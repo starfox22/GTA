@@ -476,9 +476,16 @@
       return [...countyStaticSolids, ...AIRPORT_SCENERY_SOLIDS];
     }
     function countyBlocked(x, y, r = 8) {
-      // solid() asks this for every point outside the city: no array spread.
-      const hit = (b) => x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h;
-      return countyStaticSolids.some(hit) || AIRPORT_SCENERY_SOLIDS.some(hit);
+      // solid() asks this for every point outside the city: no array spread, no closure.
+      for (let i = 0; i < countyStaticSolids.length; i++) {
+        const b = countyStaticSolids[i];
+        if (x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h) return true;
+      }
+      for (let i = 0; i < AIRPORT_SCENERY_SOLIDS.length; i++) {
+        const b = AIRPORT_SCENERY_SOLIDS[i];
+        if (x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h) return true;
+      }
+      return false;
     }
     function paintCountyGround(drawingContext, detail = true) {
       for (const reg of COUNTY_REGIONS) {

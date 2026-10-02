@@ -221,9 +221,25 @@
       // Map units a second -> km/h, the one conversion every speed readout uses.
       speedKmh = (unitsPerSecond) => (unitsPerSecond / KMH),
       distanceLabel = (units) => Math.round(worldMeters(units)) + ' m';
+    /* Math.hypot(x, y) without its allocation. The builtin makes a FixedDoubleArray for its arguments and boxes
+       its result on every call, and distanceBetween asks it thousands of times a frame. These are the builtin's own
+       operations in its own order, so the answers are the same bits (the Kahan compensation of two terms is always
+       zero: the larger magnitude scales both, the squares are summed, rooted, and scaled back). Checked against
+       Math.hypot by the console's hypotAudit(). */
+    function hypot2(x, y) {
+      const a = Math.abs(x),
+        b = Math.abs(y);
+      if (a === Infinity || b === Infinity) return Infinity;
+      if (a !== a || b !== b) return NaN;
+      const max = a > b ? a : b;
+      if (max === 0) return 0;
+      const p = a / max,
+        q = b / max;
+      return Math.sqrt(p * p + q * q) * max;
+    }
     const clamp = (value, minimum, maximum) => Math.max(minimum, Math.min(maximum, value)),
       distanceBetween = (firstPoint, secondPoint) =>
-        Math.hypot(firstPoint.x - secondPoint.x, firstPoint.y - secondPoint.y),
+        hypot2(firstPoint.x - secondPoint.x, firstPoint.y - secondPoint.y),
       headingBetween = (fromPoint, toPoint) =>
         Math.atan2(toPoint.y - fromPoint.y, toPoint.x - fromPoint.x),
       normalizeAngle = (angleRadians) => Math.atan2(Math.sin(angleRadians), Math.cos(angleRadians));

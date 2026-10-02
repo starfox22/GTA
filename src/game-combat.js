@@ -96,7 +96,7 @@
       lists[7] = sportsbookWalls();
       for (let i = 0; i < lists.length; i++) {
         const list = lists[i];
-        // Most rounds are nowhere near a given list's rectangles (rectListBounds).
+        // Most rounds are nowhere near a given list's rectangles (rectListIndex).
         if (!rectListNear(list, x, y)) continue;
         for (let k = 0; k < list.length; k++) {
           const b = list[k];

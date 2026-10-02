@@ -548,8 +548,12 @@
     // Inside the rotated ellipse (centre cx, cy, radii rx, ry grown by r, turn a).
     function insidePondEllipse(x, y, r, cx, cy, rx, ry, a) {
       const dx = x - cx,
-        dy = y - cy,
-        headingCosine = Math.cos(a),
+        dy = y - cy;
+      // The ellipse lies inside the circle of its longer radius: a point beyond it on either axis is
+      // outside (what nearly every call is), without the sine and cosine.
+      const reach = Math.max(rx, ry) + r;
+      if (r >= 0 && (dx > reach || dx < -reach || dy > reach || dy < -reach)) return false;
+      const headingCosine = Math.cos(a),
         headingSine = Math.sin(a);
       return (
         ((dx * headingCosine + dy * headingSine) / (rx + r)) ** 2 +

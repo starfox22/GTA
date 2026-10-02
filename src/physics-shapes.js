@@ -327,7 +327,7 @@
       if (harborVehicleBlocked(c) || militaryVehicleBlocked(c)) return false;
       const shape = vehicleShape(c, 5);
       if (corners(shape).some((p) => !groundAt(p.x, p.y, 2))) return false;
-      if (Math.hypot(c.vx || 0, c.vy || 0) > 36) return false;
+      if (hypot2(c.vx || 0, c.vy || 0) > 36) return false;
       for (const b of nearbyStatics(c))
         if (
           (b.minHeight === undefined ||

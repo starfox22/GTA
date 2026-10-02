@@ -70,13 +70,11 @@
       return blocks;
     }
     function railBlocked(x, y, r = 0) {
-      if (
-        RAIL_STATIONS.some((s) => {
-          const p = railLift(s);
-          return Math.abs(x - p.x) < 8.5 + r && Math.abs(y - p.y) < 8.5 + r;
-        })
-      )
-        return true;
+      // (A loop, not `some` with a closure: solid() asks this for every step of every walker.)
+      for (let i = 0; i < RAIL_STATIONS.length; i++) {
+        const p = railLift(RAIL_STATIONS[i]);
+        if (Math.abs(x - p.x) < 8.5 + r && Math.abs(y - p.y) < 8.5 + r) return true;
+      }
       const cell = railPierCells().get(Math.floor(x / 512) * 4096 + Math.floor(y / 512));
       if (!cell) return false;
       for (let i = 0; i < cell.length; i++) {

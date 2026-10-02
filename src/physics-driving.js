@@ -57,7 +57,7 @@
       const spinStep = ((Math.max(mu, 0.6) * surface * GRAVITY) / (Math.hypot(spec.l, spec.w) * 0.29)) * stepSeconds;
       c.av -= Math.sign(c.av) * Math.min(Math.abs(c.av), spinStep);
       // A shoved car leaves rubber on the road.
-      const sliding = Math.hypot(c.vx, c.vy);
+      const sliding = hypot2(c.vx, c.vy);
       if (sliding > 45 && Math.floor(physicsClock * 20) !== c.lastSkid && Math.abs(c.x - player.x) < 900 && Math.abs(c.y - player.y) < 900) {
         c.lastSkid = Math.floor(physicsClock * 20);
         skids.push({ x: c.x, y: c.y, a: Math.atan2(c.vy, c.vx), len: sliding / 40 + 2, dark: 0.45, w: 2, life: 35 });
@@ -104,7 +104,6 @@
       return 1 - 0.2 * clamp((Math.abs(along) - 50 * KMH) / (70 * KMH), 0, 1);
     }
     function controlVehicle(c, pc, stepSeconds, active) {
-      const vehicleDefinition = vehicleSpec(c);
       // Written only when different: most vehicles are parked, and storing a double into a
       // vehicle's field makes V8 allocate a new boxed number each time.
       if (c.stepStartX !== c.x) c.stepStartX = c.x;
@@ -125,6 +124,8 @@
         (c.hp > 0 || !c.damage?.burning)
       )
         return;
+      // (After the parked-vehicle return above: most of the ~280 vehicles never need their spec here.)
+      const vehicleDefinition = vehicleSpec(c);
       // Not moved by the physics yet (makeCar starts vx/vy as NaN): take the
       // velocity from the heading and whatever speed the vehicle was given.
       if (c.vx !== c.vx) {
@@ -158,7 +159,7 @@
           const d = distanceBetween(c, player),
             toward = (player.x - c.x) * c.vx + (player.y - c.y) * c.vy;
           if (d < 140 && toward > 0) {
-            const speed = Math.hypot(c.vx, c.vy),
+            const speed = hypot2(c.vx, c.vy),
               limit = clamp((d - 48) * 1.2, 0, 80);
             if (speed > limit) {
               const f = limit / Math.max(1, speed);
@@ -336,7 +337,7 @@
             handling.steer *
             // On the handbrake the locked rear slides out, so the car pivots about
             // its front wheels and reaches full swing by 15 km/h, not 30.
-            clamp((brake && !pedalled ? Math.hypot(c.vx, c.vy) / (STEER_FULL_SPEED / 2) : Math.abs(along) / STEER_FULL_SPEED), vehicleDefinition.tank ? 0.72 : 0, 1) *
+            clamp((brake && !pedalled ? hypot2(c.vx, c.vy) / (STEER_FULL_SPEED / 2) : Math.abs(along) / STEER_FULL_SPEED), vehicleDefinition.tank ? 0.72 : 0, 1) *
             Math.sign(along || 1) *
             (brake ? 1.35 : 1);
           c.handbrakeTurn = !!brake && !pedalled && Math.abs(along) > 8 * KMH;
@@ -346,7 +347,7 @@
           // drift). Up to ~37 degrees of slip (a trail's crabbing, a tidy drift) it
           // is the nose-on speed, as for every other driver.
           const cornerLimit =
-            corneringLimit(vehicleDefinition, Math.max(Math.abs(along), 0.8 * Math.hypot(c.vx, c.vy))) * handling.grip * surface * (pedalled ? 1 : cornerShare) * (brake ? (pedalled ? 1.6 : HANDBRAKE_CORNER) : 1);
+            corneringLimit(vehicleDefinition, Math.max(Math.abs(along), 0.8 * hypot2(c.vx, c.vy))) * handling.grip * surface * (pedalled ? 1 : cornerShare) * (brake ? (pedalled ? 1.6 : HANDBRAKE_CORNER) : 1);
           /* UNDERSTEER SKID
              The key asks for full lock; the tyres give what grip allows (the clamp
              below), which is a clean line for a tap, a lane change or a sweeping bend.
@@ -393,7 +394,7 @@
             c.absActive = brakeDecel > 0 && physicsClock - tyres.absAt < 0.1;
             if (c.absActive) braking = (physicsClock * 7) % 1 < 0.62;
             // How loud the tyres are (audio.js): a slide, a lock, wheelspin, a scrub.
-            const speed = Math.hypot(c.vx, c.vy),
+            const speed = hypot2(c.vx, c.vy),
               slideAngle = Math.abs(lateral) / Math.max(Math.abs(along), 20);
             c.tyreSlip =
               speed < 15 * KMH
@@ -601,7 +602,7 @@
           c.x = nx;
           c.y = ny;
         } else {
-          const speed = Math.hypot(c.vx, c.vy);
+          const speed = hypot2(c.vx, c.vy);
           if (speed > 45 && physicsClock - (c.bankHit || -100) > 0.4) {
             damageVehicle(c, (speed - 40) * 0.035, nx, ny);
             c.bankHit = physicsClock;

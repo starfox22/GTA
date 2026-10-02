@@ -83,7 +83,7 @@
     function crowdSight(a, b) {
       const dx = b.x - a.x,
         dy = b.y - a.y,
-        d = Math.hypot(dx, dy),
+        d = hypot2(dx, dy),
         steps = Math.ceil(d / 16);
       for (let i = 1; i < steps; i++) {
         const t = i / steps,
@@ -261,7 +261,7 @@
           if (!cell) continue;
           for (let k = 0; k < cell.n; k++) {
             const p = cell[k],
-              d = Math.hypot(p.x - x, p.y - y);
+              d = hypot2(p.x - x, p.y - y);
             if (d <= r) fn(p, d);
           }
         }

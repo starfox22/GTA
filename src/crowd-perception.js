@@ -71,7 +71,7 @@
       if (nearPlayer) forPeopleNear(source.x, source.y, reach, perceive);
       else
         for (const p of pedestrians) {
-          const d = Math.hypot(p.x - source.x, p.y - source.y);
+          const d = hypot2(p.x - source.x, p.y - source.y);
           if (d <= reach) perceive(p, d);
         }
       return inc;
@@ -319,10 +319,10 @@
       for (const c of vehicles) {
         if (c.hp <= 0 || Math.abs(c.x - x) > 190 || Math.abs(c.y - y) > 190) continue;
         if (isAircraft(c) || isBoat(c)) continue;
-        const speed = Math.hypot(c.vx || 0, c.vy || 0);
+        const speed = hypot2(c.vx || 0, c.vy || 0);
         if (speed < 25) continue;
         const toward = (x - c.x) * (c.vx || 0) + (y - c.y) * (c.vy || 0);
-        if (toward > 0 && Math.hypot(x - c.x, y - c.y) < 60 + speed * 1.1) return true;
+        if (toward > 0 && hypot2(x - c.x, y - c.y) < 60 + speed * 1.1) return true;
       }
       return false;
     }

@@ -50,37 +50,124 @@
      * RECTANGLE LISTS
      * Many of solid()'s tests are "is this point (grown by r) inside any of these
      * map rectangles": the harbor, marina, garages, airport scenery. The lists are
-     * fixed, so each one's overall bounds are worked out once (keyed by the list)
-     * and a point outside them answers at once, without walking the list.
+     * fixed, so each one is indexed once (keyed by the list, rebuilt if its length
+     * changes): its overall bounds answer "nowhere near" at once, and a grid of
+     * 256-unit cells holds the rectangles each cell touches, so a point inside the
+     * bounds asks only the cells under its box instead of walking the list. (The
+     * garages' walls sit on every island: their bounds cover the whole world, and
+     * the walk over all 72 rectangles cost 3 microseconds and a kilobyte of
+     * garbage in every solid() call.) A rectangle that overlaps the box shares a
+     * cell with it, so the answer is the same as the walk's.
      */
-    const rectListBounds = new WeakMap();
-    function rectListBlocked(list, x, y, r = 0) {
-      let bounds = rectListBounds.get(list);
-      if (!bounds || bounds.count !== list.length) {
-        bounds = { count: list.length, x0: Infinity, y0: Infinity, x1: -Infinity, y1: -Infinity };
-        for (const b of list) {
-          bounds.x0 = Math.min(bounds.x0, b.x);
-          bounds.y0 = Math.min(bounds.y0, b.y);
-          bounds.x1 = Math.max(bounds.x1, b.x + b.w);
-          bounds.y1 = Math.max(bounds.y1, b.y + b.h);
-        }
-        rectListBounds.set(list, bounds);
+    const RECT_CELL = 256,
+      rectListIndexes = new WeakMap();
+    function rectListIndex(list) {
+      let index = rectListIndexes.get(list);
+      if (index && index.count === list.length) return index;
+      index = { count: list.length, x0: Infinity, y0: Infinity, x1: -Infinity, y1: -Infinity, ci0: 0, cj0: 0, cw: 0, ch: 0, cells: null };
+      for (const b of list) {
+        index.x0 = Math.min(index.x0, b.x);
+        index.y0 = Math.min(index.y0, b.y);
+        index.x1 = Math.max(index.x1, b.x + b.w);
+        index.y1 = Math.max(index.y1, b.y + b.h);
       }
-      if (x + r <= bounds.x0 || x - r >= bounds.x1 || y + r <= bounds.y0 || y - r >= bounds.y1) return false;
-      for (let i = 0; i < list.length; i++) {
-        const b = list[i];
-        if (x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h) return true;
+      if (list.length && index.x0 <= index.x1 && index.y0 <= index.y1 && Number.isFinite(index.x0 + index.x1 + index.y0 + index.y1)) {
+        index.ci0 = Math.floor(index.x0 / RECT_CELL);
+        index.cj0 = Math.floor(index.y0 / RECT_CELL);
+        index.cw = Math.floor(index.x1 / RECT_CELL) - index.ci0 + 1;
+        index.ch = Math.floor(index.y1 / RECT_CELL) - index.cj0 + 1;
+        if (index.cw * index.ch <= 40000) {
+          index.cells = new Array(index.cw * index.ch).fill(null);
+          for (const b of list)
+            for (let i = Math.floor(b.x / RECT_CELL); i <= Math.floor((b.x + b.w) / RECT_CELL); i++)
+              for (let j = Math.floor(b.y / RECT_CELL); j <= Math.floor((b.y + b.h) / RECT_CELL); j++) {
+                const at = (i - index.ci0) * index.ch + (j - index.cj0);
+                (index.cells[at] ||= []).push(b);
+              }
+        }
+      }
+      rectListIndexes.set(list, index);
+      return index;
+    }
+    function rectListBlocked(list, x, y, r = 0) {
+      const index = rectListIndex(list);
+      if (x + r <= index.x0 || x - r >= index.x1 || y + r <= index.y0 || y - r >= index.y1) return false;
+      const cells = index.cells,
+        i0 = Math.floor((x - r) / RECT_CELL),
+        i1 = Math.floor((x + r) / RECT_CELL),
+        j0 = Math.floor((y - r) / RECT_CELL),
+        j1 = Math.floor((y + r) / RECT_CELL);
+      // A very large box (a spawn test) or a list too sprawling to index: walk the list.
+      if (!cells || i1 - i0 > 12 || j1 - j0 > 12) {
+        for (let i = 0; i < list.length; i++) {
+          const b = list[i];
+          if (x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h) return true;
+        }
+        return false;
+      }
+      for (let i = i0; i <= i1; i++) {
+        const ci = i - index.ci0;
+        if (ci < 0 || ci >= index.cw) continue;
+        for (let j = j0; j <= j1; j++) {
+          const cj = j - index.cj0;
+          if (cj < 0 || cj >= index.ch) continue;
+          const cell = cells[ci * index.ch + cj];
+          if (cell === null) continue;
+          for (let k = 0; k < cell.length; k++) {
+            const b = cell[k];
+            if (x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h) return true;
+          }
+        }
       }
       return false;
     }
+    /* CELL MASKS. A grid of lists kept in a Map by cell (`i * 4096 + j`) answers "nothing here" with
+       a hash lookup, and a walker's step asked nine of them. cellMask() marks, once per grid, every
+       cell within `reach` cells of a filled one in a plain byte array over the filled cells' bounds;
+       a query outside the mask or on a clear byte finds nothing in the Map either (an exact filter:
+       it only skips lookups). The mask belongs to the grid object it was made from. */
+    const cellMasks = new WeakMap();
+    function cellMask(grid, reach) {
+      let mask = cellMasks.get(grid);
+      if (mask && mask.size === grid.size && mask.reach === reach) return mask;
+      let i0 = Infinity,
+        j0 = Infinity,
+        i1 = -Infinity,
+        j1 = -Infinity;
+      for (const key of grid.keys()) {
+        // (|j| stays far under 2048 on this map: the key splits back into its column and row.)
+        const i = Math.round(key / 4096),
+          j = key - i * 4096;
+        i0 = Math.min(i0, i);
+        j0 = Math.min(j0, j);
+        i1 = Math.max(i1, i);
+        j1 = Math.max(j1, j);
+      }
+      mask = { size: grid.size, reach, i0: i0 - reach, j0: j0 - reach, w: 0, h: 0, bits: null };
+      if (i0 <= i1) {
+        mask.w = i1 - i0 + 1 + 2 * reach;
+        mask.h = j1 - j0 + 1 + 2 * reach;
+        mask.bits = new Uint8Array(mask.w * mask.h);
+        for (const key of grid.keys()) {
+          const i = Math.round(key / 4096),
+            j = key - i * 4096;
+          for (let a = -reach; a <= reach; a++)
+            for (let b = -reach; b <= reach; b++) mask.bits[(i + a - mask.i0) * mask.h + (j + b - mask.j0)] = 1;
+        }
+      }
+      cellMasks.set(grid, mask);
+      return mask;
+    }
+    // Whether a Map cell near (i, j) may hold something (see cellMask).
+    function cellMaskHas(mask, i, j) {
+      const mi = i - mask.i0,
+        mj = j - mask.j0;
+      return mi >= 0 && mj >= 0 && mi < mask.w && mj < mask.h && mask.bits[mi * mask.h + mj] === 1;
+    }
     // Whether a point lies inside a rectangle list's overall bounds.
     function rectListNear(list, x, y) {
-      let bounds = rectListBounds.get(list);
-      if (!bounds || bounds.count !== list.length) {
-        rectListBlocked(list, x, y, 0);
-        bounds = rectListBounds.get(list);
-      }
-      return x >= bounds.x0 && x <= bounds.x1 && y >= bounds.y0 && y <= bounds.y1;
+      const index = rectListIndex(list);
+      return x >= index.x0 && x <= index.x1 && y >= index.y0 && y <= index.y1;
     }
     function solid(x, y, r = 8, overWater = false) {
       if (
@@ -134,8 +221,17 @@
      * vehicles are bucketed into 128-unit cells once per simulation frame (and
      * again whenever vehicles are added or removed) and a step only asks the
      * cells around it, with a margin for a car that moves later in the frame.
+     * The cells over the playable map live in a plain array (a step asks nine to
+     * sixteen of them: a hash lookup each was a quarter of the test); anything
+     * outside it (an aircraft far out to sea) in the Map. Each cell holds `n`
+     * vehicles, never emptied with `length = 0`.
      */
     const VEHICLE_CELL = 128,
+      VEHICLE_DENSE_I0 = -64,
+      VEHICLE_DENSE_J0 = -96,
+      VEHICLE_DENSE_W = 160,
+      VEHICLE_DENSE_H = 224,
+      vehicleDense = new Array(VEHICLE_DENSE_W * VEHICLE_DENSE_H).fill(null),
       vehicleGrid = new Map(),
       vehicleGridState = { time: NaN, count: -1, stamp: 0 };
     function refreshVehicleGrid() {
@@ -147,34 +243,49 @@
       if (vehicleGrid.size > 4000) vehicleGrid.clear();
       for (let i = 0; i < vehicles.length; i++) {
         const c = vehicles[i],
-          key = Math.floor(c.x / VEHICLE_CELL) * 4096 + Math.floor(c.y / VEHICLE_CELL);
-        let cell = vehicleGrid.get(key);
-        if (!cell) vehicleGrid.set(key, (cell = []));
+          ci = Math.floor(c.x / VEHICLE_CELL),
+          cj = Math.floor(c.y / VEHICLE_CELL);
+        let cell;
+        if (ci >= VEHICLE_DENSE_I0 && ci < VEHICLE_DENSE_I0 + VEHICLE_DENSE_W && cj >= VEHICLE_DENSE_J0 && cj < VEHICLE_DENSE_J0 + VEHICLE_DENSE_H) {
+          const at = (ci - VEHICLE_DENSE_I0) * VEHICLE_DENSE_H + (cj - VEHICLE_DENSE_J0);
+          cell = vehicleDense[at];
+          if (cell === null) cell = vehicleDense[at] = Object.assign([], { stamp: 0, n: 0 });
+        } else {
+          const key = ci * 4096 + cj;
+          cell = vehicleGrid.get(key);
+          if (!cell) vehicleGrid.set(key, (cell = Object.assign([], { stamp: 0, n: 0 })));
+        }
         if (cell.stamp !== stamp) {
           cell.stamp = stamp;
-          cell.length = 0;
+          cell.n = 0;
         }
-        cell.push(c);
+        cell[cell.n++] = c;
       }
     }
     // Whether a vehicle blocks a foot step to (x, y); `reach` bounds the test.
     function footStepVehicleBlocked(x, y, collisionRadius, reach) {
       refreshVehicleGrid();
       const span = reach + 64,
+        stamp = vehicleGridState.stamp,
         i0 = Math.floor((x - span) / VEHICLE_CELL),
         i1 = Math.floor((x + span) / VEHICLE_CELL),
         j0 = Math.floor((y - span) / VEHICLE_CELL),
         j1 = Math.floor((y + span) / VEHICLE_CELL);
-      for (let i = i0; i <= i1; i++)
+      for (let i = i0; i <= i1; i++) {
+        const inColumns = i >= VEHICLE_DENSE_I0 && i < VEHICLE_DENSE_I0 + VEHICLE_DENSE_W;
         for (let j = j0; j <= j1; j++) {
-          const cell = vehicleGrid.get(i * 4096 + j);
-          if (!cell || cell.stamp !== vehicleGridState.stamp) continue;
-          for (let k = 0; k < cell.length; k++) {
+          const cell =
+            inColumns && j >= VEHICLE_DENSE_J0 && j < VEHICLE_DENSE_J0 + VEHICLE_DENSE_H
+              ? vehicleDense[(i - VEHICLE_DENSE_I0) * VEHICLE_DENSE_H + (j - VEHICLE_DENSE_J0)]
+              : vehicleGrid.get(i * 4096 + j);
+          if (!cell || cell.stamp !== stamp) continue;
+          for (let k = 0; k < cell.n; k++) {
             const c = cell[k];
             if (c.x - x > reach || x - c.x > reach || c.y - y > reach || y - c.y > reach) continue;
             if ((!isAircraft(c) || aircraftClearance(c) < 20) && pointInCar(x, y, c, collisionRadius)) return true;
           }
         }
+      }
       return false;
     }
     function footStepBlocked(body, x, y, collisionRadius, swimmer, onFoot, reach) {

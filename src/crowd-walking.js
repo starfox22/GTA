@@ -127,7 +127,7 @@
           gap = p.role === 'kid' ? 7 : 9,
           tx = leader.x + Math.cos(leader.a + Math.PI / 2) * gap * side,
           ty = leader.y + Math.sin(leader.a + Math.PI / 2) * gap * side,
-          d = Math.hypot(tx - p.x, ty - p.y);
+          d = hypot2(tx - p.x, ty - p.y);
         p.sitting = false;
         p.walking = d > 2;
         p.pose = ['chat', 'phone', 'idle', 'sit', 'wait'].includes(leader.pose) || !leader.walking ? 'idle' : null;
@@ -345,7 +345,7 @@
       const vx = Math.cos(dir) * speed + (vertical ? lateralSpeed : 0),
         vy = Math.sin(dir) * speed + (vertical ? 0 : lateralSpeed),
         heading = Math.atan2(vy, vx),
-        pace = Math.hypot(vx, vy);
+        pace = hypot2(vx, vy);
       p.pose = p.texting ? 'text' : p.dog ? 'leash' : null;
       if (crowdStep(p, heading, pace, deltaSeconds)) {
         p.blocked = (p.blocked || 0) + deltaSeconds;

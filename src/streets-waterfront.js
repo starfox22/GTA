@@ -197,6 +197,8 @@
       if (!grid) return false;
       const i0 = Math.floor(x / 128),
         j0 = Math.floor(y / 128);
+      // Nothing in any of the nine cells: one byte read instead of nine lookups (game-collision.js cellMask).
+      if (!cellMaskHas(cellMask(grid, 1), i0, j0)) return false;
       for (let i = i0 - 1; i <= i0 + 1; i++)
         for (let j = j0 - 1; j <= j0 + 1; j++) {
           const list = grid.get(i * 4096 + j);

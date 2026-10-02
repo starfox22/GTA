@@ -65,7 +65,7 @@
         const x = c.x + a * ca - l * sa,
           y = c.y + a * sa + l * ca;
         if (solid(x, y, 5)) continue;
-        const d = Math.hypot(x - p.x, y - p.y),
+        const d = hypot2(x - p.x, y - p.y),
           step = Math.min(d, speed * deltaSeconds);
         if (d > 0.01) {
           p.x += ((x - p.x) / d) * step;
@@ -149,7 +149,7 @@
     // the whole vehicle at every sub-step.
     const sweepProbe = { type: null, airframe: null, x: 0, y: 0, a: 0 };
     function sweptPersonContact(person, c, from) {
-      const distance = Math.hypot(c.x - from.x, c.y - from.y),
+      const distance = hypot2(c.x - from.x, c.y - from.y),
         steps = Math.min(24, Math.max(1, Math.ceil(distance / 7)));
       if (distance > 170) return pointInCar(person.x, person.y, c, 3);
       sweepProbe.type = c.type;
@@ -173,18 +173,23 @@
       // Where the car was last frame; the record is updated in place.
       const last = c.bloodTrackPoint || c.personSweepStart,
         prev = bloodTrackPrevious;
-      prev.x = last ? last.x : c.x;
-      prev.y = last ? last.y : c.y;
-      prev.a = last ? last.a : c.a;
+      // (Doubles are written only when they changed: a parked vehicle's frame stores nothing, where each store allocated a boxed number.)
+      const lx = last ? last.x : c.x,
+        ly = last ? last.y : c.y,
+        la = last ? last.a : c.a;
+      if (prev.x !== lx) prev.x = lx;
+      if (prev.y !== ly) prev.y = ly;
+      if (prev.a !== la) prev.a = la;
       if (!c.bloodTrackPoint) c.bloodTrackPoint = { x: 0, y: 0, a: 0 };
-      c.bloodTrackPoint.x = c.x;
-      c.bloodTrackPoint.y = c.y;
-      c.bloodTrackPoint.a = c.a;
+      const point = c.bloodTrackPoint;
+      if (point.x !== c.x) point.x = c.x;
+      if (point.y !== c.y) point.y = c.y;
+      if (point.a !== c.a) point.a = c.a;
       if (!active || !bloodOn || isBoat(c) || isAircraft(c) || (c.altitude || 0) > 3) {
         if (!bloodOn) c.bloodTrackRemaining = 0;
         return;
       }
-      const distance = Math.hypot(c.x - prev.x, c.y - prev.y);
+      const distance = hypot2(c.x - prev.x, c.y - prev.y);
       if (distance > 100) {
         c.bloodTrackRemaining = 0;
         return;

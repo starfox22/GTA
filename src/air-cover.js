@@ -153,9 +153,11 @@
       return x > 2624 + margin && x < 2752 - margin && y > 2780 + margin && y < 3100 - margin;
     }
     function underpassBlocked(x, y, r = 0) {
-      return UNDERPASS_WALLS.some(
-        (b) => x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h,
-      );
+      for (let i = 0; i < UNDERPASS_WALLS.length; i++) {
+        const b = UNDERPASS_WALLS[i];
+        if (x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h) return true;
+      }
+      return false;
     }
     // Slab test of the segment a-b (at eye height) against each block, in the
     // block's own frame. Blocks whose bounds miss the segment's are skipped.
