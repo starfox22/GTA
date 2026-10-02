@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-481 files in the include tree, 165,833 lines.
+481 files in the include tree, 165,856 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -56,7 +56,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/pursuit.js`    27 — ▸ Police response and pursuit tactics
 - `src/swat.js`   236 — SWAT teams, riot shields and rooftop snipers
 - `src/wounds.js`   153 — Wounds, hit reactions and death falls
-- `src/story.js`   901 — Story characters and mission stages
+- `src/story.js`   906 — Story characters and mission stages
 - `src/campaign.js`   458 — Campaign saves and replay
 - `src/chase.js`   546 — Cargo pursuit
 - `src/roadblocks.js`   434 — Police containment and roadblocks
@@ -117,7 +117,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/navigation.js`   689 — City map and route planning
 - `src/parachute.js`   728 — Bailout and parachute
 - `src/falls.js`    22 — ▸ Falls: bodies and vehicles off cliffs, fatal impacts
-- `src/mobile.js`   272 — Touch controls
+- `src/mobile.js`   276 — Touch controls
 - `src/input-hints.js`   151 — Input-aware hints: which device the player is using (keyboard and mouse, touch, gamepad) and what an action is called on it (keyName's touch and …
 - `src/gamepad.js`   332 — Gamepad (standard mapping): play through the same actions as the bound keys, menus by focus, the city map by a cursor; the button names hints use …
 - `src/world-view.js`   241 — World camera gestures
@@ -230,10 +230,10 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/roofmission.js ▸ Blue Hour rooftop mission
 
 - `src/roofmission-layout.js`   398 — Blue Hour layout: ROOF_HIT points, roof cover, entityElevation, sight rays and terrace routes (roofRoute, roofStep).
-- `src/roofmission-stealth.js`   237 — Blue Hour stealth: the bodyguards' beats and scanning heads, the vision-cone suspicion meter, walking and running on the terrace.
+- `src/roofmission-stealth.js`   240 — Blue Hour stealth: the bodyguards' beats and scanning heads, the vision-cone suspicion meter, walking and running on the terrace.
 - `src/roofmission-poison.js`   653 — Blue Hour poison: the reserved glass (P), Vescari's toast, cough and faint, the party's reaction, the call and the ambulance.
 - `src/roofmission-scene.js`   376 — Blue Hour scene: guests and guards (startRooftopHit), the alarm, stage flow and the party's frame update.
-- `src/roofmission-ui.js`   152 — Blue Hour HUD and 2D view: the stealth meter and prompts (roofMissionUI), speech bubbles, guard cones on the 2D map.
+- `src/roofmission-ui.js`   155 — Blue Hour HUD and 2D view: the stealth meter and prompts (roofMissionUI), speech bubbles, guard cones on the 2D map.
 - `src/roofmission-entrance.js`   116 — Blue Hour street entrance: the forecourt plan (canopy, carpet, planters, bollards, valet stand), the pavement kept clear of street furniture, the …
 
 ## src/damage.js ▸ Vehicle damage, bullet impacts and breakable street furniture
@@ -716,7 +716,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/game-console.js ▸ DeadEndCity console registry and assembly
 
 - `src/game-console-core.js`   142 — DeadEndCity console, core: status, teleport, look, clock, zoom, simulate, heal, god, cash, walk (+ godPanelConsole)
-- `src/game-console-missions.js`   299 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
+- `src/game-console-missions.js`   307 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
 - `src/game-console-police.js`   217 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
 - `src/game-console-vehicles.js`   276 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
 - `src/game-console-world.js`   227 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch

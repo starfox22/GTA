@@ -370,8 +370,13 @@
           missions[m.index].brief
         );
       const name = CHARACTERS[missions[m.index].contact].name.split(' ')[0],
+        // A key's own name in the stage text ("· E TO LOAD", "· P") stays as the key
+        // reads: lower-cased it looked like a typo ("e to load").
+        keyNames = new Set(['interact', 'poison', 'fire', 'walk'].map((id) => keyName(id))),
         task = (m.instruction || missions[m.index].brief)
-          .toLowerCase()
+          .split(' ')
+          .map((word) => (keyNames.has(word) ? word : word.toLowerCase()))
+          .join(' ')
           // Every name the stage instructions use, capitalised wherever it appears
           // ("fly to northridge", "daniel's guards" read as typos on the card).
           .replace(STORY_PROPER_NOUNS, (word) => word.replace(/(^|\s)\S/g, (c) => c.toUpperCase()));
