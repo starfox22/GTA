@@ -106,7 +106,8 @@
       const uploadScene = new Three.Scene(),
         uploadLights = [];
       let uploadTarget = null;
-      function uploadMeshes(meshes) {
+      // `shadows` false skips the sun's shadow pass for this draw (the cell pre-upload below needs none).
+      function uploadMeshes(meshes, shadows = true) {
         if (!uploadTarget) {
           uploadTarget = new Three.WebGLRenderTarget(1, 1, { type: hdrCapable ? Three.HalfFloatType : Three.UnsignedByteType, depthBuffer: true });
           for (const o of scene.children) if (o.isLight) uploadLights.push(o);
@@ -123,7 +124,7 @@
           renderer.setRenderTarget(uploadTarget);
           // With shadows on, the sun's shadow pass draws them too: their depth programs compile
           // here (the shadow map itself is redrawn by the next frame).
-          renderer.shadowMap.needsUpdate = renderer.shadowMap.enabled;
+          renderer.shadowMap.needsUpdate = shadows && renderer.shadowMap.enabled;
           renderer.render(uploadScene, camera);
         } finally {
           renderer.shadowMap.needsUpdate = false;
@@ -132,23 +133,110 @@
           renderer.setRenderTarget(previous);
         }
       }
+      /**
+       * CELL PRE-UPLOAD
+       * A static or batch cell's buffers and textures go to the GPU the first time the camera draws it: 0.2 MB to 13 MB
+       * in one frame as the view crosses into a cell (renderHiccups().cells). While the game is played a timer takes the
+       * cell nearest the view that is not on the GPU yet, up to `CELL_AHEAD` units beyond the view's reach, and uploads
+       * its meshes through `uploadMeshes` (no shadow pass) a slice of ~1.5 MB at a time, so the draw that follows finds
+       * them there. Only where the shader prewarm itself runs (a real GPU, or ?prewarm), while the page is shown, and it
+       * backs off when a slice was slow. A geometry counts as uploaded once three.js has put its dispose listener on it.
+       */
+      const CELL_AHEAD = 1700,
+        CELL_SLICE_BYTES = 1.5e6,
+        cellWarm = { cells: null, started: false, meshes: 0, megabytes: 0, ticks: 0, slowest: 0 };
+      function geometryUploaded(g) {
+        const listeners = g._listeners;
+        return !!(listeners && listeners.dispose && listeners.dispose.length);
+      }
+      function cellWarmList() {
+        const list = [];
+        const add = (group, x, y) => {
+          const meshes = [];
+          group.traverse((o) => {
+            if (o.isMesh && o.geometry && !o.isSkinnedMesh) meshes.push(o);
+          });
+          if (meshes.length) list.push({ x, y, meshes, next: 0 });
+        };
+        for (const c of staticBatchCells.values()) add(c.group, c.x, c.z);
+        for (const c of staticCells) add(c.group, c.x, c.y);
+        return list;
+      }
+      function cellWarmTick() {
+        if (!cellWarm.cells) cellWarm.cells = cellWarmList();
+        const limit = viewReach + CELL_AHEAD + 512;
+        let best = null,
+          bestDistance = limit;
+        for (const cell of cellWarm.cells) {
+          if (cell.next >= cell.meshes.length) continue;
+          const d = Math.max(Math.abs(cell.x - viewCenter.x), Math.abs(cell.y - viewCenter.y));
+          if (d < bestDistance) {
+            best = cell;
+            bestDistance = d;
+          }
+        }
+        if (!best) return 0;
+        const batch = [];
+        let bytes = 0;
+        while (best.next < best.meshes.length && bytes < CELL_SLICE_BYTES) {
+          const mesh = best.meshes[best.next++],
+            g = mesh.geometry;
+          if (!mesh.visible || geometryUploaded(g)) continue;
+          batch.push(mesh);
+          for (const name in g.attributes) bytes += g.attributes[name].array?.byteLength || 0;
+          if (g.index?.array) bytes += g.index.array.byteLength;
+        }
+        if (!batch.length) return 0;
+        cellWarm.megabytes += bytes / 1048576;
+        const started = performance.now();
+        uploadMeshes(batch, false);
+        hiccupSync();
+        const spent = performance.now() - started;
+        cellWarm.meshes += batch.length;
+        cellWarm.ticks++;
+        cellWarm.slowest = Math.max(cellWarm.slowest, spent);
+        return spent;
+      }
+      function startCellPreUpload() {
+        const run = () => {
+          let wait = 120;
+          if (!document.hidden && (gameMode === 'play' || gameMode === 'pause' || gameMode === 'menu') && prewarmInfo.done) {
+            try {
+              // A slow slice (a busy driver) backs the timer off.
+              if (cellWarmTick() > 10) wait = 500;
+            } catch (error) {
+              wait = 5000;
+            }
+          }
+          setTimeout(run, wait);
+        };
+        setTimeout(run, 4000);
+      }
       // Progress, for renderHiccups(): whether the driver compiles in parallel, scene objects and
       // passes still to compile, models still to build, programs compiled and linked so far, the
       // CPU spent, and any error that stopped a part of it.
       const prewarmInfo = { parallel: false, queued: 0, passes: 0, models: 0, modelErrors: 0, strays: 0, uploads: 0, compiled: 0, linked: 0, ms: 0, done: false, error: '' };
-      function prewarmShaders() {
+      // `stage` (lighting3d-look.js LIT STATE) runs it again in play for a tier change: the scene's objects, the
+      // post passes and, when shadows come on, the shadow samples, compiled with the new lit flags flipped for each
+      // slice only; its progress is `litStageInfo`, and `finishLitSwitch` flips them for good when all are ready.
+      function prewarmShaders(stage = null) {
         // (Lights stay out of the slices: compile() counts the lights of a slice as well as the
         // scene's, so a slice holding one compiled its programs for one light too many.)
         const queue = scene.children.filter((o) => !o.isLight),
           // The off-screen passes (registerPrewarmPass) and the wet-reflection passes: each
           // is compiled with its own target bound, as that decides the program (colour space).
-          passes = [...prewarmPasses, ...postWarmPasses(), { run: () => warmPoints() }],
+          passes = stage ? postWarmPasses(true) : [...prewarmPasses, ...postWarmPasses(), { run: () => warmPoints() }],
           // Stand-in vehicles, one per model (render3d-prewarm-models.js), built last and only
           // while the title is up.
-          models = prewarmModelList(),
+          models = stage ? [] : prewarmModelList(),
           // The far copy of the city, uploaded to the GPU a few meshes at a time once every
           // program is ready (only while the title is up).
-          uploads = [...farScenery.children, ...(renderer.shadowMap.enabled ? prewarmShadowSamples() : [])],
+          uploads = stage
+            ? stage.state.shadows && !renderer.shadowMap.enabled
+              ? prewarmShadowSamples()
+              : []
+            : [...farScenery.children, ...(renderer.shadowMap.enabled ? prewarmShadowSamples() : [])],
+          info = stage ? litStageInfo : prewarmInfo,
           slice = new Three.Object3D(),
           // Programs compiled but not yet linked. compile() only starts the work:
           // three.js links a program (the blocking part, ~0.1-0.3 s each on a
@@ -162,21 +250,33 @@
         // together) cost far more than it saved: there, programs link when first
         // drawn, as before.
         prewarmInfo.parallel = renderer.extensions.has('KHR_parallel_shader_compile');
-        prewarmInfo.queued = queue.length;
-        prewarmInfo.passes = passes.length;
-        prewarmInfo.models = models.length;
-        prewarmInfo.uploads = uploads.length;
+        if (!stage) {
+          prewarmInfo.queued = queue.length;
+          prewarmInfo.passes = passes.length;
+          prewarmInfo.models = models.length;
+          prewarmInfo.uploads = uploads.length;
+        }
         // (`?prewarm` in the URL runs it without the extension, compile only and nothing linked:
         // for headless runs on a software GL, which has none; tools/dev.mjs `--prewarm`.)
         const forced = !prewarmInfo.parallel && /[?&]prewarm\b/.test(location.search);
-        if (!prewarmInfo.parallel && !forced) return;
-        let burntWarmed = false;
+        // A tier change can stage its programs only where the shader prewarm itself runs.
+        litStagingReady = prewarmInfo.parallel || forced;
+        if (litStagingReady && !stage && !cellWarm.started) {
+          cellWarm.started = true;
+          startCellPreUpload();
+        }
+        if (!prewarmInfo.parallel && !forced) {
+          if (stage) finishLitSwitch(stage);
+          return;
+        }
+        let burntWarmed = false,
+          doneMarked = false;
         const note = (materials) => {
           for (const material of materials) {
             const program = renderer.properties.get(material).currentProgram;
             if (program && !unlinked.has(program)) {
               unlinked.add(program);
-              prewarmInfo.compiled++;
+              info.compiled++;
             }
           }
         };
@@ -201,13 +301,13 @@
           });
           slice.children = [];
         };
-        const step = () => {
+        const stepWork = () => {
           const started = performance.now(),
             previous = renderer.getRenderTarget(),
             // A slice of work may take 6 ms behind the title and 2.5 ms once the game is played.
             budget = forced || gameMode === 'menu' ? 6 : 2.5,
             bindScene = () => {
-              if (hdrCapable && postTier) renderer.setRenderTarget(sceneTarget);
+              if (hdrCapable && postTier) renderer.setRenderTarget(postSceneTarget());
             };
           bindScene();
           while (queue.length && performance.now() - started < budget) {
@@ -217,7 +317,7 @@
             try {
               note(renderer.compile(slice, camera, scene));
             } catch (error) {
-              prewarmInfo.error = String(error).slice(0, 160);
+              info.error = String(error).slice(0, 160);
               queue.length = 0;
             }
           }
@@ -229,13 +329,13 @@
               try {
                 pass.run();
               } catch (error) {
-                prewarmInfo.error = String(error).slice(0, 160);
+                info.error = String(error).slice(0, 160);
               }
               continue;
             }
             if (!target) continue;
             try {
-              renderer.setRenderTarget(target);
+              renderer.setRenderTarget(target === 'canvas' ? null : target);
               if (pass.material) {
                 // A post pass: its one material on the shared quad.
                 postQuad.material = pass.material;
@@ -252,7 +352,7 @@
                     }
               }
             } catch (error) {
-              prewarmInfo.error = String(error).slice(0, 160);
+              info.error = String(error).slice(0, 160);
             }
           }
           bindScene();
@@ -260,7 +360,7 @@
           // milliseconds of kit geometry), taken out of the scene again once compiled. Their
           // materials are not disposed, so their programs stay cached.
           const titleUp = forced || gameMode === 'menu';
-          if (!titleUp) models.length = uploads.length = 0;
+          if (!titleUp && !stage) models.length = uploads.length = 0;
           while (!queue.length && !passes.length && models.length && performance.now() - started < budget) {
             const standIn = models.shift(),
               before = scene.children.length;
@@ -281,7 +381,7 @@
               // (A builder that also hung something else on the scene would leave it there.)
               while (scene.children.length > before) {
                 scene.remove(scene.children[scene.children.length - 1]);
-                prewarmInfo.strays++;
+                info.strays++;
               }
               // The type's body-impostor pool (flight-view3d.js BODY IMPOSTORS) is made from the
               // first pristine model: make it now, and compile its instanced materials.
@@ -293,15 +393,15 @@
                 carModels.delete(standIn);
               }
             } catch (error) {
-              prewarmInfo.modelErrors++;
-              prewarmInfo.error = String(error).slice(0, 160) + ' (' + standIn.type + ')';
+              info.modelErrors++;
+              info.error = String(error).slice(0, 160) + ' (' + standIn.type + ')';
               // A failed build may leave a part of the model in the scene.
               while (scene.children.length > before) scene.remove(scene.children[scene.children.length - 1]);
             }
           }
           renderer.setRenderTarget(previous);
           // The far copy of the city, about 3 MB of buffers a step, once every program is ready.
-          if (titleUp && !queue.length && !passes.length && !models.length && !unlinked.size && uploads.length) {
+          if ((titleUp || stage) && !queue.length && !passes.length && !models.length && !unlinked.size && uploads.length) {
             const batch = [];
             for (let bytes = 0; uploads.length && bytes < 3e6; ) {
               const mesh = uploads.shift(),
@@ -313,7 +413,7 @@
             try {
               uploadMeshes(batch);
             } catch (error) {
-              prewarmInfo.error = String(error).slice(0, 160);
+              info.error = String(error).slice(0, 160);
               uploads.length = 0;
             }
           }
@@ -323,21 +423,38 @@
             if (!program.isReady()) continue;
             program.getUniforms();
             unlinked.delete(program);
-            prewarmInfo.linked++;
+            info.linked++;
           }
           hiccupSync();
-          prewarmInfo.queued = queue.length;
-          prewarmInfo.passes = passes.length;
-          prewarmInfo.models = models.length;
-          prewarmInfo.uploads = uploads.length;
+          info.queued = queue.length;
+          info.passes = passes.length;
+          info.models = models.length;
+          info.uploads = uploads.length;
           const spent = performance.now() - started;
-          prewarmInfo.ms += spent;
-          prewarmInfo.done = !queue.length && !passes.length && !models.length && !uploads.length && !unlinked.size;
+          info.ms += spent;
+          info.done = !queue.length && !passes.length && !models.length && !uploads.length && !unlinked.size;
+          if (info.done && !doneMarked) {
+            doneMarked = true;
+            if (stage) finishLitSwitch(stage);
+            else bootMark('prewarm-done');
+          }
           // A step that ran long (a model build, a big slice) is followed by a longer pause: the
           // prewarm never takes much more than a quarter of the frames it shares with the menu.
-          if (!prewarmInfo.done) setTimeout(step, Math.max(30, Math.min(400, spent * 3)));
+          if (!info.done) setTimeout(step, Math.max(30, Math.min(400, spent * 3)));
         };
-        setTimeout(step, 1500);
+        // A staged run flips the new lit flags only for the length of a step (they decide the programs).
+        const step = () => {
+          if (stage && litStaged !== stage) return; // replaced by a later change
+          const before = stage ? litFlagsNow() : null;
+          if (stage) setLitFlags(stage.state);
+          try {
+            stepWork();
+          } finally {
+            // (A step that finished the switch has set the flags for good: nothing to put back.)
+            if (stage && litStaged === stage) setLitFlags(before);
+          }
+        };
+        setTimeout(step, stage ? 0 : 1500);
       }
       const viewFrustum = new Three.Frustum(),
         viewProjection = new Three.Matrix4(),

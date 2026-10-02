@@ -404,7 +404,7 @@
           slice = new Three.Object3D(),
           previous = renderer.getRenderTarget();
         slice.add(skin.mesh);
-        if (hdrCapable && postTier) renderer.setRenderTarget(sceneTarget);
+        if (hdrCapable && postTier) renderer.setRenderTarget(postSceneTarget());
         try {
           for (const material of renderer.compile(slice, camera, scene)) cbWarmProgram = renderer.properties.get(material).currentProgram || cbWarmProgram;
         } finally {

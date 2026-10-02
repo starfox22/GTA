@@ -82,13 +82,18 @@
       }
       // The wet-reflection passes only run in the rain: the prewarm compiles them (with their
       // targets bound) as passes of the shared quad, like the shader prewarm's other passes.
-      function postWarmPasses() {
-        const passes = [];
-        if (hdrCapable && postTier && ssrMaterial && ssrTargets.length === 2)
-          passes.push(
-            { scene: postScene, camera: postCamera, material: ssrMaterial, target: ssrTargets[0] },
-            { scene: postScene, camera: postCamera, material: ssrBlurMaterial, target: ssrTargets[1] },
-          );
+      // `all` (a tier change in play, lighting3d-look.js LIT STATE) lists every pass of the new tier's chain,
+      // each with the target it draws into ('canvas' for the last), as its programs are new to the driver.
+      function postWarmPasses(all = false) {
+        const passes = [],
+          pass = (material, target) => passes.push({ scene: postScene, camera: postCamera, material, target });
+        if (all && hdrCapable && postTier) {
+          if (postTier.ao && aoMaterial && aoTargets.length === 2) pass(aoMaterial, aoTargets[0]), pass(aoBlurMaterial, aoTargets[1]);
+          if (bloomTargets.length) pass(bloomPrefilter, bloomTargets[0]), pass(bloomDown, bloomTargets[1] || bloomTargets[0]), pass(bloomUp, bloomTargets[0]);
+          if (ldrTarget && (lookSwitchState.fxaa || !postTier.msaa)) pass(compositeMaterial, ldrTarget), pass(fxaaMaterial, 'canvas');
+          else pass(compositeMaterial, 'canvas');
+        }
+        if (hdrCapable && postTier && ssrMaterial && ssrTargets.length === 2) pass(ssrMaterial, ssrTargets[0]), pass(ssrBlurMaterial, ssrTargets[1]);
         return passes;
       }
       function runPass(material, target) {
@@ -720,7 +725,19 @@
         for (const t of list) t.dispose();
         list.length = 0;
       }
+      // Sizing is lazy: a tier change used to reallocate every post target up to four times in a row (the
+      // scale reset, the tier's post quality, the resize, the tier's resolution cap). It marks them stale;
+      // the next frame, or whoever needs the scene target first (postSceneTarget), allocates them once.
+      let postTargetsStale = false;
       function sizePostTargets() {
+        postTargetsStale = true;
+      }
+      function postSceneTarget() {
+        if (postTargetsStale) allocatePostTargets();
+        return sceneTarget;
+      }
+      function allocatePostTargets() {
+        postTargetsStale = false;
         const size = renderer.getDrawingBufferSize(new Three.Vector2()),
           width = Math.max(1, Math.floor(size.x * renderScale)),
           height = Math.max(1, Math.floor(size.y * renderScale)),
@@ -867,7 +884,7 @@
           return;
         }
         const size = renderer.getDrawingBufferSize(postSizeScratch);
-        if (size.x !== canvasWidth || size.y !== canvasHeight) sizePostTargets();
+        if (postTargetsStale || size.x !== canvasWidth || size.y !== canvasHeight) allocatePostTargets();
         renderer.setRenderTarget(sceneTarget);
         renderer.render(scene, camera);
         noteSceneCalls();

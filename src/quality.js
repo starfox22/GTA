@@ -115,6 +115,9 @@
       adaptive.slowFor = adaptive.fastFor = adaptive.cpuFor = 0;
       adaptive.average = 0;
       adaptive.tierDrops = 0;
+      adaptive.lastRise = -1e9;
+      adaptive.ceiling = 1;
+      adaptive.holdUntil = adaptive.hold = 0;
       if (city3D && city3D.setRenderScale) city3D.setRenderScale(1);
       if (city3D && city3D.setQuality) city3D.setQuality(graphicsTier());
       applyTierResolution();
@@ -141,7 +144,7 @@
      * loading hitch) are ignored.
      */
     const ADAPTIVE_MIN_SCALE = 0.6,
-      adaptive = { scale: 1, average: 0, slowFor: 0, fastFor: 0, cpuFor: 0, lastDrop: -1e9, tierDrops: 0 };
+      adaptive = { scale: 1, average: 0, slowFor: 0, fastFor: 0, cpuFor: 0, lastDrop: -1e9, tierDrops: 0, lastRise: -1e9, ceiling: 1, holdUntil: 0, hold: 0 };
     function adaptGraphics(frameMs, cpuMs, now) {
       if (graphicsSetting !== 'auto' || !city3D || !city3D.setRenderScale || document.hidden) return;
       if (!(frameMs > 0) || frameMs > 250) return;
@@ -168,16 +171,30 @@
       };
       if (adaptive.slowFor > 1.2) {
         adaptive.slowFor = 0;
+        const crept = now - adaptive.lastRise < 30000;
         adaptive.lastDrop = now;
-        if (adaptive.scale > ADAPTIVE_MIN_SCALE + 0.01) adaptive.scale = city3D.setRenderScale(adaptive.scale - 0.1);
-        else dropTier();
+        if (adaptive.scale > ADAPTIVE_MIN_SCALE + 0.01) {
+          adaptive.scale = city3D.setRenderScale(adaptive.scale - 0.1);
+          // Slow again soon after creeping up: that scale is more than this machine holds. Stay below it
+          // for a while (longer each time) rather than hunting between two scales, each step of which
+          // reallocates every post target and shows as a pulse in sharpness.
+          if (crept) {
+            adaptive.hold = Math.min(600000, (adaptive.hold || 30000) * 2);
+            adaptive.ceiling = adaptive.scale;
+            adaptive.holdUntil = now + adaptive.hold;
+          }
+        } else dropTier();
       } else if (adaptive.cpuFor > 4) {
         adaptive.cpuFor = 0;
         adaptive.lastDrop = now;
         dropTier();
       } else if (adaptive.fastFor > 6 && adaptive.scale < tierBaseScale() && now - adaptive.lastDrop > 15000) {
         adaptive.fastFor = 0;
-        adaptive.scale = city3D.setRenderScale(Math.min(tierBaseScale(), adaptive.scale + 0.05));
+        const cap = now < adaptive.holdUntil ? adaptive.ceiling : 1;
+        if (adaptive.scale < cap - 0.001) {
+          adaptive.lastRise = now;
+          adaptive.scale = city3D.setRenderScale(Math.min(tierBaseScale(), cap, adaptive.scale + 0.05));
+        }
       }
     }
     /**

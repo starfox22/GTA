@@ -270,7 +270,15 @@
           statics = [];
         for (const cell of staticBatchCells.values()) batch.push(hiccupBytes(cell.group, seen));
         for (const cell of staticCells) statics.push(hiccupBytes(cell.group, seen));
-        return { batchCells: sizes(batch), staticCells: sizes(statics), looseMB: mb(looseStatics.reduce((n, s) => n + hiccupBytes(s.group, seen), 0)), farSceneryMB: mb(hiccupBytes(farScenery, new Set())), farMeshes: farScenery.children.length };
+        return {
+          batchCells: sizes(batch),
+          staticCells: sizes(statics),
+          looseMB: mb(looseStatics.reduce((n, s) => n + hiccupBytes(s.group, seen), 0)),
+          farSceneryMB: mb(hiccupBytes(farScenery, new Set())),
+          farMeshes: farScenery.children.length,
+          // The pre-upload ahead of the view (render3d-resources.js CELL PRE-UPLOAD): meshes and MB sent, slices, the slowest slice (ms).
+          preUpload: { meshes: cellWarm.meshes, MB: +cellWarm.megabytes.toFixed(1), slices: cellWarm.ticks, slowestMs: +cellWarm.slowest.toFixed(1), cells: cellWarm.cells ? cellWarm.cells.length : 0 },
+        };
       }
       function hiccupReport(reset) {
         const out = {
@@ -299,6 +307,8 @@
           now: { programs: hiccupPrograms(), textures: renderer.info.memory.textures, geometries: renderer.info.memory.geometries },
           memory: { ...renderer.info.memory },
           prewarm: { ...prewarmInfo, ms: +prewarmInfo.ms.toFixed(0) },
+          // The staged tier change (lighting3d-look.js LIT STATE): pending, switches made, CPU, programs compiled.
+          litStage: { ...litStageInfo, ms: +litStageInfo.ms.toFixed(0), staging: litStagingReady },
           worst: hiccupLog.worst.map(hiccupCopy),
           events: hiccupLog.events.map(hiccupCopy),
         };
