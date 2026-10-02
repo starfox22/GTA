@@ -104,6 +104,13 @@ Where a file lives: `grep -i <word> docs/FILEMAP.md`.
   on every vehicle); `vehicleSpec` reads `type` before `airframe`. Pedestrians left in V8's
   dictionary mode by `Object.assign` (`resetWalkerState`) measured faster than fast mode: do
   not "fix" that.
+- `Math.hypot` allocates (an argument array and a boxed result) and costs twice `hypot2()` (game-state.js), whose answers
+  are the same bits: `distanceBetween` and the hot physics and crowd loops use it. A rectangle list that `solid()` asks
+  goes through `rectListBlocked` (a cell index per list; never walk a list that spans every island on each call: the
+  garages' walls cost 3 us and 1 KB a call). Vehicle and crowd cells are counted lists in plain arrays or Maps.
+  `tools/dup-functions.mjs` (quick-check) fails on two fragments declaring one function name: one closure, the later wins.
+- Anything new that grows (a log, queue, cache keyed by id) is capped and listed in `soakReport()`
+  (game-console-soak.js); `node tools/soak.mjs` shows what grows over 30 game minutes (testing-and-console.md).
 - Map overlays draw only what is in `mapWindow` (`mapWindowHas`) and set fixed-size text with
   `mapLabel` (one font string): `px / scale` is a new font lookup per refresh while the minimap
   eases with speed (stalls of 50-150 ms).

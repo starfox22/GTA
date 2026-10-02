@@ -1,0 +1,5 @@
+# Long-session soak, cab fare fix and a lighter simulation
+- A cab ride shows its FARE notice again (two files declared `routeLength`; the later one won and threw). quick-check now fails on a duplicated function name.
+- About 5-10% less CPU a frame on foot, driving, in a five-star chase and in a firefight: `solid()` no longer walks all 72 garage walls on every call (5.4 -> 1.6 us), `Math.hypot` is replaced in hot loops by a bit-identical `hypot2`, parked vehicles skip the pedestrian contact test, closures and lookups left the foot-collision helpers.
+- `tools/soak.mjs`: a seeded bot plays 30 game minutes and reports what grows (lists, heap, DOM, listeners, audio nodes), slowdowns and errors; `tools/ab.mjs` compares two builds on one server; `dev.mjs heap` shows DOM, listeners and audio nodes, `call --retain N` what a call left alive.
+- New console methods (graphics group): `soakReport`, `stateHash`, `seedRandom`, `hypotAudit`, `cellMaskAudit`, `solidAudit`, `solidBench`, `solidPart`. Tests: taxi-ride, sim-audits.

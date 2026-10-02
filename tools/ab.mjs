@@ -63,11 +63,13 @@ const SCENE = {
     return profile(['KeyW']);
   },
   async chase() {
+    await call('god', true);
     await call('wanted', 5);
     await call('simulate', 12, ['KeyW']);
     return profile(['KeyW']);
   },
   async fight() {
+    await call('god', true);
     await call('wanted', 0);
     await call('teleport', 748, 584);
     await call('arm', 0);

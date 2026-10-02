@@ -350,3 +350,56 @@ comparison between A and B is what holds).
 - GC pauses of 50-100 ms seen in headless runs coincide with a loaded machine (the scavenger's
   helper threads wait for a core); they shrink with the allocation volume but cannot be
   measured here without an idle machine.
+
+## Third pass: solid(), exact hypot and the long-session soak (2 October 2026)
+
+Measured on the lead head `66b4a0b` plus only the console probes (A) against this branch (B), one dev server, the page
+file swapped and reloaded in A B B A order (`tools/ab.mjs`), CPU ms per 60 fps frame of `update()` from the page's
+thread time (the machine ran at a load of 11-16 on 4 cores, so only A against B means anything). Medians of two runs of
+8 s each:
+
+| Scenario | A | B | change | cars section | people |
+| --- | --- | --- | --- | --- | --- |
+| STREET (on foot, 17:24) | 5.53 | 4.99 | -9.8% | 3.54 -> 2.96 | 1.34 -> 0.99 |
+| DRIVE (sedan, W held) | 5.42 | 5.12 | -5.5% | 3.48 -> 3.46 | 1.15 -> 1.06 |
+| CHASE (five stars, god mode) | 7.35 | 6.78 | -7.8% | 4.13 -> 3.80 | 1.10 -> 0.94 |
+| FIREFIGHT (four stars, 3 gunmen) | 8.39 | 7.65 | -8.8% | 4.48 -> 4.04 | 1.20 -> 1.12 |
+
+What was found, with the tool that found it:
+
+- `solidPart <helper>` times each of the twenty `solid()` helpers alone: nineteen cost 60-260 ns, `garageBlocked` **3,188 ns and
+  1.1 KB of garbage a call**. The nine garages sit one per island, so their walls' overall bounds cover the world and
+  `rectListBlocked`'s bounds early-out never fired: every call walked 72 rectangles. Rectangle lists are now indexed in
+  256-unit cells (exact: a rectangle overlapping the box shares a cell with it). `solidBench` (200,000 calls over the map):
+  5,362 -> 1,590 ns a call and 277 -> 59 MB; near the player (span 300) 1,523 -> 678 ns.
+- `Math.hypot` makes an argument array and boxes its result: `hypot2` (the builtin's own operations: bit-identical over
+  600,000 random and special pairs) is 15.9 against 34.6 ms per million. `distanceBetween` and the hottest vehicle and crowd
+  loops use it.
+- The promenade rail test did nine Map lookups a call (an exact cell mask makes it one byte read); `railBlocked`,
+  `underpassBlocked`, `countyBlocked` made a closure per call and the Commons pond ellipse a sine and cosine for every point
+  (a point beyond the longer radius is outside); the vehicle grid for foot steps is a plain array of counted cells.
+- `updateCars` made a closure and a four-element array per vehicle per frame and tested every person near a parked car:
+  a vehicle under 0.1 km/h with nobody in contact is skipped (`knockPerson` turns anything slower away at once).
+- Parked vehicles: not restructured. They cost about 0.2-0.3 ms of a 5-8 ms frame; an exact active list would have to
+  reproduce the broadphase's pair order and still poll every vehicle for a wake-up (BACKLOG).
+- `drawPoliceMap`'s stalls in headless runs were not reproducible as drawPoliceMap's own cost (see BACKLOG).
+- Exactness checks: `solidAudit` compares every rewrite with the code it replaced (1.2 million points, 0 differences),
+  `cellMaskAudit` and `hypotAudit`; 22 regression tests pass (tools/tests/sim-audits.mjs among them).
+
+### The soak (tools/soak.mjs)
+
+A seeded bot plays 30 game minutes through the console (26 kinds of episode: see testing-and-console.md) and records every
+30 game seconds. First run (seed 1, 15 minutes of wall time), 0 console errors, 0 non-finite positions:
+
+| Series | start | 30 min | note |
+| --- | --- | --- | --- |
+| JS heap after a full collection (MB) | 38.1 | 47.9 | +7.5 in the first 15 min, +2.3 in the last 15: caches and menus fill, then it levels |
+| DOM nodes | 2,428 | 3,029 | menus built on first open (help, arsenal, settings, map), then flat |
+| event listeners | 249 | 293 | same; 241-381 while the settings screen is open |
+| live Web Audio nodes | 100 | 89 | 40-206, no trend |
+| vehicles / wrecks | 283 / 2 | 353 / 36 | wrecks and abandoned cars are never removed (BACKLOG) |
+| every log, queue and cache | | | capped (seaEvents 64, shotLog 40, runOvers 12, bloodPools 240, skids under 1,100) |
+| probe: CPU ms a frame, same Midtown scene | 5.49 | 8.22 | follows the vehicle count (271 -> 354) and the AI pool (89 -> 122) |
+
+The only defect it found was the cab's FARE notice (a `routeLength` declared twice, fixed with a test and the
+`tools/dup-functions.mjs` guard). The page is no-render: renderer-side leaks are not covered.
