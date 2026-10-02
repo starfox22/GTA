@@ -899,7 +899,24 @@
        * on (a program change for lit materials, so only on a tier or shadow
        * setting change).
        */
-      function setSearchlightQuality(tier) {
+      // The spot's shadow for a tier ({ cast, size }): a program change for lit materials, so it follows
+      // the sun's shadow in the staged lit-state switch (lighting3d-look.js LIT STATE).
+      function searchlightShadowFor(tier) {
+        const cast = shadowQuality() !== 'off';
+        return { cast, size: tier.shadowMap >= 4096 ? 2048 : tier.shadowMap >= 3072 && shadowQuality() === 'high' ? 1024 : 512 };
+      }
+      function applySearchlightShadow(state) {
+        if (airSpot.castShadow !== state.cast || airSpot.shadow.mapSize.x !== state.size) {
+          airSpot.castShadow = state.cast;
+          airSpot.shadow.mapSize.set(state.size, state.size);
+          if (airSpot.shadow.map) {
+            airSpot.shadow.map.dispose();
+            airSpot.shadow.map = null;
+          }
+        }
+      }
+      // `shadowToo` false leaves the spot's shadow to the caller (the staged switch).
+      function setSearchlightQuality(tier, shadowToo = true) {
         const steps = tier.ao >= 14 ? 22 : tier.ao > 0 ? 16 : tier.bloom > 0 ? 10 : 6,
           noise = tier.bloom > 0;
         airShaftTier = tier.ao > 0;
@@ -914,16 +931,7 @@
         // Whenever the sun has a shadow map (MEDIUM up by default) the spot has one
         // too: the player's crisp shadow, and roofs that keep the light off whoever
         // is under them. Smaller below HIGH.
-        const shadows = shadowQuality() !== 'off',
-          shadowSize = tier.shadowMap >= 4096 ? 2048 : tier.shadowMap >= 3072 && shadowQuality() === 'high' ? 1024 : 512;
-        if (airSpot.castShadow !== shadows || airSpot.shadow.mapSize.x !== shadowSize) {
-          airSpot.castShadow = shadows;
-          airSpot.shadow.mapSize.set(shadowSize, shadowSize);
-          if (airSpot.shadow.map) {
-            airSpot.shadow.map.dispose();
-            airSpot.shadow.map = null;
-          }
-        }
+        if (shadowToo) applySearchlightShadow(searchlightShadowFor(tier));
         beamRain.geometry.setDrawRange(0, (tier.ao > 0 ? BEAM_RAIN_MAX : tier.bloom > 0 ? 340 : 200) * 2);
       }
       // END SUBSYSTEM: src/searchlight3d.js

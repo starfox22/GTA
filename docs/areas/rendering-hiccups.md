@@ -39,7 +39,8 @@ answer is to do that work behind the title, a few milliseconds at a time (render
    up from the table; a new model builder must work on a bare `{id, type, color, x, y, a}` record.
 4. While the title is up: the far copy of the city (42 MB in ~500 meshes) and sample shadow casters
    are drawn once into a 1 x 1 target (`uploadMeshes`) so their buffers and shadow-depth programs
-   (side, alpha cut-out, instancing) are on the GPU before the first flight.
+   (side, alpha cut-out, instancing, and a stand-in for each custom depth material: the trees, sea life,
+   the helicopter's roof stand-in) are on the GPU before the first flight.
 
 Steps 3 and 4 stop when the game starts (they cost a build each); the rest continues at 2.5 ms a step.
 
@@ -96,6 +97,7 @@ models' kits). Hiding every instanced prop pool saves 13% of the GPU process's C
 bound for tiling them (it would trade vertex work for draw calls; not done).
 
 Not measurable here: link times (software GL), real GPU pixel cost (the dormant lights), the
-parallel-compile path itself. Known gaps: a tier change that turns shadows on or off relinks every
-lit program (~45 on the first change); a first visit to a map cell uploads its 0.2-0.6 MB (batch
-cells) to 13 MB (the largest static cell); AUTO's resolution steps reallocate the post targets.
+parallel-compile path itself. The second pass closed the old gaps (a tier change that flips shadows relinked ~45
+lit programs at once; a first visit to a map cell uploaded 0.2-13 MB in one frame; AUTO's resolution steps
+reallocated the post targets): **boot-and-memory.md**, section "Tier changes, cells and AUTO". Still open: link
+times and the real-GPU cost of all of it (headless here has neither a parallel compiler nor a GPU).

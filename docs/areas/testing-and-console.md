@@ -114,6 +114,24 @@ here, so renderer-side leaks (meshes, textures) are not covered. `tools/dup-func
 quick-check.sh) fails when two fragments declare the same function name: one closure, so the later one
 silently replaces the earlier (`routeLength` did).
 
+## Random-walk bot (tools/bot.mjs)
+
+```
+node tools/bot.mjs --seed 1 --minutes 30 [--wall 900] [--render] [--only teleport,drive,...] [--verbose]
+```
+
+Plays seeded random free-roam actions on the dev page (starts one with `?test&norender`, the demo gate live, or
+reboots a running one for a clean page; `--render` boots the rendered page): teleports to every island and door,
+every vehicle class, shooting, run-overs, police and arrests, deaths, menus and random real keys, settings, graphics
+tiers, weather and time, rides, swimming and falls, a gamepad and the mouse, rebinding the action key, garage jobs, save
+and reload. After each action it checks console errors, `DeadEndCity.integrity()` (docs/console/integrity.md), a mode
+that never returns to play, a carrier held too long, a trapped player or road vehicle, the respawn rules, the saved
+state, and every eighth action `settleAudit()`. Same seed, same choices (the game's own randomness is not seeded).
+Findings print as `FINDING` lines and land in `dist/bot/seed-<n>.json` with the last eight actions before each;
+exit status 1 when there are any. About 2 game minutes per wall minute on a loaded machine (idle stretches are the
+cheap way to add game time). A finding is a lead, not a verdict: reproduce it with `dev.mjs call` before fixing.
+Runs in this repo's history: seeds 2-4, 30 game minutes each, in the October 2026 free-roam pass (docs/audit/freeroam-sweep.md).
+
 ## Tours (tools/tour.mjs)
 
 Starts a game, declines the opening call, runs steps in order. Each step may run page JS

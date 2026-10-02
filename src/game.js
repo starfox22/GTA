@@ -149,23 +149,31 @@
     // @include src/hud.js
     // @include src/render3d.js
     // STARTUP ORDER: geometry -> collision -> entities -> saved progression -> UI -> graphics.
+    bootMark('game-start');
     buildWorld();
+    bootMark('world');
     buildBuildingGrid();
     buildColliders();
+    bootMark('colliders');
     populate();
     populateStoryWorld();
     populateCounty();
     chooseRoofHelipads();
     addMonarchHelipads();
+    bootMark('populated');
     load();
     resize();
     drawWeapon();
     updateUI();
     updateTitleMenu();
+    bootMark('title-menu');
     loadVisuals();
+    bootMark('visuals-queued');
     // @include src/game-loop.js
     requestAnimationFrame(frame);
+    bootMark('loop-ready');
     // @include src/game-console.js
     // @include src/game-agent-tools.js
+    bootMark('console-ready');
   })();
   // END SUBSYSTEM: src/game.js

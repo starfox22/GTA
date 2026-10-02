@@ -370,8 +370,15 @@
           missions[m.index].brief
         );
       const name = CHARACTERS[missions[m.index].contact].name.split(' ')[0],
-        task = (m.instruction || missions[m.index].brief)
-          .toLowerCase()
+        // A key's own name in the stage text ("· E TO LOAD", "· P", "HOLD E TO ...") stays as
+        // the key reads: lower-cased it looked like a typo ("e to load"). Only straight after
+        // the "·" or "HOLD" that the stage texts put it behind, so a gamepad's "A" is not
+        // kept in "AS A GUEST".
+        keyNames = new Set(['interact', 'poison', 'fire', 'walk'].map((id) => keyName(id))),
+        words = (m.instruction || missions[m.index].brief).split(' '),
+        task = words
+          .map((word, i) => (keyNames.has(word) && /^(·|HOLD)$/.test(words[i - 1] || '') ? word : word.toLowerCase()))
+          .join(' ')
           // Every name the stage instructions use, capitalised wherever it appears
           // ("fly to northridge", "daniel's guards" read as typos on the card).
           .replace(STORY_PROPER_NOUNS, (word) => word.replace(/(^|\s)\S/g, (c) => c.toUpperCase()));
@@ -474,8 +481,8 @@
       // hanging there pilotless with its rotor stopped.
       if (player.car && isAircraft(player.car)) player.car.abandonedFlight = true;
       player.car = null;
-      player.x = spawn.x;
-      player.y = spawn.y;
+      // The one way to move the player: it lets go of a fall, a ladder or a pool that would pull them back.
+      teleportPlayer(spawn.x, spawn.y);
       gameMode = 'play';
       startMission();
       getElement('pauseMenu').classList.add('hidden');

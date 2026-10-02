@@ -5,6 +5,7 @@
 | Method | Purpose |
 | --- | --- |
 | `nearbyPeople(radius, kind)` | Living people near the player, nearest first (`civilian`, `police`, `gang` or `all`), with line of sight: play-tests pick victims with it; police also carry `shield`, `roof` (a rooftop sniper), `aim` (a sniper's lock, 0..1), heading and state |
+| `witnessCarLines(type, color, dir)` | The three lines a 911 caller can use for a vehicle of `type` and a `#rrggbb` colour heading `dir` ("He’s in an orange sedan!"; `an` before a vowel and "SUV") |
 | `pedestrianReport()` | Crowd summary: counts by reaction, pose, role and state, street scenes, incidents, witness reports, horns, the speech `bubbles` on screen (at most two, with rank, seconds left, `viewHeight` m, height `fade`, `rider`) and `unshownLines` |
 | `fireShot(x, y)` | Fire the equipped weapon toward a map point as the player would (the crowd hears and reacts) |
 | `alarm(kind, x, y)` | Raise a `gunfire`, `explosion` or `crash` incident at a point without firing |

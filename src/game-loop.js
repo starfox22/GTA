@@ -97,12 +97,22 @@
       if (frameLimiter.next < t) frameLimiter.next = t;
       return true;
     }
+    let firstFrameMarked = false,
+      firstPlayFrameMarked = false;
     function frame(t) {
       if (!frameDue(t)) {
         requestAnimationFrame(frame);
         return;
       }
       const frameStart = performance.now();
+      if (!firstFrameMarked) {
+        firstFrameMarked = true;
+        bootMark('first-frame');
+      }
+      if (!firstPlayFrameMarked && gameMode === 'play') {
+        firstPlayFrameMarked = true;
+        bootMark('first-play-frame');
+      }
       syncTouchInput();
       // The gamepad's buttons and sticks (gamepad.js), through the same actions.
       pollGamepad();

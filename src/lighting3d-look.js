@@ -217,11 +217,12 @@
           for (const c of vehicles) {
             const spec = vehicleSpec(c);
             if (spec.boat || spec.jetski) continue;
+            // (The view test first: terrainHeight for the ~250 vehicles off screen was the cost.)
+            if (!entityInView(c, Math.max(40, spec.l))) continue;
             const ground = terrainHeight(c.x, c.y),
               aircraft = isAircraft(c);
             // Aircraft only on the ground.
             if (aircraft && (c.altitude ?? 0) - ground > 3) continue;
-            if (!entityInView(c, Math.max(40, spec.l))) continue;
             const shrink = aircraft ? 0.8 : 1;
             contactBlob(c.x, c.y, aircraft ? ground : entityElevation(c), spec.l * 1.12 * shrink, spec.w * 1.35 * shrink, c.a || 0);
           }
@@ -242,27 +243,92 @@
       }
       // ---- Quality tier ----------------------------------------------------------------------
       let activeTier = null;
-      function applyRendererQuality(tier) {
-        activeTier = tier;
-        const ratio = Math.min(devicePixelRatio || 1, tier.pixelRatio);
-        if (renderer.getPixelRatio() !== ratio) renderer.setPixelRatio(ratio);
-        renderer.setSize(viewportWidth, viewportHeight);
-        // Sun shadows (quality.js SHADOWS): off, a smaller map, or the tier's map.
-        // Switching them on or off changes the lights' state, so three.js relinks
-        // the lit programs once; a new size only reallocates the map.
-        const mode = shadowQuality(),
-          on = mode !== 'off',
-          size = mode === 'low' ? Math.min(tier.shadowMap, 2048) : Math.max(2048, tier.shadowMap);
-        renderer.shadowMap.enabled = on;
-        if (sun.castShadow !== on) sun.castShadow = on;
-        if (sun.shadow.mapSize.x !== size || (!on && sun.shadow.map)) {
-          sun.shadow.mapSize.set(size, size);
+      /**
+       * LIT STATE
+       * Whether the sun and the helicopter's spot cast shadows and whether the trees draw with alpha to
+       * coverage are part of every lit program's cache key: a tier or shadow-setting change that flips one
+       * relinks ~45 programs the first time a frame draws with it (a stall of seconds on a slow driver).
+       * Where the driver compiles in parallel, `stageLitSwitch` stages it: the new state's programs are
+       * compiled in slices behind the running frames (render3d-resources.js prewarmShaders(stage)), the flags
+       * flipped only for the length of each slice, and the flags change for good once every program is ready.
+       * A later change replaces a pending one; software GL (no parallel compile) switches at once.
+       */
+      let litStaged = null,
+        // Set by prewarmShaders once the driver is known to compile in parallel.
+        litStagingReady = false;
+      const litStageInfo = { pending: false, switches: 0, ms: 0, compiled: 0, linked: 0, queued: 0, passes: 0, uploads: 0, error: '' };
+      function litStateFor(tier) {
+        const mode = shadowQuality();
+        return {
+          shadows: mode !== 'off',
+          size: mode === 'low' ? Math.min(tier.shadowMap, 2048) : Math.max(2048, tier.shadowMap),
+          spot: searchlightShadowFor(tier),
+          coverage: foliageCoverageFor(tier),
+        };
+      }
+      function litProgramsDiffer(state) {
+        return renderer.shadowMap.enabled !== state.shadows || airSpot.castShadow !== state.spot.cast || treeMaterial.alphaToCoverage !== state.coverage;
+      }
+      // The program-keyed flags only (no map sizes or disposals): what a staged compile slice flips.
+      function setLitFlags(state) {
+        renderer.shadowMap.enabled = state.shadows;
+        sun.castShadow = state.shadows;
+        airSpot.castShadow = state.spot.cast;
+        setFoliageCoverageOn(state.coverage);
+      }
+      function litFlagsNow() {
+        return { shadows: renderer.shadowMap.enabled, spot: { cast: airSpot.castShadow }, coverage: treeMaterial.alphaToCoverage };
+      }
+      function applyLitState(state) {
+        renderer.shadowMap.enabled = state.shadows;
+        if (sun.castShadow !== state.shadows) sun.castShadow = state.shadows;
+        if (sun.shadow.mapSize.x !== state.size || (!state.shadows && sun.shadow.map)) {
+          sun.shadow.mapSize.set(state.size, state.size);
           if (sun.shadow.map) {
             sun.shadow.map.dispose();
             sun.shadow.map = null;
           }
         }
+        applySearchlightShadow(state.spot);
+        setFoliageCoverageOn(state.coverage);
+      }
+      function stageLitSwitch(state) {
+        // A shadow map that does not exist yet takes its size now, so the staged shadow pass makes the right one.
+        if (state.shadows && !renderer.shadowMap.enabled) sun.shadow.mapSize.set(state.size, state.size);
+        if (state.spot.cast && !airSpot.castShadow) airSpot.shadow.mapSize.set(state.spot.size, state.spot.size);
+        litStaged = { state, started: performance.now() };
+        litStageInfo.pending = true;
+        try {
+          postSceneTarget(); // (the post targets of the new tier must exist for the post passes)
+          prewarmShaders(litStaged);
+        } catch (error) {
+          // Staging is an optimisation: when it cannot start the switch is made at once.
+          litStageInfo.error = String(error).slice(0, 160);
+          litStaged = null;
+          litStageInfo.pending = false;
+          applyLitState(state);
+        }
+      }
+      // Called by the staged prewarm when every program of the new state is ready.
+      function finishLitSwitch(stage) {
+        if (litStaged !== stage) return;
+        litStaged = null;
+        litStageInfo.pending = false;
+        litStageInfo.switches++;
+        applyLitState(litStateFor(activeTier));
+      }
+      function applyRendererQuality(tier) {
+        activeTier = tier;
+        const ratio = Math.min(devicePixelRatio || 1, tier.pixelRatio);
+        if (renderer.getPixelRatio() !== ratio) renderer.setPixelRatio(ratio);
+        renderer.setSize(viewportWidth, viewportHeight);
+        // Sun shadows (quality.js SHADOWS): off, a smaller map, or the tier's map. A new size only
+        // reallocates the map; flipping them on or off changes the lit programs (LIT STATE above).
+        const state = litStateFor(tier);
         setPostQuality(tier);
-        setSearchlightQuality(tier);
-        setFoliageCoverage(tier);
+        setSearchlightQuality(tier, false);
+        litStaged = null;
+        litStageInfo.pending = false;
+        if (litStagingReady && lookSwitchState.stagedSwitch && litProgramsDiffer(state)) stageLitSwitch(state);
+        else applyLitState(state);
       }

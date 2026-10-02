@@ -48,10 +48,15 @@
         };
       },
       // The HUD's mission card (refreshed first) and the last announcement's small line:
-      // 'MISSION 1', 'CONTRACT 2', 'DEMO COMPLETE'.
+      // 'MISSION 1', 'CONTRACT 2', 'DEMO COMPLETE'; `text` is the card's sentence, `distance` its pill.
       missionCard() {
         updateUI();
-        return { counter: getElement('missionCounter').textContent, announce: getElement('announceSmall').textContent };
+        return {
+          counter: getElement('missionCounter').textContent,
+          announce: getElement('announceSmall').textContent,
+          text: getElement('missionText').textContent,
+          distance: getElement('missionDistance').textContent,
+        };
       },
       // Mission 2 test shortcut: start A Seat at the Table if needed, put Vescari
       // down and the player on the street for the last stage (reach the motel).
@@ -117,7 +122,10 @@
       markers: () => markersReport(),
       // Mission 2: the stealth state (suspicion, pace, each guard's view and
       // whether he sees the player) and the drink's progress and aftermath.
-      roofStealth: () => roofStealthReport(),
+      roofStealth: () => {
+        updateUI();
+        return roofStealthReport();
+      },
       roofPoison: () => roofPoisonReport(),
       // Mission 2 test helper: set the party's suspicion meter (0-100).
       roofSuspicion(value = 0) {

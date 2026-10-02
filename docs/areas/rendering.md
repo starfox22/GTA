@@ -117,5 +117,6 @@ The image pipeline, light, searchlights and the cutaway: rendering-lighting.md.
   ground 32 m round the view's subject (≤ 12 m lower, `rainFloor`), so a beam down a descent
   has rain to light; splashes stay on the street; in the air the box rides below the cloud base.
 - Tiers (quality.js): pixel ratio, shadows, MSAA, AO, SSR steps, bloom, LOD bias, rain
-  density. `DeadEndCity.graphics('high')` in tests: SwiftShader auto-detects as LOW.
+  density. A change that flips shadows or the trees' alpha to coverage is staged (compiled behind the frames, then
+  flipped: boot-and-memory.md); post targets are sized lazily (`postSceneTarget()`). `DeadEndCity.graphics('high')` in tests: SwiftShader auto-detects as LOW.
   `?shadercheck` in the URL makes three.js report shader compile errors.

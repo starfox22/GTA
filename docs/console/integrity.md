@@ -1,0 +1,7 @@
+# Console: integrity
+
+`addConsoleMethods('integrity', …)` in `src/game-console-integrity.js`. One read-only sweep for impossible state, the checks `tools/bot.mjs` (the random-walk bot) runs after every action.
+
+| Method | Purpose |
+| --- | --- |
+| `integrity()` | `problems` (empty is a pass): a non-finite number in the player, the cash, the clock, any vehicle (`vx` / `vy` only on the player's car: they are NaN by design until a car's first physics step) or any person; the player on foot inside solid geometry (`solid(x, y, 3)`) or below the terrain; the player's road vehicle sunk more than 9 units into a static; vehicles or people off the world box (WORLD_LEFT..WORLD_SIZE, WORLD_TOP..WORLD_SIZE, plus 400; aircraft and boats may leave it); a vehicle or person listed twice; a weapon with negative or over-full ammunition; `NaN`, `undefined`, `Infinity`, `null` or `[object` in the visible text; an overlay left open in play. Also `stuckPeople` (up to three people near the player whose `react` ran 25 s past its length: kind, seconds, length, state, place), `mode`, `overlays` (the visible ones), the player, `carriers` (swimming, wading, parachute, fall, climbing, carjack, thrown, tumble, coaster, pool, deck, roof, transit, taxi, loot, rideSkip, hidden, conversation: what a bot times to find one held too long) and `counts` (vehicles, pedestrians, officers, particles, skids, debris, bullets, fires, notices; soft counters: cars and people standing inside a building footprint, cars off the world box) |

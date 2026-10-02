@@ -24,7 +24,9 @@ index plus one.
 2. It spawns what it needs: vehicles get `mission = true`, people a `missionTag`.
 3. It advances with `setStage(stage, target, instruction, speaker?, line?)`; the target feeds
    the map marker and arrow via `objective()`, and a new instruction reopens the HUD
-   mission card for six seconds (`updateMissionCard`).
+   mission card for six seconds (`updateMissionCard`). The card's sentence
+   (`missionSummary`) lower-cases the instruction but keeps a key's own name ("· E to load");
+   build instructions with `keyName()` and the four actions it knows (interact, poison, fire, walk).
 4. `missionUpdate` calls its update function each frame.
 5. It ends with `winMission()` or `failMission(reason)`.
 

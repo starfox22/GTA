@@ -242,15 +242,18 @@
       if (light < 0.3 && hue < 50) return 'brown';
       return hue < 15 || hue >= 340 ? 'red' : hue < 40 ? 'orange' : hue < 68 ? 'yellow' : hue < 165 ? 'green' : hue < 255 ? 'blue' : hue < 300 ? 'purple' : 'pink';
     }
+    /* How a witness puts the player's vehicle: "a black SUV", but "an orange car", "an SUV", "an ambulance". */
+    function carSightingLines(car, dir) {
+      const what = [colourWord(car.color), CAR_WORDS[car.type] || (car.type in PRESTIGE_TYPES ? 'sports car' : 'car')].filter(Boolean).join(' '),
+        an = /^(?:[aeiou]|SUV\b)/i.test(what);
+      return [`He’s in ${an ? 'an' : 'a'} ${what}!`, `He took off in ${an ? 'an' : 'a'} ${what}, heading ${dir}!`, `${an ? 'An' : 'A'} ${what}, going ${dir}!`];
+    }
     function call911Detail(inc, p) {
       const sees = distanceBetween(p, player) < 500 && crowdSight(p, player),
         dir = compassWord(player.x - (inc?.x ?? p.x), player.y - (inc?.y ?? p.y)),
         car = player.car;
       if (inc?.kind === 'body') return pickLine(CALL_DETAILS.body, p);
-      if (sees && car && !isAircraft(car)) {
-        const what = [colourWord(car.color), CAR_WORDS[car.type] || (car.type in PRESTIGE_TYPES ? 'sports car' : 'car')].filter(Boolean).join(' ');
-        return pickLine([`He’s in a ${what}!`, `He took off in a ${what}, heading ${dir}!`, `A ${what}, going ${dir}!`], p);
-      }
+      if (sees && car && !isAircraft(car)) return pickLine(carSightingLines(car, dir), p);
       if (sees && !playerUnarmed() && selectedWeaponIndex !== KNIFE_INDEX && seededRandom() < 0.6) return pickLine(CALL_DETAILS.armed, p);
       if (sees && distanceBetween(player, inc || p) > 60) return pickLine([`He’s running ${dir}!`, `He went ${dir}, on foot!`, `He’s heading ${dir} right now!`], p);
       if (inc?.kind === 'melee' || inc?.kind === 'knock') return pickLine(CALL_DETAILS.hurt, p);

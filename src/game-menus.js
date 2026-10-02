@@ -17,7 +17,9 @@
     }
     function begin() {
       if (gameMode !== 'menu') return;
+      bootMark('begin');
       initAudio();
+      bootMark('audio-init');
       newCallNotice();
       gameMode = 'play';
       getElement('menu').classList.add('hidden');
@@ -167,8 +169,7 @@
       cash = 0;
       mission = null;
       player.car = null;
-      player.x = spawn.x;
-      player.y = spawn.y;
+      teleportPlayer(spawn.x, spawn.y);
       player.hp = 100;
       player.armor = 0;
       cameraTarget.x = player.x;

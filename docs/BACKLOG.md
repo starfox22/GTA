@@ -30,6 +30,8 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - At night the white faces round the payphone (newspaper pages, placards) sit in the street lamp's pool and read bright.
 - The Blue Hour's limousines have no chauffeurs and never leave; the doormen and valet keep their posts (no door opened, no car taken). The forecourt fixtures are foot obstacles, which stop only the player: a street walker straying to the wall or the kerb can pass through a planter or bollard.
 - At a fresh boot a double-parked delivery van (crowd-scenes.js) often holds the truck's first kerb spot: the truck then waits further east along the same kerb (x ≈ 1950), still in view.
+- `missionIndex` doubles as the job a replay picked: with one job done (before the demo's end) a replay of job 1 that is hung up on or failed leaves the payphone offering job 1 again, not job 2 (job 2 is still "CURRENT" in the picker); `settleDemoStoryIndex` only covers a finished demo. RESTART CURRENT JOB right after winning job 1 starts job 2 without its payphone call.
+- Bug pass 2026-10-02 (docs/changes/2026-10-02-missions-bug-pass.md) found no soft-lock: death, busting and retry at every stage, saving and reloading mid-job, the respray route with the truck, the truck rolled to the quay edge (it stops at the kerb, never in the sea), spiking the glass and leaving before he drinks, a parachute onto the hotel roof (not landable), 70-step random-action runs on both jobs, and `settleAudit()` at every parked truck, limousine and ambulance moment (0 changes). Not covered: a real chase with the police in play on the way to Vinny's warehouse (the tests use god mode for the harbor police), a gamepad-only run, and the story subtitle (Vinny's line) touching the minimap's corner at a 960x600 window.
 
 ## Clouds (clouds*.js, clouds3d-*.js)
 - The flight camera never looks above ~30 degrees below the horizon: under the base the underside is never in view, only the shadows and the dimmer light.
@@ -128,6 +130,12 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - A rain streak takes its head's light along its whole length (weather3d.js), so a drop just inside a beam's top edge draws a lit line up to ~6 m above it (lighting each vertex at its own point costs nothing more but changes the city look).
 - The terrain horizon sees the height field only: boulders, trees and buildings on the range do not shadow the beams; the mountain haze level and the light bar's strength were tuned on SwiftShader.
 
+## Boot and render memory (docs/areas/boot-and-memory.md)
+- Boot is ~6 s of simulation (terrain field 1.7 s, county, bike-share plan) plus the renderer's scene build before the title answers: signs and the neon atlas (~16%), ground fields, airport liveries (a per-pixel loop), the far copy of the city (built at boot, used only from the air or zoomed far out). Each could be built lazily (aircraft must stay in their `statics` group; the far copy needs its prewarm upload moved to the pre-upload timer).
+- A tier change stages the scene's programs, the post chain and the shadow-depth samples; a car type not in the scene at the switch still compiles on first sight (stand-in models are only built behind the title).
+- The cell pre-upload and the staged switch are measured by counts only (software GL has no parallel compiler and no GPU): check the first-visit upload sizes and a tier change on a real GPU.
+- JS heap creeps ~0.1-0.2 MB per teleport stop in quiet play (not attributed); the chaos soak's +17 MB follows the sim's retained vehicles (crash-test cars, police): diff two heap snapshots on a quiet machine.
+
 ## Unicorn (unicorn3d.js)
 - Little muscle definition. The sky reflection now fades on surfaces facing the ground (the bright patch under the chest): not re-shot.
 
@@ -147,3 +155,9 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - Wrecks and abandoned cars are never removed (only AI traffic is streamed out): after a 30-minute bot rampage the world held 350 vehicles (50 wrecks) against 280, and the same Midtown scene cost 8.2 ms of CPU a frame against 5.5. Retiring far, long-dead, unseen wrecks would be a (small) world-persistence change: ask first.
 - A third of the crowd sits in V8 dictionary mode (after `Object.assign` in `resetWalkerState`); it measured faster than fast mode. Re-measure before changing the people's object layout.
 - `carjack-traffic` is flaky: when the traffic car it picks stands beside a bike-share dock, E rents a bike instead (about one run in four).
+
+## Random-walk bot pass (tools/bot.mjs, October 2026)
+- A plane flies on past the edge of the world box (WORLD_LEFT..WORLD_SIZE, WORLD_TOP..WORLD_SIZE: 13 km west of it was reached in one run) and a boat sails on over the open sea: nothing turns either back, and what the renderer draws out there was not looked at (no rendered bot run yet).
+- The hospital's GET TREATMENT ($150), the armory's BODY ARMOR ($350) and the bar and diner meals charge full price at full health or full armour (a gun shop says "Ammunition is already full" and charges nothing); serviceAction (citylife-police.js). A diner's time skip may be the point of its plate: a design question.
+- Not done in that pass: the bot only ran on the no-render page (graphics tier switches mid-game, the rendered HUD, the map labels and the touch layout at phone size were not driven by it); no HUD-overlap check (two toasts or the police timer over the mission card) beyond the text sweep for NaN / undefined in `integrity()`.
+- The bot's trapped-vehicle probe fired once in 58 game minutes of seeds 2 and 3 (a luxury car near the Police HQ, not reproducible from a fresh spawn: a cruiser box-in or a wedge); `steerTo` can leave a car nose to wall.

@@ -15,6 +15,14 @@ if ! python3 tools/filemap.py --check; then
   echo "FAIL: run python3 tools/filemap.py and commit docs/FILEMAP.md" >&2
   exit 1
 fi
+# Two top-level function declarations of one name share the game closure: the later one silently replaces the
+# first for every caller (taxi.js and livingcity-medics.js both declared routeLength: every cab ride threw).
+dupes=$(grep -ho '^    function [A-Za-z0-9_$]*' src/*.js | sort | uniq -d)
+if [ -n "$dupes" ]; then
+  echo "FAIL: top-level function declared more than once in src/:" >&2
+  echo "$dupes" >&2
+  exit 1
+fi
 if grep -rlE '^(<<<<<<<|>>>>>>>)( |$)' src tools docs README.md CLAUDE.md 2>/dev/null; then
   echo "FAIL: merge-conflict markers in the files above" >&2
   exit 1

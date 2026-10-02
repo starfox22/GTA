@@ -47,6 +47,21 @@
             tinted.setColorAt(0, new Three.Color());
             samples.push(pool, tinted);
           }
+        // Meshes that carry a custom depth material (the trees' sway and cut-outs, sea life, the helicopter's roof
+        // stand-in) have shadow-depth programs of their own, made when one first reaches the shadow map (the
+        // first flight): one stand-in per depth material, instancing and geometry layout, on the same geometry.
+        const seen = new Set();
+        scene.traverse((o) => {
+          const depth = o.customDepthMaterial;
+          if (!depth || !o.geometry || !o.material) return;
+          const key = [depth.uuid, o.isInstancedMesh ? 'i' : 'm', Object.keys(o.geometry.attributes).join(','), Object.keys(o.geometry.morphAttributes).join(',')].join('|');
+          if (seen.has(key)) return;
+          seen.add(key);
+          const stand = o.isInstancedMesh ? new Three.InstancedMesh(o.geometry, o.material, 1) : new Three.Mesh(o.geometry, o.material);
+          stand.customDepthMaterial = depth;
+          if (o.isInstancedMesh && o.instanceColor) stand.setColorAt(0, new Three.Color());
+          samples.push(stand);
+        });
         for (const mesh of samples) mesh.castShadow = mesh.receiveShadow = true;
         return samples;
       }
