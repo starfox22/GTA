@@ -15,6 +15,12 @@
      * Include fragments share this closure; renderer fragments share its inner closure.
      */
 
+    // Boot timeline: a User Timing mark per start-up stage, read by DeadEndCity.bootTimings().
+    function bootMark(name) {
+      try {
+        performance.mark('dec:' + name);
+      } catch {}
+    }
     // The build's version, shown on the title menu and by DeadEndCity.version.
     const GAME_VERSION = '0.9.0';
     /**

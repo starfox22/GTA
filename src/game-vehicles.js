@@ -704,7 +704,9 @@
           spec.power = power;
           let v = 0,
             t = 0;
-          while (v < target && t < 120) {
+          // (Stops once it is slower than `seconds`: the bisection only asks whether it is, so a weak engine's
+          // probe no longer integrates up to 120 s. Same answers, a fraction of the start-up cost.)
+          while (v < target && t < 120 && t <= seconds) {
             v = Math.min(spec.max, v + engineAcceleration(spec, v) * 0.01);
             t += 0.01;
           }
@@ -714,6 +716,8 @@
         high = 4e6;
       for (let i = 0; i < 60; i++) {
         const mid = Math.sqrt(low * high);
+        // (Once the bracket cannot narrow further the rest of the 60 rounds change nothing.)
+        if (mid <= low || mid >= high) break;
         if (timeTo(mid) > seconds) low = mid;
         else high = mid;
       }

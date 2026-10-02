@@ -33,6 +33,7 @@
             }),
         ),
       );
+      bootMark('images');
       drawWeapon();
       if (gameMode === 'arsenal') renderArsenal();
       if (NO_RENDER) {
@@ -42,6 +43,7 @@
       if (typeof THREE === 'undefined' || !visualAssets.architecture || !visualAssets.ground) return;
       try {
         city3D = createCityRenderer();
+        bootMark('renderer');
         getElement('renderBadge').textContent = 'SOUTH COAST · DUSK';
         // The 2D fallback's ground bitmap (~21 MP) is never drawn with the 3D
         // renderer running: free it (late paints into it are harmless no-ops).
@@ -209,14 +211,18 @@
         // @include src/render3d-api.js
         // @include src/render3d-frame.js
       };
+      bootMark('scene-built');
       flushBreakables();
       const batchReport = batchStaticGroups();
       api.batchReport = batchReport;
+      bootMark('batched');
       tagSceneryDetail();
       compactBuildingBlocks();
       buildFarScenery(staticBatchMeshes);
+      bootMark('far-scenery');
       cellStatics();
       paintLampLight();
+      bootMark('cells-lamps');
       applyRendererQuality(graphicsTier());
       refreshEnvironment(true);
       api.resize();

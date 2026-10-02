@@ -55,7 +55,7 @@
           shadows: shadowQuality(),
           shadowSetting,
           // AUTO's frame-rate adaptation (quality.js ADAPTIVE QUALITY).
-          adaptive: { averageFrameMs: +adaptive.average.toFixed(1), tierDrops: adaptive.tierDrops },
+          adaptive: { averageFrameMs: +adaptive.average.toFixed(1), tierDrops: adaptive.tierDrops, ceiling: adaptive.ceiling, holdSeconds: Math.round(adaptive.hold / 1000) },
         };
       },
       // Police vehicle review (police3d.js): parks every police model and livery in
@@ -122,6 +122,23 @@
       renderScale(scale) {
         return city3D?.setRenderScale?.(Number(scale) || 1) ?? null;
       },
+      // Feed AUTO's dynamic-resolution controller (quality.js ADAPTIVE QUALITY) a synthetic run of frames, for tests:
+      // `plan` is [[seconds, frameMs, cpuMs], ...] on a clock of its own; returns the render scale after the run
+      // and every change as [seconds, scale] (each is a reallocation of the post targets). Needs the 3D
+      // renderer and the AUTO setting; it moves the real adaptive state (use graphics('auto') to reset it).
+      adaptiveSim(plan = []) {
+        if (!city3D?.setRenderScale || graphicsSetting !== 'auto') return null;
+        const changes = [];
+        let t = 1e6,
+          last = adaptive.scale;
+        for (const [seconds, frameMs, cpuMs] of plan)
+          for (let n = Math.round((seconds * 1000) / frameMs); n-- > 0; ) {
+            t += frameMs;
+            adaptGraphics(frameMs, cpuMs ?? frameMs * 0.3, t);
+            if (adaptive.scale !== last) changes.push([+((t - 1e6) / 1000).toFixed(1), (last = adaptive.scale)]);
+          }
+        return { scale: adaptive.scale, tier: graphicsTierId(), tierDrops: adaptive.tierDrops, ceiling: adaptive.ceiling, changes };
+      },
       // Show the ambient-occlusion or bloom buffer instead of the image ('ao',
       // 'bloom'; nothing for the image) to tune the post-processing.
       postView: (mode) => city3D?.postView?.(mode) ?? null,
@@ -159,6 +176,23 @@
       // Shader programs, textures and geometries created in play (first uses) and the slowest
       // frames' renderer CPU split; `reset` starts a fresh log.
       renderHiccups: (reset) => city3D?.hiccups?.(!!reset) ?? null,
+      // The boot timeline: ms since navigation start of each start-up stage (User Timing marks set by
+      // bootMark()), the step before it, and the page's load timings (read-only; docs/areas/boot-and-memory.md).
+      bootTimings() {
+        const nav = performance.getEntriesByType?.('navigation')?.[0],
+          marks = performance.getEntriesByType('mark').filter((m) => m.name.startsWith('dec:'));
+        let last = nav ? nav.responseEnd : 0;
+        return {
+          page: nav
+            ? { responseEnd: Math.round(nav.responseEnd), domInteractive: Math.round(nav.domInteractive), domContentLoaded: Math.round(nav.domContentLoadedEventEnd), load: Math.round(nav.loadEventEnd) }
+            : null,
+          marks: marks.map((m) => {
+            const row = [m.name.slice(4), Math.round(m.startTime), Math.round(m.startTime - last)];
+            last = m.startTime;
+            return row;
+          }),
+        };
+      },
       // Average CPU milliseconds per frame since the last call, plus renderer counters.
       stats() {
         const n = Math.max(1, profile.frames),

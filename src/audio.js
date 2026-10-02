@@ -49,6 +49,14 @@
       // A low-pass across the whole mix: open on land, dulled while swimming
       // (water-audio.js dips it each time the face goes under).
       earFilter = null;
+    // The bytes of a base64 data URL. A plain loop: Uint8Array.from(string, fn) calls fn per byte and
+    // took ~0.3 s for the 65 samples at the first click (ENTER); the bytes are the same.
+    function dataUrlBytes(url) {
+      const binary = atob(url.slice(url.indexOf(',') + 1)),
+        bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < bytes.length; i++) bytes[i] = binary.charCodeAt(i);
+      return bytes;
+    }
     function initAudio() {
       if (!window.AudioContext && !window.webkitAudioContext) return;
       if (audio) {
@@ -108,7 +116,7 @@
         // The room's returns (slap-back, open-country echo) and `reverbSend` (acoustics-audio.js).
         buildRoom();
         for (const [name, url] of Object.entries(ASSETS.audio || {})) {
-          const bytes = Uint8Array.from(atob(url.split(',')[1]), (c) => c.charCodeAt(0));
+          const bytes = dataUrlBytes(url);
           audio
             .decodeAudioData(bytes.buffer)
             .then((buffer) => {
