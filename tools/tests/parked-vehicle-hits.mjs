@@ -1,6 +1,8 @@
 // A parked car still behaves as a car after the settle shortcut for resting vehicles (physics-step.js settleIsTrivial): a driven
 // car shoves it, a blast throws and wrecks it, rounds hurt it, it comes to rest again, and the shortcut changes nothing the
 // whole settle would (settleAudit).
+export const fresh = true;
+
 export default async function (t) {
   await t.call('god', true);
   await t.call('setClock', 12);
