@@ -116,7 +116,10 @@ index plus one.
 
 ## God mode (the `godmode` cheat; god-panel.js)
 
-- Typed in play, on the city map or on the title (game-input.js cheat ring). It unlocks every
+- Typed in play, on the city map or on the title (game-input.js cheat ring): `GODMODE` or
+  `AAAAXBBBBYXXXXAYYYYB`, either case (modifier keys are ignored, not a break). A code eats its
+  keys from its second letter on (`CHEAT_SWALLOW_FROM`), the long one only from its X so the A
+  taps still steer (tools/tests/god-mode-codes.mjs presses real keys). It unlocks every
   job (`missionUnlocked`) and opens Settings on the GOD MODE tab (`syncGodSettingsTab` adds
   `'god'` to `SETTINGS_TABS` only while `player.godMode`).
 - Rows: mission select, time presets and 24 h slider (`setGodTime`), freeze
