@@ -25,6 +25,8 @@
           district: districtAt(x, y),
         };
       },
+      // The world-edge countdown (world-edge.js): the line and its inset, the land's gap to it, the countdown, the card and the last events.
+      worldEdge: () => worldEdgeReport(),
       // The Ridgeline Range (terrain.js): each field's grid, top and build time,
       // each trail's length, summit and steepest graded pitch, scenery counts and
       // the outcrops' footing. Terrain tests read it alongside probe().

@@ -102,6 +102,8 @@
       updateFlightHud();
       // Freefall: the call to open the canopy and the height left (parachute.js).
       updateFreefallCue();
+      // Past the world edge: the countdown card (world-edge.js).
+      updateWorldEdgeCue();
       watchWeaponBox();
       watchRadioBox();
       updateHudPops();

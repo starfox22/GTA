@@ -3,7 +3,7 @@
     // geometry, below the ground or off the map, carriers still held, overlays outliving their mode,
     // bad words in the HUD. Nothing here changes the game.
     // The world box (game-state.js WORLD_LEFT..WORLD_SIZE, WORLD_TOP..WORLD_SIZE: the sea, the map), grown by a margin.
-    // Aircraft and boats may leave it (nothing stops them: docs/BACKLOG.md); everything else is off the map out there.
+    // Aircraft and boats may leave it (world-edge.js warns them at a line inside the box and destroys them after 10 s, so a bot run can see them out there briefly); everything else is off the map out there.
     const INTEGRITY_MARGIN = 400;
     function integrityReport() {
       const bad = [],

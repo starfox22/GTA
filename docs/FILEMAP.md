@@ -11,11 +11,11 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-484 files in the include tree, 167,180 lines.
+485 files in the include tree, 167,510 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
-- `src/game.js`   179 — ▸ Game orchestration and shared state
+- `src/game.js`   180 — ▸ Game orchestration and shared state
 
 ## src/game.js ▸ Game orchestration and shared state
 
@@ -38,13 +38,14 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/physics.js`    19 — ▸ Vehicle and pedestrian physics
 - `src/game-people.js`   166 — Pedestrian life: Everyday chatter lives here; how people walk, what they do and how they react to danger is in src/crowd.js, which also has the …
 - `src/game-combat.js`   344 — updateCombat(), bullets, shot line-of-sight (shotBlocked) and bullet targets.
-- `src/game-update.js`   177 — update(dt): the per-frame simulation step (only active play advances clocks).
+- `src/game-update.js`   179 — update(dt): the per-frame simulation step (only active play advances clocks).
+- `src/world-edge.js`   321 — World-edge countdown: past the line just inside the world box the player has 10 s to return, or the vehicle blows up and WASTED.
 - `src/game-draw2d.js`   586 — 2D canvas fallback renderer: drawWorld, drawCar, drawPerson, markers.
 - `src/game-minimap.js`   278 — Minimap base layer: The minimap used to repaint the whole county (coast, every street, parks, promenades, county ground and every building footprint) …
 - `src/map-view.js`   367 — Map views: the city map's filters (MAP LAYERS) and GO TO list, sharp canvases on HiDPI screens, the minimap's speed pull-back and its edge arrows …
 - `src/game-ui.js`   413 — Weapon chip, mission card and updateUI() (HUD text refresh).
 - `src/game-menus.js`   188 — Resize, begin/newGame, pause, help, big map toggle.
-- `src/game-input.js`   417 — Cheat code: Letters typed during play accumulate in a short ring; when the tail spells a known code it fires.
+- `src/game-input.js`   419 — Cheat code: Letters typed during play accumulate in a short ring; when the tail spells a known code it fires.
 - `src/controls.js`   314 — Key bindings
 - `src/geography.js`    12 — ▸ Coastlines and land regions
 - `src/drawbridge.js`    68 — ▸ The Palm Sound drawbridge: schedule, gates, leaves, jumps
@@ -376,7 +377,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/hud.js ▸ HUD behaviour and the title menu
 
 - `src/hud-state.js`   648 — HUD state and pop boxes, saved settings, weapon and radio watches, stars, minimap fold and zoom (hudState, hudPop).
-- `src/hud-panels.js`   640 — HUD panels: prompts, centre cards and toasts, sniper warning, panel covers, updateHud() and the flight HUD.
+- `src/hud-panels.js`   642 — HUD panels: prompts, centre cards and toasts, sniper warning, panel covers, updateHud() and the flight HUD.
 
 ## src/render3d.js ▸ Three.js renderer and resource lifecycle
 
@@ -720,7 +721,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-missions.js`   307 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
 - `src/game-console-police.js`   217 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
 - `src/game-console-vehicles.js`   276 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
-- `src/game-console-world.js`   227 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
+- `src/game-console-world.js`   229 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
 - `src/game-console-rides.js`    98 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
 - `src/game-console-leisure.js`    72 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)
 - `src/game-console-crowd.js`   162 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
@@ -752,10 +753,11 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/ui/title-radio.css`   148 — TITLE RADIO (car-radio.js): the car radio box docked on the title menu.
 - `src/ui/flight-hud.css`   276 — Flight HUD (hud.js, FLIGHT HUD): Shown only in an aircraft, compact and against the screen edges so the view stays clear: attitude, airspeed and …
 - `src/ui/freefall.css`   205 — Freefall cue (parachute.js FREEFALL CUE): While the canopy is still packed: the call to open it with its key, the height above whatever is below, a …
+- `src/ui/world-edge.css`   168 — World-edge cue (world-edge.js): Past the line just inside the world box: RETURN TO THE CITY, the seconds left as a big number (10 ..
 - `src/ui/notify.css`   118 — Notification feed (hud-notify.js): tell() lines as .note boxes in #toast, newest first; older lines dim; an edge colour per tone and a thin bar that …
 - `src/ui/map-panel.css`   156 — City map (map-view.js): as large as the screen allows, with its filters (the legend doubles as them) and the GO TO list beside it, below it on a …
-- `src/ui/reduced-motion.css`    48 — Reduced motion: keep the states, drop the movement
-- `src/ui/hud.html`   285 — HUD. Layout and motion live in the HUD section of the stylesheet; the collapse/expand behaviour of the radio and weapon boxes and the minimap fold …
+- `src/ui/reduced-motion.css`    52 — Reduced motion: keep the states, drop the movement
+- `src/ui/hud.html`   297 — HUD. Layout and motion live in the HUD section of the stylesheet; the collapse/expand behaviour of the radio and weapon boxes and the minimap fold …
 - `src/ui/menus.html`   227 — markup: #menu, #coverArt, #startBtn, #startMeta, #newGameStart, …
 - `src/ui/panels.html`   218 — markup: #sportsbook, #sbTitle, #sbFormat, #sbCash, #sbClose, …
 - `src/ui/credits.html`   299 — markup: #credits, #closeCredits
@@ -764,4 +766,4 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## Outside the include tree
 
 - `src/asset-loader.js`   170 — decodes the embedded/streamed media into ASSETS before the game starts
-- `src/shell.html`    75 — HTML page skeleton: its src/ui/*.css and *.html fragments (in include order) and build.py's `<!-- @include-* -->` slots (game, three.js, media, credits)
+- `src/shell.html`    76 — HTML page skeleton: its src/ui/*.css and *.html fragments (in include order) and build.py's `<!-- @include-* -->` slots (game, three.js, media, credits)
