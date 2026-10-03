@@ -28,7 +28,9 @@
       }
       // New vehicle and person models built per frame (see the vehicle pass).
       const NEW_MODELS_PER_FRAME = 6;
-      let newModelsThisFrame = 0;
+      let newModelsThisFrame = 0,
+        // Vehicle models built since the start (the console's frame trace counts them per frame).
+        modelsBuiltTotal = 0;
       // Individually modelled people this frame (reused list).
       const renderPeople = [];
       function pruneModels(models, list) {

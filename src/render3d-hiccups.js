@@ -321,3 +321,57 @@
         }
         return out;
       }
+      // ATTRIBUTE CHURN: which buffer attributes (and textures) three.js re-uploads, by owner. A first call snapshots
+      // every attribute's and texture's version in the scene; called again with that snapshot it lists what changed
+      // since (each change is an upload on its next draw): owner, attribute, bytes (the whole buffer per change: an upper
+      // bound where the owner sends an update range), uploads. Read through the console's uploadChurn(frames).
+      function attributeChurn(snapshot) {
+        const versions = snapshot || new Map(),
+          changed = new Map(),
+          ownerName = (o) => {
+            let named = o;
+            while (named && !named.name) named = named.parent;
+            if (named && named.name) return named.name;
+            const m = Array.isArray(o.material) ? o.material[0] : o.material;
+            return o.type + '(' + (o.geometry ? o.geometry.type : '') + ',' + (m ? m.type : '') + ')';
+          },
+          visit = (owner, key, item, bytes) => {
+            if (!item) return;
+            const before = versions.get(item);
+            if (!snapshot) versions.set(item, item.version);
+            else if (before !== undefined && item.version !== before) {
+              const id = owner + ' ' + key,
+                row = changed.get(id) || { bytes: 0, uploads: 0, objects: 0 };
+              row.bytes += bytes * (item.version - before);
+              row.uploads += item.version - before;
+              row.objects++;
+              changed.set(id, row);
+            }
+          };
+        scene.traverse((o) => {
+          const g = o.geometry;
+          if (g && g.attributes) {
+            const owner = ownerName(o);
+            for (const name in g.attributes) {
+              const a = g.attributes[name],
+                data = a.isInterleavedBufferAttribute ? a.data : a;
+              visit(owner, name, data, data.array ? data.array.byteLength : 0);
+            }
+            if (g.index) visit(owner, 'index', g.index, g.index.array ? g.index.array.byteLength : 0);
+            if (o.isInstancedMesh) {
+              visit(owner, 'instanceMatrix', o.instanceMatrix, o.instanceMatrix.array.byteLength);
+              if (o.instanceColor) visit(owner, 'instanceColor', o.instanceColor, o.instanceColor.array.byteLength);
+            }
+          }
+          const list = Array.isArray(o.material) ? o.material : o.material ? [o.material] : [];
+          for (const m of list)
+            for (const key in m) {
+              const t = m[key];
+              if (t && t.isTexture && t.image) visit(ownerName(o), key + ' (texture)', t, (t.image.width || 0) * (t.image.height || 0) * 4);
+            }
+        });
+        if (!snapshot) return versions;
+        return [...changed]
+          .map(([id, r]) => [id, Math.round(r.bytes / 1024), r.uploads, r.objects])
+          .sort((a, b) => b[1] - a[1]);
+      }

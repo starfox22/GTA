@@ -115,6 +115,7 @@
               // frames instead of one long one. The player's own is never held back.
               if (newModelsThisFrame >= NEW_MODELS_PER_FRAME && c !== player.car) continue;
               newModelsThisFrame++;
+              modelsBuiltTotal++;
               m = makeVehicle(c);
               carModels.set(c, m);
               trimShadowCasters(m.group, 4 * m.modelScale);
