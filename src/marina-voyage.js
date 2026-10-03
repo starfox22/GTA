@@ -1,60 +1,102 @@
     // The Meridian Star's voyage: legs, speed zones, the path, sailing, carrying her decks, the horn and the route check (LINER_VOYAGE, sailLiner).
     /**
      * THE VOYAGE
-     * The Meridian Star's circuit, as legs sailed in turn and then again:
-     *   call    riding at anchor off the cruise terminal for `seconds`; her
-     *           stern platform takes passengers from the water
+     * The Meridian Star's grand tour of the islands, as legs sailed in turn and
+     * then again (about 18 minutes of play a lap; linerVoyageCheck() times it):
+     *   call    riding at anchor for `seconds`: off the cruise terminal in North
+     *           Sound (where her stern platform takes passengers from the water),
+     *           and a tender call off Palm Keys' public beach
      *   astern  backing out of North Sound along `points`
-     *   ahead   the cruise: out round the west end of Sunset Pier island, down
-     *           the open sea west of Palm Keys, back north inshore past Ocean
-     *           Drive's strand, along Northbank's sea wall and into North Sound
+     *   ahead   under way: out north about Sunset Pier island, east along Monarch
+     *           Isle's north shore and back, down the open sea past Ocean Drive's
+     *           strand and slow along the beach to her anchorage there; then out
+     *           to sea, north well offshore and in to North Sound
+     * The islands are all joined by bridges and she never passes under one
+     * (every deck is at road level, far below her funnels), so the tour keeps to
+     * the open water outside them and doubles back where a bridge closes the way:
+     * Sunset Pier's bridge closes North Sound to the east, so the way to Monarch
+     * Isle is north about Sunset Pier, out and back.
      * A leg's `points` are a control polygon; each corner is filleted with a
      * circular arc of its own radius (`[x, y, radius]`), a turning circle a
-     * 265 m ship can hold. She never passes under a bridge: every deck is at
-     * road level, far below her funnels, so the circuit stays in open water.
-     * Speed is limited by where she is (LINER_SPEED_ZONES: slow in the sound,
-     * moderate inshore, ~19 knots at sea) and by the curve (lateral acceleration
-     * LINER_TURN_GRIP), and she brakes in good time for every stop.
-     * linerVoyageCheck() sweeps her hull down the whole circuit against land,
-     * bridge footings, docks and the other ships.
+     * 170 m ship can hold. Speed is limited by where she is (LINER_SPEED_ZONES:
+     * slow in the sound and off the beach, moderate along the islands, 20 knots
+     * at sea) and by the curve (lateral acceleration LINER_TURN_GRIP), and she
+     * brakes in good time for every stop. linerVoyageCheck() sweeps her hull
+     * down the whole tour against land, bridge footings, docks, the other ships
+     * and the world edge (LINER_EDGE_MARGIN inside worldEdgeLine).
      */
     const LINER_VOYAGE = [
-      { kind: 'call', seconds: 130 },
+      { kind: 'call', seconds: 50, name: 'NORTH SOUND ANCHORAGE', detail: 'OFF THE CRUISE TERMINAL' },
       {
         kind: 'astern',
         points: [
           [2150, -5000],
-          [820, -5000],
+          [960, -5000],
         ],
-        top: 4.5 * KNOTS,
+        top: 6 * KNOTS,
       },
       {
         kind: 'ahead',
+        // North about Sunset Pier, Monarch Isle's north shore and back, then down
+        // past Ocean Drive and slow along the public beach to her anchorage.
         points: [
-          [820, -5000],
-          [1320, -5000, 520],
-          [1320, -6900, 820],
-          [-4550, -6900, 900],
-          [-4550, 4800, 550],
-          [-3450, 4800, 550],
-          [-3450, -1150, 800],
-          [-700, -1150, 800],
-          [-700, -5000, 800],
+          [960, -5000],
+          [1320, -5000, 450],
+          [1320, -7420, 1000],
+          [4900, -7420, 1100],
+          [6300, -5950, 1100],
+          [9400, -5950, 750],
+          [9400, -7400, 750],
+          [1100, -7450, 1100],
+          [-3500, -2000, 1500],
+          [-3500, 6650, 1000],
+          [-1900, 6650],
+        ],
+        top: 21 * KNOTS,
+      },
+      // At anchor off the beach she swings round on her thrusters (`swing`, radians
+      // over the call's middle) to leave westward.
+      { kind: 'call', seconds: 40, name: 'PALM KEYS ANCHORAGE', detail: 'OFF THE PUBLIC BEACH', swing: Math.PI },
+      {
+        kind: 'ahead',
+        // West past the beach-club point, north well offshore, in to North Sound.
+        points: [
+          [-1900, 6650],
+          [-4350, 6650, 1000],
+          [-4350, -3000, 1500],
+          [-1000, -5000, 1200],
           [2150, -5000],
         ],
-        top: 19 * KNOTS,
+        top: 21 * KNOTS,
       },
     ];
-    // Speed limits by area, in knots: dead slow in the sound, moderate inshore.
+    // Speed limits by area, in knots: dead slow in the sound and off the beach, moderate along the islands.
     const LINER_SPEED_ZONES = [
       { x0: -300, x1: 3300, y0: -6000, y1: -4000, top: 7.6 * KNOTS },
-      { x0: -1500, x1: 200, y0: -5200, y1: 600, top: 12 * KNOTS },
-      { x0: -3950, x1: -2300, y0: -1600, y1: 5600, top: 13 * KNOTS },
+      { x0: -1800, x1: 1900, y0: -5800, y1: -4000, top: 12 * KNOTS },
+      { x0: 1000, x1: 4600, y0: -8000, y1: -7000, top: 19 * KNOTS },
+      { x0: 5500, x1: 9800, y0: -6400, y1: -5500, top: 19 * KNOTS },
+      { x0: -3800, x1: -3200, y0: -2400, y1: 5600, top: 19 * KNOTS },
+      { x0: -2900, x1: -1000, y0: 6000, y1: 7100, top: 8 * KNOTS },
     ];
-    // Lateral grip, acceleration and braking in m/s², as map units.
-    const LINER_TURN_GRIP = 0.25 * UNITS_PER_METRE,
-      LINER_ACCELERATION = 0.14 * UNITS_PER_METRE,
-      LINER_BRAKING = 0.09 * UNITS_PER_METRE;
+    // Named waters on the tour, in its order, for liners() and the tests.
+    const LINER_PASSAGES = [
+      { name: 'HARBOR POINT', x0: 0, x1: 3300, y0: -5800, y1: -4000 },
+      { name: 'SUNSET PIER', x0: 1000, x1: 4600, y0: -8000, y1: -7000 },
+      { name: 'MONARCH ISLE', x0: 5500, x1: 9800, y0: -6500, y1: -5500 },
+      { name: 'OCEAN DRIVE', x0: -3800, x1: -3200, y0: -1600, y1: 5000 },
+      { name: 'PALM KEYS BEACH', x0: -3300, x1: -1000, y0: 6000, y1: 7100 },
+      { name: 'OPEN SEA', x0: -4928, x1: -4000, y0: -3000, y1: 6000 },
+    ];
+    // Her hull keeps at least this far inside the world-edge line (world-edge.js).
+    const LINER_EDGE_MARGIN = 200;
+    function linerPassageAt(x, y) {
+      return LINER_PASSAGES.find((p) => x > p.x0 && x < p.x1 && y > p.y0 && y < p.y1)?.name ?? null;
+    }
+    // Lateral grip (a brisk turn: she heels a couple of degrees), acceleration and braking in m/s², as map units.
+    const LINER_TURN_GRIP = 0.4 * UNITS_PER_METRE,
+      LINER_ACCELERATION = 0.16 * UNITS_PER_METRE,
+      LINER_BRAKING = 0.13 * UNITS_PER_METRE;
     /* A leg's path: the control polygon with filleted corners, resampled every 8
        units into {x, y, a (heading of travel), k (curvature)} and a speed cap per
        sample that already allows for braking into slower water and the stop. */
@@ -148,7 +190,7 @@
       };
     }
     // Where she is in the voyage. She starts at anchor, a little before sailing.
-    const linerVoyage = { leg: 0, s: 0, speed: 0, timer: 100, drift: 0, heel: 0, horn: 0, hornQueue: [] };
+    const linerVoyage = { leg: 0, s: 0, speed: 0, timer: 45, drift: 0, heel: 0, horn: 0, hornQueue: [] };
     function sailingLiner() {
       return LINERS.find((ship) => ship.voyage);
     }
@@ -168,6 +210,7 @@
       if (leg.kind === 'call') {
         v.speed = 0;
         v.timer += deltaSeconds;
+        if (leg.swing) ship.a = linerCallHeading(v.leg, v.timer);
         // One prolonged blast before she weighs anchor.
         if (v.timer >= leg.seconds - 9 && !v.warned) {
           v.warned = true;
@@ -196,6 +239,20 @@
       if (!moved) return;
       carryLinerDeck(ship, carried);
       clearLinerWay(ship);
+    }
+    /* Where and how she rides during call `index`, `timer` seconds into it: at
+       the end of the leg before, heading as she came to rest there, swung round
+       by the call's `swing` (radians, eased over the middle 60 % of the call). */
+    function linerCallPose(index, timer = 0) {
+      const leg = LINER_VOYAGE[index],
+        prev = LINER_VOYAGE[(index + LINER_VOYAGE.length - 1) % LINER_VOYAGE.length],
+        end = linerLegPath(prev).at(-1),
+        base = end.a + (prev.kind === 'astern' ? Math.PI : 0),
+        k = leg.swing ? clamp((timer - leg.seconds * 0.2) / (leg.seconds * 0.6), 0, 1) : 0;
+      return { x: end.x, y: end.y, a: normalizeAngle(base + (leg.swing || 0) * k * k * (3 - 2 * k)) };
+    }
+    function linerCallHeading(index, timer) {
+      return linerCallPose(index, timer).a;
     }
     function nextLinerLeg(ship) {
       const v = linerVoyage;
@@ -322,47 +379,153 @@
         start += length + 1;
       }
     }
+    /* Seconds a leg takes from rest to rest, stepped as sailLiner() steps it,
+       and her top speed on it (units a second). */
+    function linerLegTiming(leg) {
+      if (leg.kind === 'call') return { seconds: leg.seconds, top: 0 };
+      const path = linerLegPath(leg),
+        dt = 1 / 10;
+      let s = 0,
+        speed = 0,
+        top = 0,
+        t = 0;
+      while (s < leg.length - 0.01 && t < 3600) {
+        const cap = Math.max(linerPathAt(path, s).top, s < leg.length - 1 ? 1.2 : 0);
+        speed += clamp(cap - speed, -LINER_BRAKING * dt, LINER_ACCELERATION * dt);
+        s = Math.min(leg.length, s + Math.max(0, speed) * dt);
+        top = Math.max(top, speed);
+        t += dt;
+      }
+      return { seconds: t, top };
+    }
     /**
      * Sweep the sailing liner's hull down every leg of the voyage and report
-     * where it would touch land, a bridge footing or tower, a jetty, the moored
-     * liner or the Ironworks freighter (the console's linerVoyageCheck()).
+     * where it would touch land, a bridge footing, tower or deck, a jetty, a
+     * moored ship or the Ironworks freighter, or come within LINER_EDGE_MARGIN of
+     * the world-edge line (the console's linerVoyageCheck()). Also: each leg's
+     * length, seconds and top speed, the lap time, the named waters in the
+     * order she passes them, the closest the hull comes to the world-edge line,
+     * and `tight`, where it passes within 60 units of land (not a problem).
      */
     function linerVoyageCheck(step = 24) {
       const ship = sailingLiner(),
         problems = [],
+        tight = [],
+        passages = [],
+        line = worldEdgeLine,
         others = [
           ...LINERS.filter((l) => l !== ship).map((l) => ({ name: l.name, ...shipHull(l) })),
+          { name: SUPERYACHT.name, ...deckWorld(SUPERYACHT, (SUPERYACHT.aft - 20 + SUPERYACHT.fwd) / 2, 0), hx: (SUPERYACHT.fwd - SUPERYACHT.aft + 20) / 2, hy: SUPERYACHT.beam / 2 + 4, a: SUPERYACHT.a },
           { name: 'freighter', x: HARBOR.ship.x, y: HARBOR.ship.y, hx: HARBOR.ship.w / 2, hy: HARBOR.ship.l / 2, a: 0 },
           ...DOCKS.map((d) => ({ name: 'dock', x: d.x + d.w / 2, y: d.y + d.h / 2, hx: d.w / 2, hy: d.h / 2, a: 0 })),
+          ...monarchBoatObstacles().map((o) => ({ name: 'Monarch Harbour', ...o })),
           ...BRIDGES.flatMap((b) => [...bridgeFootings(b), ...bridgePylons(b)].map((f) => ({ name: b.name, ...f }))),
           ...BRIDGES.map((b) => ({ name: b.name + ' deck', ...bridgeBox(b, { along: 0, across: 0, hx: bridgeFrame(b).length / 2, hy: b.width / 2 }) })),
         ];
+      let edgeMargin = Infinity;
+      // Her hull in one pose (`s` along leg `index`, or degrees swung at a call).
+      const testPose = (index, s, at) => {
+        const pose = { x: at.x, y: at.y, a: at.a, l: ship.l, w: ship.w },
+          where = { leg: index, s: Math.round(s) };
+        // Outline points of the hull plan, with a margin.
+        for (let u = -ship.l / 2; u <= ship.l / 2; u += 40) {
+          const half = hullHalfBeam(ship, u);
+          for (const v of [-half - 10, 0, half + 10]) {
+            const p = deckWorld(pose, u, v);
+            if (landAt(p.x, p.y)) problems.push({ ...where, x: Math.round(p.x), y: Math.round(p.y), hit: 'land' });
+          }
+          for (const v of [-half - 60, half + 60]) {
+            const p = deckWorld(pose, u, v);
+            if (landAt(p.x, p.y)) tight.push({ ...where, x: Math.round(p.x), y: Math.round(p.y) });
+          }
+          for (const v of [-half, half]) {
+            const p = deckWorld(pose, u, v),
+              margin = Math.min(p.x - line.left, line.right - p.x, p.y - line.top, line.bottom - p.y);
+            edgeMargin = Math.min(edgeMargin, margin);
+            if (margin < LINER_EDGE_MARGIN) problems.push({ ...where, x: Math.round(p.x), y: Math.round(p.y), hit: 'world edge' });
+          }
+        }
+        const hull = { x: at.x, y: at.y, hx: ship.l / 2 + 10, hy: ship.w / 2 + 10, a: at.a };
+        for (const o of others) if (boxContact(hull, o)) problems.push({ ...where, x: Math.round(at.x), y: Math.round(at.y), hit: o.name });
+      };
       for (const [index, leg] of LINER_VOYAGE.entries()) {
-        if (leg.kind === 'call') continue;
+        if (leg.kind === 'call') {
+          if (leg.name && passages.at(-1) !== leg.name) passages.push(leg.name);
+          // Swinging at anchor sweeps a circle: every heading on the way round.
+          if (leg.swing) for (let t = 0; t <= leg.seconds; t += leg.seconds / 36) testPose(index, Math.round(t), linerCallPose(index, t));
+          continue;
+        }
         const path = linerLegPath(leg);
         for (let s = 0; s <= leg.length; s += step) {
           const at = linerPathAt(path, s),
-            pose = { x: at.x, y: at.y, a: at.a, l: ship.l, w: ship.w };
-          // Outline points of the hull plan, with a margin.
-          for (let u = -ship.l / 2; u <= ship.l / 2; u += 40) {
-            const half = hullHalfBeam(ship, u) + 10;
-            for (const v of [-half, 0, half]) {
-              const p = deckWorld(pose, u, v);
-              if (landAt(p.x, p.y)) problems.push({ leg: index, s: Math.round(s), x: Math.round(p.x), y: Math.round(p.y), hit: 'land' });
-            }
-          }
-          const hull = { x: at.x, y: at.y, hx: ship.l / 2 + 10, hy: ship.w / 2 + 10, a: at.a };
-          for (const o of others) if (boxContact(hull, o)) problems.push({ leg: index, s: Math.round(s), x: Math.round(at.x), y: Math.round(at.y), hit: o.name });
+            area = linerPassageAt(at.x, at.y);
+          if (area && passages.at(-1) !== area) passages.push(area);
+          testPose(index, s, at);
         }
       }
-      const seen = new Set();
+      const seen = new Set(),
+        once = (list, key) =>
+          list.filter((p) => {
+            const k = key(p);
+            if (seen.has(k)) return false;
+            seen.add(k);
+            return true;
+          }),
+        legs = LINER_VOYAGE.map((leg) => {
+          const timing = linerLegTiming(leg);
+          return leg.kind === 'call'
+            ? { kind: 'call', name: leg.name, seconds: leg.seconds }
+            : { kind: leg.kind, length: Math.round(leg.length), seconds: Math.round(timing.seconds), topKnots: Math.round((timing.top / KNOTS) * 10) / 10 };
+        });
       return {
-        legs: LINER_VOYAGE.map((leg) => (leg.kind === 'call' ? { kind: 'call', seconds: leg.seconds } : { kind: leg.kind, length: Math.round(linerLegPath(leg) && leg.length) })),
-        problems: problems.filter((p) => {
-          const key = p.leg + p.hit + Math.round(p.s / 400);
-          if (seen.has(key)) return false;
-          seen.add(key);
-          return true;
-        }),
+        legs,
+        lapSeconds: legs.reduce((sum, leg) => sum + leg.seconds, 0),
+        lapMinutes: Math.round((legs.reduce((sum, leg) => sum + leg.seconds, 0) / 60) * 10) / 10,
+        passages,
+        edgeMargin: Math.round(edgeMargin),
+        problems: once(problems, (p) => p.leg + p.hit + Math.round(p.s / 400)),
+        tight: once(tight, (p) => 'tight' + p.leg + Math.round(p.s / 400)),
       };
+    }
+    /* A sea chart for planning the voyage (the console's linerChart): one
+       character a `cell` units square over [x0, x1) x [y0, y1) (default the world
+       box): '#' land, '=' a bridge deck, 'o' a bridge footing, ':' beyond the
+       world-edge line, '.' open sea, and the voyage drawn over it, each leg by its
+       index in base 36, '@' where she is now. */
+    function linerChart(cell = 256, x0 = WORLD_LEFT, y0 = WORLD_TOP, x1 = WORLD_SIZE, y1 = WORLD_SIZE) {
+      const cols = Math.ceil((x1 - x0) / cell),
+        rows = Math.ceil((y1 - y0) / cell),
+        grid = [],
+        at = (x, y) => {
+          const c = Math.floor((x - x0) / cell),
+            r = Math.floor((y - y0) / cell);
+          return r >= 0 && r < rows && c >= 0 && c < cols ? [r, c] : null;
+        },
+        mark = (x, y, ch) => {
+          const rc = at(x, y);
+          if (rc) grid[rc[0]][rc[1]] = ch;
+        };
+      for (let r = 0; r < rows; r++) {
+        const row = [];
+        for (let c = 0; c < cols; c++) {
+          const x = x0 + (c + 0.5) * cell,
+            y = y0 + (r + 0.5) * cell,
+            q = cell * 0.35;
+          let ch = '.';
+          if (worldEdgeDepth(x, y) > 0) ch = ':';
+          else if ([[0, 0], [q, q], [-q, q], [q, -q], [-q, -q]].some(([dx, dy]) => landAt(x + dx, y + dy))) ch = '#';
+          row.push(ch);
+        }
+        grid.push(row);
+      }
+      for (const b of BRIDGES) {
+        const f = bridgeFrame(b);
+        for (let s = 0; s <= f.length; s += cell / 4) mark(b.a[0] + f.ux * s, b.a[1] + f.uy * s, '=');
+        for (const o of bridgeFootings(b)) mark(o.x, o.y, 'o');
+      }
+      for (const [index, leg] of LINER_VOYAGE.entries())
+        if (leg.kind !== 'call') for (const p of linerLegPath(leg)) mark(p.x, p.y, index.toString(36));
+      const ship = sailingLiner();
+      if (ship) mark(ship.x, ship.y, '@');
+      return { cell, x0, y0, x1, y1, rows: grid.map((r) => r.join('')) };
     }

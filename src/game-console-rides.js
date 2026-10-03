@@ -24,8 +24,8 @@
         for (let t = 0; t < seconds; t += 1 / 30) updateTransit(1 / 30);
         return this.trains();
       },
-      // The sailing liner: where she is, her leg of the voyage, speed (units/s
-      // and knots) and heading, and who is aboard.
+      // The sailing liner: where she is (and the named waters, LINER_PASSAGES),
+      // her leg of the voyage, speed (units/s and knots) and heading, who is aboard.
       liners: () => {
         const ship = sailingLiner(),
           leg = LINER_VOYAGE[linerVoyage.leg];
@@ -33,9 +33,11 @@
           name: ship.name,
           x: Math.round(ship.x),
           y: Math.round(ship.y),
+          area: linerPassageAt(ship.x, ship.y),
           heading: Math.round((((ship.a * 180) / Math.PI) % 360 + 360) % 360),
           leg: linerVoyage.leg,
           kind: leg.kind,
+          call: leg.kind === 'call' ? leg.name : null,
           along: Math.round(linerVoyage.s),
           legLength: leg.kind === 'call' ? leg.seconds : Math.round(leg.length || 0),
           speed: Math.round(ship.speed * 10) / 10,
@@ -51,6 +53,8 @@
       },
       // Sweep the liner's hull down the whole voyage: land, bridges, jetties, ships.
       linerVoyageCheck: (step = 24) => linerVoyageCheck(step),
+      // A sea chart of the voyage, one character a `cell` (see linerChart, marina-liners.js).
+      linerChart: (cell = 256, x0, y0, x1, y1) => linerChart(cell, x0, y0, x1, y1),
       // Board a City Rail train at station `from` bound for `to` (names, as
       // RAIL_STATIONS spells them, or indices), as the platform menu would.
       boardTrain(from = 'CRUISE TERMINAL', to = 'SOUTHPORT AIRPORT') {
