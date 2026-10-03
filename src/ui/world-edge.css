@@ -146,3 +146,9 @@ body.panel-open #worldEdgeCue {
     height: 30px;
   }
 }
+/* A short window (a phone held sideways): up under the heading strip, off the middle. */
+@media (max-height: 520px) {
+  #worldEdgeCue {
+    top: 112px;
+  }
+}
