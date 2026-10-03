@@ -71,6 +71,8 @@
       }
       player.x = x;
       player.y = y;
+      // A countdown past the world edge starts afresh from the new spot (world-edge.js).
+      resetWorldEdge();
       cameraTarget.x = x;
       cameraTarget.y = y;
       resetCameraFeel();

@@ -25,7 +25,9 @@
   #healthbox.low .vital.health i,
   .binding-key.listening,
   .bindings-clash,
-  #flightHud * {
+  #flightHud *,
+  #worldEdgeCue,
+  #worldEdgeCue * {
     animation: none !important;
   }
   #topbar *,
@@ -42,7 +44,9 @@
   .minimap-box,
   .minimap-frame,
   #flightHud,
-  #flightHud * {
+  #flightHud *,
+  #worldEdgeCue,
+  #worldEdgeCue * {
     transition-duration: 0.01ms !important;
   }
 }

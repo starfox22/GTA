@@ -118,6 +118,8 @@
         timed('offroad', () => updateOffroad(deltaSeconds));
         updatePlayerArmor(deltaSeconds);
         updatePlayerApache(deltaSeconds);
+        // Past the line just inside the world box: RETURN TO THE CITY, 10 s (world-edge.js).
+        updateWorldEdge(deltaSeconds);
         timed('combat', () => updateCombat(deltaSeconds));
         timed('mission', () => missionUpdate(deltaSeconds));
         timed('waypoint', () => {

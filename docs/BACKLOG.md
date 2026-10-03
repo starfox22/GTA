@@ -157,7 +157,6 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - `carjack-traffic` is flaky: when the traffic car it picks stands beside a bike-share dock, E rents a bike instead (about one run in four).
 
 ## Random-walk bot pass (tools/bot.mjs, October 2026)
-- A plane flies on past the edge of the world box (WORLD_LEFT..WORLD_SIZE, WORLD_TOP..WORLD_SIZE: 13 km west of it was reached in one run) and a boat sails on over the open sea: nothing turns either back, and what the renderer draws out there was not looked at (no rendered bot run yet).
 - The hospital's GET TREATMENT ($150), the armory's BODY ARMOR ($350) and the bar and diner meals charge full price at full health or full armour (a gun shop says "Ammunition is already full" and charges nothing); serviceAction (citylife-police.js). A diner's time skip may be the point of its plate: a design question.
 - Not done in that pass: the bot only ran on the no-render page (graphics tier switches mid-game, the rendered HUD, the map labels and the touch layout at phone size were not driven by it); no HUD-overlap check (two toasts or the police timer over the mission card) beyond the text sweep for NaN / undefined in `integrity()`.
 - The bot's trapped-vehicle probe fired once in 58 game minutes of seeds 2 and 3 (a luxury car near the Police HQ, not reproducible from a fresh spawn: a cruiser box-in or a wedge); `steerTo` can leave a car nose to wall.

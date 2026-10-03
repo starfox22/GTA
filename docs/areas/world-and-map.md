@@ -26,6 +26,18 @@ lies north of Northbank across North Sound; **Monarch Isle** north of the Ridgel
 ## Frames
 
 - World box `WORLD_LEFT..WORLD_SIZE` × `WORLD_TOP..WORLD_SIZE` (-5120..11264 × -8192..11264).
+- **World edge** (world-edge.js): the line `worldEdgeLine` is `WORLD_EDGE_INSET` (192 units, 24 m)
+  inside the box. Land reaches 234 units short of the east edge and 314 short of the south
+  edge (west and north have 800+), so the line clears every coast (`worldEdge().landGap` all
+  positive; tools/tests/world-edge.mjs): cars and people never meet it. The sea plane
+  (`farWater`, 28000 square about the box centre) runs 3,000+ units past the west, east and south
+  edges but only 176 past `WORLD_TOP`: the line sits well inside that. Past the line the player
+  has `WORLD_EDGE_SECONDS` (10) of game time to come back (the card RETURN TO THE CITY), or the
+  vehicle is destroyed with `damageVehicle` (physics-update.js explodes it and kills the
+  occupant) and the player is WASTED; on foot, swimming or under a canopy `die()` runs at
+  once; god mode is only warned. State is derived from `player.x/y` each step (nothing saved:
+  a teleport, respawn, new game or load outside the line starts at 10; `teleportPlayer`
+  calls `resetWorldEdge()`); only the player counts, AI aircraft and boats keep their own limits.
 - City frame `CITY_LEFT..CITY_RIGHT` × `CITY_TOP..CITY_SIZE` (-3584..3712 × -4224..5632) is
   what the baked ground textures, the night light map and the street grid cover. Anything
   past `CITY_SIZE` in x or y is county. Ground outside the frame comes in tiles

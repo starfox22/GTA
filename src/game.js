@@ -39,6 +39,7 @@
     // @include src/game-people.js
     // @include src/game-combat.js
     // @include src/game-update.js
+    // @include src/world-edge.js
     // @include src/game-draw2d.js
     // @include src/game-minimap.js
     // @include src/map-view.js
