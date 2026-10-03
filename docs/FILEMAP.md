@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-485 files in the include tree, 167,510 lines.
+486 files in the include tree, 167,514 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -214,8 +214,12 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/marina.js ▸ Harbor Point marina, the superyacht and the cruise liners
 
-- `src/marina-liners.js`   645 — Harbor Point marina: berths, liners and their voyages (MARINA, LINERS, linerVoyage).
+- `src/marina-liners.js`   279 — ▸ Harbor Point marina: berths, liners and their voyages (MARINA, LINERS, linerVoyage).
 - `src/marina-superyacht.js`   637 — Superyacht deck plan: levels, stairs, walking aboard and boarding (superyachtPlan, moveOnYacht, boardSuperyachtFrom).
+
+## src/marina-liners.js ▸ Harbor Point marina: berths, liners and their voyages (MARINA, LINERS, linerVoyage).
+
+- `src/marina-voyage.js`   368 — The Meridian Star's voyage: legs, speed zones, the path, sailing, carrying her decks, the horn and the route check (LINER_VOYAGE, sailLiner).
 
 ## src/beachvolley.js ▸ Beach volleyball on Palm Keys Beach
 
@@ -722,7 +726,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-police.js`   217 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
 - `src/game-console-vehicles.js`   276 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
 - `src/game-console-world.js`   229 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
-- `src/game-console-rides.js`    98 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
+- `src/game-console-rides.js`   100 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
 - `src/game-console-leisure.js`    72 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)
 - `src/game-console-crowd.js`   162 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
 - `src/game-console-graphics.js`   231 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
