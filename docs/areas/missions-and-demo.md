@@ -126,7 +126,10 @@ index plus one.
   (`godTimeFrozen()`, asked by citylife.js before advancing `worldMinutes`), weather
   (`setGodWeather`), refill (`godRefill`), lose police (`godLosePolice`: also marks the
   player's crowd incidents reported so a call in progress does not re-raise a star, and ends
-  the Fort Sentinel alarm), teleport (map pick mode).
+  the Fort Sentinel alarm), teleport (map pick mode: `#mapOverlay.god-pick` gives the canvas the
+  whole panel, the hint banner floats over its top edge and the side list, filters, legend and route
+  tools step aside; `godMapToggled` refits the canvas pixels after the class change; the wheel zooms
+  about the cursor, `zoomMap(factor, at)`).
 - `godTeleport(x, y)` is the safe move: nearest walkable spot (not a loose mountain face
   steeper than `SLIP_GRADE`, where the body would slide off), a boat spawned on open water,
   the current road vehicle placed on the nearest lane where `canSpawnCar` passes, aircraft
