@@ -112,8 +112,8 @@ navigation.js (big map, GPS), cycles.js (bike share), src/shell.html + src/ui/* 
   `#freefallCue`): RETURN TO THE CITY, the seconds left as a big number (10..0), metres past the
   edge, the compass word and an arrow turned toward the middle of the map (`--we-turn`, north
   up the screen), a time bar. Top centre under the flight heading strip (178 px; 140 on a phone),
-  clear of the player in the middle; `body.panel-open` hides it, `data-state` count / warn / danger / clear
-  (the 2.4 s all-clear). `updateWorldEdgeCue()` runs from `updateHud()`; the countdown itself runs in
+  clear of the player in the middle; `body.panel-open` hides it, `data-state` approach (calm blue, before the line: APPROACHING THE WORLD EDGE,
+  the distance to it in the big slot, no bar) / count / warn / danger / clear (the 2.4 s all-clear). `updateWorldEdgeCue()` runs from `updateHud()`; the countdown itself runs in
   `update()` (play mode only). Console `worldEdge()` (its `rect` gives the card's pixel box).
 - Reduced motion cuts slides and pop-ins (src/ui/reduced-motion.css).
 - Console `promptState()` reports the prompt.

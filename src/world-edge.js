@@ -12,12 +12,22 @@
      * kills the occupant) or, with no vehicle, the player dies (die()); god mode only warns.
      * The state is derived from where the player is each step, so a teleport, a respawn, a new
      * game or a load that starts outside the line simply begins at once, and nothing is saved.
+     * Before the line a calm APPROACH warning (never lethal, god mode sees it too): the card shows when
+     * an edge is within WORLD_EDGE_APPROACH_SECONDS of travel along the player's measured velocity, or
+     * within WORLD_EDGE_APPROACH_UNITS, and the player really is moving toward it; it clears when they turn.
      * Only the player is watched: AI aircraft and boats keep their own limits.
      */
     const WORLD_EDGE_SECONDS = 10,
       // Units (24 m) inside the box: the county's coast is 234 units short of the east edge and the south coast 314, so the line clears all land; the north sea plane ends 176 units past WORLD_TOP.
       WORLD_EDGE_INSET = 192,
       WORLD_EDGE_ALLCLEAR = 2.4,
+      // The approach warning: the line is at most this many game seconds ahead along the way the player
+      // is moving (a plane at full speed, ~640 units/s, is warned 16,000 units out: the whole box, but
+      // turning back at that speed takes ~3,300 units), or within this distance whatever the speed
+      // (a boat, a swimmer), provided there is real movement toward that edge; it clears with hysteresis.
+      WORLD_EDGE_APPROACH_SECONDS = 25,
+      WORLD_EDGE_APPROACH_UNITS = 3200,
+      WORLD_EDGE_APPROACH_TOWARD = 16,
       worldEdgeLine = {
         left: WORLD_LEFT + WORLD_EDGE_INSET,
         top: WORLD_TOP + WORLD_EDGE_INSET,
@@ -36,6 +46,16 @@
         spared: false,
         outAt: 0,
         history: [],
+        // Measured movement of the player (smoothed units/s) and the approach warning.
+        px: 0,
+        py: 0,
+        vx: 0,
+        vy: 0,
+        moving: false,
+        approach: false,
+        approachSeconds: 0,
+        approachDistance: 0,
+        approachEdge: '',
       };
     // How far (units) a point is outside the line; 0 inside it.
     function worldEdgeDepth(x, y) {
@@ -48,6 +68,46 @@
       worldEdge.clear = 0;
       worldEdge.fired = false;
       worldEdge.spared = false;
+      worldEdge.moving = false;
+      worldEdge.vx = worldEdge.vy = 0;
+      worldEdge.approach = false;
+    }
+    // The player's own movement, measured from where they were last step (a teleport resets it).
+    function worldEdgeMeasure(dt) {
+      const w = worldEdge;
+      if (w.moving && dt > 0) {
+        const rx = (player.x - w.px) / dt,
+          ry = (player.y - w.py) / dt;
+        // A jump (not a way of moving) is not a velocity.
+        if (Math.hypot(rx, ry) < 3000) {
+          const k = 1 - Math.exp(-dt / 0.35);
+          w.vx += (rx - w.vx) * k;
+          w.vy += (ry - w.vy) * k;
+        } else w.vx = w.vy = 0;
+      } else w.vx = w.vy = 0;
+      w.px = player.x;
+      w.py = player.y;
+      w.moving = true;
+    }
+    // Inside the line: is an edge close enough along the way the player moves? Sets worldEdge.approach*.
+    function worldEdgeApproach() {
+      const w = worldEdge,
+        more = w.approach ? 1.2 : 1;
+      let best = null;
+      for (const [edge, gap, speed] of [
+        ['WEST', player.x - worldEdgeLine.left, -w.vx],
+        ['EAST', worldEdgeLine.right - player.x, w.vx],
+        ['NORTH', player.y - worldEdgeLine.top, -w.vy],
+        ['SOUTH', worldEdgeLine.bottom - player.y, w.vy],
+      ]) {
+        if (speed < WORLD_EDGE_APPROACH_TOWARD) continue;
+        const seconds = gap / speed;
+        if ((seconds <= WORLD_EDGE_APPROACH_SECONDS * more || gap <= WORLD_EDGE_APPROACH_UNITS * more) && (!best || seconds < best.seconds)) best = { edge, gap, seconds };
+      }
+      w.approach = !!best;
+      w.approachSeconds = best ? best.seconds : 0;
+      w.approachDistance = best ? best.gap : 0;
+      w.approachEdge = best ? best.edge : '';
     }
     function worldEdgeNote(kind) {
       worldEdge.history.push({ kind, at: +gameTime.toFixed(1), x: Math.round(player.x), y: Math.round(player.y), vehicle: player.car?.type || null });
@@ -60,7 +120,9 @@
     function updateWorldEdge(dt) {
       if (gameMode !== 'play') return;
       const w = worldEdge;
+      worldEdgeMeasure(dt);
       if (worldEdgeDepth(player.x, player.y) <= 0) {
+        worldEdgeApproach();
         if (w.active) {
           const spared = w.spared;
           w.active = false;
@@ -75,6 +137,7 @@
         } else if (w.clear > 0) w.clear = Math.max(0, w.clear - dt);
         return;
       }
+      w.approach = false;
       if (!w.active) {
         w.active = true;
         w.left = WORLD_EDGE_SECONDS;
@@ -114,26 +177,40 @@
     // The cue's state for the HUD: null when nothing shows.
     function worldEdgeCueState() {
       const w = worldEdge;
-      if (!w.active && w.clear <= 0) return null;
-      if (!w.active) return { state: 'clear' };
+      if (!w.active && w.clear <= 0 && !w.approach) return null;
+      if (!w.active && w.clear > 0) return { state: 'clear' };
       const cx = (worldEdgeLine.left + worldEdgeLine.right) / 2,
         cy = (worldEdgeLine.top + worldEdgeLine.bottom) / 2,
         dx = cx - player.x,
         dy = cy - player.y,
         // Screen degrees clockwise from straight up (north is up the screen, -y).
-        turn = (Math.atan2(dx, -dy) * 180) / Math.PI;
+        turn = (Math.atan2(dx, -dy) * 180) / Math.PI,
+        way = compassWord(dx, dy).toUpperCase();
+      if (!w.active)
+        return {
+          state: 'approach',
+          edge: w.approachEdge,
+          seconds: +w.approachSeconds.toFixed(1),
+          turn,
+          way,
+          metres: Math.round(worldMeters(w.approachDistance)),
+          god: !!player.godMode,
+        };
       return {
         state: w.left <= 3 ? 'danger' : w.left <= 6 ? 'warn' : 'count',
         count: Math.max(0, Math.ceil(w.left - 1e-6)),
         fraction: clamp(w.left / WORLD_EDGE_SECONDS, 0, 1),
         turn,
-        way: compassWord(dx, dy).toUpperCase(),
+        way,
         metres: Math.round(worldMeters(worldEdgeDepth(player.x, player.y))),
         god: !!player.godMode,
       };
     }
-    const worldEdgeCue = { shown: '', count: -1, note: '', call: '', turn: -999, fraction: -1 };
-    // From updateHud(): the card shows while the countdown runs (and briefly the all-clear), and only in play.
+    function worldEdgeLength(metres) {
+      return metres >= 1000 ? (metres / 1000).toFixed(1) + ' KM' : Math.round(metres / 10) * 10 + ' M';
+    }
+    const worldEdgeCue = { shown: '', big: '', note: '', call: '', turn: -999, fraction: -1 };
+    // From updateHud(): the card shows the approach warning, the countdown and briefly the all-clear, and only in play.
     function updateWorldEdgeCue() {
       const root = getElement('worldEdgeCue');
       if (!root) return;
@@ -152,37 +229,44 @@
         worldEdgeCue.shown = cue.state;
         root.dataset.state = cue.state;
       }
-      const call = cue.state === 'clear' ? 'ALL CLEAR' : 'RETURN TO THE CITY';
+      const call = cue.state === 'clear' ? 'ALL CLEAR' : cue.state === 'approach' ? 'APPROACHING THE WORLD EDGE' : 'RETURN TO THE CITY',
+        god = cue.god ? 'GOD MODE · ' : '';
+      let big = '',
+        note = '';
+      if (cue.state === 'clear') {
+        big = 'OK';
+        note = 'BACK INSIDE THE CITY LIMITS';
+      } else if (cue.state === 'approach') {
+        big = worldEdgeLength(cue.metres);
+        note = god + 'TURN BACK · ' + cue.edge + ' EDGE · HEAD ' + cue.way;
+      } else {
+        big = String(cue.count);
+        note = god + worldEdgeLength(cue.metres) + ' PAST THE EDGE · HEAD ' + cue.way;
+      }
       if (call !== worldEdgeCue.call) {
         worldEdgeCue.call = call;
         getElement('worldEdgeCall').textContent = call;
       }
-      if (cue.state === 'clear') {
-        if (worldEdgeCue.count !== -2) {
-          worldEdgeCue.count = -2;
-          getElement('worldEdgeCount').textContent = 'OK';
-          getElement('worldEdgeNote').textContent = 'BACK INSIDE THE CITY LIMITS';
+      if (big !== worldEdgeCue.big) {
+        worldEdgeCue.big = big;
+        getElement('worldEdgeCount').textContent = big;
+        // Restart the one-second pulse on each new number of the countdown.
+        if (cue.state !== 'approach' && cue.state !== 'clear') {
+          root.classList.remove('beat');
+          void root.offsetWidth;
+          root.classList.add('beat');
         }
-        return;
       }
-      if (cue.count !== worldEdgeCue.count) {
-        worldEdgeCue.count = cue.count;
-        getElement('worldEdgeCount').textContent = cue.count;
-        // Restart the one-second pulse on each new number.
-        root.classList.remove('beat');
-        void root.offsetWidth;
-        root.classList.add('beat');
-      }
-      const note = (cue.god ? 'GOD MODE · ' : '') + (cue.metres >= 1000 ? (cue.metres / 1000).toFixed(1) + ' KM' : cue.metres + ' M') + ' PAST THE EDGE · HEAD ' + cue.way;
       if (note !== worldEdgeCue.note) {
         worldEdgeCue.note = note;
         getElement('worldEdgeNote').textContent = note;
       }
+      if (cue.state === 'clear') return;
       if (Math.abs(cue.turn - worldEdgeCue.turn) >= 1) {
         worldEdgeCue.turn = cue.turn;
         root.style.setProperty('--we-turn', cue.turn.toFixed(0) + 'deg');
       }
-      if (Math.abs(cue.fraction - worldEdgeCue.fraction) >= 0.004) {
+      if (cue.state !== 'approach' && Math.abs(cue.fraction - worldEdgeCue.fraction) >= 0.004) {
         worldEdgeCue.fraction = cue.fraction;
         root.style.setProperty('--we-left', cue.fraction.toFixed(3));
       }
@@ -214,6 +298,12 @@
         // Land to line, per side (positive: the line is clear of the land).
         landGap: { left: land.left - worldEdgeLine.left, top: land.top - worldEdgeLine.top, right: worldEdgeLine.right - land.right, bottom: worldEdgeLine.bottom - land.bottom },
         active: worldEdge.active,
+        // The approach warning: the edge, game seconds and metres to it along the measured velocity `v` (m/s).
+        approach: worldEdge.approach,
+        approachEdge: worldEdge.approachEdge,
+        approachSeconds: +worldEdge.approachSeconds.toFixed(1),
+        approachMetres: Math.round(worldMeters(worldEdge.approachDistance)),
+        v: [Math.round(worldMeters(worldEdge.vx)), Math.round(worldMeters(worldEdge.vy))],
         left: +worldEdge.left.toFixed(2),
         fired: worldEdge.fired,
         spared: worldEdge.spared,
@@ -223,6 +313,7 @@
         cue,
         shown: !!document.getElementById('worldEdgeCue')?.classList.contains('on'),
         count: document.getElementById('worldEdgeCount')?.textContent,
+        note: document.getElementById('worldEdgeNote')?.textContent,
         // Where the card is on screen (CSS pixels) and whether it is visible.
         rect: worldEdgeCueRect(),
         history: worldEdge.history.slice(),

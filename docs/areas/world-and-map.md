@@ -35,7 +35,14 @@ lies north of Northbank across North Sound; **Monarch Isle** north of the Ridgel
   has `WORLD_EDGE_SECONDS` (10) of game time to come back (the card RETURN TO THE CITY), or the
   vehicle is destroyed with `damageVehicle` (physics-update.js explodes it and kills the
   occupant) and the player is WASTED; on foot, swimming or under a canopy `die()` runs at
-  once; god mode is only warned. State is derived from `player.x/y` each step (nothing saved:
+  once; god mode is only warned. **Approach warning** before the line (calm card, never lethal,
+  god mode sees it too): an edge within 25 s of travel along the player's measured velocity
+  (smoothed over ~0.35 s; a teleport restarts the measure), or within 3,200 units (400 m), while
+  moving toward it at 2 m/s or more; it clears (with hysteresis) when the player turns or levels
+  off. A courier at 80 m/s banks a 90 degree turn in ~6 s with a ~2,300-unit radius (it came
+  within 1,283 units of the line from 4,500 out), so 25 s (16,000 units, the whole box) is ample; a
+  jet at 205 m/s (radius ~14,600 units) cannot turn inside the box at full speed and must slow.
+  Flying parallel or away shows nothing. State is derived from `player.x/y` each step (nothing saved:
   a teleport, respawn, new game or load outside the line starts at 10; `teleportPlayer`
   calls `resetWorldEdge()`); only the player counts, AI aircraft and boats keep their own limits.
 - City frame `CITY_LEFT..CITY_RIGHT` × `CITY_TOP..CITY_SIZE` (-3584..3712 × -4224..5632) is
