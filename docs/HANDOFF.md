@@ -73,11 +73,16 @@ measure GPU cost, so real-GPU gains of render changes are unverified.
 
 ## Rules added in the latest rounds (also in CLAUDE.md)
 
-- **Wrecks and abandoned cars**: see `docs/areas/vehicles-and-driving.md` (wreck limit) and
-  `docs/audit/performance.md`: off-screen wrecks retire after a timeout and a world-wide cap; anything on
-  screen, owned, occupied or mission-related is never touched. Console `wreckReport()`.
-- **World edge**: see `docs/areas/world-and-map.md` (World edge): crossing the line starts a 10 s RETURN TO THE
-  CITY countdown; at zero the vehicle explodes and the player is wasted (god mode only warns). Console `worldEdge()`.
+- **Wrecks and abandoned cars** (`src/livingcity-wrecks.js`, `WRECK_LIMITS`; rule and constants in
+  `docs/areas/people-and-crowd-living-city.md`, numbers in `docs/audit/performance.md`): wrecks go after 50 s
+  unseen, abandoned cars after 180 s, world-wide caps 16 and 24 (oldest first); nothing on screen, within 1,200
+  units of the player, owned, occupied, police or mission-related is touched. The limit is world-wide because
+  every vehicle that stays costs physics time wherever it is. Console `wreckReport()`.
+- **World edge** (`src/world-edge.js`; `docs/areas/world-and-map.md`): the line is 24 m inside the world box,
+  clear of all land. A calm APPROACHING THE WORLD EDGE card appears when an edge is within ~25 s of travel along
+  the player's velocity (or 400 m while closing); past the line a 10 s RETURN TO THE CITY countdown runs, and at
+  zero the vehicle explodes and the player is wasted (on foot or swimming they die; god mode only warns).
+  Console `worldEdge()`. The courier plane turns back in time; the jet cannot turn inside the box at full speed.
 
 ## Open items and design questions (owner's call; details in docs/BACKLOG.md)
 

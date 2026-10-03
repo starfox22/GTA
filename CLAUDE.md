@@ -7,6 +7,9 @@ fallback). ~260 source files in `src/*.js` are spliced by `// @include src/x.js`
 build: `index.html` + `media/` holding the music and the media packs) and as a downloadable
 zip folder.
 
+**Picking this project up cold? Read `docs/HANDOFF.md` first** (state, owner preferences, workflow that
+worked, open items), then the rules below.
+
 ## Commands
 
 ```sh
@@ -177,6 +180,15 @@ packs with plain `<script src>` so the zip still plays from file://.
   by `solid()` goes through `rectListBlocked` (cell-indexed), never a per-call walk of a world-spanning list.
   Anything new that grows is capped and listed in `soakReport()`; `node tools/soak.mjs` (30 game min) shows
   growth and `node tools/ab.mjs A.html B.html` A/Bs two builds on one browser slot.
+- World edge: `worldEdgeLine` / `updateWorldEdge()` (world-edge.js) is the only rule for the player leaving the
+  world box (calm approach warning from the player's velocity, then a 10 s RETURN TO THE CITY countdown past the
+  line; at zero the vehicle is destroyed with `damageVehicle` and the player is wasted, god mode only warned).
+  State derives from `player.x/y`; `teleportPlayer` calls `resetWorldEdge()`; the line must stay outside all land
+  (`worldEdge().landGap`).
+- Wrecks and abandoned cars are retired by `retireWrecks` (livingcity-wrecks.js, `WRECK_LIMITS`): 50 s and 180 s
+  unseen, world caps 16 and 24, never on screen, near the player or protected (`wreckProtected`). A vehicle that
+  must outlive its wreck gets a flag there; a new field holding a vehicle long-term needs clean-up in
+  `retireVehicle`. Console `wreckReport()`.
 - `kickCamera(heading, units)` / `shake` (camera-feel.js) are the only camera jolts; renderers
   only read `cameraKick` and `cameraShakeOffset`.
 - Roomy one-shots (shots, blasts, crashes, near thunder) connect to `reverbSend`
