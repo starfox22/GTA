@@ -26,6 +26,9 @@
     }
     function livingCityConsole() {
       return {
+        // The wreck limit (livingcity-wrecks.js), read-only: limits, wrecks and abandoned cars against the caps, every candidate's age and
+        // time unseen and why it stays, the totals retired and the last twelve retirements.
+        wreckReport: () => wreckReportRun(),
         // The traffic round the player: pool, cars in the ring and in view, moving,
         // yielding to a siren, the target for the hour and district, types.
         trafficReport: () => trafficReport(),

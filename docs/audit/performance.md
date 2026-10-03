@@ -397,9 +397,26 @@ A seeded bot plays 30 game minutes through the console (26 kinds of episode: see
 | DOM nodes | 2,428 | 3,029 | menus built on first open (help, arsenal, settings, map), then flat |
 | event listeners | 249 | 293 | same; 241-381 while the settings screen is open |
 | live Web Audio nodes | 100 | 89 | 40-206, no trend |
-| vehicles / wrecks | 283 / 2 | 353 / 36 | wrecks and abandoned cars are never removed (BACKLOG) |
+| vehicles / wrecks | 283 / 2 | 353 / 36 | wrecks and abandoned cars were never removed: fixed below (the wreck limit) |
 | every log, queue and cache | | | capped (seaEvents 64, shotLog 40, runOvers 12, bloodPools 240, skids under 1,100) |
 | probe: CPU ms a frame, same Midtown scene | 5.49 | 8.22 | follows the vehicle count (271 -> 354) and the AI pool (89 -> 122) |
+
+### The wreck limit (3 October 2026)
+
+The finding above (vehicles 283 -> 353, frame 5.5 -> 8.2 ms, because only AI traffic streams out) is closed by
+`retireWrecks` (livingcity-wrecks.js; rule and numbers in docs/areas/people-and-crowd-living-city.md). The owner asked
+whether the limit meant the whole game or what is on screen: it is the whole world (every vehicle that stays after the
+player leaves is stepped for ever), and what is on screen or near is never touched. Wrecks unseen for 50 s and cars the
+player left unseen for 180 s go; the world holds at most 16 wrecks and 24 abandoned cars (longest-lived unseen first);
+mission cars, the player's car, intact owned cars, police crews' cars are protected. Measured on the no-render page:
+
+| Run | created | vehicles | wrecks / abandoned at the end | retired |
+| --- | --- | --- | --- | --- |
+| stress (every 20 game s a new street: 3 wrecks and 2 abandoned cars, 10 game min) | 84 wrecks, 56 cars | 280 -> 300 -> 279 (140 more without the limit) | 8 / 24 (never over 13 / 24) | 114 (85 by timeout, 29 by cap) |
+| soak bot, seed 1, 14 game min | its own episodes | 0 console errors, 0 non-finite | at most 13 wrecks | 33 |
+
+The pass costs under 0.3 ms once a second (`wreckReport().lastPass.ms`). tools/tests/wreck-limit.mjs checks the timeouts,
+the cap order, the protected and in-view cases, `integrity()` and `settleAudit()` after retirements.
 
 The only defect it found was the cab's FARE notice (a `routeLength` declared twice, fixed with a test and the
 `tools/dup-functions.mjs` guard). The page is no-render: renderer-side leaks are not covered.

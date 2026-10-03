@@ -9,7 +9,7 @@
      * siren (livingcity-sirens.js), ambulances answering a body in the street
      * (livingcity-medics.js), small street events the player can step into
      * (livingcity-events.js) and visitors driving onto North Point Key
-     * (livingcity-key.js). Game logic only: the renderer reads what it needs
+     * (livingcity-key.js), and the wreck limit (livingcity-wrecks.js). Game logic only: the renderer reads what it needs
      * from the vehicles and people as ever.
      */
     // @include src/livingcity-traffic.js
@@ -17,6 +17,7 @@
     // @include src/livingcity-medics.js
     // @include src/livingcity-events.js
     // @include src/livingcity-key.js
+    // @include src/livingcity-wrecks.js
     // @include src/livingcity-console.js
     /* Once a frame from updateCivic, after the crowd streamer. */
     function updateLivingCity(deltaSeconds) {
@@ -25,5 +26,6 @@
       updateMedics(deltaSeconds);
       updateStreetEvents(deltaSeconds);
       updateKeyVisitors(deltaSeconds);
+      retireWrecks(deltaSeconds);
     }
     // END SUBSYSTEM: src/livingcity.js

@@ -38,6 +38,28 @@ frame from `updateCivic` (`timed('citylife')`). Console group `livingCity`
   corner and turns out on the spot short of the bumper (it used to shove it); lane offsets
   are taken across the lane (`navAngle`), not the car. Console `parkedPass`.
 
+## Wrecks and abandoned cars (livingcity-wrecks.js)
+
+- Only AI traffic streams out, so wrecks and cars the player left used to stay for good and every one cost physics time
+  (the 30-minute soak: 283 -> 353 vehicles, 5.5 -> 8.2 ms a frame). `retireWrecks` (from `updateLivingCity`, once a
+  second) is the one rule; its numbers are `WRECK_LIMITS`: wrecks (`hp` 0) go after **50 s** unseen, abandoned cars (the
+  player drove it, `drivenAt` is stamped each pass while `player.car`; nobody in it, no AI, no `driverOut`; never an
+  aircraft or boat) after **180 s**, and the world holds at most **16 wrecks** and **24 abandoned cars**: over a cap
+  the longest-lived unseen ones go first whatever their timeout (`retireBorn`, started when it became a candidate).
+  The cap answers the owner's "whole world or on screen": the whole world.
+- Never touched: anything on screen (camera footprint `screenViewHalf` plus 450) or within 1,200 units of the player
+  (2,640 in an aircraft or parachute), which also restarts its clock (`retireSeen`); the player's car; mission cars
+  (`mission`, `failedMission`, `missionTag`, `mission.car`); an intact owned car; a garage job, taxi ride, dealer test
+  drive or carjack in progress; police crews' cars (`crewDeployed`, `blockade`, officers out of it); a live police or air
+  unit. Not wrecks: Apaches (apache.js replaces its own) and roof-site aircraft.
+- Retiring is the streamer's path (`splice` from `vehicles`: the renderer prunes `carModels`, stains and the broadphase
+  follow) plus `clearCarStains`, the officers that stood by it and `pursuitTarget`/`airTarget`/`rammedBy` pointers.
+  A burning wreck goes with its fire. An owned car's wreck is replaced by `keepOwnedCars` as before.
+- A new vehicle role that must outlive its wreck for a reason adds a flag to `wreckProtected`; a new field that holds a
+  vehicle for long adds its clean-up to `retireVehicle`. Console: `wreckReport()` (counts, every candidate's age, unseen
+  seconds and why it stays, the last twelve retirements); `soakReport().counts` has `abandoned`, `wreckRetired`,
+  `wreckRetiredByCap`. Test: tools/tests/wreck-limit.mjs (about one minute: it runs 3 game minutes).
+
 ## Sirens (livingcity-sirens.js)
 
 - `emergencyBeacons(c)` is the one rule for flashing lamps (the renderer's strobes read it):

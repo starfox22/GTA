@@ -109,6 +109,8 @@ Where a file lives: `grep -i <word> docs/FILEMAP.md`.
   goes through `rectListBlocked` (a cell index per list; never walk a list that spans every island on each call: the
   garages' walls cost 3 us and 1 KB a call). Vehicle and crowd cells are counted lists in plain arrays or Maps.
   `tools/dup-functions.mjs` (quick-check) fails on two fragments declaring one function name: one closure, the later wins.
+- Wrecks and abandoned cars are capped (16 and 24 in the whole world) and retired 50 s / 180 s after they were last on
+  screen or near the player (livingcity-wrecks.js `WRECK_LIMITS`); a vehicle that must stay adds a flag to `wreckProtected`.
 - Anything new that grows (a log, queue, cache keyed by id) is capped and listed in `soakReport()`
   (game-console-soak.js); `node tools/soak.mjs` shows what grows over 30 game minutes (testing-and-console.md).
 - Map overlays draw only what is in `mapWindow` (`mapWindowHas`) and set fixed-size text with

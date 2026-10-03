@@ -1,0 +1,3 @@
+# Wrecks and abandoned cars no longer pile up
+- A wreck or a car you left behind is removed once it has been out of sight (off screen and more than 1,200 units from you) for 50 s (wrecks) or 3 minutes (cars); the world keeps at most 16 wrecks and 24 abandoned cars, the longest-lived unseen ones going first. Anything on screen, near you, your own car, mission vehicles and police crews' cars is never touched, so a pile-up in view stays as it is.
+- Internals: `retireWrecks` (src/livingcity-wrecks.js, `WRECK_LIMITS`), `drivenAt`/`retireBorn`/`retireSeen` on vehicles. New console method `wreckReport()`; `soakReport()` counts abandoned cars and retirements. Test: wreck-limit.

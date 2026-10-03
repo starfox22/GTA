@@ -134,6 +134,10 @@
           curbStop: undefined,
           crashStop: undefined,
           rotorSpeed: undefined,
+          // Wreck limit (livingcity-wrecks.js): when the player last drove it, when it became a candidate and was last near or seen.
+          drivenAt: undefined,
+          retireBorn: undefined,
+          retireSeen: undefined,
         };
       vehicles.push(vehicle);
       if (autonomous) assignDriver(vehicle);

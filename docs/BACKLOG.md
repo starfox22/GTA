@@ -152,7 +152,6 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - `solid()` still allocates ~140 B a call (doubles boxed for helpers V8 does not inline: groundAt, sportsBlocked, beachClubBlocked...). The helpers that open with a plain bounds test (park, northPointKey, beach, depot, beachClub, monarch) could be gated by a tiny predicate that `solid()` inlines and the helper reuses.
 - The crowd grid (`forEachPedestrianNear`, `buildCrowdGrid`) is still a Map by cell key, as the vehicle grid was: a dense array would cut ~0.15 ms a frame.
 - The 100-160 ms `drawPoliceMap` stalls of the earlier headless drive profiles did not reproduce: a 15 s drive at three stars (`--profile 10 --who bursts`) has its longest `updateUI` at 11.5 ms and no map painter among the heaviest calls. They were software-canvas flushes landing on whichever map call came next; only a real-GPU run can say more.
-- Wrecks and abandoned cars are never removed (only AI traffic is streamed out): after a 30-minute bot rampage the world held 350 vehicles (50 wrecks) against 280, and the same Midtown scene cost 8.2 ms of CPU a frame against 5.5. Retiring far, long-dead, unseen wrecks would be a (small) world-persistence change: ask first.
 - A third of the crowd sits in V8 dictionary mode (after `Object.assign` in `resetWalkerState`); it measured faster than fast mode. Re-measure before changing the people's object layout.
 - `carjack-traffic` is flaky: when the traffic car it picks stands beside a bike-share dock, E rents a bike instead (about one run in four).
 

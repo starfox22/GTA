@@ -56,7 +56,7 @@
         }
       }
       // Counts over the entities: what is awake, wrecked, mid-reaction, carrying nested lists.
-      let awake = 0, wrecks = 0, ai = 0, stains = 0, contacts = 0, resting = 0,
+      let awake = 0, wrecks = 0, abandoned = 0, ai = 0, stains = 0, contacts = 0, resting = 0,
         react = 0, flee = 0, pending = 0, hidden = 0;
       // What keeps a vehicle awake (the physics step skips only the resting): traffic, police, a burning wreck, the rest.
       const awakeBy = { ai: 0, cop: 0, burning: 0, moving: 0, other: 0 };
@@ -71,6 +71,7 @@
           else awakeBy.other++;
         }
         if (c.hp <= 0) wrecks++;
+        else if (wreckKind(c) === 2) abandoned++;
         if (c.ai) ai++;
         if (c.stains) stains += c.stains.length;
         if (c.pedestrianContacts) contacts += c.pedestrianContacts.size;
@@ -114,7 +115,7 @@
         clock: clockText(),
         mode: gameMode,
         lists,
-        counts: { awake, ...Object.fromEntries(Object.entries(awakeBy).map(([k, v]) => ['awake_' + k, v])), resting, wrecks, ai, carStainEntries: stains, pedestrianContacts: contacts, react, flee, pending, hidden },
+        counts: { awake, ...Object.fromEntries(Object.entries(awakeBy).map(([k, v]) => ['awake_' + k, v])), resting, wrecks, abandoned, wreckRetired: wreckPass.retired, wreckRetiredByCap: wreckPass.byCap, ai, carStainEntries: stains, pedestrianContacts: contacts, react, flee, pending, hidden },
         bad,
         dom: { total: domTotal, top: domTop },
         heapMB: heap,
