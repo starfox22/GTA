@@ -96,8 +96,12 @@
         const frames = clamp(Math.round(Number(seconds) * 60) || 360, 1, 7200),
           heldBefore = simulationHeld,
           lastBefore = lastTime,
-          previousBefore = profile.previousFrame;
-        let t = lastTime || performance.now();
+          previousBefore = profile.previousFrame,
+          profileLastBefore = profile.last;
+        // The stepped clock starts from 0 on every run (not from the page's own clock), so the frame steps are the
+        // same numbers on every boot and a seeded run replays exactly (dev.mjs --seed, stateHash).
+        let t = 1000 / 60;
+        lastTime = 1000 / 60;
         frameTraceStart(true, Array.isArray(held) ? held : [], !!keep);
         simulationHeld = false;
         try {
@@ -109,6 +113,7 @@
           simulationHeld = heldBefore;
           lastTime = lastBefore;
           profile.previousFrame = previousBefore;
+          profile.last = profileLastBefore;
         }
         return frameTraceStop(clamp(Number(top) || 10, 1, 40));
       },
@@ -122,7 +127,8 @@
           lastBefore = lastTime,
           previousBefore = profile.previousFrame,
           snapshot = city3D.attributeChurn();
-        let t = lastTime || performance.now();
+        let t = 1000 / 60;
+        lastTime = t;
         for (const code of held) keys[code] = true;
         try {
           for (let i = 0; i < n; i++) {

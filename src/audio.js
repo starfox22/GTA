@@ -59,6 +59,9 @@
     }
     function initAudio() {
       if (!window.AudioContext && !window.webkitAudioContext) return;
+      // A seeded boot (game-state.js DETERMINISTIC BOOT) runs silent: the sound code draws on Math.random every frame,
+      // the held live frames included, which would make the seeded sequence depend on the wall clock.
+      if (DEV_BOOT_SEED) return;
       if (audio) {
         audio.resume().catch(() => {});
         return;
