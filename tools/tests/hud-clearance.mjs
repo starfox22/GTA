@@ -43,7 +43,7 @@ export default async function (t) {
     await t.keys('KeyO', 0.15, { real: true });
     await t.keys('KeyW', 0.3);
     c = await t.call('hudClearance');
-    t.assert(c.forced && !c.folded, 'O did not open the yielding card: ' + JSON.stringify(c));
+    t.assert(c.asked && !c.folded, 'O did not open the yielding card: ' + JSON.stringify(c));
     await t.keys('KeyO', 0.15, { real: true });
     c = await t.call('hudClearance');
     t.assert(c.folded, 'a second O did not fold it: ' + JSON.stringify(c));
