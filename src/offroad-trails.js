@@ -452,6 +452,41 @@
       }
       Object.assign(field, { mudField: mud, rockField: rock, trailAcross: across, trailSeg: seg, trailOwner: which });
     }
+    /* ---- Fords -------------------------------------------------------------------------
+       A trail's `ford` (terrain-noise.js) dips the carriageway into the stream bed;
+       the water stands level OFFROAD_FORD_DEPTH over the bottom of the dip, so it is
+       about 0.55 m deep in the middle and runs out up the two ramps. One record per
+       ford: the centre, the trail's heading there, the water level, the box it can
+       lie in (the renderer draws exactly this). */
+    const OFFROAD_FORD_DEPTH = 4.5;
+    let offroadFordCache = null;
+    function offroadFords() {
+      if (offroadFordCache) return offroadFordCache;
+      terrainField(TERRAIN_FIELDS[0]);
+      offroadFordCache = [];
+      for (const trail of MOUNTAIN_TRAILS) {
+        if (!trail.ford || !trail.path) continue;
+        const n = trail.path.length - 1,
+          i = Math.round(trail.ford.at * n),
+          [x, y] = trail.path[i],
+          a = trail.path[Math.min(n, i + 2)],
+          b = trail.path[Math.max(0, i - 2)];
+        offroadFordCache.push({ x, y, a: Math.atan2(a[1] - b[1], a[0] - b[0]), level: terrainHeight(x, y) + OFFROAD_FORD_DEPTH, along: trail.ford.reach * 0.6, across: trail.width / 2 + 16 });
+      }
+      return offroadFordCache;
+    }
+    // Depth of ford water over the ground at a point (0: dry).
+    function offroadFordWater(x, y) {
+      for (const f of offroadFords()) {
+        const dx = x - f.x,
+          dy = y - f.y,
+          c = Math.cos(f.a),
+          s = Math.sin(f.a);
+        if (Math.abs(dx * c + dy * s) > f.along || Math.abs(-dx * s + dy * c) > f.across) continue;
+        return Math.max(0, f.level - terrainHeight(x, y));
+      }
+      return 0;
+    }
     /* The surface under a point (bilinear mud, nearest-vertex trail data),
        written into `out` (no allocation). */
     function offroadSurfaceAt(x, y, out) {
@@ -565,6 +600,12 @@
         roughKmh = (18 + 24 * travel) / (0.4 + roughness),
         excess = kmh / roughKmh - 1;
       if (excess > 0) force -= Math.sign(along) * Math.min(speed / stepSeconds, excess * 0.25 * GRAVITY * Math.min(1, load));
+      // Through a ford: the water pushes back on the wheels and the body, about as
+      // the square of the speed and in proportion to the depth (taken at 40 km/h
+      // half a metre deep stops a truck like the brakes would).
+      const ford = offroadFordWater(c.x, c.y);
+      if (c.fordDepth !== ford) c.fordDepth = ford;
+      if (ford > 0.5) force -= Math.sign(along) * Math.min(speed / stepSeconds, clamp((ford / 4) * (kmh / 20) ** 2 * 0.25, 0, 1.2) * GRAVITY);
       // Standing still with no throttle: the brakes hold up to the tyres' grip;
       // on anything steeper the truck slides back down.
       if (Math.abs(acceleration) < 0.05 * GRAVITY && speed < 2 * KMH && !c.ai) {
@@ -615,6 +656,7 @@
       c.surfaceMud = 0;
       c.surfaceRock = 0;
       c.lowRange = false;
+      if (c.fordDepth) c.fordDepth = 0;
     }
     /* ---- Body mud ------------------------------------------------------------------- */
     // Stream points on a coarse grid, for washing a truck driven through one.
@@ -647,7 +689,7 @@
       if (c.mudCoat <= 0) return;
       // Rain rinses it slowly; driving through water fast.
       let wash = (weather.rain || 0) * 0.01;
-      if (speed > 10 && (!landAt(c.x, c.y) || (c.offroadState && streamWaterAt(c.x, c.y)))) wash += 0.3;
+      if (speed > 10 && (!landAt(c.x, c.y) || (c.offroadState && (streamWaterAt(c.x, c.y) || c.fordDepth > 2)))) wash += 0.3;
       c.mudCoat = Math.max(0, c.mudCoat - wash * deltaSeconds);
       // Fresh mud is dark and glossy; it dries pale in a minute or two unless it rains.
       c.mudWet = clamp(c.mudWet + deltaSeconds * (wet > 0.3 ? 0.1 : -1 / 90), 0, 1);

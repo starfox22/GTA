@@ -12,7 +12,7 @@
       // club trucks, the members, the player's traction state, the hill climb.
       offroad: () => offroadReport(),
       clubLineup: (x, y) => clubLineup(x, y),
-      // 'state', 'arm', 'reset', 'clear' (records), 'gate', 'cp0'..'cp3' or 'top' (just below the summit, facing down): move the player's vehicle there.
+      // 'state', 'arm', 'reset', 'clear' (records), 'gate', 'cp0'..'cp3', 'top' (just below the summit, facing down) or 'at0.42' (that fraction of the trail): move the player's vehicle there.
       hillClimb: (action, trail) => hillClimbConsole(action, trail),
       // Drive the player's vehicle up a trail (or 'down' it) through the real physics (a line-following
       // pilot) with frames of `frame` seconds (1/30 default): progress, time and the ride telemetry.

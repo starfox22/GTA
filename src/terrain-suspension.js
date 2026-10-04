@@ -78,6 +78,9 @@
         r: (0.3 + 0.08 * travel + (heavy ? 0.12 : 0)) * UNITS_PER_METRE,
         // Blows through the stops past this speed damage it (long-travel trucks take more).
         harm: (spec.offroad || spec.tank ? 4.5 : 3) * UNITS_PER_METRE,
+        // A two-wheeler has no roll stiffness of its own (the rider balances it;
+        // riders.js leans it): its roll follows the ground across its tyres.
+        twoWheel: !!(spec.bike || spec.bicycle),
       };
       rideModels.set(spec, m);
       return m;
@@ -120,7 +123,7 @@
        rock garden, the slickrock): ledges and boulders up to RIDE_ROCK_RELIEF that
        the tyres climb and the springs work over (the club trucks' axles follow
        them). Nothing anywhere else. */
-    const RIDE_ROCK_RELIEF = 0.24 * UNITS_PER_METRE;
+    const RIDE_ROCK_RELIEF = 0.3 * UNITS_PER_METRE;
     function rideRelief(x, y) {
       const f = terrainFieldAt(x, y);
       if (!f || !f.rockField) return 0;
@@ -296,6 +299,10 @@
       r.z += r.vz * dt;
       r.p += r.vp * dt;
       r.q += r.vq * dt;
+      if (m.twoWheel) {
+        r.q = -(rideG[1] + rideG[3] - rideG[0] - rideG[2]) / (4 * m.b);
+        r.vq = 0;
+      }
       // Through the stops: the axle meets the frame. Take the corner's speed into
       // the ground out along the ground's normal (an inelastic blow) and lift the
       // body clear of the axle.
@@ -352,7 +359,7 @@
       r.x = c.x;
       r.y = c.y;
       r.a = c.a;
-      const calm = touching === 4 && Math.abs(r.vz) < 0.03 && Math.abs(r.vp) < 0.0006 && Math.abs(r.vq) < 0.0006;
+      const calm = touching >= 3 && Math.abs(r.vz) < 0.03 && Math.abs(r.vp) < 0.0006 && Math.abs(r.vq) < 0.0006;
       r.still = !moved && calm ? r.still + 1 : 0;
       if (r.still > 24) {
         r.vz = r.vp = r.vq = 0;
