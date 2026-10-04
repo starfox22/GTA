@@ -50,9 +50,14 @@
        * Breakable trees keep working: the near and mid meshes are both instances
        * linked to the tree's prop (render3d.js BREAKABLE SCENERY), so a felled
        * tree falls, leaves its stump and is replanted whole.
+       *
+       * What stands between the street camera and the player is screened away
+       * round them in the material itself (FOLIAGE CUTAWAY: foliage-cutaway.js,
+       * vegetation3d-cutaway.js), three uniforms a frame, no per-tree work.
        */
       // @include src/vegetation3d-atlas.js
       // @include src/vegetation3d-material.js
       // @include src/vegetation3d-species.js
       // @include src/vegetation3d-landscape.js
+      // @include src/vegetation3d-cutaway.js
       // END SUBSYSTEM: src/vegetation3d.js

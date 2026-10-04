@@ -43,6 +43,8 @@
       // horizon, aimed `lift` units up; no arguments restores the game camera.
       inspectView: (yaw, pitch, lift) => city3D?.inspectView?.(yaw, pitch, lift),
       vegetation: () => city3D?.vegetation?.() ?? null,
+      // The see-through hole in tree crowns round the player (foliage-cutaway.js): the plan, the line of sight, the renderer's state.
+      foliageCutaway: () => foliageCutawayReport(),
       treeLineup: (x = player.x, y = player.y, spacing, lod, perRow) => city3D?.treeLineup?.(x, y, spacing, lod, perRow) ?? null,
       // Graphics quality: 'auto', 'low', 'medium', 'high' or 'ultra' (saved like the
       // Settings choice); returns what the renderer is now using.

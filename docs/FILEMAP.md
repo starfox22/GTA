@@ -11,11 +11,11 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-492 files in the include tree, 170,352 lines.
+494 files in the include tree, 170,669 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
-- `src/game.js`   184 — ▸ Game orchestration and shared state
+- `src/game.js`   185 — ▸ Game orchestration and shared state
 
 ## src/game.js ▸ Game orchestration and shared state
 
@@ -147,6 +147,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/quality.js`   240 — Graphics quality tiers
 - `src/settings.js`   854 — Settings menu
 - `src/markers.js`    20 — Objective and player markers: which ones are drawn (the floating arrow; the optional player ring) and a read-only report.
+- `src/foliage-cutaway.js`   145 — Foliage cutaway: who the see-through hole in tree crowns, palm fronds and tall shrubs keeps in view (the player on foot or their vehicle) and how big …
 - `src/god-panel.js`   799 — God mode settings
 - `src/driving.js`   489 — Tyres, brakes and driving assists
 - `src/tyre-effects.js`   268 — What the tyres leave behind: the burnout (forward and the handbrake held at a standstill), skid marks, and the one rule for tyre smoke, dust and …
@@ -396,7 +397,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/searchlight3d.js`   937 — Searchlights: light shafts, ground pools, the helicopter's spot
 - `src/render3d-statics.js`   315 — Static building batches, static cells and culling (staticInView), shared materials.
 - `src/render3d-terrain.js`   297 — Mesh/box/rod helpers, wall textures, the ground mesh and kerbs.
-- `src/vegetation3d.js`    58 — ▸ Tree library: species, foliage atlas, wind, LOD
+- `src/vegetation3d.js`    59 — ▸ Tree library: species, foliage atlas, wind, LOD
 - `src/render3d-streetprops.js`   297 — ▸ Street lamps and their glow halos, vehicle halos, blossom, sign() boards.
 - `src/cityscape3d.js`    21 — ▸ Building archetypes, roofs, shopfronts and street furniture
 - `src/sidejobs3d.js`    61 — Contract mission meshes
@@ -463,8 +464,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/render3d-resources.js`   507 — GPU resource lifecycle: shared geometries, model pruning and disposal.
 - `src/render3d-hiccups.js`   377 — Hiccup log: what each drawn frame created for the first time (shader programs, textures, geometries) and the slowest frames' renderer CPU split; read …
 - `src/payphone3d.js`   597 — The story payphone where mission 1 starts: a 1990s yellow pedestal payphone with its lit PHONE sign, handset, keypad, directory and grime, the …
-- `src/render3d-api.js`   522 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
-- `src/render3d-frame.js`   669 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
+- `src/render3d-api.js`   524 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
+- `src/render3d-frame.js`   671 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
 
 ## src/postfx3d.js ▸ HDR post-processing pipeline
 
@@ -481,9 +482,10 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/vegetation3d.js ▸ Tree library: species, foliage atlas, wind, LOD
 
 - `src/vegetation3d-atlas.js`   605 — Vegetation 3D foliage atlas: painting, normals and mips (FOLIAGE_ATLAS, foliageAtlas).
-- `src/vegetation3d-material.js`   517 — Vegetation 3D foliage material (sway, alpha test), tree materials and FoliageMesh geometry helpers.
+- `src/vegetation3d-material.js`   549 — Vegetation 3D foliage material (sway, alpha test), tree materials and FoliageMesh geometry helpers.
 - `src/vegetation3d-species.js`   673 — Vegetation 3D species (conifers, palms and others), LOD meshes, instances, tints and far trees.
 - `src/vegetation3d-landscape.js`   148 — Vegetation 3D landscaping: dune grass and sea grape on the Palm Keys beach, flowering shrubs in the Keys' parks, meadow grass on the mountain roads' …
+- `src/vegetation3d-cutaway.js`   132 — Vegetation 3D foliage cutaway: the tree material's see-through uniforms, set once a frame from foliageCutawayPlan() (foliage-cutaway.js) and eased …
 
 ## src/render3d-streetprops.js ▸ Street lamps and their glow halos, vehicle halos, blossom, sign() boards.
 
@@ -735,7 +737,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-rides.js`   104 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
 - `src/game-console-leisure.js`    72 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)
 - `src/game-console-crowd.js`   162 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
-- `src/game-console-graphics.js`   231 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
+- `src/game-console-graphics.js`   233 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
 - `src/game-console-perf.js`   177 — DeadEndCity console, simulation cost: simProfile (per-section ms, worst frames), simScenario (staged situations)
 - `src/game-console-soak.js`   375 — DeadEndCity console, long-session health: soakReport (sizes of every list that can grow, DOM, non-finite positions)
 - `src/game-console-integrity.js`   167 — DeadEndCity console: integrity(), the invariants tools/bot.mjs checks after every action
