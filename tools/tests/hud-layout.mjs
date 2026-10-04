@@ -1,8 +1,8 @@
 // No two HUD boxes overlap on the dev page's 960x600 window (hudOverlaps), with the keyboard HUD and in touch mode:
 // the car radio opened on getting in used to reach over the speed box (it now opens upward from above it on short
-// windows), a long notice ran under the waypoint pill, and in touch mode the radio chip sat on the weapon chip and its
-// 4 s pop on getting in covered the GAS / BRAKE buttons (now it only flashes). In touch mode the mission card is at the
-// top, and a bus heading down the screen makes it yield there.
+// windows), a long notice ran under the waypoint pill and a dispatch caption under the notices, and in touch mode
+// the radio chip sat on the weapon chip and its 4 s pop on getting in covered the GAS / BRAKE buttons (now it only
+// flashes). In touch mode the mission card is at the top, and a bus heading down the screen makes it yield there.
 export const fresh = true;
 const LONG = 'You hand over everything you have. Next time, bring the fare, the driver says and pulls away';
 // CSS pop-ins (the radio, the notices) run on the wall clock: let them finish before reading the boxes.
@@ -18,13 +18,16 @@ export default async function (t) {
   await t.call('god', true);
   await clear('on foot');
 
-  // Keyboard HUD: a car (the radio opens for a few seconds) and a long notice.
+  // Keyboard HUD: a car (the radio opens for a few seconds), three stars (the police panel and a long dispatch
+  // caption at the top centre) and a long notice.
   await t.call('teleport', 420, 4400);
   await t.call('drive', 'sedan', 0, Math.PI / 2);
+  await t.call('wanted', 3);
   await t.call('notices', LONG, 8);
   await t.wait(0.3);
   await settle();
   let o = await clear('in a car, radio open, long notice');
+  t.note('drawn: ' + ['carRadio', 'toast', 'radioCaption', 'policeStatusPanel'].filter((id) => boxOf(o, id)).join(', '));
   const radio = boxOf(o, 'carRadio'),
     stats = boxOf(o, 'vehicleStats');
   t.assert(radio && stats && radio.b <= stats.t, 'the radio is not above the speed box: ' + JSON.stringify({ radio, stats }));
@@ -35,6 +38,7 @@ export default async function (t) {
 
   // Touch mode: getting in only flashes the radio chip, which sits under the weapon chip.
   // Out of the car, and the desktop radio's few seconds open (wall clock) run out first.
+  await t.call('wanted', 0);
   await t.call('teleport', 420, 4400);
   await new Promise((r) => setTimeout(r, 4600));
   await t.call('settings', { touch: 'on' });
