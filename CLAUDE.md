@@ -90,6 +90,12 @@ packs with plain `<script src>` so the zip still plays from file://.
   to move the player; releases every carrier), `solid()` (people collision), `crime()` (only
   heat source), `offerPrompt()` (only prompt writer), `actionHeld()`/`keyName()` (never
   literal keys). Details: docs/areas/core-and-contracts.md.
+- The mission card never covers the player: `missionCardFolded()` (hud-clearance.js) folds it, its reading time
+  held, while `hudPlayerBox()` meets the open card; the strip, the dialogue line and the waypoint pill fade
+  (`.yield-fade`) only as a last resort. HUD layout reads go in `measureMissionCard()` at the start of `runFrame`;
+  a new HUD box that can sit over the player joins this. `hudOverlaps()` lists overlapping boxes and
+  tools/tests/hud-layout.mjs holds 960x600 at zero. `teleportPlayer()` also ends a train ride (`dropTransitRide`)
+  and steps the player out of a vehicle with nowhere to step out to; only an aircraft in the air comes along.
 - `tell(text, s, {id, tone})` (hud-notify.js) is the only notification writer; hints use
   `pressKey()`/`keyPrefix()` (input-hints.js), never `'Press ' + keyName()`.
 - `shooterInView()` (combat-rules.js) is the only rule for whether an NPC may fire at the
