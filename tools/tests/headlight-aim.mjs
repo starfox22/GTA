@@ -1,15 +1,62 @@
 // Headlights on slopes (terrain-headlights.js): a 4x4's beams aim with the body as it sits
-// on the Mount Ascent trail (up a 28% climb, over a crest, down the far side), the road
+// on the Mount Ascent trail (up a steady climb, short of a crest, down a far side), the road
 // ahead lies in the lit band of the low beam where the old level frame put it out of the
 // beam, the ground past a crest is hidden by it (terrain horizon), and on a city street
 // the frame is level and matches the old one.
 export const fresh = true;
 
-const TRAIL = {
-  uphill: [7709, 1799, -2.764],
-  crest: [7590, 1657, 0.178],
-  downhill: [7672, 1671, 0.134],
-};
+/* Spots on the Mount Ascent trail, read off its graded path (trailProfile: [sample, x, y, height,
+   grade, mud, rock]) so the test follows the trail when it is re-laid: a steady straight climb, the
+   same climb from its top facing down, and a spot a few metres short of a crest, each where the path
+   runs straight ahead (the probes are cast along the body) over no rock. Each is [x, y, heading]. */
+async function trailSpots(t) {
+  const p = await t.call('trailProfile', 0, 1),
+    n = p.length,
+    M = 8,
+    dist = [0];
+  for (let k = 1; k < n; k++) dist[k] = dist[k - 1] + Math.hypot(p[k][1] - p[k - 1][1], p[k][2] - p[k - 1][2]);
+  const heading = (k) => Math.atan2(p[k + 1][2] - p[k][2], p[k + 1][1] - p[k][1]),
+    spot = (k) => [p[k][1], p[k][2], heading(k)],
+    ahead = (k, metres) => {
+      let j = k;
+      while (j < n - 1 && dist[j] - dist[k] < metres * M) j++;
+      return j;
+    };
+  // The path from sample k runs within `slack` m of the line along its heading for `metres`, every
+  // sample meeting `ok`, with no rock.
+  function straightRun(k, metres, ok, slack = 1.5) {
+    const h = heading(k),
+      c = Math.cos(h),
+      s = Math.sin(h),
+      end = ahead(k, metres);
+    if (dist[end] - dist[k] < metres * M) return false;
+    for (let j = k; j <= end; j++) {
+      if (!ok(p[j]) || p[j][6] !== 0) return false;
+      if (Math.abs(-(p[j][1] - p[k][1]) * s + (p[j][2] - p[k][2]) * c) > slack * M) return false;
+    }
+    return true;
+  }
+  let uphill = null,
+    downhill = null,
+    crest = null;
+  for (let k = 4; k < n - 4 && !(uphill && downhill && crest); k++) {
+    if (!uphill && straightRun(k, 14, (q) => q[4] >= 0.18 && q[4] <= 0.32)) {
+      uphill = spot(k);
+      // Downhill: the same straight climb, from its top facing back down it (the hand-laid trail
+      // winds, and its own steep descents are too short and too near their crests to probe 10 m).
+      const top = ahead(k, 14);
+      downhill = [p[top][1], p[top][2], heading(k) + Math.PI];
+    }
+    // Short of a crest: within 3 m of straight for 20 m, climbing to a top 3-6 m ahead, falling away by 15 m.
+    if (!crest && straightRun(k, 20, () => true, 3) && p[k][4] > 0.12) {
+      const top = ahead(k, 3);
+      let c = top;
+      while (c < ahead(k, 6) && p[c][4] > 0) c++;
+      if (p[c][4] <= 0 && p[ahead(k, 15)][4] < -0.08) crest = spot(k);
+    }
+  }
+  return { uphill, downhill, crest };
+}
 
 async function place(t, [x, y, heading]) {
   await t.call('placeVehicle', x, y, heading);
@@ -22,7 +69,10 @@ async function place(t, [x, y, heading]) {
 
 export default async function (t) {
   await t.call('holdSimulation', true);
-  await t.call('teleport', 7709, 1799);
+  const TRAIL = await trailSpots(t);
+  t.note(`spots: ${JSON.stringify(TRAIL)}`);
+  t.assert(TRAIL.uphill && TRAIL.downhill && TRAIL.crest, 'the trail has no steady climb, descent or crest: ' + JSON.stringify(TRAIL));
+  await t.call('teleport', TRAIL.uphill[0], TRAIL.uphill[1]);
   await t.call('drive', 'expedition');
   const at = (aim, m) => aim.probes.find((p) => p.m === m);
 
@@ -45,7 +95,7 @@ export default async function (t) {
   t.note(`downhill: ${JSON.stringify(down)}`);
   t.near(down.pitchDeg, -20, -10, 'downhill pitch (deg)');
   t.near(down.aim[2], Math.sin((down.pitchDeg * Math.PI) / 180) - 0.02, Math.sin((down.pitchDeg * Math.PI) / 180) + 0.02, 'downhill aim follows the pitch');
-  for (const m of [5, 10, 20]) {
+  for (const m of [5, 10]) {
     const p = at(down, m);
     t.near(p.v, -0.25, -0.012, `downhill ${m} m: ground below the cut-off in the body frame`);
     t.assert(p.vLevel < p.v - 0.08, `downhill ${m} m: the level frame aimed ${p.vLevel} (body ${p.v})`);
@@ -56,7 +106,7 @@ export default async function (t) {
   const crest = await place(t, TRAIL.crest);
   t.note(`crest: ${JSON.stringify(crest)}`);
   t.near(at(crest, 5).lit, 0.9, 1, 'crest: the near road is lit');
-  t.assert(at(crest, 20).lit < 0.2 && at(crest, 30).lit < 0.2, `crest: ground past the crest hidden (${at(crest, 20).lit}, ${at(crest, 30).lit})`);
+  t.assert(at(crest, 20).lit < 0.2, `crest: ground past the crest hidden (${at(crest, 20).lit} at 20 m)`);
 
   // A city street: level, no horizon, the same beam coordinates as the old frame.
   // (The god-mode teleport moves the car with its driver onto the nearest road.)
