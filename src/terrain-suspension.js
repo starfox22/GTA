@@ -466,6 +466,25 @@
         nan: w.nan,
       };
     }
+    /* Console: what the ride costs. Times `n` ride steps of the player's vehicle where
+       it stands (µs a step) and counts the vehicles on the terrain, the rides still
+       working and those that ran this step (settleIsTrivial skips the rest). */
+    function rideBenchmark(n = 2000) {
+      const c = player.car,
+        t = c && roadVehicleTerrain(c);
+      let onTerrain = 0,
+        active = 0;
+      for (const v of vehicles)
+        if (v.offroadState) {
+          onTerrain++;
+          if (v.rideActive) active++;
+        }
+      if (!t) return { onTerrain, active, usPerStep: null };
+      const count = clamp(Number(n) || 2000, 1, 100000),
+        start = performance.now();
+      for (let i = 0; i < count; i++) rideStep(c, t, 1 / 120);
+      return { onTerrain, active, usPerStep: +(((performance.now() - start) * 1000) / count).toFixed(2) };
+    }
     // The ride of the player's vehicle now (console `ride`-style report).
     function rideReport(c = player.car) {
       if (!c) return null;

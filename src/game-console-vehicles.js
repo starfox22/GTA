@@ -19,6 +19,8 @@
       trailDrive: (seconds, maxKmh, trail, frame, direction) => trailPilot(seconds, maxKmh, trail, frame, direction),
       // The ride on the terrain of the player's vehicle (terrain-suspension.js): lift, pitch, roll, load, each wheel's travel and load.
       ride3d: () => rideReport(),
+      // What the ride costs: µs a ride step for the player's vehicle, vehicles on the terrain, rides still working.
+      rideBenchmark: (n) => rideBenchmark(n),
       // A trail's path: [sample, x, y, height, grade, mud, rock] every `step` samples.
       trailProfile: (trail, step) => trailProfile(trail, step),
       // Set the mud on the player's vehicle (0..1) and how wet it is.

@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-488 files in the include tree, 169,162 lines.
+488 files in the include tree, 169,183 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -283,7 +283,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/terrain-grading.js`   537 — Grading the scenic roads over the range (terrain generation): profiles, the caps and fills they set, the viewpoints' lay-bys and the carriageway …
 - `src/terrain-noise.js`   616 — Ridgeline Range: terrain cells, switchback trails and noise functions (terrainNoise, terrainFbm, terrainRidged).
 - `src/terrain-field.js`   744 — Terrain height field: drainage, generation, sampling (terrainHeight, mountainAt), vehicle poses on slopes, tumbles.
-- `src/terrain-suspension.js`   488 — Vehicle suspension on the terrain: four tyres on spring-dampers over the height field (rideStep), heave, pitch and roll, wheel loads, the ground's …
+- `src/terrain-suspension.js`   507 — Vehicle suspension on the terrain: four tyres on spring-dampers over the height field (rideStep), heave, pitch and roll, wheel loads, the ground's …
 - `src/terrain-scenery.js`   594 — Baked terrain data: treeline, scenery, streams, snow, mountain ground paint and terrainReport().
 - `src/terrain-roadside.js`   437 — Scenic roads' roadside: guard rails and viewpoint walls (drawn and solid), reflector posts, the report (mountainRoad) and a test autopilot …
 - `src/terrain-headlights.js`   192 — Headlights on slopes: the lamps' body frame as a vehicle sits on the ground (headlightFrame) and the terrain horizon a beam sees (headlightHorizon) …
@@ -723,7 +723,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-core.js`   142 — DeadEndCity console, core: status, teleport, look, clock, zoom, simulate, heal, god, cash, walk (+ godPanelConsole)
 - `src/game-console-missions.js`   307 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
 - `src/game-console-police.js`   217 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
-- `src/game-console-vehicles.js`   279 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
+- `src/game-console-vehicles.js`   281 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
 - `src/game-console-world.js`   229 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
 - `src/game-console-rides.js`    98 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
 - `src/game-console-leisure.js`    72 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)
