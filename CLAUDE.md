@@ -242,6 +242,10 @@ packs with plain `<script src>` so the zip still plays from file://.
   only read `cameraKick` and `cameraShakeOffset`.
 - Roomy one-shots (shots, blasts, crashes, near thunder) connect to `reverbSend`
   (acoustics-audio.js), never `reverb`; audio randomness uses `sfxRandom`, not `randomBetween`.
+- Trees: every tree, palm, shrub and grass clump uses `treeMaterial`, which carries the foliage cutaway
+  (`FOLIAGE_HOLE_CUT`; uniforms from `updateFoliageCutaway` / `foliageCutawayPlan()`, foliage-cutaway.js; the same
+  Settings switch as the building cutaway). A new plant must use it to be see-through; keep `foliageHoleCut()` in
+  step with the GLSL; never add a define for it and never run it in `treeDepthMaterial`.
 - **Renderer never changes game rules**: `*3d.js` files (inside `createCityRenderer()`) only
   read state.
 - All vehicle light on a surface shares one budget (VEHICLE LIGHT BUDGET; headlight-beam.js
