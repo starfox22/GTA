@@ -98,6 +98,11 @@ packs with plain `<script src>` so the zip still plays from file://.
   and steps the player out of a vehicle with nowhere to step out to; only an aircraft in the air comes along.
 - `tell(text, s, {id, tone})` (hud-notify.js) is the only notification writer; hints use
   `pressKey()`/`keyPrefix()` (input-hints.js), never `'Press ' + keyName()`.
+- NPC body armour: `ballisticDamage(person, damage, kind, calibre, zone)` with `VEST_STOP` (combat-rules.js NPC BODY
+  ARMOUR) is the only rule for what an NPC vest stops: torso only (`strikePerson` picks the zone first), soft vs
+  `vestPlate`, by calibre (weapon `cal`, `bulletCalibre`). A new armoured NPC sets `vest`/`vestPlate`; a new gun sets
+  `cal`. A round never moves a person (only blasts, vehicles, knives, punches); `bleed` sprays a round's exit blood
+  away from the shooter. `shotsToKill()`; tools/tests/bullet-hits.mjs. Pool sizes live in `bodyPoolPlan` (blood.js).
 - `shooterInView()` (combat-rules.js) is the only rule for whether an NPC may fire at the
   player (on screen, from the camera footprint `screenViewHalf`): every new shooter checks it.
 - No pickups on the street at all: health is bought indoors (hospitals, diners, bars, clubs,
@@ -255,6 +260,9 @@ packs with plain `<script src>` so the zip still plays from file://.
   (`FOLIAGE_HOLE_CUT`; uniforms from `updateFoliageCutaway` / `foliageCutawayPlan()`, foliage-cutaway.js; the same
   Settings switch as the building cutaway). A new plant must use it to be see-through; keep `foliageHoleCut()` in
   step with the GLSL; never add a define for it and never run it in `treeDepthMaterial`.
+- See-through effects (smoke, flame, sparks, blood drops, blast ring, car flames) draw at `FX_SPRITE_ORDER`
+  (render3d-effects.js), above floor decals (2-3), tyre smoke (4) and the car blood skin (6); a new effect that
+  should cover floor blood uses it.
 - **Renderer never changes game rules**: `*3d.js` files (inside `createCityRenderer()`) only
   read state.
 - All vehicle light on a surface shares one budget (VEHICLE LIGHT BUDGET; headlight-beam.js
