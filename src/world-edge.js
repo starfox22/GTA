@@ -89,11 +89,26 @@
       w.py = player.y;
       w.moving = true;
     }
+    /* Only a player who can reach the line is warned: in the air (an aircraft, a parachute, a fall) or
+       afloat (a boat, swimming). On foot or in a road vehicle the sea comes first, and the county's east
+       coast ends only 42 units short of the line: a drive east up Mount Ascent used to raise the card
+       400 m inland. */
+    function worldEdgeCanReach() {
+      const c = player.car;
+      if (c) return isAircraft(c) || isBoat(c);
+      return !!(player.swimming || player.parachute || player.fall);
+    }
     // Inside the line: is an edge close enough along the way the player moves? Sets worldEdge.approach*.
     function worldEdgeApproach() {
       const w = worldEdge,
         more = w.approach ? 1.2 : 1;
       let best = null;
+      if (!worldEdgeCanReach()) {
+        w.approach = false;
+        w.approachSeconds = w.approachDistance = 0;
+        w.approachEdge = '';
+        return;
+      }
       for (const [edge, gap, speed] of [
         ['WEST', player.x - worldEdgeLine.left, -w.vx],
         ['EAST', worldEdgeLine.right - player.x, w.vx],
