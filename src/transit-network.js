@@ -285,6 +285,16 @@
       tell('ARRIVED · ' + s.name + ' · Your vehicle is where you left it.', 4);
       return true;
     }
+    /* The player is moved off the train (teleportPlayer: a job restart, the console): the passenger
+       train goes with the ride, no arrival; returns whether there was one. Left set, the ride pulled
+       the player straight back aboard. */
+    function dropTransitRide() {
+      if (!transitRide) return false;
+      const i = railTrains.indexOf(transitRide.train);
+      if (i >= 0) railTrains.splice(i, 1);
+      transitRide = null;
+      return true;
+    }
     function resetTransit() {
       transitRide = null;
       railTrains.length = 0;

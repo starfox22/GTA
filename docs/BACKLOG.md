@@ -20,6 +20,14 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - Headless, the reports read Web Audio automation in audio time: after a simulated `wait` the gliding gains lag the probe (they glide in real time); judge levels in a real browser.
 
 ## Free roam and HUD (docs/audit/freeroam-sweep.md)
+- HUD clearance (hud-clearance.js, 2026-10-04 pass): at 960x600 a bus heading up the screen at 60 km/h reaches
+  ~470 px, where a mission dialogue line sits low over the folded card: the line then fades to 30 % (last resort,
+  no room left); O opens the card over the player on purpose. Repro: `drive('bus', 0, -Math.PI / 2)` at (420, 5600),
+  `launch(20)`, a dialogue line up, `hudClearance()`.
+- Touch on a tablet: a tapped radio opens over the GAS / BRAKE column for its 6 s (`.touch-mode #carRadio`, 180 px
+  top, 250 px wide); getting in no longer opens it by itself.
+- 960 px wide: a three-note notice feed (116 px down) can reach a headline card's words at 27 % height (two notes
+  clear it by ~5 px); `hudOverlaps()` measures the headline by its words.
 - Damage direction: only gunfire shows the red arc (pursuit-officers.js playerHitFeedback); blasts and melee do not.
 - Gamepad: tested with a virtual pad only (`gamepadFeed`); no rumble; the settings screen cannot rebind pad buttons.
 - The 2D fallback renderer's speech bubbles keep the old 10 px text.
@@ -74,6 +82,13 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - Ships (deck-landing.js): a liner's roof levels have no drawn stairs (E takes "the stairs aft" at once, to the aft deck); no blood decal on a deck (`addBloodPool` needs ground); Monarch's superyachts and the marina's moored boats have no walkable deck (a canopy comes down clear of them, in the water); the cue measures the deck straight below, not where a moving ship will be.
 
 ## Driving (driving.js, physics-*.js)
+- At the quay on Ocean Drive (Palm Keys) a car driven slowly over the edge sometimes hangs there with its bonnet past
+  the shore for about a second and is then pushed back ~37 units onto the promenade instead of dropping into Palm
+  Sound (other runs drive straight in): `drive('supercar', 0, 0)`, `placeVehicle(-1300, 2299, 0, 0)`, `launch(12)`,
+  then `simulate(0.25, ['KeyW'])` steps (2026-10-04 free-roam pass; seen once in two tries).
+- The ATLAS CARGO FLATBED reverses at about 0.35 m/s² from rest (5 units in the first 1.6 s of S, 17 in 3.2 s; forward
+  ~1.3 m/s²): nose to a wall it barely seems to move, which the bot read as trapped twice (seed 8; its check now waits
+  longer). `drive('flatbed', 0, Math.PI / 2)` at (420, 4400), `simulate(1.6, ['KeyS'])`.
 - 50–0 km/h stops are slightly longer than before (the 0.2 s pedal build-up).
 - Soaked roads add 43–58 % to ABS stops (target 30–50 %).
 - AI traffic and police use the simple ABS-equivalent brake, not the per-axle tyre model.
@@ -93,8 +108,7 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - The comfort camera (camera-drive.js) was tuned from `cameraComfort()` numbers and stills, not
   felt at 60 fps on a real screen: worth a drive on a real GPU (lead share 0.32, across 1.8). The
   wider driving view costs draw calls (~935 at 93 km/h vs ~650 before, 1280x800 high); a
-  medium-tier check on a laptop GPU is still to do. On small screens (960x600) the bottom-centre
-  call banner can sit over the car at speed.
+  medium-tier check on a laptop GPU is still to do.
 
 ## Drive-bys (driveby.js, crowd3d-driveby.js)
 - Only the pistol fires from a vehicle, so the SMG one-hand and two-handed lean-out poses are not

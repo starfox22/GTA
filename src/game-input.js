@@ -53,8 +53,21 @@
        them: a hired cab or a liner deck would otherwise drag them straight back. */
     function teleportPlayer(x, y) {
       cancelCarjack();
-      if (player.car) exitCar();
+      if (player.car) exitCar(true);
+      // A boat in open water, a car boxed in by walls or one off a cliff has nowhere to step out to (exitCar stays
+      // put), and the player was snapped straight back aboard: they go anyway, and the vehicle stays where it stopped,
+      // as BUSTED leaves it. An aircraft in the air comes along instead (below).
+      let leftAboard = false;
+      if (player.car && !isAircraft(player.car)) {
+        const v = player.car;
+        v.ai = false;
+        v.vx = v.vy = v.speed = v.av = 0;
+        player.car = null;
+        leftAboard = true;
+      }
       if (taxiRide) endTaxiRide(false);
+      // Off a train too (it rides 62 units up on its viaduct): the ride used to pull the player back aboard.
+      const offTrain = dropTransitRide();
       cancelTaxiPick();
       player.deck = null;
       player.coaster = null;
@@ -86,6 +99,7 @@
       }
       player.x = x;
       player.y = y;
+      if ((offTrain || leftAboard) && !player.car) player.altitude = terrainHeight(x, y);
       // A countdown past the world edge starts afresh from the new spot (world-edge.js).
       resetWorldEdge();
       cameraTarget.x = x;

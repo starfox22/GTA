@@ -468,6 +468,15 @@
 body:not(.touch-mode).police-search-active #carRadio {
   top: 290px;
 }
+/* Short windows (960x600): open, the radio (about 250 px tall) reached down over the speed box, the more
+   when a police search moved it down; it stands on the equipment column instead and opens upward. */
+@media (max-height: 720px) {
+  body:not(.touch-mode) #carRadio,
+  body:not(.touch-mode).police-search-active #carRadio {
+    top: auto;
+    bottom: 172px;
+  }
+}
 /* The police chip (police-feedback.js) keeps its look; it is centred with
    margins so its untransformed box never widens a phone's viewport. */
 #policeNotice {
@@ -499,6 +508,15 @@ body:not(.touch-mode).police-search-active #carRadio {
   }
   #navigation {
     top: 64px;
+  }
+  /* The notices start under the waypoint pill (a long one ran under its left end at 960 px) and
+     stop short of the centred status lines below it. */
+  #toast {
+    top: 116px;
+    max-width: calc(50vw - 150px);
+  }
+  #radioCaption {
+    max-width: calc(300px - 2 * var(--hud-edge) - 24px);
   }
   #terrainStatus {
     top: 112px;

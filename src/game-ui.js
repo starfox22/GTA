@@ -209,10 +209,13 @@
         missionCardAsked = false;
       }
       getElement('missionObjective').textContent = objectiveLine;
-      getElement('pager').classList.toggle('compact', gameTime >= missionCardUntil || missionCardYields());
+      // Folded while a story line has no room (missionCardYields) or while the open card would cover the
+      // player, its reading time held (hud-clearance.js missionCardFolded, asked first: it runs every pass).
+      getElement('pager').classList.toggle('compact', missionCardFolded(gameTime < missionCardUntil) || missionCardYields());
     }
     function toggleMissionCard() {
-      // What is on screen decides: a strip opens, an open card folds.
+      // What is on screen decides: a strip opens, an open card folds. Opened on purpose it stays open over a
+      // story line and over the player (missionCardAsked).
       const open = !getElement('pager').classList.contains('compact');
       missionCardUntil = open ? 0 : gameTime + MISSION_CARD_SECONDS;
       missionCardAsked = !open;

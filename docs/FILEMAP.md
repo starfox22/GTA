@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-492 files in the include tree, 170,742 lines.
+493 files in the include tree, 171,098 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -32,10 +32,10 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/heat.js`   283 — Heat and wanted stars
 - `src/witnesses.js`   529 — Witnesses and 911 calls, the police side: crimes nobody has reported yet, what the police see and hear for themselves, and how a report brings them …
 - `src/game-collision.js`   360 — Building grid: solid() and shotBlocked() run thousands of times per frame (every pedestrian step, bullet and spawn test).
-- `src/game-car-spawn.js`   352 — makeCar(), canSpawnCar(), spawnClearCar(): creating vehicles with one shared object layout.
+- `src/game-car-spawn.js`   356 — makeCar(), canSpawnCar(), spawnClearCar(): creating vehicles with one shared object layout.
 - `src/game-worldgen.js`   480 — buildWorld(): the city plan, buildings (makeBuilding), trees, the 2D ground canvas.
 - `src/game-populate.js`   230 — Initial population: showcase parking (SHOWCASE_PARKING, parkShowcase) and populate().
-- `src/game-player-actions.js`   601 — Player verbs: enter and exit vehicles, interact, aim, shoot, reload, hurt, die, explode.
+- `src/game-player-actions.js`   603 — Player verbs: enter and exit vehicles, interact, aim, shoot, reload, hurt, die, explode.
 - `src/game-cops.js`   171 — resetMissionState(), spawnCop(), copRoute(): mission reset and patrol spawning.
 - `src/physics.js`    19 — ▸ Vehicle and pedestrian physics
 - `src/game-people.js`   166 — Pedestrian life: Everyday chatter lives here; how people walk, what they do and how they react to danger is in src/crowd.js, which also has the …
@@ -45,9 +45,9 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-draw2d.js`   586 — 2D canvas fallback renderer: drawWorld, drawCar, drawPerson, markers.
 - `src/game-minimap.js`   278 — Minimap base layer: The minimap used to repaint the whole county (coast, every street, parks, promenades, county ground and every building footprint) …
 - `src/map-view.js`   375 — Map views: the city map's filters (MAP LAYERS) and GO TO list, sharp canvases on HiDPI screens, the minimap's speed pull-back and its edge arrows …
-- `src/game-ui.js`   442 — Weapon chip, mission card and updateUI() (HUD text refresh).
+- `src/game-ui.js`   445 — Weapon chip, mission card and updateUI() (HUD text refresh).
 - `src/game-menus.js`   190 — Resize, begin/newGame, pause, help, big map toggle.
-- `src/game-input.js`   435 — Cheat code: Letters typed during play accumulate in a short ring; when the tail spells a known code it fires.
+- `src/game-input.js`   449 — Cheat code: Letters typed during play accumulate in a short ring; when the tail spells a known code it fires.
 - `src/controls.js`   314 — Key bindings
 - `src/geography.js`    12 — ▸ Coastlines and land regions
 - `src/drawbridge.js`    68 — ▸ The Palm Sound drawbridge: schedule, gates, leaves, jumps
@@ -150,10 +150,10 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/god-panel.js`   799 — God mode settings
 - `src/driving.js`   489 — Tyres, brakes and driving assists
 - `src/tyre-effects.js`   274 — What the tyres leave behind: the burnout (forward and the handbrake held at a standstill), skid marks, and the one rule for tyre smoke, dust and …
-- `src/hud.js`    33 — ▸ HUD behaviour and the title menu
+- `src/hud.js`    34 — ▸ HUD behaviour and the title menu
 - `src/render3d.js`   233 — ▸ Three.js renderer and resource lifecycle
 - `src/frame-trace.js`   322 — Frame trace: every frame's CPU split (simulation sections, renderer laps) and what happened in it (collections, DOM mutations, GL uploads and links …
-- `src/game-loop.js`   187 — Profiler: Rolling averages of simulation and render CPU time per frame, plus the renderer's draw-call and triangle counts.
+- `src/game-loop.js`   189 — Profiler: Rolling averages of simulation and render CPU time per frame, plus the renderer's draw-call and triangle counts.
 - `src/game-console.js`    48 — ▸ DeadEndCity console registry and assembly
 - `src/game-agent-tools.js`    72 — Optional browser agent access uses exactly the same actions as the controls.
 
@@ -322,7 +322,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/transit.js ▸ Public railway simulation
 
 - `src/transit-rails.js`   478 — Railway lines and stations, track geometry, speeds and decks (RAIL_LINES, railTrackGeometry, railGraph).
-- `src/transit-network.js`   532 — Railway stations, lifts and piers, network and routes; boarding and the transit menu (openTransit, boardTransit).
+- `src/transit-network.js`   542 — Railway stations, lifts and piers, network and routes; boarding and the transit menu (openTransit, boardTransit).
 
 ## src/sealife.js ▸ Sea life: dolphins, gulls and the great white
 
@@ -385,8 +385,9 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/hud.js ▸ HUD behaviour and the title menu
 
-- `src/hud-state.js`   659 — HUD state and pop boxes, saved settings, weapon and radio watches, stars, minimap fold and zoom (hudState, hudPop).
-- `src/hud-panels.js`   642 — HUD panels: prompts, centre cards and toasts, sniper warning, panel covers, updateHud() and the flight HUD.
+- `src/hud-state.js`   656 — HUD state and pop boxes, saved settings, weapon and radio watches, stars, minimap fold and zoom (hudState, hudPop).
+- `src/hud-panels.js`   644 — HUD panels: prompts, centre cards and toasts, sniper warning, panel covers, updateHud() and the flight HUD.
+- `src/hud-clearance.js`   302 — HUD clearance: the mission card never covers the player (and the dialogue line and the waypoint pill fade if they would).
 
 ## src/render3d.js ▸ Three.js renderer and resource lifecycle
 
@@ -727,10 +728,10 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/game-console.js ▸ DeadEndCity console registry and assembly
 
-- `src/game-console-core.js`   147 — DeadEndCity console, core: status, teleport, look, clock, zoom, simulate, heal, god, cash, walk (+ godPanelConsole)
+- `src/game-console-core.js`   153 — DeadEndCity console, core: status, teleport, look, clock, zoom, simulate, heal, god, cash, walk (+ godPanelConsole)
 - `src/game-console-missions.js`   317 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
 - `src/game-console-police.js`   217 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
-- `src/game-console-vehicles.js`   281 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
+- `src/game-console-vehicles.js`   284 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
 - `src/game-console-world.js`   231 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
 - `src/game-console-rides.js`   104 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
 - `src/game-console-leisure.js`    72 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)
@@ -738,7 +739,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-graphics.js`   231 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
 - `src/game-console-perf.js`   269 — DeadEndCity console, simulation cost: simProfile (per-section ms, worst frames), simScenario (staged situations)
 - `src/game-console-soak.js`   368 — DeadEndCity console, long-session health: soakReport (sizes of every list that can grow, DOM, non-finite positions)
-- `src/game-console-integrity.js`   167 — DeadEndCity console: integrity(), the invariants tools/bot.mjs checks after every action
+- `src/game-console-integrity.js`   177 — DeadEndCity console: integrity(), the invariants tools/bot.mjs checks after every action
 - `src/game-console-settings.js`   125 — DeadEndCity console, settings: settings, openSettings, bindings, radio (+ audioConsole)
 
 ## src/shell.html ▸ HTML page skeleton: its src/ui/*.css and *.html fragments (in include order) and build.py's `<!-- @include-* -->` slots (game, three.js, media, credits)
@@ -749,9 +750,9 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/ui/casino-transit.css`   201 — styles: #casinoTable, .roulette-top, .roulette-top canvas, .roulette-bank, …
 - `src/ui/police-arsenal.css`   523 — POLICE FEEDBACK AND ARSENAL — readable interface additions, v23.
 - `src/ui/wanted-effects.css`   206 — Wanted level (heat.js, pursuit.js, hud.js): the next star flashes red while dispatch escalates, earned stars grey out during a search, a thin meter …
-- `src/ui/hud-top.css`   630 — INTERFACE 30 — design tokens, HUD, title menu, settings (v30 UI pass).
-- `src/ui/hud-bottom.css`   698 — Bottom row: minimap + vitals, mission card, equipment
-- `src/ui/radio.css`   561 — Car radio: a station chip that opens on a change or on hover
+- `src/ui/hud-top.css`   642 — INTERFACE 30 — design tokens, HUD, title menu, settings (v30 UI pass).
+- `src/ui/hud-bottom.css`   703 — Bottom row: minimap + vitals, mission card, equipment
+- `src/ui/radio.css`   579 — Car radio: a station chip that opens on a change or on hover
 - `src/ui/title.css`   308 — Title screen
 - `src/ui/dialogs.css`   231 — Dialogs: one panel style for pause, calls, shops, help
 - `src/ui/god-panel.css`   220 — God panel: the GOD MODE settings tab and the map's teleport pick
@@ -759,7 +760,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/ui/sportsbook-bets.css`   505 — styles: .sb-summary, .sb-summary span, .sb-summary b, .sb-summary .plus b, …
 - `src/ui/demo.css`   231 — PUBLIC DEMO (campaign.js): The DEMO badge by the title menu's version, the picker's FULL GAME badges and buy note, and the DEMO COMPLETE card after …
 - `src/ui/settings.css`   480 — styles: .mission-choice, button:focus-visible, body.no-key-hints .quickkeys, #settingsOverlay, …
-- `src/ui/touch-hud.css`   344 — Touch play: thumbs own the lower corners, so the HUD moves up
+- `src/ui/touch-hud.css`   345 — Touch play: thumbs own the lower corners, so the HUD moves up
 - `src/ui/title-radio.css`   148 — TITLE RADIO (car-radio.js): the car radio box docked on the title menu.
 - `src/ui/flight-hud.css`   276 — Flight HUD (hud.js, FLIGHT HUD): Shown only in an aircraft, compact and against the screen edges so the view stays clear: attitude, airspeed and …
 - `src/ui/freefall.css`   205 — Freefall cue (parachute.js FREEFALL CUE): While the canopy is still packed: the call to open it with its key, the height above whatever is below, a …

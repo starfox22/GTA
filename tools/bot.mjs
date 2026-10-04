@@ -285,6 +285,13 @@ const actions = {
         moved = Math.max(moved, dist(a, b));
         if (moved > 8) break;
       }
+      // A heavy truck reverses slowly (a flatbed backs off a wall only ~5 units in the first 1.6 s): give it longer.
+      if (alive && moved <= 8) {
+        await sim(['KeyS'], 2.5);
+        const b = await call('status');
+        alive = b.mode === 'play';
+        moved = Math.max(moved, dist(a, b));
+      }
       if (alive && moved <= 8) find('trapped', `${type} cannot move forward or back at ${a.x},${a.y} (${a.district})`);
     }
     return `${type} ${legs} legs -> ${rep.player.vehicle || 'foot'}`;
@@ -431,6 +438,8 @@ const actions = {
     const d = pick(doors);
     await call('godTeleport', d.door.x, d.door.y + 26);
     await sim([], 0.8);
+    // An aircraft in the air comes along with the god teleport: its prompt names its own keys, not a door's.
+    if ((await call('status')).vehicle) return 'skip (in a vehicle)';
     try {
       await call('bindings', { interact: key });
       await sim([], 0.4);
@@ -443,8 +452,11 @@ const actions = {
       await ensurePlay('old key');
       await press(key);
       await realWait(0.3);
-      const afterNew = (await call('status')).mode;
-      if (prompt.visible && afterNew === 'play') find('rebind', `the rebound key ${label} did nothing at "${prompt.text}"`);
+      const after = await call('status'),
+        afterNew = after.mode;
+      // A wanted player is turned away at every door but an outfitter's (openService: "lose the police first").
+      const refused = after.wanted > 0 && d.kind !== 'clothes';
+      if (prompt.visible && afterNew === 'play' && !refused) find('rebind', `the rebound key ${label} did nothing at "${prompt.text}"`);
     } finally {
       await call('bindings', 'reset');
     }

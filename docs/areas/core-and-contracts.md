@@ -59,7 +59,9 @@ Where a file lives: `grep -i <word> docs/FILEMAP.md`.
   `player.parachute`, `player.coaster` (Falcon and Sunset Eye), `player.pool`,
   `player.thrown`, `player.fall` (off a drop, falls-body.js), `player.carjack` (the struggle
   at a car door: `cancelCarjack()`), `transitRide`, `taxiRide`, or the water (`swimming`,
-  `wading`, `climbing`). `teleportPlayer()` lets go of all of them; anything that moves the player
+  `wading`, `climbing`). `teleportPlayer()` lets go of all of them (a train ride through
+  `dropTransitRide`; a vehicle with nowhere to step out to, a boat at sea or a boxed-in car, is left where
+  it stopped; only an aircraft in the air comes along); anything that moves the player
   must go through it, and death and mission resets must release any new carrier.
 - `solid(x, y, r, overWater)` is the one collision test for people; vehicles collide with
   `staticBodies` (`addStatic`, looked up through `staticGrid`). Barriers come from one plan
