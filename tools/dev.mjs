@@ -10,7 +10,9 @@
 //   node tools/dev.mjs heap   (the page's JS heap in MB after a full collection, DOM nodes, event listeners, live Web Audio nodes: tools/soak.mjs)
 //   node tools/dev.mjs cpucost <seconds>   (CPU ms per drawn frame of each browser process: the GPU process's share is software GL's pixel cost)
 //   node tools/dev.mjs profile <seconds> [--allocations] [--top N]   (CPU profile of the live page for N seconds; --allocations: allocation sites instead)
-//   node tools/dev.mjs errors | status | reload [--render|--norender] [--keep] [--shadercheck] [--prewarm] | stop
+//   node tools/dev.mjs errors | status | reload [--render|--norender] [--keep] [--shadercheck] [--prewarm] [--seed N] | stop
+//   (start or reload --seed N: a seeded Math.random from the first line and the simulation held from the first frame,
+//   so every boot holds the same world: step it with `call simulate` and compare `call stateHash` between builds)
 //
 // `start` with no html builds dist/dev/game.html (and `reload` rebuilds it after code
 // edits, reusing the browser). The page opens with `?dev&norender` (no WebGL renderer,
@@ -118,12 +120,14 @@ function build(html) {
 }
 
 // Start (or reuse) the server and wait until the game is in play. Returns its status.
-export async function start({ html = null, render = false, nodev = false, shadercheck = false, prewarm = false, size = '960x600', port = null, quiet = false } = {}) {
+export async function start({ html = null, render = false, nodev = false, shadercheck = false, prewarm = false, seed = 0, size = '960x600', port = null, quiet = false } = {}) {
   const say = quiet ? () => {} : (s) => console.log(s);
   // ?shadercheck makes three.js report shader compile errors (console errors).
   // ?prewarm runs the title-screen shader prewarm without KHR_parallel_shader_compile (which
   // software GL lacks), compile only, so the headless page exercises it.
-  const flags = [nodev ? 'test' : 'dev', render ? null : 'norender', shadercheck ? 'shadercheck' : null, prewarm ? 'prewarm' : null].filter(Boolean).join('&');
+  // ?seed=N&hold (src/game-state.js DETERMINISTIC BOOT): a seeded Math.random from the first line and the simulation
+  // held from the first frame, so every boot holds the same world (exactness checks with stateHash).
+  const flags = [nodev ? 'test' : 'dev', render ? null : 'norender', shadercheck ? 'shadercheck' : null, prewarm ? 'prewarm' : null, seed ? 'seed=' + seed + '&hold' : null].filter(Boolean).join('&');
   const running = readState();
   if (running) {
     const st = await alive(running.port);
@@ -746,7 +750,7 @@ async function main(argv) {
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--full' || a === '--real' || a === '--down' || a === '--render' || a === '--norender' || a === '--nodev' || a === '--keep' || a === '--shadercheck' || a === '--prewarm' || a === '--allocations' || a === '--cpu') opts[a.slice(2)] = true;
-    else if (a === '--profile' || a === '--who' || a === '--alloc' || a === '--retain' || a === '--port' || a === '--keys' || a === '--max' || a === '--top' || a === '--crop' || a === '--width' || a === '--size') opts[a.slice(2)] = argv[++i];
+    else if (a === '--profile' || a === '--who' || a === '--alloc' || a === '--retain' || a === '--port' || a === '--keys' || a === '--max' || a === '--top' || a === '--crop' || a === '--width' || a === '--size' || a === '--seed') opts[a.slice(2)] = argv[++i];
     else pos.push(a);
   }
   const [cmd, ...rest] = pos;
@@ -755,7 +759,7 @@ async function main(argv) {
     case 'serve':
       return serve(rest[0], Number(rest[1]), rest[2], rest[3], rest[4] === '1');
     case 'start':
-      await start({ html: rest[0], render: !!opts.render, nodev: !!opts.nodev, shadercheck: !!opts.shadercheck, prewarm: !!opts.prewarm, size: opts.size, port: Number(opts.port) || null });
+      await start({ html: rest[0], render: !!opts.render, nodev: !!opts.nodev, shadercheck: !!opts.shadercheck, prewarm: !!opts.prewarm, seed: Number(opts.seed) || 0, size: opts.size, port: Number(opts.port) || null });
       return;
     case 'status': {
       const st = readState();
@@ -799,6 +803,7 @@ async function main(argv) {
       let flags = opts.render ? st.flags.replace(/&?norender/, '') : opts.norender && !/norender/.test(st.flags) ? st.flags + '&norender' : undefined;
       if (opts.shadercheck && !/shadercheck/.test(flags ?? st.flags)) flags = (flags ?? st.flags) + '&shadercheck';
       if (opts.prewarm && !/prewarm/.test(flags ?? st.flags)) flags = (flags ?? st.flags) + '&prewarm';
+      if (opts.seed && !/seed=/.test(flags ?? st.flags)) flags = (flags ?? st.flags) + '&seed=' + Number(opts.seed) + '&hold';
       const reply = await request({ op: 'reload', flags, keep: !!opts.keep });
       if (reply.error) return print(reply, max);
       if (reply.result.buildSeconds != null) console.log(`rebuilt in ${reply.result.buildSeconds}s`);

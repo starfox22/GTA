@@ -146,11 +146,16 @@
       // so a slow frame rate cannot leave "POLICE CLEARED!" up for minutes.
       updatePoliceNotice(Math.min(0.25, Math.max(0, (t - lastTime) / 1000)));
       lastTime = t;
-      updateWorldView(deltaSeconds);
-      updateCasino(deltaSeconds);
-      updateElevator(deltaSeconds);
-      // North Point Key's tower lifts ride on the frame clock too (skyline-lift.js).
-      updateSkyLift(deltaSeconds);
+      // A seeded boot held between console steps (game-state.js DETERMINISTIC BOOT) leaves the frame-clock systems to
+      // the stepped frames too: the camera's ease decides where traffic streams in, so live frames between two
+      // console calls (a wall-clock count) made the seeded world differ from boot to boot.
+      if (!(DEV_BOOT_SEED && simulationHeld && live)) {
+        updateWorldView(deltaSeconds);
+        updateCasino(deltaSeconds);
+        updateElevator(deltaSeconds);
+        // North Point Key's tower lifts ride on the frame clock too (skyline-lift.js).
+        updateSkyLift(deltaSeconds);
+      }
       // Everything the frame does before the simulation step (the `f:pre` part of stats()).
       const updateStart = profileLap('f:pre', frameStart);
       // The city keeps living behind the title menu, and behind settings opened

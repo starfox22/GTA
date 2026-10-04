@@ -52,7 +52,7 @@
       // tablet the 4 s pop on getting in covered the GAS / BRAKE buttons under it.
       if (id === 'carRadio' && document.body.classList.contains('touch-mode') && !tapped) {
         el.classList.remove('flash');
-        void el.offsetWidth;
+        void getComputedStyle(el).animationName; // a style pass restarts the animation (offsetWidth also laid out the page)
         el.classList.add('flash');
         return;
       }
@@ -578,7 +578,9 @@
           // the animation is restarted, on purpose).
           el.classList.add('snap');
           el.classList.remove('docked', 'pop');
-          void el.offsetWidth;
+          // The jump has to go through a style pass before the transitions come back: a computed-style read is that
+          // pass (offsetWidth used to force a whole-page layout as well).
+          void getComputedStyle(el).opacity;
           el.classList.remove('snap');
           el.classList.add('show', 'pop');
           el.dataset.prompt = offer.id;

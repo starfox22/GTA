@@ -199,14 +199,66 @@
      */
     const SCENE_PROP_KG = { cart: 160, cafeTable: 35, menuBoard: 10, guitarCase: 5, boxes: 25, rope: 15 },
       SCENE_PROP_MATERIAL = { cart: 'metal', cafeTable: 'metal', menuBoard: 'wood', guitarCase: 'plastic', boxes: 'fabric', rope: 'metal' };
+    /* KNOCK GRID: the vehicles near the player bucketed once a call by 128-unit cell (their index into `vehicles`), so
+       each prop asks the cells round it instead of every vehicle in the city (props x vehicles: ~56,000 tests a frame).
+       A prop's candidates are tested in the vehicles' own order, so the first hit, and everything after it, is the
+       same; the cells are taken one wider than the 70-unit test needs, and the test itself is unchanged. */
+    const KNOCK_CELL = 128,
+      knockCells = new Map(),
+      knockPick = [];
+    let knockStamp = 0;
+    function knockGridFill() {
+      const stamp = ++knockStamp;
+      if (knockCells.size > 2000) knockCells.clear();
+      for (let v = 0; v < vehicles.length; v++) {
+        const c = vehicles[v];
+        // A prop is only tested within 1,200 of the player, and a vehicle only within 70 of a prop (1,280 with room to spare).
+        if (!(Math.abs(c.x - player.x) <= 1280 && Math.abs(c.y - player.y) <= 1280)) continue;
+        const key = (Math.floor(c.x / KNOCK_CELL) + 1024) * 4096 + Math.floor(c.y / KNOCK_CELL) + 1024;
+        let cell = knockCells.get(key);
+        if (!cell) knockCells.set(key, (cell = Object.assign([], { stamp: 0, n: 0 })));
+        if (cell.stamp !== stamp) {
+          cell.stamp = stamp;
+          cell.n = 0;
+        }
+        cell[cell.n++] = v;
+      }
+      return stamp;
+    }
+    // The indices of the vehicles in the cells round (x, y), ascending (the order the full scan visited them in).
+    function knockCandidates(x, y, stamp) {
+      let n = 0;
+      const i0 = Math.floor((x - 70) / KNOCK_CELL) - 1,
+        i1 = Math.floor((x + 70) / KNOCK_CELL) + 1,
+        j0 = Math.floor((y - 70) / KNOCK_CELL) - 1,
+        j1 = Math.floor((y + 70) / KNOCK_CELL) + 1;
+      for (let i = i0; i <= i1; i++)
+        for (let j = j0; j <= j1; j++) {
+          const cell = knockCells.get((i + 1024) * 4096 + j + 1024);
+          if (!cell || cell.stamp !== stamp) continue;
+          for (let k = 0; k < cell.n; k++) {
+            // Insertion into the sorted pick (a handful of vehicles at most).
+            let at = n++;
+            while (at > 0 && knockPick[at - 1] > cell[k]) {
+              knockPick[at] = knockPick[at - 1];
+              at--;
+            }
+            knockPick[at] = cell[k];
+          }
+        }
+      return n;
+    }
     function knockSceneProps(deltaSeconds) {
       const props = crowd.props;
+      let stamp = 0;
       for (let i = 0; i < props.length; i++) {
         const prop = props[i];
         if (Math.abs(prop.x - player.x) > 1200 || Math.abs(prop.y - player.y) > 1200) continue;
         if (!prop.knocked || prop.vx || prop.vy) {
-          for (let v = 0; v < vehicles.length; v++) {
-            const c = vehicles[v];
+          if (!stamp) stamp = knockGridFill();
+          const picked = knockCandidates(prop.x, prop.y, stamp);
+          for (let p = 0; p < picked; p++) {
+            const c = vehicles[knockPick[p]];
             if (Math.abs(c.x - prop.x) > 70 || Math.abs(c.y - prop.y) > 70) continue;
             if (isBoat(c) || (isAircraft(c) && (c.altitude || 0) > 8)) continue;
             const speed = Math.hypot(c.vx || 0, c.vy || 0);
