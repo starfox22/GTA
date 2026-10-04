@@ -37,6 +37,9 @@
       cameraView: () => cameraViewReport(),
       // The camera's lead, offset from the player, kick and shake (camera-feel.js).
       cameraFeel: () => cameraFeelReport(),
+      // How the street camera moved over the last `seconds` (0.5-4): acceleration, jerk, zoom rate,
+      // jolt and the player's drift on screen, in screen heights (camera-comfort.js).
+      cameraComfort: (seconds = 4) => cameraComfortReport(seconds),
       // The interaction prompt as the player sees it (hud.js INTERACTION PROMPT):
       // visible, text, identity, docked, seconds since it popped in, this pass's offer.
       promptState: () => promptReport(),

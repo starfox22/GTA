@@ -52,7 +52,7 @@ people-and-crowd.md. Tests: pedestrian-awareness, second-run-over.
   A sedan at 30 km/h is always mortal, a crawl never; a truck at 8 km/h is; a bicycle at 20 is not.
 - Blood: `bleed(p, sev, heading, 'impact')`, 2-3 streaks along the path, tyres laid with
   `c.bloodTrackRemaining`; a pool only under a body that has died. The car: `addCarStain(c, p,
-  max(kph, 22), mortal)`. Sound: `runOverSound` (a pitched-down bump and a crack). Heat: `crime()`
+  kph, mortal)` (nothing under 14 km/h: a crawl leaves the bonnet clean). Sound: `runOverSound` (a pitched-down bump and a crack). Heat: `crime()`
   0.35 for a mortal pass (0.08 otherwise or for a pass over someone already dying), `crowdAlarm('knock')`;
   the kill itself is `recordKill` once, at death.
 - Console (docs/console/crowd.md): `runOverReport(type, kph, hp)` (the table), `runOverVictim`,
