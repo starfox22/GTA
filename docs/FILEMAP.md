@@ -11,11 +11,11 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-486 files in the include tree, 167,514 lines.
+487 files in the include tree, 168,059 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
-- `src/game.js`   180 — ▸ Game orchestration and shared state
+- `src/game.js`   181 — ▸ Game orchestration and shared state
 
 ## src/game.js ▸ Game orchestration and shared state
 
@@ -39,7 +39,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-people.js`   166 — Pedestrian life: Everyday chatter lives here; how people walk, what they do and how they react to danger is in src/crowd.js, which also has the …
 - `src/game-combat.js`   344 — updateCombat(), bullets, shot line-of-sight (shotBlocked) and bullet targets.
 - `src/game-update.js`   179 — update(dt): the per-frame simulation step (only active play advances clocks).
-- `src/world-edge.js`   321 — World-edge countdown: past the line just inside the world box the player has 10 s to return, or the vehicle blows up and WASTED.
+- `src/world-edge.js`   323 — World-edge countdown: past the line just inside the world box the player has 10 s to return, or the vehicle blows up and WASTED.
 - `src/game-draw2d.js`   586 — 2D canvas fallback renderer: drawWorld, drawCar, drawPerson, markers.
 - `src/game-minimap.js`   278 — Minimap base layer: The minimap used to repaint the whole county (coast, every street, parks, promenades, county ground and every building footprint) …
 - `src/map-view.js`   367 — Map views: the city map's filters (MAP LAYERS) and GO TO list, sharp canvases on HiDPI screens, the minimap's speed pull-back and its edge arrows …
@@ -111,12 +111,13 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/sportsbook-ui.js`   469 — The betting menu
 - `src/sports-audio.js`   205 — Stadium goal cheers and whistles
 - `src/transit.js`    10 — ▸ Public railway simulation
-- `src/ride-skip.js`   561 — Skip the ride
+- `src/ride-skip.js`   564 — Skip the ride
 - `src/ecology.js`   339 — Wildlife behavior
 - `src/sealife.js`    17 — ▸ Sea life: dolphins, gulls and the great white
 - `src/sealife-audio.js`   356 — Sea life sound
 - `src/navigation.js`   689 — City map and route planning
-- `src/parachute.js`   728 — Bailout and parachute
+- `src/parachute.js`   734 — Bailout and parachute
+- `src/deck-landing.js`   356 — Landing on a ship from the sky: canopy touchdowns and freefall impacts on the liners' and the superyacht's decks (deckSurfaceAt, deckLandingStep) …
 - `src/falls.js`    22 — ▸ Falls: bodies and vehicles off cliffs, fatal impacts
 - `src/mobile.js`   282 — Touch controls
 - `src/input-hints.js`   151 — Input-aware hints: which device the player is using (keyboard and mouse, touch, gamepad) and what an action is called on it (keyName's touch and …
@@ -214,12 +215,12 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/marina.js ▸ Harbor Point marina, the superyacht and the cruise liners
 
-- `src/marina-liners.js`   279 — ▸ Harbor Point marina: berths, liners and their voyages (MARINA, LINERS, linerVoyage).
-- `src/marina-superyacht.js`   637 — Superyacht deck plan: levels, stairs, walking aboard and boarding (superyachtPlan, moveOnYacht, boardSuperyachtFrom).
+- `src/marina-liners.js`   280 — ▸ Harbor Point marina: berths, liners and their voyages (MARINA, LINERS, linerVoyage).
+- `src/marina-superyacht.js`   641 — Superyacht deck plan: levels, stairs, walking aboard and boarding (superyachtPlan, moveOnYacht, boardSuperyachtFrom).
 
 ## src/marina-liners.js ▸ Harbor Point marina: berths, liners and their voyages (MARINA, LINERS, linerVoyage).
 
-- `src/marina-voyage.js`   368 — The Meridian Star's voyage: legs, speed zones, the path, sailing, carrying her decks, the horn and the route check (LINER_VOYAGE, sailLiner).
+- `src/marina-voyage.js`   531 — The Meridian Star's voyage: legs, speed zones, the path, sailing, carrying her decks, the horn and the route check (LINER_VOYAGE, sailLiner).
 
 ## src/beachvolley.js ▸ Beach volleyball on Palm Keys Beach
 
@@ -389,7 +390,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/postfx3d.js`   977 — ▸ HDR post-processing pipeline
 - `src/lighting3d.js`    27 — ▸ Sun, sky, reflections and night light
 - `src/searchlight3d.js`   937 — Searchlights: light shafts, ground pools, the helicopter's spot
-- `src/render3d-statics.js`   312 — Static building batches, static cells and culling (staticInView), shared materials.
+- `src/render3d-statics.js`   315 — Static building batches, static cells and culling (staticInView), shared materials.
 - `src/render3d-terrain.js`   297 — Mesh/box/rod helpers, wall textures, the ground mesh and kerbs.
 - `src/vegetation3d.js`    58 — ▸ Tree library: species, foliage atlas, wind, LOD
 - `src/render3d-streetprops.js`   297 — ▸ Street lamps and their glow halos, vehicle halos, blossom, sign() boards.
@@ -617,7 +618,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/marina3d-yachts.js`   513 — Marina 3D statics, deck wood, lights and superyachts (buildSuperyacht, superyachtFurniture).
 - `src/marina3d-fleet.js`   615 — Marina 3D rigging and fleet: furled jibs, booms, wheels, outboards, MARINA_BUILDERS and marinaFleet.
-- `src/marina3d-shore.js`   315 — Marina 3D shore: cruise terminal, liner classes and models, updateLinerVisuals(), updateMarinaVisuals().
+- `src/marina3d-shore.js`   317 — Marina 3D shore: cruise terminal, liner classes and models, updateLinerVisuals(), updateMarinaVisuals().
 
 ## src/dealership3d.js ▸ MONARCH MOTORS in 3D
 
@@ -726,7 +727,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-police.js`   217 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
 - `src/game-console-vehicles.js`   276 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
 - `src/game-console-world.js`   229 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
-- `src/game-console-rides.js`   100 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
+- `src/game-console-rides.js`   104 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
 - `src/game-console-leisure.js`    72 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)
 - `src/game-console-crowd.js`   162 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
 - `src/game-console-graphics.js`   231 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups

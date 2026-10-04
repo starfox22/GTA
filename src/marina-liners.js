@@ -263,9 +263,10 @@
     function shipPlatform(ship) {
       return deckWorld(ship, -ship.l / 2 - 22, 0);
     }
+    // Free to stand on at a world point, on the level the player is on (deck-landing.js linerPointFree).
     function deckPointFree(ship, x, y, r = 7) {
       const { u, v } = deckLocal(ship, x, y);
-      return linerDeckFree(ship, u, v, r);
+      return linerPointFree(ship, player.deckLevel || 0, u, v, r);
     }
     function moveOnDeck(dx, dy, r) {
       const ship = player.deck;

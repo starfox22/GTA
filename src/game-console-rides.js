@@ -99,4 +99,6 @@
         return superyachtDeckState();
       },
     });
+    // Parachute landings on the ships' decks (deck-landing.js): deckLanding(), deckJump().
+    addConsoleMethods('decks', deckLandingConsole());
     // END SUBSYSTEM: src/game-console-rides.js
