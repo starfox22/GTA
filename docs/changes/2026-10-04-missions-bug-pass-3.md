@@ -3,3 +3,4 @@
 - Console: `vehicleHealth(percent)`; test mission1-bay.
 - CHOOSE MISSION while a job is running now asks "ABANDON <JOB>?" (ABANDON JOB / KEEP PLAYING, with Enter, Escape, the gamepad's A and B or a tap) instead of throwing the job away; an abandoned job can be brought back with RESTART CURRENT JOB. Console `abandonJob(yes)`; `chooseMission()` returns the confirm.
 - With the touch controls on screen the hints name the touch buttons even after a key press (the Blue Hour's stealth hint said "SHIFT TO RUN" beside the RUN button); a gamepad still names its own buttons.
+- Console `followRoute(x, y, seconds, maxKmh)`: drives the GPS road route with steering keys through the real physics (turns, the end of the route, wedges, re-plans). Mission 1's chase was driven with it from the harbour across the Keys bridge into Palm Keys with the police in play; the last turns and the warehouse door defeat the pilot (BACKLOG), so no chase test yet.
