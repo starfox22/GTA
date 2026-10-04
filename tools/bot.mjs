@@ -431,6 +431,8 @@ const actions = {
     const d = pick(doors);
     await call('godTeleport', d.door.x, d.door.y + 26);
     await sim([], 0.8);
+    // An aircraft in the air comes along with the god teleport: its prompt names its own keys, not a door's.
+    if ((await call('status')).vehicle) return 'skip (in a vehicle)';
     try {
       await call('bindings', { interact: key });
       await sim([], 0.4);

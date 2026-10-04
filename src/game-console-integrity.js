@@ -3,7 +3,7 @@
     // geometry, below the ground or off the map, carriers still held, overlays outliving their mode,
     // bad words in the HUD. Nothing here changes the game.
     // The world box (game-state.js WORLD_LEFT..WORLD_SIZE, WORLD_TOP..WORLD_SIZE: the sea, the map), grown by a margin.
-    // Aircraft and boats may leave it (world-edge.js warns them at a line inside the box and destroys them after 10 s, so a bot run can see them out there briefly); everything else is off the map out there.
+    // Aircraft and boats may leave it (world-edge.js warns them at a line inside the box and destroys them after 10 s, so a bot run can see them out there briefly), and so may a parachute, a fall and a player killed out there by that countdown (until the respawn); everything else is off the map out there.
     const INTEGRITY_MARGIN = 400;
     function integrityReport() {
       const bad = [],
@@ -24,7 +24,10 @@
       if (!finite(wantedStars) || wantedStars < 0 || wantedStars > 5) flag('wantedStars = ' + wantedStars);
       if (!finite(gameTime) || !finite(worldMinutes)) flag('clock is not finite');
       const car = player.car;
-      if (finite(player.x) && finite(player.y) && off(player.x, player.y) && !(car && (isAircraft(car) || isBoat(car)))) flag('player off the map at ' + at(player));
+      // (A canopy or a fall drifts out there too under the world edge's countdown; dead out there, it ran out in an
+      // aircraft or boat and the WASTED respawn brings the player back.)
+      const mayLeave = (car && (isAircraft(car) || isBoat(car))) || player.parachute || player.fall || gameMode === 'dead';
+      if (finite(player.x) && finite(player.y) && off(player.x, player.y) && !mayLeave) flag('player off the map at ' + at(player));
       const onFoot =
         !car &&
         !player.swimming &&
