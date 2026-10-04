@@ -225,6 +225,10 @@ packs with plain `<script src>` so the zip still plays from file://.
   tools/tests/hillclimb-physics.mjs green. Trail rock is one source: `rideRelief` is what the tyres climb and what
   offroad3d-trail.js draws (never add trail rocks the ride can't feel); `offroadFords`/`offroadFordWater`
   (offroad-trails.js) are the only water on a trail (county3d-forest.js draws it, `tyreEmission` 'ford' sprays).
+- Trees near the 4x4 trails: every placer asks `trailTreeClear()` (trail-trees.js: the street camera's ground-plane
+  corridor, 2 m verge, 12 m hairpin run-off); forest trunks are vehicle obstacles in forest-trunks.js, built from the
+  same `terrainFieldScenery` lists the renderer plants; `trailTreeAudit()` `covering`/`verge` stay 0
+  (tools/tests/trail-trees.mjs). Tree size bounds (`forestTreeBounds`) follow `forestSpecies`/`TREE_SPECIES`.
 - The Meridian Star sails `LINER_VOYAGE` (marina-voyage.js); `linerVoyageCheck()` must report no problems (land,
   bridges, docks, ships, Monarch Harbour, hull `LINER_EDGE_MARGIN` inside the world-edge line); she never passes
   under a bridge. Moving scenery registers its cull entry with `moving: true` (render3d-statics.js), never in a
