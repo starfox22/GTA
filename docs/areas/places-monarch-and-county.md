@@ -34,9 +34,11 @@ roofs, garages): the plan is a game file, the meshes its `*3d.js` twin, coordina
   vertex (`offroadTrailBake`), traction on the range in `offroadDrive` (called by the
   physics: surface μ × load × driven share), the hill climb (`trailCourse`, best times in
   `dead-end-city-hillclimb`).
-- MOUNT ASCENT course (512 m, 93 → 761): forest two-track, THE BOG, the CREEK CROSSING ford,
-  the east-bank hairpin, THE TRAVERSE (off-camber), the MUDDY HAIRPIN, keyhole switchbacks, the
-  ROCK GARDEN (rock relief the tyres climb), SLICKROCK (0.36), the SUMMIT RIDGE. Four
+- MOUNT ASCENT course (512 m, 93 → 762): forest two-track, THE BOG, the CREEK CROSSING ford
+  (real water: drag, wash, spray), the east-bank hairpin, THE TRAVERSE (off-camber), the MUDDY
+  HAIRPIN, bermed keyhole switchbacks, the ROCK GARDEN (0.3 m rock relief the tyres climb,
+  drawn exactly), SLICKROCK (0.36, sandstone), the SUMMIT RIDGE onto a rounded summit. Marker
+  posts, cairns, logs, edge grass (world-county-and-sea-terrain.md, Trail dressing). Four
   checkpoints; target 1:15 (the trail pilot's clean run is about 69 s at 1/30 and 1/60).
 
 ## Fort Sentinel, the Apache, the tank (military.js, apache.js, armor.js, base3d-*.js)

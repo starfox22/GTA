@@ -149,13 +149,15 @@
        keyhole round its centre, which is also its level turning pad's centre. */
     function laidTrail(control, passes = 3) {
       let points = [];
-      const hairpins = [];
+      const hairpins = [],
+        turns = [];
       for (const k of control) {
         if (Array.isArray(k)) {
           points.push([k[0], k[1]]);
           continue;
         }
         hairpins.push([k.c[0], k.c[1]]);
+        turns.push({ x: k.c[0], y: k.c[1], r: k.r });
         const steps = Math.max(3, Math.round(Math.abs(k.to - k.from) / 40));
         for (let j = 0; j <= steps; j++) {
           const a = ((k.from + ((k.to - k.from) * j) / steps) * Math.PI) / 180;
@@ -174,7 +176,7 @@
         points = cut;
       }
       points = points.map(([x, y]) => [Math.round(x * 10) / 10, Math.round(y * 10) / 10]);
-      return { points, hairpins };
+      return { points, hairpins, turns };
     }
     /*
      * MOUNT ASCENT TRAIL, laid like a real 4x4 trail up the south face (after the
@@ -225,6 +227,8 @@
         // 60 units up on fill; held to that, this trail's last hairpins stood on a
         // 6 m embankment over the north face).
         summitLift: 0,
+        // A berm of packed dirt round the outside of each keyhole hairpin (m).
+        berm: 0.3,
         camber: [{ from: 0.175, to: 0.265, slope: 0.13 }],
         steep: [{ from: 0.83, to: 0.88 }],
       },

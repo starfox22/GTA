@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-491 files in the include tree, 169,976 lines.
+492 files in the include tree, 170,352 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -32,7 +32,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/heat.js`   283 — Heat and wanted stars
 - `src/witnesses.js`   529 — Witnesses and 911 calls, the police side: crimes nobody has reported yet, what the police see and hear for themselves, and how a report brings them …
 - `src/game-collision.js`   360 — Building grid: solid() and shotBlocked() run thousands of times per frame (every pedestrian step, bullet and spawn test).
-- `src/game-car-spawn.js`   216 — makeCar(), canSpawnCar(), spawnClearCar(): creating vehicles with one shared object layout.
+- `src/game-car-spawn.js`   218 — makeCar(), canSpawnCar(), spawnClearCar(): creating vehicles with one shared object layout.
 - `src/game-worldgen.js`   480 — buildWorld(): the city plan, buildings (makeBuilding), trees, the 2D ground canvas.
 - `src/game-populate.js`   230 — Initial population: showcase parking (SHOWCASE_PARKING, parkShowcase) and populate().
 - `src/game-player-actions.js`   601 — Player verbs: enter and exit vehicles, interact, aim, shoot, reload, hurt, die, explode.
@@ -149,7 +149,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/markers.js`    20 — Objective and player markers: which ones are drawn (the floating arrow; the optional player ring) and a read-only report.
 - `src/god-panel.js`   799 — God mode settings
 - `src/driving.js`   489 — Tyres, brakes and driving assists
-- `src/tyre-effects.js`   260 — What the tyres leave behind: the burnout (forward and the handbrake held at a standstill), skid marks, and the one rule for tyre smoke, dust and …
+- `src/tyre-effects.js`   268 — What the tyres leave behind: the burnout (forward and the handbrake held at a standstill), skid marks, and the one rule for tyre smoke, dust and …
 - `src/hud.js`    33 — ▸ HUD behaviour and the title menu
 - `src/render3d.js`   233 — ▸ Three.js renderer and resource lifecycle
 - `src/frame-trace.js`   322 — Frame trace: every frame's CPU split (simulation sections, renderer laps) and what happened in it (collections, DOM mutations, GL uploads and links …
@@ -288,18 +288,18 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/terrain-roads.js`   536 — Ridgeline's scenic roads: smooth centrelines through the plan's corners, grading over the range (profile, cross-fall, cuttings and fills), guard …
 - `src/terrain-grading.js`   537 — Grading the scenic roads over the range (terrain generation): profiles, the caps and fills they set, the viewpoints' lay-bys and the carriageway …
-- `src/terrain-noise.js`   612 — Ridgeline Range: terrain cells, switchback trails and noise functions (terrainNoise, terrainFbm, terrainRidged).
-- `src/terrain-field.js`   718 — Terrain height field: drainage, generation, sampling (terrainHeight, mountainAt), vehicle poses on slopes, tumbles.
-- `src/terrain-suspension.js`   481 — Vehicle suspension on the terrain: four tyres on spring-dampers over the height field (rideStep), heave, pitch and roll, wheel loads, the ground's …
-- `src/terrain-scenery.js`   585 — Baked terrain data: treeline, scenery, streams, snow, mountain ground paint and terrainReport().
+- `src/terrain-noise.js`   616 — Ridgeline Range: terrain cells, switchback trails and noise functions (terrainNoise, terrainFbm, terrainRidged).
+- `src/terrain-field.js`   744 — Terrain height field: drainage, generation, sampling (terrainHeight, mountainAt), vehicle poses on slopes, tumbles.
+- `src/terrain-suspension.js`   507 — Vehicle suspension on the terrain: four tyres on spring-dampers over the height field (rideStep), heave, pitch and roll, wheel loads, the ground's …
+- `src/terrain-scenery.js`   594 — Baked terrain data: treeline, scenery, streams, snow, mountain ground paint and terrainReport().
 - `src/terrain-roadside.js`   437 — Scenic roads' roadside: guard rails and viewpoint walls (drawn and solid), reflector posts, the report (mountainRoad) and a test autopilot …
 - `src/terrain-headlights.js`   192 — Headlights on slopes: the lamps' body frame as a vehicle sits on the ground (headlightFrame) and the terrain horizon a beam sees (headlightHorizon) …
 - `src/headlight-beam.js`   105 — Headlight light, game side: the LOW BEAM pattern (lowBeamIntensity), its strength, reach and the VEHICLE LIGHT BUDGET that many overlapping beams …
 
 ## src/offroad.js ▸ The 4x4 club, trail mud, off-road traction and the hill climb
 
-- `src/offroad-trails.js`   654 — Off-road club block and trails: layout, terrain pads, vehicle types, trail sections and surfaces (offroadSurfaceAt).
-- `src/offroad-club.js`   658 — Off-road club lot: vehicles, colliders, ground, club talk and scenes, the hill climb.
+- `src/offroad-trails.js`   696 — Off-road club block and trails: layout, terrain pads, vehicle types, trail sections and surfaces (offroadSurfaceAt).
+- `src/offroad-club.js`   660 — Off-road club lot: vehicles, colliders, ground, club talk and scenes, the hill climb.
 
 ## src/skyline.js ▸ North Point towers, North Point Key, the tower lifts and the CIRRUS sky bar
 
@@ -452,7 +452,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/cars3d.js`    87 — ▸ Civilian car models
 - `src/hypercars3d.js`   944 — The Prestige Collection's car models
 - `src/motorbikes3d.js`   581 — Motorbike models
-- `src/offroad3d.js`    41 — ▸ 4x4 club trucks, the club lot, trail props and mud
+- `src/offroad3d.js`    42 — ▸ 4x4 club trucks, the club lot, trail props and mud
 - `src/vinnytruck3d.js`   592 — Vinny's truck (mission 1, the 'flatbed' type): a 1990s medium-duty conventional flatbed at real size, merged into a few draws (makeVinnyTruck), with …
 - `src/tyresmoke3d.js`   170 — Tyre smoke, dust and road spray: soft billboards thrown up from the wheels of any road vehicle in view (a burnout's smoke; sand, lawns and loose …
 - `src/mountain-village3d.js`    38 — ▸ Mountain village meshes
@@ -483,7 +483,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/vegetation3d-atlas.js`   605 — Vegetation 3D foliage atlas: painting, normals and mips (FOLIAGE_ATLAS, foliageAtlas).
 - `src/vegetation3d-material.js`   517 — Vegetation 3D foliage material (sway, alpha test), tree materials and FoliageMesh geometry helpers.
 - `src/vegetation3d-species.js`   673 — Vegetation 3D species (conifers, palms and others), LOD meshes, instances, tints and far trees.
-- `src/vegetation3d-landscape.js`   128 — Vegetation 3D landscaping: dune grass and sea grape on the Palm Keys beach, flowering shrubs in the Keys' parks, meadow grass on the mountain roads' …
+- `src/vegetation3d-landscape.js`   148 — Vegetation 3D landscaping: dune grass and sea grape on the Palm Keys beach, flowering shrubs in the Keys' parks, meadow grass on the mountain roads' …
 
 ## src/render3d-streetprops.js ▸ Street lamps and their glow halos, vehicle halos, blossom, sign() boards.
 
@@ -586,9 +586,9 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/county3d.js ▸ County and mountain meshes
 
-- `src/county3d-ground.js`   526 — County 3D ground: regional terrain materials and patches (terrainMaterials, TERRAIN_* maps) and scenery cells.
+- `src/county3d-ground.js`   535 — County 3D ground: regional terrain materials and patches (terrainMaterials, TERRAIN_* maps) and scenery cells.
 - `src/county3d-signs.js`    23 — County roadside guide signs: a real-size board (sign() paints it) on two galvanised posts, standing on the verge at the plan's spot …
-- `src/county3d-forest.js`   508 — County 3D forests (plantForest), mist, updateTerrainVisuals(), the airport and updateCountyVisuals().
+- `src/county3d-forest.js`   531 — County 3D forests (plantForest), mist, updateTerrainVisuals(), the airport and updateCountyVisuals().
 - `src/county3d-roads.js`   444 — County 3D scenic roads: the asphalt ribbon over the graded surface (markings, shoulders, wet film), guard rails, viewpoint walls, reflector posts and …
 
 ## src/base3d.js ▸ Fort Sentinel meshes
@@ -697,7 +697,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/offroad3d-models.js`   425 — Off-road 3D mud on vehicles, body plans, liveries, shapes, tubes, tyres and rims.
 - `src/offroad3d-kits.js`   548 — Off-road 3D kits: makeOffroadVehicle() and animateOffroadVehicle().
-- `src/offroad3d-mud.js`   623 — Off-road 3D mud, dust, splats and tyre tracks: clumps, mist and ground decals.
+- `src/offroad3d-mud.js`   633 — Off-road 3D mud, dust, splats and tyre tracks: clumps, mist and ground decals.
+- `src/offroad3d-trail.js`   192 — Off-road 3D trail dressing: the rock the tyres feel (rideRelief) drawn as rock, edge boulders, trail-marker posts, cairns, fallen logs, the ford's …
 
 ## src/mountain-village3d.js ▸ Mountain village meshes
 
@@ -729,7 +730,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-core.js`   147 — DeadEndCity console, core: status, teleport, look, clock, zoom, simulate, heal, god, cash, walk (+ godPanelConsole)
 - `src/game-console-missions.js`   317 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
 - `src/game-console-police.js`   217 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
-- `src/game-console-vehicles.js`   279 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
+- `src/game-console-vehicles.js`   281 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
 - `src/game-console-world.js`   231 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
 - `src/game-console-rides.js`   104 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
 - `src/game-console-leisure.js`    72 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)

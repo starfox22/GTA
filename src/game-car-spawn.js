@@ -71,6 +71,8 @@
           rideAir: false,
           rideThumpAt: -1,
           rideThumpVz: 0,
+          // Ford water over the ground under it (offroad-trails.js offroadFordWater).
+          fordDepth: 0,
           // Off-road (offroad.js): the reused terrain record, how far the driven
           // wheels spin ahead of the ground (0..1 and in u/s), the mud and rock
           // under them, low range, the last rock ledge, the mud on the body (and
