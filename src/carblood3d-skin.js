@@ -311,22 +311,27 @@
         carBloodBuildMs = job.ms;
         carBloodBuildSlices = job.slices;
       }
-      // One painting job at a time for every car: the next fitted event with tiles still to paint.
+      // One painting job at a time for every car: the next fitted event with tiles still to paint, or with hits
+      // piled onto it since it was painted (a top-up: car-stains.js PILING UP, cbTopUpJob).
       function cbPickPaint() {
         let best = null;
         for (const skin of carBloodSkins.values())
-          for (const event of skin.events)
-            if (event.fitted && event.layout && !event.painted && (!best || event.stain.t < best.event.stain.t)) best = { skin, event };
+          for (const event of skin.events) {
+            if (!event.fitted || !event.layout) continue;
+            const due = !event.painted || (event.stain.adds?.length || 0) > (event.addsDone || 0);
+            if (due && (!best || event.stain.t < best.event.stain.t)) best = { skin, event };
+          }
         if (!best) return null;
-        const job = { skin: best.skin, event: best.event, gen: null, ms: 0, slices: 0, panel: null, tilesDone: 0 };
+        const job = { skin: best.skin, event: best.event, gen: null, ms: 0, slices: 0, panel: null, tilesDone: 0, topUp: best.event.painted };
         best.event.shown = true;
-        job.gen = cbPaintJob(job);
+        job.gen = job.topUp ? cbTopUpJob(job) : cbPaintJob(job);
         // A tile goes to the GPU when a stage of it is done (and into the canvas sheet when the tile is).
         job.onYield = (stage) => {
           if (stage !== 'stage' || !job.panel) return;
           cbFlushTile(job.skin, job.panel.slot, job.tileEnd);
           job.tileEnd = false;
         };
+        if (job.topUp) return job;
         // A clean sheet under the event: a tile that held an earlier stain is blanked before the first stroke.
         for (const panel of best.event.layout)
           if (best.skin.used[panel.slot]) {
@@ -352,6 +357,7 @@
         const job = cbPaintCurrent;
         if (cbSlice(job)) {
           cbPaintCurrent = null;
+          if (job.topUp) job.event.addsDone = job.addsTo ?? job.event.addsDone;
           job.event.painted = true;
           carBloodPaintMs = job.ms;
           carBloodPaintSlices = job.slices;

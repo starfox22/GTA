@@ -11,14 +11,14 @@
           // (boatSurfaceElevation, air-cover.js) so it slips under the roadway. The
           // camera, the shadow fit and the cutaway stay on the water: following that
           // drop jolted the whole view down and back up again at each bridge.
-          const altitude = player.car && isBoat(player.car) ? 0 : entityElevation(player.car || player),
+          const altitude = streetCameraAltitude(),
             flying = !!(isAircraft(player.car) || player.parachute);
           // Street (orthographic) or flight (perspective) camera, plus what it sees.
           updateFlightView(deltaSeconds, altitude, flying);
           // Riding the Falcon or the Eye: the ride camera takes over (themepark3d.js).
           updateParkCamera(deltaSeconds);
           // The camera's kick and tremor (camera-feel.js: game state, read here).
-          const tremor = cameraShakeOffset(gameTime, shake);
+          const tremor = cameraShakeOffset(gameTime, cameraShakeLevel());
           camera.position.x += cameraKick.x + tremor.x;
           camera.position.z += cameraKick.y + tremor.y;
           if (camera === streetCamera) lockStreetCameraToPixels();

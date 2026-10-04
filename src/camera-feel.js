@@ -2,26 +2,29 @@
     // player goes and toward the aim in a fight) and its kicks and shake, offsets the renderer adds.
     /**
      * CAMERA FEEL
-     * FOLLOW: the view eases after the player (exponentially, so it settles the same
-     * at any frame rate) with a LEAD: in a vehicle about 0.45 s of travel along the
-     * way it is going (its velocity, not its nose: a drift, a spin or a skid sideways
-     * no longer whips the view round), up to CAMERA_LEAD_AHEAD ahead or
-     * CAMERA_LEAD_BEHIND reversing; on foot a little of the way the player runs and,
-     * in a fight (footwork.js playerInFight), a share of the way to the cursor or the
-     * aim, so the street the gun points at is on screen. The lead eases on its own
-     * (CAMERA_LEAD_RATE) so a change of direction swings the view smoothly. Settings
-     * · Driving · Camera look-ahead scales every lead (0 turns them off). CHASE
-     * FRAMING: with police on the player's tail (a unit within CAMERA_CHASE_REACH
-     * behind), a vehicle's lead shrinks by up to CAMERA_CHASE_PULL so the pursuer
-     * stays in the frame.
+     * FOLLOW: the view is pulled after the player by a critically damped spring
+     * (camera-drive.js cameraSpring: exact at any frame rate, never overshooting) with
+     * a LEAD. In a road vehicle or a boat that is the DRIVING FOLLOW (camera-drive.js:
+     * a steady lead along the smoothed way it goes, firm along the road, soft across
+     * it, a smoothed height). In an aircraft about 0.45 s of travel along its velocity
+     * (not its nose), up to CAMERA_LEAD_AHEAD ahead or CAMERA_LEAD_BEHIND reversing; on
+     * foot a little of the way the player runs and, in a fight (footwork.js
+     * playerInFight), a share of the way to the cursor or the aim, so the street the
+     * gun points at is on screen; these leads ease on their own (CAMERA_LEAD_RATE) and
+     * the spring keeps the old lag. Settings · Driving · Camera look-ahead scales every
+     * lead (0 turns them off). CHASE FRAMING: with police on the player's tail (a unit
+     * within CAMERA_CHASE_REACH behind), a vehicle's lead shrinks by up to
+     * CAMERA_CHASE_PULL so the pursuer stays in the frame.
      * KICKS: kickCamera(heading, units) pushes the view along a map heading; a
      * damped spring (CAMERA_KICK_SPRING / _DAMPING, about 0.1 s to the peak) brings
      * it back. Gunfire kicks against the aim, crashes along the way the car was
-     * going, blasts away from the blast, a hit away from the shooter.
+     * going, blasts away from the blast, a hit away from the shooter. In a road
+     * vehicle a kick goes CAMERA_KICK_VEHICLE as far and settles with no bounce.
      * SHAKE: `shake` (game-state.js) is drawn as a smooth tremor of a few sines
      * (cameraShakeOffset) instead of a new random offset each frame, which read as
-     * jitter at low frame rates. The renderer (render3d-frame.js) and the 2D view
-     * add cameraKick and the tremor to the camera; nothing in the game reads them.
+     * jitter at low frame rates; in a road vehicle at CAMERA_SHAKE_VEHICLE of `shake`
+     * (cameraShakeLevel). The renderer (render3d-frame.js) and the 2D view add
+     * cameraKick and the tremor to the camera; nothing in the game reads them.
      */
     const CAMERA_LEAD_SECONDS = 0.45,
       CAMERA_LEAD_AHEAD = 300,
@@ -38,7 +41,12 @@
       CAMERA_KICK_DAMPING = 17,
       // Impulse per unit of peak displacement for that spring (about 1 / 0.0378).
       CAMERA_KICK_IMPULSE = 26.5,
-      CAMERA_KICK_MAX = 22;
+      CAMERA_KICK_MAX = 22,
+      // In a road vehicle: kicks this share as far, settled without a bounce (critical damping),
+      // and the tremor this share of `shake` (cameraShakeLevel).
+      CAMERA_KICK_VEHICLE = 0.7,
+      CAMERA_KICK_VEHICLE_DAMPING = 2 * Math.sqrt(CAMERA_KICK_SPRING),
+      CAMERA_SHAKE_VEHICLE = 0.45;
     const cameraLead = { x: 0, y: 0 },
       cameraKick = { x: 0, y: 0, vx: 0, vy: 0 },
       cameraFootMotion = { x: 0, y: 0, vx: 0, vy: 0, ready: false },
@@ -46,7 +54,7 @@
     /* Push the view along map heading `angle`, peaking about `amount` units out. */
     function kickCamera(angle, amount) {
       if (!(amount > 0) || !Number.isFinite(angle)) return;
-      const v = Math.min(amount, CAMERA_KICK_MAX) * CAMERA_KICK_IMPULSE;
+      const v = Math.min(amount, CAMERA_KICK_MAX) * CAMERA_KICK_IMPULSE * (cameraInRoadVehicle() ? CAMERA_KICK_VEHICLE : 1);
       cameraKick.vx += Math.cos(angle) * v;
       cameraKick.vy += Math.sin(angle) * v;
       // Several kicks at once (a shotgun into a crash) must not throw the view away.
@@ -62,10 +70,11 @@
       const steps = Math.min(8, Math.ceil(deltaSeconds * 120));
       if (!steps) return;
       const dt = deltaSeconds / steps,
-        k = cameraKick;
+        k = cameraKick,
+        damping = cameraInRoadVehicle() ? CAMERA_KICK_VEHICLE_DAMPING : CAMERA_KICK_DAMPING;
       for (let i = 0; i < steps; i++) {
-        k.vx += (-CAMERA_KICK_SPRING * k.x - CAMERA_KICK_DAMPING * k.vx) * dt;
-        k.vy += (-CAMERA_KICK_SPRING * k.y - CAMERA_KICK_DAMPING * k.vy) * dt;
+        k.vx += (-CAMERA_KICK_SPRING * k.x - damping * k.vx) * dt;
+        k.vy += (-CAMERA_KICK_SPRING * k.y - damping * k.vy) * dt;
         k.x += k.vx * dt;
         k.y += k.vy * dt;
       }
@@ -177,37 +186,74 @@
       out.y *= scale;
       return out;
     }
-    /* The street camera's target for this frame (game-update.js). */
+    /* The street camera's target for this frame (game-update.js), its framing (world-view.js)
+       and the comfort log (camera-comfort.js). */
     function updateCameraFollow(deltaSeconds) {
+      if (!(deltaSeconds > 0)) return;
       trackFootMotion(deltaSeconds);
       updateCameraKick(deltaSeconds);
-      const c = player.car;
+      updateDrivingCameraSpeed(deltaSeconds);
+      updateCameraFraming(deltaSeconds);
+      followCamera(deltaSeconds);
+      updateCameraHeight(deltaSeconds);
+      recordCameraComfort(deltaSeconds);
+    }
+    function followCamera(deltaSeconds) {
+      const c = player.car,
+        frame = garageCameraFrame();
       if (c?.type === 'plane') {
         // A plane: its velocity led by 0.42 s, the view held close behind it.
+        cameraDrive.on = false;
         const lead = 1 - Math.exp(-deltaSeconds * 1.4);
         cameraLead.x += ((c.vx || 0) * 0.42 - cameraLead.x) * lead;
         cameraLead.y += ((c.vy || 0) * 0.42 - cameraLead.y) * lead;
-        const hold = 1 - Math.exp(-deltaSeconds * 7);
+        const hold = 1 - Math.exp(-deltaSeconds * 7),
+          x = cameraTarget.x,
+          y = cameraTarget.y;
         cameraTarget.x += (player.x + cameraLead.x - cameraTarget.x) * hold;
         cameraTarget.y += (player.y + cameraLead.y - cameraTarget.y) * hold;
+        cameraVel.x = (cameraTarget.x - x) / deltaSeconds;
+        cameraVel.y = (cameraTarget.y - y) / deltaSeconds;
         return;
       }
+      // A road vehicle or a boat: the comfortable follow (camera-drive.js DRIVING FOLLOW).
+      if (c && !isAircraft(c) && !frame) return followVehicle(c, deltaSeconds);
+      cameraDrive.on = false;
       const want = cameraLeadTarget(cameraLeadAim),
         ease = 1 - Math.exp(-deltaSeconds * CAMERA_LEAD_RATE);
       cameraLead.x += (want.x - cameraLead.x) * ease;
       cameraLead.y += (want.y - cameraLead.y) * ease;
-      // A coaster outruns the usual trailing camera; stay with the train.
-      const follow = 1 - Math.exp(-deltaSeconds * (player.coaster ? 10 : 4.5)),
-        // A garage's drive-in show frames the bay (garages.js garageCameraFrame).
-        frame = garageCameraFrame();
-      cameraTarget.x += ((frame ? frame.x : player.x + cameraLead.x) - cameraTarget.x) * follow;
-      cameraTarget.y += ((frame ? frame.y : player.y + cameraLead.y) - cameraTarget.y) * follow;
+      // On foot and the rest: a critically damped spring with the old first-order lag (twice
+      // its rate), so nothing jerks when the follow changes hands. A coaster outruns the usual
+      // trailing camera: stay with the train. A garage's drive-in show frames the bay.
+      const rate = 2 * (player.coaster ? 10 : 4.5);
+      cameraSpring(frame ? frame.x : player.x + cameraLead.x, frame ? frame.y : player.y + cameraLead.y, 0, 0, 1, 0, rate, rate, deltaSeconds);
     }
     /* A teleport starts the view afresh on the player (game-input.js teleportPlayer). */
     function resetCameraFeel() {
       cameraLead.x = cameraLead.y = 0;
       cameraKick.x = cameraKick.y = cameraKick.vx = cameraKick.vy = 0;
       cameraFootMotion.ready = false;
+      resetCameraDrive();
+      resetCameraComfort();
+    }
+    // A road vehicle or a boat under the player: the driving follow, its height and its gentler jolts.
+    function cameraInRoadVehicle() {
+      return !!player.car && !isAircraft(player.car);
+    }
+    /* The height the street camera looks at (render3d-frame.js): in a road vehicle the
+       smoothed one (camera-drive.js), a boat's water line (a boat dipping under a bridge
+       deck must not jolt the view), else the player's. */
+    function streetCameraAltitude() {
+      const c = player.car;
+      if (c && isBoat(c)) return 0;
+      if (c && !isAircraft(c) && cameraHeight.ready) return cameraHeight.z;
+      return entityElevation(c || player);
+    }
+    /* The tremor's amount the renderers draw (cameraShakeOffset): in a road vehicle
+       CAMERA_SHAKE_VEHICLE of it, so a kerb, a trail or a crash rumbles without blurring the road. */
+    function cameraShakeLevel() {
+      return cameraInRoadVehicle() ? shake * CAMERA_SHAKE_VEHICLE : shake;
     }
     /* DeadEndCity.cameraFeel(): the lead (units and metres), where the view stands
        from the player, the kick and the shake. */
@@ -222,7 +268,15 @@
         kick: [r(cameraKick.x), r(cameraKick.y)],
         kickSpeed: r(Math.hypot(cameraKick.vx, cameraKick.vy)),
         shake: +shake.toFixed(2),
+        // The tremor actually drawn (less in a road vehicle) and the camera's height over the raw one.
+        shakeDrawn: +cameraShakeLevel().toFixed(2),
+        heightLag: r(streetCameraAltitude() - (player.car && isBoat(player.car) ? 0 : entityElevation(player.car || player))),
         lookAhead: drivingLookAhead(),
         chase: +cameraChase.close.toFixed(2),
+        // The driving follow (camera-drive.js): on, the lead's heading, the speed the framing reads (km/h), the view's speed.
+        drive: cameraDrive.on,
+        driveHeading: Math.round((cameraDrive.h * 180) / Math.PI),
+        driveKmh: Math.round(cameraDrive.speed / KMH),
+        viewSpeed: r(Math.hypot(cameraVel.x, cameraVel.y)),
       };
     }
