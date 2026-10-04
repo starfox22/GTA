@@ -221,6 +221,26 @@
 .god-slider-hours i {
   font-style: normal;
 }
+/* CHOOSE MISSION over a job in progress (campaign.js ABANDON CONFIRM): over the picker. */
+#abandonConfirm {
+  z-index: 46;
+}
+.abandon-dialog {
+  width: min(520px, 92vw);
+  padding: 28px 32px 22px;
+}
+.abandon-dialog h2 {
+  margin: 8px 0 10px;
+}
+.abandon-dialog p {
+  margin: 0 0 22px;
+  color: #c3cbbf;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.abandon-dialog .text-btn {
+  padding-bottom: 0;
+}
 @media (pointer: coarse) {
   .god-choice button {
     min-height: 40px;

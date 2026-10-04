@@ -85,6 +85,8 @@
           // Anything between the camera and the player is cut away round them
           // (lighting3d.js, CUTAWAY).
           updateCutaway(altitude);
+          // Leaves between the camera and the player dissolve round them (vegetation3d-cutaway.js).
+          updateFoliageCutaway(deltaSeconds);
           lap = profileLap('r:lod', lap);
           // Everyone on foot is drawn by the instanced character rig (crowd3d.js,
           // character-rig3d.js): pedestrians, and guards, gangs, officers, story

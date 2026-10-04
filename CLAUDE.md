@@ -90,6 +90,12 @@ packs with plain `<script src>` so the zip still plays from file://.
   to move the player; releases every carrier), `solid()` (people collision), `crime()` (only
   heat source), `offerPrompt()` (only prompt writer), `actionHeld()`/`keyName()` (never
   literal keys). Details: docs/areas/core-and-contracts.md.
+- The mission card never covers the player: `missionCardFolded()` (hud-clearance.js) folds it, its reading time
+  held, while `hudPlayerBox()` meets the open card; the strip, the dialogue line and the waypoint pill fade
+  (`.yield-fade`) only as a last resort. HUD layout reads go in `measureMissionCard()` at the start of `runFrame`;
+  a new HUD box that can sit over the player joins this. `hudOverlaps()` lists overlapping boxes and
+  tools/tests/hud-layout.mjs holds 960x600 at zero. `teleportPlayer()` also ends a train ride (`dropTransitRide`)
+  and steps the player out of a vehicle with nowhere to step out to; only an aircraft in the air comes along.
 - `tell(text, s, {id, tone})` (hud-notify.js) is the only notification writer; hints use
   `pressKey()`/`keyPrefix()` (input-hints.js), never `'Press ' + keyName()`.
 - `shooterInView()` (combat-rules.js) is the only rule for whether an NPC may fire at the
@@ -140,6 +146,11 @@ packs with plain `<script src>` so the zip still plays from file://.
   the last failed one, `retryJobIndex`), never a waiting call. Console `pointers()` lists every story pointer.
 - Service counters never sell nothing: health items in `SERVICE_CURES` and armour are refused when full
   (citylife-police.js `serviceAction`).
+- Mission vehicles take gang small-arms damage through `missionCageShare` (combat-rules.js `MISSION_CAGE`: 32 %
+  above half health, down to 6 % below 30 %); mission 1's cargo-bay balance is held by tools/tests/mission1-bay.mjs.
+  A pick in the mission picker while a job runs goes through the ABANDON confirm (campaign.js
+  `showAbandonConfirm` / story.js `abandonMission`). Hints follow the HUD on screen (input-hints.js `hintDevice`:
+  gamepad names after pad input, touch names while `body.touch-mode` is set, else keys).
 - Every service place has a real building and its door on the pavement: no floor rings, no free-standing place
   signs. Motels, inns and lodges are dressed by `dressHotel()` (civic3d-hotels.js). County boards (guide,
   scenic-view, town, trailhead) are drawn only through `roadsideSign()` (county3d-signs.js) at the spot
@@ -231,6 +242,10 @@ packs with plain `<script src>` so the zip still plays from file://.
   only read `cameraKick` and `cameraShakeOffset`.
 - Roomy one-shots (shots, blasts, crashes, near thunder) connect to `reverbSend`
   (acoustics-audio.js), never `reverb`; audio randomness uses `sfxRandom`, not `randomBetween`.
+- Trees: every tree, palm, shrub and grass clump uses `treeMaterial`, which carries the foliage cutaway
+  (`FOLIAGE_HOLE_CUT`; uniforms from `updateFoliageCutaway` / `foliageCutawayPlan()`, foliage-cutaway.js; the same
+  Settings switch as the building cutaway). A new plant must use it to be see-through; keep `foliageHoleCut()` in
+  step with the GLSL; never add a define for it and never run it in `treeDepthMaterial`.
 - **Renderer never changes game rules**: `*3d.js` files (inside `createCityRenderer()`) only
   read state.
 - All vehicle light on a surface shares one budget (VEHICLE LIGHT BUDGET; headlight-beam.js

@@ -61,6 +61,34 @@
             if ( diffuseColor.a < foliageCut ) discard;
           #endif
         #endif`;
+      // FOLIAGE CUTAWAY (foliage-cutaway.js): tree pixels between the camera and the player go through the
+      // building cutaway's 4x4 screen door, inside the subject's outline on screen (`foliageHoleShape.xy`, view
+      // units round `foliageHole.xy`, then `1 / .z` of fade; scaled to the subject's depth `foliageHoleFloor.y`
+      // under a perspective camera), nearer the camera than its middle by the margin (`.w`) and above the floor
+      // height (`foliageHoleFloor.x`). Leaves and the limbs among them alike (kept limbs drew a dark star over the
+      // player); the shadow pass (treeDepthMaterial) never runs it, so the crown's shade stays on the ground.
+      // Set once a frame by updateFoliageCutaway (vegetation3d-cutaway.js); foliageHoleCut() is this test in JS.
+      const foliageHoleUniforms = {
+        foliageHole: { value: new Three.Vector4(0, 0, 0, 0) },
+        foliageHoleShape: { value: new Three.Vector4(0, 0, 1, 0) },
+        foliageHoleFloor: { value: new Three.Vector2(0, 0) },
+      };
+      const FOLIAGE_HOLE_PARS = `
+        uniform vec4 foliageHole, foliageHoleShape;
+        uniform vec2 foliageHoleFloor;`;
+      const FOLIAGE_HOLE_CUT = `
+        if ( foliageHole.w > 0.0 ) {
+          vec3 foliageView = - vViewPosition;
+          float foliageFront = foliageView.z - foliageHole.z - foliageHoleShape.w;
+          if ( foliageFront > 0.0 ) {
+            vec2 foliageAt = foliageHoleFloor.y > 0.0 ? foliageView.xy * ( foliageHoleFloor.y / max( vViewPosition.z, 1.0 ) ) : foliageView.xy;
+            vec2 foliageAway = max( abs( foliageAt - foliageHole.xy ) - foliageHoleShape.xy, 0.0 );
+            float foliageGone = foliageHole.w * ( 1.0 - smoothstep( 0.0, 1.0, length( foliageAway ) * foliageHoleShape.z ) )
+              * smoothstep( 0.0, 4.0, foliageFront ) * smoothstep( foliageHoleFloor.x, foliageHoleFloor.x + 4.0, vCityWorld.y );
+            vec2 foliageCell = mod( floor( gl_FragCoord.xy ), 4.0 );
+            if ( ( cityBayer2( mod( foliageCell, 2.0 ) ) * 4.0 + cityBayer2( floor( foliageCell * 0.5 ) ) + 0.5 ) / 16.0 < foliageGone ) discard;
+          }
+        }`;
       function foliageVertexPatch(shader) {
         Object.assign(shader.uniforms, foliageUniforms);
         shader.vertexShader = shader.vertexShader
@@ -84,6 +112,11 @@
       treeMaterial.name = 'trees';
       treeMaterial.onBeforeCompile = (shader) => {
         cityMaterialPatch(shader);
+        // The foliage cutaway runs right after the leaf cut-out, in this material only (not the shadow pass).
+        Object.assign(shader.uniforms, foliageHoleUniforms);
+        shader.fragmentShader = shader.fragmentShader
+          .replace('#include <common>', '#include <common>\n' + FOLIAGE_HOLE_PARS)
+          .replace('#include <alphatest_fragment>', '#include <alphatest_fragment>\n' + FOLIAGE_HOLE_CUT);
         foliageVertexPatch(shader);
         shader.vertexShader = shader.vertexShader.replace(
           '#include <color_vertex>',

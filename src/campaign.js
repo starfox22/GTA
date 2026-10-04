@@ -231,6 +231,7 @@
         'menu',
         'pauseMenu',
         'missionSelect',
+        'abandonConfirm',
         'callOverlay',
         'mapOverlay',
         'serviceOverlay',
@@ -403,6 +404,8 @@
     getElement('godTimeSlider').oninput = (e) => setGodTime(Number(e.target.value));
     function closeMissionSelect() {
       if (gameMode !== 'missions') return;
+      abandonPick = null;
+      getElement('abandonConfirm').classList.add('hidden');
       getElement('missionSelect').classList.add('hidden');
       gameMode = missionMenuOrigin;
       keys = {};
@@ -412,13 +415,60 @@
         getElement(gameMode === 'pause' ? 'chooseMissionPause' : 'chooseMissionStart').focus();
       }
     }
-    function chooseMission(index) {
+    /* ABANDON CONFIRM
+       A pick in the mission picker while a job runs asks first (it used to throw the job
+       away without a word): ABANDON <JOB>? with ABANDON JOB (Enter, A, a tap) and KEEP
+       PLAYING (Escape, B), which closes the picker and goes back to the job. Abandoned, the
+       job ends without a JOB FAILED card and RESTART CURRENT JOB can bring it back
+       (story.js abandonMission); the pick then comes with its call as ever. */
+    let abandonPick = null;
+    function showAbandonConfirm(index) {
+      abandonPick = index;
+      getElement('abandonTitle').textContent = 'ABANDON ' + missions[mission.index].title.toUpperCase() + '?';
+      getElement('abandonText').textContent =
+        'The job in progress ends here and pays nothing. ' + missions[index].title + ' comes with its call.';
+      getElement('abandonYes').textContent = 'ABANDON JOB' + menuKeySuffix('accept');
+      getElement('abandonNo').textContent = 'KEEP PLAYING' + menuKeySuffix('back');
+      getElement('abandonConfirm').classList.remove('hidden');
+      getElement('abandonYes').focus();
+    }
+    /* The confirm's answer: true abandons the job for the pick, false keeps playing. */
+    function answerAbandonConfirm(abandon) {
+      if (abandonPick === null) return false;
+      const index = abandonPick;
+      abandonPick = null;
+      getElement('abandonConfirm').classList.add('hidden');
+      if (abandon) return chooseMission(index, true);
+      const fromPause = missionMenuOrigin === 'pause';
+      closeMissionSelect();
+      if (fromPause && gameMode === 'pause') togglePause();
+      return false;
+    }
+    getElement('abandonYes').onclick = () => answerAbandonConfirm(true);
+    getElement('abandonNo').onclick = () => answerAbandonConfirm(false);
+    // Console (chooseMission, abandonJob): the confirm as shown, or null.
+    function abandonConfirmReport() {
+      if (abandonPick === null) return null;
+      return {
+        title: getElement('abandonTitle').textContent,
+        text: getElement('abandonText').textContent,
+        yes: getElement('abandonYes').textContent,
+        no: getElement('abandonNo').textContent,
+        focused: document.activeElement?.id || null,
+      };
+    }
+    function chooseMission(index, abandonConfirmed = false) {
       if (Number.isInteger(index) && index < missions.length && demoLocked(index)) {
         if (gameMode === 'missions') showDemoBuyNote();
         return false;
       }
       if (!Number.isInteger(index) || index < 0 || index >= missions.length || !missionUnlocked(index))
         return false;
+      if (mission && !abandonConfirmed) {
+        if (gameMode === 'missions') showAbandonConfirm(index);
+        return false;
+      }
+      if (mission) abandonMission();
       initAudio();
       resetMissionState();
       mission = null;

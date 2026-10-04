@@ -9,9 +9,12 @@
         !(vehicle.sinkFor > 0)
       );
     }
-    // An engine fire gives the driver a few seconds; the player and mission cars a few more.
+    // An engine fire gives the driver a few seconds; the player's car a few more.
+    // A job's vehicle burns slowest (to its MISSION_FIRE_FLOOR, about 20 s for the cargo truck):
+    // with the bail-out warning that is time to get out, or to reach a respray (combat-rules.js
+    // MISSION CAGE).
     function burnSeconds(vehicle) {
-      return vehicle === player.car || vehicle.mission ? 11 : 7;
+      return vehicle.mission ? 30 : vehicle === player.car ? 11 : 7;
     }
     function igniteVehicle(vehicle) {
       vehicle.damage.burning = 0.001;

@@ -334,6 +334,8 @@
         crowdStats: (byPart) => crowdStats(byPart),
         // Trees (vegetation3d.js): species counts, the forests, tree draws in view.
         vegetation: () => vegetationReport(),
+        // The see-through hole in the trees round the player (vegetation3d-cutaway.js; DeadEndCity.foliageCutaway).
+        foliageCutaway: () => foliageHoleReport(),
         treeLineup: (x, y, spacing, lod, perRow) => treeLineup(x, y, spacing, lod, perRow),
         crowdBenchmark: (frames) => crowdBenchmark(frames),
         // A person's drawn height from the soles to the crown (their compiled look), in map units.

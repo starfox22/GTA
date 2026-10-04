@@ -114,8 +114,21 @@ navigation.js (big map, GPS), cycles.js (bike share), src/shell.html + src/ui/* 
   or a per-frame tell never piles up. Life is at least ~0.24 s a word (1.5-7 s) on the HUD
   clock. Tone (edge colour) from the words unless given: police, warn, good, info. Console
   `notices()`.
-- Car radio on a phone (`phoneHud()`): `hudPop('carRadio')` only flashes the chip; it opens
-  on a tap (the old 4 s mid-screen pop on getting in covered the road and the toasts).
+- Car radio in touch mode (phones and tablets): `hudPop('carRadio')` only flashes the chip; it
+  opens on a tap (the old 4 s pop on getting in covered the road and the toasts on a phone, the
+  GAS / BRAKE buttons on a tablet). On short windows (<= 720 px tall, not touch) it stands on the
+  equipment column and opens upward (radio.css).
+- **Mission card clearance** (hud-clearance.js): the card never covers the player. `hudPlayerBox`
+  projects the vehicle (footprint and roof) or person through the street camera; while the open card
+  would come within 18 px, `missionCardFolded` shows the strip and holds `missionCardUntil` (and
+  `incomingCallRemaining`) until the spot is clear for 0.6 s; opened on purpose (`missionCardAsked`: O,
+  a tap) it stays open. `.yield-fade` (folded strip, dialogue line, waypoint pill) only when one of them
+  would still cover the player. Boxes are read in `measureMissionCard` (runFrame start, beside the dock
+  line). Console `hudClearance()`, `hudOverlaps()` (HUD boxes that overlap each other or the player);
+  tools/tests/hud-clearance.mjs, hud-layout.mjs (960x600 at zero overlaps, keyboard and touch).
+- Narrow windows (<= 980 px): the notices start under the waypoint pill (116 px) and stop short of
+  the centre (`calc(50vw - 150px)`). The dispatch / radio caption (`#radioCaption`, top centre) is never
+  wider than the space between the notices' column and the right edge's mirror: a long line wraps.
 - Speed box (`#vehicleStats`): one readout for every way of moving; on foot the movement
   state and measured pace (`trackPlayerPace`). **Every printed speed goes through
   `speedReading` / `speedText` / `kmhReading`** (km/h or mph setting); boats keep knots,

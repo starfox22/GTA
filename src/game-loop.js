@@ -108,8 +108,10 @@
     function runFrame(t, live) {
       const frameStart = performance.now();
       if (frameTrace.on) frameTraceBegin();
-      // Layout reads the HUD asked for last pass, while the layout is still clean (hud-state.js).
+      // Layout reads the HUD asked for last pass, while the layout is still clean (hud-state.js), and the
+      // mission card's boxes for its clearance of the player (hud-clearance.js).
       measureDockLine();
+      measureMissionCard();
       if (!firstFrameMarked) {
         firstFrameMarked = true;
         bootMark('first-frame');

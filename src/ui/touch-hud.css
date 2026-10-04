@@ -162,8 +162,9 @@
 .touch-mode #speed {
   font-size: 20px;
 }
+/* Under the weapon chip (which ends at 172 px in a vehicle, the only place the radio shows). */
 .touch-mode #carRadio {
-  top: 150px;
+  top: 180px;
   right: var(--hud-edge);
   width: 150px;
 }

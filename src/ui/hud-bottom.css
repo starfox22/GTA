@@ -393,6 +393,11 @@
 #pager.compact #pagerHint {
   display: inline-block;
 }
+/* The strip would cover the player even folded (hud-clearance.js): it fades. */
+#pager.yield-fade {
+  opacity: 0.3;
+  transition: opacity 0.25s;
+}
 #pager.compact #cargoStatus {
   order: 3;
   flex-basis: 100%;

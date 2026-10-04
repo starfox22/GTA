@@ -123,6 +123,7 @@ The image pipeline, light, searchlights and the cutaway: rendering-lighting.md.
 - Trees (vegetation3d-material.js): on MSAA tiers the leaf cut-outs use alpha to coverage
   (`setFoliageCoverage`; r160 forces an opaque material's alpha to 1, so the tree material
   writes the coverage back after `<opaque_fragment>`). A/B `lookSwitches({ foliageCoverage })`.
+  The same material carries the foliage cutaway round the player (rendering-lighting.md, Searchlights and cutaway).
 - Water (world3d-water.js): one ShaderMaterial with a distance-to-shore texture, Gerstner waves;
   boat wakes are drawn into a wake map it samples (`wakeEmit`, wakes3d.js).
 - Weather visuals (weather3d.js): GPU rain streaks, splashes, drips and spray from uniforms,
