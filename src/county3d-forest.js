@@ -19,8 +19,8 @@
         const [pine, fir] = ground < 150 ? [0.55, 0.82] : ground < 400 ? [0.22, 0.62] : [0.1, 0.35];
         return r < pine ? 'pine' : r < fir ? 'fir' : 'spruce';
       }
-      // Size 1 of mountainScenery() is 1/21 of a species' modelled size.
-      const FOREST_SCALE = 1 / 21,
+      // Size 1 of mountainScenery() is 1/21 of a species' modelled size (FOREST_TREE_SCALE, trail-trees.js: the trail view corridor and the trunks size trees by it).
+      const FOREST_SCALE = FOREST_TREE_SCALE,
         // The far level's model per species.
         FOREST_FAR = { spruce: 'spruce', fir: 'spruce', pine: 'pine', stonePine: 'pine', oak: 'beech', beech: 'beech', maple: 'beech', birch: 'beech' };
       function plantForest(lists) {

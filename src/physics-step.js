@@ -350,6 +350,8 @@
       // Lamp posts, hydrants, bins and benches: solid until something heavy and fast
       // enough knocks them flat (damage.js).
       streetPropContacts();
+      // The mountain forest's trunks (forest-trunks.js): rooted, they hold.
+      forestTrunkContacts();
       mark('phys:contacts');
       for (let v = 0; v < vehicles.length; v++) settleVehicle(vehicles[v], pc, stepSeconds);
       mark('phys:post');

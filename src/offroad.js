@@ -48,5 +48,6 @@
      * target (OFFROAD_SECTIONS, 1:15 on Mount Ascent) for $1,000.
      */
     // @include src/offroad-trails.js
+    // @include src/trail-trees.js
     // @include src/offroad-club.js
     // END SUBSYSTEM: src/offroad.js
