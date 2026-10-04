@@ -15,6 +15,8 @@
     // @include src/voices.js
     // @include src/footwork.js
     // @include src/camera-feel.js
+    // @include src/camera-drive.js
+    // @include src/camera-comfort.js
     // @include src/hud-notify.js
     // A line in the notification feed (hud-notify.js): `options` { id, tone }.
     function tell(text, duration = 3, options) {
@@ -45,6 +47,7 @@
     // @include src/map-view.js
     // @include src/game-ui.js
     // @include src/game-menus.js
+    // @include src/god-splash.js
     // @include src/game-input.js
     // @include src/controls.js
     // @include src/geography.js
@@ -92,6 +95,7 @@
     // @include src/military.js
     // @include src/armor.js
     // @include src/apache.js
+    // @include src/mounted-guns.js
     // @include src/aviation.js
     // @include src/challenges.js
     // @include src/sidejobs.js
@@ -117,6 +121,7 @@
     // @include src/sealife-audio.js
     // @include src/navigation.js
     // @include src/parachute.js
+    // @include src/deck-landing.js
     // @include src/falls.js
     // @include src/mobile.js
     // @include src/input-hints.js
@@ -144,6 +149,7 @@
     // @include src/quality.js
     // @include src/settings.js
     // @include src/markers.js
+    // @include src/foliage-cutaway.js
     // @include src/god-panel.js
     // @include src/driving.js
     // @include src/tyre-effects.js
@@ -170,6 +176,7 @@
     bootMark('title-menu');
     loadVisuals();
     bootMark('visuals-queued');
+    // @include src/frame-trace.js
     // @include src/game-loop.js
     requestAnimationFrame(frame);
     bootMark('loop-ready');

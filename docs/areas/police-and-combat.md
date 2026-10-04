@@ -15,6 +15,14 @@ wounds.js, carjack.js, damage.js, air-cover.js. `policeReport()` has `wounds` an
   `'seen'` = scripted, the stars rise regardless (base alarms, mission stages in
   challenges.js, roadblock rams, stealing the Apache); an object `{ x, y, kind, caller }` =
   a witness report reaching dispatch. New scripted crimes that must raise stars need `'seen'`.
+- **Search clock** (citylife-civic.js SEARCH CLOCK, `PURSUIT_SEARCH_SECONDS` 5/7/10/14/19 s by
+  stars): it runs out of sight once the first unit reached a reported scene; at full speed outside
+  the search circle, at `SEARCH_ZONE_RATE` (0.25) inside it, not at all while units are still on
+  their way to a 911 call (`policeResponseHolding`). The HUD countdown shows only while it runs at
+  full speed (`searchClockShown()`); otherwise the panel says why (LEAVE THE SEARCH AREA, UNITS
+  RESPONDING). Sight is debounced: a sighting restarts the clock after 0.3 s of sight (a glimpse
+  only re-centres the circle on the player), a search starts after 0.6 s out of sight. A crowd tip
+  or a witness who sees the player re-centres the circle (and adds a little time).
 - Wanted chips (NEED TO LOSE POLICE, POLICE CLEARED) only on a real drop;
   `policeBlocksMissionDelivery` lists the mission stages that need zero stars.
 
@@ -86,7 +94,8 @@ wounds.js, carjack.js, damage.js, air-cover.js. `policeReport()` has `wounds` an
   traffic is locked (E says LOCKED), which is not the carjack failing. Anything that moves
   or resets the player calls `cancelCarjack()` (teleportPlayer, die, resetMissionState).
 - Armour: `vehicleArmorShare` (the Apache takes 30% of small arms). The tank turret
-  (`traverseTurret`) is shared by the player, the pursuit tank and army gunners.
+  (`traverseTurret`) is shared by the player, the pursuit tank, army gunners and the mounted
+  guns (police-and-combat-mounted.md).
 - Mission vehicles (`mission = true`) burn down to 8% and go out instead of exploding; they
   take 40% of gang small-arms damage.
 

@@ -650,7 +650,7 @@
         unreported: Math.round(unreportedHeat * 10) / 10,
         crimes: crimeLog.slice(),
         rampage: { ...rampage },
-        search: { active: searchActive, remaining: Math.round(searchRemaining * 10) / 10, lastSeen: lastSeen ? { x: round(lastSeen.x), y: round(lastSeen.y) } : null },
+        search: { active: searchActive, remaining: Math.round(searchRemaining * 10) / 10, clock: searchClock, shown: searchClockShown(), lastSeen: lastSeen ? { x: round(lastSeen.x), y: round(lastSeen.y) } : null },
         seen: wantedStars > 0 && policeCanSeePlayer(),
         arrest: Math.round(arrestProgress * 100) / 100,
         // Surrender (standing still) and whether officers may cuff rather than shoot.

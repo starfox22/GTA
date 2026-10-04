@@ -468,6 +468,15 @@
 body:not(.touch-mode).police-search-active #carRadio {
   top: 290px;
 }
+/* Short windows (960x600): open, the radio (about 250 px tall) reached down over the speed box, the more
+   when a police search moved it down; it stands on the equipment column instead and opens upward. */
+@media (max-height: 720px) {
+  body:not(.touch-mode) #carRadio,
+  body:not(.touch-mode).police-search-active #carRadio {
+    top: auto;
+    bottom: 172px;
+  }
+}
 /* The police chip (police-feedback.js) keeps its look; it is centred with
    margins so its untransformed box never widens a phone's viewport. */
 #policeNotice {
@@ -499,6 +508,15 @@ body:not(.touch-mode).police-search-active #carRadio {
   }
   #navigation {
     top: 64px;
+  }
+  /* The notices start under the waypoint pill (a long one ran under its left end at 960 px) and
+     stop short of the centred status lines below it. */
+  #toast {
+    top: 116px;
+    max-width: calc(50vw - 150px);
+  }
+  #radioCaption {
+    max-width: calc(300px - 2 * var(--hud-edge) - 24px);
   }
   #terrainStatus {
     top: 112px;
@@ -540,5 +558,22 @@ body:not(.touch-mode).police-search-active #carRadio {
   }
   #storyLine {
     bottom: 150px;
+  }
+}
+/* A short window has no room for the story line (the film subtitle) between the action
+   prompt and the open mission card: while a line is up the card stays a strip
+   (game-ui.js updateMissionCard), and the line sits just above that strip, between the
+   minimap and the speed box, so it covers neither (it covered the card's top and touched
+   the minimap's corner at 960x600). Narrower windows keep the full-width line. */
+@media (max-height: 620px) and (min-width: 701px) {
+  #storyLine {
+    bottom: 114px;
+    width: min(640px, calc(100vw - 2 * var(--hud-edge) - 540px));
+    font-size: 14px;
+  }
+}
+@media (max-height: 620px) and (min-width: 701px) and (max-width: 980px) {
+  #storyLine {
+    width: min(640px, calc(100vw - 2 * var(--hud-edge) - 440px));
   }
 }

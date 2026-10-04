@@ -68,5 +68,13 @@ buildings, ground). Vehicle lights: rendering-vehicle-lights.md.
   beam starts at `helicopterSearchlightMount(h, out)`. Console `searchlight()`.
 - Cutaway (`updateCutaway`): a player-sized dithered hole through the structure between
   camera and player, or through a roof directly over them (`airCoverVolumes()`, buildings,
-  roofs registered with `registerCutawayRoof`). Vehicles, people, trees and props are never
-  cut. Settings switch: `city3D.setCharacterCutaway(on)`, saved as `dead-end-city-cutaway`.
+  roofs registered with `registerCutawayRoof`). Vehicles, people and props are never cut.
+  Settings switch: `city3D.setCharacterCutaway(on)`, saved as `dead-end-city-cutaway`.
+- Foliage cutaway (same switch): every tree, palm, shrub and grass clump shares `treeMaterial`, whose fragment
+  shader drops pixels (4x4 screen door, `FOLIAGE_HOLE_CUT` in vegetation3d-material.js) inside the subject's
+  outline on screen plus a fade, nearer the camera than its middle, above 1.5 m over its base (grass and trunk
+  feet stay). The plan (who, how big) is game logic, `foliageCutawayPlan()` (foliage-cutaway.js); the renderer
+  only sets three uniforms a frame and eases them (`updateFoliageCutaway`, vegetation3d-cutaway.js). No define,
+  no program variant, no per-tree JS: draw calls and programs are unchanged and the prewarm covers it. The shadow
+  pass (`treeDepthMaterial`) never runs it. `foliageHoleCut()` is the shader's test in JS: change both together.
+  Console `foliageCutaway()` (the line of sight, and with a renderer the crowns it crosses and what is left).

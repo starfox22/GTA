@@ -239,7 +239,11 @@
         }
         contactShadows.count = contactCount;
         contactShadows.visible = contactCount > 0;
-        if (contactCount) contactShadows.instanceMatrix.needsUpdate = true;
+        if (contactCount) {
+          // Only the instances in use go to the GPU (the buffer holds CONTACT_CAPACITY).
+          contactShadows.instanceMatrix.addUpdateRange(0, contactCount * 16);
+          contactShadows.instanceMatrix.needsUpdate = true;
+        }
       }
       // ---- Quality tier ----------------------------------------------------------------------
       let activeTier = null;

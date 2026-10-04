@@ -15,8 +15,9 @@
      *
      * TRAIL MUD: every vertex of a trail carries a mud and a rock amount
      * (offroadTrailBake, from the trail's own distance along and across): the
-     * lower switchbacks run through damp forest and are muddy dirt, with a bog,
-     * a muddy hairpin and rocky steps as set pieces (OFFROAD_SECTIONS). Ruts in
+     * lower trail runs through damp forest and is muddy dirt, with the bog, the
+     * creek crossing, a muddy hairpin, the rock garden and the slickrock as set
+     * pieces (OFFROAD_SECTIONS). Ruts in
      * the middle hold the deepest mud; the crown and the edges are firmer, so the
      * line matters. Rain (weather.wet) makes all of it slicker.
      *
@@ -31,9 +32,11 @@
      * (club trucks under 35 km/h) multiplies the pull. With no throttle the
      * brakes hold the truck up to the same friction; past it the truck slides
      * back down. Mud also costs rolling resistance, and rough ground above a
-     * vehicle's suspension speed bounces it about. A road car spins its wheels
-     * in the first mud; a 4x4 climbs, but the wet bog and the muddy hairpin need
-     * momentum and a line out of the ruts.
+     * vehicle's suspension speed drags. The load the tyres grip with and the
+     * ground's push down a slope come from the ride on four springs
+     * (terrain-suspension.js): light over a crest, nothing in the air. A road car
+     * spins its wheels in the first mud; a 4x4 climbs, but the wet bog and the
+     * muddy hairpin need momentum and a line out of the ruts.
      *
      * BODY MUD (c.mudCoat 0..1, c.mudWet): builds up from mud thrown by the
      * tyres, washes off in rain and in water (the sea, lakes, the streams).
@@ -41,9 +44,10 @@
      * HILL CLIMB: crossing the start gate at a trailhead starts the clock; the
      * checkpoints are counted in order and the summit shows SUMMIT REACHED with
      * the time and the best clean run (localStorage `dead-end-city-hillclimb`).
-     * E at the club sign in a vehicle arms the challenge: beat 2:30 on Mount
-     * Ascent for $1,000.
+     * E at the club sign in a vehicle arms the challenge: beat the course's
+     * target (OFFROAD_SECTIONS, 1:15 on Mount Ascent) for $1,000.
      */
     // @include src/offroad-trails.js
+    // @include src/trail-trees.js
     // @include src/offroad-club.js
     // END SUBSYSTEM: src/offroad.js

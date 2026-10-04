@@ -444,12 +444,13 @@
         }
       }
       // Suspension pose on top of the body's own animation: weight transfer, the blast
-      // hop, and the sag toward a flat tyre.
+      // hop, the sag toward a flat tyre, and on the terrain the body's ride on its
+      // springs over the ground under its middle (rideLift, terrain-suspension.js).
       const pose = { lift: 0, roll: 0, pitch: 0 };
       function vehiclePose(c) {
         const hop = c.hop,
           tires = c.damage?.tires;
-        pose.lift = hop ? hop.z : 0;
+        pose.lift = (hop ? hop.z : 0) + (c.rideLift || 0);
         pose.roll = (c.loadRoll || 0) + (hop ? hop.roll : 0);
         pose.pitch = (c.loadPitch || 0) + (hop ? hop.pitch : 0);
         if (tires && !c.damage.burnt) {

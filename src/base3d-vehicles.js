@@ -78,6 +78,12 @@
             turret.add(barrel);
             rodTo(barrel, 2, 3.5, 0, 16, 3.5, 0, 0.45, darkMetal);
             box(barrel, 3, 4.5, 2.2, 3, 3, 2, oliveTrim);
+            // The M2 itself (mounted-guns.js fires it): receiver, the heavy barrel's
+            // jacket, the flash hider and the spade grips back toward the gunner.
+            box(barrel, 0.6, 3.6, 0, 4.2, 1.9, 1.7, darkMetal);
+            rodTo(barrel, 2.6, 3.5, 0, 6.2, 3.5, 0, 0.8, darkMetal);
+            rodTo(barrel, 15, 3.5, 0, 16.8, 3.5, 0, 0.66, darkMetal);
+            for (const s of [-1, 1]) rodTo(barrel, -1.4, 3.6, s * 0.6, -2.6, 3.4, s * 0.95, 0.26, darkMetal);
             model.tank = true;
             model.turret = turret;
             model.barrel = barrel;
@@ -116,6 +122,11 @@
           turret.add(barrel);
           rodTo(barrel, 6, 5, 0, 34, 5, 0, 0.7, darkMetal);
           box(barrel, 7.5, 5, 0, 3, 3, 3.6, p);
+          // The 25 mm gun's muzzle brake, and the coaxial MG beside it on the right
+          // (mounted-guns.js fires both).
+          rodTo(barrel, 32, 5, 0, 35.4, 5, 0, 1.05, darkMetal);
+          box(barrel, 7.8, 5, 3.4, 3, 2, 2, darkMetal);
+          rodTo(barrel, 9, 5, 3.4, 19, 5, 3.4, 0.3, darkMetal);
           model.tank = true;
           model.turret = turret;
           model.barrel = barrel;

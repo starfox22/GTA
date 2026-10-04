@@ -241,23 +241,63 @@
         // well above street level there); the trail leaves it level for its first 60 units.
         const start = scenicRoadLevel(points[0][0], points[0][1]),
           total = along.at(-1),
-          end = Math.min(smoothed.at(-1) + 60, start + (total - 50) * TRAIL_MAX_GRADE * 0.97);
+          end = Math.min(smoothed.at(-1) + (trail.summitLift ?? 60), start + (total - 50) * TRAIL_MAX_GRADE * 0.97);
         profile = smoothed.map((h, i) => {
           const run = Math.max(0, along[i] - 60) * TRAIL_MAX_GRADE;
           return clamp(h, Math.max(0, start - run, end - (total - along[i]) * TRAIL_MAX_GRADE), start + run);
         });
         profile[0] = start;
-        // The last stretch is level: it runs onto the summit platform.
-        const levelFrom = profile.findIndex((_, i) => along[i] >= total - 50);
+        // The last stretch is level: it runs onto the summit platform (80 units, so the
+        // eased crest below lies outside the platform's 60-unit blend).
+        const levelFrom = profile.findIndex((_, i) => along[i] >= total - 80),
+          // Bare rock (a slickrock pitch, `trail.steep`) may climb at TRAIL_ROCK_GRADE.
+          steepAt = (i) => (trail.steep || []).some((r) => along[i] >= r.from * total && along[i] <= r.to * total),
+          gradeAt = (i) => (steepAt(i) ? TRAIL_ROCK_GRADE : TRAIL_MAX_GRADE);
         for (let i = levelFrom; i < profile.length; i++) profile[i] = end;
-        for (let pass = 0; pass < 2; pass++) {
-          for (let i = 1; i < levelFrom; i++) {
-            const g = (along[i] - along[i - 1]) * TRAIL_MAX_GRADE;
-            profile[i] = clamp(profile[i], profile[i - 1] - g, profile[i - 1] + g);
+        const holdGrade = () => {
+          for (let pass = 0; pass < 2; pass++) {
+            for (let i = 1; i < levelFrom; i++) {
+              const g = (along[i] - along[i - 1]) * gradeAt(i);
+              profile[i] = clamp(profile[i], profile[i - 1] - g, profile[i - 1] + g);
+            }
+            for (let i = levelFrom - 1; i > 0; i--) {
+              const g = (along[i + 1] - along[i]) * gradeAt(i + 1);
+              profile[i] = clamp(profile[i], profile[i + 1] - g, profile[i + 1] + g);
+            }
           }
-          for (let i = levelFrom - 1; i > 0; i--) {
-            const g = (along[i + 1] - along[i]) * TRAIL_MAX_GRADE;
-            profile[i] = clamp(profile[i], profile[i + 1] - g, profile[i + 1] + g);
+        };
+        holdGrade();
+        // A ford (`trail.ford`): the trail drops into the stream bed and climbs out.
+        if (trail.ford) {
+          const at = trail.ford.at * total,
+            reach = trail.ford.reach;
+          for (let i = 1; i < levelFrom; i++) {
+            const d = Math.abs(along[i] - at);
+            if (d < reach) profile[i] -= trail.ford.depth * 0.5 * (1 + Math.cos((Math.PI * d) / reach));
+          }
+          holdGrade();
+        }
+        /* Vertical curves: every change of grade spread over about 110 units of trail
+           (the grades averaged over nine samples, twice), so no crest or dip is
+           sharper than a truck holds to: a crest of ~25 m radius or more keeps the
+           wheels on the ground to about 50 km/h. (A grade held to the limit by
+           clamping turned corners within one 12-unit sample: a 0.4 change of grade
+           there threw a truck 0.6 m into the air at 35 km/h.) Averaging never
+           steepens a grade; the summit platform takes whatever height results. */
+        // The level stretch onto the summit platform is averaged in too: the climb
+        // eases onto the platform instead of meeting it in a 0.27 crease.
+        for (let pass = 0; pass < 2; pass++) {
+          const grades = [];
+          for (let i = 1; i < profile.length; i++) grades.push((profile[i] - profile[i - 1]) / Math.max(1e-6, along[i] - along[i - 1]));
+          for (let i = 1; i < profile.length; i++) {
+            let sum = 0,
+              weight = 0;
+            for (let j = Math.max(0, i - 5); j <= Math.min(grades.length - 1, i + 3); j++) {
+              const w = along[j + 1] - along[j];
+              sum += grades[j] * w;
+              weight += w;
+            }
+            profile[i] = profile[i - 1] + (sum / Math.max(1e-6, weight)) * (along[i] - along[i - 1]);
           }
         }
         trail.path = path;
@@ -283,6 +323,14 @@
           cMax = 0,
           rMin = rows,
           rMax = 0;
+        // Cross-fall per path sample (`trail.camber`, eased in and out): an off-camber
+        // shelf tilted toward its drop. Positive: the right of the way up is higher.
+        const camber = new Float32Array(path.length);
+        for (const k of trail.camber || [])
+          for (let s = 0; s < path.length; s++) {
+            const f = along[s] / total;
+            camber[s] += k.slope * smoothStep(k.from, k.from + 0.02, f) * (1 - smoothStep(k.to - 0.02, k.to, f));
+          }
         for (let s = 1; s < path.length; s++) {
           const a = path[s - 1],
             b = path[s],
@@ -306,7 +354,8 @@
                 qy = ey - dy * u,
                 d2 = qx * qx + qy * qy,
                 i = r * cols + c,
-                h = profile[s - 1] + (profile[s] - profile[s - 1]) * u;
+                tilt = camber[s],
+                h = profile[s - 1] + (profile[s] - profile[s - 1]) * u + (tilt ? tilt * clamp((dx * ey - dy * ex) / Math.sqrt(len2), -half, half) : 0);
               if (d2 < nearest[i]) {
                 // The old nearest becomes the other leg if it was far along the trail.
                 if (Math.abs(nearestSegment[i] - s) > 16 && nearest[i] < other[i]) {
@@ -322,6 +371,20 @@
               }
             }
         }
+        // Each keyhole's loop (the path samples running round its centre), for the berms.
+        const bermLoops = trail.berm && trail.turns
+          ? trail.turns.map((t) => {
+              let from = -1,
+                to = -1;
+              path.forEach(([x, y], k) => {
+                if (Math.hypot(x - t.x, y - t.y) < t.r + 6) {
+                  if (from < 0) from = k;
+                  to = k;
+                }
+              });
+              return { ...t, from, to };
+            }).filter((t) => t.from >= 0)
+          : null;
         for (let r = rMin; r <= rMax; r++)
           for (let c = cMin; c <= cMax; c++) {
             const i = r * cols + c;
@@ -360,6 +423,16 @@
             if (w > 0) {
               heights[i] += (goal - heights[i]) * w;
               trailMask[i] = Math.max(trailMask[i], 1 - smoothStep(half - 6, half + 6, near), platform < 44 && w > 0.9 ? 1 : 0);
+            }
+            // Berms (`trail.berm`): packed dirt thrown up round the outside of a
+            // keyhole hairpin, along the carriageway's outer edge on the loop.
+            if (bermLoops) {
+              const seg = nearestSegment[i];
+              for (const t of bermLoops)
+                if (seg >= t.from && seg <= t.to) {
+                  const rho = Math.hypot(px - t.x, py - t.y) - (t.r + half);
+                  if (rho > -4 && rho < 16) heights[i] += trail.berm * UNITS_PER_METRE * Math.exp(-(((rho - 6) / 4) ** 2));
+                }
             }
           }
       }
@@ -477,22 +550,25 @@
       t.limit = 200 * KMH;
       return t;
     }
-    function terrainVehiclePose(vehicle, h) {
+    function terrainVehiclePose(vehicle, stepSeconds) {
       // Airborne off a drop, falls-vehicles.js poses it.
       if (isAircraft(vehicle) || isBoat(vehicle) || vehicle.cliffAir) return;
       // The pose depends only on where the car stands; hundreds of parked cars
-      // stand still, so skip the terrain sampling until one moves or is moved.
-      if (vehicle.poseX === vehicle.x && vehicle.poseY === vehicle.y && vehicle.poseA === vehicle.a) return;
+      // stand still, so skip the terrain sampling until one moves or is moved, or
+      // its springs are still working (rideActive: terrain-suspension.js).
+      if (vehicle.poseX === vehicle.x && vehicle.poseY === vehicle.y && vehicle.poseA === vehicle.a && !vehicle.rideActive) return;
       vehicle.poseX = vehicle.x;
       vehicle.poseY = vehicle.y;
       vehicle.poseA = vehicle.a;
       const t = roadVehicleTerrain(vehicle);
       vehicle.groundHeight = t?.z || 0;
       vehicle.offroadState = t;
-      if (t) {
-        // The body sits on its four wheels, not on the slope at its middle: pitch
-        // from the axles' heights, roll from the two sides' (a truck straddling a
-        // rut or a ledge leans as it would).
+      // On its wheels: the body rides its four tyres on their springs (pitch, roll
+      // and heave from the ground under each tyre, terrain-suspension.js).
+      if (t && !vehicle.overturned && !vehicle.deckAir && !vehicle.deckLeaf && !(vehicle.sinkFor > 0)) rideStep(vehicle, t, stepSeconds);
+      else if (t) {
+        rideEnd(vehicle);
+        // On its roof or side: the pose from the axles' heights and the two sides'.
         const spec = vehicleSpec(vehicle),
           cos = Math.cos(vehicle.a),
           sin = Math.sin(vehicle.a),
@@ -506,6 +582,7 @@
         vehicle.slopePitch = Math.atan((fl + fr - rl - rr) / (4 * ax));
         vehicle.slopeRoll = -Math.atan((fr + rr - fl - rl) / (4 * az));
       } else {
+        rideEnd(vehicle);
         vehicle.slopePitch = 0;
         vehicle.slopeRoll = 0;
       }

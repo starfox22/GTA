@@ -370,7 +370,7 @@
           arms.mg = c.noCoax ? 0 : TANK_MG_TOTAL - TANK_MG_BELT;
           arms.beltReadyAt = 0;
           c.cannonReadyAt = 0;
-        }
+        } else mountedGunRearm(c);
       }
       drawWeapon();
       updateUI();
@@ -428,7 +428,14 @@
         if (!godPick.starting) godPick.active = false;
         getElement('mapOverlay').classList.toggle('god-pick', godPick.active);
         godPickBanner.classList.toggle('hidden', !godPick.active);
-        if (godPick.active) godPickHover.textContent = 'Point at a place on the map';
+        if (godPick.active) {
+          const touch = hintDevice() === 'touch';
+          godPickTitle.textContent = touch ? 'Tap anywhere to teleport' : 'Click anywhere to teleport · Esc to cancel';
+          godPickHover.textContent = touch ? 'Pinch to zoom · drag to pan' : 'Point at a place · wheel or + / − to zoom · drag to pan';
+        }
+        // The pick layout gives the canvas the whole panel: size its pixels to it.
+        fitBigMapCanvas();
+        drawMap(cityMapContext, 800, 660, true);
         return;
       }
       getElement('mapOverlay').classList.remove('god-pick');
@@ -453,9 +460,10 @@
       return true;
     }
     const godPickBanner = settingsElement('div', 'god-pick-banner hidden'),
+      godPickTitle = settingsElement('b', '', 'Click anywhere to teleport · Esc to cancel'),
       godPickHover = settingsElement('small', '', '');
     godPickBanner.setAttribute('role', 'status');
-    godPickBanner.append(settingsElement('b', '', 'Click anywhere to teleport · Esc to cancel'), godPickHover);
+    godPickBanner.append(godPickTitle, godPickHover);
     getElement('bigmap').before(godPickBanner);
     // What a click here would do, under the banner as the pointer moves.
     getElement('bigmap').addEventListener('pointermove', (e) => {
@@ -756,6 +764,15 @@
         godTeleport(x, y) {
           if (!Number.isFinite(x) || !Number.isFinite(y)) throw Error('godTeleport needs two finite numbers');
           return godTeleport(x, y);
+        },
+        // Open the TELEPORT map from play as Settings · GOD MODE · PICK ON MAP does
+        // (god mode on; pause and the tab are passed through). Returns godPanel().
+        godTeleportPick() {
+          if (!player.godMode) throw Error('godTeleportPick needs god mode');
+          if (gameMode === 'play') togglePause();
+          if (gameMode === 'pause') openSettings('god');
+          godStartTeleportPick();
+          return this.godPanel();
         },
         godRefill: () => godRefill(),
         godLosePolice: () => godLosePolice(),

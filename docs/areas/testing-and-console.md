@@ -70,8 +70,9 @@ node tools/dev.mjs errors | status | reload [--render|--norender] [--keep] [--sh
   in no-render mode, runs `tools/tests/*.mjs` (one test per file; a line per test, a summary,
   exit 1 on failure; a console error fails the test). A test exports `default async (t)`
   using `t.call`, `t.keys`, `t.wait`, `t.assert`, `t.near(v, lo, hi, label)`, `t.finite(obj)`,
-  `t.note`; optional `export const flags = 'test'` (no `?dev`) and `fresh = true` (page
-  reloaded first; fresh tests run last). Set the state a test needs (cash, wanted level,
+  `t.note`, `t.reload({ keep })` (reopen the page; `keep: true` keeps localStorage to check
+  what a save restores: only in a `fresh` test); optional `export const flags = 'test'` (no
+  `?dev`) and `fresh = true` (page reloaded first; fresh tests run last). Set the state a test needs (cash, wanted level,
   god mode) instead of relying on the test before it. Frame-driven effects (e.g. sportsbook
   settlement) need a `t.wait()` after the call that causes them.
 - **Measuring the simulation** (docs/audit/performance.md, "Simulation side"): `node tools/dev.mjs call
@@ -84,6 +85,17 @@ node tools/dev.mjs errors | status | reload [--render|--norender] [--keep] [--sh
   `DeadEndCity.simProfile(seconds, keys)` is the scenario report to call under them.
   A/B two builds by alternating the same call on two dev servers and comparing medians and minima:
   one run is noise on a shared machine.
+- **Hiccups** (docs/areas/rendering-hiccups.md): `node tools/hitches.mjs` runs a fixed tour through
+  `hitchRun` (every frame's sections and what happened in it, src/frame-trace.js) and prints long frames
+  and their causes per stage; `--ab A.html B.html` runs both builds ABBA on one server; `--live` records
+  real frames with the browser's style and layout time (`node tools/dev.mjs metrics`); `--counts` adds the
+  renderer's counters per stage on a rendered page.
+- **Exactness of a performance change**: `node tools/dev.mjs start dist/ab.html --seed 1` opens the page
+  with a seeded Math.random from the first line, the simulation held from the first frame and no sound
+  (game-state.js DETERMINISTIC BOOT), so every boot holds the same world; `node tools/hitches.mjs --ab
+  A.html B.html --hash` then says whether `stateHash()` is equal in every run at the end of each stage
+  (walk to car out/in replay exactly; the rain stage does not yet). `allocBench(name)` and
+  `shapeReport()` find garbage (bytes per call, object layouts).
 - Call `DeadEndCity.graphics('high')` before judging an image (SwiftShader auto-detects LOW).
 - Open the page with `?dev` for dev-only console paths (e.g. `startMission` on demo-gated
   jobs), `?shadercheck` to have three.js report shader compile errors.
@@ -130,7 +142,7 @@ state, and every eighth action `settleAudit()`. Same seed, same choices (the gam
 Findings print as `FINDING` lines and land in `dist/bot/seed-<n>.json` with the last eight actions before each;
 exit status 1 when there are any. About 2 game minutes per wall minute on a loaded machine (idle stretches are the
 cheap way to add game time). A finding is a lead, not a verdict: reproduce it with `dev.mjs call` before fixing.
-Runs in this repo's history: seeds 2-4, 30 game minutes each, in the October 2026 free-roam pass (docs/audit/freeroam-sweep.md).
+Runs in this repo's history: seeds 2-4, 30 game minutes each, in the October 2026 free-roam pass (docs/audit/freeroam-sweep.md); seeds 5-8 (7-20 game minutes) in the 2026-10-04 bug pass. The `rebind` check skips a wanted player (doors turn them away) and a teleport that kept an aircraft.
 
 ## Tours (tools/tour.mjs)
 

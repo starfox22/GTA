@@ -174,6 +174,9 @@ export default async function (t) {
     t.assert(s.mode === 'play' && s.vehicle === 'plane', 'alive at 0.5 s: ' + JSON.stringify(s));
     await t.wait(1.3);
     t.assert(await dead(t), 'plane pilot not wasted at zero: ' + JSON.stringify(await t.call('status')));
+    // Dead out past the box is this countdown's own end, not a bad state (the bot's integrity check flagged it).
+    const integ = await t.call('integrity');
+    t.assert(!integ.problems.some((p) => /off the map/.test(p)), 'integrity flags the WASTED pilot: ' + integ.problems.join(' | '));
     e = await edge(t);
     t.assert(e.history.some((h) => h.kind === 'fatal' && h.vehicle === 'plane'), 'fatal recorded: ' + JSON.stringify(e.history));
     await respawned(t);

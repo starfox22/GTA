@@ -225,7 +225,11 @@
         at.iAxis.setXYZ(i, decalAlong.x * length, decalAlong.y * length, decalAlong.z * length);
         at.iSide.setXYZ(i, decalAcross.x * width, decalAcross.y * width, decalAcross.z * width);
         at.iLife.setXYZ(i, gameTime, seconds, wet);
-        for (const name of ['iPos', 'iAxis', 'iSide', 'iLife']) at[name].needsUpdate = true;
+        // Only the decal written goes up (uploadChurn).
+        for (const name of ['iPos', 'iAxis', 'iSide', 'iLife']) {
+          at[name].addUpdateRange(i * at[name].itemSize, at[name].itemSize);
+          at[name].needsUpdate = true;
+        }
         pool.geo.instanceCount = pool.used;
       }
       function spawnClump(x, y, z, vx, vy, vz, size, wet) {
@@ -284,10 +288,37 @@
         m.contacts = list;
         return list;
       }
+      // Wading a ford (tyreEmission 'ford'): sheets of water off every wheel, droplets
+      // and a white mist, the bow wave's spray ahead at speed.
+      const FORD_SPRAY = new Three.Color('#dfe8ea'),
+        FORD_MIST = new Three.Color('#eef3f4');
+      function fordSpray(c, m, e, deltaSeconds) {
+        const cos = Math.cos(c.a),
+          sin = Math.sin(c.a),
+          speed = Math.abs(c.speed || 0),
+          level = entityElevation(c) + Math.min(c.fordDepth, 6);
+        for (const w of contactWheels(c, m)) {
+          w.emit += (e.rate / 4) * deltaSeconds * 4;
+          const wx = c.x + cos * w.x - sin * w.z,
+            wy = c.y + sin * w.x + cos * w.z;
+          while (w.emit >= 1) {
+            w.emit -= 1;
+            const out = Math.sign(w.z) * (6 + Math.random() * 14),
+              fwd = (Math.random() - 0.3) * speed * 0.5,
+              vx = cos * fwd - sin * out + (c.vx || 0) * 0.6,
+              vy = sin * fwd + cos * out + (c.vy || 0) * 0.6,
+              up = 10 + Math.random() * 18 + speed * 0.25;
+            spawnClump(wx, level, wy, vx, up, vy, 0.25 + Math.random() * 0.35, 2);
+            if (Math.random() < 0.35) spawnMist(wx, level + 1, wy, vx * 0.4, up * 0.3, vy * 0.4, 2.2 + Math.random() * 2, 6, 0.4, 0.8 + Math.random() * 0.5, FORD_MIST);
+          }
+        }
+      }
       // Throw mud (or dust) from a vehicle's tyres and lay its tracks.
       function vehicleSpray(c, m, deltaSeconds) {
         const onRange = !!c.offroadState && !c.offroadState.paved;
         if (!offroadGround(c) || isAircraft(c) || isBoat(c) || c.hp <= 0) return;
+        const emission = tyreEmission(c);
+        if (emission.kind === 'ford') return fordSpray(c, m, emission, deltaSeconds);
         const along = c.speed || 0,
           speed = Math.abs(along),
           spin = c.wheelSpin || 0,
@@ -376,11 +407,19 @@
           clumpPos.set(clump.x[i], clump.y[i], clump.z[i]);
           clumpMatrix.compose(clumpPos, clumpQuat, clumpScale);
           clumpMesh.setMatrixAt(i, clumpMatrix);
-          clumpMesh.setColorAt(i, clumpColor.copy(MUD_DRY).lerp(MUD_WET, clump.wet[i]));
+          // (`wet` past 1.5: water off a ford, not mud.)
+          clumpMesh.setColorAt(i, clump.wet[i] > 1.5 ? clumpColor.copy(FORD_SPRAY) : clumpColor.copy(MUD_DRY).lerp(MUD_WET, clump.wet[i]));
         }
         clumpMesh.count = n;
-        clumpMesh.instanceMatrix.needsUpdate = true;
-        if (clumpMesh.instanceColor) clumpMesh.instanceColor.needsUpdate = true;
+        // Only the clumps in flight go up, and nothing when there are none (uploadChurn).
+        if (n) {
+          clumpMesh.instanceMatrix.addUpdateRange(0, n * 16);
+          clumpMesh.instanceMatrix.needsUpdate = true;
+          if (clumpMesh.instanceColor) {
+            clumpMesh.instanceColor.addUpdateRange(0, n * 3);
+            clumpMesh.instanceColor.needsUpdate = true;
+          }
+        }
         // Mist and dust.
         const at = mist.geo.attributes,
           mistDrag = Math.exp(-2.2 * deltaSeconds);
@@ -409,7 +448,11 @@
           at.iAlpha.setX(i, mist.alpha[i] * t * Math.min(1, (1 - t) * 8));
           at.iColor.setXYZ(i, mist.r[i], mist.g[i], mist.b[i]);
         }
-        for (const name of ['iPos', 'iSize', 'iAlpha', 'iColor']) at[name].needsUpdate = true;
+        if (n)
+          for (const name of ['iPos', 'iSize', 'iAlpha', 'iColor']) {
+            at[name].addUpdateRange(0, n * at[name].itemSize);
+            at[name].needsUpdate = true;
+          }
         mist.geo.instanceCount = n;
         mist.mesh.material.uniforms.uLight.value = (1 - 0.8 * nightAmount) * 0.72;
       }
@@ -552,25 +595,7 @@
         const course = trailCourse(t);
         gateAt(trail, course.start, 'HILL CLIMB · START', 5, 26);
         course.checkpoints.forEach((cp) => gateAt(trail, cp, null, 0, 16));
-        // Rock steps: slabs across the trail, every other path sample in the band.
-        const sections = OFFROAD_SECTIONS[t];
-        for (const band of sections.rocks) {
-          const i0 = Math.round(band.from * (trail.path.length - 1)),
-            i1 = Math.round(band.to * (trail.path.length - 1));
-          for (let i = i0 - (i0 % 2); i <= i1; i += 2) {
-            const [x, y] = trail.path[i],
-              next = trail.path[Math.min(trail.path.length - 1, i + 1)],
-              a = Math.atan2(next[1] - y, next[0] - x);
-            for (let k = -2; k <= 2; k++) {
-              const across = k * trail.width * 0.2 + (terrainHash(i, k + 9, 5) - 0.5) * 3,
-                sx = x - Math.sin(a) * across,
-                sy = y + Math.cos(a) * across,
-                h = terrainHeight(sx, sy),
-                slab = mesh(new Three.IcosahedronGeometry(1, 0), clubStone, trailGroup, sx, h + 0.35, sy, 3.2 + terrainHash(i, k, 3) * 2, 1.1, 4.5 + terrainHash(i, k, 4) * 2.5);
-              slab.rotation.y = -a + (terrainHash(i, k, 6) - 0.5) * 0.5;
-            }
-          }
-        }
+        // (The rock sections' rock, the markers, cairns and logs: offroad3d-trail.js.)
         const top = trail.path.at(-1),
           prevTop = trail.path.at(-6);
         gateAt(trail, { x: prevTop[0], y: prevTop[1], i: trail.path.length - 6 }, 'SUMMIT · FINISH', 5, 24);
@@ -604,5 +629,5 @@
         tyreTracks.material.uniforms.uTime.value = gameTime;
       }
       function offroadEffectsInfo() {
-        return { clumps: clump.count, mist: mist.count, splats: mudSplats.used, tracks: tyreTracks.used, capacity: { clumps: MUD_CLUMPS, mist: MUD_MIST, splats: MUD_SPLATS, tracks: MUD_TRACKS } };
+        return { clumps: clump.count, mist: mist.count, splats: mudSplats.used, tracks: tyreTracks.used, capacity: { clumps: MUD_CLUMPS, mist: MUD_MIST, splats: MUD_SPLATS, tracks: MUD_TRACKS }, dressing: trailDressing };
       }

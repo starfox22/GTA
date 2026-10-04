@@ -100,11 +100,18 @@
     let firstFrameMarked = false,
       firstPlayFrameMarked = false;
     function frame(t) {
-      if (!frameDue(t)) {
-        requestAnimationFrame(frame);
-        return;
-      }
+      if (frameDue(t)) runFrame(t, true);
+      requestAnimationFrame(frame);
+    }
+    // One frame's work at time t (ms): input, the simulation step, the draw. `live` is false for a frame
+    // the console steps (hitchRun, frame-trace.js): AUTO's quality controller then leaves it alone.
+    function runFrame(t, live) {
       const frameStart = performance.now();
+      if (frameTrace.on) frameTraceBegin();
+      // Layout reads the HUD asked for last pass, while the layout is still clean (hud-state.js), and the
+      // mission card's boxes for its clearance of the player (hud-clearance.js).
+      measureDockLine();
+      measureMissionCard();
       if (!firstFrameMarked) {
         firstFrameMarked = true;
         bootMark('first-frame');
@@ -139,11 +146,16 @@
       // so a slow frame rate cannot leave "POLICE CLEARED!" up for minutes.
       updatePoliceNotice(Math.min(0.25, Math.max(0, (t - lastTime) / 1000)));
       lastTime = t;
-      updateWorldView(deltaSeconds);
-      updateCasino(deltaSeconds);
-      updateElevator(deltaSeconds);
-      // North Point Key's tower lifts ride on the frame clock too (skyline-lift.js).
-      updateSkyLift(deltaSeconds);
+      // A seeded boot held between console steps (game-state.js DETERMINISTIC BOOT) leaves the frame-clock systems to
+      // the stepped frames too: the camera's ease decides where traffic streams in, so live frames between two
+      // console calls (a wall-clock count) made the seeded world differ from boot to boot.
+      if (!(DEV_BOOT_SEED && simulationHeld && live)) {
+        updateWorldView(deltaSeconds);
+        updateCasino(deltaSeconds);
+        updateElevator(deltaSeconds);
+        // North Point Key's tower lifts ride on the frame clock too (skyline-lift.js).
+        updateSkyLift(deltaSeconds);
+      }
       // Everything the frame does before the simulation step (the `f:pre` part of stats()).
       const updateStart = profileLap('f:pre', frameStart);
       // The city keeps living behind the title menu, and behind settings opened
@@ -163,7 +175,7 @@
       }
       syncPanelCover();
       const drawStart = performance.now();
-      if (!NO_RENDER) drawWorld(); // ?dev&norender (render3d.js): logic tests draw nothing
+      if (!NO_RENDER && !frameTrace.skipDraw) drawWorld(); // ?dev&norender (render3d.js): logic tests draw nothing
       updateTankReticle();
       updateDriveByCross();
       const frameEnd = performance.now();
@@ -171,7 +183,7 @@
       profile.draw += frameEnd - drawStart;
       profile.frames++;
       // AUTO graphics: dynamic resolution and tier from the frame rate (quality.js).
-      if (gameMode === 'play') adaptGraphics(t - (profile.previousFrame || t), frameEnd - updateStart, frameEnd);
+      if (live && gameMode === 'play') adaptGraphics(t - (profile.previousFrame || t), frameEnd - updateStart, frameEnd);
+      if (frameTrace.on) frameTraceEnd(t, frameStart, updateStart, drawStart, frameEnd);
       profile.previousFrame = t;
-      requestAnimationFrame(frame);
     }

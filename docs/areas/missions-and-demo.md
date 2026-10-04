@@ -40,8 +40,11 @@ index plus one.
 - A delivery that needs zero stars: add the stage to `policeBlocksMissionDelivery`.
 - If the job's opening moves, keep `MISSION_STARTS` (cycles.js, bike-share placement) in
   step, or give the entry a `start`.
-- Mission vehicles burn down to 8% and go out instead of exploding and take 40% of gang
-  small-arms damage.
+- Mission vehicles burn slowly (30 s, `burnSeconds`) down to 8% and go out instead of
+  exploding, and take 40% of gang small-arms damage above half health, falling to 6% at 30%
+  (`MISSION_CAGE`, combat-rules.js); a critical one the player drives gets a CRITICAL DAMAGE
+  headline and a bail-out warning every 3 s. Mission 1's bay: a prompt run leaves the truck
+  at ~38-52 %, a hesitant one at ~30 % (tools/tests/mission1-bay.mjs).
 - Test from the console: `startMission(i)`, `missionTargets()`, `steerTo()`, `walk()`,
   `interact()`, `simulate(seconds, keys)`; docs/audit/missions-qa.md shows the method.
 
@@ -104,37 +107,24 @@ index plus one.
   (`showDemoComplete`, game mode `'demo'`, a recap from `campaignStats`) the first time only; a
   replay of mission 2 is just a payday. Completion is kept
   in `dead-end-city-demo`. `demoLocked()` is the gate.
-- `missionIndex` is the frontier **and** the job a replay picked (`chooseMission`), so once
-  `completed >= DEMO_MISSIONS` a declined or failed replay must call `settleDemoStoryIndex()`
-  (also on load): otherwise `storyCallWaiting()` keeps the payphone arrow, pager and HUD pill up.
-  Every pointer reads `objective()`; console `pointers()` reports them all.
+- `missionIndex` is the frontier **and** the job a replay picked (`chooseMission`), so a
+  declined or failed replay calls `settleDemoStoryIndex()` (also on load and when god mode is
+  switched off): without god mode the index goes back to `completed`, so the payphone offers the
+  story's next job (none past the demo; otherwise `storyCallWaiting()` kept the payphone arrow,
+  pager and HUD pill up). God mode keeps its pick. Every pointer reads `objective()`; console
+  `pointers()` reports them all.
+- RESTART CURRENT JOB (`retryMission`) restarts `restartableJob()` (story.js): the job running,
+  else the last one failed (WASTED and BUSTED fail it), remembered in `retryJobIndex` (not saved)
+  while the picker offers it. After a win, at a new game or after a reload there is none: the
+  pause menu shows it disabled, NO JOB TO RESTART; a waiting call is taken at the payphone.
+- CHOOSE MISSION while a job runs asks ABANDON <JOB>? (`showAbandonConfirm`, campaign.js; the
+  `#abandonConfirm` dialog over the picker): ABANDON JOB (Enter, A, E) ends it through
+  `abandonMission` (no JOB FAILED card; RESTART CURRENT JOB can bring it back) and the pick's
+  call comes up; KEEP PLAYING (Escape, B) goes back to the job.
 - Never gated (not missions): the hill climb, volleyball, the stadium ball, the pier rides,
   bike share, cabs, rail, the liner, casino, garages, gun shop, Fort Sentinel, the Apache,
   MONARCH MOTORS.
 - God mode lifts every gate; the console's `startMission` reaches a gated job only with god
   mode or `?dev`. `DEMO_BUILD = false` is the full game with no trace of the demo.
 
-## God mode (the `godmode` cheat; god-panel.js)
-
-- Typed in play, on the city map or on the title (game-input.js cheat ring). It unlocks every
-  job (`missionUnlocked`) and opens Settings on the GOD MODE tab (`syncGodSettingsTab` adds
-  `'god'` to `SETTINGS_TABS` only while `player.godMode`).
-- Rows: mission select, time presets and 24 h slider (`setGodTime`), freeze
-  (`godTimeFrozen()`, asked by citylife.js before advancing `worldMinutes`), weather
-  (`setGodWeather`), refill (`godRefill`), lose police (`godLosePolice`: also marks the
-  player's crowd incidents reported so a call in progress does not re-raise a star, and ends
-  the Fort Sentinel alarm), teleport (map pick mode).
-- `godTeleport(x, y)` is the safe move: nearest walkable spot (not a loose mountain face
-  steeper than `SLIP_GRADE`, where the body would slide off), a boat spawned on open water,
-  the current road vehicle placed on the nearest lane where `canSpawnCar` passes, aircraft
-  kept airborne; then `teleportPlayer`, camera snap, crowd resettle, a second's grace.
-- Console: `god(on)`, `godPanel()`, `godTeleport(x, y)`, `godRefill()`, `godLosePolice()`,
-  `godFreeze(on)`.
-
-## Skip the ride (ride-skip.js)
-
-- A passenger skips a cab, train or the liner with `skipRide` (Y): refused when wanted, in a
-  timed job, in a hurt cab or without the fare. The screen fades, `catchUpWorld` steps the
-  clock by the ride's own seconds (weather, trains, liner), the ride is placed at its end
-  (`placeCabAtKerb`, `placeTrainAtPlatform`, `placeLinerAtAnchor`). Wanted state is never
-  touched; the effects bus ducks. Console `skipRide()`, `skipStop()`, `rideSkip()`.
+God mode (the cheat and its panel) and skipping a ride: missions-and-demo-godmode.md.

@@ -171,8 +171,8 @@
       }
     }
     /* Where a tree of the plan may not stand: its trunk on a carriageway, inside a
-       building, under a rail deck, on a runway, or in front of a door (within 16
-       units of it). planTreeAudit lists them by kind; prunePlanTrees (end of
+       building, under a rail deck, on a runway, in front of a door (within 16
+       units of it) or where it could hide a vehicle on a 4x4 trail. planTreeAudit lists them by kind; prunePlanTrees (end of
        buildCounty, before Monarch Isle, which plans its own round its doors)
        takes them out of the plan. */
     function planTreeProblem(t) {
@@ -189,6 +189,11 @@
         return 'rail deck';
       if (runwayUnder(t.x, t.y, 0)) return 'runway';
       if (PLACES.some((p) => p.door && Math.hypot(p.door.x - t.x, p.door.y - t.y) < 16)) return 'doorway';
+      // Where it could hide a vehicle on a 4x4 trail from the camera (trail-trees.js).
+      if (trailTreeNear(t.x, t.y)) {
+        const b = planTreeBounds(t, forestTreeBoundsOut);
+        if (trailTreeClear(t.x, t.y, b.canopy, b.height) < 0) return 'trail view';
+      }
       return null;
     }
     const prunedPlanTrees = {};

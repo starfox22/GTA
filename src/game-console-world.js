@@ -180,6 +180,8 @@
           bridges: [...new Set(userRoute.map((p) => BRIDGES.find((b) => segmentDistance(p.x, p.y, b.a, b.b) <= b.width / 2)?.id).filter(Boolean))],
           first: userRoute[0] || null,
           last: userRoute.at(-1) || null,
+          // The route's points, rounded (a test can drive it leg by leg with steerTo).
+          path: userRoute.map((p) => [Math.round(p.x), Math.round(p.y)]),
         };
       },
       // Ridgeline's scenic roads (terrain-roads.js): per road its length, points,
@@ -196,6 +198,11 @@
       // runway or in a doorway, with their positions; prunePlanTrees took them out
       // at build, so all but Monarch Isle's own planting should be empty.
       treeAudit: () => planTreeAudit(),
+      // The 4x4 trails' view corridor (trail-trees.js): every forest and plan tree near a
+      // trail tested at each path sample; `covering` must be 0 on every trail.
+      trailTreeAudit: () => trailTreeAudit(),
+      // The forest's solid trunks round a point (forest-trunks.js), nearest first.
+      forestTrunks: (x, y, radius) => forestTrunkReport(x, y, radius),
       // Drive a car along a scenic road on an autopilot (terrain-roadside.js
       // scenicRoadDrive): lane holding, paved, vertical g, height steps, knocks, damage.
       mountainRoadDrive: (name, kmh, from, seconds, reverse, type) => scenicRoadDrive(name, kmh, from, seconds, !!reverse, type),

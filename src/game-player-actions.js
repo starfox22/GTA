@@ -190,14 +190,15 @@
       }
       return best;
     }
-    function exitCar() {
+    // `quiet`: a refusal says nothing (teleportPlayer moves the player regardless).
+    function exitCar(quiet = false) {
       const vehicle = player.car;
       if (!vehicle) return;
       if (
         isAircraft(vehicle) &&
         (aircraftClearance(vehicle) > 1 || Math.hypot(vehicle.vx || 0, vehicle.vy || 0) > 12)
       ) {
-        tell('Land and stop to exit, or ' + pressKey('bail', 'lower') + ' to bail out with a parachute.');
+        if (!quiet) tell('Land and stop to exit, or ' + pressKey('bail', 'lower') + ' to bail out with a parachute.');
         return;
       }
       // Off a cliff (falls-vehicles.js): nowhere to step out to until it comes down.
@@ -205,7 +206,7 @@
       // Parked on a roof: out onto the roof beside it (rooftops.js).
       if (vehicle.roofSite && isAircraft(vehicle)) {
         if (!exitOntoRoof(vehicle, vehicle.roofSite)) {
-          tell('No room to get out on this roof.');
+          if (!quiet) tell('No room to get out on this roof.');
           return;
         }
         vehicle.vx = vehicle.vy = vehicle.speed = 0;
@@ -268,11 +269,12 @@
       // Out of a flooding car there is only the water (water.js).
       if (!found && vehicle.sinkFor > 0) found = exitIntoWater(vehicle);
       if (!found) {
-        tell(
-          isBoat(vehicle)
-            ? 'Pull alongside a wooden dock to step off, or ' + pressKey('bail', 'lower') + ' to dive in.'
-            : 'No room to get out. Move away from the wall.',
-        );
+        if (!quiet)
+          tell(
+            isBoat(vehicle)
+              ? 'Pull alongside a wooden dock to step off, or ' + pressKey('bail', 'lower') + ' to dive in.'
+              : 'No room to get out. Move away from the wall.',
+          );
         return;
       }
       vehicle.ai = false;
@@ -402,6 +404,8 @@
           radio('call-backup');
           // Fort Sentinel's attack helicopter: theft of military hardware (apache.js).
           if (isApache(c)) apacheBoarded(c);
+          // A Black Hawk's door guns (mounted-guns.js).
+          else if (mountedGunKind(c)) mountedGunBoarded(c);
         } else if (c.type === 'tank') {
           // Taking one of Fort Sentinel's tanks raises the base; a pursuit tank
           // taken off the army is a crime of its own.
@@ -412,7 +416,8 @@
               ' pivot · the mouse lays the turret · ' + keyName('fire') + ' fire · ' + keyName('cycleWeapon') + ' main gun / MG · right click MG',
             7,
           );
-        } else if (isBoat(c))
+        } else if (mountedGunKind(c)) mountedGunBoarded(c);
+        else if (isBoat(c))
           tell(
             keyName('forward') + '/' + keyName('back') + ' throttle · ' + keyName('left') + '/' + keyName('right') + ' steer · ' +
               keyName('handbrake') + ' slow · ' + keyName('interact') + ' exit alongside a dock',
@@ -448,6 +453,8 @@
       return Math.round(worldMeters(clearance)) + ' m OVER ROOFS';
     }
     function startReload() {
+      // A vehicle's mounted gun changes its own belt (mounted-guns.js).
+      if (mountedGunReload()) return;
       const w = currentWeapon();
       if (
         w.melee ||
@@ -505,6 +512,11 @@
       if (gameMode === 'play' && player.car?.type === 'tank') {
         // The gun fires where the turret is laid, not where the mouse is (armor.js).
         tankPlayerFire(player.car);
+        return;
+      }
+      if (gameMode === 'play' && mountedGunKind(player.car)) {
+        // The LAV-8's cannon or coax, the gun jeep's .50 cal, the Black Hawk's door guns (mounted-guns.js).
+        mountedGunFire(player.car);
         return;
       }
       if (

@@ -27,8 +27,8 @@
      * Riders (motorbikes, bicycles, the jet ski) hold the bars with the right
      * hand and shoot with the left: all round but the right rear quarter
      * (never back through their own body). A boat's helm is open all round.
-     * Aircraft: out of the side windows only. Tanks and the Apache keep their
-     * own guns.
+     * Aircraft: out of the side windows only. Tanks, the Apache and the
+     * mounted guns (mounted-guns.js: LAV-8, gun jeep, Black Hawk) keep their own.
      *
      * A BLOCKED AIM holds fire and shows a small cross along the aim for a
      * moment (driveByShot, updateDriveByCross): no line, no ring, no message.

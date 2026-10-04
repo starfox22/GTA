@@ -7,6 +7,14 @@ answer is to do that work behind the title, a few milliseconds at a time (render
 
 ## Finding hiccups
 
+- `node tools/hitches.mjs [--tiers ...] [--scale s] [--live] [--ab A.html B.html]` drives one fixed tour (district
+  changes, a bridge, the county, a three-star chase, a crash and a blast, out of the car and back, rain at night, the
+  map, the pause menu) through `DeadEndCity.hitchRun` (src/frame-trace.js): every frame's sections and what happened
+  in it (collections, first uses, uploads, models built, spawns, DOM mutations, audio nodes, canvas work, storage
+  writes); long frames (over twice the median) are listed with the section that ran over. Stepped frames never pay the
+  browser's style and layout: `--live` (`frameTrace`) does, with the CDP style/layout totals. On a shared machine the
+  wall-clock percentiles swing by 2x; compare the counters and the CPU per frame (`cpu/fr`).
+- `uploadChurn(frames)` names the buffer attributes and textures three.js re-uploads every frame.
 - `DeadEndCity.renderHiccups(reset)`: programs, textures and geometries created in play since the
   log began, the 8 slowest frames (renderer CPU without the GPU submit, split by lap) and the last
   40 first-use events. A program is named `Type:uniforms @owner ~variant[...]`: the owner is the
@@ -46,6 +54,14 @@ Steps 3 and 4 stop when the game starts (they cost a build each); the rest conti
 
 ## Rules for new code
 
+- A dynamic buffer bigger than what is drawn (instance pools, the skid marks, contact shadows) sends only the used
+  part: `attribute.addUpdateRange(0, n * itemSize)` before `needsUpdate` (the crowd, halos and car blood do too).
+- The 2D overlay over the scene (`worldContext`) is cleared only after a frame drew on it (OVERLAY INK,
+  render3d-resources.js wraps its draw calls): never clear or touch it every frame, an untouched canvas is not repainted.
+- An animation restart takes a style pass, not a layout: `void getComputedStyle(el).animationName` (or `opacity`), never
+  `offsetWidth` (it lays out the whole page mid-pass: every district crossed did).
+- New vehicle models: at most `NEW_MODELS_PER_FRAME` (6) a frame and none after `MODEL_BUILD_BUDGET_MS` (3 ms) of
+  building (render3d-resources.js); the player's own is never held back.
 - Light and shadow counts are part of every lit program's key: keep every light in the scene for
   good (intensity 0 when idle) and never toggle `castShadow`, `visible` or layers on a light in
   play. A change at a tier switch is fine (shadows on or off relinks the lit programs once).

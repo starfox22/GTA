@@ -2,7 +2,7 @@
     function drawWeapon() {
       // In a tank the chip shows the main gun or the MG (armor.js tankHud), in the
       // Apache its gun and rockets (apache.js apacheHud).
-      if (player.car?.type === 'tank' || isApache(player.car)) {
+      if (player.car?.type === 'tank' || isApache(player.car) || mountedGunKind(player.car)) {
         delete getElement('weaponArt').dataset.tankIcon;
         return;
       }
@@ -180,7 +180,22 @@
      */
     const MISSION_CARD_SECONDS = 6;
     let missionCardKey = '',
-      missionCardUntil = 0;
+      missionCardUntil = 0,
+      // Opened on purpose (O, a click or tap): it then stays open over a story line too.
+      missionCardAsked = false;
+    /* A short window (radio.css, max-height 620px) has no room for the open card and the
+       story line above it: while a line is up the card stays a strip, unless opened on
+       purpose, and the line sits just above the strip. */
+    function missionCardYields() {
+      return (
+        viewportHeight <= 620 &&
+        viewportWidth > 700 &&
+        !missionCardAsked &&
+        !!mission &&
+        gameTime <= (mission.lineUntil || 0) &&
+        !document.body?.classList.contains('touch-mode') // (touch lays the HUD out its own way)
+      );
+    }
     function updateMissionCard(objectiveLine) {
       const key =
         getElement('pagerLabel').textContent +
@@ -191,16 +206,25 @@
       if (key !== missionCardKey) {
         missionCardKey = key;
         missionCardUntil = gameTime + MISSION_CARD_SECONDS;
+        missionCardAsked = false;
       }
       getElement('missionObjective').textContent = objectiveLine;
-      getElement('pager').classList.toggle('compact', gameTime >= missionCardUntil);
+      // Folded while a story line has no room (missionCardYields) or while the open card would cover the
+      // player, its reading time held (hud-clearance.js missionCardFolded, asked first: it runs every pass).
+      getElement('pager').classList.toggle('compact', missionCardFolded(gameTime < missionCardUntil) || missionCardYields());
     }
     function toggleMissionCard() {
-      missionCardUntil = gameTime < missionCardUntil ? 0 : gameTime + MISSION_CARD_SECONDS;
+      // What is on screen decides: a strip opens, an open card folds. Opened on purpose it stays open over a
+      // story line and over the player (missionCardAsked).
+      const open = !getElement('pager').classList.contains('compact');
+      missionCardUntil = open ? 0 : gameTime + MISSION_CARD_SECONDS;
+      missionCardAsked = !open;
       updateUI();
     }
     // HUD AND CONTEXT PROMPTS: presentation derived from shared simulation state.
     function updateUI() {
+      // A docking line asked for since the last frame is measured before this pass writes anything (hud-state.js).
+      measureDockLine();
       enforceVehicleHandgun();
       // Every system offers its prompt during the pass; hud.js commitPrompt() shows one.
       clearPromptOffer();
@@ -223,7 +247,11 @@
           ? 'ARMOR ' + Math.ceil(player.armor)
           : wantedStars > 0
             ? searchActive
-              ? 'HIDE UNTIL THE TIMER ENDS'
+              ? searchClockShown()
+                ? 'HIDE UNTIL THE TIMER ENDS'
+                : searchClock === 'holding'
+                  ? 'POLICE ON THE WAY'
+                  : 'LEAVE THE SEARCH AREA'
               : 'POLICE PURSUIT'
             : 'NO ARMOR';
       getElement('weaponSlot').textContent = w.fists
@@ -281,7 +309,11 @@
       }
       getElement('missionDistance').textContent = target
         ? (m ? 'OBJECTIVE' : 'PAYPHONE') + ' · ' + distanceLabel(distanceBetween(player, target))
-        : demoStoryOver()
+        : m
+          ? // A job's last beat with nothing left to reach (mission 1 out of the back door, the
+            // payday a moment later): not "FREE ROAM · 0 JOBS COMPLETE" while it still runs.
+            'OBJECTIVE · COMPLETE'
+          : demoStoryOver()
           ? 'FREE ROAM · DEMO COMPLETE'
           : 'FREE ROAM · ' + completed + ' JOBS COMPLETE';
       updateMissionCard(
@@ -353,7 +385,7 @@
         } else if (taxiRide) prompt = taxiRide.arrival > 0 ? '' : 'STOP HERE · $' + taxiRide.fare;
         else if (hailableTaxi()) prompt = 'HAIL THIS CAB';
         else if (player.deck)
-          prompt = deckExitNear() ? 'GO ASHORE · ' + player.deck.name : '';
+          prompt = deckExitNear() ? 'GO ASHORE · ' + player.deck.name : linerStairsAvailable() ? 'STAIRS · AFT DECK' : '';
         else if (boardableLiner()) prompt = 'BOARD ' + boardableLiner().name;
         else if (transitRide) prompt = 'REQUEST NEXT RAIL STOP';
         else if (nearestStation()) prompt = 'CITY RAIL · CHOOSE DESTINATION';
@@ -406,6 +438,7 @@
       // In a tank the weapon chip shows the main gun and the MG (armor.js).
       if (c?.type === 'tank') tankHud(c);
       else if (isApache(c)) apacheHud(c);
+      else if (mountedGunKind(c)) mountedGunHud(c);
       else if (getElement('weaponArt').dataset.tankIcon) {
         delete getElement('weaponArt').dataset.tankIcon;
         drawWeapon();

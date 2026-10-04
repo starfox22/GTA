@@ -11,19 +11,34 @@ The image pipeline, light, searchlights and the cutaway: rendering-lighting.md.
   tallest roof (`streetCeiling()`); no distance haze on the street.
 - Framing (world-view.js): the player's zoom (`STREET_ZOOM` 2 on foot, one `STREET_ZOOM_STEP`
   (x1.25) out from the old 2.5: a person ~26 px tall at 1280x800, ~34 m of street on screen;
-  not saved) times a CAMERA CONTEXT share for what they are in (the old shares x1.25, so
-  vehicles frame as before: car 0.875 = 1.75, motorbike 0.95, bicycle 1.025, bus/truck/boat
-  0.75, aircraft 0.8 = the flight view's old 1.6) times the speed pull-back (from 45 km/h to 0.82 by ~205 km/h), eased as
-  `speedZoom` (~1.3 s, drawn frames only), so boarding and stepping out glide. The frame is
-  `clamp(viewportHeight * 0.68, 430, 630) / worldZoom` units tall. `cameraView()` reports it.
-  Game rules read the same footprint (`crowdViewHalf`: off-screen spawning, with a margin;
-  `screenViewHalf`, exact, for `shooterInView`: enemies fire only from on screen).
-- Follow (camera-feel.js, game side): `cameraTarget` eases (frame-rate independent) to the
-  player plus a smoothed lead along the vehicle's **velocity** (not its nose), on foot the
-  run and, in a fight, toward the aim; shorter with police on the tail (chase framing);
-  Settings · Driving · Camera look-ahead scales it.
+  not saved) times a CAMERA CONTEXT share for what they are in (car 0.7 = 1.4 at rest, one
+  step wider than the old 1.75; motorbike 0.76, bicycle 0.82, bus/truck/boat 0.6, rides 0.7;
+  aircraft 0.8 = the flight view's 1.6) times the SPEED PULL-BACK `1 / (1 + 0.0045 g)` on the
+  eased speed (`drivingCameraSpeed`, camera-drive.js: a bump, crash or wheelspin never pumps it):
+  1.31 at 50 km/h, 1.08 at 100, 0.92 at 150, 0.80 at 200 by default, no wider than 0.5 of the
+  rest framing. `speedZoom` eases in two first-order stages in the simulation
+  (`updateCameraFraming`; out ~2 s, back in ~4 s, never overshooting); `worldZoom` follows it on
+  drawn frames. The frame is `clamp(viewportHeight * 0.68, 430, 630) / worldZoom` units tall.
+  `cameraView()` reports it. Game rules read the same footprint (`crowdViewHalf`: off-screen
+  spawning, with a margin; `screenViewHalf`, exact, for `shooterInView`: enemies fire only from
+  on screen). A wider driving view draws more: ~935 draw calls at 93 km/h (1280x800, high) where
+  the old framing drew ~650.
+- Follow (camera-feel.js, game side): `cameraTarget` is moved by `cameraSpring`, an exact
+  critically damped spring (no overshoot, stable at any step), with `cameraVel` its velocity, so
+  hand-overs never jerk. In a road vehicle or boat the DRIVING FOLLOW (camera-drive.js): a lead
+  along the smoothed velocity's heading (eased, turning at most ~75°/s; a reversal shrinks it to
+  nothing before it turns), 0.55 s of travel capped at 0.32 of the frame's half height (the car
+  sits centre-low, road ahead in view), shorter with police on the tail; a firm spring along the
+  travel with the vehicle's speed fed forward (no lag) and a soft one across it (a slalom moves
+  the car on screen, not the view); the camera's height (`streetCameraAltitude`) is the ground
+  height smoothed with its climb fed forward, so terrain triangles and crests no longer bob the
+  view. On foot and in aircraft the old lead and lag (spring at twice the old easing rate).
+  Settings · Driving · Camera look-ahead scales the leads.
   `kickCamera(heading, units)` drives a spring (`cameraKick`), `shake` a smooth tremor
-  (`cameraShakeOffset`); the renderers add both, nothing reads them back. `cameraFeel()`.
+  (`cameraShakeOffset` at `cameraShakeLevel()`); in a road vehicle kicks are 0.7 as far and
+  critically damped, the tremor 0.45 of `shake`. The renderers add both, nothing reads them back.
+  `cameraFeel()`; comfort (view acceleration, jerk, zoom rate in screen heights) is
+  `cameraComfort()` (camera-comfort.js) and tools/tests/camera-comfort.mjs holds it down.
 - Air / parachute: a perspective camera (flight-view3d.js) framed like the street view (a
   dolly zoom from a 3° lens on the ground to 40° by ~90 m). `camera` is whichever is active.
   **Cull and pick LOD with `viewCenter`, `viewReach`, `viewZoom`**, not
@@ -108,6 +123,7 @@ The image pipeline, light, searchlights and the cutaway: rendering-lighting.md.
 - Trees (vegetation3d-material.js): on MSAA tiers the leaf cut-outs use alpha to coverage
   (`setFoliageCoverage`; r160 forces an opaque material's alpha to 1, so the tree material
   writes the coverage back after `<opaque_fragment>`). A/B `lookSwitches({ foliageCoverage })`.
+  The same material carries the foliage cutaway round the player (rendering-lighting.md, Searchlights and cutaway).
 - Water (world3d-water.js): one ShaderMaterial with a distance-to-shore texture, Gerstner waves;
   boat wakes are drawn into a wake map it samples (`wakeEmit`, wakes3d.js).
 - Weather visuals (weather3d.js): GPU rain streaks, splashes, drips and spray from uniforms,

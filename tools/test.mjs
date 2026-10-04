@@ -23,7 +23,9 @@
 // for `seconds` of wall clock with the left button down, `keys` held and repeating, `taps`
 // pressed afresh every 0.3 s),
 // t.assert(cond, msg), t.near(value, lo, hi, label), t.finite(obj, label) (no NaN /
-// Infinity anywhere inside), t.note(text) (shown with --verbose). A test fails on a
+// Infinity anywhere inside), t.note(text) (shown with --verbose), t.reload({ keep })
+// (reopen the page; keep: true keeps localStorage, to check what a save restores; use it
+// in a `fresh` test, as the next fresh test starts from an empty profile). A test fails on a
 // thrown error, a failed assertion or any console error it caused.
 // Prints one line per test and a summary; exits 1 when any test fails.
 import fs from 'node:fs';
@@ -72,6 +74,11 @@ function makeApi(notes) {
       if (bad.length) throw new Failure('non-finite: ' + bad.slice(0, 5).join(', '));
     },
     note: (text) => notes.push(text),
+    // `dev.mjs reload [--keep]`: the page reopened (and booted to free roam) with the same flags.
+    async reload({ keep = false } = {}) {
+      await op({ op: 'reload', keep: !!keep });
+      return waitReady();
+    },
   };
 }
 

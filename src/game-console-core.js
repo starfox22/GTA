@@ -37,9 +37,18 @@
       cameraView: () => cameraViewReport(),
       // The camera's lead, offset from the player, kick and shake (camera-feel.js).
       cameraFeel: () => cameraFeelReport(),
+      // How the street camera moved over the last `seconds` (0.5-4): acceleration, jerk, zoom rate,
+      // jolt and the player's drift on screen, in screen heights (camera-comfort.js).
+      cameraComfort: (seconds = 4) => cameraComfortReport(seconds),
       // The interaction prompt as the player sees it (hud.js INTERACTION PROMPT):
       // visible, text, identity, docked, seconds since it popped in, this pass's offer.
       promptState: () => promptReport(),
+      // The mission card's clearance of the player (hud-clearance.js): the player's box on screen, the
+      // card's open and folded boxes, the dialogue line's and the waypoint pill's, and what yields or fades.
+      // hudClearance('read') opens the card for a fresh read first, as a new call or objective does.
+      hudClearance: (action) => hudClearanceReport(action),
+      // Every HUD box on screen (id and rect, CSS px) and the pairs that overlap by more than `slack` px.
+      hudOverlaps: (slack = 2) => hudOverlapReport(slack),
       // Press the action key once, exactly as E would.
       interact() {
         interact();
@@ -54,6 +63,8 @@
       },
       god(on = true) {
         player.godMode = !!on;
+        // As the cheat does: a pick god mode made ahead of the story goes back to the frontier.
+        if (!player.godMode && !mission) settleDemoStoryIndex();
         return player.godMode;
       },
       // Run the simulation forward without drawing, holding the given keys (for
@@ -139,4 +150,5 @@
     });
     // GOD PANEL: godPanel(), godTeleport(x, y), godRefill(), godLosePolice(), godFreeze(on), mapScreenPoint(x, y) (god-panel.js).
     addConsoleMethods('godPanel', godPanelConsole());
+    addConsoleMethods('godPanel', godSplashConsole());
     // END SUBSYSTEM: src/game-console-core.js

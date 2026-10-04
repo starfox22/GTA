@@ -73,11 +73,11 @@ sizes sit inside them.
 | View | Before | Now |
 | --- | --- | --- |
 | On foot | zoom 1.6: 42.5 m of street on screen, a person ~21 px | zoom 2.5: 27 m, ~33 px |
-| Car at rest | 1.6 | 1.75 (0.7 of the zoom), eased in ~2-3 s on boarding |
-| Motorbike / bicycle | 1.6 | 1.9 / 2.05 |
-| Bus, truck, tank, boats | 1.6 | 1.5 |
+| Car at rest | 1.6 | 1.4 (0.7 of the on-foot 2; was 1.75 until the comfort camera), eased in ~2 s on boarding |
+| Motorbike / bicycle | 1.6 | 1.52 / 1.64 (was 1.9 / 2.05) |
+| Bus, truck, tank, boats | 1.6 | 1.2 (was 1.5) |
 | Aircraft (flight view framing) | 1.6 | 1.6 |
-| Speed pull-back | from 60 km/h to 0.82 by 220 km/h | from 45 km/h to 0.82 by 205 km/h |
+| Speed pull-back | from 60 km/h to 0.82 by 220 km/h | keeps widening on the eased speed: 1.31 at 50 km/h, 1.08 at 100, 0.92 at 150, 0.80 at 200 (was from 45 km/h to 0.82 by 205) |
 | Wheel limits | 0.14-3.0 | 0.14-4.5 |
 
 The street camera is orthographic, so the cutaway's hole through a building is the same in

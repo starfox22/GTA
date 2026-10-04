@@ -232,7 +232,7 @@
       show('touchRun', foot);
       show('touchAction', !chute);
       show('touchReload', foot || !!c);
-      show('touchWeapon', foot || c?.type === 'tank');
+      show('touchWeapon', foot || c?.type === 'tank' || mountedGunKind(c) === 'apc');
       show('touchPoison', foot && player.roof && !!rooftopJob());
       show('touchJump', freefall || (air && aircraftClearance(c) >= 60));
       getElement('touchJump').textContent = touchButtonLabel('touchJump');

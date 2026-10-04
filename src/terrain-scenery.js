@@ -87,55 +87,76 @@
     }
     /**
      * MOUNTAIN SCENERY
-     * Instances the renderer plants (landscaping only: no collision, like the park
-     * trees in landscape3d.js), placed on the field's own triangles:
+     * Instances the renderer plants, placed on the field's own triangles:
      *   trees     jittered 17-unit grid, kept by the forest density; conifers
      *             dominate with height, broadleaf trees in the lower valleys, and
-     *             trees shrink towards the treeline (krummholz)
+     *             trees shrink towards the treeline (krummholz); none where one
+     *             could hide a vehicle on a 4x4 trail from the street camera, and
+     *             thinned just beyond (trailTreeClear, trail-trees.js). Their
+     *             trunks stop vehicles (forest-trunks.js reads these same lists).
      *   rocks     boulders on scree slopes, below cliffs and scattered in the
-     *             alpine meadows
-     * Each entry is [x, y, ground height, size, variant, heading]; flat Float32Arrays.
+     *             alpine meadows (landscaping only: no collision)
+     * Each entry is [x, y, ground height, size, variant, heading]; flat Float32Arrays,
+     * made per field on first use (terrainFieldScenery) and joined in field order.
      */
     let mountainSceneryCache = null;
-    function mountainScenery() {
-      if (mountainSceneryCache) return mountainSceneryCache;
+    function terrainFieldScenery(field) {
+      if (field.scenery) return field.scenery;
       const conifers = [],
         broadleaf = [],
-        rocks = [];
-      for (const field of TERRAIN_FIELDS) {
-        const { cols, rows, heights, land, x0, y0, seed, trailMask, flatDistance, roadDistance } = terrainField(field),
-          { normals, forest } = terrainBakes(field),
-          spacing = 17;
-        for (let y = y0 + spacing / 2; y < field.y1; y += spacing)
-          for (let x = x0 + spacing / 2; x < field.x1; x += spacing) {
-            const jx = x + (terrainHash(Math.round(x), Math.round(y), seed + 1) - 0.5) * spacing * 0.9,
-              jy = y + (terrainHash(Math.round(x), Math.round(y), seed + 2) - 0.5) * spacing * 0.9,
-              c = Math.round((jx - x0) / TERRAIN_CELL),
-              r = Math.round((jy - y0) / TERRAIN_CELL);
-            if (c < 0 || r < 0 || c >= cols || r >= rows) continue;
-            const i = r * cols + c,
-              roll = terrainHash(Math.round(jx * 3), Math.round(jy * 3), seed + 3);
-            if (roll < forest[i] * 0.92) {
-              const ground = sampleTerrainField(field, jx, jy);
-              if (ground < 2) continue;
-              const alpine = smoothStep(TERRAIN_TREELINE - 180, TERRAIN_TREELINE, ground),
-                size = (13 + terrainHash(c, r, seed + 4) * 11) * (1 - alpine * 0.45),
-                conifer = terrainHash(c, r, seed + 5) < 0.5 + smoothStep(40, 260, ground) * 0.48;
-              (conifer ? conifers : broadleaf).push(jx, jy, ground, size, terrainHash(c, r, seed + 6), roll * TAU * 7);
-            } else if (roll > 0.962 && land[i] && trailMask[i] < 0.01 && flatDistance[i] > 40 && !(roadDistance && roadDistance[i] < 24)) {
-              // Boulders: scree and cliff feet, and some out in the meadows.
-              const steep = 1 - normals[i * 3 + 1],
-                h = heights[i];
-              if (h < 25 || steep > 0.45 || (steep < 0.12 && roll < 0.99 && h < TERRAIN_TREELINE)) continue;
-              rocks.push(jx, jy, sampleTerrainField(field, jx, jy), 3 + terrainHash(c, r, seed + 8) * (steep > 0.15 ? 13 : 7), terrainHash(c, r, seed + 9), roll * TAU * 11);
+        rocks = [],
+        bounds = forestTreeBoundsOut,
+        { cols, rows, heights, land, x0, y0, seed, trailMask, flatDistance, roadDistance } = terrainField(field),
+        { normals, forest } = terrainBakes(field),
+        spacing = 17;
+      for (let y = y0 + spacing / 2; y < field.y1; y += spacing)
+        for (let x = x0 + spacing / 2; x < field.x1; x += spacing) {
+          const jx = x + (terrainHash(Math.round(x), Math.round(y), seed + 1) - 0.5) * spacing * 0.9,
+            jy = y + (terrainHash(Math.round(x), Math.round(y), seed + 2) - 0.5) * spacing * 0.9,
+            c = Math.round((jx - x0) / TERRAIN_CELL),
+            r = Math.round((jy - y0) / TERRAIN_CELL);
+          if (c < 0 || r < 0 || c >= cols || r >= rows) continue;
+          const i = r * cols + c,
+            roll = terrainHash(Math.round(jx * 3), Math.round(jy * 3), seed + 3);
+          if (roll < forest[i] * 0.92) {
+            const ground = sampleTerrainField(field, jx, jy);
+            if (ground < 2) continue;
+            const alpine = smoothStep(TERRAIN_TREELINE - 180, TERRAIN_TREELINE, ground),
+              size = (13 + terrainHash(c, r, seed + 4) * 11) * (1 - alpine * 0.45),
+              conifer = terrainHash(c, r, seed + 5) < 0.5 + smoothStep(40, 260, ground) * 0.48;
+            // Near a 4x4 trail: never in the camera's line to a vehicle on it, thinned beyond.
+            if (trailTreeNear(jx, jy)) {
+              forestTreeBounds(size, conifer, jx, jy, bounds);
+              if (!trailTreeKeep(trailTreeClear(jx, jy, bounds.canopy, bounds.height, ground), terrainHash(c, r, seed + 7), 'forest')) continue;
             }
+            (conifer ? conifers : broadleaf).push(jx, jy, ground, size, terrainHash(c, r, seed + 6), roll * TAU * 7);
+          } else if (roll > 0.962 && land[i] && trailMask[i] < 0.01 && flatDistance[i] > 40 && !(roadDistance && roadDistance[i] < 24)) {
+            // Boulders: scree and cliff feet, and some out in the meadows.
+            const steep = 1 - normals[i * 3 + 1],
+              h = heights[i];
+            if (h < 25 || steep > 0.45 || (steep < 0.12 && roll < 0.99 && h < TERRAIN_TREELINE)) continue;
+            rocks.push(jx, jy, sampleTerrainField(field, jx, jy), 3 + terrainHash(c, r, seed + 8) * (steep > 0.15 ? 13 : 7), terrainHash(c, r, seed + 9), roll * TAU * 11);
           }
-      }
-      return (mountainSceneryCache = {
+        }
+      return (field.scenery = {
         conifers: new Float32Array(conifers),
         broadleaf: new Float32Array(broadleaf),
         rocks: new Float32Array(rocks),
       });
+    }
+    function mountainScenery() {
+      if (mountainSceneryCache) return mountainSceneryCache;
+      const join = (key) => {
+        const parts = TERRAIN_FIELDS.map((f) => terrainFieldScenery(f)[key]),
+          out = new Float32Array(parts.reduce((n, a) => n + a.length, 0));
+        let at = 0;
+        for (const a of parts) {
+          out.set(a, at);
+          at += a.length;
+        }
+        return out;
+      };
+      return (mountainSceneryCache = { conifers: join('conifers'), broadleaf: join('broadleaf'), rocks: join('rocks') });
     }
     /**
      * STREAMS AND WATERFALLS
@@ -523,10 +544,19 @@
         },
       );
     }
-    // A club truck at each trailhead: parked on the trail 90 units up from the road,
-    // to one side, facing the climb (it used to stand in the road's lane).
+    // A club truck at each trailhead: in Mount Ascent's car park, nose to the trail;
+    // elsewhere beside the trail 90 units up from the road, clear of the carriageway,
+    // facing the climb (it stood in the road's lane, then on the trail itself, where
+    // a truck starting the hill climb ran into it).
     function spawnTrailVehicles() {
       for (const t of MOUNTAIN_TRAILS) {
+        if (t === MOUNTAIN_TRAILS[0]) {
+          const p = TRAILHEAD_PARKING,
+            x = p.x + p.w - 34,
+            y = p.y + p.h / 2;
+          if (canSpawnCar('suv', x, y, -Math.PI / 2, 8)) makeCar('suv', x, y, -Math.PI / 2, false, '#bc9762');
+          continue;
+        }
         let [x, y] = t.points[0],
           left = 90,
           heading = 0;
@@ -540,8 +570,8 @@
           y = ay + (by - ay) * f;
           left -= length;
         }
-        x -= Math.sin(heading) * 11;
-        y += Math.cos(heading) * 11;
+        x -= Math.sin(heading) * (t.width / 2 + 14);
+        y += Math.cos(heading) * (t.width / 2 + 14);
         if (canSpawnCar('suv', x, y, heading, 8)) makeCar('suv', x, y, heading, false, '#bc9762');
       }
     }

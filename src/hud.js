@@ -30,4 +30,5 @@
      */
     // @include src/hud-state.js
     // @include src/hud-panels.js
+    // @include src/hud-clearance.js
     // END SUBSYSTEM: src/hud.js

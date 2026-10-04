@@ -6,7 +6,11 @@
      * Save schema, progression frontier, ammunition persistence and mission selection.
      */
     /* Campaign frontier is independent from the mission currently selected for replay. */
-    let missionMenuOrigin = 'menu';
+    let missionMenuOrigin = 'menu',
+      // The job RESTART CURRENT JOB restarts when none is running: the last one that
+      // ended without a win (failed, WASTED, BUSTED). None after a win, at a new game
+      // or after a reload (story.js restartableJob).
+      retryJobIndex = null;
     /* Jobs the picker offers: everything up to the frontier, or every job while
        the godmode cheat is on. A public demo build stops at DEMO_MISSIONS. */
     function missionUnlocked(index) {
@@ -56,12 +60,16 @@
       return missionIndex < missions.length && demoLocked(missionIndex);
     }
     /* `missionIndex` is both the story's frontier and the job a replay picked
-       (chooseMission). Once the demo is complete a replay that was declined or
-       failed must not leave the index on the old job: storyCallWaiting() would
-       keep the payphone ringing (arrow, pager, HUD pill) for a job the story
-       finished. Called on HANG UP, on a failed job and when a save loads. */
+       (chooseMission). A replay that was declined or failed must not leave the
+       index on the old job: the payphone would offer that job again instead of
+       the story's next one, and once the demo is complete storyCallWaiting()
+       would keep it ringing (arrow, pager, HUD pill) for a job the story
+       finished. So the index goes back to the frontier, `completed`; only god
+       mode keeps its free choice. Called on HANG UP, on a failed job, when a
+       save loads and when god mode is switched off. A failed job is retried
+       from the pause menu through `retryJobIndex` (story.js restartableJob). */
     function settleDemoStoryIndex() {
-      if (DEMO_BUILD && !player.godMode && completed >= DEMO_MISSIONS) missionIndex = completed;
+      if (!player.godMode) missionIndex = completed;
     }
     function resetCampaignStats() {
       campaignStats.playSeconds = campaignStats.cashEarned = campaignStats.wantedPeak = 0;
@@ -154,7 +162,7 @@
       const note = getElement('demoBuyNote');
       note.textContent = DEMO_BUY_MESSAGE;
       note.classList.remove('hidden', 'flash');
-      void note.offsetWidth;
+      void getComputedStyle(note).animationName; // a style pass restarts the animation (offsetWidth also laid out the page)
       note.classList.add('flash');
       tone(420, 0.08, 0.1, 'triangle');
     }
@@ -223,6 +231,7 @@
         'menu',
         'pauseMenu',
         'missionSelect',
+        'abandonConfirm',
         'callOverlay',
         'mapOverlay',
         'serviceOverlay',
@@ -395,6 +404,8 @@
     getElement('godTimeSlider').oninput = (e) => setGodTime(Number(e.target.value));
     function closeMissionSelect() {
       if (gameMode !== 'missions') return;
+      abandonPick = null;
+      getElement('abandonConfirm').classList.add('hidden');
       getElement('missionSelect').classList.add('hidden');
       gameMode = missionMenuOrigin;
       keys = {};
@@ -404,13 +415,60 @@
         getElement(gameMode === 'pause' ? 'chooseMissionPause' : 'chooseMissionStart').focus();
       }
     }
-    function chooseMission(index) {
+    /* ABANDON CONFIRM
+       A pick in the mission picker while a job runs asks first (it used to throw the job
+       away without a word): ABANDON <JOB>? with ABANDON JOB (Enter, A, a tap) and KEEP
+       PLAYING (Escape, B), which closes the picker and goes back to the job. Abandoned, the
+       job ends without a JOB FAILED card and RESTART CURRENT JOB can bring it back
+       (story.js abandonMission); the pick then comes with its call as ever. */
+    let abandonPick = null;
+    function showAbandonConfirm(index) {
+      abandonPick = index;
+      getElement('abandonTitle').textContent = 'ABANDON ' + missions[mission.index].title.toUpperCase() + '?';
+      getElement('abandonText').textContent =
+        'The job in progress ends here and pays nothing. ' + missions[index].title + ' comes with its call.';
+      getElement('abandonYes').textContent = 'ABANDON JOB' + menuKeySuffix('accept');
+      getElement('abandonNo').textContent = 'KEEP PLAYING' + menuKeySuffix('back');
+      getElement('abandonConfirm').classList.remove('hidden');
+      getElement('abandonYes').focus();
+    }
+    /* The confirm's answer: true abandons the job for the pick, false keeps playing. */
+    function answerAbandonConfirm(abandon) {
+      if (abandonPick === null) return false;
+      const index = abandonPick;
+      abandonPick = null;
+      getElement('abandonConfirm').classList.add('hidden');
+      if (abandon) return chooseMission(index, true);
+      const fromPause = missionMenuOrigin === 'pause';
+      closeMissionSelect();
+      if (fromPause && gameMode === 'pause') togglePause();
+      return false;
+    }
+    getElement('abandonYes').onclick = () => answerAbandonConfirm(true);
+    getElement('abandonNo').onclick = () => answerAbandonConfirm(false);
+    // Console (chooseMission, abandonJob): the confirm as shown, or null.
+    function abandonConfirmReport() {
+      if (abandonPick === null) return null;
+      return {
+        title: getElement('abandonTitle').textContent,
+        text: getElement('abandonText').textContent,
+        yes: getElement('abandonYes').textContent,
+        no: getElement('abandonNo').textContent,
+        focused: document.activeElement?.id || null,
+      };
+    }
+    function chooseMission(index, abandonConfirmed = false) {
       if (Number.isInteger(index) && index < missions.length && demoLocked(index)) {
         if (gameMode === 'missions') showDemoBuyNote();
         return false;
       }
       if (!Number.isInteger(index) || index < 0 || index >= missions.length || !missionUnlocked(index))
         return false;
+      if (mission && !abandonConfirmed) {
+        if (gameMode === 'missions') showAbandonConfirm(index);
+        return false;
+      }
+      if (mission) abandonMission();
       initAudio();
       resetMissionState();
       mission = null;
@@ -441,6 +499,7 @@
       demoCardIn = 0;
       completed = 0;
       missionIndex = 0;
+      retryJobIndex = null;
       clearMissionOverlays();
       weapons.forEach((w, i) => {
         w.owned = i === 0;

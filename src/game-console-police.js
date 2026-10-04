@@ -212,6 +212,8 @@
         return { type: c.type, x: Math.round(c.x), y: Math.round(c.y), d: Math.round(distanceBetween(c, player)) };
       },
     });
+    // Mounted guns: mountedGuns(), driveArmed(), mountedGunAim(), mountedGunTargets() (mounted-guns.js).
+    addConsoleMethods('police', mountedGunConsole());
     // Ammunition supply: bodies to search, police vehicles' stock (ammo-supply.js).
     addConsoleMethods('ammoSupply', ammoSupplyConsole());
     // NPC body armour: shotsToKill(), strikeTest() (see combat-rules.js armourConsole).

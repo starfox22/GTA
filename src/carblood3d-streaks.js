@@ -234,13 +234,13 @@
       // Top tile: the bonnet. +x along the carried direction; the impact a hand's width in from the nose.
       function* cbPaintTop(c) {
         const s = c.sev,
-          R = 0.06 + 0.17 * s,
+          R = 0.025 + 0.035 * c.lite + 0.17 * s,
           sp = clamp(c.speed, 0.35, 1.1);
         c.align = true;
         // The mass the body leaves, and the pad it was dragged over.
         {
           const len = R * (0.8 + 2.6 * c.big) * (0.5 + 0.5 * sp);
-          for (let i = 0, n = Math.round(8 + 22 * c.big); i < n; i++) {
+          for (let i = 0, n = Math.round((8 + 22 * c.big) * c.few); i < n; i++) {
             const u = c.rnd();
             c.ga = u * 0.16;
             cbDome(c, c.ix + u * len - R * 0.2, c.iy + cbGauss(c.rnd) * R * 0.35 * (1 - 0.4 * u), R * (0.25 + c.rnd() * 0.4) * (1 - 0.45 * u) * 1.4, R * (0.25 + c.rnd() * 0.4) * (1 - 0.45 * u), (c.rnd() - 0.5) * 0.5, 0.42 + c.rnd() * 0.2, 0.35);
@@ -260,16 +260,16 @@
         });
         cbStageEnd(c);
         yield 'stage';
-        yield* cbSpray(c, R, s, Math.round(170 + 840 * s), 0.7, 0.45, 2.8 * (0.4 + c.speed));
-        yield* cbMist(c, R, s, Math.round(500 + 2300 * s), 0.65);
+        yield* cbSpray(c, R, s, Math.round((170 + 840 * s) * c.few), 0.7, 0.45, 2.8 * (0.4 + c.speed));
+        yield* cbMist(c, R, s, Math.round((500 + 2300 * s) * c.few), 0.65);
         // Once the car stops, what is thick on the bonnet creeps toward the nose and the wings.
-        yield* cbRuns(c, R, { count: Math.round(2 + 5 * c.big), a: Math.PI, spread: 2.4, reach: 0.4 });
+        yield* cbRuns(c, R, { count: Math.round((2 + 5 * c.big) * c.few), a: Math.PI, spread: 2.4, reach: 0.4 });
         cbStageEnd(c);
       }
       // Face tile: bumper, grille or flank. The impact 36% up; drops thrown up and back, runs down.
       function* cbPaintFace(c) {
         const s = c.sev,
-          R = 0.04 + 0.12 * s;
+          R = 0.018 + 0.022 * c.lite + 0.12 * s;
         c.squash = 1.35;
         c.align = false;
         yield* cbCore(c, R, s, 0.9);
@@ -286,35 +286,45 @@
           fan: 0.2,
           half: c.Wm * 0.5,
         });
-        yield* cbRuns(c, R, { count: Math.round(5 + 14 * s), a: Math.PI / 2, spread: 0.3, reach: c.Hm * 0.62 });
+        yield* cbRuns(c, R, { count: Math.round((5 + 14 * s) * c.few), a: Math.PI / 2, spread: 0.3, reach: c.Hm * 0.62 });
         cbStageEnd(c);
         yield 'stage';
-        yield* cbSpray(c, R, s, Math.round(110 + 520 * s), 0.55, 0.85, 2.0 * (0.4 + c.speed));
-        yield* cbMist(c, R, s, Math.round(300 + 1300 * s), 0.55);
+        yield* cbSpray(c, R, s, Math.round((110 + 520 * s) * c.few), 0.55, 0.85, 2.0 * (0.4 + c.speed));
+        yield* cbMist(c, R, s, Math.round((300 + 1300 * s) * c.few), 0.55);
         cbStageEnd(c);
       }
-      // The paint context of one tile of one stain, drawn on the scratch tile (metres, y down).
-      function cbTileContext(panel, event) {
+      // The paint context of one tile of one stain, drawn on the scratch tile (metres, y down). With `add` (a
+      // hit piled onto the stain, car-stains.js PILING UP) it paints that hit over what the tile holds: its own
+      // severity, speed and seed, its impact moved by where it struck from the stain's point.
+      function cbTileContext(panel, event, add = null) {
         const g = cbScratch.g,
           sx = CB_TILE / panel.Wm,
-          sy = CB_TILE / panel.Hm;
+          sy = CB_TILE / panel.Hm,
+          hit = add || event.stain,
+          dx = add ? (add.x - event.stain.x) / UNITS_PER_METRE : 0,
+          dz = add ? (add.z - event.stain.z) / UNITS_PER_METRE : 0;
         g.setTransform(1, 0, 0, 1, 0, 0);
-        g.globalCompositeOperation = 'source-over';
-        g.fillStyle = '#000';
-        g.fillRect(0, 0, CB_TILE, CB_TILE);
+        if (!add) {
+          g.globalCompositeOperation = 'source-over';
+          g.fillStyle = '#000';
+          g.fillRect(0, 0, CB_TILE, CB_TILE);
+        }
         g.setTransform(sx, 0, 0, sy, 0, 0);
         g.globalCompositeOperation = 'lighten';
         return {
           g,
-          rnd: cbRandom(event.stain.seed + panel.kindSeed),
-          sev: event.stain.sev,
-          big: cbSmooth(0.28, 0.85, event.stain.sev),
-          speed: clamp(event.stain.kph / 90, 0, 1.2),
+          rnd: cbRandom(hit.seed + panel.kindSeed),
+          sev: hit.sev,
+          big: cbSmooth(0.28, 0.85, hit.sev),
+          // A light hit (sev under ~0.18, under ~30 km/h) is a few drops: smaller and fewer of everything.
+          lite: cbSmooth(0, 0.18, hit.sev),
+          few: 0.25 + 0.75 * cbSmooth(0, 0.18, hit.sev),
+          speed: clamp(hit.kph / 90, 0, 1.2),
           Wm: panel.Wm,
           Hm: panel.Hm,
           pxs: Math.sqrt(sx * sy),
-          ix: panel.fu * panel.Wm,
-          iy: (1 - panel.fv) * panel.Hm,
+          ix: clamp(panel.fu * panel.Wm + dx * panel.U.x + dz * panel.U.z, panel.Wm * 0.06, panel.Wm * 0.94),
+          iy: clamp((1 - panel.fv) * panel.Hm - (dx * panel.V.x + dz * panel.V.z), panel.Hm * 0.06, panel.Hm * 0.94),
           dx: panel.dirx,
           dy: panel.diry,
           squash: 1,
@@ -323,6 +333,31 @@
           ba: 0,
           specks: Array.from({ length: CB_SPECK_BUCKETS }, () => []),
         };
+      }
+      // The hits piled onto a stain already painted (car-stains.js PILING UP): each tile is copied back from the
+      // skin's sheet onto the scratch tile and the new impacts are painted over it, so nothing already there is
+      // lost, redrawn or blinks while the scheduler sends the tile up at each yield.
+      function* cbTopUpJob(job) {
+        const { event, skin } = job,
+          adds = event.stain.adds || [],
+          from = event.addsDone || 0,
+          to = adds.length;
+        for (const panel of event.layout) {
+          job.panel = panel;
+          const g = cbScratch.g;
+          g.setTransform(1, 0, 0, 1, 0, 0);
+          g.globalCompositeOperation = 'copy';
+          g.drawImage(skin.canvas, (panel.slot % CB_COLS) * CB_TILE, Math.floor(panel.slot / CB_COLS) * CB_TILE, CB_TILE, CB_TILE, 0, 0, CB_TILE, CB_TILE);
+          for (let i = from; i < to; i++) {
+            const c = cbTileContext(panel, event, adds[i]);
+            yield* panel.kind === 'top' ? cbPaintTop(c) : cbPaintFace(c);
+            yield 'stage';
+          }
+          job.tilesDone = (job.tilesDone || 0) + 1;
+          job.tileEnd = true;
+          yield 'stage';
+        }
+        job.addsTo = to;
       }
       // Both tiles of one stain, one at a time on the shared scratch tile; the scheduler copies the tile to the skin whenever this yields.
       function* cbPaintJob(job) {

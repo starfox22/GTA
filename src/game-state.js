@@ -15,6 +15,26 @@
      * Include fragments share this closure; renderer fragments share its inner closure.
      */
 
+    /**
+     * DETERMINISTIC BOOT (dev and test pages only, for exactness checks of performance changes): `seed=N` replaces
+     * Math.random with the console's seeded generator before anything is generated, and `hold` keeps the frame loop
+     * from simulating (holdSimulation) from the first frame, so two boots of two builds hold the same world and the
+     * same console-stepped play ends in the same stateHash(). tools/dev.mjs start/reload --seed N sets both.
+     */
+    function seededMathRandom(seed) {
+      let state = (Number(seed) >>> 0) || 1;
+      return () => {
+        state = (state + 0x6d2b79f5) >>> 0;
+        let t = state;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+    const DEV_BOOT_FLAGS = typeof location !== 'undefined' && /[?&](dev|test)\b/.test(location.search) ? location.search : '',
+      DEV_BOOT_SEED = /[?&]seed=(\d+)/.exec(DEV_BOOT_FLAGS),
+      DEV_BOOT_HOLD = /[?&]hold\b/.test(DEV_BOOT_FLAGS);
+    if (DEV_BOOT_SEED) Math.random = seededMathRandom(DEV_BOOT_SEED[1]);
     // Boot timeline: a User Timing mark per start-up stage, read by DeadEndCity.bootTimings().
     function bootMark(name) {
       try {
@@ -81,6 +101,13 @@
         },
       });
       return el;
+    }
+    // An attribute (aria-*, data-*, title) the HUD sets on every refresh, written only when it differs: setAttribute
+    // with the value already there still queues a DOM mutation and invalidates style for attribute selectors.
+    function hudAttr(el, name, value) {
+      if (!el || typeof el.setAttribute !== 'function') return;
+      const text = String(value);
+      if (el.getAttribute(name) !== text) el.setAttribute(name, text);
     }
     const getElement = (id) => {
         const el = document.getElementById(id);
@@ -348,7 +375,7 @@
         y: 1964,
       };
     // Set only by the console's holdSimulation (screenshot sequences).
-    let simulationHeld = false;
+    let simulationHeld = DEV_BOOT_HOLD;
     const player = {
       ...spawn,
       a: 0,

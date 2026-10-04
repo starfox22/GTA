@@ -1,5 +1,6 @@
 // Mission 1 (Dockside Favor) drop through its console helpers: deliver the loaded
-// truck into Vinny's warehouse, shutter down, exit the truck, out the back door: won.
+// truck into Vinny's warehouse, shutter down, exit the truck, out the back door: won (the
+// card's pill reads OBJECTIVE · COMPLETE in the beat before the payday, not FREE ROAM).
 export const fresh = true;
 export default async function (t) {
   await t.call('god', true); // the harbor police would otherwise win the gunfight
@@ -29,7 +30,11 @@ export default async function (t) {
   await t.call('teleport', -1666, 4540); // inside, by the back door
   await t.wait(1);
   await t.call('teleport', -1666, 4615); // out on the pavement
-  await t.wait(7);
+  await t.wait(0.5);
+  // The beat before the payday has no target: the card's pill must not read FREE ROAM yet.
+  const card = await t.call('missionCard');
+  t.assert(card.distance === 'OBJECTIVE · COMPLETE', 'pill in the last beat: ' + JSON.stringify(card));
+  await t.wait(6.5);
   m = await t.call('missionState');
   t.assert(m.last?.result === 'won' && m.completed === 1, 'mission not won: ' + JSON.stringify(m));
   await t.call('god', false);

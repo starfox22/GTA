@@ -209,6 +209,17 @@
           pitch.rotation.z = -0.5;
           nightsun = { yaw, pitch, aimYaw: 0, aimPitch: -0.5 };
         }
+        // Door guns (the Black Hawk): a pivot each, swung by animateHelicopter from c.arms.rel.
+        const doorGuns = kit.doorGuns
+          ? kit.doorGuns.map((g) => {
+              const pivot = new Three.Group();
+              pivot.position.set(g.x, g.y, g.z);
+              pivot.rotation.y = -g.side * DOOR_GUN_REST;
+              body.add(pivot);
+              quiet(mesh(g.geometry, M.trim, pivot, 0, 0, 0));
+              return pivot;
+            })
+          : null;
         const halos = kit.anchors.map((a) => {
           const sprite = new Three.Sprite(heliHaloMaterial(a.color));
           sprite.position.set(a.x, a.y, a.z);
@@ -241,6 +252,7 @@
           observer,
           shell: null,
           nightsun,
+          doorGuns,
           searchlightMount,
           lightMaterial,
           levels: lightMaterial.uniforms.levels.value,
