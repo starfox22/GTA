@@ -11,11 +11,11 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-496 files in the include tree, 172,037 lines.
+497 files in the include tree, 172,158 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
-- `src/game.js`   185 — ▸ Game orchestration and shared state
+- `src/game.js`   186 — ▸ Game orchestration and shared state
 
 ## src/game.js ▸ Game orchestration and shared state
 
@@ -47,7 +47,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/map-view.js`   375 — Map views: the city map's filters (MAP LAYERS) and GO TO list, sharp canvases on HiDPI screens, the minimap's speed pull-back and its edge arrows …
 - `src/game-ui.js`   445 — Weapon chip, mission card and updateUI() (HUD text refresh).
 - `src/game-menus.js`   190 — Resize, begin/newGame, pause, help, big map toggle.
-- `src/game-input.js`   461 — Cheat code: Letters typed during play accumulate in a short ring; when the tail spells a known code it fires.
+- `src/god-splash.js`   121 — God mode splash: the full-screen card and fanfare when a cheat code toggles god mode (game-input.js godModeCheat): gold "GOD MODE ACTIVATED!" with a …
+- `src/game-input.js`   459 — Cheat code: Letters typed during play accumulate in a short ring; when the tail spells a known code it fires.
 - `src/controls.js`   314 — Key bindings
 - `src/geography.js`    12 — ▸ Coastlines and land regions
 - `src/drawbridge.js`    68 — ▸ The Palm Sound drawbridge: schedule, gates, leaves, jumps
@@ -731,7 +732,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/game-console.js ▸ DeadEndCity console registry and assembly
 
-- `src/game-console-core.js`   153 — DeadEndCity console, core: status, teleport, look, clock, zoom, simulate, heal, god, cash, walk (+ godPanelConsole)
+- `src/game-console-core.js`   154 — DeadEndCity console, core: status, teleport, look, clock, zoom, simulate, heal, god, cash, walk (+ godPanelConsole)
 - `src/game-console-missions.js`   324 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
 - `src/game-console-police.js`   217 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
 - `src/game-console-vehicles.js`   415 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
@@ -770,14 +771,16 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/ui/world-edge.css`   168 — World-edge cue (world-edge.js): Past the line just inside the world box: RETURN TO THE CITY, the seconds left as a big number (10 ..
 - `src/ui/notify.css`   118 — Notification feed (hud-notify.js): tell() lines as .note boxes in #toast, newest first; older lines dim; an edge colour per tone and a thin bar that …
 - `src/ui/map-panel.css`   156 — City map (map-view.js): as large as the screen allows, with its filters (the legend doubles as them) and the GO TO list beside it, below it on a …
-- `src/ui/reduced-motion.css`    52 — Reduced motion: keep the states, drop the movement
+- `src/ui/god-splash.css`   217 — God mode splash (god-splash.js): A cheat code toggling god mode: a full-screen card over everything (play, pause, Settings, the title).
+- `src/ui/reduced-motion.css`    64 — Reduced motion: keep the states, drop the movement
 - `src/ui/hud.html`   297 — HUD. Layout and motion live in the HUD section of the stylesheet; the collapse/expand behaviour of the radio and weapon boxes and the minimap fold …
 - `src/ui/menus.html`   244 — markup: #menu, #coverArt, #startBtn, #startMeta, #newGameStart, …
 - `src/ui/panels.html`   218 — markup: #sportsbook, #sbTitle, #sbFormat, #sbCash, #sbClose, …
 - `src/ui/credits.html`   299 — markup: #credits, #closeCredits
 - `src/ui/transit.html`    18 — markup: #transitOverlay, #transitPanel, #transitTitle, #transitKey, #transitOptions, …
+- `src/ui/god-splash.html`     7 — God mode splash (god-splash.js): a cheat code toggling god mode.
 
 ## Outside the include tree
 
 - `src/asset-loader.js`   170 — decodes the embedded/streamed media into ASSETS before the game starts
-- `src/shell.html`    76 — HTML page skeleton: its src/ui/*.css and *.html fragments (in include order) and build.py's `<!-- @include-* -->` slots (game, three.js, media, credits)
+- `src/shell.html`    78 — HTML page skeleton: its src/ui/*.css and *.html fragments (in include order) and build.py's `<!-- @include-* -->` slots (game, three.js, media, credits)

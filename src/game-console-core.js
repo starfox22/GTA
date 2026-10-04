@@ -150,4 +150,5 @@
     });
     // GOD PANEL: godPanel(), godTeleport(x, y), godRefill(), godLosePolice(), godFreeze(on), mapScreenPoint(x, y) (god-panel.js).
     addConsoleMethods('godPanel', godPanelConsole());
+    addConsoleMethods('godPanel', godSplashConsole());
     // END SUBSYSTEM: src/game-console-core.js

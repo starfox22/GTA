@@ -1,6 +1,6 @@
 // God mode's two cheat codes (game-input.js CHEAT CODE), typed with real key presses: GODMODE and
 // AAAAXBBBBYXXXXAYYYYB both toggle it, in either case (Shift for capitals is ignored, not a break),
-// and the A key still steers while the long code is only begun (it eats keys from its X on).
+// each toggle plays its splash card, and the A key still steers while the long code is only begun (it eats keys from its X on).
 export const fresh = true;
 const LONG = 'AAAAXBBBBYXXXXAYYYYB';
 async function type(t, text, shift = false) {
@@ -28,6 +28,9 @@ export default async function (t) {
   s = await t.call('status');
   t.note('after the code: mode ' + s.mode);
   t.assert(s.mode === 'settings', 'god mode should open its settings tab: ' + s.mode);
+  // The splash (god-splash.js) plays over Settings.
+  let splash = await t.call('godSplash');
+  t.assert(splash.shown && splash.kind === 'on' && splash.title === 'GOD MODE ACTIVATED!', 'no ON splash: ' + JSON.stringify(splash));
   // Back to play.
   for (let i = 0; i < 3 && (await t.call('status')).mode !== 'play'; i++) {
     await t.keys('Escape', 0.05, { real: true });
@@ -38,6 +41,12 @@ export default async function (t) {
   await type(t, LONG, true);
   await t.realWait(0.3);
   t.assert(!(await god()), 'the code in capitals did not turn god mode off');
+  splash = await t.call('godSplash');
+  t.assert(splash.shown && splash.kind === 'off' && splash.title === 'GOD MODE DEACTIVATED', 'no OFF splash: ' + JSON.stringify(splash));
+  // It plays out by itself (2.6 s of CSS animation) and leaves the screen.
+  await t.realWait(3.2);
+  splash = await t.call('godSplash');
+  t.assert(!splash.shown && splash.kind === null, 'the OFF splash did not go away: ' + JSON.stringify(splash));
   // GODMODE still works.
   await type(t, 'GODMODE');
   await t.realWait(0.3);

@@ -47,6 +47,7 @@
     // @include src/map-view.js
     // @include src/game-ui.js
     // @include src/game-menus.js
+    // @include src/god-splash.js
     // @include src/game-input.js
     // @include src/controls.js
     // @include src/geography.js

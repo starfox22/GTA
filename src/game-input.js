@@ -5,7 +5,7 @@
      * the character will walk about as you spell it -- which is part of the fun.
      * Case does not matter (Caps Lock or Shift), and the modifier keys themselves
      * are ignored rather than breaking the run. Two codes toggle god mode: GODMODE
-     * and the pad-style AAAAXBBBBYXXXXAYYYYB.
+     * and the pad-style AAAAXBBBBYXXXXAYYYYB; each toggle plays the splash (god-splash.js).
      */
     let cheatBuffer = '';
     function godModeCheat() {
@@ -18,17 +18,15 @@
         }
         player.hp = 100;
         player.armor = 100;
-        announce('SOUTH COAST', 'GOD MODE ACTIVATED', 2.2);
         tell('GOD MODE ACTIVATED · every weapon · every mission unlocked · mission select, time, weather, ammo and teleport in Settings · God mode', 5);
       } else {
-        announce('SOUTH COAST', 'GODMODE OFF', 1.8);
-        tell('GODMODE OFF', 2.5);
+        tell('GOD MODE DEACTIVATED', 2.5);
         // A job god mode picked ahead of the story is no longer the payphone's (campaign.js).
         if (!mission) settleDemoStoryIndex();
       }
       drawWeapon();
       updateUI();
-      tone(player.godMode ? 720 : 240, 0.22, 0.16, 'sine');
+      showGodSplash(player.godMode);
       // Straight to Settings · GOD MODE (god-panel.js), whose first row opens
       // the mission picker with every job unlocked. In play it opens over the
       // pause menu; on the title screen over the title, and BACK returns there.

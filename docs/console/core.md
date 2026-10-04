@@ -32,6 +32,8 @@
 | --- | --- |
 | `godPanel()` | The GOD MODE settings tab (god-panel.js): god mode, whether the tab is shown, the tab list, freeze, clock, weather and lock, pick mode, and the last teleport, refill and lose-police reports |
 | `godTeleportPick()` | Open the TELEPORT map from play as Settings · GOD MODE · PICK ON MAP does (god mode on); returns `godPanel()`. With `mapScreenPoint(x, y)` a test clicks a map point with the real pointer |
+| `godSplash()` | The god mode splash (god-splash.js, `godSplashConsole()`): on screen, `kind` ('on' / 'off' / null), its title and how many have played |
+| `godSplashStill(on)` / `godSplashHide()` | Show the ON or OFF splash held at its settled look with no animation (for `dev.mjs shot`), and take it off |
 | `godTeleport(x, y)` | The god-mode teleport as a map click does it (safe ground, a boat on open water, the vehicle to the nearest road, aircraft airborne); returns where the player ended up: `asked`, `to`, `kind` (`foot`, `boat`, `road`, `aircraft`), `snapped`, district, elevation, vehicle (type, heading, on a road), swimming, `solidHere` |
 | `godRefill()`, `godLosePolice()`, `godFreeze(on)` | The tab's REFILL ALL AMMO (returns weapons, health, armour and vehicle before / after), LOSE POLICE (stars and pursuing units before / after) and Freeze time |
 | `mapScreenPoint(x, y)` | While the city map is open, the client pixel of map point (x, y) (null off the map): tests click the map with it |

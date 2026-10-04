@@ -50,3 +50,15 @@
     transition-duration: 0.01ms !important;
   }
 }
+/* The god mode splash keeps its fade (its end hides it) but nothing moves. */
+@media (prefers-reduced-motion: reduce) {
+  #godSplash .god-splash-rays,
+  #godSplash::after {
+    display: none;
+  }
+  #godSplash #godSplashTitle,
+  #godSplash #godSplashKicker,
+  #godSplash #godSplashDetail {
+    animation: none !important;
+  }
+}

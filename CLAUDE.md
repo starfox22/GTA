@@ -215,6 +215,7 @@ packs with plain `<script src>` so the zip still plays from file://.
   inside the search circle). Police sight is debounced there; `PURSUIT_SEARCH_SECONDS` sets the times.
 - Cheat codes: `CHEAT_CODES` (game-input.js; GODMODE and AAAAXBBBBYXXXXAYYYYB both run `godModeCheat`). A code
   whose first letters are driving keys sets `CHEAT_SWALLOW_FROM` so it never eats a steering tap.
+  Each toggle plays `showGodSplash(on)` (god-splash.js: CSS-run card at z-index 100 over Settings, own fanfare).
 - Road vehicles on terrain ride `rideStep` (terrain-suspension.js): pitch, roll and lift come from four tyre
   springs; `rideLift` is drawn only, never part of `entityElevation`; grip and slope push go through
   `rideLoadShare`/`rideGroundPush`; no random hops (new ground features go into `rideTyreGround`/`rideRelief`);
