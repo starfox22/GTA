@@ -51,13 +51,20 @@
       if (car) {
         if (!vehicles.includes(car)) flag('player.car is not in vehicles (' + car.type + ')');
         if (!isAircraft(car) && !isBoat(car) && !(car.altitude > 4) && !car.deckAir && gameMode === 'play') {
-          let deepest = 0;
+          let deepest = 0,
+            what = '';
           for (const b of nearbyStatics(car)) {
             if (b.minHeight !== undefined && entityElevation(car) + vehicleCollisionHeight(car) < b.minHeight) continue;
+            // The shore's edge does not stop the player's own car (physics-step.js throughShore): over it, a bonnet
+            // past the quay is not sunk into anything.
+            if (b.kind === 'coast') continue;
             const hit = boxContact(contactShape(car), b);
-            if (hit && hit.depth > deepest) deepest = hit.depth;
+            if (hit && hit.depth > deepest) {
+              deepest = hit.depth;
+              what = b.kind || (b.building ? 'building' : 'static');
+            }
           }
-          if (deepest > 9) flag('player ' + car.type + ' sunk ' + deepest.toFixed(1) + ' units into a static at ' + at(car));
+          if (deepest > 9) flag('player ' + car.type + ' sunk ' + deepest.toFixed(1) + ' units into a ' + what + ' at ' + at(car));
         }
       }
       // Every vehicle.

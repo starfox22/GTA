@@ -15,4 +15,6 @@
   `dropTransitRide()` (transit-network.js) from `teleportPlayer`; the console's `drive()` ends a cab ride first.
 - Console: `hudClearance(action)`, `hudOverlaps(slack)`. Tests: hud-clearance, hud-layout (no HUD overlaps at
   960x600, keyboard and touch), restart-carriers (train and cab), world-edge (integrity while WASTED out there).
-- Bot: a wanted player turned away at a door is no longer a "rebind" finding.
+- Bot and `integrity()`: a wanted player turned away at a door, a helicopter's own prompt after a teleport, a pilot
+  killed past the world edge (WASTED out there until the respawn) and a bonnet over the quay's edge (the shore never
+  stops the player's own car) are no longer findings. Test: integrity-shore.
