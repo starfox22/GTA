@@ -156,7 +156,13 @@ packs with plain `<script src>` so the zip still plays from file://.
   again goes through `runOverDowned` (runover.js, from `knockPerson`); they die from it only via `p.dying` then
   `finishDying()` then `strikePerson`. `p.mutedUntil` silences `scream()`.
 - Hot loops: never `length = 0` on a reused list (keep a count: `list.n`, `broadphasePairCount`); write a double
-  to an object field only when it changed; declare optional vehicle fields in `makeCar`. Map overlay painters gate
+  to an object field only when it changed; every field any system sets on a vehicle is declared in `makeCar` (as
+  `undefined`; `shapeReport()` stays at 3 layouts or fewer, tools/tests/vehicle-layouts.mjs); no closures capturing
+  loop-body variables, per-frame loops over vehicles or people are indexed (no for-of, no `[x, y]` destructuring),
+  tiny helpers are written out in the physics step (`allocBench(name)` measures bytes per call). A simulation-side
+  performance change is proved with `dev.mjs start --seed 1` plus `hitches.mjs --ab A B --hash` (equal
+  `stateHash` per stage). Restart a CSS animation with `void getComputedStyle(el).animationName`, never
+  `offsetWidth`; `worldContext` is cleared only after a frame that drew on it. Map overlay painters gate
   on `mapWindowHas` and draw fixed-size text with `mapLabel`. `settleIsTrivial` (physics-step.js) must stay in
   step with terrainVehiclePose, cliffSettle, drawbridgeSettle and rotorStrikes (`settleAudit()` checks it).
   Measure with `DeadEndCity.simProfile()` and `dev.mjs call <method> --cpu|--profile N|--alloc N`
