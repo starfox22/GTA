@@ -180,6 +180,8 @@
           bridges: [...new Set(userRoute.map((p) => BRIDGES.find((b) => segmentDistance(p.x, p.y, b.a, b.b) <= b.width / 2)?.id).filter(Boolean))],
           first: userRoute[0] || null,
           last: userRoute.at(-1) || null,
+          // The route's points, rounded (a test can drive it leg by leg with steerTo).
+          path: userRoute.map((p) => [Math.round(p.x), Math.round(p.y)]),
         };
       },
       // Ridgeline's scenic roads (terrain-roads.js): per road its length, points,

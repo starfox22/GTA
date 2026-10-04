@@ -287,7 +287,11 @@
       }
       getElement('missionDistance').textContent = target
         ? (m ? 'OBJECTIVE' : 'PAYPHONE') + ' · ' + distanceLabel(distanceBetween(player, target))
-        : demoStoryOver()
+        : m
+          ? // A job's last beat with nothing left to reach (mission 1 out of the back door, the
+            // payday a moment later): not "FREE ROAM · 0 JOBS COMPLETE" while it still runs.
+            'OBJECTIVE · COMPLETE'
+          : demoStoryOver()
           ? 'FREE ROAM · DEMO COMPLETE'
           : 'FREE ROAM · ' + completed + ' JOBS COMPLETE';
       updateMissionCard(

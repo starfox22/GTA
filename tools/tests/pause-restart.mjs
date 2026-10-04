@@ -1,11 +1,14 @@
 // The pause menu's RESTART CURRENT JOB (story.js restartableJob) restarts the job running or the
 // last one failed. With neither (a fresh game with the first call waiting, right after a win, a job
 // past the demo) it is shown disabled, NO JOB TO RESTART, and does nothing: a waiting call is taken
-// at the payphone (right after winning job 1 it used to start job 2 without its call).
+// at the payphone (right after winning job 1 it used to start job 2 without its call). The menu's
+// line counts the demo's own jobs ("1 of 2 demo jobs complete", not "1 of 16").
 export const fresh = true;
-async function restartButton(t) {
+async function restartButton(t, done) {
   const p = await t.call('pauseMenu', true);
   t.assert(p.open, 'the pause menu did not open: ' + JSON.stringify(p));
+  // A demo counts its own jobs (not "of 16").
+  if (done !== undefined) t.assert(p.info.startsWith(done + ' of 2 demo jobs complete'), 'pause info: ' + p.info);
   await t.call('pauseMenu', false);
   return p.restart;
 }
@@ -26,7 +29,8 @@ export default async function (t) {
   await t.call('holdSimulation', true);
   try {
     // A fresh game: the first call waits at the payphone; there is no job to restart.
-    let r = await restartButton(t);
+    const demo = await t.call('demo');
+    let r = await restartButton(t, demo.build ? 0 : undefined);
     t.assert(r.disabled && r.note === 'NO JOB TO RESTART', 'fresh game: ' + JSON.stringify(r));
     let m = await t.call('retryMission');
     t.assert(m.mission === null && m.mode === 'play', 'a disabled restart started a job: ' + JSON.stringify(m));
@@ -71,7 +75,7 @@ export default async function (t) {
     m = await t.call('missionState');
     t.assert(m.last?.result === 'won' && m.completed === 1, 'job 1 not won: ' + JSON.stringify(m));
     await t.call('god', false);
-    r = await restartButton(t);
+    r = await restartButton(t, demo.build ? 1 : undefined);
     t.assert(r.disabled && r.note === 'NO JOB TO RESTART', 'after a win: ' + JSON.stringify(r));
     m = await t.call('retryMission');
     t.assert(m.mission === null && m.last?.result === 'won', 'a restart after the win started a job: ' + JSON.stringify(m));
@@ -80,7 +84,6 @@ export default async function (t) {
 
     // A job past the demo (?dev reaches it), lost: the picker does not offer it, so neither does
     // the restart.
-    const demo = await t.call('demo');
     if (!demo.build) {
       t.note('not a demo build: no gated job to check');
       return;

@@ -174,6 +174,7 @@
         return {
           mode: gameMode,
           open: gameMode === 'pause',
+          info: getElement('pauseInfo').textContent,
           restart: { disabled: restart.disabled, note: restart.querySelector('span')?.textContent || null },
         };
       },
