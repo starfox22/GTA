@@ -40,8 +40,11 @@ index plus one.
 - A delivery that needs zero stars: add the stage to `policeBlocksMissionDelivery`.
 - If the job's opening moves, keep `MISSION_STARTS` (cycles.js, bike-share placement) in
   step, or give the entry a `start`.
-- Mission vehicles burn down to 8% and go out instead of exploding and take 40% of gang
-  small-arms damage.
+- Mission vehicles burn slowly (30 s, `burnSeconds`) down to 8% and go out instead of
+  exploding, and take 40% of gang small-arms damage above half health, falling to 6% at 30%
+  (`MISSION_CAGE`, combat-rules.js); a critical one the player drives gets a CRITICAL DAMAGE
+  headline and a bail-out warning every 3 s. Mission 1's bay: a prompt run leaves the truck
+  at ~38-52 %, a hesitant one at ~30 % (tools/tests/mission1-bay.mjs).
 - Test from the console: `startMission(i)`, `missionTargets()`, `steerTo()`, `walk()`,
   `interact()`, `simulate(seconds, keys)`; docs/audit/missions-qa.md shows the method.
 
@@ -114,6 +117,10 @@ index plus one.
   else the last one failed (WASTED and BUSTED fail it), remembered in `retryJobIndex` (not saved)
   while the picker offers it. After a win, at a new game or after a reload there is none: the
   pause menu shows it disabled, NO JOB TO RESTART; a waiting call is taken at the payphone.
+- CHOOSE MISSION while a job runs asks ABANDON <JOB>? (`showAbandonConfirm`, campaign.js; the
+  `#abandonConfirm` dialog over the picker): ABANDON JOB (Enter, A, E) ends it through
+  `abandonMission` (no JOB FAILED card; RESTART CURRENT JOB can bring it back) and the pick's
+  call comes up; KEEP PLAYING (Escape, B) goes back to the job.
 - Never gated (not missions): the hill climb, volleyball, the stadium ball, the pier rides,
   bike share, cabs, rail, the liner, casino, garages, gun shop, Fort Sentinel, the Apache,
   MONARCH MOTORS.

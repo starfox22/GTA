@@ -8,6 +8,15 @@
         repairVehicle(player.car);
         return this.damageReport();
       },
+      // Bring the player's vehicle down to `percent` of its health through the ordinary
+      // damage path (never up: repair() mends). Returns its hp, share, fire and mission flag.
+      vehicleHealth(percent = 100) {
+        const c = player.car;
+        if (!c) return null;
+        const target = (clamp(Number(percent) || 0, 0, 100) / 100) * c.maxhp;
+        if (target < c.hp) damageVehicle(c, c.hp - target);
+        return { hp: Math.round(c.hp), maxhp: c.maxhp, percent: Math.round((100 * c.hp) / c.maxhp), burning: !!c.damage?.burning, mission: !!c.mission };
+      },
       // The 4x4 club and the trails (offroad.js): the lot and its clearances, the
       // club trucks, the members, the player's traction state, the hill climb.
       offroad: () => offroadReport(),
@@ -95,6 +104,128 @@
           wanted: Math.ceil(wantedStars),
         };
       },
+      // Drive the player's road vehicle along the GPS road route to (x, y) through the real
+      // physics, as a player holding W/S/A/D would: steer at a point a little way along the
+      // route, slow for the turns ahead (to `maxKmh` on the straights), back off when wedged,
+      // and plan again from where it is when shoved off the route (traffic, police rams).
+      // Returns where it stopped and why ('arrived', 'time', 'left vehicle', 'no route'),
+      // with the re-plans, back-offs and the wanted level.
+      followRoute(x, y, seconds = 120, maxKmh = 80) {
+        const c = player.car;
+        if (!c || isAircraft(c) || isBoat(c)) return null;
+        const nodes = navigationGraph(),
+          goal = { x, y },
+          plan = () => {
+            const r = navShortestPath(nodes, closestNavNode(c, nodes), closestNavNode(goal, nodes));
+            r.push(goal);
+            return r;
+          };
+        let route = plan(),
+          at = 0,
+          t = 0,
+          reason = 'time',
+          stuckFor = 0,
+          backUp = 0,
+          replans = 0,
+          backoffs = 0,
+          lastPlan = 0;
+        if (route.length < 2) return { reason: 'no route' };
+        for (; t < seconds; t += 1 / 30) {
+          if (gameMode !== 'play' || player.car !== c) {
+            reason = 'left vehicle';
+            break;
+          }
+          if (Math.hypot(x - c.x, y - c.y) < 70 && Math.abs(c.speed) < 32) {
+            reason = 'arrived';
+            break;
+          }
+          // Progress along the route, and how far off it the vehicle is.
+          let off = Infinity;
+          for (let i = at; i < Math.min(route.length, at + 10); i++) {
+            const d = Math.hypot(route[i].x - c.x, route[i].y - c.y);
+            if (d < off) {
+              off = d;
+              at = i;
+            }
+          }
+          if (off > 170 && t - lastPlan > 2) {
+            route = plan();
+            at = 0;
+            lastPlan = t;
+            replans++;
+          }
+          // The point to steer at: about `look` units along the route.
+          const look = 60 + Math.abs(c.speed) * 0.6;
+          let tx = route[Math.min(at + 1, route.length - 1)].x,
+            ty = route[Math.min(at + 1, route.length - 1)].y;
+          for (let i = at, left = look; i < route.length - 1; i++) {
+            const a = i === at ? c : route[i],
+              b = route[i + 1],
+              seg = Math.hypot(b.x - a.x, b.y - a.y);
+            tx = b.x;
+            ty = b.y;
+            if (seg >= left) {
+              tx = a.x + ((b.x - a.x) * left) / seg;
+              ty = a.y + ((b.y - a.y) * left) / seg;
+              break;
+            }
+            left -= seg;
+          }
+          // The sharpest turn within braking reach (~320 units) sets the speed.
+          let turn = 0;
+          for (let i = at, run = 0; i < route.length - 2 && run < 320; i++) {
+            const a1 = Math.atan2(route[i + 1].y - route[i].y, route[i + 1].x - route[i].x),
+              a2 = Math.atan2(route[i + 2].y - route[i + 1].y, route[i + 2].x - route[i + 1].x);
+            turn = Math.max(turn, Math.abs(normalizeAngle(a2 - a1)));
+            run += Math.hypot(route[i + 1].x - route[i].x, route[i + 1].y - route[i].y);
+          }
+          // ...and so does the end of the route: brake to stop there (about 3 m/s²).
+          const toGoal = Math.hypot(x - c.x, y - c.y),
+            limit = Math.min((turn > 1 ? 24 : turn > 0.45 ? 40 : maxKmh) * KMH, Math.sqrt(48 * Math.max(0, toGoal - 45)) + 18),
+            err = normalizeAngle(Math.atan2(ty - c.y, tx - c.x) - c.a);
+          // Wedged (a wall, a box-in): back off at once, before the police can call it a
+          // surrender (pursuit-officers.js, 1.5 s within 6 units).
+          stuckFor = Math.abs(c.speed) < 5 && backUp <= 0 ? stuckFor + 1 / 30 : 0;
+          if (stuckFor > 0.5) {
+            backUp = 0.9;
+            stuckFor = 0;
+            backoffs++;
+          }
+          if (backUp > 0) {
+            backUp -= 1 / 30;
+            keys.KeyW = false;
+            keys.KeyS = true;
+            keys.KeyD = err < 0;
+            keys.KeyA = err > 0;
+          } else if (Math.abs(err) > 1.9 && c.speed < 25) {
+            // Facing away: back round on opposite lock.
+            keys.KeyW = false;
+            keys.KeyS = true;
+            keys.KeyD = err < 0;
+            keys.KeyA = err > 0;
+          } else {
+            const fast = c.speed > limit + 6 * KMH;
+            keys.KeyW = !fast && c.speed < limit && Math.abs(err) < 1.3;
+            keys.KeyS = fast || (Math.abs(err) >= 1.3 && c.speed > 20);
+            keys.KeyD = err > 0.05;
+            keys.KeyA = err < -0.05;
+          }
+          update(1 / 30);
+        }
+        keys.KeyW = keys.KeyS = keys.KeyA = keys.KeyD = false;
+        return {
+          reason,
+          seconds: Math.round(t),
+          x: Math.round(c.x),
+          y: Math.round(c.y),
+          speed: Math.round(c.speed || 0),
+          hp: Math.round(c.hp),
+          left: Math.round(Math.hypot(x - c.x, y - c.y)),
+          replans,
+          backoffs,
+          wanted: Math.ceil(wantedStars),
+        };
+      },
       // Move the player's vehicle (with the player aboard) to a point, stopped,
       // facing `heading`; aircraft can be lifted to an altitude in metres.
       placeVehicle(x, y, heading = player.car?.a ?? 0, altitudeMeters = 0) {
@@ -176,6 +307,9 @@
         if (!VEHICLE_DEFINITIONS[type]) throw Error('Unknown vehicle type ' + type);
         if (airframe && (type !== 'plane' || !AIRFRAME_SPECS[airframe])) throw Error('Unknown airframe ' + airframe);
         if (player.car) exitCar();
+        // Out of a cab or off a train first: a ride left running held the player (and the new car) in place.
+        if (taxiRide) endTaxiRide(false);
+        if (transitRide) teleportPlayer(player.x, player.y);
         let car = null;
         if (['speedboat', 'workboat', 'jetski'].includes(type)) {
           // Boats go on the nearest open water (spawnClearCar wants dry land).

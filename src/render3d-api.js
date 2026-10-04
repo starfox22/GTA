@@ -87,7 +87,9 @@
             byTriangles = new Map(),
             instancedList = [],
             sphere = new Three.Sphere(),
-            roles = new Map();
+            roles = new Map(),
+            // Calls on the scenery detail layers (flight-view3d.js LEVEL OF DETAIL): small props, mid-sized props, the rest.
+            byLayer = { detail: 0, farDetail: 0, other: 0 };
           for (const m of carModels.values()) roles.set(m.group, 'vehicle');
           let total = 0,
             triangleTotal = 0;
@@ -142,6 +144,9 @@
                 byName.set(key, (byName.get(key) || 0) + calls);
                 byCell.set(cell, (byCell.get(cell) || 0) + calls);
                 total += calls;
+                if (o.layers.isEnabled(DETAIL_LAYER) && !o.layers.isEnabled(0)) byLayer.detail += calls;
+                else if (o.layers.isEnabled(FAR_DETAIL_LAYER) && !o.layers.isEnabled(0)) byLayer.farDetail += calls;
+                else byLayer.other += calls;
                 // Triangles of what the camera pass draws (an instanced mesh: per instance).
                 const g = o.geometry,
                   count = g ? (g.index ? g.index.count : g.attributes.position ? g.attributes.position.count : 0) : 0,
@@ -165,6 +170,7 @@
           }
           return {
             total,
+            byLayer,
             byName: sorted(byName),
             byCell: sorted(byCell),
             // Triangles of the camera pass by the same names (the heaviest first).

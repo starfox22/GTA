@@ -112,7 +112,7 @@
       const stamp = getElement('sbStamp');
       stamp.textContent = sportsbookUi.stampText;
       stamp.classList.remove('show');
-      void stamp.offsetWidth;
+      void getComputedStyle(stamp).animationName; // a style pass restarts the animation (offsetWidth also laid out the page)
       stamp.classList.add('show');
       getElement('sbTabBets').classList.remove('bump');
       void getElement('sbTabBets').offsetWidth;

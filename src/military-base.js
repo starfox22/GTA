@@ -484,7 +484,9 @@
           half = (s.lane.y1 - s.lane.y0) / 2;
         let friendly = false,
           inLane = false;
-        for (const c of vehicles) {
+        // (Indexed: a for-of over every vehicle allocated an iterator result per vehicle in this once-a-frame code.)
+        for (let k = 0; k < vehicles.length; k++) {
+          const c = vehicles[k];
           if ((c.altitude || 0) > 15 || c.hp <= 0) continue;
           const dy = Math.abs(c.y - cy);
           if (dy > half + 20) continue;
@@ -500,7 +502,9 @@
         const shut = lockdown && !forced && !(friendly && !alertOnPlayerNearGate()) && !(inLane && s.slide < 0.85);
         s.slide = clamp(s.slide + (shut ? 1 : -1) * deltaSeconds * 0.28, 0, 1);
       }
-      militaryGate = Math.min(...militaryGateState.map((s) => (s.armBroken ? 1 : s.arm)));
+      let gate = Infinity;
+      for (let i = 0; i < militaryGateState.length; i++) gate = Math.min(gate, militaryGateState[i].armBroken ? 1 : militaryGateState[i].arm);
+      militaryGate = gate;
       // Broken pieces are replaced once the alarm is over and nobody is watching.
       if (!lockdown && militaryAlertUntil < gameTime && gameTime > militaryRepairAt && distanceBetween(player, MILITARY.gate) > 900)
         for (const s of militaryGateState) s.armBroken = s.bollardsBroken = s.slideBroken = false;

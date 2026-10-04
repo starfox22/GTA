@@ -90,6 +90,12 @@ packs with plain `<script src>` so the zip still plays from file://.
   to move the player; releases every carrier), `solid()` (people collision), `crime()` (only
   heat source), `offerPrompt()` (only prompt writer), `actionHeld()`/`keyName()` (never
   literal keys). Details: docs/areas/core-and-contracts.md.
+- The mission card never covers the player: `missionCardFolded()` (hud-clearance.js) folds it, its reading time
+  held, while `hudPlayerBox()` meets the open card; the strip, the dialogue line and the waypoint pill fade
+  (`.yield-fade`) only as a last resort. HUD layout reads go in `measureMissionCard()` at the start of `runFrame`;
+  a new HUD box that can sit over the player joins this. `hudOverlaps()` lists overlapping boxes and
+  tools/tests/hud-layout.mjs holds 960x600 at zero. `teleportPlayer()` also ends a train ride (`dropTransitRide`)
+  and steps the player out of a vehicle with nowhere to step out to; only an aircraft in the air comes along.
 - `tell(text, s, {id, tone})` (hud-notify.js) is the only notification writer; hints use
   `pressKey()`/`keyPrefix()` (input-hints.js), never `'Press ' + keyName()`.
 - `shooterInView()` (combat-rules.js) is the only rule for whether an NPC may fire at the
@@ -140,6 +146,11 @@ packs with plain `<script src>` so the zip still plays from file://.
   the last failed one, `retryJobIndex`), never a waiting call. Console `pointers()` lists every story pointer.
 - Service counters never sell nothing: health items in `SERVICE_CURES` and armour are refused when full
   (citylife-police.js `serviceAction`).
+- Mission vehicles take gang small-arms damage through `missionCageShare` (combat-rules.js `MISSION_CAGE`: 32 %
+  above half health, down to 6 % below 30 %); mission 1's cargo-bay balance is held by tools/tests/mission1-bay.mjs.
+  A pick in the mission picker while a job runs goes through the ABANDON confirm (campaign.js
+  `showAbandonConfirm` / story.js `abandonMission`). Hints follow the HUD on screen (input-hints.js `hintDevice`:
+  gamepad names after pad input, touch names while `body.touch-mode` is set, else keys).
 - Every service place has a real building and its door on the pavement: no floor rings, no free-standing place
   signs. Motels, inns and lodges are dressed by `dressHotel()` (civic3d-hotels.js). County boards (guide,
   scenic-view, town, trailhead) are drawn only through `roadsideSign()` (county3d-signs.js) at the spot
@@ -156,7 +167,13 @@ packs with plain `<script src>` so the zip still plays from file://.
   again goes through `runOverDowned` (runover.js, from `knockPerson`); they die from it only via `p.dying` then
   `finishDying()` then `strikePerson`. `p.mutedUntil` silences `scream()`.
 - Hot loops: never `length = 0` on a reused list (keep a count: `list.n`, `broadphasePairCount`); write a double
-  to an object field only when it changed; declare optional vehicle fields in `makeCar`. Map overlay painters gate
+  to an object field only when it changed; every field any system sets on a vehicle is declared in `makeCar` (as
+  `undefined`; `shapeReport()` stays at 3 layouts or fewer, tools/tests/vehicle-layouts.mjs); no closures capturing
+  loop-body variables, per-frame loops over vehicles or people are indexed (no for-of, no `[x, y]` destructuring),
+  tiny helpers are written out in the physics step (`allocBench(name)` measures bytes per call). A simulation-side
+  performance change is proved with `dev.mjs start --seed 1` plus `hitches.mjs --ab A B --hash` (equal
+  `stateHash` per stage). Restart a CSS animation with `void getComputedStyle(el).animationName`, never
+  `offsetWidth`; `worldContext` is cleared only after a frame that drew on it. Map overlay painters gate
   on `mapWindowHas` and draw fixed-size text with `mapLabel`. `settleIsTrivial` (physics-step.js) must stay in
   step with terrainVehiclePose, cliffSettle, drawbridgeSettle and rotorStrikes (`settleAudit()` checks it).
   Measure with `DeadEndCity.simProfile()` and `dev.mjs call <method> --cpu|--profile N|--alloc N`
@@ -203,7 +220,9 @@ packs with plain `<script src>` so the zip still plays from file://.
   `rideLoadShare`/`rideGroundPush`; no random hops (new ground features go into `rideTyreGround`/`rideRelief`);
   `settleIsTrivial` checks `rideActive`. Trail set pieces (`ford`, `camber`, `steep`, `summitLift`) and
   `OFFROAD_SECTIONS` are fractions of the path: moving a trail means re-deriving them (`trailProfile`) and keeping
-  tools/tests/hillclimb-physics.mjs green.
+  tools/tests/hillclimb-physics.mjs green. Trail rock is one source: `rideRelief` is what the tyres climb and what
+  offroad3d-trail.js draws (never add trail rocks the ride can't feel); `offroadFords`/`offroadFordWater`
+  (offroad-trails.js) are the only water on a trail (county3d-forest.js draws it, `tyreEmission` 'ford' sprays).
 - The Meridian Star sails `LINER_VOYAGE` (marina-voyage.js); `linerVoyageCheck()` must report no problems (land,
   bridges, docks, ships, Monarch Harbour, hull `LINER_EDGE_MARGIN` inside the world-edge line); she never passes
   under a bridge. Moving scenery registers its cull entry with `moving: true` (render3d-statics.js), never in a

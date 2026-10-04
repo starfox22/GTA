@@ -11,7 +11,6 @@ const GROUND = [
   [-1710, 5800, 'wood', 'the beach pier'],
   [3410, 1827, 'wood', 'a harbour dock'],
   [4100, -3500, 'tile', 'North Point Key'],
-  [7600, 1900, 'dirt', 'the Mount Ascent trailhead'],
   [7760, 1090, 'snow', 'Mount Ascent'],
   [7000, 3000, 'grass', 'county grass'],
 ];
@@ -19,6 +18,9 @@ const SIDEWALK = [1730, 2432],
   SUMMIT = [7760, 1090];
 export default async function (t) {
   try {
+    // The Mount Ascent trail just past its trailhead, read off its path (it starts on the road's asphalt).
+    const trail = await t.call('trailProfile', 0, 10);
+    GROUND.push([trail[1][1], trail[1][2], 'dirt', 'the Mount Ascent trail past its trailhead']);
     for (const [x, y, want, label] of GROUND) {
       const r = await t.call('footsteps', x, y);
       t.assert(r.surface === want, `${label} (${x}, ${y}): ${r.surface}, expected ${want}`);

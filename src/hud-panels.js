@@ -96,6 +96,8 @@
       // Keyboard, touch or gamepad: how hints name the actions (input-hints.js).
       refreshHintDevice();
       commitPrompt();
+      // The dialogue line above the mission card, and the fades if either would cover the player (hud-clearance.js).
+      placeHudClearance();
       updateSniperWarning();
       settleCentreCards();
       watchDockLine();

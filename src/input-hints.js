@@ -2,11 +2,11 @@
     // what an action is called on it (keyName's touch and gamepad paths, pressKey, moveKeysName).
     /**
      * INPUT DEVICE
-     * The last device the player touched decides how every hint names an
-     * action: a keyboard key cap (E), the on-screen button on a touch screen
-     * (ACTION, EXIT, GAS...) or the gamepad button (A, RT...). Only real input
-     * counts (the gamepad's own synthetic key events are untrusted). Until the
-     * player does anything, a touch device (touchEnabled) reads touch.
+     * How every hint names an action: the gamepad button (A, RT...) while a
+     * gamepad is the last device used, else what the HUD shows: the on-screen
+     * button while the touch controls are up (ACTION, EXIT, GAS...; touch mode,
+     * even after a key press), otherwise a keyboard key cap (E). Only real input
+     * counts (the gamepad's own synthetic key events are untrusted).
      * body[data-input] carries it for the CSS (key caps become button chips).
      * DeadEndCity.inputHints(device) forces one for tests and screenshots.
      */
@@ -33,10 +33,12 @@
     );
     function hintDevice() {
       if (hintInput.forced) return hintInput.forced;
-      const last = hintInput.last;
-      if (last === 'gamepad' || last === 'keyboard') return last;
-      // A tap counts only while the touch controls are on screen to be tapped.
-      return touchEnabled() ? 'touch' : 'keyboard';
+      // A gamepad in use names its buttons. Otherwise a hint follows the HUD on screen: with
+      // the touch controls up (body.touch-mode, mobile.js updateTouchUI) it names those
+      // buttons even after a key press ("SHIFT TO RUN" beside a RUN button read wrong), and
+      // a tap counts only while they are there to be tapped.
+      if (hintInput.last === 'gamepad') return 'gamepad';
+      return document.body?.classList.contains('touch-mode') ? 'touch' : 'keyboard';
     }
     function setHintDevice(device) {
       hintInput.forced = HINT_DEVICES.includes(device) ? device : null;

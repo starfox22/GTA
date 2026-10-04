@@ -482,8 +482,9 @@
               pz = cos * half,
               x1 = s.x + cos * s.len,
               z1 = s.y + sin * s.len,
-              h0 = terrainHeight(s.x, s.y) + 0.2,
-              h1 = terrainHeight(x1, z1) + 0.2,
+              // The ground under both ends, laid with the mark (tyre-effects.js pushTyreMark).
+              h0 = s.h0 !== undefined ? s.h0 : terrainHeight(s.x, s.y) + 0.2,
+              h1 = s.h1 !== undefined ? s.h1 : terrainHeight(x1, z1) + 0.2,
               alpha = 0.62 * (s.dark ?? 0.6) * Math.min(1, s.life / 12);
             // (a, b, c) (a, c, d): a, b along the near edge, c, d the far one.
             skidPos[si++] = s.x - px;
@@ -532,7 +533,11 @@
           renderFrame();
           lap = profileLap(shadowRefresh ? 'r:submit+shadow' : 'r:submit', lap);
           if (bakedCanvases.length && frames % 30 === 0) releaseBakedCanvases();
-          worldContext.clearRect(0, 0, viewportWidth, viewportHeight);
+          // Cleared only after a frame that drew on it (OVERLAY INK, render3d-resources.js).
+          if (overlayInk) {
+            worldContext.clearRect(0, 0, viewportWidth, viewportHeight);
+            overlayInk = false;
+          }
           if (target && gameMode === 'play') {
             const p = api.project(target.x, target.y, 32 + targetAltitude);
             if (p.x < 60 || p.x > viewportWidth - 60 || p.y < 130 || p.y > viewportHeight - 210) {

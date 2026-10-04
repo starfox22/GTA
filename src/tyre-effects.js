@@ -80,15 +80,21 @@
     function pushTyreMark(c, spec, forward, side, a, len, dark, counted) {
       const cos = Math.cos(c.a),
         sin = Math.sin(c.a),
-        track = spec.bike ? 0 : spec.w * 0.4;
+        track = spec.bike ? 0 : spec.w * 0.4,
+        x = c.x + cos * forward - sin * side * track,
+        y = c.y + sin * forward + cos * side * track;
+      // h0 / h1: the ground under the mark's two ends, worked out once here (the renderer drew every mark from two
+      // terrain lookups each frame, up to 2,200 a frame for marks that never move).
       skids.push({
-        x: c.x + cos * forward - sin * side * track,
-        y: c.y + sin * forward + cos * side * track,
+        x,
+        y,
         a,
         len,
         dark: clamp(dark, 0.05, 1),
         w: spec.bike ? 1.2 : clamp(spec.w * 0.11, 1.3, 3),
         life: MARK_LIFE,
+        h0: terrainHeight(x, y) + 0.2,
+        h1: terrainHeight(x + Math.cos(a) * len, y + Math.sin(a) * len) + 0.2,
       });
       if (counted) tyreEffectStats.marks++;
     }
