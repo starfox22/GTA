@@ -10,7 +10,8 @@ grid, shores and bridges, navigation and layout data: world-and-map.md.
 - **Ridgeline terrain** (the height field, the 4x4 trails and their grading, the ride on the
   terrain, the scenic roads): world-county-and-sea-terrain.md.
 - `prunePlanTrees` (end of `buildCounty`) drops plan trees on carriageways, in buildings, under
-  rail decks, on runways or in doorways (`treeAudit()`).
+  rail decks, on runways, in doorways or where they could hide a vehicle on a 4x4 trail
+  (`trailTreeClear`, world-county-and-sea-terrain.md) (`treeAudit()`).
 - Falls (falls.js): on foot, ground dropping away steeper than 1.35 (54°) under a step starts
   a ballistic fall (`player.fall`, a carrier; `settleFootOnGround` replaced the plain terrain
   snap); faces over 45° cannot be landed on (the body slides down, scraping) and where it

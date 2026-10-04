@@ -46,3 +46,16 @@ there). The hill climb course, the 4x4 club and its trucks: places-monarch-and-c
   players were thrown wide at the muddy hairpin).
 - The trailhead SUV (`spawnTrailVehicles`, terrain-scenery.js) parks in the Mount Ascent car
   park: on the trail it stood in front of the start gate and every run hit it.
+- **Trees and the trails** (trail-trees.js): `trailTreeClear(x, y, canopy, height, ground)` is the one rule for a
+  tree near a 4x4 trail. The street camera is orthographic at `STREET_PITCH` (slant 560/680), so a tree covers the
+  ground north of it out to the slant of its top; trees and the carriageway (half-width + `TRAIL_VIEW_MARGIN`, a
+  `TRAIL_VIEW_VEHICLE`-tall truck, pads, summit) are compared in the camera's ground plane, only the part of a crown
+  above the trail's ground counting (lower is behind). Negative: the tree could hide a vehicle and is not placed;
+  within `TRAIL_TREE_FADE` the forest thins (`trailTreeKeep`). On the map no trunk within `TRAIL_TREE_SHOULDER` of
+  the carriageway or `TRAIL_TREE_RUNOFF` outside a hairpin (the hill-climb pilot runs ~6 m wide out of the keyholes). Forest sizes are bounds over the species the renderer
+  may pick (`forestTreeBounds`; keep it in step with `forestSpecies` and `TREE_SPECIES` R/H). A new tree placer
+  near the trails must ask it; `trailTreeAudit()` checks every path sample independently (`covering` 0).
+- **Forest trunks** (forest-trunks.js): every forest tree (`terrainFieldScenery`, the same lists county3d-forest.js
+  draws) is a rooted post (`forestTrunkHalf`) in a per-field cell index, resolved after `streetPropContacts` for
+  moving vehicles within 1400 units of the player; unbreakable (the tank skips them). Boulders stay scenery.
+  Console `forestTrunks()` (no trunk on a carriageway or a trail), tools/tests/trail-trees.mjs.
