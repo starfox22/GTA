@@ -117,6 +117,10 @@ index plus one.
   else the last one failed (WASTED and BUSTED fail it), remembered in `retryJobIndex` (not saved)
   while the picker offers it. After a win, at a new game or after a reload there is none: the
   pause menu shows it disabled, NO JOB TO RESTART; a waiting call is taken at the payphone.
+- CHOOSE MISSION while a job runs asks ABANDON <JOB>? (`showAbandonConfirm`, campaign.js; the
+  `#abandonConfirm` dialog over the picker): ABANDON JOB (Enter, A, E) ends it through
+  `abandonMission` (no JOB FAILED card; RESTART CURRENT JOB can bring it back) and the pick's
+  call comes up; KEEP PLAYING (Escape, B) goes back to the job.
 - Never gated (not missions): the hill climb, volleyball, the stadium ball, the pier rides,
   bike share, cabs, rail, the liner, casino, garages, gun shop, Fort Sentinel, the Apache,
   MONARCH MOTORS.

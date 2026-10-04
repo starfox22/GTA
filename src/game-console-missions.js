@@ -190,8 +190,15 @@
       // A pick in the mission picker (campaign.js chooseMission, gated as the
       // picker is): the job's call comes up (accept it with Enter or E).
       chooseMission(index) {
+        // A job running: the pick is made in the picker, which asks first (ABANDON CONFIRM).
+        if (mission && gameMode !== 'missions') openMissionSelect();
         const chosen = chooseMission(index);
-        return { chosen, mode: gameMode, missionIndex, ...this.missionState() };
+        return { chosen, mode: gameMode, missionIndex, abandonConfirm: abandonConfirmReport(), ...this.missionState() };
+      },
+      // The ABANDON <job>? confirm (campaign.js): true presses ABANDON JOB, false KEEP PLAYING.
+      abandonJob(yes = true) {
+        const chosen = answerAbandonConfirm(!!yes);
+        return { chosen, mode: gameMode, missionIndex, abandonConfirm: abandonConfirmReport(), ...this.missionState() };
       },
       // Mission 1 test shortcut: start Dockside Favor if needed, load all three
       // crates, and put the player in the truck on the road outside Vinny's

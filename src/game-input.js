@@ -185,6 +185,18 @@
         return;
       }
       if (gameMode === 'missions') {
+        // ABANDON <JOB>? (campaign.js): Escape keeps playing, the action key presses the
+        // focused answer (Enter does that itself), and the digits wait for the answer.
+        if (abandonPick !== null) {
+          if (code === 'Escape') {
+            e.preventDefault();
+            answerAbandonConfirm(false);
+          } else if (!e.repeat && is('interact')) {
+            e.preventDefault();
+            answerAbandonConfirm(document.activeElement !== getElement('abandonNo'));
+          }
+          return;
+        }
         if (code === 'Escape') {
           e.preventDefault();
           closeMissionSelect();

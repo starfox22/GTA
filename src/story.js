@@ -486,6 +486,14 @@
       );
       getElement('storyLine').classList.remove('show');
     }
+    /* CHOOSE MISSION over a running job, confirmed (campaign.js ABANDON CONFIRM): the job
+       ends without a JOB FAILED card or line; like a failed one RESTART CURRENT JOB can
+       bring it back. The caller resets the world for the pick. */
+    function abandonMission() {
+      if (!mission) return;
+      lastMissionOutcome = { result: 'abandoned', index: mission.index, stage: mission.stage };
+      retryJobIndex = mission.index;
+    }
     /* The job RESTART CURRENT JOB restarts: the one running, else the last one that
        failed (WASTED and BUSTED fail it too) while the picker still offers it. After a
        win, at a new game or after a reload there is none: the pause menu shows the
