@@ -20,6 +20,14 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - Headless, the reports read Web Audio automation in audio time: after a simulated `wait` the gliding gains lag the probe (they glide in real time); judge levels in a real browser.
 
 ## Free roam and HUD (docs/audit/freeroam-sweep.md)
+- HUD clearance (hud-clearance.js, 2026-10-04 pass): at 960x600 a bus heading up the screen at 60 km/h reaches
+  ~470 px, where a mission dialogue line sits low over the folded card: the line then fades to 30 % (last resort,
+  no room left); O opens the card over the player on purpose. Repro: `drive('bus', 0, -Math.PI / 2)` at (420, 5600),
+  `launch(20)`, a dialogue line up, `hudClearance()`.
+- Touch on a tablet: a tapped radio opens over the GAS / BRAKE column for its 6 s (`.touch-mode #carRadio`, 180 px
+  top, 250 px wide); getting in no longer opens it by itself.
+- 960 px wide: a three-note notice feed (116 px down) can reach a headline card's words at 27 % height (two notes
+  clear it by ~5 px); `hudOverlaps()` measures the headline by its words.
 - Damage direction: only gunfire shows the red arc (pursuit-officers.js playerHitFeedback); blasts and melee do not.
 - Gamepad: tested with a virtual pad only (`gamepadFeed`); no rumble; the settings screen cannot rebind pad buttons.
 - The 2D fallback renderer's speech bubbles keep the old 10 px text.
