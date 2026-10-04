@@ -143,6 +143,92 @@
         const rows = city3D.attributeChurn(snapshot);
         return { frames: n, kbPerFrame: Math.round(rows.reduce((s, r) => s + r[1], 0) / n), top: rows.slice(0, 25) };
       },
+      // Garbage per call of one hot simulation function, on the world as it is (it changes it: a dev page only):
+      // 'trafficControl' (every city AI car), 'controlVehicle', 'settleVehicle' (every vehicle), 'vehicleBroadphase',
+      // 'knockSceneProps', 'physicsStep' (once a round). Bytes from the JS heap's growth (exact with Chromium's
+      // --enable-precise-memory-info, which tools/dev.mjs passes), rounds that a collection interrupted left out, and
+      // microseconds per call.
+      allocBench(name = 'trafficControl', rounds = 6) {
+        const pc = player.car,
+          dt = 1 / 120,
+          heap = () => (performance.memory ? performance.memory.usedJSHeapSize : 0),
+          runs = {
+            trafficControl: [vehicles.filter((c) => c.ai && !c.isle && !c.countyRoute && c.hp > 0 && !c.cop), (c) => trafficControl(c, dt)],
+            controlVehicle: [vehicles, (c) => controlVehicle(c, pc, dt, true)],
+            settleVehicle: [vehicles, (c) => settleVehicle(c, pc, dt)],
+            vehicleBroadphase: [[0], () => vehicleBroadphase(pc)],
+            knockSceneProps: [[0], () => knockSceneProps(1 / 60)],
+            physicsStep: [[0], () => physicsStep(dt, true)],
+          },
+          run = runs[name];
+        if (!run) return { error: 'one of ' + Object.keys(runs).join(', ') };
+        const [list, fn] = run;
+        for (let i = 0; i < list.length; i++) fn(list[i]);
+        let bytes = 0,
+          calls = 0,
+          ms = 0,
+          dropped = 0;
+        for (let r = 0; r < clamp(Number(rounds) || 6, 1, 200); r++) {
+          const h0 = heap(),
+            t0 = performance.now();
+          for (let i = 0; i < list.length; i++) fn(list[i]);
+          const t1 = performance.now(),
+            h1 = heap();
+          if (h1 < h0) {
+            dropped++;
+            continue;
+          }
+          bytes += h1 - h0;
+          ms += t1 - t0;
+          calls += list.length;
+        }
+        return { name, calls, bytesPerCall: calls ? Math.round(bytes / calls) : null, usPerCall: calls ? +((ms * 1000) / calls).toFixed(2) : null, roundsDropped: dropped };
+      },
+      // Object layouts of the vehicles (or 'people'): V8 gives objects whose properties were added in a different
+      // order different hidden classes, and a property read across more than four of them is megamorphic: slower,
+      // and a read of a number field then allocates a fresh boxed copy (the garbage of the physics loops). Reports
+      // the distinct key orders, the base (first) layout's length and the keys added after it (by how many vehicles,
+      // in what order of appearance), and keys some vehicles lack. Read-only.
+      shapeReport(kind = 'vehicles') {
+        const list = kind === 'people' ? pedestrians : vehicles,
+          orders = new Map(),
+          extra = new Map(),
+          missing = new Map();
+        let base = null;
+        for (const o of list) {
+          const keys = Object.keys(o),
+            sig = keys.join(',');
+          orders.set(sig, (orders.get(sig) || 0) + 1);
+        }
+        const ranked = [...orders].sort((a, b) => b[1] - a[1]);
+        if (ranked.length) base = ranked[0][0].split(',');
+        const baseSet = new Set(base || []);
+        for (const o of list) {
+          const keys = Object.keys(o);
+          for (const k of keys) if (!baseSet.has(k)) extra.set(k, (extra.get(k) || 0) + 1);
+          const own = new Set(keys);
+          for (const k of base || []) if (!own.has(k)) missing.set(k, (missing.get(k) || 0) + 1);
+        }
+        // Where each of the next layouts first parts from the biggest one's key order.
+        const parts = ranked.slice(1, 6).map(([sig, n]) => {
+          const keys = sig.split(',');
+          let i = 0;
+          while (i < keys.length && base && keys[i] === base[i]) i++;
+          return [n, i, keys.slice(i, i + 4).join(','), base ? base.slice(i, i + 4).join(',') : ''];
+        });
+        return {
+          objects: list.length,
+          layouts: orders.size,
+          biggest: ranked.slice(0, 6).map(([sig, n]) => [n, sig.split(',').length]),
+          // [objects, first differing position, their keys there, the biggest layout's keys there]
+          parts,
+          baseKeys: base ? base.length : 0,
+          // The biggest layout's last keys (fields added after creation, in the order they arrive).
+          lastKeys: base ? base.slice(-12) : [],
+          extraKeys: [...extra].sort((a, b) => b[1] - a[1]).slice(0, 160),
+          missingKeys: [...missing].sort((a, b) => b[1] - a[1]).slice(0, 20),
+        };
+      },
       // Hiccup hunt, live frames (frame-trace.js): 'start' records every frame the page draws from now on (holding the
       // keys in `held`), 'report' reads the record so far, 'stop' ends it and reports (the same report as hitchRun,
       // plus the requestAnimationFrame intervals in `gaps`).
