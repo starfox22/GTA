@@ -476,21 +476,31 @@
       offroadClubUI();
     }
     function drawCivicMap(drawingContext, big) {
+      const font = big ? 90 : 65,
+        fontName = big ? 'bold 90px monospace' : 'bold 65px monospace';
       for (const p of PLACES) {
-        const font = big ? 90 : 65,
-          w = p.symbol.length * (big ? 59 : 43) + 35,
-          h = big ? 115 : 87,
-          // Off the map's window nothing is drawn (the state below is still set, as before).
-          shown = mapWindowHas(p.door.x, p.door.y, w / 2 + h);
+        const w = p.symbol.length * (big ? 59 : 43) + 35,
+          h = big ? 115 : 87;
+        // Off the map's window nothing is drawn and no state is set (most places, on the minimap): the canvas is
+        // left below in the state the last place sets, as when every place set it.
+        if (!mapWindowHas(p.door.x, p.door.y, w / 2 + h)) continue;
         drawingContext.fillStyle = '#101d25';
-        if (shown) drawingContext.fillRect(p.door.x - w / 2, p.door.y - h / 2, w, h);
+        drawingContext.fillRect(p.door.x - w / 2, p.door.y - h / 2, w, h);
         drawingContext.strokeStyle = p.color;
         drawingContext.lineWidth = big ? 8 : 5;
-        if (shown) drawingContext.strokeRect(p.door.x - w / 2, p.door.y - h / 2, w, h);
+        drawingContext.strokeRect(p.door.x - w / 2, p.door.y - h / 2, w, h);
         drawingContext.fillStyle = p.color;
-        drawingContext.font = 'bold ' + font + 'px monospace';
+        drawingContext.font = fontName;
         drawingContext.textAlign = 'center';
-        if (shown) drawingContext.fillText(p.symbol, p.door.x, p.door.y + font * 0.34);
+        drawingContext.fillText(p.symbol, p.door.x, p.door.y + font * 0.34);
+      }
+      const last = PLACES[PLACES.length - 1];
+      if (last) {
+        drawingContext.strokeStyle = last.color;
+        drawingContext.lineWidth = big ? 8 : 5;
+        drawingContext.fillStyle = last.color;
+        drawingContext.font = fontName;
+        drawingContext.textAlign = 'center';
       }
       for (const d of DOCKS) {
         drawingContext.fillStyle = '#8fbad5';

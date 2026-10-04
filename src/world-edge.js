@@ -270,7 +270,7 @@
         // Restart the one-second pulse on each new number of the countdown.
         if (cue.state !== 'approach' && cue.state !== 'clear') {
           root.classList.remove('beat');
-          void root.offsetWidth;
+          void getComputedStyle(root).animationName; // a style pass restarts the animation (offsetWidth also laid out the page)
           root.classList.add('beat');
         }
       }

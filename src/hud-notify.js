@@ -96,8 +96,10 @@
     }
     function restartNoticeTimer(note) {
       const bar = note.el.lastChild;
+      // The animation restarts once 'none' has been through a style pass: a computed-style read is that pass (it
+      // used to be offsetWidth, which lays out the whole page as well).
       bar.style.animation = 'none';
-      void bar.offsetWidth;
+      void getComputedStyle(bar).animationName;
       bar.style.animation = '';
       note.el.style.setProperty('--note-life', Math.max(0.1, note.until - noticeNow()).toFixed(2) + 's');
     }

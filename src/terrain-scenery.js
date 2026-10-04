@@ -523,10 +523,19 @@
         },
       );
     }
-    // A club truck at each trailhead: parked on the trail 90 units up from the road,
-    // to one side, facing the climb (it used to stand in the road's lane).
+    // A club truck at each trailhead: in Mount Ascent's car park, nose to the trail;
+    // elsewhere beside the trail 90 units up from the road, clear of the carriageway,
+    // facing the climb (it stood in the road's lane, then on the trail itself, where
+    // a truck starting the hill climb ran into it).
     function spawnTrailVehicles() {
       for (const t of MOUNTAIN_TRAILS) {
+        if (t === MOUNTAIN_TRAILS[0]) {
+          const p = TRAILHEAD_PARKING,
+            x = p.x + p.w - 34,
+            y = p.y + p.h / 2;
+          if (canSpawnCar('suv', x, y, -Math.PI / 2, 8)) makeCar('suv', x, y, -Math.PI / 2, false, '#bc9762');
+          continue;
+        }
         let [x, y] = t.points[0],
           left = 90,
           heading = 0;
@@ -540,8 +549,8 @@
           y = ay + (by - ay) * f;
           left -= length;
         }
-        x -= Math.sin(heading) * 11;
-        y += Math.cos(heading) * 11;
+        x -= Math.sin(heading) * (t.width / 2 + 14);
+        y += Math.cos(heading) * (t.width / 2 + 14);
         if (canSpawnCar('suv', x, y, heading, 8)) makeCar('suv', x, y, heading, false, '#bc9762');
       }
     }

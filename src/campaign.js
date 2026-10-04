@@ -162,7 +162,7 @@
       const note = getElement('demoBuyNote');
       note.textContent = DEMO_BUY_MESSAGE;
       note.classList.remove('hidden', 'flash');
-      void note.offsetWidth;
+      void getComputedStyle(note).animationName; // a style pass restarts the animation (offsetWidth also laid out the page)
       note.classList.add('flash');
       tone(420, 0.08, 0.1, 'triangle');
     }

@@ -95,7 +95,12 @@
     }
     function strokeRoad(drawingContext, points, width, color) {
       drawingContext.beginPath();
-      points.forEach(([x, y], i) => (i ? drawingContext.lineTo(x, y) : drawingContext.moveTo(x, y)));
+      // (A plain loop: destructuring each [x, y] went through the iterator protocol, per point, per minimap pass.)
+      for (let i = 0; i < points.length; i++) {
+        const p = points[i];
+        if (i) drawingContext.lineTo(p[0], p[1]);
+        else drawingContext.moveTo(p[0], p[1]);
+      }
       drawingContext.strokeStyle = color;
       drawingContext.lineWidth = width;
       drawingContext.lineJoin = 'round';
