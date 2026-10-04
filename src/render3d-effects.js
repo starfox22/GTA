@@ -68,6 +68,12 @@
       }
       const flameTx = new Three.CanvasTexture(flameCanvas);
       flameTx.colorSpace = Three.SRGBColorSpace;
+      /* FX SPRITE ORDER: smoke, flame, sparks, blood drops and the blast ring are drawn
+         after every ground decal (blood pools 3, scorch 2, mud 3), tyre smoke (4) and the
+         car blood skin (6). Three.js sorts transparent objects by renderOrder before
+         depth and none of these write depth, so with the default 0 a blood pool under a
+         blast was painted over the fireball. */
+      const FX_SPRITE_ORDER = 8;
       const smokeMat = new Three.SpriteMaterial({
         map: smokeTx,
         color: '#8b8b8f',
@@ -91,6 +97,7 @@
           );
           m.rotation.x = -Math.PI / 2;
           m.visible = false;
+          m.renderOrder = FX_SPRITE_ORDER;
           scene.add(m);
           return m;
         },
@@ -110,6 +117,7 @@
             }),
           );
           s.visible = false;
+          s.renderOrder = FX_SPRITE_ORDER;
           scene.add(s);
           return s;
         },
@@ -161,6 +169,7 @@
         () => {
           const s = new Three.Sprite(smokeMat.clone());
           s.visible = false;
+          s.renderOrder = FX_SPRITE_ORDER;
           scene.add(s);
           return s;
         },

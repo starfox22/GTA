@@ -477,6 +477,7 @@
               new Three.SpriteMaterial({ map: flameTx, transparent: true, depthWrite: false, blending: Three.AdditiveBlending }),
             );
             s.visible = false;
+            s.renderOrder = FX_SPRITE_ORDER; // over floor blood and decals (render3d-effects.js)
             scene.add(s);
             return s;
           });
