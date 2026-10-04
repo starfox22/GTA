@@ -330,20 +330,18 @@
       let passAim = null,
         passAt = Infinity,
         pivotOut = 0;
-      for (const o of vehicles) {
-        if (
-          o === c ||
-          Math.abs(o.x - c.x) > 350 ||
-          Math.abs(o.y - c.y) > 350 ||
-          (o.altitude || 0) > 20 ||
-          isBoat(o) ||
-          distanceBetween(c, o) > 350
-        )
-          continue;
+      // An indexed loop with the box test in plain comparisons: this runs for every vehicle in the city, and a
+      // for-of iterator result or a Math.abs call per vehicle allocated (~86 bytes a vehicle, 24 KB a call) in code
+      // V8 has not fully optimised (the function deoptimises often as vehicles change shape).
+      for (let k = 0; k < vehicles.length; k++) {
+        const o = vehicles[k];
+        if (o === c) continue;
+        const dx = o.x - c.x;
+        if (dx > 350 || dx < -350) continue;
+        const dy = o.y - c.y;
+        if (dy > 350 || dy < -350 || (o.altitude || 0) > 20 || isBoat(o) || hypot2(dx, dy) > 350) continue;
         let standoff = 0;
-        const dx = o.x - c.x,
-          dy = o.y - c.y,
-          along = dx * headingCosine2 + dy * headingSine2,
+        const along = dx * headingCosine2 + dy * headingSine2,
           lateral = Math.abs(dx * rx + dy * ry),
           vehicleDefinition2 = vehicleSpec(o),
           headingCosine3 = Math.cos(o.a),
