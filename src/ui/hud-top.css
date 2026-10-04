@@ -203,6 +203,11 @@ kbd {
   color: #f3dfa9;
   pointer-events: none;
   font-family: var(--ui-font);
+  transition: opacity 0.25s;
+}
+/* Over the player (a long vehicle heading down the screen): it fades (hud-clearance.js). */
+#navigation.yield-fade {
+  opacity: 0.3;
 }
 #navArrow {
   display: grid;

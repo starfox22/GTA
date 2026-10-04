@@ -16,9 +16,9 @@
      *   - the dialogue line sits just above the card as it stands (--story-bottom), so it
      *     drops to the strip with it; if even the strip or the line would cover the
      *     player, that one fades (.yield-fade).
-     * The card's boxes are read at the start of the next frame or HUD pass (with the dock
-     * line: measureDockLine), never after this pass's writes (no forced layout): the open
-     * box is remembered from the last time the card stood open. Touch mode keeps the card
+     * The card's boxes are read at the start of the next frame (runFrame, with the dock line),
+     * never after a pass's writes (no forced layout): the open box is remembered from the last
+     * time the card stood open. Touch mode keeps the card
      * at the top (touch-hud.css) and only the yield applies there.
      */
     const CLEAR_MARGIN = 18,
@@ -33,6 +33,10 @@
       open: { l: 0, t: 0, r: 0, b: 0, ok: false },
       strip: { l: 0, t: 0, r: 0, b: 0, ok: false },
       story: { h: 0, w: 0, ok: false },
+      // The waypoint pill (top centre): a long vehicle heading down the screen reaches up to it.
+      nav: { l: 0, t: 0, r: 0, b: 0, ok: false },
+      fadeNav: false,
+      fadeNavAt: -1e9,
       vw: 0,
       vh: 0,
       measuredAt: -1,
@@ -90,9 +94,10 @@
     function clearBoxesMeet(p, l, t, r, b, margin) {
       return p.ok && p.r + margin > l && p.l - margin < r && p.b + margin > t && p.t - margin < b;
     }
-    /* At the start of a frame or HUD pass, before anything is written (measureDockLine): where the
-       card stands, open or folded, and how tall the dialogue line is. A few times a second, or at once
-       after the card changed state or the window its size. */
+    /* At the start of a frame (runFrame, beside measureDockLine), before anything is written, while the
+       last layout is still valid: where the card stands, open or folded, the waypoint pill, and how tall
+       the dialogue line is. A few times a second, or at once after the card changed state or the window
+       its size. */
     function measureMissionCard() {
       const C = cardClear,
         now = hudNow();
@@ -114,6 +119,18 @@
           into.r = box.right;
           into.b = box.bottom;
           into.ok = true;
+        }
+      }
+      const nav = getElement('navigation');
+      C.nav.ok = false;
+      if (nav.style.display !== 'none') {
+        const box = nav.getBoundingClientRect();
+        if (box.height > 0) {
+          C.nav.l = box.left;
+          C.nav.t = box.top;
+          C.nav.r = box.right;
+          C.nav.b = box.bottom;
+          C.nav.ok = true;
         }
       }
       const story = getElement('storyLine');
@@ -143,7 +160,7 @@
         storyShown = !touch && C.story.ok && getElement('storyLine').classList.contains('show'),
         o = C.open;
       let covers = false;
-      if (timerOpen && !C.forced && o.ok && p.ok && gameMode === 'play') {
+      if (timerOpen && !C.forced && o.ok && p.ok && gameMode === 'play' && !getElement('pager').classList.contains('hidden')) {
         // The open card and the dialogue line above it, as one stack.
         const top = storyShown ? o.t - CLEAR_STORY_GAP - C.story.h : o.t,
           half = storyShown ? Math.max(o.r - o.l, C.story.w) / 2 : (o.r - o.l) / 2,
@@ -211,6 +228,13 @@
         C.fadeStory = fadeStory;
         story.classList.toggle('yield-fade', fadeStory);
       }
+      // The waypoint pill fades while it would sit over the player (the minimap and the arrow still point the way).
+      if (C.nav.ok && gameMode === 'play' && clearBoxesMeet(p, C.nav.l, C.nav.t, C.nav.r, C.nav.b, 2)) C.fadeNavAt = gameTime;
+      const fadeNav = C.nav.ok && gameTime - C.fadeNavAt < CLEAR_HOLD;
+      if (fadeNav !== C.fadeNav) {
+        C.fadeNav = fadeNav;
+        getElement('navigation').classList.toggle('yield-fade', fadeNav);
+      }
     }
     /* DeadEndCity.hudClearance(): the player's box on screen, the card's boxes and what yields. */
     function hudClearanceReport(action) {
@@ -235,6 +259,8 @@
         forced: C.forced,
         fadeCard: C.fadeCard,
         fadeStory: C.fadeStory,
+        nav: r(C.nav),
+        fadeNav: C.fadeNav,
         readLeft: +Math.max(0, missionCardUntil - gameTime).toFixed(2),
       };
     }

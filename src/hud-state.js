@@ -622,8 +622,6 @@
       dockNavShown = dockLineKey();
     }
     function measureDockLine() {
-      // The mission card's boxes for its clearance of the player (hud-clearance.js), read at the same moment.
-      measureMissionCard();
       if (!dockLinePending) return;
       dockLinePending = false;
       const nav = getElement('navigation'),
