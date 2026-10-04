@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-487 files in the include tree, 168,059 lines.
+487 files in the include tree, 168,182 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -42,10 +42,10 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/world-edge.js`   323 — World-edge countdown: past the line just inside the world box the player has 10 s to return, or the vehicle blows up and WASTED.
 - `src/game-draw2d.js`   586 — 2D canvas fallback renderer: drawWorld, drawCar, drawPerson, markers.
 - `src/game-minimap.js`   278 — Minimap base layer: The minimap used to repaint the whole county (coast, every street, parks, promenades, county ground and every building footprint) …
-- `src/map-view.js`   367 — Map views: the city map's filters (MAP LAYERS) and GO TO list, sharp canvases on HiDPI screens, the minimap's speed pull-back and its edge arrows …
-- `src/game-ui.js`   413 — Weapon chip, mission card and updateUI() (HUD text refresh).
+- `src/map-view.js`   375 — Map views: the city map's filters (MAP LAYERS) and GO TO list, sharp canvases on HiDPI screens, the minimap's speed pull-back and its edge arrows …
+- `src/game-ui.js`   417 — Weapon chip, mission card and updateUI() (HUD text refresh).
 - `src/game-menus.js`   188 — Resize, begin/newGame, pause, help, big map toggle.
-- `src/game-input.js`   419 — Cheat code: Letters typed during play accumulate in a short ring; when the tail spells a known code it fires.
+- `src/game-input.js`   433 — Cheat code: Letters typed during play accumulate in a short ring; when the tail spells a known code it fires.
 - `src/controls.js`   314 — Key bindings
 - `src/geography.js`    12 — ▸ Coastlines and land regions
 - `src/drawbridge.js`    68 — ▸ The Palm Sound drawbridge: schedule, gates, leaves, jumps
@@ -115,7 +115,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/ecology.js`   339 — Wildlife behavior
 - `src/sealife.js`    17 — ▸ Sea life: dolphins, gulls and the great white
 - `src/sealife-audio.js`   356 — Sea life sound
-- `src/navigation.js`   689 — City map and route planning
+- `src/navigation.js`   706 — City map and route planning
 - `src/parachute.js`   734 — Bailout and parachute
 - `src/deck-landing.js`   356 — Landing on a ship from the sky: canopy touchdowns and freefall impacts on the liners' and the superyacht's decks (deckSurfaceAt, deckLandingStep) …
 - `src/falls.js`    22 — ▸ Falls: bodies and vehicles off cliffs, fatal impacts
@@ -145,7 +145,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/quality.js`   240 — Graphics quality tiers
 - `src/settings.js`   854 — Settings menu
 - `src/markers.js`    20 — Objective and player markers: which ones are drawn (the floating arrow; the optional player ring) and a read-only report.
-- `src/god-panel.js`   782 — God mode settings
+- `src/god-panel.js`   799 — God mode settings
 - `src/driving.js`   489 — Tyres, brakes and driving assists
 - `src/tyre-effects.js`   260 — What the tyres leave behind: the burnout (forward and the handbrake held at a standstill), skid marks, and the one rule for tyre smoke, dust and …
 - `src/hud.js`    33 — ▸ HUD behaviour and the title menu
@@ -190,7 +190,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/citylife-places.js`   495 — The civic layer: places, clock, services, police on foot, navigation and injury effects.
 - `src/citylife-police.js`   633 — City life services and police sight: service menus, crowd density, search, gang targets, deploying officers (renderService, policeSees).
-- `src/citylife-civic.js`   519 — ▸ City life: officers and the wanted level (updateOfficers, updateWanted), strikePerson (blood: blood.js), updateCivic(), navigation and the civic map.
+- `src/citylife-civic.js`   581 — ▸ City life: officers and the wanted level (updateOfficers, updateWanted), strikePerson (blood: blood.js), updateCivic(), navigation and the civic map.
 
 ## src/citylife-civic.js ▸ City life: officers and the wanted level (updateOfficers, updateWanted), strikePerson (blood: blood.js), updateCivic(), navigation and the civic map.
 
@@ -199,7 +199,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/pursuit.js ▸ Police response and pursuit tactics
 
-- `src/pursuit-dispatch.js`   759 — Police tiers and dispatch: sighting, unit kinds, wanted announcements, spawning and routing units (dispatchPolice, planPursuit).
+- `src/pursuit-dispatch.js`   760 — Police tiers and dispatch: sighting, unit kinds, wanted announcements, spawning and routing units (dispatchPolice, planPursuit).
 - `src/pursuit-steering.js`   107 — Pursuit steering aids: room to swing onto a straight run (roomToTurn), the speed the corners on the route ahead allow (routeCornerSpeed) and traffic …
 - `src/pursuit-officers.js`   687 — Officers on foot in a pursuit: suppressive fire, cover, drags, surrender and arrest (updateArrest).
 
@@ -749,7 +749,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/ui/radio.css`   544 — Car radio: a station chip that opens on a change or on hover
 - `src/ui/title.css`   308 — Title screen
 - `src/ui/dialogs.css`   231 — Dialogs: one panel style for pause, calls, shops, help
-- `src/ui/god-panel.css`   188 — God panel: the GOD MODE settings tab and the map's teleport pick
+- `src/ui/god-panel.css`   220 — God panel: the GOD MODE settings tab and the map's teleport pick
 - `src/ui/sportsbook.css`   463 — SPORTSBOOK (sportsbook-ui.js): GOALLINE's betting menu: The settings panel's glass and type, with the house's neon green for the brand and live …
 - `src/ui/sportsbook-bets.css`   505 — styles: .sb-summary, .sb-summary span, .sb-summary b, .sb-summary .plus b, …
 - `src/ui/demo.css`   231 — PUBLIC DEMO (campaign.js): The DEMO badge by the title menu's version, the picker's FULL GAME badges and buy note, and the DEMO COMPLETE card after …
