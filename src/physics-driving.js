@@ -60,7 +60,10 @@
       const sliding = hypot2(c.vx, c.vy);
       if (sliding > 45 && Math.floor(physicsClock * 20) !== c.lastSkid && Math.abs(c.x - player.x) < 900 && Math.abs(c.y - player.y) < 900) {
         c.lastSkid = Math.floor(physicsClock * 20);
-        skids.push({ x: c.x, y: c.y, a: Math.atan2(c.vy, c.vx), len: sliding / 40 + 2, dark: 0.45, w: 2, life: 35 });
+        const a = Math.atan2(c.vy, c.vx),
+          len = sliding / 40 + 2;
+        // h0 / h1 as tyre-effects.js pushTyreMark lays them (the ground under both ends, once).
+        skids.push({ x: c.x, y: c.y, a, len, dark: 0.45, w: 2, life: 35, h0: terrainHeight(c.x, c.y) + 0.2, h1: terrainHeight(c.x + Math.cos(a) * len, c.y + Math.sin(a) * len) + 0.2 });
       }
     }
     /* Kerb strike (the player's car): mounting or dropping off a kerb at speed

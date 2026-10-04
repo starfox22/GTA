@@ -26,6 +26,19 @@
         }
         return color;
       }
+      // OVERLAY INK: the 2D canvas over the scene (labels, speech bubbles, the off-screen objective arrow, the hit
+      // flash) is cleared only after a frame that drew on it. Clearing an empty canvas every frame still made the
+      // browser repaint and re-composite a full-screen layer each frame (a texture upload where the canvas is not on
+      // the GPU). Any draw call on worldContext, from whichever file, marks it.
+      let overlayInk = true;
+      for (const name of ['fillRect', 'strokeRect', 'fill', 'stroke', 'fillText', 'strokeText', 'drawImage', 'putImageData']) {
+        const draw = worldContext[name];
+        if (typeof draw === 'function')
+          worldContext[name] = function () {
+            overlayInk = true;
+            return draw.apply(this, arguments);
+          };
+      }
       // New vehicle models built per frame (see the vehicle pass): at most six, and after the first no more once
       // the frame has spent MODEL_BUILD_BUDGET_MS building them (a few dozen meshes each; a view full of new traffic
       // is spread over frames instead of one long one).
