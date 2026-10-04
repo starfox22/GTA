@@ -87,6 +87,9 @@ here when polishing; delete a line when it is fixed. Newest features first.
   the shore for about a second and is then pushed back ~37 units onto the promenade instead of dropping into Palm
   Sound (other runs drive straight in): `drive('supercar', 0, 0)`, `placeVehicle(-1300, 2299, 0, 0)`, `launch(12)`,
   then `simulate(0.25, ['KeyW'])` steps (2026-10-04 free-roam pass; seen once in two tries).
+- The ATLAS CARGO FLATBED reverses at about 0.35 m/s² from rest (5 units in the first 1.6 s of S, 17 in 3.2 s; forward
+  ~1.3 m/s²): nose to a wall it barely seems to move, which the bot read as trapped twice (seed 8; its check now waits
+  longer). `drive('flatbed', 0, Math.PI / 2)` at (420, 4400), `simulate(1.6, ['KeyS'])`.
 - 50–0 km/h stops are slightly longer than before (the 0.2 s pedal build-up).
 - Soaked roads add 43–58 % to ABS stops (target 30–50 %).
 - AI traffic and police use the simple ABS-equivalent brake, not the per-axle tyre model.

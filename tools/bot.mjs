@@ -285,6 +285,13 @@ const actions = {
         moved = Math.max(moved, dist(a, b));
         if (moved > 8) break;
       }
+      // A heavy truck reverses slowly (a flatbed backs off a wall only ~5 units in the first 1.6 s): give it longer.
+      if (alive && moved <= 8) {
+        await sim(['KeyS'], 2.5);
+        const b = await call('status');
+        alive = b.mode === 'play';
+        moved = Math.max(moved, dist(a, b));
+      }
       if (alive && moved <= 8) find('trapped', `${type} cannot move forward or back at ${a.x},${a.y} (${a.district})`);
     }
     return `${type} ${legs} legs -> ${rep.player.vehicle || 'foot'}`;

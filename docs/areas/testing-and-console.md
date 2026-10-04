@@ -135,7 +135,7 @@ state, and every eighth action `settleAudit()`. Same seed, same choices (the gam
 Findings print as `FINDING` lines and land in `dist/bot/seed-<n>.json` with the last eight actions before each;
 exit status 1 when there are any. About 2 game minutes per wall minute on a loaded machine (idle stretches are the
 cheap way to add game time). A finding is a lead, not a verdict: reproduce it with `dev.mjs call` before fixing.
-Runs in this repo's history: seeds 2-4, 30 game minutes each, in the October 2026 free-roam pass (docs/audit/freeroam-sweep.md); seeds 5-7 (7-20 game minutes) in the 2026-10-04 bug pass. The `rebind` check skips a wanted player (doors turn them away) and a teleport that kept an aircraft.
+Runs in this repo's history: seeds 2-4, 30 game minutes each, in the October 2026 free-roam pass (docs/audit/freeroam-sweep.md); seeds 5-8 (7-20 game minutes) in the 2026-10-04 bug pass. The `rebind` check skips a wanted player (doors turn them away) and a teleport that kept an aircraft.
 
 ## Tours (tools/tour.mjs)
 
