@@ -637,12 +637,14 @@
       } else if (action === 'clear') {
         clubState.records = {};
         saveHillClimbRecords();
-      } else if (action === 'gate' || action === 'top' || action.startsWith?.('cp')) {
-        // 'top': just below the summit platform, facing down the trail.
+      } else if (action === 'gate' || action === 'top' || action.startsWith?.('cp') || action.startsWith?.('at')) {
+        // 'top': just below the summit platform, facing down the trail; 'at0.42': at
+        // that fraction of the trail, facing up it.
         const path = MOUNTAIN_TRAILS[t].path,
           top = Math.max(0, path.length - 24),
+          at = action.startsWith('at') ? clamp(Math.round(clamp(+action.slice(2) || 0, 0, 1) * (path.length - 1)), 0, path.length - 3) : -1,
           c = player.car,
-          point = action === 'top' ? { x: path[top][0], y: path[top][1], i: top } : action === 'gate' ? course.from : course.checkpoints[+action.slice(2)] || course.from,
+          point = action === 'top' ? { x: path[top][0], y: path[top][1], i: top } : at >= 0 ? { x: path[at][0], y: path[at][1], i: at } : action === 'gate' ? course.from : course.checkpoints[+action.slice(2)] || course.from,
           next = action === 'top' ? path[top - 2] : path[Math.min(path.length - 1, point.i + 2)];
         if (c) {
           c.x = point.x;

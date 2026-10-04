@@ -134,9 +134,12 @@ packs with plain `<script src>` so the zip still plays from file://.
 - Objectives have no ground ring or light pool: the floating arrow (render3d-effects.js `arrowGroup`, shown
   by `objectiveArrowShown()` in markers.js) is the only pointer; the ring under the player is the `playerRing`
   setting (off by default, `playerRingOn()`). Console `markers()` lists what marks the objective and the player.
-- `missionIndex` is both the story frontier and the job a replay picked: once the demo is complete anything
-  that ends or declines a replay must call `settleDemoStoryIndex()` (campaign.js), or the payphone arrow returns.
-  Console `pointers()` lists every story pointer.
+- `missionIndex` is both the story frontier and the job a replay picked: anything that ends or declines a replay
+  calls `settleDemoStoryIndex()` (campaign.js: back to `completed` for any player without god mode), or the
+  payphone offers the old job. RESTART CURRENT JOB restarts only `restartableJob()` (story.js: the running job or
+  the last failed one, `retryJobIndex`), never a waiting call. Console `pointers()` lists every story pointer.
+- Service counters never sell nothing: health items in `SERVICE_CURES` and armour are refused when full
+  (citylife-police.js `serviceAction`).
 - Every service place has a real building and its door on the pavement: no floor rings, no free-standing place
   signs. Motels, inns and lodges are dressed by `dressHotel()` (civic3d-hotels.js). County boards (guide,
   scenic-view, town, trailhead) are drawn only through `roadsideSign()` (county3d-signs.js) at the spot
@@ -200,7 +203,9 @@ packs with plain `<script src>` so the zip still plays from file://.
   `rideLoadShare`/`rideGroundPush`; no random hops (new ground features go into `rideTyreGround`/`rideRelief`);
   `settleIsTrivial` checks `rideActive`. Trail set pieces (`ford`, `camber`, `steep`, `summitLift`) and
   `OFFROAD_SECTIONS` are fractions of the path: moving a trail means re-deriving them (`trailProfile`) and keeping
-  tools/tests/hillclimb-physics.mjs green.
+  tools/tests/hillclimb-physics.mjs green. Trail rock is one source: `rideRelief` is what the tyres climb and what
+  offroad3d-trail.js draws (never add trail rocks the ride can't feel); `offroadFords`/`offroadFordWater`
+  (offroad-trails.js) are the only water on a trail (county3d-forest.js draws it, `tyreEmission` 'ford' sprays).
 - The Meridian Star sails `LINER_VOYAGE` (marina-voyage.js); `linerVoyageCheck()` must report no problems (land,
   bridges, docks, ships, Monarch Harbour, hull `LINER_EDGE_MARGIN` inside the world-edge line); she never passes
   under a bridge. Moving scenery registers its cull entry with `moving: true` (render3d-statics.js), never in a

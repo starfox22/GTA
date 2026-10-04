@@ -57,6 +57,8 @@
       },
       god(on = true) {
         player.godMode = !!on;
+        // As the cheat does: a pick god mode made ahead of the story goes back to the frontier.
+        if (!player.godMode && !mission) settleDemoStoryIndex();
         return player.godMode;
       },
       // Run the simulation forward without drawing, holding the given keys (for

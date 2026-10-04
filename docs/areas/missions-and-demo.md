@@ -104,43 +104,20 @@ index plus one.
   (`showDemoComplete`, game mode `'demo'`, a recap from `campaignStats`) the first time only; a
   replay of mission 2 is just a payday. Completion is kept
   in `dead-end-city-demo`. `demoLocked()` is the gate.
-- `missionIndex` is the frontier **and** the job a replay picked (`chooseMission`), so once
-  `completed >= DEMO_MISSIONS` a declined or failed replay must call `settleDemoStoryIndex()`
-  (also on load): otherwise `storyCallWaiting()` keeps the payphone arrow, pager and HUD pill up.
-  Every pointer reads `objective()`; console `pointers()` reports them all.
+- `missionIndex` is the frontier **and** the job a replay picked (`chooseMission`), so a
+  declined or failed replay calls `settleDemoStoryIndex()` (also on load and when god mode is
+  switched off): without god mode the index goes back to `completed`, so the payphone offers the
+  story's next job (none past the demo; otherwise `storyCallWaiting()` kept the payphone arrow,
+  pager and HUD pill up). God mode keeps its pick. Every pointer reads `objective()`; console
+  `pointers()` reports them all.
+- RESTART CURRENT JOB (`retryMission`) restarts `restartableJob()` (story.js): the job running,
+  else the last one failed (WASTED and BUSTED fail it), remembered in `retryJobIndex` (not saved)
+  while the picker offers it. After a win, at a new game or after a reload there is none: the
+  pause menu shows it disabled, NO JOB TO RESTART; a waiting call is taken at the payphone.
 - Never gated (not missions): the hill climb, volleyball, the stadium ball, the pier rides,
   bike share, cabs, rail, the liner, casino, garages, gun shop, Fort Sentinel, the Apache,
   MONARCH MOTORS.
 - God mode lifts every gate; the console's `startMission` reaches a gated job only with god
   mode or `?dev`. `DEMO_BUILD = false` is the full game with no trace of the demo.
 
-## God mode (the `godmode` cheat; god-panel.js)
-
-- Typed in play, on the city map or on the title (game-input.js cheat ring): `GODMODE` or
-  `AAAAXBBBBYXXXXAYYYYB`, either case (modifier keys are ignored, not a break). A code eats its
-  keys from its second letter on (`CHEAT_SWALLOW_FROM`), the long one only from its X so the A
-  taps still steer (tools/tests/god-mode-codes.mjs presses real keys). It unlocks every
-  job (`missionUnlocked`) and opens Settings on the GOD MODE tab (`syncGodSettingsTab` adds
-  `'god'` to `SETTINGS_TABS` only while `player.godMode`).
-- Rows: mission select, time presets and 24 h slider (`setGodTime`), freeze
-  (`godTimeFrozen()`, asked by citylife.js before advancing `worldMinutes`), weather
-  (`setGodWeather`), refill (`godRefill`), lose police (`godLosePolice`: also marks the
-  player's crowd incidents reported so a call in progress does not re-raise a star, and ends
-  the Fort Sentinel alarm), teleport (map pick mode: `#mapOverlay.god-pick` gives the canvas the
-  whole panel, the hint banner floats over its top edge and the side list, filters, legend and route
-  tools step aside; `godMapToggled` refits the canvas pixels after the class change; the wheel zooms
-  about the cursor, `zoomMap(factor, at)`).
-- `godTeleport(x, y)` is the safe move: nearest walkable spot (not a loose mountain face
-  steeper than `SLIP_GRADE`, where the body would slide off), a boat spawned on open water,
-  the current road vehicle placed on the nearest lane where `canSpawnCar` passes, aircraft
-  kept airborne; then `teleportPlayer`, camera snap, crowd resettle, a second's grace.
-- Console: `god(on)`, `godPanel()`, `godTeleport(x, y)`, `godRefill()`, `godLosePolice()`,
-  `godFreeze(on)`.
-
-## Skip the ride (ride-skip.js)
-
-- A passenger skips a cab, train or the liner with `skipRide` (Y): refused when wanted, in a
-  timed job, in a hurt cab or without the fare. The screen fades, `catchUpWorld` steps the
-  clock by the ride's own seconds (weather, trains, liner), the ride is placed at its end
-  (`placeCabAtKerb`, `placeTrainAtPlatform`, `placeLinerAtAnchor`). Wanted state is never
-  touched; the effects bus ducks. Console `skipRide()`, `skipStop()`, `rideSkip()`.
+God mode (the cheat and its panel) and skipping a ride: missions-and-demo-godmode.md.

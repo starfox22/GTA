@@ -162,7 +162,8 @@
     }
     /* What one vehicle's tyres throw up now: `kind` 'smoke' (a burnout on a hard
        surface), 'sand', 'lawn' or 'dust' (loose city ground), 'offroad' (the trails and
-       the county: offroad3d-mud.js), 'spray' (soaked tarmac) or null; `rate` in puffs a
+       the county: offroad3d-mud.js), 'ford' (wading a trail's ford: water off every
+       wheel, offroad3d-mud.js), 'spray' (soaked tarmac) or null; `rate` in puffs a
        second per wheel of `axle` ('rear', 'front' or 'all'); `heat` the burnout's. */
     const tyreEmissionOut = { kind: null, rate: 0, axle: 'rear', heat: 0 };
     function tyreEmission(c) {
@@ -179,6 +180,13 @@
       const slip = c === player.car ? c.tyreSlip || 0 : c.sliding ? 0.7 : 0,
         dry = 1 - 0.85 * clamp(weather.wet || 0, 0, 1),
         spinAxle = spin > 0.3 ? drivenAxle(c) : 'rear';
+      // Through a ford (offroad-trails.js): water thrown off every wheel, more with speed.
+      if (c.fordDepth > 1) {
+        out.kind = 'ford';
+        out.rate = clamp(speed / (30 * KMH), 0.15, 1.6) * 26 * Math.min(1, c.fordDepth / 3) + spin * 20;
+        out.axle = 'all';
+        return out;
+      }
       if (offroadGround(c)) {
         out.kind = 'offroad';
         if ((c.surfaceMud || 0) <= 0.1) out.rate = (tyreDustRate(c, true) + tyreDustRate(c, spinAxle === 'all')) / 2;

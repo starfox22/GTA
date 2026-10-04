@@ -542,3 +542,20 @@ body:not(.touch-mode).police-search-active #carRadio {
     bottom: 150px;
   }
 }
+/* A short window has no room for the story line (the film subtitle) between the action
+   prompt and the open mission card: while a line is up the card stays a strip
+   (game-ui.js updateMissionCard), and the line sits just above that strip, between the
+   minimap and the speed box, so it covers neither (it covered the card's top and touched
+   the minimap's corner at 960x600). Narrower windows keep the full-width line. */
+@media (max-height: 620px) and (min-width: 701px) {
+  #storyLine {
+    bottom: 114px;
+    width: min(640px, calc(100vw - 2 * var(--hud-edge) - 540px));
+    font-size: 14px;
+  }
+}
+@media (max-height: 620px) and (min-width: 701px) and (max-width: 980px) {
+  #storyLine {
+    width: min(640px, calc(100vw - 2 * var(--hud-edge) - 440px));
+  }
+}

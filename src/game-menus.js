@@ -76,17 +76,19 @@
         // purchase, job or respawn, and leaving the tab pauses first (game-input.js).
         save();
         getElement('pauseMenu').classList.remove('hidden');
+        // A demo counts its own jobs, as the mission picker does (campaign.js DEMO_MISSIONS):
+        // "1 of 16" told a demo player about jobs the demo does not hold.
+        const demo = DEMO_BUILD && !player.godMode;
         getElement('pauseInfo').textContent =
-          completed +
-          ' of ' +
-          missions.length +
-          ' jobs complete · $' +
+          (demo ? Math.min(completed, DEMO_MISSIONS) + ' of ' + DEMO_MISSIONS + ' demo jobs' : completed + ' of ' + missions.length + ' jobs') +
+          ' complete · $' +
           cash.toLocaleString() +
           ' earned and in your pocket.';
-        // RESTART CURRENT JOB with nothing to restart (the demo's story or every
-        // job done, no job running): shown disabled, saying why (retryMission).
+        // RESTART CURRENT JOB with nothing to restart (no job running and none failed:
+        // after a win, at a new game, past the demo): shown disabled, saying why
+        // (story.js restartableJob).
         const restart = getElement('restartMission'),
-          noJob = !mission && !storyCallWaiting();
+          noJob = restartableJob() === null;
         restart.disabled = noJob;
         restart.replaceChildren('RESTART CURRENT JOB');
         if (noJob) {

@@ -148,6 +148,29 @@
             if (k) indices.push(base - 2, base, base - 1, base - 1, base, base + 1);
           });
         }
+        // The fords (offroad-trails.js offroadFords): the stream carried across a 4x4
+        // trail's dip as one level sheet of water at the ford's level, flowing across
+        // the carriageway; the ground above the level hides it, so its edge is the
+        // shoreline up both ramps. Same ribbon, same shader: ripples, a little broken
+        // water where it spills over the far lip.
+        for (const f of offroadFords()) {
+          const ux = -Math.sin(f.a),
+            uy = Math.cos(f.a),
+            half = f.along,
+            steps = 12;
+          for (let k = 0; k <= steps; k++) {
+            const t = (k / steps) * 2 - 1,
+              x = f.x + ux * t * f.across,
+              y = f.y + uy * t * f.across,
+              base = positions.length / 3;
+            for (const side of [-1, 1]) {
+              positions.push(x + Math.cos(f.a) * side * half, f.level, y + Math.sin(f.a) * side * half);
+              uvs.push(side * 0.5 + 0.5, ((t + 1) * f.across) / 40);
+              falls.push(0.12 + 0.25 * Math.max(0, t) ** 4);
+            }
+            if (k) indices.push(base - 2, base, base - 1, base - 1, base, base + 1);
+          }
+        }
         if (indices.length) {
           const geo = new Three.BufferGeometry();
           geo.setAttribute('position', new Three.Float32BufferAttribute(positions, 3));
