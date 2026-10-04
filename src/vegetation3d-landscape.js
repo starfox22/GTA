@@ -124,5 +124,25 @@
               add(point.x, point.y, 'meadowGrass', 0.8 + vegHash(point.x, point.y, 64) * 0.7, 'mountain road verges');
             }
         }
+        // The 4x4 trails' edges: meadow grass and bracken in tufts along both sides of
+        // the carriageway, thinning with height (none on the rock, the snow, the pads).
+        for (const [t, trail] of MOUNTAIN_TRAILS.entries()) {
+          const path = trail.path,
+            n = path.length - 1,
+            rocks = OFFROAD_SECTIONS[t]?.rocks || [];
+          for (let i = 6; i < n - 6; i += 2)
+            for (const side of [1, -1]) {
+              if (rocks.some((b) => i >= b.from * n - 3 && i <= b.to * n + 3)) continue;
+              const [ax, ay] = path[i - 1],
+                [bx, by] = path[i + 1],
+                len = Math.hypot(bx - ax, by - ay) || 1,
+                out = trail.width / 2 + 3 + vegHash(i, side, 66) * 9,
+                x = path[i][0] - ((by - ay) / len) * side * out,
+                y = path[i][1] + ((bx - ax) / len) * side * out,
+                h = terrainHeight(x, y);
+              if (vegHash(i, side, 67) > 0.75 - h / 1400 || h > TERRAIN_SNOWLINE - 140 || onMountainTrail(x, y)) continue;
+              add(x, y, 'meadowGrass', 0.7 + vegHash(x, y, 68) * 0.6, '4x4 trail edges');
+            }
+        }
         landscapeCounts.meshes = plantLandscape(plants);
       }

@@ -27,6 +27,8 @@
         box = getElement('stealthStatus'),
         on = !!missionState && !!player.roof;
       box.style.display = on ? 'block' : 'none';
+      // touch-hud.css lifts the story line over the meter while it is up (written on change only).
+      if (document.body && document.body.classList.contains('roof-stealth') !== on) document.body.classList.toggle('roof-stealth', on);
       if (on) {
         const m = missionState,
           seen = !m.alarm && enemies.some((e) => e.guard && e.sees && e.hp > 0 && e.missionTag === 'rooftop-hit'),

@@ -72,6 +72,12 @@ navigation.js (big map, GPS), cycles.js (bike share), src/shell.html + src/ui/* 
   to the top in touch mode). Radio and weapon boxes are `.hud-pop` chips opened by
   `hudPop(id)` or hover; in touch mode only by `hudPop` (a tap), since a tapped box keeps
   `:hover` / `:focus-within` long after its pop ends (touch-hud.css).
+- Story line (`#storyLine`, the film subtitle) vs the mission card: on a short desktop window
+  (max-height 620px, wider than 700px) there is no room for both above the bottom row, so
+  while a line is up the card stays a strip (`missionCardYields`, game-ui.js; O still opens it)
+  and the line sits just above the strip, between the minimap and the equipment column
+  (radio.css). In touch mode the line goes over the Blue Hour stealth meter
+  (`body.roof-stealth`, touch-hud.css). Console `missionCard()` (`open`, `line`).
 - Minimap: zoom by wheel or pinch (`minimapZoom()` scales the cached base layer), foldable,
   saved in `dead-end-city-hud`. GPS route on the minimap (`hudState.gps`). map-view.js:
   it pulls back with speed (`minimapSpeedZoom`, eased), an arrow on its rim points at an
@@ -114,14 +120,12 @@ navigation.js (big map, GPS), cycles.js (bike share), src/shell.html + src/ui/* 
   equipment column and opens upward (radio.css).
 - **Mission card clearance** (hud-clearance.js): the card never covers the player. `hudPlayerBox`
   projects the vehicle (footprint and roof) or person through the street camera; while the open card
-  (and the dialogue line above it) would come within 18 px, `missionCardFolded` shows the strip and
-  holds `missionCardUntil` (and `incomingCallRemaining`) until the spot is clear for 0.6 s; O still
-  opens it (`forceMissionCard`). `#storyLine` sits just above the card as it stands (`--story-bottom`),
-  never wider than the gap between the minimap and the equipment column; while a line shows with no room
-  for it between the prompt and the open card (600 px tall), the card yields too. `.yield-fade` (card
-  strip, dialogue line, waypoint pill) only if even folded it would cover the player. Boxes are read in `measureMissionCard`
-  (runFrame start, beside the dock line). Console `hudClearance()`, `hudOverlaps()` (HUD boxes that
-  overlap each other or the player); tools/tests/hud-clearance.mjs.
+  would come within 18 px, `missionCardFolded` shows the strip and holds `missionCardUntil` (and
+  `incomingCallRemaining`) until the spot is clear for 0.6 s; opened on purpose (`missionCardAsked`: O,
+  a tap) it stays open. `.yield-fade` (folded strip, dialogue line, waypoint pill) only when one of them
+  would still cover the player. Boxes are read in `measureMissionCard` (runFrame start, beside the dock
+  line). Console `hudClearance()`, `hudOverlaps()` (HUD boxes that overlap each other or the player);
+  tools/tests/hud-clearance.mjs, hud-layout.mjs (960x600 at zero overlaps, keyboard and touch).
 - Narrow windows (<= 980 px): the notices start under the waypoint pill (116 px) and stop short of
   the centre (`calc(50vw - 150px)`). The dispatch / radio caption (`#radioCaption`, top centre) is never
   wider than the space between the notices' column and the right edge's mirror: a long line wraps.

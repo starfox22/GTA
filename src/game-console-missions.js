@@ -56,7 +56,16 @@
           announce: getElement('announceSmall').textContent,
           text: getElement('missionText').textContent,
           distance: getElement('missionDistance').textContent,
+          // The card open (not the one-line strip), the story line (subtitle) up, and the viewport.
+          open: !getElement('pager').classList.contains('compact'),
+          line: mission && gameTime <= (mission.lineUntil || 0) ? mission.lastLine : null,
+          viewport: [viewportWidth, viewportHeight],
         };
+      },
+      // The mission card's O key: open the strip or fold the open card (game-ui.js toggleMissionCard).
+      toggleMissionCard() {
+        toggleMissionCard();
+        return this.missionCard();
       },
       // Mission 2 test shortcut: start A Seat at the Table if needed, put Vescari
       // down and the player on the street for the last stage (reach the motel).
@@ -174,6 +183,7 @@
         return {
           mode: gameMode,
           open: gameMode === 'pause',
+          info: getElement('pauseInfo').textContent,
           restart: { disabled: restart.disabled, note: restart.querySelector('span')?.textContent || null },
         };
       },

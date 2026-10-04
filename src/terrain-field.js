@@ -247,8 +247,9 @@
           return clamp(h, Math.max(0, start - run, end - (total - along[i]) * TRAIL_MAX_GRADE), start + run);
         });
         profile[0] = start;
-        // The last stretch is level: it runs onto the summit platform.
-        const levelFrom = profile.findIndex((_, i) => along[i] >= total - 50),
+        // The last stretch is level: it runs onto the summit platform (80 units, so the
+        // eased crest below lies outside the platform's 60-unit blend).
+        const levelFrom = profile.findIndex((_, i) => along[i] >= total - 80),
           // Bare rock (a slickrock pitch, `trail.steep`) may climb at TRAIL_ROCK_GRADE.
           steepAt = (i) => (trail.steep || []).some((r) => along[i] >= r.from * total && along[i] <= r.to * total),
           gradeAt = (i) => (steepAt(i) ? TRAIL_ROCK_GRADE : TRAIL_MAX_GRADE);
@@ -283,20 +284,21 @@
            clamping turned corners within one 12-unit sample: a 0.4 change of grade
            there threw a truck 0.6 m into the air at 35 km/h.) Averaging never
            steepens a grade; the summit platform takes whatever height results. */
+        // The level stretch onto the summit platform is averaged in too: the climb
+        // eases onto the platform instead of meeting it in a 0.27 crease.
         for (let pass = 0; pass < 2; pass++) {
           const grades = [];
           for (let i = 1; i < profile.length; i++) grades.push((profile[i] - profile[i - 1]) / Math.max(1e-6, along[i] - along[i - 1]));
-          for (let i = 1; i < levelFrom; i++) {
+          for (let i = 1; i < profile.length; i++) {
             let sum = 0,
               weight = 0;
-            for (let j = Math.max(0, i - 5); j <= Math.min(levelFrom - 2, i + 3); j++) {
+            for (let j = Math.max(0, i - 5); j <= Math.min(grades.length - 1, i + 3); j++) {
               const w = along[j + 1] - along[j];
               sum += grades[j] * w;
               weight += w;
             }
             profile[i] = profile[i - 1] + (sum / Math.max(1e-6, weight)) * (along[i] - along[i - 1]);
           }
-          for (let i = levelFrom; i < profile.length; i++) profile[i] = profile[levelFrom - 1];
         }
         trail.path = path;
         trail.profile = profile;
@@ -369,6 +371,20 @@
               }
             }
         }
+        // Each keyhole's loop (the path samples running round its centre), for the berms.
+        const bermLoops = trail.berm && trail.turns
+          ? trail.turns.map((t) => {
+              let from = -1,
+                to = -1;
+              path.forEach(([x, y], k) => {
+                if (Math.hypot(x - t.x, y - t.y) < t.r + 6) {
+                  if (from < 0) from = k;
+                  to = k;
+                }
+              });
+              return { ...t, from, to };
+            }).filter((t) => t.from >= 0)
+          : null;
         for (let r = rMin; r <= rMax; r++)
           for (let c = cMin; c <= cMax; c++) {
             const i = r * cols + c;
@@ -407,6 +423,16 @@
             if (w > 0) {
               heights[i] += (goal - heights[i]) * w;
               trailMask[i] = Math.max(trailMask[i], 1 - smoothStep(half - 6, half + 6, near), platform < 44 && w > 0.9 ? 1 : 0);
+            }
+            // Berms (`trail.berm`): packed dirt thrown up round the outside of a
+            // keyhole hairpin, along the carriageway's outer edge on the loop.
+            if (bermLoops) {
+              const seg = nearestSegment[i];
+              for (const t of bermLoops)
+                if (seg >= t.from && seg <= t.to) {
+                  const rho = Math.hypot(px - t.x, py - t.y) - (t.r + half);
+                  if (rho > -4 && rho < 16) heights[i] += trail.berm * UNITS_PER_METRE * Math.exp(-(((rho - 6) / 4) ** 2));
+                }
             }
           }
       }

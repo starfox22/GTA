@@ -180,7 +180,22 @@
      */
     const MISSION_CARD_SECONDS = 6;
     let missionCardKey = '',
-      missionCardUntil = 0;
+      missionCardUntil = 0,
+      // Opened on purpose (O, a click or tap): it then stays open over a story line too.
+      missionCardAsked = false;
+    /* A short window (radio.css, max-height 620px) has no room for the open card and the
+       story line above it: while a line is up the card stays a strip, unless opened on
+       purpose, and the line sits just above the strip. */
+    function missionCardYields() {
+      return (
+        viewportHeight <= 620 &&
+        viewportWidth > 700 &&
+        !missionCardAsked &&
+        !!mission &&
+        gameTime <= (mission.lineUntil || 0) &&
+        !document.body?.classList.contains('touch-mode') // (touch lays the HUD out its own way)
+      );
+    }
     function updateMissionCard(objectiveLine) {
       const key =
         getElement('pagerLabel').textContent +
@@ -191,16 +206,19 @@
       if (key !== missionCardKey) {
         missionCardKey = key;
         missionCardUntil = gameTime + MISSION_CARD_SECONDS;
+        missionCardAsked = false;
       }
       getElement('missionObjective').textContent = objectiveLine;
-      // Folded while the open card would cover the player, its reading time held (hud-clearance.js).
-      getElement('pager').classList.toggle('compact', missionCardFolded(gameTime < missionCardUntil));
+      // Folded while a story line has no room (missionCardYields) or while the open card would cover the
+      // player, its reading time held (hud-clearance.js missionCardFolded, asked first: it runs every pass).
+      getElement('pager').classList.toggle('compact', missionCardFolded(gameTime < missionCardUntil) || missionCardYields());
     }
     function toggleMissionCard() {
-      // As it shows: an open card folds; a folded one opens, even one that yielded to the player.
+      // What is on screen decides: a strip opens, an open card folds. Opened on purpose it stays open over a
+      // story line and over the player (missionCardAsked).
       const open = !getElement('pager').classList.contains('compact');
       missionCardUntil = open ? 0 : gameTime + MISSION_CARD_SECONDS;
-      if (!open) forceMissionCard();
+      missionCardAsked = !open;
       updateUI();
     }
     // HUD AND CONTEXT PROMPTS: presentation derived from shared simulation state.
@@ -291,7 +309,11 @@
       }
       getElement('missionDistance').textContent = target
         ? (m ? 'OBJECTIVE' : 'PAYPHONE') + ' · ' + distanceLabel(distanceBetween(player, target))
-        : demoStoryOver()
+        : m
+          ? // A job's last beat with nothing left to reach (mission 1 out of the back door, the
+            // payday a moment later): not "FREE ROAM · 0 JOBS COMPLETE" while it still runs.
+            'OBJECTIVE · COMPLETE'
+          : demoStoryOver()
           ? 'FREE ROAM · DEMO COMPLETE'
           : 'FREE ROAM · ' + completed + ' JOBS COMPLETE';
       updateMissionCard(

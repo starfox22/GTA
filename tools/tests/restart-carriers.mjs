@@ -20,6 +20,9 @@ export default async function (t) {
     t.assert(!rep.problems.length, `${what}: ` + rep.problems.join(' | '));
   };
 
+  // A job to restart (RESTART CURRENT JOB restarts only a job running or failed).
+  await t.call('startMission', 0);
+
   // A fall in progress: off the lethal cliff, caught a moment after the edge.
   let fell = false;
   for (const s of [1.1, 1.4, 1.8]) {
@@ -33,7 +36,6 @@ export default async function (t) {
   else t.note('no fall to restart from (cliff not reached)');
 
   // A parachute jump.
-  await t.call('retryMission'); // (the story call is waiting: this starts the job; the next restarts it)
   await t.call('bailOut', 250, 1200, 800);
   t.assert((await carriers()).parachute, 'no parachute after bailOut');
   await restart('a parachute');

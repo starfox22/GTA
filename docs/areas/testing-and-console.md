@@ -70,8 +70,9 @@ node tools/dev.mjs errors | status | reload [--render|--norender] [--keep] [--sh
   in no-render mode, runs `tools/tests/*.mjs` (one test per file; a line per test, a summary,
   exit 1 on failure; a console error fails the test). A test exports `default async (t)`
   using `t.call`, `t.keys`, `t.wait`, `t.assert`, `t.near(v, lo, hi, label)`, `t.finite(obj)`,
-  `t.note`; optional `export const flags = 'test'` (no `?dev`) and `fresh = true` (page
-  reloaded first; fresh tests run last). Set the state a test needs (cash, wanted level,
+  `t.note`, `t.reload({ keep })` (reopen the page; `keep: true` keeps localStorage to check
+  what a save restores: only in a `fresh` test); optional `export const flags = 'test'` (no
+  `?dev`) and `fresh = true` (page reloaded first; fresh tests run last). Set the state a test needs (cash, wanted level,
   god mode) instead of relying on the test before it. Frame-driven effects (e.g. sportsbook
   settlement) need a `t.wait()` after the call that causes them.
 - **Measuring the simulation** (docs/audit/performance.md, "Simulation side"): `node tools/dev.mjs call

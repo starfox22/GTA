@@ -1,23 +1,22 @@
-    // HUD clearance: the mission card and the dialogue line above it never cover the player. The player's box on
-    // screen (the street camera's projection) against the card's layout box, measured at the start of a frame.
+    // HUD clearance: the mission card never covers the player (and the dialogue line and the waypoint pill fade if they
+    // would). The player's box on screen (the street camera's projection) against the HUD's boxes, read at a frame start.
     /**
      * MISSION CARD CLEARANCE
      * The driving camera keeps a fast vehicle centre-low (camera-drive.js leadShare), so on
-     * a small window (960x600) the open mission card (the INCOMING CALL banner) and the
-     * dialogue line above it reached up over the car. Now, in every HUD pass:
+     * a small window (960x600) the open mission card (the INCOMING CALL banner) reached
+     * up over a bus or a fast car. Now, in every HUD pass:
      *   - hudPlayerBox() puts the player on screen: the vehicle's footprint and roof (or a
      *     standing person) through the street camera (orthographic, pitched as in
      *     flight-view3d.js; worldZoom in force; the 2D view's scale without a renderer);
-     *   - while the open card (with the dialogue line above it) would come within
-     *     CLEAR_MARGIN px of that box, the card yields: it shows its one-line strip and its
-     *     six seconds of reading time wait (missionCardUntil is held), so it opens for the
-     *     rest of them once the spot has been clear for CLEAR_HOLD s; O (or a tap on the
-     *     strip) still opens it on purpose;
-     *   - the dialogue line sits just above the card as it stands (--story-bottom), so it
-     *     drops to the strip with it; while a line shows and there is no room for it between
-     *     the prompt (just under the middle) and the open card (a 600 px window), the card
-     *     yields too; if even the strip or the line would cover the player, that one fades
-     *     (.yield-fade), and so does the waypoint pill.
+     *   - while the open card would come within CLEAR_MARGIN px of that box, the card
+     *     yields: it shows its one-line strip and its six seconds of reading time wait
+     *     (missionCardUntil and the INCOMING CALL notice are held), so it opens for the rest
+     *     of them once the spot has been clear for CLEAR_HOLD s; opened on purpose (O, a tap
+     *     on the strip: missionCardAsked) it stays open;
+     *   - (on a short window a dialogue line folds the card too: game-ui.js missionCardYields,
+     *     and the line sits above the strip, radio.css;)
+     *   - if even the strip, the dialogue line or the waypoint pill would cover the player,
+     *     that one fades (.yield-fade) until the player has been clear for CLEAR_HOLD s.
      * The card's boxes are read at the start of the next frame (runFrame, with the dock line),
      * never after a pass's writes (no forced layout): the open box is remembered from the last
      * time the card stood open. Touch mode keeps the card
@@ -27,16 +26,13 @@
       CLEAR_MARGIN_BACK = 30,
       CLEAR_HOLD = 0.6,
       CLEAR_MEASURE_EVERY = 0.3,
-      CLEAR_STORY_GAP = 8,
-      // The interaction prompt's bottom under the middle of the screen (#interaction: top 50% + 58 px).
-      CLEAR_PROMPT_BELOW = 96,
       CLEAR_SIN = 680 / Math.hypot(680, 560),
       CLEAR_COS = 560 / Math.hypot(680, 560);
     const cardClear = {
       // The open card and the folded strip where they stood when last measured (screen px), and when.
       open: { l: 0, t: 0, r: 0, b: 0, ok: false },
       strip: { l: 0, t: 0, r: 0, b: 0, ok: false },
-      story: { h: 0, w: 0, ok: false },
+      story: { l: 0, t: 0, r: 0, b: 0, ok: false },
       // The waypoint pill (top centre): a long vehicle heading down the screen reaches up to it.
       nav: { l: 0, t: 0, r: 0, b: 0, ok: false },
       fadeNav: false,
@@ -50,9 +46,6 @@
       yielding: false,
       clearSince: 0,
       heldAt: 0,
-      // O pressed while it yielded: open on purpose until it folds again.
-      forced: false,
-      storyBottom: -1,
       fadeCard: false,
       fadeStory: false,
       fadeCardAt: -1e9,
@@ -142,11 +135,13 @@
       if (story.classList.contains('show')) {
         const box = story.getBoundingClientRect();
         if (box.height > 0) {
-          C.story.h = box.height;
-          C.story.w = box.width;
+          C.story.l = box.left;
+          C.story.t = box.top;
+          C.story.r = box.right;
+          C.story.b = box.bottom;
           C.story.ok = true;
         }
-      }
+      } else C.story.ok = false;
     }
     /* The card's state changed: measure again at the next frame start. */
     function remeasureMissionCard() {
@@ -155,7 +150,6 @@
     /* updateMissionCard (game-ui.js): whether the card shows folded. `timerOpen` is its reading time running. */
     function missionCardFolded(timerOpen) {
       const C = cardClear;
-      if (!timerOpen) C.forced = false;
       // Opened or folded, or new words on it (a new call, job or objective): its boxes change.
       if (timerOpen !== C.want || missionCardKey !== C.key) {
         C.want = timerOpen;
@@ -163,25 +157,20 @@
         remeasureMissionCard();
       }
       const p = hudPlayerBox(C.player),
-        touch = document.body.classList.contains('touch-mode'),
-        storyShown = !touch && C.story.ok && getElement('storyLine').classList.contains('show'),
-        o = C.open;
-      let covers = false;
-      if (timerOpen && !C.forced && o.ok && gameMode === 'play' && !getElement('pager').classList.contains('hidden')) {
-        // The open card and the dialogue line above it, as one stack.
-        const top = storyShown ? o.t - CLEAR_STORY_GAP - C.story.h : o.t,
-          half = storyShown ? Math.max(o.r - o.l, C.story.w) / 2 : (o.r - o.l) / 2,
-          mid = (o.l + o.r) / 2;
-        covers = p.ok && clearBoxesMeet(p, mid - half, top, mid + half, o.b, C.yielding ? CLEAR_MARGIN_BACK : CLEAR_MARGIN);
-        // No room for the dialogue line between the prompt (just under the middle) and the open card, as on a
-        // 600 px window: the card folds, so the line sits low over the strip.
-        if (storyShown && top < viewportHeight / 2 + CLEAR_PROMPT_BELOW) covers = true;
-      }
+        o = C.open,
+        covers =
+          timerOpen &&
+          !missionCardAsked &&
+          o.ok &&
+          p.ok &&
+          gameMode === 'play' &&
+          !getElement('pager').classList.contains('hidden') &&
+          clearBoxesMeet(p, o.l, o.t, o.r, o.b, C.yielding ? CLEAR_MARGIN_BACK : CLEAR_MARGIN);
       if (covers) {
         if (!C.yielding) remeasureMissionCard();
         C.yielding = true;
         C.clearSince = gameTime;
-      } else if (C.yielding && (!timerOpen || C.forced || gameTime - C.clearSince >= CLEAR_HOLD)) {
+      } else if (C.yielding && (!timerOpen || missionCardAsked || gameTime - C.clearSince >= CLEAR_HOLD)) {
         C.yielding = false;
         remeasureMissionCard();
       }
@@ -195,39 +184,19 @@
       C.heldAt = gameTime;
       return !timerOpen || C.yielding;
     }
-    /* toggleMissionCard (O, a tap on the strip): open on purpose, even over the player. */
-    function forceMissionCard() {
-      cardClear.forced = true;
-      if (cardClear.yielding) {
-        cardClear.yielding = false;
-        remeasureMissionCard();
-      }
-    }
-    /* updateHud(): the dialogue line just above the card as it stands, and the last-resort fades. */
+    /* updateHud(): the last-resort fades of the folded card, the dialogue line and the waypoint pill. */
     function placeHudClearance() {
       const C = cardClear,
         pager = getElement('pager'),
         story = getElement('storyLine'),
-        touch = document.body.classList.contains('touch-mode'),
         hidden = pager.classList.contains('hidden'),
         folded = pager.classList.contains('compact'),
-        box = folded ? C.strip : C.open,
         p = C.player;
-      let bottom = -1;
-      if (!touch && !hidden && box.ok) bottom = Math.round(Math.max(0, viewportHeight - box.t + CLEAR_STORY_GAP));
-      if (bottom !== C.storyBottom) {
-        C.storyBottom = bottom;
-        if (bottom < 0) story.style.removeProperty('--story-bottom');
-        else story.style.setProperty('--story-bottom', bottom + 'px');
-      }
       // A fade comes at once and goes CLEAR_HOLD after the player has moved clear (no flicker at the edge).
       if (!hidden && folded && C.strip.ok && gameMode === 'play' && clearBoxesMeet(p, C.strip.l, C.strip.t, C.strip.r, C.strip.b, 2))
         C.fadeCardAt = gameTime;
-      if (!touch && C.story.ok && story.classList.contains('show') && gameMode === 'play') {
-        const b = bottom >= 0 ? bottom : 196,
-          t = viewportHeight - b - C.story.h;
-        if (clearBoxesMeet(p, (viewportWidth - C.story.w) / 2, t, (viewportWidth + C.story.w) / 2, t + C.story.h, 2)) C.fadeStoryAt = gameTime;
-      }
+      if (C.story.ok && story.classList.contains('show') && gameMode === 'play' && clearBoxesMeet(p, C.story.l, C.story.t, C.story.r, C.story.b, 2))
+        C.fadeStoryAt = gameTime;
       const fadeCard = !hidden && folded && gameTime - C.fadeCardAt < CLEAR_HOLD,
         fadeStory = story.classList.contains('show') && gameTime - C.fadeStoryAt < CLEAR_HOLD;
       if (fadeCard !== C.fadeCard) {
@@ -262,11 +231,11 @@
         player: r(C.player),
         open: r(C.open),
         strip: r(C.strip),
-        story: C.story.ok ? { h: Math.round(C.story.h), w: Math.round(C.story.w), bottom: C.storyBottom } : null,
+        story: r(C.story),
         folded: getElement('pager').classList.contains('compact'),
         hidden: getElement('pager').classList.contains('hidden'),
         yielding: C.yielding,
-        forced: C.forced,
+        asked: missionCardAsked,
         fadeCard: C.fadeCard,
         fadeStory: C.fadeStory,
         nav: r(C.nav),

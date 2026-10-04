@@ -23,6 +23,8 @@
       } else {
         announce('SOUTH COAST', 'GODMODE OFF', 1.8);
         tell('GODMODE OFF', 2.5);
+        // A job god mode picked ahead of the story is no longer the payphone's (campaign.js).
+        if (!mission) settleDemoStoryIndex();
       }
       drawWeapon();
       updateUI();

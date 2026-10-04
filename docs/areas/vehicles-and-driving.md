@@ -53,7 +53,7 @@ police3d.js, helicopter3d-*.js, apache3d.js, plane3d.js, vehicles3d.js, boats3d.
   (`rotorStrikes`). Console `heliInto`.
 - The damage model and breakable props: police-and-combat.md.
 - Off a drop (falls-vehicles.js): on a terrain field a road vehicle rides its springs
-  (terrain-suspension.js, world-county-and-sea.md); with every wheel 0.6 m clear it is
+  (terrain-suspension.js, world-county-and-sea-terrain.md); with every wheel 0.6 m clear it is
   airborne (`startCliffFlight`, `c.cliffAir`: ballistic, nose tipping at about g / 2v, roll if
   it went over at an angle; `cliffFlight` replaces the driving step). Landing speed decides: under
   5 m/s nothing, then ((v − 5) / 20)^1.3 of the hp (×1.35 on the roof or a side), the player
