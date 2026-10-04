@@ -157,7 +157,11 @@ packs with plain `<script src>` so the zip still plays from file://.
   on `mapWindowHas` and draw fixed-size text with `mapLabel`. `settleIsTrivial` (physics-step.js) must stay in
   step with terrainVehiclePose, cliffSettle, drawbridgeSettle and rotorStrikes (`settleAudit()` checks it).
   Measure with `DeadEndCity.simProfile()` and `dev.mjs call <method> --cpu|--profile N|--alloc N`
-  (docs/areas/core-and-contracts.md Performance rules).
+  (docs/areas/core-and-contracts.md Performance rules). Hiccups: `node tools/hitches.mjs` (`hitchRun`/`frameTrace`,
+  `--ab A B`): compare counters and `cpu/fr`, not wall-clock percentiles. HUD attributes written every pass go
+  through `hudAttr(el, name, value)`, a per-pass `classList.add/remove` is guarded by `contains`, and a layout read
+  in the HUD pass is queued for the frame start (`measureDockLine`). A dynamic GPU buffer bigger than what is drawn
+  calls `addUpdateRange(0, n * itemSize)` before `needsUpdate` (`uploadChurn()` lists whole-buffer re-uploads).
 - Prewarm and first uses (docs/areas/rendering-hiccups.md): an off-screen pass registers itself with
   `registerPrewarmPass(scene, camera, target)`; prewarm slices never contain lights (compile() counts a slice's
   lights too); light and shadow counts are part of every lit program's key, so never toggle a light's
@@ -184,7 +188,24 @@ packs with plain `<script src>` so the zip still plays from file://.
   world box (calm approach warning from the player's velocity, then a 10 s RETURN TO THE CITY countdown past the
   line; at zero the vehicle is destroyed with `damageVehicle` and the player is wasted, god mode only warned).
   State derives from `player.x/y`; `teleportPlayer` calls `resetWorldEdge()`; the line must stay outside all land
-  (`worldEdge().landGap`).
+  (`worldEdge().landGap`). The approach card is only for a player who can reach the line (`worldEdgeCanReach`:
+  aircraft, canopy, fall, boat, swimming; never on land or aboard a ship).
+- The TO LOSE POLICE countdown shows only through `searchClockShown()` (citylife-civic.js SEARCH CLOCK: on screen
+  only while it runs at full speed; hidden, with the panel saying why, while holding for a 911 response or creeping
+  inside the search circle). Police sight is debounced there; `PURSUIT_SEARCH_SECONDS` sets the times.
+- Cheat codes: `CHEAT_CODES` (game-input.js; GODMODE and AAAAXBBBBYXXXXAYYYYB both run `godModeCheat`). A code
+  whose first letters are driving keys sets `CHEAT_SWALLOW_FROM` so it never eats a steering tap.
+- Road vehicles on terrain ride `rideStep` (terrain-suspension.js): pitch, roll and lift come from four tyre
+  springs; `rideLift` is drawn only, never part of `entityElevation`; grip and slope push go through
+  `rideLoadShare`/`rideGroundPush`; no random hops (new ground features go into `rideTyreGround`/`rideRelief`);
+  `settleIsTrivial` checks `rideActive`. Trail set pieces (`ford`, `camber`, `steep`, `summitLift`) and
+  `OFFROAD_SECTIONS` are fractions of the path: moving a trail means re-deriving them (`trailProfile`) and keeping
+  tools/tests/hillclimb-physics.mjs green.
+- The Meridian Star sails `LINER_VOYAGE` (marina-voyage.js); `linerVoyageCheck()` must report no problems (land,
+  bridges, docks, ships, Monarch Harbour, hull `LINER_EDGE_MARGIN` inside the world-edge line); she never passes
+  under a bridge. Moving scenery registers its cull entry with `moving: true` (render3d-statics.js), never in a
+  static cell. Ship decks are landing surfaces only through `deckSurfaceAt()` / `deckLandingStep()`
+  (deck-landing.js); a new walkable ship joins there (a liner's roofs are `linerLevels`).
 - Wrecks and abandoned cars are retired by `retireWrecks` (livingcity-wrecks.js, `WRECK_LIMITS`): 50 s and 180 s
   unseen, world caps 16 and 24, never on screen, near the player or protected (`wreckProtected`). A vehicle that
   must outlive its wreck gets a flag there; a new field holding a vehicle long-term needs clean-up in
