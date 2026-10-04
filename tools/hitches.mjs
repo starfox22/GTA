@@ -5,6 +5,7 @@
 //   node tools/dev.mjs start [--render] [--size 480x300]     # the page to measure (no-render: simulation, HUD, DOM)
 //   node tools/hitches.mjs [--tiers low,medium,high,ultra,auto] [--stages walk,drive,...] [--scale 1] [--tag base]
 //                          [--live] [--seed 1] [--json]
+//   node tools/hitches.mjs --ab A.html B.html [--order ABBA] [...]   # A/B on one server started with dist/ab.html
 //
 // Stepped (default): each stage is console-stepped frames at 1/60 s (input, update, HUD and, on a rendered page, the
 // draw), so a seeded run replays the same world; the page CPU of each stage comes from its thread time (a busy machine
@@ -151,6 +152,52 @@ async function runTier(tier) {
     out[name] = { ...r, cpuMsPerFrame: !LIVE && r.frames ? +(stageCpu / r.frames).toFixed(2) : null };
   }
   return out;
+}
+
+// --ab: each build's HTML is copied over the server's page file and the page reloaded (no second browser), runs in the
+// --order given; the table is the median of each build's runs per stage, and the counters per frame over the tour.
+const AB = argv.indexOf('--ab') >= 0 ? argv.slice(argv.indexOf('--ab') + 1, argv.indexOf('--ab') + 3) : null;
+if (AB) {
+  const page = readState().html,
+    order = opt('order', 'ABBA').split(''),
+    runs = { A: [], B: [] },
+    median = (list) => {
+      const v = list.filter((x) => x != null && Number.isFinite(x)).sort((a, b) => a - b);
+      return v.length ? (v.length % 2 ? v[v.length >> 1] : (v[v.length / 2 - 1] + v[v.length / 2]) / 2) : null;
+    };
+  for (const which of order) {
+    fs.copyFileSync(AB[which === 'A' ? 0 : 1], page);
+    await request({ op: 'reload', keep: false });
+    for (let i = 0; i < 900; i++) {
+      const st = await request({ op: 'status' }, { timeoutMs: 5000 }).catch(() => null);
+      if (st?.state === 'ready') break;
+      await sleep(1000);
+    }
+    const stages = await runTier(TIERS[0] || '');
+    runs[which].push(stages);
+    console.log(`${which} run ${runs[which].length} done`);
+  }
+  const keysOf = (stage) => ['cpuMsPerFrame', 'p95Ms', 'p99Ms', 'maxMs', 'long', 'over33'],
+    perFrame = (stages, k) => {
+      let sum = 0,
+        frames = 0;
+      for (const r of Object.values(stages)) {
+        sum += (r.totals && r.totals[k]) || 0;
+        frames += r.frames || 0;
+      }
+      return frames ? sum / frames : null;
+    };
+  console.log(`\nA = ${path.relative(ROOT, AB[0])}, B = ${path.relative(ROOT, AB[1])}; medians of ${runs.A.length} / ${runs.B.length} runs`);
+  console.log(row(['stage', 'cpu/frame A>B', 'p95 A>B', 'p99 A>B', 'max A>B', 'long A>B', '>33 A>B'], [10, 14, 13, 13, 13, 10, 10]));
+  for (const name of ORDER) {
+    const cells = keysOf().map((k) => `${r1(median(runs.A.map((s) => s[name][k])))}>${r1(median(runs.B.map((s) => s[name][k])))}`);
+    console.log(row([name, ...cells], [10, 14, 13, 13, 13, 10, 10]));
+  }
+  for (const k of ['allocKB', 'gcMB', 'dom', 'bufMB', 'texMB', 'models', 'geometries', 'textures', 'programs', 'audioNodes', 'canvasText'])
+    console.log(`  ${k} per frame: ${r1(median(runs.A.map((s) => perFrame(s, k))) * (k.endsWith('MB') ? 1024 : 1))} > ${r1(median(runs.B.map((s) => perFrame(s, k))) * (k.endsWith('MB') ? 1024 : 1))}${k.endsWith('MB') ? ' (KB)' : ''}`);
+  fs.mkdirSync(path.join(ROOT, 'dist', 'hitches'), { recursive: true });
+  fs.writeFileSync(path.join(ROOT, 'dist', 'hitches', TAG + '-ab.json'), JSON.stringify({ A: AB[0], B: AB[1], order, runs }, null, 1));
+  process.exit(0);
 }
 
 const results = { tag: TAG, live: LIVE, scale: SCALE, seed: SEED, at: new Date().toISOString(), tiers: {} };

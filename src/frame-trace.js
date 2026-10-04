@@ -131,10 +131,17 @@
       profile.parts = scratch;
       tr.heapBegin = frameTraceHeap();
     }
-    // The id of the element a DOM mutation touched (or its nearest ancestor's).
-    function frameTraceTarget(node) {
-      for (let n = node; n; n = n.parentNode) if (n.id) return n.id;
-      return '(no id)';
+    // Where a DOM mutation landed: the nearest id, the element's own class when it has no id, and the attribute.
+    function frameTraceTarget(m) {
+      const el = m.target.nodeType === 1 ? m.target : m.target.parentNode;
+      let id = '(no id)';
+      for (let n = el; n; n = n.parentNode)
+        if (n.id) {
+          id = n.id;
+          break;
+        }
+      const own = el && !el.id && el.className && typeof el.className === 'string' ? ' .' + el.className.split(' ')[0] : '';
+      return id + own + (m.type === 'attributes' ? ' [' + m.attributeName + ']' : m.type === 'childList' ? ' (children)' : ' (text)');
     }
     function frameTraceEnd(t, frameStart, updateStart, drawStart, frameEnd) {
       const tr = frameTrace,
@@ -176,7 +183,7 @@
         if (records.length) {
           c.dom = records.length;
           for (const m of records) {
-            const id = frameTraceTarget(m.target);
+            const id = frameTraceTarget(m);
             tr.domTargets.set(id, (tr.domTargets.get(id) || 0) + 1);
           }
         }
@@ -218,7 +225,7 @@
       const frames = frameTrace.frames,
         n = frames.length,
         r2 = (v) => +v.toFixed(2);
-      if (!n) return { frames: 0 };
+      if (!n) return { frames: 0, wrappersLeft: frameTrace.on ? -1 : frameTrace.restore.length };
       const sorted = frames.map((f) => f.ms).sort((a, b) => a - b),
         at = (list, q) => list[Math.min(list.length - 1, Math.floor(q * list.length))],
         median = at(sorted, 0.5),
@@ -266,6 +273,8 @@
       return {
         mode: frameTrace.stepped ? 'stepped' : 'live',
         frames: n,
+        // Prototype wrappers still installed (0 once the trace has stopped).
+        wrappersLeft: frameTrace.on ? -1 : frameTrace.restore.length,
         seconds: r2(seconds),
         avgMs: r2(sorted.reduce((a, b) => a + b, 0) / n),
         p50Ms: r2(median),
