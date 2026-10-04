@@ -36,8 +36,10 @@
        * pooled and the program compiled in advance, a painted tile is uploaded as a sub-image.
        *
        * Bounds: CB_MAX_CARS stained models at a time (the oldest give up theirs),
-       * three stains a car, everything disposed with the model (updateCarBlood
-       * sweeps) or when a respray or repair clears the records.
+       * three stains a car (more people pile onto them: car-stains.js PILING UP; each
+       * such hit is painted over its stain's tiles by cbTopUpJob, no re-fit), everything
+       * disposed with the model (updateCarBlood sweeps) or when a respray or repair
+       * clears the records.
        */
       const CB_TILE = 512,
         CB_COLS = 3,
@@ -168,6 +170,9 @@
             events: skin ? skin.events.length : 0,
             fitted: skin ? skin.events.filter((e) => e.fitted).length : 0,
             painted: skin ? skin.events.filter((e) => e.painted).length : 0,
+            // Hits piled onto the stains (car-stains.js PILING UP) and how many of them are painted (cbTopUpJob).
+            piled: skin ? skin.events.reduce((n, e) => n + (e.stain.adds?.length || 0), 0) : 0,
+            piledPainted: skin ? skin.events.reduce((n, e) => n + (e.addsDone || 0), 0) : 0,
             visible: skin ? skin.mesh.visible : false,
             panels: skin ? skin.events.flatMap((e) => (e.layout || []).map((p) => ({ kind: p.kind, slot: p.slot, tiles: [+p.Wm.toFixed(2), +p.Hm.toFixed(2)] }))) : [],
             warm: { compiles: cbWarmCompiles, linked: cbWarmLinked, key: cbWarmKey, ms: +cbWarmMs.toFixed(1) },

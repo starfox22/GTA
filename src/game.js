@@ -15,6 +15,8 @@
     // @include src/voices.js
     // @include src/footwork.js
     // @include src/camera-feel.js
+    // @include src/camera-drive.js
+    // @include src/camera-comfort.js
     // @include src/hud-notify.js
     // A line in the notification feed (hud-notify.js): `options` { id, tone }.
     function tell(text, duration = 3, options) {
