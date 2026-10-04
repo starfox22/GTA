@@ -30,6 +30,9 @@
         hiccups: (reset) => hiccupReport(reset),
         // Running totals the console's frame trace (frame-trace.js) differences per frame: programs linked, textures
         // and geometries on the GPU, vehicle models built.
+        // Civilian models drawn merged while pristine (vehicle-merge3d.js PRISTINE MERGE).
+        vehicleMerges: () => vehicleMergeReport(),
+        vehicleMergeAudit: () => vehicleMergeAudit(),
         // Buffer attributes and textures re-uploaded since a snapshot (render3d-hiccups.js ATTRIBUTE CHURN).
         attributeChurn: (snapshot) => attributeChurn(snapshot),
         traceCounters: () => ({

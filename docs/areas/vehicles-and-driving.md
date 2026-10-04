@@ -88,9 +88,15 @@ police3d.js, helicopter3d-*.js, apache3d.js, plane3d.js, vehicles3d.js, boats3d.
   `glassPoint(g, l, w, 'roof', s, t)` or add `glassCrown(g, x, l)`, never `g.roof + g.arch`
   alone. The MULE VAN's shell runs up to its roof (its glasshouse is only the cab's screen and
   door glass; `hoodHinge`, `doorTop`); shell sections must keep ten points to blend.
-- Draw-call budget: a civilian car ~20 draws and 3 shadow casters, a motorbike 11, a patrol
-  car ~22, helicopters 9-14. Zoomed out, cars pool into instanced impostors per type
-  (BODY IMPOSTORS). Report with `carModels()`, `helicopterModels()`; line-ups with
+- Draw-call budget: a civilian car 22 draws and 3 shadow casters (13 while pristine), a motorbike 11, a
+  patrol car ~22 (fewer while pristine), helicopters 9-14. Zoomed out, cars pool into instanced impostors per type
+  (BODY IMPOSTORS). **PRISTINE MERGE** (vehicle-merge3d.js): an untouched civilian or police car draws its
+  non-casting static parts merged per material (hood + panels + paint bumpers, other bumpers, lamp pairs, a front
+  wheel's tyre and rim, a rear axle's wheels; police: all wheels, never turned), the originals hidden underneath;
+  `vehicleMergeEligible` (damage, stains, mud, burnt, carjack door, the player's car) sends it back to its parts for
+  good, bumping `m.shapeVersion`. A new part that animates, changes material per side or is read by damage, blood
+  or lights must stay out of the kit's plan (`vmCivilianPlan` / `vmPolicePlan`); `vehicleMergeAudit()` compares
+  every merged mesh with its parts vertex by vertex, `vehicleMerges()` counts them. Report with `carModels()`, `helicopterModels()`; line-ups with
   `carLineup`, `policeLineup`, `helicopterLineup`.
 - Looks are cached per vehicle in a WeakMap (`pickPoliceLook`, `helicopterLookFor`), not on it.
 - Police lights run when `(c.cop && wantedStars > 0) || c.airUnit || c.gangTarget ||

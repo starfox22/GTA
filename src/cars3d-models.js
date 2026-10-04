@@ -207,6 +207,9 @@
           dims: { l, w, h: body.h, roof: g ? g.roof : body.h, van: !!body.hatch, sill: body.yb + 0.1 * CAR_M },
           shell,
           shellBase: shell.geometry.attributes.position.array,
+          // The kit and the paint panels, for the pristine merge (vehicle-merge3d.js).
+          kit,
+          panels,
           cabin,
           cabinBase: cabin ? cabin.geometry.attributes.position.array : null,
           wheels,

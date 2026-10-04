@@ -166,11 +166,14 @@
               for (const lamp of m.lamps)
                 if (lamp.lit === tailLamp && !c.damage?.lights?.[lamp.key]) lamp.mesh.material = braking ? brakeLamp : tailLamp;
             }
+            // A pristine car drawn merged goes back to its own parts before anything changes them (vehicle-merge3d.js).
+            if (m.merged && !vehicleMergeEligible(c, m)) splitVehicleModel(m);
             // Civilian lamps, DRLs, rolling and steering wheels (cars3d.js).
             if (m.civilian) {
               const lampsOn = vehicleLampAmount(),
                 driven = c.hp > 0 && (c.ai || c === player.car || !!c.showLamps);
               animateCivilianCar(c, m, deltaSeconds, driven, lampsOn, braking);
+              if (m.merged) syncMergedVehicle(m);
             }
             // Windscreen wipers in the rain (vehicles3d.js).
             if (m.wipers) updateWipers(c, m, deltaSeconds);
@@ -204,6 +207,9 @@
               applyVehicleDamage(c, m);
               m.brakeLit = null; // lamp materials were reset: re-apply brake lights
             }
+            // PRISTINE MERGE (vehicle-merge3d.js): once its first damage pass has set it up, an untouched civilian car
+            // draws its static parts merged per material.
+            if ((m.civilian || m.police) && m.merged === undefined && m.damageVersion === c.damageVersion && vehicleMergeEligible(c, m)) mergeVehicleModel(c, m);
             // Control surfaces, gear, propeller, lights and buffet (plane3d.js).
             if (m.plane) animateAircraft(c, m, deltaSeconds);
             if (m.tank) {
@@ -258,7 +264,10 @@
               for (const { pivot, side } of m.rearDoors) pivot.rotation.y = side * open * 1.85;
             }
             // Flash patterns, wig-wag, halos (police3d.js).
-            if (m.police) animatePoliceVehicle(c, m);
+            if (m.police) {
+              animatePoliceVehicle(c, m);
+              if (m.merged) syncMergedVehicle(m);
+            }
             // Club trucks: wheel spin, steering, articulation, light bars; mud on any body (offroad3d.js).
             if (m.offroad) animateOffroadVehicle(c, m, deltaSeconds);
             else if (c.mudCoat > 0.01 || m.mudUniforms) applyVehicleMud(c, m);

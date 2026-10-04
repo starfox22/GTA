@@ -91,8 +91,9 @@
       // happened in them (`gc`, `program`, `texture-upload`, `geometry-upload`, `models`, `spawn`, `dom`, `storage`,
       // `audio-nodes`, `canvas`, `sync-read`), section averages and worst, and counters per second. The browser's own
       // style, layout and paint run between live frames only: frameTrace measures those. `keep` appends to the last
-      // run's frames (one report for a stage of several steps). Advances the game like simulate().
-      hitchRun(seconds = 6, held = [], top = 10, keep = false) {
+      // run's frames (one report for a stage of several steps); `draw` false skips the draw (stage a scene on a rendered
+      // page quickly: the camera and everything else still step). Advances the game like simulate().
+      hitchRun(seconds = 6, held = [], top = 10, keep = false, draw = true) {
         const frames = clamp(Math.round(Number(seconds) * 60) || 360, 1, 7200),
           heldBefore = simulationHeld,
           lastBefore = lastTime,
@@ -104,12 +105,14 @@
         lastTime = 1000 / 60;
         frameTraceStart(true, Array.isArray(held) ? held : [], !!keep);
         simulationHeld = false;
+        frameTrace.skipDraw = draw === false;
         try {
           for (let i = 0; i < frames; i++) {
             t += 1000 / 60;
             runFrame(t, false);
           }
         } finally {
+          frameTrace.skipDraw = false;
           simulationHeld = heldBefore;
           lastTime = lastBefore;
           profile.previousFrame = previousBefore;

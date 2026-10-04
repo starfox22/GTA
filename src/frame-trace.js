@@ -12,6 +12,8 @@
       frameTrace = {
         on: false,
         stepped: false,
+        // hitchRun with `draw` false: whole frames without the draw (a scene staged quickly on a rendered page).
+        skipDraw: false,
         frames: [],
         saved: null,
         scratch: {},

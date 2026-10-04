@@ -136,6 +136,47 @@ const STAGES = {
     return measure(1, []);
   },
 };
+// --scenes: three fixed views for the renderer's draw counts (drawProfile, stats, vehicleMerges) instead of the tour:
+// a city street at noon, a sports car at speed on the Keys Bridge (the driving camera pulled back) and the street at
+// night with headlights. Use on a rendered page started with --seed, so both builds of an A/B see the same world.
+async function sceneCounts(name) {
+  const dp = await call('drawProfile', 40),
+    st = await call('stats'),
+    merges = await call('vehicleMerges').catch(() => null);
+  const vehicles = (dp.byName.find(([k]) => k.startsWith('vehicle in vehicle')) || [0, 0])[1];
+  return { name, frames: 1, total: dp.total, vehicles, triangles: dp.triangles, shadowCalls: st.shadowCalls, programs: st.programs, merged: merges ? merges.live : null, savedDraws: merges ? merges.savedDraws : null };
+}
+// Each scene is stepped without drawing (hitchRun's `draw` false) and then drawn for a few frames, so the new models are
+// built and merged before the counts are read.
+const SCENES = {
+  async street() {
+    await call('setClock', 12);
+    await call('teleport', 1310, 1176);
+    await call('hitchRun', 1, [], 1, false, false);
+    await call('hitchRun', 0.25);
+    return sceneCounts('street');
+  },
+  async highway() {
+    await call('teleport', 300, 1160);
+    await call('drive', 'sport', 0, Math.PI);
+    await call('launch', 32);
+    await call('hitchRun', 2.5, ['KeyW'], 1, false, false);
+    await call('hitchRun', 0.25, ['KeyW']);
+    return sceneCounts('highway');
+  },
+  async night() {
+    await call('interact');
+    await call('setClock', 22.5);
+    await call('teleport', 1310, 1176);
+    await call('hitchRun', 1, [], 1, false, false);
+    await call('hitchRun', 0.25);
+    return sceneCounts('night');
+  },
+};
+if (flag('scenes')) {
+  for (const k of Object.keys(STAGES)) delete STAGES[k];
+  Object.assign(STAGES, SCENES);
+}
 const ORDER = opt('stages', Object.keys(STAGES).join(',')).split(',');
 
 const r1 = (v) => (v == null ? '' : String(+(+v).toFixed(1)));
@@ -188,6 +229,18 @@ if (AB) {
     const stages = await runTier(TIERS[0] || '');
     runs[which].push(stages);
     console.log(`${which} run ${runs[which].length} done`);
+  }
+  if (flag('scenes')) {
+    console.log(`\nA = ${path.relative(ROOT, AB[0])}, B = ${path.relative(ROOT, AB[1])}; medians of ${runs.A.length} / ${runs.B.length} runs`);
+    console.log(row(['scene', 'calls A>B', 'vehicle calls A>B', 'triangles A>B', 'shadow A>B', 'programs A>B', 'merged B'], [10, 12, 18, 22, 12, 14, 9]));
+    for (const name of ORDER) {
+      const a = (k) => median(runs.A.map((s) => s[name][k])),
+        b = (k) => median(runs.B.map((s) => s[name][k]));
+      console.log(row([name, `${a('total')}>${b('total')}`, `${a('vehicles')}>${b('vehicles')}`, `${a('triangles')}>${b('triangles')}`, `${a('shadowCalls')}>${b('shadowCalls')}`, `${a('programs')}>${b('programs')}`, b('merged')], [10, 12, 18, 22, 12, 14, 9]));
+    }
+    fs.mkdirSync(path.join(ROOT, 'dist', 'hitches'), { recursive: true });
+    fs.writeFileSync(path.join(ROOT, 'dist', 'hitches', TAG + '-ab.json'), JSON.stringify({ A: AB[0], B: AB[1], order, runs }, null, 1));
+    process.exit(0);
   }
   const keysOf = (stage) => ['cpuMsPerFrame', 'p95Ms', 'p99Ms', 'maxMs', 'long', 'over33'],
     perFrame = (stages, k) => {

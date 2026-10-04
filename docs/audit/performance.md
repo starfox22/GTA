@@ -576,3 +576,35 @@ trafficControl and physicsStep.
 
 **Left**: the minimap's layers are all redrawn every 0.09 s (drawBikeShareMap up to 7 ms CPU here when zoomed out at speed); the
 pedestrians' 83 layouts; the active-vehicle list for parked cars (BACKLOG).
+
+## Fifth pass: per-vehicle draw calls (4 October 2026)
+
+The driving camera's pull-back put more cars in view (vehicle models were 150-188 of 347-413 calls a frame at highway
+zoom). A civilian car was 22 draw calls (shell, cabin, hood, panels, trim, DRL, two bumpers, four tyres, four rims, four
+lamps, two wipers), of which only the shell, cabin and trim cast shadows.
+
+**PRISTINE MERGE** (src/vehicle-merge3d.js): an untouched civilian or police car draws its non-casting static parts merged
+per material: hood + panels + paint bumpers, the black or chrome bumpers, each lamp pair (their material copied from the
+left lamp every frame: on, off, brake), each front wheel's tyre and rim (the tyre under the rim's finish material with the
+rubber's roughness and metalness), each rear axle's two wheels (they turn about one line, so one spin turns both); police:
+hood + panels, bumpers, tail lamps (the head lamps wig-wag apart), and all eight wheel parts (police wheels are never
+turned). The originals stay hidden underneath; damage, stains, mud, a fire, a carjack door or the player at the wheel
+sends the model back to them for good (`vehicleMergeEligible`, which bumps `m.shapeVersion` so bullet marks and car blood
+re-read the body). Merged geometries are built once per kit (at most one kit a frame) and shared.
+
+| Measure | before | after |
+| --- | --- | --- |
+| Civilian car, draw calls (`carModels()`) | 22 | 13 (triangles unchanged) |
+| Lineup: every civilian and police model at zoom 1.1, 30 merged (HIGH; LOW the same) | 559 calls, vehicles 398 | 430, vehicles 269 (-32%) |
+| Downtown at speed, seeded (HIGH; the player's own car is never merged) | 266, vehicles 102 | 245, vehicles 80 |
+| Merged meshes against the parts they replace (`vehicleMergeAudit`, world space) | | max 0.000001 units, normals 0 |
+| Seeded shots, before and after builds, noon and night | | 6 and 4 pixels over a 10% difference of 256,000 (PSNR 50-53 dB: JPEG noise) |
+| Shader programs | | none new (same materials, same attribute layouts) |
+| A kit's plan (first car of each kit, this loaded VM) | | 5-7 ms, one kit a frame |
+
+`tools/merge-scenes.mjs` measures it on a rendered page with the merge on and off in the same frame
+(`lookSwitches({ vehicleMerge: false })`); `vehicleMerges()` says why a model is not merged. The shadow pass is unchanged
+by design (nothing merged casts). Left per pristine car: the shell, cabin and trim (casters), the DRL, two front wheels and
+two wipers. Next levers: a parked car's wheels merged into the body (they never turn while it stands), instanced shells
+per kit for traffic beyond the near ring at the pulled-back zoom. Note: tools/tests/headlight-aim.mjs fails on the lead
+branch itself (uphill pitch 31.4 degrees, test range 10-20), not from this pass.

@@ -173,7 +173,7 @@
       }
       syncPanelCover();
       const drawStart = performance.now();
-      if (!NO_RENDER) drawWorld(); // ?dev&norender (render3d.js): logic tests draw nothing
+      if (!NO_RENDER && !frameTrace.skipDraw) drawWorld(); // ?dev&norender (render3d.js): logic tests draw nothing
       updateTankReticle();
       updateDriveByCross();
       const frameEnd = performance.now();
