@@ -41,9 +41,19 @@ MONARCH MOTORS, Ridgeline, Fort Sentinel and the stadium: places-monarch-and-cou
   passerelle is a stair). Aboard, `player.deck`, `deckLevel`, `deckStair`; `player.altitude`
   is the deck height so `entityElevation()` just works. Decks above the player are hidden
   (`superyachtCoverHeight`).
-- **MS MERIDIAN STAR** sails `LINER_VOYAGE` (~13 min a lap; speed zones, turning radii);
-  `carryLinerDeck` keeps passengers in place; she never passes under a bridge. Console
-  `liners()`, `advanceLiner(s)`, `linerVoyageCheck()`.
+- **MS MERIDIAN STAR** sails `LINER_VOYAGE` (marina-voyage.js, ~20 min a lap): North Sound call,
+  astern, north about Sunset Pier, Monarch Isle's north shore past MONARCH ONE and back, Ocean
+  Drive, slow along Palm Keys' beach to a call where she swings round (`swing`), north offshore,
+  home. 21 kn at sea, 19 along the islands (`LINER_SPEED_ZONES`), 8 off the beach, 7.6 in the
+  sound. The islands are all bridged and she never passes under a bridge, so the tour doubles
+  back (Sunset Pier's bridge closes North Sound to the east). `linerVoyageCheck()` must stay
+  clean: land, bridges, docks, ships, Monarch Harbour, `LINER_EDGE_MARGIN` (200) inside the
+  world-edge line; it also times the lap and lists `LINER_PASSAGES`. `linerChart()` draws a
+  sea chart for planning. Her cull entry is `moving` (render3d-statics.js): a static cell hid
+  her away from the anchorage. Aboard, no world-edge approach card. `carryLinerDeck` keeps
+  passengers in place. Walkable levels (deck-landing.js `linerLevels`): her promenade deck and
+  the deckhouse roofs; E elsewhere than the aft deck takes the stairs aft (`linerStairsAft`).
+  Console `liners()`, `advanceLiner(s)`, `linerVoyageCheck()`, `linerChart()`.
 - Ironworks cargo terminal and mission 1's loading bay: harbor.js (the bay and the depot
   drop: harbor-cargo-job.js).
 
