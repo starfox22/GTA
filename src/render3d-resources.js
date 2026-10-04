@@ -26,9 +26,13 @@
         }
         return color;
       }
-      // New vehicle and person models built per frame (see the vehicle pass).
-      const NEW_MODELS_PER_FRAME = 6;
+      // New vehicle models built per frame (see the vehicle pass): at most six, and after the first no more once
+      // the frame has spent MODEL_BUILD_BUDGET_MS building them (a few dozen meshes each; a view full of new traffic
+      // is spread over frames instead of one long one).
+      const NEW_MODELS_PER_FRAME = 6,
+        MODEL_BUILD_BUDGET_MS = 3;
       let newModelsThisFrame = 0,
+        modelBuildMs = 0,
         // Vehicle models built since the start (the console's frame trace counts them per frame).
         modelsBuiltTotal = 0;
       // Individually modelled people this frame (reused list).
