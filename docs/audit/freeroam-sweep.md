@@ -93,8 +93,9 @@ changes (`physics-update.js` engine-fire toast key).
   card covered a bus heading up the screen at 60 km/h (now it folds, its read held); the open radio reached over the
   speed box; a long notice ran under the waypoint pill and a dispatch caption under the notices; touch on a tablet: the
   radio popped over GAS / BRAKE on getting in and its chip sat on the weapon chip. 1440x900 had only the caption.
-- **Framing**: bus, sedan and speedboat at rest and at speed both ways, touch and keyboard: the vehicle sits centre-low
-  heading up the screen and high heading down; a long vehicle reaches the waypoint pill heading down (it fades).
+- **Framing**: a bus and cars at speed both ways (keyboard and touch), a speedboat at rest: the vehicle sits centre-low
+  heading up the screen and high heading down; a long vehicle reaches the waypoint pill heading down (it fades). A
+  boat and a motorbike at speed were not shot (the rendered page ran a few fps under load).
 - **Checked, fine**: graphics tier switches high / low / medium on the rendered page (no errors), the virtual gamepad
   drive, a save surviving `reload --keep`, liner voyage and deck landings, the search clock, WASTED respawns, the
   taxi ride and the enter key (filtered tests green on this branch).
