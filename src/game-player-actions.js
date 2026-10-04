@@ -190,14 +190,15 @@
       }
       return best;
     }
-    function exitCar() {
+    // `quiet`: a refusal says nothing (teleportPlayer moves the player regardless).
+    function exitCar(quiet = false) {
       const vehicle = player.car;
       if (!vehicle) return;
       if (
         isAircraft(vehicle) &&
         (aircraftClearance(vehicle) > 1 || Math.hypot(vehicle.vx || 0, vehicle.vy || 0) > 12)
       ) {
-        tell('Land and stop to exit, or ' + pressKey('bail', 'lower') + ' to bail out with a parachute.');
+        if (!quiet) tell('Land and stop to exit, or ' + pressKey('bail', 'lower') + ' to bail out with a parachute.');
         return;
       }
       // Off a cliff (falls-vehicles.js): nowhere to step out to until it comes down.
@@ -205,7 +206,7 @@
       // Parked on a roof: out onto the roof beside it (rooftops.js).
       if (vehicle.roofSite && isAircraft(vehicle)) {
         if (!exitOntoRoof(vehicle, vehicle.roofSite)) {
-          tell('No room to get out on this roof.');
+          if (!quiet) tell('No room to get out on this roof.');
           return;
         }
         vehicle.vx = vehicle.vy = vehicle.speed = 0;
@@ -268,11 +269,12 @@
       // Out of a flooding car there is only the water (water.js).
       if (!found && vehicle.sinkFor > 0) found = exitIntoWater(vehicle);
       if (!found) {
-        tell(
-          isBoat(vehicle)
-            ? 'Pull alongside a wooden dock to step off, or ' + pressKey('bail', 'lower') + ' to dive in.'
-            : 'No room to get out. Move away from the wall.',
-        );
+        if (!quiet)
+          tell(
+            isBoat(vehicle)
+              ? 'Pull alongside a wooden dock to step off, or ' + pressKey('bail', 'lower') + ' to dive in.'
+              : 'No room to get out. Move away from the wall.',
+          );
         return;
       }
       vehicle.ai = false;

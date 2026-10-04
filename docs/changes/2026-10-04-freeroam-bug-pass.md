@@ -10,9 +10,11 @@
 - Touch (tablets): getting in a car no longer opens the radio over the GAS / BRAKE buttons for 4 s (it flashes its
   chip, as on phones), and the chip no longer sits on the weapon chip.
 - Restarting a job while riding a CITY RAIL train no longer pulls the player straight back aboard (any move of the
-  player now ends the ride).
+  player now ends the ride); a move out of a boat at sea or a boxed-in car (nowhere to step out to) no longer leaves
+  the player aboard, snapped back to the vehicle (console and scenario moves; job restarts already let go).
 - Internals: src/hud-clearance.js (`hudPlayerBox`, `missionCardFolded` beside `missionCardYields`, `measureMissionCard`);
-  `dropTransitRide()` (transit-network.js) from `teleportPlayer`; the console's `drive()` ends a cab ride first.
+  `dropTransitRide()` (transit-network.js) and a forced step-out (`exitCar(quiet)`) in `teleportPlayer`; the console's
+  `drive()` ends a cab ride first.
 - Console: `hudClearance(action)`, `hudOverlaps(slack)`. Tests: hud-clearance, hud-layout (no HUD overlaps at
   960x600, keyboard and touch), restart-carriers (train and cab), world-edge (integrity while WASTED out there).
 - Bot and `integrity()`: a wanted player turned away at a door, a helicopter's own prompt after a teleport, a pilot

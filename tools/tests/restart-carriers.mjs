@@ -53,6 +53,18 @@ export default async function (t) {
   await restart('a train ride');
   t.assert(!(await carriers()).transit, 'still riding the train after the restart');
 
+  // A speedboat in open water: exitCar has nowhere to put the player (the sea), so teleportPlayer left them aboard
+  // and the boat pulled them straight back out to sea (the job restarts clear player.car first; the console, the bot
+  // and the scenario set-ups did not).
+  await t.call('teleport', -2500, 7000);
+  await t.call('drive', 'speedboat', 0, -Math.PI / 2);
+  t.assert((await t.call('status')).vehicle === 'speedboat', 'not in the speedboat');
+  await t.call('teleport', spawn.x, spawn.y);
+  await t.wait(2);
+  const ashore = await t.call('status');
+  t.assert(!ashore.vehicle && Math.hypot(ashore.x - spawn.x, ashore.y - spawn.y) < 60, 'the boat at sea kept the player: ' + JSON.stringify(ashore));
+  await restart('after a teleport out of a boat');
+
   // A cab ride, then the console's drive(): the ride held the player and the new car in place.
   await t.call('cab', 2650, 1250);
   await t.wait(3);
