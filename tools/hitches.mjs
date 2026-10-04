@@ -6,6 +6,7 @@
 //   node tools/hitches.mjs [--tiers low,medium,high,ultra,auto] [--stages walk,drive,...] [--scale 1] [--tag base]
 //                          [--live] [--seed 1] [--json]
 //   node tools/hitches.mjs --ab A.html B.html [--order ABBA] [...]   # A/B on one server started with dist/ab.html
+//   --counts: on a rendered page, the draw calls, shadow calls, triangles, programs and upload churn after every stage.
 //   --hash: stateHash() after every stage; on a page started with `dev.mjs start --seed 1` (seeded Math.random, the
 //   simulation held from the first frame) every boot holds the same world, so equal hashes in an A/B prove a change
 //   left the simulation exactly as it was.
@@ -154,6 +155,13 @@ async function runTier(tier) {
     const r = await STAGES[name]();
     out[name] = { ...r, cpuMsPerFrame: !LIVE && r.frames ? +(stageCpu / r.frames).toFixed(2) : null };
     if (flag('hash')) out[name].hash = await call('stateHash');
+    // --counts (rendered pages): the renderer's counters at the end of the stage (draw calls in the view and the shadow
+    // pass, triangles, programs, the render scale) and the buffers and textures re-sent per frame (uploadChurn).
+    if (flag('counts')) {
+      const st = await call('stats'),
+        churn = await call('uploadChurn', 6);
+      out[name].counts = { viewCalls: st.viewCalls, shadowCalls: st.shadowCalls, triangles: st.triangles, programs: st.programs, renderScale: st.renderScale, churnKBPerFrame: churn ? churn.kbPerFrame : null };
+    }
   }
   return out;
 }
@@ -222,6 +230,7 @@ for (const tier of TIERS.length ? TIERS : ['']) {
     const causes = Object.entries(r.causes || {}).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([k, v]) => `${k} ${v}`).join(', ');
     const tags = Object.entries(r.tags || {}).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([k, v]) => `${k} ${v}`).join(', ');
     console.log(row([name, r.frames, r1(r.cpuMsPerFrame), r1(r.p50Ms), r1(r.p95Ms), r1(r.p99Ms), r1(r.maxMs), r.long, r.over33, causes, tags], widths) + (r.hash ? ' ' + r.hash : ''));
+    if (r.counts) console.log('           counts ' + JSON.stringify(r.counts) + ' perFrame ' + JSON.stringify({ texKB: r1(((r.totals.texMB || 0) * 1024) / r.frames), bufKB: r1(((r.totals.bufMB || 0) * 1024) / r.frames), models: r1((r.totals.models || 0) / r.frames), geometries: r1((r.totals.geometries || 0) / r.frames), programs: r.totals.programs || 0 }));
   }
   if (results.tiers[tier || 'current'].browser) console.log('browser over the tour:', JSON.stringify(results.tiers[tier || 'current'].browser));
 }
