@@ -1,4 +1,4 @@
-// Foliage cutaway (foliage-cutaway.js, vegetation3d-material.js FOLIAGE_HOLE): leaves on the street camera's line of
+// Foliage cutaway (foliage-cutaway.js, vegetation3d-material.js FOLIAGE_HOLE_CUT): leaves on the street camera's line of
 // sight to the player are dropped, on foot and in a truck on the hill-climb trail; leaves behind or beside the player and
 // grass at their feet stay; Settings · Character see-through off closes it.
 function checkHole(t, r, label) {

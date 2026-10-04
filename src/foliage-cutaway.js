@@ -4,14 +4,14 @@
      * FOLIAGE CUTAWAY
      * The street camera looks down at ~50 degrees, so a crown between it and the player (a forest trail, a street
      * tree, a row of palms) hid the player's car or the player on foot for seconds at a time; the building cutaway
-     * (lighting3d-cutaway.js) only cuts structures. The tree material (vegetation3d-material.js FOLIAGE_HOLE)
+     * (lighting3d-cutaway.js) only cuts structures. The tree material (vegetation3d-material.js FOLIAGE_HOLE_CUT)
      * dissolves its pixels (leaves and the limbs among them; never in the shadow pass, so the crown's shade stays)
      * with the same 4x4 screen door as the building cutaway, where all of these hold:
      *   - on screen, inside the subject's outline (the bounds of its box seen from the camera) grown by `pad`, then
      *     coming back over `fade`, so a crown thins as it reaches the player's outline and closes after it passed;
      *   - nearer the camera than the subject's middle by more than `margin` (what stands behind or beside it stays);
      *   - higher than `floor` over the subject's base (grass, flower beds and low shrubs stay whole).
-     * Nothing is decided per tree or per frame in JS: the renderer sets three uniforms a frame from this plan
+     * Nothing is decided per tree in JS: the renderer sets three uniforms a frame from this plan
      * (vegetation3d-cutaway.js) and eases them, and each tree pixel tests itself. Same switch as the building
      * cutaway: Settings · Character see-through (`settings.cutaway`, `city3D.setCharacterCutaway`).
      * foliageHoleCut() mirrors the shader for the console and tests: change both together.
@@ -49,7 +49,8 @@
     function foliageCutawayPlan() {
       const plan = foliageCutawayState,
         vehicle = taxiRide ? taxiRide.car : player.car;
-      plan.on = !!settings.cutaway && gameMode !== 'map' && !player.hidden && !transitRide;
+      // Not on the map, hidden, on a rail ride (the train's viaduct) or a park ride (its own camera).
+      plan.on = !!settings.cutaway && gameMode !== 'map' && !player.hidden && !transitRide && !player.coaster;
       if (vehicle) {
         const spec = vehicleSpec(vehicle);
         plan.kind = 'vehicle';
@@ -90,7 +91,7 @@
     }
     /* How much of a tree pixel at map (x, y), height z the tree shader drops (0 kept .. 1 gone) for an orthographic
        view with `axes` ({right, up, back}: the camera's axes, back pointing at the camera), the open box `box` ({x, y})
-       and the hole's `strength`. Mirrors FOLIAGE_HOLE in vegetation3d-material.js, which then screens the result
+       and the hole's `strength`. Mirrors FOLIAGE_HOLE_CUT in vegetation3d-material.js, which then screens the result
        through the 4x4 dither. */
     function foliageHoleCut(plan, axes, box, strength, x, y, z) {
       if (strength <= 0) return 0;
@@ -133,9 +134,9 @@
         fadeM: FOLIAGE_HOLE.fade / UNITS_PER_METRE,
         sight,
         stays: {
-          // 3 m north of it at crown height (behind it from the camera).
-          behind: cut(plan.x, plan.y - 24, middle + 40),
-          // Level with its middle, beyond the fade to the east.
+          // 3 m north of it, half a metre over its middle: behind it from the camera, on screen at its outline.
+          behind: cut(plan.x, plan.y - 24, middle + 4),
+          // East of it beyond the fade, a little over its middle (in front of it, beside its outline).
           beside: cut(plan.x + side, plan.y, middle + 10),
           // A tuft of grass 1 m in front of its feet, 1 m tall.
           grass: cut(plan.x, plan.y + 8, plan.base + 8),

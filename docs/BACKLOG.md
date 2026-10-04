@@ -122,6 +122,9 @@ here when polishing; delete a line when it is fixed. Newest features first.
 ## Ground and trees (ground-*.js, surfaces3d.js, vegetation3d*.js)
 - District paving is chosen on a 64-unit grid, so the style can switch mid-pavement at a boundary.
 - Sea sun glitter looked very speckled in headless shots: check on a real GPU.
+- Foliage cutaway (foliage-cutaway.js): its 4x4 screen door is fixed to the screen, so the fade edge crawls a little on a
+  moving crown (as the building cutaway's does); its GPU cost (a few ALU per tree pixel, none when shut) is unmeasured on a
+  real GPU. Plants not drawn with `treeMaterial` are never cut: Monarch Isle's topiary and hedges, the rooftop olive pots.
 
 ## Scenic mountain roads (terrain-roads.js, terrain-grading.js, county3d-roads.js)
 - Junction mouths between two graded roads keep a small ripple where the surfaces blend (up to ~6 g at 100 km/h at Eagle Pass's start; `mountainRoad()` junctionBumpG100).
