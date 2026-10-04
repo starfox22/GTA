@@ -96,6 +96,11 @@
         if (change && typeof change.layer === 'string') setMapLayer(change.layer, change.on !== false);
         return mapViewReport();
       },
+      // Open (true) or close (false) the city map as the map key does; returns the mode and whether it is open.
+      cityMap(open) {
+        if (open !== undefined && !!open !== mapOpen) toggleMap();
+        return { mode: gameMode, open: mapOpen };
+      },
       // Open the settings screen on a tab ('graphics', 'audio', 'gameplay',
       // 'driving', 'controls'); during play it opens over the pause menu. Screenshot tours use it.
       openSettings(tab = 'graphics') {

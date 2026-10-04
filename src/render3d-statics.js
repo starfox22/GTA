@@ -257,8 +257,9 @@
        * once in `statics` is moved under a 1024-unit cell group (identity
        * transform, so nothing moves). A cell entirely out of reach is hidden in
        * one test and its groups are skipped by the visibility loop, the matrix
-       * pass and both render passes. Groups registered twice, parented elsewhere
-       * or added later stay loose and are tested one by one as before.
+       * pass and both render passes. Groups registered twice, parented elsewhere,
+       * added later or marked `moving` (an entry whose x/y follow the group, such
+       * as the sailing liner's) stay loose and are tested one by one as before.
        */
       const staticCells = [],
         looseStatics = [];
@@ -276,7 +277,9 @@
           moved = new Map();
         for (const s of statics) uses.set(s.group, (uses.get(s.group) || 0) + 1);
         for (const s of statics) {
-          if (s.group.parent !== scene || uses.get(s.group) !== 1) {
+          // A group that moves (`moving`: the liner under way) keeps its own test:
+          // a cell would hide it whenever the view left where it started.
+          if (s.moving || s.group.parent !== scene || uses.get(s.group) !== 1) {
             looseStatics.push(s);
             continue;
           }

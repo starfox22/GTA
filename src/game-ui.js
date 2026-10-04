@@ -201,6 +201,8 @@
     }
     // HUD AND CONTEXT PROMPTS: presentation derived from shared simulation state.
     function updateUI() {
+      // A docking line asked for since the last frame is measured before this pass writes anything (hud-state.js).
+      measureDockLine();
       enforceVehicleHandgun();
       // Every system offers its prompt during the pass; hud.js commitPrompt() shows one.
       clearPromptOffer();
@@ -223,7 +225,11 @@
           ? 'ARMOR ' + Math.ceil(player.armor)
           : wantedStars > 0
             ? searchActive
-              ? 'HIDE UNTIL THE TIMER ENDS'
+              ? searchClockShown()
+                ? 'HIDE UNTIL THE TIMER ENDS'
+                : searchClock === 'holding'
+                  ? 'POLICE ON THE WAY'
+                  : 'LEAVE THE SEARCH AREA'
               : 'POLICE PURSUIT'
             : 'NO ARMOR';
       getElement('weaponSlot').textContent = w.fists
@@ -353,7 +359,7 @@
         } else if (taxiRide) prompt = taxiRide.arrival > 0 ? '' : 'STOP HERE · $' + taxiRide.fare;
         else if (hailableTaxi()) prompt = 'HAIL THIS CAB';
         else if (player.deck)
-          prompt = deckExitNear() ? 'GO ASHORE · ' + player.deck.name : '';
+          prompt = deckExitNear() ? 'GO ASHORE · ' + player.deck.name : linerStairsAvailable() ? 'STAIRS · AFT DECK' : '';
         else if (boardableLiner()) prompt = 'BOARD ' + boardableLiner().name;
         else if (transitRide) prompt = 'REQUEST NEXT RAIL STOP';
         else if (nearestStation()) prompt = 'CITY RAIL · CHOOSE DESTINATION';

@@ -6,6 +6,7 @@
 //   node tools/dev.mjs wait <seconds> [--real]
 //   node tools/dev.mjs mouse <x> <y> [seconds] [--down] [--keys Code,Code]
 //   node tools/dev.mjs shot <name> [--full] [--crop x,y,w,h] [--width N]
+//   node tools/dev.mjs metrics   (the page's CDP Performance totals: RecalcStyleDuration, LayoutDuration, ScriptDuration, TaskDuration in ms)
 //   node tools/dev.mjs heap   (the page's JS heap in MB after a full collection, DOM nodes, event listeners, live Web Audio nodes: tools/soak.mjs)
 //   node tools/dev.mjs cpucost <seconds>   (CPU ms per drawn frame of each browser process: the GPU process's share is software GL's pixel cost)
 //   node tools/dev.mjs profile <seconds> [--allocations] [--top N]   (CPU profile of the live page for N seconds; --allocations: allocation sites instead)
@@ -223,7 +224,8 @@ async function serve(file, port, flags, size, ownBuild) {
   const browser = await chromium.launch({
     executablePath: chromeExecutable(),
     // DEC_JS_FLAGS: V8 flags for the page, e.g. `--no-turbo-inlining` so a profile names the real function.
-    args: [...glArgs(), '--autoplay-policy=no-user-gesture-required', ...(process.env.DEC_JS_FLAGS ? ['--js-flags=' + process.env.DEC_JS_FLAGS] : [])],
+    // --enable-precise-memory-info: performance.memory moves with every allocation, so the frame trace (src/frame-trace.js) sees collections.
+    args: [...glArgs(), '--autoplay-policy=no-user-gesture-required', '--enable-precise-memory-info', ...(process.env.DEC_JS_FLAGS ? ['--js-flags=' + process.env.DEC_JS_FLAGS] : [])],
   });
 
   // Idle: freeze the page (no timers, no frames) and hand the slot to someone else.
@@ -353,11 +355,16 @@ async function serve(file, port, flags, size, ownBuild) {
         const chain = [];
         for (let at = id; at; at = parent.get(at)) chain.push(byId.get(at).callFrame.functionName || '(anon)');
         chain.reverse();
-        const u = chain.lastIndexOf('update');
-        let name = u < 0 ? '(outside update)' : '(update itself)';
-        for (let i = u + 1; u >= 0 && i < chain.length; i++)
+        // The section: the first named function below update() (simulation), below the renderer's render() (`draw:`),
+        // or below runFrame() (`frame:`, the rest of a frame: input, HUD timers, the draw's caller).
+        let root = chain.lastIndexOf('update'),
+          prefix = '';
+        if (root < 0 && (root = chain.lastIndexOf('render')) >= 0) prefix = 'draw:';
+        if (root < 0 && (root = chain.lastIndexOf('runFrame')) >= 0) prefix = 'frame:';
+        let name = root < 0 ? '(outside update)' : prefix ? prefix + '(itself)' : '(update itself)';
+        for (let i = root + 1; root >= 0 && i < chain.length; i++)
           if (chain[i] !== 'timed' && chain[i] !== '(anon)') {
-            name = chain[i];
+            name = prefix + chain[i];
             break;
           }
         sectionOf.set(id, name);
@@ -621,6 +628,15 @@ async function serve(file, port, flags, size, ownBuild) {
         const { profile } = await cdp.send('Profiler.stop');
         return { result: summarizeProfile(profile, op.top || 25) };
       }
+      case 'metrics': {
+        // The page's Performance domain totals (ms for the *Duration ones): style recalculation, layout, script and task
+        // time so far; a tool differences two reads around a stretch of live frames (tools/hitches.mjs).
+        await cdp.send('Performance.enable').catch(() => {});
+        const { metrics } = await cdp.send('Performance.getMetrics');
+        const out = {};
+        for (const m of metrics) out[m.name] = /Duration$/.test(m.name) || m.name === 'ThreadTime' ? +(m.value * 1000).toFixed(1) : m.value;
+        return { result: out };
+      }
       case 'errors': {
         const out = errors;
         errors = [];
@@ -766,6 +782,8 @@ async function main(argv) {
       );
     case 'heap':
       return print(await request({ op: 'heap' }), max);
+    case 'metrics':
+      return print(await request({ op: 'metrics' }), max);
     case 'cpucost':
       return print(await request({ op: 'cpucost', seconds: Number(rest[0] || 20) }), max);
     case 'profile':

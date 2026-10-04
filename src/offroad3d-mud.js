@@ -225,7 +225,11 @@
         at.iAxis.setXYZ(i, decalAlong.x * length, decalAlong.y * length, decalAlong.z * length);
         at.iSide.setXYZ(i, decalAcross.x * width, decalAcross.y * width, decalAcross.z * width);
         at.iLife.setXYZ(i, gameTime, seconds, wet);
-        for (const name of ['iPos', 'iAxis', 'iSide', 'iLife']) at[name].needsUpdate = true;
+        // Only the decal written goes up (uploadChurn).
+        for (const name of ['iPos', 'iAxis', 'iSide', 'iLife']) {
+          at[name].addUpdateRange(i * at[name].itemSize, at[name].itemSize);
+          at[name].needsUpdate = true;
+        }
         pool.geo.instanceCount = pool.used;
       }
       function spawnClump(x, y, z, vx, vy, vz, size, wet) {
@@ -379,8 +383,15 @@
           clumpMesh.setColorAt(i, clumpColor.copy(MUD_DRY).lerp(MUD_WET, clump.wet[i]));
         }
         clumpMesh.count = n;
-        clumpMesh.instanceMatrix.needsUpdate = true;
-        if (clumpMesh.instanceColor) clumpMesh.instanceColor.needsUpdate = true;
+        // Only the clumps in flight go up, and nothing when there are none (uploadChurn).
+        if (n) {
+          clumpMesh.instanceMatrix.addUpdateRange(0, n * 16);
+          clumpMesh.instanceMatrix.needsUpdate = true;
+          if (clumpMesh.instanceColor) {
+            clumpMesh.instanceColor.addUpdateRange(0, n * 3);
+            clumpMesh.instanceColor.needsUpdate = true;
+          }
+        }
         // Mist and dust.
         const at = mist.geo.attributes,
           mistDrag = Math.exp(-2.2 * deltaSeconds);
@@ -409,7 +420,11 @@
           at.iAlpha.setX(i, mist.alpha[i] * t * Math.min(1, (1 - t) * 8));
           at.iColor.setXYZ(i, mist.r[i], mist.g[i], mist.b[i]);
         }
-        for (const name of ['iPos', 'iSize', 'iAlpha', 'iColor']) at[name].needsUpdate = true;
+        if (n)
+          for (const name of ['iPos', 'iSize', 'iAlpha', 'iColor']) {
+            at[name].addUpdateRange(0, n * at[name].itemSize);
+            at[name].needsUpdate = true;
+          }
         mist.geo.instanceCount = n;
         mist.mesh.material.uniforms.uLight.value = (1 - 0.8 * nightAmount) * 0.72;
       }

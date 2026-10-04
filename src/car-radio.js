@@ -427,11 +427,11 @@
                   ? track.title + ' · ' + track.artist
                   : 'Tuning…';
       getElement('radioPower').textContent = keyPrefix('radioPower') + (on ? 'ON' : 'OFF');
-      getElement('radioPower').setAttribute?.('aria-pressed', String(on));
+      hudAttr(getElement('radioPower'), 'aria-pressed', on);
       getElement('carRadio').classList.toggle('radio-off', !on);
       const tuned = radioStationIndex();
       for (let i = 0; i < MUSIC_STATIONS.length; i++) {
-        getElement('radioPreset' + i).setAttribute?.('aria-pressed', String(i === tuned));
+        hudAttr(getElement('radioPreset' + i), 'aria-pressed', i === tuned);
         getElement('radioPreset' + i).classList.toggle('selected', i === tuned);
       }
       syncCarRadio();

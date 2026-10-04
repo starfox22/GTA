@@ -97,6 +97,7 @@
           lap = profileLap('r:crowd', lap);
           pruneModels(carModels, vehicles);
           newModelsThisFrame = 0;
+          modelBuildMs = 0;
           beginVehicleImpostors();
           for (const c of vehicles) {
             let m = carModels.get(c);
@@ -113,11 +114,14 @@
               // Building a car is a few dozen meshes: a view full of new traffic (a
               // teleport, a fast drive into a new street) is spread over a few
               // frames instead of one long one. The player's own is never held back.
-              if (newModelsThisFrame >= NEW_MODELS_PER_FRAME && c !== player.car) continue;
+              if ((newModelsThisFrame >= NEW_MODELS_PER_FRAME || modelBuildMs > MODEL_BUILD_BUDGET_MS) && c !== player.car) continue;
+              const buildStart = performance.now();
               newModelsThisFrame++;
+              modelsBuiltTotal++;
               m = makeVehicle(c);
               carModels.set(c, m);
               trimShadowCasters(m.group, 4 * m.modelScale);
+              modelBuildMs += performance.now() - buildStart;
             }
             m.group.visible = near;
             if (!near) continue;
@@ -501,8 +505,13 @@
             for (let k = 0; k < 6; k++, ci += 4) skidColor[ci + 3] = alpha;
           }
           skidGeo.setDrawRange(0, si / 3);
-          skidGeo.attributes.position.needsUpdate = true;
-          skidGeo.attributes.color.needsUpdate = true;
+          // Only the marks drawn go to the GPU, not the whole 1100-mark buffer (184 KB a frame).
+          if (si > 0) {
+            skidGeo.attributes.position.addUpdateRange(0, si);
+            skidGeo.attributes.position.needsUpdate = true;
+            skidGeo.attributes.color.addUpdateRange(0, (si / 3) * 4);
+            skidGeo.attributes.color.needsUpdate = true;
+          }
           skidLines.visible = si > 0;
           skidLines.frustumCulled = false;
           // The sun's shadow map is redrawn every frame it is on (quality.js
