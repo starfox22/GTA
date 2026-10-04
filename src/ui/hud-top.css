@@ -604,7 +604,8 @@ kbd {
   }
 }
 /* Mission dialogue as film subtitles, just above the mission card as it stands (open or
-   folded): hud-clearance.js writes --story-bottom. */
+   folded): hud-clearance.js writes --story-bottom. Low over the strip it sits between the
+   minimap and the equipment column, so it is never wider than the gap between them. */
 #storyLine {
   position: fixed;
   z-index: 8;
@@ -615,7 +616,7 @@ kbd {
   transition:
     bottom 0.3s var(--ui-ease),
     opacity 0.25s;
-  width: min(640px, 64vw);
+  width: min(640px, 64vw, max(360px, calc(100vw - 540px)));
   padding: 8px 16px;
   border-radius: 8px;
   background: #06090cb0;

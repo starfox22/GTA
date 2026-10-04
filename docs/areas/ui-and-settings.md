@@ -108,15 +108,18 @@ navigation.js (big map, GPS), cycles.js (bike share), src/shell.html + src/ui/* 
   or a per-frame tell never piles up. Life is at least ~0.24 s a word (1.5-7 s) on the HUD
   clock. Tone (edge colour) from the words unless given: police, warn, good, info. Console
   `notices()`.
-- Car radio on a phone (`phoneHud()`): `hudPop('carRadio')` only flashes the chip; it opens
-  on a tap (the old 4 s mid-screen pop on getting in covered the road and the toasts). On short
-  windows (<= 720 px tall) it stands on the equipment column and opens upward (radio.css).
+- Car radio in touch mode (phones and tablets): `hudPop('carRadio')` only flashes the chip; it
+  opens on a tap (the old 4 s pop on getting in covered the road and the toasts on a phone, the
+  GAS / BRAKE buttons on a tablet). On short windows (<= 720 px tall, not touch) it stands on the
+  equipment column and opens upward (radio.css).
 - **Mission card clearance** (hud-clearance.js): the card never covers the player. `hudPlayerBox`
   projects the vehicle (footprint and roof) or person through the street camera; while the open card
   (and the dialogue line above it) would come within 18 px, `missionCardFolded` shows the strip and
   holds `missionCardUntil` (and `incomingCallRemaining`) until the spot is clear for 0.6 s; O still
-  opens it (`forceMissionCard`). `#storyLine` sits just above the card as it stands (`--story-bottom`);
-  `.yield-fade` only if even folded it would cover the player. Boxes are read in `measureMissionCard`
+  opens it (`forceMissionCard`). `#storyLine` sits just above the card as it stands (`--story-bottom`),
+  never wider than the gap between the minimap and the equipment column; while a line shows with no room
+  for it between the prompt and the open card (600 px tall), the card yields too. `.yield-fade` (card
+  strip, dialogue line, waypoint pill) only if even folded it would cover the player. Boxes are read in `measureMissionCard`
   (runFrame start, beside the dock line). Console `hudClearance()`, `hudOverlaps()` (HUD boxes that
   overlap each other or the player); tools/tests/hud-clearance.mjs.
 - Narrow windows (<= 980 px): the notices start under the waypoint pill (116 px) and stop short of

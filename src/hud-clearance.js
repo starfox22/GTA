@@ -14,8 +14,10 @@
      *     rest of them once the spot has been clear for CLEAR_HOLD s; O (or a tap on the
      *     strip) still opens it on purpose;
      *   - the dialogue line sits just above the card as it stands (--story-bottom), so it
-     *     drops to the strip with it; if even the strip or the line would cover the
-     *     player, that one fades (.yield-fade).
+     *     drops to the strip with it; while a line shows and there is no room for it between
+     *     the prompt (just under the middle) and the open card (a 600 px window), the card
+     *     yields too; if even the strip or the line would cover the player, that one fades
+     *     (.yield-fade), and so does the waypoint pill.
      * The card's boxes are read at the start of the next frame (runFrame, with the dock line),
      * never after a pass's writes (no forced layout): the open box is remembered from the last
      * time the card stood open. Touch mode keeps the card
@@ -26,6 +28,8 @@
       CLEAR_HOLD = 0.6,
       CLEAR_MEASURE_EVERY = 0.3,
       CLEAR_STORY_GAP = 8,
+      // The interaction prompt's bottom under the middle of the screen (#interaction: top 50% + 58 px).
+      CLEAR_PROMPT_BELOW = 96,
       CLEAR_SIN = 680 / Math.hypot(680, 560),
       CLEAR_COS = 560 / Math.hypot(680, 560);
     const cardClear = {
@@ -41,6 +45,7 @@
       vh: 0,
       measuredAt: -1,
       want: true,
+      key: '',
       // The card is folded for the player's sake (and since when the spot has been clear).
       yielding: false,
       clearSince: 0,
@@ -151,8 +156,10 @@
     function missionCardFolded(timerOpen) {
       const C = cardClear;
       if (!timerOpen) C.forced = false;
-      if (timerOpen !== C.want) {
+      // Opened or folded, or new words on it (a new call, job or objective): its boxes change.
+      if (timerOpen !== C.want || missionCardKey !== C.key) {
         C.want = timerOpen;
+        C.key = missionCardKey;
         remeasureMissionCard();
       }
       const p = hudPlayerBox(C.player),
@@ -160,12 +167,15 @@
         storyShown = !touch && C.story.ok && getElement('storyLine').classList.contains('show'),
         o = C.open;
       let covers = false;
-      if (timerOpen && !C.forced && o.ok && p.ok && gameMode === 'play' && !getElement('pager').classList.contains('hidden')) {
+      if (timerOpen && !C.forced && o.ok && gameMode === 'play' && !getElement('pager').classList.contains('hidden')) {
         // The open card and the dialogue line above it, as one stack.
         const top = storyShown ? o.t - CLEAR_STORY_GAP - C.story.h : o.t,
           half = storyShown ? Math.max(o.r - o.l, C.story.w) / 2 : (o.r - o.l) / 2,
           mid = (o.l + o.r) / 2;
-        covers = clearBoxesMeet(p, mid - half, top, mid + half, o.b, C.yielding ? CLEAR_MARGIN_BACK : CLEAR_MARGIN);
+        covers = p.ok && clearBoxesMeet(p, mid - half, top, mid + half, o.b, C.yielding ? CLEAR_MARGIN_BACK : CLEAR_MARGIN);
+        // No room for the dialogue line between the prompt (just under the middle) and the open card, as on a
+        // 600 px window: the card folds, so the line sits low over the strip.
+        if (storyShown && top < viewportHeight / 2 + CLEAR_PROMPT_BELOW) covers = true;
       }
       if (covers) {
         if (!C.yielding) remeasureMissionCard();
@@ -281,14 +291,23 @@
         }
         return true;
       };
-      const add = (id, el) => {
+      const add = (id, el, words = false) => {
         if (!el) return;
-        const b = el.getBoundingClientRect();
+        let b = el.getBoundingClientRect();
+        if (words) {
+          // The text itself (a centred line in a full-width block).
+          const range = document.createRange();
+          range.selectNodeContents(el);
+          b = range.getBoundingClientRect();
+        }
         if (b.width < 1 || b.height < 1 || !drawn(el)) return;
         if (b.right <= 0 || b.bottom <= 0 || b.left >= viewportWidth || b.top >= viewportHeight) return;
         shown.push({ id, el, l: Math.round(b.left), t: Math.round(b.top), r: Math.round(b.right), b: Math.round(b.bottom) });
       };
-      for (const id of HUD_OVERLAP_IDS) add(id, document.getElementById(id));
+      // The headline card spans the window: its words are what show.
+      for (const id of HUD_OVERLAP_IDS) if (id !== 'announcement') add(id, document.getElementById(id));
+      add('announceSmall', document.getElementById('announceSmall'), true);
+      add('announceBig', document.getElementById('announceBig'), true);
       for (const el of document.querySelectorAll('.touch-utility, .touch-actions')) add(el.className, el);
       const pairs = [];
       for (let i = 0; i < shown.length; i++)
