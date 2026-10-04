@@ -43,6 +43,12 @@
       // The interaction prompt as the player sees it (hud.js INTERACTION PROMPT):
       // visible, text, identity, docked, seconds since it popped in, this pass's offer.
       promptState: () => promptReport(),
+      // The mission card's clearance of the player (hud-clearance.js): the player's box on screen, the
+      // card's open and folded boxes, the dialogue line's place, and whether the card yields or fades.
+      // hudClearance('read') opens the card for a fresh read first, as a new call or objective does.
+      hudClearance: (action) => hudClearanceReport(action),
+      // Every HUD box on screen (id and rect, CSS px) and the pairs that overlap by more than `slack` px.
+      hudOverlaps: (slack = 2) => hudOverlapReport(slack),
       // Press the action key once, exactly as E would.
       interact() {
         interact();

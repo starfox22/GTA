@@ -193,10 +193,14 @@
         missionCardUntil = gameTime + MISSION_CARD_SECONDS;
       }
       getElement('missionObjective').textContent = objectiveLine;
-      getElement('pager').classList.toggle('compact', gameTime >= missionCardUntil);
+      // Folded while the open card would cover the player, its reading time held (hud-clearance.js).
+      getElement('pager').classList.toggle('compact', missionCardFolded(gameTime < missionCardUntil));
     }
     function toggleMissionCard() {
-      missionCardUntil = gameTime < missionCardUntil ? 0 : gameTime + MISSION_CARD_SECONDS;
+      // As it shows: an open card folds; a folded one opens, even one that yielded to the player.
+      const open = !getElement('pager').classList.contains('compact');
+      missionCardUntil = open ? 0 : gameTime + MISSION_CARD_SECONDS;
+      if (!open) forceMissionCard();
       updateUI();
     }
     // HUD AND CONTEXT PROMPTS: presentation derived from shared simulation state.

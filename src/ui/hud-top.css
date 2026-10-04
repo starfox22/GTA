@@ -598,14 +598,18 @@ kbd {
     opacity: 0;
   }
 }
-/* Mission dialogue as film subtitles. */
+/* Mission dialogue as film subtitles, just above the mission card as it stands (open or
+   folded): hud-clearance.js writes --story-bottom. */
 #storyLine {
   position: fixed;
   z-index: 8;
   left: 0;
   right: 0;
   margin-inline: auto;
-  bottom: 196px;
+  bottom: var(--story-bottom, 196px);
+  transition:
+    bottom 0.3s var(--ui-ease),
+    opacity 0.25s;
   width: min(640px, 64vw);
   padding: 8px 16px;
   border-radius: 8px;
@@ -621,6 +625,10 @@ kbd {
 #storyLine.show {
   display: block;
   animation: promptIn2 0.3s var(--ui-ease);
+}
+/* Last resort when even the folded card or the line would cover the player (hud-clearance.js). */
+#storyLine.yield-fade {
+  opacity: 0.3;
 }
 @keyframes promptIn2 {
   from {
