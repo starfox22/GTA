@@ -50,12 +50,19 @@ Part of police-and-combat.md.
 
 ## Blood on vehicles
 
-A hit that hurts (20 km/h and up) leaves a stain on the car (`addCarStain`, car-stains.js, called
-from knockPerson). It is data on the vehicle: `c.stains`, at most 3 records `{id, t, face, x, z,
-sev, sx, sz, kph, seed, wash, reach, flow, creep}` (the body-local point struck, severity, the
-direction the blood is carried: inward and back along the airflow). Fatal: sev 0.62-1 by speed;
-survivor 0.12-0.42; a slow bump nothing. `reach` is the metres the airflow can drag it back (1.5 m
-for a survivor, ~3 m for a fatal hit at speed: bumper to roof edge). `flow` (0-1) is how far it has
+A hit that hurts leaves a stain on the car (`addCarStain`, car-stains.js, called from knockPerson
+and, for a second pass over someone down, runOverDowned with the real speed). It is data on the
+vehicle: `c.stains`, at most 3 records `{id, t, face, x, z, sev, sx, sz, kph, seed, wash, reach,
+flow, creep, hits, load, adds}` (the body-local point struck, severity, the direction the blood is
+carried: inward and back along the airflow). How much is `carStainSeverity(kph, fatal)`: nothing
+under 14 km/h (a crawl over someone leaves the bonnet clean), then `0.76 (1 - exp(-((kph - 14) /
+37)^1.45))` for a death (0.05 at 20 km/h, 0.12 at 25, 0.47 at 50, 0.69 at 80, at most 0.76: a third
+less per person than the old flat 0.62-1), 0.6 of that for a survivor; the painter makes a sev under
+~0.18 a few small drops (`lite`/`few` in the paint context). PILING UP: once a car holds three
+records, a hit on a face that has one tops up the nearest (`hits`, `load` = summed sev, the hit in
+`adds` {x, z, sev, kph, seed}, at most 12, and `t` fresh again); only a hit on a new face replaces
+the oldest. `reach` is the metres the airflow can drag it back (~1.5 m for a light hit, ~2.5 m for
+a fatal one at 80 km/h: bumper to windscreen). `flow` (0-1) is how far it has
 been dragged: `updateCarStainFlow` advances it every frame, only while the car runs faster than
 4 m/s, so a car that keeps going blows the streaks the whole length of the bonnet in about a
 second and one that stops dead stops them short; `creep` (0-1) is the gravity runs, advanced only
@@ -67,7 +74,9 @@ them in rain > 0.5 outside cover and retires them after 1500 s; `clearCarStains`
   (child of `m.body`), one material and one 1536x1024 canvas sheet per stained car, `CB_MAX_CARS`
   5 (out of sight / oldest retire; a retired skin goes back to a pool of one). Each stain is two
   512 px tiles: TOP (bonnet, fender tops, windscreen base, as long as `reach`) and FACE (bumper,
-  grille or flank). The boxes are laid out once per stain (`event.layout`) and every visible mesh
+  grille or flank). A record's `adds` are painted over its own tiles by `cbTopUpJob` (each tile
+  copied back from the sheet, the new impacts drawn over it with 'lighten' at their own offset and
+  seed): no re-fit, nothing redrawn or blinking; `carBloodReport().skin.piled/piledPainted`. The boxes are laid out once per stain (`event.layout`) and every visible mesh
   triangle inside is clipped to them, lifted 0.1 units along its normal, UV-mapped; meshes another
   mesh covers (bonnet over shell) are skipped. It re-fits when `damageVersion` / `shapeVersion`
   change (crumple, hood hinge), the old geometry showing until the new one is committed.

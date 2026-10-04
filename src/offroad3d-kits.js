@@ -514,20 +514,27 @@
           travel = r * 0.45 * (spec.travel || 1),
           pitch = Math.sin(c.slopePitch || 0),
           rollSlope = Math.sin(c.slopeRoll || 0),
-          centre = c.groundHeight || 0,
-          ease = 1 - Math.exp(-deltaSeconds * 18),
-          rough = onGround ? (c.surfaceRock > 0.5 ? 1.1 : 0.35 + 0.4 * c.surfaceMud) : 0;
+          centre = (c.groundHeight || 0) + (c.rideLift || 0),
+          // Each wheel where its spring has it (terrain-suspension.js): pushed up on a
+          // rock, hanging in the air, the axles crossed over a rut.
+          ride = c.ride && !c.ride.handed && c.offroadState ? c.ride : null,
+          rm = ride ? rideModel(spec) : null,
+          ease = 1 - Math.exp(-deltaSeconds * (ride ? 40 : 18));
         for (let i = 0; i < m.knuckles.length; i++) {
           const k = m.knuckles[i],
             wheel = m.wheels[i].wheel;
           wheel.rotation.z = k.driven ? m.spin : m.rollOnly;
           if (k.front) k.knuckle.rotation.y = -steer;
           let target = 0;
-          if (onGround) {
+          if (ride) {
+            const right = k.z > 0 ? 1 : 0,
+              w = clamp((k.x / rm.a + 1) / 2, 0, 1),
+              d = ride.d[2 + right] + (ride.d[right] - ride.d[2 + right]) * w;
+            target = clamp(d, -rm.droop, rm.bump + RIDE_STOP);
+          } else if (onGround) {
             const wx = c.x + cos * k.x - sin * k.z,
-              wy = c.y + sin * k.x + cos * k.z,
-              ground = terrainHeight(wx, wy) + (terrainNoise(wx / 9, wy / 9, 71) * 0.5) * rough;
-            target = clamp(ground - (centre + k.x * pitch - k.z * rollSlope), -travel, travel);
+              wy = c.y + sin * k.x + cos * k.z;
+            target = clamp(terrainHeight(wx, wy) - (centre + k.x * pitch - k.z * rollSlope), -travel, travel);
           }
           k.offset += (target - k.offset) * ease;
           k.knuckle.position.y = k.baseY + k.offset;

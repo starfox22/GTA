@@ -228,10 +228,12 @@
         if (!b.depotWall && x > b.x && x < b.x + b.w && y > b.y && y < b.y + b.h && (!best || b.height > best.height)) best = b;
       return best;
     }
+    // The ground, a roof, or a ship's deck (deck-landing.js): the freefall cue counts down to it.
     function parachuteFloor(x, y) {
       const ground = terrainHeight(x, y),
-        roof = parachuteRoofAt(x, y);
-      return roof ? Math.max(ground, roof.height) : ground;
+        roof = parachuteRoofAt(x, y),
+        deck = deckSurfaceAt(x, y);
+      return Math.max(roof ? Math.max(ground, roof.height) : ground, deck ? deck.z : -Infinity);
     }
     /* The load (g felt in the harness) of a jumper falling at `fall` with drag area
        `area`: the slider and the stretch in the lines round the peak off, so it eases
@@ -294,6 +296,8 @@
         playerImpact(into, 0, p.stage, true);
         return;
       }
+      // On a boat: in the water beside her; on a moored hull or a footing: clear of it (deck-landing.js).
+      if (water && splashBesideHull(into, p.stage)) return;
       // Down in the sea within swimming distance of a way out: swim for it (water.js).
       if (water && parachuteSplashdown()) {
         playerImpact(into, 0, p.stage, true);
@@ -387,6 +391,8 @@
       player.x += p.vx * deltaSeconds;
       player.y += p.vy * deltaSeconds;
       player.altitude += p.vz * deltaSeconds;
+      // A liner's or the superyacht's deck, moving or not (deck-landing.js).
+      if (deckLandingStep(p, wasAltitude, flying)) return;
       // The Blue Hour terrace is a real landing zone: come in over the roof line
       // with the canopy open and you put down among the tables instead of being
       // pushed off the parapet like any other building.

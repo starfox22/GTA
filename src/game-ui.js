@@ -359,7 +359,7 @@
         } else if (taxiRide) prompt = taxiRide.arrival > 0 ? '' : 'STOP HERE · $' + taxiRide.fare;
         else if (hailableTaxi()) prompt = 'HAIL THIS CAB';
         else if (player.deck)
-          prompt = deckExitNear() ? 'GO ASHORE · ' + player.deck.name : '';
+          prompt = deckExitNear() ? 'GO ASHORE · ' + player.deck.name : linerStairsAvailable() ? 'STAIRS · AFT DECK' : '';
         else if (boardableLiner()) prompt = 'BOARD ' + boardableLiner().name;
         else if (transitRide) prompt = 'REQUEST NEXT RAIL STOP';
         else if (nearestStation()) prompt = 'CITY RAIL · CHOOSE DESTINATION';

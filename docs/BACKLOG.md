@@ -70,6 +70,7 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - The canopy's pendulum and surge run on drawn frames (parachute3d-pose.js): no test covers them (headless runs a few fps); the slider is mostly hidden under the canopy from the flight camera.
 - The freefall cue panel sits just under the frame's centre; while the camera catches up after the snap the canopy can pass behind it.
 - The Blue Hour terrace canopy landing is kept but has no test.
+- Ships (deck-landing.js): a liner's roof levels have no drawn stairs (E takes "the stairs aft" at once, to the aft deck); no blood decal on a deck (`addBloodPool` needs ground); Monarch's superyachts and the marina's moored boats have no walkable deck (a canopy comes down clear of them, in the water); the cue measures the deck straight below, not where a moving ship will be.
 
 ## Driving (driving.js, physics-*.js)
 - 50–0 km/h stops are slightly longer than before (the 0.2 s pedal build-up).
@@ -88,6 +89,11 @@ here when polishing; delete a line when it is fixed. Newest features first.
   whoever is near the (stale) cursor; the camera leans along the stick.
 - Rain spray and dust were checked only in stills (headless frames are seconds apart); worth a
   look on a real GPU at speed in the rain and on the beach.
+- The comfort camera (camera-drive.js) was tuned from `cameraComfort()` numbers and stills, not
+  felt at 60 fps on a real screen: worth a drive on a real GPU (lead share 0.32, across 1.8). The
+  wider driving view costs draw calls (~935 at 93 km/h vs ~650 before, 1280x800 high); a
+  medium-tier check on a laptop GPU is still to do. On small screens (960x600) the bottom-centre
+  call banner can sit over the car at speed.
 
 ## Drive-bys (driveby.js, crowd3d-driveby.js)
 - Only the pistol fires from a vehicle, so the SMG one-hand and two-handed lean-out poses are not

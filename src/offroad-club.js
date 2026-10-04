@@ -356,7 +356,7 @@
       if (!c) offerPrompt('4X4 CLUB · HILL CLIMB · TAKE A TRUCK', { key: null, id: 'club-hillclimb-foot' });
       else if (isAircraft(c) || isBoat(c) || vehicleSpec(c).bicycle) return;
       else if (clubState.armed === 0) offerPrompt('HILL CLIMB ARMED · START GATE AT THE MOUNT ASCENT TRAILHEAD', { key: null, id: 'club-hillclimb-armed' });
-      else offerPrompt('HILL CLIMB · BEAT 2:30' + (best !== undefined ? ' · BEST ' + climbClock(best) : ''), { id: 'club-hillclimb' });
+      else offerPrompt('HILL CLIMB · BEAT ' + climbClock(trailCourse(0).target) + (best !== undefined ? ' · BEST ' + climbClock(best) : ''), { id: 'club-hillclimb' });
     }
     function offroadClubInteract() {
       const c = player.car;
@@ -367,7 +367,7 @@
       // by road from the club): the GPS takes the player there.
       const gate = trailCourse(0).start;
       setWaypoint(gate.x, gate.y);
-      tell('HILL CLIMB · Mount Ascent · drive up Eagle Pass to the trailhead: the clock starts at the gate. Beat 2:30 for $1,000.', 7);
+      tell('HILL CLIMB · Mount Ascent · drive up Eagle Pass to the trailhead: the clock starts at the gate. Beat ' + climbClock(trailCourse(0).target) + ' for $1,000.', 7);
       tone(520, 0.1, 0.16, 'triangle');
       return true;
     }
@@ -470,17 +470,21 @@
       return ids;
     }
     /*
-     * TRAIL PILOT (console): drives the player's vehicle up a trail through the
-     * real physics and controls (keys, 30 steps a second, no drawing), following
-     * the graded path with a look-ahead, easing off before the hairpins and
-     * holding at most `maxKmh`. Reports how far it got, the time, the wheelspin,
-     * and why it stopped (the summit, stuck, time). `keysHeld` go in as extra
-     * keys (e.g. Space).
+     * TRAIL PILOT (console): drives the player's vehicle up a trail (or down it,
+     * `direction` 'down') through the real physics and controls (keys, a frame of
+     * `frame` seconds, 1/30 by default, no drawing), following the graded path with
+     * a look-ahead, easing off before the hairpins and holding at most `maxKmh`.
+     * Reports how far it got, the time, the wheelspin, why it stopped (the summit or
+     * the trailhead, stuck, time) and the ride (terrain-suspension.js telemetry:
+     * time in the air, the highest gap under the wheels, how fast the body rose
+     * against the ground, blows through the bump stops, flights).
      */
-    function trailPilot(seconds = 240, maxKmh = 40, t = 0) {
+    const pilotSurface = { mud: 0, rock: 0, across: 9, seg: -1, trail: -1 };
+    function trailPilot(seconds = 240, maxKmh = 40, t = 0, frame = 1 / 30, direction = 'up') {
       const c = player.car,
         trail = MOUNTAIN_TRAILS[t],
-        path = trail.path,
+        down = direction === 'down',
+        path = down ? trail.path.slice().reverse() : trail.path,
         n = path.length - 1;
       if (!c) return null;
       let idx = 0,
@@ -504,7 +508,12 @@
         }
       }
       best = idx;
-      const dt = 1 / 30;
+      const dt = clamp(Number(frame) || 1 / 30, 1 / 240, 1 / 10),
+        watch = rideWatchStart(c);
+      let airFrames = 0,
+        flights = 0,
+        wasAir = false,
+        nan = false;
       for (; time < seconds; time += dt) {
         if (player.car !== c || c.hp <= 0) {
           reason = 'lost vehicle';
@@ -521,8 +530,8 @@
           best = idx;
           bestAt = time;
         }
-        if (idx >= n - 2 || distanceBetween(c, trail.peak) < 40) {
-          reason = 'summit';
+        if (idx >= n - 2 || (!down && distanceBetween(c, trail.peak) < 40)) {
+          reason = down ? 'trailhead' : 'summit';
           break;
         }
         if (time - bestAt > 12) {
@@ -543,7 +552,9 @@
         const h0 = heading(idx),
           reach = 6 + Math.floor(Math.max(0, kmh) / 2.5);
         for (let j = idx + 1; j <= Math.min(n - 1, idx + reach); j++) bend = Math.max(bend, Math.abs(normalizeAngle(heading(j) - h0)));
-        const desired = Math.min(maxKmh, bend > 2.2 ? 9 : bend > 1.3 ? 14 : bend > 0.6 ? 24 : maxKmh);
+        // Rock under the line ahead (the rock garden, the slickrock): crawl it.
+        const rockAhead = offroadSurfaceAt(path[Math.min(n, idx + 6)][0], path[Math.min(n, idx + 6)][1], pilotSurface).rock > 0.3 || c.surfaceRock > 0.3;
+        const desired = Math.min(maxKmh, bend > 2.2 ? 9 : bend > 1.3 ? 14 : bend > 0.6 ? 24 : maxKmh, rockAhead ? 22 : maxKmh) * (down ? 0.75 : 1);
         // Wedged (nose in a bank past a hairpin): back off a moment on opposite lock.
         stall = keys.KeyW && Math.abs(kmh) < 1 && c.wheelSpin < 0.3 ? stall + dt : 0;
         if (stall > 1.5) backing = 1.4;
@@ -566,9 +577,26 @@
         maxSpeed = Math.max(maxSpeed, kmh);
         update(dt);
         if (idx !== lastProgress) lastProgress = idx;
+        if (c.cliffAir) airFrames++;
+        if (c.cliffAir && !wasAir) flights++;
+        wasAir = !!c.cliffAir;
+        if (!Number.isFinite(c.x + c.y + c.vx + c.vy + (c.slopePitch || 0) + (c.slopeRoll || 0) + (c.rideLift || 0))) {
+          nan = true;
+          reason = 'nan';
+          break;
+        }
       }
       keys.KeyW = keys.KeyS = keys.KeyA = keys.KeyD = false;
+      const ride = rideWatchReport(watch);
+      rideWatch = null;
       return {
+        direction: down ? 'down' : 'up',
+        frame: +dt.toFixed(4),
+        ride,
+        cliffFlights: flights,
+        cliffAirS: +(airFrames * dt).toFixed(2),
+        nan,
+        overturned: !!c.overturned,
         reason,
         seconds: +time.toFixed(1),
         sample: best,
@@ -609,11 +637,13 @@
       } else if (action === 'clear') {
         clubState.records = {};
         saveHillClimbRecords();
-      } else if (action === 'gate' || action.startsWith?.('cp')) {
-        const c = player.car,
-          point = action === 'gate' ? course.from : course.checkpoints[+action.slice(2)] || course.from,
-          path = MOUNTAIN_TRAILS[t].path,
-          next = path[Math.min(path.length - 1, point.i + 2)];
+      } else if (action === 'gate' || action === 'top' || action.startsWith?.('cp')) {
+        // 'top': just below the summit platform, facing down the trail.
+        const path = MOUNTAIN_TRAILS[t].path,
+          top = Math.max(0, path.length - 24),
+          c = player.car,
+          point = action === 'top' ? { x: path[top][0], y: path[top][1], i: top } : action === 'gate' ? course.from : course.checkpoints[+action.slice(2)] || course.from,
+          next = action === 'top' ? path[top - 2] : path[Math.min(path.length - 1, point.i + 2)];
         if (c) {
           c.x = point.x;
           c.y = point.y;

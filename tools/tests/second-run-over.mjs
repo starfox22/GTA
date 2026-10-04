@@ -1,7 +1,8 @@
 // A second pass over someone already on the ground (runover.js): the first pass at low speed leaves them down and alive
 // with no blood; a second pass at 30+ km/h kills them within a second or two through the normal death path (one kill,
-// one reward, a pool, a stain on the car); a slow second pass hurts and maims but need not kill; a heavy vehicle
-// kills even slowly; the pass cannot repeat while the car is still over them.
+// one reward, a pool, a stain on the car as light as the speed: car-stains.js HOW MUCH); a slow second pass hurts and
+// maims but need not kill and leaves the bonnet clean; a heavy vehicle kills even slowly; the pass cannot repeat while
+// the car is still over them.
 export const fresh = true;
 const SPOT = { x: 420, y: 4600 }; // the airport's open ground, nobody about
 async function arrange(t, type = 'sedan') {
@@ -72,7 +73,8 @@ export default async function (t) {
     t.assert(b.near.pool >= 1, `no pool in the street: ${JSON.stringify(b.near)}`);
     t.assert(b.near.track >= 1, `the tyres laid no tracks: ${JSON.stringify(b.near)}`);
     const stains = (await t.call('carBloodReport')).stains;
-    t.assert(stains.some((x) => x.sev >= 0.55), `no fatal stain on the car: ${JSON.stringify(stains)}`);
+    // About 29 km/h: a modest mark (sev ~0.18), not the old flat 0.62 of a fatal hit at any speed.
+    t.assert(stains.some((x) => x.sev >= 0.1 && x.sev <= 0.3), `no stain for a 29 km/h pass, or too much: ${JSON.stringify(stains)}`);
     // Drive over the body again and again: nothing more happens.
     await t.call('launch', 8);
     await t.wait(1.5);
@@ -82,7 +84,7 @@ export default async function (t) {
     t.assert(after.kills === s.kills && after.cash === s.cash && after.overruns === second.overruns, `a body was run over again and counted: ${JSON.stringify(after)}`);
     t.note(`two passes: dying ${second.dying} s after the second at 29 km/h, ${stains.length} stains on the car`);
 
-    // 2. A slow second pass (6 km/h) over someone already down hurts, maims, but does not kill.
+    // 2. A slow second pass (6 km/h) over someone already down hurts, maims, but does not kill, and the bonnet stays clean.
     await arrange(t);
     await t.call('runOverVictim', 27, 0, 30, 9);
     const before = await t.call('runOverState');
@@ -93,6 +95,8 @@ export default async function (t) {
     t.assert(!s.dead && s.dying === null && s.hp > 0, `a crawl killed them: ${JSON.stringify(s)}`);
     t.assert(s.hp <= before.hp - 6, `a car rolled over them and they lost only ${before.hp - s.hp}: ${JSON.stringify(s)}`);
     t.assert(!s.pool, `a pool under someone alive: ${JSON.stringify(s)}`);
+    const crawlStains = (await t.call('carBloodReport')).stains;
+    t.assert(crawlStains.length === 0, `a crawl over someone stained the car: ${JSON.stringify(crawlStains)}`);
     await t.wait(4);
     s = await t.call('runOverState');
     t.assert(!s.dead && s.hp > 0, `they died of a slow pass: ${JSON.stringify(s)}`);

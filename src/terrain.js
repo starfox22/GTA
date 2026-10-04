@@ -11,6 +11,7 @@
     // @include src/terrain-grading.js
     // @include src/terrain-noise.js
     // @include src/terrain-field.js
+    // @include src/terrain-suspension.js
     // @include src/terrain-scenery.js
     // @include src/terrain-roadside.js
     // @include src/terrain-headlights.js

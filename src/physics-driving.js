@@ -597,7 +597,8 @@
           // swing started at 30 km/h goes on round as the car slows.
           const yawAuthority =
             physicsClock < (c.spinUntil || 0) ? 1.1 : c === pc ? (c.handbrakeTurn ? HANDBRAKE_YAW_RESPONSE : PLAYER_YAW_RESPONSE) : 5;
-          c.av += (steer - c.av) * (1 - Math.exp(-yawAuthority * stepSeconds));
+          // Wheels off the ground over a crest (terrain-suspension.js): the yaw it had carries on.
+          if (!c.rideAir) c.av += (steer - c.av) * (1 - Math.exp(-yawAuthority * stepSeconds));
         }
         // normalizeAngle() written out (the same atan2 of sine and cosine).
         const turned = c.a + c.av * stepSeconds;

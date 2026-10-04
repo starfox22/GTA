@@ -142,15 +142,91 @@
       });
       return { points, hairpins };
     }
+    /* A trail laid by hand: control points, and hairpins given as a turn about a
+       centre ({ c: [x, y], r, from, to }: degrees, map frame, y south), rounded by
+       Chaikin corner cutting (three passes: curves a truck can follow that still
+       read as the bends they were laid as), the two ends kept. Each hairpin is a
+       keyhole round its centre, which is also its level turning pad's centre. */
+    function laidTrail(control, passes = 3) {
+      let points = [];
+      const hairpins = [];
+      for (const k of control) {
+        if (Array.isArray(k)) {
+          points.push([k[0], k[1]]);
+          continue;
+        }
+        hairpins.push([k.c[0], k.c[1]]);
+        const steps = Math.max(3, Math.round(Math.abs(k.to - k.from) / 40));
+        for (let j = 0; j <= steps; j++) {
+          const a = ((k.from + ((k.to - k.from) * j) / steps) * Math.PI) / 180;
+          points.push([k.c[0] + Math.cos(a) * k.r, k.c[1] + Math.sin(a) * k.r]);
+        }
+      }
+      for (let pass = 0; pass < passes; pass++) {
+        const cut = [points[0]];
+        for (let i = 0; i < points.length - 1; i++) {
+          const [x0, y0] = points[i],
+            [x1, y1] = points[i + 1];
+          if (i) cut.push([x0 * 0.75 + x1 * 0.25, y0 * 0.75 + y1 * 0.25]);
+          if (i < points.length - 2) cut.push([x0 * 0.25 + x1 * 0.75, y0 * 0.25 + y1 * 0.75]);
+        }
+        cut.push(points.at(-1));
+        points = cut;
+      }
+      points = points.map(([x, y]) => [Math.round(x * 10) / 10, Math.round(y * 10) / 10]);
+      return { points, hairpins };
+    }
+    /*
+     * MOUNT ASCENT TRAIL, laid like a real 4x4 trail up the south face (after the
+     * Rubicon's creek and rock gardens, Black Bear Pass's shelf switchbacks, Moab's
+     * slickrock and a ridge run to finish): from the Eagle Pass trailhead a forest
+     * two-track winds east through damp woods past THE BOG to the CREEK CROSSING
+     * (a ford through the stream that drains the east ravine), climbs the far bank
+     * to a hairpin and comes back the length of the face on an off-camber shelf
+     * (THE TRAVERSE, tilted toward the drop); then switchbacks of every shape (a
+     * muddy one, a tight one, a long sweeper), the ROCK GARDEN of ledges and
+     * boulders, a steep SLICKROCK pitch on bare rock, and the SUMMIT RIDGE: a
+     * run along the crest to the top with the sea below. Its grading
+     * (terrain-field.js) rounds every crest and dip into a vertical curve a truck
+     * holds to at speed, dips the ford, tilts the traverse and lets the slickrock
+     * go steeper than dirt could (TRAIL_ROCK_GRADE: bare rock grips at 0.8).
+     */
+    const ASCENT_TRAIL = laidTrail([
+      [7510, 1970], [7540, 1880], [7610, 1846], [7690, 1856], [7772, 1826], [7852, 1810], [7922, 1772], [7970, 1726], [8022, 1700],
+      { c: [8052, 1640], r: 42, from: 100, to: -90 },
+      [7980, 1600], [7860, 1596], [7740, 1582], [7620, 1566], [7500, 1556], [7430, 1550],
+      { c: [7384, 1518], r: 44, from: 45, to: 315 },
+      [7480, 1488], [7580, 1494], [7700, 1484], [7810, 1476], [7880, 1470],
+      { c: [7924, 1430], r: 44, from: 115, to: -115 },
+      [7830, 1390], [7720, 1380], [7610, 1374], [7520, 1360],
+      { c: [7438, 1316], r: 44, from: 50, to: 310 },
+      [7540, 1282], [7640, 1278], [7740, 1266], [7790, 1260],
+      { c: [7838, 1222], r: 44, from: 125, to: -125 },
+      [7760, 1188], [7660, 1180], [7590, 1170],
+      { c: [7514, 1133], r: 44, from: 49, to: 311 },
+      [7600, 1100], [7660, 1094], [7714, 1093], [7760, 1090],
+    ]);
     // Turning pads are this far across (from the pad's centre).
-    const HAIRPIN_PAD = 46;
+    const HAIRPIN_PAD = 46,
+      // Bare rock (the slickrock pitch) is graded steeper than dirt: it grips at 0.8.
+      TRAIL_ROCK_GRADE = 0.36;
     const MOUNTAIN_TRAILS = [
       {
         name: 'MOUNT ASCENT TRAIL',
         width: 42,
-        ...switchbackTrail(COUNTY_PEAKS[0], [[7510, 1970], [7540, 1880]], 9, 540),
+        ...ASCENT_TRAIL,
         peak: COUNTY_PEAKS[0],
         trail: true,
+        // Grading set pieces (fractions of the path, terrain-field.js): the ford's
+        // dip, the off-camber shelf (cross-fall, positive: the right of the way up
+        // higher), the slickrock pitch allowed TRAIL_ROCK_GRADE.
+        ford: { at: 0.077, depth: 11, reach: 46 },
+        // The summit platform at the summit's own height (a switchback trail's ends
+        // 60 units up on fill; held to that, this trail's last hairpins stood on a
+        // 6 m embankment over the north face).
+        summitLift: 0,
+        camber: [{ from: 0.175, to: 0.265, slope: 0.13 }],
+        steep: [{ from: 0.83, to: 0.88 }],
       },
       {
         name: 'NEEDLE RIDGE TRAIL',
