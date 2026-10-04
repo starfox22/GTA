@@ -1,6 +1,6 @@
 // Blood (blood.js): one round leaves a spatter and drops, never a pool; a body on the
-// ground bleeds a pool that starts small and spreads over tens of seconds, larger after
-// several rounds; a blast pools at once and sprays round the body.
+// ground bleeds a pool that starts small and spreads fast (most of it in 10-15 s) to about
+// 1.5 m across, larger after several rounds; a blast pools at once and sprays round the body.
 export const fresh = true;
 const SPOTS = [
   [420, 4600],
@@ -27,20 +27,22 @@ export default async function (t) {
     t.assert(r.near.spatter >= 1 && r.near.drop >= 1, `no spatter or drops from a round: ${JSON.stringify(r)}`);
     t.assert(r.largest < 4.5, `a round's blood too large: ${JSON.stringify(r)}`);
 
-    // A body killed by one round: a small pool that spreads over tens of seconds.
+    // A body killed by one round: a small pool that spreads quickly, then eases out.
     const dead = await victim(t, SPOTS[1], 1, 400, 'headshot');
     t.assert(dead.dead, `the headshot did not kill: ${JSON.stringify(dead)}`);
     r = await report(t, dead);
     t.assert(r.pools.length === 1, `one pool under the body: ${JSON.stringify(r.pools)}`);
     const early = r.pools[0].r;
-    t.assert(early < 2.5, `the pool is full at once: ${JSON.stringify(r.pools)}`);
+    t.assert(early < 3.2, `the pool is full at once: ${JSON.stringify(r.pools)}`);
     await t.wait(10);
     const mid = (await report(t, dead)).pools[0].r;
     await t.wait(20);
     r = await report(t, dead);
     const late = r.pools[0].r;
     t.assert(early < mid && mid < late, `the pool does not spread: ${early} -> ${mid} -> ${late}`);
-    t.assert(late > 3 && late <= r.pools[0].rMax + 0.01 && late < 7, `a one-round pool after 30 s: ${late}`);
+    // Fast: most of the spread by 10 s (r 4.2 at 30 s before 2026-10-04, r 3.0 at 10 s).
+    t.assert(mid >= 4.6, `the pool spreads too slowly: ${mid} at 10 s`);
+    t.assert(late >= 5.6 && late <= r.pools[0].rMax + 0.01 && late < 7, `a one-round pool after 30 s: ${late}`);
     t.note(`one round: pool r ${early} -> ${mid} (10 s) -> ${late} (30 s), rMax ${r.pools[0].rMax}`);
 
     // Several rounds before death: a larger pool, filling faster.

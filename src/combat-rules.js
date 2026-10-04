@@ -34,6 +34,27 @@
         impact: 0,
       };
     /**
+     * NPC BODY ARMOUR (the player keeps VEST_SHARE above)
+     * A vest covers the torso only: a round in the head or the legs goes round it.
+     * `vestPlate` people (SWAT, agents, soldiers, marksmen) wear rifle plates; everyone
+     * else with a `vest` wears a soft concealable one (patrol officers, Vescari).
+     * `stop` is the share of a torso round's energy the vest takes (the rest is the
+     * blunt hit through it); `wear` is how many vest points each absorbed point costs.
+     * A soft vest stops handgun rounds and buckshot and barely slows a rifle round; a
+     * plate stops handgun rounds and most of a rifle round until it is cracked through.
+     * Shots to kill (torso, 9mm 28 dmg): gang 80 hp 2, patrol (soft 40) 3, at four
+     * stars (soft 60) 4, SWAT (plate 120) 7; assault rifle: patrol 2, SWAT 4
+     * (`shotsToKill()` in the console prints the table).
+     */
+    const VEST_STOP = {
+        soft: { handgun: { stop: 0.85, wear: 0.5 }, buck: { stop: 0.9, wear: 0.25 }, rifle: { stop: 0.2, wear: 1 } },
+        plate: { handgun: { stop: 0.9, wear: 0.5 }, buck: { stop: 0.92, wear: 0.25 }, rifle: { stop: 0.75, wear: 1 } },
+      },
+      // A round the vest took this share of or more opens no wound (wearingVest sparks).
+      VEST_STOPPED = 0.6;
+    // What the last ballisticDamage() call's vest took: share of the round, 0 for none.
+    let vestStoppedShare = 0;
+    /**
      * SNIPER FIRE
      * The rooftop snipers (swat.js; switched off by SNIPERS_ENABLED) follow these
      * rules so the player always gets a chance to dodge:
@@ -232,7 +253,11 @@
       if (person === player) player.armor = Math.max(0, player.armor - absorbed);
       else person.vest = Math.max(0, (person.vest || 0) - absorbed);
     }
-    function ballisticDamage(person, damage, kind = 'ballistic') {
+    /* What a hit takes from a person's health. `calibre` ('handgun' | 'buck' | 'rifle')
+       and `zone` ('head' | 'torso' | 'leg') matter only for an NPC's vest on a round
+       ('ballistic'): NPC BODY ARMOUR above. */
+    function ballisticDamage(person, damage, kind = 'ballistic', calibre = 'handgun', zone = 'torso') {
+      vestStoppedShare = 0;
       let d =
         damage *
         (kind === 'sniper'
@@ -242,14 +267,123 @@
           : kind === 'melee'
             ? MELEE_LETHALITY
             : 1);
-      const share = VEST_SHARE[kind] || 0,
-        vest = vestOf(person);
+      const vest = vestOf(person);
+      if (vest > 0 && person !== player && kind === 'ballistic') {
+        if (zone !== 'torso') return d;
+        const rule = VEST_STOP[person.vestPlate ? 'plate' : 'soft'][calibre] || VEST_STOP.soft.handgun,
+          absorbed = Math.min(d * rule.stop, vest / rule.wear);
+        reduceVest(person, absorbed * rule.wear);
+        vestStoppedShare = d > 0 ? absorbed / d : 0;
+        return Math.max(0, d - absorbed);
+      }
+      const share = VEST_SHARE[kind] || 0;
       if (vest > 0 && share > 0) {
         const absorbed = Math.min(vest, d * share);
         reduceVest(person, absorbed);
+        vestStoppedShare = d > 0 ? absorbed / d : 0;
         d -= absorbed;
       }
       return Math.max(0, d);
+    }
+    /* The calibre class of a round: the player's weapon table sets `cal`; police
+       rifles, soldiers and marksmen fire rifle rounds; everyone else a handgun. */
+    function bulletCalibre(b) {
+      return b.cal || (b.owner?.rifle || b.faction === 'military' || b.damageKind === 'sniper' ? 'rifle' : 'handgun');
+    }
+    /* Console: torso hits to put someone down, per weapon and target (NPC BODY ARMOUR).
+       Pure arithmetic on copies; no one is hurt. */
+    function shotsToKillTable() {
+      const targets = {
+        civilian: { hp: 30 },
+        gang: { hp: 80 },
+        guard: { hp: 85 },
+        vescari: { hp: 84, vest: 40 },
+        patrol: { hp: OFFICER_KINDS.patrol.hp, vest: OFFICER_KINDS.patrol.vest },
+        patrol4: { hp: OFFICER_KINDS.patrol.hp, vest: 60 },
+        swat: { hp: OFFICER_KINDS.swat.hp, vest: OFFICER_KINDS.swat.vest, vestPlate: true },
+        fed: { hp: OFFICER_KINDS.fed.hp, vest: OFFICER_KINDS.fed.vest, vestPlate: true },
+        soldier: { hp: OFFICER_KINDS.soldier.hp, vest: OFFICER_KINDS.soldier.vest, vestPlate: true },
+        garrison: { hp: 115, vest: 110, vestPlate: true },
+      };
+      const table = {};
+      for (const w of weapons) {
+        if (w.rocket) continue;
+        const row = (table[w.name] = {});
+        for (const name in targets) {
+          const t = { ...targets[name] };
+          let n = 0;
+          while (t.hp > 0 && n < 40) {
+            n++;
+            for (let j = 0; j < (w.pellets || 1); j++) t.hp -= ballisticDamage(t, w.dmg, 'ballistic', w.cal || 'handgun', 'torso');
+          }
+          row[name] = n;
+        }
+      }
+      vestStoppedShare = 0;
+      return table;
+    }
+    /* Console (police group): the armour table and a live test of real hits. */
+    function armourConsole() {
+      const ROLES = {
+        civilian: { hp: 30 },
+        gang: { hp: 80 },
+        vescari: { hp: 84, vest: 40 },
+        patrol: { unit: 'patrol' },
+        road: { unit: 'road' },
+        swat: { unit: 'swat' },
+        fed: { unit: 'fed' },
+        soldier: { unit: 'soldier' },
+        garrison: { hp: 115, vest: 110, vestPlate: true },
+      };
+      return {
+        // Torso hits to put each kind of target down, per weapon (NPC BODY ARMOUR; arithmetic only).
+        shotsToKill: () => shotsToKillTable(),
+        // A target of `role` (civilian, gang, vescari, patrol, road, swat, fed, soldier, garrison)
+        // standing `distance` ahead of the player, facing them, struck by weapon `weaponIndex`
+        // (0 pistol .. 5 precision rifle) through strikePerson until `down` (dead, or an officer
+        // left wounded down by the last hit): hits taken, how far any hit moved the body (`moved`, units), the shot heading `a`.
+        // `zone` 'torso' | 'head' | 'leg' fixes where every round lands (null: as in play).
+        strikeTest(role = 'patrol', weaponIndex = 0, distance = 50, zone = 'torso') {
+          const r = ROLES[role],
+            w = weapons[weaponIndex];
+          if (!r || !w || w.melee || w.rocket) throw Error('strikeTest: unknown role or weapon');
+          if (player.car) exitCar();
+          const a = player.a || 0,
+            kind = r.unit ? OFFICER_KINDS[r.unit] : null,
+            t = {
+              x: player.x + Math.cos(a) * distance,
+              y: player.y + Math.sin(a) * distance,
+              a: a + Math.PI,
+              dir: a + Math.PI,
+              hp: kind ? kind.hp : r.hp,
+              vest: kind ? kind.vest : r.vest || 0,
+              vestPlate: kind ? !!kind.plate : !!r.vestPlate,
+              // Officers carry the police flag (the stagger, wounded down, officer down).
+              police: !!kind,
+              unit: r.unit,
+              flee: 0,
+              timer: 999,
+              walk: 0,
+              state: 'idle',
+            },
+            x0 = t.x,
+            y0 = t.y;
+          t.maxhp = t.hp;
+          let hits = 0,
+            moved = 0;
+          hitZoneOverride = zone || null;
+          try {
+            while (t.hp > 0 && !t.woundedDown && hits < 40) {
+              hits++;
+              for (let j = 0; j < (w.pellets || 1) && t.hp > 0; j++) strikePerson(t, w.dmg, a, null, true, 'ballistic', w.cal || 'handgun');
+              moved = Math.max(moved, Math.hypot(t.x - x0, t.y - y0));
+            }
+          } finally {
+            hitZoneOverride = null;
+          }
+          return { role, weapon: w.name, hits, down: t.hp <= 0 || !!t.woundedDown, dead: t.hp <= 0, x: +x0.toFixed(1), y: +y0.toFixed(1), a: +a.toFixed(4), moved: +moved.toFixed(3), vestLeft: Math.round(t.vest || 0) };
+        },
+      };
     }
     function wearingVest(person) {
       return vestOf(person) > 0;

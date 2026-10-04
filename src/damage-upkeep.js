@@ -516,6 +516,7 @@
               vz: 0,
               life: w.rocket ? 1.8 : weaponIndex === 5 ? 1 : 0.6,
               dmg: w.dmg,
+              cal: w.cal,
               rocket: w.rocket,
               enemy: false,
             });

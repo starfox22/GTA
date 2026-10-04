@@ -28,6 +28,7 @@
         maxhp: 115,
         // Base security wear plate carriers: small arms need several rounds to matter.
         vest: 110,
+        vestPlate: true,
         color: '#5f6b4b',
         faction: 'military',
         military: true,

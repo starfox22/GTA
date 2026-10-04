@@ -1,4 +1,5 @@
-    // Weapon table (weapons) and mission list (missions).
+    // Weapon table (weapons) and mission list (missions). `cal` is the calibre class an
+    // NPC's vest is rated against (combat-rules.js NPC BODY ARMOUR).
     const weapons = [
       {
         owned: true,
@@ -8,6 +9,7 @@
         reserve: 96,
         rate: 0.28,
         dmg: 28,
+        cal: 'handgun',
         speed: 780,
         spread: 0.018,
         load: 0.9,
@@ -20,6 +22,7 @@
         reserve: 150,
         rate: 0.085,
         dmg: 17,
+        cal: 'handgun',
         speed: 850,
         spread: 0.085,
         load: 1.25,
@@ -32,6 +35,7 @@
         reserve: 36,
         rate: 0.7,
         dmg: 19,
+        cal: 'buck',
         speed: 740,
         spread: 0.16,
         pellets: 6,
@@ -58,6 +62,7 @@
         reserve: 150,
         rate: 0.12,
         dmg: 33,
+        cal: 'rifle',
         speed: 1100,
         spread: 0.03,
         load: 1.5,
@@ -70,6 +75,7 @@
         reserve: 30,
         rate: 1.1,
         dmg: 105,
+        cal: 'rifle',
         speed: 1500,
         spread: 0.003,
         load: 1.9,

@@ -316,6 +316,8 @@
               belt: false,
               shoes: '#0f0f10',
               footwear: 'shoe',
+              // A navy tactical vest over the suit (they wear plates: combat-rules.js NPC BODY ARMOUR).
+              vest: { a: '#1c2230', b: '#262d3d', c: '#1c2230' },
               label: 'FED',
               eyes: '#0a0a0b',
               beard: 0,

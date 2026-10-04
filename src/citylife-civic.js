@@ -270,9 +270,13 @@
       screamAt = gameTime + 1.7;
       playPersonScream(p, 0.65); // their own voice: a man's or a woman's take (voices.js)
     }
-    function strikePerson(person, damage, a = 0, source = null, showBlood = true, kind = 'ballistic') {
+    /* A hit on a person. `calibre` ('handgun' | 'buck' | 'rifle', bulletCalibre) and the
+       hit zone (wounds.js pickHitZone, chosen here first) decide what a vest stops. */
+    function strikePerson(person, damage, a = 0, source = null, showBlood = true, kind = 'ballistic', calibre = 'handgun') {
       if (person.hp <= 0) return;
-      const dealt = ballisticDamage(person, damage, kind);
+      const zone = pickHitZone(kind),
+        dealt = ballisticDamage(person, damage, kind, calibre, zone),
+        vestShare = vestStoppedShare;
       if (person.faction && source === player) alertGang(person.faction);
       if (source) {
         person.threat = {
@@ -293,17 +297,18 @@
       if (person.faction && source?.police) person.policeAggroUntil = gameTime + 15;
       person.hp -= dealt;
       person.flee = 8;
-      // A hit officer staggers: a half-second with no aimed fire, shoved back.
+      // A hit officer staggers: a half-second with no aimed fire. A round does not
+      // shove anyone (they flinch on the spot, wounds.js); only a blast moves them.
       if (person.police && person.hp > 0 && dealt > 4) {
         person.staggerUntil = gameTime + (kind === 'blast' ? 1.2 : 0.45);
-        moveBody(person, Math.cos(a) * 6, Math.sin(a) * 6, 8);
+        if (kind === 'blast') moveBody(person, Math.cos(a) * 6, Math.sin(a) * 6, 8);
       }
-      // A round the vest ate sparks off the plate instead of opening a wound.
-      const stopped = dealt < damage * 0.4 && wearingVest(person);
+      // A round the vest ate sparks off it instead of opening a wound.
+      const stopped = vestShare >= VEST_STOPPED;
       if (stopped) particle(person.x, person.y, '#e8dfb6', 4, 55, 2);
       scream(person);
       // Where it landed, the flinch, a limp, a blood trail, the fall (wounds.js).
-      if (dealt > 0) woundPerson(person, dealt, a, kind, source);
+      if (dealt > 0) woundPerson(person, dealt, a, kind, source, zone, stopped);
       // After the fall is chosen: a spatter for the wound, and for the dead the
       // pool that spreads from under the body (blood.js).
       if (!stopped && showBlood && dealt > 0) bleed(person, Math.min(2, dealt / 38), a, kind);

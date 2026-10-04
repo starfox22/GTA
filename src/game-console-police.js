@@ -214,4 +214,6 @@
     });
     // Ammunition supply: bodies to search, police vehicles' stock (ammo-supply.js).
     addConsoleMethods('ammoSupply', ammoSupplyConsole());
+    // NPC body armour: shotsToKill(), strikeTest() (see combat-rules.js armourConsole).
+    addConsoleMethods('police', armourConsole());
     // END SUBSYSTEM: src/game-console-police.js

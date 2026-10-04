@@ -580,6 +580,7 @@
           ),
           life: w.rocket ? 1.8 : selectedWeaponIndex === 5 ? 1 : 0.6,
           dmg: w.dmg,
+          cal: w.cal,
           rocket: w.rocket,
           enemy: false,
           headshotTarget: selectedWeaponIndex === 5 && shotTarget && !shotTarget.type ? shotTarget : null,

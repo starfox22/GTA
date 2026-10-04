@@ -38,8 +38,9 @@
           faction: 'vescari',
           missionTag: 'rooftop-hit',
           boss: true,
-          // Vescari is the only one at the party with a plate under the jacket.
-          vest: 60,
+          // Vescari is the only one at the party with a vest under the jacket: a soft
+          // one (combat-rules.js NPC BODY ARMOUR), three torso rounds from the 9mm.
+          vest: 40,
           timer: 1.4,
           walk: 0,
         };

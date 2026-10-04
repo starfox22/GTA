@@ -7,8 +7,8 @@
      * legs), the flinch the renderers play for it (crowd3d.js for pedestrians,
      * render3d.js for officers, gangs and guards), a limp after a leg hit, a
      * blood trail from anyone wounded who keeps moving, and how the body goes
-     * down: thrown back away from the shot, pitched forward, spun round, or slid
-     * down a wall into a sitting slump. The fall itself takes half a second.
+     * down: over backwards away from the shot, pitched forward, spun round, or slid
+     * down a wall into a sitting slump (a round never moves the body). The fall itself takes half a second.
      *
      * Downed officers (hit hard but alive) stop fighting and crawl for their car;
      * a partner may drag them into cover (see updateOfficers, citylife.js).
@@ -17,21 +17,25 @@
       DEATH_FALL_SECONDS = 0.55,
       BLEEDER_LIMIT = 48,
       bleeders = [];
+    // Console tests only (combat-rules.js strikeTest): the zone every round lands in.
+    let hitZoneOverride = null;
     function pickHitZone(kind) {
       if (kind === 'headshot') return 'head';
       if (kind === 'blast' || kind === 'impact' || kind === 'melee') return 'torso';
       // A punch lands on the jaw or the body.
       if (kind === 'punch') return seededRandom() < 0.4 ? 'head' : 'torso';
+      if (hitZoneOverride) return hitZoneOverride;
       const r = seededRandom();
       return r < 0.12 ? 'head' : r < 0.7 ? 'torso' : 'leg';
     }
-    /* Called by strikePerson for every hit that did damage. */
-    function woundPerson(person, dealt, a, kind, source = null) {
+    /* Called by strikePerson for every hit that did damage (`zone` chosen there; a
+       round `stopped` by a vest bruises: a flinch, no limp, no blood trail). */
+    function woundPerson(person, dealt, a, kind, source = null, zone = null, stopped = false) {
       // Poisoned (mission 2): no wound, no fall of its own, no blood trail.
       if (person.poisoned) return;
       person.hitAt = gameTime;
       person.hitDir = a;
-      person.hitZone = pickHitZone(kind);
+      person.hitZone = zone || pickHitZone(kind);
       // Not every fatal-looking round kills outright: a body hit (not the head,
       // not a blast) leaves an officer down about one time in three and a
       // bystander about one time in four, alive on the ground, crawling.
@@ -53,7 +57,7 @@
         chooseDeathFall(person, a, kind);
         return;
       }
-      if (dealt < 4) return;
+      if (dealt < 4 || stopped) return;
       // A leg wound slows anyone for the rest of the fight.
       if (person.hitZone === 'leg' || person.hp < (person.maxhp || 100) * 0.3) {
         person.limping = true;
@@ -76,14 +80,19 @@
      * staggers back into it and slides down
      * into a sitting slump instead. The heading is turned so the renderers,
      * which tip a body over backwards about its own heading, land it right.
+     * A round never moves the body: it drops where it stood (only a wall right
+     * behind it turns the fall into a slump); a blast or a car throws it
+     * (physics-knockdowns.js, explode).
      */
     function chooseDeathFall(person, a, kind) {
       const facingShooter = Math.cos(normalizeAngle((person.a || 0) - (a + Math.PI))) > 0,
-        style = { sign: 1, turn: 0, slump: false };
-      // A wall within a couple of steps behind: stagger back into it.
+        style = { sign: 1, turn: 0, slump: false },
+        round = kind === 'ballistic' || kind === 'headshot';
+      // A wall within a couple of steps behind: stagger back into it (a round:
+      // only a wall the body already stands against).
       let wall = 0;
       if (kind !== 'blast' && kind !== 'impact')
-        for (let d = 6; d <= 30 && !wall; d += 4)
+        for (let d = 6; d <= (round ? 9 : 30) && !wall; d += 4)
           if (solid(person.x + Math.cos(a) * d, person.y + Math.sin(a) * d, 4)) wall = d;
       if (wall && seededRandom() < 0.75) {
         style.slump = true;
@@ -94,8 +103,9 @@
         person.a = style.sign > 0 ? a + Math.PI : a;
         if (kind !== 'headshot' && seededRandom() < 0.35) style.turn = (seededRandom() < 0.5 ? -1 : 1) * randomBetween(0.7, 1.4);
       }
-      // A blast or a car throws the body; a round only knocks it back a step.
-      if (kind !== 'blast' && kind !== 'impact' && !style.slump) moveBody(person, Math.cos(a) * 5, Math.sin(a) * 5, 6);
+      // A blast or a car throws the body; a knife or a punch knocks it back a step;
+      // a round leaves it where it stood.
+      if (kind !== 'blast' && kind !== 'impact' && !round && !style.slump) moveBody(person, Math.cos(a) * 5, Math.sin(a) * 5, 6);
       person.deathStyle = style;
     }
     /* 0 standing to 1 on the ground, over the half second after death. Poison
@@ -113,7 +123,9 @@
       const since = gameTime - (p.hitAt ?? -10);
       return p.hp > 0 && since < HIT_FLINCH_SECONDS ? 1 - since / HIT_FLINCH_SECONDS : 0;
     }
-    /* The wounded who keep moving leave drops behind them. */
+    /* The wounded who keep moving leave drops behind them; someone wounded on the
+       floor (crawling or down) who lies still for a moment bleeds a small pool
+       (blood.js bodyPool 'wounded'), left behind as it was when they crawl on. */
     function updateWounds() {
       for (let i = bleeders.length - 1; i >= 0; i--) {
         const b = bleeders[i],
@@ -121,6 +133,19 @@
         if (p.hp <= 0 || gameTime > b.until || p.hidden || p.poisoned) {
           bleeders.splice(i, 1);
           continue;
+        }
+        if (p.woundedDown || p.downed) {
+          if (b.restX === undefined || Math.hypot(p.x - b.restX, p.y - b.restY) > 3) {
+            b.restX = p.x;
+            b.restY = p.y;
+            b.restAt = gameTime;
+            const pool = p.bloodPool;
+            if (pool?.wounded) {
+              pool.rMax = Math.max(pool.r, 0.5);
+              pool.vol = pool.rMax * pool.rMax;
+              p.bloodPool = null;
+            }
+          } else if (!p.bloodPool && gameTime - b.restAt > 1.5) bodyPool(p, 'wounded', p.hitDir || 0);
         }
         const moved = Math.hypot(p.x - b.x, p.y - b.y);
         if (moved < 13) continue;

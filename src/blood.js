@@ -8,11 +8,12 @@
      * length along `a`, `variant` the stamp.
      *
      * A hit is not a pool. A round that opens a wound throws a puff of red mist
-     * and a few fine drops out of the exit side (the heading of the shot), one
-     * directional spatter a step behind the body and a drop or two at its feet.
+     * and an exit spray away from the shooter (the heading of the shot): a plume,
+     * a cone of fine drops landing a metre or more beyond the body, a directional
+     * spatter behind it and a drop at its feet; the body itself does not move.
      * Only a body on the ground bleeds a pool: it starts small under the torso
-     * and spreads over tens of seconds (a volume that flows out ever slower),
-     * larger the more wounds it took. A blast or a car at speed gives a larger,
+     * and spreads fast, most of it in 10-15 s (a volume that flows out ever
+     * slower), larger the more wounds it took (POOL SIZE). A blast or a car at speed gives a larger,
      * faster pool and a radial spray. Anyone wounded who keeps moving drips a
      * trail (wounds.js). Everything fades after BLOOD_LIFE seconds; at most
      * BLOOD_LIMIT decals exist, and the oldest spatter and drops go first.
@@ -178,8 +179,9 @@
     /* A wound. `a` is the heading the shot travelled (blood leaves the exit side). */
     function bleed(p, severity = 1, a = 0, kind = 'ballistic') {
       if (!bloodOn || !p || p.poisoned) return;
-      // A living body that bled before long ago (or came back: the player) starts over.
-      if (p.hp > 0 && (p.bloodPool || gameTime - (p.bloodAt ?? -1e9) > 90)) {
+      // A living body that bled before long ago (or came back: the player) starts over;
+      // someone wounded on the floor keeps their wounds and the pool they lie in.
+      if (p.hp > 0 && ((p.bloodPool && !p.bloodPool.wounded) || gameTime - (p.bloodAt ?? -1e9) > 90)) {
         p.bloodHits = 0;
         p.bloodPool = null;
       }
@@ -205,73 +207,122 @@
         size: 1.4 + severity * (blast ? 1.6 : 0.8),
         mist: true,
       });
-      // Flying drops: a few for a round, a spray for a blast or a car.
-      const drops = blast ? 16 + Math.round(severity * 6) : impact ? 7 + Math.round(severity * 4) : 2 + Math.round(severity * 3),
-        cone = blast ? Math.PI : impact ? 0.9 : 0.4;
+      const round = !blast && !impact;
+      // A round's exit plume: a finer, wider cloud carried a metre or two on past the
+      // body, away from the shooter.
+      if (round)
+        particles.push({
+          x: p.x + Math.cos(a) * 4,
+          y: p.y + Math.sin(a) * 4,
+          vx: Math.cos(a) * 46,
+          vy: Math.sin(a) * 46,
+          z: z + 10,
+          vz: 1,
+          life: 0.5,
+          max: 0.5,
+          color: '#5c0910',
+          size: 1.6 + severity * 0.9,
+          mist: true,
+        });
+      // Flying drops: for a round an exit spray, a narrow cone of fine drops flying
+      // on along the shot and landing behind the body; a spray round a blast or a car.
+      const drops = blast ? 16 + Math.round(severity * 6) : impact ? 7 + Math.round(severity * 4) : 3 + Math.round(severity * 4),
+        cone = blast ? Math.PI : impact ? 0.9 : 0.32;
       for (let i = 0; i < drops; i++) {
         const spread = a + randomBetween(-cone, cone),
-          v = randomBetween(35, 115) * (blast ? 1.4 : 1),
-          life = randomBetween(0.5, 1);
+          v = round ? randomBetween(35, 100) : randomBetween(35, 115) * (blast ? 1.4 : 1),
+          life = round ? randomBetween(0.7, 1.1) : randomBetween(0.5, 1);
         particles.push({
-          x: p.x,
-          y: p.y,
+          x: p.x + (round ? Math.cos(a) * 2 : 0),
+          y: p.y + (round ? Math.sin(a) * 2 : 0),
           vx: Math.cos(spread) * v,
           vy: Math.sin(spread) * v,
           z: z + (impact ? 5 : 10),
-          vz: randomBetween(8, 34),
+          vz: round ? randomBetween(4, 24) : randomBetween(8, 34),
           life,
           max: life,
           color: randomChoice(['#5e0710', '#720a15', '#4a050c']),
-          size: randomBetween(0.45, 1.15),
+          size: round ? randomBetween(0.4, 1.05) : randomBetween(0.45, 1.15),
           blood: true,
           surface: roof ? z : undefined,
         });
       }
-      // On the ground: the spatter behind the wound (radial round a blast) and a
-      // drop at the feet.
-      const splats = blast ? 5 + Math.round(severity * 2) : impact ? 2 : severity > 1.7 ? 2 : 1;
+      // On the ground: the spatter behind the wound (radial round a blast), a second
+      // one further on from a heavy round, and a drop at the feet.
+      const splats = blast ? 5 + Math.round(severity * 2) : impact ? 2 : severity > 0.8 ? 2 : 1;
       for (let i = 0; i < splats; i++) {
-        const aa = blast ? a + (i * TAU) / splats + randomBetween(-0.4, 0.4) : a + randomBetween(-0.3, 0.3),
-          r = (blast ? randomBetween(3.2, 5) : impact ? randomBetween(2.6, 3.8) : randomBetween(2.4, 3.4)) * (0.75 + Math.min(severity, 2) * 0.2),
-          d = randomBetween(2, 5),
+        const aa = blast ? a + (i * TAU) / splats + randomBetween(-0.4, 0.4) : a + randomBetween(-0.25, 0.25),
+          r = (blast ? randomBetween(3.2, 5) : impact ? randomBetween(2.6, 3.8) : randomBetween(2.6, 3.6)) * (0.75 + Math.min(severity, 2) * 0.2),
+          d = round ? (i ? randomBetween(9, 15) : randomBetween(3, 7)) : randomBetween(2, 5),
           x = p.x + Math.cos(aa) * d,
           y = p.y + Math.sin(aa) * d;
-        addBloodSpatter(x, y, r, aa, ground(x, y), blast ? 1.3 : 1.6);
+        addBloodSpatter(x, y, round && i ? r * 0.8 : r, aa, ground(x, y), blast ? 1.3 : round ? 1.8 : 1.6);
       }
-      const fx = p.x + randomBetween(-2, 2),
-        fy = p.y + randomBetween(-2, 2);
-      addBloodDrop(fx, fy, randomBetween(0.6, 1.1), randomBetween(0, TAU), { surface: ground(fx, fy) });
+      // The drop at the feet falls from the wound: under the body, a little to the exit side.
+      const lean = round ? randomBetween(0.3, 2) : 0,
+        fx = p.x + Math.cos(a) * lean + randomBetween(-1.5, 1.5),
+        fy = p.y + Math.sin(a) * lean + randomBetween(-1.5, 1.5);
+      addBloodDrop(fx, fy, randomBetween(0.7, 1.2), randomBetween(0, TAU), { surface: ground(fx, fy) });
       if (p.hp <= 0) bodyPool(p, kind, a);
     }
-    /* The pool under a body on the ground: it spreads from under the torso and
-       grows as the body bleeds out. Called by bleed() for the dead; a later wound
-       only makes it larger and quicker. */
+    /**
+     * POOL SIZE
+     * The pool under a body on the ground: it spreads from under the torso and
+     * grows as the body bleeds out. Called by bleed() for the dead (and by
+     * updateWounds for the wounded lying still, kind 'wounded'); a later wound
+     * only makes it larger and quicker. Every body holds about the same blood:
+     * the pool grows with the number of wounds it runs from, not with how hard
+     * the killing round hit. Units (8 a metre): one fatal round ends about r 6
+     * (1.5 m across), several up to 8.5 (2.1 m); a car or a blast 7.5-11.5; a
+     * wounded person lying still 2.6-4. The volume flows out on `tau` (most of the
+     * spread in the first 10-15 s, easing out); a fresh pool starts at r 1.2.
+     */
+    const BLOOD_POOL_ROUND = 6,
+      BLOOD_POOL_ROUND_MAX = 8.5,
+      BLOOD_POOL_PER_WOUND = 0.8,
+      BLOOD_POOL_TAU = 6.5,
+      BLOOD_POOL_TAU_MIN = 3.5;
+    function bodyPoolPlan(kind, hits) {
+      const blast = kind === 'blast',
+        impact = kind === 'impact' || kind === 'fall';
+      if (kind === 'wounded') return { rMax: clamp(2.6 + (hits - 1) * 0.5, 2.6, 4), tau: 9, r0: 0.9 };
+      if (blast || impact)
+        return { rMax: clamp(BLOOD_POOL_ROUND + (hits - 1) * 0.7 + (blast ? 3 : 1.6), 7.5, 11.5), tau: blast ? 3 : 4, r0: blast ? 3 : 1.8 };
+      return {
+        rMax: clamp(BLOOD_POOL_ROUND + (hits - 1) * BLOOD_POOL_PER_WOUND, BLOOD_POOL_ROUND, BLOOD_POOL_ROUND_MAX),
+        tau: clamp(BLOOD_POOL_TAU - (hits - 1) * 0.8, BLOOD_POOL_TAU_MIN, BLOOD_POOL_TAU),
+        r0: 1.2,
+      };
+    }
     function bodyPool(p, kind = 'ballistic', a = 0, surface = null) {
       if (!bloodOn || !p || p.poisoned) return null;
-      // Every body holds about the same blood: the pool grows with the number of
-      // wounds it runs from, not with how hard the killing round hit.
       const hits = Math.max(1, p.bloodHits || 1),
         blast = kind === 'blast',
         impact = kind === 'impact' || kind === 'fall',
-        rMax = blast || impact ? clamp(4.2 + (hits - 1) * 0.8 + (blast ? 3.5 : 2.2), 5, 11.5) : clamp(4.2 + (hits - 1) * 1.1, 4.2, 9),
-        tau = blast ? 5 : impact ? 8 : clamp(17 - hits * 2.5, 7, 15);
+        wounded = kind === 'wounded',
+        plan = bodyPoolPlan(kind, hits),
+        rMax = plan.rMax,
+        tau = plan.tau;
       let b = p.bloodPool;
       if (b && bloodPools.includes(b)) {
         b.rMax = Math.max(b.rMax, rMax);
         b.tau = Math.min(b.tau, tau);
+        // The wounded die where they lay: the same pool, now a body's.
+        if (!wounded) b.wounded = false;
         return b;
       }
       // Under the chest: the body lies along the line of the shot (wounds.js
       // chooseDeathFall); slumped against a wall it pools at the wall's foot.
       const style = p.deathStyle,
-        lie = style?.slump ? 0 : blast || impact ? 1.5 : 4,
+        lie = style?.slump || wounded ? 0 : blast || impact ? 1.5 : 4,
         la = a + (style?.turn || 0),
         x = p.x + Math.cos(la) * lie,
         y = p.y + Math.sin(la) * lie,
-        r0 = blast ? 3 : impact ? 1.6 : 0.8;
+        r0 = plan.r0;
       b = addBloodPool(x, y, r0, randomBetween(0, TAU), {
         rMax,
         tau,
+        wounded,
         vol: r0 * r0,
         opacity: 0.97,
         surface: surface ?? (rooftopFloor(p) ? entityElevation(p) : bloodSurface(x, y)),
@@ -324,7 +375,7 @@
         total: bloodPools.length,
         near: counts,
         largest: +Math.max(0, ...near.filter((b) => !b.track).map((b) => b.r)).toFixed(2),
-        pools: near.filter((b) => b.rMax).map((b) => ({ r: +b.r.toFixed(2), rMax: +b.rMax.toFixed(2), tau: b.tau, age: +(gameTime - b.created).toFixed(1) })),
+        pools: near.filter((b) => b.rMax).map((b) => ({ r: +b.r.toFixed(2), rMax: +b.rMax.toFixed(2), tau: b.tau, age: +(gameTime - b.created).toFixed(1), wounded: !!b.wounded })),
         flying: particles.filter((p) => p.blood && Math.hypot(p.x - x, p.y - y) < radius).length,
       };
     }
@@ -332,6 +383,25 @@
       return {
         // Blood decals round a point (default the player, 120 units): counts by kind, the largest, the spreading pools.
         bloodReport: (x, y, radius) => bloodReport(x, y, radius),
+        // Spatter and drops within `radius` (60) of a victim at (x, y), split by the shot's
+        // heading `a` (radians, the way the round travelled): `downrange` (beyond the victim,
+        // away from the shooter), `uprange` (more than 2 units toward the shooter), `level`;
+        // `farthest` downrange distance. Pools and tracks are left out.
+        bloodSides(x, y, a = 0, radius = 60) {
+          const r = { downrange: 0, uprange: 0, level: 0, farthest: 0 },
+            ux = Math.cos(a),
+            uy = Math.sin(a);
+          for (const b of bloodPools) {
+            if (b.rMax || b.track || Math.hypot(b.x - x, b.y - y) > radius) continue;
+            const along = (b.x - x) * ux + (b.y - y) * uy;
+            if (along > 0.5) {
+              r.downrange++;
+              r.farthest = Math.max(r.farthest, +along.toFixed(1));
+            } else if (along < -2) r.uprange++;
+            else r.level++;
+          }
+          return r;
+        },
         // Tests: stand a bystander `distance` ahead of the player and wound them `hits` times
         // (damage each, kind 'ballistic' | 'headshot' | 'blast' | 'impact'), as the player's shots would.
         bloodVictim(hits = 1, damage = 20, kind = 'ballistic', distance = 50) {

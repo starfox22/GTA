@@ -285,6 +285,7 @@
               b.owner || (!b.enemy ? player : null),
               true,
               headshot ? 'headshot' : 'ballistic',
+              bulletCalibre(b),
             );
             if (!b.enemy) {
               if (p.police) crime(0.3);
