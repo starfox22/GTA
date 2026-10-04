@@ -9,9 +9,27 @@ grid, shores and bridges, navigation and layout data: world-and-map.md.
   scenery. Ridgeline's three towns are planned by mountain-village.js.
 - **Ridgeline Range** (terrain.js, drawn by county3d.js): one generated, eroded height field
   (deterministic, typed arrays, built on first use), flattened under rail, towns, helipads and
-  the other roads, with two switchback 4x4 trails (`TRAIL_MAX_GRADE` 0.28). `terrainHeight`
-  samples the exact Float32 vertices the renderer draws, so contact and picture agree. Console
-  `terrain()`.
+  the other roads, with two 4x4 trails (`TRAIL_MAX_GRADE` 0.28; bare rock `TRAIL_ROCK_GRADE`
+  0.36 on a trail's `steep` stretch). `terrainHeight` samples the exact Float32 vertices the
+  renderer draws, so contact and picture agree. Console `terrain()`.
+- **Trails** (terrain-noise.js, graded in terrain-field.js): Mount Ascent is laid by hand
+  (`laidTrail`: control points and keyhole hairpins round their pad centres), Needle Ridge is a
+  `switchbackTrail`. Grading clamps the relief to the grade band, then a trail's set pieces
+  (`ford` dip, `camber` cross-fall, `steep`, `summitLift`), then averages the grades over nine
+  samples twice: every crest and dip is a vertical curve (a grade clamped to the limit used to
+  turn a 0.4 corner in one sample, which threw trucks into the air). Moving a trail shifts its
+  fractions: re-derive OFFROAD_SECTIONS, `ford`/`camber`/`steep` and check `trailProfile`.
+- **Ride on the terrain** (terrain-suspension.js, `rideStep` from `terrainVehiclePose`): four
+  tyres on spring-dampers (`rideModel` from the spec's `travel`), each on the tyre-rounded
+  ground (`rideTyreGround`, plus `rideRelief` rock on rock sections); the body heaves, pitches
+  and rolls (load shifts downhill). Through the bump stops the corner's speed into the ground
+  is taken out along the normal (a bank stops a truck instead of launching it); tyre load acts
+  along the ground's normal: offroadDrive/offroadPaved read `rideLoad` (grip) and `rideAx/Ay`
+  (the push down a slope) through `rideLoadShare`/`rideGroundPush`. While it holds a vehicle
+  the falls state is pinned to the ground; every wheel 0.6 m clear hands it to
+  `startCliffFlight`. `rideLift` is drawn only (`entityElevation` stays on the ground);
+  `rideActive` false = settled (`settleIsTrivial` checks it). Console `ride3d()`, `trailDrive`
+  telemetry; tools/tests/hillclimb-physics.mjs.
 - **Scenic roads** (terrain-roads/-grading/-roadside.js, `SCENIC_ROAD_NAMES`): corners are
   filleted arcs (kept out of towns; the layout audit notes a crossing per arc segment);
   `road.points` is what everything reads, `road.dense` (4-unit samples) what grading and
