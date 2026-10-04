@@ -225,7 +225,11 @@
           ? 'ARMOR ' + Math.ceil(player.armor)
           : wantedStars > 0
             ? searchActive
-              ? 'HIDE UNTIL THE TIMER ENDS'
+              ? searchClockShown()
+                ? 'HIDE UNTIL THE TIMER ENDS'
+                : searchClock === 'holding'
+                  ? 'POLICE ON THE WAY'
+                  : 'LEAVE THE SEARCH AREA'
               : 'POLICE PURSUIT'
             : 'NO ARMOR';
       getElement('weaponSlot').textContent = w.fists

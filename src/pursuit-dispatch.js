@@ -36,7 +36,8 @@
       // A police marksman on a roof (swat.js fires the rounds).
       sniper: { hp: 90, vest: 60, color: '#1b2026', rate: [2, 3], burst: 1, dmg: 60, playerDmg: 14, speed: 1500, range: 760, run: 0, sample: 'pistol', rifle: true },
     };
-    const PURSUIT_SEARCH_SECONDS = [0, 6, 9, 13, 18, 24];
+    // Seconds out of sight (and out of the search area) to lose them, by stars (citylife-civic.js SEARCH CLOCK).
+    const PURSUIT_SEARCH_SECONDS = [0, 5, 7, 10, 14, 19];
     // Running totals for policeReport(): pursuit contacts with the player's car.
     const pursuitStats = { contacts: 0, pits: 0, spinouts: 0, spawned: 0, tankShots: 0, sniperShots: 0, arrests: 0, shortcuts: 0, marine: 0, marineShots: 0 };
     // Until then no cruiser tries contact (set when one spins the runner out).
