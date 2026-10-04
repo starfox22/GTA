@@ -42,7 +42,8 @@ lies north of Northbank across North Sound; **Monarch Isle** north of the Ridgel
   off. A courier at 80 m/s banks a 90 degree turn in ~6 s with a ~2,300-unit radius (it came
   within 1,283 units of the line from 4,500 out), so 25 s (16,000 units, the whole box) is ample; a
   jet at 205 m/s (radius ~14,600 units) cannot turn inside the box at full speed and must slow.
-  Flying parallel or away shows nothing, nor riding a ship (`player.deck`). State is derived from `player.x/y` each step (nothing saved:
+  Flying parallel or away shows nothing, nor riding a ship (`player.deck`), nor anything on land
+  (`worldEdgeCanReach`: only aircraft, canopy, fall, boat or swimming; the east coast is 42 units from the line). State is derived from `player.x/y` each step (nothing saved:
   a teleport, respawn, new game or load outside the line starts at 10; `teleportPlayer`
   calls `resetWorldEdge()`); only the player counts, AI aircraft and boats keep their own limits.
 - City frame `CITY_LEFT..CITY_RIGHT` × `CITY_TOP..CITY_SIZE` (-3584..3712 × -4224..5632) is
