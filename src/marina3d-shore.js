@@ -249,7 +249,9 @@
         g.position.set(ship.x, 0, ship.y);
         g.rotation.y = -ship.a;
         scene.add(g);
-        const culling = { x: ship.x, y: ship.y, group: g, radius: 760 };
+        // The ship under way is `moving`: never filed under the static cell of her
+        // anchorage, which hid her once the view left it (STATIC CELLS).
+        const culling = { x: ship.x, y: ship.y, group: g, radius: 760, moving: !!ship.voyage };
         statics.push(culling);
         // The ship under way carries her own lights (they move with her).
         if (ship.voyage) {

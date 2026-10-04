@@ -115,7 +115,9 @@
         ['NORTH', player.y - worldEdgeLine.top, -w.vy],
         ['SOUTH', worldEdgeLine.bottom - player.y, w.vy],
       ]) {
-        if (speed < WORLD_EDGE_APPROACH_TOWARD) continue;
+        // Aboard a ship (player.deck) the player goes where she goes, and the liner's
+        // course keeps well inside the line (marina-voyage.js linerVoyageCheck).
+        if (player.deck || speed < WORLD_EDGE_APPROACH_TOWARD) continue;
         const seconds = gap / speed;
         if ((seconds <= WORLD_EDGE_APPROACH_SECONDS * more || gap <= WORLD_EDGE_APPROACH_UNITS * more) && (!best || seconds < best.seconds)) best = { edge, gap, seconds };
       }

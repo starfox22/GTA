@@ -71,6 +71,14 @@ grid, shores and bridges, navigation and layout data: world-and-map.md.
   driven by the rig's forward acceleration); the camera jolt is `shake`, set by parachute.js.
   Every rig object is `userData.dynamic`: without it the detail pass hid the canopy from
   the flight camera high up. Console `parachuteView()` reports the rig as drawn.
+- Ships' decks (deck-landing.js): `deckSurfaceAt()` (topmost deck: a liner's promenade deck or
+  deckhouse roof, the yacht's highest level) is part of `parachuteFloor`, and
+  `deckLandingStep()` runs in updateParachute before the ground: an open canopy on a free spot
+  stands the player there (`player.deck`, carried); the impact is the descent plus the speed
+  across the deck, relative to the moving ship, past `DECK_RUNOUT` (riderInjury 'tumble'); a
+  blocked spot settles within 30 units or glides to a lower deck (else off her side);
+  freefall is an impact on the deck. A boat has no deck: down beside her, swimming (E boards);
+  fixed hulls set the jumper clear. Console group `decks`: `deckLanding`, `deckJump`, `canopyOver`.
 - Railway (transit.js, transit3d.js): SHORE LINE (Cruise Terminal → west sea wall → Southport
   Airport), COAST LINE (→ Oceanview → Palmshore), RIDGE LINE (→ Eastgate, Northridge,
   Stonecreek). Each `route` is a control polygon filleted by `railTrackGeometry`; everything

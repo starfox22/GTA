@@ -70,6 +70,7 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - The canopy's pendulum and surge run on drawn frames (parachute3d-pose.js): no test covers them (headless runs a few fps); the slider is mostly hidden under the canopy from the flight camera.
 - The freefall cue panel sits just under the frame's centre; while the camera catches up after the snap the canopy can pass behind it.
 - The Blue Hour terrace canopy landing is kept but has no test.
+- Ships (deck-landing.js): a liner's roof levels have no drawn stairs (E takes "the stairs aft" at once, to the aft deck); no blood decal on a deck (`addBloodPool` needs ground); Monarch's superyachts and the marina's moored boats have no walkable deck (a canopy comes down clear of them, in the water); the cue measures the deck straight below, not where a moving ship will be.
 
 ## Driving (driving.js, physics-*.js)
 - 50–0 km/h stops are slightly longer than before (the 0.2 s pedal build-up).
