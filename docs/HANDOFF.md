@@ -9,17 +9,21 @@ rules, workflow), then this page, then only the area doc your task needs (`docs/
   Version 0.9.0 is the **public demo**: free roam over the whole map plus story missions 1 (the harbour
   job) and 2 (the Blue Hour hotel hit). Missions 3+ are gated for regular players (`DEMO_BUILD`,
   `demoLocked()`; god mode lifts the gates). Bug passes and polish target free roam and missions 1-2 only.
-- **Branches**: `claude/stoic-newton-qvpewc` is the working branch; `main` is the owner's approved game and
-  was fast-forwarded to it when the owner approved. Never push `main` without the owner's explicit approval in
+- **Branches**: `claude/tender-babbage-3t74xl` is the working branch of the latest round (October 4; before it
+  `claude/stoic-newton-qvpewc`); `main` is the owner's approved game and is fast-forwarded only when the owner
+  approves (it was not moved in the latest round). Never push `main` without the owner's explicit approval in
   the current conversation (the owner has given it for specific releases: ask each time unless they say
   "push to main when done").
 - **Published build**: the claude.ai artifact https://claude.ai/artifact/NtDPAmpmNsgU8LPW4hH13B (split build:
-  `index.html` + `media/`). Version numbers on that link are the artifact's own counter, not `GAME_VERSION`.
+  `index.html` + `media/`; version 47 is the latest round). Version numbers on that link are the artifact's own
+  counter, not `GAME_VERSION`.
   The downloadable zip is built by CI for whatever branch is pushed.
-- **Tests**: `node tools/test.mjs` runs the whole regression suite (about 80 tests, ~18 minutes on the 4-core
-  cloud box; the runner always loads the no-render page). It must be green before a publish. Known flake:
+- **Tests**: `node tools/test.mjs` runs the whole regression suite (about 105 tests, ~30 minutes on the 4-core
+  cloud box; the runner always loads the no-render page, so the render-* tests are null checks there: run them
+  on a rendered page when a render change needs them). It must be green before a publish. Known flakes:
   `carjack-traffic` fails about one run in four when the picked traffic car stands beside a bike-share dock
-  (E rents a bike instead).
+  (E rents a bike instead); `living-medics` failed once (medics never reached the victim) and passed on rerun;
+  the `hypot2` timing check in `sim-audits` fails under heavy CPU load (a smoke run beside it).
 
 ## The owner's standing preferences (keep following them)
 
@@ -52,7 +56,12 @@ rules, workflow), then this page, then only the area doc your task needs (`docs/
 4. `main` (only with approval): `git fetch -q origin main && git merge-base --is-ancestor origin/main HEAD &&
    git push origin claude/stoic-newton-qvpewc:refs/heads/main` (a plain fast-forward).
 
-Lessons: worktrees can start far behind (merge the lead branch first); a container restart stops background
+Lessons: a `fresh` test's reload rebuilds the page from the working tree, so never merge while a suite runs;
+run the final suite in a frozen detached worktree (`git worktree add --detach .claude/worktrees/lead-suite
+<commit>`) and keep merging in the main checkout. Count open browsers with `ps` (a frozen dev server keeps its
+browser open without a slot): the owner's cap is 4 browsers machine-wide, so 4 helpers means the lead opens none.
+Tests that pin positions on a trail or road break when it is re-laid: read spots off the data (`trailProfile`).
+Worktrees can start far behind (merge the lead branch first); a container restart stops background
 helpers but their worktrees survive, so resume them with `SendMessage` to the agent id; removing other
 worktrees is denied by the permission classifier (leave them); browser slots are the bottleneck, so stop dev
 servers (`node tools/dev.mjs stop`) between runs; a leftover server breaks test boots; two files declaring one
@@ -70,6 +79,7 @@ measure GPU cost, so real-GPU gains of render changes are unverified.
 | Pedestrians and cars | awareness (`watchVehicle`), second run-over (`runOverDowned`), bloodier hood with long streaks | `areas/people-and-crowd-vehicles.md` |
 | Bug passes | missions 1-2 under the demo gate, free roam, the random-walk bot, cab-ride crash | `2026-10-02-*`, `tools/bot.mjs`, `docs/BACKLOG.md` |
 | Edge and wrecks | world-edge countdown, wreck and abandoned-car limit | `2026-10-03-*`, see below |
+| October 4 round | police search clock (shown only while it runs, shorter times), second god-mode code, big TELEPORT map, driving camera (wider, speed pull-back, damped follow, `cameraComfort`), bonnet blood by speed (`carStainSeverity`), hill climb (`rideStep` suspension, hand-laid Mount Ascent trail, rock/ford dressing), liner grand tour and deck landings (`deck-landing.js`), see-through foliage, world-edge card off land, missions 1-2 and free-roam bug passes (replay frontier, `restartableJob`, fair harbour fight, ABANDON confirm, HUD clearance), performance (frame trace, `hitches.mjs`, DOM writes, buffer ranges, vehicle layouts and allocations, merged car parts) | `docs/changes/2026-10-0[34]-*`, CLAUDE.md rules, `audit/performance.md` (fourth and fifth pass) |
 
 ## Rules added in the latest rounds (also in CLAUDE.md)
 
@@ -91,7 +101,16 @@ measure GPU cost, so real-GPU gains of render changes are unverified.
 - The night-and-rain mission scenario at HIGH graphics was never re-run after a container restart; real-GPU
   frame costs of the prewarm, staged tier change and cell pre-upload are unmeasured (only counts were).
 - Remaining performance levers: an active-vehicle list for parked cars (exactness constraints in BACKLOG),
-  heavy scenes with many awake police or gang members, a JS heap creep of ~0.1-0.2 MB per teleport stop.
+  heavy scenes with many awake police or gang members, a JS heap creep of ~0.1-0.2 MB per teleport stop, the
+  ~640 KB/frame the simulation still allocates (controlVehicle, boxContact, footprintOffGround, solid, blood tracks,
+  83 pedestrian layouts), `drawBikeShareMap` (up to 7 ms with the minimap pulled back at speed), the parts each
+  pristine car still draws apart (shell, cabin, trim, DRL, front wheels, wipers) and instanced shells for distant
+  traffic. GPU costs (foliage cutaway, wider driving view) are unmeasured: SwiftShader only counts.
+- The liner cannot circle every island: they are joined by bridges she never passes under and the east and south
+  coasts lie almost on the world edge; her tour covers the north and west coasts (BACKLOG has the deck notes).
+- Mission 1's police chase all the way to Vinny's warehouse is not proven end to end by a test (the route pilot
+  `followRoute` crosses the bridge but loses the last turns to a dozen officers); the surrender rule
+  (`trackSurrender`) counts a wedged driver holding the throttle as giving up (owner's call).
 
 ## Where things are (fast index)
 
