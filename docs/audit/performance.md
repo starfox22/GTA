@@ -569,6 +569,10 @@ vehicle models 150-188, sprites 27-51, static batches ~49 and the scenery detail
 by zoom would save about 3%: the lever is per-vehicle calls (each car is ~25 meshes; merging a car's static trim per
 material, or the instanced body shell for traffic beyond a distance at the pulled-back zoom). Not changed.
 
-**Left**: knockSceneProps still tests every vehicle against every prop near the player (69 bytes but ~45 us a frame);
-the minimap's layers are all redrawn every 0.09 s (drawBikeShareMap up to 7 ms CPU here when zoomed out at speed); the
+knockSceneProps now asks a grid of the vehicles near the player (KNOCK GRID, crowd-traffic.js; candidates in the
+vehicles' order, so the first hit is the same): 25-50 -> 8-18 us a call. tools/tests/vehicle-layouts.mjs keeps the
+vehicles to at most 3 layouts (it found three more fields: emergency, sirenClear, supply) and bounds the garbage of
+trafficControl and physicsStep.
+
+**Left**: the minimap's layers are all redrawn every 0.09 s (drawBikeShareMap up to 7 ms CPU here when zoomed out at speed); the
 pedestrians' 83 layouts; the active-vehicle list for parked cars (BACKLOG).
