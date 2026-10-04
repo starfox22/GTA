@@ -465,14 +465,39 @@
           c.failedMission = true;
         });
       announce('THE SOUTH COAST LEDGER', 'JOB FAILED', 3);
-      // A replay after the demo ended has no ringing payphone to return to.
+      // RESTART CURRENT JOB retries it; a failed replay leaves the payphone to the story's
+      // own next job (none after the demo's end).
+      const failed = lastMissionOutcome.index;
+      retryJobIndex = failed;
       settleDemoStoryIndex();
       save();
-      tell(reason + (demoStoryOver() ? ' Replay it from the pause menu.' : ' Return to the payphone or retry from pause.'), 6);
+      const retry = restartableJob() !== null,
+        payphone = storyCallWaiting() && missionIndex === failed;
+      tell(
+        reason +
+          (payphone
+            ? retry
+              ? ' Return to the payphone or retry from pause.'
+              : ' Return to the payphone.'
+            : retry
+              ? ' Retry it from the pause menu.'
+              : ''),
+        6,
+      );
       getElement('storyLine').classList.remove('show');
     }
+    /* The job RESTART CURRENT JOB restarts: the one running, else the last one that
+       failed (WASTED and BUSTED fail it too) while the picker still offers it. After a
+       win, at a new game or after a reload there is none: the pause menu shows the
+       button disabled, NO JOB TO RESTART (game-menus.js), and a waiting call is taken
+       at the payphone, never skipped from the menu. */
+    function restartableJob() {
+      if (mission) return mission.index;
+      return retryJobIndex !== null && missionUnlocked(retryJobIndex) ? retryJobIndex : null;
+    }
     function retryMission() {
-      if (!mission && !storyCallWaiting()) return;
+      const index = restartableJob();
+      if (index === null) return;
       if (transitRide) leaveTransit(transitRide.from, true);
       player.roof = false;
       player.buildingRoof = null;
@@ -484,6 +509,7 @@
       // The one way to move the player: it lets go of a fall, a ladder or a pool that would pull them back.
       teleportPlayer(spawn.x, spawn.y);
       gameMode = 'play';
+      missionIndex = index;
       startMission();
       getElement('pauseMenu').classList.add('hidden');
       keys = {};
@@ -491,6 +517,8 @@
     function winMission() {
       if (!mission) return;
       lastMissionOutcome = { result: 'won', index: mission.index, stage: mission.stage };
+      // A won job is over: nothing for RESTART CURRENT JOB until the next one starts.
+      retryJobIndex = null;
       cleanupMissionExtras();
       radio('mission-complete');
       const previousCompleted = completed,

@@ -1,36 +1,98 @@
-// The pause menu's RESTART CURRENT JOB: live with a story call waiting or a job running,
-// shown disabled (NO JOB TO RESTART) when a demo build has nothing left it can restart.
+// The pause menu's RESTART CURRENT JOB (story.js restartableJob) restarts the job running or the
+// last one failed. With neither (a fresh game with the first call waiting, right after a win, a job
+// past the demo) it is shown disabled, NO JOB TO RESTART, and does nothing: a waiting call is taken
+// at the payphone (right after winning job 1 it used to start job 2 without its call).
 export const fresh = true;
+async function restartButton(t) {
+  const p = await t.call('pauseMenu', true);
+  t.assert(p.open, 'the pause menu did not open: ' + JSON.stringify(p));
+  await t.call('pauseMenu', false);
+  return p.restart;
+}
+// Blasts at the mission vehicle from a safe distance until the job fails.
+async function failJob(t) {
+  const car = (await t.call('missionTargets')).car;
+  await t.call('teleport', car.x - 500, car.y - 30);
+  let m = null;
+  for (let i = 0; i < 8 && !m?.last; i++) {
+    await t.call('blast', car.x, car.y, 4);
+    await t.wait(0.5);
+    m = await t.call('missionState');
+  }
+  t.assert(m.last?.result === 'failed', 'the job did not fail: ' + JSON.stringify(m));
+  return m;
+}
 export default async function (t) {
   await t.call('holdSimulation', true);
   try {
-    let p = await t.call('pauseMenu', true);
-    t.assert(p.open && !p.restart.disabled && !p.restart.note, 'restart unavailable with a call waiting: ' + JSON.stringify(p));
-    await t.call('pauseMenu', false);
-    const demo = await t.call('demo');
-    if (!demo.build) {
-      t.note('not a demo build: the no-job case is not reachable quickly');
-      return;
-    }
-    // A job past the demo (?dev reaches it), lost: the demo has no job to restart.
-    await t.call('startMission', demo.missions);
-    p = await t.call('pauseMenu', true);
-    t.assert(!p.restart.disabled, 'restart unavailable with a job running: ' + JSON.stringify(p));
-    await t.call('pauseMenu', false);
-    const car = (await t.call('missionTargets')).car;
-    await t.call('teleport', car.x - 500, car.y);
-    let m = null;
-    for (let i = 0; i < 8 && !m?.last; i++) {
-      await t.call('blast', car.x, car.y, 4);
-      await t.wait(0.5);
+    // A fresh game: the first call waits at the payphone; there is no job to restart.
+    let r = await restartButton(t);
+    t.assert(r.disabled && r.note === 'NO JOB TO RESTART', 'fresh game: ' + JSON.stringify(r));
+    let m = await t.call('retryMission');
+    t.assert(m.mission === null && m.mode === 'play', 'a disabled restart started a job: ' + JSON.stringify(m));
+
+    // Job 1 taken at the payphone: running, it restarts; failed, it still restarts.
+    await t.call('teleport', 748, 584);
+    await t.call('interact');
+    await t.keys('Enter', 0.3, { real: true });
+    m = await t.call('missionState');
+    t.assert(m.index === 0 && m.stage === 0, 'the call did not start job 1: ' + JSON.stringify(m));
+    r = await restartButton(t);
+    t.assert(!r.disabled && !r.note, 'job running: ' + JSON.stringify(r));
+    await failJob(t);
+    r = await restartButton(t);
+    t.assert(!r.disabled && !r.note, 'job failed: ' + JSON.stringify(r));
+    m = await t.call('retryMission');
+    t.assert(m.index === 0 && m.stage === 0, 'the failed job did not restart: ' + JSON.stringify(m));
+
+    // Won (god mode only against the harbor police): no current job. The restart is disabled and
+    // job 2's call waits at the payphone.
+    await t.call('god', true);
+    await t.call('skipToDepotDelivery');
+    await t.keys('KeyW', 3);
+    await t.wait(4);
+    m = await t.call('missionState');
+    for (let i = 0; i < 12 && !(m.depotSealed && m.stage >= 5); i++) {
+      if (m.stage === 3) {
+        await t.call('neutraliseDepotPolice');
+        await t.call('placeVehicle', -1664, 4470, Math.PI / 2);
+      }
+      await t.wait(2);
       m = await t.call('missionState');
     }
-    t.assert(m.last?.result === 'failed', 'the job did not end: ' + JSON.stringify(m));
-    p = await t.call('pauseMenu', true);
-    t.assert(p.open && p.restart.disabled && p.restart.note === 'NO JOB TO RESTART', 'restart offered with no job: ' + JSON.stringify(p));
+    await t.call('neutraliseDepotPolice');
+    await t.wait(2);
+    await t.call('interact'); // out of the cab
+    await t.wait(2);
+    await t.call('teleport', -1666, 4540);
+    await t.wait(1);
+    await t.call('teleport', -1666, 4615);
+    await t.wait(7);
+    m = await t.call('missionState');
+    t.assert(m.last?.result === 'won' && m.completed === 1, 'job 1 not won: ' + JSON.stringify(m));
+    await t.call('god', false);
+    r = await restartButton(t);
+    t.assert(r.disabled && r.note === 'NO JOB TO RESTART', 'after a win: ' + JSON.stringify(r));
     m = await t.call('retryMission');
-    t.assert(!m.index && m.last, 'a disabled restart started a job: ' + JSON.stringify(m));
-    await t.call('pauseMenu', false);
+    t.assert(m.mission === null && m.last?.result === 'won', 'a restart after the win started a job: ' + JSON.stringify(m));
+    const p = await t.call('pointers');
+    t.assert(p.payphoneRinging && p.missionIndex === 1, "job 2's call is not waiting: " + JSON.stringify(p));
+
+    // A job past the demo (?dev reaches it), lost: the picker does not offer it, so neither does
+    // the restart.
+    const demo = await t.call('demo');
+    if (!demo.build) {
+      t.note('not a demo build: no gated job to check');
+      return;
+    }
+    await t.call('startMission', demo.missions);
+    r = await restartButton(t);
+    t.assert(!r.disabled, 'a running job cannot be restarted: ' + JSON.stringify(r));
+    await failJob(t);
+    r = await restartButton(t);
+    t.assert(r.disabled && r.note === 'NO JOB TO RESTART', 'restart offered for a gated job: ' + JSON.stringify(r));
+    m = await t.call('retryMission');
+    t.assert(m.mission === null && m.last, 'a disabled restart started a job: ' + JSON.stringify(m));
   } finally {
     await t.call('holdSimulation', false);
   }

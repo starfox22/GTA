@@ -6,7 +6,11 @@
      * Save schema, progression frontier, ammunition persistence and mission selection.
      */
     /* Campaign frontier is independent from the mission currently selected for replay. */
-    let missionMenuOrigin = 'menu';
+    let missionMenuOrigin = 'menu',
+      // The job RESTART CURRENT JOB restarts when none is running: the last one that
+      // ended without a win (failed, WASTED, BUSTED). None after a win, at a new game
+      // or after a reload (story.js restartableJob).
+      retryJobIndex = null;
     /* Jobs the picker offers: everything up to the frontier, or every job while
        the godmode cheat is on. A public demo build stops at DEMO_MISSIONS. */
     function missionUnlocked(index) {
@@ -56,12 +60,16 @@
       return missionIndex < missions.length && demoLocked(missionIndex);
     }
     /* `missionIndex` is both the story's frontier and the job a replay picked
-       (chooseMission). Once the demo is complete a replay that was declined or
-       failed must not leave the index on the old job: storyCallWaiting() would
-       keep the payphone ringing (arrow, pager, HUD pill) for a job the story
-       finished. Called on HANG UP, on a failed job and when a save loads. */
+       (chooseMission). A replay that was declined or failed must not leave the
+       index on the old job: the payphone would offer that job again instead of
+       the story's next one, and once the demo is complete storyCallWaiting()
+       would keep it ringing (arrow, pager, HUD pill) for a job the story
+       finished. So the index goes back to the frontier, `completed`; only god
+       mode keeps its free choice. Called on HANG UP, on a failed job, when a
+       save loads and when god mode is switched off. A failed job is retried
+       from the pause menu through `retryJobIndex` (story.js restartableJob). */
     function settleDemoStoryIndex() {
-      if (DEMO_BUILD && !player.godMode && completed >= DEMO_MISSIONS) missionIndex = completed;
+      if (!player.godMode) missionIndex = completed;
     }
     function resetCampaignStats() {
       campaignStats.playSeconds = campaignStats.cashEarned = campaignStats.wantedPeak = 0;
@@ -441,6 +449,7 @@
       demoCardIn = 0;
       completed = 0;
       missionIndex = 0;
+      retryJobIndex = null;
       clearMissionOverlays();
       weapons.forEach((w, i) => {
         w.owned = i === 0;

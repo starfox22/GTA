@@ -83,10 +83,11 @@
           ' jobs complete · $' +
           cash.toLocaleString() +
           ' earned and in your pocket.';
-        // RESTART CURRENT JOB with nothing to restart (the demo's story or every
-        // job done, no job running): shown disabled, saying why (retryMission).
+        // RESTART CURRENT JOB with nothing to restart (no job running and none failed:
+        // after a win, at a new game, past the demo): shown disabled, saying why
+        // (story.js restartableJob).
         const restart = getElement('restartMission'),
-          noJob = !mission && !storyCallWaiting();
+          noJob = restartableJob() === null;
         restart.disabled = noJob;
         restart.replaceChildren('RESTART CURRENT JOB');
         if (noJob) {

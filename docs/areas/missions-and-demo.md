@@ -104,10 +104,16 @@ index plus one.
   (`showDemoComplete`, game mode `'demo'`, a recap from `campaignStats`) the first time only; a
   replay of mission 2 is just a payday. Completion is kept
   in `dead-end-city-demo`. `demoLocked()` is the gate.
-- `missionIndex` is the frontier **and** the job a replay picked (`chooseMission`), so once
-  `completed >= DEMO_MISSIONS` a declined or failed replay must call `settleDemoStoryIndex()`
-  (also on load): otherwise `storyCallWaiting()` keeps the payphone arrow, pager and HUD pill up.
-  Every pointer reads `objective()`; console `pointers()` reports them all.
+- `missionIndex` is the frontier **and** the job a replay picked (`chooseMission`), so a
+  declined or failed replay calls `settleDemoStoryIndex()` (also on load and when god mode is
+  switched off): without god mode the index goes back to `completed`, so the payphone offers the
+  story's next job (none past the demo; otherwise `storyCallWaiting()` kept the payphone arrow,
+  pager and HUD pill up). God mode keeps its pick. Every pointer reads `objective()`; console
+  `pointers()` reports them all.
+- RESTART CURRENT JOB (`retryMission`) restarts `restartableJob()` (story.js): the job running,
+  else the last one failed (WASTED and BUSTED fail it), remembered in `retryJobIndex` (not saved)
+  while the picker offers it. After a win, at a new game or after a reload there is none: the
+  pause menu shows it disabled, NO JOB TO RESTART; a waiting call is taken at the payphone.
 - Never gated (not missions): the hill climb, volleyball, the stadium ball, the pier rides,
   bike share, cabs, rail, the liner, casino, garages, gun shop, Fort Sentinel, the Apache,
   MONARCH MOTORS.
