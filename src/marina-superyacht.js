@@ -321,7 +321,8 @@
     }
     function marinaInteract() {
       if (player.deck) {
-        if (!deckExitNear()) return false;
+        // Elsewhere aboard a liner (a roof, the foredeck): the stairs aft (deck-landing.js).
+        if (!deckExitNear()) return linerStairsAft();
         leaveLiner();
         return true;
       }
@@ -363,6 +364,8 @@
       }
       const aft = deckWorld(ship, -ship.l / 2 + 58, 0);
       player.deck = ship;
+      player.deckLevel = 0;
+      player.deckStair = null;
       player.deckHeading = ship.a;
       player.x = aft.x;
       player.y = aft.y;
@@ -385,7 +388,8 @@
       const { u } = deckLocal(ship, player.x, player.y);
       if (ship === SUPERYACHT)
         return !!player.deckStair?.gangway || (player.deckLevel === 0 && !player.deckStair && u < -265);
-      return u < -ship.l / 2 + 96;
+      // A liner's way off is her aft deck, by the stern platform (on her promenade deck, not a roof).
+      return !(player.deckLevel > 0) && u < -ship.l / 2 + 96;
     }
     /* Tourists stroll the promenade decks and lean on the rail; on the lido deck
        atop the midships house they lie on the loungers or stand about with a

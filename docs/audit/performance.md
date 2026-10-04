@@ -420,3 +420,191 @@ the cap order, the protected and in-view cases, `integrity()` and `settleAudit()
 
 The only defect it found was the cab's FARE notice (a `routeLength` declared twice, fixed with a test and the
 `tools/dup-functions.mjs` guard). The page is no-render: renderer-side leaks are not covered.
+
+## Fourth pass: hiccups, frame by frame (3-4 October 2026)
+
+Goal from the owner: no random hiccups on any tier. A hiccup is a frame much longer than its neighbours, so this pass
+measured every frame instead of averages, with a cause per long frame.
+
+### The tool
+
+`src/frame-trace.js` records each frame's sections (update parts, renderer laps, `f:pre`) and what happened in it:
+heap drops (collections; `--enable-precise-memory-info` in tools/dev.mjs makes `performance.memory` exact), DOM
+mutations by element and attribute, WebGL texture and buffer uploads (bytes, update ranges counted exactly) and program
+links, canvas 2D draws and text, Web Audio nodes, localStorage writes, vehicle models built, spawns, first-use programs,
+textures and geometries. The counters are prototype wrappers installed only while a trace runs. `runFrame()` is the
+frame body shared by the requestAnimationFrame loop and the console's stepped runner, so a stepped frame is a real
+frame minus the browser's own style, layout and paint. Console: `hitchRun` (stepped), `frameTrace` (live),
+`uploadChurn` (what three.js re-uploads), `cityMap` (staging). `node tools/hitches.mjs` runs a fixed tour: walk,
+eight district teleports, a downtown drive, the Keys Bridge, the county, a three-star chase, a crash, a blast, out of
+the car and back in, rain at 21:30, the map, the pause menu; `--ab A.html B.html` compares two builds in ABBA order.
+
+### What it found (no-render page, base build plus the tool, load 8-19 on 4 cores)
+
+| Stage | CPU ms / frame | KB allocated / frame | long frames (of) | long frames' section (count) | tags |
+| --- | --- | --- | --- | --- | --- |
+| walk | 5.5 | 1,700 | 44 (360) | cars 20, people 11, sound 5 | gc 4, spawn 1 |
+| districts | 4.4 | 1,400 | 50 (720) | cars 20, people 5, civic 5 | gc 9, spawn 3 |
+| drive | 4.7 | 1,600 | 11 (480) | cars 8 | |
+| chase (3 stars) | 5.7 | 1,600 | 19 (600) | cars 8, civic 4, people 3 | gc 3, spawn 3 |
+| blast | 6.6 | 1,500 | 10 (180) | cars 5, damage 2 | gc 2 |
+| rain at night | 6.3 | 1,600 | 17 (480) | cars 10, people 2 | gc 5 |
+
+- **Collections**: the simulation allocates 1.4-1.7 MB a frame (mostly boxed doubles: `trafficControl` 18%,
+  `controlVehicle` 12%, `vehicleBroadphase` 9%, `knockSceneProps` 3.5%, `settleVehicle` 2.7%, `updateBloodTracks` 2.6%),
+  so a ~30 MB young-generation scavenge runs about every 18 frames, three a second. On this loaded machine those frames
+  were among the longest (helper threads wait for a core); on a laptop a scavenge is a few ms. Not changed here (the
+  physics files belong to another change in flight): the largest lever left.
+- **CPU bursts** (`--profile --who bursts`, CPU time with descheduling gaps dropped): single `updateCars` calls of 4-7 ms
+  (physics step, `hullTouchesLand`, `controlVehicle`) at ~280 vehicles; `updateUI` 6.6 ms (the minimap:
+  `drawCivicMap`, `entityElevation`); `updateMilitary` 5.6 ms (`updateGatePieces`); `updateUI` 5.3 ms in
+  `placeDockLine > getBoundingClientRect` (fixed below). The first trace after a boot had two frames of 45 and 89 ms in
+  the physics (JIT warm-up and a collection); later runs did not repeat them.
+- **DOM**: 25 mutations a second standing still, 60 in a chase: attributes rewritten with the value they had
+  (`data-context`, the speed box's `data-mode`, the radio's `aria-pressed`, the portrait's `title`) and the toast's
+  `classList.remove('show')` on every frame of a notice's leave (`add`/`remove` rewrite the attribute even when nothing
+  changes).
+- **Rendered, LOW** (480 x 300, software GL, prewarm on): 0-1 programs created per stage (the prewarm holds); a drive
+  into new streets uploads 2.4 geometries and ~240 KB of buffers a frame (the cell pre-upload and new car models) and
+  ~0.1 car model a frame; standing still ~160 KB of buffer uploads a frame in ~90 calls, almost all the crowd's
+  instance ranges. `uploadChurn` named two buffers re-sent whole every frame: the skid marks (184 KB while any mark is
+  drawn) and the contact shadows (57.6 KB at LOW). Wall-clock frames there took 0.5-14 s (software GL under load), so
+  MEDIUM, HIGH, ULTRA and AUTO were not toured: their GPU cost is not measurable here.
+
+### What changed
+
+| Fix | Files | Measured |
+| --- | --- | --- |
+| HUD attributes written only on change (`hudAttr`), toast class guarded | game-state.js, hud-state.js, hud-panels.js, hud-notify.js, car-radio.js, story.js | DOM mutations a second (A/B, medians of 2+2): standing 25 -> 8.3, driving 27.6 -> 14.5, car out/in 24.5 -> 15.3, chase 60 -> 46 |
+| The dock line's layout read moved to the start of the next frame or HUD pass (`measureDockLine`) | hud-state.js, game-loop.js, game-ui.js | the 5.3 ms forced whole-page layout each time a prompt or a card docked is gone (the read finds a clean layout) |
+| Skid marks and contact shadows send only what is drawn (`addUpdateRange`) | render3d-frame.js, lighting3d-look.js | skid marks 184 KB a frame -> the marks drawn; contact shadows 57.6 KB -> 64 bytes a shadow (~6.4 KB in a street) |
+| New car models: still at most 6 a frame, and none after 3 ms of building | render3d-resources.js, render3d-frame.js | bounds a burst of new traffic to ~3 ms of model building a frame (plus one model) |
+
+CPU per frame and allocation are unchanged by design (A/B 4.2-6.9 ms either way). tools/tests/hud-dom-writes.mjs keeps
+the steady HUD at zero rewritten attributes; tools/tests/frame-trace.mjs covers the tool.
+
+### Left for later (measured cost)
+
+- Allocation 1.4-1.7 MB a frame, three scavenges a second (above); `knockSceneProps` also tests every vehicle against
+  every prop near the player (O(props x vehicles)): the vehicle grid would do.
+- Minimap passes of up to 6.6 ms CPU every 0.09 s (map-view.js): spread its layers over passes.
+- The 2D overlay canvas (`worldContext`) is cleared every frame even when nothing was drawn on it, so the browser
+  composites a full-screen layer every frame: clear only after a frame that drew.
+- Forced layouts left: `restartNoticeTimer` (`void bar.offsetWidth` per new or refreshed notice) and the prompt pop
+  (`void el.offsetWidth` per new prompt).
+- Whole-buffer re-uploads left: the mud clumps (40 KB a frame, offroad3d-mud.js) and an unnamed instanced sphere pool
+  (42 KB a frame); the skid marks still compute two terrain heights per mark per frame (up to 2,200) for marks that
+  never move.
+- The tour at MEDIUM-ULTRA and AUTO on a real GPU (`node tools/hitches.mjs --tiers medium,high,ultra,auto --scale 0.2`
+  with `DEC_GPU=1`).
+
+### Second round: garbage, layouts and the rest of the list (4 October 2026)
+
+**Exactness first.** `dev.mjs start --seed 1` opens a deterministic page (seeded Math.random from the first line, the
+simulation held from the first frame, no sound, frame-clock systems stepped only by the console), and hitchRun steps
+from a clock starting at 0, so two boots of a build replay the tour to the same `stateHash()`; `hitches.mjs --ab --hash`
+compares builds. Every change below that touches the simulation was proved with equal hashes in all four runs (A B B A)
+at the end of walk, districts, drive, chase, crash, blast and car out/in.
+
+**The garbage was megamorphic reads.** `allocBench` (bytes per call) and `shapeReport` (object layouts) found it: a street
+held 25-41 vehicle layouts (fields added after creation by assignDriver, vehicleHandling, the army, police and air units,
+aircraft, horns, blood...), so every read in the loops over all vehicles was megamorphic, and V8 allocates a boxed copy
+for each megamorphic read of a number field. Declaring every field in `makeCar` left 2 layouts. Then a closure
+(`pathAhead.some(...)`) inside trafficControl's scan of every vehicle made V8 allocate a context per vehicle, and small
+helpers V8 did not inline (`clamp`, `normalizeAngle`, `wetGrip`, `corneringLimit`) boxed their arguments in every moving
+vehicle's step.
+
+| allocBench (bytes per call) | before | after |
+| --- | --- | --- |
+| trafficControl (every city AI car, 20 Hz near) | 24,181 | 3,492 |
+| vehicleBroadphase (every physics step) | 80,115 | 15,254 |
+| controlVehicle (every vehicle, every step) | 443 | 114 |
+| settleVehicle | 284 | 21 |
+| knockSceneProps (every frame) | 26,501-50,732 | 69 |
+| physicsStep (all of the above, 2 a frame) | 571,637 | 146,899 |
+
+Tour A/B, seeded (A = the merged lead branch with this pass's tools, without the garbage work; medians of A B B A):
+
+| Stage | KB allocated a frame | collections | long frames | CPU ms a frame |
+| --- | --- | --- | --- | --- |
+| walk | 1,771 -> 844 | 11.5 -> 3.5 | 38 -> 41 | 6.5 -> 6.1 |
+| districts | 1,294 -> 554 | 12.5 -> 5.5 | 65.5 -> 60.5 | 4.0 -> 4.3 |
+| drive | 1,454 -> 577 | 5.5 -> 2.5 | 60 -> 26.5 | 4.5 -> 4.8 |
+| chase | 1,680 -> 704 | 7 -> 3 | 68 -> 29 | 5.7 -> 5.7 |
+| crash | 1,673 -> 604 | 2 -> 0.5 | 10.5 -> 5.5 | 5.8 -> 5.9 |
+| blast | 1,849 -> 651 | 3.5 -> 0.5 | 19 -> 10 | 6.5 -> 6.1 |
+| car out/in | 1,646 -> 536 | 2 -> 0.5 | 19.5 -> 9 | 5.8 -> 5.3 |
+| whole tour | **1,558 -> 638** | | | |
+
+The target was 300 KB a frame: not reached. What allocates now (street, 5 s, KB a frame): controlVehicle ~51 (helper
+calls with number arguments: engineAcceleration, vehicleHandling...), boxContact 21, footprintOffGround 20, solid 19,
+updateBloodTracks 18, vehicleBroadphase 18, militarySolids 16, updateKnockdowns 14, people 11 (83 pedestrian layouts:
+`shapeReport('people')`), touchPerson 11, iterator steps (`> next`) in updateBeach, updateAmbience, soundUpdate,
+updateMilitary ~5 each. CPU per frame moved within the noise (the machine ran at a load of 15-22).
+
+**Also in this round**: no forced layouts for animation restarts (the district name on every district crossed, the
+notice timer, the prompt pop, the radio chip, the world-edge beat, the demo card, the sportsbook stamp: a computed-style
+read instead of offsetWidth); the overlay canvas cleared only after a frame drew on it; skid marks carry the ground
+height of both ends from when they are laid (up to 2,200 terrain lookups a frame before); drawCivicMap skips hidden places
+(five canvas states per place for every place in the city before); updateGangFights builds no arrays and skips rivals
+whose longer leg already exceeds the best distance; the gate pieces, traffic hum and siren loops are indexed;
+strokeRoad no longer destructures every point.
+
+**Tiers** (480 x 300 rendered, software GL, prewarm on, after a tier switch; walk then drive, ~20 stepped frames each):
+
+| Tier | view calls (walk / drive) | shadow calls | triangles (walk) | programs | programs created in the stage | buffer KB a frame |
+| --- | --- | --- | --- | --- | --- | --- |
+| LOW | 235 / 199 | 0 | 0.87 M | 171-172 | 1 / 0 | 100 / 135 |
+| MEDIUM | 272 / 233 | 330 / 169 | 2.08 M | 235-240 | 4 / 0 | 138 / 95 |
+| HIGH | 307 / 251 | 339 / 190 | 2.13 M | 250-252 | 4 / 0 | 115 / 100 |
+| ULTRA | 318 / 271 | 251 / 192 | 1.58 M | 258 | 2 / 0 | 110 / 100 |
+| AUTO (picked LOW here) | 316 / 307 | 0 | 0.91 M | 259 | 1 / 0 | 110 / 105 |
+
+The programs created in the walk stage come right after each tier switch (the staged change covers the scene, not models
+first seen after it); ULTRA's switch reallocates its post targets (4.6 MB of texture storage a frame over the stage, once).
+GPU time is not measurable here.
+
+**The new driving camera** (1280 x 800, HIGH, pulled back at speed, zoom 1.06-1.16): 347-413 calls a frame, of which
+vehicle models 150-188, sprites 27-51, static batches ~49 and the scenery detail layers only 13. Culling the detail layers
+by zoom would save about 3%: the lever is per-vehicle calls (each car is ~25 meshes; merging a car's static trim per
+material, or the instanced body shell for traffic beyond a distance at the pulled-back zoom). Not changed.
+
+knockSceneProps now asks a grid of the vehicles near the player (KNOCK GRID, crowd-traffic.js; candidates in the
+vehicles' order, so the first hit is the same): 25-50 -> 8-18 us a call. tools/tests/vehicle-layouts.mjs keeps the
+vehicles to at most 3 layouts (it found three more fields: emergency, sirenClear, supply) and bounds the garbage of
+trafficControl and physicsStep.
+
+**Left**: the minimap's layers are all redrawn every 0.09 s (drawBikeShareMap up to 7 ms CPU here when zoomed out at speed); the
+pedestrians' 83 layouts; the active-vehicle list for parked cars (BACKLOG).
+
+## Fifth pass: per-vehicle draw calls (4 October 2026)
+
+The driving camera's pull-back put more cars in view (vehicle models were 150-188 of 347-413 calls a frame at highway
+zoom). A civilian car was 22 draw calls (shell, cabin, hood, panels, trim, DRL, two bumpers, four tyres, four rims, four
+lamps, two wipers), of which only the shell, cabin and trim cast shadows.
+
+**PRISTINE MERGE** (src/vehicle-merge3d.js): an untouched civilian or police car draws its non-casting static parts merged
+per material: hood + panels + paint bumpers, the black or chrome bumpers, each lamp pair (their material copied from the
+left lamp every frame: on, off, brake), each front wheel's tyre and rim (the tyre under the rim's finish material with the
+rubber's roughness and metalness), each rear axle's two wheels (they turn about one line, so one spin turns both); police:
+hood + panels, bumpers, tail lamps (the head lamps wig-wag apart), and all eight wheel parts (police wheels are never
+turned). The originals stay hidden underneath; damage, stains, mud, a fire, a carjack door or the player at the wheel
+sends the model back to them for good (`vehicleMergeEligible`, which bumps `m.shapeVersion` so bullet marks and car blood
+re-read the body). Merged geometries are built once per kit (at most one kit a frame) and shared.
+
+| Measure | before | after |
+| --- | --- | --- |
+| Civilian car, draw calls (`carModels()`) | 22 | 13 (triangles unchanged) |
+| Lineup: every civilian and police model at zoom 1.1, 30 merged (HIGH; LOW the same) | 559 calls, vehicles 398 | 430, vehicles 269 (-32%) |
+| Downtown at speed, seeded (HIGH; the player's own car is never merged) | 266, vehicles 102 | 245, vehicles 80 |
+| Merged meshes against the parts they replace (`vehicleMergeAudit`, world space) | | max 0.000001 units, normals 0 |
+| Seeded shots, before and after builds, noon and night | | 6 and 4 pixels over a 10% difference of 256,000 (PSNR 50-53 dB: JPEG noise) |
+| Shader programs | | none new (same materials, same attribute layouts) |
+| A kit's plan (first car of each kit, this loaded VM) | | 5-7 ms, one kit a frame |
+
+`tools/merge-scenes.mjs` measures it on a rendered page with the merge on and off in the same frame
+(`lookSwitches({ vehicleMerge: false })`); `vehicleMerges()` says why a model is not merged. The shadow pass is unchanged
+by design (nothing merged casts). Left per pristine car: the shell, cabin and trim (casters), the DRL, two front wheels and
+two wipers. Next levers: a parked car's wheels merged into the body (they never turn while it stands), instanced shells
+per kit for traffic beyond the near ring at the pulled-back zoom. Note: tools/tests/headlight-aim.mjs fails on the lead
+branch itself (uphill pitch 31.4 degrees, test range 10-20), not from this pass.

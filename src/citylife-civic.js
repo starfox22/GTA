@@ -182,10 +182,34 @@
           c.crew = [];
         }
     }
+    /**
+     * SEARCH CLOCK
+     * The countdown to losing the police (PURSUIT_SEARCH_SECONDS by stars) runs while
+     * they search: out of sight, once the first unit has reached a reported scene
+     * (witnesses.js policeResponseHolding). Outside the search area (the circle on
+     * the radar) it runs at full speed and the HUD shows it; inside it creeps at
+     * SEARCH_ZONE_RATE (they are combing those streets: hide long enough and they
+     * give up) and while units are still on their way to a 911 call it waits, and in
+     * both cases the HUD hides it and says why, so the number on screen is only ever
+     * one that is visibly counting down. Sight is debounced: a sighting restarts the
+     * clock only once it has lasted SEARCH_SIGHT_CONFIRM s (a glimpse through a gap
+     * just re-centres the search area on the player), and a search starts only after
+     * SEARCH_LOST_CONFIRM s out of sight, so a unit at the edge of its view no longer
+     * flickers the clock back to the top (the "stuck at 6 s" of old).
+     * `searchClock` says which: 'off' (no stars or a scripted chase), 'pursuit' (they
+     * have eyes on the player), 'holding', 'zone' or 'running'.
+     */
+    const SEARCH_SIGHT_CONFIRM = 0.3,
+      SEARCH_LOST_CONFIRM = 0.6,
+      SEARCH_ZONE_RATE = 0.25;
+    let searchClock = 'off',
+      searchSightHeld = 0,
+      searchUnseenHeld = 0;
     function updateWanted(deltaSeconds) {
       updateWitnesses(deltaSeconds);
       updateStarProgress(deltaSeconds);
       updatePursuit(deltaSeconds);
+      searchClock = 'off';
       if (mission?.index === 2 && [1, 2].includes(mission.stage)) {
         wantedStars = Math.max(1, wantedStars);
         searchActive = false;
@@ -229,38 +253,70 @@
       if (wantedStars <= 0) {
         searchActive = false;
         searchRemaining = 0;
+        searchSightHeld = searchUnseenHeld = 0;
         return;
       }
-      const seen = policeHaveEyesOnPlayer();
+      const sightNow = policeHaveEyesOnPlayer();
+      if (sightNow) {
+        searchSightHeld += deltaSeconds;
+        searchUnseenHeld = 0;
+      } else {
+        searchUnseenHeld += deltaSeconds;
+        searchSightHeld = 0;
+      }
+      // Debounced (SEARCH CLOCK above): a moment's glimpse does not end a search,
+      // and a moment out of sight does not start one.
+      const seen = searchActive ? searchSightHeld >= SEARCH_SIGHT_CONFIRM : searchUnseenHeld < SEARCH_LOST_CONFIRM;
       if (seen) {
         // Dispatch says so when the search finds the player again, and when the
         // player they are watching turns up in another car or on foot.
         if (searchActive && wantedStars >= 1) policeRadioEvent('spotted', player);
-        else policeDescribeSuspect();
+        else if (sightNow) policeDescribeSuspect();
         lastSeen = {
           x: player.x,
           y: player.y,
         };
         searchActive = false;
         searchRemaining = policeSearchSeconds();
+        searchClock = 'pursuit';
       } else {
         if (!searchActive) {
           searchActive = true;
           searchRemaining = policeSearchSeconds();
           if (wantedStars >= 2) policeRadioEvent('lost');
         }
-        // Inside the search area (the circle on the radar) the clock barely
-        // moves: the police are combing those streets. Get out of it.
-        // A reported crime: nobody is looking until the first unit gets there.
-        const inZone = distanceBetween(player, lastSeen) < policeSearchRadius();
-        if (!policeResponseHolding()) searchRemaining = Math.max(0, searchRemaining - deltaSeconds * (inZone ? 0.2 : 1));
+        // A glimpse puts the search area on the player without restarting the clock.
+        if (sightNow)
+          lastSeen = {
+            x: player.x,
+            y: player.y,
+          };
+        // Inside the search area the clock creeps: the police are combing those
+        // streets. A reported crime: nobody is looking until the first unit gets there.
+        const inZone = distanceBetween(player, lastSeen) < policeSearchRadius(),
+          holding = policeResponseHolding();
+        searchClock = holding ? 'holding' : inZone ? 'zone' : 'running';
+        if (!holding) searchRemaining = Math.max(0, searchRemaining - deltaSeconds * (inZone ? SEARCH_ZONE_RATE : 1));
         if (searchRemaining === 0) {
           clearPolice(true);
+          searchClock = 'off';
           return;
         }
       }
       dispatchPolice(deltaSeconds);
     }
+    /* The HUD's countdown is shown only while it runs at full speed (SEARCH CLOCK). */
+    function searchClockShown() {
+      return wantedStars > 0 && searchActive && searchClock === 'running';
+    }
+    // What the police panel says during a search: why the clock is hidden, or that it runs.
+    function searchStatusText() {
+      const inZone = !!lastSeen && distanceBetween(player, lastSeen) < policeSearchRadius();
+      if (searchClock === 'holding') return inZone ? 'UNITS RESPONDING · LEAVE THE AREA' : 'UNITS RESPONDING · STAY OUT OF SIGHT';
+      return inZone ? 'LEAVE THE SEARCH AREA' : 'OUT OF SIGHT · STAY HIDDEN';
+    }
+    // The police panel's last written state (civic HUD below writes only changes).
+    const policeHudShown = { status: null, searching: null, timer: null, seconds: null };
     // Wound spatter, drops, body pools and their decals (blood.js).
     // @include src/blood.js
     // The blood a vehicle carries after hitting someone (car-stains.js).
@@ -380,30 +436,36 @@
       const cargo = cargoChase(),
         dispatching = !!cargo && !cargo.policeArrived;
       getElement('chaseStatus').classList.toggle('dispatching', dispatching);
-      getElement('chaseStatus').textContent = dispatching
-        ? 'Cops alerted · ' + Math.ceil(cargo.policeArrivalIn - 1e-7) + 's'
-        : mission?.index === 10 && mission.stage === 5
-          ? 'MANIFEST EXPOSED · GET DANIEL INSIDE VINNY’S WAREHOUSE'
-          : depotStakeout()
-            ? mission.stage === 5
-              ? 'OFFICERS INSIDE THE WAREHOUSE'
-              : 'POLICE OUTSIDE · OUT THE BACK'
-          : cargo
-            ? 'COPS TRACKING TRUCK · RESPRAY AT R'
-            : wantedStars > 0
-              ? searchActive
-                ? distanceBetween(player, lastSeen) < policeSearchRadius()
-                  ? 'LEAVE THE SEARCH AREA'
-                  : 'OUT OF SIGHT · STAY HIDDEN'
-                : 'POLICE HAVE EYES ON YOU'
-              : '';
-      const airText = airPursuitStatus();
-      if (airText) getElement('chaseStatus').textContent += '\n' + airText;
-      getElement('chaseStatus').classList.toggle('searching', searchActive);
-      const timer = getElement('policeEscapeTimer');
-      timer.classList.toggle('hidden', !(wantedStars > 0 && searchActive));
-      document.body?.classList.toggle('police-search-active', wantedStars > 0 && searchActive);
-      getElement('policeEscapeSeconds').textContent = Math.ceil(searchRemaining) + 's';
+      const airText = airPursuitStatus(),
+        status =
+          (dispatching
+            ? 'Cops alerted · ' + Math.ceil(cargo.policeArrivalIn - 1e-7) + 's'
+            : mission?.index === 10 && mission.stage === 5
+              ? 'MANIFEST EXPOSED · GET DANIEL INSIDE VINNY’S WAREHOUSE'
+              : depotStakeout()
+                ? mission.stage === 5
+                  ? 'OFFICERS INSIDE THE WAREHOUSE'
+                  : 'POLICE OUTSIDE · OUT THE BACK'
+                : cargo
+                  ? 'COPS TRACKING TRUCK · RESPRAY AT R'
+                  : wantedStars > 0
+                    ? searchActive
+                      ? searchStatusText()
+                      : 'POLICE HAVE EYES ON YOU'
+                    : '') + (airText ? '\n' + airText : ''),
+        // The countdown shows only while it is running at full speed (SEARCH CLOCK).
+        timerShown = searchClockShown(),
+        seconds = Math.ceil(searchRemaining) + 's',
+        hud = policeHudShown;
+      // Written only when they change: this runs every frame.
+      if (hud.status !== status) getElement('chaseStatus').textContent = hud.status = status;
+      if (hud.searching !== searchActive) getElement('chaseStatus').classList.toggle('searching', (hud.searching = searchActive));
+      if (hud.timer !== timerShown) {
+        hud.timer = timerShown;
+        getElement('policeEscapeTimer').classList.toggle('hidden', !timerShown);
+        document.body?.classList.toggle('police-search-active', timerShown);
+      }
+      if (timerShown && hud.seconds !== seconds) getElement('policeEscapeSeconds').textContent = hud.seconds = seconds;
       if (gameMode === 'play' && !player.car && !playerOnRoof()) {
         const place = !lootableBody() && nearestPlace();
         // A gun shop says what it sells: ammunition and armour are bought, not found.
@@ -414,21 +476,31 @@
       offroadClubUI();
     }
     function drawCivicMap(drawingContext, big) {
+      const font = big ? 90 : 65,
+        fontName = big ? 'bold 90px monospace' : 'bold 65px monospace';
       for (const p of PLACES) {
-        const font = big ? 90 : 65,
-          w = p.symbol.length * (big ? 59 : 43) + 35,
-          h = big ? 115 : 87,
-          // Off the map's window nothing is drawn (the state below is still set, as before).
-          shown = mapWindowHas(p.door.x, p.door.y, w / 2 + h);
+        const w = p.symbol.length * (big ? 59 : 43) + 35,
+          h = big ? 115 : 87;
+        // Off the map's window nothing is drawn and no state is set (most places, on the minimap): the canvas is
+        // left below in the state the last place sets, as when every place set it.
+        if (!mapWindowHas(p.door.x, p.door.y, w / 2 + h)) continue;
         drawingContext.fillStyle = '#101d25';
-        if (shown) drawingContext.fillRect(p.door.x - w / 2, p.door.y - h / 2, w, h);
+        drawingContext.fillRect(p.door.x - w / 2, p.door.y - h / 2, w, h);
         drawingContext.strokeStyle = p.color;
         drawingContext.lineWidth = big ? 8 : 5;
-        if (shown) drawingContext.strokeRect(p.door.x - w / 2, p.door.y - h / 2, w, h);
+        drawingContext.strokeRect(p.door.x - w / 2, p.door.y - h / 2, w, h);
         drawingContext.fillStyle = p.color;
-        drawingContext.font = 'bold ' + font + 'px monospace';
+        drawingContext.font = fontName;
         drawingContext.textAlign = 'center';
-        if (shown) drawingContext.fillText(p.symbol, p.door.x, p.door.y + font * 0.34);
+        drawingContext.fillText(p.symbol, p.door.x, p.door.y + font * 0.34);
+      }
+      const last = PLACES[PLACES.length - 1];
+      if (last) {
+        drawingContext.strokeStyle = last.color;
+        drawingContext.lineWidth = big ? 8 : 5;
+        drawingContext.fillStyle = last.color;
+        drawingContext.font = fontName;
+        drawingContext.textAlign = 'center';
       }
       for (const d of DOCKS) {
         drawingContext.fillStyle = '#8fbad5';

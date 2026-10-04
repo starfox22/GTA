@@ -771,6 +771,8 @@
        * 'dead-end-city-cutaway' = 'off').
        * (It used to be a 96-unit disc that cut everything above head height in
        * front of the player, tree crowns, buses and whole tower faces included.)
+       * Trees have their own see-through on the same switch, in their material
+       * (FOLIAGE CUTAWAY, foliage-cutaway.js).
        */
       const cutawayPoint = new Three.Vector3(),
         cutawayEdge = new Three.Vector3(),

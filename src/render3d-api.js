@@ -28,6 +28,19 @@
         },
         // First uses and the slowest frames (render3d-hiccups.js; DeadEndCity.renderHiccups()).
         hiccups: (reset) => hiccupReport(reset),
+        // Running totals the console's frame trace (frame-trace.js) differences per frame: programs linked, textures
+        // and geometries on the GPU, vehicle models built.
+        // Civilian models drawn merged while pristine (vehicle-merge3d.js PRISTINE MERGE).
+        vehicleMerges: () => vehicleMergeReport(),
+        vehicleMergeAudit: () => vehicleMergeAudit(),
+        // Buffer attributes and textures re-uploaded since a snapshot (render3d-hiccups.js ATTRIBUTE CHURN).
+        attributeChurn: (snapshot) => attributeChurn(snapshot),
+        traceCounters: () => ({
+          programs: hiccupPrograms(),
+          textures: renderer.info.memory.textures,
+          geometries: renderer.info.memory.geometries,
+          models: modelsBuiltTotal,
+        }),
         info() {
           let objects = 0;
           const byType = {};
@@ -77,7 +90,9 @@
             byTriangles = new Map(),
             instancedList = [],
             sphere = new Three.Sphere(),
-            roles = new Map();
+            roles = new Map(),
+            // Calls on the scenery detail layers (flight-view3d.js LEVEL OF DETAIL): small props, mid-sized props, the rest.
+            byLayer = { detail: 0, farDetail: 0, other: 0 };
           for (const m of carModels.values()) roles.set(m.group, 'vehicle');
           let total = 0,
             triangleTotal = 0;
@@ -132,6 +147,9 @@
                 byName.set(key, (byName.get(key) || 0) + calls);
                 byCell.set(cell, (byCell.get(cell) || 0) + calls);
                 total += calls;
+                if (o.layers.isEnabled(DETAIL_LAYER) && !o.layers.isEnabled(0)) byLayer.detail += calls;
+                else if (o.layers.isEnabled(FAR_DETAIL_LAYER) && !o.layers.isEnabled(0)) byLayer.farDetail += calls;
+                else byLayer.other += calls;
                 // Triangles of what the camera pass draws (an instanced mesh: per instance).
                 const g = o.geometry,
                   count = g ? (g.index ? g.index.count : g.attributes.position ? g.attributes.position.count : 0) : 0,
@@ -155,6 +173,7 @@
           }
           return {
             total,
+            byLayer,
             byName: sorted(byName),
             byCell: sorted(byCell),
             // Triangles of the camera pass by the same names (the heaviest first).
@@ -315,6 +334,8 @@
         crowdStats: (byPart) => crowdStats(byPart),
         // Trees (vegetation3d.js): species counts, the forests, tree draws in view.
         vegetation: () => vegetationReport(),
+        // The see-through hole in the trees round the player (vegetation3d-cutaway.js; DeadEndCity.foliageCutaway).
+        foliageCutaway: () => foliageHoleReport(),
         treeLineup: (x, y, spacing, lod, perRow) => treeLineup(x, y, spacing, lod, perRow),
         crowdBenchmark: (frames) => crowdBenchmark(frames),
         // A person's drawn height from the soles to the crown (their compiled look), in map units.

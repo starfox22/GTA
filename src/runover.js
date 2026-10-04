@@ -75,7 +75,8 @@
       if (!conscious) person.mutedUntil = gameTime + 60;
       runOverSound(person, harm.harm, mortal);
       if (bloodOn) runOverBlood(person, c, heading, severity, mortal || harm.maiming);
-      addCarStain(c, person, Math.max(kph, 22), mortal);
+      // The bonnet only takes blood from 14 km/h (car-stains.js HOW MUCH): a crawl over someone leaves it clean.
+      addCarStain(c, person, kph, mortal);
       if (dying) {
         // Already going: a second wheel finishes it.
         finishDying(person);

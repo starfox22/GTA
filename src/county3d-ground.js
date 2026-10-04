@@ -144,9 +144,18 @@
         float tWater = smoothstep( 0.8, 0.9, tFlow ) * ( 1.0 - tSnow ) * ( 1.0 - tTrail ) * 0.45 * smoothstep( 3.0, 12.0, tP.y );
         float tFoam = smoothstep( 0.3, 0.6, tSteep ) * ( 0.6 + 0.4 * terrainNoise( vec2( tP.x * 0.2, tP.y * 0.12 + terrainTime * 4.0 ) ) );
         tCol = mix( tCol, mix( terrainSrgb( vec3( 0.17, 0.25, 0.27 ) ), terrainSrgb( vec3( 0.85, 0.9, 0.92 ) ), tFoam ), tWater );
-        // The trail: packed gravel with darker wheel ruts along the middle.
+        // The trail: packed gravel, a two-track worn into it (two compacted, darker wheel
+        // lines a truck's track apart, stones kicked to the sides, a crown between them
+        // that keeps a little grass low down in the woods).
         vec3 tGravel = terrainSrgb( vec3( 0.62, 0.55, 0.43 ) ) * ( 0.84 + 0.3 * mix( 0.5, terrainNoise( tP.xz * 0.6 ), tFade ) );
-        tCol = mix( tCol, tGravel, smoothstep( 0.2, 0.8, tTrail ) * ( 1.0 - tSnow * 0.6 ) );
+        float tTrackA = vTerrainMud.y * 3.0, tOnTrail = smoothstep( 0.2, 0.8, tTrail );
+        float tTrack = exp( -pow( ( tTrackA - 0.33 ) / 0.085, 2.0 ) ) * tOnTrail;
+        float tWear = mix( 0.5, terrainNoise( tP.xz * vec2( 0.9, 0.14 ) + 3.0 ), tFade );
+        tGravel *= 1.0 - 0.2 * tTrack * ( 0.65 + 0.35 * tWear );
+        tGravel = mix( tGravel, terrainSrgb( vec3( 0.7, 0.66, 0.58 ) ) * ( 0.9 + 0.2 * tWear ), smoothstep( 0.62, 0.95, tTrackA ) * 0.35 * tOnTrail );
+        float tCrown = ( 1.0 - smoothstep( 0.06, 0.2, tTrackA ) ) * ( 1.0 - smoothstep( 150.0, 330.0, tP.y ) ) * smoothstep( 0.45, 0.7, terrainNoise( tP.xz * 0.21 + 7.0 ) );
+        tGravel = mix( tGravel, terrainSrgb( vec3( 0.38, 0.42, 0.26 ) ) * ( 0.8 + 0.4 * tWear ), tCrown * 0.55 );
+        tCol = mix( tCol, tGravel, tOnTrail * ( 1.0 - tSnow * 0.6 ) );
         // Trail mud (offroad.js bakes it per vertex): dark, wet dirt, deepest in the
         // two wheel ruts, puddles lying in them, wetter after rain; rock ledges
         // where the rock steps are.

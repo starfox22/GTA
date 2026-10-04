@@ -1,9 +1,10 @@
-// Car blood (car-stains.js; carblood3d.js draws it): a fatal run-over stains the nose and the airflow
-// drags it the whole length of the bonnet while the car runs (a car that stops at once stops the
-// streaks short, and its gravity runs creep once it is still), a slow bump and a bump that lets the
-// person live at walking pace leave nothing, a survivor's is small and short, a flank hit stains the
-// flank, the stain dries over ~2 min, repeated hits stop at three, rain washes it, a repair or a
-// garage respray clears it, and with the blood setting off nothing stains.
+// Car blood (car-stains.js; carblood3d.js draws it): how much by speed (nothing under 14 km/h, a few
+// drops at 20-25, a clear splash at 50, heavy at 80, a third less than the old flat 0.62-1 of a fatal
+// hit), a fatal run-over stains the nose and the airflow drags it the length of the bonnet while the
+// car runs (a car that stops at once stops the streaks short, and its gravity runs creep once it is
+// still), a slow bump leaves nothing, a survivor's is small and short, a flank hit stains the flank,
+// the stain dries over ~2 min, more people pile up on three records instead of replacing each other,
+// rain washes it, a repair or a garage respray clears it, and with the blood setting off nothing stains.
 export const fresh = true;
 const SPOT = { x: 420, y: 4600 }; // the airport's open ground, nobody about
 async function arrange(t, type = 'sedan') {
@@ -48,6 +49,27 @@ export default async function (t) {
     t.assert(spec.type === 'sedan', 'no sedan: ' + JSON.stringify(spec));
     const half = 19; // the sedan's half length in units (19.4 on the nose)
 
+    // How much by speed (carBloodMark goes through addCarStain): nothing under 14 km/h, then a smooth rise.
+    const mark = async (kph, fatal = true) => {
+      await t.call('repair');
+      return t.call('carBloodMark', 'front', kph, fatal, 0);
+    };
+    t.assert((await mark(10)) === null && (await mark(13)) === null, 'a crawl stained the bonnet');
+    const curve = {};
+    for (const kph of [16, 20, 25, 30, 50, 80, 120]) curve[kph] = (await mark(kph)).sev;
+    t.note('fatal sev by km/h: ' + JSON.stringify(curve));
+    t.near(curve[16], 0.01, 0.03, 'sev at 16 km/h (barely a drop)');
+    t.near(curve[25], 0.08, 0.16, 'sev at 25 km/h (a few drops)');
+    t.near(curve[50], 0.4, 0.52, 'sev at 50 km/h (a clear splash)');
+    t.near(curve[80], 0.62, 0.72, 'sev at 80 km/h (heavy)');
+    t.near(curve[120], 0.7, 0.76, 'sev at 120 km/h (no more than 0.76)');
+    for (const [a, b] of [[16, 20], [20, 25], [25, 30], [30, 50], [50, 80], [80, 120]]) t.assert(curve[b] > curve[a], `sev not rising from ${a} to ${b} km/h: ${JSON.stringify(curve)}`);
+    // A third less than the old curve (fatal: 0.73 at 50 km/h, 1 at 80) at equal speed.
+    t.assert(curve[50] <= 0.73 * 0.68 && curve[80] <= 0.72, `not a third less than before: ${JSON.stringify(curve)}`);
+    const survivor = (await mark(50, false)).sev;
+    t.near(survivor, curve[50] * 0.55, curve[50] * 0.65, 'a survivor at 50 km/h (0.6 of a death)');
+    await t.call('repair');
+
     // A slow bump (11 km/h): no stain.
     let r = await hit(t, 3, half + 14, 0);
     t.assert(r.stains.length === 0, 'a slow bump stained the car: ' + JSON.stringify(r.stains));
@@ -61,10 +83,10 @@ export default async function (t) {
     t.assert(s.sev >= 0.55, 'a fatal hit left a small stain: ' + s.sev);
     t.assert(s.x > half * 0.8 && Math.abs(s.z) < 9, 'stain off the nose: ' + JSON.stringify(s));
     t.assert(s.dry < 0.2, 'a fresh stain is dry already: ' + s.dry);
-    // Bloody: the airflow can drag it from the bumper to the windscreen's base and over (2.5 m and more), and the
-    // car that ran on for a second has dragged all of it; its runs have not crept (the car never stopped).
-    t.assert(s.sev >= 0.9, 'a fatal hit at speed is not heavy: ' + s.sev);
-    t.assert(s.reach >= 2.5, 'the streaks cannot run the length of the bonnet: ' + s.reach + ' m');
+    // Heavy for one person: the airflow can drag it from the bumper to the windscreen's base (2.3 m and more),
+    // and the car that ran on for a second has dragged all of it; its runs have not crept (the car never stopped).
+    t.assert(s.sev >= 0.6 && s.sev <= 0.76, 'a fatal hit at speed is not heavy, or more than one person leaves: ' + s.sev);
+    t.assert(s.reach >= 2.3, 'the streaks cannot run the length of the bonnet: ' + s.reach + ' m');
     t.assert(s.flow >= 0.95, 'the airflow has not dragged it back: flow ' + s.flow);
     t.assert(s.creep < 0.2, 'gravity runs crept on a moving car: ' + s.creep);
     if (r.skin && r.skin.skins > 0) t.assert(r.skin.triangles > 0, 'the renderer fitted nothing: ' + JSON.stringify(r.skin));
@@ -95,7 +117,7 @@ export default async function (t) {
     // A fatal hit and the car stopping dead: the streaks stop short, and the gravity runs creep once it is still.
     await arrange(t);
     r = await hitAndStop(t);
-    t.assert(r.stains.length === 1 && r.stains[0].sev >= 0.8, 'the stop-after-hit run left no heavy stain: ' + JSON.stringify(r.stains));
+    t.assert(r.stains.length === 1 && r.stains[0].sev >= 0.55, 'the stop-after-hit run left no heavy stain: ' + JSON.stringify(r.stains));
     const stopped = r.stains[0];
     t.assert(stopped.flow < 0.45, 'streaks ran on although the car stopped: flow ' + stopped.flow);
     await t.wait(24);
@@ -104,12 +126,23 @@ export default async function (t) {
     t.assert(rested.flow <= stopped.flow + 0.02, 'streaks grew on a stopped car: ' + stopped.flow + ' -> ' + rested.flow);
     t.note(`stopped at once: flow ${stopped.flow}, creep ${rested.creep} after 24 s`);
 
-    // Repeated hits accumulate up to three.
+    // More people pile up: three records, the rest topped up onto the nearest on the same face, none lost.
     await arrange(t);
     for (let i = 0; i < 6; i++) await t.call('carBloodMark', i % 2 ? 'front' : 'left', 70, true, 0);
     r = await t.call('carBloodReport');
-    t.assert(r.stains.length === 3, 'stains not capped at three: ' + r.stains.length);
+    t.assert(r.stains.length === 3, 'stains not capped at three records: ' + r.stains.length);
     t.assert(r.stains[2].id > r.stains[0].id, 'oldest not first');
+    t.assert(r.hits === 6, 'hits lost when the records were full: ' + JSON.stringify(r));
+    // Five killed on the nose at 50 km/h: each a modest mark, together a heavily bloodied front.
+    await arrange(t);
+    const across = [-6, 4, 0, -3, 6];
+    for (const z of across) await t.call('carBloodMark', 'front', 50, true, z);
+    r = await t.call('carBloodReport');
+    t.assert(r.stains.length === 3 && r.hits === 5, 'five hits did not pile up on the front: ' + JSON.stringify(r));
+    t.assert(r.stains.every((x) => x.face === 'front') && r.stains.reduce((n, x) => n + x.adds, 0) === 2, 'the extra hits were not added: ' + JSON.stringify(r.stains));
+    t.near(r.load, 5 * curve[50] - 0.05, 5 * curve[50] + 0.05, 'blood load of five people at 50 km/h');
+    t.assert(r.load >= 2 * 1.0, 'five people leave less than two heavy hits: ' + r.load);
+    t.note(`five at 50 km/h: ${r.stains.length} records, load ${r.load} (one at 80 km/h: ${curve[80]})`);
 
     // Rain washes them off in a storm.
     await t.call('sky', 'storm');
@@ -136,7 +169,8 @@ export default async function (t) {
     await t.call('bloodEnabled', true);
     await arrange(t);
     r = await hit(t, 22, half + 40, 0, true);
-    t.assert(r.stains.length === 1, 'no stain with blood back on: ' + JSON.stringify(r));
+    // (A passer-by caught in the same run adds a record of their own: at least one is the point.)
+    t.assert(r.stains.length >= 1, 'no stain with blood back on: ' + JSON.stringify(r));
 
     // A garage respray and repair at MONARCH COACHWORKS clears the car.
     const shop = (await t.call('garage')).garages.find((g) => g.id === 'monarch');

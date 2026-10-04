@@ -38,4 +38,5 @@
       // @include src/offroad3d-models.js
       // @include src/offroad3d-kits.js
       // @include src/offroad3d-mud.js
+      // @include src/offroad3d-trail.js
       // END SUBSYSTEM: src/offroad3d.js

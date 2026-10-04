@@ -20,9 +20,20 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - Headless, the reports read Web Audio automation in audio time: after a simulated `wait` the gliding gains lag the probe (they glide in real time); judge levels in a real browser.
 
 ## Free roam and HUD (docs/audit/freeroam-sweep.md)
+- HUD clearance (hud-clearance.js, 2026-10-04 pass): at 960x600 a bus heading up the screen at 60 km/h reaches
+  ~470 px, where a mission dialogue line sits low over the folded card: the line then fades to 30 % (last resort,
+  no room left); O opens the card over the player on purpose. Repro: `drive('bus', 0, -Math.PI / 2)` at (420, 5600),
+  `launch(20)`, a dialogue line up, `hudClearance()`.
+- Touch on a tablet: a tapped radio opens over the GAS / BRAKE column for its 6 s (`.touch-mode #carRadio`, 180 px
+  top, 250 px wide); getting in no longer opens it by itself.
+- 960 px wide: a three-note notice feed (116 px down) can reach a headline card's words at 27 % height (two notes
+  clear it by ~5 px); `hudOverlaps()` measures the headline by its words.
 - Damage direction: only gunfire shows the red arc (pursuit-officers.js playerHitFeedback); blasts and melee do not.
 - Gamepad: tested with a virtual pad only (`gamepadFeed`); no rumble; the settings screen cannot rebind pad buttons.
 - The 2D fallback renderer's speech bubbles keep the old 10 px text.
+- tools/tests/hud-layout.mjs failed once in three runs (2026-10-04, god-splash round, unrelated code): "the top card
+  covered the bus" with `folded: false`, `readLeft` 5.5 (open card 64-152 px over the bus at 93 px). Timing of the
+  fold against the bus's climb; not reproduced on two reruns.
 
 ## Missions 1 and 2 (harbor*.js, chase.js, roofmission*.js, campaign.js)
 - Vinny's truck (vinnytruck3d.js) has no crumple shell or pane-by-pane glass damage (tyres, burn and lamps only), and a respray keeps its MORETTI & SONS door lettering.
@@ -30,8 +41,9 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - At night the white faces round the payphone (newspaper pages, placards) sit in the street lamp's pool and read bright.
 - The Blue Hour's limousines have no chauffeurs and never leave; the doormen and valet keep their posts (no door opened, no car taken). The forecourt fixtures are foot obstacles, which stop only the player: a street walker straying to the wall or the kerb can pass through a planter or bollard.
 - At a fresh boot a double-parked delivery van (crowd-scenes.js) often holds the truck's first kerb spot: the truck then waits further east along the same kerb (x ≈ 1950), still in view.
-- `missionIndex` doubles as the job a replay picked: with one job done (before the demo's end) a replay of job 1 that is hung up on or failed leaves the payphone offering job 1 again, not job 2 (job 2 is still "CURRENT" in the picker); `settleDemoStoryIndex` only covers a finished demo. RESTART CURRENT JOB right after winning job 1 starts job 2 without its payphone call.
-- Bug pass 2026-10-02 (docs/changes/2026-10-02-missions-bug-pass.md) found no soft-lock: death, busting and retry at every stage, saving and reloading mid-job, the respray route with the truck, the truck rolled to the quay edge (it stops at the kerb, never in the sea), spiking the glass and leaving before he drinks, a parachute onto the hotel roof (not landable), 70-step random-action runs on both jobs, and `settleAudit()` at every parked truck, limousine and ambulance moment (0 changes). Not covered: a real chase with the police in play on the way to Vinny's warehouse (the tests use god mode for the harbor police), a gamepad-only run, and the story subtitle (Vinny's line) touching the minimap's corner at a 960x600 window.
+- Bug pass 2026-10-02 (docs/changes/2026-10-02-missions-bug-pass.md) found no soft-lock: death, busting and retry at every stage, saving and reloading mid-job, the respray route with the truck, the truck rolled to the quay edge (it stops at the kerb, never in the sea), spiking the glass and leaving before he drinks, a parachute onto the hotel roof (not landable), 70-step random-action runs on both jobs, and `settleAudit()` at every parked truck, limousine and ambulance moment (0 changes). Not covered: a gamepad-only run.
+- Bug pass 2026-10-04 (docs/changes/2026-10-04-missions-bug-pass-2.md), no god mode: the cargo chase keeps `searchClock` 'off' (no countdown) as designed; a truck wedged by the console pilot near (290, 1739) on the GPS route was BUSTED, failing the job with the payphone line. A truck driven fast at the east quay edge (x ≈ 3390) goes into the sea ("THE CAR IS GOING UNDER · E to get out"); one rolled slowly stops at the kerb. A player who loads and then sits in the bay keeps the truck at 8 % once the crew's 45 s alert runs out (the cage share and the fire floor): the police chase then finishes a truck that weak unless it is resprayed.
+- Mission 1's chase end to end (no god mode), driven by the console's `followRoute` (the GPS road route with steering keys): from the harbour with three stars, 11-12 cruisers, the helicopter and two roadblocks the truck crossed the Keys bridge and reached Palm Keys (x -1408, y ~3600-4000) in 5 of 7 runs (66-106 s), but the last two turns and the 90 degree turn in at the warehouse door with a dozen officers converging defeated the pilot every time: an overshoot past y 4224, then wedged and BUSTED, or the truck shot down while boxed in (police rounds 45 %, ~6 hp/s). Not stable enough for the suite (tools/tests has no mission1-chase); the drop is covered by mission1-depot. Owner's call: the surrender rule (pursuit-officers.js `trackSurrender`, 1.5 s within 6 units) counts a wedged vehicle whose driver holds the throttle as giving up, so a truck pushing against a cruiser is pulled out at three stars.
 
 ## Clouds (clouds*.js, clouds3d-*.js)
 - The flight camera never looks above ~30 degrees below the horizon: under the base the underside is never in view, only the shadows and the dimmer light.
@@ -70,8 +82,16 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - The canopy's pendulum and surge run on drawn frames (parachute3d-pose.js): no test covers them (headless runs a few fps); the slider is mostly hidden under the canopy from the flight camera.
 - The freefall cue panel sits just under the frame's centre; while the camera catches up after the snap the canopy can pass behind it.
 - The Blue Hour terrace canopy landing is kept but has no test.
+- Ships (deck-landing.js): a liner's roof levels have no drawn stairs (E takes "the stairs aft" at once, to the aft deck); no blood decal on a deck (`addBloodPool` needs ground); Monarch's superyachts and the marina's moored boats have no walkable deck (a canopy comes down clear of them, in the water); the cue measures the deck straight below, not where a moving ship will be.
 
 ## Driving (driving.js, physics-*.js)
+- At the quay on Ocean Drive (Palm Keys) a car driven slowly over the edge sometimes hangs there with its bonnet past
+  the shore for about a second and is then pushed back ~37 units onto the promenade instead of dropping into Palm
+  Sound (other runs drive straight in): `drive('supercar', 0, 0)`, `placeVehicle(-1300, 2299, 0, 0)`, `launch(12)`,
+  then `simulate(0.25, ['KeyW'])` steps (2026-10-04 free-roam pass; seen once in two tries).
+- The ATLAS CARGO FLATBED reverses at about 0.35 m/s² from rest (5 units in the first 1.6 s of S, 17 in 3.2 s; forward
+  ~1.3 m/s²): nose to a wall it barely seems to move, which the bot read as trapped twice (seed 8; its check now waits
+  longer). `drive('flatbed', 0, Math.PI / 2)` at (420, 4400), `simulate(1.6, ['KeyS'])`.
 - 50–0 km/h stops are slightly longer than before (the 0.2 s pedal build-up).
 - Soaked roads add 43–58 % to ABS stops (target 30–50 %).
 - AI traffic and police use the simple ABS-equivalent brake, not the per-axle tyre model.
@@ -88,6 +108,10 @@ here when polishing; delete a line when it is fixed. Newest features first.
   whoever is near the (stale) cursor; the camera leans along the stick.
 - Rain spray and dust were checked only in stills (headless frames are seconds apart); worth a
   look on a real GPU at speed in the rain and on the beach.
+- The comfort camera (camera-drive.js) was tuned from `cameraComfort()` numbers and stills, not
+  felt at 60 fps on a real screen: worth a drive on a real GPU (lead share 0.32, across 1.8). The
+  wider driving view costs draw calls (~935 at 93 km/h vs ~650 before, 1280x800 high); a
+  medium-tier check on a laptop GPU is still to do.
 
 ## Drive-bys (driveby.js, crowd3d-driveby.js)
 - Only the pistol fires from a vehicle, so the SMG one-hand and two-handed lean-out poses are not
@@ -114,6 +138,9 @@ here when polishing; delete a line when it is fixed. Newest features first.
 ## Ground and trees (ground-*.js, surfaces3d.js, vegetation3d*.js)
 - District paving is chosen on a 64-unit grid, so the style can switch mid-pavement at a boundary.
 - Sea sun glitter looked very speckled in headless shots: check on a real GPU.
+- Foliage cutaway (foliage-cutaway.js): its 4x4 screen door is fixed to the screen, so the fade edge crawls a little on a
+  moving crown (as the building cutaway's does); its GPU cost (a few ALU per tree pixel, none when shut) is unmeasured on a
+  real GPU. Plants not drawn with `treeMaterial` are never cut: Monarch Isle's topiary and hedges, the rooftop olive pots.
 
 ## Scenic mountain roads (terrain-roads.js, terrain-grading.js, county3d-roads.js)
 - Junction mouths between two graded roads keep a small ripple where the surfaces blend (up to ~6 g at 100 km/h at Eagle Pass's start; `mountainRoad()` junctionBumpG100).
@@ -156,6 +183,5 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - `carjack-traffic` is flaky: when the traffic car it picks stands beside a bike-share dock, E rents a bike instead (about one run in four).
 
 ## Random-walk bot pass (tools/bot.mjs, October 2026)
-- The hospital's GET TREATMENT ($150), the armory's BODY ARMOR ($350) and the bar and diner meals charge full price at full health or full armour (a gun shop says "Ammunition is already full" and charges nothing); serviceAction (citylife-police.js). A diner's time skip may be the point of its plate: a design question.
 - Not done in that pass: the bot only ran on the no-render page (graphics tier switches mid-game, the rendered HUD, the map labels and the touch layout at phone size were not driven by it); no HUD-overlap check (two toasts or the police timer over the mission card) beyond the text sweep for NaN / undefined in `integrity()`.
 - The bot's trapped-vehicle probe fired once in 58 game minutes of seeds 2 and 3 (a luxury car near the Police HQ, not reproducible from a fresh spawn: a cruiser box-in or a wedge); `steerTo` can leave a car nose to wall.

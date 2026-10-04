@@ -358,7 +358,7 @@
           rafe: '100% 100%',
         }[id] || '0% 0%';
       el.style.backgroundPosition = tile;
-      el.title = CHARACTERS[id]?.name || 'Vinny Moretti';
+      hudAttr(el, 'title', CHARACTERS[id]?.name || 'Vinny Moretti');
     }
     const STORY_PROPER_NOUNS =
       /\b(vinny|elena|mara|rafe|daniel|vescari|vale|rusk|palm keys|blue hour|coral palms|southport|oceanview|northridge|glasshouse|bay launch|eastside garage|sunset motel|hangar three)\b/g;
@@ -465,14 +465,47 @@
           c.failedMission = true;
         });
       announce('THE SOUTH COAST LEDGER', 'JOB FAILED', 3);
-      // A replay after the demo ended has no ringing payphone to return to.
+      // RESTART CURRENT JOB retries it; a failed replay leaves the payphone to the story's
+      // own next job (none after the demo's end).
+      const failed = lastMissionOutcome.index;
+      retryJobIndex = failed;
       settleDemoStoryIndex();
       save();
-      tell(reason + (demoStoryOver() ? ' Replay it from the pause menu.' : ' Return to the payphone or retry from pause.'), 6);
+      const retry = restartableJob() !== null,
+        payphone = storyCallWaiting() && missionIndex === failed;
+      tell(
+        reason +
+          (payphone
+            ? retry
+              ? ' Return to the payphone or retry from pause.'
+              : ' Return to the payphone.'
+            : retry
+              ? ' Retry it from the pause menu.'
+              : ''),
+        6,
+      );
       getElement('storyLine').classList.remove('show');
     }
+    /* CHOOSE MISSION over a running job, confirmed (campaign.js ABANDON CONFIRM): the job
+       ends without a JOB FAILED card or line; like a failed one RESTART CURRENT JOB can
+       bring it back. The caller resets the world for the pick. */
+    function abandonMission() {
+      if (!mission) return;
+      lastMissionOutcome = { result: 'abandoned', index: mission.index, stage: mission.stage };
+      retryJobIndex = mission.index;
+    }
+    /* The job RESTART CURRENT JOB restarts: the one running, else the last one that
+       failed (WASTED and BUSTED fail it too) while the picker still offers it. After a
+       win, at a new game or after a reload there is none: the pause menu shows the
+       button disabled, NO JOB TO RESTART (game-menus.js), and a waiting call is taken
+       at the payphone, never skipped from the menu. */
+    function restartableJob() {
+      if (mission) return mission.index;
+      return retryJobIndex !== null && missionUnlocked(retryJobIndex) ? retryJobIndex : null;
+    }
     function retryMission() {
-      if (!mission && !storyCallWaiting()) return;
+      const index = restartableJob();
+      if (index === null) return;
       if (transitRide) leaveTransit(transitRide.from, true);
       player.roof = false;
       player.buildingRoof = null;
@@ -484,6 +517,7 @@
       // The one way to move the player: it lets go of a fall, a ladder or a pool that would pull them back.
       teleportPlayer(spawn.x, spawn.y);
       gameMode = 'play';
+      missionIndex = index;
       startMission();
       getElement('pauseMenu').classList.add('hidden');
       keys = {};
@@ -491,6 +525,8 @@
     function winMission() {
       if (!mission) return;
       lastMissionOutcome = { result: 'won', index: mission.index, stage: mission.stage };
+      // A won job is over: nothing for RESTART CURRENT JOB until the next one starts.
+      retryJobIndex = null;
       cleanupMissionExtras();
       radio('mission-complete');
       const previousCompleted = completed,
@@ -588,32 +624,57 @@
       if (m.index === 0) updateHarborMission(m, deltaSeconds);
       if (m.index === 1) updateRooftopHit(m, deltaSeconds);
     }
+    // Everyone in the gang fights this frame (enemies, then gang members), in a list kept between frames with a count
+    // (it was two spreads and a filter every frame).
+    const gangFighters = [];
+    gangFighters.n = 0;
+    function gangFightCop(e, cop, best) {
+      if (cop.hp <= 0 || cop.returned) return -1;
+      const d = distanceBetween(e, cop);
+      return d < 335 && d < best * 1.3 && clearSight(e, cop) ? d : -1;
+    }
     function updateGangFights(deltaSeconds) {
-      const all = [...enemies, ...gangMembers].filter(
-        (e) => !e.military && e.missionTag !== 'rooftop-hit',
-      );
-      for (const e of all) {
+      const all = gangFighters;
+      let n = 0;
+      for (let i = 0; i < enemies.length; i++) if (!enemies[i].military && enemies[i].missionTag !== 'rooftop-hit') all[n++] = enemies[i];
+      for (let i = 0; i < gangMembers.length; i++) if (!gangMembers[i].military && gangMembers[i].missionTag !== 'rooftop-hit') all[n++] = gangMembers[i];
+      for (let i = n; i < all.n; i++) all[i] = null;
+      all.n = n;
+      for (let i = 0; i < n; i++) {
+        const e = all[i];
         if (e.hp <= 0 || personIncapacitated(e)) continue;
         e.timer -= deltaSeconds;
         let target = null,
           best = 340;
-        for (const rival of all)
+        for (let k = 0; k < n; k++) {
+          const rival = all[k];
           if (rival !== e && rival.hp > 0 && rival.faction !== e.faction) {
+            // A distance is never shorter than its longer leg: a rival that far off cannot be nearer than `best`.
+            const dx = Math.abs(e.x - rival.x),
+              dy = Math.abs(e.y - rival.y);
+            if (dx >= best || dy >= best || dx !== dx || dy !== dy) continue;
             const d = distanceBetween(e, rival);
             if (d < best && clearSight(e, rival)) {
               target = rival;
               best = d;
             }
           }
+        }
         if ((e.policeAggroUntil || 0) > gameTime || (e.policeThreatUntil || 0) > gameTime) {
-          for (const cop of [
-            ...officers,
-            ...vehicles.filter((c) => lawVehicle(c) && !c.crewDeployed && c.gangTarget),
-          ]) {
-            if (cop.hp <= 0 || cop.returned) continue;
-            const d = distanceBetween(e, cop);
-            if (d < 335 && d < best * 1.3 && clearSight(e, cop)) {
-              target = cop;
+          // Officers, then the law vehicles sent after a gang (the order the spread list had).
+          for (let k = 0; k < officers.length; k++) {
+            const d = gangFightCop(e, officers[k], best);
+            if (d >= 0) {
+              target = officers[k];
+              best = d;
+            }
+          }
+          for (let k = 0; k < vehicles.length; k++) {
+            const c = vehicles[k];
+            if (!(lawVehicle(c) && !c.crewDeployed && c.gangTarget)) continue;
+            const d = gangFightCop(e, c, best);
+            if (d >= 0) {
+              target = c;
               best = d;
             }
           }
@@ -795,7 +856,7 @@
         lastDistrict = d;
         districtNoticeUntil = gameTime + 2.8;
         location.classList.remove('entering');
-        void location.offsetWidth;
+        void getComputedStyle(location).animationName; // a style pass restarts the animation (offsetWidth also laid out the page)
         location.classList.add('entering');
       }
       if (districtNoticeUntil && gameTime > districtNoticeUntil) {

@@ -213,6 +213,7 @@
         c.poseX === c.x &&
         c.poseY === c.y &&
         c.poseA === c.a &&
+        !c.rideActive &&
         c.type !== 'police' &&
         c.type !== 'helicopter' &&
         c.type !== 'plane' &&

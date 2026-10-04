@@ -201,6 +201,7 @@
       // @include src/mountain-village3d.js
       // @include src/plane3d.js
       // @include src/render3d-vehicle-models.js
+      // @include src/vehicle-merge3d.js
       // @include src/render3d-prewarm-models.js
       // @include src/render3d-effects.js
       // @include src/render3d-resources.js

@@ -470,6 +470,9 @@
           dims: { l, w, h: body.h, roof: g.roof, van: body.kind !== 'sedan' },
           shell,
           shellBase: shell.geometry.attributes.position.array,
+          // The kit and the paint panels, for the pristine merge (vehicle-merge3d.js).
+          kit,
+          panels,
           cabin,
           cabinBase: cabin.geometry.attributes.position.array,
           wheels,

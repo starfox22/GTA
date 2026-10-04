@@ -1,6 +1,7 @@
-// Camera feel (camera-feel.js): the lead follows the car's path, not its nose, and swings
-// smoothly through a handbrake spin; on foot it leans toward the aim in a fight; gunfire
-// kicks the view back against the aim; Camera look-ahead 0 turns the leads off.
+// Camera feel (camera-feel.js, camera-drive.js): the lead follows the car's path, not its nose
+// (0.55 s of travel, capped by the frame), and swings smoothly through a handbrake spin; on foot it
+// leans toward the aim in a fight; gunfire kicks the view back against the aim; Camera look-ahead 0
+// turns the leads off.
 export default async function (t) {
   await t.call('holdSimulation', true);
   try {
@@ -12,9 +13,14 @@ export default async function (t) {
     const pose = await t.call('pose');
     t.finite(run, 'cameraFeel at speed');
     t.near(run.leadHeading, 85, 95, 'lead heading on a straight (deg, south = 90)');
-    // 0.45 s of travel, eased: most of it after a few seconds of steady speed.
-    const expect = (pose.kmh / 3.6) * 0.45;
-    t.near(+(run.leadMetres / expect).toFixed(2), 0.75, 1.05, 'lead / 0.45 s of travel');
+    t.assert(run.drive, 'the driving follow is not on in a car: ' + JSON.stringify(run));
+    // 0.55 s of travel or 0.32 of the frame's half height, whichever is less, eased: most of it after a few
+    // seconds of steady speed.
+    const view = await t.call('cameraView'),
+      frameH = Math.min(630, Math.max(430, view.viewport[1] * 0.68)),
+      half = frameH / view.framed / 2 / (680 / Math.hypot(680, 560)) / 8,
+      expect = Math.min((pose.kmh / 3.6) * 0.55, half * 0.32);
+    t.near(+(run.leadMetres / expect).toFixed(2), 0.8, 1.05, 'lead / its rule (0.55 s, capped by the frame)');
     // A handbrake spin: the lead moves smoothly (the old nose lead swept ~60+ units a tenth).
     let last = run.lead,
       swing = 0;

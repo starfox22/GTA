@@ -9,7 +9,8 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | BACKLOG.md | Known issues and loose ends per feature (check before polishing an area) |
 | areas/core-and-contracts.md | The closure and include model, units and scale, entity contracts, carriers, saves, performance rules |
 | areas/world-and-map.md | Layout and coordinates, frames, the Northbank grid, shores, bridges and the drawbridge, navigation, `layout()` and the layout audit |
-| areas/world-county-and-sea.md | The county, Ridgeline terrain, scenic roads, falls off cliffs, rail, airfields, parks, sea life |
+| areas/world-county-and-sea.md | The county, falls off cliffs, rail, airfields, parks, sea life |
+| areas/world-county-and-sea-terrain.md | Ridgeline terrain: the height field, the 4x4 trails and their grading, the ride on the terrain (suspension), trail dressing, scenic roads |
 | areas/places-and-venues.md | Palm Keys, the beach and Marea, Sunset Pier, Harbor Point (marina, superyacht, liners, cargo terminal), North Point Key, roofs and helipads, garages, casino |
 | areas/places-monarch-and-county.md | Monarch Isle and MONARCH ONE, Ridgeline villages and the 4x4 club, Fort Sentinel and the Apache, the stadium and GOALLINE, MONARCH MOTORS |
 | areas/vehicles-and-driving.md | Vehicle specs, handling, brakes and assists, crashes, riders, cliffs, aircraft, vehicle models and their contracts |
@@ -23,7 +24,8 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/police-and-combat-blood.md | Blood: a hit's spatter and drops, the pool a body bleeds out, blasts and impacts, `bleed()` for other code |
 | areas/police-and-combat-driveby.md | Drive-bys: firing arcs per window and body, the aim clamp, the rear screen, the lean-out pose |
 | areas/police-and-combat-mounted.md | Mounted guns: the LAV-8's 25 mm and coax, the gun jeep's .50 cal, the Black Hawk's door guns |
-| areas/missions-and-demo.md | Mission list and lifecycle, adding a mission, saves, the demo build, god mode, ride skip |
+| areas/missions-and-demo.md | Mission list and lifecycle, adding a mission, saves, the demo build, RESTART CURRENT JOB and the story index |
+| areas/missions-and-demo-godmode.md | God mode (the cheat, its panel, teleport) and skipping a cab, train or liner ride |
 | areas/missions-and-demo-mission1.md | Mission 1's look: Vinny's truck model (livery, lamps, crate slots) and the yellow payphone and its dressing |
 | areas/missions-bluehour.md | The Blue Hour hotel (mission 2) in 3D: terrace, the VIP table and reserved glass, the street entrance, the limousines and doormen |
 | areas/audio-and-radio.md | The mix and buses, sound systems, media and credits, the car radio |

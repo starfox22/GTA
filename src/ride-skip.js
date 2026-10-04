@@ -157,9 +157,10 @@
       }
       return length;
     }
-    /* The liner's way back to her anchorage: seconds from here over each leg's
-       speed caps (they already allow for braking into the stop), accelerating as
-       she does, and the pose she comes to rest in. */
+    /* The liner's way on to her next anchorage (LINER_VOYAGE's next call):
+       seconds from here over each leg's speed caps (they already allow for
+       braking into the stop), accelerating as she does, and the pose she comes
+       to rest in. */
     function linerSkipPlan() {
       const v = linerVoyage,
         legs = LINER_VOYAGE.length;
@@ -249,8 +250,9 @@
           fare: 0,
           seconds: plan.seconds,
           kicker: player.deck.name + ' · ARRIVING',
-          title: 'NORTH SOUND ANCHORAGE',
-          detail: 'OFF THE CRUISE TERMINAL',
+          // Her next call: the North Sound anchorage or the one off Palm Keys' beach.
+          title: LINER_VOYAGE[plan.callLeg].name,
+          detail: LINER_VOYAGE[plan.callLeg].detail,
           // Her walkable deck is the aft deck, all of it by the stern ladder, so
           // the prompt keeps the way off too.
           prompt: 'SKIP THE VOYAGE' + (deckExitNear() ? ' · ' + keyName('interact') + ' GO ASHORE' : ' · BACK AT ANCHOR'),
@@ -394,7 +396,8 @@
         seconds = plan.seconds;
         catchUpWorld(seconds, true);
         placeLinerAtAnchor(ship, plan);
-        arrived = { name: 'NORTH SOUND ANCHORAGE', message: ship.name + ' · AT ANCHOR OFF THE CRUISE TERMINAL' };
+        const call = LINER_VOYAGE[plan.callLeg];
+        arrived = { name: call.name, message: ship.name + ' · AT ANCHOR ' + call.detail };
       }
       trainSkipPick = null;
       // The camera is where the player is, not sweeping across the map to it.

@@ -11,7 +11,11 @@ police-and-combat.md.
   (citylife-police.js `serviceAction`): hospital treatment $150 to full (SAINT MARLOW,
   RIVERSIDE MEDICAL, THE HALCYON CLINIC), a diner plate +45 / coffee +12, a bar meal +30, a
   club break +20, a motel, the safehouse or a county LODGE bed to full, and a LODGE's hot meal
-  +35 ($25; `countyLodge(p)`). `tools/tests/health-indoors.mjs` checks both.
+  +35 ($25; `countyLodge(p)`). Nothing is sold for nothing: treatment and food
+  (`SERVICE_CURES`) at full health and armour already full are refused with a line ("You’re
+  already in good shape.", "Your body armor is already full.") and no charge, the counter left
+  open, as full ammunition is; sleep and the club are never refused. "Full" is as the HUD rounds
+  it (`Math.ceil`). `tools/tests/health-indoors.mjs` checks all of it.
 - **Gun shops** sell weapons, refills (`PRICES`, `AMMO_PRICES`, citylife-places.js) and body
   armour ($350): SOUTH COAST ARMORY in Northbank (door 876, 410, a few blocks from missions 1
   and 2) and the county OUTFITTERS (terrain-scenery.js). The door prompt reads

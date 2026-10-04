@@ -90,6 +90,12 @@ packs with plain `<script src>` so the zip still plays from file://.
   to move the player; releases every carrier), `solid()` (people collision), `crime()` (only
   heat source), `offerPrompt()` (only prompt writer), `actionHeld()`/`keyName()` (never
   literal keys). Details: docs/areas/core-and-contracts.md.
+- The mission card never covers the player: `missionCardFolded()` (hud-clearance.js) folds it, its reading time
+  held, while `hudPlayerBox()` meets the open card; the strip, the dialogue line and the waypoint pill fade
+  (`.yield-fade`) only as a last resort. HUD layout reads go in `measureMissionCard()` at the start of `runFrame`;
+  a new HUD box that can sit over the player joins this. `hudOverlaps()` lists overlapping boxes and
+  tools/tests/hud-layout.mjs holds 960x600 at zero. `teleportPlayer()` also ends a train ride (`dropTransitRide`)
+  and steps the player out of a vehicle with nowhere to step out to; only an aircraft in the air comes along.
 - `tell(text, s, {id, tone})` (hud-notify.js) is the only notification writer; hints use
   `pressKey()`/`keyPrefix()` (input-hints.js), never `'Press ' + keyName()`.
 - `shooterInView()` (combat-rules.js) is the only rule for whether an NPC may fire at the
@@ -134,9 +140,17 @@ packs with plain `<script src>` so the zip still plays from file://.
 - Objectives have no ground ring or light pool: the floating arrow (render3d-effects.js `arrowGroup`, shown
   by `objectiveArrowShown()` in markers.js) is the only pointer; the ring under the player is the `playerRing`
   setting (off by default, `playerRingOn()`). Console `markers()` lists what marks the objective and the player.
-- `missionIndex` is both the story frontier and the job a replay picked: once the demo is complete anything
-  that ends or declines a replay must call `settleDemoStoryIndex()` (campaign.js), or the payphone arrow returns.
-  Console `pointers()` lists every story pointer.
+- `missionIndex` is both the story frontier and the job a replay picked: anything that ends or declines a replay
+  calls `settleDemoStoryIndex()` (campaign.js: back to `completed` for any player without god mode), or the
+  payphone offers the old job. RESTART CURRENT JOB restarts only `restartableJob()` (story.js: the running job or
+  the last failed one, `retryJobIndex`), never a waiting call. Console `pointers()` lists every story pointer.
+- Service counters never sell nothing: health items in `SERVICE_CURES` and armour are refused when full
+  (citylife-police.js `serviceAction`).
+- Mission vehicles take gang small-arms damage through `missionCageShare` (combat-rules.js `MISSION_CAGE`: 32 %
+  above half health, down to 6 % below 30 %); mission 1's cargo-bay balance is held by tools/tests/mission1-bay.mjs.
+  A pick in the mission picker while a job runs goes through the ABANDON confirm (campaign.js
+  `showAbandonConfirm` / story.js `abandonMission`). Hints follow the HUD on screen (input-hints.js `hintDevice`:
+  gamepad names after pad input, touch names while `body.touch-mode` is set, else keys).
 - Every service place has a real building and its door on the pavement: no floor rings, no free-standing place
   signs. Motels, inns and lodges are dressed by `dressHotel()` (civic3d-hotels.js). County boards (guide,
   scenic-view, town, trailhead) are drawn only through `roadsideSign()` (county3d-signs.js) at the spot
@@ -153,11 +167,21 @@ packs with plain `<script src>` so the zip still plays from file://.
   again goes through `runOverDowned` (runover.js, from `knockPerson`); they die from it only via `p.dying` then
   `finishDying()` then `strikePerson`. `p.mutedUntil` silences `scream()`.
 - Hot loops: never `length = 0` on a reused list (keep a count: `list.n`, `broadphasePairCount`); write a double
-  to an object field only when it changed; declare optional vehicle fields in `makeCar`. Map overlay painters gate
+  to an object field only when it changed; every field any system sets on a vehicle is declared in `makeCar` (as
+  `undefined`; `shapeReport()` stays at 3 layouts or fewer, tools/tests/vehicle-layouts.mjs); no closures capturing
+  loop-body variables, per-frame loops over vehicles or people are indexed (no for-of, no `[x, y]` destructuring),
+  tiny helpers are written out in the physics step (`allocBench(name)` measures bytes per call). A simulation-side
+  performance change is proved with `dev.mjs start --seed 1` plus `hitches.mjs --ab A B --hash` (equal
+  `stateHash` per stage). Restart a CSS animation with `void getComputedStyle(el).animationName`, never
+  `offsetWidth`; `worldContext` is cleared only after a frame that drew on it. Map overlay painters gate
   on `mapWindowHas` and draw fixed-size text with `mapLabel`. `settleIsTrivial` (physics-step.js) must stay in
   step with terrainVehiclePose, cliffSettle, drawbridgeSettle and rotorStrikes (`settleAudit()` checks it).
   Measure with `DeadEndCity.simProfile()` and `dev.mjs call <method> --cpu|--profile N|--alloc N`
-  (docs/areas/core-and-contracts.md Performance rules).
+  (docs/areas/core-and-contracts.md Performance rules). Hiccups: `node tools/hitches.mjs` (`hitchRun`/`frameTrace`,
+  `--ab A B`): compare counters and `cpu/fr`, not wall-clock percentiles. HUD attributes written every pass go
+  through `hudAttr(el, name, value)`, a per-pass `classList.add/remove` is guarded by `contains`, and a layout read
+  in the HUD pass is queued for the frame start (`measureDockLine`). A dynamic GPU buffer bigger than what is drawn
+  calls `addUpdateRange(0, n * itemSize)` before `needsUpdate` (`uploadChurn()` lists whole-buffer re-uploads).
 - Prewarm and first uses (docs/areas/rendering-hiccups.md): an off-screen pass registers itself with
   `registerPrewarmPass(scene, camera, target)`; prewarm slices never contain lights (compile() counts a slice's
   lights too); light and shadow counts are part of every lit program's key, so never toggle a light's
@@ -184,15 +208,46 @@ packs with plain `<script src>` so the zip still plays from file://.
   world box (calm approach warning from the player's velocity, then a 10 s RETURN TO THE CITY countdown past the
   line; at zero the vehicle is destroyed with `damageVehicle` and the player is wasted, god mode only warned).
   State derives from `player.x/y`; `teleportPlayer` calls `resetWorldEdge()`; the line must stay outside all land
-  (`worldEdge().landGap`).
+  (`worldEdge().landGap`). The approach card is only for a player who can reach the line (`worldEdgeCanReach`:
+  aircraft, canopy, fall, boat, swimming; never on land or aboard a ship).
+- The TO LOSE POLICE countdown shows only through `searchClockShown()` (citylife-civic.js SEARCH CLOCK: on screen
+  only while it runs at full speed; hidden, with the panel saying why, while holding for a 911 response or creeping
+  inside the search circle). Police sight is debounced there; `PURSUIT_SEARCH_SECONDS` sets the times.
+- Cheat codes: `CHEAT_CODES` (game-input.js; GODMODE and AAAAXBBBBYXXXXAYYYYB both run `godModeCheat`). A code
+  whose first letters are driving keys sets `CHEAT_SWALLOW_FROM` so it never eats a steering tap.
+  Each toggle plays `showGodSplash(on)` (god-splash.js: CSS-run card at z-index 100 over Settings); its sound
+  (god-splash-audio.js) lands on `GOD_SPLASH_IMPACT` / `GOD_SPLASH_POWER_OFF`: retime the CSS and those together.
+- Road vehicles on terrain ride `rideStep` (terrain-suspension.js): pitch, roll and lift come from four tyre
+  springs; `rideLift` is drawn only, never part of `entityElevation`; grip and slope push go through
+  `rideLoadShare`/`rideGroundPush`; no random hops (new ground features go into `rideTyreGround`/`rideRelief`);
+  `settleIsTrivial` checks `rideActive`. Trail set pieces (`ford`, `camber`, `steep`, `summitLift`) and
+  `OFFROAD_SECTIONS` are fractions of the path: moving a trail means re-deriving them (`trailProfile`) and keeping
+  tools/tests/hillclimb-physics.mjs green. Trail rock is one source: `rideRelief` is what the tyres climb and what
+  offroad3d-trail.js draws (never add trail rocks the ride can't feel); `offroadFords`/`offroadFordWater`
+  (offroad-trails.js) are the only water on a trail (county3d-forest.js draws it, `tyreEmission` 'ford' sprays).
+- The Meridian Star sails `LINER_VOYAGE` (marina-voyage.js); `linerVoyageCheck()` must report no problems (land,
+  bridges, docks, ships, Monarch Harbour, hull `LINER_EDGE_MARGIN` inside the world-edge line); she never passes
+  under a bridge. Moving scenery registers its cull entry with `moving: true` (render3d-statics.js), never in a
+  static cell. Ship decks are landing surfaces only through `deckSurfaceAt()` / `deckLandingStep()`
+  (deck-landing.js); a new walkable ship joins there (a liner's roofs are `linerLevels`).
 - Wrecks and abandoned cars are retired by `retireWrecks` (livingcity-wrecks.js, `WRECK_LIMITS`): 50 s and 180 s
   unseen, world caps 16 and 24, never on screen, near the player or protected (`wreckProtected`). A vehicle that
   must outlive its wreck gets a flag there; a new field holding a vehicle long-term needs clean-up in
   `retireVehicle`. Console `wreckReport()`.
+- The street camera's follow is a critically damped spring (`cameraSpring`, camera-drive.js: smoothed look-ahead
+  that turns at most ~75 deg/s, smoothed camera height); vehicle framing is `CAMERA_CONTEXT` × `speedZoomTarget`
+  (world-view.js). Renderers read only `streetCameraAltitude()` and `cameraShakeLevel()`. Check
+  `cameraComfort()` / tools/tests/camera-comfort.mjs after any camera change.
+- `carStainSeverity(kph, fatal)` (car-stains.js) is the only rule for how much bonnet blood a hit leaves (none under
+  14 km/h); further hits add to a car's 3 stain records (`adds`, painted by `cbTopUpJob`), never replace one.
 - `kickCamera(heading, units)` / `shake` (camera-feel.js) are the only camera jolts; renderers
   only read `cameraKick` and `cameraShakeOffset`.
 - Roomy one-shots (shots, blasts, crashes, near thunder) connect to `reverbSend`
   (acoustics-audio.js), never `reverb`; audio randomness uses `sfxRandom`, not `randomBetween`.
+- Trees: every tree, palm, shrub and grass clump uses `treeMaterial`, which carries the foliage cutaway
+  (`FOLIAGE_HOLE_CUT`; uniforms from `updateFoliageCutaway` / `foliageCutawayPlan()`, foliage-cutaway.js; the same
+  Settings switch as the building cutaway). A new plant must use it to be see-through; keep `foliageHoleCut()` in
+  step with the GLSL; never add a define for it and never run it in `treeDepthMaterial`.
 - **Renderer never changes game rules**: `*3d.js` files (inside `createCityRenderer()`) only
   read state.
 - All vehicle light on a surface shares one budget (VEHICLE LIGHT BUDGET; headlight-beam.js

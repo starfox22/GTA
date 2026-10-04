@@ -64,6 +64,23 @@
         <button class="text-btn" id="closeMissions">BACK <span>ESC</span></button>
       </div>
     </div>
+    <!-- A pick in the mission picker while a job runs asks first (campaign.js ABANDON CONFIRM). -->
+    <div
+      class="overlay hidden"
+      id="abandonConfirm"
+      role="alertdialog"
+      aria-modal="true"
+      aria-labelledby="abandonTitle"
+      aria-describedby="abandonText"
+    >
+      <div class="dialog abandon-dialog">
+        <div class="eyebrow">JOB IN PROGRESS</div>
+        <h2 id="abandonTitle">ABANDON THE JOB?</h2>
+        <p id="abandonText"></p>
+        <button class="primary" id="abandonYes">ABANDON JOB</button
+        ><button class="text-btn" id="abandonNo">KEEP PLAYING</button>
+      </div>
+    </div>
     <!-- PUBLIC DEMO (campaign.js): the card after mission 2 in a demo build.
          The cover art (copied from the title screen when it opens) under the
          title's logo, the thanks, a recap and the way on. -->

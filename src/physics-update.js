@@ -77,10 +77,14 @@
           vehicle.hp > 0 &&
           vehicle.hp < vehicle.maxhp * 0.26 &&
           !vehicleSpec(vehicle).bicycle &&
-          gameTime - (vehicle.bailWarnedAt || -100) > 6
+          gameTime - (vehicle.bailWarnedAt || -100) > (vehicle.mission ? 3 : 6)
         ) {
+          // A job's vehicle (the cargo truck) is the job: the first warning is a headline
+          // too, and it repeats twice as often (combat-rules.js MISSION CAGE).
+          if (vehicle.mission && !(vehicle.bailWarnedAt > 0)) announce('CRITICAL DAMAGE', 'BAIL OUT · ' + keyName('interact'), 2.6);
           vehicle.bailWarnedAt = gameTime;
-          tell('ENGINE ON FIRE · BAIL OUT (' + keyName('interact') + ') BEFORE IT GOES UP', 3.5);
+          // A job's engine fire goes out on its own (MISSION_FIRE_FLOOR): then it is the damage.
+          tell((vehicle.damage?.burning ? 'ENGINE ON FIRE' : 'CRITICAL DAMAGE') + ' · BAIL OUT (' + keyName('interact') + ') BEFORE IT GOES UP', 3.5, { id: 'bail-out' });
           tone(520, 0.14, 0.2, 'square', 240);
         }
         updateBloodTracks(vehicle, active);

@@ -154,8 +154,8 @@
           base = Math.atan2(c.dy, c.dx),
           // Lobes lie along the carried direction when the body slid (a bonnet), any way on a face.
           lobe = (x, y, r, peak) => cbDome(c, x, y, r * c.squash, r, c.align ? base + (rnd() - 0.5) * 1.1 : rnd() * TAU, peak, 0.3);
-        // Fingers: short, broad at the root, drawn to a point, sometimes a bulb.
-        const arms = (c.align ? 5 : 7) + Math.round((c.align ? 7 : 12) * s);
+        // Fingers: short, broad at the root, drawn to a point, sometimes a bulb (a light hit has few of everything).
+        const arms = Math.round(((c.align ? 5 : 7) + Math.round((c.align ? 7 : 12) * s)) * c.few);
         for (let i = 0; i < arms; i++) {
           if ((i & 3) === 3 && cbOver()) yield;
           const fly = cbFlight(c, R, 0.5, c.align ? 0.85 : 0.65, c.align ? 0.55 : 0.8),
@@ -196,31 +196,31 @@
           }
         }
         // The mass: broad low lobes, then thicker ones inside, then the pool's heart.
-        for (let i = 0, n = Math.round((14 + 12 * s) * lobesScale); i < n; i++) {
+        for (let i = 0, n = Math.round((14 + 12 * s) * lobesScale * c.few); i < n; i++) {
           const a = rnd() * TAU,
             d = R * 0.62 * Math.sqrt(rnd());
           lobe(c.ix + Math.cos(a) * d * c.squash, c.iy + Math.sin(a) * d, R * (0.32 + rnd() * 0.5), 0.5 + rnd() * 0.15);
         }
         if (cbOver()) yield;
-        for (let i = 0; i < 6 + 5 * s; i++) {
+        for (let i = 0; i < (6 + 5 * s) * c.few; i++) {
           const a = rnd() * TAU,
             d = R * 0.45 * Math.sqrt(rnd());
           lobe(c.ix + Math.cos(a) * d * c.squash, c.iy + Math.sin(a) * d, R * (0.22 + rnd() * 0.32), 0.68 + rnd() * 0.14);
         }
-        for (let i = 0; i < 2 + 3 * s; i++) {
+        for (let i = 0; i < (2 + 3 * s) * c.few; i++) {
           const a = rnd() * TAU,
             d = R * 0.25 * Math.sqrt(rnd());
           lobe(c.ix + Math.cos(a) * d * c.squash, c.iy + Math.sin(a) * d, R * (0.14 + rnd() * 0.2), 0.86 + rnd() * 0.12);
         }
         if (cbOver()) yield;
         // A crown of medium drops just outside, each drawn out along the way it flew.
-        for (let i = 0; i < 10 + 12 * s; i++) {
+        for (let i = 0; i < (10 + 12 * s) * c.few; i++) {
           const f = cbFlight(c, R, 0.35, 0.55, 0.9),
             r = R * (0.08 + rnd() * 0.16);
           cbDrop(c, f.x, f.y, r * (1 + rnd() * 1.2), r, f.a);
         }
         // Fine drops packed close round the mass.
-        for (let i = 0; i < 50 + 110 * s; i++) {
+        for (let i = 0; i < (50 + 110 * s) * c.few; i++) {
           const f = cbFlight(c, R, 0.25, 0.4, 1.1),
             r = R * (0.012 + rnd() * rnd() * 0.06);
           cbDrop(c, f.x, f.y, r, r * (0.8 + rnd() * 0.4), rnd() * TAU);

@@ -11,14 +11,14 @@
           // (boatSurfaceElevation, air-cover.js) so it slips under the roadway. The
           // camera, the shadow fit and the cutaway stay on the water: following that
           // drop jolted the whole view down and back up again at each bridge.
-          const altitude = player.car && isBoat(player.car) ? 0 : entityElevation(player.car || player),
+          const altitude = streetCameraAltitude(),
             flying = !!(isAircraft(player.car) || player.parachute);
           // Street (orthographic) or flight (perspective) camera, plus what it sees.
           updateFlightView(deltaSeconds, altitude, flying);
           // Riding the Falcon or the Eye: the ride camera takes over (themepark3d.js).
           updateParkCamera(deltaSeconds);
           // The camera's kick and tremor (camera-feel.js: game state, read here).
-          const tremor = cameraShakeOffset(gameTime, shake);
+          const tremor = cameraShakeOffset(gameTime, cameraShakeLevel());
           camera.position.x += cameraKick.x + tremor.x;
           camera.position.z += cameraKick.y + tremor.y;
           if (camera === streetCamera) lockStreetCameraToPixels();
@@ -85,6 +85,8 @@
           // Anything between the camera and the player is cut away round them
           // (lighting3d.js, CUTAWAY).
           updateCutaway(altitude);
+          // Leaves between the camera and the player dissolve round them (vegetation3d-cutaway.js).
+          updateFoliageCutaway(deltaSeconds);
           lap = profileLap('r:lod', lap);
           // Everyone on foot is drawn by the instanced character rig (crowd3d.js,
           // character-rig3d.js): pedestrians, and guards, gangs, officers, story
@@ -97,6 +99,7 @@
           lap = profileLap('r:crowd', lap);
           pruneModels(carModels, vehicles);
           newModelsThisFrame = 0;
+          modelBuildMs = 0;
           beginVehicleImpostors();
           for (const c of vehicles) {
             let m = carModels.get(c);
@@ -113,11 +116,14 @@
               // Building a car is a few dozen meshes: a view full of new traffic (a
               // teleport, a fast drive into a new street) is spread over a few
               // frames instead of one long one. The player's own is never held back.
-              if (newModelsThisFrame >= NEW_MODELS_PER_FRAME && c !== player.car) continue;
+              if ((newModelsThisFrame >= NEW_MODELS_PER_FRAME || modelBuildMs > MODEL_BUILD_BUDGET_MS) && c !== player.car) continue;
+              const buildStart = performance.now();
               newModelsThisFrame++;
+              modelsBuiltTotal++;
               m = makeVehicle(c);
               carModels.set(c, m);
               trimShadowCasters(m.group, 4 * m.modelScale);
+              modelBuildMs += performance.now() - buildStart;
             }
             m.group.visible = near;
             if (!near) continue;
@@ -162,11 +168,14 @@
               for (const lamp of m.lamps)
                 if (lamp.lit === tailLamp && !c.damage?.lights?.[lamp.key]) lamp.mesh.material = braking ? brakeLamp : tailLamp;
             }
+            // A pristine car drawn merged goes back to its own parts before anything changes them (vehicle-merge3d.js).
+            if (m.merged && !vehicleMergeEligible(c, m)) splitVehicleModel(m);
             // Civilian lamps, DRLs, rolling and steering wheels (cars3d.js).
             if (m.civilian) {
               const lampsOn = vehicleLampAmount(),
                 driven = c.hp > 0 && (c.ai || c === player.car || !!c.showLamps);
               animateCivilianCar(c, m, deltaSeconds, driven, lampsOn, braking);
+              if (m.merged) syncMergedVehicle(m);
             }
             // Windscreen wipers in the rain (vehicles3d.js).
             if (m.wipers) updateWipers(c, m, deltaSeconds);
@@ -200,6 +209,9 @@
               applyVehicleDamage(c, m);
               m.brakeLit = null; // lamp materials were reset: re-apply brake lights
             }
+            // PRISTINE MERGE (vehicle-merge3d.js): once its first damage pass has set it up, an untouched civilian car
+            // draws its static parts merged per material.
+            if ((m.civilian || m.police) && m.merged === undefined && m.damageVersion === c.damageVersion && vehicleMergeEligible(c, m)) mergeVehicleModel(c, m);
             // Control surfaces, gear, propeller, lights and buffet (plane3d.js).
             if (m.plane) animateAircraft(c, m, deltaSeconds);
             if (m.tank) {
@@ -254,7 +266,10 @@
               for (const { pivot, side } of m.rearDoors) pivot.rotation.y = side * open * 1.85;
             }
             // Flash patterns, wig-wag, halos (police3d.js).
-            if (m.police) animatePoliceVehicle(c, m);
+            if (m.police) {
+              animatePoliceVehicle(c, m);
+              if (m.merged) syncMergedVehicle(m);
+            }
             // Club trucks: wheel spin, steering, articulation, light bars; mud on any body (offroad3d.js).
             if (m.offroad) animateOffroadVehicle(c, m, deltaSeconds);
             else if (c.mudCoat > 0.01 || m.mudUniforms) applyVehicleMud(c, m);
@@ -476,8 +491,9 @@
               pz = cos * half,
               x1 = s.x + cos * s.len,
               z1 = s.y + sin * s.len,
-              h0 = terrainHeight(s.x, s.y) + 0.2,
-              h1 = terrainHeight(x1, z1) + 0.2,
+              // The ground under both ends, laid with the mark (tyre-effects.js pushTyreMark).
+              h0 = s.h0 !== undefined ? s.h0 : terrainHeight(s.x, s.y) + 0.2,
+              h1 = s.h1 !== undefined ? s.h1 : terrainHeight(x1, z1) + 0.2,
               alpha = 0.62 * (s.dark ?? 0.6) * Math.min(1, s.life / 12);
             // (a, b, c) (a, c, d): a, b along the near edge, c, d the far one.
             skidPos[si++] = s.x - px;
@@ -501,8 +517,13 @@
             for (let k = 0; k < 6; k++, ci += 4) skidColor[ci + 3] = alpha;
           }
           skidGeo.setDrawRange(0, si / 3);
-          skidGeo.attributes.position.needsUpdate = true;
-          skidGeo.attributes.color.needsUpdate = true;
+          // Only the marks drawn go to the GPU, not the whole 1100-mark buffer (184 KB a frame).
+          if (si > 0) {
+            skidGeo.attributes.position.addUpdateRange(0, si);
+            skidGeo.attributes.position.needsUpdate = true;
+            skidGeo.attributes.color.addUpdateRange(0, (si / 3) * 4);
+            skidGeo.attributes.color.needsUpdate = true;
+          }
           skidLines.visible = si > 0;
           skidLines.frustumCulled = false;
           // The sun's shadow map is redrawn every frame it is on (quality.js
@@ -521,7 +542,11 @@
           renderFrame();
           lap = profileLap(shadowRefresh ? 'r:submit+shadow' : 'r:submit', lap);
           if (bakedCanvases.length && frames % 30 === 0) releaseBakedCanvases();
-          worldContext.clearRect(0, 0, viewportWidth, viewportHeight);
+          // Cleared only after a frame that drew on it (OVERLAY INK, render3d-resources.js).
+          if (overlayInk) {
+            worldContext.clearRect(0, 0, viewportWidth, viewportHeight);
+            overlayInk = false;
+          }
           if (target && gameMode === 'play') {
             const p = api.project(target.x, target.y, 32 + targetAltitude);
             if (p.x < 60 || p.x > viewportWidth - 60 || p.y < 130 || p.y > viewportHeight - 210) {

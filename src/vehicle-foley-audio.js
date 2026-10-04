@@ -163,6 +163,7 @@
       skidClock: 0,
       doors: [],
       hop: null,
+      thumpAt: -1,
       thumps: 0,
       passTokens: 3,
       passBys: 0,
@@ -247,6 +248,9 @@
       // or a rut on the trails (offroad-trails.js), a landing (falls-vehicles.js).
       if (road && active && c.hop && c.hop !== f.hop) suspensionThump(c, c.hop.vz || 20);
       f.hop = c ? c.hop || null : null;
+      // A stop met hard or a landing on the springs on the terrain (terrain-suspension.js).
+      if (road && active && c.rideThumpAt > 0 && c.rideThumpAt !== f.thumpAt) suspensionThump(c, c.rideThumpVz);
+      f.thumpAt = c ? c.rideThumpAt : -1;
       updateTrafficSkid(deltaSeconds, active, now);
       updatePassBys(deltaSeconds, active);
     }

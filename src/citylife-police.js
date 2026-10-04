@@ -132,6 +132,8 @@
     function countyLodge(p) {
       return p?.kind === 'sleep' && String(p.id || '').startsWith('county-sleep-');
     }
+    // Counter actions bought for health alone (serviceAction refuses them at full health).
+    const SERVICE_CURES = new Set(['heal', 'meal', 'lodgeMeal', 'plate', 'coffee']);
     function serviceAction(action, slot = 0) {
       if (gameMode !== 'service' || !servicePlace) return false;
       if (wantedStars > 0 && action !== 'change') return needToLosePolice();
@@ -218,6 +220,13 @@
         advance = action === 'sleep' ? 360 : (480 - (worldMinutes % 1440) + 1440) % 1440 || 1440;
         health = 100;
       } else return false;
+      // Nothing to sell: treatment or food at full health, armor that is already full
+      // (as the gun counter says of full ammunition; "full" as the HUD rounds it). The
+      // money stays in the pocket. Sleep and the club are a break, not a cure: never refused.
+      if (action === 'armor' ? Math.ceil(player.armor) >= 100 : SERVICE_CURES.has(action) && Math.ceil(player.hp) >= 100) {
+        tell(action === 'armor' ? 'Your body armor is already full.' : 'You’re already in good shape.', 3);
+        return false;
+      }
       if (advance && mission?.timeLimit) {
         tell('Finish the timed job before taking a break.', 3);
         return false;

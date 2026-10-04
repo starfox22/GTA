@@ -7,21 +7,8 @@ grid, shores and bridges, navigation and layout data: world-and-map.md.
 
 - County (county.js): its own roads (`COUNTY_ROADS`, also GPS and police routing), towns and
   scenery. Ridgeline's three towns are planned by mountain-village.js.
-- **Ridgeline Range** (terrain.js, drawn by county3d.js): one generated, eroded height field
-  (deterministic, typed arrays, built on first use), flattened under rail, towns, helipads and
-  the other roads, with two switchback 4x4 trails (`TRAIL_MAX_GRADE` 0.28). `terrainHeight`
-  samples the exact Float32 vertices the renderer draws, so contact and picture agree. Console
-  `terrain()`.
-- **Scenic roads** (terrain-roads/-grading/-roadside.js, `SCENIC_ROAD_NAMES`): corners are
-  filleted arcs (kept out of towns; the layout audit notes a crossing per arc segment);
-  `road.points` is what everything reads, `road.dense` (4-unit samples) what grading and
-  the ribbon read. Graded over the range (8%, spline profile, crown and bank, cut
-  and fill), at street level by towns, bridges and other roads; trails start at road level. A
-  road or trail that began on a rounded corner is moved onto the curve (don't assume the old
-  vertex). County carriageways are tarmac to `offroadDrive` (`offroadState.paved`); rails are
-  oriented statics. `scenicRoadNear`'s `t` is positive right of the road's direction (map y
-  points south): traffic keeps right. Check `mountainRoad()` and
-  tools/tests/mountain-road.mjs after edits.
+- **Ridgeline terrain** (the height field, the 4x4 trails and their grading, the ride on the
+  terrain, the scenic roads): world-county-and-sea-terrain.md.
 - `prunePlanTrees` (end of `buildCounty`) drops plan trees on carriageways, in buildings, under
   rail decks, on runways or in doorways (`treeAudit()`).
 - Falls (falls.js): on foot, ground dropping away steeper than 1.35 (54°) under a step starts
@@ -53,6 +40,14 @@ grid, shores and bridges, navigation and layout data: world-and-map.md.
   driven by the rig's forward acceleration); the camera jolt is `shake`, set by parachute.js.
   Every rig object is `userData.dynamic`: without it the detail pass hid the canopy from
   the flight camera high up. Console `parachuteView()` reports the rig as drawn.
+- Ships' decks (deck-landing.js): `deckSurfaceAt()` (topmost deck: a liner's promenade deck or
+  deckhouse roof, the yacht's highest level) is part of `parachuteFloor`, and
+  `deckLandingStep()` runs in updateParachute before the ground: an open canopy on a free spot
+  stands the player there (`player.deck`, carried); the impact is the descent plus the speed
+  across the deck, relative to the moving ship, past `DECK_RUNOUT` (riderInjury 'tumble'); a
+  blocked spot settles within 30 units or glides to a lower deck (else off her side);
+  freefall is an impact on the deck. A boat has no deck: down beside her, swimming (E boards);
+  fixed hulls set the jumper clear. Console group `decks`: `deckLanding`, `deckJump`, `canopyOver`.
 - Railway (transit.js, transit3d.js): SHORE LINE (Cruise Terminal → west sea wall → Southport
   Airport), COAST LINE (→ Oceanview → Palmshore), RIDGE LINE (→ Eastgate, Northridge,
   Stonecreek). Each `route` is a control polygon filleted by `railTrackGeometry`; everything

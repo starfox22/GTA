@@ -4,10 +4,16 @@
 export default async function (t) {
   await t.call('holdSimulation', true);
   try {
-    const r = await t.call('regencyTraffic', 25);
+    // Known conditions, and 40 s: on the shared page the scenic traffic built up by the tests before
+    // it makes the car up from the bridge yield at the Eagle Pass junction (as it should), and 25 s
+    // no longer reached its turn-round.
+    await t.call('sky', 'clear');
+    await t.call('wetness', 0);
+    await t.call('setClock', 13);
+    const r = await t.call('regencyTraffic', 40);
     t.assert(!r.error, r.error);
     t.finite(r, 'regencyTraffic');
-    t.assert(r.seconds >= 25, `stopped after ${r.seconds} s`);
+    t.assert(r.seconds >= 40, `stopped after ${r.seconds} s`);
     for (const c of r.cars) {
       const label = `${c.type} (now at ${c.at})`;
       t.assert(!c.gone, `${label}: gone`);
