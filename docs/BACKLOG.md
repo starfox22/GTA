@@ -31,6 +31,9 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - Damage direction: only gunfire shows the red arc (pursuit-officers.js playerHitFeedback); blasts and melee do not.
 - Gamepad: tested with a virtual pad only (`gamepadFeed`); no rumble; the settings screen cannot rebind pad buttons.
 - The 2D fallback renderer's speech bubbles keep the old 10 px text.
+- tools/tests/hud-layout.mjs failed once in three runs (2026-10-04, god-splash round, unrelated code): "the top card
+  covered the bus" with `folded: false`, `readLeft` 5.5 (open card 64-152 px over the bus at 93 px). Timing of the
+  fold against the bus's climb; not reproduced on two reruns.
 
 ## Missions 1 and 2 (harbor*.js, chase.js, roofmission*.js, campaign.js)
 - Vinny's truck (vinnytruck3d.js) has no crumple shell or pane-by-pane glass damage (tyres, burn and lamps only), and a respray keeps its MORETTI & SONS door lettering.

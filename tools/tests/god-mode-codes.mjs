@@ -43,8 +43,8 @@ export default async function (t) {
   t.assert(!(await god()), 'the code in capitals did not turn god mode off');
   splash = await t.call('godSplash');
   t.assert(splash.shown && splash.kind === 'off' && splash.title === 'GOD MODE DEACTIVATED', 'no OFF splash: ' + JSON.stringify(splash));
-  // It plays out by itself (2.6 s of CSS animation) and leaves the screen.
-  await t.realWait(3.2);
+  // It plays out by itself (3 s of CSS animation) and leaves the screen.
+  await t.realWait(3.6);
   splash = await t.call('godSplash');
   t.assert(!splash.shown && splash.kind === null, 'the OFF splash did not go away: ' + JSON.stringify(splash));
   // GODMODE still works.
@@ -54,6 +54,17 @@ export default async function (t) {
   for (let i = 0; i < 3 && (await t.call('status')).mode !== 'play'; i++) {
     await t.keys('Escape', 0.05, { real: true });
     await t.realWait(0.3);
+  }
+  // Both sounds render offline without errors and stay under full scale before the master chain.
+  for (const on of [true, false]) {
+    await t.call('godFanfareRender', on);
+    let r = null;
+    for (let i = 0; i < 20 && (!r || r.pending); i++) {
+      await t.realWait(0.3);
+      r = await t.call('godFanfareReport');
+    }
+    t.note(`${on ? 'ON' : 'OFF'} sound: ` + JSON.stringify(r));
+    t.assert(r && !r.error && !r.pending && r.peak > 0.1 && r.peak < 1, 'splash sound did not render cleanly: ' + JSON.stringify(r));
   }
   await t.call('god', false);
 }

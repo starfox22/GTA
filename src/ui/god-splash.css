@@ -1,9 +1,16 @@
 /* --- God mode splash (god-splash.js) ---------------------------------------
    A cheat code toggling god mode: a full-screen card over everything (play,
-   pause, Settings, the title). ON slams a gold title in over a light burst;
-   OFF drops a cold steel one. The container's own animation sets the length;
-   god-splash.js takes .show off when it ends. Clicks pass through. */
+   pause, Settings, the title); clicks pass through. The container's own
+   animation sets the length and god-splash.js takes .show off when it ends.
+   ON (4.2 s): letterbox bars, two rings and a light streak charge up for
+   0.55 s, then the gold title slams in (chromatic split, flash, two
+   shockwaves, a spark burst, a shake), the rays and halo open, a shine
+   sweeps across, and it all zooms out. The sound lands on the same beat
+   (god-splash-audio.js GOD_SPLASH_IMPACT).
+   OFF (3 s): a steel title glitches in over scanlines, holds, and at 2.15 s
+   switches off like an old TV (GOD_SPLASH_POWER_OFF). */
 #godSplash {
+  --gs-y: 44%;
   position: fixed;
   inset: 0;
   z-index: 100;
@@ -18,49 +25,130 @@
   display: grid;
 }
 #godSplash.on {
-  background: radial-gradient(ellipse at 50% 46%, #3a2a0899 0%, #000000b8 58%, #000000e0 100%);
-  animation: godSplashLife 3.6s linear both;
+  background: radial-gradient(ellipse at 50% var(--gs-y), #3a2a08a8 0%, #000000c4 56%, #000000ea 100%);
+  animation: godSplashLifeOn 4.2s linear both;
 }
 #godSplash.off {
-  background: radial-gradient(ellipse at 50% 46%, #0d1a2499 0%, #000000b0 60%, #000000d8 100%);
-  animation: godSplashLife 2.6s linear both;
+  background: radial-gradient(ellipse at 50% var(--gs-y), #0d1a24a0 0%, #000000bc 60%, #000000e0 100%);
+  animation: godSplashLifeOff 3s linear both;
 }
-@keyframes godSplashLife {
+@keyframes godSplashLifeOn {
   0% {
     opacity: 0;
   }
-  6% {
+  5% {
     opacity: 1;
   }
-  82% {
+  88% {
     opacity: 1;
   }
   100% {
     opacity: 0;
   }
 }
-.god-splash-rays {
+@keyframes godSplashLifeOff {
+  0% {
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  86% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+#godSplash > i,
+.gs-sparks {
   position: absolute;
+  pointer-events: none;
+}
+/* --- Letterbox bars (both cards) --- */
+.gs-bar {
+  left: 0;
+  right: 0;
+  height: 10vh;
+  background: #000;
+}
+.gs-top {
+  top: 0;
+  box-shadow: 0 1px 0 #ffd76a40;
+}
+.gs-bottom {
+  bottom: 0;
+  box-shadow: 0 -1px 0 #ffd76a40;
+}
+#godSplash.on .gs-top {
+  animation: godBarTop 4.2s var(--ui-ease) both;
+}
+#godSplash.on .gs-bottom {
+  animation: godBarBottom 4.2s var(--ui-ease) both;
+}
+#godSplash.off .gs-top {
+  animation: godBarTop 3s var(--ui-ease) both;
+}
+#godSplash.off .gs-bottom {
+  animation: godBarBottom 3s var(--ui-ease) both;
+}
+#godSplash.off .gs-bar {
+  box-shadow: none;
+}
+@keyframes godBarTop {
+  0% {
+    transform: translateY(-100%);
+  }
+  10%,
+  86% {
+    transform: none;
+  }
+  100% {
+    transform: translateY(-100%);
+  }
+}
+@keyframes godBarBottom {
+  0% {
+    transform: translateY(100%);
+  }
+  10%,
+  86% {
+    transform: none;
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+/* --- Rays and halo (ON) --- */
+.gs-rays {
   left: 50%;
-  top: 46%;
+  top: var(--gs-y);
   width: 180vmax;
   height: 180vmax;
   margin: -90vmax 0 0 -90vmax;
   border-radius: 50%;
-  background: repeating-conic-gradient(from 0deg, #ffd76a2e 0deg 6deg, #ffd76a00 6deg 18deg);
-  -webkit-mask: radial-gradient(circle, #000 0%, #000 12%, #0000 46%);
-  mask: radial-gradient(circle, #000 0%, #000 12%, #0000 46%);
+  background: repeating-conic-gradient(from 0deg, #ffd76a33 0deg 5deg, #ffd76a00 5deg 15deg);
+  -webkit-mask: radial-gradient(circle, #000 0%, #000 10%, #0000 46%);
+  mask: radial-gradient(circle, #000 0%, #000 10%, #0000 46%);
   opacity: 0;
 }
-#godSplash.on .god-splash-rays {
+.gs-rays-back {
+  background: repeating-conic-gradient(from 7deg, #fff3c41c 0deg 2deg, #fff3c400 2deg 9deg);
+}
+#godSplash.on .gs-rays {
   animation:
-    godRaysIn 0.9s 0.1s var(--ui-ease) both,
-    godRaysSpin 3.6s linear both;
+    godRaysIn 0.8s 0.55s cubic-bezier(0.1, 0.9, 0.2, 1) both,
+    godRaysSpin 4.2s linear both;
+}
+#godSplash.on .gs-rays-back {
+  animation:
+    godRaysIn 1s 0.6s cubic-bezier(0.1, 0.9, 0.2, 1) both,
+    godRaysSpinBack 4.2s linear both;
 }
 @keyframes godRaysIn {
   from {
     opacity: 0;
-    transform: scale(0.3);
+    transform: scale(0.15);
   }
   to {
     opacity: 1;
@@ -68,20 +156,247 @@
   }
 }
 @keyframes godRaysSpin {
-  from {
-    rotate: 0deg;
-  }
   to {
-    rotate: 40deg;
+    rotate: 50deg;
   }
 }
+@keyframes godRaysSpinBack {
+  to {
+    rotate: -35deg;
+  }
+}
+.gs-halo {
+  left: 50%;
+  top: var(--gs-y);
+  width: 110vmin;
+  height: 56vmin;
+  margin: -28vmin 0 0 -55vmin;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, #ffcf5a66 0%, #ffb02a22 40%, #ffb02a00 70%);
+  opacity: 0;
+}
+#godSplash.on .gs-halo {
+  animation:
+    godHaloIn 0.5s 0.55s ease-out both,
+    godHaloBreathe 1.6s 1.6s ease-in-out infinite alternate;
+}
+@keyframes godHaloIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1.25);
+  }
+  100% {
+    opacity: 0.85;
+    transform: none;
+  }
+}
+@keyframes godHaloBreathe {
+  from {
+    opacity: 0.85;
+    transform: none;
+  }
+  to {
+    opacity: 0.55;
+    transform: scale(1.08);
+  }
+}
+/* Impact parts start invisible and use `forwards`: a backwards fill would show them before the hit. */
+/* --- Charge-up: rings closing in and a streak of light (ON) --- */
+.gs-charge {
+  left: 50%;
+  top: var(--gs-y);
+  width: 40vmin;
+  height: 40vmin;
+  margin: -20vmin 0 0 -20vmin;
+  border-radius: 50%;
+  border: 2px solid #ffe7a0;
+  box-shadow:
+    0 0 24px #ffc94acc,
+    inset 0 0 24px #ffc94a88;
+  opacity: 0;
+}
+#godSplash.on .gs-charge {
+  animation: godCharge 0.55s cubic-bezier(0.6, 0, 1, 1) both;
+}
+#godSplash.on .gs-charge-late {
+  animation: godCharge 0.4s 0.15s cubic-bezier(0.6, 0, 1, 1) both;
+}
+@keyframes godCharge {
+  0% {
+    opacity: 0;
+    transform: scale(3.2);
+  }
+  30% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 1;
+    transform: scale(0.04);
+  }
+}
+.gs-streak {
+  left: 0;
+  right: 0;
+  top: var(--gs-y);
+  height: 3px;
+  margin-top: -1.5px;
+  background: linear-gradient(90deg, #fff0 0%, #ffe7a0 30%, #fff 50%, #ffe7a0 70%, #fff0 100%);
+  box-shadow: 0 0 18px #ffd76a;
+  opacity: 0;
+}
+#godSplash.on .gs-streak {
+  animation: godStreak 0.85s 0.05s both;
+}
+@keyframes godStreak {
+  0% {
+    opacity: 0;
+    transform: scaleX(0);
+    animation-timing-function: cubic-bezier(0.5, 0, 1, 1);
+  }
+  59% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+  68% {
+    opacity: 1;
+    transform: scaleX(1.2) scaleY(8);
+  }
+  100% {
+    opacity: 0;
+    transform: scaleX(1.5) scaleY(0.4);
+  }
+}
+/* --- Impact: shockwaves, sparks and a flash (ON) --- */
+.gs-shock {
+  left: 50%;
+  top: var(--gs-y);
+  width: 24vmin;
+  height: 24vmin;
+  margin: -12vmin 0 0 -12vmin;
+  border-radius: 50%;
+  border: 3px solid #fff1c4;
+  box-shadow: 0 0 30px #ffd76a;
+  opacity: 0;
+}
+#godSplash.on .gs-shock {
+  animation: godShock 0.9s 0.55s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+}
+#godSplash.on .gs-shock-late {
+  border-color: #ffd76a;
+  animation: godShock 1.2s 0.68s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+}
+@keyframes godShock {
+  0% {
+    opacity: 1;
+    transform: scale(0.2);
+    border-width: 10px;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(7);
+    border-width: 1px;
+  }
+}
+.gs-sparks {
+  left: 50%;
+  top: var(--gs-y);
+  width: 0;
+  height: 0;
+}
+.gs-sparks i {
+  position: absolute;
+  left: 0;
+  top: -1px;
+  width: var(--w);
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #fff0, #ffd76a 40%, #fff);
+  box-shadow: 0 0 6px #ffcf5a;
+  transform-origin: 0 50%;
+  opacity: 0;
+}
+#godSplash.on .gs-sparks i {
+  animation: godSpark var(--t) 0.55s cubic-bezier(0.05, 0.7, 0.3, 1) forwards;
+}
+@keyframes godSpark {
+  0% {
+    opacity: 1;
+    transform: rotate(var(--a)) translateX(3vmin) scaleX(0.4);
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(var(--a)) translateX(var(--d)) scaleX(1);
+  }
+}
+#godSplash.on::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% var(--gs-y), #fffbe8 0%, #fff8e0c0 25%, #fff8e000 65%);
+  opacity: 0;
+  animation: godFlash 0.6s 0.55s ease-out forwards;
+}
+@keyframes godFlash {
+  0% {
+    opacity: 0.95;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+/* --- The card --- */
 .god-splash-card {
   position: relative;
   display: grid;
   justify-items: center;
   gap: 10px;
   padding: 0 16px;
-  margin-top: -6vh;
+  margin-top: -12vh;
+}
+#godSplash.on .god-splash-card {
+  animation:
+    godShake 0.5s 0.55s linear both,
+    godCardOut 0.6s 3.55s cubic-bezier(0.5, 0, 0.9, 0.5) forwards;
+}
+@keyframes godShake {
+  0% {
+    transform: translate(0, 0);
+  }
+  10% {
+    transform: translate(-14px, 8px);
+  }
+  20% {
+    transform: translate(12px, -9px);
+  }
+  32% {
+    transform: translate(-9px, -5px);
+  }
+  45% {
+    transform: translate(7px, 6px);
+  }
+  60% {
+    transform: translate(-4px, 3px);
+  }
+  78% {
+    transform: translate(2px, -2px);
+  }
+  100% {
+    transform: none;
+  }
+}
+@keyframes godCardOut {
+  to {
+    opacity: 0;
+    transform: scale(1.3);
+    filter: blur(10px);
+  }
 }
 #godSplashKicker {
   font-size: clamp(11px, 1.3vw, 15px);
@@ -91,16 +406,48 @@
   color: #f4ead0;
   text-shadow: 0 2px 10px #000;
 }
-#godSplashTitle {
+.gs-title {
+  position: relative;
+}
+#godSplashTitle,
+.gs-ghost {
   display: block;
   font:
     900 italic clamp(24px, 7.4vw, 118px) / 1 var(--ui-font);
   letter-spacing: -0.02em;
   white-space: nowrap;
   padding: 0.06em 0.12em;
+}
+#godSplash.off #godSplashTitle,
+#godSplash.off .gs-ghost {
+  font-size: clamp(22px, 6.5vw, 104px);
+}
+#godSplashTitle {
+  position: relative;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+/* Red and cyan copies behind the title: the chromatic split on the slam and the glitch. */
+.gs-ghost {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: screen;
+  opacity: 0;
+}
+.gs-ghost-a {
+  color: #ff2d55;
+}
+.gs-ghost-b {
+  color: #2de1ff;
+}
+.gs-rule {
+  display: block;
+  width: min(62vw, 720px);
+  height: 2px;
+  background: linear-gradient(90deg, #fff0, #ffd76a, #fff, #ffd76a, #fff0);
+  box-shadow: 0 0 12px #ffcf5a;
+  transform: scaleX(0);
 }
 #godSplashDetail {
   font-size: clamp(11px, 1.35vw, 16px);
@@ -110,38 +457,38 @@
   color: #e9e4d2;
   text-shadow: 0 2px 10px #000;
 }
-/* ON: gold, a slam with overshoot, then a shine sweeping across. */
+/* ON title: gold, slammed from huge and landing on the beat, then a shine. */
 #godSplash.on #godSplashTitle {
   background-image: linear-gradient(
     100deg,
-    #b9832b 0%,
-    #f6d77c 28%,
-    #fff6d6 44%,
+    #b07a22 0%,
+    #f6d77c 26%,
+    #fff6d6 43%,
     #ffffff 50%,
-    #fff6d6 56%,
-    #f6d77c 72%,
-    #a8731f 100%
+    #fff6d6 57%,
+    #f6d77c 74%,
+    #9e6a1a 100%
   );
   background-size: 260% 100%;
   background-position: 100% 0;
-  filter: drop-shadow(0 0 22px #ffc94a88) drop-shadow(0 6px 3px #000c);
+  filter: drop-shadow(0 0 20px #ffc94a99) drop-shadow(0 6px 3px #000c);
   animation:
-    godTitleSlam 0.7s 0.12s cubic-bezier(0.18, 1.5, 0.4, 1) both,
-    godTitleShine 1.3s 0.75s ease-in-out both;
+    godTitleSlam 0.24s 0.33s cubic-bezier(0.55, 0, 1, 0.6) both,
+    godTitleShine 1.2s 1.15s ease-in-out both;
 }
 @keyframes godTitleSlam {
   0% {
     opacity: 0;
-    transform: scale(2.6);
-    filter: blur(14px) drop-shadow(0 0 22px #ffc94a00);
+    transform: scale(4.5);
+    filter: blur(18px) drop-shadow(0 0 20px #ffc94a00);
   }
-  60% {
+  40% {
     opacity: 1;
   }
   100% {
     opacity: 1;
     transform: none;
-    filter: drop-shadow(0 0 22px #ffc94a88) drop-shadow(0 6px 3px #000c);
+    filter: drop-shadow(0 0 20px #ffc94a99) drop-shadow(0 6px 3px #000c);
   }
 }
 @keyframes godTitleShine {
@@ -152,12 +499,41 @@
     background-position: 0% 0;
   }
 }
+#godSplash.on .gs-ghost-a {
+  animation: godSplitA 0.5s 0.55s ease-out forwards;
+}
+#godSplash.on .gs-ghost-b {
+  animation: godSplitB 0.5s 0.55s ease-out forwards;
+}
+@keyframes godSplitA {
+  0% {
+    opacity: 0.9;
+    transform: translate(-0.14em, 0.03em);
+  }
+  100% {
+    opacity: 0;
+    transform: none;
+  }
+}
+@keyframes godSplitB {
+  0% {
+    opacity: 0.9;
+    transform: translate(0.14em, -0.03em);
+  }
+  100% {
+    opacity: 0;
+    transform: none;
+  }
+}
 #godSplash.on #godSplashKicker {
   color: #ffe39a;
-  animation: godLineIn 0.5s 0.02s var(--ui-ease) both;
+  animation: godLineIn 0.6s 0.75s var(--ui-ease) both;
+}
+#godSplash.on .gs-rule {
+  animation: godRule 0.7s 0.8s var(--ui-ease) both;
 }
 #godSplash.on #godSplashDetail {
-  animation: godLineIn 0.6s 0.7s var(--ui-ease) both;
+  animation: godLineIn 0.6s 1s var(--ui-ease) both;
 }
 @keyframes godLineIn {
   from {
@@ -165,45 +541,192 @@
     letter-spacing: 1.1em;
   }
 }
-/* A white flash as the title lands. */
-#godSplash.on::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 50% 44%, #fff8e0 0%, #fff8e000 60%);
-  opacity: 0;
-  animation: godFlash 0.7s 0.42s ease-out both;
-}
-@keyframes godFlash {
-  0% {
+@keyframes godRule {
+  from {
+    transform: scaleX(0);
     opacity: 0;
   }
-  15% {
-    opacity: 0.75;
+  to {
+    transform: none;
+    opacity: 1;
   }
+}
+/* --- OFF: steel, glitching in over scanlines, then the TV switches off --- */
+.gs-scan {
+  inset: 0;
+  background: repeating-linear-gradient(0deg, #0000 0 2px, #00000055 2px 4px);
+  opacity: 0;
+}
+#godSplash.off .gs-scan {
+  animation: godScan 3s linear both;
+}
+@keyframes godScan {
+  0%,
   100% {
     opacity: 0;
   }
+  6%,
+  80% {
+    opacity: 0.7;
+  }
 }
-/* OFF: steel grey, dropping in and settling. */
 #godSplash.off #godSplashTitle {
-  font-size: clamp(22px, 6.5vw, 104px);
   background-image: linear-gradient(180deg, #f2f5f7 0%, #b9c4cc 48%, #6e7c87 52%, #c9d2d8 100%);
   filter: drop-shadow(0 6px 3px #000c);
-  animation: godTitleDrop 0.6s 0.06s cubic-bezier(0.3, 1.3, 0.5, 1) both;
+  animation: godGlitchIn 0.7s 0.05s steps(1, end) both;
 }
-@keyframes godTitleDrop {
-  from {
+@keyframes godGlitchIn {
+  0% {
     opacity: 0;
-    transform: translateY(-0.6em) scale(1.08);
+  }
+  8% {
+    opacity: 1;
+    transform: translate(-18px, 0) skewX(-12deg);
+    clip-path: inset(0 0 62% 0);
+  }
+  18% {
+    transform: translate(14px, 0);
+    clip-path: inset(40% 0 20% 0);
+  }
+  28% {
+    opacity: 0.3;
+    transform: translate(-6px, 0) scaleY(1.1);
+    clip-path: inset(0 0 0 0);
+  }
+  38% {
+    opacity: 1;
+    transform: translate(9px, 0) skewX(8deg);
+    clip-path: inset(55% 0 0 0);
+  }
+  50% {
+    transform: translate(-3px, 0);
+    clip-path: inset(0 0 30% 0);
+  }
+  64% {
+    transform: none;
+    clip-path: inset(0 0 0 0);
+  }
+  76% {
+    opacity: 0.6;
+  }
+  86%,
+  100% {
+    opacity: 1;
+    transform: none;
+    clip-path: none;
+  }
+}
+#godSplash.off .gs-ghost-a {
+  animation: godGlitchA 0.75s 0.05s steps(1, end) both;
+}
+#godSplash.off .gs-ghost-b {
+  animation: godGlitchB 0.75s 0.05s steps(1, end) both;
+}
+@keyframes godGlitchA {
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.85;
+    transform: translate(-0.12em, 0);
+  }
+  30% {
+    transform: translate(0.05em, 0.02em);
+  }
+  50% {
+    transform: translate(-0.07em, 0);
+  }
+  70% {
+    transform: translate(-0.02em, 0);
+  }
+  90%,
+  100% {
+    opacity: 0;
+    transform: none;
+  }
+}
+@keyframes godGlitchB {
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.85;
+    transform: translate(0.12em, 0);
+  }
+  30% {
+    transform: translate(-0.06em, -0.02em);
+  }
+  50% {
+    transform: translate(0.08em, 0);
+  }
+  70% {
+    transform: translate(0.03em, 0);
+  }
+  90%,
+  100% {
+    opacity: 0;
+    transform: none;
   }
 }
 #godSplash.off #godSplashKicker,
 #godSplash.off #godSplashDetail {
   color: #c8d3da;
-  animation: godLineIn 0.5s 0.3s var(--ui-ease) both;
+  animation: godLineIn 0.5s 0.45s var(--ui-ease) both;
 }
-#godSplash.off .god-splash-rays {
+#godSplash.off .gs-rule {
+  background: linear-gradient(90deg, #fff0, #8fa3b1, #e8eef2, #8fa3b1, #fff0);
+  box-shadow: none;
+  animation: godRule 0.6s 0.4s var(--ui-ease) both;
+}
+/* The TV off: the picture squashes to a bright line, then to a dot. */
+#godSplash.off .god-splash-card {
+  animation: godCrtOff 0.5s 2.15s cubic-bezier(0.7, 0, 0.9, 0.6) forwards;
+}
+@keyframes godCrtOff {
+  0% {
+    transform: none;
+    filter: none;
+    opacity: 1;
+  }
+  45% {
+    transform: scale(1.06, 0.015);
+    filter: brightness(5);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0, 0.015);
+    filter: brightness(5);
+    opacity: 0;
+  }
+}
+#godSplash.off .gs-streak {
+  background: #f4fbff;
+  box-shadow: 0 0 22px #bfe9ff;
+  animation: godCrtLine 0.55s 2.3s ease-in both;
+}
+@keyframes godCrtLine {
+  0% {
+    opacity: 0;
+    transform: scaleX(0.7);
+  }
+  20% {
+    opacity: 1;
+    transform: scaleX(0.6);
+  }
+  80% {
+    opacity: 1;
+    transform: scale(0.004, 2);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.002, 1);
+  }
+}
+#godSplash.off .gs-rays,
+#godSplash.off .gs-halo,
+#godSplash.off .gs-charge,
+#godSplash.off .gs-shock,
+#godSplash.off .gs-sparks {
   display: none;
 }
 /* Console godSplashStill(): the settled card with nothing moving, for stills. */
@@ -212,6 +735,11 @@
 #godSplash.still::after {
   animation: none !important;
 }
-#godSplash.still .god-splash-rays {
+#godSplash.still.on .gs-rays,
+#godSplash.still.on .gs-halo,
+#godSplash.still.off .gs-scan {
   opacity: 1;
+}
+#godSplash.still .gs-rule {
+  transform: none;
 }

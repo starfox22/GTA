@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-497 files in the include tree, 172,158 lines.
+498 files in the include tree, 172,330 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -47,7 +47,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/map-view.js`   375 — Map views: the city map's filters (MAP LAYERS) and GO TO list, sharp canvases on HiDPI screens, the minimap's speed pull-back and its edge arrows …
 - `src/game-ui.js`   445 — Weapon chip, mission card and updateUI() (HUD text refresh).
 - `src/game-menus.js`   190 — Resize, begin/newGame, pause, help, big map toggle.
-- `src/god-splash.js`   121 — God mode splash: the full-screen card and fanfare when a cheat code toggles god mode (game-input.js godModeCheat): gold "GOD MODE ACTIVATED!" with a …
+- `src/god-splash.js`   108 — ▸ God mode splash: the full-screen card and fanfare when a cheat code toggles god mode (game-input.js godModeCheat): ON charges up, slams a gold "GOD …
 - `src/game-input.js`   459 — Cheat code: Letters typed during play accumulate in a short ring; when the tail spells a known code it fires.
 - `src/controls.js`   314 — Key bindings
 - `src/geography.js`    12 — ▸ Coastlines and land regions
@@ -171,6 +171,10 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/runover.js`   224 — Second pass: a vehicle runs over someone already on the ground (knockPerson hands over): harm by speed and weight, blood, the car's stain, a death a …
 - `src/physics-update.js`   144 — updateCars(): per-frame vehicle update driving the fixed steps.
 - `src/physics-console.js`   672 — HANDLING TESTS (developer console) turnTest() drives a fresh vehicle on the open strip beside the Oceanview runway through the real game step …
+
+## src/god-splash.js ▸ God mode splash: the full-screen card and fanfare when a cheat code toggles god mode (game-input.js godModeCheat): ON charges up, slams a gold "GOD …
+
+- `src/god-splash-audio.js`   185 — GOD MODE SPLASH SOUND (god-splash.js): ON is a riser into an impact (sub boom, thump, metallic shing), a wide detuned power chord with an angelic pad …
 
 ## src/geography.js ▸ Coastlines and land regions
 
@@ -771,14 +775,14 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/ui/world-edge.css`   168 — World-edge cue (world-edge.js): Past the line just inside the world box: RETURN TO THE CITY, the seconds left as a big number (10 ..
 - `src/ui/notify.css`   118 — Notification feed (hud-notify.js): tell() lines as .note boxes in #toast, newest first; older lines dim; an edge colour per tone and a thin bar that …
 - `src/ui/map-panel.css`   156 — City map (map-view.js): as large as the screen allows, with its filters (the legend doubles as them) and the GO TO list beside it, below it on a …
-- `src/ui/god-splash.css`   217 — God mode splash (god-splash.js): A cheat code toggling god mode: a full-screen card over everything (play, pause, Settings, the title).
-- `src/ui/reduced-motion.css`    64 — Reduced motion: keep the states, drop the movement
+- `src/ui/god-splash.css`   745 — God mode splash (god-splash.js): A cheat code toggling god mode: a full-screen card over everything (play, pause, Settings, the title); clicks pass …
+- `src/ui/reduced-motion.css`    71 — Reduced motion: keep the states, drop the movement
 - `src/ui/hud.html`   297 — HUD. Layout and motion live in the HUD section of the stylesheet; the collapse/expand behaviour of the radio and weapon boxes and the minimap fold …
 - `src/ui/menus.html`   244 — markup: #menu, #coverArt, #startBtn, #startMeta, #newGameStart, …
 - `src/ui/panels.html`   218 — markup: #sportsbook, #sbTitle, #sbFormat, #sbCash, #sbClose, …
 - `src/ui/credits.html`   299 — markup: #credits, #closeCredits
 - `src/ui/transit.html`    18 — markup: #transitOverlay, #transitPanel, #transitTitle, #transitKey, #transitOptions, …
-- `src/ui/god-splash.html`     7 — God mode splash (god-splash.js): a cheat code toggling god mode.
+- `src/ui/god-splash.html`    17 — God mode splash (god-splash.js): a cheat code toggling god mode.
 
 ## Outside the include tree
 

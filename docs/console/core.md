@@ -34,6 +34,8 @@
 | `godTeleportPick()` | Open the TELEPORT map from play as Settings · GOD MODE · PICK ON MAP does (god mode on); returns `godPanel()`. With `mapScreenPoint(x, y)` a test clicks a map point with the real pointer |
 | `godSplash()` | The god mode splash (god-splash.js, `godSplashConsole()`): on screen, `kind` ('on' / 'off' / null), its title and how many have played |
 | `godSplashStill(on)` / `godSplashHide()` | Show the ON or OFF splash held at its settled look with no animation (for `dev.mjs shot`), and take it off |
+| `godSplashScrub(on, seconds)` | Show the splash as it looks `seconds` in, held (each animation stepped there, its values written inline, the animation dropped): stills of the moving parts with `dev.mjs shot`; `godSplashHide()` clears it |
+| `godFanfareRender(on)` / `godFanfareReport()` | Render the ON or OFF splash sound offline (god-splash-audio.js) and report `{ peak, rms, loudestRms }` (50 ms window) once done, or `{ error }` |
 | `godTeleport(x, y)` | The god-mode teleport as a map click does it (safe ground, a boat on open water, the vehicle to the nearest road, aircraft airborne); returns where the player ended up: `asked`, `to`, `kind` (`foot`, `boat`, `road`, `aircraft`), `snapped`, district, elevation, vehicle (type, heading, on a road), swimming, `solidHere` |
 | `godRefill()`, `godLosePolice()`, `godFreeze(on)` | The tab's REFILL ALL AMMO (returns weapons, health, armour and vehicle before / after), LOSE POLICE (stars and pursuing units before / after) and Freeze time |
 | `mapScreenPoint(x, y)` | While the city map is open, the client pixel of map point (x, y) (null off the map): tests click the map with it |

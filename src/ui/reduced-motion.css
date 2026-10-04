@@ -52,13 +52,20 @@
 }
 /* The god mode splash keeps its fade (its end hides it) but nothing moves. */
 @media (prefers-reduced-motion: reduce) {
-  #godSplash .god-splash-rays,
+  #godSplash > i:not(.gs-halo),
+  #godSplash .gs-sparks,
   #godSplash::after {
     display: none;
   }
-  #godSplash #godSplashTitle,
-  #godSplash #godSplashKicker,
-  #godSplash #godSplashDetail {
+  #godSplash .god-splash-card,
+  #godSplash .god-splash-card * {
     animation: none !important;
+  }
+  #godSplash .gs-rule {
+    transform: none;
+  }
+  #godSplash.on .gs-halo {
+    animation: none !important;
+    opacity: 0.85;
   }
 }
