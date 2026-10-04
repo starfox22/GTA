@@ -221,8 +221,10 @@
       skyBarSound(deltaSeconds);
       // Traffic hum follows the moving cars around you; the city never falls silent.
       let moving = 0;
-      for (const c of vehicles)
+      for (let k = 0; k < vehicles.length; k++) {
+        const c = vehicles[k];
         if (c.hp > 0 && Math.abs(c.x - player.x) < 700 && Math.abs(c.y - player.y) < 700 && Math.abs(c.speed || 0) > 12) moving++;
+      }
       const hour = crowdHour(),
         light = daylight(),
         night = hour > 22 || hour < 5.5;

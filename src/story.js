@@ -588,32 +588,57 @@
       if (m.index === 0) updateHarborMission(m, deltaSeconds);
       if (m.index === 1) updateRooftopHit(m, deltaSeconds);
     }
+    // Everyone in the gang fights this frame (enemies, then gang members), in a list kept between frames with a count
+    // (it was two spreads and a filter every frame).
+    const gangFighters = [];
+    gangFighters.n = 0;
+    function gangFightCop(e, cop, best) {
+      if (cop.hp <= 0 || cop.returned) return -1;
+      const d = distanceBetween(e, cop);
+      return d < 335 && d < best * 1.3 && clearSight(e, cop) ? d : -1;
+    }
     function updateGangFights(deltaSeconds) {
-      const all = [...enemies, ...gangMembers].filter(
-        (e) => !e.military && e.missionTag !== 'rooftop-hit',
-      );
-      for (const e of all) {
+      const all = gangFighters;
+      let n = 0;
+      for (let i = 0; i < enemies.length; i++) if (!enemies[i].military && enemies[i].missionTag !== 'rooftop-hit') all[n++] = enemies[i];
+      for (let i = 0; i < gangMembers.length; i++) if (!gangMembers[i].military && gangMembers[i].missionTag !== 'rooftop-hit') all[n++] = gangMembers[i];
+      for (let i = n; i < all.n; i++) all[i] = null;
+      all.n = n;
+      for (let i = 0; i < n; i++) {
+        const e = all[i];
         if (e.hp <= 0 || personIncapacitated(e)) continue;
         e.timer -= deltaSeconds;
         let target = null,
           best = 340;
-        for (const rival of all)
+        for (let k = 0; k < n; k++) {
+          const rival = all[k];
           if (rival !== e && rival.hp > 0 && rival.faction !== e.faction) {
+            // A distance is never shorter than its longer leg: a rival that far off cannot be nearer than `best`.
+            const dx = Math.abs(e.x - rival.x),
+              dy = Math.abs(e.y - rival.y);
+            if (dx >= best || dy >= best || dx !== dx || dy !== dy) continue;
             const d = distanceBetween(e, rival);
             if (d < best && clearSight(e, rival)) {
               target = rival;
               best = d;
             }
           }
+        }
         if ((e.policeAggroUntil || 0) > gameTime || (e.policeThreatUntil || 0) > gameTime) {
-          for (const cop of [
-            ...officers,
-            ...vehicles.filter((c) => lawVehicle(c) && !c.crewDeployed && c.gangTarget),
-          ]) {
-            if (cop.hp <= 0 || cop.returned) continue;
-            const d = distanceBetween(e, cop);
-            if (d < 335 && d < best * 1.3 && clearSight(e, cop)) {
-              target = cop;
+          // Officers, then the law vehicles sent after a gang (the order the spread list had).
+          for (let k = 0; k < officers.length; k++) {
+            const d = gangFightCop(e, officers[k], best);
+            if (d >= 0) {
+              target = officers[k];
+              best = d;
+            }
+          }
+          for (let k = 0; k < vehicles.length; k++) {
+            const c = vehicles[k];
+            if (!(lawVehicle(c) && !c.crewDeployed && c.gangTarget)) continue;
+            const d = gangFightCop(e, c, best);
+            if (d >= 0) {
+              target = c;
               best = d;
             }
           }

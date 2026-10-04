@@ -446,7 +446,8 @@
       if (siren) {
         let d = 10000,
           nearest = null;
-        for (const car of vehicles)
+        for (let k = 0; k < vehicles.length; k++) {
+          const car = vehicles[k];
           if (car.hp > 0 && ((car.cop && wantedStars > 0) || car.gangTarget || car.emergency?.running)) {
             const dc = distanceBetween(car, player);
             if (dc < d) {
@@ -454,6 +455,7 @@
               nearest = car;
             }
           }
+        }
         glideParam(siren.gain.gain,
           active ? clamp(1 - d / 700, 0, 1) * 0.18 : 0,
           audio.currentTime,

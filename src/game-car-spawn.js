@@ -279,6 +279,11 @@
           lookAt: undefined,
           speech: undefined,
           speechUntil: undefined,
+          // A vehicle falling off a drop (falls-vehicles.js).
+          fallGround: undefined,
+          fallVz: undefined,
+          fallX: undefined,
+          fallY: undefined,
         };
       vehicles.push(vehicle);
       if (autonomous) assignDriver(vehicle);
