@@ -210,6 +210,12 @@ packs with plain `<script src>` so the zip still plays from file://.
   unseen, world caps 16 and 24, never on screen, near the player or protected (`wreckProtected`). A vehicle that
   must outlive its wreck gets a flag there; a new field holding a vehicle long-term needs clean-up in
   `retireVehicle`. Console `wreckReport()`.
+- The street camera's follow is a critically damped spring (`cameraSpring`, camera-drive.js: smoothed look-ahead
+  that turns at most ~75 deg/s, smoothed camera height); vehicle framing is `CAMERA_CONTEXT` × `speedZoomTarget`
+  (world-view.js). Renderers read only `streetCameraAltitude()` and `cameraShakeLevel()`. Check
+  `cameraComfort()` / tools/tests/camera-comfort.mjs after any camera change.
+- `carStainSeverity(kph, fatal)` (car-stains.js) is the only rule for how much bonnet blood a hit leaves (none under
+  14 km/h); further hits add to a car's 3 stain records (`adds`, painted by `cbTopUpJob`), never replace one.
 - `kickCamera(heading, units)` / `shake` (camera-feel.js) are the only camera jolts; renderers
   only read `cameraKick` and `cameraShakeOffset`.
 - Roomy one-shots (shots, blasts, crashes, near thunder) connect to `reverbSend`
