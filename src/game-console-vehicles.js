@@ -12,10 +12,13 @@
       // club trucks, the members, the player's traction state, the hill climb.
       offroad: () => offroadReport(),
       clubLineup: (x, y) => clubLineup(x, y),
-      // 'state', 'arm', 'reset', 'clear' (records), 'gate' or 'cp0'..'cp2' (move the player's vehicle there).
+      // 'state', 'arm', 'reset', 'clear' (records), 'gate', 'cp0'..'cp3' or 'top' (just below the summit, facing down): move the player's vehicle there.
       hillClimb: (action, trail) => hillClimbConsole(action, trail),
-      // Drive the player's vehicle up a trail through the real physics (a line-following pilot).
-      trailDrive: (seconds, maxKmh, trail) => trailPilot(seconds, maxKmh, trail),
+      // Drive the player's vehicle up a trail (or 'down' it) through the real physics (a line-following
+      // pilot) with frames of `frame` seconds (1/30 default): progress, time and the ride telemetry.
+      trailDrive: (seconds, maxKmh, trail, frame, direction) => trailPilot(seconds, maxKmh, trail, frame, direction),
+      // The ride on the terrain of the player's vehicle (terrain-suspension.js): lift, pitch, roll, load, each wheel's travel and load.
+      ride3d: () => rideReport(),
       // A trail's path: [sample, x, y, height, grade, mud, rock] every `step` samples.
       trailProfile: (trail, step) => trailProfile(trail, step),
       // Set the mud on the player's vehicle (0..1) and how wet it is.

@@ -357,15 +357,22 @@
        hill climb's checkpoints. */
     const OFFROAD_SECTIONS = [
       {
-        // MOUNT ASCENT
-        mudTo: 0.58,
+        // MOUNT ASCENT (terrain-noise.js ASCENT_TRAIL): the forest two-track, the
+        // bog, the creek ford, the traverse, the muddy hairpin, the rock garden, the
+        // slickrock pitch and the summit ridge.
+        mudTo: 0.36,
         patches: [
-          { name: 'THE BOG', from: 0.13, to: 0.21, depth: 1 },
-          { name: 'MUDDY HAIRPIN', hairpin: 2, reach: 70, depth: 0.8 },
+          { name: 'THE BOG', from: 0.03, to: 0.056, depth: 1 },
+          { name: 'CREEK CROSSING', from: 0.064, to: 0.09, depth: 0.95 },
+          { name: 'MUDDY HAIRPIN', hairpin: 1, reach: 70, depth: 0.8 },
         ],
-        rocks: [{ name: 'ROCK STEPS', from: 0.66, to: 0.74 }],
-        checkpoints: [0.24, 'hairpin:2', 0.77],
-        target: 150,
+        rocks: [
+          { name: 'ROCK GARDEN', from: 0.545, to: 0.6 },
+          { name: 'SLICKROCK', from: 0.835, to: 0.875 },
+        ],
+        checkpoints: [0.1, 'hairpin:1', 0.61, 0.885],
+        // 512 m: a clean expert run (the trail pilot: 45 km/h, slowing for the bends, crawling the rock) takes about 70 s.
+        target: 75,
       },
       {
         // NEEDLE RIDGE
@@ -522,7 +529,10 @@
         tyreMu = surfaceMu * (s.rock > 0.5 ? tyre[2] : tyre[0] + (tyre[1] - tyre[0]) * clamp(s.mud * 1.6, 0, 1)) * (spec.lockers && (s.rock > 0.5 || s.mud > 0.4) ? 1.08 : 1),
         grade = t.along,
         share = drivenShare(spec, grade),
-        tractionLimit = tyreMu * share * GRAVITY * cn,
+        // What the tyres press on the ground with (terrain-suspension.js): 1 standing,
+        // light over a crest, nothing in the air.
+        load = rideLoadShare(c, cn),
+        tractionLimit = tyreMu * share * GRAVITY * load,
         speed = Math.abs(along),
         kmh = speed / KMH;
       // Low range: the transfer case's reduction multiplies the pull at crawling speed.
@@ -540,51 +550,29 @@
         force = Math.sign(demand) * tractionLimit * (1 - 0.22 * spin);
       } else if (demand < 0 && !driving) {
         // Brakes (and engine braking) act on all four wheels.
-        const brakeLimit = tyreMu * GRAVITY * cn;
+        const brakeLimit = tyreMu * GRAVITY * load;
         force = Math.max(demand, -brakeLimit);
       }
       // Rolling resistance: the tyres sink into mud (heavier trucks further).
       const sink = (spec.tyre ? 1 : 1.3) * (0.05 + 0.012 * (spec.mass || 1.5)),
-        rolling = (0.012 + s.mud * sink + (onTrail ? 0 : 0.025)) * GRAVITY;
+        rolling = (0.012 + s.mud * sink + (onTrail ? 0 : 0.025)) * GRAVITY * Math.min(1, load);
       force -= Math.sign(along) * Math.min(speed / stepSeconds, rolling);
-      // Rough ground above what the suspension soaks up: bounces, a scrub, a jolt.
+      // Rough ground above what the suspension soaks up: the springs and dampers
+      // turn the speed into heat (the ledges, ruts and stones themselves are felt
+      // by the tyres: terrain-suspension.js rideRelief).
       const travel = spec.travel || (spec.offroad ? 1 : 0.6),
         roughness = s.rock > 0.5 ? 1 : onTrail ? 0.3 + 0.25 * s.mud : 0.85,
         roughKmh = (18 + 24 * travel) / (0.4 + roughness),
         excess = kmh / roughKmh - 1;
-      if (excess > 0) {
-        force -= Math.sign(along) * Math.min(speed / stepSeconds, excess * 0.25 * GRAVITY);
-        if (!c.hop && Math.random() < stepSeconds * (1 + excess * 6)) {
-          c.hop = { z: 0, vz: clamp(10 + excess * 30 + kmh * 0.2, 10, 60), pitch: 0, vp: (Math.random() - 0.4) * 2.2, roll: 0, vr: (Math.random() - 0.5) * 2.2 };
-          if (c === player.car) shake = Math.max(shake, clamp(excess * 2.5, 0.4, 2.5));
-          if (excess > 0.8 && !spec.offroad) damageVehicle(c, excess * 2.2, c.x, c.y);
-        }
-      }
-      // Rock steps: a ledge every three metres.
-      if (s.rock > 0.5 && s.seg >= 0) {
-        const ledge = s.seg >> 1;
-        if (c.ledge !== ledge) {
-          c.ledge = ledge;
-          if (kmh > 6) {
-            c.hop = { z: 0, vz: clamp(8 + kmh * 0.9, 8, 55), pitch: 0, vp: (along > 0 ? -1 : 1) * clamp(kmh / 12, 0.4, 2.4), roll: 0, vr: (Math.random() - 0.5) * 1.4 };
-            const scrub = clamp((kmh - 8) / 70, 0, 0.3) / (spec.travel || 1);
-            c.vx *= 1 - scrub;
-            c.vy *= 1 - scrub;
-            if (kmh > 30) damageVehicle(c, (kmh - 30) * (spec.offroad ? 0.25 : 0.6), c.x, c.y);
-            if (c === player.car) shake = Math.max(shake, clamp(kmh / 15, 0.5, 3));
-          }
-        }
-      }
+      if (excess > 0) force -= Math.sign(along) * Math.min(speed / stepSeconds, excess * 0.25 * GRAVITY * Math.min(1, load));
       // Standing still with no throttle: the brakes hold up to the tyres' grip;
       // on anything steeper the truck slides back down.
-      const gravityAlong = -GRAVITY * grade * cn;
       if (Math.abs(acceleration) < 0.05 * GRAVITY && speed < 2 * KMH && !c.ai) {
-        const hold = tyreMu * GRAVITY * cn;
-        force = clamp(-gravityAlong - along / stepSeconds, -hold, hold);
+        const hold = tyreMu * GRAVITY * load;
+        force = clamp(-ridePushAlong(c, t, cn) - along / stepSeconds, -hold, hold);
       }
-      // Gravity along the ground (the tyres cancel the part across the car).
-      c.vx -= t.slope.x * GRAVITY * cn * stepSeconds;
-      c.vy -= t.slope.y * GRAVITY * cn * stepSeconds;
+      // The ground's push along it, gravity's share (the tyres cancel the part across the car).
+      rideGroundPush(c, t, cn, stepSeconds);
       // What the wheels do: spinning ahead of the ground, or rolling with it.
       c.wheelSpin += (spin - c.wheelSpin) * Math.min(1, stepSeconds * (spin > c.wheelSpin ? 10 : 4));
       c.spinSpeed = c.wheelSpin * (55 + speed * 0.7) * (c.lowRange ? 0.8 : 1.2);
@@ -592,8 +580,8 @@
       c.surfaceRock = s.rock;
       offroadStep.acceleration = force;
       // Sideways grip follows the same friction.
-      offroadStep.grip = clamp(tyreMu / 0.85, 0.25, 1);
-      offroadStep.lateral = clamp(tyreMu / 0.8, 0.3, 1) * (spin > 0.4 ? 0.7 : 1);
+      offroadStep.grip = clamp(tyreMu / 0.85, 0.25, 1) * Math.min(1, load);
+      offroadStep.lateral = clamp(tyreMu / 0.8, 0.3, 1) * (spin > 0.4 ? 0.7 : 1) * Math.min(1, load);
       t.limit = roughKmh * 1.6 * KMH;
       return offroadStep;
     }
@@ -603,18 +591,19 @@
        and a banked bend leans it into the curve. A car stopped with nothing
        pressed is held on its brakes. */
     function offroadPaved(c, t, acceleration, along, stepSeconds) {
-      const cn = 1 / Math.sqrt(1 + t.slope.x * t.slope.x + t.slope.y * t.slope.y);
-      let force = acceleration;
+      const cn = 1 / Math.sqrt(1 + t.slope.x * t.slope.x + t.slope.y * t.slope.y),
+        // Off the ground over a crest the tyres have nothing to work on (terrain-suspension.js).
+        load = Math.min(1, rideLoadShare(c, cn) / cn);
+      let force = acceleration * load;
       if (Math.abs(acceleration) < 0.05 * GRAVITY && Math.abs(along) < 2 * KMH && !c.ai) {
-        const hold = 0.8 * GRAVITY * cn;
-        force = clamp(GRAVITY * t.along * cn - along / stepSeconds, -hold, hold);
+        const hold = 0.8 * GRAVITY * cn * load;
+        force = clamp(-ridePushAlong(c, t, cn) - along / stepSeconds, -hold, hold);
       }
-      c.vx -= t.slope.x * GRAVITY * cn * stepSeconds;
-      c.vy -= t.slope.y * GRAVITY * cn * stepSeconds;
+      rideGroundPush(c, t, cn, stepSeconds);
       offroadRoll(c, stepSeconds);
       offroadStep.acceleration = force;
-      offroadStep.grip = 1;
-      offroadStep.lateral = 1;
+      offroadStep.grip = load;
+      offroadStep.lateral = load;
       t.limit = Infinity;
       return offroadStep;
     }

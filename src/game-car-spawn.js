@@ -59,6 +59,18 @@
           slopePitch: 0,
           slopeRoll: 0,
           offroadState: null,
+          // The ride on the terrain (terrain-suspension.js): the springs' record,
+          // still working, the body's lift over the ground (drawn only), the tyres'
+          // load and the ground's push (per unit mass), off the ground, the last knock.
+          ride: null,
+          rideActive: false,
+          rideLift: 0,
+          rideLoad: 0,
+          rideAx: 0,
+          rideAy: 0,
+          rideAir: false,
+          rideThumpAt: -1,
+          rideThumpVz: 0,
           // Off-road (offroad.js): the reused terrain record, how far the driven
           // wheels spin ahead of the ground (0..1 and in u/s), the mud and rock
           // under them, low range, the last rock ledge, the mud on the body (and
