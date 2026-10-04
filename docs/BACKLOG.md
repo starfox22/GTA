@@ -31,7 +31,8 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - Damage direction: only gunfire shows the red arc (pursuit-officers.js playerHitFeedback); blasts and melee do not.
 - Gamepad: tested with a virtual pad only (`gamepadFeed`); no rumble; the settings screen cannot rebind pad buttons.
 - The 2D fallback renderer's speech bubbles keep the old 10 px text.
-- tools/tests/hud-layout.mjs failed once in three runs (2026-10-04, god-splash round, unrelated code): "the top card
+- tools/tests/hud-layout.mjs failed once in three runs (2026-10-04, god-splash round, unrelated code; again in the
+  full suite of the armour/trail round, passing alone): "the top card
   covered the bus" with `folded: false`, `readLeft` 5.5 (open card 64-152 px over the bus at 93 px). Timing of the
   fold against the bus's climb; not reproduced on two reruns.
 
