@@ -213,8 +213,15 @@
       const shown = getElement('bigmap').clientWidth;
       return shown > 0 ? clamp(800 / shown, 1, 2.2) : 1;
     }
+    function mapShownBox() {
+      const r = getElement('bigmap').getBoundingClientRect();
+      return { width: Math.round(r.width), height: Math.round(r.height), viewport: [viewportWidth, viewportHeight] };
+    }
     function mapControlsLine() {
       const device = hintDevice();
+      // The god-mode TELEPORT pick (god-panel.js): a click is a teleport, not a route.
+      if (getElement('mapOverlay').classList.contains('god-pick'))
+        return device === 'touch' ? 'PINCH ZOOM · DRAG PAN · TAP TO TELEPORT' : 'WHEEL OR + / − ZOOM · DRAG PAN · CLICK TO TELEPORT · C FIND ME · 0 RESET';
       if (device === 'touch') return 'PINCH ZOOM · DRAG PAN · TAP TO SET A ROUTE';
       if (device === 'gamepad') return 'L-STICK PAN · LT / RT ZOOM · A ROUTE · X CLEAR · Y FIND ME';
       return '+ / − ZOOM · ARROWS PAN · CLICK A ROUTE · C FIND ME · 0 RESET';
@@ -360,7 +367,8 @@
       return {
         layers: { ...mapLayers },
         destinations: mapDestinations().map((d) => ({ heading: d.heading, name: d.name, metres: Math.round(worldMeters(d.distance)) })),
-        bigmap: { width: getElement('bigmap').width, height: getElement('bigmap').height },
+        // `shown`: the canvas box on screen in CSS pixels (the TELEPORT pick makes it the whole panel).
+        bigmap: { width: getElement('bigmap').width, height: getElement('bigmap').height, shown: mapShownBox() },
         minimap: { width: getElement('minimap').width, height: getElement('minimap').height, logical: { ...minimapView } },
         speedZoom: +minimapPull.value.toFixed(3),
       };
