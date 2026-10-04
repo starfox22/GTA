@@ -180,7 +180,22 @@
      */
     const MISSION_CARD_SECONDS = 6;
     let missionCardKey = '',
-      missionCardUntil = 0;
+      missionCardUntil = 0,
+      // Opened on purpose (O, a click or tap): it then stays open over a story line too.
+      missionCardAsked = false;
+    /* A short window (radio.css, max-height 620px) has no room for the open card and the
+       story line above it: while a line is up the card stays a strip, unless opened on
+       purpose, and the line sits just above the strip. */
+    function missionCardYields() {
+      return (
+        viewportHeight <= 620 &&
+        viewportWidth > 700 &&
+        !missionCardAsked &&
+        !!mission &&
+        gameTime <= (mission.lineUntil || 0) &&
+        !document.body?.classList.contains('touch-mode') // (touch lays the HUD out its own way)
+      );
+    }
     function updateMissionCard(objectiveLine) {
       const key =
         getElement('pagerLabel').textContent +
@@ -191,12 +206,16 @@
       if (key !== missionCardKey) {
         missionCardKey = key;
         missionCardUntil = gameTime + MISSION_CARD_SECONDS;
+        missionCardAsked = false;
       }
       getElement('missionObjective').textContent = objectiveLine;
-      getElement('pager').classList.toggle('compact', gameTime >= missionCardUntil);
+      getElement('pager').classList.toggle('compact', gameTime >= missionCardUntil || missionCardYields());
     }
     function toggleMissionCard() {
-      missionCardUntil = gameTime < missionCardUntil ? 0 : gameTime + MISSION_CARD_SECONDS;
+      // What is on screen decides: a strip opens, an open card folds.
+      const open = !getElement('pager').classList.contains('compact');
+      missionCardUntil = open ? 0 : gameTime + MISSION_CARD_SECONDS;
+      missionCardAsked = !open;
       updateUI();
     }
     // HUD AND CONTEXT PROMPTS: presentation derived from shared simulation state.
