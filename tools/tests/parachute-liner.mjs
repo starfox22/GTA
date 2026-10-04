@@ -4,6 +4,34 @@
 // the jumper in the water beside her, and E climbs aboard.
 export const fresh = true;
 
+/* Fly the canopy as a player would onto her lido: aim where it will be when the canopy is
+   down to it (her speed times the time left at the sink rate), turn toward it, pull the
+   risers when it is running away, flare when it is close. Returns deckLanding() once down. */
+async function steerOnto(t, seconds) {
+  for (let flown = 0; flown < seconds; ) {
+    const d = await t.call('deckLanding');
+    if (!d.parachute) return d;
+    const ship = await t.call('liners'),
+      left = Math.max(0.5, (d.altitude - 152) / 28),
+      a = (ship.heading * Math.PI) / 180,
+      ahead = -140 + ship.speed * left,
+      tx = ship.x + Math.cos(a) * ahead,
+      ty = ship.y + Math.sin(a) * ahead,
+      want = Math.atan2(ty - d.y, tx - d.x),
+      err = Math.atan2(Math.sin(want - d.heading), Math.cos(want - d.heading)),
+      need = Math.hypot(tx - d.x, ty - d.y) / left;
+    let s = 0.4;
+    if (Math.abs(err) > 0.08) {
+      s = Math.min(0.4, Math.abs(err) / 1.15);
+      await t.keys(err > 0 ? 'KeyD' : 'KeyA', s);
+    } else if (need > 9.5 * 8) await t.keys('KeyW', s);
+    else if (need < 5 * 8) await t.keys('KeyS', s);
+    else await t.wait(s);
+    flown += s;
+  }
+  return t.call('deckLanding');
+}
+
 export default async function (t) {
   await t.call('holdSimulation', true);
   try {
@@ -44,6 +72,17 @@ export default async function (t) {
     await t.call('interact');
     d = await t.call('deckLanding');
     t.assert(!d.aboard, `went ashore by the stern platform: ${JSON.stringify(d)}`);
+
+    // 2b. Steered onto her from 70 m up, well ahead and off to one side, while she makes way.
+    ship = await t.call('liners');
+    for (let i = 0; i < 24 && !(ship.kind === 'ahead' && ship.knots >= 15); i++) ship = await t.call('advanceLiner', 15);
+    const a = (ship.heading * Math.PI) / 180,
+      sx = ship.x + Math.cos(a) * 1500 - Math.sin(a) * 400,
+      sy = ship.y + Math.sin(a) * 1500 + Math.cos(a) * 400;
+    await t.call('canopyOver', sx, sy, 70, Math.atan2(ship.y - sy, ship.x - sx));
+    d = await steerOnto(t, 40);
+    t.assert(d.aboard && d.aboard.ship === 'MS MERIDIAN STAR' && d.last.outcome !== 'dead', `steered onto her deck: ${JSON.stringify(d)}`);
+    t.note(`steered down onto her ${d.last.deck} at ${d.last.shipKnots} kn, ${d.last.acrossMs} m/s across the deck`);
 
     // 3. Freefall onto the moored Coral Dawn: as hard as the ground, on her deck.
     d = await t.call('deckJump', 'coraldawn', 60, -622, 0, false);

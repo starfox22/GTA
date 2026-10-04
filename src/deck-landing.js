@@ -311,6 +311,11 @@
         aboard: player.deck ? { ship: player.deck.name, level: player.deckLevel ?? 0, ...deckLocalRounded(player.deck) } : null,
         swimming: !!player.swimming,
         parachute: player.parachute ? player.parachute.stage : null,
+        // Where the player is and faces (for a test steering a canopy onto a ship).
+        x: Math.round(player.x),
+        y: Math.round(player.y),
+        altitude: Math.round(player.altitude),
+        heading: +(player.a || 0).toFixed(3),
         last: lastDeckLanding,
       };
     }
