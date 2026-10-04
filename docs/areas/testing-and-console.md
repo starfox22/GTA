@@ -84,6 +84,10 @@ node tools/dev.mjs errors | status | reload [--render|--norender] [--keep] [--sh
   `DeadEndCity.simProfile(seconds, keys)` is the scenario report to call under them.
   A/B two builds by alternating the same call on two dev servers and comparing medians and minima:
   one run is noise on a shared machine.
+- **Hiccups** (docs/areas/rendering-hiccups.md): `node tools/hitches.mjs` runs a fixed tour through
+  `hitchRun` (every frame's sections and what happened in it, src/frame-trace.js) and prints long frames
+  and their causes per stage; `--ab A.html B.html` runs both builds ABBA on one server; `--live` records
+  real frames with the browser's style and layout time (`node tools/dev.mjs metrics`).
 - Call `DeadEndCity.graphics('high')` before judging an image (SwiftShader auto-detects LOW).
 - Open the page with `?dev` for dev-only console paths (e.g. `startMission` on demo-gated
   jobs), `?shadercheck` to have three.js report shader compile errors.

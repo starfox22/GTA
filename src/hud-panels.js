@@ -108,7 +108,7 @@
       watchRadioBox();
       updateHudPops();
       renderQuickKeys();
-      getElement('bottom').dataset.context = hudContext();
+      hudAttr(getElement('bottom'), 'data-context', hudContext());
     }
     /**
      * FLIGHT HUD

@@ -63,7 +63,7 @@
         note.tone = tone;
         note.until = Math.max(note.until, now + life);
         note.life = life;
-        note.el.dataset.tone = tone;
+        if (note.el.dataset.tone !== tone) note.el.dataset.tone = tone;
         if (changed) note.el.firstChild.textContent = text;
         if (changed || note.until - now < life * 0.5) restartNoticeTimer(note);
       } else {
@@ -85,7 +85,8 @@
       // panel, so it shows over it. (The class, not hudCovered(): tell() runs
       // during boot, before hud.js's constants exist.)
       box.classList.toggle('over-panel', document.body.classList.contains('panel-open'));
-      box.classList.add('show');
+      // (add() rewrites the class attribute even when the class is there: a DOM mutation per repeated line.)
+      if (!box.classList.contains('show')) box.classList.add('show');
       trimNotices();
       markOlderNotices();
       if (typeof freshToast === 'function')
@@ -136,7 +137,9 @@
         }
       }
       if (changed) markOlderNotices();
-      if (!notices.some((n) => !n.leaving)) getElement('toast').classList.remove('show');
+      // (remove() rewrites the class attribute even when the class is gone: a DOM mutation every frame of a leave.)
+      const box = getElement('toast');
+      if (box.classList.contains('show') && !notices.some((n) => !n.leaving)) box.classList.remove('show');
     }
     /* Clear the feed at once (a teleport out of the water, a new game). */
     function clearNotices() {

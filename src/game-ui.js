@@ -201,6 +201,8 @@
     }
     // HUD AND CONTEXT PROMPTS: presentation derived from shared simulation state.
     function updateUI() {
+      // A docking line asked for since the last frame is measured before this pass writes anything (hud-state.js).
+      measureDockLine();
       enforceVehicleHandgun();
       // Every system offers its prompt during the pass; hud.js commitPrompt() shows one.
       clearPromptOffer();

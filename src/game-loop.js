@@ -100,11 +100,16 @@
     let firstFrameMarked = false,
       firstPlayFrameMarked = false;
     function frame(t) {
-      if (!frameDue(t)) {
-        requestAnimationFrame(frame);
-        return;
-      }
+      if (frameDue(t)) runFrame(t, true);
+      requestAnimationFrame(frame);
+    }
+    // One frame's work at time t (ms): input, the simulation step, the draw. `live` is false for a frame
+    // the console steps (hitchRun, frame-trace.js): AUTO's quality controller then leaves it alone.
+    function runFrame(t, live) {
       const frameStart = performance.now();
+      if (frameTrace.on) frameTraceBegin();
+      // Layout reads the HUD asked for last pass, while the layout is still clean (hud-state.js).
+      measureDockLine();
       if (!firstFrameMarked) {
         firstFrameMarked = true;
         bootMark('first-frame');
@@ -171,7 +176,7 @@
       profile.draw += frameEnd - drawStart;
       profile.frames++;
       // AUTO graphics: dynamic resolution and tier from the frame rate (quality.js).
-      if (gameMode === 'play') adaptGraphics(t - (profile.previousFrame || t), frameEnd - updateStart, frameEnd);
+      if (live && gameMode === 'play') adaptGraphics(t - (profile.previousFrame || t), frameEnd - updateStart, frameEnd);
+      if (frameTrace.on) frameTraceEnd(t, frameStart, updateStart, drawStart, frameEnd);
       profile.previousFrame = t;
-      requestAnimationFrame(frame);
     }

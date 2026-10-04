@@ -28,6 +28,16 @@
         },
         // First uses and the slowest frames (render3d-hiccups.js; DeadEndCity.renderHiccups()).
         hiccups: (reset) => hiccupReport(reset),
+        // Running totals the console's frame trace (frame-trace.js) differences per frame: programs linked, textures
+        // and geometries on the GPU, vehicle models built.
+        // Buffer attributes and textures re-uploaded since a snapshot (render3d-hiccups.js ATTRIBUTE CHURN).
+        attributeChurn: (snapshot) => attributeChurn(snapshot),
+        traceCounters: () => ({
+          programs: hiccupPrograms(),
+          textures: renderer.info.memory.textures,
+          geometries: renderer.info.memory.geometries,
+          models: modelsBuiltTotal,
+        }),
         info() {
           let objects = 0;
           const byType = {};

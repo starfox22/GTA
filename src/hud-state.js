@@ -389,7 +389,7 @@
       box.classList.toggle('no-meter', meter === null);
       box.classList.toggle('breath', meterKind === 'breath');
       box.classList.toggle('damaged', meterKind === 'condition' ? meter < 0.3 : meterKind === 'breath' && meter < 0.3);
-      box.dataset.mode = c ? 'vehicle' : chute ? 'falling' : swimming ? 'swim' : transitRide ? 'rail' : 'foot';
+      hudAttr(box, 'data-mode', c ? 'vehicle' : chute ? 'falling' : swimming ? 'swim' : transitRide ? 'rail' : 'foot');
     }
     /**
      * KEY HINTS
@@ -613,11 +613,20 @@
      * pill is shown or hidden, not every pass.
      */
     let dockNavShown = null;
+    // The measurement reads layout: it runs at the start of the next frame or HUD pass (measureDockLine), before
+    // anything is written, where the browser's last layout is still valid, instead of forcing a layout of the whole
+    // page straight after this pass's writes (a 1-5 ms stall each time a prompt docked).
+    let dockLinePending = false;
     function placeDockLine() {
+      dockLinePending = true;
+      dockNavShown = dockLineKey();
+    }
+    function measureDockLine() {
+      if (!dockLinePending) return;
+      dockLinePending = false;
       const nav = getElement('navigation'),
         shown = nav.style.display !== 'none',
         box = shown ? nav.getBoundingClientRect() : null;
-      dockNavShown = dockLineKey();
       let bottom = box && box.height ? box.bottom : 12;
       // In an aircraft: below the heading strip and its warning line.
       if (flightHud.shown) bottom = Math.max(bottom, flightHud.root.querySelector('.fh-top').getBoundingClientRect().bottom);

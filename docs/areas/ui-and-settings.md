@@ -90,6 +90,14 @@ navigation.js (big map, GPS), cycles.js (bike share), src/shell.html + src/ui/* 
   text changes (one id per vehicle kind, so TAKE OFF → RISE is not a new pop-in).
   Visibility is a class (`.show`), never `display` (toggling display restarted the fade-in
   every pass: the old flickering prompt).
+- **HUD writes** (game-state.js HUD WRITE GUARD): `textContent` / `innerHTML` of elements from `getElement()` skip
+  a same-value write; attributes the HUD sets every pass go through `hudAttr(el, name, value)` (setAttribute,
+  `dataset` and `title` rewrite the attribute, a DOM mutation and an attribute-selector invalidation, even when
+  unchanged); `classList.add` / `remove` rewrite the class attribute too, so a per-pass one is guarded by
+  `contains` (`toggle(name, force)` is safe). A layout read in the pass (getBoundingClientRect, offsetWidth) forces a
+  whole-page layout after its writes: queue it for the frame start instead, as the dock line does
+  (`placeDockLine` -> `measureDockLine`, run first in `runFrame` and `updateUI`). `hitchRun().domTargets` lists what
+  still mutates; tools/tests/hud-dom-writes.mjs holds the steady HUD at zero rewrites.
 - Range tests behind a prompt have hysteresis asked the same way by the prompt and by the
   action key: `withinRange(key, distance, enter, exit)`; `nearestPlace()` for doors.
 - Centre cards: `announce()` headline card. PANEL COVER: `body.panel-open` hides HUD text
