@@ -420,3 +420,80 @@ the cap order, the protected and in-view cases, `integrity()` and `settleAudit()
 
 The only defect it found was the cab's FARE notice (a `routeLength` declared twice, fixed with a test and the
 `tools/dup-functions.mjs` guard). The page is no-render: renderer-side leaks are not covered.
+
+## Fourth pass: hiccups, frame by frame (3-4 October 2026)
+
+Goal from the owner: no random hiccups on any tier. A hiccup is a frame much longer than its neighbours, so this pass
+measured every frame instead of averages, with a cause per long frame.
+
+### The tool
+
+`src/frame-trace.js` records each frame's sections (update parts, renderer laps, `f:pre`) and what happened in it:
+heap drops (collections; `--enable-precise-memory-info` in tools/dev.mjs makes `performance.memory` exact), DOM
+mutations by element and attribute, WebGL texture and buffer uploads (bytes, update ranges counted exactly) and program
+links, canvas 2D draws and text, Web Audio nodes, localStorage writes, vehicle models built, spawns, first-use programs,
+textures and geometries. The counters are prototype wrappers installed only while a trace runs. `runFrame()` is the
+frame body shared by the requestAnimationFrame loop and the console's stepped runner, so a stepped frame is a real
+frame minus the browser's own style, layout and paint. Console: `hitchRun` (stepped), `frameTrace` (live),
+`uploadChurn` (what three.js re-uploads), `cityMap` (staging). `node tools/hitches.mjs` runs a fixed tour: walk,
+eight district teleports, a downtown drive, the Keys Bridge, the county, a three-star chase, a crash, a blast, out of
+the car and back in, rain at 21:30, the map, the pause menu; `--ab A.html B.html` compares two builds in ABBA order.
+
+### What it found (no-render page, base build plus the tool, load 8-19 on 4 cores)
+
+| Stage | CPU ms / frame | KB allocated / frame | long frames (of) | long frames' section (count) | tags |
+| --- | --- | --- | --- | --- | --- |
+| walk | 5.5 | 1,700 | 44 (360) | cars 20, people 11, sound 5 | gc 4, spawn 1 |
+| districts | 4.4 | 1,400 | 50 (720) | cars 20, people 5, civic 5 | gc 9, spawn 3 |
+| drive | 4.7 | 1,600 | 11 (480) | cars 8 | |
+| chase (3 stars) | 5.7 | 1,600 | 19 (600) | cars 8, civic 4, people 3 | gc 3, spawn 3 |
+| blast | 6.6 | 1,500 | 10 (180) | cars 5, damage 2 | gc 2 |
+| rain at night | 6.3 | 1,600 | 17 (480) | cars 10, people 2 | gc 5 |
+
+- **Collections**: the simulation allocates 1.4-1.7 MB a frame (mostly boxed doubles: `trafficControl` 18%,
+  `controlVehicle` 12%, `vehicleBroadphase` 9%, `knockSceneProps` 3.5%, `settleVehicle` 2.7%, `updateBloodTracks` 2.6%),
+  so a ~30 MB young-generation scavenge runs about every 18 frames, three a second. On this loaded machine those frames
+  were among the longest (helper threads wait for a core); on a laptop a scavenge is a few ms. Not changed here (the
+  physics files belong to another change in flight): the largest lever left.
+- **CPU bursts** (`--profile --who bursts`, CPU time with descheduling gaps dropped): single `updateCars` calls of 4-7 ms
+  (physics step, `hullTouchesLand`, `controlVehicle`) at ~280 vehicles; `updateUI` 6.6 ms (the minimap:
+  `drawCivicMap`, `entityElevation`); `updateMilitary` 5.6 ms (`updateGatePieces`); `updateUI` 5.3 ms in
+  `placeDockLine > getBoundingClientRect` (fixed below). The first trace after a boot had two frames of 45 and 89 ms in
+  the physics (JIT warm-up and a collection); later runs did not repeat them.
+- **DOM**: 25 mutations a second standing still, 60 in a chase: attributes rewritten with the value they had
+  (`data-context`, the speed box's `data-mode`, the radio's `aria-pressed`, the portrait's `title`) and the toast's
+  `classList.remove('show')` on every frame of a notice's leave (`add`/`remove` rewrite the attribute even when nothing
+  changes).
+- **Rendered, LOW** (480 x 300, software GL, prewarm on): 0-1 programs created per stage (the prewarm holds); a drive
+  into new streets uploads 2.4 geometries and ~240 KB of buffers a frame (the cell pre-upload and new car models) and
+  ~0.1 car model a frame; standing still ~160 KB of buffer uploads a frame in ~90 calls, almost all the crowd's
+  instance ranges. `uploadChurn` named two buffers re-sent whole every frame: the skid marks (184 KB while any mark is
+  drawn) and the contact shadows (57.6 KB at LOW). Wall-clock frames there took 0.5-14 s (software GL under load), so
+  MEDIUM, HIGH, ULTRA and AUTO were not toured: their GPU cost is not measurable here.
+
+### What changed
+
+| Fix | Files | Measured |
+| --- | --- | --- |
+| HUD attributes written only on change (`hudAttr`), toast class guarded | game-state.js, hud-state.js, hud-panels.js, hud-notify.js, car-radio.js, story.js | DOM mutations a second (A/B, medians of 2+2): standing 25 -> 8.3, driving 27.6 -> 14.5, car out/in 24.5 -> 15.3, chase 60 -> 46 |
+| The dock line's layout read moved to the start of the next frame or HUD pass (`measureDockLine`) | hud-state.js, game-loop.js, game-ui.js | the 5.3 ms forced whole-page layout each time a prompt or a card docked is gone (the read finds a clean layout) |
+| Skid marks and contact shadows send only what is drawn (`addUpdateRange`) | render3d-frame.js, lighting3d-look.js | skid marks 184 KB a frame -> the marks drawn; contact shadows 57.6 KB -> 64 bytes a shadow (~6.4 KB in a street) |
+| New car models: still at most 6 a frame, and none after 3 ms of building | render3d-resources.js, render3d-frame.js | bounds a burst of new traffic to ~3 ms of model building a frame (plus one model) |
+
+CPU per frame and allocation are unchanged by design (A/B 4.2-6.9 ms either way). tools/tests/hud-dom-writes.mjs keeps
+the steady HUD at zero rewritten attributes; tools/tests/frame-trace.mjs covers the tool.
+
+### Left for later (measured cost)
+
+- Allocation 1.4-1.7 MB a frame, three scavenges a second (above); `knockSceneProps` also tests every vehicle against
+  every prop near the player (O(props x vehicles)): the vehicle grid would do.
+- Minimap passes of up to 6.6 ms CPU every 0.09 s (map-view.js): spread its layers over passes.
+- The 2D overlay canvas (`worldContext`) is cleared every frame even when nothing was drawn on it, so the browser
+  composites a full-screen layer every frame: clear only after a frame that drew.
+- Forced layouts left: `restartNoticeTimer` (`void bar.offsetWidth` per new or refreshed notice) and the prompt pop
+  (`void el.offsetWidth` per new prompt).
+- Whole-buffer re-uploads left: the mud clumps (40 KB a frame, offroad3d-mud.js) and an unnamed instanced sphere pool
+  (42 KB a frame); the skid marks still compute two terrain heights per mark per frame (up to 2,200) for marks that
+  never move.
+- The tour at MEDIUM-ULTRA and AUTO on a real GPU (`node tools/hitches.mjs --tiers medium,high,ultra,auto --scale 0.2`
+  with `DEC_GPU=1`).

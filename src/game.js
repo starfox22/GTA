@@ -171,6 +171,7 @@
     bootMark('title-menu');
     loadVisuals();
     bootMark('visuals-queued');
+    // @include src/frame-trace.js
     // @include src/game-loop.js
     requestAnimationFrame(frame);
     bootMark('loop-ready');

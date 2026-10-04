@@ -85,6 +85,68 @@
       // code), the five slowest frames with their biggest section, the JS heap growth in MB and the number of
       // collections seen. Read-only: it advances the simulation like simulate().
       simProfile: (seconds = 6, held = [], top = 14) => simProfileRun(seconds, Array.isArray(held) ? held : [], clamp(Number(top) || 14, 1, 60)),
+      // Hiccup hunt, stepped (frame-trace.js): runs `seconds` of whole frames at 1/60 s (input, update, HUD and, with a
+      // renderer, the draw) holding the keys in `held`, in whatever mode the game is in, and reports the frame times
+      // (p50 / p95 / p99 / max), the long frames (over twice the median) with the section that ran over and what
+      // happened in them (`gc`, `program`, `texture-upload`, `geometry-upload`, `models`, `spawn`, `dom`, `storage`,
+      // `audio-nodes`, `canvas`, `sync-read`), section averages and worst, and counters per second. The browser's own
+      // style, layout and paint run between live frames only: frameTrace measures those. `keep` appends to the last
+      // run's frames (one report for a stage of several steps). Advances the game like simulate().
+      hitchRun(seconds = 6, held = [], top = 10, keep = false) {
+        const frames = clamp(Math.round(Number(seconds) * 60) || 360, 1, 7200),
+          heldBefore = simulationHeld,
+          lastBefore = lastTime,
+          previousBefore = profile.previousFrame;
+        let t = lastTime || performance.now();
+        frameTraceStart(true, Array.isArray(held) ? held : [], !!keep);
+        simulationHeld = false;
+        try {
+          for (let i = 0; i < frames; i++) {
+            t += 1000 / 60;
+            runFrame(t, false);
+          }
+        } finally {
+          simulationHeld = heldBefore;
+          lastTime = lastBefore;
+          profile.previousFrame = previousBefore;
+        }
+        return frameTraceStop(clamp(Number(top) || 10, 1, 40));
+      },
+      // GPU upload churn (rendered pages): steps `frames` whole frames like hitchRun and lists the buffer attributes and
+      // textures whose data changed, so three.js uploaded them again: [owner attribute, KB uploaded in all (a whole
+      // buffer per change), uploads, objects],
+      // biggest first, and the KB per frame in all. Advances the game like simulate().
+      uploadChurn(frames = 30, held = []) {
+        if (!city3D || !city3D.attributeChurn) return null;
+        const n = clamp(Math.round(Number(frames)) || 30, 1, 600),
+          lastBefore = lastTime,
+          previousBefore = profile.previousFrame,
+          snapshot = city3D.attributeChurn();
+        let t = lastTime || performance.now();
+        for (const code of held) keys[code] = true;
+        try {
+          for (let i = 0; i < n; i++) {
+            t += 1000 / 60;
+            runFrame(t, false);
+          }
+        } finally {
+          for (const code of held) keys[code] = false;
+          lastTime = lastBefore;
+          profile.previousFrame = previousBefore;
+        }
+        const rows = city3D.attributeChurn(snapshot);
+        return { frames: n, kbPerFrame: Math.round(rows.reduce((s, r) => s + r[1], 0) / n), top: rows.slice(0, 25) };
+      },
+      // Hiccup hunt, live frames (frame-trace.js): 'start' records every frame the page draws from now on (holding the
+      // keys in `held`), 'report' reads the record so far, 'stop' ends it and reports (the same report as hitchRun,
+      // plus the requestAnimationFrame intervals in `gaps`).
+      frameTrace(command = 'report', held = []) {
+        if (command === 'start') {
+          frameTraceStart(false, Array.isArray(held) ? held : []);
+          return { on: true };
+        }
+        return command === 'stop' ? frameTraceStop(10) : frameTraceReport(10);
+      },
       // The settle shortcut (physics-step.js settleIsTrivial): steps the physics `steps` times (1/120 s each, the
       // world moves on) and, after each, runs the whole settle on every vehicle the shortcut skips and counts any
       // field it changed besides `speed`. `changed` must be 0; `checked` is how many were looked at.

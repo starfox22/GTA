@@ -82,6 +82,13 @@
       });
       return el;
     }
+    // An attribute (aria-*, data-*, title) the HUD sets on every refresh, written only when it differs: setAttribute
+    // with the value already there still queues a DOM mutation and invalidates style for attribute selectors.
+    function hudAttr(el, name, value) {
+      if (!el || typeof el.setAttribute !== 'function') return;
+      const text = String(value);
+      if (el.getAttribute(name) !== text) el.setAttribute(name, text);
+    }
     const getElement = (id) => {
         const el = document.getElementById(id);
         return el && !guardedElements.has(el) ? guardElementWrites(el) : el;
