@@ -63,6 +63,17 @@ export default async function (t) {
     t.assert(moved > 150, `carried with her: moved ${Math.round(moved)} units in 20 s`);
     t.assert(Math.abs(d.aboard.heightM - spot.heightM) < 0.2, `still at deck height: ${JSON.stringify(d.aboard)}`);
 
+    // 1b. Flown into her the wrong way (against her heading): the deck comes at the jumper at
+    // canopy plus ship speed, more than a run-out takes, and the landing hurts.
+    ship = await t.call('liners');
+    await t.call('deckJump', 'meridian', 4, -60, 30, true, ((ship.heading + 180) * Math.PI) / 180);
+    await t.wait(3);
+    d = await t.call('deckLanding');
+    const expected = 8.6 + ship.knots * 0.5144;
+    t.assert(d.aboard && d.last && Math.abs(d.last.acrossMs - expected) < 1.5, `across the deck at canopy plus ship speed (${expected.toFixed(1)} m/s): ${JSON.stringify(d.last)}`);
+    if (d.last.acrossMs > 12.5) t.assert(d.last.outcome === 'hurt', `a hard landing head-on at ${d.last.acrossMs} m/s: ${JSON.stringify(d.last)}`);
+    t.note(`head-on: ${d.last.acrossMs} m/s across her deck at ${d.last.shipKnots} kn, ${d.last.outcome}`);
+
     // 2. Her stairs lead aft to the stern platform, the way off.
     if (d.aboard.level > 0 || d.aboard.u > -584) {
       await t.call('interact');

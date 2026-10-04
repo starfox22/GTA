@@ -2,7 +2,7 @@
     /**
      * THE VOYAGE
      * The Meridian Star's grand tour of the islands, as legs sailed in turn and
-     * then again (about 18 minutes of play a lap; linerVoyageCheck() times it):
+     * then again (about 20 minutes of play a lap; linerVoyageCheck() times it):
      *   call    riding at anchor for `seconds`: off the cruise terminal in North
      *           Sound (where her stern platform takes passengers from the water),
      *           and a tender call off Palm Keys' public beach
@@ -19,14 +19,14 @@
      * A leg's `points` are a control polygon; each corner is filleted with a
      * circular arc of its own radius (`[x, y, radius]`), a turning circle a
      * 170 m ship can hold. Speed is limited by where she is (LINER_SPEED_ZONES:
-     * slow in the sound and off the beach, moderate along the islands, 20 knots
+     * slow in the sound and off the beach, 20 knots along the islands, 21
      * at sea) and by the curve (lateral acceleration LINER_TURN_GRIP), and she
      * brakes in good time for every stop. linerVoyageCheck() sweeps her hull
      * down the whole tour against land, bridge footings, docks, the other ships
      * and the world edge (LINER_EDGE_MARGIN inside worldEdgeLine).
      */
     const LINER_VOYAGE = [
-      { kind: 'call', seconds: 50, name: 'NORTH SOUND ANCHORAGE', detail: 'OFF THE CRUISE TERMINAL' },
+      { kind: 'call', seconds: 45, name: 'NORTH SOUND ANCHORAGE', detail: 'OFF THE CRUISE TERMINAL' },
       {
         kind: 'astern',
         points: [
@@ -56,7 +56,7 @@
       },
       // At anchor off the beach she swings round on her thrusters (`swing`, radians
       // over the call's middle) to leave westward.
-      { kind: 'call', seconds: 40, name: 'PALM KEYS ANCHORAGE', detail: 'OFF THE PUBLIC BEACH', swing: Math.PI },
+      { kind: 'call', seconds: 70, name: 'PALM KEYS ANCHORAGE', detail: 'OFF THE PUBLIC BEACH', swing: Math.PI },
       {
         kind: 'ahead',
         // West past the beach-club point, north well offshore, in to North Sound.
@@ -74,10 +74,10 @@
     const LINER_SPEED_ZONES = [
       { x0: -300, x1: 3300, y0: -6000, y1: -4000, top: 7.6 * KNOTS },
       { x0: -1800, x1: 1900, y0: -5800, y1: -4000, top: 12 * KNOTS },
-      { x0: 1000, x1: 4600, y0: -8000, y1: -7000, top: 19 * KNOTS },
-      { x0: 5500, x1: 9800, y0: -6400, y1: -5500, top: 19 * KNOTS },
-      { x0: -3800, x1: -3200, y0: -2400, y1: 5600, top: 19 * KNOTS },
-      { x0: -2900, x1: -1000, y0: 6000, y1: 7100, top: 8 * KNOTS },
+      { x0: 1000, x1: 4600, y0: -8000, y1: -7000, top: 20 * KNOTS },
+      { x0: 5500, x1: 9800, y0: -6400, y1: -5500, top: 20 * KNOTS },
+      { x0: -3800, x1: -3200, y0: -2400, y1: 5600, top: 20 * KNOTS },
+      { x0: -2600, x1: -1000, y0: 6000, y1: 7100, top: 8 * KNOTS },
     ];
     // Named waters on the tour, in its order, for liners() and the tests.
     const LINER_PASSAGES = [
@@ -189,8 +189,8 @@
         top: p.top + (n.top - p.top) * f,
       };
     }
-    // Where she is in the voyage. She starts at anchor, a little before sailing.
-    const linerVoyage = { leg: 0, s: 0, speed: 0, timer: 45, drift: 0, heel: 0, horn: 0, hornQueue: [] };
+    // Where she is in the voyage. She starts at anchor off the terminal, 30 s before sailing.
+    const linerVoyage = { leg: 0, s: 0, speed: 0, timer: 15, drift: 0, heel: 0, horn: 0, hornQueue: [] };
     function sailingLiner() {
       return LINERS.find((ship) => ship.voyage);
     }
@@ -242,13 +242,13 @@
     }
     /* Where and how she rides during call `index`, `timer` seconds into it: at
        the end of the leg before, heading as she came to rest there, swung round
-       by the call's `swing` (radians, eased over the middle 60 % of the call). */
+       by the call's `swing` (radians, eased over the call but its first and last tenth). */
     function linerCallPose(index, timer = 0) {
       const leg = LINER_VOYAGE[index],
         prev = LINER_VOYAGE[(index + LINER_VOYAGE.length - 1) % LINER_VOYAGE.length],
         end = linerLegPath(prev).at(-1),
         base = end.a + (prev.kind === 'astern' ? Math.PI : 0),
-        k = leg.swing ? clamp((timer - leg.seconds * 0.2) / (leg.seconds * 0.6), 0, 1) : 0;
+        k = leg.swing ? clamp((timer - leg.seconds * 0.1) / (leg.seconds * 0.8), 0, 1) : 0;
       return { x: end.x, y: end.y, a: normalizeAngle(base + (leg.swing || 0) * k * k * (3 - 2 * k)) };
     }
     function linerCallHeading(index, timer) {

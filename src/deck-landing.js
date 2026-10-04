@@ -27,8 +27,8 @@
      * shore (E climbs aboard as from any swim), and a jumper coming down on a
      * moored hull, a pontoon, a footing or the freighter is set down clear of it.
      */
-    // A canopy's own forward speed (trimmed), which a landing runs out on the feet; faster across the deck is a tumble.
-    const DECK_RUNOUT = 31 * KMH;
+    // What a landing runs out on the feet across a deck: a trimmed canopy's 31 km/h and a few strides more (10 m/s); faster is a tumble.
+    const DECK_RUNOUT = 36 * KMH;
     /* What stands on a liner's deckhouse roofs, as marina3d-shore.js builds them:
        [house, u0, u1, v0, v1] in the ship's frame. */
     const LINER_ROOF_BLOCKS = [

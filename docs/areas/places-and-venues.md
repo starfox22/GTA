@@ -44,7 +44,7 @@ MONARCH MOTORS, Ridgeline, Fort Sentinel and the stadium: places-monarch-and-cou
 - **MS MERIDIAN STAR** sails `LINER_VOYAGE` (marina-voyage.js, ~20 min a lap): North Sound call,
   astern, north about Sunset Pier, Monarch Isle's north shore past MONARCH ONE and back, Ocean
   Drive, slow along Palm Keys' beach to a call where she swings round (`swing`), north offshore,
-  home. 21 kn at sea, 19 along the islands (`LINER_SPEED_ZONES`), 8 off the beach, 7.6 in the
+  home. 21 kn at sea, 20 along the islands (`LINER_SPEED_ZONES`), 8 off the beach, 7.6 in the
   sound. The islands are all bridged and she never passes under a bridge, so the tour doubles
   back (Sunset Pier's bridge closes North Sound to the east). `linerVoyageCheck()` must stay
   clean: land, bridges, docks, ships, Monarch Harbour, `LINER_EDGE_MARGIN` (200) inside the
