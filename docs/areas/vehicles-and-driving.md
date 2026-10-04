@@ -70,7 +70,8 @@ police3d.js, helicopter3d-*.js, apache3d.js, plane3d.js, vehicles3d.js, boats3d.
   (world-county-and-sea.md, Airfields). Flight controls: spool, pitch/roll springs, flaps,
   gear, stall warnings; `flightData()` feeds the HUD and console.
 - Helicopters: `helicopterControl` (physics); rooftop landings in rooftops.js. The police
-  helicopter is unarmed (police-and-combat.md). The Apache (apache.js) is player-only.
+  helicopter is unarmed (police-and-combat.md). The Apache (apache.js) is player-only; the
+  military Black Hawk's door guns, the LAV-8 and the gun jeep: police-and-combat-mounted.md.
 - Camera: a vehicle frames at its CAMERA CONTEXT share of `STREET_ZOOM` (a car 0.7) and eases
   back from ~45 km/h (`speedZoomTarget`); in the air a perspective camera (rendering.md).
 

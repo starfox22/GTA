@@ -2,7 +2,7 @@
     function drawWeapon() {
       // In a tank the chip shows the main gun or the MG (armor.js tankHud), in the
       // Apache its gun and rockets (apache.js apacheHud).
-      if (player.car?.type === 'tank' || isApache(player.car)) {
+      if (player.car?.type === 'tank' || isApache(player.car) || mountedGunKind(player.car)) {
         delete getElement('weaponArt').dataset.tankIcon;
         return;
       }
@@ -438,6 +438,7 @@
       // In a tank the weapon chip shows the main gun and the MG (armor.js).
       if (c?.type === 'tank') tankHud(c);
       else if (isApache(c)) apacheHud(c);
+      else if (mountedGunKind(c)) mountedGunHud(c);
       else if (getElement('weaponArt').dataset.tankIcon) {
         delete getElement('weaponArt').dataset.tankIcon;
         drawWeapon();

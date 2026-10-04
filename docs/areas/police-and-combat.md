@@ -92,7 +92,8 @@ wounds.js, carjack.js, damage.js, air-cover.js. `policeReport()` has `wounds` an
   traffic is locked (E says LOCKED), which is not the carjack failing. Anything that moves
   or resets the player calls `cancelCarjack()` (teleportPlayer, die, resetMissionState).
 - Armour: `vehicleArmorShare` (the Apache takes 30% of small arms). The tank turret
-  (`traverseTurret`) is shared by the player, the pursuit tank and army gunners.
+  (`traverseTurret`) is shared by the player, the pursuit tank, army gunners and the mounted
+  guns (police-and-combat-mounted.md).
 - Mission vehicles (`mission = true`) burn down to 8% and go out instead of exploding; they
   take 40% of gang small-arms damage.
 

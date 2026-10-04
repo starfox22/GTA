@@ -370,7 +370,7 @@
           arms.mg = c.noCoax ? 0 : TANK_MG_TOTAL - TANK_MG_BELT;
           arms.beltReadyAt = 0;
           c.cannonReadyAt = 0;
-        }
+        } else mountedGunRearm(c);
       }
       drawWeapon();
       updateUI();

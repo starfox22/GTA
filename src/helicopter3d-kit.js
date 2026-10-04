@@ -214,6 +214,8 @@
           rotor,
           tail,
           nightsun: kitParts.nightsun || null,
+          // The Black Hawk's door guns, each on its own pivot (heliHawkEquipment).
+          doorGuns: kitParts.doorGuns ? kitParts.doorGuns.map((g) => ({ x: g.x, y: g.y, z: g.z, side: g.side, geometry: policeGeometry(g.set) })) : null,
         };
         heliKits.set(look.kind, kit);
         return kit;

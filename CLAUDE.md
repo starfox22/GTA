@@ -240,6 +240,9 @@ packs with plain `<script src>` so the zip still plays from file://.
   `cameraComfort()` / tools/tests/camera-comfort.mjs after any camera change.
 - `carStainSeverity(kph, fatal)` (car-stains.js) is the only rule for how much bonnet blood a hit leaves (none under
   14 km/h); further hits add to a car's 3 stain records (`adds`, painted by `cbTopUpJob`), never replace one.
+- Military mounted guns the player fires (LAV-8 25 mm + coax, gun jeep M2, Black Hawk door guns) live in
+  `mounted-guns.js` (`mountedGunKind`, `MOUNTED_GUNS`); its muzzle offsets match base3d-vehicles.js and
+  helicopter3d-equipment.js, so move them together. The tank stays in armor.js, the Apache in apache.js.
 - `kickCamera(heading, units)` / `shake` (camera-feel.js) are the only camera jolts; renderers
   only read `cameraKick` and `cameraShakeOffset`.
 - Roomy one-shots (shots, blasts, crashes, near thunder) connect to `reverbSend`
