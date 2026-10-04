@@ -1,0 +1,3 @@
+# Missions 1 and 2: fairer harbour fight, abandon confirm, the chase proven
+- Mission 1's harbour bay is fair to a first try: past half health Vinny's truck shrugs off more of the Harbor Kings' fire (32 % of it above half, 6 % below 30 %) and a job vehicle's engine fire burns for 30 s instead of 11, so a hesitant run (a wrong stop, a cancelled load, a wrong turn) gets out with the truck at about 30 % instead of blowing up with the driver inside after ~30 s. A prompt run leaves it at about 38-52 %, as it did before the new driving camera. A critical job vehicle now brings up a CRITICAL DAMAGE · BAIL OUT headline and repeats the warning every 3 s.
+- Console: `vehicleHealth(percent)`; test mission1-bay.

@@ -8,6 +8,15 @@
         repairVehicle(player.car);
         return this.damageReport();
       },
+      // Bring the player's vehicle down to `percent` of its health through the ordinary
+      // damage path (never up: repair() mends). Returns its hp, share, fire and mission flag.
+      vehicleHealth(percent = 100) {
+        const c = player.car;
+        if (!c) return null;
+        const target = (clamp(Number(percent) || 0, 0, 100) / 100) * c.maxhp;
+        if (target < c.hp) damageVehicle(c, c.hp - target);
+        return { hp: Math.round(c.hp), maxhp: c.maxhp, percent: Math.round((100 * c.hp) / c.maxhp), burning: !!c.damage?.burning, mission: !!c.mission };
+      },
       // The 4x4 club and the trails (offroad.js): the lot and its clearances, the
       // club trucks, the members, the player's traction state, the hill climb.
       offroad: () => offroadReport(),

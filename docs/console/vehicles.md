@@ -8,6 +8,7 @@
 | `bike(heading)` | Rack a bicycle beside the player |
 | `ride()` | Current vehicle telemetry (speed, pedal cadence and effort; in a tank the hull, turret and aim headings in degrees, the traverse rate and the ammunition) |
 | `repair()` | Mend the player's vehicle as a repair bay would (repeatable physics tests); returns `damageReport()` |
+| `vehicleHealth(percent)` | Bring the player's vehicle down to `percent` of its health through `damageVehicle` (never up); returns `hp`, `maxhp`, `percent`, `burning`, `mission` |
 | `drive(type, altitudeMeters, heading, airframe)` | Spawn any vehicle type beside the player and board it; aircraft can start airborne (a plane then cruises gear up at 75% power); boats go on the nearest open water; optional heading in radians (0 = east); a plane takes an airframe (`'courier'` default, `'jet'`, `'airliner'`) |
 | `offroad()` | The 4x4 club and the trails: the lot, its pad height and clearances from the roads and trails, each club truck (dimensions, mass, performance, tyres, drive, parked), the members and what they say, the player's traction state (speed, wheel speed, wheelspin, low range, mud, rock, grade, body mud), the running climb, the challenge, the last result, best times, the courses, `effects` (mud clumps, mist, splats and tracks in use) |
 | `clubLineup(x, y)` | Park one of every club truck side by side facing the camera |

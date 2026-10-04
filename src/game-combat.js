@@ -204,13 +204,14 @@
                 c,
                 // The vehicles missions hand you are built for the job (the cargo
                 // truck's steel cage, Vinny's armored van): gang small-arms fire
-                // does 40% damage to them, or a crew opening up on the loading
+                // does 40% damage to them, less once they are badly hit
+                // (combat-rules.js MISSION CAGE), or a crew opening up on the loading
                 // truck wrecks it before the third crate is aboard. An armoured
                 // airframe (the Apache) shrugs off most small-arms fire
                 // (combat-rules.js vehicleArmorShare).
                 vehicleArmorShare(c, b) *
                   (b.enemy && c.mission && b.faction !== 'police' && !b.rocket
-                    ? b.dmg * 0.4
+                    ? b.dmg * missionCageShare(c)
                     : // Police rounds are meant for the driver: they chew a car up
                       // slowly rather than wrecking it in a dozen hits.
                       b.faction === 'police' && c === player.car && !b.rocket

@@ -315,6 +315,23 @@
     function vehicleArmorShare(vehicle, b) {
       return isApache(vehicle) && !b.rocket && !b.antiTank ? APACHE_SMALL_ARMS_SHARE : 1;
     }
+    /* MISSION CAGE
+       The vehicles missions hand you (mission 1's cargo truck with its steel cage, Elena's
+       car, Vinny's armoured van) take 40% of gang small-arms damage while they are in good
+       shape, so a prompt run through the harbour bay still leaves the truck about half
+       wrecked. Past half health the share falls to MISSION_CAGE.low at MISSION_CAGE.lowAt:
+       a hesitant first try (a wrong stop, a cancelled load, a wrong turn) gets out with the
+       truck smoking rather than blown up with the driver in it, and a burning truck gives
+       a long warning to bail out. A crew left shooting at a parked truck still wrecks it.
+       Measured in tools/tests/mission1-bay.mjs. */
+    const MISSION_CAGE = { full: 0.32, fullAt: 0.5, low: 0.06, lowAt: 0.3 };
+    function missionCageShare(vehicle) {
+      const f = vehicle.hp / (vehicle.maxhp || 1),
+        c = MISSION_CAGE;
+      if (f >= c.fullAt) return c.full;
+      if (f <= c.lowAt) return c.low;
+      return c.low + ((c.full - c.low) * (f - c.lowAt)) / (c.fullAt - c.lowAt);
+    }
     function bulletDamagesVehicle(b, vehicle) {
       return vehicle.type !== 'tank' || !!(b.rocket || b.antiTank);
     }
