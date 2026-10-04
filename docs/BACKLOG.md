@@ -83,6 +83,10 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - Ships (deck-landing.js): a liner's roof levels have no drawn stairs (E takes "the stairs aft" at once, to the aft deck); no blood decal on a deck (`addBloodPool` needs ground); Monarch's superyachts and the marina's moored boats have no walkable deck (a canopy comes down clear of them, in the water); the cue measures the deck straight below, not where a moving ship will be.
 
 ## Driving (driving.js, physics-*.js)
+- At the quay on Ocean Drive (Palm Keys) a car driven slowly over the edge sometimes hangs there with its bonnet past
+  the shore for about a second and is then pushed back ~37 units onto the promenade instead of dropping into Palm
+  Sound (other runs drive straight in): `drive('supercar', 0, 0)`, `placeVehicle(-1300, 2299, 0, 0)`, `launch(12)`,
+  then `simulate(0.25, ['KeyW'])` steps (2026-10-04 free-roam pass; seen once in two tries).
 - 50–0 km/h stops are slightly longer than before (the 0.2 s pedal build-up).
 - Soaked roads add 43–58 % to ABS stops (target 30–50 %).
 - AI traffic and police use the simple ABS-equivalent brake, not the per-axle tyre model.

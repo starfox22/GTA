@@ -82,3 +82,19 @@ key rebinding; weather and day cycles; the demo build boots into free roam with 
 
 Nothing in driving, traffic / police AI or the renderers needed a fix beyond one-line text
 changes (`physics-update.js` engine-fire toast key).
+
+## Second pass (2026-10-04, after the driving camera, hill climb, liner and world-edge rounds)
+
+- **Bot**: seeds 5 (20 game min), 6 (7 min, stopped early) and 7 (10 min) on the no-render page. Real findings: a
+  train ride survived `teleportPlayer` (a job restart pulled the player back aboard: `dropTransitRide`); the console's
+  `drive()` under a running cab ride. Checker fixes: a wanted player refused at a door, a helicopter's own prompt after
+  a teleport, a pilot WASTED past the world edge, a bonnet over the quay's coast collider.
+- **HUD at 960x600 and 1440x900** (`hudOverlaps()`, `hudClearance()`, rendered shots at 960x600): the open mission
+  card covered a bus heading up the screen at 60 km/h (now it folds, its read held); the open radio reached over the
+  speed box; a long notice ran under the waypoint pill and a dispatch caption under the notices; touch on a tablet: the
+  radio popped over GAS / BRAKE on getting in and its chip sat on the weapon chip. 1440x900 had only the caption.
+- **Framing**: bus, sedan and speedboat at rest and at speed both ways, touch and keyboard: the vehicle sits centre-low
+  heading up the screen and high heading down; a long vehicle reaches the waypoint pill heading down (it fades).
+- **Checked, fine**: graphics tier switches high / low / medium on the rendered page (no errors), the virtual gamepad
+  drive, a save surviving `reload --keep`, liner voyage and deck landings, the search clock, WASTED respawns, the
+  taxi ride and the enter key (filtered tests green on this branch).
