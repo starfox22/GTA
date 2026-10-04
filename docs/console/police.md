@@ -12,6 +12,8 @@
 | `ammoSupply()` | Ammunition supply (ammo-supply.js, registered as its own group from this file): each weapon's ownership and rounds, the searchable body in reach (kind, gun, rounds, distance), whether the player is crouched taking one, what was last taken from bodies and vehicles, and the gun shops' doors |
 | `setAmmo(index, ammo, reserve, owned)` | Set one weapon's ownership and rounds (the pistol stays owned) |
 | `armedBody(kind, dx, dy)` | A dead armed person beside the player: `patrol`, `road`, `swat`, `fed`, `sniper`, `soldier` (officers) or `gang`, `guard`; returns what they carry. `interact()` takes it |
+| `shotsToKill()` | NPC body armour (combat-rules.js NPC BODY ARMOUR): torso hits to put each kind of target down (civilian, gang, guard, vescari, patrol, patrol4, swat, fed, soldier, garrison) per weapon; arithmetic only |
+| `strikeTest(role, weaponIndex, distance, zone)` | A target of `role` (`civilian`, `gang`, `vescari`, `patrol`, `road`, `swat`, `fed`, `soldier`, `garrison`) `distance` (50) ahead of the player struck by weapon `weaponIndex` through `strikePerson` until `down`; every round in `zone` (`torso` default, `head`, `leg`; null as in play); returns `hits`, `down`, `dead`, position, heading `a`, `moved` (how far any hit moved the body: 0), `vestLeft` |
 | `parkLawVehicle(kind, board)` | An empty, unlocked `patrol` car, `swat` van or `fed` SUV 70 units east; `board` takes the wheel at once (enterVehicle, which takes its stock once) |
 | `hostileGunman(dx, dy, seconds)` | A live Harbor Kings gunman out for the player (the ON-SCREEN RULE test; `shotLog` source `harbor-gunman`) |
 | `arm(index)` | Own weapon `index` (0 pistol to 5 precision rifle) with full ammunition and select it; 6 selects the knife, 7 no weapon (fists) |

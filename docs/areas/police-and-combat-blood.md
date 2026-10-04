@@ -5,20 +5,25 @@ Part of police-and-combat.md.
 
 ## The rule: a hit is not a pool
 
-- One round: a short dark-red mist at the wound, 2-8 fine drops thrown out of the exit side
-  (the shot's heading, a narrow cone), one directional **spatter** a step behind the body
-  and a **drop** at its feet. Never a pool.
-- A **pool** only under a body on the ground (`p.hp <= 0`): `bodyPool(p, kind, a)` starts it
-  small (r 0.8) under the chest (4 units along the line of the shot, `deathStyle.turn`; at the
-  wall's foot for a slump) and it spreads in `updateBlood` as a volume that flows out ever
-  slower (`vol += (rMax² - vol)(1 - e^(-dt/tau))`, `r = √vol`). `rMax` grows with the number
-  of wounds (`p.bloodHits`), not the damage: 4.2 units for one round, +1.1 a wound, 9 at most
-  for gunfire; +2.2 for an impact or fall, +3.5 for a blast (11.5 at most). `tau` 14.5 s for
-  one round, down to 7 s for many, 8 s for an impact or fall, 5 s for a blast (which also
-  starts at r 3 and throws a radial spray). A later hit only raises `rMax`/lowers `tau`, never jumps the size.
+- One round: a short dark-red mist at the wound and an **exit spray** away from the shooter
+  (the shot's heading `a`): a finer plume carried a metre or two on, 3-11 fine drops in a
+  ±18° cone landing 1-4 m beyond the body, a directional **spatter** 3-7 units behind it
+  (a second, 9-15 units on, from a heavy round, severity > 0.8) and a **drop** at its feet
+  leaning to the exit side. Nothing lands toward the shooter. Never a pool. The body is not moved.
+- A **pool** only under a body on the ground: `bodyPool(p, kind, a)` (sizes in `bodyPoolPlan`,
+  POOL SIZE) starts it at r 1.2 under the chest (4 units along the line of the shot,
+  `deathStyle.turn`; at the wall's foot for a slump) and it spreads in `updateBlood` as a volume
+  that flows out ever slower (`vol += (rMax² - vol)(1 - e^(-dt/tau))`, `r = √vol`). `rMax` grows
+  with the number of wounds (`p.bloodHits`), not the damage: 6 units (1.5 m across) for one
+  round, +0.8 a wound, 8.5 at most for gunfire; 7.5-11.5 for an impact, fall or blast. `tau`
+  6.5 s for one round, down to 3.5 s for many (most of the spread in 10-15 s), 4 s for an impact
+  or fall, 3 s for a blast (which also starts at r 3 and throws a radial spray). One round:
+  r 2.7 at 1 s, 5.5 at 10 s, 6 at 30 s (was 1.4, 3.0, 3.9). A later hit only raises `rMax`/lowers `tau`.
+- Someone wounded on the floor (alive: `woundedDown` crawling, officers `downed`) who lies still
+  1.5 s bleeds a small pool (`bodyPool(p, 'wounded')`, r 2.6-4, tau 9, `wounded: true`) where they
+  lie (wounds.js `updateWounds`); crawling on freezes it at its size; dying there grows it into the body's.
 - Anyone wounded who keeps moving drips a trail of small drops (wounds.js `updateWounds`).
-- Wounded-down people (alive, crawling) do not pool; vest-stopped rounds do not bleed;
-  poisoned bodies never bleed.
+- Vest-stopped rounds do not bleed (police-and-combat-armour.md); poisoned bodies never bleed.
 
 ## Data and renderers
 
@@ -31,7 +36,10 @@ Part of police-and-combat.md.
   `addBloodSpatter` puts that origin on the point), 8-11 drops (scalloped edge). Landing
   flight drops become drops drawn out by their speed (game-update.js).
 - The renderers only read: civic3d.js (size from `bloodDecalScale`, fade `bloodFade`, a
-  slow darkening as blood dries) and `drawBlood2D`. The mist is a `mist` particle
+  slow darkening as blood dries; transparent, renderOrder 3) and `drawBlood2D`. Fire, smoke,
+  sparks, drops and the blast ring draw at `FX_SPRITE_ORDER` 8 (render3d-effects.js, car flames
+  too): with the default 0 the floor blood was painted over an explosion's fireball (transparent
+  objects sort by renderOrder before depth, and none of them write depth). The mist is a `mist` particle
   (render3d-frame.js draws it at its height, fading and spreading).
 - Bounds: `BLOOD_LIMIT` 240 decals (the oldest non-pool goes first), `BLOOD_LIFE` 240 s.
 
@@ -45,8 +53,8 @@ Part of police-and-combat.md.
   splash (`bleed(p, sev, heading, 'impact')`, a living body does not pool), streaks along the tyre path,
   `c.bloodTrackRemaining` for the tyres, and the pool (`bodyPool`) once they have died a second or two later.
   A non-fatal first pass leaves no blood at all.
-- Console: `bloodReport(x, y, radius)`, `bloodVictim(hits, damage, kind)` (docs/console/crowd.md).
-  Test: tools/tests/blood-wounds.mjs.
+- Console: `bloodReport(x, y, radius)`, `bloodVictim(hits, damage, kind)`, `bloodSides(x, y, a, radius)`
+  (docs/console/crowd.md). Tests: tools/tests/blood-wounds.mjs, tools/tests/bullet-hits.mjs (exit spray).
 
 ## Blood on vehicles
 

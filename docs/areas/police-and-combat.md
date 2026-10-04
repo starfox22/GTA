@@ -28,7 +28,7 @@ wounds.js, carjack.js, damage.js, air-cover.js. `policeReport()` has `wounds` an
 - `POLICE_TIERS[stars]` says what each star sends: patrols that arrest (1), contact tactics
   (PIT, box) and shooting (2), the unarmed helicopter and a roadblock (3), SWAT vans (4),
   federal agents, army jeeps, an APC, a truck and after `TANK_AFTER_SECONDS` the tank (5).
-- `OFFICER_KINDS` (patrol, road, swat, fed, soldier, sniper): hp, vest, fire rate, damage to
+- `OFFICER_KINDS` (patrol, road, swat, fed, soldier, sniper): hp, vest (`plate`), fire rate, damage to
   NPCs vs the player (`playerDmg`), `run` pace (the player's 25 km/h run outpaces them all).
 - `dispatchPolice` / `spawnPursuitUnit` spawn off-camera on roads ahead of the player;
   `pursuitControl` drives (lead, PIT, flank, block, search along routes, off-road shortcuts);
@@ -66,10 +66,12 @@ wounds.js, carjack.js, damage.js, air-cover.js. `policeReport()` has `wounds` an
 - One 3D world for all gunfire: elevation-aware shots (combat-rules.js), `shotBlocked()`
   against the building grid, `bulletTargets` from the 64-unit pedestrian grid plus
   `sportsTargets()` and other venue lists.
-- LETHALITY (combat-rules.js): firearms are lethal (one or two torso rounds); `vest` is the
-  NPC counterpart of `player.armor`; `VEST_SHARE` per damage kind.
+- LETHALITY (combat-rules.js): firearms are lethal (one or two torso rounds). NPC vests by
+  calibre and hit zone, shots to kill: docs/areas/police-and-combat-armour.md; the player's
+  `player.armor` keeps `VEST_SHARE` per damage kind.
 - Wounds (wounds.js): hit zones, flinch, limp, blood trail (blood itself: police-and-combat-blood.md), downed officers dragged to cover,
-  `chooseDeathFall` (backwards, face down, slumped against a wall).
+  `chooseDeathFall` (backwards, face down, slumped against a wall). A round never moves anyone (no shove alive, no
+  step back when killed); only blasts, vehicles, knives and punches do.
 - Firing kicks the view against the aim (`kickCamera`, by the round's weight; camera-feel.js).
   Nobody shoots the player from off screen: `shooterInView` (police-and-combat-ammo.md).
 - Melee and FISTS live in arsenal.js (`meleeAttack`; `playerUnarmed()` tells the crowd the
