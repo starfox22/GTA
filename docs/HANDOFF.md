@@ -86,7 +86,6 @@ measure GPU cost, so real-GPU gains of render changes are unverified.
 
 ## Open items and design questions (owner's call; details in docs/BACKLOG.md)
 
-- Treatment ($150), body armour ($350) and meals charge full price at full health or armour.
 - Mission 4's "GO HOME" goal now ends at the SUNSET MOTEL (the free-standing safehouse was removed); it is not
   in the demo.
 - The night-and-rain mission scenario at HIGH graphics was never re-run after a container restart; real-GPU

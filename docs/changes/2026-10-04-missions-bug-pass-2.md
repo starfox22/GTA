@@ -1,4 +1,5 @@
 # Missions 1 and 2: second bug pass
 - A replay picked from the mission list that you hang up on or fail now gives the payphone back to the story's next job (it offered the replayed job again); a failed replay says "Retry it from the pause menu." instead of sending you to the payphone.
 - RESTART CURRENT JOB restarts the job you are on or the one you just failed (WASTED and BUSTED included). After a win, at a new game or after a reload it shows NO JOB TO RESTART (right after winning job 1 it used to start job 2 without its phone call).
-- Internals: `settleDemoStoryIndex()` now returns every non-god replay to the frontier (also when god mode is switched off); `restartableJob()` / `retryJobIndex` (story.js, campaign.js); tests: `t.reload({ keep })` in tools/test.mjs, new mission-replay-frontier and pause-restart extended.
+- Hospitals, diners, bars and lodges no longer charge for treatment or food at full health ("You’re already in good shape."), and the gun shop no longer sells body armour that is already full.
+- Internals: `settleDemoStoryIndex()` now returns every non-god replay to the frontier (also when god mode is switched off); `restartableJob()` / `retryJobIndex` (story.js, campaign.js); `SERVICE_CURES` (citylife-police.js); tests: `t.reload({ keep })` in tools/test.mjs, new mission-replay-frontier, pause-restart and health-indoors extended.
