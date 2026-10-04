@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-487 files in the include tree, 167,906 lines.
+487 files in the include tree, 168,021 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -164,7 +164,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/physics-driving.js`   647 — controlVehicle(): grip, cornering limit, kerb strikes, reverse; broadphase buffers.
 - `src/physics-step.js`   355 — physicsStep(): the fixed step, broadphase, contact passes, settling.
 - `src/physics-knockdowns.js`   272 — People knocked down by vehicles, swept person contacts, blood tracks.
-- `src/runover.js`   223 — Second pass: a vehicle runs over someone already on the ground (knockPerson hands over): harm by speed and weight, blood, the car's stain, a death a …
+- `src/runover.js`   224 — Second pass: a vehicle runs over someone already on the ground (knockPerson hands over): harm by speed and weight, blood, the car's stain, a death a …
 - `src/physics-update.js`   140 — updateCars(): per-frame vehicle update driving the fixed steps.
 - `src/physics-console.js`   672 — HANDLING TESTS (developer console) turnTest() drives a fresh vehicle on the open strip beside the Oceanview runway through the real game step …
 
@@ -196,7 +196,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/citylife-civic.js ▸ City life: officers and the wanted level (updateOfficers, updateWanted), strikePerson (blood: blood.js), updateCivic(), navigation and the civic map.
 
 - `src/blood.js`   347 — Blood: wound spatter, drops, the pool a body bleeds out slowly (bleed, bodyPool, addBloodPool/Drop), their stamps (bloodStamp), growth and ageing …
-- `src/car-stains.js`   246 — Car stains: the blood a vehicle carries after it hits someone (c.stains), aged and washed here; carblood3d.js draws it.
+- `src/car-stains.js`   314 — Car stains: the blood a vehicle carries after it hits someone (c.stains), aged and washed here; carblood3d.js draws it.
 
 ## src/pursuit.js ▸ Police response and pursuit tactics
 
@@ -481,7 +481,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/render3d-streetprops.js ▸ Street lamps and their glow halos, vehicle halos, blossom, sign() boards.
 
 - `src/damage3d.js`    27 — ▸ Crumpling bodies, decals, debris and knocked furniture
-- `src/carblood3d.js`   189 — ▸ Car blood 3D: stains on a vehicle's bodywork, decal geometry clipped to the model's own surface, painted and fitted in time slices.
+- `src/carblood3d.js`   194 — ▸ Car blood 3D: stains on a vehicle's bodywork, decal geometry clipped to the model's own surface, painted and fitted in time slices.
 - `src/signkit3d.js`   156 — ▸ Sign lettering kit: stroke font, letter treatments, boards, emblems
 - `src/signdesigns3d.js`    82 — ▸ Business sign designs: families, the style table, hotels, towers, billboards
 
@@ -494,9 +494,9 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/carblood3d.js ▸ Car blood 3D: stains on a vehicle's bodywork, decal geometry clipped to the model's own surface, painted and fitted in time slices.
 
 - `src/carblood3d-paint.js`   274 — Car blood 3D, painting: primitives of the thickness field (drops, domes, the impact mass, spray, mist), drawn in time slices.
-- `src/carblood3d-streaks.js`   338 — Car blood 3D, streaks: the strands the airflow drags back along the bonnet, the gravity runs, and the two tile compositions.
+- `src/carblood3d-streaks.js`   373 — Car blood 3D, streaks: the strands the airflow drags back along the bonnet, the gravity runs, and the two tile compositions.
 - `src/carblood3d-fit.js`   546 — Car blood 3D, fitting: decal geometry clipped to the model's own surface, done in time slices (gather, panels, clip, cover test).
-- `src/carblood3d-skin.js`   417 — Car blood 3D, skins: the shared shader, a pool of ready skins, the per-frame work budget, the warm-up and the tile upload.
+- `src/carblood3d-skin.js`   423 — Car blood 3D, skins: the shared shader, a pool of ready skins, the per-frame work budget, the warm-up and the tile upload.
 
 ## src/signkit3d.js ▸ Sign lettering kit: stroke font, letter treatments, boards, emblems
 
