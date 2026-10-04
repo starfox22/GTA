@@ -30,14 +30,16 @@ async function loaded(t, seconds) {
   t.assert(m?.stage === 3, 'the crates were not loaded: ' + JSON.stringify(m && { stage: m.stage, car: m.car }));
   return m;
 }
-// Out through the barrier: the turn out of the bay, the gate, the street beyond.
+// Out through the barrier: the turn out of the bay and the gate (the truck's health is read there),
+// then the street beyond (police units rolling up to the gate can hold the console pilot there).
 async function leave(t, via = []) {
-  for (const [x, y] of [...via, [3000, 1600], [2780, 1664], [2400, 1664]]) {
-    const r = await t.call('steerTo', x, y, 15, x === 2400 ? 60 : 40, true);
+  for (const [x, y] of [...via, [3000, 1600], [2780, 1664]]) {
+    const r = await t.call('steerTo', x, y, 15, 40, true);
     t.assert(r, `out of the truck on the way to ${x},${y}`);
   }
   const m = await t.call('missionTargets');
-  t.assert(m && m.stage === 3 && m.car.driver && m.player.x < 2600, 'not out of the harbour with the truck: ' + JSON.stringify(m && { stage: m.stage, player: m.player, car: m.car }));
+  t.assert(m && m.stage === 3 && m.car.driver && m.player.x < 2830, 'not through the harbour barrier with the truck: ' + JSON.stringify(m && { stage: m.stage, player: m.player, car: m.car }));
+  await t.call('steerTo', 2400, 1664, 10, 60, true);
   return Math.round((100 * m.car.hp) / m.car.maxhp);
 }
 export default async function (t) {
@@ -51,7 +53,7 @@ export default async function (t) {
     await t.call('interact');
     await loaded(t, 10);
     const prompt = await leave(t);
-    t.near(prompt, 33, 62, 'prompt run: truck health % at the street');
+    t.near(prompt, 33, 62, 'prompt run: truck health % at the barrier');
 
     // The hesitant first try.
     let m = await t.call('retryMission');
@@ -67,7 +69,7 @@ export default async function (t) {
     await t.call('interact');
     await loaded(t, 12);
     const hesitant = await leave(t, [[3260, 1460]]); // a wrong turn north into the yard first
-    t.near(hesitant, 12, 60, 'hesitant run: truck health % at the street');
+    t.near(hesitant, 12, 60, 'hesitant run: truck health % at the barrier');
 
     // Critical: a headline and the bail-out warning (every 3 s for a job's vehicle).
     m = await t.call('vehicleHealth', 25.5);
