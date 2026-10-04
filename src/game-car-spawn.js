@@ -286,6 +286,10 @@
           fallVz: undefined,
           fallX: undefined,
           fallY: undefined,
+          // Emergency runs and supply drops (livingcity-sirens.js, livingcity-medics.js, ammo-supply.js).
+          emergency: undefined,
+          sirenClear: undefined,
+          supply: undefined,
         };
       vehicles.push(vehicle);
       if (autonomous) assignDriver(vehicle);
