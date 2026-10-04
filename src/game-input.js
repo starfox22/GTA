@@ -3,37 +3,50 @@
      * Letters typed during play accumulate in a short ring; when the tail spells a
      * known code it fires. The keys still do their normal jobs while you type, so
      * the character will walk about as you spell it -- which is part of the fun.
+     * Case does not matter (Caps Lock or Shift), and the modifier keys themselves
+     * are ignored rather than breaking the run. Two codes toggle god mode: GODMODE
+     * and the pad-style AAAAXBBBBYXXXXAYYYYB.
      */
     let cheatBuffer = '';
-    const CHEAT_CODES = {
-      godmode: () => {
-        player.godMode = !player.godMode;
-        if (player.godMode) {
-          for (const w of weapons) {
-            w.owned = true;
-            w.ammo = w.clip;
-            w.reserve = w.clip * (w.rocket ? 5 : 9);
-          }
-          player.hp = 100;
-          player.armor = 100;
-          announce('SOUTH COAST', 'GOD MODE ACTIVATED', 2.2);
-          tell('GOD MODE ACTIVATED · every weapon · every mission unlocked · mission select, time, weather, ammo and teleport in Settings · God mode', 5);
-        } else {
-          announce('SOUTH COAST', 'GODMODE OFF', 1.8);
-          tell('GODMODE OFF', 2.5);
+    function godModeCheat() {
+      player.godMode = !player.godMode;
+      if (player.godMode) {
+        for (const w of weapons) {
+          w.owned = true;
+          w.ammo = w.clip;
+          w.reserve = w.clip * (w.rocket ? 5 : 9);
         }
-        drawWeapon();
-        updateUI();
-        tone(player.godMode ? 720 : 240, 0.22, 0.16, 'sine');
-        // Straight to Settings · GOD MODE (god-panel.js), whose first row opens
-        // the mission picker with every job unlocked. In play it opens over the
-        // pause menu; on the title screen over the title, and BACK returns there.
-        if (!player.godMode) return;
-        if (gameMode === 'map') toggleMap();
-        if (gameMode === 'play') togglePause();
-        if (gameMode === 'pause' || gameMode === 'menu') openSettings('god');
-      },
+        player.hp = 100;
+        player.armor = 100;
+        announce('SOUTH COAST', 'GOD MODE ACTIVATED', 2.2);
+        tell('GOD MODE ACTIVATED · every weapon · every mission unlocked · mission select, time, weather, ammo and teleport in Settings · God mode', 5);
+      } else {
+        announce('SOUTH COAST', 'GODMODE OFF', 1.8);
+        tell('GODMODE OFF', 2.5);
+      }
+      drawWeapon();
+      updateUI();
+      tone(player.godMode ? 720 : 240, 0.22, 0.16, 'sine');
+      // Straight to Settings · GOD MODE (god-panel.js), whose first row opens
+      // the mission picker with every job unlocked. In play it opens over the
+      // pause menu; on the title screen over the title, and BACK returns there.
+      if (!player.godMode) return;
+      if (gameMode === 'map') toggleMap();
+      if (gameMode === 'play') togglePause();
+      if (gameMode === 'pause' || gameMode === 'menu') openSettings('god');
+    }
+    const CHEAT_CODES = {
+      godmode: godModeCheat,
+      aaaaxbbbbyxxxxayyyyb: godModeCheat,
     };
+    // The ring holds the longest code.
+    const CHEAT_BUFFER_LENGTH = Math.max(...Object.keys(CHEAT_CODES).map((code) => code.length));
+    // A code eats its keys (so spelling it does not also drive) once this many of its
+    // letters are typed; 2 by default. A is steering left, so AAAA... eats nothing
+    // until its X: tapping A twice in a corner must never lose the second tap.
+    const CHEAT_SWALLOW_FROM = { aaaaxbbbbyxxxxayyyyb: 5 };
+    // Modifier keys pressed while typing (Shift for capitals, Caps Lock) leave the ring alone.
+    const CHEAT_IGNORED_KEYS = new Set(['shift', 'capslock', 'control', 'alt', 'altgraph', 'meta', 'os']);
     /* Put the player somewhere else, letting go of anything that was carrying
        them: a hired cab or a liner deck would otherwise drag them straight back. */
     function teleportPlayer(x, y) {
@@ -80,23 +93,24 @@
     // Returns true once the tail of the buffer is going somewhere, so the caller
     // can swallow the keypress: spelling a code should not also drive the car.
     function feedCheatBuffer(key) {
+      if (CHEAT_IGNORED_KEYS.has(key)) return false;
       if (!/^[a-z]$/.test(key)) {
         cheatBuffer = '';
         return false;
       }
-      cheatBuffer = (cheatBuffer + key).slice(-16);
+      cheatBuffer = (cheatBuffer + key).slice(-CHEAT_BUFFER_LENGTH);
       for (const [code, run] of Object.entries(CHEAT_CODES))
         if (cheatBuffer.endsWith(code)) {
           cheatBuffer = '';
           run();
           return true;
         }
-      // Only from the second letter on: a lone first letter (G) is also a game
-      // key (the aircraft's descend) and must not be eaten on every press.
-      const tail = cheatBuffer.slice(-15);
+      // Only from the second letter on (CHEAT_SWALLOW_FROM): a lone first letter
+      // (G) is also a game key (the aircraft's descend) and must not be eaten on
+      // every press. A whole code typed so far is not a prefix still to come.
       for (const code of Object.keys(CHEAT_CODES))
-        for (let i = 2; i <= Math.min(tail.length, code.length); i++)
-          if (code.startsWith(tail.slice(-i))) return true;
+        for (let i = CHEAT_SWALLOW_FROM[code] ?? 2; i < Math.min(cheatBuffer.length + 1, code.length); i++)
+          if (code.startsWith(cheatBuffer.slice(-i))) return true;
       return false;
     }
     /**

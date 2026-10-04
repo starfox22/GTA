@@ -131,32 +131,64 @@
     opacity: 0;
   }
 }
-/* The map in pick mode: a crosshair, a gold frame and the hint over the top. */
+/* The map in pick mode (TELEPORT): the map is the whole panel, as big as the
+   screen allows (the canvas keeps its 800 x 660 frame's shape, so the height
+   decides), with a crosshair, a gold frame and the hint floating over its top
+   edge. The route tools, the GO TO list, the filters and the legend step aside:
+   the banner used to sit in the map's grid cell and push the canvas into the
+   250-pixel side column. */
 #mapOverlay.god-pick .map-panel {
   position: relative;
+  width: min(98vw, calc((100vh - 96px) * 800 / 660 + 32px));
+  width: min(98vw, calc((100dvh - 96px) * 800 / 660 + 32px));
+  max-height: 98vh;
+  max-height: 98dvh;
+  padding: 12px 16px 16px;
   border-color: var(--ui-gold);
 }
+#mapOverlay.god-pick .map-heading h2 {
+  margin: 2px 0 8px;
+  font-size: 22px;
+}
+#mapOverlay.god-pick .map-tools,
+#mapOverlay.god-pick .map-side,
+#mapOverlay.god-pick .legend {
+  display: none;
+}
+#mapOverlay.god-pick .map-body {
+  position: relative;
+  grid-template-columns: minmax(0, 1fr);
+}
 #mapOverlay.god-pick #bigmap {
+  width: 100%;
+  max-width: calc((100vh - 96px) * 800 / 660);
+  max-width: calc((100dvh - 96px) * 800 / 660);
+  max-height: none;
   cursor: crosshair;
   outline: 2px solid #f0c45a88;
   outline-offset: -2px;
 }
-#mapOverlay.god-pick #mapRouteStatus,
-#mapOverlay.god-pick #clearRoute {
-  display: none;
-}
 .god-pick-banner {
+  position: absolute;
+  z-index: 2;
+  top: 10px;
+  left: 0;
+  right: 0;
+  width: max-content;
+  max-width: calc(100% - 24px);
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 3px;
-  margin: 0 0 8px;
-  padding: 9px 14px;
+  padding: 8px 16px;
   border-radius: 10px;
-  background: #f0c45a;
+  background: #f0c45aee;
+  box-shadow: 0 6px 18px #0008;
   color: #16120a;
   font-family: var(--ui-font);
   text-align: center;
+  pointer-events: none;
   animation: rowIn 0.3s var(--ui-ease);
 }
 .god-pick-banner b {

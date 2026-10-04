@@ -518,8 +518,24 @@
         y: mapCenter.y + (p.y - 330) / s,
       };
     }
-    function zoomMap(factor) {
+    /* Zoom the city map by `factor`; with `at` (a point in the 800 x 660 frame: the
+       wheel's cursor) the place under it stays under it. Back out to the whole
+       world, the map re-centres on it (as the zoom keys do, game-input.js). */
+    function zoomMap(factor, at = null) {
+      const anchor = at ? mapWorldPoint(at) : null;
       mapZoom = clamp(mapZoom * factor, 1, 9);
+      if (mapZoom === 1)
+        mapCenter = {
+          x: (WORLD_LEFT + WORLD_SIZE) / 2,
+          y: (WORLD_TOP + WORLD_SIZE) / 2,
+        };
+      else if (anchor) {
+        const s = Math.min(800 / WORLD_WIDTH, 660 / WORLD_HEIGHT) * 0.92 * mapZoom;
+        mapCenter = {
+          x: clamp(anchor.x - (at.x - 400) / s, WORLD_LEFT, WORLD_SIZE),
+          y: clamp(anchor.y - (at.y - 330) / s, WORLD_TOP, WORLD_SIZE),
+        };
+      }
       drawMap(cityMapContext, 800, 660, true);
     }
     const mapPointers = new Map();
@@ -616,7 +632,8 @@
       (e) => {
         if (mapOpen) {
           e.preventDefault();
-          zoomMap(e.deltaY < 0 ? 1.2 : 1 / 1.2);
+          const p = mapLocalPoint(e);
+          zoomMap(e.deltaY < 0 ? 1.2 : 1 / 1.2, p.valid ? p : null);
         }
       },
       {
