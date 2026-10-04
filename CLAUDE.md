@@ -146,6 +146,11 @@ packs with plain `<script src>` so the zip still plays from file://.
   the last failed one, `retryJobIndex`), never a waiting call. Console `pointers()` lists every story pointer.
 - Service counters never sell nothing: health items in `SERVICE_CURES` and armour are refused when full
   (citylife-police.js `serviceAction`).
+- Mission vehicles take gang small-arms damage through `missionCageShare` (combat-rules.js `MISSION_CAGE`: 32 %
+  above half health, down to 6 % below 30 %); mission 1's cargo-bay balance is held by tools/tests/mission1-bay.mjs.
+  A pick in the mission picker while a job runs goes through the ABANDON confirm (campaign.js
+  `showAbandonConfirm` / story.js `abandonMission`). Hints follow the HUD on screen (input-hints.js `hintDevice`:
+  gamepad names after pad input, touch names while `body.touch-mode` is set, else keys).
 - Every service place has a real building and its door on the pavement: no floor rings, no free-standing place
   signs. Motels, inns and lodges are dressed by `dressHotel()` (civic3d-hotels.js). County boards (guide,
   scenic-view, town, trailhead) are drawn only through `roadsideSign()` (county3d-signs.js) at the spot
