@@ -497,3 +497,78 @@ the steady HUD at zero rewritten attributes; tools/tests/frame-trace.mjs covers 
   never move.
 - The tour at MEDIUM-ULTRA and AUTO on a real GPU (`node tools/hitches.mjs --tiers medium,high,ultra,auto --scale 0.2`
   with `DEC_GPU=1`).
+
+### Second round: garbage, layouts and the rest of the list (4 October 2026)
+
+**Exactness first.** `dev.mjs start --seed 1` opens a deterministic page (seeded Math.random from the first line, the
+simulation held from the first frame, no sound, frame-clock systems stepped only by the console), and hitchRun steps
+from a clock starting at 0, so two boots of a build replay the tour to the same `stateHash()`; `hitches.mjs --ab --hash`
+compares builds. Every change below that touches the simulation was proved with equal hashes in all four runs (A B B A)
+at the end of walk, districts, drive, chase, crash, blast and car out/in.
+
+**The garbage was megamorphic reads.** `allocBench` (bytes per call) and `shapeReport` (object layouts) found it: a street
+held 25-41 vehicle layouts (fields added after creation by assignDriver, vehicleHandling, the army, police and air units,
+aircraft, horns, blood...), so every read in the loops over all vehicles was megamorphic, and V8 allocates a boxed copy
+for each megamorphic read of a number field. Declaring every field in `makeCar` left 2 layouts. Then a closure
+(`pathAhead.some(...)`) inside trafficControl's scan of every vehicle made V8 allocate a context per vehicle, and small
+helpers V8 did not inline (`clamp`, `normalizeAngle`, `wetGrip`, `corneringLimit`) boxed their arguments in every moving
+vehicle's step.
+
+| allocBench (bytes per call) | before | after |
+| --- | --- | --- |
+| trafficControl (every city AI car, 20 Hz near) | 24,181 | 3,492 |
+| vehicleBroadphase (every physics step) | 80,115 | 15,254 |
+| controlVehicle (every vehicle, every step) | 443 | 114 |
+| settleVehicle | 284 | 21 |
+| knockSceneProps (every frame) | 26,501-50,732 | 69 |
+| physicsStep (all of the above, 2 a frame) | 571,637 | 146,899 |
+
+Tour A/B, seeded (A = the merged lead branch with this pass's tools, without the garbage work; medians of A B B A):
+
+| Stage | KB allocated a frame | collections | long frames | CPU ms a frame |
+| --- | --- | --- | --- | --- |
+| walk | 1,771 -> 844 | 11.5 -> 3.5 | 38 -> 41 | 6.5 -> 6.1 |
+| districts | 1,294 -> 554 | 12.5 -> 5.5 | 65.5 -> 60.5 | 4.0 -> 4.3 |
+| drive | 1,454 -> 577 | 5.5 -> 2.5 | 60 -> 26.5 | 4.5 -> 4.8 |
+| chase | 1,680 -> 704 | 7 -> 3 | 68 -> 29 | 5.7 -> 5.7 |
+| crash | 1,673 -> 604 | 2 -> 0.5 | 10.5 -> 5.5 | 5.8 -> 5.9 |
+| blast | 1,849 -> 651 | 3.5 -> 0.5 | 19 -> 10 | 6.5 -> 6.1 |
+| car out/in | 1,646 -> 536 | 2 -> 0.5 | 19.5 -> 9 | 5.8 -> 5.3 |
+| whole tour | **1,558 -> 638** | | | |
+
+The target was 300 KB a frame: not reached. What allocates now (street, 5 s, KB a frame): controlVehicle ~51 (helper
+calls with number arguments: engineAcceleration, vehicleHandling...), boxContact 21, footprintOffGround 20, solid 19,
+updateBloodTracks 18, vehicleBroadphase 18, militarySolids 16, updateKnockdowns 14, people 11 (83 pedestrian layouts:
+`shapeReport('people')`), touchPerson 11, iterator steps (`> next`) in updateBeach, updateAmbience, soundUpdate,
+updateMilitary ~5 each. CPU per frame moved within the noise (the machine ran at a load of 15-22).
+
+**Also in this round**: no forced layouts for animation restarts (the district name on every district crossed, the
+notice timer, the prompt pop, the radio chip, the world-edge beat, the demo card, the sportsbook stamp: a computed-style
+read instead of offsetWidth); the overlay canvas cleared only after a frame drew on it; skid marks carry the ground
+height of both ends from when they are laid (up to 2,200 terrain lookups a frame before); drawCivicMap skips hidden places
+(five canvas states per place for every place in the city before); updateGangFights builds no arrays and skips rivals
+whose longer leg already exceeds the best distance; the gate pieces, traffic hum and siren loops are indexed;
+strokeRoad no longer destructures every point.
+
+**Tiers** (480 x 300 rendered, software GL, prewarm on, after a tier switch; walk then drive, ~20 stepped frames each):
+
+| Tier | view calls (walk / drive) | shadow calls | triangles (walk) | programs | programs created in the stage | buffer KB a frame |
+| --- | --- | --- | --- | --- | --- | --- |
+| LOW | 235 / 199 | 0 | 0.87 M | 171-172 | 1 / 0 | 100 / 135 |
+| MEDIUM | 272 / 233 | 330 / 169 | 2.08 M | 235-240 | 4 / 0 | 138 / 95 |
+| HIGH | 307 / 251 | 339 / 190 | 2.13 M | 250-252 | 4 / 0 | 115 / 100 |
+| ULTRA | 318 / 271 | 251 / 192 | 1.58 M | 258 | 2 / 0 | 110 / 100 |
+| AUTO (picked LOW here) | 316 / 307 | 0 | 0.91 M | 259 | 1 / 0 | 110 / 105 |
+
+The programs created in the walk stage come right after each tier switch (the staged change covers the scene, not models
+first seen after it); ULTRA's switch reallocates its post targets (4.6 MB of texture storage a frame over the stage, once).
+GPU time is not measurable here.
+
+**The new driving camera** (1280 x 800, HIGH, pulled back at speed, zoom 1.06-1.16): 347-413 calls a frame, of which
+vehicle models 150-188, sprites 27-51, static batches ~49 and the scenery detail layers only 13. Culling the detail layers
+by zoom would save about 3%: the lever is per-vehicle calls (each car is ~25 meshes; merging a car's static trim per
+material, or the instanced body shell for traffic beyond a distance at the pulled-back zoom). Not changed.
+
+**Left**: knockSceneProps still tests every vehicle against every prop near the player (69 bytes but ~45 us a frame);
+the minimap's layers are all redrawn every 0.09 s (drawBikeShareMap up to 7 ms CPU here when zoomed out at speed); the
+pedestrians' 83 layouts; the active-vehicle list for parked cars (BACKLOG).

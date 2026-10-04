@@ -101,7 +101,15 @@ Where a file lives: `grep -i <word> docs/FILEMAP.md`.
   `if (a !== b) a = b` (`controlVehicle`, `contactShape`).
 - Reading a property an object lacks costs about 60 ns against 8 (objects of many layouts):
   `makeCar` declares the optional vehicle fields as `undefined` (add one when the step reads it
-  on every vehicle); `vehicleSpec` reads `type` before `airframe`. Pedestrians left in V8's
+  on every vehicle); `vehicleSpec` reads `type` before `airframe`. **Every field any system sets on a vehicle is declared
+  in `makeCar`** (as `undefined` unless its readers expect a value): with 25-41 layouts every read in the loops over all
+  vehicles went megamorphic, and a megamorphic read of a number field allocates a boxed copy (1.5 MB of garbage a frame
+  came mostly from that). `shapeReport()` must show at most 2-3 vehicle layouts; it names the keys that split them.
+- No closure that captures a loop body's variables inside a hot loop (`list.some((p) => ...)` over every vehicle): V8
+  then allocates a context for every iteration, used or not (8 KB a trafficControl call). Per-frame loops over vehicles or
+  people are indexed (`for (let i = 0; ...)`), not for-of or destructuring (`[x, y]`), which allocate where V8 has not
+  optimised the function; and a small helper V8 does not inline (`clamp`, `normalizeAngle`) boxes its number arguments
+  and result: write it out in the step's inner paths. `allocBench(name)` gives bytes per call of the hot functions. Pedestrians left in V8's
   dictionary mode by `Object.assign` (`resetWalkerState`) measured faster than fast mode: do
   not "fix" that.
 - `Math.hypot` allocates (an argument array and a boxed result) and costs twice `hypot2()` (game-state.js), whose answers

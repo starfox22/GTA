@@ -56,6 +56,10 @@ Steps 3 and 4 stop when the game starts (they cost a build each); the rest conti
 
 - A dynamic buffer bigger than what is drawn (instance pools, the skid marks, contact shadows) sends only the used
   part: `attribute.addUpdateRange(0, n * itemSize)` before `needsUpdate` (the crowd, halos and car blood do too).
+- The 2D overlay over the scene (`worldContext`) is cleared only after a frame drew on it (OVERLAY INK,
+  render3d-resources.js wraps its draw calls): never clear or touch it every frame, an untouched canvas is not repainted.
+- An animation restart takes a style pass, not a layout: `void getComputedStyle(el).animationName` (or `opacity`), never
+  `offsetWidth` (it lays out the whole page mid-pass: every district crossed did).
 - New vehicle models: at most `NEW_MODELS_PER_FRAME` (6) a frame and none after `MODEL_BUILD_BUDGET_MS` (3 ms) of
   building (render3d-resources.js); the player's own is never held back.
 - Light and shadow counts are part of every lit program's key: keep every light in the scene for
