@@ -6,7 +6,8 @@
   column (it ran over both, and over the card, on a 600 px window); with no room for both, the card folds for it.
   The waypoint pill fades when a long vehicle heading down the screen reaches it.
 - Short windows (960x600): the open car radio no longer reaches down over the speed box (it opens upward from just
-  above it); a long notice no longer runs under the waypoint pill.
+  above it); a long notice no longer runs under the waypoint pill, nor a dispatch caption under the notices (it
+  wraps, at 1440x900 too).
 - Touch (tablets): getting in a car no longer opens the radio over the GAS / BRAKE buttons for 4 s (it flashes its
   chip, as on phones), and the chip no longer sits on the weapon chip.
 - Restarting a job while riding a CITY RAIL train no longer pulls the player straight back aboard (any move of the

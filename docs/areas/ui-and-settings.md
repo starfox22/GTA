@@ -123,7 +123,8 @@ navigation.js (big map, GPS), cycles.js (bike share), src/shell.html + src/ui/* 
   (runFrame start, beside the dock line). Console `hudClearance()`, `hudOverlaps()` (HUD boxes that
   overlap each other or the player); tools/tests/hud-clearance.mjs.
 - Narrow windows (<= 980 px): the notices start under the waypoint pill (116 px) and stop short of
-  the centre (`calc(50vw - 150px)`).
+  the centre (`calc(50vw - 150px)`). The dispatch / radio caption (`#radioCaption`, top centre) is never
+  wider than the space between the notices' column and the right edge's mirror: a long line wraps.
 - Speed box (`#vehicleStats`): one readout for every way of moving; on foot the movement
   state and measured pace (`trackPlayerPace`). **Every printed speed goes through
   `speedReading` / `speedText` / `kmhReading`** (km/h or mph setting); boats keep knots,

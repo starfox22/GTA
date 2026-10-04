@@ -316,7 +316,9 @@ kbd {
   right: 0;
   margin-inline: auto;
   width: max-content;
-  max-width: calc(100vw - 32px);
+  /* Clear of the notices' column on the left (and so of the right column too): a long dispatch
+     line wraps rather than running under them. */
+  max-width: calc(100vw - 2 * (var(--hud-edge) + min(400px, 40vw) + 12px));
   transform: translateY(-4px);
   padding: 6px 14px;
   border-radius: 6px;

@@ -515,6 +515,9 @@ body:not(.touch-mode).police-search-active #carRadio {
     top: 116px;
     max-width: calc(50vw - 150px);
   }
+  #radioCaption {
+    max-width: calc(300px - 2 * var(--hud-edge) - 24px);
+  }
   #terrainStatus {
     top: 112px;
   }
