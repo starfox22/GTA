@@ -11,11 +11,11 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-485 files in the include tree, 167,510 lines.
+486 files in the include tree, 168,022 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
-- `src/game.js`   180 — ▸ Game orchestration and shared state
+- `src/game.js`   181 — ▸ Game orchestration and shared state
 
 ## src/game.js ▸ Game orchestration and shared state
 
@@ -33,17 +33,17 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-car-spawn.js`   204 — makeCar(), canSpawnCar(), spawnClearCar(): creating vehicles with one shared object layout.
 - `src/game-worldgen.js`   480 — buildWorld(): the city plan, buildings (makeBuilding), trees, the 2D ground canvas.
 - `src/game-populate.js`   230 — Initial population: showcase parking (SHOWCASE_PARKING, parkShowcase) and populate().
-- `src/game-player-actions.js`   601 — Player verbs: enter and exit vehicles, interact, aim, shoot, reload, hurt, die, explode.
+- `src/game-player-actions.js`   611 — Player verbs: enter and exit vehicles, interact, aim, shoot, reload, hurt, die, explode.
 - `src/game-cops.js`   171 — resetMissionState(), spawnCop(), copRoute(): mission reset and patrol spawning.
 - `src/physics.js`    19 — ▸ Vehicle and pedestrian physics
 - `src/game-people.js`   166 — Pedestrian life: Everyday chatter lives here; how people walk, what they do and how they react to danger is in src/crowd.js, which also has the …
 - `src/game-combat.js`   344 — updateCombat(), bullets, shot line-of-sight (shotBlocked) and bullet targets.
-- `src/game-update.js`   179 — update(dt): the per-frame simulation step (only active play advances clocks).
+- `src/game-update.js`   181 — update(dt): the per-frame simulation step (only active play advances clocks).
 - `src/world-edge.js`   321 — World-edge countdown: past the line just inside the world box the player has 10 s to return, or the vehicle blows up and WASTED.
 - `src/game-draw2d.js`   586 — 2D canvas fallback renderer: drawWorld, drawCar, drawPerson, markers.
 - `src/game-minimap.js`   278 — Minimap base layer: The minimap used to repaint the whole county (coast, every street, parks, promenades, county ground and every building footprint) …
 - `src/map-view.js`   367 — Map views: the city map's filters (MAP LAYERS) and GO TO list, sharp canvases on HiDPI screens, the minimap's speed pull-back and its edge arrows …
-- `src/game-ui.js`   413 — Weapon chip, mission card and updateUI() (HUD text refresh).
+- `src/game-ui.js`   414 — Weapon chip, mission card and updateUI() (HUD text refresh).
 - `src/game-menus.js`   188 — Resize, begin/newGame, pause, help, big map toggle.
 - `src/game-input.js`   419 — Cheat code: Letters typed during play accumulate in a short ring; when the tail spells a known code it fires.
 - `src/controls.js`   314 — Key bindings
@@ -90,8 +90,9 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/monarch.js`    77 — ▸ Monarch Isle: the plan, the land and the streets
 - `src/airfields.js`   388 — Runways, taxiways and the reclaimed runway piers
 - `src/military.js`    27 — ▸ Fort Sentinel
-- `src/armor.js`   252 — The player's tank: turret traverse, ammunition, reticle
+- `src/armor.js`   254 — The player's tank: turret traverse, ammunition, reticle
 - `src/apache.js`   478 — Fort Sentinel's AH-64 attack helicopter
+- `src/mounted-guns.js`   452 — Mounted guns the player fires from Fort Sentinel's vehicles: the LAV-8's 25 mm cannon and coax MG, the gun jeep's ring-mounted .50 cal and the Black …
 - `src/aviation.js`    10 — ▸ Fixed-wing flight and flight missions
 - `src/challenges.js`   607 — Mission-specific encounters
 - `src/sidejobs.js`   418 — Contract missions after the main story
@@ -187,7 +188,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/citylife.js ▸ Civic services and police
 
-- `src/citylife-places.js`   495 — The civic layer: places, clock, services, police on foot, navigation and injury effects.
+- `src/citylife-places.js`   497 — The civic layer: places, clock, services, police on foot, navigation and injury effects.
 - `src/citylife-police.js`   633 — City life services and police sight: service menus, crowd density, search, gang targets, deploying officers (renderService, policeSees).
 - `src/citylife-civic.js`   519 — ▸ City life: officers and the wanted level (updateOfficers, updateWanted), strikePerson (blood: blood.js), updateCivic(), navigation and the civic map.
 
@@ -591,7 +592,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/base3d-buildings.js`   327 — Fort Sentinel buildings from SENTINEL.buildings (planOf): window rows and flags.
 - `src/base3d-facilities.js`   337 — Fort Sentinel control tower, radar head (radarHead), windsock and glow meshes.
 - `src/base3d-frame.js`   102 — Fort Sentinel per-frame visuals: updateBaseVisuals() and the searchlight lens.
-- `src/base3d-vehicles.js`   179 — Military vehicle models: makeMilitaryVehicle(), compactTank, wheels, lamps and star decals.
+- `src/base3d-vehicles.js`   190 — Military vehicle models: makeMilitaryVehicle(), compactTank, wheels, lamps and star decals.
 
 ## src/boats3d.js ▸ Boat kit: lofted hulls and shared yacht parts
 
@@ -662,10 +663,10 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/helicopter3d-plans.js`   314 — Helicopter airframe plans: Colibri, Robin, Hawk (heliPlans).
 - `src/helicopter3d-geometry.js`   335 — Helicopter surface maths: monotone interpolation, sections, lofted grids and geometry helpers.
 - `src/helicopter3d-livery.js`   626 — Helicopter livery painting: emblems, seals, roundels, lettering.
-- `src/helicopter3d-kit.js`   220 — Helicopter kit: every shared geometry of one look (heliKit, heliKits).
-- `src/helicopter3d-equipment.js`   331 — Helicopter equipment: skids, lenses, nav lights, beacons, Nightsun, per-type kit and cabins.
-- `src/helicopter3d-model.js`   260 — Helicopter rotors and makeHelicopter().
-- `src/helicopter3d-animate.js`   167 — Helicopter per frame: animateHelicopter(), helicopterSearchlightMount(), helicopterModelReport().
+- `src/helicopter3d-kit.js`   222 — Helicopter kit: every shared geometry of one look (heliKit, heliKits).
+- `src/helicopter3d-equipment.js`   341 — Helicopter equipment: skids, lenses, nav lights, beacons, Nightsun, per-type kit and cabins.
+- `src/helicopter3d-model.js`   272 — Helicopter rotors and makeHelicopter().
+- `src/helicopter3d-animate.js`   172 — Helicopter per frame: animateHelicopter(), helicopterSearchlightMount(), helicopterModelReport().
 
 ## src/police3d.js ▸ Police vehicle models
 
@@ -719,7 +720,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/game-console-core.js`   142 — DeadEndCity console, core: status, teleport, look, clock, zoom, simulate, heal, god, cash, walk (+ godPanelConsole)
 - `src/game-console-missions.js`   307 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
-- `src/game-console-police.js`   217 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
+- `src/game-console-police.js`   219 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
 - `src/game-console-vehicles.js`   276 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
 - `src/game-console-world.js`   229 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
 - `src/game-console-rides.js`    98 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht

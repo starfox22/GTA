@@ -92,6 +92,7 @@
     // @include src/military.js
     // @include src/armor.js
     // @include src/apache.js
+    // @include src/mounted-guns.js
     // @include src/aviation.js
     // @include src/challenges.js
     // @include src/sidejobs.js

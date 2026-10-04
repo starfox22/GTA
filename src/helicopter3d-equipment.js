@@ -242,10 +242,20 @@
           // The sliding door's rail fairing above the door.
           const rz = heliSurfaceZ(stationAt(8), 21.3, side) + side * 0.12;
           policeAdd(trim, boxGeo, 5.5, 21.3, rz, 26, 0.35, 0.25, grey);
-          // M240 on the gunner's window mount.
-          const gz = heliSurfaceZ(stationAt(21), 15.5, side) + side * 0.6;
-          policeAdd(trim, boxGeo, 21, 15.4, gz, 2.2, 0.8, 0.7, '#1b1c1a');
-          heliRod(trim, [22, 15.5, gz + side * 0.2], [26.6, 15.2, gz + side * 1.7], 0.22, '#141514');
+          // M240H on the gunner's window mount: the pintle post stays on the airframe,
+          // the gun swings on its own pivot (makeHelicopter `doorGuns`, laid by
+          // mounted-guns.js), built here along +x from the pivot.
+          const gz = heliSurfaceZ(stationAt(21), 15.5, side) + side * 0.6,
+            gun = policeSet();
+          policeAdd(trim, boxGeo, 21, 14.5, gz, 0.45, 1.3, 0.45, '#1b1c1a');
+          policeAdd(gun, boxGeo, 0.5, 0.1, 0, 2.8, 0.8, 0.7, '#1b1c1a');
+          heliRod(gun, [1.8, 0.15, 0], [5.6, 0.1, 0], 0.22, '#141514');
+          heliRod(gun, [5.4, 0.1, 0], [6.3, 0.1, 0], 0.32, '#141514');
+          // Feed tray cover, the ammunition box inboard and the spade grips.
+          policeAdd(gun, boxGeo, 0.3, 0.6, 0, 1.6, 0.25, 0.6, '#262824');
+          policeAdd(gun, boxGeo, 0.3, -0.45, -side * 0.75, 1.3, 0.9, 0.8, '#3a4234');
+          for (const s of [-1, 1]) heliRod(gun, [-0.9, 0.1, s * 0.22], [-1.6, 0.05, s * 0.42], 0.12, '#141514');
+          (k.doorGuns ||= []).push({ x: 21, y: 15.4, z: gz, side, set: gun });
         }
         // Tail rotor gearbox and drive fairing on the pylon.
         const t = plan.tailRotor;

@@ -118,6 +118,8 @@
         timed('offroad', () => updateOffroad(deltaSeconds));
         updatePlayerArmor(deltaSeconds);
         updatePlayerApache(deltaSeconds);
+        // The LAV-8, gun jeep and Black Hawk guns (mounted-guns.js).
+        updatePlayerMountedGun(deltaSeconds);
         // Past the line just inside the world box: RETURN TO THE CITY, 10 s (world-edge.js).
         updateWorldEdge(deltaSeconds);
         timed('combat', () => updateCombat(deltaSeconds));

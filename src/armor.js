@@ -225,6 +225,8 @@
       if (!el) return;
       // The Apache's chin gun uses the same ring and pip (apache.js).
       if (isApache(c)) return updateApacheReticle(el, c);
+      // So do the LAV-8, the gun jeep and the Black Hawk's door guns (mounted-guns.js).
+      if (mountedGunKind(c)) return updateMountedReticle(el, c);
       const show = gameMode === 'play' && !!city3D && c?.type === 'tank' && c.hp > 0;
       el.classList.toggle('hidden', !show);
       if (!show) return;

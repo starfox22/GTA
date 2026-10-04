@@ -402,6 +402,8 @@
           radio('call-backup');
           // Fort Sentinel's attack helicopter: theft of military hardware (apache.js).
           if (isApache(c)) apacheBoarded(c);
+          // A Black Hawk's door guns (mounted-guns.js).
+          else if (mountedGunKind(c)) mountedGunBoarded(c);
         } else if (c.type === 'tank') {
           // Taking one of Fort Sentinel's tanks raises the base; a pursuit tank
           // taken off the army is a crime of its own.
@@ -412,7 +414,8 @@
               ' pivot · the mouse lays the turret · ' + keyName('fire') + ' fire · ' + keyName('cycleWeapon') + ' main gun / MG · right click MG',
             7,
           );
-        } else if (isBoat(c))
+        } else if (mountedGunKind(c)) mountedGunBoarded(c);
+        else if (isBoat(c))
           tell(
             keyName('forward') + '/' + keyName('back') + ' throttle · ' + keyName('left') + '/' + keyName('right') + ' steer · ' +
               keyName('handbrake') + ' slow · ' + keyName('interact') + ' exit alongside a dock',
@@ -448,6 +451,8 @@
       return Math.round(worldMeters(clearance)) + ' m OVER ROOFS';
     }
     function startReload() {
+      // A vehicle's mounted gun changes its own belt (mounted-guns.js).
+      if (mountedGunReload()) return;
       const w = currentWeapon();
       if (
         w.melee ||
@@ -505,6 +510,11 @@
       if (gameMode === 'play' && player.car?.type === 'tank') {
         // The gun fires where the turret is laid, not where the mouse is (armor.js).
         tankPlayerFire(player.car);
+        return;
+      }
+      if (gameMode === 'play' && mountedGunKind(player.car)) {
+        // The LAV-8's cannon or coax, the gun jeep's .50 cal, the Black Hawk's door guns (mounted-guns.js).
+        mountedGunFire(player.car);
         return;
       }
       if (
