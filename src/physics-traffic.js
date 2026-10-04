@@ -361,18 +361,19 @@
         // and found cars waiting there for us to clear the junction (each then
         // waited for the other for ever) or parked at the kerb beside our exit.
         // While committed, a car only counts if it stands on the rest of our path.
-        if (
-          pathAhead &&
-          !pathAhead.some((p) => {
-            const px = p.x - o.x,
-              py = p.y - o.y;
-            return (
+        // (A plain loop, not pathAhead.some(closure): a closure capturing this body's constants made V8 allocate a
+        // context for every vehicle the loop visited, used or not: ~8 KB a call.)
+        if (pathAhead) {
+          let onPath = false;
+          for (let i = 0; i < pathAhead.length && !onPath; i++) {
+            const px = pathAhead[i].x - o.x,
+              py = pathAhead[i].y - o.y;
+            onPath =
               Math.abs(px * headingCosine3 + py * headingSine3) < vehicleDefinition2.l / 2 + side + 4 &&
-              Math.abs(-px * headingSine3 + py * headingCosine3) < vehicleDefinition2.w / 2 + side + 4
-            );
-          })
-        )
-          continue;
+              Math.abs(-px * headingSine3 + py * headingCosine3) < vehicleDefinition2.w / 2 + side + 4;
+          }
+          if (!onPath) continue;
+        }
         // A parked car, a wreck, a double-parked delivery van or a car its driver
         // walked away from: nobody is coming back to move it. Ease across the lane
         // past one poking a little way in from the kerb; pull out round one that

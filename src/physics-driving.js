@@ -492,15 +492,19 @@
              stopping formulas in trafficControl turn a speed into a distance through
              its square). One driver in eleven keeps their dry-road habits and is
              the one who, now and then, runs into the car ahead. */
+          // wetGrip(), corneringLimit() and clamp() written out (the same arithmetic): every traffic car runs this
+          // twice a frame, and each call into a helper V8 does not inline boxes its number arguments and result.
           const handling = vehicleHandling(c),
-            surface = wetGrip(),
+            surface = 1 - weather.wet * 0.28,
             rainPace = c.id % 11 === 0 ? 1 : Math.sqrt(surface),
-            corner = corneringLimit(vehicleDefinition, along) * surface;
-          steer = clamp(ai.steer, -corner, corner);
-          acceleration = clamp(
-            (ai.desired * rainPace * handling.top - along) * 5,
+            corner = (((vehicleDefinition.cornerG || 1.2) * GRAVITY) / Math.max(Math.abs(along), 20 * KMH)) * surface;
+          steer = Math.max(-corner, Math.min(corner, ai.steer));
+          acceleration = Math.max(
             -vehicleDefinition.brake * surface,
-            Math.min(engineAcceleration(vehicleDefinition, along) * handling.power, vehicleDefinition.acc * surface),
+            Math.min(
+              Math.min(engineAcceleration(vehicleDefinition, along) * handling.power, vehicleDefinition.acc * surface),
+              (ai.desired * rainPace * handling.top - along) * 5,
+            ),
           );
           lateralScale = surface;
           drag = 0;
@@ -572,7 +576,8 @@
             (((vehicleDefinition.cornerG || 1.2) * 1.25 * GRAVITY * Math.max(grip, 5)) / Math.max(specGrip, 5)) *
             lateralScale *
             stepSeconds,
-          traction = clamp(lateral * (1 - Math.exp(-tyreRate * stepSeconds)), -lateralLimit, lateralLimit);
+          // clamp() written out (every moving vehicle, every step: see the traffic branch above).
+          traction = Math.max(-lateralLimit, Math.min(lateralLimit, lateral * (1 - Math.exp(-tyreRate * stepSeconds))));
         c.vx += headingSine * traction;
         c.vy -= headingCosine * traction;
         c.vx *= Math.exp(-drag * stepSeconds);
@@ -591,7 +596,9 @@
             physicsClock < (c.spinUntil || 0) ? 1.1 : c === pc ? (c.handbrakeTurn ? HANDBRAKE_YAW_RESPONSE : PLAYER_YAW_RESPONSE) : 5;
           c.av += (steer - c.av) * (1 - Math.exp(-yawAuthority * stepSeconds));
         }
-        c.a = normalizeAngle(c.a + c.av * stepSeconds);
+        // normalizeAngle() written out (the same atan2 of sine and cosine).
+        const turned = c.a + c.av * stepSeconds;
+        c.a = Math.atan2(Math.sin(turned), Math.cos(turned));
         c.moveA = Math.atan2(c.vy, c.vx);
         c.speed = c.vx * Math.cos(c.a) + c.vy * Math.sin(c.a);
       }
