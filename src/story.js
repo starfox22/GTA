@@ -795,7 +795,7 @@
         lastDistrict = d;
         districtNoticeUntil = gameTime + 2.8;
         location.classList.remove('entering');
-        void location.offsetWidth;
+        void getComputedStyle(location).animationName; // a style pass restarts the animation (offsetWidth also laid out the page)
         location.classList.add('entering');
       }
       if (districtNoticeUntil && gameTime > districtNoticeUntil) {
