@@ -53,6 +53,8 @@
       cancelCarjack();
       if (player.car) exitCar();
       if (taxiRide) endTaxiRide(false);
+      // Off a train too (it rides 62 units up on its viaduct): the ride used to pull the player back aboard.
+      const offTrain = dropTransitRide();
       cancelTaxiPick();
       player.deck = null;
       player.coaster = null;
@@ -84,6 +86,7 @@
       }
       player.x = x;
       player.y = y;
+      if (offTrain && !player.car) player.altitude = terrainHeight(x, y);
       // A countdown past the world edge starts afresh from the new spot (world-edge.js).
       resetWorldEdge();
       cameraTarget.x = x;

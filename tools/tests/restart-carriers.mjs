@@ -42,4 +42,24 @@ export default async function (t) {
   await t.call('boardYacht');
   t.assert((await carriers()).deck, 'not on the yacht deck after boardYacht');
   await restart('the yacht deck');
+
+  // A train ride (the free-roam bug pass): teleportPlayer left transitRide set, so the train pulled the player
+  // straight back aboard after a restart.
+  await t.call('boardTrain', 0, 2);
+  await t.wait(3);
+  t.assert((await carriers()).transit, 'not riding after boardTrain');
+  await restart('a train ride');
+  t.assert(!(await carriers()).transit, 'still riding the train after the restart');
+
+  // A cab ride, then the console's drive(): the ride held the player and the new car in place.
+  await t.call('cab', 2650, 1250);
+  await t.wait(3);
+  t.assert((await carriers()).taxi, 'not riding after cab()');
+  await t.call('drive', 'sport', 0, 0);
+  const c = await carriers();
+  t.assert(!c.taxi && !c.transit, 'drive() left a ride running: ' + JSON.stringify(c));
+  const before = await t.call('status');
+  await t.keys('KeyW', 1.6);
+  const after = await t.call('status');
+  t.assert(after.vehicle === 'sport' && Math.hypot(after.x - before.x, after.y - before.y) > 30, `the car did not move: ${before.x},${before.y} -> ${after.x},${after.y}`);
 }

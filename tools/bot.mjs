@@ -443,8 +443,11 @@ const actions = {
       await ensurePlay('old key');
       await press(key);
       await realWait(0.3);
-      const afterNew = (await call('status')).mode;
-      if (prompt.visible && afterNew === 'play') find('rebind', `the rebound key ${label} did nothing at "${prompt.text}"`);
+      const after = await call('status'),
+        afterNew = after.mode;
+      // A wanted player is turned away at every door but an outfitter's (openService: "lose the police first").
+      const refused = after.wanted > 0 && d.kind !== 'clothes';
+      if (prompt.visible && afterNew === 'play' && !refused) find('rebind', `the rebound key ${label} did nothing at "${prompt.text}"`);
     } finally {
       await call('bindings', 'reset');
     }

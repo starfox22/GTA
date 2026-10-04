@@ -174,6 +174,9 @@
         if (!VEHICLE_DEFINITIONS[type]) throw Error('Unknown vehicle type ' + type);
         if (airframe && (type !== 'plane' || !AIRFRAME_SPECS[airframe])) throw Error('Unknown airframe ' + airframe);
         if (player.car) exitCar();
+        // Out of a cab or off a train first: a ride left running held the player (and the new car) in place.
+        if (taxiRide) endTaxiRide(false);
+        if (transitRide) teleportPlayer(player.x, player.y);
         let car = null;
         if (['speedboat', 'workboat', 'jetski'].includes(type)) {
           // Boats go on the nearest open water (spawnClearCar wants dry land).
