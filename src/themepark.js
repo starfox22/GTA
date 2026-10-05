@@ -56,6 +56,7 @@
     // @include src/themepark-falcon-track.js
     // @include src/themepark-falcon-train.js
     // @include src/themepark-rides.js
+    // @include src/ride-look.js
     // @include src/themepark-colliders.js
     // @include src/themepark-grounds.js
     // @include src/themepark-crowd.js

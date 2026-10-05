@@ -327,11 +327,23 @@
        * the Eye the view from the capsule over the island and the city, or the
        * wheel seen from outside. E cycles the views. Called right after the
        * street/flight camera is set up each frame (render3d.js).
+       * The rider's head-look (ride-look.js rideLookAngles) turns the smoothed
+       * view about the eye: pitch about the head's right axis, yaw about the
+       * view's up (the track's up in the front seat, so the head turns with the
+       * car through a loop). rideCam keeps the view before the head turns it.
        */
       const rideCam = { pos: new Three.Vector3(), look: new Three.Vector3(), up: new Three.Vector3(0, 1, 0), ready: false },
         rideA = parkNewFrame3(),
         rideB = parkNewFrame3(),
         parkWorldUp = new Three.Vector3(0, 1, 0),
+        rideTarget = new Three.Vector3(),
+        rideLookAt = new Three.Vector3(),
+        rideUp = new Three.Vector3(),
+        rideHeadDir = new Three.Vector3(),
+        rideHeadRight = new Three.Vector3(),
+        rideHeadUp = new Three.Vector3(),
+        rideHeadLook = new Three.Vector3(),
+        rideHead = { yaw: 0, pitch: 0, seat: false },
         TRACKSIDE = [
           [2300, -6250, 60],
           [1790, -6600, 40],
@@ -360,9 +372,9 @@
           setStationRoofCut(false);
           return false;
         }
-        const target = new Three.Vector3(),
-          look = new Three.Vector3(),
-          up = new Three.Vector3();
+        const target = rideTarget,
+          look = rideLookAt,
+          up = rideUp;
         let fov = 60;
         if (ride.kind === 'wheel') {
           wheelCapsule(ride.capsule, podSpot);
@@ -373,10 +385,10 @@
             look.set(EYE.x, EYE.hub, EYE.y);
             fov = 55;
           } else {
-            // Inside the capsule, looking out across the island and the sound.
-            const pan = Math.sin(gameTime * 0.05) * 1.1;
+            // Inside the capsule, looking out south across the island and the city;
+            // the rider's head turns from there (ride-look.js).
             target.set(podSpot.x, podSpot.z + 2, podSpot.y + 10);
-            look.set(podSpot.x + Math.sin(pan) * 400, podSpot.z - 110, podSpot.y + Math.cos(pan) * 400 + 200);
+            look.set(podSpot.x, podSpot.z - 110, podSpot.y + 600);
             fov = 65;
           }
           up.copy(parkWorldUp);
@@ -432,6 +444,23 @@
           rideCam.look.lerp(look, k);
           rideCam.up.lerp(up, k).normalize();
         }
+        // The rider's head: pitch about the head's right axis, then yaw about the view's up.
+        rideLookAngles(rideHead);
+        rideHeadLook.copy(rideCam.look);
+        rideHeadUp.copy(rideCam.up);
+        if (rideHead.yaw !== 0 || rideHead.pitch !== 0) {
+          rideHeadDir.subVectors(rideCam.look, rideCam.pos);
+          const reach = rideHeadDir.length();
+          rideHeadRight.crossVectors(rideHeadDir, rideCam.up);
+          const across = rideHeadRight.length();
+          if (reach > 1e-3 && across > 1e-4 * reach) {
+            rideHeadDir.multiplyScalar(1 / reach);
+            rideHeadRight.multiplyScalar(1 / across);
+            rideHeadDir.applyAxisAngle(rideHeadRight, rideHead.pitch).applyAxisAngle(rideCam.up, -rideHead.yaw);
+            rideHeadUp.applyAxisAngle(rideHeadRight, rideHead.pitch).applyAxisAngle(rideCam.up, -rideHead.yaw);
+            rideHeadLook.copy(rideCam.pos).addScaledVector(rideHeadDir, reach);
+          }
+        }
         camera = flightCamera;
         flightViewActive = true;
         flightCamera.fov = fov;
@@ -439,14 +468,14 @@
         flightCamera.near = 1.5;
         flightCamera.far = 24000;
         flightCamera.position.copy(rideCam.pos);
-        flightCamera.up.copy(rideCam.up);
-        flightCamera.lookAt(rideCam.look);
+        flightCamera.up.copy(rideHeadUp);
+        flightCamera.lookAt(rideHeadLook);
         flightCamera.updateProjectionMatrix();
         flightCamera.updateMatrixWorld(true);
         flightCamera.up.set(0, 1, 0);
         // What the renderer considers in view: the park and a good way beyond.
-        viewCenter.x = (rideCam.look.x + rideCam.pos.x) / 2;
-        viewCenter.y = (rideCam.look.z + rideCam.pos.z) / 2;
+        viewCenter.x = (rideHeadLook.x + rideCam.pos.x) / 2;
+        viewCenter.y = (rideHeadLook.z + rideCam.pos.z) / 2;
         viewReach = 2600;
         viewZoom = 0.5;
         viewGroundDistance = 700;

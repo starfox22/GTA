@@ -54,6 +54,9 @@
       // Pad input -> the codes it holds ('b7', 'stick-up', ...).
       held: new Map(),
       aiming: false,
+      // The right stick as read in play (ride-look.js turns a rider's head with it); 0 in menus.
+      lookX: 0,
+      lookY: 0,
       menuDir: null,
       menuNext: 0,
       lastPoll: 0,
@@ -103,6 +106,7 @@
       for (const input of [...gamepad.held.keys()]) padHoldCodes(input, []);
       if (gamepad.aiming) touchAim = null;
       gamepad.aiming = false;
+      gamepad.lookX = gamepad.lookY = 0;
       gamepad.buttons = [];
     }
     /* The physical key bound to an action (its first), or null when unbound. */
@@ -163,6 +167,8 @@
       const gentle = context === 'foot' && m > PAD_DEAD && (roofPartyPace() ? m >= PAD_RUN : m < PAD_RUN);
       padHoldCodes('stick-walk', gentle ? padCodes(['walk']) : []);
       if (m > PAD_DEAD) mouse.active = false;
+      if (gamepad.lookX !== rx) gamepad.lookX = rx;
+      if (gamepad.lookY !== ry) gamepad.lookY = ry;
       // The right stick aims as the touch aim stick does (RT fires).
       if (Math.hypot(rx, ry) > PAD_AIM) {
         touchAim = Math.atan2(ry, rx);
@@ -175,6 +181,7 @@
     }
     /* Menus: a direction from the D-pad or the stick, repeated while held. */
     function padMenu(down, pressed, lx, ly, dt, now) {
+      gamepad.lookX = gamepad.lookY = 0;
       if (gamepad.aiming) {
         touchAim = null;
         gamepad.aiming = false;

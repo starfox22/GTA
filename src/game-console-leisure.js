@@ -61,6 +61,9 @@
         rideAttraction(kind);
         return parkReport().riding;
       },
+      // The rider's head-look on the Falcon or the Eye (ride-look.js): head and target yaw / pitch in degrees, the
+      // input that leads it (mouse, touch, pad), what the camera turns by in this view, and the viewport.
+      rideLook: () => rideLookReport(),
       // The Falcon riders' scream cues (track position, height, vertical speed, g) and lines; `reset` clears the log.
       coasterVoices: (reset = false) => falconVoicesReport(!!reset),
     });

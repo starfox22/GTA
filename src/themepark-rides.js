@@ -75,6 +75,8 @@
         player.altitude = seat.z + 4;
         player.a = Math.atan2(seat.ty, seat.tx);
       }
+      // The rider's head-look (ride-look.js), after a ride that has just ended let go.
+      updateRideLook(deltaSeconds);
       updateFalconVoices();
       updateParkShows(deltaSeconds);
       updateParkCrowd(deltaSeconds);

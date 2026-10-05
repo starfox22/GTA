@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-501 files in the include tree, 173,625 lines.
+502 files in the include tree, 173,912 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -68,7 +68,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/carjack-struggle.js`   566 — The carjack struggle: walking round to the driver's door, the door, reaching in, a tug of war, hauling the driver out and taking the seat …
 - `src/riders.js`   482 — Riders thrown from motorbikes and bicycles
 - `src/wheelie.js`   167 — Wheelies: a motorbike's or bicycle's front wheel lifted by the throttle and the rider's weight, pitching about the rear tyre (c.wheelie, radians; the …
-- `src/themepark.js`    63 — ▸ Sunset Pier resort and theme park
+- `src/themepark.js`    64 — ▸ Sunset Pier resort and theme park
 - `src/marina.js`    11 — ▸ Harbor Point marina, the superyacht and the cruise liners
 - `src/taxi.js`   287 — Yellow cabs
 - `src/cycles.js`   803 — City bicycles
@@ -125,7 +125,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/falls.js`    22 — ▸ Falls: bodies and vehicles off cliffs, fatal impacts
 - `src/mobile.js`   282 — Touch controls
 - `src/input-hints.js`   153 — Input-aware hints: which device the player is using (keyboard and mouse, touch, gamepad) and what an action is called on it (keyName's touch and …
-- `src/gamepad.js`   332 — Gamepad (standard mapping): play through the same actions as the bound keys, menus by focus, the city map by a cursor; the button names hints use …
+- `src/gamepad.js`   339 — Gamepad (standard mapping): play through the same actions as the bound keys, menus by focus, the city map by a cursor; the button names hints use …
 - `src/world-view.js`   270 — World camera gestures
 - `src/car-radio.js`   871 — Vehicle radio stations
 - `src/garages.js`   752 — ▸ Drive-in repair and respray
@@ -217,7 +217,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/themepark-falcon-track.js`   344 — The Falcon coaster track: circuit builder, speed profile, banking and frames (coasterCircuit, coasterFrame).
 - `src/themepark-falcon-train.js`   430 — The Falcon coaster train: stepping, boarding and leaving, riders, screams and speakers (stepCoasterTrain).
-- `src/themepark-rides.js`   191 — The Sunset Eye wheel, coaster status, park shows and fireworks (updateWheelRide, updateParkShows).
+- `src/themepark-rides.js`   193 — The Sunset Eye wheel, coaster status, park shows and fireworks (updateWheelRide, updateParkShows).
+- `src/ride-look.js`   245 — Ride head-look: on the Sunset Eye and the Falcon the pointer's place on screen, a touch drag or the gamepad's right stick turns the rider's head …
 - `src/themepark-colliders.js`   293 — Theme park colliders: solids, air solids, kiosks, coaster footings, lagoon and paths (parkBlocked).
 - `src/themepark-grounds.js`   337 — Theme park grounds: the log flume, the pier ground paint, buildSunsetPier() and park palms.
 - `src/themepark-crowd.js`   268 — Theme park crowd: lines, spots, queues and guests (spawnParkGuest).
@@ -555,7 +556,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/themepark3d-materials.js`   465 — Theme park 3D root, shared materials, ride instancing and tube helpers.
 - `src/themepark3d-rides.js`   471 — Theme park 3D Falcon train and Sunset Eye capsules and LEDs (updateCoasterTrain, updateEyeCapsules).
 - `src/themepark3d-carousel.js`   425 — ▸ Theme park 3D Sunset Palace carousel, teacups and flume boats (updateFlume).
-- `src/themepark3d-shows.js`   456 — Theme park 3D bumper cars, fireworks, updateParkVisuals() and the ride camera.
+- `src/themepark3d-shows.js`   485 — Theme park 3D bumper cars, fireworks, updateParkVisuals() and the ride camera.
 
 ## src/themepark3d-carousel.js ▸ Theme park 3D Sunset Palace carousel, teacups and flume boats (updateFlume).
 
@@ -745,7 +746,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-vehicles.js`   415 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
 - `src/game-console-world.js`   236 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
 - `src/game-console-rides.js`   104 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
-- `src/game-console-leisure.js`    72 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)
+- `src/game-console-leisure.js`    75 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)
 - `src/game-console-crowd.js`   162 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
 - `src/game-console-graphics.js`   237 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
 - `src/game-console-perf.js`   272 — DeadEndCity console, simulation cost: simProfile (per-section ms, worst frames), simScenario (staged situations)
