@@ -63,6 +63,12 @@
           kind: godSplashKind,
           title: getElement('godSplashTitle').textContent,
           count: godSplashCount,
+          // The card's own life animation (its end takes the splash off) and whether the page is visible.
+          life: getElement('godSplash')
+            .getAnimations()
+            .map((a) => a.animationName + ' ' + a.playState + ' ' + Math.round(a.currentTime || 0))
+            .join(', '),
+          page: document.visibilityState,
         }),
         // Show a splash held at its settled look, no animation (for stills); godSplashHide() takes it off.
         godSplashStill(on = true) {

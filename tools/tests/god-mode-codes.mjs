@@ -43,9 +43,10 @@ export default async function (t) {
   t.assert(!(await god()), 'the code in capitals did not turn god mode off');
   splash = await t.call('godSplash');
   t.assert(splash.shown && splash.kind === 'off' && splash.title === 'GOD MODE DEACTIVATED', 'no OFF splash: ' + JSON.stringify(splash));
-  // It plays out by itself (3 s of CSS animation) and leaves the screen.
-  await t.realWait(3.6);
-  splash = await t.call('godSplash');
+  // It plays out by itself (3 s of CSS animation) and leaves the screen. A CSS animation starts on the page's next
+  // frame, which the no-render page under a running simulation can hold back ~1 s, so the wait polls (up to 6 s).
+  await t.realWait(3);
+  for (let i = 0; i < 12 && (splash = await t.call('godSplash')).shown; i++) await t.realWait(0.25);
   t.assert(!splash.shown && splash.kind === null, 'the OFF splash did not go away: ' + JSON.stringify(splash));
   // GODMODE still works.
   await type(t, 'GODMODE');

@@ -32,7 +32,7 @@
 | --- | --- |
 | `godPanel()` | The GOD MODE settings tab (god-panel.js): god mode, whether the tab is shown, the tab list, freeze, clock, weather and lock, pick mode, and the last teleport, refill and lose-police reports |
 | `godTeleportPick()` | Open the TELEPORT map from play as Settings · GOD MODE · PICK ON MAP does (god mode on); returns `godPanel()`. With `mapScreenPoint(x, y)` a test clicks a map point with the real pointer |
-| `godSplash()` | The god mode splash (god-splash.js, `godSplashConsole()`): on screen, `kind` ('on' / 'off' / null), its title and how many have played |
+| `godSplash()` | The god mode splash (god-splash.js, `godSplashConsole()`): on screen, `kind` ('on' / 'off' / null), its title, how many have played, `life` (the card's own animation: name, play state, ms; its end takes the splash off) and `page` (visibility) |
 | `godSplashStill(on)` / `godSplashHide()` | Show the ON or OFF splash held at its settled look with no animation (for `dev.mjs shot`), and take it off |
 | `godSplashScrub(on, seconds)` | Show the splash as it looks `seconds` in, held (each animation stepped there, its values written inline, the animation dropped): stills of the moving parts with `dev.mjs shot`; `godSplashHide()` clears it |
 | `godFanfareRender(on)` / `godFanfareReport()` | Render the ON or OFF splash sound offline (god-splash-audio.js) and report `{ peak, rms, loudestRms }` (50 ms window) once done, or `{ error }` |

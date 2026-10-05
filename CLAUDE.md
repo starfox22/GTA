@@ -252,6 +252,11 @@ packs with plain `<script src>` so the zip still plays from file://.
 - Military mounted guns the player fires (LAV-8 25 mm + coax, gun jeep M2, Black Hawk door guns) live in
   `mounted-guns.js` (`mountedGunKind`, `MOUNTED_GUNS`); its muzzle offsets match base3d-vehicles.js and
   helicopter3d-equipment.js, so move them together. The tank stays in armor.js, the Apache in apache.js.
+- Ride head-look (Sunset Eye, Falcon) lives in ride-look.js: `updateRideLook` (from `updateCoaster`) owns the input
+  (pointer place on screen, touch drag, right stick) and the smoothing; the ride camera only reads `rideLookAngles(out)`
+  after its own smoothing; any change of `player.coaster` or its `view` resets the head. Console `rideLook()`.
+- Sound that is off is said on screen: M and the start of play post `soundOffText()` (audio.js; mute and master
+  volume are saved). `MIX_MAKEUP` sits after the limiter; `wakeAudio` resumes a suspended context on any gesture.
 - `kickCamera(heading, units)` / `shake` (camera-feel.js) are the only camera jolts; renderers
   only read `cameraKick` and `cameraShakeOffset`.
 - Roomy one-shots (shots, blasts, crashes, near thunder) connect to `reverbSend`
