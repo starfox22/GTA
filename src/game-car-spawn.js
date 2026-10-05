@@ -290,6 +290,12 @@
           emergency: undefined,
           sirenClear: undefined,
           supply: undefined,
+          // A harbour driver's panic source (harbor-terminal.js), the last bank scrape (physics-driving.js), a cab's
+          // fare and its kerb wait (crowd-transit.js).
+          threat: undefined,
+          bankHit: undefined,
+          fareUntil: undefined,
+          curbCooldown: undefined,
         };
       vehicles.push(vehicle);
       if (autonomous) assignDriver(vehicle);

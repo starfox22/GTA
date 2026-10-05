@@ -35,6 +35,12 @@ here when polishing; delete a line when it is fixed. Newest features first.
   full suite of the armour/trail round, passing alone): "the top card
   covered the bus" with `folded: false`, `readLeft` 5.5 (open card 64-152 px over the bus at 93 px). Timing of the
   fold against the bus's climb; not reproduced on two reruns.
+- tools/tests/car-blood.mjs failed once run straight after vehicle-layouts on the same page (2026-10-05): "a flank
+  hit did not stain the flank" (the stains read `right` and `front`); it passed in the full suite and alone. The
+  side hit's face depends on the struck car's pose after the earlier test.
+- tools/tests/vehicle-layouts.mjs showed 4 layouts once (2026-10-05): `threat`, `bankHit`, `fareUntil`,
+  `curbCooldown` were set on vehicles without a makeCar declaration (only when those events happen during the
+  run); now declared.
 
 ## Missions 1 and 2 (harbor*.js, chase.js, roofmission*.js, campaign.js)
 - Vinny's truck (vinnytruck3d.js) has no crumple shell or pane-by-pane glass damage (tyres, burn and lamps only), and a respray keeps its MORETTI & SONS door lettering.
