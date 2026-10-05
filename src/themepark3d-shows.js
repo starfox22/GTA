@@ -386,9 +386,12 @@
             fov = 55;
           } else {
             // Inside the capsule, looking out south across the island and the city;
-            // the rider's head turns from there (ride-look.js).
-            target.set(podSpot.x, podSpot.z + 2, podSpot.y + 10);
-            look.set(podSpot.x, podSpot.z - 110, podSpot.y + 600);
+            // the rider's head turns from there (ride-look.js). A standing rider's eyes
+            // (1.5 m over the floor, whose top is 6 under the pod's centre) between the
+            // two cradle rings (at +-9): turned sideways the head sees the rings as
+            // window posts and the floor only when looking down (updateEyeCapsules).
+            target.set(podSpot.x, podSpot.z + 6, podSpot.y + 4);
+            look.set(podSpot.x, podSpot.z - 106, podSpot.y + 594);
             fov = 65;
           }
           up.copy(parkWorldUp);
