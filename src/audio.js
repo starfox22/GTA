@@ -41,7 +41,16 @@
       voiceBus = null,
       duckBus = null,
       mixBus = null,
-      ambienceDuck = null;
+      ambienceDuck = null,
+      // The last node before the speakers (the ceiling), for the console's output meter (audioLevel).
+      audioOut = null,
+      audioMeter = null;
+    // MAKEUP: the limiter's output is lifted 6 dB. The mix sat ~20 dB under ordinary media (the street bed near
+    // -36 dBFS RMS, the player's pistol peaking near -19 dBFS) and was easy to mistake for no sound at all. The
+    // limiter's curve keeps a full-scale input near -3.6 dBFS after the lift; the ceiling holds anything louder.
+    const MIX_MAKEUP = 2;
+    // The context's state changes (running, suspended, interrupted), newest last, for audioMix().
+    const audioStates = [];
     let audioBuffers = {},
       audioLoops = {},
       reverb = null,
@@ -66,8 +75,19 @@
         audio.resume().catch(() => {});
         return;
       }
+      // iOS Safari: a 'playback' session sounds like a video does; the default follows the silent switch, so a phone
+      // on silent played the game mute.
+      try {
+        if (navigator.audioSession) navigator.audioSession.type = 'playback';
+      } catch (error) {}
       try {
         audio = new (window.AudioContext || window.webkitAudioContext)();
+        noteAudioState();
+        audio.addEventListener('statechange', noteAudioState);
+        // A context the browser suspends or interrupts later (a tab switch, a call, a new audio device, Safari's
+        // 'interrupted') comes back on the player's next click, tap or key, whatever it does in the game.
+        for (const type of ['pointerdown', 'keydown', 'touchend'])
+          window.addEventListener(type, wakeAudio, { capture: true, passive: true });
         const limiter = audio.createDynamicsCompressor();
         limiter.threshold.value = -12;
         limiter.knee.value = 18;
@@ -88,7 +108,10 @@
         ceiling.ratio.value = 20;
         ceiling.attack.value = 0.001;
         ceiling.release.value = 0.1;
-        duckBus.connect(earFilter).connect(mixBus).connect(limiter).connect(ceiling).connect(audio.destination);
+        const makeup = audio.createGain();
+        makeup.gain.value = MIX_MAKEUP;
+        duckBus.connect(earFilter).connect(mixBus).connect(limiter).connect(makeup).connect(ceiling).connect(audio.destination);
+        audioOut = ceiling;
         ambienceDuck = audio.createGain();
         ambienceDuck.connect(duckBus);
         const bus = (channel, into = duckBus) => {
@@ -131,6 +154,22 @@
       } catch (error) {
         console.warn('Audio unavailable', error);
       }
+    }
+    function wakeAudio() {
+      if (audio && audio.state !== 'running' && audio.state !== 'closed') audio.resume().catch(() => {});
+    }
+    function noteAudioState() {
+      audioStates.push(audio.state + ' @' + audio.currentTime.toFixed(1));
+      if (audioStates.length > 8) audioStates.shift();
+    }
+    /* What the screen says about a silent mix (the Sound switch off, the master volume at 0), or '' when it plays.
+       M is easy to press by accident (other games open a map with it) and both settings are saved, so the game
+       says so when the switch changes and when play starts. */
+    function soundOffText() {
+      const how = hintDevice() === 'touch' || hintDevice() === 'gamepad' ? 'SETTINGS · AUDIO' : pressKey('mute');
+      if (!soundOn) return 'SOUND OFF · ' + how + ' TO TURN IT ON';
+      if (settings.masterVolume <= 0) return 'MASTER VOLUME IS 0 · SETTINGS · AUDIO';
+      return '';
     }
     function startLoop(name) {
       if (!audio || !audioBuffers[name] || audioLoops[name]) return;
@@ -604,6 +643,9 @@
       return {
         audioMix: () => ({
           context: audio ? audio.state : null,
+          states: audioStates.slice(),
+          makeup: MIX_MAKEUP,
+          soundOffText: soundOffText(),
           time: audio ? +audio.currentTime.toFixed(2) : 0,
           soundOn,
           // Each bus's live gain (THE MIX above): `mix` is the master volume
@@ -633,6 +675,25 @@
             ]),
           ),
         }),
+        // What reaches the speakers right now: { state, rms, peak } over the last ~46 ms after the ceiling
+        // (the meter is connected on the first call).
+        audioLevel() {
+          if (!audio || !audioOut) return { state: audio ? audio.state : null, rms: 0, peak: 0 };
+          if (!audioMeter) {
+            audioMeter = audio.createAnalyser();
+            audioMeter.fftSize = 2048;
+            audioOut.connect(audioMeter);
+          }
+          const data = new Float32Array(audioMeter.fftSize);
+          audioMeter.getFloatTimeDomainData(data);
+          let sum = 0,
+            peak = 0;
+          for (let i = 0; i < data.length; i++) {
+            sum += data[i] * data[i];
+            peak = Math.max(peak, Math.abs(data[i]));
+          }
+          return { state: audio.state, rms: +Math.sqrt(sum / data.length).toFixed(4), peak: +peak.toFixed(4) };
+        },
         // The player's engine (revs, gear, load, layer rates and gains), road
         // noise, the traffic voices and a trace of the last 12 s (engine-audio.js).
         engineSound: () => engineReport(),

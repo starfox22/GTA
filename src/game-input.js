@@ -294,6 +294,7 @@
       }
       if (is('mute')) {
         mute();
+        tell(soundOffText() || 'SOUND ON', 3, { id: 'sound' });
         return;
       }
       if (is('help')) {

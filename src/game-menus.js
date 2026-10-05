@@ -32,6 +32,9 @@
         5,
       );
       announce('SOUTH COAST · 1997', 'DEAD END CITY', 1.8);
+      // A saved mute or a master volume at 0 would otherwise start a silent game with no word why.
+      const quiet = soundOffText();
+      if (quiet) tell(quiet, 6, { id: 'sound' });
     }
     function togglePause() {
       closeSportsbook();
