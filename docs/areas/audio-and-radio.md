@@ -18,7 +18,12 @@ doors, tyre ground) is in audio-soundscape.md.
   - `sirenBus`, `musicBus` (the beach club), `voiceBus` (callouts).
 - All but voices pass the ride-skip `duckBus` (`setMixDuck`), then the ear filter
   (`earFilter`, dulled while swimming), then `mixBus` (master × Sound switch), a limiter
-  (soft knee at -12 dB) and a brick-wall ceiling at -1 dBFS.
+  (soft knee at -12 dB), `MIX_MAKEUP` (+6 dB: the mix used to sit ~20 dB under ordinary media)
+  and a brick-wall ceiling at -1 dBFS (`audioOut`; console `audioLevel()` meters it).
+- Silence must be explained: M (mute) and the start of play post `soundOffText()` (SOUND OFF ·
+  how to undo it, or MASTER VOLUME IS 0); both settings are saved. A context the browser
+  suspends or interrupts is resumed by the next pointerdown/keydown/touchend (`wakeAudio`);
+  iOS gets `navigator.audioSession.type = 'playback'` so the silent switch does not mute it.
 - The ambience bus passes `ambienceDuck` (LOUD DUCK): `duckForLoud(level)` from playSample
   for ROOM_SAMPLES dips it up to 0.45 (~5 dB) in ~15 ms, holds 0.12 s, releases over ~1 s
   (`updateLoudDuck`). The ambience slider stays on `ambienceBus`; never set the duck's gain
