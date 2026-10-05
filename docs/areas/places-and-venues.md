@@ -27,7 +27,9 @@ MONARCH MOTORS, Ridgeline, Fort Sentinel and the stadium: places-monarch-and-cou
   fountain and fireworks schedules, the log flume, the Aurora unicorn statue (sculpted from
   the three.js example horse by `tools/unicorn_model.py` → `assets/unicorn-horse.json`).
 - Riding either ride makes `player.coaster` the carrier; the ride camera
-  (`updateParkCamera`) is called from render3d.js after `updateFlightView`.
+  (`updateParkCamera`) is called from render3d.js after `updateFlightView`. Head-look: ride-look.js
+  (`updateRideLook` from `updateCoaster`) turns the view by `rideLookAngles()` about the eye after the
+  camera's own smoothing; any change of `player.coaster` or its `view` resets it. Console `rideLook()`.
 - Riders' voices are cued from the circuit each frame (fall speed, g, inversions);
   `coasterVoices()` logs them. Collision: `parkSolids()` (people and vehicles) and
   `parkAirSolids()` (aircraft). Guests exist only within ~1.9 km. Console `themePark()`.

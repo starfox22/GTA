@@ -14,6 +14,7 @@
 | `clubTalk()`, `clubTalkApproach()` | Club conversations: script count by personality, the running one (lines, pose), the bubbles; stand beside the nearest talkable club-goer |
 | `volley()`, `volleyJoin(team)`, `volleyLob()`, `volleyCourtCheck()` | Beach volleyball: court, phase, score, ball, players, the player, log; join on a side (0 west, 1 east); lob the ball to the player; the court against the beach plan |
 | `themePark()`, `boardRide(kind)` | Sunset Pier: the Falcon's numbers and train, the Eye, fountain and fireworks state, guests, an overlap self-check; board `'coaster'` or `'wheel'` (then `interact()` cycles the ride camera) |
+| `rideLook()` | The rider's head-look on the Falcon or the Eye (ride-look.js): `yaw`/`pitch` and their targets in degrees (yaw > 0 right, pitch > 0 up), `source` (`none`, `mouse`, `touch`, `pad`), `seat` (a seat view turns the head fully; camera views by `cameraYaw`/`cameraPitch`), the pointer, the viewport and the limits |
 | `coasterVoices(reset)` | The Falcon riders' voices: running, track position (m), whether the first drop has passed, who is speaking, and the log of every scream cue (`first drop`, `drop`, `dip`, `airtime`, `inversion`: game time, car, track m, height m, vertical speed m/s, seat g, drop depth, voices played, lines said) and rider line (`say lift`, `say end`); `reset` clears the log |
 
 ## sports (`sportsConsole() in src/sports-frame.js`)
