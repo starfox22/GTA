@@ -518,6 +518,15 @@
         worldContext.lineTo(b.x - b.vx * 0.012, b.y - b.vy * 0.012);
         worldContext.stroke();
       }
+      const seaMissile = worldEdge.missile;
+      if (seaMissile) {
+        worldContext.strokeStyle = '#ffe0a0';
+        worldContext.lineWidth = 5;
+        worldContext.beginPath();
+        worldContext.moveTo(seaMissile.x, seaMissile.y);
+        worldContext.lineTo(seaMissile.x - seaMissile.vx * 0.05, seaMissile.y - seaMissile.vy * 0.05);
+        worldContext.stroke();
+      }
       drawFire2D();
       for (const p of particles)
         if (visible(p)) {

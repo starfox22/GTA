@@ -1,11 +1,11 @@
-/* --- World-edge cue (world-edge.js) -------------------------------------------
-   Past the line just inside the world box: RETURN TO THE CITY, the seconds left as a big
-   number (10 .. 0), how far past the edge and which way to head, a bar of the time and an
-   arrow turned toward the middle of the map (north is up the screen). Top of the screen
-   under the flight heading strip, clear of the player in the middle. Each new number
-   pulses once (.beat). data-state: approach (calm blue, before the line: the distance to
-   the edge in place of the seconds, no bar), count (amber), warn (orange, 6 s), danger
-   (red, 3 s), clear (green, the brief all-clear). */
+/* --- Open-sea cue (world-edge.js) ----------------------------------------------
+   After 10 s heading away from all land: RETURN TO THE CITY, the seconds left as a big
+   number (10 .. 0), how far the nearest land is and which way to head, a bar of the time
+   and an arrow turned toward that land (north is up the screen). Top of the screen under
+   the flight heading strip, clear of the player in the middle. Each number going down
+   pulses once (.beat). data-state: count (amber), warn (orange, 6 s), danger (red, 3 s),
+   back (calm blue: heading back for land, the seconds winding up), missile (red, the
+   missile in flight, no bar or arrow), clear (green, the brief all-clear). */
 #worldEdgeCue {
   --we-accent: #ffc247;
   --we-left: 1;
@@ -49,8 +49,11 @@ body.panel-open #worldEdgeCue {
 #worldEdgeCue[data-state='clear'] {
   --we-accent: #7fe0a0;
 }
-#worldEdgeCue[data-state='approach'] {
+#worldEdgeCue[data-state='back'] {
   --we-accent: #8fd3ff;
+}
+#worldEdgeCue[data-state='missile'] {
+  --we-accent: #ff3b30;
 }
 #worldEdgeCue .wec-card {
   display: grid;
@@ -114,11 +117,11 @@ body.panel-open #worldEdgeCue {
 }
 #worldEdgeCue[data-state='clear'] .wec-bar,
 #worldEdgeCue[data-state='clear'] .wec-arrow,
-#worldEdgeCue[data-state='approach'] .wec-bar {
+#worldEdgeCue[data-state='missile'] .wec-bar,
+#worldEdgeCue[data-state='missile'] .wec-arrow {
   display: none;
 }
-/* The calm warning before the line: the distance to the edge where the countdown shows seconds. */
-#worldEdgeCue[data-state='approach'] .wec-count b,
+/* The all-clear's OK is a word, not a number. */
 #worldEdgeCue[data-state='clear'] .wec-count b {
   font-size: 30px;
   letter-spacing: 0.02em;
@@ -152,7 +155,7 @@ body.panel-open #worldEdgeCue {
   #worldEdgeCue .wec-count b {
     font-size: 46px;
   }
-  #worldEdgeCue[data-state='approach'] .wec-count b {
+  #worldEdgeCue[data-state='clear'] .wec-count b {
     font-size: 24px;
   }
   #worldEdgeCue .wec-arrow {

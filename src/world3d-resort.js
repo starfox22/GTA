@@ -137,6 +137,9 @@
         waterSurface.scale.set(waterScale, waterScale, 1);
         waterSurface.position.x = Math.round(viewCenter.x / 25) * 25;
         waterSurface.position.z = Math.round(viewCenter.y / 25) * 25;
+        // The flat far sea follows too, so it still reaches the horizon out past the map (world-edge.js).
+        farWater.position.x = Math.round(viewCenter.x / 500) * 500;
+        farWater.position.z = Math.round(viewCenter.y / 500) * 500;
         farWater.material.color
           .set('#061421')
           .lerp(new Three.Color(cameraTarget.x < -600 ? '#0c5a68' : '#0f3a52'), light);

@@ -1,7 +1,7 @@
-// World edge (world-edge.js worldEdgeCanReach): on land the approach card never shows. The county's east
+// Open-sea countdown (world-edge.js worldEdgeCanReach): on land nothing counts and no card shows. The county's east
 // coast ends only 42 units short of the line, so a car driving east on the Ridgeline (here along the
 // Stonecreek Connector, 3,000 units from the line, inside the 3,200-unit approach distance) used to be told
-// to turn back 400 m inland.
+// to turn back 400 m inland by the old edge warning.
 export const fresh = true;
 export default async function (t) {
   await t.call('holdSimulation', true);
@@ -21,10 +21,10 @@ export default async function (t) {
       await t.keys('KeyW', 0.25);
       e = await t.call('worldEdge');
       fastest = Math.max(fastest, e.v[0]);
-      t.assert(!e.approach && e.cue === null, 'warned on land: ' + JSON.stringify([e.approachEdge, e.approachMetres, e.v]));
+      t.assert(e.out === 0 && !e.canReach && e.cue === null, 'counted on land: ' + JSON.stringify([e.out, e.landMetres, e.v]));
     }
     t.note(`drove east on land from ${line.right - x} units off the line, fastest ${fastest} m/s east; no card`);
-    // worldEdge().v is in m/s; the warning needs only 2 m/s toward an edge.
+    // worldEdge().v is in m/s.
     t.assert(fastest > 8, 'the car never really moved east, so the check proved nothing: ' + fastest);
   } finally {
     await t.call('holdSimulation', false);

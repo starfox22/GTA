@@ -475,6 +475,16 @@
             tracerPositions[bi++] = 9 + (b.altitude || 0) - (b.vz || 0) * tail;
             tracerPositions[bi++] = b.y - b.vy * tail;
           }
+          // The open-sea missile (world-edge.js): a long bright streak with its smoke behind.
+          const seaMissile = worldEdge.missile;
+          if (seaMissile && bi + 6 <= tracerPositions.length) {
+            tracerPositions[bi++] = seaMissile.x;
+            tracerPositions[bi++] = 9 + seaMissile.altitude;
+            tracerPositions[bi++] = seaMissile.y;
+            tracerPositions[bi++] = seaMissile.x - seaMissile.vx * 0.05;
+            tracerPositions[bi++] = 9 + seaMissile.altitude - seaMissile.vz * 0.05;
+            tracerPositions[bi++] = seaMissile.y - seaMissile.vy * 0.05;
+          }
           tracerGeo.setDrawRange(0, bi / 3);
           tracerGeo.attributes.position.needsUpdate = true;
           tracer.frustumCulled = false;

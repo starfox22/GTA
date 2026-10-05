@@ -135,13 +135,15 @@ navigation.js (big map, GPS), cycles.js (bike share), src/shell.html + src/ui/* 
   distances stay metric. Console `speedBox()`.
 - Flight HUD (`#flightHud`, `updateFlightHud` from `flightData()`): instruments hug the
   screen edges; warnings (STALL, PULL UP, GEAR) always show even with the instruments off.
-- World-edge card (`#worldEdgeCue`, world-edge.js, src/ui/world-edge.css; same pattern as
-  `#freefallCue`): RETURN TO THE CITY, the seconds left as a big number (10..0), metres past the
-  edge, the compass word and an arrow turned toward the middle of the map (`--we-turn`, north
-  up the screen), a time bar. Top centre under the flight heading strip (178 px; 140 on a phone),
-  clear of the player in the middle; `body.panel-open` hides it, `data-state` approach (calm blue, before the line: APPROACHING THE WORLD EDGE,
-  the distance to it in the big slot, no bar) / count / warn / danger / clear (the 2.4 s all-clear). `updateWorldEdgeCue()` runs from `updateHud()`; the countdown itself runs in
-  `update()` (play mode only). Console `worldEdge()` (its `rect` gives the card's pixel box).
+- Open-sea card (`#worldEdgeCue`, world-edge.js, src/ui/world-edge.css; same pattern as
+  `#freefallCue`): RETURN TO THE CITY, the seconds left as a big number (10..0), the distance to the
+  nearest land, the compass word and an arrow turned toward that land (`--we-turn`, north up the
+  screen), a time bar. Top centre under the flight heading strip (178 px; 140 on a phone), clear of
+  the player in the middle; `body.panel-open` hides it. `data-state` count / warn / danger / back
+  (calm blue: HEADING BACK, the seconds winding up) / missile (MISSILE INBOUND, a red "!", no bar or
+  arrow) / clear (the 2.4 s all-clear). The card never names the map's edge. `updateWorldEdgeCue()` runs
+  from `updateHud()`; the clock runs in `update()` (play mode only). Console `worldEdge()` (its `rect`
+  gives the card's pixel box).
 - Reduced motion cuts slides and pop-ins (src/ui/reduced-motion.css).
 - Console `promptState()` reports the prompt.
 

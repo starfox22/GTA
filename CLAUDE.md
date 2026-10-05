@@ -209,12 +209,12 @@ packs with plain `<script src>` so the zip still plays from file://.
   by `solid()` goes through `rectListBlocked` (cell-indexed), never a per-call walk of a world-spanning list.
   Anything new that grows is capped and listed in `soakReport()`; `node tools/soak.mjs` (30 game min) shows
   growth and `node tools/ab.mjs A.html B.html` A/Bs two builds on one browser slot.
-- World edge: `worldEdgeLine` / `updateWorldEdge()` (world-edge.js) is the only rule for the player leaving the
-  world box (calm approach warning from the player's velocity, then a 10 s RETURN TO THE CITY countdown past the
-  line; at zero the vehicle is destroyed with `damageVehicle` and the player is wasted, god mode only warned).
-  State derives from `player.x/y`; `teleportPlayer` calls `resetWorldEdge()`; the line must stay outside all land
-  (`worldEdge().landGap`). The approach card is only for a player who can reach the line (`worldEdgeCanReach`:
-  aircraft, canopy, fall, boat, swimming; never on land or aboard a ship).
+- Open sea: `updateWorldEdge()` (world-edge.js) is the only rule for the player heading out to sea: nothing over land or
+  within `WORLD_EDGE_OPEN_SEA` of it; `worldEdge.out` counts seconds moving away from the nearest land
+  (`worldEdgeLandDistance`); at `WORLD_EDGE_AWAY` a RETURN TO THE CITY countdown (never naming the map's edge), heading
+  back winds it up; at zero `worldEdge.missile` homes in and kills the player in any vehicle (god mode only warned).
+  Only `worldEdgeCanReach` players count (never aboard a ship); `teleportPlayer` calls `resetWorldEdge()`;
+  `worldEdgeLine` must stay outside all land (`worldEdge().landGap`); the renderers only draw the missile.
 - The TO LOSE POLICE countdown shows only through `searchClockShown()` (citylife-civic.js SEARCH CLOCK: on screen
   only while it runs at full speed; hidden, with the panel saying why, while holding for a 911 response or creeping
   inside the search circle). Police sight is debounced there; `PURSUIT_SEARCH_SECONDS` sets the times.

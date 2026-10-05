@@ -88,11 +88,10 @@ measure GPU cost, so real-GPU gains of render changes are unverified.
   unseen, abandoned cars after 180 s, world-wide caps 16 and 24 (oldest first); nothing on screen, within 1,200
   units of the player, owned, occupied, police or mission-related is touched. The limit is world-wide because
   every vehicle that stays costs physics time wherever it is. Console `wreckReport()`.
-- **World edge** (`src/world-edge.js`; `docs/areas/world-and-map.md`): the line is 24 m inside the world box,
-  clear of all land. A calm APPROACHING THE WORLD EDGE card appears when an edge is within ~25 s of travel along
-  the player's velocity (or 400 m while closing); past the line a 10 s RETURN TO THE CITY countdown runs, and at
-  zero the vehicle explodes and the player is wasted (on foot or swimming they die; god mode only warns).
-  Console `worldEdge()`. The courier plane turns back in time; the jet cannot turn inside the box at full speed.
+- **Open sea** (`src/world-edge.js`; `docs/areas/world-and-map.md`): nothing over or near land. After 10 s
+  flying or sailing away from all land a 10 s RETURN TO THE CITY countdown runs (heading back winds it up and
+  clears it); at zero a missile from the coast kills the player in whatever they are in (god mode only warns).
+  Console `worldEdge()`.
 
 ## Open items and design questions (owner's call; details in docs/BACKLOG.md)
 

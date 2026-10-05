@@ -26,26 +26,23 @@ lies north of Northbank across North Sound; **Monarch Isle** north of the Ridgel
 ## Frames
 
 - World box `WORLD_LEFT..WORLD_SIZE` × `WORLD_TOP..WORLD_SIZE` (-5120..11264 × -8192..11264).
-- **World edge** (world-edge.js): the line `worldEdgeLine` is `WORLD_EDGE_INSET` (192 units, 24 m)
-  inside the box. Land reaches 234 units short of the east edge and 314 short of the south
-  edge (west and north have 800+), so the line clears every coast (`worldEdge().landGap` all
-  positive; tools/tests/world-edge.mjs): cars and people never meet it. The sea plane
-  (`farWater`, 28000 square about the box centre) runs 3,000+ units past the west, east and south
-  edges but only 176 past `WORLD_TOP`: the line sits well inside that. Past the line the player
-  has `WORLD_EDGE_SECONDS` (10) of game time to come back (the card RETURN TO THE CITY), or the
-  vehicle is destroyed with `damageVehicle` (physics-update.js explodes it and kills the
-  occupant) and the player is WASTED; on foot, swimming or under a canopy `die()` runs at
-  once; god mode is only warned. **Approach warning** before the line (calm card, never lethal,
-  god mode sees it too): an edge within 25 s of travel along the player's measured velocity
-  (smoothed over ~0.35 s; a teleport restarts the measure), or within 3,200 units (400 m), while
-  moving toward it at 2 m/s or more; it clears (with hysteresis) when the player turns or levels
-  off. A courier at 80 m/s banks a 90 degree turn in ~6 s with a ~2,300-unit radius (it came
-  within 1,283 units of the line from 4,500 out), so 25 s (16,000 units, the whole box) is ample; a
-  jet at 205 m/s (radius ~14,600 units) cannot turn inside the box at full speed and must slow.
-  Flying parallel or away shows nothing, nor riding a ship (`player.deck`), nor anything on land
-  (`worldEdgeCanReach`: only aircraft, canopy, fall, boat or swimming; the east coast is 42 units from the line). State is derived from `player.x/y` each step (nothing saved:
-  a teleport, respawn, new game or load outside the line starts at 10; `teleportPlayer`
-  calls `resetWorldEdge()`); only the player counts, AI aircraft and boats keep their own limits.
+- **Open sea** (world-edge.js; the file keeps the old world-edge name): nothing is tied to the map's edge any
+  more. Over land, within `WORLD_EDGE_OPEN_SEA` (1,200 units, 150 m) of it, or moving along a coast nothing
+  counts. `worldEdge.out` is the seconds spent moving away from the nearest land (`worldEdgeLandDistance`:
+  LAND_REGIONS edges plus bridge decks, looked up every 0.2 s, 0 over land) at 0.75 m/s or more; heading back
+  takes them off, holding still keeps them. At `WORLD_EDGE_AWAY` (10) the RETURN TO THE CITY card counts
+  `WORLD_EDGE_SECONDS` (10) down; holding still now counts too, heading back winds it up (the calm `back` card)
+  and clears it at `out` < 10 or within 150 m of land. At zero a missile (`worldEdge.missile`, 160 m/s, fired
+  2,000 units out on the coast side, homing) hits within ~1-2 s: `explode()` plus `damageVehicle` (the same
+  path as any wreck) or `die()` on foot; god mode is warned only (a missile already flying only shakes it).
+  `WORLD_EDGE_OUTER` (7,000 units) past `worldEdgeLine` starts the countdown at once, so a slow drift meets it.
+  `worldEdgeLine` (`WORLD_EDGE_INSET` 192 units inside the box, clear of all land: `worldEdge().landGap`) now
+  only bounds the liner's course and that outer limit. Only a player who can get out to sea counts
+  (`worldEdgeCanReach`: aircraft, boat, swimming, canopy, fall; never aboard a ship, `player.deck`). State is
+  derived from `player.x/y` each step (nothing saved; `teleportPlayer` calls `resetWorldEdge()`, which also
+  drops a missile); only the player counts. The far sea plane (`farWater`, 28,000 square) follows the view
+  (world3d-resort.js) like the swell mesh, so open water reaches the horizon out there. Tests:
+  tools/tests/world-edge.mjs, world-edge-land.mjs.
 - City frame `CITY_LEFT..CITY_RIGHT` × `CITY_TOP..CITY_SIZE` (-3584..3712 × -4224..5632) is
   what the baked ground textures, the night light map and the street grid cover. Anything
   past `CITY_SIZE` in x or y is county. Ground outside the frame comes in tiles
