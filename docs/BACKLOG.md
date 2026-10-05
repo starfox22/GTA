@@ -41,6 +41,8 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - tools/tests/vehicle-layouts.mjs showed 4 layouts once (2026-10-05): `threat`, `bankHit`, `fareUntil`,
   `curbCooldown` were set on vehicles without a makeCar declaration (only when those events happen during the
   run); now declared.
+- bot seed 5 (2026-10-05) once respawned the player with 1 star after `die(blasted)` on land, just after running people
+  over (a witness call finishing after WASTED?); it did not repeat on two later runs (seeds 5 and 7).
 
 ## Missions 1 and 2 (harbor*.js, chase.js, roofmission*.js, campaign.js)
 - Vinny's truck (vinnytruck3d.js) has no crumple shell or pane-by-pane glass damage (tyres, burn and lamps only), and a respray keeps its MORETTI & SONS door lettering.
