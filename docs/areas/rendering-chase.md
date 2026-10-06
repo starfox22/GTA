@@ -32,7 +32,9 @@ the game never reads it. Numbers: audit/performance.md (Chase view pass).
   averaged material (as in the air).
 - Gotchas: `resetChaseFar()` runs on every far-mode change (it puts every cell's `full` group back);
   anything new that the far copy stands for must hide with its cell; `drawProfile` counts only groups
-  whose material is visible.
+  whose material is visible. Behind the title (`gameMode` 'menu') the copy stays whole even in the chase
+  view: the prewarm draws every far mesh once with its own material to upload it (`uploadMeshes`), and
+  the chase view's materials are those programs or the batches' own (no new program).
 
 ## Shadows (CHASE SHADOWS, CHASE SHADOW CASTERS)
 

@@ -341,7 +341,8 @@
         // renders: a few dozen merged casters instead of every building batch.
         const proxy = !far && !chaseViewActive && viewZoom < SHADOW_PROXY_ZOOM * lod && farClasses.length > 0;
         // The chase view: the full city near the camera, the copy cell by cell beyond (chase-view3d.js CHASE FAR CELLS).
-        const chase = chaseViewActive && farClasses.length > 0;
+        // Not behind the title: the prewarm draws every far mesh whole there to upload it (uploadMeshes).
+        const chase = chaseViewActive && farClasses.length > 0 && gameMode !== 'menu';
         if (far !== farSceneryShown || proxy !== shadowProxyShown || chase !== farChaseShown) {
           farSceneryShown = far;
           shadowProxyShown = proxy;
