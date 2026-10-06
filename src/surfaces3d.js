@@ -39,16 +39,30 @@
       // view direction and high-passed across it, so only the bright cores of the
       // pools come through, as narrow streaks in the lamps' own colours (sharper
       // and brighter in standing water, broken up by the rings in the rain).
+      // STREET LEVEL (the chase view sets citySheenDir to 0, weather3d.js): the
+      // streak runs away from the camera through each point, and a lamp is
+      // mirrored where its pool lies about 1.2 to 4.7 times the point's distance
+      // beyond it (a lamp head several times the camera's height); without the
+      // wet reflections pass the film mirrors more sky as the view grazes it.
       const GROUND_WET_LIGHT = `
-        reflectedLight.indirectSpecular += citySkyReflect * wetReflect;
+        vec2 along = citySheenDir;
+        float sheenAway = 0.0, wetSky = 1.0;
+        if ( dot( along, along ) < 0.25 ) {
+          vec2 away = vCityWorld.xz - cameraPosition.xz;
+          sheenAway = max( length( away ), 1.0 );
+          along = away / sheenAway;
+          vec3 skyward = normalize( ( viewMatrix * vec4( 0.0, 1.0, 0.0, 0.0 ) ).xyz );
+          if ( cityReflectOut < 0.5 ) wetSky += 1.6 * pow( 1.0 - clamp( dot( skyward, geometryViewDir ), 0.0, 1.0 ), 5.0 );
+        }
+        reflectedLight.indirectSpecular += citySkyReflect * wetReflect * wetSky;
         if ( wetReflect > 0.003 && cityLampPower > 0.001 ) {
-          vec2 along = citySheenDir, across = vec2( -along.y, along.x );
+          vec2 across = vec2( -along.y, along.x );
           // Rings in a puddle tilt the normal: the streak shivers sideways.
           vec2 wobble = across * normal.x * 30.0;
           float spread = mix( 1.0, 0.55, smoothstep( 0.4, 0.9, wetReflect ) );
           vec3 streak = vec3( 0.0 );
           for ( int i = 0; i < 6; i++ ) {
-            float d = ( 12.0 + float( i ) * 11.0 ) * spread;
+            float d = sheenAway > 0.0 ? min( sheenAway * ( 1.2 + float( i ) * 0.7 ) * spread, 1200.0 ) : ( 12.0 + float( i ) * 11.0 ) * spread;
             vec2 uvC = ( vCityWorld.xz + along * d + wobble - cityLampRect.xy ) * cityLampRect.zw;
             vec2 side = across * 9.0 * cityLampRect.zw;
             vec3 core = texture2D( cityLampMap, uvC ).rgb;
