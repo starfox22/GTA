@@ -221,7 +221,7 @@
      * bottom. Called every simulation step.
      */
     function updateCursorLook(deltaSeconds) {
-      if (chaseCam.locked || !mouse.active || gameMode !== 'play' || touchModeOn() || !(deltaSeconds > 0)) return;
+      if (!chaseCameraLive() || chaseCam.locked || !mouse.active || gameMode !== 'play' || touchModeOn() || !(deltaSeconds > 0)) return;
       const band = 0.1,
         u = mouse.x / Math.max(1, viewportWidth),
         v = mouse.y / Math.max(1, viewportHeight),
