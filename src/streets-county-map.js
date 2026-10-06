@@ -89,6 +89,18 @@
       drawingContext.save();
       drawingContext.translate(x, y);
       drawingContext.scale(size, size);
+      // The chase camera's view on the minimap: a soft wedge the way it looks (chase-camera.js).
+      if (!big && !off && chaseCameraLive() && chaseCam.ready) {
+        const look = chaseCam.viewYaw,
+          half = Math.atan(Math.tan((chaseCam.fov * Math.PI) / 360) * chaseCam.aspect),
+          reach = 46;
+        drawingContext.fillStyle = 'rgba(255, 249, 218, 0.13)';
+        drawingContext.beginPath();
+        drawingContext.moveTo(0, 0);
+        drawingContext.arc(0, 0, reach, look - half, look + half);
+        drawingContext.closePath();
+        drawingContext.fill();
+      }
       drawingContext.fillStyle = '#081f30';
       drawingContext.strokeStyle = '#78f1fa';
       drawingContext.lineWidth = 2;
