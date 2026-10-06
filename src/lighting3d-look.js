@@ -13,8 +13,101 @@
         overcast: ['#8a949e', '#b3b9bf', '#4a4d50', '#d0d0d0'],
       };
       const skyKeyColors = Object.fromEntries(
-        Object.entries(SKY_KEYS).map(([k, list]) => [k, list.map((c) => new Three.Color(c))]),
-      );
+          Object.entries(SKY_KEYS).map(([k, list]) => [k, list.map((c) => new Three.Color(c))]),
+        ),
+        SKY_KEY_TARGETS = [skyUniforms.uZenith, skyUniforms.uHorizon, skyUniforms.uGround, skyUniforms.uGlow];
+      /**
+       * SKY AND HAZE (aerial-haze3d.js CITY_HAZE, lighting3d-sky-dome.js SKY)
+       * The keys become the one sky the dome, the environment map and the chase view's haze
+       * draw: the zenith a touch deeper and bluer by clear day; the horizon (the key, a little
+       * brighter by day, with the city's sodium glow low over it at night); the glow along the
+       * horizon towards the sun (faint by day, broad and gold at dusk); and the broad
+       * circumsolar glow with its bright core (the old sky's glow, the same light). Tuned
+       * against the old gradient: the environment's irradiance stays within a few per cent
+       * for roofs and walls by day, dusk, night and overcast (at dusk roofs ~7 % less, walls
+       * facing the sun ~12 % more: the gold is low on the horizon). In the chase view the
+       * haze model is on (cityHazeSun.w), told how dense the air is at the camera (scale
+       * height HAZE_SCALE_HEIGHT above sea level) and where the far clip is.
+       */
+      const HAZE_SCALE_HEIGHT = 150 * UNITS_PER_METRE,
+        HAZE_DEEP = [0.78, 0.9, 1.0],
+        // Sodium light scattered in the night air over the city (times nightAmount and the city's weight): in
+        // the haze and the environment about as bright as the blue it replaces, and a stronger band low over
+        // the horizon on the dome only (uCityGlow), so the night's ambient keeps its level.
+        HAZE_CITY_GLOW = new Three.Color('#c07848').multiplyScalar(0.07),
+        DOME_CITY_GLOW = new Three.Color('#c27a45').multiplyScalar(0.1),
+        // At dusk the horizon away from the sun cools towards a dusty pink (as bright as the key it
+        // replaces); round the sun the glow is whiter than the gold along the horizon (Mie light is grey).
+        HAZE_DUSK_AWAY = new Three.Color('#c8a0a8'),
+        HAZE_HALO_WHITE = new Three.Color('#fff2dc'),
+        // The dome alone (lighting3d-sky-dome.js uDomeZenith): share of the zenith's light taken out up
+        // high, by clear day and at dusk, so the sky through the grade's warm gain is a deep blue. The
+        // environment keeps its light; at the horizon, where the haze meets the dome, nothing changes.
+        DOME_ZENITH_DAY = [0.7, 0.45, 0],
+        DOME_ZENITH_DUSK = [0.2, 0.05, -0.35],
+        SKY_SUN_DISC = 36;
+      let hazeCityWeight = 0,
+        hazeCityX = Infinity,
+        hazeCityY = Infinity;
+      function updateHaze(dark, dusk, night, overcast) {
+        const H = CITY_HAZE,
+          sunU = H.cityHazeSun.value,
+          skyU = H.cityHazeSky.value,
+          glowU = H.cityHazeGlow.value,
+          topU = H.cityHazeTop.value,
+          haloU = H.cityHazeHalo.value,
+          viewU = H.cityHazeView.value,
+          zenith = skyUniforms.uZenith.value,
+          horizon = skyUniforms.uHorizon.value,
+          glow = skyUniforms.uGlow.value,
+          clear = 1 - overcast,
+          day = clear * (1 - dark),
+          glowOn = 1 - night,
+          away = 1 + 0.1 * day - 0.1 * dusk * clear,
+          glowShare = (0.1 + 0.9 * dusk) * clear * glowOn,
+          haloShare = 0.55 * (2 - 0.5 * dusk) * glowOn * (1 - 0.5 * overcast);
+        // How much city lies round the camera (clouds.js area map; read again only after it moves 256 units).
+        if (Math.abs(camera.position.x - hazeCityX) + Math.abs(camera.position.z - hazeCityY) > 256) {
+          hazeCityX = camera.position.x;
+          hazeCityY = camera.position.z;
+          hazeCityWeight = clamp(cloudAreaAt(hazeCityX, hazeCityY).city * 1.4, 0, 1);
+        }
+        const city = nightAmount * (0.35 + 0.65 * hazeCityWeight),
+          blue = away * (1 - 0.12 * city),
+          pink = 0.45 * dusk * clear,
+          pinkScale = (horizon.r + horizon.g + horizon.b) / (HAZE_DUSK_AWAY.r + HAZE_DUSK_AWAY.g + HAZE_DUSK_AWAY.b),
+          domeDay = (1 - dark) * clear,
+          domeDusk = dusk * clear;
+        skyUniforms.uDomeZenith.value.set(
+          DOME_ZENITH_DAY[0] * domeDay + DOME_ZENITH_DUSK[0] * domeDusk,
+          DOME_ZENITH_DAY[1] * domeDay + DOME_ZENITH_DUSK[1] * domeDusk,
+          DOME_ZENITH_DAY[2] * domeDay + DOME_ZENITH_DUSK[2] * domeDusk,
+        );
+        skyUniforms.uCityGlow.value.copy(DOME_CITY_GLOW).multiplyScalar(city * (1 - 0.6 * overcast));
+        sunU[0] = skySunDirection.x;
+        sunU[1] = skySunDirection.y;
+        sunU[2] = skySunDirection.z;
+        sunU[3] = chaseViewActive ? 1 : 0;
+        skyU[0] = (horizon.r + (HAZE_DUSK_AWAY.r * pinkScale - horizon.r) * pink) * blue + HAZE_CITY_GLOW.r * city;
+        skyU[1] = (horizon.g + (HAZE_DUSK_AWAY.g * pinkScale - horizon.g) * pink) * blue + HAZE_CITY_GLOW.g * city;
+        skyU[2] = (horizon.b + (HAZE_DUSK_AWAY.b * pinkScale - horizon.b) * pink) * blue + HAZE_CITY_GLOW.b * city;
+        skyU[3] = 1 / HAZE_SCALE_HEIGHT;
+        glowU[0] = glow.r * glowShare;
+        glowU[1] = glow.g * glowShare;
+        glowU[2] = glow.b * glowShare;
+        glowU[3] = 4 + 4 * (1 - dusk);
+        topU[0] = zenith.r * (1 + (HAZE_DEEP[0] - 1) * day);
+        topU[1] = zenith.g * (1 + (HAZE_DEEP[1] - 1) * day);
+        topU[2] = zenith.b * (1 + (HAZE_DEEP[2] - 1) * day);
+        topU[3] = 2.2 + 0.8 * clear;
+        haloU[0] = (glow.r + (HAZE_HALO_WHITE.r - glow.r) * 0.6) * haloShare;
+        haloU[1] = (glow.g + (HAZE_HALO_WHITE.g - glow.g) * 0.6) * haloShare;
+        haloU[2] = (glow.b + (HAZE_HALO_WHITE.b - glow.b) * 0.6) * haloShare;
+        haloU[3] = 40;
+        viewU[0] = Math.exp(-Math.max(0, camera.position.y) / HAZE_SCALE_HEIGHT);
+        viewU[1] = chaseViewActive ? camera.far : 0;
+        viewU[2] = camera.position.y;
+      }
       // Lamp materials are declared after this file; their day colours are read on first use.
       let warmLampBase = null,
         tailLampBase = null,
@@ -70,12 +163,18 @@
           rain = weather.rain;
         // Sky colours: night -> day, dusk on top, grey as it clouds over.
         const k = skyKeyColors;
-        for (let i = 0; i < 4; i++) {
-          const target = [skyUniforms.uZenith, skyUniforms.uHorizon, skyUniforms.uGround, skyUniforms.uGlow][i].value;
-          target.copy(k.night[i]).lerp(k.day[i], 1 - dark).lerp(k.dusk[i], dusk * 0.75).lerp(k.overcast[i], overcast * 0.7 * light);
-        }
-        skyUniforms.uNight.value = night;
-        skyUniforms.uStars.value = night * (1 - overcast);
+        for (let i = 0; i < 4; i++)
+          SKY_KEY_TARGETS[i].value.copy(k.night[i]).lerp(k.day[i], 1 - dark).lerp(k.dusk[i], dusk * 0.75).lerp(k.overcast[i], overcast * 0.7 * light);
+        updateHaze(dark, dusk, night, overcast);
+        // The disc keeps its light until it sets, dimmer low down (the long path through the air reddens it
+        // too, in the light's own dusk colour); it hides as the cloud closes (the clouds drawn over it do
+        // the rest). The moon goes behind an overcast, the stars behind any cloud and over the city's glow.
+        const closing = clamp((weather.cloud - 0.5) / 0.35, 0, 1),
+          sunUp = skySunDirection.y;
+        skyUniforms.uSunDisc.value =
+          SKY_SUN_DISC * smoothStep(-0.015, 0.03, sunUp) * (0.35 + 0.65 * smoothStep(0, 0.45, sunUp)) * (1 - 0.85 * closing * closing * (3 - 2 * closing));
+        skyUniforms.uMoonLight.value = night * (1 - 0.85 * overcast);
+        skyUniforms.uStars.value = night * (1 - overcast) * (1 - 0.45 * hazeCityWeight);
         skyUniforms.uSunColor.value.copy(sun.color);
         refreshEnvironment(false);
         // The dome only exists for the perspective views: in the air and the chase view (chase-view3d.js).
@@ -84,8 +183,9 @@
           skyDome.position.copy(camera.position);
           skyDome.scale.setScalar(camera.far * 0.9);
         }
-        // Sun glints on the water, cloud lighting and cloud shadows follow the real sun.
-        waterUniforms.uSun.value.copy(sunDirection);
+        // Sun glints on the water, cloud lighting and cloud shadows follow the real sun; in the chase view
+        // the glitter lies under the sun the sky draws (handing over to the moon as the light does).
+        waterUniforms.uSun.value.copy(chaseViewActive ? skyLightDirection : sunDirection);
         SUN_DIRECTION.copy(sunDirection);
         marchUniforms.uSunDirection.value.copy(sunDirection);
         shadeUniforms.uSunDirection.value.copy(sunDirection);

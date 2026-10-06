@@ -14,6 +14,7 @@
       // @include src/clouds3d-lens.js
       const postCompositeUniforms = {
         ...cloudLensUniforms,
+        ...sunGlareUniforms,
         tScene: { value: null },
         tDepth: { value: null },
         tAo: { value: null },
@@ -104,6 +105,7 @@
             return mix( c * 12.92, pow( c, vec3( 0.41666 ) ) * 1.055 - 0.055, step( 0.0031308, c ) );
           }
           #include <city_lens_pars>
+          #include <city_sun_glare_pars>
           void main() {
             // Water on the lens bends the whole image under each bead.
             vec3 lens = cityLens( vUv, uAspect );
@@ -127,6 +129,10 @@
             #endif
             #ifdef USE_BLOOM
               color += texture2D( tBloom, sceneUv ).rgb * uBloomStrength;
+            #endif
+            #ifdef USE_SUN_GLARE
+              // The sun in frame (chase view): veiling glare, the flare's ghosts and the shafts (postfx3d-sun.js).
+              color += citySunGlare( sceneUv );
             #endif
             // A bead's rim: a glint along its top, shade along its bottom.
             color *= 1.0 - lens.z * 0.1;
@@ -184,6 +190,7 @@
             tier.bloom ? { USE_BLOOM: 1 } : {},
             tier.grade ? { USE_GRADE: 1 } : {},
             tier.ssr ? { USE_SSR: 1 } : {},
+            sunGlareDefines(tier),
           ),
         );
       }

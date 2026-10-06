@@ -55,8 +55,16 @@
         vec3 citySRGBToLinear( vec3 c ) {
           return mix( c * 0.0773993808, pow( c * 0.9478672986 + 0.0521327014, vec3( 2.4 ) ), step( 0.04045, c ) );
         }`;
+      // (The chase view's haze, aerial-haze3d.js, is scene light: such a shader is hazed again after the curve
+      // is undone, from the colour the fog chunk started with, so the sea meets the sky without a seam.)
       Three.ShaderChunk.city_hdr_output = hdrCapable
-        ? `gl_FragColor.rgb = cityInverseTone( citySRGBToLinear( clamp( gl_FragColor.rgb, 0.0, 1.0 ) ) );`
+        ? `
+          #if defined( USE_FOG ) && ! defined( FOG_EXP2 )
+            if ( cityHazeSun.w > 0.5 ) gl_FragColor.rgb = mix( cityInverseTone( citySRGBToLinear( clamp( fogBase, 0.0, 1.0 ) ) ), fogTint, fogFactor );
+            else gl_FragColor.rgb = cityInverseTone( citySRGBToLinear( clamp( gl_FragColor.rgb, 0.0, 1.0 ) ) );
+          #else
+            gl_FragColor.rgb = cityInverseTone( citySRGBToLinear( clamp( gl_FragColor.rgb, 0.0, 1.0 ) ) );
+          #endif`
         : '';
       // ---- Full-screen passes --------------------------------------------------------
       const postScene = new Three.Scene(),
@@ -94,6 +102,8 @@
           else pass(compositeMaterial, 'canvas');
         }
         if (hdrCapable && postTier && ssrMaterial && ssrTargets.length === 2) pass(ssrMaterial, ssrTargets[0]), pass(ssrBlurMaterial, ssrTargets[1]);
+        // The sun glare's passes (postfx3d-sun.js) run only in the chase view, with the sun in frame.
+        if (hdrCapable && postTier) sunGlareWarmPasses(pass);
         return passes;
       }
       function runPass(material, target) {
@@ -490,6 +500,7 @@
       bloomUp.blendEquation = Three.AddEquation;
       bloomUp.blendSrc = Three.OneFactor;
       bloomUp.blendDst = Three.OneFactor;
+      // @include src/postfx3d-sun.js
       // @include src/postfx3d-composite.js
       /**
        * FXAA
@@ -576,6 +587,7 @@
         disposeTargets(bloomTargets);
         for (let i = 0, w = width >> 1, h = height >> 1; i < tier.bloom && w >= 4 && h >= 4; i++, w >>= 1, h >>= 1)
           bloomTargets.push(colorTarget(w, h));
+        allocateSunShaftTargets(tier, width, height);
         if (ldrTarget) ldrTarget.dispose();
         ldrTarget = colorTarget(width, height, Three.UnsignedByteType);
         postCompositeUniforms.uAspect.value = width / height;
@@ -745,6 +757,8 @@
           postCompositeUniforms.tReflect.value = ssrTargets[1].texture;
           postCompositeUniforms.uReflect.value = postLook.reflect;
         } else if (ssrTargets.length) postCompositeUniforms.tReflect.value = ssrTargets[1].texture;
+        // The sun in frame in the chase view: its visibility, glare and shafts (postfx3d-sun.js).
+        renderSunGlare(tier);
         if (bloomTargets.length) {
           bloomUniforms.uThreshold.value = postLook.bloomThreshold;
           bloomUniforms.tSource.value = sceneTarget.texture;

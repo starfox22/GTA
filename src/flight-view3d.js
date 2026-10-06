@@ -18,28 +18,7 @@
        * taking off and landing never pops; walking and driving still use the
        * orthographic camera itself.
        */
-      /**
-       * AERIAL PERSPECTIVE
-       * Exponential fog measured from the camera is the wrong model for a camera that
-       * looks down from a height: everything is equally far away, so it greys the whole
-       * frame evenly, which read as a milky filter. Haze here is clear out to `near`
-       * (set to most of the distance to the ground in the middle of the frame) and
-       * thickens with the distance beyond it, so only the far edge of a high view picks
-       * up the sky colour, the way distant land does. `scene.fog` is a linear Fog whose
-       * near/far feed this curve; `density` is kept as the knob the time-of-day and
-       * weather code turn (far = 1 / density), with the same meaning it always had.
-       */
-      Three.ShaderChunk.fog_fragment = `
-        #ifdef USE_FOG
-          #ifdef FOG_EXP2
-            float fogFactor = 1.0 - exp( - fogDensity * fogDensity * vFogDepth * vFogDepth );
-          #else
-            // Aerial perspective (flight-view3d.js): clear to fogNear, then exp-squared over fogFar.
-            float fogReach = max( vFogDepth - fogNear, 0.0 ) / fogFar;
-            float fogFactor = 1.0 - exp( - fogReach * fogReach );
-          #endif
-          gl_FragColor.rgb = mix( gl_FragColor.rgb, fogColor, fogFactor );
-        #endif`;
+      // @include src/aerial-haze3d.js
       const STREET_FOG_DENSITY = 0.00015;
       scene.fog = new Three.Fog('#747381', 0, 1 / STREET_FOG_DENSITY);
       scene.fog.density = STREET_FOG_DENSITY;

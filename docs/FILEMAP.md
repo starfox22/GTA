@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-505 files in the include tree, 175,189 lines.
+509 files in the include tree, 175,908 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -402,9 +402,9 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/render3d.js ▸ Three.js renderer and resource lifecycle
 
-- `src/flight-view3d.js`   892 — Flight camera and aerial perspective
+- `src/flight-view3d.js`   871 — ▸ Flight camera and aerial perspective
 - `src/chase-view3d.js`   189 — Chase view 3D: the perspective camera behind the player (chase-camera.js says where it stands), the ground it sees for culling and level of detail …
-- `src/postfx3d.js`   790 — ▸ HDR post-processing pipeline
+- `src/postfx3d.js`   804 — ▸ HDR post-processing pipeline
 - `src/lighting3d.js`    27 — ▸ Sun, sky, reflections and night light
 - `src/searchlight3d.js`   937 — Searchlights: light shafts, ground pools, the helicopter's spot
 - `src/render3d-statics.js`   317 — Static building batches, static cells and culling (staticInView), shared materials.
@@ -454,7 +454,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/character-rig3d.js`   899 — Character rig: sculpted body parts, outfits and paint
 - `src/crowd3d.js`    85 — ▸ Instanced people: skeleton, gait, poses, weapons and street props
 - `src/carjack3d.js`   212 — The carjack struggle drawn: the driver's door swinging, the poses of the tug of war and the player's hands on the driver (swingDriverDoor …
-- `src/clouds3d.js`    55 — ▸ Volumetric clouds and cloud shadows
+- `src/clouds3d.js`    56 — ▸ Volumetric clouds and cloud shadows
 - `src/ground-data3d.js`   826 — Ground shader data
 - `src/surfaces3d.js`   232 — ▸ Procedural surface detail
 - `src/grass3d.js`   153 — Grass tufts
@@ -480,9 +480,14 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/render3d-api.js`   535 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
 - `src/render3d-frame.js`   702 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
 
+## src/flight-view3d.js ▸ Flight camera and aerial perspective
+
+- `src/aerial-haze3d.js`   108 — Aerial perspective: the fog chunks every fog-enabled material compiles (clear to fogNear, then exp-squared), and the chase view's haze on top: the …
+
 ## src/postfx3d.js ▸ HDR post-processing pipeline
 
-- `src/postfx3d-composite.js`   190 — ▸ Post composite (one material per tier): AO upsampling, wet reflections, bloom, ACES tone curve, film grade, vignette and dither; the sun glare lands …
+- `src/postfx3d-sun.js`   246 — Post sun glare (the chase view): how much of the sun the sky draws is seen (depth and brightness round its disc, eased), light shafts from it through …
+- `src/postfx3d-composite.js`   197 — ▸ Post composite (one material per tier): AO upsampling, wet reflections, bloom, ACES tone curve, film grade, vignette and dither; the sun glare lands …
 
 ## src/postfx3d-composite.js ▸ Post composite (one material per tier): AO upsampling, wet reflections, bloom, ACES tone curve, film grade, vignette and dither; the sun glare lands …
 
@@ -490,11 +495,15 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/lighting3d.js ▸ Sun, sky, reflections and night light
 
-- `src/lighting3d-sky.js`   824 — Lighting 3D sun path, sky dome and environment map (updateSunPath, refreshEnvironment) and lamp textures.
+- `src/lighting3d-sky.js`   739 — ▸ Lighting 3D sun path (updateSunPath: the light, and the sun the sky draws), the sky (lighting3d-sky-dome.js), the night light map, the city light and …
 - `src/lighting3d-cutaway.js`   167 — Lighting 3D cutaway occluders (updateCutaway, setCharacterCutaway) and the default material patches.
 - `src/lighting3d-vehicle-lights.js`   647 — Lighting 3D vehicle lights: the nearest cars' low beams as real lights (CAR LAMPS), the drive light map and beam haze.
 - `src/lighting3d-vehicle-shadows.js`   314 — Lighting 3D vehicle lights, part 2: BEAM SHADOWS (people, cars, trees and posts in the CAR LAMPS beams), the TERRAIN HORIZON strip kept in the same …
-- `src/lighting3d-look.js`   338 — Lighting 3D time-of-day look (updateLighting, NIGHT_LOOK, grade), contact shadows and the quality tier switch.
+- `src/lighting3d-look.js`   438 — Lighting 3D time-of-day look (updateLighting, NIGHT_LOOK, grade), contact shadows and the quality tier switch.
+
+## src/lighting3d-sky.js ▸ Lighting 3D sun path (updateSunPath: the light, and the sun the sky draws), the sky (lighting3d-sky-dome.js), the night light map, the city light and …
+
+- `src/lighting3d-sky-dome.js`   180 — Lighting 3D sky: the sky shader (cityHazeColor plus the dome's sun disc, moon and stars), the dome behind the chase and flight views, and the …
 
 ## src/vegetation3d.js ▸ Tree library: species, foliage atlas, wind, LOD
 
@@ -669,11 +678,12 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/clouds3d.js ▸ Volumetric clouds and cloud shadows
 
 - `src/clouds3d-field.js`   244 — Clouds 3D field: textures of the game's cloud layer (clouds.js), the GPU noise volume, the shared density field (CLOUD_FIELD_GLSL: base and top by …
-- `src/clouds3d-march.js`   261 — Clouds 3D ray-march pass: the half-resolution march through the layer beyond the subject (stopped by the hills and the tall towers), its composite …
+- `src/clouds3d-march.js`   276 — Clouds 3D ray-march pass: the half-resolution march through the layer beyond the subject (stopped by the hills and the tall towers), its composite …
 - `src/clouds3d-near.js`   187 — Clouds 3D near the camera: the veil of cloud between the camera and the subject (the jumper or the aircraft), marched like the far layer and …
 - `src/clouds3d-wisps.js`   216 — Clouds 3D wisps: soft rags of cloud streaming past the camera at the speed it moves through the layer (streaked along the relative wind), shown only …
 - `src/clouds3d-shadows.js`    85 — Clouds 3D shadows: the plane over the city that throws the cloud field's shadows on the ground.
-- `src/clouds3d-frame.js`   290 — Clouds 3D frame update (updateCloudVisuals): shadows, sun dimming, the far march, the veil near the camera, the wisps, the lens and the in-cloud …
+- `src/clouds3d-frame.js`   314 — Clouds 3D frame update (updateCloudVisuals): shadows, sun dimming, the far march, the veil near the camera, the wisps, the lens and the in-cloud …
+- `src/clouds3d-sky.js`   130 — Clouds 3D from below: the cloud layer over the chase view, drawn by the sky dome.
 
 ## src/surfaces3d.js ▸ Procedural surface detail
 

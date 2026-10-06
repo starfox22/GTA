@@ -106,6 +106,8 @@
         cloudView.subjectDistance = subjectDistance;
         cloudComposite.visible = cloudDepth.visible = active;
         updateCloudLens(deltaSeconds, flying && tier !== 'LOW' ? context : '', cameraAmount, underCanopy, fallFlow);
+        // The chase view's sky: the layer seen from below (clouds3d-sky.js).
+        updateSkyClouds(tier, coverage, cloudSunIntensity, light);
         if (!active) {
           cloudVeil.visible = false;
           cloudView.veilSteps = cloudView.veilCap = cloudView.flatVeil = 0;
@@ -113,37 +115,13 @@
           cloudView.wisps = cloudView.wispOpacity = 0;
           return;
         }
-        sceneBufferSize(cloudBuffer);
-        // The LOW tier marches the layer at the phones' resolution (a third of the
-        // screen rather than a half: under half the fragments), with no recompile.
-        const resolution = tier === 'LOW' ? Math.min(CLOUD_RESOLUTION, 0.34) : CLOUD_RESOLUTION,
-          width = Math.max(4, Math.round((viewportWidth || cloudBuffer.x) * resolution)),
-          height = Math.max(4, Math.round((viewportHeight || cloudBuffer.y) * resolution));
-        if (cloudTarget.width !== width || cloudTarget.height !== height) cloudTarget.setSize(width, height);
+        const { width, height } = sizeCloudTarget(tier);
         compositeUniforms.uResolution.value.copy(cloudBuffer);
         nearCompositeUniforms.uResolution.value.copy(cloudBuffer);
         marchUniforms.uInverseProjection.value.copy(camera.projectionMatrixInverse);
         marchUniforms.uCameraWorld.value.copy(camera.matrixWorld);
         marchUniforms.uCameraPosition.value.copy(camera.position);
-        // Light: the scene's own sun, sky and ground colours, so dawn, dusk, night and
-        // lightning all reach the clouds without a palette of their own.
-        marchUniforms.uSunColor.value.copy(sun.color).multiplyScalar(cloudSunIntensity * 0.62);
-        // The game's day sun is a warm, stylised yellow; on cloud that reads as sand. Up
-        // high the sun is whiter: half-way to its own grey by day, all of it kept at dusk.
-        const cloudSun = marchUniforms.uSunColor.value,
-          sunGrey = cloudSun.r * 0.2126 + cloudSun.g * 0.7152 + cloudSun.b * 0.0722,
-          whiten = 0.5 * clamp((light - 0.35) / 0.4, 0, 1);
-        cloudSun.lerp(cloudGrey.setScalar(sunGrey), whiten);
-        marchUniforms.uSkyColor.value.copy(hemi.color).multiplyScalar(hemi.intensity * 0.42);
-        // Light bounced up off the city is greyed, or cloud bases turn olive.
-        marchUniforms.uGroundColor.value
-          .copy(hemi.groundColor)
-          .lerp(cloudGrey.setScalar(hemi.groundColor.r * 0.3 + hemi.groundColor.g * 0.59 + hemi.groundColor.b * 0.11), 0.7)
-          .multiplyScalar(hemi.intensity * 0.3);
-        marchUniforms.uGlowColor.value.setRGB(1, 0.6, 0.36).multiplyScalar(nightAmount * 0.3);
-        // Most of the day grade's warm gain taken back out: sunlit cloud is white.
-        const gain = postLook.gain;
-        marchUniforms.uCloudTint.value.set(1 + (1 / gain.x - 1) * 0.85, 1 + (1 / gain.y - 1) * 0.85, 1 + (1 / gain.z - 1) * 0.85);
+        setCloudLight(cloudSunIntensity, light);
         marchUniforms.uEye.value.copy(camera.position);
         marchUniforms.uHazeColor.value.copy(scene.fog.color);
         marchUniforms.uHaze.value.set(scene.fog.near, scene.fog.far);
@@ -251,6 +229,42 @@
         postLook.contrast *= 1 - grey * 0.16;
         postLook.bloomStrength *= 1 + grey * 0.5;
       }
+      // The march target at the tier's share of the screen (cloudBuffer: the scene buffer's size, read here).
+      // The LOW tier marches the layer at the phones' resolution (a third of the screen rather than a half:
+      // under half the fragments), with no recompile.
+      const cloudTargetSize = { width: 4, height: 4 };
+      function sizeCloudTarget(tier) {
+        sceneBufferSize(cloudBuffer);
+        const resolution = tier === 'LOW' ? Math.min(CLOUD_RESOLUTION, 0.34) : CLOUD_RESOLUTION,
+          width = Math.max(4, Math.round((viewportWidth || cloudBuffer.x) * resolution)),
+          height = Math.max(4, Math.round((viewportHeight || cloudBuffer.y) * resolution));
+        if (cloudTarget.width !== width || cloudTarget.height !== height) cloudTarget.setSize(width, height);
+        cloudTargetSize.width = width;
+        cloudTargetSize.height = height;
+        return cloudTargetSize;
+      }
+      /* The light the clouds are drawn with (the far march, the veil and, from below, the dome's layer): the
+         scene's own sun, sky and ground colours, so dawn, dusk, night and lightning all reach the clouds without
+         a palette of their own. */
+      function setCloudLight(cloudSunIntensity, light) {
+        marchUniforms.uSunColor.value.copy(sun.color).multiplyScalar(cloudSunIntensity * 0.62);
+        // The game's day sun is a warm, stylised yellow; on cloud that reads as sand. Up
+        // high the sun is whiter: half-way to its own grey by day, all of it kept at dusk.
+        const cloudSun = marchUniforms.uSunColor.value,
+          sunGrey = cloudSun.r * 0.2126 + cloudSun.g * 0.7152 + cloudSun.b * 0.0722,
+          whiten = 0.5 * clamp((light - 0.35) / 0.4, 0, 1);
+        cloudSun.lerp(cloudGrey.setScalar(sunGrey), whiten);
+        marchUniforms.uSkyColor.value.copy(hemi.color).multiplyScalar(hemi.intensity * 0.42);
+        // Light bounced up off the city is greyed, or cloud bases turn olive.
+        marchUniforms.uGroundColor.value
+          .copy(hemi.groundColor)
+          .lerp(cloudGrey.setScalar(hemi.groundColor.r * 0.3 + hemi.groundColor.g * 0.59 + hemi.groundColor.b * 0.11), 0.7)
+          .multiplyScalar(hemi.intensity * 0.3);
+        marchUniforms.uGlowColor.value.setRGB(1, 0.6, 0.36).multiplyScalar(nightAmount * 0.3);
+        // Most of the day grade's warm gain taken back out: sunlit cloud is white.
+        const gain = postLook.gain;
+        marchUniforms.uCloudTint.value.set(1 + (1 / gain.x - 1) * 0.85, 1 + (1 / gain.y - 1) * 0.85, 1 + (1 / gain.z - 1) * 0.85);
+      }
       // Water on the lens (clouds3d-lens.js): only for a jumper's camera. Beads gather
       // within a second or two in cloud and dry or blow off over a few seconds after it;
       // in freefall the rush of air stretches them and sweeps them up the frame.
@@ -286,5 +300,15 @@
           towers: cloudTowerBoxes.filter((b) => b.z > b.x).length,
           // The light the clouds are drawn with (scene-linear RGB).
           light: ['uSunColor', 'uSkyColor', 'uGroundColor'].map((k) => marchUniforms[k].value.toArray().map(r)),
+          // The chase view's sky (clouds3d-sky.js, aerial-haze3d.js, postfx3d-sun.js): the clouds from below
+          // ('march', 'layer' or ''), the sun the sky draws (elevation, degrees), the haze, the sun glare.
+          sky: {
+            clouds: ['', 'layer', 'march'][skyCloudView.mode],
+            sunDeg: +((Math.asin(clamp(skySunDirection.y, -1, 1)) * 180) / Math.PI).toFixed(1),
+            haze: CITY_HAZE.cityHazeSun.value[3] > 0.5,
+            horizon: Array.from(CITY_HAZE.cityHazeSky.value.subarray(0, 3), r),
+            zenith: Array.from(CITY_HAZE.cityHazeTop.value.subarray(0, 3), r),
+            glare: sunGlareReport(),
+          },
         };
       }
