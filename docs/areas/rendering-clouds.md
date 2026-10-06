@@ -29,8 +29,8 @@ The cloud layer (game side, clouds.js) and how it is drawn (clouds3d*.js inside
 - field: the game's coverage and area maps become textures; `CLOUD_FIELD_GLSL`
   (`cloudDensityAt(p, area, detailed)`, `cloudSlab(area)`) is the one density function the
   march, the veil, the wisps and the shadows share; `syncCloudField(u)` copies the layer in.
-- march: half resolution, only when `camera === flightCamera` and the camera is above the lowest
-  cloud (`cloudLayerBounds`). The flight camera never looks above ~30 degrees below the horizon,
+- march: half resolution, when `camera === flightCamera` and the camera is above the lowest
+  cloud (`cloudLayerBounds`), or from below in the chase view (see below). The flight camera never looks above ~30 degrees below the horizon,
   so a layer entirely above the camera cannot be in view: an aircraft under the base sees only
   the shadows and the dimmer light, never the underside. Rays stop at the hills (the area map's
   ground channel, highest ground per texel) and at the six tallest towers' boxes
@@ -40,6 +40,13 @@ The cloud layer (game side, clouds.js) and how it is drawn (clouds3d*.js inside
   over everything (renderOrder 1100), with a soft cap (`NEAR_CAP`: freefall 0.62, canopy 0.55,
   aircraft 0.45 x its own immersion) so the subject stays readable. The far march starts where
   the veil hands over (`uNearFade`). LOW: no march, a flat veil from `cloudAmountAt`.
+- from below (clouds3d-sky.js, the chase view): the sky dome composites the layer behind all geometry.
+  HIGH/ULTRA: the far march with `uBelow` 1 (camera up through the slab, out to 4.5 km, no pocket or veil,
+  lit from `skyLightDirection`, the base also lit by the sky round about and the sunlit ground, hazed by
+  the chase haze) into the march target, read by the dome at its own pixel (four taps: soft grain). LOW/MEDIUM: the dome reads the
+  field at two heights where the ray crosses the slab (no detail octave): a soft opacity and a shaded
+  underside. Same coverage map and noise as the shadows; WebGL1 has none. A camera inside the layer (a
+  summit in a wet deck) sees the march round it on HIGH/ULTRA, nothing on LOW/MEDIUM.
 - An aircraft keeps its pocket of clear air (walls of cloud, the ground below); freefall has
   none (the white-out is the point), a canopy a thin one. A jumper passes from the freefall
   values to the canopy's (veil cap, pocket, wisps, lens) by `p.opening`, and the streaks and
