@@ -1,0 +1,53 @@
+/* Chase view (chase-hud.js): the reticle in the middle of the screen. A small dot on foot with a
+   gun, a thin ring round it while aiming over the shoulder; both warm to red over a person or a
+   vehicle the shot would hit. No cursor shows over the game while the pointer is captured. */
+#chaseReticle {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 7;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  --reticle: rgba(246, 244, 236, 0.92);
+}
+#chaseReticle.on-target {
+  --reticle: rgba(255, 92, 70, 0.95);
+}
+#chaseReticle .reticle-dot,
+#chaseReticle .reticle-ring {
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+#chaseReticle .reticle-dot {
+  width: 4px;
+  height: 4px;
+  background: var(--reticle);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.55);
+}
+#chaseReticle .reticle-ring {
+  width: 26px;
+  height: 26px;
+  border: 1.5px solid var(--reticle);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35), inset 0 0 0 1px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(1.35);
+  transition: opacity 0.12s, transform 0.12s;
+}
+#chaseReticle.aiming .reticle-ring {
+  opacity: 0.85;
+  transform: translate(-50%, -50%) scale(1);
+}
+/* A shot that lands: the ring flashes in and out. */
+#chaseReticle.hit .reticle-ring {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(0.8);
+  transition: none;
+}
+body.chase-locked #scene,
+body.chase-locked #game {
+  cursor: none;
+}
