@@ -45,6 +45,7 @@
       // beyond it (a lamp head several times the camera's height); without the
       // wet reflections pass the film mirrors more sky as the view grazes it.
       const GROUND_WET_LIGHT = `
+        {
         vec2 along = citySheenDir;
         float sheenAway = 0.0, wetSky = 1.0;
         if ( dot( along, along ) < 0.25 ) {
@@ -74,6 +75,7 @@
             streak += core * peak * peak * ( 1.0 - float( i ) * 0.12 );
           }
           reflectedLight.directSpecular += streak * cityLampPower * cityPower() * wetReflect * citySheenGain;
+        }
         }`;
       // With the wet reflections pass on, the wet ground marks itself in the HDR
       // target's alpha, negative (nothing else writes a negative alpha), for the

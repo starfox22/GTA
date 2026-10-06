@@ -135,3 +135,19 @@
           u[2] *= keep;
         }
       }
+      /* DeadEndCity.rainView(): what the rain and the wet street draw now (render3d-api.js rainView). */
+      function rainViewReport() {
+        const r = (v, d = 2) => +(+v).toFixed(d),
+          m = (units) => r(units / UNITS_PER_METRE, 1),
+          near = rainNearUniforms,
+          street = ssrUniforms.uStreet.value;
+        return {
+          street: rainNearMesh.visible,
+          rain: { shown: rainMesh.visible, drops: rainGeometry.drawRange.count / 2, fallMetres: m(rainUniforms.uFall.value), streakMetres: m(rainUniforms.uLength.value), opacity: r(rainUniforms.uOpacity.value), lensClearMetres: m(rainUniforms.uNear.value.w) },
+          near: { drops: rainNearMesh.visible ? rainNearGeometry.drawRange.count / 2 : 0, boxMetres: m(RAIN_NEAR_BOX), fallMetres: m(near.uFall.value), streakMetres: m(near.uLength.value), opacity: r(near.uOpacity.value) },
+          splashes: { shown: splashMesh.visible, count: splashMesh.visible ? splashGeometry.instanceCount : 0, reachMetres: m(splashUniforms.uReach.value), size: r(splashUniforms.uSize.value), upright: splashUniforms.uUpright.value },
+          haze: { clearMetres: m(scene.fog.near), farMetres: m(scene.fog.far), skyLeft: r(CITY_HAZE.cityHazeSky.value[0] + CITY_HAZE.cityHazeSky.value[1] + CITY_HAZE.cityHazeSky.value[2], 3) },
+          reflections: { on: postLook.reflect > 0, mirror: r(postLook.reflect), skyShare: r(postLook.reflectShare), reachMetres: m(ssrUniforms.uReach.value), fresnel: r(street.x), jitter: r(street.y), firstStep: r(street.w, 3) },
+          sheenRadial: wetUniforms.citySheenDir.value.lengthSq() < 0.25,
+        };
+      }

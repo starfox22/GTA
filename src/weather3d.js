@@ -156,11 +156,12 @@
             float fadeIn = smoothstep( 0.0, 0.06, t ) * ( 1.0 - smoothstep( 0.93, 1.0, t ) );
             float alpha = uOpacity * ( 0.3 + 0.7 * depth ) * fadeIn * ( 1.0 - aEnd * 0.85 ), sky = 1.0;
             // At street level (uNear.w > 0) no drop crosses the lens (a streak the height of the frame),
-            // the nearest are the brightest and they catch more of the sky's light against the dark street.
+            // the nearest are the brightest and at night they catch more of the city's light (against the
+            // dark street the night sky's own was too dim to show them).
             if ( uNear.w > 0.0 ) {
               float lens = distance( head, uNear.xyz );
               alpha *= smoothstep( uNear.w, uNear.w * 2.5, lens ) * ( 1.0 + 1.2 * ( 1.0 - smoothstep( uNear.w, uNear.w * 14.0, lens ) ) );
-              sky = 2.8;
+              sky = 1.0 + 1.8 * ( 1.0 - smoothstep( 0.08, 0.4, dot( uAmbient, vec3( 0.3333 ) ) ) );
             }
             vColor = vec4( uAmbient * ( sky + uFlash * 6.0 ) + lamp * ( 0.9 + depth ), alpha * ( 1.0 + min( dot( lamp, vec3( 0.33 ) ) * 1.5, 2.0 ) ) );
             gl_Position = projectionMatrix * viewMatrix * vec4( pos, 1.0 );
@@ -376,10 +377,15 @@
       const roadSprayGeometry = new Three.BufferGeometry(),
         roadSprayStart = new Float32Array(ROAD_SPRAY_MAX * 3),
         roadSprayVelocity = new Float32Array(ROAD_SPRAY_MAX * 3),
-        roadSprayBirth = new Float32Array(ROAD_SPRAY_MAX).fill(-100);
+        roadSprayBirth = new Float32Array(ROAD_SPRAY_MAX).fill(-100),
+        // How much of the car's tail lamps the mist behind it carries (brake lights more): at night
+        // the spray off a car's rear wheels glows red in its own tail lights.
+        roadSprayTint = new Float32Array(ROAD_SPRAY_MAX),
+        ROAD_SPRAY_ATTRIBUTES = ['position', 'aVelocity', 'aBirth', 'aTint'];
       roadSprayGeometry.setAttribute('position', new Three.BufferAttribute(roadSprayStart, 3));
       roadSprayGeometry.setAttribute('aVelocity', new Three.BufferAttribute(roadSprayVelocity, 3));
       roadSprayGeometry.setAttribute('aBirth', new Three.BufferAttribute(roadSprayBirth, 1));
+      roadSprayGeometry.setAttribute('aTint', new Three.BufferAttribute(roadSprayTint, 1));
       const roadSprayUniforms = {
         uTime: rainUniforms.uTime,
         uAmbient: rainUniforms.uAmbient,
@@ -393,7 +399,7 @@
         },
         vertexShader: `
           attribute vec3 aVelocity;
-          attribute float aBirth;
+          attribute float aBirth, aTint;
           uniform float uTime, uPixels, uPerspective;
           uniform vec3 uAmbient;
           varying vec4 vColor;
@@ -405,7 +411,9 @@
             p.y = max( p.y, position.y - 1.0 );
             float k = clamp( age / life, 0.0, 1.0 );
             float alive = step( 0.0, age ) * step( age, life );
-            vColor = vec4( uAmbient * 0.95 + rainLampLight( p ) * 0.8, alive * 0.2 * ( 1.0 - k ) * smoothstep( 0.0, 0.08, age ) );
+            // (The tail lamps' red fades as the mist drifts back out of their light.)
+            vec3 tail = vec3( 1.0, 0.1, 0.05 ) * aTint * ( 1.0 - k ) * ( 1.0 - k );
+            vColor = vec4( uAmbient * 0.95 + rainLampLight( p ) * 0.8 + tail, alive * 0.2 * ( 1.0 - k ) * smoothstep( 0.0, 0.08, age ) );
             vec4 mv = viewMatrix * vec4( p, 1.0 );
             gl_Position = projectionMatrix * mv;
             float size = ( 5.0 + 16.0 * k ) * alive;
@@ -431,8 +439,9 @@
       let roadSprayNext = 0,
         roadSprayDirtyFrom = ROAD_SPRAY_MAX,
         roadSprayDirtyTo = -1;
-      function spawnRoadSpray(x, y, z, vx, vy, vz) {
+      function spawnRoadSpray(x, y, z, vx, vy, vz, tint) {
         const i = roadSprayNext;
+        roadSprayTint[i] = tint;
         roadSprayNext = (roadSprayNext + 1) % ROAD_SPRAY_MAX;
         roadSprayStart[i * 3] = x;
         roadSprayStart[i * 3 + 1] = y;
@@ -446,14 +455,19 @@
       }
       function emitCarSpray(deltaSeconds, budget) {
         if (weather.wet < 0.15 || budget <= 0) return;
-        for (const c of vehicles) {
-          const speed = Math.abs(c.speed || 0);
+        const lamps = vehicleLampAmount();
+        for (let v = 0; v < vehicles.length; v++) {
+          const c = vehicles[v],
+            speed = Math.abs(c.speed || 0);
           if (speed < 70 || c.hp <= 0 || isAircraft(c)) continue;
           const spec = vehicleSpec(c);
           if (spec.boat || spec.jetski || spec.bicycle) continue;
           if (!entityInView(c, 80)) continue;
           const rate = (speed - 60) * 0.12 * weather.wet * budget,
-            count = Math.floor(rate * deltaSeconds + Math.random());
+            count = Math.floor(rate * deltaSeconds + Math.random()),
+            // Driven cars' tail lamps (render3d-frame.js lights them the same way), brighter braking.
+            driven = c.ai || c === player.car,
+            tint = driven ? (c.braking ? Math.max(0.75, lamps) * 1.6 : lamps > 0.25 ? lamps * 0.5 : 0) : 0;
           const cos = Math.cos(c.a),
             sin = Math.sin(c.a),
             ground = entityElevation(c) + 1.2,
@@ -464,12 +478,15 @@
               x = c.x - cos * back - sin * across,
               z = c.y - sin * back + cos * across,
               kick = speed * (0.12 + Math.random() * 0.1);
-            spawnRoadSpray(x, ground, z, -cos * kick + (Math.random() - 0.5) * 18 - sin * side * 8, 10 + Math.random() * 16, -sin * kick + (Math.random() - 0.5) * 18 + cos * side * 8);
+            spawnRoadSpray(x, ground, z, -cos * kick + (Math.random() - 0.5) * 18 - sin * side * 8, 10 + Math.random() * 16, -sin * kick + (Math.random() - 0.5) * 18 + cos * side * 8, tint);
           }
         }
         if (roadSprayDirtyTo >= roadSprayDirtyFrom) {
-          for (const name of ['position', 'aVelocity', 'aBirth']) {
-            const attr = roadSprayGeometry.attributes[name];
+          // Only the particles written this frame go to the GPU.
+          for (let a = 0; a < ROAD_SPRAY_ATTRIBUTES.length; a++) {
+            const attr = roadSprayGeometry.attributes[ROAD_SPRAY_ATTRIBUTES[a]];
+            attr.clearUpdateRanges();
+            attr.addUpdateRange(roadSprayDirtyFrom * attr.itemSize, (roadSprayDirtyTo - roadSprayDirtyFrom + 1) * attr.itemSize);
             attr.needsUpdate = true;
           }
           roadSprayDirtyFrom = ROAD_SPRAY_MAX;
