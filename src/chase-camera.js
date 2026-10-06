@@ -45,6 +45,8 @@
       CHASE_FOOT = { pivot: 1.58, dist: 3.5, shoulder: 0.42, fov: 52, pitch: 0.16 },
       CHASE_AIM = { pivot: 1.62, dist: 1.85, shoulder: 0.66, fov: 44 },
       CHASE_NEAR = 4,
+      // Seconds the pivot takes to slide from the old subject to the new one (in or out of a vehicle).
+      CHASE_HANDOVER = 0.55,
       CHASE_WALL_MARGIN = 3,
       CHASE_GROUND_CLEAR = 3,
       // The reticle's place on screen, as a share of the width and height.
@@ -92,6 +94,11 @@
       // The page could not capture the pointer (CURSOR LOOK instead); the last request was a soft one.
       lockFailed: false,
       lockSoft: false,
+      // HAND-OVER: seconds left of the pivot's slide, and where it slides from.
+      handover: 0,
+      fromX: 0,
+      fromY: 0,
+      fromZ: 0,
     };
     let viewMode = VIEW_STREET;
     try {
@@ -327,19 +334,41 @@
         by = body.y,
         bz = c && isBoat(c) ? Math.max(0, entityElevation(c)) : entityElevation(body);
       const subject = c || player;
-      if (!cam.ready || cam.subject !== subject) {
-        // A new subject: the camera starts behind it.
-        const heading = c ? c.a : cam.ready ? cam.yaw : player.a;
-        cam.yaw = heading;
+      if (!cam.ready) {
+        // A fresh start (a new game, a teleport, a switch of view): behind the subject at once.
+        cam.yaw = c ? c.a : player.a;
         cam.yawVel = 0;
         cam.lookYaw = cam.lookPitch = 0;
-        if (!cam.ready || c) cam.pitch = shape.pitch;
+        cam.pitch = shape.pitch;
         cam.wantDist = cam.dist = shape.dist * M * cam.zoom;
         cam.slope = 0;
         cam.speedBlend = 0;
+        cam.handover = 0;
         cam.subject = subject;
         cam.ready = true;
+      } else if (cam.subject !== subject) {
+        // HAND-OVER: getting in or out of a vehicle. The camera keeps where it looks and the
+        // pivot slides from the old subject to the new one (CHASE_HANDOVER s); in a vehicle the
+        // heading spring then swings it round behind, and the boom eases out to its length.
+        cam.fromX = cam.px;
+        cam.fromY = cam.py;
+        cam.fromZ = cam.pz;
+        cam.handover = CHASE_HANDOVER;
+        if (c) {
+          // The camera's look offsets fold into its heading, so nothing jumps.
+          cam.yaw = normalizeAngle(cam.yaw + cam.lookYaw);
+          cam.pitch = clamp(cam.pitch + cam.lookPitch, CHASE_PITCH_MIN, CHASE_PITCH_MAX);
+        } else {
+          cam.yaw = normalizeAngle(cam.yaw + cam.lookYaw);
+          cam.pitch = clamp(cam.pitch + cam.lookPitch - cam.slope, CHASE_PITCH_MIN, CHASE_PITCH_MAX);
+          cam.slope = 0;
+        }
+        cam.lookYaw = cam.lookPitch = 0;
+        cam.yawVel = 0;
+        cam.subject = subject;
       }
+      // In a vehicle the pitch eases back to the vehicle's own (the mouse moves lookPitch there).
+      if (c) cam.pitch += (shape.pitch - cam.pitch) * (1 - Math.exp(-deltaSeconds * 2.5));
       // Aiming over the shoulder eases in and out (about a fifth of a second).
       const aimWant = chaseAiming() ? 1 : 0;
       cam.aimBlend += (aimWant - cam.aimBlend) * (1 - Math.exp(-deltaSeconds * 11));
@@ -360,8 +389,6 @@
         cam.yawVel += (omega * omega * error - 2 * omega * cam.yawVel) * deltaSeconds;
         cam.yawVel = clamp(cam.yawVel, -6, 6);
         cam.yaw = normalizeAngle(cam.yaw + cam.yawVel * deltaSeconds);
-        // A big change (a spin, a teleport) is caught up at once rather than swept round.
-        if (Math.abs(normalizeAngle(target - cam.yaw)) > 2.4 && speed < 2 * M) cam.yaw = target;
         // Looking about in a vehicle eases back behind it a moment after the last look.
         if (cam.idle > CHASE_LOOK_RETURN && (speed > 1.5 * M || isAircraft(c))) {
           const back = 1 - Math.exp(-deltaSeconds * 2.2);
@@ -400,6 +427,15 @@
       cam.px = bx;
       cam.py = by;
       cam.pz = bz + pivotM * M;
+      if (cam.handover > 0) {
+        // The pivot slides over from the last subject (a smooth step over the hand-over).
+        cam.handover = Math.max(0, cam.handover - deltaSeconds);
+        const k = cam.handover / CHASE_HANDOVER,
+          w = k * k * (3 - 2 * k);
+        cam.px += (cam.fromX - cam.px) * w;
+        cam.py += (cam.fromY - cam.py) * w;
+        cam.pz += (cam.fromZ - cam.pz) * w;
+      }
       cam.shoulder = shoulderM * M;
       // The boom: back along the view from the pivot, out to the right shoulder.
       const cy = Math.cos(yaw),
