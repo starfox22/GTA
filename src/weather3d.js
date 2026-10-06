@@ -60,6 +60,9 @@
         uOpacity: { value: 0 },
         uAmbient: { value: new Three.Color('#bcd2e4') },
         uFlash: { value: 0 },
+        // Street level (the chase view, weather3d-chase.js): the lens (xyz) and how close a drop may come
+        // to it (w, units; 0 in the street view and the air: no change).
+        uNear: { value: new Three.Vector4() },
       };
       // Night light map (lighting3d.js): the drops glitter where the lamps are,
       // and in the low beams of the nearest cars (CAR LAMPS), whose cut-off is
@@ -134,6 +137,7 @@
           uniform float uTime, uFall, uTop, uBox, uLength, uOpacity, uFlash;
           uniform vec2 uWind;
           uniform vec3 uAmbient;
+          uniform vec4 uNear;
           varying vec4 vColor;
           ${RAIN_LAMP_GLSL}
           void main() {
@@ -150,8 +154,15 @@
             vec3 pos = head - velocity / speed * uLength * ( 0.45 + 0.9 * depth ) * aEnd;
             vec3 lamp = rainLampLight( head );
             float fadeIn = smoothstep( 0.0, 0.06, t ) * ( 1.0 - smoothstep( 0.93, 1.0, t ) );
-            float alpha = uOpacity * ( 0.3 + 0.7 * depth ) * fadeIn * ( 1.0 - aEnd * 0.85 );
-            vColor = vec4( uAmbient * ( 1.0 + uFlash * 6.0 ) + lamp * ( 0.9 + depth ), alpha * ( 1.0 + min( dot( lamp, vec3( 0.33 ) ) * 1.5, 2.0 ) ) );
+            float alpha = uOpacity * ( 0.3 + 0.7 * depth ) * fadeIn * ( 1.0 - aEnd * 0.85 ), sky = 1.0;
+            // At street level (uNear.w > 0) no drop crosses the lens (a streak the height of the frame),
+            // the nearest are the brightest and they catch more of the sky's light against the dark street.
+            if ( uNear.w > 0.0 ) {
+              float lens = distance( head, uNear.xyz );
+              alpha *= smoothstep( uNear.w, uNear.w * 2.5, lens ) * ( 1.0 + 1.2 * ( 1.0 - smoothstep( uNear.w, uNear.w * 14.0, lens ) ) );
+              sky = 2.8;
+            }
+            vColor = vec4( uAmbient * ( sky + uFlash * 6.0 ) + lamp * ( 0.9 + depth ), alpha * ( 1.0 + min( dot( lamp, vec3( 0.33 ) ) * 1.5, 2.0 ) ) );
             gl_Position = projectionMatrix * viewMatrix * vec4( pos, 1.0 );
           }`,
         fragmentShader: `
@@ -187,6 +198,9 @@
         uReach: { value: 700 },
         uStrength: { value: 0 },
         uAmbient: rainUniforms.uAmbient,
+        // Street level (the chase view): the splashes' size and the share that stand up as crowns facing the camera.
+        uSize: { value: 1 },
+        uUpright: { value: 0 },
       };
       const splashMaterial = new Three.ShaderMaterial({
         uniforms: {
@@ -196,12 +210,13 @@
         vertexShader: `
           attribute vec3 aSeed;
           uniform vec3 uOrigin;
-          uniform float uTime, uReach, uStrength;
+          uniform float uTime, uReach, uStrength, uSize, uUpright;
           uniform vec3 uAmbient;
           varying vec2 vUv;
           varying float vLife;
           varying vec3 vLight;
           varying float vAlpha;
+          varying float vCrown;
           ${RAIN_LAMP_GLSL}
           float sHash( vec2 p ) { vec3 p3 = fract( vec3( p.xyx ) * 0.1031 ); p3 += dot( p3, p3.yzx + 33.33 ); return fract( ( p3.x + p3.y ) * p3.z ); }
           float sNoise( vec2 p ) {
@@ -219,11 +234,18 @@
             vec2 p = uOrigin.xz + spot * uReach * 2.0;
             // Puddles (the ground shader's puddle noise) ring widely; tarmac only spits.
             float puddle = smoothstep( 0.56, 0.68, sNoise( p * 0.017 + 41.0 ) );
-            float size = mix( 1.2, 3.4, puddle ) * ( 0.7 + 0.6 * aSeed.z );
+            float size = mix( 1.2, 3.4, puddle ) * ( 0.7 + 0.6 * aSeed.z ) * uSize;
             vUv = uv;
             vLight = uAmbient * 0.9 + rainLampLight( vec3( p.x, 1.0, p.y ) ) * 1.4;
             vAlpha = uStrength * mix( 0.5, 1.0, puddle );
             vec3 pos = vec3( p.x, uOrigin.y + 0.55, p.y ) + position * size * 2.0;
+            // At street level a share of them stand up as a crown thrown off the tarmac (a quad facing the
+            // camera, uv.y up): seen along the street a flat splash is only a sliver.
+            vCrown = step( aSeed.y, 0.5 ) * uUpright * ( 1.0 - puddle * 0.6 );
+            if ( vCrown > 0.0 ) {
+              vec2 side = normalize( vec2( p.y - cameraPosition.z, cameraPosition.x - p.x ) + 1e-4 );
+              pos = vec3( p.x + side.x * position.x * size * 1.4, uOrigin.y + 0.2 + uv.y * size * 1.1, p.y + side.y * position.x * size * 1.4 );
+            }
             gl_Position = projectionMatrix * viewMatrix * vec4( pos, 1.0 );
           }`,
         fragmentShader: `
@@ -231,7 +253,20 @@
           varying float vLife;
           varying vec3 vLight;
           varying float vAlpha;
+          varying float vCrown;
           void main() {
+            if ( vCrown > 0.0 ) {
+              // A crown: two thin sheets of spray leaning out from the impact, rising and falling back
+              // in the first third of the splash's life, beaded at the rim.
+              float x = ( vUv.x - 0.5 ) * 2.0, y = vUv.y;
+              float life = clamp( vLife * 3.2, 0.0, 1.0 ), rise = sin( life * 3.1416 ) * 0.95;
+              float sheet = exp( -pow( ( abs( x ) - ( 0.12 + 0.55 * y ) ) * 9.0, 2.0 ) ) * step( y, rise );
+              float beads = exp( -pow( ( y - rise ) * 14.0, 2.0 ) ) * ( 0.5 + 0.5 * sin( x * 23.0 + vLife * 7.0 ) ) * step( 0.1, abs( x ) );
+              float c = ( sheet * ( 1.0 - y * 0.6 ) * 0.7 + beads ) * ( 1.0 - life ) * vAlpha * vCrown * 1.6;
+              if ( c < 0.004 ) discard;
+              gl_FragColor = vec4( vLight, c );
+              return;
+            }
             float d = length( vUv - 0.5 ) * 2.0;
             // An expanding ring, and a crown of spray in the first instant.
             float r = vLife;
@@ -255,6 +290,7 @@
       splashMesh.renderOrder = 3;
       splashMesh.name = 'rain splashes';
       scene.add(splashMesh);
+      // @include src/weather3d-chase.js
       /* ---- Drips off roofs and awnings ------------------------------------------------- */
       const DRIP_MAX = 700;
       const dripGeometry = new Three.BufferGeometry();
@@ -589,6 +625,8 @@
           splashUniforms.uReach.value = Math.min(viewReach, 1100);
           splashUniforms.uStrength.value = clamp(rain * 0.6, 0, 0.5);
         }
+        // At street level: the near field of rain, the side view's fall and the splashes ahead (weather3d-chase.js).
+        updateStreetRain(rain, ground, street, tier);
         // Drips: while it rains and on for a while after, on MEDIUM and up.
         const drip = low || flightViewActive ? 0 : clamp(Math.max(rain * 1.2, (weather.wet - 0.2) * 0.8), 0, 1);
         dripMesh.visible = drip > 0.02;
@@ -619,7 +657,8 @@
         const overcast = cloud * cloud;
         sun.intensity *= 1 - overcast * 0.62 - rain * 0.12;
         hemi.intensity *= 1 + overcast * 0.22 - rain * 0.1;
-        scene.fog.density *= 1 + rain * 2.6 + weather.approach * 0.6;
+        // (The chase view thickens its own haze in the rain: chase-view3d.js, the Haze lines.)
+        if (!chaseViewActive) scene.fog.density *= 1 + rain * 2.6 + weather.approach * 0.6;
         const flash = weather.flash;
         if (flash > 0.01) {
           const f = flash * flash;
@@ -676,15 +715,19 @@
         // only a few percent of the sky, and a clear blue sky in the drying
         // patches read as blue paint.
         wetSkyScratch.copy(skyUniforms.uHorizon.value).lerp(skyUniforms.uZenith.value, 0.78);
-        const skyGrey = (wetSkyScratch.r + wetSkyScratch.g + wetSkyScratch.b) / 3;
-        wetSkyScratch.lerp(wetGreyScratch.setScalar(skyGrey), 0.4).multiplyScalar(WET_SKY_SHARE_NIGHT + (WET_SKY_SHARE - WET_SKY_SHARE_NIGHT) * light);
+        const skyGrey = (wetSkyScratch.r + wetSkyScratch.g + wetSkyScratch.b) / 3,
+          skyShare = WET_SKY_SHARE_NIGHT + (WET_SKY_SHARE - WET_SKY_SHARE_NIGHT) * light;
+        wetSkyScratch.lerp(wetGreyScratch.setScalar(skyGrey), 0.4).multiplyScalar(skyShare);
         wetUniforms.citySkyReflect.value.copy(wetSkyScratch).multiplyScalar(mirror);
         camera.getWorldDirection(wetViewScratch);
         const flat = Math.hypot(wetViewScratch.x, wetViewScratch.z);
-        if (flat > 0.05) wetUniforms.citySheenDir.value.set(wetViewScratch.x / flat, wetViewScratch.z / flat);
+        // (At street level 0: the ground runs each streak away from the camera itself, surfaces3d.js.)
+        if (chaseViewActive) wetUniforms.citySheenDir.value.set(0, 0);
+        else if (flat > 0.05) wetUniforms.citySheenDir.value.set(wetViewScratch.x / flat, wetViewScratch.z / flat);
         wetUniforms.citySheenGain.value = detail === 0 ? 0 : WET_STREAK_GAIN;
         postLook.reflect = reflections ? mirror : 0;
         postLook.reflectSky.copy(wetSkyScratch);
+        postLook.reflectShare = skyShare;
         postLook.rain = weather.rain;
         postLook.rainTime = surfaceUniforms.cityRainTime.value;
       }
@@ -698,5 +741,7 @@
         postLook.saturation *= 1 - storm * 0.1;
         postLook.contrast *= 1 - storm * 0.04;
         postLook.bloomThreshold *= 1 + weather.flash * 0.5;
+        // The chase view's rainy air, darker than the sky keys' (weather3d-chase.js).
+        chaseRainAir();
       }
       // END SUBSYSTEM: src/weather3d.js

@@ -21,6 +21,9 @@
        */
       const CHASE_DRAW = { LOW: 2600, MEDIUM: 3600, HIGH: 4800, ULTRA: 6400 },
         CHASE_HAZE_CLEAR = 0.16,
+        // How much a downpour thickens the haze beyond the clear zone (1.9 times at full rain; the street
+        // view's 3.6 times, from above, hung a milky veil over the street at eye level).
+        CHASE_RAIN_HAZE = 0.9,
         CHASE_LOD_NEAR = 400,
         // Behind the camera, cells this close still draw (they cast the shadows in front of it).
         CHASE_SHADOW_KEEP = 1400,
@@ -95,11 +98,13 @@
         viewReach = Math.max(920, (maxX - minX) / 2, (maxY - minY) / 2) + 120;
         viewZoom = Math.min(4.5, chaseZoomAt(chaseCam.x + CHASE_LOD_NEAR, chaseCam.y));
         viewGroundDistance = CHASE_LOD_NEAR;
-        // Haze: clear near the camera, closing over the far part of the draw distance.
+        // Haze: clear near the camera, closing over the far part of the draw distance. Rain and the build-up
+        // to a shower close it sooner (CHASE_RAIN_HAZE), never over the clear near street; weather3d-chase.js
+        // darkens that air (chaseRainAir), so the distance goes dark and dense instead of milky.
         const clear = reach * CHASE_HAZE_CLEAR;
         scene.fog.near = clear;
         // fogFactor = 1 - exp(-((d - near) / far)^2): about 0.93 at the far clip.
-        scene.fog.density = 1.62 / Math.max(1, reach - clear);
+        scene.fog.density = (1.62 / Math.max(1, reach - clear)) * (1 + weather.rain * CHASE_RAIN_HAZE + weather.approach * 0.3);
         return true;
       }
       // @include src/chase-view3d-far.js
