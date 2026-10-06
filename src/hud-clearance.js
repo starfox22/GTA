@@ -40,6 +40,7 @@
       fadeNavAt: -1e9,
       vw: 0,
       vh: 0,
+      chaseLayout: false,
       measuredAt: -1,
       want: true,
       key: '',
@@ -103,10 +104,16 @@
     function measureMissionCard() {
       const C = cardClear,
         now = hudNow();
-      if (C.vw !== viewportWidth || C.vh !== viewportHeight) {
+      // A new window size, or a switch between the street and the chase view's layouts (chase-view.css), moves
+      // the card: what was measured no longer holds.
+      const chaseLayout = document.body.classList.contains('chase-view');
+      if (C.vw !== viewportWidth || C.vh !== viewportHeight || C.chaseLayout !== chaseLayout) {
         C.vw = viewportWidth;
         C.vh = viewportHeight;
+        C.chaseLayout = chaseLayout;
         C.open.ok = C.strip.ok = C.story.ok = false;
+        // (A fold for the old layout's card is no reason to keep this one folded.)
+        C.yielding = false;
         C.measuredAt = -1;
       }
       if (C.measuredAt >= 0 && now - C.measuredAt < CLEAR_MEASURE_EVERY) return;

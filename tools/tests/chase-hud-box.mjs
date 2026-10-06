@@ -25,7 +25,8 @@ export default async function (t) {
     const foot = await check('on foot');
     t.note('on foot: ' + JSON.stringify(foot));
     await t.call('drive', 'sedan', 0, 0);
-    await t.wait(0.5);
+    // The camera's hand-over into the car and its boom running out settle in about a second and a half.
+    await t.wait(2);
     const car = await check('in a sedan');
     t.note('in a sedan: ' + JSON.stringify(car));
     t.assert(car.box.r - car.box.l > foot.box.r - foot.box.l, 'the car is no wider on screen than the person');

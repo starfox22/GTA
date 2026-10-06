@@ -8,7 +8,7 @@
      * shot is fired at one. Without a captured pointer (CURSOR LOOK) it follows the
      * cursor, which is the aim then. Class and style writes happen only on a change.
      */
-    const chaseReticle = { shown: false, aiming: false, target: false, hit: false, x: NaN, y: NaN, locked: false, shotAt: -1, hitUntil: 0 },
+    const chaseReticle = { shown: false, aiming: false, target: false, hit: false, x: NaN, y: NaN, locked: false, view: false, shotAt: -1, hitUntil: 0 },
       chaseReticleAim = { x: 0, y: 0, z: 0, hit: null, t: 0 };
     function chaseReticleWanted() {
       if (gameMode !== 'play' || !chaseCameraLive() || !chaseCam.ready) return false;
@@ -25,6 +25,12 @@
       if (!el) return;
       // Menus and overlays (pause, map, settings, shops) get the cursor back.
       if (chaseCam.locked && gameMode !== 'play') releaseChasePointer();
+      // The HUD's chase layout (chase-view.css: the mission card at the top, off the player).
+      const view = chaseCameraLive();
+      if (view !== chaseReticle.view) {
+        chaseReticle.view = view;
+        document.body.classList.toggle('chase-view', view);
+      }
       const locked = !!chaseCam.locked;
       if (locked !== chaseReticle.locked) {
         chaseReticle.locked = locked;

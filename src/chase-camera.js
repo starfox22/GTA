@@ -656,7 +656,7 @@
     /* The map heading from `from` (the player or their vehicle) to the point under the reticle (or,
        without a captured pointer, under the cursor: CURSOR LOOK). */
     function chaseAimHeading(from = player.car || player) {
-      const p = chaseCam.locked || !mouse.active ? chaseAimPoint() : chaseAimPoint(chaseAimOut, mouse.x, mouse.y);
+      const p = chaseCam.locked || !mouse.active || touchModeOn() ? chaseAimPoint() : chaseAimPoint(chaseAimOut, mouse.x, mouse.y);
       const dx = p.x - from.x,
         dy = p.y - from.y;
       if (Math.hypot(dx, dy) < 4) return chaseCam.viewYaw ?? chaseCam.yaw;

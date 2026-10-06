@@ -102,6 +102,8 @@
         scene.fog.density = 1.62 / Math.max(1, reach - clear);
         return true;
       }
+      // @include src/chase-view3d-far.js
+      // @include src/chase-view3d-props.js
       /* DeadEndCity.chaseCamera() adds what the renderer draws (render3d-api.js chaseView). */
       function chaseViewReport() {
         return {
@@ -113,8 +115,18 @@
           viewZoom: +viewZoom.toFixed(3),
           fogNear: Math.round(scene.fog.near),
           fogDensity: +scene.fog.density.toExponential(3),
+          // CHASE FAR CELLS: the radius (m) beyond which a cell draws the far copy, far cells, far meshes drawn.
+          farMetres: Math.round(chaseFarNear / UNITS_PER_METRE),
+          farCells: chaseFarCount,
+          farMeshes: chaseFarShownCount,
+          // CHASE SHADOWS: shadow-casting cells tested and left out of the last shadow pass.
+          shadowCells: { ...chaseShadowStats },
+          // CHASE PROPS: small props (static cells' detail meshes, breakable pools) left out, and casting no shadow.
+          props: chasePropsReport(),
+          draws: chaseDrawBands(),
         };
       }
+      // @include src/chase-view3d-draws.js
       /**
        * CHASE SHADOWS
        * Looking along the street the frustum reaches the draw distance, and a shadow box
@@ -186,4 +198,6 @@
         }
         sun.shadow.normalBias = clamp(texel * 1.6, 0.35, 4);
         cityLightUniforms.cityShadowReach.value = reach;
+        chaseShadowRegion(reach, tanH, tanV, lift + 2 * radius);
       }
+      // @include src/chase-view3d-casters.js

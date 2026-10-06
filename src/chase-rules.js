@@ -20,7 +20,9 @@
      *    the pivot the camera turns about, the buildings shrunk by the thing's radius plus the boom and their
      *    roofs lowered by the boom, so neither the camera's swing nor the thing's own size shows it.
      *  - FIRE (shooterInView): the shooter's chest inside the frustum (with the caller's inset in px), no deeper
-     *    than CHASE_FIRE_REACH, and not hidden from the camera itself behind a building.
+     *    than CHASE_FIRE_REACH, and not hidden from the camera itself behind a building; or CLOSE QUARTERS:
+     *    within CHASE_FIRE_NEAR (CHASE_FIRE_NEAR_VEHICLE in a vehicle) of the player with nothing built between
+     *    them, wherever the camera looks, as the street view's frame round the player allows.
      *  - LEAN (chaseStreamCentre): the crowd and the traffic are counted and spawned round a centre leaned
      *    toward the camera's heading, so the street ahead fills and spawn spots beyond the sight reach lie on it.
      *  - AIM: the reticle (or the cursor while the pointer is free: CURSOR LOOK) is the aim for every input
@@ -28,6 +30,9 @@
      */
     const CHASE_SIGHT_REACH = 200 * UNITS_PER_METRE,
       CHASE_FIRE_REACH = 150 * UNITS_PER_METRE,
+      // CLOSE QUARTERS (shooterInView): about the street view's frame round the player on foot and in a vehicle.
+      CHASE_FIRE_NEAR = 24 * UNITS_PER_METRE,
+      CHASE_FIRE_NEAR_VEHICLE = 40 * UNITS_PER_METRE,
       // Wrecks are big and burn: they count as seen twice as deep.
       CHASE_WRECK_REACH = 2 * CHASE_SIGHT_REACH,
       CHASE_BODY_LIFT = 1 * UNITS_PER_METRE,
@@ -224,13 +229,19 @@
     function chaseShooterInView(shooter, inset) {
       if (!chaseCam.ready) return false;
       const z = chaseChestHeight(shooter);
+      // CLOSE QUARTERS: within CHASE_FIRE_NEAR of the player (more in a vehicle) a shooter may fire from off
+      // screen, as the street view's frame round the player lets them (the damage arc shows where from),
+      // but never through a building between them and the player.
+      const near = player.car ? CHASE_FIRE_NEAR_VEHICLE : CHASE_FIRE_NEAR;
+      if (hypot2(shooter.x - player.x, shooter.y - player.y) < near)
+        return !chaseHiddenFrom(player.x, player.y, chaseChestHeight(player.car || player), shooter.x, shooter.y, z);
       if (!chaseSees(shooter.x, shooter.y, z, 0, inset, CHASE_FIRE_REACH)) return false;
       return !chaseHiddenFrom(chaseCam.x, chaseCam.y, chaseCam.z, shooter.x, shooter.y, z);
     }
     /* Where a shooter's gun is: a person's chest, a vehicle's turret or window. */
     function chaseChestHeight(e) {
       const ground = entityElevation(e);
-      return e.type && vehicleSpec(e) ? ground + vehicleCollisionHeight(e) * 0.6 : ground + PERSON_HEIGHT * 0.72;
+      return e.type && vehicleSpec(e) ? ground + chaseBodyHeight(e) * 0.7 : ground + PERSON_HEIGHT * 0.72;
     }
     /* The centre a stream (crowd, traffic) counts and spawns round in the chase view: the player, leaned `lean`
        units toward the camera's heading (crowd-streaming.js, livingcity-traffic.js), into `out`. */
@@ -249,7 +260,7 @@
        the mouse is in use (CURSOR LOOK: the same choice as chaseAimHeading). */
     const chaseAimAt = { x: 0, y: 0 };
     function chaseAimScreen() {
-      if (chaseCam.locked || !mouse.active) {
+      if (chaseCam.locked || !mouse.active || touchModeOn()) {
         chaseAimAt.x = viewportWidth * CHASE_RETICLE.x;
         chaseAimAt.y = viewportHeight * CHASE_RETICLE.y;
       } else {
@@ -355,6 +366,20 @@
     /* hudPlayerBox in the chase view: the corners of the player's (or their vehicle's, or the cab's they ride
        in) box through the chase camera, in CSS px; a corner behind the near plane counts as on it. */
     const chaseBoxAt = { x: 0, y: 0 };
+    /* How tall a vehicle stands on screen (the roof, a rider's head): its spec's height when it has one, else by
+       its class. vehicleCollisionHeight's fallback (4 m, for aircraft fins) would stand a sedan's box up to the
+       top of the chase view's frame. */
+    function chaseBodyHeight(c) {
+      const spec = vehicleSpec(c),
+        M = UNITS_PER_METRE;
+      if (Number.isFinite(spec.height)) return spec.height;
+      if (isAircraft(c)) return vehicleCollisionHeight(c);
+      if (spec.bike || spec.bicycle) return 1.7 * M;
+      if (spec.boat || spec.jetski) return 2 * M;
+      if (spec.tank) return 2.6 * M;
+      if (spec.truck || spec.l > 7 * M) return 3.2 * M;
+      return 1.55 * M;
+    }
     function chasePlayerBox(out) {
       out.ok = false;
       if (!chaseCam.ready) return out;
@@ -368,7 +393,7 @@
         side = spec.w / 2;
         a = c.a;
         z0 = isBoat(c) ? Math.max(0, entityElevation(c)) : entityElevation(c);
-        tall = vehicleCollisionHeight(c);
+        tall = chaseBodyHeight(c);
       } else {
         half = side = CHASE_PERSON_HALF;
         a = player.a || 0;
@@ -439,7 +464,7 @@
       if (lock) out.lock = { kind: lock.type || lock.role || lock.faction || lock.species || 'person', x: Math.round(lock.x), y: Math.round(lock.y) };
       if (live && chaseCam.ready) {
         const body = player.car || player,
-          q = chaseProject(body.x, body.y, entityElevation(body) + (player.car ? vehicleCollisionHeight(player.car) : PERSON_HEIGHT) / 2, { x: 0, y: 0, depth: 0, behind: false });
+          q = chaseProject(body.x, body.y, entityElevation(body) + (player.car ? chaseBodyHeight(player.car) : PERSON_HEIGHT) / 2, { x: 0, y: 0, depth: 0, behind: false });
         out.playerScreen = { x: r(q.x), y: r(q.y), depth: r(q.depth) };
         const cc = chaseStreamCentre({ x: 0, y: 0 }, CROWD_RING * CHASE_CROWD_LEAN),
           tc = chaseStreamCentre({ x: 0, y: 0 }, TRAFFIC_RING * CHASE_TRAFFIC_LEAN);

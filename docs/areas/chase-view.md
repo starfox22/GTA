@@ -68,6 +68,8 @@ rendering.md Cameras and view.
   `CHASE_SHADOW_REACH` (one size whatever way the camera turns, centre snapped to texels), and lit
   materials fade the shadow out over the last part of that depth (`cityShadowFade`, the
   `cityShadowReach` uniform in `cityLightUniforms`; 0 in the other views: no fade there).
+- Level of detail (far cells drawn from the far copy, shadow casters and proxies, small props and
+  pools, people and vehicles by distance): rendering-chase.md.
 - The reticle (chase-hud.js, chase-view.css): on foot with a gun; red over a target, a flash on a
   shot, a ring while aiming. `body.chase-locked` hides the cursor while the pointer is captured.
 
