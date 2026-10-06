@@ -356,6 +356,41 @@
           set: (on) => (settings.motionComfort = !!on),
         },
         {
+          id: 'cameraView',
+          kind: 'choice',
+          label: 'Camera view',
+          note: () =>
+            'STREET looks down on the city from above, as the game always has. CHASE stands behind you at street level: the mouse looks round (click the game to capture it, Escape lets it go), the right button aims over the shoulder. ' +
+            keyName('cameraView') +
+            ' switches between them in play.',
+          options: [
+            ['street', 'STREET'],
+            ['chase', 'CHASE'],
+          ],
+          get: () => viewMode,
+          set: (value) => setViewMode(value, true),
+        },
+        {
+          id: 'lookSensitivity',
+          kind: 'slider',
+          label: 'Look sensitivity',
+          min: 20,
+          max: 300,
+          step: 10,
+          format: (v) => v + '%',
+          note: () => 'How fast the mouse, the right stick or a drag turns the chase camera.',
+          get: () => settings.lookSensitivity,
+          set: (value) => (settings.lookSensitivity = clamp(Math.round(value), 20, 300)),
+        },
+        {
+          id: 'invertLook',
+          kind: 'toggle',
+          label: 'Invert look',
+          note: () => 'In the chase camera, pushing the mouse or the stick forward looks down instead of up.',
+          get: () => settings.invertLook,
+          set: (on) => (settings.invertLook = !!on),
+        },
+        {
           id: 'minimap',
           kind: 'toggle',
           label: 'Minimap',

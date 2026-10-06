@@ -28,10 +28,11 @@
       PAD_MENU_REPEAT = 0.13;
     /* Buttons in standard-mapping order, per control context: the actions each drives. */
     const PAD_PLAY = {
-      foot: [['interact'], ['poison'], ['reload'], ['skipRide'], ['cycleWeapon'], ['arsenal'], ['walk'], ['fire'], ['map'], [], ['missionCard'], ['zoomReset'], ['zoomIn'], ['zoomOut'], ['skipStop'], ['help']],
-      drive: [['interact'], ['handbrake'], ['reload'], ['bail'], ['horn'], ['fire'], ['back'], ['forward'], ['map'], [], ['sprint'], ['zoomReset'], ['zoomIn'], ['zoomOut'], ['radioPower'], ['radioNext']],
+      // R3 switches the street and chase views (chase-camera.js); in the chase view on foot LT aims over the shoulder.
+      foot: [['interact'], ['poison'], ['reload'], ['skipRide'], ['cycleWeapon'], ['arsenal'], ['walk'], ['fire'], ['map'], [], ['missionCard'], ['cameraView'], ['zoomIn'], ['zoomOut'], ['skipStop'], ['help']],
+      drive: [['interact'], ['handbrake'], ['reload'], ['bail'], ['horn'], ['fire'], ['back'], ['forward'], ['map'], [], ['sprint'], ['cameraView'], ['zoomIn'], ['zoomOut'], ['radioPower'], ['radioNext']],
       air: [['interact'], ['rockets', 'flapsUp'], ['reload'], ['bail'], ['flapsDown'], ['fire'], ['back'], ['forward'], ['map'], [], ['gear'], ['divert'], ['zoomIn'], ['zoomOut'], ['radioPower'], ['radioNext']],
-      chute: [[], [], [], ['bail'], [], [], ['back'], ['forward'], ['map'], [], [], ['zoomReset'], ['zoomIn'], ['zoomOut'], [], []],
+      chute: [[], [], [], ['bail'], [], [], ['back'], ['forward'], ['map'], [], [], ['cameraView'], ['zoomIn'], ['zoomOut'], [], []],
     };
     /* The left stick's four ways, per context (null: that way does nothing there). */
     const PAD_STICK = {
@@ -54,7 +55,10 @@
       // Pad input -> the codes it holds ('b7', 'stick-up', ...).
       held: new Map(),
       aiming: false,
-      // The right stick as read in play (ride-look.js turns a rider's head with it); 0 in menus.
+      // LT held on foot in the chase view: aiming over the shoulder (chase-camera.js chaseAiming).
+      aimHeld: false,
+      // The right stick as read in play (ride-look.js turns a rider's head with it, and the chase
+      // camera turns with it: chase-camera.js updateStickLook); 0 in menus.
       lookX: 0,
       lookY: 0,
       menuDir: null,
@@ -106,6 +110,7 @@
       for (const input of [...gamepad.held.keys()]) padHoldCodes(input, []);
       if (gamepad.aiming) touchAim = null;
       gamepad.aiming = false;
+      gamepad.aimHeld = false;
       gamepad.lookX = gamepad.lookY = 0;
       gamepad.buttons = [];
     }
@@ -149,8 +154,11 @@
     }
     function padPlay(down, pressed, lx, ly, rx, ry) {
       const context = controlContext(),
-        row = PAD_PLAY[context];
-      for (let i = 0; i < row.length; i++) padHoldCodes('b' + i, down[i] ? padCodes(row[i]) : []);
+        row = PAD_PLAY[context],
+        // In the chase view on foot LT aims over the shoulder instead of walking (a gentle push still walks).
+        chaseFoot = chaseCameraLive() && context === 'foot';
+      gamepad.aimHeld = chaseFoot && !!down[6];
+      for (let i = 0; i < row.length; i++) padHoldCodes('b' + i, down[i] && !(chaseFoot && i === 6) ? padCodes(row[i]) : []);
       // MENU pauses (Escape), on the press only.
       if (pressed(9)) padTap('Escape');
       const m = Math.hypot(lx, ly),
@@ -169,6 +177,15 @@
       if (m > PAD_DEAD) mouse.active = false;
       if (gamepad.lookX !== rx) gamepad.lookX = rx;
       if (gamepad.lookY !== ry) gamepad.lookY = ry;
+      // In the chase view the right stick turns the camera and the reticle is the aim (chase-camera.js).
+      if (chaseCameraLive()) {
+        if (gamepad.aiming) {
+          touchAim = null;
+          gamepad.aiming = false;
+        }
+        if (Math.hypot(rx, ry) > PAD_AIM) mouse.active = false;
+        return;
+      }
       // The right stick aims as the touch aim stick does (RT fires).
       if (Math.hypot(rx, ry) > PAD_AIM) {
         touchAim = Math.atan2(ry, rx);
@@ -182,6 +199,7 @@
     /* Menus: a direction from the D-pad or the stick, repeated while held. */
     function padMenu(down, pressed, lx, ly, dt, now) {
       gamepad.lookX = gamepad.lookY = 0;
+      gamepad.aimHeld = false;
       if (gamepad.aiming) {
         touchAim = null;
         gamepad.aiming = false;
@@ -303,6 +321,8 @@
       const context = controlContext(),
         ways = PAD_STICK[context];
       for (const way of ['up', 'down', 'left', 'right']) if (ways[way] === id) return PAD_STICK_NAMES[way];
+      // In the chase view on foot LT aims: a gentle push of the stick walks.
+      if (id === 'walk' && context === 'foot' && chaseCameraLive()) return 'L-STICK (LIGHT)';
       const row = PAD_PLAY[context],
         i = row.findIndex((ids) => ids.includes(id));
       if (i >= 0) return PAD_BUTTON_NAMES[i];
