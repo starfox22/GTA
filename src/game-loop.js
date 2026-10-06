@@ -178,6 +178,8 @@
       if (!NO_RENDER && !frameTrace.skipDraw) drawWorld(); // ?dev&norender (render3d.js): logic tests draw nothing
       updateTankReticle();
       updateDriveByCross();
+      // The chase view's reticle (chase-hud.js).
+      updateChaseReticle();
       const frameEnd = performance.now();
       profile.update += drawStart - updateStart;
       profile.draw += frameEnd - drawStart;

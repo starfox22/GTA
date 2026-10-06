@@ -154,6 +154,7 @@
     // @include src/driving.js
     // @include src/chase-camera.js
     // @include src/chase-rules.js
+    // @include src/chase-hud.js
     // @include src/tyre-effects.js
     // @include src/hud.js
     // @include src/render3d.js

@@ -39,12 +39,14 @@
       VIEW_CHASE = 'chase',
       CHASE_LOOK_RATE = 0.0026,
       CHASE_PAD_RATE = 3.2,
-      CHASE_PITCH_MIN = -0.55,
+      CHASE_PITCH_MIN = -0.9,
       CHASE_PITCH_MAX = 1.15,
       CHASE_LOOK_RETURN = 1.6,
       CHASE_FOOT = { pivot: 1.58, dist: 3.5, shoulder: 0.42, fov: 52, pitch: 0.16 },
       CHASE_AIM = { pivot: 1.62, dist: 1.85, shoulder: 0.66, fov: 44 },
       CHASE_NEAR = 4,
+      // Seconds the pivot takes to slide from the old subject to the new one (in or out of a vehicle).
+      CHASE_HANDOVER = 0.55,
       CHASE_WALL_MARGIN = 3,
       CHASE_GROUND_CLEAR = 3,
       // The reticle's place on screen, as a share of the width and height.
@@ -89,8 +91,14 @@
       // shoulder when the ground lifted the camera): what the renderer and the projection use.
       viewYaw: -Math.PI / 2,
       viewPitch: CHASE_FOOT.pitch,
-      // The page could not capture the pointer (CURSOR LOOK instead).
+      // The page could not capture the pointer (CURSOR LOOK instead); the last request was a soft one.
       lockFailed: false,
+      lockSoft: false,
+      // HAND-OVER: seconds left of the pivot's slide, and where it slides from.
+      handover: 0,
+      fromX: 0,
+      fromY: 0,
+      fromZ: 0,
     };
     let viewMode = VIEW_STREET;
     try {
@@ -170,12 +178,15 @@
        Returns true when a capture was asked for (the click that asks fires nothing). A page that
        cannot capture the pointer (an embedding frame without the permission) falls back on
        CURSOR LOOK (updateCursorLook). */
-    function captureChasePointer() {
+    function captureChasePointer(soft = false) {
       if (!chaseCameraLive() || gameMode !== 'play' || touchModeOn() || chaseCam.lockFailed) return false;
       if (document.pointerLockElement === canvas || typeof canvas.requestPointerLock !== 'function') {
         chaseCam.lockFailed = typeof canvas.requestPointerLock !== 'function';
         return false;
       }
+      // A soft request (resuming from the pause menu) may be refused for a moment after Escape:
+      // only a refused click on the game means the page cannot capture the pointer at all.
+      chaseCam.lockSoft = soft;
       try {
         const asked = canvas.requestPointerLock();
         // (Some browsers return a promise that rejects when the page is not focused.)
@@ -198,7 +209,7 @@
         if (chaseCam.locked) placeMouseOnReticle();
       });
       document.addEventListener('pointerlockerror', () => {
-        chaseCam.lockFailed = true;
+        if (!chaseCam.lockSoft) chaseCam.lockFailed = true;
         chaseCam.locked = false;
       });
     }
@@ -210,7 +221,7 @@
      * bottom. Called every simulation step.
      */
     function updateCursorLook(deltaSeconds) {
-      if (chaseCam.locked || !mouse.active || gameMode !== 'play' || touchModeOn() || !(deltaSeconds > 0)) return;
+      if (!chaseCameraLive() || chaseCam.locked || !mouse.active || gameMode !== 'play' || touchModeOn() || !(deltaSeconds > 0)) return;
       const band = 0.1,
         u = mouse.x / Math.max(1, viewportWidth),
         v = mouse.y / Math.max(1, viewportHeight),
@@ -219,6 +230,12 @@
         p = push(v);
       if (h || p) chaseTurn(h * Math.abs(h) * 2.4 * lookSensitivity() * deltaSeconds, p * Math.abs(p) * 1.2 * lookSensitivity() * deltaSeconds * (settings.invertLook ? -1 : 1));
     }
+    /* The gamepad's right stick and the touch aim stick turn the chase camera, every simulation step. */
+    function updateStickLook(deltaSeconds) {
+      if (!chaseCameraLive() || gameMode !== 'play' || !(deltaSeconds > 0)) return;
+      if (gamepad.lookX || gamepad.lookY) chaseStick(gamepad.lookX, gamepad.lookY, deltaSeconds);
+      if (touchLookX || touchLookY) chaseStick(touchLookX, touchLookY, deltaSeconds);
+    }
     /* While the pointer is captured the aim is the reticle (mouse.x / y stand on it for every reader). */
     function placeMouseOnReticle() {
       mouse.x = viewportWidth * CHASE_RETICLE.x;
@@ -226,9 +243,17 @@
       mouse.active = true;
     }
     /* ---- Follow -------------------------------------------------------------------------- */
-    /* In a vehicle (not a passenger) the camera follows the vehicle's heading. */
+    /* The vehicle the camera follows: the player's own, or the cab or the train they ride in
+       (the camera then follows the ride as it would a car the player drove). */
+    function chaseRideVehicle() {
+      if (player.coaster) return null;
+      if (player.car) return player.car;
+      if (taxiRide?.car) return taxiRide.car;
+      if (transitRide?.train) return transitRide.train;
+      return null;
+    }
     function chaseFollowsVehicle() {
-      return !!player.car && !player.coaster;
+      return !!chaseRideVehicle();
     }
     /* Aiming over the shoulder: the right button held on foot with a gun, or the touch / pad aim. */
     function chaseAiming() {
@@ -269,6 +294,15 @@
         }
         return s;
       }
+      if (c === transitRide?.train) {
+        // A city rail car on its viaduct: well back and over the roof.
+        s.pivot = 3.4;
+        s.dist = 16;
+        s.shoulder = 0;
+        s.fov = 55;
+        s.pitch = 0.2;
+        return s;
+      }
       const spec = vehicleSpec(c),
         length = spec.l / UNITS_PER_METRE,
         height = (spec.height ?? Math.min(32, spec.l * 0.32)) / UNITS_PER_METRE;
@@ -306,7 +340,8 @@
         cam.ready = false;
         return;
       }
-      const c = player.car && !player.coaster ? player.car : null,
+      const c = chaseRideVehicle(),
+        train = !!c && c === transitRide?.train,
         comfort = motionComfortOn(),
         shape = chaseShapeFor(c),
         M = UNITS_PER_METRE;
@@ -315,21 +350,43 @@
       const body = c || player,
         bx = body.x,
         by = body.y,
-        bz = c && isBoat(c) ? Math.max(0, entityElevation(c)) : entityElevation(body);
+        bz = train ? entityElevation(player) : c && isBoat(c) ? Math.max(0, entityElevation(c)) : entityElevation(body);
       const subject = c || player;
-      if (!cam.ready || cam.subject !== subject) {
-        // A new subject: the camera starts behind it.
-        const heading = c ? c.a : cam.ready ? cam.yaw : player.a;
-        cam.yaw = heading;
+      if (!cam.ready) {
+        // A fresh start (a new game, a teleport, a switch of view): behind the subject at once.
+        cam.yaw = c ? c.a : player.a;
         cam.yawVel = 0;
         cam.lookYaw = cam.lookPitch = 0;
-        if (!cam.ready || c) cam.pitch = shape.pitch;
+        cam.pitch = shape.pitch;
         cam.wantDist = cam.dist = shape.dist * M * cam.zoom;
         cam.slope = 0;
         cam.speedBlend = 0;
+        cam.handover = 0;
         cam.subject = subject;
         cam.ready = true;
+      } else if (cam.subject !== subject) {
+        // HAND-OVER: getting in or out of a vehicle. The camera keeps where it looks and the
+        // pivot slides from the old subject to the new one (CHASE_HANDOVER s); in a vehicle the
+        // heading spring then swings it round behind, and the boom eases out to its length.
+        cam.fromX = cam.px;
+        cam.fromY = cam.py;
+        cam.fromZ = cam.pz;
+        cam.handover = CHASE_HANDOVER;
+        if (c) {
+          // The camera's look offsets fold into its heading, so nothing jumps.
+          cam.yaw = normalizeAngle(cam.yaw + cam.lookYaw);
+          cam.pitch = clamp(cam.pitch + cam.lookPitch, CHASE_PITCH_MIN, CHASE_PITCH_MAX);
+        } else {
+          cam.yaw = normalizeAngle(cam.yaw + cam.lookYaw);
+          cam.pitch = clamp(cam.pitch + cam.lookPitch - cam.slope, CHASE_PITCH_MIN, CHASE_PITCH_MAX);
+          cam.slope = 0;
+        }
+        cam.lookYaw = cam.lookPitch = 0;
+        cam.yawVel = 0;
+        cam.subject = subject;
       }
+      // In a vehicle the pitch eases back to the vehicle's own (the mouse moves lookPitch there).
+      if (c) cam.pitch += (shape.pitch - cam.pitch) * (1 - Math.exp(-deltaSeconds * 2.5));
       // Aiming over the shoulder eases in and out (about a fifth of a second).
       const aimWant = chaseAiming() ? 1 : 0;
       cam.aimBlend += (aimWant - cam.aimBlend) * (1 - Math.exp(-deltaSeconds * 11));
@@ -350,8 +407,6 @@
         cam.yawVel += (omega * omega * error - 2 * omega * cam.yawVel) * deltaSeconds;
         cam.yawVel = clamp(cam.yawVel, -6, 6);
         cam.yaw = normalizeAngle(cam.yaw + cam.yawVel * deltaSeconds);
-        // A big change (a spin, a teleport) is caught up at once rather than swept round.
-        if (Math.abs(normalizeAngle(target - cam.yaw)) > 2.4 && speed < 2 * M) cam.yaw = target;
         // Looking about in a vehicle eases back behind it a moment after the last look.
         if (cam.idle > CHASE_LOOK_RETURN && (speed > 1.5 * M || isAircraft(c))) {
           const back = 1 - Math.exp(-deltaSeconds * 2.2);
@@ -362,7 +417,7 @@
         let slope = 0;
         if (isAircraft(c)) {
           if (c.type === 'plane') slope = clamp(Math.atan2(c.vz || 0, Math.max(1, speed)), -0.6, 0.6) * 0.8;
-        } else if (!isBoat(c)) {
+        } else if (!train && !isBoat(c)) {
           const step = 4 * M,
             ahead = terrainHeight(bx + Math.cos(c.a) * step, by + Math.sin(c.a) * step),
             behind = terrainHeight(bx - Math.cos(c.a) * step, by - Math.sin(c.a) * step);
@@ -390,6 +445,15 @@
       cam.px = bx;
       cam.py = by;
       cam.pz = bz + pivotM * M;
+      if (cam.handover > 0) {
+        // The pivot slides over from the last subject (a smooth step over the hand-over).
+        cam.handover = Math.max(0, cam.handover - deltaSeconds);
+        const k = cam.handover / CHASE_HANDOVER,
+          w = k * k * (3 - 2 * k);
+        cam.px += (cam.fromX - cam.px) * w;
+        cam.py += (cam.fromY - cam.py) * w;
+        cam.pz += (cam.fromZ - cam.pz) * w;
+      }
       cam.shoulder = shoulderM * M;
       // The boom: back along the view from the pivot, out to the right shoulder.
       const cy = Math.cos(yaw),
@@ -410,13 +474,16 @@
       cam.x = sx0 - fx * cam.dist;
       cam.y = sy0 - fy * cam.dist;
       cam.z = cam.pz - fz * cam.dist;
-      const floor = chaseFloor(cam.x, cam.y) + CHASE_GROUND_CLEAR;
-      if (cam.z < floor) cam.z = floor;
-      // The camera looks through the shoulder point: along the boom, or down at it when the
-      // floor lifted the camera.
-      const hd = Math.hypot(sx0 - cam.x, sy0 - cam.y);
+      const floor = chaseFloor(cam.x, cam.y) + CHASE_GROUND_CLEAR,
+        lifted = cam.z < floor;
+      if (lifted) cam.z = floor;
+      // The camera looks along the boom through the shoulder point. When the floor lifted it
+      // (looking up from low down, or a rise behind), it looks at the shoulder instead, or
+      // further up when the player looks up: the player then sits low in the frame.
+      const hd = Math.hypot(sx0 - cam.x, sy0 - cam.y),
+        toShoulder = hd > 1 ? Math.atan2(cam.z - cam.pz, hd) : pitch;
       cam.viewYaw = yaw;
-      cam.viewPitch = hd > 1 ? Math.atan2(cam.z - cam.pz, hd) : pitch;
+      cam.viewPitch = !lifted ? pitch : pitch < 0 ? Math.min(pitch, toShoulder) : toShoulder;
     }
     /* How far the boom can reach from (x, y, z) along the unit direction (dx, dy, dz) before a
        building (footprint and height), up to `want`; the vehicle itself is not a wall. */

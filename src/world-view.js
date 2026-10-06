@@ -205,6 +205,10 @@
     canvas.addEventListener('pointermove', (e) => {
       if (!worldPointers.has(e.pointerId)) return;
       e.preventDefault();
+      // CHASE TOUCH: one finger dragged over the game turns the chase camera (chase-camera.js).
+      const was = worldPointers.get(e.pointerId);
+      if (worldPointers.size === 1 && chaseCameraLive() && was)
+        chaseTurn((e.clientX - was.x) * CHASE_LOOK_RATE * 1.6 * lookSensitivity(), (e.clientY - was.y) * CHASE_LOOK_RATE * 1.6 * lookSensitivity() * (settings.invertLook ? -1 : 1));
       worldPointers.set(e.pointerId, {
         x: e.clientX,
         y: e.clientY,
@@ -234,7 +238,9 @@
         if (gameMode !== 'play' || worldSafariGesture) return;
         e.preventDefault();
         const delta = e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? viewportHeight : 1);
-        setWorldZoom(worldZoomTarget * Math.exp(-clamp(delta, -160, 160) * 0.008));
+        // In the chase view the wheel moves the camera along its boom (chase-camera.js).
+        if (chaseCameraLive()) chaseZoom(Math.exp(-clamp(delta, -160, 160) * 0.004));
+        else setWorldZoom(worldZoomTarget * Math.exp(-clamp(delta, -160, 160) * 0.008));
       },
       {
         passive: false,

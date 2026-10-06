@@ -201,6 +201,7 @@
       updateCameraHeight(deltaSeconds);
       // The chase view behind the player (chase-camera.js), when it is the view.
       updateCursorLook(deltaSeconds);
+      updateStickLook(deltaSeconds);
       updateChaseCamera(deltaSeconds);
       recordCameraComfort(deltaSeconds);
     }
