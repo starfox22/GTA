@@ -57,7 +57,8 @@ rendering.md Cameras and view.
 - `updateChaseView` runs in `render()` after `updateFlightView` and before the ride camera, sets
   `camera = chaseCamera` and `chaseViewActive`. `flightViewActive` keeps meaning "in the air".
 - Draw distance `CHASE_DRAW` by tier; the haze (aerial-perspective fog) closes over the far part of
-  it so the far clip is never seen.
+  it so the far clip is never seen. The haze's colour and height falloff, the sky, the clouds from
+  below and the sun glare: rendering-sky.md and rendering-clouds.md.
 - Culling: `viewCenter` / `viewReach` hold the box round the visible wedge; scenery cells and loose
   statics are also tested against the frustum (`chaseCellShown`), keeping cells within
   `CHASE_SHADOW_KEEP` behind the camera, whose buildings shade the street in front of it.

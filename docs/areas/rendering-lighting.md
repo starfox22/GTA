@@ -33,8 +33,9 @@ buildings, ground). Vehicle lights: rendering-vehicle-lights.md.
 
 - Sun and sky (lighting3d.js): `sunDirection` follows the clock; the shadow box is fitted to
   the view and texel-snapped (`placeSun`); the sky is PMREM-filtered into
-  `scene.environment`. Shadows are redrawn every frame when on (kept maps trailed moving
-  objects); with shadows off, contact blobs (CONTACT SHADOWS).
+  `scene.environment` (the sky, the chase view's haze and the sun glare: rendering-sky.md).
+  Shadows are redrawn every frame when on (kept maps trailed moving objects); with shadows
+  off, contact blobs (CONTACT SHADOWS).
 - Time of day: `daylight()` sets the sun's strength; `skyDarkness(light)`
   (lighting3d-look.js: 0 until the last half hour of sun) sets the sky keys, the fill's and
   the sun's colour mix and the NIGHT_LOOK (moon and sky fill, exposure, blue grade). The
