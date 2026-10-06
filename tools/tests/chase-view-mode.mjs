@@ -37,7 +37,10 @@ export default async function (t) {
       await t.call('viewMode', 'street');
       const after = await read();
       t.assert(before.rules === after.rules, 'the street rules read differently after a round trip: ' + before.rules + ' / ' + after.rules);
-      if (before.zoom === after.zoom) t.assert(before.sized === after.sized, 'the street boxes differ after a round trip: ' + before.sized + ' / ' + after.sized);
+      // (Within a pixel and a half: the zoom can ease between the two calls of one read.)
+      const close = (a, b) =>
+        typeof a === 'number' ? Math.abs(a - b) <= 1.5 : a && typeof a === 'object' ? Object.keys(a).every((k) => close(a[k], b?.[k])) : a === b;
+      if (before.zoom === after.zoom) t.assert(close(JSON.parse(before.sized), JSON.parse(after.sized)), 'the street boxes differ after a round trip: ' + before.sized + ' / ' + after.sized);
       else t.note(`the street zoom eased from ${before.zoom} to ${after.zoom} meanwhile: boxes not compared`);
     } finally {
       await t.call('holdSimulation', false);
