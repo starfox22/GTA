@@ -11,23 +11,29 @@ The image pipeline, light, searchlights and the cutaway: rendering-lighting.md.
   tallest roof (`streetCeiling()`); no distance haze on the street.
 - Framing (world-view.js): the player's zoom (`STREET_ZOOM` 2 on foot, one `STREET_ZOOM_STEP`
   (x1.25) out from the old 2.5: a person ~26 px tall at 1280x800, ~34 m of street on screen;
-  not saved) times a CAMERA CONTEXT share for what they are in (car 0.7 = 1.4 at rest, one
-  step wider than the old 1.75; motorbike 0.76, bicycle 0.82, bus/truck/boat 0.6, rides 0.7;
-  aircraft 0.8 = the flight view's 1.6) times the SPEED PULL-BACK `1 / (1 + 0.0045 g)` on the
-  eased speed (`drivingCameraSpeed`, camera-drive.js: a bump, crash or wheelspin never pumps it):
-  1.31 at 50 km/h, 1.08 at 100, 0.92 at 150, 0.80 at 200 by default, no wider than 0.5 of the
-  rest framing. `speedZoom` eases in two first-order stages in the simulation
-  (`updateCameraFraming`; out ~2 s, back in ~4 s, never overshooting); `worldZoom` follows it on
+  not saved) times a CAMERA CONTEXT share for what they are in (car 0.56 = 1.12 at rest, two
+  steps wider than the old 1.75, for motion sickness: the street slides past more slowly;
+  motorbike 0.61, bicycle 0.66, bus/truck/boat 0.48, rides 0.7; aircraft 0.8 = the flight
+  view's 1.6; every vehicle share times `vehicleCameraFactor()`, Settings · Driving · Vehicle
+  camera distance 80-160 %) times the SPEED PULL-BACK `1 / (1 + 0.0025 g)` on the eased speed
+  (`drivingCameraSpeed`, camera-drive.js: a bump, crash or wheelspin never pumps it): 1.08 at
+  50 km/h, 0.97 at 100, 0.87 at 150, 0.79 at 200 by default (a x1.4 swing, not x1.75: a zoom in
+  motion is a looming flow), no wider than 0.5 of the rest framing; with Motion comfort
+  (`motionComfortOn()`, settings.js) a fixed 0.86 at any speed. `speedZoom` eases in two
+  first-order stages in the simulation (`updateCameraFraming`; out ~3 s, at most ~30 %/s, back
+  in ~4 s, never overshooting); `worldZoom` follows it on
   drawn frames. The frame is `clamp(viewportHeight * 0.68, 430, 630) / worldZoom` units tall.
   `cameraView()` reports it. Game rules read the same footprint (`crowdViewHalf`: off-screen
   spawning, with a margin; `screenViewHalf`, exact, for `shooterInView`: enemies fire only from
   on screen). A wider driving view draws more: ~935 draw calls at 93 km/h (1280x800, high) where
-  the old framing drew ~650.
+  the 1.75 framing drew ~650; the 1.12 rest framing (October 6) is wider again at city speeds and
+  the same at top speed.
 - Follow (camera-feel.js, game side): `cameraTarget` is moved by `cameraSpring`, an exact
   critically damped spring (no overshoot, stable at any step), with `cameraVel` its velocity, so
   hand-overs never jerk. In a road vehicle or boat the DRIVING FOLLOW (camera-drive.js): a lead
-  along the smoothed velocity's heading (eased, turning at most ~75°/s; a reversal shrinks it to
-  nothing before it turns), 0.55 s of travel capped at 0.32 of the frame's half height (the car
+  along the smoothed velocity's heading (eased, turning at most ~52°/s: the lead's turn is what
+  swings the view sideways at a corner; a reversal shrinks it to
+  nothing before it turns), 0.55 s of travel capped at 0.25 of the frame's half height (the car
   sits centre-low, road ahead in view), shorter with police on the tail; a firm spring along the
   travel with the vehicle's speed fed forward (no lag) and a soft one across it (a slalom moves
   the car on screen, not the view); the camera's height (`streetCameraAltitude`) is the ground
@@ -37,6 +43,9 @@ The image pipeline, light, searchlights and the cutaway: rendering-lighting.md.
   `kickCamera(heading, units)` drives a spring (`cameraKick`), `shake` a smooth tremor
   (`cameraShakeOffset` at `cameraShakeLevel()`); in a road vehicle kicks are 0.7 as far and
   critically damped, the tremor 0.45 of `shake`. The renderers add both, nothing reads them back.
+  Motion comfort (Settings · Gameplay, `motionComfortOn()`): no kicks or tremor, the driving lead
+  halved and turning at 0.6 of the rate, no aim lean on foot, no flight-camera bank. The street
+  view's pitch is unchanged on purpose: it is orthographic, so tall buildings give no parallax.
   `cameraFeel()`; comfort (view acceleration, jerk, zoom rate in screen heights) is
   `cameraComfort()` (camera-comfort.js) and tools/tests/camera-comfort.mjs holds it down.
 - Air / parachute: a perspective camera (flight-view3d.js) framed like the street view (a

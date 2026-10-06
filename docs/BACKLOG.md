@@ -118,9 +118,11 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - Rain spray and dust were checked only in stills (headless frames are seconds apart); worth a
   look on a real GPU at speed in the rain and on the beach.
 - The comfort camera (camera-drive.js) was tuned from `cameraComfort()` numbers and stills, not
-  felt at 60 fps on a real screen: worth a drive on a real GPU (lead share 0.32, across 1.8). The
-  wider driving view costs draw calls (~935 at 93 km/h vs ~650 before, 1280x800 high); a
-  medium-tier check on a laptop GPU is still to do.
+  felt at 60 fps on a real screen: worth a drive on a real GPU (lead share 0.25, turn 0.9 rad/s,
+  across 1.8). The wider driving view (1.12 at rest since October 6) costs draw calls at city
+  speeds; a medium-tier check on a laptop GPU is still to do. The owner reported motion sickness
+  twice: if it persists, next candidates are a steeper street pitch (a big change: foliage cutaway,
+  trail-tree corridor and HUD clearance all assume STREET_PITCH) and a frame-rate floor.
 
 ## Drive-bys (driveby.js, crowd3d-driveby.js)
 - Only the pistol fires from a vehicle, so the SMG one-hand and two-handed lean-out poses are not

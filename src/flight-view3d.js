@@ -240,7 +240,8 @@
           turnRate = craft && isAircraft(craft) ? craft.av || 0 : 0,
           planeSpeed = craft?.type === 'plane' ? craft.airspeed || 0 : 0;
         flightSpeedWiden += (clamp((planeSpeed - 150) / 600, 0, 0.22) - flightSpeedWiden) * (1 - Math.exp(-deltaSeconds * 0.8));
-        flightBank += (clamp(-turnRate * 0.045, -0.06, 0.06) * widen - flightBank) * (1 - Math.exp(-deltaSeconds * 2.5));
+        // Motion comfort (settings.js) keeps the horizon level: no bank.
+        flightBank += ((motionComfortOn() ? 0 : clamp(-turnRate * 0.045, -0.06, 0.06) * widen) - flightBank) * (1 - Math.exp(-deltaSeconds * 2.5));
         flightDistance = distance;
         flightCamera.fov = fov;
         flightCamera.aspect = aspect;

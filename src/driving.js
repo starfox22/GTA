@@ -36,10 +36,10 @@
      *
      * DRIVING SETTINGS (Settings · Driving, saved under 'dead-end-city-driving'):
      * ABS, stability control, traction control, steering sensitivity, speed units
-     * (hud.js) and the driving camera's look-ahead.
+     * (hud.js), the driving camera's look-ahead and the vehicle camera's distance.
      */
     const DRIVING_STORAGE = 'dead-end-city-driving',
-      DRIVING_DEFAULTS = { abs: true, esc: true, tcs: true, steering: 100, lookAhead: 100 };
+      DRIVING_DEFAULTS = { abs: true, esc: true, tcs: true, steering: 100, lookAhead: 100, cameraDistance: 100 };
     const drivingSettings = { ...DRIVING_DEFAULTS };
     try {
       const saved = JSON.parse(localStorage.getItem(DRIVING_STORAGE));
@@ -47,6 +47,7 @@
         for (const key of ['abs', 'esc', 'tcs']) if (typeof saved[key] === 'boolean') drivingSettings[key] = saved[key];
         if (Number.isFinite(saved.steering)) drivingSettings.steering = clamp(Math.round(saved.steering), 50, 150);
         if (Number.isFinite(saved.lookAhead)) drivingSettings.lookAhead = clamp(Math.round(saved.lookAhead), 0, 150);
+        if (Number.isFinite(saved.cameraDistance)) drivingSettings.cameraDistance = clamp(Math.round(saved.cameraDistance), 80, 160);
       }
     } catch {}
     function saveDrivingSettings() {
@@ -67,12 +68,17 @@
       if (['abs', 'esc', 'tcs'].includes(key)) drivingSettings[key] = !!value;
       else if (key === 'steering') drivingSettings.steering = clamp(Math.round(Number(value) || 100), 50, 150);
       else if (key === 'lookAhead') drivingSettings.lookAhead = clamp(Math.round(Number(value) || 0), 0, 150);
+      else if (key === 'cameraDistance') drivingSettings.cameraDistance = clamp(Math.round(Number(value) || 100), 80, 160);
       else return;
       saveDrivingSettings();
     }
     // The camera's lead ahead of a moving vehicle (game.js), as a factor.
     function drivingLookAhead() {
       return drivingSettings.lookAhead / 100;
+    }
+    // The vehicle camera's distance (world-view.js cameraContextZoom), as a factor on the zoom: 125 % is one zoom step out.
+    function vehicleCameraFactor() {
+      return 100 / drivingSettings.cameraDistance;
     }
 
     /**
@@ -461,6 +467,19 @@
         set: (value) => setDrivingSetting('lookAhead', value),
       },
       {
+        id: 'cameraDistance',
+        kind: 'slider',
+        label: 'Vehicle camera distance',
+        min: 80,
+        max: 160,
+        step: 10,
+        format: (v) => v + '%',
+        note: () =>
+          'How far back the camera stands in a car, on a bike or in a boat. Further back, the street slides past the screen more slowly, which is easier on players who get motion sick. The mouse wheel zooms on top of it.',
+        get: () => drivingSettings.cameraDistance,
+        set: (value) => setDrivingSetting('cameraDistance', value),
+      },
+      {
         id: 'units',
         kind: 'choice',
         label: 'Speed units',
@@ -477,7 +496,7 @@
         id: 'drivingReset',
         kind: 'action',
         label: 'Default driving settings',
-        note: () => 'ABS, stability and traction control on, steering and look-ahead at 100%, km/h.',
+        note: () => 'ABS, stability and traction control on, steering, look-ahead and camera distance at 100%, km/h.',
         button: 'RESET DRIVING TO DEFAULTS',
         disabled: drivingSettingsAreDefault,
         run: () => {

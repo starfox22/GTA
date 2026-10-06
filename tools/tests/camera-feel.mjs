@@ -14,12 +14,12 @@ export default async function (t) {
     t.finite(run, 'cameraFeel at speed');
     t.near(run.leadHeading, 85, 95, 'lead heading on a straight (deg, south = 90)');
     t.assert(run.drive, 'the driving follow is not on in a car: ' + JSON.stringify(run));
-    // 0.55 s of travel or 0.32 of the frame's half height, whichever is less, eased: most of it after a few
+    // 0.55 s of travel or 0.25 of the frame's half height, whichever is less, eased: most of it after a few
     // seconds of steady speed.
     const view = await t.call('cameraView'),
       frameH = Math.min(630, Math.max(430, view.viewport[1] * 0.68)),
       half = frameH / view.framed / 2 / (680 / Math.hypot(680, 560)) / 8,
-      expect = Math.min((pose.kmh / 3.6) * 0.55, half * 0.32);
+      expect = Math.min((pose.kmh / 3.6) * 0.55, half * 0.25);
     t.near(+(run.leadMetres / expect).toFixed(2), 0.8, 1.05, 'lead / its rule (0.55 s, capped by the frame)');
     // A handbrake spin: the lead moves smoothly (the old nose lead swept ~60+ units a tenth).
     let last = run.lead,

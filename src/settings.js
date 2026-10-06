@@ -68,6 +68,8 @@
       playerRing: false,
       // The camera eases back for a spectacle close by (drawbridge.js drawbridgeCameraZoom).
       eventCamera: true,
+      // A steady camera for players who get motion sick (motionComfortOn): see MOTION COMFORT.
+      motionComfort: false,
     };
     let radioMigrated = false;
     try {
@@ -100,6 +102,7 @@
         if (typeof saved.playerOutline === 'boolean') settings.playerOutline = saved.playerOutline;
         if (typeof saved.playerRing === 'boolean') settings.playerRing = saved.playerRing;
         if (typeof saved.eventCamera === 'boolean') settings.eventCamera = saved.eventCamera;
+        if (typeof saved.motionComfort === 'boolean') settings.motionComfort = saved.motionComfort;
         // The title menu's radio (car-radio.js TITLE RADIO), on unless switched off.
         if (typeof saved.titleRadio === 'boolean') titleRadioEnabled = saved.titleRadio;
         if (typeof saved.soundOn === 'boolean') soundOn = saved.soundOn;
@@ -124,6 +127,7 @@
             playerOutline: settings.playerOutline,
             playerRing: settings.playerRing,
             eventCamera: settings.eventCamera,
+            motionComfort: settings.motionComfort,
             titleRadio: titleRadioEnabled,
             soundOn,
             voicesOn,
@@ -164,6 +168,14 @@
     }
     function eventCameraOn() {
       return settings.eventCamera;
+    }
+    /* MOTION COMFORT (Settings · Gameplay): a steadier camera. In a vehicle the framing
+       holds still whatever the speed (world-view.js speedZoomTarget) and the lead is
+       shorter and turns more slowly (camera-drive.js); no camera kicks or tremor
+       (camera-feel.js kickCamera, cameraShakeLevel); on foot the view does not lean
+       toward the aim; the flight camera does not bank (flight-view3d.js). */
+    function motionComfortOn() {
+      return settings.motionComfort;
     }
     function setCharacterCutaway(on) {
       settings.cutaway = !!on;
@@ -326,6 +338,15 @@
           note: () => 'Near a spectacle, such as the drawbridge opening, the camera eases back a little so it all fits on screen. You keep full control.',
           get: () => settings.eventCamera,
           set: (on) => (settings.eventCamera = !!on),
+        },
+        {
+          id: 'motionComfort',
+          kind: 'toggle',
+          label: 'Motion comfort',
+          note: () =>
+            'For players who feel motion sick. The camera holds one zoom in a vehicle whatever the speed, leads less and swings more slowly through turns, never shakes or jolts, does not lean toward your aim on foot and does not bank in flight. Settings · Driving · Vehicle camera distance moves it further back.',
+          get: () => settings.motionComfort,
+          set: (on) => (settings.motionComfort = !!on),
         },
         {
           id: 'minimap',

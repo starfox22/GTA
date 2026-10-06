@@ -244,9 +244,11 @@ packs with plain `<script src>` so the zip still plays from file://.
   must outlive its wreck gets a flag there; a new field holding a vehicle long-term needs clean-up in
   `retireVehicle`. Console `wreckReport()`.
 - The street camera's follow is a critically damped spring (`cameraSpring`, camera-drive.js: smoothed look-ahead
-  that turns at most ~75 deg/s, smoothed camera height); vehicle framing is `CAMERA_CONTEXT` × `speedZoomTarget`
-  (world-view.js). Renderers read only `streetCameraAltitude()` and `cameraShakeLevel()`. Check
-  `cameraComfort()` / tools/tests/camera-comfort.mjs after any camera change.
+  that turns at most ~52 deg/s, smoothed camera height); vehicle framing is `CAMERA_CONTEXT` × `speedZoomTarget`
+  (world-view.js; `vehicleCameraFactor()` is Settings · Driving · Vehicle camera distance). Renderers read only
+  `streetCameraAltitude()` and `cameraShakeLevel()`. `motionComfortOn()` (settings.js MOTION COMFORT) is the one
+  switch for the steady camera (fixed vehicle zoom, short slow lead, no kicks/tremor/aim lean/flight bank): a new
+  camera motion checks it. Check `cameraComfort()` / tools/tests/camera-comfort.mjs after any camera change.
 - `carStainSeverity(kph, fatal)` (car-stains.js) is the only rule for how much bonnet blood a hit leaves (none under
   14 km/h); further hits add to a car's 3 stain records (`adds`, painted by `cbTopUpJob`), never replace one.
 - Military mounted guns the player fires (LAV-8 25 mm + coax, gun jeep M2, Black Hawk door guns) live in

@@ -24,18 +24,20 @@
     /* CAMERA CONTEXT: the share of the player's zoom the camera frames at for
        what the player is in, so entering a car pulls the view back over a
        couple of seconds and stepping out brings it in again (both eased with
-       the speed framing in updateCameraFraming). A car at rest frames at 0.7
-       of the on-foot zoom (1.4 by default: one zoom step further out than the
-       old 1.75, so more of the road ahead is in view); motorbikes, bicycles,
-       long vehicles, boats and rides moved out by the same step, so they keep
-       their proportions; aircraft keep the framing the flight view was tuned
-       at (1.6 by default), the parachute its own. */
+       the speed framing in updateCameraFraming). A car at rest frames at 0.56
+       of the on-foot zoom (1.12 by default: two zoom steps further out than the
+       old 1.75, so the street flows past the screen more slowly, which is what
+       eases motion sickness, and more of the road ahead is in view); motorbikes,
+       bicycles, long vehicles and boats keep their proportions to it. Settings ·
+       Driving · Vehicle camera distance is a factor on every vehicle's share
+       (vehicleCameraFactor, driving.js). Rides keep 0.7; aircraft keep the
+       framing the flight view was tuned at (1.6 by default), the parachute its own. */
     const CAMERA_CONTEXT = {
-      car: 0.7,
-      bike: 0.76,
-      bicycle: 0.82,
-      long: 0.6,
-      boat: 0.6,
+      car: 0.56,
+      bike: 0.61,
+      bicycle: 0.66,
+      long: 0.48,
+      boat: 0.48,
       air: 1.6 / STREET_ZOOM,
       ride: 0.7,
       parachute: 0.78 * STREET_ZOOM_STEP,
@@ -47,11 +49,12 @@
       if (c) {
         const spec = vehicleSpec(c);
         if (isAircraft(c)) return CAMERA_CONTEXT.air;
-        if (spec.boat || spec.jetski) return CAMERA_CONTEXT.boat;
-        if (spec.bicycle) return CAMERA_CONTEXT.bicycle;
-        if (spec.bike) return CAMERA_CONTEXT.bike;
-        if (spec.truck || spec.tank || spec.l > 7 * UNITS_PER_METRE) return CAMERA_CONTEXT.long;
-        return CAMERA_CONTEXT.car;
+        const far = vehicleCameraFactor();
+        if (spec.boat || spec.jetski) return CAMERA_CONTEXT.boat * far;
+        if (spec.bicycle) return CAMERA_CONTEXT.bicycle * far;
+        if (spec.bike) return CAMERA_CONTEXT.bike * far;
+        if (spec.truck || spec.tank || spec.l > 7 * UNITS_PER_METRE) return CAMERA_CONTEXT.long * far;
+        return CAMERA_CONTEXT.car * far;
       }
       if (player.parachute) return CAMERA_CONTEXT.parachute;
       if (transitRide || taxiRide || player.coaster) return CAMERA_CONTEXT.ride;
@@ -98,9 +101,10 @@
        updateCameraFollow, so console simulate() advances it too), in two
        first-order stages: the zoom's rate starts and stops smoothly and never
        overshoots. Out (a wider view) at FRAMING_OUT, back in at FRAMING_IN:
-       boarding a car settles in about two seconds, stepping out in about
-       four; a garage's show and a carjack at FRAMING_QUICK. */
-    const FRAMING_OUT = 2.2,
+       boarding a car settles in about three seconds (the zoom never faster
+       than ~30 % a second: a quick zoom is a looming flow), stepping out in
+       about four; a garage's show and a carjack at FRAMING_QUICK. */
+    const FRAMING_OUT = 1.5,
       FRAMING_IN = 0.9,
       FRAMING_QUICK = 5;
     function updateCameraFraming(deltaSeconds) {
@@ -113,26 +117,30 @@
       if (!(speedZoom > 0)) speedZoom = framingStage = 1;
     }
     /* SPEED PULL-BACK. At real speeds a car covers the street view in a few
-       seconds, so the view widens with speed, and keeps widening: the factor
-       on the vehicle's framing at rest is 1 / (1 + DRIVE_PULL * g), g the km/h
-       over DRIVE_PULL_FROM with a soft start over the first DRIVE_PULL_SOFT:
-       about 0.94 at 50 km/h, 0.77 at 100, 0.66 at 150 and 0.57 at 200 (no wider
-       than DRIVE_PULL_LIMIT). By default (1.4 at rest) that is 1.31, 1.08, 0.92
-       and 0.80 (the old camera: 1.75, 1.43, 1.14, 0.82), so the road ahead
-       stays readable at highway speeds and top speed costs the renderer no
-       more than it did. It reads the
-       eased speed (camera-drive.js drivingCameraSpeed), so a bump, a crash or
-       wheelspin never pumps it; boats too, aircraft have their own flight
-       view. A player who zoomed out keeps the proportional pull-back.
-       `context` is the vehicle's share of the player's zoom
+       seconds, so the view widens with speed: the factor on the vehicle's
+       framing at rest is 1 / (1 + DRIVE_PULL * g), g the km/h over
+       DRIVE_PULL_FROM with a soft start over the first DRIVE_PULL_SOFT: about
+       0.96 at 50 km/h, 0.86 at 100, 0.78 at 150 and 0.71 at 200 (no wider than
+       DRIVE_PULL_LIMIT). By default (1.12 at rest) that is 1.08, 0.97, 0.87 and
+       0.79: the old curve's top-speed width (0.80) reached from a wider start, so
+       the zoom swings through a smaller range (x1.4, not x1.75) as the speed
+       changes; a zoom in motion is a looming flow, a strong cue for motion
+       sickness. It reads the eased speed (camera-drive.js drivingCameraSpeed), so
+       a bump, a crash or wheelspin never pumps it; boats too, aircraft have their
+       own flight view. With Motion comfort on (motionComfortOn, settings.js) the
+       framing never follows the speed: it holds MOTION_COMFORT_FRAMING (the
+       default curve's 100 km/h). A player who zoomed out keeps the proportional
+       pull-back. `context` is the vehicle's share of the player's zoom
        (cameraContextZoom); returns a factor on top of it. */
-    const DRIVE_PULL = 0.0045,
+    const DRIVE_PULL = 0.0025,
       DRIVE_PULL_FROM = 20,
       DRIVE_PULL_SOFT = 30,
-      DRIVE_PULL_LIMIT = 0.5;
+      DRIVE_PULL_LIMIT = 0.5,
+      MOTION_COMFORT_FRAMING = 0.86;
     function speedZoomTarget(context = 1) {
       const c = player.car;
       if (!c || isAircraft(c)) return 1;
+      if (motionComfortOn()) return MOTION_COMFORT_FRAMING;
       const over = Math.max(0, drivingCameraSpeed() / KMH - DRIVE_PULL_FROM),
         g = over < DRIVE_PULL_SOFT ? (over * over) / (2 * DRIVE_PULL_SOFT) : over - DRIVE_PULL_SOFT / 2;
       return Math.max(DRIVE_PULL_LIMIT, 1 / (1 + DRIVE_PULL * g));
@@ -166,6 +174,9 @@
         viewport: [viewportWidth, viewportHeight],
         viewMetres: +worldMeters(viewH).toFixed(1),
         personPx: Math.round((standing * viewportHeight) / viewH),
+        // Settings: Motion comfort (settings.js) and Vehicle camera distance (driving.js, %).
+        motionComfort: motionComfortOn(),
+        vehicleDistance: drivingSettings.cameraDistance,
         // How the view has moved over the last few seconds (camera-comfort.js).
         comfort: cameraComfortReport(),
       };

@@ -26,6 +26,10 @@
      *   height        the vehicle's ground height, its rate of climb smoothed and fed
      *                 forward (no lag up a long grade), a critically damped spring
      *                 (`height`) over the kinks and crests; jumps over heightSnap snap
+     *   turns         the lead is what swings the view sideways at a corner (its
+     *                 length times its turn rate on top of the car's own path), so it
+     *                 is a quarter of the half frame and turns at 0.9 rad/s at most;
+     *                 Motion comfort (settings.js) halves it and turns it at 0.55
      *   speed         the speed the framing reads (world-view.js speedZoomTarget),
      *                 eased up at speedUp and down at speedDown, so a bump, a crash or
      *                 wheelspin never pumps the zoom
@@ -35,11 +39,14 @@
     const CAMERA_DRIVE = {
       velocityRate: 3,
       leadSeconds: 0.55,
-      leadShare: 0.32,
+      leadShare: 0.25,
       leadBack: 60,
       leadMinSpeed: 12,
-      leadHeadRate: 2.5,
-      leadTurnMax: 1.3,
+      leadHeadRate: 2,
+      leadTurnMax: 0.9,
+      // Motion comfort (settings.js motionComfortOn): the lead's length and turn rate scaled by these.
+      steadyLead: 0.5,
+      steadyTurn: 0.6,
       leadFlip: 2.1,
       leadLengthRate: 2.2,
       along: 3,
@@ -98,8 +105,10 @@
       D.v1y += (rvy - D.v1y) * kv;
       D.vx += (D.v1x - D.vx) * kv;
       D.vy += (D.v1y - D.vy) * kv;
-      const sv = Math.hypot(D.vx, D.vy),
-        scale = drivingLookAhead();
+      const steady = motionComfortOn(),
+        sv = Math.hypot(D.vx, D.vy),
+        scale = drivingLookAhead() * (steady ? K.steadyLead : 1),
+        turnMax = K.leadTurnMax * (steady ? K.steadyTurn : 1);
       let want = 0;
       if (scale && sv > K.leadMinSpeed) {
         const forward = D.vx * Math.cos(c.a) + D.vy * Math.sin(c.a) >= 0,
@@ -117,7 +126,7 @@
             turn = 0;
           }
         }
-        D.h += clamp(turn * (1 - Math.exp(-dt * K.leadHeadRate)), -K.leadTurnMax * dt, K.leadTurnMax * dt);
+        D.h += clamp(turn * (1 - Math.exp(-dt * K.leadHeadRate)), -turnMax * dt, turnMax * dt);
       }
       const kl = 1 - Math.exp(-dt * K.leadLengthRate);
       D.len1 += (want - D.len1) * kl;

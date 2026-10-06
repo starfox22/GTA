@@ -1,13 +1,13 @@
 // Driving camera comfort (camera-drive.js follow, world-view.js framing, camera-comfort.js metric): boarding
-// frames one step wider (1.4), the pull-back keeps widening with speed and eases without pumping, and the
+// frames two steps wider than the old 1.75 (1.12), the pull-back keeps widening with speed and eases without pumping, and the
 // view's acceleration, jerk and zoom rate stay low through a slalom, hard braking, a turn and a rough county
-// drive; a blast jolts the view less in a car than on foot. All numbers are noted first, then checked.
+// drive; a blast jolts the view less in a car than on foot, and not at all with Motion comfort on. All numbers are noted first, then checked.
 export const fresh = true;
 const SPOT = { x: 420, y: 4400 }; // the airport's open ground, heading south down the runway
 const pull = (kmh) => {
   const over = Math.max(0, kmh - 20),
     g = over < 30 ? (over * over) / 60 : over - 15;
-  return Math.max(0.5, 1 / (1 + 0.0045 * g));
+  return Math.max(0.5, 1 / (1 + 0.0025 * g));
 };
 export default async function (t) {
   await t.call('holdSimulation', true);
@@ -23,7 +23,7 @@ export default async function (t) {
     return v;
   };
   try {
-    // Boarding a sports car at rest: the view eases out to 0.7 of the on-foot zoom.
+    // Boarding a sports car at rest: the view eases out to 0.56 of the on-foot zoom.
     await t.call('teleport', SPOT.x, SPOT.y);
     await t.call('setZoom', 2);
     await t.wait(1.5);
@@ -75,17 +75,25 @@ export default async function (t) {
     await t.call('blast', SPOT.x + 460, SPOT.y, 1);
     await t.wait(1);
     const inCar = (await t.call('cameraView')).comfort;
-    t.note(`blast jolt: on foot ${onFoot.jolt}, in a car ${inCar.jolt}`);
+    // Motion comfort: no jolt at all.
+    await t.call('settings', { motionComfort: true });
+    await t.wait(4.5);
+    await t.call('blast', SPOT.x + 460, SPOT.y, 1);
+    await t.wait(1);
+    const steady = (await t.call('cameraView')).comfort;
+    await t.call('settings', { motionComfort: false });
+    t.note(`blast jolt: on foot ${onFoot.jolt}, in a car ${inCar.jolt}, motion comfort ${steady.jolt}`);
 
-    // Framing: one zoom step wider than the old 1.75 at rest; the pull-back follows its curve and is
+    // Framing: two zoom steps wider than the old 1.75 at rest; the pull-back follows its curve and is
     // well wider than the old camera's at highway speed.
-    t.near(parked.context, 0.7, 0.7, 'car context');
-    t.near(parked.framed, 1.36, 1.44, 'car at rest framed (zoom)');
+    t.near(parked.context, 0.56, 0.56, 'car context');
+    // Three seconds after boarding: still settling the last few per cent.
+    t.near(parked.framed, 1.1, 1.19, 'car at rest framed (zoom), 3 s after boarding');
     t.assert(cruise.kmh >= 95, `cruise too slow for the highway check: ${cruise.kmh} km/h`);
     t.near(cruise.speed, pull(cruise.kmh) - 0.01, pull(cruise.kmh) + 0.01, `pull-back at ${cruise.kmh} km/h`);
     // The old camera held 1.37 at 110 km/h (0.78 of its 1.75 at rest).
-    t.assert(cruise.framed <= 1.15, `the view at ${cruise.kmh} km/h is not wider than before: framed ${cruise.framed}`);
-    t.assert(slalom.framed < 1.15, `the view at ~100 km/h is not wide: framed ${slalom.framed}`);
+    t.assert(cruise.framed <= 1.02, `the view at ${cruise.kmh} km/h is not wider than before: framed ${cruise.framed}`);
+    t.assert(slalom.framed < 1.02, `the view at ~100 km/h is not wide: framed ${slalom.framed}`);
     // Comfort (screen heights per s^2 and s^3, zoom % per s). The old follow measured: slalom accel rms 0.27,
     // jerk rms 1.5, peak 2.4; braking accel rms 0.31, jerk rms 0.8; rough ground jerk peak 3-22.
     const below = (label, path, limit) => {
@@ -108,8 +116,10 @@ export default async function (t) {
     below('rough', 'jerk.peak', 2.5);
     // In the slalom the car weaves on screen rather than the whole view swaying with it.
     t.assert(m.slalom.drift.swing > 0.03, `the car did not weave on screen: ${JSON.stringify(m.slalom.drift)}`);
+    t.assert(steady.jolt === 0, 'a blast jolts the view with motion comfort on: ' + steady.jolt);
     t.assert(inCar.jolt <= onFoot.jolt * 0.65 + 1e-4, `a blast jolts the car's view as much as on foot: ${inCar.jolt} vs ${onFoot.jolt}`);
   } finally {
+    await t.call('settings', { motionComfort: false });
     await t.call('god', false);
     await t.call('holdSimulation', false);
   }

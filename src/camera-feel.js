@@ -25,6 +25,8 @@
      * jitter at low frame rates; in a road vehicle at CAMERA_SHAKE_VEHICLE of `shake`
      * (cameraShakeLevel). The renderer (render3d-frame.js) and the 2D view add
      * cameraKick and the tremor to the camera; nothing in the game reads them.
+     * MOTION COMFORT (settings.js motionComfortOn): no kicks and no tremor, and on
+     * foot no lean toward the aim.
      */
     const CAMERA_LEAD_SECONDS = 0.45,
       CAMERA_LEAD_AHEAD = 300,
@@ -53,7 +55,7 @@
       cameraShakeOut = { x: 0, y: 0 };
     /* Push the view along map heading `angle`, peaking about `amount` units out. */
     function kickCamera(angle, amount) {
-      if (!(amount > 0) || !Number.isFinite(angle)) return;
+      if (!(amount > 0) || !Number.isFinite(angle) || motionComfortOn()) return;
       const v = Math.min(amount, CAMERA_KICK_MAX) * CAMERA_KICK_IMPULSE * (cameraInRoadVehicle() ? CAMERA_KICK_VEHICLE : 1);
       cameraKick.vx += Math.cos(angle) * v;
       cameraKick.vy += Math.sin(angle) * v;
@@ -157,7 +159,7 @@
       // middle of the screen, so the view does not chase the cursor), or along the
       // aim with the keyboard or the touch stick.
       const w = currentWeapon();
-      if (!w.melee && (touchAim !== null || playerInFight()) && !player.swimming && !player.carjack) {
+      if (!w.melee && !motionComfortOn() && (touchAim !== null || playerInFight()) && !player.swimming && !player.carjack) {
         let ax = 0,
           ay = 0;
         if (touchAim === null && mouse.active) {
@@ -253,6 +255,7 @@
     /* The tremor's amount the renderers draw (cameraShakeOffset): in a road vehicle
        CAMERA_SHAKE_VEHICLE of it, so a kerb, a trail or a crash rumbles without blurring the road. */
     function cameraShakeLevel() {
+      if (motionComfortOn()) return 0;
       return cameraInRoadVehicle() ? shake * CAMERA_SHAKE_VEHICLE : shake;
     }
     /* DeadEndCity.cameraFeel(): the lead (units and metres), where the view stands

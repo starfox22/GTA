@@ -41,6 +41,9 @@ navigation.js (big map, GPS), cycles.js (bike share), src/shell.html + src/ui/* 
 - While open, `gameMode` is `'settings'` and every key goes to `settingsKeyDown()`.
 - Renderer-owned switches go through the renderer (`city3D.setCharacterCutaway(on)`); values
   the renderer polls (player outline, player ring) are read every frame from `settings`.
+- Gameplay · Motion comfort (`settings.motionComfort`, `motionComfortOn()`): the steady camera (settings.js
+  MOTION COMFORT); Driving · Vehicle camera distance (`drivingSettings.cameraDistance`, 80-160 %,
+  `vehicleCameraFactor()`): a factor on every vehicle's framing. Both are read live by the camera.
 - Graphics · Ring under your character (`settings.playerRing`, `playerRingOn()`): off by
   default, also for saves that predate it; drives the 3D `playerRing` and the 2D fallback's
   circle under the player. Objectives have no ring at all (markers.js): the floating arrow only.

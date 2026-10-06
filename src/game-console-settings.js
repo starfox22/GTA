@@ -13,6 +13,7 @@
           if (typeof changes.cutaway === 'boolean') setCharacterCutaway(changes.cutaway);
           if (typeof changes.playerOutline === 'boolean') settings.playerOutline = changes.playerOutline;
           if (typeof changes.playerRing === 'boolean') settings.playerRing = changes.playerRing;
+          if (typeof changes.motionComfort === 'boolean') settings.motionComfort = changes.motionComfort;
           // 'auto', 'off', 'low' or 'high' (quality.js SHADOWS).
           if (typeof changes.shadows === 'string') setShadowSetting(changes.shadows.toLowerCase());
           if (typeof changes.sound === 'boolean' && changes.sound !== soundOn) mute();
@@ -29,9 +30,9 @@
           if (typeof changes.footSpeed === 'boolean') setFootSpeed(changes.footSpeed);
           if (Number.isFinite(changes.minimapZoom)) setMinimapZoom(changes.minimapZoom);
           // Settings · Driving (driving.js): abs, esc, tcs (booleans), steering
-          // (50-150 %), lookAhead (0-150 %); drivingReset: true restores them.
+          // (50-150 %), lookAhead (0-150 %), cameraDistance (80-160 %); drivingReset: true restores them.
           for (const key of ['abs', 'esc', 'tcs']) if (typeof changes[key] === 'boolean') setDrivingSetting(key, changes[key]);
-          for (const key of ['steering', 'lookAhead']) if (Number.isFinite(changes[key])) setDrivingSetting(key, changes[key]);
+          for (const key of ['steering', 'lookAhead', 'cameraDistance']) if (Number.isFinite(changes[key])) setDrivingSetting(key, changes[key]);
           if (changes.drivingReset === true) resetDrivingSettings();
           if (typeof changes.touch === 'string') setTouchMode(changes.touch);
           applyVolumes();
@@ -47,6 +48,7 @@
           cutaway: settings.cutaway,
           playerOutline: settings.playerOutline,
           playerRing: settings.playerRing,
+          motionComfort: settings.motionComfort,
           sound: soundOn,
           // The volume sliders (settings.js AUDIO_VOLUMES): masterVolume,
           // radioVolume, engineVolume, soundVolume (effects), voiceVolume,
@@ -66,6 +68,7 @@
           tcs: drivingSettings.tcs,
           steering: drivingSettings.steering,
           lookAhead: drivingSettings.lookAhead,
+          cameraDistance: drivingSettings.cameraDistance,
           gpsRoute: gpsRoute.points.length,
           touch: touchMode,
           screen: gameMode === 'settings' ? settingsTab : null,
