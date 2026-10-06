@@ -181,4 +181,6 @@
     // GOD PANEL: godPanel(), godTeleport(x, y), godRefill(), godLosePolice(), godFreeze(on), mapScreenPoint(x, y) (god-panel.js).
     addConsoleMethods('godPanel', godPanelConsole());
     addConsoleMethods('godPanel', godSplashConsole());
+    // VIEW RULES: viewRules(x, y, margin) (chase-rules.js: what the rules that depend on the view say).
+    addConsoleMethods('core', chaseRulesConsole());
     // END SUBSYSTEM: src/game-console-core.js

@@ -4,7 +4,8 @@
      * ever and cost physics time (a 30-minute rampage: 283 -> 353 vehicles, 5.5 -> 8.2 ms a frame). Once a
      * second a pass looks at the vehicles that are WRECKS (hp 0) or ABANDONED (the player drove it, nobody is in
      * it, it is not driven by an AI) and removes the ones nobody will miss. A candidate is never touched while it
-     * is on screen (the camera footprint plus WRECK_LIMITS.viewMargin) or within WRECK_LIMITS.safeDistance of the
+     * is on screen (the camera footprint plus WRECK_LIMITS.viewMargin; in the chase view the chase camera's frustum
+     * grown by it, CHASE_WRECK_REACH deep: chase-rules.js) or within WRECK_LIMITS.safeDistance of the
      * player, and never when it is protected: the player's own car, a mission car, an intact owned car, a car in
      * a garage job, a taxi or ride, a police crew's, anything a person is still using. The rest leave when they
      * have gone unseen for their timeout, and the hard caps (all of the kind, protected and seen included)
@@ -98,7 +99,10 @@
         flying = isAircraft(player.car) || !!player.parachute,
         safe = flying ? WRECK_LIMITS.safeDistance * 2.2 : WRECK_LIMITS.safeDistance,
         mx = view.w + WRECK_LIMITS.viewMargin,
-        my = view.h + WRECK_LIMITS.viewMargin;
+        my = view.h + WRECK_LIMITS.viewMargin,
+        // The chase view: the chase camera's frustum, the margin a world radius, twice the sight reach deep
+        // (a wreck is big and burns; chase-rules.js).
+        chase = chaseCameraLive();
       let wrecks = 0,
         abandoned = 0,
         shielded = 0,
@@ -120,7 +124,10 @@
           c.retireBorn = c.retireSeen = now;
           continue;
         }
-        if (hypot2(c.x - player.x, c.y - player.y) < safe || (Math.abs(c.x - cameraTarget.x) < mx && Math.abs(c.y - cameraTarget.y) < my)) {
+        if (
+          hypot2(c.x - player.x, c.y - player.y) < safe ||
+          (chase ? chaseInView(c.x, c.y, WRECK_LIMITS.viewMargin, CHASE_WRECK_REACH) : Math.abs(c.x - cameraTarget.x) < mx && Math.abs(c.y - cameraTarget.y) < my)
+        ) {
           seen++;
           c.retireSeen = now;
           continue;

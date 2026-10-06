@@ -272,8 +272,10 @@
         if (roadblockAt(site)) continue;
         const d = distanceBetween(site, target);
         if (d < 430 || d > 2200) continue;
-        // Never build one the runner can watch being built.
+        // Never build one the runner can watch being built (the chase view sees 200 m down a street: there
+        // the site must also be out of its sight, chase-rules.js).
         if (d < 950 && clearSight(site, target)) continue;
+        if (chaseCameraLive() && !spotUnseen(site.x, site.y, 100, SPOT_CAR)) continue;
         if (roadblocks.some((r) => distanceBetween(r, site) < 700)) continue;
         const ahead = Math.cos(normalizeAngle(headingBetween(target, site) - heading)),
           score = ahead * 1.7 + (site.bridge ? 1.5 : 0) + 1 - d / 2300;

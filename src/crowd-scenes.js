@@ -123,7 +123,7 @@
       const options = streetFrontages().filter((door) => {
         const d = distanceBetween(door, player);
         if (d < (allowInView ? 60 : minD) || d > maxD) return false;
-        if (!allowInView && crowdInView(door.x, door.y, 80)) return false;
+        if (!allowInView && !spotUnseen(door.x, door.y, 80, SPOT_PERSON)) return false;
         return !crowd.scenes.some((s) => distanceBetween(s, door) < 150);
       });
       if (!options.length) return null;

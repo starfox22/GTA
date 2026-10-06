@@ -47,19 +47,27 @@
         inCityGrid(p.x, p.y)
       );
     }
+    /* Where the crowd is counted and spawned round: the player, or in the chase view the player leaned toward
+       the camera's heading, so the street ahead fills (chase-rules.js CHASE RULES, LEAN). */
+    const crowdCentreAt = { x: 0, y: 0 };
+    function crowdStreamCentre() {
+      return chaseCameraLive() ? chaseStreamCentre(crowdCentreAt, CROWD_RING * CHASE_CROWD_LEAN) : player;
+    }
     function crowdSpawnSpot(allowInView = false) {
+      const centre = crowdStreamCentre();
       for (let attempt = 0; attempt < 30; attempt++) {
         const vertical = seededRandom() < 0.5,
           road = vertical
-            ? roadNear(player.x + randomBetween(-CROWD_RING, CROWD_RING))
-            : rowNear(player.y + randomBetween(-CROWD_RING, CROWD_RING)),
+            ? roadNear(centre.x + randomBetween(-CROWD_RING, CROWD_RING))
+            : rowNear(centre.y + randomBetween(-CROWD_RING, CROWD_RING)),
           along = vertical
-            ? player.y + randomBetween(-CROWD_RING, CROWD_RING)
-            : player.x + randomBetween(-CROWD_RING, CROWD_RING),
+            ? centre.y + randomBetween(-CROWD_RING, CROWD_RING)
+            : centre.x + randomBetween(-CROWD_RING, CROWD_RING),
           off = sidewalkOffset(road, vertical) * randomChoice([-1, 1]) + randomBetween(-6, 6),
           x = vertical ? road + off : along,
           y = vertical ? along : road + off;
-        if (!inCityGrid(x, y) || (!allowInView && crowdInView(x, y, 70))) continue;
+        // Out of sight (in the chase view also hidden behind a building: spotUnseen).
+        if (!inCityGrid(x, y) || (!allowInView && !spotUnseen(x, y, 70, SPOT_PERSON))) continue;
         if (crowdOnRoad(x, y) || solid(x, y, 5) || inHarbor(x, y, 8) || !landAt(x, y)) continue;
         if (!(vertical ? cityStreetAt(road, y) : cityStreetAt(x, road))) continue;
         let crowded = false;
@@ -152,7 +160,8 @@
         crowd.settledAt === null || Math.hypot(player.x - crowd.settledAt.x, player.y - crowd.settledAt.y) > 2600;
       const target = Math.round(CROWD_STREET_TARGET * crowd.tempo.out * bustle),
         followers = new Map(),
-        far = [];
+        far = [],
+        centre = crowdStreamCentre();
       let near = 0;
       for (const p of pedestrians)
         if (p.leader && p.hp > 0) {
@@ -161,8 +170,8 @@
         }
       for (const p of pedestrians) {
         if (p.leader || !streamableWalker(p)) continue;
-        const dx = Math.abs(p.x - player.x),
-          dy = Math.abs(p.y - player.y);
+        const dx = Math.abs(p.x - centre.x),
+          dy = Math.abs(p.y - centre.y);
         if (dx < CROWD_RING + 150 && dy < CROWD_RING + 150) near += 1 + (followers.get(p)?.length || 0);
         else if (!crowdInView(p.x, p.y, 100)) far.push(p);
       }
