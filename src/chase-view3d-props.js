@@ -27,8 +27,10 @@
       // three frames running is moving and is left alone from then on (always drawn and casting).
       function chasePoolList() {
         const list = [],
+          // (Vehicle models come and go with the traffic: never theirs.)
+          vehicleGroups = new Set([...carModels.values()].map((m) => m.group)),
           visit = (o) => {
-            if (o.userData.cellContainer || o === farScenery || o.userData.dynamic) return;
+            if (o.userData.cellContainer || o === farScenery || o.userData.dynamic || vehicleGroups.has(o)) return;
             if (o.isInstancedMesh && o.count > 0)
               list.push({ mesh: o, mask: o.layers.mask, drawn: true, moving: false, writes: 0, version: -1, count: -1, m0: 0, m2: 0, m12: 0, m14: 0, x0: 0, x1: 0, z0: 0, z1: 0, y0: 0, top: 0 });
             for (let i = 0; i < o.children.length; i++) visit(o.children[i]);
@@ -177,7 +179,7 @@
           y = chaseCam.z;
         for (let i = 0; i < chasePools.length; i++) {
           const pool = chasePools[i];
-          if (pool.moving || !pool.mesh.visible) continue;
+          if (pool.moving || !pool.mesh.visible || !pool.mesh.parent) continue;
           chasePoolBounds(pool);
           if (pool.moving) {
             if (!pool.drawn) pool.mesh.layers.mask = pool.mask;

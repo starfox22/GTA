@@ -132,8 +132,9 @@
           if (far) {
             farCount++;
             if (d < reach) {
-              chaseSphere.center.set(cell.minX + half, Math.max(y, cell.top * 0.5), cell.minZ + half);
-              chaseSphere.radius = half * 1.42 + Math.max(0, cell.top);
+              // The cell from the ground to its highest point.
+              chaseSphere.center.set(cell.minX + half, Math.max(0, cell.top) * 0.5, cell.minZ + half);
+              chaseSphere.radius = half * 1.42 + Math.max(0, cell.top) * 0.5 + 40;
               shown = viewFrustum.intersectsSphere(chaseSphere);
             }
           }
