@@ -1,6 +1,7 @@
 // shooterInView in the chase view (combat-rules.js ON-SCREEN RULE, chase-rules.js FIRE): someone standing on the
-// street in front of the camera may fire at the player; behind the camera, off to the side, beyond the fire reach
-// or behind a building (the Old Quarter block east of the start) they may not. The street view's rule is the
+// street in front of the camera may fire at the player, and so may someone close behind (CLOSE QUARTERS); further
+// behind the camera, off to the side, beyond the fire reach or behind a building (the Old Quarter block east of the
+// start) they may not. The street view's rule is the
 // camera footprint round cameraTarget as before.
 export default async function (t) {
   const at = async (x, y) => (await t.call('viewRules', x, y)).point;
@@ -14,6 +15,9 @@ export default async function (t) {
     t.assert(p.sees && !p.hiddenFromCamera && p.shooter && p.shooterInset, 'a gunman 50 m ahead on the street may not fire: ' + JSON.stringify(p));
     p = await at(348, 584); // 50 m behind
     t.assert(p.screen.behind && !p.shooter, 'a gunman behind the camera may fire: ' + JSON.stringify(p));
+    // CLOSE QUARTERS: 15 m behind the player on foot may fire from off screen (the street view's frame allows it).
+    p = await at(748 - 120, 584);
+    t.assert(p.screen.behind && p.shooter, 'a gunman 15 m behind the player may not fire (close quarters): ' + JSON.stringify(p));
     p = await at(748, 984); // 50 m to the south of the player, far off the frustum's side
     t.assert(!p.sees && !p.shooter, 'a gunman off to the side may fire: ' + JSON.stringify(p));
     p = await at(748 + 1500, 584); // ~190 m ahead: on screen, beyond the 150 m fire reach

@@ -407,7 +407,8 @@
       const el = getElement('damageArc'),
         from = b.owner || { x: b.x - (b.vx || 0), y: b.y - (b.vy || 0) };
       if (!el) return;
-      const a = headingBetween(player, from);
+      // Up the screen is north in the street view, the way the camera looks in the chase view.
+      const a = headingBetween(player, from) - (chaseCameraLive() ? chaseCam.viewYaw + Math.PI / 2 : 0);
       el.style.transform = 'translate(-50%, -50%) rotate(' + ((a * 180) / Math.PI + 90).toFixed(1) + 'deg)';
       // Restart the flash without forcing a layout (`void el.offsetWidth` made the browser
       // lay the whole HUD out on every hit): an animation restarts when its name changes, so

@@ -51,3 +51,24 @@ body.chase-locked #scene,
 body.chase-locked #game {
   cursor: none;
 }
+/* The chase view (chase-hud.js puts body.chase-view on): the player stands low in the middle of the
+   frame, where the mission card and its key strip sat, so they move to the left, standing on the
+   minimap (the notices keep the top left, the waypoint pill, the prompt and the dispatch caption the
+   top middle, the police panel, the car radio and the equipment the right). Touch mode has its own
+   top layout. */
+body.chase-view:not(.touch-mode) .bottom-middle {
+  position: fixed;
+  left: var(--hud-edge);
+  bottom: 172px;
+  width: min(280px, 27vw);
+  flex: none;
+  align-items: flex-start;
+}
+/* The prompt docks under the waypoint pill in the chase view (the player fills the middle): the
+   dispatch caption goes under it. */
+body.chase-view:not(.touch-mode) #radioCaption {
+  top: 154px;
+}
+body.chase-view:not(.touch-mode) #equipment {
+  margin-left: auto;
+}
