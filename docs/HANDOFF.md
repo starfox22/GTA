@@ -9,13 +9,12 @@ rules, workflow), then this page, then only the area doc your task needs (`docs/
   Version 0.9.0 is the **public demo**: free roam over the whole map plus story missions 1 (the harbour
   job) and 2 (the Blue Hour hotel hit). Missions 3+ are gated for regular players (`DEMO_BUILD`,
   `demoLocked()`; god mode lifts the gates). Bug passes and polish target free roam and missions 1-2 only.
-- **Branches**: `claude/tender-babbage-3t74xl` is the working branch of the latest round (October 4; before it
-  `claude/stoic-newton-qvpewc`); `main` is the owner's approved game and is fast-forwarded only when the owner
-  approves (it was not moved in the latest round). Never push `main` without the owner's explicit approval in
-  the current conversation (the owner has given it for specific releases: ask each time unless they say
-  "push to main when done").
+- **Branches**: `main` is the owner's approved game. On October 6 the owner approved moving the working
+  branch `claude/tender-babbage-3t74xl` (rounds of October 4-6) to `main`, so both held the same commit then.
+  A new session develops on its own working branch and fast-forwards `main` only when the owner approves in the
+  current conversation (never assume it; the approval covers that one push).
 - **Published build**: the claude.ai artifact https://claude.ai/artifact/NtDPAmpmNsgU8LPW4hH13B (split build:
-  `index.html` + `media/`; version 47 is the latest round). Version numbers on that link are the artifact's own
+  `index.html` + `media/`; version 53 is the latest round, the build that went to `main` on October 6). Version numbers on that link are the artifact's own
   counter, not `GAME_VERSION`.
   The downloadable zip is built by CI for whatever branch is pushed.
 - **Tests**: `node tools/test.mjs` runs the whole regression suite (about 105 tests, ~30 minutes on the 4-core
@@ -57,7 +56,7 @@ rules, workflow), then this page, then only the area doc your task needs (`docs/
    `node tools/media-check.mjs dist/publish/index.html` (9 tracks, 0 failed), then publish with the Artifact tool
    (CLAUDE.md "Publish": a `files` map entry for every file in `dist/publish/media/`, `force: true`).
 4. `main` (only with approval): `git fetch -q origin main && git merge-base --is-ancestor origin/main HEAD &&
-   git push origin claude/stoic-newton-qvpewc:refs/heads/main` (a plain fast-forward).
+   git push origin HEAD:refs/heads/main` (a plain fast-forward; refuse and ask if it is not one).
 
 Lessons: a `fresh` test's reload rebuilds the page from the working tree, so never merge while a suite runs;
 run the final suite in a frozen detached worktree (`git worktree add --detach .claude/worktrees/lead-suite
@@ -83,6 +82,7 @@ measure GPU cost, so real-GPU gains of render changes are unverified.
 | Bug passes | missions 1-2 under the demo gate, free roam, the random-walk bot, cab-ride crash | `2026-10-02-*`, `tools/bot.mjs`, `docs/BACKLOG.md` |
 | Edge and wrecks | world-edge countdown, wreck and abandoned-car limit | `2026-10-03-*`, see below |
 | October 4 round | police search clock (shown only while it runs, shorter times), second god-mode code, big TELEPORT map, driving camera (wider, speed pull-back, damped follow, `cameraComfort`), bonnet blood by speed (`carStainSeverity`), hill climb (`rideStep` suspension, hand-laid Mount Ascent trail, rock/ford dressing), liner grand tour and deck landings (`deck-landing.js`), see-through foliage, world-edge card off land, missions 1-2 and free-roam bug passes (replay frontier, `restartableJob`, fair harbour fight, ABANDON confirm, HUD clearance), performance (frame trace, `hitches.mjs`, DOM writes, buffer ranges, vehicle layouts and allocations, merged car parts) | `docs/changes/2026-10-0[34]-*`, CLAUDE.md rules, `audit/performance.md` (fourth and fifth pass) |
+| October 5 round | open sea (RETURN TO THE CITY countdown after 10 s heading away from land, then a missile; replaces the world-edge warning), ride head-look on the Sunset Eye and the Falcon (`ride-look.js`), sound check (`soundOffText`, saved mute and master volume, `MIX_MAKEUP`, `wakeAudio`) | `docs/changes/2026-10-05-*`, `areas/world-and-map.md`, `areas/places-and-venues.md`, `areas/audio-and-radio.md` |
 | October 6 round | motion comfort: vehicle camera one step further back (1.12), flatter speed zoom, shorter slower lead, Settings · Gameplay · Motion comfort and Settings · Driving · Vehicle camera distance | `docs/changes/2026-10-06-motion-comfort.md`, CLAUDE.md camera rule |
 
 ## Rules added in the latest rounds (also in CLAUDE.md)
@@ -96,6 +96,16 @@ measure GPU cost, so real-GPU gains of render changes are unverified.
   flying or sailing away from all land a 10 s RETURN TO THE CITY countdown runs (heading back winds it up and
   clears it); at zero a missile from the coast kills the player in whatever they are in (god mode only warns).
   Console `worldEdge()`.
+- **Ride head-look** (`src/ride-look.js`): on the Eye and the Falcon the pointer, a touch drag or the right stick
+  turns the rider's head; the ride camera only reads `rideLookAngles()`. Console `rideLook()`.
+- **Sound that is off is said on screen** (`soundOffText()`, audio.js): mute and master volume are saved, so a
+  silent game always explains itself.
+- **Motion comfort** (`motionComfortOn()`, settings.js; camera-drive.js, camera-feel.js, world-view.js): the owner
+  gets motion sick. Vehicle framing 1.12 at rest (`CAMERA_CONTEXT.car` 0.56 × `vehicleCameraFactor()`), speed
+  pull-back `1 / (1 + 0.0025 g)`, boarding zoom at most ~30 %/s, lead 0.25 of the half frame turning at most
+  0.9 rad/s. Motion comfort holds the vehicle zoom fixed (0.86), halves the lead, drops kicks, tremor, the aim
+  lean and the flight bank. Keep `cameraComfort()` numbers from rising (tools/tests/camera-comfort.mjs); if the
+  owner still feels sick, the next candidates (in BACKLOG) are a steeper street pitch and a frame-rate floor.
 
 ## Open items and design questions (owner's call; details in docs/BACKLOG.md)
 
