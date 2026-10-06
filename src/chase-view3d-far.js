@@ -12,7 +12,7 @@
        * signs, glass, everything else in the cell) stays as it is. A cell turns far 48
        * units past the radius and near again 48 units inside it, so it never flickers.
        */
-      const CHASE_FAR_NEAR = { LOW: 1200, MEDIUM: 1400, HIGH: 1600, ULTRA: 2000 },
+      const CHASE_FAR_NEAR = { LOW: 1400, MEDIUM: 1600, HIGH: 1800, ULTRA: 2200 },
         CHASE_FAR_HYSTERESIS = 48,
         chaseFarCells = new Map(),
         chaseFarList = [],
