@@ -39,7 +39,7 @@
       VIEW_CHASE = 'chase',
       CHASE_LOOK_RATE = 0.0026,
       CHASE_PAD_RATE = 3.2,
-      CHASE_PITCH_MIN = -0.55,
+      CHASE_PITCH_MIN = -0.9,
       CHASE_PITCH_MAX = 1.15,
       CHASE_LOOK_RETURN = 1.6,
       CHASE_FOOT = { pivot: 1.58, dist: 3.5, shoulder: 0.42, fov: 52, pitch: 0.16 },
@@ -456,13 +456,16 @@
       cam.x = sx0 - fx * cam.dist;
       cam.y = sy0 - fy * cam.dist;
       cam.z = cam.pz - fz * cam.dist;
-      const floor = chaseFloor(cam.x, cam.y) + CHASE_GROUND_CLEAR;
-      if (cam.z < floor) cam.z = floor;
-      // The camera looks through the shoulder point: along the boom, or down at it when the
-      // floor lifted the camera.
-      const hd = Math.hypot(sx0 - cam.x, sy0 - cam.y);
+      const floor = chaseFloor(cam.x, cam.y) + CHASE_GROUND_CLEAR,
+        lifted = cam.z < floor;
+      if (lifted) cam.z = floor;
+      // The camera looks along the boom through the shoulder point. When the floor lifted it
+      // (looking up from low down, or a rise behind), it looks at the shoulder instead, or
+      // further up when the player looks up: the player then sits low in the frame.
+      const hd = Math.hypot(sx0 - cam.x, sy0 - cam.y),
+        toShoulder = hd > 1 ? Math.atan2(cam.z - cam.pz, hd) : pitch;
       cam.viewYaw = yaw;
-      cam.viewPitch = hd > 1 ? Math.atan2(cam.z - cam.pz, hd) : pitch;
+      cam.viewPitch = !lifted ? pitch : pitch < 0 ? Math.min(pitch, toShoulder) : toShoulder;
     }
     /* How far the boom can reach from (x, y, z) along the unit direction (dx, dy, dz) before a
        building (footprint and height), up to `want`; the vehicle itself is not a wall. */
