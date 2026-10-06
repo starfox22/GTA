@@ -114,7 +114,7 @@
               vec3 haze = cityHazeColor( d ), sky = haze;
               #ifdef SKY_DOME
                 // A deeper blue overhead than the environment's (none at the horizon, where the haze meets it).
-                sky -= cityHazeTop.rgb * uDomeZenith * ( 1.0 - exp( - max( d.y, 0.0 ) * cityHazeTop.w ) );
+                sky = max( sky - cityHazeTop.rgb * uDomeZenith * ( 1.0 - exp( - max( d.y, 0.0 ) * cityHazeTop.w ) ), 0.0 );
                 sky += uSunColor * ( skySunDisc( d ) * uSunDisc ) + skyMoon( d ) + skyStars( d )
                      + uCityGlow * exp( - max( d.y, 0.0 ) * 11.0 );
                 #ifdef SKY_CLOUDS

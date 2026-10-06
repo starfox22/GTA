@@ -34,17 +34,19 @@
         // Sodium light scattered in the night air over the city (times nightAmount and the city's weight): in
         // the haze and the environment about as bright as the blue it replaces, and a stronger band low over
         // the horizon on the dome only (uCityGlow), so the night's ambient keeps its level.
-        HAZE_CITY_GLOW = new Three.Color('#c07848').multiplyScalar(0.07),
-        DOME_CITY_GLOW = new Three.Color('#c27a45').multiplyScalar(0.1),
+        HAZE_CITY_GLOW = new Three.Color('#c07848').multiplyScalar(0.1),
+        DOME_CITY_GLOW = new Three.Color('#c27a45').multiplyScalar(0.18),
         // At dusk the horizon away from the sun cools towards a dusty pink (as bright as the key it
         // replaces); round the sun the glow is whiter than the gold along the horizon (Mie light is grey).
         HAZE_DUSK_AWAY = new Three.Color('#c8a0a8'),
         HAZE_HALO_WHITE = new Three.Color('#fff2dc'),
         // The dome alone (lighting3d-sky-dome.js uDomeZenith): share of the zenith's light taken out up
-        // high, by clear day and at dusk, so the sky through the grade's warm gain is a deep blue. The
-        // environment keeps its light; at the horizon, where the haze meets the dome, nothing changes.
+        // high, by clear day, at dusk and at night, so the sky through the grade's warm gain is a deep
+        // blue (and the night's stars read). The environment keeps its light; at the horizon, where the
+        // haze meets the dome, nothing changes.
         DOME_ZENITH_DAY = [0.7, 0.45, 0],
-        DOME_ZENITH_DUSK = [0.2, 0.05, -0.35],
+        DOME_ZENITH_DUSK = [0, -0.25, -0.1],
+        DOME_ZENITH_NIGHT = [0.25, 0.22, 0.15],
         SKY_SUN_DISC = 36;
       let hazeCityWeight = 0,
         hazeCityX = Infinity,
@@ -73,15 +75,16 @@
           hazeCityWeight = clamp(cloudAreaAt(hazeCityX, hazeCityY).city * 1.4, 0, 1);
         }
         const city = nightAmount * (0.35 + 0.65 * hazeCityWeight),
-          blue = away * (1 - 0.12 * city),
+          blue = away * (1 - 0.2 * city),
           pink = 0.45 * dusk * clear,
           pinkScale = (horizon.r + horizon.g + horizon.b) / (HAZE_DUSK_AWAY.r + HAZE_DUSK_AWAY.g + HAZE_DUSK_AWAY.b),
           domeDay = (1 - dark) * clear,
-          domeDusk = dusk * clear;
+          domeDusk = dusk * clear,
+          domeNight = dark * (1 - 0.5 * overcast);
         skyUniforms.uDomeZenith.value.set(
-          DOME_ZENITH_DAY[0] * domeDay + DOME_ZENITH_DUSK[0] * domeDusk,
-          DOME_ZENITH_DAY[1] * domeDay + DOME_ZENITH_DUSK[1] * domeDusk,
-          DOME_ZENITH_DAY[2] * domeDay + DOME_ZENITH_DUSK[2] * domeDusk,
+          DOME_ZENITH_DAY[0] * domeDay + DOME_ZENITH_DUSK[0] * domeDusk + DOME_ZENITH_NIGHT[0] * domeNight,
+          DOME_ZENITH_DAY[1] * domeDay + DOME_ZENITH_DUSK[1] * domeDusk + DOME_ZENITH_NIGHT[1] * domeNight,
+          DOME_ZENITH_DAY[2] * domeDay + DOME_ZENITH_DUSK[2] * domeDusk + DOME_ZENITH_NIGHT[2] * domeNight,
         );
         skyUniforms.uCityGlow.value.copy(DOME_CITY_GLOW).multiplyScalar(city * (1 - 0.6 * overcast));
         sunU[0] = skySunDirection.x;

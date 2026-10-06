@@ -26,8 +26,9 @@
         // 0 none, 1 the layer drawn in the dome (LOW, MEDIUM), 2 the march's target (HIGH, ULTRA).
         uSkyCloudMode: { value: 0 },
         uSkyCloudMarch: { value: cloudTarget ? cloudTarget.texture : null },
-        // The scene buffer's size in pixels (the dome's gl_FragCoord into the march target).
+        // The scene buffer's size in pixels (the dome's gl_FragCoord into the march target), and the target's.
         uSkyCloudBuffer: { value: new Three.Vector2(1, 1) },
+        uSkyCloudMarchSize: { value: new Three.Vector2(4, 4) },
         // The layer's base over the camera, and the chase haze's clear distance and span (scene.fog).
         uSkyCloudBase: { value: 0 },
         uSkyCloudHaze: { value: new Three.Vector2(0, 1) },
@@ -44,13 +45,17 @@
         ${CLOUD_FIELD_GLSL}
         uniform float uSkyCloudMode, uSkyCloudBase;
         uniform sampler2D uSkyCloudMarch;
-        uniform vec2 uSkyCloudBuffer, uSkyCloudHaze;
+        uniform vec2 uSkyCloudBuffer, uSkyCloudMarchSize, uSkyCloudHaze;
         uniform vec3 uSkyCloudSunDir, uSkyCloudSun, uSkyCloudAmbient, uSkyCloudBounce, uSkyCloudGlow, uSkyCloudTint;
         // The cloud in direction d, premultiplied (rgb) with its opacity (a); haze is the sky without its
         // sun, moon and stars in that direction (what distant cloud fades into).
         vec4 skyClouds( vec3 d, vec3 haze ) {
           if ( uSkyCloudMode > 1.5 ) {
-            vec4 c = texture2D( uSkyCloudMarch, gl_FragCoord.xy / uSkyCloudBuffer );
+            // Four bilinear taps a march texel apart (the target is half size): the march's jittered
+            // grain and its stair-stepped edges come out soft.
+            vec2 uv = gl_FragCoord.xy / uSkyCloudBuffer, o = 0.75 / uSkyCloudMarchSize;
+            vec4 c = ( texture2D( uSkyCloudMarch, uv + vec2( o.x, o.y ) ) + texture2D( uSkyCloudMarch, uv + vec2( -o.x, o.y ) )
+                     + texture2D( uSkyCloudMarch, uv + vec2( o.x, -o.y ) ) + texture2D( uSkyCloudMarch, uv - o ) ) * 0.25;
             return vec4( c.rgb / ${CLOUD_STORE_SCALE.toFixed(2)}, c.a );
           }
           if ( uSkyCloudMode < 0.5 || d.y < 0.012 || cameraPosition.y > uSkyCloudBase ) return vec4( 0.0 );
@@ -105,7 +110,8 @@
           return;
         }
         // The march from the camera up through the slab: no pocket, no veil hand-over, no shafts below it.
-        sizeCloudTarget(tier);
+        const size = sizeCloudTarget(tier);
+        skyCloudUniforms.uSkyCloudMarchSize.value.set(size.width, size.height);
         const u = marchUniforms;
         u.uBelow.value = 1;
         u.uInverseProjection.value.copy(camera.projectionMatrixInverse);
