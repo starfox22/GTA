@@ -198,6 +198,9 @@
       updateCameraFraming(deltaSeconds);
       followCamera(deltaSeconds);
       updateCameraHeight(deltaSeconds);
+      // The chase view behind the player (chase-camera.js), when it is the view.
+      updateCursorLook(deltaSeconds);
+      updateChaseCamera(deltaSeconds);
       recordCameraComfort(deltaSeconds);
     }
     function followCamera(deltaSeconds) {
@@ -238,6 +241,7 @@
       cameraFootMotion.ready = false;
       resetCameraDrive();
       resetCameraComfort();
+      resetChaseCamera();
     }
     // A road vehicle or a boat under the player: the driving follow, its height and its gentler jolts.
     function cameraInRoadVehicle() {

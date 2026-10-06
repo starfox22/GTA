@@ -175,6 +175,9 @@
         cityCutSpanA: { value: new Three.Vector4(1, 0, 0, 0) },
         cityCutBoxB: { value: new Three.Vector4(0, 0, 0, 0) },
         cityCutSpanB: { value: new Three.Vector4(1, 0, 0, 0) },
+        // The chase view's sun shadow reach (view depth, world units; 0: no fade): the shadow map
+        // covers the near part of that view only, and fades out before its edge (chase-view3d.js).
+        cityShadowReach: { value: 0 },
       };
       /* Wet ground (surfaces3d.js, WET SURFACES below): how much of the wet look
          the tier draws (0 LOW darkening only, 1 MEDIUM the sheen, 2 HIGH / ULTRA
@@ -509,6 +512,12 @@
         }`;
       const CITY_LIGHT_PARS = `
         varying vec3 vCityWorld;
+        // The sun's shadow fades out with view depth in the chase view (CHASE SHADOWS, chase-view3d.js).
+        #define CITY_SHADOW_FADE 1
+        uniform float cityShadowReach;
+        float cityShadowFade( vec3 viewPosition ) {
+          return cityShadowReach > 0.0 ? smoothstep( cityShadowReach * 0.72, cityShadowReach, -viewPosition.z ) : 0.0;
+        }
         uniform sampler2D cityLampMap;
         uniform vec4 cityLampRect;
         uniform float cityLampPower;

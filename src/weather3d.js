@@ -565,9 +565,12 @@
           ground = flightViewActive
             ? Math.max(street, Math.min(flightAltitude, cloudBaseAt(cameraTarget.x, cameraTarget.y)) - RAIN_TOP * 0.6)
             : rainFloor(cameraTarget.x, cameraTarget.y, street);
-        rainUniforms.uOrigin.value.set(viewCenter.x, ground, viewCenter.y);
+        // In the chase view the rain stands round the camera, a little ahead of it (chase-view3d.js).
+        const rainX = chaseViewActive ? chaseCam.x + Math.cos(chaseCam.viewYaw) * 260 : viewCenter.x,
+          rainZ = chaseViewActive ? chaseCam.y + Math.sin(chaseCam.viewYaw) * 260 : viewCenter.y;
+        rainUniforms.uOrigin.value.set(rainX, ground, rainZ);
         // Splashes stay on the street (they are not drawn from the air).
-        splashUniforms.uOrigin.value.set(viewCenter.x, street, viewCenter.y);
+        splashUniforms.uOrigin.value.set(rainX, street, rainZ);
         rainMesh.visible = rain > 0.02;
         if (rainMesh.visible) {
           const drops = Math.min(RAIN_MAX, Math.round((touchEnabled() ? Math.min(tier.rain, 1100) : tier.rain) * clamp(0.25 + rain, 0, 1)));

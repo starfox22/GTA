@@ -81,7 +81,8 @@
       // Its own virtual code: Space is the handbrake's, and the two may be bound apart.
       { id: 'rockets', label: 'Rockets', note: 'Apache: fire a rocket salvo along the nose, to the range of the aim (right mouse button too)', group: 'air', code: 'RocketSalvo', keys: ['Space'], ctx: ['air'] },
       { id: 'bail', label: 'Bail out / open parachute', note: 'Jump from an aircraft, then press again to open the parachute (it never opens by itself); dive off a boat or out of a sinking car', group: 'air', keys: ['KeyJ'], ctx: ['drive', 'air', 'chute'] },
-      { id: 'divert', label: 'Divert landing', note: 'Mission 11: change the landing site once the manifest is exposed', group: 'air', keys: ['KeyV'], ctx: ['air'] },
+      // V was the divert key before the chase camera took it (loadControlBindings moves an old default pair).
+      { id: 'divert', label: 'Divert landing', note: 'Mission 11: change the landing site once the manifest is exposed', group: 'air', keys: ['KeyC'], ctx: ['air'] },
       { id: 'reload', label: 'Reload', note: 'Reload the equipped weapon', group: 'weapons', keys: ['KeyR'], ctx: ['foot', 'drive', 'air'] },
       { id: 'cycleWeapon', label: 'Next weapon', note: 'Cycle through equipped weapons', group: 'weapons', keys: ['KeyQ'], ctx: ['foot', 'drive', 'air'] },
       { id: 'fists', label: 'Fists (no weapon)', note: 'Put every weapon away and fight with your fists', group: 'weapons', keys: ['Backquote', 'Digit8'], ctx: ['foot', 'drive', 'air'] },
@@ -95,9 +96,11 @@
       { id: 'arsenal', label: 'Arsenal', note: 'Open the arsenal', group: 'weapons', keys: ['KeyI'], ctx: EVERYWHERE },
       { id: 'map', label: 'City map', note: 'Open or close the county map', group: 'interface', keys: ['Tab'], ctx: EVERYWHERE },
       { id: 'missionCard', label: 'Mission card', note: 'Show the mission card again', group: 'interface', keys: ['KeyO'], ctx: EVERYWHERE },
-      { id: 'zoomIn', label: 'Zoom in', note: 'Bring the street camera closer', group: 'interface', keys: ['Equal', 'NumpadAdd'], ctx: EVERYWHERE },
-      { id: 'zoomOut', label: 'Zoom out', note: 'Pull the street camera back', group: 'interface', keys: ['Minus', 'NumpadSubtract'], ctx: EVERYWHERE },
-      { id: 'zoomReset', label: 'Reset zoom', note: 'Street camera back to normal', group: 'interface', keys: ['Digit0'], ctx: EVERYWHERE },
+      // The overhead street view or the chase camera behind the player (chase-camera.js).
+      { id: 'cameraView', label: 'Camera view', note: 'Switch between the overhead street camera and the chase camera behind you (the mouse looks round in the chase view)', group: 'interface', keys: ['KeyV'], ctx: EVERYWHERE },
+      { id: 'zoomIn', label: 'Zoom in', note: 'Bring the camera closer', group: 'interface', keys: ['Equal', 'NumpadAdd'], ctx: EVERYWHERE },
+      { id: 'zoomOut', label: 'Zoom out', note: 'Pull the camera back', group: 'interface', keys: ['Minus', 'NumpadSubtract'], ctx: EVERYWHERE },
+      { id: 'zoomReset', label: 'Reset zoom', note: 'Camera back to normal', group: 'interface', keys: ['Digit0'], ctx: EVERYWHERE },
       { id: 'mute', label: 'Mute', note: 'All game sound on or off', group: 'interface', keys: ['KeyM'], ctx: EVERYWHERE },
       { id: 'help', label: 'Controls card', note: 'The quick controls reference', group: 'interface', keys: ['Slash'], ctx: EVERYWHERE },
     ];
@@ -136,6 +139,7 @@
           ['ascend', 'KeyT'],
           ['descend', 'KeyG'],
           ['walk', 'KeyC'],
+          ['divert', 'KeyV'],
         ])
           if (controlBindings[id][0] === old && !controlBindings[id][1]) controlBindings[id] = [...CONTROL_ACTION[id].keys];
       } catch {}

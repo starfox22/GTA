@@ -15,12 +15,16 @@
             flying = !!(isAircraft(player.car) || player.parachute);
           // Street (orthographic) or flight (perspective) camera, plus what it sees.
           updateFlightView(deltaSeconds, altitude, flying);
+          // The chase view behind the player takes over from both (chase-view3d.js).
+          updateChaseView(deltaSeconds);
           // Riding the Falcon or the Eye: the ride camera takes over (themepark3d.js).
-          updateParkCamera(deltaSeconds);
-          // The camera's kick and tremor (camera-feel.js: game state, read here).
-          const tremor = cameraShakeOffset(gameTime, cameraShakeLevel());
-          camera.position.x += cameraKick.x + tremor.x;
-          camera.position.z += cameraKick.y + tremor.y;
+          if (updateParkCamera(deltaSeconds)) chaseViewActive = false;
+          // The camera's kick and tremor (camera-feel.js: game state, read here); the chase
+          // camera stands a few metres from the player, so it takes a small share of them.
+          const tremor = cameraShakeOffset(gameTime, cameraShakeLevel()),
+            jolt = chaseViewActive ? 0.12 : 1;
+          camera.position.x += (cameraKick.x + tremor.x) * jolt;
+          camera.position.z += (cameraKick.y + tremor.y) * jolt;
           if (camera === streetCamera) lockStreetCameraToPixels();
           camera.updateMatrixWorld(true);
           viewFrustum.setFromProjectionMatrix(
@@ -65,7 +69,9 @@
           for (const cell of staticCells) {
             const show =
               Math.abs(cell.x - viewCenter.x) < viewReach + cell.reach &&
-              Math.abs(cell.y - viewCenter.y) < viewReach + cell.reach;
+              Math.abs(cell.y - viewCenter.y) < viewReach + cell.reach &&
+              // The chase view also tests the frustum (chase-view3d.js).
+              (!chaseViewActive || chaseCellShown(cell.x, cell.y, cell.reach));
             cell.group.visible = show;
             if (!show) continue;
             for (const s of cell.entries) s.group.visible = staticInView(s);
@@ -77,7 +83,8 @@
           for (const cell of staticBatchCells.values())
             cell.group.visible =
               Math.abs(cell.x - viewCenter.x) < batchReach + cell.half &&
-              Math.abs(cell.z - viewCenter.y) < batchReach + cell.half;
+              Math.abs(cell.z - viewCenter.y) < batchReach + cell.half &&
+              (!chaseViewActive || chaseCellShown(cell.x, cell.z, cell.half));
           // Signals are re-placed from their groups' visibility: after the cull, or a
           // junction coming into view drew its posts and bulbs a frame late (lights
           // popping in at the edge of the frame as the camera moved).

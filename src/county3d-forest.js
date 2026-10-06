@@ -286,7 +286,7 @@
       function updateTerrainVisuals() {
         terrainUniforms.terrainTime.value = gameTime % 1000;
         terrainUniforms.terrainSunPower.value = clamp(sun.intensity / 3, 0, 1.5);
-        if (flightViewActive) terrainEye.copy(camera.position);
+        if (flightViewActive || chaseViewActive) terrainEye.copy(camera.position);
         else terrainEye.set(viewCenter.x, 700, viewCenter.y);
         const lodScale = activeTier ? activeTier.lodBias : 1;
         for (const chunk of terrainChunks) {

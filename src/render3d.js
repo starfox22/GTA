@@ -121,6 +121,7 @@
         prewarmPasses.push({ scene: passScene, camera: passCamera, target });
       }
       // @include src/flight-view3d.js
+      // @include src/chase-view3d.js
       // @include src/postfx3d.js
       // @include src/lighting3d.js
       // @include src/searchlight3d.js

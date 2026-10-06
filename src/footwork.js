@@ -14,11 +14,13 @@
      */
     const FOOTWORK_SIDE = 0.8,
       FOOTWORK_BACK = 0.6;
-    /* The way the movement keys point (map heading), or null with none held. */
+    /* The way the movement keys point (map heading), or null with none held: up the screen in the
+       street view, along the camera's heading in the chase view (chase-camera.js). */
     function playerMoveHeading() {
       const x = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0),
         y = (keys.KeyS || keys.ArrowDown ? 1 : 0) - (keys.KeyW || keys.ArrowUp ? 1 : 0);
-      return x || y ? Math.atan2(y, x) : null;
+      if (!x && !y) return null;
+      return chaseCameraLive() ? chaseMoveHeading(x, y) : Math.atan2(y, x);
     }
     function playerInFight() {
       return (

@@ -111,6 +111,8 @@
       /* Level of detail from the zoom: 2 full (hands and small props once a figure is 25 px
          or more), 1 without them, 0 far figures. */
       function crowdDetail() {
+        // The chase view stands among the people: full detail (chase-view3d.js).
+        if (chaseViewActive) return 2;
         const lod = activeTier ? activeTier.lodBias : 1,
           zoom = flightViewActive ? viewZoom : worldZoom;
         return zoom >= 1.3 * lod ? 2 : zoom >= 0.34 * lod ? 1 : 0;
@@ -128,8 +130,8 @@
         let drawn = 0;
         lastDelta = deltaSeconds;
         const detail = crowdDetail(),
-          zoom = flightViewActive ? viewZoom : worldZoom,
-          zoomedIn = (flightViewActive ? viewZoom : worldZoom) > 0.22;
+          zoom = chaseViewActive ? 4 : flightViewActive ? viewZoom : worldZoom,
+          zoomedIn = chaseViewActive || (flightViewActive ? viewZoom : worldZoom) > 0.22;
         // Close-up detail only where a head is more than a few pixels across.
         BODY = zoom >= 2.4 ? BODY_CLOSE : BODY_STREET;
         trackCarTransition();

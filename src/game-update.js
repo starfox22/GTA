@@ -70,17 +70,16 @@
           const x = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0),
             y = (keys.KeyS || keys.ArrowDown ? 1 : 0) - (keys.KeyW || keys.ArrowUp ? 1 : 0);
           if (x || y) {
-            player.a = Math.atan2(y, x);
+            // The keys point along the screen: in the chase view, turned to the camera's heading.
+            const chase = chaseCameraLive();
+            player.a = chase ? chaseMoveHeading(x, y) : Math.atan2(y, x);
+            const ux = chase ? Math.cos(player.a) : x / Math.hypot(x, y),
+              uy = chase ? Math.sin(player.a) : y / Math.hypot(x, y);
             // On foot the player runs; holding the walk action (Shift) walks.
             let s = player.swimming ? swimSpeed() : footPace();
             if (player.wading) s *= wadeFactor();
             player.walk += deltaSeconds * strideRate(s);
-            moveBody(
-              player,
-              (x / Math.hypot(x, y)) * s * deltaSeconds,
-              (y / Math.hypot(x, y)) * s * deltaSeconds,
-              8,
-            );
+            moveBody(player, ux * s * deltaSeconds, uy * s * deltaSeconds, 8);
           }
         }
         if (

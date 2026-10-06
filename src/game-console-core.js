@@ -40,6 +40,36 @@
       // How the street camera moved over the last `seconds` (0.5-4): acceleration, jerk, zoom rate,
       // jolt and the player's drift on screen, in screen heights (camera-comfort.js).
       cameraComfort: (seconds = 4) => cameraComfortReport(seconds),
+      // The view: 'street' (overhead) or 'chase' (behind the player); no argument reports it (chase-camera.js).
+      viewMode(mode) {
+        if (mode !== undefined) {
+          if (mode !== 'street' && mode !== 'chase') throw Error("viewMode takes 'street' or 'chase'");
+          setViewMode(mode, true);
+        }
+        return this.chaseCamera();
+      },
+      // Where the chase camera stands and looks, its boom and lens, the reticle's aim, and what the
+      // renderer draws (chase-view3d.js: draw distance, culling reach, haze).
+      chaseCamera: () => ({ ...chaseCameraReport(), view: city3D?.chaseView ? city3D.chaseView() : null }),
+      // Turn the chase camera as the mouse would by (dx, dy) pixels, or set its heading and pitch in degrees.
+      chaseLook(dx = 0, dy = 0, headingDeg, pitchDeg) {
+        if (!chaseCameraLive()) throw Error("the chase view is off: viewMode('chase') first");
+        if (Number.isFinite(headingDeg)) {
+          chaseCam.idle = 0;
+          if (chaseFollowsVehicle()) chaseCam.lookYaw = normalizeAngle((headingDeg * Math.PI) / 180 - chaseCam.yaw);
+          else chaseCam.yaw = normalizeAngle((headingDeg * Math.PI) / 180);
+        }
+        if (Number.isFinite(pitchDeg)) chaseCam.pitch = clamp((pitchDeg * Math.PI) / 180, CHASE_PITCH_MIN, CHASE_PITCH_MAX);
+        if (dx || dy) chaseTurn(dx * CHASE_LOOK_RATE, dy * CHASE_LOOK_RATE);
+        updateChaseCamera(1 / 60);
+        return chaseCameraReport();
+      },
+      // The screen point (CSS px) of a map point in the chase view, or null outside it.
+      chaseProject(x, y, z = 0) {
+        if (!chaseCameraLive()) return null;
+        const p = chaseProject(x, y, z, { x: 0, y: 0, depth: 0, behind: false });
+        return { x: Math.round(p.x), y: Math.round(p.y), depth: Math.round(p.depth), behind: p.behind, sees: chaseSees(x, y, z) };
+      },
       // The interaction prompt as the player sees it (hud.js INTERACTION PROMPT):
       // visible, text, identity, docked, seconds since it popped in, this pass's offer.
       promptState: () => promptReport(),

@@ -152,6 +152,7 @@
     // @include src/foliage-cutaway.js
     // @include src/god-panel.js
     // @include src/driving.js
+    // @include src/chase-camera.js
     // @include src/tyre-effects.js
     // @include src/hud.js
     // @include src/render3d.js

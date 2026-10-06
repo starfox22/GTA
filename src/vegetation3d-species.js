@@ -603,7 +603,7 @@
           streetNear = viewZoom >= MID_TREE_ZOOM * lod;
         for (const entry of foliageLodMeshes) {
           let near = streetNear;
-          if (flightViewActive) near = Math.hypot(camera.position.x - entry.x, camera.position.z - entry.z, camera.position.y) < MID_TREE_DISTANCE / lod;
+          if (flightViewActive || chaseViewActive) near = Math.hypot(camera.position.x - entry.x, camera.position.z - entry.z, camera.position.y) < MID_TREE_DISTANCE / lod;
           entry.im.visible = !far && (entry.lod ? !near : near);
         }
       }

@@ -131,10 +131,11 @@
       // The sheets the tufts can grow on: the city's and Monarch Isle's.
       const monarchTileTexture = countyTileTextures.find((e) => e.tile.x === MONARCH_TILE.x && e.tile.y === MONARCH_TILE.y);
       function updateGrassTufts() {
+        // The chase view: full tufts round the ground just ahead of the camera (chase-view3d.js).
         const tier = (activeTier || graphicsTier()).name,
-          fade = clamp((viewZoom - TUFT_ZOOM_IN) / (TUFT_ZOOM_FULL - TUFT_ZOOM_IN), 0, 1),
-          cx = viewCenter.x,
-          cz = viewCenter.y;
+          fade = chaseViewActive ? 1 : clamp((viewZoom - TUFT_ZOOM_IN) / (TUFT_ZOOM_FULL - TUFT_ZOOM_IN), 0, 1),
+          cx = chaseViewActive ? chaseCam.px + Math.cos(chaseCam.viewYaw) * 120 : viewCenter.x,
+          cz = chaseViewActive ? chaseCam.py + Math.sin(chaseCam.viewYaw) * 120 : viewCenter.y;
         let sheet = null;
         if (cx > CITY_LEFT && cx < CITY_RIGHT && cz > CITY_TOP && cz < CITY_SIZE) sheet = { tx: groundTx, x: CITY_LEFT, y: CITY_TOP, w: CITY_WIDTH, h: CITY_HEIGHT };
         else if (monarchTileTexture) {

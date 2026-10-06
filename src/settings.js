@@ -70,6 +70,9 @@
       eventCamera: true,
       // A steady camera for players who get motion sick (motionComfortOn): see MOTION COMFORT.
       motionComfort: false,
+      // The chase camera's mouse and stick look (chase-camera.js): percent, and up / down swapped.
+      lookSensitivity: 100,
+      invertLook: false,
     };
     let radioMigrated = false;
     try {
@@ -103,6 +106,8 @@
         if (typeof saved.playerRing === 'boolean') settings.playerRing = saved.playerRing;
         if (typeof saved.eventCamera === 'boolean') settings.eventCamera = saved.eventCamera;
         if (typeof saved.motionComfort === 'boolean') settings.motionComfort = saved.motionComfort;
+        if (Number.isFinite(saved.lookSensitivity)) settings.lookSensitivity = clamp(Math.round(saved.lookSensitivity), 20, 300);
+        if (typeof saved.invertLook === 'boolean') settings.invertLook = saved.invertLook;
         // The title menu's radio (car-radio.js TITLE RADIO), on unless switched off.
         if (typeof saved.titleRadio === 'boolean') titleRadioEnabled = saved.titleRadio;
         if (typeof saved.soundOn === 'boolean') soundOn = saved.soundOn;
@@ -128,6 +133,8 @@
             playerRing: settings.playerRing,
             eventCamera: settings.eventCamera,
             motionComfort: settings.motionComfort,
+            lookSensitivity: settings.lookSensitivity,
+            invertLook: settings.invertLook,
             titleRadio: titleRadioEnabled,
             soundOn,
             voicesOn,

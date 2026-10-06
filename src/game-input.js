@@ -309,9 +309,17 @@
         return;
       }
       if (gameMode !== 'play') return;
+      // The overhead street view or the chase camera (chase-camera.js).
+      if (is('cameraView')) {
+        e.preventDefault();
+        toggleViewMode();
+        return;
+      }
       if (is('zoomIn') || is('zoomOut') || is('zoomReset')) {
         e.preventDefault();
-        setWorldZoom(is('zoomReset') ? STREET_ZOOM : worldZoomTarget * (is('zoomOut') ? 1 / STREET_ZOOM_STEP : STREET_ZOOM_STEP));
+        // In the chase view the zoom keys move the camera along its boom.
+        if (chaseCameraLive()) chaseCam.zoom = is('zoomReset') ? 1 : chaseZoom(is('zoomOut') ? 1 / STREET_ZOOM_STEP : STREET_ZOOM_STEP);
+        else setWorldZoom(is('zoomReset') ? STREET_ZOOM : worldZoomTarget * (is('zoomOut') ? 1 / STREET_ZOOM_STEP : STREET_ZOOM_STEP));
         return;
       }
       if (is('bail')) {
@@ -417,19 +425,31 @@
     canvas.addEventListener('mousemove', (e) => {
       // Compatibility mouse events synthesized from touches must not hijack the aim.
       if (performance.now() < worldTouchUntil || e.sourceCapabilities?.firesTouchEvents) return;
+      // A captured pointer turns the chase camera; the aim stays on the reticle (chase-camera.js).
+      if (chaseCam.locked) {
+        chaseLook(e.movementX || 0, e.movementY || 0);
+        placeMouseOnReticle();
+        return;
+      }
       mouse.x = e.clientX;
       mouse.y = e.clientY;
       mouse.active = true;
     });
     canvas.addEventListener('mousedown', (e) => {
       if (performance.now() < worldTouchUntil || e.sourceCapabilities?.firesTouchEvents) return;
-      // The right button fires a tank's machine gun (armor.js).
+      // In the chase view a click first captures the pointer (the mouse then looks round); that
+      // click fires nothing, unless the page cannot capture it (chase-camera.js CURSOR LOOK).
+      if (gameMode === 'play' && chaseCameraLive() && !chaseCam.locked && captureChasePointer()) return;
+      // The right button fires a tank's machine gun (armor.js) and aims over the shoulder in the chase view.
       if (e.button === 2 && gameMode === 'play') mouse.alt = true;
       if (e.button === 0 && gameMode === 'play') {
         mouse.down = true;
         mouse.active = true;
-        mouse.x = e.clientX;
-        mouse.y = e.clientY;
+        if (chaseCam.locked) placeMouseOnReticle();
+        else {
+          mouse.x = e.clientX;
+          mouse.y = e.clientY;
+        }
         initAudio();
         shoot();
       }

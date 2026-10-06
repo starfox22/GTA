@@ -78,8 +78,8 @@
         skyUniforms.uStars.value = night * (1 - overcast);
         skyUniforms.uSunColor.value.copy(sun.color);
         refreshEnvironment(false);
-        // The dome only exists for the flight camera.
-        skyDome.visible = flightViewActive;
+        // The dome only exists for the perspective views: in the air and the chase view (chase-view3d.js).
+        skyDome.visible = flightViewActive || chaseViewActive;
         if (skyDome.visible) {
           skyDome.position.copy(camera.position);
           skyDome.scale.setScalar(camera.far * 0.9);
@@ -227,7 +227,7 @@
             contactBlob(c.x, c.y, aircraft ? ground : entityElevation(c), spec.l * 1.12 * shrink, spec.w * 1.35 * shrink, c.a || 0);
           }
           // People are only drawn this close in (render3d.js, crowd3d.js).
-          if (flightViewActive ? viewZoom > PEOPLE_ZOOM : worldZoom > 0.22) {
+          if (chaseViewActive || (flightViewActive ? viewZoom > PEOPLE_ZOOM : worldZoom > 0.22)) {
             for (const p of pedestrians)
               if (!p.hidden && !p.swimming && entityInView(p, 20)) contactBlob(p.x, p.y, entityElevation(p), 10, 10, 0);
             for (const p of renderPeople) {

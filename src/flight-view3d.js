@@ -318,6 +318,9 @@
         shadowWorldUp = new Three.Vector3(0, 1, 0);
       let shadowHalfSize = 900;
       function placeSun() {
+        // The chase view fits the shadow to the near part of its view (chase-view3d.js CHASE SHADOWS).
+        if (chaseViewActive) return placeChaseSun();
+        cityLightUniforms.cityShadowReach.value = 0;
         const craft = player.car && isAircraft(player.car) ? player.car : player.parachute ? player : null,
           centerX = flightViewActive ? viewCenter.x : cameraTarget.x,
           centerZ = flightViewActive ? viewCenter.y : cameraTarget.y,
@@ -553,12 +556,14 @@
       // Zoomed out on the street a car is a couple of dozen pixels long too, so the
       // impostors serve both cameras; the quality tier's lodBias moves the switch.
       function vehicleImpostor(c) {
-        const lod = activeTier ? activeTier.lodBias : 1;
-        if (viewZoom >= BODY_IMPOSTOR_ZOOM * lod || c === player.car || isAircraft(c)) return false;
+        const lod = activeTier ? activeTier.lodBias : 1,
+          // The chase view: each car by its own distance from the camera (chase-view3d.js).
+          zoom = chaseViewActive ? chaseZoomAt(c.x, c.y) : viewZoom;
+        if (zoom >= BODY_IMPOSTOR_ZOOM * lod || c === player.car || isAircraft(c)) return false;
         // Intact cars with a body pool; the badly damaged and everything else get
         // the two boxes once they are small enough.
         if (c.hp >= c.maxhp * 0.6 && bodyImpostor(c)) return true;
-        if (viewZoom >= IMPOSTOR_ZOOM * lod || impostorCount >= IMPOSTOR_CAPACITY) return false;
+        if (zoom >= IMPOSTOR_ZOOM * lod || impostorCount >= IMPOSTOR_CAPACITY) return false;
         if (c === player.car || isAircraft(c)) return false;
         const spec = vehicleSpec(c),
           length = spec.l,
@@ -859,12 +864,13 @@
       function updateFarScenery() {
         // Zoomed right out on the street the whole city is in view too, so the far
         // copy serves both cameras (the quality tier's lodBias moves the switch).
+        // The chase view draws the full city out to its draw distance (chase-view3d.js).
         const lod = activeTier ? activeTier.lodBias : 1,
-          far = viewZoom < (flightViewActive ? FAR_SCENERY_ZOOM : STREET_FAR_SCENERY_ZOOM) * lod && farClasses.length > 0;
+          far = !chaseViewActive && viewZoom < (flightViewActive ? FAR_SCENERY_ZOOM : STREET_FAR_SCENERY_ZOOM) * lod && farClasses.length > 0;
         // Between the street and the far view, the full city is drawn but its
         // shadows come from the far copy on a layer only the sun's shadow camera
         // renders: a few dozen merged casters instead of every building batch.
-        const proxy = !far && viewZoom < SHADOW_PROXY_ZOOM * lod && farClasses.length > 0;
+        const proxy = !far && !chaseViewActive && viewZoom < SHADOW_PROXY_ZOOM * lod && farClasses.length > 0;
         if (far !== farSceneryShown || proxy !== shadowProxyShown) {
           farSceneryShown = far;
           shadowProxyShown = proxy;
