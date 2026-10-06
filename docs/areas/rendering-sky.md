@@ -31,3 +31,13 @@ rest of the light: rendering-lighting.md; the clouds (from below too): rendering
   the disc, eased), shafts on HIGH/ULTRA (a quarter-size mask of the bright sky round the sun smeared towards
   it twice; geometry blocks them), glare on MEDIUM up and the flare's ghosts on HIGH/ULTRA in the composite.
   Warmed through `postWarmPasses`. Console: `cloudLayer().view.sky`.
+
+## Numbers (headless SwiftShader, HIGH, 1280 x 720, one page, base build then this one)
+
+- Chase view at noon (fair, looking over the city): view calls 2043 -> 2035, shadow calls 752 -> 755 (scene noise);
+  the new work is off the scene pass: the march from below (half size), the cloud shadows (quarter size) and, with
+  the sun in frame, the visibility (1 x 1), the shafts' mask and two smears (quarter size).
+- First-use programs in the chase view (noon, then golden hour into the sun) after a `--prewarm` boot at HIGH: 1,
+  a shadow-depth variant that was there before; every new program (dome, march, shadow pass, sun passes) is warmed.
+- SwiftShader frame times swing with the machine's load (15.5 -> 9.5 s a frame at noon, 18.3 -> 14.4 s at dusk):
+  judge the real cost on a GPU.
