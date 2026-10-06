@@ -350,9 +350,17 @@
       dripMesh.name = 'rain drips';
       scene.add(dripMesh);
       let dripCenterX = 1e9,
-        dripCenterY = 1e9;
+        dripCenterY = 1e9,
+        dripStreet = false;
+      // At street level the drips stand round a point DRIP_STREET_AHEAD ahead of the camera, within
+      // DRIP_STREET_REACH, placed again when that point has moved DRIP_STREET_MOVE.
+      const DRIP_STREET_AHEAD = 220,
+        DRIP_STREET_REACH = 520,
+        DRIP_STREET_MOVE = 160,
+        dripEye = { x: 0, y: 0 };
       // Emitters along the roof edges and awnings facing the camera, round the view.
-      function placeDrips(cx, cy, reach) {
+      // `eye` (the chase view's camera, or null): the faces it sees, not the street camera's south faces.
+      function placeDrips(cx, cy, reach, eye = null) {
         let n = 0;
         const add = (x, y, z) => {
           if (n >= DRIP_MAX) return;
@@ -364,7 +372,14 @@
           if (n >= DRIP_MAX) break;
           if (b.x + b.w < cx - reach || b.x > cx + reach || b.y + b.h < cy - reach || b.y > cy + reach) continue;
           // The south face (towards the camera): gutters every 16-30 units.
-          for (let x = b.x + 6 + Math.random() * 10; x < b.x + b.w - 4; x += 16 + Math.random() * 14) add(x, (b.eaves ?? b.height) - 0.5, b.y + b.h + 1.2);
+          const eaves = (b.eaves ?? b.height) - 0.5;
+          if (!eye || eye.y > b.y + b.h) for (let x = b.x + 6 + Math.random() * 10; x < b.x + b.w - 4; x += 16 + Math.random() * 14) add(x, eaves, b.y + b.h + 1.2);
+          if (eye) {
+            // Street level: whichever faces the camera stands in front of.
+            if (eye.y < b.y) for (let x = b.x + 6 + Math.random() * 10; x < b.x + b.w - 4; x += 16 + Math.random() * 14) add(x, eaves, b.y - 1.2);
+            if (eye.x < b.x) for (let y = b.y + 6 + Math.random() * 10; y < b.y + b.h - 4; y += 16 + Math.random() * 14) add(b.x - 1.2, eaves, y);
+            if (eye.x > b.x + b.w) for (let y = b.y + 6 + Math.random() * 10; y < b.y + b.h - 4; y += 16 + Math.random() * 14) add(b.x + b.w + 1.2, eaves, y);
+          }
           // Shop awnings drip in a row along their front edge.
           for (const pane of b.shopPanes || [])
             for (let k = -pane.width / 2 + 2; k < pane.width / 2; k += 5 + Math.random() * 4) add(pane.cx + k, SHOP_FLOOR * 0.72 - 2.3, pane.face + 10.5);
@@ -651,11 +666,18 @@
           dripUniforms.uOpacity.value = 0.55 * drip;
           dripUniforms.uGround.value = street;
           dripCheck -= deltaSeconds;
-          if (dripCheck <= 0 && Math.hypot(viewCenter.x - dripCenterX, viewCenter.y - dripCenterY) > viewReach * 0.35) {
+          // At street level round the camera (the view's centre lies far down the street), on the faces it sees.
+          const street3d = chaseViewActive,
+            focusX = street3d ? chaseCam.x + Math.cos(chaseCam.viewYaw) * DRIP_STREET_AHEAD : viewCenter.x,
+            focusY = street3d ? chaseCam.y + Math.sin(chaseCam.viewYaw) * DRIP_STREET_AHEAD : viewCenter.y;
+          if (street3d !== dripStreet || (dripCheck <= 0 && Math.hypot(focusX - dripCenterX, focusY - dripCenterY) > (street3d ? DRIP_STREET_MOVE : viewReach * 0.35))) {
             dripCheck = 0.5;
-            dripCenterX = viewCenter.x;
-            dripCenterY = viewCenter.y;
-            placeDrips(dripCenterX, dripCenterY, Math.min(viewReach * 1.3, 1400));
+            dripStreet = street3d;
+            dripCenterX = focusX;
+            dripCenterY = focusY;
+            dripEye.x = chaseCam.x;
+            dripEye.y = chaseCam.y;
+            placeDrips(dripCenterX, dripCenterY, street3d ? DRIP_STREET_REACH : Math.min(viewReach * 1.3, 1400), street3d ? dripEye : null);
           }
         }
         // Spray behind fast cars on a wet road.
