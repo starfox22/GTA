@@ -404,9 +404,9 @@
     }
     /**
      * A GUN POINTED AT YOU
-     * With a firearm out and aimed (mouse or touch aim, or after a recent shot),
-     * whoever the barrel is on puts their hands up and pleads; held there long
-     * enough some drop to their knees, some bolt.
+     * With a firearm out and aimed (mouse or touch aim, the chase view's reticle,
+     * or after a recent shot), whoever the barrel is on puts their hands up and
+     * pleads; held there long enough some drop to their knees, some bolt.
      */
     function aimReactions(deltaSeconds) {
       crowd.timers.aim -= deltaSeconds;
@@ -420,7 +420,7 @@
         return;
       }
       if (selectedWeaponIndex === KNIFE_INDEX || !weapons[selectedWeaponIndex]?.owned) return;
-      if (!(mouse.active || touchAim !== null || gameTime - crowd.playerShotAt < 8)) return;
+      if (!(mouse.active || touchAim !== null || chaseCameraLive() || gameTime - crowd.playerShotAt < 8)) return;
       const aimA = aim();
       forPeopleNear(player.x, player.y, 240, (p, d) => {
         if (p.hp <= 0 || d < 6 || personIncapacitated(p) || p.onDeck) return;

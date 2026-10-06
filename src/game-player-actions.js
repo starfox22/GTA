@@ -469,6 +469,8 @@
     }
     function aim() {
       if (touchAim !== null) return touchAim;
+      // The chase view: the reticle (or the cursor) is the aim for every device (chase-rules.js chaseAim).
+      if (chaseCameraLive()) return chaseAim();
       if (mouse.active && city3D) return city3D.aim(mouse.x, mouse.y);
       let a = player.car ? player.car.a : player.a;
       // From a vehicle: a threat inside the drive-by arcs, else out of the driver's window (driveby.js).

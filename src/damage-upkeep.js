@@ -451,7 +451,8 @@
     function restoreStreetProps() {
       for (let i = knockedProps.length - 1; i >= 0; i--) {
         const prop = knockedProps[i];
-        if (gameTime - prop.knockedAt < 240 || distanceBetween(prop, cameraTarget) < 1100) continue;
+        // (The chase view sees farther down a street: there it must also be out of its frame, chase-rules.js.)
+        if (gameTime - prop.knockedAt < 240 || distanceBetween(prop, cameraTarget) < 1100 || (chaseCameraLive() && chaseInView(prop.x, prop.y, 60))) continue;
         prop.down = false;
         prop.sprayUntil = 0;
         prop.strain = 0;

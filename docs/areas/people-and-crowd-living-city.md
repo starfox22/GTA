@@ -14,6 +14,20 @@ frame from `updateCivic` (`timed('citylife')`). Console group `livingCity`
   far, unseen cars off the street and putting a car of a fitting type on a lane just beyond
   the view edge (mid-block, `trafficSpawnValid`, rolling at 30 km/h). While the player drives
   fast the spots lean ahead of them. A teleport (2,600+ units) resettles at once.
+- **In the chase view** (chase-rules.js CHASE RULES) "in view" (`crowdInView`, and so every
+  caller of it) is the chase camera's frustum, the margin a world radius, within `CHASE_SIGHT_REACH`
+  (200 m): behind the camera, off its sides or beyond the reach is unseen; per entity, no building
+  march. The ring is `TRAFFIC_RING` and both streams count and spawn round a centre leaned toward the
+  camera's heading (`chaseStreamCentre`: traffic 0.7 of the ring, ~92 m; crowd 0.4 of `CROWD_RING`,
+  ~62 m), so spots beyond the sight reach lie on the street ahead. Spawn choosers ask `spotUnseen(x,
+  y, margin, SPOT_PERSON | SPOT_CAR | SPOT_AMBULANCE)` (crowd and traffic streams, scenes, bus stops,
+  hails, `spawnCop`, pursuit spawn points, the medics' starts and hops): in the street view exactly
+  `!crowdInView`; in the chase view off the frustum turned out by `CHASE_SPAWN_TURN` (20 deg either
+  side: a mouse flick cannot show a fresh spawn), or hidden behind a building from everywhere the
+  camera can swing to (one march from the pivot, buildings shrunk by the thing's radius plus the boom).
+  `viewPopAudit(seconds, keys, turn)` counts what appears or vanishes in view (0 standing, turning at
+  300 deg/s, walking, driving; 15 people and 5 cars in 20 s with the street footprint);
+  tools/tests/chase-streams.mjs, chase-in-view.mjs.
 - **Only `streamed` cars are ever moved or sent home**, and only untouched ones
   (`streamableTraffic`): no fare, bus route, delivery, crash, damage, mission, theft, siren
   or player contact. Buses, beach club cabs, drawbridge queues keep their own life.
@@ -47,7 +61,8 @@ frame from `updateCivic` (`timed('citylife')`). Console group `livingCity`
   aircraft or boat) after **180 s**, and the world holds at most **16 wrecks** and **24 abandoned cars**: over a cap
   the longest-lived unseen ones go first whatever their timeout (`retireBorn`, started when it became a candidate).
   The cap answers the owner's "whole world or on screen": the whole world.
-- Never touched: anything on screen (camera footprint `screenViewHalf` plus 450) or within 1,200 units of the player
+- Never touched: anything on screen (camera footprint `screenViewHalf` plus 450; in the chase view the chase camera's
+  frustum grown by 450 as a world radius, `CHASE_WRECK_REACH` 400 m deep: a wreck is big and burns) or within 1,200 units of the player
   (2,640 in an aircraft or parachute), which also restarts its clock (`retireSeen`); the player's car; mission cars
   (`mission`, `failedMission`, `missionTag`, `mission.car`); an intact owned car; a garage job, taxi ride, dealer test
   drive or carjack in progress; police crews' cars (`crewDeployed`, `blockade`, officers out of it); a live police or air

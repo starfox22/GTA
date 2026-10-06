@@ -200,6 +200,8 @@
     }
     /* Roughly what the camera can see, so people only pop in and out off screen. */
     function beachInView(x, y, margin = 90) {
+      // The chase view: the chase camera's frustum within its sight reach (chase-rules.js).
+      if (chaseCameraLive()) return chaseInView(x, y, margin);
       const vh = clamp(viewportHeight * 0.68, 430, 630) / Math.max(0.14, worldZoom),
         halfW = (vh * viewportWidth) / Math.max(1, viewportHeight) / 2 + margin,
         halfH = vh * 0.66 + margin;

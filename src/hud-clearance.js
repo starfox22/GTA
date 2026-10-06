@@ -7,7 +7,8 @@
      * up over a bus or a fast car. Now, in every HUD pass:
      *   - hudPlayerBox() puts the player on screen: the vehicle's footprint and roof (or a
      *     standing person) through the street camera (orthographic, pitched as in
-     *     flight-view3d.js; worldZoom in force; the 2D view's scale without a renderer);
+     *     flight-view3d.js; worldZoom in force; the 2D view's scale without a renderer), or
+     *     in the chase view the box's eight corners through the chase camera;
      *   - while the open card would come within CLEAR_MARGIN px of that box, the card
      *     yields: it shows its one-line strip and its six seconds of reading time wait
      *     (missionCardUntil and the INCOMING CALL notice are held), so it opens for the rest
@@ -53,10 +54,13 @@
       player: { l: 0, t: 0, r: 0, b: 0, ok: false },
     };
     /* The player on screen (vehicle or person) as a box in CSS px, written into `out`;
-       out.ok false when the view is not the street camera (aircraft, parachute, rides). */
+       out.ok false when the view is not the street camera (aircraft, parachute, rides).
+       In the chase view: the box's corners through the chase camera (chase-rules.js
+       chasePlayerBox), aircraft and parachute included (the chase camera frames them too). */
     function hudPlayerBox(out) {
       const c = player.car;
       out.ok = false;
+      if (chaseCameraLive()) return transitRide ? out : chasePlayerBox(out);
       if ((c && isAircraft(c)) || player.parachute || player.coaster || transitRide) return out;
       const body = c || player,
         spec = c ? vehicleSpec(c) : null,

@@ -72,11 +72,25 @@ rendering.md Cameras and view.
 - The reticle (chase-hud.js, chase-view.css): on foot with a gun; red over a target, a flash on a
   shot, a ring while aiming. `body.chase-locked` hides the cursor while the pointer is captured.
 
+## Game rules in the chase view (chase-rules.js)
+
+- In view (`crowdInView`, so every caller; `beachInView`, the wreck limit): the frustum within
+  `CHASE_SIGHT_REACH` (200 m), the margin a world radius; per entity, no building march.
+- Spawn spots (`spotUnseen(x, y, margin, SPOT_*)`; exactly `!crowdInView` in the street view): off the
+  frustum turned out `CHASE_SPAWN_TURN` either side, or hidden behind a building from everywhere the
+  camera can swing to. The crowd and traffic streams lean their centre up the camera's heading.
+- Fire (`shooterInView`): chest in the frame, within `CHASE_FIRE_REACH` (150 m), not behind a building.
+- Aim: `aim()` is `chaseAimHeading` for every device (`chaseAim`); the soft lock, drive-by, tank,
+  mounted guns, Apache and volleyball follow the reticle. HUD: `hudPlayerBox` projects the box corners.
+- Details where each rule lives: police-and-combat-ammo.md (ON-SCREEN RULE), people-and-crowd-living-
+  city.md (streams, wrecks), police-and-combat-driveby.md, ui-and-settings.md (card clearance).
+  Console `viewRules(x, y, margin)`, `viewPopAudit(seconds, keys, turn)` (what pops into view: keep 0).
+
 ## Gotchas
 
 - Anything that asks "is this on screen" or "where does the aim point" must ask the chase camera when
   `chaseCameraLive()` (shooterInView, crowd and traffic spawning, the wreck limit, the HUD's player
-  box, the aim): never `cameraTarget` and the street footprint alone.
+  box, the aim): never `cameraTarget` and the street footprint alone; the helpers are in chase-rules.js.
 - `chaseCameraLive()` is false on the coaster and the Eye (the ride camera draws), and `chaseCam.ready`
   is false for the first step after a reset: the renderer keeps the street camera until it is placed.
 - Console: `viewMode`, `chaseCamera()` (with the renderer's `view`), `chaseLook(dx, dy, headingDeg,

@@ -166,7 +166,9 @@
      * the rule is off. The view is the street camera's ground footprint
      * (screenViewHalf), centred where the camera looks (`cameraTarget`: on foot
      * it leads toward the aim in a fight, in a car along the road ahead;
-     * camera-feel.js), not on the player.
+     * camera-feel.js), not on the player. In the chase view it is the chase
+     * camera's frame: the shooter's chest on screen (less the inset), within
+     * CHASE_FIRE_REACH and not behind a building (chase-rules.js).
      */
     const STREET_VIEW_SIN_PITCH = 680 / Math.hypot(680, 560);
     const screenView = { w: 0, h: 0, width: 0, height: 0, zoom: 0 };
@@ -186,6 +188,8 @@
     }
     function shooterInView(shooter, inset = 20) {
       if (isAircraft(player.car) || player.parachute) return true;
+      // The chase view: the shooter's chest in the chase camera's frame, near enough and not behind a building.
+      if (chaseCameraLive()) return chaseShooterInView(shooter, inset);
       const view = screenViewHalf();
       return Math.abs(shooter.x - cameraTarget.x) < view.w - inset && Math.abs(shooter.y - cameraTarget.y) < view.h - inset;
     }
@@ -404,6 +408,8 @@
       };
     }
     function playerShotTarget(a) {
+      // The chase view: whoever is nearest the reticle (or the cursor) on screen, whatever aims (chase-rules.js).
+      if (chaseCameraLive()) return chaseShotTarget();
       const candidates = [
         ...wildlife.filter((a) => a.species === 'bear' || mouse.active),
         ...enemies,
@@ -543,8 +549,8 @@
       if (airDispatchTimer > 0 && (!c || c.airRetreat)) return null;
       if (c && !missionScoped) return c;
       if (!c) {
-        // The helicopter comes in from across the city.
-        const a = player.a + Math.PI * 0.7,
+        // The helicopter comes in from across the city (in the chase view from well off the camera's heading).
+        const a = (chaseCameraLive() ? (chaseCam.viewYaw ?? player.a) : player.a) + Math.PI * 0.7,
           x = target.x + Math.cos(a) * 900,
           y = target.y + Math.sin(a) * 900;
         c = makeCar(

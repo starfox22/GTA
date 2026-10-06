@@ -143,20 +143,33 @@
       );
     }
     function trafficRing() {
+      // The chase view sees down the street, not a footprint that grows with the street zoom.
+      if (chaseCameraLive()) return TRAFFIC_RING;
       const v = crowdViewHalf();
       return Math.max(TRAFFIC_RING, v.w + 450, v.h + 450);
     }
+    /* Where the traffic is counted and spawned round: the player, or in the chase view the player leaned
+       toward the camera's heading, so the street ahead fills and spots beyond the sight reach lie on it
+       (chase-rules.js CHASE RULES, LEAN). */
+    const trafficCentreAt = { x: 0, y: 0 };
+    function trafficStreamCentre(ring) {
+      return chaseCameraLive() ? chaseStreamCentre(trafficCentreAt, ring * CHASE_TRAFFIC_LEAN) : player;
+    }
     /* A lane spot just beyond the edge of the screen (anywhere in the ring on a
        settle), clear of junctions and other cars. When the player drives fast the
-       spots lean ahead of them, so they meet the traffic rather than trail it. */
+       spots lean ahead of them, so they meet the traffic rather than trail it (in the
+       chase view the whole ring leans the camera's way instead, and a spot hidden
+       behind a building will do). */
     function trafficSpawnSpot(settle, ring) {
       const car = player.car,
         vx = car ? car.vx || 0 : 0,
         vy = car ? car.vy || 0 : 0,
-        fast = Math.hypot(vx, vy) > 30 * KMH;
+        chase = chaseCameraLive(),
+        fast = !chase && Math.hypot(vx, vy) > 30 * KMH,
+        centre = trafficStreamCentre(ring);
       for (let attempt = 0; attempt < 24; attempt++) {
-        let cx = player.x,
-          cy = player.y;
+        let cx = centre.x,
+          cy = centre.y;
         if (fast && seededRandom() < 0.6) {
           const s = Math.hypot(vx, vy);
           cx += (vx / s) * ring * 0.55;
@@ -172,8 +185,8 @@
           x = vertical ? road - dir * 25 : along,
           y = vertical ? along : road + dir * 25,
           a = vertical ? (dir * Math.PI) / 2 : dir > 0 ? 0 : Math.PI;
-        if (Math.abs(x - player.x) > ring + 200 || Math.abs(y - player.y) > ring + 200) continue;
-        if (!inCityGrid(x, y) || (!settle && crowdInView(x, y, 150))) continue;
+        if (Math.abs(x - centre.x) > ring + 200 || Math.abs(y - centre.y) > ring + 200) continue;
+        if (!inCityGrid(x, y) || (!settle && !spotUnseen(x, y, 150, SPOT_CAR))) continue;
         if (inHarbor(x, y, 70) || !landAt(x, y) || !cityStreetAt(x, y)) continue;
         let crowded = false;
         for (const o of vehicles)
@@ -220,15 +233,16 @@
       let near = 0,
         pool = 0;
       const far = [],
-        since = clamp(gameTime - (trafficStream.lastTick ?? gameTime), 0, 1);
+        since = clamp(gameTime - (trafficStream.lastTick ?? gameTime), 0, 1),
+        centre = trafficStreamCentre(ring);
       trafficStream.lastTick = gameTime;
       for (const c of vehicles) {
         if (!c.ai || c.cop || c.isle || c.countyRoute || isBoat(c) || isAircraft(c)) continue;
         if (c.streamed) pool++;
         // How long it has stood still (a deadlock nobody is watching is cleared).
         c.trafficIdle = Math.abs(c.speed || 0) < 3 * KMH ? (c.trafficIdle || 0) + since : 0;
-        const dx = Math.abs(c.x - player.x),
-          dy = Math.abs(c.y - player.y),
+        const dx = Math.abs(c.x - centre.x),
+          dy = Math.abs(c.y - centre.y),
           outside = dx > ring + 250 || dy > ring + 250,
           jammed = c.trafficIdle > TRAFFIC_JAM_SECONDS;
         if (dx < ring && dy < ring && !jammed) near++;
@@ -236,7 +250,7 @@
       }
       trafficStream.near = near;
       // The farthest goes first: it is the least likely to be missed.
-      far.sort((a, b) => Math.abs(b.x - player.x) + Math.abs(b.y - player.y) - Math.abs(a.x - player.x) - Math.abs(a.y - player.y));
+      far.sort((a, b) => Math.abs(b.x - centre.x) + Math.abs(b.y - centre.y) - Math.abs(a.x - centre.x) - Math.abs(a.y - centre.y));
       let taken = 0;
       const retire = (c) => {
         const index = vehicles.indexOf(c);
@@ -301,6 +315,8 @@
     /* Developer console: the traffic round the player. */
     function trafficReport() {
       const ring = trafficRing(),
+        // The box the streamer counts (round the player; leaned the camera's way in the chase view).
+        centre = trafficStreamCentre(ring),
         types = {},
         out = {
           enabled: trafficStream.enabled,
@@ -330,7 +346,7 @@
         if (!c.ai || c.cop || c.isle || c.countyRoute || isBoat(c) || isAircraft(c)) continue;
         if (c.streamed) out.pool++;
         if (streamableTraffic(c)) out.streamable++;
-        if (Math.abs(c.x - player.x) >= ring || Math.abs(c.y - player.y) >= ring) continue;
+        if (Math.abs(c.x - centre.x) >= ring || Math.abs(c.y - centre.y) >= ring) continue;
         out.near++;
         types[c.type] = (types[c.type] || 0) + 1;
         const moving = Math.abs(c.speed || 0) > 3 * KMH;

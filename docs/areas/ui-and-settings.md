@@ -129,6 +129,12 @@ navigation.js (big map, GPS), cycles.js (bike share), src/shell.html + src/ui/* 
   would still cover the player. Boxes are read in `measureMissionCard` (runFrame start, beside the dock
   line). Console `hudClearance()`, `hudOverlaps()` (HUD boxes that overlap each other or the player);
   tools/tests/hud-clearance.mjs, hud-layout.mjs (960x600 at zero overlaps, keyboard and touch).
+  **In the chase view** `hudPlayerBox` is the eight corners of the player's box (0.8 m wide on foot,
+  the vehicle's footprint and height, aircraft and parachute included) through the chase camera
+  (chase-rules.js `chasePlayerBox`; a corner behind the near plane counts as on it); tools/tests/
+  chase-hud-box.mjs. The chase camera stands the player bottom centre (on foot about x 316-477, y
+  263-598 at 960x600), right where the bottom-centre card and strip sit: there the card always folds
+  and the strip fades, so the chase view wants the card elsewhere (open item).
 - Narrow windows (<= 980 px): the notices start under the waypoint pill (116 px) and stop short of
   the centre (`calc(50vw - 150px)`). The dispatch / radio caption (`#radioCaption`, top centre) is never
   wider than the space between the notices' column and the right edge's mirror: a long line wraps.

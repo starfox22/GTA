@@ -304,7 +304,8 @@
     /**
      * THE PLAYER'S HIT
      * `soft` is the Walk (Shift) set; a spike when running in by the net under a
-     * high ball. The aim comes from the mouse (if it is in use) or the movement keys.
+     * high ball. The aim comes from the mouse (if it is in use) or the movement keys;
+     * in the chase view from the reticle (or the cursor).
      */
     function volleyAimPoint(team) {
       const c = court(),
@@ -312,8 +313,10 @@
         inset = 0.6 * VU;
       let x = c.x + other * c.w * 0.3,
         y = c.y;
-      if (mouse.active && city3D?.groundPoint) {
-        const g = city3D.groundPoint(mouse.x, mouse.y, 0);
+      // The chase view: the ground under the reticle (or the cursor), whatever aims (chase-rules.js).
+      const chase = chaseCameraLive();
+      if (chase || (mouse.active && city3D?.groundPoint)) {
+        const g = chase ? chaseGroundPoint(0) : city3D.groundPoint(mouse.x, mouse.y, 0);
         if (g) {
           y = g.y;
           // A point on the other side sets the depth too; on this side only the line.

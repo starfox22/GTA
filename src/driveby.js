@@ -39,7 +39,10 @@
      * (`vehicle.windowsDown`, read by damage3d-bodies.js). The renderer draws
      * the pose from `driveBy` (crowd3d-driveby.js); the bullet leaves from the
      * same muzzle (driveByGrip). There are no NPC drive-bys: any future shooter
-     * in a vehicle goes through driveByAim with its own vehicle.
+     * in a vehicle goes through driveByAim with its own vehicle. In the chase view
+     * the aim is the camera's reticle for every device (aim() is chaseAimHeading
+     * from the vehicle: chase-rules.js), through the same arcs, and the cross is
+     * placed by the chase camera (none while it lies behind the camera).
      */
     const DRIVE_BY_DEG = Math.PI / 180,
       DRIVE_BY_EXTEND = 0.26,
@@ -447,8 +450,10 @@
       if (best) return headingBetween(c, best);
       return normalizeAngle(c.a - Math.PI / 2);
     }
-    /* A map point (x, y, height) on screen: the 3D camera's projection, else the 2D view's. */
+    /* A map point (x, y, height) on screen: the 3D camera's projection, else the 2D view's; in the chase view
+       the chase camera's (with or without a renderer; `behind` when it lies behind the camera). */
     function driveByScreenPoint(x, y, height) {
+      if (chaseCameraLive()) return chaseProject(x, y, height, { x: 0, y: 0, depth: 0, behind: false });
       if (city3D) return city3D.project(x, y, height);
       return { x: (x - cameraTarget.x) * canvasScale + viewportWidth / 2, y: (y - cameraTarget.y) * canvasScale + viewportHeight / 2 };
     }
@@ -466,11 +471,13 @@
         c = player.car;
       if (!el) return;
       const age = gameTime - d.crossAt,
-        show = !!c && d.car === c && gameMode === 'play' && age >= 0 && age < DRIVE_BY_CROSS_LIFE;
+        live = !!c && d.car === c && gameMode === 'play' && age >= 0 && age < DRIVE_BY_CROSS_LIFE,
+        p = live ? driveByCrossPoint(c, d.crossRel) : null,
+        s = live ? driveByScreenPoint(p.x, p.y, p.height) : null,
+        // (The chase camera can look away from it: none behind the camera.)
+        show = live && !(chaseCameraLive() && s.behind);
       el.classList.toggle('hidden', !show);
       if (!show) return;
-      const p = driveByCrossPoint(c, d.crossRel),
-        s = driveByScreenPoint(p.x, p.y, p.height);
       el.style.transform = 'translate(' + s.x.toFixed(0) + 'px,' + s.y.toFixed(0) + 'px)';
       el.style.opacity = (1 - (age / DRIVE_BY_CROSS_LIFE) ** 2).toFixed(2);
     }

@@ -95,7 +95,7 @@
         const a = dirs[Math.floor(seededRandom() * 4)],
           x = jx - Math.cos(a) * 150,
           y = jy - Math.sin(a) * 150;
-        if (crowdInView(x, y, 160) || !cityStreetAt(x, y) || !groundAt(x, y, 20) || solid(x, y, 16)) continue;
+        if (!spotUnseen(x, y, 160, SPOT_AMBULANCE) || !cityStreetAt(x, y) || !groundAt(x, y, 20) || solid(x, y, 16)) continue;
         if (!canSpawnCar('ambulance', x, y, a, 8)) continue;
         return { x, y, a, junction: { x: jx, y: jy } };
       }
@@ -204,7 +204,7 @@
       }
       job.stuckFor = (speed < 3 || job.slow) && left > 40 ? job.stuckFor + deltaSeconds : 0;
       if ((job.stuckFor > 8 || gameTime - job.startedAt > 70) && !crowdInView(c.x, c.y, 120)) {
-        if (!crowdInView(job.stop.x, job.stop.y, 60) && canSpawnCar('ambulance', job.stop.x, job.stop.y, job.heading, 4)) {
+        if (spotUnseen(job.stop.x, job.stop.y, 60, SPOT_AMBULANCE) && canSpawnCar('ambulance', job.stop.x, job.stop.y, job.heading, 4)) {
           Object.assign(c, { x: job.stop.x, y: job.stop.y, a: job.heading, vx: 0, vy: 0, speed: 0 });
           return arriveMedicJob(job);
         }
@@ -235,7 +235,7 @@
         for (let t = len - 40; t >= (j === index ? 80 : 40); t -= 40) {
           const x = from.x + Math.cos(a) * t,
             y = from.y + Math.sin(a) * t;
-          if (crowdInView(x, y, 120) || !cityStreetAt(x, y) || !canSpawnCar('ambulance', x, y, a, 4)) continue;
+          if (!spotUnseen(x, y, 120, SPOT_AMBULANCE) || !cityStreetAt(x, y) || !canSpawnCar('ambulance', x, y, a, 4)) continue;
           // Nobody standing where it lands, or just ahead (it would wait for them).
           let people = false;
           forEachPedestrianNear(x + Math.cos(a) * 30, y + Math.sin(a) * 30, 70, (p) => {

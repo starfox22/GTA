@@ -168,7 +168,7 @@
       for (const x of ROAD_CENTERS)
         for (const y of ROAD_ROWS) {
           const d = Math.hypot(x - centre.x, y - centre.y);
-          if (d < 520 || d > 1250 || crowdInView(x, y, 140)) continue;
+          if (d < 520 || d > 1250 || !spotUnseen(x, y, 140, SPOT_CAR)) continue;
           if (inHarbor(x, y, 100) || harborPoliceProtected(x, y, 60) || !groundAt(x, y, 30)) continue;
           if (solid(x, y, 30) || vehicles.some((c) => Math.abs(c.x - x) < 70 && Math.abs(c.y - y) < 70)) continue;
           const toward = Math.cos(normalizeAngle(Math.atan2(y - centre.y, x - centre.x) - heading));
