@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-504 files in the include tree, 175,186 lines.
+509 files in the include tree, 176,176 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -402,12 +402,12 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/render3d.js ▸ Three.js renderer and resource lifecycle
 
-- `src/flight-view3d.js`   892 — Flight camera and aerial perspective
-- `src/chase-view3d.js`   189 — Chase view 3D: the perspective camera behind the player (chase-camera.js says where it stands), the ground it sees for culling and level of detail …
+- `src/flight-view3d.js`   637 — ▸ Flight camera and aerial perspective
+- `src/chase-view3d.js`   203 — ▸ Chase view 3D: the perspective camera behind the player (chase-camera.js says where it stands), the ground it sees for culling and level of detail …
 - `src/postfx3d.js`   977 — ▸ HDR post-processing pipeline
 - `src/lighting3d.js`    27 — ▸ Sun, sky, reflections and night light
 - `src/searchlight3d.js`   937 — Searchlights: light shafts, ground pools, the helicopter's spot
-- `src/render3d-statics.js`   317 — Static building batches, static cells and culling (staticInView), shared materials.
+- `src/render3d-statics.js`   362 — Static building batches, static cells and culling (staticInView), shared materials.
 - `src/render3d-terrain.js`   297 — Mesh/box/rod helpers, wall textures, the ground mesh and kerbs.
 - `src/vegetation3d.js`    63 — ▸ Tree library: species, foliage atlas, wind, LOD
 - `src/render3d-streetprops.js`   297 — ▸ Street lamps and their glow halos, vehicle halos, blossom, sign() boards.
@@ -477,8 +477,19 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/render3d-resources.js`   520 — GPU resource lifecycle: shared geometries, model pruning and disposal.
 - `src/render3d-hiccups.js`   377 — Hiccup log: what each drawn frame created for the first time (shader programs, textures, geometries) and the slowest frames' renderer CPU split; read …
 - `src/payphone3d.js`   597 — The story payphone where mission 1 starts: a 1990s yellow pedestal payphone with its lit PHONE sign, handset, keypad, directory and grime, the …
-- `src/render3d-api.js`   535 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
-- `src/render3d-frame.js`   702 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
+- `src/render3d-api.js`   541 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
+- `src/render3d-frame.js`   704 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
+
+## src/flight-view3d.js ▸ Flight camera and aerial perspective
+
+- `src/flight-view3d-far.js`   373 — Far scenery: The static batches keep one material per building (for each building's own window lighting), so the whole city is ~8000 draw calls, and …
+
+## src/chase-view3d.js ▸ Chase view 3D: the perspective camera behind the player (chase-camera.js says where it stands), the ground it sees for culling and level of detail …
+
+- `src/chase-view3d-far.js`   156 — Chase far cells: Beyond CHASE_FAR_NEAR (by tier) the chase view draws the far copy of the city (FAR SCENERY, flight-view3d.js) instead of the full …
+- `src/chase-view3d-props.js`   213 — Chase props: Small props step out of the chase view by their own size against their distance: a prop is drawn while its largest side (height …
+- `src/chase-view3d-draws.js`   113 — Console only: the last frame's draw calls by kind and by distance from the camera (metres to the nearest point of each object's bounding sphere), for …
+- `src/chase-view3d-casters.js`   304 — Chase shadow casters: The shadow box is square round the sphere of the near slice of the view, so it holds far more scenery than can shade what the …
 
 ## src/postfx3d.js ▸ HDR post-processing pipeline
 
@@ -660,7 +671,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/crowd3d-draw.js`   559 — drawCrowdPerson(): weapon holds, phone poses and the far-figure shortcut.
 - `src/crowd3d-special.js`   484 — Crowd 3D special characters: player, officers, soldiers, gangs, swimmers, parachutes (specialSpec, applyLimbOverrides).
 - `src/crowd3d-driveby.js`   162 — Crowd 3D drive-by pose: the player at the wheel with the gun arm out of the window, torso and head turned to the aim, recoil per shot …
-- `src/crowd3d-frame.js`   261 — updateCrowd3D(): per-frame packing, car enter and exit transitions, dogs, crowd stats.
+- `src/crowd3d-frame.js`   280 — updateCrowd3D(): per-frame packing, car enter and exit transitions, dogs, crowd stats.
 
 ## src/clouds3d.js ▸ Volumetric clouds and cloud shadows
 
