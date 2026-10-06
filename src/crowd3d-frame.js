@@ -111,11 +111,21 @@
       /* Level of detail from the zoom: 2 full (hands and small props once a figure is 25 px
          or more), 1 without them, 0 far figures. */
       function crowdDetail() {
-        // The chase view stands among the people: full detail (chase-view3d.js).
+        // The chase view stands among the people: full detail, and each person by their own distance (crowdChaseDetail).
         if (chaseViewActive) return 2;
         const lod = activeTier ? activeTier.lodBias : 1,
           zoom = flightViewActive ? viewZoom : worldZoom;
         return zoom >= 1.3 * lod ? 2 : zoom >= 0.34 * lod ? 1 : 0;
+      }
+      /* The chase view: a person's detail by the street zoom they are drawn at (chaseZoomAt), on the
+         street view's steps, and -1 (not drawn) once a figure would be under ~3 pixels, deep in the haze;
+         their body set by the same zoom (the close set where a head is more than a few pixels across). */
+      const CROWD_CHASE_LEAST_ZOOM = 0.15;
+      function crowdChaseDetail(p) {
+        const lod = activeTier ? activeTier.lodBias : 1,
+          zoom = chaseZoomAt(p.x, p.y);
+        BODY = zoom >= 2.4 ? BODY_CLOSE : BODY_STREET;
+        return zoom >= 1.3 * lod ? 2 : zoom >= 0.34 * lod ? 1 : zoom >= CROWD_CHASE_LEAST_ZOOM * lod ? 0 : -1;
       }
       /**
        * Per frame: pack every visible pedestrian, their dog, the special
@@ -132,37 +142,46 @@
         const detail = crowdDetail(),
           zoom = chaseViewActive ? 4 : flightViewActive ? viewZoom : worldZoom,
           zoomedIn = chaseViewActive || (flightViewActive ? viewZoom : worldZoom) > 0.22;
-        // Close-up detail only where a head is more than a few pixels across.
-        BODY = zoom >= 2.4 ? BODY_CLOSE : BODY_STREET;
+        // Close-up detail only where a head is more than a few pixels across (in the chase view each person's own).
+        const frameBody = zoom >= 2.4 ? BODY_CLOSE : BODY_STREET;
+        BODY = frameBody;
+        // The chase view's far figures stand well beyond its shadow reach (chase-view3d.js CHASE SHADOWS).
+        if (P.figure.mesh.castShadow === chaseViewActive) P.figure.mesh.castShadow = P.figureLeg.mesh.castShadow = !chaseViewActive;
         trackCarTransition();
         if (zoomedIn)
-          for (const p of pedestrians) {
+          for (let i = 0; i < pedestrians.length; i++) {
+            const p = pedestrians[i];
             if (p.hidden) continue;
-            const view = entityInView(p, 30),
-              dogView = p.dog && entityInView(p.dog, 20);
+            const personDetail = chaseViewActive ? crowdChaseDetail(p) : detail,
+              view = personDetail >= 0 && entityInView(p, 30),
+              dogView = personDetail >= 0 && p.dog && entityInView(p.dog, 20);
             if (!view && !dogView) {
               const s = crowdState.get(p);
               if (s) s.seen = false;
               continue;
             }
-            const hand = drawCrowdPerson(p, stateFor(p), deltaSeconds, detail, null);
+            const hand = drawCrowdPerson(p, stateFor(p), deltaSeconds, personDetail, null);
             drawn++;
             if (p.dog) drawCrowdDog(p, hand, deltaSeconds);
           }
-        for (const p of specials) {
-          const isPlayer = p === player;
+        for (let i = 0; i < specials.length; i++) {
+          const p = specials[i],
+            isPlayer = p === player;
           if (p.hidden) continue;
           if (isPlayer && (player.car || transitRide || taxiRide)) continue;
-          if (!isPlayer && (!zoomedIn || !entityInView(p, 35))) {
+          const personDetail = chaseViewActive && !isPlayer ? crowdChaseDetail(p) : detail;
+          if (!isPlayer && (!zoomedIn || personDetail < 0 || !entityInView(p, 35))) {
             const s = crowdState.get(p);
             if (s) s.seen = false;
             continue;
           }
           const spec = specialSpec(p),
             s = stateFor(p);
-          drawCrowdPerson(p, s, deltaSeconds, isPlayer ? Math.max(detail, 1) : detail, spec);
+          if (isPlayer) BODY = frameBody;
+          drawCrowdPerson(p, s, deltaSeconds, isPlayer ? Math.max(personDetail, 1) : personDetail, spec);
           drawn++;
         }
+        BODY = frameBody;
         drawEnterCar(deltaSeconds, detail);
         if (zoomedIn) drawn += drawBeachgoers(deltaSeconds, detail);
         crowdPackMs = performance.now() - packStart;

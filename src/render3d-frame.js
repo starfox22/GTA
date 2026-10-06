@@ -85,7 +85,9 @@
               Math.abs(cell.x - viewCenter.x) < batchReach + cell.half &&
               Math.abs(cell.z - viewCenter.y) < batchReach + cell.half &&
               (!chaseViewActive || chaseCellShown(cell.x, cell.z, cell.half));
-          // Signals are re-placed from their groups' visibility: after the cull, or a
+          // The chase view's small props by their own distance (chase-view3d.js CHASE PROPS).
+          updateChaseProps();
+          // Signals are re-placed from their groups' visibility: after the cell cull, or a
           // junction coming into view drew its posts and bulbs a frame late (lights
           // popping in at the edge of the frame as the camera moved).
           updateTrafficVisuals();

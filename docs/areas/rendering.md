@@ -59,6 +59,8 @@ The image pipeline, light, searchlights and the cutaway: rendering-lighting.md.
   `fog.near` belongs to `updateFlightView`. Nothing may lay a uniform wash over the frame.
 - From the air: small props drop by `viewZoom`, traffic becomes impostors, and below
   `viewZoom` 0.2 a merged far copy of the scenery (FAR SCENERY) replaces the batches.
+- Chase view (V): draw distance, far cells from the far copy, shadow casters, props, people and
+  vehicles by distance: rendering-chase.md.
 - Clouds (clouds3d*.js): a ray-marched layer whose height is the game's (`cloudBaseAt` /
   `cloudTopAt`, clouds.js: ~250-420 m by weather and area), drawn when the flight camera is
   above the lowest cloud, a veil and wisps near the camera in cloud; the same density field
