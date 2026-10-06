@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-504 files in the include tree, 175,186 lines.
+505 files in the include tree, 175,189 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -404,7 +404,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/flight-view3d.js`   892 — Flight camera and aerial perspective
 - `src/chase-view3d.js`   189 — Chase view 3D: the perspective camera behind the player (chase-camera.js says where it stands), the ground it sees for culling and level of detail …
-- `src/postfx3d.js`   977 — ▸ HDR post-processing pipeline
+- `src/postfx3d.js`   790 — ▸ HDR post-processing pipeline
 - `src/lighting3d.js`    27 — ▸ Sun, sky, reflections and night light
 - `src/searchlight3d.js`   937 — Searchlights: light shafts, ground pools, the helicopter's spot
 - `src/render3d-statics.js`   317 — Static building batches, static cells and culling (staticInView), shared materials.
@@ -481,6 +481,10 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/render3d-frame.js`   702 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
 
 ## src/postfx3d.js ▸ HDR post-processing pipeline
+
+- `src/postfx3d-composite.js`   190 — ▸ Post composite (one material per tier): AO upsampling, wet reflections, bloom, ACES tone curve, film grade, vignette and dither; the sun glare lands …
+
+## src/postfx3d-composite.js ▸ Post composite (one material per tier): AO upsampling, wet reflections, bloom, ACES tone curve, film grade, vignette and dither; the sun glare lands …
 
 - `src/clouds3d-lens.js`    44 — Clouds 3D lens: beads of water on the camera's lens after a cloud, refracting the frame and swept up it by the freefall airflow; a GLSL chunk and …
 
