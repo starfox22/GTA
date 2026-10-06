@@ -394,6 +394,21 @@
           hoodSet.normal[i + 1] /= n;
           hoodSet.normal[i + 2] /= n;
         }
+        // ---- The cabin behind the glass (cars3d-interior.js CABINS), last in the trim ----
+        // The body impostors draw the trim up to `outerTrim` (kit.trimOuter); the people sit by `seats`.
+        const outerTrim = sets.trim.index.length,
+          seats = g ? carSeatPlan(g, l, w, M, body.name, body.seats) : null;
+        if (g && !g.open && body.cabin !== false) {
+          // The carpet over the shell's top inside the glass (else the paint shows through it); a two-seater's
+          // stops at the bulkhead behind the seats.
+          const from = seats.two ? seats.x - 0.26 * M - Math.sin(seats.recline) * 0.1 * M : g.xb * l + 0.04 * M,
+            half = cabinGlassHalf(g, w, g.base) - 0.02 * M;
+          patch(sets.trim, 'top', from, g.xf * l - 0.04 * M, -half, half, { color: '#1c1d1f', finish: 'matte', lift: 0.012 * M, cols: 8, rows: 4 });
+          carCabinParts((geo, matrix, color, finish) => civAddMatrix(sets.trim, geo, matrix, { color, finish }), g, l, w, seats, CAR_CABIN_TRIM[body.name] || CAR_CABIN_TRIM.default, {
+            hatch: !!body.hatch,
+            deckY: (x) => topY(x, 0),
+          });
+        }
         // ---- Bumpers (the damage model's two loose parts), normalised to a unit box ----
         const bumperGeometry = (front) => {
           const spec = body.bumpers?.[front ? 0 : 1] || {},
@@ -421,12 +436,17 @@
           return { geo, centre: centre.clone(), size: size.clone(), material: spec.material || 'paint' };
         };
         const kit = {
+          // The body and size it was built for (DeadEndCity.carModels' cabin report).
+          type: body.name,
+          l,
           shell: civShellGeometry(body, l, w),
           cabin: g ? civCabinGeometry(body, l, w) : null,
           hood: civGeometry(hoodSet, { colors: false, finish: false }),
           hoodBaseY,
           paint: civGeometry(sets.paint, { colors: false, finish: false }),
           trim: civGeometry(sets.trim),
+          trimOuter: null,
+          seats,
           drl: sets.drl.count ? civGeometry(sets.drl, { finish: false }) : null,
           lamps: {},
           halos: k.halos,
@@ -439,6 +459,18 @@
         };
         for (const name of ['headLeft', 'headRight', 'tailLeft', 'tailRight'])
           kit.lamps[name] = sets[name].count ? civGeometry(sets[name], { finish: false }) : null;
+        kit.trimOuter = civDrawRange(kit.trim, outerTrim);
         civKits.set(key, kit);
         return kit;
+      }
+      // The first `count` indices of `geo` as a geometry of their own, on the same buffers (nothing is uploaded twice).
+      function civDrawRange(geo, count) {
+        if (count >= geo.index.count) return geo;
+        const part = new Three.BufferGeometry();
+        for (const name in geo.attributes) part.setAttribute(name, geo.attributes[name]);
+        part.setIndex(geo.index);
+        part.setDrawRange(0, count);
+        part.boundingSphere = geo.boundingSphere;
+        sharedGeometries.add(part);
+        return part;
       }

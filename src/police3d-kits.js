@@ -320,8 +320,22 @@
           kit.doorHeight = 14;
           kit.doorY = 12.9;
         }
+        // ---- The cabin behind the glass (cars3d-interior.js CABINS), last in the trim: the impostors stop before it ----
+        const outerTrim = trim.index.length;
+        kit.seats = null;
+        if (!bearcat) {
+          const M = UNITS_PER_METRE / POLICE_DRAW_SCALE,
+            half = cabinGlassHalf(g, w, g.base) - 0.02 * M;
+          kit.seats = carSeatPlan(g, l, w, M, body.name);
+          // The carpet over the shell's top inside the glass.
+          let deck = 0;
+          for (let t = g.xb; t <= g.xf; t += 0.02) deck = Math.max(deck, topAt(t * l));
+          policeAdd(trim, boxGeo, ((g.xb + g.xf) / 2) * l, deck + 0.02 * M, 0, (g.xf - g.xb) * l - 0.1 * M, 0.04 * M, half * 2, '#1c1d1f');
+          carCabinParts((geo, matrix, color) => policeAddMatrix(trim, geo, matrix, color), g, l, w, kit.seats, CAR_CABIN_TRIM.police, { police: true, hatch: body.kind === 'suv', deckY: () => deck + 0.04 * M });
+        }
         kit.paint = policeGeometry(paint);
         kit.trim = policeGeometry(trim);
+        kit.trimOuter = civDrawRange(kit.trim, outerTrim);
         kit.bright = bright.count ? policeGeometry(bright) : null;
         kit.lights = policeGeometry(lights, { channels: true });
         kit.beaconLeft = beaconLeft.count ? policeGeometry(beaconLeft) : null;
@@ -365,6 +379,15 @@
         policeRims.set(key, geo);
         return geo;
       }
+      // A patrol car's see-through glass (cars3d-interior.js CAR GLASS); its impostors keep policeGlass.
+      let policeSeeGlass = null;
+      function policeCabinGlass() {
+        if (!policeSeeGlass) {
+          policeSeeGlass = carGlassMaterial('#0f171d', 0.56);
+          sharedMaterials.add(policeSeeGlass);
+        }
+        return policeSeeGlass;
+      }
       // ---- The model -----------------------------------------------------------------------
       /*
        * Builds a police vehicle with the same contract as makeVehicle's cars
@@ -402,7 +425,7 @@
             envMapIntensity: 1,
           });
         const shell = mesh(kit.shell, paint, bodyGroup, 0, 0, 0),
-          cabin = mesh(kit.cabin, policeGlass, bodyGroup, 0, 0, 0),
+          cabin = mesh(kit.cabin, kit.seats ? policeCabinGlass() : policeGlass, bodyGroup, 0, 0, 0),
           hood = mesh(kit.hood, paint, bodyGroup, l * 0.34, body.h + 0.05, 0, l * 0.25, 0.4, w * (body.kind === 'bearcat' ? 0.82 : 0.7));
         hood.rotation.z = body.hoodTilt || 0;
         const panels = mesh(kit.paint, paint, bodyGroup, 0, 0, 0),
@@ -490,8 +513,11 @@
           liveryColor: look.paint,
           finish,
           bumperMaterial: policeBumperMaterial,
-          glass: policeGlass,
+          glass: cabin.material,
           panelGeometry: kit.door,
+          // Where the crew sits (cars3d-interior.js carSeatPlan; crowd3d-driveby.js SEATED OCCUPANTS).
+          seats: kit.seats,
+          seated: 0,
           trunkGeometry: kit.trunk,
           lightMaterial,
           levels: lightMaterial.uniforms.levels.value,
@@ -503,7 +529,7 @@
             { mesh: cabin, material: policeGlass, shadow: true },
             { mesh: hood, material: livePaint || null, tint: true },
             { mesh: panels, material: livePaint || null, tint: true },
-            { mesh: trim, material: policeTrimMaterial },
+            { geometry: kit.trimOuter, material: policeTrimMaterial },
             ...(kit.beaconLeft ? [{ geometry: kit.beaconLeft, beacon: 'left' }, { geometry: kit.beaconRight, beacon: 'right' }] : []),
           ],
         };
@@ -547,6 +573,8 @@
        * glow, once a frame for each police model in view (render3d.js vehicle pass).
        */
       function animatePoliceVehicle(c, m) {
+        // The crew shows through the glass (crowd3d-driveby.js SEATED OCCUPANTS).
+        if (m.seats) queueCarOccupants(c, m);
         const lampsOn = vehicleLampAmount(),
           mode = policeLightLevels(c, m.levels, gameTime),
           levels = m.levels;

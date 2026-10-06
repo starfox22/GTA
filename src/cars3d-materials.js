@@ -265,9 +265,11 @@
         const atlas = civTrimAtlas();
         civMaterials = {
           trim: civFinishPatch(new Three.MeshStandardMaterial({ vertexColors: true, map: atlas, roughness: 0.5, metalness: 0.2, envMapIntensity: 1.1 }), 'car-trim'),
-          // Tinted glass with a strong sky reflection; the damage model's cracked and
-          // burst panes replace it pane by pane (damage3d.js, `m.glass`).
-          glass: new Three.MeshStandardMaterial({ color: '#1a2128', roughness: 0.06, metalness: 0.7, envMapIntensity: 1.6 }),
+          // Tinted see-through glass with the sky over it (cars3d-interior.js CAR GLASS); the damage model's cracked
+          // and burst panes replace it pane by pane (damage3d.js, `m.glass`).
+          glass: carGlassMaterial('#121a20', 0.52),
+          // The body impostors' glass, far beyond the cabins: dark, opaque, a strong sky reflection.
+          glassFar: new Three.MeshStandardMaterial({ color: '#1a2128', roughness: 0.06, metalness: 0.7, envMapIntensity: 1.6 }),
           // Daytime running lights and CV_LED graphics: lit while driven, dark lenses parked.
           drlOn: new Three.MeshBasicMaterial({ vertexColors: true, color: new Three.Color(2.4, 2.4, 2.4) }),
           drlOff: new Three.MeshBasicMaterial({ vertexColors: true, color: new Three.Color(0.3, 0.3, 0.32) }),
@@ -285,31 +287,45 @@
        * shows the paint). The burnt shell's soot map is opaque, so it covers all.
        * Instance colours (the body impostors) tint the paint, not the decals.
        */
+      /*
+       * ROAD DIRT: toward the sills the paint takes the road's grime (darker, matt, its clear coat dulled), up to about
+       * half a metre over the car's ground. `carDirt` is per car (x the amount, y the ground's height in the world:
+       * animateCivilianCar writes them, the amount from the car's own grime and its wear); the impostors keep none.
+       */
+      const CIV_NO_DIRT = { value: new Three.Vector2(0, -1e6) };
+      const CIV_DIRT_GLSL = `
+        float carSill = carDirt.x * ( 1.0 - smoothstep( 0.9, 4.6, vCityWorld.y - carDirt.y ) );
+        carSill *= 0.8 + 0.2 * sin( vCityWorld.y * 3.1 + vMapUv.x * 37.0 );
+        diffuseColor.rgb = mix( diffuseColor.rgb, diffuseColor.rgb * 0.45 + vec3( 0.05, 0.043, 0.035 ), saturate( carSill ) );`;
       function civLiveryPatch(material) {
         material.onBeforeCompile = (shader) => {
           cityMaterialPatch(shader);
+          shader.uniforms.carDirt = material.userData.carDirt || CIV_NO_DIRT;
           shader.fragmentShader = shader.fragmentShader
+            .replace('#include <common>', '#include <common>\nuniform vec2 carDirt;')
             .replace('#include <map_fragment>', '#ifdef USE_MAP\n  vec4 carLivery = texture2D( map, vMapUv );\n#endif')
             .replace(
               '#include <color_fragment>',
-              '#include <color_fragment>\n#ifdef USE_MAP\n  diffuseColor.rgb = diffuseColor.rgb * ( 1.0 - carLivery.a ) + carLivery.rgb;\n#endif',
-            );
+              '#include <color_fragment>\n#ifdef USE_MAP\n  diffuseColor.rgb = diffuseColor.rgb * ( 1.0 - carLivery.a ) + carLivery.rgb;\n' + CIV_DIRT_GLSL + '\n#else\n  float carSill = 0.0;\n#endif',
+            )
+            .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\nroughnessFactor = mix( roughnessFactor, 0.82, saturate( carSill ) );')
+            .replace('#include <lights_physical_fragment>', '#include <lights_physical_fragment>\n#ifdef USE_CLEARCOAT\n  material.clearcoat *= 1.0 - 0.85 * saturate( carSill );\n#endif');
         };
         material.customProgramCacheKey = () => 'car-livery';
         return material;
       }
       function civPaintMaterial(color, livery, finish) {
-        return civLiveryPatch(
-          new Three.MeshPhysicalMaterial({
-            color,
-            map: livery,
-            roughness: finish.roughness,
-            metalness: finish.metalness,
-            clearcoat: 1,
-            clearcoatRoughness: 0.05,
-            envMapIntensity: 1,
-          }),
-        );
+        const material = new Three.MeshPhysicalMaterial({
+          color,
+          map: livery,
+          roughness: finish.roughness,
+          metalness: finish.metalness,
+          clearcoat: 1,
+          clearcoatRoughness: 0.05,
+          envMapIntensity: 1,
+        });
+        material.userData.carDirt = { value: new Three.Vector2(0, -1e6) };
+        return civLiveryPatch(material);
       }
       // The pooled impostor paint for a livery (flight-view3d.js BODY IMPOSTORS).
       const civImpostorPaints = new Map();

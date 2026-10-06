@@ -70,6 +70,10 @@
        * The paint is clear-coated; bright solid colours get a solid gloss,
        * darker and neutral ones a metallic flake (civFinish).
        *
+       * CABINS (cars3d-interior.js): the glass is see-through and tinted, with the
+       * seats, dashboard, wheel and mirror merged at the end of the trim (the body
+       * impostors draw the trim without them) and the people drawn by the rig.
+       *
        * Draw calls: shell, glass, hood, paint panels, trim, drl, four lamps, two
        * bumpers and four wheels (tyre + rim): about 21, against ~40 for the old
        * box-built cars. Zoomed out the cars pool per type (flight-view3d.js
@@ -78,6 +82,7 @@
       // @include src/cars3d-materials.js
       // @include src/cars3d-geometry.js
       // @include src/cars3d-wheels.js
+      // @include src/cars3d-interior.js
       // @include src/cars3d-kit.js
       // @include src/cars3d-models.js
       // @include src/cars3d-body-parts.js

@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-516 files in the include tree, 177,964 lines.
+517 files in the include tree, 178,639 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -147,12 +147,12 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/bullets-audio.js`   179 — Bullet sound: strikes by surface (concrete chips and ricochets, metal, glass, dirt) and the crack and whizz of an enemy round passing close to the …
 - `src/runover-audio.js`     8 — Sound of a wheel going over someone already on the ground (runover.js): a low thud and a short crack, heavier with weight and speed.
 - `src/quality.js`   240 — Graphics quality tiers
-- `src/settings.js`   917 — Settings menu
+- `src/settings.js`   930 — Settings menu
 - `src/markers.js`    20 — Objective and player markers: which ones are drawn (the floating arrow; the optional player ring) and a read-only report.
 - `src/foliage-cutaway.js`   146 — Foliage cutaway: who the see-through hole in tree crowns, palm fronds and tall shrubs keeps in view (the player on foot or their vehicle) and how big …
 - `src/god-panel.js`   799 — God mode settings
 - `src/driving.js`   508 — Tyres, brakes and driving assists
-- `src/chase-camera.js`   700 — Chase camera: the third-person view behind the player that V switches with the street view: where it stands and looks, mouse / stick / touch look …
+- `src/chase-camera.js`   793 — Chase camera: the third-person view behind the player that V switches with the street view: where it stands and looks, mouse / stick / touch look …
 - `src/chase-rules.js`   599 — Chase rules: what the player can see in the chase view, for the game's rules (who may fire, spawning and recycling out of sight, the HUD's player …
 - `src/chase-hud.js`    77 — Chase HUD: the reticle in the middle of the screen in the chase view (chase-view.css) and the hidden cursor while the pointer is captured; drawn …
 - `src/tyre-effects.js`   274 — What the tyres leave behind: the burnout (forward and the handbrake held at a standstill), skid marks, and the one rule for tyre smoke, dust and …
@@ -400,7 +400,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/hud-state.js`   657 — HUD state and pop boxes, saved settings, weapon and radio watches, stars, minimap fold and zoom (hudState, hudPop).
 - `src/hud-panels.js`   644 — HUD panels: prompts, centre cards and toasts, sniper warning, panel covers, updateHud() and the flight HUD.
-- `src/hud-clearance.js`   313 — HUD clearance: the mission card never covers the player (and the dialogue line and the waypoint pill fade if they would).
+- `src/hud-clearance.js`   324 — HUD clearance: the mission card never covers the player (and the dialogue line and the waypoint pill fade if they would).
 
 ## src/render3d.js ▸ Three.js renderer and resource lifecycle
 
@@ -464,7 +464,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/apache3d.js`   435 — The AH-64 attack helicopter model
 - `src/vehicles3d.js`   622 — Vehicle meshes
 - `src/police3d.js`    61 — ▸ Police vehicle models
-- `src/cars3d.js`    87 — ▸ Civilian car models
+- `src/cars3d.js`    92 — ▸ Civilian car models
 - `src/hypercars3d.js`   944 — The Prestige Collection's car models
 - `src/motorbikes3d.js`   581 — Motorbike models
 - `src/offroad3d.js`    42 — ▸ 4x4 club trucks, the club lot, trail props and mud
@@ -682,8 +682,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/crowd3d-roofparty.js`   141 — Crowd 3D poses for mission 2 (the Blue Hour): Vescari's poisoned toast beat by beat, and the bodyguards' heads turning with their sight cones.
 - `src/crowd3d-draw.js`   559 — drawCrowdPerson(): weapon holds, phone poses and the far-figure shortcut.
 - `src/crowd3d-special.js`   484 — Crowd 3D special characters: player, officers, soldiers, gangs, swimmers, parachutes (specialSpec, applyLimbOverrides).
-- `src/crowd3d-driveby.js`   162 — Crowd 3D drive-by pose: the player at the wheel with the gun arm out of the window, torso and head turned to the aim, recoil per shot …
-- `src/crowd3d-frame.js`   280 — updateCrowd3D(): per-frame packing, car enter and exit transitions, dogs, crowd stats.
+- `src/crowd3d-driveby.js`   329 — Crowd 3D drive-by pose: the player at the wheel with the gun arm out of the window, torso and head turned to the aim, recoil per shot …
+- `src/crowd3d-frame.js`   281 — updateCrowd3D(): per-frame packing, car enter and exit transitions, dogs, crowd stats.
 
 ## src/clouds3d.js ▸ Volumetric clouds and cloud shadows
 
@@ -719,17 +719,18 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/police3d-looks.js`   504 — Police 3D bodies, liveries and looks (POLICE_BODIES, pickPoliceLook), trim materials and shared resources.
 - `src/police3d-cabins.js`   620 — Police 3D glasshouse cabins and livery textures (policeCabinGeometry, policeLiveryTextures).
-- `src/police3d-kits.js`   600 — Police 3D kits: makePoliceVehicle(), animatePoliceVehicle(), rims, rear doors, beacons and road glow.
+- `src/police3d-kits.js`   627 — Police 3D kits: makePoliceVehicle(), animatePoliceVehicle(), rims, rear doors, beacons and road glow.
 
 ## src/cars3d.js ▸ Civilian car models
 
-- `src/cars3d-materials.js`   334 — Civilian car materials: trim atlas, paint and finish materials (civMaterials, civPaintMaterial).
+- `src/cars3d-materials.js`   350 — Civilian car materials: trim atlas, paint and finish materials (civMaterials, civPaintMaterial).
 - `src/cars3d-geometry.js`   317 — Civilian car merging kit: matrices, beams, bars, discs and profile shapes (civAdd, civGeometry, civShapeKit).
 - `src/cars3d-wheels.js`   159 — Civilian car tyres and rims (civTyreGeometry, civRimGeometry).
-- `src/cars3d-kit.js`   444 — Civilian car kit: a body's merged parts for one size (civKit, civKits).
-- `src/cars3d-models.js`   284 — Civilian car models: makeCivilianCar(), animateCivilianCar(), liveries, lettering and lamps.
+- `src/cars3d-interior.js`   274 — Car cabins seen through the glass: the seat plan (carSeatPlan), the cabin merged into a kit's trim (carCabinParts: seats and headrests, dashboard …
+- `src/cars3d-kit.js`   473 — Civilian car kit: a body's merged parts for one size (civKit, civKits).
+- `src/cars3d-models.js`   300 — Civilian car models: makeCivilianCar(), animateCivilianCar(), liveries, lettering and lamps.
 - `src/cars3d-body-parts.js`   144 — Civilian car body parts: civBody() and shared lamps, LED lines, projectors, plates, exhausts, badges, fins.
-- `src/cars3d-bodies-a.js`   545 — CAR_BODIES part 1: sedan, taxi, coupe, muscle, sport, roadster, rally, hotrod.
+- `src/cars3d-bodies-a.js`   547 — CAR_BODIES part 1: sedan, taxi, coupe, muscle, sport, roadster, rally, hotrod.
 - `src/cars3d-bodies-b.js`   599 — CAR_BODIES part 2: supercar, luxury, limousine, suv, van, pickup, chevette, brutini, cavalino.
 
 ## src/offroad3d.js ▸ 4x4 club trucks, the club lot, trail props and mud
@@ -768,7 +769,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/game-console-core.js`   186 — DeadEndCity console, core: status, teleport, look, clock, zoom, simulate, heal, god, cash, walk (+ godPanelConsole)
 - `src/game-console-missions.js`   324 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
-- `src/game-console-police.js`   221 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
+- `src/game-console-police.js`   240 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
 - `src/game-console-vehicles.js`   415 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
 - `src/game-console-world.js`   236 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
 - `src/game-console-rides.js`   104 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
@@ -778,7 +779,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-perf.js`   272 — DeadEndCity console, simulation cost: simProfile (per-section ms, worst frames), simScenario (staged situations)
 - `src/game-console-soak.js`   368 — DeadEndCity console, long-session health: soakReport (sizes of every list that can grow, DOM, non-finite positions)
 - `src/game-console-integrity.js`   177 — DeadEndCity console: integrity(), the invariants tools/bot.mjs checks after every action
-- `src/game-console-settings.js`   135 — DeadEndCity console, settings: settings, openSettings, bindings, radio (+ audioConsole)
+- `src/game-console-settings.js`   137 — DeadEndCity console, settings: settings, openSettings, bindings, radio (+ audioConsole)
 
 ## src/shell.html ▸ HTML page skeleton: its src/ui/*.css and *.html fragments (in include order) and build.py's `<!-- @include-* -->` slots (game, three.js, media, credits)
 
@@ -806,7 +807,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/ui/notify.css`   118 — Notification feed (hud-notify.js): tell() lines as .note boxes in #toast, newest first; older lines dim; an edge colour per tone and a thin bar that …
 - `src/ui/map-panel.css`   156 — City map (map-view.js): as large as the screen allows, with its filters (the legend doubles as them) and the GO TO list beside it, below it on a …
 - `src/ui/god-splash.css`   745 — God mode splash (god-splash.js): A cheat code toggling god mode: a full-screen card over everything (play, pause, Settings, the title); clicks pass …
-- `src/ui/chase-view.css`    85 — Chase view (chase-hud.js): the reticle in the middle of the screen.
+- `src/ui/chase-view.css`    86 — Chase view (chase-hud.js): the reticle in the middle of the screen.
 - `src/ui/reduced-motion.css`    71 — Reduced motion: keep the states, drop the movement
 - `src/ui/hud.html`   299 — HUD. Layout and motion live in the HUD section of the stylesheet; the collapse/expand behaviour of the radio and weapon boxes and the minimap fold …
 - `src/ui/menus.html`   244 — markup: #menu, #coverArt, #startBtn, #startMeta, #newGameStart, …
