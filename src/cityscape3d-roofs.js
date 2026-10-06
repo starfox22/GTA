@@ -209,20 +209,22 @@
           bayWidth = (b.w - 16) / bays,
           glassTop = SHOP_FLOOR * 0.8,
           awningY = SHOP_FLOOR * 0.72,
-          signY = SHOP_FLOOR + 4;
-        box(group, b.w / 2, SHOP_FLOOR / 2, b.h + 0.4, b.w - 2, SHOP_FLOOR, 1.2, staticMat('#2b3033', 0.7, 0.2));
-        box(group, b.w / 2, SHOP_FLOOR + 0.6, b.h + 1.2, b.w, 1.4, 2.6, mat(kind === 'stucco' ? '#d9c8a8' : '#4a4d50'));
+          signY = SHOP_FLOOR + 4,
+          // The glass is drawn once the shop is named: its interior shows the trade (SHOP WINDOWS).
+          panes = [];
+        box(group, b.w / 2, SHOP_FLOOR / 2, b.h + 0.4, b.w - 2, SHOP_FLOOR, 1.2, FRONT_PANEL);
+        box(group, b.w / 2, SHOP_FLOOR + 0.6, b.h + 1.2, b.w, 1.4, 2.6, kind === 'stucco' ? FRONT_FASCIA_LIGHT : FRONT_FASCIA_DARK);
         for (let k = 0; k < bays; k++) {
           const x = 8 + bayWidth * (k + 0.5),
             door = k === Math.floor(bays / 2);
           if (door) {
-            box(group, x, DOOR_HEIGHT / 2, face + 0.2, 8, DOOR_HEIGHT, 0.6, staticMat('#3f2f28'));
+            box(group, x, DOOR_HEIGHT / 2, face + 0.2, 8, DOOR_HEIGHT, 0.6, FRONT_DOOR);
             box(group, x, DOOR_HEIGHT / 2, face + 0.6, 0.6, DOOR_HEIGHT, 0.3, chrome);
             box(group, x, DOOR_HEIGHT + 0.6, face + 0.4, 9, 0.8, 0.6, chrome);
             // A transom light over the door, up to the glazing line.
-            box(group, x, (DOOR_HEIGHT + 1 + glassTop) / 2, face + 0.2, 8, glassTop - DOOR_HEIGHT - 1, 0.5, shopGlassMaterial);
+            panes.push(x, (DOOR_HEIGHT + 1 + glassTop) / 2, 8, glassTop - DOOR_HEIGHT - 1);
           } else {
-            box(group, x, (3 + glassTop) / 2, face + 0.2, bayWidth - 8, glassTop - 3, 0.5, shopGlassMaterial);
+            panes.push(x, (3 + glassTop) / 2, bayWidth - 8, glassTop - 3);
             // The pane in world space, so a bullet can star it and a blast blow it in.
             (b.shopPanes || (b.shopPanes = [])).push({
               x0: b.x + x - (bayWidth - 8) / 2,
@@ -233,7 +235,7 @@
               state: 0,
               hits: 0,
             });
-            box(group, x, 1.8, face + 0.3, bayWidth - 8, 2.4, 0.7, staticMat('#5b5f63'));
+            box(group, x, 1.8, face + 0.3, bayWidth - 8, 2.4, 0.7, FRONT_STEEL);
             if (windowNeon) {
               const color = windowNeonColor(windowNeon);
               atlasSign(group, windowNeonCell(windowNeon), x, 14, face + 0.9, Math.min(14, bayWidth - 12), Math.min(14, bayWidth - 12) / 2, cityRandom() < 0.3 ? neonCutoutFlicker : neonCutout);
@@ -259,6 +261,13 @@
           cell = shopSignCell(name),
           light = shopSignLight(name),
           flicker = shopSignIsNeon(name) && cityRandom() < 0.14;
+        // The glass (its own random: cityRandom's stream is the roof plant's and the bus stops').
+        frontSeed(i, 8);
+        const south = frontageFace(b, 0),
+          interior = shopInteriorFor(name),
+          lit = frontRandom() < 0.85 ? 0.6 + frontRandom() * 0.4 : 0,
+          phase = frontRandom() * 9;
+        for (let k = 0; k < panes.length; k += 4) shopPane(group, south, panes[k], panes[k + 1], 1.05, panes[k + 2], panes[k + 3], interior, lit, phase);
         atlasSign(group, cell, signX, signY, b.h + 1.9, signWidth, signWidth / 4, flicker ? cityPick(neonBoardFlicker) : neonBoard);
         box(group, signX, signY, b.h + 1.2, signWidth + 2, signWidth / 4 + 2, 0.8, darkMetal);
         // Colour on the pavement and, in the rain, smeared down the wet road.
@@ -337,12 +346,11 @@
                     : '#7c6d63',
           trim = staticMat(trimColor);
         blockBox(group, b.w / 2, height / 2, b.h / 2, b.w, height, b.h, face, top);
-        // Parapet coping and a plinth along the street.
+        // Parapet coping (the plinths are the street frontage's, cityscape3d-frontage.js).
         box(group, b.w / 2, height + 1.6, 2, b.w + 3, 3.2, 4, trim);
         box(group, b.w / 2, height + 1.6, b.h - 2, b.w + 3, 3.2, 4, trim);
         box(group, 2, height + 1.6, b.h / 2, 4, 3.2, b.h, trim);
         box(group, b.w - 2, height + 1.6, b.h / 2, 4, 3.2, b.h, trim);
-        if (kind !== 'tower') box(group, b.w / 2, 2.5, b.h + 0.8, b.w + 3, 5, 2, kind === 'stucco' || kind === 'deco' ? staticMat('#cbbfae') : trim);
         if (kind === 'tower' && height > realBuildingHeight(120)) {
           /* Setback crown. A single step reads as an office block; the towers of
              the financial core step two or three times and carry a mast, which is
@@ -388,9 +396,20 @@
           }
           b.crownHeight = crown;
         }
+        // String courses and the office cornice run round all four sides.
         if (kind === 'brick' && cityRandom() < 0.5)
-          for (let y = SHOP_FLOOR; y < height - 6; y += STOREY) box(group, b.w / 2, y, b.h + 0.3, b.w + 1, 1.1, 1.4, trim);
-        if (kind === 'office') box(group, b.w / 2, height - 5, b.h + 0.6, b.w + 1.5, 2.2, 2, trim);
+          for (let y = SHOP_FLOOR; y < height - 6; y += STOREY) {
+            box(group, b.w / 2, y, b.h + 0.3, b.w + 1, 1.1, 1.4, trim);
+            box(group, b.w / 2, y, -0.3, b.w + 1, 1.1, 1.4, trim);
+            box(group, -0.3, y, b.h / 2, 1.4, 1.1, b.h + 1, trim);
+            box(group, b.w + 0.3, y, b.h / 2, 1.4, 1.1, b.h + 1, trim);
+          }
+        if (kind === 'office') {
+          box(group, b.w / 2, height - 5, b.h + 0.6, b.w + 1.5, 2.2, 2, trim);
+          box(group, b.w / 2, height - 5, -0.6, b.w + 1.5, 2.2, 2, trim);
+          box(group, -0.6, height - 5, b.h / 2, 2, 2.2, b.h + 1.5, trim);
+          box(group, b.w + 0.6, height - 5, b.h / 2, 2, 2.2, b.h + 1.5, trim);
+        }
         if (kind === 'hotel') {
           // A slab edge at every floor, a picture window and a balcony shelf over it.
           for (let y = SHOP_FLOOR; y < height - 8; y += STOREY) {
@@ -408,9 +427,11 @@
           }
           for (const x of [5, b.w - 5]) for (const z of [5, b.h - 5]) box(group, x, height / 2, z, 7, height + 1, 7, concrete);
         }
-        const streetSouth = cityStreetSouth(b);
-        if (streetSouth && !b.place && ['brick', 'stucco', 'office', 'deco'].includes(kind)) shopfront(group, b, kind, i);
+        const classicSouth = cityStreetSouth(b) && !b.place && ['brick', 'stucco', 'office', 'deco'].includes(kind);
+        if (classicSouth) shopfront(group, b, kind, i);
         else if (kind === 'brick' && !b.place && cityRandom() < 0.7) fireEscape(group, b);
+        // Every other side: shops, lobbies, doors, plinths and fire escapes (STREET FRONTAGE).
+        dressFrontage(group, b, kind, i, trim, classicSouth);
         if (kind === 'decoTower' && !b.place) balconies(group, b, staticMat('#efe4d2'));
         decorateRoof(kind, b, group, i);
         roofOwner = null;

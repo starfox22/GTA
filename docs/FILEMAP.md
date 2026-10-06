@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-511 files in the include tree, 177,089 lines.
+513 files in the include tree, 177,909 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -28,7 +28,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/camera-feel.js`   291 — Camera feel: the street camera's follow (a lead along the vehicle's path; on foot the way the player goes and toward the aim in a fight) and its …
 - `src/camera-drive.js`   184 — Camera drive: the street camera's follow in a road vehicle or a boat, built for comfort: a steady lead, critically damped springs (firm along the …
 - `src/camera-comfort.js`   133 — Camera comfort: what the street camera's motion does to the eye, sampled as it runs (cameraView().comfort): the view's acceleration and jerk in …
-- `src/hud-notify.js`   162 — Notification feed behind tell(): lines stack in #toast, newest first, at most NOTICE_MAX (two on a phone); a repeat refreshes its own line; readable …
+- `src/hud-notify.js`   166 — Notification feed behind tell(): lines stack in #toast, newest first, at most NOTICE_MAX (two on a phone); a repeat refreshes its own line; readable …
 - `src/heat.js`   283 — Heat and wanted stars
 - `src/witnesses.js`   529 — Witnesses and 911 calls, the police side: crimes nobody has reported yet, what the police see and hear for themselves, and how a report brings them …
 - `src/game-collision.js`   360 — Building grid: solid() and shotBlocked() run thousands of times per frame (every pedestrian step, bullet and spawn test).
@@ -153,8 +153,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/god-panel.js`   799 — God mode settings
 - `src/driving.js`   508 — Tyres, brakes and driving assists
 - `src/chase-camera.js`   700 — Chase camera: the third-person view behind the player that V switches with the street view: where it stands and looks, mouse / stick / touch look …
-- `src/chase-rules.js`   574 — Chase rules: what the player can see in the chase view, for the game's rules (who may fire, spawning and recycling out of sight, the HUD's player …
-- `src/chase-hud.js`    71 — Chase HUD: the reticle in the middle of the screen in the chase view (chase-view.css) and the hidden cursor while the pointer is captured; drawn …
+- `src/chase-rules.js`   599 — Chase rules: what the player can see in the chase view, for the game's rules (who may fire, spawning and recycling out of sight, the HUD's player …
+- `src/chase-hud.js`    77 — Chase HUD: the reticle in the middle of the screen in the chase view (chase-view.css) and the hidden cursor while the pointer is captured; drawn …
 - `src/tyre-effects.js`   274 — What the tyres leave behind: the burnout (forward and the handbrake held at a standstill), skid marks, and the one rule for tyre smoke, dust and …
 - `src/hud.js`    34 — ▸ HUD behaviour and the title menu
 - `src/render3d.js`   235 — ▸ Three.js renderer and resource lifecycle
@@ -214,7 +214,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/pursuit-dispatch.js`   762 — Police tiers and dispatch: sighting, unit kinds, wanted announcements, spawning and routing units (dispatchPolice, planPursuit).
 - `src/pursuit-steering.js`   107 — Pursuit steering aids: room to swing onto a straight run (roomToTurn), the speed the corners on the route ahead allow (routeCornerSpeed) and traffic …
-- `src/pursuit-officers.js`   687 — Officers on foot in a pursuit: suppressive fire, cover, drags, surrender and arrest (updateArrest).
+- `src/pursuit-officers.js`   688 — Officers on foot in a pursuit: suppressive fire, cover, drags, surrender and arrest (updateArrest).
 
 ## src/themepark.js ▸ Sunset Pier resort and theme park
 
@@ -400,7 +400,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/hud-state.js`   657 — HUD state and pop boxes, saved settings, weapon and radio watches, stars, minimap fold and zoom (hudState, hudPop).
 - `src/hud-panels.js`   644 — HUD panels: prompts, centre cards and toasts, sniper warning, panel covers, updateHud() and the flight HUD.
-- `src/hud-clearance.js`   306 — HUD clearance: the mission card never covers the player (and the dialogue line and the waypoint pill fade if they would).
+- `src/hud-clearance.js`   324 — HUD clearance: the mission card never covers the player (and the dialogue line and the waypoint pill fade if they would).
 
 ## src/render3d.js ▸ Three.js renderer and resource lifecycle
 
@@ -413,7 +413,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/render3d-terrain.js`   297 — Mesh/box/rod helpers, wall textures, the ground mesh and kerbs.
 - `src/vegetation3d.js`    63 — ▸ Tree library: species, foliage atlas, wind, LOD
 - `src/render3d-streetprops.js`   297 — ▸ Street lamps and their glow halos, vehicle halos, blossom, sign() boards.
-- `src/cityscape3d.js`    21 — ▸ Building archetypes, roofs, shopfronts and street furniture
+- `src/cityscape3d.js`    26 — ▸ Building archetypes, roofs, shopfronts and street furniture
 - `src/sidejobs3d.js`    61 — Contract mission meshes
 - `src/roadblocks3d.js`    70 — Police roadblock meshes
 - `src/themepark3d.js`    22 — ▸ Sunset Pier resort meshes
@@ -484,7 +484,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/flight-view3d.js ▸ Flight camera and aerial perspective
 
-- `src/flight-view3d-far.js`   374 — The far copy of the city (FAR SCENERY): built once, drawn whole from the air and cell by cell in the chase view.
+- `src/flight-view3d-far.js`   375 — The far copy of the city (FAR SCENERY): built once, drawn whole from the air and cell by cell in the chase view.
 
 ## src/chase-view3d.js ▸ Chase view 3D: the perspective camera behind the player (chase-camera.js says where it stands), the ground it sees for culling and level of detail …
 
@@ -549,7 +549,9 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/cityscape3d.js ▸ Building archetypes, roofs, shopfronts and street furniture
 
 - `src/cityscape3d-kit.js`   646 — ▸ Cityscape 3D kit: seeded random, instancing helpers, static materials, roof and window textures.
-- `src/cityscape3d-roofs.js`   554 — ▸ Cityscape 3D roof props and facades: AC units, water towers, billboards, helipads, shopfronts, fire escapes (decorateRoof).
+- `src/cityscape3d-shopwindows.js`   321 — Shop windows: a painted atlas of eight shop and lobby interiors, the shared lit shop-window material and its panes.
+- `src/cityscape3d-frontage.js`   418 — Street frontage on every side of a building: which sides face a street, an alley or a yard, and their ground floors (shops, lobbies, stoops, loading …
+- `src/cityscape3d-roofs.js`   575 — ▸ Cityscape 3D roof props and facades: AC units, water towers, billboards, helipads, shopfronts, fire escapes (decorateRoof).
 
 ## src/cityscape3d-kit.js ▸ Cityscape 3D kit: seeded random, instancing helpers, static materials, roof and window textures.
 
@@ -795,7 +797,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/ui/notify.css`   118 — Notification feed (hud-notify.js): tell() lines as .note boxes in #toast, newest first; older lines dim; an edge colour per tone and a thin bar that …
 - `src/ui/map-panel.css`   156 — City map (map-view.js): as large as the screen allows, with its filters (the legend doubles as them) and the GO TO list beside it, below it on a …
 - `src/ui/god-splash.css`   745 — God mode splash (god-splash.js): A cheat code toggling god mode: a full-screen card over everything (play, pause, Settings, the title); clicks pass …
-- `src/ui/chase-view.css`    53 — Chase view (chase-hud.js): the reticle in the middle of the screen.
+- `src/ui/chase-view.css`    86 — Chase view (chase-hud.js): the reticle in the middle of the screen.
 - `src/ui/reduced-motion.css`    71 — Reduced motion: keep the states, drop the movement
 - `src/ui/hud.html`   299 — HUD. Layout and motion live in the HUD section of the stylesheet; the collapse/expand behaviour of the radio and weapon boxes and the minimap fold …
 - `src/ui/menus.html`   244 — markup: #menu, #coverArt, #startBtn, #startMeta, #newGameStart, …
