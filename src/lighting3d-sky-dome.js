@@ -8,9 +8,10 @@
        * cityHazeColor (aerial-haze3d.js), which the chase view's haze uses too, so the far
        * city melts into it: a horizon band, brighter and warmer towards the sun (broad and
        * gold at dusk), giving way to a zenith a little deeper than the key by clear day, and
-       * the broad circumsolar glow with its bright core. The colours come from the keys
+       * the broad circumsolar glow. The colours come from the keys
        * (lighting3d-look.js SKY_KEYS through updateHaze), tuned so the environment map lights
-       * the city as the old gradient did. The dome (SKY_DOME) adds the sun's disc, darkened
+       * the city as the old gradient did. The dome (SKY_DOME) adds a deeper zenith
+       * (uDomeZenith), the aureole's bright core and the sun's disc, darkened
        * towards its limb at an HDR brightness the bloom and the sun glare pick up; the moon
        * with its maria and halo; steady stars, faint and bright, white to blue and amber,
        * fading into the horizon; and the clouds seen from below (SKY_CLOUDS, clouds3d-sky.js).
@@ -115,6 +116,10 @@
               #ifdef SKY_DOME
                 // A deeper blue overhead than the environment's (none at the horizon, where the haze meets it).
                 sky = max( sky - cityHazeTop.rgb * uDomeZenith * ( 1.0 - exp( - max( d.y, 0.0 ) * cityHazeTop.w ) ), 0.0 );
+                // The aureole's bright core, a few degrees round the sun (not in the haze: a building in front
+                // of the sun stands dark against it; not in the environment: no second sun on glossy paint).
+                float toSun = clamp( dot( d, cityHazeSun.xyz ) * 0.5 + 0.5, 0.0, 1.0 );
+                sky += cityHazeHalo.rgb * 2.0 * pow( toSun, cityHazeHalo.w * 24.0 );
                 sky += uSunColor * ( skySunDisc( d ) * uSunDisc ) + skyMoon( d ) + skyStars( d )
                      + uCityGlow * exp( - max( d.y, 0.0 ) * 11.0 );
                 #ifdef SKY_CLOUDS

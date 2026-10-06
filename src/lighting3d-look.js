@@ -22,7 +22,7 @@
        * draw: the zenith a touch deeper and bluer by clear day; the horizon (the key, a little
        * brighter by day, with the city's sodium glow low over it at night); the glow along the
        * horizon towards the sun (faint by day, broad and gold at dusk); and the broad
-       * circumsolar glow with its bright core (the old sky's glow, the same light). Tuned
+       * circumsolar glow, whiter (the old sky's glow, the same light; its core is the dome's). Tuned
        * against the old gradient: the environment's irradiance stays within a few per cent
        * for roofs and walls by day, dusk, night and overcast (at dusk roofs ~7 % less, walls
        * facing the sun ~12 % more: the gold is low on the horizon). In the chase view the

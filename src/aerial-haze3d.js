@@ -36,7 +36,7 @@
         cityHazeGlow: { value: new Float32Array([0, 0, 0, 6]) },
         // rgb: the zenith; w: how quickly the horizon band gives way to it (per unit of sine elevation).
         cityHazeTop: { value: new Float32Array([0.2, 0.3, 0.6, 4]) },
-        // rgb: the circumsolar glow; w: how tight it is (its bright core is twice as bright, 24 times tighter).
+        // rgb: the circumsolar glow; w: how tight it is (the dome adds its bright core, twice as bright, 24 times tighter).
         cityHazeHalo: { value: new Float32Array([0, 0, 0, 200]) },
         // x: haze density at the camera's height (1 at sea level), y: the far clip (view depth, 0: none), z: camera height.
         cityHazeView: { value: new Float32Array([1, 0, 0, 0]) },
@@ -48,7 +48,7 @@
           float toSun = clamp( dot( dir, cityHazeSun.xyz ) * 0.5 + 0.5, 0.0, 1.0 );
           vec3 horizon = cityHazeSky.rgb + cityHazeGlow.rgb * pow( toSun, cityHazeGlow.w );
           vec3 sky = mix( cityHazeTop.rgb, horizon, exp( - max( dir.y, 0.0 ) * cityHazeTop.w ) );
-          return sky + cityHazeHalo.rgb * ( pow( toSun, cityHazeHalo.w ) + 2.0 * pow( toSun, cityHazeHalo.w * 24.0 ) );
+          return sky + cityHazeHalo.rgb * pow( toSun, cityHazeHalo.w );
         }
         // The curve's reach for a point rel (world) from the camera, dist = length( rel ): the air crossed
         // (thinning with height) against air as dense as at sea level.
