@@ -166,8 +166,10 @@
       }
       // The glare passes for the prewarm: the visibility, the mask and the smear, each with its target bound.
       function sunGlareWarmPasses(pass) {
-        if (sunGlareLevel(postTier) >= 1) pass(sunSeenMaterial, sunSeenTarget);
-        if (sunShaftTargets.length === 2) pass(sunMaskMaterial, sunShaftTargets[0]), pass(sunSmearMaterial, sunShaftTargets[1]);
+        const level = sunGlareLevel(postTier);
+        if (level >= 1) pass(sunSeenMaterial, sunSeenTarget);
+        // (The shafts' targets come with the post targets, which may be made after this list: looked up when compiled.)
+        if (level >= 2) pass(sunMaskMaterial, () => sunShaftTargets[0] || null), pass(sunSmearMaterial, () => sunShaftTargets[1] || null);
       }
       /* Where the sky's sun is on screen and how much glare it gives this frame; then the visibility and, on HIGH
          and ULTRA, the shafts. Runs after the scene pass (renderFrame), reading its colour and depth. */
