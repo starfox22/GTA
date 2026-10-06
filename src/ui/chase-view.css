@@ -72,3 +72,14 @@ body.chase-view:not(.touch-mode) #radioCaption {
 body.chase-view:not(.touch-mode) #equipment {
   margin-left: auto;
 }
+/* Short windows: the open card drops its paragraph (as on touch screens), so the notices above it keep
+   their room; the title and the objective stay, and O shows the whole card again. */
+@media (max-height: 760px) {
+  body.chase-view:not(.touch-mode) #pager .mission-copy p {
+    display: none;
+  }
+  body.chase-view:not(.touch-mode) #missionPortrait {
+    width: 34px;
+    height: 34px;
+  }
+}

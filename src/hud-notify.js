@@ -44,7 +44,11 @@
       return String(text).replace(/[\d.,:$%]+/g, '#');
     }
     function noticeLimit() {
-      return document.body?.classList.contains('touch-mode') && innerWidth <= 600 ? NOTICE_MAX_PHONE : NOTICE_MAX;
+      const body = document.body;
+      if (body?.classList.contains('touch-mode') && innerWidth <= 600) return NOTICE_MAX_PHONE;
+      // The chase view on a short window: the mission card stands under the notices (chase-view.css).
+      if (body?.classList.contains('chase-view') && !body.classList.contains('touch-mode') && innerHeight <= 760) return NOTICE_MAX_PHONE;
+      return NOTICE_MAX;
     }
     function notify(text, seconds = 3, options = {}) {
       if (text === undefined || text === null || text === '') return;

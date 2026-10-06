@@ -11,8 +11,13 @@ export default async function (t) {
     await t.call('hudClearance', 'read');
     await settle();
     await t.wait(0.2);
-    const o = await t.call('hudOverlaps'),
-      c = await t.call('hudClearance');
+    // The card pops in on the wall clock (and a fresh page's first card a moment later): wait for it to show.
+    let o = await t.call('hudOverlaps');
+    for (let i = 0; i < 6 && !boxOf(o, 'pager'); i++) {
+      await settle();
+      o = await t.call('hudOverlaps');
+    }
+    const c = await t.call('hudClearance');
     t.assert(o.viewport[0] === 960 && o.viewport[1] === 600, 'not the 960x600 window: ' + o.viewport);
     t.assert(!o.overlaps.length, `${what}: HUD boxes overlap: ` + JSON.stringify(o.overlaps));
     const pager = boxOf(o, 'pager'),
