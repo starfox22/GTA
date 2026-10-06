@@ -61,6 +61,9 @@
           v = new Three.Vector3(),
           n3 = new Three.Matrix3();
         let removed = 0;
+        // What is merged here is hidden cell by cell where the chase view draws the far copy instead
+        // (FAR SCENERY, flight-view3d.js), so its far pieces may stand in for it there.
+        farNoteChase = true;
         for (const group of batchGroups) {
           group.updateMatrixWorld(true);
           const taken = [];
@@ -93,6 +96,7 @@
           for (const o of taken) o.parent.remove(o);
           removed += taken.length;
         }
+        farNoteChase = false;
         for (const b of buckets.values()) {
           const positions = new Float32Array(b.vertices * 3),
             normals = new Float32Array(b.vertices * 3),
@@ -106,7 +110,8 @@
               .filter((name) => b.parts.every(({ geo }) => geo.attributes[name]?.itemSize === first[name].itemSize))
               .map((name) => ({ name, size: first[name].itemSize, array: new Float32Array(b.vertices * first[name].itemSize) }));
           let vo = 0,
-            io = 0;
+            io = 0,
+            top = -Infinity;
           for (const { geo, matrix } of b.parts) {
             const pos = geo.attributes.position,
               nor = geo.attributes.normal,
@@ -115,6 +120,7 @@
             n3.getNormalMatrix(matrix);
             for (let i = 0; i < count; i++) {
               v.fromBufferAttribute(pos, i).applyMatrix4(matrix);
+              if (v.y > top) top = v.y;
               positions[(vo + i) * 3] = v.x;
               positions[(vo + i) * 3 + 1] = v.y;
               positions[(vo + i) * 3 + 2] = v.z;
@@ -153,7 +159,21 @@
           m.castShadow = true;
           m.receiveShadow = true;
           m.name = 'static batch';
-          staticBatchCell(b.cx, b.cz, cellSize).group.add(m);
+          // Its cell (STATIC BATCH CELLS) and highest point: the chase view's far cells and shadow casters (chase-view3d.js).
+          m.userData.cellX = b.cx;
+          m.userData.cellZ = b.cz;
+          const cell = staticBatchCell(b.cx, b.cz, cellSize);
+          cell.top = Math.max(cell.top, top);
+          // The batches the far copy stands for hang together (`full`): the chase view swaps a cell
+          // for the copy with one switch (chase-view3d.js CHASE FAR CELLS).
+          if (farMaterialUsable(b.material)) {
+            if (!cell.full) {
+              cell.full = new Three.Group();
+              cell.full.name = 'static batch full';
+              cell.group.add(cell.full);
+            }
+            cell.full.add(m);
+          } else cell.group.add(m);
           staticBatchMeshes.push(m);
         }
         return { merged: removed, batches: buckets.size };
@@ -244,7 +264,8 @@
           group.name = 'static batch cell';
           group.userData.cellContainer = true;
           scene.add(group);
-          cell = { group, x: (cx + 0.5) * cellSize, z: (cz + 0.5) * cellSize, half: cellSize / 2 };
+          // `top`: the highest point of what it holds (world height), for the chase view's shadow casters.
+          cell = { group, x: (cx + 0.5) * cellSize, z: (cz + 0.5) * cellSize, half: cellSize / 2, top: 0, full: null };
           staticBatchCells.set(key, cell);
         }
         return cell;
@@ -276,7 +297,8 @@
       function cellStatics(cellSize = 1024) {
         const uses = new Map(),
           cells = new Map(),
-          moved = new Map();
+          moved = new Map(),
+          bounds = new Three.Box3();
         for (const s of statics) uses.set(s.group, (uses.get(s.group) || 0) + 1);
         for (const s of statics) {
           // A group that moves (`moving`: the liner under way) keeps its own test:
@@ -297,12 +319,35 @@
               x: (Math.floor(s.x / cellSize) + 0.5) * cellSize,
               y: (Math.floor(s.y / cellSize) + 0.5) * cellSize,
               reach: 0,
+              // The highest point of its groups (world height): the chase view's shadow casters, and its
+              // small props on the detail layers with their sizes: the chase view's distance steps (chase-view3d.js).
+              top: 0,
+              detail: [],
               entries: [],
             };
             cells.set(key, cell);
             staticCells.push(cell);
           }
           cell.reach = Math.max(cell.reach, Math.abs(s.x - cell.x) + s.radius, Math.abs(s.y - cell.y) + s.radius);
+          // The entry's highest point (the chase view's shadow casters, entry by entry).
+          s.top = 0;
+          s.group.traverse((o) => {
+            if (!o.geometry || !(o.isMesh || o.isLine || o.isPoints)) return;
+            if (o.isInstancedMesh) {
+              if (o.boundingBox === null) o.computeBoundingBox();
+              bounds.copy(o.boundingBox);
+            } else {
+              if (!o.geometry.boundingBox) o.geometry.computeBoundingBox();
+              bounds.copy(o.geometry.boundingBox);
+            }
+            if (bounds.isEmpty()) return;
+            bounds.applyMatrix4(o.matrixWorld);
+            s.top = Math.max(s.top, bounds.max.y);
+            cell.top = Math.max(cell.top, bounds.max.y);
+            const mask = o.layers.mask;
+            if (mask === 1 << DETAIL_LAYER || mask === 1 << FAR_DETAIL_LAYER)
+              cell.detail.push(chaseDetailEntry(o, bounds));
+          });
           cell.entries.push(s);
           moved.set(s.group, cell.group);
         }

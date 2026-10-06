@@ -109,7 +109,13 @@
                 inView = viewFrustum.intersectsSphere(sphere);
               }
               if (inView) {
-                const calls = Array.isArray(o.material) ? Math.max(1, o.geometry.groups.length) : 1;
+                // (A group whose material is hidden is not drawn: the far copy's skipped cells, FAR SCENERY.)
+                let calls = 1;
+                if (Array.isArray(o.material)) {
+                  calls = 0;
+                  for (const g of o.geometry.groups) if (o.material[g.materialIndex]?.visible) calls++;
+                  if (!o.geometry.groups.length) calls = 1;
+                }
                 let named = o,
                   root = o;
                 // (A cell group of STATIC CELLS / STATIC BATCH CELLS counts as the scene.)
