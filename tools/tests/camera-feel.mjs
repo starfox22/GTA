@@ -36,6 +36,8 @@ export default async function (t) {
     await t.call('footwork', 0);
     await t.wait(1.5);
     const aimed = await t.call('cameraFeel');
+    if (!(aimed.lead[0] >= 22 && aimed.lead[0] <= 40))
+      t.note('aim lead off: ' + JSON.stringify({ feel: aimed, status: await t.call('status'), foot: await t.call('footwork', 0), integrity: await t.call('integrity') }));
     t.near(aimed.lead[0], 22, 40, 'on-foot aim lead east (units)');
     t.near(Math.abs(aimed.lead[1]), 0, 3, 'on-foot aim lead across');
     // A shot kicks the view back against it (the round may snap to someone near the

@@ -23,7 +23,10 @@ rules, workflow), then this page, then only the area doc your task needs (`docs/
   on a rendered page when a render change needs them). It must be green before a publish. Known flakes:
   `carjack-traffic` fails about one run in four when the picked traffic car stands beside a bike-share dock
   (E rents a bike instead); `living-medics` failed once (medics never reached the victim) and passed on rerun;
-  the `hypot2` timing check in `sim-audits` fails under heavy CPU load (a smoke run beside it).
+  the `hypot2` timing check in `sim-audits` fails under heavy CPU load (a smoke run beside it); `camera-feel`'s
+  on-foot aim lead read zero about one run in fourteen (the lead target is exactly 0 with the pistol and the aim
+  set, so an early return in cameraLeadTarget: fall/thrown/ride; the test now notes `integrity()` carriers when it
+  happens); `living-key` failed once with a traffic car parked on the visitor spawn and passed on rerun.
 
 ## The owner's standing preferences (keep following them)
 
@@ -80,6 +83,7 @@ measure GPU cost, so real-GPU gains of render changes are unverified.
 | Bug passes | missions 1-2 under the demo gate, free roam, the random-walk bot, cab-ride crash | `2026-10-02-*`, `tools/bot.mjs`, `docs/BACKLOG.md` |
 | Edge and wrecks | world-edge countdown, wreck and abandoned-car limit | `2026-10-03-*`, see below |
 | October 4 round | police search clock (shown only while it runs, shorter times), second god-mode code, big TELEPORT map, driving camera (wider, speed pull-back, damped follow, `cameraComfort`), bonnet blood by speed (`carStainSeverity`), hill climb (`rideStep` suspension, hand-laid Mount Ascent trail, rock/ford dressing), liner grand tour and deck landings (`deck-landing.js`), see-through foliage, world-edge card off land, missions 1-2 and free-roam bug passes (replay frontier, `restartableJob`, fair harbour fight, ABANDON confirm, HUD clearance), performance (frame trace, `hitches.mjs`, DOM writes, buffer ranges, vehicle layouts and allocations, merged car parts) | `docs/changes/2026-10-0[34]-*`, CLAUDE.md rules, `audit/performance.md` (fourth and fifth pass) |
+| October 6 round | motion comfort: vehicle camera one step further back (1.12), flatter speed zoom, shorter slower lead, Settings · Gameplay · Motion comfort and Settings · Driving · Vehicle camera distance | `docs/changes/2026-10-06-motion-comfort.md`, CLAUDE.md camera rule |
 
 ## Rules added in the latest rounds (also in CLAUDE.md)
 

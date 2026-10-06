@@ -58,6 +58,9 @@ export default async function (t) {
     await t.call('launch', 20);
     await t.keys('KeyW', 3);
     await t.call('hudClearance', 'read');
+    // The opened card's box is measured at the start of a drawn frame (measureMissionCard): let one run before
+    // stepping, or the step's fold checks still see the box from before touch mode moved the card to the top.
+    await settle();
     await t.keys('KeyW', 0.5);
     const c = await t.call('hudClearance');
     t.note(`touch, bus heading down: player ${JSON.stringify(c.player)}, open card ${JSON.stringify(c.open)}`);
