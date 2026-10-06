@@ -352,13 +352,13 @@
       chaseLock.target = p;
     }
     /* ---- HUD -------------------------------------------------------------------------------- */
-    /* hudPlayerBox in the chase view: the corners of the player's (or their vehicle's) box through the chase
-       camera, in CSS px; a corner behind the near plane counts as on it. */
+    /* hudPlayerBox in the chase view: the corners of the player's (or their vehicle's, or the cab's they ride
+       in) box through the chase camera, in CSS px; a corner behind the near plane counts as on it. */
     const chaseBoxAt = { x: 0, y: 0 };
     function chasePlayerBox(out) {
       out.ok = false;
       if (!chaseCam.ready) return out;
-      const c = player.car,
+      const c = player.car || taxiRide?.car || null,
         body = c || player;
       if (!(Number.isFinite(body.x) && Number.isFinite(body.y))) return out;
       let half, side, a, z0, tall;

@@ -16,9 +16,11 @@ export default async function (t) {
       // The reticle's ray meets the ground a dozen metres ahead: the aim is along the camera, give or take the shoulder.
       t.near(Math.abs(deg(r.aimDeg - heading)), 0, 12, `camera ${heading}: aim off the camera's heading (deg)`);
     }
-    // At the wheel: the camera looking out to the left puts the drive-by out of the driver's window.
+    // At the wheel: the camera looking out to the left puts the drive-by out of the driver's window. (Getting
+    // in hands the camera over and its heading spring swings it behind the car: let it settle first.)
+    await t.call('chaseLook', 0, 0, 0, 9);
     await t.call('drive', 'sedan', 0, 0);
-    await t.wait(0.5);
+    await t.wait(3);
     const car = await t.call('status');
     t.assert(car.vehicle === 'sedan', 'not in the sedan: ' + JSON.stringify(car));
     await t.call('chaseLook', 0, 0, -90, 9);
