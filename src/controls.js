@@ -62,6 +62,8 @@
       { id: 'handbrake', label: 'Handbrake / alt fire', note: 'Handbrake in a vehicle, fires on foot', group: 'combat', keys: ['Space'], ctx: ['foot', 'drive'] },
       { id: 'poison', label: 'Spike the drink', note: 'Mission 2: poison the reserved drink', group: 'combat', keys: ['KeyP'], ctx: ['foot'] },
       { id: 'horn', label: 'Horn', note: 'Sound the horn', group: 'vehicle', keys: ['KeyH'], ctx: ['drive'] },
+      // The chase camera's look behind (chase-camera.js): held, the view cuts to behind the vehicle.
+      { id: 'lookBehind', label: 'Look behind', note: 'Chase camera: hold to look out of the back of the vehicle (the view cuts round and back)', group: 'vehicle', keys: ['KeyC'], ctx: ['drive'] },
       { id: 'radioPower', label: 'Radio on / off', note: 'Car radio power', group: 'vehicle', keys: ['KeyN'], ctx: ['drive', 'air'] },
       { id: 'radioNext', label: 'Next station', note: 'Tune the next radio station', group: 'vehicle', keys: ['KeyB'], ctx: ['drive', 'air'] },
       { id: 'radioQuieter', label: 'Radio volume down', note: 'Turn the radio down (the radio box shows the level; the same as Settings · Audio)', group: 'vehicle', keys: ['Comma'], ctx: ['drive', 'air'] },
