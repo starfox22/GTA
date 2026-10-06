@@ -59,7 +59,8 @@ body.chase-locked #game {
 body.chase-view:not(.touch-mode) .bottom-middle {
   position: fixed;
   left: var(--hud-edge);
-  bottom: 172px;
+  /* The minimap's top (measured with the card's boxes, hud-clearance.js measureMissionCard). */
+  bottom: var(--chase-card-bottom, 172px);
   width: min(280px, 27vw);
   flex: none;
   align-items: flex-start;

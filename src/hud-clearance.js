@@ -41,6 +41,8 @@
       vw: 0,
       vh: 0,
       chaseLayout: false,
+      // The chase layout's card: how far up from the bottom it stands (the minimap's top, chase-view.css).
+      cardBottom: -1,
       measuredAt: -1,
       want: true,
       key: '',
@@ -118,6 +120,15 @@
       }
       if (C.measuredAt >= 0 && now - C.measuredAt < CLEAR_MEASURE_EVERY) return;
       C.measuredAt = now;
+      // The chase layout stands the card on the minimap, whatever its size (folded, a big window): its top.
+      if (chaseLayout) {
+        const top = getElement('minimapBox').getBoundingClientRect().top,
+          bottom = top > 0 ? Math.round(viewportHeight - top + 8) : 172;
+        if (bottom !== C.cardBottom) {
+          C.cardBottom = bottom;
+          document.body.style.setProperty('--chase-card-bottom', bottom + 'px');
+        }
+      }
       const pager = getElement('pager');
       if (!pager.classList.contains('hidden')) {
         const box = pager.getBoundingClientRect();
