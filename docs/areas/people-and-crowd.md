@@ -19,7 +19,9 @@ Animals: ecology.js / ecology3d.js, sealife (world-county-and-sea.md).
 
 - Streaming (`streamCrowd`): people exist around the camera so visible streets are always
   busy; density follows the hour (`cityTempo`) and the district. `crowd.settledAt = null`
-  asks the streamer to resettle (after a teleport or a ride skip).
+  asks the streamer to resettle (after a teleport or a ride skip). In the chase view it counts
+  and spawns round a centre leaned up the camera's heading, and a spot is out of sight off the
+  chase camera's frustum or behind a building (`spotUnseen`; people-and-crowd-living-city.md).
 - Walking: right-hand side of the sidewalk, corners, signals, doors; `strideCycle(speed)` /
   `strideRate(speed)` keep legs in step with the ground (one stride = 10 units + 0.3 s).
   Pedestrians walk 4-6 km/h, flee at 17-21; officers run 16-19.
