@@ -154,6 +154,8 @@
     function chaseTurn(yaw, pitch) {
       if (!Number.isFinite(yaw + pitch)) return;
       chaseCam.idle = 0;
+      // A clear look breaks a lock-on (LOCK-ON).
+      chaseLockOn.input += Math.abs(yaw) + Math.abs(pitch);
       if (chaseFollowsVehicle()) {
         chaseCam.lookYaw = normalizeAngle(chaseCam.lookYaw + yaw);
         chaseCam.lookPitch = clamp(chaseCam.lookPitch + pitch, CHASE_PITCH_MIN - chaseCam.pitch, CHASE_PITCH_MAX - chaseCam.pitch);
@@ -261,6 +263,90 @@
       const w = currentWeapon();
       if (!w || w.melee) return false;
       return !!mouse.alt || (typeof gamepad !== 'undefined' && !!gamepad.aimHeld);
+    }
+    /**
+     * LOCK-ON (Settings · Gameplay · Aim assist, on by default): pressing aim (the right button, LT) with a
+     * threat close to the reticle turns the camera onto them and holds it there while aiming, as GTA IV's
+     * lock-on does. A clear move of the mouse or the stick breaks it to free aim; it lets go when the target
+     * falls, hides behind something or runs out of reach. Threats only (mission gunmen, gangs, officers while
+     * wanted, bears): never a passer-by.
+     */
+    const CHASE_LOCK_CONE = 0.3,
+      CHASE_LOCK_REACH = 70 * UNITS_PER_METRE,
+      CHASE_LOCK_RATE = 14,
+      // Radians of look input in one step that break the lock.
+      CHASE_LOCK_BREAK = 0.05;
+    const chaseLockOn = { target: null, aiming: false, input: 0, since: 0 };
+    function chaseLockThreat(e) {
+      if (!e || e.hp <= 0 || e.hidden || e === player) return false;
+      return true;
+    }
+    function chaseLockChest(e) {
+      return entityElevation(e) + PERSON_HEIGHT * 0.72;
+    }
+    /* The threat nearest the reticle within CHASE_LOCK_CONE and CHASE_LOCK_REACH, in sight, or null. */
+    function chaseLockFind() {
+      const b = chaseFrame();
+      let best = CHASE_LOCK_CONE,
+        found = null;
+      const lists = [enemies, gangMembers, wantedStars > 0 ? officers : null, wildlife];
+      for (let l = 0; l < lists.length; l++) {
+        const list = lists[l];
+        if (!list) continue;
+        for (let i = 0; i < list.length; i++) {
+          const e = list[i];
+          if (!chaseLockThreat(e)) continue;
+          if (list === wildlife && e.species !== 'bear') continue;
+          const dx = e.x - chaseCam.x,
+            dy = e.y - chaseCam.y,
+            dz = chaseLockChest(e) - chaseCam.z,
+            d = Math.hypot(dx, dy, dz);
+          if (d > CHASE_LOCK_REACH || d < 1) continue;
+          const along = (dx * b.fx + dy * b.fy + dz * b.fz) / d;
+          if (along <= 0) continue;
+          const off = Math.acos(Math.min(1, along)) + d * 0.000015;
+          if (off >= best || !clearSight(player, e)) continue;
+          best = off;
+          found = e;
+        }
+      }
+      return found;
+    }
+    function updateChaseLock(deltaSeconds, aiming) {
+      const L = chaseLockOn,
+        input = L.input;
+      L.input = 0;
+      if (!aiming || settings.aimAssist === false) {
+        L.target = null;
+        L.aiming = false;
+        return;
+      }
+      // At the press: the threat nearest the reticle.
+      if (!L.aiming) {
+        L.aiming = true;
+        L.target = chaseLockFind();
+        L.since = gameTime;
+      }
+      const e = L.target;
+      if (!e) return;
+      // A clear look breaks it to free aim; a fallen, hidden or far target lets go.
+      if (input > CHASE_LOCK_BREAK || !chaseLockThreat(e) || Math.hypot(e.x - player.x, e.y - player.y) > CHASE_LOCK_REACH * 1.2) {
+        L.target = null;
+        return;
+      }
+      if (gameTime - L.since > 0.5 && !clearSight(player, e)) {
+        L.target = null;
+        return;
+      }
+      // Turn the camera so the reticle (its middle) sits on the target's chest.
+      const dx = e.x - chaseCam.x,
+        dy = e.y - chaseCam.y,
+        dz = chaseLockChest(e) - chaseCam.z,
+        yaw = Math.atan2(dy, dx),
+        pitch = Math.atan2(-dz, Math.max(1, Math.hypot(dx, dy))),
+        k = 1 - Math.exp(-deltaSeconds * CHASE_LOCK_RATE);
+      chaseCam.yaw = normalizeAngle(chaseCam.yaw + normalizeAngle(yaw - chaseCam.yaw) * k);
+      chaseCam.pitch = clamp(chaseCam.pitch + (pitch - chaseCam.pitch) * k, CHASE_PITCH_MIN, CHASE_PITCH_MAX);
     }
     /* The heading a vehicle travels (its velocity, or its nose when slow or reversing). */
     function chaseVehicleHeading(c) {
@@ -390,6 +476,8 @@
       // Aiming over the shoulder eases in and out (about a fifth of a second).
       const aimWant = chaseAiming() ? 1 : 0;
       cam.aimBlend += (aimWant - cam.aimBlend) * (1 - Math.exp(-deltaSeconds * 11));
+      // Aiming at a threat near the reticle locks the camera onto them (LOCK-ON).
+      updateChaseLock(deltaSeconds, aimWant === 1 && !c);
       const a = cam.aimBlend,
         pivotM = shape.pivot + (CHASE_AIM.pivot - shape.pivot) * a,
         distM = shape.dist + (CHASE_AIM.dist - shape.dist) * a,
@@ -689,6 +777,11 @@
         wantMetres: r(chaseCam.wantDist / M, 2),
         heightMetres: r((chaseCam.z - chaseFloor(chaseCam.x, chaseCam.y)) / M, 2),
         aiming: r(chaseCam.aimBlend, 2),
+        // LOCK-ON: what the aim holds on (kind and distance), or null.
+        lockOn: chaseLockOn.target
+          ? { kind: chaseLockOn.target.faction || chaseLockOn.target.role || chaseLockOn.target.species || 'gunman', metres: r(Math.hypot(chaseLockOn.target.x - player.x, chaseLockOn.target.y - player.y) / M) }
+          : null,
+        aimAssist: settings.aimAssist !== false,
         speedBlend: r(chaseCam.speedBlend, 2),
         zoom: r(chaseCam.zoom, 2),
         aim: aim

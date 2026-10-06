@@ -70,7 +70,9 @@ rendering.md Cameras and view.
 - Level of detail (far cells drawn from the far copy, shadow casters and proxies, small props and
   pools, people and vehicles by distance): rendering-chase.md.
 - The reticle (chase-hud.js, chase-view.css): on foot with a gun; red over a target, a flash on a
-  shot, a ring while aiming. `body.chase-locked` hides the cursor while the pointer is captured.
+  shot, a ring while aiming. LOCK-ON (Settings · Gameplay · Aim assist, on by default): aiming with a
+  threat within 0.3 rad of the reticle and 70 m turns the camera onto their chest and holds it; a clear
+  look (mouse, stick) breaks it to free aim; passers-by never lock (`chaseLockOn`, `updateChaseLock`). `body.chase-locked` hides the cursor while the pointer is captured.
 
 ## Game rules in the chase view (chase-rules.js)
 
