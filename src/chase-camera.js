@@ -89,8 +89,9 @@
       // shoulder when the ground lifted the camera): what the renderer and the projection use.
       viewYaw: -Math.PI / 2,
       viewPitch: CHASE_FOOT.pitch,
-      // The page could not capture the pointer (CURSOR LOOK instead).
+      // The page could not capture the pointer (CURSOR LOOK instead); the last request was a soft one.
       lockFailed: false,
+      lockSoft: false,
     };
     let viewMode = VIEW_STREET;
     try {
@@ -170,12 +171,15 @@
        Returns true when a capture was asked for (the click that asks fires nothing). A page that
        cannot capture the pointer (an embedding frame without the permission) falls back on
        CURSOR LOOK (updateCursorLook). */
-    function captureChasePointer() {
+    function captureChasePointer(soft = false) {
       if (!chaseCameraLive() || gameMode !== 'play' || touchModeOn() || chaseCam.lockFailed) return false;
       if (document.pointerLockElement === canvas || typeof canvas.requestPointerLock !== 'function') {
         chaseCam.lockFailed = typeof canvas.requestPointerLock !== 'function';
         return false;
       }
+      // A soft request (resuming from the pause menu) may be refused for a moment after Escape:
+      // only a refused click on the game means the page cannot capture the pointer at all.
+      chaseCam.lockSoft = soft;
       try {
         const asked = canvas.requestPointerLock();
         // (Some browsers return a promise that rejects when the page is not focused.)
@@ -198,7 +202,7 @@
         if (chaseCam.locked) placeMouseOnReticle();
       });
       document.addEventListener('pointerlockerror', () => {
-        chaseCam.lockFailed = true;
+        if (!chaseCam.lockSoft) chaseCam.lockFailed = true;
         chaseCam.locked = false;
       });
     }
@@ -218,6 +222,12 @@
         h = push(u),
         p = push(v);
       if (h || p) chaseTurn(h * Math.abs(h) * 2.4 * lookSensitivity() * deltaSeconds, p * Math.abs(p) * 1.2 * lookSensitivity() * deltaSeconds * (settings.invertLook ? -1 : 1));
+    }
+    /* The gamepad's right stick and the touch aim stick turn the chase camera, every simulation step. */
+    function updateStickLook(deltaSeconds) {
+      if (!chaseCameraLive() || gameMode !== 'play' || !(deltaSeconds > 0)) return;
+      if (gamepad.lookX || gamepad.lookY) chaseStick(gamepad.lookX, gamepad.lookY, deltaSeconds);
+      if (touchLookX || touchLookY) chaseStick(touchLookX, touchLookY, deltaSeconds);
     }
     /* While the pointer is captured the aim is the reticle (mouse.x / y stand on it for every reader). */
     function placeMouseOnReticle() {

@@ -14,6 +14,10 @@
           if (typeof changes.playerOutline === 'boolean') settings.playerOutline = changes.playerOutline;
           if (typeof changes.playerRing === 'boolean') settings.playerRing = changes.playerRing;
           if (typeof changes.motionComfort === 'boolean') settings.motionComfort = changes.motionComfort;
+          // The chase camera (chase-camera.js): 'street' or 'chase', look sensitivity 20-300 %, invert look.
+          if (changes.cameraView === 'street' || changes.cameraView === 'chase') setViewMode(changes.cameraView, true);
+          if (Number.isFinite(changes.lookSensitivity)) settings.lookSensitivity = clamp(Math.round(changes.lookSensitivity), 20, 300);
+          if (typeof changes.invertLook === 'boolean') settings.invertLook = changes.invertLook;
           // 'auto', 'off', 'low' or 'high' (quality.js SHADOWS).
           if (typeof changes.shadows === 'string') setShadowSetting(changes.shadows.toLowerCase());
           if (typeof changes.sound === 'boolean' && changes.sound !== soundOn) mute();
@@ -49,6 +53,9 @@
           playerOutline: settings.playerOutline,
           playerRing: settings.playerRing,
           motionComfort: settings.motionComfort,
+          cameraView: viewMode,
+          lookSensitivity: settings.lookSensitivity,
+          invertLook: settings.invertLook,
           sound: soundOn,
           // The volume sliders (settings.js AUDIO_VOLUMES): masterVolume,
           // radioVolume, engineVolume, soundVolume (effects), voiceVolume,

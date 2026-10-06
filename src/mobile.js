@@ -7,6 +7,9 @@
      */
     /* Pointer-owned controls use the same game actions as the keyboard; no synthetic keyboard events. */
     let touchAim = null,
+      // The aim stick's push in the chase view (-1..1 each way): it turns the camera there (chase-camera.js).
+      touchLookX = 0,
+      touchLookY = 0,
       touchMode = 'auto',
       touchKeys = new Set(),
       touchApplied = new Set(),
@@ -32,6 +35,7 @@
       touchPointerKeys.clear();
       touchSticks.clear();
       touchAim = null;
+      touchLookX = touchLookY = 0;
       for (const id of ['moveNub', 'aimNub']) getElement(id).style.transform = 'translate(-50%,-50%)';
     }
     function rebuildTouchKeys() {
@@ -70,7 +74,10 @@
       const stick = touchSticks.get(e.pointerId);
       if (stick) {
         getElement(stick.aim ? 'aimNub' : 'moveNub').style.transform = 'translate(-50%,-50%)';
-        if (stick.aim) touchAim = null;
+        if (stick.aim) {
+          touchAim = null;
+          touchLookX = touchLookY = 0;
+        }
         touchSticks.delete(e.pointerId);
       }
       rebuildTouchKeys();
@@ -91,7 +98,14 @@
       getElement(stick.aim ? 'aimNub' : 'moveNub').style.transform =
         'translate(calc(-50% + ' + x + 'px),calc(-50% + ' + y + 'px))';
       const list = [];
-      if (m > radius * 0.23) {
+      if (stick.aim && chaseCameraLive()) {
+        // CHASE TOUCH: the aim stick turns the camera (a joystick: the push is a rate) and fires
+        // at the reticle when pushed past two thirds of the way out.
+        touchAim = null;
+        touchLookX = m > radius * 0.18 ? x / radius : 0;
+        touchLookY = m > radius * 0.18 ? y / radius : 0;
+        if (m > radius * 0.66) list.push('KeyF');
+      } else if (m > radius * 0.23) {
         if (stick.aim) {
           touchAim = Math.atan2(dy, dx);
           list.push('KeyF');
@@ -107,7 +121,10 @@
             if (roofPartyPace() ? m >= radius * 0.5 : m < radius * 0.5) list.push(actionCode('walk'));
           }
         }
-      } else if (stick.aim) touchAim = null;
+      } else if (stick.aim) {
+        touchAim = null;
+        touchLookX = touchLookY = 0;
+      }
       touchPointerKeys.set(e.pointerId, list);
       rebuildTouchKeys();
       syncTouchInput();

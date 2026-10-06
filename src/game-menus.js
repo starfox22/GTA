@@ -105,6 +105,8 @@
         gameMode = 'play';
         getElement('pauseMenu').classList.add('hidden');
         canvas.focus();
+        // Back into the chase view: capture the mouse again if the browser allows it now (chase-camera.js).
+        captureChasePointer(true);
       }
       keys = {};
       mouse.down = false;
