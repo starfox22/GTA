@@ -135,9 +135,11 @@
       const ground = terrainHeight(c.x, c.y);
       let p = null;
       if (apacheAimOverride) p = { x: apacheAimOverride.x, y: apacheAimOverride.y };
+      // The chase view: the ground under the reticle (or the cursor), whatever aims (chase-rules.js).
+      else if (chaseCameraLive() && touchAim === null) p = chaseGroundPoint(ground + 4);
       else if (mouse.active && touchAim === null && city3D) p = city3D.groundPoint(mouse.x, mouse.y, ground + 4);
       if (!p) {
-        const a = touchAim ?? c.a;
+        const a = touchAim ?? (chaseCameraLive() ? (chaseCam.viewYaw ?? c.a) : c.a);
         p = { x: c.x + Math.cos(a) * 340, y: c.y + Math.sin(a) * 340 };
       }
       // Between a short and a long burst's reach.

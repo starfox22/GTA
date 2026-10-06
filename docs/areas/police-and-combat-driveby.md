@@ -47,6 +47,11 @@ crowd3d-driveby.js (the pose), the `spec.gunFrame`/`torsoTwist` hook in crowd3d-
   touch (the "can't shoot back" report; tools/tests/driveby-mouse.mjs).
 - Keyboard aim in a vehicle (`aim()`, no mouse or stick): `driveByAutoAim` takes the nearest
   threat inside the arcs, else straight out of the driver's window.
+- **In the chase view** the reticle (or the cursor while the pointer is free) is the aim for every
+  device: `aim()` is `chaseAimHeading(player.car)` (chase-rules.js `chaseAim`, kept for the step), so
+  the drive-by goes through the same `driveByAim` arcs and clamps toward where the camera looks (no
+  `driveByAutoAim`); `driveByScreenPoint` and the cross use `chaseProject` (no cross while it lies
+  behind the camera). tools/tests/chase-aim.mjs.
 - There are **no NPC drive-bys** (the marine units and gun trucks are deck gunners and
   turrets). A future shooter in a vehicle must go through `driveByAim` with its vehicle.
 

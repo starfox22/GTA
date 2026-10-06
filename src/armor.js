@@ -233,14 +233,22 @@
       const base = entityElevation(c) + 14,
         here = city3D.project(c.x, c.y, base),
         want = c.turretAim ?? aim();
-      // Range: to the mouse when aiming with it, otherwise a fixed 320 units.
+      // Range: to the mouse when aiming with it, otherwise a fixed 320 units. The chase view: the ring on
+      // the reticle (or the cursor), the range to the point under it (chase-rules.js).
+      const chase = chaseCameraLive() && touchAim === null,
+        at = chase ? chaseAimScreen() : null;
       let range = 320;
-      if (mouse.active && touchAim === null) {
+      if (chase) range = chaseAimRange(c);
+      else if (mouse.active && touchAim === null) {
         const ahead = city3D.project(c.x + Math.cos(want) * 100, c.y + Math.sin(want) * 100, base),
           perHundred = Math.hypot(ahead.x - here.x, ahead.y - here.y);
         if (perHundred > 1) range = clamp((100 * Math.hypot(mouse.x - here.x, mouse.y - here.y)) / perHundred, 60, 900);
       }
-      const ring = mouse.active && touchAim === null ? { x: mouse.x, y: mouse.y } : city3D.project(c.x + Math.cos(want) * range, c.y + Math.sin(want) * range, base),
+      const ring = chase
+          ? { x: at.x, y: at.y }
+          : mouse.active && touchAim === null
+            ? { x: mouse.x, y: mouse.y }
+            : city3D.project(c.x + Math.cos(want) * range, c.y + Math.sin(want) * range, base),
         barrel = c.turretA ?? c.a,
         pip = city3D.project(c.x + Math.cos(barrel) * range, c.y + Math.sin(barrel) * range, base),
         ringEl = getElement('tankAimRing'),

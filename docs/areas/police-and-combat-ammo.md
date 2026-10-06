@@ -55,4 +55,13 @@ police-and-combat.md.
   parachute it is off (the flight view shows far more).
 - `shotLog()` counts every round aimed at the player with `onScreen` from the same test, so
   `offscreen` should stay 0 for every source.
+- **In the chase view** (chase-camera.js; `chaseCameraLive()`) the view is the chase camera's
+  frame (chase-rules.js FIRE): the shooter's chest (`chaseChestHeight`: 0.72 of a person, 0.6 of a
+  vehicle's height) inside the frustum less the inset in px (`chaseSees`), no deeper than
+  `CHASE_FIRE_REACH` (150 m), and not hidden from the camera behind a building (`chaseHiddenFrom`: one
+  march through the building grid with heights; a building the camera stands in does not count).
+  Behind the camera, off the frame's sides, beyond the reach or round a corner: hold fire. The air
+  exemption is unchanged. The soft lock (`playerShotTarget`) is then whoever is within 38 px of the
+  reticle (or the cursor) through `chaseProject`, for every device (`chaseShotTarget`). Console
+  `viewRules(x, y)` (`shooter`, `shooterInset`, `hiddenFromCamera`); tools/tests/chase-shooter.mjs.
 - Gang fire between factions, and at the police, is not limited by the screen.

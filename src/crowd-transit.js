@@ -125,7 +125,7 @@
       let hailer = null;
       recruit(s, 140, (p) => (hailer = sceneMember(s, p, 'hailer', spot, 40)));
       if (!hailer) {
-        if (crowdInView(kerbX, kerbY, 60)) {
+        if (!spotUnseen(kerbX, kerbY, 60, SPOT_PERSON)) {
           removeScene(s);
           return null;
         }
@@ -307,7 +307,7 @@
             place.door &&
             distanceBetween(place.door, player) < 1500 &&
             !crowd.scenes.some((s) => s.place === place) &&
-            (allowInView || !crowdInView(place.door.x, place.door.y, 60))
+            (allowInView || spotUnseen(place.door.x, place.door.y, 60, SPOT_PERSON))
           )
             stageNightlife(place);
       if (crowd.hour >= 6 || crowd.hour < 0.5)
@@ -315,7 +315,7 @@
           if (
             distanceBetween(stop, player) < 1100 &&
             !crowd.scenes.some((s) => s.stop === stop) &&
-            (allowInView || !crowdInView(stop.x, stop.y, 60)) &&
+            (allowInView || spotUnseen(stop.x, stop.y, 60, SPOT_PERSON)) &&
             count('busStop') < 5
           )
             stageBusStop(stop);

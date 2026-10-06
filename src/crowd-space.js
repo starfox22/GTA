@@ -42,7 +42,10 @@
       }
       return crowdView;
     }
+    /* On screen or about to be: the street camera's footprint grown by `margin`; in the chase view the chase
+       camera's frustum, `margin` a world radius, within its sight reach (chase-rules.js CHASE RULES). */
     function crowdInView(x, y, margin = 0) {
+      if (chaseCameraLive()) return chaseInView(x, y, margin);
       const v = crowdViewHalf();
       return Math.abs(x - cameraTarget.x) < v.w + margin && Math.abs(y - cameraTarget.y) < v.h + margin;
     }
