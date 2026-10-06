@@ -713,6 +713,8 @@
         renderer.setRenderTarget(sceneTarget);
         renderer.render(scene, camera);
         noteSceneCalls();
+        // The chase view's cloud shadows, per pixel from the depth (clouds3d-sky.js).
+        renderChaseCloudShade();
         const tier = postTier;
         if (tier.ao && aoMaterial) {
           aoUniforms.tDepth.value = sceneTarget.depthTexture;

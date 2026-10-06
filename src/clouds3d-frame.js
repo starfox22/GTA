@@ -59,14 +59,17 @@
         // all: its residual blotches over the rain-dark streets read as dirt.
         const closedDeck = clamp((cloud - 0.72) / 0.18, 0, 1),
           shadeStrength = cloudsSupported ? 0.34 * clamp(light * 1.4, 0, 1) * (1 - closedDeck) : 0;
-        cloudShade.visible = shadeStrength > 0.01 && coverage > 0.05;
+        const shadeOn = shadeStrength > 0.01 && coverage > 0.05;
+        // The chase camera stands under the plane: its shadows come per pixel (clouds3d-sky.js).
+        cloudShade.visible = shadeOn && !chaseViewActive;
+        chaseShade.on = shadeOn && chaseViewActive;
+        shadeUniforms.uStrength.value = shadeStrength;
         if (cloudShade.visible) {
           const ground = terrainHeight(viewCenter.x, viewCenter.y),
             span = viewReach * 2.6 + 1200;
           cloudShade.position.set(viewCenter.x, ground + shadeHeight, viewCenter.y);
           cloudShade.scale.set(span, span, 1);
           shadeUniforms.uGround.value = ground;
-          shadeUniforms.uStrength.value = shadeStrength;
           shadeUniforms.uPerspective.value = camera.isPerspectiveCamera ? 1 : 0;
           camera.getWorldDirection(shadeUniforms.uViewDirection.value);
         }
@@ -304,6 +307,8 @@
           // ('march', 'layer' or ''), the sun the sky draws (elevation, degrees), the haze, the sun glare.
           sky: {
             clouds: ['', 'layer', 'march'][skyCloudView.mode],
+            // Cloud shadows drawn per pixel (the chase view) this frame.
+            shadows: chaseShade.drawn,
             sunDeg: +((Math.asin(clamp(skySunDirection.y, -1, 1)) * 180) / Math.PI).toFixed(1),
             haze: CITY_HAZE.cityHazeSun.value[3] > 0.5,
             horizon: Array.from(CITY_HAZE.cityHazeSky.value.subarray(0, 3), r),

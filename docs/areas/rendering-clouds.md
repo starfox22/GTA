@@ -47,6 +47,10 @@ The cloud layer (game side, clouds.js) and how it is drawn (clouds3d*.js inside
   field at two heights where the ray crosses the slab (no detail octave): a soft opacity and a shaded
   underside. Same coverage map and noise as the shadows; WebGL1 has none. A camera inside the layer (a
   summit in a wet deck) sees the march round it on HIGH/ULTRA, nothing on LOW/MEDIUM.
+- shadows from the street (clouds3d-sky.js): the plane only works for a camera above it, so the chase
+  view hides it and finds the shadow per pixel: a quarter-size pass rebuilds each pixel's world point
+  from the depth and reads `cloudShadeAt` (CLOUD_SHADE_GLSL, the plane's own field, rings and strength),
+  fading under the haze; the composite blends it towards the plane's slate (`uCloudShade`).
 - An aircraft keeps its pocket of clear air (walls of cloud, the ground below); freefall has
   none (the white-out is the point), a canopy a thin one. A jumper passes from the freefall
   values to the canopy's (veil cap, pocket, wisps, lens) by `p.opening`, and the streaks and

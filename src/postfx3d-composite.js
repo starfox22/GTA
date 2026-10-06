@@ -25,6 +25,9 @@
         uInvProjection: aoUniforms.uInvProjection,
         tBloom: { value: null },
         tReflect: { value: null },
+        // The chase view's cloud shadows (clouds3d-sky.js): their target, and 1 while it holds this frame's.
+        tCloudShade: { value: null },
+        uCloudShade: { value: 0 },
         uReflect: { value: 0 },
         uExposure: { value: 1.14 },
         uAoStrength: { value: 0 },
@@ -50,6 +53,8 @@
           uniform sampler2D tBloom;
           uniform sampler2D tReflect;
           uniform float uReflect;
+          uniform sampler2D tCloudShade;
+          uniform float uCloudShade;
           uniform float uExposure;
           uniform float uAoStrength;
           uniform float uBloomStrength;
@@ -114,6 +119,8 @@
             // A NaN pixel would come out of the tone curve black, an overflowed one
             // (half float infinity) as NaN too: show them as nothing and as white.
             color = any( isnan( color ) ) ? vec3( 0.0 ) : clamp( color, vec3( 0.0 ), vec3( 6.0e4 ) );
+            // Cloud shadows in the chase view: towards the shadow plane's slate, as its blend did.
+            if ( uCloudShade > 0.5 ) color = mix( color, vec3( 0.06, 0.08, 0.12 ), texture2D( tCloudShade, sceneUv ).r );
             #ifdef USE_AO
               float ao = compositeAo( sceneUv );
               // Lights (lamps, neon, lit windows) are not shaded; sunlit paving is.

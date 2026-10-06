@@ -1,5 +1,5 @@
-      // Clouds 3D from below: the cloud layer over the chase view, drawn by the sky dome. HIGH and ULTRA march up into
-      // the slab (clouds3d-march.js, uBelow); LOW and MEDIUM draw a cheap 2D layer from the same field in the dome.
+      // Clouds 3D from below: the cloud layer over the chase view, drawn by the sky dome (HIGH and ULTRA march up into
+      // the slab, clouds3d-march.js uBelow; LOW and MEDIUM a cheap 2D layer from the same field), and its shadows per pixel.
       /**
        * CLOUDS FROM BELOW
        * The chase view looks along the street, so the sky (and the layer, 250-400 m up) is in
@@ -133,4 +133,78 @@
         renderer.setRenderTarget(null);
         renderer.setClearColor(cloudClearColor, clearAlpha);
         u.uBelow.value = 0;
+      }
+      /**
+       * CLOUD SHADOWS FROM THE STREET
+       * The shadow plane (clouds3d-shadows.js) serves cameras above it; the chase camera stands
+       * under it (and the plane is not drawn there), so in the chase view the shadows are found
+       * per pixel: a quarter-size pass rebuilds each pixel's world point from the scene's depth
+       * and reads cloudShadeAt there (the plane's own field, rings and strength), so a cloud's
+       * shadow lies on roofs and walls where they are, and fades as the haze takes the distance
+       * over. The composite darkens the scene by it towards the plane's slate (postfx3d-composite.js
+       * uCloudShade), before AO and bloom, as the plane's blend did. Sky pixels are left alone.
+       */
+      const chaseShade = { on: false, drawn: false },
+        chaseShadeUniforms = {
+          ...shadeUniforms,
+          tDepth: { value: null },
+          uInverseProjection: { value: new Three.Matrix4() },
+          uCameraWorld: { value: new Three.Matrix4() },
+          // The chase haze's clear distance and span (scene.fog): the shadows fade out under it.
+          uFade: { value: new Three.Vector2(0, 1) },
+        },
+        chaseShadeTarget = cloudsSupported ? colorTarget(4, 4, Three.UnsignedByteType) : null,
+        chaseShadeScene = new Three.Scene(),
+        chaseShadeQuad = new Three.Mesh(
+          fullScreenGeometry,
+          new Three.ShaderMaterial({
+            uniforms: chaseShadeUniforms,
+            depthTest: false,
+            depthWrite: false,
+            vertexShader: `
+              varying vec2 vUv;
+              void main(){ vUv = uv; gl_Position = vec4(position.xy, 0., 1.); }`,
+            fragmentShader: `
+              precision highp float;
+              ${CLOUD_FIELD_GLSL}
+              ${CLOUD_SHADE_GLSL}
+              uniform sampler2D tDepth;
+              uniform mat4 uInverseProjection, uCameraWorld;
+              uniform vec2 uFade;
+              uniform float uStrength;
+              varying vec2 vUv;
+              void main(){
+                float z = texture2D(tDepth, vUv).x;
+                if (z >= 0.99999) { gl_FragColor = vec4(0.); return; }
+                vec4 view = uInverseProjection * vec4(vUv * 2. - 1., z * 2. - 1., 1.);
+                view /= view.w;
+                vec3 world = (uCameraWorld * vec4(view.xyz, 1.)).xyz;
+                float fade = 1. - smoothstep(uFade.x, uFade.x + uFade.y * 1.5, length(view.xyz));
+                gl_FragColor = vec4(cloudShadeAt(world) * uStrength * fade, 0., 0., 1.);
+              }`,
+          }),
+        );
+      chaseShadeQuad.frustumCulled = false;
+      chaseShadeScene.add(chaseShadeQuad);
+      registerPrewarmPass(chaseShadeScene, fullScreenCamera, () => chaseShadeTarget);
+      /* From renderFrame (postfx3d.js), after the scene pass: the shadows for the composite, or none. */
+      function renderChaseCloudShade() {
+        const u = postCompositeUniforms;
+        chaseShade.drawn = false;
+        if (!chaseShade.on || !chaseShadeTarget || !sceneTarget) {
+          u.uCloudShade.value = 0;
+          return;
+        }
+        const width = Math.max(4, postWidth >> 2),
+          height = Math.max(4, postHeight >> 2);
+        if (chaseShadeTarget.width !== width || chaseShadeTarget.height !== height) chaseShadeTarget.setSize(width, height);
+        chaseShadeUniforms.tDepth.value = sceneTarget.depthTexture;
+        chaseShadeUniforms.uInverseProjection.value.copy(camera.projectionMatrixInverse);
+        chaseShadeUniforms.uCameraWorld.value.copy(camera.matrixWorld);
+        chaseShadeUniforms.uFade.value.set(scene.fog.near, scene.fog.far);
+        renderer.setRenderTarget(chaseShadeTarget);
+        renderer.render(chaseShadeScene, fullScreenCamera);
+        u.tCloudShade.value = chaseShadeTarget.texture;
+        u.uCloudShade.value = 1;
+        chaseShade.drawn = true;
       }

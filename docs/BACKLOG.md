@@ -56,7 +56,7 @@ here when polishing; delete a line when it is fixed. Newest features first.
 
 ## Clouds (clouds*.js, clouds3d-*.js)
 - The flight camera never looks above ~30 degrees below the horizon: under the base the underside is never in view, only the shadows and the dimmer light (the chase view shows it: clouds3d-sky.js).
-- Chase view: no cloud shadows on the ground (the shadow plane works only for a camera above it); a quarter-size pass rebuilding each pixel's world point from depth and reading `softCloud` along the sun, blended in the composite like the plane, would add them. The sky, haze, sun glare and shafts were tuned on SwiftShader: check on a real GPU (and the march from below's cost at ULTRA).
+- Chase view: the sky, haze, sun glare, shafts and the per-pixel cloud shadows were tuned on SwiftShader: check on a real GPU (and the cost of the march from below at ULTRA). The cloud shadows darken shade too (as the plane always did: a blend, not a light term); the half-size march still shows some stair-stepping on cumulus walls.
 - The veil is capped so the subject stays readable, so the ground shows through it once a jumper is within ~30 m of the base (the far march covers only beyond the jumper).
 - Tower stops are boxes (lot + 0.5 m): a twisted crown (EVOLUTION) is approximated; only the six tallest towers stop rays.
 - `cloudAmountAt` (sound, lens, LOW's veil, grey-out) is a likelihood from the coverage map: in a gap the GPU carves it can still say "in cloud".
