@@ -159,7 +159,8 @@
       // middle of the screen, so the view does not chase the cursor), or along the
       // aim with the keyboard or the touch stick.
       const w = currentWeapon();
-      if (!w.melee && !motionComfortOn() && (touchAim !== null || playerInFight()) && !player.swimming && !player.carjack) {
+      // (Not in the chase view: its camera stands behind the player and the aim is its reticle.)
+      if (!w.melee && !motionComfortOn() && !chaseCameraLive() && (touchAim !== null || playerInFight()) && !player.swimming && !player.carjack) {
         let ax = 0,
           ay = 0;
         if (touchAim === null && mouse.active) {

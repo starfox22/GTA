@@ -127,6 +127,8 @@
     function mountedHeliAim(c) {
       let p = null;
       if (mountedAimOverride) p = mountedAimOverride;
+      // The chase view: the ground under the reticle (or the cursor), whatever aims (chase-rules.js).
+      else if (chaseCameraLive() && touchAim === null) p = chaseGroundPoint(terrainHeight(c.x, c.y) + 4);
       else if (mouse.active && touchAim === null && city3D) p = city3D.groundPoint(mouse.x, mouse.y, terrainHeight(c.x, c.y) + 4);
       let a;
       if (p) a = Math.atan2(p.y - c.y, p.x - c.x);
@@ -357,14 +359,18 @@
         const base = entityElevation(c) + w.height - 4,
           here = city3D.project(c.x, c.y, base),
           want = c.turretAim ?? c.a,
+          // The chase view: the ring on the reticle (or the cursor), the range to the point under it.
+          chase = chaseCameraLive() && touchAim === null && !mountedAimOverride,
           mouseAim = mouse.active && touchAim === null && !mountedAimOverride;
         let range = c.gunAim?.range || 320;
-        if (mouseAim) {
+        if (chase) range = chaseAimRange(c);
+        else if (mouseAim) {
           const ahead = city3D.project(c.x + Math.cos(want) * 100, c.y + Math.sin(want) * 100, base),
             perHundred = Math.hypot(ahead.x - here.x, ahead.y - here.y);
           if (perHundred > 1) range = clamp((100 * Math.hypot(mouse.x - here.x, mouse.y - here.y)) / perHundred, 60, 900);
         }
-        ring = mouseAim ? { x: mouse.x, y: mouse.y } : city3D.project(c.x + Math.cos(want) * range, c.y + Math.sin(want) * range, base);
+        const at = chase ? chaseAimScreen() : null;
+        ring = chase ? { x: at.x, y: at.y } : mouseAim ? { x: mouse.x, y: mouse.y } : city3D.project(c.x + Math.cos(want) * range, c.y + Math.sin(want) * range, base);
         pip = city3D.project(c.x + Math.cos(barrel) * range, c.y + Math.sin(barrel) * range, base);
       }
       ringEl.style.transform = 'translate(' + ring.x.toFixed(0) + 'px,' + ring.y.toFixed(0) + 'px)';

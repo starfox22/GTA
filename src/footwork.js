@@ -5,7 +5,9 @@
      * With the mouse or the touch aim stick the player aims anywhere. In a fight (the
      * fire key or button held, a shot or a punch in the last moments, a reload) and
      * when standing still, the body faces the aim; running between fights it faces
-     * the way it goes, at the full pace. Facing the aim while moving another way is
+     * the way it goes, at the full pace. In the chase view the reticle is the aim and
+     * the body faces it in a fight or while aiming over the shoulder, not standing
+     * still. Facing the aim while moving another way is
      * footwork, not a run: a side-step goes at FOOTWORK_SIDE of the pace, a backpedal
      * at FOOTWORK_BACK, diagonals in between. footPace() (game-state.js) applies it,
      * so the movement, the mountain footing, the footsteps and the police's aim all
@@ -32,9 +34,13 @@
       );
     }
     /* The heading the body faces on foot when it faces the aim, else null (it faces
-       the way it goes, player.a). */
+       the way it goes, player.a). In the chase view only in a fight or aiming over the
+       shoulder (whatever aims: the reticle is the aim), never for standing still, so
+       the camera can go round an idle player and see their face. */
     function playerAimFacing() {
-      if (player.car || player.swimming || player.carjack || !(mouse.active || touchAim !== null)) return null;
+      if (player.car || player.swimming || player.carjack) return null;
+      if (chaseCameraLive()) return touchAim !== null || playerInFight() || chaseCam.aimBlend > 0.3 ? aim() : null;
+      if (!(mouse.active || touchAim !== null)) return null;
       if (touchAim !== null || playerInFight() || playerMoveHeading() === null) return aim();
       return null;
     }
