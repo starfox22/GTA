@@ -493,6 +493,26 @@
           float zone = cityPower();
           return texture2D( cityLampMap, uv ).rgb * ( cityLampPower * zone * height );
         }
+        // CITY WALL LIGHT: a wall also takes the pools on the pavement and the road in front of it, a few
+        // metres out along its normal and fainter further out, so lamps across the street light its lower
+        // floors and a facade on a side street catches a little of the street's light instead of going
+        // black (seen at eye level in the chase view, where facades fill the frame). Added as the brighter
+        // of the two, so a wall standing in a pool is lit as before.
+        vec3 cityLampTap( vec2 xz ) {
+          vec2 uv = ( xz - cityLampRect.xy ) * cityLampRect.zw;
+          if ( uv.x >= 0.0 && uv.y >= 0.0 && uv.x <= 1.0 && uv.y <= 1.0 ) return texture2D( cityLampMap, uv ).rgb * cityPower();
+          vec2 iv = ( xz - cityIsleRect.xy ) * cityIsleRect.zw;
+          if ( iv.x < 0.0 || iv.y < 0.0 || iv.x > 1.0 || iv.y > 1.0 ) return vec3( 0.0 );
+          return texture2D( cityIsleMap, iv ).rgb;
+        }
+        vec3 cityWallLight( vec3 viewNormal, float up ) {
+          vec3 n = ( vec4( viewNormal, 0.0 ) * viewMatrix ).xyz;
+          float flat2 = dot( n.xz, n.xz );
+          if ( flat2 < 0.25 || cityLampPower < 0.001 ) return vec3( 0.0 );
+          vec2 out2 = n.xz * inversesqrt( flat2 );
+          vec3 street = cityLampTap( vCityWorld.xz + out2 * 28.0 ) * 0.42 + cityLampTap( vCityWorld.xz + out2 * 75.0 ) * 0.22 + cityLampTap( vCityWorld.xz + out2 * 140.0 ) * 0.12;
+          return street * cityLampPower * ( 1.0 - smoothstep( 26.0, 96.0, vCityWorld.y ) ) * ( 1.0 - up );
+        }
         // Vehicle head and tail lights (the drive light map, redrawn every frame
         // round the view): the road, kerbs, cars, people and walls ahead of a car.
         vec3 cityDriveLight() {
@@ -534,6 +554,7 @@
           // washes take theirs from what is left, then the CAR LAMPS below.
           float capBase = mix( ${CAR_LAMP_FACE_CAP.toFixed(1)}, ${CAR_LAMP_ROAD_CAP.toFixed(2)}, up );
           vec3 lamps = cityLampLight( up );
+          if ( up < 0.5 ) lamps = max( lamps, cityWallLight( normal, up ) );
           vec3 drive = cityDriveLight();
           cityCarLeft = exp( -0.5 * max( lamps.r, max( lamps.g, lamps.b ) ) * facing / capBase );
           float driveShare = max( drive.r, max( drive.g, drive.b ) ) * facing / capBase;

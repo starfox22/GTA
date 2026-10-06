@@ -46,7 +46,17 @@
        * head lamps add a faint horizontal flare streak on HIGH and ULTRA. `gain`
        * brightens a lamp (brake lights), `tint` recolours it (reversing lamps on
        * the tail sprites) and `size` scales it.
+       *
+       * At street level (the chase view) a lamp faces the lens itself, not the
+       * view's axis; a halo is never wider than HALO_STREET_ANGLE of the view (the
+       * world-sized glow round the tail lamps of the car just ahead was a red blob
+       * a tenth of the frame wide); and a head lamp looking at the camera adds a
+       * soft glare of a fixed size on screen (HALO_GLARE_ANGLE), strongest close
+       * up, fading with the distance (HALO_GLARE_FADE), as oncoming lights dazzle.
        */
+      const HALO_STREET_ANGLE = 0.05,
+        HALO_GLARE_ANGLE = 0.15,
+        HALO_GLARE_FADE = [70 * UNITS_PER_METRE, 260 * UNITS_PER_METRE];
       const VEHICLE_HALO_CAPACITY = 640,
         vehicleHaloMaterial = new Three.ShaderMaterial({
           // (merge() would clone the texture; the shared halo texture is set below.)
@@ -148,26 +158,53 @@
           vx = ce[8],
           vy = ce[9],
           vz = ce[10],
-          flares = (activeTier?.bloom ?? 0) >= 5;
+          flares = (activeTier?.bloom ?? 0) >= 5,
+          // At street level: towards the lens (its place), sizes held to a share of the view.
+          street = chaseViewActive,
+          lensX = ce[12],
+          lensY = ce[13],
+          lensZ = ce[14];
         let n = 0;
         for (let i = 0; i < count; i++) {
           const sprite = vehicleHaloQueue[i],
             parent = sprite.parent,
             pe = parent.matrixWorld.elements,
             parentScale = Math.hypot(pe[0], pe[1], pe[2]),
-            size = sprite.scale.x * parentScale * vehicleHaloSize[i],
             facing = vehicleHaloFacing[i];
+          let size = sprite.scale.x * parentScale * vehicleHaloSize[i],
+            lens = 0,
+            ax = vx,
+            ay = vy,
+            az = vz;
           vehicleHaloPoint.copy(sprite.position).applyMatrix4(parent.matrixWorld);
+          if (street) {
+            ax = lensX - vehicleHaloPoint.x;
+            ay = lensY - vehicleHaloPoint.y;
+            az = lensZ - vehicleHaloPoint.z;
+            lens = Math.sqrt(ax * ax + ay * ay + az * az) || 1;
+            ax /= lens;
+            ay /= lens;
+            az /= lens;
+            if (size > lens * HALO_STREET_ANGLE) size = lens * HALO_STREET_ANGLE;
+          }
           let gain = vehicleHaloGain[i],
             toward = 0;
           if (facing) {
             // How squarely the lamp faces the camera (the body's x axis is its heading).
-            toward = (facing * (pe[0] * vx + pe[1] * vy + pe[2] * vz)) / (parentScale || 1);
+            toward = (facing * (pe[0] * ax + pe[1] * ay + pe[2] * az)) / (parentScale || 1);
             gain *= (0.55 + 0.45 * Three.MathUtils.smoothstep(toward, -0.6, 0.15)) * (1 + (facing > 0 ? 1.0 : 0.6) * Three.MathUtils.smoothstep(toward, 0.05, 0.7));
           }
           vehicleHaloColor.copy(vehicleHaloTint[i] || sprite.material.color).multiplyScalar(gain);
           const opacity = vehicleHaloOpacity[i];
           writeVehicleHalo(n++, vehicleHaloPoint.x, vehicleHaloPoint.y, vehicleHaloPoint.z, size, size, opacity, vehicleHaloColor);
+          // Street level: a head lamp looking at the lens dazzles (a soft glare of a fixed size on screen).
+          if (street && facing > 0 && toward > 0.5 && n < VEHICLE_HALO_CAPACITY) {
+            const glare = Three.MathUtils.smoothstep(toward, 0.5, 0.95) * (1 - Three.MathUtils.smoothstep(lens, HALO_GLARE_FADE[0], HALO_GLARE_FADE[1]));
+            if (glare > 0.01) {
+              const wide = lens * HALO_GLARE_ANGLE;
+              writeVehicleHalo(n++, vehicleHaloPoint.x, vehicleHaloPoint.y, vehicleHaloPoint.z, wide, wide, opacity * 0.2 * glare, vehicleHaloColor);
+            }
+          }
           // A head lamp looking at the camera: a thin horizontal flare streak.
           if (flares && facing > 0 && toward > 0.2 && n < VEHICLE_HALO_CAPACITY) {
             const streak = Three.MathUtils.smoothstep(toward, 0.2, 0.8);
