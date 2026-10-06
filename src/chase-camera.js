@@ -243,9 +243,17 @@
       mouse.active = true;
     }
     /* ---- Follow -------------------------------------------------------------------------- */
-    /* In a vehicle (not a passenger) the camera follows the vehicle's heading. */
+    /* The vehicle the camera follows: the player's own, or the cab or the train they ride in
+       (the camera then follows the ride as it would a car the player drove). */
+    function chaseRideVehicle() {
+      if (player.coaster) return null;
+      if (player.car) return player.car;
+      if (taxiRide?.car) return taxiRide.car;
+      if (transitRide?.train) return transitRide.train;
+      return null;
+    }
     function chaseFollowsVehicle() {
-      return !!player.car && !player.coaster;
+      return !!chaseRideVehicle();
     }
     /* Aiming over the shoulder: the right button held on foot with a gun, or the touch / pad aim. */
     function chaseAiming() {
@@ -286,6 +294,15 @@
         }
         return s;
       }
+      if (c === transitRide?.train) {
+        // A city rail car on its viaduct: well back and over the roof.
+        s.pivot = 3.4;
+        s.dist = 16;
+        s.shoulder = 0;
+        s.fov = 55;
+        s.pitch = 0.2;
+        return s;
+      }
       const spec = vehicleSpec(c),
         length = spec.l / UNITS_PER_METRE,
         height = (spec.height ?? Math.min(32, spec.l * 0.32)) / UNITS_PER_METRE;
@@ -323,7 +340,8 @@
         cam.ready = false;
         return;
       }
-      const c = player.car && !player.coaster ? player.car : null,
+      const c = chaseRideVehicle(),
+        train = !!c && c === transitRide?.train,
         comfort = motionComfortOn(),
         shape = chaseShapeFor(c),
         M = UNITS_PER_METRE;
@@ -332,7 +350,7 @@
       const body = c || player,
         bx = body.x,
         by = body.y,
-        bz = c && isBoat(c) ? Math.max(0, entityElevation(c)) : entityElevation(body);
+        bz = train ? entityElevation(player) : c && isBoat(c) ? Math.max(0, entityElevation(c)) : entityElevation(body);
       const subject = c || player;
       if (!cam.ready) {
         // A fresh start (a new game, a teleport, a switch of view): behind the subject at once.
@@ -399,7 +417,7 @@
         let slope = 0;
         if (isAircraft(c)) {
           if (c.type === 'plane') slope = clamp(Math.atan2(c.vz || 0, Math.max(1, speed)), -0.6, 0.6) * 0.8;
-        } else if (!isBoat(c)) {
+        } else if (!train && !isBoat(c)) {
           const step = 4 * M,
             ahead = terrainHeight(bx + Math.cos(c.a) * step, by + Math.sin(c.a) * step),
             behind = terrainHeight(bx - Math.cos(c.a) * step, by - Math.sin(c.a) * step);
