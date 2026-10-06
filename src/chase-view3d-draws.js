@@ -1,3 +1,4 @@
+      // Chase view console report: the last frame's camera and shadow draw calls by kind and distance band.
       /* Console only: the last frame's draw calls by kind and by distance from the camera (metres
          to the nearest point of each object's bounding sphere), for the camera pass (its render
          list) and the sun's shadow pass (the casters three.js would draw into the map). */

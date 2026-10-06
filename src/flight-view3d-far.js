@@ -1,3 +1,4 @@
+      // The far copy of the city (FAR SCENERY): built once, drawn whole from the air and cell by cell in the chase view.
       /**
        * FAR SCENERY
        * The static batches keep one material per building (for each building's own

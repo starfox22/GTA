@@ -1,3 +1,4 @@
+      // Chase view small props and pools: detail-layer meshes, breakable furniture and outlying instanced pools by distance.
       /**
        * CHASE PROPS
        * Small props step out of the chase view by their own size against their distance:

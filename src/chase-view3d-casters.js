@@ -1,3 +1,4 @@
+      // Chase view shadow casters: what cannot shade the view is left out of the sun's shadow pass; far-copy proxies.
       /**
        * CHASE SHADOW CASTERS
        * The shadow box is square round the sphere of the near slice of the view, so it

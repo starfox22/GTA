@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-509 files in the include tree, 176,176 lines.
+509 files in the include tree, 176,181 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -482,14 +482,14 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/flight-view3d.js ▸ Flight camera and aerial perspective
 
-- `src/flight-view3d-far.js`   373 — Far scenery: The static batches keep one material per building (for each building's own window lighting), so the whole city is ~8000 draw calls, and …
+- `src/flight-view3d-far.js`   374 — The far copy of the city (FAR SCENERY): built once, drawn whole from the air and cell by cell in the chase view.
 
 ## src/chase-view3d.js ▸ Chase view 3D: the perspective camera behind the player (chase-camera.js says where it stands), the ground it sees for culling and level of detail …
 
-- `src/chase-view3d-far.js`   156 — Chase far cells: Beyond CHASE_FAR_NEAR (by tier) the chase view draws the far copy of the city (FAR SCENERY, flight-view3d.js) instead of the full …
-- `src/chase-view3d-props.js`   213 — Chase props: Small props step out of the chase view by their own size against their distance: a prop is drawn while its largest side (height …
-- `src/chase-view3d-draws.js`   113 — Console only: the last frame's draw calls by kind and by distance from the camera (metres to the nearest point of each object's bounding sphere), for …
-- `src/chase-view3d-casters.js`   304 — Chase shadow casters: The shadow box is square round the sphere of the near slice of the view, so it holds far more scenery than can shade what the …
+- `src/chase-view3d-far.js`   157 — Chase view far cells: beyond a near radius by tier, 1024-unit cells are drawn from the far copy of the city.
+- `src/chase-view3d-props.js`   214 — Chase view small props and pools: detail-layer meshes, breakable furniture and outlying instanced pools by distance.
+- `src/chase-view3d-draws.js`   114 — Chase view console report: the last frame's camera and shadow draw calls by kind and distance band.
+- `src/chase-view3d-casters.js`   305 — Chase view shadow casters: what cannot shade the view is left out of the sun's shadow pass; far-copy proxies.
 
 ## src/postfx3d.js ▸ HDR post-processing pipeline
 

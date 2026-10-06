@@ -1,3 +1,4 @@
+      // Chase view far cells: beyond a near radius by tier, 1024-unit cells are drawn from the far copy of the city.
       /**
        * CHASE FAR CELLS
        * Beyond CHASE_FAR_NEAR (by tier) the chase view draws the far copy of the city
@@ -11,7 +12,7 @@
        * signs, glass, everything else in the cell) stays as it is. A cell turns far 48
        * units past the radius and near again 48 units inside it, so it never flickers.
        */
-      const CHASE_FAR_NEAR = { LOW: 1400, MEDIUM: 1600, HIGH: 1800, ULTRA: 2200 },
+      const CHASE_FAR_NEAR = { LOW: 1200, MEDIUM: 1400, HIGH: 1600, ULTRA: 2000 },
         CHASE_FAR_HYSTERESIS = 48,
         chaseFarCells = new Map(),
         chaseFarList = [],
