@@ -14,7 +14,7 @@ the game never reads it. Numbers: audit/performance.md (Chase view pass).
 
 ## Far cells: the far copy beyond the near radius (CHASE FAR CELLS)
 
-- Beyond `CHASE_FAR_NEAR` (LOW 150 m, MEDIUM 175, HIGH 200, ULTRA 250, from the nearest point of a
+- Beyond `CHASE_FAR_NEAR` (LOW 175 m, MEDIUM 200, HIGH 225, ULTRA 275, from the nearest point of a
   1024-unit cell) a cell is drawn from the far copy of the city (FAR SCENERY, flight-view3d.js) instead
   of its full batches: the cell hides its `full` group (the static batch cell's batches the copy stands
   for, render3d-statics.js) and its building blocks, and turns on its run in the 3 km far meshes.
@@ -26,7 +26,7 @@ the game never reads it. Numbers: audit/performance.md (Chase view pass).
   in `[material, farSkipMaterial]` and its groups draw the runs of far cells in view (consecutive cells
   as one call, `chaseFarGroups`), the rest skipped (an invisible material is never pushed).
 - The copy is the same shapes, so the seam shows only where a piece under `FAR_PIECE_SIZE` (20 units
-  across from above) drops out, a few pixels at 150 m and more, in the haze. Shared facades keep their
+  across from above) drops out, a few pixels at 175 m and more, in the haze. Shared facades keep their
   own material (the far geometry carries `cityLit`), so window light stays building by building at night;
   a class of one material with plain texture transforms keeps that material; others use the copy's
   averaged material (as in the air).

@@ -608,3 +608,50 @@ by design (nothing merged casts). Left per pristine car: the shell, cabin and tr
 two wipers. Next levers: a parked car's wheels merged into the body (they never turn while it stands), instanced shells
 per kit for traffic beyond the near ring at the pulled-back zoom. Note: tools/tests/headlight-aim.mjs fails on the lead
 branch itself (uphill pitch 31.4 degrees, test range 10-20), not from this pass.
+
+## Sixth pass: the chase view's draw distance and detail (6 October 2026)
+
+The chase view (V) looks along the street to the tier's draw distance (600 m on HIGH), so at the start spot (HIGH,
+1280x720, on foot looking east down Armory St) it drew ~970 camera calls, ~840 shadow calls and 3.1 M triangles, where
+the street view there draws ~235 / ~215 / 1.6 M. `chaseCamera().view.draws` (new) splits the last frame's camera and
+shadow calls and triangles by kind and distance band; it showed where that went: the shadow pass drew every batch of the
+9-16 cells in the square shadow box (~350 calls), the static cells' groups (~180) and pools (~150); the people were all
+at full detail and close-up body set (370 k triangles in view, 260 k in the shadow map); instanced pools were 1.2 M
+triangles (the Ridgeline's far trees 390 k at 500-650 m, city-wide prop pools ~350 k a pass, breakable furniture 185 k);
+in view, ~140 batch calls and their building blocks lay beyond 200 m.
+
+What changed (docs/areas/rendering-chase.md): far cells drawn from the far copy (FAR SCENERY in 1024-unit runs, one draw
+group per cell, facades with their own window light); shadow casters tested against the ground under the frustum slice
+(sun-swept boxes of cells, static groups, far meshes and pools) and the far copy casting for near cells past 70 m; small
+props, breakable pools and outlying pools by size and distance; people by distance (detail, body set, cut-off).
+
+Seeded A/B (`dev.mjs start --render --size 1280x720 --seed 1`, held simulation, the same steps on the base build
+dab4b40 and this one, HIGH): `stats()` of the last frame, camera calls / shadow calls / triangles (scene pass, shadow
+map included). Vehicle models are built and merged a few a frame, so a view with traffic varies by up to ~100 calls
+with the frame it is read on (two readings where they differed).
+
+| Scene | before | after |
+| --- | --- | --- |
+| Chase, on foot at the start spot looking east | 796-886 / 773-816 / 2.97-3.03 M | 704-774 / 434-469 / 1.76-1.78 M |
+| Chase, driving the y 1152 avenue east at ~98 km/h | 750 / 1181 / 2.96 M | 630-643 / 426-429 / 1.85 M |
+| Chase, on foot looking down that avenue | 1111 / 1097 / 3.13 M | 1019 / 582 / 2.16 M |
+| The same at night | 1227 / 1110 / 3.24 M | 1143 / 694 / 2.22 M |
+| Chase, helicopter at 150 m | 681 / 661 / 2.35 M | 536 / 239 / 1.47 M |
+| Street view, on foot at the start spot | 234 / 215 / 1.58 M | 235 / 215 / 1.58 M |
+| Flight view (street mode), 150 m | 499 / 249 / 1.73 M | 492 / 247 / 1.74 M |
+| Flight view (street mode), 600 m (the far copy) | 400 / 395 / 1.66 M | 374 / 387 / 1.67 M |
+
+Unseeded at the start spot (HIGH) the breakdown after the pass, camera / shadow: batches 197 / 120, far-copy runs 55 /
+30, static groups 108 / 87, instanced pools 135-154 / 105-110 (690 k / 480-530 k triangles), people 33-50 calls and
+30-125 k triangles (was 32 calls and 370 k in view alone). The shadow pass leaves out ~300 cells and groups a frame and
+draws 2-6 near cells from the far copy. LOW (no shadows), MEDIUM and ULTRA screenshots hold (no holes, the haze over
+the far clip); right after an in-play tier switch the vehicle models are rebuilt unmerged, so their call counts read
+high there (LOW ~810 camera calls of which ~260 vehicles; MEDIUM 883 / 518 / 1.71 M; ULTRA, 800 m, 1262 / 660 /
+2.96 M).
+
+**Left**: the city-wide prop pools (lamp posts, bollards, benches: ~30 InstancedMeshes drawn whole in every view,
+~290 k triangles a pass) cannot be culled by distance without splitting them (toppling rewrites their instances);
+grass tufts (108 k) and the ground planes (97 k) in view; the bridges at 400-600 m (~45 calls, ~95 k triangles); the
+avenue's unbatched static meshes (~200 calls looking down the avenue); traffic models within ~100 m. The far copy's
+classes (texture and finish) make a far cell cost about as many calls as its batches: the saving there is triangles and
+the blocks, not calls; merging the untextured classes for the chase view would need a second copy.
