@@ -89,20 +89,21 @@
         // two-seater or where not even a low back fits under a fastback's glass.
         let rear = null,
           rearBack = 0;
-        if (!CAR_TWO_SEATERS.has(name) && !g.open) {
-          const step = name === 'limousine' ? Math.max(0.8 * M, x - (g.xb * l + 0.9 * M)) : 0.8 * M,
-            rx = x - step,
-            rearRecline = recline + 0.08;
-          for (let along = 0.86; along >= 0.42; along -= 0.04) {
-            const topX = rx - 0.06 * M - Math.sin(rearRecline) * along * M,
-              topY = y + 0.06 * M + Math.cos(rearRecline) * along * M;
-            if (topX > cabinGlassX(g, l, topY, false) + 0.05 * M && topY < roof - 0.05 * M) {
-              rear = rx;
-              rearBack = along;
-              break;
+        const rearRecline = recline;
+        if (!CAR_TWO_SEATERS.has(name) && !g.open)
+          // The longest step back (less legroom in a tight cabin) whose bench back fits, then its tallest back.
+          for (const legroom of name === 'limousine' ? [Math.max(0.8, (x - g.xb * l) / M - 0.9)] : [0.8, 0.74, 0.68]) {
+            const rx = x - legroom * M;
+            for (let along = 0.86; along >= 0.42 && rear === null; along -= 0.04) {
+              const topX = rx - 0.06 * M - Math.sin(rearRecline) * along * M,
+                topY = y + 0.06 * M + Math.cos(rearRecline) * along * M;
+              if (topX > cabinGlassX(g, l, topY, false) + 0.04 * M && topY < roof - 0.05 * M) {
+                rear = rx;
+                rearBack = along;
+              }
             }
+            if (rear !== null) break;
           }
-        }
         const wheel = own?.wheel ? { x: own.wheel[0] * M + g.xf * l, y: own.wheel[1] * M } : { x: x + 0.52 * M, y: y + 0.34 * M };
         return {
           M,
@@ -114,7 +115,7 @@
           rearY: y + 0.04 * M,
           // How far up the rear back reaches (metres, headrests included when it is 0.7 or more).
           rearBack,
-          rearRecline: recline + 0.08,
+          rearRecline,
           wheel: { x: wheel.x, y: wheel.y, z: -side, r: 0.185 * M, tilt: own?.tilt ?? 0.4 },
           two: CAR_TWO_SEATERS.has(name),
         };
