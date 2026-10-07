@@ -372,21 +372,33 @@
       /*
        * CLUB BADGES
        * The 4x4 club trucks (offroad3d-kits.js) carry their name (CLUB_BADGES: ROVER, BADGER, BRONCO, TAURO...) in light
-       * metal on the tailgate's right corner at the plate's height, smaller and further out past a spare wheel hung in
-       * the middle.
+       * metal on the tailgate's right corner (left on the expedition and bronco, clear of a ladder or carrier) at the
+       * plate's height, between the plate and the corner and clear of a spare wheel hung in the middle (smaller when
+       * that leaves little room).
        */
       // The name each club truck's tail carries (its maker, or the model where the maker's name is not on the tail).
       const CLUB_BADGES = { series: 'ROVER', crawler: 'BADGER', bronco: 'BRONCO', expedition: 'HIGHLANDER', hilux: 'TAURO', sixbysix: 'OKTAV', trophy: 'SIDEWINDER' };
+      // The expedition's ladder and the bronco's swing-away carrier stand on the tailgate's right: their names go left.
+      const CLUB_BADGE_LEFT = { expedition: true, bronco: true };
       function offroadRearBadge(trim, type, def, l, w, tail, spares = []) {
         const text = CLUB_BADGES[type] || String(VEHICLE_DEFINITIONS[type]?.name || type).split(/\s+/)[0],
-          // A spare hung on the tailgate takes its middle: the name goes smaller, into the corner past it.
           spare = spares.some((s) => s.z === 0 && s.ry),
           y = def.bumpers[1][1] + 1.6,
-          right = w * (spare ? 0.45 : 0.42),
-          // Between the plate's edge (1.4 off the centre line) and the corner: a long name (SIDEWINDER) goes smaller.
-          room = right - 1.7;
+          side = CLUB_BADGE_LEFT[type] ? -1 : 1,
+          right = w * (spare ? 0.45 : 0.42);
         let cap = spare ? 0.42 : 0.5,
-          laid = badgeFlatGeometry(text, 'block', cap, 0.18, [0, 0, 0], [-1, 0, 0], [0, 0, 1]);
+          // Clear of the plate's edge (1.4 off the centre line) and of a spare hung on the tailgate: the wheel's width
+          // at the name's height, plus a margin for the chase camera looking down past the wheel (it stands proud).
+          left = 1.7;
+        for (const s of spares) {
+          if (s.z !== 0 || !s.ry) continue;
+          const dy = Math.max(0, Math.abs(y - s.y) - cap / 2),
+            r = def.wheel.r;
+          if (dy < r) left = Math.max(left, Math.sqrt(r * r - dy * dy) + 0.6);
+        }
+        // A long name (SIDEWINDER) goes smaller to fit between them.
+        const room = right - left;
+        let laid = badgeFlatGeometry(text, 'block', cap, 0.18, [0, 0, 0], [-1, 0, 0], [0, 0, 1]);
         if (!laid) return null;
         laid.geometry.computeBoundingBox();
         let b = laid.geometry.boundingBox;
@@ -397,7 +409,7 @@
           laid.geometry.computeBoundingBox();
           b = laid.geometry.boundingBox;
         }
-        laid.geometry.translate(tail - 0.06, y, right - (b.max.z - b.min.z) / 2);
+        laid.geometry.translate(tail - 0.06, y, side * (right - (b.max.z - b.min.z) / 2));
         policeAddMatrix(trim, laid.geometry, badgeIdentity, '#e4e7ea');
         laid.geometry.dispose();
         return { text, sub: null, style: 'block', letters: laid.letters };
