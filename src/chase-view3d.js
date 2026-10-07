@@ -120,6 +120,8 @@
           viewZoom: +viewZoom.toFixed(3),
           fogNear: Math.round(scene.fog.near),
           fogDensity: +scene.fog.density.toExponential(3),
+          // The camera motion blur (postfx3d-motion.js): on this frame, its exposure share, the setting.
+          motionBlur: cameraMotionReport(),
           // CHASE FAR CELLS: the radius (m) beyond which a cell draws the far copy, far cells, far meshes drawn.
           farMetres: Math.round(chaseFarNear / UNITS_PER_METRE),
           farCells: chaseFarCount,

@@ -75,6 +75,8 @@
       invertLook: false,
       // Aiming in the chase camera locks onto a threat near the reticle (chase-camera.js LOCK-ON).
       aimAssist: true,
+      // The chase camera's motion blur on HIGH / ULTRA (postfx3d-motion.js).
+      motionBlur: true,
     };
     let radioMigrated = false;
     try {
@@ -111,6 +113,7 @@
         if (Number.isFinite(saved.lookSensitivity)) settings.lookSensitivity = clamp(Math.round(saved.lookSensitivity), 20, 300);
         if (typeof saved.invertLook === 'boolean') settings.invertLook = saved.invertLook;
         if (typeof saved.aimAssist === 'boolean') settings.aimAssist = saved.aimAssist;
+        if (typeof saved.motionBlur === 'boolean') settings.motionBlur = saved.motionBlur;
         // The title menu's radio (car-radio.js TITLE RADIO), on unless switched off.
         if (typeof saved.titleRadio === 'boolean') titleRadioEnabled = saved.titleRadio;
         if (typeof saved.soundOn === 'boolean') soundOn = saved.soundOn;
@@ -139,6 +142,7 @@
             lookSensitivity: settings.lookSensitivity,
             invertLook: settings.invertLook,
             aimAssist: settings.aimAssist,
+            motionBlur: settings.motionBlur,
             titleRadio: titleRadioEnabled,
             soundOn,
             voicesOn,
@@ -273,6 +277,15 @@
           set: (on) => {
             settings.playerOutline = !!on;
           },
+        },
+        {
+          id: 'motionBlur',
+          kind: 'toggle',
+          label: 'Motion blur',
+          note: () =>
+            'In the chase camera on HIGH and ULTRA, the street smears a little as the camera moves fast (a short exposure); your own car and the player stay sharp. Off with Motion comfort.',
+          get: () => settings.motionBlur,
+          set: (on) => (settings.motionBlur = !!on),
         },
         {
           id: 'playerRing',
