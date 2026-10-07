@@ -173,10 +173,10 @@
           m.designDents = k === 1 ? c.dents : c.dents.map((d) => ({ ...d, x: d.x * k, y: d.y * k, z: d.z * k, r: d.r * k, depth: d.depth === undefined ? undefined : d.depth * k }));
         }
         const dents = m.designDents || c.dents;
-        // Hood: buckles up a little with the nose, springs open on its (moved) hinge, or is gone.
+        // Hood: buckles up a little with the nose, springs up off its latch on its (moved) hinge, or is gone.
         m.hood.visible = parts.hood < 2;
         if (parts.hood === 2 && before.hood !== 2 && !first) spawnPanel(m.hood, paintColor, c, l * 0.25, 0.4, w * 0.67, 1.4);
-        m.hoodPivot.rotation.set(parts.hood === 1 ? 0.07 : 0, 0, parts.hood === 1 ? 0.78 + (c.id % 5) * 0.05 : Math.min(0.12, damage.front * 0.12));
+        m.hoodPivot.rotation.set(parts.hood === 1 ? 0.05 : 0, 0, parts.hood === 1 ? 0.3 + (c.id % 5) * 0.04 : Math.min(0.12, damage.front * 0.12));
         if (parts.hood >= 1 && !m.engine) {
           // The engine bay the hood was covering: block, rocker cover, air box.
           m.engine = new Three.Group();
@@ -203,11 +203,15 @@
           bumper.position.copy(m.bumperOrigins[i]);
           bumper.rotation.set(0, 0, 0);
           if (state === 1) {
-            // Held by the far bracket: the loose end drops about 25 degrees.
-            const drop = 0.44;
+            // Held by the far bracket: the loose end drops about 25 degrees, no further than the road. It turns about
+            // that bracket (the bumper's own half length and height from its rest box: BODY CRUMPLE).
+            const rest = m.crumple?.parts.find((p) => p.mesh === bumper)?.box,
+              length = rest ? (rest[5] - rest[2]) / 2 : half,
+              low = rest ? rest[1] : bumper.position.y - bumper.scale.y / 2,
+              drop = Math.min(0.44, Math.asin(clamp((low - 0.3) / (2 * length), 0, 1)));
             bumper.rotation.x = side * drop;
-            bumper.position.y -= half * Math.sin(drop);
-            bumper.position.z += side * half * (1 - Math.cos(drop));
+            bumper.position.y -= length * Math.sin(drop);
+            bumper.position.z -= side * length * (1 - Math.cos(drop));
           }
           // Police bumpers are black plastic (police3d.js).
           bumper.material = damage.burnt ? burntMetal : m.bumperMaterials?.[i] || m.bumperMaterial || chrome;

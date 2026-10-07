@@ -97,9 +97,43 @@
           hits = markRay.intersectObjects(targets, false);
         for (let i = 0; i < hits.length; i++) {
           if (hits[i].distance > middle) break;
-          if (markSurfaceOk(m, hits[i], mark)) return hits[i];
+          if (markSurfaceOk(m, hits[i], mark) && (mark.kind === 'star' || markCovered(m, hits[i], targets))) return hits[i];
         }
         return null;
+      }
+      // Whether the surface round a hit holds a chase-view hole's bare-metal ring (four points a hole's ring out, each
+      // within 4 cm of the hit's plane): a round that clips a mirror's edge or a trim strip goes on to the panel behind.
+      const coverNormal = new Three.Vector3(),
+        coverU = new Three.Vector3(),
+        coverV = new Three.Vector3(),
+        coverRay = new Three.Raycaster();
+      function markCovered(m, hit, targets) {
+        coverNormal.copy(hit.face.normal).transformDirection(hit.object.matrixWorld);
+        coverU.set(0, 1, 0);
+        if (Math.abs(coverNormal.dot(coverU)) > 0.9) coverU.set(1, 0, 0);
+        coverU.cross(coverNormal).normalize();
+        coverV.crossVectors(coverNormal, coverU);
+        const scale = m.modelScale || 1,
+          ring = MARK_SIZES.hole[2] * 1.4 * 0.26 * scale,
+          slack = 0.32 * scale;
+        let covered = 0;
+        for (let k = 0; k < 4; k++) {
+          const a = (k * Math.PI) / 2;
+          markCorner
+            .copy(hit.point)
+            .addScaledVector(coverU, Math.cos(a) * ring)
+            .addScaledVector(coverV, Math.sin(a) * ring)
+            .addScaledVector(coverNormal, 1);
+          coverRay.set(markCorner, coverNormal.clone().negate());
+          coverRay.far = 1 + slack;
+          const under = coverRay.intersectObjects(targets, false);
+          for (const u of under)
+            if (u.object !== m.cabin && Math.abs(u.distance - 1) <= slack) {
+              covered++;
+              break;
+            }
+        }
+        return covered >= 3;
       }
       // A star the round's line misses the model's pane with (the glass band's numbers are the game's): aim at the
       // pane itself, as near as it allows to where the round went in.
