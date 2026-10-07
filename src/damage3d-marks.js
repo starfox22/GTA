@@ -433,6 +433,7 @@
         if (!m) return null;
         // `rebend`: bend every part again now, in one go (to time a full bend: crumpleMs, slowest).
         if (rebend && m.crumple && m.designDents) {
+          crumpleQueue.delete(m);
           crumpleStart(c, m, m.designDents, true);
           crumpleStep(m, Infinity, true);
           crumpleQueue.delete(m);

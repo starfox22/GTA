@@ -422,11 +422,20 @@
         record.seed = c.id;
         // A hood sprung open keeps half of the shortening its crumple would give (the rest goes into its ridge).
         record.hoodKeep = c.damage?.parts?.hood >= 1 ? 0.5 : 1;
+        const queued = crumpleQueue.has(m);
+        // A pass under way goes on with the new dents (the parts it has done are done again in one more pass), so a
+        // car whose dents change every frame (one grinding along a wall) still gets bent; new parts start it over.
+        if (queued && record.next > 0 && record.order && record.order.length === record.parts.length) {
+          record.again = true;
+          record.all = record.all || all;
+          return;
+        }
         crumpleOrder(m);
         // A pass for parts adopted since the last one keeps going over the rest only if a full one was queued.
-        record.all = all || (crumpleQueue.has(m) && record.all);
+        record.all = all || (queued && record.all);
         record.next = 0;
         record.ms = 0;
+        record.again = false;
         crumpleQueue.add(m);
       }
       // Bends this body's next parts until `until` (performance.now()); true when it is done.
@@ -487,7 +496,17 @@
           }
           const done = crumpleStep(m, until, first);
           first = false;
-          if (!done) return;
+          if (!done || m.crumple.again) {
+            // Another pass for dents that came mid-way; and the next frame starts with the next body in the queue.
+            if (done) {
+              m.crumple.again = false;
+              m.crumple.all = true;
+              m.crumple.next = 0;
+            }
+            crumpleQueue.delete(m);
+            crumpleQueue.add(m);
+            return;
+          }
           crumpleQueue.delete(m);
         }
       }
