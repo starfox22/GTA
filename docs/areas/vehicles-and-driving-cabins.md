@@ -37,7 +37,9 @@ vehicles-and-driving-models.md.
   `CABIN_HEAD_GAP` (2 cm) inside the glasshouse's inner outline (`cabinProfile`: rear glass, the roof lowered by
   `CABIN_ROOF_LINER` 3 cm, windscreen; the side glass across). Search order: up to 10 cm lower and 23 degrees back,
   then down to the floor and back to 32 degrees (39 in a `CAR_TWO_SEATERS` mid-engined car, as real supercar seats lie),
-  then along the cabin. The seat back's top stays inside the rear glass; a rear bench only where its back fits
+  then along the cabin (a pass whose lowest seat has no room at its middle and deepest lie is skipped: the fit runs
+  when a kit is built, `fitMs` in the report, a few ms). A body's `seats.recline` raises its own limit (the Valkyrie's
+  and La Fera's racing seats). The seat back's top stays inside the rear glass; a rear bench only where its back fits
   (`CAR_TWO_SEATERS` never). A body may give its own (`seats`, the roadster's buckets).
 - The seated people (crowd3d-driveby.js `seatOccupant`) lie at `plan.lean` with `seatHeadPitch`: change the pose there
   and in `cabinHeadPose` together. A roof too low for every step is a body to fix (raise its `glass.roof`, add a
@@ -64,5 +66,7 @@ vehicles-and-driving-models.md.
   civAddMatrix): no texture, material, program or draw call of its own. The trim material alpha-tests
   (`alphaTest` 0.5): only the glyph cells have transparent pixels; on the small mips the letters drop under the test
   and simply go. A new atlas cell keeps opaque pixels.
-- Placing one: keep it off lamps, the plate (y +/- 6 cm, 26 cm either side), pipes and light bars (`carModels()` lists
-  each model's `badge` {text, sub, letters}); tools/tests/rear-badges.mjs checks every letter is laid and the draw count.
+- Placing one: keep it off lamps, the plate (y +/- 6 cm, 26 cm either side), pipes, emblems and light bars, and give it
+  a `lift` past any trim panel under it (letters stand 1.2 cm proud by default; patches lie 1-2 cm off the paint).
+  `carModels()` lists each model's `badge` {text, sub, letters}; tools/tests/rear-badges.mjs checks every letter is
+  laid and the draw count.
