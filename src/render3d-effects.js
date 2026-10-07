@@ -37,20 +37,46 @@
       // (The player's headlights are CAR LAMPS slot 0, lighting3d-vehicle-lights.js.)
       const muzzleLight = new Three.PointLight('#ffc67a', 0, 95, 1.5);
       scene.add(muzzleLight);
-      const smokeCanvas = document.createElement('canvas');
-      smokeCanvas.width = smokeCanvas.height = 128;
-      const sm = smokeCanvas.getContext('2d');
-      for (let i = 0; i < 28; i++) {
-        const x = 64 + Math.sin(i * 2.4) * 34,
-          y = 64 + Math.cos(i * 1.7) * 34,
-          r = 14 + (i % 7) * 3,
-          gr = sm.createRadialGradient(x, y, 0, x, y, r);
-        gr.addColorStop(0, '#ffffff55');
-        gr.addColorStop(1, '#ffffff00');
-        sm.fillStyle = gr;
-        sm.fillRect(x - r, y - r, r * 2, r * 2);
+      // A blast's scorch on the ground (`debris`): a soot core, a ragged edge and rays of soot thrown out from it
+      // (it was the old smoke sprite's ring of soft blobs, a pale donut at street level). Drawn once, no randomness.
+      const scorchCanvas = document.createElement('canvas');
+      scorchCanvas.width = scorchCanvas.height = 128;
+      const sm = scorchCanvas.getContext('2d');
+      const scorchCore = sm.createRadialGradient(64, 64, 0, 64, 64, 46);
+      scorchCore.addColorStop(0, '#ffffffff');
+      scorchCore.addColorStop(0.45, '#ffffffc8');
+      scorchCore.addColorStop(0.8, '#ffffff50');
+      scorchCore.addColorStop(1, '#ffffff00');
+      sm.fillStyle = scorchCore;
+      sm.fillRect(0, 0, 128, 128);
+      for (let i = 0; i < 30; i++) {
+        const a = i * 2.39996 + (i % 3) * 0.21,
+          length = 30 + ((i * 37) % 31),
+          half = 0.035 + (i % 4) * 0.02;
+        sm.fillStyle = 'rgba(255,255,255,' + (0.16 + (i % 5) * 0.045) + ')';
+        sm.beginPath();
+        sm.moveTo(64 + Math.cos(a) * 8, 64 + Math.sin(a) * 8);
+        sm.lineTo(64 + Math.cos(a - half) * length, 64 + Math.sin(a - half) * length);
+        sm.lineTo(64 + Math.cos(a + half) * length, 64 + Math.sin(a + half) * length);
+        sm.closePath();
+        sm.fill();
       }
-      const smokeTx = new Three.CanvasTexture(smokeCanvas);
+      for (let i = 0; i < 16; i++) {
+        const a = i * 1.7 + 0.4,
+          r = 26 + ((i * 13) % 14),
+          x = 64 + Math.cos(a) * r,
+          y = 64 + Math.sin(a) * r,
+          size = 5 + (i % 4) * 2.5,
+          blot = sm.createRadialGradient(x, y, 0, x, y, size);
+        blot.addColorStop(0, '#ffffff70');
+        blot.addColorStop(1, '#ffffff00');
+        sm.fillStyle = blot;
+        sm.fillRect(x - size, y - size, size * 2, size * 2);
+      }
+      const scorchTx = new Three.CanvasTexture(scorchCanvas);
+      // On the GPU from the start (the first blast must not upload it), its canvas then freed.
+      renderer.initTexture(scorchTx);
+      bakedCanvases.push(scorchTx);
       /* FX SPRITE ORDER: the effect particles (smoke, flame, sparks, blood drops: fx3d-particles.js)
          are drawn after every ground decal (blood pools 3, scorch 2, mud 3), tyre smoke (4) and
          the car blood skin (6). Three.js sorts transparent objects by renderOrder before depth
@@ -79,7 +105,7 @@
           const m = new Three.Mesh(
             new Three.PlaneGeometry(1, 1),
             new Three.MeshBasicMaterial({
-              map: smokeTx,
+              map: scorchTx,
               color: '#07090b',
               transparent: true,
               opacity: 0.75,

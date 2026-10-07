@@ -367,8 +367,13 @@
             m.visible = !!d && distanceBetween(d, cameraTarget) < 1000;
             if (d) {
               m.position.set(d.x, (d.altitude ?? terrainHeight(d.x, d.y)) + 0.2, d.y);
-              m.scale.set(100, 85, 1);
+              m.scale.set(80, 70, 1);
               m.material.opacity = Math.min(0.8, d.life / 10);
+              // Each scorch turned its own way (its rays never line up from one blast to the next).
+              if (m.userData.debris !== d) {
+                m.userData.debris = d;
+                m.rotation.z = (d.x * 0.0123 + d.y * 0.0371) % TAU;
+              }
             }
           }
           // Smoke, dust, fire, sparks, flashes, glass and the game's particles: one sorted, lit pool, one draw call.

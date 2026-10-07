@@ -204,8 +204,8 @@
             vSoft = ( p.y - iShape.w ) / max( size * 0.26, 1.5 );
             vec4 mvPosition = viewMatrix * vec4( p, 1.0 );
             vViewZ = mvPosition.z;
-            // Soft against the scene over a third of its size (half a metre to three metres).
-            vSoftDepth = clamp( size * 0.33, 4.0, 24.0 );
+            // Soft against the scene over a third of its size (at most three metres: a spark on a car stays a spark).
+            vSoftDepth = clamp( size * 0.33, 0.6, 24.0 );
             // A particle the lens is inside, or nearly, fades out rather than filling the frame.
             float depth = - ( viewMatrix * vec4( iPos.xyz, 1.0 ) ).z;
             vFade = isOrthographic ? 1.0 : smoothstep( 0.12 * size, 0.5 * size, depth - 4.0 );
