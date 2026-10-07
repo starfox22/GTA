@@ -183,6 +183,16 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - No tunnel or stone bridge yet; the lay-by signs are small at street zoom.
 - Grading and carving add about half a second to the range's first build (`terrain()` buildMs roadJunctions..roadCarve).
 
+## Effect particles (fx3d-*.js; docs/areas/rendering-effects.md)
+- Soft edges against walls, cars and people only on HIGH and ULTRA (a multisampled scene target, so the depth
+  texture is a resolved copy); LOW and MEDIUM fade into the ground only. A depth copy would extend it.
+- Smoke is lit by the sun as if in the open: a column standing in a building's shade is not darkened (no shadow
+  lookup); the flash and fire lights reach it per corner.
+- Tyre smoke, dust and spray (tyresmoke3d.js) and the 4x4 mud mist still draw their own unlit round billboards:
+  they could share the lit atlas (`fxPuff`) for the same look at street level.
+- Checked in stills on software GL at half resolution: worth a look at 60 fps on a real GPU (flame tongues in
+  motion, a blast's timing, the overdraw of a big smoke column on a laptop GPU at 1080p).
+
 ## Rendering (postfx3d.js, lighting3d-*.js)
 - Beam shadows cover the first 2/6/8 CAR LAMPS slots (MEDIUM/HIGH/ULTRA): drive-map traffic and later slots light through people and cars; buildings never shadow a beam (a corner block lets a kerb-side spill reach the cross street).
 - The ground's screen-space bump (GROUND_NORMAL) still takes 2x2-quad derivatives: a 1-pixel scroll changes the shading of the asphalt aggregate and slab joints on ~3% of pixels (Old Quarter on MEDIUM, 1 px against 2 px shifts; the crisp-edge rebuild no longer does).
