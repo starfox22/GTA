@@ -12,6 +12,12 @@ buildings, ground). Vehicle lights: rendering-vehicle-lights.md.
   cut-outs and glints stayed stepped and flickering on HIGH/ULTRA without it). The half-res AO
   is upsampled depth-aware (`compositeAo`), not bilinearly (shade fringes at silhouettes).
   `renderFrame()` replaces `renderer.render()`.
+- CAMERA MOTION BLUR (postfx3d-motion.js, before bloom and composite; Settings · Graphics · Motion
+  blur): the chase view only, HIGH/ULTRA, never with Motion comfort or in the air
+  (`chaseMotionBlurAllowed()` is the game's half). Depth reprojection with last frame's camera, a
+  fixed 1/90 s shutter, capped at 3.5% of the screen; anything within 12 m (the player, their car)
+  stays sharp and is never smeared over what is behind it; a cut (teleport, look behind, view switch)
+  skips a frame. Report: `chaseCamera().view.motionBlur`.
 - Custom `ShaderMaterial`s that compute final screen colours (the water) end with
   `#include <city_hdr_output>` (and include `<city_hdr_pars>`) to invert the tone curve;
   unlit `MeshBasicMaterial`s with `toneMapped: false` (signs) get this automatically.

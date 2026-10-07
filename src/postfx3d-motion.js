@@ -80,16 +80,10 @@
           motionUniforms,
         );
       }
-      /* Whether this frame smears: the chase view, HIGH or ULTRA, the setting, no comfort, in play, not a cut. */
+      /* Whether this frame smears: the game allows it (chaseMotionBlurAllowed: the chase view, the setting, no
+         comfort, in play), the chase camera draws, not in the air, HIGH or ULTRA (the caller adds: not a cut). */
       function cameraMotionWanted(tier) {
-        return (
-          chaseViewActive &&
-          !flightViewActive &&
-          (tier.name === 'HIGH' || tier.name === 'ULTRA') &&
-          settings.motionBlur !== false &&
-          !motionComfortOn() &&
-          gameMode === 'play'
-        );
+        return chaseMotionBlurAllowed() && chaseViewActive && !flightViewActive && (tier.name === 'HIGH' || tier.name === 'ULTRA');
       }
       /* Before the bloom and the composite: returns the texture the rest of the frame reads as the scene's
          colour (the smeared one, or the scene target's own). */
