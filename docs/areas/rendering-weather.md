@@ -19,8 +19,8 @@ rendering-sky.md). The weather machine itself is game state (weather.js); these 
 - Asphalt wear (ground-shader3d-albedo.js ASPHALT, all in the road's own frame `rp`): RESURFACING
   stretches 236 units long (each its tone, freshness and age; a sealed joint across the road), thermal
   cracks across older stretches (most sealed with tar), sealed lane joints in runs, trench
-  reinstatements and concrete-capped cuts among the utility patches, darker oil strips, and junction
-  boxes (no lanes) polished and oil-dripped. Zebras and stop lines (marks across the traffic) get tyre
+  reinstatements and concrete-capped cuts among the utility patches, darker rubbered wheel paths and oil
+  strips, and junction boxes (lane-free info cells, read bilinearly: `jb`) polished and oil-dripped. Zebras and stop lines (marks across the traffic) get tyre
   grime and wear in streaks along the traffic (GROUND_MARKS `tyre`). City slabs: relaid slabs, utility
   covers. Wall grime is baked into the city sheet (render3d-terrain.js `paintWallGrime`): translucent
   dark strokes round each footprint, which keep each class's hue (the shader reads classes from it).

@@ -139,13 +139,31 @@
             // direction, one sign for both halves of the carriageway).
             vec2 rn = gKerbN.x < -0.01 || ( abs( gKerbN.x ) <= 0.01 && gKerbN.y < 0.0 ) ? -gKerbN : gKerbN;
             vec2 rp = gKerb < 90.0 && gLaneW > 1.0 ? vec2( dot( gp, vec2( -rn.y, rn.x ) ), dot( gp, rn ) ) : gp;
+            // How far into a junction box (the info grid's lane-free cells inside
+            // the carriageway), read bilinearly: the grid is nearest-sampled, 16
+            // units a cell, and a tone switched on it changed in stair steps.
+            float jb = 0.0;
+            if ( cityFieldOn > 0.5 && gKerb < -1.0 ) {
+              vec2 jc = ( gp - cityFieldRect.xy ) * cityFieldRect.zw * cityFieldInfoSize - 0.5;
+              vec2 jf = floor( jc ), jw = jc - jf;
+              ivec2 j0 = ivec2( jf ), jmax = ivec2( cityFieldInfoSize ) - 1;
+              float l00 = 1.0 - step( 1.0, texelFetch( cityFieldInfo, clamp( j0, ivec2( 0 ), jmax ), 0 ).g * 255.0 );
+              float l10 = 1.0 - step( 1.0, texelFetch( cityFieldInfo, clamp( j0 + ivec2( 1, 0 ), ivec2( 0 ), jmax ), 0 ).g * 255.0 );
+              float l01 = 1.0 - step( 1.0, texelFetch( cityFieldInfo, clamp( j0 + ivec2( 0, 1 ), ivec2( 0 ), jmax ), 0 ).g * 255.0 );
+              float l11 = 1.0 - step( 1.0, texelFetch( cityFieldInfo, clamp( j0 + ivec2( 1, 1 ), ivec2( 0 ), jmax ), 0 ).g * 255.0 );
+              jb = smoothstep( 0.2, 0.8, mix( mix( l00, l10, jw.x ), mix( l01, l11, jw.x ), jw.y ) );
+            }
             // RESURFACING: the carriageway was laid in stretches, each of its own
             // year (tone, how fresh and black, how cracked), with a sealed joint
-            // across the road where two meet.
-            float stretch = cityHash( vec2( floor( rp.x / 236.0 ), floor( rp.y / 410.0 ) ) + 77.0 );
+            // across the road where two meet. Their frame follows the kerb whatever
+            // the lane grid says, and a junction box is a stretch of its own.
+            // (Each row of streets has its own phase: joints on parallel streets never line up.)
+            vec2 rps = gKerb < 90.0 ? vec2( dot( gp, vec2( -rn.y, rn.x ) ), dot( gp, rn ) ) : gp;
+            rps.x += 236.0 * cityHash( vec2( floor( rps.y / 410.0 ), 5.0 ) );
+            float stretch = mix( cityHash( vec2( floor( rps.x / 236.0 ), floor( rps.y / 410.0 ) ) + 77.0 ), cityHash( floor( gp / 236.0 ) + 79.0 ), jb );
             age = clamp( age + ( stretch - 0.5 ) * 0.6, 0.0, 1.0 );
             float fresh = smoothstep( 0.78, 0.92, stretch ) * ( 1.0 - age );
-            float stretchJoint = gLaneW > 1.0 ? groundBand( abs( fract( rp.x / 236.0 + 0.5 ) - 0.5 ) * 236.0, 0.35, fp ) : 0.0;
+            float stretchJoint = gKerb < -1.0 ? groundBand( abs( fract( rps.x / 236.0 + 0.5 ) - 0.5 ) * 236.0, 0.35, fp ) * ( 1.0 - jb ) : 0.0;
             // Lanes: polished wheel paths, oil down the middle.
             float wheel = 0.0, oilLane = 0.0;
             if ( gLaneW > 1.0 && inRoad > 3.0 && inRoad < 62.0 ) {
@@ -226,14 +244,15 @@
             asphalt *= 0.92 + 0.16 * stretch;
             asphalt = mix( asphalt, mix( vec3( dot( asphalt, vec3( 0.2126, 0.7152, 0.0722 ) ) ), asphalt, 0.7 ) * 1.06, age * 0.5 );
             asphalt = mix( asphalt, base * ( 0.7 + 0.12 * ag.r ), fresh * 0.7 );
-            asphalt *= 1.0 + 0.085 * wheel;
+            // Wheel paths: rubber laid down and polished smooth (the sheen is in the roughness).
+            asphalt *= 1.0 - 0.07 * wheel * ( 0.4 + 0.6 * age );
             vec3 patchCol = mix( base * ( 0.72 + 0.2 * ag.b ), vec3( dot( base, vec3( 0.2126, 0.7152, 0.0722 ) ) ) * ( 1.5 + 0.3 * ag.r ), capped );
             asphalt = mix( asphalt, patchCol, patchM );
             asphalt *= 1.0 - 0.38 * seam - 0.42 * sealLine - 0.35 * hair - 0.4 * tar - 0.42 * thermalOpen;
             asphalt *= 1.0 - 0.3 * oilLane;
             // Junction boxes (inside two carriageways at once, no lanes): turning
             // tyres polish them in broad swathes and cars waiting to turn drip oil.
-            float junctionBox = gLaneW < 1.0 && gKerb < -3.0 ? smoothstep( 3.0, 9.0, inRoad ) : 0.0;
+            float junctionBox = jb * smoothstep( 3.0, 9.0, inRoad );
             if ( junctionBox > 0.0 ) {
               float swathe = cityNoise( gp * 0.03 + 21.0 ) * 0.6 + cityNoise( gp * 0.11 + 5.0 ) * 0.4;
               float drip = smoothstep( 0.6, 0.82, cityNoise( gp * 0.075 + 33.0 ) * 0.7 + cityNoise( gp * 0.4 ) * 0.3 ) * groundFade( 2.0, fp );

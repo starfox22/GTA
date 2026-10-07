@@ -173,7 +173,8 @@
             rRough = 0.82;
             porous = 0.85;
           } else if ( kind == 4 ) {
-            // PAVERS: 60 cm slabs on pedestals, open joints, a gravel margin along the parapet.
+            // PAVERS: 60 cm slabs on pedestals, open joints, to the parapet (hotel and deco terraces: their
+            // furniture stands along the railings).
             float s = 4.8;
             vec2 cell = floor( rl / s ), f = rl - cell * s;
             float jd = min( min( f.x, s - f.x ), min( f.y, s - f.y ) );
@@ -183,8 +184,6 @@
             float slabTone = mix( 0.5, cityHash( cell + rid * 0.21 ), res );
             col = base * ( 0.9 + 0.16 * slabTone ) * ( 0.88 + 0.24 * cg.r ) * ( 1.0 - 0.45 * joint );
             col *= 1.0 - 0.2 * ( smoothstep( 0.55, 0.85, cg.a ) * 0.35 + smoothstep( 0.66, 0.86, cityNoise( rWorld * 0.11 + seed ) ) * 0.25 );
-            float margin = 1.0 - smoothstep( 8.6 - 0.5 * fp, 8.6 + 0.5 * fp, edge );
-            col = mix( col, vec3( 0.2, 0.19, 0.17 ) * ( 0.75 + 0.5 * cg.b ), margin );
             rRough = 0.84;
             porous = 0.8;
           } else if ( kind == 5 ) {
