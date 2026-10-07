@@ -169,6 +169,7 @@
       // @include src/bridges3d.js
       // @include src/skyline3d-islet.js
       // @include src/monarch-bridges3d.js
+      // @include src/coronation3d.js
       // @include src/harbor3d.js
       // @include src/roofmission3d.js
       // @include src/marina3d.js

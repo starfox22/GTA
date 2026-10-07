@@ -167,17 +167,18 @@
       // Portal plaques and signs: one small atlas of their own (the boat-name atlas is full).
       const bridgePlaqueCanvas = document.createElement('canvas');
       bridgePlaqueCanvas.width = 1024;
-      bridgePlaqueCanvas.height = 1024;
+      // Two columns of 512 x 128 cells, sixteen rows: room for the drawbridges' tender plaques.
+      bridgePlaqueCanvas.height = 2048;
       const bridgePlaqueTexture = new Three.CanvasTexture(bridgePlaqueCanvas);
       bridgePlaqueTexture.colorSpace = Three.SRGBColorSpace;
       bridgePlaqueTexture.anisotropy = 4;
       const bridgePlaqueMaterial = new Three.MeshBasicMaterial({ map: bridgePlaqueTexture, side: Three.DoubleSide, toneMapped: false });
-      // One 512 x 128 cell per distinct plaque (sixteen cells), reused by repeats.
+      // One 512 x 128 cell per distinct plaque (thirty-two cells), reused by repeats.
       const bridgePlaqueCells = new Map();
       function bridgePlaque(parent, text, sub, background, color, width, x, y, z, rotationY) {
         const key = [text, sub, background, color].join('|'),
           known = bridgePlaqueCells.has(key),
-          index = known ? bridgePlaqueCells.get(key) : bridgePlaqueCells.size % 16,
+          index = known ? bridgePlaqueCells.get(key) : bridgePlaqueCells.size % 32,
           cx = (index % 2) * 512,
           cy = Math.floor(index / 2) * 128,
           g = bridgePlaqueCanvas.getContext('2d');
@@ -186,8 +187,8 @@
         const geo = new Three.PlaneGeometry(width, width / 4),
           uv = geo.attributes.uv,
           u0 = (index % 2) / 2,
-          v1 = 1 - cy / 1024,
-          v0 = v1 - 128 / 1024;
+          v1 = 1 - cy / bridgePlaqueCanvas.height,
+          v0 = v1 - 128 / bridgePlaqueCanvas.height;
         for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) > 0.5 ? u0 + 0.5 : u0, uv.getY(i) > 0.5 ? v1 : v0);
         const m = mesh(geo, bridgePlaqueMaterial, parent, x, y, z);
         m.rotation.y = rotationY;
@@ -550,11 +551,11 @@
       /* Channel marks for shipping: a green light on one side of each navigation
          span and red on the other, both deck edges, plus a white centre light. */
       function channelLights(g, bridge, s, lights) {
-        // A drawbridge shows its own: red on the fenders, red or green on the leaf tips (drawbridge3d.js).
-        if (bridge.movable) return;
+        // A drawbridge's channel shows its own: red on the fenders, red or green on the leaf tips (drawbridge3d.js).
         const W = bridge.width;
         for (const [c0, c1] of s.channels)
           for (const side of [-1, 1]) {
+            if (s.bascule && c0 === s.bascule.channel[0]) continue;
             kitLight(lights, g, c0, -1.5, side * (W / 2 + 2.6), '#ff4a3c');
             kitLight(lights, g, c1, -1.5, side * (W / 2 + 2.6), '#3dff7a');
             kitLight(lights, g, (c0 + c1) / 2, -1.2, side * (W / 2 + 2.6), '#f4f6ff');

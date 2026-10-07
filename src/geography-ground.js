@@ -18,7 +18,7 @@
           y <= Math.max(b.a[1], b.b[1]) + pad &&
           segmentDistance(x, y, b.a, b.b) <= pad &&
           // A raised drawbridge leaves open water between its leaf tips.
-          !(b.movable && drawbridgeOpenGap(x, y, r))
+          !(b.movable && drawbridgeOpenGapOfBridge(b, x, y, r))
         );
       });
     }
@@ -64,7 +64,7 @@
       if (reg.id === 'ridgeline') appendLakePaths(drawingContext);
     }
     /* Bridge decks on the flat ground layers (2D view, minimap and map): the
-       deck, its kerb lines and the centre dashes. The drawbridge's moving span is
+       deck, its kerb lines and the centre dashes. A drawbridge's moving span is
        left out of the baked layers (the 3D ground would show it across the open
        gap; the maps draw it live, drawDrawbridgeMap); `live` (the 2D view, drawn
        every frame) paints it while the leaves are down. */
@@ -72,7 +72,7 @@
       for (const bridge of BRIDGES) {
         const f = bridgeFrame(bridge),
           pieces = [[0, f.length]];
-        if (bridge.movable && !(live && drawbridge.angle < 0.004)) {
+        if (bridge.movable && !(live && (drawbridgeList().find((d) => d.bridge === bridge)?.angle || 0) < 0.004)) {
           const s = bridgeStructure(bridge),
             h0 = f.length / 2 + s.bascule.trunnions[0],
             h1 = f.length / 2 + s.bascule.trunnions[1];

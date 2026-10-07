@@ -97,18 +97,21 @@
               }
             : null,
       }),
-      // The Palm Sound drawbridge (drawbridge.js): 'status', 'open' (start an opening
-      // now), 'close' (bring it down, lift the arms), 'hold' with degrees (arms down,
-      // leaves held there until 'close'), 'snap' with degrees (leaves there at once).
-      drawbridge: (action, degrees) => drawbridgeCommand(action, degrees),
+      // A drawbridge (drawbridge.js; `id` the bridge's id, the Palm Sound one by
+      // default, 'all' for every one): 'status', 'open' (start an opening now),
+      // 'close' (bring it down, lift the arms), 'hold' with degrees (arms down, leaves
+      // held there until 'close'), 'snap' with degrees (leaves there at once).
+      drawbridge: (action, degrees, id) => drawbridgeCommand(action, degrees, id),
+      // Every drawbridge's state, the share of a day with one up, the islands' access bridges.
+      drawbridges: () => drawbridgesReport(),
       // Put `count` traffic cars on each approach, heading onto the drawbridge.
-      drawbridgeTraffic: (count) => drawbridgeSpawnTraffic(count),
+      drawbridgeTraffic: (count, id) => drawbridgeSpawnTraffic(count, id),
       // Stand at a drawbridge viewpoint ('channel', 'west', 'east', 'north', 'south',
       // 'tower', 'overview', 'pit') at a zoom; returns the point and the bridge's state.
-      drawbridgeLook(spot = 'channel', zoom) {
-        const p = drawbridgeViewpoint(spot);
+      drawbridgeLook(spot = 'channel', zoom, id) {
+        const p = drawbridgeViewpoint(spot, id);
         this.look(p.x, p.y, zoom);
-        return { x: Math.round(p.x), y: Math.round(p.y), ...drawbridgeReport() };
+        return { x: Math.round(p.x), y: Math.round(p.y), ...drawbridgeReport(id) };
       },
       // The plan as data, for layout audits: coast, streets, rail, footprints and
       // every static collider in map units. A test renders it as a debug map and
