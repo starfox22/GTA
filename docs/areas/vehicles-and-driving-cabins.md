@@ -45,14 +45,21 @@ vehicles-and-driving-models.md.
   and in `cabinHeadPose` together. A roof too low for every step is a body to fix (raise its `glass.roof`, add a
   `crown`, move `rb` back over the head), never a smaller margin.
 - The drive-by pose (`drawDriveByDriver`) sits in the same seat (`m.seats`, lean and face) and reaches the grip the
-  bullet leaves from (driveby.js `driveByGrip`, in the vehicle's frame); from a low seat the grip can lie past the
-  arm, so drawCrowdPerson brings the gun in with the IK's wrist (it never floats; the muzzle stays the game's).
-  `driveBySeat` (game side) still sizes the grips from the glass bands.
+  bullet leaves from (driveby.js `driveByGrip`, in the vehicle's frame).
+- DRIVE-BY SEATS (driveby-seats.js, game side): `DRIVEBY_SEATS` is the model's seat per car type ('law:<body>' for a
+  police body; `policeLookChoice` is the one choice of a law car's body and livery, pickPoliceLook reads it) in world
+  metres [x ahead, hip height, offset from the centre line, lean, belt], recorded from the renderer's plans;
+  `driveBySeat` takes it (`fitted`), and `driveByReachClamp` keeps every grip within `DRIVEBY_RIG.reach` of the arm from
+  the shoulder on its side (the player's proportions, the seat's lean and the pose's twist, never its roll), keeping the
+  sill height: the drawn hand holds the gun the bullet leaves from (`driveByArm.gap` 0; drawCrowdPerson still brings a
+  gun in with the wrist should a grip ever lie past reach). A seat that moves (a body or headroom change) re-records
+  its line: tools/tests/cabin-headroom.mjs prints the drifted lines (gap over 2 cm) to paste;
+  tools/tests/driveby-seats.mjs (no-render) checks reach and sill. Console `driveBySeatReport()`.
 - Report: `DeadEndCity.cabinHeadroom()`: per kit the room (metres) round the man's, woman's and player's heads
-  (`clear`, `roof`), the hip and recline, the drive-by arm's `reach` (a share of the arm, from the model's seat and from
-  `driveBySeat`), `through` (who pokes out where); the top-level `through` counts cars with any head out and
-  `driveByArm` is the last drive-by frame's pull-in (metres). tools/tests/cabin-headroom.mjs holds `through` at 0
-  (rendered page only: the suite's no-render page skips it).
+  (`clear`, `roof`), the hip and recline, `key`, `seat` and the game's `gameSeat` / `seatGap`, `through` (who pokes out
+  where); the top-level `through` counts cars with any head out and `driveByArm` is the last drive-by frame's pull-in
+  (metres). tools/tests/cabin-headroom.mjs holds `through` at 0 (rendered page only: the suite's no-render page skips
+  it).
 
 ## Rear badges (cars3d-badges.js REAR BADGES)
 
@@ -66,6 +73,14 @@ vehicles-and-driving-models.md.
   civAddMatrix): no texture, material, program or draw call of its own. The trim material alpha-tests
   (`alphaTest` 0.5): only the glyph cells have transparent pixels; on the small mips the letters drop under the test
   and simply go. A new atlas cell keeps opaque pixels.
+- Other vehicles, no draw call added either: police kits (their trim takes the atlas, `policeSolidUv` sends its other
+  vertices to the solid cell; POLICE or SHERIFF across a marked trunk, `POLICE_MODEL_BADGES` right of the plate; the
+  kit key includes `policeRearWord`), the 4x4 club (the maker's name on the tailgate's right corner, its per-vehicle
+  trim material alpha-tests the atlas), motorbikes (`MOTO_BADGES` on both tank or fairing sides), the flatbed (ATLAS on
+  the cab's back wall), the box truck, ambulance and bus (`BADGE_PANELS`: a canvas on a panel that was already a mesh;
+  the bus's two flank bands became one box to pay for its tail panel) and the army (`MILITARY_STENCILS`, base3d-vehicles.js:
+  stencils and stars share one texture and material, so mergeUnder keeps them one mesh). Console `carBadges()`.
+- Crumpled cars (damage3d-crumple.js) bend the trim, badges included, with the shell.
 - Placing one: keep it off lamps, the plate (y +/- 6 cm, 26 cm either side), pipes, emblems and light bars, and give it
   a `lift` past any trim panel under it (letters stand 1.2 cm proud by default; patches lie 1-2 cm off the paint).
   `carModels()` lists each model's `badge` {text, sub, letters}; tools/tests/rear-badges.mjs checks every letter is
