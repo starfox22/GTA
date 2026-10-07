@@ -731,7 +731,7 @@
        */
       const WET_MIRROR_DAY = 0.55,
         WET_MIRROR_NIGHT = 0.6,
-        WET_STREAK_GAIN = 0.65,
+        WET_STREAK_GAIN = 1,
         // The sky's share by day and by night: the night sky is the readable
         // blue-hour ambient, and mirrored at the day's share it greyed a wet
         // night road lighter than a dry one (wet asphalt at night reads darker,
@@ -744,7 +744,7 @@
       function updateWetGround(tier, light) {
         const wet = weather.wet,
           detail = tier.name === 'LOW' ? 0 : tier.name === 'MEDIUM' ? 1 : 2,
-          reflections = wet > 0.01 && detail === 2 && wetReflectionsAvailable(),
+          reflections = wet > 0.01 && detail === 2 && wetReflectionsAvailable() && lookSwitchState.wetReflections,
           mirror = WET_MIRROR_NIGHT + (WET_MIRROR_DAY - WET_MIRROR_NIGHT) * light;
         wetUniforms.cityWetDetail.value = detail;
         wetUniforms.cityReflectOut.value = reflections ? 1 : 0;
@@ -764,6 +764,8 @@
         if (chaseViewActive) wetUniforms.citySheenDir.value.set(0, 0);
         else if (flat > 0.05) wetUniforms.citySheenDir.value.set(wetViewScratch.x / flat, wetViewScratch.z / flat);
         wetUniforms.citySheenGain.value = detail === 0 ? 0 : WET_STREAK_GAIN;
+        // The lamps mirrored in the wet road (wet-glints3d.js), at night on a wet street.
+        updateWetGlints(tier, detail > 0 && wet > 0.01 && cityLightUniforms.cityLampPower.value > 0.001 && lookSwitchState.wetGlints);
         postLook.reflect = reflections ? mirror : 0;
         postLook.reflectSky.copy(wetSkyScratch);
         postLook.reflectShare = skyShare;

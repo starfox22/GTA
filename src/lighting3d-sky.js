@@ -100,12 +100,18 @@
          this frame (the ground then marks itself in the HDR alpha, postfx3d.js),
          and the sky light the wet surface mirrors (scene-linear), all set by
          updateWeatherVisuals (weather3d.js). */
+      // WET LAMP GLINTS (wet-glints3d.js): the street lamp heads the wet road mirrors this frame, A = head
+      // position (world) and strength, B = colour (scene-linear) and the head's size.
+      const WET_GLINT_SLOTS = 32;
       const wetUniforms = {
+        cityGlintA: { value: Array.from({ length: WET_GLINT_SLOTS }, () => new Three.Vector4()) },
+        cityGlintB: { value: Array.from({ length: WET_GLINT_SLOTS }, () => new Three.Vector4()) },
+        cityGlintCount: { value: 0 },
         cityWetDetail: { value: 0 },
         cityReflectOut: { value: 0 },
         citySkyReflect: { value: new Three.Color(0, 0, 0) },
-        // The view direction along the ground (lamp streaks run along it) and
-        // how bright the lamp and neon streaks in the wet road are.
+        // The view direction along the ground (0 at street level: the chase view) and
+        // how bright the lamps' glints in the wet road are (0 on LOW).
         citySheenDir: { value: new Three.Vector2(0, -1) },
         citySheenGain: { value: 0 },
       };

@@ -47,7 +47,7 @@
             const halo = addGlow(l.x + dx, height + dy, l.y, 10, '#ffd9a0', 0.75, { day: 0 });
             if (dx === 0) prop.halo = glowHandle(halo);
           }
-          addStreak(l.x, l.y + 8, 7, 52, '#ffcf96', 0.5);
+          // (Its reflection in a wet street: WET LAMP GLINTS, wet-glints3d.js.)
           registerFootObstacle(l.x, l.y, 1.6);
         }
       }

@@ -17,6 +17,7 @@
         tyreSmokeInfo: () => tyreSmokeReport(),
         // The effect particle pool (fx3d-particles.js): live, drawn, capacity, peak, emitted, dropped.
         effectParticles: () => fxReport(),
+        chimneySmoke: (options) => chimneySmokeReport(options),
         // The mountain villages as drawn (mountain-village3d.js): meshes, draw calls, triangles per town.
         mountainInfo: () => mountainVillageInfo(),
         /**
@@ -398,6 +399,7 @@
         // What the chase view draws (chase-view3d.js): draw distance, clip planes, culling reach, haze.
         chaseView: () => chaseViewReport(),
         rainView: () => rainViewReport(),
+        wetGlints: (options) => wetGlintReport(options),
         aim(mx, my) {
           ray.setFromCamera(
             new Three.Vector2((mx / viewportWidth) * 2 - 1, (-my / viewportHeight) * 2 + 1),

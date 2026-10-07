@@ -76,9 +76,7 @@ air keep theirs exactly (each switch is a uniform, not a new program).
 - The wet film at grazing views (`wetGraze`, ground-shader3d-albedo.js): it levels up to 97 % of the
   aggregate's bump and evens the grain in its roughness, as the view flattens (an eye-level view
   along a wet street sparkled pixel by pixel, a snow of specks); 0 from the street camera.
-- The ground's lamp streaks (surfaces3d.js `GROUND_WET_LIGHT`; `citySheenDir` 0 is the street-level
-  flag) run away from the camera through each point and sample the light map 1.2-4.7 times the
-  point's distance beyond it; without the reflections pass the film's flat sky rises with Fresnel.
+- WET LAMP GLINTS (wet-glints3d.js): the street lamps mirrored in the wet road, both views: rendering-weather-wet.md.
 - Wet neon streaks (signage3d.js `uStreakView`) turn towards the camera, up to 1.8 times their
   length and 72 % of the distance (never under the camera), at 55 % while the reflections pass runs.
 - Roof drips stand round a point `DRIP_STREET_AHEAD` ahead of the camera on the faces it sees (the
