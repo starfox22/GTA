@@ -220,7 +220,12 @@
         for (const side of [-1, 1]) {
           const key = side < 0 ? 'doorLeft' : 'doorRight',
             state = parts[key];
-          if (!state) continue;
+          if (!state) {
+            // Repaired: the door is shut again (the body's own side shows), no opening.
+            const shut = m.doors?.[side];
+            if (shut) shut.panel.visible = shut.opening.visible = false;
+            continue;
+          }
           m.doors = m.doors || {};
           let door = m.doors[side];
           if (!door) {
@@ -253,6 +258,7 @@
             crumpleAdopt(m, opening, false);
             crumpleAdopt(m, panel, false, true);
           }
+          door.opening.visible = true;
           door.pivot.rotation.set(0, side * (state === 1 ? 0.95 : 0), state === 1 ? -0.09 : 0);
           if (state === 2 && before[key] !== 2 && !first && door.panel.visible)
             spawnPanel(door.panel, paintColor, c, l * 0.26, h - 4.4, 0.45, 1.2);
