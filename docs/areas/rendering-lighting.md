@@ -33,8 +33,9 @@ buildings, ground). Vehicle lights: rendering-vehicle-lights.md.
 
 - Sun and sky (lighting3d.js): `sunDirection` follows the clock; the shadow box is fitted to
   the view and texel-snapped (`placeSun`); the sky is PMREM-filtered into
-  `scene.environment`. Shadows are redrawn every frame when on (kept maps trailed moving
-  objects); with shadows off, contact blobs (CONTACT SHADOWS).
+  `scene.environment` (the sky, the chase view's haze and the sun glare: rendering-sky.md).
+  Shadows are redrawn every frame when on (kept maps trailed moving objects); with shadows
+  off, contact blobs (CONTACT SHADOWS).
 - Time of day: `daylight()` sets the sun's strength; `skyDarkness(light)`
   (lighting3d-look.js: 0 until the last half hour of sun) sets the sky keys, the fill's and
   the sun's colour mix and the NIGHT_LOOK (moon and sky fill, exposure, blue grade). The
@@ -50,6 +51,13 @@ buildings, ground). Vehicle lights: rendering-vehicle-lights.md.
   old 12 m pool, a long tail across the road); lanterns `LAMP_POOL_RADIUS`. The island map
   (`ISLE_LAMP_BOUNDS`, from the city frame's east edge) lights Monarch Isle and North
   Point Key (its lanterns, gate, fountain and lobby spill).
+  CITY WALL LIGHT (`cityWallLight`, lighting3d-sky.js): a wall also takes the map 3.5, 9 and
+  17.5 m out along its normal (weights 0.42, 0.22, 0.12, fading by ~12 m up), as the brighter of
+  the two, so lamps across the street light the lower floors and side-street facades are not
+  black at eye level; a wall standing in a pool is lit as before.
+- Glow field at street level (signage3d.js): a glow is never wider than `GLOW_STREET_ANGLE`
+  (0.07 rad) of a perspective view (a lamp's 3.5 m halo filled the frame up close); the street
+  view's orthographic camera is untouched (the projection's w column tells them apart).
 - Vehicle lights (CAR LAMPS, the drive light map, beam shadows, lamps on slopes, the
   terrain horizon): rendering-vehicle-lights.md.
 - Sign emissive is multiplied by `cityPower()` so the blackout job darkens districts.

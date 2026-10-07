@@ -1,9 +1,16 @@
-      // Lighting 3D sun path, sky dome and environment map (updateSunPath, refreshEnvironment) and lamp textures.
+      // Lighting 3D sun path (updateSunPath: the light, and the sun the sky draws), the sky (lighting3d-sky-dome.js),
+      // the night light map, the city light and glass shader patches and the cutaway roofs.
       // ---- Sun path ----------------------------------------------------------------------
       // Unit vector towards the sun (or moon), shared with the shadow fit, water and sky.
       const sunDirection = new Three.Vector3(-0.56, 0.62, -0.55).normalize(),
         MOON_DIRECTION = new Three.Vector3(-0.42, 0.78, -0.46).normalize(),
-        sunScratch = new Three.Vector3();
+        sunScratch = new Three.Vector3(),
+        // The sun the sky draws (disc, glow, haze, sun glare): on the light's bearing, but it really
+        // sets (on the horizon at sunrise and sunset, under it at night); the light never goes below
+        // ~15 degrees. The clouds seen from below are lit from skyLightDirection: that sun, handing
+        // over to the moon through twilight as the light does.
+        skySunDirection = sunDirection.clone(),
+        skyLightDirection = sunDirection.clone();
       function dayFraction() {
         return ((worldMinutes % 1440) / 60 - 5.66) / 14.17;
       }
@@ -17,108 +24,16 @@
           elevation = 0.27 + (1.02 - 0.27) * Math.pow(arc, 0.8);
         sunScratch.set(Math.cos(azimuth) * Math.cos(elevation), Math.sin(elevation), Math.sin(azimuth) * Math.cos(elevation));
         // Hand over to the moon through twilight.
-        const moon = clamp(1 - daylight() / 0.12, 0, 1);
-        sunDirection.copy(sunScratch).lerp(MOON_DIRECTION, moon * moon * (3 - 2 * moon)).normalize();
+        const moon = clamp(1 - daylight() / 0.12, 0, 1),
+          handover = moon * moon * (3 - 2 * moon);
+        sunDirection.copy(sunScratch).lerp(MOON_DIRECTION, handover).normalize();
+        // The sky's sun: the same bearing, the same noon height, on the horizon at t 0 and 1.
+        const rise = Math.sin(t * Math.PI),
+          skyElevation = Math.sign(rise) * 1.02 * Math.pow(Math.abs(rise), 0.8);
+        skySunDirection.set(Math.cos(azimuth) * Math.cos(skyElevation), Math.sin(skyElevation), Math.sin(azimuth) * Math.cos(skyElevation));
+        skyLightDirection.copy(skySunDirection).lerp(MOON_DIRECTION, handover).normalize();
       }
-      // ---- Procedural sky ----------------------------------------------------------------
-      /**
-       * One sky shader serves both the dome behind the flight camera and the scene
-       * that PMREM filters into the environment map. Colours are scene-linear.
-       */
-      const skyUniforms = {
-        uZenith: { value: new Three.Color('#2f5f9e') },
-        uHorizon: { value: new Three.Color('#a9c4dc') },
-        uGround: { value: new Three.Color('#3a3f45') },
-        uSunDir: { value: sunDirection },
-        uSunColor: { value: new Three.Color('#fff2d6') },
-        uGlow: { value: new Three.Color('#ffd7a8') },
-        uNight: { value: 0 },
-        uMoonDir: { value: MOON_DIRECTION },
-        uStars: { value: 0 },
-      };
-      function makeSkyMaterial(stars) {
-        return new Three.ShaderMaterial({
-          uniforms: skyUniforms,
-          side: Three.BackSide,
-          depthWrite: false,
-          depthTest: stars,
-          fog: false,
-          defines: stars ? { SKY_STARS: 1 } : {},
-          vertexShader: `
-            varying vec3 vDir;
-            void main() {
-              vDir = normalize( position );
-              vec4 p = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-              gl_Position = p.xyww;
-            }`,
-          fragmentShader: `
-            varying vec3 vDir;
-            uniform vec3 uZenith, uHorizon, uGround, uSunDir, uSunColor, uGlow, uMoonDir;
-            uniform float uNight, uStars;
-            float hash13( vec3 p ) {
-              p = fract( p * 0.1031 );
-              p += dot( p, p.zyx + 31.32 );
-              return fract( ( p.x + p.y ) * p.z );
-            }
-            void main() {
-              vec3 d = normalize( vDir );
-              float up = d.y;
-              // Gradient: horizon band, zenith above, a dim ground below.
-              vec3 sky = mix( uHorizon, uZenith, pow( clamp( up, 0.0, 1.0 ), 0.55 ) );
-              sky = mix( sky, uGround, smoothstep( 0.0, -0.18, up ) );
-              // Sun glow: a broad halo that warms the horizon, and the disc itself.
-              float cosSun = dot( d, uSunDir );
-              sky += uGlow * pow( max( cosSun, 0.0 ), 8.0 ) * 0.55 * ( 1.0 - uNight );
-              #ifdef SKY_STARS
-                // The disc only on the dome: in the environment map the sun's own
-                // specular highlight already comes from the directional light.
-                sky += uSunColor * smoothstep( 0.9994, 0.9998, cosSun ) * 30.0 * ( 1.0 - uNight );
-                // Stars: sparse hashed cells, twinkle-free, only above the horizon.
-                if ( uStars > 0.01 && up > 0.0 ) {
-                  vec3 cell = floor( d * 420.0 );
-                  float star = step( 0.9975, hash13( cell ) );
-                  vec3 local = fract( d * 420.0 ) - 0.5;
-                  star *= smoothstep( 0.35, 0.0, length( local ) ) * ( 0.4 + 0.6 * hash13( cell + 7.0 ) );
-                  sky += vec3( 0.8, 0.85, 1.0 ) * star * uStars * 2.5 * smoothstep( 0.0, 0.25, up );
-                }
-                // Moon: a pale disc with a soft halo.
-                float cosMoon = dot( d, uMoonDir );
-                sky += vec3( 0.75, 0.8, 0.9 ) * ( smoothstep( 0.99965, 0.99985, cosMoon ) * 6.0 + pow( max( cosMoon, 0.0 ), 64.0 ) * 0.08 ) * uNight;
-              #endif
-              gl_FragColor = vec4( sky, 1.0 );
-            }`,
-        });
-      }
-      // The dome behind the flight view. It follows the camera and is only drawn in
-      // the air; the street camera never sees the sky.
-      const skyDome = new Three.Mesh(new Three.SphereGeometry(1, 32, 16), makeSkyMaterial(true));
-      skyDome.frustumCulled = false;
-      skyDome.renderOrder = -10;
-      skyDome.visible = false;
-      skyDome.name = 'sky dome';
-      scene.add(skyDome);
-      // Environment map: the same sky, blurred into PMREM mip levels.
-      const envScene = new Three.Scene(),
-        envSky = new Three.Mesh(new Three.SphereGeometry(100, 32, 16), makeSkyMaterial(false));
-      envScene.add(envSky);
-      const pmrem = new Three.PMREMGenerator(renderer);
-      let envTarget = null,
-        envSignature = '',
-        envAge = Infinity;
-      function refreshEnvironment(force) {
-        // Rebuilding costs a few milliseconds of GPU time: only when the sky has
-        // visibly changed, and not more than twice a second.
-        const sig = [skyUniforms.uZenith.value, skyUniforms.uHorizon.value, skyUniforms.uGlow.value]
-          .map((c) => c.getHexString())
-          .join('') + Math.round(sunDirection.x * 20) + Math.round(sunDirection.z * 20) + Math.round(sunDirection.y * 20);
-        if (!force && (sig === envSignature || envAge < 0.5)) return;
-        envSignature = sig;
-        envAge = 0;
-        const previous = envTarget;
-        envTarget = pmrem.fromScene(envScene, 0, 1, 1000);
-        scene.environment = envTarget.texture;
-        if (previous) previous.dispose();
-      }
+      // @include src/lighting3d-sky-dome.js
       // ---- Night light map ---------------------------------------------------------------
       /**
        * Pools of light over the city at LAMP_MAP_UNITS world units per texel,
@@ -578,6 +493,26 @@
           float zone = cityPower();
           return texture2D( cityLampMap, uv ).rgb * ( cityLampPower * zone * height );
         }
+        // CITY WALL LIGHT: a wall also takes the pools on the pavement and the road in front of it, a few
+        // metres out along its normal and fainter further out, so lamps across the street light its lower
+        // floors and a facade on a side street catches a little of the street's light instead of going
+        // black (seen at eye level in the chase view, where facades fill the frame). Added as the brighter
+        // of the two, so a wall standing in a pool is lit as before.
+        vec3 cityLampTap( vec2 xz ) {
+          vec2 uv = ( xz - cityLampRect.xy ) * cityLampRect.zw;
+          if ( uv.x >= 0.0 && uv.y >= 0.0 && uv.x <= 1.0 && uv.y <= 1.0 ) return texture2D( cityLampMap, uv ).rgb * cityPower();
+          vec2 iv = ( xz - cityIsleRect.xy ) * cityIsleRect.zw;
+          if ( iv.x < 0.0 || iv.y < 0.0 || iv.x > 1.0 || iv.y > 1.0 ) return vec3( 0.0 );
+          return texture2D( cityIsleMap, iv ).rgb;
+        }
+        vec3 cityWallLight( vec3 viewNormal, float up ) {
+          vec3 n = ( vec4( viewNormal, 0.0 ) * viewMatrix ).xyz;
+          float flat2 = dot( n.xz, n.xz );
+          if ( flat2 < 0.25 || cityLampPower < 0.001 ) return vec3( 0.0 );
+          vec2 out2 = n.xz * inversesqrt( flat2 );
+          vec3 street = cityLampTap( vCityWorld.xz + out2 * 28.0 ) * 0.42 + cityLampTap( vCityWorld.xz + out2 * 75.0 ) * 0.22 + cityLampTap( vCityWorld.xz + out2 * 140.0 ) * 0.12;
+          return street * cityLampPower * ( 1.0 - smoothstep( 26.0, 96.0, vCityWorld.y ) ) * ( 1.0 - up );
+        }
         // Vehicle head and tail lights (the drive light map, redrawn every frame
         // round the view): the road, kerbs, cars, people and walls ahead of a car.
         vec3 cityDriveLight() {
@@ -619,6 +554,7 @@
           // washes take theirs from what is left, then the CAR LAMPS below.
           float capBase = mix( ${CAR_LAMP_FACE_CAP.toFixed(1)}, ${CAR_LAMP_ROAD_CAP.toFixed(2)}, up );
           vec3 lamps = cityLampLight( up );
+          if ( up < 0.5 ) lamps = max( lamps, cityWallLight( normal, up ) );
           vec3 drive = cityDriveLight();
           cityCarLeft = exp( -0.5 * max( lamps.r, max( lamps.g, lamps.b ) ) * facing / capBase );
           float driveShare = max( drive.r, max( drive.g, drive.b ) ) * facing / capBase;

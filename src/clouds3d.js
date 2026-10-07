@@ -52,4 +52,5 @@
       // @include src/clouds3d-wisps.js
       // @include src/clouds3d-shadows.js
       // @include src/clouds3d-frame.js
+      // @include src/clouds3d-sky.js
       // END SUBSYSTEM: src/clouds3d.js

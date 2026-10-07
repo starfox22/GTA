@@ -55,8 +55,16 @@
         vec3 citySRGBToLinear( vec3 c ) {
           return mix( c * 0.0773993808, pow( c * 0.9478672986 + 0.0521327014, vec3( 2.4 ) ), step( 0.04045, c ) );
         }`;
+      // (The chase view's haze, aerial-haze3d.js, is scene light: such a shader is hazed again after the curve
+      // is undone, from the colour the fog chunk started with, so the sea meets the sky without a seam.)
       Three.ShaderChunk.city_hdr_output = hdrCapable
-        ? `gl_FragColor.rgb = cityInverseTone( citySRGBToLinear( clamp( gl_FragColor.rgb, 0.0, 1.0 ) ) );`
+        ? `
+          #if defined( USE_FOG ) && ! defined( FOG_EXP2 )
+            if ( cityHazeSun.w > 0.5 ) gl_FragColor.rgb = mix( cityInverseTone( citySRGBToLinear( clamp( fogBase, 0.0, 1.0 ) ) ), fogTint, fogFactor );
+            else gl_FragColor.rgb = cityInverseTone( citySRGBToLinear( clamp( gl_FragColor.rgb, 0.0, 1.0 ) ) );
+          #else
+            gl_FragColor.rgb = cityInverseTone( citySRGBToLinear( clamp( gl_FragColor.rgb, 0.0, 1.0 ) ) );
+          #endif`
         : '';
       // ---- Full-screen passes --------------------------------------------------------
       const postScene = new Three.Scene(),
@@ -94,6 +102,8 @@
           else pass(compositeMaterial, 'canvas');
         }
         if (hdrCapable && postTier && ssrMaterial && ssrTargets.length === 2) pass(ssrMaterial, ssrTargets[0]), pass(ssrBlurMaterial, ssrTargets[1]);
+        // The sun glare's passes (postfx3d-sun.js) run only in the chase view, with the sun in frame.
+        if (hdrCapable && postTier) sunGlareWarmPasses(pass);
         return passes;
       }
       function runPass(material, target) {
@@ -299,6 +309,16 @@
        * reflects, so the composite adds `reflection * wetness * mirror` and a
        * building reflected in a puddle darkens it while a lamp brightens it.
        * Dry streets skip both passes.
+       *
+       * STREET LEVEL (the chase view, `uStreet`; the street view passes 0, 1, 0, 0
+       * and draws exactly as before): the ray reaches down the street (SSR_STREET_REACH
+       * of the draw distance) and starts a share of the point's distance out, so the
+       * steps are spent where a far point's reflection lies; the wet road mirrors more
+       * as the view grazes it (Schlick's Fresnel, a gain on the reflection); a ray that
+       * meets nothing (off the frame or past the reach) mirrors the sky's own colour
+       * in its direction (cityHazeColor: the dome's), so puddles show the sky's
+       * gradient; the glossy jitter is narrower (the perspective already stretches
+       * a light down the road) and the blur after it longer, towards the viewer.
        */
       const ssrUniforms = {
         tScene: { value: null },
@@ -313,7 +333,17 @@
         uSky: { value: new Three.Color(0, 0, 0) },
         uRain: { value: 0 },
         uRainTime: { value: 0 },
+        // Street level: x the Fresnel gain at grazing, y the glossy jitter's share, z the sky's share for a
+        // ray that meets nothing as the ground's flat sky has it (postLook.reflectShare; 0: that flat sky),
+        // w the first step as a share of the distance.
+        uStreet: { value: new Three.Vector4(0, 1, 0, 0) },
+        // The sky's colours (aerial-haze3d.js CITY_HAZE, shared arrays) for cityHazeColor.
+        ...CITY_HAZE,
       };
+      const SSR_STREET = new Three.Vector4(0.7, 0.4, 0.4, 0.025),
+        SSR_STREET_OFF = new Three.Vector4(0, 1, 0, 0),
+        SSR_STREET_REACH = 0.55,
+        SSR_STREET_REACH_MAX = 3200;
       function makeSsrMaterial(steps) {
         return postMaterial(
           `
@@ -323,9 +353,11 @@
           uniform vec2 uDepthTexel;
           uniform float uPerspective, uReach, uRain, uRainTime;
           uniform vec3 uSky;
+          uniform vec4 uStreet;
           ${AO_COMMON}
           ${SURFACE_NOISE}
           ${RAIN_RINGS}
+          ${CITY_HAZE_GLSL}
           vec2 cityProject( vec3 q ) {
             vec4 clip = uProjection * vec4( q, 1.0 );
             return clip.xy / clip.w * 0.5 + 0.5;
@@ -346,17 +378,32 @@
               N = normalize( N + ( uView * vec4( tilt.x, 0.0, tilt.y, 0.0 ) ).xyz );
             }
             vec3 R = reflect( V, N );
+            // Street level: more mirror as the view grazes the road (none of it from the street camera's
+            // steep view), and what a ray that meets nothing sees: the sky's own colour that way there, the
+            // flat sky the ground already mirrors in the street view (a miss then adds nothing).
+            float fresnel = pow( 1.0 - clamp( dot( -V, N ), 0.0, 1.0 ), 5.0 ), gain = 1.0 + uStreet.x * fresnel;
+            vec3 sky = uSky;
+            if ( uStreet.z > 0.0 ) {
+              // (Greyed a little and toned down by the same share as the ground's flat sky, the share
+              // rising to the whole sky as the view grazes the water.)
+              sky = cityHazeColor( normalize( ( uCameraWorld * vec4( R, 0.0 ) ).xyz ) );
+              sky = mix( sky, vec3( dot( sky, vec3( 0.3333 ) ) ), 0.3 ) * mix( uStreet.z, 1.0, fresnel );
+            }
+            vec3 miss = sky * gain - uSky;
             // Glossy lobe: jitter the ray in its vertical plane (streaks along the
             // view) and a little sideways, more on damp tarmac than in a puddle.
-            float rough = mix( 0.2, 0.012, pool );
-            float n1 = fract( 52.9829189 * fract( dot( gl_FragCoord.xy, vec2( 0.06711056, 0.00583715 ) ) ) );
+            float rough = mix( 0.2, 0.012, pool ) * uStreet.y;
+            // (Interleaved gradient noise: fast across the frame for the street camera; at street level
+            // fast down it, along the blur that follows, so the jitter averages out instead of speckling.)
+            float n1 = fract( 52.9829189 * fract( dot( gl_FragCoord.xy, uStreet.x > 0.0 ? vec2( 0.00583715, 0.06711056 ) : vec2( 0.06711056, 0.00583715 ) ) ) );
             float n2 = fract( n1 * 7.13 + 0.37 );
             vec3 side = normalize( cross( R, N ) ), lift = normalize( cross( side, R ) );
             R = normalize( R + lift * ( n1 - 0.5 ) * rough * 2.4 + side * ( n2 - 0.5 ) * rough * 0.3 );
-            if ( dot( R, N ) < 0.02 ) { gl_FragColor = vec4( 0.0 ); return; }
-            // March out along the ray in growing steps.
-            float growth = pow( uReach / 1.5, 1.0 / float( SSR_STEPS - 1 ) );
-            float t = 1.5 * ( 0.75 + 0.5 * n2 ), last = 0.0, hit = 0.0;
+            if ( dot( R, N ) < 0.02 ) { gl_FragColor = vec4( miss, 0.0 ); return; }
+            // March out along the ray in growing steps (at street level from a share of the point's distance).
+            float start = max( 1.5, length( P ) * uStreet.w );
+            float growth = pow( uReach / start, 1.0 / float( SSR_STEPS - 1 ) );
+            float t = start * ( 0.75 + 0.5 * n2 ), last = 0.0, hit = 0.0;
             vec2 q = uv;
             for ( int i = 0; i < SSR_STEPS; i++ ) {
               vec3 Q = P + R * t;
@@ -367,7 +414,7 @@
               last = t;
               t *= growth;
             }
-            if ( hit < 0.5 ) { gl_FragColor = vec4( 0.0 ); return; }
+            if ( hit < 0.5 ) { gl_FragColor = vec4( miss, 0.0 ); return; }
             // Refine the crossing between the last miss and the hit.
             float lo = last, hi = t;
             for ( int j = 0; j < 5; j++ ) {
@@ -381,7 +428,7 @@
             // Fade out towards the frame edges (nothing beyond them to reflect) and the reach.
             vec2 edge = smoothstep( vec2( 0.0 ), vec2( 0.06, 0.1 ), q ) * smoothstep( vec2( 1.0 ), vec2( 0.94, 0.9 ), q );
             float fade = edge.x * edge.y * ( 1.0 - smoothstep( uReach * 0.55, uReach, hi ) );
-            gl_FragColor = vec4( ( c - uSky ) * fade, fade );
+            gl_FragColor = vec4( mix( miss, c * gain - uSky, fade ), fade );
           }`,
           ssrUniforms,
           { SSR_STEPS: steps },
@@ -490,194 +537,8 @@
       bloomUp.blendEquation = Three.AddEquation;
       bloomUp.blendSrc = Three.OneFactor;
       bloomUp.blendDst = Three.OneFactor;
-      /**
-       * COMPOSITE
-       * AO darkens the scene (less where the pixel is itself a light), the bloom is
-       * added, and the result goes through the same ACES filmic curve the renderer
-       * used before (so exposure keeps its meaning). The grade then works on the
-       * display image: saturation, contrast about mid grey, a lift/gain pair that
-       * tints shadows and highlights separately (teal shadows and amber lights at
-       * dusk, blue shadows and sodium-warm lights at night), and a gentle vignette.
-       * A little blue-noise-like dither stops the night sky and fog from banding.
-       * Water on the lens after a cloud refracts the whole frame (clouds3d-lens.js).
-       */
-      // @include src/clouds3d-lens.js
-      const postCompositeUniforms = {
-        ...cloudLensUniforms,
-        tScene: { value: null },
-        tDepth: { value: null },
-        tAo: { value: null },
-        // Joint bilateral AO upsampling: the AO target's size, the depth texel
-        // and the inverse projection (shared with the AO pass).
-        uAoSize: { value: new Three.Vector2(1, 1) },
-        uFullTexel: { value: new Three.Vector2(1, 1) },
-        uInvProjection: aoUniforms.uInvProjection,
-        tBloom: { value: null },
-        tReflect: { value: null },
-        uReflect: { value: 0 },
-        uExposure: { value: 1.14 },
-        uAoStrength: { value: 0 },
-        uBloomStrength: { value: 0 },
-        uSaturation: { value: 1 },
-        uVibrance: { value: 0 },
-        uContrast: { value: 1 },
-        uLift: { value: new Three.Vector3(0, 0, 0) },
-        uGain: { value: new Three.Vector3(1, 1, 1) },
-        uVignette: { value: 0 },
-        uGrain: { value: 0 },
-        uTime: { value: 0 },
-        uAspect: { value: 1 },
-        // Developer view: 0 the image, 1 the AO term, 2 the bloom (DeadEndCity.postView).
-        uDebugView: { value: 0 },
-      };
-      function makeCompositeMaterial(tier) {
-        return postMaterial(
-          `
-          varying vec2 vUv;
-          uniform sampler2D tScene;
-          uniform sampler2D tAo;
-          uniform sampler2D tBloom;
-          uniform sampler2D tReflect;
-          uniform float uReflect;
-          uniform float uExposure;
-          uniform float uAoStrength;
-          uniform float uBloomStrength;
-          uniform float uSaturation;
-          uniform float uVibrance;
-          uniform float uContrast;
-          uniform vec3 uLift;
-          uniform vec3 uGain;
-          uniform float uVignette;
-          uniform float uGrain;
-          uniform float uTime;
-          uniform float uAspect;
-          uniform float uDebugView;
-          uniform sampler2D tDepth;
-          #ifdef USE_AO
-            uniform vec2 uAoSize;
-            uniform vec2 uFullTexel;
-            uniform mat4 uInvProjection;
-            float compositeViewZ( float depth ) {
-              float z = depth * 2.0 - 1.0;
-              return ( uInvProjection[2][2] * z + uInvProjection[3][2] ) / ( uInvProjection[2][3] * z + uInvProjection[3][3] );
-            }
-            // The half-resolution AO brought up to full resolution taking only
-            // the texels on this pixel's own surface (their depth within half a
-            // metre): plain bilinear filtering smeared a roof's or a car's shade
-            // a pixel or two over the street beside it (and the street's onto
-            // the edge of the car), a fringe that flickered as the view moved.
-            float compositeAo( vec2 uv ) {
-              float zc = compositeViewZ( texture2D( tDepth, uv ).x );
-              vec2 p = uv * uAoSize - 0.5, i0 = floor( p ), f = p - i0;
-              float sum = 0.0, weights = 0.0;
-              for ( int k = 0; k < 4; k++ ) {
-                vec2 o = vec2( mod( float( k ), 2.0 ), floor( float( k ) * 0.5 ) );
-                vec2 cell = i0 + o;
-                // (The AO pass read each block's top-left depth texel.)
-                float z = compositeViewZ( texture2D( tDepth, ( cell * 2.0 + 0.5 ) * uFullTexel ).x );
-                float w = mix( 1.0 - f.x, f.x, o.x ) * mix( 1.0 - f.y, f.y, o.y ) * max( 1e-3, 1.0 - abs( z - zc ) * 0.25 );
-                sum += texture2D( tAo, ( cell + 0.5 ) / uAoSize ).r * w;
-                weights += w;
-              }
-              return sum / weights;
-            }
-          #endif
-          vec3 cityACES( vec3 color ) {
-            const mat3 inputMat = mat3( vec3( 0.59719, 0.07600, 0.02840 ), vec3( 0.35458, 0.90834, 0.13383 ), vec3( 0.04823, 0.01566, 0.83777 ) );
-            const mat3 outputMat = mat3( vec3( 1.60475, -0.10208, -0.00327 ), vec3( -0.53108, 1.10813, -0.07276 ), vec3( -0.07367, -0.00605, 1.07602 ) );
-            color = inputMat * ( color * uExposure / 0.6 );
-            vec3 a = color * ( color + 0.0245786 ) - 0.000090537;
-            vec3 b = color * ( 0.983729 * color + 0.4329510 ) + 0.238081;
-            return clamp( outputMat * ( a / b ), 0.0, 1.0 );
-          }
-          vec3 cityLinearToSRGB( vec3 c ) {
-            return mix( c * 12.92, pow( c, vec3( 0.41666 ) ) * 1.055 - 0.055, step( 0.0031308, c ) );
-          }
-          #include <city_lens_pars>
-          void main() {
-            // Water on the lens bends the whole image under each bead.
-            vec3 lens = cityLens( vUv, uAspect );
-            vec2 sceneUv = clamp( vUv + lens.xy, 0.0, 1.0 );
-            vec3 color = texture2D( tScene, sceneUv ).rgb;
-            // A NaN pixel would come out of the tone curve black, an overflowed one
-            // (half float infinity) as NaN too: show them as nothing and as white.
-            color = any( isnan( color ) ) ? vec3( 0.0 ) : clamp( color, vec3( 0.0 ), vec3( 6.0e4 ) );
-            #ifdef USE_AO
-              float ao = compositeAo( sceneUv );
-              // Lights (lamps, neon, lit windows) are not shaded; sunlit paving is.
-              float lum = dot( color, vec3( 0.2126, 0.7152, 0.0722 ) );
-              color *= mix( 1.0, ao, uAoStrength * ( 1.0 - smoothstep( 3.5, 9.0, lum ) ) );
-            #endif
-            #ifdef USE_SSR
-              // Wet reflections: the ground's own reflectivity (negative alpha) at
-              // full resolution keeps the half-resolution reflection off the cars
-              // and kerbs standing in it.
-              float wet = clamp( -texture2D( tScene, sceneUv ).a, 0.0, 1.0 );
-              if ( uReflect > 0.0 && wet > 0.0 ) color = max( color + texture2D( tReflect, sceneUv ).rgb * wet * uReflect, 0.0 );
-            #endif
-            #ifdef USE_BLOOM
-              color += texture2D( tBloom, sceneUv ).rgb * uBloomStrength;
-            #endif
-            // A bead's rim: a glint along its top, shade along its bottom.
-            color *= 1.0 - lens.z * 0.1;
-            color = cityACES( color );
-            #ifdef USE_GRADE
-              float luma = dot( color, vec3( 0.2126, 0.7152, 0.0722 ) );
-              // Saturation, plus vibrance: more for muted colours than vivid ones,
-              // judged by saturation (chroma over value). Raw chroma counted every
-              // dark colour as muted, so shade and night went to saturated navy.
-              float peak = max( color.r, max( color.g, color.b ) );
-              float sat = ( peak - min( color.r, min( color.g, color.b ) ) ) / max( peak, 1e-4 );
-              color = max( mix( vec3( luma ), color, uSaturation * ( 1.0 + uVibrance * ( 1.0 - smoothstep( 0.05, 0.6, sat ) ) ) ), 0.0 );
-              // FILM GRADE: contrast and lift on a perceptual scale (gamma 2.2).
-              // The contrast is an S-curve about mid grey that bends but never
-              // clips (the old linear ( c - 0.18 ) * k + 0.18 cut everything under
-              // ~20% of the display range to black: shade and night streets lost
-              // their texture and showed only the lift's flat navy). The lift
-              // tints the darks and the gain the lights (split toning): a gain
-              // over the whole range also reddened the blue shade, magenta at dusk.
-              vec3 g = pow( min( color, vec3( 1.0 ) ), vec3( 1.0 / 2.2 ) );
-              g += uContrast * g * ( 1.0 - g ) * ( 2.0 * g - 1.0 );
-              g += uLift * ( 1.0 - g );
-              g = max( g, vec3( 0.0 ) );
-              float lights = smoothstep( 0.05, 0.7, dot( g, vec3( 0.2126, 0.7152, 0.0722 ) ) );
-              color = pow( g, vec3( 2.2 ) ) * mix( vec3( 1.0 ), uGain, lights );
-              vec2 v = ( vUv - 0.5 ) * vec2( uAspect, 1.0 );
-              color *= 1.0 - uVignette * smoothstep( 0.35, 1.05, length( v ) );
-            #endif
-            #ifdef USE_AO
-              if ( uDebugView > 0.5 && uDebugView < 1.5 ) color = vec3( texture2D( tAo, vUv ).r );
-            #endif
-            #ifdef USE_BLOOM
-              if ( uDebugView > 1.5 && uDebugView < 2.5 ) color = texture2D( tBloom, vUv ).rgb;
-            #endif
-            if ( uDebugView > 2.5 && uDebugView < 3.5 ) color = vec3( fract( texture2D( tDepth, vUv ).x * 400.0 ) );
-            #ifdef USE_SSR
-              // The wet reflections (red: the ground's reflectivity) around mid grey.
-              if ( uDebugView > 3.5 ) color = clamp( texture2D( tReflect, vUv ).rgb * 0.5 + 0.25, 0.0, 1.0 ) + vec3( clamp( -texture2D( tScene, vUv ).a, 0.0, 1.0 ) * 0.25, 0.0, 0.0 );
-            #endif
-            color = cityLinearToSRGB( clamp( color, 0.0, 1.0 ) );
-            // Dither (and, when graded, a whisper of film grain) against banding. An
-            // arithmetic hash: the old fract( sin( dot( ... ) ) * 43758 ) one fed sin()
-            // arguments in the hundreds of thousands on large canvases, where GPUs'
-            // sin() loses precision and the "noise" turns into rows of lines.
-            vec3 p3 = fract( vec3( gl_FragCoord.xyx + fract( uTime ) * 61.0 ) * 0.1031 );
-            p3 += dot( p3, p3.yzx + 33.33 );
-            float n = fract( ( p3.x + p3.y ) * p3.z );
-            color += ( n - 0.5 ) * ( 1.5 / 255.0 + uGrain );
-            gl_FragColor = vec4( color, 1.0 );
-          }`,
-          postCompositeUniforms,
-          Object.assign(
-            {},
-            tier.ao ? { USE_AO: 1 } : {},
-            tier.bloom ? { USE_BLOOM: 1 } : {},
-            tier.grade ? { USE_GRADE: 1 } : {},
-            tier.ssr ? { USE_SSR: 1 } : {},
-          ),
-        );
-      }
-      let compositeMaterial = null;
+      // @include src/postfx3d-sun.js
+      // @include src/postfx3d-composite.js
       /**
        * FXAA
        * Fast approximate anti-aliasing (after Timothy Lottes' FXAA, NVIDIA): find
@@ -763,6 +624,7 @@
         disposeTargets(bloomTargets);
         for (let i = 0, w = width >> 1, h = height >> 1; i < tier.bloom && w >= 4 && h >= 4; i++, w >>= 1, h >>= 1)
           bloomTargets.push(colorTarget(w, h));
+        allocateSunShaftTargets(tier, width, height);
         if (ldrTarget) ldrTarget.dispose();
         ldrTarget = colorTarget(width, height, Three.UnsignedByteType);
         postCompositeUniforms.uAspect.value = width / height;
@@ -851,6 +713,9 @@
         // (scene-linear), and the rain on the puddles.
         reflect: 0,
         reflectSky: new Three.Color(0, 0, 0),
+        // The share of the sky's light the wet ground mirrors (WET_SKY_SHARE by the hour): at street level
+        // the reflections pass mirrors the sky's own colour at that share, rising to all of it at grazing.
+        reflectShare: 0.4,
         rain: 0,
         rainTime: 0,
       };
@@ -888,6 +753,8 @@
         renderer.setRenderTarget(sceneTarget);
         renderer.render(scene, camera);
         noteSceneCalls();
+        // The chase view's cloud shadows, per pixel from the depth (clouds3d-sky.js).
+        renderChaseCloudShade();
         const tier = postTier;
         if (tier.ao && aoMaterial) {
           aoUniforms.tDepth.value = sceneTarget.depthTexture;
@@ -923,15 +790,22 @@
           ssrUniforms.uSky.value.copy(postLook.reflectSky);
           ssrUniforms.uRain.value = postLook.rain;
           ssrUniforms.uRainTime.value = postLook.rainTime;
-          // Out to about a frame height of ground (the street view's is ~630 units at zoom 1).
-          ssrUniforms.uReach.value = clamp(700 / Math.max(0.2, viewZoom), 400, 2400);
+          // Out to about a frame height of ground (the street view's is ~630 units at zoom 1); at street
+          // level down the street, with the street-level terms (STREET LEVEL above).
+          ssrUniforms.uReach.value = chaseViewActive
+            ? Math.min(SSR_STREET_REACH_MAX, chaseDrawReach * SSR_STREET_REACH)
+            : clamp(700 / Math.max(0.2, viewZoom), 400, 2400);
+          SSR_STREET.z = Math.max(0.01, postLook.reflectShare);
+          ssrUniforms.uStreet.value.copy(chaseViewActive ? SSR_STREET : SSR_STREET_OFF);
           runPass(ssrMaterial, ssrTargets[0]);
           ssrBlurUniforms.tSource.value = ssrTargets[0].texture;
-          ssrBlurUniforms.uDirection.value.set(0, 1.4 / ssrTargets[0].height);
+          ssrBlurUniforms.uDirection.value.set(0, (chaseViewActive ? 2.6 : 1.4) / ssrTargets[0].height);
           runPass(ssrBlurMaterial, ssrTargets[1]);
           postCompositeUniforms.tReflect.value = ssrTargets[1].texture;
           postCompositeUniforms.uReflect.value = postLook.reflect;
         } else if (ssrTargets.length) postCompositeUniforms.tReflect.value = ssrTargets[1].texture;
+        // The sun in frame in the chase view: its visibility, glare and shafts (postfx3d-sun.js).
+        renderSunGlare(tier);
         if (bloomTargets.length) {
           bloomUniforms.uThreshold.value = postLook.bloomThreshold;
           bloomUniforms.tSource.value = sceneTarget.texture;

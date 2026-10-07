@@ -31,13 +31,15 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/missions-bluehour.md | The Blue Hour hotel (mission 2) in 3D: terrace, the VIP table and reserved glass, the street entrance, the limousines and doormen |
 | areas/audio-and-radio.md | The mix and buses, sound systems, media and credits, the car radio |
 | areas/audio-soundscape.md | Free-roam sound: the ear probe and the room (slap-back, echo, occlusion), ambience beds by place, footsteps by surface, horns, doors, tyre ground |
-| areas/rendering.md | Cameras and view, draw-call rules, buildings and signs, ground, water, wet roads, weather, tiers |
-| areas/rendering-buildings.md | Building archetypes and roofs, the street frontage on every side (shops, lobbies, stoops, loading bays, backs, fire escapes), shop windows, the sign design system |
+| areas/rendering.md | Cameras and view, draw-call rules |
+| areas/rendering-buildings.md | Building archetypes and roofs, the street frontage on every side (shops, lobbies, stoops, loading bays, backs, fire escapes), shop windows, the sign design system (`sign()`, `SIGN_DESIGNS`, families), billboards, the glow field |
+| areas/rendering-weather.md | Ground, wet roads, water, rain, splashes, spray, lightning, tiers, and their street-level (chase view) numbers: near rain, rain haze, wet reflections, streaks |
 | areas/chase-view.md | The third-person CHASE view (V): where the camera stands (game state, its projection), look input (pointer lock, pad, touch), drawing it (draw distance, culling, shadows), the reticle |
 | areas/rendering-chase.md | The chase view's draw distance and level of detail: far cells drawn from the far copy, shadow casters and proxies, small props and pools, people and vehicles by distance, the `chaseCamera().view` report |
 | areas/rendering-hiccups.md | First-use hitches: what the title-screen prewarm warms (programs, off-screen passes, stand-in models, the far copy), the first-use log (`renderHiccups`), the rules a new effect follows, dormant lights, numbers |
 | areas/boot-and-memory.md | The boot timeline (`bootTimings()`) and what each stage costs, what was cut, the renderer memory soak, the staged tier change, the cell pre-upload and AUTO's resolution hold |
 | areas/rendering-lighting.md | HDR pipeline, post passes and the film grade, sun and time of day, night light map, searchlights, the cutaway |
+| areas/rendering-sky.md | The sky dome and environment map (one sky), the sky's sun, the chase view's aerial haze (`cityHaze*`), sun glare and shafts |
 | areas/rendering-vehicle-lights.md | Vehicle lamps: CAR LAMPS, the drive light map, beam shadows, beams on slopes and the terrain horizon |
 | areas/rendering-clouds.md | The cloud layer's altitude by weather and area (`cloudBaseAt`), the march, the veil, wisps and lens in cloud, cloud shadows |
 | areas/ui-and-settings.md | Input actions, settings, HUD and the interaction prompt, touch, bike share |

@@ -68,6 +68,22 @@ export default async function (t) {
     await t.keys('Digit0', 0.1, { real: true });
     t.near((await t.call('chaseCamera')).zoom, 1, 1, 'zoom reset: boom factor');
 
+    // C held in a car looks behind it (a cut round) and lets go back.
+    await t.call('drive', 'sedan', 0, 0);
+    await t.wait(2);
+    let car = await t.call('chaseCamera');
+    t.near(Math.abs(((car.yawDeg - 0 + 540) % 360) - 180), 0, 8, 'in the car: the camera looks along the car (deg off)');
+    await t.keys('KeyC', 0.3);
+    car = await t.call('chaseCamera');
+    t.assert(car.behind === true, 'C held in a car did not look behind: ' + JSON.stringify(car));
+    t.near(Math.abs(((car.yawDeg - 180 + 540) % 360) - 180), 0, 8, 'looking behind: the camera looks back along the car (deg off)');
+    await t.wait(0.1);
+    car = await t.call('chaseCamera');
+    t.assert(car.behind === false, 'still looking behind after C was let go: ' + JSON.stringify(car));
+    t.near(Math.abs(((car.yawDeg + 540) % 360) - 180), 0, 8, 'C let go: the camera looks along the car again (deg off)');
+    await t.call('interact');
+    await t.wait(0.5);
+
     // R3 switches back to the street view; there the right stick aims again.
     await t.call('gamepadFeed', { buttons: { R3: 1 } });
     await t.call('gamepadFeed', { buttons: { R3: 0 } });

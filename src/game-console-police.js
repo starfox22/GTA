@@ -23,6 +23,25 @@
       // the incident's body count, the search, arrest progress, the tier's
       // allowances and every unit (patrol, swat, fed, army, air) and officer.
       policeReport: () => policeReportData(),
+      // A Harbor Kings gunman standing at map (x, y), as a mission's guards are placed (story.js spawnGuards),
+      // facing the player: for aim and lock-on tests (chase-camera.js LOCK-ON). Returns where it stands.
+      gunmanAt(x, y) {
+        if (!Number.isFinite(x) || !Number.isFinite(y)) throw Error('gunmanAt needs a map point');
+        const g = {
+          x,
+          y,
+          a: Math.atan2(player.y - y, player.x - x),
+          hp: 85,
+          timer: 3,
+          color: '#b66951',
+          faction: 'harbor',
+          name: 'HARBOR KINGS',
+          missionTag: 'console',
+          walk: 0,
+        };
+        enemies.push(g);
+        return { x: g.x, y: g.y, enemies: enemies.length };
+      },
       // Hostile rounds aimed at the player since the last reset, by source, with
       // the shooter's distance and whether it was on screen (combat-rules.js SHOT
       // LOG); `reset` clears the log after reading it.

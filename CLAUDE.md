@@ -249,6 +249,19 @@ packs with plain `<script src>` so the zip still plays from file://.
   `streetCameraAltitude()` and `cameraShakeLevel()`. `motionComfortOn()` (settings.js MOTION COMFORT) is the one
   switch for the steady camera (fixed vehicle zoom, short slow lead, no kicks/tremor/aim lean/flight bank): a new
   camera motion checks it. Check `cameraComfort()` / tools/tests/camera-comfort.mjs after any camera change.
+- **Chase view** (V; docs/areas/chase-view.md): `chaseCam` (chase-camera.js) is game state with its own pinhole
+  (`chaseProject`, `chaseRay`, `chaseSees`, `chaseAimPoint`); chase-view3d.js only copies it into `chaseCamera`.
+  `setViewMode` is the only switch (saved). While `chaseCameraLive()`, every "is it on screen" rule asks the chase
+  camera through chase-rules.js (`crowdInView` = the frustum within `CHASE_SIGHT_REACH`; spawn spots through
+  `spotUnseen(x, y, margin, SPOT_*)`, exactly `!crowdInView` in the street view; `shooterInView` = in frame within
+  `CHASE_FIRE_REACH` or within `CHASE_FIRE_NEAR` of the player, never through a building), never a `cameraTarget`
+  box; `viewPopAudit()` stays at 0 (tools/tests/chase-streams.mjs). The reticle (the cursor without pointer lock)
+  is the aim for every device: aim code reads `aim()`, `chaseAimScreen()` or `chaseGroundPoint()`, never
+  `mouse.x/y` with `city3D.groundPoint` alone. Movement keys go through `playerMoveHeading()`; the street view's
+  paths stay bit-identical when the chase view is off. Its HUD layout is `body.chase-view` (chase-view.css).
+- Chase view level of detail (rendering-chase.md): anything new the far copy stands for hides with its cell
+  (`cell.full` / `cell.blocks`); shadow-pass-only hiding goes through `chaseShadowCasters` (restored after the
+  pass); its shadow box is `placeChaseSun` (the depth fade `cityShadowReach`); never toggle a light.
 - `carStainSeverity(kph, fatal)` (car-stains.js) is the only rule for how much bonnet blood a hit leaves (none under
   14 km/h); further hits add to a car's 3 stain records (`adds`, painted by `cbTopUpJob`), never replace one.
 - Military mounted guns the player fires (LAV-8 25 mm + coax, gun jeep M2, Black Hawk door guns) live in
@@ -275,6 +288,16 @@ packs with plain `<script src>` so the zip still plays from file://.
 - All vehicle light on a surface shares one budget (VEHICLE LIGHT BUDGET; headlight-beam.js
   `lowBeamIntensity`/`headlightRoadLight` mirror CITY_LIGHT_APPLY: keep them in step); a new
   vehicle light source fills that budget rather than adding on top.
+- Sky and haze (rendering-sky.md): `cityHazeColor(dir)` (aerial-haze3d.js) is the one sky colour: the dome, the
+  environment map and the chase view's haze all draw it; its `cityHaze*` uniforms are written only by `updateHaze`
+  (lighting3d-look.js), and a custom fog shader gets them by building its uniforms from `UniformsLib.fog`.
+  `skySunDirection` is the sun the sky draws (it sets); `sunDirection` (the light) stays above ~15° for readable
+  shadows: sky visuals, glare and clouds from below use the first, shadows the second. The dome draws at
+  renderOrder 50 after the opaque city: an opaque thing that writes no depth and must show against the sky needs more.
+- Rain and wet streets at street level (rendering-weather.md): `updateStreetRain`, `chaseRainAir` and the SSR's
+  `uStreet` switch on `chaseViewActive` (uniforms, no new programs); the street view keeps `uStreet` (0,1,0,0),
+  `uNear.w` 0, splash `uSize` 1 / `uUpright` 0 and a non-zero `citySheenDir`. Darken `cityHaze*` only after
+  `refreshEnvironment` (`weatherGrade`).
 - `cloudBaseAt(x, y)` / `cloudTopAt(x, y)` (clouds.js) are the only source of the cloud
   altitude (by weather and area); the renderer draws from the same maps
   (docs/areas/rendering-clouds.md). Console `cloudJump(metres, kind)` drops the player over

@@ -20,7 +20,15 @@
        * WET STREETS
        * Under each street-level sign a stretched additive streak is laid on the
        * road towards the camera, the way neon smears across wet tarmac. Streaks
-       * are one instanced mesh too and show only in the rain at night.
+       * are one instanced mesh too and show only in the rain at night. The street
+       * camera stands to the south, so a streak runs south; at street level (the
+       * chase view, `uStreakView`) the shader turns each one towards the camera
+       * and lengthens it with the distance (never under the camera), dimmer
+       * where the wet reflections pass already mirrors the sign itself.
+       *
+       * At street level a glow is never wider than GLOW_STREET_ANGLE of the view
+       * (a perspective camera: the projection's w column): a lamp's world-sized
+       * halo filled the frame up close.
        *
        * LIGHT SPILL
        * `signLightPools` are painted into the night light map by lighting3d.js
@@ -28,6 +36,11 @@
        */
       const GLOW_CAPACITY = 9000,
         STREAK_CAPACITY = 3400,
+        // At street level, a glow's widest (radians of the view) and how far a streak may run towards the
+        // camera (times its street-view length, and a share of its distance from the camera).
+        GLOW_STREET_ANGLE = 0.07,
+        STREAK_STREET_LENGTH = 1.8,
+        STREAK_STREET_REACH = 0.72,
         glowCenters = new Float32Array(GLOW_CAPACITY * 3),
         glowColors = new Float32Array(GLOW_CAPACITY * 3),
         glowParams = new Float32Array(GLOW_CAPACITY * 4),
@@ -105,6 +118,8 @@
             vec4 mvPosition = modelViewMatrix * vec4( glowCenter, 1.0 );
             // Nothing to draw: park the quad behind the camera.
             float size = lit * level > 0.002 ? glowParams.x : 0.0;
+            // A perspective camera (projectionMatrix[2][3] = -1): no wider than GLOW_STREET_ANGLE of the view.
+            if ( projectionMatrix[ 2 ][ 3 ] < -0.5 ) size = min( size, max( -mvPosition.z, 0.0 ) * ${GLOW_STREET_ANGLE.toFixed(3)} );
             mvPosition.xy += position.xy * size;
             // Pull the quad towards the camera so it clears the wall it hangs on.
             mvPosition.z += size * 0.35;
@@ -198,6 +213,8 @@
           attribute vec4 glowParams;
           attribute vec2 glowExtra;
           uniform float uWet;
+          // Street level: the camera on the map (xy), 1 (z) and the streaks' strength there (w).
+          uniform vec4 uStreakView;
           varying vec2 vUv;
           varying vec3 vGlow;
           varying vec2 vGround;
@@ -206,9 +223,19 @@
           void main() {
             vUv = uv;
             float level = glowLevel( glowParams.z, glowParams.y ) * uNight * uWet * glowExtra.y;
-            vGlow = glowTint( glowParams.z, glowParams.y, glowColor ) * glowParams.w * level;
             // A ground quad: width across, length running south (towards the camera).
             vec3 p = glowCenter + vec3( position.x * glowParams.x, 0.0, -position.y * glowExtra.x );
+            if ( uStreakView.z > 0.5 ) {
+              // Street level: from under the sign towards the camera, longer the further off it is.
+              vec2 foot = glowCenter.xz - vec2( 0.0, glowExtra.x * 0.5 ), toward = uStreakView.xy - foot;
+              float gap = length( toward );
+              vec2 along = toward / max( gap, 1.0 ), across = vec2( -along.y, along.x );
+              float run = min( glowExtra.x * ${STREAK_STREET_LENGTH.toFixed(2)}, gap * ${STREAK_STREET_REACH.toFixed(2)} );
+              vec2 q = foot + across * position.x * glowParams.x + along * ( 0.5 - position.y ) * run;
+              p = vec3( q.x, glowCenter.y, q.y );
+              level *= uStreakView.w;
+            }
+            vGlow = glowTint( glowParams.z, glowParams.y, glowColor ) * glowParams.w * level;
             if ( level < 0.002 ) p = vec3( 0.0, -9999.0, 0.0 );
             vGround = p.xz;
             vec4 mvPosition = modelViewMatrix * vec4( p, 1.0 );
@@ -255,6 +282,7 @@
         polygonOffsetUnits: -4,
       });
       for (const k of ['uTime', 'uNight', 'uWet']) streakMaterial.uniforms[k] = glowUniforms[k];
+      streakMaterial.uniforms.uStreakView = { value: new Three.Vector4() };
       const streakMesh = new Three.Mesh(glowGeometry(STREAK_CAPACITY, streakCenters, streakColors, streakParams, streakExtra), streakMaterial);
       streakMesh.frustumCulled = false;
       streakMesh.renderOrder = 1;
@@ -323,6 +351,10 @@
         glowUniforms.uTime.value = gameTime;
         glowUniforms.uNight.value = night;
         glowUniforms.uWet.value = weather.wet || 0;
+        // Street level: the streaks run towards the chase camera, dimmer where the wet reflections run.
+        const streakView = streakMaterial.uniforms.uStreakView.value;
+        if (chaseViewActive) streakView.set(chaseCam.x, chaseCam.y, 1, postLook.reflect > 0 ? 0.55 : 1);
+        else streakView.z = 0;
         glowPowerCheck -= 1;
         // Power only changes during the blackout contract; poll it twice a second.
         if (glowPowerCheck <= 0) {

@@ -41,6 +41,9 @@
          night the city's glow on the underside of the deck. */
       const CLOUD_LIGHT_GLSL = `
         uniform vec3 uSunDirection, uSunColor, uSkyColor, uGroundColor, uGlowColor, uCloudTint;
+        // 1 marching from under the layer (clouds3d-sky.js): the base is lit by the sky round about and the
+        // sunlit ground below as well, which from above only ever shows as a dim underside.
+        uniform float uBelow;
         const float EXTINCTION = 0.028; // per world unit at density 1
         float henyeyGreenstein(float c, float g){
           float g2 = g * g;
@@ -72,10 +75,12 @@
                     * mix(1., 1. - exp(-d * 6.), 0.5) * 1.3;
           float city = smoothstep(-3900., -2700., p.x) * smoothstep(4600., 3600., p.x)
                      * smoothstep(-4700., -3800., p.z) * smoothstep(6200., 5300., p.z);
+          vec3 below = uBelow * (uSkyColor * 1.25 + uSunColor * 0.09 * max(uSunDirection.y, 0.) + uGlowColor) * (1. - h) * (1. - h);
           return (uSunColor * sun
                + uSkyColor * (0.25 + 0.75 * h) * (0.35 + 0.65 * exp(-od * 0.5))
                + uGroundColor * (1. - h)
-               + uGlowColor * city * pow(1. - h, 3.)) * uCloudTint;
+               + uGlowColor * city * pow(1. - h, 3.)
+               + below) * uCloudTint;
         }`;
       // Where a ray first meets one of the tall towers the layer can reach (a big number if none).
       const CLOUD_TOWERS_GLSL = `
@@ -112,6 +117,10 @@
         uTowerTop: { value: cloudTowerTops },
         uMaxDistance: { value: 30000 },
         uShafts: { value: new Three.Vector3(0, 0, 0) },
+        // 1: marching up into the layer from under it (the chase view, clouds3d-sky.js): the haze is the
+        // chase view's own (aerial-haze3d.js), thinning with height and coloured like the sky behind.
+        uBelow: { value: 0 },
+        ...CITY_HAZE,
       };
       const marchMaterial = new Three.ShaderMaterial({
         uniforms: marchUniforms,
@@ -131,6 +140,7 @@
           ${CLOUD_FIELD_GLSL}
           ${CLOUD_LIGHT_GLSL}
           ${CLOUD_TOWERS_GLSL}
+          ${CITY_HAZE_GLSL}
           uniform vec3 uCameraPosition, uHazeColor, uAircraft, uPocket;
           uniform vec2 uHaze, uNearFade, uSlab;
           uniform float uMaxDistance;
@@ -177,8 +187,13 @@
               t += stepLength;
             }
             float alpha = 1. - transmittance;
-            if (firstHit > 0.){
-              // The same aerial perspective as the scene (flight-view3d.js).
+            if (firstHit > 0. && uBelow > 0.5){
+              // From the street: the chase haze, thinning with height and the colour of the sky behind,
+              // so far cloud sinks into the horizon and the cloud overhead stays crisp.
+              float reach = cityHazeReach(rd * firstHit, firstHit, uHaze.x, uHaze.y);
+              light = mix(light, cityHazeColor(rd) * alpha, 1. - exp(-reach * reach));
+            } else if (firstHit > 0.){
+              // The same aerial perspective as the scene (aerial-haze3d.js).
               float reach = max(firstHit - uHaze.x, 0.) / uHaze.y;
               light = mix(light, uHazeColor * alpha, 1. - exp(-reach * reach));
             }

@@ -1,8 +1,8 @@
 # Rendering: buildings, street frontage and signs
 
 cityscape3d.js and its pieces build the city's buildings (Monarch Isle, the mountain villages and
-Fort Sentinel build their own). Draw-call rules: rendering.md. Numbers: audit/performance.md
-(Seventh pass).
+Fort Sentinel build their own). Draw-call rules: rendering.md; night glows and wet-street streaks at
+street level: rendering-weather.md. Numbers: audit/performance.md (Seventh pass).
 
 ## Archetypes, roofs and the south face
 
@@ -91,5 +91,5 @@ Fort Sentinel build their own). Draw-call rules: rendering.md. Numbers: audit/pe
 - The damage code's shop panes and `wallOffset` (damage3d-world.js, damage3d-decals.js) know the
   south shopfront only: a bullet hole low on another side sits 0.18 off the wall, behind that
   side's glass or plinth.
-- Wet-road streaks run south (towards the street camera): a sign on another side spills light
-  on the pavement but lays no streak.
+- Only a south side's signs lay a wet-road streak (STREAK_CAPACITY is shared city-wide); a sign on
+  another side spills light on the pavement only.

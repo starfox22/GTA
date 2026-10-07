@@ -18,6 +18,7 @@
           if (changes.cameraView === 'street' || changes.cameraView === 'chase') setViewMode(changes.cameraView, true);
           if (Number.isFinite(changes.lookSensitivity)) settings.lookSensitivity = clamp(Math.round(changes.lookSensitivity), 20, 300);
           if (typeof changes.invertLook === 'boolean') settings.invertLook = changes.invertLook;
+          if (typeof changes.aimAssist === 'boolean') settings.aimAssist = changes.aimAssist;
           // 'auto', 'off', 'low' or 'high' (quality.js SHADOWS).
           if (typeof changes.shadows === 'string') setShadowSetting(changes.shadows.toLowerCase());
           if (typeof changes.sound === 'boolean' && changes.sound !== soundOn) mute();
@@ -56,6 +57,7 @@
           cameraView: viewMode,
           lookSensitivity: settings.lookSensitivity,
           invertLook: settings.invertLook,
+          aimAssist: settings.aimAssist,
           sound: soundOn,
           // The volume sliders (settings.js AUDIO_VOLUMES): masterVolume,
           // radioVolume, engineVolume, soundVolume (effects), voiceVolume,
