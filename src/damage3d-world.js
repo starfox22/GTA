@@ -19,8 +19,10 @@
             life: 0.6 + Math.random() * 0.5,
             max: 1.1,
             color: Math.random() < 0.5 ? '#e4f1f7' : '#9fc4d6',
-            size: 1 + Math.random() * 1.4,
+            size: 2.4 + Math.random() * 2.8,
             case: true,
+            glass: true,
+            spin: (Math.random() - 0.5) * 18,
           });
       }
       function bulletHole(x, y, z, nx, ny, size, surface, building) {
@@ -278,10 +280,12 @@
             life: 0.18 + Math.random() * 0.22 + (water ? 0.3 : 0),
             max: water ? 0.7 : 0.4,
             color: metal ? '#ffd084' : glassHit ? (j % 2 ? '#e8f4fa' : '#9fc4d6') : water ? '#dcedf5' : kind === 'dust' ? '#a8987f' : '#b6aba0',
-            size: metal ? 1.7 : glassHit ? 1.3 : water ? 2.2 : 3,
+            size: metal ? 1.7 : glassHit ? 2.6 + Math.random() * 1.6 : water ? 2.2 : 3,
             glow: metal,
             case: metal || glassHit || water,
             smoke: !metal && !glassHit && !water,
+            glass: glassHit,
+            spin: glassHit ? (Math.random() - 0.5) * 18 : 0,
           });
       }
 
