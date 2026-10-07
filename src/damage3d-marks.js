@@ -97,43 +97,46 @@
           hits = markRay.intersectObjects(targets, false);
         for (let i = 0; i < hits.length; i++) {
           if (hits[i].distance > middle) break;
-          if (markSurfaceOk(m, hits[i], mark) && (mark.kind === 'star' || markCovered(m, hits[i], targets))) return hits[i];
+          if (markSurfaceOk(m, hits[i], mark) && (mark.kind === 'star' || markCovered(m, hits[i], targets, mark))) return hits[i];
         }
         return null;
       }
-      // Whether the surface round a hit holds a chase-view hole's bare-metal ring (four points a hole's ring out, all
-      // within 4 cm of the hit's plane): a round that clips a mirror's edge or a trim strip goes on to the panel behind.
+      // How many of four points `ring` out from `point` in the plane across `normal` (world space) have the body under
+      // them within `slack` of that plane: the part `own` first, else any other but the glass.
       const coverNormal = new Three.Vector3(),
+        coverDown = new Three.Vector3(),
         coverU = new Three.Vector3(),
         coverV = new Three.Vector3(),
         coverRay = new Three.Raycaster();
-      function markCovered(m, hit, targets) {
-        coverNormal.copy(hit.face.normal).transformDirection(hit.object.matrixWorld);
+      function markRingHolds(m, point, normal, ring, slack, own, targets) {
         coverU.set(0, 1, 0);
-        if (Math.abs(coverNormal.dot(coverU)) > 0.9) coverU.set(1, 0, 0);
-        coverU.cross(coverNormal).normalize();
-        coverV.crossVectors(coverNormal, coverU);
-        const scale = m.modelScale || 1,
-          ring = MARK_SIZES.hole[2] * 1.4 * 0.26 * scale,
-          slack = 0.32 * scale;
-        let covered = 0;
+        if (Math.abs(normal.dot(coverU)) > 0.9) coverU.set(1, 0, 0);
+        coverU.cross(normal).normalize();
+        coverV.crossVectors(normal, coverU);
+        coverDown.copy(normal).negate();
+        let held = 0;
         for (let k = 0; k < 4; k++) {
           const a = (k * Math.PI) / 2;
-          markCorner
-            .copy(hit.point)
-            .addScaledVector(coverU, Math.cos(a) * ring)
-            .addScaledVector(coverV, Math.sin(a) * ring)
-            .addScaledVector(coverNormal, 1);
-          coverRay.set(markCorner, coverNormal.clone().negate());
+          markCorner.copy(point).addScaledVector(coverU, Math.cos(a) * ring).addScaledVector(coverV, Math.sin(a) * ring).addScaledVector(normal, 1);
+          coverRay.set(markCorner, coverDown);
           coverRay.far = 1 + slack;
-          const under = coverRay.intersectObjects(targets, false);
-          for (const u of under)
-            if (u.object !== m.cabin && Math.abs(u.distance - 1) <= slack) {
-              covered++;
-              break;
-            }
+          coverRay.near = Math.max(0, 1 - slack);
+          let found = own ? coverRay.intersectObject(own, false).length > 0 : false;
+          if (!found)
+            for (const under of coverRay.intersectObjects(targets, false))
+              if (under.object !== m.cabin) {
+                found = true;
+                break;
+              }
+          if (found) held++;
         }
-        return covered === 4;
+        return held;
+      }
+      // Whether the surface round a hit holds a chase-view hole's bare-metal ring (all four points within 4 cm of the
+      // hit's plane): a round that clips a mirror's edge or a trim strip goes on to the panel behind.
+      function markCovered(m, hit, targets, mark) {
+        coverNormal.copy(hit.face.normal).transformDirection(hit.object.matrixWorld);
+        return markRingHolds(m, hit.point, coverNormal, MARK_SIZES.hole[2] * (mark.size || 1.4) * 0.26, 0.32, hit.object, targets) === 4;
       }
       // A star the round's line misses the model's pane with (the glass band's numbers are the game's): aim at the
       // pane itself, as near as it allows to where the round went in.
@@ -306,7 +309,26 @@
           k = 1 / (m.modelScale || 1),
           sx = mark.size * size[view ? 2 : 0] * k,
           sy = mark.size * size[view ? 3 : 1] * k;
-        decalPose(anchor.matrix, markPoint.x, markPoint.y, markPoint.z, markNormal.x, markNormal.y, markNormal.z, sx, sy, mark.kind === 'scrape' ? 0 : (mark.id * 2.39996) % TAU, MARK_LIFT);
+        let shrink = 1;
+        // Close up (the chase view) a hole whose panel has since crumpled under it: smaller, or lost in the folds.
+        if (view && mark.kind === 'hole' && anchor.version !== anchor.checked) {
+          anchor.checked = anchor.version;
+          const scale = m.modelScale || 1;
+          markWorld.copy(m.body.matrixWorld);
+          markCorner.copy(markPoint).applyMatrix4(markWorld);
+          coverNormal.copy(markNormal).transformDirection(markWorld);
+          const centre = markCorner.clone(),
+            ring = 0.26 * sx * scale,
+            targets = markTargets(m);
+          if (markRingHolds(m, centre, coverNormal, ring, 0.32, object, targets) < 4)
+            shrink = markRingHolds(m, centre, coverNormal, ring * 0.5, 0.32, object, targets) === 4 ? 0.5 : 0;
+          anchor.shrink = shrink;
+        } else if (view && mark.kind === 'hole') shrink = anchor.shrink ?? 1;
+        if (!shrink) {
+          anchor.hidden = true;
+          return 0;
+        }
+        decalPose(anchor.matrix, markPoint.x, markPoint.y, markPoint.z, markNormal.x, markNormal.y, markNormal.z, sx * shrink, sy * shrink, mark.kind === 'scrape' ? 0 : (mark.id * 2.39996) % TAU, MARK_LIFT);
         return 1;
       }
       // The world matrices and the body's inverse, once per car when an anchor needs them.
@@ -318,7 +340,7 @@
         const layer = vehicleDecals,
           view = chaseViewActive ? 1 : 0;
         let n = 0,
-          budget = 8;
+          budget = 12;
         for (let v = 0; v < vehicles.length; v++) {
           const c = vehicles[v],
             marks = c.damage?.marks;
@@ -340,24 +362,24 @@
             let anchor = markAnchors.get(mark);
             if (anchor && anchor.model !== m) anchor = null;
             const stale = !anchor || anchor.version !== m.shapeVersion;
-            if (stale || anchor.view !== view) {
+            // Casting and the close-up ring check cost rays: a few marks a frame (`budget`); one waiting keeps its last
+            // pose for a frame or two.
+            if ((stale || anchor.view !== view) && budget > 0) {
+              budget--;
               if (!prepared) {
                 markPrepare(m);
                 prepared = true;
               }
               if (stale) {
-                // Cast (a few a frame) when there is no surface yet or its part has left the body; else re-read the triangle.
-                if (!anchor || !anchor.object || markShown(anchor.object, m) === -1) {
-                  if (budget <= 0) continue;
-                  budget--;
-                  anchor = anchorMark(c, m, mark, anchor);
-                }
+                // Cast when there is no surface yet or its part has left the body; else re-read the triangle.
+                if (!anchor || !anchor.object || markShown(anchor.object, m) === -1) anchor = anchorMark(c, m, mark, anchor);
                 if (anchor.object && m.doors) markOntoDoor(m, anchor);
                 anchor.version = m.shapeVersion;
               }
               if (anchor.object) poseMark(m, mark, anchor, view);
               else anchor.view = view;
             }
+            if (!anchor || anchor.view === -1) continue;
             if (!anchor.object || anchor.hidden) continue;
             writeDecal(layer, n++, markWorld.multiplyMatrices(bodyWorld, anchor.matrix), MARK_TILES[mark.kind], mark.kind === 'scrape' ? 0.85 : 1, null);
           }
@@ -369,15 +391,18 @@
       // ---- Report (console vehicleDamageShape) -------------------------------------------------------------------------
       // How far a decal's plane stands off the surface under it at a point (world units; + above, - sunk), or null when
       // nothing is under it within 3 units.
-      // The part the mark is pinned to is asked first (another part swung in front, a sprung door, does not count).
+      // The part the mark is pinned to is asked first (another part swung in front, a sprung door, does not count);
+      // with no `own`, the nearest surface under the point no more than 0.5 units in front of the decal.
       function markGapAt(m, point, normal, targets, mark, own) {
         markOrigin.copy(point).addScaledVector(normal, 3);
         markWorldDirection.copy(normal).negate();
         markRay.set(markOrigin, markWorldDirection);
         markRay.far = 6;
-        const mine = markRay.intersectObject(own, false)[0];
+        markRay.near = own ? 0 : 2.5;
+        const mine = own ? markRay.intersectObject(own, false)[0] : null;
         if (mine) return mine.distance - 3;
         const hits = markRay.intersectObjects(targets, false);
+        markRay.near = 0;
         for (const hit of hits) if (mark.kind === 'star' ? hit.object === m.cabin : hit.object !== m.cabin) return hit.distance - 3;
         return null;
       }
@@ -442,7 +467,7 @@
           let ring = -Infinity;
           for (const [fx, fy] of [[0.26, 0], [-0.26, 0], [0, 0.26], [0, -0.26]]) {
             const point = centre.clone().addScaledVector(axisX, fx).addScaledVector(axisY, fy),
-              g = markGapAt(m, point, normal, targets, mark, o);
+              g = markGapAt(m, point, normal, targets, mark, null);
             ring = g === null || ring === Infinity ? Infinity : Math.max(ring, g);
           }
           entry.ringGapCm = ring === Infinity ? null : cm(ring);
