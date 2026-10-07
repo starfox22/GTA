@@ -521,6 +521,8 @@
           debrisDirty = false;
         }
         updatePropVisuals(deltaSeconds);
+        // Crumpled bodies bent within their frame budget (damage3d-crumple.js), then the marks on them.
+        crumpleSlices();
         drawVehicleMarks();
         flushDecals(worldDecals);
         flushDecals(vehicleDecals);

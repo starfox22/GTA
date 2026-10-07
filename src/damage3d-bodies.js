@@ -248,11 +248,8 @@
           crumpleAdopt(m, m.trunk, true);
         }
         if (m.trunk) m.trunk.rotation.z = parts.trunk ? -0.85 : 0;
-        // Bend the body with its dents (all of it when they changed, else only parts made just now).
-        if (reshape || m.crumple.fresh) {
-          crumpleApply(c, m, dents, reshape);
-          m.shapeVersion = (m.shapeVersion || 0) + 1;
-        }
+        // Bend the body with its dents (all of it when they changed, else only parts made just now), in time slices.
+        if (reshape || m.crumple.fresh) crumpleStart(c, m, dents, reshape);
         // Glass: one material per pane once any pane is damaged.
         const glass = damage.glass,
           // `m.glass`: a model's own intact glass (police3d.js).

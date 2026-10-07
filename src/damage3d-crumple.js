@@ -6,11 +6,12 @@
        * the body (a `part`: its pristine positions and normals, its rest matrix in body space and that matrix's
        * inverse for moves, its body-space box) and the things that only move (a `point`: wheel groups, the hood's
        * hinge, door and boot hinges, wiper sets, lamp halos and police beacon halos). Parts made later (a sprung door's
-       * opening, the engine bay, a boot lid) join through crumpleAdopt. crumpleApply then moves every vertex by
-       * crumpleField at its rest place in body space, so the shell, the glass in its frame, the panels, the lamps and
-       * the cabin inside all bend together; the hood bends relative to its hinge (the hinge itself moves), wheels move
-       * with their arches (not up or down: the tyres keep the ground). A part no dent reaches keeps the shared
-       * geometry; one that is bent gets its own copy (dents never shrink until a repair, which bends it back).
+       * opening, the engine bay, a boot lid) join through crumpleAdopt. crumpleStart queues the body and crumpleSlices
+       * (each frame, within CRUMPLE_BUDGET_MS) moves every vertex by crumpleField at its rest place in body space, so
+       * the shell, the glass in its frame, the panels, the lamps and the cabin inside all bend together; the hood bends
+       * relative to its hinge (the hinge itself moves), wheels move with their arches (never up or down: the tyres keep
+       * the road). A part no dent reaches keeps the shared geometry; one that is bent gets its own copy (dents never
+       * shrink until a repair, which bends it back).
        * Normals are recomputed where a vertex moved and the authored ones kept where it did not.
        */
       const crumpleMove = { x: 0, y: 0, z: 0 },
@@ -292,24 +293,48 @@
         part.ms = performance.now() - started;
         return true;
       }
-      // Bends the parts (all of them, or only the ones adopted since the last pass) and moves the points.
-      function crumpleApply(c, m, dents, all) {
+      // Bends are time-sliced: a body's parts (shell first, small parts next, the trim and cabin last) are bent within
+      // CRUMPLE_BUDGET_MS a frame over every queued body (at least one part a frame), and its hinges, wheels and halos
+      // move, and m.shapeVersion is bumped, when the last part is done. New dents mid-way start the body over, so a
+      // crash grinding on for frames is bent at the pace the budget allows rather than every frame in full.
+      const CRUMPLE_BUDGET_MS = 3,
+        crumpleQueue = new Set();
+      function crumpleStart(c, m, dents, all) {
+        const record = m.crumple;
+        // The crush limits in design units (crumpleLimits, damage-crumple.js).
+        record.limits = crumpleLimits(c, 1 / (m.modelScale || 1), record.limits || {});
+        record.reach = record.reach || new Float64Array(6);
+        record.reach.set(crumpleReachBox(dents));
+        record.dents = dents;
+        record.seed = c.id;
+        crumpleOrder(m);
+        // A pass for parts adopted since the last one keeps going over the rest only if a full one was queued.
+        record.all = all || (crumpleQueue.has(m) && record.all);
+        record.next = 0;
+        record.ms = 0;
+        crumpleQueue.add(m);
+      }
+      // Bends this body's next parts until `until` (performance.now()); true when it is done.
+      function crumpleStep(m, until, first) {
         const record = m.crumple,
-          seed = c.id,
-          // The crush limits in design units (crumpleLimits, damage-crumple.js).
-          limits = (record.limits = crumpleLimits(c, 1 / (m.modelScale || 1), record.limits || {})),
+          parts = record.parts,
           started = performance.now();
-        let bent = 0;
-        const reach = crumpleReachBox(dents);
-        for (const part of record.parts) {
-          if (!all && part.adopted) continue;
-          if (crumpleBend(part, dents, limits, seed, reach)) bent++;
+        while (record.next < parts.length) {
+          if (!first && performance.now() > until) {
+            record.ms += performance.now() - started;
+            return false;
+          }
+          first = false;
+          const part = parts[record.order ? record.order[record.next] : record.next];
+          record.next++;
+          if (!record.all && part.adopted) continue;
+          crumpleBend(part, record.dents, record.limits, record.seed, record.reach);
           part.adopted = true;
           if (part.own && part.mesh === m.shell) m.ownShell = true;
           if (part.own && part.mesh === m.cabin) m.ownCabin = true;
         }
         for (const point of record.points) {
-          crumpleField(dents, limits, point.at[0], point.at[2], point.at[1], seed, crumpleMove);
+          crumpleField(record.dents, record.limits, point.at[0], point.at[2], point.at[1], record.seed, crumpleMove);
           // Body space (x, up, across) into the parent's space; wheels keep their height (the tyre stays on the road).
           let mx = crumpleMove.x,
             my = point.level ? 0 : crumpleMove.z,
@@ -320,12 +345,45 @@
               y = p[1] * mx + p[4] * my + p[7] * mz,
               z = p[2] * mx + p[5] * my + p[8] * mz;
             mx = x;
-            my = point.level ? 0 : y;
+            my = y;
             mz = z;
           }
-          point.object.position.set(point.rest.x + mx, point.rest.y + my, point.rest.z + mz);
+          point.object.position.set(point.rest.x + mx, point.level ? point.object.position.y : point.rest.y + my, point.rest.z + mz);
         }
         record.fresh = false;
-        record.lastMs = performance.now() - started;
+        record.ms += performance.now() - started;
+        record.lastMs = record.ms;
+        let bent = 0;
+        for (const part of parts) if (part.bent) bent++;
         record.bent = bent;
+        m.shapeVersion = (m.shapeVersion || 0) + 1;
+        return true;
+      }
+      // Once a frame (updateDamageVisuals): the queued bodies' bends within the budget.
+      function crumpleSlices() {
+        if (!crumpleQueue.size) return;
+        const until = performance.now() + CRUMPLE_BUDGET_MS;
+        let first = true;
+        for (const m of crumpleQueue) {
+          // A model taken out of the scene meanwhile is dropped.
+          if (!m.group.parent || !m.crumple) {
+            crumpleQueue.delete(m);
+            continue;
+          }
+          const done = crumpleStep(m, until, first);
+          first = false;
+          if (!done) return;
+          crumpleQueue.delete(m);
+        }
+      }
+      // The order parts are bent in: the shell first, then by size (the trim and its cabin last).
+      function crumpleOrder(m) {
+        const record = m.crumple,
+          order = record.parts.map((part, i) => i);
+        order.sort((a, b) => {
+          const p = record.parts[a],
+            q = record.parts[b];
+          return (p.mesh === m.shell ? -1e9 : p.base.length) - (q.mesh === m.shell ? -1e9 : q.base.length);
+        });
+        record.order = order;
       }

@@ -139,6 +139,7 @@
         nearest.z += (dent.z - nearest.z) * share;
         nearest.nx = nx / length;
         nearest.ny = ny / length;
+        nearest.nz = (nearest.nz || 0) + ((dent.nz || 0) - (nearest.nz || 0)) * share;
         nearest.depth = Math.min(cap, nearest.depth + dent.depth * 0.85);
         nearest.r = Math.min(spec.l * 0.5, Math.max(nearest.r, dent.r) + dent.depth * 0.3);
         nearest.force = clamp(nearest.depth / 1.4, 0.25, 3.5);
@@ -191,6 +192,7 @@
       let depth,
         nx,
         ny,
+        nz = 0,
         px = lx,
         py = ly,
         z = 6;
@@ -203,6 +205,18 @@
         depth = clamp((detail.closing - 36) * 0.04 * heavier, 0, 0.3 * spec.l);
         nx = inward.x;
         ny = inward.y;
+        // A landing on its roof or a side (falls-vehicles.js cliffImpact): that face takes the crush.
+        if (detail.face === 'roof') {
+          const band = vehicleGlassBand(vehicle);
+          px = py = nx = ny = 0;
+          z = band ? band.roof : 14;
+          nz = -1;
+        } else if (detail.face === 'left' || detail.face === 'right') {
+          const side = detail.face === 'left' ? -1 : 1;
+          px = nx = 0;
+          py = (side * spec.w) / 2;
+          ny = -side;
+        }
       } else if (kind === 'blast') {
         // The face toward the blast is dished in; the harder the closer.
         const from = vehicleLocalPoint(vehicle, detail.x, detail.y),
@@ -221,7 +235,7 @@
       }
       const zone = damageZone(spec, px, py),
         span = zone === 'front' || zone === 'rear' ? 0.25 * spec.l : 0.5 * spec.w;
-      if (depth > 0.05) addDent(vehicle, { x: px, y: py, z, nx, ny, depth, r: clamp(8 + depth * 1.7, 8, spec.l * 0.45) });
+      if (depth > 0.05) addDent(vehicle, { x: px, y: py, z, nx, ny, nz, depth, r: clamp(8 + depth * 1.7, 8, spec.l * 0.45) });
       damage[zone] = clamp(damage[zone] + depth / span + share * 0.5, 0, 1);
       if (type === 'car' || type === 'truck') breakParts(vehicle, damage, spec, zone, px, py, depth);
     }

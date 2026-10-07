@@ -223,9 +223,12 @@
           view = chaseViewActive ? 1 : 0;
         let n = 0,
           budget = 8;
-        for (const [c, m] of carModels) {
-          const marks = c.damage?.marks;
-          if (!marks || !marks.length || !m.group.visible) continue;
+        for (let v = 0; v < vehicles.length; v++) {
+          const c = vehicles[v],
+            marks = c.damage?.marks;
+          if (!marks || !marks.length) continue;
+          const m = carModels.get(c);
+          if (!m || !m.group.visible) continue;
           // Body to world as it stands this frame (the vehicle loop has posed the body).
           m.group.updateMatrix();
           m.body.updateMatrix();
@@ -401,6 +404,12 @@
           wheelMoveM: Math.round((wheelMove * scale * 1000) / UNITS_PER_METRE) / 1000,
           shell: shellReport,
           drawnMarks: marks.filter((e) => e.drawn).length,
+          // Still to come: a bend queued (crumpleSlices) or marks not yet looked for on the model (a few a frame).
+          bending: crumpleQueue.has(m),
+          waiting: (c.damage?.marks || []).filter((mark) => {
+            const anchor = markAnchors.get(mark);
+            return !anchor || anchor.model !== m || anchor.version !== m.shapeVersion || anchor.view !== view;
+          }).length,
           marks,
         };
       }

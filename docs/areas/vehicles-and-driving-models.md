@@ -7,7 +7,7 @@ vehicles-and-driving.md.
 ## Contracts and draw calls
 
 - `makeVehicle` dispatches by type to the builders above. All civilian/police/helicopter
-  models follow the **damage contract** damage3d.js reads: a lofted shell and a five-pane
+  models follow the **damage contract** damage3d.js reads (crumple and marks: vehicles-and-driving-damage.md): a lofted shell and a five-pane
   glasshouse (`PANE_ORDER`) shared until dented; hooks `liveryMap` / `liveryColor` /
   `finish`, `bumperMaterial`, `panelGeometry` / `trunkGeometry`, `glass`; lamps keep their
   keys and `lit` materials; `nightLights` are [head, tail] per side.
@@ -73,3 +73,4 @@ vehicles-and-driving.md.
   written by `animateCivilianCar` when it changes; impostors keep none.
 - Report: `carModels()` gives each civilian model's `cabin` (hip, recline, rear bench, `headroom` over a seated
   crown, `behind` (headrest to rear glass, metres), `cabinTriangles`, `seated` people); tools/tests/car-cabins.mjs.
+

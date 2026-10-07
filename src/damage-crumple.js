@@ -11,7 +11,8 @@
      *  - inward travel stops softly at the crush limits (crumpleLimits): a nose folds back at most to the foot of the
      *    screen (the firewall, and no more than 30 % of the length), a tail to just behind the rear glass's foot (no
      *    further than 40 % of the length from the middle, nor 30 % in), a side to 20 % of the width from the centre
-     *    line (about 0.4 m of intrusion on a saloon): nothing reaches the centre plane or the cabin's middle, and a
+     *    line (about 0.4 m of intrusion on a saloon), a roof landed on (nz -1) to 45 % of the glasshouse's height over
+     *    the belt line: nothing reaches the centre plane or the cabin's middle, and a
      *    point already past a limit is not pushed further in. The limits are per axis, so overlapping dents cannot
      *    add up past them.
      * Nothing in it is random or per vertex: every part of a body (shell, glass, paint panels, trim and cabin, lamps,
@@ -32,6 +33,8 @@
       out.front = front * k;
       out.rear = rear * k;
       out.side = CRUMPLE_SIDE_PLANE * spec.w * k;
+      // A roof landed on (a dent with nz -1) comes down to 45 % of the way from the belt line to the roof, no lower.
+      out.roof = (band ? band.belt + 0.45 * (band.roof - band.belt) : 10) * k;
       return out;
     }
     // Inward travel `t` against the room left before the crush limit: unchanged for the first 60 % of the room, then
@@ -48,6 +51,7 @@
     function crumpleField(dents, limits, x, y, z, seed, out) {
       let ix = 0,
         iy = 0,
+        iz = 0,
         bx = 0,
         by = 0,
         dz = 0;
@@ -69,6 +73,8 @@
           bulge = t * 0.12 * Math.tanh(across * 0.25);
         ix += d.nx * t;
         iy += d.ny * t;
+        // A roof pushed down (a landing on it) dishes unevenly along and across.
+        if (d.nz) iz += d.nz * t * (1 + 0.18 * Math.sin(ex * 0.8 + phase) * Math.cos(ey * 0.9));
         bx -= d.ny * bulge;
         by += d.nx * bulge;
         dz += t * (0.1 * Math.sin(along * 0.9 + phase * 1.3 + k) - 0.05);
@@ -77,16 +83,17 @@
       else if (ix > 0) ix = crumpleSoftStop(ix, limits.rear - x);
       if (iy < 0) iy = -crumpleSoftStop(-iy, y - limits.side);
       else if (iy > 0) iy = crumpleSoftStop(iy, -limits.side - y);
+      if (iz < 0) iz = -crumpleSoftStop(-iz, z - limits.roof);
       out.x = ix + bx;
       out.y = iy + by;
-      out.z = dz;
+      out.z = iz + dz;
       return out;
     }
     /*
      * crumpleAudit(vehicle): the field on a box hull of the vehicle's size (sides, ends and rows across and along,
      * sampled every 1/20 of the length or width at three heights up to the belt line): the deepest inward travel at the
-     * front, the rear and the sides against the room the limits leave (metres), points that crossed the centre plane
-     * (`crossed`) or moved into the occupant cell (`intoCabin`: between the limit planes, the middle 40 % of the width,
+     * front, the rear, the sides and the roof against the room the limits leave (metres), points that crossed the centre plane
+     * (`crossed`; a roof below its limit counts too) or moved into the occupant cell (`intoCabin`: between the limit planes, the middle 40 % of the width,
      * from the floor to the belt), sample rows whose order along the push folded over (`folds`), the steepest change of
      * travel between neighbouring samples (`steepest`, per unit of spacing) and the largest move (`maxMoveM`); `marks`
      * and `holesOverBonnet` (holes off the glasshouse drawn above the belt line: none).
@@ -151,6 +158,18 @@
         for (const f of [-0.35, 0, 0.35]) row(f * l, -w / 2, f * l, w / 2, z, 'y');
         for (const f of [-0.3, 0, 0.3]) row(-l / 2, (f * w) / 2, l / 2, (f * w) / 2, z, 'x');
       }
+      // The roof: rows along the glasshouse at roof height (how far a roof landed on came down).
+      let roofIn = 0;
+      if (band)
+        for (const f of [-0.5, 0, 0.5]) {
+          const y = (f * w) / 2;
+          for (let i = 0; i < n; i++) {
+            const x = band.back + ((band.front - band.back) * i) / (n - 1);
+            crumpleField(dents, limits, x, y, band.roof, vehicle.id, out);
+            roofIn = Math.max(roofIn, -out.z);
+            if (band.roof + out.z < limits.roof - 0.05) crossed++;
+          }
+        }
       // Holes off the glasshouse drawn above the belt line (a chest-high line over a bonnet: bulletHitVehicle keeps them under it).
       let holesOverBonnet = 0;
       for (const mark of vehicle.damage?.marks || [])
@@ -167,6 +186,8 @@
         frontRoomM: r3((l / 2 - limits.front) / M),
         rearRoomM: r3((limits.rear + l / 2) / M),
         sideRoomM: r3((w / 2 - limits.side) / M),
+        roofInM: r3(roofIn / M),
+        roofRoomM: band ? r3((band.roof - limits.roof) / M) : 0,
         maxMoveM: r3(maxMove / M),
         steepest: r3(steepest),
         crossed,
@@ -180,18 +201,19 @@
       const byId = (id) => (id === undefined ? player.car || null : vehicles.find((c) => c.id === id) || null);
       return {
         // A crash on one side of vehicle `id` at `kmh` closing speed against something immovable, `offset` (m) along
-        // that side: the dent, zones and parts as a real crash records them (no hit points taken). Returns damageReport.
+        // that side, or 'roof' (a landing on it, as falls-vehicles.js records one): the dent, zones and parts as a real
+        // crash records them (no hit points taken). Returns damageReport.
         dentVehicle(id, side = 'front', kmh = 50, offset = 0) {
           const c = byId(id);
           if (!c) return null;
           const spec = vehicleSpec(c),
             u = offset * UNITS_PER_METRE,
-            face = { front: [spec.l / 2, u, -1, 0], rear: [-spec.l / 2, u, 1, 0], left: [u, -spec.w / 2, 0, 1], right: [u, spec.w / 2, 0, -1] }[side];
-          if (!face) throw Error('side is front, rear, left or right');
+            face = { front: [spec.l / 2, u, -1, 0], rear: [-spec.l / 2, u, 1, 0], left: [u, -spec.w / 2, 0, 1], right: [u, spec.w / 2, 0, -1], roof: [0, 0, 0, 0] }[side];
+          if (!face) throw Error('side is front, rear, left, right or roof');
           const at = vehicleWorldPoint(c, face[0], face[1]),
             cos = Math.cos(c.a),
             sin = Math.sin(c.a);
-          recordVehicleDamage(c, 0, at.x, at.y, { kind: 'crash', nx: face[2] * cos - face[3] * sin, ny: face[2] * sin + face[3] * cos, closing: kmh * KMH, otherMass: 0 });
+          recordVehicleDamage(c, 0, at.x, at.y, { kind: 'crash', nx: face[2] * cos - face[3] * sin, ny: face[2] * sin + face[3] * cos, closing: kmh * KMH, otherMass: 0, face: side === 'roof' ? 'roof' : undefined });
           c.damageVersion = (c.damageVersion || 0) + 1;
           return damageReport(c);
         },

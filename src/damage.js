@@ -9,7 +9,8 @@
      * physics, handling and visuals always agree, and a repaired or newly spawned
      * vehicle starts clean (freshDamage):
      *   damage.front/rear/left/right  0..1 crumple of each zone (the original contract)
-     *   vehicle.dents[]   {x, y, z, nx, ny, depth, r}: crumple centres in vehicle space. The
+     *   vehicle.dents[]   {x, y, z, nx, ny, nz, depth, r}: crumple centres in vehicle space (nz:
+     *                     -1 for a roof landed on, else 0). The
      *                     renderer bends every body part by crumpleField (damage-crumple.js):
      *                     along (nx, ny) by up to `depth`, smooth falloff over radius `r`,
      *                     inward travel capped (damage3d-crumple.js applies it).

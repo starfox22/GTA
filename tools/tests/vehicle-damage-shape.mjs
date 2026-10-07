@@ -1,5 +1,5 @@
 // Vehicle damage shape (damage-crumple.js, damage3d-crumple.js, damage3d-marks.js): shots and crashes on every side of
-// several bodies keep the crumple inside its limits (crumpleAudit: nothing past the centre plane or into the cabin, no
+// several bodies (and a landing on the roof) keep the crumple inside its limits (crumpleAudit: nothing past the centre plane or into the cabin, no
 // folds; holes off the glasshouse under the belt line); on a rendered page every part a dent reaches is bent with the
 // shell (none missed, no flipped faces) and every bullet hole and star sits on the body, before and after the crumple,
 // in the street and the chase view. On the no-render page (the suite's) the drawn checks are skipped.
@@ -31,12 +31,18 @@ export default async function (t) {
     await t.call('teleport', v.x - 50, v.y + 30);
     // A step so the camera follows, then a few drawn frames (marks are found a few a frame).
     await t.wait(0.2);
-    await t.realWait(rendered ? 2.5 : 0.1);
+    await t.realWait(rendered ? 1 : 0.1);
   };
   const drawn = async (car, label, view) => {
     if (!rendered) return;
-    const shape = await t.call('vehicleDamageShape', car.id);
-    t.assert(shape, `${car.type}: a model is built (${label})`);
+    // Software GL draws a few frames a second: wait for the model, its bend and its marks.
+    let shape = null;
+    for (let k = 0; k < 40; k++) {
+      shape = await t.call('vehicleDamageShape', car.id);
+      if (shape && !shape.bending && !shape.waiting) break;
+      await t.realWait(1);
+    }
+    t.assert(shape && !shape.bending && !shape.waiting, `${car.type}: the model is built, bent and marked (${label}) ${JSON.stringify(shape)?.slice(0, 200)}`);
     t.finite(shape, `${car.type} shape`);
     t.assert(shape.missed === 0, `${car.type} ${label}: every part a dent reaches is bent (${shape.missed} missed)`);
     if (shape.shell) {
@@ -75,12 +81,15 @@ export default async function (t) {
     await t.call('dentVehicle', car.id, 'left', 70, -0.6);
     await t.call('dentVehicle', car.id, 'rear', 60, 0);
     await t.call('dentVehicle', car.id, 'right', 110, 0.9);
+    // A rollover's landing on the roof.
+    await t.call('dentVehicle', car.id, 'roof', 70);
     const audit = await t.call('crumpleAudit', car.id);
     t.finite(audit, `${car.type} audit`);
     t.assert(audit.crossed === 0 && audit.intoCabin === 0, `${car.type}: the crumple stays out of the centre plane and the cabin ${JSON.stringify(audit)}`);
     t.assert(audit.folds <= 2, `${car.type}: the metal folds without turning over (${audit.folds} folds)`);
     t.assert(audit.frontInM <= audit.frontRoomM && audit.rearInM <= audit.rearRoomM && audit.sideInM <= audit.sideRoomM, `${car.type}: inward travel within the limits ${JSON.stringify(audit)}`);
     t.assert(audit.frontInM > 0.2 && audit.rearInM > 0.1 && audit.sideInM > 0.1, `${car.type}: the crashes show ${JSON.stringify(audit)}`);
+    t.assert(audit.roofInM > 0.03 && audit.roofInM <= audit.roofRoomM, `${car.type}: the roof comes down within its limit ${JSON.stringify(audit)}`);
   }
   for (const view of ['chase', 'street']) {
     await t.call('viewMode', view);
