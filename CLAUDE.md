@@ -103,6 +103,14 @@ packs with plain `<script src>` so the zip still plays from file://.
   `vestPlate`, by calibre (weapon `cal`, `bulletCalibre`). A new armoured NPC sets `vest`/`vestPlate`; a new gun sets
   `cal`. A round never moves a person (only blasts, vehicles, knives, punches); `bleed` sprays a round's exit blood
   away from the shooter. `shotsToKill()`; tools/tests/bullet-hits.mjs. Pool sizes live in `bodyPoolPlan` (blood.js).
+- Gore (gore.js; police-and-combat-gore.md): `goreHit()` is the only rule for a hit's class, range, blood scale and what
+  comes off; strikePerson calls it first, and `detail` (`{range, power, heavy, pellets}`) passes what the shooter's
+  distance cannot. `p.goreLost` (GORE_* bits) and `p.goreWounds` are the only gore state (bump `p.goreVersion` on any
+  change; renderers only read them); a new heavy gun sets `goreCal: 'heavy'` on its bullets. Blood and gore randomness
+  is `goreRandom`; severed pieces, stumps, tracked people and gore events are capped and listed in `soakReport` (a new
+  list holding people is retired by `updateSeveredParts` / `updateGore`). Blood decals draw only through blood3d.js (one
+  instanced draw); the spray reaches walls and cars only through `bloodSprayObstacle`, flying drops land through
+  `landBloodDrop`. Every rigPart carries `crowdWound`; on the player's body a lost part folds by `pbSkin.w`.
 - `shooterInView()` (combat-rules.js) is the only rule for whether an NPC may fire at the
   player (on screen, from the camera footprint `screenViewHalf`): every new shooter checks it.
 - No pickups on the street at all: health is bought indoors (hospitals, diners, bars, clubs,
