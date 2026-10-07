@@ -29,7 +29,11 @@ the models' damage contract is vehicles-and-driving-models.md.
   through it, stars only on their pane, and a hole only where the panel holds its whole ring (`markCovered`: else the ray
   goes on to the panel behind a mirror or a trim edge); a mark with no surface is not drawn. The decal is posed on
   the part's own smooth normal there (re-made where a crumple moved it), facing out the way it faced the round. A hole in the side's metal where a door
-  later springs moves onto the door's skin (`markOntoDoor`, by the door's grid `DOOR_GRID`). Chase view sizes are real (a hole ~12 cm
+  later springs moves onto the door's skin (`markOntoDoor`, by the door's grid `DOOR_GRID`). Close up (the chase view)
+  a hole re-posed after a crumple checks its ring again: half size if only that fits, hidden if the metal under it is
+  folded away. Casts and ring checks share a budget of 12 marks a frame (a mark waiting keeps its last pose).
+- A part that holds marks must keep its vertex order when bent (bending clones the geometry, never re-indexes it):
+  anchors are vertex indices and weights. Chase view sizes are real (a hole ~12 cm
   decal), the street view keeps the large readable ones. `bulletHitVehicle` draws holes off the glasshouse under the
   belt line (`z` for the hit rules is unchanged).
 - Console: `dentVehicle(id, side, kmh, offset)`, `shootVehicle(id, side, rounds)`, `crumpleAudit(id)` (field limits

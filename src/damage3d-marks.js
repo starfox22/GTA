@@ -101,7 +101,7 @@
         }
         return null;
       }
-      // How many of four points `ring` out from `point` in the plane across `normal` (world space) have the body under
+      // How many of eight points `ring` out from `point` in the plane across `normal` (world space) have the body under
       // them within `slack` of that plane: the part `own` first, else any other but the glass.
       const coverNormal = new Three.Vector3(),
         coverDown = new Three.Vector3(),
@@ -115,8 +115,8 @@
         coverV.crossVectors(normal, coverU);
         coverDown.copy(normal).negate();
         let held = 0;
-        for (let k = 0; k < 4; k++) {
-          const a = (k * Math.PI) / 2;
+        for (let k = 0; k < 8; k++) {
+          const a = (k * Math.PI) / 4;
           markCorner.copy(point).addScaledVector(coverU, Math.cos(a) * ring).addScaledVector(coverV, Math.sin(a) * ring).addScaledVector(normal, 1);
           coverRay.set(markCorner, coverDown);
           coverRay.far = 1 + slack;
@@ -132,11 +132,11 @@
         }
         return held;
       }
-      // Whether the surface round a hit holds a chase-view hole's bare-metal ring (all four points within 4 cm of the
+      // Whether the surface round a hit holds a chase-view hole's bare-metal ring (all eight points within 4 cm of the
       // hit's plane): a round that clips a mirror's edge or a trim strip goes on to the panel behind.
       function markCovered(m, hit, targets, mark) {
         coverNormal.copy(hit.face.normal).transformDirection(hit.object.matrixWorld);
-        return markRingHolds(m, hit.point, coverNormal, MARK_SIZES.hole[2] * (mark.size || 1.4) * 0.26, 0.32, hit.object, targets) === 4;
+        return markRingHolds(m, hit.point, coverNormal, MARK_SIZES.hole[2] * (mark.size || 1.4) * 0.26, 0.32, hit.object, targets) === 8;
       }
       // A star the round's line misses the model's pane with (the glass band's numbers are the game's): aim at the
       // pane itself, as near as it allows to where the round went in.
@@ -320,8 +320,8 @@
           const centre = markCorner.clone(),
             ring = 0.26 * sx * scale,
             targets = markTargets(m);
-          if (markRingHolds(m, centre, coverNormal, ring, 0.32, object, targets) < 4)
-            shrink = markRingHolds(m, centre, coverNormal, ring * 0.5, 0.32, object, targets) === 4 ? 0.5 : 0;
+          if (markRingHolds(m, centre, coverNormal, ring, 0.32, object, targets) < 8)
+            shrink = markRingHolds(m, centre, coverNormal, ring * 0.5, 0.32, object, targets) === 8 ? 0.5 : 0;
           anchor.shrink = shrink;
         } else if (view && mark.kind === 'hole') shrink = anchor.shrink ?? 1;
         if (!shrink) {
@@ -465,7 +465,7 @@
           // The ring of bare metal round the hole (a quarter of the decal out from its middle), or a star's inner cracks.
           // + floats over the surface, - is sunk under another surface in front (hidden, as a hole under a fold is).
           let ring = -Infinity;
-          for (const [fx, fy] of [[0.26, 0], [-0.26, 0], [0, 0.26], [0, -0.26]]) {
+          for (const [fx, fy] of [[0.26, 0], [-0.26, 0], [0, 0.26], [0, -0.26], [0.184, 0.184], [-0.184, 0.184], [0.184, -0.184], [-0.184, -0.184]]) {
             const point = centre.clone().addScaledVector(axisX, fx).addScaledVector(axisY, fy),
               g = markGapAt(m, point, normal, targets, mark, null);
             ring = g === null || ring === Infinity ? Infinity : Math.max(ring, g);

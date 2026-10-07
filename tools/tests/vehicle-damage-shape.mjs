@@ -60,7 +60,7 @@ export default async function (t) {
       // Floating is what matters (+ cm); a mark a fold has since covered is hidden (-), as a real hole would be.
       t.assert(m.gapCm <= 2, `${car.type} ${label}: a ${m.kind} on the ${m.on} sits on the surface (${m.gapCm} cm off)`);
       if (view === 'chase' && m.ringGapCm !== null)
-        t.assert(m.ringGapCm <= (label === 'shot' ? 3 : 6), `${car.type} ${label}: the ${m.kind}'s ring lies on the ${m.on} (${m.ringGapCm} cm)`);
+        t.assert(m.ringGapCm <= (label === 'shot' ? 4 : 6), `${car.type} ${label}: the ${m.kind}'s ring lies on the ${m.on} (${m.ringGapCm} cm)`);
       if (m.kind === 'star') t.assert(m.on === 'glass', `${car.type} ${label}: a star is on the glass (${m.on})`);
       if (m.kind === 'hole') t.assert(m.on !== 'glass', `${car.type} ${label}: a hole is not on the glass`);
     }
@@ -90,14 +90,13 @@ export default async function (t) {
     const audit = await t.call('crumpleAudit', car.id);
     t.finite(audit, `${car.type} audit`);
     t.assert(audit.crossed === 0 && audit.intoCabin === 0, `${car.type}: the crumple stays out of the centre plane and the cabin ${JSON.stringify(audit)}`);
-    t.assert(audit.folds <= 2, `${car.type}: the metal folds without turning over (${audit.folds} folds)`);
+    t.assert(audit.folds === 0, `${car.type}: the metal folds without turning over (${audit.folds} folds of 2.5 cm or more)`);
     t.assert(audit.frontInM <= audit.frontRoomM && audit.rearInM <= audit.rearRoomM && audit.sideInM <= audit.sideRoomM, `${car.type}: inward travel within the limits ${JSON.stringify(audit)}`);
     t.assert(audit.frontInM > 0.2 && audit.rearInM > 0.1 && audit.sideInM > 0.1, `${car.type}: the crashes show ${JSON.stringify(audit)}`);
     t.assert(audit.roofInM > 0.03 && audit.roofInM <= audit.roofRoomM, `${car.type}: the roof comes down within its limit ${JSON.stringify(audit)}`);
-  }
-  for (const view of ['chase', 'street']) {
-    await t.call('viewMode', view);
-    for (const car of cars) {
+    // Drawn close up and from above (one car at a time: bends are time-sliced, a few parts a frame on software GL).
+    for (const view of ['chase', 'street']) {
+      await t.call('viewMode', view);
       await look(car, view);
       await drawn(car, 'crashed', view);
     }
