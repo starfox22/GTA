@@ -546,6 +546,10 @@
         // standing water that ripples in the rain and, with the wet reflections
         // pass (postfx3d.js), mirrors the street. LOW only darkens.
         float wetFilm = 0.0, puddle = 0.0, wetReflect = 0.0;
+        // How flat the view grazes the ground (0 from the street camera's height, 1 along the street at eye
+        // level): what is left of the aggregate's bump and grain under the film glints pixel by pixel there
+        // (a snow of specks down a wet street), so the film levels more of them the flatter the view.
+        float wetGraze = 1.0 - smoothstep( 0.08, 0.35, dot( isOrthographic ? vec3( 0.0, 0.0, 1.0 ) : normalize( vViewPosition ), normalize( ( viewMatrix * vec4( 0.0, 1.0, 0.0, 0.0 ) ).xyz ) ) );
         if ( cityWet > 0.002 ) {
           float low = cityWetLow( gp ), gutter = gGutter * roadMask;
           wetFilm = cityWetFilm( gp, low, gutter * 0.25, cityWet );
@@ -562,7 +566,7 @@
       const GROUND_ROUGHNESS = `
         roughnessFactor = gRough;
         // The damp film smooths the surface into a sheen (only a little on LOW).
-        roughnessFactor = mix( roughnessFactor, min( roughnessFactor, cityWetDetail > 0.5 ? 0.28 + 0.16 * grain : 0.6 ), wetFilm * ( 1.0 - 0.7 * grassMask ) );
+        roughnessFactor = mix( roughnessFactor, min( roughnessFactor, cityWetDetail > 0.5 ? 0.28 + 0.16 * mix( grain, 0.5, wetGraze ) : 0.6 ), wetFilm * ( 1.0 - 0.7 * grassMask ) );
         // Not a perfect mirror: at 0.05 the sun's reflection in a puddle was a blinding
         // blob that bloomed across the street from the air.
         roughnessFactor = mix( roughnessFactor, 0.09, puddle );`;
@@ -572,7 +576,7 @@
           // joints, cracks, the kerb's face, paint, setts. Water levels it: a
           // puddle entirely, the damp film mostly (the glossy film on the full
           // aggregate bump glinted pixel by pixel, a snow of specks in the rain).
-          float bumpH = gHeight * ( 1.0 - puddle ) * ( 1.0 - 0.65 * wetFilm ) * ( cityGroundDetail > 0.5 ? 1.0 : 0.0 );
+          float bumpH = gHeight * ( 1.0 - puddle ) * ( 1.0 - mix( 0.65, 0.97, wetGraze ) * wetFilm ) * ( cityGroundDetail > 0.5 ? 1.0 : 0.0 );
           vec2 dHdxy = vec2( dFdx( bumpH ), dFdy( bumpH ) ) * 0.9;
           // Screen derivatives are shared by each 2 x 2 block of pixels, so a
           // height step (a paint edge, a joint, the kerb's arris) landing inside

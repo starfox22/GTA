@@ -393,7 +393,9 @@
             // Glossy lobe: jitter the ray in its vertical plane (streaks along the
             // view) and a little sideways, more on damp tarmac than in a puddle.
             float rough = mix( 0.2, 0.012, pool ) * uStreet.y;
-            float n1 = fract( 52.9829189 * fract( dot( gl_FragCoord.xy, vec2( 0.06711056, 0.00583715 ) ) ) );
+            // (Interleaved gradient noise: fast across the frame for the street camera; at street level
+            // fast down it, along the blur that follows, so the jitter averages out instead of speckling.)
+            float n1 = fract( 52.9829189 * fract( dot( gl_FragCoord.xy, uStreet.x > 0.0 ? vec2( 0.00583715, 0.06711056 ) : vec2( 0.06711056, 0.00583715 ) ) ) );
             float n2 = fract( n1 * 7.13 + 0.37 );
             vec3 side = normalize( cross( R, N ) ), lift = normalize( cross( side, R ) );
             R = normalize( R + lift * ( n1 - 0.5 ) * rough * 2.4 + side * ( n2 - 0.5 ) * rough * 0.3 );

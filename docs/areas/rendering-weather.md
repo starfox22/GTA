@@ -63,7 +63,11 @@ air keep theirs exactly (each switch is a uniform, not a new program).
   (2,640 units on HIGH, was ~600), the first step a share of the point's distance, Schlick's Fresnel
   as a gain at grazing angles, a ray that meets nothing mirrors the sky's own colour that way
   (`cityHazeColor` at the ground's sky share, `postLook.reflectShare`, rising to all of it at grazing),
-  40 % of the glossy jitter and a longer blur. The street view passes (0, 1, 0, 0): unchanged output.
+  40 % of the glossy jitter, its noise running down the frame (along the blur, which then averages
+  it) and a longer blur. The street view passes (0, 1, 0, 0): unchanged output.
+- The wet film at grazing views (`wetGraze`, ground-shader3d-albedo.js): it levels up to 97 % of the
+  aggregate's bump and evens the grain in its roughness, as the view flattens (an eye-level view
+  along a wet street sparkled pixel by pixel, a snow of specks); 0 from the street camera.
 - The ground's lamp streaks (surfaces3d.js `GROUND_WET_LIGHT`; `citySheenDir` 0 is the street-level
   flag) run away from the camera through each point and sample the light map 1.2-4.7 times the
   point's distance beyond it; without the reflections pass the film's flat sky rises with Fresnel.

@@ -670,7 +670,7 @@
           const street3d = chaseViewActive,
             focusX = street3d ? chaseCam.x + Math.cos(chaseCam.viewYaw) * DRIP_STREET_AHEAD : viewCenter.x,
             focusY = street3d ? chaseCam.y + Math.sin(chaseCam.viewYaw) * DRIP_STREET_AHEAD : viewCenter.y;
-          if (street3d !== dripStreet || (dripCheck <= 0 && Math.hypot(focusX - dripCenterX, focusY - dripCenterY) > (street3d ? DRIP_STREET_MOVE : viewReach * 0.35))) {
+          if (street3d !== dripStreet || (dripCheck <= 0 && hypot2(focusX - dripCenterX, focusY - dripCenterY) > (street3d ? DRIP_STREET_MOVE : viewReach * 0.35))) {
             dripCheck = 0.5;
             dripStreet = street3d;
             dripCenterX = focusX;
