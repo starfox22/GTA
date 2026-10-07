@@ -45,7 +45,7 @@
           weapons: [
             {
               id: 'cannon', name: '25 MM CANNON', icon: 'shell', interval: 0.3, belt: 210, stowed: 420, reload: 14,
-              speed: 1000, life: 1, dmg: 40, heavy: true, muzzle: 26, side: 0, height: 19, spread: 0.006,
+              speed: 1000, life: 1, dmg: 40, heavy: true, gore: 'heavy', muzzle: 26, side: 0, height: 19, spread: 0.006,
               recoil: 0.16, kick: 0.9, shake: 1.2, heatEvery: 2, tracerEvery: 1, sound: 'rifle', volume: 0.42, pitch: [0.47, 0.52], boom: true,
             },
             {
@@ -63,7 +63,7 @@
           weapons: [
             {
               id: 'hmg', name: 'M2 .50 CAL', icon: 'mg', interval: 0.109, belt: 100, stowed: 500, reload: 6,
-              speed: 950, life: 0.8, dmg: 34, heavy: false, muzzle: 10.5, side: 0, height: 17.5, spread: 0.012,
+              speed: 950, life: 0.8, dmg: 34, heavy: false, gore: 'heavy', muzzle: 10.5, side: 0, height: 17.5, spread: 0.012,
               recoil: 0.07, kick: 0.35, shake: 0.7, heatEvery: 3, tracerEvery: 5, sound: 'rifle', volume: 0.34, pitch: [0.64, 0.7], boom: false,
             },
           ],
@@ -255,7 +255,7 @@
         flashBase = origin.altitude;
         flashHeight = 9;
       }
-      bullets.push({ ...origin, ...velocity, life, dmg: w.dmg, enemy: false, owner: player, tracer, heavyRound: w.heavy || undefined });
+      bullets.push({ ...origin, ...velocity, life, dmg: w.dmg, enemy: false, owner: player, tracer, heavyRound: w.heavy || undefined, goreCal: w.gore });
       playSample(w.sound, w.volume, sfxRandom(w.pitch[0], w.pitch[1]), c);
       if (w.boom) playSample('explosion', 0.07, sfxRandom(2.3, 2.6), c);
       if (city3D) city3D.fire(origin.x, origin.y, a, false, flashBase, flashHeight);

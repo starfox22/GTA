@@ -5,7 +5,9 @@
        * translation of bone i from bind to now, playerBodyFlush), so elbows and knees keep their volume and
        * twisted shoulders do not pinch. The mesh is in rig units; pbScale is the rig's height scale. The hands
        * blend to their gripping shape by pbGripAmount (left, right). The paint reads the bind position (metres),
-       * its normal, the zones and the occlusion.
+       * its normal, the zones and the occlusion. GORE: a part he lost (pbLost, a bit per bone: the vertex's part
+       * pbSkin.w) folds onto its cut (pbCut[bone], bind space), where the crowd's stump stands (crowd3d-gore.js);
+       * pbWound (bind metres, w = 2 + the stain's radius) soaks the tee, the jeans or the skin round a wound.
        */
       const PB_VERTEX_PARS = `
         attribute vec4 pbSkin;
@@ -19,6 +21,8 @@
         uniform float pbScale;
         uniform vec2 pbGripAmount;
         uniform vec2 pbTrigger;
+        uniform float pbLost;
+        uniform vec3 pbCut[ ${PB_BONES} ];
         varying vec3 vPbBind;
         varying vec3 vPbBindN;
         varying vec4 vPbZone;
@@ -46,6 +50,11 @@
           float trig = hand * ( pbSkin.w > 7.5 ? pbTrigger.y : pbTrigger.x );
           pbPos = mix( position, mix( pbGrip.xyz, pbTrig, trig ), grip );
           pbNrm = normalize( mix( normal, mix( pbGripN, pbTrigN, trig ), grip ) );
+          // A part he lost folds onto its cut (gore.js; only on death).
+          if ( pbLost > 0.5 ) {
+            float pbPart = floor( pbSkin.w + 0.5 );
+            if ( mod( floor( pbLost / exp2( pbPart ) ), 2.0 ) > 0.5 ) pbPos = pbCut[ int( pbPart ) ];
+          }
           vPbBind = pbPos / ${PB_UNITS.toFixed(6)};
           vPbBindN = pbNrm;
           vPbZone = pbZone;
@@ -74,6 +83,7 @@
         varying vec3 vPbHairT;
         uniform float pbScale;
         uniform vec3 cityPlayerRim;
+        uniform vec4 pbWound[ 4 ];
         float pbSkinWrap = 0.0;
         float pbSheen = 0.0;
         float pbHairSpec = 0.0;
@@ -362,6 +372,22 @@
           pbSheen = sock;
           pbSpec = mix( 1.0, 0.3, sock );
           pbSpecF90 = mix( 1.0, 0.3, sock );
+        }
+        // Wounds (gore.js): the tee, the jeans or the skin soaked round each, further below than above, wet.
+        for ( int i = 0; i < 4; i++ ) {
+          vec4 w = pbWound[ i ];
+          if ( w.w < 1.5 ) continue;
+          float r = w.w - 2.0;
+          vec3 d = vPbBind - w.xyz;
+          d.y *= d.y < 0.0 ? 0.55 : 1.0;
+          float n = pbNoise( vPbBind * 38.0 ) * 0.6 + pbNoise( vPbBind * 95.0 ) * 0.4;
+          float soak = 1.0 - smoothstep( r * 0.3, r * ( 0.85 + 0.5 * n ), length( d ) + n * r * 0.35 );
+          float hole = 1.0 - smoothstep( r * 0.05, r * 0.2, length( vPbBind - w.xyz ) );
+          float lum = dot( pbC, vec3( 0.2126, 0.7152, 0.0722 ) );
+          pbC = mix( pbC, vec3( 0.16, 0.012, 0.016 ) * ( 0.55 + 0.85 * min( lum * 2.0, 1.0 ) ), soak * 0.94 );
+          pbC = mix( pbC, vec3( 0.045, 0.003, 0.004 ), hole * 0.85 );
+          pbRough = mix( pbRough < 0.0 ? 0.8 : pbRough, 0.38, soak * 0.6 );
+          pbSheen *= 1.0 - soak;
         }
         diffuseColor.rgb = pbC;`;
       const PB_ROUGH = `roughnessFactor = pbRough >= 0.0 ? pbRough : roughnessFactor;`;

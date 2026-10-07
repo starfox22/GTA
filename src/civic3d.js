@@ -211,62 +211,8 @@
           radius: Math.max(p.w, p.h),
         });
       }
-      // Pools, spatters and drops (blood.js bloodStamp).
-      const bloodMaps = Array.from(
-        {
-          length: BLOOD_VARIANTS,
-        },
-        (_, i) => {
-          const t = new Three.CanvasTexture(bloodStamp(i));
-          t.colorSpace = Three.SRGBColorSpace;
-          return t;
-        },
-      );
-      const treadCanvas = document.createElement('canvas');
-      treadCanvas.width = 64;
-      treadCanvas.height = 16;
-      const treadCtx = treadCanvas.getContext('2d');
-      treadCtx.fillStyle = '#78101c';
-      treadCtx.fillRect(0, 1, 64, 14);
-      treadCtx.clearRect(0, 7, 64, 2);
-      for (let x = 0; x < 64; x += 7) {
-        treadCtx.clearRect(x, 0, 2, 16);
-      }
-      const treadMap = new Three.CanvasTexture(treadCanvas);
-      treadMap.colorSpace = Three.SRGBColorSpace;
-      const poolGeo = new Three.PlaneGeometry(1, 1),
-        bloodMeshes = Array.from(
-          {
-            length: BLOOD_LIMIT,
-          },
-          () => {
-            const m = new Three.Mesh(
-              poolGeo,
-              new Three.MeshStandardMaterial({
-                map: bloodMaps[0],
-                color: '#ffffff',
-                // Satin, not a mirror. The street camera looks north-down at one fixed
-                // angle, so on a mid-morning sun (east-north-east, ~45 degrees up) every
-                // flat glossy surface in view sits right on the sun's mirror angle: at
-                // roughness 0.27 the whole pool turned into a pale pink-white highlight.
-                roughness: 0.62,
-                envMapIntensity: 0.5,
-                transparent: true,
-                opacity: 0.97,
-                depthWrite: false,
-                polygonOffset: true,
-                polygonOffsetFactor: -2,
-                polygonOffsetUnits: -2,
-              }),
-            );
-            m.rotation.x = -Math.PI / 2;
-            m.visible = false;
-            m.renderOrder = 3;
-            m.userData.blood = true;
-            scene.add(m);
-            return m;
-          },
-        );
+      // Pools, spatters, drops, tracks and wall splashes (blood.js) in one instanced draw (blood3d.js).
+      // @include src/blood3d.js
       /**
        * TIME OF DAY
        * Sky, fog, sun and ambient colours follow daylight() through four keyframes:
@@ -330,25 +276,6 @@
           ' · ' +
           weatherLabel();
         if (badge !== lastBadge) getElement('renderBadge').textContent = lastBadge = badge;
-        for (let i = 0; i < bloodMeshes.length; i++) {
-          const m = bloodMeshes[i],
-            p = bloodPools[i];
-          m.visible =
-            bloodOn &&
-            !!p &&
-            Math.abs(p.x - cameraTarget.x) < 850 &&
-            Math.abs(p.y - cameraTarget.y) < 950;
-          if (!m.visible) continue;
-          // The size is the game's (blood.js: a pool spreads in updateBlood); here
-          // only the look: blood darkens as it dries over the first minutes.
-          const s = bloodDecalScale(p),
-            dry = clamp((gameTime - p.created - 20) / 150, 0, 1);
-          m.position.set(p.x, (p.surface || 0) + 0.32, p.y);
-          m.rotation.z = -p.a;
-          m.scale.set(s.along, s.across, 1);
-          m.material.map = p.track ? treadMap : bloodMaps[p.variant || 0];
-          m.material.color.setScalar(1 - dry * 0.35);
-          m.material.opacity = bloodFade(p);
-        }
+        updateBloodDecals();
       }
       // END SUBSYSTEM: src/civic3d.js

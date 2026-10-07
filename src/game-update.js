@@ -142,12 +142,11 @@
         if (p.blood) {
           p.vz -= 160 * deltaSeconds;
           p.z += p.vz * deltaSeconds;
-          if (p.z <= (p.surface ?? bloodSurface(p.x, p.y)) + 0.3) {
-            // A drop lands drawn out along its flight (blood.js).
-            addBloodDrop(p.x, p.y, p.size, Math.atan2(p.vy, p.vx), {
-              stretch: 1 + Math.min(1.5, Math.hypot(p.vx, p.vy) / 80),
-              surface: p.surface ?? bloodSurface(p.x, p.y),
-            });
+          // A drop of a spray that met a wall or a vehicle ends there (blood.js bloodSprayObstacle).
+          if (p.stopX !== undefined && (p.x - p.stopX) * p.ux + (p.y - p.stopY) * p.uy >= 0) p.life = 0;
+          else if (p.z <= (p.surface ?? bloodSurface(p.x, p.y)) + 0.3) {
+            // A drop lands drawn out along its flight, or joins a pool or a drop already there (blood.js).
+            landBloodDrop(p);
             p.life = 0;
           }
         }

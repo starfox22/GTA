@@ -4,8 +4,10 @@ Every effect sprite the renderer throws goes through one pool: fx3d-particles.js
 shader, the pass), fx3d-recipes.js (blasts, muzzle flashes, bullet strikes, flames, smoke) and fx3d-atlas.js (the
 texture). Both views draw it from one instanced quad in one draw call; it used to be one `Three.Sprite` (one draw
 call) per particle, flat-lit. Renderer only: nothing here changes the game. Separate systems: tyre smoke and spray
-(tyresmoke3d.js, `tyreEmission`), the 4x4 mud (offroad3d-mud.js), blood pools and car blood, and debris chunks
-(damage3d-decals.js: real lit, shadowed meshes; blasts throw them too).
+(tyresmoke3d.js, `tyreEmission`), the 4x4 mud (offroad3d-mud.js), blood decals (blood3d.js: every pool, spatter,
+drop, track and wall splash in one instanced draw) and car blood, and debris chunks (damage3d-decals.js: real lit,
+shadowed meshes; blasts throw them too). A fresh cut (gore.js `goreEvents`) adds bone chips (`fxBit`) and a dark
+mist (`fxPuff`) to the pool (crowd3d-gore.js `goreEffects`).
 
 ## The pool (fx3d-particles.js)
 

@@ -146,7 +146,8 @@
         stuckFor: 0,
         medics: [],
         outcome: null,
-        revivable: gameTime - (body.deadTime || 0) < MEDIC_REVIVE_AGE && seededRandom() < 0.75,
+        // Nobody comes back without a limb or a head (gore.js GORE).
+        revivable: gameTime - (body.deadTime || 0) < MEDIC_REVIVE_AGE && seededRandom() < 0.75 && !body.goreLost,
       };
       c.emergency = { running: true, job };
       body.medicSeen = true;

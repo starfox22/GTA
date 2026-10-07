@@ -53,11 +53,20 @@
        * as 0xRRGGBB floats, sRGB) and `crowdMeta` (x: the region mask, y: pattern
        * for slot A + 16 x rim). Chained after the city patch (lighting3d.js) so
        * street lights, headlights and the cutaway still apply.
+       *
+       * WOUNDS: `crowdWound` (per instance, crowd3d-gore.js goreWoundFor) is where a round went into this
+       * part (xyz, the part's own space) and w = 2 + the stain's reach (+100 when it went through, so the
+       * mirrored point on the far side soaks too); w under 1.5 is no wound (a geometry without the
+       * attribute reads w = 1). The cloth or skin round it soaks dark red with a ragged edge (value
+       * noise), further below the wound than above (it runs down), near black in the hole itself; never
+       * emissive.
        */
       const RIG_PAINT_VERTEX_PARS = `
         attribute float crowdRegion;
         attribute vec4 crowdPaint;
         attribute vec2 crowdMeta;
+        attribute vec4 crowdWound;
+        varying vec4 vCrowdWound;
         varying vec3 vCrowdColor;
         varying vec3 vCrowdLocal;
         varying float vCrowdPattern;
@@ -85,6 +94,7 @@
           vCrowdSlotA = crowdSlot == 0 ? 1.0 : 0.0;
           vCrowdLocal = position;
           vCrowdAccent = crowdUnpack( crowdPaint.z );
+          vCrowdWound = crowdWound;
         }`;
       const RIG_PAINT_FRAGMENT_PARS = `
         varying vec3 vCrowdColor;
@@ -93,7 +103,38 @@
         varying float vCrowdSlotA;
         varying float vCrowdRim;
         varying vec3 vCrowdAccent;
+        varying vec4 vCrowdWound;
         uniform vec3 cityPlayerRim;
+        float crowdWoundHash( vec3 p ) {
+          return fract( sin( dot( p, vec3( 12.9898, 78.233, 37.719 ) ) ) * 43758.5453 );
+        }
+        float crowdWoundNoise( vec3 p ) {
+          vec3 i = floor( p ), f = fract( p );
+          f = f * f * ( 3.0 - 2.0 * f );
+          float a = mix( crowdWoundHash( i ), crowdWoundHash( i + vec3( 1.0, 0.0, 0.0 ) ), f.x );
+          float b = mix( crowdWoundHash( i + vec3( 0.0, 1.0, 0.0 ) ), crowdWoundHash( i + vec3( 1.0, 1.0, 0.0 ) ), f.x );
+          float c = mix( crowdWoundHash( i + vec3( 0.0, 0.0, 1.0 ) ), crowdWoundHash( i + vec3( 1.0, 0.0, 1.0 ) ), f.x );
+          float d = mix( crowdWoundHash( i + vec3( 0.0, 1.0, 1.0 ) ), crowdWoundHash( i + vec3( 1.0, 1.0, 1.0 ) ), f.x );
+          return mix( mix( a, b, f.y ), mix( c, d, f.y ), f.z );
+        }
+        float crowdWoundSpot( vec3 d, float r, float n ) {
+          d.y *= d.y < 0.0 ? 0.55 : 1.0;
+          return 1.0 - smoothstep( r * 0.3, r * ( 0.85 + 0.5 * n ), length( d ) + n * r * 0.35 );
+        }
+        vec3 crowdWoundSoak( vec3 c, vec3 p ) {
+          float exitSide = step( 50.0, vCrowdWound.w );
+          float r = vCrowdWound.w - 2.0 - exitSide * 100.0;
+          float n = crowdWoundNoise( p * 2.7 ) * 0.6 + crowdWoundNoise( p * 6.3 ) * 0.4;
+          vec3 d = p - vCrowdWound.xyz;
+          float soak = crowdWoundSpot( d, r, n );
+          if ( exitSide > 0.5 ) soak = max( soak, crowdWoundSpot( p - vec3( -vCrowdWound.x, vCrowdWound.y, -vCrowdWound.z ), r * 1.15, n ) );
+          float hole = 1.0 - smoothstep( r * 0.05, r * 0.22, length( d ) );
+          float lum = dot( c, vec3( 0.2126, 0.7152, 0.0722 ) );
+          // Blood in cloth: deep red on light fabric, darker and wet on dark.
+          vec3 blood = vec3( 0.16, 0.012, 0.016 ) * ( 0.55 + 0.85 * min( lum * 2.0, 1.0 ) );
+          c = mix( c, blood, soak * 0.94 );
+          return mix( c, vec3( 0.045, 0.003, 0.004 ), hole * 0.85 );
+        }
         vec3 crowdPatternColor( vec3 c, float pattern, vec3 p ) {
           if ( pattern > 7.5 ) {
             // Club kits in the accent colour (slot C): stripes, hoops, halves, a sash.
@@ -141,7 +182,8 @@
             '#include <color_fragment>',
             `#include <color_fragment>
             float crowdPattern = vCrowdSlotA > 0.5 ? floor( vCrowdPattern + 0.5 ) : 0.0;
-            diffuseColor.rgb *= crowdPattern > 0.5 ? crowdPatternColor( vCrowdColor, crowdPattern, vCrowdLocal ) : vCrowdColor;`,
+            diffuseColor.rgb *= crowdPattern > 0.5 ? crowdPatternColor( vCrowdColor, crowdPattern, vCrowdLocal ) : vCrowdColor;
+            if ( vCrowdWound.w > 1.5 ) diffuseColor.rgb = crowdWoundSoak( diffuseColor.rgb, vCrowdLocal );`,
           )
           .replace(
             '#include <roughnessmap_fragment>',

@@ -44,6 +44,8 @@
         kind === 'ballistic' &&
         person.hitZone !== 'head' &&
         !person.woundedDown &&
+        // A chest destroyed at point blank (gore.js GORE) leaves no one crawling.
+        !person.goreFatal &&
         (person.police || pedestrians.includes(person)) &&
         // Mission 1's sealed warehouse: no one left crawling on the floor (harbor.js depotPoliceInside).
         !(person.police && depotSealed && insideDepot(person.x, person.y)) &&

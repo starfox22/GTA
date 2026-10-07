@@ -58,9 +58,11 @@
       return Math.max(0.01, fatal ? sev : sev * CAR_STAIN_SURVIVOR);
     }
     // Where on the body `person` met `c`, and the stain it leaves. Returns the record (a new
-    // one, or the one it topped up) or null.
-    function addCarStain(c, person, kph, fatal) {
-      if (!bloodOn || !carStainable(c) || !(kph >= CAR_STAIN_MIN_KPH)) return null;
+    // one, or the one it topped up) or null. `sevGiven`: a gunshot's spray that reached the car
+    // (blood.js bloodSprayObstacle) brings its own severity, the car standing or not; a hit by
+    // the car itself always goes by carStainSeverity.
+    function addCarStain(c, person, kph, fatal, sevGiven = null) {
+      if (!bloodOn || !carStainable(c) || (sevGiven === null && !(kph >= CAR_STAIN_MIN_KPH))) return null;
       const spec = vehicleSpec(c),
         ca = Math.cos(c.a),
         sa = Math.sin(c.a),
@@ -87,7 +89,7 @@
       const n = Math.hypot(sx, sz) || 1;
       sx /= n;
       sz /= n;
-      const sev = carStainSeverity(kph, fatal),
+      const sev = sevGiven ?? carStainSeverity(kph, fatal),
         seed = (Math.imul(carStainCounter + 1, 2654435761) ^ Math.imul(c.id | 0 || 7, 40503)) >>> 0;
       // Full: pile onto the nearest record on the same face (PILING UP).
       if (c.stains && c.stains.length >= CAR_STAIN_LIMIT) {

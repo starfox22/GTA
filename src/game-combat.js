@@ -287,6 +287,8 @@
               true,
               headshot ? 'headshot' : 'ballistic',
               bulletCalibre(b),
+              // A .50 or a 25 mm round (mounted-guns.js): gore.js GORE 'heavy'.
+              b.goreCal === 'heavy' ? GORE_HEAVY_DETAIL : null,
             );
             if (!b.enemy) {
               if (p.police) crime(0.3);

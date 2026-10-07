@@ -26,6 +26,7 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/police-and-combat-ammo.md | Where guns and rounds come from: no street ammo or armour, the gun shops, taking a body's gun, police vehicles' stock; the on-screen fire rule |
 | areas/police-and-combat-witnesses.md | Witnesses and 911 calls: who calls, the call and its bubbles, the response to a report, `witnessReport` |
 | areas/police-and-combat-blood.md | Blood: a hit's spatter and drops, the pool a body bleeds out, blasts and impacts, `bleed()` for other code |
+| areas/police-and-combat-gore.md | Gore: blood by calibre, range and zone, point-blank loads, lost limbs and heads, stumps and bleeding out, wounds on the clothes, the Gore setting |
 | areas/police-and-combat-armour.md | NPC body armour: soft vests and plates by calibre and hit zone, shots to kill per weapon, no knock-back from rounds |
 | areas/police-and-combat-driveby.md | Drive-bys: firing arcs per window and body, the aim clamp, the rear screen, the lean-out pose |
 | areas/police-and-combat-mounted.md | Mounted guns: the LAV-8's 25 mm and coax, the gun jeep's .50 cal, the Black Hawk's door guns |

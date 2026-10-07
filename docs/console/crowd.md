@@ -54,7 +54,7 @@ Wounds on the ground (docs/areas/police-and-combat.md, BLOOD).
 
 | Method | Purpose |
 | --- | --- |
-| `bloodReport(x, y, radius)` | Blood decals within `radius` (default 120) of (x, y) (default the player): `total` in the world, `near` counts by kind (`pool` spreading under a body, `spatter`, `drop`, `track`, `stain`), the `largest` radius, each pool's `r` / `rMax` / `tau` / `age`, drops still `flying` |
+| `bloodReport(x, y, radius)` | Blood decals within `radius` (default 120) of (x, y) (default the player): `total` in the world, `near` counts by kind (`pool` spreading under a body, `spatter`, `drop`, `track`, `stain`, `wall` splashes), the `largest` radius, each pool's `r` / `rMax` / `tau` / `age`, drops still `flying` |
 | `bloodVictim(hits, damage, kind, distance)` | A bystander `distance` (50) ahead of the player, struck `hits` times for `damage` of `kind` (`ballistic`, `headshot`, `blast`, `impact`) as the player's shots would; returns position, hp, `dead`, `downed` |
 | `bloodSides(x, y, a, radius)` | Spatter and drops within `radius` (60) of a victim at (x, y), split by the shot heading `a`: `downrange` (beyond the victim, away from the shooter), `uprange` (over 2 units toward the shooter), `level`, and the `farthest` downrange distance; pools and tracks left out |
 | `carBloodReport(reset)` | Blood on the player's car (car-stains.js): `hits` (everyone who bled on it) and `load` (their sev summed), each stain's `face`, `x`/`z`, `sev`, `hits`, `load`, `adds` (people piled onto it), `kph`, `age`, `dry` (0 wet .. 1 dry), `wash`, `reach` (metres the airflow can drag it back), `flow` (0-1, how much of that it has: advances only while the car runs) and `creep` (0-1, the gravity runs: advances only once it has slowed); `skin` is what the 3D view fitted and costs (`triangles`, `events`, `fitted`, `painted`, `piled` / `piledPainted` (piled-on hits and those painted), `panels`, `buildMs` / `buildSlices`, `paintMs` / `paintSlices`, `gatherCache`, `warm` (the program compiled and linked in advance), `work` (the ms a frame spent on it: worst frame and slice, tile uploads), `frameGaps`, `skins` alive of `maxSkins`, `spare`), null without the renderer; `reset` true clears the frame probes |
@@ -64,3 +64,18 @@ Wounds on the ground (docs/areas/police-and-combat.md, BLOOD).
 | `runOverVictim(along, lateral, hp, down)` | Tests: a bystander on the player's car, `along` ahead of its centre and `lateral` right, lying down already for `down` seconds (0: standing) |
 | `runOverState()` | The last `runOverVictim`: `hp`, `dead`, `down`, `dying` (seconds to death), `overruns`, the last `hit` (second pass or not), rampage `kills`, `cash`, `wanted`, `pool`, `bloodHits` |
 | `bloodEnabled(on)` | The blood setting for tests: false stops all blood and stains; no argument reports it |
+
+## gore (gore-console.js, registered from game-console-crowd.js)
+
+Heavy hits: lost limbs, stumps, wounds on the clothes, blood by calibre and range (docs/areas/police-and-combat-gore.md).
+
+| Method | Purpose |
+| --- | --- |
+| `goreReport()` | The `level` (Settings · Gore), `severed` pieces (kind, the part, `rest`, `age`, where, `ownerDead`), spurting `stumps`, `tracked` people and `people` (where, `dead`, `lost`, `wounds`, `bleedOut` seconds), `events` (cuts so far), the `caps`, the player's `lost` parts and `wounds`, and the `lastHit` (class, range in m, zone, `close`, blood `scale`, `burst`, `sever`, `fatal`) |
+| `goreShot(role, weaponIndex, metres, zone, heavy)` | Tests: a bystander `metres` ahead of the player (`role` civilian, gang, patrol or swat: hit points and vest) takes one trigger pull of weapon `weaponIndex` (every pellet of a load) from the player there, in `zone` (head, torso, leg; null as it falls); `heavy` makes it a .50 round. Returns `hp`, `dead`, `down`, `lost`, `pieces` / `thrown`, `wounds`, `bleedOut`, `a` (the shot's heading) and the `hit` |
+| `goreWallShot(weaponIndex, metres, gap, zone)` | Tests: the same with the bystander `gap` m in front of the south face of the nearest building (taller than 4 m, no shopfront), the player south of them facing north; adds `wall` (splashes on that face) and `face` |
+| `goreCarShot(weaponIndex, metres, gap, zone)` | Tests: the same with a sedan parked broadside `gap` m beyond the bystander; adds `stains` (records on it, car-stains.js) and `stainSev` |
+| `goreBlast(metres, power)` | Tests: a blast of `power` (1 a rocket) `metres` beyond a fresh bystander 50 units ahead of the player; the outcome as `goreShot` |
+| `goreInspect(on)` | Inspection only: hide the player's own figure for close-ups at his feet (`closeUp`, `inspectView`); false shows him |
+| `goreSeed(seed)` | Seed blood and gore's own random stream (goreRandom) for a repeatable run |
+| `bloodPlanTable()` | What a round lets out (blood.js HOW MUCH A ROUND LETS OUT), no chance in it: per weapon, range and zone the blood `scale`, `drops`, ground `spatters`, the spray's `reach` (m), `close` and `burst` |

@@ -55,6 +55,7 @@
       enemies.length = 0;
       officers.length = 0;
       bloodPools.length = 0;
+      resetGore();
       fires.length = 0;
       debris.length = 0;
       particles.length = 0;

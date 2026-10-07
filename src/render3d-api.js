@@ -17,6 +17,8 @@
         tyreSmokeInfo: () => tyreSmokeReport(),
         // The effect particle pool (fx3d-particles.js): live, drawn, capacity, peak, emitted, dropped.
         effectParticles: () => fxReport(),
+        // Blood decals drawn (blood3d.js BLOOD DECALS): one instanced draw.
+        bloodDecals: () => bloodDecalReport(),
         // The mountain villages as drawn (mountain-village3d.js): meshes, draw calls, triangles per town.
         mountainInfo: () => mountainVillageInfo(),
         /**

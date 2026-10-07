@@ -278,11 +278,12 @@
         crowdStillCount = 0,
         crowdStillShown = 0;
       function recordInstance(part, i) {
-        const data = new Float32Array(16 + (part.paint ? 6 : 3));
+        const data = new Float32Array(16 + (part.paint ? 10 : 3));
         data.set(part.mesh.instanceMatrix.array.subarray(i * 16, i * 16 + 16));
         if (part.paint) {
           data.set(part.paint.array.subarray(i * 4, i * 4 + 4), 16);
           data.set(part.meta.array.subarray(i * 2, i * 2 + 2), 20);
+          data.set(part.wound.array.subarray(i * 4, i * 4 + 4), 22);
         } else if (part.mesh.instanceColor) data.set(part.mesh.instanceColor.array.subarray(i * 3, i * 3 + 3), 16);
         crowdRecording.push(part, data);
       }
@@ -303,6 +304,12 @@
             pa[i * 4 + 3] = data[19];
             ma[i * 2] = data[20];
             ma[i * 2 + 1] = data[21];
+            const wa = part.wound.array;
+            wa[i * 4] = data[22];
+            wa[i * 4 + 1] = data[23];
+            wa[i * 4 + 2] = data[24];
+            wa[i * 4 + 3] = data[25];
+            if (data[25] > 1.5) part.wounds++;
           } else if (part.mesh.instanceColor && data.length > 16) {
             const c = part.mesh.instanceColor.array;
             c[i * 3] = data[16];
@@ -330,6 +337,13 @@
         pa[i * 4 + 3] = paint[3];
         ma[i * 2] = paint[4];
         ma[i * 2 + 1] = paint[5] + rigRimFlag;
+        // The wound soaking this part (crowd3d-gore.js goreWoundFor sets rigWoundNow; zeros otherwise).
+        const wa = part.wound.array;
+        wa[i * 4] = rigWoundNow[0];
+        wa[i * 4 + 1] = rigWoundNow[1];
+        wa[i * 4 + 2] = rigWoundNow[2];
+        wa[i * 4 + 3] = rigWoundNow[3];
+        if (rigWoundNow[3] > 1.5) part.wounds++;
         if (crowdRecording) recordInstance(part, i);
         part.n++;
       }

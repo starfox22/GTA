@@ -20,6 +20,7 @@
         seaEvents: () => seaEvents, dolphinPods: () => dolphinPods, gulls: () => gulls,
         // blood, wounds, stains, wrecks
         bloodPools: () => bloodPools, bleeders: () => bleeders, carStained: () => carStained,
+        severedParts: () => severedParts, goreStumps: () => goreStumps, goreTracked: () => goreTracked, goreEvents: () => goreEvents,
         bloodTrackSources: () => bloodTrackSources, knockedProps: () => knockedProps, streetProps: () => streetProps,
         // contacts and physics
         impactContacts: () => impactContacts, staticBodies: () => staticBodies, specRadii: () => specRadii,
