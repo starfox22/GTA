@@ -3,6 +3,7 @@
         uniform highp sampler2DArray cityDetail;
         uniform float cityGroundDetail;
         uniform float cityGroundSlopeCap;
+        uniform float cityGroundWear;
         uniform sampler2D cityFieldDist;
         uniform sampler2D cityFieldInfo;
         uniform vec4 cityFieldRect;

@@ -203,6 +203,8 @@
           if (options && typeof options === 'object')
             for (const key of Object.keys(lookSwitchState)) if (key in options) lookSwitchState[key] = !!options[key];
           groundShared.cityGroundSlopeCap.value = lookSwitchState.groundSlopeCap ? 1 : 0;
+          groundShared.cityGroundWear.value = lookSwitchState.groundWear ? 1 : 0;
+          roofSkinSwitch.value = lookSwitchState.roofSkin ? 1 : 0;
           setFoliageCoverage(activeTier);
           return { ...lookSwitchState };
         },

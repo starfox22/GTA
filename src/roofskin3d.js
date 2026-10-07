@@ -18,11 +18,15 @@
        *    the rain (HIGH and ULTRA) puddles that ripple there; every finish soaks darker and glossier with the shared
        *    wet pattern (lighting3d-sky.js WET SURFACES), metal and membrane mostly glossier. The roofs never mark the
        *    wet reflections pass (it reflects the street); their puddles mirror the sky's light (`citySkyReflect`).
-       *  - LOW skips the detail layers (the ground's `cityDetail` array, no new texture) and the repairs.
+       *  - LOW skips the detail layers (the ground's `cityDetail` array, no new texture), the repairs and most of the
+       *    noise (weathering, scour, cracks, rust, birdbaths, tide marks). `lookSwitches({ roofSkin: false })` draws
+       *    the old paintings instead, for an A/B of the look or the cost in one page.
        * The air view's far copy keeps each finish's old painting (`map`) under the same tint; the base colours here are
        * those paintings' means, so a roof keeps its tone when the copy takes over.
        */
       const ROOF_SKIN_KINDS = ['gravel', 'membrane', 'tar', 'terracotta', 'pavers', 'green', 'metal'];
+      // 0 draws the old whole-roof paintings instead: an A/B in one page (lookSwitches roofSkin).
+      const roofSkinSwitch = { value: 1 };
       // The old paintings' mean colours (sRGB), per finish.
       const ROOF_SKIN_BASE = {
         gravel: '#8b877e',
@@ -37,6 +41,7 @@
         uniform highp sampler2DArray cityDetail;
         uniform float cityGroundDetail;
         uniform float cityRoofKind;
+        uniform float cityRoofSkin;
         uniform vec3 cityRoofBase;
         uniform float cityWetDetail;
         uniform vec3 citySkyReflect;
@@ -64,7 +69,12 @@
       const ROOF_SKIN_ALBEDO = `
         float rRough = 0.9, rMetal = 0.0, rWetFilm = 0.0, rPuddle = 0.0, rWetReflect = 0.0, rFp = 1.0;
         vec2 rWorld = vCityWorld.xz;
-        {
+        if ( cityRoofSkin < 0.5 ) {
+          // The A/B (lookSwitches roofSkin): the old whole-roof painting.
+          diffuseColor *= texture2D( map, vMapUv );
+          rRough = roughness;
+          rMetal = metalness;
+        } else {
           vec2 rdx = dFdx( rWorld ), rdy = dFdy( rWorld );
           rFp = max( max( length( rdx ), length( rdy ) ), 1e-4 );
           float fp = rFp;
@@ -103,10 +113,12 @@
                                shortSide * ( 0.5 + ( cityHash( rid + slot + 4.1 ) - 0.5 ) * 0.3 ) );
           float toDrain = length( vec2( along, across ) - drainAt );
           // Where water stands: the dish round each drain (an uneven ring) and the odd birdbath, never at the parapet.
-          float pond = cityNoise( rWorld * 0.042 + seed * 1.7 ) * 0.65 + cityNoise( rWorld * 0.13 + seed.yx ) * 0.35;
-          float dish = 1.0 - smoothstep( 1.5, 18.0 + 10.0 * cityNoise( rWorld * 0.09 + seed ), toDrain );
+          // (LOW: a round dish, no birdbaths, no tide mark.)
+          float pond = rich ? cityNoise( rWorld * 0.042 + seed * 1.7 ) * 0.65 + cityNoise( rWorld * 0.13 + seed.yx ) * 0.35 : 0.0;
+          float dish = 1.0 - smoothstep( 1.5, 18.0 + ( rich ? 10.0 * cityNoise( rWorld * 0.09 + seed ) : 5.0 ), toDrain );
           float low = level * max( dish, smoothstep( 0.78, 0.95, pond ) * 0.75 ) * smoothstep( 5.0, 12.0, edge );
-          float tide = roofBand( low - 0.6, 0.012, max( fwidth( low ), 1e-3 ) ) * level;
+          float lowWidth = max( fwidth( low ), 1e-3 );
+          float tide = rich ? roofBand( low - 0.6, 0.012, lowWidth ) * level : 0.0;
           vec3 base = cityRoofBase, col = base;
           float porous = 0.8;
           if ( kind == 0 ) {
@@ -115,10 +127,12 @@
             vec3 pebble = base * mix( vec3( 0.8, 0.82, 0.86 ), vec3( 1.16, 1.07, 0.95 ), lg.g );
             col = mix( base * 0.6, pebble, smoothstep( 0.05, 0.32, lg.r ) ) * ( 0.92 + 0.16 * macro );
             // Raked heaps and hollows: a gentle mottle a couple of metres across.
-            col *= 0.95 + 0.1 * cityNoise( rWorld * 0.11 + seed.yx );
-            float windward = 1.0 - smoothstep( 4.0, 16.0, edge );
-            float scour = smoothstep( 0.8, 0.9, cityNoise( rWorld * 0.085 + seed * 1.3 ) * 0.7 + cityNoise( rWorld * 0.31 ) * 0.3 + 0.1 * windward + 0.05 * age );
-            col = mix( col, vec3( 0.06, 0.06, 0.062 ) * ( 0.8 + 0.4 * lg.b ), scour * ( 0.45 + 0.35 * ( 1.0 - lg.r ) ) );
+            if ( rich ) {
+              col *= 0.95 + 0.1 * cityNoise( rWorld * 0.11 + seed.yx );
+              float windward = 1.0 - smoothstep( 4.0, 16.0, edge );
+              float scour = smoothstep( 0.8, 0.9, cityNoise( rWorld * 0.085 + seed * 1.3 ) * 0.7 + cityNoise( rWorld * 0.31 ) * 0.3 + 0.1 * windward + 0.05 * age );
+              col = mix( col, vec3( 0.06, 0.06, 0.062 ) * ( 0.8 + 0.4 * lg.b ), scour * ( 0.45 + 0.35 * ( 1.0 - lg.r ) ) );
+            }
             rRough = 0.95;
             porous = 1.0;
           } else if ( kind == 1 ) {
@@ -132,7 +146,7 @@
             col = base * ( 0.96 + 0.07 * sheetTone ) * ( 0.93 + 0.12 * cg.r ) * ( 0.96 + 0.08 * macro );
             col *= ( 1.0 + 0.05 * lapWeld ) * ( 1.0 - 0.26 * max( lapShadow, endLap ) );
             // Weathering: a chalky grey-brown film in streaks along the sheets (rain runs along the laps), heavier with age.
-            float film = smoothstep( 0.4, 0.85, cityNoise( vec2( along * 0.012, across * 0.09 ) + seed ) * 0.7 + cg.a * 0.3 ) * ( 0.3 + 0.6 * age );
+            float film = rich ? smoothstep( 0.4, 0.85, cityNoise( vec2( along * 0.012, across * 0.09 ) + seed ) * 0.7 + cg.a * 0.3 ) * ( 0.3 + 0.6 * age ) : 0.3 * age;
             col = mix( col, col * vec3( 0.9, 0.88, 0.84 ), film );
             rRough = 0.7;
             porous = 0.3;
@@ -144,12 +158,15 @@
             float lap = roofLines( across, 7.6, 0.16, fp );
             col = base * ( 0.8 + 0.4 * ag.r ) * ( 0.93 + 0.12 * cityHash( vec2( roll, rid.x ) + 9.1 ) ) * ( 0.92 + 0.16 * macro );
             col *= 1.0 - 0.3 * lap;
-            float lapRun = step( 0.6, cityHash( vec2( roll, rid.y ) + 1.3 ) ) * smoothstep( 0.45, 0.6, cityNoise( vec2( along * 0.035, roll * 1.7 ) + seed ) );
-            float cn = cityNoise( rWorld * 0.032 + seed * 2.0 + 17.0 ) + ( cityNoise( rWorld * 0.3 ) - 0.5 ) * 0.05;
-            float crack = roofBand( cn - 0.5, 0.0055, fp * 0.016 + 1e-4 ) * smoothstep( 0.55, 0.72, cityNoise( rWorld * 0.009 + seed.yx ) + 0.2 * age );
-            float blob = max( roofLines( across, 7.6, 0.5, fp ) * lapRun, crack ) * smoothstep( 6.0, 8.0, edge );
+            float blob = 0.0, coated = step( 0.8, pick );
+            if ( rich ) {
+              float lapRun = step( 0.6, cityHash( vec2( roll, rid.y ) + 1.3 ) ) * smoothstep( 0.45, 0.6, cityNoise( vec2( along * 0.035, roll * 1.7 ) + seed ) );
+              float cn = cityNoise( rWorld * 0.032 + seed * 2.0 + 17.0 ) + ( cityNoise( rWorld * 0.3 ) - 0.5 ) * 0.05;
+              float crack = roofBand( cn - 0.5, 0.0055, fp * 0.016 + 1e-4 ) * smoothstep( 0.55, 0.72, cityNoise( rWorld * 0.009 + seed.yx ) + 0.2 * age );
+              blob = max( roofLines( across, 7.6, 0.5, fp ) * lapRun, crack ) * smoothstep( 6.0, 8.0, edge );
+              coated *= 1.0 - smoothstep( 0.72, 0.78, cityNoise( rWorld * 0.11 + seed ) * 0.7 + cityNoise( rWorld * 0.43 ) * 0.3 + 0.1 * age );
+            }
             float flashing = 1.0 - smoothstep( 6.2 - 0.5 * fp, 6.2 + 0.5 * fp, edge );
-            float coated = step( 0.8, pick ) * ( 1.0 - smoothstep( 0.72, 0.78, cityNoise( rWorld * 0.11 + seed ) * 0.7 + cityNoise( rWorld * 0.43 ) * 0.3 + 0.1 * age ) );
             float silver = max( flashing, coated );
             col = mix( col, vec3( 0.4, 0.41, 0.41 ) * ( 0.75 + 0.35 * ag.r ) * ( 0.9 + 0.1 * macro ), silver * 0.9 );
             col = mix( col, vec3( 0.017, 0.016, 0.015 ), blob );
@@ -167,9 +184,11 @@
             float barrel = mix( 0.95, 0.8 + 0.3 * sin( u * 3.14159 ), resU );
             float lip = mix( 0.9, 1.0 - 0.5 * smoothstep( 0.8, 1.0, v ), resV );
             col = base * mix( vec3( 0.84, 0.88, 0.92 ), vec3( 1.12, 1.0, 0.9 ), tileTone ) * barrel * lip * ( 0.93 + 0.14 * macro );
-            float lichen = smoothstep( 0.6, 0.82, cityNoise( rWorld * 0.085 + seed ) ) * ( 0.35 + 0.65 * age );
-            col = mix( col, col * vec3( 0.66, 0.68, 0.52 ), lichen * 0.55 );
-            col = mix( col, col * vec3( 1.12, 1.1, 1.06 ), smoothstep( 0.5, 0.9, cityNoise( rWorld * 0.03 + seed.yx ) ) * 0.25 );
+            if ( rich ) {
+              float lichen = smoothstep( 0.6, 0.82, cityNoise( rWorld * 0.085 + seed ) ) * ( 0.35 + 0.65 * age );
+              col = mix( col, col * vec3( 0.66, 0.68, 0.52 ), lichen * 0.55 );
+              col = mix( col, col * vec3( 1.12, 1.1, 1.06 ), smoothstep( 0.5, 0.9, cityNoise( rWorld * 0.03 + seed.yx ) ) * 0.25 );
+            }
             rRough = 0.82;
             porous = 0.85;
           } else if ( kind == 4 ) {
@@ -207,7 +226,7 @@
             float res = clamp( ( pitch / fp - 2.0 ) * 0.4, 0.0, 1.0 );
             float panelTone = mix( 0.5, cityHash( vec2( panel, rid.x ) + 2.3 ), res );
             col = base * ( 0.92 + 0.12 * panelTone ) * ( 1.0 + 0.25 * rib - 0.2 * ribShade ) * ( 0.92 + 0.16 * macro );
-            float rust = smoothstep( 0.62, 0.85, cityNoise( vec2( rl.x * 0.6, rl.y * 0.045 ) + seed ) ) * ( 0.3 + 0.7 * age );
+            float rust = rich ? smoothstep( 0.62, 0.85, cityNoise( vec2( rl.x * 0.6, rl.y * 0.045 ) + seed ) ) * ( 0.3 + 0.7 * age ) : 0.0;
             col = mix( col, vec3( 0.2, 0.085, 0.035 ), rust * 0.6 );
             float roofLight = step( 0.86, cityHash( vec2( panel, floor( rl.y / 36.0 ) ) + rid * 0.7 ) ) * res;
             col = mix( col, vec3( 0.46, 0.48, 0.43 ), roofLight * 0.85 );
@@ -275,6 +294,7 @@
         shader.uniforms.cityGroundDetail = groundShared.cityGroundDetail;
         shader.uniforms.cityRain = surfaceUniforms.cityRain;
         shader.uniforms.cityRainTime = surfaceUniforms.cityRainTime;
+        shader.uniforms.cityRoofSkin = roofSkinSwitch;
         shader.uniforms.cityRoofKind = { value: Math.max(0, ROOF_SKIN_KINDS.indexOf(material.userData.roofFinish)) };
         shader.uniforms.cityRoofBase = { value: new Three.Color(ROOF_SKIN_BASE[material.userData.roofFinish] || '#8b877e') };
         shader.fragmentShader = shader.fragmentShader

@@ -169,7 +169,7 @@
         };
       },
       // A/B switches for the look: { pixelLock, fxaa, vibrance, carLamps, groundSlopeCap, terrainBeams, lightBar,
-      // foliageCoverage, vehicleLights } (true = as in play).
+      // foliageCoverage, vehicleLights, stagedSwitch, vehicleMerge, roofSkin, groundWear } (true = as in play).
       lookSwitches: (options) => city3D?.lookSwitches?.(options) ?? null,
       // Scene draw calls in view by object name and by map cell (render3d.js).
       drawProfile: (top) => city3D?.drawProfile?.(top) ?? null,

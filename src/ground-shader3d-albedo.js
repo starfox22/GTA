@@ -142,8 +142,10 @@
             // How far into a junction box (the info grid's lane-free cells inside
             // the carriageway), read bilinearly: the grid is nearest-sampled, 16
             // units a cell, and a tone switched on it changed in stair steps.
+            // (cityGroundWear 0 leaves this wear out: an A/B, lookSwitches groundWear.)
+            bool wearOn = cityGroundWear > 0.5;
             float jb = 0.0;
-            if ( cityFieldOn > 0.5 && gKerb < -1.0 ) {
+            if ( wearOn && cityFieldOn > 0.5 && gKerb < -1.0 ) {
               vec2 jc = ( gp - cityFieldRect.xy ) * cityFieldRect.zw * cityFieldInfoSize - 0.5;
               vec2 jf = floor( jc ), jw = jc - jf;
               ivec2 j0 = ivec2( jf ), jmax = ivec2( cityFieldInfoSize ) - 1;
@@ -161,10 +163,10 @@
             // (Each row of streets has its own phase: joints on parallel streets never line up.)
             vec2 rps = gKerb < 90.0 ? vec2( dot( gp, vec2( -rn.y, rn.x ) ), dot( gp, rn ) ) : gp;
             rps.x += 236.0 * cityHash( vec2( floor( rps.y / 410.0 ), 5.0 ) );
-            float stretch = mix( cityHash( vec2( floor( rps.x / 236.0 ), floor( rps.y / 410.0 ) ) + 77.0 ), cityHash( floor( ( gp + 128.0 ) / 512.0 ) + 79.0 ), jb );
+            float stretch = wearOn ? mix( cityHash( vec2( floor( rps.x / 236.0 ), floor( rps.y / 410.0 ) ) + 77.0 ), cityHash( floor( ( gp + 128.0 ) / 512.0 ) + 79.0 ), jb ) : 0.5;
             age = clamp( age + ( stretch - 0.5 ) * 0.6, 0.0, 1.0 );
             float fresh = smoothstep( 0.78, 0.92, stretch ) * ( 1.0 - age );
-            float stretchJoint = gKerb < -1.0 ? groundBand( abs( fract( rps.x / 236.0 + 0.5 ) - 0.5 ) * 236.0, 0.35, fp ) * ( 1.0 - jb ) : 0.0;
+            float stretchJoint = wearOn && gKerb < -1.0 ? groundBand( abs( fract( rps.x / 236.0 + 0.5 ) - 0.5 ) * 236.0, 0.35, fp ) * ( 1.0 - jb ) : 0.0;
             // Lanes: polished wheel paths, oil down the middle.
             float wheel = 0.0, oilLane = 0.0;
             if ( gLaneW > 1.0 && inRoad > 3.0 && inRoad < 62.0 ) {
@@ -191,11 +193,11 @@
               // (A line's band widens with the footprint: scale it back to the
               // line's true share of the pixel.)
               seam = ( 1.0 - smoothstep( 0.3, 0.3 + fp, abs( sd ) ) ) * min( 1.0, 0.6 / fp );
-              capped = step( 0.75, cityHash( pc + 15.0 ) );
+              capped = wearOn ? step( 0.75, cityHash( pc + 15.0 ) ) : 0.0;
             }
             // Trench reinstatements: a long strip along the road where a pipe or
             // a cable went in.
-            if ( gLaneW > 1.0 ) {
+            if ( wearOn && gLaneW > 1.0 ) {
               vec2 tc = vec2( floor( rp.x / 180.0 ), floor( rp.y / 30.0 ) );
               if ( cityHash( tc + 51.0 ) > 0.9 - 0.06 * age ) {
                 vec2 thz = vec2( 30.0 + 50.0 * cityHash( tc + 52.0 ), 1.6 + 1.2 * cityHash( tc + 53.0 ) );
@@ -220,7 +222,7 @@
             // older stretches, most sealed with a band of tar; and the joint
             // between paving passes along a lane line, sealed in runs.
             float thermal = 0.0, thermalOpen = 0.0, laneJoint = 0.0;
-            if ( gLaneW > 1.0 ) {
+            if ( wearOn && gLaneW > 1.0 ) {
               float tCell = floor( rp.x / 64.0 ), tRow = floor( rp.y / 410.0 );
               if ( cityHash( vec2( tCell, tRow ) + 13.0 ) < 0.15 + 0.6 * age ) {
                 float x0 = ( tCell + 0.2 + 0.6 * cityHash( vec2( tCell, tRow ) + 31.0 ) ) * 64.0;
@@ -243,7 +245,7 @@
             vec3 asphalt = base * ( 0.8 + 0.42 * ag.r + ( ag.g - 0.5 ) * 0.18 ) * ( 0.9 + 0.2 * macro ) * ( 0.94 + 0.12 * ag.a );
             // An older stretch is greyer and paler, a fresh one black and even.
             asphalt *= 0.92 + 0.16 * stretch;
-            asphalt = mix( asphalt, mix( vec3( dot( asphalt, vec3( 0.2126, 0.7152, 0.0722 ) ) ), asphalt, 0.7 ) * 1.06, age * 0.5 );
+            if ( wearOn ) asphalt = mix( asphalt, mix( vec3( dot( asphalt, vec3( 0.2126, 0.7152, 0.0722 ) ) ), asphalt, 0.7 ) * 1.06, age * 0.5 );
             asphalt = mix( asphalt, base * ( 0.7 + 0.12 * ag.r ), fresh * 0.7 );
             // Wheel paths: rubber laid down and polished smooth (the sheen is in the roughness).
             asphalt *= 1.0 - 0.07 * wheel * ( 0.4 + 0.6 * age );
