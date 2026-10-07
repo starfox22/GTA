@@ -278,12 +278,6 @@
         vtBox(paint, 0.93, 0.98, 0.96, 2.62, -1.12, 1.12, plain);
         vtBox(glass, 0.915, 0.93, 2.02, 2.42, -0.52, 0.52, {});
         vtBox(trim, 0.92, 0.935, 1.99, 2.45, -0.56, 0.56, rubber);
-        // The maker's name across the back wall under the window, over the deck (cars3d-badges.js REAR BADGES).
-        const makerBadge = badgeFlatGeometry('ATLAS', 'wide', 0.09 * VT, 0.6, [0.922 * VT, 1.78 * VT, 0], [-1, 0, 0], [0, 0, 1]);
-        if (makerBadge) {
-          civAddMatrix(trim, makerBadge.geometry, civIdentity, { color: '#e1e5e9', finish: 'alloy', rawUv: true });
-          makerBadge.geometry.dispose();
-        }
         // HOOD between the fenders: sloping gently to the grille, a centre crease and a badge.
         vtProfile(
           paint,
@@ -415,6 +409,13 @@
         for (const z of [-1.16, 0, 1.16]) vtBox(trim, rackX - 0.04, rackX + 0.04, deckTop, 2.88, z - 0.04, z + 0.04, frame);
         for (const y of [2.86, 2.08]) vtBox(trim, rackX - 0.04, rackX + 0.04, y - 0.035, y + 0.035, -1.2, 1.2, frame);
         vtBox(trim, rackX - 0.01, rackX + 0.01, deckTop + 0.04, 2.82, -1.12, 1.12, { color: '#141517', finish: 'satin', cell: 'mesh' });
+        // The maker's name across the rack's upper panel, proud of the tubes (the rack hides the cab's back wall from the
+        // chase camera; cars3d-badges.js REAR BADGES).
+        const makerBadge = badgeFlatGeometry('ATLAS', 'wide', 0.12 * VT, 0.6, [(rackX - 0.046) * VT, 2.47 * VT, 0], [-1, 0, 0], [0, 0, 1]);
+        if (makerBadge) {
+          civAddMatrix(trim, makerBadge.geometry, civIdentity, { color: '#e1e5e9', finish: 'alloy', rawUv: true });
+          makerBadge.geometry.dispose();
+        }
         for (const s of sides) {
           vtBox(trim, rackX - 0.12, rackX - 0.04, 2.83, 2.95, s * 0.62 - 0.08, s * 0.62 + 0.08, black);
           vtBox(trim, rackX - 0.125, rackX - 0.12, 2.845, 2.935, s * 0.62 - 0.065, s * 0.62 + 0.065, { color: '#eef1f2', finish: 'lens' });
