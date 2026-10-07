@@ -60,3 +60,16 @@
       for (const along of s.deco.pylons)
         for (const side of [-1, 1]) s.solids.push({ along, across: side * s.deco.across, hx: 9, hy: 9, minHeight: 0, height: s.deco.pylonHeight, kind: 'pylon' });
     };
+    /* Where the Coronation Bridge lands on a sea wall (both ends). The coast walks
+       that keep a rhythm (esplanade furniture, sea-wall ladders, the surf's ear
+       points) still count these stretches, so nothing along the rest of either
+       waterfront moved when the bridge was added (as northPointKeyBridgeLanding). */
+    function coronationBridgeLanding(e) {
+      if (!e.opening) return false;
+      const B = CORONATION_BRIDGE;
+      return segmentDistance(e.x, e.y, B.a, B.b) <= B.width / 2 + 8;
+    }
+    // A sea-wall stretch under a bridge added after the coast's rhythms were laid out.
+    function lateBridgeLanding(e) {
+      return northPointKeyBridgeLanding(e) || coronationBridgeLanding(e);
+    }

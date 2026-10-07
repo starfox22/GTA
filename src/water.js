@@ -174,6 +174,13 @@
           if (run >= 420) run = 0;
           continue;
         }
+        // The Coronation Bridge's landings count as the quay they were (coronation-bridge.js).
+        if (coronationBridgeLanding(e)) {
+          if (shoreStyle(e) !== 'quay') continue;
+          run += e.length;
+          if (run >= 420) run = 0;
+          continue;
+        }
         if (e.opening || shoreStyle(e) !== 'quay') continue;
         run += e.length;
         if (run < 420) continue;
