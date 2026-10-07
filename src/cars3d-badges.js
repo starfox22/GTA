@@ -371,10 +371,10 @@
       }
       /*
        * CLUB BADGES
-       * The 4x4 club trucks (offroad3d-kits.js) carry their name (CLUB_BADGES: ROVER, BADGER, BRONCO, TAURO...) in light
-       * metal on the tailgate's right corner (left on the expedition and bronco, clear of a ladder or carrier) at the
-       * plate's height, between the plate and the corner and clear of a spare wheel hung in the middle (smaller when
-       * that leaves little room).
+       * The 4x4 club trucks (offroad3d-kits.js) carry their name (CLUB_BADGES: ROVER, BADGER, BRONCO, TAURO...) in
+       * metal (light, dark on a pale livery) on the tailgate's right corner (left on the expedition and bronco, clear
+       * of a ladder or carrier) at the plate's height, between the plate and the corner and clear of a spare wheel
+       * hung in the middle (smaller when that leaves little room).
        */
       // The name each club truck's tail carries (its maker, or the model where the maker's name is not on the tail).
       const CLUB_BADGES = { series: 'ROVER', crawler: 'BADGER', bronco: 'BRONCO', expedition: 'HIGHLANDER', hilux: 'TAURO', sixbysix: 'OKTAV', trophy: 'SIDEWINDER' };
@@ -410,7 +410,10 @@
           b = laid.geometry.boundingBox;
         }
         laid.geometry.translate(tail - 0.06, y, side * (right - (b.max.z - b.min.z) / 2));
-        policeAddMatrix(trim, laid.geometry, badgeIdentity, '#e4e7ea');
+        // Bright metal reads on a dark or bold paint; on a pale one (cream, white) the chrome shows its dark reflection.
+        const paint = new Three.Color(OFFROAD_LIVERIES[type]?.base || '#808080'),
+          pale = 0.2126 * paint.r + 0.7152 * paint.g + 0.0722 * paint.b > 0.55;
+        policeAddMatrix(trim, laid.geometry, badgeIdentity, pale ? '#4a4f55' : '#e4e7ea');
         laid.geometry.dispose();
         return { text, sub: null, style: 'block', letters: laid.letters };
       }
