@@ -307,9 +307,12 @@ packs with plain `<script src>` so the zip still plays from file://.
   (`FOLIAGE_HOLE_CUT`; uniforms from `updateFoliageCutaway` / `foliageCutawayPlan()`, foliage-cutaway.js; the same
   Settings switch as the building cutaway). A new plant must use it to be see-through; keep `foliageHoleCut()` in
   step with the GLSL; never add a define for it and never run it in `treeDepthMaterial`.
-- See-through effects (smoke, flame, sparks, blood drops, blast ring, car flames) draw at `FX_SPRITE_ORDER`
-  (render3d-effects.js), above floor decals (2-3), tyre smoke (4) and the car blood skin (6); a new effect that
-  should cover floor blood uses it.
+- Effect sprites (smoke, dust, fire, sparks, muzzle flashes, glass, blood drops) are slots in the EFFECT POOL
+  (rendering-effects.md): spawn them with `fxAdd` or the fx3d-recipes.js helpers (`fxPuff`, `fxBit`, `fxSpark`,
+  `fxFlames`, `fxSmoke`), never a `Three.Sprite` per particle; effect randomness is `fxRandom()`, never Math.random.
+  The pool draws in its own pass after the scene (`renderFxPass`), soft against walls only on HIGH/ULTRA; other
+  see-through effects keep `FX_SPRITE_ORDER` (above floor decals 2-3, tyre smoke 4, the car blood skin 6). A game
+  `particle()` that only stands in for a 3D effect passes `standIn`.
 - **Renderer never changes game rules**: `*3d.js` files (inside `createCityRenderer()`) only
   read state.
 - All vehicle light on a surface shares one budget (VEHICLE LIGHT BUDGET; headlight-beam.js
