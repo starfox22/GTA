@@ -299,6 +299,13 @@ packs with plain `<script src>` so the zip still plays from file://.
   so exterior trim goes before the cabin); `carSeatPlan` (`m.seats`) is the one seat rule; crowd3d-driveby.js SEATED
   OCCUPANTS seats people only within `OCCUPANT_REACH` (at or beyond the glass's clear reach); see-through glass never
   casts a shadow (the paint panels do).
+- Car seats (cars3d-headroom.js CABIN HEADROOM; vehicles-and-driving-cabins.md): `carSeatPlan` fits every closed cabin's
+  seat round the head the rig draws (tallest man and woman with hair and caps, `cabinHeadPose` = drawCrowdPerson's chain
+  at `seatTorsoLean`/`seatHeadPitch`); seated occupants and the drive-by pose take `plan.lean`: change the riding pose and
+  `cabinHeadPose` together. `cabinHeadroom().through` stays 0; a roof too low is a body fix, never a smaller margin; a
+  body's glass change keeps damage-vehicles.js `CAR_GLASS_BANDS` in step. Rear badges (`CAR_BADGES`, cars3d-badges.js)
+  are glyph quads in the trim atlas's lower half merged into the kit's trim before the cabin (no draw call); the trim
+  material alpha-tests the atlas, so other atlas cells stay opaque, addressed only through `trimCellRect` (512x1024).
 - Chase view level of detail (rendering-chase.md): anything new the far copy stands for hides with its cell
   (`cell.full` / `cell.blocks`); shadow-pass-only hiding goes through `chaseShadowCasters` (restored after the
   pass); its shadow box is `placeChaseSun` (the depth fade `cityShadowReach`); never toggle a light.
