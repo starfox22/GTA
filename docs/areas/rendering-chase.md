@@ -28,8 +28,9 @@ the game never reads it. Numbers: audit/performance.md (Chase view pass).
 - The copy is the same shapes, so the seam shows only where a piece under `FAR_PIECE_SIZE` (20 units
   across from above) drops out, a few pixels at 175 m and more, in the haze. Shared facades keep their
   own material (the far geometry carries `cityLit`), so window light stays building by building at night;
-  a class of one material with plain texture transforms keeps that material; others use the copy's
-  averaged material (as in the air).
+  a class of one material with plain texture transforms keeps that material (the roof skin too: it reads
+  only the uv, the tint and the world position, `farTint`); others use the copy's averaged material (as in
+  the air).
 - Gotchas: `resetChaseFar()` runs on every far-mode change (it puts every cell's `full` group back);
   anything new that the far copy stands for must hide with its cell; `drawProfile` counts only groups
   whose material is visible. Behind the title (`gameMode` 'menu') the copy stays whole even in the chase

@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-526 files in the include tree, 181,386 lines.
+528 files in the include tree, 181,969 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -157,7 +157,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/chase-hud.js`    77 — Chase HUD: the reticle in the middle of the screen in the chase view (chase-view.css) and the hidden cursor while the pointer is captured; drawn …
 - `src/tyre-effects.js`   274 — What the tyres leave behind: the burnout (forward and the handbrake held at a standstill), skid marks, and the one rule for tyre smoke, dust and …
 - `src/hud.js`    34 — ▸ HUD behaviour and the title menu
-- `src/render3d.js`   235 — ▸ Three.js renderer and resource lifecycle
+- `src/render3d.js`   236 — ▸ Three.js renderer and resource lifecycle
 - `src/frame-trace.js`   324 — Frame trace: every frame's CPU split (simulation sections, renderer laps) and what happened in it (collections, DOM mutations, GL uploads and links …
 - `src/game-loop.js`   191 — Profiler: Rolling averages of simulation and render CPU time per frame, plus the renderer's draw-call and triangle counts.
 - `src/game-console.js`    48 — ▸ DeadEndCity console registry and assembly
@@ -410,10 +410,10 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/lighting3d.js`    27 — ▸ Sun, sky, reflections and night light
 - `src/searchlight3d.js`   937 — Searchlights: light shafts, ground pools, the helicopter's spot
 - `src/render3d-statics.js`   362 — Static building batches, static cells and culling (staticInView), shared materials.
-- `src/render3d-terrain.js`   297 — Mesh/box/rod helpers, wall textures, the ground mesh and kerbs.
+- `src/render3d-terrain.js`   320 — Mesh/box/rod helpers, wall textures, the ground mesh and kerbs.
 - `src/vegetation3d.js`    63 — ▸ Tree library: species, foliage atlas, wind, LOD
 - `src/render3d-streetprops.js`   340 — ▸ Street lamps and their glow halos, vehicle halos, blossom, sign() boards.
-- `src/cityscape3d.js`    26 — ▸ Building archetypes, roofs, shopfronts and street furniture
+- `src/cityscape3d.js`    27 — ▸ Building archetypes, roofs, shopfronts and street furniture
 - `src/sidejobs3d.js`    61 — Contract mission meshes
 - `src/roadblocks3d.js`    70 — Police roadblock meshes
 - `src/themepark3d.js`    22 — ▸ Sunset Pier resort meshes
@@ -459,6 +459,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/clouds3d.js`    56 — ▸ Volumetric clouds and cloud shadows
 - `src/ground-data3d.js`   826 — Ground shader data
 - `src/surfaces3d.js`   248 — ▸ Procedural surface detail
+- `src/roofskin3d.js`   303 — Roof skin: the city's roof finishes drawn in world space at screen resolution (membrane sheets, gravel ballast, tar and its repairs, clay tiles …
 - `src/grass3d.js`   153 — Grass tufts
 - `src/helicopter3d.js`    99 — ▸ Helicopter models
 - `src/apache3d.js`   435 — The AH-64 attack helicopter model
@@ -475,17 +476,17 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/render3d-vehicle-models.js`   350 — MakeVehicle()/buildVehicleModel(), modelScale, car rims, sniper sights.
 - `src/vehicle-merge3d.js`   345 — Pristine merge: a civilian car nothing has touched draws its non-casting static parts merged per material (hood + panels + paint bumpers, black and …
 - `src/render3d-prewarm-models.js`    67 — Prewarm lists: the throwaway vehicles and the sample shadow casters the title-screen prewarm builds, so each model's kit, shared materials and shader …
-- `src/render3d-effects.js`   236 — ▸ The optional player ring, the objective arrow, muzzle and head lights, smoke and flame sprites.
+- `src/render3d-effects.js`   241 — ▸ The optional player ring, the objective arrow, muzzle and head lights, smoke and flame sprites.
 - `src/render3d-resources.js`   520 — GPU resource lifecycle: shared geometries, model pruning and disposal.
 - `src/render3d-hiccups.js`   377 — Hiccup log: what each drawn frame created for the first time (shader programs, textures, geometries) and the slowest frames' renderer CPU split; read …
 - `src/payphone3d.js`   597 — The story payphone where mission 1 starts: a 1990s yellow pedestal payphone with its lit PHONE sign, handset, keypad, directory and grime, the …
-- `src/render3d-api.js`   542 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
+- `src/render3d-api.js`   543 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
 - `src/render3d-frame.js`   706 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
 
 ## src/flight-view3d.js ▸ Flight camera and aerial perspective
 
 - `src/aerial-haze3d.js`   108 — Aerial perspective: the fog chunks every fog-enabled material compiles (clear to fogNear, then exp-squared), and the chase view's haze on top: the …
-- `src/flight-view3d-far.js`   375 — The far copy of the city (FAR SCENERY): built once, drawn whole from the air and cell by cell in the chase view.
+- `src/flight-view3d-far.js`   379 — The far copy of the city (FAR SCENERY): built once, drawn whole from the air and cell by cell in the chase view.
 
 ## src/chase-view3d.js ▸ Chase view 3D: the perspective camera behind the player (chase-camera.js says where it stands), the ground it sees for culling and level of detail …
 
@@ -559,10 +560,11 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/cityscape3d.js ▸ Building archetypes, roofs, shopfronts and street furniture
 
-- `src/cityscape3d-kit.js`   642 — ▸ Cityscape 3D kit: seeded random, instancing helpers, static materials, roof and window textures.
+- `src/cityscape3d-kit.js`   678 — ▸ Cityscape 3D kit: seeded random, instancing helpers, static materials, roof and window textures.
 - `src/cityscape3d-shopwindows.js`   322 — Shop windows: a painted atlas of eight shop and lobby interiors, the shared lit shop-window material and its panes.
 - `src/cityscape3d-frontage.js`   458 — Street frontage on every side of a building: which sides face a street, an alley or a yard, and their ground floors (shops, lobbies, stoops, loading …
-- `src/cityscape3d-roofs.js`   575 — ▸ Cityscape 3D roof props and facades: AC units, water towers, billboards, helipads, shopfronts, fire escapes (decorateRoof).
+- `src/cityscape3d-roofplant.js`   120 — Roof plant extras: mushroom exhaust fans, a galvanized duct run, plumbing vent stacks and conduit on the city's flat roofs, in FRONT PAINT (no new …
+- `src/cityscape3d-roofs.js`   577 — ▸ Cityscape 3D roof props and facades: AC units, water towers, billboards, helipads, shopfronts, fire escapes (decorateRoof).
 
 ## src/cityscape3d-kit.js ▸ Cityscape 3D kit: seeded random, instancing helpers, static materials, roof and window textures.
 
@@ -719,8 +721,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/ground-shader3d.js ▸ Ground materials (GLSL)
 
-- `src/ground-shader3d-pars.js`   305 — Ground shader GLSL chunks: shared uniforms and helpers (GROUND_PARS), sheet magnification (GROUND_SHEET_PARS), the marks (GROUND_MARKS).
-- `src/ground-shader3d-albedo.js`   616 — Ground shader GLSL chunks: the main albedo pass (GROUND_ALBEDO, one literal), GROUND_ROUGHNESS and GROUND_NORMAL.
+- `src/ground-shader3d-pars.js`   312 — Ground shader GLSL chunks: shared uniforms and helpers (GROUND_PARS), sheet magnification (GROUND_SHEET_PARS), the marks (GROUND_MARKS).
+- `src/ground-shader3d-albedo.js`   696 — Ground shader GLSL chunks: the main albedo pass (GROUND_ALBEDO, one literal), GROUND_ROUGHNESS and GROUND_NORMAL.
 
 ## src/helicopter3d.js ▸ Helicopter models
 

@@ -17,7 +17,16 @@ street level: rendering-weather.md. Numbers: audit/performance.md (Seventh pass)
   without one may have the south fire escape. Both draw from `cityRandom`.
 - **`cityRandom`'s stream is part of the game**: after the buildings it places the roof plant
   (`b.roofKeepOuts`) and the bus stops (`registerBusStop`). Anything new in the building loop
-  draws from its own seeded random (`frontRandom`, `shopPaintRandom`), never `cityRandom`.
+  draws from its own seeded random (`frontRandom`, `shopPaintRandom`, `roofPlantRandom`), never
+  `cityRandom` (nor may the `ROOF_TEXTURES` painters, which run before the loop, draw more or fewer).
+- **Roof skin** (roofskin3d.js): the finishes (`roofMaterial`) share one program (`cityRoof`) drawing
+  them in world space with drains, ponding, parapet grime and the wet look; the roof's size and the
+  parapet's distance come from the cap's uv gradient. Each cap carries its building's tint as a vertex
+  colour in 8-bit steps (`roofCapGeometry`: tone, age, seed, hashed from its position), which the far
+  copy carries too, so the chase view's far cells keep this material (`farTint`); the air's far copy
+  keeps the old paintings (`map`). Roofs never mark the wet reflections pass. `groundDetail().roofs`.
+- **Roof extras** (cityscape3d-roofplant.js): fans, ducts, vent stacks, conduit in FRONT PAINT (no new
+  batch), never in `b.roofKeepOuts`, under 4 units tall, clear of the recorded plant.
 
 ## Street frontage on every side (cityscape3d-frontage.js STREET FRONTAGE)
 
