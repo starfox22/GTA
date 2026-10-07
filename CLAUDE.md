@@ -126,6 +126,12 @@ packs with plain `<script src>` so the zip still plays from file://.
 - New land or bridges: append to `LAND_REGIONS`/`BRIDGES` last and keep coast-walk rhythms
   and grid blocks unchanged (compare `layout()` with the base build). Tall towers only where
   nothing stands north of them (the camera looks north): North Point Key, Monarch One.
+- Drawbridges (world-and-map-drawbridges.md): every `movable` bridge in `BRIDGES` has one state in `drawbridgeList()`
+  (its plan in `bridge.drawbridge`); raise and lower only through `drawbridgeOpenNow(d)` / `drawbridgeCloseNow(d)`, never
+  by setting `d.angle`. Traffic controllers call `drawbridgeTrafficLimit`, pursuit `drawbridgeSpanLimit`; a car on a leaf
+  carries `c.deckBridge`. Every island with more than one road bridge keeps a drawbridge (`bridgeIslands()`) and the
+  timetables keep `drawbridgeOpenShare().share` >= 0.5 (tools/tests/drawbridge-islands.mjs). A bridge appended later
+  that lands on a sea wall keeps the coastline rhythms through `lateBridgeLanding(e)`.
 - North Point Key visitors (livingcity-key.js) are the only traffic on the Key; its inbound
   lane runs 17 units off the centre line, not 24 (the sea-wall rail reaches onto the deck).
 - The Blue Hour: `BLUE_HOUR_ENTRANCE` (roofmission-entrance.js) is the only plan for the hotel's
