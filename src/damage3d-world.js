@@ -9,7 +9,7 @@
         addDecal(DECAL.pane, pane.cx, (3 + SHOP_FLOOR * 0.8) / 2, pane.face, 0, 0, 1, pane.width + 0.4, SHOP_FLOOR * 0.8 - 2.6, 0, 1, null, 0.14);
         addDecal(DECAL.shards, pane.cx, 0.12, pane.face + 7, 0, 1, 0, pane.width * 0.95, 12, Math.random() < 0.5 ? 0 : Math.PI, 0.95);
         for (let j = 0; j < 22; j++)
-          fx.push({
+          fxLegacy({
             x: pane.cx + (Math.random() - 0.5) * pane.width,
             y: 3 + Math.random() * 24,
             z: pane.face + 1,
@@ -26,6 +26,8 @@
           });
       }
       function bulletHole(x, y, z, nx, ny, size, surface, building) {
+        // The strike's dust and chips come out of this hole (fx3d-recipes.js fxImpact).
+        if (surface !== 'ground') fxNoteHole(x, y, z, nx, ny);
         if (surface === 'ground') {
           addDecal(DECAL.scuff, x, z + 0.1, y, 0, 1, 0, size * 3.2, size * 2.2, Math.random() * TAU, 0.9);
           return 'dust';
@@ -56,20 +58,9 @@
         const off = wallOffset(building, ny, z);
         spawnChunks(x + nx * (off + 1), z, y + ny * (off + 1), nx, ny, Math.round(clamp((closing - 100) / 14, 3, 14)), color, 0.5);
         if (closing > 190) spawnRubble(x + nx * off, y + ny * off, nx, ny, Math.round(clamp((closing - 180) / 10, 3, 14)), color, 8);
+        // Dust knocked off the face, rolling out into the street.
         for (let j = 0; j < 6; j++)
-          fx.push({
-            x: x + nx * 4 + (Math.random() - 0.5) * 10,
-            y: z,
-            z: y + ny * 4 + (Math.random() - 0.5) * 10,
-            vx: nx * 20 + (Math.random() - 0.5) * 20,
-            vy: 8 + Math.random() * 10,
-            vz: ny * 20 + (Math.random() - 0.5) * 20,
-            life: 1.4,
-            max: 1.4,
-            color: '#b3aa9c',
-            size: 10,
-            smoke: true,
-          });
+          fxPuff(x + nx * 4 + (fxRandom() - 0.5) * 10, z, y + ny * 4 + (fxRandom() - 0.5) * 10, nx * 20 + (fxRandom() - 0.5) * 20, 8 + fxRandom() * 10, ny * 20 + (fxRandom() - 0.5) * 20, fxBetween(1.4, 2.2), 8, 2.4, FX_DUST_LIGHT, 0.5, elevation, 2.2);
       }
       // The windows of the floors above a blast. They are painted into the facade atlas
       // (WINDOW_GRIDS in cityscape3d.js, in 512-pixel tile coordinates), so each broken
@@ -105,7 +96,7 @@
                 addDecal(DECAL.window, x, z, py, 0, 0, 1, width, paneHeight, 0, 0.95, null, wallOffset(building, 1, z) + 0.08);
                 windowsBroken++;
                 for (let j = 0; j < 4; j++)
-                  fx.push({
+                  fxLegacy({
                     x,
                     y: z,
                     z: py + 2,
@@ -219,20 +210,24 @@
         spawnRubble(x + nx * foot, y + ny * foot, nx, ny, Math.round(22 * power), color, size * 0.7);
         addDecal(DECAL.rubble, x + nx * (foot + 10), terrainHeight(x, y) + 0.15, y + ny * (foot + 10), 0, 1, 0, size * 2.4, size * 1.5, Math.atan2(nx, ny), 0.92);
         // A dust cloud rolling off the wall.
+        const shellGround = terrainHeight(x, y);
         for (let j = 0; j < 16; j++)
-          fx.push({
-            x: x + nx * (off + 4) + tx * (Math.random() - 0.5) * size,
-            y: z + (Math.random() - 0.5) * size * 0.6,
-            z: y + ny * (off + 4) + ty * (Math.random() - 0.5) * size,
-            vx: nx * (14 + Math.random() * 26) + tx * (Math.random() - 0.5) * 24,
-            vy: -4 + Math.random() * 12,
-            vz: ny * (14 + Math.random() * 26) + ty * (Math.random() - 0.5) * 24,
-            life: 2.4 + Math.random() * 1.6,
-            max: 4,
-            color: '#a79d8e',
-            size: 16 + Math.random() * 10,
-            smoke: true,
-          });
+          fxPuff(
+            x + nx * (off + 4) + tx * (fxRandom() - 0.5) * size,
+            z + (fxRandom() - 0.5) * size * 0.6,
+            y + ny * (off + 4) + ty * (fxRandom() - 0.5) * size,
+            nx * (14 + fxRandom() * 26) + tx * (fxRandom() - 0.5) * 24,
+            -4 + fxRandom() * 12,
+            ny * (14 + fxRandom() * 26) + ty * (fxRandom() - 0.5) * 24,
+            fxBetween(3, 4.8),
+            12 + fxRandom() * 8,
+            2.2,
+            FX_DUST,
+            0.62,
+            shellGround,
+            1.2,
+            -0.2 * UNITS_PER_METRE,
+          );
         const pane = ny > 0.5 && z < 16 ? shopPaneAt(building, x) : null;
         if (pane) shatterShopPane(pane);
         if (building.shopPanes && ny > 0.5)
@@ -242,51 +237,20 @@
       function groundStain(x, y, elevation, kind, size) {
         addDecal(DECAL[kind] ?? DECAL.oil, x, elevation + 0.12, y, 0, 1, 0, size, size * (0.7 + Math.random() * 0.3), Math.random() * TAU, 0.85);
       }
+      // A scrape along a wall or the road (damage-upkeep.js): streaking sparks along the scrape.
       function sparks(x, y, height, dx, dy, count) {
+        const ground = terrainHeight(x, y);
         for (let j = 0; j < count; j++) {
-          const s = 50 + Math.random() * 90,
-            spread = (Math.random() - 0.5) * 0.9;
-          fx.push({
-            x,
-            y: height,
-            z: y,
-            vx: (dx + dy * spread) * s * (Math.random() < 0.5 ? 1 : -1),
-            vy: 15 + Math.random() * 45,
-            vz: (dy - dx * spread) * s * (Math.random() < 0.5 ? 1 : -1),
-            life: 0.18 + Math.random() * 0.3,
-            max: 0.48,
-            color: Math.random() < 0.3 ? '#fff6d8' : '#ffb347',
-            size: 1.1 + Math.random() * 0.8,
-            glow: true,
-            case: true,
-          });
+          const s = 50 + fxRandom() * 90,
+            spread = (fxRandom() - 0.5) * 0.9,
+            way = fxRandom() < 0.5 ? 1 : -1;
+          fxSpark(x, height, y, (dx + dy * spread) * s * way, 15 + fxRandom() * 45, (dy - dx * spread) * s * way, 0.18 + fxRandom() * 0.3, 1.1 + fxRandom() * 0.8, ground);
         }
       }
-      // Bullet strike effects: sparks off metal, glitter off glass, a puff off masonry
-      // or dirt, a splash on water.
+      // Bullet strike effects by surface (fx3d-recipes.js STRIKES): sparks off metal, glitter off glass, dust and
+      // chips out of masonry along the wall's normal, a spurt of dirt off the ground, a splash on water.
       function impactEffect(x, z, kind, altitude) {
-        const metal = kind === 'metal',
-          glassHit = kind === 'glass',
-          water = kind === 'water';
-        const count = metal ? 8 : glassHit ? 10 : water ? 9 : 5;
-        for (let j = 0; j < count; j++)
-          fx.push({
-            x,
-            y: 5 + altitude,
-            z,
-            vx: (Math.random() - 0.5) * (water ? 30 : 100),
-            vy: water ? 50 + Math.random() * 60 : 35 + Math.random() * 55,
-            vz: (Math.random() - 0.5) * (water ? 30 : 100),
-            life: 0.18 + Math.random() * 0.22 + (water ? 0.3 : 0),
-            max: water ? 0.7 : 0.4,
-            color: metal ? '#ffd084' : glassHit ? (j % 2 ? '#e8f4fa' : '#9fc4d6') : water ? '#dcedf5' : kind === 'dust' ? '#a8987f' : '#b6aba0',
-            size: metal ? 1.7 : glassHit ? 2.6 + Math.random() * 1.6 : water ? 2.2 : 3,
-            glow: metal,
-            case: metal || glassHit || water,
-            smoke: !metal && !glassHit && !water,
-            glass: glassHit,
-            spin: glassHit ? (Math.random() - 0.5) * 18 : 0,
-          });
+        fxImpact(x, z, kind, altitude);
       }
 
       // ---- Street furniture ------------------------------------------------------------------
@@ -516,34 +480,16 @@
         if (gameTime > prop.sprayUntil || distanceBetween(prop, cameraTarget) > 900) return;
         const pressure = clamp((prop.sprayUntil - gameTime) / 10, 0.3, 1),
           count = Math.floor(deltaSeconds * 70 + Math.random());
-        for (let j = 0; j < count; j++)
-          fx.push({
-            x: prop.x + (Math.random() - 0.5) * 2,
-            y: visual.ground + 2,
-            z: prop.y + (Math.random() - 0.5) * 2,
-            vx: (Math.random() - 0.5) * 22,
-            vy: (90 + Math.random() * 45) * pressure,
-            vz: (Math.random() - 0.5) * 22,
-            life: 1.1,
-            max: 1.1,
-            color: Math.random() < 0.5 ? '#e2f1f8' : '#bcd9e6',
-            size: 2 + Math.random() * 2.5,
-            case: true,
-          });
-        if (Math.random() < deltaSeconds * 8)
-          fx.push({
-            x: prop.x,
-            y: visual.ground + 25 * pressure,
-            z: prop.y,
-            vx: 6,
-            vy: 4,
-            vz: 2,
-            life: 1.6,
-            max: 1.6,
-            color: '#e8f2f6',
-            size: 12,
-            smoke: true,
-          });
+        for (let j = 0; j < count; j++) {
+          const i = fxAdd(prop.x + (fxRandom() - 0.5) * 2, visual.ground + 2, prop.y + (fxRandom() - 0.5) * 2, (fxRandom() - 0.5) * 22, (90 + fxRandom() * 45) * pressure, (fxRandom() - 0.5) * 22, 1.1, 2 + fxRandom() * 2.5, fxRandom() < 0.5 ? FX_SPRAY_A : FX_SPRAY_B, 0.85);
+          if (i < 0) break;
+          fxs.frame[i] = FX_DROP;
+          fxs.gravity[i] = 120;
+          fxs.bounce[i] = 0.2;
+          fxs.floor[i] = visual.ground + 0.5;
+        }
+        // Mist blown off the top of the column.
+        if (Math.random() < deltaSeconds * 8) fxPuff(prop.x, visual.ground + 25 * pressure, prop.y, 6, 4, 2, 1.6, 9, 2.4, FX_SPRAY_A, 0.35, visual.ground, 1.2, 4);
       }
       function updatePropVisuals(deltaSeconds) {
         for (const prop of knockedProps) {
@@ -578,8 +524,6 @@
         drawVehicleMarks();
         flushDecals(worldDecals);
         flushDecals(vehicleDecals);
-        if (carFlames) for (let i = carFlameIndex; i < carFlames.length; i++) carFlames[i].visible = false;
-        carFlameIndex = 0;
         if (!carFireLightUsed) carFireLight.intensity = 0;
         carFireLightUsed = false;
       }

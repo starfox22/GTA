@@ -5,6 +5,9 @@
       // Tyre smoke, dust and road spray (tyresmoke3d.js): puffs alive, the graphics
       // tier's cap, the pool's capacity, puffs emitted since boot and the peak alive.
       tyreSmoke: () => (city3D ? city3D.tyreSmokeInfo() : null),
+      // The effect particles (fx3d-particles.js): live, waiting on a delay, drawn last frame (and of them the
+      // game's particles), capacity, peak, emitted, dropped, the tier's share and the draw calls (null without WebGL).
+      effectParticles: () => (city3D ? city3D.effectParticles() : null),
       // The rain and the wet street as drawn (weather3d-chase.js): both boxes of rain, the near box at
       // street level, the splashes, the haze, the wet reflections' street-level terms (null without WebGL).
       rainView: () => (city3D?.rainView ? city3D.rainView() : null),

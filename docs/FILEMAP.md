@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-521 files in the include tree, 180,098 lines.
+524 files in the include tree, 180,842 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -398,7 +398,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/hud.js ▸ HUD behaviour and the title menu
 
-- `src/hud-state.js`   657 — HUD state and pop boxes, saved settings, weapon and radio watches, stars, minimap fold and zoom (hudState, hudPop).
+- `src/hud-state.js`   656 — HUD state and pop boxes, saved settings, weapon and radio watches, stars, minimap fold and zoom (hudState, hudPop).
 - `src/hud-panels.js`   644 — HUD panels: prompts, centre cards and toasts, sniper warning, panel covers, updateHud() and the flight HUD.
 - `src/hud-clearance.js`   324 — HUD clearance: the mission card never covers the player (and the dialogue line and the waypoint pill fade if they would).
 
@@ -409,7 +409,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/postfx3d.js`   856 — ▸ HDR post-processing pipeline
 - `src/lighting3d.js`    27 — ▸ Sun, sky, reflections and night light
 - `src/searchlight3d.js`   937 — Searchlights: light shafts, ground pools, the helicopter's spot
-- `src/render3d-statics.js`   362 — Static building batches, static cells and culling (staticInView), shared materials.
+- `src/render3d-statics.js`   361 — Static building batches, static cells and culling (staticInView), shared materials.
 - `src/render3d-terrain.js`   297 — Mesh/box/rod helpers, wall textures, the ground mesh and kerbs.
 - `src/vegetation3d.js`    63 — ▸ Tree library: species, foliage atlas, wind, LOD
 - `src/render3d-streetprops.js`   340 — ▸ Street lamps and their glow halos, vehicle halos, blossom, sign() boards.
@@ -475,12 +475,12 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/render3d-vehicle-models.js`   350 — MakeVehicle()/buildVehicleModel(), modelScale, car rims, sniper sights.
 - `src/vehicle-merge3d.js`   345 — Pristine merge: a civilian car nothing has touched draws its non-casting static parts merged per material (hood + panels + paint bumpers, black and …
 - `src/render3d-prewarm-models.js`    67 — Prewarm lists: the throwaway vehicles and the sample shadow casters the title-screen prewarm builds, so each model's kit, shared materials and shader …
-- `src/render3d-effects.js`   216 — ▸ The optional player ring, the objective arrow, muzzle and head lights, smoke and flame sprites.
+- `src/render3d-effects.js`   135 — ▸ The optional player ring, the objective arrow, the muzzle and fire lights, the effect particles (fx3d-*.js), scorch, tracers, skid marks.
 - `src/render3d-resources.js`   520 — GPU resource lifecycle: shared geometries, model pruning and disposal.
 - `src/render3d-hiccups.js`   377 — Hiccup log: what each drawn frame created for the first time (shader programs, textures, geometries) and the slowest frames' renderer CPU split; read …
 - `src/payphone3d.js`   597 — The story payphone where mission 1 starts: a 1990s yellow pedestal payphone with its lit PHONE sign, handset, keypad, directory and grime, the …
-- `src/render3d-api.js`   542 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
-- `src/render3d-frame.js`   704 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
+- `src/render3d-api.js`   434 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
+- `src/render3d-frame.js`   605 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
 
 ## src/flight-view3d.js ▸ Flight camera and aerial perspective
 
@@ -534,8 +534,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/damage3d.js ▸ Crumpling bodies, decals, debris and knocked furniture
 
 - `src/damage3d-decals.js`   673 — Damage 3D decals: the decal atlas (cracked glass, soot) and world decal layers (addDecal, flushDecals).
-- `src/damage3d-bodies.js`   646 — Damage 3D vehicle bodies: shell sections, crumpling, hinged parts and glass (carBodyDamage, crumple).
-- `src/damage3d-world.js`   608 — Damage 3D world hits: shop windows, bullet holes, structure impacts and blasts, sparks, knocked props (impactEffect).
+- `src/damage3d-bodies.js`   616 — Damage 3D vehicle bodies: shell sections, crumpling, hinged parts and glass (carBodyDamage, crumple).
+- `src/damage3d-world.js`   556 — Damage 3D world hits: shop windows, bullet holes, structure impacts and blasts, sparks, knocked props (impactEffect).
 
 ## src/carblood3d.js ▸ Car blood 3D: stains on a vehicle's bodywork, decal geometry clipped to the model's own surface, painted and fitted in time slices.
 
@@ -762,9 +762,12 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/plane3d-shapes.js`   564 — Aircraft 3D plans, airfoils, fuselage and lifting surfaces, liveries (aircraftPlans, fuselageMesh).
 - `src/plane3d-build.js`   626 — Aircraft 3D static merge, labels, control surfaces, engines, gear, makePlane() and animateAircraft().
 
-## src/render3d-effects.js ▸ The optional player ring, the objective arrow, muzzle and head lights, smoke and flame sprites.
+## src/render3d-effects.js ▸ The optional player ring, the objective arrow, the muzzle and fire lights, the effect particles (fx3d-*.js), scorch, tracers, skid marks.
 
 - `src/parachute3d.js`    51 — ▸ Ram-air parachute
+- `src/fx3d-atlas.js`   201 — The effect particles' texture atlas (fx3d-particles.js): four billowed smoke puffs with their surface normals, a glow, a muzzle flash star, the …
+- `src/fx3d-particles.js`   513 — Effect particles: smoke, dust, fire, sparks, flashes, glass and drops in one instanced billboard pool, stepped from a struct-of-arrays store (fxAdd) …
+- `src/fx3d-recipes.js`   402 — Effect recipes on the particle pool (fx3d-particles.js): a blast's flash, fireball, smoke column, dust ring, sparks and debris; muzzle flashes …
 
 ## src/parachute3d.js ▸ Ram-air parachute
 

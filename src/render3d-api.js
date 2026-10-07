@@ -15,6 +15,8 @@
         },
         // Tyre smoke, dust and spray (tyresmoke3d.js): puffs alive, the tier's cap, emitted, peak.
         tyreSmokeInfo: () => tyreSmokeReport(),
+        // The effect particle pool (fx3d-particles.js): live, drawn, capacity, peak, emitted, dropped.
+        effectParticles: () => fxReport(),
         // The mountain villages as drawn (mountain-village3d.js): meshes, draw calls, triangles per town.
         mountainInfo: () => mountainVillageInfo(),
         /**
@@ -413,130 +415,20 @@
         // A rocket motor's flame and a puff of its smoke trail at a point in the
         // air (apache.js; `motor` 1 while it burns, less as it coasts).
         smokePuff(x, z, altitude = 0, motor = 1) {
-          const y = altitude + 9;
-          if (motor >= 1)
-            fx.push({ x, y, z, vx: 0, vy: 0, vz: 0, life: 0.06, max: 0.06, color: '#ffd28a', size: 7, glow: true });
-          fx.push({
-            x: x + randomBetween(-1.5, 1.5),
-            y,
-            z: z + randomBetween(-1.5, 1.5),
-            vx: randomBetween(-4, 4),
-            vy: randomBetween(2, 7),
-            vz: randomBetween(-4, 4),
-            life: 1.4 * motor + 0.4,
-            max: 1.4 * motor + 0.4,
-            color: '#c9c6bb',
-            size: 4 + motor * 2,
-            smoke: true,
-          });
+          fxRocketTrail(x, z, altitude, motor);
         },
         // `height`: the muzzle over `altitude` (a drive-by's gun out of the window, driveby.js).
         fire(x, z, a, rocket, altitude = 0, height = 11) {
           muzzleUntil = gameTime + 0.055;
           muzzleLight.position.set(x, height + altitude, z);
+          muzzleLight.distance = 95;
           muzzleLight.intensity = rocket ? 1250 : 760;
-          for (let j = 0; j < 4; j++)
-            fx.push({
-              x: x + Math.cos(a) * j * 3,
-              y: height + altitude,
-              z: z + Math.sin(a) * j * 3,
-              vx: Math.cos(a) * 65,
-              vy: 5,
-              vz: Math.sin(a) * 65,
-              life: 0.045,
-              max: 0.045,
-              color: j ? '#ffa33a' : '#fff6d2',
-              size: rocket ? 18 : 7 - j,
-              glow: true,
-            });
-          if (!rocket) {
-            fx.push({
-              x,
-              y: height + altitude,
-              z,
-              vx: -Math.sin(a) * 42,
-              vy: 44,
-              vz: Math.cos(a) * 42,
-              life: 1.7,
-              max: 1.7,
-              color: '#caa55e',
-              size: 1.5,
-              case: true,
-              floor: altitude + 0.35,
-            });
-            fx.push({
-              x,
-              y: height + altitude,
-              z,
-              vx: Math.cos(a) * 15,
-              vy: 13,
-              vz: Math.sin(a) * 15,
-              life: 0.36,
-              max: 0.36,
-              color: '#aab4b8',
-              size: 5,
-              smoke: true,
-            });
-          }
+          fxMuzzle(x, z, a, rocket, altitude, height);
         },
         impact(x, z, kind, altitude = 0) {
           impactEffect(x, z, kind, altitude);
         },
+        // A blast (fx3d-recipes.js BLAST): flash, fireball, smoke column, dust, sparks, chunks and its light.
         explosion(x, z, power = 1, altitude = terrainHeight(x, z)) {
-          const ring = blastRings[blastRingIndex++ % blastRings.length];
-          ring.position.set(x, altitude + 0.38, z);
-          ring.userData = {
-            born: gameTime,
-            power,
-          };
-          ring.visible = true;
-          for (let j = 0; j < 66; j++) {
-            const a = Math.random() * TAU,
-              s = (25 + Math.random() * 170) * power,
-              glow = j < 20;
-            const life = glow ? 0.22 + Math.random() * 0.65 : 1.8 + Math.random() * 2.7;
-            fx.push({
-              x: x + Math.cos(a) * 5,
-              y: altitude + 6,
-              z: z + Math.sin(a) * 5,
-              vx: Math.cos(a) * s,
-              vy: glow ? 25 + Math.random() * 75 : 30 + Math.random() * 38,
-              vz: Math.sin(a) * s,
-              life,
-              max: life,
-              color: glow ? (j < 5 ? '#fff2bf' : '#ff8c31') : j % 2 ? '#3c4147' : '#656970',
-              size: (glow ? 14 : 22) * power,
-              glow,
-              smoke: !glow,
-            });
-          }
-          for (let j = 0; j < 16; j++) {
-            const a = Math.random() * TAU;
-            fx.push({
-              x,
-              y: altitude + 12,
-              z,
-              vx: Math.cos(a) * randomBetween(80, 180),
-              vy: randomBetween(70, 180),
-              vz: Math.sin(a) * randomBetween(80, 180),
-              life: 1.6,
-              max: 1.6,
-              color: '#ab9e81',
-              size: randomBetween(1, 3),
-              case: true,
-            });
-          }
-          if (
-            distanceBetween(
-              {
-                x,
-                y: z,
-              },
-              player,
-            ) < 700
-          ) {
-            muzzleLight.position.set(x, altitude + 20, z);
-            muzzleLight.intensity = 1900 * power;
-            muzzleUntil = gameTime + 0.18;
-          }
+          fxExplosion(x, z, power, altitude);
         },

@@ -345,59 +345,21 @@
             );
             arrowGroup.rotation.y = gameTime * 0.6;
           }
-          if (gameTime > muzzleUntil) muzzleLight.intensity = 0;
-          for (const ring of blastRings) {
-            if (!ring.visible) continue;
-            const age = gameTime - ring.userData.born;
-            ring.visible = age < 0.6;
-            const radius = 12 + age * 220 * ring.userData.power;
-            ring.scale.set(radius, radius, 1);
-            ring.material.opacity = Math.max(0, 0.35 * (1 - age / 0.6));
-          }
-          let fi = 0,
-            li = 0;
+          // The muzzle light, or a blast's flash and fireball glow dying away (fx3d-recipes.js).
+          fxFlashLight();
+          // Fires on the ground (game `fires`): flame and smoke particles, and a flickering light each.
+          let li = 0;
           for (const fire of fires) {
             if (distanceBetween(fire, cameraTarget) > 1000) continue;
             const fade = Math.min(1, fire.life / 3),
-              age = fire.max - fire.life,
               altitude = fire.altitude ?? terrainHeight(fire.x, fire.y);
-            for (let j = 0; j < 3 && fi < flamePool.length; j++) {
-              const sp = flamePool[fi++],
-                phase = gameTime * 7 + j * 2.4 + fire.x;
-              sp.visible = true;
-              sp.position.set(
-                fire.x + Math.sin(phase * 0.5) * 13 * fire.power,
-                altitude + 12 + Math.sin(phase) * 3,
-                fire.y + Math.cos(phase * 0.4) * 11 * fire.power,
-              );
-              sp.scale.set(
-                (28 + Math.sin(phase) * 6) * fire.power,
-                (52 + Math.cos(phase * 1.3) * 12) * fire.power,
-                1,
-              );
-              sp.material.opacity = fade * 0.9;
-            }
+            if (deltaSeconds > 0) fxGroundFire(fire, altitude, fade, deltaSeconds);
             if (li < fireLights.length) {
               const light = fireLights[li++];
               light.position.set(fire.x, altitude + 20, fire.y);
               light.intensity = fade * fire.power * (540 + Math.sin(gameTime * 17) * 90);
             }
-            if (deltaSeconds > 0 && Math.random() < deltaSeconds * 12)
-              fx.push({
-                x: fire.x + randomBetween(-10, 10),
-                y: altitude + 18,
-                z: fire.y + randomBetween(-10, 10),
-                vx: 7,
-                vy: randomBetween(22, 40),
-                vz: 3,
-                life: 3,
-                max: 3,
-                color: age > 8 ? '#3b4146' : '#606166',
-                size: 18 * fire.power,
-                smoke: true,
-              });
           }
-          for (; fi < flamePool.length; fi++) flamePool[fi].visible = false;
           for (; li < fireLights.length; li++) fireLights[li].intensity = 0;
           for (let i = 0; i < scorchMeshes.length; i++) {
             const d = debris[debris.length - 1 - i],
@@ -409,73 +371,12 @@
               m.material.opacity = Math.min(0.8, d.life / 10);
             }
           }
-          if (fx.length > 620) fx.splice(0, fx.length - 620);
-          let pi = 0;
-          // Sprites are unlit: blood drops, casings, glass and smoke take the scene's
-          // light level so they do not glow in the dark (flames and sparks do).
-          const spriteLight = 0.3 + 0.7 * daylight();
-          for (let i = fx.length - 1; i >= 0; i--) {
-            const p = fx[i];
-            p.life -= deltaSeconds;
-            if (p.life <= 0) {
-              fx.splice(i, 1);
-              continue;
-            }
-            p.x += p.vx * deltaSeconds;
-            p.y += p.vy * deltaSeconds;
-            p.z += p.vz * deltaSeconds;
-            if (p.case) {
-              // A spent case falls, bounces and lies a moment on the ground before it fades.
-              p.vy -= 120 * deltaSeconds;
-              if (p.y < (p.floor ?? 0.5)) {
-                p.y = p.floor ?? 0.5;
-                const bounce = p.vy < -12;
-                p.vy = bounce ? -p.vy * 0.35 : 0;
-                p.vx *= bounce ? 0.55 : 0.6;
-                p.vz *= bounce ? 0.55 : 0.6;
-              }
-            } else {
-              const drag = Math.pow(0.97, deltaSeconds * 60);
-              p.vx *= drag;
-              p.vz *= drag;
-            }
-            p.y = Math.max(0.5, p.y);
-            if (pi >= particlePool.length) continue;
-            const s = particlePool[pi++];
-            s.visible = true;
-            s.position.set(p.x, p.y, p.z);
-            const a = p.life / p.max;
-            s.material.map = p.glow ? haloTx : p.glass ? glassTx : smokeTx;
-            const turn = p.glass ? p.spin * (p.max - p.life) : 0;
-            if (s.material.rotation !== turn) s.material.rotation = turn;
-            s.material.color.copy(cachedColor(p.color));
-            if (!p.glow) s.material.color.multiplyScalar(spriteLight);
-            s.material.opacity = Math.min(p.smoke ? 0.56 : 0.96, a * 1.7);
-            s.material.blending = p.glow ? Three.AdditiveBlending : Three.NormalBlending;
-            let sz = p.case ? p.size : p.size * (1 + (1 - a) * 2);
-            s.scale.set(sz, sz, 1);
-          }
-          for (const p of particles) {
-            if (pi >= particlePool.length) break;
-            const s = particlePool[pi++];
-            s.visible = true;
-            s.position.set(
-              p.x,
-              p.blood || p.flame || p.mist ? Math.max(0.3, p.z) : 2 + (1 - p.life / p.max) * 13,
-              p.y,
-            );
-            s.material.map = p.blood ? bloodDropTx : p.flame ? flameTx : smokeTx;
-            s.material.color.copy(cachedColor(p.color));
-            if (!p.flame) s.material.color.multiplyScalar(spriteLight);
-            // A wound's mist (blood.js): a faint puff that spreads as it fades.
-            s.material.opacity = p.blood ? 0.97 : p.mist ? clamp(p.life / p.max, 0, 1) * 0.45 : clamp(p.life / p.max, 0, 0.7);
-            s.material.blending = p.flame ? Three.AdditiveBlending : Three.NormalBlending;
-            const puff = p.mist ? 1.6 + (1 - p.life / p.max) * 2.2 : 1.6;
-            s.scale.set(p.size * (p.blood ? 1.1 : puff), p.size * (p.blood ? 1.8 : puff), 1);
-          }
-          for (; pi < particlePool.length; pi++) particlePool[pi].visible = false;
+          // Smoke, dust, fire, sparks, flashes, glass and the game's particles: one sorted, lit pool, one draw call.
+          drawFxParticles(deltaSeconds);
           let bi = 0;
           for (const b of bullets) {
+            // A rocket's smoke trail (the Apache's rockets lay their own, apache.js smokePuff).
+            if (b.rocket && !b.apacheRocket && deltaSeconds > 0 && fxRandom() < deltaSeconds * 45) fxRocketTrail(b.x, b.y, b.altitude || 0, 1);
             if (bi + 6 > tracerPositions.length) break;
             // A sniper round (combat-rules.js SNIPER FIRE) leaves a longer streak.
             const tail = b.tracer || 0.009;

@@ -1,8 +1,7 @@
       // Static building batches, static cells and culling (staticInView), shared materials.
       const allBuildings = [],
         statics = [],
-        carModels = new Map(),
-        fx = [];
+        carModels = new Map();
       const boxGeo = new Three.BoxGeometry(1, 1, 1),
         sphereGeo = new Three.SphereGeometry(1, 12, 8),
         wheelGeo = new Three.CylinderGeometry(1, 1, 1, 20),

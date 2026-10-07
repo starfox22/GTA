@@ -1,4 +1,4 @@
-      // The optional player ring, the objective arrow, muzzle and head lights, smoke and flame sprites.
+      // The optional player ring, the objective arrow, the muzzle and fire lights, the effect particles (fx3d-*.js), scorch, tracers, skid marks.
       /**
        * PLAYER AT NIGHT
        * No light follows the player (the pool of light that rode at their feet
@@ -51,97 +51,16 @@
         sm.fillRect(x - r, y - r, r * 2, r * 2);
       }
       const smokeTx = new Three.CanvasTexture(smokeCanvas);
-      // Broken glass (fx with `glass`): tempered glass bursts into a shower of small cubes, so one sprite is a
-      // scatter of sharp glints that tumbles (its rotation), never a soft puff (a pale square at street level).
-      const glassCanvas = document.createElement('canvas');
-      glassCanvas.width = glassCanvas.height = 64;
-      const gc = glassCanvas.getContext('2d');
-      for (let i = 0; i < 22; i++) {
-        const a = i * 2.39996,
-          r = 3 + 26 * Math.sqrt((i + 0.5) / 22),
-          x = 32 + Math.cos(a) * r,
-          y = 32 + Math.sin(a) * r,
-          k = 0.9 + (i % 3) * 0.8;
-        gc.fillStyle = i % 4 === 0 ? '#ffffff' : i % 4 === 1 ? '#ffffffd0' : '#ffffff90';
-        gc.beginPath();
-        gc.moveTo(x, y - k * 1.3);
-        gc.lineTo(x + k, y + k * 0.7);
-        gc.lineTo(x - k * 0.9, y + k * 0.5);
-        gc.closePath();
-        gc.fill();
-      }
-      const glassTx = new Three.CanvasTexture(glassCanvas);
-      const flameCanvas = document.createElement('canvas');
-      flameCanvas.width = 64;
-      flameCanvas.height = 128;
-      const fg = flameCanvas.getContext('2d');
-      for (let i = 0; i < 9; i++) {
-        const x = 32 + Math.sin(i * 2.4) * 11,
-          y = 88 - i * 7,
-          r = 21 - i * 1.5,
-          gr = fg.createRadialGradient(x, y, 1, x, y, r);
-        gr.addColorStop(0, i < 3 ? '#fff5ca' : '#ffbb65');
-        gr.addColorStop(0.45, '#ff8313c0');
-        gr.addColorStop(1, '#dd3b0000');
-        fg.fillStyle = gr;
-        fg.fillRect(x - r, y - r, r * 2, r * 2);
-      }
-      const flameTx = new Three.CanvasTexture(flameCanvas);
-      flameTx.colorSpace = Three.SRGBColorSpace;
-      /* FX SPRITE ORDER: smoke, flame, sparks, blood drops and the blast ring are drawn
-         after every ground decal (blood pools 3, scorch 2, mud 3), tyre smoke (4) and the
-         car blood skin (6). Three.js sorts transparent objects by renderOrder before
-         depth and none of these write depth, so with the default 0 a blood pool under a
-         blast was painted over the fireball. */
+      /* FX SPRITE ORDER: the effect particles (smoke, flame, sparks, blood drops: fx3d-particles.js)
+         are drawn after every ground decal (blood pools 3, scorch 2, mud 3), tyre smoke (4) and
+         the car blood skin (6). Three.js sorts transparent objects by renderOrder before depth
+         and none of these write depth, so with the default 0 a blood pool under a blast was
+         painted over the fireball. */
       const FX_SPRITE_ORDER = 8;
-      const smokeMat = new Three.SpriteMaterial({
-        map: smokeTx,
-        color: '#8b8b8f',
-        transparent: true,
-        depthWrite: false,
-      });
-      const blastRings = Array.from(
-        {
-          length: 10,
-        },
-        () => {
-          const m = new Three.Mesh(
-            new Three.RingGeometry(0.82, 1, 48),
-            new Three.MeshBasicMaterial({
-              color: '#e7d0a6',
-              transparent: true,
-              opacity: 0,
-              side: Three.DoubleSide,
-              depthWrite: false,
-            }),
-          );
-          m.rotation.x = -Math.PI / 2;
-          m.visible = false;
-          m.renderOrder = FX_SPRITE_ORDER;
-          scene.add(m);
-          return m;
-        },
-      );
-      let blastRingIndex = 0;
-      const flamePool = Array.from(
-        {
-          length: 72,
-        },
-        () => {
-          const s = new Three.Sprite(
-            new Three.SpriteMaterial({
-              map: flameTx,
-              transparent: true,
-              depthWrite: false,
-              blending: Three.AdditiveBlending,
-            }),
-          );
-          s.visible = false;
-          s.renderOrder = FX_SPRITE_ORDER;
-          scene.add(s);
-          return s;
-        },
-      );
+      // Smoke, dust, fire, sparks, flashes, glass and drops: one instanced pool and its recipes.
+      // @include src/fx3d-atlas.js
+      // @include src/fx3d-particles.js
+      // @include src/fx3d-recipes.js
       const fireLights = Array.from(
         {
           length: 4,
@@ -172,26 +91,6 @@
           m.renderOrder = 2;
           scene.add(m);
           return m;
-        },
-      );
-      const bloodDropCanvas = document.createElement('canvas');
-      bloodDropCanvas.width = bloodDropCanvas.height = 32;
-      const dropCtx = bloodDropCanvas.getContext('2d');
-      dropCtx.fillStyle = '#ffffff';
-      dropCtx.beginPath();
-      dropCtx.ellipse(16, 16, 9, 13, 0.25, 0, TAU);
-      dropCtx.fill();
-      const bloodDropTx = new Three.CanvasTexture(bloodDropCanvas);
-      const particlePool = Array.from(
-        {
-          length: 480,
-        },
-        () => {
-          const s = new Three.Sprite(smokeMat.clone());
-          s.visible = false;
-          s.renderOrder = FX_SPRITE_ORDER;
-          scene.add(s);
-          return s;
         },
       );
       const tracerGeo = new Three.BufferGeometry(),

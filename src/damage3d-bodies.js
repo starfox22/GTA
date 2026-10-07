@@ -352,7 +352,7 @@
           z = c.y + local[0] * sin + local[1] * cos,
           y = entityElevation(c) + 11 * (m.modelScale || 1);
         for (let j = 0; j < 14; j++)
-          fx.push({
+          fxLegacy({
             x: x + (Math.random() - 0.5) * 6,
             y,
             z: z + (Math.random() - 0.5) * 6,
@@ -468,43 +468,16 @@
       }
 
       // ---- Smoke and fire ------------------------------------------------------------------
-      let carFlames = null,
-        carFlameIndex = 0,
-        carFireLightUsed = false;
+      // Flames and smoke are particles (fx3d-recipes.js fxFlames, fxSmoke); one light flickers over the fire nearest.
+      let carFireLightUsed = false;
       const carFireLight = new Three.PointLight('#ff8f3a', 0, 170, 1.6);
       scene.add(carFireLight);
-      function flameAt(x, y, z, size, strength) {
-        if (!carFlames)
-          carFlames = Array.from({ length: 32 }, () => {
-            const s = new Three.Sprite(
-              new Three.SpriteMaterial({ map: flameTx, transparent: true, depthWrite: false, blending: Three.AdditiveBlending }),
-            );
-            s.visible = false;
-            s.renderOrder = FX_SPRITE_ORDER; // over floor blood and decals (render3d-effects.js)
-            scene.add(s);
-            return s;
-          });
-        if (carFlameIndex >= carFlames.length) return;
-        const s = carFlames[carFlameIndex++];
-        s.visible = true;
-        s.position.set(x, y + size * 0.35, z);
-        s.scale.set(size * 0.62, size, 1);
-        s.material.opacity = strength;
+      /* Flames from a patch `size` units across at (x, height y, z), `strength` 0..1, emitted over `dt` s. */
+      function flameAt(x, y, z, size, strength, dt, ground) {
+        fxFlames(x, y, z, size * 0.85, strength, 8 + size * 0.9, dt, ground);
       }
-      function engineSmoke(x, y, z, color, size, rise) {
-        fx.push({
-          x: x + (Math.random() - 0.5) * 4,
-          y,
-          z: z + (Math.random() - 0.5) * 4,
-          vx: 4 + (Math.random() - 0.5) * 6,
-          vy: rise,
-          vz: 2 + (Math.random() - 0.5) * 6,
-          life: 2.2,
-          max: 2.2,
-          color,
-          size,
-          smoke: true,
-        });
+      function engineSmoke(x, y, z, color, size, rise, ground, alpha) {
+        fxSmoke(x, y, z, cachedColor(color), size, rise, alpha, ground);
       }
       /**
        * Per-frame damage effects for a visible vehicle: grey wisps from a hurt engine,
@@ -516,14 +489,14 @@
         if (deltaSeconds <= 0 || spec.bicycle) return;
         const damage = c.damage,
           health = c.hp / c.maxhp,
-          elevation = entityElevation(c) + (c.hop?.z || 0),
+          ground = entityElevation(c),
+          elevation = ground + (c.hop?.z || 0),
           engineX = m.car ? spec.l * 0.33 : spec.truck ? spec.l * 0.3 : 0,
           engineY = elevation + (m.car ? (m.dims.h + 1.2) * (m.modelScale || 1) : spec.truck ? 14 : 9),
           cos = Math.cos(c.a),
           sin = Math.sin(c.a),
           x = c.x + cos * engineX,
-          z = c.y + sin * engineX,
-          chance = (rate) => Math.random() < 1 - Math.exp(-rate * deltaSeconds);
+          z = c.y + sin * engineX;
         if (c.hp <= 0) {
           const age = gameTime - c.deadTime;
           if (age < 12) {
@@ -531,7 +504,7 @@
             const strength = clamp(1 - age / 12, 0, 1);
             for (let k = 0; k < 3; k++) {
               const along = (k - 1) * spec.l * 0.28;
-              flameAt(c.x + cos * along, elevation + 6, c.y + sin * along, (16 + Math.sin(gameTime * 11 + k * 2) * 3) * (0.6 + strength * 0.6), 0.9 * strength);
+              flameAt(c.x + cos * along, elevation + 6, c.y + sin * along, 16 * (0.6 + strength * 0.6), 0.45 + 0.55 * strength, deltaSeconds, ground);
             }
             if (!carFireLightUsed) {
               carFireLightUsed = true;
@@ -539,30 +512,25 @@
               carFireLight.intensity = 620 * strength * (0.85 + 0.15 * Math.sin(gameTime * 17));
             }
           }
-          if (age < 55 && chance(age < 12 ? 16 : 6 * (1 - age / 55)))
-            engineSmoke(c.x, elevation + 10, c.y, age < 12 ? '#27292c' : '#4a4d52', age < 12 ? 17 : 12, 18);
+          // Thick black smoke while it burns, thinning to grey as it smoulders.
+          if (age < 55 && fxRandom() < 1 - Math.exp(-(age < 12 ? 16 : 6 * (1 - age / 55)) * deltaSeconds))
+            engineSmoke(c.x, elevation + 10, c.y, age < 12 ? '#27292c' : '#4a4d52', age < 12 ? 17 : 12, 18, ground, age < 12 ? 0.72 : 0.5 * (1 - age / 55) + 0.15);
           return;
         }
         if (damage?.burning) {
           const grow = clamp(damage.burning / 3, 0.35, 1);
-          for (let k = 0; k < 2; k++)
-            flameAt(
-              x + (k - 0.5) * 3 * -sin,
-              engineY - 1,
-              z + (k - 0.5) * 3 * cos,
-              (9 + Math.sin(gameTime * 13 + k * 3) * 2.5) * grow,
-              0.95,
-            );
+          for (let k = 0; k < 2; k++) flameAt(x + (k - 0.5) * 3 * -sin, engineY - 1, z + (k - 0.5) * 3 * cos, 9 * grow, 0.95, deltaSeconds, ground);
           if (!carFireLightUsed) {
             carFireLightUsed = true;
             carFireLight.position.set(x, engineY + 8, z);
             carFireLight.intensity = 380 * grow * (0.85 + 0.15 * Math.sin(gameTime * 19));
           }
-          if (chance(14)) engineSmoke(x, engineY + 3, z, '#222427', 14, 22);
+          if (fxRandom() < 1 - Math.exp(-14 * deltaSeconds)) engineSmoke(x, engineY + 3, z, '#222427', 14, 22, ground, 0.7);
           return;
         }
-        if (health < 0.6 && chance((0.6 - health) * 22))
-          engineSmoke(x, engineY, z, health < 0.4 ? '#55595f' : '#a4a8ad', health < 0.4 ? 11 : 8, health < 0.4 ? 16 : 12);
+        // A hurt engine: grey wisps, darker and thicker as it fails.
+        if (health < 0.6 && fxRandom() < 1 - Math.exp(-(0.6 - health) * 22 * deltaSeconds))
+          engineSmoke(x, engineY, z, health < 0.4 ? '#55595f' : '#a4a8ad', health < 0.4 ? 11 : 8, health < 0.4 ? 16 : 12, ground, health < 0.4 ? 0.5 : 0.3);
       }
 
       // ---- Marks on vehicles ------------------------------------------------------------------

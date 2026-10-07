@@ -748,7 +748,9 @@
           renderer.setRenderTarget(null);
           renderer.render(scene, camera);
           noteSceneCalls();
-          frameStats.totalCalls = frameStats.sceneCalls;
+          // The effect particles over it (fx3d-particles.js FX PASS).
+          renderFxPass(null, 1, 1);
+          frameStats.totalCalls = renderer.info.render.calls;
           return;
         }
         const size = renderer.getDrawingBufferSize(postSizeScratch);
@@ -756,6 +758,9 @@
         renderer.setRenderTarget(sceneTarget);
         renderer.render(scene, camera);
         noteSceneCalls();
+        // The effect particles over it (fx3d-particles.js FX PASS): soft against its depth where the target is
+        // multisampled (its depth texture is then a resolved copy, not the attachment being drawn into).
+        renderFxPass(sceneTarget.samples > 0 ? sceneTarget.depthTexture : null, postWidth, postHeight);
         // The chase view's cloud shadows, per pixel from the depth (clouds3d-sky.js).
         renderChaseCloudShade();
         const tier = postTier;
