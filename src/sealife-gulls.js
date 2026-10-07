@@ -76,8 +76,7 @@
       const list = [];
       const c = player.car;
       if (isBoat(c) && Math.abs(c.speed || 0) > 3 * KNOTS && Math.abs(c.speed || 0) < 30 * KNOTS) list.push(c);
-      const v = typeof drawbridge !== 'undefined' ? drawbridge.vessel : null;
-      if (v && (v.speed || 0) > 1) list.push(v);
+      for (const d of drawbridgeList()) if (d.vessel && (d.vessel.speed || 0) > 1) list.push(d.vessel);
       for (const s of LINERS) if (s.voyage && (s.speed || 0) > 2 * KNOTS) list.push(s);
       return list;
     }

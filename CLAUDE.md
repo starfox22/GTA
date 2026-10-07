@@ -126,6 +126,12 @@ packs with plain `<script src>` so the zip still plays from file://.
 - New land or bridges: append to `LAND_REGIONS`/`BRIDGES` last and keep coast-walk rhythms
   and grid blocks unchanged (compare `layout()` with the base build). Tall towers only where
   nothing stands north of them (the camera looks north): North Point Key, Monarch One.
+- Drawbridges (world-and-map-drawbridges.md): every `movable` bridge in `BRIDGES` has one state in `drawbridgeList()`
+  (its plan in `bridge.drawbridge`); raise and lower only through `drawbridgeOpenNow(d)` / `drawbridgeCloseNow(d)`, never
+  by setting `d.angle`. Traffic controllers call `drawbridgeTrafficLimit`, pursuit `drawbridgeSpanLimit`; a car on a leaf
+  carries `c.deckBridge`. Every island with more than one road bridge keeps a drawbridge (`bridgeIslands()`) and the
+  timetables keep `drawbridgeOpenShare().share` >= 0.5 (tools/tests/drawbridge-islands.mjs). A bridge appended later
+  that lands on a sea wall keeps the coastline rhythms through `lateBridgeLanding(e)`.
 - North Point Key visitors (livingcity-key.js) are the only traffic on the Key; its inbound
   lane runs 17 units off the centre line, not 24 (the sea-wall rail reaches onto the deck).
 - The Blue Hour: `BLUE_HOUR_ENTRANCE` (roofmission-entrance.js) is the only plan for the hotel's
@@ -287,6 +293,7 @@ packs with plain `<script src>` so the zip still plays from file://.
   must still pose every bone. His bind skeleton is the rig's joints at `PB_WIDTH` (the 'player' outfit's
   `widthAbsolute`: change them together). A vertex's part (`pbSkin.w`, a bone index) is the one rule for telling
   his body parts apart (wounds, severed limbs); tools/tests/player-body.mjs holds proportions and the pose sweep.
+  A weapon's hand placement on his body is `PB_GRIPS` (player-body3d-grips.js): a new weapon adds its grip there.
 - Car cabins (cars3d-interior.js): civilian and police glass is see-through (`carGlassMaterial`, premultiplied; the
   tint closes past `CAR_GLASS_CLEAR`); the cabin merges at the end of each kit's trim (impostors draw `kit.trimOuter`,
   so exterior trim goes before the cabin); `carSeatPlan` (`m.seats`) is the one seat rule; crowd3d-driveby.js SEATED

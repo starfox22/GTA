@@ -19,13 +19,16 @@ keeps until god mode is switched off (`settleDemoStoryIndex`).
   the Fort Sentinel alarm), teleport (map pick mode: `#mapOverlay.god-pick` gives the canvas the
   whole panel, the hint banner floats over its top edge and the side list, filters, legend and route
   tools step aside; `godMapToggled` refits the canvas pixels after the class change; the wheel zooms
-  about the cursor, `zoomMap(factor, at)`).
+  about the cursor, `zoomMap(factor, at)`), drawbridges (god-drawbridges.js: chips ALL and one per
+  drawbridge, RAISE NOW through `drawbridgeOpenNow` (bells, gates, the span cleared, then the
+  swing: never a jump), LOWER through `drawbridgeCloseNow`; the label lists what each is doing).
 - `godTeleport(x, y)` is the safe move: nearest walkable spot (not a loose mountain face
   steeper than `SLIP_GRADE`, where the body would slide off), a boat spawned on open water,
   the current road vehicle placed on the nearest lane where `canSpawnCar` passes, aircraft
   kept airborne; then `teleportPlayer`, camera snap, crowd resettle, a second's grace.
 - Console: `god(on)`, `godPanel()`, `godTeleport(x, y)`, `godRefill()`, `godLosePolice()`,
-  `godFreeze(on)`.
+  `godFreeze(on)`, `godDrawbridges(action, pick)`, `godDrawbridgePanel(close)` (opens the tab on
+  the drawbridge row and returns its chips' and buttons' screen centres; tools/tests/god-drawbridges.mjs).
 
 ## Skip the ride (ride-skip.js)
 

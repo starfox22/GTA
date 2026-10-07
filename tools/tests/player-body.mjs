@@ -9,7 +9,7 @@ import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
-const FILES = ['src/player-body3d-mesher.js', 'src/player-body3d-anatomy.js', 'src/player-body3d-head.js', 'src/player-body3d-extremities.js', 'src/player-body3d-build.js', 'src/player-body3d-shader.js'];
+const FILES = ['src/player-body3d-mesher.js', 'src/player-body3d-anatomy.js', 'src/player-body3d-head.js', 'src/player-body3d-extremities.js', 'src/player-body3d-build.js', 'src/player-body3d-shader.js', 'src/player-body3d-grips.js'];
 
 function load(Three) {
   const rig = fs.readFileSync(path.join(ROOT, 'src/character-rig3d.js'), 'utf8').match(/const RIG = \{[\s\S]*?\n {6}\};/)[0];
@@ -23,7 +23,7 @@ function load(Three) {
   ).join('\n');
   const prelude = `const TAU = Math.PI * 2, PERSON_HEIGHT = 14; const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
     function cityMaterialPatch() {} const playerRim = { value: null }; const pbUniforms = {};\n${rig}\n${near}`;
-  return new Function('Three', prelude + '\n' + source + '\nreturn { pbClock, pbBuildSteps, pbMaterialPatch, pbDepthPatch, PB_UNITS, PB_BONES, PB_WIDTH, RIG };')(Three);
+  return new Function('Three', prelude + '\n' + source + '\nreturn { pbClock, pbBuildSteps, pbMaterialPatch, pbDepthPatch, pbGripsFor, PB_GRIPS, PB_UNITS, PB_BONES, PB_WIDTH, RIG };')(Three);
 }
 
 // The rig's joint chain as drawCrowdPerson builds it (crowdJoint: parent · T · Ry · Rx · Rz), for a pose.
@@ -157,14 +157,30 @@ export default async function (t) {
   const data = step.value;
   data.unitsPerMetre = api.PB_UNITS;
   t.note(`built in ${Date.now() - started} ms: ${data.vertices} vertices, ${data.triangles} triangles`);
-  t.near(data.triangles, 40000, 130000, 'player body triangles');
+  t.near(data.triangles, 70000, 130000, 'player body triangles (HIGH and ULTRA)');
+  // LOW and MEDIUM: the same body meshed coarser, about half the triangles, the same height.
+  {
+    const coarse = api.pbBuildSteps('coarse');
+    let r;
+    api.pbClock.until = performance.now() + 30;
+    while (!(r = coarse.next()).done) {
+      await tick();
+      api.pbClock.until = performance.now() + 30;
+    }
+    api.pbClock.until = Infinity;
+    t.near(+(r.value.triangles / data.triangles).toFixed(2), 0.3, 0.6, 'LOW/MEDIUM triangles over HIGH');
+    let top = -1;
+    const Q = r.value.attributes.position;
+    for (let i = 1; i < Q.length; i += 3) top = Math.max(top, Q[i] / api.PB_UNITS);
+    t.near(+top.toFixed(3), 1.8, 1.83, 'LOW/MEDIUM: top of the hair (m)');
+  }
   const A = data.attributes,
     P = A.position,
     S = A.pbSkin,
     Z = A.pbZone,
     n = data.vertices,
     M = (v, k) => P[v * 3 + k] / api.PB_UNITS;
-  for (const name of ['position', 'normal', 'pbSkin', 'pbGrip', 'pbGripN', 'pbZone']) t.finite([...A[name].slice(0, 20000)], name);
+  for (const name of ['position', 'normal', 'pbSkin', 'pbGrip', 'pbGripN', 'pbTrig', 'pbTrigN', 'pbZone']) t.finite([...A[name].slice(0, 20000)], name);
   // Bones, weights and parts.
   let bad = 0;
   const parts = new Set();
@@ -218,6 +234,9 @@ export default async function (t) {
   let shoulders = 0,
     chestFront = -9,
     chestBack = 9,
+    chestWidth = 0,
+    waistWidth = 0,
+    bellyFront = -9,
     fingertips = 9;
   for (let v = 0; v < n; v++) {
     const x = posed[v * 3] / W,
@@ -230,10 +249,47 @@ export default async function (t) {
       chestBack = Math.min(chestBack, x);
     }
     if (part === 7 || part === 8) fingertips = Math.min(fingertips, y);
+    if (part <= 1 && y > 1.24 && y < 1.32) chestWidth = Math.max(chestWidth, Math.abs(z) * 2);
+    if (part <= 1 && y > 1.0 && y < 1.06) waistWidth = Math.max(waistWidth, Math.abs(z) * 2);
+    if (part <= 1 && y > 1.02 && y < 1.14 && Math.abs(z) < 0.06) bellyFront = Math.max(bellyFront, x);
   }
-  t.near(+shoulders.toFixed(3), 0.44, 0.52, 'shoulder breadth across the deltoids (m)');
+  // Athletic for his age: broad shoulders, a V from the chest to the waist, a flat stomach.
+  t.near(+shoulders.toFixed(3), 0.48, 0.56, 'shoulder breadth across the deltoids (m)');
+  t.near(+(chestWidth / waistWidth).toFixed(3), 1.08, 1.4, 'chest over waist width (the V)');
+  t.near(+((bellyFront - chestFront) * 1000).toFixed(1), -60, 5, 'belly forward of the chest (mm; flat stomach)');
   t.near(+(chestFront - chestBack).toFixed(3), 0.22, 0.31, 'chest depth (m)');
   t.near(+(fingertips / stature).toFixed(3), 0.34, 0.41, 'fingertips at mid-thigh (share of stature)');
+  // The hands: the trigger shape differs from the grip only on the index finger; every weapon's grip frames are
+  // proper rotations (no mirror, no scale) whose fist sits on the weapon's grip.
+  {
+    const G = A.pbGrip,
+      T = A.pbTrig;
+    let hand = 0,
+      moved = 0;
+    for (let v = 0; v < n; v++) {
+      if (Math.round(Z[v * 4]) !== 3) continue;
+      hand++;
+      if (Math.hypot(G[v * 4] - T[v * 3], G[v * 4 + 1] - T[v * 3 + 1], G[v * 4 + 2] - T[v * 3 + 2]) > 0.01) moved++;
+    }
+    t.near(+(moved / hand).toFixed(3), 0.03, 0.3, 'share of the hands the trigger finger moves');
+    for (const weapon of Object.keys(api.PB_GRIPS)) {
+      const g = api.pbGripsFor(weapon);
+      for (const m of [g.fire[0], g.fire[1], g.support].filter(Boolean)) {
+        const e = m.elements,
+          det = new Three.Matrix3().setFromMatrix4(m).determinant();
+        t.assert(Math.abs(det - 1) < 1e-6 && Math.abs(Math.hypot(e[0], e[1], e[2]) - 1) < 1e-6, `${weapon}: a grip frame is not a rotation (det ${det})`);
+      }
+      // The firing fist's centre (hand space) lands on the grip's axis.
+      const fist = new Three.Vector3(0, -0.088 * api.PB_UNITS, -0.03 * api.PB_UNITS).applyMatrix4(g.fire[1]),
+        f = api.PB_GRIPS[weapon].fire,
+        ax = -Math.sin(f.angle),
+        ay = Math.cos(f.angle),
+        dx = fist.x - f.at[0],
+        dy = fist.y - f.at[1],
+        off = Math.abs(dx * ay - dy * ax) + Math.abs(fist.z);
+      t.assert(off < 1e-6, `${weapon}: the firing fist is ${off} off the grip's axis`);
+    }
+  }
   // The pose set: edges, triangles and the seams of the separate parts.
   const edgeLen = (Q, a, b) => Math.hypot(Q[a * 3] - Q[b * 3], Q[a * 3 + 1] - Q[b * 3 + 1], Q[a * 3 + 2] - Q[b * 3 + 2]);
   const area = (Q, a, b, c) => {

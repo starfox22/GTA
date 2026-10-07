@@ -23,7 +23,10 @@ roofs, garages): the plan is a game file, the meshes its `*3d.js` twin, coordina
   physics for cars with `c.isle`) and pavement walk graph that crosses only at zebras.
   The REGENCY BRIDGE link runs on up the mainland's Regency Road; its cars turn round
   `ISLE_END_TRIM` short of the road's end (which lies on Eagle Pass's centreline, in a
-  bend), yielding to anything ahead or across. Console `regencyTraffic()`.
+  bend), yielding to anything ahead or across. Console `regencyTraffic()`. The CORONATION
+  BRIDGE link (a drawbridge, world-and-map-drawbridges.md) runs from the Westgate / Ocean
+  Crescent corner over to Sunset Pier and turns round on Pier Island Drive by the car park;
+  island cars stop at its stop lines (`drawbridgeTrafficLimit` in `isleTrafficControl`).
 - Night: its own lamp light map over `MONARCH_BOUNDS`. Console `monarch()`.
 
 ## Ridgeline: villages, 4x4 club, hill climb (mountain-village*.js, offroad*.js, mountain-club3d.js)

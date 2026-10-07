@@ -14,12 +14,16 @@
        * `rim`, in his own outfit: playerBodyOn) it draws the body set BODY_PLAYER, whose body parts are empty,
        * and hands the joint matrices to playerBodyBone and the hands' grip to playerBodyGrip instead.
        * playerBodyFlush (finishCrowd3D) turns them into the bones' dual quaternions and shows the mesh only on
-       * a frame that posed it. Weapons, phones and props stay the crowd's.
+       * a frame that posed it. Weapons, phones and props stay the crowd's, but his hands take them his way
+       * (player-body3d-grips.js): round the grip, the trigger finger along the guard, the other hand under the
+       * handguard or round the firing hand. His eyes look where he aims (or glance about) and blink.
        *
        * BUILD: the meshes take about a second of work, so pbBuildSteps runs as a generator a few milliseconds
-       * at a time from the renderer's start (more behind the title, less in play). Until it is done the player
-       * is drawn from the near set as before (playerBodyOn is false). The material is on the scene from the
-       * start (a placeholder triangle with every attribute), so the title prewarm compiles both programs.
+       * at a time from the renderer's start (more behind the title, less in play), fine on HIGH and ULTRA and
+       * coarse on LOW and MEDIUM (PB_SPACINGS). If play starts before it is done, the rest is done at once on
+       * the first frame of play (playerBodyStart), so he is never seen in the crowd's body; a tier change of
+       * class rebuilds in slices behind the old mesh. The material is on the scene from the start (a placeholder
+       * with every attribute), so the title prewarm compiles both programs (`playerModel().programs`).
        */
       // @include src/player-body3d-mesher.js
       // @include src/player-body3d-anatomy.js
@@ -27,11 +31,15 @@
       // @include src/player-body3d-extremities.js
       // @include src/player-body3d-build.js
       // @include src/player-body3d-shader.js
+      // @include src/player-body3d-grips.js
       const pbUniforms = {
         pbQr: { value: Array.from({ length: PB_BONES }, () => new Three.Vector4(0, 0, 0, 1)) },
         pbQd: { value: Array.from({ length: PB_BONES }, () => new Three.Vector4(0, 0, 0, 0)) },
         pbScale: { value: 1 },
         pbGripAmount: { value: new Three.Vector2(0.15, 0.15) },
+        pbTrigger: { value: new Three.Vector2(0, 0) },
+        pbBlink: { value: 0 },
+        pbGaze: { value: new Three.Vector2(0, 0) },
       };
       const playerBodyMaterial = (() => {
           const material = new Three.MeshStandardMaterial({ color: '#ffffff', roughness: 0.8, metalness: 0 });
@@ -45,31 +53,28 @@
           material.customProgramCacheKey = () => 'player-body-depth';
           return material;
         })();
+      const PB_ATTRIBUTES = [
+        ['position', 3],
+        ['normal', 3],
+        ['pbSkin', 4],
+        ['pbGrip', 4],
+        ['pbGripN', 3],
+        ['pbTrig', 3],
+        ['pbTrigN', 3],
+        ['pbZone', 4],
+      ];
       /* A geometry with every attribute the body has (the placeholder until the build is done). */
       function pbGeometry(data) {
-        const g = new Three.BufferGeometry(),
-          a = data.attributes;
-        g.setAttribute('position', new Three.BufferAttribute(a.position, 3));
-        g.setAttribute('normal', new Three.BufferAttribute(a.normal, 3));
-        g.setAttribute('pbSkin', new Three.BufferAttribute(a.pbSkin, 4));
-        g.setAttribute('pbGrip', new Three.BufferAttribute(a.pbGrip, 4));
-        g.setAttribute('pbGripN', new Three.BufferAttribute(a.pbGripN, 3));
-        g.setAttribute('pbZone', new Three.BufferAttribute(a.pbZone, 4));
+        const g = new Three.BufferGeometry();
+        for (const [name, size] of PB_ATTRIBUTES) g.setAttribute(name, new Three.BufferAttribute(data.attributes[name], size));
         // (Under 65,536 vertices: a 16-bit index.)
-        g.setIndex(new Three.BufferAttribute(data.index.length && data.attributes.position.length / 3 < 65536 ? Uint16Array.from(data.index) : data.index, 1));
+        g.setIndex(new Three.BufferAttribute(data.attributes.position.length / 3 < 65536 ? Uint16Array.from(data.index) : data.index, 1));
         g.boundingSphere = new Three.Sphere(new Three.Vector3(0, 7, 0), 9);
         return g;
       }
       const playerBodyMesh = (() => {
         const placeholder = pbGeometry({
-          attributes: {
-            position: new Float32Array(9),
-            normal: new Float32Array([0, 1, 0, 0, 1, 0, 0, 1, 0]),
-            pbSkin: new Float32Array(12),
-            pbGrip: new Float32Array(12),
-            pbGripN: new Float32Array(9),
-            pbZone: new Float32Array(12),
-          },
+          attributes: Object.fromEntries(PB_ATTRIBUTES.map(([name, size]) => [name, new Float32Array(3 * size)])),
           index: new Uint32Array([0, 1, 2]),
         });
         const mesh = new Three.Mesh(placeholder, playerBodyMaterial);
@@ -84,29 +89,48 @@
       })();
       // The bind skeleton in rig units (rotation as a quaternion, origin) once built; the frame's captured joints.
       const pbState = {
-          ready: false,
-          enabled: true,
-          error: '',
-          data: null,
-          bindQ: [],
-          bindO: [],
-          frames: Array.from({ length: PB_BONES }, () => new Three.Matrix4()),
-          posed: 0,
-          shown: false,
-          grip: [0.15, 0.15],
-          slices: 0,
-          workMs: 0,
-          started: performance.now(),
-        },
-        pbBuild = pbBuildSteps();
+        ready: false,
+        enabled: true,
+        error: '',
+        data: null,
+        detail: null,
+        building: null,
+        build: null,
+        bindQ: [],
+        bindO: [],
+        frames: Array.from({ length: PB_BONES }, () => new Three.Matrix4()),
+        posed: 0,
+        shown: false,
+        grip: [0.15, 0.15, 0, 0],
+        slices: 0,
+        workMs: 0,
+        finishedAtStart: false,
+        firstShow: null,
+        blinkAt: 2,
+        blinkStart: -1,
+        gazeAt: 0,
+        gazeYaw: 0,
+        gazePitch: 0,
+        gazeWantYaw: 0,
+        gazeWantPitch: 0,
+      };
+      /* The meshing the tier asks for: fine on HIGH and ULTRA, coarse on LOW and MEDIUM. */
+      function pbDetailWanted() {
+        const name = (activeTier || graphicsTier()).name;
+        return name === 'LOW' || name === 'MEDIUM' ? 'coarse' : 'fine';
+      }
       function pbBuildStep(finish = false) {
-        if (pbState.ready || pbState.error) return;
+        if (pbState.error) return;
+        if (!pbState.build) {
+          pbState.building = pbDetailWanted();
+          pbState.build = pbBuildSteps(pbState.building);
+        }
         const t0 = performance.now(),
-          budget = finish ? 1e9 : gameMode === 'menu' ? 9 : 4;
+          budget = finish ? 1e9 : gameMode === 'menu' ? 12 : 4;
         pbClock.until = t0 + budget;
         let r;
         try {
-          r = pbBuild.next();
+          r = pbState.build.next();
         } catch (error) {
           pbState.error = String(error).slice(0, 200);
           console.error('player body: build failed', error);
@@ -118,13 +142,15 @@
         pbState.workMs += performance.now() - t0;
         if (!r.done) {
           if (finish) return pbBuildStep(true);
-          setTimeout(() => pbBuildStep(), gameMode === 'menu' ? 4 : 12);
+          setTimeout(() => pbBuildStep(), gameMode === 'menu' ? 2 : 12);
           return;
         }
+        pbState.build = null;
         const data = r.value,
           old = playerBodyMesh.geometry;
         // Only the summary is kept: the arrays live on in the geometry's attributes.
         pbState.data = { ms: data.ms, vertices: data.vertices, triangles: data.triangles, parts: data.parts };
+        pbState.detail = data.detail;
         for (let b = 0; b < PB_BONES; b++) {
           const bone = data.bones[b],
             R = bone.R,
@@ -134,20 +160,39 @@
         }
         playerBodyMesh.geometry = pbGeometry(data);
         old.dispose();
-        // Its buffers go to the GPU now (render3d-resources.js OFF-SCREEN UPLOAD), not in the frame he first shows.
+        // Its buffers go to the GPU now (render3d-resources.js OFF-SCREEN UPLOAD), not in the frame he first shows,
+        // and with shadows on, the sun's pass compiles his shadow program too (the title prewarm's shadow samples
+        // come after the far city's uploads, which a quick start can cut short).
         const shown = playerBodyMesh.visible;
         playerBodyMesh.visible = true;
         try {
-          uploadMeshes([playerBodyMesh], false);
+          uploadMeshes([playerBodyMesh], renderer.shadowMap.enabled);
         } catch (error) {
           console.warn('player body: upload', error);
         }
         playerBodyMesh.visible = shown;
+        if (!pbState.ready) bootMark('player-body');
         pbState.ready = true;
-        pbState.builtAt = performance.now();
-        bootMark('player-body');
       }
       setTimeout(() => pbBuildStep(), 0);
+      /**
+       * Play begins (the first frame packing the crowd outside the menu): a build still running is finished at
+       * once, in the frame play starts, so the player never shows in the crowd's body first. Later, a change of
+       * tier class (LOW/MEDIUM against HIGH/ULTRA) rebuilds in slices while the old mesh stays.
+       */
+      function playerBodyStart() {
+        if (pbState.error) return;
+        if (!pbState.ready) {
+          if (gameMode === 'menu') return;
+          pbState.finishedAtStart = true;
+          pbBuildStep(true);
+          return;
+        }
+        if (!pbState.build && pbState.detail !== pbDetailWanted()) {
+          pbState.build = pbBuildSteps((pbState.building = pbDetailWanted()));
+          setTimeout(() => pbBuildStep(), 0);
+        }
+      }
       // The body set the player is drawn from: the close set's kit and hats, its own parts left empty.
       const PB_EMPTY_PART = { mesh: null, n: 0, capacity: 0 };
       const BODY_PLAYER = { ...BODY_CLOSE };
@@ -160,15 +205,56 @@
         pbState.frames[i].copy(matrix);
         pbState.posed |= 1 << i;
       }
-      function playerBodyGrip(left, right) {
+      /* How far each hand closes (0 relaxed to 1 gripping) and whether its index finger lies along a trigger guard. */
+      function playerBodyGrip(left, right, triggerLeft = 0, triggerRight = 0) {
         pbState.grip[0] = left;
         pbState.grip[1] = right;
+        pbState.grip[2] = triggerLeft;
+        pbState.grip[3] = triggerRight;
       }
       const pbRot = new Three.Matrix4(),
         pbQ = new Three.Quaternion(),
         pbQInv = new Three.Quaternion(),
         pbT = new Three.Vector3(),
-        pbO = new Three.Vector3();
+        pbO = new Three.Vector3(),
+        pbLook = new Three.Vector3();
+      /**
+       * EYES: a blink every 2-6 s (now and then two), 0.16 s down and up; the eyes lead the head to where he
+       * aims (the chase camera's pitch when it is the view), else small glances about the way he faces, each a
+       * quick jump (a saccade) and then still. Head-relative yaw and pitch, clamped to what eyes can turn.
+       * (Looks only: Math.random is fine here, nothing in the game reads them.)
+       */
+      function pbEyes(head) {
+        const t = gameTime;
+        if (t >= pbState.blinkAt || pbState.blinkAt - t > 10) {
+          pbState.blinkStart = t;
+          pbState.blinkAt = t + (Math.random() < 0.15 ? 0.3 : 2 + Math.random() * 4);
+        }
+        const k = (t - pbState.blinkStart) / 0.16;
+        pbUniforms.pbBlink.value = k >= 0 && k < 1 ? Math.sin(Math.PI * k) : 0;
+        const e = head.elements,
+          sx = Math.hypot(e[0], e[1], e[2]) || 1,
+          aimHeading = playerAimFacing();
+        if (aimHeading !== null) {
+          const pitch = chaseViewActive ? -(chaseCam.viewPitch || 0) : 0;
+          // The map heading in three.js's frame (map x, elevation, map y).
+          pbLook.set(Math.cos(aimHeading) * Math.cos(pitch), Math.sin(pitch), Math.sin(aimHeading) * Math.cos(pitch));
+          // Into the head's frame (x forward, y up, z right).
+          const f = (e[0] * pbLook.x + e[1] * pbLook.y + e[2] * pbLook.z) / sx,
+            u = (e[4] * pbLook.x + e[5] * pbLook.y + e[6] * pbLook.z) / sx,
+            r = (e[8] * pbLook.x + e[9] * pbLook.y + e[10] * pbLook.z) / sx;
+          pbState.gazeWantYaw = clamp(Math.atan2(r, f), -0.55, 0.55);
+          pbState.gazeWantPitch = clamp(Math.asin(clamp(u, -1, 1)), -0.35, 0.3);
+        } else if (t >= pbState.gazeAt || pbState.gazeAt - t > 10) {
+          pbState.gazeAt = t + 0.8 + Math.random() * 2.2;
+          pbState.gazeWantYaw = (Math.random() - 0.5) * 0.5;
+          pbState.gazeWantPitch = (Math.random() - 0.6) * 0.18;
+        }
+        const ease = 1 - Math.exp(-(lastDelta || 1 / 60) * 30);
+        pbState.gazeYaw += (pbState.gazeWantYaw - pbState.gazeYaw) * ease;
+        pbState.gazePitch += (pbState.gazeWantPitch - pbState.gazePitch) * ease;
+        pbUniforms.pbGaze.value.set(pbState.gazeYaw, pbState.gazePitch);
+      }
       /* Per frame, after the crowd is packed: the bones' dual quaternions from the captured joints. */
       function playerBodyFlush() {
         const all = (1 << PB_BONES) - 1,
@@ -177,6 +263,8 @@
         pbState.shown = shown;
         if (playerBodyMesh.visible !== shown) playerBodyMesh.visible = shown;
         if (!shown) return;
+        // Evidence for the prewarm: did both programs exist before he was first drawn?
+        if (!pbState.firstShow) pbState.firstShow = pbPrograms();
         const qr = pbUniforms.pbQr.value,
           qd = pbUniforms.pbQd.value;
         for (let b = 0; b < PB_BONES; b++) {
@@ -201,25 +289,40 @@
           );
         }
         pbUniforms.pbGripAmount.value.set(pbState.grip[0], pbState.grip[1]);
+        pbUniforms.pbTrigger.value.set(pbState.grip[2], pbState.grip[3]);
+        pbEyes(pbState.frames[2]);
+      }
+      /* Whether the camera and the shadow programs exist (compiled by the prewarm or a draw). */
+      function pbPrograms() {
+        return { camera: !!renderer.properties.get(playerBodyMaterial).currentProgram, shadow: !!renderer.properties.get(playerBodyDepth).currentProgram };
       }
       /* Console (DeadEndCity.playerModel): the body's build, size and parts, and whether it drew this frame;
          `finish` completes a build still running in slices at once (tests and tools). */
       function playerBodyReport(finish = false) {
-        if (finish && !pbState.ready) pbBuildStep(true);
+        if (finish && (!pbState.ready || pbState.build)) pbBuildStep(true);
         const d = pbState.data;
         return {
           ready: pbState.ready,
           enabled: pbState.enabled,
           error: pbState.error || null,
+          detail: pbState.detail,
+          rebuilding: pbState.ready && !!pbState.build,
           shown: pbState.shown,
           visible: playerBodyMesh.visible,
           buildMs: d ? d.ms : null,
           workMs: Math.round(pbState.workMs),
           slices: pbState.slices,
+          // The build ran out of time behind the title and was finished on the first frame of play.
+          finishedAtStart: pbState.finishedAtStart,
           vertices: d ? d.vertices : 0,
           triangles: d ? d.triangles : 0,
           parts: d ? d.parts : null,
           grip: pbState.grip.slice(),
+          blink: +pbUniforms.pbBlink.value.toFixed(2),
+          gaze: [+pbState.gazeYaw.toFixed(2), +pbState.gazePitch.toFixed(2)],
+          // Programs now, and when he was first drawn (true there: the prewarm compiled them first).
+          programs: pbPrograms(),
+          programsAtFirstDraw: pbState.firstShow,
           drawCalls: { camera: 1, shadow: playerBodyMesh.castShadow ? 1 : 0 },
         };
       }

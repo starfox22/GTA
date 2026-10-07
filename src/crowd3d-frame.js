@@ -216,6 +216,8 @@
         // The chase view's far figures stand well beyond its shadow reach (chase-view3d.js CHASE SHADOWS).
         if (P.figure.mesh.castShadow === chaseViewActive) P.figure.mesh.castShadow = P.figureLeg.mesh.castShadow = !chaseViewActive;
         trackCarTransition();
+        // The player's own body: finished at once if play began before its build was done (player-body3d.js).
+        playerBodyStart();
         chooseNearPeople(specials);
         if (zoomedIn)
           for (let i = 0; i < pedestrians.length; i++) {

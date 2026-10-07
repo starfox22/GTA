@@ -14,9 +14,11 @@
         [-0.0095, -0.094, -0.04, [0.04, 0.025, 0.019], 0.0095, 0.0074],
         [-0.0265, -0.087, -0.11, [0.031, 0.018, 0.016], 0.0085, 0.0066],
       ];
+      // Curl per joint: relaxed, gripping, and (index finger only) the trigger finger, laid along the guard.
       const PB_CURL = [
         [0.22, 0.32, 0.18],
         [1.2, 1.5, 0.78],
+        [0.42, 0.62, 0.3],
       ];
       // The thumb: base, then the directions of its three segments relaxed and gripping, lengths and radii.
       const PB_THUMB = {
@@ -93,9 +95,9 @@
         return { ops };
       }
       /* Which segment a hand vertex follows: { chain: 0-3 finger, 4 thumb, -1 palm; along: metres past the base }. */
-      function pbHandSegments() {
+      function pbHandSegments(trigger = false) {
         const chains = [];
-        for (let f = 0; f < 4; f++) chains.push({ relaxed: pbFingerChain(f, 0), grip: pbFingerChain(f, 1), r: PB_FINGERS[f][4] });
+        for (let f = 0; f < 4; f++) chains.push({ relaxed: pbFingerChain(f, 0), grip: pbFingerChain(f, trigger && f === 0 ? 2 : 1), r: PB_FINGERS[f][4] });
         chains.push({ relaxed: pbThumbChain(0), grip: pbThumbChain(1), r: PB_THUMB.radii[0] });
         return chains;
       }
@@ -104,8 +106,8 @@
        * to the gripping one (segment frames: origin at the joint, y back along the segment), blended over a few
        * millimetres across each joint so the knuckles bend rather than break.
        */
-      function pbGripShape(position) {
-        const chains = pbHandSegments(),
+      function pbGripShape(position, trigger = false) {
+        const chains = pbHandSegments(trigger),
           count = position.length / 3,
           out = new Float32Array(position),
           tmp = [0, 0, 0];

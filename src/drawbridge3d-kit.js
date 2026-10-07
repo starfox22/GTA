@@ -1,5 +1,25 @@
-      // Drawbridge 3D kit: view state, pit render order, lenses, glows, gratings and racks.
-      const drawbridgeView = { built: false, leaves: [], arms: [], lenses: [], glows: [], pinions: [], locks: [], floodlit: [], ship: null };
+      // Drawbridge 3D kit: per-bridge view state, the looks, pit render order, lenses, glows, gratings and racks.
+      /* One view per drawbridge (its meshes, lenses and glows, the game state it
+         draws); `drawbridgeView` is the one being built or updated, so the kit's
+         builders below add to it. */
+      const drawbridgeViews = [];
+      let drawbridgeView = null;
+      function newDrawbridgeView(state) {
+        const view = { built: false, state, look: DRAWBRIDGE_LOOKS[state.plan.look] || DRAWBRIDGE_LOOKS.beaux, leaves: [], arms: [], lenses: [], glows: [], pinions: [], locks: [], floodlit: [], ship: null };
+        drawbridgeViews.push(view);
+        return (drawbridgeView = view);
+      }
+      /* Each drawbridge's own look: the leaves' paint, the railings, the tender's
+         houses (houseStyle: 'beaux' limestone with copper hip roofs at Palm Sound,
+         'deco' stepped stucco towers with fins and portholes, 'modern' 1960s
+         concrete booths with flat cantilevered roofs, 'steel' clad control cabins),
+         the pier stone and the lamp standards. */
+      const DRAWBRIDGE_LOOKS = {
+        beaux: { paint: '#46615a', glow: '#ffdca6', underside: '#59625f', stone: null, houseStyle: 'beaux', wall: '#e6dfcf', roof: '#5f9583', trim: '#8d887e', lamp: 'globe' },
+        deco: { paint: '#5aa79a', glow: '#d8fff4', underside: '#6f8a86', stone: '#d9d2c3', houseStyle: 'deco', wall: '#f1ead8', roof: '#3f9c94', trim: '#c9a659', lamp: 'globe' },
+        modern: { paint: '#d8dcd6', glow: '#ffe9c2', underside: '#9aa29f', stone: '#c7c3b8', houseStyle: 'modern', wall: '#dad6cb', roof: '#2f6f7a', trim: '#7b8584', lamp: 'twin' },
+        steel: { paint: '#8a4a2e', glow: '#ffe2b8', underside: '#6c625a', stone: '#9c9a94', houseStyle: 'steel', wall: '#b9bdbd', roof: '#3b4146', trim: '#5c5f60', lamp: 'cobra' },
+      };
       // Drawn before the pit mask (renderOrder -2), which is drawn before the water.
       const DRAWBRIDGE_PIT_ORDER = -3;
       // A signal lens: dark glass until switched on, then its colour, bright enough to bloom.
@@ -251,10 +271,21 @@
           bridgeMember(leaf, V3(X(x), d - depth0, -zz), V3(X(x + 56), d - depth1, zz), 1, 1, iron);
           bridgeMember(leaf, V3(X(x), d - depth0, zz), V3(X(x + 56), d - depth1, -zz), 1, 1, iron);
         }
-        // Globe lamps along the leaf's railings: their light pools are in the deck's light map.
+        // Lamps along the leaf's railings (globes, or the look's plain arm lamp):
+        // their light pools are in the deck's light map.
         for (const x of [L * 0.25, L * 0.5, L * 0.75])
           for (const side of [-1, 1]) {
             const z = side * (half + 1.8);
+            if (drawbridgeView.look.lamp !== 'globe') {
+              box(leaf, X(x), top + 1.2, z, 2.4, 2.4, 2.4, iron);
+              box(leaf, X(x), top + 15, z, 1.1, 28, 1.1, iron);
+              box(leaf, X(x), top + 28.6, z - side * 4.6, 0.8, 0.8, 9.2, iron);
+              box(leaf, X(x), top + 28.4, z - side * 9.4, 2.8, 1, 4.6, iron);
+              box(leaf, X(x), top + 27.8, z - side * 9.4, 2.3, 0.3, 3.9, bridgeLampMaterial);
+              kitLight(kit.lights, leaf, X(x), top + 27.4, z - side * 9.4, '#ffe7c0');
+              kit.pools.push({ x: hinge + X(x), z: z - side * 12, size: 38 });
+              continue;
+            }
             box(leaf, X(x), top + 1.5, z, 3.2, 3, 3.2, iron);
             box(leaf, X(x), top + 13, z, 1.3, 24, 1.3, iron);
             box(leaf, X(x), top + 23, z, 0.8, 0.8, 11, iron);
@@ -303,7 +334,7 @@
           half = lay.half,
           X = (x) => hinge + dir * x,
           mid = (x0, x1) => (X(x0) + X(x1)) / 2,
-          stone = BRIDGE_KIT.stone,
+          stone = drawbridgeView.look.stone ? tint(drawbridgeView.look.stone, 'matte') : BRIDGE_KIT.stone,
           granite = tint('#8f8a80', 'matte'),
           wall = tint('#a39f95', 'matte'),
           floor = tint('#3b3a37', 'matte'),
@@ -427,6 +458,7 @@
       // tall windows, a glazed lookout and a copper hip roof. `main` is the
       // two-storey control house.
       function drawbridgeHouse(g, h, s, kit, main) {
+        if (drawbridgeView.look.houseStyle !== 'beaux') return drawbridgeHouseStyled(g, h, kit, main, drawbridgeView.look);
         const out = Math.sign(h.across),
           x = h.along,
           z = h.across,
@@ -505,10 +537,15 @@
           box(g, x + (sx * (w + 5)) / 2, cabY + 3.2, z + (sz * (dz + 5)) / 2, lx, 0.5, lz, iron);
           box(g, x + (sx * (w + 5)) / 2, cabY + 1.6, z + (sz * (dz + 5)) / 2, lx, 0.3, lz, iron);
         }
-        const mastX = x + w / 2 - 4,
-          mastZ = z,
-          mastTop = cabY + cabH + roofH + 16;
-        box(g, mastX, (cabY + cabH + mastTop) / 2, mastZ, 1.2, mastTop - cabY - cabH, 1.2, iron);
+        const mastTop = drawbridgeMast(g, kit, x + w / 2 - 4, z, cabY + cabH, cabY + cabH + roofH + 16, iron);
+        bridgePlaque(g, 'BRIDGE TENDER', drawbridgeView.state.plan.tender || 'BASCULE BRIDGE', '#e9e3d0', '#39463f', 18, x, corniceY - 3, z - out * (dz / 2 + 0.3), out > 0 ? Math.PI : 0);
+        return mastTop;
+      }
+      /* The control house's vessel signal mast: red over green to each way up the
+         channel (lit by the state: red while the span is down, green fully open),
+         the horn and a red lamp on top. Returns the mast's top. */
+      function drawbridgeMast(g, kit, mastX, mastZ, base, mastTop, iron) {
+        box(g, mastX, (base + mastTop) / 2, mastZ, 1.2, mastTop - base, 1.2, iron);
         for (const face of [-1, 1]) {
           const fz = mastZ + face * 1.6;
           box(g, mastX, mastTop - 5, fz, 3, 8, 0.6, iron);
@@ -521,7 +558,6 @@
         horn.rotation.z = Math.PI / 2;
         box(g, mastX, mastTop + 0.6, mastZ, 0.3, 1.6, 0.3, iron);
         kitLight(kit.lights, g, mastX, mastTop + 1.6, mastZ, '#ff5040');
-        bridgePlaque(g, 'BRIDGE TENDER', 'PALM SOUND BASCULE · 1926', '#e9e3d0', '#39463f', 18, x, corniceY - 3, z - out * (dz / 2 + 0.3), out > 0 ? Math.PI : 0);
         return mastTop;
       }
       // Timber fender wall along the channel from the pier's cutwater, ending in a dolphin.

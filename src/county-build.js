@@ -257,6 +257,8 @@
       };
       forEachPedestrianNear(c.x, c.y, 160, yieldTo);
       if (!player.car) yieldTo(player);
+      // Held at a drawbridge's stop line while it opens (drawbridge.js).
+      desired = drawbridgeTrafficLimit(c, desired);
       return {
         steer: clamp(da * 2.5, -1.6, 1.6),
         desired,

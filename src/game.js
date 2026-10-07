@@ -106,6 +106,7 @@
     // @include src/mountain-village.js
     // @include src/casino.js
     // @include src/skyline.js
+    // @include src/coronation-bridge.js
     // @include src/renewal.js
     // @include src/sports-fixtures.js
     // @include src/sportsbook-odds.js
@@ -151,6 +152,7 @@
     // @include src/markers.js
     // @include src/foliage-cutaway.js
     // @include src/god-panel.js
+    // @include src/god-drawbridges.js
     // @include src/driving.js
     // @include src/chase-camera.js
     // @include src/chase-rules.js

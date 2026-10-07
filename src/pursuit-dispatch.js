@@ -604,6 +604,8 @@
       else if (plan.mode === 'chase' && (!policeTier().ram || gameTime < contactHoldUntil) && plan.distance < 110)
         // One star: tail the runner, do not ram them.
         desired = Math.min(desired, plan.quarrySpeed * 0.95);
+      // Never into a raised drawbridge's gap: brake to the trunnion (drawbridge.js).
+      desired = drawbridgeSpanLimit(c, desired);
       // Yaw needs rolling wheels: a stopped car cannot spin on the spot.
       steer *= clamp(Math.abs(along) / 55, 0.3, 1) * (along < -5 ? -1 : 1);
       // Stuck: wanting to go, not going; or nose to nose with a car, shoving it.

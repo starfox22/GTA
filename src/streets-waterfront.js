@@ -98,9 +98,9 @@
       promenadeCache = [];
       let step = 0;
       for (const e of coastSegments()) {
-        // Where North Point Key's bridge lands, the walk it replaced still counts
-        // in the rhythm, so every spot after it keeps its kind (skyline-islet.js).
-        const keyLanding = northPointKeyBridgeLanding(e);
+        // Where North Point Key's and the Coronation Bridge land, the walk they replaced
+        // still counts in the rhythm, so every spot after keeps its kind (lateBridgeLanding).
+        const keyLanding = lateBridgeLanding(e);
         if ((e.opening && !keyLanding) || !PROMENADE_REGIONS.includes(e.region) || esplanadeGivesWay(e)) continue;
         const p = esplanadePoint(e);
         if (!groundAt(p.x, p.y, 10)) continue;

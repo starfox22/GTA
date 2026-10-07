@@ -162,16 +162,10 @@ here when polishing; delete a line when it is fixed. Newest features first.
 
 ## The player's body (player-body3d*.js; docs/areas/people-and-crowd-player.md)
 
-- On a weapon the hand takes the gun's frame (crowd3d-draw.js `drawHold`), whose long axis runs down the grip:
-  the curled fingers wrap a line along the barrel rather than round the grip. A proper grip needs the hand
-  turned 90 degrees about its palm normal and the wrist target moved back to match.
-- The build is ~1 s of work on a desktop (2-3 s on the cloud box), sliced behind the title; a player who starts
-  at once sees the near-set figure until it is done (a one-time switch). Caching the arrays (IndexedDB) or a
-  worker would remove it.
-- ~92k triangles (46k vertices) and one shadow draw: LOW could mesh at coarser spacings (`PB_SPACING`).
-- The face is sculpted from primitives: the cheeks and the corners of the mouth read soft at the closest chase
-  zoom; a second pass on the lids and the nasolabial area would help most. No eye movement or blinking.
-- Arms raised far over the head stretch the armpit (the A-pose bind); corrective shapes would hold the deltoid.
+- The build is ~1 s of work on a desktop (2-3 s on the cloud box), sliced behind the title; a player who presses
+  play at once waits for the rest on that first frame. Caching the arrays (IndexedDB) or a worker would remove it.
+- Hands straight up (surrender) still bulge the tee's sides under the arms (no collarbone or corrective shapes).
+- The face is sculpted from primitives: no expressions; the eyes move and blink but the lids do not follow them.
 
 ## Mountain island (mountain-village*.js, mountain-club3d.js)
 - Northridge metal roofs (rescue barn, general store) were lightened but not re-shot.
@@ -181,6 +175,10 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - Counterweights leave the top-down view after sinking ~10 m.
 - The ALBATROSS's fore-and-aft sails are nearly edge-on from above.
 - About half the onlookers wander off before the leaves are fully up.
+- The three newer drawbridges' ships (LADY GRACE, CORAL QUEEN, WANDERER) are ALBATROSS's hull in other paint with no
+  name board (the boat-name atlas is full); the Coronation Bridge's land approaches are painted as deck on the ground
+  tiles; the 'deco', 'modern' and 'steel' tender's houses and the Coronation Bridge are checked on SwiftShader only.
+- Monarch Isle's traffic turns round on Pier Island Drive: Sunset Pier has no traffic of its own to hand over to.
 
 ## Helicopters (helicopter3d*.js)
 - "POLICE" on the tail boom is partly hidden from low side angles; the door seal is small.

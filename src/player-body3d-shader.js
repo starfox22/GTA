@@ -11,11 +11,14 @@
         attribute vec4 pbSkin;
         attribute vec4 pbGrip;
         attribute vec3 pbGripN;
+        attribute vec3 pbTrig;
+        attribute vec3 pbTrigN;
         attribute vec4 pbZone;
         uniform vec4 pbQr[ ${PB_BONES} ];
         uniform vec4 pbQd[ ${PB_BONES} ];
         uniform float pbScale;
         uniform vec2 pbGripAmount;
+        uniform vec2 pbTrigger;
         varying vec3 vPbBind;
         varying vec3 vPbBindN;
         varying vec4 vPbZone;
@@ -39,8 +42,10 @@
           // The hands' grip: bone 7 the left hand, 8 the right.
           float hand = step( 6.5, pbSkin.w ) * step( pbSkin.w, 8.5 );
           float grip = hand * ( pbSkin.w > 7.5 ? pbGripAmount.y : pbGripAmount.x );
-          pbPos = mix( position, pbGrip.xyz, grip );
-          pbNrm = normalize( mix( normal, pbGripN, grip ) );
+          // The trigger finger: the index laid along the guard instead of curled with the rest.
+          float trig = hand * ( pbSkin.w > 7.5 ? pbTrigger.y : pbTrigger.x );
+          pbPos = mix( position, mix( pbGrip.xyz, pbTrig, trig ), grip );
+          pbNrm = normalize( mix( normal, mix( pbGripN, pbTrigN, trig ), grip ) );
           vPbBind = pbPos / ${PB_UNITS.toFixed(6)};
           vPbBindN = pbNrm;
           vPbZone = pbZone;
@@ -76,6 +81,9 @@
         // Specular strength and grazing reflectance (cloth and hair reflect far less than a polished dielectric).
         float pbSpec = 1.0;
         float pbSpecF90 = 1.0;
+        float pbEyeLid = 0.0;
+        uniform float pbBlink;
+        uniform vec2 pbGaze;
         float pbHeight = 0.0;
         vec3 pbHairDir = vec3( 0.0, 1.0, 0.0 );
         float pbHash( vec3 p ) {
@@ -126,6 +134,19 @@
           float brow = ( 1.0 - smoothstep( browW * 0.6, browW, abs( P.y - browY ) ) ) * step( az, 0.054 ) * step( 0.012, az ) * step( 0.06, P.x );
           float hairs = mix( 0.75, 0.6 + 0.8 * pbNoise( vec3( P.z * 1400.0, P.y * 300.0, 0.0 ) ), pbFade( 0.0008, px ) );
           c = mix( c, pbLin( vec3( 0.19, 0.13, 0.09 ) ), clamp( brow * hairs * 0.92, 0.0, 1.0 ) );
+          // Crisp features up close: the upper lid's crease, the nose wings' groove, the nostrils' shade.
+          float creaseY = eyeC.y + 0.0072 - 28.0 * ( az - 0.0335 ) * ( az - 0.0335 );
+          float crease = pbLine( P.y - creaseY, 0.00028, px ) * step( abs( az - 0.0335 ), 0.0135 ) * step( 0.064, P.x );
+          float alar = pbLine( length( vec2( P.y - 1.6305, az - 0.0138 ) ) - 0.0092, 0.0003, px ) * step( 0.094, P.x ) * step( P.y, 1.638 );
+          float nostril = smoothstep( 0.0035, 0.0, length( vec2( ( P.y - 1.6245 ) * 1.6, az - 0.0078 ) ) - 0.003 ) * step( 0.097, P.x );
+          c *= 1.0 - 0.2 * crease - 0.16 * alar - 0.45 * nostril;
+          pbHeight -= ( 0.00018 * crease + 0.00015 * alar ) * pbFade( 0.001, px );
+          // The lips' border: a fine light line along the upper lip with its bow, the philtrum's two ridges above.
+          float bow = 1.6178 - 0.0013 * smoothstep( 0.007, 0.0, az ) + 0.0009 * smoothstep( 0.0, 0.006, az ) * smoothstep( 0.012, 0.006, az) - 0.0018 * smoothstep( 0.014, 0.022, az );
+          float border = pbLine( P.y - bow, 0.00025, px ) * step( az, 0.022 ) * step( 0.083, P.x );
+          float philtrum = ( pbLine( az - 0.0045, 0.0007, px ) ) * step( bow, P.y ) * step( P.y, 1.6245 ) * step( 0.09, P.x );
+          c *= 1.0 + 0.1 * border;
+          pbHeight += ( 0.00012 * border + 0.0001 * philtrum ) * pbFade( 0.001, px );
           // Lips.
           float lipZ = 1.0 - smoothstep( 0.017, 0.024, az );
           float lips = lipZ * smoothstep( 0.0815, 0.088, P.x ) * ( 1.0 - smoothstep( 1.6175, 1.6195, P.y ) ) * smoothstep( 1.5905, 1.5935, P.y );
@@ -151,8 +172,8 @@
           float corner = length( vec2( P.y - eyeC.y, az - 0.0475 ) );
           float crow = step( 0.044, az ) * smoothstep( 0.016, 0.006, corner ) * pbLine( sin( atan( P.y - eyeC.y, az - 0.0475 ) * 6.0 ) * corner, 0.0002, px );
           float under = pbLine( length( vec2( ( P.y - eyeC.y + 0.0085 ) * 2.2, az - 0.034 ) ) - 0.014, 0.0003, px ) * step( P.y, eyeC.y - 0.004 ) * step( 0.06, P.x );
-          pbHeight -= ( 0.00022 * lines * fore + 0.00016 * crow + 0.00014 * under ) * pbFade( 0.0012, px );
-          c *= 1.0 - 0.08 * ( lines * fore + crow + under );
+          pbHeight -= ( 0.00008 * lines * fore + 0.00007 * crow + 0.00004 * under ) * pbFade( 0.0012, px );
+          c *= 1.0 - 0.025 * ( lines * fore + crow + under );
           return c;
         }
         // Short brown hair: strands along the combing, the odd grey at the temples, the line broken into hairs.
@@ -180,16 +201,26 @@
         vec3 pbEye( vec3 P, float px ) {
           vec3 e = P.z < 0.0 ? PB_EYE_L : PB_EYE_R;
           vec3 n = normalize( P - e );
-          vec3 gaze = normalize( vec3( 1.0, -0.04, sign( P.z ) * 0.04 ) );
+          // Where he looks (pbGaze: yaw to the right, pitch up, from the head), a touch converged.
+          float yaw = pbGaze.x, pitch = pbGaze.y;
+          vec3 gaze = normalize( vec3( cos( pitch ) * cos( yaw ), sin( pitch ) - 0.03, cos( pitch ) * sin( yaw ) - sign( P.z ) * 0.025 ) );
           float c = dot( n, gaze );
           float r = sqrt( max( 0.0, 1.0 - c * c ) );
           vec3 sclera = pbLin( vec3( 0.9, 0.87, 0.84 ) ) * ( 1.0 - 0.2 * smoothstep( 0.6, 0.95, abs( n.z ) ) );
-          float ang = atan( dot( n, vec3( 0.0, 1.0, 0.0 ) ), dot( n, cross( gaze, vec3( 0.0, 1.0, 0.0 ) ) ) );
+          vec3 side = normalize( cross( gaze, vec3( 0.0, 1.0, 0.0 ) ) + 1e-5 );
+          float ang = atan( dot( n, cross( side, gaze ) ), dot( n, side ) );
           vec3 iris = pbLin( vec3( 0.36, 0.27, 0.15 ) ) * ( 0.7 + 0.5 * pbNoise( vec3( ang * 9.0, r * 60.0, 2.0 ) ) );
           iris = mix( iris, pbLin( vec3( 0.42, 0.4, 0.22 ) ), smoothstep( 0.2, 0.32, r ) * 0.4 );
           iris *= 1.0 - 0.6 * smoothstep( 0.4, 0.48, r );
           vec3 col = mix( iris, sclera, smoothstep( 0.47, 0.51, r ) );
           col = mix( pbLin( vec3( 0.02 ) ), col, smoothstep( 0.17, 0.2, r ) );
+          // The upper lid: its edge drops as he looks down and all the way in a blink, lashes along it.
+          float lidEdge = mix( 0.3 + 0.7 * min( pitch, 0.0 ), -0.42, pbBlink ) - 0.12 * n.z * n.z;
+          pbEyeLid = smoothstep( lidEdge - 0.02, lidEdge + 0.02, n.y );
+          vec3 lid = pbSkinColor( P, px ) * vec3( 0.95, 0.86, 0.84 );
+          col = mix( col, lid, pbEyeLid );
+          float lash = ( 1.0 - smoothstep( 0.0, 0.06, abs( n.y - lidEdge ) ) ) * smoothstep( 0.02, 0.15, pbBlink + max( 0.0, -pitch ) );
+          col = mix( col, pbLin( vec3( 0.08, 0.06, 0.05 ) ), lash * 0.8 );
           return col;
         }
         // Black cotton jersey: knit, a few soft folds, the collar's rib and the hems' stitching.
@@ -312,7 +343,8 @@
           pbSpec = mix( 0.7, 0.5, coverage );
         } else if ( pbMat < 2.5 ) {
           pbC = pbEye( vPbBind, pbPx );
-          pbRough = 0.06;
+          pbRough = mix( 0.06, 0.5, pbEyeLid );
+          pbSkinWrap = pbEyeLid;
         } else if ( pbMat < 3.5 ) {
           pbC = pbSkinColor( vPbBind, pbPx ) * vec3( 1.02, 0.95, 0.93 );
           float nail = smoothstep( -pbPx, pbPx, vPbZone.z );
