@@ -267,7 +267,7 @@
           trim: civFinishPatch(new Three.MeshStandardMaterial({ vertexColors: true, map: atlas, roughness: 0.5, metalness: 0.2, envMapIntensity: 1.1 }), 'car-trim'),
           // Tinted see-through glass with the sky over it (cars3d-interior.js CAR GLASS); the damage model's cracked
           // and burst panes replace it pane by pane (damage3d.js, `m.glass`).
-          glass: carGlassMaterial('#121a20', 0.52),
+          glass: carGlassMaterial('#121a20', 0.44),
           // The body impostors' glass, far beyond the cabins: dark, opaque, a strong sky reflection.
           glassFar: new Three.MeshStandardMaterial({ color: '#1a2128', roughness: 0.06, metalness: 0.7, envMapIntensity: 1.6 }),
           // Daytime running lights and CV_LED graphics: lit while driven, dark lenses parked.

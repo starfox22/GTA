@@ -383,7 +383,7 @@
       let policeSeeGlass = null;
       function policeCabinGlass() {
         if (!policeSeeGlass) {
-          policeSeeGlass = carGlassMaterial('#0f171d', 0.56);
+          policeSeeGlass = carGlassMaterial('#0f171d', 0.48);
           sharedMaterials.add(policeSeeGlass);
         }
         return policeSeeGlass;
@@ -428,6 +428,8 @@
           cabin = mesh(kit.cabin, kit.seats ? policeCabinGlass() : policeGlass, bodyGroup, 0, 0, 0),
           hood = mesh(kit.hood, paint, bodyGroup, l * 0.34, body.h + 0.05, 0, l * 0.25, 0.4, w * (body.kind === 'bearcat' ? 0.82 : 0.7));
         hood.rotation.z = body.hoodTilt || 0;
+        // See-through glass lets the sun into the cabin; the roof panel and pillars cast the glasshouse's shadow.
+        if (kit.seats) cabin.castShadow = false;
         const panels = mesh(kit.paint, paint, bodyGroup, 0, 0, 0),
           trim = mesh(kit.trim, policeTrimMaterial, bodyGroup, 0, 0, 0);
         if (kit.bright) mesh(kit.bright, policeBrightMaterial, bodyGroup, 0, 0, 0);

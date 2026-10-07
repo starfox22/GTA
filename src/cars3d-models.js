@@ -171,8 +171,11 @@
           trim = mesh(kit.trim, materials.trim, bodyGroup, 0, 0, 0),
           drl = kit.drl ? mesh(kit.drl, materials.drlOff, bodyGroup, 0, 0, 0) : null;
         if (drl) drl.castShadow = false;
-        // The shell, glass and trim cast the car's shadow; the hood and panels lie on them.
-        hood.castShadow = panels.castShadow = false;
+        // The shell, the paint panels (roof panel, pillars) and the trim cast the car's shadow; the hood lies on the
+        // shell, and the see-through glass lets the sun into the cabin (cars3d-interior.js CAR GLASS).
+        hood.castShadow = false;
+        panels.castShadow = true;
+        if (cabin) cabin.castShadow = false;
         const bumperMaterial = { paint, black: materials.bumperBlack, chrome: materials.bumperChrome },
           bumpers = kit.bumpers.map((b) => {
             const m = mesh(b.geo, bumperMaterial[b.material] || paint, bodyGroup, b.centre.x, b.centre.y, b.centre.z, b.size.x, b.size.y, b.size.z);
