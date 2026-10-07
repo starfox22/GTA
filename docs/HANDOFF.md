@@ -19,8 +19,8 @@ rules, workflow), then this page, then only the area doc your task needs (`docs/
   `index.html` + `media/`; version 53 is the latest round, the build that went to `main` on October 6). Version numbers on that link are the artifact's own
   counter, not `GAME_VERSION`.
   The downloadable zip is built by CI for whatever branch is pushed.
-- **Tests**: `node tools/test.mjs` runs the whole regression suite (about 105 tests, ~30 minutes on the 4-core
-  cloud box; the runner always loads the no-render page, so the render-* tests are null checks there: run them
+- **Tests**: `node tools/test.mjs` runs the whole regression suite (124 tests, ~35 minutes on the 4-core
+  cloud box; 123/124 at the end of the chase view round, the one failure, chase-radio-chip, fixed and rerun; the runner always loads the no-render page, so the render-* tests are null checks there: run them
   on a rendered page when a render change needs them). It must be green before a publish. Known flakes:
   `carjack-traffic` fails about one run in four when the picked traffic car stands beside a bike-share dock
   (E rents a bike instead); `living-medics` failed once (medics never reached the victim) and passed on rerun;
