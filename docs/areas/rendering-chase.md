@@ -3,7 +3,8 @@
 The chase view (V; chase-camera.js says where the camera stands, chase-view3d.js draws it) looks along
 the street to the tier's draw distance (`CHASE_DRAW`: LOW 325 m, MEDIUM 450, HIGH 600, ULTRA 800), so it
 sees far more of the city than the overhead view. Everything here only changes what is drawn and how;
-the game never reads it. Numbers: audit/performance.md (Chase view pass).
+the game never reads it. What steps out by its size and the haze (CHASE PROPS, PARTS, HAZE SIZES) and the
+draw calls per tier: rendering-chase-budget.md.
 
 ## What is drawn at all
 
@@ -46,18 +47,19 @@ the game never reads it. Numbers: audit/performance.md (Chase view pass).
   its box swept away from the sun by its height (`top`, measured at boot) against the ground under the
   frustum slice (2D hull, `chaseShadowRegion`). Casters that cannot reach it are hidden for that pass only
   (the camera's draw list is made before the shadow map) and shown again after. The sweep is capped at the
-  shadow camera's depth.
+  shadow camera's depth. Inside a cell that can cast, each batch, breakable or tree pool and prop or part
+  is tested on its own box too, and a small batch casts only within its size times `CHASE_PROP_SHADOW` /
+  lodBias (rendering-chase-budget.md).
 - Shadow proxies: a near cell whose nearest point is beyond `CHASE_SHADOW_PROXY` (0.47) of the shadow
   reach casts from the far copy: its batches and blocks are hidden for the pass and the far meshes swap
   in `shadowGroups` drawing the casting cells. Pieces under 2.5 m lose their shadow there (70 m on HIGH).
 - Never a light's castShadow: only meshes' `castShadow`, `visible` and layer masks change.
 
-## Small props and pools (CHASE PROPS, CHASE POOLS)
+## Small props and pools (CHASE PROPS, CHASE PARTS, CHASE POOLS)
 
-- A static cell's meshes on the detail layers (sized at boot by `cellStatics`: largest side, height
-  included, so a pole is not small) leave by their own distance: drawn while that side is ~4 px at
-  720 lines (`CHASE_PROP_PIXELS` / lodBias), casting over a third of that. Breakable furniture pools the
-  same by the nearest point of their bounds (trees keep vegetation3d-species.js's near/mid switch).
+- Detail-layer props, the static groups' small parts and glows, signs, small batches, breakable pools and
+  vehicles' small parts step out by their own size against their distance and the haze:
+  rendering-chase-budget.md.
 - Instanced pools outside the cells (forests, lanterns, posts) step out past `CHASE_POOL_REACH` (0.85) of
   the draw distance by the nearest point of their instances' box (made again when `instanceMatrix.version`
   or the pool's place changes; a pool written three frames running is moving and left alone). City-wide
@@ -72,11 +74,14 @@ the game never reads it. Numbers: audit/performance.md (Chase view pass).
   near set for the player and up to seven others within ~12 m, people-and-crowd-rig.md; close within
   ~26 m; the street set beyond); under ~3 px (`CROWD_CHASE_LEAST_ZOOM`) they are not drawn. Far
   figures cast no shadow in the chase view (they stand past the shadow reach).
-- Vehicles: `vehicleImpostor` by `chaseZoomAt` (body impostor from ~100 m on HIGH, boxes from ~157 m).
+- Vehicles: `vehicleImpostor` by `chaseZoomAt` (body impostor from ~100 m on HIGH, boxes from ~157 m); a
+  full model's small parts by their size (CHASE VEHICLE PARTS, rendering-chase-budget.md).
 
 ## Console
 
 `DeadEndCity.chaseCamera().view`: `farMetres`, `farCells`, `farMeshes`, `shadowCells` (tested, hidden,
-proxies in the last shadow pass), `props` (detail meshes and pools hidden or not casting, loose pools) and
-`draws`: the last frame's camera and shadow calls and triangles by kind (batch, far, static, instanced,
-crowd, vehicle, sprite, other) and by distance band, with the top names.
+proxies in the last shadow pass), `props` (detail meshes, parts, signs and pools hidden or not casting,
+loose pools) and `draws`: the last frame's camera and shadow calls and triangles by kind (batch, far,
+static, instanced, crowd, vehicle, sprite, other), by distance band and by size on screen (`px<N`, the
+largest side at 720 lines), with the top names. `lookSwitches({ chaseBudget: false })` turns the budget off
+in the same page (an A/B).

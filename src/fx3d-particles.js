@@ -8,7 +8,8 @@
        * the dust that game code throws with particle()) are drawn in the same pass; the game's
        * flame particles are not (the renderer draws each fire from `fires` itself).
        *  - One InstancedBufferGeometry quad, one ShaderMaterial, one draw call for all of them
-       *    (it was one Sprite, one draw call, per particle), sorted far to near each frame so the
+       *    (it was one Sprite, one draw call, per particle); the chase view's budget leaves out what is
+       *    too small or too deep in the haze to see (chaseSpriteHidden); sorted far to near each frame so the
        *    premultiplied blend (ONE, ONE_MINUS_SRC_ALPHA) composites smoke over smoke correctly;
        *    the same blend adds sparks and flashes (`glow`: light with no coverage).
        *  - LIT: a puff's atlas frame carries the normals of its billows (fx3d-atlas.js), lit by the
@@ -461,7 +462,8 @@
             depth = (x - cx) * fx + (y - cy) * fy + (z - cz) * fz,
             t = 1 - s.life[i] / s.max[i],
             size = s.size[i] * (1 + s.grow[i] * (1 - (1 - t) * (1 - t)));
-          if (depth < -size) continue;
+          // Behind the camera, or (the chase view's budget) too small or too deep in the haze to see.
+          if (depth < -size || chaseSpriteHidden(x, y, z, size)) continue;
           let fade = 1 - t * t;
           const fadeIn = s.fadeIn[i];
           if (fadeIn > 0 && t < fadeIn) fade *= t / fadeIn;
@@ -514,7 +516,7 @@
             frame = Math.floor((twist % 1) * FX_PUFF_FRAMES);
           }
           const depth = (x - cx) * fx + (y - cy) * fy + (z - cz) * fz;
-          if (depth < -size) continue;
+          if (depth < -size || chaseSpriteHidden(x, y, z, size)) continue;
           const color = cachedColor(p.color);
           fxStageOne(count++, depth, x, y, z, size, color.r, color.g, color.b, alpha, twist % TAU, frame, 0, p.blood ? -1e5 : ground, 0, 0, 0, 0);
           legacy++;

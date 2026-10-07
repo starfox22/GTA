@@ -319,7 +319,8 @@
               y: (Math.floor(s.y / cellSize) + 0.5) * cellSize,
               reach: 0,
               // The highest point of its groups (world height): the chase view's shadow casters, and its
-              // small props on the detail layers with their sizes: the chase view's distance steps (chase-view3d.js).
+              // small props on the detail layers and small parts with their sizes: the chase view's distance
+              // steps (chase-view3d-props.js CHASE PROPS, CHASE PARTS).
               top: 0,
               detail: [],
               entries: [],
@@ -331,6 +332,12 @@
           // The entry's highest point (the chase view's shadow casters, entry by entry).
           s.top = 0;
           s.group.traverse((o) => {
+            // A glow casts nothing and adds no height; it steps out of the chase view by its size (CHASE PARTS).
+            if (o.isSprite) {
+              const part = o.layers.mask === 1 ? chasePartEntry(o, null, s.group) : null;
+              if (part) cell.detail.push(part);
+              return;
+            }
             if (!o.geometry || !(o.isMesh || o.isLine || o.isPoints)) return;
             if (o.isInstancedMesh) {
               if (o.boundingBox === null) o.computeBoundingBox();
@@ -344,8 +351,12 @@
             s.top = Math.max(s.top, bounds.max.y);
             cell.top = Math.max(cell.top, bounds.max.y);
             const mask = o.layers.mask;
-            if (mask === 1 << DETAIL_LAYER || mask === 1 << FAR_DETAIL_LAYER)
-              cell.detail.push(chaseDetailEntry(o, bounds));
+            if (mask === 1 << DETAIL_LAYER || mask === 1 << FAR_DETAIL_LAYER) cell.detail.push(chaseDetailEntry(o, bounds, false));
+            else if (mask === 1) {
+              // The group's other small meshes step out of the chase view the same way (CHASE PARTS).
+              const part = chasePartEntry(o, bounds, s.group);
+              if (part) cell.detail.push(part);
+            }
           });
           cell.entries.push(s);
           moved.set(s.group, cell.group);

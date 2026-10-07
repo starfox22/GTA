@@ -259,6 +259,11 @@ packs with plain `<script src>` so the zip still plays from file://.
   is the aim for every device: aim code reads `aim()`, `chaseAimScreen()` or `chaseGroundPoint()`, never
   `mouse.x/y` with `city3D.groundPoint` alone. Movement keys go through `playerMoveHeading()`; the street view's
   paths stay bit-identical when the chase view is off. Its HUD layout is `body.chase-view` (chase-view.css).
+- Chase view budget (rendering-chase-budget.md): a static group's small parts and glows, scene signs, small batches,
+  vehicles' unlit small parts and effect sprites step out by size against distance and haze (`chasePropShown`); hide
+  only by layer mask or castShadow (never `visible`, never a light); a part that moves sits in a `userData.dynamic`
+  branch; a `farHidden` mesh's castShadow belongs to the far copy (`farOwned`); `lookSwitches({ chaseBudget: false })`
+  is the in-page A/B.
 - Building frontage (cityscape3d-frontage.js STREET FRONTAGE): a new shopfront part takes a FRONT PAINT colour
   (`facePaint`/`paintBox`), never a new `staticMat`; nothing in the building loop draws from `cityRandom` (its stream
   places roof plant and bus stops); nothing on a north side stands more than 3 units off the wall and no awning goes

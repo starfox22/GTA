@@ -295,6 +295,8 @@
               );
             // Engine smoke, fire and the burning wreck (damage3d.js).
             vehicleEffects(c, m, deltaSeconds);
+            // The chase view's small parts by the vehicle's distance (chase-view3d-props.js CHASE VEHICLE PARTS).
+            chaseVehicleParts(c, m);
           }
           endVehicleImpostors();
           // Riders on the vehicles just posed, then the people's instance upload (crowd3d.js).
