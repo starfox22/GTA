@@ -7,7 +7,8 @@
        * normals by its normal matrix, not renormalised, so the shader's interpolation is the original's), drawn with
        * the original's material, so the picture is the same. The tyre joins its rim under the rim's material, whose
        * finish patch reads roughness / metalness per vertex: its part is given the rubber's constants (0.88, 0).
-       * Nothing merged casts a shadow (the shell, cabin and trim, the only casters, are left alone), merged wheels
+       * Nothing merged casts a shadow but the paint set when its panels do (the roof panel and pillars over see-through glass:
+       * cars3d-interior.js CAR GLASS; the shell and trim, the other casters, are left alone), merged wheels
        * hang under the original wheel groups (they roll and steer with them; a rear axle's two wheels share its line,
        * so they turn as one), and the merged geometries are built once per kit and shared (sharedGeometries).
        * Damage, blood and bullet marks read the originals: `rayTargets` skips hidden meshes, so the split bumps
@@ -233,6 +234,8 @@
           // A part missing or already hidden on this model (a body variant): leave this entry out.
           if (!parent || !source || hidden.some((o) => !o || !o.visible)) continue;
           const mesh = vmMesh(entry.geo, source.material, parent);
+          // The paint set carries the roof panel and pillars: it casts when the panels do (see-through glass).
+          if (m.panels.castShadow && m.cabin && !m.cabin.castShadow && entry.hides.some((ref) => ref[0] === 'panels')) mesh.castShadow = true;
           merged.meshes.push(mesh);
           merged.parts.push(hidden);
           if (entry.sync) merged.synced.push(mesh, source);

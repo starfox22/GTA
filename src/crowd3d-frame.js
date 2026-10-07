@@ -201,6 +201,7 @@
       function finishCrowd3D(deltaSeconds) {
         const start = performance.now();
         drawQueuedRiders(deltaSeconds, crowdDetail());
+        drawCarOccupants(deltaSeconds, crowdDetail());
         drawDriveByDriver(deltaSeconds, crowdDetail());
         drawQueuedAthletes(deltaSeconds, crowdDetail());
         flushCrowdParts();
@@ -244,6 +245,9 @@
           packMsAverage: Math.round(crowdPackAverage * 100) / 100,
           // People drawn from their recorded instances (STILL FIGURES).
           still: crowdStillShown,
+          // People seated in cars this frame and the time they took (crowd3d-driveby.js SEATED OCCUPANTS).
+          occupants: occupantsDrawn,
+          occupantMs: Math.round(occupantMsAverage * 1000) / 1000,
           ...(byPart ? { byPart: list } : {}),
         };
       }

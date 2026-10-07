@@ -24,7 +24,7 @@
             [bead + (0.9 - bead) * 0.5, 0.49],
             [bead, 0.44],
           ].map(([r, y]) => new Three.Vector2(r, y)),
-          lathe = new Three.LatheGeometry(profile, 14),
+          lathe = new Three.LatheGeometry(profile, 20),
           set = civSet(),
           sidewall = (r) => (kind === 'whitewall' && r > bead + (0.9 - bead) * 0.25 && r < bead + (0.9 - bead) * 0.8 ? '#e8e6de' : '#26272a');
         // Colour the lathe by radius (whitewalls), tread darker.

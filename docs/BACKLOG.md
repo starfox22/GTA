@@ -134,6 +134,17 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - A boat's helmsman and an aircraft's pilot are not drawn during a drive-by (the shot still
   follows the arcs and leaves from `driveByGrip`).
 
+## Car cabins and glass (cars3d-interior.js, crowd3d-driveby.js SEATED OCCUPANTS)
+- A burst pane is still damage3d.js's dark `brokenGlass` frame: the cabin behind it does not show through the hole
+  (a model hook like `m.glass` for burst panes would let it).
+- The model's seat (`carSeatPlan`) and the drive-by's (`driveBySeat`) differ by a few centimetres in the van, the hot
+  rod and the police bodies (their game-side glass band is generic): the figure shifts when the gun comes out there.
+- The steering wheel is part of the merged trim and does not turn; the hands slide a little on the rim instead.
+- The player riding in the back of a taxi, rear passengers and a SWAT or army crew are not seated; trucks, buses and
+  the 4x4 club trucks keep opaque glass. Interiors carry no instrument glow at night.
+- Seated people are capped at 16 cars a frame (`OCCUPANT_CAP`): in a jam past that the farthest cabins in reach are
+  empty behind their tint.
+
 ## Mountain island (mountain-village*.js, mountain-club3d.js)
 - Northridge metal roofs (rescue barn, general store) were lightened but not re-shot.
 - The Last Witness now lands at the Northridge ranger station pad: play the mission through once.

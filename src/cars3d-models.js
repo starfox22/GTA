@@ -101,7 +101,31 @@
           parts.push([o.material?.name || o.material?.type || '?', tris]);
         });
         parts.sort((a, b) => b[1] - a[1]);
-        return { id: c.id, type: c.type, draws, casters, triangles, heaviest: parts.slice(0, 6) };
+        return { id: c.id, type: c.type, draws, casters, triangles, heaviest: parts.slice(0, 6), cabin: m.seats ? civCabinReport(m) : null };
+      }
+      /*
+       * A model's cabin for DeadEndCity.carModels (cars3d-interior.js CABINS): the driver's hip in metres (x ahead of
+       * the middle, y over the ground, z to the right), the seat backs' lie, whether there is a rear bench, the room
+       * left over a seated crown under the roof and behind the headrest to the rear glass (metres, negative: through
+       * the glass), the cabin's triangles in the trim and the people drawn in it on the last frame it was queued.
+       */
+      function civCabinReport(m) {
+        const s = m.seats,
+          M = s.M,
+          g = CAR_BODIES[m.kit?.type]?.glass || null,
+          r3 = (v) => +v.toFixed(3),
+          trim = m.kit.trim,
+          outer = m.kit.trimOuter.drawRange.count,
+          cabinTriangles = Math.round(((trim.index ? trim.index.count : 0) - (outer === Infinity ? trim.index.count : outer)) / 3);
+        const report = { hip: [r3(s.x / M), r3(s.y / M), r3(s.z / M)], recline: r3(s.recline), rear: s.rear !== null, two: s.two, cabinTriangles, seated: m.seated || 0 };
+        if (g && !g.open) {
+          const crown = s.y + 0.88 * M * Math.cos(s.recline),
+            headX = s.x - 0.06 * M - Math.sin(s.recline) * 0.86 * M,
+            headY = s.y + 0.02 * M + Math.cos(s.recline) * 0.86 * M;
+          report.headroom = r3((g.roof - crown) / M);
+          report.behind = r3((headX - cabinGlassX(g, m.kit.l, headY, false)) / M);
+        }
+        return report;
       }
       // ---- The model -----------------------------------------------------------------------
       const civLampMaterials = {};
@@ -147,8 +171,11 @@
           trim = mesh(kit.trim, materials.trim, bodyGroup, 0, 0, 0),
           drl = kit.drl ? mesh(kit.drl, materials.drlOff, bodyGroup, 0, 0, 0) : null;
         if (drl) drl.castShadow = false;
-        // The shell, glass and trim cast the car's shadow; the hood and panels lie on them.
-        hood.castShadow = panels.castShadow = false;
+        // The shell, the paint panels (roof panel, pillars) and the trim cast the car's shadow; the hood lies on the
+        // shell, and the see-through glass lets the sun into the cabin (cars3d-interior.js CAR GLASS).
+        hood.castShadow = false;
+        panels.castShadow = true;
+        if (cabin) cabin.castShadow = false;
         const bumperMaterial = { paint, black: materials.bumperBlack, chrome: materials.bumperChrome },
           bumpers = kit.bumpers.map((b) => {
             const m = mesh(b.geo, bumperMaterial[b.material] || paint, bodyGroup, b.centre.x, b.centre.y, b.centre.z, b.size.x, b.size.y, b.size.z);
@@ -231,12 +258,19 @@
           glass: materials.glass,
           panelGeometry: kit.door,
           trunkGeometry: kit.trunk,
+          // Where the people sit (cars3d-interior.js carSeatPlan; crowd3d-driveby.js SEATED OCCUPANTS).
+          seats: kit.seats,
+          seated: 0,
+          // Road dirt toward the sills: this car's share and the uniform the paint reads (civLiveryPatch ROAD DIRT).
+          dirt: paint.userData.carDirt,
+          dirtBase: 0.12 + ((vehicle.id * 2654435761) % 1000) / 1000 * 0.36,
+          // Far away: the opaque glass and the trim without the cabin (cars3d-interior.js CABINS).
           impostorParts: [
             { mesh: shell, material: civImpostorPaint(livery), tint: true, shadow: true },
-            ...(cabin ? [{ mesh: cabin, material: materials.glass, shadow: true }] : []),
+            ...(cabin ? [{ mesh: cabin, material: materials.glassFar, shadow: true }] : []),
             { mesh: hood, material: civImpostorPaint(livery), tint: true },
             { mesh: panels, material: civImpostorPaint(livery), tint: true },
-            { mesh: trim, material: materials.trim },
+            { geometry: kit.trimOuter, material: materials.trim },
           ],
         };
       }
@@ -281,4 +315,14 @@
           if (wheel.front) wheel.wheel.rotation.y = -m.steer;
         }
         if (m.extra?.animate) m.extra.animate(c, m, deltaSeconds, driven, lampsOn);
+        // Road dirt toward the sills: the car's own share, more as it wears (civLiveryPatch ROAD DIRT).
+        const dirt = m.dirt?.value;
+        if (dirt) {
+          const amount = m.dirtBase + 0.45 * clamp(1 - c.hp / c.maxhp, 0, 1),
+            ground = m.group.position.y;
+          if (dirt.x !== amount) dirt.x = amount;
+          if (dirt.y !== ground) dirt.y = ground;
+        }
+        // The people in it show through the glass (crowd3d-driveby.js SEATED OCCUPANTS).
+        if (m.seats) queueCarOccupants(c, m);
       }
