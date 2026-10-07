@@ -83,6 +83,8 @@
           for (const [c, m] of carModels) if (m.civilian || m.moto) out.push(civilianModelReport(c, m));
           return out;
         },
+        // Seated heads against every closed cabin built (cars3d-headroom.js; DeadEndCity.cabinHeadroom()).
+        cabinHeadroom: cabinHeadroomReport,
         helicopterModels() {
           const out = [];
           for (const [c, m] of carModels) if (c.type === 'helicopter') out.push(helicopterModelReport(c, m));

@@ -163,8 +163,12 @@ here when polishing; delete a line when it is fixed. Newest features first.
 ## Car cabins and glass (cars3d-interior.js, crowd3d-driveby.js SEATED OCCUPANTS)
 - A burst pane is still damage3d.js's dark `brokenGlass` frame: the cabin behind it does not show through the hole
   (a model hook like `m.glass` for burst panes would let it).
-- The model's seat (`carSeatPlan`) and the drive-by's (`driveBySeat`) differ by a few centimetres in the van, the hot
-  rod and the police bodies (their game-side glass band is generic): the figure shifts when the gun comes out there.
+- The drive-by pose now sits in the model's seat, but the grip the bullet leaves from is still sized from
+  `driveBySeat` (glass bands; generic for police): from a low, laid-back seat (supercars, police) the arm cannot reach
+  it and the gun is drawn brought in with the wrist, up to ~0.25 m from the muzzle the game fires from
+  (`cabinHeadroom().driveByArm`). A game-side seat table matching `m.seats` (police by body) would close it.
+- Police cars carry no rear badge (their trim is police3d.js's own, without the atlas); trucks, buses, military and
+  boats none either. Badges sit on the tail's surface: a dented tail leaves them where the panel was.
 - The steering wheel is part of the merged trim and does not turn; the hands slide a little on the rim instead.
 - The player riding in the back of a taxi, rear passengers and a SWAT or army crew are not seated; trucks, buses and
   the 4x4 club trucks keep opaque glass. Interiors carry no instrument glow at night.

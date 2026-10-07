@@ -18,17 +18,20 @@
         };
       // ---- TRIM ATLAS ---------------------------------------------------------------
       /*
-       * One 512 x 512 canvas of sixteen 128-pixel cells, painted in greys that the
-       * trim's vertex colours tint: solid, honeycomb, slats, bars, mesh, carbon,
-       * perforated, big hexagons, louvres, knurled tread, checker, lens facets,
-       * CV_LED dots, vents, a licence plate and a badge.
+       * One 512 x 1024 canvas: sixteen 128-pixel cells in the top half, painted in
+       * greys that the trim's vertex colours tint: solid, honeycomb, slats, bars,
+       * mesh, carbon, perforated, big hexagons, louvres, knurled tread, checker,
+       * lens facets, CV_LED dots, vents, a licence plate and a badge; the lower half
+       * holds the rear badges' letters (cars3d-badges.js REAR BADGES), the only
+       * pixels that are not opaque (the trim alpha-tests them).
        */
       const TRIM_CELL = { solid: 0, honeycomb: 1, slats: 2, bars: 3, mesh: 4, carbon: 5, perforated: 6, hex: 7, louvre: 8, tread: 9, checker: 10, lens: 11, dots: 12, vents: 13, plate: 14, badge: 15 };
       let civTrimAtlasTexture = null;
       function civTrimAtlas() {
         if (civTrimAtlasTexture) return civTrimAtlasTexture;
         const canvas = document.createElement('canvas');
-        canvas.width = canvas.height = 512;
+        canvas.width = 512;
+        canvas.height = 1024;
         const g = canvas.getContext('2d'),
           cell = (index, paint) => {
             g.save();
@@ -226,19 +229,23 @@
           c.lineWidth = 6;
           c.strokeRect(10, 10, 108, 108);
         });
+        civBadgeGlyphs(g);
         const texture = new Three.CanvasTexture(canvas);
         texture.colorSpace = Three.SRGBColorSpace;
         texture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
         civTrimAtlasTexture = texture;
+        // Painted once, uploaded once: its canvas is freed after the upload (render3d-resources.js).
+        bakedCanvases.push(texture);
         return texture;
       }
       // A cell's UV rectangle, inset so mipmaps do not bleed from its neighbours.
       function trimCellRect(name) {
         const index = TRIM_CELL[name] ?? 0,
           inset = 5 / 512,
+          insetV = 5 / 1024,
           u0 = (index % 4) / 4 + inset,
-          v1 = 1 - Math.floor(index / 4) / 4 - inset;
-        return [u0, v1 - 0.25 + inset * 2, u0 + 0.25 - inset * 2, v1];
+          v1 = 1 - Math.floor(index / 4) / 8 - insetV;
+        return [u0, v1 - 0.125 + insetV * 2, u0 + 0.25 - inset * 2, v1];
       }
       // ---- Shared materials ---------------------------------------------------------
       /*
@@ -264,7 +271,8 @@
         if (civMaterials) return civMaterials;
         const atlas = civTrimAtlas();
         civMaterials = {
-          trim: civFinishPatch(new Three.MeshStandardMaterial({ vertexColors: true, map: atlas, roughness: 0.5, metalness: 0.2, envMapIntensity: 1.1 }), 'car-trim'),
+          // Alpha-tested: the rear badges' letters are cut out of their glyph cells (cars3d-badges.js).
+          trim: civFinishPatch(new Three.MeshStandardMaterial({ vertexColors: true, map: atlas, roughness: 0.5, metalness: 0.2, envMapIntensity: 1.1, alphaTest: 0.5 }), 'car-trim'),
           // Tinted see-through glass with the sky over it (cars3d-interior.js CAR GLASS); the damage model's cracked
           // and burst panes replace it pane by pane (damage3d.js, `m.glass`).
           glass: carGlassMaterial('#121a20', 0.4),

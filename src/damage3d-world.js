@@ -521,6 +521,8 @@
           debrisDirty = false;
         }
         updatePropVisuals(deltaSeconds);
+        // Crumpled bodies bent within their frame budget (damage3d-crumple.js), then the marks on them.
+        crumpleSlices();
         drawVehicleMarks();
         flushDecals(worldDecals);
         flushDecals(vehicleDecals);
@@ -541,6 +543,8 @@
         groundStain,
         sparks,
         carBloodInfo,
+        // The crumpled parts and the marks of a vehicle as drawn (damage3d-marks.js; console vehicleDamageShape).
+        vehicleDamageShape,
         damageInfo: () => ({
           worldDecals: worldDecals.used,
           worldDecalCapacity: worldDecals.capacity,

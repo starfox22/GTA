@@ -397,6 +397,29 @@
             shoulderWorld[side].setFromMatrixPosition(mShoulder[side]);
             holdPole.set(-0.4, -1, (side ? 1 : -1) * 0.6).transformDirection(mTorso);
             ikArm(mShoulder[side], mElbow[side], mHand[side], shoulderWorld[side], spec.handTargets[side], holdPole, RIG.upperArm * H, RIG.forearm * H, H);
+            // A grip past the arm's reach (a drive-by from a low seat): the gun comes in with the wrist, never floats.
+            if (spec.gunFrame && side === spec.gunHand) {
+              const gx = ikT.x - spec.handTargets[side].x,
+                gy = ikT.y - spec.handTargets[side].y,
+                gz = ikT.z - spec.handTargets[side].z;
+              if (gx * gx + gy * gy + gz * gz > 1e-6) {
+                const f = spec.gunFrame.elements,
+                  h = spec.gunHandFrame.elements;
+                f[12] += gx;
+                f[13] += gy;
+                f[14] += gz;
+                h[12] += gx;
+                h[13] += gy;
+                h[14] += gz;
+                // The player's own hand (player-body3d.js) round the grip comes in with it.
+                if (own) {
+                  const o = handFrames[1].elements;
+                  o[12] += gx;
+                  o[13] += gy;
+                  o[14] += gz;
+                }
+              }
+            }
           }
           // A drive-by (crowd3d-driveby.js): the pistol along the aim, the firing hand on its grip.
           if (spec.gunFrame) {

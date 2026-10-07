@@ -115,7 +115,8 @@ wounds.js, carjack.js, damage.js, air-cover.js. `policeReport()` has `wounds` an
   x, y, source, detail)` takes hp, the rest goes to `recordVehicleDamage()`; `detail.kind`:
   `crash` crumples along the normal, `blast` dishes toward the blast, `bullet` marks the skin.
 - `vehicle.dents[]` are `{x, y, z, nx, ny, depth, r}` in vehicle space (x forward, y right,
-  z up); nearby dents merge. `damage.front/rear/left/right` (0..1) drive panels, glass,
+  z up); nearby dents merge. The renderer bends the whole body with them through `crumpleField` (crush limits,
+  marks pinned to the panel they hit: vehicles-and-driving-damage.md). `damage.front/rear/left/right` (0..1) drive panels, glass,
   lamps, tyres and `damage.pull`. `vehicleHandling(c)` turns damage into power, grip and
   steering pull. Below 25% health the engine burns to the explosion; `wreckVehicle` guts once;
   `repairVehicle` / `freshDamage` reset.

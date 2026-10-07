@@ -19,6 +19,7 @@
        * Riders keep their rig (RIDERS): the left hand leaves the bar for the gun.
        */
       const driveByGhost = { x: 0, y: 0, a: 0, hp: 1 },
+        driveByArm = { gap: 0, window: null, relDeg: 0, type: null },
         dbView = { rel: 0, window: null },
         dbFrame = new Three.Matrix4(),
         dbSeat = new Three.Matrix4(),
@@ -52,14 +53,19 @@
        * Poses the pistol in `seat` (a frame at the driver's hips, vehicle axes:
        * x ahead, y up, z right, world units) out to the grip for `rel`, blended
        * from `ready` (world) by `e`; fills sp.gunFrame / gunHandFrame and the
-       * hand target. Returns the hand that holds it.
+       * hand target. `vehicleFrame` (the car's frame at its origin) places the
+       * grip where driveByGrip has it when the hips are in the model's seat
+       * rather than driveBySeat. Returns the hand that holds it.
        */
-      function poseDriveByGun(c, sp, seat, ready, rel, e, H) {
+      function poseDriveByGun(c, sp, seat, ready, rel, e, H, vehicleFrame = null) {
         const s = driveBySeat(c),
           g = driveByGrip(c, driveBy.window, rel),
           M = UNITS_PER_METRE,
           recoil = clamp(((player.recoilUntil || 0) - gameTime) / 0.12, 0, 1);
-        dbGrip.set(g.x - s.x, g.z - s.z, g.y - s.y).applyMatrix4(seat);
+        // The grip where the bullet leaves from: in the vehicle's frame when the body sits in the model's own seat,
+        // else from the game's seat (a rider's hips).
+        if (vehicleFrame) dbGrip.set(g.x, g.z, g.y).applyMatrix4(vehicleFrame);
+        else dbGrip.set(g.x - s.x, g.z - s.z, g.y - s.y).applyMatrix4(seat);
         dbUp.set(0, 1, 0).transformDirection(seat);
         // Lap to window, lifted over the sill on the way; the kick throws the hand back and up.
         dbPos.lerpVectors(ready, dbGrip, e).addScaledVector(dbUp, Math.sin(Math.PI * e) * 0.13 * M + recoil * 0.12);
@@ -115,11 +121,16 @@
         dbBodyQuat.setFromEuler(dbEuler);
         dbQuat.multiply(dbBodyQuat);
         dbFrame.compose(dbPos, dbQuat, crowdScale.set(1, 1, 1));
-        dbSeat.copy(dbFrame).multiply(dbRoot.makeTranslation(s.x, s.z, s.y));
+        // The hips in the model's seat (the seated pose's, fitted under the roof: cars3d-headroom.js CABIN HEADROOM),
+        // lying back with it; a model without one sits at driveBySeat.
+        const plan = m.seats,
+          k = m.group.scale.x || 1;
+        if (plan) dbSeat.copy(dbFrame).multiply(dbRoot.makeTranslation(plan.x * k, plan.y * k, plan.z * k));
+        else dbSeat.copy(dbFrame).multiply(dbRoot.makeTranslation(s.x, s.z, s.y));
         const sp = specialSpec(player);
         sp.hold = null;
         sp.pose = 'riding';
-        sp.riderLean = driveBy.window === 'right' ? 0.02 : 0.16;
+        sp.riderLean = plan ? plan.lean : driveBy.window === 'right' ? 0.02 : 0.16;
         sp.facing = c.a;
         sp.look = specialLook(player);
         // The pistol comes up from the lap on its hand's side.
@@ -127,12 +138,18 @@
         dbReady.set(0.3 * M, 0.24 * M, (gunHand ? 0.1 : -0.1) * M).applyMatrix4(dbSeat);
         const R = compiledLook(sp.look, driveByGhost),
           H = R.height * RIG_UNIT;
-        poseDriveByGun(c, sp, dbSeat, dbReady, rel, e, H);
+        poseDriveByGun(c, sp, dbSeat, dbReady, rel, e, H, plan ? dbFrame : null);
+        // The face level under the roof (the seated pose's) whatever the aim's pitch.
+        if (plan) sp.headPitch = seatHeadPitch(plan.lean);
         // The other hand on the wheel's rim, turning with the steering.
         const wheelHand = 1 - gunHand,
           steer = clamp(c.tyres ? c.tyres.steer : clamp(c.av * 0.5, -1, 1), -1, 1),
           clock = (wheelHand ? 1 : -1) * 1.35 - steer * 0.9;
-        dbHands[wheelHand].set(0.5 * M, 0.36 * M + Math.cos(clock) * 0.18 * M, Math.sin(clock) * 0.18 * M).applyMatrix4(dbSeat);
+        if (plan) {
+          // The model's wheel (the seated driver's): plan units scaled to the world, relative to the seat.
+          carWheelRim(plan.wheel, clock, ocRim);
+          dbHands[wheelHand].set(ocRim[0] * k, ocRim[1] * k, ocRim[2] * k).applyMatrix4(dbFrame);
+        } else dbHands[wheelHand].set(0.5 * M, 0.36 * M + Math.cos(clock) * 0.18 * M, Math.sin(clock) * 0.18 * M).applyMatrix4(dbSeat);
         // Feet on the pedals.
         for (let side = 0; side < 2; side++) dbFeet[side].set(0.74 * M, -0.26 * M, (side ? 0.1 : -0.12) * M).applyMatrix4(dbSeat);
         sp.handTargets = dbHands;
@@ -145,6 +162,15 @@
         driveByGhost.y = c.y;
         driveByGhost.a = c.a;
         drawCrowdPerson(driveByGhost, stateFor(driveByGhost), deltaSeconds, detail, sp);
+        // How far (metres) the gun hand's target lies past the arm's reach once the gun is out (0: the hand holds it;
+        // DeadEndCity.cabinHeadroom().driveByArm).
+        if (e > 0.95) {
+          const hand = sp.gunHand;
+          driveByArm.gap = Math.max(0, shoulderWorld[hand].distanceTo(dbHands[hand]) - (RIG.upperArm + RIG.forearm) * H * 0.998) / UNITS_PER_METRE;
+          driveByArm.window = d.window;
+          driveByArm.relDeg = Math.round((rel * 180) / Math.PI);
+          driveByArm.type = c.type;
+        }
       }
       /**
        * On a bike (drawQueuedRiders): the left hand off the bar and onto the
@@ -316,14 +342,15 @@
         sp.weapon = null;
         sp.pose = 'riding';
         sp.facing = c.a;
-        // Lying back with the seat; a glance about now and then, more for a passenger.
-        sp.riderLean = 0.12 + (plan.recline - 0.3) * 0.9;
+        // Lying back with the seat, the face level (cars3d-headroom.js CABIN HEADROOM fits the seat round this head);
+        // a glance about now and then, more for a passenger.
+        sp.riderLean = plan.lean;
         const steer = clamp(c === player.car && c.tyres ? c.tyres.steer : (c.av || 0) * 0.5, -1, 1),
           glance = Math.sin(gameTime * (seat ? 0.31 : 0.23) + (c.id || 0) * 1.7);
         sp.torsoTwist = 0;
         sp.torsoRoll = clamp(-steer * Math.min(1, Math.abs(c.speed || 0) / 120) * 0.1, -0.1, 0.1);
         sp.headYaw = isPlayer ? -steer * 0.2 : (glance > 0.6 ? (glance - 0.6) * (seat ? 1.6 : 0.9) : 0) * ((c.id || 0) % 2 ? 1 : -1) - steer * 0.15;
-        sp.headPitch = 0.04;
+        sp.headPitch = seatHeadPitch(plan.lean);
         const R = compiledLook(sp.look, proxy),
           H = R.height * RIG_UNIT;
         if (seat === 0) {

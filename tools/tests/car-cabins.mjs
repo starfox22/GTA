@@ -34,7 +34,8 @@ export default async function (t) {
   // The player at the wheel shows through the glass in the chase view.
   await t.call('viewMode', 'chase');
   await t.call('drive', 'sedan', 0, 0);
-  await t.call('hitchRun', 0.3);
+  // Past the 0.4 s stand-in walking to the door (crowd3d-frame.js carTransition).
+  await t.call('hitchRun', 0.6);
   const own = (await t.call('carModels')).find((r) => r.type === 'sedan' && r.draws > 18 && r.cabin?.seated);
   t.assert(own && own.cabin.seated === 1, `the player is seated in their sedan: ${JSON.stringify(own?.cabin)}`);
   await t.call('viewMode', 'street');
