@@ -298,7 +298,7 @@
           const { g, l, w } = plan.glass,
             M = plan.M,
             side = Math.abs(plan.z),
-            entry = { type: c.type, body: c.policeLook?.body || null, hip: [r3(plan.x / M), r3(plan.y / M)], recline: r3(plan.recline), clear: {}, roof: {}, through: [] };
+            entry = { type: c.type, body: c.policeLook?.body || null, hip: [r3(plan.x / M), r3(plan.y / M)], recline: r3(plan.recline), fitMs: r3(plan.fitMs || 0), clear: {}, roof: {}, through: [] };
           for (const who of people) {
             const clear = cabinClearance(g, l, w, M, [who.cloud], plan.x, plan.y, side, plan.lean) / M;
             entry.clear[who.name] = r3(clear);

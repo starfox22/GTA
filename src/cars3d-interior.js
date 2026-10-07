@@ -76,7 +76,9 @@
           recline = 0.3,
           side = own?.z !== undefined ? own.z * M : Math.max(0.16 * M, Math.min(0.2 * width, cabinGlassHalf(g, w, y + 0.7 * M * Math.cos(recline)) - 0.19 * M));
         // Under a roof: the seat that keeps the seated head clear of the roof and glass (cars3d-headroom.js CABIN HEADROOM).
+        const fitFrom = performance.now();
         if (!g.open) ({ x, y, recline, side } = cabinSeatFit(g, l, w, M, x0, y0, floor, width, own, CAR_TWO_SEATERS.has(name)));
+        const fitMs = performance.now() - fitFrom;
         // The rear bench a step back, its back (and headrests) as tall as the rear glass leaves room for: none in a
         // two-seater or where not even a low back fits under a fastback's glass.
         let rear = null,
@@ -106,6 +108,8 @@
           // The seated torso's lie (crowd3d-driveby.js seatOccupant) and the glasshouse the head is fitted under.
           lean: seatTorsoLean(recline),
           glass: { g, l, w },
+          // What the fit cost when the kit was built (DeadEndCity.cabinHeadroom `fitMs`).
+          fitMs,
           rear,
           rearY: y + 0.04 * M,
           // How far up the rear back reaches (metres, headrests included when it is 0.7 or more).

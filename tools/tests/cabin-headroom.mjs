@@ -26,7 +26,7 @@ export default async function (t) {
     const name = c.type + (c.body ? '/' + c.body : '');
     for (const who of ['man', 'woman', 'player']) t.assert(c.clear[who] >= 0, `${name}: the ${who}'s head clears the roof and glass (${c.clear[who]} m)`);
     t.assert(c.hip[1] >= 0.19 && c.hip[1] <= 1.2, `${name}: the hip over the floor (${c.hip[1]} m)`);
-    t.assert(c.recline >= 0.29 && c.recline <= (c.type === 'valkyrie' ? 0.89 : 0.69), `${name}: the seat back lies back like a real one (${c.recline} rad)`);
+    t.assert(c.recline >= 0.29 && c.recline <= (['valkyrie', 'lafera'].includes(c.type) ? 0.89 : 0.69), `${name}: the seat back lies back like a real one (${c.recline} rad)`);
   }
   // The drive-by in the Chevette Z06 (its seat low and laid back): the gun comes out of the window in the hand.
   await t.call('viewMode', 'chase');

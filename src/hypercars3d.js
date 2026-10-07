@@ -869,6 +869,8 @@
             [-0.06, 0.94, 0.8], [0.08, 0.95, 0.74], [0.2, 0.97, 0.66], [0.3, 0.98, 0.59], [0.4, 0.96, 0.52], [0.46, 0.9, 0.46, 0.11], [0.49, 0.78, 0.4, 0.14], [0.5, 0.6, 0.34, 0.18],
           ],
           glass: { base: 0.82, roof: 1.12, xf: 0.2, xb: -0.18, rf: 0.01, rb: -0.1, wb: 0.38, wt: 0.26, bow: 0.036, bulge: 0.1, arch: 0.07, frame: 'gloss', pillars: [[0.32, 0.05, 'black']], aPillar: 'black' },
+          // Fixed racing seats moulded into the tub, lying well back (cars3d-headroom.js).
+          seats: { recline: 0.76 },
           wheel: { r: 0.34, rr: 0.36, width: 0.26, wr: 0.34, xf: 0.3, xr: -0.29, caliper: '#f2c500' },
           rim: { style: 'split', spokes: 5, color: '#2a2c30', frac: 0.78, centreLock: true },
           hatch: true,
