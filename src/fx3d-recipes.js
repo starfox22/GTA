@@ -258,10 +258,10 @@
           s.streak[i] = 0.05;
           s.floor[i] = -1e5;
         }
-        i = fxAdd(x + ca * reach, y, z + sa * reach, 0, 0, 0, rocket ? 0.08 : 0.055, (rocket ? 3 : 0.85) * U, FX_FLASH_COLOR, 0);
+        i = fxAdd(x + ca * reach, y, z + sa * reach, 0, 0, 0, rocket ? 0.08 : 0.045, (rocket ? 3 : 0.45) * U, FX_FLASH_COLOR, 0);
         if (i >= 0) {
           s.frame[i] = FX_GLOW;
-          s.glow[i] = 4;
+          s.glow[i] = rocket ? 4 : 2.5;
           s.floor[i] = -1e5;
         }
         if (rocket) {
