@@ -32,7 +32,7 @@
         if (/DINER|CAFÉ|PIZZA|NOODLE|BAKERY|DELI/.test(name)) return SHOP_INTERIOR.cafe;
         if (/BOOK|VINYL|VIDEO|PHOTO|ARCADE/.test(name)) return SHOP_INTERIOR.shelves;
         if (/SEAFOOD|FLOWER|BOTÁNICA/.test(name)) return SHOP_INTERIOR.market;
-        if (/LAUNDROMAT|BARBER|TATTOO|GYM|DRY CLEANER/.test(name)) return SHOP_INTERIOR.service;
+        if (/LAUNDROMAT|BARBER|TATTOO|DRY CLEANER/.test(name)) return SHOP_INTERIOR.service;
         if (/TAILOR|THRIFT|SHOE/.test(name)) return SHOP_INTERIOR.racks;
         if (/PAWN|HARDWARE|FURNITURE|BAIL|CHECK/.test(name)) return SHOP_INTERIOR.goods;
         return SHOP_INTERIOR.aisles;
