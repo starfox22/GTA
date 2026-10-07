@@ -120,7 +120,8 @@
         rearIn = 0,
         sideIn = 0,
         samples = 0;
-      const inCabin = (x, y, z) => x > cabin.x0 && x < cabin.x1 && Math.abs(y) < cabin.y && z > cabin.z0 && z < cabin.z1;
+      // In the cell's footprint (a point counts by where it is across the plan, at a height inside the cell).
+      const inCabin = (x, y) => x > cabin.x0 && x < cabin.x1 && Math.abs(y) < cabin.y;
       // One row of samples from (x0, y0) to (x1, y1) at height z: moved, checked in order along the row.
       const row = (x0, y0, x1, y1, z, axis) => {
         let last = null,
@@ -141,7 +142,7 @@
           if (x < -l * 0.45) rearIn = Math.max(rearIn, out.x);
           if (Math.abs(y) > w * 0.45) sideIn = Math.max(sideIn, y > 0 ? -out.y : out.y);
           if ((Math.abs(x) > l * 0.02 && Math.sign(mx) !== Math.sign(x)) || (Math.abs(y) > w * 0.02 && Math.sign(my) !== Math.sign(y))) crossed++;
-          if (!inCabin(x, y, z) && inCabin(mx, my, mz)) intoCabin++;
+          if (z > cabin.z0 && z < cabin.z1 && !inCabin(x, y) && inCabin(mx, my)) intoCabin++;
           const along = axis === 'x' ? mx : my;
           if (last !== null && along < last - 0.05) folds++;
           if (i) steepest = Math.max(steepest, Math.hypot(out.x - lx, out.y - ly, out.z - lz) / (Math.hypot(x1 - x0, y1 - y0) / (n - 1) || 1));
@@ -242,10 +243,10 @@
           return c ? crumpleAudit(c) : null;
         },
         // The vehicle as drawn (damage3d-crumple.js, damage3d-marks.js): its crumpled parts and its marks on the body;
-        // null without the 3D renderer.
-        vehicleDamageShape: (id) => {
+        // null without the 3D renderer. `rebend` bends every part again at once first (times a full bend).
+        vehicleDamageShape: (id, rebend = false) => {
           const c = byId(id);
-          return c && city3D ? city3D.vehicleDamageShape(c) : null;
+          return c && city3D ? city3D.vehicleDamageShape(c, !!rebend) : null;
         },
       };
     }

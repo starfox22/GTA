@@ -281,9 +281,15 @@
         for (const hit of hits) if (mark.kind === 'star' ? hit.object === m.cabin : hit.object !== m.cabin) return hit.distance - 3;
         return null;
       }
-      function vehicleDamageShape(c) {
+      function vehicleDamageShape(c, rebend) {
         const m = carModels.get(c);
         if (!m) return null;
+        // `rebend`: bend every part again now, in one go (to time a full bend: crumpleMs, slowest).
+        if (rebend && m.crumple && m.designDents) {
+          crumpleStart(c, m, m.designDents, true);
+          crumpleStep(m, Infinity, true);
+          crumpleQueue.delete(m);
+        }
         markPrepare(m);
         const scale = m.modelScale || 1,
           cm = (units) => Math.round(((units * 100) / UNITS_PER_METRE) * 10) / 10,
@@ -346,11 +352,13 @@
             stretch = 0;
           // The occupant cell: between the crush limit planes (crumpleLimits), the middle of the width, floor to belt.
           const lim = record.limits || crumpleLimits(c, k),
-            inCabin = (x, y, z) => band && x > lim.rear + 2 && x < lim.front - 2 && Math.abs(z) < Math.min(half * 0.4, lim.side * 0.9) && y > (m.dims.sill ?? 4.8) + 1 && y < band.belt * k - 1;
+            inCabin = (x, y, z) => band && x > lim.rear + 2 && x < lim.front - 2 && Math.abs(z) < Math.min(half * 0.4, lim.side * 0.9),
+            cellHeight = (y) => y > (m.dims.sill ?? 4.8) + 1 && y < band.belt * k - 1;
           for (let i = 0; i < now.length; i += 3) {
             maxMove = Math.max(maxMove, Math.hypot(now[i] - base[i], now[i + 1] - base[i + 1], now[i + 2] - base[i + 2]));
             if (Math.abs(base[i + 2]) > half * 0.05 && Math.sign(now[i + 2]) !== Math.sign(base[i + 2])) crossed++;
-            if (!inCabin(base[i], base[i + 1], base[i + 2]) && inCabin(now[i], now[i + 1], now[i + 2])) intoCabin++;
+            // Across the plan into the occupant cell (by where it is, at a height inside the cell).
+            if (cellHeight(base[i + 1]) && !inCabin(base[i], base[i + 1], base[i + 2]) && inCabin(now[i], now[i + 1], now[i + 2])) intoCabin++;
           }
           if (index) {
             const a = new Three.Vector3(),

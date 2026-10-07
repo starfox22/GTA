@@ -164,7 +164,8 @@
         if (!m.hoodPivot && m.hood) m.hoodPivot = hingePart(m, m.hood, hingeScratch.set(l * 0.215, m.hoodBaseY, 0));
         if (!m.crumple) m.crumple = crumpleCollect(m);
         // The dents are in world units, the model in its design units (render3d.js DESIGN SIZE).
-        const signature = c.dents.reduce((s, d) => s + (d.depth || 0) * 7 + d.x + d.y * 3 + d.r * 0.01, c.dents.length),
+        // (A hood springing open is bent again: it keeps more of its length open, crumpleBend.)
+        const signature = c.dents.reduce((s, d) => s + (d.depth || 0) * 7 + d.x + d.y * 3 + d.r * 0.01 + (d.nz || 0) * 0.37, c.dents.length) + (parts.hood >= 1 ? 0.123 : 0),
           reshape = signature !== m.dentSignature;
         if (reshape) {
           m.dentSignature = signature;
@@ -223,15 +224,28 @@
             pivot.position.set(l * 0.2, 0, side * w * 0.5);
             m.body.add(pivot);
             // From the sill (`dims.sill`: a real-size body's, cars3d.js) to the belt.
+            // The door is cut from the body's own side (its curve, paint and livery; damage3d-crumple.js), else a slab.
             const sill = m.dims.sill ?? 4.8,
-              panel = box(pivot, -l * 0.13, (sill + h + 0.4) / 2, side * 0.25, l * 0.26, h + 0.4 - sill, 0.45, m.paint),
+              shaped = doorPanelGeometries(m, side, l * -0.06, l * 0.2, sill + 0.2, h - 0.15, pivot.position);
+            let panel, opening;
+            if (shaped) {
+              panel = new Three.Mesh(shaped.door, [m.paint, engineBay]);
+              opening = new Three.Mesh(shaped.opening, engineBay);
+              panel.castShadow = opening.receiveShadow = panel.receiveShadow = true;
+              pivot.add(panel);
+              m.body.add(opening);
+            } else {
+              panel = box(pivot, -l * 0.13, (sill + h + 0.4) / 2, side * 0.25, l * 0.26, h + 0.4 - sill, 0.45, m.paint);
               opening = box(m.body, l * 0.07, (sill + h) / 2, side * (w * 0.5 + 0.04), l * 0.24, h - sill - 0.2, 0.3, engineBay);
-            // A livery samples its door colour through the panel's UVs (police3d.js).
-            if (m.panelGeometry) panel.geometry = m.panelGeometry;
+              // A livery samples its door colour through the panel's UVs (police3d.js).
+              if (m.panelGeometry) panel.geometry = m.panelGeometry;
+            }
             door = m.doors[side] = { pivot, panel, opening };
-            // The hinge moves with the crumpled side and the opening bends with it.
+            // The hinge moves with the crumpled side; the opening and the door (in its closed place, relative to the
+            // hinge) bend with it.
             crumpleAdopt(m, pivot, true);
             crumpleAdopt(m, opening, false);
+            crumpleAdopt(m, panel, false, true);
           }
           door.pivot.rotation.set(0, side * (state === 1 ? 0.95 : 0), state === 1 ? -0.09 : 0);
           if (state === 2 && before[key] !== 2 && !first && door.panel.visible)

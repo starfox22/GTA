@@ -93,7 +93,11 @@
           const hinge = crumplePoint(m, m.hoodPivot, false);
           points.push(hinge);
           const part = crumplePart(m, m.hood, hinge.at);
-          if (part) parts.push(part);
+          if (part) {
+            part.length = Math.max(1, part.box[3] - hinge.at[0]);
+            part.buckle = true;
+            parts.push(part);
+          }
         }
         for (const bumper of m.bumpers || []) {
           skip.add(bumper);
@@ -115,15 +119,114 @@
         const outer = m.kit?.trimOuter;
         return { parts, points, skip, fresh: false, trimSource: m.kit?.trim || null, trimOuter: outer ? Math.min(outer.drawRange.count, outer.index ? outer.index.count : Infinity) : Infinity };
       }
+      // A sprung door cut from the body's own side: a grid over the door's rectangle (body space, x0..x1 along, y0..y1
+      // up) laid on the pristine shell by rays from the side, with the shell's own UVs (so the paint and a livery carry
+      // on), as the door (outer skin in paint, inner trim dark, edges in paint; positions relative to `origin`, its
+      // hinge) and as the opening left in the body (the dark inner panel flush with the side). Null when no ray meets
+      // the shell (the old flat panels are used).
+      const doorRay = new Three.Raycaster(),
+        doorFrom = new Three.Vector3(),
+        doorDir = new Three.Vector3();
+      function doorPanelGeometries(m, side, x0, x1, y0, y1, origin) {
+        const shellPart = m.crumple?.parts.find((p) => p.mesh === m.shell),
+          probe = new Three.Mesh(shellPart ? shellPart.source : m.shell.geometry);
+        probe.updateMatrixWorld(true);
+        const NX = 8,
+          NY = 6,
+          grid = [],
+          reach = m.dims.w * 1.5;
+        for (let j = 0; j < NY; j++)
+          for (let i = 0; i < NX; i++) {
+            const x = x0 + ((x1 - x0) * i) / (NX - 1),
+              y = y0 + ((y1 - y0) * j) / (NY - 1);
+            doorRay.set(doorFrom.set(x, y, side * reach), doorDir.set(0, 0, -side));
+            doorRay.far = reach * 2;
+            const hit = doorRay.intersectObject(probe, false)[0];
+            if (!hit) return null;
+            grid.push([x, y, hit.point.z, hit.uv ? hit.uv.x : 0.5, hit.uv ? hit.uv.y : 0.5]);
+          }
+        const at = (i, j) => grid[j * NX + i],
+          door = { position: [], uv: [], groups: [[], []] },
+          opening = { position: [], uv: [] },
+          inset = 0.35,
+          push = (set, p, dz, list) => {
+            set.position.push(p[0] - origin.x, p[1] - origin.y, p[2] + side * dz - origin.z);
+            set.uv.push(p[3], p[4]);
+            if (list) list.push(set.position.length / 3 - 1);
+          },
+          quad = (list, a, b, c, d) => list.push(a, b, d, b, c, d);
+        // Skin and trim: one vertex per grid point on each face.
+        const outer = [],
+          inner = [];
+        for (const p of grid) push(door, p, 0.03, outer);
+        for (const p of grid) push(door, p, -inset, inner);
+        for (let j = 0; j < NY - 1; j++)
+          for (let i = 0; i < NX - 1; i++) {
+            const k = j * NX + i,
+              a = outer[k],
+              b = outer[k + 1],
+              c = outer[k + NX + 1],
+              d = outer[k + NX];
+            // Wound to face out on this side; the trim the other way.
+            if (side > 0) quad(door.groups[0], a, b, c, d);
+            else quad(door.groups[0], b, a, d, c);
+            const ia = inner[k],
+              ib = inner[k + 1],
+              ic = inner[k + NX + 1],
+              id = inner[k + NX];
+            if (side > 0) quad(door.groups[1], ib, ia, id, ic);
+            else quad(door.groups[1], ia, ib, ic, id);
+          }
+        // The edges round the door (skin to trim).
+        const rim = [];
+        for (let i = 0; i < NX - 1; i++) rim.push([i, 0, i + 1, 0]);
+        for (let j = 0; j < NY - 1; j++) rim.push([NX - 1, j, NX - 1, j + 1]);
+        for (let i = NX - 1; i > 0; i--) rim.push([i, NY - 1, i - 1, NY - 1]);
+        for (let j = NY - 1; j > 0; j--) rim.push([0, j, 0, j - 1]);
+        for (const [ai, aj, bi, bj] of rim) {
+          const a = outer[aj * NX + ai],
+            b = outer[bj * NX + bi],
+            c = inner[bj * NX + bi],
+            d = inner[aj * NX + ai];
+          if (side > 0) quad(door.groups[0], b, a, d, c);
+          else quad(door.groups[0], a, b, c, d);
+        }
+        const doorGeometry = new Three.BufferGeometry();
+        doorGeometry.setAttribute('position', new Three.Float32BufferAttribute(door.position, 3));
+        doorGeometry.setAttribute('uv', new Three.Float32BufferAttribute(door.uv, 2));
+        doorGeometry.setIndex([...door.groups[0], ...door.groups[1]]);
+        doorGeometry.addGroup(0, door.groups[0].length, 0);
+        doorGeometry.addGroup(door.groups[0].length, door.groups[1].length, 1);
+        doorGeometry.computeVertexNormals();
+        // The opening: the inner panel left flush with the side (body space, not relative to the hinge).
+        const openingIndex = [];
+        for (const p of grid) {
+          opening.position.push(p[0], p[1], p[2] + side * 0.02);
+          opening.uv.push(p[3], p[4]);
+        }
+        for (let j = 0; j < NY - 1; j++)
+          for (let i = 0; i < NX - 1; i++) {
+            const k = j * NX + i;
+            if (side > 0) quad(openingIndex, k, k + 1, k + NX + 1, k + NX);
+            else quad(openingIndex, k + 1, k, k + NX, k + NX + 1);
+          }
+        const openingGeometry = new Three.BufferGeometry();
+        openingGeometry.setAttribute('position', new Three.Float32BufferAttribute(opening.position, 3));
+        openingGeometry.setAttribute('uv', new Three.Float32BufferAttribute(opening.uv, 2));
+        openingGeometry.setIndex(openingIndex);
+        openingGeometry.computeVertexNormals();
+        return { door: doorGeometry, opening: openingGeometry };
+      }
       // A part or hinge made after the first damage (door opening and hinge, boot lid, engine bay) joins the crumple.
-      function crumpleAdopt(m, object, asPoint) {
+      // `hinged`: a mesh inside a hinge just adopted as a point (a door): bent relative to that hinge's own move.
+      function crumpleAdopt(m, object, asPoint, hinged) {
         const record = m.crumple;
         if (!record) return;
         if (asPoint) {
           record.skip.add(object);
           record.points.push(crumplePoint(m, object, false));
         } else if (object.isMesh) {
-          const part = crumplePart(m, object, null);
+          const part = crumplePart(m, object, hinged ? record.points[record.points.length - 1].at : null);
           if (part) record.parts.push(part);
         } else crumpleWalk(m, object, record.skip, record.parts);
         record.fresh = true;
@@ -224,7 +327,7 @@
         normal.needsUpdate = true;
       }
       // Moves every vertex of a part by the field at its rest place (relative to the hinge's own move for a hinged part).
-      function crumpleBend(part, dents, limits, seed, reach) {
+      function crumpleBend(part, dents, limits, seed, reach, hoodKeep) {
         const touched = crumpleReaches(part.box, dents);
         if (!touched && !part.bent) return false;
         const started = performance.now(),
@@ -272,6 +375,14 @@
               my += crumpleMove.z;
               mz += crumpleMove.y;
             }
+            // The hood: pushed back toward its hinge it buckles up in a ridge rather than shrinking (sheet metal keeps its
+            // length); sprung open it keeps more of its length (hoodKeep), closed it lies on the crushed nose.
+            if (part.buckle && mx < 0) {
+              const u = Math.min(1, Math.max(0, (bx - part.hinge[0]) / part.length)),
+                back = -mx;
+              mx = -back * hoodKeep;
+              my += back * (0.16 + (1 - hoodKeep) * 0.5) * Math.sin(Math.PI * u);
+            }
           } else mx = my = mz = 0;
           if (mx * mx + my * my + mz * mz > 1e-8) {
             moved[i] = 1;
@@ -307,6 +418,8 @@
         record.reach.set(crumpleReachBox(dents));
         record.dents = dents;
         record.seed = c.id;
+        // A hood sprung open keeps half of the shortening its crumple would give (the rest goes into its ridge).
+        record.hoodKeep = c.damage?.parts?.hood >= 1 ? 0.5 : 1;
         crumpleOrder(m);
         // A pass for parts adopted since the last one keeps going over the rest only if a full one was queued.
         record.all = all || (crumpleQueue.has(m) && record.all);
@@ -328,7 +441,7 @@
           const part = parts[record.order ? record.order[record.next] : record.next];
           record.next++;
           if (!record.all && part.adopted) continue;
-          crumpleBend(part, record.dents, record.limits, record.seed, record.reach);
+          crumpleBend(part, record.dents, record.limits, record.seed, record.reach, record.hoodKeep);
           part.adopted = true;
           if (part.own && part.mesh === m.shell) m.ownShell = true;
           if (part.own && part.mesh === m.cabin) m.ownCabin = true;
