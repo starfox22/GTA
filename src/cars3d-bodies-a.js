@@ -337,6 +337,8 @@
             [0.1, 0.98, 0.84], [0.2, 0.985, 0.8], [0.32, 0.99, 0.75], [0.42, 0.97, 0.7], [0.47, 0.91, 0.63, 0.16], [0.49, 0.83, 0.56, 0.2], [0.5, 0.72, 0.48, 0.27],
           ],
           glass: { base: 0.82, roof: 1.2, xf: 0.19, xb: 0.02, rf: 0.07, rb: 0.02, wb: 0.4, wt: 0.37, bow: 0.01, bulge: 0.05, arch: 0.03, open: true, sideFrom: 0.8, aPillar: 'black', aWidth: 0.05 },
+          // The people on its own buckets, hands on its own wheel (cars3d-interior.js carSeatPlan).
+          seats: { x: -0.07, y: 0.74, z: 0.3, wheel: [-0.52, 0.95], tilt: -0.93 },
           wheel: { r: 0.31, width: 0.215, xf: 0.3, xr: -0.29, caliper: '#3a3d42' },
           rim: { style: 'straight', spokes: 7, color: '#b8bec4', frac: 0.72, spokeWidth: 0.1 },
           mirrors: true,

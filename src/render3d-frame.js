@@ -445,7 +445,9 @@
             s.visible = true;
             s.position.set(p.x, p.y, p.z);
             const a = p.life / p.max;
-            s.material.map = p.glow ? haloTx : smokeTx;
+            s.material.map = p.glow ? haloTx : p.glass ? glassTx : smokeTx;
+            const turn = p.glass ? p.spin * (p.max - p.life) : 0;
+            if (s.material.rotation !== turn) s.material.rotation = turn;
             s.material.color.copy(cachedColor(p.color));
             if (!p.glow) s.material.color.multiplyScalar(spriteLight);
             s.material.opacity = Math.min(p.smoke ? 0.56 : 0.96, a * 1.7);

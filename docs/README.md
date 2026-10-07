@@ -13,7 +13,8 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/world-county-and-sea-terrain.md | Ridgeline terrain: the height field, the 4x4 trails and their grading, the ride on the terrain (suspension), trail dressing, scenic roads |
 | areas/places-and-venues.md | Palm Keys, the beach and Marea, Sunset Pier, Harbor Point (marina, superyacht, liners, cargo terminal), North Point Key, roofs and helipads, garages, casino |
 | areas/places-monarch-and-county.md | Monarch Isle and MONARCH ONE, Ridgeline villages and the 4x4 club, Fort Sentinel and the Apache, the stadium and GOALLINE, MONARCH MOTORS |
-| areas/vehicles-and-driving.md | Vehicle specs, handling, brakes and assists, crashes, riders, cliffs, aircraft, vehicle models and their contracts |
+| areas/vehicles-and-driving.md | Vehicle specs, handling, brakes and assists, crashes, riders, cliffs, aircraft (models: -models.md) |
+| areas/vehicles-and-driving-models.md | Vehicle models: the damage contract, draw calls and the pristine merge, cabins, see-through glass and the seated occupants |
 | areas/vehicles-and-driving-handling.md | Steering and grip, brakes and assists, drifts and the handbrake (`driftTest`) |
 | areas/people-and-crowd.md | Crowd behaviour, perception, speech bubbles |
 | areas/people-and-crowd-rig.md | The character rig: one instanced rig for everyone, key-ring outlines, looks, skeleton and gait, body sets, the chase view's near set (sculpted faces, hands, shoes, the near paint shader) |
@@ -32,7 +33,9 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/missions-bluehour.md | The Blue Hour hotel (mission 2) in 3D: terrace, the VIP table and reserved glass, the street entrance, the limousines and doormen |
 | areas/audio-and-radio.md | The mix and buses, sound systems, media and credits, the car radio |
 | areas/audio-soundscape.md | Free-roam sound: the ear probe and the room (slap-back, echo, occlusion), ambience beds by place, footsteps by surface, horns, doors, tyre ground |
-| areas/rendering.md | Cameras and view, draw-call rules, buildings and signs, ground, water, wet roads, weather, tiers |
+| areas/rendering.md | Cameras and view, draw-call rules |
+| areas/rendering-buildings.md | Building archetypes and roofs, the street frontage on every side (shops, lobbies, stoops, loading bays, backs, fire escapes), shop windows, the sign design system (`sign()`, `SIGN_DESIGNS`, families), billboards, the glow field |
+| areas/rendering-weather.md | Ground, wet roads, water, rain, splashes, spray, lightning, tiers, and their street-level (chase view) numbers: near rain, rain haze, wet reflections, streaks |
 | areas/chase-view.md | The third-person CHASE view (V): where the camera stands (game state, its projection), look input (pointer lock, pad, touch), drawing it (draw distance, culling, shadows), the reticle |
 | areas/rendering-chase.md | The chase view's draw distance and level of detail: far cells drawn from the far copy, shadow casters and proxies, small props and pools, people and vehicles by distance, the `chaseCamera().view` report |
 | areas/rendering-hiccups.md | First-use hitches: what the title-screen prewarm warms (programs, off-screen passes, stand-in models, the far copy), the first-use log (`renderHiccups`), the rules a new effect follows, dormant lights, numbers |

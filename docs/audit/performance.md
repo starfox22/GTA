@@ -655,3 +655,40 @@ grass tufts (108 k) and the ground planes (97 k) in view; the bridges at 400-600
 avenue's unbatched static meshes (~200 calls looking down the avenue); traffic models within ~100 m. The far copy's
 classes (texture and finish) make a far cell cost about as many calls as its batches: the saving there is triangles and
 the blocks, not calls; merging the untextured classes for the chase view would need a second copy.
+
+## Seventh pass: street frontage on every side (6-7 October 2026)
+
+Every street side of a city building now has a ground floor (shops, lobbies, stoops, loading bays; backs with service
+doors and fire escapes; docs/areas/rendering-buildings.md). A first version used a `staticMat` per colour for panels,
+doors, shutters, fascias and awnings: in a cell with no shopfront before that was up to ~15 new batches, +28 to +40
+camera batches looking down a street and +5-14% calls in the street view. Every plain-painted part (the old south
+shopfront's too) is now one vertex-coloured material (FRONT PAINT), which took that back out; the old per-building
+fascia `mat()` went at the same time.
+
+Seeded A/B (`dev.mjs start --render --size 1280x720 --seed 1`, held simulation, HIGH, 13:00; each reading after three
+drawn frames: the machine ran 5 dev servers, so a fixed wait read stale frames), base c4b1eab against 9e7efa4. Chase
+rows: camera calls / shadow calls from `chaseCamera().view.draws`, then scenery calls (batches + far copy + static
+groups, camera | shadow); triangles are `stats()` (both passes). Traffic models vary by build order (the start spot
+had 73 vehicle calls before, 83 after).
+
+| Scene | before | after |
+| --- | --- | --- |
+| Chase, start spot (748, 584) looking east | 695 / 403, scenery 361 \| 251, 1.63 M | 686 / 432, scenery 342 \| 277, 1.73 M |
+| Chase, start spot looking west | 735 / 314, scenery 462 \| 174, 1.43 M | 740 / 342, scenery 467 \| 202, 1.45 M |
+| Chase, the y 1152 avenue looking east | 537 / 301, scenery 261 \| 117, 1.66 M | 540 / 368, scenery 264 \| 184, 1.73 M |
+| Chase, the avenue looking west | 947 / 502, scenery 543 \| 305, 1.73 M | 967 / 566, scenery 563 \| 369, 1.79 M |
+| Street view, start spot | 208 / 224, 1.57 M | 216 / 237, 1.60 M |
+| Street view, the avenue | 149 / 193, 1.51 M | 156 / 203, 1.55 M |
+
+Camera-pass scenery is -5% to +4%; the street view +4-5% calls and +2-3% triangles. Most of the shadow-pass rise is
+not new geometry: `chaseBatchCellBounds` (chase-view3d-casters.js) measures a batch cell from its direct children only,
+not from the far-usable batches in `cell.full`, so a cell whose only direct batches are a few small ones (alpha-tested
+window neons, lamp heads) gets a tiny box and can be left out of the shadow pass whole: on the avenue the base cast no
+batch within 150 m (19 batches, all 150-300 m away). The new shopfronts' window neons (`neonCutout`, not far-usable)
+widen those boxes, so the facades and roofs of those cells cast again (their 'map lit' and 'map' batches are +21 to
++36 against +27 to +68 shadow batches in all); FRONT PAINT itself adds one batch per cell. Fixing the bounds (include `cell.full`)
+would make the base cast those shadows too.
+
+Also checked: `layout()` street props and foot obstacles and five buildings' `rooftops()` hash the same before and
+after (cityRandom's stream, which places roof plant and bus stops, is untouched); no console errors; boot stages are
+within the loaded machine's run-to-run noise (scene built 18.9-22.4 s before, 21.1 s after on software GL).

@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-521 files in the include tree, 179,358 lines.
+526 files in the include tree, 181,386 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -147,12 +147,12 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/bullets-audio.js`   179 — Bullet sound: strikes by surface (concrete chips and ricochets, metal, glass, dirt) and the crack and whizz of an enemy round passing close to the …
 - `src/runover-audio.js`     8 — Sound of a wheel going over someone already on the ground (runover.js): a low thud and a short crack, heavier with weight and speed.
 - `src/quality.js`   240 — Graphics quality tiers
-- `src/settings.js`   930 — Settings menu
+- `src/settings.js`   943 — Settings menu
 - `src/markers.js`    20 — Objective and player markers: which ones are drawn (the floating arrow; the optional player ring) and a read-only report.
 - `src/foliage-cutaway.js`   146 — Foliage cutaway: who the see-through hole in tree crowns, palm fronds and tall shrubs keeps in view (the player on foot or their vehicle) and how big …
 - `src/god-panel.js`   799 — God mode settings
 - `src/driving.js`   508 — Tyres, brakes and driving assists
-- `src/chase-camera.js`   804 — Chase camera: the third-person view behind the player that V switches with the street view: where it stands and looks, mouse / stick / touch look …
+- `src/chase-camera.js`   810 — Chase camera: the third-person view behind the player that V switches with the street view: where it stands and looks, mouse / stick / touch look …
 - `src/chase-rules.js`   599 — Chase rules: what the player can see in the chase view, for the game's rules (who may fire, spawning and recycling out of sight, the HUD's player …
 - `src/chase-hud.js`    77 — Chase HUD: the reticle in the middle of the screen in the chase view (chase-view.css) and the hidden cursor while the pointer is captured; drawn …
 - `src/tyre-effects.js`   274 — What the tyres leave behind: the burnout (forward and the handbrake held at a standstill), skid marks, and the one rule for tyre smoke, dust and …
@@ -398,22 +398,22 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/hud.js ▸ HUD behaviour and the title menu
 
-- `src/hud-state.js`   657 — HUD state and pop boxes, saved settings, weapon and radio watches, stars, minimap fold and zoom (hudState, hudPop).
+- `src/hud-state.js`   656 — HUD state and pop boxes, saved settings, weapon and radio watches, stars, minimap fold and zoom (hudState, hudPop).
 - `src/hud-panels.js`   644 — HUD panels: prompts, centre cards and toasts, sniper warning, panel covers, updateHud() and the flight HUD.
 - `src/hud-clearance.js`   324 — HUD clearance: the mission card never covers the player (and the dialogue line and the waypoint pill fade if they would).
 
 ## src/render3d.js ▸ Three.js renderer and resource lifecycle
 
 - `src/flight-view3d.js`   616 — ▸ Flight camera and aerial perspective
-- `src/chase-view3d.js`   203 — ▸ Chase view 3D: the perspective camera behind the player (chase-camera.js says where it stands), the ground it sees for culling and level of detail …
-- `src/postfx3d.js`   806 — ▸ HDR post-processing pipeline
+- `src/chase-view3d.js`   210 — ▸ Chase view 3D: the perspective camera behind the player (chase-camera.js says where it stands), the ground it sees for culling and level of detail …
+- `src/postfx3d.js`   856 — ▸ HDR post-processing pipeline
 - `src/lighting3d.js`    27 — ▸ Sun, sky, reflections and night light
 - `src/searchlight3d.js`   937 — Searchlights: light shafts, ground pools, the helicopter's spot
 - `src/render3d-statics.js`   362 — Static building batches, static cells and culling (staticInView), shared materials.
 - `src/render3d-terrain.js`   297 — Mesh/box/rod helpers, wall textures, the ground mesh and kerbs.
 - `src/vegetation3d.js`    63 — ▸ Tree library: species, foliage atlas, wind, LOD
-- `src/render3d-streetprops.js`   297 — ▸ Street lamps and their glow halos, vehicle halos, blossom, sign() boards.
-- `src/cityscape3d.js`    21 — ▸ Building archetypes, roofs, shopfronts and street furniture
+- `src/render3d-streetprops.js`   340 — ▸ Street lamps and their glow halos, vehicle halos, blossom, sign() boards.
+- `src/cityscape3d.js`    26 — ▸ Building archetypes, roofs, shopfronts and street furniture
 - `src/sidejobs3d.js`    61 — Contract mission meshes
 - `src/roadblocks3d.js`    70 — Police roadblock meshes
 - `src/themepark3d.js`    22 — ▸ Sunset Pier resort meshes
@@ -452,19 +452,19 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/dealership3d.js`    43 — ▸ MONARCH MOTORS in 3D
 - `src/beachclub3d.js`    38 — ▸ Marea Beach Club meshes and show lighting
 - `src/cycles3d.js`   465 — Bike-share station meshes
-- `src/weather3d.js`   702 — Weather and sky visuals
+- `src/weather3d.js`   786 — ▸ Weather and sky visuals
 - `src/character-rig3d.js`   696 — ▸ Character rig: sculpted body parts, outfits and paint
 - `src/crowd3d.js`    87 — ▸ Instanced people: skeleton, gait, poses, weapons and street props
 - `src/carjack3d.js`   212 — The carjack struggle drawn: the driver's door swinging, the poses of the tug of war and the player's hands on the driver (swingDriverDoor …
 - `src/clouds3d.js`    56 — ▸ Volumetric clouds and cloud shadows
 - `src/ground-data3d.js`   826 — Ground shader data
-- `src/surfaces3d.js`   232 — ▸ Procedural surface detail
+- `src/surfaces3d.js`   248 — ▸ Procedural surface detail
 - `src/grass3d.js`   153 — Grass tufts
 - `src/helicopter3d.js`    99 — ▸ Helicopter models
 - `src/apache3d.js`   435 — The AH-64 attack helicopter model
 - `src/vehicles3d.js`   622 — Vehicle meshes
 - `src/police3d.js`    61 — ▸ Police vehicle models
-- `src/cars3d.js`    87 — ▸ Civilian car models
+- `src/cars3d.js`    92 — ▸ Civilian car models
 - `src/hypercars3d.js`   944 — The Prestige Collection's car models
 - `src/motorbikes3d.js`   581 — Motorbike models
 - `src/offroad3d.js`    42 — ▸ 4x4 club trucks, the club lot, trail props and mud
@@ -473,14 +473,14 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/mountain-village3d.js`    38 — ▸ Mountain village meshes
 - `src/plane3d.js`    48 — ▸ Airplane meshes
 - `src/render3d-vehicle-models.js`   350 — MakeVehicle()/buildVehicleModel(), modelScale, car rims, sniper sights.
-- `src/vehicle-merge3d.js`   342 — Pristine merge: a civilian car nothing has touched draws its non-casting static parts merged per material (hood + panels + paint bumpers, black and …
+- `src/vehicle-merge3d.js`   345 — Pristine merge: a civilian car nothing has touched draws its non-casting static parts merged per material (hood + panels + paint bumpers, black and …
 - `src/render3d-prewarm-models.js`    67 — Prewarm lists: the throwaway vehicles and the sample shadow casters the title-screen prewarm builds, so each model's kit, shared materials and shader …
-- `src/render3d-effects.js`   216 — ▸ The optional player ring, the objective arrow, muzzle and head lights, smoke and flame sprites.
+- `src/render3d-effects.js`   236 — ▸ The optional player ring, the objective arrow, muzzle and head lights, smoke and flame sprites.
 - `src/render3d-resources.js`   520 — GPU resource lifecycle: shared geometries, model pruning and disposal.
 - `src/render3d-hiccups.js`   377 — Hiccup log: what each drawn frame created for the first time (shader programs, textures, geometries) and the slowest frames' renderer CPU split; read …
 - `src/payphone3d.js`   597 — The story payphone where mission 1 starts: a 1990s yellow pedestal payphone with its lit PHONE sign, handset, keypad, directory and grime, the …
-- `src/render3d-api.js`   541 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
-- `src/render3d-frame.js`   704 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
+- `src/render3d-api.js`   542 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
+- `src/render3d-frame.js`   706 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
 
 ## src/flight-view3d.js ▸ Flight camera and aerial perspective
 
@@ -492,11 +492,12 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/chase-view3d-far.js`   158 — Chase view far cells: beyond a near radius by tier, 1024-unit cells are drawn from the far copy of the city.
 - `src/chase-view3d-props.js`   216 — Chase view small props and pools: detail-layer meshes, breakable furniture and outlying instanced pools by distance.
 - `src/chase-view3d-draws.js`   114 — Chase view console report: the last frame's camera and shadow draw calls by kind and distance band.
-- `src/chase-view3d-casters.js`   305 — Chase view shadow casters: what cannot shade the view is left out of the sun's shadow pass; far-copy proxies.
+- `src/chase-view3d-casters.js`   306 — Chase view shadow casters: what cannot shade the view is left out of the sun's shadow pass; far-copy proxies.
 
 ## src/postfx3d.js ▸ HDR post-processing pipeline
 
 - `src/postfx3d-sun.js`   248 — Post sun glare (the chase view): how much of the sun the sky draws is seen (depth and brightness round its disc, eased), light shafts from it through …
+- `src/postfx3d-motion.js`   136 — Camera motion blur in the chase view: the scene smeared along each pixel's screen motion since the last frame (from the depth and the two frames' …
 - `src/postfx3d-composite.js`   204 — ▸ Post composite (one material per tier): AO upsampling, wet reflections, bloom, ACES tone curve, film grade, vignette and dither; the sun glare lands …
 
 ## src/postfx3d-composite.js ▸ Post composite (one material per tier): AO upsampling, wet reflections, bloom, ACES tone curve, film grade, vignette and dither; the sun glare lands …
@@ -505,7 +506,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/lighting3d.js ▸ Sun, sky, reflections and night light
 
-- `src/lighting3d-sky.js`   739 — ▸ Lighting 3D sun path (updateSunPath: the light, and the sun the sky draws), the sky (lighting3d-sky-dome.js), the night light map, the city light and …
+- `src/lighting3d-sky.js`   760 — ▸ Lighting 3D sun path (updateSunPath: the light, and the sun the sky draws), the sky (lighting3d-sky-dome.js), the night light map, the city light and …
 - `src/lighting3d-cutaway.js`   167 — Lighting 3D cutaway occluders (updateCutaway, setCharacterCutaway) and the default material patches.
 - `src/lighting3d-vehicle-lights.js`   647 — Lighting 3D vehicle lights: the nearest cars' low beams as real lights (CAR LAMPS), the drive light map and beam haze.
 - `src/lighting3d-vehicle-shadows.js`   314 — Lighting 3D vehicle lights, part 2: BEAM SHADOWS (people, cars, trees and posts in the CAR LAMPS beams), the TERRAIN HORIZON strip kept in the same …
@@ -533,8 +534,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/damage3d.js ▸ Crumpling bodies, decals, debris and knocked furniture
 
 - `src/damage3d-decals.js`   673 — Damage 3D decals: the decal atlas (cracked glass, soot) and world decal layers (addDecal, flushDecals).
-- `src/damage3d-bodies.js`   646 — Damage 3D vehicle bodies: shell sections, crumpling, hinged parts and glass (carBodyDamage, crumple).
-- `src/damage3d-world.js`   608 — Damage 3D world hits: shop windows, bullet holes, structure impacts and blasts, sparks, knocked props (impactEffect).
+- `src/damage3d-bodies.js`   648 — Damage 3D vehicle bodies: shell sections, crumpling, hinged parts and glass (carBodyDamage, crumple).
+- `src/damage3d-world.js`   612 — Damage 3D world hits: shop windows, bullet holes, structure impacts and blasts, sparks, knocked props (impactEffect).
 
 ## src/carblood3d.js ▸ Car blood 3D: stains on a vehicle's bodywork, decal geometry clipped to the model's own surface, painted and fitted in time slices.
 
@@ -558,12 +559,14 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/cityscape3d.js ▸ Building archetypes, roofs, shopfronts and street furniture
 
-- `src/cityscape3d-kit.js`   646 — ▸ Cityscape 3D kit: seeded random, instancing helpers, static materials, roof and window textures.
-- `src/cityscape3d-roofs.js`   554 — ▸ Cityscape 3D roof props and facades: AC units, water towers, billboards, helipads, shopfronts, fire escapes (decorateRoof).
+- `src/cityscape3d-kit.js`   642 — ▸ Cityscape 3D kit: seeded random, instancing helpers, static materials, roof and window textures.
+- `src/cityscape3d-shopwindows.js`   322 — Shop windows: a painted atlas of eight shop and lobby interiors, the shared lit shop-window material and its panes.
+- `src/cityscape3d-frontage.js`   458 — Street frontage on every side of a building: which sides face a street, an alley or a yard, and their ground floors (shops, lobbies, stoops, loading …
+- `src/cityscape3d-roofs.js`   575 — ▸ Cityscape 3D roof props and facades: AC units, water towers, billboards, helipads, shopfronts, fire escapes (decorateRoof).
 
 ## src/cityscape3d-kit.js ▸ Cityscape 3D kit: seeded random, instancing helpers, static materials, roof and window textures.
 
-- `src/signage3d.js`   760 — Night glows, neon and wet-street reflections
+- `src/signage3d.js`   792 — Night glows, neon and wet-street reflections
 
 ## src/cityscape3d-roofs.js ▸ Cityscape 3D roof props and facades: AC units, water towers, billboards, helipads, shopfronts, fire escapes (decorateRoof).
 
@@ -672,6 +675,10 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/beachclub3d-club.js`   553 — Marea beach club 3D, inside buildBeachClub3D(): materials, textures, ground, street side, staff block, stage and dance floor.
 - `src/beachclub3d-terrace.js`   462 — Marea beach club 3D, inside buildBeachClub3D(): bars, VIP terrace, daybeds, pool, fire lounge, palms and lights.
 
+## src/weather3d.js ▸ Weather and sky visuals
+
+- `src/weather3d-chase.js`   153 — Rain at street level (the chase view): a dense near field of short streaks round the camera, the side view's fall speed, streak length and slant for …
+
 ## src/character-rig3d.js ▸ Character rig: sculpted body parts, outfits and paint
 
 - `src/character-rig3d-kit.js`    77 — Kit worn over the torso (torso space).
@@ -681,7 +688,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/character-near3d.js ▸ The near body set (chase view): smooth sculpted parts for the player and the few people nearest the camera, with a woman's shape as a second shape of …
 
 - `src/character-near3d-head.js`   135 — Near set heads: a face modelled into the head loft (sockets, brow, nose, cheekbones, lips, chin, jaw) as a man's and a woman's shape, ears, and the …
-- `src/character-near3d-shader.js`   424 — Near set paint shader: the rig's paint with the second shape and variants, a painted face (eyes, brows, lips, stubble, make-up), hair strands lit …
+- `src/character-near3d-shader.js`   430 — Near set paint shader: the rig's paint with the second shape and variants, a painted face (eyes, brows, lips, stubble, make-up), hair strands lit …
 
 ## src/crowd3d.js ▸ Instanced people: skeleton, gait, poses, weapons and street props
 
@@ -693,8 +700,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/crowd3d-roofparty.js`   141 — Crowd 3D poses for mission 2 (the Blue Hour): Vescari's poisoned toast beat by beat, and the bodyguards' heads turning with their sight cones.
 - `src/crowd3d-draw.js`   559 — drawCrowdPerson(): weapon holds, phone poses and the far-figure shortcut.
 - `src/crowd3d-special.js`   484 — Crowd 3D special characters: player, officers, soldiers, gangs, swimmers, parachutes (specialSpec, applyLimbOverrides).
-- `src/crowd3d-driveby.js`   162 — Crowd 3D drive-by pose: the player at the wheel with the gun arm out of the window, torso and head turned to the aim, recoil per shot …
-- `src/crowd3d-frame.js`   341 — updateCrowd3D(): per-frame packing, car enter and exit transitions, dogs, crowd stats.
+- `src/crowd3d-driveby.js`   345 — Crowd 3D drive-by pose: the player at the wheel with the gun arm out of the window, torso and head turned to the aim, recoil per shot …
+- `src/crowd3d-frame.js`   357 — updateCrowd3D(): per-frame packing, car enter and exit transitions, dogs, crowd stats.
 
 ## src/clouds3d.js ▸ Volumetric clouds and cloud shadows
 
@@ -713,7 +720,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/ground-shader3d.js ▸ Ground materials (GLSL)
 
 - `src/ground-shader3d-pars.js`   305 — Ground shader GLSL chunks: shared uniforms and helpers (GROUND_PARS), sheet magnification (GROUND_SHEET_PARS), the marks (GROUND_MARKS).
-- `src/ground-shader3d-albedo.js`   612 — Ground shader GLSL chunks: the main albedo pass (GROUND_ALBEDO, one literal), GROUND_ROUGHNESS and GROUND_NORMAL.
+- `src/ground-shader3d-albedo.js`   616 — Ground shader GLSL chunks: the main albedo pass (GROUND_ALBEDO, one literal), GROUND_ROUGHNESS and GROUND_NORMAL.
 
 ## src/helicopter3d.js ▸ Helicopter models
 
@@ -730,17 +737,18 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/police3d-looks.js`   504 — Police 3D bodies, liveries and looks (POLICE_BODIES, pickPoliceLook), trim materials and shared resources.
 - `src/police3d-cabins.js`   620 — Police 3D glasshouse cabins and livery textures (policeCabinGeometry, policeLiveryTextures).
-- `src/police3d-kits.js`   600 — Police 3D kits: makePoliceVehicle(), animatePoliceVehicle(), rims, rear doors, beacons and road glow.
+- `src/police3d-kits.js`   630 — Police 3D kits: makePoliceVehicle(), animatePoliceVehicle(), rims, rear doors, beacons and road glow.
 
 ## src/cars3d.js ▸ Civilian car models
 
-- `src/cars3d-materials.js`   334 — Civilian car materials: trim atlas, paint and finish materials (civMaterials, civPaintMaterial).
+- `src/cars3d-materials.js`   350 — Civilian car materials: trim atlas, paint and finish materials (civMaterials, civPaintMaterial).
 - `src/cars3d-geometry.js`   317 — Civilian car merging kit: matrices, beams, bars, discs and profile shapes (civAdd, civGeometry, civShapeKit).
 - `src/cars3d-wheels.js`   159 — Civilian car tyres and rims (civTyreGeometry, civRimGeometry).
-- `src/cars3d-kit.js`   444 — Civilian car kit: a body's merged parts for one size (civKit, civKits).
-- `src/cars3d-models.js`   284 — Civilian car models: makeCivilianCar(), animateCivilianCar(), liveries, lettering and lamps.
+- `src/cars3d-interior.js`   290 — Car cabins seen through the glass: the seat plan (carSeatPlan), the cabin merged into a kit's trim (carCabinParts: seats and headrests, dashboard …
+- `src/cars3d-kit.js`   476 — Civilian car kit: a body's merged parts for one size (civKit, civKits).
+- `src/cars3d-models.js`   328 — Civilian car models: makeCivilianCar(), animateCivilianCar(), liveries, lettering and lamps.
 - `src/cars3d-body-parts.js`   144 — Civilian car body parts: civBody() and shared lamps, LED lines, projectors, plates, exhausts, badges, fins.
-- `src/cars3d-bodies-a.js`   545 — CAR_BODIES part 1: sedan, taxi, coupe, muscle, sport, roadster, rally, hotrod.
+- `src/cars3d-bodies-a.js`   547 — CAR_BODIES part 1: sedan, taxi, coupe, muscle, sport, roadster, rally, hotrod.
 - `src/cars3d-bodies-b.js`   599 — CAR_BODIES part 2: supercar, luxury, limousine, suv, van, pickup, chevette, brutini, cavalino.
 
 ## src/offroad3d.js ▸ 4x4 club trucks, the club lot, trail props and mud
@@ -785,11 +793,11 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-rides.js`   104 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
 - `src/game-console-leisure.js`    75 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)
 - `src/game-console-crowd.js`   162 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
-- `src/game-console-graphics.js`   237 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
+- `src/game-console-graphics.js`   240 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
 - `src/game-console-perf.js`   272 — DeadEndCity console, simulation cost: simProfile (per-section ms, worst frames), simScenario (staged situations)
 - `src/game-console-soak.js`   368 — DeadEndCity console, long-session health: soakReport (sizes of every list that can grow, DOM, non-finite positions)
 - `src/game-console-integrity.js`   177 — DeadEndCity console: integrity(), the invariants tools/bot.mjs checks after every action
-- `src/game-console-settings.js`   137 — DeadEndCity console, settings: settings, openSettings, bindings, radio (+ audioConsole)
+- `src/game-console-settings.js`   139 — DeadEndCity console, settings: settings, openSettings, bindings, radio (+ audioConsole)
 
 ## src/shell.html ▸ HTML page skeleton: its src/ui/*.css and *.html fragments (in include order) and build.py's `<!-- @include-* -->` slots (game, three.js, media, credits)
 

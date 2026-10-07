@@ -51,6 +51,26 @@
         sm.fillRect(x - r, y - r, r * 2, r * 2);
       }
       const smokeTx = new Three.CanvasTexture(smokeCanvas);
+      // Broken glass (fx with `glass`): tempered glass bursts into a shower of small cubes, so one sprite is a
+      // scatter of sharp glints that tumbles (its rotation), never a soft puff (a pale square at street level).
+      const glassCanvas = document.createElement('canvas');
+      glassCanvas.width = glassCanvas.height = 64;
+      const gc = glassCanvas.getContext('2d');
+      for (let i = 0; i < 22; i++) {
+        const a = i * 2.39996,
+          r = 3 + 26 * Math.sqrt((i + 0.5) / 22),
+          x = 32 + Math.cos(a) * r,
+          y = 32 + Math.sin(a) * r,
+          k = 0.9 + (i % 3) * 0.8;
+        gc.fillStyle = i % 4 === 0 ? '#ffffff' : i % 4 === 1 ? '#ffffffd0' : '#ffffff90';
+        gc.beginPath();
+        gc.moveTo(x, y - k * 1.3);
+        gc.lineTo(x + k, y + k * 0.7);
+        gc.lineTo(x - k * 0.9, y + k * 0.5);
+        gc.closePath();
+        gc.fill();
+      }
+      const glassTx = new Three.CanvasTexture(glassCanvas);
       const flameCanvas = document.createElement('canvas');
       flameCanvas.width = 64;
       flameCanvas.height = 128;

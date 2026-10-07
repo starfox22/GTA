@@ -362,8 +362,10 @@
             life: 0.5 + Math.random() * 0.4,
             max: 0.9,
             color: Math.random() < 0.5 ? '#e4f1f7' : '#9fc4d6',
-            size: 1 + Math.random() * 1.2,
+            size: 2.4 + Math.random() * 2.4,
             case: true,
+            glass: true,
+            spin: (Math.random() - 0.5) * 18,
           });
       }
       /**

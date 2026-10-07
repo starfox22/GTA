@@ -19,6 +19,7 @@
           if (Number.isFinite(changes.lookSensitivity)) settings.lookSensitivity = clamp(Math.round(changes.lookSensitivity), 20, 300);
           if (typeof changes.invertLook === 'boolean') settings.invertLook = changes.invertLook;
           if (typeof changes.aimAssist === 'boolean') settings.aimAssist = changes.aimAssist;
+          if (typeof changes.motionBlur === 'boolean') settings.motionBlur = changes.motionBlur;
           // 'auto', 'off', 'low' or 'high' (quality.js SHADOWS).
           if (typeof changes.shadows === 'string') setShadowSetting(changes.shadows.toLowerCase());
           if (typeof changes.sound === 'boolean' && changes.sound !== soundOn) mute();
@@ -58,6 +59,7 @@
           lookSensitivity: settings.lookSensitivity,
           invertLook: settings.invertLook,
           aimAssist: settings.aimAssist,
+          motionBlur: settings.motionBlur,
           sound: soundOn,
           // The volume sliders (settings.js AUDIO_VOLUMES): masterVolume,
           // radioVolume, engineVolume, soundVolume (effects), voiceVolume,

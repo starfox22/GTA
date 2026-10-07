@@ -405,8 +405,7 @@
       return 'car';
     }
     const QUICK_KEYS = {
-      // V switches the overhead street view and the chase camera (chase-camera.js).
-      foot: [['move', 'RUN'], ['walk', 'WALK'], ['interact', 'INTERACT'], ['fire', 'FIRE'], ['cameraView', 'CAMERA'], ['help', 'CONTROLS']],
+      foot: [['move', 'RUN'], ['walk', 'WALK'], ['interact', 'INTERACT'], ['fire', 'FIRE'], ['help', 'CONTROLS']],
       swim: [['move', 'SWIM'], ['walk', 'EASY STROKE'], ['help', 'CONTROLS']],
       // The Blue Hour during mission 2: guests walk; the walk key runs (footPace).
       party: [['move', 'WALK'], ['walk', 'RUN'], ['poison', 'SPIKE DRINK'], ['interact', 'INTERACT'], ['help', 'CONTROLS']],

@@ -188,6 +188,8 @@
         N.reach2 = reach * reach;
         N.keep2 = N.reach2 / (CROWD_NEAR_KEEP * CROWD_NEAR_KEEP);
         if (!player.hidden && !(player.car || transitRide || taxiRide)) nearConsider(player, Infinity);
+        // At the wheel the player is drawn through their seated stand-in (crowd3d-driveby.js drawCarOccupants).
+        else if (player.car && !transitRide && !taxiRide) nearConsider(driveByGhost, Infinity);
         for (let i = 0; i < pedestrians.length; i++) if (!pedestrians[i].hidden) nearCandidate(pedestrians[i]);
         for (let i = 0; i < specials.length; i++) if (specials[i] !== player && !specials[i].hidden) nearCandidate(specials[i]);
       }
@@ -267,6 +269,7 @@
       function finishCrowd3D(deltaSeconds) {
         const start = performance.now();
         drawQueuedRiders(deltaSeconds, crowdDetail());
+        drawCarOccupants(deltaSeconds, crowdDetail());
         const body = BODY;
         if (chaseViewActive) BODY = BODY_NEAR;
         drawDriveByDriver(deltaSeconds, crowdDetail());
@@ -315,6 +318,9 @@
           packMsAverage: Math.round(crowdPackAverage * 100) / 100,
           // People drawn from their recorded instances (STILL FIGURES).
           still: crowdStillShown,
+          // People seated in cars this frame and the time they took (crowd3d-driveby.js SEATED OCCUPANTS).
+          occupants: occupantsDrawn,
+          occupantMs: Math.round(occupantMsAverage * 1000) / 1000,
           ...(byPart ? { byPart: list } : {}),
         };
       }

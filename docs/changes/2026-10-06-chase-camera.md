@@ -17,3 +17,6 @@
   camera onto him and holds it; a move of the mouse or the stick breaks it. Console `gunmanAt(x, y)`; test
   chase-lock.
 - C held in a vehicle looks behind it in the chase camera (Settings · Controls · Look behind).
+- Camera motion blur in the chase view on HIGH and ULTRA (Settings · Graphics · Motion blur; off with Motion
+  comfort): the street smears with the camera's own motion while the player and their car stay sharp.
+  Test chase-motion-blur.
