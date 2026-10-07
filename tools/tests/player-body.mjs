@@ -157,7 +157,23 @@ export default async function (t) {
   const data = step.value;
   data.unitsPerMetre = api.PB_UNITS;
   t.note(`built in ${Date.now() - started} ms: ${data.vertices} vertices, ${data.triangles} triangles`);
-  t.near(data.triangles, 40000, 130000, 'player body triangles');
+  t.near(data.triangles, 70000, 130000, 'player body triangles (HIGH and ULTRA)');
+  // LOW and MEDIUM: the same body meshed coarser, about half the triangles, the same height.
+  {
+    const coarse = api.pbBuildSteps('coarse');
+    let r;
+    api.pbClock.until = performance.now() + 30;
+    while (!(r = coarse.next()).done) {
+      await tick();
+      api.pbClock.until = performance.now() + 30;
+    }
+    api.pbClock.until = Infinity;
+    t.near(+(r.value.triangles / data.triangles).toFixed(2), 0.3, 0.6, 'LOW/MEDIUM triangles over HIGH');
+    let top = -1;
+    const Q = r.value.attributes.position;
+    for (let i = 1; i < Q.length; i += 3) top = Math.max(top, Q[i] / api.PB_UNITS);
+    t.near(+top.toFixed(3), 1.8, 1.83, 'LOW/MEDIUM: top of the hair (m)');
+  }
   const A = data.attributes,
     P = A.position,
     S = A.pbSkin,

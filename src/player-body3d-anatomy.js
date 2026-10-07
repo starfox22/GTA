@@ -178,7 +178,7 @@
         ops.push({ op: 'add', f: collar.f, b: collar.b, k: 0.004 });
         // ---- Neck (skin): into the head above, under the tee below ----
         const neck = [
-          pbLimb([-0.014, 1.42, 0], [0.004, 1.615, 0], 0.07, 0.062, { flat: 1.06, depth: 0.95 }),
+          pbLimb([-0.012, 1.465, 0], [0.004, 1.615, 0], 0.066, 0.062, { flat: 1.08, depth: 0.95 }),
           // Sternocleidomastoids: behind the ears to the top of the breastbone.
           pbLimb([-0.012, 1.615, -0.048], [0.052, 1.462, -0.014], 0.016, 0.014),
           pbLimb([-0.012, 1.615, 0.048], [0.052, 1.462, 0.014], 0.016, 0.014),

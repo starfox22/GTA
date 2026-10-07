@@ -160,11 +160,13 @@
         }
         playerBodyMesh.geometry = pbGeometry(data);
         old.dispose();
-        // Its buffers go to the GPU now (render3d-resources.js OFF-SCREEN UPLOAD), not in the frame he first shows.
+        // Its buffers go to the GPU now (render3d-resources.js OFF-SCREEN UPLOAD), not in the frame he first shows,
+        // and with shadows on, the sun's pass compiles his shadow program too (the title prewarm's shadow samples
+        // come after the far city's uploads, which a quick start can cut short).
         const shown = playerBodyMesh.visible;
         playerBodyMesh.visible = true;
         try {
-          uploadMeshes([playerBodyMesh], false);
+          uploadMeshes([playerBodyMesh], renderer.shadowMap.enabled);
         } catch (error) {
           console.warn('player body: upload', error);
         }

@@ -75,7 +75,7 @@
         add(pbEllipsoid(0.07, 1.605, 0, 0.02, 0.022, 0.03), 0.02);
         mirror((s) => add(pbEllipsoid(0.047, 1.664, s * 0.052, 0.027, 0.015, 0.022, rz(0.12)), 0.026));
         // The cheek between the cheekbone and the jaw: lean, not hollow.
-        mirror((s) => add(pbEllipsoid(0.026, 1.63, s * 0.045, 0.028, 0.03, 0.015), 0.026));
+        mirror((s) => add(pbEllipsoid(0.028, 1.632, s * 0.046, 0.029, 0.03, 0.0165), 0.026));
         // Mandible: chin, the jawline back to the corners under the ears, the ramus up.
         mirror((s) => add(pbEllipsoid(0.074, 1.584, s * 0.009, 0.018, 0.017, 0.017), 0.01));
         mirror((s) => add(pbLimb([0.066, 1.58, s * 0.02], [-0.006, 1.6, s * 0.051], 0.0115, 0.0125), 0.012));

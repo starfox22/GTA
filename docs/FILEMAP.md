@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-539 files in the include tree, 185,853 lines.
+539 files in the include tree, 185,855 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -455,7 +455,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/weather3d.js`   786 — ▸ Weather and sky visuals
 - `src/character-rig3d.js`   696 — ▸ Character rig: sculpted body parts, outfits and paint
 - `src/crowd3d.js`    87 — ▸ Instanced people: skeleton, gait, poses, weapons and street props
-- `src/player-body3d.js`   326 — ▸ The player's own body: one skinned mesh (a man in his forties in a black tee, jeans and leather shoes) posed by the crowd rig's skeleton every frame …
+- `src/player-body3d.js`   328 — ▸ The player's own body: one skinned mesh (a man in his forties in a black tee, jeans and leather shoes) posed by the crowd rig's skeleton every frame …
 - `src/carjack3d.js`   212 — The carjack struggle drawn: the driver's door swinging, the poses of the tug of war and the player's hands on the driver (swingDriverDoor …
 - `src/clouds3d.js`    56 — ▸ Volumetric clouds and cloud shadows
 - `src/ground-data3d.js`   826 — Ground shader data
