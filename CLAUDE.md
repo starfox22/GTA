@@ -294,6 +294,10 @@ packs with plain `<script src>` so the zip still plays from file://.
   `skySunDirection` is the sun the sky draws (it sets); `sunDirection` (the light) stays above ~15° for readable
   shadows: sky visuals, glare and clouds from below use the first, shadows the second. The dome draws at
   renderOrder 50 after the opaque city: an opaque thing that writes no depth and must show against the sky needs more.
+- Rain and wet streets at street level (rendering-weather.md): `updateStreetRain`, `chaseRainAir` and the SSR's
+  `uStreet` switch on `chaseViewActive` (uniforms, no new programs); the street view keeps `uStreet` (0,1,0,0),
+  `uNear.w` 0, splash `uSize` 1 / `uUpright` 0 and a non-zero `citySheenDir`. Darken `cityHaze*` only after
+  `refreshEnvironment` (`weatherGrade`).
 - `cloudBaseAt(x, y)` / `cloudTopAt(x, y)` (clouds.js) are the only source of the cloud
   altitude (by weather and area); the renderer draws from the same maps
   (docs/areas/rendering-clouds.md). Console `cloudJump(metres, kind)` drops the player over
