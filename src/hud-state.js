@@ -51,8 +51,8 @@
       // or the power button just flashes the chip (its name says what changed). On a
       // tablet the 4 s pop on getting in covered the GAS / BRAKE buttons under it, and
       // in the chase view it covered the road ahead (it still opens on hover or a click).
-      const body = document.body.classList;
-      if (id === 'carRadio' && (body.contains('touch-mode') || body.contains('chase-view')) && !tapped) {
+      // (The view from the game's state: the body's chase-view class follows a frame later.)
+      if (id === 'carRadio' && (document.body.classList.contains('touch-mode') || chaseCameraLive()) && !tapped) {
         el.classList.remove('flash');
         void getComputedStyle(el).animationName; // a style pass restarts the animation (offsetWidth also laid out the page)
         el.classList.add('flash');
