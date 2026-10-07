@@ -9,8 +9,8 @@
        *    ground; sparks and embers that arc, streak and bounce; chunks of road (the debris pool,
        *    damage3d-decals.js); the flash light dying away over ~0.8 s (fxFlashLight). No flat ring on the
        *    ground (at eye level it was a disc lying in the street).
-       *  - MUZZLE (fxMuzzle): a star-shaped flash stretched along the barrel, a hot core, a faint wisp of
-       *    smoke and the spent case; a rocket's backblast.
+       *  - MUZZLE (fxMuzzle): a star-shaped flash turned at random, a plume stretched along the barrel, a
+       *    hot core, a faint wisp of smoke and the spent case; a rocket's backblast.
        *  - STRIKES (fxImpact): masonry spits a cone of dust and chips out of the wall along its normal at the
        *    hole's height (bulletHole() notes the hole it just made, fxNoteHole), the ground kicks up a spurt of
        *    dirt, metal throws streaking sparks, glass a glitter, water a splash.
@@ -240,12 +240,19 @@
           ca = Math.cos(a),
           sa = Math.sin(a),
           reach = rocket ? 5 : 2.5;
-        // The flash: a star stretched along the barrel, over a hot core.
-        let i = fxAdd(x + ca * (reach + 2), y, z + sa * (reach + 2), ca * 10 * U, 0, sa * 10 * U, rocket ? 0.09 : 0.05, (rocket ? 2.4 : 0.6) * U, FX_FLASH_COLOR, 0);
+        // The flash: a star at the muzzle (turned at random, never the same twice), a plume of flame stretched
+        // along the barrel, a hot core.
+        let i = fxAdd(x + ca * (reach + 1), y, z + sa * (reach + 1), 0, 0, 0, rocket ? 0.09 : 0.05, (rocket ? 2.4 : 0.62) * U, FX_FLASH_COLOR, 0);
         if (i >= 0) {
           s.frame[i] = FX_FLASH;
           s.glow[i] = rocket ? 7 : 6;
-          s.streak[i] = 0.03;
+          s.floor[i] = -1e5;
+        }
+        i = fxAdd(x + ca * (reach + 3), y, z + sa * (reach + 3), ca * 10 * U, 0, sa * 10 * U, rocket ? 0.08 : 0.045, (rocket ? 1.2 : 0.34) * U, FX_FLASH_COLOR, 0);
+        if (i >= 0) {
+          s.frame[i] = FX_GLOW;
+          s.glow[i] = 5;
+          s.streak[i] = 0.05;
           s.floor[i] = -1e5;
         }
         i = fxAdd(x + ca * reach, y, z + sa * reach, 0, 0, 0, rocket ? 0.08 : 0.055, (rocket ? 3 : 0.85) * U, FX_FLASH_COLOR, 0);
@@ -373,16 +380,17 @@
           due = rate * dt * fxTierShare();
         let count = Math.floor(due) + (fxRandom() < due % 1 ? 1 : 0);
         while (count-- > 0) {
-          const i = fxAdd(x + fxBetween(-0.5, 0.5) * width, y + fxBetween(0, 0.25) * width, z + fxBetween(-0.5, 0.5) * width, fxBetween(-0.4, 0.4) * U, fxBetween(1.2, 2.6) * U, fxBetween(-0.4, 0.4) * U, fxBetween(0.42, 0.8), width * fxBetween(0.42, 0.68), FX_SOOT, 0.42 * strength);
+          const i = fxAdd(x + fxBetween(-0.5, 0.5) * width, y + fxBetween(0, 0.25) * width, z + fxBetween(-0.5, 0.5) * width, fxBetween(-0.4, 0.4) * U, fxBetween(1.5, 3) * U, fxBetween(-0.4, 0.4) * U, fxBetween(0.42, 0.8), width * fxBetween(0.36, 0.58), FX_SOOT, 0.42 * strength);
           if (i < 0) return;
           s.frame[i] = fxPuffFrame();
           s.heat[i] = 0.55 + 0.45 * strength;
-          s.cool[i] = fxBetween(0.2, 0.34);
-          s.grow[i] = 0.55;
-          s.rise[i] = 3.2 * U;
+          s.cool[i] = fxBetween(0.2, 0.32);
+          s.grow[i] = 0.6;
+          s.rise[i] = 3.6 * U;
           s.drag[i] = 1.5;
           s.wind[i] = 0.6;
-          s.streak[i] = 0.1;
+          // Tongues: stretched up along their rise.
+          s.streak[i] = 0.15;
           s.fadeIn[i] = 0.1;
           s.floor[i] = ground;
         }

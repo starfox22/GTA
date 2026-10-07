@@ -297,6 +297,7 @@
       const fxScene = new Three.Scene(),
         fxNoDepth = new Three.DataTexture(new Uint8Array(4), 1, 1);
       fxNoDepth.needsUpdate = true;
+      renderer.initTexture(fxNoDepth);
       fxUniforms.tDepth.value = fxNoDepth;
       fxScene.add(fxMesh);
       fxScene.fog = scene.fog;

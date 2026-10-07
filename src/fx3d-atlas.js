@@ -256,7 +256,9 @@
         do {
           if (fxAtlasBake.next().done) {
             fxAtlasBake = null;
+            // Uploaded now (with its mip chain), in a frame that is already paying for the bake.
             fxAtlas.needsUpdate = true;
+            renderer.initTexture(fxAtlas);
             break;
           }
         } while (performance.now() - started < budgetMs);
