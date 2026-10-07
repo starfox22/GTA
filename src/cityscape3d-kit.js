@@ -598,19 +598,23 @@
         geo.setAttribute('cityLit', new Three.BufferAttribute(lit, 2));
         return (face.geometry = geo);
       }
-      // One material per roof finish, shared by every roof that uses it (they batch).
+      // One material per roof finish, shared by every roof that uses it (they batch). The ROOF SKIN (roofskin3d.js)
+      // draws the finish in world space; `map` stays the old whole-roof painting for the air view's far copy. Each
+      // cap's tint is a vertex colour (roofCapGeometry) that the far copy carries too (`farTint`, flight-view3d-far.js).
       const roofMaterials = new Map();
       function roofMaterial(kind) {
         const name = cityPick(ROOF_FOR[kind] || ROOF_FOR.brick);
-        if (!roofMaterials.has(name))
-          roofMaterials.set(
-            name,
-            new Three.MeshStandardMaterial({
-              map: ROOF_TEXTURES[name],
-              roughness: name === 'metal' ? 0.45 : 0.92,
-              metalness: name === 'metal' ? 0.5 : 0.02,
-            }),
-          );
+        if (!roofMaterials.has(name)) {
+          const material = new Three.MeshStandardMaterial({
+            map: ROOF_TEXTURES[name],
+            roughness: name === 'metal' ? 0.45 : 0.92,
+            metalness: name === 'metal' ? 0.5 : 0.02,
+            vertexColors: true,
+          });
+          material.userData.roofFinish = name;
+          material.userData.farTint = true;
+          roofMaterials.set(name, material);
+        }
         return { name, material: roofMaterials.get(name) };
       }
       /**
@@ -621,7 +625,7 @@
        * that the batcher could not merge at all.)
        */
       const blockWallsGeo = boxGeo.clone(),
-        blockRoofGeo = boxGeo.clone();
+        blockRoofGeo = new Three.BufferGeometry();
       {
         const index = boxGeo.index.array,
           sides = [],
@@ -632,11 +636,43 @@
             else if (g.materialIndex !== 3) sides.push(index[k]);
           }
         blockWallsGeo.setIndex(sides);
-        blockRoofGeo.setIndex(roof);
         blockWallsGeo.clearGroups();
-        blockRoofGeo.clearGroups();
+        // The roof cap: the box's top face alone, its four corners (uv 0..1 across the roof).
+        const corners = [...new Set(roof)];
+        for (const name of ['position', 'normal', 'uv']) {
+          const source = boxGeo.attributes[name],
+            size = source.itemSize,
+            out = new Float32Array(corners.length * size);
+          corners.forEach((v, i) => {
+            for (let k = 0; k < size; k++) out[i * size + k] = source.getComponent(v, k);
+          });
+          blockRoofGeo.setAttribute(name, new Three.BufferAttribute(out, size));
+        }
+        blockRoofGeo.setIndex(roof.map((v) => corners.indexOf(v)));
+      }
+      /* A building's roof caps carry its tint as a vertex colour: tone, warmth and age, which also seed the ROOF SKIN's
+         pattern (roofskin3d.js). Hashed from where the building stands, never drawn from cityRandom (its stream places
+         the roof plant and the bus stops), and in 8-bit steps so the far copy (8-bit colours) carries the same value. */
+      const roofCaps = new Map();
+      function roofCapGeometry(x, z) {
+        const key = x + ',' + z;
+        if (roofCaps.has(key)) return roofCaps.get(key);
+        const hash = (a, b) => {
+            const s = Math.sin(a * 12.9898 + b * 78.233) * 43758.5453;
+            return s - Math.floor(s);
+          },
+          tone = 0.9 + 0.12 * hash(x * 0.013 + 0.37, z * 0.017 + 1.9),
+          warm = (hash(z * 0.011 + 3.1, x * 0.019 + 7.3) - 0.5) * 0.07,
+          step = (v) => Math.round(Math.min(1, Math.max(0, v)) * 255) / 255,
+          rgb = [step(tone * (1 + warm)), step(tone), step(tone * (1 - warm))],
+          geo = blockRoofGeo.clone(),
+          colors = new Float32Array(geo.attributes.position.count * 3);
+        for (let i = 0; i < colors.length; i++) colors[i] = rgb[i % 3];
+        geo.setAttribute('color', new Three.BufferAttribute(colors, 3));
+        roofCaps.set(key, geo);
+        return geo;
       }
       function blockBox(group, x, y, z, w, h, d, face, top) {
         mesh(facadeGeometry(face), face.material, group, x, y, z, w, h, d);
-        mesh(blockRoofGeo, top, group, x, y, z, w, h, d);
+        mesh(roofCapGeometry(group.position.x, group.position.z), top, group, x, y, z, w, h, d);
       }

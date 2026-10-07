@@ -291,6 +291,7 @@
         groundReport: () => ({
           ...groundDataReport,
           detailLevel: groundShared.cityGroundDetail.value,
+          roofs: roofSkinReport(),
           tufts: { shown: tuftMesh.visible, instances: tuftMesh.geometry.instanceCount, fade: +tuftUniforms.tuftFade.value.toFixed(2) },
         }),
         // Developer view of the post-processing inputs: 'ao', 'bloom' or nothing.

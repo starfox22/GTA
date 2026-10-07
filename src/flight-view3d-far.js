@@ -76,8 +76,8 @@
           !!material &&
           material.isMeshStandardMaterial &&
           !material.transparent &&
-          // Shared facades (cityscape3d.js) carry their tint as vertex colours.
-          (!material.vertexColors || material.userData.cityFacade) &&
+          // Shared facades and roof finishes (cityscape3d.js) carry their tint as vertex colours.
+          (!material.vertexColors || material.userData.cityFacade || material.userData.farTint) &&
           !material.alphaTest &&
           !material.normalMap
         );
@@ -218,10 +218,14 @@
               metalness: sample.metalness,
               side: sample.side,
             });
-          // (A material with its own shader patch may want attributes the copy does not carry: not that one.)
+          // (A material with its own shader patch may want attributes the copy does not carry: not that one. The roof
+          // skin reads only the uv, the tint and the world position, which the copy carries: `farTint`.)
           const members = [...c.members],
             facade = !!sample.userData.cityFacade && members.every((m) => m.userData.cityFacade),
-            plainPatch = sample.onBeforeCompile === Three.MeshStandardMaterial.prototype.onBeforeCompile || sample.onBeforeCompile === cityGlassPatch,
+            plainPatch =
+              sample.onBeforeCompile === Three.MeshStandardMaterial.prototype.onBeforeCompile ||
+              sample.onBeforeCompile === cityGlassPatch ||
+              !!sample.userData.farTint,
             chaseMaterial = (facade || (members.length === 1 && plainPatch)) && members.every(plainTransform) ? sample : material;
           farClasses.push({ material, members, chaseMaterial });
           for (const bucket of c.cells.values()) {
