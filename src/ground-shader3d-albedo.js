@@ -156,11 +156,12 @@
             // RESURFACING: the carriageway was laid in stretches, each of its own
             // year (tone, how fresh and black, how cracked), with a sealed joint
             // across the road where two meet. Their frame follows the kerb whatever
-            // the lane grid says, and a junction box is a stretch of its own.
+            // the lane grid says, and a junction box is a stretch of its own (the
+            // grid's junctions, at 128 + 512 k, sit in the middle of 512-unit cells).
             // (Each row of streets has its own phase: joints on parallel streets never line up.)
             vec2 rps = gKerb < 90.0 ? vec2( dot( gp, vec2( -rn.y, rn.x ) ), dot( gp, rn ) ) : gp;
             rps.x += 236.0 * cityHash( vec2( floor( rps.y / 410.0 ), 5.0 ) );
-            float stretch = mix( cityHash( vec2( floor( rps.x / 236.0 ), floor( rps.y / 410.0 ) ) + 77.0 ), cityHash( floor( gp / 236.0 ) + 79.0 ), jb );
+            float stretch = mix( cityHash( vec2( floor( rps.x / 236.0 ), floor( rps.y / 410.0 ) ) + 77.0 ), cityHash( floor( ( gp + 128.0 ) / 512.0 ) + 79.0 ), jb );
             age = clamp( age + ( stretch - 0.5 ) * 0.6, 0.0, 1.0 );
             float fresh = smoothstep( 0.78, 0.92, stretch ) * ( 1.0 - age );
             float stretchJoint = gKerb < -1.0 ? groundBand( abs( fract( rps.x / 236.0 + 0.5 ) - 0.5 ) * 236.0, 0.35, fp ) * ( 1.0 - jb ) : 0.0;
