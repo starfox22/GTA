@@ -104,6 +104,8 @@
         if (hdrCapable && postTier && ssrMaterial && ssrTargets.length === 2) pass(ssrMaterial, ssrTargets[0]), pass(ssrBlurMaterial, ssrTargets[1]);
         // The sun glare's passes (postfx3d-sun.js) run only in the chase view, with the sun in frame.
         if (hdrCapable && postTier) sunGlareWarmPasses(pass);
+        // The chase view's camera motion blur (postfx3d-motion.js), HIGH and ULTRA.
+        if (hdrCapable && postTier) cameraMotionWarmPasses(pass);
         return passes;
       }
       function runPass(material, target) {
@@ -538,6 +540,7 @@
       bloomUp.blendSrc = Three.OneFactor;
       bloomUp.blendDst = Three.OneFactor;
       // @include src/postfx3d-sun.js
+      // @include src/postfx3d-motion.js
       // @include src/postfx3d-composite.js
       /**
        * FXAA
@@ -806,9 +809,11 @@
         } else if (ssrTargets.length) postCompositeUniforms.tReflect.value = ssrTargets[1].texture;
         // The sun in frame in the chase view: its visibility, glare and shafts (postfx3d-sun.js).
         renderSunGlare(tier);
+        // The chase view's camera motion blur (postfx3d-motion.js): what the bloom and the composite read as the scene.
+        const sceneColor = renderCameraMotion(tier, sceneTarget.texture);
         if (bloomTargets.length) {
           bloomUniforms.uThreshold.value = postLook.bloomThreshold;
-          bloomUniforms.tSource.value = sceneTarget.texture;
+          bloomUniforms.tSource.value = sceneColor;
           bloomUniforms.uTexel.value.set(1 / postWidth, 1 / postHeight);
           runPass(bloomPrefilter, bloomTargets[0]);
           for (let i = 1; i < bloomTargets.length; i++) {
@@ -825,7 +830,7 @@
           renderer.autoClear = true;
           postCompositeUniforms.tBloom.value = bloomTargets[0].texture;
         }
-        postCompositeUniforms.tScene.value = sceneTarget.texture;
+        postCompositeUniforms.tScene.value = sceneColor;
         postCompositeUniforms.tDepth.value = sceneTarget.depthTexture;
         postCompositeUniforms.uExposure.value = postLook.exposure;
         postCompositeUniforms.uBloomStrength.value = postLook.bloomStrength;

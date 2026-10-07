@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-517 files in the include tree, 178,510 lines.
+518 files in the include tree, 178,686 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -147,7 +147,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/bullets-audio.js`   179 — Bullet sound: strikes by surface (concrete chips and ricochets, metal, glass, dirt) and the crack and whizz of an enemy round passing close to the …
 - `src/runover-audio.js`     8 — Sound of a wheel going over someone already on the ground (runover.js): a low thud and a short crack, heavier with weight and speed.
 - `src/quality.js`   240 — Graphics quality tiers
-- `src/settings.js`   930 — Settings menu
+- `src/settings.js`   943 — Settings menu
 - `src/markers.js`    20 — Objective and player markers: which ones are drawn (the floating arrow; the optional player ring) and a read-only report.
 - `src/foliage-cutaway.js`   146 — Foliage cutaway: who the see-through hole in tree crowns, palm fronds and tall shrubs keeps in view (the player on foot or their vehicle) and how big …
 - `src/god-panel.js`   799 — God mode settings
@@ -405,14 +405,14 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/render3d.js ▸ Three.js renderer and resource lifecycle
 
 - `src/flight-view3d.js`   616 — ▸ Flight camera and aerial perspective
-- `src/chase-view3d.js`   208 — ▸ Chase view 3D: the perspective camera behind the player (chase-camera.js says where it stands), the ground it sees for culling and level of detail …
-- `src/postfx3d.js`   849 — ▸ HDR post-processing pipeline
+- `src/chase-view3d.js`   210 — ▸ Chase view 3D: the perspective camera behind the player (chase-camera.js says where it stands), the ground it sees for culling and level of detail …
+- `src/postfx3d.js`   856 — ▸ HDR post-processing pipeline
 - `src/lighting3d.js`    27 — ▸ Sun, sky, reflections and night light
 - `src/searchlight3d.js`   937 — Searchlights: light shafts, ground pools, the helicopter's spot
 - `src/render3d-statics.js`   362 — Static building batches, static cells and culling (staticInView), shared materials.
 - `src/render3d-terrain.js`   297 — Mesh/box/rod helpers, wall textures, the ground mesh and kerbs.
 - `src/vegetation3d.js`    63 — ▸ Tree library: species, foliage atlas, wind, LOD
-- `src/render3d-streetprops.js`   334 — ▸ Street lamps and their glow halos, vehicle halos, blossom, sign() boards.
+- `src/render3d-streetprops.js`   340 — ▸ Street lamps and their glow halos, vehicle halos, blossom, sign() boards.
 - `src/cityscape3d.js`    21 — ▸ Building archetypes, roofs, shopfronts and street furniture
 - `src/sidejobs3d.js`    61 — Contract mission meshes
 - `src/roadblocks3d.js`    70 — Police roadblock meshes
@@ -497,6 +497,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/postfx3d.js ▸ HDR post-processing pipeline
 
 - `src/postfx3d-sun.js`   248 — Post sun glare (the chase view): how much of the sun the sky draws is seen (depth and brightness round its disc, eased), light shafts from it through …
+- `src/postfx3d-motion.js`   142 — Camera motion blur in the chase view: the scene smeared along each pixel's screen motion since the last frame (from the depth and the two frames' …
 - `src/postfx3d-composite.js`   204 — ▸ Post composite (one material per tier): AO upsampling, wet reflections, bloom, ACES tone curve, film grade, vignette and dither; the sun glare lands …
 
 ## src/postfx3d-composite.js ▸ Post composite (one material per tier): AO upsampling, wet reflections, bloom, ACES tone curve, film grade, vignette and dither; the sun glare lands …
@@ -706,7 +707,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/ground-shader3d.js ▸ Ground materials (GLSL)
 
 - `src/ground-shader3d-pars.js`   305 — Ground shader GLSL chunks: shared uniforms and helpers (GROUND_PARS), sheet magnification (GROUND_SHEET_PARS), the marks (GROUND_MARKS).
-- `src/ground-shader3d-albedo.js`   612 — Ground shader GLSL chunks: the main albedo pass (GROUND_ALBEDO, one literal), GROUND_ROUGHNESS and GROUND_NORMAL.
+- `src/ground-shader3d-albedo.js`   616 — Ground shader GLSL chunks: the main albedo pass (GROUND_ALBEDO, one literal), GROUND_ROUGHNESS and GROUND_NORMAL.
 
 ## src/helicopter3d.js ▸ Helicopter models
 
@@ -782,7 +783,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-perf.js`   272 — DeadEndCity console, simulation cost: simProfile (per-section ms, worst frames), simScenario (staged situations)
 - `src/game-console-soak.js`   368 — DeadEndCity console, long-session health: soakReport (sizes of every list that can grow, DOM, non-finite positions)
 - `src/game-console-integrity.js`   177 — DeadEndCity console: integrity(), the invariants tools/bot.mjs checks after every action
-- `src/game-console-settings.js`   137 — DeadEndCity console, settings: settings, openSettings, bindings, radio (+ audioConsole)
+- `src/game-console-settings.js`   139 — DeadEndCity console, settings: settings, openSettings, bindings, radio (+ audioConsole)
 
 ## src/shell.html ▸ HTML page skeleton: its src/ui/*.css and *.html fragments (in include order) and build.py's `<!-- @include-* -->` slots (game, three.js, media, credits)
 
