@@ -420,7 +420,7 @@
       function fxGroundFire(fire, altitude, fade, deltaSeconds) {
         const U = UNITS_PER_METRE,
           age = fire.max - fire.life;
-        fxFlames(fire.x, altitude + 0.4 * U, fire.y, 2.6 * U * fire.power, fade, 34 * Math.max(0.4, fire.power), deltaSeconds, altitude);
+        fxFlames(fire.x, altitude + 0.4 * U, fire.y, 3 * U * fire.power, fade, 42 * Math.max(0.4, fire.power), deltaSeconds, altitude);
         if (fxRandom() < deltaSeconds * 9 * fxTierShare())
           fxSmoke(fire.x + fxBetween(-1, 1) * U, altitude + 2.2 * U * fire.power, fire.y + fxBetween(-1, 1) * U, age > 8 ? FX_SMOKE_GREY : FX_SMOKE_DARK, 2.4 * U * fire.power, 3.4 * U, 0.6 * fade, altitude, 4.2);
       }
