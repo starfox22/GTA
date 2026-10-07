@@ -43,34 +43,12 @@ vehicles-and-driving.md.
 - Flagships: one traffic car in forty (`FLAGSHIP_TYPES`); SHOWCASE PARKING in
   game-populate.js (`showcase()`). The Prestige Collection and MONARCH MOTORS:
   places-monarch-and-county.md.
+- CHEVETTE Z06 (cars3d-bodies-b.js, after the C8 Z06): its glass keeps the numbers of damage-vehicles.js
+  `CAR_GLASS_BANDS` (belt 0.88, roof 1.22, rear foot -0.42, screen foot 0.13) with a `crown` over the driver; the
+  Z06 Carbon Aero (hypercars3d.js `chevetteSE`) spreads its body and details and adds the tall wing; the ZR1X is a
+  body of its own. A change to a body's glass keeps CAR_GLASS_BANDS in step and `cabinHeadroom()` at zero `through`.
 
-## Cabins and see-through glass (cars3d-interior.js)
+## Cabins, headroom and rear badges
 
-- The civilian and police glass is see-through (CAR GLASS: `carGlassMaterial`, premultiplied alpha): the tint is
-  `opacity` of the pane in front of the cabin, the sky's reflection lies over it unweakened and grazing angles turn
-  to mirror (Fresnel). Past `CAR_GLASS_CLEAR` (24-36 m from the camera) the tint closes to `CAR_GLASS_FAR_TINT`, so a
-  far cabin never shows empty. The body impostors keep the old opaque glass (`glassFar`, `policeGlass`); the
-  4x4 club trucks still use `policeGlass`. Cracked and burst panes are damage3d.js's own (opaque) materials.
-- See-through glass casts no shadow (the sun reaches the cabin through it): the paint panels (roof panel, pillars)
-  cast instead, and the pristine merge's paint set casts when they do, so a car still has three casters.
-- The cabin (`carCabinParts`: seats and headrests, dash and binnacle, wheel, mirror, parcel shelf, a patrol car's
-  cage and laptop, the carpet over the shell top) is merged at the END of the kit's trim: no draw call of its own.
-  `kit.trimOuter` is the same buffers with a shorter draw range, and the impostors pool that (no cabin far away).
-  Anything added to the trim after the cabin would vanish from the impostors: add exterior trim before it.
-- `carSeatPlan` is the one seat rule (kit.seats, `m.seats`): the drive-by's hip (driveby.js `driveBySeat`: 1.4 m
-  behind the screen's foot, 0.42 m under the belt), lowered and laid back under a low roof, moved forward until the
-  seat back is inside a short glasshouse; a rear bench only where its back fits under the rear glass
-  (`CAR_TWO_SEATERS` never). A body may give its own (`seats`, the roadster's buckets). The model's seat may sit a
-  little apart from `driveBySeat` (vans, hot rod, police: their game-side glass band is generic), so the drive-by
-  pose can shift a few centimetres when the gun comes out there.
-- The people (crowd3d-driveby.js SEATED OCCUPANTS): the vehicle pass queues cars (`queueCarOccupants` from
-  `animateCivilianCar` / `animatePoliceVehicle`), `drawCarOccupants` (finishCrowd3D) seats the nearest
-  `OCCUPANT_CAP` within `OCCUPANT_REACH` of the camera (keep it at or past `CAR_GLASS_CLEAR`'s far end): the player
-  (unless the drive-by pose draws them), traffic drivers dressed by `driverColor` / `driverFemale` / `driverRole`, one
-  passenger (`passengers`), a patrol car's two officers while `!crewDeployed`. Hands on the rim (`carWheelRim`), the
-  'riding' pose with the seat's lie in `riderLean`.
-- Road dirt toward the sills (civLiveryPatch ROAD DIRT): `m.dirt` is the paint's own uniform (amount, ground height),
-  written by `animateCivilianCar` when it changes; impostors keep none.
-- Report: `carModels()` gives each civilian model's `cabin` (hip, recline, rear bench, `headroom` over a seated
-  crown, `behind` (headrest to rear glass, metres), `cabinTriangles`, `seated` people); tools/tests/car-cabins.mjs.
-
+The glass, the cabins, the seat plan, the seated people's headroom and the badges on the tails:
+vehicles-and-driving-cabins.md.

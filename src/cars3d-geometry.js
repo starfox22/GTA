@@ -20,7 +20,7 @@
       }
       /* options: color, finish ([roughness, metalness] or a CV_FINISH name), cell (an
          atlas cell: the geometry's own UVs map into it), uv (one fixed UV: a
-         livery swatch), uvOf (x, y, z) -> [u, v] (a projection into the livery). */
+         livery swatch), uvOf (x, y, z) -> [u, v] (a projection into the livery), rawUv (the geometry's UVs as they are). */
       function civAddMatrix(set, geo, matrix, options = {}) {
         civNormalMatrix.getNormalMatrix(matrix);
         civColor.set(options.color || '#ffffff');
@@ -29,13 +29,15 @@
           uv = geo.attributes.uv,
           base = set.count,
           finish = typeof options.finish === 'string' ? CV_FINISH[options.finish] : options.finish || CV_FINISH.satin,
-          rect = options.uv || options.uvOf ? null : trimCellRect(options.cell || 'solid'),
+          rect = options.uv || options.uvOf || options.rawUv ? null : trimCellRect(options.cell || 'solid'),
           solid = !options.cell;
         for (let i = 0; i < pos.count; i++) {
           civVector.fromBufferAttribute(pos, i).applyMatrix4(matrix);
           set.position.push(civVector.x, civVector.y, civVector.z);
           if (options.uvOf) set.uv.push(...options.uvOf(civVector.x, civVector.y, civVector.z));
           else if (options.uv) set.uv.push(options.uv[0], options.uv[1]);
+          // The geometry's own UVs, as they are (cars3d-badges.js: glyphs anywhere in the trim atlas).
+          else if (options.rawUv) set.uv.push(uv.getX(i), uv.getY(i));
           else if (solid) set.uv.push((rect[0] + rect[2]) / 2, (rect[1] + rect[3]) / 2);
           else {
             const u = uv ? uv.getX(i) : 0,

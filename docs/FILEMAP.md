@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-547 files in the include tree, 188,213 lines.
+549 files in the include tree, 188,876 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -471,8 +471,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/apache3d.js`   435 — The AH-64 attack helicopter model
 - `src/vehicles3d.js`   622 — Vehicle meshes
 - `src/police3d.js`    61 — ▸ Police vehicle models
-- `src/cars3d.js`    92 — ▸ Civilian car models
-- `src/hypercars3d.js`   944 — The Prestige Collection's car models
+- `src/cars3d.js`    94 — ▸ Civilian car models
+- `src/hypercars3d.js`   954 — The Prestige Collection's car models
 - `src/motorbikes3d.js`   581 — Motorbike models
 - `src/offroad3d.js`    42 — ▸ 4x4 club trucks, the club lot, trail props and mud
 - `src/vinnytruck3d.js`   592 — Vinny's truck (mission 1, the 'flatbed' type): a 1990s medium-duty conventional flatbed at real size, merged into a few draws (makeVinnyTruck), with …
@@ -486,7 +486,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/render3d-resources.js`   520 — GPU resource lifecycle: shared geometries, model pruning and disposal.
 - `src/render3d-hiccups.js`   377 — Hiccup log: what each drawn frame created for the first time (shader programs, textures, geometries) and the slowest frames' renderer CPU split; read …
 - `src/payphone3d.js`   597 — The story payphone where mission 1 starts: a 1990s yellow pedestal payphone with its lit PHONE sign, handset, keypad, directory and grime, the …
-- `src/render3d-api.js`   438 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
+- `src/render3d-api.js`   440 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
 - `src/render3d-frame.js`   614 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
 
 ## src/flight-view3d.js ▸ Flight camera and aerial perspective
@@ -709,9 +709,9 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/crowd3d-joints.js`   139 — Crowd 3D joint indices and per-person pose state (crowdState, setArm, crowdDancePose).
 - `src/crowd3d-poses.js`   901 — Crowd 3D pose targets and IK for arms and legs (crowdPoseTargets, solveLeg).
 - `src/crowd3d-roofparty.js`   141 — Crowd 3D poses for mission 2 (the Blue Hour): Vescari's poisoned toast beat by beat, and the bodyguards' heads turning with their sight cones.
-- `src/crowd3d-draw.js`   636 — drawCrowdPerson(): weapon holds, phone poses and the far-figure shortcut.
+- `src/crowd3d-draw.js`   659 — drawCrowdPerson(): weapon holds, phone poses and the far-figure shortcut.
 - `src/crowd3d-special.js`   484 — Crowd 3D special characters: player, officers, soldiers, gangs, swimmers, parachutes (specialSpec, applyLimbOverrides).
-- `src/crowd3d-driveby.js`   345 — Crowd 3D drive-by pose: the player at the wheel with the gun arm out of the window, torso and head turned to the aim, recoil per shot …
+- `src/crowd3d-driveby.js`   372 — Crowd 3D drive-by pose: the player at the wheel with the gun arm out of the window, torso and head turned to the aim, recoil per shot …
 - `src/crowd3d-frame.js`   364 — updateCrowd3D(): per-frame packing, car enter and exit transitions, dogs, crowd stats.
 
 ## src/player-body3d.js ▸ The player's own body: one skinned mesh (a man in his forties in a black tee, jeans and leather shoes) posed by the crowd rig's skeleton every frame …
@@ -762,15 +762,17 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/cars3d.js ▸ Civilian car models
 
-- `src/cars3d-materials.js`   350 — Civilian car materials: trim atlas, paint and finish materials (civMaterials, civPaintMaterial).
-- `src/cars3d-geometry.js`   317 — Civilian car merging kit: matrices, beams, bars, discs and profile shapes (civAdd, civGeometry, civShapeKit).
+- `src/cars3d-materials.js`   358 — Civilian car materials: trim atlas, paint and finish materials (civMaterials, civPaintMaterial).
+- `src/cars3d-geometry.js`   319 — Civilian car merging kit: matrices, beams, bars, discs and profile shapes (civAdd, civGeometry, civShapeKit).
 - `src/cars3d-wheels.js`   159 — Civilian car tyres and rims (civTyreGeometry, civRimGeometry).
-- `src/cars3d-interior.js`   290 — Car cabins seen through the glass: the seat plan (carSeatPlan), the cabin merged into a kit's trim (carCabinParts: seats and headrests, dashboard …
-- `src/cars3d-kit.js`   476 — Civilian car kit: a body's merged parts for one size (civKit, civKits).
-- `src/cars3d-models.js`   328 — Civilian car models: makeCivilianCar(), animateCivilianCar(), liveries, lettering and lamps.
+- `src/cars3d-interior.js`   289 — Car cabins seen through the glass: the seat plan (carSeatPlan), the cabin merged into a kit's trim (carCabinParts: seats and headrests, dashboard …
+- `src/cars3d-headroom.js`   353 — Cabin headroom: the seated rig's head (head, hair and caps of the tallest man and woman, and the player) against the glasshouse's inner surface; the …
+- `src/cars3d-kit.js`   479 — Civilian car kit: a body's merged parts for one size (civKit, civKits).
+- `src/cars3d-models.js`   329 — Civilian car models: makeCivilianCar(), animateCivilianCar(), liveries, lettering and lamps.
 - `src/cars3d-body-parts.js`   144 — Civilian car body parts: civBody() and shared lamps, LED lines, projectors, plates, exhausts, badges, fins.
+- `src/cars3d-badges.js`   194 — Rear badges: every car's model name in its maker's lettering on the tail (CAR_BADGES), glyphs painted into the trim atlas's lower half …
 - `src/cars3d-bodies-a.js`   547 — CAR_BODIES part 1: sedan, taxi, coupe, muscle, sport, roadster, rally, hotrod.
-- `src/cars3d-bodies-b.js`   599 — CAR_BODIES part 2: supercar, luxury, limousine, suv, van, pickup, chevette, brutini, cavalino.
+- `src/cars3d-bodies-b.js`   635 — CAR_BODIES part 2: supercar, luxury, limousine, suv, van, pickup, chevette, brutini, cavalino.
 
 ## src/offroad3d.js ▸ 4x4 club trucks, the club lot, trail props and mud
 
@@ -817,7 +819,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-rides.js`   104 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
 - `src/game-console-leisure.js`    75 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)
 - `src/game-console-crowd.js`   165 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
-- `src/game-console-graphics.js`   243 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
+- `src/game-console-graphics.js`   246 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
 - `src/game-console-perf.js`   272 — DeadEndCity console, simulation cost: simProfile (per-section ms, worst frames), simScenario (staged situations)
 - `src/game-console-soak.js`   368 — DeadEndCity console, long-session health: soakReport (sizes of every list that can grow, DOM, non-finite positions)
 - `src/game-console-integrity.js`   177 — DeadEndCity console: integrity(), the invariants tools/bot.mjs checks after every action

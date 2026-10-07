@@ -370,31 +370,37 @@
             plateLight(k, 0.62);
           },
         }),
-        /* CHEVETTE Z06: a mid-engined flat-plane V8 supercar after the C8 Z06:
-           a short sharp nose with angular lamps, the cab pushed forward, huge
-           intakes in the flanks, a glass engine cover showing the V8, stacked
-           angular tail lamps, four pipes in the middle and a tall wing. */
+        /* CHEVETTE Z06: a mid-engined flat-plane V8 supercar after the C8 Z06: the cab pushed forward over a long
+           rear deck, a low sharp nose with thin angular LED lamps over a wide open mouth and corner intakes, the big
+           scoop behind each door feeding the engine, wide hips with intakes on their tops, a black roof panel, the V8
+           under the engine glass between the sail panels, slim stacked tail lamps over a black fascia with corner
+           vents, four pipes in the middle and an integrated ducktail (the carbon aero edition, hypercars3d.js
+           chevetteSE, carries the tall wing). The roof's crown leaves a tall driver room with the seat low and laid
+           back, as the real car does (cars3d-headroom.js CABIN HEADROOM). */
         chevette: civBody('chevette', {
           yb: 0.11,
           h: 0.9,
-          arches: 0.035,
+          arches: 0.03,
           archSpan: 0.1,
           section: SEC_WEDGE,
           sections: [[-0.5, SEC_FENDER], [-0.2, SEC_FENDER], [-0.09, SEC_WEDGE], [0.1, SEC_WEDGE], [0.2, SEC_FENDER], [0.5, SEC_FENDER]],
           profile: [
-            [-0.5, 0.84, 0.86, 0.3], [-0.49, 0.93, 0.92, 0.2], [-0.47, 0.98, 0.95, 0.12], [-0.4, 1.02, 0.96], [-0.3, 1.04, 0.95], [-0.2, 1.0, 0.94],
-            [-0.05, 0.96, 0.9], [0.08, 0.97, 0.86], [0.2, 0.99, 0.79], [0.3, 1.0, 0.74], [0.4, 0.98, 0.66], [0.46, 0.93, 0.56, 0.12], [0.49, 0.84, 0.47, 0.16], [0.5, 0.74, 0.38, 0.22],
+            [-0.5, 0.86, 0.9, 0.3], [-0.492, 0.94, 0.95, 0.2], [-0.475, 0.99, 0.97, 0.12], [-0.42, 1.02, 0.975], [-0.32, 1.045, 0.965], [-0.2, 1.0, 0.94],
+            [-0.06, 0.96, 0.9], [0.08, 0.97, 0.85], [0.2, 0.99, 0.78], [0.3, 1.0, 0.72], [0.4, 0.975, 0.63], [0.46, 0.92, 0.54, 0.12], [0.49, 0.83, 0.45, 0.15], [0.5, 0.72, 0.37, 0.2],
           ],
-          glass: { base: 0.88, roof: 1.22, xf: 0.13, xb: -0.42, rf: -0.06, rb: -0.17, wb: 0.39, wt: 0.3, bow: 0.022, bulge: 0.06, arch: 0.05, frame: 'gloss', sideFrom: 0.42, pillars: [[0.42, 0.06, 'black']], aPillar: 'black', buttress: 'paint' },
-          wheel: { r: 0.345, rr: 0.365, width: 0.27, wr: 0.345, xf: 0.3, xr: -0.29, caliper: '#e3b62b' },
-          rim: { style: 'spider', spokes: 10, color: '#1b1c1f', frac: 0.78, centreLock: false, lipColor: '#3a3d42' },
+          // The screen's foot, the belt, the roof and the rear glass's foot as damage-vehicles.js CAR_GLASS_BANDS has them.
+          glass: { base: 0.88, roof: 1.22, xf: 0.13, xb: -0.42, rf: -0.045, rb: -0.215, wb: 0.39, wt: 0.3, bow: 0.022, bulge: 0.05, arch: 0.05, crown: 0.025, screenCurve: 0.02, frame: 'gloss', sideFrom: 0.42, pillars: [[0.42, 0.06, 'black']], aPillar: 'black', buttress: 'paint' },
+          wheel: { r: 0.345, rr: 0.36, width: 0.28, wr: 0.35, xf: 0.29, xr: -0.29, caliper: '#e3b62b' },
+          rim: { style: 'spider', spokes: 10, color: '#1b1c1f', frac: 0.79, centreLock: false, lipColor: '#3a3d42' },
+          roofSwatch: 'roof',
+          roofColor: '#141518',
           hatch: true,
-          doors: [[0.12, -0.08]],
+          doors: [[0.12, -0.085]],
           handles: [],
           plateFront: 0.3,
           frontPlate: false,
-          plateRear: 0.42,
-          bumpers: [{ y: 0.14, h: 0.04, span: 0.9, material: 'black', d: 0.1 }, { y: 0.18, h: 0.06, span: 0.9, material: 'black' }],
+          plateRear: 0.58,
+          bumpers: [{ y: 0.14, h: 0.04, span: 0.9, material: 'black', d: 0.1 }, { y: 0.16, h: 0.05, span: 0.9, material: 'black' }],
           livery(g, f, L) {
             // Twin stripes, thin, offset to the driver's side as the Z06's.
             L.stripe(-0.52 * L.l, 0.52 * L.l, -0.3, -0.18, 'rgba(12,13,15,0.92)');
@@ -404,45 +410,75 @@
           },
           details(k) {
             const { M, S, sets, at, l } = k;
+            const paint = k.sw('paint'),
+              // The scoop behind the door: tall at the rear wheel, narrowing forward (its foot and top at x).
+              scoop = (x) => {
+                const f = clamp((x + 0.205 * l) / (0.12 * l), 0, 1);
+                return [(0.4 + 0.11 * f) * M, (0.8 - 0.12 * f) * M];
+              };
             for (const side of [-1, 1]) {
-              // Angular lamps: a sharp blade rising into the wing with an LED brow.
-              const { hw } = cornerLamp(k, 1, side, { zIn: 0.48, zOut: 0.995, yIn: [0.4, 0.46], yOut: [0.47, 0.56], wrap: 0.42, wrapTip: 0.15, wrapRise: 0.07 });
-              ledLine(k, sets.drl, 'front', [[side * hw * 0.5, 0.458 * M], [side * hw * 0.7, 0.49 * M], [side * hw * 0.99, 0.56 * M]], CV_LED, 0.014);
-              projector(k, k.head(side), 'front', side * hw * 0.64, 0.44 * M, 0.025, side);
-              projector(k, k.head(side), 'front', side * hw * 0.78, 0.47 * M, 0.025, side);
-              k.halo('head', side, k.surf('front', side * hw * 0.72, 0.46 * M, 0.05 * M), 1);
-              // The flank intake ahead of the rear wheel, the brake duct in the nose.
-              k.patch(sets.trim, 'side', -0.2 * l, -0.05 * l, 0.36 * M, 0.78 * M, { side, cell: 'honeycomb', color: '#1a1b1d', finish: 'gloss', tile: 0.1 * M, lift: 0.004 * M, span: (x) => { const f = (x + 0.2 * l) / (0.15 * l); return [(0.36 + 0.06 * f) * M, (0.66 + 0.12 * f) * M]; } });
-              k.patch(sets.trim, 'front', side * hw * 0.55, side * hw * 0.92, 0.18 * M, 0.34 * M, { cell: 'honeycomb', color: '#1a1b1d', finish: 'gloss', tile: 0.08 * M });
-              // Stacked angular tail lamps.
+              // Thin angular lamps high on the wing corners: a dark blade, the LED brow along its top and down its
+              // outer end, two small projectors.
+              const { hw } = cornerLamp(k, 1, side, { zIn: 0.5, zOut: 0.995, yIn: [0.43, 0.47], yOut: [0.49, 0.56], wrap: 0.46, wrapTip: 0.12, wrapRise: 0.06 });
+              ledLine(k, sets.drl, 'front', [[side * hw * 0.52, 0.468 * M], [side * hw * 0.74, 0.5 * M], [side * hw * 0.99, 0.558 * M]], CV_LED, 0.012);
+              ledLine(k, sets.drl, 'front', [[side * hw * 0.955, 0.505 * M], [side * hw * 0.99, 0.555 * M]], CV_LED, 0.012);
+              projector(k, k.head(side), 'front', side * hw * 0.66, 0.476 * M, 0.021, side);
+              projector(k, k.head(side), 'front', side * hw * 0.8, 0.5 * M, 0.021, side);
+              k.halo('head', side, k.surf('front', side * hw * 0.74, 0.49 * M, 0.05 * M), 1);
+              // The corner intakes under the lamps.
+              k.patch(sets.trim, 'front', side * hw * 0.6, side * hw * 0.95, 0.17 * M, 0.38 * M, {
+                cell: 'honeycomb',
+                color: '#141517',
+                finish: 'gloss',
+                tile: 0.06 * M,
+                span: (z) => {
+                  const f = clamp((Math.abs(z) / hw - 0.6) / 0.35, 0, 1);
+                  return [(0.17 + 0.03 * f) * M, (0.38 - 0.08 * f) * M];
+                },
+              });
+              // The scoop: a deep gloss-black intake with the paint lip over it.
+              k.patch(sets.trim, 'side', -0.205 * l, -0.085 * l, 0, 0, { side, color: '#08090a', finish: 'gloss', cols: 10, rows: 4, lift: 0.004 * M, span: scoop });
+              k.strip(sets.paint, 'side', [[-0.212 * l, 0.815 * M], [-0.15 * l, 0.75 * M], [-0.082 * l, 0.69 * M]], 0.028 * M, 0.03 * M, { ...paint, lift: 0.014 * M }, side);
+              // Intakes on the tops of the hips, behind the side glass.
+              k.patch(sets.trim, 'top', -0.26 * l, -0.17 * l, side * 0.58 * M, side * 0.76 * M, { cell: 'slats', color: '#111214', finish: 'gloss', tile: 0.045 * M, lift: 0.01 * M });
+              // Slim stacked tail lamps: a smoked blade rising outward, two LED bars and the LED down its outer end.
               const tw = at(-0.495 * l, 0.8 * M).half;
-              lampPatch(k, k.tail(side), 'rear', side * tw * 0.42, side * tw * 0.99, (z) => { const f = (Math.abs(z) / tw - 0.42) / 0.57; return [(0.74 + f * 0.05) * M, (0.82 + f * 0.06) * M]; }, '#2a0508');
-              ledLine(k, k.tail(side), 'rear', [[side * tw * 0.44, 0.76 * M], [side * tw * 0.97, 0.815 * M]], CV_TAIL_BAR, 0.014);
-              ledLine(k, k.tail(side), 'rear', [[side * tw * 0.5, 0.8 * M], [side * tw * 0.97, 0.86 * M]], CV_TAIL_BAR, 0.012);
-              k.halo('tail', side, k.surf('rear', side * tw * 0.72, 0.8 * M, 0.05 * M), 1);
-              // Wing stands.
-              k.bar(sets.trim, [-0.46 * l, k.top(-0.46 * l), side * 0.55 * M], [-0.49 * l, k.top(-0.46 * l) + 0.26 * M, side * 0.55 * M], 0.03 * M, 0.2 * M, 0.012 * M, { color: '#111214', finish: 'carbon', cell: 'carbon' });
+              lampPatch(k, k.tail(side), 'rear', side * tw * 0.5, side * tw * 0.99, (z) => {
+                const f = (Math.abs(z) / tw - 0.5) / 0.49;
+                return [(0.75 + f * 0.05) * M, (0.82 + f * 0.07) * M];
+              }, '#26060a');
+              ledLine(k, k.tail(side), 'rear', [[side * tw * 0.52, 0.776 * M], [side * tw * 0.97, 0.83 * M]], CV_TAIL_BAR, 0.012);
+              ledLine(k, k.tail(side), 'rear', [[side * tw * 0.57, 0.806 * M], [side * tw * 0.97, 0.868 * M]], CV_TAIL_BAR, 0.01);
+              ledLine(k, k.tail(side), 'rear', [[side * tw * 0.965, 0.79 * M], [side * tw * 0.975, 0.875 * M]], CV_TAIL_BAR, 0.012);
+              k.halo('tail', side, k.surf('rear', side * tw * 0.76, 0.81 * M, 0.05 * M), 1);
+              // The corner vents in the black fascia.
+              k.patch(sets.trim, 'rear', side * tw * 0.54, side * tw * 0.95, 0.34 * M, 0.58 * M, { cell: 'honeycomb', color: '#141517', finish: 'gloss', tile: 0.05 * M, lift: 0.014 * M });
             }
-            // Front splitter and grille, the quad pipes in a square in the middle.
+            // The mouth, its carbon splitter and the crossed-flags badge on the nose.
             const gw = at(0.495 * l, 0.25 * M).half;
-            k.grille('front', -gw * 0.5, gw * 0.5, 0.16 * M, 0.3 * M, { cell: 'honeycomb', color: '#1f2023', frame: CV_GLOSS, frameFinish: 'gloss', tile: 0.08 * M });
-            badge(k, 'front', 0, 0.36, 0.035, '#c9ced3');
-            k.patch(sets.trim, 'rear', -0.2 * M, 0.2 * M, 0.2 * M, 0.44 * M, { color: '#0c0c0d', finish: 'gloss', cols: 2, rows: 2, lift: 0.012 * M });
-            exhaustTips(k, [-0.1, 0.1], 0.26, 0.045, '#3a3d42');
-            exhaustTips(k, [-0.1, 0.1], 0.38, 0.045, '#3a3d42');
-            k.patch(sets.trim, 'rear', -0.8 * M, -0.24 * M, 0.14 * M, 0.3 * M, { cell: 'honeycomb', color: '#141517', finish: 'gloss', tile: 0.08 * M, lift: 0.01 * M });
-            k.patch(sets.trim, 'rear', 0.24 * M, 0.8 * M, 0.14 * M, 0.3 * M, { cell: 'honeycomb', color: '#141517', finish: 'gloss', tile: 0.08 * M, lift: 0.01 * M });
+            k.grille('front', -gw * 0.56, gw * 0.56, 0.15 * M, 0.33 * M, { cell: 'honeycomb', color: '#1a1b1e', frame: CV_GLOSS, frameFinish: 'gloss', tile: 0.06 * M });
+            k.patch(sets.trim, 'front', -0.84 * M, 0.84 * M, 0.1 * M, 0.14 * M, { cell: 'carbon', color: '#2c2e32', finish: 'carbon', tile: 0.1 * M, lift: 0.03 * M });
+            badge(k, 'front', 0, 0.41, 0.03, '#c9ced3');
+            // The black rear fascia under the lamps with a carbon diffuser lip along its foot, four pipes in a square in
+            // the middle under the plate.
+            const rw = at(-0.495 * l, 0.45 * M).half;
+            k.patch(sets.trim, 'rear', -rw * 0.97, rw * 0.97, 0.3 * M, 0.66 * M, { color: '#0d0e10', finish: 'gloss', cols: 10, rows: 3, lift: 0.008 * M });
+            k.patch(sets.trim, 'rear', -rw * 0.9, rw * 0.9, 0.3 * M, 0.34 * M, { cell: 'carbon', color: '#2a2b2e', finish: 'carbon', tile: 0.1 * M, lift: 0.011 * M });
+            exhaustTips(k, [-0.08, 0.08], 0.38, 0.042, '#5a5e63');
+            exhaustTips(k, [-0.08, 0.08], 0.47, 0.042, '#5a5e63');
             // The V8 under the engine glass: the plenum and its red covers.
-            const ex = -0.3 * l,
+            const ex = -0.31 * l,
               ey = 0.82 * M;
             k.bar(sets.trim, [ex - 0.3 * M, ey, 0], [ex + 0.25 * M, ey, 0], 0.08 * M, 0.5 * M, 0.03 * M, { color: '#1c1d1f', finish: 'satin' });
             for (const side of [-1, 1]) k.bar(sets.trim, [ex - 0.28 * M, ey + 0.06 * M, side * 0.18 * M], [ex + 0.22 * M, ey + 0.06 * M, side * 0.18 * M], 0.04 * M, 0.1 * M, 0.02 * M, { color: '#b3121b', finish: 'gloss' });
-            // The wing.
-            const wy = k.top(-0.46 * l) + 0.27 * M;
-            k.bar(sets.trim, [-0.492 * l, wy, -0.78 * M], [-0.492 * l, wy, 0.78 * M], 0.035 * M, 0.3 * M, 0.015 * M, { color: '#111214', finish: 'carbon', cell: 'carbon' }, [0.2, 1, 0]);
-            for (const side of [-1, 1]) k.add(sets.trim, S.box, -0.492 * l, wy - 0.03 * M, side * 0.79 * M, 0.34 * M, 0.12 * M, 0.02 * M, { color: '#111214', finish: 'carbon' });
-            k.add(sets.drl, S.box, -0.5 * l + 0.04 * M, wy - 0.01 * M, 0, 0.02 * M, 0.015 * M, 0.5 * M, { color: '#ff3a2e' });
-            plateLight(k, 0.42);
+            // The ducktail: the deck's trailing edge kicked up in paint, a black wicker on it, the lit third brake light.
+            const dx = -0.487 * l,
+              dt = k.top(dx),
+              dw = at(dx, dt - 0.04 * M).half;
+            k.bar(sets.paint, [dx, dt + 0.02 * M, -dw * 0.86], [dx, dt + 0.02 * M, dw * 0.86], 0.05 * M, 0.11 * M, 0.018 * M, paint, [0.45, 1, 0]);
+            k.bar(sets.trim, [dx - 0.04 * M, dt + 0.05 * M, -dw * 0.84], [dx - 0.04 * M, dt + 0.05 * M, dw * 0.84], 0.014 * M, 0.02 * M, 0.006 * M, { color: '#0c0d0f', finish: 'gloss', box: true });
+            k.add(sets.drl, S.box, dx - 0.045 * M, dt + 0.035 * M, 0, 0.012 * M, 0.012 * M, 0.42 * M, { color: '#ff3a2e' });
+            plateLight(k, 0.58);
           },
         }),
         /* BRUTINI SVJ: a V12 wedge hypercar after the Aventador SVJ: one line from

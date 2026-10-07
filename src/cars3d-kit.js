@@ -358,6 +358,8 @@
         }
         // ---- The body's own details ----
         body.details(k);
+        // The model's name on the tail (cars3d-badges.js REAR BADGES).
+        const rearBadge = civRearBadges(k, body);
         // ---- Hood: a panel on the shell top from the hinge to the nose ----
         const hoodFrom = Math.max(0.215 * l, (g ? g.xf * l : 0) + (body.hoodGap ?? 0.12) * M),
           hoodTo = (0.5 - (body.hoodNose ?? 0.05)) * l,
@@ -447,6 +449,7 @@
           trim: civGeometry(sets.trim),
           trimOuter: null,
           seats,
+          badge: rearBadge,
           drl: sets.drl.count ? civGeometry(sets.drl, { finish: false }) : null,
           lamps: {},
           halos: k.halos,
