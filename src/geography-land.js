@@ -146,6 +146,13 @@
      *   pier-bridge  Riverbank Dr at x 3200, y -3900..-5800
      * South channel and the county: oceanview (Northbank - Oceanview), coral
      * sound, ridgeline viaduct, sentinel causeway.
+     * Appended later: Monarch Isle's two (monarch-streets.js), North Point Key's
+     * (skyline-islet.js) and the Coronation Bridge (coronation-bridge.js, last).
+     *
+     * `movable` bridges are drawbridges (drawbridge.js), their plan in `drawbridge`:
+     * keys-harbor (style 'bascule'), coronation ('deco') and, let into their own
+     * designs by basculeRetrofit, oceanview and ridgeline. Every island reached by
+     * more than one bridge has one (bridgeIslands, drawbridge-report.js).
      *
      * `style` picks each bridge's architecture (BRIDGE_DESIGNS below): where its
      * piers, towers, cables and navigation channels are. The renderer

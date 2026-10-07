@@ -168,6 +168,10 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - Counterweights leave the top-down view after sinking ~10 m.
 - The ALBATROSS's fore-and-aft sails are nearly edge-on from above.
 - About half the onlookers wander off before the leaves are fully up.
+- The three newer drawbridges' ships (LADY GRACE, CORAL QUEEN, WANDERER) are ALBATROSS's hull in other paint with no
+  name board (the boat-name atlas is full); the Coronation Bridge's land approaches are painted as deck on the ground
+  tiles; the 'deco', 'modern' and 'steel' tender's houses and the Coronation Bridge are checked on SwiftShader only.
+- Monarch Isle's traffic turns round on Pier Island Drive: Sunset Pier has no traffic of its own to hand over to.
 
 ## Helicopters (helicopter3d*.js)
 - "POLICE" on the tail boom is partly hidden from low side angles; the door seal is small.
