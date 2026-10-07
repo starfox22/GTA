@@ -49,6 +49,9 @@
       CHASE_HANDOVER = 0.55,
       CHASE_WALL_MARGIN = 3,
       CHASE_GROUND_CLEAR = 3,
+      // CLOSE QUARTERS: a boom a wall cut shorter than `from` (m) cranes the camera up to `lift` (m) over the
+      // head, easing at `rate` (1/s), so the head drops out of the frame instead of filling it.
+      CHASE_CRANE = { from: 1.6, lift: 0.55, rate: 5 },
       // The reticle's place on screen, as a share of the width and height.
       CHASE_RETICLE = { x: 0.5, y: 0.5 },
       // How far the camera's reticle reaches when it meets nothing (the convergence of the shoulder offset).
@@ -94,6 +97,8 @@
       // The page could not capture the pointer (CURSOR LOOK instead); the last request was a soft one.
       lockFailed: false,
       lockSoft: false,
+      // CLOSE QUARTERS: how far the camera is craned up over the head (map units).
+      crane: 0,
       // HAND-OVER: seconds left of the pivot's slide, and where it slides from.
       handover: 0,
       // LOOK BEHIND is held (a vehicle's view cut round to its back).
@@ -574,9 +579,13 @@
       // In at once in front of a wall, out again slowly (about 4 m/s).
       if (reach < cam.dist) cam.dist = reach;
       else cam.dist = Math.min(reach, cam.dist + deltaSeconds * 4 * M * (1 + cam.speedBlend * 3));
+      // CLOSE QUARTERS: only a boom the wall cut short cranes (not a short zoom or the aim), never while aiming.
+      const cut = cam.dist < cam.wantDist - 0.1 * M ? clamp((CHASE_CRANE.from * M - cam.dist) / ((CHASE_CRANE.from - 0.5) * M), 0, 1) : 0,
+        craneTo = cut * (1 - cam.aimBlend) * CHASE_CRANE.lift * M;
+      cam.crane += (craneTo - cam.crane) * (1 - Math.exp(-deltaSeconds * CHASE_CRANE.rate));
       cam.x = sx0 - fx * cam.dist;
       cam.y = sy0 - fy * cam.dist;
-      cam.z = cam.pz - fz * cam.dist;
+      cam.z = cam.pz - fz * cam.dist + cam.crane;
       const floor = chaseFloor(cam.x, cam.y) + CHASE_GROUND_CLEAR,
         lifted = cam.z < floor;
       if (lifted) cam.z = floor;
@@ -621,6 +630,7 @@
     /* A teleport, a new game or a switch of view starts the camera behind the player. */
     function resetChaseCamera() {
       chaseCam.ready = false;
+      chaseCam.crane = 0;
       chaseCam.subject = null;
       chaseCam.idle = 99;
       chaseCam.aimBlend = 0;
@@ -793,6 +803,7 @@
         heightMetres: r((chaseCam.z - chaseFloor(chaseCam.x, chaseCam.y)) / M, 2),
         aiming: r(chaseCam.aimBlend, 2),
         behind: chaseCam.behind,
+        craneMetres: r(chaseCam.crane / M, 2),
         // LOCK-ON: what the aim holds on (kind and distance), or null.
         lockOn: chaseLockOn.target
           ? { kind: chaseLockOn.target.faction || chaseLockOn.target.role || chaseLockOn.target.species || 'gunman', metres: r(Math.hypot(chaseLockOn.target.x - player.x, chaseLockOn.target.y - player.y) / M) }

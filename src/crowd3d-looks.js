@@ -144,11 +144,14 @@
         const height = look.heightAbsolute || (kid ? look.height || 0.64 : clamp((look.height || 1) * (female ? 0.965 : 1.015), 0.914, 1.086)),
           // A touch broader than the tape measure (8%) so figures read from the street camera.
           width = clamp(1 + ((look.build || 1) - 1) * 0.5, 0.9, 1.2) * (kid ? 0.9 : 1) * 1.08;
+        // Make-up from the seed (0 none, 1 day, 2 evening): lipstick here, liner, shadow and blush in the near face.
+        const uniformed = /^(police|traffic|swat|army|mp|fed)$/.test(look.outfit || ''),
+          makeup = !female || kid ? 0 : look.makeup ?? (uniformed ? (h(14) < 0.5 ? 0 : 1) : role === 'reveller' || look.outfit === 'partyGuest' ? (h(14) < 0.6 ? 2 : 1) : h(14) < 0.3 ? 0 : h(14) < 0.82 ? 1 : 2);
         const eyes = look.eyes || mixHex(hair, '#0d0b0a', 0.45),
           jaw = beard === 2 ? mixHex(hair, skin, 0.15) : beard === 1 ? mixHex(skin, hair, 0.38) : skin,
-          lips = mixHex(skin, '#a4474a', female ? 0.38 : 0.2),
+          lips = makeup ? mixHex(skin, pickOf(['#b5655f', '#b4424f', '#9e1f2c', '#7a2a3e', '#c8574a'], h(15)), makeup > 1 ? 0.72 : 0.48) : mixHex(skin, '#a4474a', female ? 0.38 : 0.2),
           collarColor = legsCovered ? pants : socks || skin;
-        return {
+        const compiled = {
           top: look.top,
           pants: look.pants,
           shoes: look.shoes,
@@ -189,7 +192,8 @@
             hood: rigPaint(top, top, top, top, [0], topPattern),
             upperArm: rigPaint(top, top, accent, skin, SLEEVES[armCover], topPattern),
             forearm: rigPaint(top, look.cuff || top, top, skin, armCover === 'long' ? [0, 1] : [3, 3], topPattern),
-            hand: gloves ? rigPaint(gloves) : rigPaint(skin),
+            // Slot D is the skin on every body part (the near shader lights it as skin).
+            hand: gloves ? rigPaint(gloves, gloves, gloves, skin) : rigPaint(skin),
             pelvis: rigPaint(pants, look.beltColor || '#1d1a18', look.buckle || '#b7b9bb', skin, look.belt || garment === 'bikini' || garment === 'dress' || garment === 'shirtless' || (shorts && !legsCovered && summer) ? [0, 0, 0] : [0, 1, 2], pantsPattern),
             skirt: rigPaint(pants, mixHex(pants, '#000000', 0.2), pants, pants, [0, 1]),
             thigh: rigPaint(pants, pants, pants, skin, skirt || garment === 'bikini' ? [3, 3] : shorts ? [0, 3] : [0, 0], pantsPattern),
@@ -203,6 +207,38 @@
             figureLeg: rigPaint(legsCovered ? pants : skin, barefoot ? skin : shoes, pants, pants, [0, 1]),
           },
         };
+        // The near set's bits (character-near3d.js rigNearBits): a woman's shape, the variant, the garment or face.
+        const paints = compiled.paints;
+        mixColor.set(skin);
+        const darkSkin = mixColor.r * 0.3 + mixColor.g * 0.59 + mixColor.b * 0.11 < 0.2,
+          iris = darkSkin ? pickOf([0, 6, 0, 1], h(13)) : pickOf([0, 1, 1, 2, 3, 4, 4, 5, 7, 0], h(13)),
+          topCode = { tank: 6, crop: 6, dress: 6, bikini: 7, shirtless: 7, jacket: 3, accentJacket: 3, suit: 2, uniform: 4, hoodie: 5 }[garment] || 0,
+          legCode =
+            garment === 'bikini' || (garment === 'shirtless' && shorts)
+              ? 6
+              : skirt || garment === 'dress'
+                ? 5
+                : pantsPattern === PATTERN.denim
+                  ? 1
+                  : garment === 'suit'
+                    ? 2
+                    : garment === 'uniform' || /^(swat|army|mp)$/.test(look.outfit || '')
+                      ? 3
+                      : role === 'jogger'
+                        ? 7
+                        : shorts
+                          ? 4
+                          : 0;
+        rigNearBits(paints.head, female, 0, iris + 8 * Math.min(2, beard || 0) + 32 * makeup);
+        rigNearBits(paints.hair, false, Math.max(0, NEAR_HAIR.indexOf(compiled.hairPart)));
+        rigNearBits(paints.torso, female, 0, topCode);
+        rigNearBits(paints.upperArm, false, 0, topCode);
+        rigNearBits(paints.forearm, false, 0, topCode);
+        rigNearBits(paints.pelvis, female, 0, legCode);
+        rigNearBits(paints.thigh, female, 0, legCode);
+        rigNearBits(paints.shin, false, 0, legCode);
+        rigNearBits(paints.shoe, false, footwear === 'boot' ? NEAR_FOOT.boot : barefoot ? NEAR_FOOT.bare : NEAR_FOOT.shoe, footwear === 'sneaker' ? 1 : footwear === 'boot' ? 2 : 0);
+        return compiled;
       }
       /**
        * OUTFITS

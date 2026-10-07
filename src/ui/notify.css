@@ -92,9 +92,10 @@
     padding: 7px 12px 8px;
   }
 }
-/* A phone does not unfold the car radio over the road on its own (hud-state.js
-   hudPop): a new station or the power button flashes the chip instead. */
-.touch-mode #carRadio.flash {
+/* A phone, or the chase view, does not unfold the car radio over the road on its own
+   (hud-state.js hudPop): a new station or the power button flashes the chip instead. */
+.touch-mode #carRadio.flash,
+body.chase-view #carRadio.flash {
   animation: radioChipFlash 0.9s var(--ui-ease);
 }
 @keyframes radioChipFlash {
@@ -109,7 +110,8 @@
 @media (prefers-reduced-motion: reduce) {
   #toast .note,
   .note-timer,
-  .touch-mode #carRadio.flash {
+  .touch-mode #carRadio.flash,
+  body.chase-view #carRadio.flash {
     animation: none;
   }
   #toast .note.leaving {

@@ -16,7 +16,8 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/vehicles-and-driving.md | Vehicle specs, handling, brakes and assists, crashes, riders, cliffs, aircraft (models: -models.md) |
 | areas/vehicles-and-driving-models.md | Vehicle models: the damage contract, draw calls and the pristine merge, cabins, see-through glass and the seated occupants |
 | areas/vehicles-and-driving-handling.md | Steering and grip, brakes and assists, drifts and the handbrake (`driftTest`) |
-| areas/people-and-crowd.md | Crowd behaviour, perception, speech bubbles, the character rig |
+| areas/people-and-crowd.md | Crowd behaviour, perception, speech bubbles |
+| areas/people-and-crowd-rig.md | The character rig: one instanced rig for everyone, key-ring outlines, looks, skeleton and gait, body sets, the chase view's near set (sculpted faces, hands, shoes, the near paint shader) |
 | areas/people-and-crowd-vehicles.md | Who sees or hears a car coming and how they react (dodge, freeze, hit unaware), the second pass over someone on the ground (harm by speed and weight, blood, dying) |
 | areas/people-and-crowd-living-city.md | Free roam's living city: traffic streamed round the player by hour and district, sirens and pulling over, ambulances and paramedics, street events |
 | areas/police-and-combat.md | Heat and stars, police response, shooting and wounds, carjacking, overhead cover, damage and breakables |
@@ -35,7 +36,8 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/rendering.md | Cameras and view, draw-call rules |
 | areas/rendering-buildings.md | Building archetypes and roofs, the street frontage on every side (shops, lobbies, stoops, loading bays, backs, fire escapes), shop windows, the sign design system (`sign()`, `SIGN_DESIGNS`, families), billboards, the glow field |
 | areas/rendering-weather.md | Ground, wet roads, water, rain, splashes, spray, lightning, tiers, and their street-level (chase view) numbers: near rain, rain haze, wet reflections, streaks |
-| areas/chase-view.md | The third-person CHASE view (V): where the camera stands (game state, its projection), look input (pointer lock, pad, touch), drawing it (draw distance, culling, shadows), the reticle |
+| areas/chase-view.md | The third-person CHASE view (V): where the camera stands (game state, its projection, walls and the close-quarters crane), drawing it (draw distance, culling, shadows), the reticle and lock-on, its game rules |
+| areas/chase-view-input.md | The chase view's input: pointer lock and CURSOR LOOK, look behind, pad and touch look, camera-relative movement |
 | areas/rendering-chase.md | The chase view's draw distance and level of detail: far cells drawn from the far copy, shadow casters and proxies, small props and pools, people and vehicles by distance, the `chaseCamera().view` report |
 | areas/rendering-effects.md | Effect particles: smoke, fire, sparks, muzzle flashes, glass and drops in one sorted, lit, instanced pool (`fxAdd`), the atlas, the recipes (blasts, muzzle, bullet strikes, flames), `effectParticles()` |
 | areas/rendering-hiccups.md | First-use hitches: what the title-screen prewarm warms (programs, off-screen passes, stand-in models, the far copy), the first-use log (`renderHiccups`), the rules a new effect follows, dormant lights, numbers |

@@ -79,7 +79,7 @@
           float crowdPacked = crowdSlot == 0 ? crowdPaint.x : crowdSlot == 1 ? crowdPaint.y : crowdSlot == 2 ? crowdPaint.z : crowdPaint.w;
           vCrowdColor = crowdUnpack( crowdPacked );
           float crowdFlags = floor( crowdMeta.y + 0.5 );
-          vCrowdRim = floor( crowdFlags / 16.0 );
+          vCrowdRim = mod( floor( crowdFlags / 16.0 ), 2.0 );
           // The pattern is the same at every vertex; whether a vertex wears slot A is not.
           vCrowdPattern = mod( crowdFlags, 16.0 );
           vCrowdSlotA = crowdSlot == 0 ? 1.0 : 0.0;
@@ -204,21 +204,26 @@
             regions.push(region ? region(ringIndex[i], th > Math.PI ? th - TAU : th, r.y, x, z) : 0);
           }
         }
+        // Rings stacked downwards (a limb hanging from its joint) wind the other way, so every loft faces out.
+        const down = rings.length > 1 && rings[rings.length - 1].y < rings[0].y;
         for (let i = 0; i < rings.length - 1; i++)
           for (let k = 0; k < n; k++) {
             const a = i * n + k,
               b = i * n + ((k + 1) % n);
-            index.push(a, a + n, b, b, a + n, b + n);
+            if (down) index.push(a, b, a + n, b, b + n, a + n);
+            else index.push(a, a + n, b, b, a + n, b + n);
           }
         const cap = (i, top) => {
           const r = rings[i],
-            centre = positions.length / 3;
-          positions.push(r.cx || 0, r.y + (top ? 1 : -1) * (r.dome || 0), r.cz || 0);
+            centre = positions.length / 3,
+            // The dome stands away from the neighbouring ring; the upper end faces up.
+            up = top !== down;
+          positions.push(r.cx || 0, r.y + (up ? 1 : -1) * (r.dome || 0), r.cz || 0);
           regions.push(region ? region(ringIndex[i], 0, r.y, r.cx || 0, r.cz || 0, true) : 0);
           for (let k = 0; k < n; k++) {
             const a = i * n + k,
               b = i * n + ((k + 1) % n);
-            if (top) index.push(centre, b, a);
+            if (up) index.push(centre, b, a);
             else index.push(centre, a, b);
           }
         };
@@ -315,24 +320,24 @@
        * Joint at the neck base. Regions: 0 skin, 1 eyes and brows, 2 jaw (clean,
        * stubble or beard), 3 lips. Ears and a nose are merged in.
        */
+      const RIG_HEAD_RINGS = [
+        { y: 0.0, fx: 0.4, bx: 0.42, w: 0.45, cx: -0.06 },
+        { y: 0.5, fx: 0.38, bx: 0.4, w: 0.41, cx: -0.04 },
+        { y: 0.6, fx: 0.58, bx: 0.44, w: 0.44, cx: 0.06 },
+        { y: 0.74, fx: 0.74, bx: 0.6, w: 0.54, cx: 0.04 },
+        { y: 0.92, fx: 0.8, bx: 0.7, w: 0.59, cx: 0.02 },
+        { y: 1.12, fx: 0.84, bx: 0.76, w: 0.62 },
+        { y: 1.32, fx: 0.85, bx: 0.8, w: 0.645 },
+        { y: 1.47, fx: 0.83, bx: 0.82, w: 0.65 },
+        { y: 1.6, fx: 0.84, bx: 0.83, w: 0.65 },
+        { y: 1.72, fx: 0.83, bx: 0.83, w: 0.645 },
+        { y: 1.92, fx: 0.77, bx: 0.81, w: 0.62, cx: -0.01 },
+        { y: 2.1, fx: 0.64, bx: 0.72, w: 0.55, cx: -0.03 },
+        { y: 2.25, fx: 0.44, bx: 0.54, w: 0.4, cx: -0.04 },
+        { y: 2.35, fx: 0.16, bx: 0.22, w: 0.15, cx: -0.04, dome: 0.03 },
+      ];
       function rigHeadGeometry() {
-        const rings = [
-          { y: 0.0, fx: 0.4, bx: 0.42, w: 0.45, cx: -0.06 },
-          { y: 0.5, fx: 0.38, bx: 0.4, w: 0.41, cx: -0.04 },
-          { y: 0.6, fx: 0.58, bx: 0.44, w: 0.44, cx: 0.06 },
-          { y: 0.74, fx: 0.74, bx: 0.6, w: 0.54, cx: 0.04 },
-          { y: 0.92, fx: 0.8, bx: 0.7, w: 0.59, cx: 0.02 },
-          { y: 1.12, fx: 0.84, bx: 0.76, w: 0.62 },
-          { y: 1.32, fx: 0.85, bx: 0.8, w: 0.645 },
-          { y: 1.47, fx: 0.83, bx: 0.82, w: 0.65 },
-          { y: 1.6, fx: 0.84, bx: 0.83, w: 0.65 },
-          { y: 1.72, fx: 0.83, bx: 0.83, w: 0.645 },
-          { y: 1.92, fx: 0.77, bx: 0.81, w: 0.62, cx: -0.01 },
-          { y: 2.1, fx: 0.64, bx: 0.72, w: 0.55, cx: -0.03 },
-          { y: 2.25, fx: 0.44, bx: 0.54, w: 0.4, cx: -0.04 },
-          { y: 2.35, fx: 0.16, bx: 0.22, w: 0.15, cx: -0.04, dome: 0.03 },
-        ];
-        const skull = rigLoft(rings, 16, (i, th) => {
+        const skull = rigLoft(RIG_HEAD_RINGS, 16, (i, th) => {
           const a = Math.abs(th) / RIG_DEG;
           if (i === 7 && a > 10 && a < 35) return 1; // eyes
           if (i === 9 && a > 10 && a < 50) return 1; // brows
@@ -352,7 +357,7 @@
       }
       /* Hair styles and hats, in head space. */
       const hairRings = (list) => list.map(([y, fx, bx, w, cx = 0, dome = 0]) => ({ y, fx, bx, w, cx, dome }));
-      function rigHairGeometries() {
+      function rigHairRingLists() {
         const short = hairRings([
           [0.95, 0.2, 0.8, 0.6],
           [1.2, 0.35, 0.87, 0.675],
@@ -412,6 +417,10 @@
           [2.36, 0.46, 0.52, 0.4, -0.03],
           [2.46, 0.14, 0.18, 0.13, -0.03, 0.03],
         ]);
+        return { short, crop, buzz, long, curly, bob };
+      }
+      function rigHairGeometries() {
+        const { short, crop, buzz, long, curly, bob } = rigHairRingLists();
         return {
           hairShort: rigLoft(short, 14),
           hairCrop: rigLoft(crop, 14),
@@ -499,8 +508,8 @@
         if (y <= 0.62) return 7;
         return 0;
       }
-      function rigTorsoGeometry(female) {
-        const keys = female
+      function rigTorsoKeys(female) {
+        return female
           ? [
               { y: -0.3, fx: 0.74, bx: 0.8, w: 1.02, n: 2.2 },
               { y: 0.25, fx: 0.72, bx: 0.76, w: 0.96, n: 2.2 },
@@ -530,12 +539,14 @@
               { y: 3.34, fx: 0.45, bx: 0.48, w: 0.7 },
               { y: 3.4, fx: 0.42, bx: 0.44, w: 0.56 },
             ];
-        return rigLoft(rigProfile(keys, TORSO_SAMPLES), 16, torsoRegion);
+      }
+      function rigTorsoGeometry(female) {
+        return rigLoft(rigProfile(rigTorsoKeys(female), TORSO_SAMPLES), 16, torsoRegion);
       }
       /* Pelvis: joint at the hip joints' height. Regions: 0 cloth, 1 belt, 2 buckle. */
-      function rigPelvisGeometry(female) {
+      function rigPelvisRings(female) {
         const w = female ? 1.08 : 1.0;
-        const rings = [
+        return [
           { y: -0.88, fx: 0.3, bx: 0.36, w: 0.42 * w },
           { y: -0.62, fx: 0.7, bx: 0.8, w: 1.02 * w },
           { y: -0.2, fx: 0.78, bx: (female ? 0.98 : 0.92), w: 1.26 * w, n: 2.3 },
@@ -546,7 +557,9 @@
           { y: 1.08, fx: 0.84, bx: 0.85, w: (female ? 1.04 : 1.17), n: 2.3 },
           { y: 1.22, fx: 0.7, bx: 0.72, w: 0.98 },
         ];
-        return rigLoft(rings, 16, (i, th) => (i >= 5 && i <= 6 ? (Math.abs(th) < 14 * RIG_DEG ? 2 : 1) : 0));
+      }
+      function rigPelvisGeometry(female) {
+        return rigLoft(rigPelvisRings(female), 16, (i, th) => (i >= 5 && i <= 6 ? (Math.abs(th) < 14 * RIG_DEG ? 2 : 1) : 0));
       }
       /* Skirt or dress hem: open, drawn double sided. Regions: 0 cloth, 1 hem. */
       function rigSkirtGeometry() {
@@ -560,38 +573,28 @@
         return rigLoft(rings, 16, (i) => (i === 4 ? 1 : 0), false, false);
       }
       /* Limbs hang down (-y) from their joint. Regions by height (see paints). */
-      function rigUpperArmGeometry() {
-        return rigLoft(
-          [
-            { y: 0.3, fx: 0.3, w: 0.3, dome: 0.06 },
-            { y: 0.12, fx: 0.5, bx: 0.48, w: 0.5 },
-            { y: -0.3, fx: 0.55, bx: 0.52, w: 0.54 },
-            { y: -0.75, fx: 0.5, bx: 0.49, w: 0.5 },
-            { y: -1.05, fx: 0.47, bx: 0.47, w: 0.46 },
-            { y: -1.2, fx: 0.46, bx: 0.46, w: 0.45 },
-            { y: -1.9, fx: 0.4, bx: 0.39, w: 0.38 },
-            { y: -2.5, fx: 0.34, bx: 0.37, w: 0.34 },
-            { y: -2.8, fx: 0.3, bx: 0.33, w: 0.3, dome: 0.1 },
-          ],
-          10,
-          (i) => (i <= 4 ? 0 : 1),
-        );
-      }
-      function rigForearmGeometry() {
-        return rigLoft(
-          [
-            { y: 0.28, fx: 0.3, bx: 0.33, w: 0.3, dome: 0.08 },
-            { y: -0.1, fx: 0.34, bx: 0.37, w: 0.34 },
-            { y: -0.6, fx: 0.36, bx: 0.34, w: 0.35 },
-            { y: -1.5, fx: 0.27, bx: 0.26, w: 0.26 },
-            { y: -1.72, fx: 0.24, bx: 0.23, w: 0.22 },
-            { y: -2.0, fx: 0.19, bx: 0.19, w: 0.17 },
-            { y: -2.12, fx: 0.15, bx: 0.15, w: 0.13 },
-          ],
-          9,
-          (i) => (i >= 4 ? 1 : 0),
-        );
-      }
+      const RIG_UPPER_ARM_RINGS = [
+          { y: 0.3, fx: 0.3, w: 0.3, dome: 0.06 },
+          { y: 0.12, fx: 0.5, bx: 0.48, w: 0.5 },
+          { y: -0.3, fx: 0.55, bx: 0.52, w: 0.54 },
+          { y: -0.75, fx: 0.5, bx: 0.49, w: 0.5 },
+          { y: -1.05, fx: 0.47, bx: 0.47, w: 0.46 },
+          { y: -1.2, fx: 0.46, bx: 0.46, w: 0.45 },
+          { y: -1.9, fx: 0.4, bx: 0.39, w: 0.38 },
+          { y: -2.5, fx: 0.34, bx: 0.37, w: 0.34 },
+          { y: -2.8, fx: 0.3, bx: 0.33, w: 0.3, dome: 0.1 },
+        ],
+        RIG_FOREARM_RINGS = [
+          { y: 0.28, fx: 0.3, bx: 0.33, w: 0.3, dome: 0.08 },
+          { y: -0.1, fx: 0.34, bx: 0.37, w: 0.34 },
+          { y: -0.6, fx: 0.36, bx: 0.34, w: 0.35 },
+          { y: -1.5, fx: 0.27, bx: 0.26, w: 0.26 },
+          { y: -1.72, fx: 0.24, bx: 0.23, w: 0.22 },
+          { y: -2.0, fx: 0.19, bx: 0.19, w: 0.17 },
+          { y: -2.12, fx: 0.15, bx: 0.15, w: 0.13 },
+        ];
+      const rigUpperArmGeometry = () => rigLoft(RIG_UPPER_ARM_RINGS, 10, (i) => (i <= 4 ? 0 : 1)),
+        rigForearmGeometry = () => rigLoft(RIG_FOREARM_RINGS, 9, (i) => (i >= 4 ? 1 : 0));
       /* Hand from the wrist: palm, curled fingers, thumb. Thin across (z). */
       function rigHandGeometry() {
         return rigMerge([
@@ -608,10 +611,9 @@
           rigPlace(rigRegion(new Three.CylinderGeometry(0.08, 0.1, 0.66, 5, 1), 0), 0.3, -0.52, 0.06, 0, 0, 0.55),
         ]);
       }
-      function rigThighGeometry(female) {
+      function rigThighRings(female) {
         const w = female ? 1.05 : 1;
-        return rigLoft(
-          [
+        return [
             { y: 0.55, fx: 0.62, bx: 0.66, w: 0.62 * w },
             { y: 0.05, fx: 0.7, bx: 0.72, w: 0.7 * w },
             { y: -0.6, fx: 0.7, bx: 0.66, w: 0.66 * w },
@@ -620,28 +622,21 @@
             { y: -2.5, fx: 0.47, bx: 0.47, w: 0.46 },
             { y: -3.25, fx: 0.43, bx: 0.41, w: 0.42 },
             { y: -3.55, fx: 0.38, bx: 0.36, w: 0.38, dome: 0.12 },
-          ],
-          10,
-          (i) => (i <= 3 ? 0 : 1),
-        );
+          ];
       }
-      function rigShinGeometry() {
-        return rigLoft(
-          [
-            { y: 0.32, fx: 0.38, bx: 0.36, w: 0.38, dome: 0.1 },
-            { y: -0.12, fx: 0.42, bx: 0.4, w: 0.42 },
-            { y: -0.35, fx: 0.37, bx: 0.44, w: 0.41 },
-            { y: -1.0, fx: 0.35, bx: 0.52, w: 0.42 },
-            { y: -1.9, fx: 0.31, bx: 0.36, w: 0.33 },
-            { y: -2.75, fx: 0.26, bx: 0.26, w: 0.25 },
-            { y: -2.9, fx: 0.25, bx: 0.25, w: 0.24 },
-            { y: -3.45, fx: 0.23, bx: 0.24, w: 0.22 },
-            { y: -3.62, fx: 0.15, bx: 0.15, w: 0.15, dome: 0.03 },
-          ],
-          9,
-          (i) => (i <= 1 ? 2 : i >= 6 ? 1 : 0),
-        );
-      }
+      const rigThighGeometry = (female) => rigLoft(rigThighRings(female), 10, (i) => (i <= 3 ? 0 : 1));
+      const RIG_SHIN_RINGS = [
+        { y: 0.32, fx: 0.38, bx: 0.36, w: 0.38, dome: 0.1 },
+        { y: -0.12, fx: 0.42, bx: 0.4, w: 0.42 },
+        { y: -0.35, fx: 0.37, bx: 0.44, w: 0.41 },
+        { y: -1.0, fx: 0.35, bx: 0.52, w: 0.42 },
+        { y: -1.9, fx: 0.31, bx: 0.36, w: 0.33 },
+        { y: -2.75, fx: 0.26, bx: 0.26, w: 0.25 },
+        { y: -2.9, fx: 0.25, bx: 0.25, w: 0.24 },
+        { y: -3.45, fx: 0.23, bx: 0.24, w: 0.22 },
+        { y: -3.62, fx: 0.15, bx: 0.15, w: 0.15, dome: 0.03 },
+      ];
+      const rigShinGeometry = () => rigLoft(RIG_SHIN_RINGS, 9, (i) => (i <= 1 ? 2 : i >= 6 ? 1 : 0));
       /* Shoe or boot, from the ankle joint; sole at -RIG.ankle. Regions: 0 upper, 1 sole, 2 collar / shaft. */
       function rigShoeGeometry(boot) {
         // Lofted along the foot (loft y = forward); loft x becomes down.
@@ -660,207 +655,8 @@
         g.rotateZ(-Math.PI / 2);
         return g;
       }
-      /* Kit worn over the torso (torso space). */
-      function rigVestGeometry() {
-        // Plate carrier / hi-vis vest. Regions: 0 base, 1 pouches, 2 reflective bands.
-        const shell = rigLoft(
-          [
-            { y: 0.72, fx: 1.12, bx: 1.02, w: 1.46, n: 3.2 },
-            { y: 1.1, fx: 1.16, bx: 1.04, w: 1.52, n: 3.2 },
-            { y: 1.3, fx: 1.18, bx: 1.05, w: 1.56, n: 3.2 },
-            { y: 1.55, fx: 1.2, bx: 1.06, w: 1.6, n: 3.2 },
-            { y: 2.2, fx: 1.2, bx: 1.08, w: 1.66, n: 3.2 },
-            { y: 2.45, fx: 1.16, bx: 1.1, w: 1.66, n: 3.2 },
-            { y: 2.7, fx: 1.1, bx: 1.09, w: 1.6, n: 3.0 },
-            { y: 2.95, fx: 0.98, bx: 1.02, w: 1.3, n: 2.6 },
-            { y: 3.12, fx: 0.78, bx: 0.86, w: 0.95, n: 2.4 },
-          ],
-          16,
-          (i) => (i === 1 || i === 2 || i === 5 ? 2 : 0),
-        );
-        const pouches = [-0.62, 0, 0.62].map((z) => rigBox(0.36, 0.62, 0.5, 1, 1.28, 1.2, z));
-        return rigMerge([shell, ...pouches, rigBox(0.3, 0.5, 0.42, 1, 1.24, 2.25, -0.75)]);
-      }
-      function rigBeltGeometry() {
-        // Duty belt at the pelvis. Regions: 0 belt, 1 holster and pouches, 2 buckle and cuffs.
-        const belt = rigLoft(
-          [
-            { y: 0.6, fx: 0.93, bx: 0.94, w: 1.33, n: 2.4 },
-            { y: 0.98, fx: 0.93, bx: 0.94, w: 1.3, n: 2.4 },
-          ],
-          16,
-          (i, th) => (Math.abs(th) < 12 * RIG_DEG ? 2 : 0),
-        );
-        return rigMerge([
-          belt,
-          rigBox(0.55, 1.15, 0.36, 1, 0.2, 0.35, 1.38, 0, 0, 0.05), // holster, right hip
-          rigBox(0.4, 0.45, 0.3, 1, 0.7, 0.72, -0.9), // magazine pouch
-          rigBox(0.34, 0.5, 0.3, 1, -0.2, 0.7, -1.32), // radio
-          rigBox(0.5, 0.3, 0.3, 2, -0.9, 0.78, 0.4), // cuffs
-        ]);
-      }
-      const rigCollarGeometry = () =>
-        rigLoft(
-          [
-            { y: 3.12, fx: 0.62, bx: 0.7, w: 0.78 },
-            { y: 3.36, fx: 0.56, bx: 0.62, w: 0.66 },
-            { y: 3.62, fx: 0.52, bx: 0.6, w: 0.6 },
-          ],
-          14,
-          null,
-          false,
-          false,
-        );
-      const rigHoodGeometry = () =>
-        rigLoft(
-          [
-            { y: 2.72, fx: 0.25, bx: 0.3, w: 0.7, cx: -0.72 },
-            { y: 3.1, fx: 0.42, bx: 0.44, w: 0.9, cx: -0.62 },
-            { y: 3.45, fx: 0.4, bx: 0.4, w: 0.82, cx: -0.62 },
-            { y: 3.66, fx: 0.24, bx: 0.26, w: 0.6, cx: -0.62, dome: 0.03 },
-          ],
-          10,
-        );
-      function rigBackpackGeometry() {
-        return rigMerge([
-          rigLoft(
-            [
-              { y: -1.35, fx: 0.4, bx: 0.52, w: 0.95, n: 3 },
-              { y: -0.9, fx: 0.45, bx: 0.66, w: 1.05, n: 3 },
-              { y: 0.9, fx: 0.45, bx: 0.66, w: 1.05, n: 3 },
-              { y: 1.3, fx: 0.4, bx: 0.5, w: 0.95, n: 3, dome: 0.1 },
-            ],
-            12,
-          ),
-          rigBox(0.3, 0.9, 1.4, 1, -0.62, -0.7, 0),
-          rigBox(1.4, 0.2, 0.28, 1, 0.55, 1.05, 0.78, 0, 0, -0.35),
-          rigBox(1.4, 0.2, 0.28, 1, 0.55, 1.05, -0.78, 0, 0, -0.35),
-        ]);
-      }
-      /**
-       * WEAPONS
-       * Built round the firing hand's grip at the origin, muzzle towards +x, a
-       * touch larger than life so they read at street zoom. Regions: 0 metal,
-       * 1 polymer / grips, 2 wood or tan furniture, 3 glass and bright steel.
-       * `support` is where the other hand goes (x, y, z in weapon space).
-       */
-      const WEAPON_SCALE = 1.2;
-      function rigWeaponGeometries() {
-        const scaled = (g) => {
-          g.scale(WEAPON_SCALE, WEAPON_SCALE, WEAPON_SCALE);
-          return g;
-        };
-        return {
-          pistol: scaled(
-            rigMerge([
-              rigBox(1.7, 0.3, 0.26, 0, 0.58, 0.3, 0),
-              rigBox(1.3, 0.18, 0.24, 1, 0.52, 0.1, 0),
-              rigBox(0.36, 0.95, 0.26, 1, -0.1, -0.34, 0, 0, 0, 0.28),
-              rigBox(0.45, 0.07, 0.1, 1, 0.3, -0.14, 0),
-            ]),
-          ),
-          smg: scaled(
-            rigMerge([
-              rigBox(2.3, 0.44, 0.3, 0, 0.62, 0.22, 0),
-              rigRod(1.7, 2.5, 0.09, 0, 0.26, 0),
-              rigBox(0.34, 0.85, 0.26, 1, -0.05, -0.34, 0, 0, 0, 0.26),
-              rigBox(0.24, 1.05, 0.2, 0, 0.72, -0.5, 0, 0, 0, -0.08),
-              rigBox(0.55, 0.36, 0.3, 1, 1.35, 0.08, 0),
-              rigBox(0.95, 0.12, 0.26, 1, -0.95, 0.24, 0),
-            ]),
-          ),
-          shotgun: scaled(
-            rigMerge([
-              rigRod(0.9, 5.4, 0.11, 0, 0.3, 0),
-              rigRod(0.9, 4.2, 0.09, 0, 0.1, 0),
-              rigBox(1.3, 0.3, 0.3, 2, 2.8, 0.1, 0),
-              rigBox(1.5, 0.48, 0.3, 0, 0.35, 0.22, 0),
-              rigBox(0.4, 0.2, 0.12, 0, 0.25, -0.12, 0),
-              rigBox(2.5, 0.46, 0.28, 2, -1.25, 0.02, 0, 0, 0, 0.1),
-              rigBox(0.22, 0.85, 0.3, 1, -2.5, -0.12, 0, 0, 0, 0.1),
-            ]),
-          ),
-          rifle: scaled(
-            rigMerge([
-              rigBox(2.3, 0.52, 0.3, 0, 0.6, 0.24, 0),
-              rigBox(1.9, 0.44, 0.34, 1, 2.65, 0.24, 0),
-              rigRod(3.55, 4.6, 0.07, 0, 0.24, 0),
-              rigBox(0.2, 0.26, 0.2, 0, 4.6, 0.24, 0),
-              rigBox(0.36, 1.1, 0.26, 0, 0.95, -0.46, 0, 0, 0, -0.2),
-              rigBox(0.32, 0.8, 0.26, 1, -0.05, -0.3, 0, 0, 0, 0.3),
-              rigBox(1.3, 0.24, 0.24, 0, -0.95, 0.28, 0),
-              rigBox(0.7, 0.62, 0.28, 1, -1.62, 0.14, 0),
-              rigBox(0.66, 0.32, 0.24, 3, 0.9, 0.66, 0),
-            ]),
-          ),
-          sniper: scaled(
-            rigMerge([
-              rigBox(2.0, 0.46, 0.3, 0, 0.55, 0.24, 0),
-              rigRod(1.5, 6.4, 0.085, 0, 0.3, 0),
-              rigBox(2.5, 0.42, 0.34, 2, 1.9, 0.05, 0),
-              rigBox(0.3, 0.8, 0.26, 2, -0.08, -0.3, 0, 0, 0, 0.3),
-              rigBox(2.0, 0.6, 0.28, 2, -1.3, 0.08, 0, 0, 0, 0.06),
-              rigRod(-0.2, 1.9, 0.16, 3, 0.78, 0, 8, 0.2),
-              rigBox(0.3, 0.3, 0.14, 0, 0.8, 0.52, 0),
-            ]),
-          ),
-          rocket: scaled(
-            rigMerge([
-              rigRod(-3.1, 4.3, 0.4, 0, 0.62, 0, 10),
-              rigPlace(rigRegion(new Three.ConeGeometry(0.46, 1.3, 10, 1), 2), 4.95, 0.62, 0, 0, 0, -Math.PI / 2),
-              rigBox(0.34, 0.85, 0.28, 1, -0.05, -0.1, 0, 0, 0, 0.25),
-              rigBox(0.3, 0.7, 0.28, 1, 1.8, -0.02, 0),
-              rigBox(0.5, 0.36, 0.14, 1, 0.5, 1.12, -0.28),
-            ]),
-          ),
-          knife: scaled(
-            rigMerge([
-              rigBox(0.9, 0.22, 0.18, 1, 0.05, 0, 0),
-              rigBox(0.12, 0.42, 0.24, 0, 0.55, 0, 0),
-              rigPlace(rigRegion(new Three.BoxGeometry(1.35, 0.2, 0.05), 3), 1.25, 0.02, 0),
-            ]),
-          ),
-          // Ballistic shield on the support arm: slab (0), handle (1), viewport (3).
-          shield: rigMerge([
-            rigBox(0.2, 7.2, 4.8, 0, 0.35, -0.6, 0),
-            rigBox(0.06, 0.9, 2.5, 3, 0.47, 2.2, 0),
-            rigBox(0.5, 0.3, 0.3, 1, 0.05, 0, 0),
-          ]),
-        };
-      }
-      /* Where each weapon is held: the support hand (weapon space), and whether it is shouldered. */
-      const WEAPON_HOLDS = {
-        pistol: { support: [-0.05, -0.1, -0.2], shoulder: false, length: 1.8 },
-        smg: { support: [1.35, -0.1, -0.1], shoulder: false, length: 3 },
-        shotgun: { support: [2.8, -0.05, -0.1], shoulder: true, length: 6.4 },
-        rifle: { support: [2.5, -0.02, -0.12], shoulder: true, length: 5.6 },
-        sniper: { support: [1.9, -0.18, -0.1], shoulder: true, length: 7.6 },
-        rocket: { support: [1.8, -0.35, -0.05], shoulder: true, onShoulder: true, length: 8 },
-        knife: { support: null, shoulder: false, length: 1.5 },
-      };
-      /* POLICE / FED lettering: a canvas texture on a small tilted panel. */
-      function rigLabelMaterial(text, color, width = 256) {
-        const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = 80;
-        const g = canvas.getContext('2d');
-        g.fillStyle = color;
-        g.font = `900 ${text.length > 3 ? 62 : 72}px Arial, Helvetica, sans-serif`;
-        g.textAlign = 'center';
-        g.textBaseline = 'middle';
-        g.fillText(text, width / 2, 42, width - 12);
-        const map = new Three.CanvasTexture(canvas);
-        map.colorSpace = Three.SRGBColorSpace;
-        map.anisotropy = 4;
-        return new Three.MeshStandardMaterial({ map, alphaTest: 0.45, roughness: 0.7 });
-      }
-      // The panel faces backwards and up (it sits across the upper back), text reading left to right from behind.
-      const rigLabelGeometry = (() => {
-        const g = new Three.PlaneGeometry(2.3, 0.72);
-        g.rotateY(-Math.PI / 2);
-        g.rotateZ(-0.62);
-        return g;
-      })();
+      // @include src/character-rig3d-kit.js
+      // @include src/character-rig3d-weapons.js
 
       /* ---- Paint ------------------------------------------------------------------ */
       const hexCache = new Map();
@@ -896,4 +692,5 @@
         hoodie: [0, 0, 0, 0, 0, 0, 2, 0],
         dress: [0, 0, 0, 0, 3, 0, 0, 0],
       };
+      // @include src/character-near3d.js
       // END SUBSYSTEM: src/character-rig3d.js

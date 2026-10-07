@@ -136,13 +136,14 @@ Plays seeded random free-roam actions on the dev page (starts one with `?test&no
 reboots a running one for a clean page; `--render` boots the rendered page): teleports to every island and door,
 every vehicle class, shooting, run-overs, police and arrests, deaths, menus and random real keys, settings, graphics
 tiers, weather and time, rides, swimming and falls, a gamepad and the mouse, rebinding the action key, garage jobs, save
-and reload. After each action it checks console errors, `DeadEndCity.integrity()` (docs/console/integrity.md), a mode
+and reload, and V into and out of the chase view (`chaseView`: look round, move along the camera, aim with LT; the
+view stays for the actions that follow, and the camera must stay finite). After each action it checks console errors, `DeadEndCity.integrity()` (docs/console/integrity.md), a mode
 that never returns to play, a carrier held too long, a trapped player or road vehicle, the respawn rules, the saved
 state, and every eighth action `settleAudit()`. Same seed, same choices (the game's own randomness is not seeded).
 Findings print as `FINDING` lines and land in `dist/bot/seed-<n>.json` with the last eight actions before each;
 exit status 1 when there are any. About 2 game minutes per wall minute on a loaded machine (idle stretches are the
 cheap way to add game time). A finding is a lead, not a verdict: reproduce it with `dev.mjs call` before fixing.
-Runs in this repo's history: seeds 2-4, 30 game minutes each, in the October 2026 free-roam pass (docs/audit/freeroam-sweep.md); seeds 5-8 (7-20 game minutes) in the 2026-10-04 bug pass. The `rebind` check skips a wanted player (doors turn them away) and a teleport that kept an aircraft.
+Runs in this repo's history: seeds 2-4, 30 game minutes each, in the October 2026 free-roam pass (docs/audit/freeroam-sweep.md); seeds 5-8 (7-20 game minutes) in the 2026-10-04 bug pass; seeds 7 and 11 (10 and 8 game minutes, 0 findings) after the chase view. The `rebind` check skips a wanted player (doors turn them away) and a teleport that kept an aircraft.
 
 ## Tours (tools/tour.mjs)
 

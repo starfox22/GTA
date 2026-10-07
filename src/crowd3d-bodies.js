@@ -42,6 +42,46 @@
       }
       const BODY_CLOSE = rigBodySet('', 1),
         BODY_STREET = rigBodySet(' street', 0.6);
+      /**
+       * NEAR SET (character-near3d.js): the player and the few people nearest the chase camera
+       * (crowd3d-frame.js NEAR PEOPLE). Ten parts of its own, each one draw: head, hair (every style),
+       * torso, pelvis and thighs (a woman's shape in the same mesh), arms, hands, shins and footwear
+       * (shoe, boot and bare foot). Hats, kit and skirts are the close set's, which fit the same outlines.
+       */
+      const CROWD_NEAR_CAPACITY = 16;
+      function rigNearSet() {
+        rigSegmentScale = 1;
+        const cap = CROWD_NEAR_CAPACITY,
+          part = (name, geometry, capacity, shadow) => {
+            const p = rigPart(name + ' near', geometry, rigNearMaterial, capacity, shadow);
+            if (shadow) p.mesh.customDepthMaterial = rigNearDepthMaterial;
+            return p;
+          },
+          torso = part('torso', nearTorsoGeometry(), cap, true),
+          pelvis = part('pelvis', nearPelvisGeometry(), cap, true),
+          thigh = part('thigh', nearThighGeometry(), cap * 2, true),
+          hair = part('hair', nearHairGeometry(), cap, false),
+          foot = part('foot', nearFootGeometry(), cap * 2, false);
+        const set = {
+          ...BODY_CLOSE,
+          head: part('head', nearHeadGeometry(), cap, true),
+          torsoM: torso,
+          torsoF: torso,
+          pelvisM: pelvis,
+          pelvisF: pelvis,
+          upperArm: part('upper arm', nearUpperArmGeometry(), cap * 2, true),
+          forearm: part('forearm', nearForearmGeometry(), cap * 2, false),
+          hand: part('hand', nearHandGeometry(), cap * 2, false),
+          thighM: thigh,
+          thighF: thigh,
+          shin: part('shin', nearShinGeometry(), cap * 2, true),
+          shoe: foot,
+          boot: foot,
+        };
+        for (const style of NEAR_HAIR) set[style] = hair;
+        return set;
+      }
+      const BODY_NEAR = rigNearSet();
       // The set drawn this frame (updateCrowd3D).
       let BODY = BODY_STREET;
       const P = {

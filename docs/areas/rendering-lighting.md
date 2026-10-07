@@ -49,6 +49,10 @@ buildings, ground). Vehicle lights: rendering-vehicle-lights.md.
   ~1.5 h before sunset. Laying the night look over the low sun turned the golden hour
   magenta; its keys are `SUN_DUSK`, `HEMI_*_DUSK` (civic3d.js) and `SKY_KEYS.dusk` (the
   environment's sky: a violet zenith over an orange horizon filters to mauve).
+  CHASE NIGHT (lighting3d-look.js): at street level the chase view takes half the moon and sky
+  fill, 60 % of the night exposure and a quarter of the contrast loss, and its sky keys are
+  `SKY_KEYS.chaseNight` (a deep navy): a darker night where lamps, windows and headlights pool,
+  as GTA IV draws it. The street view keeps the readable blue-hour night.
 - Night light: lamp, window and neon pools painted once into a city-wide light map;
   `cityMaterialPatch` (MeshStandardMaterial's default `onBeforeCompile`) adds it to lit
   surfaces. **A material with its own `onBeforeCompile` must call

@@ -3,7 +3,8 @@
 Behaviour: crowd.js and crowd-*.js (looks, speech, streaming, walking, perception,
 reactions, scenes, transit, traffic life), game-people.js (everyday chatter), wounds.js,
 riders.js, venue files that staff their own people (beachclub, dealership-people,
-sportsbook, monarch-life, themepark-crowd). Drawing: character-rig3d.js and crowd3d-*.js.
+sportsbook, monarch-life, themepark-crowd). Drawing: character-rig3d.js and crowd3d-*.js
+(people-and-crowd-rig.md).
 Animals: ecology.js / ecology3d.js, sealife (world-county-and-sea.md).
 
 ## The split
@@ -82,34 +83,7 @@ Animals: ecology.js / ecology3d.js, sealife (world-county-and-sea.md).
   the stars. 911 lines: `call911Opening` / `call911Detail` (street by `spokenStreet`,
   colour and kind of the player's car, compass direction). Keep lines PG-13, no slurs.
 
-## One character rig for everyone (character-rig3d.js, crowd3d-*.js)
+## The character rig
 
-- Everyone on foot (pedestrians, the player, officers, SWAT, agents, soldiers, gangs, guests,
-  beachgoers, athletes, riders) is drawn from one InstancedMesh per body part: about 30 draw
-  calls for all of them. A part's colours are four packed floats plus a per-region mask per
-  instance (`rigPaintPatch`), so outfits cost no draw calls.
-- Modelled at real height (`PERSON_HEIGHT` 1.75 m at look height 1, ~7.5 heads); adults
-  1.6-1.9 m, the player 1.80 m; nothing scales it again.
-- Looks are compiled once (`compileLook`, crowd3d-looks.js); `OUTFITS` / `outfitLook` dress
-  special roles; `specialLook` / `specialSpec` (crowd3d-special.js) say what the player,
-  officers and mission characters wear and hold, from game state.
-- Skeleton: root → hips → torso → head / shoulders → elbows → hands; hips → thighs → knees →
-  ankles. Poses are layered: a base pose from `person.pose`, eased per joint; a gait layer
-  driven by the distance actually moved (planted feet, two-bone IK, `solveLeg`); weapon holds
-  in an aim frame reached by IK (`HOLD_POSES`, `ikArm`) with recoil and reload.
-- LOD: close-up body set above zoom 2.4, a street set below, hands and props dropped below
-  1.3, a three-instance figure below 0.34 for walkers (the tier's `lodBias` scales these).
-- Gait by direction (crowd3d-draw.js BACKPEDAL): the chest faces `facing`, the hips lead
-  along the travel line (forwards) or its reverse (`s.backing`, with hysteresis), and the
-  stride runs along the travel direction in the hips' frame (`solveLeg` plus a per-leg
-  abduction), so backing off steps backwards and strafing side-steps without crossing the
-  feet. The phase always advances with distance; never flip its sign (that plays a forward
-  run in reverse: the old moonwalk bug).
-- The player's facing (footwork.js `playerAimFacing`): the aim in a fight or standing
-  still, else the way they run; `footPace()` includes the backpedal (0.6) and side-step
-  (0.8) shares, so anything reading the pace agrees with the legs.
-- Venue drawing hooks: `queueAthlete` (sports3d), BEACHGOERS poses (beach3d), RIDERS (seat
-  from the vehicle model's `riderSeat`), `poseParachutist` (parachute3d poses a stand-in whose
-  angles the rig applies).
-- Console: `crowdStats(byPart)`, `crowdBenchmark(frames)` (draw cost of the crowd),
-  `scaleReport()` for statures, `closeUp()` for a look.
+How everyone on foot is drawn (one instanced rig, looks, skeleton and gait, the body sets and
+the chase view's near set): people-and-crowd-rig.md.

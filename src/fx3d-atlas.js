@@ -10,7 +10,7 @@
        *          into shade: the volume a flat sprite lacks at eye level. B: thickness, 0..1.
        *  4    GLOW: the round soft halo of a spark, an ember or a flash core (the lamp halo's profile).
        *  5    FLASH: a muzzle flash, a hot core and five uneven spikes.
-       *  6    GLASS: a scatter of sharp glints (the broken-glass sprite: tempered glass bursts into a
+       *  6    GLASS: a scatter of sharp crumbs (the broken-glass sprite: tempered glass bursts into a
        *       shower of small cubes, so it tumbles as a glitter, never a soft puff).
        *  7    DROP: a hard-edged drop (blood, water, casings and chips: a few pixels across).
        * Frames 4-7 have a flat normal (RG 0.5), so they are lit like a card facing the camera.
@@ -220,18 +220,23 @@
         glassCanvas.width = glassCanvas.height = S;
         const gc = glassCanvas.getContext('2d', { willReadFrequently: true });
         if (gc) {
+          // Sixteen crumbs on a sunflower spiral: three to five corners, each turned its own way, three sizes.
           const k2 = S / 64;
-          for (let i = 0; i < 22; i++) {
+          for (let i = 0; i < 16; i++) {
             const a = i * 2.39996,
-              rr = 3 + 26 * Math.sqrt((i + 0.5) / 22),
+              rr = 3 + 25 * Math.sqrt((i + 0.5) / 16),
               x = (32 + Math.cos(a) * rr) * k2,
               y = (32 + Math.sin(a) * rr) * k2,
-              k = (0.9 + (i % 3) * 0.8) * k2;
-            gc.fillStyle = i % 4 === 0 ? '#ffffff' : i % 4 === 1 ? '#ffffffd0' : '#ffffff90';
+              k = (1.5 + (i % 3) * 1.1) * k2,
+              corners = 3 + (i % 3);
+            gc.fillStyle = ['#ffffff', '#ffffffd8', '#ffffffa0', '#ffffffc0'][i % 4];
             gc.beginPath();
-            gc.moveTo(x, y - k * 1.3);
-            gc.lineTo(x + k, y + k * 0.7);
-            gc.lineTo(x - k * 0.9, y + k * 0.5);
+            for (let j = 0; j < corners; j++) {
+              const t = i * 1.7 + (j / corners) * Math.PI * 2,
+                rc = k * (0.65 + 0.35 * Math.sin(i * 3.1 + j * 2.3) ** 2);
+              if (j) gc.lineTo(x + Math.cos(t) * rc, y + Math.sin(t) * rc);
+              else gc.moveTo(x + Math.cos(t) * rc, y + Math.sin(t) * rc);
+            }
             gc.closePath();
             gc.fill();
           }
