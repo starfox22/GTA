@@ -12,7 +12,7 @@
        */
       const PB_UNITS = 14 / 1.8,
         PB_WIDTH = 0.92,
-        PB_BIND_ARM = 0.36,
+        PB_BIND_ARM = 0.7,
         PB_BIND_SPREAD = 0.045,
         PB_BONES = 15,
         PB_BONE_NAMES = ['hips', 'torso', 'head', 'upperArmL', 'upperArmR', 'forearmL', 'forearmR', 'handL', 'handR', 'thighL', 'thighR', 'shinL', 'shinR', 'footL', 'footR'];
@@ -112,17 +112,17 @@
         const tee = [];
         const E = (cx, cy, cz, rx, ry, rz, frame) => pbIn(torso, pbEllipsoid(...t(cx, cy, cz), rx, ry, rz, frame));
         // Rib cage and chest (y in bind metres).
-        tee.push(E(0.005, 1.285, 0, 0.112, 0.19, 0.16));
-        tee.push(E(0.045, 1.335, -0.068, 0.072, 0.07, 0.082), E(0.045, 1.335, 0.068, 0.072, 0.07, 0.082));
+        tee.push(E(0.01, 1.29, 0, 0.114, 0.19, 0.174));
+        tee.push(E(0.056, 1.328, -0.068, 0.07, 0.064, 0.086), E(0.056, 1.328, 0.068, 0.07, 0.064, 0.086));
         // Upper back and shoulder blades.
-        tee.push(E(-0.05, 1.33, -0.075, 0.068, 0.11, 0.085), E(-0.05, 1.33, 0.075, 0.068, 0.11, 0.085));
+        tee.push(E(-0.05, 1.31, -0.09, 0.068, 0.12, 0.1), E(-0.05, 1.31, 0.09, 0.068, 0.12, 0.1));
         // Belly (a little forward and low) and the flanks over the hips.
-        tee.push(E(0.0, 1.115, 0, 0.1, 0.15, 0.134));
-        tee.push(E(-0.012, 1.06, -0.09, 0.09, 0.08, 0.06), E(-0.012, 1.06, 0.09, 0.09, 0.08, 0.06));
-        tee.push(E(-0.025, 1.12, 0, 0.096, 0.15, 0.136));
+        tee.push(E(-0.012, 1.12, 0, 0.09, 0.15, 0.118));
+        tee.push(E(-0.016, 1.07, -0.074, 0.08, 0.07, 0.046), E(-0.016, 1.07, 0.074, 0.08, 0.07, 0.046));
+        tee.push(E(-0.026, 1.12, 0, 0.09, 0.15, 0.118));
         // The shoulder girdle: collarbones to the shoulder tips, trapezius slopes up to the neck.
         for (const s of [-1, 1]) {
-          tee.push(pbIn(torso, pbLimb(t(0.015, 1.41, s * 0.03), t(0.0, 1.418, s * 0.155), 0.046, 0.046)));
+          tee.push(pbIn(torso, pbLimb(t(0.015, 1.41, s * 0.03), t(0.0, 1.418, s * 0.162), 0.047, 0.048)));
           // Trapezius: from the side of the neck down to the shoulder's tip.
           tee.push(pbIn(torso, pbLimb(t(-0.022, 1.508, s * 0.04), t(-0.012, 1.452, s * 0.155), 0.036, 0.03)));
         }
@@ -130,7 +130,7 @@
         const sleeves = [3, 4].map((b) =>
           pbIn(
             B[b],
-            pbLimb([0.0, -0.015, 0], [0, -0.168, 0], 0.058, 0.057, {
+            pbLimb([0.0, -0.015, 0], [0, -0.168, 0], 0.062, 0.06, {
               flat: 0.94,
               bulge: (u) => 0.005 * Math.sin(Math.PI * Math.min(1, u * 1.4)),
             }),
@@ -178,7 +178,7 @@
         ops.push({ op: 'add', f: collar.f, b: collar.b, k: 0.004 });
         // ---- Neck (skin): into the head above, under the tee below ----
         const neck = [
-          pbLimb([-0.014, 1.42, 0], [0.004, 1.615, 0], 0.067, 0.06, { flat: 1.06, depth: 0.95 }),
+          pbLimb([-0.014, 1.42, 0], [0.004, 1.615, 0], 0.07, 0.062, { flat: 1.06, depth: 0.95 }),
           // Sternocleidomastoids: behind the ears to the top of the breastbone.
           pbLimb([-0.012, 1.615, -0.048], [0.052, 1.462, -0.014], 0.016, 0.014),
           pbLimb([-0.012, 1.615, 0.048], [0.052, 1.462, 0.014], 0.016, 0.014),
@@ -197,14 +197,14 @@
             lat = (v) => v * s;
           const arm = [
             // Deltoid (under the sleeve) and the upper arm, a little flattened side to side.
-            pbIn(up, pbEllipsoid(0.002, -0.05, lat(0.016), 0.052, 0.08, 0.042)),
-            pbIn(up, pbLimb([0, -0.01, 0], [0, -0.31, 0], 0.051, 0.039, { flat: 0.9 })),
+            pbIn(up, pbEllipsoid(0.003, -0.055, lat(0.012), 0.055, 0.085, 0.045)),
+            pbIn(up, pbLimb([0, -0.01, 0], [0, -0.31, 0], 0.054, 0.041, { flat: 0.9 })),
             // Biceps in front, triceps behind.
-            pbIn(up, pbEllipsoid(0.022, -0.175, lat(0.002), 0.033, 0.075, 0.036)),
-            pbIn(up, pbEllipsoid(-0.024, -0.15, 0, 0.034, 0.088, 0.037)),
+            pbIn(up, pbEllipsoid(0.026, -0.17, lat(0.002), 0.037, 0.08, 0.038)),
+            pbIn(up, pbEllipsoid(-0.026, -0.15, 0, 0.037, 0.09, 0.04)),
             // The elbow's point and the forearm: wide and muscular below the elbow, flat at the wrist.
             pbIn(fore, pbSphere(-0.02, 0.005, 0, 0.021)),
-            pbIn(fore, pbLimb([0, 0.01, 0], [0, -0.252, 0], 0.045, 0.027, { flat: 0.8, bulge: (u) => 0.01 * Math.exp(-((u - 0.2) * (u - 0.2)) / 0.03) })),
+            pbIn(fore, pbLimb([0, 0.01, 0], [0, -0.252, 0], 0.047, 0.028, { flat: 0.8, bulge: (u) => 0.012 * Math.exp(-((u - 0.2) * (u - 0.2)) / 0.03) })),
             pbIn(fore, pbEllipsoid(0.01, -0.06, lat(0.012), 0.036, 0.075, 0.034)),
           ];
           ops.push(pbGroup(arm.map((p, i) => pbAdd(p, i ? 0.02 : 0)), 0.012));
@@ -212,8 +212,8 @@
         // ---- Jeans: hips, seat and legs, from under the tee to the hem ----
         const H = hips.o;
         const jeans = [
-          pbEllipsoid(0.0, 0.985, 0, 0.112, 0.085, 0.166),
-          pbEllipsoid(0.005, 0.935, 0, 0.1, 0.075, 0.172),
+          pbEllipsoid(-0.004, 0.985, 0, 0.102, 0.085, 0.15),
+          pbEllipsoid(0.0, 0.935, 0, 0.096, 0.075, 0.164),
           // Seat.
           pbEllipsoid(-0.052, 0.9, -0.07, 0.078, 0.088, 0.082),
           pbEllipsoid(-0.052, 0.9, 0.07, 0.078, 0.088, 0.082),

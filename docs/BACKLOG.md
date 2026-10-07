@@ -162,16 +162,10 @@ here when polishing; delete a line when it is fixed. Newest features first.
 
 ## The player's body (player-body3d*.js; docs/areas/people-and-crowd-player.md)
 
-- On a weapon the hand takes the gun's frame (crowd3d-draw.js `drawHold`), whose long axis runs down the grip:
-  the curled fingers wrap a line along the barrel rather than round the grip. A proper grip needs the hand
-  turned 90 degrees about its palm normal and the wrist target moved back to match.
-- The build is ~1 s of work on a desktop (2-3 s on the cloud box), sliced behind the title; a player who starts
-  at once sees the near-set figure until it is done (a one-time switch). Caching the arrays (IndexedDB) or a
-  worker would remove it.
-- ~92k triangles (46k vertices) and one shadow draw: LOW could mesh at coarser spacings (`PB_SPACING`).
-- The face is sculpted from primitives: the cheeks and the corners of the mouth read soft at the closest chase
-  zoom; a second pass on the lids and the nasolabial area would help most. No eye movement or blinking.
-- Arms raised far over the head stretch the armpit (the A-pose bind); corrective shapes would hold the deltoid.
+- The build is ~1 s of work on a desktop (2-3 s on the cloud box), sliced behind the title; a player who presses
+  play at once waits for the rest on that first frame. Caching the arrays (IndexedDB) or a worker would remove it.
+- Hands straight up (surrender) still bulge the tee's sides under the arms (no collarbone or corrective shapes).
+- The face is sculpted from primitives: no expressions; the eyes move and blink but the lids do not follow them.
 
 ## Mountain island (mountain-village*.js, mountain-club3d.js)
 - Northridge metal roofs (rescue barn, general store) were lightened but not re-shot.
