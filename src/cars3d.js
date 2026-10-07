@@ -83,6 +83,7 @@
       // @include src/cars3d-geometry.js
       // @include src/cars3d-wheels.js
       // @include src/cars3d-interior.js
+      // @include src/cars3d-headroom.js
       // @include src/cars3d-kit.js
       // @include src/cars3d-models.js
       // @include src/cars3d-body-parts.js

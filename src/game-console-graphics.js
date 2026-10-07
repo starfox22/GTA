@@ -125,6 +125,9 @@
       // Every civilian car and motorbike model built: draw calls, shadow casters,
       // triangles and the heaviest parts (cars3d.js, motorbikes3d.js).
       carModels: () => city3D?.carModels?.() ?? null,
+      // The seated heads against every closed car cabin built (cars3d-headroom.js CABIN HEADROOM): room in metres for
+      // the tallest man and woman, the player and the player's drive-by pose; `through` counts cars with a head out.
+      cabinHeadroom: () => city3D?.cabinHeadroom?.() ?? null,
       // Dynamic resolution by hand (0.5..1 of the canvas; tests of the scaled scene
       // pass). On AUTO the adaptive controller may change it again.
       renderScale(scale) {

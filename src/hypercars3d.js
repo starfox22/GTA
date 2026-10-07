@@ -226,7 +226,9 @@
             [-0.5, 0.86, 0.72, 0.34], [-0.49, 0.94, 0.77, 0.22], [-0.46, 0.99, 0.8, 0.12], [-0.38, 1.02, 0.8], [-0.3, 1.03, 0.79], [-0.2, 0.98, 0.77],
             [-0.1, 0.9, 0.76], [0.04, 0.87, 0.75], [0.16, 0.9, 0.62], [0.26, 0.96, 0.52], [0.37, 0.98, 0.47], [0.45, 0.92, 0.41, 0.1], [0.49, 0.8, 0.34, 0.12], [0.5, 0.64, 0.28, 0.15],
           ],
-          glass: { base: 0.72, roof: 1.06, xf: 0.2, xb: -0.3, rf: 0.04, rb: -0.12, wb: 0.25, wt: 0.14, bow: 0.035, bulge: 0.12, arch: 0.07, frame: 'gloss', aPillar: 'black', pillars: [] },
+          // The canopy wide enough over two heads side by side; the seats lie back as a racing car's (cars3d-headroom.js).
+          glass: { base: 0.72, roof: 1.07, xf: 0.2, xb: -0.3, rf: 0.04, rb: -0.12, wb: 0.25, wt: 0.18, bow: 0.035, bulge: 0.12, arch: 0.08, frame: 'gloss', aPillar: 'black', pillars: [] },
+          seats: { recline: 0.88 },
           wheel: { r: 0.34, rr: 0.36, width: 0.28, wr: 0.35, xf: 0.31, xr: -0.3, caliper: '#c9ced3' },
           rim: { style: 'aero', spokes: 10, color: '#1a1b1e', frac: 0.8 },
           hatch: true,

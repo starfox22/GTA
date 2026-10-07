@@ -106,8 +106,9 @@
       /*
        * A model's cabin for DeadEndCity.carModels (cars3d-interior.js CABINS): the driver's hip in metres (x ahead of
        * the middle, y over the ground, z to the right), the seat backs' lie, whether there is a rear bench, the room
-       * left over a seated crown under the roof and behind the headrest to the rear glass (metres, negative: through
-       * the glass), the cabin's triangles in the trim and the people drawn in it on the last frame it was queued.
+       * left round the tallest seated head under the roof and glass (cars3d-headroom.js) and behind the headrest to the
+       * rear glass (metres, negative: through the glass), the cabin's triangles in the trim and the people drawn in it
+       * on the last frame it was queued.
        */
       function civCabinReport(m) {
         const s = m.seats,
@@ -119,10 +120,10 @@
           cabinTriangles = Math.round(((trim.index ? trim.index.count : 0) - (outer === Infinity ? trim.index.count : outer)) / 3);
         const report = { hip: [r3(s.x / M), r3(s.y / M), r3(s.z / M)], recline: r3(s.recline), rear: s.rear !== null, two: s.two, cabinTriangles, seated: m.seated || 0 };
         if (g && !g.open) {
-          const crown = s.y + 0.88 * M * Math.cos(s.recline),
-            headX = s.x - 0.06 * M - Math.sin(s.recline) * 0.86 * M,
+          const headX = s.x - 0.06 * M - Math.sin(s.recline) * 0.86 * M,
             headY = s.y + 0.02 * M + Math.cos(s.recline) * 0.86 * M;
-          report.headroom = r3((g.roof - crown) / M);
+          // The room round the tallest man's and woman's heads as drawn (cars3d-headroom.js CABIN HEADROOM).
+          report.headroom = r3(cabinClearance(g, m.kit.l, s.glass.w, M, cabinSeatClouds(), s.x, s.y, Math.abs(s.z), s.lean) / M);
           report.behind = r3((headX - cabinGlassX(g, m.kit.l, headY, false)) / M);
         }
         return report;
