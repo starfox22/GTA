@@ -143,7 +143,7 @@
           helmet = hatStyle === 'helmet' || hatStyle === 'hardHat';
         const height = look.heightAbsolute || (kid ? look.height || 0.64 : clamp((look.height || 1) * (female ? 0.965 : 1.015), 0.914, 1.086)),
           // A touch broader than the tape measure (8%) so figures read from the street camera.
-          width = clamp(1 + ((look.build || 1) - 1) * 0.5, 0.9, 1.2) * (kid ? 0.9 : 1) * 1.08;
+          width = look.widthAbsolute || clamp(1 + ((look.build || 1) - 1) * 0.5, 0.9, 1.2) * (kid ? 0.9 : 1) * 1.08;
         // Make-up from the seed (0 none, 1 day, 2 evening): lipstick here, liner, shadow and blush in the near face.
         const uniformed = /^(police|traffic|swat|army|mp|fed)$/.test(look.outfit || ''),
           makeup = !female || kid ? 0 : look.makeup ?? (uniformed ? (h(14) < 0.5 ? 0 : 1) : role === 'reveller' || look.outfit === 'partyGuest' ? (h(14) < 0.6 ? 2 : 1) : h(14) < 0.3 ? 0 : h(14) < 0.82 ? 1 : 2);
@@ -254,7 +254,6 @@
       // Which outfit, and whether its wearer is a woman, are decided in voices.js
       // (personOutfit, outfitFemale) so the screams match the bodies.
       const outfitOf = personOutfit;
-      const PLAYER_GOLD = '#c9a14f'; // the HUD gold (shell.html --ui-gold #e2c897), deepened so it reads as gold on cloth
       function outfitLook(p, outfit, seed) {
         const h = (k) => hashOf(seed, k),
           skin = pickOf(['#e9c2a3', '#d9a886', '#c99169', '#b27a52', '#8f5b3c', '#6e4630', '#4e3223'], h(1)),
@@ -263,28 +262,33 @@
         switch (outfit) {
           case 'player':
           case 'playerDisguise': {
+            // The player: a man in his forties, 1.80 m, real shoulders (no street-view widening), short brown
+            // hair, two days' stubble; a plain black crew-neck tee, mid-wash jeans, dark leather shoes. In his own
+            // clothes he is drawn from his own body (player-body3d.js); these colours are the crowd sets' match.
             const disguise = outfit === 'playerDisguise';
             return {
               ...base,
               skin: '#c49270',
-              hair: '#1a1411',
-              hairStyle: 'hairCrop',
+              hair: '#4a3324',
+              hairStyle: 'hairShort',
               beard: 1,
-              build: 1.2,
+              build: 1.05,
+              widthAbsolute: 0.92,
               heightAbsolute: 1.8 / 1.75,
-              garment: disguise ? 'suit' : 'accentJacket',
-              top: disguise ? '#e3dac0' : '#2a221e',
-              inner: disguise ? '#f6f4ee' : '#eeebe4',
-              accent: disguise ? '#16171b' : PLAYER_GOLD,
-              topPattern: disguise ? 0 : PATTERN.leather,
-              cuff: disguise ? '#e3dac0' : '#1d1714',
-              pants: disguise ? '#23272f' : '#2b3647',
+              garment: disguise ? 'suit' : 'tee',
+              top: disguise ? '#e3dac0' : '#1b1b1e',
+              inner: disguise ? '#f6f4ee' : '#1b1b1e',
+              accent: disguise ? '#16171b' : '#1b1b1e',
+              topPattern: 0,
+              sleeves: disguise,
+              cuff: disguise ? '#e3dac0' : '#1b1b1e',
+              pants: disguise ? '#23272f' : '#43597a',
               pantsPattern: disguise ? 0 : PATTERN.denim,
               belt: false,
               beltColor: '#2a1d15',
               buckle: '#c9a45a',
-              shoes: disguise ? '#121214' : '#3b2b1f',
-              footwear: disguise ? 'shoe' : 'boot',
+              shoes: disguise ? '#121214' : '#33241a',
+              footwear: 'shoe',
             };
           }
           case 'police':

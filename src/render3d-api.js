@@ -343,6 +343,7 @@
         crowdRigHeight: () => crowdRigHeight(),
         // People's share of the frame (crowd3d.js): parts, draw calls, triangles.
         crowdStats: (byPart) => crowdStats(byPart),
+        playerModel: (finish) => playerBodyReport(!!finish),
         // Trees (vegetation3d.js): species counts, the forests, tree draws in view.
         vegetation: () => vegetationReport(),
         // The see-through hole in the trees round the player (vegetation3d-cutaway.js; DeadEndCity.foliageCutaway).

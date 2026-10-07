@@ -5,6 +5,8 @@
 export default async function (t) {
   await t.call('holdSimulation', true);
   try {
+    // Measured at 100 % look-ahead (the default is 150 %, restored at the end).
+    await t.call('settings', { lookAhead: 100 });
     // Down the airport runway's south half (camera-framing drives its north half).
     await t.call('teleport', 420, 6400);
     await t.call('drive', 'sport', 0, Math.PI / 2);
@@ -56,7 +58,7 @@ export default async function (t) {
     t.near(off.leadMetres, 0, 0.3, 'lead with look-ahead 0 (m)');
   } finally {
     await t.call('footwork', null);
-    await t.call('settings', { lookAhead: 100 });
+    await t.call('settings', { drivingReset: true });
     await t.call('holdSimulation', false);
   }
 }
