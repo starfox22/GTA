@@ -37,10 +37,12 @@
       // @include src/crowd3d-parts.js
       /**
        * BODY SETS
-       * The body parts are built twice: a close-up set at full detail and a
+       * The body parts are built three times: a close-up set at full detail, a
        * street set with about half the facets (for the zooms people are played
-       * at, where a head is a few pixels across). Only one set is drawn in a
-       * frame, so the draw calls do not double.
+       * at, where a head is a few pixels across), and in the chase view a near
+       * set for the player and the few people nearest the camera (sculpted
+       * faces, hands and shoes: character-near3d.js). The street view draws one
+       * of the first two a frame; the chase view picks per person by distance.
        */
       // @include src/crowd3d-bodies.js
 

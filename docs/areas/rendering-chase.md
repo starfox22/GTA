@@ -67,8 +67,9 @@ the game never reads it. Numbers: audit/performance.md (Chase view pass).
 ## People and vehicles
 
 - People (crowd3d-frame.js `crowdChaseDetail`): each person's street zoom (`chaseZoomAt`) picks the street
-  view's steps (2 full, 1 without hands and props, 0 the three-instance figure) and the body set (close
-  within ~26 m, the street set beyond); under ~3 px (`CROWD_CHASE_LEAST_ZOOM`) they are not drawn. Far
+  view's steps (2 full, 1 without hands and props, 0 the three-instance figure) and the body set (the
+  near set for the player and up to seven others within ~12 m, people-and-crowd-rig.md; close within
+  ~26 m; the street set beyond); under ~3 px (`CROWD_CHASE_LEAST_ZOOM`) they are not drawn. Far
   figures cast no shadow in the chase view (they stand past the shadow reach).
 - Vehicles: `vehicleImpostor` by `chaseZoomAt` (body impostor from ~100 m on HIGH, boxes from ~157 m).
 
