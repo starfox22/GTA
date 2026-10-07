@@ -263,6 +263,14 @@ packs with plain `<script src>` so the zip still plays from file://.
   (`facePaint`/`paintBox`), never a new `staticMat`; nothing in the building loop draws from `cityRandom` (its stream
   places roof plant and bus stops); nothing on a north side stands more than 3 units off the wall and no awning goes
   east, west or south (the street camera's cutaway and overhead cover).
+- Roofs and ground (rendering-buildings.md, rendering-weather.md): city roof finishes (`roofMaterial`) are drawn by
+  the ROOF SKIN (roofskin3d.js, one `cityRoof` program); a roof cap comes from `roofCapGeometry`, its 8-bit tint is the
+  roof's seed and age, and the far copy carries it (`farTint`). New roof plant is decoration in FRONT PAINT from its own
+  stream (`roofPlantRandom`): never `place()` into `roofPlantPools`, never `b.roofKeepOuts`, never `cityRandom`, and no
+  change in how many numbers the `ROOF_TEXTURES` painters draw (tools/tests/roof-skin.mjs holds the recorded plant).
+  The city ground sheet is read by colour class: anything painted over it after the fills (`paintWallGrime`) is
+  translucent dark and keeps each class's hue; ground tones read the lane grid bilinearly, never `gLaneW` nearest.
+  Compare looks and cost with `lookSwitches({ roofSkin, groundWear })`.
 - Character rig (people-and-crowd-rig.md): every body set lofts the same key rings (`RIG_*_RINGS`, `rig*Rings`), so
   outline changes go there; lofts face outwards whichever way their rings run (tools/tests/rig-geometry.mjs). Slot D
   of every body part's paint is the skin; paint bits from 32 belong to the near set (`rigNearBits`). Near hands take
