@@ -138,7 +138,7 @@
       const CROWD_NEAR_CAP = 8,
         CROWD_NEAR_ZOOM = 5.2,
         CROWD_NEAR_KEEP = 0.86,
-        crowdNear = { list: new Array(CROWD_NEAR_CAP).fill(null), score: new Float32Array(CROWD_NEAR_CAP), n: 0, last: new Array(CROWD_NEAR_CAP).fill(null), lastN: 0 };
+        crowdNear = { list: new Array(CROWD_NEAR_CAP).fill(null), score: new Float32Array(CROWD_NEAR_CAP), n: 0, last: new Array(CROWD_NEAR_CAP).fill(null), lastN: 0, reach2: 0, keep2: 0 };
       function nearPerson(p) {
         for (let i = 0; i < crowdNear.n; i++) if (crowdNear.list[i] === p) return true;
         return false;
@@ -158,15 +158,21 @@
         N.list[i] = p;
         N.score[i] = score;
       }
+      // Squared ground distances from the camera, nearest scoring highest (chaseZoomAt's rule, without a hypot each).
       function nearCandidate(p) {
-        const N = crowdNear;
-        let score = chaseZoomAt(p.x, p.y);
+        const N = crowdNear,
+          dx = p.x - chaseCam.x,
+          dy = p.y - chaseCam.y,
+          d2 = dx * dx + dy * dy;
+        if (d2 > N.keep2) return;
+        let kept = false;
         for (let i = 0; i < N.lastN; i++)
           if (N.last[i] === p) {
-            score /= CROWD_NEAR_KEEP;
+            kept = true;
             break;
           }
-        if (score >= CROWD_NEAR_ZOOM && entityInView(p, 30)) nearConsider(p, score);
+        // Someone already near keeps their place over a newcomer as if CROWD_NEAR_KEEP nearer.
+        if ((kept || d2 <= N.reach2) && entityInView(p, 30)) nearConsider(p, kept ? -d2 * CROWD_NEAR_KEEP * CROWD_NEAR_KEEP : -d2);
       }
       function chooseNearPeople(specials) {
         const N = crowdNear;
@@ -177,6 +183,10 @@
         N.lastN = N.n;
         N.n = 0;
         if (!chaseViewActive) return;
+        // The distance at which chaseZoomAt reaches CROWD_NEAR_ZOOM (it is the street frame over the distance).
+        const reach = streetFrameHeight() / (2 * Math.tan((chaseCamera.fov * Math.PI) / 360) * CROWD_NEAR_ZOOM);
+        N.reach2 = reach * reach;
+        N.keep2 = N.reach2 / (CROWD_NEAR_KEEP * CROWD_NEAR_KEEP);
         if (!player.hidden && !(player.car || transitRide || taxiRide)) nearConsider(player, Infinity);
         for (let i = 0; i < pedestrians.length; i++) if (!pedestrians[i].hidden) nearCandidate(pedestrians[i]);
         for (let i = 0; i < specials.length; i++) if (specials[i] !== player && !specials[i].hidden) nearCandidate(specials[i]);
