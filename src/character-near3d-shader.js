@@ -59,7 +59,7 @@
         vRigSlotA = crowdUnpack( crowdPaint.x );
         vRigSlotB = crowdUnpack( crowdPaint.y );
         vRigSlotD = crowdUnpack( crowdPaint.w );
-        // Strands run down the head's surface.
+        // Strands run down the head's surface; at the crown, where down is no direction, the length goes to 0.
         vec3 rigT = vec3( 0.0, -1.0, 0.0 ) + rigLocalN * rigLocalN.y;
         vRigHairT = ( modelViewMatrix * instanceMatrix * vec4( rigT, 0.0 ) ).xyz;`;
       const RIG_NEAR_FRAGMENT_PARS = `
@@ -337,7 +337,8 @@
           rigRough = rigFaceRough > 0.0 ? rigFaceRough : 0.52;
         } else if ( rigK < 1.5 ) {
           diffuseColor.rgb = rigHairColor( vCrowdLocal, diffuseColor.rgb, rigPx );
-          rigHairSpec = 1.0;
+          // No highlight where the strands have no direction (the crown, a parting's whorl).
+          rigHairSpec = smoothstep( 0.2, 0.55, length( vRigHairT ) );
           rigHairDir = normalize( vRigHairT + vec3( 0.0, 1e-5, 0.0 ) );
           rigRough = 0.62;
         } else {
