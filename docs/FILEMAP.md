@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-549 files in the include tree, 188,620 lines.
+549 files in the include tree, 188,623 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -217,7 +217,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/gore.js ▸ Gore rules and state: how hard a hit lands by calibre, range and zone (goreHit), the point-blank shotgun load, limbs and heads lost to a heavy hit …
 
 - `src/gore-props.js`   126 — Severed parts: a limb a heavy hit took off (gore.js goreSever), thrown as a physics prop that tumbles, bounces off walls and the ground and comes to …
-- `src/gore-console.js`   175 — Gore console (DeadEndCity, group 'gore', registered in game-console-crowd.js): goreReport, goreShot, goreBlast, goreSeed and bloodPlanTable …
+- `src/gore-console.js`   177 — Gore console (DeadEndCity, group 'gore', registered in game-console-crowd.js): goreReport, goreShot, goreBlast, goreSeed and bloodPlanTable …
 
 ## src/pursuit.js ▸ Police response and pursuit tactics
 
@@ -714,7 +714,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/crowd3d-poses.js`   901 — Crowd 3D pose targets and IK for arms and legs (crowdPoseTargets, solveLeg).
 - `src/crowd3d-roofparty.js`   141 — Crowd 3D poses for mission 2 (the Blue Hour): Vescari's poisoned toast beat by beat, and the bodyguards' heads turning with their sight cones.
 - `src/crowd3d-draw.js`   673 — drawCrowdPerson(): weapon holds, phone poses and the far-figure shortcut.
-- `src/crowd3d-gore.js`   257 — Crowd 3D gore: what the rig draws of gore.js's state: lost parts left out, a ragged stump (torn cloth and skin, raw flesh, the bone) at each cut …
+- `src/crowd3d-gore.js`   258 — Crowd 3D gore: what the rig draws of gore.js's state: lost parts left out, a ragged stump (torn cloth and skin, raw flesh, the bone) at each cut …
 - `src/crowd3d-special.js`   484 — Crowd 3D special characters: player, officers, soldiers, gangs, swimmers, parachutes (specialSpec, applyLimbOverrides).
 - `src/crowd3d-driveby.js`   345 — Crowd 3D drive-by pose: the player at the wheel with the gun arm out of the window, torso and head turned to the aim, recoil per shot …
 - `src/crowd3d-frame.js`   377 — updateCrowd3D(): per-frame packing, car enter and exit transitions, dogs, crowd stats.

@@ -76,6 +76,6 @@ Heavy hits: lost limbs, stumps, wounds on the clothes, blood by calibre and rang
 | `goreWallShot(weaponIndex, metres, gap, zone)` | Tests: the same with the bystander `gap` m in front of the south face of the nearest building (taller than 4 m, no shopfront), the player south of them facing north; adds `wall` (splashes on that face) and `face` |
 | `goreCarShot(weaponIndex, metres, gap, zone)` | Tests: the same with a sedan parked broadside `gap` m beyond the bystander; adds `stains` (records on it, car-stains.js) and `stainSev` |
 | `goreBlast(metres, power)` | Tests: a blast of `power` (1 a rocket) `metres` beyond a fresh bystander 50 units ahead of the player; the outcome as `goreShot` |
-| `goreInspect(on)` | Inspection only: hide the player's own figure for close-ups at his feet (`closeUp`, `inspectView`); false shows him |
+| `gorePlayerWound(zone, back, exit)` | Tests: a round's wound on the player's clothes (health down to 70 at most, no other harm; `zone` head, torso, arm, leg; from behind or the front; `exit` through and through); returns his wounds |
 | `goreSeed(seed)` | Seed blood and gore's own random stream (goreRandom) for a repeatable run |
 | `bloodPlanTable()` | What a round lets out (blood.js HOW MUCH A ROUND LETS OUT), no chance in it: per weapon, range and zone the blood `scale`, `drops`, ground `spatters`, the spray's `reach` (m), `close` and `burst` |

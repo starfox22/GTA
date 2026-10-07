@@ -131,7 +131,7 @@
           float hole = 1.0 - smoothstep( r * 0.05, r * 0.22, length( d ) );
           float lum = dot( c, vec3( 0.2126, 0.7152, 0.0722 ) );
           // Blood in cloth: deep red on light fabric, darker and wet on dark.
-          vec3 blood = vec3( 0.16, 0.012, 0.016 ) * ( 0.55 + 0.85 * min( lum * 2.0, 1.0 ) );
+          vec3 blood = vec3( 0.16, 0.012, 0.016 ) * ( 0.32 + 1.0 * min( lum * 2.5, 1.0 ) );
           c = mix( c, blood, soak * 0.94 );
           return mix( c, vec3( 0.045, 0.003, 0.004 ), hole * 0.85 );
         }

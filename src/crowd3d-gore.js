@@ -108,9 +108,10 @@
         return goreStumpPaint;
       }
       /* A stump at a joint frame (the lost part hung from it along -y); `up` turns it to face +y (the neck,
-         a severed piece's cut end). `r` is the limb's radius there (part units). */
-      function goreStumpAt(frame, r, paint, up = false, skinOnly = false) {
-        if (up) crowdJoint(goreStumpFrame, frame, 0, 0, 0, Math.PI);
+         a severed piece's cut end, `lift` units up its own axis: past the part's domed top). `r` is the
+         limb's radius there (part units). */
+      function goreStumpAt(frame, r, paint, up = false, skinOnly = false, lift = 0) {
+        if (up) crowdJoint(goreStumpFrame, frame, 0, lift, 0, Math.PI);
         else goreStumpFrame.copy(frame);
         rigEmit(P.stump, goreStumpFrame, r, r * 1.1, r, goreStumpPaintFrom(paint, skinOnly));
       }
@@ -220,7 +221,7 @@
             crowdJoint(mOut, elbow, 0, -RIG.forearm, 0, 0.1);
             goreStumpFrame.copy(mOut);
             rigEmit(BODY_CLOSE.hand, goreStumpFrame, 1, 1, 1, paints.hand);
-            goreStumpAt(goreJ, (kind === 'arm' ? 0.5 : 0.34) * w, kind === 'arm' ? paints.upperArm : paints.forearm, true);
+            goreStumpAt(goreJ, (kind === 'arm' ? 0.54 : 0.36) * w, kind === 'arm' ? paints.upperArm : paints.forearm, true, false, 0.24);
           } else {
             let knee = goreJ;
             if (kind === 'leg') {
@@ -232,7 +233,7 @@
             crowdJoint(mOut, knee, 0, -RIG.shin, 0, 0);
             goreStumpFrame.copy(mOut);
             rigEmit(BODY_CLOSE[R.shoePart], goreStumpFrame, 1, 1, 1, paints.shoe);
-            goreStumpAt(goreJ, (kind === 'leg' ? 0.62 : 0.42) * w, kind === 'leg' ? paints.thigh : paints.shin, true);
+            goreStumpAt(goreJ, (kind === 'leg' ? 0.74 : 0.45) * w, kind === 'leg' ? paints.thigh : paints.shin, true, false, kind === 'leg' ? 0.5 : 0.3);
           }
         }
       }

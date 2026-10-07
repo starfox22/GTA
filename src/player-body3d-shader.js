@@ -384,7 +384,7 @@
           float soak = 1.0 - smoothstep( r * 0.3, r * ( 0.85 + 0.5 * n ), length( d ) + n * r * 0.35 );
           float hole = 1.0 - smoothstep( r * 0.05, r * 0.2, length( vPbBind - w.xyz ) );
           float lum = dot( pbC, vec3( 0.2126, 0.7152, 0.0722 ) );
-          pbC = mix( pbC, vec3( 0.16, 0.012, 0.016 ) * ( 0.55 + 0.85 * min( lum * 2.0, 1.0 ) ), soak * 0.94 );
+          pbC = mix( pbC, vec3( 0.16, 0.012, 0.016 ) * ( 0.32 + 1.0 * min( lum * 2.5, 1.0 ) ), soak * 0.94 );
           pbC = mix( pbC, vec3( 0.045, 0.003, 0.004 ), hole * 0.85 );
           pbRough = mix( pbRough < 0.0 ? 0.8 : pbRough, 0.38, soak * 0.6 );
           pbSheen *= 1.0 - soak;

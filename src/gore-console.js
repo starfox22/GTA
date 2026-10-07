@@ -128,11 +128,13 @@
           explode(p.x + Math.cos(a) * metres * UNITS_PER_METRE, p.y + Math.sin(a) * metres * UNITS_PER_METRE, power, 'player');
           return goreOutcome(p, before);
         },
-        // Inspection only: hide the player's own figure (true) for close-ups of what lies at his feet
-        // (closeUp, inspectView); false shows him again.
-        goreInspect(on = true) {
-          player.hidden = !!on;
-          return player.hidden;
+        // Tests: a round's wound on the player's clothes (his health down to 70 at most, no other harm):
+        // `zone` (head, torso, arm, leg), from behind (`back` true) or the front, through and through (`exit`). Returns his wounds.
+        gorePlayerWound(zone = 'torso', back = true, exit = true) {
+          // (At full health his clothes are cleaned again: gore.js updateGore.)
+          player.hp = Math.min(player.hp, 70);
+          goreWound(player, zone, (player.a || 0) + (back ? 0 : Math.PI), 1.4, 1.6, exit);
+          return (player.goreWounds || []).map((w) => ({ zone: w.zone, rel: w.rel, size: w.size, exit: w.exit }));
         },
         // Seed gore.js goreRandom (blood and gore's own stream) for a repeatable run.
         goreSeed(seed = 1) {
