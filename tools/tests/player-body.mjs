@@ -23,7 +23,7 @@ function load(Three) {
   ).join('\n');
   const prelude = `const TAU = Math.PI * 2, PERSON_HEIGHT = 14; const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
     function cityMaterialPatch() {} const playerRim = { value: null }; const pbUniforms = {};\n${rig}\n${near}`;
-  return new Function('Three', prelude + '\n' + source + '\nreturn { pbRun, pbBuildSteps, pbMaterialPatch, pbDepthPatch, PB_UNITS, PB_BONES, PB_WIDTH, RIG };')(Three);
+  return new Function('Three', prelude + '\n' + source + '\nreturn { pbClock, pbBuildSteps, pbMaterialPatch, pbDepthPatch, PB_UNITS, PB_BONES, PB_WIDTH, RIG };')(Three);
 }
 
 // The rig's joint chain as drawCrowdPerson builds it (crowdJoint: parent · T · Ry · Rx · Rz), for a pose.
@@ -126,10 +126,35 @@ function skinner(Three, data, frames) {
 }
 
 export default async function (t) {
+  // On a rendered page (first: the node build below holds this process for seconds): the player is drawn from
+  // it in the chase view and the street view.
+  const model = await t.call('playerModel', true);
+  if (!model) t.note('no 3D renderer on this page: the in-game checks need a rendered page');
+  else {
+    t.assert(model.ready && !model.error, 'player body not built: ' + JSON.stringify(model));
+    for (const view of ['chase', 'street']) {
+      await t.call('viewMode', view);
+      await t.wait(0.5);
+      await t.call('crowdBenchmark', 1);
+      const stats = await t.call('crowdStats');
+      t.assert(stats.playerBody === true, `${view} view: the player is not drawn from his own body`);
+    }
+    await t.call('viewMode', 'street');
+  }
   const Three = createRequire(import.meta.url)(path.join(ROOT, 'vendor/three.r160.js'));
   const api = load(Three),
     started = Date.now(),
-    data = api.pbRun(api.pbBuildSteps());
+    build = api.pbBuildSteps(),
+    // The build yields every 30 ms, so this process keeps answering the page between slices.
+    tick = () => new Promise((resolve) => setImmediate(resolve));
+  let step;
+  api.pbClock.until = performance.now() + 30;
+  while (!(step = build.next()).done) {
+    await tick();
+    api.pbClock.until = performance.now() + 30;
+  }
+  api.pbClock.until = Infinity;
+  const data = step.value;
   data.unitsPerMetre = api.PB_UNITS;
   t.note(`built in ${Date.now() - started} ms: ${data.vertices} vertices, ${data.triangles} triangles`);
   t.near(data.triangles, 40000, 130000, 'player body triangles');
@@ -296,6 +321,7 @@ export default async function (t) {
   }
   const report = {};
   for (const [name, pose] of Object.entries(POSES)) {
+    await tick();
     const skin = skinner(Three, data, poseFrames(Three, api.RIG, H, pose, api.PB_WIDTH));
     for (let v = 0; v < n; v++) posed.set(skin(P[v * 3], P[v * 3 + 1], P[v * 3 + 2], S[v * 4], S[v * 4 + 1], S[v * 4 + 2]), v * 3);
     // Skinned normals: the bind normal carried by the same blend (a point a little out along it, minus the point).
@@ -354,19 +380,4 @@ export default async function (t) {
   const depth = { uniforms: {}, vertexShader: Three.ShaderLib.depth.vertexShader, fragmentShader: '' };
   api.pbDepthPatch(depth);
   t.assert(depth.vertexShader.includes('vec3 transformed = pbQRot'), 'player body depth patch: skinning missing');
-  // On a rendered page: the player is drawn from it in the chase view and the street view.
-  const model = await t.call('playerModel', true);
-  if (!model) {
-    t.note('no 3D renderer on this page: the in-game checks need a rendered page');
-    return;
-  }
-  t.assert(model.ready && !model.error, 'player body not built: ' + JSON.stringify(model));
-  for (const view of ['chase', 'street']) {
-    await t.call('viewMode', view);
-    await t.wait(0.5);
-    await t.call('crowdBenchmark', 1);
-    const stats = await t.call('crowdStats');
-    t.assert(stats.playerBody === true, `${view} view: the player is not drawn from his own body`);
-  }
-  await t.call('viewMode', 'street');
 }
