@@ -47,10 +47,12 @@ crowd3d-*.js (packing, poses, looks). Behaviour is in people-and-crowd.md.
 
 ## The near set (character-near3d*.js, chase view)
 
-- Who: the player always (on foot, the car-entry ghost, a drive-by at the window) and others
-  nearest the camera, at most `CROWD_NEAR_CAP` (8) in all, from about 12 m (`CROWD_NEAR_ZOOM`
-  5.2 on the street frame) and kept to about 14 m once chosen (`CROWD_NEAR_KEEP`), in view
-  only (`chooseNearPeople`, once a frame, no allocation). Riders and beachgoers stay close-set.
+- Who: the player always (on foot, the car-entry ghost, seated at the wheel through
+  `driveByGhost`, a drive-by at the window) and others nearest the camera, at most
+  `CROWD_NEAR_CAP` (8) in all, from about 12 m (`CROWD_NEAR_ZOOM` 5.2 on the street frame) and
+  kept to about 14 m once chosen (`CROWD_NEAR_KEEP`), in view only (`chooseNearPeople`, once a
+  frame, no allocation). Riders, beachgoers and other cars' occupants stay on the close or street
+  set by distance.
 - Ten parts (`BODY_NEAR`, crowd3d-bodies.js), one draw each, plus six shadow draws (head,
   torso, pelvis, upper arms, thighs, shins): the close keys sampled by a monotone cubic
   (`nearCurve`) with about three times the rings and facets, then sculpted (`nearSculpt`):
