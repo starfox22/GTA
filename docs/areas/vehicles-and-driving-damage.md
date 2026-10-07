@@ -17,7 +17,8 @@ the models' damage contract is vehicles-and-driving-models.md.
   shell needs nothing: it is bent with it. A part that animates its own matrix, or a hinge, must be a `point` (skip its
   subtree) or it is bent in the wrong frame. Bends are time-sliced (`crumpleSlices`, ~3 ms a frame, shell first, trim
   last); `m.shapeVersion` is bumped when a body is done. The hood bends relative to its hinge and buckles into a
-  ridge rather than shrinking (`buckle`, half the shortening kept once sprung, then lifted 17-25 degrees off the latch);
+  ridge rather than shrinking (`buckle`, half the shortening kept once sprung, then lifted 17-25 degrees off the latch;
+  a boot lid the same toward its front hinge, sprung 22-30 degrees);
   bumpers keep only the hanging droop as a pose (turned about the attached bracket, never below the road); wheels move
   with the arches in x and across, never up. A sprung door is cut from the pristine shell's side by rays
   (`doorPanelGeometries`: curve and UVs, so paint and liveries carry on; skin, dark trim and edges, 2 draw calls) and its

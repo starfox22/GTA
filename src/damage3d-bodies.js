@@ -272,8 +272,10 @@
           const lid = box(m.trunk, -l * 0.09, 0, 0, l * 0.18, 0.4, w * 0.67, m.paint);
           if (m.trunkGeometry) lid.geometry = m.trunkGeometry;
           crumpleAdopt(m, m.trunk, true);
+          crumpleAdopt(m, lid, false, 'lid');
         }
-        if (m.trunk) m.trunk.rotation.z = parts.trunk ? -0.85 : 0;
+        // Sprung off its latch on a crushed tail, not swung wide open.
+        if (m.trunk) m.trunk.rotation.z = parts.trunk ? -0.38 - (c.id % 4) * 0.04 : 0;
         // Bend the body with its dents (all of it when they changed, else only parts made just now), in time slices.
         if (reshape || m.crumple.fresh) crumpleStart(c, m, dents, reshape);
         // Glass: one material per pane once any pane is damaged.

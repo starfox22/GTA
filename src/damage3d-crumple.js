@@ -95,7 +95,7 @@
           const part = crumplePart(m, m.hood, hinge.at);
           if (part) {
             part.length = Math.max(1, part.box[3] - hinge.at[0]);
-            part.buckle = true;
+            part.buckle = 'hood';
             parts.push(part);
           }
         }
@@ -228,8 +228,16 @@
           record.skip.add(object);
           record.points.push(crumplePoint(m, object, false));
         } else if (object.isMesh) {
-          const part = crumplePart(m, object, hinged ? record.points[record.points.length - 1].at : null);
-          if (part) record.parts.push(part);
+          const hinge = hinged ? record.points[record.points.length - 1].at : null,
+            part = crumplePart(m, object, hinge);
+          if (part) {
+            // A lid on a hinge (hinged === 'lid') buckles toward it as the hood does.
+            if (hinged === 'lid') {
+              part.buckle = 'lid';
+              part.length = Math.max(1, Math.max(Math.abs(part.box[0] - hinge[0]), Math.abs(part.box[3] - hinge[0])));
+            }
+            record.parts.push(part);
+          }
         } else crumpleWalk(m, object, record.skip, record.parts);
         record.fresh = true;
       }
@@ -379,11 +387,16 @@
             }
             // The hood: pushed back toward its hinge it buckles up in a ridge rather than shrinking (sheet metal keeps its
             // length); sprung open it keeps more of its length (hoodKeep), closed it lies on the crushed nose.
-            if (part.buckle && mx < 0) {
-              const u = Math.min(1, Math.max(0, (bx - part.hinge[0]) / part.length)),
-                back = -mx;
-              mx = -back * hoodKeep;
-              my += back * (0.16 + (1 - hoodKeep) * 0.5) * Math.sin(Math.PI * u);
+            // (A boot lid the same, its hinge at its front end; sprung, it keeps half.)
+            if (part.buckle) {
+              const ahead = bx >= part.hinge[0] ? 1 : -1,
+                back = -mx * ahead;
+              if (back > 0) {
+                const keep = part.buckle === 'lid' ? 0.5 : hoodKeep,
+                  u = Math.min(1, Math.max(0, (Math.abs(bx - part.hinge[0])) / part.length));
+                mx = -ahead * back * keep;
+                my += back * (0.16 + (1 - keep) * 0.5) * Math.sin(Math.PI * u);
+              }
             }
           } else mx = my = mz = 0;
           if (mx * mx + my * my + mz * mz > 1e-8) {

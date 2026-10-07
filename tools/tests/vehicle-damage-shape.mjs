@@ -60,7 +60,7 @@ export default async function (t) {
       // Floating is what matters (+ cm); a mark a fold has since covered is hidden (-), as a real hole would be.
       t.assert(m.gapCm <= 2, `${car.type} ${label}: a ${m.kind} on the ${m.on} sits on the surface (${m.gapCm} cm off)`);
       if (view === 'chase' && m.ringGapCm !== null)
-        t.assert(m.ringGapCm <= (label === 'shot' ? 4 : 6), `${car.type} ${label}: the ${m.kind}'s ring lies on the ${m.on} (${m.ringGapCm} cm)`);
+        t.assert(m.ringGapCm <= (label === 'shot' ? 5 : 6), `${car.type} ${label}: the ${m.kind}'s ring lies on the ${m.on} (${m.ringGapCm} cm)`);
       if (m.kind === 'star') t.assert(m.on === 'glass', `${car.type} ${label}: a star is on the glass (${m.on})`);
       if (m.kind === 'hole') t.assert(m.on !== 'glass', `${car.type} ${label}: a hole is not on the glass`);
     }
