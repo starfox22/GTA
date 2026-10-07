@@ -91,6 +91,9 @@
       crowdStats: (byPart) => city3D?.crowdStats?.(byPart) || null,
       // Pack the people `frames` times back to back: the rig's CPU cost per frame in ms.
       crowdBenchmark: (frames) => city3D?.crowdBenchmark?.(frames) ?? null,
+      // The player's own body (player-body3d.js): build, vertices, triangles, parts, whether it drew this frame;
+      // `finish` true completes a build still running behind the title at once. Null without the 3D renderer.
+      playerModel: (finish) => city3D?.playerModel?.(finish === true) ?? null,
       // Voices (voices.js): who near the player screams as a woman or a man and, with
       // the 3D renderer, how the rig draws them (`mismatches`); the last screams played.
       voiceReport: (radius) => voiceReport(radius),

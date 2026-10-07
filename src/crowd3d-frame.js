@@ -187,9 +187,11 @@
         const reach = streetFrameHeight() / (2 * Math.tan((chaseCamera.fov * Math.PI) / 360) * CROWD_NEAR_ZOOM);
         N.reach2 = reach * reach;
         N.keep2 = N.reach2 / (CROWD_NEAR_KEEP * CROWD_NEAR_KEEP);
-        if (!player.hidden && !(player.car || transitRide || taxiRide)) nearConsider(player, Infinity);
+        // The player in his own body (player-body3d.js) takes no place among the near.
+        const ownBody = playerBodyOn(specialLook(player));
+        if (!ownBody && !player.hidden && !(player.car || transitRide || taxiRide)) nearConsider(player, Infinity);
         // At the wheel the player is drawn through their seated stand-in (crowd3d-driveby.js drawCarOccupants).
-        else if (player.car && !transitRide && !taxiRide) nearConsider(driveByGhost, Infinity);
+        else if (!ownBody && player.car && !transitRide && !taxiRide) nearConsider(driveByGhost, Infinity);
         for (let i = 0; i < pedestrians.length; i++) if (!pedestrians[i].hidden) nearCandidate(pedestrians[i]);
         for (let i = 0; i < specials.length; i++) if (specials[i] !== player && !specials[i].hidden) nearCandidate(specials[i]);
       }
@@ -275,6 +277,7 @@
         drawDriveByDriver(deltaSeconds, crowdDetail());
         BODY = body;
         drawQueuedAthletes(deltaSeconds, crowdDetail());
+        playerBodyFlush();
         flushCrowdParts();
         crowdPackMs += performance.now() - start;
         crowdPackAverage += (crowdPackMs - crowdPackAverage) * 0.05;
@@ -312,6 +315,8 @@
           instances,
           triangles: Math.round(triangles),
           bodySet: BODY === BODY_CLOSE ? 'close' : BODY === BODY_NEAR ? 'near' : 'street',
+          // The player drawn from his own body this frame (player-body3d.js), one camera and one shadow draw.
+          playerBody: pbState.shown,
           // People drawn from the near set this frame (NEAR PEOPLE), the player among them.
           near: crowdNear.n,
           packMs: Math.round(crowdPackMs * 100) / 100,

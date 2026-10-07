@@ -366,16 +366,18 @@
       worldContext.ellipse(3, 4, 9, 5, 0, 0, TAU);
       worldContext.fill();
       const step = Math.sin(person.walk || 0) * 2.5;
-      worldContext.fillStyle = '#27382f';
+      // The player in his own clothes: jeans, a black tee, brown hair (the 3D body's colours).
+      const ownClothes = isPlayer && !player.disguised;
+      worldContext.fillStyle = ownClothes ? '#3d5274' : '#27382f';
       worldContext.fillRect(-6 + step, -4, 6, 3);
       worldContext.fillRect(-6 - step, 1, 6, 3);
-      worldContext.fillStyle = isPlayer ? (player.disguised ? '#e5d7b2' : '#dde5cb') : person.color;
+      worldContext.fillStyle = isPlayer ? (player.disguised ? '#e5d7b2' : '#1d1d20') : person.color;
       worldContext.fillRect(-4, -6, 8, 12);
-      worldContext.fillStyle = isPlayer ? (player.disguised ? '#233341' : '#71856c') : '#756c53';
+      worldContext.fillStyle = isPlayer ? (player.disguised ? '#233341' : '#2a2a2e') : '#756c53';
       worldContext.fillRect(-4, -3, 6, 6);
       worldContext.fillStyle = '#c8ac85';
       worldContext.fillRect(-1, -3, 5, 6);
-      worldContext.fillStyle = isPlayer ? '#393e33' : '#514939';
+      worldContext.fillStyle = ownClothes ? '#4a3324' : isPlayer ? '#393e33' : '#514939';
       worldContext.fillRect(-1, -3, 3, 6);
       if (
         !personIncapacitated(person) &&

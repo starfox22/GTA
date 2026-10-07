@@ -5,6 +5,11 @@
 // whatever the speed. The framing eases with the simulation, so `framed` (the zoom it holds)
 // follows `aim` (the zoom it eases to) under console simulate() too.
 export default async function (t) {
+  // Settings · Driving defaults: the street camera stands 120 % back in a vehicle and leads 150 %; the framing
+  // below is measured at 100 % and the defaults restored at the end.
+  const defaults = await t.call('settings');
+  t.assert(defaults.cameraDistance === 120 && defaults.lookAhead === 150, 'driving camera defaults: ' + JSON.stringify(defaults));
+  await t.call('settings', { cameraDistance: 100 });
   // On the airport runway, heading south down it: clear of traffic and of the spot other
   // tests drive from.
   await t.call('teleport', 420, 4600);
@@ -92,6 +97,6 @@ export default async function (t) {
     await t.keys('KeyS', 3.5);
     await t.call('interact');
   } finally {
-    await t.call('settings', { motionComfort: false, cameraDistance: 100 });
+    await t.call('settings', { motionComfort: false, drivingReset: true });
   }
 }
