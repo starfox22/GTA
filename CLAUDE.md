@@ -263,6 +263,11 @@ packs with plain `<script src>` so the zip still plays from file://.
   (`facePaint`/`paintBox`), never a new `staticMat`; nothing in the building loop draws from `cityRandom` (its stream
   places roof plant and bus stops); nothing on a north side stands more than 3 units off the wall and no awning goes
   east, west or south (the street camera's cutaway and overhead cover).
+- Car cabins (cars3d-interior.js): civilian and police glass is see-through (`carGlassMaterial`, premultiplied; the
+  tint closes past `CAR_GLASS_CLEAR`); the cabin merges at the end of each kit's trim (impostors draw `kit.trimOuter`,
+  so exterior trim goes before the cabin); `carSeatPlan` (`m.seats`) is the one seat rule; crowd3d-driveby.js SEATED
+  OCCUPANTS seats people only within `OCCUPANT_REACH` (at or beyond the glass's clear reach); see-through glass never
+  casts a shadow (the paint panels do).
 - Chase view level of detail (rendering-chase.md): anything new the far copy stands for hides with its cell
   (`cell.full` / `cell.blocks`); shadow-pass-only hiding goes through `chaseShadowCasters` (restored after the
   pass); its shadow box is `placeChaseSun` (the depth fade `cityShadowReach`); never toggle a light.
