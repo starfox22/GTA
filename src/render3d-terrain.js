@@ -70,6 +70,28 @@
       env.needsUpdate = true;
       env.colorSpace = Three.SRGBColorSpace;
       scene.environment = env;
+      /* WALL GRIME: the pavement darkens towards the foot of a wall (splash-back, soot, the dirt that gathers where
+         nobody walks): a soft band round each city building's footprint, three translucent dark strokes centred on its
+         outline (the inner half lies under the building), about a fifth darker at the wall and gone 6 units out. Dark
+         and see-through, it keeps each colour's hue, so the ground shader still reads paving, lawn or tarmac from the
+         sheet (ground-shader3d.js CLASSES). One path per stroke: where two bands meet in an alley they do not double. */
+      function paintWallGrime(g) {
+        g.save();
+        g.lineJoin = 'miter';
+        for (const [width, alpha] of [
+          [12, 0.05],
+          [7, 0.07],
+          [3, 0.09],
+        ]) {
+          g.lineWidth = width;
+          g.strokeStyle = `rgba(22, 20, 17, ${alpha})`;
+          g.beginPath();
+          // Lofted towers (b.skyline) are not rectangles; Monarch Isle, the villages and the fort have sheets of their own.
+          for (const b of buildings) if (!(b.depotWall || b.baseBuilding || b.monarch || b.mountain || b.skyline)) g.rect(b.x, b.y, b.w, b.h);
+          g.stroke();
+        }
+        g.restore();
+      }
       // Real ground materials and painted markings are baked once, then receive live shadows.
       // The baked ground now has to cover the northern reclamation as well, so the
       // canvas is taller than it is wide and its pixels-per-unit is chosen to keep
@@ -199,6 +221,7 @@
       paintMarina(drawingContext);
       paintDepotGround(drawingContext);
       paintSportsGround(drawingContext);
+      paintWallGrime(drawingContext);
       const groundTx = new Three.CanvasTexture(terrain);
       groundTx.colorSpace = Three.SRGBColorSpace;
       groundTx.anisotropy = 8;

@@ -205,6 +205,8 @@
           if (options && typeof options === 'object')
             for (const key of Object.keys(lookSwitchState)) if (key in options) lookSwitchState[key] = !!options[key];
           groundShared.cityGroundSlopeCap.value = lookSwitchState.groundSlopeCap ? 1 : 0;
+          groundShared.cityGroundWear.value = lookSwitchState.groundWear ? 1 : 0;
+          roofSkinSwitch.value = lookSwitchState.roofSkin ? 1 : 0;
           setFoliageCoverage(activeTier);
           return { ...lookSwitchState };
         },
@@ -293,6 +295,7 @@
         groundReport: () => ({
           ...groundDataReport,
           detailLevel: groundShared.cityGroundDetail.value,
+          roofs: roofSkinReport(),
           tufts: { shown: tuftMesh.visible, instances: tuftMesh.geometry.instanceCount, fade: +tuftUniforms.tuftFade.value.toFixed(2) },
         }),
         // Developer view of the post-processing inputs: 'ao', 'bloom' or nothing.

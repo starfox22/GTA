@@ -135,27 +135,56 @@
             vec4 ag = groundLayer2( gp, 0.0, 12.0, gpx, gpy );
             gAggregate = ag.r;
             float inRoad = -gKerb;
+            // The road's own frame: along it and across it (the kerb field's
+            // direction, one sign for both halves of the carriageway).
+            vec2 rn = gKerbN.x < -0.01 || ( abs( gKerbN.x ) <= 0.01 && gKerbN.y < 0.0 ) ? -gKerbN : gKerbN;
+            vec2 rp = gKerb < 90.0 && gLaneW > 1.0 ? vec2( dot( gp, vec2( -rn.y, rn.x ) ), dot( gp, rn ) ) : gp;
+            // How far into a junction box (the info grid's lane-free cells inside
+            // the carriageway), read bilinearly: the grid is nearest-sampled, 16
+            // units a cell, and a tone switched on it changed in stair steps.
+            // (cityGroundWear 0 leaves this wear out: an A/B, lookSwitches groundWear.)
+            bool wearOn = cityGroundWear > 0.5;
+            float jb = 0.0;
+            if ( wearOn && cityFieldOn > 0.5 && gKerb < -1.0 ) {
+              vec2 jc = ( gp - cityFieldRect.xy ) * cityFieldRect.zw * cityFieldInfoSize - 0.5;
+              vec2 jf = floor( jc ), jw = jc - jf;
+              ivec2 j0 = ivec2( jf ), jmax = ivec2( cityFieldInfoSize ) - 1;
+              float l00 = 1.0 - step( 1.0, texelFetch( cityFieldInfo, clamp( j0, ivec2( 0 ), jmax ), 0 ).g * 255.0 );
+              float l10 = 1.0 - step( 1.0, texelFetch( cityFieldInfo, clamp( j0 + ivec2( 1, 0 ), ivec2( 0 ), jmax ), 0 ).g * 255.0 );
+              float l01 = 1.0 - step( 1.0, texelFetch( cityFieldInfo, clamp( j0 + ivec2( 0, 1 ), ivec2( 0 ), jmax ), 0 ).g * 255.0 );
+              float l11 = 1.0 - step( 1.0, texelFetch( cityFieldInfo, clamp( j0 + ivec2( 1, 1 ), ivec2( 0 ), jmax ), 0 ).g * 255.0 );
+              jb = smoothstep( 0.2, 0.8, mix( mix( l00, l10, jw.x ), mix( l01, l11, jw.x ), jw.y ) );
+            }
+            // RESURFACING: the carriageway was laid in stretches, each of its own
+            // year (tone, how fresh and black, how cracked), with a sealed joint
+            // across the road where two meet. Their frame follows the kerb whatever
+            // the lane grid says, and a junction box is a stretch of its own (the
+            // grid's junctions, at 128 + 512 k, sit in the middle of 512-unit cells).
+            // (Each row of streets has its own phase: joints on parallel streets never line up.)
+            vec2 rps = gKerb < 90.0 ? vec2( dot( gp, vec2( -rn.y, rn.x ) ), dot( gp, rn ) ) : gp;
+            rps.x += 236.0 * cityHash( vec2( floor( rps.y / 410.0 ), 5.0 ) );
+            float stretch = wearOn ? mix( cityHash( vec2( floor( rps.x / 236.0 ), floor( rps.y / 410.0 ) ) + 77.0 ), cityHash( floor( ( gp + 128.0 ) / 512.0 ) + 79.0 ), jb ) : 0.5;
+            age = clamp( age + ( stretch - 0.5 ) * 0.6, 0.0, 1.0 );
+            float fresh = smoothstep( 0.78, 0.92, stretch ) * ( 1.0 - age );
+            float stretchJoint = wearOn && gKerb < -1.0 ? groundBand( abs( fract( rps.x / 236.0 + 0.5 ) - 0.5 ) * 236.0, 0.35, fp ) * ( 1.0 - jb ) : 0.0;
             // Lanes: polished wheel paths, oil down the middle.
             float wheel = 0.0, oilLane = 0.0;
             if ( gLaneW > 1.0 && inRoad > 3.0 && inRoad < 62.0 ) {
               float u = mod( inRoad, gLaneW ), c0 = gLaneW * 0.5 + 1.0;
               wheel = ( 1.0 - smoothstep( 0.8, 3.6, abs( abs( u - c0 ) - 6.5 + ( cityNoise( gp * 0.07 ) - 0.5 ) * 1.6 ) ) )
                     * smoothstep( 0.25, 0.75, cityNoise( gp * 0.021 + 2.0 ) * 0.7 + cityNoise( gp * 0.11 ) * 0.3 );
-              oilLane = ( 1.0 - smoothstep( 0.8, 3.2, abs( u - c0 ) ) ) * smoothstep( 0.42, 0.78, cityNoise( gp * 0.09 + 7.0 ) );
+              oilLane = ( 1.0 - smoothstep( 0.8, 3.6, abs( u - c0 ) ) ) * smoothstep( 0.3, 0.7, cityNoise( gp * 0.09 + 7.0 ) * 0.7 + cityNoise( gp * 0.37 ) * 0.3 );
               // Seen from high up the bands average out rather than alias.
               float laneFade = groundFade( 3.0, fp );
               wheel = mix( 0.2, wheel, laneFade );
-              oilLane = mix( 0.1, oilLane, laneFade );
+              oilLane = mix( 0.12, oilLane, laneFade );
             }
             gWheel = wheel;
             // Utility cuts: a patch of newer asphalt in some 40-unit cells, its
-            // border sealed with tar. The cells follow the road (the kerb field's
-            // direction, one sign for both halves of the carriageway).
-            vec2 rn = gKerbN.x < -0.01 || ( abs( gKerbN.x ) <= 0.01 && gKerbN.y < 0.0 ) ? -gKerbN : gKerbN;
-            vec2 rp = gKerb < 90.0 && gLaneW > 1.0 ? vec2( dot( gp, vec2( -rn.y, rn.x ) ), dot( gp, rn ) ) : gp;
+            // border sealed with tar (a quarter of them capped in concrete).
             vec2 pc = floor( rp / 40.0 );
-            float patchM = 0.0, seam = 0.0;
-            if ( cityHash( pc + 91.0 ) > 0.91 - 0.07 * age ) {
+            float patchM = 0.0, seam = 0.0, capped = 0.0;
+            if ( cityHash( pc + 91.0 ) > 0.91 - 0.09 * age ) {
               vec2 hsz = vec2( 3.0, 2.5 ) + vec2( cityHash( pc + 3.0 ), cityHash( pc + 5.0 ) ) * vec2( 14.0, 9.0 );
               if ( cityHash( pc + 13.0 ) > 0.5 ) hsz = hsz.yx;
               vec2 centre = pc * 40.0 + 20.0 + ( vec2( cityHash( pc + 7.0 ), cityHash( pc + 9.0 ) ) - 0.5 ) * max( 40.0 - 2.0 * hsz - 2.0, 0.0 );
@@ -164,6 +193,21 @@
               // (A line's band widens with the footprint: scale it back to the
               // line's true share of the pixel.)
               seam = ( 1.0 - smoothstep( 0.3, 0.3 + fp, abs( sd ) ) ) * min( 1.0, 0.6 / fp );
+              capped = wearOn ? step( 0.75, cityHash( pc + 15.0 ) ) : 0.0;
+            }
+            // Trench reinstatements: a long strip along the road where a pipe or
+            // a cable went in.
+            if ( wearOn && gLaneW > 1.0 ) {
+              vec2 tc = vec2( floor( rp.x / 180.0 ), floor( rp.y / 30.0 ) );
+              if ( cityHash( tc + 51.0 ) > 0.9 - 0.06 * age ) {
+                vec2 thz = vec2( 30.0 + 50.0 * cityHash( tc + 52.0 ), 1.6 + 1.2 * cityHash( tc + 53.0 ) );
+                vec2 tcentre = vec2( ( tc.x + 0.5 ) * 180.0 + ( cityHash( tc + 54.0 ) - 0.5 ) * ( 180.0 - 2.0 * thz.x ), ( tc.y + 0.5 ) * 30.0 );
+                float sdT = groundBox( rp - tcentre, thz ) + ( cityNoise( gp * 0.7 ) - 0.5 ) * 0.2;
+                float inT = 1.0 - smoothstep( -0.5 * fp, 0.5 * fp, sdT );
+                seam = max( seam, ( 1.0 - smoothstep( 0.3, 0.3 + fp, abs( sdT ) ) ) * min( 1.0, 0.6 / fp ) );
+                capped *= 1.0 - inT;
+                patchM = max( patchM, inT );
+              }
             }
             tarPatch = patchM;
             // Sealed cracks: long tar lines in some stretches; hairline cracks.
@@ -174,13 +218,53 @@
             float hn = cityNoise( gp * 0.07 + 11.0 ) + ( cityNoise( gp * 0.5 ) - 0.5 ) * 0.08;
             float hairW = 0.07 * 0.07 * 1.4;
             float hair = ( 1.0 - smoothstep( hairW, hairW + fp * 0.1, abs( hn - 0.5 ) ) ) * smoothstep( 0.5, 0.75, cityNoise( gp * 0.02 + 4.0 ) ) * groundFade( 0.35, fp ) * ( 0.4 + 0.8 * age );
+            // Thermal cracks across the carriageway every few car lengths on the
+            // older stretches, most sealed with a band of tar; and the joint
+            // between paving passes along a lane line, sealed in runs.
+            float thermal = 0.0, thermalOpen = 0.0, laneJoint = 0.0;
+            if ( wearOn && gLaneW > 1.0 ) {
+              float tCell = floor( rp.x / 64.0 ), tRow = floor( rp.y / 410.0 );
+              if ( cityHash( vec2( tCell, tRow ) + 13.0 ) < 0.15 + 0.6 * age ) {
+                float x0 = ( tCell + 0.2 + 0.6 * cityHash( vec2( tCell, tRow ) + 31.0 ) ) * 64.0;
+                float wob = ( cityNoise( vec2( rp.y * 0.06, tCell ) ) - 0.5 ) * 7.0 + ( cityNoise( vec2( rp.y * 0.4, tCell + 9.0 ) ) - 0.5 ) * 1.1;
+                float sealed = step( 0.3, cityHash( vec2( tCell, tRow ) + 3.0 ) );
+                float line = groundBand( abs( rp.x - x0 - wob ), mix( 0.14, 0.5, sealed ), fp ) * mix( groundFade( 0.3, fp ), 1.0, sealed );
+                // A crack seldom runs the whole width.
+                line *= smoothstep( 0.28, 0.42, cityNoise( vec2( rp.y * 0.025, tCell * 3.1 ) ) );
+                thermal = line * sealed;
+                thermalOpen = line * ( 1.0 - sealed );
+              }
+              if ( inRoad > 8.0 ) {
+                float k = floor( inRoad / gLaneW + 0.5 );
+                float wobL = ( cityNoise( vec2( rp.x * 0.045, k * 7.0 ) ) - 0.5 ) * 2.2;
+                float run = smoothstep( 0.62, 0.76, cityNoise( vec2( rp.x * 0.012, k * 3.0 + 40.0 ) ) + 0.25 * age );
+                laneJoint = groundBand( abs( inRoad - k * gLaneW - wobL ), 0.45, fp ) * run * step( 0.5, k );
+              }
+            }
+            float tar = max( max( thermal, laneJoint ), stretchJoint * 0.8 );
             vec3 asphalt = base * ( 0.8 + 0.42 * ag.r + ( ag.g - 0.5 ) * 0.18 ) * ( 0.9 + 0.2 * macro ) * ( 0.94 + 0.12 * ag.a );
-            asphalt *= 1.0 + 0.055 * wheel;
-            asphalt = mix( asphalt, base * ( 0.72 + 0.2 * ag.b ), patchM );
-            asphalt *= 1.0 - 0.38 * seam - 0.42 * sealLine - 0.35 * hair;
-            asphalt *= 1.0 - 0.22 * oilLane;
-            float h = ( ag.r - 0.5 ) * 0.4 + ( ag.g - 0.5 ) * 0.3 - 0.35 * hair - 0.1 * sealLine + 0.05 * seam - 0.06 * patchM;
-            float rough = clamp( 0.86 - 0.14 * wheel - 0.24 * seam - 0.3 * sealLine - 0.14 * oilLane - 0.08 * patchM + ( ag.g - 0.5 ) * 0.12, 0.35, 0.95 );
+            // An older stretch is greyer and paler, a fresh one black and even.
+            asphalt *= 0.92 + 0.16 * stretch;
+            if ( wearOn ) asphalt = mix( asphalt, mix( vec3( dot( asphalt, vec3( 0.2126, 0.7152, 0.0722 ) ) ), asphalt, 0.7 ) * 1.06, age * 0.5 );
+            asphalt = mix( asphalt, base * ( 0.7 + 0.12 * ag.r ), fresh * 0.7 );
+            // Wheel paths: rubber laid down and polished smooth (the sheen is in the roughness).
+            asphalt *= 1.0 - 0.07 * wheel * ( 0.4 + 0.6 * age );
+            vec3 patchCol = mix( base * ( 0.72 + 0.2 * ag.b ), vec3( dot( base, vec3( 0.2126, 0.7152, 0.0722 ) ) ) * ( 1.5 + 0.3 * ag.r ), capped );
+            asphalt = mix( asphalt, patchCol, patchM );
+            asphalt *= 1.0 - 0.38 * seam - 0.42 * sealLine - 0.35 * hair - 0.4 * tar - 0.42 * thermalOpen;
+            asphalt *= 1.0 - 0.3 * oilLane;
+            // Junction boxes (inside two carriageways at once, no lanes): turning
+            // tyres polish them in broad swathes and cars waiting to turn drip oil.
+            float junctionBox = jb * smoothstep( 3.0, 9.0, inRoad );
+            if ( junctionBox > 0.0 ) {
+              float swathe = cityNoise( gp * 0.03 + 21.0 ) * 0.6 + cityNoise( gp * 0.11 + 5.0 ) * 0.4;
+              float drip = smoothstep( 0.6, 0.82, cityNoise( gp * 0.075 + 33.0 ) * 0.7 + cityNoise( gp * 0.4 ) * 0.3 ) * groundFade( 2.0, fp );
+              asphalt *= 1.0 - junctionBox * ( 0.1 * smoothstep( 0.45, 0.75, swathe ) + 0.26 * drip );
+              wheel = max( wheel, junctionBox * smoothstep( 0.45, 0.75, swathe ) * 0.8 );
+              oilLane = max( oilLane, junctionBox * drip );
+            }
+            float h = ( ag.r - 0.5 ) * 0.4 + ( ag.g - 0.5 ) * 0.3 - 0.35 * hair - 0.1 * sealLine + 0.05 * seam - 0.06 * patchM + 0.04 * tar - 0.3 * thermalOpen;
+            float rough = clamp( 0.86 - 0.16 * wheel - 0.24 * seam - 0.3 * sealLine - 0.3 * tar - 0.16 * oilLane - 0.08 * patchM + 0.04 * capped + ( ag.g - 0.5 ) * 0.12, 0.35, 0.95 );
             // Along the kerb: a concrete gutter pan (setts in the Old Quarter and
             // on Monarch Isle), grime, and the kerb's contact shadow.
             if ( inRoad > -1.0 && inRoad < 8.0 && gLaneW > 1.0 ) {
@@ -251,6 +335,24 @@
               vec2 bUv = byKerb ? ( t.x > 0.5 ? gp : gp.yx ) : gp;
               vec4 broom = groundLayer( bUv, 2.0, 8.0, t.x > 0.5 || !byKerb ? gpx : gpx.yx, t.x > 0.5 || !byKerb ? gpy : gpy.yx );
               pave = base * ( 0.9 + 0.12 * tone ) * ( 0.84 + 0.3 * cg.r ) * ( 0.95 + 0.1 * broom.g );
+              // Slabs relaid after works: paler and cleaner than their neighbours.
+              pave *= 1.0 + 0.12 * step( 0.93, cityHash( cellId + 19.0 ) ) * groundFade( s, fp );
+              // A utility cover set in a slab: a steel meter lid with a raised
+              // tread, or a concrete access plate in an iron frame.
+              if ( cityHash( cellId + 41.0 ) > 0.965 ) {
+                vec2 lf = fr - ( cellId + 0.5 ) * s;
+                float steel = step( 0.5, cityHash( cellId + 43.0 ) );
+                float sdP = groundBox( lf, steel > 0.5 ? vec2( 2.1, 1.5 ) : vec2( 3.3, 3.3 ) );
+                float plate = 1.0 - smoothstep( -0.5 * fp, 0.5 * fp, sdP );
+                float rim = groundBand( sdP + 0.25, 0.25, fp ) * groundFade( 0.5, fp );
+                vec2 tq = abs( fract( lf * 1.6 ) - 0.5 );
+                float treadP = steel * ( 1.0 - smoothstep( 0.16, 0.24, max( tq.x, tq.y ) ) ) * groundFade( 0.6, fp );
+                vec3 lid = mix( base * 0.92 * ( 0.84 + 0.3 * cg.r ), vec3( 0.075, 0.072, 0.068 ) * ( 1.0 + 0.6 * treadP ), steel );
+                lid = mix( lid, vec3( 0.06, 0.058, 0.055 ), rim );
+                pave = mix( pave, lid, plate );
+                h = mix( h, 0.08 * treadP - 0.1 * rim, plate );
+                gMetal = max( gMetal, plate * steel * 0.45 );
+              }
               // A cracked slab here and there.
               if ( cityHash( cellId + 3.3 ) > 0.91 ) {
                 vec2 lf = fr - ( cellId + 0.5 ) * s;

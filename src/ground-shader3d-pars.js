@@ -3,6 +3,7 @@
         uniform highp sampler2DArray cityDetail;
         uniform float cityGroundDetail;
         uniform float cityGroundSlopeCap;
+        uniform float cityGroundWear;
         uniform sampler2D cityFieldDist;
         uniform sampler2D cityFieldInfo;
         uniform vec4 cityFieldRect;
@@ -196,16 +197,33 @@
                     along = mix( along, len / period, smoothstep( 0.3 * period, 0.6 * period, aa ) );
                     cover *= along * groundBand( q.x, A.z + 0.5, aa );
                   } else cover *= groundBand( q.x, A.z - rag, aa );
-                  float worn = 0.18 + 0.12 * wear + 0.35 * gWheel;
+                  // Zebras and stop lines lie across the traffic (bars at most 6.5
+                  // long every 13.5, or a solid line 1.15 or more wide): tyres cross
+                  // them along q.y and leave grey streaks, the paint worn through in
+                  // the tracks.
+                  float lenM = floor( B.w / 4096.0 ) * 0.25, periodM = ( B.w - floor( B.w / 4096.0 ) * 4096.0 ) * 0.25;
+                  float acrossTraffic = wear < 2.5 && ( kind > 1.5 ? lenM < 6.6 && periodM < 13.6 : A.w > 1.15 ) ? 1.0 : 0.0;
+                  float tyre = acrossTraffic * smoothstep( 0.48, 0.78, cityNoise( vec2( q.x * 0.45 + seed * 31.0, q.y * 0.05 ) ) ) * groundFade( 1.2, fp );
+                  float worn = 0.18 + 0.12 * wear + 0.35 * gWheel + 0.34 * tyre;
                   float through = smoothstep( worn - 0.08, worn + 0.08, gAggregate * 0.55 + cityNoise( gp * 0.37 + seed * 9.0 ) * 0.45 + 0.08 );
                   through = mix( 1.0 - worn * 0.5, through, groundFade( 0.35, fp ) );
                   cover *= through * ( 0.9 + 0.1 * seed );
-                  // Car park bay lines (wear 3): faded, and only on the tarmac.
-                  if ( wear > 2.5 ) cover *= 0.6 * gRoad;
+                  // Car park bay lines (wear 3): faded, and only on the tarmac. In
+                  // most bays, oil dropped where the engines stand.
+                  if ( wear > 2.5 ) {
+                    cover *= 0.6 * gRoad;
+                    float bayU = q.x + A.z - 0.5 * lenM, bay = floor( bayU / periodM );
+                    vec2 bq = vec2( bayU - ( bay + 0.5 ) * periodM, q.y );
+                    float bh = cityHash( vec2( bay, seed * 91.0 ) );
+                    float drop = groundBox( bq, vec2( 2.0 + 1.5 * bh, 3.5 + 2.5 * bh ) ) + ( cityNoise( gp * 0.45 + bh * 17.0 ) - 0.5 ) * 3.0;
+                    float oil = ( 1.0 - smoothstep( -1.0, 1.5, drop ) ) * step( 0.3, bh ) * gRoad;
+                    gColour *= 1.0 - 0.32 * oil * ( 0.6 + 0.4 * cityNoise( gp * 1.3 + 4.0 ) );
+                    gRough = mix( gRough, 0.55, oil * 0.6 );
+                  }
                   vec3 paintCol = paint < 0.5 ? vec3( 0.6, 0.6, 0.57 ) : paint < 1.5 ? vec3( 0.58, 0.53, 0.4 ) : vec3( 0.58, 0.4, 0.08 );
                   paintCol *= 0.86 + 0.14 * cityNoise( gp * 0.8 + 3.0 );
-                  // Grime settles on old paint.
-                  paintCol = mix( paintCol, gColour * 1.6, 0.12 + 0.08 * wear );
+                  // Grime settles on old paint, most in the tyre tracks.
+                  paintCol = mix( paintCol, gColour * 1.6, 0.12 + 0.08 * wear + 0.62 * tyre );
                   gColour = mix( gColour, paintCol, cover );
                   gHeight += cover * 0.22;
                   gRough = mix( gRough, 0.62, cover );

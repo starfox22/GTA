@@ -188,6 +188,7 @@
       // @include src/clouds3d.js
       // @include src/ground-data3d.js
       // @include src/surfaces3d.js
+      // @include src/roofskin3d.js
       // @include src/grass3d.js
       // @include src/helicopter3d.js
       // @include src/apache3d.js

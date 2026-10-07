@@ -434,6 +434,8 @@
         dressFrontage(group, b, kind, i, trim, classicSouth);
         if (kind === 'decoTower' && !b.place) balconies(group, b, staticMat('#efe4d2'));
         decorateRoof(kind, b, group, i);
+        // Small plant the roof rules never read (ROOF EXTRAS, cityscape3d-roofplant.js).
+        roofExtras(kind, b, group, i);
         roofOwner = null;
         allBuildings.push({
           b,

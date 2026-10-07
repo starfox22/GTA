@@ -27,7 +27,10 @@ rules, workflow), then this page, then only the area doc your task needs (`docs/
   the `hypot2` timing check in `sim-audits` fails under heavy CPU load (a smoke run beside it); `camera-feel`'s
   on-foot aim lead read zero about one run in fourteen (the lead target is exactly 0 with the pistol and the aim
   set, so an early return in cameraLeadTarget: fall/thrown/ride; the test now notes `integrity()` carriers when it
-  happens); `living-key` failed once with a traffic car parked on the visitor spawn and passed on rerun.
+  happens); `living-key` failed once with a traffic car parked on the visitor spawn and passed on rerun;
+  `wheelie`'s real-key part (W + ↑ held for 1.2 s of wall clock) lifts only ~2.5° when three browsers share the
+  4-core box (the base build fails the same way under that load); `living-medics` once ended a lost run as
+  revived and passed on rerun; `police-search-clock` once found no room for its cruiser (traffic) and passed.
 
 ## The owner's standing preferences (keep following them)
 
