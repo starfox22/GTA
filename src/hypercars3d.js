@@ -931,8 +931,14 @@
         },
         details(k) {
           CAR_BODIES.chevette.details(k);
+          const { M, S, at, l, sets } = k;
+          // The aero pack's tall wing on swan stands over the ducktail.
+          const wx = -0.46 * l,
+            wy = k.top(wx) + 0.27 * M;
+          for (const side of [-1, 1]) k.bar(sets.trim, [wx, k.top(wx), side * 0.55 * M], [-0.49 * l, wy - 0.01 * M, side * 0.55 * M], 0.03 * M, 0.2 * M, 0.012 * M, { color: '#111214', finish: 'carbon', cell: 'carbon' });
+          k.bar(sets.trim, [-0.492 * l, wy, -0.78 * M], [-0.492 * l, wy, 0.78 * M], 0.035 * M, 0.3 * M, 0.015 * M, { color: '#111214', finish: 'carbon', cell: 'carbon' }, [0.2, 1, 0]);
+          for (const side of [-1, 1]) k.add(sets.trim, S.box, -0.492 * l, wy - 0.03 * M, side * 0.79 * M, 0.34 * M, 0.12 * M, 0.02 * M, { color: '#111214', finish: 'carbon' });
           // The carbon splitter and dive planes of the aero pack.
-          const { M, at, l } = k;
           hcSplitter(k, 0.13, 0.9, 0.05);
           for (const side of [-1, 1]) {
             const hw = at(0.48 * l, 0.3 * M).half;
