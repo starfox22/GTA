@@ -51,6 +51,8 @@ vehicles-and-driving.md.
   to mirror (Fresnel). Past `CAR_GLASS_CLEAR` (24-36 m from the camera) the tint closes to `CAR_GLASS_FAR_TINT`, so a
   far cabin never shows empty. The body impostors keep the old opaque glass (`glassFar`, `policeGlass`); the
   4x4 club trucks still use `policeGlass`. Cracked and burst panes are damage3d.js's own (opaque) materials.
+- See-through glass casts no shadow (the sun reaches the cabin through it): the paint panels (roof panel, pillars)
+  cast instead, and the pristine merge's paint set casts when they do, so a car still has three casters.
 - The cabin (`carCabinParts`: seats and headrests, dash and binnacle, wheel, mirror, parcel shelf, a patrol car's
   cage and laptop, the carpet over the shell top) is merged at the END of the kit's trim: no draw call of its own.
   `kit.trimOuter` is the same buffers with a shorter draw range, and the impostors pool that (no cabin far away).
