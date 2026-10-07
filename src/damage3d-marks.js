@@ -101,7 +101,7 @@
         }
         return null;
       }
-      // Whether the surface round a hit holds a chase-view hole's bare-metal ring (four points a hole's ring out, each
+      // Whether the surface round a hit holds a chase-view hole's bare-metal ring (four points a hole's ring out, all
       // within 4 cm of the hit's plane): a round that clips a mirror's edge or a trim strip goes on to the panel behind.
       const coverNormal = new Three.Vector3(),
         coverU = new Three.Vector3(),
@@ -133,7 +133,7 @@
               break;
             }
         }
-        return covered >= 3;
+        return covered === 4;
       }
       // A star the round's line misses the model's pane with (the glass band's numbers are the game's): aim at the
       // pane itself, as near as it allows to where the round went in.
@@ -205,9 +205,10 @@
           anchor.u = markCorner.x;
           anchor.v = markCorner.y;
           anchor.w = markCorner.z;
-          // Which way the triangle's own (wound) face looks at the shooter: kept, so a crumple that turns the
-          // triangle turns the decal with it.
-          markTriangle.getNormal(markNormal).transformDirection(object.matrixWorld);
+          // Which way the part's own (smooth) normal there looks at the shooter: kept, so the decal faces out the same
+          // way after a crumple, a fold or a hinge swing.
+          markSmoothNormal(object, anchor, markNormal);
+          markNormal.transformDirection(object.matrixWorld);
           anchor.sign = markNormal.dot(markRay.ray.direction) <= 0 ? 1 : -1;
         }
         markAnchors.set(mark, anchor);
@@ -253,10 +254,26 @@
             anchor.v = fi + fj - 1;
             anchor.w = 1 - fi;
           }
-          // These triangles face +z (along, then up): out on the right, in on the left.
-          anchor.sign = side;
+          // The skin's normals face out of the door.
+          anchor.sign = 1;
           return;
         }
+      }
+      // The normal at an anchor: the part's vertex normals by its weights, else its triangle's.
+      function markSmoothNormal(object, anchor, out) {
+        const normal = object.geometry.attributes.normal,
+          { a, b, c, u, v, w } = anchor;
+        if (normal)
+          out.set(
+            normal.getX(a) * u + normal.getX(b) * v + normal.getX(c) * w,
+            normal.getY(a) * u + normal.getY(b) * v + normal.getY(c) * w,
+            normal.getZ(a) * u + normal.getZ(b) * v + normal.getZ(c) * w,
+          );
+        if (!normal || out.lengthSq() < 1e-10) {
+          markTriangle.setFromAttributeAndIndices(object.geometry.attributes.position, a, b, c);
+          markTriangle.getNormal(out);
+        }
+        return out.normalize();
       }
       // Re-reads the anchor's triangle where it now is and poses the decal on it, sized for the view.
       function poseMark(m, mark, anchor, view) {
@@ -274,10 +291,9 @@
           position.getY(a) * u + position.getY(b) * v + position.getY(c) * w,
           position.getZ(a) * u + position.getZ(b) * v + position.getZ(c) * w,
         );
-        // The triangle's own plane (the decal is small: the plane it sits in is the surface under it), facing out
-        // the way it faced the shooter when the round hit.
-        markTriangle.setFromAttributeAndIndices(position, a, b, c);
-        markTriangle.getNormal(markNormal);
+        // The part's own smooth normal there (re-made where a crumple moved it), facing out the way it faced the
+        // shooter when the round hit.
+        markSmoothNormal(object, anchor, markNormal);
         markPoint.applyMatrix4(markRel);
         markNormal.applyMatrix3(markNormalMatrix.getNormalMatrix(markRel)).normalize().multiplyScalar(anchor.sign || 1);
         const size = MARK_SIZES[mark.kind] || MARK_SIZES.hole,
@@ -416,13 +432,18 @@
           entry.sizeCm = cm(axisX.length());
           entry.gapCm = gap === null ? null : cm(gap);
           // The ring of bare metal round the hole (a quarter of the decal out from its middle), or a star's inner cracks.
-          let ring = 0;
+          // + floats over the surface, - is sunk under another surface in front (hidden, as a hole under a fold is).
+          let ring = -Infinity;
           for (const [fx, fy] of [[0.26, 0], [-0.26, 0], [0, 0.26], [0, -0.26]]) {
             const point = centre.clone().addScaledVector(axisX, fx).addScaledVector(axisY, fy),
               g = markGapAt(m, point, normal, targets, mark, o);
-            ring = g === null ? Infinity : Math.max(ring, Math.abs(g));
+            ring = g === null || ring === Infinity ? Infinity : Math.max(ring, g);
           }
           entry.ringGapCm = ring === Infinity ? null : cm(ring);
+          // How far (degrees) the decal's plane leans off its triangle's own plane.
+          markTriangle.setFromAttributeAndIndices(o.geometry.attributes.position, anchor.a, anchor.b, anchor.c);
+          const plane = markTriangle.getNormal(new Three.Vector3()).transformDirection(o.matrixWorld);
+          entry.leanDeg = Math.round((Math.acos(clamp(Math.abs(plane.dot(normal)), 0, 1)) * 180) / Math.PI);
         }
         const record = m.crumple,
           parts = record?.parts || [],
