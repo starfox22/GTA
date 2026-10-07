@@ -60,7 +60,8 @@ title) and uploads the texture once, when it is done (~10 ms of work warm, sever
   thrown out at 6-15 m/s that the air stops within a few metres, the furthest (its skin) cooling first; a column of
   20 dark puffs over the first second, rising for 6-10 s with the wind; 14 dust puffs along the ground; 28 sparks;
   10 road chunks (the debris pool); the muzzle light as the flash and fireball glow for ~0.8 s (`fxFlashLight`,
-  reach 42 m). No flat ring on the street.
+  reach 42 m). No flat ring on the street. A burst 5 m or more above the terrain (the side jobs' fireworks, a
+  shell in the air) throws no dust or road, and its sparks fall to the ground below.
 - MUZZLE (`fire()`): a star turned at random, a plume along the barrel, a hot core, a faint wisp, the case; a
   rocket's backblast.
 - STRIKES (`impact()`): masonry throws dust and chips out of the hole along the wall's normal at its height

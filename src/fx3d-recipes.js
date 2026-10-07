@@ -128,7 +128,10 @@
           share = fxTierShare(),
           p = Math.max(0.2, power),
           root = Math.sqrt(p),
-          ground = altitude,
+          terrain = terrainHeight(x, z),
+          // A burst well above the ground (the side jobs' fireworks, a shell in the air): no dust, no road.
+          airborne = altitude > terrain + 5 * U,
+          ground = airborne ? terrain : altitude,
           base = altitude + 1.4 * U * root;
         // The flash: a white-hot core, a star, gone in a tenth of a second.
         let i = fxAdd(x, base, z, 0, 0, 0, 0.09, 7 * U * p, FX_FLASH_COLOR, 0);
@@ -192,7 +195,7 @@
           }
         }
         // Dust rolled out along the street by the shock.
-        const ring = Math.max(6, Math.round(14 * share));
+        const ring = airborne ? 0 : Math.max(6, Math.round(14 * share));
         for (let k = 0; k < ring; k++) {
           const a = ((k + fxRandom() * 0.8) / ring) * TAU,
             speed = fxBetween(14, 26) * U * root;
@@ -208,7 +211,7 @@
           i = fxSpark(x, base, z, Math.cos(a) * flat * speed, up * speed, Math.sin(a) * flat * speed, fxBetween(0.5, 1.5), fxBetween(0.12, 0.26) * U, ground, fxBetween(2.5, 5));
         }
         // Chunks of the road (the debris pool's lit, shadowed pieces).
-        const chunks = Math.max(4, Math.round(10 * share));
+        const chunks = airborne ? 0 : Math.max(4, Math.round(10 * share));
         for (let k = 0; k < chunks; k++) {
           const a = fxRandom() * TAU;
           spawnChunks(x, ground + 2, z, Math.cos(a), Math.sin(a), 1, FX_ASPHALT, 1.1 * root, false);

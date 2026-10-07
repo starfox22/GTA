@@ -498,7 +498,8 @@
           let y, size, alpha, frame;
           if (p.blood) {
             y = Math.max(0.3, p.z);
-            size = p.size * 1.35;
+            // (The drop frame is an upright ellipse: about the old 1.1 x 1.8 sprite's area.)
+            size = p.size * 1.45;
             alpha = 0.97;
             frame = FX_DROP;
           } else if (p.mist) {
