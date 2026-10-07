@@ -13,3 +13,7 @@
   shadows fitted to the near view with a depth fade); docs/areas/chase-view.md.
 - Console: `viewMode`, `chaseCamera`, `chaseLook`, `chaseProject`; `settings({ cameraView, lookSensitivity,
   invertLook })`. Tests: chase-input.
+- Lock-on (Settings · Gameplay · Aim assist, on by default): aiming with a gunman near the reticle turns the
+  camera onto him and holds it; a move of the mouse or the stick breaks it. Console `gunmanAt(x, y)`; test
+  chase-lock.
+- C held in a vehicle looks behind it in the chase camera (Settings · Controls · Look behind).

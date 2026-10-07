@@ -38,6 +38,7 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/rendering-hiccups.md | First-use hitches: what the title-screen prewarm warms (programs, off-screen passes, stand-in models, the far copy), the first-use log (`renderHiccups`), the rules a new effect follows, dormant lights, numbers |
 | areas/boot-and-memory.md | The boot timeline (`bootTimings()`) and what each stage costs, what was cut, the renderer memory soak, the staged tier change, the cell pre-upload and AUTO's resolution hold |
 | areas/rendering-lighting.md | HDR pipeline, post passes and the film grade, sun and time of day, night light map, searchlights, the cutaway |
+| areas/rendering-sky.md | The sky dome and environment map (one sky), the sky's sun, the chase view's aerial haze (`cityHaze*`), sun glare and shafts |
 | areas/rendering-vehicle-lights.md | Vehicle lamps: CAR LAMPS, the drive light map, beam shadows, beams on slopes and the terrain horizon |
 | areas/rendering-clouds.md | The cloud layer's altitude by weather and area (`cloudBaseAt`), the march, the veil, wisps and lens in cloud, cloud shadows |
 | areas/ui-and-settings.md | Input actions, settings, HUD and the interaction prompt, touch, bike share |

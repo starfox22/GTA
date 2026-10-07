@@ -73,6 +73,8 @@
       // The chase camera's mouse and stick look (chase-camera.js): percent, and up / down swapped.
       lookSensitivity: 100,
       invertLook: false,
+      // Aiming in the chase camera locks onto a threat near the reticle (chase-camera.js LOCK-ON).
+      aimAssist: true,
     };
     let radioMigrated = false;
     try {
@@ -108,6 +110,7 @@
         if (typeof saved.motionComfort === 'boolean') settings.motionComfort = saved.motionComfort;
         if (Number.isFinite(saved.lookSensitivity)) settings.lookSensitivity = clamp(Math.round(saved.lookSensitivity), 20, 300);
         if (typeof saved.invertLook === 'boolean') settings.invertLook = saved.invertLook;
+        if (typeof saved.aimAssist === 'boolean') settings.aimAssist = saved.aimAssist;
         // The title menu's radio (car-radio.js TITLE RADIO), on unless switched off.
         if (typeof saved.titleRadio === 'boolean') titleRadioEnabled = saved.titleRadio;
         if (typeof saved.soundOn === 'boolean') soundOn = saved.soundOn;
@@ -135,6 +138,7 @@
             motionComfort: settings.motionComfort,
             lookSensitivity: settings.lookSensitivity,
             invertLook: settings.invertLook,
+            aimAssist: settings.aimAssist,
             titleRadio: titleRadioEnabled,
             soundOn,
             voicesOn,
@@ -389,6 +393,15 @@
           note: () => 'In the chase camera, pushing the mouse or the stick forward looks down instead of up.',
           get: () => settings.invertLook,
           set: (on) => (settings.invertLook = !!on),
+        },
+        {
+          id: 'aimAssist',
+          kind: 'toggle',
+          label: 'Aim assist',
+          note: () =>
+            'In the chase camera, aiming (the right button, LT) with a gunman near the reticle locks onto them; move the mouse or the stick to break away and aim freely. Never locks onto passers-by.',
+          get: () => settings.aimAssist,
+          set: (on) => (settings.aimAssist = !!on),
         },
         {
           id: 'minimap',

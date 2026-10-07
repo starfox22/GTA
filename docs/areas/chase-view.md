@@ -45,6 +45,8 @@ rendering.md Cameras and view.
   CURSOR LOOK: a page that cannot capture the pointer (an embedding frame without the permission:
   `pointerlockerror` after a click) keeps the cursor: the aim is the cursor and the camera turns while
   it stands in a band along the screen's edges.
+- LOOK BEHIND (C held in a vehicle, `lookBehind`): the view cuts round to the back of the vehicle and back
+  on release (a cut, not a swing: a fast pan is the harder motion on the eye).
 - Pad: the right stick turns the camera (`chaseStick`, `updateStickLook`) instead of aiming, LT aims
   over the shoulder on foot (`gamepad.aimHeld`; a gentle stick push still walks), R3 switches the
   view. Touch: the aim stick turns the camera and fires past two thirds of its throw (CHASE TOUCH); a
@@ -57,7 +59,8 @@ rendering.md Cameras and view.
 - `updateChaseView` runs in `render()` after `updateFlightView` and before the ride camera, sets
   `camera = chaseCamera` and `chaseViewActive`. `flightViewActive` keeps meaning "in the air".
 - Draw distance `CHASE_DRAW` by tier; the haze (aerial-perspective fog) closes over the far part of
-  it so the far clip is never seen.
+  it so the far clip is never seen. The haze's colour and height falloff, the sky, the clouds from
+  below and the sun glare: rendering-sky.md and rendering-clouds.md.
 - Culling: `viewCenter` / `viewReach` hold the box round the visible wedge; scenery cells and loose
   statics are also tested against the frustum (`chaseCellShown`), keeping cells within
   `CHASE_SHADOW_KEEP` behind the camera, whose buildings shade the street in front of it.
@@ -70,7 +73,9 @@ rendering.md Cameras and view.
 - Level of detail (far cells drawn from the far copy, shadow casters and proxies, small props and
   pools, people and vehicles by distance): rendering-chase.md.
 - The reticle (chase-hud.js, chase-view.css): on foot with a gun; red over a target, a flash on a
-  shot, a ring while aiming. `body.chase-locked` hides the cursor while the pointer is captured.
+  shot, a ring while aiming. LOCK-ON (Settings · Gameplay · Aim assist, on by default): aiming with a
+  threat within 0.3 rad of the reticle and 70 m turns the camera onto their chest and holds it; a clear
+  look (mouse, stick) breaks it to free aim; passers-by never lock (`chaseLockOn`, `updateChaseLock`). `body.chase-locked` hides the cursor while the pointer is captured.
 
 ## Game rules in the chase view (chase-rules.js)
 
