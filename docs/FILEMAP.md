@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-517 files in the include tree, 178,436 lines.
+517 files in the include tree, 178,510 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -49,7 +49,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-menus.js`   195 — Resize, begin/newGame, pause, help, big map toggle.
 - `src/god-splash.js`   114 — ▸ God mode splash: the full-screen card and fanfare when a cheat code toggles god mode (game-input.js godModeCheat): ON charges up, slams a gold "GOD …
 - `src/game-input.js`   480 — Cheat code: Letters typed during play accumulate in a short ring; when the tail spells a known code it fires.
-- `src/controls.js`   318 — Key bindings
+- `src/controls.js`   320 — Key bindings
 - `src/geography.js`    12 — ▸ Coastlines and land regions
 - `src/drawbridge.js`    68 — ▸ The Palm Sound drawbridge: schedule, gates, leaves, jumps
 - `src/harbor.js`    11 — ▸ Ironworks cargo terminal
@@ -152,7 +152,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/foliage-cutaway.js`   146 — Foliage cutaway: who the see-through hole in tree crowns, palm fronds and tall shrubs keeps in view (the player on foot or their vehicle) and how big …
 - `src/god-panel.js`   799 — God mode settings
 - `src/driving.js`   508 — Tyres, brakes and driving assists
-- `src/chase-camera.js`   793 — Chase camera: the third-person view behind the player that V switches with the street view: where it stands and looks, mouse / stick / touch look …
+- `src/chase-camera.js`   804 — Chase camera: the third-person view behind the player that V switches with the street view: where it stands and looks, mouse / stick / touch look …
 - `src/chase-rules.js`   599 — Chase rules: what the player can see in the chase view, for the game's rules (who may fire, spawning and recycling out of sight, the HUD's player …
 - `src/chase-hud.js`    77 — Chase HUD: the reticle in the middle of the screen in the chase view (chase-view.css) and the hidden cursor while the pointer is captured; drawn …
 - `src/tyre-effects.js`   274 — What the tyres leave behind: the burnout (forward and the handbrake held at a standstill), skid marks, and the one rule for tyre smoke, dust and …
@@ -452,13 +452,13 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/dealership3d.js`    43 — ▸ MONARCH MOTORS in 3D
 - `src/beachclub3d.js`    38 — ▸ Marea Beach Club meshes and show lighting
 - `src/cycles3d.js`   465 — Bike-share station meshes
-- `src/weather3d.js`   747 — ▸ Weather and sky visuals
+- `src/weather3d.js`   786 — ▸ Weather and sky visuals
 - `src/character-rig3d.js`   899 — Character rig: sculpted body parts, outfits and paint
 - `src/crowd3d.js`    85 — ▸ Instanced people: skeleton, gait, poses, weapons and street props
 - `src/carjack3d.js`   212 — The carjack struggle drawn: the driver's door swinging, the poses of the tug of war and the player's hands on the driver (swingDriverDoor …
 - `src/clouds3d.js`    56 — ▸ Volumetric clouds and cloud shadows
 - `src/ground-data3d.js`   826 — Ground shader data
-- `src/surfaces3d.js`   246 — ▸ Procedural surface detail
+- `src/surfaces3d.js`   248 — ▸ Procedural surface detail
 - `src/grass3d.js`   153 — Grass tufts
 - `src/helicopter3d.js`    99 — ▸ Helicopter models
 - `src/apache3d.js`   435 — The AH-64 attack helicopter model
@@ -479,7 +479,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/render3d-resources.js`   520 — GPU resource lifecycle: shared geometries, model pruning and disposal.
 - `src/render3d-hiccups.js`   377 — Hiccup log: what each drawn frame created for the first time (shader programs, textures, geometries) and the slowest frames' renderer CPU split; read …
 - `src/payphone3d.js`   597 — The story payphone where mission 1 starts: a 1990s yellow pedestal payphone with its lit PHONE sign, handset, keypad, directory and grime, the …
-- `src/render3d-api.js`   541 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
+- `src/render3d-api.js`   542 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
 - `src/render3d-frame.js`   704 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
 
 ## src/flight-view3d.js ▸ Flight camera and aerial perspective
@@ -674,7 +674,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/weather3d.js ▸ Weather and sky visuals
 
-- `src/weather3d-chase.js`   137 — Rain at street level (the chase view): a dense near field of short streaks round the camera, the side view's fall speed, streak length and slant for …
+- `src/weather3d-chase.js`   153 — Rain at street level (the chase view): a dense near field of short streaks round the camera, the side view's fall speed, streak length and slant for …
 
 ## src/crowd3d.js ▸ Instanced people: skeleton, gait, poses, weapons and street props
 
@@ -778,7 +778,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-rides.js`   104 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
 - `src/game-console-leisure.js`    75 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)
 - `src/game-console-crowd.js`   162 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
-- `src/game-console-graphics.js`   237 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
+- `src/game-console-graphics.js`   240 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
 - `src/game-console-perf.js`   272 — DeadEndCity console, simulation cost: simProfile (per-section ms, worst frames), simScenario (staged situations)
 - `src/game-console-soak.js`   368 — DeadEndCity console, long-session health: soakReport (sizes of every list that can grow, DOM, non-finite positions)
 - `src/game-console-integrity.js`   177 — DeadEndCity console: integrity(), the invariants tools/bot.mjs checks after every action
