@@ -10,6 +10,9 @@
         // A blue-hour night, brighter than a real one on purpose: the moonlit sky
         // is the ambient that keeps streets readable between the lamp pools.
         night: ['#43557a', '#5f6a88', '#2b2e37', '#463d5e'],
+        // CHASE NIGHT's sky: at street level the lamps carry the light, so the night sky is a deep navy over the
+        // city's glow (the one sky: dome, environment and haze all take it).
+        chaseNight: ['#1f2a44', '#3b4260', '#1b1d24', '#30294a'],
         overcast: ['#8a949e', '#b3b9bf', '#4a4d50', '#d0d0d0'],
       };
       const skyKeyColors = Object.fromEntries(
@@ -132,6 +135,12 @@
         contrast: 0.08, // contrast lost at full night
         lampPower: 3.6, // street-lamp map strength
       };
+      /* CHASE NIGHT: at street level the lamps, windows, neon and headlights light the way (CITY WALL LIGHT reaches
+         the facades), so the chase view takes less of the moon and sky fill and of the night exposure and keeps more
+         contrast: a darker night with stronger pools, as GTA IV draws it. The street view keeps the readable night.
+         Shares of NIGHT_LOOK's moon, sky, exposure and contrast terms. */
+      const CHASE_NIGHT = { moon: 0.5, sky: 0.55, exposure: 0.6, contrast: 0.25 },
+        STREET_NIGHT = { moon: 1, sky: 1, exposure: 1, contrast: 1 };
       const gradeLiftNight = new Three.Vector3(0.012, 0.02, 0.036),
         gradeGainNight = new Three.Vector3(1.05, 1.0, 0.95),
         gradeLiftDusk = new Three.Vector3(0.0, 0.002, 0.006),
@@ -166,8 +175,9 @@
           rain = weather.rain;
         // Sky colours: night -> day, dusk on top, grey as it clouds over.
         const k = skyKeyColors;
+        const nightKeys = chaseViewActive ? k.chaseNight : k.night;
         for (let i = 0; i < 4; i++)
-          SKY_KEY_TARGETS[i].value.copy(k.night[i]).lerp(k.day[i], 1 - dark).lerp(k.dusk[i], dusk * 0.75).lerp(k.overcast[i], overcast * 0.7 * light);
+          SKY_KEY_TARGETS[i].value.copy(nightKeys[i]).lerp(k.day[i], 1 - dark).lerp(k.dusk[i], dusk * 0.75).lerp(k.overcast[i], overcast * 0.7 * light);
         updateHaze(dark, dusk, night, overcast);
         // The disc keeps its light until it sets, dimmer low down (the long path through the air reddens it
         // too, in the light's own dusk colour); it hides as the cloud closes (the clouds drawn over it do
@@ -207,12 +217,13 @@
         tailLamp.color.copy(tailLampBase).multiplyScalar(1 + lampsOn * 2.5);
         brakeLamp.color.copy(brakeLampBase).multiplyScalar(3 + lampsOn * 3);
         updateHeadlightBeams();
-        // Moonlight and sky light strong enough to read the streets by at night.
-        sun.intensity += dark * NIGHT_LOOK.moon;
-        hemi.intensity += dark * NIGHT_LOOK.sky;
+        // Moonlight and sky light strong enough to read the streets by at night (less of it at street level).
+        const nightFill = chaseViewActive ? CHASE_NIGHT : STREET_NIGHT;
+        sun.intensity += dark * NIGHT_LOOK.moon * nightFill.moon;
+        hemi.intensity += dark * NIGHT_LOOK.sky * nightFill.sky;
         // Post look: exposure, bloom and grade (postfx3d.js).
         // A touch more exposure at night: legibility first, darkness second.
-        postLook.exposure = renderer.toneMappingExposure * (1 + dark * NIGHT_LOOK.exposure);
+        postLook.exposure = renderer.toneMappingExposure * (1 + dark * NIGHT_LOOK.exposure * nightFill.exposure);
         // Bloom: by day only glints and the sun on glass and water (at 2.2 the
         // sunlit pale paving itself crossed the knee and hung a milky veil over
         // the street); after dark the lights themselves (lamps, neon, windows,
@@ -223,7 +234,7 @@
         // the muted paint, awnings and planting, not what is already strong).
         postLook.saturation = (1.12 + dusk * 0.05 - dark * NIGHT_LOOK.saturation) * (1 - overcast * 0.14 - rain * 0.06);
         postLook.vibrance = (0.42 + dusk * 0.08 - dark * 0.2) * (1 - overcast * 0.5);
-        postLook.contrast = 1.2 + dusk * 0.02 - dark * NIGHT_LOOK.contrast - overcast * 0.08;
+        postLook.contrast = 1.2 + dusk * 0.02 - dark * NIGHT_LOOK.contrast * nightFill.contrast - overcast * 0.08;
         postLook.lift.copy(gradeLiftDay).lerp(gradeLiftDusk, dusk).lerp(gradeLiftNight, dark);
         postLook.gain.copy(gradeGainDay).lerp(gradeGainDusk, dusk).lerp(gradeGainNight, dark);
         if (rain > 0.05) {

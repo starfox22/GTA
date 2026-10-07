@@ -17,7 +17,9 @@ rest of the light: rendering-lighting.md; the clouds (from below too): rendering
 - The environment's light was tuned against the old gradient: irradiance within ~5 % up and sideways by
   day, night and overcast (dusk roofs -7 %, walls facing the sun +12 %). Re-check after changing a share.
   The dome alone takes some light out of the zenith (`uDomeZenith`, DOME_ZENITH_*): a deep blue through
-  the warm grade, darker at night; none at the horizon, where the haze meets it.
+  the warm grade, darker at night; none at the horizon, where the haze meets it. At night the chase
+  view swaps in `SKY_KEYS.chaseNight` (a deeper navy; CHASE NIGHT in rendering-lighting.md): the one
+  sky still, so the environment rebuilds once on a switch of view after dark (`refreshEnvironment`).
 - The dome draws at renderOrder 50, after the opaque city, depth-tested at the far plane: only visible
   sky is shaded. An opaque-queue object that writes no depth and must show against the sky needs a
   higher renderOrder (the objective arrow is 99).

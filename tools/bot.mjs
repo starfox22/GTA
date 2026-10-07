@@ -508,6 +508,26 @@ const actions = {
     await ensurePlay('gamepad ' + Object.keys(buttons).join('+'));
     return Object.keys(buttons).join('+') || 'sticks';
   },
+  async chaseView() {
+    // V (a real press) switches between the street view and the chase view (the choice stays for the actions that
+    // follow). In the chase view: look round (chaseLook stands for the mouse), move along the camera, aim with the
+    // pad's LT on foot; the camera must stay placed and finite.
+    await press('KeyV');
+    const cam = await call('chaseCamera');
+    if (cam.mode !== 'chase') return cam.mode;
+    await call('chaseLook', Math.round(between(-400, 400)), Math.round(between(-80, 80)));
+    await sim(pick(MOVE_SETS), between(0.5, 2));
+    if (await onFoot()) {
+      await call('gamepadFeed', { axes: [0, 0, 0, 0], buttons: { LT: 1 } });
+      await realWait(0.4);
+      await call('gamepadFeed', null);
+    }
+    const after = await call('chaseCamera');
+    if (after.live && after.ready && ![...after.position, ...after.pivot, after.yawDeg, after.pitchDeg, after.boomMetres].every(Number.isFinite))
+      find('chase', 'the chase camera is not finite: ' + JSON.stringify(after).slice(0, 200));
+    await ensurePlay('chaseView');
+    return 'chase';
+  },
   async mouseFire() {
     // The real pointer: aim somewhere on the screen and hold the button (fire), keys held for movement.
     await call('arm', Math.floor(between(0, 6)));
@@ -728,6 +748,7 @@ const TABLE = [
   ['rebind', 1],
   ['gamepad', 1.5],
   ['mouseFire', 1.5],
+  ['chaseView', 2.5],
   ['touchMode', 1],
   ['menus', 4],
   ['inputAlive', 2],

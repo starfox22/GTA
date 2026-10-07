@@ -36,7 +36,8 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/rendering.md | Cameras and view, draw-call rules |
 | areas/rendering-buildings.md | Building archetypes and roofs, the street frontage on every side (shops, lobbies, stoops, loading bays, backs, fire escapes), shop windows, the sign design system (`sign()`, `SIGN_DESIGNS`, families), billboards, the glow field |
 | areas/rendering-weather.md | Ground, wet roads, water, rain, splashes, spray, lightning, tiers, and their street-level (chase view) numbers: near rain, rain haze, wet reflections, streaks |
-| areas/chase-view.md | The third-person CHASE view (V): where the camera stands (game state, its projection), look input (pointer lock, pad, touch), drawing it (draw distance, culling, shadows), the reticle |
+| areas/chase-view.md | The third-person CHASE view (V): where the camera stands (game state, its projection, walls and the close-quarters crane), drawing it (draw distance, culling, shadows), the reticle and lock-on, its game rules |
+| areas/chase-view-input.md | The chase view's input: pointer lock and CURSOR LOOK, look behind, pad and touch look, camera-relative movement |
 | areas/rendering-chase.md | The chase view's draw distance and level of detail: far cells drawn from the far copy, shadow casters and proxies, small props and pools, people and vehicles by distance, the `chaseCamera().view` report |
 | areas/rendering-hiccups.md | First-use hitches: what the title-screen prewarm warms (programs, off-screen passes, stand-in models, the far copy), the first-use log (`renderHiccups`), the rules a new effect follows, dormant lights, numbers |
 | areas/boot-and-memory.md | The boot timeline (`bootTimings()`) and what each stage costs, what was cut, the renderer memory soak, the staged tier change, the cell pre-upload and AUTO's resolution hold |
