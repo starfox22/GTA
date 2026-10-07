@@ -532,9 +532,14 @@
       drawFire2D();
       for (const p of particles)
         if (visible(p)) {
-          worldContext.globalAlpha = clamp(p.life / p.max, 0, 1);
+          worldContext.globalAlpha = clamp(p.life / p.max, 0, 1) * (p.mist ? 0.5 : 1);
           worldContext.fillStyle = p.color;
-          worldContext.fillRect(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size);
+          // Blood flies as round drops and soft mist, never squares.
+          if (p.blood || p.mist) {
+            worldContext.beginPath();
+            worldContext.arc(p.x, p.y, p.size * (p.mist ? 1.2 : 0.5), 0, TAU);
+            worldContext.fill();
+          } else worldContext.fillRect(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size);
         }
       worldContext.globalAlpha = 1;
       // Streetlights give the city a subtle warm dusk.

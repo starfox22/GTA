@@ -1,6 +1,6 @@
 // Blood (blood.js): one round leaves a spatter and drops, never a pool; a body on the
 // ground bleeds a pool that starts small and spreads fast (most of it in 10-15 s) to about
-// 1.5 m across, larger after several rounds; a blast pools at once and sprays round the body.
+// 1.75 m across, larger after several rounds; a blast pools at once and sprays round the body.
 export const fresh = true;
 const SPOTS = [
   [420, 4600],
@@ -33,7 +33,7 @@ export default async function (t) {
     r = await report(t, dead);
     t.assert(r.pools.length === 1, `one pool under the body: ${JSON.stringify(r.pools)}`);
     const early = r.pools[0].r;
-    t.assert(early < 3.2, `the pool is full at once: ${JSON.stringify(r.pools)}`);
+    t.assert(early < 3.5, `the pool is full at once: ${JSON.stringify(r.pools)}`);
     await t.wait(10);
     const mid = (await report(t, dead)).pools[0].r;
     await t.wait(20);
@@ -42,7 +42,8 @@ export default async function (t) {
     t.assert(early < mid && mid < late, `the pool does not spread: ${early} -> ${mid} -> ${late}`);
     // Fast: most of the spread by 10 s (r 4.2 at 30 s before 2026-10-04, r 3.0 at 10 s).
     t.assert(mid >= 4.6, `the pool spreads too slowly: ${mid} at 10 s`);
-    t.assert(late >= 5.6 && late <= r.pools[0].rMax + 0.01 && late < 7, `a one-round pool after 30 s: ${late}`);
+    // One round: about r 7 (1.75 m across; 6 before the gore round of 2026-10-07).
+    t.assert(late >= 6.4 && late <= r.pools[0].rMax + 0.01 && late < 8, `a one-round pool after 30 s: ${late}`);
     t.note(`one round: pool r ${early} -> ${mid} (10 s) -> ${late} (30 s), rMax ${r.pools[0].rMax}`);
 
     // Several rounds before death: a larger pool, filling faster.
@@ -59,7 +60,8 @@ export default async function (t) {
     r = await report(t, blast);
     t.assert(r.pools.length === 1 && r.pools[0].r >= 3, `no immediate pool from a blast: ${JSON.stringify(r)}`);
     t.assert(r.near.spatter >= 4, `no spray round a blast: ${JSON.stringify(r.near)}`);
-    t.assert(r.total <= 240, `blood decals unbounded: ${r.total}`);
+    const caps = (await t.call('goreReport')).caps;
+    t.assert(r.total <= caps.decals, `blood decals unbounded: ${r.total} over ${caps.decals}`);
   } finally {
     await t.call('holdSimulation', false);
   }

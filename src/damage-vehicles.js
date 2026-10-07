@@ -139,6 +139,7 @@
         nearest.z += (dent.z - nearest.z) * share;
         nearest.nx = nx / length;
         nearest.ny = ny / length;
+        nearest.nz = (nearest.nz || 0) + ((dent.nz || 0) - (nearest.nz || 0)) * share;
         nearest.depth = Math.min(cap, nearest.depth + dent.depth * 0.85);
         nearest.r = Math.min(spec.l * 0.5, Math.max(nearest.r, dent.r) + dent.depth * 0.3);
         nearest.force = clamp(nearest.depth / 1.4, 0.25, 3.5);
@@ -191,6 +192,7 @@
       let depth,
         nx,
         ny,
+        nz = 0,
         px = lx,
         py = ly,
         z = 6;
@@ -203,6 +205,18 @@
         depth = clamp((detail.closing - 36) * 0.04 * heavier, 0, 0.3 * spec.l);
         nx = inward.x;
         ny = inward.y;
+        // A landing on its roof or a side (falls-vehicles.js cliffImpact): that face takes the crush.
+        if (detail.face === 'roof') {
+          const band = vehicleGlassBand(vehicle);
+          px = py = nx = ny = 0;
+          z = band ? band.roof : 14;
+          nz = -1;
+        } else if (detail.face === 'left' || detail.face === 'right') {
+          const side = detail.face === 'left' ? -1 : 1;
+          px = nx = 0;
+          py = (side * spec.w) / 2;
+          ny = -side;
+        }
       } else if (kind === 'blast') {
         // The face toward the blast is dished in; the harder the closer.
         const from = vehicleLocalPoint(vehicle, detail.x, detail.y),
@@ -221,7 +235,7 @@
       }
       const zone = damageZone(spec, px, py),
         span = zone === 'front' || zone === 'rear' ? 0.25 * spec.l : 0.5 * spec.w;
-      if (depth > 0.05) addDent(vehicle, { x: px, y: py, z, nx, ny, depth, r: clamp(8 + depth * 1.7, 8, spec.l * 0.45) });
+      if (depth > 0.05) addDent(vehicle, { x: px, y: py, z, nx, ny, nz, depth, r: clamp(8 + depth * 1.7, 8, spec.l * 0.45) });
       damage[zone] = clamp(damage[zone] + depth / span + share * 0.5, 0, 1);
       if (type === 'car' || type === 'truck') breakParts(vehicle, damage, spec, zone, px, py, depth);
     }
@@ -343,7 +357,10 @@
         vehicle.damageVersion++;
         return kind;
       }
-      addVehicleMark(vehicle, { kind: 'hole', x: entry.x, y: entry.y, z, dx: entry.dx, dy: entry.dy, size });
+      // Off the glasshouse (bonnet, boot, the ends) the round went into metal under the belt line: a chest-high line
+      // over a bonnet would have met the screen, so the hole is drawn on the panel below it (the rules above keep `z`).
+      const holeZ = band && (entry.x <= band.back || entry.x >= band.front) ? Math.min(z, band.belt - 0.6) : z;
+      addVehicleMark(vehicle, { kind: 'hole', x: entry.x, y: entry.y, z: holeZ, dx: entry.dx, dy: entry.dy, size });
       if (band) {
         // Lamps sit in the corners of each end, below the belt line.
         const lampY = Math.abs(entry.y) > spec.w * 0.1 && Math.abs(entry.y) < spec.w * 0.48 && z < band.belt + 1;

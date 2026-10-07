@@ -9,6 +9,8 @@ police-and-combat.md. The player's own armour (`player.armor`) is not this: it k
   gang members and guards (80-85 hp) to two 9mm or rifle rounds, three from the machine pistol.
 - A vest covers the **torso only**: the hit zone is chosen in `strikePerson` first
   (wounds.js `pickHitZone`: head 12 %, torso 58 %, legs 30 %) and a head or leg round goes round it.
+  gore.js `goreHit` may change it: a point-blank load keeps its first pellet's zone, and a torso
+  load within ~5 m (or a .50) catches the arm held in front 30 % of the time (zone `arm`, no vest).
 - `vest` points are the vest's integrity; `vestPlate` says what it is. Soft (concealable: patrol
   and road officers, Vescari) or plate (SWAT, agents, soldiers, marksmen, the Fort Sentinel garrison).
   `VEST_STOP[class][calibre]`: `stop` is the share of a torso round the vest takes (the rest is the

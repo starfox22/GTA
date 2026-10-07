@@ -102,7 +102,17 @@
               part.meta.clearUpdateRanges();
               part.meta.addUpdateRange(0, part.n * 2);
               part.meta.needsUpdate = true;
+              // Wounds only while someone in this part has one (and the frame after, to clear them).
+              if (part.wounds || part.woundsBefore) {
+                part.wound.clearUpdateRanges();
+                part.wound.addUpdateRange(0, part.n * 4);
+                part.wound.needsUpdate = true;
+              }
             }
+          }
+          if (part.paint) {
+            part.woundsBefore = part.wounds;
+            part.wounds = 0;
           }
           mesh.visible = part.n > 0;
           part.n = 0;
@@ -216,6 +226,8 @@
         // The chase view's far figures stand well beyond its shadow reach (chase-view3d.js CHASE SHADOWS).
         if (P.figure.mesh.castShadow === chaseViewActive) P.figure.mesh.castShadow = P.figureLeg.mesh.castShadow = !chaseViewActive;
         trackCarTransition();
+        // The player's own body: finished at once if play began before its build was done (player-body3d.js).
+        playerBodyStart();
         chooseNearPeople(specials);
         if (zoomedIn)
           for (let i = 0; i < pedestrians.length; i++) {
@@ -254,6 +266,9 @@
         drawEnterCar(deltaSeconds, detail);
         BODY = frameBody;
         if (zoomedIn) drawn += drawBeachgoers(deltaSeconds, detail);
+        // Limbs a heavy hit took off, and the bone chips at a fresh cut (crowd3d-gore.js).
+        if (zoomedIn && severedParts.length) drawSeveredParts();
+        goreEffects();
         crowdPackMs = performance.now() - packStart;
         for (const prop of crowd.props) {
           const part = propParts[prop.kind];

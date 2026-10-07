@@ -40,6 +40,16 @@ people-and-crowd-player.md.)
 - Venue drawing hooks: `queueAthlete` (sports3d), BEACHGOERS poses (beach3d), RIDERS (seat from
   the vehicle model's `riderSeat`), `poseParachutist` (parachute3d poses a stand-in).
 
+## Gore on the rig (crowd3d-gore.js; police-and-combat-gore.md)
+
+- A part in `p.goreLost` is left out and `P.stump` (one part on the body material: torn sleeve in the lost part's
+  colour, slot D skin edge, flesh, bone) is packed at its joint; a severed piece is the owner's own parts at the
+  piece's pose. Still figures re-record when `p.goreVersion` changes.
+- Every rigPart carries `crowdWound` (vec4: the entry in the part's space, w = 2 + reach, +100 for an exit; under
+  1.5 none) written by rigEmit from `rigWoundNow` (set by `goreWoundFor` before a body part, cleared after); the
+  paint shader soaks the cloth or skin there (PAINT SHADER WOUNDS). Uploaded only while a part has a wounded
+  instance (and the frame after).
+
 ## Body sets and level of detail
 
 - Street view: the close set above zoom 2.4, the street set (half the facets, every other ring)

@@ -226,7 +226,9 @@
             [-0.5, 0.86, 0.72, 0.34], [-0.49, 0.94, 0.77, 0.22], [-0.46, 0.99, 0.8, 0.12], [-0.38, 1.02, 0.8], [-0.3, 1.03, 0.79], [-0.2, 0.98, 0.77],
             [-0.1, 0.9, 0.76], [0.04, 0.87, 0.75], [0.16, 0.9, 0.62], [0.26, 0.96, 0.52], [0.37, 0.98, 0.47], [0.45, 0.92, 0.41, 0.1], [0.49, 0.8, 0.34, 0.12], [0.5, 0.64, 0.28, 0.15],
           ],
-          glass: { base: 0.72, roof: 1.06, xf: 0.2, xb: -0.3, rf: 0.04, rb: -0.12, wb: 0.25, wt: 0.14, bow: 0.035, bulge: 0.12, arch: 0.07, frame: 'gloss', aPillar: 'black', pillars: [] },
+          // The canopy wide enough over two heads side by side; the seats lie back as a racing car's (cars3d-headroom.js).
+          glass: { base: 0.72, roof: 1.07, xf: 0.2, xb: -0.3, rf: 0.04, rb: -0.12, wb: 0.25, wt: 0.18, bow: 0.035, bulge: 0.12, arch: 0.08, frame: 'gloss', aPillar: 'black', pillars: [] },
+          seats: { recline: 0.88 },
           wheel: { r: 0.34, rr: 0.36, width: 0.28, wr: 0.35, xf: 0.31, xr: -0.3, caliper: '#c9ced3' },
           rim: { style: 'aero', spokes: 10, color: '#1a1b1e', frac: 0.8 },
           hatch: true,
@@ -867,6 +869,8 @@
             [-0.06, 0.94, 0.8], [0.08, 0.95, 0.74], [0.2, 0.97, 0.66], [0.3, 0.98, 0.59], [0.4, 0.96, 0.52], [0.46, 0.9, 0.46, 0.11], [0.49, 0.78, 0.4, 0.14], [0.5, 0.6, 0.34, 0.18],
           ],
           glass: { base: 0.82, roof: 1.12, xf: 0.2, xb: -0.18, rf: 0.01, rb: -0.1, wb: 0.38, wt: 0.26, bow: 0.036, bulge: 0.1, arch: 0.07, frame: 'gloss', pillars: [[0.32, 0.05, 'black']], aPillar: 'black' },
+          // Fixed racing seats moulded into the tub, lying well back (cars3d-headroom.js).
+          seats: { recline: 0.76 },
           wheel: { r: 0.34, rr: 0.36, width: 0.26, wr: 0.34, xf: 0.3, xr: -0.29, caliper: '#f2c500' },
           rim: { style: 'split', spokes: 5, color: '#2a2c30', frac: 0.78, centreLock: true },
           hatch: true,
@@ -929,8 +933,14 @@
         },
         details(k) {
           CAR_BODIES.chevette.details(k);
+          const { M, S, at, l, sets } = k;
+          // The aero pack's tall wing on swan stands over the ducktail.
+          const wx = -0.46 * l,
+            wy = k.top(wx) + 0.27 * M;
+          for (const side of [-1, 1]) k.bar(sets.trim, [wx, k.top(wx), side * 0.55 * M], [-0.49 * l, wy - 0.01 * M, side * 0.55 * M], 0.03 * M, 0.2 * M, 0.012 * M, { color: '#111214', finish: 'carbon', cell: 'carbon' });
+          k.bar(sets.trim, [-0.492 * l, wy, -0.78 * M], [-0.492 * l, wy, 0.78 * M], 0.035 * M, 0.3 * M, 0.015 * M, { color: '#111214', finish: 'carbon', cell: 'carbon' }, [0.2, 1, 0]);
+          for (const side of [-1, 1]) k.add(sets.trim, S.box, -0.492 * l, wy - 0.03 * M, side * 0.79 * M, 0.34 * M, 0.12 * M, 0.02 * M, { color: '#111214', finish: 'carbon' });
           // The carbon splitter and dive planes of the aero pack.
-          const { M, at, l } = k;
           hcSplitter(k, 0.13, 0.9, 0.05);
           for (const side of [-1, 1]) {
             const hw = at(0.48 * l, 0.3 * M).half;

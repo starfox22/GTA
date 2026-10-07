@@ -144,45 +144,6 @@
         sharedGeometries.add(geo);
         return geo;
       }
-      // Pushes every vertex along the dents it lies inside: full depth at the centre,
-      // easing to nothing at the dent's radius, with a per-vertex wrinkle so the metal
-      // folds rather than dishes. `offsetX` is the mesh's place along the body.
-      function crumple(geometry, base, dents, offsetX, seed) {
-        const position = geometry.attributes.position,
-          array = position.array;
-        for (let i = 0; i < position.count; i++) {
-          const x = base[i * 3] + offsetX,
-            y = base[i * 3 + 1],
-            z = base[i * 3 + 2],
-            wrinkle = Math.sin(i * 12.9898 + seed * 78.233) * 43758.5453,
-            n = (wrinkle - Math.floor(wrinkle)) * 2 - 1;
-          let dx = 0,
-            dy = 0,
-            dz = 0;
-          for (const d of dents) {
-            if (d.depth === undefined) continue;
-            const ex = x - d.x,
-              ey = (y - d.z) * 0.6,
-              ez = z - d.y,
-              q = (ex * ex + ey * ey + ez * ez) / (d.r * d.r);
-            if (q >= 1) continue;
-            const f = (1 - q) * (1 - q) * d.depth,
-              // Crushed metal has to go somewhere: it bulges out sideways from the push.
-              across = ex * -d.ny + ez * d.nx,
-              bulge = f * 0.14 * Math.sign(across);
-            dx += d.nx * f * (1 + 0.45 * n) - d.ny * bulge;
-            dz += d.ny * f * (1 + 0.45 * n) + d.nx * bulge;
-            dy += f * (0.32 * n - 0.14);
-          }
-          array[i * 3] = base[i * 3] + dx;
-          array[i * 3 + 1] = base[i * 3 + 1] + dy;
-          array[i * 3 + 2] = base[i * 3 + 2] + dz;
-        }
-        position.needsUpdate = true;
-        geometry.computeVertexNormals();
-        geometry.computeBoundingSphere();
-        geometry.computeBoundingBox();
-      }
       // Moves a part into a pivot group at `hinge` so it can swing about that point.
       function hingePart(m, part, hinge) {
         const pivot = new Three.Group();
@@ -199,38 +160,23 @@
           first = !m.partState,
           before = m.partState || {},
           paintColor = '#' + m.paint.color.getHexString();
-        // Crumple the shell and the glasshouse with the same dents. The dents are
-        // in world units, the model in its design units (render3d.js DESIGN SIZE).
-        const signature = c.dents.reduce((s, d) => s + (d.depth || 0) * 7 + d.x + d.y * 3, c.dents.length);
-        if (signature !== m.dentSignature) {
+        // The hood swings on a hinge; the body's parts are listed in their rest pose the first time (BODY CRUMPLE).
+        if (!m.hoodPivot && m.hood) m.hoodPivot = hingePart(m, m.hood, hingeScratch.set(l * 0.215, m.hoodBaseY, 0));
+        if (!m.crumple) m.crumple = crumpleCollect(m);
+        // The dents are in world units, the model in its design units (render3d.js DESIGN SIZE).
+        // (A hood springing open is bent again: it keeps more of its length open, crumpleBend.)
+        const signature = c.dents.reduce((s, d) => s + (d.depth || 0) * 7 + d.x + d.y * 3 + d.r * 0.01 + (d.nz || 0) * 0.37, c.dents.length) + (parts.hood >= 1 ? 0.123 : 0),
+          reshape = signature !== m.dentSignature;
+        if (reshape) {
           m.dentSignature = signature;
           const k = 1 / (m.modelScale || 1);
           m.designDents = k === 1 ? c.dents : c.dents.map((d) => ({ ...d, x: d.x * k, y: d.y * k, z: d.z * k, r: d.r * k, depth: d.depth === undefined ? undefined : d.depth * k }));
-          if (c.dents.length) {
-            if (!m.ownShell) {
-              m.shell.geometry = m.shell.geometry.clone();
-              m.ownShell = true;
-            }
-            crumple(m.shell.geometry, m.shellBase, m.designDents, 0, c.id);
-            if (m.cabinBase) {
-              if (!m.ownCabin) {
-                m.cabin.geometry = m.cabin.geometry.clone();
-                m.ownCabin = true;
-              }
-              crumple(m.cabin.geometry, m.cabinBase, m.designDents, m.cabin.position.x, c.id);
-            }
-          }
-          m.shapeVersion = (m.shapeVersion || 0) + 1;
         }
-        const frontDepth = (m.designDents || c.dents).reduce((s, d) => (d.x > l * 0.2 && d.depth ? Math.max(s, d.depth) : s), 0);
-        // Hood: buckles up in the middle, springs open on its hinge, or is gone.
-        if (!m.hoodPivot) m.hoodPivot = hingePart(m, m.hood, hingeScratch.set(l * 0.215, m.hoodBaseY, 0));
+        const dents = m.designDents || c.dents;
+        // Hood: buckles up a little with the nose, springs up off its latch on its (moved) hinge, or is gone.
         m.hood.visible = parts.hood < 2;
         if (parts.hood === 2 && before.hood !== 2 && !first) spawnPanel(m.hood, paintColor, c, l * 0.25, 0.4, w * 0.67, 1.4);
-        m.hoodPivot.position.set(l * 0.215 - frontDepth * 0.12, m.hoodBaseY - frontDepth * 0.08, 0);
-        m.hoodPivot.rotation.set(parts.hood === 1 ? 0.07 : 0, 0, parts.hood === 1 ? 0.78 + (c.id % 5) * 0.05 : Math.min(0.32, damage.front * 0.3));
-        m.hood.scale.x = l * 0.25 * (1 - clamp(frontDepth / (l * 0.3), 0, 0.45));
-        m.hood.position.x = m.hood.scale.x / 2;
+        m.hoodPivot.rotation.set(parts.hood === 1 ? 0.05 : 0, 0, parts.hood === 1 ? 0.3 + (c.id % 5) * 0.04 : Math.min(0.12, damage.front * 0.12));
         if (parts.hood >= 1 && !m.engine) {
           // The engine bay the hood was covering: block, rocker cover, air box.
           m.engine = new Three.Group();
@@ -239,12 +185,12 @@
           box(m.engine, 0, 0, 0, l * 0.21, 0.9, w * 0.58, engineBay);
           box(m.engine, -l * 0.02, 0.8, 0, l * 0.12, 0.9, w * 0.22, darkMetal);
           mesh(cylinderGeo, darkMetal, m.engine, l * 0.05, 0.9, w * 0.17, 1.6, 0.8, 1.6);
+          crumpleAdopt(m, m.engine, false);
         }
         if (m.engine) m.engine.visible = parts.hood >= 1;
-        // Bumpers: pushed in with the crumple, hanging off one bracket, or torn away.
+        // Bumpers: bent with the crumple (BODY CRUMPLE), hanging off one bracket, or torn away.
         m.bumpers.forEach((bumper, i) => {
           const state = i ? parts.bumperRear : parts.bumperFront,
-            amount = i ? damage.rear : damage.front,
             side = (i ? damage.bumperRearSide : damage.bumperFrontSide) || 1,
             half = bumper.scale.z / 2;
           if (state === 2) {
@@ -255,15 +201,17 @@
           }
           bumper.visible = true;
           bumper.position.copy(m.bumperOrigins[i]);
-          bumper.position.x += (i ? 1 : -1) * amount * 2.4;
-          bumper.position.y -= amount * 1.1;
-          bumper.rotation.set(0, (i ? 1 : -1) * amount * 0.15 * side, 0);
+          bumper.rotation.set(0, 0, 0);
           if (state === 1) {
-            // Held by the far bracket: the loose end drops about 25 degrees.
-            const drop = 0.44;
+            // Held by the far bracket: the loose end drops about 25 degrees, no further than the road. It turns about
+            // that bracket (the bumper's own half length and height from its rest box: BODY CRUMPLE).
+            const rest = m.crumple?.parts.find((p) => p.mesh === bumper)?.box,
+              length = rest ? (rest[5] - rest[2]) / 2 : half,
+              low = rest ? rest[1] : bumper.position.y - bumper.scale.y / 2,
+              drop = Math.min(0.44, Math.asin(clamp((low - 0.3) / (2 * length), 0, 1)));
             bumper.rotation.x = side * drop;
-            bumper.position.y -= half * Math.sin(drop);
-            bumper.position.z += side * half * (1 - Math.cos(drop));
+            bumper.position.y -= length * Math.sin(drop);
+            bumper.position.z -= side * length * (1 - Math.cos(drop));
           }
           // Police bumpers are black plastic (police3d.js).
           bumper.material = damage.burnt ? burntMetal : m.bumperMaterials?.[i] || m.bumperMaterial || chrome;
@@ -272,7 +220,12 @@
         for (const side of [-1, 1]) {
           const key = side < 0 ? 'doorLeft' : 'doorRight',
             state = parts[key];
-          if (!state) continue;
+          if (!state) {
+            // Repaired: the door is shut again (the body's own side shows), no opening.
+            const shut = m.doors?.[side];
+            if (shut) shut.panel.visible = shut.opening.visible = false;
+            continue;
+          }
           m.doors = m.doors || {};
           let door = m.doors[side];
           if (!door) {
@@ -280,13 +233,32 @@
             pivot.position.set(l * 0.2, 0, side * w * 0.5);
             m.body.add(pivot);
             // From the sill (`dims.sill`: a real-size body's, cars3d.js) to the belt.
+            // The door is cut from the body's own side (its curve, paint and livery; damage3d-crumple.js), else a slab.
             const sill = m.dims.sill ?? 4.8,
-              panel = box(pivot, -l * 0.13, (sill + h + 0.4) / 2, side * 0.25, l * 0.26, h + 0.4 - sill, 0.45, m.paint),
+              rect = { x0: l * -0.06, x1: l * 0.2, y0: sill + 0.2, y1: h - 0.15 },
+              shaped = doorPanelGeometries(m, side, rect.x0, rect.x1, rect.y0, rect.y1, pivot.position);
+            let panel, opening;
+            if (shaped) {
+              panel = new Three.Mesh(shaped.door, [m.paint, engineBay]);
+              opening = new Three.Mesh(shaped.opening, engineBay);
+              panel.castShadow = opening.receiveShadow = panel.receiveShadow = true;
+              pivot.add(panel);
+              m.body.add(opening);
+            } else {
+              panel = box(pivot, -l * 0.13, (sill + h + 0.4) / 2, side * 0.25, l * 0.26, h + 0.4 - sill, 0.45, m.paint);
               opening = box(m.body, l * 0.07, (sill + h) / 2, side * (w * 0.5 + 0.04), l * 0.24, h - sill - 0.2, 0.3, engineBay);
-            // A livery samples its door colour through the panel's UVs (police3d.js).
-            if (m.panelGeometry) panel.geometry = m.panelGeometry;
-            door = m.doors[side] = { pivot, panel, opening };
+              // A livery samples its door colour through the panel's UVs (police3d.js).
+              if (m.panelGeometry) panel.geometry = m.panelGeometry;
+            }
+            // `rect`: the shaped door's place in the side (holes in that metal go with it, damage3d-marks.js).
+            door = m.doors[side] = { pivot, panel, opening, rect: shaped ? rect : null };
+            // The hinge moves with the crumpled side; the opening and the door (in its closed place, relative to the
+            // hinge) bend with it.
+            crumpleAdopt(m, pivot, true);
+            crumpleAdopt(m, opening, false);
+            crumpleAdopt(m, panel, false, true);
           }
+          door.opening.visible = true;
           door.pivot.rotation.set(0, side * (state === 1 ? 0.95 : 0), state === 1 ? -0.09 : 0);
           if (state === 2 && before[key] !== 2 && !first && door.panel.visible)
             spawnPanel(door.panel, paintColor, c, l * 0.26, h - 4.4, 0.45, 1.2);
@@ -299,8 +271,13 @@
           m.body.add(m.trunk);
           const lid = box(m.trunk, -l * 0.09, 0, 0, l * 0.18, 0.4, w * 0.67, m.paint);
           if (m.trunkGeometry) lid.geometry = m.trunkGeometry;
+          crumpleAdopt(m, m.trunk, true);
+          crumpleAdopt(m, lid, false, 'lid');
         }
-        if (m.trunk) m.trunk.rotation.z = parts.trunk ? -0.85 : 0;
+        // Sprung off its latch on a crushed tail, not swung wide open.
+        if (m.trunk) m.trunk.rotation.z = parts.trunk ? -0.38 - (c.id % 4) * 0.04 : 0;
+        // Bend the body with its dents (all of it when they changed, else only parts made just now), in time slices.
+        if (reshape || m.crumple.fresh) crumpleStart(c, m, dents, reshape);
         // Glass: one material per pane once any pane is damaged.
         const glass = damage.glass,
           // `m.glass`: a model's own intact glass (police3d.js).
@@ -316,7 +293,7 @@
             m.cabin.material = m.paneMaterials;
           } else m.cabin.material = m.glass || carGlass;
         } else m.cabin.material = paneMaterial(glass.front);
-        // Wheels: bent inward on a crumpled side; a flat tyre sits down on its rim.
+        // Wheels: moved with their arches (BODY CRUMPLE), bent inward on a crumpled side; a flat tyre sits down on its rim.
         m.wheels.forEach(({ wheel, side }) => {
           const key = (wheel.position.x > 0 ? 'front' : 'rear') + (side < 0 ? 'Left' : 'Right');
           if (wheel.userData.baseY === undefined) wheel.userData.baseY = wheel.position.y;
@@ -533,84 +510,3 @@
           engineSmoke(x, engineY, z, health < 0.4 ? '#55595f' : '#a4a8ad', health < 0.4 ? 11 : 8, health < 0.4 ? 16 : 12, ground, health < 0.4 ? 0.5 : 0.3);
       }
 
-      // ---- Marks on vehicles ------------------------------------------------------------------
-      const markAnchors = new WeakMap(),
-        markRay = new Three.Raycaster(),
-        markOrigin = new Three.Vector3(),
-        markDirection = new Three.Vector3(),
-        markInverse = new Three.Matrix4(),
-        bodyWorld = new Three.Matrix4(),
-        markWorld = new Three.Matrix4();
-      function rayTargets(m) {
-        const wheelParts = new Set();
-        for (const { wheel } of m.wheels || []) wheel?.traverse?.((o) => wheelParts.add(o));
-        const list = [];
-        m.body.traverse((o) => {
-          if (!o.isMesh || o.isInstancedMesh || wheelParts.has(o)) return;
-          for (let p = o; p && p !== m.body; p = p.parent) if (!p.visible) return;
-          list.push(o);
-        });
-        return list;
-      }
-      // Finds where a mark sits on the body: cast along the bullet's line from outside,
-      // take the first surface it meets, and keep that pose in body space.
-      function anchorMark(c, m, mark) {
-        m.group.updateMatrixWorld(true);
-        markInverse.copy(m.body.matrixWorld).invert();
-        markDirection.set(mark.dx, 0, mark.dy);
-        if (markDirection.lengthSq() < 1e-6) markDirection.set(-mark.x, 0, -mark.y);
-        markDirection.normalize();
-        markOrigin.set(mark.x, mark.z, mark.y).addScaledVector(markDirection, -18).applyMatrix4(m.body.matrixWorld);
-        const worldDirection = markDirection.clone().transformDirection(m.body.matrixWorld);
-        markRay.set(markOrigin, worldDirection);
-        markRay.far = 44;
-        if (!m.rayTargets || m.rayTargetsVersion !== m.shapeVersion) {
-          m.rayTargets = rayTargets(m);
-          m.rayTargetsVersion = m.shapeVersion;
-        }
-        const hit = markRay.intersectObjects(m.rayTargets, false)[0],
-          point = new Three.Vector3(),
-          normal = new Three.Vector3();
-        if (hit && hit.face) {
-          point.copy(hit.point).applyMatrix4(markInverse);
-          normal.copy(hit.face.normal).transformDirection(hit.object.matrixWorld).transformDirection(markInverse);
-          if (normal.dot(markDirection) > 0) normal.negate();
-        } else {
-          point.set(mark.x, mark.z, mark.y);
-          normal.copy(markDirection).negate();
-        }
-        const scrape = mark.kind === 'scrape',
-          sx = scrape ? mark.size * 1.8 : mark.kind === 'star' ? mark.size : mark.size * 4.2,
-          sy = scrape ? mark.size * 0.45 : sx,
-          anchor = {
-            matrix: decalPose(new Three.Matrix4(), point.x, point.y, point.z, normal.x, normal.y, normal.z, sx, sy, scrape ? 0 : (mark.id * 2.39996) % TAU, 0.07),
-            version: m.shapeVersion,
-          };
-        markAnchors.set(mark, anchor);
-        return anchor;
-      }
-      const MARK_TILES = { hole: DECAL.hole, star: DECAL.star, scrape: DECAL.scrape };
-      function drawVehicleMarks() {
-        const layer = vehicleDecals;
-        let n = 0,
-          budget = 8;
-        for (const [c, m] of carModels) {
-          const marks = c.damage?.marks;
-          if (!marks?.length || !m.group.visible) continue;
-          m.group.updateMatrix();
-          m.body.updateMatrix();
-          bodyWorld.multiplyMatrices(m.group.matrix, m.body.matrix);
-          for (const mark of marks) {
-            if (n >= layer.capacity) break;
-            if (mark.kind === 'star' && c.damage.glass[mark.pane] === 2) continue;
-            let anchor = markAnchors.get(mark);
-            if (!anchor || anchor.version !== m.shapeVersion) {
-              if (budget <= 0 && !anchor) continue;
-              if (budget-- > 0) anchor = anchorMark(c, m, mark);
-            }
-            writeDecal(layer, n++, markWorld.multiplyMatrices(bodyWorld, anchor.matrix), MARK_TILES[mark.kind], mark.kind === 'scrape' ? 0.85 : 1, null);
-          }
-        }
-        layer.mesh.count = n;
-        if (n) layer.dirty = true;
-      }

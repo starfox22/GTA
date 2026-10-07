@@ -78,14 +78,17 @@
         ),
       ])
         if (e.hp > 0 && distance(e) < 85 * power && clearSight(blast, e)) {
-          strikePerson(e, 200, headingBetween(blast, e), attacker, true, 'blast');
+          strikePerson(e, 200, headingBetween(blast, e), attacker, true, 'blast', 'handgun', { range: distance(e), power });
         }
       for (const animal of wildlife)
         if (animal.hp > 0 && distance(animal) < 85 * power && clearSight(blast, animal))
           strikeWildlife(animal, Math.max(0, 200 * power - distance(animal) * 1.6));
       const pd = distance(player);
-      if (pd < 95 * power && clearSight(blast, player))
+      if (pd < 95 * power && clearSight(blast, player)) {
         hurt(Math.max(0, (95 * power - pd) * 0.75), 'blast');
+        // Killed close to it: the blast may take a limb (gore.js goreBlastDeath; only on death).
+        if (player.hp <= 0) goreBlastDeath(pd, power, headingBetween(blast, player));
+      }
       if (attacker === player) crime(0.5);
     }
     function hurt(d, kind = 'ballistic') {
@@ -144,6 +147,7 @@
         if (gameMode !== 'dead') return;
         cash = Math.max(0, cash - 250);
         player.hp = 100;
+        goreRestore(player);
         player.armor = 0;
         player.inv = 3;
         const hospital = nearestHospital(player.x, player.y);

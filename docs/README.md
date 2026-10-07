@@ -15,7 +15,9 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/places-and-venues.md | Palm Keys, the beach and Marea, Sunset Pier, Harbor Point (marina, superyacht, liners, cargo terminal), North Point Key, roofs and helipads, garages, casino |
 | areas/places-monarch-and-county.md | Monarch Isle and MONARCH ONE, Ridgeline villages and the 4x4 club, Fort Sentinel and the Apache, the stadium and GOALLINE, MONARCH MOTORS |
 | areas/vehicles-and-driving.md | Vehicle specs, handling, brakes and assists, crashes, riders, cliffs, aircraft (models: -models.md) |
-| areas/vehicles-and-driving-models.md | Vehicle models: the damage contract, draw calls and the pristine merge, cabins, see-through glass and the seated occupants |
+| areas/vehicles-and-driving-models.md | Vehicle models: the damage contract, draw calls and the pristine merge, body impostors, flagships |
+| areas/vehicles-and-driving-cabins.md | Car cabins: see-through glass, the seat plan fitted round the drawn head (`cabinHeadroom`), seated occupants, the drive-by seat, rear badges |
+| areas/vehicles-and-driving-damage.md | Crash damage on the body: the crumple field and its limits, bent parts, bullet holes and stars pinned to the panel they hit (`vehicleDamageShape`) |
 | areas/vehicles-and-driving-handling.md | Steering and grip, brakes and assists, drifts and the handbrake (`driftTest`) |
 | areas/people-and-crowd.md | Crowd behaviour, perception, speech bubbles |
 | areas/people-and-crowd-rig.md | The character rig: one instanced rig for everyone, key-ring outlines, looks, skeleton and gait, body sets, the chase view's near set (sculpted faces, hands, shoes, the near paint shader) |
@@ -26,6 +28,7 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/police-and-combat-ammo.md | Where guns and rounds come from: no street ammo or armour, the gun shops, taking a body's gun, police vehicles' stock; the on-screen fire rule |
 | areas/police-and-combat-witnesses.md | Witnesses and 911 calls: who calls, the call and its bubbles, the response to a report, `witnessReport` |
 | areas/police-and-combat-blood.md | Blood: a hit's spatter and drops, the pool a body bleeds out, blasts and impacts, `bleed()` for other code |
+| areas/police-and-combat-gore.md | Gore: blood by calibre, range and zone, point-blank loads, lost limbs and heads, stumps and bleeding out, wounds on the clothes, the Gore setting |
 | areas/police-and-combat-armour.md | NPC body armour: soft vests and plates by calibre and hit zone, shots to kill per weapon, no knock-back from rounds |
 | areas/police-and-combat-driveby.md | Drive-bys: firing arcs per window and body, the aim clamp, the rear screen, the lean-out pose |
 | areas/police-and-combat-mounted.md | Mounted guns: the LAV-8's 25 mm and coax, the gun jeep's .50 cal, the Black Hawk's door guns |

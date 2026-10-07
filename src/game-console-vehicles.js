@@ -403,6 +403,8 @@
     // Damage testing: park(), shootAt(), blast(), crashTest(), damageReport(),
     // streetProps(), damageStats() (see damage.js damageConsole).
     addConsoleMethods('damage', damageConsole());
+    // dentVehicle(), crumpleAudit(), vehicleDamageShape() (see damage-crumple.js crumpleConsole).
+    addConsoleMethods('damage', crumpleConsole());
     // Handling: turnTest(), pose(), aiDriving(), riderReport(), rideInto(),
     // bridgeJump() (see physics-console.js handlingConsole).
     addConsoleMethods('handling', handlingConsole());

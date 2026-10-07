@@ -260,6 +260,16 @@
       cliffImpact(c, landing, wheels);
       cliffRest(c, ground, landing, wheels);
     }
+    /* The face a vehicle in the air comes down on, off its wheels: 'roof', 'left' or 'right' (a roll past a quarter
+       turn puts that side down: +roll lowers the right, as the renderer turns the body), or null for a nose or tail. */
+    function cliffFaceDown(c) {
+      const air = c.cliffAir;
+      if (!air) return null;
+      const r = normalizeAngle(air.roll || 0),
+        p = normalizeAngle(air.pitch || 0);
+      if (Math.abs(Math.sin(r)) < Math.abs(Math.sin(p))) return Math.cos(p) < -0.5 && Math.cos(r) > 0.5 ? 'roof' : null;
+      return Math.cos(r) < -0.5 ? 'roof' : Math.cos(r) > 0.5 ? null : r > 0 ? 'right' : 'left';
+    }
     /* What a landing does to the vehicle and whoever is in it. */
     function cliffImpact(c, into, wheels) {
       const spec = vehicleSpec(c),
@@ -282,7 +292,7 @@
       } else if (spec.bike) riderLanding(c, into);
       const share = Math.pow((into - CLIFF_SAFE_INTO) / CLIFF_DAMAGE_SPAN, 1.3) * (wheels ? 1 : CLIFF_ROOF_FACTOR),
         hit = share * (c.maxhp || spec.hp || 150) * (spec.tank ? 0.1 : 1);
-      damageVehicle(c, hit, c.x, c.y, null, { kind: 'crash', nx: 0, ny: 0, closing: into, otherMass: 0 });
+      damageVehicle(c, hit, c.x, c.y, null, { kind: 'crash', nx: 0, ny: 0, closing: into, otherMass: 0, face: wheels ? null : cliffFaceDown(c) });
       if (near) {
         playSample(into > 14 * UNITS_PER_METRE ? 'crash-heavy-1' : 'crash-medium-1', clamp(into / (18 * UNITS_PER_METRE), 0.3, 0.95), 0.95, c);
         if (into > 10 * UNITS_PER_METRE) playSample('crash-glass-1', 0.35, 1, c);

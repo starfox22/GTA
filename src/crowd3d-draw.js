@@ -86,6 +86,7 @@
           still.body === BODY &&
           still.look === R &&
           still.facing === facing &&
+          still.gore === (p.goreVersion || 0) &&
           hitFlinch(p) === 0
         ) {
           replayInstances(still.records);
@@ -126,7 +127,7 @@
         s.still = null;
         if (settledStill) {
           // Record this frame's instances; later frames copy them.
-          s.still = { pose: stillPose, dead, detail, body: BODY, look: R, facing, records: [] };
+          s.still = { pose: stillPose, dead, detail, body: BODY, look: R, facing, gore: p.goreVersion || 0, records: [] };
           crowdRecording = s.still.records;
         }
         // Swimming strokes and the parachute set the limbs outright.
@@ -310,7 +311,11 @@
         const w = R.width,
           paints = R.paints;
         // Far away and simply standing or walking: three instances.
-        if (detail === 0 && farFigureOk(p, spec, J) && !own) {
+        // What gore.js says is gone is left out below, a stump at the cut (crowd3d-gore.js); wounds soak the clothes.
+        const lost = p.goreLost || 0,
+          wounded = !!p.goreWounds?.length;
+        if (lost) s.goreLook = look;
+        if (detail === 0 && farFigureOk(p, spec, J) && !own && !lost) {
           crowdJoint(mHips, mRoot, 0, bob, 0, 0, 0, pelvisYaw);
           rigEmit(P.figure, mHips, w, 1, w, paints.figure);
           for (let side = 0; side < 2; side++) {
@@ -332,7 +337,9 @@
         if (R.skirtOn) rigEmit(BODY.skirt, mHips, w, 1, w, paints.skirt);
         if (R.belt) rigEmit(BODY.belt, mHips, w, 1, w, paints.belt);
         // The torso breathes (a touch deeper and taller at the chest).
+        if (wounded) goreWoundFor(p, 1, 0);
         rigEmit(BODY[R.torso], mTorso, w * (1 + breathe * 0.012), 1 + breathe * 0.006, w, paints.torso);
+        if (wounded) goreWoundClear();
         if (R.collar) rigEmit(BODY.collar, mTorso, w, 1, w, paints.collar);
         if (R.hood) rigEmit(BODY.hood, mTorso, w, 1, w, paints.hood);
         if (R.vest) rigEmit(BODY.vest, mTorso, w, 1, w, paints.vest);
@@ -352,10 +359,15 @@
         const headYaw = J[J_HEAD_YAW] - (upperTurn - clamp(upperTurn, -1.1, 1.1)) - 0.2 * hipsDiff * loco * 0.8;
         crowdJoint(mHead, mTorso, 0.04, RIG.neck, 0, -J[J_HEAD_PITCH] - lean * 0.3, 0, headYaw);
         const hs = R.headScale;
-        rigEmit(BODY.head, mHead, hs, hs, hs, paints.head);
         if (own) playerBodyBone(2, mHead);
-        if (R.hatPart) rigEmit(BODY[R.hatPart], mHead, hs, hs, hs, paints.hat);
-        if (R.hairPart && !(R.hatPart && R.hairPart === 'hairCurly')) rigEmit(BODY[R.hairPart], mHead, hs, hs, hs, paints.hair);
+        if (lost & GORE_HEAD) goreStumpAt(mHead, 0.43 * hs * w, paints.head, true, true);
+        else {
+          if (wounded) goreWoundFor(p, 0, 0);
+          rigEmit(BODY.head, mHead, hs, hs, hs, paints.head);
+          if (R.hatPart) rigEmit(BODY[R.hatPart], mHead, hs, hs, hs, paints.hat);
+          if (R.hairPart && !(R.hatPart && R.hairPart === 'hairCurly')) rigEmit(BODY[R.hairPart], mHead, hs, hs, hs, paints.hair);
+          if (wounded) goreWoundClear();
+        }
         // Shoulders.
         for (let side = 0; side < 2; side++) {
           const sign = side ? 1 : -1;
@@ -369,28 +381,71 @@
         const hold = spec?.hold,
           holdWeight = J[J_HOLD];
         if (hold?.inHand) {
-          crowdJoint(mGun, mHand[1], hold.at[0], hold.at[1], hold.at[2], hold.rz);
+          // The player's own hand holds it in his fist (player-body3d-grips.js).
+          if (own) mGun.multiplyMatrices(mHand[1], pbGripsFor(spec.weapon).inverse);
+          else crowdJoint(mGun, mHand[1], hold.at[0], hold.at[1], hold.at[2], hold.rz);
           rigEmit(P[spec.weapon], mGun, 1, 1, 1, WEAPON_PAINTS[spec.weapon] || WEAPON_PAINTS.pistol);
-        } else if (hold && holdWeight > 0.05) drawHold(p, s, spec, hold, H, elevation, hipY, holdWeight);
+        } else if (hold && holdWeight > 0.05) drawHold(p, s, spec, hold, H, elevation, hipY, holdWeight, own);
         // A rider's hands on the bars (RIDERS).
         if (spec?.handTargets) {
+          // The player's own firing hand round the drive-by gun's grip: its wrist is the target.
+          if (own && spec.gunFrame) {
+            handFrames[1].multiplyMatrices(spec.gunFrame, pbGripsFor(spec.weapon || 'pistol').fire[spec.gunHand ? 1 : 0]);
+            spec.handTargets[spec.gunHand].setFromMatrixPosition(handFrames[1]);
+          }
           for (let side = 0; side < 2; side++) {
             shoulderWorld[side].setFromMatrixPosition(mShoulder[side]);
             holdPole.set(-0.4, -1, (side ? 1 : -1) * 0.6).transformDirection(mTorso);
             ikArm(mShoulder[side], mElbow[side], mHand[side], shoulderWorld[side], spec.handTargets[side], holdPole, RIG.upperArm * H, RIG.forearm * H, H);
+            // A grip past the arm's reach (a drive-by from a low seat): the gun comes in with the wrist, never floats.
+            if (spec.gunFrame && side === spec.gunHand) {
+              const gx = ikT.x - spec.handTargets[side].x,
+                gy = ikT.y - spec.handTargets[side].y,
+                gz = ikT.z - spec.handTargets[side].z;
+              if (gx * gx + gy * gy + gz * gz > 1e-6) {
+                const f = spec.gunFrame.elements,
+                  h = spec.gunHandFrame.elements;
+                f[12] += gx;
+                f[13] += gy;
+                f[14] += gz;
+                h[12] += gx;
+                h[13] += gy;
+                h[14] += gz;
+                // The player's own hand (player-body3d.js) round the grip comes in with it.
+                if (own) {
+                  const o = handFrames[1].elements;
+                  o[12] += gx;
+                  o[13] += gy;
+                  o[14] += gz;
+                }
+              }
+            }
           }
           // A drive-by (crowd3d-driveby.js): the pistol along the aim, the firing hand on its grip.
           if (spec.gunFrame) {
             rigEmit(P[spec.weapon] || P.pistol, spec.gunFrame, 1, 1, 1, WEAPON_PAINTS[spec.weapon] || WEAPON_PAINTS.pistol);
-            mHand[spec.gunHand].copy(spec.gunHandFrame);
+            mHand[spec.gunHand].copy(own ? handFrames[1] : spec.gunHandFrame);
           }
         }
         const armPaint = paints.upperArm,
           forePaint = paints.forearm;
         for (let side = 0; side < 2; side++) {
-          rigEmit(BODY.upperArm, mShoulder[side], w, 1, w, armPaint);
-          rigEmit(BODY.forearm, mElbow[side], w, 1, w, forePaint);
-          if (detail > 1) rigEmit(BODY.hand, mHand[side], 1, 1, 1, paints.hand);
+          const armGone = lost & GORE_ARM[side],
+            foreGone = armGone || lost & GORE_FOREARM[side];
+          if (armGone) goreStumpAt(mShoulder[side], 0.5 * w, armPaint);
+          else {
+            if (wounded) goreWoundFor(p, 2, side);
+            rigEmit(BODY.upperArm, mShoulder[side], w, 1, w, armPaint);
+            if (wounded) goreWoundClear();
+            if (foreGone) goreStumpAt(mElbow[side], 0.36 * w, forePaint);
+          }
+          if (!foreGone) {
+            if (wounded) goreWoundFor(p, 3, side);
+            rigEmit(BODY.forearm, mElbow[side], w, 1, w, forePaint);
+            if (wounded) goreWoundClear();
+            if (detail > 1) rigEmit(BODY.hand, mHand[side], 1, 1, 1, paints.hand);
+          }
+          if (wounded) goreWoundClear();
           if (own) {
             playerBodyBone(3 + side, mShoulder[side]);
             playerBodyBone(5 + side, mElbow[side]);
@@ -399,7 +454,7 @@
         }
         if (own) {
           const grip = playerHandGrip(p, spec, hold, holdWeight);
-          playerBodyGrip(grip[0], grip[1]);
+          playerBodyGrip(grip[0], grip[1], grip[2], grip[3]);
         }
         // Legs.
         for (let side = 0; side < 2; side++) {
@@ -416,9 +471,21 @@
             spread = clamp(Math.atan2(sign * legLocal.z - R.hipZ * w, -legLocal.y), -0.15, 0.5);
           }
           crowdJoint(mHip[side], mHips, 0, 0, sign * R.hipZ * w, hip, -sign * spread, 0);
-          rigEmit(BODY[R.thigh], mHip[side], w, 1, w, paints.thigh);
+          const legGone = lost & GORE_LEG[side],
+            shinGone = legGone || lost & GORE_SHIN[side];
+          if (legGone) goreStumpAt(mHip[side], 0.62 * w, paints.thigh);
+          else {
+            if (wounded) goreWoundFor(p, 4, side);
+            rigEmit(BODY[R.thigh], mHip[side], w, 1, w, paints.thigh);
+          }
           crowdJoint(mKnee[side], mHip[side], 0, -RIG.thigh, 0, knee);
-          rigEmit(BODY.shin, mKnee[side], w, 1, w, paints.shin);
+          if (wounded) goreWoundClear();
+          if (shinGone && !legGone) goreStumpAt(mKnee[side], 0.44 * w, paints.shin);
+          else if (!shinGone) {
+            if (wounded) goreWoundFor(p, 5, side);
+            rigEmit(BODY.shin, mKnee[side], w, 1, w, paints.shin);
+          }
+          if (wounded) goreWoundClear();
           if (own) {
             playerBodyBone(9 + side, mHip[side]);
             playerBodyBone(11 + side, mKnee[side]);
@@ -427,7 +494,7 @@
           // toes at push-off and hangs toes-down in the swing.
           const flat = fall > 0.5 ? 0.3 : 1;
           crowdJoint(mFoot, mKnee[side], 0, -RIG.shin, 0, -(hip + knee) * flat + footPitch[side] + (-run * loco * 0.06));
-          rigEmit(BODY[R.shoePart], mFoot, 1, 1, 1, paints.shoe);
+          if (!shinGone) rigEmit(BODY[R.shoePart], mFoot, 1, 1, 1, paints.shoe);
           if (own) playerBodyBone(13 + side, mFoot);
         }
         BODY = bodySet;
@@ -488,7 +555,7 @@
        * weapon is drawn there, and the wrists are brought to its grip and
        * handguard by IK (overwriting the posed arm matrices).
        */
-      function drawHold(p, s, spec, hold, H, elevation, hipY, weight) {
+      function drawHold(p, s, spec, hold, H, elevation, hipY, weight, own = false) {
         crowdJoint(mAim, mIdentity, p.x, elevation + hipY * H, p.y, 0, 0, -s.yaw);
         mAim.scale(crowdScale.set(H, H, H));
         for (let side = 0; side < 2; side++) shoulderWorld[side].setFromMatrixPosition(mShoulder[side]);
@@ -534,7 +601,9 @@
           // The firing hand: its wrist a little behind and above the grip.
           // The firing hand wraps the grip: the wrist a little behind and above it,
           // the hand down the grip, fingers round the front.
-          crowdJoint(handFrames[1], mGun, -0.3, 0.34, 0.02, 0.22);
+          const grips = own ? pbGripsFor(spec.weapon) : null;
+          if (own) handFrames[1].multiplyMatrices(mGun, grips.fire[1]);
+          else crowdJoint(handFrames[1], mGun, -0.3, 0.34, 0.02, 0.22);
           rightTarget = armTargets[1].setFromMatrixPosition(handFrames[1]);
           rightFrame = handFrames[1];
           if (info.support && !hold.oneHand) {
@@ -542,15 +611,20 @@
               k = WEAPON_SCALE_OF(spec.weapon),
               pistolGrip = spec.weapon === 'pistol';
             // Reloading: the support hand goes to the magazine and back.
-            crowdJoint(
-              handFrames[0],
-              mGun,
-              sp[0] * k - reloadBump * (sp[0] * k - 0.5) + (pistolGrip ? -0.22 : -0.3),
-              sp[1] + (pistolGrip ? 0.3 : 0.12) - reloadBump * 1.1,
-              sp[2] - (pistolGrip ? 0.08 : 0.22),
-              pistolGrip ? 0.22 : 0.9,
-              pistolGrip ? 0 : -0.5,
-            );
+            if (own && grips.support) {
+              mOut.makeTranslation(-reloadBump * 0.8, -reloadBump * 1.1, 0);
+              handFrames[0].multiplyMatrices(mGun, mOut).multiply(grips.support);
+            } else {
+              crowdJoint(
+                handFrames[0],
+                mGun,
+                sp[0] * k - reloadBump * (sp[0] * k - 0.5) + (pistolGrip ? -0.22 : -0.3),
+                sp[1] + (pistolGrip ? 0.3 : 0.12) - reloadBump * 1.1,
+                sp[2] - (pistolGrip ? 0.08 : 0.22),
+                pistolGrip ? 0.22 : 0.9,
+                pistolGrip ? 0 : -0.5,
+              );
+            }
             leftTarget = armTargets[0].setFromMatrixPosition(handFrames[0]);
             leftFrame = handFrames[0];
           }
@@ -586,29 +660,37 @@
        * How far the player's hands close (player-body3d.js grip shape, 0 relaxed to 1 gripping): round a weapon,
        * a fist in a fight, on the bars or the wheel, round what the right hand carries; slack when down.
        */
-      const playerGripOut = [0.15, 0.15];
+      // Left and right closing, then left and right trigger fingers (0 or 1).
+      const playerGripOut = [0.15, 0.15, 0, 0];
       function playerHandGrip(p, spec, hold, weight) {
         let left = 0.15,
-          right = 0.15;
+          right = 0.15,
+          triggerLeft = 0,
+          triggerRight = 0;
         if (p.hp <= 0) left = right = 0.3;
         else if (hold?.fists) left = right = 0.6 + 0.4 * weight;
-        else if (hold?.inHand) right = 0.88;
-        else if (hold && spec?.weapon) {
+        else if (hold?.inHand) {
+          right = 0.92;
+          triggerRight = spec.weapon !== 'knife' ? 1 : 0;
+        } else if (hold && spec?.weapon) {
           const info = WEAPON_HOLDS[spec.weapon] || WEAPON_HOLDS.pistol;
-          right = 0.15 + 0.73 * weight;
-          if (info.support && !hold.oneHand) left = 0.15 + 0.6 * weight;
+          right = 0.15 + 0.8 * weight;
+          triggerRight = spec.weapon !== 'knife' ? 1 : 0;
+          if (info.support && !hold.oneHand) left = 0.15 + 0.75 * weight;
         }
         if (spec?.handTargets) {
           left = Math.max(left, 0.78);
           right = Math.max(right, 0.78);
         }
         if (spec?.gunFrame) {
-          if (spec.gunHand) right = 0.88;
-          else left = 0.88;
+          if (spec.gunHand) (right = 0.92), (triggerRight = 1);
+          else (left = 0.92), (triggerLeft = 1);
         }
         if (!hold && (p.carry || PHONE_POSES.has(p.pose))) right = Math.max(right, 0.7);
         playerGripOut[0] = left;
         playerGripOut[1] = right;
+        playerGripOut[2] = triggerLeft;
+        playerGripOut[3] = triggerRight;
         return playerGripOut;
       }
       const WEAPON_SCALE_OF = (weapon) => (weapon === 'shield' ? 1 : WEAPON_SCALE);

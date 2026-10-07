@@ -77,6 +77,8 @@
       aimAssist: true,
       // The chase camera's motion blur on HIGH / ULTRA (postfx3d-motion.js).
       motionBlur: true,
+      // GORE (gore.js): 'full' (lost limbs, the full spray) or 'reduced' (no dismemberment, less blood).
+      gore: 'full',
     };
     let radioMigrated = false;
     try {
@@ -114,6 +116,7 @@
         if (typeof saved.invertLook === 'boolean') settings.invertLook = saved.invertLook;
         if (typeof saved.aimAssist === 'boolean') settings.aimAssist = saved.aimAssist;
         if (typeof saved.motionBlur === 'boolean') settings.motionBlur = saved.motionBlur;
+        if (saved.gore === 'full' || saved.gore === 'reduced') settings.gore = saved.gore;
         // The title menu's radio (car-radio.js TITLE RADIO), on unless switched off.
         if (typeof saved.titleRadio === 'boolean') titleRadioEnabled = saved.titleRadio;
         if (typeof saved.soundOn === 'boolean') soundOn = saved.soundOn;
@@ -143,6 +146,7 @@
             invertLook: settings.invertLook,
             aimAssist: settings.aimAssist,
             motionBlur: settings.motionBlur,
+            gore: settings.gore,
             titleRadio: titleRadioEnabled,
             soundOn,
             voicesOn,
@@ -191,6 +195,10 @@
        toward the aim; the flight camera does not bank (flight-view3d.js). */
     function motionComfortOn() {
       return settings.motionComfort;
+    }
+    /* GORE (Settings · Gameplay · Gore): 'full' or 'reduced' (gore.js goreFull). */
+    function goreLevel() {
+      return settings.gore;
     }
     function setCharacterCutaway(on) {
       settings.cutaway = !!on;
@@ -371,6 +379,19 @@
             'For players who feel motion sick. The camera holds one zoom in a vehicle whatever the speed, leads less and swings more slowly through turns, never shakes or jolts, does not lean toward your aim on foot and does not bank in flight. Settings · Driving · Vehicle camera distance moves it further back.',
           get: () => settings.motionComfort,
           set: (on) => (settings.motionComfort = !!on),
+        },
+        {
+          id: 'gore',
+          kind: 'choice',
+          label: 'Gore',
+          note: () =>
+            'FULL: gunshots spray blood by calibre and range, and a point-blank shotgun, a heavy machine gun or a close blast can take a limb or a head. REDUCED: less blood, nothing comes off.',
+          options: [
+            ['full', 'FULL'],
+            ['reduced', 'REDUCED'],
+          ],
+          get: () => settings.gore,
+          set: (value) => (settings.gore = value === 'reduced' ? 'reduced' : 'full'),
         },
         {
           id: 'cameraView',

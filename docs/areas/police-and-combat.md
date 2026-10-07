@@ -77,6 +77,8 @@ wounds.js, carjack.js, damage.js, air-cover.js. `policeReport()` has `wounds` an
 - LETHALITY (combat-rules.js): firearms are lethal (one or two torso rounds). NPC vests by
   calibre and hit zone, shots to kill: docs/areas/police-and-combat-armour.md; the player's
   `player.armor` keeps `VEST_SHARE` per damage kind.
+- Heavy hits (gore.js; police-and-combat-gore.md): blood by calibre, range and zone; a point-blank shotgun load, a
+  .50 or a close blast can take a limb or the head (stumps, severed pieces, bleeding out); wounds soak the clothes.
 - Wounds (wounds.js): hit zones, flinch, limp, blood trail (blood itself: police-and-combat-blood.md), downed officers dragged to cover,
   `chooseDeathFall` (backwards, face down, slumped against a wall). A round never moves anyone (no shove alive, no
   step back when killed); only blasts, vehicles, knives and punches do.
@@ -113,7 +115,8 @@ wounds.js, carjack.js, damage.js, air-cover.js. `policeReport()` has `wounds` an
   x, y, source, detail)` takes hp, the rest goes to `recordVehicleDamage()`; `detail.kind`:
   `crash` crumples along the normal, `blast` dishes toward the blast, `bullet` marks the skin.
 - `vehicle.dents[]` are `{x, y, z, nx, ny, depth, r}` in vehicle space (x forward, y right,
-  z up); nearby dents merge. `damage.front/rear/left/right` (0..1) drive panels, glass,
+  z up); nearby dents merge. The renderer bends the whole body with them through `crumpleField` (crush limits,
+  marks pinned to the panel they hit: vehicles-and-driving-damage.md). `damage.front/rear/left/right` (0..1) drive panels, glass,
   lamps, tyres and `damage.pull`. `vehicleHandling(c)` turns damage into power, grip and
   steering pull. Below 25% health the engine burns to the explosion; `wreckVehicle` guts once;
   `repairVehicle` / `freshDamage` reset.

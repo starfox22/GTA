@@ -134,6 +134,17 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - A boat's helmsman and an aircraft's pilot are not drawn during a drive-by (the shot still
   follows the arcs and leaves from `driveByGrip`).
 
+## Gore (gore*.js, crowd3d-gore.js, blood3d.js; docs/areas/police-and-combat-gore.md)
+- The cut's place for spurts and bursts (`goreJointPoint`) is the reference adult's joints on a straight
+  body, not the drawn pose: on a sprawled body a spurt can start a little off the stump.
+- A destroyed head leaves a neck stump and fragments, never a whole head as a piece; a severed piece carries
+  no wound stain of its own; the 2D fallback draws neither stumps nor pieces (blood only).
+- Wet blood's gloss is one roughness for every decal: against a low sun from a grazing angle (inspection
+  views, the chase camera at dusk) pools and spatter read orange-brown; wet versus dry roughness would fix it.
+- No point-blank knock-back for a shotgun (the round rule holds): the body drops where it stood.
+- Not measured on a GPU: the stump part adds one camera and one shadow draw while any is on screen, blood
+  decals went from up to 240 draws to one.
+
 ## Chase view (chase-camera.js, chase-view3d*.js, chase-rules.js; docs/areas/chase-view.md)
 
 - No cover system (GTA IV's take-cover key): rounds already stop on cars and walls in the map plane, but the
@@ -152,8 +163,12 @@ here when polishing; delete a line when it is fixed. Newest features first.
 ## Car cabins and glass (cars3d-interior.js, crowd3d-driveby.js SEATED OCCUPANTS)
 - A burst pane is still damage3d.js's dark `brokenGlass` frame: the cabin behind it does not show through the hole
   (a model hook like `m.glass` for burst panes would let it).
-- The model's seat (`carSeatPlan`) and the drive-by's (`driveBySeat`) differ by a few centimetres in the van, the hot
-  rod and the police bodies (their game-side glass band is generic): the figure shifts when the gun comes out there.
+- The drive-by pose now sits in the model's seat, but the grip the bullet leaves from is still sized from
+  `driveBySeat` (glass bands; generic for police): from a low, laid-back seat (supercars, police) the arm cannot reach
+  it and the gun is drawn brought in with the wrist, up to ~0.25 m from the muzzle the game fires from
+  (`cabinHeadroom().driveByArm`). A game-side seat table matching `m.seats` (police by body) would close it.
+- Police cars carry no rear badge (their trim is police3d.js's own, without the atlas); trucks, buses, military and
+  boats none either. Badges sit on the tail's surface: a dented tail leaves them where the panel was.
 - The steering wheel is part of the merged trim and does not turn; the hands slide a little on the rim instead.
 - The player riding in the back of a taxi, rear passengers and a SWAT or army crew are not seated; trucks, buses and
   the 4x4 club trucks keep opaque glass. Interiors carry no instrument glow at night.
@@ -162,16 +177,10 @@ here when polishing; delete a line when it is fixed. Newest features first.
 
 ## The player's body (player-body3d*.js; docs/areas/people-and-crowd-player.md)
 
-- On a weapon the hand takes the gun's frame (crowd3d-draw.js `drawHold`), whose long axis runs down the grip:
-  the curled fingers wrap a line along the barrel rather than round the grip. A proper grip needs the hand
-  turned 90 degrees about its palm normal and the wrist target moved back to match.
-- The build is ~1 s of work on a desktop (2-3 s on the cloud box), sliced behind the title; a player who starts
-  at once sees the near-set figure until it is done (a one-time switch). Caching the arrays (IndexedDB) or a
-  worker would remove it.
-- ~92k triangles (46k vertices) and one shadow draw: LOW could mesh at coarser spacings (`PB_SPACING`).
-- The face is sculpted from primitives: the cheeks and the corners of the mouth read soft at the closest chase
-  zoom; a second pass on the lids and the nasolabial area would help most. No eye movement or blinking.
-- Arms raised far over the head stretch the armpit (the A-pose bind); corrective shapes would hold the deltoid.
+- The build is ~1 s of work on a desktop (2-3 s on the cloud box), sliced behind the title; a player who presses
+  play at once waits for the rest on that first frame. Caching the arrays (IndexedDB) or a worker would remove it.
+- Hands straight up (surrender) still bulge the tee's sides under the arms (no collarbone or corrective shapes).
+- The face is sculpted from primitives: no expressions; the eyes move and blink but the lids do not follow them.
 
 ## Mountain island (mountain-village*.js, mountain-club3d.js)
 - Northridge metal roofs (rescue barn, general store) were lightened but not re-shot.

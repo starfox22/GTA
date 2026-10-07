@@ -5,20 +5,37 @@ Part of police-and-combat.md.
 
 ## The rule: a hit is not a pool
 
-- One round: a short dark-red mist at the wound and an **exit spray** away from the shooter
-  (the shot's heading `a`): a finer plume carried a metre or two on, 3-11 fine drops in a
-  ±18° cone landing 1-4 m beyond the body, a directional **spatter** 3-7 units behind it
-  (a second, 9-15 units on, from a heavy round, severity > 0.8) and a **drop** at its feet
-  leaning to the exit side. Nothing lands toward the shooter. Never a pool. The body is not moved.
+- One round: a fine entry puff toward the shooter (it lands nowhere), a short dark-red mist at
+  the wound height and an **exit spray** away from the shooter (the shot's heading `a`): a
+  plume carried a metre or two on, fine drops in a cone landing 1-4 m beyond the body, a
+  directional **spatter** 3-7 units behind it (more, further on, from a heavy round) and a
+  **drop** at its feet leaning to the exit side. Nothing lands toward the shooter. Never a
+  pool. The body is not moved.
+- HOW MUCH (bloodShotPlan, deterministic: console `bloodPlanTable`): gore.js goreHit's `scale`
+  by calibre, range and zone (police-and-combat-gore.md) multiplies the drops (3 + 4 x severity,
+  at most 48), the plume, the spray's speed, cone and the spatters (at most 5); a pistol round at
+  mid range is scale 1 (the old spray). A point-blank load, a .50 or a close blast adds a
+  **burst** (`bloodBurst`: tissue lumps, a heavy mist, spatter up to ~4 m).
+- WALLS AND VEHICLES (`bloodSprayObstacle`): the first building face or vehicle along the spray
+  within its `reach` (2.8 m for a pistol, ~6-7 m for a point-blank load) takes it: wall splashes
+  (`wall` decals with the face's normal, a radial burst with drips running down; their `surface`
+  is the height) or a stain through `addCarStain(c, point, 0, false, sev)` (car-stains.js: a
+  gunshot's spray brings its own severity, the car standing or moving). The flying drops stop
+  there (`stopX/stopY`); ground spatter never lands past the wall.
+- Landing drops (`landBloodDrop`): a drop is 0.4 of its flying size on the ground (a centimetre
+  or few), drawn out by its speed; one landing where a body's pool will spread is lost in it, one
+  on a fresh drop adds to it, and fine ones leave no mark more than half the time (round drops
+  overlapping in a pool read as bubbles).
 - A **pool** only under a body on the ground: `bodyPool(p, kind, a)` (sizes in `bodyPoolPlan`,
   POOL SIZE) starts it at r 1.2 under the chest (4 units along the line of the shot,
   `deathStyle.turn`; at the wall's foot for a slump) and it spreads in `updateBlood` as a volume
   that flows out ever slower (`vol += (rMax² - vol)(1 - e^(-dt/tau))`, `r = √vol`). `rMax` grows
-  with the number of wounds (`p.bloodHits`), not the damage: 6 units (1.5 m across) for one
-  round, +0.8 a wound, 8.5 at most for gunfire; 7.5-11.5 for an impact, fall or blast. `tau`
-  6.5 s for one round, down to 3.5 s for many (most of the spread in 10-15 s), 4 s for an impact
-  or fall, 3 s for a blast (which also starts at r 3 and throws a radial spray). One round:
-  r 2.7 at 1 s, 5.5 at 10 s, 6 at 30 s (was 1.4, 3.0, 3.9). A later hit only raises `rMax`/lowers `tau`.
+  with the number of wounds (`p.bloodHits`), not the damage: 7 units (1.75 m across) for one
+  round, +0.9 a wound, 10 at most for gunfire; 8.5-13 for an impact, fall or blast; a body that
+  lost a part 2.5 more (13.5 at most). `tau` 6.5 s for one round, down to 3.5 s for many (most of
+  the spread in 10-15 s), 4 s for an impact or fall, 3 s for a blast (which also starts at r 3 and
+  throws a radial spray). One round: r ~3 at 1 s, 6.2 at 10 s, 7 at 30 s (6 before October 7).
+  A later hit only raises `rMax`/lowers `tau`.
 - Someone wounded on the floor (alive: `woundedDown` crawling, officers `downed`) who lies still
   1.5 s bleeds a small pool (`bodyPool(p, 'wounded')`, r 2.6-4, tau 9, `wounded: true`) where they
   lie (wounds.js `updateWounds`); crawling on freezes it at its size; dying there grows it into the body's.
@@ -29,25 +46,33 @@ Part of police-and-combat.md.
 
 - `bloodPools` entries are decals: `{x, y, r, a, variant, stretch, surface, opacity}`, plus
   `rMax/tau/vol` for a spreading pool, `track` for tyre prints (physics-knockdowns.js; tyres
-  pick blood up only from pools, r ≥ 2.5). `r` is the visible radius in world units
-  (`bloodDecalScale`: 2.5 r across the stamp, × `stretch` along `a`).
+  pick blood up only from pools, r ≥ 2.5), `wall` + `nx, ny` + `building` for a wall splash.
+  `r` is the visible radius in world units (`bloodDecalScale`: 2.5 r across the stamp, ×
+  `stretch` along `a`).
 - Stamps (`bloodStamp`): variants 0-3 pools (lobed, near black at the centre, a thin redder
   rim, no highlight), 4-7 spatters (a fan of drops along +x from the wound at the left:
-  `addBloodSpatter` puts that origin on the point), 8-11 drops (scalloped edge). Landing
-  flight drops become drops drawn out by their speed (game-update.js).
-- The renderers only read: civic3d.js (size from `bloodDecalScale`, fade `bloodFade`, a
-  slow darkening as blood dries; transparent, renderOrder 3) and `drawBlood2D`. Fire, smoke,
+  `addBloodSpatter` puts that origin on the point), 8-11 drops (scalloped edge), 12-15 wall
+  splashes (+y down the wall: drips). Landing flight drops: `landBloodDrop` (game-update.js).
+- The renderers only read: blood3d.js (every decal in ONE instanced draw from one atlas of the
+  stamps and the tread; a wall splash stands on its face, lifted by damage3d-decals.js
+  `wallOffset`; fade `bloodFade`, darker as blood dries; transparent, renderOrder 3; rewritten
+  only when the list changes, a pool spreads or every 0.5 s; `bloodDecalReport`) and
+  `drawBlood2D` (walls left out; blood particles drawn round, never squares). Fire, smoke,
   sparks and drops are the effect particle pool (rendering-effects.md), drawn at `FX_SPRITE_ORDER` 8
   (render3d-effects.js): with the default 0 the floor blood was painted over an explosion's fireball
   (transparent objects sort by renderOrder before depth, and none of them write depth). The mist is a `mist`
   particle (fx3d-particles.js draws it at its height, fading and spreading).
-- Bounds: `BLOOD_LIMIT` 240 decals (the oldest non-pool goes first), `BLOOD_LIFE` 240 s.
+- Bounds: `BLOOD_LIMIT` 480 decals (the oldest non-pool goes first; was 240 meshes, now one
+  draw), `BLOOD_LIFE` 240 s. Randomness: gore.js `goreRandom` (blood never draws on the seeded
+  game stream).
 
 ## For other code
 
-- `bleed(entity, severity, heading, kind)`: severity 0.25 a graze, ~0.5-1 a round, 2 a
+- `bleed(entity, severity, heading, kind, hit)`: severity 0.25 a graze, ~0.5-1 a round, 2 a
   killing blast, max 2.5; `kind` 'ballistic' | 'headshot' | 'blast' | 'impact' | 'fall' |
-  'melee'. It counts the wound and pools the body if it is dead. A thrown bike rider or a
+  'melee'; `hit` (optional) gore.js goreHit's scratch from strikePerson. It counts the wound,
+  records it on the clothes (gore.js `goreWound`, rounds and blades) and pools the body if it
+  is dead. A thrown bike rider or a
   fall calls `bleed(rider, severity, heading, 'impact')`; a pool alone: `bodyPool(p, kind, a)`.
 - Someone already down who is run over again (runover.js, docs/areas/people-and-crowd-vehicles.md): a
   splash (`bleed(p, sev, heading, 'impact')`, a living body does not pool), streaks along the tyre path,

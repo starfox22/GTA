@@ -15,7 +15,11 @@
        *            neckline; the head: inside the hairline, the hair's depth; the hand: on a nail; the shoe: in
        *            the sole, in the sock.
        */
-      const PB_SPACING = { body: 0.013, head: 0.0041, hand: 0.0036, shoe: 0.0055 },
+      // Spacings by tier: HIGH and ULTRA mesh fine (a crisper face), LOW and MEDIUM about half the triangles.
+      const PB_SPACINGS = {
+          fine: { body: 0.013, head: 0.0032, hand: 0.0034, shoe: 0.0055 },
+          coarse: { body: 0.0175, head: 0.0052, hand: 0.0048, shoe: 0.0075 },
+        },
         PB_MAT = { body: 0, head: 1, eye: 2, hand: 3, shoe: 4 };
       const pbSmooth = (a, b, x) => {
         const t = Math.max(0, Math.min(1, (x - a) / (b - a)));
@@ -30,8 +34,11 @@
         const along = -q[1],
           r = Math.sqrt(q[0] * q[0] + q[2] * q[2]),
           reach = 0.082 + 0.024 * pbSmooth(0.12, 0, along);
-        if (along > -0.04 && r < reach + 0.03) {
-          const arm = pbSmooth(-0.025, 0.055, along) * (1 - pbSmooth(reach - 0.01, reach + 0.03, r)),
+        if (along > -0.06 && r < reach + 0.05) {
+          // The shoulder's cap (the deltoid over the joint, the tee's shoulder) rises with the arm: with no
+          // collarbone in the rig it follows the arm most of the way, or a raised arm left it behind as a wing.
+          const cap = pbSmooth(0.1, 0.185, Math.abs(z)) * pbSmooth(1.33, 1.42, y),
+            arm = Math.max(pbSmooth(-0.05, 0.035, along) * (1 - pbSmooth(reach, reach + 0.05, r)), cap * 0.85),
             L1 = PB_RIG_M(RIG.upperArm),
             fore = pbSmooth(L1 - 0.045, L1 + 0.035, along);
           if (arm > 0.001) {
@@ -196,14 +203,15 @@
        * The whole build as a generator (it yields when pbClock.until passes, so it can run a slice at a time
        * behind the title): { geometry data, bind skeleton, counts by part, build milliseconds }.
        */
-      function* pbBuildSteps() {
-        const started = performance.now(),
+      function* pbBuildSteps(detail = 'fine') {
+        const PB_SPACING = PB_SPACINGS[detail] || PB_SPACINGS.fine,
+          started = performance.now(),
           B = pbBindSkeleton(),
           pieces = [],
           w = [0, 0, 0];
         // The clothed body.
         const bodyField = pbBodyField(B),
-          body = yield* pbMeshSteps(bodyField.ops, [-0.24, 0.04, -0.48, 0.24, 1.66, 0.48], PB_SPACING.body);
+          body = yield* pbMeshSteps(bodyField.ops, [-0.24, 0.04, -0.64, 0.24, 1.66, 0.64], PB_SPACING.body);
         body.ao = yield* pbOcclusionSteps(body, 0.06);
         {
           const count = body.position.length / 3,
@@ -274,10 +282,12 @@
         // Hands: the right hand meshed once, mirrored for the left; the grip shape moves with each.
         const hand = yield* pbMeshSteps(pbHandField().ops, [-0.06, -0.2, -0.06, 0.09, 0.03, 0.035], PB_SPACING.hand);
         hand.ao = yield* pbOcclusionSteps(hand, 0.012);
-        const gripLocal = pbGripShape(hand.position);
+        const gripLocal = pbGripShape(hand.position),
+          triggerLocal = pbGripShape(hand.position, true);
         for (const side of [0, 1]) {
           const placed = pbPlace(hand, B[7 + side], !side),
             gripPlaced = pbPlace({ position: gripLocal, normal: hand.normal, index: hand.index }, B[7 + side], !side),
+            triggerPlaced = pbPlace({ position: triggerLocal, normal: hand.normal, index: hand.index }, B[7 + side], !side),
             count = placed.position.length / 3,
             skin = new Float32Array(count * 4),
             zone = new Float32Array(count * 4),
@@ -307,8 +317,9 @@
             }
             zone.set([PB_MAT.hand, side, nail, 0], v * 4);
           }
-          const gripN = pbTriangleNormals(gripPlaced.position, placed.index);
-          pieces.push({ ...placed, skin, zone, grip: gripPlaced.position, gripN });
+          const gripN = pbTriangleNormals(gripPlaced.position, placed.index),
+            triggerN = pbTriangleNormals(triggerPlaced.position, placed.index);
+          pieces.push({ ...placed, skin, zone, grip: gripPlaced.position, gripN, trigger: triggerPlaced.position, triggerN });
         }
         yield;
         // Shoes.
@@ -344,6 +355,8 @@
           skin = new Float32Array(vertices * 4),
           grip = new Float32Array(vertices * 4),
           gripN = new Float32Array(vertices * 3),
+          trig = new Float32Array(vertices * 3),
+          trigN = new Float32Array(vertices * 3),
           zone = new Float32Array(vertices * 4),
           index = new Uint32Array(indices),
           parts = {};
@@ -357,6 +370,8 @@
               normal[(v0 + v) * 3 + k] = p.normal[v * 3 + k];
               grip[(v0 + v) * 4 + k] = (p.grip ? p.grip[v * 3 + k] : p.position[v * 3 + k]) * PB_UNITS;
               gripN[(v0 + v) * 3 + k] = p.gripN ? p.gripN[v * 3 + k] : p.normal[v * 3 + k];
+              trig[(v0 + v) * 3 + k] = (p.trigger ? p.trigger[v * 3 + k] : p.position[v * 3 + k]) * PB_UNITS;
+              trigN[(v0 + v) * 3 + k] = p.triggerN ? p.triggerN[v * 3 + k] : p.normal[v * 3 + k];
             }
             grip[(v0 + v) * 4 + 3] = p.ao ? p.ao[v] : 1;
             const part = PB_BONE_NAMES[p.skin[v * 4 + 3]];
@@ -370,7 +385,8 @@
         }
         return {
           bones: B,
-          attributes: { position, normal, pbSkin: skin, pbGrip: grip, pbGripN: gripN, pbZone: zone },
+          attributes: { position, normal, pbSkin: skin, pbGrip: grip, pbGripN: gripN, pbTrig: trig, pbTrigN: trigN, pbZone: zone },
+          detail,
           index,
           vertices,
           triangles: indices / 3,

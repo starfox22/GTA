@@ -12,9 +12,10 @@
        *
        * The seat plan is the drive-by's (driveby.js driveBySeat): the driver's hip 1.4 m behind the windscreen's foot,
        * 0.42 m under the belt, a fifth of the width left of the centre line, so the drive-by pose and the seated pose
-       * sit in the same seat. A low car seats its people lower and lies them back so a crown clears the roof; a short
-       * glasshouse moves the seat forward until its back is inside the glass (`fit`); the steering wheel is 0.52 m
-       * ahead of the hip and 0.34 m above it, its column 0.4 rad above level. A body may give its own (`seats`).
+       * sit in the same seat. Under a roof the seat is fitted round the drawn head (cars3d-headroom.js CABIN HEADROOM: a
+       * low car seats its people lower and lies them back); a short glasshouse moves the seat forward until its back
+       * is inside the glass; the steering wheel is 0.52 m ahead of the hip and 0.34 m above it, its column 0.4 rad above
+       * level. A body may give its own (`seats`).
        */
       const CAR_TWO_SEATERS = new Set([
         'sport', 'roadster', 'hotrod', 'supercar', 'chevette', 'brutini', 'cavalino',
@@ -68,23 +69,16 @@
         const width = w / 0.87,
           roof = g.roof + (g.arch || 0) * 0.6,
           floor = Math.max(0.2 * M, g.base - 0.62 * M);
-        let x = own?.x !== undefined ? own.x * l : g.xf * l - 1.4 * M,
-          y = own?.y !== undefined ? own.y * M : g.base - 0.42 * M;
-        // A crown 0.88 m over the hip when upright: low roofs lie the seat back, then lower it.
-        let recline = g.open ? 0.3 : clamp(Math.acos(clamp((roof - 0.07 * M - y) / (0.88 * M), 0, 1)), 0.3, 0.62);
-        if (!g.open && y + 0.88 * M * Math.cos(recline) > roof - 0.07 * M) y = Math.max(floor, roof - 0.07 * M - 0.88 * M * Math.cos(recline));
-        const back = (yy, along) => [x - 0.06 * M - Math.sin(recline) * along, yy + Math.cos(recline) * along];
-        // The seat back's top (with its headrest) inside the rear glass, and the hip behind the wheel's room.
-        if (!g.open && own?.x === undefined) {
-          const [tx, ty] = back(y + 0.02 * M, 0.86 * M),
-            limit = cabinGlassX(g, l, ty, false) + 0.08 * M;
-          if (tx < limit) x += limit - tx;
-          // Behind a cab (the van's bulkhead): the seat under the cab's glass.
-          if (x < g.xb * l + 0.3 * M) x = g.xb * l + 0.3 * M;
-        }
-        // Side by side inside the glass at head height.
-        const headY = y + 0.7 * M * Math.cos(recline),
-          side = own?.z !== undefined ? own.z * M : Math.max(0.16 * M, Math.min(0.2 * width, cabinGlassHalf(g, w, headY) - 0.19 * M));
+        const x0 = own?.x !== undefined ? own.x * l : g.xf * l - 1.4 * M,
+          y0 = own?.y !== undefined ? own.y * M : g.base - 0.42 * M;
+        let x = x0,
+          y = y0,
+          recline = 0.3,
+          side = own?.z !== undefined ? own.z * M : Math.max(0.16 * M, Math.min(0.2 * width, cabinGlassHalf(g, w, y + 0.7 * M * Math.cos(recline)) - 0.19 * M));
+        // Under a roof: the seat that keeps the seated head clear of the roof and glass (cars3d-headroom.js CABIN HEADROOM).
+        const fitFrom = performance.now();
+        if (!g.open) ({ x, y, recline, side } = cabinSeatFit(g, l, w, M, x0, y0, floor, width, own, CAR_TWO_SEATERS.has(name)));
+        const fitMs = performance.now() - fitFrom;
         // The rear bench a step back, its back (and headrests) as tall as the rear glass leaves room for: none in a
         // two-seater or where not even a low back fits under a fastback's glass.
         let rear = null,
@@ -111,6 +105,11 @@
           y,
           z: -side,
           recline,
+          // The seated torso's lie (crowd3d-driveby.js seatOccupant) and the glasshouse the head is fitted under.
+          lean: seatTorsoLean(recline),
+          glass: { g, l, w },
+          // What the fit cost when the kit was built (DeadEndCity.cabinHeadroom `fitMs`).
+          fitMs,
           rear,
           rearY: y + 0.04 * M,
           // How far up the rear back reaches (metres, headrests included when it is 0.7 or more).

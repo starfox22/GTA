@@ -103,6 +103,14 @@ packs with plain `<script src>` so the zip still plays from file://.
   `vestPlate`, by calibre (weapon `cal`, `bulletCalibre`). A new armoured NPC sets `vest`/`vestPlate`; a new gun sets
   `cal`. A round never moves a person (only blasts, vehicles, knives, punches); `bleed` sprays a round's exit blood
   away from the shooter. `shotsToKill()`; tools/tests/bullet-hits.mjs. Pool sizes live in `bodyPoolPlan` (blood.js).
+- Gore (gore.js; police-and-combat-gore.md): `goreHit()` is the only rule for a hit's class, range, blood scale and what
+  comes off; strikePerson calls it first, and `detail` (`{range, power, heavy, pellets}`) passes what the shooter's
+  distance cannot. `p.goreLost` (GORE_* bits) and `p.goreWounds` are the only gore state (bump `p.goreVersion` on any
+  change; renderers only read them); a new heavy gun sets `goreCal: 'heavy'` on its bullets. Blood and gore randomness
+  is `goreRandom`; severed pieces, stumps, tracked people and gore events are capped and listed in `soakReport` (a new
+  list holding people is retired by `updateSeveredParts` / `updateGore`). Blood decals draw only through blood3d.js (one
+  instanced draw); the spray reaches walls and cars only through `bloodSprayObstacle`, flying drops land through
+  `landBloodDrop`. Every rigPart carries `crowdWound`; on the player's body a lost part folds by `pbSkin.w`.
 - `shooterInView()` (combat-rules.js) is the only rule for whether an NPC may fire at the
   player (on screen, from the camera footprint `screenViewHalf`): every new shooter checks it.
 - No pickups on the street at all: health is bought indoors (hospitals, diners, bars, clubs,
@@ -293,14 +301,29 @@ packs with plain `<script src>` so the zip still plays from file://.
   must still pose every bone. His bind skeleton is the rig's joints at `PB_WIDTH` (the 'player' outfit's
   `widthAbsolute`: change them together). A vertex's part (`pbSkin.w`, a bone index) is the one rule for telling
   his body parts apart (wounds, severed limbs); tools/tests/player-body.mjs holds proportions and the pose sweep.
+  A weapon's hand placement on his body is `PB_GRIPS` (player-body3d-grips.js): a new weapon adds its grip there.
 - Car cabins (cars3d-interior.js): civilian and police glass is see-through (`carGlassMaterial`, premultiplied; the
   tint closes past `CAR_GLASS_CLEAR`); the cabin merges at the end of each kit's trim (impostors draw `kit.trimOuter`,
   so exterior trim goes before the cabin); `carSeatPlan` (`m.seats`) is the one seat rule; crowd3d-driveby.js SEATED
   OCCUPANTS seats people only within `OCCUPANT_REACH` (at or beyond the glass's clear reach); see-through glass never
   casts a shadow (the paint panels do).
+- Car seats (cars3d-headroom.js CABIN HEADROOM; vehicles-and-driving-cabins.md): `carSeatPlan` fits every closed cabin's
+  seat round the head the rig draws (tallest man and woman with hair and caps, `cabinHeadPose` = drawCrowdPerson's chain
+  at `seatTorsoLean`/`seatHeadPitch`); seated occupants and the drive-by pose take `plan.lean`: change the riding pose and
+  `cabinHeadPose` together. `cabinHeadroom().through` stays 0; a roof too low is a body fix, never a smaller margin; a
+  body's glass change keeps damage-vehicles.js `CAR_GLASS_BANDS` in step. Rear badges (`CAR_BADGES`, cars3d-badges.js)
+  are glyph quads in the trim atlas's lower half merged into the kit's trim before the cabin (no draw call); the trim
+  material alpha-tests the atlas, so other atlas cells stay opaque, addressed only through `trimCellRect` (512x1024).
 - Chase view level of detail (rendering-chase.md): anything new the far copy stands for hides with its cell
   (`cell.full` / `cell.blocks`); shadow-pass-only hiding goes through `chaseShadowCasters` (restored after the
   pass); its shadow box is `placeChaseSun` (the depth fade `cityShadowReach`); never toggle a light.
+- Car crash damage (vehicles-and-driving-damage.md): `crumpleField(dents, limits, ...)` / `crumpleLimits(vehicle)`
+  (damage-crumple.js) is the only crumple rule; damage3d-crumple.js bends every mesh under a car body with it,
+  time-sliced (`crumpleSlices`), and bumps `m.shapeVersion` when a body is done. A part that animates its own matrix or
+  swings on a hinge registers as a moved point (`crumpleCollect` / `crumpleAdopt`). Marks on vehicles
+  (damage3d-marks.js) are pinned to a triangle of the part they hit, so a part holding marks keeps its vertex order when
+  bent; a mark with no surface is not drawn; holes never on glass or the cabin, stars only on their own pane
+  (`crumpleAudit()`, tools/tests/vehicle-damage-shape.mjs).
 - `carStainSeverity(kph, fatal)` (car-stains.js) is the only rule for how much bonnet blood a hit leaves (none under
   14 km/h); further hits add to a car's 3 stain records (`adds`, painted by `cbTopUpJob`), never replace one.
 - Military mounted guns the player fires (LAV-8 25 mm + coax, gun jeep M2, Black Hawk door guns) live in
