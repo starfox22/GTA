@@ -31,4 +31,24 @@ export default async function (t) {
     const r = models.find((m) => m.type === type && m.badge);
     t.assert(r && r.draws <= 14, `${type}: ${r?.draws} draws with its badge`);
   }
+  // Everything else the player drives: police bodies (POLICE / SHERIFF and the model), motorbikes (tank sides), the
+  // box truck, ambulance and bus (their tail panels), the army's stencils, the 4x4 club's makers.
+  const others = ['bike', 'cruiser', 'dolcati', 'yamasaki', 'kr500', 'truck', 'ambulance', 'bus', 'jeep', 'apc', 'armytruck', 'series', 'crawler', 'bronco', 'expedition', 'hilux', 'sixbysix', 'trophy'];
+  await t.call('carLineup', others.slice(0, 9), 760, 4250, 0, 60);
+  await t.call('carLineup', others.slice(9), 860, 4250, 0, 60);
+  await t.call('policeLineup', 960, 4250, 0, false, 44);
+  await t.call('look', 860, 4450, 1.1);
+  await t.call('hitchRun', 0.8);
+  const badges = await t.call('carBadges'),
+    of = (type, body) => badges.find((b) => b.type === type && (!body || b.body === body) && b.badge);
+  for (const type of others) {
+    const b = of(type);
+    t.assert(b && b.badge.text, `${type}: a badge (${JSON.stringify(b?.badge)})`);
+    if (b && b.badge.letters !== undefined) t.assert(b.badge.letters > 0, `${type}: its letters laid (${b.badge.letters})`);
+  }
+  for (const body of ['charger', 'utility', 'crownvic', 'tahoe']) {
+    const b = of('police', body) || of('suv', body);
+    t.assert(b && b.badge.letters > 0 && b.badge.sub, `police ${body}: its model name on the tail (${JSON.stringify(b?.badge)})`);
+  }
+  t.assert(badges.some((b) => b.badge?.text === 'POLICE'), 'a marked patrol car reads POLICE');
 }

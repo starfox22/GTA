@@ -404,6 +404,8 @@
         // Footpegs (rider's and passenger's).
         for (const side of [-1, 1]) civBar(sets.trim, mp(body.rider.foot[0], body.rider.foot[1] - 0.02, side * 0.1), mp(body.rider.foot[0], body.rider.foot[1] - 0.02, side * 0.2), 0.02 * M, 0.02 * M, 0.008 * M, { color: '#9aa0a6', finish: 'alloy' });
         body.build(k);
+        // The maker's name on both sides of the tank or fairing (cars3d-badges.js MOTORBIKE BADGES).
+        const badge = motoBadges(sets.trim, type);
         // ---- The fork: tubes from the headstock to the axle, clamps, bars, mirrors ----
         // Built about the headstock; the fork group sits there, tilted by the rake.
         const fork = { tubes: { color: body.forks, finish: 'chrome' }, black: { color: '#16171a', finish: 'satin' } },
@@ -445,6 +447,7 @@
           tyres: [civTyreGeometry(body.tyre || 'road', body.rim.frac * 0.98), civTyreGeometry(body.tyre || 'road', body.rim.frac * 0.98)],
           rims: [civRimGeometry(body.rim, 1, wd.rf * M, wd.wf * M), civRimGeometry(body.rim, 1, wd.rr * M, wd.wr * M)],
           rider: motoRiderGeometry(type),
+          badge,
         };
         motoKits.set(key, kit);
         return kit;
@@ -473,6 +476,8 @@
         model.bike = true;
         model.realSize = true;
         model.moto = type;
+        // Its tank badges (DeadEndCity.carBadges()).
+        model.badge = kit.badge;
         model.paint = motoPaintMaterial(vehicle.color);
         if (kit.paint) mesh(kit.paint, model.paint, b, 0, 0, 0);
         mesh(kit.trim, materials.trim, b, 0, 0, 0);
