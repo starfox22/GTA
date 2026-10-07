@@ -139,6 +139,11 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - No cover system (GTA IV's take-cover key): rounds already stop on cars and walls in the map plane, but the
   player's own rounds would hit the car they hide behind (no over-the-top fire) and NPCs have no cover logic.
   A design question for the owner before any work.
+- The first press of V after the title prewarm (HIGH): two shadow-depth programs (`MeshDepth` with uv: alpha-tested
+  casters only the chase view's shadow pass draws) link on the first chase frame, and the distant cells the street
+  view never saw upload their textures and geometry then (~50-100 textures, 150-500 geometries on SwiftShader). The
+  motion-blur pass is warmed (postfx3d-motion.js). A chase-view shadow warm-up and a pre-upload of the view down the
+  street would remove the rest.
 - Motion blur is the camera's own motion only (depth reprojection, no per-object velocity buffer): other cars
   passing fast are sharp, and anything within 12 m of the camera never smears.
 - The close-quarters crane (CHASE_CRANE) handles a wall behind the player; the camera can still come close to the

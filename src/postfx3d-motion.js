@@ -99,10 +99,7 @@
         motionActive = cameraMotionWanted(tier) && !cut && dt > 1e-4;
         if (motionActive) {
           if (!motionMaterial) motionMaterial = makeMotionMaterial();
-          if (!motionTarget || motionTarget.width !== postWidth || motionTarget.height !== postHeight) {
-            if (motionTarget) motionTarget.dispose();
-            motionTarget = colorTarget(postWidth, postHeight);
-          }
+          motionTargetSized(postWidth, postHeight);
           motionUniforms.tScene.value = sceneTexture;
           motionUniforms.tDepth.value = sceneTarget.depthTexture;
           motionUniforms.uInvViewProj.value.copy(motionViewProj).invert();
@@ -120,16 +117,21 @@
         motionPrevTime = gameTime;
         return out;
       }
-      /* The title prewarm compiles the pass (postWarmPasses, rendering-hiccups.md) on the tiers that run it. */
+      function motionTargetSized(width, height) {
+        if (!motionTarget || motionTarget.width !== width || motionTarget.height !== height) {
+          if (motionTarget) motionTarget.dispose();
+          motionTarget = colorTarget(width, height);
+        }
+        return motionTarget;
+      }
+      /* The title prewarm compiles the pass (postWarmPasses, rendering-hiccups.md) on the tiers that run it. The post
+         size may not be known when the list is made (the pass then linked on the first chase frame): the target is
+         looked up when compiled, as the sun shafts' are. */
       function cameraMotionWarmPasses(pass) {
         const tier = postTier;
-        if (!tier || (tier.name !== 'HIGH' && tier.name !== 'ULTRA') || !(postWidth > 0 && postHeight > 0)) return;
+        if (!tier || (tier.name !== 'HIGH' && tier.name !== 'ULTRA')) return;
         if (!motionMaterial) motionMaterial = makeMotionMaterial();
-        if (!motionTarget || motionTarget.width !== postWidth || motionTarget.height !== postHeight) {
-          if (motionTarget) motionTarget.dispose();
-          motionTarget = colorTarget(postWidth, postHeight);
-        }
-        pass(motionMaterial, motionTarget);
+        pass(motionMaterial, () => motionTargetSized(Math.max(1, postWidth), Math.max(1, postHeight)));
       }
       function cameraMotionReport() {
         return { active: motionActive, strength: +motionUniforms.uStrength.value.toFixed(3), setting: settings.motionBlur !== false, comfort: motionComfortOn() };
