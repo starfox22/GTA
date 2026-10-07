@@ -134,6 +134,18 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - A boat's helmsman and an aircraft's pilot are not drawn during a drive-by (the shot still
   follows the arcs and leaves from `driveByGrip`).
 
+## Chase view (chase-camera.js, chase-view3d*.js, chase-rules.js; docs/areas/chase-view.md)
+
+- No cover system (GTA IV's take-cover key): rounds already stop on cars and walls in the map plane, but the
+  player's own rounds would hit the car they hide behind (no over-the-top fire) and NPCs have no cover logic.
+  A design question for the owner before any work.
+- Motion blur is the camera's own motion only (depth reprojection, no per-object velocity buffer): other cars
+  passing fast are sharp, and anything within 12 m of the camera never smears.
+- The car radio panel stands open over the right of the chase view for ~8 s after getting in (it folds to its
+  station chip as in the street view).
+- The close-quarters crane (CHASE_CRANE) handles a wall behind the player; the camera can still come close to the
+  player's head beside a wall on the right shoulder side (the boom is marched from the shoulder point).
+
 ## Car cabins and glass (cars3d-interior.js, crowd3d-driveby.js SEATED OCCUPANTS)
 - A burst pane is still damage3d.js's dark `brokenGlass` frame: the cabin behind it does not show through the hole
   (a model hook like `m.glass` for burst panes would let it).
@@ -181,7 +193,6 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - The terrain horizon sees the height field only: boulders, trees and buildings on the range do not shadow the beams; the mountain haze level and the light bar's strength were tuned on SwiftShader.
 
 ## Street frontage (cityscape3d-frontage.js, cityscape3d-shopwindows.js)
-- The chase view's shadow casters measure a static batch cell from its direct children only (chase-view3d-casters.js `chaseBatchCellBounds` skips `cell.full`, which holds every far-usable batch): a cell whose other batches are a few small ones gets a tiny box and leaves the shadow pass whole (on the y 1152 avenue no batch within 150 m cast). Include `cell.full`'s batches in the bounds.
 - Shop windows on the north, east and west sides are not `b.shopPanes`: bullets never star them, and the damage code's `wallOffset` puts a bullet hole low on those sides 0.18 off the wall, behind the glass or plinth (both assume the south shopfront).
 - Only south-side signs lay a wet-road streak (STREAK_CAPACITY 3400 is shared city-wide); streaks now turn to the chase camera, so other sides could have them with a bigger pool.
 - No bins in the yards (they would be walk-through without collision); a stoop's door stands two steps up where the crowd's door point is at street level.
