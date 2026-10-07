@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-536 files in the include tree, 184,429 lines.
+536 files in the include tree, 184,430 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -385,7 +385,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/monarch-life.js ▸ Monarch Isle: traffic, people, boats and sound
 
-- `src/monarch-life-traffic.js`   637 — Monarch Isle road graph, traffic control, car types and populateMonarchIsle().
+- `src/monarch-life-traffic.js`   638 — Monarch Isle road graph, traffic control, car types and populateMonarchIsle().
 - `src/monarch-life-crowd.js`   483 — Monarch Isle walkers and staff: walk routes, destinations, dress and updateMonarchCrowd().
 
 ## src/dealership.js ▸ MONARCH MOTORS: the plan, the sale, the garage and the alarm
