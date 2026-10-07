@@ -71,6 +71,13 @@ title) and uploads the texture once, when it is done (~10 ms of work warm, sever
   after a blast (`fxGroundFire` from `fires`, with their lights), a burning engine bay, a wreck (damage3d-bodies.js).
 - The blast, fire and smoke counts follow the tier (FX_TIER_SHARE: LOW 0.55, MEDIUM 0.8).
 
+## Numbers (headless SwiftShader, HIGH, render scale 0.5, shadows off, a power-1 blast 30 m ahead)
+
+Before -> after: the chase view's camera pass 3 s after the blast drew 83 sprite calls (977 in all) -> 9 sprites
+(lamp halos and the like) plus the pool's one call (916 in all); the blast linked 2 programs in play (the shock
+ring's MeshBasic variants) -> 0; the blast adds ~94 slots (22 fireball, 20 column on delays, 14 dust, 28 sparks,
+the flash, the road chunks are debris). The atlas bake was ~80-110 ms of CPU in all on that machine, in slices.
+
 ## Console and checks
 
 `DeadEndCity.effectParticles()`: live, waiting, drawn (and of them the game's), capacity, peak, emitted, dropped,
