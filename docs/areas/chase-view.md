@@ -30,8 +30,10 @@ rendering.md Cameras and view.
   last look. Getting in or out is a HAND-OVER: the pivot slides over `CHASE_HANDOVER` s, the heading
   and pitch carry on (no snap); a teleport or a switch of view (`resetChaseCamera`) starts it behind.
 - Walls: the boom is marched against building footprints and heights (`chaseBoomReach`,
-  `chaseInsideBuilding`); it comes in at once and backs out at ~4 m/s. The camera never goes below
-  the ground or the water (`chaseFloor`), and then looks down at the shoulder instead.
+  `chaseInsideBuilding`); it comes in at once and backs out at ~4 m/s. CLOSE QUARTERS: a boom a wall
+  cut shorter than 1.6 m cranes the camera up to 0.55 m over the head (`CHASE_CRANE`, eased; never
+  while aiming), so the head drops out of the frame. The camera never goes below the ground or the
+  water (`chaseFloor`), and then looks down at the shoulder instead.
 - MOTION COMFORT (`motionComfortOn()`): the lens and boom do not change with speed, the heading spring
   is slower, no auto-follow on foot, and the renderer takes 0.12 of the kicks and tremor (none with
   comfort on, as in the street view).
