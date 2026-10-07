@@ -85,6 +85,7 @@
     // @include src/rooftops.js
     // @include src/air-cover.js
     // @include src/combat-rules.js
+    // @include src/driveby-seats.js
     // @include src/driveby.js
     // @include src/damage.js
     // @include src/crash-audio.js

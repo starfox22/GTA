@@ -147,8 +147,7 @@
           sideDigits: '#eef0ec',
         },
       };
-      const POLICE_PATROL_BODIES = ['charger', 'charger', 'utility', 'utility', 'crownvic'],
-        UNMARKED_PAINTS = ['#2a2f35', '#1e2227', '#3b3f3c', '#41454d', '#252f3c', '#4a2a2c'];
+      const UNMARKED_PAINTS = ['#2a2f35', '#1e2227', '#3b3f3c', '#41454d', '#252f3c', '#4a2a2c'];
       // ---- Which model ---------------------------------------------------------------
       // Looks are cached per vehicle (never stored on the vehicle object: the
       // physics keeps every vehicle one object layout).
@@ -164,17 +163,10 @@
       function pickPoliceLook(vehicle) {
         const hash = Math.imul((vehicle.id | 0) + 0x9e37, 0x85ebca6b) >>> 0,
           pick = (list, shift) => list[((hash >>> shift) & 0xffff) % list.length];
-        let body, livery;
-        // DeadEndCity.policeLineup() names the model and livery outright.
-        if (vehicle.policeLook) ({ body, livery } = vehicle.policeLook);
-        else if (vehicle.lawUnit === 'swat') [body, livery] = ['bearcat', 'swat'];
-        else if (vehicle.lawUnit === 'fed') [body, livery] = ['tahoe', 'unmarked'];
-        else if (vehicle.type === 'police') {
-          const county = vehicle.x > CITY_SIZE || vehicle.y > CITY_SIZE;
-          body = pick(POLICE_PATROL_BODIES, 3);
-          livery = county ? 'sheriff' : !vehicle.blockade && ((hash >>> 19) & 0xff) % 9 === 0 ? 'unmarked' : (hash >>> 11) & 1 ? 'bw' : 'modern';
-          if (livery === 'unmarked' && body === 'utility') body = 'charger';
-        } else return null;
+        // The body and livery are the game's (driveby-seats.js policeLookChoice: its drive-by seat is the body's).
+        const choice = policeLookChoice(vehicle);
+        if (!choice) return null;
+        let { body, livery } = choice;
         if (!POLICE_BODIES[body]) body = 'charger';
         const unmarked = livery === 'unmarked' || !POLICE_LIVERIES[livery];
         return {
