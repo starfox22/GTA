@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-531 files in the include tree, 183,414 lines.
+534 files in the include tree, 184,270 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -86,7 +86,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/air-cover.js`   408 — Overhead cover geometry
 - `src/combat-rules.js`   733 — Aerial combat and pursuit rules
 - `src/driveby.js`   557 — Drive-bys: the arcs a gun can point out of each vehicle (per window, from the driver's seat), the lean-out before the first shot, the panes it breaks …
-- `src/damage.js`    34 — ▸ Vehicle damage, bullet impacts and breakable street furniture
+- `src/damage.js`    37 — ▸ Vehicle damage, bullet impacts and breakable street furniture
 - `src/crash-audio.js`   243 — Vehicle crash sound
 - `src/engine-audio.js`   619 — Engine sound
 - `src/county.js`    11 — ▸ Outlying districts
@@ -258,7 +258,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/damage.js ▸ Vehicle damage, bullet impacts and breakable street furniture
 
-- `src/damage-vehicles.js`   546 — Vehicle damage state: dents, lamps, glass bands and panes (freshDamage, ensureDamage, addDent, shatterPane).
+- `src/damage-vehicles.js`   549 — Vehicle damage state: dents, lamps, glass bands and panes (freshDamage, ensureDamage, addDent, shatterPane).
+- `src/damage-crumple.js`   229 — Crumple field: how far a point of a vehicle's body moves for its dents (crumpleField, crumpleLimits), the one rule the renderer bends every part of a …
 - `src/damage-upkeep.js`   622 — Vehicle fire, wrecks and per-frame damage upkeep (igniteVehicle, wreckVehicle, updateDamage) and knockable street props.
 
 ## src/county.js ▸ Outlying districts
@@ -498,7 +499,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/postfx3d.js ▸ HDR post-processing pipeline
 
 - `src/postfx3d-sun.js`   248 — Post sun glare (the chase view): how much of the sun the sky draws is seen (depth and brightness round its disc, eased), light shafts from it through …
-- `src/postfx3d-motion.js`   136 — Camera motion blur in the chase view: the scene smeared along each pixel's screen motion since the last frame (from the depth and the two frames' …
+- `src/postfx3d-motion.js`   138 — Camera motion blur in the chase view: the scene smeared along each pixel's screen motion since the last frame (from the depth and the two frames' …
 - `src/postfx3d-composite.js`   204 — ▸ Post composite (one material per tier): AO upsampling, wet reflections, bloom, ACES tone curve, film grade, vignette and dither; the sun glare lands …
 
 ## src/postfx3d-composite.js ▸ Post composite (one material per tier): AO upsampling, wet reflections, bloom, ACES tone curve, film grade, vignette and dither; the sun glare lands …
@@ -527,7 +528,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/render3d-streetprops.js ▸ Street lamps and their glow halos, vehicle halos, blossom, sign() boards.
 
-- `src/damage3d.js`    27 — ▸ Crumpling bodies, decals, debris and knocked furniture
+- `src/damage3d.js`    33 — ▸ Crumpling bodies, decals, debris and knocked furniture
 - `src/carblood3d.js`   194 — ▸ Car blood 3D: stains on a vehicle's bodywork, decal geometry clipped to the model's own surface, painted and fitted in time slices.
 - `src/signkit3d.js`   156 — ▸ Sign lettering kit: stroke font, letter treatments, boards, emblems
 - `src/signdesigns3d.js`    82 — ▸ Business sign designs: families, the style table, hotels, towers, billboards
@@ -535,8 +536,10 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/damage3d.js ▸ Crumpling bodies, decals, debris and knocked furniture
 
 - `src/damage3d-decals.js`   673 — Damage 3D decals: the decal atlas (cracked glass, soot) and world decal layers (addDecal, flushDecals).
-- `src/damage3d-bodies.js`   616 — Damage 3D vehicle bodies: shell sections, crumpling, hinged parts and glass (carBodyDamage, crumple).
-- `src/damage3d-world.js`   556 — Damage 3D world hits: shop windows, bullet holes, structure impacts and blasts, sparks, knocked props (impactEffect).
+- `src/damage3d-bodies.js`   486 — Damage 3D vehicle bodies: shell sections, crumpling, hinged parts and glass (carBodyDamage, crumple).
+- `src/damage3d-crumple.js`   331 — Damage 3D crumple: every part of a car body bent by the one crumple field (crumpleField, damage-crumple.js) at its rest place: shell, glass, paint …
+- `src/damage3d-marks.js`   406 — Damage 3D vehicle marks: bullet holes, glass stars and scrapes pinned to the triangle of the body part they hit (they bend, swing and tear off with …
+- `src/damage3d-world.js`   558 — Damage 3D world hits: shop windows, bullet holes, structure impacts and blasts, sparks, knocked props (impactEffect).
 
 ## src/carblood3d.js ▸ Car blood 3D: stains on a vehicle's bodywork, decal geometry clipped to the model's own surface, painted and fitted in time slices.
 
@@ -779,7 +782,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/parachute3d.js`    51 — ▸ Ram-air parachute
 - `src/fx3d-atlas.js`   272 — The effect particles' texture atlas (fx3d-particles.js): four billowed smoke puffs with their surface normals, a glow, a muzzle flash star, the …
-- `src/fx3d-particles.js`   596 — Effect particles: smoke, dust, fire, sparks, flashes, glass and drops in one instanced billboard pool, stepped from a struct-of-arrays store (fxAdd) …
+- `src/fx3d-particles.js`   598 — Effect particles: smoke, dust, fire, sparks, flashes, glass and drops in one instanced billboard pool, stepped from a struct-of-arrays store (fxAdd) …
 - `src/fx3d-recipes.js`   426 — Effect recipes on the particle pool (fx3d-particles.js): a blast's flash, fireball, smoke column, dust ring, sparks and debris; muzzle flashes …
 
 ## src/parachute3d.js ▸ Ram-air parachute
@@ -793,7 +796,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-core.js`   186 — DeadEndCity console, core: status, teleport, look, clock, zoom, simulate, heal, god, cash, walk (+ godPanelConsole)
 - `src/game-console-missions.js`   324 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
 - `src/game-console-police.js`   240 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
-- `src/game-console-vehicles.js`   415 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
+- `src/game-console-vehicles.js`   417 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
 - `src/game-console-world.js`   236 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
 - `src/game-console-rides.js`   104 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
 - `src/game-console-leisure.js`    75 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)

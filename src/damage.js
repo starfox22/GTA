@@ -10,8 +10,9 @@
      * vehicle starts clean (freshDamage):
      *   damage.front/rear/left/right  0..1 crumple of each zone (the original contract)
      *   vehicle.dents[]   {x, y, z, nx, ny, depth, r}: crumple centres in vehicle space. The
-     *                     renderer pushes body vertices along (nx, ny) by up to `depth`
-     *                     with a smooth falloff over radius `r` (damage3d.js).
+     *                     renderer bends every body part by crumpleField (damage-crumple.js):
+     *                     along (nx, ny) by up to `depth`, smooth falloff over radius `r`,
+     *                     inward travel capped (damage3d-crumple.js applies it).
      *   damage.parts      hood, bumpers, doors, trunk: 0 on, 1 sprung or hanging, 2 torn off
      *   damage.glass      per pane: 0 intact, 1 cracked, 2 shattered. Windscreens are
      *                     laminated and crack first; side and rear glass is tempered and
@@ -29,6 +30,8 @@
      * for vehicles; enough momentum knocks it flat and it stops being solid.
      */
     // @include src/damage-vehicles.js
+
+    // @include src/damage-crumple.js
 
     // @include src/damage-upkeep.js
     // END SUBSYSTEM: src/damage.js

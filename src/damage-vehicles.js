@@ -343,7 +343,10 @@
         vehicle.damageVersion++;
         return kind;
       }
-      addVehicleMark(vehicle, { kind: 'hole', x: entry.x, y: entry.y, z, dx: entry.dx, dy: entry.dy, size });
+      // Off the glasshouse (bonnet, boot, the ends) the round went into metal under the belt line: a chest-high line
+      // over a bonnet would have met the screen, so the hole is drawn on the panel below it (the rules above keep `z`).
+      const holeZ = band && (entry.x <= band.back || entry.x >= band.front) ? Math.min(z, band.belt - 0.6) : z;
+      addVehicleMark(vehicle, { kind: 'hole', x: entry.x, y: entry.y, z: holeZ, dx: entry.dx, dy: entry.dy, size });
       if (band) {
         // Lamps sit in the corners of each end, below the belt line.
         const lampY = Math.abs(entry.y) > spec.w * 0.1 && Math.abs(entry.y) < spec.w * 0.48 && z < band.belt + 1;

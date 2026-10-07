@@ -541,6 +541,8 @@
         groundStain,
         sparks,
         carBloodInfo,
+        // The crumpled parts and the marks of a vehicle as drawn (damage3d-marks.js; console vehicleDamageShape).
+        vehicleDamageShape,
         damageInfo: () => ({
           worldDecals: worldDecals.used,
           worldDecalCapacity: worldDecals.capacity,
