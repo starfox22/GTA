@@ -293,6 +293,7 @@ packs with plain `<script src>` so the zip still plays from file://.
   must still pose every bone. His bind skeleton is the rig's joints at `PB_WIDTH` (the 'player' outfit's
   `widthAbsolute`: change them together). A vertex's part (`pbSkin.w`, a bone index) is the one rule for telling
   his body parts apart (wounds, severed limbs); tools/tests/player-body.mjs holds proportions and the pose sweep.
+  A weapon's hand placement on his body is `PB_GRIPS` (player-body3d-grips.js): a new weapon adds its grip there.
 - Car cabins (cars3d-interior.js): civilian and police glass is see-through (`carGlassMaterial`, premultiplied; the
   tint closes past `CAR_GLASS_CLEAR`); the cabin merges at the end of each kit's trim (impostors draw `kit.trimOuter`,
   so exterior trim goes before the cabin); `carSeatPlan` (`m.seats`) is the one seat rule; crowd3d-driveby.js SEATED

@@ -69,19 +69,19 @@
         add(pbEllipsoid(-0.006, 1.703, 0, 0.1, 0.091, 0.0765, rz(-0.12)), 0);
         add(pbEllipsoid(0.035, 1.735, 0, 0.068, 0.06, 0.07), 0.03);
         // Face: the brow ridge and the forehead above it, the cheek and maxilla mass, the jaw and chin.
-        add(pbEllipsoid(0.072, 1.703, 0, 0.026, 0.017, 0.056), 0.02);
+        add(pbEllipsoid(0.073, 1.704, 0, 0.026, 0.016, 0.057), 0.018);
         add(pbEllipsoid(0.043, 1.641, 0, 0.049, 0.047, 0.051), 0.028);
         // The muzzle under the nose: the teeth's arch behind the lips, flatter than the face mass.
         add(pbEllipsoid(0.07, 1.605, 0, 0.02, 0.022, 0.03), 0.02);
-        mirror((s) => add(pbEllipsoid(0.05, 1.666, s * 0.05, 0.024, 0.013, 0.021, rz(0.1)), 0.02));
+        mirror((s) => add(pbEllipsoid(0.047, 1.664, s * 0.052, 0.027, 0.015, 0.022, rz(0.12)), 0.026));
         // The cheek between the cheekbone and the jaw: lean, not hollow.
-        mirror((s) => add(pbEllipsoid(0.028, 1.628, s * 0.047, 0.03, 0.03, 0.016), 0.024));
+        mirror((s) => add(pbEllipsoid(0.028, 1.632, s * 0.046, 0.029, 0.03, 0.0165), 0.026));
         // Mandible: chin, the jawline back to the corners under the ears, the ramus up.
-        add(pbEllipsoid(0.074, 1.585, 0, 0.019, 0.017, 0.025), 0.014);
-        mirror((s) => add(pbLimb([0.067, 1.582, s * 0.019], [-0.002, 1.605, s * 0.049], 0.012, 0.0135), 0.02));
-        mirror((s) => add(pbLimb([-0.002, 1.605, s * 0.049], [-0.014, 1.655, s * 0.056], 0.0135, 0.013), 0.018));
+        mirror((s) => add(pbEllipsoid(0.074, 1.584, s * 0.009, 0.018, 0.017, 0.017), 0.01));
+        mirror((s) => add(pbLimb([0.066, 1.58, s * 0.02], [-0.006, 1.6, s * 0.051], 0.0115, 0.0125), 0.012));
+        mirror((s) => add(pbLimb([-0.006, 1.6, s * 0.051], [-0.016, 1.655, s * 0.056], 0.0125, 0.0125), 0.012));
         // Under the chin, a little fullness.
-        add(pbEllipsoid(0.035, 1.58, 0, 0.034, 0.012, 0.034), 0.025);
+        add(pbEllipsoid(0.03, 1.582, 0, 0.03, 0.01, 0.03), 0.02);
         // Temples: hollow a touch.
         mirror((s) => sub(pbEllipsoid(0.045, 1.718, s * 0.083, 0.024, 0.026, 0.012), 0.02));
         // Eye sockets under the brow; the lids are a mass round each eyeball with an almond opening cut through
@@ -111,8 +111,8 @@
         }
         // Nose: bridge, tip, wings; nostrils carved underneath.
         add(pbLimb([0.088, 1.69, 0], [0.109, 1.643, 0], 0.0085, 0.0105, { flat: 1.15 }), 0.008);
-        add(pbSphere(0.1075, 1.6355, 0, 0.0135), 0.007);
-        mirror((s) => add(pbEllipsoid(0.0985, 1.6305, s * 0.0145, 0.0095, 0.0085, 0.0078), 0.005));
+        add(pbSphere(0.1065, 1.636, 0, 0.0122), 0.007);
+        mirror((s) => add(pbEllipsoid(0.0985, 1.6305, s * 0.0138, 0.0088, 0.008, 0.0072), 0.005));
         mirror((s) => sub(pbEllipsoid(0.1035, 1.6255, s * 0.0078, 0.0068, 0.003, 0.0045), 0.002));
         // Mouth: upper and lower lips, the line between, the philtrum above.
         add(pbEllipsoid(0.0875, 1.6115, 0, 0.0095, 0.0055, 0.0215), 0.006);

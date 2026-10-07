@@ -369,11 +369,18 @@
         const hold = spec?.hold,
           holdWeight = J[J_HOLD];
         if (hold?.inHand) {
-          crowdJoint(mGun, mHand[1], hold.at[0], hold.at[1], hold.at[2], hold.rz);
+          // The player's own hand holds it in his fist (player-body3d-grips.js).
+          if (own) mGun.multiplyMatrices(mHand[1], pbGripsFor(spec.weapon).inverse);
+          else crowdJoint(mGun, mHand[1], hold.at[0], hold.at[1], hold.at[2], hold.rz);
           rigEmit(P[spec.weapon], mGun, 1, 1, 1, WEAPON_PAINTS[spec.weapon] || WEAPON_PAINTS.pistol);
-        } else if (hold && holdWeight > 0.05) drawHold(p, s, spec, hold, H, elevation, hipY, holdWeight);
+        } else if (hold && holdWeight > 0.05) drawHold(p, s, spec, hold, H, elevation, hipY, holdWeight, own);
         // A rider's hands on the bars (RIDERS).
         if (spec?.handTargets) {
+          // The player's own firing hand round the drive-by gun's grip: its wrist is the target.
+          if (own && spec.gunFrame) {
+            handFrames[1].multiplyMatrices(spec.gunFrame, pbGripsFor(spec.weapon || 'pistol').fire[spec.gunHand ? 1 : 0]);
+            spec.handTargets[spec.gunHand].setFromMatrixPosition(handFrames[1]);
+          }
           for (let side = 0; side < 2; side++) {
             shoulderWorld[side].setFromMatrixPosition(mShoulder[side]);
             holdPole.set(-0.4, -1, (side ? 1 : -1) * 0.6).transformDirection(mTorso);
@@ -398,7 +405,7 @@
           // A drive-by (crowd3d-driveby.js): the pistol along the aim, the firing hand on its grip.
           if (spec.gunFrame) {
             rigEmit(P[spec.weapon] || P.pistol, spec.gunFrame, 1, 1, 1, WEAPON_PAINTS[spec.weapon] || WEAPON_PAINTS.pistol);
-            mHand[spec.gunHand].copy(spec.gunHandFrame);
+            mHand[spec.gunHand].copy(own ? handFrames[1] : spec.gunHandFrame);
           }
         }
         const armPaint = paints.upperArm,
@@ -415,7 +422,7 @@
         }
         if (own) {
           const grip = playerHandGrip(p, spec, hold, holdWeight);
-          playerBodyGrip(grip[0], grip[1]);
+          playerBodyGrip(grip[0], grip[1], grip[2], grip[3]);
         }
         // Legs.
         for (let side = 0; side < 2; side++) {
@@ -504,7 +511,7 @@
        * weapon is drawn there, and the wrists are brought to its grip and
        * handguard by IK (overwriting the posed arm matrices).
        */
-      function drawHold(p, s, spec, hold, H, elevation, hipY, weight) {
+      function drawHold(p, s, spec, hold, H, elevation, hipY, weight, own = false) {
         crowdJoint(mAim, mIdentity, p.x, elevation + hipY * H, p.y, 0, 0, -s.yaw);
         mAim.scale(crowdScale.set(H, H, H));
         for (let side = 0; side < 2; side++) shoulderWorld[side].setFromMatrixPosition(mShoulder[side]);
@@ -550,7 +557,9 @@
           // The firing hand: its wrist a little behind and above the grip.
           // The firing hand wraps the grip: the wrist a little behind and above it,
           // the hand down the grip, fingers round the front.
-          crowdJoint(handFrames[1], mGun, -0.3, 0.34, 0.02, 0.22);
+          const grips = own ? pbGripsFor(spec.weapon) : null;
+          if (own) handFrames[1].multiplyMatrices(mGun, grips.fire[1]);
+          else crowdJoint(handFrames[1], mGun, -0.3, 0.34, 0.02, 0.22);
           rightTarget = armTargets[1].setFromMatrixPosition(handFrames[1]);
           rightFrame = handFrames[1];
           if (info.support && !hold.oneHand) {
@@ -558,15 +567,20 @@
               k = WEAPON_SCALE_OF(spec.weapon),
               pistolGrip = spec.weapon === 'pistol';
             // Reloading: the support hand goes to the magazine and back.
-            crowdJoint(
-              handFrames[0],
-              mGun,
-              sp[0] * k - reloadBump * (sp[0] * k - 0.5) + (pistolGrip ? -0.22 : -0.3),
-              sp[1] + (pistolGrip ? 0.3 : 0.12) - reloadBump * 1.1,
-              sp[2] - (pistolGrip ? 0.08 : 0.22),
-              pistolGrip ? 0.22 : 0.9,
-              pistolGrip ? 0 : -0.5,
-            );
+            if (own && grips.support) {
+              mOut.makeTranslation(-reloadBump * 0.8, -reloadBump * 1.1, 0);
+              handFrames[0].multiplyMatrices(mGun, mOut).multiply(grips.support);
+            } else {
+              crowdJoint(
+                handFrames[0],
+                mGun,
+                sp[0] * k - reloadBump * (sp[0] * k - 0.5) + (pistolGrip ? -0.22 : -0.3),
+                sp[1] + (pistolGrip ? 0.3 : 0.12) - reloadBump * 1.1,
+                sp[2] - (pistolGrip ? 0.08 : 0.22),
+                pistolGrip ? 0.22 : 0.9,
+                pistolGrip ? 0 : -0.5,
+              );
+            }
             leftTarget = armTargets[0].setFromMatrixPosition(handFrames[0]);
             leftFrame = handFrames[0];
           }
@@ -602,29 +616,37 @@
        * How far the player's hands close (player-body3d.js grip shape, 0 relaxed to 1 gripping): round a weapon,
        * a fist in a fight, on the bars or the wheel, round what the right hand carries; slack when down.
        */
-      const playerGripOut = [0.15, 0.15];
+      // Left and right closing, then left and right trigger fingers (0 or 1).
+      const playerGripOut = [0.15, 0.15, 0, 0];
       function playerHandGrip(p, spec, hold, weight) {
         let left = 0.15,
-          right = 0.15;
+          right = 0.15,
+          triggerLeft = 0,
+          triggerRight = 0;
         if (p.hp <= 0) left = right = 0.3;
         else if (hold?.fists) left = right = 0.6 + 0.4 * weight;
-        else if (hold?.inHand) right = 0.88;
-        else if (hold && spec?.weapon) {
+        else if (hold?.inHand) {
+          right = 0.92;
+          triggerRight = spec.weapon !== 'knife' ? 1 : 0;
+        } else if (hold && spec?.weapon) {
           const info = WEAPON_HOLDS[spec.weapon] || WEAPON_HOLDS.pistol;
-          right = 0.15 + 0.73 * weight;
-          if (info.support && !hold.oneHand) left = 0.15 + 0.6 * weight;
+          right = 0.15 + 0.8 * weight;
+          triggerRight = spec.weapon !== 'knife' ? 1 : 0;
+          if (info.support && !hold.oneHand) left = 0.15 + 0.75 * weight;
         }
         if (spec?.handTargets) {
           left = Math.max(left, 0.78);
           right = Math.max(right, 0.78);
         }
         if (spec?.gunFrame) {
-          if (spec.gunHand) right = 0.88;
-          else left = 0.88;
+          if (spec.gunHand) (right = 0.92), (triggerRight = 1);
+          else (left = 0.92), (triggerLeft = 1);
         }
         if (!hold && (p.carry || PHONE_POSES.has(p.pose))) right = Math.max(right, 0.7);
         playerGripOut[0] = left;
         playerGripOut[1] = right;
+        playerGripOut[2] = triggerLeft;
+        playerGripOut[3] = triggerRight;
         return playerGripOut;
       }
       const WEAPON_SCALE_OF = (weapon) => (weapon === 'shield' ? 1 : WEAPON_SCALE);
