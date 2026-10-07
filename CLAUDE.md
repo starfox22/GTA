@@ -259,6 +259,10 @@ packs with plain `<script src>` so the zip still plays from file://.
   is the aim for every device: aim code reads `aim()`, `chaseAimScreen()` or `chaseGroundPoint()`, never
   `mouse.x/y` with `city3D.groundPoint` alone. Movement keys go through `playerMoveHeading()`; the street view's
   paths stay bit-identical when the chase view is off. Its HUD layout is `body.chase-view` (chase-view.css).
+- Building frontage (cityscape3d-frontage.js STREET FRONTAGE): a new shopfront part takes a FRONT PAINT colour
+  (`facePaint`/`paintBox`), never a new `staticMat`; nothing in the building loop draws from `cityRandom` (its stream
+  places roof plant and bus stops); nothing on a north side stands more than 3 units off the wall and no awning goes
+  east, west or south (the street camera's cutaway and overhead cover).
 - Chase view level of detail (rendering-chase.md): anything new the far copy stands for hides with its cell
   (`cell.full` / `cell.blocks`); shadow-pass-only hiding goes through `chaseShadowCasters` (restored after the
   pass); its shadow box is `placeChaseSun` (the depth fade `cityShadowReach`); never toggle a light.
@@ -294,6 +298,10 @@ packs with plain `<script src>` so the zip still plays from file://.
   `skySunDirection` is the sun the sky draws (it sets); `sunDirection` (the light) stays above ~15° for readable
   shadows: sky visuals, glare and clouds from below use the first, shadows the second. The dome draws at
   renderOrder 50 after the opaque city: an opaque thing that writes no depth and must show against the sky needs more.
+- Rain and wet streets at street level (rendering-weather.md): `updateStreetRain`, `chaseRainAir` and the SSR's
+  `uStreet` switch on `chaseViewActive` (uniforms, no new programs); the street view keeps `uStreet` (0,1,0,0),
+  `uNear.w` 0, splash `uSize` 1 / `uUpright` 0 and a non-zero `citySheenDir`. Darken `cityHaze*` only after
+  `refreshEnvironment` (`weatherGrade`).
 - `cloudBaseAt(x, y)` / `cloudTopAt(x, y)` (clouds.js) are the only source of the cloud
   altitude (by weather and area); the renderer draws from the same maps
   (docs/areas/rendering-clouds.md). Console `cloudJump(metres, kind)` drops the player over

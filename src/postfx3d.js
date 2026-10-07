@@ -104,6 +104,8 @@
         if (hdrCapable && postTier && ssrMaterial && ssrTargets.length === 2) pass(ssrMaterial, ssrTargets[0]), pass(ssrBlurMaterial, ssrTargets[1]);
         // The sun glare's passes (postfx3d-sun.js) run only in the chase view, with the sun in frame.
         if (hdrCapable && postTier) sunGlareWarmPasses(pass);
+        // The chase view's camera motion blur (postfx3d-motion.js), HIGH and ULTRA.
+        if (hdrCapable && postTier) cameraMotionWarmPasses(pass);
         return passes;
       }
       function runPass(material, target) {
@@ -309,6 +311,16 @@
        * reflects, so the composite adds `reflection * wetness * mirror` and a
        * building reflected in a puddle darkens it while a lamp brightens it.
        * Dry streets skip both passes.
+       *
+       * STREET LEVEL (the chase view, `uStreet`; the street view passes 0, 1, 0, 0
+       * and draws exactly as before): the ray reaches down the street (SSR_STREET_REACH
+       * of the draw distance) and starts a share of the point's distance out, so the
+       * steps are spent where a far point's reflection lies; the wet road mirrors more
+       * as the view grazes it (Schlick's Fresnel, a gain on the reflection); a ray that
+       * meets nothing (off the frame or past the reach) mirrors the sky's own colour
+       * in its direction (cityHazeColor: the dome's), so puddles show the sky's
+       * gradient; the glossy jitter is narrower (the perspective already stretches
+       * a light down the road) and the blur after it longer, towards the viewer.
        */
       const ssrUniforms = {
         tScene: { value: null },
@@ -323,7 +335,17 @@
         uSky: { value: new Three.Color(0, 0, 0) },
         uRain: { value: 0 },
         uRainTime: { value: 0 },
+        // Street level: x the Fresnel gain at grazing, y the glossy jitter's share, z the sky's share for a
+        // ray that meets nothing as the ground's flat sky has it (postLook.reflectShare; 0: that flat sky),
+        // w the first step as a share of the distance.
+        uStreet: { value: new Three.Vector4(0, 1, 0, 0) },
+        // The sky's colours (aerial-haze3d.js CITY_HAZE, shared arrays) for cityHazeColor.
+        ...CITY_HAZE,
       };
+      const SSR_STREET = new Three.Vector4(0.7, 0.4, 0.4, 0.025),
+        SSR_STREET_OFF = new Three.Vector4(0, 1, 0, 0),
+        SSR_STREET_REACH = 0.55,
+        SSR_STREET_REACH_MAX = 3200;
       function makeSsrMaterial(steps) {
         return postMaterial(
           `
@@ -333,9 +355,11 @@
           uniform vec2 uDepthTexel;
           uniform float uPerspective, uReach, uRain, uRainTime;
           uniform vec3 uSky;
+          uniform vec4 uStreet;
           ${AO_COMMON}
           ${SURFACE_NOISE}
           ${RAIN_RINGS}
+          ${CITY_HAZE_GLSL}
           vec2 cityProject( vec3 q ) {
             vec4 clip = uProjection * vec4( q, 1.0 );
             return clip.xy / clip.w * 0.5 + 0.5;
@@ -356,17 +380,32 @@
               N = normalize( N + ( uView * vec4( tilt.x, 0.0, tilt.y, 0.0 ) ).xyz );
             }
             vec3 R = reflect( V, N );
+            // Street level: more mirror as the view grazes the road (none of it from the street camera's
+            // steep view), and what a ray that meets nothing sees: the sky's own colour that way there, the
+            // flat sky the ground already mirrors in the street view (a miss then adds nothing).
+            float fresnel = pow( 1.0 - clamp( dot( -V, N ), 0.0, 1.0 ), 5.0 ), gain = 1.0 + uStreet.x * fresnel;
+            vec3 sky = uSky;
+            if ( uStreet.z > 0.0 ) {
+              // (Greyed a little and toned down by the same share as the ground's flat sky, the share
+              // rising to the whole sky as the view grazes the water.)
+              sky = cityHazeColor( normalize( ( uCameraWorld * vec4( R, 0.0 ) ).xyz ) );
+              sky = mix( sky, vec3( dot( sky, vec3( 0.3333 ) ) ), 0.3 ) * mix( uStreet.z, 1.0, fresnel );
+            }
+            vec3 miss = sky * gain - uSky;
             // Glossy lobe: jitter the ray in its vertical plane (streaks along the
             // view) and a little sideways, more on damp tarmac than in a puddle.
-            float rough = mix( 0.2, 0.012, pool );
-            float n1 = fract( 52.9829189 * fract( dot( gl_FragCoord.xy, vec2( 0.06711056, 0.00583715 ) ) ) );
+            float rough = mix( 0.2, 0.012, pool ) * uStreet.y;
+            // (Interleaved gradient noise: fast across the frame for the street camera; at street level
+            // fast down it, along the blur that follows, so the jitter averages out instead of speckling.)
+            float n1 = fract( 52.9829189 * fract( dot( gl_FragCoord.xy, uStreet.x > 0.0 ? vec2( 0.00583715, 0.06711056 ) : vec2( 0.06711056, 0.00583715 ) ) ) );
             float n2 = fract( n1 * 7.13 + 0.37 );
             vec3 side = normalize( cross( R, N ) ), lift = normalize( cross( side, R ) );
             R = normalize( R + lift * ( n1 - 0.5 ) * rough * 2.4 + side * ( n2 - 0.5 ) * rough * 0.3 );
-            if ( dot( R, N ) < 0.02 ) { gl_FragColor = vec4( 0.0 ); return; }
-            // March out along the ray in growing steps.
-            float growth = pow( uReach / 1.5, 1.0 / float( SSR_STEPS - 1 ) );
-            float t = 1.5 * ( 0.75 + 0.5 * n2 ), last = 0.0, hit = 0.0;
+            if ( dot( R, N ) < 0.02 ) { gl_FragColor = vec4( miss, 0.0 ); return; }
+            // March out along the ray in growing steps (at street level from a share of the point's distance).
+            float start = max( 1.5, length( P ) * uStreet.w );
+            float growth = pow( uReach / start, 1.0 / float( SSR_STEPS - 1 ) );
+            float t = start * ( 0.75 + 0.5 * n2 ), last = 0.0, hit = 0.0;
             vec2 q = uv;
             for ( int i = 0; i < SSR_STEPS; i++ ) {
               vec3 Q = P + R * t;
@@ -377,7 +416,7 @@
               last = t;
               t *= growth;
             }
-            if ( hit < 0.5 ) { gl_FragColor = vec4( 0.0 ); return; }
+            if ( hit < 0.5 ) { gl_FragColor = vec4( miss, 0.0 ); return; }
             // Refine the crossing between the last miss and the hit.
             float lo = last, hi = t;
             for ( int j = 0; j < 5; j++ ) {
@@ -391,7 +430,7 @@
             // Fade out towards the frame edges (nothing beyond them to reflect) and the reach.
             vec2 edge = smoothstep( vec2( 0.0 ), vec2( 0.06, 0.1 ), q ) * smoothstep( vec2( 1.0 ), vec2( 0.94, 0.9 ), q );
             float fade = edge.x * edge.y * ( 1.0 - smoothstep( uReach * 0.55, uReach, hi ) );
-            gl_FragColor = vec4( ( c - uSky ) * fade, fade );
+            gl_FragColor = vec4( mix( miss, c * gain - uSky, fade ), fade );
           }`,
           ssrUniforms,
           { SSR_STEPS: steps },
@@ -501,6 +540,7 @@
       bloomUp.blendSrc = Three.OneFactor;
       bloomUp.blendDst = Three.OneFactor;
       // @include src/postfx3d-sun.js
+      // @include src/postfx3d-motion.js
       // @include src/postfx3d-composite.js
       /**
        * FXAA
@@ -676,6 +716,9 @@
         // (scene-linear), and the rain on the puddles.
         reflect: 0,
         reflectSky: new Three.Color(0, 0, 0),
+        // The share of the sky's light the wet ground mirrors (WET_SKY_SHARE by the hour): at street level
+        // the reflections pass mirrors the sky's own colour at that share, rising to all of it at grazing.
+        reflectShare: 0.4,
         rain: 0,
         rainTime: 0,
       };
@@ -750,20 +793,27 @@
           ssrUniforms.uSky.value.copy(postLook.reflectSky);
           ssrUniforms.uRain.value = postLook.rain;
           ssrUniforms.uRainTime.value = postLook.rainTime;
-          // Out to about a frame height of ground (the street view's is ~630 units at zoom 1).
-          ssrUniforms.uReach.value = clamp(700 / Math.max(0.2, viewZoom), 400, 2400);
+          // Out to about a frame height of ground (the street view's is ~630 units at zoom 1); at street
+          // level down the street, with the street-level terms (STREET LEVEL above).
+          ssrUniforms.uReach.value = chaseViewActive
+            ? Math.min(SSR_STREET_REACH_MAX, chaseDrawReach * SSR_STREET_REACH)
+            : clamp(700 / Math.max(0.2, viewZoom), 400, 2400);
+          SSR_STREET.z = Math.max(0.01, postLook.reflectShare);
+          ssrUniforms.uStreet.value.copy(chaseViewActive ? SSR_STREET : SSR_STREET_OFF);
           runPass(ssrMaterial, ssrTargets[0]);
           ssrBlurUniforms.tSource.value = ssrTargets[0].texture;
-          ssrBlurUniforms.uDirection.value.set(0, 1.4 / ssrTargets[0].height);
+          ssrBlurUniforms.uDirection.value.set(0, (chaseViewActive ? 2.6 : 1.4) / ssrTargets[0].height);
           runPass(ssrBlurMaterial, ssrTargets[1]);
           postCompositeUniforms.tReflect.value = ssrTargets[1].texture;
           postCompositeUniforms.uReflect.value = postLook.reflect;
         } else if (ssrTargets.length) postCompositeUniforms.tReflect.value = ssrTargets[1].texture;
         // The sun in frame in the chase view: its visibility, glare and shafts (postfx3d-sun.js).
         renderSunGlare(tier);
+        // The chase view's camera motion blur (postfx3d-motion.js): what the bloom and the composite read as the scene.
+        const sceneColor = renderCameraMotion(tier, sceneTarget.texture);
         if (bloomTargets.length) {
           bloomUniforms.uThreshold.value = postLook.bloomThreshold;
-          bloomUniforms.tSource.value = sceneTarget.texture;
+          bloomUniforms.tSource.value = sceneColor;
           bloomUniforms.uTexel.value.set(1 / postWidth, 1 / postHeight);
           runPass(bloomPrefilter, bloomTargets[0]);
           for (let i = 1; i < bloomTargets.length; i++) {
@@ -780,7 +830,7 @@
           renderer.autoClear = true;
           postCompositeUniforms.tBloom.value = bloomTargets[0].texture;
         }
-        postCompositeUniforms.tScene.value = sceneTarget.texture;
+        postCompositeUniforms.tScene.value = sceneColor;
         postCompositeUniforms.tDepth.value = sceneTarget.depthTexture;
         postCompositeUniforms.uExposure.value = postLook.exposure;
         postCompositeUniforms.uBloomStrength.value = postLook.bloomStrength;

@@ -5,6 +5,9 @@
       // Tyre smoke, dust and road spray (tyresmoke3d.js): puffs alive, the graphics
       // tier's cap, the pool's capacity, puffs emitted since boot and the peak alive.
       tyreSmoke: () => (city3D ? city3D.tyreSmokeInfo() : null),
+      // The rain and the wet street as drawn (weather3d-chase.js): both boxes of rain, the near box at
+      // street level, the splashes, the haze, the wet reflections' street-level terms (null without WebGL).
+      rainView: () => (city3D?.rainView ? city3D.rainView() : null),
       // World-scale audit, everything in metres: each road vehicle's spec
       // (length, width), the built models within `radius` of the player measured
       // from their meshes (length, width, height), the player's model, the crowd

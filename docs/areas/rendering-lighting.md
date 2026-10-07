@@ -12,6 +12,12 @@ buildings, ground). Vehicle lights: rendering-vehicle-lights.md.
   cut-outs and glints stayed stepped and flickering on HIGH/ULTRA without it). The half-res AO
   is upsampled depth-aware (`compositeAo`), not bilinearly (shade fringes at silhouettes).
   `renderFrame()` replaces `renderer.render()`.
+- CAMERA MOTION BLUR (postfx3d-motion.js, before bloom and composite; Settings · Graphics · Motion
+  blur): the chase view only, HIGH/ULTRA, never with Motion comfort or in the air
+  (`chaseMotionBlurAllowed()` is the game's half). Depth reprojection with last frame's camera, a
+  fixed 1/90 s shutter, capped at 3.5% of the screen; anything within 12 m (the player, their car)
+  stays sharp and is never smeared over what is behind it; a cut (teleport, look behind, view switch)
+  skips a frame. Report: `chaseCamera().view.motionBlur`.
 - Custom `ShaderMaterial`s that compute final screen colours (the water) end with
   `#include <city_hdr_output>` (and include `<city_hdr_pars>`) to invert the tone curve;
   unlit `MeshBasicMaterial`s with `toneMapped: false` (signs) get this automatically.
@@ -51,6 +57,13 @@ buildings, ground). Vehicle lights: rendering-vehicle-lights.md.
   old 12 m pool, a long tail across the road); lanterns `LAMP_POOL_RADIUS`. The island map
   (`ISLE_LAMP_BOUNDS`, from the city frame's east edge) lights Monarch Isle and North
   Point Key (its lanterns, gate, fountain and lobby spill).
+  CITY WALL LIGHT (`cityWallLight`, lighting3d-sky.js): a wall also takes the map 3.5, 9 and
+  17.5 m out along its normal (weights 0.42, 0.22, 0.12, fading by ~12 m up), as the brighter of
+  the two, so lamps across the street light the lower floors and side-street facades are not
+  black at eye level; a wall standing in a pool is lit as before.
+- Glow field at street level (signage3d.js): a glow is never wider than `GLOW_STREET_ANGLE`
+  (0.07 rad) of a perspective view (a lamp's 3.5 m halo filled the frame up close); the street
+  view's orthographic camera is untouched (the projection's w column tells them apart).
 - Vehicle lights (CAR LAMPS, the drive light map, beam shadows, lamps on slopes, the
   terrain horizon): rendering-vehicle-lights.md.
 - Sign emissive is multiplied by `cityPower()` so the blackout job darkens districts.

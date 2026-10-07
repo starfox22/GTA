@@ -474,11 +474,7 @@
           }),
         ),
         beaconMaterial = new Three.MeshBasicMaterial({ color: '#ff3b2f' }),
-        beacons = [],
-        awningMaterials = ['#b7413a', '#2d6a5e', '#26426d', '#c99a2e', '#6d3f76', '#d86d4a'].map((c) =>
-          mat(c, 0.9),
-        ),
-        awningStripe = mat('#efe6d3', 0.9);
+        beacons = [];
       /**
        * SHARED FACADES
        * Every building used to have its own facade material (its own texture

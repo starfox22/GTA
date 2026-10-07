@@ -391,6 +391,7 @@
         zoomHeight: (zoom) => streetZoomHeight(zoom),
         // What the chase view draws (chase-view3d.js): draw distance, clip planes, culling reach, haze.
         chaseView: () => chaseViewReport(),
+        rainView: () => rainViewReport(),
         aim(mx, my) {
           ray.setFromCamera(
             new Three.Vector2((mx / viewportWidth) * 2 - 1, (-my / viewportHeight) * 2 + 1),

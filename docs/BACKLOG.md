@@ -180,6 +180,13 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - A rain streak takes its head's light along its whole length (weather3d.js), so a drop just inside a beam's top edge draws a lit line up to ~6 m above it (lighting each vertex at its own point costs nothing more but changes the city look).
 - The terrain horizon sees the height field only: boulders, trees and buildings on the range do not shadow the beams; the mountain haze level and the light bar's strength were tuned on SwiftShader.
 
+## Street frontage (cityscape3d-frontage.js, cityscape3d-shopwindows.js)
+- The chase view's shadow casters measure a static batch cell from its direct children only (chase-view3d-casters.js `chaseBatchCellBounds` skips `cell.full`, which holds every far-usable batch): a cell whose other batches are a few small ones gets a tiny box and leaves the shadow pass whole (on the y 1152 avenue no batch within 150 m cast). Include `cell.full`'s batches in the bounds.
+- Shop windows on the north, east and west sides are not `b.shopPanes`: bullets never star them, and the damage code's `wallOffset` puts a bullet hole low on those sides 0.18 off the wall, behind the glass or plinth (both assume the south shopfront).
+- Only south-side signs lay a wet-road streak (STREAK_CAPACITY 3400 is shared city-wide); streaks now turn to the chase camera, so other sides could have them with a bigger pool.
+- No bins in the yards (they would be walk-through without collision); a stoop's door stands two steps up where the crowd's door point is at street level.
+- 32 shop names for every shopfront in the city (the 2048² sign atlas is packed up front and nearly full): names repeat along a street.
+
 ## Boot and render memory (docs/areas/boot-and-memory.md)
 - Boot is ~6 s of simulation (terrain field 1.7 s, county, bike-share plan) plus the renderer's scene build before the title answers: signs and the neon atlas (~16%), ground fields, airport liveries (a per-pixel loop), the far copy of the city (built at boot, used only from the air or zoomed far out). Each could be built lazily (aircraft must stay in their `statics` group; the far copy needs its prewarm upload moved to the pre-upload timer).
 - A tier change stages the scene's programs, the post chain and the shadow-depth samples; a car type not in the scene at the switch still compiles on first sight (stand-in models are only built behind the title).
