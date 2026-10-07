@@ -1,4 +1,25 @@
       // Chase view console report: the last frame's camera and shadow draw calls by kind and distance band.
+      /* Console only: an object's world box (a sprite by its scale, an instanced mesh by its instances, a far mesh
+         whose arrays left once uploaded by its sphere); false when it has none. */
+      const chaseBoxCentre = new Three.Vector3(),
+        chaseBoxSize = new Three.Vector3();
+      function chaseWorldBox(o, box) {
+        if (o.isSprite) {
+          const e = o.matrixWorld.elements;
+          box.setFromCenterAndSize(chaseBoxCentre.set(e[12], e[13], e[14]), chaseBoxSize.set(Math.hypot(e[0], e[1], e[2]), Math.hypot(e[4], e[5], e[6]), 0));
+        } else if (o.isInstancedMesh) {
+          if (o.boundingBox === null) o.computeBoundingBox();
+          box.copy(o.boundingBox).applyMatrix4(o.matrixWorld);
+        } else if (o.geometry) {
+          const g = o.geometry;
+          if (!g.boundingBox && g.attributes.position?.array) g.computeBoundingBox();
+          if (g.boundingBox) box.copy(g.boundingBox);
+          else if (g.boundingSphere) g.boundingSphere.getBoundingBox(box);
+          else return false;
+          box.applyMatrix4(o.matrixWorld);
+        } else return false;
+        return !box.isEmpty();
+      }
       /* Console only: the last frame's draw calls by kind and by distance from the camera (metres
          to the nearest point of each object's bounding sphere), for the camera pass (its render
          list) and the sun's shadow pass (the casters three.js would draw into the map). */
@@ -39,15 +60,25 @@
           if (sphere.radius > 2400 || !o.frustumCulled) return 'whole';
           return bandName(Math.max(0, sphere.center.distanceTo(camera.position) - sphere.radius) / UNITS_PER_METRE);
         };
+        // Its largest side on screen at 720 lines (px), from its world box's centre: the size CHASE PROPS steps out by.
+        const box = new Three.Box3(),
+          pixelsPerUnit = 360 / Math.tan((camera.fov * Math.PI) / 360),
+          PIXELS = [2, 4, 8, 16, 32, Infinity],
+          pixelBand = (o) => {
+            if (!chaseWorldBox(o, box)) return 'px?';
+            const side = Math.max(box.max.x - box.min.x, box.max.y - box.min.y, box.max.z - box.min.z),
+              px = (side * pixelsPerUnit) / Math.max(CHASE_NEAR, box.getCenter(sphere.center).distanceTo(camera.position));
+            return 'px<' + PIXELS.find((b) => px < b);
+          };
         const nameOf = (o) => {
           let named = o;
           while (named && !named.name && named.parent && named.parent !== scene && !named.parent.userData.cellContainer) named = named.parent;
           const material = Array.isArray(o.material) ? o.material[0] : o.material;
           const look = ' ' + (o.geometry?.type || '') + ' ' + material.type + (material.color ? ' #' + material.color.getHexString() : '') + (material.map ? ' map' : '') + (material.emissiveMap ? ' lit' : '');
-          // Loose scenery (no name, outside the cells) by the map cell of its root.
+          // Loose scenery and static cells' groups (no name) by the map cell of the mesh.
           let root = o;
           while (root.parent && root.parent !== scene && !root.parent.userData.cellContainer) root = root.parent;
-          const where = !named.name && root.parent === scene ? o.getWorldPosition(new Three.Vector3()) : null,
+          const where = !named.name && (root.parent === scene || root.parent?.name === 'static cell') ? o.getWorldPosition(new Three.Vector3()) : null,
             at = where ? ' @' + Math.round(where.x / 256) * 256 + ',' + Math.round(where.z / 256) * 256 : '';
           return (named.name || o.type) + (o.name === 'static batch' || !named.name ? look : '') + at;
         };
@@ -58,6 +89,8 @@
           row.calls++;
           row.triangles += triangles;
           row[band] = (row[band] || 0) + 1;
+          const px = pixelBand(o);
+          row[px] = (row[px] || 0) + 1;
           const name = nameOf(o);
           const entry = row.names[name] || (row.names[name] = [0, 0]);
           entry[0]++;
