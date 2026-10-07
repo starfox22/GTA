@@ -25,8 +25,11 @@
        * east, west or south, where a player under it would be covered and only overhead
        * cover is cut away; on a north side nothing stands more than 3 units off the wall,
        * inside the cutaway round a player hidden behind the building (its box plus 3):
-       * shallow valance awnings, no canopy, no fire escape. Shared materials only (staticMat, the shop window
-       * material, the sign atlas), so batchStaticGroups merges it per material and cell.
+       * shallow valance awnings, no canopy, no fire escape. Few shared materials, so a cell's
+       * frontage costs a handful of batches (batchStaticGroups merges per material and cell):
+       * every plain-painted part in FRONT PAINT (vertex colours), the glass in the shop window
+       * material, signs from the shop atlas (neonBoard, neonCutout), and the building's trim,
+       * darkMetal and concrete, which every cell already draws.
        * Its own seeded random (frontRandom), reseeded per building and side: never
        * cityRandom, whose stream after the buildings places the roof plant
        * (b.roofKeepOuts) and the bus stops, both read by game rules. The pavement in front
@@ -37,12 +40,24 @@
         FRONT_MARGIN = 12,
         FRONT_ALLEY = 34,
         FRONT_GLASS_TOP = SHOP_FLOOR * 0.8,
-        FRONT_PANEL = staticMat('#2b3033', 0.7, 0.2),
-        FRONT_STEEL = staticMat('#5b5f63'),
-        FRONT_DOOR = staticMat('#3f2f28'),
         FRONT_STONE = staticMat('#cbbfae'),
-        FRONT_FASCIA_LIGHT = staticMat('#d9c8a8'),
-        FRONT_FASCIA_DARK = staticMat('#4a4d50'),
+        /* FRONT PAINT: one material for every plain-painted part of a shopfront (panels, doors, shutters,
+           fascias, frames, awnings), its colour a vertex colour, so a cell's shopfronts of every colour are one
+           batch, not one per colour. Made like the facades (sharedFacade: vertex colours and `cityLit`, here
+           dark), so the far copy keeps it (farMaterialUsable). Colours are sRGB like staticMat's. */
+        FRONT_PAINT = sharedFacade('frontPaint', () => new Three.MeshStandardMaterial({ roughness: 0.72, metalness: 0.08 })),
+        FRONT_COLORS = {
+          panel: '#2b3033',
+          steel: '#5b5f63',
+          door: '#3f2f28',
+          fasciaLight: '#d9c8a8',
+          fasciaDark: '#4a4d50',
+          chrome: '#b8c0c3',
+          stripe: '#efe6d3',
+        },
+        // The awning canvases (the classic south shopfront draws one with cityPick: keep the list's length).
+        FRONT_AWNING_COLORS = ['#b7413a', '#2d6a5e', '#26426d', '#c99a2e', '#6d3f76', '#d86d4a'],
+        frontPaintGeometries = new Map(),
         frontFrom = new Three.Vector3(),
         frontTo = new Three.Vector3();
       let frontState = 1,
@@ -82,6 +97,33 @@
         const x = faceX(f, u, out),
           z = faceZ(f, u, out);
         return f.rx ? box(group, x, y, z, width, height, depth, material) : box(group, x, y, z, depth, height, width, material);
+      }
+      // A unit box in FRONT PAINT of one colour (shared by every part of that colour).
+      function frontPaintGeometry(color) {
+        let geometry = frontPaintGeometries.get(color);
+        if (geometry) return geometry;
+        geometry = boxGeo.clone();
+        const count = geometry.attributes.position.count,
+          tint = new Three.Color(color),
+          colors = new Float32Array(count * 3);
+        for (let k = 0; k < count; k++) {
+          colors[k * 3] = tint.r;
+          colors[k * 3 + 1] = tint.g;
+          colors[k * 3 + 2] = tint.b;
+        }
+        geometry.setAttribute('color', new Three.BufferAttribute(colors, 3));
+        geometry.setAttribute('cityLit', new Three.BufferAttribute(new Float32Array(count * 2), 2));
+        frontPaintGeometries.set(color, geometry);
+        return geometry;
+      }
+      // A painted box in the building group's space, and one on a side (as faceBox).
+      function paintBox(group, x, y, z, width, height, depth, color) {
+        return mesh(frontPaintGeometry(color), FRONT_PAINT, group, x, y, z, width, height, depth);
+      }
+      function facePaint(group, f, u, y, out, width, height, depth, color) {
+        const x = faceX(f, u, out),
+          z = faceZ(f, u, out);
+        return f.rx ? paintBox(group, x, y, z, width, height, depth, color) : paintBox(group, x, y, z, depth, height, width, color);
       }
       // A display window on a side: a pane of shop interior `cell` (cityscape3d-shopwindows.js).
       function shopPane(group, f, u, y, out, width, height, cell, lit, phase) {
@@ -153,7 +195,7 @@
         const style = frontageStyle(kind, b, classicSouth),
           plinth = kind === 'stucco' || kind === 'deco' ? FRONT_STONE : trim,
           podium = kind === 'tower' && b.height > realBuildingHeight(260) ? 11 : 0,
-          fascia = kind === 'stucco' || kind === 'deco' ? FRONT_FASCIA_LIGHT : FRONT_FASCIA_DARK;
+          fascia = kind === 'stucco' || kind === 'deco' ? FRONT_COLORS.fasciaLight : FRONT_COLORS.fasciaDark;
         for (let side = 0; side < 4; side++) {
           const f = frontageFace(b, side);
           frontSeed(i, side);
@@ -204,12 +246,12 @@
       }
       // The door to the floors above, between the shops: where people go in (crowd-space.js DOORS).
       function frontStairDoor(group, f, u, trim, fascia) {
-        faceBox(group, f, u, SHOP_FLOOR / 2, 0.4, 16, SHOP_FLOOR, 1.2, FRONT_PANEL);
-        faceBox(group, f, u, DOOR_HEIGHT / 2, 1, 9, DOOR_HEIGHT, 0.6, FRONT_DOOR);
-        faceBox(group, f, u + 2.9, DOOR_HEIGHT * 0.48, 1.45, 0.6, 2.6, 0.5, chrome);
+        facePaint(group, f, u, SHOP_FLOOR / 2, 0.4, 16, SHOP_FLOOR, 1.2, FRONT_COLORS.panel);
+        facePaint(group, f, u, DOOR_HEIGHT / 2, 1, 9, DOOR_HEIGHT, 0.6, FRONT_COLORS.door);
+        facePaint(group, f, u + 2.9, DOOR_HEIGHT * 0.48, 1.45, 0.6, 2.6, 0.5, FRONT_COLORS.chrome);
         shopPane(group, f, u, (DOOR_HEIGHT + 1 + FRONT_GLASS_TOP) / 2, 1.05, 9, FRONT_GLASS_TOP - DOOR_HEIGHT - 1, SHOP_INTERIOR.lobby, 0.45 + frontRandom() * 0.4, frontRandom() * 9);
         for (const du of [-6.5, 6.5]) faceBox(group, f, u + du, SHOP_FLOOR / 2, 1, 3, SHOP_FLOOR, 2, trim);
-        faceBox(group, f, u, SHOP_FLOOR + 0.6, 1.2, 17, 1.4, 2.6, fascia);
+        facePaint(group, f, u, SHOP_FLOOR + 0.6, 1.2, 17, 1.4, 2.6, fascia);
       }
       /**
        * One shop, u0..u1 along a side: a display window on a stall riser (or a roller shutter
@@ -233,14 +275,14 @@
           winU = (winA + winB) / 2,
           glassH = FRONT_GLASS_TOP - 3,
           glassY = 3 + glassH / 2;
-        faceBox(group, f, mid, SHOP_FLOOR / 2, 0.4, w, SHOP_FLOOR, 1.2, FRONT_PANEL);
-        faceBox(group, f, mid, SHOP_FLOOR + 0.6, 1.2, w + 1, 1.4, 2.6, fascia);
-        faceBox(group, f, winU, 1.5, 1.2, winW, 3, 1.2, FRONT_STEEL);
+        facePaint(group, f, mid, SHOP_FLOOR / 2, 0.4, w, SHOP_FLOOR, 1.2, FRONT_COLORS.panel);
+        facePaint(group, f, mid, SHOP_FLOOR + 0.6, 1.2, w + 1, 1.4, 2.6, fascia);
+        facePaint(group, f, winU, 1.5, 1.2, winW, 3, 1.2, FRONT_COLORS.steel);
         if (shut) {
           // A roller shutter down over the window, under its barrel housing.
-          faceBox(group, f, winU, glassY, 1.25, winW, glassH, 0.3, FRONT_STEEL);
+          facePaint(group, f, winU, glassY, 1.25, winW, glassH, 0.3, FRONT_COLORS.steel);
           for (const y of [9, 16, 23]) faceBox(group, f, winU, y, 1.45, winW, 0.35, 0.2, darkMetal);
-          faceBox(group, f, winU, FRONT_GLASS_TOP + 1.3, 1.7, winW + 1, 2.6, 2.2, FRONT_STEEL);
+          facePaint(group, f, winU, FRONT_GLASS_TOP + 1.3, 1.7, winW + 1, 2.6, 2.2, FRONT_COLORS.steel);
         } else {
           shopPane(group, f, winU, glassY, 1.05, winW, glassH, cell, lit, phase);
           if (winW > 34) faceBox(group, f, winU, glassY, 1.25, 0.9, glassH, 0.5, darkMetal);
@@ -256,20 +298,19 @@
         const signW = Math.min(w - 6, 60, (b.height - SHOP_FLOOR - 6) * 4),
           signH = signW / 4,
           signY = SHOP_FLOOR + 1.8 + signH / 2,
-          neon = shopSignIsNeon(name),
-          flicker = neon && frontRandom() < 0.14;
+          neon = shopSignIsNeon(name);
         if (signW >= 18) {
-          atlasSign(group, shopSignCell(name), faceX(f, mid, 1.9), signY, faceZ(f, mid, 1.9), signW, signH, flicker ? frontPick(neonBoardFlicker) : neonBoard, f.yaw);
+          atlasSign(group, shopSignCell(name), faceX(f, mid, 1.9), signY, faceZ(f, mid, 1.9), signW, signH, neonBoard, f.yaw);
           faceBox(group, f, mid, signY, 1.2, signW + 2, signH + 2, 0.8, darkMetal);
           // Its colour on the pavement; on a south side also down the wet road (the streaks run
           // south). The streak's phase is given: left out, addStreak would draw it from cityRandom.
-          const streak = f.side === 0 ? { width: signW * 0.8, length: 70, strength: neon ? 1.1 : 0.7, mode: flicker ? 'flicker' : 'steady', phase: frontRandom() } : null;
+          const streak = f.side === 0 ? { width: signW * 0.8, length: 70, strength: neon ? 1.1 : 0.7, mode: 'steady', phase: frontRandom() } : null;
           signSpill(b.x + faceX(f, mid, 14), b.y + faceZ(f, mid, 14), signW * 0.8, shopSignLight(name), neon ? 0.4 : 0.3, streak);
         }
         if (lit) signLightPools.push({ x: b.x + faceX(f, winU, 10), y: b.y + faceZ(f, winU, 10), r: Math.max(22, winW * 0.8), color: [1, 0.84, 0.63], strength: 0.4 * lit });
         if (lit && frontRandom() < 0.3) {
           const size = Math.min(14, winW - 12);
-          if (size >= 8) atlasSign(group, windowNeonCell(frontPick(WINDOW_NEONS)), faceX(f, winU, 1.4), 14, faceZ(f, winU, 1.4), size, size / 2, frontRandom() < 0.3 ? neonCutoutFlicker : neonCutout, f.yaw);
+          if (size >= 8) atlasSign(group, windowNeonCell(frontPick(WINDOW_NEONS)), faceX(f, winU, 1.4), 14, faceZ(f, winU, 1.4), size, size / 2, neonCutout, f.yaw);
         }
         if (f.side === 1) {
           if (!shut && frontRandom() < 0.55) frontAwning(group, f, mid, w - 4);
@@ -278,10 +319,10 @@
       // A striped valance awning over a north shopfront, steep and shallow: it stays inside the
       // street camera's cutaway round a hidden player (the building's box plus 3 units).
       function frontAwning(group, f, u, width) {
-        const awning = faceBox(group, f, u, FRONT_GLASS_TOP + 1, 1.1, width, 0.6, 4, frontPick(awningMaterials));
+        const awning = facePaint(group, f, u, FRONT_GLASS_TOP + 1, 1.1, width, 0.6, 4, frontPick(FRONT_AWNING_COLORS));
         awning.rotation.x = -0.55;
         for (const s of [-0.25, 0.25]) {
-          const stripe = faceBox(group, f, u + s * width, FRONT_GLASS_TOP + 1, 1.1, width / 8, 0.65, 4, awningStripe);
+          const stripe = facePaint(group, f, u + s * width, FRONT_GLASS_TOP + 1, 1.1, width / 8, 0.65, 4, FRONT_COLORS.stripe);
           stripe.rotation.x = -0.55;
         }
       }
@@ -313,14 +354,14 @@
             [0, u - w / 2 - 5],
             [u + w / 2 + 5, L],
           ])
-            if (z - a > 2) faceBox(group, f, (a + z) / 2, 4, 0.7, z - a, 8, 1.6, FRONT_PANEL);
+            if (z - a > 2) facePaint(group, f, (a + z) / 2, 4, 0.7, z - a, 8, 1.6, FRONT_COLORS.panel);
         const lit = 0.6 + frontRandom() * 0.4,
           phase = frontRandom() * 9,
           bays = Math.max(2, Math.round(w / 14));
         shopPane(group, f, u, 0.5 + glassH / 2, out + 1.05, w, glassH, SHOP_INTERIOR.lobby, lit, phase);
         for (let k = 1; k < bays; k++) faceBox(group, f, u - w / 2 + (k * w) / bays, 0.5 + glassH / 2, out + 1.3, 0.8, glassH, 0.6, darkMetal);
-        faceBox(group, f, u, DOOR_HEIGHT + 0.5, out + 1.35, 18, 0.6, 0.5, chrome);
-        faceBox(group, f, u, DOOR_HEIGHT / 2, out + 1.35, 0.6, DOOR_HEIGHT, 0.5, chrome);
+        facePaint(group, f, u, DOOR_HEIGHT + 0.5, out + 1.35, 18, 0.6, 0.5, FRONT_COLORS.chrome);
+        facePaint(group, f, u, DOOR_HEIGHT / 2, out + 1.35, 0.6, DOOR_HEIGHT, 0.5, FRONT_COLORS.chrome);
         for (const du of [-(w / 2 + 2.5), w / 2 + 2.5]) faceBox(group, f, u + du, 17, out + 1.2, 5, 34, 2.4, trim);
         faceBox(group, f, u, 33.5, out + 1.2, w + 10, 3, 2.4, trim);
         signLightPools.push({ x: b.x + faceX(f, u, out + 12), y: b.y + faceZ(f, u, out + 12), r: Math.max(26, w * 0.7), color: [1, 0.86, 0.68], strength: 0.4 * lit });
@@ -335,8 +376,8 @@
         }
         frontPlinth(group, f, -1.5, u - 7.5, plinth);
         frontPlinth(group, f, u + 7.5, L + 1.5, plinth);
-        faceBox(group, f, u, 5 + DOOR_HEIGHT / 2, 1, 9, DOOR_HEIGHT, 0.6, FRONT_DOOR);
-        faceBox(group, f, u + 2.9, 5 + DOOR_HEIGHT * 0.48, 1.45, 0.6, 2.6, 0.5, chrome);
+        facePaint(group, f, u, 5 + DOOR_HEIGHT / 2, 1, 9, DOOR_HEIGHT, 0.6, FRONT_COLORS.door);
+        facePaint(group, f, u + 2.9, 5 + DOOR_HEIGHT * 0.48, 1.45, 0.6, 2.6, 0.5, FRONT_COLORS.chrome);
         shopPane(group, f, u, 5 + DOOR_HEIGHT + 3.2, 1.05, 9, 4.4, SHOP_INTERIOR.lobby, 0.3 + frontRandom() * 0.4, frontRandom() * 9);
         for (const du of [-6.3, 6.3]) faceBox(group, f, u + du, 5 + (DOOR_HEIGHT + 7) / 2, 1.2, 3.4, DOOR_HEIGHT + 7, 2.4, trim);
         faceBox(group, f, u, 5 + DOOR_HEIGHT + 8, 1.9, 17, 2, 2.2, trim);
@@ -361,7 +402,7 @@
           for (let k = 0; k < n; k++) {
             const c = a + (room * (k + 0.5)) / n;
             if (!frontSpanClear(b, f, c - w / 2, c + w / 2)) continue;
-            faceBox(group, f, c, top / 2, 0.7, w, top, 0.6, FRONT_STEEL);
+            facePaint(group, f, c, top / 2, 0.7, w, top, 0.6, FRONT_COLORS.steel);
             for (let y = 6; y < top - 2; y += 6) faceBox(group, f, c, y, 1.05, w, 0.4, 0.2, darkMetal);
             faceBox(group, f, c, top + 1.5, 1.5, w + 3, 3, 2.6, darkMetal);
             for (const s of [-1, 1]) {
@@ -374,7 +415,7 @@
       // ---- Alleys, yards and plain sides ----------------------------------------------------
       // A steel service door under a hood.
       function frontServiceDoor(group, f, u) {
-        faceBox(group, f, u, DOOR_HEIGHT / 2, 0.45, 9, DOOR_HEIGHT, 0.7, FRONT_STEEL);
+        facePaint(group, f, u, DOOR_HEIGHT / 2, 0.45, 9, DOOR_HEIGHT, 0.7, FRONT_COLORS.steel);
         faceBox(group, f, u, DOOR_HEIGHT + 0.6, 0.6, 10.6, 1.2, 1, darkMetal);
         faceBox(group, f, u, DOOR_HEIGHT + 3.4, 1.5, 12, 0.6, 3, darkMetal);
       }

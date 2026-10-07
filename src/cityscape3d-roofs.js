@@ -212,15 +212,15 @@
           signY = SHOP_FLOOR + 4,
           // The glass is drawn once the shop is named: its interior shows the trade (SHOP WINDOWS).
           panes = [];
-        box(group, b.w / 2, SHOP_FLOOR / 2, b.h + 0.4, b.w - 2, SHOP_FLOOR, 1.2, FRONT_PANEL);
-        box(group, b.w / 2, SHOP_FLOOR + 0.6, b.h + 1.2, b.w, 1.4, 2.6, kind === 'stucco' ? FRONT_FASCIA_LIGHT : FRONT_FASCIA_DARK);
+        paintBox(group, b.w / 2, SHOP_FLOOR / 2, b.h + 0.4, b.w - 2, SHOP_FLOOR, 1.2, FRONT_COLORS.panel);
+        paintBox(group, b.w / 2, SHOP_FLOOR + 0.6, b.h + 1.2, b.w, 1.4, 2.6, kind === 'stucco' ? FRONT_COLORS.fasciaLight : FRONT_COLORS.fasciaDark);
         for (let k = 0; k < bays; k++) {
           const x = 8 + bayWidth * (k + 0.5),
             door = k === Math.floor(bays / 2);
           if (door) {
-            box(group, x, DOOR_HEIGHT / 2, face + 0.2, 8, DOOR_HEIGHT, 0.6, FRONT_DOOR);
-            box(group, x, DOOR_HEIGHT / 2, face + 0.6, 0.6, DOOR_HEIGHT, 0.3, chrome);
-            box(group, x, DOOR_HEIGHT + 0.6, face + 0.4, 9, 0.8, 0.6, chrome);
+            paintBox(group, x, DOOR_HEIGHT / 2, face + 0.2, 8, DOOR_HEIGHT, 0.6, FRONT_COLORS.door);
+            paintBox(group, x, DOOR_HEIGHT / 2, face + 0.6, 0.6, DOOR_HEIGHT, 0.3, FRONT_COLORS.chrome);
+            paintBox(group, x, DOOR_HEIGHT + 0.6, face + 0.4, 9, 0.8, 0.6, FRONT_COLORS.chrome);
             // A transom light over the door, up to the glazing line.
             panes.push(x, (DOOR_HEIGHT + 1 + glassTop) / 2, 8, glassTop - DOOR_HEIGHT - 1);
           } else {
@@ -235,7 +235,7 @@
               state: 0,
               hits: 0,
             });
-            box(group, x, 1.8, face + 0.3, bayWidth - 8, 2.4, 0.7, FRONT_STEEL);
+            paintBox(group, x, 1.8, face + 0.3, bayWidth - 8, 2.4, 0.7, FRONT_COLORS.steel);
             if (windowNeon) {
               const color = windowNeonColor(windowNeon);
               atlasSign(group, windowNeonCell(windowNeon), x, 14, face + 0.9, Math.min(14, bayWidth - 12), Math.min(14, bayWidth - 12) / 2, cityRandom() < 0.3 ? neonCutoutFlicker : neonCutout);
@@ -245,9 +245,9 @@
             }
           }
           if (!door && cityRandom() < 0.55) {
-            const awning = box(group, x, awningY, face + 5.4, bayWidth - 6, 0.7, 11, cityPick(awningMaterials));
+            const awning = paintBox(group, x, awningY, face + 5.4, bayWidth - 6, 0.7, 11, cityPick(FRONT_AWNING_COLORS));
             awning.rotation.x = 0.42;
-            const stripe = box(group, x, awningY, face + 5.4, bayWidth - 6, 0.75, 11, awningStripe);
+            const stripe = paintBox(group, x, awningY, face + 5.4, bayWidth - 6, 0.75, 11, FRONT_COLORS.stripe);
             stripe.rotation.x = 0.42;
             stripe.scale.x = 0.34;
             // Someone standing under it is out of sight of the helicopter (air-cover.js).
