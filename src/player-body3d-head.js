@@ -120,7 +120,7 @@
         sub(pbEllipsoid(0.099, 1.6052, 0, 0.012, 0.001, 0.0225), 0.0012);
         mirror((s) => sub(pbEllipsoid(0.083, 1.605, s * 0.0238, 0.005, 0.003, 0.0035), 0.004));
         // Nasolabial folds from the nose wings to the mouth's corners.
-        mirror((s) => sub(pbLimb([0.095, 1.631, s * 0.025], [0.084, 1.599, s * 0.031], 0.0016, 0.0013), 0.004));
+        mirror((s) => sub(pbLimb([0.095, 1.631, s * 0.025], [0.084, 1.599, s * 0.031], 0.0011, 0.0009), 0.004));
         // Hair: a thickness over the scalp inside the hairline.
         ops.push({ op: 'mod', g: (x, y, z, d) => (y > 1.6 && d < 0.03 ? d - pbHairDepth(x, y, z) : d), b: [PB_HEAD_CENTRE[0], 1.71, 0, 0.13] });
         // Ears: a shell tilted back and turned out from the head, the bowl carved in, the lobe below.

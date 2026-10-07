@@ -372,12 +372,15 @@
           }
         }`;
       const PB_INDIRECT = `
-        reflectedLight.indirectDiffuse *= vPbAO;
-        reflectedLight.indirectSpecular *= vPbAO * ( 1.0 - 0.7 * pbHairSpec );
+        // The face's creases (the folds by the mouth, under the lip) are shallow: their baked occlusion is
+        // softened there, or they read as dirt.
+        float pbAO = pbMat > 0.5 && pbMat < 1.5 ? mix( 0.55, 1.0, vPbAO ) : vPbAO;
+        reflectedLight.indirectDiffuse *= pbAO;
+        reflectedLight.indirectSpecular *= pbAO * ( 1.0 - 0.7 * pbHairSpec );
         // Cloth's sheen in the sky light too, and the deepest creases take a little of the direct light.
         // (vViewPosition runs from the surface to the camera.)
         reflectedLight.indirectSpecular += pbSheen * 0.045 * pow( 1.0 - saturate( dot( normal, normalize( vViewPosition ) ) ), 3.0 ) * vPbAO * ( irradiance + iblIrradiance ) * RECIPROCAL_PI;
-        reflectedLight.directDiffuse *= mix( 0.65, 1.0, vPbAO );`;
+        reflectedLight.directDiffuse *= mix( 0.65, 1.0, pbAO );`;
       const PB_RIM = `
         {
           float rimView = 1.0 - clamp( dot( normal, normalize( vViewPosition ) ), 0.0, 1.0 );

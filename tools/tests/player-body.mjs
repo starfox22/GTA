@@ -374,7 +374,7 @@ export default async function (t) {
     ['pbSkinWrap * vPbAO', 'fragmentShader'],
     ['roughnessFactor = pbRough', 'fragmentShader'],
     ['vec2 dH = vec2', 'fragmentShader'],
-    ['indirectDiffuse *= vPbAO', 'fragmentShader'],
+    ['indirectDiffuse *= pbAO', 'fragmentShader'],
   ])
     t.assert(shader[where].includes(key), `player body patch: "${key}" missing from the ${where}`);
   const depth = { uniforms: {}, vertexShader: Three.ShaderLib.depth.vertexShader, fragmentShader: '' };
