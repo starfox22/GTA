@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-513 files in the include tree, 177,146 lines.
+516 files in the include tree, 178,387 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -453,8 +453,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/beachclub3d.js`    38 — ▸ Marea Beach Club meshes and show lighting
 - `src/cycles3d.js`   465 — Bike-share station meshes
 - `src/weather3d.js`   702 — Weather and sky visuals
-- `src/character-rig3d.js`   700 — ▸ Character rig: sculpted body parts, outfits and paint
-- `src/crowd3d.js`    85 — ▸ Instanced people: skeleton, gait, poses, weapons and street props
+- `src/character-rig3d.js`   696 — ▸ Character rig: sculpted body parts, outfits and paint
+- `src/crowd3d.js`    87 — ▸ Instanced people: skeleton, gait, poses, weapons and street props
 - `src/carjack3d.js`   212 — The carjack struggle drawn: the driver's door swinging, the poses of the tug of war and the player's hands on the driver (swingDriverDoor …
 - `src/clouds3d.js`    55 — ▸ Volumetric clouds and cloud shadows
 - `src/ground-data3d.js`   826 — Ground shader data
@@ -666,19 +666,25 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/character-rig3d-kit.js`    77 — Kit worn over the torso (torso space).
 - `src/character-rig3d-weapons.js`   124 — Weapons: Built round the firing hand's grip at the origin, muzzle towards +x, a touch larger than life so they read at street zoom.
+- `src/character-near3d.js`   547 — ▸ The near body set (chase view): smooth sculpted parts for the player and the few people nearest the camera, with a woman's shape as a second shape of …
+
+## src/character-near3d.js ▸ The near body set (chase view): smooth sculpted parts for the player and the few people nearest the camera, with a woman's shape as a second shape of …
+
+- `src/character-near3d-head.js`   135 — Near set heads: a face modelled into the head loft (sockets, brow, nose, cheekbones, lips, chin, jaw) as a man's and a woman's shape, ears, and the …
+- `src/character-near3d-shader.js`   424 — Near set paint shader: the rig's paint with the second shape and variants, a painted face (eyes, brows, lips, stubble, make-up), hair strands lit …
 
 ## src/crowd3d.js ▸ Instanced people: skeleton, gait, poses, weapons and street props
 
 - `src/crowd3d-parts.js`   134 — Crowd 3D instanced parts: capacity, body material, limbs, weapon and far-figure geometries (crowdParts, rigPart).
-- `src/crowd3d-bodies.js`   302 — Crowd 3D body sets (close and street detail), prop geometry and instance recording (rigBodySet, crowdEmit).
-- `src/crowd3d-looks.js`   480 — Crowd 3D looks: compiling a look into parts and paints (compileLook, compiledLook, specialLooks).
+- `src/crowd3d-bodies.js`   342 — Crowd 3D body sets (close and street detail), prop geometry and instance recording (rigBodySet, crowdEmit).
+- `src/crowd3d-looks.js`   516 — Crowd 3D looks: compiling a look into parts and paints (compileLook, compiledLook, specialLooks).
 - `src/crowd3d-joints.js`   139 — Crowd 3D joint indices and per-person pose state (crowdState, setArm, crowdDancePose).
 - `src/crowd3d-poses.js`   901 — Crowd 3D pose targets and IK for arms and legs (crowdPoseTargets, solveLeg).
 - `src/crowd3d-roofparty.js`   141 — Crowd 3D poses for mission 2 (the Blue Hour): Vescari's poisoned toast beat by beat, and the bodyguards' heads turning with their sight cones.
 - `src/crowd3d-draw.js`   559 — drawCrowdPerson(): weapon holds, phone poses and the far-figure shortcut.
 - `src/crowd3d-special.js`   484 — Crowd 3D special characters: player, officers, soldiers, gangs, swimmers, parachutes (specialSpec, applyLimbOverrides).
 - `src/crowd3d-driveby.js`   162 — Crowd 3D drive-by pose: the player at the wheel with the gun arm out of the window, torso and head turned to the aim, recoil per shot …
-- `src/crowd3d-frame.js`   280 — updateCrowd3D(): per-frame packing, car enter and exit transitions, dogs, crowd stats.
+- `src/crowd3d-frame.js`   341 — updateCrowd3D(): per-frame packing, car enter and exit transitions, dogs, crowd stats.
 
 ## src/clouds3d.js ▸ Volumetric clouds and cloud shadows
 

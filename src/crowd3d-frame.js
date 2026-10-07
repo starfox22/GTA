@@ -124,8 +124,62 @@
       function crowdChaseDetail(p) {
         const lod = activeTier ? activeTier.lodBias : 1,
           zoom = chaseZoomAt(p.x, p.y);
-        BODY = zoom >= 2.4 ? BODY_CLOSE : BODY_STREET;
+        BODY = nearPerson(p) ? BODY_NEAR : zoom >= 2.4 ? BODY_CLOSE : BODY_STREET;
         return zoom >= 1.3 * lod ? 2 : zoom >= 0.34 * lod ? 1 : zoom >= CROWD_CHASE_LEAST_ZOOM * lod ? 0 : -1;
+      }
+      /**
+       * NEAR PEOPLE
+       * In the chase view the player and the few others nearest the camera are drawn from the near set
+       * (crowd3d-bodies.js BODY_NEAR): at most CROWD_NEAR_CAP in all, nearest first, from about 12 m
+       * (CROWD_NEAR_ZOOM at a 720-pixel window; the street frame, so a bigger window is the same) and kept
+       * to about 14 m once chosen (CROWD_NEAR_KEEP), so nobody flickers between sets at the edge. Chosen
+       * once a frame, before packing; nothing is allocated.
+       */
+      const CROWD_NEAR_CAP = 8,
+        CROWD_NEAR_ZOOM = 5.2,
+        CROWD_NEAR_KEEP = 0.86,
+        crowdNear = { list: new Array(CROWD_NEAR_CAP).fill(null), score: new Float32Array(CROWD_NEAR_CAP), n: 0, last: new Array(CROWD_NEAR_CAP).fill(null), lastN: 0 };
+      function nearPerson(p) {
+        for (let i = 0; i < crowdNear.n; i++) if (crowdNear.list[i] === p) return true;
+        return false;
+      }
+      function nearConsider(p, score) {
+        const N = crowdNear;
+        if (N.n === CROWD_NEAR_CAP) {
+          if (score <= N.score[CROWD_NEAR_CAP - 1]) return;
+          N.n--;
+        }
+        let i = N.n++;
+        while (i > 0 && N.score[i - 1] < score) {
+          N.list[i] = N.list[i - 1];
+          N.score[i] = N.score[i - 1];
+          i--;
+        }
+        N.list[i] = p;
+        N.score[i] = score;
+      }
+      function nearCandidate(p) {
+        const N = crowdNear;
+        let score = chaseZoomAt(p.x, p.y);
+        for (let i = 0; i < N.lastN; i++)
+          if (N.last[i] === p) {
+            score /= CROWD_NEAR_KEEP;
+            break;
+          }
+        if (score >= CROWD_NEAR_ZOOM && entityInView(p, 30)) nearConsider(p, score);
+      }
+      function chooseNearPeople(specials) {
+        const N = crowdNear;
+        for (let i = 0; i < CROWD_NEAR_CAP; i++) {
+          N.last[i] = i < N.n ? N.list[i] : null;
+          N.list[i] = null;
+        }
+        N.lastN = N.n;
+        N.n = 0;
+        if (!chaseViewActive) return;
+        if (!player.hidden && !(player.car || transitRide || taxiRide)) nearConsider(player, Infinity);
+        for (let i = 0; i < pedestrians.length; i++) if (!pedestrians[i].hidden) nearCandidate(pedestrians[i]);
+        for (let i = 0; i < specials.length; i++) if (specials[i] !== player && !specials[i].hidden) nearCandidate(specials[i]);
       }
       /**
        * Per frame: pack every visible pedestrian, their dog, the special
@@ -148,6 +202,7 @@
         // The chase view's far figures stand well beyond its shadow reach (chase-view3d.js CHASE SHADOWS).
         if (P.figure.mesh.castShadow === chaseViewActive) P.figure.mesh.castShadow = P.figureLeg.mesh.castShadow = !chaseViewActive;
         trackCarTransition();
+        chooseNearPeople(specials);
         if (zoomedIn)
           for (let i = 0; i < pedestrians.length; i++) {
             const p = pedestrians[i];
@@ -177,12 +232,13 @@
           }
           const spec = specialSpec(p),
             s = stateFor(p);
-          if (isPlayer) BODY = frameBody;
+          if (isPlayer) BODY = chaseViewActive ? BODY_NEAR : frameBody;
           drawCrowdPerson(p, s, deltaSeconds, isPlayer ? Math.max(personDetail, 1) : personDetail, spec);
           drawn++;
         }
-        BODY = frameBody;
+        BODY = chaseViewActive ? BODY_NEAR : frameBody;
         drawEnterCar(deltaSeconds, detail);
+        BODY = frameBody;
         if (zoomedIn) drawn += drawBeachgoers(deltaSeconds, detail);
         crowdPackMs = performance.now() - packStart;
         for (const prop of crowd.props) {
@@ -201,7 +257,10 @@
       function finishCrowd3D(deltaSeconds) {
         const start = performance.now();
         drawQueuedRiders(deltaSeconds, crowdDetail());
+        const body = BODY;
+        if (chaseViewActive) BODY = BODY_NEAR;
         drawDriveByDriver(deltaSeconds, crowdDetail());
+        BODY = body;
         drawQueuedAthletes(deltaSeconds, crowdDetail());
         flushCrowdParts();
         crowdPackMs += performance.now() - start;
@@ -239,7 +298,9 @@
           shadowCalls,
           instances,
           triangles: Math.round(triangles),
-          bodySet: BODY === BODY_CLOSE ? 'close' : 'street',
+          bodySet: BODY === BODY_CLOSE ? 'close' : BODY === BODY_NEAR ? 'near' : 'street',
+          // People drawn from the near set this frame (NEAR PEOPLE), the player among them.
+          near: crowdNear.n,
           packMs: Math.round(crowdPackMs * 100) / 100,
           packMsAverage: Math.round(crowdPackAverage * 100) / 100,
           // People drawn from their recorded instances (STILL FIGURES).
