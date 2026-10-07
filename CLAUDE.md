@@ -302,6 +302,13 @@ packs with plain `<script src>` so the zip still plays from file://.
 - Chase view level of detail (rendering-chase.md): anything new the far copy stands for hides with its cell
   (`cell.full` / `cell.blocks`); shadow-pass-only hiding goes through `chaseShadowCasters` (restored after the
   pass); its shadow box is `placeChaseSun` (the depth fade `cityShadowReach`); never toggle a light.
+- Car crash damage (vehicles-and-driving-damage.md): `crumpleField(dents, limits, ...)` / `crumpleLimits(vehicle)`
+  (damage-crumple.js) is the only crumple rule; damage3d-crumple.js bends every mesh under a car body with it,
+  time-sliced (`crumpleSlices`), and bumps `m.shapeVersion` when a body is done. A part that animates its own matrix or
+  swings on a hinge registers as a moved point (`crumpleCollect` / `crumpleAdopt`). Marks on vehicles
+  (damage3d-marks.js) are pinned to a triangle of the part they hit, so a part holding marks keeps its vertex order when
+  bent; a mark with no surface is not drawn; holes never on glass or the cabin, stars only on their own pane
+  (`crumpleAudit()`, tools/tests/vehicle-damage-shape.mjs).
 - `carStainSeverity(kph, fatal)` (car-stains.js) is the only rule for how much bonnet blood a hit leaves (none under
   14 km/h); further hits add to a car's 3 stain records (`adds`, painted by `cbTopUpJob`), never replace one.
 - Military mounted guns the player fires (LAV-8 25 mm + coax, gun jeep M2, Black Hawk door guns) live in
