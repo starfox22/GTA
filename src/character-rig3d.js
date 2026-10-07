@@ -321,21 +321,21 @@
        * stubble or beard), 3 lips. Ears and a nose are merged in.
        */
       const RIG_HEAD_RINGS = [
-          { y: 0.0, fx: 0.4, bx: 0.42, w: 0.45, cx: -0.06 },
-          { y: 0.5, fx: 0.38, bx: 0.4, w: 0.41, cx: -0.04 },
-          { y: 0.6, fx: 0.58, bx: 0.44, w: 0.44, cx: 0.06 },
-          { y: 0.74, fx: 0.74, bx: 0.6, w: 0.54, cx: 0.04 },
-          { y: 0.92, fx: 0.8, bx: 0.7, w: 0.59, cx: 0.02 },
-          { y: 1.12, fx: 0.84, bx: 0.76, w: 0.62 },
-          { y: 1.32, fx: 0.85, bx: 0.8, w: 0.645 },
-          { y: 1.47, fx: 0.83, bx: 0.82, w: 0.65 },
-          { y: 1.6, fx: 0.84, bx: 0.83, w: 0.65 },
-          { y: 1.72, fx: 0.83, bx: 0.83, w: 0.645 },
-          { y: 1.92, fx: 0.77, bx: 0.81, w: 0.62, cx: -0.01 },
-          { y: 2.1, fx: 0.64, bx: 0.72, w: 0.55, cx: -0.03 },
-          { y: 2.25, fx: 0.44, bx: 0.54, w: 0.4, cx: -0.04 },
-          { y: 2.35, fx: 0.16, bx: 0.22, w: 0.15, cx: -0.04, dome: 0.03 },
-        ];
+        { y: 0.0, fx: 0.4, bx: 0.42, w: 0.45, cx: -0.06 },
+        { y: 0.5, fx: 0.38, bx: 0.4, w: 0.41, cx: -0.04 },
+        { y: 0.6, fx: 0.58, bx: 0.44, w: 0.44, cx: 0.06 },
+        { y: 0.74, fx: 0.74, bx: 0.6, w: 0.54, cx: 0.04 },
+        { y: 0.92, fx: 0.8, bx: 0.7, w: 0.59, cx: 0.02 },
+        { y: 1.12, fx: 0.84, bx: 0.76, w: 0.62 },
+        { y: 1.32, fx: 0.85, bx: 0.8, w: 0.645 },
+        { y: 1.47, fx: 0.83, bx: 0.82, w: 0.65 },
+        { y: 1.6, fx: 0.84, bx: 0.83, w: 0.65 },
+        { y: 1.72, fx: 0.83, bx: 0.83, w: 0.645 },
+        { y: 1.92, fx: 0.77, bx: 0.81, w: 0.62, cx: -0.01 },
+        { y: 2.1, fx: 0.64, bx: 0.72, w: 0.55, cx: -0.03 },
+        { y: 2.25, fx: 0.44, bx: 0.54, w: 0.4, cx: -0.04 },
+        { y: 2.35, fx: 0.16, bx: 0.22, w: 0.15, cx: -0.04, dome: 0.03 },
+      ];
       function rigHeadGeometry() {
         const skull = rigLoft(RIG_HEAD_RINGS, 16, (i, th) => {
           const a = Math.abs(th) / RIG_DEG;
@@ -574,25 +574,25 @@
       }
       /* Limbs hang down (-y) from their joint. Regions by height (see paints). */
       const RIG_UPPER_ARM_RINGS = [
-            { y: 0.3, fx: 0.3, w: 0.3, dome: 0.06 },
-            { y: 0.12, fx: 0.5, bx: 0.48, w: 0.5 },
-            { y: -0.3, fx: 0.55, bx: 0.52, w: 0.54 },
-            { y: -0.75, fx: 0.5, bx: 0.49, w: 0.5 },
-            { y: -1.05, fx: 0.47, bx: 0.47, w: 0.46 },
-            { y: -1.2, fx: 0.46, bx: 0.46, w: 0.45 },
-            { y: -1.9, fx: 0.4, bx: 0.39, w: 0.38 },
-            { y: -2.5, fx: 0.34, bx: 0.37, w: 0.34 },
-            { y: -2.8, fx: 0.3, bx: 0.33, w: 0.3, dome: 0.1 },
-          ],
+          { y: 0.3, fx: 0.3, w: 0.3, dome: 0.06 },
+          { y: 0.12, fx: 0.5, bx: 0.48, w: 0.5 },
+          { y: -0.3, fx: 0.55, bx: 0.52, w: 0.54 },
+          { y: -0.75, fx: 0.5, bx: 0.49, w: 0.5 },
+          { y: -1.05, fx: 0.47, bx: 0.47, w: 0.46 },
+          { y: -1.2, fx: 0.46, bx: 0.46, w: 0.45 },
+          { y: -1.9, fx: 0.4, bx: 0.39, w: 0.38 },
+          { y: -2.5, fx: 0.34, bx: 0.37, w: 0.34 },
+          { y: -2.8, fx: 0.3, bx: 0.33, w: 0.3, dome: 0.1 },
+        ],
         RIG_FOREARM_RINGS = [
-            { y: 0.28, fx: 0.3, bx: 0.33, w: 0.3, dome: 0.08 },
-            { y: -0.1, fx: 0.34, bx: 0.37, w: 0.34 },
-            { y: -0.6, fx: 0.36, bx: 0.34, w: 0.35 },
-            { y: -1.5, fx: 0.27, bx: 0.26, w: 0.26 },
-            { y: -1.72, fx: 0.24, bx: 0.23, w: 0.22 },
-            { y: -2.0, fx: 0.19, bx: 0.19, w: 0.17 },
-            { y: -2.12, fx: 0.15, bx: 0.15, w: 0.13 },
-          ];
+          { y: 0.28, fx: 0.3, bx: 0.33, w: 0.3, dome: 0.08 },
+          { y: -0.1, fx: 0.34, bx: 0.37, w: 0.34 },
+          { y: -0.6, fx: 0.36, bx: 0.34, w: 0.35 },
+          { y: -1.5, fx: 0.27, bx: 0.26, w: 0.26 },
+          { y: -1.72, fx: 0.24, bx: 0.23, w: 0.22 },
+          { y: -2.0, fx: 0.19, bx: 0.19, w: 0.17 },
+          { y: -2.12, fx: 0.15, bx: 0.15, w: 0.13 },
+        ];
       const rigUpperArmGeometry = () => rigLoft(RIG_UPPER_ARM_RINGS, 10, (i) => (i <= 4 ? 0 : 1)),
         rigForearmGeometry = () => rigLoft(RIG_FOREARM_RINGS, 9, (i) => (i >= 4 ? 1 : 0));
       /* Hand from the wrist: palm, curled fingers, thumb. Thin across (z). */
@@ -626,16 +626,16 @@
       }
       const rigThighGeometry = (female) => rigLoft(rigThighRings(female), 10, (i) => (i <= 3 ? 0 : 1));
       const RIG_SHIN_RINGS = [
-            { y: 0.32, fx: 0.38, bx: 0.36, w: 0.38, dome: 0.1 },
-            { y: -0.12, fx: 0.42, bx: 0.4, w: 0.42 },
-            { y: -0.35, fx: 0.37, bx: 0.44, w: 0.41 },
-            { y: -1.0, fx: 0.35, bx: 0.52, w: 0.42 },
-            { y: -1.9, fx: 0.31, bx: 0.36, w: 0.33 },
-            { y: -2.75, fx: 0.26, bx: 0.26, w: 0.25 },
-            { y: -2.9, fx: 0.25, bx: 0.25, w: 0.24 },
-            { y: -3.45, fx: 0.23, bx: 0.24, w: 0.22 },
-            { y: -3.62, fx: 0.15, bx: 0.15, w: 0.15, dome: 0.03 },
-          ];
+        { y: 0.32, fx: 0.38, bx: 0.36, w: 0.38, dome: 0.1 },
+        { y: -0.12, fx: 0.42, bx: 0.4, w: 0.42 },
+        { y: -0.35, fx: 0.37, bx: 0.44, w: 0.41 },
+        { y: -1.0, fx: 0.35, bx: 0.52, w: 0.42 },
+        { y: -1.9, fx: 0.31, bx: 0.36, w: 0.33 },
+        { y: -2.75, fx: 0.26, bx: 0.26, w: 0.25 },
+        { y: -2.9, fx: 0.25, bx: 0.25, w: 0.24 },
+        { y: -3.45, fx: 0.23, bx: 0.24, w: 0.22 },
+        { y: -3.62, fx: 0.15, bx: 0.15, w: 0.15, dome: 0.03 },
+      ];
       const rigShinGeometry = () => rigLoft(RIG_SHIN_RINGS, 9, (i) => (i <= 1 ? 2 : i >= 6 ? 1 : 0));
       /* Shoe or boot, from the ankle joint; sole at -RIG.ankle. Regions: 0 upper, 1 sole, 2 collar / shaft. */
       function rigShoeGeometry(boot) {

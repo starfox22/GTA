@@ -43,9 +43,9 @@
           return d;
         };
       }
-      const NEAR_HEAD_YS = nearJoin(nearSpan(0, 0.55, 0.14), nearSpan(0.55, 1.0, 0.05), nearSpan(1.0, 1.2, 0.033), nearSpan(1.2, 1.75, 0.05), nearSpan(1.75, 2.35, 0.1));
+      const NEAR_HEAD_YS = nearJoin(nearSpan(0, 0.55, 0.14), nearSpan(0.55, 1.0, 0.042), nearSpan(1.0, 1.2, 0.03), nearSpan(1.2, 1.75, 0.042), nearSpan(1.75, 2.35, 0.1));
       function nearSkull(female) {
-        const g = nearLoft(nearRings(RIG_HEAD_RINGS, NEAR_HEAD_YS), 36, { warp: 0.55 });
+        const g = nearLoft(nearRings(RIG_HEAD_RINGS, NEAR_HEAD_YS), 40, { warp: 0.6 });
         return nearSculpt(g, nearFaceSculpt(female));
       }
       /* The right ear (the left is its mirror): a flat, tilted shell with a hollow, standing off the head. */

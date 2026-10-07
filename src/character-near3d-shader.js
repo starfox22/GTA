@@ -137,15 +137,15 @@
           float lower = 1.46 - 0.034 * ( 1.0 - ex * ex ) + 0.006 * ex;
           float inEye = ( 1.0 - step( 1.0, abs( ex ) ) ) * smoothstep( lower - px, lower + px, p.y ) * ( 1.0 - smoothstep( upper - px, upper + px, p.y ) ) * front;
           float ir = length( vec2( ez + 0.004, ey - 0.004 ) );
-          vec3 sclera = rigLin( vec3( 0.84, 0.8, 0.76 ) );
+          vec3 sclera = rigLin( vec3( 0.74, 0.7, 0.66 ) );
           vec3 iris = rigIris( mod( code, 8.0 ) ) * ( 1.0 - 0.3 * smoothstep( 0.022, 0.048, ir ) );
           vec3 eye = mix( sclera, iris, 1.0 - smoothstep( 0.046 - px, 0.046 + px, ir ) );
           eye = mix( eye, vec3( 0.006 ), 1.0 - smoothstep( 0.017 - px * 0.5, 0.017 + px * 0.5, ir ) );
-          eye *= 1.0 - 0.4 * smoothstep( upper - 0.04, upper, p.y ) - 0.25 * smoothstep( 0.6, 1.0, abs( ex ) );
+          eye *= 1.0 - 0.55 * smoothstep( upper - 0.045, upper, p.y ) - 0.3 * smoothstep( 0.55, 1.0, abs( ex ) );
           c = mix( c, eye, inEye );
           rigFaceRough = mix( -1.0, 0.15, inEye );
           // Lashes along the upper lid (heavier outwards, lined with make-up), a fainter lower lid, the crease, shadow.
-          float lash = 0.013 + 0.008 * max( ex, 0.0 ) + 0.007 * makeup;
+          float lash = 0.017 + 0.009 * max( ex, 0.0 ) + 0.007 * makeup;
           float lid = ( 1.0 - step( 1.06 + 0.12 * makeup, abs( ex ) ) ) * rigBand( p.y, upper - 0.004, upper + lash, px ) * front;
           c = mix( c, rigLin( vec3( 0.07, 0.05, 0.045 ) ), 0.85 * lid );
           c = mix( c, c * 0.72, ( 1.0 - step( 1.0, abs( ex ) ) ) * rigLine( p.y - lower + 0.004, 0.008, px ) * front );
@@ -155,8 +155,8 @@
           float bz = ( az - 0.1 ) / 0.33;
           float browY = 1.585 + ( female > 0.5 ? 0.06 : 0.04 ) * sin( clamp( bz, 0.0, 1.0 ) * 2.6 );
           float browW = mix( 0.052, 0.022, clamp( bz, 0.0, 1.0 ) ) * ( female > 0.5 ? 0.72 : 1.0 );
-          float browHair = mix( 0.85, 0.55 + 0.45 * rigNoise( vec3( az * 80.0, p.y * 30.0, 0.0 ) ), clamp( 0.012 / px - 0.5, 0.0, 1.0 ) );
-          c = mix( c, brow, 0.9 * browHair * smoothstep( -0.05, 0.05, bz ) * ( 1.0 - smoothstep( 0.95, 1.05, bz ) ) * rigLine( p.y - browY, browW, px ) * front );
+          float browHair = mix( 0.95, 0.65 + 0.35 * rigNoise( vec3( az * 80.0, p.y * 30.0, 0.0 ) ), clamp( 0.012 / px - 0.5, 0.0, 1.0 ) );
+          c = mix( c, brow, 0.95 * browHair * smoothstep( -0.05, 0.05, bz ) * ( 1.0 - smoothstep( 0.95, 1.05, bz ) ) * rigLine( p.y - browY, browW, px ) * front );
           // Lips: a cupid's bow above, a fuller lower lip, the mouth line between.
           float lz = az / ( female > 0.5 ? 0.185 : 0.2 );
           float upperLip = 0.905 + 0.04 * ( 1.0 - lz * lz ) - 0.01 * exp( -p.z * p.z / 0.0016 );
@@ -370,7 +370,7 @@
       // Skin wraps the light further in red; hair adds a highlight along its strands.
       const RIG_NEAR_DIRECT = `{
           float rigNL = dot( geometryNormal, directLight.direction );
-          vec3 rigWrap = rigSkinWrap * vec3( 0.42, 0.2, 0.13 );
+          vec3 rigWrap = rigSkinWrap * vec3( 0.3, 0.14, 0.09 );
           vec3 rigLit = saturate( ( vec3( rigNL ) + rigWrap ) / ( 1.0 + rigWrap ) );
           reflectedLight.directDiffuse += rigLit * directLight.color * BRDF_Lambert( material.diffuseColor );
           if ( rigHairSpec > 0.0 ) {
@@ -379,7 +379,7 @@
             float rigT2 = dot( normalize( rigHairDir - geometryNormal * 0.12 ), rigH );
             float rigS1 = pow( sqrt( max( 0.0, 1.0 - rigT1 * rigT1 ) ), 80.0 );
             float rigS2 = pow( sqrt( max( 0.0, 1.0 - rigT2 * rigT2 ) ), 20.0 );
-            reflectedLight.directSpecular += directLight.color * smoothstep( -0.15, 0.3, rigNL ) * rigHairSpec * ( 0.1 * rigS1 + 0.25 * rigS2 * material.diffuseColor );
+            reflectedLight.directSpecular += directLight.color * smoothstep( -0.15, 0.3, rigNL ) * rigHairSpec * ( 0.05 * rigS1 + 0.16 * rigS2 * material.diffuseColor );
           }
         }`;
       const RIG_LAMBERT_DIRECT = 'reflectedLight.directDiffuse += irradiance * BRDF_Lambert( material.diffuseColor );';
