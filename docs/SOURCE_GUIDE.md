@@ -18,7 +18,7 @@ where each section went:
 | 4d. Input, settings and the HUD, bike share, flight HUD | docs/areas/ui-and-settings.md |
 | 4d. Skip the ride, public demo, god mode · 5. Missions | docs/areas/missions-and-demo.md, docs/areas/missions-and-demo-godmode.md |
 | 4d. Audio buses, radio volume, title radio | docs/areas/audio-and-radio.md |
-| 6. Rendering notes · 6b. Performance (sign families: rendering.md "Buildings and signs") | docs/areas/rendering.md |
+| 6. Rendering notes · 6b. Performance (sign families, frontage: rendering-buildings.md) | docs/areas/rendering.md |
 | 6c. Image pipeline and lighting | docs/areas/rendering-lighting.md, docs/areas/rendering-vehicle-lights.md |
 | 6a. Damage and destruction | docs/areas/police-and-combat.md |
 | 6c. Police vehicles · 6d. Helicopters · 6d. Civilian cars and motorbikes | docs/areas/vehicles-and-driving.md |
