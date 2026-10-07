@@ -22,5 +22,6 @@
       // @include src/cityscape3d-kit.js
       // @include src/cityscape3d-shopwindows.js
       // @include src/cityscape3d-frontage.js
+      // @include src/cityscape3d-roofplant.js
       // @include src/cityscape3d-roofs.js
       // END SUBSYSTEM: src/cityscape3d.js
