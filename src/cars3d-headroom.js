@@ -260,18 +260,25 @@
         const reclines = [],
           most = own?.recline ?? (two ? CABIN_RECLINE_TWO : CABIN_RECLINE_MAX);
         for (let r = CABIN_RECLINE_MIN; r <= most + 1e-6; r += 0.02) reclines.push(r);
-        // Up to 10 cm lower and 23 degrees back first (a seat's own travel), then anything down to the floor.
-        for (const [lo, upright] of [[Math.max(floor, y0 - 0.1 * M), 0.4], [floor, most]])
+        // Up to 10 cm lower and 23 degrees back first (a seat's own travel), then anything down to the floor. A pass
+        // whose lowest seat has no room at its middle and deepest lie is skipped (a few tries, not dozens: the fit
+        // runs when a kit is built, in play for a car type's first appearance).
+        const roomAt = (lo, upright, dx = 0) => tryAt((CABIN_RECLINE_MIN + upright) / 2, lo, dx) || tryAt(upright, lo, dx);
+        for (const [lo, upright] of [[Math.max(floor, y0 - 0.1 * M), 0.4], [floor, most]]) {
+          if (!roomAt(lo, upright)) continue;
           for (const recline of reclines) {
             if (recline > upright + 1e-6) break;
             const seat = lowest(recline, lo);
             if (seat) return seat;
           }
-        for (const step of [0.05, -0.05, 0.1, -0.1, 0.15, -0.15, 0.2, -0.2, 0.3, -0.3])
+        }
+        for (const step of [0.05, -0.05, 0.1, -0.1, 0.15, -0.15, 0.2, -0.2, 0.3, -0.3]) {
+          if (!roomAt(floor, most, step * M)) continue;
           for (const recline of reclines) {
             const seat = lowest(recline, floor, step * M);
             if (seat) return seat;
           }
+        }
         return best;
       }
       /*
