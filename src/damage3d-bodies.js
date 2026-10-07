@@ -230,7 +230,8 @@
             // From the sill (`dims.sill`: a real-size body's, cars3d.js) to the belt.
             // The door is cut from the body's own side (its curve, paint and livery; damage3d-crumple.js), else a slab.
             const sill = m.dims.sill ?? 4.8,
-              shaped = doorPanelGeometries(m, side, l * -0.06, l * 0.2, sill + 0.2, h - 0.15, pivot.position);
+              rect = { x0: l * -0.06, x1: l * 0.2, y0: sill + 0.2, y1: h - 0.15 },
+              shaped = doorPanelGeometries(m, side, rect.x0, rect.x1, rect.y0, rect.y1, pivot.position);
             let panel, opening;
             if (shaped) {
               panel = new Three.Mesh(shaped.door, [m.paint, engineBay]);
@@ -244,7 +245,8 @@
               // A livery samples its door colour through the panel's UVs (police3d.js).
               if (m.panelGeometry) panel.geometry = m.panelGeometry;
             }
-            door = m.doors[side] = { pivot, panel, opening };
+            // `rect`: the shaped door's place in the side (holes in that metal go with it, damage3d-marks.js).
+            door = m.doors[side] = { pivot, panel, opening, rect: shaped ? rect : null };
             // The hinge moves with the crumpled side; the opening and the door (in its closed place, relative to the
             // hinge) bend with it.
             crumpleAdopt(m, pivot, true);

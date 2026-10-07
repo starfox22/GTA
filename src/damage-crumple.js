@@ -79,14 +79,19 @@
         by += d.nx * bulge;
         dz += t * (0.1 * Math.sin(along * 0.9 + phase * 1.3 + k) - 0.05);
       }
+      // The pushes stop at the limits (per axis, so overlapping dents cannot add up past them); a roof is held by its
+      // whole move down (push and folds) above the roof plane.
       if (ix < 0) ix = -crumpleSoftStop(-ix, x - limits.front);
       else if (ix > 0) ix = crumpleSoftStop(ix, limits.rear - x);
       if (iy < 0) iy = -crumpleSoftStop(-iy, y - limits.side);
       else if (iy > 0) iy = crumpleSoftStop(iy, -limits.side - y);
-      if (iz < 0) iz = -crumpleSoftStop(-iz, z - limits.roof);
-      out.x = ix + bx;
-      out.y = iy + by;
-      out.z = iz + dz;
+      const mx = ix + bx,
+        my = iy + by;
+      let mz = dz + (iz < 0 && z > limits.roof ? iz : 0);
+      if (mz < 0 && z > limits.roof) mz = -crumpleSoftStop(-mz, z - limits.roof);
+      out.x = mx;
+      out.y = my;
+      out.z = mz;
       return out;
     }
     /*
@@ -144,7 +149,8 @@
           if ((Math.abs(x) > l * 0.02 && Math.sign(mx) !== Math.sign(x)) || (Math.abs(y) > w * 0.02 && Math.sign(my) !== Math.sign(y))) crossed++;
           if (z > cabin.z0 && z < cabin.z1 && !inCabin(x, y) && inCabin(mx, my)) intoCabin++;
           const along = axis === 'x' ? mx : my;
-          if (last !== null && along < last - 0.05) folds++;
+          // (A pile-up at a limit may reorder points by millimetres: a fold is 2.5 cm or more.)
+          if (last !== null && along < last - 0.2) folds++;
           if (i) steepest = Math.max(steepest, Math.hypot(out.x - lx, out.y - ly, out.z - lz) / (Math.hypot(x1 - x0, y1 - y0) / (n - 1) || 1));
           last = along;
           lx = out.x;

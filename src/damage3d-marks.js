@@ -186,7 +186,7 @@
           const targets = markTargets(m);
           for (const share of [1, 0.8, 0.62, 0.45]) if ((hit = markCast(m, mark, x, z * share, y, dx, dy, targets))) break;
         }
-        anchor = anchor || { model: m, object: null, a: 0, b: 0, c: 0, u: 0, v: 0, w: 0, dx: 0, dy: 0, version: -1, view: -1, hidden: false, matrix: new Three.Matrix4() };
+        anchor = anchor || { model: m, object: null, a: 0, b: 0, c: 0, u: 0, v: 0, w: 0, sign: 1, dx: 0, dy: 0, version: -1, view: -1, hidden: false, matrix: new Three.Matrix4() };
         anchor.model = m;
         anchor.object = null;
         anchor.dx = dx;
@@ -205,9 +205,58 @@
           anchor.u = markCorner.x;
           anchor.v = markCorner.y;
           anchor.w = markCorner.z;
+          // Which way the triangle's own (wound) face looks at the shooter: kept, so a crumple that turns the
+          // triangle turns the decal with it.
+          markTriangle.getNormal(markNormal).transformDirection(object.matrixWorld);
+          anchor.sign = markNormal.dot(markRay.ray.direction) <= 0 ? 1 : -1;
         }
         markAnchors.set(mark, anchor);
         return anchor;
+      }
+      // A hole in the side's metal where a door has since sprung goes with the door: the same place on the door's skin
+      // (its grid was laid on the pristine shell, damage3d-crumple.js doorPanelGeometries).
+      function markOntoDoor(m, anchor) {
+        if (anchor.object !== m.shell || !m.doors || !m.crumple) return;
+        const shell = m.crumple.parts.find((p) => p.mesh === m.shell);
+        if (!shell) return;
+        const base = shell.base,
+          { a, b, c, u, v, w } = anchor,
+          x = base[a * 3] * u + base[b * 3] * v + base[c * 3] * w,
+          y = base[a * 3 + 1] * u + base[b * 3 + 1] * v + base[c * 3 + 1] * w,
+          z = base[a * 3 + 2] * u + base[b * 3 + 2] * v + base[c * 3 + 2] * w;
+        for (const key in m.doors) {
+          const door = m.doors[key],
+            rect = door.rect,
+            side = Number(key);
+          if (!rect || Math.sign(z) !== side || x < rect.x0 || x > rect.x1 || y < rect.y0 || y > rect.y1) continue;
+          const [NX, NY] = DOOR_GRID,
+            gx = ((x - rect.x0) / (rect.x1 - rect.x0)) * (NX - 1),
+            gy = ((y - rect.y0) / (rect.y1 - rect.y0)) * (NY - 1),
+            i = Math.min(NX - 2, Math.floor(gx)),
+            j = Math.min(NY - 2, Math.floor(gy)),
+            fi = gx - i,
+            fj = gy - j,
+            k = j * NX + i;
+          anchor.object = door.panel;
+          if (fi + fj <= 1) {
+            anchor.a = k;
+            anchor.b = k + 1;
+            anchor.c = k + NX;
+            anchor.u = 1 - fi - fj;
+            anchor.v = fi;
+            anchor.w = fj;
+          } else {
+            anchor.a = k + 1;
+            anchor.b = k + NX + 1;
+            anchor.c = k + NX;
+            anchor.u = 1 - fj;
+            anchor.v = fi + fj - 1;
+            anchor.w = 1 - fi;
+          }
+          // These triangles face +z (along, then up): out on the right, in on the left.
+          anchor.sign = side;
+          return;
+        }
       }
       // Re-reads the anchor's triangle where it now is and poses the decal on it, sized for the view.
       function poseMark(m, mark, anchor, view) {
@@ -218,7 +267,6 @@
         if (shown !== 1) return shown;
         const geometry = object.geometry,
           position = geometry.attributes.position,
-          normal = geometry.attributes.normal,
           { a, b, c, u, v, w } = anchor;
         markRel.copy(markInverse).multiply(object.matrixWorld);
         markPoint.set(
@@ -226,20 +274,12 @@
           position.getY(a) * u + position.getY(b) * v + position.getY(c) * w,
           position.getZ(a) * u + position.getZ(b) * v + position.getZ(c) * w,
         );
-        if (normal)
-          markNormal.set(
-            normal.getX(a) * u + normal.getX(b) * v + normal.getX(c) * w,
-            normal.getY(a) * u + normal.getY(b) * v + normal.getY(c) * w,
-            normal.getZ(a) * u + normal.getZ(b) * v + normal.getZ(c) * w,
-          );
-        if (!normal || markNormal.lengthSq() < 1e-10) {
-          markTriangle.setFromAttributeAndIndices(position, a, b, c);
-          markTriangle.getNormal(markNormal);
-        }
+        // The triangle's own plane (the decal is small: the plane it sits in is the surface under it), facing out
+        // the way it faced the shooter when the round hit.
+        markTriangle.setFromAttributeAndIndices(position, a, b, c);
+        markTriangle.getNormal(markNormal);
         markPoint.applyMatrix4(markRel);
-        markNormal.applyMatrix3(markNormalMatrix.getNormalMatrix(markRel)).normalize();
-        // Facing the shooter (the side the round came from).
-        if (markNormal.x * anchor.dx + markNormal.z * anchor.dy > 0) markNormal.negate();
+        markNormal.applyMatrix3(markNormalMatrix.getNormalMatrix(markRel)).normalize().multiplyScalar(anchor.sign || 1);
         const size = MARK_SIZES[mark.kind] || MARK_SIZES.hole,
           k = 1 / (m.modelScale || 1),
           sx = mark.size * size[view ? 2 : 0] * k,
@@ -290,6 +330,7 @@
                   budget--;
                   anchor = anchorMark(c, m, mark, anchor);
                 }
+                if (anchor.object && m.doors) markOntoDoor(m, anchor);
                 anchor.version = m.shapeVersion;
               }
               if (anchor.object) poseMark(m, mark, anchor, view);
@@ -306,14 +347,39 @@
       // ---- Report (console vehicleDamageShape) -------------------------------------------------------------------------
       // How far a decal's plane stands off the surface under it at a point (world units; + above, - sunk), or null when
       // nothing is under it within 3 units.
-      function markGapAt(m, point, normal, targets, mark) {
+      // The part the mark is pinned to is asked first (another part swung in front, a sprung door, does not count).
+      function markGapAt(m, point, normal, targets, mark, own) {
         markOrigin.copy(point).addScaledVector(normal, 3);
         markWorldDirection.copy(normal).negate();
         markRay.set(markOrigin, markWorldDirection);
         markRay.far = 6;
+        const mine = markRay.intersectObject(own, false)[0];
+        if (mine) return mine.distance - 3;
         const hits = markRay.intersectObjects(targets, false);
         for (const hit of hits) if (mark.kind === 'star' ? hit.object === m.cabin : hit.object !== m.cabin) return hit.distance - 3;
         return null;
+      }
+      // What a mesh of the model is, for the report.
+      function markPartRole(m, o) {
+        return o === m.shell
+          ? 'shell'
+          : o === m.cabin
+            ? 'glass'
+            : o === m.hood
+              ? 'hood'
+              : m.bumpers?.includes(o)
+                ? 'bumper'
+                : o === m.panels
+                  ? 'panels'
+                  : m.lamps?.some((lamp) => lamp.mesh === o)
+                    ? 'lamp'
+                    : (o.userData.crumpleSource || o.geometry) === m.kit?.trim
+                      ? 'trim'
+                      : m.doors && Object.values(m.doors).some((d) => d.panel === o)
+                        ? 'door'
+                        : m.doors && Object.values(m.doors).some((d) => d.opening === o)
+                          ? 'opening'
+                          : 'other';
       }
       function vehicleDamageShape(c, rebend) {
         const m = carModels.get(c);
@@ -338,7 +404,7 @@
           marks.push(entry);
           if (!anchor?.object || anchor.model !== m) continue;
           const o = anchor.object;
-          entry.on = o === m.shell ? 'shell' : o === m.cabin ? 'glass' : o === m.hood ? 'hood' : m.bumpers?.includes(o) ? 'bumper' : o === m.panels ? 'panels' : m.lamps?.some((lamp) => lamp.mesh === o) ? 'lamp' : (o.userData.crumpleSource || o.geometry) === m.kit?.trim ? 'trim' : 'other';
+          entry.on = markPartRole(m, o);
           if (!entry.drawn || anchor.view !== view) continue;
           markWorld.multiplyMatrices(m.body.matrixWorld, anchor.matrix);
           const e = markWorld.elements,
@@ -346,14 +412,14 @@
             axisX = new Three.Vector3(e[0], e[1], e[2]),
             axisY = new Three.Vector3(e[4], e[5], e[6]),
             normal = new Three.Vector3(e[8], e[9], e[10]).normalize(),
-            gap = markGapAt(m, centre, normal, targets, mark);
+            gap = markGapAt(m, centre, normal, targets, mark, o);
           entry.sizeCm = cm(axisX.length());
           entry.gapCm = gap === null ? null : cm(gap);
           // The ring of bare metal round the hole (a quarter of the decal out from its middle), or a star's inner cracks.
           let ring = 0;
           for (const [fx, fy] of [[0.26, 0], [-0.26, 0], [0, 0.26], [0, -0.26]]) {
             const point = centre.clone().addScaledVector(axisX, fx).addScaledVector(axisY, fy),
-              g = markGapAt(m, point, normal, targets, mark);
+              g = markGapAt(m, point, normal, targets, mark, o);
             ring = g === null ? Infinity : Math.max(ring, Math.abs(g));
           }
           entry.ringGapCm = ring === Infinity ? null : cm(ring);
@@ -361,13 +427,13 @@
         const record = m.crumple,
           parts = record?.parts || [],
           dents = m.designDents || c.dents || [];
-        let missed = 0,
-          bent = 0,
+        let bent = 0,
           vertices = 0;
+        const missed = [];
         for (const part of parts) {
           if (part.own) vertices += part.mesh.geometry.attributes.position.count;
           if (part.bent) bent++;
-          else if (!part.own && part.mesh.visible && dents.length && crumpleReaches(part.box, dents)) missed++;
+          else if (!part.own && part.mesh.visible && dents.length && crumpleReaches(part.box, dents)) missed.push(markPartRole(m, part.mesh));
         }
         const shell = parts.find((p) => p.mesh === m.shell);
         let shellReport = null;
@@ -434,7 +500,8 @@
           shapeVersion: m.shapeVersion || 0,
           parts: parts.length,
           bent,
-          missed,
+          missed: missed.length,
+          missedParts: missed,
           vertices,
           crumpleMs: record ? Math.round((record.lastMs || 0) * 100) / 100 : null,
           // The slowest parts of the last bend (ms, vertices).
@@ -442,13 +509,14 @@
             .filter((p) => p.ms)
             .sort((p, q) => q.ms - p.ms)
             .slice(0, 4)
-            .map((p) => [p.mesh === m.shell ? 'shell' : p.mesh === m.cabin ? 'glass' : (p.mesh.userData.crumpleSource || p.mesh.geometry) === m.kit?.trim ? 'trim' : p.mesh.name || 'part', Math.round(p.ms * 100) / 100, p.base.length / 3]),
+            .map((p) => [markPartRole(m, p.mesh), Math.round(p.ms * 100) / 100, p.base.length / 3]),
           wheelMoveM: Math.round((wheelMove * scale * 1000) / UNITS_PER_METRE) / 1000,
           shell: shellReport,
           drawnMarks: marks.filter((e) => e.drawn).length,
           // Still to come: a bend queued (crumpleSlices) or marks not yet looked for on the model (a few a frame).
           bending: crumpleQueue.has(m),
           waiting: (c.damage?.marks || []).filter((mark) => {
+            if (mark.kind === 'star' && (c.damage.glass[mark.pane] === 2 || c.windowsDown?.[mark.pane])) return false;
             const anchor = markAnchors.get(mark);
             return !anchor || anchor.model !== m || anchor.version !== m.shapeVersion || anchor.view !== view;
           }).length,

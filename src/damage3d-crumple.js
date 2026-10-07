@@ -124,15 +124,17 @@
       // on), as the door (outer skin in paint, inner trim dark, edges in paint; positions relative to `origin`, its
       // hinge) and as the opening left in the body (the dark inner panel flush with the side). Null when no ray meets
       // the shell (the old flat panels are used).
-      const doorRay = new Three.Raycaster(),
+      // The door's grid (points along, up): the outer skin's vertices come first, row by row (damage3d-marks.js
+      // markOntoDoor reads them so).
+      const DOOR_GRID = [8, 6],
+        doorRay = new Three.Raycaster(),
         doorFrom = new Three.Vector3(),
         doorDir = new Three.Vector3();
       function doorPanelGeometries(m, side, x0, x1, y0, y1, origin) {
         const shellPart = m.crumple?.parts.find((p) => p.mesh === m.shell),
           probe = new Three.Mesh(shellPart ? shellPart.source : m.shell.geometry);
         probe.updateMatrixWorld(true);
-        const NX = 8,
-          NY = 6,
+        const [NX, NY] = DOOR_GRID,
           grid = [],
           reach = m.dims.w * 1.5;
         for (let j = 0; j < NY; j++)
