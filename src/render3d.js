@@ -184,6 +184,7 @@
       // @include src/weather3d.js
       // @include src/character-rig3d.js
       // @include src/crowd3d.js
+      // @include src/player-body3d.js
       // @include src/carjack3d.js
       // @include src/clouds3d.js
       // @include src/ground-data3d.js

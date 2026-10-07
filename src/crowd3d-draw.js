@@ -58,6 +58,8 @@
       function drawCrowdPerson(p, s, deltaSeconds, detail, spec = null) {
         const look = spec?.look || p.look || ensureLook(p),
           R = compiledLook(look, p),
+          // The player in his own outfit is drawn from his own body (player-body3d.js): no still copies.
+          own = spec?.rim === true && playerBodyOn(look),
           J = s.joints,
           T = poseTarget,
           t = gameTime,
@@ -75,6 +77,7 @@
           still = s.still;
         if (
           still &&
+          !own &&
           s.seen &&
           moved < 1e-4 &&
           still.pose === stillPose &&
@@ -118,7 +121,8 @@
           unsettled < 0.003 &&
           !p.ejected &&
           ((p.hp <= 0 && J[J_FALL] >= 0.999) || (STILL_POSES.has(spec?.pose) && hitFlinch(p) === 0)) &&
-          moved < 1e-4;
+          moved < 1e-4 &&
+          !own;
         s.still = null;
         if (settledStill) {
           // Record this frame's instances; later frames copy them.
@@ -306,7 +310,7 @@
         const w = R.width,
           paints = R.paints;
         // Far away and simply standing or walking: three instances.
-        if (detail === 0 && farFigureOk(p, spec, J)) {
+        if (detail === 0 && farFigureOk(p, spec, J) && !own) {
           crowdJoint(mHips, mRoot, 0, bob, 0, 0, 0, pelvisYaw);
           rigEmit(P.figure, mHips, w, 1, w, paints.figure);
           for (let side = 0; side < 2; side++) {
@@ -318,6 +322,12 @@
         }
         crowdJoint(mHips, mRoot, 0, hipY, 0, -run * loco * 0.06, roll * 0.4, pelvisYaw);
         crowdJoint(mTorso, mHips, 0, RIG.waist, 0, lean, roll, twist);
+        const bodySet = BODY;
+        if (own) {
+          BODY = BODY_PLAYER;
+          playerBodyBone(0, mHips);
+          playerBodyBone(1, mTorso);
+        }
         rigEmit(BODY[R.pelvis], mHips, w, 1, w, paints.pelvis);
         if (R.skirtOn) rigEmit(BODY.skirt, mHips, w, 1, w, paints.skirt);
         if (R.belt) rigEmit(BODY.belt, mHips, w, 1, w, paints.belt);
@@ -343,6 +353,7 @@
         crowdJoint(mHead, mTorso, 0.04, RIG.neck, 0, -J[J_HEAD_PITCH] - lean * 0.3, 0, headYaw);
         const hs = R.headScale;
         rigEmit(BODY.head, mHead, hs, hs, hs, paints.head);
+        if (own) playerBodyBone(2, mHead);
         if (R.hatPart) rigEmit(BODY[R.hatPart], mHead, hs, hs, hs, paints.hat);
         if (R.hairPart && !(R.hatPart && R.hairPart === 'hairCurly')) rigEmit(BODY[R.hairPart], mHead, hs, hs, hs, paints.hair);
         // Shoulders.
@@ -380,6 +391,15 @@
           rigEmit(BODY.upperArm, mShoulder[side], w, 1, w, armPaint);
           rigEmit(BODY.forearm, mElbow[side], w, 1, w, forePaint);
           if (detail > 1) rigEmit(BODY.hand, mHand[side], 1, 1, 1, paints.hand);
+          if (own) {
+            playerBodyBone(3 + side, mShoulder[side]);
+            playerBodyBone(5 + side, mElbow[side]);
+            playerBodyBone(7 + side, mHand[side]);
+          }
+        }
+        if (own) {
+          const grip = playerHandGrip(p, spec, hold, holdWeight);
+          playerBodyGrip(grip[0], grip[1]);
         }
         // Legs.
         for (let side = 0; side < 2; side++) {
@@ -399,12 +419,18 @@
           rigEmit(BODY[R.thigh], mHip[side], w, 1, w, paints.thigh);
           crowdJoint(mKnee[side], mHip[side], 0, -RIG.thigh, 0, knee);
           rigEmit(BODY.shin, mKnee[side], w, 1, w, paints.shin);
+          if (own) {
+            playerBodyBone(9 + side, mHip[side]);
+            playerBodyBone(11 + side, mKnee[side]);
+          }
           // The foot stays flat on the ground through the stance, rolls onto the
           // toes at push-off and hangs toes-down in the swing.
           const flat = fall > 0.5 ? 0.3 : 1;
           crowdJoint(mFoot, mKnee[side], 0, -RIG.shin, 0, -(hip + knee) * flat + footPitch[side] + (-run * loco * 0.06));
           rigEmit(BODY[R.shoePart], mFoot, 1, 1, 1, paints.shoe);
+          if (own) playerBodyBone(13 + side, mFoot);
         }
+        BODY = bodySet;
         // Things in hand.
         const right = mHand[1];
         if (detail > 1 && !hold) {
@@ -555,5 +581,34 @@
           const frame = side ? rightFrame : leftFrame;
           if (frame && weight > 0.6) mHand[side].copy(frame);
         }
+      }
+      /**
+       * How far the player's hands close (player-body3d.js grip shape, 0 relaxed to 1 gripping): round a weapon,
+       * a fist in a fight, on the bars or the wheel, round what the right hand carries; slack when down.
+       */
+      const playerGripOut = [0.15, 0.15];
+      function playerHandGrip(p, spec, hold, weight) {
+        let left = 0.15,
+          right = 0.15;
+        if (p.hp <= 0) left = right = 0.3;
+        else if (hold?.fists) left = right = 0.6 + 0.4 * weight;
+        else if (hold?.inHand) right = 0.88;
+        else if (hold && spec?.weapon) {
+          const info = WEAPON_HOLDS[spec.weapon] || WEAPON_HOLDS.pistol;
+          right = 0.15 + 0.73 * weight;
+          if (info.support && !hold.oneHand) left = 0.15 + 0.6 * weight;
+        }
+        if (spec?.handTargets) {
+          left = Math.max(left, 0.78);
+          right = Math.max(right, 0.78);
+        }
+        if (spec?.gunFrame) {
+          if (spec.gunHand) right = 0.88;
+          else left = 0.88;
+        }
+        if (!hold && (p.carry || PHONE_POSES.has(p.pose))) right = Math.max(right, 0.7);
+        playerGripOut[0] = left;
+        playerGripOut[1] = right;
+        return playerGripOut;
       }
       const WEAPON_SCALE_OF = (weapon) => (weapon === 'shield' ? 1 : WEAPON_SCALE);

@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-531 files in the include tree, 183,414 lines.
+538 files in the include tree, 185,620 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -42,7 +42,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-combat.js`   346 — updateCombat(), bullets, shot line-of-sight (shotBlocked) and bullet targets.
 - `src/game-update.js`   180 — update(dt): the per-frame simulation step (only active play advances clocks).
 - `src/world-edge.js`   521 — Open-sea countdown: 10 s flying or sailing away from all land starts RETURN TO THE CITY and 10 s more; at zero a missile comes in from the coast and …
-- `src/game-draw2d.js`   595 — 2D canvas fallback renderer: drawWorld, drawCar, drawPerson, markers.
+- `src/game-draw2d.js`   597 — 2D canvas fallback renderer: drawWorld, drawCar, drawPerson, markers.
 - `src/game-minimap.js`   278 — Minimap base layer: The minimap used to repaint the whole county (coast, every street, parks, promenades, county ground and every building footprint) …
 - `src/map-view.js`   375 — Map views: the city map's filters (MAP LAYERS) and GO TO list, sharp canvases on HiDPI screens, the minimap's speed pull-back and its edge arrows …
 - `src/game-ui.js`   446 — Weapon chip, mission card and updateUI() (HUD text refresh).
@@ -157,7 +157,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/chase-hud.js`    77 — Chase HUD: the reticle in the middle of the screen in the chase view (chase-view.css) and the hidden cursor while the pointer is captured; drawn …
 - `src/tyre-effects.js`   274 — What the tyres leave behind: the burnout (forward and the handbrake held at a standstill), skid marks, and the one rule for tyre smoke, dust and …
 - `src/hud.js`    34 — ▸ HUD behaviour and the title menu
-- `src/render3d.js`   236 — ▸ Three.js renderer and resource lifecycle
+- `src/render3d.js`   237 — ▸ Three.js renderer and resource lifecycle
 - `src/frame-trace.js`   324 — Frame trace: every frame's CPU split (simulation sections, renderer laps) and what happened in it (collections, DOM mutations, GL uploads and links …
 - `src/game-loop.js`   191 — Profiler: Rolling averages of simulation and render CPU time per frame, plus the renderer's draw-call and triangle counts.
 - `src/game-console.js`    48 — ▸ DeadEndCity console registry and assembly
@@ -455,6 +455,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/weather3d.js`   786 — ▸ Weather and sky visuals
 - `src/character-rig3d.js`   696 — ▸ Character rig: sculpted body parts, outfits and paint
 - `src/crowd3d.js`    87 — ▸ Instanced people: skeleton, gait, poses, weapons and street props
+- `src/player-body3d.js`   224 — ▸ The player's own body: one skinned mesh (a man in his forties in a black tee, jeans and leather shoes) posed by the crowd rig's skeleton every frame …
 - `src/carjack3d.js`   212 — The carjack struggle drawn: the driver's door swinging, the poses of the tug of war and the player's hands on the driver (swingDriverDoor …
 - `src/clouds3d.js`    56 — ▸ Volumetric clouds and cloud shadows
 - `src/ground-data3d.js`   826 — Ground shader data
@@ -480,7 +481,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/render3d-resources.js`   520 — GPU resource lifecycle: shared geometries, model pruning and disposal.
 - `src/render3d-hiccups.js`   377 — Hiccup log: what each drawn frame created for the first time (shader programs, textures, geometries) and the slowest frames' renderer CPU split; read …
 - `src/payphone3d.js`   597 — The story payphone where mission 1 starts: a 1990s yellow pedestal payphone with its lit PHONE sign, handset, keypad, directory and grime, the …
-- `src/render3d-api.js`   437 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
+- `src/render3d-api.js`   438 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
 - `src/render3d-frame.js`   614 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
 
 ## src/flight-view3d.js ▸ Flight camera and aerial perspective
@@ -498,7 +499,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/postfx3d.js ▸ HDR post-processing pipeline
 
 - `src/postfx3d-sun.js`   248 — Post sun glare (the chase view): how much of the sun the sky draws is seen (depth and brightness round its disc, eased), light shafts from it through …
-- `src/postfx3d-motion.js`   136 — Camera motion blur in the chase view: the scene smeared along each pixel's screen motion since the last frame (from the depth and the two frames' …
+- `src/postfx3d-motion.js`   138 — Camera motion blur in the chase view: the scene smeared along each pixel's screen motion since the last frame (from the depth and the two frames' …
 - `src/postfx3d-composite.js`   204 — ▸ Post composite (one material per tier): AO upsampling, wet reflections, bloom, ACES tone curve, film grade, vignette and dither; the sun glare lands …
 
 ## src/postfx3d-composite.js ▸ Post composite (one material per tier): AO upsampling, wet reflections, bloom, ACES tone curve, film grade, vignette and dither; the sun glare lands …
@@ -696,14 +697,23 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/crowd3d-parts.js`   134 — Crowd 3D instanced parts: capacity, body material, limbs, weapon and far-figure geometries (crowdParts, rigPart).
 - `src/crowd3d-bodies.js`   342 — Crowd 3D body sets (close and street detail), prop geometry and instance recording (rigBodySet, crowdEmit).
-- `src/crowd3d-looks.js`   516 — Crowd 3D looks: compiling a look into parts and paints (compileLook, compiledLook, specialLooks).
+- `src/crowd3d-looks.js`   520 — Crowd 3D looks: compiling a look into parts and paints (compileLook, compiledLook, specialLooks).
 - `src/crowd3d-joints.js`   139 — Crowd 3D joint indices and per-person pose state (crowdState, setArm, crowdDancePose).
 - `src/crowd3d-poses.js`   901 — Crowd 3D pose targets and IK for arms and legs (crowdPoseTargets, solveLeg).
 - `src/crowd3d-roofparty.js`   141 — Crowd 3D poses for mission 2 (the Blue Hour): Vescari's poisoned toast beat by beat, and the bodyguards' heads turning with their sight cones.
-- `src/crowd3d-draw.js`   559 — drawCrowdPerson(): weapon holds, phone poses and the far-figure shortcut.
+- `src/crowd3d-draw.js`   614 — drawCrowdPerson(): weapon holds, phone poses and the far-figure shortcut.
 - `src/crowd3d-special.js`   484 — Crowd 3D special characters: player, officers, soldiers, gangs, swimmers, parachutes (specialSpec, applyLimbOverrides).
 - `src/crowd3d-driveby.js`   345 — Crowd 3D drive-by pose: the player at the wheel with the gun arm out of the window, torso and head turned to the aim, recoil per shot …
-- `src/crowd3d-frame.js`   357 — updateCrowd3D(): per-frame packing, car enter and exit transitions, dogs, crowd stats.
+- `src/crowd3d-frame.js`   362 — updateCrowd3D(): per-frame packing, car enter and exit transitions, dogs, crowd stats.
+
+## src/player-body3d.js ▸ The player's own body: one skinned mesh (a man in his forties in a black tee, jeans and leather shoes) posed by the crowd rig's skeleton every frame …
+
+- `src/player-body3d-mesher.js`   423 — Player body: signed distance primitives, a field of ordered operations culled per cell, and the surface-nets mesher that turns a field into a smooth …
+- `src/player-body3d-anatomy.js`   272 — Player body anatomy: the bind skeleton (the rig's joints, arms out in an A pose) and the body's field: torso in a black crew-neck tee, neck, arms …
+- `src/player-body3d-head.js`   144 — Player body head: a man in his forties modelled as one field (skull, brow, eyes in their sockets and lids, nose, cheekbones, mouth, jaw, chin, ears) …
+- `src/player-body3d-extremities.js`   275 — Player body hands and shoes: a right hand (palm, knuckles, four fingers and a thumb in a relaxed curl, with the curled grip as a second shape) …
+- `src/player-body3d-build.js`   380 — Player body build: meshes every part from its field, gives each vertex its bones and weights, its part, the paint zones the shader reads (tee, jeans …
+- `src/player-body3d-shader.js`   413 — Player body shader: dual quaternion skinning of the bind-space mesh, the hands' grip, and the paint (skin with a subsurface wrap, a forties' face …
 
 ## src/clouds3d.js ▸ Volumetric clouds and cloud shadows
 
@@ -779,7 +789,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/parachute3d.js`    51 — ▸ Ram-air parachute
 - `src/fx3d-atlas.js`   272 — The effect particles' texture atlas (fx3d-particles.js): four billowed smoke puffs with their surface normals, a glow, a muzzle flash star, the …
-- `src/fx3d-particles.js`   596 — Effect particles: smoke, dust, fire, sparks, flashes, glass and drops in one instanced billboard pool, stepped from a struct-of-arrays store (fxAdd) …
+- `src/fx3d-particles.js`   598 — Effect particles: smoke, dust, fire, sparks, flashes, glass and drops in one instanced billboard pool, stepped from a struct-of-arrays store (fxAdd) …
 - `src/fx3d-recipes.js`   426 — Effect recipes on the particle pool (fx3d-particles.js): a blast's flash, fireball, smoke column, dust ring, sparks and debris; muzzle flashes …
 
 ## src/parachute3d.js ▸ Ram-air parachute
@@ -797,7 +807,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-world.js`   236 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
 - `src/game-console-rides.js`   104 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
 - `src/game-console-leisure.js`    75 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)
-- `src/game-console-crowd.js`   162 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
+- `src/game-console-crowd.js`   165 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
 - `src/game-console-graphics.js`   243 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
 - `src/game-console-perf.js`   272 — DeadEndCity console, simulation cost: simProfile (per-section ms, worst frames), simScenario (staged situations)
 - `src/game-console-soak.js`   368 — DeadEndCity console, long-session health: soakReport (sizes of every list that can grow, DOM, non-finite positions)
