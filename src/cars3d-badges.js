@@ -45,7 +45,7 @@
           van: { text: 'MULE', y: 0.82, z: 0.42, h: 0.06 },
           pickup: { text: 'WORKHORSE', y: 0.92, z: 0, h: 0.085 },
           chevette: { text: 'CHEVETTE', style: 'wide', y: 0.705, z: 0, h: 0.045, spacing: 0.75, sub: ['Z06', 0.705, 0.64, 0.042] },
-          brutini: { text: 'BRUTINI', style: 'wide', y: 0.62, z: 0, h: 0.04, spacing: 0.6, color: '#d9b14a', finish: 'gloss' },
+          brutini: { text: 'BRUTINI', style: 'wide', y: 0.745, z: 0, h: 0.04, spacing: 0.6, color: '#d9b14a', finish: 'gloss' },
           cavalino: { text: 'CAVALINO', style: 'italic', y: 0.6, z: 0, h: 0.04, sub: ['458', 0.62, 0.62, 0.042] },
           valkyrie: { text: 'VALKYRIE', style: 'wide', y: 0.62, z: 0, h: 0.038, spacing: 0.7 },
           dbs: { text: 'WALTER MARTIN', style: 'wide', y: 0.74, z: 0, h: 0.034, spacing: 0.55, sub: ['DBS', 0.6, 0.62, 0.04] },
@@ -56,7 +56,7 @@
           jasko: { text: 'KONIGSBERG', style: 'wide', y: 0.62, z: 0, h: 0.036, spacing: 0.55 },
           sirocco: { text: 'PAGANO', style: 'wide', y: 0.62, z: 0, h: 0.042, spacing: 0.7 },
           novera: { text: 'RIMAK', style: 'wide', y: 0.64, z: 0, h: 0.042, spacing: 0.9 },
-          w1: { text: 'McLOWEN', style: 'wide', y: 0.62, z: 0, h: 0.038, spacing: 0.7, sub: ['W1', 0.56, 0.6, 0.042] },
+          w1: { text: 'McLOWEN', style: 'wide', y: 0.675, z: 0, h: 0.038, spacing: 0.7, sub: ['W1', 0.56, 0.6, 0.042] },
           lafera: { text: 'LA FERA', style: 'italic', y: 0.6, z: 0, h: 0.045 },
         };
       // Glyph metrics, filled while the atlas paints: per style, per character, [u0, u1, v0, v1, width / cap height].
@@ -371,18 +371,33 @@
       }
       /*
        * CLUB BADGES
-       * The 4x4 club trucks (offroad3d-kits.js) carry their maker's name (the first word of the game's name: ROVER,
-       * BADGER, TAURO...) in light metal on the tailgate's right corner at the plate's height, clear of a spare wheel
-       * hung in the middle.
+       * The 4x4 club trucks (offroad3d-kits.js) carry their name (CLUB_BADGES: ROVER, BADGER, BRONCO, TAURO...) in light
+       * metal on the tailgate's right corner at the plate's height, smaller and further out past a spare wheel hung in
+       * the middle.
        */
-      function offroadRearBadge(trim, type, def, l, w, tail) {
-        const text = String(VEHICLE_DEFINITIONS[type]?.name || type).split(/\s+/)[0],
+      // The name each club truck's tail carries (its maker, or the model where the maker's name is not on the tail).
+      const CLUB_BADGES = { series: 'ROVER', crawler: 'BADGER', bronco: 'BRONCO', expedition: 'HIGHLANDER', hilux: 'TAURO', sixbysix: 'OKTAV', trophy: 'SIDEWINDER' };
+      function offroadRearBadge(trim, type, def, l, w, tail, spares = []) {
+        const text = CLUB_BADGES[type] || String(VEHICLE_DEFINITIONS[type]?.name || type).split(/\s+/)[0],
+          // A spare hung on the tailgate takes its middle: the name goes smaller, into the corner past it.
+          spare = spares.some((s) => s.z === 0 && s.ry),
           y = def.bumpers[1][1] + 1.6,
-          laid = badgeFlatGeometry(text, 'block', 0.5, 0.18, [0, 0, 0], [-1, 0, 0], [0, 0, 1]);
+          right = w * (spare ? 0.45 : 0.42),
+          // Between the plate's edge (1.4 off the centre line) and the corner: a long name (SIDEWINDER) goes smaller.
+          room = right - 1.7;
+        let cap = spare ? 0.42 : 0.5,
+          laid = badgeFlatGeometry(text, 'block', cap, 0.18, [0, 0, 0], [-1, 0, 0], [0, 0, 1]);
         if (!laid) return null;
         laid.geometry.computeBoundingBox();
-        const b = laid.geometry.boundingBox;
-        laid.geometry.translate(tail - 0.06, y, w * 0.42 - (b.max.z - b.min.z) / 2);
+        let b = laid.geometry.boundingBox;
+        if (b.max.z - b.min.z > room) {
+          laid.geometry.dispose();
+          cap *= room / (b.max.z - b.min.z);
+          laid = badgeFlatGeometry(text, 'block', cap, 0.18, [0, 0, 0], [-1, 0, 0], [0, 0, 1]);
+          laid.geometry.computeBoundingBox();
+          b = laid.geometry.boundingBox;
+        }
+        laid.geometry.translate(tail - 0.06, y, right - (b.max.z - b.min.z) / 2);
         policeAddMatrix(trim, laid.geometry, badgeIdentity, '#e4e7ea');
         laid.geometry.dispose();
         return { text, sub: null, style: 'block', letters: laid.letters };

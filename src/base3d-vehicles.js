@@ -172,7 +172,7 @@
           nose.rotation.z = 0.5;
           const rear = box(b, -l * 0.44, 15, 0, l * 0.1, 10, w * 0.9, p);
           rear.rotation.z = -0.2;
-          militaryStencil(b, 'apc', -l * 0.45 - 0.15, 9.2, w * 0.18, 1.2);
+          militaryStencil(b, 'apc', -l * 0.49 - 0.65, 12.5, w * 0.18, 1.2);
           box(b, -l * 0.06, 19.8, 0, l * 0.62, 1.6, w * 0.84, p);
           for (const s of [-1, 1]) {
             const skirt = box(b, 0, 16, s * w * 0.47, l * 0.8, 6, 1.2, p);

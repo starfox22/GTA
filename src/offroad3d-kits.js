@@ -350,7 +350,7 @@
         }
         // The maker's name on the tail (cars3d-badges.js CLUB BADGES): the trim reads the trim atlas, its parts the solid cell.
         policeSolidUv(trim, 0);
-        kit.badge = offroadRearBadge(trim, type, def, l, w, tail);
+        kit.badge = offroadRearBadge(trim, type, def, l, w, tail, spares);
         kit.paint = policeGeometry(paint);
         kit.trim = policeGeometry(trim);
         kit.bright = bright.count ? policeGeometry(bright) : null;
