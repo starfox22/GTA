@@ -314,7 +314,7 @@
           }
         }
         b.life -= deltaSeconds;
-        if (b.rocket && seededRandom() < 0.8) particle(b.x, b.y, '#cbc4a0', 1, 15, 5);
+        if (b.rocket && seededRandom() < 0.8) particle(b.x, b.y, '#cbc4a0', 1, 15, 5, true);
         if (impact || b.life <= 0) {
           // A rocket or shell into a facade goes off against the wall, outside it.
           const face = b.rocket && impact && hitKind === 'wall' ? heavyRoundHitsBuilding(b) : null;
@@ -333,7 +333,7 @@
           else if (impact && hitKind !== 'flesh') {
             // Walls keep a chip or a hole, shop windows crack and then give way.
             if (hitKind === 'wall') hitKind = bulletHitSurface(b);
-            particle(b.x, b.y, hitKind === 'metal' ? '#dbd8a7' : '#aaa89e', 3, 40);
+            particle(b.x, b.y, hitKind === 'metal' ? '#dbd8a7' : '#aaa89e', 3, 40, 3, true);
             if (city3D) city3D.impact(b.x, b.y, hitKind, b.altitude || 0);
             // The strike's sound by surface: a chip, a ricochet, a knock, glass (bullets-audio.js).
             bulletImpactSound(b.x, b.y, hitKind, b.altitude || 0);

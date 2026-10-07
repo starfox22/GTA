@@ -2,7 +2,9 @@
     function district() {
       return districtAt(player.x, player.y);
     }
-    function particle(x, y, color, n = 8, speed = 100, size = 3) {
+    // A burst of flat particles. `standIn`: the 2D view's picture of something the 3D renderer draws for itself
+    // (a muzzle flash, a bullet strike, a blast, a rocket's trail: fx3d-recipes.js), so only the 2D view draws it.
+    function particle(x, y, color, n = 8, speed = 100, size = 3, standIn = false) {
       for (let i = 0; i < n; i++) {
         let a = randomBetween(0, TAU),
           v = randomBetween(speed * 0.2, speed);
@@ -15,6 +17,7 @@
           max: 0.8,
           color,
           size: randomBetween(1, size),
+          standIn,
         });
       }
     }
@@ -44,8 +47,8 @@
         emit: 0,
       });
       if (fires.length > 24) fires.shift();
-      particle(x, y, '#e0b769', 40, 180, 9);
-      particle(x, y, '#6c7165', 22, 110, 16);
+      particle(x, y, '#e0b769', 40, 180, 9, true);
+      particle(x, y, '#6c7165', 22, 110, 16, true);
       debris.push({
         x,
         y,
@@ -600,7 +603,7 @@
           headshotTarget: selectedWeaponIndex === 5 && shotTarget && !shotTarget.type ? shotTarget : null,
         });
       }
-      particle(ox, oy, '#f4d990', 5, 70, 4);
+      particle(ox, oy, '#f4d990', 5, 70, 4, true);
       weaponSound(selectedWeaponIndex, ox, oy);
       // The flash at the gun's height out of a vehicle's window.
       if (city3D) city3D.fire(ox, oy, a, w.rocket, entityElevation(player), driveByMuzzle ? driveByMuzzle.height : undefined);

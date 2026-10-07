@@ -242,7 +242,7 @@
       });
       playSample('explosion', 0.6, 1.5, c);
       if (city3D) city3D.fire(x, y, a, true, entityElevation(c));
-      particle(x, y, '#f9d18a', 12, 110, 7);
+      particle(x, y, '#f9d18a', 12, 110, 7, true);
       if (!enemy) {
         shake = Math.max(shake, 6);
         notifyViolence(player, 'gunfire', player);

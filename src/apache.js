@@ -237,7 +237,7 @@
     function apacheRoundImpact(b) {
       const altitude = b.altitude || 0;
       if (city3D) city3D.impact(b.x, b.y, 'metal', altitude);
-      particle(b.x, b.y, '#ffd08a', 3, 60, 3);
+      particle(b.x, b.y, '#ffd08a', 3, 60, 3, true);
       for (const list of [pedestrians, enemies, gangMembers, officers])
         for (const p of list)
           if (p.hp > 0 && Math.abs(p.x - b.x) < 14 && Math.abs(p.y - b.y) < 14 && Math.abs(entityElevation(p) - altitude) < 20)
