@@ -43,7 +43,9 @@ navigation.js (big map, GPS), cycles.js (bike share), src/shell.html + src/ui/* 
   the renderer polls (player outline, player ring) are read every frame from `settings`.
 - Gameplay · Motion comfort (`settings.motionComfort`, `motionComfortOn()`): the steady camera (settings.js
   MOTION COMFORT); Driving · Vehicle camera distance (`drivingSettings.cameraDistance`, 80-160 %,
-  `vehicleCameraFactor()`): a factor on every vehicle's framing. Both are read live by the camera.
+  default 120 %, `vehicleCameraFactor()`): a factor on every vehicle's framing; Driving · Camera look-ahead
+  (`drivingSettings.lookAhead`, 0-150 %, default 150 %). All are read live by the street camera (the chase view
+  ignores them); camera tests calibrate at 100 % and restore the defaults with `drivingReset`.
 - Graphics · Ring under your character (`settings.playerRing`, `playerRingOn()`): off by
   default, also for saves that predate it; drives the 3D `playerRing` and the 2D fallback's
   circle under the player. Objectives have no ring at all (markers.js): the floating arrow only.
