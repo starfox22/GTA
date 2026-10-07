@@ -45,6 +45,8 @@ rendering.md Cameras and view.
   CURSOR LOOK: a page that cannot capture the pointer (an embedding frame without the permission:
   `pointerlockerror` after a click) keeps the cursor: the aim is the cursor and the camera turns while
   it stands in a band along the screen's edges.
+- LOOK BEHIND (C held in a vehicle, `lookBehind`): the view cuts round to the back of the vehicle and back
+  on release (a cut, not a swing: a fast pan is the harder motion on the eye).
 - Pad: the right stick turns the camera (`chaseStick`, `updateStickLook`) instead of aiming, LT aims
   over the shoulder on foot (`gamepad.aimHeld`; a gentle stick push still walks), R3 switches the
   view. Touch: the aim stick turns the camera and fires past two thirds of its throw (CHASE TOUCH); a

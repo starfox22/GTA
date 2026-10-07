@@ -96,6 +96,8 @@
       lockSoft: false,
       // HAND-OVER: seconds left of the pivot's slide, and where it slides from.
       handover: 0,
+      // LOOK BEHIND is held (a vehicle's view cut round to its back).
+      behind: false,
       fromX: 0,
       fromY: 0,
       fromZ: 0,
@@ -528,8 +530,16 @@
         }
       }
       cam.fov = fov;
-      const yaw = normalizeAngle(cam.yaw + cam.lookYaw),
-        pitch = clamp(cam.pitch + cam.lookPitch - cam.slope, CHASE_PITCH_MIN, CHASE_PITCH_MAX);
+      // LOOK BEHIND (held in a vehicle): the view cuts round to behind the vehicle and back on release, a cut
+      // rather than a swing (a fast pan is the harder motion on the eye).
+      const behind = !!c && actionHeld('lookBehind') && gameMode === 'play';
+      if (behind !== cam.behind) {
+        cam.behind = behind;
+        // The boom is measured afresh on the far side (no slide out of a wall it was pulled in by).
+        cam.dist = Math.min(cam.dist, cam.wantDist);
+      }
+      const yaw = normalizeAngle(cam.yaw + (behind ? Math.PI : cam.lookYaw)),
+        pitch = clamp(cam.pitch + (behind ? 0 : cam.lookPitch) - (behind ? -cam.slope : cam.slope), CHASE_PITCH_MIN, CHASE_PITCH_MAX);
       cam.px = bx;
       cam.py = by;
       cam.pz = bz + pivotM * M;
@@ -777,6 +787,7 @@
         wantMetres: r(chaseCam.wantDist / M, 2),
         heightMetres: r((chaseCam.z - chaseFloor(chaseCam.x, chaseCam.y)) / M, 2),
         aiming: r(chaseCam.aimBlend, 2),
+        behind: chaseCam.behind,
         // LOCK-ON: what the aim holds on (kind and distance), or null.
         lockOn: chaseLockOn.target
           ? { kind: chaseLockOn.target.faction || chaseLockOn.target.role || chaseLockOn.target.species || 'gunman', metres: r(Math.hypot(chaseLockOn.target.x - player.x, chaseLockOn.target.y - player.y) / M) }

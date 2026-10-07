@@ -16,3 +16,4 @@
 - Lock-on (Settings · Gameplay · Aim assist, on by default): aiming with a gunman near the reticle turns the
   camera onto him and holds it; a move of the mouse or the stick breaks it. Console `gunmanAt(x, y)`; test
   chase-lock.
+- C held in a vehicle looks behind it in the chase camera (Settings · Controls · Look behind).
