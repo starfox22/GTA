@@ -37,10 +37,10 @@ Part of police-and-combat.md.
   flight drops become drops drawn out by their speed (game-update.js).
 - The renderers only read: civic3d.js (size from `bloodDecalScale`, fade `bloodFade`, a
   slow darkening as blood dries; transparent, renderOrder 3) and `drawBlood2D`. Fire, smoke,
-  sparks, drops and the blast ring draw at `FX_SPRITE_ORDER` 8 (render3d-effects.js, car flames
-  too): with the default 0 the floor blood was painted over an explosion's fireball (transparent
-  objects sort by renderOrder before depth, and none of them write depth). The mist is a `mist` particle
-  (render3d-frame.js draws it at its height, fading and spreading).
+  sparks and drops are the effect particle pool (rendering-effects.md), drawn at `FX_SPRITE_ORDER` 8
+  (render3d-effects.js): with the default 0 the floor blood was painted over an explosion's fireball
+  (transparent objects sort by renderOrder before depth, and none of them write depth). The mist is a `mist`
+  particle (fx3d-particles.js draws it at its height, fading and spreading).
 - Bounds: `BLOOD_LIMIT` 240 decals (the oldest non-pool goes first), `BLOOD_LIFE` 240 s.
 
 ## For other code

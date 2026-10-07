@@ -78,6 +78,8 @@ The image pipeline, light, searchlights and the cutaway: rendering-lighting.md.
   building part uses those or `staticMat()`, **never a per-building `mat()`** (a draw call per
   building).
 - Small repeated props: add an InstancedMesh pool in cityscape3d.js `pools`.
+- Effect sprites (smoke, fire, sparks, flashes, glass, drops) are slots in one instanced pool drawn in one call
+  (`fxAdd`, fx3d-particles.js): never a `Three.Sprite` per particle (**rendering-effects.md**).
 - Boat-kit groups are merged by `kitMerge` and must not go into `batchGroups`.
 - Matrices: world matrices are updated once a frame just before drawing, and only for what
   is shown; code reading a hidden object's `matrixWorld` calls `updateWorldMatrix()` first.

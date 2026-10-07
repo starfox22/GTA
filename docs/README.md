@@ -37,6 +37,7 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/rendering-weather.md | Ground, wet roads, water, rain, splashes, spray, lightning, tiers, and their street-level (chase view) numbers: near rain, rain haze, wet reflections, streaks |
 | areas/chase-view.md | The third-person CHASE view (V): where the camera stands (game state, its projection), look input (pointer lock, pad, touch), drawing it (draw distance, culling, shadows), the reticle |
 | areas/rendering-chase.md | The chase view's draw distance and level of detail: far cells drawn from the far copy, shadow casters and proxies, small props and pools, people and vehicles by distance, the `chaseCamera().view` report |
+| areas/rendering-effects.md | Effect particles: smoke, fire, sparks, muzzle flashes, glass and drops in one sorted, lit, instanced pool (`fxAdd`), the atlas, the recipes (blasts, muzzle, bullet strikes, flames), `effectParticles()` |
 | areas/rendering-hiccups.md | First-use hitches: what the title-screen prewarm warms (programs, off-screen passes, stand-in models, the far copy), the first-use log (`renderHiccups`), the rules a new effect follows, dormant lights, numbers |
 | areas/boot-and-memory.md | The boot timeline (`bootTimings()`) and what each stage costs, what was cut, the renderer memory soak, the staged tier change, the cell pre-upload and AUTO's resolution hold |
 | areas/rendering-lighting.md | HDR pipeline, post passes and the film grade, sun and time of day, night light map, searchlights, the cutaway |
