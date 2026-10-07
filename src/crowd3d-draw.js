@@ -399,6 +399,13 @@
                 h[12] += gx;
                 h[13] += gy;
                 h[14] += gz;
+                // The player's own hand (player-body3d.js) round the grip comes in with it.
+                if (own) {
+                  const o = handFrames[1].elements;
+                  o[12] += gx;
+                  o[13] += gy;
+                  o[14] += gz;
+                }
               }
             }
           }
