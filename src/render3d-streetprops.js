@@ -56,6 +56,9 @@
        */
       const HALO_STREET_ANGLE = 0.05,
         HALO_GLARE_ANGLE = 0.15,
+        // The glare grows in from HALO_GLARE_NEAR (closer, the lamp's own bloom is the glare: a glare
+        // disc on top of it was a white blob) and fades out over HALO_GLARE_FADE.
+        HALO_GLARE_NEAR = [5 * UNITS_PER_METRE, 18 * UNITS_PER_METRE],
         HALO_GLARE_FADE = [70 * UNITS_PER_METRE, 260 * UNITS_PER_METRE];
       const VEHICLE_HALO_CAPACITY = 640,
         vehicleHaloMaterial = new Three.ShaderMaterial({
@@ -199,10 +202,13 @@
           writeVehicleHalo(n++, vehicleHaloPoint.x, vehicleHaloPoint.y, vehicleHaloPoint.z, size, size, opacity, vehicleHaloColor);
           // Street level: a head lamp looking at the lens dazzles (a soft glare of a fixed size on screen).
           if (street && facing > 0 && toward > 0.5 && n < VEHICLE_HALO_CAPACITY) {
-            const glare = Three.MathUtils.smoothstep(toward, 0.5, 0.95) * (1 - Three.MathUtils.smoothstep(lens, HALO_GLARE_FADE[0], HALO_GLARE_FADE[1]));
+            const glare =
+              Three.MathUtils.smoothstep(toward, 0.5, 0.95) *
+              Three.MathUtils.smoothstep(lens, HALO_GLARE_NEAR[0], HALO_GLARE_NEAR[1]) *
+              (1 - Three.MathUtils.smoothstep(lens, HALO_GLARE_FADE[0], HALO_GLARE_FADE[1]));
             if (glare > 0.01) {
               const wide = lens * HALO_GLARE_ANGLE;
-              writeVehicleHalo(n++, vehicleHaloPoint.x, vehicleHaloPoint.y, vehicleHaloPoint.z, wide, wide, opacity * 0.2 * glare, vehicleHaloColor);
+              writeVehicleHalo(n++, vehicleHaloPoint.x, vehicleHaloPoint.y, vehicleHaloPoint.z, wide, wide, opacity * 0.14 * glare, vehicleHaloColor);
             }
           }
           // A head lamp looking at the camera: a thin horizontal flare streak.

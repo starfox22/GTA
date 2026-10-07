@@ -18,7 +18,8 @@ pipeline: rendering-lighting.md.
   At street level (chase view, render3d-streetprops.js `flushVehicleHalos`): a lamp faces the lens
   (its place, not the view's axis), a halo is at most `HALO_STREET_ANGLE` (0.05 rad) of the view
   (the tail lamps just ahead were red blobs a tenth of the frame wide), and a head lamp looking at
-  the camera adds a soft glare of fixed screen size (`HALO_GLARE_ANGLE`, fading over
+  the camera adds a soft glare of fixed screen size (`HALO_GLARE_ANGLE`, growing in over
+  `HALO_GLARE_NEAR` 5-18 m, where the lamp's own bloom is the glare, and fading over
   `HALO_GLARE_FADE` 70-260 m). Halos and glare light no surface: they are outside the budget.
 - VEHICLE LIGHT BUDGET (headlight-beam.js): all vehicle light a surface takes shares one soft
   cap, filled in order (street lamps' pool at half, the drive map, then each slot:
