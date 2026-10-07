@@ -22,3 +22,5 @@
   Test chase-motion-blur.
 - Backed against a wall, the chase camera cranes up over the player's head instead of filling the screen with it
   (test chase-crane).
+- In the chase view the car radio only flashes its station chip on getting in or a new station (as on touch
+  screens), instead of opening over the road ahead; hover or a click still opens it (test chase-radio-chip).

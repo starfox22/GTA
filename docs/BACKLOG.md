@@ -141,8 +141,6 @@ here when polishing; delete a line when it is fixed. Newest features first.
   A design question for the owner before any work.
 - Motion blur is the camera's own motion only (depth reprojection, no per-object velocity buffer): other cars
   passing fast are sharp, and anything within 12 m of the camera never smears.
-- The car radio panel stands open over the right of the chase view for ~8 s after getting in (it folds to its
-  station chip as in the street view).
 - The close-quarters crane (CHASE_CRANE) handles a wall behind the player; the camera can still come close to the
   player's head beside a wall on the right shoulder side (the boom is marched from the shoulder point).
 

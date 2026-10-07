@@ -117,9 +117,10 @@ navigation.js (big map, GPS), cycles.js (bike share), src/shell.html + src/ui/* 
   or a per-frame tell never piles up. Life is at least ~0.24 s a word (1.5-7 s) on the HUD
   clock. Tone (edge colour) from the words unless given: police, warn, good, info. Console
   `notices()`.
-- Car radio in touch mode (phones and tablets): `hudPop('carRadio')` only flashes the chip; it
-  opens on a tap (the old 4 s pop on getting in covered the road and the toasts on a phone, the
-  GAS / BRAKE buttons on a tablet). On short windows (<= 720 px tall, not touch) it stands on the
+- Car radio in touch mode (phones and tablets) and in the chase view: `hudPop('carRadio')` only
+  flashes the chip; it opens on a tap, hover or click (the old 4 s pop on getting in covered the
+  road and the toasts on a phone, the GAS / BRAKE buttons on a tablet, the road ahead in the chase
+  view). On short windows (<= 720 px tall, not touch) it stands on the
   equipment column and opens upward (radio.css).
 - **Mission card clearance** (hud-clearance.js): the card never covers the player. `hudPlayerBox`
   projects the vehicle (footprint and roof) or person through the street camera; while the open card
