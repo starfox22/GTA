@@ -263,6 +263,11 @@ packs with plain `<script src>` so the zip still plays from file://.
   (`facePaint`/`paintBox`), never a new `staticMat`; nothing in the building loop draws from `cityRandom` (its stream
   places roof plant and bus stops); nothing on a north side stands more than 3 units off the wall and no awning goes
   east, west or south (the street camera's cutaway and overhead cover).
+- Character rig (people-and-crowd-rig.md): every body set lofts the same key rings (`RIG_*_RINGS`, `rig*Rings`), so
+  outline changes go there; lofts face outwards whichever way their rings run (tools/tests/rig-geometry.mjs). Slot D
+  of every body part's paint is the skin; paint bits from 32 belong to the near set (`rigNearBits`). Near hands take
+  their side from instance order: pack hands in pairs, left then right (`drawCrowdPerson`). `chooseNearPeople`
+  (crowd3d-frame.js) is the only place a person joins the chase view's near set, at most `CROWD_NEAR_CAP`.
 - Car cabins (cars3d-interior.js): civilian and police glass is see-through (`carGlassMaterial`, premultiplied; the
   tint closes past `CAR_GLASS_CLEAR`); the cabin merges at the end of each kit's trim (impostors draw `kit.trimOuter`,
   so exterior trim goes before the cabin); `carSeatPlan` (`m.seats`) is the one seat rule; crowd3d-driveby.js SEATED
