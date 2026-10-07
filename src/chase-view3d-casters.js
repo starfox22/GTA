@@ -40,8 +40,10 @@
         chaseShadowSwapCount = 0,
         chaseShadowFrame = 0,
         chaseShadowRegionSet = false,
-        // The static batch and breakable cells as a list, each with its bounds (made on first use).
-        chaseShadowBatchCells = null;
+        // The static batch and breakable cells as a list, each with its bounds (made on first use), and whether
+        // their batches and pools (CHASE PROPS entries, made on the first chase frame) are attached.
+        chaseShadowBatchCells = null,
+        chaseShadowListed = false;
       function chaseShadowRegion(reach, tanH, tanV, cap) {
         const e = chaseCamera.matrixWorld.elements,
           p = chaseCamera.position;
@@ -160,7 +162,7 @@
       }
       /* A static batch or breakable cell's bounds: the spheres of what it holds (world space; the cell groups are at the origin). */
       function chaseBatchCellBounds(cell) {
-        const b = { cell, x0: Infinity, x1: -Infinity, z0: Infinity, z1: -Infinity, top: cell.top || 0 };
+        const b = { cell, x0: Infinity, x1: -Infinity, z0: Infinity, z1: -Infinity, top: cell.top || 0, batches: null, pools: null };
         chaseGrowCellBounds(b, cell.group.children);
         // The batches the far copy stands for hang from their own group (`full`): they cast too.
         if (cell.full) chaseGrowCellBounds(b, cell.full.children);
@@ -204,6 +206,22 @@
         }
         if (!chaseViewActive || !chaseShadowRegionSet) return;
         if (!chaseShadowBatchCells) chaseShadowBatchCells = [...staticBatchCells.values()].map(chaseBatchCellBounds).filter((b) => b.x0 <= b.x1);
+        if (!chaseShadowListed && chaseBatches) {
+          chaseShadowListed = true;
+          // Each cell's batches and breakable pools (CHASE PROPS entries), tested one by one once the cell can cast.
+          const batches = new Map(),
+            pools = new Map();
+          for (const record of chaseBatches) batches.set(record.cell, record.list);
+          for (const entry of chaseBreakables) {
+            const list = pools.get(entry.mesh.parent) || [];
+            list.push(entry);
+            pools.set(entry.mesh.parent, list);
+          }
+          for (const b of chaseShadowBatchCells) {
+            b.batches = batches.get(b.cell) || null;
+            b.pools = pools.get(b.cell.group) || null;
+          }
+        }
         const proxyFrom = chaseShadowReach() * CHASE_SHADOW_PROXY,
           x = chaseCam.x,
           z = chaseCam.y,
@@ -230,11 +248,36 @@
           if (cell.full && cell.full.visible) chaseShadowHide(cell.full);
           for (let k = 0; k < cell.blocks.length; k++) if (cell.blocks[k].visible) chaseShadowHide(cell.blocks[k]);
         }
+        const shade2 = chasePropShade * chasePropShade;
         for (let i = 0; i < chaseShadowBatchCells.length; i++) {
           const b = chaseShadowBatchCells[i];
           if (!b.cell.group.visible) continue;
           tested++;
-          if (!chaseShadowCaster(b.x0, b.x1, b.z0, b.z1, b.top)) chaseShadowHide(b.cell.group);
+          if (!chaseShadowCaster(b.x0, b.x1, b.z0, b.z1, b.top)) {
+            chaseShadowHide(b.cell.group);
+            continue;
+          }
+          // Then each batch on its own (a cell's batch of one material is often one building or one small thing):
+          // by its box, and a small one only within its size times the props' shadow distance (CHASE PROPS).
+          if (!chaseBudgetOn) continue;
+          const batches = b.batches;
+          if (batches)
+            for (let k = 0; k < batches.length; k++) {
+              const entry = batches[k],
+                mesh = entry.mesh;
+              if (!entry.drawn || !mesh.visible || !mesh.castShadow || !mesh.parent.visible) continue;
+              const dx = entry.x - x,
+                dz = entry.z - z;
+              if (dx * dx + dz * dz >= entry.size * entry.size * shade2 || !chaseShadowCaster(entry.x - entry.hx, entry.x + entry.hx, entry.z - entry.hz, entry.z + entry.hz, entry.top))
+                chaseShadowHide(mesh);
+            }
+          const pools = b.pools;
+          if (pools)
+            for (let k = 0; k < pools.length; k++) {
+              const entry = pools[k],
+                mesh = entry.mesh;
+              if (entry.drawn && mesh.visible && mesh.castShadow && !chaseShadowCaster(entry.x0, entry.x1, entry.z0, entry.z1, entry.top)) chaseShadowHide(mesh);
+            }
         }
         for (let i = 0; i < staticCells.length; i++) {
           const cell = staticCells[i];
@@ -250,6 +293,15 @@
             const entry = entries[k];
             if (entry.group.visible && !chaseShadowCaster(entry.x - entry.radius, entry.x + entry.radius, entry.y - entry.radius, entry.y + entry.radius, entry.top))
               chaseShadowHide(entry.group);
+          }
+          // And their small props and parts (CHASE PROPS) one by one, by their own boxes.
+          if (!chaseBudgetOn) continue;
+          const detail = cell.detail;
+          for (let k = 0; k < detail.length; k++) {
+            const entry = detail[k],
+              mesh = entry.mesh;
+            if (entry.drawn && mesh.visible && mesh.castShadow && !chaseShadowCaster(entry.x - entry.hx, entry.x + entry.hx, entry.z - entry.hz, entry.z + entry.hz, entry.top))
+              chaseShadowHide(mesh);
           }
         }
         // Pools outside the cells (CHASE POOLS), by their instances' box.

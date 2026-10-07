@@ -295,6 +295,8 @@
               );
             // Engine smoke, fire and the burning wreck (damage3d.js).
             vehicleEffects(c, m, deltaSeconds);
+            // The chase view's small parts by the vehicle's distance (chase-view3d-props.js CHASE VEHICLE PARTS).
+            chaseVehicleParts(c, m);
           }
           endVehicleImpostors();
           // Riders on the vehicles just posed, then the people's instance upload (crowd3d.js).
@@ -441,6 +443,8 @@
             }
             p.y = Math.max(0.5, p.y);
             if (pi >= particlePool.length) continue;
+            // The chase view leaves out a spark or puff too small or too deep in the haze to see (chaseSpriteHidden).
+            if (chaseSpriteHidden(p.x, p.y, p.z, p.case ? p.size : p.size * (3 - (2 * p.life) / p.max))) continue;
             const s = particlePool[pi++];
             s.visible = true;
             s.position.set(p.x, p.y, p.z);
@@ -457,20 +461,18 @@
           }
           for (const p of particles) {
             if (pi >= particlePool.length) break;
+            const height = p.blood || p.flame || p.mist ? Math.max(0.3, p.z) : 2 + (1 - p.life / p.max) * 13,
+              puff = p.mist ? 1.6 + (1 - p.life / p.max) * 2.2 : 1.6;
+            if (chaseSpriteHidden(p.x, height, p.y, p.size * (p.blood ? 1.8 : puff))) continue;
             const s = particlePool[pi++];
             s.visible = true;
-            s.position.set(
-              p.x,
-              p.blood || p.flame || p.mist ? Math.max(0.3, p.z) : 2 + (1 - p.life / p.max) * 13,
-              p.y,
-            );
+            s.position.set(p.x, height, p.y);
             s.material.map = p.blood ? bloodDropTx : p.flame ? flameTx : smokeTx;
             s.material.color.copy(cachedColor(p.color));
             if (!p.flame) s.material.color.multiplyScalar(spriteLight);
             // A wound's mist (blood.js): a faint puff that spreads as it fades.
             s.material.opacity = p.blood ? 0.97 : p.mist ? clamp(p.life / p.max, 0, 1) * 0.45 : clamp(p.life / p.max, 0, 0.7);
             s.material.blending = p.flame ? Three.AdditiveBlending : Three.NormalBlending;
-            const puff = p.mist ? 1.6 + (1 - p.life / p.max) * 2.2 : 1.6;
             s.scale.set(p.size * (p.blood ? 1.1 : puff), p.size * (p.blood ? 1.8 : puff), 1);
           }
           for (; pi < particlePool.length; pi++) particlePool[pi].visible = false;

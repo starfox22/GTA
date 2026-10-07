@@ -21,6 +21,8 @@
        */
       const CHASE_DRAW = { LOW: 2600, MEDIUM: 3600, HIGH: 4800, ULTRA: 6400 },
         CHASE_HAZE_CLEAR = 0.16,
+        // The share of the far clip where the haze has closed over everything (the fog chunk's floor ends at 0.97).
+        CHASE_HAZE_CLOSED = 0.97,
         // How much a downpour thickens the haze beyond the clear zone (1.9 times at full rain; the street
         // view's 3.6 times, from above, hung a milky veil over the street at eye level).
         CHASE_RAIN_HAZE = 0.9,
@@ -34,7 +36,13 @@
       chaseCamera.layers.enable(DETAIL_LAYER);
       chaseCamera.layers.enable(FAR_DETAIL_LAYER);
       let chaseViewActive = false,
-        chaseDrawReach = CHASE_DRAW.HIGH;
+        chaseDrawReach = CHASE_DRAW.HIGH,
+        // The lens's forward axis (world, unit) and the view depth where the haze has closed completely (the fog
+        // chunk's floor, aerial-haze3d.js: from 0.8 to 0.97 of the far clip): past it nothing shows (chaseDepthHidden).
+        chaseForwardX = 1,
+        chaseForwardY = 0,
+        chaseForwardZ = 0,
+        chaseClosedDepth = Infinity;
       function chaseDrawDistance() {
         const tier = activeTier || graphicsTier();
         return CHASE_DRAW[tier.name] || CHASE_DRAW.HIGH;
@@ -76,6 +84,14 @@
         chaseCamera.lookAt(chaseLookAt);
         chaseCamera.updateProjectionMatrix();
         chaseCamera.updateMatrixWorld(true);
+        const forwardX = Math.cos(yaw) * cp,
+          forwardY = -Math.sin(pitch),
+          forwardZ = Math.sin(yaw) * cp,
+          closedDepth = chaseCamera.far * CHASE_HAZE_CLOSED;
+        if (forwardX !== chaseForwardX) chaseForwardX = forwardX;
+        if (forwardY !== chaseForwardY) chaseForwardY = forwardY;
+        if (forwardZ !== chaseForwardZ) chaseForwardZ = forwardZ;
+        if (closedDepth !== chaseClosedDepth) chaseClosedDepth = closedDepth;
         // The ground this view can see: the camera and the far edge of the frustum, out to the draw distance.
         const tanV = Math.tan((chaseCamera.fov * Math.PI) / 360),
           tanH = tanV * aspect,
