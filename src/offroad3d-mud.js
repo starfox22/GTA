@@ -603,7 +603,6 @@
       });
       // SIGN_DESIGNS gets the club's own board (signdesigns3d.js).
       // ---- Per frame -----------------------------------------------------------------------------
-      let grillSmoke = 0;
       function updateOffroadVisuals(deltaSeconds) {
         if (deltaSeconds <= 0) return;
         const L = OFFROAD_CLUB.lot,
@@ -611,15 +610,8 @@
         trailClubLive.visible = nearClub;
         if (nearClub) {
           waveFlag();
-          // The grill smokes; the fire ring smoulders by day and burns at night.
-          grillSmoke += deltaSeconds * (5 + nightAmount * 3);
-          while (grillSmoke > 1) {
-            grillSmoke -= 1;
-            const gr = OFFROAD_CLUB.grill,
-              fr = OFFROAD_CLUB.fire;
-            engineSmoke(gr.x, 8.2, gr.y, '#cfcfca', 5, 9);
-            if (Math.random() < 0.4) engineSmoke(fr.x, 3, fr.y, nightAmount > 0.3 ? '#8a7f74' : '#b5b2ab', 7, 12);
-          }
+          // The grill smokes; the fire ring smoulders by day and burns at night (chimney-smoke3d.js).
+          updateClubYardSmoke(deltaSeconds, true);
         }
         for (const [c, m] of carModels)
           if (m.group.visible && (c.offroadState || c.x > CITY_SIZE - 200) && Math.abs(c.x - viewCenter.x) < viewReach + 100 && Math.abs(c.y - viewCenter.y) < viewReach + 100)

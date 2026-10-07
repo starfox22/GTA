@@ -35,4 +35,5 @@
       // @include src/mountain-village3d-textures.js
       // @include src/mountain-village3d-kit.js
       // @include src/mountain-village3d-details.js
+      // @include src/chimney-smoke3d.js
       // END SUBSYSTEM: src/mountain-village3d.js

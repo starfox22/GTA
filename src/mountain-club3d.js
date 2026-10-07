@@ -157,7 +157,7 @@
           mvBlock(shell, 'stone', chimney.x, 0, chimney.y, chimney.x + chimney.w, CLUB_EAVES, chimney.y + chimney.h, stoneTint, 'ny');
           mvBlock(shell, 'stone', chimney.x + 1.5, CLUB_EAVES, chimney.y + chimney.h * 0.25, chimney.x + chimney.w - 0.5, ridgeY + 1.5 * M, chimney.y + chimney.h * 0.75, stoneTint, 'ny');
           mvBlock(shell, 'stone', chimney.x + 0.5, ridgeY + 1.5 * M, chimney.y + chimney.h * 0.2, chimney.x + chimney.w + 0.5, ridgeY + 1.75 * M, chimney.y + chimney.h * 0.8, '#a9a296', '');
-          mvChimneys.push({ x: chimney.x + chimney.w / 2, y: ridgeY + 1.8 * M, z: chimney.y + chimney.h / 2 });
+          mvChimneys.push({ x: chimney.x + chimney.w / 2, y: ridgeY + 1.8 * M, z: chimney.y + chimney.h / 2, club: true });
         }
         // ---- The veranda: deck, posts, rail, steps; the balcony over it.
         mvBlock(shell, 'planks', CLUBD.x, 0, CLUBD.y, CLUBD.x + CLUBD.w, 0.15 * M, CLUBD.y + CLUBD.h, '#d8b88e', 'ny');

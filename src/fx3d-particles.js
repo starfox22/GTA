@@ -40,7 +40,7 @@
         // many of the flash and fire lights each tier lets light the smoke (a loop at each corner).
         FX_TIER_SHARE = { LOW: 0.55, MEDIUM: 0.8, HIGH: 1, ULTRA: 1 },
         FX_TIER_LIGHTS = { LOW: 1, MEDIUM: 2, HIGH: 4, ULTRA: 4 },
-        FX_FIELDS = ['x', 'y', 'z', 'vx', 'vy', 'vz', 'life', 'max', 'delay', 'size', 'grow', 'r', 'g', 'b', 'alpha', 'heat', 'cool', 'glow', 'twinkle', 'rot', 'spin', 'frame', 'floor', 'rise', 'drag', 'gravity', 'bounce', 'wind', 'streak', 'fadeIn'];
+        FX_FIELDS = ['x', 'y', 'z', 'vx', 'vy', 'vz', 'life', 'max', 'delay', 'size', 'grow', 'r', 'g', 'b', 'alpha', 'heat', 'cool', 'glow', 'twinkle', 'rot', 'spin', 'frame', 'floor', 'rise', 'drag', 'gravity', 'bounce', 'wind', 'streak', 'fadeIn', 'thin'];
       const fxs = { n: 0, peak: 0, emitted: 0, dropped: 0, drawn: 0, legacy: 0 };
       for (const name of FX_FIELDS) fxs[name] = new Float32Array(FX_CAPACITY);
       const fxColumns = FX_FIELDS.map((name) => fxs[name]);
@@ -99,6 +99,7 @@
         s.wind[i] = 0;
         s.streak[i] = 0;
         s.fadeIn[i] = 0;
+        s.thin[i] = 0;
         s.emitted++;
         if (s.n > s.peak) s.peak = s.n;
         return i;
@@ -467,6 +468,8 @@
           let fade = 1 - t * t;
           const fadeIn = s.fadeIn[i];
           if (fadeIn > 0 && t < fadeIn) fade *= t / fadeIn;
+          // `thin`: a plume that spreads thins as it grows (its opacity times (first size / size) ^ thin).
+          if (s.thin[i] > 0) fade *= Math.pow(s.size[i] / size, s.thin[i]);
           let heat = s.heat[i],
             alpha = s.alpha[i];
           if (heat > 0) {

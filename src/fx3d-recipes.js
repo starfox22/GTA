@@ -412,7 +412,7 @@
         }
       }
       /* Smoke off a fire or a hurt engine: `size` units across at birth, rising at about `rise` units a second. */
-      function fxSmoke(x, y, z, color, size, rise, alpha, ground, life = 2.4) {
+      function fxSmoke(x, y, z, color, size, rise, alpha = 0.45, ground = 0.5, life = 2.4) {
         return fxPuff(x + fxBetween(-2, 2), y, z + fxBetween(-2, 2), fxBetween(-2, 2), rise * 0.7, fxBetween(-2, 2), life * fxBetween(0.85, 1.15), size * 0.7, 2.6, color, alpha, ground, 1.1, rise * 1.1);
       }
       /* A fire on the ground (a blast's burning fuel, game `fires`): flames over a patch by its power, dark smoke
