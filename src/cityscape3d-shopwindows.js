@@ -15,10 +15,11 @@
        * bus stops are drawn from that stream after the buildings).
        */
       const SHOP_INTERIOR = { aisles: 0, racks: 1, cafe: 2, shelves: 3, market: 4, service: 5, goods: 6, lobby: 7 },
+        // By day an interior reads darker than the street behind the glass's reflection.
         SHOP_PANE_TINTS = [
-          [0.6, 0.64, 0.66],
-          [0.66, 0.62, 0.56],
-          [0.54, 0.62, 0.66],
+          [0.36, 0.39, 0.41],
+          [0.41, 0.38, 0.34],
+          [0.32, 0.37, 0.4],
         ].map(([r, g, b]) => new Three.Color(r, g, b));
       let shopPaintSeed = 6211;
       const shopPaintRandom = () => {
