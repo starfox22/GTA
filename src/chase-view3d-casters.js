@@ -160,23 +160,24 @@
       }
       /* A static batch or breakable cell's bounds: the spheres of what it holds (world space; the cell groups are at the origin). */
       function chaseBatchCellBounds(cell) {
-        let x0 = Infinity,
-          x1 = -Infinity,
-          z0 = Infinity,
-          z1 = -Infinity,
-          top = cell.top || 0;
-        for (const o of cell.group.children) {
+        const b = { cell, x0: Infinity, x1: -Infinity, z0: Infinity, z1: -Infinity, top: cell.top || 0 };
+        chaseGrowCellBounds(b, cell.group.children);
+        // The batches the far copy stands for hang from their own group (`full`): they cast too.
+        if (cell.full) chaseGrowCellBounds(b, cell.full.children);
+        return b;
+      }
+      function chaseGrowCellBounds(b, children) {
+        for (const o of children) {
           if (!o.geometry) continue;
           if (o.isInstancedMesh && o.boundingSphere === null) o.computeBoundingSphere();
           if (!o.isInstancedMesh && !o.geometry.boundingSphere) o.geometry.computeBoundingSphere();
           const s = o.isInstancedMesh ? o.boundingSphere : o.geometry.boundingSphere;
-          x0 = Math.min(x0, s.center.x - s.radius);
-          x1 = Math.max(x1, s.center.x + s.radius);
-          z0 = Math.min(z0, s.center.z - s.radius);
-          z1 = Math.max(z1, s.center.z + s.radius);
-          top = Math.max(top, s.center.y + s.radius);
+          b.x0 = Math.min(b.x0, s.center.x - s.radius);
+          b.x1 = Math.max(b.x1, s.center.x + s.radius);
+          b.z0 = Math.min(b.z0, s.center.z - s.radius);
+          b.z1 = Math.max(b.z1, s.center.z + s.radius);
+          b.top = Math.max(b.top, s.center.y + s.radius);
         }
-        return { cell, x0, x1, z0, z1, top };
       }
       function chaseShadowHide(o) {
         o.visible = false;
