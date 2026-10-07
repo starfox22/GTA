@@ -13,8 +13,8 @@
        */
       const PB_EYE_R = 0.0122,
         PB_EYES = [
-          [0.069, 1.683, -0.0315],
-          [0.069, 1.683, 0.0315],
+          [0.0705, 1.683, -0.0315],
+          [0.0705, 1.683, 0.0315],
         ],
         PB_HEAD_CENTRE = [-0.004, 1.703, 0];
       /* How far inside the hairline a scalp point is (metres, positive inside), and the hair's thickness there. */
@@ -125,12 +125,12 @@
         ops.push({ op: 'mod', g: (x, y, z, d) => (y > 1.6 && d < 0.03 ? d - pbHairDepth(x, y, z) : d), b: [PB_HEAD_CENTRE[0], 1.71, 0, 0.13] });
         // Ears: a shell tilted back and turned out from the head, the bowl carved in, the lobe below.
         for (const s of [-1, 1]) {
-          const frame = mul(ry(s * 0.32), rz(-0.2)),
+          const frame = mul(ry(s * 0.2), rz(-0.2)),
             c = [-0.018, 1.668, s * 0.0745];
           ops.push(
             pbGroup(
               [
-                pbAdd(pbEllipsoid(c[0], c[1], c[2], 0.019, 0.0305, 0.0072, frame)),
+                pbAdd(pbEllipsoid(c[0], c[1], c[2], 0.0175, 0.029, 0.0068, frame)),
                 pbAdd(pbEllipsoid(c[0] + 0.004, c[1] - 0.027, c[2] + s * 0.001, 0.0095, 0.0095, 0.0048), 0.006),
                 pbSub(pbEllipsoid(c[0] + 0.004, c[1] - 0.004, c[2] + s * 0.0065, 0.0105, 0.017, 0.0055, frame), 0.003),
                 // The tragus' ridge in front of the bowl.

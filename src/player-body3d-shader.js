@@ -113,13 +113,12 @@
           c = mix( c, c * vec3( 1.05, 0.86, 0.82 ), clamp( cheek * 0.35 + nose * 0.45 + ear * 0.4, 0.0, 1.0 ) );
           vec3 eyeC = az > 0.0 ? ( P.z < 0.0 ? PB_EYE_L : PB_EYE_R ) : PB_EYE_R;
           float socket = exp( -pow( ( P.y - eyeC.y + 0.006 ) / 0.012, 2.0 ) - pow( ( az - 0.033 ) / 0.02, 2.0 ) ) * step( 0.05, P.x );
-          c *= 1.0 - 0.07 * socket;
-          c = mix( c, c * vec3( 0.95, 0.93, 1.0 ), socket * 0.4 );
+          c = mix( c, c * vec3( 0.97, 0.95, 1.0 ), socket * 0.4 );
           // Lash lines: the lid margins round the opening (just outside the eyeball), the upper one heavier.
           float rim = length( P - eyeC ) - ${PB_EYE_R.toFixed(4)};
           float lash = ( 1.0 - smoothstep( 0.0005, 0.0018, rim ) ) * step( 0.06, P.x );
           float upper = step( eyeC.y - 0.0005, P.y );
-          c = mix( c, pbLin( vec3( 0.16, 0.11, 0.08 ) ), lash * ( 0.25 + 0.5 * upper ) );
+          c = mix( c, c * 0.45, lash * ( 0.12 + 0.4 * upper ) );
           // Brows: an arch over each eye, hairs along it.
           float bz = clamp( ( az - 0.011 ) / 0.042, 0.0, 1.0 );
           float browY = 1.7035 + 0.0045 * sin( bz * 3.0 ) - 0.002 * bz;
@@ -136,7 +135,7 @@
           // Stubble: two days on the jaw, chin, upper lip and cheeks below the cheekbones; dots when near.
           float jaw = smoothstep( 1.648, 1.632, P.y + 0.012 * smoothstep( 0.03, 0.06, az ) ) * smoothstep( 1.548, 1.575, P.y );
           float cheekLine = smoothstep( 0.07, 0.048, az + ( 1.64 - P.y ) * 0.35 ) * step( 0.015, P.x );
-          float lipBand = ( 1.0 - lips ) * smoothstep( 1.6235, 1.619, P.y ) * step( 1.612, P.y ) * step( az, 0.026 ) * 0.8;
+          float lipBand = ( 1.0 - lips ) * smoothstep( 1.6235, 1.619, P.y ) * step( 1.612, P.y ) * step( az, 0.026 ) * 0.6;
           float stubble = clamp( jaw * mix( 1.0, cheekLine, step( 1.6, P.y ) ) + lipBand, 0.0, 1.0 );
           stubble *= 1.0 - smoothstep( 1.616, 1.6185, P.y ) * ( 1.0 - lipBand ) * step( P.y, 1.625 ) * lipZ;
           stubble *= 1.0 - lips;
@@ -144,7 +143,7 @@
           float near = pbFade( 0.0005, px );
           float cover = mix( 0.5, smoothstep( 0.35, 0.75, dots ), near );
           // Stubble greys the skin (dark hairs and the shade between them) rather than painting a beard on it.
-          c = mix( c, c * vec3( 0.62, 0.62, 0.66 ), stubble * cover * 0.62 );
+          c = mix( c, c * vec3( 0.66, 0.66, 0.7 ), stubble * cover * 0.5 );
           // Age lines: across the forehead, crow's feet at the outer corners, under the eyes.
           float fore = step( 1.718, P.y ) * step( P.y, 1.756 ) * step( az, 0.05 ) * step( 0.06, P.x );
           float lines = 0.0;

@@ -124,7 +124,7 @@
         for (const s of [-1, 1]) {
           tee.push(pbIn(torso, pbLimb(t(0.015, 1.41, s * 0.03), t(0.0, 1.418, s * 0.155), 0.046, 0.046)));
           // Trapezius: from the side of the neck down to the shoulder's tip.
-          tee.push(pbIn(torso, pbLimb(t(-0.025, 1.5, s * 0.035), t(-0.012, 1.452, s * 0.155), 0.034, 0.03)));
+          tee.push(pbIn(torso, pbLimb(t(-0.022, 1.508, s * 0.04), t(-0.012, 1.452, s * 0.155), 0.036, 0.03)));
         }
         // Short sleeves: loose round cones over the deltoid to mid-biceps.
         const sleeves = [3, 4].map((b) =>
@@ -187,9 +187,6 @@
           // Trapezius from the nape out under the tee.
           pbLimb([-0.035, 1.56, -0.012], [-0.03, 1.47, -0.1], 0.036, 0.032),
           pbLimb([-0.035, 1.56, 0.012], [-0.03, 1.47, 0.1], 0.036, 0.032),
-          // The trapezius' slope broadening the neck's base at the sides.
-          pbLimb([-0.028, 1.535, -0.03], [-0.02, 1.47, -0.11], 0.04, 0.034),
-          pbLimb([-0.028, 1.535, 0.03], [-0.02, 1.47, 0.11], 0.04, 0.034),
         ];
         ops.push(pbGroup(neck.map((p, i) => pbAdd(p, i ? 0.022 : 0)), 0.008));
         // ---- Arms below the sleeves (skin) ----
