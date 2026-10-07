@@ -8,7 +8,8 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | FILEMAP.md | Which file holds what (generated; grep it first) |
 | BACKLOG.md | Known issues and loose ends per feature (check before polishing an area) |
 | areas/core-and-contracts.md | The closure and include model, units and scale, entity contracts, carriers, saves, performance rules |
-| areas/world-and-map.md | Layout and coordinates, frames, the Northbank grid, shores, bridges and the drawbridge, navigation, `layout()` and the layout audit |
+| areas/world-and-map.md | Layout and coordinates, frames, the Northbank grid, shores, bridges, navigation, `layout()` and the layout audit |
+| areas/world-and-map-drawbridges.md | The four drawbridges: which island needs which, the state list and its contracts, timetables and the open share, looks and ships, the Coronation Bridge |
 | areas/world-county-and-sea.md | The county, falls off cliffs, rail, airfields, parks, sea life |
 | areas/world-county-and-sea-terrain.md | Ridgeline terrain: the height field, the 4x4 trails and their grading, the ride on the terrain (suspension), trail dressing, scenic roads |
 | areas/places-and-venues.md | Palm Keys, the beach and Marea, Sunset Pier, Harbor Point (marina, superyacht, liners, cargo terminal), North Point Key, roofs and helipads, garages, casino |
@@ -19,6 +20,7 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/vehicles-and-driving-handling.md | Steering and grip, brakes and assists, drifts and the handbrake (`driftTest`) |
 | areas/people-and-crowd.md | Crowd behaviour, perception, speech bubbles |
 | areas/people-and-crowd-rig.md | The character rig: one instanced rig for everyone, key-ring outlines, looks, skeleton and gait, body sets, the chase view's near set (sculpted faces, hands, shoes, the near paint shader) |
+| areas/people-and-crowd-player.md | The player's own body: one skinned mesh (SDF-built man in his forties, black tee, jeans), dual quaternion skinning on the rig's skeleton, the grip, the paint, its test |
 | areas/people-and-crowd-vehicles.md | Who sees or hears a car coming and how they react (dodge, freeze, hit unaware), the second pass over someone on the ground (harm by speed and weight, blood, dying) |
 | areas/people-and-crowd-living-city.md | Free roam's living city: traffic streamed round the player by hour and district, sirens and pulling over, ambulances and paramedics, street events |
 | areas/police-and-combat.md | Heat and stars, police response, shooting and wounds, carjacking, overhead cover, damage and breakables |

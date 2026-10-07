@@ -38,6 +38,11 @@
         ridgeEnd = nodeAt(ISLE_RIDGE_END.x, ISLE_RIDGE_END.y, 'end');
       link(cityEnd, west, [[cityEnd.x, cityEnd.y], [west.x, west.y]], 30, 70 * KMH, 'SOVEREIGN BRIDGE');
       link(harbour, ridgeEnd, [[harbour.x, harbour.y], ...MONARCH_RIDGE_ROAD.points], 24, 60 * KMH, 'REGENCY BRIDGE');
+      // Over the Coronation Bridge to Sunset Pier, round by the car park on Pier Island Drive and back.
+      const B = CORONATION_BRIDGE,
+        corner = nodes.find((n) => Math.abs(n.x - B.b[0]) < 1 && Math.abs(n.y - B.b[1]) < 1),
+        pierEnd = nodeAt(B.pierTurn[0], B.pierTurn[1], 'end');
+      link(corner, pierEnd, [[corner.x, corner.y], B.a, B.pierTurn], 24, 60 * KMH, 'CORONATION BRIDGE');
       return (isleGraphCache = { nodes, links });
     }
     // A point on a link's lane at distance d from its start, travelling in `dir`.
@@ -149,7 +154,7 @@
           a = isleLanePoint(l, outDir, 1).a,
           straight = Math.abs(normalizeAngle(a - inA)) < 0.4;
         // The city end of the bridge and the Regency Road are taken now and then.
-        const rare = l.name === 'SOVEREIGN BRIDGE' || l.name === 'REGENCY BRIDGE' ? 0.3 : 1;
+        const rare = l.name === 'SOVEREIGN BRIDGE' || l.name === 'REGENCY BRIDGE' || l.name === 'CORONATION BRIDGE' ? 0.3 : 1;
         return (straight ? 2.4 : 1) * rare;
       };
       let total = 0;
@@ -268,6 +273,9 @@
       forEachPedestrianNear(c.x, c.y, 130, yieldTo);
       if (!player.car) yieldTo(player);
       if (c.panicUntil > gameTime) desired = 80 * KMH;
+      // Held at a drawbridge's stop line while it opens (the Regency's own bridge
+      // is fixed; the Coronation Bridge is a bascule: drawbridge.js).
+      desired = drawbridgeTrafficLimit(c, desired);
       s.desired = desired;
       // How long it has stood still (the report's stuck test).
       const now = gameTime;
@@ -405,7 +413,7 @@
       const { links } = isleRoadGraph(),
         random = isleRandomSource(7717);
       // Moving traffic: spread along the island's streets, both ways.
-      const streets = links.filter((l) => l.name !== 'SOVEREIGN BRIDGE' && l.name !== 'REGENCY BRIDGE');
+      const streets = links.filter((l) => l.name !== 'SOVEREIGN BRIDGE' && l.name !== 'REGENCY BRIDGE' && l.name !== 'CORONATION BRIDGE');
       let placed = 0;
       for (let tries = 0; tries < 120 && placed < 30; tries++) {
         const link = streets[Math.floor(random() * streets.length)],
@@ -463,10 +471,11 @@
         h.roofSite = pad.building;
       }
     }
+    // The third runs up Sovereign Sound through the Coronation Bridge's channel (between its bascule piers).
     const ISLE_BOAT_ROUTES = [
       ['speedboat', [[9300, -722], [8300, -722], [7840, -722], [7700, -540], [7400, -330], [8600, -300], [9900, -330], [10420, -620], [10300, -300], [8600, -330], [7500, -380], [7760, -640], [8300, -722]]],
       ['workboat', [[8900, -700], [7900, -700], [7700, -520], [6900, -300], [6000, -380], [5700, -300], [6900, -260], [7650, -470], [8000, -722]]],
-      ['speedboat', [[5100, -4600], [5200, -3000], [5100, -1500], [4700, -900], [4400, -2400], [4600, -4400], [5600, -5500], [7600, -5600], [9600, -5500], [7600, -5550], [5500, -5450]]],
+      ['speedboat', [[5100, -4600], [5200, -3000], [5100, -1500], [4700, -900], [4400, -2400], [4600, -4400], [4579, -4973], [4953, -5443], [5600, -5500], [7600, -5600], [9600, -5500], [7600, -5550], [5500, -5450], [4953, -5443], [4579, -4973]]],
     ];
     /* The helm of a cruising boat: head for the next point, slow down to turn. */
     function isleBoatHelm(c, along) {

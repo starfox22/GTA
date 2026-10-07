@@ -203,6 +203,29 @@
   font-weight: 700;
   letter-spacing: 0.04em;
 }
+/* Drawbridges: the bridge chips under the label, the two buttons beside them. */
+.god-bridges-row {
+  flex-wrap: wrap;
+  gap: 10px 16px;
+}
+.god-bridges-row .settings-label {
+  flex: 1 1 100%;
+}
+.god-bridge-choice {
+  flex: 1 1 340px;
+}
+.god-bridge-choice button {
+  padding-left: 6px;
+  padding-right: 6px;
+  white-space: nowrap;
+}
+.god-bridges-row .god-action {
+  min-width: 112px;
+}
+.god-action.god-action-lower {
+  background: #ffffff24;
+  color: #e9eee4;
+}
 @media (max-width: 700px) {
   .god-time-row .god-choice {
     flex-wrap: wrap;

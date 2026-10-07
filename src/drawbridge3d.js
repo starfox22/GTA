@@ -1,13 +1,19 @@
-      // BEGIN SUBSYSTEM: src/drawbridge3d.js — The Palm Sound drawbridge in 3D
+      // BEGIN SUBSYSTEM: src/drawbridge3d.js — The drawbridges in 3D
       /**
-       * The Palm Sound drawbridge in 3D
+       * The drawbridges in 3D
        * Source: src/drawbridge3d.js
        * Scope: createCityRenderer() closure, included just before bridges3d.js;
-       * buildDrawbridge() is the Palm Sound Causeway's builder there (called while
-       * the bridges are built, so it may use every bridges3d helper), and
-       * updateDrawbridgeVisuals() runs each frame from updateBridgeVisuals().
-       * Nothing here runs at include time.
+       * buildDrawbridgeSpan() draws one drawbridge's moving span and everything
+       * that works it (called by its bridge's builder while the bridges are built,
+       * so it may use every bridges3d helper): the Palm Sound Causeway's
+       * (buildDrawbridge, style 'bascule'), the Coronation Bridge's (coronation3d.js)
+       * and the spans let into the Oceanview Causeway and the Ridgeline Viaduct.
+       * Each has its own view (drawbridgeViews) and look (DRAWBRIDGE_LOOKS: paint,
+       * tender's houses, lamps); updateDrawbridgeVisuals() runs each frame from
+       * updateBridgeVisuals() and updates them all. Nothing here runs at include
+       * time but the views' list and the looks.
        *
+       * What follows describes the Palm Sound one.
        * A double-leaf trunnion bascule in the Chicago manner, drawn from the same
        * layout the game uses (bridgeStructure 's.bascule', drawbridge.js):
        *   leaves     each a group hinged `drop` below the road at its trunnion, 44 m
@@ -49,5 +55,6 @@
        * ones get soft halos (Points), hidden while dark.
        */
       // @include src/drawbridge3d-kit.js
+      // @include src/drawbridge3d-houses.js
       // @include src/drawbridge3d-build.js
       // END SUBSYSTEM: src/drawbridge3d.js

@@ -85,22 +85,16 @@ lies north of Northbank across North Sound; **Monarch Isle** north of the Ridgel
   carriageway starts at `BRIDGE_CLEARANCE`, 46). One structure feeds everything: boats steer
   round `bridgeFootings()`, aircraft collide with `bridgePylons()`, bridges3d.js draws it,
   roadblocks cut the city end, the route graph joins it to the streets.
-- Twelve bridges (Keys, Palm Sound Causeway, East Bay, South Bay, Sunset Pier, Oceanview,
-  Coral Sound, Ridgeline Viaduct, Sentinel, Sovereign, Regency, North Point Key):
+- Thirteen bridges (Keys, Palm Sound Causeway, East Bay, South Bay, Sunset Pier, Oceanview,
+  Coral Sound, Ridgeline Viaduct, Sentinel, Sovereign, Regency, North Point Key, Coronation):
   `DeadEndCity.layout().bridges` has ids, styles, towers and footings. A region or bridge
-  added later is appended at the end (Monarch's, North Point Key's) so earlier coast walks
+  added later is appended at the end (Monarch's, North Point Key's, the Coronation Bridge) so earlier coast walks
   and promenade rhythms keep their order. Rail bridges belong to the viaducts (transit.js).
-- **The Palm Sound drawbridge** (drawbridge.js, drawbridge3d.js): a working double-leaf
-  bascule with 44 m leaves on `bridgeStructure(bridge).bascule`. Openings at
-  `DRAWBRIDGE_OPENINGS` for the brigantine ALBATROSS; phases warning → gates → clearing →
-  unlock → raising → open → lowering → seating → idle, on game seconds. Contracts:
-  `drawbridgeTrafficLimit` (traffic stops at the line), `drawbridgeKeepsOff` (only the
-  player's vehicle may be on an unseated span), `drawbridgeFootBlocked`, `drawbridgeSurface(u)`
-  (road height and slope; null over the gap, which is water), leaves as ramps
-  (`drawbridgeSlopeDrive`, `drawbridgeFlight`, `drawbridgeSettle`), GPS delay
-  (`drawbridgeRouteDelay`; the graph is built as if the bridge were down). The pits reach below
-  the sea: a depth-only mask keeps the water plane out (renderOrder -2). Console:
-  `drawbridge(...)`, `drawbridgeLook(spot)`, `drawbridgeTraffic(n)`.
+- **The drawbridges** (world-and-map-drawbridges.md): four working double-leaf bascules
+  (Palm Sound Causeway, Coronation Bridge, and spans let into the Oceanview Causeway and the
+  Ridgeline Viaduct), one on every island with more than one bridge. Phases warning → gates →
+  clearing → unlock → raising → open → lowering → seating → lifting → idle, on game seconds.
+  The pits reach below the sea: a depth-only mask keeps the water plane out (renderOrder -2).
 
 ## Navigation and layout data
 

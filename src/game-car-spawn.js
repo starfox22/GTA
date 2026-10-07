@@ -121,6 +121,7 @@
           cliffLift: undefined,
           deckAir: undefined,
           deckLeaf: undefined,
+          deckBridge: undefined,
           deckLift: undefined,
           sinkFor: undefined,
           overturned: undefined,

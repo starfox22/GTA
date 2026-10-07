@@ -319,6 +319,12 @@
       beachShorePoints = [];
       let run = 90;
       for (const e of coastSegments()) {
+        // The Coronation Bridge's landings keep their turn in the rhythm (coronation-bridge.js).
+        if (coronationBridgeLanding(e) && shoreStyle(e) === 'beach') {
+          run += e.length;
+          if (run >= 90) run = 0;
+          continue;
+        }
         if (e.opening || shoreStyle(e) !== 'beach') continue;
         run += e.length;
         if (run < 90) continue;

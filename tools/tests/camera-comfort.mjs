@@ -13,6 +13,8 @@ export default async function (t) {
   await t.call('holdSimulation', true);
   await t.call('god', true);
   await t.call('wanted', 0);
+  // Calibrated at 100 % camera distance and look-ahead (the defaults are 120 % and 150 %, restored at the end).
+  await t.call('settings', { cameraDistance: 100, lookAhead: 100 });
   const m = {};
   const comfort = async (label, seconds = 4) => {
     const v = await t.call('cameraView'),
@@ -119,7 +121,7 @@ export default async function (t) {
     t.assert(steady.jolt === 0, 'a blast jolts the view with motion comfort on: ' + steady.jolt);
     t.assert(inCar.jolt <= onFoot.jolt * 0.65 + 1e-4, `a blast jolts the car's view as much as on foot: ${inCar.jolt} vs ${onFoot.jolt}`);
   } finally {
-    await t.call('settings', { motionComfort: false });
+    await t.call('settings', { motionComfort: false, drivingReset: true });
     await t.call('god', false);
     await t.call('holdSimulation', false);
   }

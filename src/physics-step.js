@@ -226,7 +226,7 @@
         !c.cliffLift &&
         !(c.fallVz > 0) &&
         c !== pc &&
-        drawbridge.angle < 0.004 &&
+        drawbridgesShut &&
         !isBoat(c)
       );
     }
