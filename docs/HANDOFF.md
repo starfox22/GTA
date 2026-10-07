@@ -5,7 +5,9 @@ rules, workflow), then this page, then only the area doc your task needs (`docs/
 
 ## State
 
-- **The game**: Dead End City, a browser top-down 1997 crime game (Three.js 3D with a 2D fallback).
+- **The game**: Dead End City, a browser top-down 1997 crime game (Three.js 3D with a 2D fallback), now with a
+  second camera: V switches the overhead STREET view and a GTA IV-style third-person CHASE view (October 6-7
+  round, branch `claude/trusting-cannon-seq2mv`; not on `main` until the owner approves).
   Version 0.9.0 is the **public demo**: free roam over the whole map plus story missions 1 (the harbour
   job) and 2 (the Blue Hour hotel hit). Missions 3+ are gated for regular players (`DEMO_BUILD`,
   `demoLocked()`; god mode lifts the gates). Bug passes and polish target free roam and missions 1-2 only.
@@ -83,9 +85,17 @@ measure GPU cost, so real-GPU gains of render changes are unverified.
 | Edge and wrecks | world-edge countdown, wreck and abandoned-car limit | `2026-10-03-*`, see below |
 | October 4 round | police search clock (shown only while it runs, shorter times), second god-mode code, big TELEPORT map, driving camera (wider, speed pull-back, damped follow, `cameraComfort`), bonnet blood by speed (`carStainSeverity`), hill climb (`rideStep` suspension, hand-laid Mount Ascent trail, rock/ford dressing), liner grand tour and deck landings (`deck-landing.js`), see-through foliage, world-edge card off land, missions 1-2 and free-roam bug passes (replay frontier, `restartableJob`, fair harbour fight, ABANDON confirm, HUD clearance), performance (frame trace, `hitches.mjs`, DOM writes, buffer ranges, vehicle layouts and allocations, merged car parts) | `docs/changes/2026-10-0[34]-*`, CLAUDE.md rules, `audit/performance.md` (fourth and fifth pass) |
 | October 5 round | open sea (RETURN TO THE CITY countdown after 10 s heading away from land, then a missile; replaces the world-edge warning), ride head-look on the Sunset Eye and the Falcon (`ride-look.js`), sound check (`soundOffText`, saved mute and master volume, `MIX_MAKEUP`, `wakeAudio`) | `docs/changes/2026-10-05-*`, `areas/world-and-map.md`, `areas/places-and-venues.md`, `areas/audio-and-radio.md` |
+| October 6-7 round: the chase view | V toggles a third-person CHASE camera (game-side `chaseCam` with its own projection; pointer lock or CURSOR LOOK, pad, touch; over-the-shoulder aim, lock-on, look behind, close-quarters crane); every on-screen rule asks it (`chase-rules.js`); its HUD layout; draw distance and level of detail (far copy, casters, props, people and vehicles by distance); sky dome, aerial haze, clouds from below, sun glare; rain at street level; shopfronts on every side; car cabins with seated people; a near body set for people up close; broken-glass crumbs; camera motion blur; a darker night at street level (CHASE NIGHT); the radio chip | `docs/changes/2026-10-06-*` (chase-camera, chase-lod, chase-rules, sky, street-rain, street-facades, close-cars, close-people), `areas/chase-view.md`, `areas/chase-view-input.md`, `areas/rendering-chase.md` |
 | October 6 round | motion comfort: vehicle camera one step further back (1.12), flatter speed zoom, shorter slower lead, Settings · Gameplay · Motion comfort and Settings · Driving · Vehicle camera distance | `docs/changes/2026-10-06-motion-comfort.md`, CLAUDE.md camera rule |
 
 ## Rules added in the latest rounds (also in CLAUDE.md)
+
+- **Chase view** (`src/chase-camera.js`, `chase-rules.js`, `chase-view3d*.js`; docs/areas/chase-view.md): the camera
+  is game state (`chaseCam`, `chaseProject`/`chaseRay`/`chaseSees`/`chaseAimPoint`), the renderer only copies it.
+  While `chaseCameraLive()`, every "is it on screen" rule asks the chase camera (`crowdInView`, `spotUnseen`,
+  `shooterInView`), aim code reads `aim()`/`chaseAimScreen()`, movement keys go through `playerMoveHeading()`, and the
+  street view's paths stay bit-identical when the chase view is off. The level-of-detail, frontage, cabin and rig
+  rules have their own CLAUDE.md lines.
 
 - **Wrecks and abandoned cars** (`src/livingcity-wrecks.js`, `WRECK_LIMITS`; rule and constants in
   `docs/areas/people-and-crowd-living-city.md`, numbers in `docs/audit/performance.md`): wrecks go after 50 s
@@ -108,6 +118,11 @@ measure GPU cost, so real-GPU gains of render changes are unverified.
   owner still feels sick, the next candidates (in BACKLOG) are a steeper street pitch and a frame-rate floor.
 
 ## Open items and design questions (owner's call; details in docs/BACKLOG.md)
+
+- The chase view (BACKLOG "Chase view"): no cover system yet (a design question: the player's rounds would hit the
+  car they hide behind); motion blur is the camera's own; sky, haze, glare and the new materials were tuned on
+  SwiftShader only (check on a real GPU); the chase view draws 3-4 times the street view's calls (see the tier
+  numbers in rendering-chase.md before trimming further).
 
 - Mission 4's "GO HOME" goal now ends at the SUNSET MOTEL (the free-standing safehouse was removed); it is not
   in the demo.
