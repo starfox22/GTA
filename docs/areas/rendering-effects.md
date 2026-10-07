@@ -77,6 +77,9 @@ Before -> after: the chase view's camera pass 3 s after the blast drew 83 sprite
 (lamp halos and the like) plus the pool's one call (916 in all); the blast linked 2 programs in play (the shock
 ring's MeshBasic variants) -> 0; the blast adds ~94 slots (22 fireball, 20 column on delays, 14 dust, 28 sparks,
 the flash, the road chunks are debris). The atlas bake was ~80-110 ms of CPU in all on that machine, in slices.
+Two rounds then the blast, 1 s from a settled `renderHiccups(true)`: 2 programs, 16 textures, 56 geometries in 7
+frames (worst 72 ms) -> 0 programs, 10 textures, 47 geometries in 5 frames (worst 25 ms); what is left is wrecks
+and decals, not the pool.
 
 ## Console and checks
 
