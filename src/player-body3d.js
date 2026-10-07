@@ -123,7 +123,8 @@
         }
         const data = r.value,
           old = playerBodyMesh.geometry;
-        pbState.data = data;
+        // Only the summary is kept: the arrays live on in the geometry's attributes.
+        pbState.data = { ms: data.ms, vertices: data.vertices, triangles: data.triangles, parts: data.parts };
         for (let b = 0; b < PB_BONES; b++) {
           const bone = data.bones[b],
             R = bone.R,
