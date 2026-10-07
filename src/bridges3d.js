@@ -20,6 +20,10 @@
        *   hpylon      Ridgeline Viaduct: concrete H-pylons, a weathering-steel girder
        *   swing       Sentinel Causeway: olive plate girders, a swing span, floodlights
        *   key         North Point Key Bridge: white twin arches beside the footways
+       *   deco        Coronation Bridge: an Art Deco causeway with a bascule (coronation3d.js)
+       * A movable bridge (the bascule, the Coronation Bridge, and the spans let into
+       * the Oceanview Causeway and the Ridgeline Viaduct) draws its moving span with
+       * buildDrawbridgeSpan (drawbridge3d.js).
        * Each bridge is built in its own frame (x along the deck from the middle,
        * z across to the right of a -> b, y up from the road) and merged into a few
        * vertex-coloured meshes; its night lights are one points cloud. Lamps,

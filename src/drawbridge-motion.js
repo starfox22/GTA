@@ -10,11 +10,23 @@
         if (active) drawbridgeLeaveDeck(c);
         return;
       }
-      if (!active && (drawbridge.angle < 0.004 || !drawbridgeNear(c.x, c.y, 60))) return;
-      const g = drawbridgeGeometry(),
-        p = drawbridgeLocal(c.x, c.y),
+      if (!active && drawbridgesShut) return;
+      // The drawbridge the car rides (set while it is on a leaf or in the air off
+      // one), else a raised one it is close to.
+      let d = active ? c.deckBridge : undefined;
+      if (!d) {
+        const list = drawbridgeList();
+        for (let i = 0; i < list.length && !d; i++) if (list[i].angle >= 0.004 && drawbridgeNear(list[i], c.x, c.y, 60)) d = list[i];
+        if (!d && active) d = drawbridgeAt(c.x, c.y, 60);
+        if (!d) {
+          if (active) drawbridgeLeaveDeck(c);
+          return;
+        }
+      }
+      const g = drawbridgeGeometry(d),
+        p = drawbridgeLocal(d, c.x, c.y),
         onDeckWidth = Math.abs(p.v) < g.half - 2,
-        surface = onDeckWidth ? drawbridgeSurface(p.u) : undefined,
+        surface = onDeckWidth ? drawbridgeSurface(d, p.u) : undefined,
         speedU = c.vx * g.f.ux + c.vy * g.f.uy;
       if (c.deckAir) {
         // Past the far trunnion the approach span is road too, not the Sound (a
@@ -26,7 +38,7 @@
            of the leaf and the car drops into the gap. */
         const spec = vehicleSpec(c),
           ahead = (spec.l / 2) * Math.sign(speedU || 1),
-          nose = drawbridgeSurface(p.u + ahead),
+          nose = drawbridgeSurface(d, p.u + ahead),
           noseHeight = c.deckLift + (spec.l / 2) * Math.sin(c.slopePitch || 0);
         if (surface === null && nose && nose.leaf !== c.deckJump?.leaf && noseHeight < nose.h - 3 && c.deckJump) {
           const closing = Math.abs(speedU);
@@ -40,8 +52,8 @@
         }
         if (surface && c.deckLift < surface.h - 7) {
           // Came in under the far leaf's tip: strike its end and drop into the gap.
-          const start = drawbridgeLocal(c.stepStartX, c.stepStartY),
-            before = drawbridgeSurface(start.u);
+          const start = drawbridgeLocal(d, c.stepStartX, c.stepStartY),
+            before = drawbridgeSurface(d, start.u);
           if (before === null) {
             if (c.deckJump) c.deckJump.struck = true;
             const closing = Math.abs(speedU);
@@ -83,13 +95,14 @@
             jump.landed = true;
             jump.distance = Math.round(worldMeters(distanceBetween(jump, c)));
             jump.impact = Math.round(into);
-            if (c === player.car && jump.crossed) announce('BRIDGE JUMP', jump.distance + ' M OVER PALM SOUND', 3.5);
+            if (c === player.car && jump.crossed) announce('BRIDGE JUMP', jump.distance + ' M OVER ' + (d.plan.water || 'THE WATER'), 3.5);
             c.deckJump = null;
           }
           if (!surface) drawbridgeLeaveDeck(c);
           else {
             // Down on a leaf: it carries the car from this step on.
             c.deckLeaf = surface.leaf;
+            c.deckBridge = d;
             c.deckSlope = surface.slope;
             c.slopePitch = Math.atan(surface.slope * Math.cos(c.a - g.f.a));
           }
@@ -100,7 +113,7 @@
           c.vx *= 0.3;
           c.vy *= 0.3;
           splashAt(c.x, c.y, 2.6);
-          drawbridge.splashes++;
+          d.splashes++;
           if (c.deckJump) {
             c.deckJump.landed = false;
             c.deckJump.splash = true;
@@ -118,6 +131,7 @@
           c.deckAir = true;
           c.deckLeaf = 0;
           c.deckSlope = 0;
+          c.deckBridge = d;
           return drawbridgePose(c, stepSeconds);
         }
         if (c.deckLeaf || c.deckLift) drawbridgeLeaveDeck(c);
@@ -131,17 +145,19 @@
         c.deckVz = c.deckVz || 0;
         c.deckLeaf = 0;
         c.deckSlope = 0;
-        c.deckJump = { x: c.x, y: c.y, leaf: p.u < g.m ? -1 : 1, speed: Math.round(Math.abs(speedU)), angle: Math.round((drawbridge.angle * 180) / Math.PI), at: gameTime, crossed: false };
-        drawbridge.jumps.push(c.deckJump);
-        if (drawbridge.jumps.length > 8) drawbridge.jumps.shift();
+        c.deckBridge = d;
+        c.deckJump = { x: c.x, y: c.y, leaf: p.u < g.m ? -1 : 1, speed: Math.round(Math.abs(speedU)), angle: Math.round((d.angle * 180) / Math.PI), at: gameTime, crossed: false, bridge: d.id };
+        d.jumps.push(c.deckJump);
+        if (d.jumps.length > 8) d.jumps.shift();
         return drawbridgePose(c, stepSeconds);
       }
       // On a leaf: ride its surface; the vertical speed is what a take-off carries.
-      if (!c.deckAir && Math.abs(surface.slope - (c.deckSlope || 0)) > 0.004) drawbridgeKink(c, c.deckSlope || 0, surface.slope, speedU);
+      if (!c.deckAir && Math.abs(surface.slope - (c.deckSlope || 0)) > 0.004) drawbridgeKink(d, c, c.deckSlope || 0, surface.slope, speedU);
       const rise = (surface.h - (c.deckLift || 0)) / stepSeconds;
       c.deckVz = (c.deckVz || 0) * 0.5 + rise * 0.5;
       c.deckLift = surface.h;
-      c.deckLeaf = surface.h > 0.01 || drawbridge.angle > 0.004 ? surface.leaf : 0;
+      c.deckLeaf = surface.h > 0.01 || d.angle > 0.004 ? surface.leaf : 0;
+      c.deckBridge = c.deckLeaf || c.deckLift ? d : undefined;
       c.deckSlope = surface.slope;
       c.slopePitch = Math.atan(surface.slope * Math.cos(c.a - g.f.a));
       drawbridgePose(c, stepSeconds);
@@ -240,8 +256,7 @@
       });
     }
     // The drive motors' hum while the leaves swing: a held voice whose level follows the swing speed.
-    function updateDrawbridgeMotor(level) {
-      const d = drawbridge;
+    function updateDrawbridgeMotor(d, level) {
       if (!audio || !soundOn) return;
       if (level <= 0.001) {
         if (d.motor) {
@@ -288,7 +303,7 @@
         for (const o of [sub, hum, hum2, whine]) o.start();
         d.motor = { gain, whine, sub, sources: [sub, hum, hum2, whine] };
       }
-      const g = drawbridgeGeometry();
+      const g = drawbridgeGeometry(d);
       // Held only while refreshed: if the game stops updating (paused), it dies away.
       const now = audio.currentTime;
       d.motor.gain.gain.cancelScheduledValues(now);
@@ -314,42 +329,56 @@
         o.stop(t + 0.1);
       });
     }
-    /* ---- The tall ship ---------------------------------------------------------------- */
-    /* ALBATROSS, a brigantine (a 32 m hull, 40 m over the bowsprit, masts 30 m
-       over the water): the tall ship the bridge opens for. She lies at anchor on
-       one side of the causeway with her sails furled; each opening she sets them
-       and passes through the channel to the other side (the opening between the
-       raised leaves is 70 m wide where her mastheads pass). `across` is her
-       distance from the deck's centre line (+ is the right of a -> b, south
-       here); `sails` (0 furled .. 1 set) is for the renderer. */
+    /* ---- The tall ships -------------------------------------------------------------- */
+    /* Each drawbridge opens for a tall ship of its own (bridge.drawbridge.vessel:
+       name, paint, anchorage): at the Palm Sound Causeway the brigantine ALBATROSS
+       (a 32 m hull, 40 m over the bowsprit, masts 30 m over the water). She lies at
+       anchor on one side of the causeway with her sails furled; each opening she
+       sets them and passes through the channel to the other side (the opening
+       between the raised leaves is 70 m wide where her mastheads pass). `across`
+       is her distance from the deck's centre line (+ is the right of a -> b);
+       `sails` (0 furled .. 1 set) is for the renderer. */
     // Under sail and engine: about 5 knots through the bridge, 4 while she closes the hold point.
     const DRAWBRIDGE_VESSEL = { length: 256, beam: 60, masts: 30, anchor: 860, hold: 440, cruise: 5 * KNOTS, approach: 4 * KNOTS };
-    function drawbridgeVessel() {
-      if (drawbridge.vessel) return drawbridge.vessel;
-      // `dir` is the way she goes next: +1 toward +across.
-      drawbridge.vessel = { across: DRAWBRIDGE_VESSEL.anchor, dir: -1, speed: 0, leg: 'anchored', swing: 0, sails: 0, x: 0, y: 0, a: 0 };
-      placeDrawbridgeVessel(drawbridge.vessel, 0);
-      return drawbridge.vessel;
+    // This drawbridge's ship: the common hull with its own anchorage distances.
+    function drawbridgeVesselSpec(d) {
+      const plan = d.plan.vessel;
+      if (!plan) return DRAWBRIDGE_VESSEL;
+      return (d.vesselSpec ||= { ...DRAWBRIDGE_VESSEL, anchor: plan.anchor || DRAWBRIDGE_VESSEL.anchor, hold: plan.hold || DRAWBRIDGE_VESSEL.hold });
     }
-    function placeDrawbridgeVessel(v, deltaSeconds) {
-      const g = drawbridgeGeometry(),
+    function drawbridgeVessel(d) {
+      if (d.vessel) return d.vessel;
+      const spec = drawbridgeVesselSpec(d),
+        side = d.plan.vessel?.start || 1;
+      // `dir` is the way she goes next: +1 toward +across.
+      d.vessel = { across: side * spec.anchor, dir: -side, speed: 0, leg: 'anchored', swing: 0, sails: 0, x: 0, y: 0, a: 0, name: d.plan.vessel?.name || 'ALBATROSS', bridge: d.id };
+      placeDrawbridgeVessel(d, d.vessel, 0);
+      return d.vessel;
+    }
+    function placeDrawbridgeVessel(d, v, deltaSeconds) {
+      const g = drawbridgeGeometry(d),
         p = bridgePoint(g.bridge, g.m + Math.sin(v.swing) * 18, v.across),
         heading = g.f.a + (v.dir * Math.PI) / 2;
       v.x = p.x;
       v.y = p.y;
       // At anchor she lies to the breeze, then turns to face the bridge for the next passage.
-      const want = v.leg === 'anchored' ? heading + Math.sin(gameTime * 0.05) * 0.12 : heading;
+      const want = v.leg === 'anchored' ? heading + Math.sin(gameTime * 0.05 + d.index * 1.7) * 0.12 : heading;
       v.a = deltaSeconds ? normalizeAngle(v.a + clamp(normalizeAngle(want - v.a), -0.12 * deltaSeconds, 0.12 * deltaSeconds)) : want;
     }
+    // Every drawbridge ship's hull on the map (boats and spawns keep off them).
     function drawbridgeVesselHulls() {
-      const v = drawbridge.vessel;
-      if (!v) return [];
-      return [{ x: v.x, y: v.y, hx: DRAWBRIDGE_VESSEL.length / 2, hy: DRAWBRIDGE_VESSEL.beam / 2, a: v.a }];
+      const list = drawbridgeList(),
+        out = [];
+      for (let i = 0; i < list.length; i++) {
+        const v = list[i].vessel;
+        if (v) out.push({ x: v.x, y: v.y, hx: DRAWBRIDGE_VESSEL.length / 2, hy: DRAWBRIDGE_VESSEL.beam / 2, a: v.a });
+      }
+      return out;
     }
-    function updateDrawbridgeVessel(deltaSeconds) {
-      const v = drawbridgeVessel(),
-        spec = DRAWBRIDGE_VESSEL,
-        open = drawbridge.phase === 'open' && drawbridge.held === null;
+    function updateDrawbridgeVessel(d, deltaSeconds) {
+      const v = drawbridgeVessel(d),
+        spec = drawbridgeVesselSpec(d),
+        open = d.phase === 'open' && d.held === null;
       // How far she has come across: -anchor at her anchorage, +anchor at the far one.
       const past = v.dir * v.across;
       let want = 0;
@@ -382,20 +411,20 @@
       const setSails = v.leg !== 'anchored' ? 1 : 0;
       v.sails = clamp(v.sails + Math.sign(setSails - v.sails) * deltaSeconds * 0.12, 0, 1);
       // Passing under the raised leaves she salutes the bridge; the tender answers.
-      if (v.leg === 'transit' && !v.saluted && v.dir * v.across > -DRAWBRIDGE_VESSEL.length * 0.2) {
+      if (v.leg === 'transit' && !v.saluted && v.dir * v.across > -spec.length * 0.2) {
         v.saluted = true;
         drawbridgeHorn(v.x, v.y, 185, [2.2]);
         v.answerAt = gameTime + 3.2;
       }
       if (v.answerAt && gameTime > v.answerAt) {
         v.answerAt = 0;
-        const g = drawbridgeGeometry();
+        const g = drawbridgeGeometry(d);
         drawbridgeHorn(g.channel.x, g.channel.y, 150, [0.7, 0.7]);
       }
-      placeDrawbridgeVessel(v, deltaSeconds);
+      placeDrawbridgeVessel(d, v, deltaSeconds);
     }
-    function drawbridgeVesselSetOff() {
-      const v = drawbridgeVessel();
+    function drawbridgeVesselSetOff(d) {
+      const v = drawbridgeVessel(d);
       if (v.leg !== 'anchored') return;
       v.leg = 'approach';
       v.saluted = false;
@@ -403,11 +432,11 @@
       drawbridgeHorn(v.x, v.y, 185);
     }
     // The ship is clear of the span on her far side (or has nowhere to go).
-    function drawbridgeVesselClear() {
-      const v = drawbridge.vessel;
+    function drawbridgeVesselClear(d) {
+      const v = d.vessel;
       if (!v || v.leg === 'anchored') return true;
       if (v.leg === 'approach') return false;
-      return v.dir * v.across > drawbridgeGeometry().half + DRAWBRIDGE_VESSEL.length / 2 + 70;
+      return v.dir * v.across > drawbridgeGeometry(d).half + drawbridgeVesselSpec(d).length / 2 + 70;
     }
     /* ---- Onlookers and the camera ------------------------------------------------- */
     /* A small crowd gathers on both approaches to watch an opening the player is
@@ -416,8 +445,8 @@
        crowd scene, crowd.js: anything frightening breaks it up as it would any
        scene), and wander off once the arms are up. */
     const DRAWBRIDGE_SPECTATORS = 12;
-    function drawbridgeHoldingSpots() {
-      const g = drawbridgeGeometry(),
+    function drawbridgeHoldingSpots(d) {
+      const g = drawbridgeGeometry(d),
         spots = [];
       for (let k = 0; k < DRAWBRIDGE_SPECTATORS; k++) {
         const approach = k % 2 ? 1 : -1,
@@ -433,9 +462,8 @@
       }
       return spots;
     }
-    function drawbridgeSpectators() {
-      const d = drawbridge,
-        g = drawbridgeGeometry();
+    function drawbridgeSpectators(d) {
+      const g = drawbridgeGeometry(d);
       if (d.phase === 'idle' || d.reason === 'hold' || d.phase === 'lifting') {
         if (d.audience) {
           d.audience.done = true;
@@ -448,7 +476,7 @@
       d.audienceFor = d.openings;
       const scene = (d.audience = makeScene('bridgeWatch', g.channel.x, g.channel.y)),
         roles = ['tourist', 'tourist', 'casual', 'casual', 'elder', 'commuter', 'casual', 'kid'];
-      for (const [k, { spot, approach, u, v }] of drawbridgeHoldingSpots().entries()) {
+      for (const [k, { spot, approach, u, v }] of drawbridgeHoldingSpots(d).entries()) {
         const p = spawnSceneMember(scene, 'bridgeWatcher', spot, roles[k % roles.length]);
         if (!p) break;
         scene.spawned = (scene.spawned || 0) + 1;

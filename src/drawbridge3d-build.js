@@ -170,7 +170,7 @@
         const c = Math.cos(angle),
           s = Math.sin(angle);
         out.x = leaf.hinge + leaf.dir * (along * c - y * s);
-        out.y = -drawbridgeGeometry().drop + along * s + y * c;
+        out.y = -drawbridgeGeometry(drawbridgeView.state).drop + along * s + y * c;
         out.z = z;
         return out;
       }
@@ -178,8 +178,8 @@
       function updateDrawbridgeWater(deltaSeconds, visible) {
         const w = drawbridgeView.water;
         if (!w) return;
-        const d = drawbridge,
-          geo = drawbridgeGeometry(),
+        const d = drawbridgeView.state,
+          geo = drawbridgeGeometry(d),
           rising = d.phase === 'raising' && d.rate > 0.0005,
           wet = clamp(1 - d.angle / 0.45, 0.12, 1),
           gravity = GRAVITY;
@@ -240,15 +240,52 @@
         w.cloud.geometry.attributes.position.needsUpdate = n > 0;
         w.cloud.visible = n > 0 && visible;
       }
-      /* ---- Build (called by bridges3d's BRIDGE_BUILDERS.bascule) ---------------------- */
+      /* ---- Build ------------------------------------------------------------------------ */
+      // The Palm Sound Causeway (BRIDGE_BUILDERS.bascule): the low causeway and its span.
       function buildDrawbridge(g, bridge, s, kit) {
         const W = bridge.width,
           b = s.bascule,
-          iron = tint('#1f2a2a', 'satin'),
-          v = drawbridgeView;
+          iron = tint('#1f2a2a', 'satin');
+        // The fixed deck up to each trunnion; the leaves carry the rest.
+        bridgeDeck(g, bridge, s, { fascia: BRIDGE_KIT.concrete, rail: guardBalustrade(BRIDGE_KIT.white, BRIDGE_KIT.kerb), gap: [b.trunnions[0] + 0.5, b.trunnions[1] - 0.5] });
+        for (const p of s.approach) approachPier(g, bridge, p, BRIDGE_KIT.concrete);
+        buildDrawbridgeSpan(g, bridge, s, kit);
+        // Ornamental lamps: globe standards along the approaches, triple lamps at the piers.
+        bridgeLamps(g, bridge, s, kit.lights, kit.pools, 56, 'globe', iron, [drawbridgeLampGap(s)]);
+        for (const [i, hinge] of b.trunnions.entries())
+          for (const x of [b.tail - 8, 8]) for (const side of [-1, 1]) bridgeLampPost(g, hinge - (i ? -1 : 1) * x, side, W, 'globe', iron, kit.lights, kit.pools);
+        // Name plaques on the approach spans.
+        const [name, sub] = bridge.drawbridge.plaque || [bridge.name, ''];
+        for (const [x, rot] of [
+          [s.water[0] - 20, -Math.PI / 2],
+          [s.water[1] + 20, Math.PI / 2],
+        ])
+          for (const side of [-1, 1]) {
+            box(g, x, 5, side * (W / 2 + 6), 5, 10, 5, BRIDGE_KIT.stone);
+            if (side > 0) bridgePlaque(g, name, sub, '#e9e3d0', '#39463f', 20, x + (rot < 0 ? -2.6 : 2.6), 6, side * (W / 2 + 6), rot);
+          }
+      }
+      // The stretch of deck lamps keep off: the span and its piers (they carry their own).
+      function drawbridgeLampGap(s) {
+        const b = s.bascule;
+        return [b.trunnions[0] - b.tail - 24, b.trunnions[1] + b.tail + 24];
+      }
+      // The deck gap a builder leaves for the leaves (bridgeDeck's look.gap).
+      function drawbridgeDeckGap(s) {
+        return [s.bascule.trunnions[0] + 0.5, s.bascule.trunnions[1] - 0.5];
+      }
+      /* One drawbridge's moving span and its works, in its bridge's frame (any
+         bridge builder calls it after its bridgeDeck with the gap): the piers and
+         pits, the leaves, the tender's houses, fenders, floodlights, the water off
+         the leaves, gates, signals and signs. */
+      function buildDrawbridgeSpan(g, bridge, s, kit) {
+        const b = s.bascule,
+          state = drawbridgeList().find((d) => d.bridge === bridge),
+          v = newDrawbridgeView(state),
+          look = v.look;
         // The leaves' paint and undersides: floodlit at night (updateDrawbridgeVisuals).
-        const paint = drawbridgeFloodlit('#46615a', '#ffdca6');
-        v.underside = drawbridgeFloodlit('#59625f', '#ffe6c0', 'metal');
+        const paint = drawbridgeFloodlit(look.paint, look.glow);
+        v.underside = drawbridgeFloodlit(look.underside, '#ffe6c0', 'metal');
         v.sigRed = drawbridgeLens('#ff2a1c', 'sigRed');
         v.sigAmber = drawbridgeLens('#ffb020', 'sigAmber');
         v.sigGreen = drawbridgeLens('#22ff8a', 'sigGreen');
@@ -263,9 +300,6 @@
         v.navGreen = drawbridgeLens('#2aff6a', 'navGreen');
         v.fenderRed = drawbridgeLens('#ff3a2a', 'fenderRed');
         v.spanFlash = drawbridgeLens('#ff3322', 'spanFlash');
-        // The fixed deck up to each trunnion; the leaves carry the rest.
-        bridgeDeck(g, bridge, s, { fascia: BRIDGE_KIT.concrete, rail: guardBalustrade(BRIDGE_KIT.white, BRIDGE_KIT.kerb), gap: [b.trunnions[0] + 0.5, b.trunnions[1] - 0.5] });
-        for (const p of s.approach) approachPier(g, bridge, p, BRIDGE_KIT.concrete);
         // The piers and their pits (the pits drawn first, then the mask, then the water).
         const pit = new Three.Group(),
           masks = [];
@@ -286,19 +320,15 @@
             farHidden.push(mm);
           }
         // Tender's houses and the control house.
-        for (const h of b.houses) drawbridgeHouse(g, h, s, kit, h.main);
+        const houseTops = b.houses.map((h) => drawbridgeHouse(g, h, s, kit, h.main));
         const fenderLights = b.fenders.map((f) => drawbridgeFender(g, f, bridge, kit));
         drawbridgeGlow(g, fenderLights, '#ff3a2a', 'fenderRed', 12);
         drawbridgeFloodlights(g, bridge, s);
         drawbridgeWater(g);
-        // Ornamental lamps: globe standards along the approaches, triple lamps at the piers.
-        bridgeLamps(g, bridge, s, kit.lights, kit.pools, 56, 'globe', iron, [[b.trunnions[0] - b.tail - 24, b.trunnions[1] + b.tail + 24]]);
-        for (const [i, hinge] of b.trunnions.entries())
-          for (const x of [b.tail - 8, 8]) for (const side of [-1, 1]) bridgeLampPost(g, hinge - (i ? -1 : 1) * x, side, W, 'globe', iron, kit.lights, kit.pools);
         // Gates, signals and signs.
         const flash = [],
           heads = [];
-        for (const arm of drawbridgeArms()) flash.push(drawbridgeGate(g, arm, bridge, kit));
+        for (const arm of drawbridgeArms(state)) flash.push(drawbridgeGate(g, arm, bridge, kit));
         const warn = [];
         for (const approach of [-1, 1]) warn.push(...drawbridgeApproach(g, bridge, s, approach, kit, heads));
         drawbridgeGlow(g, flash.map((p) => V3(p.x, p.y, p.z - 3.4)), '#ff2a1c', 'flashA', 10);
@@ -308,16 +338,7 @@
         drawbridgeGlow(g, heads.filter((_, i) => i % 3 === 2), '#22ff8a', 'sigGreen', 9);
         drawbridgeGlow(g, warn.filter((f) => f.key === 'warnA').map((f) => f.point), '#ffb020', 'warnA', 9);
         drawbridgeGlow(g, warn.filter((f) => f.key === 'warnB').map((f) => f.point), '#ffb020', 'warnB', 9);
-        // Name plaques on the approach spans.
-        for (const [x, rot] of [
-          [s.water[0] - 20, -Math.PI / 2],
-          [s.water[1] + 20, Math.PI / 2],
-        ])
-          for (const side of [-1, 1]) {
-            box(g, x, 5, side * (W / 2 + 6), 5, 10, 5, BRIDGE_KIT.stone);
-            if (side > 0) bridgePlaque(g, 'PALM SOUND', 'CAUSEWAY · 1926', '#e9e3d0', '#39463f', 20, x + (rot < 0 ? -2.6 : 2.6), 6, side * (W / 2 + 6), rot);
-          }
-        aviationBeacons(g, b.houses.map((h) => V3(h.along, h.main ? 66 : 50, h.across)));
+        aviationBeacons(g, b.houses.map((h, i) => V3(h.along, look.houseStyle === 'beaux' ? (h.main ? 66 : 50) : houseTops[i] + 2, h.across)));
         v.group = g;
         v.built = true;
       }
@@ -365,8 +386,11 @@
       }
       // ALBATROSS: black hull with a white gunstripe, teak decks, varnished deckhouses,
       // square sails on the foremast, a gaff main, three headsails, festoon lights.
-      function buildDrawbridgeShip() {
-        const d = { len: DRAWBRIDGE_VESSEL.length, beam: DRAWBRIDGE_VESSEL.beam, hull: '#16191c', accent: '#1d3f6e' },
+      // The other drawbridges' ships are sisters in their own paint (plan: name,
+      // hull, accent); only ALBATROSS carries a name board (the boat-name atlas is full).
+      const DRAWBRIDGE_SHIP_NAME = 'ALBATROSS';
+      function buildDrawbridgeShip(plan = {}) {
+        const d = { len: DRAWBRIDGE_VESSEL.length, beam: DRAWBRIDGE_VESSEL.beam, hull: plan.hull || '#16191c', accent: plan.accent || '#1d3f6e' },
           l = d.len,
           bm = d.beam,
           g = new Three.Group(),
@@ -377,7 +401,7 @@
           rigging = tint('#3a3530', 'matte'),
           canvas = new Three.MeshStandardMaterial({ color: '#efe6d0', roughness: 0.85, side: Three.DoubleSide, emissive: '#ffcf96', emissiveIntensity: 0 }),
           deckZ = 15;
-        g.name = 'ALBATROSS';
+        g.name = plan.name || DRAWBRIDGE_SHIP_NAME;
         g.userData.lightCloud = true;
         scene.add(g);
         const spec = yachtSpec(d, {
@@ -475,8 +499,8 @@
             kitLight(lights, g, a[0] + (c[0] - a[0]) * t, a[1] + (c[1] - a[1]) * t - sag, 0, ['#ffd98a', '#ff9a6a', '#fff2c8', '#9ad8ff'][i % 4]);
           }
         }
-        kitNameBoard(g, 'ALBATROSS', 'PALM KEYS', '#e9d7a0', 40, -l * 0.5 - 0.5, sheerAt(spec, -l * 0.5) - 5, 0, -Math.PI / 2);
-        for (const mm of kitMerge(g)) mm.name = 'ALBATROSS';
+        if (g.name === DRAWBRIDGE_SHIP_NAME) kitNameBoard(g, 'ALBATROSS', 'PALM KEYS', '#e9d7a0', 40, -l * 0.5 - 0.5, sheerAt(spec, -l * 0.5) - 5, 0, -Math.PI / 2);
+        for (const mm of kitMerge(g)) mm.name = g.name;
         kitLightCloud(lights, 9);
         /* The sails (dynamic, not merged): the four square sails hang from their
            yards and bulge forward; the gaff main, gaff topsail and the headsails
@@ -505,9 +529,13 @@
       }
       /* ---- Per frame ----------------------------------------------------------------- */
       function updateDrawbridgeVisuals() {
-        const v = drawbridgeView;
-        if (!v.built) return;
-        const d = drawbridge,
+        for (let i = 0; i < drawbridgeViews.length; i++) {
+          drawbridgeView = drawbridgeViews[i];
+          if (drawbridgeView.built) updateOneDrawbridgeVisuals(drawbridgeView);
+        }
+      }
+      function updateOneDrawbridgeVisuals(v) {
+        const d = v.state,
           night = nightAmount,
           lit = clamp(night * 1.3 - 0.1, 0, 1),
           deltaSeconds = clamp(gameTime - (v.lastTime ?? gameTime), 0, 0.1);
@@ -581,14 +609,14 @@
         }
         for (const m of v.floodlit) m.emissiveIntensity = lit * (0.08 + 0.3 * flood) * (m === v.underside ? 0.6 : 1);
         // Water off the leaves: only simulated while the bridge is in view.
-        const g = drawbridgeGeometry(),
+        const g = drawbridgeGeometry(d),
           near = Math.abs(g.channel.x - viewCenter.x) < viewReach + 700 && Math.abs(g.channel.y - viewCenter.y) < viewReach + 700 && !farSceneryShown;
         updateDrawbridgeWater(deltaSeconds, near);
         if (v.water) pointSize(v.water.material);
         // The ship: built the first time she is needed, then follows the game's vessel.
         const vessel = d.vessel;
         if (vessel) {
-          if (!v.ship) v.ship = buildDrawbridgeShip();
+          if (!v.ship) v.ship = buildDrawbridgeShip(d.plan.vessel);
           const ship = v.ship,
             k = ship.group;
           k.position.set(vessel.x, 0.4 + Math.sin(gameTime * 0.8 + 0.7) * 0.5, vessel.y);

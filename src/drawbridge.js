@@ -1,14 +1,28 @@
-    // BEGIN SUBSYSTEM: src/drawbridge.js — The Palm Sound drawbridge: schedule, gates, leaves, jumps
+    // BEGIN SUBSYSTEM: src/drawbridge.js — The drawbridges: schedules, gates, leaves, jumps
     /**
-     * The Palm Sound drawbridge
+     * The drawbridges
      * Source: src/drawbridge.js
      * Scope: shared game closure (after geography.js and water.js; drawn by
      * drawbridge3d.js).
      *
-     * The Palm Sound Causeway (BRIDGES 'keys-harbor', Harbor Ave at y 3200) is a
-     * working double-leaf trunnion bascule. Its layout comes from bridgeStructure()
-     * (`s.bascule`: trunnions, leaf length, piers, gate and stop lines), so the
-     * renderer, the physics and the boats agree on it.
+     * Every bridge in BRIDGES marked `movable` is a working double-leaf trunnion
+     * bascule with its own state (drawbridgeList(): phase, angle, arms, ship),
+     * its plan in `bridge.drawbridge` (timetable, leaf length, the ship, names,
+     * look) and its layout from bridgeStructure() (`s.bascule`: trunnions, leaf
+     * length, piers, gate and stop lines, `middle` the channel), so the renderer,
+     * the physics and the boats agree on it. Four of them: the Palm Sound
+     * Causeway (BRIDGES 'keys-harbor', Harbor Ave at y 3200, the first), the
+     * Coronation Bridge (Sunset Pier - Monarch Isle), and bascule spans let into
+     * the Oceanview Causeway and the East Bay Crossing (drawbridge-sites.js), so
+     * every island reached by more than one bridge has one (bridgeIslands).
+     * Functions taking `d` work on one drawbridge; the old entry points
+     * (drawbridgeTrafficLimit, drawbridgeKeepsOff, drawbridgeFootBlocked,
+     * drawbridgeSettle, drawbridgeOpenGap, drawbridgeCameraZoom, updateDrawbridge,
+     * drawDrawbridgeMap) ask every one. A car on a leaf or in the air off one
+     * carries `c.deckBridge`.
+     *
+     * The text below describes the Palm Sound one; the others differ in leaf
+     * length, look, ship and timetable only.
      *
      * The leaves are 44 m each (88 m trunnion to trunnion), as long as the
      * longest double-leaf bascules built; their counterweights hang off the
@@ -65,4 +79,5 @@
     // @include src/drawbridge-span.js
     // @include src/drawbridge-motion.js
     // @include src/drawbridge-opening.js
+    // @include src/drawbridge-report.js
     // END SUBSYSTEM: src/drawbridge.js

@@ -349,7 +349,8 @@
           const W = bridge.width,
             sand = tint('#cdbf9f', 'satin'),
             seaGreen = tint('#3f8a86', 'satin');
-          bridgeDeck(g, bridge, s, { fascia: sand, walk: tint('#b9ae95', 'matte'), rail: guardJersey(sand, seaGreen) });
+          // A bascule let into the navigation span (drawbridge3d.js draws it and its works).
+          bridgeDeck(g, bridge, s, { fascia: sand, walk: tint('#b9ae95', 'matte'), rail: guardJersey(sand, seaGreen), gap: s.bascule ? drawbridgeDeckGap(s) : undefined });
           for (const x of s.approach) cutwaterPier(g, x, 7, W / 2 + 8, -12, -1, sand);
           // Fishing balconies jut out from the deck every few spans, benches along the rail.
           for (let i = 1; i < s.approach.length; i += 3) {
@@ -376,9 +377,10 @@
               kitLight(kit.lights, g, x, 32, z, color === '#d8392c' ? '#ff4a3c' : '#3dff7a');
             }
           }
-          bridgeLamps(g, bridge, s, kit.lights, kit.pools, 96, 'twin', tint('#d9dcd6', 'metal'), s.navigation.map((x) => [x - 20, x + 20]));
+          bridgeLamps(g, bridge, s, kit.lights, kit.pools, 96, 'twin', tint('#d9dcd6', 'metal'), [...s.navigation.map((x) => [x - 20, x + 20]), ...(s.bascule ? [drawbridgeLampGap(s)] : [])]);
           bridgePlaque(g, 'OCEANVIEW', 'CAUSEWAY', '#23574f', '#f2efe0', 36, s.water[0] - 8, 10, W / 2 + 8, 0);
           box(g, s.water[0] - 8, 5, W / 2 + 8, 1.2, 10, 1.2, BRIDGE_KIT.steel);
+          if (s.bascule) buildDrawbridgeSpan(g, bridge, s, kit);
         },
         extradosed(g, bridge, s, kit) {
           const W = bridge.width,
@@ -422,8 +424,20 @@
             grey = bridgeGlowPaint('#a5a8a6', '#fff0d6', 0.22, 'satin'),
             rust = tint('#7f4a30', 'matte'),
             stays = tint('#c9ccce', 'metal');
-          bridgeDeck(g, bridge, s, { fascia: rust, rail: guardSteel(BRIDGE_KIT.darkSteel) });
+          bridgeDeck(g, bridge, s, { fascia: rust, rail: guardSteel(BRIDGE_KIT.darkSteel), gap: s.bascule ? drawbridgeDeckGap(s) : undefined });
           for (const x of s.approach) approachPier(g, bridge, x, BRIDGE_KIT.concreteDark);
+          if (s.bascule) {
+            // Rebuilt round a bascule (basculeRetrofit): weathering-steel girders on
+            // concrete bents either side of it, the name on a pylon at each landing.
+            buildDrawbridgeSpan(g, bridge, s, kit);
+            for (const [x, rot, z] of [
+              [s.water[0] - 14, 0, W / 2 + 9],
+              [s.water[1] + 14, Math.PI, -W / 2 - 9],
+            ]) {
+              box(g, x, 9, z, 30, 18, 3, BRIDGE_KIT.concreteDark);
+              bridgePlaque(g, 'RIDGELINE VIADUCT', 'RIDGELINE · CORAL COAST', '#3b2b22', '#efe3cf', 26, x, 12, z + (rot ? -1.6 : 1.6), rot);
+            }
+          }
           for (const at of h.at) {
             cutwaterPier(g, at, 26, W / 2 + 36, -14, -1, BRIDGE_KIT.concrete);
             for (const side of [-1, 1]) {
@@ -443,12 +457,14 @@
             bridgePlaque(g, 'RIDGELINE VIADUCT', null, '#3b2b22', '#efe3cf', 50, at - 6.1, h.beam, 0, -Math.PI / 2);
             bridgePlaque(g, 'RIDGELINE VIADUCT', null, '#3b2b22', '#efe3cf', 50, at + 6.1, h.beam, 0, Math.PI / 2);
           }
-          bridgeLamps(g, bridge, s, kit.lights, kit.pools, 66, 'cobra', BRIDGE_KIT.darkSteel, h.at.map((at) => [at - 22, at + 22]));
-          aviationBeacons(g, h.at.flatMap((at) => [V3(at, h.height + 7, h.legs), V3(at, h.height + 7, -h.legs)]));
+          bridgeLamps(g, bridge, s, kit.lights, kit.pools, 66, 'cobra', BRIDGE_KIT.darkSteel, [...h.at.map((at) => [at - 22, at + 22]), ...(s.bascule ? [drawbridgeLampGap(s)] : [])]);
+          if (h.at.length) aviationBeacons(g, h.at.flatMap((at) => [V3(at, h.height + 7, h.legs), V3(at, h.height + 7, -h.legs)]));
         },
         // Monarch Isle's two (monarch-bridges3d.js).
         harp: buildHarpBridge,
         bowstring: buildBowstringBridge,
+        // The Coronation Bridge, Sunset Pier - Monarch Isle (coronation3d.js).
+        deco: buildCoronationBridge,
         swing(g, bridge, s, kit) {
           const W = bridge.width,
             w = s.swing,

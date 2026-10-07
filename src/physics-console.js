@@ -359,29 +359,30 @@
            the outcome ('clears', 'falls short', 'strikes the far leaf' (and falls),
            "can't climb"), the gap and tip height the leaves make, the speed up the
            leaf at the tip, the flight's length and the landing's speed into the road. */
-        bridgeJump(degrees = 15, kmh = 60, type = 'sedan', seconds = 9, trace = false) {
-          const d = drawbridge,
-            g = drawbridgeGeometry();
+        bridgeJump(degrees = 15, kmh = 60, type = 'sedan', seconds = 9, trace = false, id) {
+          const d = drawbridgeById(id),
+            g = drawbridgeGeometry(d);
           if (player.car) exitCar();
           if (testCar && vehicles.includes(testCar)) vehicles.splice(vehicles.indexOf(testCar), 1);
-          drawbridgeArms();
+          drawbridgeArms(d);
           d.held = d.angle = clamp((degrees * Math.PI) / 180, 0, DRAWBRIDGE_MAX_ANGLE);
           d.rate = 0;
           d.phase = 'open';
           d.timer = 0;
           d.jumps.length = 0;
+          noteDrawbridgeStates();
           // The ship back at an anchorage, out of the channel.
-          const ship = drawbridgeVessel();
+          const ship = drawbridgeVessel(d);
           if (ship.leg !== 'anchored') {
-            ship.across = (ship.across >= 0 ? 1 : -1) * DRAWBRIDGE_VESSEL.anchor;
+            ship.across = (ship.across >= 0 ? 1 : -1) * drawbridgeVesselSpec(d).anchor;
             Object.assign(ship, { leg: 'anchored', speed: 0, sails: 0, dir: ship.across > 0 ? -1 : 1 });
           }
           // A clear run: nothing else on the causeway (a cop stopped at the trunnion
           // from an earlier chase, traffic queued at the stop line).
           for (let i = vehicles.length - 1; i >= 0; i--) {
             const o = vehicles[i];
-            if (o === player.car || isBoat(o) || isAircraft(o) || !drawbridgeNear(o.x, o.y)) continue;
-            if (Math.abs(drawbridgeLocal(o.x, o.y).v) < g.half + 20) vehicles.splice(i, 1);
+            if (o === player.car || isBoat(o) || isAircraft(o) || !drawbridgeNear(d, o.x, o.y)) continue;
+            if (Math.abs(drawbridgeLocal(d, o.x, o.y).v) < g.half + 20) vehicles.splice(i, 1);
           }
           const start = bridgePoint(g.bridge, g.hinge[0] - 25 * UNITS_PER_METRE, g.road / 4);
           teleportPlayer(start.x, start.y);
@@ -401,7 +402,7 @@
             const forward = c.vx * g.f.ux + c.vy * g.f.uy;
             keys.KeyW = forward < kmh * KMH;
             update(1 / 30);
-            if (trace && i % 3 === 0) samples.push([+(i / 30).toFixed(2), Math.round(drawbridgeLocal(c.x, c.y).u - g.hinge[0]), Math.round(forward / KMH), +(c.deckLift || 0).toFixed(1), c.deckLeaf, !!c.deckAir, +(c.deckSlope || 0).toFixed(2)]);
+            if (trace && i % 3 === 0) samples.push([+(i / 30).toFixed(2), Math.round(drawbridgeLocal(d, c.x, c.y).u - g.hinge[0]), Math.round(forward / KMH), +(c.deckLift || 0).toFixed(1), c.deckLeaf, !!c.deckAir, +(c.deckSlope || 0).toFixed(2)]);
             maxLift = Math.max(maxLift, c.deckLift || 0);
             if (tipKmh === null && c.deckAir) tipKmh = Math.round(Math.hypot(c.vx, c.vy, c.deckVz || 0) / KMH);
             const along = c.vx * g.f.ux + c.vy * g.f.uy;
@@ -423,7 +424,7 @@
                 : jump.struck
                   ? 'strikes the far leaf'
                   : 'falls short';
-          const report = drawbridgeReport();
+          const report = drawbridgeReport(d);
           return {
             degrees,
             kmh,

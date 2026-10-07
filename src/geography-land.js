@@ -146,6 +146,13 @@
      *   pier-bridge  Riverbank Dr at x 3200, y -3900..-5800
      * South channel and the county: oceanview (Northbank - Oceanview), coral
      * sound, ridgeline viaduct, sentinel causeway.
+     * Appended later: Monarch Isle's two (monarch-streets.js), North Point Key's
+     * (skyline-islet.js) and the Coronation Bridge (coronation-bridge.js, last).
+     *
+     * `movable` bridges are drawbridges (drawbridge.js), their plan in `drawbridge`:
+     * keys-harbor (style 'bascule'), coronation ('deco') and, let into their own
+     * designs by basculeRetrofit, oceanview and ridgeline. Every island reached by
+     * more than one bridge has one (bridgeIslands, drawbridge-report.js).
      *
      * `style` picks each bridge's architecture (BRIDGE_DESIGNS below): where its
      * piers, towers, cables and navigation channels are. The renderer
@@ -168,6 +175,17 @@
         style: 'bascule',
         // A working drawbridge: its leaves open on a timetable (drawbridge.js).
         movable: true,
+        drawbridge: {
+          openings: [400, 860, 1290], // DRAWBRIDGE_OPENINGS: 06:40, 14:20, 21:30
+          leafM: 44,
+          title: 'Palm Sound Causeway',
+          water: 'PALM SOUND',
+          ends: ['west', 'east'],
+          look: 'beaux',
+          plaque: ['PALM SOUND', 'CAUSEWAY · 1926'],
+          tender: 'PALM SOUND BASCULE · 1926',
+          vessel: { name: 'ALBATROSS', hull: '#16191c', accent: '#1d3f6e', start: 1 },
+        },
         name: 'PALM SOUND CAUSEWAY',
         link: 'PALM KEYS - NORTHBANK',
         width: 112,
@@ -211,6 +229,18 @@
         // starts.
         id: 'oceanview',
         style: 'segmental',
+        // Its navigation span is a working bascule (basculeRetrofit, drawbridge.js).
+        movable: true,
+        drawbridge: {
+          openings: [120, 1080], // 02:00, 18:00
+          leafM: 26,
+          title: 'Oceanview Causeway',
+          water: 'THE SOUTH CHANNEL',
+          ends: ['north', 'south'],
+          look: 'modern',
+          tender: 'OCEANVIEW CAUSEWAY · BASCULE · 1962',
+          vessel: { name: 'CORAL QUEEN', hull: '#f1efe8', accent: '#1f6f78', start: -1 },
+        },
         name: 'OCEANVIEW CAUSEWAY',
         link: 'NORTHBANK - OCEANVIEW',
         width: 128,
@@ -231,6 +261,18 @@
       {
         id: 'ridgeline',
         style: 'hpylon',
+        // Rebuilt round a working bascule over Coral Sound's channel (basculeRetrofit).
+        movable: true,
+        drawbridge: {
+          openings: [60, 1100], // 01:00, 18:20
+          leafM: 30,
+          title: 'Ridgeline Viaduct',
+          water: 'CORAL SOUND',
+          ends: ['north', 'south'],
+          look: 'steel',
+          tender: 'RIDGELINE VIADUCT · BASCULE · 1971',
+          vessel: { name: 'WANDERER', hull: '#2b2f33', accent: '#a8452c', start: 1 },
+        },
         name: 'RIDGELINE VIADUCT',
         link: 'RIDGELINE - CORAL COAST',
         width: 116,
@@ -324,6 +366,90 @@
           list.push({ along: (s0 + s1) / 2, across: 0, hx: Math.abs(d) / 2, hy: halfWidth, minHeight: BRIDGE_CLEARANCE, height, kind });
       }
     }
+    /* A working double-leaf trunnion bascule centred on `m` (drawbridge.js opens
+       it; drawbridge3d.js draws it): its leaves (`bridge.drawbridge.leafM`, 44 m at
+       Palm Sound) swing about trunnions `drop` below the road. Each stands on a
+       massive pier: its nose (`toe`) runs under the leaf's heel, and behind the
+       trunnion (`tail`) two open counterweight pits flank the fixed deck, one each
+       side, where the counterweights on the leaf's outboard main girders swing
+       down as it rises. Beyond the pits the platforms carry the tender's houses,
+       the one on the b end's right the control house. Timber fenders guard the
+       channel up and down from the pier noses; the gate and stop lines stand on
+       the approach spans behind the piers. */
+    function basculeSpan(bridge, m, s) {
+      const W = bridge.width,
+        half = W / 2,
+        leaf = (bridge.drawbridge?.leafM || 44) * UNITS_PER_METRE,
+        tail = 116,
+        toe = 40,
+        // Across: the fixed deck's edge (half + 2), the pit out to half + 72,
+        // its outer wall, then the house platform out to `wide`.
+        wide = half + 116,
+        pier = tail + toe;
+      s.bascule = {
+        // The channel's middle (along), where the leaf tips meet.
+        middle: m,
+        leaf,
+        drop: 16,
+        tail,
+        toe,
+        pier,
+        wide,
+        // The pits, from the trunnion: back and front walls along, inner and
+        // outer walls across, the floor below the road.
+        pit: { inner: half + 2, outer: half + 72, back: tail - 6, front: toe - 4, depth: 136 },
+        trunnions: [m - leaf, m + leaf],
+        piers: [m - leaf - (tail - toe) / 2, m + leaf + (tail - toe) / 2],
+        gates: [m - leaf - tail - 26, m + leaf + tail + 26],
+        stops: [m - leaf - tail - 44, m + leaf + tail + 44],
+        houses: [],
+        fenders: [],
+      };
+      s.bascule.channel = [m - leaf + toe + 8, m + leaf - toe - 8];
+      s.channels = [s.bascule.channel];
+      s.bascule.piers.forEach((p, i) => {
+        s.footings.push({ along: p, across: 0, hx: pier / 2 + 1, hy: wide, kind: 'bascule pier' });
+        for (const side of [-1, 1]) {
+          const main = i === 1 && side > 0;
+          s.bascule.houses.push({ along: p, across: side * (half + 96), main });
+          s.solids.push({ along: p, across: side * (half + 96), hx: main ? 17 : 12, hy: main ? 12 : 10, minHeight: 0, height: main ? 64 : 48, kind: main ? 'control house' : 'tender house' });
+          const face = i ? m + leaf - toe + 4 : m - leaf + toe - 4;
+          s.bascule.fenders.push({ along: face, across: side * (wide + 82) });
+          s.footings.push({ along: face, across: side * (wide + 82), hx: 3, hy: 80, kind: 'fender' });
+        }
+      });
+    }
+    /* A bascule let into a bridge of another design (bridge.movable with its own
+       style: the Oceanview Causeway, the Ridgeline Viaduct): the span goes where
+       the channel was (`bridge.drawbridge.shift` moves it along the deck), and
+       whatever the design stood there (its main piers, pylons and their stays,
+       approach bents, the old channels) gives way to the bascule's piers. */
+    function basculeRetrofit(bridge, s) {
+      const m = s.middle + (bridge.drawbridge?.shift || 0),
+        footings = s.footings,
+        solids = s.solids,
+        channels = s.channels;
+      s.footings = [];
+      s.solids = [];
+      basculeSpan(bridge, m, s);
+      const b = s.bascule,
+        lo = b.trunnions[0] - b.tail - 10,
+        hi = b.trunnions[1] + b.tail + 10,
+        clear = (along, reach = 0) => along + reach < lo || along - reach > hi;
+      b.retrofit = true;
+      s.footings.push(...footings.filter((f) => clear(f.along, f.hx)));
+      s.solids.push(...solids.filter((o) => clear(o.along, o.hx)));
+      s.channels = [...channels.filter(([c0, c1]) => c1 < lo || c0 > hi), b.channel];
+      s.approach = s.approach.filter((along) => clear(along, 30));
+      if (s.navigation) s.navigation = s.navigation.filter((along) => clear(along, 20));
+      if (s.hpylons) {
+        // A pylon whose stays would reach the leaves goes, stays and all.
+        const gone = s.hpylons.at.filter((along) => !clear(along, s.hpylons.reach));
+        s.hpylons.at = s.hpylons.at.filter((along) => clear(along, s.hpylons.reach));
+        s.solids = s.solids.filter((o) => o.kind === 'control house' || o.kind === 'tender house' || !gone.some((at) => Math.abs(o.along - at) < s.hpylons.reach + 24));
+        s.footings = s.footings.filter((f) => f.kind !== 'pylon footing' || !gone.some((at) => Math.abs(f.along - at) < 1));
+      }
+    }
     const BRIDGE_DESIGNS = {
       /* Keys Bridge: a steel through-truss. A camel-back main span over the
          channel between two side spans on four river piers, concrete approach
@@ -359,45 +485,9 @@
          and down from the pier noses; the gate and stop lines stand on the
          approach spans behind the piers. */
       bascule(bridge, [w0, w1], m, s) {
-        const W = bridge.width,
-          half = W / 2,
-          leaf = 44 * UNITS_PER_METRE,
-          tail = 116,
-          toe = 40,
-          // Across: the fixed deck's edge (half + 2), the pit out to half + 72,
-          // its outer wall, then the house platform out to `wide`.
-          wide = half + 116,
-          pier = tail + toe;
-        s.bascule = {
-          leaf,
-          drop: 16,
-          tail,
-          toe,
-          pier,
-          wide,
-          // The pits, from the trunnion: back and front walls along, inner and
-          // outer walls across, the floor below the road.
-          pit: { inner: half + 2, outer: half + 72, back: tail - 6, front: toe - 4, depth: 136 },
-          trunnions: [m - leaf, m + leaf],
-          piers: [m - leaf - (tail - toe) / 2, m + leaf + (tail - toe) / 2],
-          gates: [m - leaf - tail - 26, m + leaf + tail + 26],
-          stops: [m - leaf - tail - 44, m + leaf + tail + 44],
-          houses: [],
-          fenders: [],
-        };
-        s.channels = [[m - leaf + toe + 8, m + leaf - toe - 8]];
-        s.bascule.piers.forEach((p, i) => {
-          s.footings.push({ along: p, across: 0, hx: pier / 2 + 1, hy: wide, kind: 'bascule pier' });
-          for (const side of [-1, 1]) {
-            const main = i === 1 && side > 0;
-            s.bascule.houses.push({ along: p, across: side * (half + 96), main });
-            s.solids.push({ along: p, across: side * (half + 96), hx: main ? 17 : 12, hy: main ? 12 : 10, minHeight: 0, height: main ? 64 : 48, kind: main ? 'control house' : 'tender house' });
-            const face = i ? m + leaf - toe + 4 : m - leaf + toe - 4;
-            s.bascule.fenders.push({ along: face, across: side * (wide + 82) });
-            s.footings.push({ along: face, across: side * (wide + 82), hx: 3, hy: 80, kind: 'fender' });
-          }
-        });
-        s.approach = [...approachPiers(m - leaf - tail, w0, 110), ...approachPiers(m + leaf + tail, w1, 110)];
+        basculeSpan(bridge, m, s);
+        const b = s.bascule;
+        s.approach = [...approachPiers(m - b.leaf - b.tail, w0, 110), ...approachPiers(m + b.leaf + b.tail, w1, 110)];
       },
       /* East Bay Crossing: a white cable-stayed bridge on a single A-pylon in
          mid-bay, two fans of stays to each edge of the deck, two navigation
@@ -563,6 +653,7 @@
         m = Math.round((water[0] + water[1]) / 2),
         s = { style: bridge.style, water, middle: m, channels: [], footings: [], solids: [], approach: [] };
       BRIDGE_DESIGNS[bridge.style](bridge, water, m, s);
+      if (bridge.movable && !s.bascule) basculeRetrofit(bridge, s);
       // Approach piers are plain bents under the deck, wherever they stand in water.
       s.approach = s.approach.filter((along) => !landAt(bridgePoint(bridge, along).x, bridgePoint(bridge, along).y));
       for (const along of s.approach) s.footings.push({ along, across: 0, hx: 6, hy: bridge.width / 2 + 4, kind: 'approach pier' });

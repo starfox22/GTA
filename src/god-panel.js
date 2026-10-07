@@ -27,6 +27,8 @@
      *                 down and head home, the helicopter leaves, roadblocks go),
      *                 witness calls already made are dropped, Fort Sentinel's
      *                 alarm ends. The mission's own state is not touched.
+     *   Drawbridges   RAISE NOW / LOWER for ALL or one drawbridge, through its
+     *                 own opening (god-drawbridges.js).
      *   Teleport      closes the menus and opens the city map in pick mode
      *                 (crosshair, "Click anywhere to teleport · Esc to cancel",
      *                 wheel / pinch zoom and drag pan as usual). A click goes
@@ -130,6 +132,8 @@
       },
       { id: 'godRefill', kind: 'custom', render: renderGodRefillRow },
       { id: 'godPolice', kind: 'custom', render: renderGodPoliceRow },
+      // Raise or lower the drawbridges, all or one (god-drawbridges.js).
+      { id: 'godBridges', kind: 'custom', render: renderGodDrawbridgeRow },
       { id: 'godTeleport', kind: 'custom', render: renderGodTeleportRow },
     ];
     function godRow(id, extraClass) {

@@ -11,11 +11,11 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-539 files in the include tree, 185,855 lines.
+544 files in the include tree, 186,900 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
-- `src/game.js`   190 — ▸ Game orchestration and shared state
+- `src/game.js`   192 — ▸ Game orchestration and shared state
 
 ## src/game.js ▸ Game orchestration and shared state
 
@@ -32,7 +32,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/heat.js`   283 — Heat and wanted stars
 - `src/witnesses.js`   529 — Witnesses and 911 calls, the police side: crimes nobody has reported yet, what the police see and hear for themselves, and how a report brings them …
 - `src/game-collision.js`   360 — Building grid: solid() and shotBlocked() run thousands of times per frame (every pedestrian step, bullet and spawn test).
-- `src/game-car-spawn.js`   362 — makeCar(), canSpawnCar(), spawnClearCar(): creating vehicles with one shared object layout.
+- `src/game-car-spawn.js`   363 — makeCar(), canSpawnCar(), spawnClearCar(): creating vehicles with one shared object layout.
 - `src/game-worldgen.js`   480 — buildWorld(): the city plan, buildings (makeBuilding), trees, the 2D ground canvas.
 - `src/game-populate.js`   230 — Initial population: showcase parking (SHOWCASE_PARKING, parkShowcase) and populate().
 - `src/game-player-actions.js`   619 — Player verbs: enter and exit vehicles, interact, aim, shoot, reload, hurt, die, explode.
@@ -51,7 +51,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-input.js`   480 — Cheat code: Letters typed during play accumulate in a short ring; when the tail spells a known code it fires.
 - `src/controls.js`   320 — Key bindings
 - `src/geography.js`    12 — ▸ Coastlines and land regions
-- `src/drawbridge.js`    68 — ▸ The Palm Sound drawbridge: schedule, gates, leaves, jumps
+- `src/drawbridge.js`    83 — ▸ The drawbridges: schedules, gates, leaves, jumps
 - `src/harbor.js`    11 — ▸ Ironworks cargo terminal
 - `src/police-feedback.js`    52 — Police action feedback
 - `src/arsenal.js`   257 — Arsenal and knife combat
@@ -77,8 +77,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/clouds.js`   329 — Cloud layer (game side): cloudBaseAt/cloudTopAt, the only source of the cloud altitude, by weather and area; the coverage and area maps the renderer …
 - `src/clouds-audio.js`    61 — Cloud sound: inside a cloud the rush of air goes deep and damp (a low, soft roar and a fine hiss of droplets), following cloudLayer.immersion and the …
 - `src/clouds-console.js`    64 — Cloud console (registered by game-console-world.js as 'clouds'): cloudLayer() report, cloudSpot() and cloudJump(), a freefall from a given altitude …
-- `src/water.js`   689 — Swimming and sinking
-- `src/water-audio.js`   394 — Water and beach sound
+- `src/water.js`   696 — Swimming and sinking
+- `src/water-audio.js`   400 — Water and beach sound
 - `src/beachvolley.js`    43 — ▸ Beach volleyball on Palm Keys Beach
 - `src/beach.js`    12 — ▸ Palm Keys Beach life
 - `src/roofmission.js`    15 — ▸ Blue Hour rooftop mission
@@ -106,6 +106,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/mountain-village.js`   648 — The mountain villages of Ridgeline County
 - `src/casino.js`   266 — Casino roulette
 - `src/skyline.js`    14 — ▸ North Point towers, North Point Key, the tower lifts and the CIRRUS sky bar
+- `src/coronation-bridge.js`    75 — The Coronation Bridge: Sunset Pier to Monarch Isle across Sovereign Sound, an Art Deco causeway with a working double-leaf bascule (BRIDGES …
 - `src/renewal.js`   601 — Parks and recreation
 - `src/sports-fixtures.js`   300 — Teams, kits, crests and the fixture calendar
 - `src/sportsbook-odds.js`   300 — Sportsbook pricing model
@@ -119,7 +120,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/ecology.js`   339 — Wildlife behavior
 - `src/sealife.js`    17 — ▸ Sea life: dolphins, gulls and the great white
 - `src/sealife-audio.js`   356 — Sea life sound
-- `src/navigation.js`   706 — City map and route planning
+- `src/navigation.js`   707 — City map and route planning
 - `src/parachute.js`   734 — Bailout and parachute
 - `src/deck-landing.js`   361 — Landing on a ship from the sky: canopy touchdowns and freefall impacts on the liners' and the superyacht's decks (deckSurfaceAt, deckLandingStep) …
 - `src/falls.js`    22 — ▸ Falls: bodies and vehicles off cliffs, fatal impacts
@@ -150,14 +151,15 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/settings.js`   943 — Settings menu
 - `src/markers.js`    20 — Objective and player markers: which ones are drawn (the floating arrow; the optional player ring) and a read-only report.
 - `src/foliage-cutaway.js`   146 — Foliage cutaway: who the see-through hole in tree crowns, palm fronds and tall shrubs keeps in view (the player on foot or their vehicle) and how big …
-- `src/god-panel.js`   799 — God mode settings
+- `src/god-panel.js`   803 — God mode settings
+- `src/god-drawbridges.js`   134 — God mode settings · DRAWBRIDGES: raise or lower every drawbridge or one at a time, through each bridge's own opening (godDrawbridges).
 - `src/driving.js`   508 — Tyres, brakes and driving assists
 - `src/chase-camera.js`   821 — Chase camera: the third-person view behind the player that V switches with the street view: where it stands and looks, mouse / stick / touch look …
 - `src/chase-rules.js`   599 — Chase rules: what the player can see in the chase view, for the game's rules (who may fire, spawning and recycling out of sight, the HUD's player …
 - `src/chase-hud.js`    77 — Chase HUD: the reticle in the middle of the screen in the chase view (chase-view.css) and the hidden cursor while the pointer is captured; drawn …
 - `src/tyre-effects.js`   274 — What the tyres leave behind: the burnout (forward and the handbrake held at a standstill), skid marks, and the one rule for tyre smoke, dust and …
 - `src/hud.js`    34 — ▸ HUD behaviour and the title menu
-- `src/render3d.js`   237 — ▸ Three.js renderer and resource lifecycle
+- `src/render3d.js`   238 — ▸ Three.js renderer and resource lifecycle
 - `src/frame-trace.js`   324 — Frame trace: every frame's CPU split (simulation sections, renderer laps) and what happened in it (collections, DOM mutations, GL uploads and links …
 - `src/game-loop.js`   191 — Profiler: Rolling averages of simulation and render CPU time per frame, plus the renderer's draw-call and triangle counts.
 - `src/game-console.js`    48 — ▸ DeadEndCity console registry and assembly
@@ -174,7 +176,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/physics-knockdowns.js`   272 — People knocked down by vehicles, swept person contacts, blood tracks.
 - `src/runover.js`   224 — Second pass: a vehicle runs over someone already on the ground (knockPerson hands over): harm by speed and weight, blood, the car's stain, a death a …
 - `src/physics-update.js`   144 — updateCars(): per-frame vehicle update driving the fixed steps.
-- `src/physics-console.js`   672 — HANDLING TESTS (developer console) turnTest() drives a fresh vehicle on the open strip beside the Oceanview runway through the real game step …
+- `src/physics-console.js`   673 — HANDLING TESTS (developer console) turnTest() drives a fresh vehicle on the open strip beside the Oceanview runway through the real game step …
 
 ## src/god-splash.js ▸ God mode splash: the full-screen card and fanfare when a cheat code toggles god mode (game-input.js godModeCheat): ON charges up, slams a gold "GOD …
 
@@ -184,14 +186,15 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/geography-regions.js`   458 — One coastline model drives terrain, water, the map and all vehicle footprints.
 - `src/geography-key.js`    69 — North Point Key: the islet off Northbank's north-east point that carries the three towers (coast and plan anchors).
-- `src/geography-land.js`   575 — Land cell cache (landAt), airport and boulevard tests, BRIDGES, bridge frames, clearance and approach piers.
+- `src/geography-land.js`   666 — Land cell cache (landAt), airport and boulevard tests, BRIDGES, bridge frames, clearance and approach piers.
 - `src/geography-ground.js`   525 — Bridge pylons and footings on the map, groundAt(), lake, coast and region paths, painted district ground and beach.
 
-## src/drawbridge.js ▸ The Palm Sound drawbridge: schedule, gates, leaves, jumps
+## src/drawbridge.js ▸ The drawbridges: schedules, gates, leaves, jumps
 
-- `src/drawbridge-span.js`   453 — Drawbridge span: opening timetable, geometry, surface, gap and on-span tests (DRAWBRIDGE_OPENINGS, drawbridgeSurface).
-- `src/drawbridge-motion.js`   463 — Drawbridge motion: vehicles riding the leaves, pose, sounds (bell, clank, horn), motor, drips and passing vessels.
-- `src/drawbridge-opening.js`   445 — Drawbridge openings: clearing the span, camera zoom, swinging the leaves, updateDrawbridge(), map, console command and report.
+- `src/drawbridge-span.js`   571 — Drawbridge span: the drawbridges (drawbridgeList), opening timetables, geometry, surface, gap and on-span tests (drawbridgeSurface).
+- `src/drawbridge-motion.js`   491 — Drawbridge motion: vehicles riding the leaves, pose, sounds (bell, clank, horn), motor, drips and passing vessels.
+- `src/drawbridge-opening.js`   272 — Drawbridge openings: clearing the span, camera zoom, swinging the leaves, updateDrawbridge(), map, console command and report.
+- `src/drawbridge-report.js`   420 — Drawbridges on the map, the console and god panel commands (open, close, hold), reports, the day's open share and the islands' access bridges.
 
 ## src/harbor.js ▸ Ironworks cargo terminal
 
@@ -212,7 +215,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/pursuit.js ▸ Police response and pursuit tactics
 
-- `src/pursuit-dispatch.js`   762 — Police tiers and dispatch: sighting, unit kinds, wanted announcements, spawning and routing units (dispatchPolice, planPursuit).
+- `src/pursuit-dispatch.js`   764 — Police tiers and dispatch: sighting, unit kinds, wanted announcements, spawning and routing units (dispatchPolice, planPursuit).
 - `src/pursuit-steering.js`   107 — Pursuit steering aids: room to swing onto a straight run (roomToTurn), the speed the corners on the route ahead allow (routeCornerSpeed) and traffic …
 - `src/pursuit-officers.js`   688 — Officers on foot in a pursuit: suppressive fire, cover, drags, surrender and arrest (updateArrest).
 
@@ -264,7 +267,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/county.js ▸ Outlying districts
 
 - `src/county-map.js`   565 — South Coast County: shared playable geography, roads and map data.
-- `src/county-build.js`   570 — South Coast County build: buildCounty(), populateCounty(), colliders, bridge bodies, 2D and map drawing, county police.
+- `src/county-build.js`   572 — South Coast County build: buildCounty(), populateCounty(), colliders, bridge bodies, 2D and map drawing, county police.
 - `src/county-guide-signs.js`    78 — The county's roadside guide signs as a plan (verge, two posts, real size) and the audit that no board of any kind stands on or across asphalt …
 
 ## src/monarch.js ▸ Monarch Isle: the plan, the land and the streets
@@ -340,7 +343,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/sealife.js ▸ Sea life: dolphins, gulls and the great white
 
 - `src/sealife-sea.js`   620 — The sea field: distance to land, steering, viewer, hour and events for sea life (seaField, seaSteer).
-- `src/sealife-gulls.js`   581 — Gulls (updateGulls) and the shark's setup: encounters, beach alarm and placement.
+- `src/sealife-gulls.js`   580 — Gulls (updateGulls) and the shark's setup: encounters, beach alarm and placement.
 - `src/sealife-shark.js`   536 — Shark bites, patrols, beach passes and bumps (updateShark) and the beach shark alarm.
 
 ## src/falls.js ▸ Falls: bodies and vehicles off cliffs, fatal impacts
@@ -382,7 +385,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/monarch-life.js ▸ Monarch Isle: traffic, people, boats and sound
 
-- `src/monarch-life-traffic.js`   629 — Monarch Isle road graph, traffic control, car types and populateMonarchIsle().
+- `src/monarch-life-traffic.js`   638 — Monarch Isle road graph, traffic control, car types and populateMonarchIsle().
 - `src/monarch-life-crowd.js`   483 — Monarch Isle walkers and staff: walk routes, destinations, dress and updateMonarchCrowd().
 
 ## src/dealership.js ▸ MONARCH MOTORS: the plan, the sale, the garage and the alarm
@@ -436,10 +439,11 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/base3d.js`    62 — ▸ Fort Sentinel meshes
 - `src/airfields3d.js`   487 — Runways, taxiways and airfield lighting
 - `src/boats3d.js`    21 — ▸ Boat kit: lofted hulls and shared yacht parts
-- `src/drawbridge3d.js`    53 — ▸ The Palm Sound drawbridge in 3D
-- `src/bridges3d.js`    33 — ▸ Bridges: one architecture per crossing
+- `src/drawbridge3d.js`    60 — ▸ The drawbridges in 3D
+- `src/bridges3d.js`    37 — ▸ Bridges: one architecture per crossing
 - `src/skyline3d-islet.js`    91 — North Point Key's dressing: the fountain on the circle's island, the gate pylons, lamp standards, forecourt benches, loungers and parasols on the …
 - `src/monarch-bridges3d.js`   222 — Monarch Isle's two bridges
+- `src/coronation3d.js`    87 — The Coronation Bridge in 3D (BRIDGE_BUILDERS.deco): an Art Deco causeway on column bents, pierced parapets, fluted lamp standards, entrance pylons …
 - `src/harbor3d.js`   648 — Cargo terminal meshes
 - `src/roofmission3d.js`   175 — Mission 2 (the Blue Hour) in 3D: the bodyguards' sight cones on the terrace floor and the speech bubbles and name label over the party.
 - `src/marina3d.js`    17 — ▸ Marina, superyacht and cruise liner meshes
@@ -651,16 +655,17 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/boats3d-kit.js`   510 — Boat kit materials and textures: finishes, tints, glass, pool water, lamps, teak and mahogany (KIT_FINISHES).
 - `src/boats3d-fittings.js`   485 — Boat kit fittings: deck slabs, stairs, rails, loungers, sofas, tables, hot tubs, pools, tenders, radar scanners.
 
-## src/drawbridge3d.js ▸ The Palm Sound drawbridge in 3D
+## src/drawbridge3d.js ▸ The drawbridges in 3D
 
-- `src/drawbridge3d-kit.js`   617 — Drawbridge 3D kit: view state, pit render order, lenses, glows, gratings and racks.
-- `src/drawbridge3d-build.js`   611 — Drawbridge 3D gates, signals, signs, water and the ship (buildDrawbridge, buildDrawbridgeShip).
+- `src/drawbridge3d-kit.js`   653 — Drawbridge 3D kit: per-bridge view state, the looks, pit render order, lenses, glows, gratings and racks.
+- `src/drawbridge3d-houses.js`   118 — Drawbridge 3D tender's houses in the other looks: Art Deco towers, 1960s concrete booths and steel control cabins (drawbridgeHouseStyled).
+- `src/drawbridge3d-build.js`   639 — Drawbridge 3D gates, signals, signs, water and the ship (buildDrawbridge, buildDrawbridgeShip).
 
 ## src/bridges3d.js ▸ Bridges: one architecture per crossing
 
-- `src/bridges3d-kit.js`   562 — Bridge 3D kit: BRIDGE_KIT, lamp, glow and LED materials, deck lights and pools.
+- `src/bridges3d-kit.js`   563 — Bridge 3D kit: BRIDGE_KIT, lamp, glow and LED materials, deck lights and pools.
 - `src/bridges3d-key.js`    35 — North Point Key Bridge 3D: white twin arches beside the footways, warm LED lines, glass balustrade, globe lamps.
-- `src/bridges3d-build.js`   623 — Bridge 3D builders: footing foam, approach piers, beacons, BRIDGE_BUILDERS, far copies and updateBridgeVisuals().
+- `src/bridges3d-build.js`   639 — Bridge 3D builders: footing foam, approach piers, beacons, BRIDGE_BUILDERS, far copies and updateBridgeVisuals().
 
 ## src/marina3d.js ▸ Marina, superyacht and cruise liner meshes
 
@@ -801,11 +806,11 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/game-console.js ▸ DeadEndCity console registry and assembly
 
-- `src/game-console-core.js`   186 — DeadEndCity console, core: status, teleport, look, clock, zoom, simulate, heal, god, cash, walk (+ godPanelConsole)
+- `src/game-console-core.js`   188 — DeadEndCity console, core: status, teleport, look, clock, zoom, simulate, heal, god, cash, walk (+ godPanelConsole)
 - `src/game-console-missions.js`   324 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
 - `src/game-console-police.js`   240 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
 - `src/game-console-vehicles.js`   415 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
-- `src/game-console-world.js`   236 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
+- `src/game-console-world.js`   239 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
 - `src/game-console-rides.js`   104 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
 - `src/game-console-leisure.js`    75 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)
 - `src/game-console-crowd.js`   165 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
@@ -828,7 +833,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/ui/radio.css`   579 — Car radio: a station chip that opens on a change or on hover
 - `src/ui/title.css`   308 — Title screen
 - `src/ui/dialogs.css`   251 — Dialogs: one panel style for pause, calls, shops, help
-- `src/ui/god-panel.css`   220 — God panel: the GOD MODE settings tab and the map's teleport pick
+- `src/ui/god-panel.css`   243 — God panel: the GOD MODE settings tab and the map's teleport pick
 - `src/ui/sportsbook.css`   463 — SPORTSBOOK (sportsbook-ui.js): GOALLINE's betting menu: The settings panel's glass and type, with the house's neon green for the brand and live …
 - `src/ui/sportsbook-bets.css`   505 — styles: .sb-summary, .sb-summary span, .sb-summary b, .sb-summary .plus b, …
 - `src/ui/demo.css`   231 — PUBLIC DEMO (campaign.js): The DEMO badge by the title menu's version, the picker's FULL GAME badges and buy note, and the DEMO COMPLETE card after …
