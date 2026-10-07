@@ -281,6 +281,12 @@ packs with plain `<script src>` so the zip still plays from file://.
   of every body part's paint is the skin; paint bits from 32 belong to the near set (`rigNearBits`). Near hands take
   their side from instance order: pack hands in pairs, left then right (`drawCrowdPerson`). `chooseNearPeople`
   (crowd3d-frame.js) is the only place a person joins the chase view's near set, at most `CROWD_NEAR_CAP`.
+- The player in his own clothes is drawn from his own body (player-body3d*.js; people-and-crowd-player.md):
+  drawCrowdPerson hands his joints to `playerBodyBone` (in `PB_BONE_NAMES` order) and his hands to `playerBodyGrip`;
+  `playerBodyFlush` shows him only on a frame that posed all 15 bones, so a new early return or way of drawing him
+  must still pose every bone. His bind skeleton is the rig's joints at `PB_WIDTH` (the 'player' outfit's
+  `widthAbsolute`: change them together). A vertex's part (`pbSkin.w`, a bone index) is the one rule for telling
+  his body parts apart (wounds, severed limbs); tools/tests/player-body.mjs holds proportions and the pose sweep.
 - Car cabins (cars3d-interior.js): civilian and police glass is see-through (`carGlassMaterial`, premultiplied; the
   tint closes past `CAR_GLASS_CLEAR`); the cabin merges at the end of each kit's trim (impostors draw `kit.trimOuter`,
   so exterior trim goes before the cabin); `carSeatPlan` (`m.seats`) is the one seat rule; crowd3d-driveby.js SEATED
