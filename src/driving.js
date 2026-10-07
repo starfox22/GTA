@@ -39,7 +39,7 @@
      * (hud.js), the driving camera's look-ahead and the vehicle camera's distance.
      */
     const DRIVING_STORAGE = 'dead-end-city-driving',
-      DRIVING_DEFAULTS = { abs: true, esc: true, tcs: true, steering: 100, lookAhead: 100, cameraDistance: 100 };
+      DRIVING_DEFAULTS = { abs: true, esc: true, tcs: true, steering: 100, lookAhead: 150, cameraDistance: 120 };
     const drivingSettings = { ...DRIVING_DEFAULTS };
     try {
       const saved = JSON.parse(localStorage.getItem(DRIVING_STORAGE));
@@ -496,7 +496,7 @@
         id: 'drivingReset',
         kind: 'action',
         label: 'Default driving settings',
-        note: () => 'ABS, stability and traction control on, steering, look-ahead and camera distance at 100%, km/h.',
+        note: () => 'ABS, stability and traction control on, steering at 100%, look-ahead at 150%, camera distance at 120%, km/h.',
         button: 'RESET DRIVING TO DEFAULTS',
         disabled: drivingSettingsAreDefault,
         run: () => {
