@@ -94,6 +94,7 @@ export default async function (t) {
     ['rigSkinWrap * vec3', 'fragmentShader'],
     ['roughnessFactor = rigRough', 'fragmentShader'],
     ['vec2 rigDH', 'fragmentShader'],
+    ['indirectSpecular *= 0.3', 'fragmentShader'],
   ])
     t.assert(shader[where].includes(key), `near paint patch: "${key}" missing from the ${where}`);
 }

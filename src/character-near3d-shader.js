@@ -340,7 +340,8 @@
           // No highlight where the strands have no direction (the crown, a parting's whorl).
           rigHairSpec = smoothstep( 0.2, 0.55, length( vRigHairT ) );
           rigHairDir = normalize( vRigHairT + vec3( 0.0, 1e-5, 0.0 ) );
-          rigRough = 0.62;
+          // Rough, so the sheen is the strands' own highlight rather than a broad gloss on the crown.
+          rigRough = 0.85;
         } else {
           vec3 rigC = rigCloth( rigK, vCrowdLocal, vRigCode, rigFabric, rigPx );
           float rigClothy = 1.0 - vRigSkin;
@@ -384,6 +385,9 @@
           }
         }`;
       const RIG_LAMBERT_DIRECT = 'reflectedLight.directDiffuse += irradiance * BRDF_Lambert( material.diffuseColor );';
+      // Hair is fibres, not a smooth dielectric: the sky's grazing reflection off the crown read as a bald spot.
+      const RIG_NEAR_INDIRECT = `
+        if ( rigK > 0.5 && rigK < 1.5 ) reflectedLight.indirectSpecular *= 0.3;`;
       function rigNearPatch(shader) {
         rigPaintPatch(shader);
         const physical = Three.ShaderChunk.lights_physical_pars_fragment;
@@ -397,7 +401,8 @@
           .replace('#include <lights_physical_pars_fragment>', RIG_NEAR_FRAGMENT_PARS + '\n' + physical.replace(RIG_LAMBERT_DIRECT, RIG_NEAR_DIRECT))
           .replace('#include <roughnessmap_fragment>', RIG_NEAR_COLOR + '\n#include <roughnessmap_fragment>')
           .replace('#include <metalnessmap_fragment>', RIG_NEAR_ROUGH + '\n#include <metalnessmap_fragment>')
-          .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\n' + RIG_NEAR_NORMAL);
+          .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\n' + RIG_NEAR_NORMAL)
+          .replace('#include <aomap_fragment>', '#include <aomap_fragment>\n' + RIG_NEAR_INDIRECT);
       }
       const rigNearMaterial = (() => {
         const material = new Three.MeshStandardMaterial({ color: '#ffffff', roughness: 0.8 });

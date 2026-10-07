@@ -80,12 +80,18 @@ crowd3d-*.js (packing, poses, looks). Behaviour is in people-and-crowd.md.
   1 shirt, 2 suit, 3 jacket, 4 uniform, 5 hoodie, 6 sleeveless, 7 bare; legs 0 trousers, 1 jeans,
   2 suit, 3 uniform, 4 shorts, 5 under a skirt, 6 swimwear, 7 joggers; feet 0 shoe, 1 sneaker,
   2 boot. The other sets' shader ignores bits from 32 (the rim is bit 16).
-- Cost (chase view, Broadway 17:00, HIGH): see docs/changes/2026-10-06-close-people.md. The near
-  parts are in the scene from the start, so the title prewarm compiles their program and the
-  depth program (render3d-prewarm-models.js finds the custom depth material).
+- Cost (seeded A/B, chase view on Broadway at 17:00, HIGH, the player near): +8 camera and +6
+  shadow draws (at most +10 and +6 however many are near: one draw per near part), crowd triangles
+  122k to 148k (a near person draws about 17k; `crowdStats` counts every variant a mesh holds),
+  scene triangles +1.7%, packing CPU unchanged; the street view identical. The near parts are in
+  the scene from the start, so the title prewarm compiles their program, and the depth program
+  with the shadow samples (render3d-prewarm-models.js finds the custom depth material).
 
 ## Console
 
 `crowdStats(byPart)` (parts, camera and shadow calls, instances, triangles, `bodySet`, `near`:
-people drawn from the near set), `crowdBenchmark(frames)`, `scaleReport()` for statures,
-`closeUp()` to look at a person past the play zoom.
+people drawn from the near set; a near part's triangles count every variant it holds),
+`crowdBenchmark(frames)`, `scaleReport()` for statures, `closeUp()` to look at a person past the
+play zoom. `crowdStats` describes the last pack: after a view change on a slow page, call
+`crowdBenchmark(1)` first (it packs at once). For close-ups, `characterLineup('stand', 12)` with
+the player unarmed (`arm(7)`): an armed player sends the row running, backs to the camera.
