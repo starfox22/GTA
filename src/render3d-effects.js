@@ -56,17 +56,22 @@
       const glassCanvas = document.createElement('canvas');
       glassCanvas.width = glassCanvas.height = 64;
       const gc = glassCanvas.getContext('2d');
-      for (let i = 0; i < 22; i++) {
+      // Sixteen crumbs on a sunflower spiral: three to five corners, each turned its own way, three sizes.
+      for (let i = 0; i < 16; i++) {
         const a = i * 2.39996,
-          r = 3 + 26 * Math.sqrt((i + 0.5) / 22),
+          r = 3 + 25 * Math.sqrt((i + 0.5) / 16),
           x = 32 + Math.cos(a) * r,
           y = 32 + Math.sin(a) * r,
-          k = 0.9 + (i % 3) * 0.8;
-        gc.fillStyle = i % 4 === 0 ? '#ffffff' : i % 4 === 1 ? '#ffffffd0' : '#ffffff90';
+          k = 1.5 + (i % 3) * 1.1,
+          corners = 3 + (i % 3);
+        gc.fillStyle = ['#ffffff', '#ffffffd8', '#ffffffa0', '#ffffffc0'][i % 4];
         gc.beginPath();
-        gc.moveTo(x, y - k * 1.3);
-        gc.lineTo(x + k, y + k * 0.7);
-        gc.lineTo(x - k * 0.9, y + k * 0.5);
+        for (let j = 0; j < corners; j++) {
+          const t = i * 1.7 + (j / corners) * TAU,
+            rr = k * (0.65 + 0.35 * Math.sin(i * 3.1 + j * 2.3) ** 2);
+          if (j) gc.lineTo(x + Math.cos(t) * rr, y + Math.sin(t) * rr);
+          else gc.moveTo(x + Math.cos(t) * rr, y + Math.sin(t) * rr);
+        }
         gc.closePath();
         gc.fill();
       }
