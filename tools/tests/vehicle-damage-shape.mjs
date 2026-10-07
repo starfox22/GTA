@@ -25,25 +25,25 @@ export default async function (t) {
     await t.wait(0.2);
     for (const side of ['left', 'front', 'right', 'rear']) await t.call('shootVehicle', car.id, side, 3);
   };
-  const look = async (car) => {
+  const look = async (car, view) => {
     const v = await t.call('vehicleById', car.id);
-    await t.call('teleport', v.x - 50, v.y + 30);
-    // A step so the camera follows (turned to the car in the chase view: a car out of view is not updated), then a
+    // West of the car, looking east at it (a car out of view is not updated); a step so the camera follows, then a
     // few drawn frames (marks are found a few a frame).
+    await t.call('teleport', v.x - 60, v.y);
     await t.wait(0.2);
-    if (rendered) await t.call('chaseLook', 0, 0, (Math.atan2(-30, 50) * 180) / Math.PI, 10);
+    if (rendered && view === 'chase') await t.call('chaseLook', 0, 0, 0, 10);
     await t.realWait(rendered ? 1 : 0.1);
   };
   const drawn = async (car, label, view) => {
     if (!rendered) return;
     // Software GL draws a few frames a second: wait for the model, its bend and its marks.
     let shape = null;
-    for (let k = 0; k < 40; k++) {
-      shape = await t.call('vehicleDamageShape', car.id);
-      if (shape && !shape.bending && !shape.waiting && shape.view === view) break;
+    const ready = (r) => r && r.inView && !r.stale && !r.bending && !r.waiting && r.view === view;
+    for (let k = 0; k < 90 && !ready(shape); k++) {
       await t.realWait(1);
+      shape = await t.call('vehicleDamageShape', car.id);
     }
-    t.assert(shape && !shape.bending && !shape.waiting && shape.view === view, `${car.type}: the model is built, bent and marked in the ${view} view (${label}) ${JSON.stringify(shape && { view: shape.view, bending: shape.bending, waiting: shape.waiting, missed: shape.missedParts })}`);
+    t.assert(ready(shape), `${car.type}: the model is in view, bent and marked in the ${view} view (${label}) ${JSON.stringify(shape && { view: shape.view, inView: shape.inView, stale: shape.stale, bending: shape.bending, waiting: shape.waiting, missed: shape.missedParts })}`);
     t.finite(shape, `${car.type} shape`);
     t.assert(shape.missed === 0, `${car.type} ${label}: every part a dent reaches is bent (${shape.missed} missed)`);
     if (shape.shell) {
@@ -76,7 +76,7 @@ export default async function (t) {
   for (const view of ['street', 'chase']) {
     await t.call('viewMode', view);
     for (const car of cars) {
-      await look(car);
+      await look(car, view);
       await drawn(car, 'shot', view);
     }
   }
@@ -98,7 +98,7 @@ export default async function (t) {
   for (const view of ['chase', 'street']) {
     await t.call('viewMode', view);
     for (const car of cars) {
-      await look(car);
+      await look(car, view);
       await drawn(car, 'crashed', view);
     }
   }

@@ -259,21 +259,27 @@
           return;
         }
       }
-      // The normal at an anchor: the part's vertex normals by its weights, else its triangle's.
+      // The normal at an anchor: the part's vertex normals by its weights where they follow the triangle (a smooth
+      // panel), the triangle's own plane on the side they point to where they do not (a hard edge smoothed over, a
+      // small trim part): the decal then lies flat on the face it is on.
+      const markFace = new Three.Vector3();
       function markSmoothNormal(object, anchor, out) {
         const normal = object.geometry.attributes.normal,
           { a, b, c, u, v, w } = anchor;
+        markTriangle.setFromAttributeAndIndices(object.geometry.attributes.position, a, b, c);
+        markTriangle.getNormal(markFace);
         if (normal)
           out.set(
             normal.getX(a) * u + normal.getX(b) * v + normal.getX(c) * w,
             normal.getY(a) * u + normal.getY(b) * v + normal.getY(c) * w,
             normal.getZ(a) * u + normal.getZ(b) * v + normal.getZ(c) * w,
           );
-        if (!normal || out.lengthSq() < 1e-10) {
-          markTriangle.setFromAttributeAndIndices(object.geometry.attributes.position, a, b, c);
-          markTriangle.getNormal(out);
-        }
-        return out.normalize();
+        if (!normal || out.lengthSq() < 1e-10) return out.copy(markFace);
+        out.normalize();
+        const along = markFace.dot(out);
+        // Over about 20 degrees apart: the face's plane, turned to the smooth normal's side.
+        if (Math.abs(along) < 0.94) out.copy(markFace).multiplyScalar(along < 0 ? -1 : 1);
+        return out;
       }
       // Re-reads the anchor's triangle where it now is and poses the decal on it, sized for the view.
       function poseMark(m, mark, anchor, view) {
@@ -534,6 +540,9 @@
           wheelMoveM: Math.round((wheelMove * scale * 1000) / UNITS_PER_METRE) / 1000,
           shell: shellReport,
           drawnMarks: marks.filter((e) => e.drawn).length,
+          // Drawn this frame (a vehicle out of view is not updated) and with its damage applied (render3d-frame.js).
+          inView: !!m.group.visible,
+          stale: m.damageVersion !== c.damageVersion,
           // Still to come: a bend queued (crumpleSlices) or marks not yet looked for on the model (a few a frame).
           bending: crumpleQueue.has(m),
           waiting: (c.damage?.marks || []).filter((mark) => {

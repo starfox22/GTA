@@ -26,9 +26,9 @@ the models' damage contract is vehicles-and-driving-models.md.
   -1 for the roof).
 - VEHICLE MARKS (damage3d-marks.js): a hole, star or scrape is pinned to the triangle a ray along the round's line met
   (barycentric anchor), so it rides crumples, hinges and pristine-merge splits; holes never on glass or the cabin seen
-  through it, stars only on their pane, and a hole only where the panel holds its ring (`markCovered`: else the ray
-  goes on to the panel behind a mirror or a trim edge); a mark with no surface is not drawn. The decal lies in its
-  triangle's own plane, facing out the way the triangle faced the round. A hole in the side's metal where a door
+  through it, stars only on their pane, and a hole only where the panel holds its whole ring (`markCovered`: else the ray
+  goes on to the panel behind a mirror or a trim edge); a mark with no surface is not drawn. The decal is posed on
+  the part's own smooth normal there (re-made where a crumple moved it), facing out the way it faced the round. A hole in the side's metal where a door
   later springs moves onto the door's skin (`markOntoDoor`, by the door's grid `DOOR_GRID`). Chase view sizes are real (a hole ~12 cm
   decal), the street view keeps the large readable ones. `bulletHitVehicle` draws holes off the glasshouse under the
   belt line (`z` for the hit rules is unchanged).
