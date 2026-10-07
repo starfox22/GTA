@@ -22,7 +22,7 @@
       ]);
       // Upholstery, dash and accent per body (the rest: charcoal cloth, a satin dash).
       const CAR_CABIN_TRIM = {
-        default: { seat: '#34363a', dash: '#1b1c1f', accent: '#5b6066' },
+        default: { seat: '#3c3e42', dash: '#1b1c1f', accent: '#5b6066' },
         taxi: { seat: '#4a443d', dash: '#232220', accent: '#3c3a37', screen: false },
         coupe: { seat: '#e4e1da', dash: '#202124', accent: '#8f969d' },
         muscle: { seat: '#1e1e20', dash: '#18191b', accent: '#7a1e1e', screen: false },
@@ -170,18 +170,19 @@
           // Up the seat back from the hip: [x, y] `along` metres up it, lying back `r`.
           up = (hipX, hipY, along, r = rec) => [hipX - 0.06 * M - Math.sin(r) * along * M, hipY + 0.02 * M + Math.cos(r) * along * M];
         // ---- Seats: the back's upper half rounded, a headrest over a gap, the cushion a box ----
-        // A seat: the back `reach` metres up from the hip, a headrest over a gap when it reaches 0.7 m or more.
-        const seatAt = (hipX, hipY, z, width, headrests, reach = 0.84, r = rec) => {
-          const backTop = reach >= 0.7 ? reach - 0.24 : reach,
+        // A seat: the back `reach` metres up from the hip, with a headrest over a gap when it reaches 0.6 m or more.
+        // Low (0.64 m, a crown is 0.84 m up): a seated head and shoulders show over it through the rear glass.
+        const seatAt = (hipX, hipY, z, width, headrests, reach = 0.64, r = rec) => {
+          const backTop = reach >= 0.6 ? reach - 0.18 : reach,
             [x0, y0] = up(hipX, hipY, 0.02, r),
             [x1, y1] = up(hipX, hipY, backTop, r);
           box(hipX - 0.08 * M, hipY - 0.12 * M, z - width / 2, hipX + 0.42 * M, hipY + 0.02 * M, z + width / 2, seat, 'leather');
           bar([x0, y0, z], [x1, y1, z], 0.13 * M, width, 0.05 * M, seat, 'leather');
-          if (reach >= 0.7)
+          if (reach >= 0.6)
             for (const hz of headrests) {
-              const [hx0, hy0] = up(hipX, hipY, backTop + 0.06, r),
+              const [hx0, hy0] = up(hipX, hipY, backTop + 0.04, r),
                 [hx1, hy1] = up(hipX, hipY, reach, r);
-              bar([hx0, hy0, z + hz], [hx1, hy1, z + hz], 0.11 * M, 0.27 * M, 0.045 * M, seat, 'leather');
+              bar([hx0, hy0, z + hz], [hx1, hy1, z + hz], 0.1 * M, 0.24 * M, 0.04 * M, seat, 'leather');
             }
         };
         const sz = Math.abs(plan.z),
@@ -189,10 +190,11 @@
         for (const side of [-1, 1]) seatAt(plan.x, plan.y, side * sz, Math.min(0.5 * M, sz * 2 - 0.08 * M), [0]);
         if (plan.rear !== null) {
           const benchHalf = Math.min(inner, sz + 0.27 * M);
-          seatAt(plan.rear, plan.rearY, 0, benchHalf * 2, [-sz, sz], plan.rearBack, plan.rearRecline);
+          const reach = Math.min(0.64, plan.rearBack);
+          seatAt(plan.rear, plan.rearY, 0, benchHalf * 2, [-sz, sz], reach, plan.rearRecline);
           // A parcel shelf from the bench's top back to the rear glass (saloons).
           if (!opts.hatch) {
-            const [bx] = up(plan.rear, plan.rearY, Math.min(0.6, plan.rearBack), plan.rearRecline),
+            const [bx] = up(plan.rear, plan.rearY, reach >= 0.6 ? reach - 0.18 : reach, plan.rearRecline),
               shelfY = Math.max(base + 0.02 * M, opts.deckY ? opts.deckY(bx) + 0.015 * M : 0),
               gx = cabinGlassX(g, l, shelfY + 0.03 * M, false) + 0.03 * M;
             if (gx < bx - 0.1 * M) box(gx, shelfY - 0.04 * M, -inner * 0.95, bx - 0.04 * M, shelfY, inner * 0.95, trim.dash, 'matte');

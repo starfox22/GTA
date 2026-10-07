@@ -383,7 +383,7 @@
       let policeSeeGlass = null;
       function policeCabinGlass() {
         if (!policeSeeGlass) {
-          policeSeeGlass = carGlassMaterial('#0f171d', 0.48);
+          policeSeeGlass = carGlassMaterial('#0f171d', 0.44);
           sharedMaterials.add(policeSeeGlass);
         }
         return policeSeeGlass;
