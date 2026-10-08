@@ -316,6 +316,10 @@ packs with plain `<script src>` so the zip still plays from file://.
   body's glass change keeps damage-vehicles.js `CAR_GLASS_BANDS` in step. Rear badges (`CAR_BADGES`, cars3d-badges.js)
   are glyph quads in the trim atlas's lower half merged into the kit's trim before the cabin (no draw call); the trim
   material alpha-tests the atlas, so other atlas cells stay opaque, addressed only through `trimCellRect` (512x1024).
+  Police and club trims read the atlas through `policeSolidUv`; military stencils share the star material
+  (`militaryMarks`); club badges stay clear of a tailgate spare wheel, ladder or carrier and the plate. `DRIVEBY_SEATS`
+  (driveby-seats.js) is the game's copy of `carSeatPlan`: re-record it when a seat moves (the rendered cabin-headroom
+  test prints the lines); `policeLookChoice` is the only rule for police body and livery.
 - Chase view level of detail (rendering-chase.md): anything new the far copy stands for hides with its cell
   (`cell.full` / `cell.blocks`); shadow-pass-only hiding goes through `chaseShadowCasters` (restored after the
   pass); its shadow box is `placeChaseSun` (the depth fade `cityShadowReach`); never toggle a light.
