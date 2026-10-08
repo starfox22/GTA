@@ -213,12 +213,16 @@
               m.canopy.material.roughness = 0.12 + wear * 0.65;
               // The Apache's chin gun and lights (apache3d.js).
               if (m.apache) animateApache(c, m);
-            } else if (m.damageVersion !== c.damageVersion) {
-              // Crumple, panels, glass, lamps and tyres follow the damage data (damage3d.js).
+            } else if (m.damageVersion !== c.damageVersion || (m.trunkDrawnOpen === true) !== (c.trunkOpen === true)) {
+              // Crumple, panels, glass, lamps and tyres follow the damage data (damage3d.js); a trunk opened or shut
+              // (vehicle-trunk.js) is drawn the same way, however `trunkOpen` was set.
               m.damageVersion = c.damageVersion;
+              m.trunkDrawnOpen = c.trunkOpen === true;
               applyVehicleDamage(c, m);
               m.brakeLit = null; // lamp materials were reset: re-apply brake lights
             }
+            // A trunk picked open swings up on its springs (damage3d-bodies.js trunkLidAngle).
+            if (m.trunk && c.trunkOpen && gameTime - c.trunkOpenAt < 1) m.trunk.rotation.z = trunkLidAngle(c, c.damage.parts);
             // PRISTINE MERGE (vehicle-merge3d.js): once its first damage pass has set it up, an untouched civilian car
             // draws its static parts merged per material.
             if ((m.civilian || m.police) && m.merged === undefined && m.damageVersion === c.damageVersion && vehicleMergeEligible(c, m)) mergeVehicleModel(c, m);

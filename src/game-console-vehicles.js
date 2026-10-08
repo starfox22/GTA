@@ -398,6 +398,8 @@
         };
       },
     });
+    // The lockpick and trunks: lockpick(), trunkReport(), trunkTarget() (see vehicle-trunk.js vehicleTrunkConsole).
+    addConsoleMethods('vehicles', vehicleTrunkConsole());
     // Drive-bys: driveBy(), driveByArcs(), driveByCheck(), driveByAim() (see driveby.js driveByConsole).
     addConsoleMethods('vehicles', driveByConsole());
     // Damage testing: park(), shootAt(), blast(), crashTest(), damageReport(),

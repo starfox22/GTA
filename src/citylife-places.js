@@ -441,11 +441,12 @@
     }
     function selectWeapon(index) {
       if (player.car && player.car.type !== 'tank' && index !== 0 && index !== FISTS_INDEX) {
-        tell('Only an owned 9mm pistol can be fired while driving or piloting.', 3);
+        if (index === LOCKPICK_INDEX) tell('The lockpick works on foot: get out first.', 3);
+        else tell('Only an owned 9mm pistol can be fired while driving or piloting.', 3);
         return false;
       }
       if (!weaponIsEquipped(index)) {
-        tell('Discover this weapon at South Coast Armory. Look for GUN on the map.', 3);
+        if (index !== LOCKPICK_INDEX) tell('Discover this weapon at South Coast Armory. Look for GUN on the map.', 3);
         return false;
       }
       selectedWeaponIndex = index;

@@ -259,6 +259,7 @@
           glass: materials.glass,
           panelGeometry: kit.door,
           trunkGeometry: kit.trunk,
+          trunkDeck: kit.trunkDeck,
           // Where the people sit (cars3d-interior.js carSeatPlan; crowd3d-driveby.js SEATED OCCUPANTS).
           seats: kit.seats,
           seated: 0,

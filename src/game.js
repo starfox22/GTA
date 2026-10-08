@@ -66,6 +66,7 @@
     // @include src/roadblocks.js
     // @include src/carjack.js
     // @include src/carjack-struggle.js
+    // @include src/vehicle-trunk.js
     // @include src/riders.js
     // @include src/wheelie.js
     // @include src/themepark.js
@@ -148,6 +149,7 @@
     // @include src/acoustics-audio.js
     // @include src/footsteps-audio.js
     // @include src/vehicle-foley-audio.js
+    // @include src/lockpick-audio.js
     // @include src/bullets-audio.js
     // @include src/runover-audio.js
     // @include src/quality.js

@@ -14,6 +14,11 @@
         rocket: { grip: [1.35, 3.55, 1.08], pitch: 0.03, twist: -0.2, lean: -0.08, headPitch: 0.15, headYaw: 0.2, aiming: true },
         knife: { grip: [2.3, 3.35, 0.9], pitch: 0.1, twist: -0.15, lean: -0.1, headPitch: 0.1, oneHand: true },
         fists: { twist: 0, lean: -0.1, headPitch: 0.15, fists: true },
+        // The lockpick (vehicle-trunk.js): carried low in the right hand; at work, both hands at the lock in front of a
+        // kneeling body (the left on the tension wrench), the bumper's lock low, a door's at the handle.
+        lockpick: { inHand: true, at: [0.1, -0.6, 0.05], rz: -1.35 },
+        lockpickTrunk: { grip: [3.05, 1.45, 0.3], pitch: 0, twist: -0.05, lean: 0.06, headPitch: 0.42, oneHand: false },
+        lockpickDoor: { grip: [2.75, 3.25, 0.3], pitch: 0, twist: -0.05, lean: 0.02, headPitch: 0.22, oneHand: false },
         shield: { grip: [3.3, 4.4, 0.55], pitch: 0, twist: -0.2, lean: -0.12, headPitch: 0.1, oneHand: true, aiming: true },
       };
       const WEAPON_PAINTS = {
@@ -25,9 +30,11 @@
         sniper: rigPaint('#2a2c2e', '#1a1b1d', '#5d4a33', '#3f5d6d', [0, 1, 2, 3]),
         rocket: rigPaint('#56603f', '#1e2019', '#3c4430', '#888888', [0, 1, 2, 3]),
         knife: rigPaint('#1c1c1c', '#101010', '#101010', '#cfd6db', [0, 1, 2, 3]),
+        // The tension wrench's blued steel, the pick's black rubber grip, its bright shaft.
+        lockpick: rigPaint('#4a5156', '#141516', '#141516', '#c9d1d6', [0, 1, 2, 3]),
         shield: rigPaint('#15181c', '#0f1113', '#0f1113', '#56707f', [0, 1, 2, 3]),
       };
-      const PLAYER_WEAPONS = ['pistol', 'smg', 'shotgun', 'rocket', 'rifle', 'sniper', 'knife', null];
+      const PLAYER_WEAPONS = ['pistol', 'smg', 'shotgun', 'rocket', 'rifle', 'sniper', 'knife', null, 'lockpick'];
       const holdVec2 = new Three.Vector3(),
         holdPole = new Three.Vector3(),
         shoulderWorld = [new Three.Vector3(), new Three.Vector3()],
@@ -676,11 +683,11 @@
         else if (hold?.fists) left = right = 0.6 + 0.4 * weight;
         else if (hold?.inHand) {
           right = 0.92;
-          triggerRight = spec.weapon !== 'knife' ? 1 : 0;
+          triggerRight = spec.weapon !== 'knife' && spec.weapon !== 'lockpick' ? 1 : 0;
         } else if (hold && spec?.weapon) {
           const info = WEAPON_HOLDS[spec.weapon] || WEAPON_HOLDS.pistol;
           right = 0.15 + 0.8 * weight;
-          triggerRight = spec.weapon !== 'knife' ? 1 : 0;
+          triggerRight = spec.weapon !== 'knife' && spec.weapon !== 'lockpick' ? 1 : 0;
           if (info.support && !hold.oneHand) left = 0.15 + 0.75 * weight;
         }
         if (spec?.handTargets) {

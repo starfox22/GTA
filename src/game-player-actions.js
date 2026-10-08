@@ -312,6 +312,8 @@
       if (policeBlocksMissionDelivery()) return;
       // Over the body of someone who carried a gun: take it (ammo-supply.js).
       if (lootInteract()) return;
+      // At a trunk or a locked driver's door with the lockpick: the hold picks it (vehicle-trunk.js), never the carjack.
+      if (lockpickInteract()) return;
       // A lobby lift on North Point Key (skyline-lift.js).
       if (northPointKeyInteract()) return;
       if (transitInteract()) return;
@@ -551,6 +553,8 @@
         return;
       }
       const w = currentWeapon();
+      // The lockpick strikes nothing: fire does nothing with it in hand (vehicle-trunk.js uses it).
+      if (w.tool) return;
       if (w.melee) {
         meleeAttack();
         return;

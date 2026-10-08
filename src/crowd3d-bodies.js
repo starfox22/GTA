@@ -98,6 +98,7 @@
         sniper: rigPart('sniper rifle', weaponGeometries.sniper, rigGearMaterial, 20),
         rocket: rigPart('rocket launcher', weaponGeometries.rocket, rigGearMaterial, 10),
         knife: rigPart('knife', weaponGeometries.knife, rigGearMaterial, 20),
+        lockpick: rigPart('lockpick', weaponGeometries.lockpick, rigGearMaterial, 4),
         shield: rigPart('shield', weaponGeometries.shield, rigGearMaterial, 40, true),
         // Things in hand and scene props (vertex coloured).
         briefcase: crowdPart('briefcase', crowdMerge([

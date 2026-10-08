@@ -81,6 +81,12 @@
           if (lootCrouching()) {
             sp.pose = 'kneel';
             sp.facing = player.lootFacing ?? player.a;
+            // Kneeling at a lock with the lockpick (vehicle-trunk.js): both hands at it.
+            const lock = lockpickWorking();
+            if (lock) {
+              sp.weapon = 'lockpick';
+              sp.hold = lock === 'door' ? HOLD_POSES.lockpickDoor : HOLD_POSES.lockpickTrunk;
+            }
             return sp;
           }
           // Digging at the summit cairn (summitjob.js, mission 3).
@@ -120,7 +126,8 @@
           if (weapon === 'knife') {
             sp.hold = HOLD_POSES.knife;
             sp.knifeSwing = Math.max(0, ((player.knifeSwingUntil || 0) - gameTime) / 0.28);
-          } else if (weapon === 'rocket') sp.hold = HOLD_POSES.rocket;
+          } else if (weapon === 'lockpick') sp.hold = HOLD_POSES.lockpick;
+          else if (weapon === 'rocket') sp.hold = HOLD_POSES.rocket;
           else if (weapon === 'pistol') sp.hold = firedRecently || sp.reload >= 0 ? HOLD_POSES.pistolAim : HOLD_POSES.pistolSide;
           else if (weapon === 'smg') sp.hold = firedRecently || sp.reload >= 0 ? HOLD_POSES.smgAim : HOLD_POSES.smgSide;
           else sp.hold = firedRecently || sp.reload >= 0 ? HOLD_POSES.longAim : HOLD_POSES.longReady;

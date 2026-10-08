@@ -173,6 +173,13 @@
           driverFemale: undefined,
           driverRole: undefined,
           passengers: undefined,
+          // A trunk with something in it and the lockpick's work on it or the driver's lock (vehicle-trunk.js).
+          trunkLoot: undefined,
+          trunkOpen: undefined,
+          trunkOpenAt: undefined,
+          trunkPick: undefined,
+          lockPick: undefined,
+          pickAt: undefined,
           handling: undefined,
           handlingVersion: undefined,
           handlingHp: undefined,

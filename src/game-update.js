@@ -51,6 +51,8 @@
         // resets player.hidden that a shark attack sets.
         timed('sealife', () => updateSeaLife(deltaSeconds));
         timed('sports', () => updateSports(deltaSeconds));
+        // The lockpick held at a trunk or a locked door: the step in, the crouch, the pins (vehicle-trunk.js).
+        updateLockpick(deltaSeconds);
         if (player.parachute) updateParachute(deltaSeconds);
         else if (
           !player.car &&

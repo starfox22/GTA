@@ -65,3 +65,26 @@ police-and-combat.md.
   reticle (or the cursor) through `chaseProject`, for every device (`chaseShotTarget`). Console
   `viewRules(x, y)` (`shooter`, `shooterInset`, `hiddenFromCamera`); tools/tests/chase-shooter.mjs.
 - Gang fire between factions, and at the police, is not limited by the screen.
+
+## The lockpick and trunks (arsenal.js, vehicle-trunk.js)
+
+- **A tool slot**: `LOCKPICK_INDEX` 8 after KNIFE and FISTS, never in `weapons` (indices 0-5 are the saves'
+  contract). `LOCKPICK` is `melee` (so every gun-only path, ammo, reload, aim lean, crosshair, leaves it alone) and
+  `tool` (shoot() and meleeAttack() do nothing). Owned only through `giveLockpick()` (a story beat; console
+  `lockpick()`), saved as `lockpick` in the campaign save (absent = not owned), cleared by `resetCampaign`.
+  `playerUnarmed()` is true with it in hand (the crowd sees no weapon). Key `lockpick` (Digit9, foot only); cycling
+  and the arsenal list it only once owned (`arsenalSlots`).
+- **Trunks**: a mission sets `c.trunkLoot = { label }` on a vehicle; `trunkPoint(c, out)` is the kneeling spot behind
+  the rear bumper. With the lockpick in hand, on foot within 16 units of it on a stopped vehicle, interact is taken by
+  `lockpickInteract` (before the carjack and the seat) and the held action (`updateLockpick`, each frame) steps the
+  player in, kneels him (`player.lootUntil`, the loot crouch, renewed while held) and sets 5 pins in 5 s; then
+  `openTrunk(c)` (`trunkOpen`, `trunkOpenAt`, a `damageVersion` bump). A locked driver's door (`vehicleIsLocked`) is
+  the same at 6 units outside the door, 3 pins in 3.5 s, then `c.locked = false`. Progress (`trunkPick`, `lockPick`,
+  `pickAt`) is kept 10 s. Missions poll `trunkOpen`, `trunkPickProgress(c)` and `trunkPicking(c)`.
+- **Witnesses**: each pin set is `crime(0.07, 'theft')` (a door 0.08): banked unless the police see it, then the scan
+  (witnesses.js) asks the crowd who was looking (`crowdAlarm('theft')`, sight and facing): never a radius.
+- **Drawn**: in hand `HOLD_POSES.lockpick` (inHand, `PB_GRIPS.lockpick`); kneeling at the lock
+  `lockpickTrunk` / `lockpickDoor` (both hands by IK, the left on the wrench) while `lockpickWorking()`. The lid hangs on
+  the kit's rear deck line (`kit.trunkDeck`; damage3d-bodies.js `trunkLidAngle`, swung per frame for 1 s in
+  render3d-frame.js) over a dark well; vans and SUVs (tailgates in the body) keep no lid, only the state.
+
