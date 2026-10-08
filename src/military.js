@@ -24,4 +24,7 @@
      */
     // @include src/military-base.js
     // @include src/military-life.js
+    // @include src/fort-cover.js
+    // @include src/fort-cover-watch.js
+    // @include src/fort-cover-records.js
     // END SUBSYSTEM: src/military.js

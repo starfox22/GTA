@@ -75,6 +75,8 @@
       player.fall = null;
       player.pool = null;
       player.jumpUntil = 0;
+      // Out of a chair at a scene's table (skyline-meeting.js).
+      player.sceneSeat = null;
       // Off any roof: the Blue Hour terrace or a building roof.
       if (player.roof || player.buildingRoof) {
         player.roof = false;

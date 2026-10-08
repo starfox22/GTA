@@ -1,7 +1,8 @@
       // Fort Sentinel buildings from SENTINEL.buildings (planOf): window rows and flags.
       const planOf = (id) => SENTINEL.buildings.find((b) => b.id === id);
       // Window rows on the south and north faces (and optionally east/west).
-      function windowRows(b, rows, spacing, w, h, { skip = null, ends = true } = {}) {
+      // `doorAt`: a door in the south face's lowest row takes that window's place.
+      function windowRows(b, rows, spacing, w, h, { skip = null, ends = true, doorAt = null } = {}) {
         for (const y of rows) {
           for (let x = b.x + spacing * 0.7; x < b.x + b.w - spacing * 0.4; x += spacing) {
             if (skip && x > skip[0] && x < skip[1]) continue;
@@ -9,6 +10,7 @@
               [b.y + b.h, 1],
               [b.y, -1],
             ]) {
+              if (doorAt !== null && s === 1 && y === rows[0] && Math.abs(x - doorAt) < spacing / 2) continue;
               box(baseGroup, x, y, z + s * 0.35, w, h, 0.6, B.window);
               box(baseGroup, x, y - h / 2 - 0.6, z + s * 0.9, w + 1.6, 0.8, 1.6, B.cream);
             }
@@ -38,7 +40,18 @@
           [b.w / 2, 0, 2, b.h],
         ])
           box(baseGroup, cx + dx, 42.5, cz + dz, w, 4, d, B.sandDark);
-        windowRows(b, [11, 28], 20, 11, 9, { skip: [cx - 60, cx + 60] });
+        windowRows(b, [11, 28], 20, 11, 9, { skip: [cx - 60, cx + 60], doorAt: FORT_RECORDS.door.x });
+        // The records office's side door (fort-cover-records.js FORT_RECORDS): a steel door in a frame on the
+        // plinth, a step down to the pavement and its sign above the string course.
+        {
+          const d = FORT_RECORDS.door,
+            fz = b.y + b.h;
+          box(baseGroup, d.x, 10.7, fz + 0.4, 11.6, 16.4, 0.8, B.sandDark);
+          box(baseGroup, d.x, 10.6, fz + 0.9, 9.4, 16, 0.5, B.oliveDark);
+          box(baseGroup, d.x + 3.2, 10.4, fz + 1.3, 1.4, 0.6, 0.6, B.steel);
+          box(baseGroup, d.x, 0.75, fz + 4.2, 14, 1.5, 3, B.concreteLight);
+          plate(baseGroup, d.x, 21.8, fz + 0.75, 16, 2.4, plateMaterial('RECORDS', { w: 384, h: 56, bg: '#2a3326', fg: '#e8d7a3' }), 0);
+        }
         // Portico: columns, canopy, steps, entrance glazing and the crest.
         const pz = b.y + b.h;
         box(baseGroup, cx, 20, pz + 1, 118, 38, 2, B.cream);

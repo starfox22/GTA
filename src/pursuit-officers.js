@@ -288,6 +288,7 @@
         player.hp = Math.max(player.hp, 60);
         player.armor = 0;
         player.inv = 3;
+        fortCoverReset();
         const spot = policeRespawnPoint();
         if (player.car) {
           // Pulled from the car: it stays where it stopped.

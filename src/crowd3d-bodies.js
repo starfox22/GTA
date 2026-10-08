@@ -137,6 +137,21 @@
           { geo: at(new Three.CylinderGeometry(0.48, 0.28, 0.7, 8), 0.15, -0.48, 0), color: '#ff7a4a' },
           { geo: at(unitBox, 0.3, 0.26, 0.1, 0, 0, 0.3, 0.1, 1.2, 0.1), color: '#2fbf8f' },
         ]), crowdPropMaterial, 320, false, false),
+        // A meeting's table (skyline-meeting.js): a manila folder held flat in the hand, the envelope slid
+        // across the table, the RESERVED tent card.
+        folder: crowdPart('folder', crowdMerge([
+          { geo: at(unitBox, 0.25, -1.2, 0, 0, 0, 0, 1.9, 2.5, 0.16), color: '#d6b46e' },
+          { geo: at(unitBox, 0.25, -0.02, 0, 0, 0, 0, 1.0, 0.12, 0.17), color: '#c8a35c' },
+        ]), crowdPropMaterial, 4, false, false),
+        envelope: crowdPart('envelope', crowdMerge([
+          { geo: at(unitBox, 0, 0.08, 0, 0, 0, 0, 2.0, 0.12, 1.1), color: '#efe7d2' },
+          { geo: at(unitBox, 0.55, 0.15, 0, 0, 0, 0, 0.5, 0.04, 1.1), color: '#e2d7bc' },
+        ]), crowdPropMaterial, 4, false, false),
+        tableCard: crowdPart('table card', crowdMerge([
+          { geo: at(unitBox, 0, 0.42, 0.18, 0.4, 0, 0, 1.3, 0.9, 0.06), color: '#f6f3ea' },
+          { geo: at(unitBox, 0, 0.42, -0.18, -0.4, 0, 0, 1.3, 0.9, 0.06), color: '#f6f3ea' },
+          { geo: at(unitBox, 0, 0.5, 0.21, 0.4, 0, 0, 0.9, 0.12, 0.02), color: '#7a5a2a' },
+        ]), crowdPropMaterial, 4, false, false),
         tray: crowdPart('tray', crowdMerge([
           { geo: at(unitCylinder, 0, 0.2, 0, 0, 0, 0, 2.3, 0.18, 2.3), color: '#c9ccc9' },
           { geo: at(unitCylinder, 0.8, 0.8, 0.5, 0, 0, 0, 0.35, 1.05, 0.35), color: '#ff7a4a' },

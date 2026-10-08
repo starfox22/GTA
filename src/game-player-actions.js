@@ -150,6 +150,7 @@
         goreRestore(player);
         player.armor = 0;
         player.inv = 3;
+        fortCoverReset();
         const hospital = nearestHospital(player.x, player.y);
         teleportPlayer(hospital.door.x, hospital.door.y);
         clearPolice();
@@ -327,6 +328,7 @@
         summitJobInteract() ||
         fortJobInteract() ||
         challengeMissionInteract() ||
+        fortCoverInteract() ||
         militaryInteract() ||
         harborInteract() ||
         interactRooftop()
@@ -382,6 +384,8 @@
     function enterVehicle(c) {
         player.buildingRoof = null;
         player.car = c;
+        // Any of Fort Sentinel's vehicles under cover or on the base: the alarm at once (fort-cover.js).
+        if (c.military) fortCoverBoarded(c);
         // A bike that went down is picked up and ridden on (riders.js).
         c.fallen = null;
         c.ramUntil = 0;

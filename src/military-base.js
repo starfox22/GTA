@@ -447,6 +447,11 @@
         inZone = onGround && x > g.funnel.x0 - 60 && x < MILITARY.x + 150 && y > g.opening[0] - 30 && y < g.opening[1] + 30;
       if (alert) return;
       if (c.level === 3) c.level = 0;
+      // On foot in uniform with the stolen pass: the guards ask for ID instead (fort-cover.js).
+      if (fortCoverOwnsGate()) {
+        c.level = 0;
+        return;
+      }
       const guards = militaryGuards('gate');
       if (!inZone) {
         if (c.level > 0 && gameTime - c.leftAt > 8) c.level = 0;

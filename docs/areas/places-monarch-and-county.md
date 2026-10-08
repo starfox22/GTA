@@ -52,6 +52,21 @@ roofs, garages): the plan is a game file, the meshes its `*3d.js` twin, coordina
 - The AH-64 (`airframe: 'apache'`, `HELICOPTER_AIRFRAMES`) is only ever flown by the
   player; stealing it is like taking a tank plus maximum heat. Console `military()`,
   `apache()`.
+- Cover (fort-cover.js, -watch, -records; mission 4 drives it): `wearUniform(on)` sets `player.uniform`
+  ('army' → outfit `playerArmy`, crowd rig, not the player body); `fortCoverBegin()` / `fortCoverEnd()` /
+  `fortCoverReport()`; state `fortCover` {active, cleared, suspicion 0-100, alarmed, papers, insideBase,
+  leftWithPapers, entered, blownBy}. With the cover inactive nothing changes (every hook checks `fortCover.active`).
+  `fortCoverOwnsGate()` (on foot, uniform, no stars, no alert) replaces the gate challenge: papers at
+  `FORT_COVER_GATE.check` (9236, 8182), cleared after a 3.1 s inspection. `fortCoverShielded()` (cleared, not
+  alarmed, uniform, on foot, off roofs) is the exception in `militaryThreatened`. Any alarm while cleared sets
+  `alarmed`. The watch (`fortSoldierSees`: 55° half-cone, 420 units, towers 650, `clearSight`) runs after the
+  garrison's step (end of `updateMilitary`), so a watcher may turn to him; `FORT_RESTRICTED` lists the off-limits
+  rectangles. `fortCoverBoarded(c)` in `enterVehicle` is the only vehicle rule. Records door
+  `FORT_RECORDS.door` (9624, 8035; drawn by base3d-buildings.js in place of a ground-floor window), the search runs
+  in gameMode 'elevator' on the frame clock (`updateFortRecords`, also stepped by `simulate`) and steps him out with
+  `teleportPlayer`. The meter shares mission 2's `#stealthStatus` (roofMissionUI keeps it shown for
+  `fortCoverMeterShown()`); the foot strip context is `cover`. `fortCoverReset()` runs on mission cleanup, new
+  game, WASTED and BUSTED. Console `fortCover()`, `fortCoverTest(step)`; tools/tests/fort-cover.mjs.
 
 ## South Coast Stadium and GOALLINE (sports-*.js, sports3d.js, sportsbook*.js)
 

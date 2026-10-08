@@ -331,7 +331,8 @@
     /* ---- The update ------------------------------------------------------------------- */
     function militaryThreatened() {
       return (
-        (inMilitary(player.x, player.y) && !isAircraft(player.car)) ||
+        // A cleared man in uniform walks the base unchallenged (fort-cover.js).
+        (inMilitary(player.x, player.y) && !isAircraft(player.car) && !fortCoverShielded()) ||
         (isAircraft(player.car) && inMilitary(player.x, player.y) && entityElevation(player.car) - terrainHeight(player.x, player.y) < 90) ||
         gangMembers.some((g) => g.military && (g.playerThreatUntil || 0) > gameTime) ||
         vehicles.some(
@@ -347,7 +348,7 @@
     function updateMilitary(deltaSeconds) {
       const near = distanceBetween(player, MILITARY.gate) < 480,
         inside = inMilitary(player.x, player.y);
-      if (near && !inside && militaryAlertUntil < gameTime && gameTime - militaryWarningAt > 25) {
+      if (near && !inside && !fortCover.active && militaryAlertUntil < gameTime && gameTime - militaryWarningAt > 25) {
         militaryWarningAt = gameTime;
         tell('FORT SENTINEL · Restricted military installation. Use of deadly force authorized beyond the gate.', 6);
       }
@@ -545,6 +546,8 @@
             if (e.route) e.routeIndex = 1;
           }
       }
+      // The borrowed uniform: the gate's papers, the garrison's suspicion, walking out (fort-cover.js).
+      updateFortCover(deltaSeconds);
     }
     function militaryUI() {
       if (gameMode !== 'play') return;

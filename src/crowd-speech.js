@@ -168,7 +168,8 @@
       // player, while talking with a club-goer (clubtalk.js).
       // sealifeSpeakers(): the beach shouting SHARK! (sealife.js).
       // offstageCallSpeakers(): 911 callers the crowd does not run (witnesses.js).
-      for (const list of [pedestrians, vehicles, gangMembers, coasterSpeakers(), clubTalkSpeakers(), sealifeSpeakers(), offstageCallSpeakers()])
+      // skyMeetingSpeakers(): the diplomat of a meeting at CIRRUS (skyline-meeting.js).
+      for (const list of [pedestrians, vehicles, gangMembers, coasterSpeakers(), clubTalkSpeakers(), sealifeSpeakers(), offstageCallSpeakers(), skyMeetingSpeakers()])
         for (const p of list) {
           if (!p.speech || p.speechUntil < gameTime) continue;
           if (p.speechHeard !== p.speech) {

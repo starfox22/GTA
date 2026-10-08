@@ -238,6 +238,8 @@
       };
       skyBar.groups = [];
       for (const t of plan.tables) {
+        // A meeting's reserved table stays free (skyline-meeting.js).
+        if (skyMeetingHolds(t)) continue;
         const pair =
           t.kind === 'date'
             ? [seat(t.seats[0], 'guest', seededRandom() < 0.5 ? 'gown' : 'suit'), null]
@@ -291,12 +293,15 @@
     function updateNorthPointKey(deltaSeconds) {
       const lift = skyBarLift();
       if (!lift) return;
+      // A story meeting at CIRRUS (skyline-meeting.js).
+      updateSkyMeeting(deltaSeconds);
       const b = lift.b,
         onBar = player.buildingRoof === b,
         near = onBar || Math.hypot(player.x - (b.x + b.w / 2), player.y - (b.y + b.h / 2)) < 900;
       if (near && !skyBar.live) skyBarArrive();
       else if (!near && skyBar.live && Math.hypot(player.x - (b.x + b.w / 2), player.y - (b.y + b.h / 2)) > 1400) skyBarLeave();
-      if (!skyBar.live || !onBar) return;
+      // The other tables hush while the player sits in a meeting, so its lines can be read.
+      if (!skyBar.live || !onBar || skyMeetingBusy()) return;
       // One table talks at a time, the nearest that has rested longest; staff chip in.
       if (skyBar.talker) {
         const g = skyBar.talker;
@@ -370,6 +375,8 @@
         return true;
       }
       if (k.role === 'waiter') {
+        // Sent to a table by a meeting (skyline-meeting.js skyMeetingService).
+        if (skyMeetingErrandStep(p, k, deltaSeconds)) return true;
         p.pose = 'tray';
         if (k.pause > 0) {
           k.pause -= deltaSeconds;

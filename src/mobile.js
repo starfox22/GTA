@@ -118,7 +118,7 @@
             // A gentle push walks; past half-way the player runs, as with the keys.
             // On the Blue Hour terrace during mission 2 the walk action runs
             // (footPace), so it is held for the hard push there instead.
-            if (roofPartyPace() ? m >= radius * 0.5 : m < radius * 0.5) list.push(actionCode('walk'));
+            if (roofPartyPace() || fortCoverPace() ? m >= radius * 0.5 : m < radius * 0.5) list.push(actionCode('walk'));
           }
         }
       } else if (stick.aim) {
@@ -290,7 +290,7 @@
           return transitRide ? 'NEXT STOP' : c ? 'EXIT' : 'ACTION';
         case 'touchRun':
           // The Blue Hour terrace during the job walks by default: the walk action runs there.
-          return roofPartyPace() ? 'RUN' : 'WALK';
+          return roofPartyPace() || fortCoverPace() ? 'RUN' : 'WALK';
         case 'touchJump':
           return player.parachute?.stage === 'freefall' ? 'OPEN CHUTE' : 'PARACHUTE';
       }

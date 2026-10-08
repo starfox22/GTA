@@ -349,4 +349,6 @@
         return n;
       },
     });
+    // The CIRRUS meeting scene a story job drives: skyMeeting(action), skyMeetingSkip(stage) (skyline-meeting.js).
+    addConsoleMethods('missions', skyMeetingConsole());
     // END SUBSYSTEM: src/game-console-missions.js

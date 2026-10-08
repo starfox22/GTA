@@ -315,7 +315,7 @@
             FORT_RECORDS.door,
             'WALK TO HEADQUARTERS · THE RECORDS OFFICE',
             'vinny',
-            'You’re in. Walk like you’ve been there two years. Headquarters, the records office round the side.',
+            'You’re in. Walk like you’ve been there two years. Headquarters: the door marked RECORDS, left of the main entrance. Not past the sentries.',
           );
         } else if (wantedStars > 0 && m.instruction.indexOf('LOSE') !== 0) m.instruction = 'LOSE THE POLICE · THEN THE GATE';
         else if (wantedStars === 0 && m.instruction.indexOf('LOSE') === 0) m.instruction = 'WALK UP TO FORT SENTINEL’S GATE · SHOW YOUR PAPERS';
@@ -329,7 +329,7 @@
         if (fortCover.papers)
           setStage(
             FORT_STAGE.out,
-            SENTINEL.gate.booth,
+            FORT_COVER_GATE.check,
             'WALK OUT THROUGH THE MAIN GATE · CALMLY',
             'vinny',
             'Got them? Don’t run. Nobody runs out of a base with nothing to hide.',
@@ -337,7 +337,7 @@
         return;
       }
       if (m.stage === FORT_STAGE.out) {
-        const out = fortCover.leftWithPapers || (!inMilitary(player.x, player.y) && distanceBetween(player, SENTINEL.gate.booth) > 260);
+        const out = fortCover.leftWithPapers || (!inMilitary(player.x, player.y) && distanceBetween(player, FORT_COVER_GATE.check) > 260);
         if (fortCover.alarmed && m.instruction.indexOf('COVER') !== 0) {
           m.instruction = 'COVER BLOWN · GET OUT WITH THE PAPERS';
           updateUI();
@@ -368,11 +368,15 @@
                     : s === 'seated' || s === 'drinks'
                       ? 'HAVE A DRINK WITH VARGA'
                       : 'HAND OVER THE PAPERS';
-        const target = skyMeetingTarget();
+        const target = skyMeetingTarget() || m.target;
         if (text !== m.instruction || target !== m.target) {
           m.instruction = text;
           m.target = target;
           updateUI();
+        }
+        if (s === 'failed') {
+          failMission('The consul is dead. Nobody will buy those papers now.');
+          return;
         }
         if (s === 'done') winMission();
       }
@@ -395,7 +399,7 @@
       announce('BORROWED STRIPES', 'PFC D. KESSLER', 2.6);
       setStage(
         FORT_STAGE.gate,
-        SENTINEL.gate.booth,
+        FORT_COVER_GATE.check,
         wantedStars > 0 ? 'LOSE THE POLICE · THEN THE GATE' : 'WALK UP TO FORT SENTINEL’S GATE · SHOW YOUR PAPERS',
         'vinny',
         'Fits? Good. Leave the car outside and walk up to the gate. Holster everything. You’re a tired private back from leave.',
@@ -466,9 +470,13 @@
         m.kcar.missionDriver = undefined;
         m.kcar.trunkLoot = undefined;
       }
-      if (player.uniform) wearUniform(false);
-      fortCoverEnd();
-      skyMeetingEnd();
+      // The uniform and the cover go in fortCoverReset, the meeting in skyMeetingWrapUp (cleanupMissionExtras).
+    }
+    /* A won job leaves the player in Kessler's uniform (at CIRRUS, mid-drink): it is his
+       until he changes (a car or out of sight), dies or takes the next job. */
+    function fortJobKeepsUniform() {
+      const m = fortJob();
+      return !!m && m.stage === FORT_STAGE.meet && skyMeeting.stage === 'done' && player.uniform === 'army';
     }
     function fortJobReport() {
       const m = fortJob();

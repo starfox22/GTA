@@ -514,6 +514,7 @@
       selectedWeaponIndex = 0;
       reloadSecondsRemaining = shotCooldownSeconds = 0;
       player.disguised = false;
+      fortCoverReset();
     }
     getElement('chooseMissionStart').onclick = openMissionSelect;
     getElement('chooseMissionPause').onclick = openMissionSelect;

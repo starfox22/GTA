@@ -3,6 +3,8 @@
         'look', 'facing', 'snapFacing', 'rim', 'elevation', 'rootOverride', 'pose', 'transition', 'hold', 'weapon', 'recoil', 'reload',
         'knifeSwing', 'punch', 'punchLead', 'army', 'shield', 'dazed', 'limp', 'cocktail', 'sip', 'swim', 'parachute', 'lieInPlace',
         'progress', 'bounce', 'flag', 'riderLean', 'handTargets', 'legTargets', 'thrown',
+        // A chair at a scene's table (skyline-meeting.js): the glass raised 0-1, the arm across the table, what is in hand.
+        'drinkLift', 'sitReach', 'handProp',
         // A drive-by (crowd3d-driveby.js): the pistol's frame and hand, the torso and head turned to the aim.
         'gunFrame', 'gunHandFrame', 'gunHand', 'torsoTwist', 'torsoRoll', 'headYaw', 'headPitch',
       ];
@@ -29,7 +31,8 @@
       function specialSpec(p) {
         const sp = specScratch;
         resetSpec(sp);
-        sp.look = specialLook(p);
+        // A scene's character can bring a look of his own (skyline-meeting.js `ownLook`).
+        sp.look = p.ownLook || specialLook(p);
         sp.facing = p.a || 0;
         const incapacitated = personIncapacitated(p) || p.hp <= 0;
         if (p === player) {
@@ -47,6 +50,16 @@
             return sp;
           }
           if (player.swimming) return playerSwimSpec(sp);
+          // In a chair at a meeting's table (skyline-meeting.js): seated, a glass or the folder in hand.
+          if (player.sceneSeat) {
+            const seat = player.sceneSeat;
+            sp.pose = 'sit';
+            sp.facing = seat.a;
+            sp.drinkLift = seat.hand === 'cocktail' ? seat.lift : null;
+            sp.sitReach = seat.reach;
+            sp.handProp = seat.hand;
+            return sp;
+          }
           if (player.parachute) return playerParachuteSpec(sp);
           if (player.thrown) {
             // Thrown off a bike or out of a crash (riders.js).
