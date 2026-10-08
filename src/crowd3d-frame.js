@@ -229,6 +229,8 @@
         // The player's own body: finished at once if play began before its build was done (player-body3d.js).
         playerBodyStart();
         chooseNearPeople(specials);
+        // Who is drawn as their avatar this frame (npc-avatar3d.js).
+        npcAvatarChoose(specials);
         if (zoomedIn)
           for (let i = 0; i < pedestrians.length; i++) {
             const p = pedestrians[i];
@@ -301,6 +303,7 @@
         BODY = body;
         drawQueuedAthletes(deltaSeconds, crowdDetail());
         playerBodyFlush();
+        npcAvatarFlush();
         flushCrowdParts();
         crowdPackMs += performance.now() - start;
         crowdPackAverage += (crowdPackMs - crowdPackAverage) * 0.05;
@@ -342,6 +345,8 @@
           playerBody: pbState.shown,
           // People drawn from the near set this frame (NEAR PEOPLE), the player among them.
           near: crowdNear.n,
+          // People drawn as their avatars this frame (npc-avatar3d.js), one camera and one shadow draw each.
+          avatars: npcAv.shown,
           packMs: Math.round(crowdPackMs * 100) / 100,
           packMsAverage: Math.round(crowdPackAverage * 100) / 100,
           // People drawn from their recorded instances (STILL FIGURES).

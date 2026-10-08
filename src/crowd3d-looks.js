@@ -39,12 +39,16 @@
           kid = role === 'kid' || !!look.kid,
           // One rule for the body and the voice (voices.js lookFemale).
           female = lookFemale(look),
-          skin = look.skin || '#c99169',
-          hair = look.hair || '#231a15',
           district = look.outfit || !p ? '' : districtAt(p.x, p.y) || '',
           summer = SUMMER_DISTRICTS.test(district),
-          downtown = DOWNTOWN_DISTRICTS.test(district);
-        let top = look.top || '#44505c',
+          downtown = DOWNTOWN_DISTRICTS.test(district),
+          // The avatar drawn near the camera (npc-avatar-cast.js); a street look takes its clothes.
+          avatar = npcAvatarPick(look, p, female, kid, role, summer, h),
+          dressed = look.outfit ? null : npcAvatarLookTraits(avatar);
+        let skin = dressed ? dressed.skin : look.skin || '#c99169',
+          hair = dressed ? dressed.hair : look.hair || '#231a15',
+          hairStyle = dressed ? dressed.hairStyle : look.hairStyle,
+          top = look.top || '#44505c',
           pants = look.pants || '#2a3444',
           shoes = look.shoes || '#141414',
           garment = look.garment,
@@ -62,6 +66,19 @@
           vest = look.vest || null,
           beard = look.beard ?? (!female && !kid ? (h(3) < 0.1 ? 2 : h(3) < 0.32 ? 1 : 0) : 0),
           hairPart = null;
+        if (dressed) {
+          top = accent = dressed.top;
+          pants = dressed.pants;
+          shoes = dressed.shoes;
+          garment = dressed.garment;
+          sleeves = dressed.sleeves;
+          shorts = dressed.shorts;
+          skirt = dressed.skirt;
+          footwear = dressed.footwear;
+          hatStyle = dressed.hat;
+          topPattern = pantsPattern = 0;
+          vest = null;
+        }
         const barefoot = shoes === skin;
         if (!garment) {
           if (top === skin) garment = 'shirtless';
@@ -132,7 +149,7 @@
           kneePads = look.kneePads || null;
         if (!sole) sole = footwear === 'sneaker' ? '#eeede8' : footwear === 'boot' ? '#15120f' : barefoot ? skin : '#1b1816';
         // Hair: 0 shaved / bald, 1 short, 2 long, 3 bun, 4 curly (crowd.js); outfits may name a part.
-        const style = look.hairStyle;
+        const style = hairStyle;
         if (typeof style === 'string') hairPart = BODY_CLOSE[style] ? style : null;
         else if (style === 1) hairPart = 'hairShort';
         else if (style === 2) hairPart = 'hairLong';
@@ -165,6 +182,8 @@
           kid,
           height,
           width,
+          // The cast index drawn near the camera (npc-avatar3d.js), or -1.
+          avatar,
           garment,
           torso: female ? 'torsoF' : 'torsoM',
           pelvis: female ? 'pelvisF' : 'pelvisM',

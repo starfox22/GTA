@@ -67,6 +67,9 @@
           R = compiledLook(look, p),
           // The player in his own outfit is drawn from his own body (player-body3d.js): no still copies.
           own = spec?.rim === true && playerBodyOn(look),
+          // Someone near the camera drawn as their avatar (npc-avatar3d.js): skinned like the player, no still copies.
+          avatarSlot = own ? null : npcAvatarTake(p, s, R, detail),
+          skinned = own || avatarSlot !== null,
           J = s.joints,
           T = poseTarget,
           t = gameTime,
@@ -84,7 +87,7 @@
           still = s.still;
         if (
           still &&
-          !own &&
+          !skinned &&
           s.seen &&
           moved < 1e-4 &&
           still.pose === stillPose &&
@@ -130,7 +133,7 @@
           !p.ejected &&
           ((p.hp <= 0 && J[J_FALL] >= 0.999) || (STILL_POSES.has(spec?.pose) && hitFlinch(p) === 0)) &&
           moved < 1e-4 &&
-          !own;
+          !skinned;
         s.still = null;
         if (settledStill) {
           // Record this frame's instances; later frames copy them.
@@ -315,14 +318,15 @@
         }
         mRoot.scale(crowdScale.set(H, H, H));
         rigRimFlag = spec?.rim ? 16 : 0;
-        const w = R.width,
+        // (An avatar is fitted at its own shoulders: its joints stand where its body was fitted.)
+        const w = avatarSlot ? avatarSlot.width : R.width,
           paints = R.paints;
         // Far away and simply standing or walking: three instances.
         // What gore.js says is gone is left out below, a stump at the cut (crowd3d-gore.js); wounds soak the clothes.
         const lost = p.goreLost || 0,
           wounded = !!p.goreWounds?.length;
         if (lost) s.goreLook = look;
-        if (detail === 0 && farFigureOk(p, spec, J) && !own && !lost) {
+        if (detail === 0 && farFigureOk(p, spec, J) && !skinned && !lost) {
           crowdJoint(mHips, mRoot, 0, bob, 0, 0, 0, pelvisYaw);
           rigEmit(P.figure, mHips, w, 1, w, paints.figure);
           for (let side = 0; side < 2; side++) {
@@ -335,10 +339,10 @@
         crowdJoint(mHips, mRoot, 0, hipY, 0, -run * loco * 0.06, roll * 0.4, pelvisYaw);
         crowdJoint(mTorso, mHips, 0, RIG.waist, 0, lean, roll, twist);
         const bodySet = BODY;
-        if (own) {
-          BODY = BODY_PLAYER;
-          playerBodyBone(0, mHips);
-          playerBodyBone(1, mTorso);
+        if (skinned) {
+          BODY = own ? BODY_PLAYER : BODY_AVATAR;
+          skinBone(avatarSlot, 0, mHips);
+          skinBone(avatarSlot, 1, mTorso);
         }
         rigEmit(BODY[R.pelvis], mHips, w, 1, w, paints.pelvis);
         if (R.skirtOn) rigEmit(BODY.skirt, mHips, w, 1, w, paints.skirt);
@@ -350,7 +354,7 @@
         if (R.collar) rigEmit(BODY.collar, mTorso, w, 1, w, paints.collar);
         if (R.hood) rigEmit(BODY.hood, mTorso, w, 1, w, paints.hood);
         if (R.vest) rigEmit(BODY.vest, mTorso, w, 1, w, paints.vest);
-        if (R.label) {
+        if (R.label && !avatarSlot) {
           crowdJoint(mOut, mTorso, -(R.vest ? 1.16 : 1.0) * w, 2.62, 0);
           crowdEmit(R.label, mOut, 1, 1, w);
         }
@@ -366,7 +370,7 @@
         const headYaw = J[J_HEAD_YAW] - (upperTurn - clamp(upperTurn, -1.1, 1.1)) - 0.2 * hipsDiff * loco * 0.8;
         crowdJoint(mHead, mTorso, 0.04, RIG.neck, 0, -J[J_HEAD_PITCH] - lean * 0.3, 0, headYaw);
         const hs = R.headScale;
-        if (own) playerBodyBone(2, mHead);
+        if (skinned) skinBone(avatarSlot, 2, mHead);
         if (lost & GORE_HEAD) goreStumpAt(mHead, 0.43 * hs * w, paints.head, true, true);
         else {
           if (wounded) goreWoundFor(p, 0, 0);
@@ -453,15 +457,16 @@
             if (detail > 1) rigEmit(BODY.hand, mHand[side], 1, 1, 1, paints.hand);
           }
           if (wounded) goreWoundClear();
-          if (own) {
-            playerBodyBone(3 + side, mShoulder[side]);
-            playerBodyBone(5 + side, mElbow[side]);
-            playerBodyBone(7 + side, mHand[side]);
+          if (skinned) {
+            skinBone(avatarSlot, 3 + side, mShoulder[side]);
+            skinBone(avatarSlot, 5 + side, mElbow[side]);
+            skinBone(avatarSlot, 7 + side, mHand[side]);
           }
         }
-        if (own) {
+        if (skinned) {
           const grip = playerHandGrip(p, spec, hold, holdWeight);
-          playerBodyGrip(grip[0], grip[1], grip[2], grip[3]);
+          if (avatarSlot) npcAvatarGrip(avatarSlot, grip[0], grip[1]);
+          else playerBodyGrip(grip[0], grip[1], grip[2], grip[3]);
         }
         // Legs.
         for (let side = 0; side < 2; side++) {
@@ -493,16 +498,16 @@
             rigEmit(BODY.shin, mKnee[side], w, 1, w, paints.shin);
           }
           if (wounded) goreWoundClear();
-          if (own) {
-            playerBodyBone(9 + side, mHip[side]);
-            playerBodyBone(11 + side, mKnee[side]);
+          if (skinned) {
+            skinBone(avatarSlot, 9 + side, mHip[side]);
+            skinBone(avatarSlot, 11 + side, mKnee[side]);
           }
           // The foot stays flat on the ground through the stance, rolls onto the
           // toes at push-off and hangs toes-down in the swing.
           const flat = fall > 0.5 ? 0.3 : 1;
           crowdJoint(mFoot, mKnee[side], 0, -RIG.shin, 0, -(hip + knee) * flat + footPitch[side] + (-run * loco * 0.06));
           if (!shinGone) rigEmit(BODY[R.shoePart], mFoot, 1, 1, 1, paints.shoe);
-          if (own) playerBodyBone(13 + side, mFoot);
+          if (skinned) skinBone(avatarSlot, 13 + side, mFoot);
         }
         // Where the cuts are as drawn, for spurts and bursts (crowd3d-gore.js POSED CUTS).
         if (lost || dead || t - (p.hitAt ?? -9) < 3) goreRecordCuts(s, mHead, mShoulder, mElbow, mHip, mKnee);
