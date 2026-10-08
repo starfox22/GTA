@@ -210,20 +210,6 @@
       updateStarProgress(deltaSeconds);
       updatePursuit(deltaSeconds);
       searchClock = 'off';
-      if (mission?.index === 2 && [1, 2].includes(mission.stage)) {
-        wantedStars = Math.max(1, wantedStars);
-        searchActive = false;
-        lastSeen = {
-          x: mission.car.x,
-          y: mission.car.y,
-        };
-        copSpawn -= deltaSeconds;
-        if (copSpawn <= 0) {
-          copSpawn = 6;
-          spawnCop();
-        }
-        return;
-      }
       if (mission?.index === 10 && mission.stage === 5) {
         wantedStars = Math.max(mission.escapeHeat, wantedStars);
         searchActive = false;

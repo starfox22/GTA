@@ -22,7 +22,7 @@
     }
     /**
      * PUBLIC DEMO (game.js DEMO_BUILD)
-     * In a demo build a normal player gets missions 1 and 2 (indices below
+     * In a demo build a normal player gets missions 1 to 4 (indices below
      * DEMO_MISSIONS). Everything later in `missions` is a story job or a
      * contract and is gated: the picker shows it locked and nameless (???) with a
      * FULL GAME badge (a click shows the buy note), the payphone does not ring for it, and
@@ -30,13 +30,13 @@
      * missions and stay open: the hill climb, beach volleyball, the stadium ball,
      * the Sunset Pier rides, the bike share, cabs, rail and the liner, the
      * casino, garages and the gun shop, Fort Sentinel and the Apache.
-     * Completing mission 2 shows the DEMO COMPLETE card (thanks, a stats recap,
+     * Completing mission 4 shows the DEMO COMPLETE card (thanks, a stats recap,
      * CONTINUE FREE ROAM / MAIN MENU); it is remembered in its own storage key,
      * `dead-end-city-demo`, which NEW GAME does not erase. God mode (the godmode
      * cheat) lifts every gate and never shows the card. The developer console's
      * startMission reaches a gated job only with god mode or `?dev` in the URL.
      */
-    const DEMO_MISSIONS = 2;
+    const DEMO_MISSIONS = 4;
     const DEMO_BUY_MESSAGE = 'Thanks for playing the demo! If you liked it, please buy the full game.';
     const DEMO_KEY = 'dead-end-city-demo';
     // Play time, cash earned and the highest wanted level of this story, saved
@@ -87,9 +87,9 @@
         if (demoCardIn === 0) showDemoComplete();
       }
     }
-    /* winMission: mission 2 closes the demo; the card follows the payday headline.
+    /* winMission: the last demo mission (4) closes the demo; the card follows the payday headline.
        Only the first time the story reaches the end (`firstTime`): a replay of
-       mission 2 is just a payday. */
+       it is just a payday. */
     function demoMissionWon(index, firstTime = true) {
       if (!DEMO_BUILD || player.godMode || index !== DEMO_MISSIONS - 1 || !firstTime) return false;
       demoCompleted = true;
@@ -265,7 +265,7 @@
       getElement('missionSelectNote').textContent = player.godMode
         ? 'God mode: every job is open. A job played ahead of the story does not skip it.'
         : demo
-          ? 'Demo: the first two missions are yours to play and replay. The rest of the story is in the full game.'
+          ? 'Demo: the first four missions are yours to play and replay. The rest of the story is in the full game.'
           : 'Replay a completed job or continue your story. Future jobs stay secret.';
       for (let i = 0; i < missions.length; i++) {
         const unlocked = missionUnlocked(i),

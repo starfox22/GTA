@@ -222,8 +222,6 @@
     /* What the prompt says in a vehicle at or in a garage (null elsewhere). */
     function garagePrompt(vehicle) {
       if (repairJob) return repairJob.phase === 'driveout' ? '' : 'SKIP';
-      // Vinny's coupe with its tracker (challenges.js): no respray until it is out.
-      if (mission?.index === 2 && [1, 2].includes(mission.stage) && garageForCar(vehicle)) return 'GET OUT · REMOVE THE TRACKER';
       const s = garageApproach(vehicle);
       if (!s) {
         // Heading for a garage (nose within 90 degrees of its door): how to get served.
@@ -252,19 +250,6 @@
         return true;
       }
       if (!c) return false;
-      if (mission?.index === 2 && [1, 2].includes(mission.stage) && garageForCar(c)) {
-        if (c === mission.car && garageForCar(c).id === 'eastside' && Math.abs(c.speed) < 8 && mission.stage === 1)
-          setStage(2, c, 'GET OUT · HOLD ' + keyName('interact') + ' BESIDE THE COUPE TO REMOVE TRACKER');
-        exitCar();
-        if (!player.car)
-          tell(
-            mission.stage === 2
-              ? 'Hold ' + keyName('interact') + ' beside the coupe to remove its transmitter before respraying.'
-              : 'Take the marked coupe to Eastside Garage to remove its transmitter.',
-            4,
-          );
-        return true;
-      }
       const s = garageApproach(c);
       if (!s) return false;
       if (mission?.index === 10 && mission.stage === 5) {

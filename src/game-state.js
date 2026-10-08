@@ -45,9 +45,9 @@
     const GAME_VERSION = '0.9.0';
     /**
      * DEMO BUILD FLAG
-     * true: the public demo. A normal player gets missions 1 and 2 only; every
+     * true: the public demo. A normal player gets missions 1 to 4 only; every
      * later story mission and contract shows as FULL GAME in the picker and the
-     * payphone stops ringing after mission 2, whose completion shows the DEMO
+     * payphone stops ringing after mission 4, whose completion shows the DEMO
      * COMPLETE card (thanks, stats, free roam or main menu). Free roam and its
      * activities stay open. God mode (the godmode cheat) plays everything, with
      * no card. false: the full game, with no demo gates or badges at all.

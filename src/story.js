@@ -332,7 +332,7 @@
       updateUI();
     }
     function offerMission() {
-      // PUBLIC DEMO (campaign.js): past mission 2 the payphone has nothing.
+      // PUBLIC DEMO (campaign.js): past mission 4 the payphone has nothing.
       if (demoStoryOver()) {
         tell(DEMO_BUY_MESSAGE, 5);
         return;
@@ -535,7 +535,7 @@
       cash += reward;
       finishCampaignMission(missionState);
       mission = null;
-      // PUBLIC DEMO: mission 2 brings up the DEMO COMPLETE card (campaign.js).
+      // PUBLIC DEMO: mission 4 brings up the DEMO COMPLETE card (campaign.js).
       const demoEnd = demoMissionWon(missionState.index, completed > previousCompleted);
       if (completed > previousCompleted) newCallNotice();
       enemies.length = 0;

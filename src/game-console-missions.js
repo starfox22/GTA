@@ -288,7 +288,6 @@
             .filter((p) => p.missionTag || p.name === 'ELENA CRUZ')
             .map((p) => ({ name: p.name, x: Math.round(p.x), y: Math.round(p.y), hp: Math.round(p.hp), hidden: !!p.hidden })),
           points: {
-            receipts: m.receipts?.map(pt),
             waterRoute: m.waterRoute?.map(pt),
             gates: m.gates?.map(pt),
             checkpoints: m.checkpoints?.map(pt),

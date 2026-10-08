@@ -7,8 +7,6 @@
      */
     /* Each chapter owns a different action, and a reason to take the next job. */
     const CHALLENGE_COPY = {
-      2: ['Steal the tracked coupe, remove its transmitter, and deliver it unseen.', 'Vinny’s Favor'],
-      3: ['Recover three receipt bundles before the customs office destroys them.', 'Paper Trail'],
       4: ['Switch cars with Elena to shake her tail before reaching the motel.', 'No Last Ferry'],
       5: [
         'Recover rival account books, defend the loading bay, and escape in the armored van.',
@@ -44,26 +42,6 @@
       return missionState.actionProgress >= seconds;
     }
     function startChallengeMission(missionState) {
-      if (missionState.index === 2) {
-        missionState.car = spawnClearCar('coupe', 1000, 666, Math.PI, false, '#89c7ab');
-        missionState.car.mission = true;
-        // The lift in Eastside Garage's bay (garages.js).
-        const eastside = GARAGES.find((g) => g.id === 'eastside');
-        missionState.workshop = {
-          x: eastside.service.x,
-          y: eastside.service.y,
-        };
-        setStage(0, missionState.car, 'STEAL VINNY’S SEA-GREEN COUPE');
-      }
-      if (missionState.index === 3) {
-        missionState.receipts = [
-          [2715, 1570],
-          [2930, 1570],
-          [3130, 1710],
-        ].map((p) => findStreetPoint(...p));
-        missionState.receipt = 0;
-        setStage(0, missionState.receipts[0], 'RECEIPTS 1 / 3 · ON FOOT, HOLD ' + keyName('interact') + ' TO COLLECT');
-      }
       if (missionState.index === 4) {
         setStage(0, LOC.cinema, 'PICK UP ELENA AT THE CINEMA · USE A CAR');
         storyActors.push(actor('ELENA CRUZ', LOC.cinema.x, LOC.cinema.y, '#7ac9c7'));
@@ -126,82 +104,6 @@
         ground = !playerOnRoof() && !player.parachute && (player.car?.altitude || 0) < 2,
         stopped = !player.car || Math.abs(player.car.speed) < 12,
         foot = !player.car && ground;
-      if (missionState.index === 2) {
-        if (missionState.stage === 0 && player.car === missionState.car) {
-          crime(2, 'seen');
-          setStage(
-            1,
-            missionState.workshop,
-            'TRACKER ACTIVE · PARK IN EASTSIDE GARAGE',
-            'vinny',
-            'The ledger is under the seat. Their transmitter is under the rear bumper. Remove it before coming to me.',
-          );
-        } else if (missionState.stage === 1) {
-          wantedStars = Math.max(1, wantedStars);
-          if (
-            (distanceBetween(missionState.car, missionState.workshop) < 75 ||
-              garageForCar(missionState.car)?.id === 'eastside') &&
-            Math.abs(missionState.car.speed) < 8
-          )
-            setStage(2, missionState.car, 'GET OUT · HOLD ' + keyName('interact') + ' BESIDE THE COUPE TO REMOVE TRACKER');
-        } else if (missionState.stage === 2) {
-          wantedStars = Math.max(1, wantedStars);
-          if (
-            holdMissionAction(
-              missionState,
-              deltaSeconds,
-              foot &&
-                distanceBetween(player, missionState.car) < 90 &&
-                Math.abs(missionState.car.speed) < 8,
-              4,
-            )
-          ) {
-            missionState.actionProgress = 0;
-            setStage(
-              3,
-              LOC.vinny,
-              'TRACKER REMOVED · LOSE POLICE · DELIVER THE COUPE',
-              'vinny',
-              'Clean signal. Now lose the patrols and bring the ledger.',
-            );
-          }
-        } else if (
-          missionState.stage === 3 &&
-          ground &&
-          near &&
-          stopped &&
-          player.car === missionState.car &&
-          wantedStars === 0
-        )
-          winMission();
-      }
-      if (missionState.index === 3) {
-        if (missionState.stage < 3 && holdMissionAction(missionState, deltaSeconds, foot && near, 2)) {
-          missionState.actionProgress = 0;
-          if (missionState.stage === 0) {
-            missionState.timer = missionState.timeLimit = 95;
-            crime(2, 'seen');
-          }
-          missionState.receipt++;
-          if (missionState.receipt < 3)
-            setStage(
-              missionState.receipt,
-              missionState.receipts[missionState.receipt],
-              'RECEIPTS ' + (missionState.receipt + 1) + ' / 3 · HOLD ' + keyName('interact') + ' · BEFORE THE SHREDDER',
-            );
-          else {
-            missionState.timeLimit = 0;
-            setStage(
-              3,
-              safehouse,
-              'ALL RECEIPTS SAVED · LOSE THE POLICE · GO HOME',
-              'elena',
-              'The signatures match both gangs. Daniel can authenticate them, if we find him alive.',
-            );
-          }
-        } else if (missionState.stage === 3 && ground && near && stopped && wantedStars === 0)
-          winMission();
-      }
       if (missionState.index === 4) {
         if (missionState.cleanCar?.hp <= 0 && missionState.stage < 3) {
           failMission('The clean getaway sedan was destroyed.');
@@ -565,9 +467,7 @@
       }
       if (
         near &&
-        ((missionState.index === 2 && missionState.stage === 2 && !player.car) ||
-          (missionState.index === 3 && missionState.stage < 3 && !player.car) ||
-          (missionState.index === 5 &&
+        ((missionState.index === 5 &&
             [1, 3].includes(missionState.stage) &&
             player.car === missionState.car) ||
           (missionState.index === 6 && [2, 3].includes(missionState.stage) && player.roof) ||
