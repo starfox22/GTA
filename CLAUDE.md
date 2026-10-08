@@ -395,6 +395,10 @@ packs with plain `<script src>` so the zip still plays from file://.
   Chimney and wood smoke: `fxWoodSmoke` / `updateChimneySmoke` (chimney-smoke3d.js); the pool's `thin` field thins a
   spreading plume; emitters keep the pool's clock and seed plumes whole; every `fxSmoke` caller passes an opacity and a
   floor (`chimneySmoke()`).
+- Sun path (sun-path.js): `sunPathAt` is the only sun/moon light path (the twilight handover slerps over
+  `SUN_HANDOVER` with `shade` dimming); renderers draw the light clock `litMinutes()`/`litDaylight()`, never
+  `worldMinutes`/`daylight()` for the look; any clock jump in play is blended by `stepSunClock`, a load, new game or
+  console `setClock` calls `snapSunClock()` (`sunReport()`, tools/tests/sun-gradual.mjs).
 - `cloudBaseAt(x, y)` / `cloudTopAt(x, y)` (clouds.js) are the only source of the cloud
   altitude (by weather and area); the renderer draws from the same maps
   (docs/areas/rendering-clouds.md). Console `cloudJump(metres, kind)` drops the player over
