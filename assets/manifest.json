@@ -66,6 +66,18 @@
     "original": "tools/player_model.py (Rocketbox m027 normal and specular maps)"
   },
   {
+    "id": "media-npc-models",
+    "file": "assets/npc-models.bin",
+    "mime": "application/octet-stream",
+    "original": "tools/npc_models.py (32 Microsoft Rocketbox avatars, MIT: the CAST list)"
+  },
+  {
+    "id": "media-npc-skin",
+    "file": "assets/npc-skin.webp",
+    "mime": "image/webp",
+    "original": "tools/npc_models.py (the cast's colour maps in one atlas)"
+  },
+  {
     "id": "media-music-synth",
     "file": "assets/music/synth.mp3",
     "mime": "audio/mpeg",
