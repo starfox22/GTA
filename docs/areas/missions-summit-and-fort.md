@@ -26,3 +26,35 @@ cleanup, the demo gate) are in missions-and-demo.md; this page is what each job 
   hole and spoil heap that grow, the case once the dig passes 62 %. Shared standard materials only (no new
   program, nothing to prewarm).
 - Console: `summitJob()` (report), `summitSkip('summit' | 'deliver')`. Test: tools/tests/mission3-summit.mjs.
+
+## Mission 4: Borrowed Stripes (fortjob.js with vehicle-trunk.js, fort-cover*.js, skyline-meeting.js)
+
+- `FORT_JOB`: the stakeout where the Sentinel causeway meets the coast road (also the entry's `start`), Kessler's
+  car in the fort's lot, the gate's outbound lane, his kerb on Marina Rd opposite the Marea (north side: he arrives
+  westbound) and his walk to the door. Stages are `FORT_STAGE` (stakeout, tail, parked, trunk, take, change, gate,
+  inside, out, meet).
+- Vinny's call gives the lockpick (`giveLockpick`, arsenal slot 8). Watching from the stakeout for 4 s with no stars
+  sends Kessler out: a red `muscle` car, `mission` (never retired, burns slowly), `missionDriver: 'kessler'`,
+  `trunkLoot` UNIFORM AND ID, driving `countyRoute` = `fortRoute()` (the navigation graph held to the right lane,
+  as the cabs drive it). Wedged for 9 s he skips a node only where `spotUnseen` both ends.
+- The tail: `tailHeat` rises on his bumper (within `tooClose`) or close behind him while he moves; held up behind him
+  in traffic or at a drawbridge does not count. At 1 he made the tail (fail); farther than `lost` for `lostSeconds`
+  after he passed the stakeout, he is lost (fail). The meter shares `#stealthStatus` (fortJobUI after roofMissionUI).
+- `missionDriver` is declared in makeCar and copied to the driver on foot by `makeCarDriver` (carjack.js), so a
+  carjacked, crashed or parked Kessler is still `fortKessler(m)`; the crowd streamer never moves him
+  (`streamableWalker`). His walk to the door is `p.missionWalk`, run by `updateMissionWalker` (game-people.js) until
+  a reaction takes over; at the door he leaves the world.
+- Quiet way: once he is inside, pick the trunk (vehicle-trunk.js; only someone within ~15 m looking at the player,
+  `lockpickWatcher`, phones it in; an officer in sight is a crime seen). Kessler seeing the pick while he is still
+  outside shouts and reports a theft. Messy way: his car taken (keys in it) or Kessler down (take his keys from the
+  body); `fortKeysOpenTrunk` runs before `lockpickInteract`, so keys win over a pick in hand.
+- The change: in a car standing still it happens by itself (3 s); on foot, a held interact where no pedestrian
+  within 260 units has a clear line and not inside the base. Then `wearUniform(true)` and `fortCoverBegin()`.
+- Base: fort-cover.js does the gate's papers (`FORT_COVER_GATE.check`), the soldiers' suspicion, the military-vehicle
+  alarm and the records office (`FORT_RECORDS.door`, `fortCover.papers`). Blown before the papers: the job fails;
+  after: get out with them however. Out (calm crossing, or off the base 260 units from the gate): `skyMeetingBegin`.
+- Meeting: the stage text follows `skyMeeting.stage` (skyline-meeting.js, places-sky-meeting.md); 'failed' (the
+  consul killed) fails the job, 'done' wins it. A won job keeps the uniform on (`fortJobKeepsUniform`,
+  cleanupMissionExtras); the next job, a death or a new game takes it off.
+- Console: `fortJob()`, `fortSkip('arrive' | 'parked' | 'inside' | 'changed' | 'meet')` (always a fresh run).
+  Tests: mission4-tail.mjs, mission4-paths.mjs (and fort-cover, lockpick, sky-meeting for the systems).

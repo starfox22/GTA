@@ -165,6 +165,18 @@ packs with plain `<script src>` so the zip still plays from file://.
   calls `settleDemoStoryIndex()` (campaign.js: back to `completed` for any player without god mode), or the
   payphone offers the old job. RESTART CURRENT JOB restarts only `restartableJob()` (story.js: the running job or
   the last failed one, `retryJobIndex`), never a waiting call. Console `pointers()` lists every story pointer.
+- Missions 3-4 (docs/areas/missions-summit-and-fort.md): the summit cache is drawn only from `summitCacheView()`;
+  a story character at the wheel carries `missionDriver` (declared in makeCar, copied to the driver on foot by
+  `makeCarDriver`; `streamableWalker` never moves him) and a scripted walk is `p.missionWalk` (`updateMissionWalker`
+  steps aside for a reaction). The lockpick is `LOCKPICK_INDEX` (arsenal.js, a TOOL, never in `weapons`); trunks and
+  lock picking go only through vehicle-trunk.js (`c.trunkLoot`, `trunkPoint`, `openTrunk`/`closeTrunk`, never
+  `c.trunkOpen` by hand); a pick is reported only by `lockpickWatcher()` (someone close and looking, or police).
+  Fort Sentinel cover (fort-cover*.js): `fortCoverShielded()` is the only exception to `militaryThreatened`,
+  `fortCoverOwnsGate()` the only replacement for the gate challenge, `fortCoverBoarded(c)` the only military-vehicle
+  rule; every hook checks `fortCover.active`, so free roam is unchanged; `player.uniform` is the borrowed uniform.
+  The CIRRUS meeting (skyline-meeting.js) is driven only through `skyMeetingBegin/End/Report/Target` and
+  `skyMeeting.stage`; a seated player is `player.sceneSeat` (`teleportPlayer` clears it); CIRRUS staff are lent only
+  through `keyPerson.errand`.
 - Service counters never sell nothing: health items in `SERVICE_CURES` and armour are refused when full
   (citylife-police.js `serviceAction`).
 - Mission vehicles take gang small-arms damage through `missionCageShare` (combat-rules.js `MISSION_CAGE`: 32 %

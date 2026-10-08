@@ -9,8 +9,12 @@ rules, workflow), then this page, then only the area doc your task needs (`docs/
   second camera: V switches the overhead STREET view and a GTA IV-style third-person CHASE view (October 6-7
   round, branch `claude/trusting-cannon-seq2mv`; not on `main` until the owner approves).
   Version 0.9.0 is the **public demo**: free roam over the whole map plus story missions 1 (the harbour
-  job) and 2 (the Blue Hour hotel hit). Missions 3+ are gated for regular players (`DEMO_BUILD`,
-  `demoLocked()`; god mode lifts the gates). Bug passes and polish target free roam and missions 1-2 only.
+  job), 2 (the Blue Hour hotel hit), 3 (High Ground: the package on top of Mount Ascent) and 4 (Borrowed Stripes:
+  Kessler's uniform, Fort Sentinel, the consul at CIRRUS), added October 8 on `claude/confident-johnson-vlpoqb`.
+  Missions 5+ are gated for regular players (`DEMO_BUILD`, `DEMO_MISSIONS` = 4, `demoLocked()`; god mode lifts the
+  gates). The owner is replacing the old story job by job: the old missions 3 (Vinny's Favor) and 4 (Paper Trail)
+  are deleted, and the rest (challenges.js 5-9, aviation 10-11) will go the same way. Bug passes and polish target
+  free roam and missions 1-4.
 - **Branches**: `main` is the owner's approved game. On October 6 the owner approved moving the working
   branch `claude/tender-babbage-3t74xl` (rounds of October 4-6) to `main`, so both held the same commit then.
   On October 8 the owner approved moving `claude/trusting-cannon-seq2mv` (the chase view and chase detail rounds,
@@ -126,6 +130,12 @@ measure GPU cost, so real-GPU gains of render changes are unverified.
 
 ## Open items and design questions (owner's call; details in docs/BACKLOG.md)
 
+- Missions 3-4 (October 8; `docs/changes/2026-10-08-*`, docs/areas/missions-summit-and-fort.md): the parachute was
+  left as it is at the owner's word (a jump onto the summit uses the existing landing and scree rules). Open lines:
+  vans and SUVs open their trunk with no lid drawn (tailgate part of the body); Varga's waistcoat is not modelled;
+  the cocktail is the beach club's glass prop; the Marea's street is busy, so a quiet pick means waiting for a gap
+  (`lockpickWatcher`: someone within ~15 m looking); Kessler walks in even when the club's door is shut (05:15-09:30).
+
 - The chase view (BACKLOG "Chase view", "Effect particles"): no cover system yet (a design question: the player's rounds would hit the
   car they hide behind); motion blur is the camera's own; sky, haze, glare and the new materials were tuned on
   SwiftShader only (check on a real GPU); after the draw budget the chase view still draws ~2.5 times the street
@@ -145,8 +155,6 @@ measure GPU cost, so real-GPU gains of render changes are unverified.
   - Crumple: a sprung door covers the lower door only; street-view mark sizes unchanged.
   - Street camera: look-ahead defaults to 150 % but its frame share stops at `leadShareMax` 0.3 (HUD clearance).
 
-- Mission 4's "GO HOME" goal now ends at the SUNSET MOTEL (the free-standing safehouse was removed); it is not
-  in the demo.
 - The night-and-rain mission scenario at HIGH graphics was never re-run after a container restart; real-GPU
   frame costs of the prewarm, staged tier change and cell pre-upload are unmeasured (only counts were).
 - Remaining performance levers: an active-vehicle list for parked cars (exactness constraints in BACKLOG),
