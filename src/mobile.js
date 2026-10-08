@@ -150,9 +150,10 @@
       ['touchGo', () => ['KeyW']],
       ['touchBrake', () => ['KeyS']],
       // In an aircraft the up/down buttons are the climb and descend actions;
-      // elsewhere the up button is the handbrake. The parachute opens from the
-      // jump button (touchJump), as the bail key does.
-      ['touchUp', () => [isAircraft(player.car) ? actionCode('ascend') : actionCode('handbrake')]],
+      // in another vehicle the up button is the handbrake, and on foot it jumps
+      // (player-jump.js). The parachute opens from the PARACHUTE button
+      // (touchJump), as the bail key does.
+      ['touchUp', () => [isAircraft(player.car) ? actionCode('ascend') : player.car ? actionCode('handbrake') : actionCode('jump')]],
       ['touchDown', () => [actionCode('descend')]],
       // On foot the player runs; the WALK button holds the walk action.
       ['touchRun', () => [actionCode('walk')]],
@@ -244,7 +245,7 @@
       show('touchFire', !!c);
       show('touchGo', !!c || chute);
       show('touchBrake', !!c || chute);
-      show('touchUp', !!c);
+      show('touchUp', !!c || (foot && !player.swimming));
       show('touchDown', air);
       show('touchRun', foot);
       show('touchAction', !chute);
@@ -283,7 +284,7 @@
         case 'touchBrake':
           return chute ? 'FLARE' : air ? 'POWER −' : 'BRAKE';
         case 'touchUp':
-          return c?.type === 'plane' ? 'NOSE UP' : c?.type === 'helicopter' ? 'RISE' : 'HANDBRAKE';
+          return c?.type === 'plane' ? 'NOSE UP' : c?.type === 'helicopter' ? 'RISE' : c ? 'HANDBRAKE' : 'JUMP';
         case 'touchDown':
           return c?.type === 'plane' ? 'NOSE DOWN' : 'DESCEND';
         case 'touchAction':

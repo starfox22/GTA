@@ -13,6 +13,23 @@
     const BUILDING_CELL = 256,
       buildingGrid = new Map(),
       noBuildings = [];
+    /**
+     * LOW THINGS A JUMP CLEARS (player-jump.js)
+     * A solid with a `height` (map units; `jumpH` on foot furniture) lower than
+     * `solidSkipBelow` and not lower than SOLID_LOW_MIN does not block. It is 0
+     * (nothing skipped) except inside the jumping player's own foot step
+     * (footSolid / footFurnitureBlocked), so everyone else, vehicles and every
+     * other caller see solid() unchanged. Below SOLID_LOW_MIN a solid that stops
+     * walkers marks water (a pool's edge, a lily pond), never something to hop.
+     * `jumpLow` is the step's state: on while the player jumps or settles after a
+     * landing, `clear` the soles' height now.
+     */
+    const SOLID_LOW_MIN = 3,
+      jumpLow = { on: false, clear: 0 };
+    let solidSkipBelow = 0;
+    function jumpedOver(height) {
+      return height < solidSkipBelow && height >= SOLID_LOW_MIN;
+    }
     function buildBuildingGrid() {
       buildingGrid.clear();
       for (const b of buildings) {
@@ -101,7 +118,7 @@
       if (!cells || i1 - i0 > 12 || j1 - j0 > 12) {
         for (let i = 0; i < list.length; i++) {
           const b = list[i];
-          if (x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h) return true;
+          if (x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h && !(solidSkipBelow && jumpedOver(b.height))) return true;
         }
         return false;
       }
@@ -115,7 +132,7 @@
           if (cell === null) continue;
           for (let k = 0; k < cell.length; k++) {
             const b = cell[k];
-            if (x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h) return true;
+            if (x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h && !(solidSkipBelow && jumpedOver(b.height))) return true;
           }
         }
       }
@@ -288,8 +305,33 @@
       }
       return false;
     }
+    /* solid() for a foot step. The jumping (or just landed) player: everything a jump never clears at the body's
+       width, then the low things at the legs' width while the feet are not above them; a step that starts inside
+       a low thing at the legs' width may leave it (a landing on top slides off). */
+    function footSolid(body, x, y, r, swimmer) {
+      if (body !== player || !jumpLow.on) return solid(x, y, r, swimmer);
+      solidSkipBelow = JUMP_LOW_MAX;
+      let hit = solid(x, y, r, swimmer);
+      if (!hit) {
+        solidSkipBelow = jumpLow.clear;
+        hit = solid(x, y, JUMP_BODY_R, swimmer) && !solid(body.x, body.y, JUMP_BODY_R, swimmer);
+      }
+      solidSkipBelow = 0;
+      return hit;
+    }
+    function footFurnitureBlocked(body, x, y) {
+      if (body !== player || !jumpLow.on) return footObstacleBlocked(x, y, 4.5);
+      solidSkipBelow = JUMP_LOW_MAX;
+      let hit = footObstacleBlocked(x, y, 4.5);
+      if (!hit) {
+        solidSkipBelow = jumpLow.clear;
+        hit = footObstacleBlocked(x, y, JUMP_BODY_R) && !footObstacleBlocked(body.x, body.y, JUMP_BODY_R);
+      }
+      solidSkipBelow = 0;
+      return hit;
+    }
     function footStepBlocked(body, x, y, collisionRadius, swimmer, onFoot, reach) {
-      if (solid(x, y, collisionRadius, swimmer)) return true;
+      if (footSolid(body, x, y, collisionRadius, swimmer)) return true;
       // Where the player may cross the shoreline (beaches, ladders): water.js.
       if (swimmer && shoreStepBlocked(body.x, body.y, x, y, collisionRadius)) return true;
       if (body.police && harborPoliceProtected(x, y, collisionRadius)) return true;
@@ -297,7 +339,7 @@
       if (body.police && depotPoliceBlocked(body, x, y)) return true;
       // Street furniture, tree trunks, park fixtures and shelters stop the
       // player on foot (streets.js); the crowd keeps to its own paths round them.
-      if (onFoot && footObstacleBlocked(x, y, 4.5)) return true;
+      if (onFoot && footFurnitureBlocked(body, x, y)) return true;
       // Behind the drawbridge's sidewalk arms, and never onto a raised span.
       if (drawbridgeFootBlocked(body, x, y, collisionRadius)) return true;
       return footStepVehicleBlocked(x, y, collisionRadius, reach);

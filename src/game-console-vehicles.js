@@ -287,6 +287,16 @@
         unit: getElement('speedUnit').textContent,
         units: hudState.units,
       }),
+      // Vehicles within `metres` of the player, nearest first: id, type, distance in metres, whether the player may take
+      // it without a theft (authorized), whether anyone drives it.
+      vehiclesNear(metres = 60) {
+        const out = [];
+        for (const c of vehicles) {
+          const d = Math.hypot(c.x - player.x, c.y - player.y) / UNITS_PER_METRE;
+          if (d <= metres) out.push({ id: c.id, type: c.type, metres: +d.toFixed(1), authorized: !!c.authorized, driven: !!(c.ai || c === player.car) });
+        }
+        return out.sort((a, b) => a.metres - b.metres);
+      },
       // Rack a bicycle beside the player.
       bike(headingRadians = player.a) {
         spawnClearCar(

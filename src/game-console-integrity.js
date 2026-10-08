@@ -135,6 +135,7 @@
           wading: !!player.wading,
           parachute: !!player.parachute,
           fall: !!player.fall,
+          jump: !!player.jump,
           climbing: !!player.climbing,
           carjack: !!player.carjack,
           thrown: !!player.thrown,

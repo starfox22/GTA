@@ -137,8 +137,8 @@
           s.still = { pose: stillPose, dead, detail, body: BODY, look: R, facing, gore: p.goreVersion || 0, records: [] };
           crowdRecording = s.still.records;
         }
-        // Swimming strokes and the parachute set the limbs outright.
-        if (spec && (spec.swim || spec.parachute)) applyLimbOverrides(spec, J);
+        // Swimming strokes, the parachute and the jump set the limbs outright.
+        if (spec && (spec.swim || spec.parachute || spec.jump)) applyLimbOverrides(spec, J);
         // Facing. The upper body turns to where they face; the hips follow the
         // direction of travel (strafing, backing away) or, standing, step round
         // once the twist grows large.

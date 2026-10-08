@@ -57,7 +57,8 @@ Where a file lives: `grep -i <word> docs/FILEMAP.md`.
 - **Carriers**: the player is held by one at a time: `player.car`, `player.roof` (Blue
   Hour terrace), `player.buildingRoof`, `player.deck` (superyacht, liner),
   `player.parachute`, `player.coaster` (Falcon and Sunset Eye), `player.pool`,
-  `player.thrown`, `player.fall` (off a drop, falls-body.js), `player.carjack` (the struggle
+  `player.thrown`, `player.fall` (off a drop, falls-body.js), `player.jump` (the jump on foot, under a second:
+  player-jump.js `cancelPlayerJump`), `player.carjack` (the struggle
   at a car door: `cancelCarjack()`), `transitRide`, `taxiRide`, or the water (`swimming`,
   `wading`, `climbing`). `teleportPlayer()` lets go of all of them (a train ride through
   `dropTransitRide`; a vehicle with nowhere to step out to, a boat at sea or a boxed-in car, is left where

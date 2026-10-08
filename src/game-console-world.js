@@ -232,6 +232,8 @@
     // FALLS: bailOut(metres, x, y, heading), openParachute(), parachuteState(), parachuteFallTo(target), fallState(),
     // cliffSpot(kind), fallTest(kind, arg) (falls-console.js).
     addConsoleMethods('falls', fallsConsole());
+    // The jump on foot: jumpReport(), jumpObstacles(x, y, radius, count) (player-jump.js).
+    addConsoleMethods('jump', playerJumpConsole());
     // North Point Key: skyline(), skylineVisit(spot) (skyline-console.js).
     addConsoleMethods('skyline', skylineConsole());
     // Clouds: cloudLayer(x, y, altitudeM), cloudSpot(kind, lead), cloudJump(metres, kind) (clouds-console.js).

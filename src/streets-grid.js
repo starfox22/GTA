@@ -245,14 +245,14 @@
       }
       // Radii up to 32 are covered by the margin each solid was bucketed with.
       if (r > 32) {
-        for (const b of list) if (x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h) return true;
+        for (const b of list) if (x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h && !(solidSkipBelow && jumpedOver(b.height))) return true;
         return false;
       }
       const cell = streetEndGrid.get(Math.floor(x / 256) * 4096 + Math.floor(y / 256));
       if (!cell) return false;
       for (let i = 0; i < cell.length; i++) {
         const b = cell[i];
-        if (x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h) return true;
+        if (x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h && !(solidSkipBelow && jumpedOver(b.height))) return true;
       }
       return false;
     }

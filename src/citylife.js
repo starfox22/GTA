@@ -6,6 +6,7 @@
      * Clock, businesses, officers, police routing, wanted search and injury effects.
      */
     // @include src/citylife-places.js
+    // @include src/sun-path.js
     // @include src/citylife-police.js
     // @include src/citylife-civic.js
     // END SUBSYSTEM: src/citylife.js

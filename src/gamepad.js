@@ -29,7 +29,8 @@
     /* Buttons in standard-mapping order, per control context: the actions each drives. */
     const PAD_PLAY = {
       // R3 switches the street and chase views (chase-camera.js); in the chase view on foot LT aims over the shoulder.
-      foot: [['interact'], ['poison'], ['reload'], ['skipRide'], ['cycleWeapon'], ['arsenal'], ['walk'], ['fire'], ['map'], [], ['missionCard'], ['cameraView'], ['zoomIn'], ['zoomOut'], ['skipStop'], ['help']],
+      // Y jumps (player-jump.js); on a ride, where nobody jumps, it skips the ride.
+      foot: [['interact'], ['poison'], ['reload'], ['skipRide', 'jump'], ['cycleWeapon'], ['arsenal'], ['walk'], ['fire'], ['map'], [], ['missionCard'], ['cameraView'], ['zoomIn'], ['zoomOut'], ['skipStop'], ['help']],
       drive: [['interact'], ['handbrake'], ['reload'], ['bail'], ['horn'], ['fire'], ['back'], ['forward'], ['map'], [], ['sprint'], ['cameraView'], ['zoomIn'], ['zoomOut'], ['radioPower'], ['radioNext']],
       air: [['interact'], ['rockets', 'flapsUp'], ['reload'], ['bail'], ['flapsDown'], ['fire'], ['back'], ['forward'], ['map'], [], ['gear'], ['divert'], ['zoomIn'], ['zoomOut'], ['radioPower'], ['radioNext']],
       chute: [[], [], [], ['bail'], [], [], ['back'], ['forward'], ['map'], [], [], ['cameraView'], ['zoomIn'], ['zoomOut'], [], []],

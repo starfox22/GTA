@@ -147,6 +147,8 @@ packs with plain `<script src>` so the zip still plays from file://.
 - The Blue Hour: `BLUE_HOUR_ENTRANCE` (roofmission-entrance.js) is the only plan for the hotel's
   forecourt (canopy, limousines, staff); street furniture stays off it via `blueHourForecourt()`.
   Terrace furniture stays inside `roofCover` footprints or the 14-unit strip along the railings.
+- Respray garages are marked only in a chase: `garageBeacon()` (garages.js RESPRAY BEACON) is the one rule; renderers
+  read it.
 - Every drivable island has a respray garage (`GARAGE_ISLANDS`, garages-shops.js; checked by
   tools/tests/garages-islands.mjs).
 - `playerImpact()` / `fallInjury()` / `riderInjury()` (falls-body.js) are the only fall-damage
@@ -157,6 +159,10 @@ packs with plain `<script src>` so the zip still plays from file://.
   (flight-view3d.js `tagSceneryDetail` otherwise hides small meshes from the flight camera).
 - `tyreEmission(c)` (tyre-effects.js) is the only rule for tyre smoke, dust and spray: smoke only
   from a burnout (`burnoutStep`); skid marks only through `layTyreMarks`; renderers only draw them.
+- Jump on foot (player-jump.js): `player.jump` is a carrier (`cancelPlayerJump`); what a jump clears is a solid's
+  `height` (foot furniture `jumpH`, props `JUMP_PROP_HEIGHT`) skipped through `solidSkipBelow` only in the jumping
+  player's own step (`footSolid`), never elsewhere; Fort Sentinel, the theme park and the Marea keep their blockers out
+  of it. Space is `jump` on foot, `handbrake` driving, `rockets` in the air.
 - `c.wheelie` (wheelie.js) is the only two-wheeler pitch; wheelie input is `wheelieHeld()` (controls.js).
 - Objectives have no ground ring or light pool: the floating arrow (render3d-effects.js `arrowGroup`, shown
   by `objectiveArrowShown()` in markers.js) is the only pointer; the ring under the player is the `playerRing`
@@ -251,7 +257,8 @@ packs with plain `<script src>` so the zip still plays from file://.
 - The TO LOSE POLICE countdown shows only through `searchClockShown()` (citylife-civic.js SEARCH CLOCK: on screen
   only while it runs at full speed; hidden, with the panel saying why, while holding for a 911 response or creeping
   inside the search circle). Police sight is debounced there; `PURSUIT_SEARCH_SECONDS` sets the times.
-- Cheat codes: `CHEAT_CODES` (game-input.js; GODMODE and AAAAXBBBBYXXXXAYYYYB both run `godModeCheat`). A code
+- Cheat codes: `CHEAT_CODES` (game-input.js; GODMODE runs `godModeCheat` (+`GOD_MODE_CASH`), HELICOPTER `helicopterCheat`;
+  AAAAXBBBBYXXXXAYYYYB is switched off for now). A code
   whose first letters are driving keys sets `CHEAT_SWALLOW_FROM` so it never eats a steering tap.
   Each toggle plays `showGodSplash(on)` (god-splash.js: CSS-run card at z-index 100 over Settings); its sound
   (god-splash-audio.js) lands on `GOD_SPLASH_IMPACT` / `GOD_SPLASH_POWER_OFF`: retime the CSS and those together.
@@ -392,6 +399,10 @@ packs with plain `<script src>` so the zip still plays from file://.
   Chimney and wood smoke: `fxWoodSmoke` / `updateChimneySmoke` (chimney-smoke3d.js); the pool's `thin` field thins a
   spreading plume; emitters keep the pool's clock and seed plumes whole; every `fxSmoke` caller passes an opacity and a
   floor (`chimneySmoke()`).
+- Sun path (sun-path.js): `sunPathAt` is the only sun/moon light path (the twilight handover slerps over
+  `SUN_HANDOVER` with `shade` dimming); renderers draw the light clock `litMinutes()`/`litDaylight()`, never
+  `worldMinutes`/`daylight()` for the look; any clock jump in play is blended by `stepSunClock`, a load, new game or
+  console `setClock` calls `snapSunClock()` (`sunReport()`, tools/tests/sun-gradual.mjs).
 - `cloudBaseAt(x, y)` / `cloudTopAt(x, y)` (clouds.js) are the only source of the cloud
   altitude (by weather and area); the renderer draws from the same maps
   (docs/areas/rendering-clouds.md). Console `cloudJump(metres, kind)` drops the player over

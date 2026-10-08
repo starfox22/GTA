@@ -176,6 +176,8 @@
         updateAmbience(deltaSeconds);
       }
       syncPanelCover();
+      // The light clock (sun-path.js) on the frame clock, also behind menus: a time skip is drawn over a few seconds.
+      stepSunClock(deltaSeconds);
       const drawStart = performance.now();
       if (!NO_RENDER && !frameTrace.skipDraw) drawWorld(); // ?dev&norender (render3d.js): logic tests draw nothing
       updateTankReticle();

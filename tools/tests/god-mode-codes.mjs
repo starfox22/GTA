@@ -1,8 +1,8 @@
-// God mode's two cheat codes (game-input.js CHEAT CODE), typed with real key presses: GODMODE and
-// AAAAXBBBBYXXXXAYYYYB both toggle it, in either case (Shift for capitals is ignored, not a break),
-// each toggle plays its splash card, and the A key still steers while the long code is only begun (it eats keys from its X on).
+// God mode's cheat code (game-input.js CHEAT CODE), typed with real key presses: GODMODE toggles it in
+// either case (Shift for capitals is ignored, not a break), each toggle plays its splash card, and two A
+// taps both steer (no code eats a lone A). The pad-style AAAAXBBBBYXXXXAYYYYB is off (cheat-helicopter.mjs).
 export const fresh = true;
-const LONG = 'AAAAXBBBBYXXXXAYYYYB';
+const LONG = 'GODMODE';
 async function type(t, text, shift = false) {
   for (const ch of text) await t.keys(shift ? ['ShiftLeft', 'Key' + ch] : ['Key' + ch], 0.04, { real: true });
 }
@@ -21,10 +21,10 @@ export default async function (t) {
   s = await t.call('status');
   t.note(`A taps: x ${x0} → ${x1} → ${s.x}`);
   t.assert(x1 < x0 - 2 && s.x < x1 - 2, 'both A taps should walk the player left: ' + [x0, x1, s.x].join(' → '));
-  // The long code in lower case (after those stray A's): god mode on, Settings · GOD MODE opens.
+  // The code in lower case (after those stray A's): god mode on, Settings · GOD MODE opens.
   await type(t, LONG);
   await t.realWait(0.3);
-  t.assert(await god(), 'AAAAXBBBBYXXXXAYYYYB did not turn god mode on');
+  t.assert(await god(), 'godmode did not turn god mode on');
   s = await t.call('status');
   t.note('after the code: mode ' + s.mode);
   t.assert(s.mode === 'settings', 'god mode should open its settings tab: ' + s.mode);
@@ -48,10 +48,10 @@ export default async function (t) {
   await t.realWait(3);
   for (let i = 0; i < 12 && (splash = await t.call('godSplash')).shown; i++) await t.realWait(0.25);
   t.assert(!splash.shown && splash.kind === null, 'the OFF splash did not go away: ' + JSON.stringify(splash));
-  // GODMODE still works.
+  // And on again.
   await type(t, 'GODMODE');
   await t.realWait(0.3);
-  t.assert(await god(), 'GODMODE no longer turns god mode on');
+  t.assert(await god(), 'GODMODE did not turn god mode back on');
   for (let i = 0; i < 3 && (await t.call('status')).mode !== 'play'; i++) {
     await t.keys('Escape', 0.05, { real: true });
     await t.realWait(0.3);

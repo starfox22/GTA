@@ -26,7 +26,7 @@
     }
     function playerInFight() {
       return (
-        !!(mouse.down || keys.KeyF || keys.Space) ||
+        !!(mouse.down || keys.KeyF) ||
         gameTime - (player.lastShotAt ?? -100) < 1.6 ||
         reloadSecondsRemaining > 0 ||
         gameTime - (player.punchAt ?? -100) < 2.5 ||

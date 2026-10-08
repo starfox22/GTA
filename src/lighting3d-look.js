@@ -163,7 +163,7 @@
         envAge += (now - lightingClock) / 1000;
         lightingClock = now;
         updateSunPath();
-        const light = daylight(),
+        const light = litDaylight(),
           // The lights come on with `night` (from ~1.5 h before sunset); the
           // night LOOK (moon and sky fill, exposure, the blue grade) waits for
           // `dark`, from the last half hour of sun: the moonlit fill and blue lift
@@ -221,6 +221,12 @@
         const nightFill = chaseViewActive ? CHASE_NIGHT : STREET_NIGHT;
         sun.intensity += dark * NIGHT_LOOK.moon * nightFill.moon;
         hemi.intensity += dark * NIGHT_LOOK.sky * nightFill.sky;
+        // Through twilight the light swings from the sun to the moon (sun-path.js): its shadows fade out and back
+        // while it turns, the sky fill taking a little of what it gives up (twilight light is diffuse).
+        if (sunShade < 1) {
+          hemi.intensity += sun.intensity * (1 - sunShade) * 0.3;
+          sun.intensity *= sunShade;
+        }
         // Post look: exposure, bloom and grade (postfx3d.js).
         // A touch more exposure at night: legibility first, darkness second.
         postLook.exposure = renderer.toneMappingExposure * (1 + dark * NIGHT_LOOK.exposure * nightFill.exposure);
