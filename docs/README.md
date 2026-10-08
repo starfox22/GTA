@@ -25,7 +25,7 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/people-and-crowd-vehicles.md | Who sees or hears a car coming and how they react (dodge, freeze, hit unaware), the second pass over someone on the ground (harm by speed and weight, blood, dying) |
 | areas/people-and-crowd-living-city.md | Free roam's living city: traffic streamed round the player by hour and district, sirens and pulling over, ambulances and paramedics, street events |
 | areas/police-and-combat.md | Heat and stars, police response, shooting and wounds, carjacking, overhead cover, damage and breakables |
-| areas/police-and-combat-ammo.md | Where guns and rounds come from: no street ammo or armour, the gun shops, taking a body's gun, police vehicles' stock; the on-screen fire rule |
+| areas/police-and-combat-ammo.md | Where guns and rounds come from: no street ammo or armour, the gun shops, taking a body's gun, police vehicles' stock; the on-screen fire rule; the lockpick and trunks |
 | areas/police-and-combat-witnesses.md | Witnesses and 911 calls: who calls, the call and its bubbles, the response to a report, `witnessReport` |
 | areas/police-and-combat-blood.md | Blood: a hit's spatter and drops, the pool a body bleeds out, blasts and impacts, `bleed()` for other code |
 | areas/police-and-combat-gore.md | Gore: blood by calibre, range and zone, point-blank loads, lost limbs and heads, stumps and bleeding out, wounds on the clothes, the Gore setting |

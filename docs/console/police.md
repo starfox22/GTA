@@ -18,7 +18,7 @@
 | `strikeTest(role, weaponIndex, distance, zone)` | A target of `role` (`civilian`, `gang`, `vescari`, `patrol`, `road`, `swat`, `fed`, `soldier`, `garrison`) `distance` (50) ahead of the player struck by weapon `weaponIndex` through `strikePerson` until `down`; every round in `zone` (`torso` default, `head`, `leg`; null as in play); returns `hits`, `down`, `dead`, position, heading `a`, `moved` (how far any hit moved the body: 0), `vestLeft` |
 | `parkLawVehicle(kind, board)` | An empty, unlocked `patrol` car, `swat` van or `fed` SUV 70 units east; `board` takes the wheel at once (enterVehicle, which takes its stock once) |
 | `hostileGunman(dx, dy, seconds)` | A live Harbor Kings gunman out for the player (the ON-SCREEN RULE test; `shotLog` source `harbor-gunman`) |
-| `arm(index)` | Own weapon `index` (0 pistol to 5 precision rifle) with full ammunition and select it; 6 selects the knife, 7 no weapon (fists) |
+| `arm(index)` | Own weapon `index` (0 pistol to 5 precision rifle) with full ammunition and select it; 6 selects the knife, 7 no weapon (fists), 8 the lockpick (given first) |
 | `roadblocks()`, `containment()` | Police cordon state (cruisers still braced, cones knocked, breached) |
 | `roadblock(siteIndex)`, `clearRoadblocks()` | Build a police cut at a chokepoint (nearest to the player if omitted); take every cut down (repeatable ram tests) |
 | `military()` | Fort Sentinel: alert, lockdown, gate challenge level, each lane's arm, bollards and sliding gate (and what is broken), soldiers on duty by role, military vehicles and their roles, the supply run and the drill |
