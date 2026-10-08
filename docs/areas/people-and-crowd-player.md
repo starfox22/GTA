@@ -6,39 +6,45 @@ player in a disguise (mission 2's suit), stays on the rig (people-and-crowd-rig.
 
 ## Who he is
 
-A handsome, athletic man in his forties, 1.80 m to the scalp (about 7.6 heads), the rig's joints at `PB_WIDTH`
-0.92: about 0.53 m across the deltoids, a defined chest and arms filling the sleeves, a flat stomach and a V to
-the waist; a strong jaw and chin, cheekbones, a straight nose, neat short brown hair with a slightly receded M
-and a little grey over the ears, light stubble, a few fine lines, hazel eyes; a plain black crew-neck tee,
-mid-wash straight jeans breaking over dark brown leather derbies. `outfitLook(p, 'player')` (crowd3d-looks.js)
-carries the same colours and width (`widthAbsolute`) for the crowd sets (the disguise, the 2D fallback).
+A muscular man in his thirties, 1.81 m to the crown, after the owner's reference: short dark-brown hair, a trimmed
+dark beard, a black tee with a white skull on the chest, dark indigo jeans, brown shoes, lightly tanned skin. He is
+the Microsoft Rocketbox avatar Male_Adult_16 (MIT, docs/THIRD_PARTY_CREDITS.txt), restyled. The rig's joints are at
+`PB_WIDTH` 1.04 (the model's shoulders); `outfitLook(p, 'player')` (crowd3d-looks.js) carries the same width
+(`widthAbsolute`) and the clothes' colours for the crowd sets (the disguise, the 2D fallback).
 
-## How it is built
+## The model (player-body3d-asset.js; preferred whenever the build carries it)
 
-- Signed distance fields in bind space (metres): the clothed body as layered groups (tee, collar, neck, arms,
-  jeans: `pbBodyField`), the head with the face and the hair as a thickness inside the hairline
-  (`pbHeadField`, `pbHairline`, `pbHairDepth`), a right hand and a right shoe (`pbHandField`, `pbShoeField`,
-  mirrored for the left), the eyeballs as spheres. Surface nets (`pbMeshSteps`) mesh each at its own spacing
-  (`PB_SPACINGS`: fine on HIGH/ULTRA, body 13 mm, head 3.2, hands 3.4, shoes 5.5, ~56k vertices; coarse on
-  LOW/MEDIUM, 17.5 / 5.2 / 4.8 / 7.5 mm, about half) and project the vertices onto the surface; normals
-  come from the field's gradient, occlusion is baked from it (`pbOcclusionSteps`).
-- The bind skeleton is the rig's own joints (`pbBindSkeleton`, RIG and the look's width) with the arms out in
-  an A pose (`PB_BIND_ARM` 0.7 rad: between hanging and raised, so neither stretches the armpit far). The
-  shoulder's cap follows the arm most of the way (the rig has no collarbone). Weights come from where a vertex is
-  along each limb, then
-  are spread over the surface (`pbSmoothWeights`) and cut to two bones; each vertex keeps its part (the bone
-  it mostly follows: head, torso, hips, upper/lower arms and legs, hands, feet: `pbSkin.w`) for anything that
-  must tell parts apart (wounds, a severed limb).
-- The paint never needs UVs: everything is placed in bind space. Per vertex `pbZone` holds the material
-  (body, head, eye, hand, shoe) and signed distances (how much nearer the tee's, the skin's or the jeans'
-  operations are, so the tee's hem and sleeves are crisp lines; inside the hairline; the nails; the sole).
-- About a second of work (2-3 s on the loaded cloud box), so `pbBuildSteps` is a generator run a few ms at a
-  time from the renderer's start (12 ms slices behind the title, 4 ms in play). If play starts first,
-  `playerBodyStart` (updateCrowd3D) finishes it at once on the first frame of play (`finishedAtStart`), so the
-  player is never seen in the crowd's body. A tier change across LOW/MEDIUM and HIGH/ULTRA rebuilds in slices
-  behind the old mesh. `playerModel(true)` finishes a build at once (tests). The material
-  is on the scene from the start on a placeholder triangle with every attribute, so the title prewarm compiles
-  the program and its shadow depth program; the finished buffers are uploaded off-screen (`uploadMeshes`).
+- tools/player_model.py (offline, numpy + PIL; its own binary FBX reader) converts the avatar: the mesh in its rest
+  pose (metres, x forward, y up, z right; 7,064 triangles), UVs into a two-page atlas (body left, head right), each
+  vertex's two strongest of the 15 bones (Biped bones mapped by name: spine and clavicles to the torso, neck and face
+  to the head, fingers to the hand), the hands' sub-bones (palm, three segments per finger and thumb) and the
+  asset's joint frames. Textures: `player-skin.webp` (colour) and `player-detail.webp` (normal x/y, specular),
+  1024 px pages. The restyle is painted in 3D: every texel's place on the body is baked from the mesh (`bake`), so the
+  skull is projected on the chest, the beard follows the jaw by its angle round the head, hair is told from skin by a
+  colour model fitted on the crown against the cheeks. Re-run it with the Rocketbox folder (see its docstring).
+- At load `pbAssetBuildSteps` fits it to `pbBindSkeleton` (the rig stays the one source of joints): the trunk by
+  one field of height (hip joint and shoulders onto the rig's, the head scaled `PB_ASSET_HEAD` round the neck so the
+  crown is at `PB_ASSET_CROWN`, the chest broadened and the waist taken in: `PB_ASSET_CHEST`/`PB_ASSET_WAIST`),
+  each limb rigidly onto its rig bone (frame: up the limb, the knuckle line forward) scaled along it to the rig's
+  length and round it by `PB_ASSET_ARMS`; the shoe keeps its height (the shin ends `lift` above the rig's ankle).
+- Hands: relaxed, gripping and trigger shapes come from the model's own finger segments turned to the field
+  hand's curls (`PB_CURL`, `PB_THUMB`), blended by its finger weights; the fist lands near `PB_FIST`, so
+  `PB_GRIPS` holds unchanged.
+- `pbZone` is (material, skin share, 0, 0) with the field codes (0 clothes, 1 head, 2 eye, 3 hand, 4 shoe), so the
+  tests and gore read it alike; `pbTextured` (on once the mesh and both images are in) switches the shader to the
+  atlases. A model that fails to decode logs an error and the fields are built instead (`pbBodySteps`).
+
+## The field body (fallback)
+
+- Signed distance fields in bind space (metres): the clothed body (`pbBodyField`), the head with hair as a
+  thickness (`pbHeadField`), a right hand and shoe mirrored, eyeballs. Surface nets (`pbMeshSteps`) mesh each at
+  `PB_SPACINGS` (fine on HIGH/ULTRA ~56k vertices, coarse about half); weights from where a vertex is along each
+  limb, spread over the surface (`pbSmoothWeights`), cut to two bones. Its paint (tee, denim, leather, face) needs no
+  UVs. About a second of work: `pbBuildSteps` runs as a generator in slices.
+- Both builds run behind the title (12 ms slices, 4 ms in play); `playerBodyStart` finishes one at once on the
+  first frame of play (`finishedAtStart`); a tier change across LOW/MEDIUM and HIGH/ULTRA rebuilds behind the old
+  mesh. The material is on the scene from the start on a placeholder with every attribute (the prewarm compiles
+  both programs); finished buffers are uploaded off-screen (`uploadMeshes`), the textures by `initTexture`.
 
 ## Posing it
 
@@ -48,7 +54,7 @@ carries the same colours and width (`widthAbsolute`) for the crowd sets (the dis
   other hand cups the firing hand on a pistol, holds the handguard from below on long guns, or a front grip.
   drawHold and the drive-by take these frames for the player (the IK reaches their wrists); a gun carried at
   the side sits in his fist (`inverse`). A new weapon adds its grip there.
-- Eyes (`pbEyes`, shader `pbEye`): they lead the head to where he aims (the chase camera's pitch in the chase
+- Eyes (`pbEyes`, shader `pbEye`; the field body only, the model's eyes are painted): they lead the head to where he aims (the chase camera's pitch in the chase
   view), else glance about in quick jumps; a blink every 2-6 s draws the upper lid down over the eyeball.
 
 - Gore (gore.js; police-and-combat-gore.md): `pbLost` (a bit per bone) folds a lost part's vertices (their part
@@ -69,23 +75,22 @@ carries the same colours and width (`widthAbsolute`) for the crowd sets (the dis
 
 ## Paint (player-body3d-shader.js)
 
-Skin wraps the light further in red (subsurface hint); cloth and hair reflect little (`pbSpec`, `pbSpecF90`)
-and cloth adds a Charlie sheen (black jersey reads as fabric); hair has two highlights along its strands. Face:
-warm cheeks, nose and ears, lash lines, brows, lips, stubble that greys the skin (dots up close, down the
-throat on the neck), forehead lines, crow's feet. Tee: knit, bunching above the hem, armpit folds, hem bands,
-the collar's rib. Jeans: twill, fades on the thighs and knees, whiskers, creases behind the knee, out- and
-inseams with tan stitching, back pockets, the hem stacked over the shoe. Shoes: grain, rubber sole, socks.
-Fine detail fades below a pixel (`pbPx`).
+The model: colour from the atlas (sRGB), its normal map in a frame from screen derivatives (no tangents), specular
+from the detail page; skin (head and hands, hair left out by its darkness) takes the red wrap, cloth the sheen, hair a
+soft strand highlight. The field body: skin with a subsurface wrap, face, stubble, tee knit, denim, leather, all from
+bind-space position, fine detail fading below a pixel (`pbPx`). Wounds soak either the same way (`pbWound`).
 
 ## Checks and console
 
-- tools/tests/player-body.mjs builds it in node: proportions (stature, heads tall, shoulders, chest, reach),
+- tools/tests/player-body.mjs builds both bodies in node (the model and the fields): proportions (stature, heads tall, shoulders, chest, reach),
   bones and parts, a closed outward mesh, and a pose set (walk, run, aim, rifle, hands up, phone, seated,
   kneel, crawl, freefall, swim, lying, carjack, twists, wrists) through the shader's skinning: no tearing
-  stretch, no collapse, no folding in a twist, no gap at the neck, wrists or ankles. On a rendered page it
+  stretch, no collapse, no folding a twist adds, no gap at the neck, wrists or ankles (the fields) or between the
+  model's welded vertices (split by UVs only). On a rendered page it
   checks the player is drawn from it in both views.
-- Console `playerModel(finish)`: ready, build and work ms, vertices, triangles, vertices by part, whether it
-  drew this frame; `crowdStats().playerBody`.
-- Cost: one camera and one shadow draw; HIGH/ULTRA ~56k vertices / 112k triangles, LOW/MEDIUM about half; the
-  near set's player slot is freed. `playerModel().programsAtFirstDraw` says whether the prewarm had compiled both
+- Console `playerModel(finish)`: ready, build and work ms, `model` (the asset's name or 'fields'), `textured`,
+  vertices, triangles, vertices by part, whether it drew this frame; `crowdStats().playerBody`.
+- Cost: one camera and one shadow draw; the model 4.2k vertices / 7k triangles on every tier plus two 2048x1024
+  textures (the fields: HIGH/ULTRA ~56k vertices / 112k triangles, LOW/MEDIUM about half); the near set's player
+  slot is freed. `playerModel().programsAtFirstDraw` says whether the prewarm had compiled both
   programs before he was first drawn.

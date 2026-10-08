@@ -3,7 +3,8 @@
       // ---- Sun path ----------------------------------------------------------------------
       // Unit vector towards the sun (or moon), shared with the shadow fit, water and sky.
       const sunDirection = new Three.Vector3(-0.56, 0.62, -0.55).normalize(),
-        MOON_DIRECTION = new Three.Vector3(-0.42, 0.78, -0.46).normalize(),
+        // The moon (the sky draws it there; the light hands over to it, sun-path.js SUN_MOON).
+        MOON_DIRECTION = new Three.Vector3(SUN_MOON.x, SUN_MOON.y, SUN_MOON.z),
         sunScratch = new Three.Vector3(),
         // The sun the sky draws (disc, glow, haze, sun glare): on the light's bearing, but it really
         // sets (on the horizon at sunrise and sunset, under it at night); the light never goes below
@@ -11,27 +12,16 @@
         // over to the moon through twilight as the light does.
         skySunDirection = sunDirection.clone(),
         skyLightDirection = sunDirection.clone();
-      function dayFraction() {
-        return ((worldMinutes % 1440) / 60 - 5.66) / 14.17;
-      }
+      // The path itself is game-side math (sun-path.js sunPathAt) at the light clock (litMinutes: eased across
+      // time skips); `sunShade` is the light's strength share, dipping while it swings to the moon through twilight.
+      const sunPath = {};
+      let sunShade = 1;
       function updateSunPath() {
-        const t = dayFraction(),
-          arc = Math.sin(clamp(t, 0, 1) * Math.PI);
-        // East (t 0) through north-north-west at noon to west (t 1); the noon sun
-        // leans to the west-north-west, where the old fixed light stood.
-        const azimuth = -Math.PI * clamp(t, -0.05, 1.05) - 0.95 * arc,
-          // Never flatter than ~15 degrees for shadows, so dusk streets stay readable.
-          elevation = 0.27 + (1.02 - 0.27) * Math.pow(arc, 0.8);
-        sunScratch.set(Math.cos(azimuth) * Math.cos(elevation), Math.sin(elevation), Math.sin(azimuth) * Math.cos(elevation));
-        // Hand over to the moon through twilight.
-        const moon = clamp(1 - daylight() / 0.12, 0, 1),
-          handover = moon * moon * (3 - 2 * moon);
-        sunDirection.copy(sunScratch).lerp(MOON_DIRECTION, handover).normalize();
-        // The sky's sun: the same bearing, the same noon height, on the horizon at t 0 and 1.
-        const rise = Math.sin(t * Math.PI),
-          skyElevation = Math.sign(rise) * 1.02 * Math.pow(Math.abs(rise), 0.8);
-        skySunDirection.set(Math.cos(azimuth) * Math.cos(skyElevation), Math.sin(skyElevation), Math.sin(azimuth) * Math.cos(skyElevation));
-        skyLightDirection.copy(skySunDirection).lerp(MOON_DIRECTION, handover).normalize();
+        sunPathAt(litMinutes(), sunPath);
+        sunDirection.set(sunPath.lx, sunPath.ly, sunPath.lz);
+        skySunDirection.set(sunPath.sx, sunPath.sy, sunPath.sz);
+        skyLightDirection.set(sunPath.kx, sunPath.ky, sunPath.kz);
+        sunShade = sunPath.shade;
       }
       // @include src/lighting3d-sky-dome.js
       // ---- Night light map ---------------------------------------------------------------

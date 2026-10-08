@@ -168,6 +168,7 @@
       resetMissionState();
       resetCampaign();
       worldMinutes = 17 * 60 + 20;
+      snapSunClock();
       harborGate = harborGateUntil = 0;
       weapons.forEach((w, i) => (w.owned = i === 0));
       selectedWeaponIndex = 0;

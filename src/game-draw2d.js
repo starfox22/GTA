@@ -361,10 +361,13 @@
         }
         if (player.inv > 0) worldContext.globalAlpha = 0.45 + 0.4 * Math.sin(gameTime * 25);
       }
+      // In a jump (player-jump.js) the shadow falls away and the body grows a little towards the camera.
+      const lift = isPlayer && player.jump ? playerJumpPose()?.lift || 0 : 0;
       worldContext.fillStyle = '#102b2380';
       worldContext.beginPath();
-      worldContext.ellipse(3, 4, 9, 5, 0, 0, TAU);
+      worldContext.ellipse(3 + lift * 0.8, 4 + lift * 0.8, 9, 5, 0, 0, TAU);
       worldContext.fill();
+      if (lift) worldContext.scale(1 + lift * 0.04, 1 + lift * 0.04);
       const step = Math.sin(person.walk || 0) * 2.5;
       // The player in his own clothes: jeans, a black tee, brown hair (the 3D body's colours).
       // Fort Sentinel's borrowed field uniform (fort-cover.js): camo, olive webbing, a patrol cap.
@@ -559,13 +562,15 @@
         }
       const target = objective();
       if (target) marker(target, '#d7f970', mission ? '↓' : '☎');
-      for (const s of GARAGES) if (distanceBetween(player, s) < 400) marker(s, s.color, 'R', 16);
+      // Only the respray arrow's shop, and only in a chase (garages.js RESPRAY BEACON).
+      const respray = garageBeacon();
+      if (respray) marker(respray, '#8fd3ff', 'R', 16);
       drawStoryMarkers2D();
       drawRoofDialogue2D();
       drawParachute2D();
       worldContext.restore();
       // Film tint and edge direction, kept away from the central play area.
-      worldContext.fillStyle = 'rgba(7,13,35,' + (1 - daylight()) * 0.25 + ')';
+      worldContext.fillStyle = 'rgba(7,13,35,' + (1 - litDaylight()) * 0.25 + ')';
       worldContext.fillRect(0, 0, viewportWidth, viewportHeight);
       if (flash > 0) {
         worldContext.fillStyle = 'rgba(205,111,72,' + flash * 0.6 + ')';

@@ -34,6 +34,14 @@
       cone.rotation.z = Math.PI;
       cone.renderOrder = 99;
       scene.add(arrowGroup);
+      // The respray arrow (garages.js garageBeacon): the same pointer in the shops' paint-blue, over a garage door
+      // while the police chase the player.
+      const resprayArrow = new Three.Group();
+      const resprayCone = mesh(cone.geometry, new Three.MeshBasicMaterial({ color: '#8fd3ff', depthTest: false, depthWrite: false }), resprayArrow, 0, 0, 0);
+      resprayCone.rotation.z = Math.PI;
+      resprayCone.renderOrder = 99;
+      resprayArrow.visible = false;
+      scene.add(resprayArrow);
       // (The player's headlights are CAR LAMPS slot 0, lighting3d-vehicle-lights.js.)
       const muzzleLight = new Three.PointLight('#ffc67a', 0, 95, 1.5);
       scene.add(muzzleLight);

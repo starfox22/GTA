@@ -619,7 +619,7 @@
       function updateWeatherVisuals(deltaSeconds) {
         const rain = weather.rain,
           cloud = weather.cloud,
-          light = daylight(),
+          light = litDaylight(),
           tier = activeTier || graphicsTier(),
           low = tier.name === 'LOW';
         rainClock += deltaSeconds;
@@ -775,7 +775,7 @@
       /* Storm grade, applied after the time-of-day look (updateLighting): a rainy
          day is darker, flatter and cooler; a flash opens the exposure. */
       function weatherGrade() {
-        const light = daylight(),
+        const light = litDaylight(),
           rain = weather.rain,
           storm = Math.max(rain, weather.approach * 0.5);
         postLook.exposure *= (1 - storm * 0.16 * light) * (1 + weather.flash * 0.6);

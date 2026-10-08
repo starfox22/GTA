@@ -27,8 +27,10 @@
         teleportPlayer(x, y);
         return this.status();
       },
-      setClock(hours) {
+      // The light follows at once (screenshots and tours); `blend` true eases it over as a time skip in play does.
+      setClock(hours, blend = false) {
         worldMinutes = Math.floor(worldMinutes / 1440) * 1440 + clamp(hours, 0, 24) * 60;
+        if (!blend) snapSunClock();
         return clockText();
       },
       setZoom: (value) => setWorldZoom(value),

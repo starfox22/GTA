@@ -263,18 +263,18 @@
           case 'player':
           case 'playerDisguise':
           case 'playerArmy': {
-            // The player: a man in his forties, 1.80 m, real shoulders (no street-view widening), short brown
-            // hair, two days' stubble; a plain black crew-neck tee, mid-wash jeans, dark leather shoes. In his own
-            // clothes he is drawn from his own body (player-body3d.js); these colours are the crowd sets' match.
+            // The player: a man in his thirties, 1.80 m, real shoulders (no street-view widening), short dark
+            // hair, stubble; a brown hoodie, dark jeans, dark trainers. In his own clothes he is drawn from his own
+            // body (player-body3d.js, the shipped model); these colours are the crowd sets' match.
             const disguise = outfit === 'playerDisguise',
               own = {
                 ...base,
-                skin: '#c49270',
-                hair: '#4a3324',
+                skin: '#c99a7c',
+                hair: '#2b1d16',
                 hairStyle: 'hairShort',
                 beard: 1,
                 build: 1.05,
-                widthAbsolute: 0.92,
+                widthAbsolute: 1.04,
                 heightAbsolute: 1.8 / 1.75,
               };
             // Mission 4's borrowed uniform (fort-cover.js wearUniform): an off-duty soldier's woodland field
@@ -302,18 +302,18 @@
             return {
               ...own,
               garment: disguise ? 'suit' : 'tee',
-              top: disguise ? '#e3dac0' : '#1b1b1e',
-              inner: disguise ? '#f6f4ee' : '#1b1b1e',
-              accent: disguise ? '#16171b' : '#1b1b1e',
+              top: disguise ? '#e3dac0' : '#4b3427',
+              inner: disguise ? '#f6f4ee' : '#4b3427',
+              accent: disguise ? '#16171b' : '#4b3427',
               topPattern: 0,
-              sleeves: disguise,
-              cuff: disguise ? '#e3dac0' : '#1b1b1e',
-              pants: disguise ? '#23272f' : '#43597a',
+              sleeves: true,
+              cuff: disguise ? '#e3dac0' : '#4b3427',
+              pants: disguise ? '#23272f' : '#2d3440',
               pantsPattern: disguise ? 0 : PATTERN.denim,
               belt: false,
               beltColor: '#2a1d15',
               buckle: '#c9a45a',
-              shoes: disguise ? '#121214' : '#33241a',
+              shoes: disguise ? '#121214' : '#2c2c2e',
               footwear: 'shoe',
             };
           }

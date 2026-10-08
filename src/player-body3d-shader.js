@@ -16,6 +16,8 @@
         attribute vec3 pbTrig;
         attribute vec3 pbTrigN;
         attribute vec4 pbZone;
+        attribute vec2 pbUv;
+        varying vec2 vPbUv;
         uniform vec4 pbQr[ ${PB_BONES} ];
         uniform vec4 pbQd[ ${PB_BONES} ];
         uniform float pbScale;
@@ -58,6 +60,7 @@
           vPbBind = pbPos / ${PB_UNITS.toFixed(6)};
           vPbBindN = pbNrm;
           vPbZone = pbZone;
+          vPbUv = pbUv;
           vPbAO = pbGrip.w;
           // Hair strands: combed back on top, down and back at the sides.
           vec3 dir = mix( vec3( -0.35, -1.0, 0.0 ), vec3( -1.0, -0.25, 0.0 ), smoothstep( 0.15, 0.75, pbNrm.y ) );
@@ -81,6 +84,11 @@
         varying vec4 vPbZone;
         varying float vPbAO;
         varying vec3 vPbHairT;
+        varying vec2 vPbUv;
+        uniform float pbTextured;
+        uniform sampler2D pbSkinMap;
+        uniform sampler2D pbDetailMap;
+        vec3 pbMapN = vec3( 0.0, 0.0, 1.0 );
         uniform float pbScale;
         uniform vec3 cityPlayerRim;
         uniform vec4 pbWound[ 4 ];
@@ -321,7 +329,26 @@
         float pbMat = floor( vPbZone.x + 0.5 );
         vec3 pbN = normalize( vPbBindN );
         vec3 pbC;
-        if ( pbMat < 0.5 ) {
+        if ( pbTextured > 0.5 ) {
+          // The shipped model (player-body3d-asset.js): colour from its atlas; the detail atlas holds the
+          // tangent-space normal (rg) and the specular map (b). Skin (head and hands, the hair left out by its
+          // darkness) takes the red wrap; cloth the sheen; the hair a soft highlight along its strands.
+          pbC = texture2D( pbSkinMap, vPbUv ).rgb;
+          vec3 pbDet = texture2D( pbDetailMap, vPbUv ).rgb;
+          vec2 nxy = pbDet.rg * 2.0 - 1.0;
+          pbMapN = vec3( nxy, sqrt( max( 0.0, 1.0 - dot( nxy, nxy ) ) ) );
+          float lum = dot( pbC, vec3( 0.2126, 0.7152, 0.0722 ) );
+          float hair = pbMat > 0.5 && pbMat < 1.5 ? 1.0 - smoothstep( 0.035, 0.075, lum ) : 0.0;
+          float skin = vPbZone.y * ( 1.0 - hair );
+          pbSkinWrap = skin;
+          pbHairSpec = hair * 0.6;
+          pbHairDir = normalize( vPbHairT + vec3( 0.0, 1e-5, 0.0 ) );
+          float cloth = ( 1.0 - vPbZone.y ) * step( pbMat, 0.5 );
+          pbSheen = cloth * 0.35;
+          pbSpec = mix( mix( 0.25, 0.8, pbDet.b ), mix( 0.45, 0.9, pbDet.b ), skin );
+          pbSpecF90 = mix( 0.35, 1.0, skin );
+          pbRough = pbMat > 1.5 && pbMat < 2.5 ? 0.12 : mix( mix( 0.9, 0.6, pbDet.b ), mix( 0.62, 0.42, pbDet.b ), skin );
+        } else if ( pbMat < 0.5 ) {
           // Owners: where the tee meets the jeans the two zones are opposite, so their shares add to one.
           float tee = smoothstep( -pbPx, pbPx, vPbZone.y );
           float jeans = min( smoothstep( -pbPx, pbPx, vPbZone.z ), 1.0 - tee );
@@ -393,6 +420,17 @@
       const PB_ROUGH = `roughnessFactor = pbRough >= 0.0 ? pbRough : roughnessFactor;`;
       // The relief into the normal by its screen derivatives (three.js perturbNormalArb, without a bump map).
       const PB_NORMAL = `
+        if ( pbTextured > 0.5 ) {
+          // The model's normal map in a frame from the screen derivatives (three.js perturbNormal2Arb).
+          vec3 q0 = dFdx( - vViewPosition ), q1 = dFdy( - vViewPosition );
+          vec2 st0 = dFdx( vPbUv ), st1 = dFdy( vPbUv );
+          vec3 q1perp = cross( q1, normal ), q0perp = cross( normal, q0 );
+          vec3 T = q1perp * st0.x + q0perp * st1.x;
+          vec3 Bt = q1perp * st0.y + q0perp * st1.y;
+          float det = max( dot( T, T ), dot( Bt, Bt ) );
+          float sc = det == 0.0 ? 0.0 : faceDirection * inversesqrt( det );
+          normal = normalize( T * ( pbMapN.x * sc ) + Bt * ( pbMapN.y * sc ) + normal * pbMapN.z );
+        }
         {
           float pbH = pbHeight * ${PB_UNITS.toFixed(6)} * pbScale;
           vec2 dH = vec2( dFdx( pbH ), dFdy( pbH ) );

@@ -121,7 +121,8 @@
       });
       return (scenicFurnitureCache = { rails, posts, views });
     }
-    // The rails and walls as oriented static bodies (county-build.js addCountyColliders); the walls and benches stop people too.
+    // The rails and walls as oriented static bodies (county-build.js addCountyColliders); the walls and benches stop people too
+    // (the 0.9 m stone wall is low enough to jump: county3d-roads.js draws it 7.2 high).
     function addScenicRoadColliders() {
       const { rails, views } = scenicRoadFurniture();
       for (const rail of rails)
@@ -133,7 +134,7 @@
             wall = rail.kind === 'wall';
           if (length < 1) continue;
           addBridgeBody({ x: (a[0] + b[0]) / 2, y: (a[1] + b[1]) / 2, hx: length / 2 + 0.6, hy: wall ? 2.4 : 1.3, a: angle, height: Math.max(a[2], b[2]) + 7, kind: wall ? 'viewpoint wall' : 'guardrail' });
-          if (wall && !addScenicRoadColliders.feet) registerFootObstacle((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, length / 2 + 0.6, 2.4, angle);
+          if (wall && !addScenicRoadColliders.feet) registerFootObstacle((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, length / 2 + 0.6, 2.4, angle, 7.2);
         }
       if (!addScenicRoadColliders.feet) for (const v of views) registerFootObstacle(v.x, v.y, 9, 3, v.a + Math.PI / 2);
       addScenicRoadColliders.feet = true;

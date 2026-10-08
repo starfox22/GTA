@@ -15,6 +15,8 @@
         objectiveArrow: objectiveArrowShown(target),
         objectiveRing: false,
         target: target ? { x: Math.round(target.x), y: Math.round(target.y) } : null,
+        // The respray arrow over a garage door (garages.js RESPRAY BEACON: only while the police want the player).
+        respray: garageBeacon() ? { x: Math.round(garageBeacon().x), y: Math.round(garageBeacon().y) } : null,
         renderer: city3D?.markerProbe ? city3D.markerProbe() : null,
       };
     }

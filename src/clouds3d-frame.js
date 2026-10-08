@@ -43,7 +43,7 @@
         return t * t * (3 - 2 * t);
       }
       function updateCloudVisuals(deltaSeconds) {
-        const light = daylight(),
+        const light = litDaylight(),
           cloud = weather.cloud,
           coverage = cloudLayer.coverage,
           overcast = clamp((cloud - 0.8) / 0.2, 0, 1),

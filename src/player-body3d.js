@@ -1,9 +1,10 @@
-      // The player's own body: one skinned mesh (a man in his forties in a black tee, jeans and leather shoes) posed by
-      // the crowd rig's skeleton every frame, built from signed distance fields in slices behind the title.
+      // The player's own body: one skinned mesh posed by the crowd rig's skeleton every frame: the shipped model (a
+      // restyled Rocketbox avatar: skull tee, jeans, beard; player-body3d-asset.js), or the field-built fallback.
       /**
        * PLAYER BODY
        * The player is not drawn from the crowd's instanced parts but from a body of his own (one draw, one
-       * shadow draw): realistic adult proportions at the rig's joints (character-rig3d.js RIG), modelled as
+       * shadow draw). Normally that is the shipped model fitted to the rig's joints at load (player-body3d-asset.js,
+       * pbBodySteps); without it, the fallback: realistic adult proportions at the rig's joints (RIG), modelled as
        * signed distance fields and meshed by surface nets (player-body3d-mesher.js): the clothed body
        * (anatomy), the head with the face and the hair (head), hands and shoes (extremities). Each vertex
        * follows two of the rig's 15 bones as dual quaternions (shader), so the joints bend without gaps or
@@ -30,6 +31,7 @@
       // @include src/player-body3d-head.js
       // @include src/player-body3d-extremities.js
       // @include src/player-body3d-build.js
+      // @include src/player-body3d-asset.js
       // @include src/player-body3d-shader.js
       // @include src/player-body3d-grips.js
       const pbUniforms = {
@@ -44,6 +46,10 @@
         pbLost: { value: 0 },
         pbCut: { value: Array.from({ length: PB_BONES }, () => new Three.Vector3()) },
         pbWound: { value: Array.from({ length: 4 }, () => new Three.Vector4()) },
+        // The shipped model's textures (player-body3d-asset.js): colour, and normal (rg) with specular (b).
+        pbTextured: { value: 0 },
+        pbSkinMap: { value: pbAssetTexture('playerSkin', true) },
+        pbDetailMap: { value: pbAssetTexture('playerDetail', false) },
       };
       const playerBodyMaterial = (() => {
           const material = new Three.MeshStandardMaterial({ color: '#ffffff', roughness: 0.8, metalness: 0 });
@@ -66,6 +72,7 @@
         ['pbTrig', 3],
         ['pbTrigN', 3],
         ['pbZone', 4],
+        ['pbUv', 2],
       ];
       /* A geometry with every attribute the body has (the placeholder until the build is done). */
       function pbGeometry(data) {
@@ -127,7 +134,7 @@
         if (pbState.error) return;
         if (!pbState.build) {
           pbState.building = pbDetailWanted();
-          pbState.build = pbBuildSteps(pbState.building);
+          pbState.build = pbBodySteps(pbState.building);
         }
         const t0 = performance.now(),
           budget = finish ? 1e9 : gameMode === 'menu' ? 12 : 4;
@@ -153,7 +160,9 @@
         const data = r.value,
           old = playerBodyMesh.geometry;
         // Only the summary is kept: the arrays live on in the geometry's attributes.
-        pbState.data = { ms: data.ms, vertices: data.vertices, triangles: data.triangles, parts: data.parts };
+        pbState.data = { ms: data.ms, vertices: data.vertices, triangles: data.triangles, parts: data.parts, model: data.model || 'fields' };
+        pbState.textured = !!data.textured;
+        pbTexturedUpdate();
         pbState.detail = data.detail;
         for (let b = 0; b < PB_BONES; b++) {
           const bone = data.bones[b],
@@ -181,6 +190,41 @@
         pbState.ready = true;
       }
       setTimeout(() => pbBuildStep(), 0);
+      /* The body's build: the shipped model when the build carries it (and it decodes), else the fields. */
+      function* pbBodySteps(detail) {
+        let model = null;
+        try {
+          model = yield* pbAssetBuildSteps(detail);
+        } catch (error) {
+          console.error('player body: the model failed, using the fields', error);
+        }
+        return model || (yield* pbBuildSteps(detail));
+      }
+      /* The textures are painted once both images and the model's mesh are in. */
+      function pbTexturedUpdate() {
+        const on = pbState.textured && pbUniforms.pbSkinMap.value.image && pbUniforms.pbDetailMap.value.image ? 1 : 0;
+        pbUniforms.pbTextured.value = on;
+      }
+      /* One of the model's atlases from its embedded image (decoded off the frame, uploaded when it arrives). */
+      function pbAssetTexture(name, colour) {
+        const texture = new Three.Texture();
+        texture.colorSpace = colour ? Three.SRGBColorSpace : Three.NoColorSpace;
+        texture.anisotropy = 4;
+        const url = typeof ASSETS !== 'undefined' && ASSETS[name];
+        if (url && typeof Image !== 'undefined') {
+          const image = new Image();
+          image.onload = () => {
+            texture.image = image;
+            texture.needsUpdate = true;
+            try {
+              renderer.initTexture(texture);
+            } catch (error) {}
+            pbTexturedUpdate();
+          };
+          image.src = url;
+        }
+        return texture;
+      }
       /**
        * Play begins (the first frame packing the crowd outside the menu): a build still running is finished at
        * once, in the frame play starts, so the player never shows in the crowd's body first. Later, a change of
@@ -195,7 +239,7 @@
           return;
         }
         if (!pbState.build && pbState.detail !== pbDetailWanted()) {
-          pbState.build = pbBuildSteps((pbState.building = pbDetailWanted()));
+          pbState.build = pbBodySteps((pbState.building = pbDetailWanted()));
           setTimeout(() => pbBuildStep(), 0);
         }
       }
@@ -383,6 +427,8 @@
           vertices: d ? d.vertices : 0,
           triangles: d ? d.triangles : 0,
           parts: d ? d.parts : null,
+          model: d ? d.model : null,
+          textured: !!pbUniforms.pbTextured.value,
           grip: pbState.grip.slice(),
           blink: +pbUniforms.pbBlink.value.toFixed(2),
           gaze: [+pbState.gazeYaw.toFixed(2), +pbState.gazePitch.toFixed(2)],
