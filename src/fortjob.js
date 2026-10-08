@@ -72,12 +72,12 @@
       m.uniform = false;
       m.changeProgress = 0;
       m.parkedAt = 0;
-      if (!lockpickOwned()) giveLockpick();
+      if (!lockpickOwned()) giveLockpick(true);
       setStage(FORT_STAGE.stakeout, FORT_JOB.stakeout, 'WATCH FORT SENTINEL’S GATE FROM THE CAUSEWAY’S END');
       tell(
-        'Vinny’s lockpick is in your arsenal (' +
-          keyName('lockpick') +
-          '). Kessler drives a red muscle car. Tail him, don’t crowd him, and don’t make a scene unless you have to.',
+        'Vinny’s lockpick is in your arsenal: ' +
+          pressKey('lockpick', true) +
+          ' to take it in hand. Kessler drives a red muscle car. Tail him, don’t crowd him, and don’t make a scene unless you have to.',
         8,
       );
     }
@@ -283,12 +283,12 @@
           pedestrians.splice(pedestrians.indexOf(k), 1);
           m.kessler = null;
           m.inside = true;
-          setStage(FORT_STAGE.trunk, trunkPoint(c, { x: 0, y: 0 }), 'PICK KESSLER’S TRUNK · LOCKPICK (' + keyName('lockpick') + ')');
+          setStage(FORT_STAGE.trunk, trunkPoint(c, { x: 0, y: 0 }), 'PICK KESSLER’S TRUNK · LOCKPICK ' + keyName('lockpick'));
           fortBeat(m, 'inside', 'He’s in. The lockpick, the trunk, and walk away like it’s your car.');
         } else if (!k || k.hp <= 0) setStage(FORT_STAGE.trunk, trunkPoint(c, { x: 0, y: 0 }), 'GET INTO KESSLER’S TRUNK');
       }
       // Seen at his car while he can see it: he shouts, and someone calls it in.
-      if ((m.stage === FORT_STAGE.parked || m.stage === FORT_STAGE.trunk) && k && !m.spotted && (c.trunkPick || 0) > 0 && fortKesslerSees(k)) {
+      if ((m.stage === FORT_STAGE.parked || m.stage === FORT_STAGE.trunk) && k && !m.spotted && trunkPicking(c) && fortKesslerSees(k)) {
         m.spotted = true;
         k.speech = 'HEY! THAT’S MY CAR!';
         k.speechUntil = gameTime + 2.5;
@@ -306,8 +306,9 @@
         return;
       }
       if (m.stage === FORT_STAGE.change) {
+        // In a car standing still he changes on the back seat by himself; out of sight on foot, a held interact.
         const hidden = fortChangeSpot();
-        if (hidden && actionHeld('interact')) {
+        if (hidden && (player.car || actionHeld('interact'))) {
           m.changeProgress += deltaSeconds;
           if (m.changeProgress >= 3) fortChanged(m);
         } else m.changeProgress = Math.max(0, m.changeProgress - deltaSeconds * 0.5);
@@ -410,6 +411,15 @@
         'Fits? Good. Leave the car outside and walk up to the gate. Holster everything. You’re a tired private back from leave.',
       );
     }
+    /* Kessler's keys open his trunk outright: asked before the lockpick (game-player-actions.js),
+       so with the pick in hand a key still wins. */
+    function fortKeysOpenTrunk() {
+      const m = fortJob(),
+        c = m?.kcar;
+      if (!c || c.trunkOpen || !m.keys || !fortTrunkOpenOffer(m) || (m.stage !== FORT_STAGE.trunk && m.stage !== FORT_STAGE.parked)) return false;
+      openTrunk(c);
+      return true;
+    }
     function fortJobInteract() {
       const m = fortJob();
       if (!m) return false;
@@ -423,11 +433,7 @@
         tell('KESSLER’S KEYS', 2);
         return true;
       }
-      if (c && !c.trunkOpen && m.keys && fortTrunkOpenOffer(m) && (m.stage === FORT_STAGE.trunk || m.stage === FORT_STAGE.parked)) {
-        c.trunkOpen = true;
-        tone(180, 0.05, 0.12, 'square');
-        return true;
-      }
+      if (fortKeysOpenTrunk()) return true;
       if (m.stage === FORT_STAGE.take && c && !player.car && distanceBetween(player, trunkPoint(c, fortScratch)) < 34) {
         player.lootUntil = gameTime + LOOT_CROUCH;
         player.lootFacing = headingBetween(player, c);
@@ -436,13 +442,13 @@
         setStage(
           FORT_STAGE.change,
           null,
-          'CHANGE INTO THE UNIFORM · HOLD ' + keyName('interact') + ' IN A CAR OR OUT OF SIGHT',
+          'CHANGE INTO THE UNIFORM · SIT IN A PARKED CAR, OR HOLD ' + keyName('interact') + ' OUT OF SIGHT',
           'vinny',
           'Not on the street, genius. In a car, or somewhere nobody’s looking.',
         );
         return true;
       }
-      if (m.stage === FORT_STAGE.change && fortChangeSpot()) return true;
+      if (m.stage === FORT_STAGE.change && !player.car && fortChangeSpot()) return true;
       return false;
     }
     function fortJobUI() {
@@ -464,8 +470,12 @@
         offerPrompt('TAKE THE UNIFORM AND ID', { id: 'fort-take' });
       if (m.stage === FORT_STAGE.change) {
         if (fortChangeSpot())
-          offerPrompt(m.changeProgress > 0 ? 'CHANGING · ' + Math.round((m.changeProgress / 3) * 100) + ' %' : 'CHANGE INTO THE UNIFORM', { hold: true, id: 'fort-change' });
-        else offerPrompt('PEOPLE ARE WATCHING · CHANGE IN A CAR OR OUT OF SIGHT', { key: null, id: 'fort-change-seen' });
+          offerPrompt(
+            m.changeProgress > 0 ? 'CHANGING · ' + Math.round((m.changeProgress / 3) * 100) + ' %' : 'CHANGE INTO THE UNIFORM',
+            player.car ? { key: null, id: 'fort-change-car' } : { hold: true, id: 'fort-change' },
+          );
+        else if (player.car) offerPrompt('STOP THE CAR TO CHANGE', { key: null, id: 'fort-change-moving' });
+        else offerPrompt('PEOPLE ARE WATCHING · CHANGE IN A PARKED CAR OR OUT OF SIGHT', { key: null, id: 'fort-change-seen' });
       }
     }
     function fortJobCleanup() {
@@ -482,6 +492,70 @@
     function fortJobKeepsUniform() {
       const m = fortJob();
       return !!m && m.stage === FORT_STAGE.meet && skyMeeting.stage === 'done' && player.uniform === 'army';
+    }
+    /* Console test shortcuts (game-console-missions.js fortSkip): start the job if needed and
+       jump to a beat. 'arrive': Kessler's car on its last approach to the Marea, the player's
+       car behind it; 'parked': he has parked and is crossing to the door; 'inside': he is in,
+       the player on foot at his trunk; 'changed': in uniform and cover on, on foot short of the
+       gate; 'meet': out of the base with the papers, the consul waiting at EVOLUTION. */
+    function fortJobSkip(where) {
+      if (!fortJob()) {
+        missionIndex = 3;
+        startMission();
+      }
+      const m = mission;
+      if (!m.kcar) fortDepart(m);
+      const c = m.kcar,
+        route = c.countyRoute;
+      if (where === 'arrive' || where === 'parked' || where === 'inside') {
+        const i = Math.max(3, route.length - 7),
+          p = route[i],
+          q = route[i + 1];
+        c.x = p.x;
+        c.y = p.y;
+        c.a = headingBetween(p, q);
+        c.vx = c.vy = 0;
+        c.countyIndex = i + 1;
+        m.departedAt = gameTime - 60;
+        m.passed = true;
+        m.tailHeat = 0;
+        if (where === 'arrive') {
+          const b = route[i - 3];
+          if (player.car) exitCar(true);
+          teleportPlayer(b.x, b.y);
+        }
+      }
+      if (where === 'parked' || where === 'inside') {
+        const k = route[route.length - 1];
+        c.x = k.x;
+        c.y = k.y;
+        c.a = FORT_JOB.park.a;
+        fortParkCar(m);
+        if (where === 'inside') {
+          m.kessler.x = FORT_JOB.walkIn[FORT_JOB.walkIn.length - 1].x;
+          m.kessler.y = FORT_JOB.walkIn[FORT_JOB.walkIn.length - 1].y;
+          m.kessler.missionWalk.i = FORT_JOB.walkIn.length;
+          updateMissionWalker(m.kessler, 0);
+          if (player.car) exitCar(true);
+          const t = trunkPoint(c, { x: 0, y: 0 });
+          teleportPlayer(t.x - Math.cos(c.a) * 6, t.y - Math.sin(c.a) * 6);
+          missionUpdate(0);
+        } else if (player.car) exitCar(true);
+      }
+      if (where === 'changed' || where === 'meet') {
+        c.occupied = false;
+        c.ai = false;
+        m.bag = true;
+        if (player.car) exitCar(true);
+        teleportPlayer(FORT_COVER_GATE.check.x - 260, FORT_COVER_GATE.check.y);
+        fortChanged(m);
+        if (where === 'meet') {
+          fortCover.cleared = fortCover.papers = fortCover.leftWithPapers = true;
+          m.stage = FORT_STAGE.out;
+          missionUpdate(0);
+        }
+      }
+      return fortJobReport();
     }
     function fortJobReport() {
       const m = fortJob();

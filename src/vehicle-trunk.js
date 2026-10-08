@@ -13,9 +13,9 @@
      * whose trunk holds something and is shut, or at the driver's door of a locked one (carjack.js vehicleIsLocked),
      * the interact action held (actionHeld) steps the player to the lock, kneels him there (the loot crouch,
      * ammo-supply.js `player.lootUntil`) and works the pins: a soft click per pin set, the latch at the last.
-     * Releasing or moving off pauses it. Each pin set is a small theft through `crime(amount, 'theft')`: with no
-     * stars it only counts when the police see it or somebody watching phones it in (witnesses.js, the crowd's own
-     * sight), never by distance alone. Missions poll `trunkOpen`, `trunkPickProgress(c)` and `trunkPicking(c)`.
+     * Releasing or moving off pauses it. A lockpick at a lock looks like someone at their own car: only a person
+     * close by and looking at him (`lockpickWatcher`: LOCKPICK_NOTICE, facing him, a clear line) notices, and phones
+     * it in as a theft (witnessReport); a police officer in sight makes it a crime seen. Nobody watching, it is silent. Missions poll `trunkOpen`, `trunkPickProgress(c)` and `trunkPicking(c)`.
      */
     const TRUNK_PICK_SECONDS = 5,
       TRUNK_PINS = 5,
@@ -33,8 +33,9 @@
       // A vehicle rolling faster than this cannot be worked on.
       PICK_STOPPED = 3 * KMH,
       // The heat of each pin set (a whole trunk 0.35, a door 0.24: under a punch on a police officer).
-      TRUNK_PIN_HEAT = 0.07,
-      DOOR_PIN_HEAT = 0.08;
+      // Who notices a lock being picked: a passer-by this close who is looking his way; an officer much further.
+      LOCKPICK_NOTICE = 15 * UNITS_PER_METRE,
+      LOCKPICK_NOTICE_COP = 55 * UNITS_PER_METRE;
     const lockpickWork = { car: null, kind: null, active: false, at: -10, rakeAt: 0, stats: { pins: 0, trunks: 0, doors: 0 } };
     const pickSpot = { x: 0, y: 0 };
     /* The kneeling spot at a vehicle's trunk: on the centre line just behind the rear bumper. */
@@ -177,8 +178,13 @@
       if (pinNow > pinBefore) {
         w.stats.pins++;
         if (pinNow < pins) lockpickPinSound(pinNow);
-        // A theft in progress: counted only if the police or someone watching sees it (witnesses.js).
-        crime(trunk ? TRUNK_PIN_HEAT : DOOR_PIN_HEAT, 'theft');
+        // A theft in progress, only if someone close is watching (lockpickWatcher): they phone it in once.
+        const watcher = lockpickWatcher();
+        if (watcher === 'police') crime(1, 'seen');
+        else if (watcher && w.reportedCar !== target) {
+          w.reportedCar = target;
+          witnessReport(watcher, 'theft', target.x, target.y);
+        }
       }
       if (done >= total) {
         if (trunk) {
@@ -194,6 +200,28 @@
         lockpickLatchSound(kind);
         w.active = false;
       }
+    }
+    /* Who sees the player at a lock: 'police' for an officer in sight, else the nearest passer-by within
+       LOCKPICK_NOTICE who faces him (within ~70 degrees) with a clear line, else null. */
+    function lockpickWatcher() {
+      for (let i = 0; i < officers.length; i++) {
+        const o = officers[i];
+        if (o.hp > 0 && !o.returned && distanceBetween(o, player) < LOCKPICK_NOTICE_COP && crowdSight(o, player)) return 'police';
+      }
+      let best = null,
+        bestD = LOCKPICK_NOTICE;
+      for (let i = 0; i < pedestrians.length; i++) {
+        const p = pedestrians[i];
+        if (p.hp <= 0 || personIncapacitated(p) || p.flee > 0) continue;
+        const dx = player.x - p.x,
+          dy = player.y - p.y;
+        if (dx > bestD || dx < -bestD || dy > bestD || dy < -bestD) continue;
+        const d = hypot2(dx, dy);
+        if (d >= bestD || Math.abs(normalizeAngle(Math.atan2(dy, dx) - (p.a || 0))) > 1.2 || !crowdSight(p, player)) continue;
+        best = p;
+        bestD = d;
+      }
+      return best;
     }
     /* Opens a vehicle's trunk (the pick's last pin, or a mission): the lid swings up. */
     function openTrunk(c) {
@@ -234,7 +262,9 @@
         else if (!lockpickEquipped()) offerPrompt('EQUIP THE LOCKPICK', { key: 'lockpick', id: 'trunk-equip' });
         else {
           const pins = Math.floor(trunkPickProgress(trunk) * TRUNK_PINS + 1e-6);
-          if (trunkPicking(trunk)) offerPrompt('PICKING · ' + pins + ' / ' + TRUNK_PINS + ' PINS', { hold: true, id: 'trunk-picking' });
+          if (!trunkPicking(trunk) && lockpickWatcher()) offerPrompt('SOMEONE IS WATCHING · WAIT FOR A GAP', { hold: true, id: 'trunk-watched' });
+          else if (trunkPicking(trunk))
+            offerPrompt('PICKING · ' + pins + ' / ' + TRUNK_PINS + ' PINS' + (lockpickWatcher() ? ' · SOMEONE IS LOOKING' : ''), { hold: true, id: 'trunk-picking' });
           else offerPrompt('PICK THE TRUNK LOCK' + (pins ? ' · ' + pins + ' / ' + TRUNK_PINS + ' PINS' : ''), { hold: true, id: 'trunk-pick' });
         }
         return;

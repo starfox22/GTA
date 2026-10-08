@@ -313,6 +313,8 @@
       // Over the body of someone who carried a gun: take it (ammo-supply.js).
       if (lootInteract()) return;
       // At a trunk or a locked driver's door with the lockpick: the hold picks it (vehicle-trunk.js), never the carjack.
+      // Mission 4: Kessler's keys open his trunk before the lockpick is asked (fortjob.js).
+      if (fortKeysOpenTrunk()) return;
       if (lockpickInteract()) return;
       // A lobby lift on North Point Key (skyline-lift.js).
       if (northPointKeyInteract()) return;
