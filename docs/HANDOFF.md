@@ -22,10 +22,10 @@ rules, workflow), then this page, then only the area doc your task needs (`docs/
   A new session develops on its own working branch and fast-forwards `main` only when the owner approves in the
   current conversation (never assume it; the approval covers that one push).
 - **Published build**: the claude.ai artifact https://claude.ai/artifact/NtDPAmpmNsgU8LPW4hH13B (split build:
-  `index.html` + `media/`; version 57 (October 8) is the missions 3-4 polish (step briefs, Kessler's alarm, the gate talked through) and version 56 demo missions 3-4, both from `claude/confident-johnson-vlpoqb`; version 55 is the chase detail round from `claude/trusting-cannon-seq2mv`, published October 8; version 54 the chase view round, October 7; version 53 is the build that went to `main` on October 6). Version numbers on that link are the artifact's own
+  `index.html` + `media/`; version 58 (October 8) is the jump on Space, the Rocketbox player model, the gradual sun, the world reset (WASTED / mission pick), the HELICOPTER cheat, god mode cash and the chase-only respray arrow; version 57 (October 8) is the missions 3-4 polish (step briefs, Kessler's alarm, the gate talked through) and version 56 demo missions 3-4, both from `claude/confident-johnson-vlpoqb`; version 55 is the chase detail round from `claude/trusting-cannon-seq2mv`, published October 8; version 54 the chase view round, October 7; version 53 is the build that went to `main` on October 6). Version numbers on that link are the artifact's own
   counter, not `GAME_VERSION`.
   The downloadable zip is built by CI for whatever branch is pushed.
-- **Tests**: `node tools/test.mjs` runs the whole regression suite (137 tests, ~50 minutes on the 4-core
+- **Tests**: `node tools/test.mjs` runs the whole regression suite (152 tests, 151/152 on October 8 with pedestrian-awareness passing on rerun; earlier: 137 tests, ~50 minutes on the 4-core
   cloud box; 136/137 at the end of the chase detail round of October 7-8, the one failure, hud-clearance at the new
   150 % look-ahead, fixed (`leadShareMax`) and rerun 7/7 with the camera and HUD tests; the runner always loads the no-render page, so the render-* tests are null checks there: run them
   on a rendered page when a render change needs them). It must be green before a publish. Known flakes:
