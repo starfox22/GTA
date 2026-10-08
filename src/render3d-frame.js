@@ -218,6 +218,8 @@
               applyVehicleDamage(c, m);
               m.brakeLit = null; // lamp materials were reset: re-apply brake lights
             }
+            // A trunk picked open swings up on its springs (damage3d-bodies.js trunkLidAngle).
+            if (m.trunk && c.trunkOpen && gameTime - c.trunkOpenAt < 1) m.trunk.rotation.z = trunkLidAngle(c, c.damage.parts);
             // PRISTINE MERGE (vehicle-merge3d.js): once its first damage pass has set it up, an untouched civilian car
             // draws its static parts merged per material.
             if ((m.civilian || m.police) && m.merged === undefined && m.damageVersion === c.damageVersion && vehicleMergeEligible(c, m)) mergeVehicleModel(c, m);

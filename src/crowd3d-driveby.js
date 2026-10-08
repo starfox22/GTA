@@ -76,7 +76,8 @@
         // The firing hand wraps the grip (as drawHold): the wrist behind and above it.
         crowdJoint(dbGunHand, dbGun, -0.3, 0.34, 0.02, 0.22);
         dbHands[g.hand].setFromMatrixPosition(dbGunHand);
-        sp.weapon = PLAYER_WEAPONS[selectedWeaponIndex] || 'pistol';
+        // (Never the lockpick: a drive-by is the pistol's.)
+        sp.weapon = selectedWeaponIndex === LOCKPICK_INDEX ? 'pistol' : PLAYER_WEAPONS[selectedWeaponIndex] || 'pistol';
         sp.gunFrame = dbGun;
         sp.gunHandFrame = dbGunHand;
         sp.gunHand = g.hand;

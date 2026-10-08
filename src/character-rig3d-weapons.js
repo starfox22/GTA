@@ -81,6 +81,17 @@
               rigPlace(rigRegion(new Three.BoxGeometry(1.35, 0.2, 0.05), 3), 1.25, 0.02, 0),
             ]),
           ),
+          // A hook pick (black rubber grip 1, bright steel shaft and hook 3) over an L-shaped tension wrench (blued
+          // steel 0) held with it: about 13 cm long, a touch larger than life like the rest.
+          lockpick: scaled(
+            rigMerge([
+              rigBox(0.82, 0.15, 0.1, 1, 0.02, 0, 0),
+              rigBox(0.8, 0.035, 0.03, 3, 0.83, 0.02, 0),
+              rigBox(0.035, 0.1, 0.03, 3, 1.215, 0.06, 0, 0, 0, -0.35),
+              rigBox(0.95, 0.06, 0.022, 0, 0.3, -0.12, 0.07),
+              rigBox(0.04, 0.22, 0.022, 0, 0.77, -0.04, 0.07),
+            ]),
+          ),
           // Ballistic shield on the support arm: slab (0), handle (1), viewport (3).
           shield: rigMerge([
             rigBox(0.2, 7.2, 4.8, 0, 0.35, -0.6, 0),
@@ -98,6 +109,8 @@
         sniper: { support: [1.9, -0.18, -0.1], shoulder: true, length: 7.6 },
         rocket: { support: [1.8, -0.35, -0.05], shoulder: true, onShoulder: true, length: 8 },
         knife: { support: null, shoulder: false, length: 1.5 },
+        // At work the left hand holds the tension wrench just below and left of the pick.
+        lockpick: { support: [0.35, -0.3, -0.45], shoulder: false, length: 1.3 },
       };
       /* POLICE / FED lettering: a canvas texture on a small tilted panel. */
       function rigLabelMaterial(text, color, width = 256) {

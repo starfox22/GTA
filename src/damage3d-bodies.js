@@ -154,6 +154,15 @@
         return pivot;
       }
       const hingeScratch = new Three.Vector3();
+      /* The trunk lid's hinge angle: picked open (vehicle-trunk.js), it rises a hair off the latch and then up on its
+         springs over about 0.9 s; sprung off its latch on a crushed tail, not swung wide open; else shut. */
+      function trunkLidAngle(c, parts) {
+        if (c.trunkOpen) {
+          const t = clamp((gameTime - (c.trunkOpenAt ?? -10)) / 0.9, 0, 1);
+          return -0.06 - 1.12 * (1 - Math.pow(1 - t, 3));
+        }
+        return parts.trunk ? -0.38 - (c.id % 4) * 0.04 : 0;
+      }
       function carBodyDamage(c, m, damage) {
         const { l, w, h, van } = m.dims,
           parts = damage.parts,
@@ -264,8 +273,9 @@
             spawnPanel(door.panel, paintColor, c, l * 0.26, h - 4.4, 0.45, 1.2);
           door.panel.visible = state < 2;
         }
-        // The trunk lid pops up on its hinge (vans and SUVs have tailgates in the body).
-        if (parts.trunk && !van && !m.trunk) {
+        // The trunk lid pops up on its hinge (vans and SUVs have tailgates in the body), or is picked open
+        // (vehicle-trunk.js `c.trunkOpen`).
+        if ((parts.trunk || c.trunkOpen) && !van && !m.trunk) {
           m.trunk = new Three.Group();
           m.trunk.position.set(-l * 0.3, m.hoodBaseY, 0);
           m.body.add(m.trunk);
@@ -274,8 +284,13 @@
           crumpleAdopt(m, m.trunk, true);
           crumpleAdopt(m, lid, false, 'lid');
         }
-        // Sprung off its latch on a crushed tail, not swung wide open.
-        if (m.trunk) m.trunk.rotation.z = parts.trunk ? -0.38 - (c.id % 4) * 0.04 : 0;
+        // Wide open, the dark well under the lid (the empty-frame black, as a torn door's opening shows the bay).
+        if (c.trunkOpen && m.trunk && !m.trunkWell) {
+          m.trunkWell = box(m.body, -l * 0.39, m.hoodBaseY + 0.02, 0, l * 0.16, 0.42, w * 0.6, brokenGlass);
+          crumpleAdopt(m, m.trunkWell, false);
+        }
+        if (m.trunkWell) m.trunkWell.visible = !!c.trunkOpen;
+        if (m.trunk) m.trunk.rotation.z = trunkLidAngle(c, parts);
         // Bend the body with its dents (all of it when they changed, else only parts made just now), in time slices.
         if (reshape || m.crumple.fresh) crumpleStart(c, m, dents, reshape);
         // Glass: one material per pane once any pane is damaged.
