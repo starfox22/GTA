@@ -43,8 +43,8 @@
       // Tailing: noticed when this close behind him for a while, lost past `lost`.
       close: 150,
       tooClose: 70,
-      lost: 1500,
-      lostSeconds: 12,
+      lost: 1800,
+      lostSeconds: 15,
     };
     const FORT_STAGE = {
       stakeout: 0,
@@ -220,15 +220,20 @@
       const d = distanceBetween(player, c),
         behind = Math.cos(normalizeAngle(headingBetween(c, player) - c.a)) < -0.3,
         driving = !!player.car;
-      if (d < FORT_JOB.tooClose) m.tailHeat += deltaSeconds / 2.5;
-      else if (d < FORT_JOB.close && behind && driving) m.tailHeat += deltaSeconds / 9;
-      else m.tailHeat = Math.max(0, m.tailHeat - deltaSeconds / 18);
+      // Held up behind him at lights or a raised drawbridge is what any driver does: only
+      // sitting on his bumper then counts, and slowly.
+      const moving = Math.abs(c.speed || 0) > 12 * KMH;
+      if (d < FORT_JOB.tooClose) m.tailHeat += deltaSeconds / (moving ? 4 : 12);
+      else if (d < FORT_JOB.close && behind && driving && moving) m.tailHeat += deltaSeconds / 12;
+      else m.tailHeat = Math.max(0, m.tailHeat - deltaSeconds / 15);
       if (m.tailHeat > 0.45) fortBeat(m, 'close', 'Too close. Drop back a few cars.');
       if (m.tailHeat >= 1) {
         failMission('Kessler made the tail and drove back to the fort. The uniform is no use now.');
         return;
       }
-      if (d > FORT_JOB.lost) {
+      // The clock for losing him starts once he has come past the stakeout.
+      if (!m.passed && (distanceBetween(c, FORT_JOB.stakeout) < 400 || gameTime - m.departedAt > 45)) m.passed = true;
+      if (d > FORT_JOB.lost && m.passed) {
         m.lostFor += deltaSeconds;
         if (m.lostFor > FORT_JOB.lostSeconds * 0.5) fortBeat(m, 'losing', 'Where is he? Don’t lose him, I can’t get you another name.');
         if (m.lostFor > FORT_JOB.lostSeconds) {
@@ -489,7 +494,7 @@
         instruction: m.instruction,
         target: pt(m.target),
         car: c
-          ? { x: Math.round(c.x), y: Math.round(c.y), kmh: Math.round(Math.abs(c.speed || 0) / KMH), occupied: !!c.occupied, routeIndex: c.countyIndex, route: c.countyRoute?.length || 0, trunkOpen: !!c.trunkOpen, trunkPick: c.trunkPick || 0 }
+          ? { x: Math.round(c.x), y: Math.round(c.y), a: Math.round(c.a * 100) / 100, kmh: Math.round(Math.abs(c.speed || 0) / KMH), occupied: !!c.occupied, routeIndex: c.countyIndex, behind: c.countyRoute ? pt(c.countyRoute[Math.max(0, c.countyIndex - 4)]) : null, route: c.countyRoute?.length || 0, trunkOpen: !!c.trunkOpen, trunkPick: c.trunkPick || 0 }
           : null,
         kessler: k ? { x: Math.round(k.x), y: Math.round(k.y), hp: Math.round(k.hp), walking: !!k.missionWalk && !k.missionWalk.done } : null,
         inside: !!m.inside,
