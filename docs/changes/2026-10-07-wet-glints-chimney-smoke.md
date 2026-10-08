@@ -15,3 +15,5 @@
   uniforms only, in the ground shader), chimney-smoke3d.js (`fxWoodSmoke`, `CHIMNEY_SMOKE`), the effect pool's
   `thin` field; `lookSwitches({ wetGlints, wetReflections })`. Console `wetGlints()`, `chimneySmoke()`;
   tests wet-glints.mjs, chimney-smoke.mjs.
+- The title prewarm now sizes the post targets first, so the wet reflections and their blur no longer link on
+  the first shower on HIGH (after the prewarm, rain at night links no program on any tier in either view).

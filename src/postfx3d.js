@@ -95,6 +95,9 @@
       function postWarmPasses(all = false) {
         const passes = [],
           pass = (material, target) => passes.push({ scene: postScene, camera: postCamera, material, target });
+        // The targets are sized lazily (first drawn frame): size them now, or the passes that need one (the wet
+        // reflections and their blur) were left out of the title prewarm and linked when the rain first came.
+        if (hdrCapable && postTier) postSceneTarget();
         if (all && hdrCapable && postTier) {
           if (postTier.ao && aoMaterial && aoTargets.length === 2) pass(aoMaterial, aoTargets[0]), pass(aoBlurMaterial, aoTargets[1]);
           if (bloomTargets.length) pass(bloomPrefilter, bloomTargets[0]), pass(bloomDown, bloomTargets[1] || bloomTargets[0]), pass(bloomUp, bloomTargets[0]);

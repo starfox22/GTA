@@ -235,6 +235,7 @@ here when polishing; delete a line when it is fixed. Newest features first.
 ## Street frontage (cityscape3d-frontage.js, cityscape3d-shopwindows.js)
 - Shop windows on the north, east and west sides are not `b.shopPanes`: bullets never star them, and the damage code's `wallOffset` puts a bullet hole low on those sides 0.18 off the wall, behind the glass or plinth (both assume the south shopfront).
 - Only south-side signs (those `signSpill` gives a `streak`) glint in the wet road: other sides could join the glint list (wet-glints3d.js) now that it follows any view.
+- A graphics tier changed in play (not at the title) still links the rain-only programs on the first shower: the crowd's umbrellas (a depth variant), road spray, roof drips, the valley mist, and the wet reflections when switching up to HIGH (seen on software GL: the staged lit switch compiles only what is visible). After the title prewarm at the saved tier, rain at night links nothing on LOW, MEDIUM or HIGH in either view.
 - WET LAMP GLINTS are drawn by the ground sheets, bridge roads and scenic roads only: the mountain villages' cobble decals and the range's terrain show no glint of their lanterns; sign glints are steady (no flicker or colour cycle as the old streaks had).
 - No bins in the yards (they would be walk-through without collision); a stoop's door stands two steps up where the crowd's door point is at street level.
 - 32 shop names for every shopfront in the city (the 2048² sign atlas is packed up front and nearly full): names repeat along a street.
