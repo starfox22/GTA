@@ -81,7 +81,7 @@ title) and uploads the texture once, when it is done (~10 ms of work warm, sever
   always); at most 3/5/7/8 plumes by tier, the nearest the view's centre. A plume that starts (comes into reach,
   a teleport) is seeded whole (`chimneyPlumeSeed`: puffs at their ages, moved by fxStep's motion in closed form),
   and the emitters keep the pool's clock (at most 0.04 s a frame). Console `chimneySmoke()`. (Before:
-  `engineSmoke` without an opacity or a floor wrote NaN into the slot, drawn as hard flat cards.)
+  `engineSmoke` without an opacity or a floor wrote NaN into the slot.)
 - The blast, fire and smoke counts follow the tier (FX_TIER_SHARE: LOW 0.55, MEDIUM 0.8).
 
 ## Numbers (headless SwiftShader, HIGH, render scale 0.5, shadows off, a power-1 blast 30 m ahead)

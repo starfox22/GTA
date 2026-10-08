@@ -8,7 +8,7 @@
 - Wet asphalt reads darker and a little richer; standing water darker still.
 - The 4x4 club's chimney (and the mountain village's chimneys, the club's fire ring and grill) now give thin,
   lit, blue-grey wood smoke that widens and fades as it rises, bends with the wind and wanders, a few chimneys
-  by day and more at night. (The old puffs were hard flat cards: they were spawned without an opacity.)
+  by day and more at night. (The old puffs were spawned without an opacity or a floor: NaN in the pool's slots.)
 - Internals: wet-glints3d.js (WET LAMP GLINTS: GGX lobe per lamp head over a per-frame list of up to 32,
   uniforms only, in the ground shader), chimney-smoke3d.js (`fxWoodSmoke`, `CHIMNEY_SMOKE`), the effect pool's
   `thin` field; `lookSwitches({ wetGlints, wetReflections })`. Console `wetGlints()`, `chimneySmoke()`;
