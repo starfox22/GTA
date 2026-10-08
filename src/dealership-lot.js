@@ -382,6 +382,23 @@
         }
       }
     }
+    /* A world reset (world-reset.js): any test drive is over (its car went with the old world), the alarm is off,
+       the display is restocked and the owned cars wait repaired in their bays (they are the player's: kept). */
+    function dealershipWorldReset() {
+      if (!DEALER.planned) return;
+      dealer.test = null;
+      dealer.alarmUntil = 0;
+      for (const s of DEALER.slots) {
+        s.car = null;
+        s.stolenAt = -1e9;
+      }
+      for (const rec of dealer.owned) {
+        rec.car = null;
+        rec.lostAt = -1;
+      }
+      stockDealership();
+      keepOwnedCars();
+    }
     /* ---- Security ------------------------------------------------------------------- */
     /**
      * The alarm: four stars at once (never lower than the level already

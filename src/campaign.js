@@ -486,6 +486,8 @@
       teleportPlayer(spawn.x, spawn.y);
       cameraTarget.x = player.x;
       cameraTarget.y = player.y;
+      // A new mission starts in a city back to normal (world-reset.js).
+      resetWorld('mission');
       missionIndex = index;
       gameMode = 'play';
       save();

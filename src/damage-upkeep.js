@@ -448,17 +448,23 @@
       });
     }
     // The city puts its furniture back (and replants its trees) once nobody is looking.
-    function restoreStreetProps() {
+    // `all` (a world reset, world-reset.js): every knocked piece stands again at once, in view or not.
+    function restoreStreetProps(all = false) {
       for (let i = knockedProps.length - 1; i >= 0; i--) {
         const prop = knockedProps[i];
         // (The chase view sees farther down a street: there it must also be out of its frame, chase-rules.js.)
-        if (gameTime - prop.knockedAt < 240 || distanceBetween(prop, cameraTarget) < 1100 || (chaseCameraLive() && chaseInView(prop.x, prop.y, 60))) continue;
+        if (!all && (gameTime - prop.knockedAt < 240 || distanceBetween(prop, cameraTarget) < 1100 || (chaseCameraLive() && chaseInView(prop.x, prop.y, 60)))) continue;
         prop.down = false;
         prop.sprayUntil = 0;
         prop.strain = 0;
         if (prop.bench && prop.bench.taken === BROKEN_BENCH) prop.bench.taken = null;
         knockedProps.splice(i, 1);
       }
+    }
+    function restoreAllStreetProps() {
+      restoreStreetProps(true);
+      // A hit that strained a piece without knocking it over is forgotten too.
+      for (let i = 0; i < streetProps.length; i++) if (streetProps[i].strain) streetProps[i].strain = 0;
     }
 
     // ---- Developer console -------------------------------------------------------------

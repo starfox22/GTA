@@ -36,6 +36,7 @@
     // @include src/game-car-spawn.js
     // @include src/game-worldgen.js
     // @include src/game-populate.js
+    // @include src/world-reset.js
     // @include src/game-player-actions.js
     // @include src/game-cops.js
     // @include src/physics.js
@@ -173,9 +174,7 @@
     buildBuildingGrid();
     buildColliders();
     bootMark('colliders');
-    populate();
-    populateStoryWorld();
-    populateCounty();
+    populateWorld();
     chooseRoofHelipads();
     addMonarchHelipads();
     bootMark('populated');

@@ -181,9 +181,8 @@
       player.armor = 0;
       cameraTarget.x = player.x;
       cameraTarget.y = player.y;
-      populate();
-      populateStoryWorld();
-      populateCounty();
+      // Every vehicle and person from the boot seed, and no damage anywhere (world-reset.js).
+      resetWorld('new-game');
       save();
       gameMode = 'play';
       getElement('pauseMenu').classList.add('hidden');

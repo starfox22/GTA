@@ -20,6 +20,16 @@
       honks: 0,
       incidentId: 1,
     };
+    // A world reset (world-reset.js): the people these lists point at are gone; incidents, bodies, people indoors and
+    // street scenes (with their props) start again empty. The timers and counters keep running.
+    function resetCrowdLife() {
+      crowd.incidents.length = 0;
+      crowd.bodies.length = 0;
+      crowd.indoors.length = 0;
+      crowd.scenes.length = 0;
+      crowd.props.length = 0;
+      crowd.settledAt = null;
+    }
     // Bus shelters register themselves here when the renderer builds them.
     const BUS_STOPS = [];
     function registerBusStop(x, y) {

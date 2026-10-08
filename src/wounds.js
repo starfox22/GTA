@@ -17,6 +17,10 @@
       DEATH_FALL_SECONDS = 0.55,
       BLEEDER_LIMIT = 48,
       bleeders = [];
+    // A world reset (world-reset.js): the wounded it tracked are gone.
+    function clearBleeders() {
+      bleeders.length = 0;
+    }
     // Console tests only (combat-rules.js strikeTest): the zone every round lands in.
     let hitZoneOverride = null;
     function pickHitZone(kind) {

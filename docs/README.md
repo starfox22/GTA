@@ -35,6 +35,7 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/police-and-combat-mounted.md | Mounted guns: the LAV-8's 25 mm and coax, the gun jeep's .50 cal, the Black Hawk's door guns |
 | areas/missions-and-demo.md | Mission list and lifecycle, adding a mission, saves, the demo build, RESTART CURRENT JOB and the story index |
 | areas/missions-and-demo-godmode.md | God mode (the cheat, its panel, teleport) and skipping a cab, train or liner ride |
+| areas/missions-and-demo-world-reset.md | The world reset on WASTED, a mission pick, RESTART CURRENT JOB and a new game: triggers, what resets, what is kept |
 | areas/missions-and-demo-mission1.md | Mission 1's look: Vinny's truck model (livery, lamps, crate slots) and the yellow payphone and its dressing |
 | areas/missions-bluehour.md | The Blue Hour hotel (mission 2) in 3D: terrace, the VIP table and reserved glass, the street entrance, the limousines and doormen |
 | areas/missions-summit-and-fort.md | Missions 3 and 4: the package on Mount Ascent (dig, carrier, Vinny's warehouse) and Borrowed Stripes (Kessler's tail, the trunk, the uniform, Fort Sentinel, the consul at CIRRUS) |

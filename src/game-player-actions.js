@@ -158,6 +158,8 @@
         gameMode = 'play';
         if (mission) failMission('Hospital bill: $250. Your job is ready to retry.');
         else tell('Back on your feet at ' + hospital.name + '. Hospital bill: $250.', 4);
+        // The city wakes up with him: wrecks, damage, blood and bodies gone (world-reset.js).
+        resetWorld('wasted');
         save();
       }, 4200);
     }

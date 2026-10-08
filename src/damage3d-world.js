@@ -506,10 +506,33 @@
             }
       }
 
+      // ---- World reset -------------------------------------------------------------------
+      // A world reset (world-reset.js bumps worldResetSerial): wall and ground decals, rubble, torn panels and the
+      // blown windows go; the shop panes stand whole again. Knocked props come back through knockedProps.
+      let damageResetSeen = worldResetSerial;
+      function clearWorldDamage() {
+        damageResetSeen = worldResetSerial;
+        worldDecals.used = worldDecals.next = 0;
+        worldDecals.mesh.count = 0;
+        chunks.length = 0;
+        panels.length = 0;
+        debrisDirty = true;
+        windowsBroken = 0;
+        shellBreaches = 0;
+        for (let i = 0; i < buildings.length; i++) {
+          const list = buildings[i].shopPanes;
+          if (list)
+            for (let k = 0; k < list.length; k++) {
+              list[k].state = 0;
+              list[k].hits = 0;
+            }
+        }
+      }
       // ---- Frame -------------------------------------------------------------------------
       // After the vehicle loop: debris, furniture, marks on vehicles, spare flames.
       function updateDamageVisuals(deltaSeconds) {
         claimDamageResources();
+        if (damageResetSeen !== worldResetSerial) clearWorldDamage();
         if (deltaSeconds > 0) {
           stepDebris(chunks, deltaSeconds, 75);
           stepDebris(panels, deltaSeconds, 150);

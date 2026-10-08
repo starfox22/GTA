@@ -23,6 +23,12 @@
       viewMargin: 450, // units added to the camera footprint
     };
     const wreckPass = { timer: 0, wrecks: 0, abandoned: 0, protectedCount: 0, seen: 0, retired: 0, retiredWrecks: 0, retiredAbandoned: 0, byTimeout: 0, byCap: 0, ms: 0, last: [], pool: [], poolN: 0 };
+    // A world reset (world-reset.js): the candidate pool lets go of the old vehicles; the retired totals are kept.
+    function resetWreckPass() {
+      for (let i = 0; i < wreckPass.pool.length; i++) wreckPass.pool[i] = null;
+      wreckPass.poolN = 0;
+      wreckPass.wrecks = wreckPass.abandoned = wreckPass.protectedCount = wreckPass.seen = 0;
+    }
     // 0 an ordinary vehicle, 1 a wreck, 2 an abandoned car.
     function wreckKind(c) {
       if (c.hp <= 0) return isApache(c) || c.roofSite ? 0 : 1;

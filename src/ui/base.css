@@ -445,6 +445,27 @@ kbd {
 .elevator-dialog .meter {
   height: 3px;
 }
+/* A world reset (world-reset.js worldResetFade): black at once, then the new scene fades in, under the HUD. */
+.world-reset-fade {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  background: #04060a;
+  pointer-events: none;
+  opacity: 0;
+}
+.world-reset-fade.run {
+  animation: world-reset-fade 1.1s ease-in forwards;
+}
+@keyframes world-reset-fade {
+  0%,
+  25% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
 /* North Point Key's lifts: the screen fades to black (opacity set by skyline-lift.js). */
 .sky-lift {
   position: absolute;

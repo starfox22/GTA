@@ -11,11 +11,11 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-567 files in the include tree, 195,511 lines.
+568 files in the include tree, 195,794 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
-- `src/game.js`   198 — ▸ Game orchestration and shared state
+- `src/game.js`   197 — ▸ Game orchestration and shared state
 
 ## src/game.js ▸ Game orchestration and shared state
 
@@ -29,14 +29,15 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/camera-drive.js`   188 — Camera drive: the street camera's follow in a road vehicle or a boat, built for comfort: a steady lead, critically damped springs (firm along the …
 - `src/camera-comfort.js`   133 — Camera comfort: what the street camera's motion does to the eye, sampled as it runs (cameraView().comfort): the view's acceleration and jerk in …
 - `src/hud-notify.js`   166 — Notification feed behind tell(): lines stack in #toast, newest first, at most NOTICE_MAX (two on a phone); a repeat refreshes its own line; readable …
-- `src/mission-brief.js`    97 — Mission briefs: the big centred sentence that says what a story step is about (missions 3-4), held a few seconds, then folded down into the mission …
+- `src/mission-brief.js`    98 — Mission briefs: the big centred sentence that says what a story step is about (missions 3-4), held a few seconds, then folded down into the mission …
 - `src/heat.js`   283 — Heat and wanted stars
 - `src/witnesses.js`   529 — Witnesses and 911 calls, the police side: crimes nobody has reported yet, what the police see and hear for themselves, and how a report brings them …
 - `src/game-collision.js`   360 — Building grid: solid() and shotBlocked() run thousands of times per frame (every pedestrian step, bullet and spawn test).
 - `src/game-car-spawn.js`   377 — makeCar(), canSpawnCar(), spawnClearCar(): creating vehicles with one shared object layout.
 - `src/game-worldgen.js`   480 — buildWorld(): the city plan, buildings (makeBuilding), trees, the 2D ground canvas.
 - `src/game-populate.js`   231 — Initial population: showcase parking (SHOWCASE_PARKING, parkShowcase) and populate().
-- `src/game-player-actions.js`   635 — Player verbs: enter and exit vehicles, interact, aim, shoot, reload, hurt, die, explode.
+- `src/world-reset.js`   128 — World reset: resetWorld(reason) puts the city back as it was at boot (vehicles, people, wrecks, damage, blood, gore, fires, knocked furniture, shop …
+- `src/game-player-actions.js`   637 — Player verbs: enter and exit vehicles, interact, aim, shoot, reload, hurt, die, explode.
 - `src/game-cops.js`   174 — resetMissionState(), spawnCop(), copRoute(): mission reset and patrol spawning.
 - `src/physics.js`    19 — ▸ Vehicle and pedestrian physics
 - `src/game-people.js`   168 — Pedestrian life: Everyday chatter lives here; how people walk, what they do and how they react to danger is in src/crowd.js, which also has the …
@@ -47,7 +48,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-minimap.js`   278 — Minimap base layer: The minimap used to repaint the whole county (coast, every street, parks, promenades, county ground and every building footprint) …
 - `src/map-view.js`   375 — Map views: the city map's filters (MAP LAYERS) and GO TO list, sharp canvases on HiDPI screens, the minimap's speed pull-back and its edge arrows …
 - `src/game-ui.js`   521 — Weapon chip, mission card and updateUI() (HUD text refresh).
-- `src/game-menus.js`   195 — Resize, begin/newGame, pause, help, big map toggle.
+- `src/game-menus.js`   194 — Resize, begin/newGame, pause, help, big map toggle.
 - `src/god-splash.js`   114 — ▸ God mode splash: the full-screen card and fanfare when a cheat code toggles god mode (game-input.js godModeCheat): ON charges up, slams a gold "GOD …
 - `src/game-input.js`   485 — Cheat code: Letters typed during play accumulate in a short ring; when the tail spells a known code it fires.
 - `src/controls.js`   322 — Key bindings
@@ -60,9 +61,9 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/citylife.js`    11 — ▸ Civic services and police
 - `src/pursuit.js`    27 — ▸ Police response and pursuit tactics
 - `src/swat.js`   236 — SWAT teams, riot shields and rooftop snipers
-- `src/wounds.js`   180 — Wounds, hit reactions and death falls
-- `src/story.js`   986 — Story characters and mission stages
-- `src/campaign.js`   523 — Campaign saves and replay
+- `src/wounds.js`   184 — Wounds, hit reactions and death falls
+- `src/story.js`   995 — Story characters and mission stages
+- `src/campaign.js`   525 — Campaign saves and replay
 - `src/chase.js`   554 — Cargo pursuit
 - `src/roadblocks.js`   436 — Police containment and roadblocks
 - `src/carjack.js`   340 — Carjacking and driver reactions
@@ -102,7 +103,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/aviation.js`    10 — ▸ Fixed-wing flight and flight missions
 - `src/challenges.js`   507 — Mission-specific encounters
 - `src/summitjob.js`   319 — Mission 3, High Ground: the package buried at the top of Mount Ascent
-- `src/fortjob.js`   814 — Mission 4, Borrowed Stripes: an off-duty soldier's uniform, Fort Sentinel and the consul at CIRRUS
+- `src/fortjob.js`   880 — Mission 4, Borrowed Stripes: an off-duty soldier's uniform, Fort Sentinel and the consul at CIRRUS
 - `src/sidejobs.js`   418 — Contract missions after the main story
 - `src/streets.js`    12 — ▸ Road presentation
 - `src/terrain.js`    20 — ▸ Mountains and off-road contact
@@ -275,7 +276,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/damage-vehicles.js`   563 — Vehicle damage state: dents, lamps, glass bands and panes (freshDamage, ensureDamage, addDent, shatterPane).
 - `src/damage-crumple.js`   286 — Crumple field: how far a point of a vehicle's body moves for its dents (crumpleField, crumpleLimits), the one rule the renderer bends every part of a …
-- `src/damage-upkeep.js`   622 — Vehicle fire, wrecks and per-frame damage upkeep (igniteVehicle, wreckVehicle, updateDamage) and knockable street props.
+- `src/damage-upkeep.js`   628 — Vehicle fire, wrecks and per-frame damage upkeep (igniteVehicle, wreckVehicle, updateDamage) and knockable street props.
 
 ## src/county.js ▸ Outlying districts
 
@@ -298,7 +299,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/military-base.js`   608 — Fort Sentinel rules: plans, walls, gates, lockdown, solids and alarms (MILITARY, SENTINEL, militaryBlocked, militaryAlarm).
 - `src/military-life.js`   603 — Fort Sentinel life: buildMilitary(), soldiers and drill, gunners and tanks firing, supply runs, updateMilitary().
-- `src/fort-cover.js`   412 — Fort Sentinel cover: the borrowed army uniform (wearUniform), the stolen pass shown at the gate, the cover state and its small API for a mission …
+- `src/fort-cover.js`   420 — Fort Sentinel cover: the borrowed army uniform (wearUniform), the stolen pass shown at the gate, the cover state and its small API for a mission …
 - `src/fort-cover-watch.js`   165 — Fort Sentinel cover, the garrison's eyes: each soldier's forward cone (fortSoldierSees), the restricted spots, and the suspicion it fills while the …
 - `src/fort-cover-records.js`   117 — Fort Sentinel's HQ records office: its side door (FORT_RECORDS), the fade inside, the timed search for the weapons file on a card (#fortRecords) and …
 
@@ -378,7 +379,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/crowd-looks.js`   167 — Crowd appearance: palettes, role weights, dressPerson() and ensureLook().
 - `src/crowd-speech.js`   217 — Crowd spoken lines (CROWD_LINES, crowdSay) and speech bubbles.
 - `src/crowd-chatter.js`   298 — Street chatter that fits the moment (the hour, the weather, the district, what the player looks like and drives, what just happened), the lines …
-- `src/crowd-space.js`   271 — Crowd shared state (crowd), bus stops, view culling, sidewalk snapping, sight and building doors.
+- `src/crowd-space.js`   281 — Crowd shared state (crowd), bus stops, view culling, sidewalk snapping, sight and building doors.
 - `src/crowd-streaming.js`   238 — Crowd streaming: spawning and placing street walkers round the camera (streamCrowd, makeStreetWalker).
 - `src/crowd-walking.js`   412 — Walking the grid: crossings, sidewalks, going indoors, rain, updateStreetWalker() and encounters.
 - `src/crowd-perception.js`   461 — Crowd perception: incidents heard and seen (crowdIncident, crowdAlarm); deciding, starting and ending reactions.
@@ -397,7 +398,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/livingcity-medics.js`   525 — Ambulances in free roam: a body left in a city street brings an ambulance under lights and siren (dispatchMedics); two paramedics work on the victim …
 - `src/livingcity-events.js`   195 — Street events in free roam: a bag snatch the player can stop by catching the thief on foot (updateStreetEvents, stageSnatch), his marker on the radar …
 - `src/livingcity-key.js`   306 — North Point Key visitors: cabs, limousines and fine cars that come over the Key bridge, round the drop-off circle (a pause by the valet), and back …
-- `src/livingcity-wrecks.js`   204 — Wreck limit: wrecks and abandoned cars nobody can see go after a timeout, with a hard cap on each (retireWrecks, wreckReport).
+- `src/livingcity-wrecks.js`   210 — Wreck limit: wrecks and abandoned cars nobody can see go after a timeout, with a hard cap on each (retireWrecks, wreckReport).
 - `src/livingcity-console.js`   151 — DeadEndCity console methods for the living city (registered by game-console-crowd.js as 'livingCity'): traffic reports and switches, the siren pass …
 
 ## src/monarch-life.js ▸ Monarch Isle: traffic, people, boats and sound
@@ -407,7 +408,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/dealership.js ▸ MONARCH MOTORS: the plan, the sale, the garage and the alarm
 
-- `src/dealership-lot.js`   659 — Car dealership lot: plan, keep-out, saved garage and the display stock (DEALER, planDealership, spawnDisplayCar).
+- `src/dealership-lot.js`   676 — Car dealership lot: plan, keep-out, saved garage and the display stock (DEALER, planDealership, spawnDisplayCar).
 - `src/dealership-menu.js`   623 — Car dealership menu: camera, spec cards, browsing, paint, buying, keys and bringing owned cars (renderDealerMenu).
 
 ## src/beachclub.js ▸ Marea Beach Club (plan, people, door, schedule)
@@ -561,7 +562,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/damage3d-bodies.js`   539 — Damage 3D vehicle bodies: shell sections, crumpling, hinged parts and glass (carBodyDamage, crumple).
 - `src/damage3d-crumple.js`   536 — Damage 3D crumple: every part of a car body bent by the one crumple field (crumpleField, damage-crumple.js) at its rest place: shell, glass, paint …
 - `src/damage3d-marks.js`   581 — Damage 3D vehicle marks: bullet holes, glass stars and scrapes pinned to the triangle of the body part they hit (they bend, swing and tear off with …
-- `src/damage3d-world.js`   560 — Damage 3D world hits: shop windows, bullet holes, structure impacts and blasts, sparks, knocked props (impactEffect).
+- `src/damage3d-world.js`   583 — Damage 3D world hits: shop windows, bullet holes, structure impacts and blasts, sparks, knocked props (impactEffect).
 
 ## src/carblood3d.js ▸ Car blood 3D: stains on a vehicle's bodywork, decal geometry clipped to the model's own surface, painted and fitted in time slices.
 
@@ -833,7 +834,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/game-console.js ▸ DeadEndCity console registry and assembly
 
 - `src/game-console-core.js`   189 — DeadEndCity console, core: status, teleport, look, clock, zoom, simulate, heal, god, cash, walk (+ godPanelConsole)
-- `src/game-console-missions.js`   358 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
+- `src/game-console-missions.js`   361 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
 - `src/game-console-police.js`   271 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
 - `src/game-console-vehicles.js`   419 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
 - `src/game-console-world.js`   239 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
@@ -849,7 +850,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/shell.html ▸ HTML page skeleton: its src/ui/*.css and *.html fragments (in include order) and build.py's `<!-- @include-* -->` slots (game, three.js, media, credits)
 
 - `src/ui/build-header.html`   364 — Dead end city — readable development / review build 0.9.0: Open this HTML directly to play offline.
-- `src/ui/base.css`   605 — styles: :root, body, button, button:focus-visible, …
+- `src/ui/base.css`   626 — styles: :root, body, button, button:focus-visible, …
 - `src/ui/touch-controls.css`   312 — Compact dashboard radio: presets stay within reach without covering the road ahead.
 - `src/ui/casino-transit.css`   201 — styles: #casinoTable, .roulette-top, .roulette-top canvas, .roulette-bank, …
 - `src/ui/police-arsenal.css`   523 — POLICE FEEDBACK AND ARSENAL — readable interface additions, v23.
@@ -873,10 +874,10 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/ui/map-panel.css`   156 — City map (map-view.js): as large as the screen allows, with its filters (the legend doubles as them) and the GO TO list beside it, below it on a …
 - `src/ui/god-splash.css`   745 — God mode splash (god-splash.js): A cheat code toggling god mode: a full-screen card over everything (play, pause, Settings, the title); clicks pass …
 - `src/ui/chase-view.css`    86 — Chase view (chase-hud.js): the reticle in the middle of the screen.
-- `src/ui/mission-brief.css`   133 — Mission brief (mission-brief.js): one sentence for a story step in the upper middle of the screen, above the player and under the waypoint pill, then …
+- `src/ui/mission-brief.css`   123 — Mission brief (mission-brief.js): one sentence for a story step in the upper middle of the screen, above the player and under the waypoint pill, then …
 - `src/ui/reduced-motion.css`    74 — Reduced motion: keep the states, drop the movement
 - `src/ui/hud.html`   305 — HUD. Layout and motion live in the HUD section of the stylesheet; the collapse/expand behaviour of the radio and weapon boxes and the minimap fold …
-- `src/ui/menus.html`   252 — markup: #menu, #coverArt, #startBtn, #startMeta, #newGameStart, …
+- `src/ui/menus.html`   254 — markup: #menu, #coverArt, #startBtn, #startMeta, #newGameStart, …
 - `src/ui/panels.html`   218 — markup: #sportsbook, #sbTitle, #sbFormat, #sbCash, #sbClose, …
 - `src/ui/credits.html`   299 — markup: #credits, #closeCredits
 - `src/ui/transit.html`    18 — markup: #transitOverlay, #transitPanel, #transitTitle, #transitKey, #transitOptions, …

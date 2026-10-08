@@ -203,6 +203,9 @@
         return inside.length;
       },
       missions: () => missions.map((m, i) => ({ index: i, title: m.title, contact: m.contact })),
+      // The world reset on WASTED and a mission pick (world-reset.js): resets by reason, the last one's counts
+      // before and after (and its cost in ms), and the counts now. Read-only.
+      worldResetReport: () => worldResetReportRun(),
       // The pause menu's RESTART CURRENT JOB (story.js retryMission).
       retryMission() {
         retryMission();
