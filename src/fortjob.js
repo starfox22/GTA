@@ -299,9 +299,14 @@
         if (c.trunkOpen) {
           setStage(FORT_STAGE.take, trunkPoint(c, { x: 0, y: 0 }), 'TAKE THE UNIFORM AND THE ID · ' + keyName('interact'));
           tell('A duffel bag: a pressed field uniform, boots, a patrol cap and a laminated ID. KESSLER, D. · PFC.', 4);
-        } else if (m.keys || m.killed) {
-          if (m.stage !== FORT_STAGE.trunk || m.instruction.indexOf('OPEN') !== 0) m.instruction = 'OPEN KESSLER’S TRUNK · ' + keyName('interact');
+          return;
         }
+        if (m.killed && !m.keys && k) {
+          // His keys are on him.
+          if (m.instruction.indexOf('TAKE') !== 0) setStage(FORT_STAGE.trunk, k, 'TAKE KESSLER’S KEYS · ' + keyName('interact'));
+          return;
+        }
+        if (m.keys && m.instruction.indexOf('OPEN') !== 0) setStage(FORT_STAGE.trunk, trunkPoint(c, { x: 0, y: 0 }), 'OPEN KESSLER’S TRUNK · ' + keyName('interact'));
         if (m.stage === FORT_STAGE.trunk) trunkPoint(c, m.target);
         return;
       }

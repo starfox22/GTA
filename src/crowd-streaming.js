@@ -33,6 +33,8 @@
         !p.stroll &&
         !p.onDeck &&
         !p.keyPerson &&
+        // A story character on foot (fortjob.js: Kessler) is never moved to another street.
+        !p.missionDriver &&
         !p.cityRole &&
         !p.parkGuest &&
         !p.react &&
