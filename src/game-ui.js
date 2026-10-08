@@ -50,9 +50,72 @@
       g.fillRect(6, 11, 5, 3);
       g.restore();
     }
+    /* The lockpick: a hook pick (black rubber grip, bright steel shaft, the hook turned up at the tip) over an
+       L-shaped tension wrench, pointing the way the gun icons point; procedural like the fist. */
+    function drawLockpickIcon(targetCanvas) {
+      const g = targetCanvas.getContext('2d');
+      g.clearRect(0, 0, targetCanvas.width, targetCanvas.height);
+      g.save();
+      const scale = Math.min(targetCanvas.width / 150, targetCanvas.height / 70);
+      g.translate(targetCanvas.width / 2, targetCanvas.height / 2);
+      g.scale(scale, scale);
+      g.lineJoin = g.lineCap = 'round';
+      const steel = g.createLinearGradient(0, -4, 0, 4);
+      steel.addColorStop(0, '#eef3f5');
+      steel.addColorStop(0.5, '#aab4ba');
+      steel.addColorStop(1, '#6f7a80');
+      // The tension wrench: a flat bar with its short leg bent down at the front.
+      g.strokeStyle = '#3a3f43';
+      g.lineWidth = 6.5;
+      g.beginPath();
+      g.moveTo(-58, 15);
+      g.lineTo(34, 15);
+      g.lineTo(34, 27);
+      g.stroke();
+      g.strokeStyle = '#9aa4aa';
+      g.lineWidth = 4.2;
+      g.stroke();
+      // The pick's shaft and hook.
+      g.strokeStyle = '#2a2d30';
+      g.lineWidth = 5.2;
+      g.beginPath();
+      g.moveTo(-6, -4);
+      g.lineTo(58, -4);
+      g.quadraticCurveTo(64, -4, 64, -12);
+      g.stroke();
+      g.strokeStyle = steel;
+      g.lineWidth = 3;
+      g.stroke();
+      // The grip: black rubber, a little waisted, with ribs.
+      g.fillStyle = '#17191b';
+      g.strokeStyle = '#050606';
+      g.lineWidth = 2;
+      g.beginPath();
+      g.moveTo(-64, -11);
+      g.quadraticCurveTo(-36, -15, -6, -9);
+      g.lineTo(-6, 1);
+      g.quadraticCurveTo(-36, 7, -64, 3);
+      g.quadraticCurveTo(-70, -4, -64, -11);
+      g.closePath();
+      g.fill();
+      g.stroke();
+      g.strokeStyle = '#34383b';
+      g.lineWidth = 1.4;
+      for (let i = 0; i < 6; i++) {
+        g.beginPath();
+        g.moveTo(-52 + i * 7, -10.5);
+        g.lineTo(-52 + i * 7, 2.5);
+        g.stroke();
+      }
+      g.restore();
+    }
     function drawWeaponIcon(targetCanvas, weaponIndex) {
       if (weaponIndex === FISTS_INDEX) {
         drawFistIcon(targetCanvas);
+        return;
+      }
+      if (weaponIndex === LOCKPICK_INDEX) {
+        drawLockpickIcon(targetCanvas);
         return;
       }
       const atlas = visualAssets.arsenal;
@@ -256,19 +319,23 @@
             : 'NO ARMOR';
       getElement('weaponSlot').textContent = w.fists
         ? 'UNARMED · WEAPONS AWAY'
+        : w.tool
+        ? 'TOOL · QUIET ENTRY'
         : w.melee
         ? 'KNIFE · ALWAYS CARRIED'
         : 'EQUIPPED · ' + equippedWeaponIndices().length + ' WEAPONS';
       getElement('weaponName').textContent = w.name;
-      getElement('ammo').textContent = w.fists
+      getElement('ammo').textContent = w.fists || w.tool
         ? '—'
         : w.melee
         ? '∞'
         : reloadSecondsRemaining > 0
           ? '··'
           : String(w.ammo).padStart(2, '0');
-      getElement('reserve').textContent = w.fists ? 'PUNCH' : w.melee ? 'NO AMMO NEEDED' : '/ ' + w.reserve;
-      getElement('reloadHint').textContent = w.melee
+      getElement('reserve').textContent = w.fists ? 'PUNCH' : w.tool ? 'HOLD AT A LOCK' : w.melee ? 'NO AMMO NEEDED' : '/ ' + w.reserve;
+      getElement('reloadHint').textContent = w.tool
+        ? keyName('interact')
+        : w.melee
         ? keyName('fire')
         : reloadSecondsRemaining > 0
           ? 'LOADING'
@@ -416,7 +483,9 @@
           if (player.carjack) prompt = ['door', 'reach', 'tug'].includes(player.carjack.phase) ? 'HAUL THEM OUT' : '';
           else if (n)
             prompt = vehicleIsLocked(n)
-              ? 'LOCKED · BREAK THE WINDOW'
+              ? lockpickEquipped()
+                ? "LOCKED · PICK IT AT THE DRIVER'S DOOR"
+                : 'LOCKED · BREAK THE WINDOW'
               : (n.occupied ? 'PULL OUT THE DRIVER · ' : 'ENTER ') + vehicleSpec(n).name;
         }
       }
@@ -426,6 +495,8 @@
         key: isAircraft(c) ? null : promptKey,
         id: promptId,
       });
+      // At a trunk with something in it, or a locked driver's door with the lockpick in hand (vehicle-trunk.js).
+      if (gameMode === 'play' && !c) offerLockpickPrompt();
       drawMinimap();
       if (mapOpen) drawMap(cityMapContext, 800, 660, true);
       drawWeapon();

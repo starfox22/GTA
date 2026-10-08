@@ -386,13 +386,15 @@
       ) {
         worldContext.fillStyle = '#c2b48f';
         worldContext.fillRect(2, 3, 7, 3);
+        // The lockpick: a short thin steel line (both hands low at a lock: vehicle-trunk.js).
+        const pick = isPlayer && selectedWeaponIndex === LOCKPICK_INDEX;
         worldContext.fillStyle =
-          isPlayer && selectedWeaponIndex === KNIFE_INDEX ? '#e0e8ed' : '#1a2722';
+          isPlayer && selectedWeaponIndex === KNIFE_INDEX ? '#e0e8ed' : pick ? '#aeb7bc' : '#1a2722';
         worldContext.fillRect(
           7,
           3,
-          isPlayer && selectedWeaponIndex === 3 ? 12 : 7,
-          isPlayer && selectedWeaponIndex === KNIFE_INDEX ? 1.5 : 3,
+          isPlayer && selectedWeaponIndex === 3 ? 12 : pick ? 4 : 7,
+          (isPlayer && selectedWeaponIndex === KNIFE_INDEX) || pick ? 1.5 : 3,
         );
       }
       worldContext.restore();

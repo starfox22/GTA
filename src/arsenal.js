@@ -8,11 +8,17 @@
      * FISTS (index 7) is no weapon at all: nothing in hand, a left-right punch.
      * With fists up the player looks harmless, so the crowd does not panic at the
      * sight of them (crowd.js); a punch is still assault (heat.js).
+     * LOCKPICK (index 8) is a tool, not a weapon: owned only once given (giveLockpick, saved
+     * in the campaign save), it fires nothing and frightens nobody; held at a trunk or a
+     * locked driver's door, holding interact picks the lock (vehicle-trunk.js).
      */
     const KNIFE_INDEX = 6,
-      FISTS_INDEX = 7;
+      FISTS_INDEX = 7,
+      LOCKPICK_INDEX = 8;
     const KNIFE = { name: 'KNIFE', owned: true, melee: true, dmg: 42, rate: 0.48, range: 24 };
     const FISTS = { name: 'FISTS', owned: true, melee: true, fists: true, dmg: 7, rate: 0.36, range: 21 };
+    // `melee` keeps every gun-only path (ammo, reload, aim lean, crosshair) away from it; `tool` stops a strike.
+    const LOCKPICK = { name: 'LOCKPICK', owned: false, melee: true, tool: true, dmg: 0, rate: 0.4, range: 0 };
     const WEAPON_CATEGORIES = [
       'SIDEARM',
       'AUTOMATIC',
@@ -22,26 +28,59 @@
       'PRECISION',
       'MELEE',
       'UNARMED',
+      'TOOL',
     ];
 
+    function slotWeapon(index) {
+      return index === KNIFE_INDEX ? KNIFE : index === FISTS_INDEX ? FISTS : index === LOCKPICK_INDEX ? LOCKPICK : weapons[index];
+    }
     function currentWeapon() {
-      return selectedWeaponIndex === KNIFE_INDEX ? KNIFE : selectedWeaponIndex === FISTS_INDEX ? FISTS : weapons[selectedWeaponIndex];
+      return slotWeapon(selectedWeaponIndex);
     }
     function weaponIsEquipped(index) {
-      return Number.isInteger(index) && (index === KNIFE_INDEX || index === FISTS_INDEX || !!weapons[index]?.owned);
+      return (
+        Number.isInteger(index) &&
+        (index === KNIFE_INDEX || index === FISTS_INDEX || (index === LOCKPICK_INDEX ? LOCKPICK.owned : !!weapons[index]?.owned))
+      );
     }
-    /* No weapon in hand: fists (or nothing at all while driving). */
+    /* No weapon in hand: fists (or nothing at all while driving), or only the lockpick, which frightens nobody. */
     function playerUnarmed() {
-      return selectedWeaponIndex === FISTS_INDEX;
+      return selectedWeaponIndex === FISTS_INDEX || selectedWeaponIndex === LOCKPICK_INDEX;
     }
     function equippedWeaponIndices() {
-      return [
+      const list = [
         ...weapons
           .map((weapon, index) => (weapon.owned ? index : null))
           .filter((index) => index !== null),
         KNIFE_INDEX,
         FISTS_INDEX,
       ];
+      if (LOCKPICK.owned) list.push(LOCKPICK_INDEX);
+      return list;
+    }
+    /* The arsenal's cards in their stable order: the lockpick's only once it is owned. */
+    function arsenalSlots() {
+      return LOCKPICK.owned ? [...weapons.keys(), KNIFE_INDEX, FISTS_INDEX, LOCKPICK_INDEX] : [...weapons.keys(), KNIFE_INDEX, FISTS_INDEX];
+    }
+    /* THE LOCKPICK (a tension wrench and a hook pick): given once (story), saved with the campaign. */
+    function lockpickOwned() {
+      return LOCKPICK.owned;
+    }
+    function lockpickEquipped() {
+      return LOCKPICK.owned && selectedWeaponIndex === LOCKPICK_INDEX;
+    }
+    function giveLockpick(quiet = false) {
+      const fresh = !LOCKPICK.owned;
+      LOCKPICK.owned = true;
+      if (fresh && !quiet)
+        tell('LOCKPICK · in the arsenal · ' + pressKey('lockpick') + ' to take it in hand', 5, { id: 'lockpick' });
+      save();
+      return fresh;
+    }
+    /* Taken back (a new game, the console): the hand goes empty if it held it. */
+    function takeLockpick() {
+      LOCKPICK.owned = false;
+      if (selectedWeaponIndex === LOCKPICK_INDEX) selectedWeaponIndex = FISTS_INDEX;
     }
     function restoreWeaponSelection(savedSelection) {
       // Ignore obsolete v10 carried slots: ownership now makes every purchase available.
@@ -73,16 +112,17 @@
     // Unknown card data intentionally excludes names, categories, icons and statistics.
     function arsenalCardData(index) {
       if (!weaponIsEquipped(index)) return { index, owned: false, name: '???', status: 'UNDISCOVERED' };
-      const weapon = index === KNIFE_INDEX ? KNIFE : index === FISTS_INDEX ? FISTS : weapons[index];
+      const weapon = slotWeapon(index);
       return {
         index,
         owned: true,
         name: weapon.name,
         category: WEAPON_CATEGORIES[index],
         selected: index === selectedWeaponIndex,
-        shortcut: index === KNIFE_INDEX ? 'K' : index === FISTS_INDEX ? keyName('fists') : String(index + 1),
+        shortcut:
+          index === KNIFE_INDEX ? 'K' : index === FISTS_INDEX ? keyName('fists') : index === LOCKPICK_INDEX ? keyName('lockpick') : String(index + 1),
         status: index === selectedWeaponIndex ? 'IN HAND' : 'EQUIPPED',
-        supply: weapon.fists ? 'NO WEAPON' : weapon.melee ? 'NO AMMO NEEDED' : weapon.ammo + ' / ' + weapon.reserve,
+        supply: weapon.fists ? 'NO WEAPON' : weapon.tool ? 'QUIET ENTRY' : weapon.melee ? 'NO AMMO NEEDED' : weapon.ammo + ' / ' + weapon.reserve,
       };
     }
     function arsenalText(className, text) {
@@ -98,22 +138,32 @@
         renderArsenal(index);
       } else {
         getElement('arsenalActiveDescription').textContent =
-          'Only the 9mm pistol can be used from a vehicle. Get out to select another weapon.';
+          index === LOCKPICK_INDEX
+            ? 'The lockpick is for a lock, not a moving car. Get out first.'
+            : 'Only the 9mm pistol can be used from a vehicle. Get out to select another weapon.';
       }
     }
     function renderArsenal(focusIndex = null) {
       const active = currentWeapon();
-      getElement('arsenalEquippedCount').textContent = equippedWeaponIndices().length + ' / 8 EQUIPPED';
+      getElement('arsenalEquippedCount').textContent = equippedWeaponIndices().length + ' / ' + arsenalSlots().length + ' EQUIPPED';
       getElement('arsenalActiveName').textContent = active.name;
       getElement('arsenalActiveCategory').textContent = WEAPON_CATEGORIES[selectedWeaponIndex];
-      getElement('arsenalActiveAmmo').textContent = active.melee
+      getElement('arsenalActiveAmmo').textContent = active.tool
+        ? '—'
+        : active.melee
         ? '∞'
         : String(active.ammo).padStart(2, '0');
-      getElement('arsenalActiveReserve').textContent = active.melee
+      getElement('arsenalActiveReserve').textContent = active.tool
+        ? 'QUIET ENTRY'
+        : active.melee
         ? 'NO AMMO NEEDED'
         : '/ ' + active.reserve + ' RESERVE';
       getElement('arsenalActiveDescription').textContent = active.fists
         ? 'Weapons away. People on the street are not afraid of you; a punch is still assault.'
+        : active.tool
+        ? "A tension wrench and a hook pick. Kneel at a trunk or a locked driver's door and hold " +
+          keyName('interact') +
+          ' to work the pins. Quiet, but anyone watching sees a theft.'
         : active.melee
         ? 'Close-range attacks. Always ready. No ammunition required.'
         : 'Ready to use. Select any equipped weapon below, or cycle with Q.';
@@ -122,7 +172,7 @@
       collection.replaceChildren();
       let focusTarget = null;
       // Stable order retains seven collectible positions; names appear only after acquisition.
-      for (const index of [...weapons.keys(), KNIFE_INDEX, FISTS_INDEX]) {
+      for (const index of arsenalSlots()) {
         const data = arsenalCardData(index);
         const card = document.createElement('button');
         card.type = 'button';
@@ -165,7 +215,7 @@
     // The knife stabs; fists throw a left-right combination whose third punch
     // in quick succession is a haymaker that puts a civilian on the ground.
     function meleeAttack() {
-      if (player.car || player.parachute || transitRide) return false;
+      if (player.car || player.parachute || transitRide || currentWeapon().tool) return false;
       const weapon = currentWeapon(),
         fists = !!weapon.fists,
         heading = aim();

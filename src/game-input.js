@@ -190,9 +190,11 @@
           cycleWeapon();
           updateUI();
           renderArsenal(selectedWeaponIndex);
-        } else if (!e.repeat && (is('knife') || is('fists') || weaponSlotKey(actions) >= 0)) {
+        } else if (!e.repeat && (is('knife') || is('fists') || is('lockpick') || weaponSlotKey(actions) >= 0)) {
           e.preventDefault();
-          selectArsenalWeapon(is('knife') ? KNIFE_INDEX : is('fists') ? FISTS_INDEX : weaponSlotKey(actions));
+          selectArsenalWeapon(
+            is('knife') ? KNIFE_INDEX : is('fists') ? FISTS_INDEX : is('lockpick') ? LOCKPICK_INDEX : weaponSlotKey(actions),
+          );
         }
         return;
       }
@@ -362,6 +364,7 @@
       if (is('arsenal')) openArsenal();
       if (is('knife')) selectWeapon(KNIFE_INDEX);
       if (is('fists')) selectWeapon(FISTS_INDEX);
+      if (is('lockpick') && lockpickOwned()) selectWeapon(LOCKPICK_INDEX);
       if (weaponSlotKey(actions) >= 0) selectWeapon(weaponSlotKey(actions));
       if (is('cycleWeapon')) cycleWeapon();
       if (is('missionCard')) toggleMissionCard();

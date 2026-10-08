@@ -11,11 +11,11 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-557 files in the include tree, 191,935 lines.
+559 files in the include tree, 192,342 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
-- `src/game.js`   193 — ▸ Game orchestration and shared state
+- `src/game.js`   195 — ▸ Game orchestration and shared state
 
 ## src/game.js ▸ Game orchestration and shared state
 
@@ -32,40 +32,41 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/heat.js`   283 — Heat and wanted stars
 - `src/witnesses.js`   529 — Witnesses and 911 calls, the police side: crimes nobody has reported yet, what the police see and hear for themselves, and how a report brings them …
 - `src/game-collision.js`   360 — Building grid: solid() and shotBlocked() run thousands of times per frame (every pedestrian step, bullet and spawn test).
-- `src/game-car-spawn.js`   368 — makeCar(), canSpawnCar(), spawnClearCar(): creating vehicles with one shared object layout.
+- `src/game-car-spawn.js`   375 — makeCar(), canSpawnCar(), spawnClearCar(): creating vehicles with one shared object layout.
 - `src/game-worldgen.js`   480 — buildWorld(): the city plan, buildings (makeBuilding), trees, the 2D ground canvas.
 - `src/game-populate.js`   231 — Initial population: showcase parking (SHOWCASE_PARKING, parkShowcase) and populate().
-- `src/game-player-actions.js`   623 — Player verbs: enter and exit vehicles, interact, aim, shoot, reload, hurt, die, explode.
+- `src/game-player-actions.js`   627 — Player verbs: enter and exit vehicles, interact, aim, shoot, reload, hurt, die, explode.
 - `src/game-cops.js`   172 — resetMissionState(), spawnCop(), copRoute(): mission reset and patrol spawning.
 - `src/physics.js`    19 — ▸ Vehicle and pedestrian physics
 - `src/game-people.js`   166 — Pedestrian life: Everyday chatter lives here; how people walk, what they do and how they react to danger is in src/crowd.js, which also has the …
 - `src/game-combat.js`   348 — updateCombat(), bullets, shot line-of-sight (shotBlocked) and bullet targets.
-- `src/game-update.js`   179 — update(dt): the per-frame simulation step (only active play advances clocks).
+- `src/game-update.js`   181 — update(dt): the per-frame simulation step (only active play advances clocks).
 - `src/world-edge.js`   521 — Open-sea countdown: 10 s flying or sailing away from all land starts RETURN TO THE CITY and 10 s more; at zero a missile comes in from the coast and …
-- `src/game-draw2d.js`   602 — 2D canvas fallback renderer: drawWorld, drawCar, drawPerson, markers.
+- `src/game-draw2d.js`   604 — 2D canvas fallback renderer: drawWorld, drawCar, drawPerson, markers.
 - `src/game-minimap.js`   278 — Minimap base layer: The minimap used to repaint the whole county (coast, every street, parks, promenades, county ground and every building footprint) …
 - `src/map-view.js`   375 — Map views: the city map's filters (MAP LAYERS) and GO TO list, sharp canvases on HiDPI screens, the minimap's speed pull-back and its edge arrows …
-- `src/game-ui.js`   446 — Weapon chip, mission card and updateUI() (HUD text refresh).
+- `src/game-ui.js`   517 — Weapon chip, mission card and updateUI() (HUD text refresh).
 - `src/game-menus.js`   195 — Resize, begin/newGame, pause, help, big map toggle.
 - `src/god-splash.js`   114 — ▸ God mode splash: the full-screen card and fanfare when a cheat code toggles god mode (game-input.js godModeCheat): ON charges up, slams a gold "GOD …
-- `src/game-input.js`   480 — Cheat code: Letters typed during play accumulate in a short ring; when the tail spells a known code it fires.
-- `src/controls.js`   320 — Key bindings
+- `src/game-input.js`   483 — Cheat code: Letters typed during play accumulate in a short ring; when the tail spells a known code it fires.
+- `src/controls.js`   322 — Key bindings
 - `src/geography.js`    12 — ▸ Coastlines and land regions
 - `src/drawbridge.js`    83 — ▸ The drawbridges: schedules, gates, leaves, jumps
 - `src/harbor.js`    11 — ▸ Ironworks cargo terminal
 - `src/police-feedback.js`    52 — Police action feedback
-- `src/arsenal.js`   257 — Arsenal and knife combat
+- `src/arsenal.js`   307 — Arsenal and knife combat
 - `src/ammo-supply.js`   241 — Ammunition supply: no pickups on the street (not even health).
 - `src/citylife.js`    11 — ▸ Civic services and police
 - `src/pursuit.js`    27 — ▸ Police response and pursuit tactics
 - `src/swat.js`   236 — SWAT teams, riot shields and rooftop snipers
 - `src/wounds.js`   180 — Wounds, hit reactions and death falls
 - `src/story.js`   969 — Story characters and mission stages
-- `src/campaign.js`   517 — Campaign saves and replay
+- `src/campaign.js`   522 — Campaign saves and replay
 - `src/chase.js`   546 — Cargo pursuit
 - `src/roadblocks.js`   436 — Police containment and roadblocks
 - `src/carjack.js`   338 — Carjacking and driver reactions
 - `src/carjack-struggle.js`   566 — The carjack struggle: walking round to the driver's door, the door, reaching in, a tug of war, hauling the driver out and taking the seat …
+- `src/vehicle-trunk.js`   316 — Vehicle trunks and the lockpick at work: a trunk with something in it (`c.trunkLoot`, set by a mission), picked pin by pin by holding interact with …
 - `src/riders.js`   482 — Riders thrown from motorbikes and bicycles
 - `src/wheelie.js`   167 — Wheelies: a motorbike's or bicycle's front wheel lifted by the throttle and the rider's weight, pitching about the rear tyre (c.wheelie, radians; the …
 - `src/themepark.js`    64 — ▸ Sunset Pier resort and theme park
@@ -98,7 +99,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/apache.js`   480 — Fort Sentinel's AH-64 attack helicopter
 - `src/mounted-guns.js`   458 — Mounted guns the player fires from Fort Sentinel's vehicles: the LAV-8's 25 mm cannon and coax MG, the gun jeep's ring-mounted .50 cal and the Black …
 - `src/aviation.js`    10 — ▸ Fixed-wing flight and flight missions
-- `src/challenges.js`   607 — Mission-specific encounters
+- `src/challenges.js`   507 — Mission-specific encounters
 - `src/sidejobs.js`   418 — Contract missions after the main story
 - `src/streets.js`    12 — ▸ Road presentation
 - `src/terrain.js`    20 — ▸ Mountains and off-road contact
@@ -130,7 +131,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/gamepad.js`   359 — Gamepad (standard mapping): play through the same actions as the bound keys, menus by focus, the city map by a cursor; the button names hints use …
 - `src/world-view.js`   287 — World camera gestures
 - `src/car-radio.js`   871 — Vehicle radio stations
-- `src/garages.js`   752 — ▸ Drive-in repair and respray
+- `src/garages.js`   737 — ▸ Drive-in repair and respray
 - `src/crowd.js`   194 — ▸ Crowd life, perception and reactions
 - `src/livingcity.js`    31 — ▸ The living city in free roam
 - `src/monarch-life.js`    38 — ▸ Monarch Isle: traffic, people, boats and sound
@@ -146,6 +147,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/acoustics-audio.js`   360 — Acoustics: the space round the ear (street canyons, open country, height) and how a positioned sound reaches it (air absorption, occlusion by …
 - `src/footsteps-audio.js`   346 — Footsteps and foley on foot: the ground under each step (footSurfaceAt), a step's sound for that ground and pace, puddles in the wet, landings, and …
 - `src/vehicle-foley-audio.js`   469 — Vehicle foley: horns by class (the player's and traffic's), doors and a locked handle, the tyres' ground (squeal or scrub), traffic skids, suspension …
+- `src/lockpick-audio.js`    36 — The lockpick's sounds (vehicle-trunk.js): the pick raking the pins, the soft click of a pin setting, the latch giving (a trunk's clunk and the lid …
 - `src/bullets-audio.js`   179 — Bullet sound: strikes by surface (concrete chips and ricochets, metal, glass, dirt) and the crack and whizz of an enemy round passing close to the …
 - `src/runover-audio.js`     8 — Sound of a wheel going over someone already on the ground (runover.js): a low thud and a short crack, heavier with weight and speed.
 - `src/quality.js`   240 — Graphics quality tiers
@@ -205,9 +207,9 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/citylife.js ▸ Civic services and police
 
-- `src/citylife-places.js`   497 — The civic layer: places, clock, services, police on foot, navigation and injury effects.
+- `src/citylife-places.js`   498 — The civic layer: places, clock, services, police on foot, navigation and injury effects.
 - `src/citylife-police.js`   642 — City life services and police sight: service menus, crowd density, search, gang targets, deploying officers (renderService, policeSees).
-- `src/citylife-civic.js`   612 — ▸ City life: officers and the wanted level (updateOfficers, updateWanted), strikePerson (blood: blood.js), updateCivic(), navigation and the civic map.
+- `src/citylife-civic.js`   598 — ▸ City life: officers and the wanted level (updateOfficers, updateWanted), strikePerson (blood: blood.js), updateCivic(), navigation and the civic map.
 
 ## src/citylife-civic.js ▸ City life: officers and the wanted level (updateOfficers, updateWanted), strikePerson (blood: blood.js), updateCivic(), navigation and the civic map.
 
@@ -388,7 +390,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/livingcity-medics.js`   525 — Ambulances in free roam: a body left in a city street brings an ambulance under lights and siren (dispatchMedics); two paramedics work on the victim …
 - `src/livingcity-events.js`   195 — Street events in free roam: a bag snatch the player can stop by catching the thief on foot (updateStreetEvents, stageSnatch), his marker on the radar …
 - `src/livingcity-key.js`   306 — North Point Key visitors: cabs, limousines and fine cars that come over the Key bridge, round the drop-off circle (a pause by the valet), and back …
-- `src/livingcity-wrecks.js`   202 — Wreck limit: wrecks and abandoned cars nobody can see go after a timeout, with a hard cap on each (retireWrecks, wreckReport).
+- `src/livingcity-wrecks.js`   204 — Wreck limit: wrecks and abandoned cars nobody can see go after a timeout, with a hard cap on each (retireWrecks, wreckReport).
 - `src/livingcity-console.js`   151 — DeadEndCity console methods for the living city (registered by game-console-crowd.js as 'livingCity'): traffic reports and switches, the siren pass …
 
 ## src/monarch-life.js ▸ Monarch Isle: traffic, people, boats and sound
@@ -701,7 +703,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/character-rig3d.js ▸ Character rig: sculpted body parts, outfits and paint
 
 - `src/character-rig3d-kit.js`    77 — Kit worn over the torso (torso space).
-- `src/character-rig3d-weapons.js`   124 — Weapons: Built round the firing hand's grip at the origin, muzzle towards +x, a touch larger than life so they read at street zoom.
+- `src/character-rig3d-weapons.js`   137 — Weapons: Built round the firing hand's grip at the origin, muzzle towards +x, a touch larger than life so they read at street zoom.
 - `src/character-near3d.js`   547 — ▸ The near body set (chase view): smooth sculpted parts for the player and the few people nearest the camera, with a woman's shape as a second shape of …
 
 ## src/character-near3d.js ▸ The near body set (chase view): smooth sculpted parts for the player and the few people nearest the camera, with a woman's shape as a second shape of …
@@ -712,15 +714,15 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/crowd3d.js ▸ Instanced people: skeleton, gait, poses, weapons and street props
 
 - `src/crowd3d-parts.js`   142 — Crowd 3D instanced parts: capacity, body material, limbs, weapon and far-figure geometries (crowdParts, rigPart).
-- `src/crowd3d-bodies.js`   356 — Crowd 3D body sets (close and street detail), prop geometry and instance recording (rigBodySet, crowdEmit).
+- `src/crowd3d-bodies.js`   357 — Crowd 3D body sets (close and street detail), prop geometry and instance recording (rigBodySet, crowdEmit).
 - `src/crowd3d-looks.js`   520 — Crowd 3D looks: compiling a look into parts and paints (compileLook, compiledLook, specialLooks).
 - `src/crowd3d-joints.js`   139 — Crowd 3D joint indices and per-person pose state (crowdState, setArm, crowdDancePose).
 - `src/crowd3d-poses.js`   901 — Crowd 3D pose targets and IK for arms and legs (crowdPoseTargets, solveLeg).
 - `src/crowd3d-roofparty.js`   141 — Crowd 3D poses for mission 2 (the Blue Hour): Vescari's poisoned toast beat by beat, and the bodyguards' heads turning with their sight cones.
-- `src/crowd3d-draw.js`   698 — drawCrowdPerson(): weapon holds, phone poses and the far-figure shortcut.
+- `src/crowd3d-draw.js`   705 — drawCrowdPerson(): weapon holds, phone poses and the far-figure shortcut.
 - `src/crowd3d-gore.js`   361 — Crowd 3D gore: what the rig draws of gore.js's state: lost parts left out, a ragged stump (torn cloth and skin, raw flesh, the bone) at each cut …
-- `src/crowd3d-special.js`   484 — Crowd 3D special characters: player, officers, soldiers, gangs, swimmers, parachutes (specialSpec, applyLimbOverrides).
-- `src/crowd3d-driveby.js`   372 — Crowd 3D drive-by pose: the player at the wheel with the gun arm out of the window, torso and head turned to the aim, recoil per shot …
+- `src/crowd3d-special.js`   491 — Crowd 3D special characters: player, officers, soldiers, gangs, swimmers, parachutes (specialSpec, applyLimbOverrides).
+- `src/crowd3d-driveby.js`   373 — Crowd 3D drive-by pose: the player at the wheel with the gun arm out of the window, torso and head turned to the aim, recoil per shot …
 - `src/crowd3d-frame.js`   377 — updateCrowd3D(): per-frame packing, car enter and exit transitions, dogs, crowd stats.
 
 ## src/player-body3d.js ▸ The player's own body: one skinned mesh (a man in his forties in a black tee, jeans and leather shoes) posed by the crowd rig's skeleton every frame …
@@ -731,7 +733,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/player-body3d-extremities.js`   277 — Player body hands and shoes: a right hand (palm, knuckles, four fingers and a thumb in a relaxed curl, with the curled grip as a second shape) …
 - `src/player-body3d-build.js`   396 — Player body build: meshes every part from its field, gives each vertex its bones and weights, its part, the paint zones the shader reads (tee, jeans …
 - `src/player-body3d-shader.js`   473 — Player body shader: dual quaternion skinning of the bind-space mesh, the hands' grip, and the paint (skin with a subsurface wrap, a forties' face …
-- `src/player-body3d-grips.js`    58 — Player body grips: where the player's own hands go on each weapon (weapon space): the firing hand round the grip with the trigger finger along the …
+- `src/player-body3d-grips.js`    60 — Player body grips: where the player's own hands go on each weapon (weapon space): the firing hand round the grip with the trigger finger along the …
 
 ## src/clouds3d.js ▸ Volumetric clouds and cloud shadows
 
@@ -823,9 +825,9 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/game-console.js ▸ DeadEndCity console registry and assembly
 
 - `src/game-console-core.js`   188 — DeadEndCity console, core: status, teleport, look, clock, zoom, simulate, heal, god, cash, walk (+ godPanelConsole)
-- `src/game-console-missions.js`   324 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
-- `src/game-console-police.js`   240 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
-- `src/game-console-vehicles.js`   417 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
+- `src/game-console-missions.js`   323 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
+- `src/game-console-police.js`   241 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
+- `src/game-console-vehicles.js`   419 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
 - `src/game-console-world.js`   239 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
 - `src/game-console-rides.js`   104 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
 - `src/game-console-leisure.js`    75 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)

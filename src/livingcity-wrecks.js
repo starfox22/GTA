@@ -48,6 +48,8 @@
         c.blockade ||
         c.carjackTest ||
         c.rideTarget ||
+        // Something still in its trunk (vehicle-trunk.js: a mission's).
+        (c.trunkLoot && !c.trunkOpen) ||
         (c.hp > 0 && (c.lawUnit || c.airUnit || c.cop))
       );
     }

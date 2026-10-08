@@ -89,8 +89,9 @@
       // Combat tests: own weapon `index` (0 pistol ... 5 precision rifle) with a
       // full clip and reserve, and select it. Returns its name.
       arm(index = 4) {
-        // 6 the knife, 7 no weapon (fists): selected as they are.
-        if (index === KNIFE_INDEX || index === FISTS_INDEX) {
+        // 6 the knife, 7 no weapon (fists): selected as they are; 8 the lockpick, given first.
+        if (index === LOCKPICK_INDEX) giveLockpick(true);
+        if (index === KNIFE_INDEX || index === FISTS_INDEX || index === LOCKPICK_INDEX) {
           selectedWeaponIndex = index;
           reloadSecondsRemaining = 0;
           drawWeapon();

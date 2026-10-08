@@ -194,6 +194,8 @@
             armor: player.armor,
             ammo: weapons.map((w) => w.ammo),
             reserve: weapons.map((w) => w.reserve),
+            // The lockpick (arsenal.js): absent in older saves, which means not owned.
+            lockpick: lockpickOwned(),
             // GOALLINE: open bets (their stakes already out of the cash) and the history.
             sportsbook: sportsbookSaveData(),
           }),
@@ -219,6 +221,8 @@
           if (Array.isArray(s.ammo)) w.ammo = savedSupply(s.ammo[i], w.ammo, w.clip);
           if (Array.isArray(s.reserve)) w.reserve = savedSupply(s.reserve[i], w.reserve, 999999);
         });
+        if (s.lockpick === true) LOCKPICK.owned = true;
+        else takeLockpick();
         restoreWeaponSelection(s.selectedWeaponIndex);
         loadSportsbook(s.sportsbook);
         if (s.stats && typeof s.stats === 'object')
@@ -506,6 +510,7 @@
         w.ammo = w.clip;
         w.reserve = initialAmmo[i];
       });
+      takeLockpick();
       selectedWeaponIndex = 0;
       reloadSecondsRemaining = shotCooldownSeconds = 0;
       player.disguised = false;
