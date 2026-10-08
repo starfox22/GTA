@@ -7,7 +7,8 @@ crowd3d-*.js (packing, poses, looks). Behaviour is in people-and-crowd.md.
 ## One rig for everyone
 
 (The player in his own clothes is drawn from a body of his own, posed by this same skeleton:
-people-and-crowd-player.md.)
+people-and-crowd-player.md; the few people nearest the camera are drawn as skinned avatars on it, the rig painting
+everyone else in their avatar's colours: people-and-crowd-avatars.md.)
 
 - Everyone on foot (pedestrians, the player, officers, SWAT, agents, soldiers, gangs, guests,
   beachgoers, athletes, riders) is drawn from one InstancedMesh per body part. A part's colours

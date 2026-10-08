@@ -45,23 +45,29 @@
         return out;
       }
       /* The trunk's map for an avatar (see the banner): y(h), slope, horizontal scale k(h), forward shift dx(h). */
-      function npcAvatarTrunk(B, A) {
+      function npcAvatarTrunk(B, A, crownA) {
         const hipA = A[0].o[1],
           hipB = B[0].o[1],
           shA = A[3].o[1],
           shB = B[3].o[1],
           neckA = A[2].o[1],
           r = (shB - hipB) / (shA - hipA),
+          // The head at the trunk's stretch, a touch smaller (the player's PB_ASSET_HEAD); the neck then stands so the
+          // crown is at NPC_CROWN, the rig's stature with hair, as the player's.
+          hs = r * PB_ASSET_HEAD,
+          neckB = Math.max(shB + 0.01, NPC_CROWN - (crownA - neckA) * hs),
+          neckSlope = (neckB - shB) / Math.max(1e-3, neckA - shA),
           forward = B[3].o[0] - A[3].o[0];
         return {
-          y: (h) => (h <= hipA ? h + hipB - hipA : hipB + (h - hipA) * r),
-          slope: (h) => (h <= hipA ? 1 : r),
-          k: (h) => 1 + (r - 1) * Math.max(0, Math.min(1, (h - shA) / Math.max(1e-3, neckA - shA))),
+          y: (h) => (h <= hipA ? h + hipB - hipA : h <= shA ? hipB + (h - hipA) * r : h <= neckA ? shB + (h - shA) * neckSlope : neckB + (h - neckA) * hs),
+          slope: (h) => (h <= hipA ? 1 : h <= shA ? r : h <= neckA ? neckSlope : hs),
+          k: (h) => 1 + (hs - 1) * Math.max(0, Math.min(1, (h - shA) / Math.max(1e-3, neckA - shA))),
           dx: (h) => forward * Math.max(0, Math.min(1, (h - hipA) / (shA - hipA))),
           centre: [A[2].o[0], A[2].o[2]],
-          neckA,
         };
       }
+      // The crown in bind space (metres, at look height 1): the player's PB_ASSET_CROWN.
+      const NPC_CROWN = 1.81;
       /** One avatar's fit: { bones, width, female, attributes, index, vertices, triangles } (bind space in rig units). */
       function npcAvatarFitOne(asset, i) {
         const entry = asset.header.avatars[i],
@@ -76,10 +82,15 @@
           scale = 1 / asset.header.scale,
           P0 = arrays.position,
           SK = arrays.skin,
-          trunk = npcAvatarTrunk(B, A),
           len = (o, p) => Math.hypot(p[0] - o[0], p[1] - o[1], p[2] - o[2]);
-        let lowest = 9;
-        for (let v = 0; v < n; v++) lowest = Math.min(lowest, P0[v * 3 + 1] * scale);
+        let lowest = 9,
+          crownA = -9;
+        for (let v = 0; v < n; v++) {
+          lowest = Math.min(lowest, P0[v * 3 + 1] * scale);
+          // The head page's top (hair or scalp; a hat or helmet is another material).
+          if (arrays.material[v] === 1) crownA = Math.max(crownA, P0[v * 3 + 1] * scale);
+        }
+        const trunk = npcAvatarTrunk(B, A, crownA);
         const lift = A[13].o[1] - lowest + PB_SOLE,
           maps = [];
         for (const side of [0, 1]) {
@@ -96,7 +107,7 @@
               k = trunk.k(h),
               s = trunk.slope(h);
             outP[0] = trunk.centre[0] + (p[0] - trunk.centre[0]) * k + trunk.dx(h);
-            outP[1] = h > trunk.neckA ? trunk.y(trunk.neckA) + (h - trunk.neckA) * k : trunk.y(h);
+            outP[1] = trunk.y(h);
             outP[2] = trunk.centre[1] + (p[2] - trunk.centre[1]) * k;
             outN[0] = nv[0] / k;
             outN[1] = nv[1] / s;

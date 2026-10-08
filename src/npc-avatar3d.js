@@ -75,7 +75,8 @@
             npcWound: { value: Array.from({ length: 4 }, () => new Three.Vector4()) },
             npcMap: { value: npcAvatarMap },
           },
-          material = new Three.MeshStandardMaterial({ color: '#ffffff', roughness: 0.85, metalness: 0, side: Three.DoubleSide }),
+          // Double-sided for the hair cards and open cuffs; the shadow from back faces, as a closed body's (no acne).
+          material = new Three.MeshStandardMaterial({ color: '#ffffff', roughness: 0.85, metalness: 0, side: Three.DoubleSide, shadowSide: Three.BackSide }),
           depth = new Three.MeshDepthMaterial({ depthPacking: Three.RGBADepthPacking, side: Three.DoubleSide });
         material.onBeforeCompile = (shader) => npcMaterialPatch(shader, uniforms);
         material.customProgramCacheKey = () => 'npc-avatar';
@@ -379,7 +380,10 @@
           shown: npcAv.shown,
           triangles: npcAv.triangles,
           drawCalls: { camera: npcAv.shown, shadow: renderer.shadowMap.enabled ? npcAv.shown : 0 },
-          slots: npcSlots.filter((s) => s.mesh.visible && s.person).map((s) => ({ avatar: cast[s.avatar]?.name, female: !!npcAv.fits[s.avatar]?.female, width: +s.width.toFixed(3), lost: s.uniforms.npcLost.value, wounds: s.uniforms.npcWound.value.filter((w) => w.w > 1.5).length })),
+          // `personFemale` is the game's rule (voices.js): the avatar's sex must be the same.
+          slots: npcSlots
+            .filter((s) => s.mesh.visible && s.person)
+            .map((s) => ({ avatar: cast[s.avatar]?.name, female: !!npcAv.fits[s.avatar]?.female, personFemale: personFemale(s.person), width: +s.width.toFixed(3), lost: s.uniforms.npcLost.value, wounds: s.uniforms.npcWound.value.filter((w) => w.w > 1.5).length })),
           programs: npcAvatarPrograms(),
           programsAtFirstDraw: npcAv.firstShow,
           names: cast.map((a) => a.name),

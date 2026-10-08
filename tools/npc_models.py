@@ -122,6 +122,9 @@ def convert_one(src, name):
     joint = {k: pm.to_game(v['link'][:3, 3]) for k, v in cl.items()}
     J = lambda n: joint['Bip01 ' + n]
     cpg = pm.to_game(av['cp'])
+    # (Female_Adult_14's mesh is bound 1.19 m below its skeleton: the soles go back to the ground the bones stand on.)
+    if cpg[:, 1].min() < -0.05:
+        cpg[:, 1] -= cpg[:, 1].min()
     ncp = len(cpg)
     dense = np.zeros((ncp, 15))
     sub = np.zeros((ncp, 16))
