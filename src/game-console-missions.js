@@ -112,6 +112,9 @@
         }
         return summitJobReport();
       },
+      // Mission 4 (Borrowed Stripes, fortjob.js): the stage, Kessler's car (route progress,
+      // trunk), Kessler on foot, the tail's heat, keys, the uniform.
+      fortJob: () => fortJobReport(),
       // Mission 2: put the player on the Blue Hour terrace at roof-local (x, y)
       // (default: out of the lift), starting A Seat at the Table dressed as a
       // guest if needed. Arrives the way the lift does (story.js updateElevator).
