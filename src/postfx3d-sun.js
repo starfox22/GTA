@@ -187,7 +187,7 @@
             const nx = sunGlareClip.x / sunGlareClip.w,
               ny = sunGlareClip.y / sunGlareClip.w,
               edge = Math.max(Math.abs(nx), Math.abs(ny)),
-              light = daylight();
+              light = litDaylight();
             screen.x = nx * 0.5 + 0.5;
             screen.y = ny * 0.5 + 0.5;
             sunGlareState.onScreen = 1 - smoothStep(0.95, 1.3, edge);

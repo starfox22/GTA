@@ -565,7 +565,7 @@
       drawParachute2D();
       worldContext.restore();
       // Film tint and edge direction, kept away from the central play area.
-      worldContext.fillStyle = 'rgba(7,13,35,' + (1 - daylight()) * 0.25 + ')';
+      worldContext.fillStyle = 'rgba(7,13,35,' + (1 - litDaylight()) * 0.25 + ')';
       worldContext.fillRect(0, 0, viewportWidth, viewportHeight);
       if (flash > 0) {
         worldContext.fillStyle = 'rgba(205,111,72,' + flash * 0.6 + ')';

@@ -214,6 +214,7 @@
         settleDemoStoryIndex();
         cash = clamp(Number(s.cash) || 0, 0, 99999999);
         worldMinutes = Number.isFinite(s.worldMinutes) ? Math.max(0, s.worldMinutes) : worldMinutes;
+        snapSunClock();
         if (Array.isArray(s.owned)) weapons.forEach((w, i) => (w.owned = i === 0 || !!s.owned[i]));
         else if (completed > 0) weapons.forEach((w, i) => (w.owned = i < 4));
         if (Number.isFinite(s.armor)) player.armor = clamp(s.armor, 0, 100);

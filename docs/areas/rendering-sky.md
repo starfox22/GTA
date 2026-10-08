@@ -14,6 +14,17 @@ rest of the light: rendering-lighting.md; the clouds (from below too): rendering
 - The sky's sun (`skySunDirection`, lighting3d-sky.js) has the light's bearing but really sets; the light
   stays above ~15 degrees for shadows. Disc, glow, haze, glare, the chase view's water glitter and the
   clouds from below (`skyLightDirection`: that sun handing over to the moon) use it.
+- SUN PATH (sun-path.js, game-side math; lighting3d-sky.js `updateSunPath` only copies it): `sunPathAt(minutes)`
+  gives the shadow light, the sky's sun and the sky light. The light hands over to the moon as a slerp over
+  `SUN_HANDOVER` (20 game min before sunset to 70 after, mirrored at dawn) while its strength dips (`shade`, by
+  `SUN_HANDOVER_DIM`; `updateLighting` scales `sun.intensity`, the sky fill takes 30 % of the loss): the old
+  handover swung the shadows ~100 degrees in 16 game minutes at dawn. Keep `sunReport().dayMaxDegPerMin` under
+  2.5 and `minElevationDeg` >= 15 (tools/tests/sun-gradual.mjs).
+- The renderer draws the light clock, never `worldMinutes` straight: `litMinutes()` / `litDaylight()` (every
+  `*3d.js` look that followed `daylight()`). `stepSunClock(dt)` (game-loop.js runFrame, behind menus too) takes a
+  clock change beyond a minute a second as a skip (sleep, meals, god panel, `setClock`, missions, ride skips,
+  console `simulate`) and eases it in over 2-6 s (Hermite, carrying its speed into a new skip); a load or new game
+  calls `snapSunClock()`. Gameplay keeps `daylight()` on the world clock. The shadow map is redrawn every frame.
 - The environment's light was tuned against the old gradient: irradiance within ~5 % up and sideways by
   day, night and overcast (dusk roofs -7 %, walls facing the sun +12 %). Re-check after changing a share.
   The dome alone takes some light out of the zenith (`uDomeZenith`, DOME_ZENITH_*): a deep blue through

@@ -400,7 +400,7 @@
           .copy(sun.color)
           .multiplyScalar(sun.intensity * 0.3)
           .add(seaLifeTmpColor.copy(hemi.color).multiplyScalar(hemi.intensity * 0.38))
-          .multiplyScalar(0.3 + 0.7 * daylight());
+          .multiplyScalar(0.3 + 0.7 * litDaylight());
         sceneBufferSize(seaLifeBuffer);
         seaSprayUniforms.uPerspective.value = camera.isPerspectiveCamera ? 1 : 0;
         seaSprayUniforms.uPixels.value = camera.isPerspectiveCamera ? (seaLifeBuffer.y / 2) * camera.projectionMatrix.elements[5] : seaLifeBuffer.y / (camera.top - camera.bottom);
