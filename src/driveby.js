@@ -198,29 +198,33 @@
     function driveBySeat(vehicle) {
       const profile = driveByProfile(vehicle),
         spec = vehicleSpec(vehicle),
-        key = vehicle.type + (vehicle.policeLook || vehicle.lawUnit ? '|law' : '');
+        key = driveBySeatKey(vehicle);
       let seat = seatCache.get(key);
       if (seat) return seat;
       const M = UNITS_PER_METRE;
       if (!profile || profile.body === 'rider' || profile.body === 'deck') {
         const rider = profile?.body === 'rider',
           z = spec.bicycle ? 15.2 : vehicle.type === 'jetski' ? 8.1 : rider ? 12.3 : 9;
-        seat = { x: -0.06 * spec.l, y: 0, z, half: spec.w / 2, belt: z, roof: z + 2 * M, back: -spec.l / 2, front: spec.l / 2, open: true };
+        seat = { x: -0.06 * spec.l, y: 0, z, lean: 0, half: spec.w / 2, belt: z, roof: z + 2 * M, back: -spec.l / 2, front: spec.l / 2, open: true, fitted: false };
       } else {
         const band = vehicleGlassBand(vehicle),
-          // A truck's cab sits over the front axle; a car's driver a hand behind the middle.
-          x = band.front - 1.4 * M;
+          // The model's own seat where the renderer seats people (driveby-seats.js DRIVEBY_SEATS); else a truck's
+          // cab over the front axle, a car's driver a hand behind the middle.
+          fit = DRIVEBY_SEATS[key];
         seat = {
-          x,
-          y: -0.2 * spec.w,
-          z: band.belt - 0.42 * M,
+          x: fit ? fit[0] * M : band.front - 1.4 * M,
+          y: fit ? -fit[2] * M : -0.2 * spec.w,
+          z: fit ? fit[1] * M : band.belt - 0.42 * M,
+          // How far the torso lies back (the drive-by pose's lean; the reach is measured with it).
+          lean: fit ? fit[3] : 0.16,
           // The door skin: the collider's width includes the mirrors.
           half: spec.w * 0.44,
-          belt: band.belt,
+          belt: fit ? fit[4] * M : band.belt,
           roof: band.roof,
           back: band.back,
           front: band.front,
           open: band.open || profile.body === 'open',
+          fitted: !!fit,
         };
       }
       seatCache.set(key, seat);
@@ -277,10 +281,12 @@
       out.y = y;
       out.z = z;
       out.hand = hand;
+      // In a cabin with the model's seat: within the arm's reach (the pose's twist as poseDriveByGun turns it).
+      if (seat.fitted && !seat.open) driveByReachClamp(seat, hand, window === 'rear' ? -1.0 : clamp(-rel * 0.3, -0.75, 0.85), out);
       // The muzzle a pistol's length ahead of the grip.
-      out.mx = x + ux * 0.21 * M;
-      out.my = y + uy * 0.21 * M;
-      out.mz = z + 0.045 * M;
+      out.mx = out.x + ux * 0.21 * M;
+      out.my = out.y + uy * 0.21 * M;
+      out.mz = out.z + 0.045 * M;
       return out;
     }
     /**
@@ -521,6 +527,27 @@
           return { type, profile, arcs: (driveByArcs(probe) || []).map(([a, b, w]) => ({ window: w, from: Math.round(a / DRIVE_BY_DEG), to: Math.round(b / DRIVE_BY_DEG) })) };
         },
         // Where an aim `relDegrees` off the nose would fire from the current vehicle (no shot).
+        // The current vehicle's drive-by seat (driveby-seats.js: `fitted` from DRIVEBY_SEATS, metres and radians) and,
+        // for each window and a sweep of aims, the grip's distance from the shoulder on its side as a share of the
+        // arm (`reach`, at most DRIVEBY_RIG.reach) and its height over the belt (metres).
+        driveBySeatReport() {
+          const c = player.car;
+          if (!c) throw Error('Not in a vehicle');
+          const s = driveBySeat(c),
+            U = UNITS_PER_METRE,
+            r3 = (v) => +v.toFixed(3),
+            grips = [];
+          for (const window of ['left', 'right', 'rear', 'front'])
+            for (const deg of window === 'left' ? [-145, -110, -90, -60, -35] : window === 'right' ? [35, 60, 90, 120, 145] : window === 'rear' ? [160, 180, 200] : [-30, 0, 30]) {
+              const rel = deg * DRIVE_BY_DEG,
+                g = driveByGrip(c, window, rel, { x: 0, y: 0, z: 0, mx: 0, my: 0, mz: 0, hand: 0 });
+              driveByReachClamp(s, g.hand, window === 'rear' ? -1.0 : clamp(-rel * 0.3, -0.75, 0.85), { x: g.x, y: g.y, z: g.z });
+              const o = driveByShoulderOut,
+                reach = Math.hypot(g.x - o.x, g.y - o.y, g.z - o.z) / (DRIVEBY_RIG.arm * DRIVEBY_RIG.unit);
+              grips.push({ window, deg, hand: g.hand, reach: r3(reach), overBelt: r3((g.z - s.belt) / U), out: r3((Math.abs(g.y) - s.half) / U) });
+            }
+          return { key: driveBySeatKey(c), fitted: s.fitted, seat: [r3(s.x / U), r3(s.z / U), r3(-s.y / U), r3(s.lean), r3(s.belt / U)], grips };
+        },
         driveByCheck(relDegrees) {
           if (!player.car) throw Error('Not in a vehicle');
           const sol = driveByAim(player.car, player.car.a + relDegrees * DRIVE_BY_DEG);

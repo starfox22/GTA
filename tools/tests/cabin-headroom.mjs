@@ -1,7 +1,8 @@
 // Cabin headroom (cars3d-headroom.js CABIN HEADROOM): with every civilian, Prestige and police car lined up, no seated
 // head (the tallest man and woman drawn in cars, the player) goes through a roof, a windscreen, a rear or a side glass,
 // the seats stay over the floor and lie back no further than real seats do, and the drive-by pose in a low supercar
-// keeps the gun in the hand. On the no-render page (the suite's) cabinHeadroom() is null and the test only checks that.
+// reaches the very grip the bullet leaves from (the game's seat is the model's: driveby-seats.js). On the no-render
+// page (the suite's) cabinHeadroom() is null and the test only checks that.
 export default async function (t) {
   const first = await t.call('cabinHeadroom');
   if (first === null) return;
@@ -28,6 +29,9 @@ export default async function (t) {
     t.assert(c.hip[1] >= 0.19 && c.hip[1] <= 1.2, `${name}: the hip over the floor (${c.hip[1]} m)`);
     t.assert(c.recline >= 0.29 && c.recline <= (['valkyrie', 'lafera'].includes(c.type) ? 0.89 : 0.69), `${name}: the seat back lies back like a real one (${c.recline} rad)`);
   }
+  // The game's drive-by seat is the model's (driveby-seats.js DRIVEBY_SEATS): a drifted line is printed to paste.
+  const drifted = r.cars.filter((c) => c.seatGap !== undefined && c.seatGap > 0.02);
+  t.assert(!drifted.length, `DRIVEBY_SEATS lines to re-record:\n${drifted.map((c) => `      ${/^\w+$/.test(c.key) ? c.key : `'${c.key}'`}: [${c.seat.join(', ')}],`).join('\n')}`);
   // The drive-by in the Chevette Z06 (its seat low and laid back): the gun comes out of the window in the hand.
   await t.call('viewMode', 'chase');
   await t.call('drive', 'chevette', 0, 0);
@@ -36,6 +40,7 @@ export default async function (t) {
   const arm = (await t.call('cabinHeadroom')).driveByArm;
   t.note(`drive-by arm in the chevette: ${JSON.stringify(arm)}`);
   t.assert(arm.type === 'chevette' && arm.window === 'left', `the drive-by pose was drawn: ${JSON.stringify(arm)}`);
+  t.assert(arm.gap < 0.02, `the hand reaches the grip the bullet leaves from (${arm.gap} m short)`);
   await t.call('driveByAim', null);
   await t.call('viewMode', 'street');
 }

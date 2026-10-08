@@ -284,9 +284,9 @@
       /*
        * DeadEndCity.cabinHeadroom(): every car model built with a closed cabin (civilian, Prestige, police), once per
        * kit: the room (metres) round the head of the tallest man and woman and the player as they look now under the
-       * roof and inside the glass (`clear`; `roof` the room under the roof and the panes alone), the drive-by pose's
-       * `reach` to its grip; `through` lists who pokes out where, and the top-level `through` counts the cars with
-       * anyone out.
+       * roof and inside the glass (`clear`; `roof` the room under the roof and the panes alone), the seat (`key`,
+       * `seat`) and the game's drive-by seat beside it (`gameSeat`, `seatGap`); `through` lists who pokes out where,
+       * and the top-level `through` counts the cars with anyone out.
        */
       function cabinHeadroomReport() {
         const r3 = (v) => +v.toFixed(3),
@@ -312,42 +312,20 @@
             entry.roof[who.name] = r3(cabinScratch.roof / M);
             if (clear < 0) entry.through.push(who.name + (cabinScratch.roof < cabinScratch.side ? ' roof' : ' side'));
           }
-          // The drive-by pose sits in the same seat (crowd3d-driveby.js drawDriveByDriver) and reaches the grip the
-          // bullet leaves from (driveby.js driveByGrip): how far, as a share of the arm, from the shoulder on its side.
+          // The game's seat for drive-bys (driveby-seats.js DRIVEBY_SEATS, recorded from this plan): world metres x ahead,
+          // hip height, side, lean, belt; `seatGap` how far apart the two are (metres and radians added).
+          entry.key = driveBySeatKey(c);
+          entry.seat = [r3(plan.x / M), r3(plan.y / M), r3(side / M), r3(plan.lean), r3(g.base / M)];
           const profile = driveByProfile(c);
           if (profile && profile.body !== 'rider' && profile.body !== 'open') {
-            entry.reach = r3(cabinDriveByReach(c, m, playerLook));
-            // The same from driveBySeat at the old upright lean (what the pose reached before it took the model's seat).
-            entry.reachGameSeat = r3(cabinDriveByReach(c, m, playerLook, true));
+            const s = driveBySeat(c),
+              U = UNITS_PER_METRE,
+              game = [s.x / U, s.z / U, Math.abs(s.y) / U, s.lean, s.belt / U];
+            entry.gameSeat = game.map(r3);
+            entry.seatGap = r3(Math.hypot(game[0] - plan.x / M, game[1] - plan.y / M, game[2] - side / M) + Math.abs(game[3] - plan.lean));
           }
           if (entry.through.length) through++;
           cars.push(entry);
         }
         return { through, cars, driveByArm: { ...driveByArm, gap: r3(driveByArm.gap) } };
-      }
-      /*
-       * The drive-by arm's longest reach from the model's seat (x 1: the arm straight): the shoulder on the gun's side
-       * (the torso at the seat's lean, untwisted) to driveByGrip for the left and right windows across the aims.
-       */
-      function cabinDriveByReach(c, m, look, game = false) {
-        const plan = m.seats,
-          k = m.group.scale.x || 1,
-          s = driveBySeat(c),
-          H = look.height * RIG_UNIT,
-          lean = game ? 0.16 : plan.lean,
-          hip = game ? [s.x, s.z, s.y] : [plan.x * k, plan.y * k, plan.z * k],
-          arm = (RIG.upperArm + RIG.forearm) * H;
-        let most = 0;
-        for (const window of ['left', 'right'])
-          for (const rel of window === 'left' ? [-1.2, -0.6, 0, 0.6, 1.2] : [-0.6, 0, 0.6]) {
-            const grip = driveByGrip(c, window, rel),
-              sign = grip.hand ? 1 : -1,
-              up = (RIG.waist + RIG.shoulderY * Math.cos(lean)) * H,
-              back = RIG.shoulderY * Math.sin(lean) * H,
-              sx = hip[0] - back,
-              sy = hip[1] + up,
-              sz = hip[2] + sign * look.shoulderZ * look.width * H;
-            most = Math.max(most, Math.hypot(grip.x - sx, grip.z - sy, grip.y - sz) / arm);
-          }
-        return most;
       }

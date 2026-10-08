@@ -220,9 +220,12 @@
           for (const side of [-1, 1]) {
             for (let x = -l * 0.38; x < l * 0.42; x += 12)
               box(b, x, 23, side * w * 0.507, 10, 10, 0.35, glass);
-            box(b, 0, 13, side * w * 0.51, l * 0.87, 2, 0.4, mat('#e3d4af'));
             box(b, l * 0.27, 15, side * w * 0.515, 9, 19, 0.4, glass);
           }
+          // The cream band down both flanks: one box through the body, standing out of either side.
+          box(b, 0, 13, 0, l * 0.87, 2, w * 1.02 + 0.4, mat('#e3d4af'));
+          // The engine hatch and destination sign on the tail: METRO in amber (the draw the band gave back).
+          box(b, -l * 0.461, 20, 0, 0.4, 15, w * 0.82, badgePanelMaterial('bus'));
         } else {
           const cab = l * 0.31;
           box(b, l * 0.29, 13, 0, cab, 17, w, model.paint);
@@ -250,7 +253,8 @@
           } else {
             const cargo = mat(ambulance ? '#e7e3d9' : '#a5b5b9', 0.74, 0.15);
             box(b, -l * 0.16, 18, 0, l * 0.6, 24, w, cargo);
-            box(b, -l * 0.46, 18, 0, 0.5, 22, w * 0.89, chrome);
+            // The rear doors with the maker's name (a box truck's ATLAS, the ambulance's PARAMEDIC): the panel's own draw.
+            box(b, -l * 0.46, 18, 0, 0.5, 22, w * 0.89, badgePanelMaterial(ambulance ? 'ambulance' : 'truck'));
             for (const side of [-1, 1]) {
               if (ambulance) {
                 box(b, -l * 0.16, 17, side * w * 0.506, l * 0.6, 3, 0.4, mat('#a63038'));
@@ -273,6 +277,8 @@
         }
         box(b, l * 0.49, 6.5, 0, 2, 3, w * 0.9, chrome);
         box(b, l * 0.475, 11, 0, 1, 4, w * 0.43, darkMetal);
+        // What its tail says (DeadEndCity.carBadges()).
+        if (bus || !(flatbed || pickup)) model.badge = { text: BADGE_PANELS[bus ? 'bus' : ambulance ? 'ambulance' : 'truck'].lines[0][0], panel: true };
         // Wipers on the upright windscreen (bus: 17-29, cab: 15.5-22.5).
         if (bus) addWipers(model, b, l * 0.466 + 0.4, 17.2, l * 0.466 + 0.4, 28, w * 0.44);
         else addWipers(model, b, l * 0.447 + 0.4, 15.6, l * 0.447 + 0.4, 22, w * 0.415);

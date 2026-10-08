@@ -87,6 +87,15 @@
           for (const [c, m] of carModels) if (m.civilian || m.moto) out.push(civilianModelReport(c, m));
           return out;
         },
+        // What every vehicle model built says on its tail (cars3d-badges.js; DeadEndCity.carBadges()).
+        carBadges() {
+          const out = [];
+          for (const [c, m] of carModels) {
+            const badge = m.badge || m.kit?.badge || null;
+            out.push({ id: c.id, type: c.type, body: m.look?.body || null, badge });
+          }
+          return out;
+        },
         // Seated heads against every closed cabin built (cars3d-headroom.js; DeadEndCity.cabinHeadroom()).
         cabinHeadroom: cabinHeadroomReport,
         helicopterModels() {

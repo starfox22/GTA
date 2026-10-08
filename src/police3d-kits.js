@@ -2,7 +2,7 @@
       // ---- The kit: merged parts for one body and equipment ----------------------------------
       const policeKits = new Map();
       function policeKit(look, body, l, w) {
-        const key = [body.name, look.equipment, l, w].join(':');
+        const key = [body.name, look.equipment, policeRearWord(look), l, w].join(':');
         if (policeKits.has(key)) return policeKits.get(key);
         const S = policeShapeKit(),
           g = body.glass,
@@ -320,6 +320,10 @@
           kit.doorHeight = 14;
           kit.doorY = 12.9;
         }
+        // ---- Badges on the tail (cars3d-badges.js POLICE BADGES): the trim reads the trim atlas, its parts the solid cell ----
+        policeSolidUv(trim, 0);
+        kit.badge = policeRearBadges(trim, body, look, l, w, topAt);
+        const badgesEnd = trim.count;
         // ---- The cabin behind the glass (cars3d-interior.js CABINS), last in the trim: the impostors stop before it ----
         const outerTrim = trim.index.length;
         kit.seats = null;
@@ -333,6 +337,7 @@
           policeAdd(trim, boxGeo, ((g.xb + g.xf) / 2) * l, deck + 0.02 * M, 0, (g.xf - g.xb) * l - 0.1 * M, 0.04 * M, half * 2, '#1c1d1f');
           carCabinParts((geo, matrix, color) => policeAddMatrix(trim, geo, matrix, color), g, l, w, kit.seats, CAR_CABIN_TRIM.police, { police: true, hatch: body.kind === 'suv', deckY: () => deck + 0.04 * M });
         }
+        policeSolidUv(trim, badgesEnd);
         kit.paint = policeGeometry(paint);
         kit.trim = policeGeometry(trim);
         kit.trimOuter = civDrawRange(kit.trim, outerTrim);
@@ -547,6 +552,7 @@
         policeAdd(frame, boxGeo, -0.5, 2.6, 0, 0.1, 3.0, half * 0.45, '#111b27');
         for (const y of [-5.0, 4.6]) policeAdd(frame, S.cylinderLow, -0.1, y, -half * 0.48, 0.35, 1.4, 0.35, '#2a3038');
         policeAdd(frame, boxGeo, -0.45, -1.5, half * 0.3, 0.3, 0.3, 1.8, '#9aa1a8');
+        policeSolidUv(frame, 0);
         const trimGeo = policeGeometry(frame),
           text = policeSet();
         decalText(text, 'SWAT', [-0.46, -3.6, 0], [0, 0, 1], [0, 1, 0], 2.2, '#eef0ec');

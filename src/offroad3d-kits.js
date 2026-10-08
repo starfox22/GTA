@@ -348,6 +348,9 @@
           policeAdd(paint, boxGeo, tail + 0.4, floor + 2.0, 0, 0.1, 1.6, 3.2, '#ffffff', swatch('base'));
           mirrors(false);
         }
+        // The maker's name on the tail (cars3d-badges.js CLUB BADGES): the trim reads the trim atlas, its parts the solid cell.
+        policeSolidUv(trim, 0);
+        kit.badge = offroadRearBadge(trim, type, def, l, w, tail, spares);
         kit.paint = policeGeometry(paint);
         kit.trim = policeGeometry(trim);
         kit.bright = bright.count ? policeGeometry(bright) : null;
@@ -389,7 +392,8 @@
             new Three.MeshPhysicalMaterial({ color: '#ffffff', map: livery, roughness: finish.roughness, metalness: finish.metalness, clearcoat: type === 'sixbysix' ? 0.1 : 1, clearcoatRoughness: 0.08 }),
             uniforms,
           ),
-          trimMaterial = vehicleMudPatch(new Three.MeshStandardMaterial({ vertexColors: true, roughness: 0.55, metalness: 0.25 }), uniforms),
+          // The trim atlas, alpha-tested: the badge's letters (cars3d-badges.js CLUB BADGES).
+          trimMaterial = vehicleMudPatch(new Three.MeshStandardMaterial({ vertexColors: true, map: civTrimAtlas(), alphaTest: 0.5, roughness: 0.55, metalness: 0.25 }), uniforms),
           tyreMaterial = vehicleMudPatch(new Three.MeshStandardMaterial({ vertexColors: true, roughness: 0.92, metalness: 0 }), uniforms, true);
         const shell = mesh(kit.shell, paint, body, 0, 0, 0),
           cabin = kit.cabin
@@ -465,6 +469,7 @@
           dead: false,
           car: true,
           offroad: true,
+          badge: kit.badge,
           dims: { l, w, h: def.h, roof: g.roof, van: true },
           shell,
           shellBase: shell.geometry.attributes.position.array,

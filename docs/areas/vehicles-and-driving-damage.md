@@ -8,7 +8,9 @@ the models' damage contract is vehicles-and-driving-models.md.
 
 - `crumpleField(dents, limits, x, y, z, seed, out)` is the one rule for how a body point moves for `vehicle.dents`
   (game side, pure): a smooth dish along each dent's inward direction, a wavy crush front, folds across the push and a
-  smooth outward bulge; inward travel stops softly at `crumpleLimits(vehicle)` (the screen's foot or 30 % of the length
+  smooth bulge away from the body's middle (faded where a push piles metal up at a limit); inward travel (each
+  direction along an axis on its own, so a far-side push never offsets a near-side one) stops softly at
+  `crumpleLimits(vehicle)` (the screen's foot or 30 % of the length
   for a nose, just behind the rear glass's foot for a tail, 20 % of the width from the centre line for a side). Nothing
   in it is random per vertex, so parts that touch at rest still touch after a crash.
 - BODY CRUMPLE (damage3d-crumple.js): `crumpleCollect` lists every mesh under the body in its rest pose on the first
@@ -37,6 +39,8 @@ the models' damage contract is vehicles-and-driving-models.md.
   anchors are vertex indices and weights. Chase view sizes are real (a hole ~12 cm
   decal), the street view keeps the large readable ones. `bulletHitVehicle` draws holes off the glasshouse under the
   belt line (`z` for the hit rules is unchanged).
+- Where the waves and folds fall is the vehicle's id (`seed`), which differs run to run: `crumpleAudit(id, seeds)` checks
+  the same dents under many seeds (the test uses 400).
 - Console: `dentVehicle(id, side, kmh, offset)`, `shootVehicle(id, side, rounds)`, `crumpleAudit(id)` (field limits
   on a box hull, works without WebGL) and `vehicleDamageShape(id)` (parts bent or missed, shell crossed / into cabin /
   flipped faces, each mark's part and gap to the surface in cm); tools/tests/vehicle-damage-shape.mjs.

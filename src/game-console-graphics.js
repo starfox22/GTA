@@ -130,6 +130,8 @@
       // The seated heads against every closed car cabin built (cars3d-headroom.js CABIN HEADROOM): room in metres for
       // the tallest man and woman, the player and the player's drive-by pose; `through` counts cars with a head out.
       cabinHeadroom: () => city3D?.cabinHeadroom?.() ?? null,
+      // What every vehicle model built carries on its tail (cars3d-badges.js REAR BADGES): { id, type, body, badge }.
+      carBadges: () => city3D?.carBadges?.() ?? null,
       // Dynamic resolution by hand (0.5..1 of the canvas; tests of the scaled scene
       // pass). On AUTO the adaptive controller may change it again.
       renderScale(scale) {

@@ -1,10 +1,82 @@
       // Military vehicle models: makeMilitaryVehicle(), compactTank, wheels, lamps and star decals.
       const oliveTrim = mat('#3c4433', 0.8, 0.2),
         canvasMat = mat('#6b6c4c', 0.97);
+      /*
+       * MILITARY MARKS
+       * The stars and the stencilled designations on the army's vehicles share one texture and one material
+       * (`militaryMarks()`): a vehicle's star decals and its stencil merge into one mesh (mergeUnder), so the stencil adds
+       * no draw call. Cream stencil capitals on a transparent ground (alpha-tested), the star in the first cell.
+       */
+      const MILITARY_STENCILS = { jeep: 'SENTINEL J4', apc: 'LAV-8  A12', truck: 'M35 CARGO', bowser: 'M49 FUEL' },
+        // Made on the first army vehicle (sharedMaterials is declared after the scenery is set up).
+        militaryMarksMade = () => {
+          const rows = Object.keys(MILITARY_STENCILS),
+            widths = {},
+            tx = baseTexture(
+              512,
+              256,
+              (g) => {
+                g.clearRect(0, 0, 512, 256);
+                // The star (as base3d-materials.js starTx draws it), in the 128 x 128 cell at the top left.
+                g.fillStyle = '#e8e6d8';
+                g.beginPath();
+                for (let i = 0; i < 10; i++) {
+                  const r = i % 2 ? 22 : 56,
+                    a = -Math.PI / 2 + (i * Math.PI) / 5;
+                  g.lineTo(64 + Math.cos(a) * r, 64 + Math.sin(a) * r);
+                }
+                g.fill();
+                g.strokeStyle = '#e8e6d8';
+                g.lineWidth = 6;
+                g.beginPath();
+                g.arc(64, 64, 60, 0, TAU);
+                g.stroke();
+                // A stencil per row to the right of it, 48 px capitals, the bridges of a stencil cut through them.
+                g.font = 'bold 52px "Arial Narrow", Arial, sans-serif';
+                g.textBaseline = 'middle';
+                rows.forEach((kind, i) => {
+                  const text = MILITARY_STENCILS[kind],
+                    y = 32 + i * 64,
+                    width = Math.min(370, g.measureText(text).width);
+                  g.fillStyle = '#e8e6d8';
+                  g.fillText(text, 136, y, 370);
+                  g.clearRect(136, y - 2, width, 3);
+                  widths[kind] = width + 8;
+                });
+              },
+              false,
+            );
+          bakedCanvases.push(tx);
+          const material = new Three.MeshStandardMaterial({ map: tx, alphaTest: 0.5, roughness: 0.8 });
+          sharedMaterials.add(material);
+          return { material, rows, widths };
+        };
+      let militaryMarksCache = null;
+      function militaryMarks() {
+        return militaryMarksCache || (militaryMarksCache = militaryMarksMade());
+      }
+      // A plate's UVs onto a cell of the marks: [u0, v0, u1, v1] in pixels of the 512 x 256 canvas (top-left origin).
+      function militaryMarkUv(m, x0, y0, x1, y1) {
+        const uv = m.geometry.attributes.uv;
+        // PlaneGeometry's corners: (0,1) (1,1) (0,0) (1,0).
+        const u = [x0 / 512, x1 / 512, x0 / 512, x1 / 512],
+          v = [1 - y0 / 256, 1 - y0 / 256, 1 - y1 / 256, 1 - y1 / 256];
+        for (let i = 0; i < 4; i++) uv.setXY(i, u[i], v[i]);
+        uv.needsUpdate = true;
+        return m;
+      }
       function starDecal(parent, x, y, z, size, facing, flat = false) {
-        const m = plate(parent, x, y, z, size, size, B.star, facing);
+        const m = militaryMarkUv(plate(parent, x, y, z, size, size, militaryMarks().material, facing), 2, 2, 126, 126);
         if (flat) m.rotation.set(-Math.PI / 2, 0, facing);
         return m;
+      }
+      // The stencilled designation (MILITARY_STENCILS) on a vehicle's tail, `h` tall, centred at (x, y, z), facing back.
+      function militaryStencil(parent, kind, x, y, z, h) {
+        const marks = militaryMarks(),
+          i = marks.rows.indexOf(kind),
+          width = marks.widths[kind] || 200,
+          m = plate(parent, x, y, z, (h * width) / 56, h, marks.material, -Math.PI / 2);
+        return militaryMarkUv(m, 132, 4 + i * 64, 136 + width, 60 + i * 64);
       }
       function militaryLamps(model, b, x, y, halfWidth) {
         for (const side of [-1, 1])
@@ -61,6 +133,7 @@
           box(b, l * 0.49, 7, 0, 2.2, 3, w * 0.86, darkMetal);
           for (const s of [-1, 1]) rodTo(b, l * 0.5, 6, s * w * 0.3, l * 0.52, 14, s * w * 0.3, 0.6, darkMetal);
           const spare = mesh(wheelGeo, rubber, b, -l * 0.5, 13, w * 0.2, 5, 2.2, 5);
+          militaryStencil(b, 'jeep', -l * 0.48 - 1.15, 11, -w * 0.2, 1.1);
           spare.rotation.z = Math.PI / 2;
           rodTo(b, -l * 0.3, 22, -w * 0.38, -l * 0.34, 44, -w * 0.4, 0.2, darkMetal);
           starDecal(b, l * 0.28, 15.1, 0, 7, -Math.PI / 2, true);
@@ -99,6 +172,7 @@
           nose.rotation.z = 0.5;
           const rear = box(b, -l * 0.44, 15, 0, l * 0.1, 10, w * 0.9, p);
           rear.rotation.z = -0.2;
+          militaryStencil(b, 'apc', -l * 0.49 - 0.65, 12.5, w * 0.18, 1.2);
           box(b, -l * 0.06, 19.8, 0, l * 0.62, 1.6, w * 0.84, p);
           for (const s of [-1, 1]) {
             const skirt = box(b, 0, 16, s * w * 0.47, l * 0.8, 6, 1.2, p);
@@ -155,6 +229,7 @@
             tank.rotation.z = Math.PI / 2;
             box(b, -l * 0.2, 25, 0, l * 0.3, 1, 5, darkMetal);
             for (const s of [-1, 1]) plate(b, -l * 0.2, 17, s * (w * 0.41 + 0.3), 18, 5, plateMaterial('FLAMMABLE', { bg: '#b8322a', fg: '#ffffff', w: 256, h: 64 }), s > 0 ? 0 : Math.PI);
+            militaryStencil(b, 'bowser', -l * 0.46 - 0.15, 17, 0, 1.4);
           } else {
             box(b, -l * 0.2, 10.5, 0, l * 0.56, 2, w * 0.96, p);
             for (const s of [-1, 1]) box(b, -l * 0.2, 13.5, s * w * 0.47, l * 0.56, 5, 1, p);
@@ -167,10 +242,13 @@
             back.position.set(-l * 0.48, 15.5, 0);
             back.rotation.y = -Math.PI / 2;
             b.add(back);
+            militaryStencil(b, 'truck', -l * 0.48 - 0.2, 11.5, w * 0.22, 1.3);
           }
           militaryLamps(model, b, l * 0.47, 12, w * 0.3);
           for (const x of [l * 0.34, -l * 0.18, -l * 0.34]) for (const s of [-1, 1]) militaryWheel(model, x, s * w * 0.4, r, 4.2);
         }
+        // Its stencil (DeadEndCity.carBadges()).
+        model.badge = { text: MILITARY_STENCILS[kind === 'truck' && vehicle.fuelBowser ? 'bowser' : kind] || null, stencil: true };
         for (const lamp of model.lamps) keep.add(lamp.mesh);
         for (const wheel of model.wheels) keep.add(wheel.wheel);
         mergeUnder(b, keep);
