@@ -436,8 +436,14 @@
         fxPointLights();
       }
       /* Steps the store and draws it with the game's particles: from render3d-frame.js once a frame. */
+      // A world reset (world-reset.js worldResetSerial): the smoke and flames of the old world go with it.
+      let fxResetSeen = worldResetSerial;
       function drawFxParticles(deltaSeconds) {
         const s = fxs;
+        if (fxResetSeen !== worldResetSerial) {
+          fxResetSeen = worldResetSerial;
+          s.n = 0;
+        }
         // The atlas bakes a slice a frame (fx3d-atlas.js): a few per cent of the frame's own time, more behind
         // the title (a slow software renderer bakes it in a few frames, a fast GPU over a second or two).
         if (fxAtlasBake) {

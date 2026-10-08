@@ -25,6 +25,7 @@ The owner's rule: when the player dies or picks a new mission, everything in the
   (knocked furniture and trees, strain), `dealershipWorldReset` (test drive, alarm, display restocked).
 - The renderer reads `worldResetSerial`: damage3d-world.js `clearWorldDamage` empties the world decal ring (chips,
   cracks, scorch, craters, oil, shards, blown windows), rubble and torn panels, and stands the shop panes whole.
+  fx3d-particles.js empties the effect pool (the old world's smoke and flames) on the same serial.
 - A new system that keeps world damage or holds vehicles or people outside these lists adds its own reset helper
   and calls it from `resetWorld`; renderer-held damage watches `worldResetSerial`.
 
