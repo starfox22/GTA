@@ -364,12 +364,27 @@
         if (m.stuckFor > 4 && m.stuckFor - deltaSeconds <= 4) carHorn(c, 0.6, true);
         if (m.stuckFor > 9 && route) {
           const next = route[Math.min(route.length - 1, c.countyIndex + 1)];
+          const blocker = fortBlockingCar(c);
           if (spotUnseen(next.x, next.y, 60, SPOT_CAR) && spotUnseen(c.x, c.y, 60, SPOT_CAR) && canSpawnCar(c.type, next.x, next.y, headingBetween(c, next))) {
             c.a = headingBetween(c, next);
             c.x = next.x;
             c.y = next.y;
             c.vx = c.vy = 0;
             c.countyIndex = Math.min(route.length - 1, c.countyIndex + 1);
+          } else if (blocker && fortBlockAlong < 160 && Math.abs(blocker.speed || 0) < 6 * KMH) {
+            // In sight behind a car that is not moving: he pulls out into the other lane and round it, as anyone would.
+            const fx = Math.cos(c.a),
+              fy = Math.sin(c.a),
+              sx = Math.sin(c.a) * 44,
+              sy = -Math.cos(c.a) * 44,
+              ahead = vehicleSpec(blocker).l / 2 + 50;
+            route.splice(
+              c.countyIndex,
+              0,
+              { x: blocker.x + sx - fx * 10, y: blocker.y + sy - fy * 10 },
+              { x: blocker.x + sx + fx * ahead, y: blocker.y + sy + fy * ahead },
+            );
+            m.overtakes = (m.overtakes || 0) + 1;
           }
           m.stuckFor = 0;
         }
@@ -797,11 +812,13 @@
       return fortJobReport();
     }
     /* What holds Kessler's car up (countyRouteControl's look-ahead): the nearest vehicle in his lane ahead, or someone in front. */
-    function fortBlocker(c) {
+    let fortBlockAlong = 0;
+    // The nearest vehicle in his lane ahead within the look-ahead (fortBlockAlong: how far along).
+    function fortBlockingCar(c) {
       const cos = Math.cos(c.a),
         sin = Math.sin(c.a);
-      let best = null,
-        bestAlong = 241;
+      let best = null;
+      fortBlockAlong = 241;
       for (let i = 0; i < vehicles.length; i++) {
         const o = vehicles[i];
         if (o === c || (o.altitude || 0) > 15) continue;
@@ -809,11 +826,18 @@
           dy = o.y - c.y,
           along = dx * cos + dy * sin,
           side = Math.abs(-dx * sin + dy * cos);
-        if (along > 0 && along < bestAlong && side < (vehicleSpec(c).w + vehicleSpec(o).w) / 2 + 7) {
-          bestAlong = along;
-          best = { kind: 'vehicle', type: o.type, along: Math.round(along), occupied: !!o.occupied, ai: !!o.ai, kmh: Math.round(Math.abs(o.speed || 0) / KMH) };
+        if (along > 0 && along < fortBlockAlong && side < (vehicleSpec(c).w + vehicleSpec(o).w) / 2 + 7) {
+          fortBlockAlong = along;
+          best = o;
         }
       }
+      return best;
+    }
+    function fortBlocker(c) {
+      const o = fortBlockingCar(c),
+        best = o
+          ? { kind: 'vehicle', type: o.type, along: Math.round(fortBlockAlong), occupied: !!o.occupied, ai: !!o.ai, kmh: Math.round(Math.abs(o.speed || 0) / KMH) }
+          : null;
       if (best) return best;
       let person = null;
       forEachPedestrianNear(c.x, c.y, 160, (p) => {
@@ -846,6 +870,7 @@
         blocker: c && c.occupied ? fortBlocker(c) : null,
         waitClub: !!m.waitClub,
         jumped: !!m.jumped,
+        overtakes: m.overtakes || 0,
         clubWait: Math.round((m.clubWait || 0) * 10) / 10,
         uniform: !!player.uniform,
         changeProgress: Math.round(m.changeProgress * 10) / 10,
