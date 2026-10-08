@@ -30,7 +30,7 @@
     }
     /* Which outfit the rig dresses a special character in (crowd3d-looks.js specialLook). */
     function personOutfit(p) {
-      if (p === player) return player.disguised ? 'playerDisguise' : 'player';
+      if (p === player) return player.uniform === 'army' ? 'playerArmy' : player.disguised ? 'playerDisguise' : 'player';
       if (p.police) return { patrol: 'police', road: 'traffic', swat: 'swat', sniper: 'swat', fed: 'fed', soldier: 'army' }[p.unit] || 'police';
       if (p.military) return p.role === 'gate' ? 'mp' : 'army';
       if (p.guest) return p.staff ? 'waiter' : 'partyGuest';
@@ -64,6 +64,7 @@
           return !!p.female;
         case 'player':
         case 'playerDisguise':
+        case 'playerArmy':
         case 'swat':
         case 'army':
         case 'mp':
