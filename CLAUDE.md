@@ -321,6 +321,9 @@ packs with plain `<script src>` so the zip still plays from file://.
   of every body part's paint is the skin; paint bits from 32 belong to the near set (`rigNearBits`). Near hands take
   their side from instance order: pack hands in pairs, left then right (`drawCrowdPerson`). `chooseNearPeople`
   (crowd3d-frame.js) is the only place a person joins the chase view's near set, at most `CROWD_NEAR_CAP`.
+- The player's body is the shipped model when the build carries it (player-body3d-asset.js fits
+  assets/player-model.bin from tools/player_model.py, Microsoft Rocketbox, MIT) and the field body otherwise; `PB_WIDTH`
+  1.04 is the model's shoulders.
 - The player in his own clothes is drawn from his own body (player-body3d*.js; people-and-crowd-player.md):
   drawCrowdPerson hands his joints to `playerBodyBone` (in `PB_BONE_NAMES` order) and his hands to `playerBodyGrip`;
   `playerBodyFlush` shows him only on a frame that posed all 15 bones, so a new early return or way of drawing him
