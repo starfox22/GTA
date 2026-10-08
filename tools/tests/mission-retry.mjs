@@ -1,6 +1,6 @@
 // RESTART CURRENT JOB (retryMission): a failed mission 1 restarts clean (a fresh truck at
-// its kerb, stage 0, no stars), and a helicopter the player was flying comes down instead
-// of hanging pilotless in the air.
+// its kerb, stage 0, no stars), and a helicopter the player was flying goes with the world
+// reset (world-reset.js) instead of hanging pilotless in the air.
 export const fresh = true;
 export default async function (t) {
   await t.call('holdSimulation', true);
@@ -24,7 +24,7 @@ export default async function (t) {
     t.assert(again.car && again.car.id !== first.id && again.car.hp === again.car.maxhp, 'no fresh truck: ' + JSON.stringify(again.car));
     t.assert(again.missionVehicles.length === 1 && !again.player.vehicle, 'leftovers after the retry: ' + JSON.stringify(again.missionVehicles));
 
-    // Retry while flying: the helicopter is left to come down.
+    // Retry while flying: the world reset takes the helicopter away (nothing pilotless in the air).
     await t.call('teleport', 1200, 900);
     await t.call('drive', 'helicopter', 60);
     await t.wait(0.5);
@@ -34,7 +34,7 @@ export default async function (t) {
     await t.call('retryMission');
     await t.wait(8);
     const after = await t.call('vehicleAt', heli.x, heli.y);
-    t.assert(after.id === heli.id && after.altitude < heli.altitude - 200, 'the helicopter hangs in the air: ' + JSON.stringify(after));
+    t.assert(after.id !== heli.id && after.altitude < 50, 'the helicopter hangs in the air: ' + JSON.stringify(after));
   } finally {
     await t.call('holdSimulation', false);
   }
