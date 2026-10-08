@@ -159,6 +159,10 @@ packs with plain `<script src>` so the zip still plays from file://.
   (flight-view3d.js `tagSceneryDetail` otherwise hides small meshes from the flight camera).
 - `tyreEmission(c)` (tyre-effects.js) is the only rule for tyre smoke, dust and spray: smoke only
   from a burnout (`burnoutStep`); skid marks only through `layTyreMarks`; renderers only draw them.
+- Jump on foot (player-jump.js): `player.jump` is a carrier (`cancelPlayerJump`); what a jump clears is a solid's
+  `height` (foot furniture `jumpH`, props `JUMP_PROP_HEIGHT`) skipped through `solidSkipBelow` only in the jumping
+  player's own step (`footSolid`), never elsewhere; Fort Sentinel, the theme park and the Marea keep their blockers out
+  of it. Space is `jump` on foot, `handbrake` driving, `rockets` in the air.
 - `c.wheelie` (wheelie.js) is the only two-wheeler pitch; wheelie input is `wheelieHeld()` (controls.js).
 - Objectives have no ground ring or light pool: the floating arrow (render3d-effects.js `arrowGroup`, shown
   by `objectiveArrowShown()` in markers.js) is the only pointer; the ring under the player is the `playerRing`
