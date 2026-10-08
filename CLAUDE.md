@@ -147,6 +147,8 @@ packs with plain `<script src>` so the zip still plays from file://.
 - The Blue Hour: `BLUE_HOUR_ENTRANCE` (roofmission-entrance.js) is the only plan for the hotel's
   forecourt (canopy, limousines, staff); street furniture stays off it via `blueHourForecourt()`.
   Terrace furniture stays inside `roofCover` footprints or the 14-unit strip along the railings.
+- Respray garages are marked only in a chase: `garageBeacon()` (garages.js RESPRAY BEACON) is the one rule; renderers
+  read it.
 - Every drivable island has a respray garage (`GARAGE_ISLANDS`, garages-shops.js; checked by
   tools/tests/garages-islands.mjs).
 - `playerImpact()` / `fallInjury()` / `riderInjury()` (falls-body.js) are the only fall-damage
@@ -251,7 +253,8 @@ packs with plain `<script src>` so the zip still plays from file://.
 - The TO LOSE POLICE countdown shows only through `searchClockShown()` (citylife-civic.js SEARCH CLOCK: on screen
   only while it runs at full speed; hidden, with the panel saying why, while holding for a 911 response or creeping
   inside the search circle). Police sight is debounced there; `PURSUIT_SEARCH_SECONDS` sets the times.
-- Cheat codes: `CHEAT_CODES` (game-input.js; GODMODE and AAAAXBBBBYXXXXAYYYYB both run `godModeCheat`). A code
+- Cheat codes: `CHEAT_CODES` (game-input.js; GODMODE runs `godModeCheat` (+`GOD_MODE_CASH`), HELICOPTER `helicopterCheat`;
+  AAAAXBBBBYXXXXAYYYYB is switched off for now). A code
   whose first letters are driving keys sets `CHEAT_SWALLOW_FROM` so it never eats a steering tap.
   Each toggle plays `showGodSplash(on)` (god-splash.js: CSS-run card at z-index 100 over Settings); its sound
   (god-splash-audio.js) lands on `GOD_SPLASH_IMPACT` / `GOD_SPLASH_POWER_OFF`: retime the CSS and those together.

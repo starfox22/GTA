@@ -559,7 +559,9 @@
         }
       const target = objective();
       if (target) marker(target, '#d7f970', mission ? '↓' : '☎');
-      for (const s of GARAGES) if (distanceBetween(player, s) < 400) marker(s, s.color, 'R', 16);
+      // Only the respray arrow's shop, and only in a chase (garages.js RESPRAY BEACON).
+      const respray = garageBeacon();
+      if (respray) marker(respray, '#8fd3ff', 'R', 16);
       drawStoryMarkers2D();
       drawRoofDialogue2D();
       drawParachute2D();
