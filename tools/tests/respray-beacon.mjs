@@ -16,7 +16,8 @@ export default async function (t) {
   r = await t.call('garage');
   t.note('beacon: ' + JSON.stringify(r.beacon));
   t.assert(r.beacon && r.beacon.shop === shop.name, 'no arrow over ' + shop.name + ' in a chase: ' + JSON.stringify(r.beacon));
-  t.near(r.beacon.x, (shop.door.x0 + shop.door.x1) / 2, 2, 'arrow not over the door');
+  const mid = (shop.door.x0 + shop.door.x1) / 2;
+  t.near(r.beacon.x, mid - 2, mid + 2, 'arrow not over the door');
   const m = await t.call('markers');
   t.assert(m.respray, 'markers() does not list the respray arrow');
   // On foot: no arrow.
