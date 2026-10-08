@@ -7,7 +7,8 @@
      * over r^2 (height counts 0.6). On that smooth dish:
      *  - the crush front waves by up to 16 % across the panel (metal never folds evenly),
      *  - the metal buckles out of the panel in folds across the push (accordion creases about 0.9 m apart),
-     *  - crushed metal bulges out to either side of the push (smoothly: no tear on the push's centre line);
+     *  - crushed metal bulges outward across the push, away from the body's middle (smoothly: no tear, and never
+     *    toward the centre line, wherever the dent is);
      *  - inward travel stops softly at the crush limits (crumpleLimits): a nose folds back at most to the foot of the
      *    screen (the firewall, and no more than 30 % of the length), a tail to just behind the rear glass's foot (no
      *    further than 40 % of the length from the middle, nor 30 % in), a side to 20 % of the width from the centre
@@ -21,7 +22,9 @@
      * design units, render3d.js DESIGN SIZE: dents and limits divided by the model's scale).
      */
     const CRUMPLE_NOSE_TRAVEL = 0.3,
-      CRUMPLE_SIDE_PLANE = 0.2;
+      CRUMPLE_SIDE_PLANE = 0.2,
+      // A push of this many units along an axis halves other dents' bulge along it.
+      CRUMPLE_BULGE_HOLD = 0.3;
     // The planes inward travel stops at, in vehicle space (world units) times `k`: `front` and `rear` along x, `side`
     // across (|y|). Written into `out` (made when not given).
     function crumpleLimits(vehicle, k = 1, out = {}) {
@@ -49,8 +52,12 @@
     // Writes into `out` {x, y, z} the move of the body point (x forward, y right, z up) for `dents` within `limits`
     // (crumpleLimits); `seed` (the vehicle's id) sets where the waves and folds fall.
     function crumpleField(dents, limits, x, y, z, seed, out) {
-      let ix = 0,
-        iy = 0,
+      // Pushes each way along each axis are kept apart: each stops at its own limit (a push from the far side never
+      // offsets one from the near side).
+      let ixBack = 0,
+        ixFore = 0,
+        iyIn = 0,
+        iyOut = 0,
         iz = 0,
         bx = 0,
         by = 0,
@@ -70,9 +77,14 @@
           across = ey * d.nx - ex * d.ny,
           wave = 1 + 0.16 * Math.sin(across * 0.75 + phase + k * 1.7) * Math.cos(z * 0.6 + phase * 0.7),
           t = depth * fall * wave,
-          bulge = t * 0.12 * Math.tanh(across * 0.25);
-        ix += d.nx * t;
-        iy += d.ny * t;
+          // Out from the body's own middle across the push (never toward or over it, whatever the dent's offset).
+          bulge = t * 0.12 * Math.tanh((y * d.nx - x * d.ny) * 0.25);
+        const px = d.nx * t,
+          py = d.ny * t;
+        if (px < 0) ixBack += px;
+        else ixFore += px;
+        if (py < 0) iyIn += py;
+        else iyOut += py;
         // A roof pushed down (a landing on it) dishes unevenly along and across.
         if (d.nz) iz += d.nz * t * (1 + 0.18 * Math.sin(ex * 0.8 + phase) * Math.cos(ey * 0.9));
         bx -= d.ny * bulge;
@@ -81,12 +93,14 @@
       }
       // The pushes stop at the limits (per axis, so overlapping dents cannot add up past them); a roof is held by its
       // whole move down (push and folds) above the roof plane.
-      if (ix < 0) ix = -crumpleSoftStop(-ix, x - limits.front);
-      else if (ix > 0) ix = crumpleSoftStop(ix, limits.rear - x);
-      if (iy < 0) iy = -crumpleSoftStop(-iy, y - limits.side);
-      else if (iy > 0) iy = crumpleSoftStop(iy, -limits.side - y);
-      const mx = ix + bx,
-        my = iy + by;
+      // Where a push piles metal up against a limit, another dent's bulge along that axis fades out (smoothly with
+      // the push, CRUMPLE_BULGE_HOLD): a bulge riding across the pile would fold the metal over itself.
+      const holdX = CRUMPLE_BULGE_HOLD / (CRUMPLE_BULGE_HOLD + Math.max(-ixBack, ixFore)),
+        holdY = CRUMPLE_BULGE_HOLD / (CRUMPLE_BULGE_HOLD + Math.max(-iyIn, iyOut)),
+        ix = -crumpleSoftStop(-ixBack, x - limits.front) + crumpleSoftStop(ixFore, limits.rear - x),
+        iy = -crumpleSoftStop(-iyIn, y - limits.side) + crumpleSoftStop(iyOut, -limits.side - y);
+      const mx = ix + bx * holdX,
+        my = iy + by * holdY;
       let mz = dz + (iz < 0 && z > limits.roof ? iz : 0);
       if (mz < 0 && z > limits.roof) mz = -crumpleSoftStop(-mz, z - limits.roof);
       out.x = mx;
@@ -103,7 +117,7 @@
      * travel between neighbouring samples (`steepest`, per unit of spacing) and the largest move (`maxMoveM`); `marks`
      * and `holesOverBonnet` (holes off the glasshouse drawn above the belt line: none).
      */
-    function crumpleAudit(vehicle) {
+    function crumpleAudit(vehicle, seed = vehicle.id) {
       const spec = vehicleSpec(vehicle),
         dents = vehicle.dents || [],
         l = spec.l,
@@ -137,7 +151,7 @@
           const f = i / (n - 1),
             x = x0 + (x1 - x0) * f,
             y = y0 + (y1 - y0) * f;
-          crumpleField(dents, limits, x, y, z, vehicle.id, out);
+          crumpleField(dents, limits, x, y, z, seed, out);
           const mx = x + out.x,
             my = y + out.y,
             mz = z + out.z;
@@ -172,7 +186,7 @@
           const y = (f * w) / 2;
           for (let i = 0; i < n; i++) {
             const x = band.back + ((band.front - band.back) * i) / (n - 1);
-            crumpleField(dents, limits, x, y, band.roof, vehicle.id, out);
+            crumpleField(dents, limits, x, y, band.roof, seed, out);
             roofIn = Math.max(roofIn, -out.z);
             if (band.roof + out.z < limits.roof - 0.05) crossed++;
           }
@@ -244,9 +258,23 @@
           return { kinds, marks: damageReport(c).marks };
         },
         // The crumple field on a box hull of the vehicle (crumpleField, crumpleAudit above).
-        crumpleAudit: (id) => {
+        // `seeds` > 0: the same dents under seeds 0..seeds-1 (where the waves and folds fall, crumpleField; in play the
+        // vehicle's id), reporting the worst seed's audit (`seed`, `seeds`): a check that holds for any id.
+        crumpleAudit: (id, seeds = 0) => {
           const c = byId(id);
-          return c ? crumpleAudit(c) : null;
+          if (!c) return null;
+          if (!(seeds > 0)) return crumpleAudit(c);
+          let worst = null,
+            score = -1;
+          for (let s = 0; s < Math.min(seeds, 2000); s++) {
+            const a = crumpleAudit(c, s),
+              bad = a.folds * 1e6 + a.crossed * 1e3 + a.intoCabin + (a.frontInM > a.frontRoomM || a.rearInM > a.rearRoomM || a.sideInM > a.sideRoomM || a.roofInM > a.roofRoomM ? 1e9 : 0);
+            if (bad > score) {
+              score = bad;
+              worst = { ...a, seed: s };
+            }
+          }
+          return { ...worst, seeds: Math.min(seeds, 2000) };
         },
         // The vehicle as drawn (damage3d-crumple.js, damage3d-marks.js): its crumpled parts and its marks on the body;
         // null without the 3D renderer. `rebend` bends every part again at once first (times a full bend).

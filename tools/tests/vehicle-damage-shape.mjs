@@ -87,7 +87,8 @@ export default async function (t) {
     await t.call('dentVehicle', car.id, 'right', 110, 0.9);
     // A rollover's landing on the roof.
     await t.call('dentVehicle', car.id, 'roof', 70);
-    const audit = await t.call('crumpleAudit', car.id);
+    // Every seed (where the waves and folds fall is the vehicle's id in play, which differs run to run): the worst.
+    const audit = await t.call('crumpleAudit', car.id, 400);
     t.finite(audit, `${car.type} audit`);
     t.assert(audit.crossed === 0 && audit.intoCabin === 0, `${car.type}: the crumple stays out of the centre plane and the cabin ${JSON.stringify(audit)}`);
     t.assert(audit.folds === 0, `${car.type}: the metal folds without turning over (${audit.folds} folds of 2.5 cm or more)`);
