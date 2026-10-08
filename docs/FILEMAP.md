@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-557 files in the include tree, 191,797 lines.
+557 files in the include tree, 191,935 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -26,13 +26,13 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/voices.js`   173 — People's voices: whether someone is drawn as a woman or a man (personFemale) and the recorded scream that fits them (screamVoice, playPersonScream …
 - `src/footwork.js`    69 — On foot: where the player's body faces (the aim while fighting, else the way they go) and what facing one way while moving another costs the pace …
 - `src/camera-feel.js`   291 — Camera feel: the street camera's follow (a lead along the vehicle's path; on foot the way the player goes and toward the aim in a fight) and its …
-- `src/camera-drive.js`   184 — Camera drive: the street camera's follow in a road vehicle or a boat, built for comfort: a steady lead, critically damped springs (firm along the …
+- `src/camera-drive.js`   188 — Camera drive: the street camera's follow in a road vehicle or a boat, built for comfort: a steady lead, critically damped springs (firm along the …
 - `src/camera-comfort.js`   133 — Camera comfort: what the street camera's motion does to the eye, sampled as it runs (cameraView().comfort): the view's acceleration and jerk in …
 - `src/hud-notify.js`   166 — Notification feed behind tell(): lines stack in #toast, newest first, at most NOTICE_MAX (two on a phone); a repeat refreshes its own line; readable …
 - `src/heat.js`   283 — Heat and wanted stars
 - `src/witnesses.js`   529 — Witnesses and 911 calls, the police side: crimes nobody has reported yet, what the police see and hear for themselves, and how a report brings them …
 - `src/game-collision.js`   360 — Building grid: solid() and shotBlocked() run thousands of times per frame (every pedestrian step, bullet and spawn test).
-- `src/game-car-spawn.js`   363 — makeCar(), canSpawnCar(), spawnClearCar(): creating vehicles with one shared object layout.
+- `src/game-car-spawn.js`   368 — makeCar(), canSpawnCar(), spawnClearCar(): creating vehicles with one shared object layout.
 - `src/game-worldgen.js`   480 — buildWorld(): the city plan, buildings (makeBuilding), trees, the 2D ground canvas.
 - `src/game-populate.js`   231 — Initial population: showcase parking (SHOWCASE_PARKING, parkShowcase) and populate().
 - `src/game-player-actions.js`   623 — Player verbs: enter and exit vehicles, interact, aim, shoot, reload, hurt, die, explode.
@@ -269,7 +269,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/damage.js ▸ Vehicle damage, bullet impacts and breakable street furniture
 
 - `src/damage-vehicles.js`   563 — Vehicle damage state: dents, lamps, glass bands and panes (freshDamage, ensureDamage, addDent, shatterPane).
-- `src/damage-crumple.js`   258 — Crumple field: how far a point of a vehicle's body moves for its dents (crumpleField, crumpleLimits), the one rule the renderer bends every part of a …
+- `src/damage-crumple.js`   286 — Crumple field: how far a point of a vehicle's body moves for its dents (crumpleField, crumpleLimits), the one rule the renderer bends every part of a …
 - `src/damage-upkeep.js`   622 — Vehicle fire, wrecks and per-frame damage upkeep (igniteVehicle, wreckVehicle, updateDamage) and knockable street props.
 
 ## src/county.js ▸ Outlying districts
@@ -417,7 +417,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/flight-view3d.js`   616 — ▸ Flight camera and aerial perspective
 - `src/chase-view3d.js`   226 — ▸ Chase view 3D: the perspective camera behind the player (chase-camera.js says where it stands), the ground it sees for culling and level of detail …
-- `src/postfx3d.js`   867 — ▸ HDR post-processing pipeline
+- `src/postfx3d.js`   870 — ▸ HDR post-processing pipeline
 - `src/lighting3d.js`    27 — ▸ Sun, sky, reflections and night light
 - `src/searchlight3d.js`   937 — Searchlights: light shafts, ground pools, the helicopter's spot
 - `src/render3d-statics.js`   372 — Static building batches, static cells and culling (staticInView), shared materials.
@@ -450,8 +450,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/drawbridge3d.js`    60 — ▸ The drawbridges in 3D
 - `src/bridges3d.js`    37 — ▸ Bridges: one architecture per crossing
 - `src/skyline3d-islet.js`    91 — North Point Key's dressing: the fountain on the circle's island, the gate pylons, lamp standards, forecourt benches, loungers and parasols on the …
-- `src/monarch-bridges3d.js`   222 — Monarch Isle's two bridges
-- `src/coronation3d.js`    87 — The Coronation Bridge in 3D (BRIDGE_BUILDERS.deco): an Art Deco causeway on column bents, pierced parapets, fluted lamp standards, entrance pylons …
+- `src/monarch-bridges3d.js`   223 — Monarch Isle's two bridges
+- `src/coronation3d.js`    88 — The Coronation Bridge in 3D (BRIDGE_BUILDERS.deco): an Art Deco causeway on column bents, pierced parapets, fluted lamp standards, entrance pylons …
 - `src/harbor3d.js`   648 — Cargo terminal meshes
 - `src/roofmission3d.js`   175 — Mission 2 (the Blue Hour) in 3D: the bodyguards' sight cones on the terrace floor and the speech bubbles and name label over the party.
 - `src/marina3d.js`    17 — ▸ Marina, superyacht and cruise liner meshes
@@ -520,7 +520,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/lighting3d.js ▸ Sun, sky, reflections and night light
 
-- `src/lighting3d-sky.js`   766 — ▸ Lighting 3D sun path (updateSunPath: the light, and the sun the sky draws), the sky (lighting3d-sky-dome.js), the night light map, the city light and …
+- `src/lighting3d-sky.js`   781 — ▸ Lighting 3D sun path (updateSunPath: the light, and the sun the sky draws), the sky (lighting3d-sky-dome.js), the night light map, the city light and …
 - `src/lighting3d-cutaway.js`   167 — Lighting 3D cutaway occluders (updateCutaway, setCharacterCutaway) and the default material patches.
 - `src/lighting3d-vehicle-lights.js`   647 — Lighting 3D vehicle lights: the nearest cars' low beams as real lights (CAR LAMPS), the drive light map and beam haze.
 - `src/lighting3d-vehicle-shadows.js`   314 — Lighting 3D vehicle lights, part 2: BEAM SHADOWS (people, cars, trees and posts in the CAR LAMPS beams), the TERRAIN HORIZON strip kept in the same …
@@ -579,11 +579,11 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/cityscape3d-shopwindows.js`   322 — Shop windows: a painted atlas of eight shop and lobby interiors, the shared lit shop-window material and its panes.
 - `src/cityscape3d-frontage.js`   458 — Street frontage on every side of a building: which sides face a street, an alley or a yard, and their ground floors (shops, lobbies, stoops, loading …
 - `src/cityscape3d-roofplant.js`   120 — Roof plant extras: mushroom exhaust fans, a galvanized duct run, plumbing vent stacks and conduit on the city's flat roofs, in FRONT PAINT (no new …
-- `src/cityscape3d-roofs.js`   577 — ▸ Cityscape 3D roof props and facades: AC units, water towers, billboards, helipads, shopfronts, fire escapes (decorateRoof).
+- `src/cityscape3d-roofs.js`   579 — ▸ Cityscape 3D roof props and facades: AC units, water towers, billboards, helipads, shopfronts, fire escapes (decorateRoof).
 
 ## src/cityscape3d-kit.js ▸ Cityscape 3D kit: seeded random, instancing helpers, static materials, roof and window textures.
 
-- `src/signage3d.js`   792 — Night glows, neon and wet-street reflections
+- `src/signage3d.js`   797 — Night glows, neon and wet-street reflections
 
 ## src/cityscape3d-roofs.js ▸ Cityscape 3D roof props and facades: AC units, water towers, billboards, helipads, shopfronts, fire escapes (decorateRoof).
 
@@ -647,8 +647,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/county3d-ground.js`   535 — County 3D ground: regional terrain materials and patches (terrainMaterials, TERRAIN_* maps) and scenery cells.
 - `src/county3d-signs.js`    23 — County roadside guide signs: a real-size board (sign() paints it) on two galvanised posts, standing on the verge at the plan's spot …
-- `src/county3d-forest.js`   531 — County 3D forests (plantForest), mist, updateTerrainVisuals(), the airport and updateCountyVisuals().
-- `src/county3d-roads.js`   444 — County 3D scenic roads: the asphalt ribbon over the graded surface (markings, shoulders, wet film), guard rails, viewpoint walls, reflector posts and …
+- `src/county3d-forest.js`   533 — County 3D forests (plantForest), mist, updateTerrainVisuals(), the airport and updateCountyVisuals().
+- `src/county3d-roads.js`   446 — County 3D scenic roads: the asphalt ribbon over the graded surface (markings, shoulders, wet film), guard rails, viewpoint walls, reflector posts and …
 
 ## src/base3d.js ▸ Fort Sentinel meshes
 
@@ -668,15 +668,15 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/drawbridge3d.js ▸ The drawbridges in 3D
 
-- `src/drawbridge3d-kit.js`   653 — Drawbridge 3D kit: per-bridge view state, the looks, pit render order, lenses, glows, gratings and racks.
+- `src/drawbridge3d-kit.js`   655 — Drawbridge 3D kit: per-bridge view state, the looks, pit render order, lenses, glows, gratings and racks.
 - `src/drawbridge3d-houses.js`   118 — Drawbridge 3D tender's houses in the other looks: Art Deco towers, 1960s concrete booths and steel control cabins (drawbridgeHouseStyled).
 - `src/drawbridge3d-build.js`   639 — Drawbridge 3D gates, signals, signs, water and the ship (buildDrawbridge, buildDrawbridgeShip).
 
 ## src/bridges3d.js ▸ Bridges: one architecture per crossing
 
-- `src/bridges3d-kit.js`   563 — Bridge 3D kit: BRIDGE_KIT, lamp, glow and LED materials, deck lights and pools.
+- `src/bridges3d-kit.js`   571 — Bridge 3D kit: BRIDGE_KIT, lamp, glow and LED materials, deck lights and pools.
 - `src/bridges3d-key.js`    35 — North Point Key Bridge 3D: white twin arches beside the footways, warm LED lines, glass balustrade, globe lamps.
-- `src/bridges3d-build.js`   639 — Bridge 3D builders: footing foam, approach piers, beacons, BRIDGE_BUILDERS, far copies and updateBridgeVisuals().
+- `src/bridges3d-build.js`   640 — Bridge 3D builders: footing foam, approach piers, beacons, BRIDGE_BUILDERS, far copies and updateBridgeVisuals().
 
 ## src/marina3d.js ▸ Marina, superyacht and cruise liner meshes
 
@@ -746,7 +746,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/surfaces3d.js ▸ Procedural surface detail
 
 - `src/ground-shader3d.js`    55 — ▸ Ground materials (GLSL)
-- `src/wet-glints3d.js`   256 — Wet lamp glints: the street lamps' reflections in the wet road, as glossy GGX highlights of the nearest lamp heads (a per-frame list of …
+- `src/wet-glints3d.js`   313 — Wet lamp glints: the street lamps' reflections in the wet road, as glossy GGX highlights of the nearest lamp heads (a per-frame list of …
 
 ## src/ground-shader3d.js ▸ Ground materials (GLSL)
 
@@ -795,7 +795,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/mountain-village3d-textures.js`   606 — Mountain village 3D textures and materials: window, door and map atlases (MV_TEX, MV_MAT).
 - `src/mountain-village3d-kit.js`   643 — Mountain village 3D kit: per-material buffers and primitives (mvBatch, mvQuad, mvBox, mvCyl).
-- `src/mountain-village3d-details.js`   643 — ▸ Mountain village 3D details: balconies, false fronts, porches, awnings, steeples, motel and barn fronts, decks, lights.
+- `src/mountain-village3d-details.js`   645 — ▸ Mountain village 3D details: balconies, false fronts, porches, awnings, steeples, motel and barn fronts, decks, lights.
 - `src/chimney-smoke3d.js`   308 — Wood smoke from the mountain chimneys (the village houses and the 4x4 club) and the club's grill and fire ring: thin, lit, translucent plumes in the …
 
 ## src/mountain-village3d-details.js ▸ Mountain village 3D details: balconies, false fronts, porches, awnings, steeples, motel and barn fronts, decks, lights.

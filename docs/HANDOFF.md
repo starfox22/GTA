@@ -13,6 +13,8 @@ rules, workflow), then this page, then only the area doc your task needs (`docs/
   `demoLocked()`; god mode lifts the gates). Bug passes and polish target free roam and missions 1-2 only.
 - **Branches**: `main` is the owner's approved game. On October 6 the owner approved moving the working
   branch `claude/tender-babbage-3t74xl` (rounds of October 4-6) to `main`, so both held the same commit then.
+  On October 8 the owner approved moving `claude/trusting-cannon-seq2mv` (the chase view and chase detail rounds,
+  artifact version 55) to `main`.
   A new session develops on its own working branch and fast-forwards `main` only when the owner approves in the
   current conversation (never assume it; the approval covers that one push).
 - **Published build**: the claude.ai artifact https://claude.ai/artifact/NtDPAmpmNsgU8LPW4hH13B (split build:
@@ -129,6 +131,19 @@ measure GPU cost, so real-GPU gains of render changes are unverified.
   SwiftShader only (check on a real GPU); after the draw budget the chase view still draws ~2.5 times the street
   view's calls (avenue: LOW 474, MEDIUM 913, HIGH 989, ULTRA 1117; rendering-chase-budget.md has the table and what
   is left: crowd part pools, breakable pools, impostor pools).
+
+- The chase detail round (October 7-8; fragments `docs/changes/2026-10-07-*`, open lines in BACKLOG):
+  - Owner's call: the Ridgeline Viaduct lost its two H-pylons and their cables so it could be the island's drawbridge
+    (no other Ridgeline bridge had room); the alternative is rebuilding another Ridgeline bridge as the bascule.
+  - The Coronation Bridge's south-west approach runs north of the North Point Key towers (they can hide it overhead).
+  - The player's body: no blinking/face rig beyond blink and gaze; real-GPU cost of its 92k triangles unmeasured.
+  - Gore: no point-blank shotgun knockdown (the round rule holds); stump close-ups judged only on SwiftShader crops.
+  - No badges on bicycles, the tank, boats or aircraft; small POLICE/BADGER/BRONCO lettering where room is short.
+  - Wet glints: no reflection on roofs, cobbles, mountain terrain or decks (would need new programs); a tier change in
+    play compiles the rain-only shaders at the first shower; the 40-slot glint list's uniform count is untested on
+    low-end GPUs (HIGH/ULTRA only use 40).
+  - Crumple: a sprung door covers the lower door only; street-view mark sizes unchanged.
+  - Street camera: look-ahead defaults to 150 % but its frame share stops at `leadShareMax` 0.3 (HUD clearance).
 
 - Mission 4's "GO HOME" goal now ends at the SUNSET MOTEL (the free-standing safehouse was removed); it is not
   in the demo.
