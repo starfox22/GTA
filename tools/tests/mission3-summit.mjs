@@ -38,7 +38,7 @@ export default async function (t) {
     t.assert(!s.vehicle, 'could not get out on the summit: ' + JSON.stringify(s));
     m = await t.call('summitJob');
     t.assert(m.stage === 1 && m.lastCar === 'hilux', 'stage 1 with the truck: ' + JSON.stringify(m));
-    await t.call('teleport', 7768, 1074);
+    await t.call('teleport', 7778, 1084);
     await t.keys('KeyE', 8);
     m = await t.call('summitJob');
     t.assert(m.stage === 2 && m.carrier === 'hand' && /TRUCK/.test(m.instruction), 'load stage: ' + JSON.stringify(m));

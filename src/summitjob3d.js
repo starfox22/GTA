@@ -17,7 +17,7 @@
         scene.add(group);
         const stoneGeo = new Three.DodecahedronGeometry(1, 0),
           stoneMats = [mat('#7d7b74', 0.95), mat('#8e8a80', 0.95), mat('#66645e', 0.95)],
-          // The cairn as Tommy left it: a ring of fist-to-head-sized stones, a second
+          // The heap as Tommy left it: a ring of fist-to-head-sized stones, a second
           // course, a capstone. [x, z, y above ground, radius m, squash, where it goes when lifted].
           plan = [
             [-0.32, 0.0, 0.14, 0.2, 0.7, [0.95, 0.55]],

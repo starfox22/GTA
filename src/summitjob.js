@@ -13,9 +13,10 @@
      * reads `summitCacheView()`.
      */
     const SUMMIT_JOB = {
-      // The cairn on the north-east lip of the summit platform (terrain-field.js levels
-      // the ground within ~40 units of COUNTY_PEAKS[0]; the trail arrives from the west).
-      cache: { x: 7781, y: 1069 },
+      // At the foot of the summit cairn (offroad3d-trail.js, top + (12, -10)), on its east
+      // side, clear of the SUMMIT · FINISH gate (terrain-field.js levels the ground within
+      // ~40 units of COUNTY_PEAKS[0]; the trail arrives from the west).
+      cache: { x: 7791, y: 1082 },
       peak: { x: 7760, y: 1090 },
       trailhead: { x: 7510, y: 1970 },
       // The RIDGELINE 4X4 CLUB's gate in Northridge (offroad-trails.js OFFROAD_CLUB).
@@ -121,7 +122,7 @@
             m.cache,
             c ? 'GET OUT · DIG UP THE PACKAGE AT THE CAIRN' : 'DIG UP THE PACKAGE AT THE CAIRN · HOLD ' + keyName('interact'),
             'vinny',
-            'Tommy stacked stones on it, at the edge facing the sea. It’s under there, a foot down. Dig.',
+            'Tommy buried it at the foot of the big cairn, the side facing the sea. Stones on top, a foot down. Dig.',
           );
           tell('THE SUMMIT · Mount Ascent', 3);
         }
