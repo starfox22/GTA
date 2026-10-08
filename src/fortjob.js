@@ -498,18 +498,16 @@
       const m = fortJob();
       return !!m && m.stage === FORT_STAGE.meet && skyMeeting.stage === 'done' && player.uniform === 'army';
     }
-    /* Console test shortcuts (game-console-missions.js fortSkip): start the job if needed and
-       jump to a beat. 'arrive': Kessler's car on its last approach to the Marea, the player's
+    /* Console test shortcuts (game-console-missions.js fortSkip): restart the job and jump to a beat. 'arrive': Kessler's car on its last approach to the Marea, the player's
        car behind it; 'parked': he has parked and is crossing to the door; 'inside': he is in,
        the player on foot at his trunk; 'changed': in uniform and cover on, on foot short of the
        gate; 'meet': out of the base with the papers, the consul waiting at EVOLUTION. */
     function fortJobSkip(where) {
-      if (!fortJob()) {
-        missionIndex = 3;
-        startMission();
-      }
+      // Always a fresh run of the job (a parked car has no route left).
+      missionIndex = 3;
+      startMission();
       const m = mission;
-      if (!m.kcar) fortDepart(m);
+      fortDepart(m);
       const c = m.kcar,
         route = c.countyRoute;
       if (where === 'arrive' || where === 'parked' || where === 'inside') {
