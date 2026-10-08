@@ -208,6 +208,8 @@
           c.hp > 0 &&
           c.hp >= c.maxhp &&
           c.damageVersion === 0 &&
+          // An open trunk's lid swings on its own hinge (damage3d-bodies.js).
+          !c.trunkOpen &&
           !(c.stains && c.stains.length) &&
           !(c.mudCoat > 0) &&
           !m.charred &&

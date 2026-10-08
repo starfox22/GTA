@@ -108,16 +108,12 @@
       doorPickPoint(c, pickSpot);
       return withinRange('lockpick-door', hypot2(pickSpot.x - player.x, pickSpot.y - player.y), DOOR_REACH) ? c : null;
     }
-    /* The action key pressed (interact): at a picked trunk or door the hold does the work, so the press is taken here
-       (never the carjack or the driver's seat). Without the lockpick in hand at a trunk: how to take it out. */
+    /* The action key pressed (interact): with the lockpick in hand at a trunk or a locked door the hold does the work,
+       so the press is taken here (never the carjack or the driver's seat). Without it in hand the press goes on down
+       the chain (a mission's keys may open the trunk; the prompt already says EQUIP THE LOCKPICK). */
     function lockpickInteract() {
-      const trunk = trunkPickTarget();
-      if (trunk) {
-        if (!lockpickOwned()) return false;
-        if (!lockpickEquipped()) tell(pressKey('lockpick') + ' to take the lockpick in hand', 2.5, { id: 'lockpick' });
-        return true;
-      }
-      return !!doorPickTarget();
+      if (!lockpickEquipped()) return false;
+      return !!(trunkPickTarget() || doorPickTarget());
     }
     /* Every frame (game-update.js): the hold at a lock steps in, kneels and works the pins. */
     function updateLockpick(deltaSeconds) {

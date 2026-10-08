@@ -213,9 +213,11 @@
               m.canopy.material.roughness = 0.12 + wear * 0.65;
               // The Apache's chin gun and lights (apache3d.js).
               if (m.apache) animateApache(c, m);
-            } else if (m.damageVersion !== c.damageVersion) {
-              // Crumple, panels, glass, lamps and tyres follow the damage data (damage3d.js).
+            } else if (m.damageVersion !== c.damageVersion || (m.trunkDrawnOpen === true) !== (c.trunkOpen === true)) {
+              // Crumple, panels, glass, lamps and tyres follow the damage data (damage3d.js); a trunk opened or shut
+              // (vehicle-trunk.js) is drawn the same way, however `trunkOpen` was set.
               m.damageVersion = c.damageVersion;
+              m.trunkDrawnOpen = c.trunkOpen === true;
               applyVehicleDamage(c, m);
               m.brakeLit = null; // lamp materials were reset: re-apply brake lights
             }
