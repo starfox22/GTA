@@ -203,7 +203,8 @@ async function loadWorld() {
 const ROAD_VEHICLES = ['sedan', 'taxi', 'coupe', 'muscle', 'sport', 'roadster', 'rally', 'hotrod', 'supercar', 'luxury', 'limousine', 'suv', 'van', 'pickup', 'truck', 'bus', 'ambulance', 'police', 'flatbed', 'chevette', 'brutini', 'cavalino', 'dolcati', 'yamasaki', 'kr500', 'bike', 'cruiser', 'bicycle', 'tank'];
 const WATER_VEHICLES = ['speedboat', 'workboat', 'jetski'];
 const AIR_VEHICLES = ['helicopter', 'plane'];
-const MOVE_SETS = [['KeyW'], ['KeyW'], ['KeyW', 'KeyD'], ['KeyW', 'KeyA'], ['KeyS'], ['KeyD'], ['KeyA'], ['KeyW', 'Space']];
+// 'Space' is the handbrake's virtual code, 'Jump' the jump's (on foot).
+const MOVE_SETS = [['KeyW'], ['KeyW'], ['KeyW', 'KeyD'], ['KeyW', 'KeyA'], ['KeyS'], ['KeyD'], ['KeyA'], ['KeyW', 'Space'], ['KeyW', 'Jump']];
 const SKY = ['clear', 'fair', 'cloudy', 'overcast', 'rain', 'storm'];
 
 async function onFoot() {
@@ -531,7 +532,7 @@ const actions = {
   async mouseFire() {
     // The real pointer: aim somewhere on the screen and hold the button (fire), keys held for movement.
     await call('arm', Math.floor(between(0, 6)));
-    await op({ op: 'mouse', x: Math.round(between(80, 880)), y: Math.round(between(60, 540)), seconds: between(0.6, 1.8), down: true, codes: chance(0.5) ? pick(MOVE_SETS).filter((k) => k !== 'Space') : [], taps: [] });
+    await op({ op: 'mouse', x: Math.round(between(80, 880)), y: Math.round(between(60, 540)), seconds: between(0.6, 1.8), down: true, codes: chance(0.5) ? pick(MOVE_SETS).filter((k) => k !== 'Space' && k !== 'Jump') : [], taps: [] });
     await call('arm', 0);
     return 'mouse fire';
   },

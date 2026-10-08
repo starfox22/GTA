@@ -82,10 +82,12 @@ export default async function (t) {
   s = await t.call('status');
   t.assert(s.vehicle === 'sedan', `not in the car: ${JSON.stringify(s)}`);
   const jumpsInCar = (await t.call('jumpReport')).log.jumps;
-  const fast = await t.keys('KeyW', 3);
-  const slowed = await t.keys('Space', 1.5, { real: true });
-  t.note(`speed ${JSON.stringify(fast)} -> ${JSON.stringify(slowed)}`);
-  t.assert(Math.abs(slowed.speed) < Math.abs(fast.speed) * 0.85, `Space did not brake the car: ${fast.speed} -> ${slowed.speed}`);
+  const fast = await t.keys('KeyW', 1.5);
+  // The real Space key held 1.2 s of wall clock (coasting loses ~12 % there; the handbrake over half).
+  await t.mouse(480, 300, { seconds: 1.2, keys: ['Space'] });
+  const slowed = await t.wait(0.02);
+  t.note(`speed ${fast.speed} -> ${slowed.speed}`);
+  t.assert(fast.speed > 30 && Math.abs(slowed.speed) < fast.speed * 0.7, `Space did not brake the car: ${fast.speed} -> ${slowed.speed}`);
   r = await t.call('jumpReport');
   s = await t.call('status');
   t.assert(s.vehicle === 'sedan' && r.log.jumps === jumpsInCar && !r.state, 'Space in the car jumped or left it: ' + JSON.stringify(r.log));
