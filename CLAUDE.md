@@ -167,6 +167,11 @@ packs with plain `<script src>` so the zip still plays from file://.
 - Objectives have no ground ring or light pool: the floating arrow (render3d-effects.js `arrowGroup`, shown
   by `objectiveArrowShown()` in markers.js) is the only pointer; the ring under the player is the `playerRing`
   setting (off by default, `playerRingOn()`). Console `markers()` lists what marks the objective and the player.
+- World reset (missions-and-demo-world-reset.md): `resetWorld(reason)` (world-reset.js) is the only way the world goes
+  back to normal (WASTED, a mission pick, RESTART CURRENT JOB, a taken job call, new game); entities come only from
+  `populateWorld()` (boot seed replayed); a system that keeps world damage or holds vehicles or people outside the
+  populate lists adds a reset helper next to its state, called from `resetWorld`; renderer-held damage clears when
+  `worldResetSerial` changes; progress (cash, weapons, story, owned cars, settings) is never reset.
 - `missionIndex` is both the story frontier and the job a replay picked: anything that ends or declines a replay
   calls `settleDemoStoryIndex()` (campaign.js: back to `completed` for any player without god mode), or the
   payphone offers the old job. RESTART CURRENT JOB restarts only `restartableJob()` (story.js: the running job or
