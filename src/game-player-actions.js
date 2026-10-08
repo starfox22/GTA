@@ -115,6 +115,7 @@
       player.tumbleRoll = 0;
       player.thrown = null;
       player.fall = null;
+      cancelPlayerJump();
       cancelCarjack();
       player.parachute = null;
       // A body on a roof (the Blue Hour terrace, a building roof) stays up there

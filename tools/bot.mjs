@@ -92,7 +92,7 @@ function find(kind, msg, extra = {}) {
 }
 
 // Carriers held too long (game seconds) are stuck states.
-const CARRIER_LIMITS = { fall: 40, parachute: 260, carjack: 40, thrown: 40, tumble: 25, climbing: 30, coaster: 400, loot: 6, rideSkip: 40, hidden: 150, conversation: 240, swimming: 220, taxi: 400, transit: 500 };
+const CARRIER_LIMITS = { fall: 40, jump: 3, parachute: 260, carjack: 40, thrown: 40, tumble: 25, climbing: 30, coaster: 400, loot: 6, rideSkip: 40, hidden: 150, conversation: 240, swimming: 220, taxi: 400, transit: 500 };
 let since = {};
 function watchCarriers(rep) {
   for (const [name, on] of Object.entries(rep.carriers)) {

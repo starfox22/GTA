@@ -21,7 +21,8 @@
      *
      * CONTEXTS
      * One physical key may drive several actions when they can never be wanted
-     * at the same time: Space is the handbrake in a car and fires on foot. Each
+     * at the same time: Space is the handbrake in a car, the jump on foot and the
+     * Apache's rockets in the air. Each
      * action lists the contexts it is used in (foot, drive, air, chute); two
      * actions conflict only when their contexts overlap. The settings screen
      * warns about a conflict and offers to swap the two keys. The exception is
@@ -59,7 +60,10 @@
       { id: 'sprint', label: 'Pedal hard', note: 'Bicycle: stand on the pedals for speed (uses stamina)', group: 'move', keys: ['ShiftLeft', 'ShiftRight'], ctx: ['drive'] },
       { id: 'interact', label: 'Interact', note: 'Enter or leave a vehicle, payphones, shops, stations, boarding; hold for objectives', group: 'combat', keys: ['KeyE'], ctx: EVERYWHERE },
       { id: 'fire', label: 'Fire', note: 'Fire the equipped weapon; the handgun from a vehicle; the Apache\'s 30 mm chin gun (the mouse aims it)', group: 'combat', keys: ['KeyF'], ctx: ['foot', 'drive', 'air'] },
-      { id: 'handbrake', label: 'Handbrake / alt fire', note: 'Handbrake in a vehicle, fires on foot', group: 'combat', keys: ['Space'], ctx: ['foot', 'drive'] },
+      // On foot Space jumps (player-jump.js: over low walls, railings and benches); its own virtual code, since
+      // Space is the handbrake's, and the two may be bound apart. The id 'handbrake' keeps saved bindings.
+      { id: 'jump', label: 'Jump', note: 'On foot: hop over low walls, railings, benches and fences (run at them to clear the higher ones)', group: 'move', code: 'Jump', keys: ['Space'], ctx: ['foot'] },
+      { id: 'handbrake', label: 'Handbrake', note: 'Handbrake in a vehicle (slow down in a boat)', group: 'vehicle', keys: ['Space'], ctx: ['drive'] },
       { id: 'poison', label: 'Spike the drink', note: 'Mission 2: poison the reserved drink', group: 'combat', keys: ['KeyP'], ctx: ['foot'] },
       { id: 'horn', label: 'Horn', note: 'Sound the horn', group: 'vehicle', keys: ['KeyH'], ctx: ['drive'] },
       // The chase camera's look behind (chase-camera.js): held, the view cuts to behind the vehicle.

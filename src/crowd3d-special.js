@@ -3,6 +3,8 @@
         'look', 'facing', 'snapFacing', 'rim', 'elevation', 'rootOverride', 'pose', 'transition', 'hold', 'weapon', 'recoil', 'reload',
         'knifeSwing', 'punch', 'punchLead', 'army', 'shield', 'dazed', 'limp', 'cocktail', 'sip', 'swim', 'parachute', 'lieInPlace',
         'progress', 'bounce', 'flag', 'riderLean', 'handTargets', 'legTargets', 'thrown',
+        // The player's jump on foot (player-jump.js playerJumpPose): crouch, tuck, landing.
+        'jump',
         // A chair at a scene's table (skyline-meeting.js): the glass raised 0-1, the arm across the table, what is in hand.
         'drinkLift', 'sitReach', 'handProp',
         // A drive-by (crowd3d-driveby.js): the pistol's frame and hand, the torso and head turned to the aim.
@@ -102,6 +104,8 @@
             sp.rootOverride = rootMatrixScratch;
             return sp;
           }
+          // A jump on foot: the legs and hips are set after the pose has eased (applyLimbOverrides).
+          sp.jump = playerJumpPose();
           if (carTransition.kind === 'exit' && gameTime - carTransition.at < 0.5) {
             sp.pose = 'exitCar';
             sp.transition = clamp((gameTime - carTransition.at) / 0.5, 0, 1);
@@ -211,8 +215,12 @@
         return sp;
       }
       let lastDelta = 0;
-      /* Swimming and the parachute set the limbs directly, after the pose has eased. */
+      /* Swimming, the parachute and the jump set the limbs directly, after the pose has eased. */
       function applyLimbOverrides(sp, J) {
+        if (sp.jump) {
+          applyJumpLimbs(sp.jump, J, !!sp.hold);
+          return;
+        }
         if (sp.swim) {
           const { stroke, hard, drive, float, dive } = sp.swim;
           J[J_LOCO] = 0;
@@ -286,6 +294,70 @@
           J[J_LEAN] = sp.parachute.torso.rotation.z;
           J[J_ARMFREE[0]] = J[J_ARMFREE[1]] = 0;
         }
+      }
+      /**
+       * THE JUMP (player-jump.js playerJumpPose; the root is already lifted by the
+       * player's altitude). Crouch: the hips drop with the feet planted, arms back.
+       * Air: the push-off straightens the legs, then they tuck, the lead leg
+       * reaching forward over the obstacle and the trail leg folded under, the
+       * soles drawn up by `rise` (the clearance the game tests), arms forward for
+       * balance; the legs reach down again for the ground. Landing: the knees take
+       * it and straighten. The weight blends in over the crouch, so the run's
+       * stride hands over smoothly; after the landing the pose eases back by itself.
+       * With a weapon held the arms are left to the hold.
+       */
+      function applyJumpLimbs(jp, J, holding) {
+        const L1 = RIG.thigh,
+          L2 = RIG.shin,
+          reach = RIG.hip - RIG.ankle,
+          w = jp.phase === 'crouch' ? 0.35 + 0.65 * jp.k : 1,
+          set = (i, v) => (J[i] += (v - J[i]) * w);
+        let drop = 0,
+          lean = 0,
+          arm = 0,
+          spread = 0.06;
+        set(J_LOCO, 0);
+        set(J_FALL, 0);
+        if (jp.phase === 'air') {
+          // Push-off for the first tenth: the crouch's drop let go.
+          drop = -1.3 * jp.crouch;
+          const tuck = jp.tuck,
+            rise = jp.rise / RIG_UNIT;
+          for (let side = 0; side < 2; side++) {
+            const lead = side === jp.lead,
+              // The lead foot reaches ahead and stays lower; the trail foot folds up under the hips.
+              fx = lead ? 0.4 + 2.6 * tuck : -0.3 - 0.5 * tuck,
+              fy = -(reach + drop - rise * (lead ? 0.85 : 1.15)),
+              leg = solveLeg(fx, fy, L1, L2);
+            set(J_HIP[side], leg.hip);
+            set(J_KNEE[side], leg.knee);
+          }
+          lean = -0.18 * tuck - 0.12 * jp.crouch;
+          arm = 0.35 + 0.75 * tuck;
+          spread = 0.1 + 0.08 * tuck;
+        } else {
+          // Feet planted under the hips, the knees bent by the drop.
+          drop = -(jp.phase === 'crouch' ? 1.3 : 1.7) * jp.crouch;
+          const leg = solveLeg(0.35 + 0.4 * jp.crouch, -(reach + drop), L1, L2);
+          for (let side = 0; side < 2; side++) {
+            set(J_HIP[side], leg.hip);
+            set(J_KNEE[side], leg.knee);
+          }
+          lean = -0.32 * jp.crouch;
+          arm = jp.phase === 'crouch' ? -0.55 * jp.crouch : 0.45 * jp.crouch;
+        }
+        set(J_DROP, drop);
+        set(J_LEAN, lean);
+        set(J_SPREAD, spread);
+        if (!holding) {
+          for (let side = 0; side < 2; side++) {
+            set(J_SH[side], arm);
+            set(J_AB[side], 0.22 + 0.15 * Math.abs(arm));
+            set(J_EL[side], 0.35 + 0.5 * Math.max(0, arm));
+            set(J_ARMFREE[side], 0);
+          }
+        }
+        set(J_HEAD_PITCH, 0.12 - 0.5 * lean);
       }
       /**
        * BEACHGOERS

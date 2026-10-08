@@ -225,13 +225,15 @@
      * `hy` is omitted, else an oriented box of half extents hx, hy turned by `a`)
      * and `footObstacleBlocked` stops the player on foot against them and against
      * the standing knockable furniture (damage.js). Tree trunks come from the
-     * game's own `trees` list.
+     * game's own `trees` list. `jumpH` (map units high) marks a low piece the
+     * player's jump clears (player-jump.js; props by JUMP_PROP_HEIGHT); without it
+     * a piece is too tall to jump.
      */
     const FOOT_CELL = 128,
       footObstacleGrid = new Map();
     let footTreesAdded = false;
-    function registerFootObstacle(x, y, hx, hy, a = 0) {
-      const o = hy === undefined ? { x, y, r: hx } : { x, y, hx, hy, c: Math.cos(a), s: Math.sin(a) },
+    function registerFootObstacle(x, y, hx, hy, a = 0, jumpH = undefined) {
+      const o = hy === undefined ? { x, y, r: hx, jumpH } : { x, y, hx, hy, c: Math.cos(a), s: Math.sin(a), jumpH },
         // Filed in every cell within reach of a walker's radius too, so a lookup
         // of the one cell under the walker finds it.
         reach = (hy === undefined ? hx : Math.hypot(hx, hy)) + 6;
@@ -260,10 +262,10 @@
     function footObstacleBlocked(x, y, r) {
       addFootTrees();
       const list = footObstacleGrid.get(Math.floor(x / FOOT_CELL) * 4096 + Math.floor(y / FOOT_CELL));
-      if (list) for (const o of list) if (footObstacleHit(o, x, y, r)) return true;
+      if (list) for (const o of list) if (footObstacleHit(o, x, y, r) && !(solidSkipBelow && jumpedOver(o.jumpH))) return true;
       let hit = false;
       propsNear(x, y, r + 10, (prop) => {
-        if (hit || prop.down || prop.kind === 'cone') return;
+        if (hit || prop.down || prop.kind === 'cone' || (solidSkipBelow && jumpedOver(JUMP_PROP_HEIGHT[prop.kind]))) return;
         hit = footObstacleHit({ x: prop.x, y: prop.y, hx: prop.hx, hy: prop.hy, c: Math.cos(prop.a), s: Math.sin(prop.a) }, x, y, r);
       });
       return hit;

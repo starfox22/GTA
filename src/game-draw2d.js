@@ -361,10 +361,13 @@
         }
         if (player.inv > 0) worldContext.globalAlpha = 0.45 + 0.4 * Math.sin(gameTime * 25);
       }
+      // In a jump (player-jump.js) the shadow falls away and the body grows a little towards the camera.
+      const lift = isPlayer && player.jump ? playerJumpPose()?.lift || 0 : 0;
       worldContext.fillStyle = '#102b2380';
       worldContext.beginPath();
-      worldContext.ellipse(3, 4, 9, 5, 0, 0, TAU);
+      worldContext.ellipse(3 + lift * 0.8, 4 + lift * 0.8, 9, 5, 0, 0, TAU);
       worldContext.fill();
+      if (lift) worldContext.scale(1 + lift * 0.04, 1 + lift * 0.04);
       const step = Math.sin(person.walk || 0) * 2.5;
       // The player in his own clothes: jeans, a black tee, brown hair (the 3D body's colours).
       // Fort Sentinel's borrowed field uniform (fort-cover.js): camo, olive webbing, a patrol cap.

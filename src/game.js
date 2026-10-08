@@ -33,6 +33,7 @@
     // @include src/heat.js
     // @include src/witnesses.js
     // @include src/game-collision.js
+    // @include src/player-jump.js
     // @include src/game-car-spawn.js
     // @include src/game-worldgen.js
     // @include src/game-populate.js
