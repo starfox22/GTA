@@ -19,8 +19,9 @@ rules, workflow), then this page, then only the area doc your task needs (`docs/
   `index.html` + `media/`; version 54 is the chase view round from `claude/trusting-cannon-seq2mv`, published October 7; version 53 is the build that went to `main` on October 6). Version numbers on that link are the artifact's own
   counter, not `GAME_VERSION`.
   The downloadable zip is built by CI for whatever branch is pushed.
-- **Tests**: `node tools/test.mjs` runs the whole regression suite (124 tests, ~35 minutes on the 4-core
-  cloud box; 123/124 at the end of the chase view round, the one failure, chase-radio-chip, fixed and rerun; the runner always loads the no-render page, so the render-* tests are null checks there: run them
+- **Tests**: `node tools/test.mjs` runs the whole regression suite (137 tests, ~50 minutes on the 4-core
+  cloud box; 136/137 at the end of the chase detail round of October 7-8, the one failure, hud-clearance at the new
+  150 % look-ahead, fixed (`leadShareMax`) and rerun 7/7 with the camera and HUD tests; the runner always loads the no-render page, so the render-* tests are null checks there: run them
   on a rendered page when a render change needs them). It must be green before a publish. Known flakes:
   `carjack-traffic` fails about one run in four when the picked traffic car stands beside a bike-share dock
   (E rents a bike instead); `living-medics` failed once (medics never reached the victim) and passed on rerun;
@@ -79,6 +80,7 @@ measure GPU cost, so real-GPU gains of render changes are unverified.
 
 | Round | Topics | Where |
 | --- | --- | --- |
+| Chase detail (Oct 7-8) | the player's own skinned body (player-body3d*.js), crash crumple and pinned bullet holes, cabin headroom, Chevette Z06 rebuild, badges on every vehicle, drive-by seat table, gore and dismemberment (gore.js, Gore setting), wet lamp glints, chimney wood smoke, Coronation Bridge and drawbridges on every multi-bridge island (god-mode controls), street camera defaults 120 % / 150 % | `docs/changes/2026-10-07-*`, areas `people-and-crowd-player`, `vehicles-and-driving-damage`, `vehicles-and-driving-cabins`, `police-and-combat-gore`, `rendering-weather-wet`, `world-and-map-drawbridges` |
 | Night and driving feel | headlights without blow-out and with occlusion, no tyre smoke except burnouts, realistic blood per shot, bike falls and wheelies, drive-by arcs and cross, parachute opening, health only indoors | `docs/changes/2026-09-28-*`, area docs for blood, vehicle lights, driveby, vehicles |
 | Carjack and stars | the full carjack struggle and pull-out, no stars over downed people | `2026-09-28-carjack-struggle` |
 | Rings, signs, hotels, car blood | no ground rings, optional player ring, no stale demo arrow (`settleDemoStoryIndex`), no stray signs (`roadsideSign`), motels with real entrances (`dressHotel`), vehicle blood stains | `2026-09-30-*`, `areas/places-and-venues.md`, `areas/police-and-combat-blood.md` |
