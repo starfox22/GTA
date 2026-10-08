@@ -25,10 +25,12 @@
     function roofMissionUI() {
       const missionState = rooftopJob(),
         box = getElement('stealthStatus'),
-        on = !!missionState && !!player.roof;
-      box.style.display = on ? 'block' : 'none';
+        on = !!missionState && !!player.roof,
+        // Fort Sentinel's cover meter shares the box (fort-cover.js fortCoverUI writes it, after this).
+        shown = on || fortCoverMeterShown();
+      box.style.display = shown ? 'block' : 'none';
       // touch-hud.css lifts the story line over the meter while it is up (written on change only).
-      if (document.body && document.body.classList.contains('roof-stealth') !== on) document.body.classList.toggle('roof-stealth', on);
+      if (document.body && document.body.classList.contains('roof-stealth') !== shown) document.body.classList.toggle('roof-stealth', shown);
       if (on) {
         const m = missionState,
           seen = !m.alarm && enemies.some((e) => e.guard && e.sees && e.hp > 0 && e.missionTag === 'rooftop-hit'),

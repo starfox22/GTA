@@ -172,7 +172,7 @@
         padHoldCodes('stick-' + way, on && ways[way] ? padCodes([ways[way]]) : []);
       // On foot a gentle push walks, as on the touch stick (the terrace in
       // mission 2 walks by default, so there the hard push holds it to run).
-      const gentle = context === 'foot' && m > PAD_DEAD && (roofPartyPace() ? m >= PAD_RUN : m < PAD_RUN);
+      const gentle = context === 'foot' && m > PAD_DEAD && (roofPartyPace() || fortCoverPace() ? m >= PAD_RUN : m < PAD_RUN);
       padHoldCodes('stick-walk', gentle ? padCodes(['walk']) : []);
       if (m > PAD_DEAD) mouse.active = false;
       if (gamepad.lookX !== rx) gamepad.lookX = rx;
