@@ -321,16 +321,23 @@
     // @include src/blood.js
     // The blood a vehicle carries after hitting someone (car-stains.js).
     // @include src/car-stains.js
+    // Point-blank loads, heavy rounds and blasts: lost limbs, stumps, wounds on the clothes (gore.js).
+    // @include src/gore.js
     function scream(p) {
       if (!voicesOn || gameTime < screamAt || gameTime < (p.mutedUntil || 0) || distanceBetween(p, player) > 470) return;
       screamAt = gameTime + 1.7;
       playPersonScream(p, 0.65); // their own voice: a man's or a woman's take (voices.js)
     }
     /* A hit on a person. `calibre` ('handgun' | 'buck' | 'rifle', bulletCalibre) and the
-       hit zone (wounds.js pickHitZone, chosen here first) decide what a vest stops. */
-    function strikePerson(person, damage, a = 0, source = null, showBlood = true, kind = 'ballistic', calibre = 'handgun') {
+       hit zone (wounds.js pickHitZone, chosen here first) decide what a vest stops. `detail`
+       (optional) tells gore.js goreHit what the shooter's distance cannot: { range } (units),
+       { power } for a blast, { heavy } for a .50 or 25 mm round, { pellets }. */
+    function strikePerson(person, damage, a = 0, source = null, showBlood = true, kind = 'ballistic', calibre = 'handgun', detail = null) {
       if (person.hp <= 0) return;
-      const zone = pickHitZone(kind),
+      // How hard it lands by calibre, range and zone, and what it takes off (gore.js GORE): a
+      // point-blank load keeps one zone, and a torso load may catch an arm (no vest there).
+      const hit = goreHit(person, pickHitZone(kind), kind, calibre, source, detail, a, damage),
+        zone = hit.zone,
         dealt = ballisticDamage(person, damage, kind, calibre, zone),
         vestShare = vestStoppedShare;
       if (person.faction && source === player) alertGang(person.faction);
@@ -362,12 +369,19 @@
       // A round the vest ate sparks off it instead of opening a wound.
       const stopped = vestShare >= VEST_STOPPED;
       if (stopped) particle(person.x, person.y, '#e8dfb6', 4, 55, 2);
+      // A head or a chest destroyed at point blank kills outright (gore.js GORE).
+      if (hit.fatal && !stopped && dealt > 0) {
+        person.hp = Math.min(person.hp, 0);
+        person.goreFatal = true;
+      }
       scream(person);
       // Where it landed, the flinch, a limp, a blood trail, the fall (wounds.js).
       if (dealt > 0) woundPerson(person, dealt, a, kind, source, zone, stopped);
+      // A part comes off: the stump, the piece thrown, a survivor down and bleeding out (gore.js).
+      if (hit.sever && !stopped && dealt > 0) goreSever(person, hit.sever, a, hit, source);
       // After the fall is chosen: a spatter for the wound, and for the dead the
       // pool that spreads from under the body (blood.js).
-      if (!stopped && showBlood && dealt > 0) bleed(person, Math.min(2, dealt / 38), a, kind);
+      if (!stopped && showBlood && dealt > 0) bleed(person, Math.min(2, dealt / 38), a, kind, hit);
       else if (showBlood && person.hp <= 0) bodyPool(person, kind, a);
       if (person.hp <= 0) {
         person.deadTime = gameTime;
@@ -391,6 +405,8 @@
       timed('police:air', () => updateAirPolice(deltaSeconds));
       updateWounds();
       updateBlood(deltaSeconds);
+      updateGore(deltaSeconds);
+      updateSeveredParts(deltaSeconds);
       updateCarStains(deltaSeconds);
     }
     function navigationState() {

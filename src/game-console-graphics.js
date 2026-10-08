@@ -8,9 +8,11 @@
       // The effect particles (fx3d-particles.js): live, waiting on a delay, drawn last frame (and of them the
       // game's particles), capacity, peak, emitted, dropped, the tier's share and the draw calls (null without WebGL).
       effectParticles: () => (city3D ? city3D.effectParticles() : null),
+      chimneySmoke: (options) => (city3D?.chimneySmoke ? city3D.chimneySmoke(options) : null),
       // The rain and the wet street as drawn (weather3d-chase.js): both boxes of rain, the near box at
       // street level, the splashes, the haze, the wet reflections' street-level terms (null without WebGL).
       rainView: () => (city3D?.rainView ? city3D.rainView() : null),
+      wetGlints: (options) => (city3D?.wetGlints ? city3D.wetGlints(options) : null),
       // World-scale audit, everything in metres: each road vehicle's spec
       // (length, width), the built models within `radius` of the player measured
       // from their meshes (length, width, height), the player's model, the crowd
@@ -177,7 +179,7 @@
         };
       },
       // A/B switches for the look: { pixelLock, fxaa, vibrance, carLamps, groundSlopeCap, terrainBeams, lightBar,
-      // foliageCoverage, vehicleLights, stagedSwitch, vehicleMerge, roofSkin, groundWear } (true = as in play).
+      // foliageCoverage, vehicleLights, stagedSwitch, vehicleMerge, roofSkin, groundWear, chaseBudget, wetGlints, wetReflections } (true = as in play).
       lookSwitches: (options) => city3D?.lookSwitches?.(options) ?? null,
       // Scene draw calls in view by object name and by map cell (render3d.js).
       drawProfile: (top) => city3D?.drawProfile?.(top) ?? null,

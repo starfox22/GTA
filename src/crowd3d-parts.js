@@ -78,17 +78,25 @@
         crowdParts[name] = { mesh, n: 0, capacity };
         return crowdParts[name];
       }
-      /* A painted body part (character-rig3d.js PAINT SHADER): per-instance paint and mask. */
+      /* A painted body part (character-rig3d.js PAINT SHADER): per-instance paint and mask, and the wound
+         soaking it (crowdWound, crowd3d-gore.js WOUNDS; uploaded only on frames that have one or just had). */
       function rigPart(name, geometry, material, capacity, shadow = false) {
         const paintAttribute = new Three.InstancedBufferAttribute(new Float32Array(capacity * 4), 4),
-          metaAttribute = new Three.InstancedBufferAttribute(new Float32Array(capacity * 2), 2);
+          metaAttribute = new Three.InstancedBufferAttribute(new Float32Array(capacity * 2), 2),
+          woundAttribute = new Three.InstancedBufferAttribute(new Float32Array(capacity * 4), 4);
         paintAttribute.setUsage(Three.DynamicDrawUsage);
         metaAttribute.setUsage(Three.DynamicDrawUsage);
+        woundAttribute.setUsage(Three.DynamicDrawUsage);
         geometry.setAttribute('crowdPaint', paintAttribute);
         geometry.setAttribute('crowdMeta', metaAttribute);
+        geometry.setAttribute('crowdWound', woundAttribute);
         const part = crowdPart(name, geometry, material, capacity, shadow, false);
         part.paint = paintAttribute;
         part.meta = metaAttribute;
+        part.wound = woundAttribute;
+        // Wounded instances packed this frame and the last (the upload rule).
+        part.wounds = 0;
+        part.woundsBefore = 0;
         return part;
       }
       const weaponGeometries = rigWeaponGeometries();

@@ -51,6 +51,11 @@ carries the same colours and width (`widthAbsolute`) for the crowd sets (the dis
 - Eyes (`pbEyes`, shader `pbEye`): they lead the head to where he aims (the chase camera's pitch in the chase
   view), else glance about in quick jumps; a blink every 2-6 s draws the upper lid down over the eyeball.
 
+- Gore (gore.js; police-and-combat-gore.md): `pbLost` (a bit per bone) folds a lost part's vertices (their part
+  `pbSkin.w`) onto its cut (`pbCut`: the bind origin of the lost chain's first bone), where the crowd's stump is
+  drawn; `pbWound[4]` (bind metres, w = 2 + radius) soaks his tee, jeans or skin round a wound (and its exit).
+  `playerBodyGore` sets them when `player.goreVersion` changes or a stain is still spreading. He loses parts only
+  on death; WASTED's respawn restores him.
 - drawCrowdPerson (crowd3d-draw.js) poses the player like anyone else; for him (`spec.rim` and `playerBodyOn`)
   the body set is `BODY_PLAYER` (the close set with its body parts empty), and the joint matrices go to
   `playerBodyBone(i, m)` (`PB_BONE_NAMES` order) and the hands' closing to `playerBodyGrip` (`playerHandGrip`:

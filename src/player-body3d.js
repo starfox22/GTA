@@ -40,6 +40,10 @@
         pbTrigger: { value: new Three.Vector2(0, 0) },
         pbBlink: { value: 0 },
         pbGaze: { value: new Three.Vector2(0, 0) },
+        // GORE (player-body3d-shader.js): the bones he lost, where each folds to, his wounds (playerBodyGore).
+        pbLost: { value: 0 },
+        pbCut: { value: Array.from({ length: PB_BONES }, () => new Three.Vector3()) },
+        pbWound: { value: Array.from({ length: 4 }, () => new Three.Vector4()) },
       };
       const playerBodyMaterial = (() => {
           const material = new Three.MeshStandardMaterial({ color: '#ffffff', roughness: 0.8, metalness: 0 });
@@ -158,6 +162,8 @@
           pbState.bindQ[b] = new Three.Quaternion().setFromRotationMatrix(m);
           pbState.bindO[b] = new Three.Vector3(bone.o[0] * PB_UNITS, bone.o[1] * PB_UNITS, bone.o[2] * PB_UNITS);
         }
+        pbState.bones = data.bones;
+        pbState.goreVersion = -1;
         playerBodyMesh.geometry = pbGeometry(data);
         old.dispose();
         // Its buffers go to the GPU now (render3d-resources.js OFF-SCREEN UPLOAD), not in the frame he first shows,
@@ -291,6 +297,66 @@
         pbUniforms.pbGripAmount.value.set(pbState.grip[0], pbState.grip[1]);
         pbUniforms.pbTrigger.value.set(pbState.grip[2], pbState.grip[3]);
         pbEyes(pbState.frames[2]);
+        playerBodyGore();
+      }
+      /**
+       * GORE ON HIS BODY (gore.js state; only his own reading of it): `player.goreLost` folds the bones of a lost
+       * part onto the cut (head: bone 2 at the neck; an arm 3/5/7 at the shoulder, a forearm 5/7 at the elbow; a
+       * leg 9/11/13 at the hip, a shin 11/13 at the knee), and up to four wound spots (entry, and the exit when
+       * the round went through) in bind space, growing over the stain's first seconds.
+       */
+      const PB_GORE_CUTS = [
+        [GORE_HEAD, 2, [2]],
+        [GORE_ARM[0], 3, [3, 5, 7]],
+        [GORE_ARM[1], 4, [4, 6, 8]],
+        [GORE_FOREARM[0], 5, [5, 7]],
+        [GORE_FOREARM[1], 6, [6, 8]],
+        [GORE_LEG[0], 9, [9, 11, 13]],
+        [GORE_LEG[1], 10, [10, 12, 14]],
+        [GORE_SHIN[0], 11, [11, 13]],
+        [GORE_SHIN[1], 12, [12, 14]],
+      ];
+      const pbWoundOrder = [],
+        pbWoundBySize = (a, b) => b.size - a.size;
+      function playerBodyGore() {
+        const bones = pbState.bones,
+          wounds = player.goreWounds,
+          fresh = wounds && wounds.length && gameTime - wounds[wounds.length - 1].t < 24;
+        if (!bones || (pbState.goreVersion === (player.goreVersion || 0) && !fresh)) return;
+        pbState.goreVersion = player.goreVersion || 0;
+        const lost = player.goreLost || 0;
+        let mask = 0;
+        for (const [bit, cut, parts] of PB_GORE_CUTS)
+          if (lost & bit)
+            for (const b of parts) {
+              if (!(mask & (1 << b))) pbUniforms.pbCut.value[b].copy(pbState.bindO[cut]);
+              mask |= 1 << b;
+            }
+        pbUniforms.pbLost.value = mask;
+        const spots = pbUniforms.pbWound.value;
+        for (const v of spots) v.set(0, 0, 0, 0);
+        if (!wounds || !wounds.length) return;
+        pbWoundOrder.length = 0;
+        for (const w of wounds) pbWoundOrder.push(w);
+        pbWoundOrder.sort(pbWoundBySize);
+        let n = 0;
+        for (const w of pbWoundOrder) {
+          if (n >= 4) break;
+          const grown = w.size * (0.45 + 0.55 * (1 - Math.exp(-(gameTime - w.t) / 10))),
+            r = 2 + Math.min(0.15, grown * 0.06),
+            c = Math.cos(w.rel),
+            s = Math.sin(w.rel);
+          let bone, along, rx, rz;
+          if (w.zone === 'head') [bone, along, rx, rz] = [bones[2], 0.1 + w.h * 0.13, 0.1, 0.08];
+          else if (w.zone === 'torso') [bone, along, rx, rz] = [bones[1], 0.04 + w.h * 0.34, 0.13, 0.17];
+          else if (w.zone === 'arm') [bone, along, rx, rz] = w.h < 0.5 ? [bones[3 + w.side], -(0.04 + w.h * 2 * 0.24), 0.05, 0.05] : [bones[5 + w.side], -(0.03 + (w.h - 0.5) * 2 * 0.2), 0.04, 0.04];
+          else [bone, along, rx, rz] = w.h < 0.5 ? [bones[9 + w.side], -(0.06 + w.h * 2 * 0.34), 0.08, 0.08] : [bones[11 + w.side], -(0.05 + (w.h - 0.5) * 2 * 0.36), 0.055, 0.055];
+          // The point along the bone (its own y axis), then out to the skin at the entry's side and its mirror.
+          for (const side of w.exit ? [1, -1] : [1]) {
+            if (n >= 4) break;
+            spots[n++].set(bone.o[0] + bone.R[3] * along + side * c * rx, bone.o[1] + bone.R[4] * along, bone.o[2] + bone.R[5] * along + side * s * rz, r);
+          }
+        }
       }
       /* Whether the camera and the shadow programs exist (compiled by the prewarm or a draw). */
       function pbPrograms() {

@@ -134,6 +134,15 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - A boat's helmsman and an aircraft's pilot are not drawn during a drive-by (the shot still
   follows the arcs and leaves from `driveByGrip`).
 
+## Gore (gore*.js, crowd3d-gore.js, blood3d.js; docs/areas/police-and-combat-gore.md)
+- The first burst and the thrown piece of someone not hit in the 3 s before (no posed cut recorded yet)
+  start from the reference body (standing: close to the drawn pose).
+- A destroyed head leaves a neck stump and fragments, never a whole head as a piece; a severed piece carries
+  no wound stain of its own; the 2D fallback draws neither stumps nor pieces (blood only).
+- No point-blank knock-back for a shotgun (the round rule holds): the body drops where it stood.
+- Not measured on a GPU: the stump part adds one camera and one shadow draw while any is on screen, blood
+  decals went from up to 240 draws to one.
+
 ## Chase view (chase-camera.js, chase-view3d*.js, chase-rules.js; docs/areas/chase-view.md)
 
 - No cover system (GTA IV's take-cover key): rounds already stop on cars and walls in the map plane, but the
@@ -222,7 +231,8 @@ here when polishing; delete a line when it is fixed. Newest features first.
 
 ## Street frontage (cityscape3d-frontage.js, cityscape3d-shopwindows.js)
 - Shop windows on the north, east and west sides are not `b.shopPanes`: bullets never star them, and the damage code's `wallOffset` puts a bullet hole low on those sides 0.18 off the wall, behind the glass or plinth (both assume the south shopfront).
-- Only south-side signs lay a wet-road streak (STREAK_CAPACITY 3400 is shared city-wide); streaks now turn to the chase camera, so other sides could have them with a bigger pool.
+- Only south-side signs lay a wet-road streak (STREAK_CAPACITY 3400 is shared city-wide; the street lamps and isle lanterns no longer take any: WET LAMP GLINTS); streaks now turn to the chase camera, so other sides could have them. Signs could join the glint list (wet-glints3d.js) instead of a fixed streak.
+- WET LAMP GLINTS cover the city lamps and Monarch lanterns only: the mountain village's lamps, bridge lamps (still `addStreak`) and county lamps have no glint; the ground shader is the only surface that draws them (roofs, bridge decks, county scenic roads do not).
 - No bins in the yards (they would be walk-through without collision); a stoop's door stands two steps up where the crowd's door point is at street level.
 - 32 shop names for every shopfront in the city (the 2048² sign atlas is packed up front and nearly full): names repeat along a street.
 

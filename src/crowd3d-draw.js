@@ -86,6 +86,7 @@
           still.body === BODY &&
           still.look === R &&
           still.facing === facing &&
+          still.gore === (p.goreVersion || 0) &&
           hitFlinch(p) === 0
         ) {
           replayInstances(still.records);
@@ -126,7 +127,7 @@
         s.still = null;
         if (settledStill) {
           // Record this frame's instances; later frames copy them.
-          s.still = { pose: stillPose, dead, detail, body: BODY, look: R, facing, records: [] };
+          s.still = { pose: stillPose, dead, detail, body: BODY, look: R, facing, gore: p.goreVersion || 0, records: [] };
           crowdRecording = s.still.records;
         }
         // Swimming strokes and the parachute set the limbs outright.
@@ -310,7 +311,11 @@
         const w = R.width,
           paints = R.paints;
         // Far away and simply standing or walking: three instances.
-        if (detail === 0 && farFigureOk(p, spec, J) && !own) {
+        // What gore.js says is gone is left out below, a stump at the cut (crowd3d-gore.js); wounds soak the clothes.
+        const lost = p.goreLost || 0,
+          wounded = !!p.goreWounds?.length;
+        if (lost) s.goreLook = look;
+        if (detail === 0 && farFigureOk(p, spec, J) && !own && !lost) {
           crowdJoint(mHips, mRoot, 0, bob, 0, 0, 0, pelvisYaw);
           rigEmit(P.figure, mHips, w, 1, w, paints.figure);
           for (let side = 0; side < 2; side++) {
@@ -332,7 +337,9 @@
         if (R.skirtOn) rigEmit(BODY.skirt, mHips, w, 1, w, paints.skirt);
         if (R.belt) rigEmit(BODY.belt, mHips, w, 1, w, paints.belt);
         // The torso breathes (a touch deeper and taller at the chest).
+        if (wounded) goreWoundFor(p, 1, 0);
         rigEmit(BODY[R.torso], mTorso, w * (1 + breathe * 0.012), 1 + breathe * 0.006, w, paints.torso);
+        if (wounded) goreWoundClear();
         if (R.collar) rigEmit(BODY.collar, mTorso, w, 1, w, paints.collar);
         if (R.hood) rigEmit(BODY.hood, mTorso, w, 1, w, paints.hood);
         if (R.vest) rigEmit(BODY.vest, mTorso, w, 1, w, paints.vest);
@@ -352,10 +359,15 @@
         const headYaw = J[J_HEAD_YAW] - (upperTurn - clamp(upperTurn, -1.1, 1.1)) - 0.2 * hipsDiff * loco * 0.8;
         crowdJoint(mHead, mTorso, 0.04, RIG.neck, 0, -J[J_HEAD_PITCH] - lean * 0.3, 0, headYaw);
         const hs = R.headScale;
-        rigEmit(BODY.head, mHead, hs, hs, hs, paints.head);
         if (own) playerBodyBone(2, mHead);
-        if (R.hatPart) rigEmit(BODY[R.hatPart], mHead, hs, hs, hs, paints.hat);
-        if (R.hairPart && !(R.hatPart && R.hairPart === 'hairCurly')) rigEmit(BODY[R.hairPart], mHead, hs, hs, hs, paints.hair);
+        if (lost & GORE_HEAD) goreStumpAt(mHead, 0.43 * hs * w, paints.head, true, true);
+        else {
+          if (wounded) goreWoundFor(p, 0, 0);
+          rigEmit(BODY.head, mHead, hs, hs, hs, paints.head);
+          if (R.hatPart) rigEmit(BODY[R.hatPart], mHead, hs, hs, hs, paints.hat);
+          if (R.hairPart && !(R.hatPart && R.hairPart === 'hairCurly')) rigEmit(BODY[R.hairPart], mHead, hs, hs, hs, paints.hair);
+          if (wounded) goreWoundClear();
+        }
         // Shoulders.
         for (let side = 0; side < 2; side++) {
           const sign = side ? 1 : -1;
@@ -418,9 +430,22 @@
         const armPaint = paints.upperArm,
           forePaint = paints.forearm;
         for (let side = 0; side < 2; side++) {
-          rigEmit(BODY.upperArm, mShoulder[side], w, 1, w, armPaint);
-          rigEmit(BODY.forearm, mElbow[side], w, 1, w, forePaint);
-          if (detail > 1) rigEmit(BODY.hand, mHand[side], 1, 1, 1, paints.hand);
+          const armGone = lost & GORE_ARM[side],
+            foreGone = armGone || lost & GORE_FOREARM[side];
+          if (armGone) goreStumpAt(mShoulder[side], 0.5 * w, armPaint);
+          else {
+            if (wounded) goreWoundFor(p, 2, side);
+            rigEmit(BODY.upperArm, mShoulder[side], w, 1, w, armPaint);
+            if (wounded) goreWoundClear();
+            if (foreGone) goreStumpAt(mElbow[side], 0.36 * w, forePaint);
+          }
+          if (!foreGone) {
+            if (wounded) goreWoundFor(p, 3, side);
+            rigEmit(BODY.forearm, mElbow[side], w, 1, w, forePaint);
+            if (wounded) goreWoundClear();
+            if (detail > 1) rigEmit(BODY.hand, mHand[side], 1, 1, 1, paints.hand);
+          }
+          if (wounded) goreWoundClear();
           if (own) {
             playerBodyBone(3 + side, mShoulder[side]);
             playerBodyBone(5 + side, mElbow[side]);
@@ -446,9 +471,21 @@
             spread = clamp(Math.atan2(sign * legLocal.z - R.hipZ * w, -legLocal.y), -0.15, 0.5);
           }
           crowdJoint(mHip[side], mHips, 0, 0, sign * R.hipZ * w, hip, -sign * spread, 0);
-          rigEmit(BODY[R.thigh], mHip[side], w, 1, w, paints.thigh);
+          const legGone = lost & GORE_LEG[side],
+            shinGone = legGone || lost & GORE_SHIN[side];
+          if (legGone) goreStumpAt(mHip[side], 0.62 * w, paints.thigh);
+          else {
+            if (wounded) goreWoundFor(p, 4, side);
+            rigEmit(BODY[R.thigh], mHip[side], w, 1, w, paints.thigh);
+          }
           crowdJoint(mKnee[side], mHip[side], 0, -RIG.thigh, 0, knee);
-          rigEmit(BODY.shin, mKnee[side], w, 1, w, paints.shin);
+          if (wounded) goreWoundClear();
+          if (shinGone && !legGone) goreStumpAt(mKnee[side], 0.44 * w, paints.shin);
+          else if (!shinGone) {
+            if (wounded) goreWoundFor(p, 5, side);
+            rigEmit(BODY.shin, mKnee[side], w, 1, w, paints.shin);
+          }
+          if (wounded) goreWoundClear();
           if (own) {
             playerBodyBone(9 + side, mHip[side]);
             playerBodyBone(11 + side, mKnee[side]);
@@ -457,9 +494,11 @@
           // toes at push-off and hangs toes-down in the swing.
           const flat = fall > 0.5 ? 0.3 : 1;
           crowdJoint(mFoot, mKnee[side], 0, -RIG.shin, 0, -(hip + knee) * flat + footPitch[side] + (-run * loco * 0.06));
-          rigEmit(BODY[R.shoePart], mFoot, 1, 1, 1, paints.shoe);
+          if (!shinGone) rigEmit(BODY[R.shoePart], mFoot, 1, 1, 1, paints.shoe);
           if (own) playerBodyBone(13 + side, mFoot);
         }
+        // Where the cuts are as drawn, for spurts and bursts (crowd3d-gore.js POSED CUTS).
+        if (lost || dead || t - (p.hitAt ?? -9) < 3) goreRecordCuts(s, mHead, mShoulder, mElbow, mHip, mKnee);
         BODY = bodySet;
         // Things in hand.
         const right = mHand[1];

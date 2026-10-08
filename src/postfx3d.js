@@ -296,8 +296,9 @@
       /**
        * WET REFLECTIONS
        * On HIGH and ULTRA, while the streets are wet, the wet ground mirrors what
-       * stands on it: facades, shop windows and neon, lamp heads, cars and their
-       * lights, people. The ground shader (surfaces3d.js) marks wet pixels in the
+       * stands on it: facades, shop windows and neon, cars and their lights,
+       * people (a hit far brighter than a lit facade is compressed: the lamps'
+       * own reflections are the ground's WET LAMP GLINTS, wet-glints3d.js). The ground shader (surfaces3d.js) marks wet pixels in the
        * HDR target's alpha with a negative reflectivity (damp film a little,
        * standing water a lot); this pass, at half resolution, traces each marked
        * pixel's mirror ray through the depth buffer (geometric steps out to about
@@ -427,6 +428,11 @@
             }
             vec3 c = texture2D( tScene, q ).rgb;
             c = any( isnan( c ) ) ? vec3( 0.0 ) : clamp( c, vec3( 0.0 ), vec3( 64.0 ) );
+            // Lamp heads and their halos are mirrored by the ground itself (WET LAMP GLINTS, wet-glints3d.js: a
+            // glossy lobe per lamp): what is far brighter than a lit facade is compressed here (logarithmically
+            // above the knee), so a lamp is not mirrored twice, as a hard streak over its soft glint.
+            float hot = max( max( c.r, c.g ), c.b );
+            if ( hot > 1.0 ) c *= ( 1.0 + log( hot ) ) / hot;
             // Fade out towards the frame edges (nothing beyond them to reflect) and the reach.
             vec2 edge = smoothstep( vec2( 0.0 ), vec2( 0.06, 0.1 ), q ) * smoothstep( vec2( 1.0 ), vec2( 0.94, 0.9 ), q );
             float fade = edge.x * edge.y * ( 1.0 - smoothstep( uReach * 0.55, uReach, hi ) );
@@ -655,7 +661,7 @@
        * camera sees, so the snap never shows. Zooming still resamples, as it must.
        */
       // A/B switches for the look (DeadEndCity.lookSwitches): all on in play.
-      const lookSwitchState = { pixelLock: true, fxaa: true, vibrance: true, carLamps: true, groundSlopeCap: true, terrainBeams: true, lightBar: true, foliageCoverage: true, vehicleLights: true, stagedSwitch: true, vehicleMerge: true, roofSkin: true, groundWear: true, chaseBudget: true };
+      const lookSwitchState = { pixelLock: true, fxaa: true, vibrance: true, carLamps: true, groundSlopeCap: true, terrainBeams: true, lightBar: true, foliageCoverage: true, vehicleLights: true, stagedSwitch: true, vehicleMerge: true, roofSkin: true, groundWear: true, chaseBudget: true, wetGlints: true, wetReflections: true };
       const snapRight = new Three.Vector3(),
         snapUp = new Three.Vector3(),
         snapBuffer = new Three.Vector2();

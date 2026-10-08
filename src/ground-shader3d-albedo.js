@@ -660,9 +660,11 @@
           float soak = wetFilm * porous;
           float bright = smoothstep( 0.3, 0.55, lum ) * ( 1.0 - grassMask );
           vec3 soaked = diffuseColor.rgb;
-          soaked = max( mix( vec3( dot( soaked, vec3( 0.2126, 0.7152, 0.0722 ) ) ), soaked, 1.0 + 0.4 * soak ), 0.0 );
-          soaked *= 1.0 - soak * mix( 0.46, 0.2, bright );
-          diffuseColor.rgb = soaked * ( 1.0 - 0.3 * puddle );
+          // (Water fills the pores: wet asphalt keeps about half its light and reads richer; standing water
+          // darker still, its light going into the mirror instead.)
+          soaked = max( mix( vec3( dot( soaked, vec3( 0.2126, 0.7152, 0.0722 ) ) ), soaked, 1.0 + 0.5 * soak ), 0.0 );
+          soaked *= 1.0 - soak * mix( 0.52, 0.22, bright );
+          diffuseColor.rgb = soaked * ( 1.0 - 0.38 * puddle );
           wetReflect = cityWetDetail > 0.5 ? clamp( wetFilm * mix( 0.34, 0.42, 1.0 - gPorous ) * ( 1.0 - bright * 0.4 ) * ( 1.0 - 0.7 * grassMask ) + puddle * 0.66, 0.0, 1.0 ) : 0.0;
         }`;
       const GROUND_ROUGHNESS = `

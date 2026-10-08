@@ -103,6 +103,16 @@ packs with plain `<script src>` so the zip still plays from file://.
   `vestPlate`, by calibre (weapon `cal`, `bulletCalibre`). A new armoured NPC sets `vest`/`vestPlate`; a new gun sets
   `cal`. A round never moves a person (only blasts, vehicles, knives, punches); `bleed` sprays a round's exit blood
   away from the shooter. `shotsToKill()`; tools/tests/bullet-hits.mjs. Pool sizes live in `bodyPoolPlan` (blood.js).
+- Gore (gore.js; police-and-combat-gore.md): `goreHit()` is the only rule for a hit's class, range, blood scale and what
+  comes off; strikePerson calls it first, and `detail` (`{range, power, heavy, pellets}`) passes what the shooter's
+  distance cannot. `p.goreLost` (GORE_* bits) and `p.goreWounds` are the only gore state (bump `p.goreVersion` on any
+  change; renderers only read them); a new heavy gun sets `goreCal: 'heavy'` on its bullets. Blood and gore randomness
+  is `goreRandom`; severed pieces, stumps, tracked people and gore events are capped and listed in `soakReport` (a new
+  list holding people is retired by `updateSeveredParts` / `updateGore`). Blood decals draw only through blood3d.js (one
+  instanced draw); the spray reaches walls and cars only through `bloodSprayObstacle`, flying drops land through
+  `landBloodDrop`. Every rigPart carries `crowdWound`; on the player's body a lost part folds by `pbSkin.w`.
+  Blood decals' look is per instance (`aBloodLook`: fade, dry, wash) in one program, specular capped and tinted. Where
+  gore particles start is `goreJointPoint` (the drawn pose via `city3D.goreCutPoint` when there is one): cosmetic only.
 - `shooterInView()` (combat-rules.js) is the only rule for whether an NPC may fire at the
   player (on screen, from the camera footprint `screenViewHalf`): every new shooter checks it.
 - No pickups on the street at all: health is bought indoors (hospitals, diners, bars, clubs,
@@ -355,6 +365,12 @@ packs with plain `<script src>` so the zip still plays from file://.
   `uStreet` switch on `chaseViewActive` (uniforms, no new programs); the street view keeps `uStreet` (0,1,0,0),
   `uNear.w` 0, splash `uSize` 1 / `uUpright` 0 and a non-zero `citySheenDir`. Darken `cityHaze*` only after
   `refreshEnvironment` (`weatherGrade`).
+- Wet roads (rendering-weather-wet.md): WET LAMP GLINTS (wet-glints3d.js) are the only way a lamp shows in wet ground; a
+  new lamp joins `wetGlintSources`, never `addStreak` or a light-map read; uniforms only (`cityGlintA/B/Count`,
+  `WET_GLINT_SLOTS`); the reflections pass compresses hits above 1.0 so a lamp is not mirrored twice (`wetGlints()`).
+  Chimney and wood smoke: `fxWoodSmoke` / `updateChimneySmoke` (chimney-smoke3d.js); the pool's `thin` field thins a
+  spreading plume; emitters keep the pool's clock and seed plumes whole; every `fxSmoke` caller passes an opacity and a
+  floor (`chimneySmoke()`).
 - `cloudBaseAt(x, y)` / `cloudTopAt(x, y)` (clouds.js) are the only source of the cloud
   altitude (by weather and area); the renderer draws from the same maps
   (docs/areas/rendering-clouds.md). Console `cloudJump(metres, kind)` drops the player over

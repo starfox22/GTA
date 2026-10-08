@@ -74,6 +74,7 @@
        * the upper body turns for it.
        */
       // @include src/crowd3d-draw.js
+      // @include src/crowd3d-gore.js
 
       /**
        * SPECIAL CHARACTERS

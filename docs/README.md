@@ -28,6 +28,7 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/police-and-combat-ammo.md | Where guns and rounds come from: no street ammo or armour, the gun shops, taking a body's gun, police vehicles' stock; the on-screen fire rule |
 | areas/police-and-combat-witnesses.md | Witnesses and 911 calls: who calls, the call and its bubbles, the response to a report, `witnessReport` |
 | areas/police-and-combat-blood.md | Blood: a hit's spatter and drops, the pool a body bleeds out, blasts and impacts, `bleed()` for other code |
+| areas/police-and-combat-gore.md | Gore: blood by calibre, range and zone, point-blank loads, lost limbs and heads, stumps and bleeding out, wounds on the clothes, the Gore setting |
 | areas/police-and-combat-armour.md | NPC body armour: soft vests and plates by calibre and hit zone, shots to kill per weapon, no knock-back from rounds |
 | areas/police-and-combat-driveby.md | Drive-bys: firing arcs per window and body, the aim clamp, the rear screen, the lean-out pose |
 | areas/police-and-combat-mounted.md | Mounted guns: the LAV-8's 25 mm and coax, the gun jeep's .50 cal, the Black Hawk's door guns |
@@ -40,6 +41,7 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/rendering.md | Cameras and view, draw-call rules |
 | areas/rendering-buildings.md | Building archetypes and roofs, the street frontage on every side (shops, lobbies, stoops, loading bays, backs, fire escapes), shop windows, the sign design system (`sign()`, `SIGN_DESIGNS`, families), billboards, the glow field |
 | areas/rendering-weather.md | Ground, wet roads, water, rain, splashes, spray, lightning, tiers, and their street-level (chase view) numbers: near rain, rain haze, wet reflections, streaks |
+| areas/rendering-weather-wet.md | Wet streets at night: the street lamps mirrored in the wet road (WET LAMP GLINTS), both views; sources, look numbers, A/B switches |
 | areas/chase-view.md | The third-person CHASE view (V): where the camera stands (game state, its projection, walls and the close-quarters crane), drawing it (draw distance, culling, shadows), the reticle and lock-on, its game rules |
 | areas/chase-view-input.md | The chase view's input: pointer lock and CURSOR LOOK, look behind, pad and touch look, camera-relative movement |
 | areas/rendering-chase.md | The chase view's draw distance and level of detail: far cells drawn from the far copy, shadow casters and proxies, small props and pools, people and vehicles by distance, the `chaseCamera().view` report |

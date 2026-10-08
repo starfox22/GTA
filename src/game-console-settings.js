@@ -20,6 +20,8 @@
           if (typeof changes.invertLook === 'boolean') settings.invertLook = changes.invertLook;
           if (typeof changes.aimAssist === 'boolean') settings.aimAssist = changes.aimAssist;
           if (typeof changes.motionBlur === 'boolean') settings.motionBlur = changes.motionBlur;
+          // Settings · Gameplay · Gore (gore.js): 'full' or 'reduced'.
+          if (changes.gore === 'full' || changes.gore === 'reduced') settings.gore = changes.gore;
           // 'auto', 'off', 'low' or 'high' (quality.js SHADOWS).
           if (typeof changes.shadows === 'string') setShadowSetting(changes.shadows.toLowerCase());
           if (typeof changes.sound === 'boolean' && changes.sound !== soundOn) mute();
@@ -60,6 +62,7 @@
           invertLook: settings.invertLook,
           aimAssist: settings.aimAssist,
           motionBlur: settings.motionBlur,
+          gore: settings.gore,
           sound: soundOn,
           // The volume sliders (settings.js AUDIO_VOLUMES): masterVolume,
           // radioVolume, engineVolume, soundVolume (effects), voiceVolume,

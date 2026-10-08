@@ -608,8 +608,7 @@
       mvLampPosts.instanceMatrix.needsUpdate = mvLampArms.instanceMatrix.needsUpdate = mvLampHeads.instanceMatrix.needsUpdate = true;
       // @include src/mountain-club3d.js
       /* ---- Per frame -------------------------------------------------------------------------- */
-      let mvSmokeClock = 0,
-        mvLastTime = 0;
+      let mvLastTime = 0;
       function updateMountainVisuals() {
         const deltaSeconds = clamp(gameTime - mvLastTime, 0, 0.25),
           night = nightAmount,
@@ -624,15 +623,8 @@
         mvLampHeads.material.emissiveIntensity = night * 2.4;
         mvPoolMaterial.opacity = clamp(night * 1.15, 0, 1);
         MV_MAT.water.emissiveIntensity = 0.1 + night * 0.25;
-        // Wood smoke from a few chimneys, more on a cold night.
-        mvSmokeClock -= deltaSeconds;
-        if (mvSmokeClock <= 0 && mvChimneys.length) {
-          mvSmokeClock = 0.35 + (1 - night) * 0.5;
-          for (let k = 0; k < mvChimneys.length; k += 5) {
-            const c = mvChimneys[(k + Math.floor(gameTime * 0.1)) % mvChimneys.length];
-            if (Math.abs(c.x - viewCenter.x) < viewReach + 100 && Math.abs(c.z - viewCenter.y) < viewReach + 100) engineSmoke(c.x, c.y, c.z, night > 0.4 ? '#8d857c' : '#c9c5bf', 6, 14);
-          }
-        }
+        // Wood smoke from the chimneys (chimney-smoke3d.js).
+        updateChimneySmoke(deltaSeconds, night);
         updateClubVisuals(deltaSeconds);
       }
       function mountainVillageInfo() {

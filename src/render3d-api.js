@@ -17,6 +17,12 @@
         tyreSmokeInfo: () => tyreSmokeReport(),
         // The effect particle pool (fx3d-particles.js): live, drawn, capacity, peak, emitted, dropped.
         effectParticles: () => fxReport(),
+        // The mountain chimneys' wood smoke (chimney-smoke3d.js): plumes, rate, puffs.
+        chimneySmoke: (options) => chimneySmokeReport(options),
+        // Blood decals drawn (blood3d.js BLOOD DECALS): one instanced draw.
+        bloodDecals: () => bloodDecalReport(),
+        // A cut joint as drawn (crowd3d-gore.js POSED CUTS) for gore.js goreJointPoint; false if not drawn lately.
+        goreCutPoint: (p, bit, out) => goreCutPoint(p, bit, out),
         // The mountain villages as drawn (mountain-village3d.js): meshes, draw calls, triangles per town.
         mountainInfo: () => mountainVillageInfo(),
         /**
@@ -409,6 +415,7 @@
         // What the chase view draws (chase-view3d.js): draw distance, clip planes, culling reach, haze.
         chaseView: () => chaseViewReport(),
         rainView: () => rainViewReport(),
+        wetGlints: (options) => wetGlintReport(options),
         aim(mx, my) {
           ray.setFromCamera(
             new Three.Vector2((mx / viewportWidth) * 2 - 1, (-my / viewportHeight) * 2 + 1),
