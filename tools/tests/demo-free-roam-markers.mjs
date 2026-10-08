@@ -1,4 +1,4 @@
-// Public demo (demo gate live): after mission 2 and CONTINUE FREE ROAM no story pointer is left
+// Public demo (demo gate live): after mission 4 and CONTINUE FREE ROAM no story pointer is left
 // (objective, navigation pill, payphone), also after a replay is picked and hung up; an active
 // replay still shows its pointer.
 export const flags = 'test';
@@ -33,14 +33,37 @@ export default async function (t) {
   await t.call('teleport', -2183, 1990);
   await t.wait(5);
   let d = await t.call('demo');
+  t.assert(!d.cardShown && !d.storyOver && d.callWaiting, 'mission 2 is not the end of the demo now: ' + JSON.stringify(d));
+  // Mission 3 (High Ground): the handover in Vinny's warehouse.
+  await t.call('startMission', 2);
+  await t.call('summitSkip', 'deliver');
+  await t.call('teleport', -1625, 4497);
+  await t.wait(1);
+  await t.call('interact');
+  await t.wait(8);
+  m = await t.call('missionState');
+  t.assert(m.last?.result === 'won' && m.last.index === 2 && m.completed === 3, 'mission 3 not won: ' + JSON.stringify(m));
+  // Mission 4 (Borrowed Stripes): out of Fort Sentinel with the papers, the handover at CIRRUS.
+  await t.call('fortSkip', 'meet');
+  await t.call('skyMeetingSkip', 'handover');
+  await t.wait(1);
+  await t.call('interact');
+  for (let i = 0; i < 30; i++) {
+    await t.wait(1);
+    m = await t.call('missionState');
+    if (m.mission === null) break;
+  }
+  t.assert(m.last?.result === 'won' && m.last.index === 3 && m.completed === 4, 'mission 4 not won: ' + JSON.stringify(m));
+  await t.wait(5);
+  d = await t.call('demo');
   t.assert(d.cardShown && d.storyOver && d.completed && !d.callWaiting, 'demo card not up: ' + JSON.stringify(d));
   await t.keys('Enter', 0.3, { real: true });
   await t.wait(2);
   d = await t.call('demo');
   t.assert(!d.cardShown, 'card still up');
   none(await t.call('pointers'), 'free roam');
-  // Replay mission 2 from the picker and hang up: still free roam, no ringing payphone.
-  const c = await t.call('chooseMission', 1);
+  // Replay mission 4 from the picker and hang up: still free roam, no ringing payphone.
+  const c = await t.call('chooseMission', 3);
   t.assert(c.chosen && c.mode === 'dialogue', 'replay call not up: ' + JSON.stringify(c));
   await t.keys('Escape', 0.3, { real: true });
   await t.wait(1);
