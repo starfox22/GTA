@@ -365,6 +365,12 @@ packs with plain `<script src>` so the zip still plays from file://.
   `uStreet` switch on `chaseViewActive` (uniforms, no new programs); the street view keeps `uStreet` (0,1,0,0),
   `uNear.w` 0, splash `uSize` 1 / `uUpright` 0 and a non-zero `citySheenDir`. Darken `cityHaze*` only after
   `refreshEnvironment` (`weatherGrade`).
+- Wet roads (rendering-weather-wet.md): WET LAMP GLINTS (wet-glints3d.js) are the only way a lamp shows in wet ground; a
+  new lamp joins `wetGlintSources`, never `addStreak` or a light-map read; uniforms only (`cityGlintA/B/Count`,
+  `WET_GLINT_SLOTS`); the reflections pass compresses hits above 1.0 so a lamp is not mirrored twice (`wetGlints()`).
+  Chimney and wood smoke: `fxWoodSmoke` / `updateChimneySmoke` (chimney-smoke3d.js); the pool's `thin` field thins a
+  spreading plume; emitters keep the pool's clock and seed plumes whole; every `fxSmoke` caller passes an opacity and a
+  floor (`chimneySmoke()`).
 - `cloudBaseAt(x, y)` / `cloudTopAt(x, y)` (clouds.js) are the only source of the cloud
   altitude (by weather and area); the renderer draws from the same maps
   (docs/areas/rendering-clouds.md). Console `cloudJump(metres, kind)` drops the player over
