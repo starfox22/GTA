@@ -23,8 +23,8 @@ the poses and the props.
 
 ## Contracts and gotchas
 
-- The diplomat is a story actor (`missionTag: 'sky-meeting'`) in his own `look` (crowd rig);
-  `p.handProp` (`cocktail` / `folder`), `p.drinkLift` and `p.sitReach` drive his hand (crowd3d-poses.js
+- The diplomat is a story actor (`missionTag: 'sky-meeting'`) in his own look (`p.ownLook`, which
+  crowd3d-special.js `specialSpec` prefers to the outfit); `p.handProp` (`cocktail` / `folder`), `p.drinkLift` and `p.sitReach` drive his hand (crowd3d-poses.js
   `sit`). His speech bubble comes through `skyMeetingSpeakers()` (crowd-speech.js).
 - The player in a chair is `player.sceneSeat` (`{x, y, a, lift, hand, reach}`): game-update.js holds
   his feet (`skyMeetingSeatHold`; a movement key stands him up, the stage falls back to `terrace`

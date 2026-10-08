@@ -15,8 +15,8 @@
      * 'done' (he has it, slides an envelope back, stands and leaves for the lift). 'failed' if he
      * is killed.
      *
-     * - He is a story actor (`missionTag` 'sky-meeting') in his own look (charcoal suit, grey
-     *   hair); the crowd rig draws him; `p.handProp` / `p.drinkLift` / `p.sitReach` drive his hand.
+     * - He is a story actor (`missionTag` 'sky-meeting') in his own look (`p.ownLook`: charcoal
+     *   suit, grey hair); the crowd rig draws him; `p.handProp` / `p.drinkLift` / `p.sitReach` drive his hand.
      * - The player sits through `player.sceneSeat` ({x, y, a, lift, hand, reach}): game-update.js
      *   holds his feet while it is set (skyMeetingSeatHold; a movement key stands him up),
      *   crowd3d-special.js poses him (sit, the glass raised by `lift`), teleportPlayer clears it.
@@ -160,7 +160,7 @@
       Object.assign(d, {
         a: P.door.a,
         missionTag: 'sky-meeting',
-        look: SKY_MEETING_LOOK,
+        ownLook: SKY_MEETING_LOOK,
         pose: 'smoke',
         handProp: null,
         drinkLift: null,

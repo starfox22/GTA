@@ -31,7 +31,8 @@
       function specialSpec(p) {
         const sp = specScratch;
         resetSpec(sp);
-        sp.look = specialLook(p);
+        // A scene's character can bring a look of his own (skyline-meeting.js `ownLook`).
+        sp.look = p.ownLook || specialLook(p);
         sp.facing = p.a || 0;
         const incapacitated = personIncapacitated(p) || p.hp <= 0;
         if (p === player) {
