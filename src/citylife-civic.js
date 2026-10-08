@@ -482,6 +482,8 @@
       // Mission 4's tail meter shares the box (fortjob.js).
       fortJobUI();
       militaryUI();
+      // Fort Sentinel under cover: the papers, the records door and the suspicion meter (fort-cover.js).
+      fortCoverUI();
       offroadClubUI();
     }
     function drawCivicMap(drawingContext, big) {

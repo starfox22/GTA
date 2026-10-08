@@ -108,6 +108,36 @@
       },
       // Fort Sentinel security: alert, lockdown, gate pieces, garrison and vehicles.
       military: () => militaryReport(),
+      // Fort Sentinel cover (fort-cover.js): the disguise and the base's cover rules, as a mission polls them.
+      fortCover: () => fortCoverReport(),
+      // Stage the cover for a test: 'gate' (cover on, uniform on, west of the booth), 'inside' (cleared, on the
+      // base road south of the HQ sentries), 'records' (cleared at the records door), 'exit' (cleared with the
+      // papers in the outbound lane), 'jeep' (cleared beside a parked jeep in the motor pool), 'end' (cover off,
+      // own clothes, west of the gate). Each calms the base first (no alarm, lockdown or stars); `suspicion` starts
+      // the meter there. Returns fortCover().
+      fortCoverTest(step = 'gate', suspicion = 0) {
+        const spots = { gate: [9150, 8182], inside: [9740, 8170], records: [FORT_RECORDS.spot.x, FORT_RECORDS.spot.y], exit: [9330, 8098], jeep: [9470, 8915], end: [9100, 8182] };
+        if (!spots[step]) return { error: 'step: ' + Object.keys(spots).join(', ') };
+        clearPolice(true);
+        militaryAlertUntil = militaryLockdownUntil = militaryGateUntil = 0;
+        militaryChallenge = { level: 0, since: 0, spokeAt: -100, leftAt: -100 };
+        for (const s of militaryGateState) s.bollards = s.slide = 0;
+        if (step === 'end') {
+          fortCoverEnd();
+          wearUniform(false);
+        } else {
+          fortCoverBegin();
+          wearUniform(true);
+          fortCover.cleared = step !== 'gate';
+          fortCover.entered = fortCover.cleared;
+          fortCover.papers = step === 'exit';
+          fortCover.suspicion = clamp(+suspicion || 0, 0, 99);
+        }
+        teleportPlayer(spots[step][0], spots[step][1]);
+        player.a = step === 'gate' ? 0 : step === 'exit' || step === 'end' ? Math.PI : Math.PI / 2;
+        fortCover.lastSpot = null;
+        return fortCoverReport();
+      },
       // The chokepoint catalogue and the state of the cordon.
       containment: () => ({
         sites: roadblockSites().length,

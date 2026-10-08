@@ -222,7 +222,7 @@
                   ? 1
                   : garment === 'suit'
                     ? 2
-                    : garment === 'uniform' || /^(swat|army|mp)$/.test(look.outfit || '')
+                    : garment === 'uniform' || /^(swat|army|mp|playerArmy)$/.test(look.outfit || '')
                       ? 3
                       : role === 'jogger'
                         ? 7
@@ -261,20 +261,46 @@
           base = { outfit, skin, hair, hairStyle: 1, build: 1 + (h(3) - 0.5) * 0.3, height: 0.95 + h(4) * 0.12, female: false, sleeves: true };
         switch (outfit) {
           case 'player':
-          case 'playerDisguise': {
+          case 'playerDisguise':
+          case 'playerArmy': {
             // The player: a man in his forties, 1.80 m, real shoulders (no street-view widening), short brown
             // hair, two days' stubble; a plain black crew-neck tee, mid-wash jeans, dark leather shoes. In his own
             // clothes he is drawn from his own body (player-body3d.js); these colours are the crowd sets' match.
-            const disguise = outfit === 'playerDisguise';
+            const disguise = outfit === 'playerDisguise',
+              own = {
+                ...base,
+                skin: '#c49270',
+                hair: '#4a3324',
+                hairStyle: 'hairShort',
+                beard: 1,
+                build: 1.05,
+                widthAbsolute: 0.92,
+                heightAbsolute: 1.8 / 1.75,
+              };
+            // Mission 4's borrowed uniform (fort-cover.js wearUniform): an off-duty soldier's woodland field
+            // uniform, belt and boots, and a patrol cap instead of the helmet and plate carrier on duty.
+            if (outfit === 'playerArmy')
+              return {
+                ...own,
+                garment: 'tee',
+                top: '#6f7552',
+                topPattern: PATTERN.camo,
+                pants: '#6f7552',
+                pantsPattern: PATTERN.camo,
+                belt: true,
+                beltColor: '#3e3c2d',
+                buckle: '#8d8a72',
+                dutyBelt: null,
+                vest: null,
+                hatStyle: 'patrolCap',
+                hatColor: '#5d6247',
+                brim: '#4a4d38',
+                hatBadge: '#2d2f26',
+                shoes: '#3a2e22',
+                footwear: 'boot',
+              };
             return {
-              ...base,
-              skin: '#c49270',
-              hair: '#4a3324',
-              hairStyle: 'hairShort',
-              beard: 1,
-              build: 1.05,
-              widthAbsolute: 0.92,
-              heightAbsolute: 1.8 / 1.75,
+              ...own,
               garment: disguise ? 'suit' : 'tee',
               top: disguise ? '#e3dac0' : '#1b1b1e',
               inner: disguise ? '#f6f4ee' : '#1b1b1e',

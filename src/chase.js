@@ -487,6 +487,8 @@
       player.disguised = false;
       summitCleanup();
       fortJobCleanup();
+      // Fort Sentinel's borrowed uniform and cover (fort-cover.js).
+      fortCoverReset();
       resetDepotDoors();
       // Mission 2's ambulance, if it has not pulled up yet (roofmission-poison.js).
       settleRoofAmbulance(rooftopJob());

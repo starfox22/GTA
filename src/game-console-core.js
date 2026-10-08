@@ -108,6 +108,7 @@
           if (gameMode === 'elevator') {
             updateElevator(1 / 30);
             updateSkyLift(1 / 30);
+            updateFortRecords(1 / 30);
           }
           else if (gameMode === 'play') update(1 / 30);
           else break;

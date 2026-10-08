@@ -238,9 +238,12 @@
        footing (terrain.js), footsteps (audio.js) and the police's aim read it. */
     function footPace() {
       // On the Blue Hour terrace during the job walking is the default (roofPartyPace).
+      // So is Fort Sentinel under cover, in the borrowed uniform (fortCoverPace, fort-cover.js).
       const base = player.roof
         ? (roofPartyPace() && actionHeld('walk') ? FOOT_RUN : FOOT_WALK)
-        : (actionHeld('walk') ? FOOT_WALK : FOOT_RUN);
+        : fortCoverPace()
+          ? (actionHeld('walk') ? FOOT_RUN : FOOT_WALK)
+          : (actionHeld('walk') ? FOOT_WALK : FOOT_RUN);
       // Backpedalling or side-stepping while facing the aim is slower (footwork.js).
       return base * footworkPace(playerMoveHeading());
     }

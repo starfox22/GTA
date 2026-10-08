@@ -470,6 +470,13 @@ kbd {
   letter-spacing: 6px;
   margin-top: 10px;
 }
+.sky-lift-note {
+  display: block;
+  margin-top: 14px;
+  font: 12px monospace;
+  letter-spacing: 3px;
+  color: #a7ae9c;
+}
 @media (max-width: 850px) {
   .call-dialog {
     padding: 24px;

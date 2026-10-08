@@ -155,6 +155,8 @@
         updateElevator(deltaSeconds);
         // North Point Key's tower lifts ride on the frame clock too (skyline-lift.js).
         updateSkyLift(deltaSeconds);
+        // So does Fort Sentinel's records office (fort-cover-records.js).
+        updateFortRecords(deltaSeconds);
       }
       // Everything the frame does before the simulation step (the `f:pre` part of stats()).
       const updateStart = profileLap('f:pre', frameStart);
