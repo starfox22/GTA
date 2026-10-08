@@ -108,6 +108,7 @@
         st.candidates = 0;
         st.checked = 0;
         st.hidden = 0;
+        st.signs = 0;
         if (!active || slots === 0) {
           if (wetGlintFade && st.reach !== 0) wetGlintFade.fill(0);
           st.reach = 0;
