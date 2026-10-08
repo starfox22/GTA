@@ -11,7 +11,7 @@
           for (const o of scene.children)
             if (o.visible && o.isMesh && /^(Ring|Circle)Geometry$/.test(o.geometry.type) && target && Math.hypot(o.position.x - target.x, o.position.z - target.y) < 60)
               near.push(o.geometry.type);
-          return { playerRing: playerRing.visible, arrow: arrowGroup.visible, flatMarkersAtTarget: near.length };
+          return { playerRing: playerRing.visible, arrow: arrowGroup.visible, respray: resprayArrow.visible, flatMarkersAtTarget: near.length };
         },
         // Tyre smoke, dust and spray (tyresmoke3d.js): puffs alive, the tier's cap, emitted, peak.
         tyreSmokeInfo: () => tyreSmokeReport(),

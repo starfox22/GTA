@@ -5,6 +5,7 @@
 | Method | Purpose |
 | --- | --- |
 | `placeVehicle(x, y, heading, altitudeMeters)` | Move the player's vehicle (stopped, aircraft at an altitude) |
+| `vehiclesNear(metres)` | Vehicles within `metres` (60) of the player, nearest first: id, type, distance in metres, `authorized` (taking it is no theft), `driven` |
 | `bike(heading)` | Rack a bicycle beside the player |
 | `ride()` | Current vehicle telemetry (speed, pedal cadence and effort; in a tank the hull, turret and aim headings in degrees, the traverse rate and the ammunition) |
 | `repair()` | Mend the player's vehicle as a repair bay would (repeatable physics tests); returns `damageReport()` |

@@ -6,10 +6,11 @@ keeps until god mode is switched off (`settleDemoStoryIndex`).
 
 ## God mode (the `godmode` cheat; god-panel.js)
 
-- Typed in play, on the city map or on the title (game-input.js cheat ring): `GODMODE` or
-  `AAAAXBBBBYXXXXAYYYYB`, either case (modifier keys are ignored, not a break). A code eats its
-  keys from its second letter on (`CHEAT_SWALLOW_FROM`), the long one only from its X so the A
-  taps still steer (tools/tests/god-mode-codes.mjs presses real keys). It unlocks every
+- Typed in play, on the city map or on the title (game-input.js cheat ring): `GODMODE`, either case
+  (modifier keys are ignored, not a break). The pad-style `AAAAXBBBBYXXXXAYYYYB` is switched off for now (the
+  owner's call, October 8); restoring it is one line in `CHEAT_CODES`. A code eats its keys from its second
+  letter on (`CHEAT_SWALLOW_FROM`), so a lone A tap still steers (tools/tests/god-mode-codes.mjs presses real keys). Switching it on adds `GOD_MODE_CASH`
+  ($1,000,000, capped at the purse's $99,999,999). It unlocks every
   job (`missionUnlocked`) and opens Settings on the GOD MODE tab (`syncGodSettingsTab` adds
   `'god'` to `SETTINGS_TABS` only while `player.godMode`).
 - Rows: mission select, time presets and 24 h slider (`setGodTime`), freeze
@@ -29,6 +30,13 @@ keeps until god mode is switched off (`settleDemoStoryIndex`).
 - Console: `god(on)`, `godPanel()`, `godTeleport(x, y)`, `godRefill()`, `godLosePolice()`,
   `godFreeze(on)`, `godDrawbridges(action, pick)`, `godDrawbridgePanel(close)` (opens the tab on
   the drawbridge row and returns its chips' and buttons' screen centres; tools/tests/god-drawbridges.mjs).
+
+## HELICOPTER (game-input.js `helicopterCheat`)
+
+- Typed in play: a helicopter the player may take (`authorized`, no theft) is parked on the first clear spot
+  (`canSpawnCar` with a 34-unit rotor margin, land under every corner) on rings from 9 m out to 65 m round him;
+  none on a ride, a deck, a scene seat or in an aircraft. It eats keys only from its L (`CHEAT_SWALLOW_FROM`),
+  so a horn then the action key (H, E) is never lost. tools/tests/cheat-helicopter.mjs; console `vehiclesNear()`.
 
 ## Skip the ride (ride-skip.js)
 

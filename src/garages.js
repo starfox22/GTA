@@ -361,8 +361,51 @@
       player.y = y;
       player.a = a;
     }
+    /* RESPRAY BEACON: while the police want the player and he drives a vehicle a shop would take, the nearest
+       garage within GARAGE_BEACON_SHOW gets the floating arrow over its door (render3d-frame.js beside the
+       objective arrow; the 2D fallback's marker), with one line saying what it is for. Out of a chase nothing
+       marks the shops. Game state only: the renderers read `garageBeacon()`. */
+    const GARAGE_BEACON_SHOW = 110 * UNITS_PER_METRE,
+      GARAGE_BEACON_HIDE = 135 * UNITS_PER_METRE;
+    const garageBeaconState = { shop: null, point: { x: 0, y: 0, altitude: 0 }, told: null };
+    function updateGarageBeacon() {
+      const B = garageBeaconState,
+        car = player.car;
+      let pick = null;
+      if (wantedLevel > 0 && !repairJob && car && garageServiceable(car) && gameMode === 'play') {
+        let best = Infinity;
+        for (const s of GARAGES) {
+          const d = Math.hypot(s.bayX - car.x, s.front - car.y),
+            reach = s === B.shop ? GARAGE_BEACON_HIDE : GARAGE_BEACON_SHOW;
+          if (d < reach && d < best) {
+            best = d;
+            pick = s;
+          }
+        }
+      }
+      if (pick !== B.shop) {
+        B.shop = pick;
+        if (pick) {
+          // Over the middle of the door, above the lintel.
+          B.point.x = pick.bayX;
+          B.point.y = pick.front;
+          B.point.altitude = terrainHeight(pick.bayX, pick.front) + GARAGE_PLAN.doorHeight + 4;
+          if (B.told !== pick) {
+            B.told = pick;
+            tell('RESPRAY · ' + pick.name + ' · drive in to change the paint and lose the police', 4, { id: 'respray-beacon' });
+          }
+        }
+      }
+      // A new chase may point at the same shop again.
+      if (wantedLevel === 0) B.told = null;
+    }
+    // The point the respray arrow floats over ({x, y, altitude}), or null.
+    function garageBeacon() {
+      return garageBeaconState.shop ? garageBeaconState.point : null;
+    }
     function updateGarage(deltaSeconds) {
       staffGarages(deltaSeconds);
+      updateGarageBeacon();
       const job = repairJob;
       if (!job) return;
       const { car, shop } = job;
@@ -732,6 +775,8 @@
           ? { shop: repairJob.shop.id, phase: repairJob.phase, t: +repairJob.t.toFixed(2), seen: repairJob.seen, color: repairJob.car.color, applied: repairJob.applied }
           : null,
         last: garageLastService,
+        // The respray arrow (RESPRAY BEACON): the shop it floats over while the police want the player.
+        beacon: garageBeaconState.shop ? { shop: garageBeaconState.shop.name, ...garageBeaconState.point } : null,
       };
     }
     // END SUBSYSTEM: src/garages.js

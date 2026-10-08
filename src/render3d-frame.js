@@ -352,6 +352,12 @@
             );
             arrowGroup.rotation.y = gameTime * 0.6;
           }
+          const respray = garageBeacon();
+          resprayArrow.visible = !!respray;
+          if (respray) {
+            resprayArrow.position.set(respray.x, respray.altitude + 12 + Math.sin(gameTime * 3 + 1) * 3, respray.y);
+            resprayArrow.rotation.y = gameTime * 0.6;
+          }
           // The muzzle light, or a blast's flash and fireball glow dying away (fx3d-recipes.js).
           fxFlashLight();
           // Fires on the ground (game `fires`): flame and smoke particles, and a flickering light each.

@@ -4,10 +4,14 @@
      * known code it fires. The keys still do their normal jobs while you type, so
      * the character will walk about as you spell it -- which is part of the fun.
      * Case does not matter (Caps Lock or Shift), and the modifier keys themselves
-     * are ignored rather than breaking the run. Two codes toggle god mode: GODMODE
-     * and the pad-style AAAAXBBBBYXXXXAYYYYB; each toggle plays the splash (god-splash.js).
+     * are ignored rather than breaking the run. GODMODE toggles god mode (each toggle plays
+     * the splash, god-splash.js; switching it on adds GOD_MODE_CASH); HELICOPTER parks a
+     * helicopter beside the player (helicopterCheat). The pad-style AAAAXBBBBYXXXXAYYYYB is
+     * switched off for now (the owner's call): put it back in CHEAT_CODES to restore it.
      */
     let cheatBuffer = '';
+    // Cash god mode adds each time it is switched on.
+    const GOD_MODE_CASH = 1000000;
     function godModeCheat() {
       player.godMode = !player.godMode;
       if (player.godMode) {
@@ -18,7 +22,8 @@
         }
         player.hp = 100;
         player.armor = 100;
-        tell('GOD MODE ACTIVATED · every weapon · every mission unlocked · mission select, time, weather, ammo and teleport in Settings · God mode', 5);
+        cash = Math.min(cash + GOD_MODE_CASH, 99999999);
+        tell('GOD MODE ACTIVATED · $1,000,000 · every weapon · every mission unlocked · mission select, time, weather, ammo and teleport in Settings · God mode', 5);
       } else {
         tell('GOD MODE DEACTIVATED', 2.5);
         // A job god mode picked ahead of the story is no longer the payphone's (campaign.js).
@@ -35,16 +40,42 @@
       if (gameMode === 'play') togglePause();
       if (gameMode === 'pause' || gameMode === 'menu') openSettings('god');
     }
+    /* HELICOPTER: a helicopter of the player's own (authorized: taking it is no theft) on clear ground
+       (canSpawnCar: land under every corner) beside him, with rotor room round it. */
+    function helicopterCheat() {
+      if (gameMode !== 'play') return null;
+      if (player.coaster || player.sceneSeat || player.deck || (player.car && isAircraft(player.car))) {
+        tell('NO HELICOPTER HERE', 2.5, { id: 'cheat-heli' });
+        return null;
+      }
+      const from = player.car || player,
+        x0 = from.x,
+        y0 = from.y;
+      // Rings outward from 9 m: never on top of the player, clear of walls by the rotor's reach.
+      for (let r = 72; r <= 520; r += 32)
+        for (let i = 0; i < 16; i++) {
+          const a = player.a + Math.PI / 2 + (i * TAU) / 16,
+            x = x0 + Math.cos(a) * r,
+            y = y0 + Math.sin(a) * r;
+          if (!canSpawnCar('helicopter', x, y, player.a, 34)) continue;
+          const heli = makeCar('helicopter', x, y, player.a, false);
+          heli.authorized = true;
+          tell('HELICOPTER · ' + pressKey('interact') + ' beside it to climb in', 4, { id: 'cheat-heli' });
+          return heli;
+        }
+      tell('NO ROOM FOR A HELICOPTER HERE · try open ground', 3, { id: 'cheat-heli' });
+      return null;
+    }
     const CHEAT_CODES = {
       godmode: godModeCheat,
-      aaaaxbbbbyxxxxayyyyb: godModeCheat,
+      helicopter: helicopterCheat,
     };
     // The ring holds the longest code.
     const CHEAT_BUFFER_LENGTH = Math.max(...Object.keys(CHEAT_CODES).map((code) => code.length));
     // A code eats its keys (so spelling it does not also drive) once this many of its
-    // letters are typed; 2 by default. A is steering left, so AAAA... eats nothing
-    // until its X: tapping A twice in a corner must never lose the second tap.
-    const CHEAT_SWALLOW_FROM = { aaaaxbbbbyxxxxayyyyb: 5 };
+    // letters are typed; 2 by default. HELICOPTER from its L: H (horn) then E (get out)
+    // is an everyday pair and the E must never be lost.
+    const CHEAT_SWALLOW_FROM = { helicopter: 3 };
     // Modifier keys pressed while typing (Shift for capitals, Caps Lock) leave the ring alone.
     const CHEAT_IGNORED_KEYS = new Set(['shift', 'capslock', 'control', 'alt', 'altgraph', 'meta', 'os']);
     /* Put the player somewhere else, letting go of anything that was carrying
