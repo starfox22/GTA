@@ -47,6 +47,7 @@
           updateWorldVisuals();
           updateCityscapeVisuals();
           updateSideJobVisuals();
+          updateSummitCacheVisuals();
           updateRoadblockVisuals();
           updateBikeShareVisuals();
           updateParkVisuals();

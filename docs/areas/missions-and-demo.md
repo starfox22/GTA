@@ -2,7 +2,7 @@
 
 story.js (characters, `STORY`, `setStage`, `startMission`, `winMission`, `failMission`,
 `missionUpdate`), harbor.js + chase.js (mission 1), roofmission.js (mission 2),
-challenges.js (3-9), aviation.js (10-11), sidejobs.js (contracts), campaign.js (saves,
+summitjob.js (3), fortjob.js (4), challenges.js (5-9), aviation.js (10-11), sidejobs.js (contracts), campaign.js (saves,
 progression, PUBLIC DEMO), god-panel.js, game-cops.js (`resetMissionState`).
 
 ## The list
@@ -14,7 +14,9 @@ index plus one.
 | --- | --- | --- | --- |
 | 1 | 0 | Dockside Favor | harbor.js, chase.js (ends in Vinny's warehouse: harbor.js THE DROP) |
 | 2 | 1 | A Seat at the Table | roofmission.js (the Blue Hour hit) |
-| 3-9 | 2-8 | Vinny's Favor … One Clean Exit | challenges.js |
+| 3 | 2 | High Ground | summitjob.js (the package on Mount Ascent; missions-summit-and-fort.md) |
+| 4 | 3 | Borrowed Stripes | fortjob.js + vehicle-trunk.js, fort-cover.js, skyline-meeting.js (missions-summit-and-fort.md) |
+| 5-9 | 4-8 | No Last Ferry … One Clean Exit | challenges.js |
 | 10-11 | 9-10 | The Last Witness, The Manifest | aviation.js |
 | C1-C5 | 11-15 | Rush Hour, Fireworks Night, Blackout, Ring Run, Repo Man | sidejobs.js (`SIDE_JOB_FIRST`) |
 
@@ -100,12 +102,12 @@ index plus one.
 
 ## Public demo (`DEMO_BUILD`, game-state.js; campaign.js PUBLIC DEMO)
 
-- `DEMO_BUILD = true` today. A normal player gets missions 1 and 2 (`DEMO_MISSIONS`); later
+- `DEMO_BUILD = true` today. A normal player gets missions 1 to 4 (`DEMO_MISSIONS` = 4); later
   jobs show locked and nameless (`???`, `missionPickerTitle`) with a FULL GAME badge and a buy note
   (a story job not reached yet is `???` too). The payphone stops ringing after
-  mission 2 (`storyCallWaiting`), and completing it shows the DEMO COMPLETE card
+  mission 4 (`storyCallWaiting`), and completing it shows the DEMO COMPLETE card
   (`showDemoComplete`, game mode `'demo'`, a recap from `campaignStats`) the first time only; a
-  replay of mission 2 is just a payday. Completion is kept
+  replay of mission 4 is just a payday. Completion is kept
   in `dead-end-city-demo`. `demoLocked()` is the gate.
 - `missionIndex` is the frontier **and** the job a replay picked (`chooseMission`), so a
   declined or failed replay calls `settleDemoStoryIndex()` (also on load and when god mode is

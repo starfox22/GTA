@@ -485,6 +485,8 @@
     }
     function cleanupMissionExtras() {
       player.disguised = false;
+      summitCleanup();
+      fortJobCleanup();
       // Fort Sentinel's borrowed uniform and cover (fort-cover.js).
       fortCoverReset();
       resetDepotDoors();

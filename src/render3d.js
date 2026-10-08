@@ -143,6 +143,7 @@
       sign('24 HOUR', 1470, 544, 85, '#f3d394');
       sign('FREIGHT CO.', 2880, 549, 106, '#c1d4bb');
       // @include src/sidejobs3d.js
+      // @include src/summitjob3d.js
       // @include src/roadblocks3d.js
       // @include src/themepark3d.js
       // @include src/garage3d.js

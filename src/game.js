@@ -99,6 +99,8 @@
     // @include src/mounted-guns.js
     // @include src/aviation.js
     // @include src/challenges.js
+    // @include src/summitjob.js
+    // @include src/fortjob.js
     // @include src/sidejobs.js
     // @include src/streets.js
     // @include src/terrain.js

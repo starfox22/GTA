@@ -280,6 +280,8 @@
           driverOut: undefined,
           doorsOpenAt: undefined,
           deliveryScene: undefined,
+          // A story character at the wheel (fortjob.js: 'kessler'), handed to the driver on foot (carjack.js makeCarDriver).
+          missionDriver: undefined,
           // The static-body cache (physics-shapes.js nearbyStatics), where the driver looks, and a driver's shout.
           staticCacheKey: undefined,
           staticCache: undefined,
