@@ -275,18 +275,31 @@
         }
         // The trunk lid pops up on its hinge (vans and SUVs have tailgates in the body), or is picked open
         // (vehicle-trunk.js `c.trunkOpen`).
+        // A civilian body's rear deck line (`m.trunkDeck`, cars3d-kit.js): the lid lies along it from the rear glass's
+        // foot to the tail; other bodies keep the old slab at the hood's hinge height.
+        const deck = m.trunkDeck,
+          deckLength = deck ? deck.hingeX - deck.tailX : l * 0.18,
+          deckSlope = deck ? Math.atan2(deck.hingeY - deck.tailY, deckLength) : 0;
         if ((parts.trunk || c.trunkOpen) && !van && !m.trunk) {
           m.trunk = new Three.Group();
-          m.trunk.position.set(-l * 0.3, m.hoodBaseY, 0);
+          if (deck) m.trunk.position.set(deck.hingeX, deck.hingeY, 0);
+          else m.trunk.position.set(-l * 0.3, m.hoodBaseY, 0);
           m.body.add(m.trunk);
-          const lid = box(m.trunk, -l * 0.09, 0, 0, l * 0.18, 0.4, w * 0.67, m.paint);
+          const half = deckLength / 2,
+            lid = box(m.trunk, -half * Math.cos(deckSlope), -half * Math.sin(deckSlope) + (deck ? 0.14 : 0), 0, deckLength, 0.4, w * 0.67, m.paint);
+          lid.rotation.z = deckSlope;
           if (m.trunkGeometry) lid.geometry = m.trunkGeometry;
           crumpleAdopt(m, m.trunk, true);
           crumpleAdopt(m, lid, false, 'lid');
         }
-        // Wide open, the dark well under the lid (the empty-frame black, as a torn door's opening shows the bay).
+        // Wide open, the dark well under the lid (the empty-frame black, as a torn door's opening shows the bay): a
+        // thin slab on the deck where the lid lay.
         if (c.trunkOpen && m.trunk && !m.trunkWell) {
-          m.trunkWell = box(m.body, -l * 0.39, m.hoodBaseY + 0.02, 0, l * 0.16, 0.42, w * 0.6, brokenGlass);
+          const half = deckLength / 2,
+            x0 = m.trunk.position.x,
+            y0 = m.trunk.position.y;
+          m.trunkWell = box(m.body, x0 - half * Math.cos(deckSlope), y0 - half * Math.sin(deckSlope) + 0.1, 0, deckLength * 0.9, 0.14, w * 0.6, brokenGlass);
+          m.trunkWell.rotation.z = deckSlope;
           crumpleAdopt(m, m.trunkWell, false);
         }
         if (m.trunkWell) m.trunkWell.visible = !!c.trunkOpen;

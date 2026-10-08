@@ -459,6 +459,13 @@
           tyre: civTyreGeometry(body.tyre || 'road', body.rim.frac ? body.rim.frac * 0.98 : 0.68),
           door: policeSwatchBox(CAR_SWATCH.paint),
           trunk: policeSwatchBox(CAR_SWATCH.paint),
+          // The trunk lid's line on the centre of the rear deck, hinge (at the rear glass's foot) to the tail: where the
+          // damage model hangs a sprung or picked-open lid and its dark well (damage3d-bodies.js).
+          trunkDeck: (() => {
+            const tailX = -0.48 * l,
+              hingeX = Math.max(g ? g.xb * l + 0.02 * M : -0.3 * l, tailX + 0.06 * l);
+            return { hingeX, hingeY: topY(hingeX, 0), tailX, tailY: topY(tailX, 0) };
+          })(),
         };
         for (const name of ['headLeft', 'headRight', 'tailLeft', 'tailRight'])
           kit.lamps[name] = sets[name].count ? civGeometry(sets[name], { finish: false }) : null;
