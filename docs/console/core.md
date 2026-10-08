@@ -4,7 +4,7 @@
 
 | Method | Purpose |
 | --- | --- |
-| `setClock(hours)` | Time of day (hours, 0-24) |
+| `setClock(hours, blend = false)` | Time of day (hours, 0-24). The light follows at once (screenshots); `blend` true eases it over as a time skip in play does (sun-path.js) |
 | `god(on)` | Invulnerability |
 | `version` | The build version (0.9.0) |
 | `unitsPerMetre` | The world scale, map units to the metre (8) |

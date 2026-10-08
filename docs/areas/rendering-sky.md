@@ -22,9 +22,10 @@ rest of the light: rendering-lighting.md; the clouds (from below too): rendering
   2.5 and `minElevationDeg` >= 15 (tools/tests/sun-gradual.mjs).
 - The renderer draws the light clock, never `worldMinutes` straight: `litMinutes()` / `litDaylight()` (every
   `*3d.js` look that followed `daylight()`). `stepSunClock(dt)` (game-loop.js runFrame, behind menus too) takes a
-  clock change beyond a minute a second as a skip (sleep, meals, god panel, `setClock`, missions, ride skips,
+  clock change beyond a minute a second as a skip (sleep, meals, god panel, `setClock(h, true)`, missions, ride skips,
   console `simulate`) and eases it in over 2-6 s (Hermite, carrying its speed into a new skip); a load or new game
-  calls `snapSunClock()`. Gameplay keeps `daylight()` on the world clock. The shadow map is redrawn every frame.
+  calls `snapSunClock()`, as do console `setClock(h)` and `matchDay` (shots and tours see the hour at once).
+  Gameplay keeps `daylight()` on the world clock. The shadow map is redrawn every frame.
 - The environment's light was tuned against the old gradient: irradiance within ~5 % up and sideways by
   day, night and overcast (dusk roofs -7 %, walls facing the sun +12 %). Re-check after changing a share.
   The dome alone takes some light out of the zenith (`uDomeZenith`, DOME_ZENITH_*): a deep blue through

@@ -23,14 +23,19 @@ export default async function (t) {
   t.assert(r.skip.maxDegPerFrame < 5, `a skip through dawn: under 5 deg a frame: ${r.skip.maxDegPerFrame}`);
   r = await t.call('sunReport', 10);
   t.assert(r.skip.seconds >= 1.9 && r.skip.maxDegPerFrame < 0.5, `a ten-minute skip blends: ${JSON.stringify(r.skip)}`);
-  // Live: wait for the light to settle, jump the clock, and the light holds, then eases over to the new hour.
+  // Console setClock snaps the light (screenshots); with `blend` it eases over as a skip in play does.
+  await t.call('setClock', 13);
+  await sleep(200);
+  const snapped = await t.call('sunReport', 0);
+  t.assert(!snapped.blending && snapped.clock.startsWith('13:'), `setClock snaps the light: ${JSON.stringify(snapped)}`);
+  // Live: jump the clock, and the light holds, then eases over to the new hour.
   await t.call('setClock', 9);
   await sleep(200);
   for (let i = 0; i < 60 && (await t.call('sunReport', 0)).blending; i++) await sleep(500);
   await sleep(300);
   const before = await t.call('sunReport', 0);
   t.assert(!before.blending, `settled before the jump: ${JSON.stringify(before)}`);
-  await t.call('setClock', 16);
+  await t.call('setClock', 16, true);
   await sleep(200); // a few frames (the light clock steps on the frame clock)
   const jumped = await t.call('sunReport', 0);
   t.assert(jumped.blending, `a jump of the clock blends: ${JSON.stringify(jumped)}`);
