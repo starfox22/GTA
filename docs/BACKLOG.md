@@ -62,6 +62,12 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - A driver sitting in a car whose door is being picked does not react.
 - No backpack is drawn on the player's body while he carries the summit package on foot.
 - The hangar floors are not a restricted spot for the fort's suspicion (the hangars are solid buildings).
+- Shot at in his car, Kessler radios the fort, yet his ID still clears the gate once the stars are gone (by design,
+  so the job stays winnable; Vinny says why). Carjacking him is not an alert.
+- Kessler's car waits in ordinary traffic like everyone else; in the player's view it never skips a jam (the Marina
+  Rd junction by the club can hold him half a minute).
+- The gate conversation (about 16 s) cannot be skipped; the player's feet are held while it runs.
+- Mission briefs are only used by missions 3-4 so far; the other jobs keep the title card and the strip.
 
 ## Clouds (clouds*.js, clouds3d-*.js)
 - The flight camera never looks above ~30 degrees below the horizon: under the base the underside is never in view, only the shadows and the dimmer light (the chase view shows it: clouds3d-sky.js).

@@ -29,7 +29,8 @@ export default async function (t) {
   await t.realWait(0.5);
   c = await cover();
   t.assert(c.inspecting !== null || c.cleared, 'the action key did not start the inspection: ' + JSON.stringify(c));
-  await t.wait(3.6);
+  // The sergeant reads the ID and talks it through (FORT_GATE_TALK): about sixteen seconds.
+  await t.wait(16.6);
   c = await cover();
   t.assert(c.cleared && !c.alarmed, 'not cleared after the inspection: ' + JSON.stringify(c));
   // In through the gate on foot, walking: no alarm.

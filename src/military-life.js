@@ -551,7 +551,7 @@
     }
     function militaryUI() {
       if (gameMode !== 'play') return;
-      if (distanceBetween(player, MILITARY.gate) < 125 && militaryGateClosedToPlayer() && !isAircraft(player.car)) {
+      if (distanceBetween(player, MILITARY.gate) < 125 && militaryGateClosedToPlayer() && !isAircraft(player.car) && !fortCoverOwnsGate()) {
         offerPrompt('FORCE THE GATE CONTROLS · ARMED RESPONSE', { id: 'fort-gate' });
       }
       if (player.car?.type === 'tank') {

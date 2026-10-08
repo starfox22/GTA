@@ -7,7 +7,7 @@
        anywhere on the base, blows the cover at once. Unseen it drains slowly. */
     const FORT_VIEW = { half: (55 * Math.PI) / 180, range: 420, towerRange: 650, face: 42 },
       FORT_RUN_SPEED = 9 * KMH,
-      // Places a private has no business in: the soldiers there say so.
+      // Places a visiting officer has no business in: the soldiers there say so.
       FORT_RESTRICTED = [
         { name: 'AMMUNITION BUNKERS', x: 10290, y: 8775, w: 160, h: 370 },
         { name: 'FUEL DEPOT', x: 10040, y: 8800, w: 240, h: 180 },
@@ -16,13 +16,14 @@
         // The HQ's main doorway between its two sentries (the records office has its own door).
         { name: 'HQ ENTRANCE', x: 9712, y: 8036, w: 56, h: 28 },
       ],
+      // He wears a lieutenant's bars: the men are polite about it, and that is what makes it dangerous.
       FORT_LINES = {
-        running: 'HEY. WALK, SOLDIER.',
-        restricted: 'OFF LIMITS, PRIVATE. MOVE ALONG.',
-        loitering: 'DON’T KNOW YOU. WHAT UNIT?',
-        climbing: 'GET DOWN FROM THERE!',
-        wary: 'WHO’S YOUR SERGEANT, PRIVATE?',
-        stop: 'YOU. HOLD IT RIGHT THERE.',
+        running: 'EVERYTHING ALL RIGHT, SIR?',
+        restricted: 'SIR, THIS AREA IS OFF LIMITS WITHOUT A PASS.',
+        loitering: 'CAN I HELP YOU, SIR? DON’T THINK I KNOW YOU.',
+        climbing: 'SIR! GET DOWN FROM THERE!',
+        wary: 'WHICH UNIT DID YOU SAY YOU WERE WITH, SIR?',
+        stop: 'SIR. HOLD IT RIGHT THERE.',
       };
     function fortRestrictedAt(x, y) {
       for (let i = 0; i < FORT_RESTRICTED.length; i++) {

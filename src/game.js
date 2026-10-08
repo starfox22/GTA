@@ -18,6 +18,7 @@
     // @include src/camera-drive.js
     // @include src/camera-comfort.js
     // @include src/hud-notify.js
+    // @include src/mission-brief.js
     // A line in the notification feed (hud-notify.js): `options` { id, tone }.
     function tell(text, duration = 3, options) {
       notify(text, duration, options);

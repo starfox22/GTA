@@ -27,7 +27,9 @@
   .bindings-clash,
   #flightHud *,
   #worldEdgeCue,
-  #worldEdgeCue * {
+  #worldEdgeCue *,
+  #missionBrief *,
+  #pager.brief-land {
     animation: none !important;
   }
   #topbar *,
@@ -46,7 +48,8 @@
   #flightHud,
   #flightHud *,
   #worldEdgeCue,
-  #worldEdgeCue * {
+  #worldEdgeCue *,
+  #missionBrief {
     transition-duration: 0.01ms !important;
   }
 }

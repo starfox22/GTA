@@ -417,6 +417,8 @@
       return militaryGateState.some((s) => s.slide > 0.85 && !s.slideBroken) || (!!player.car && militaryGate < 0.85);
     }
     function militaryInteract() {
+      // In the borrowed uniform the gate is talked through (fort-cover.js), never forced by the action key.
+      if (fortCoverOwnsGate()) return false;
       if (
         playerOnRoof() ||
         (player.car?.altitude || 0) > 4 ||

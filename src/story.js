@@ -85,7 +85,7 @@
         // summitjob.js: the RIDGELINE 4X4 CLUB's gate, where the climb is best begun.
         start: { x: 8590, y: 3070 },
         phoneMessage:
-          'Vinny gave you a mission: one of his men buried a package at the very top of Mount Ascent, where the 4x4 trail ends. Dig it up and bring it to his warehouse.',
+          'Vinny gave you a mission: before the Feds picked him up, Tommy Russo buried a package of Vinny’s at the very top of Mount Ascent, where the 4x4 trail ends. Dig it up and bring it to his warehouse.',
         brief: 'Get to the top of Mount Ascent, dig up the buried package and bring it to Vinny’s warehouse.',
       },
       {
@@ -95,8 +95,8 @@
         // fortjob.js: the stakeout where the Sentinel causeway meets the coast road.
         start: { x: 7740, y: 8060 },
         phoneMessage:
-          'Vinny gave you a mission: get inside Fort Sentinel as a soldier, steal the confidential weapons papers and deliver them to a diplomat at the top of EVOLUTION.',
-        brief: 'Take an off-duty soldier’s uniform and badge, walk into Fort Sentinel, steal the weapons papers and deliver them to the consul at CIRRUS.',
+          'Vinny gave you a mission: steal an off-duty officer’s uniform and ID, walk into Fort Sentinel through the front gate, take the HAWTHORN weapons file from the records office and sell it to a consul at the top of the EVOLUTION tower.',
+        brief: 'Steal Lieutenant Kessler’s uniform and ID from his car, walk into Fort Sentinel, take the HAWTHORN weapons file and deliver it to the consul at CIRRUS.',
       },
       {
         title: 'No Last Ferry',
@@ -367,7 +367,7 @@
       hudAttr(el, 'title', CHARACTERS[id]?.name || 'Vinny Moretti');
     }
     const STORY_PROPER_NOUNS =
-      /\b(vinny|elena|mara|rafe|daniel|vescari|vale|rusk|palm keys|blue hour|coral palms|southport|oceanview|northridge|glasshouse|bay launch|eastside garage|sunset motel|hangar three|kessler|varga|fort sentinel|evolution|cirrus|north point key|mount ascent|marea|headquarters|ridgeline)\b/g;
+      /\b(vinny|elena|mara|rafe|daniel|vescari|vale|rusk|palm keys|blue hour|coral palms|southport|oceanview|northridge|glasshouse|bay launch|eastside garage|sunset motel|hangar three|kessler|varga|fort sentinel|evolution|cirrus|north point key|mount ascent|marea|headquarters|ridgeline|hawthorn)\b/g;
     function missionSummary(m) {
       if (m.index >= SIDE_JOB_FIRST)
         return (
@@ -449,7 +449,8 @@
       else startSideJob(missionState);
       // MISSION 1, CONTRACT 2: no total (missionStartLabel, cycles.js).
       announce(missionStartLabel(missionState.index), info.title.toUpperCase(), 3);
-      missionLine(info.contact, info.brief);
+      // A job that opens with its own line from the contact (missions 3-4) keeps it on screen.
+      if (!missionState.ownOpening) missionLine(info.contact, info.brief);
       save();
     }
     // How the last mission ended (read by the developer console's missionState()).

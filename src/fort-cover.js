@@ -39,7 +39,20 @@
       // The approach (the gate challenge's own zone) and the line he crosses on the way out.
       zone: { x0: 9040, x1: 9450, y0: 8032, y1: 8268 },
       outX: 9200,
+      // How far past the arm a man on foot who has shown nothing is called back before the challenge takes over.
+      grace: 56,
     };
+    /* The papers at the gate: [second, who, line]. The sergeant reads the ID, the roster says Kessler is on leave,
+       the cover story holds, the photo nearly does not. Subtitled on the HUD (missionLine) and in speech bubbles. */
+    const FORT_GATE_TALK = [
+        [0.4, 'guard', 'Kessler, D. First Lieutenant, Logistics.'],
+        [2.8, 'guard', 'Roster has you on leave until Monday, sir.'],
+        [5.3, 'you', 'Tell that to the colonel. He moved the inventory audit up and wants the manifests on his desk by oh-six-hundred.'],
+        [9.4, 'guard', 'This photo doesn’t look much like you, sir.'],
+        [11.9, 'you', 'Three days at the Marea will do that to a man, Sergeant.'],
+        [14.2, 'guard', 'Can’t argue with that. Go on through, Lieutenant. Records is the side door, left of headquarters.'],
+      ],
+      FORT_GATE_CLEARED_AT = 16.4;
     /* ---- The uniform ------------------------------------------------------------------ */
     // An off-duty soldier's field uniform (personOutfit 'playerArmy': camo, belt, boots, patrol cap) on the player's
     // own face and build. Putting it on stows whatever was in his hands. Returns player.uniform.
@@ -144,10 +157,12 @@
     }
     // The gate's guards deal with him through the cover (papers) rather than the challenge.
     function fortCoverOwnsGate() {
-      if (!fortCover.active || fortCover.alarmed || player.uniform !== 'army' || player.car || playerOnRoof()) return false;
+      if (!fortCover.active || fortCover.alarmed || player.uniform !== 'army' || playerOnRoof()) return false;
       if (wantedStars > 0 || militaryAlertUntil > gameTime) return false;
-      // Walked past the booth without showing anything: the challenge takes over.
-      if (!fortCover.cleared && !fortCover.inspect && player.x > SENTINEL.gate.armX + 8) return false;
+      // Driven up in uniform: sent back to park outside the wire, not shot at; driven past the arm, the challenge.
+      if (player.car) return !fortCover.cleared && !isAircraft(player.car) && !player.car.military && player.x < SENTINEL.gate.armX + 8;
+      // Walked past the booth without showing anything: called back first, then (FORT_COVER_GATE.grace on) the challenge.
+      if (!fortCover.cleared && !fortCover.inspect && player.x > SENTINEL.gate.armX + FORT_COVER_GATE.grace) return false;
       return true;
     }
     function fortCoverInGateZone() {
@@ -181,6 +196,7 @@
       fortCover.suspicion = 100;
       fortCover.inspect = null;
       if (by) militarySpeak(by, 'INTRUDER! HE’S NOT ONE OF OURS!', 3);
+      fortCover.inspect = null;
       militaryAlarm();
       announce('FORT SENTINEL · INTRUDER ALERT', 'COVER BLOWN', 3);
     }
@@ -188,70 +204,110 @@
     function fortCoverGateReady() {
       return (
         fortCoverOwnsGate() &&
+        !player.car &&
         !fortCover.cleared &&
         !fortCover.inspect &&
         selectedWeaponIndex === FISTS_INDEX &&
         withinRange('fort-papers', distanceBetween(player, FORT_COVER_GATE.check), FORT_COVER_GATE.reach)
       );
     }
+    // A line at the gate: the speech bubble and, while a story job runs, the subtitle.
+    function fortGateLine(who, text) {
+      const p = who === 'you' ? player : who;
+      if (!p) return;
+      const seconds = Math.max(2.4, speechReadSeconds(text) * 0.9);
+      // A long line reads in the subtitle only: a bubble that size would span the screen.
+      if (mission && text.length > 52) {
+        missionLine(who === 'you' ? 'YOU' : 'GATE SERGEANT', text);
+        return;
+      }
+      if (p === player) {
+        player.speech = text.toUpperCase();
+        player.speechUntil = gameTime + seconds;
+      } else militarySpeak(p, text.toUpperCase(), seconds);
+      if (mission) missionLine(who === 'you' ? 'YOU' : 'GATE SERGEANT', text);
+    }
+    // In the middle of showing the papers: the feet stay put (game-update.js), he faces the sergeant.
+    function fortGateTalking() {
+      return !!fortCover.inspect && !player.car;
+    }
     function updateFortGate(deltaSeconds) {
       const own = fortCoverOwnsGate(),
         zone = fortCoverInGateZone();
       if (!own || !zone) {
-        if (!zone) fortCover.halted = false;
+        if (!zone) fortCover.halted = fortCover.carWarned = false;
         if (fortCover.inspect && !own) fortCover.inspect = null;
         return;
       }
       const guard = fortGateSpeaker();
       if (!guard) return;
-      const I = fortCover.inspect;
+      const I = fortCover.inspect,
+        d = distanceBetween(player, FORT_COVER_GATE.check);
       if (!fortCover.cleared) {
         // The nearest guard turns to him (after the garrison's own step, which turns posts back to their post).
         guard.a = headingBetween(guard, player);
         guard.aimingOnly = false;
-        if (!fortCover.halted) {
+        if (player.car) {
+          if (!fortCover.carWarned && d < 260) {
+            fortCover.carWarned = true;
+            fortGateLine(guard, 'Sir, private vehicles stay outside the wire. Park it there and walk up.');
+            tone(660, 0.12, 0.1, 'square', 650);
+          }
+          return;
+        }
+        if (!fortCover.halted && d < 160) {
           fortCover.halted = true;
-          militarySpeak(guard, 'HALT. ID, PLEASE.', 2.6);
+          fortGateLine(guard, 'Evening, sir. ID, please.');
           tone(660, 0.12, 0.12, 'square', 650);
         } else if (selectedWeaponIndex !== FISTS_INDEX && gameTime - fortCover.saidAt > 6) {
           fortCover.saidAt = gameTime;
-          militarySpeak(guard, 'SHOULDER THAT WEAPON, PRIVATE.', 2.6);
+          fortGateLine(guard, 'Sir, put that weapon away before you come any closer.');
+        } else if (!I && player.x > SENTINEL.gate.armX + 8 && gameTime - fortCover.saidAt > 5) {
+          fortCover.saidAt = gameTime;
+          fortGateLine(guard, 'Sir! I need to see your ID first.');
         }
       }
       if (!I) return;
-      // The inspection: he reads the badge, a word, waved through. Walking off cancels it.
-      if (distanceBetween(player, FORT_COVER_GATE.check) > FORT_COVER_GATE.reach * 1.8) {
+      // Pushed away from the window (a car, a blast): the sergeant wants his papers back.
+      if (d > FORT_COVER_GATE.reach * 1.8) {
         fortCover.inspect = null;
-        militarySpeak(guard, 'HEY! YOUR PAPERS!', 2.4);
+        fortGateLine(guard, 'Sir? Your ID!');
         return;
       }
       // A weapon out in the middle of it: no papers today.
       if (selectedWeaponIndex !== FISTS_INDEX) {
         fortCover.inspect = null;
         fortCover.saidAt = gameTime;
-        militarySpeak(guard, 'SHOULDER THAT WEAPON, PRIVATE.', 2.6);
+        fortGateLine(guard, 'Sir, put that weapon away.');
         return;
       }
+      player.a = headingBetween(player, guard);
+      guard.a = headingBetween(guard, player);
       const t0 = I.t;
       I.t += deltaSeconds;
-      const at = (s) => t0 < s && I.t >= s;
-      if (at(1.5)) {
-        player.speech = 'CAN’T SLEEP IN TOWN, SARGE.';
-        player.speechUntil = gameTime + 1.8;
+      for (let i = 0; i < FORT_GATE_TALK.length; i++) {
+        const beat = FORT_GATE_TALK[i];
+        if (t0 < beat[0] && I.t >= beat[0]) fortGateLine(beat[1] === 'you' ? 'you' : guard, beat[2]);
       }
-      if (at(0.6)) noise(0.06, 0.05, 4200);
-      if (at(3.1)) {
+      // The card turned over, a long look at the photo.
+      if (t0 < 0.6 && I.t >= 0.6) noise(0.06, 0.05, 4200);
+      if (t0 < 9.2 && I.t >= 9.2) noise(0.05, 0.04, 4600);
+      if (I.t >= FORT_GATE_CLEARED_AT) {
         fortCover.inspect = null;
         fortCover.cleared = true;
-        militarySpeak(guard, 'GO ON THROUGH.', 2.4);
         tone(1040, 0.1, 0.08, 'sine');
-        tell('FORT SENTINEL · Cleared at the gate. Walk like you belong here.', 4, { id: 'fort-cover' });
       }
     }
     function startFortInspection() {
       const guard = fortGateSpeaker();
+      // The conversation takes the middle of the screen: a step brief still up folds into the strip.
+      foldMissionBrief();
       fortCover.inspect = { t: 0 };
-      if (guard) militarySpeak(guard, 'KESSLER, D. ... PFC. BACK EARLY?', 2.6);
+      fortCover.halted = true;
+      if (guard) {
+        guard.a = headingBetween(guard, player);
+        player.a = headingBetween(player, guard);
+      }
       noise(0.08, 0.06, 3800);
       return true;
     }
@@ -287,7 +343,7 @@
         fortCover.leftWithPapers = true;
         fortCover.leftAt = gameTime;
         const guard = fortGateSpeaker();
-        if (guard && distanceBetween(guard, player) < 260) militarySpeak(guard, 'EVENING, PRIVATE. DON’T BE LATE BACK.', 3);
+        if (guard && distanceBetween(guard, player) < 260) fortGateLine(guard, 'Good night, Lieutenant. Hope the colonel’s happy.');
       }
       updateFortWatch(deltaSeconds);
     }
@@ -302,9 +358,17 @@
         fortCoverHud.on = false;
         return;
       }
-      if (fortCoverGateReady()) offerPrompt('SHOW YOUR PAPERS', { id: 'fort-papers' });
-      else if (fortCoverOwnsGate() && !fortCover.cleared && fortCoverInGateZone() && distanceBetween(player, FORT_COVER_GATE.check) < 120)
-        offerPrompt(selectedWeaponIndex !== FISTS_INDEX ? 'PUT YOUR WEAPON AWAY' : 'WALK UP TO THE BOOTH', { key: null, id: 'fort-papers-wait' });
+      if (fortCoverGateReady()) offerPrompt('SHOW YOUR ID TO THE SERGEANT', { id: 'fort-papers' });
+      else if (fortCover.inspect) offerPrompt('SHOWING YOUR ID · STAY CALM', { key: null, id: 'fort-papers-wait' });
+      else if (fortCoverOwnsGate() && !fortCover.cleared && fortCoverInGateZone()) {
+        const d = distanceBetween(player, FORT_COVER_GATE.check);
+        if (player.car) {
+          if (d < 320) offerPrompt('PARK OUTSIDE THE GATE · WALK UP ON FOOT', { key: null, id: 'fort-papers-wait' });
+        } else if (selectedWeaponIndex !== FISTS_INDEX && d < 200)
+          offerPrompt('PUT YOUR WEAPON AWAY · ' + keyName('fists'), { key: null, id: 'fort-papers-wait' });
+        else if (player.x > SENTINEL.gate.armX + 8) offerPrompt('GO BACK TO THE BOOTH · SHOW YOUR ID', { key: null, id: 'fort-papers-wait' });
+        else if (d < 200) offerPrompt('WALK UP TO THE GUARD BOOTH', { key: null, id: 'fort-papers-wait' });
+      }
       fortRecordsUI();
       const H = fortCoverHud;
       if (!fortCoverMeterShown()) {

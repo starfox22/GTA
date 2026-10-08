@@ -61,7 +61,18 @@
       m.carryCar = null;
       m.lastCar = null;
       m.beats = {};
-      setStage(0, m.summit, 'REACH THE SUMMIT OF MOUNT ASCENT · A 4X4 MAKES THE CLIMB');
+      m.ownOpening = true;
+      setStage(
+        0,
+        m.summit,
+        'REACH THE SUMMIT OF MOUNT ASCENT · A 4X4 MAKES THE CLIMB',
+        'vinny',
+        'Before the Feds picked him up, Tommy Russo buried something of mine on top of Mount Ascent. Under the cairn at the summit. Go get it, and don’t open it.',
+      );
+      missionBrief(
+        'Vinny asked you to collect a buried package from the very top of Mount Ascent. Get up there, with a 4x4 up the trail or a parachute onto the summit, and dig it up for him.',
+        { kicker: 'THE JOB' },
+      );
     }
     /* Vinny in his warehouse, for the handover; the Vinny who stands at his usual
        corner (story.js populateStoryWorld) steps out of sight meanwhile. */
@@ -122,8 +133,9 @@
             m.cache,
             c ? 'GET OUT · DIG UP THE PACKAGE AT THE CAIRN' : 'DIG UP THE PACKAGE AT THE CAIRN · HOLD ' + keyName('interact'),
             'vinny',
-            'Tommy buried it at the foot of the big cairn, the side facing the sea. Stones on top, a foot down. Dig.',
+            'Tommy said the foot of the big cairn, the side facing the sea. Stones on top, a foot of grit under them. Dig.',
           );
+          missionBrief('You made it to the summit. The package is buried under the stone cairn: ' + (c ? 'get out and ' : '') + 'hold ' + keyName('interact') + ' to dig it up.');
           tell('THE SUMMIT · Mount Ascent', 3);
         }
         return;
@@ -171,6 +183,11 @@
         return;
       }
       if (m.stage === 3) {
+        // With the police on him: told once each time, Vinny will not open the door.
+        if (wantedStars > 0 && !m.heatBriefed) {
+          m.heatBriefed = true;
+          missionBrief('Vinny won’t open his door with the police on your tail. Lose them before you go to the warehouse.', { tone: 'alert' });
+        } else if (wantedStars === 0) m.heatBriefed = false;
         // Driven into the warehouse with it in the vehicle: getting out takes it along.
         if (m.carrier === 'car' && !c && insideDepot(player.x, player.y) && distanceBetween(player, m.carryCar) < 120) m.carrier = 'hand';
         if (insideDepot(player.x, player.y)) summitVinny(m);
@@ -189,7 +206,7 @@
         if (m.vinny) m.vinny.a = headingBetween(m.vinny, player);
         if (m.handoverLine && gameTime > m.handoverLine) {
           m.handoverLine = 0;
-          missionLine('vinny', 'Go home, get some sleep. The phone will ring again soon. I’ve got something bigger.');
+          missionLine('vinny', 'Go home, get some sleep. Next one’s bigger: I’ve got a buyer for something the army owns.');
         }
         if (m.handover <= 0) winMission();
       }
@@ -212,11 +229,13 @@
           summitRearPoint(car),
           'LOAD IT INTO THE ' + summitVehicleWord(car) + ' · ' + keyName('interact') + ' AT THE BACK',
           'vinny',
-          'Got it? Don’t open it. Put it in the ' + summitVehicleWord(car).toLowerCase() + ' and come down slow.',
+          'Got it? Don’t open it. What you don’t know, nobody can beat out of you. Put it in the ' + summitVehicleWord(car).toLowerCase() + '.',
         );
+        missionBrief('Package recovered. Load it into your ' + summitVehicleWord(car).toLowerCase() + ': ' + keyName('interact') + ' at the back, or just get in.');
       } else {
         m.carrier = 'backpack';
-        summitDeliverStage(m, 'Got it? Don’t open it. Backpack, zip it up, and come down slow.');
+        summitDeliverStage(m, 'Got it? Don’t open it. What you don’t know, nobody can beat out of you. Zip it in the backpack and come down slow.');
+        missionBrief('Package recovered and zipped into your backpack. Take it down the mountain to Vinny’s warehouse.');
       }
     }
     function summitStow(m, c) {
@@ -224,7 +243,8 @@
       m.carryCar = c;
       c.mission = true;
       tone(160, 0.06, 0.12, 'triangle');
-      summitDeliverStage(m, 'Good. Bring it to the warehouse. Easy on the way down.');
+      summitDeliverStage(m, 'Good. Bring it to the warehouse. Easy on the way down, the mountain doesn’t forgive.');
+      missionBrief('The package is loaded. Drive it down the mountain to Vinny’s warehouse, carefully.');
       tell('PACKAGE LOADED · ' + summitVehicleWord(c), 2.6);
     }
     function summitDeliverStage(m, line) {

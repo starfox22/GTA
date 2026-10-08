@@ -15,7 +15,7 @@ export default async function (t) {
   let s = await t.call('startMission', 3);
   t.assert(s.mission === 'Borrowed Stripes', 'mission 4 is Borrowed Stripes: ' + JSON.stringify(s));
   let r = await t.call('fortJob');
-  t.assert(r.stage === 0 && r.lockpick && /GATE/.test(r.instruction), 'stakeout stage with the lockpick: ' + JSON.stringify(r));
+  t.assert(r.stage === 0 && r.lockpick && /FORT SENTINEL/.test(r.instruction) && /MAREA/.test(r.instruction), 'stakeout stage with the lockpick: ' + JSON.stringify(r));
   // Watching from the causeway's end in a car: he comes out.
   await t.call('teleport', 7700, 8090);
   await t.call('drive', 'sedan', 0, 0);

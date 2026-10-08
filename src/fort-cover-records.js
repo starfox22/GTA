@@ -45,7 +45,7 @@
     const FORT_RECORDS_BEATS = [
       [0, 'RECORDS OFFICE', 'THE DUTY CLERK IS ON HIS BREAK', null],
       [1.4, 'CABINET 7', 'PERSONNEL · LOGISTICS · RESTRICTED', 'drawer'],
-      [3.0, 'FILE 7-ALPHA', 'RESTRICTED · WEAPONS DEVELOPMENT', 'paper'],
+      [3.0, 'FILE 7-ALPHA · HAWTHORN', 'RESTRICTED · WEAPONS DEVELOPMENT', 'paper'],
       [4.6, 'PAPERS TAKEN', 'FOLDED INSIDE THE TUNIC', 'drawer'],
     ];
     function fortRecordsSound(kind) {
@@ -81,7 +81,7 @@
       if (t0 < 3.6 && t >= 3.6) fortRecordsSound('paper');
       if (R.followed && t0 < 5.6 && t >= 5.6) {
         getElement('fortRecordsLine').textContent = 'FOOTSTEPS IN THE HALL';
-        getElement('fortRecordsNote').textContent = 'A DUTY OFFICER · “WHO SIGNED YOU IN, PRIVATE?”';
+        getElement('fortRecordsNote').textContent = 'A DUTY OFFICER · “LIEUTENANT? WHO SIGNED YOU INTO RECORDS?”';
         tone(220, 0.2, 0.08, 'square', 200);
       }
       if (!R.out && t >= end - 0.55) {
@@ -102,7 +102,7 @@
         if (gameMode === 'elevator') gameMode = 'play';
         canvas.focus();
         if (R.followed) fortCoverBlow('records', null);
-        else tell('RECORDS OFFICE · The weapons file is inside your tunic. Walk out the way you came in.', 4.5, { id: 'fort-cover' });
+        else if (!mission) tell('RECORDS OFFICE · The weapons file is inside your tunic. Walk out the way you came in.', 4.5, { id: 'fort-cover' });
       }
     }
     // A new game, WASTED / BUSTED: drop any search under way.

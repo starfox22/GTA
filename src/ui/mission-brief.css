@@ -1,0 +1,123 @@
+/* Mission brief (mission-brief.js): one sentence for a story step in the upper middle of the
+   screen, above the player and under the waypoint pill, then dropped into the pager strip. */
+#missionBrief {
+  position: absolute;
+  top: 22%;
+  left: 50%;
+  width: min(780px, calc(100vw - 32px));
+  transform: translate(-50%, 10px);
+  padding: 16px 30px 18px;
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  font-family: var(--ui-font);
+  /* A dark band behind the words that fades out at both ends: no box edges, the city still reads round it. */
+  background: linear-gradient(90deg, rgba(6, 8, 10, 0) 0, rgba(6, 8, 10, 0.62) 16%, rgba(6, 8, 10, 0.62) 84%, rgba(6, 8, 10, 0) 100%);
+}
+#missionBrief.show {
+  visibility: visible;
+  opacity: 1;
+  transform: translate(-50%, 0);
+  transition:
+    opacity 0.4s,
+    transform 0.55s var(--ui-ease);
+}
+#missionBrief.held {
+  visibility: hidden !important;
+}
+/* Folding: down toward the strip at the bottom middle, shrinking as it goes. */
+#missionBrief.fold {
+  visibility: visible;
+  opacity: 0;
+  transform: translate(-50%, calc(62vh - 40px)) scale(0.32);
+  transition:
+    opacity 0.8s cubic-bezier(0.6, 0, 0.9, 0.4),
+    transform 0.8s cubic-bezier(0.55, 0, 0.75, 0.3);
+}
+#missionBrief small {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.42em;
+  color: var(--ui-gold);
+  text-shadow: 0 1px 3px #000;
+}
+#missionBrief p {
+  margin: 0;
+  font:
+    700 clamp(19px, 2.15vw, 29px) / 1.3 var(--ui-font);
+  letter-spacing: -0.005em;
+  color: #f4f1ea;
+  text-shadow:
+    0 2px 18px #000,
+    0 1px 3px #000;
+  text-wrap: balance;
+}
+#missionBrief.show p {
+  animation: missionBriefIn 0.7s var(--ui-ease);
+}
+@keyframes missionBriefIn {
+  from {
+    opacity: 0;
+    filter: blur(5px);
+    letter-spacing: 0.04em;
+  }
+}
+#missionBrief .mb-rule {
+  display: block;
+  width: 120px;
+  height: 2px;
+  margin: 12px auto 0;
+  background: linear-gradient(90deg, transparent, var(--ui-gold), transparent);
+}
+#missionBrief.show .mb-rule {
+  animation: missionBriefRule 0.9s var(--ui-ease);
+}
+@keyframes missionBriefRule {
+  from {
+    width: 0;
+  }
+}
+/* A warning (KESSLER ALERTED THE MILITARY, COVER BLOWN): red kicker and rule. */
+#missionBrief.alert small {
+  color: #ff5a4a;
+}
+#missionBrief.alert .mb-rule {
+  background: linear-gradient(90deg, transparent, #ff5a4a, transparent);
+}
+/* The strip the brief lands in glows once. */
+#pager.brief-land {
+  animation: pagerBriefLand 1.1s ease-out 0.55s;
+}
+@keyframes pagerBriefLand {
+  0% {
+    box-shadow: 0 0 0 0 rgba(226, 200, 151, 0);
+  }
+  25% {
+    box-shadow: 0 0 0 2px rgba(226, 200, 151, 0.85), 0 0 26px rgba(226, 200, 151, 0.45);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(226, 200, 151, 0);
+  }
+}
+body.panel-open #missionBrief {
+  visibility: hidden;
+}
+/* Touch lays the card out at the top (touch-hud.css): the brief sits a little lower and folds upward. */
+.touch-mode #missionBrief {
+  top: 24%;
+}
+.touch-mode #missionBrief.fold {
+  transform: translate(-50%, -24vh) scale(0.32);
+}
+@media (max-height: 620px) {
+  #missionBrief {
+    top: 19%;
+    padding: 10px 24px 14px;
+  }
+  #missionBrief p {
+    font-size: clamp(17px, 1.9vw, 23px);
+  }
+}

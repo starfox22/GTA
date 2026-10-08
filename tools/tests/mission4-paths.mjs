@@ -46,9 +46,13 @@ export default async function (t) {
   t.assert(r.stage === 3 && r.inside, 'inside: ' + JSON.stringify(r));
   await t.call('lockpick', true, true);
   await t.wait(0.3);
-  await t.keys('KeyE', 5.8, { real: true });
-  await t.wait(0.5);
-  r = await t.call('fortJob');
+  // A passer-by looking pauses the pick (lockpickWatcher): keep at it until it gives.
+  for (let i = 0; i < 4; i++) {
+    await t.keys('KeyE', 5.8, { real: true });
+    await t.wait(0.5);
+    r = await t.call('fortJob');
+    if (r.car.trunkOpen) break;
+  }
   t.assert(r.stage === 4 && r.car.trunkOpen, 'trunk picked open: ' + JSON.stringify(r));
   await E(t);
   await t.wait(0.5);
@@ -68,7 +72,11 @@ export default async function (t) {
   await t.call('teleport', 9236, 8182);
   await t.wait(1);
   await E(t);
-  await t.wait(4);
+  // The sergeant reads the ID, the roster, the cover story, the photo: about sixteen seconds.
+  await t.wait(8);
+  cover = await t.call('fortCover');
+  t.assert(cover.inspecting > 5 && !cover.cleared, 'the papers are being read: ' + JSON.stringify(cover));
+  await t.wait(10);
   r = await t.call('fortJob');
   t.assert(r.stage === 7 && /RECORDS/.test(r.instruction), 'cleared at the gate: ' + JSON.stringify(r));
   await t.call('teleport', 9624, 8052);

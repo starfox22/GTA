@@ -177,6 +177,11 @@ packs with plain `<script src>` so the zip still plays from file://.
   The CIRRUS meeting (skyline-meeting.js) is driven only through `skyMeetingBegin/End/Report/Target` and
   `skyMeeting.stage`; a seated player is `player.sceneSeat` (`teleportPlayer` clears it); CIRRUS staff are lent only
   through `keyPerson.errand`.
+- Mission briefs (mission-brief.js): `missionBrief(text, opts)` is the only writer of the big centred step sentence;
+  it waits for a centred headline (`#announcement`) and folds into the pager strip (O folds it early). A long line of
+  dialogue goes in the subtitle (`missionLine`), never a speech bubble that size (`fortGateLine`); Fort Sentinel's
+  gate is talked through `FORT_GATE_TALK` (feet held by `fortGateTalking`), and in uniform `militaryInteract` never
+  forces the gate.
 - Service counters never sell nothing: health items in `SERVICE_CURES` and armour are refused when full
   (citylife-police.js `serviceAction`).
 - Mission vehicles take gang small-arms damage through `missionCageShare` (combat-rules.js `MISSION_CAGE`: 32 %

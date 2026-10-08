@@ -33,13 +33,24 @@ cleanup, the demo gate) are in missions-and-demo.md; this page is what each job 
   car in the fort's lot, the gate's outbound lane, his kerb on Marina Rd opposite the Marea (north side: he arrives
   westbound) and his walk to the door. Stages are `FORT_STAGE` (stakeout, tail, parked, trunk, take, change, gate,
   inside, out, meet).
-- Vinny's call gives the lockpick (`giveLockpick`, arsenal slot 8). Watching from the stakeout for 4 s with no stars
-  sends Kessler out: a red `muscle` car, `mission` (never retired, burns slowly), `missionDriver: 'kessler'`,
+- Story: Lieutenant Dale Kessler (logistics) is off duty at the Marea; his uniform and ID open Fort Sentinel's gate,
+  the records office holds the HAWTHORN weapons file, Consul Anton Varga buys it at CIRRUS. Every step opens with a
+  mission brief (`fortStage` = setStage + `missionBrief`, mission-brief.js) and a line from Vinny.
+- Vinny's call gives the lockpick (`giveLockpick`, arsenal slot 8). Watching from the stakeout for 6 s with no stars,
+  or 40 s after the start wherever the player is (`m.departAt`), sends Kessler out: a red `muscle` car, `mission` (never retired, burns slowly), `missionDriver: 'kessler'`,
   `trunkLoot` UNIFORM AND ID, driving `countyRoute` = `fortRoute()` (the navigation graph held to the right lane,
   as the cabs drive it). Wedged for 9 s he skips a node only where `spotUnseen` both ends.
 - The tail: `tailHeat` rises on his bumper (within `tooClose`) or close behind him while he moves; held up behind him
-  in traffic or at a drawbridge does not count. At 1 he made the tail (fail); farther than `lost` for `lostSeconds`
-  after he passed the stakeout, he is lost (fail). The meter shares `#stealthStatus` (fortJobUI after roofMissionUI).
+  in traffic or at a drawbridge does not count. At 1 he made the tail (fail). Farther than `lost` for `lostSeconds`
+  after he passed the stakeout is not a fail: the job sends the player to wait at the Marea (`m.waitClub`). The
+  meter shares `#stealthStatus` (fortJobUI after roofMissionUI).
+- Waiting at the club (`fortClubWait`): the player within 1100 units of his kerb, his car over 1700 away, for 14 s:
+  the car is put on a node 7-20 from the end of his route that `spotUnseen` and `canSpawnCar` allow (`m.jumped`).
+  City traffic at the Marina Rd junction can still hold him a while (`fortJob().blocker` says what is in his lane).
+- Shot at at the wheel (`fortAlerted`): a hit on his car within 0.6 s of him driving, or a round fired within 320
+  units: KESSLER ALERTED THE MILITARY (announce), `crime(32, 'seen')` + `setWantedLevel(5)`, a red brief; he bails
+  and runs (`ejectDriver`), the car unlocked with the keys in it (`m.keys`). His ID still works at the gate once
+  the stars are gone (Vinny: the army takes days to cancel anything). Carjacking him is not an alert.
 - `missionDriver` is declared in makeCar and copied to the driver on foot by `makeCarDriver` (carjack.js), so a
   carjacked, crashed or parked Kessler is still `fortKessler(m)`; the crowd streamer never moves him
   (`streamableWalker`). His walk to the door is `p.missionWalk`, run by `updateMissionWalker` (game-people.js) until
@@ -50,6 +61,12 @@ cleanup, the demo gate) are in missions-and-demo.md; this page is what each job 
   body); `fortKeysOpenTrunk` runs before `lockpickInteract`, so keys win over a pick in hand.
 - The change: in a car standing still it happens by itself (3 s); on foot, a held interact where no pedestrian
   within 260 units has a clear line and not inside the base. Then `wearUniform(true)` and `fortCoverBegin()`.
+- Gate (fort-cover.js): driven up in uniform the cover still owns the gate (`fortCoverOwnsGate` true short of the
+  arm in a non-military car): the sergeant sends the car back to park outside, no challenge, no FORCE THE GATE
+  prompt (`militaryInteract`/`militaryUI` skip it). On foot he halts the player within 160 units; past the arm without
+  papers he calls him back until `FORT_COVER_GATE.grace` (56 units), then the challenge. Showing the ID runs
+  `FORT_GATE_TALK` (about 16 s, `FORT_GATE_CLEARED_AT`) with the feet held (`fortGateTalking`, game-update.js);
+  lines go through `fortGateLine` (bubble when short, subtitle via `missionLine` always). A weapon drawn cancels it.
 - Base: fort-cover.js does the gate's papers (`FORT_COVER_GATE.check`), the soldiers' suspicion, the military-vehicle
   alarm and the records office (`FORT_RECORDS.door`, `fortCover.papers`). Blown before the papers: the job fails;
   after: get out with them however. Out (calm crossing, or off the base 260 units from the gate): `skyMeetingBegin`.
@@ -57,4 +74,15 @@ cleanup, the demo gate) are in missions-and-demo.md; this page is what each job 
   consul killed) fails the job, 'done' wins it. A won job keeps the uniform on (`fortJobKeepsUniform`,
   cleanupMissionExtras); the next job, a death or a new game takes it off.
 - Console: `fortJob()`, `fortSkip('arrive' | 'parked' | 'inside' | 'changed' | 'meet')` (always a fresh run).
-  Tests: mission4-tail.mjs, mission4-paths.mjs (and fort-cover, lockpick, sky-meeting for the systems).
+  Tests: mission4-tail.mjs, mission4-paths.mjs, mission4-alert.mjs, fort-gate-talk.mjs (and fort-cover, lockpick,
+  sky-meeting for the systems).
+
+## Mission briefs (mission-brief.js, ui/mission-brief.css)
+
+- `missionBrief(text, { kicker, tone, seconds })` puts one sentence in the upper middle (22% from the top, above the
+  player, under the waypoint pill) for its reading time (`missionBriefSeconds`: 4.5-10 game seconds), then folds it
+  down into the pager strip, which glows once (`#pager.brief-land`). A brief waits while a headline card
+  (`#announcement`) is centred and folds when one comes up; a newer brief replaces the one showing; O folds it early
+  (`toggleMissionCard`); with no job it folds. Missions 3 and 4 use it; the strip keeps setStage's instruction.
+- Jobs that open with their own line from the contact set `m.ownOpening` (story.js then skips the brief line).
+- Console `missionBrief()`; test tools/tests/mission-brief.mjs.

@@ -117,6 +117,8 @@
       fortJob: () => fortJobReport(),
       // Mission 4 test shortcuts (fortjob.js fortJobSkip): 'arrive', 'parked', 'inside', 'changed', 'meet'.
       fortSkip: (where) => fortJobSkip(where),
+      // The big centred brief of a story step (mission-brief.js): phase show/fold/idle, its text, seconds left.
+      missionBrief: () => missionBriefReport(),
       // Mission 2: put the player on the Blue Hour terrace at roof-local (x, y)
       // (default: out of the lift), starting A Seat at the Table dressed as a
       // guest if needed. Arrives the way the lift does (story.js updateElevator).

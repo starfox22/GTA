@@ -70,6 +70,8 @@
           !lootCrouching() &&
           // On his knees digging at the summit cairn (summitjob.js).
           !summitDigging() &&
+          // Showing the papers at Fort Sentinel's gate (fort-cover.js).
+          !fortGateTalking() &&
           // In a chair at a meeting's table: a movement key stands up (skyline-meeting.js).
           !skyMeetingSeatHold()
         ) {
