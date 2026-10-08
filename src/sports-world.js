@@ -225,7 +225,8 @@
           x + radius > stand.x &&
           x - radius < stand.x + stand.w &&
           y + radius > stand.y &&
-          y - radius < stand.y + stand.h,
+          y - radius < stand.y + stand.h &&
+          !(solidSkipBelow && jumpedOver(stand.height)),
       );
     }
 

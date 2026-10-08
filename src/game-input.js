@@ -106,6 +106,7 @@
       player.fall = null;
       player.pool = null;
       player.jumpUntil = 0;
+      cancelPlayerJump();
       // Out of a chair at a scene's table (skyline-meeting.js).
       player.sceneSeat = null;
       // Off any roof: the Blue Hour terrace or a building roof.
@@ -390,7 +391,7 @@
       // the keys fall through and do nothing.
       if ((is('skipRide') && rideSkipKey('skip')) || (is('skipStop') && rideSkipKey('cycle'))) return;
       holdActions(actions);
-      if (is('fire') || (is('handbrake') && !player.car)) shoot();
+      if (is('fire')) shoot();
       if (is('interact')) interact();
       if (is('poison')) poisonDrink();
       if (is('reload')) startReload();

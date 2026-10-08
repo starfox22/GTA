@@ -66,7 +66,7 @@
     }
     function northPointKeyBlocked(x, y, r = 0) {
       if (x < 3700 || x > 4500 || y < -4020 || y > -3090) return false;
-      return NORTH_POINT_KEY_SOLIDS.some((b) => x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h);
+      return NORTH_POINT_KEY_SOLIDS.some((b) => x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h && !(solidSkipBelow && jumpedOver(b.height)));
     }
     // The gate at the bridge landing: two pylons either side of the carriageway.
     const NORTH_POINT_KEY_GATE = { x: 3806, half: 60, size: 16 };
@@ -160,7 +160,8 @@
       for (const side of [-1, 1])
         NORTH_POINT_KEY_SOLIDS.push({ x: G.x - G.size / 2, y: K.row + side * G.half - G.size / 2, w: G.size, h: G.size, height: 72, kind: 'gate pylon' });
       registerFootObstacle(C.x, C.y, K.fountain.r + 3);
-      for (const l of northPointKeyFurniture().loungers) registerFootObstacle(l.x, l.y, 9, 4, l.a);
+      // Loungers are low enough to jump (player-jump.js).
+      for (const l of northPointKeyFurniture().loungers) registerFootObstacle(l.x, l.y, 9, 4, l.a, 3.2);
       // The roof decks and the lifts (skyline-lift.js), now the towers stand.
       prepareSkylineRoofs();
       const t = K.tile,

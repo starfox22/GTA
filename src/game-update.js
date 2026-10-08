@@ -53,12 +53,16 @@
         timed('sports', () => updateSports(deltaSeconds));
         // The lockpick held at a trunk or a locked door: the step in, the crouch, the pins (vehicle-trunk.js).
         updateLockpick(deltaSeconds);
+        // The jump on foot: the press, the crouch, the flight over low things, the landing (player-jump.js).
+        updatePlayerJump(deltaSeconds);
         if (player.parachute) updateParachute(deltaSeconds);
         else if (
           !player.car &&
           !transitRide &&
           !taxiRide &&
           !player.coaster &&
+          // In the air the jump carries the body; no steering until it lands.
+          !playerJumpFlying() &&
           // Off a drop: flying until the ground comes up (falls-body.js).
           !updatePlayerFall(deltaSeconds) &&
           // Thrown off a bike: flying, sliding or lying there (riders.js).
@@ -86,6 +90,7 @@
             // On foot the player runs; holding the walk action (Shift) walks.
             let s = player.swimming ? swimSpeed() : footPace();
             if (player.wading) s *= wadeFactor();
+            if (player.jump) s *= playerJumpPace();
             player.walk += deltaSeconds * strideRate(s);
             moveBody(player, ux * s * deltaSeconds, uy * s * deltaSeconds, 8);
           }
@@ -112,7 +117,7 @@
         updateDriveBy(deltaSeconds);
         // On the volleyball court a click hits the ball instead (beachvolley.js);
         // nothing is fired while thrown off a bike (riders.js).
-        if (!volleyTakesFire() && !player.thrown && !player.carjack && !player.sceneSeat && (keys.KeyF || (!player.car && keys.Space) || mouse.down)) shoot();
+        if (!volleyTakesFire() && !player.thrown && !player.carjack && !player.sceneSeat && (keys.KeyF || mouse.down)) shoot();
         timed('people', () => updatePeople(deltaSeconds));
         timed('bullets', () => updateBullets(deltaSeconds));
         timed('damage', () => updateDamage(deltaSeconds));

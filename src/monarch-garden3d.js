@@ -441,7 +441,8 @@
             z = G.pond.y + Math.sin(a) * (G.pond.ry + 34),
             bench = isleBox(x, 3.4, z, 14, 1, 4.4, ISLE.teak, root);
           bench.rotation.y = -a + Math.PI / 2;
-          registerFootObstacle(x, z, 5);
+          // A backless teak bench, low enough to jump (player-jump.js).
+          registerFootObstacle(x, z, 5, undefined, 0, 4);
         }
         // Garden lamps along the walks.
         for (let z = G.y + 40; z < G.y + G.h; z += 70)

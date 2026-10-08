@@ -81,7 +81,9 @@
         case 'fire':
           return foot ? 'AIM STICK' : 'FIRE';
         case 'handbrake':
-          return foot ? 'AIM STICK' : 'HANDBRAKE';
+          return 'HANDBRAKE';
+        case 'jump':
+          return foot ? touchButtonLabel('touchUp') : null;
         case 'ascend':
           return air ? touchButtonLabel('touchUp') : 'RISE';
         case 'descend':

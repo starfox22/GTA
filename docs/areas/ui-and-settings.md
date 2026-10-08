@@ -12,8 +12,11 @@ navigation.js (big map, GPS), cycles.js (bike share), src/shell.html + src/ui/* 
   code and tests keep reading `keys.KeyW` whatever the player bound.
 - New code reads `actionHeld('ascend')` and names keys in prompts with
   `keyName('interact')`, **never a literal "E"**.
-- Two actions may share a key only when their contexts do not overlap (Space: handbrake in a
-  car, fire on foot). `overrides` lets an air action take a key from movement in the `air`
+- Two actions may share a key only when their contexts do not overlap (Space: `jump` on foot,
+  `handbrake` in a vehicle, `rockets` in the air; each has its own virtual code, `Jump`, `Space`,
+  `RocketSalvo`, so readers check the context themselves and a jump is taken on the press's edge,
+  player-jump.js). Space no longer fires on foot (there was no other use for it).
+  `overrides` lets an air action take a key from movement in the `air`
   context (`ascend` / `descend` on the arrows); `controlConflicts()` knows that pair.
   `overrideCtx` limits where it takes over: `ascend` is also a `drive` action (climb + throttle
   = a wheelie, `wheelieHeld()`), but on the road ↑ stays forward too; the pad's stick-up in a

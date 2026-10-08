@@ -20,6 +20,16 @@ grid, shores and bridges, navigation and layout data: world-and-map.md.
   20 m/s, fatal from 30. Slopes up to the tumble (terrain-field.js) are unchanged. Console
   group `falls` (`cliffSpot`, `fallTest`, `fallState`, `bailOut`, `parachuteState`,
   `parachuteFallTo`).
+- Jump on foot (player-jump.js, the `jump` action, Space): crouch 0.1 s, a 0.5 m hop of
+  0.64 s carrying the run, landing 0.2 s through `playerImpact(..., 'jump')`; `player.jump` is
+  a carrier and sets `player.jumpUntil` for the air time (the on-the-ground rules read that).
+  What it clears is data, not geometry: a solid's `height` (foot furniture `jumpH`, props
+  `JUMP_PROP_HEIGHT`) below the soles (`playerJumpClearance()`, up to 1.05 m) is skipped through
+  `solidSkipBelow`, only in the jumping player's own step (`footSolid`); a heighted solid under
+  `SOLID_LOW_MIN` (3 units) marks water and never clears. A new low wall or bench joins by
+  carrying its height there; a new restricted area keeps its blocker out of it (Fort
+  Sentinel, the theme park and the Marea club are). Landing lower than the take-off is a fall.
+  Console `jumpReport()`, `jumpObstacles()`; tools/tests/player-jump.mjs.
 - Parachute (parachute.js; parachute3d.js draws it): only an aircraft bail-out (60 m clear)
   starts one; the ripcord is a second `bail` press once the first is let go, and
   `deployParachute()` runs once (`stage` stays 'canopy'). The pull is not an open canopy: the
