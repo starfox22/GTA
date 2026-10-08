@@ -19,7 +19,10 @@
        *    what is far brighter than a lit facade (postfx3d.js), so a lamp is not mirrored twice;
        *  - rain rings in the puddles tilt the normal (GROUND_NORMAL), so the glints shiver in the rain.
        * Only the ground draws them; nothing is added above the road. The sources (wetGlintSources, built once):
-       * the city's street lamps (`lamps`) and Monarch Isle's lanterns (`monarchLamps`); they replace the fixed
+       * the city's street lamps (`lamps`), Monarch Isle's lanterns (`monarchLamps`) and what the world registers
+       * with addWetGlint (bridge deck lamps, village and county lanterns, lit signs as wide soft sources, at most
+       * `signSlots` of the list); besides the ground, the bridge road and the scenic roads draw them
+       * (wetGlintPatch). They replace the fixed
        * additive smear each lamp used to lay south of its foot (signage3d.js addStreak: the same streak at every
        * angle, wet or drying) and the light map's pools smeared along the view (shop windows and neon spill
        * streaked where no lamp stood). The list (updateWetGlints, every frame from updateWetGround): the lit
@@ -29,7 +32,9 @@
        * Console `wetGlints()`.
        */
       const WET_GLINT = {
-          slots: { LOW: 0, MEDIUM: 16, HIGH: WET_GLINT_SLOTS, ULTRA: WET_GLINT_SLOTS },
+          slots: { LOW: 0, MEDIUM: 20, HIGH: WET_GLINT_SLOTS, ULTRA: WET_GLINT_SLOTS },
+          // Lit signs take at most this many of the slots (the lamps keep the rest).
+          signSlots: { LOW: 0, MEDIUM: 5, HIGH: 10, ULTRA: 10 },
           // How bright a street lamp's head is (scene-linear irradiance at 1 unit: ~0.3 at its foot 9 m below,
           // times the night's lamp power), and its size (units), which widens the lobe.
           intensity: 1500,
@@ -50,7 +55,7 @@
         },
         // The underside of a street lamp's head (render3d-streetprops.js LAMP_HEIGHT), where its light leaves it.
         LAMP_GLINT_HEIGHT = LAMP_HEIGHT - 1.2,
-        wetGlintState = { count: 0, candidates: 0, checked: 0, hidden: 0, reach: 0 },
+        wetGlintState = { count: 0, candidates: 0, checked: 0, hidden: 0, reach: 0, signs: 0 },
         wetGlintColour = new Three.Color();
       // The sources, built on the first wet night: head position, colour (scene-linear), strength, size, the key
       // a knocked-down prop has in lampLightOut, whether the city's blackout zones apply.
@@ -73,11 +78,23 @@
           const height = (l.kind === 'mole' ? 4.2 : 4.6) * UNITS_PER_METRE - 4;
           list.push({ x: l.x, y: height, z: l.y, r: wetGlintColour.r, g: wetGlintColour.g, b: wetGlintColour.b, w: WET_GLINT.lanternShare, size: WET_GLINT.lanternRadius, key: l.x + ',' + l.y, city: false });
         }
+        // Bridge lamps, village and county lanterns, lit signs (addWetGlint, lighting3d-sky.js).
+        for (const e of wetGlintExtras) list.push({ x: e.x, y: e.y, z: e.z, r: e.r, g: e.g, b: e.b, w: e.w, size: e.size, key: e.key, city: true, sign: e.kind === 'sign', group: e.group });
         wetGlintSources = list;
         wetGlintFade = new Float32Array(list.length);
         wetGlintHidden = new Uint8Array(list.length);
         wetGlintOrder = new Int32Array(WET_GLINT_SLOTS + 8);
         wetGlintDist = new Float64Array(WET_GLINT_SLOTS + 8);
+      }
+      // A source on a moving part (a drawbridge leaf): where its group's frame holds it now.
+      function wetGlintFollow(src) {
+        const e = src.group.group.matrixWorld.elements,
+          lx = src.group.x,
+          ly = src.group.y,
+          lz = src.group.z;
+        src.x = e[0] * lx + e[4] * ly + e[8] * lz + e[12];
+        src.y = e[1] * lx + e[5] * ly + e[9] * lz + e[13];
+        src.z = e[2] * lx + e[6] * ly + e[10] * lz + e[14];
       }
       /* The source list for this frame (from updateWetGround, weather3d.js): up to the tier's slots of the lit lamps
          nearest the view, each with its fade. Nothing when the street is dry, the lamps are off or on LOW. */
@@ -112,8 +129,9 @@
         // while it fades out; one pushed off the end fades from there.
         let kept = 0;
         for (let i = 0; i < sources.length; i++) {
-          const src = sources[i],
-            dx = src.x - cx,
+          const src = sources[i];
+          if (src.group) wetGlintFollow(src);
+          const dx = src.x - cx,
             dy = src.z - cy;
           let want = Math.abs(dx) < reach && Math.abs(dy) < reach;
           if (want && chase && dx * fwdX + dy * fwdY < -G.behind) want = false;
@@ -153,16 +171,21 @@
         // The first `slots` by distance fade in (a hidden one keeps its place, to be tested again, but fades out),
         // the rest fade out; those still showing fill the uniforms.
         const strength = G.intensity * (chase ? G.chaseGain : G.streetGain),
+          signCap = Math.min(slots, G.signSlots[tier.name] ?? 0),
           zone = cityLightUniforms.cityZonePower.value,
           riverLeft = cityLightUniforms.cityRiverLeft.value,
           A = wetUniforms.cityGlintA.value,
           B = wetUniforms.cityGlintB.value;
-        let count = 0;
+        let count = 0,
+          signs = 0;
+        st.signs = 0;
         for (let k = 0; k < kept; k++) {
           const i = wetGlintOrder[k],
-            hidden = chase && wetGlintHidden[i] === 1;
+            hidden = chase && wetGlintHidden[i] === 1,
+            // Signs past their share of the slots fade out like lamps past the slots.
+            overSigns = sources[i].sign && signs++ >= signCap;
           if (hidden) st.hidden++;
-          wetGlintFade[i] = k < slots && wetGlintDist[k] < 1e11 && !hidden ? Math.min(1, wetGlintFade[i] + step) : Math.max(0, wetGlintFade[i] - step);
+          wetGlintFade[i] = k < slots && wetGlintDist[k] < 1e11 && !hidden && !overSigns ? Math.min(1, wetGlintFade[i] + step) : Math.max(0, wetGlintFade[i] - step);
           const fade = wetGlintFade[i];
           if (fade <= 0 || count >= slots) continue;
           const src = sources[i],
@@ -172,7 +195,11 @@
           const a = A[count],
             b = B[count],
             w = src.w * strength * fade * fade * (3 - 2 * fade) * power;
-          if (a.x !== src.x || a.y !== src.y || a.z !== src.z || a.w !== w) a.set(src.x, src.y, src.z, w);
+          const x = src.x,
+            y = src.y,
+            z = src.z;
+          if (src.sign) st.signs++;
+          if (a.x !== x || a.y !== y || a.z !== z || a.w !== w) a.set(x, y, z, w);
           if (b.x !== src.r || b.y !== src.g || b.z !== src.b || b.w !== src.size) b.set(src.r, src.g, src.b, src.size);
           count++;
         }
@@ -198,6 +225,9 @@
           slots: WET_GLINT_SLOTS,
           tierSlots: WET_GLINT.slots[graphicsTier().name] ?? 0,
           sources: wetGlintSources ? wetGlintSources.length : 0,
+          extras: { lamps: wetGlintExtras.filter((e) => e.kind !== 'sign').length, signs: wetGlintExtras.filter((e) => e.kind === 'sign').length, moving: wetGlintExtras.filter((e) => e.group).length },
+          signs: st.signs,
+          signSlots: WET_GLINT.signSlots[graphicsTier().name] ?? 0,
           count: st.count,
           candidates: st.candidates,
           reach: Math.round(st.reach),
@@ -213,8 +243,15 @@
           lightMapStreaks: false,
         };
       }
-      const WET_GLINT_GLSL = `
-        if ( cityGlintCount > 0.5 && wetReflect > 0.003 && cityLampPower > 0.001 ) {
+      /* The glint GLSL for a wet surface whose wetness (0..1 of a full mirror's share), standing water and pixel
+         footprint (world units) are the GLSL expressions given; it reads `normal`, `material.roughness`,
+         `vCityWorld`, cityNoise and the glint uniforms (wetGlintPatch declares them for a surface other than the
+         ground), and adds to reflectedLight.directSpecular after the lights. */
+      function wetGlintGlsl(wetExpr, puddleExpr, fpExpr) {
+        return `
+        if ( cityGlintCount > 0.5 && cityLampPower > 0.001 ) {
+          float gWet = ${wetExpr}, gPuddle = ${puddleExpr}, gFp = ${fpExpr};
+          if ( gWet > 0.003 ) {
           vec3 gP = vCityWorld;
           // Towards the eye (the street camera is orthographic: one direction for the whole frame).
           vec3 gV = isOrthographic ? normalize( vec3( viewMatrix[ 0 ][ 2 ], viewMatrix[ 1 ][ 2 ], viewMatrix[ 2 ][ 2 ] ) ) : normalize( cameraPosition - gP );
@@ -222,12 +259,12 @@
           float gNoV = max( dot( gN, gV ), 1e-3 );
           // The roughness texture: worn and exposed aggregate (rougher, dimmer film) in patches a metre or two
           // across, finer grit where a pixel can resolve it; standing water stays smooth.
-          float gFine = 1.0 - smoothstep( 0.8, 2.5, fp );
+          float gFine = 1.0 - smoothstep( 0.8, 2.5, gFp );
           float gBreak = cityNoise( gP.xz * 0.085 + 3.0 ) * 0.65 + mix( 0.5, cityNoise( gP.xz * 0.37 + 11.0 ), gFine ) * 0.35;
-          float gRough = clamp( material.roughness * mix( mix( 0.72, 1.55, gBreak ), 1.0, puddle ), 0.06, 1.0 );
+          float gRough = clamp( material.roughness * mix( mix( 0.72, 1.55, gBreak ), 1.0, gPuddle ), 0.06, 1.0 );
           float gA = gRough * gRough;
           // How much of the surface carries water: the film thins over the worn patches.
-          float gCover = clamp( wetReflect * 2.4, 0.0, 1.0 ) * mix( mix( 1.0, 0.45, smoothstep( 0.45, 0.85, gBreak ) ), 1.0, puddle );
+          float gCover = clamp( gWet * 2.4, 0.0, 1.0 ) * mix( mix( 1.0, 0.45, smoothstep( 0.45, 0.85, gBreak ) ), 1.0, gPuddle );
           vec3 glint = vec3( 0.0 );
           for ( int i = 0; i < ${WET_GLINT_SLOTS}; i++ ) {
             if ( float( i ) >= cityGlintCount ) break;
@@ -253,4 +290,23 @@
             glint += gLb.rgb * ( gLa.w / gD2 * gDist * gVis * gF * gNoL );
           }
           reflectedLight.directSpecular += min( glint, vec3( 48.0 ) ) * ( cityLampPower * gCover * citySheenGain );
+        }
         }`;
+      }
+      const WET_GLINT_GLSL = wetGlintGlsl('wetReflect', 'puddle', 'fp');
+      /* WET LAMP GLINTS on another wet surface (a bridge deck, a scenic road): its uniforms and declarations,
+         and the glint after the lights; the material keeps its own program (no new one). */
+      function wetGlintPatch(shader, wetExpr, puddleExpr, fpExpr) {
+        shader.uniforms.cityGlintA = wetUniforms.cityGlintA;
+        shader.uniforms.cityGlintB = wetUniforms.cityGlintB;
+        shader.uniforms.cityGlintCount = wetUniforms.cityGlintCount;
+        shader.uniforms.citySheenGain = wetUniforms.citySheenGain;
+        shader.fragmentShader = shader.fragmentShader
+          .replace('#include <common>', '#include <common>\n' + WET_GLINT_PARS)
+          .replace('#include <lights_fragment_end>', '#include <lights_fragment_end>\n' + wetGlintGlsl(wetExpr, puddleExpr, fpExpr));
+      }
+      const WET_GLINT_PARS = `
+        uniform vec4 cityGlintA[ ${WET_GLINT_SLOTS} ];
+        uniform vec4 cityGlintB[ ${WET_GLINT_SLOTS} ];
+        uniform float cityGlintCount;
+        uniform float citySheenGain;`;

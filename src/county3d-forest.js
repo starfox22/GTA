@@ -418,6 +418,8 @@
           box(group, x + 4, 38, z, 9, 1.3, 1.4, darkMetal);
           box(group, x + 8, 37, z, 5, 1, 4, warmLamp);
           halo(group, x + 8, 37, z, 17);
+          // Its reflection in the wet road (WET LAMP GLINTS, wet-glints3d.js).
+          addWetGlint(x + 8, 36.4, z, '#ffd7a0', 0.7, 2.4);
           box(group, x + 23, 2, z + 2, 20, 3, 7, wood);
           for (const side of [-1, 1]) box(group, x + 23 + side * 7, 1, z + 2, 1.5, 3, 6, darkMetal);
           statics.push({

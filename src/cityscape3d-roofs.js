@@ -276,6 +276,8 @@
           length: 70,
           strength: style === 'lightbox' ? 0.7 : 1.1,
           mode: flicker ? 'flicker' : 'steady',
+          height: signY,
+          back: 12,
         });
       }
       function fireEscape(group, b) {

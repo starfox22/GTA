@@ -103,6 +103,8 @@
           // Dry tarmac in shade is lit by the sky, not a mirror of it (it came out
           // blue under every tree); the wet film keeps its reflection.
           .replace('#include <aomap_fragment>', '#include <aomap_fragment>\nreflectedLight.indirectSpecular *= mix( 0.3, 1.0, max( sFilm, sPuddle ) );\nreflectedLight.indirectDiffuse *= vec3( 1.04, 1.0, 0.9 );');
+        // The county town lanterns mirrored in the wet road (WET LAMP GLINTS, wet-glints3d.js).
+        wetGlintPatch(shader, 'clamp( sFilm * 0.38 + sPuddle * 0.66, 0.0, 1.0 )', 'sPuddle', 'length( fwidth( sp ) )');
       };
       scenicRoadMaterial.customProgramCacheKey = () => 'scenic-road';
       // Samples of a later road inside an earlier road's carriageway: the earlier one draws them.

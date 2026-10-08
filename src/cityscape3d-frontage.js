@@ -304,7 +304,7 @@
           faceBox(group, f, mid, signY, 1.2, signW + 2, signH + 2, 0.8, darkMetal);
           // Its colour on the pavement; on a south side also down the wet road (the streaks run
           // south). The streak's phase is given: left out, addStreak would draw it from cityRandom.
-          const streak = f.side === 0 ? { width: signW * 0.8, length: 70, strength: neon ? 1.1 : 0.7, mode: 'steady', phase: frontRandom() } : null;
+          const streak = f.side === 0 ? { width: signW * 0.8, length: 70, strength: neon ? 1.1 : 0.7, mode: 'steady', phase: frontRandom(), height: signY, back: 12 } : null;
           signSpill(b.x + faceX(f, mid, 14), b.y + faceZ(f, mid, 14), signW * 0.8, shopSignLight(name), neon ? 0.4 : 0.3, streak);
         }
         if (lit) signLightPools.push({ x: b.x + faceX(f, winU, 10), y: b.y + faceZ(f, winU, 10), r: Math.max(22, winW * 0.8), color: [1, 0.84, 0.63], strength: 0.4 * lit });

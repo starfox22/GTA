@@ -137,6 +137,7 @@
                 bridgeMember(g, V3(x, 28, side * plane), V3(x, 28, side * (plane - 9)), 0.7, 0.7, green);
                 box(g, x, 27.4, side * (plane - 10), 3, 1, 5, bridgeLampMaterial);
                 kitLight(kit.lights, g, x, 26, side * (plane - 10), '#ffd7a0');
+                bridgeGlint(g, x, 26.9, side * (plane - 10));
                 kit.pools.push(bridgePool(g, x, side * (plane - 16), 42));
               }
           }

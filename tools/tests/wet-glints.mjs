@@ -21,7 +21,8 @@ export default async function (t) {
     t.finite(night, 'wetGlints at night');
     t.assert(night.count > 0 && night.count <= night.tierSlots, 'lamps glint in the wet road: ' + JSON.stringify(night));
     t.assert(night.gain > 0 && night.lampPower > 0 && !night.lightMapStreaks, 'lit, from the lamp heads: ' + JSON.stringify(night));
-    for (const n of night.nearest) t.near(n.height, 60, 75, 'a glint source is a lamp head');
+    t.assert(night.extras.lamps > 0 && night.extras.signs > 0 && night.extras.moving > 0, 'bridge, village, county lamps, signs and drawbridge leaf lamps are sources: ' + JSON.stringify(night.extras));
+    t.assert(night.signs <= night.signSlots, 'signs keep to their share of the slots: ' + JSON.stringify(night));
     const rain = await t.call('rainView');
     if (rain) t.assert(!rain.sheenRadial, 'the street view keeps a non-zero citySheenDir: ' + JSON.stringify(rain));
     // The chase view: lamps in front of the lens, a few tested each frame for a building in the way.

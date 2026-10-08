@@ -102,7 +102,22 @@
          updateWeatherVisuals (weather3d.js). */
       // WET LAMP GLINTS (wet-glints3d.js): the street lamp heads the wet road mirrors this frame, A = head
       // position (world) and strength, B = colour (scene-linear) and the head's size.
-      const WET_GLINT_SLOTS = 32;
+      const WET_GLINT_SLOTS = 40;
+      /* Lamps and lit signs besides the city's street lamps and Monarch's lanterns (bridge lamps, the mountain
+         villages' and county towns' lanterns, shop signs): registered while the world is built (addWetGlint),
+         merged into the list by wet-glints3d.js. A source on a moving part (a drawbridge leaf) keeps its group
+         and its position in that group's frame. */
+      const wetGlintExtras = [];
+      function addWetGlint(x, y, z, color, share = 1, size = 2.6, kind = 'lamp', group = null) {
+        const c = new Three.Color(color);
+        wetGlintExtras.push({ x, y, z, r: c.r, g: c.g, b: c.b, w: share, size, kind, group, key: null });
+      }
+      // A source given in a group's frame: placed in the world now, and followed if the group moves.
+      function addWetGlintIn(group, x, y, z, color, share, size, moving = false) {
+        group.updateMatrixWorld(true);
+        const p = group.localToWorld(new Three.Vector3(x, y, z));
+        addWetGlint(p.x, p.y, p.z, color, share, size, 'lamp', moving ? { group, x, y, z } : null);
+      }
       const wetUniforms = {
         cityGlintA: { value: Array.from({ length: WET_GLINT_SLOTS }, () => new Three.Vector4()) },
         cityGlintB: { value: Array.from({ length: WET_GLINT_SLOTS }, () => new Three.Vector4()) },

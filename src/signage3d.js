@@ -302,13 +302,16 @@
       }
       /**
        * A street-level light source: tints the night light map (a pool on the
-       * ground and the lower facade) and, if it faces a street, smears across the
-       * wet road. `z` is the pavement line in front of the sign.
+       * ground and the lower facade) and, if it faces a street (`streak`), shows
+       * in the wet road as a soft coloured glint of the sign (WET LAMP GLINTS,
+       * wet-glints3d.js: a wide source, `streak.width` across, at
+       * `streak.height`, `streak.back` behind the pavement line). `z` is the
+       * pavement line in front of the sign.
        */
       function signSpill(x, z, radius, color, strength = 0.4, streak = null) {
         glowScratch.set(color);
         signLightPools.push({ x, y: z, r: radius, color: [glowScratch.r, glowScratch.g, glowScratch.b], strength });
-        if (streak) addStreak(x, z + 4, streak.width, streak.length, color, streak.strength ?? 1.2, streak);
+        if (streak) addWetGlint(x, streak.height ?? SHOP_FLOOR + 6, z - (streak.back ?? 12), color, (streak.strength ?? 1.2) * 0.3, Math.max(4, streak.width * 0.3), 'sign');
       }
       // Blackout contract: dim glows (and streaks) in districts without power.
       let glowPowerCheck = 0,
@@ -342,6 +345,8 @@
         bulbPool.instanceMatrix.needsUpdate = true;
         glowMesh.geometry.instanceCount = glowCount;
         streakMesh.geometry.instanceCount = streakCount;
+        // (Lamps and signs show in the wet road as glints now: the streaks are left to anything that still adds one.)
+        streakMesh.visible = streakCount > 0;
         for (const m of [glowMesh, streakMesh])
           for (const a of Object.values(m.geometry.attributes)) if (a.isInstancedBufferAttribute) a.needsUpdate = true;
       }
@@ -765,7 +770,7 @@
               addGlow(lamp.x, lamp.y, lamp.z, Math.min(16, 6 + s.width * 0.04), '#ffe2b0', 1.3, { day: 0 });
             }
           if (p.y < 60)
-            signSpill(p.x, p.z + 10, Math.max(40, s.width * 0.55), s.color, 0.3, { width: s.width * 0.7, length: 90, strength: 0.8 });
+            signSpill(p.x, p.z + 10, Math.max(40, s.width * 0.55), s.color, 0.3, { width: s.width * 0.7, length: 90, strength: 0.8, height: p.y, back: 10 });
         }
       }
       // Per frame: sign strength by the hour, flicker, LED channels and the ticker.

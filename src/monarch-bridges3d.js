@@ -128,6 +128,7 @@
             box(g, f.along, 9.6, side * (W / 2 + 18), 12, 1.6, 12, stone);
             mesh(sphereGeo, bridgeLampMaterial, g, f.along, 14, side * (W / 2 + 18), 3, 3, 3);
             kitLight(kit.lights, g, f.along, 14, side * (W / 2 + 18), '#ffe2b0');
+            bridgeGlint(g, f.along, 14, side * (W / 2 + 18), '#ffe2b0', 0.5);
           }
         }
         // The three arches, both planes: the rib, a tie girder along the deck edge,

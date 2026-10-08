@@ -568,6 +568,8 @@
         placePropInstance(mvLampArms, prop, l.x, height + 0.6, l.y, 1.6, 1.2, 1.6);
         placePropInstance(mvLampHeads, prop, l.x + 4.2, height - 3.4, l.y, 1.1, 2.6, 1.1, Math.PI / 4);
         prop.halo = glowHandle(addGlow(l.x + 4.2, height - 3.4, l.y, 12, '#ffcf8a', 0.85, { day: 0 }));
+        // Its reflection in the wet ground (WET LAMP GLINTS, wet-glints3d.js).
+        addWetGlint(l.x + 4.2, height - 4.6, l.y, '#ffcf8a', 0.3, 1.4);
         mvPool(batch, l.x + 4, l.y + 2, 8 * MVU, '#ffc27a', 0.42);
       }
       /* ---- The towns ------------------------------------------------------------------------- */

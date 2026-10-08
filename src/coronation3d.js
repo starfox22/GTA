@@ -65,6 +65,7 @@
         box(g, x, 32.4, z, 3.8, 0.8, 3.8, chrome);
         box(g, x, 26, z, 3.8, 0.6, 3.8, chrome);
         kitLight(kit.lights, g, x, 28.5, z, '#ffe6b8');
+        bridgeGlint(g, x, 27, z, '#ffe6b8');
         kit.pools.push(bridgePool(g, x, z - side * 8, 38));
       }
       /* An entrance pylon: a granite plinth, a cream shaft with fluted chrome fins on

@@ -82,12 +82,15 @@
         g.globalCompositeOperation = 'source-over';
         light.texture.needsUpdate = true;
       }
-      // A lamp's pool at (x, z) in the bridge's frame, and its smear on the wet road.
+      // A lamp's pool at (x, z) in the bridge's frame (its reflection in the wet deck is the lamp head's own glint:
+      // bridgeGlint, WET LAMP GLINTS).
       function bridgePool(g, x, z, size) {
-        g.updateMatrixWorld(true);
-        const p = g.localToWorld(new Three.Vector3(x, 0, z));
-        addStreak(p.x, p.z, size * 0.22, size * 1.5, '#ffcf96', 0.9, { phase: Math.random() });
         return { x, z, size };
+      }
+      // A deck lamp's head at (x, y, z) in the bridge's frame mirrored in the wet road (wet-glints3d.js); `moving`:
+      // on a part that moves (a drawbridge leaf).
+      function bridgeGlint(g, x, y, z, color = '#ffd7a0', share = 0.8, moving = false) {
+        addWetGlintIn(g, x, y, z, color, share, 2.2, moving);
       }
       const BRIDGE_DECK_LIGHT_PARS = `
         varying vec2 vDeckUv;
@@ -363,6 +366,9 @@
             .replace('#include <metalnessmap_fragment>', '#include <metalnessmap_fragment>\nmetalnessFactor = 0.0;')
             .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\n' + BRIDGE_ROAD_NORMAL)
             .replace('#include <lights_fragment_end>', '#include <lights_fragment_end>\n' + BRIDGE_DECK_LIGHT_APPLY.replace('* deckLampPower', '* deckLampPower * 1.7'));
+          // The lamps mirrored in the wet deck (WET LAMP GLINTS, wet-glints3d.js): the soaked surface's share, the
+          // ruts' and gutters' standing water, the pixel's footprint.
+          wetGlintPatch(shader, 'clamp( deckWet * 0.38 + puddle * 0.66, 0.0, 1.0 )', 'puddle', 'footprint');
         };
         m.customProgramCacheKey = () => 'bridge-road';
         return m;
@@ -507,6 +513,7 @@
           head = (hx, hy, hz, sx, sy, sz) => {
             box(g, hx, hy, hz, sx, sy, sz, bridgeLampMaterial);
             kitLight(lights, g, hx, hy - 1.5, hz, '#ffd7a0');
+            bridgeGlint(g, hx, hy - sy / 2, hz);
           },
           pool = (px, pz, size) => pools.push(bridgePool(g, px, pz, size));
         if (kind === 'globe') {
@@ -517,6 +524,7 @@
           for (const dz of [-5, 5]) {
             mesh(sphereGeo, bridgeLampMaterial, g, x, 25.4, z + dz, 2.2, 2.2, 2.2);
             kitLight(lights, g, x, 25.4, z + dz, '#ffe2b0');
+            bridgeGlint(g, x, 25.4, z + dz, '#ffe2b0', 0.45);
           }
           mesh(sphereGeo, bridgeLampMaterial, g, x, 27.5, z, 1.9, 2.4, 1.9);
           pool(x, z - side * 6, 34);

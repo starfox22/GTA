@@ -234,8 +234,8 @@ here when polishing; delete a line when it is fixed. Newest features first.
 
 ## Street frontage (cityscape3d-frontage.js, cityscape3d-shopwindows.js)
 - Shop windows on the north, east and west sides are not `b.shopPanes`: bullets never star them, and the damage code's `wallOffset` puts a bullet hole low on those sides 0.18 off the wall, behind the glass or plinth (both assume the south shopfront).
-- Only south-side signs lay a wet-road streak (STREAK_CAPACITY 3400 is shared city-wide; the street lamps and isle lanterns no longer take any: WET LAMP GLINTS); streaks now turn to the chase camera, so other sides could have them. Signs could join the glint list (wet-glints3d.js) instead of a fixed streak.
-- WET LAMP GLINTS cover the city lamps and Monarch lanterns only: the mountain village's lamps, bridge lamps (still `addStreak`) and county lamps have no glint; the ground shader is the only surface that draws them (roofs, bridge decks, county scenic roads do not).
+- Only south-side signs (those `signSpill` gives a `streak`) glint in the wet road: other sides could join the glint list (wet-glints3d.js) now that it follows any view.
+- WET LAMP GLINTS are drawn by the ground sheets, bridge roads and scenic roads only: the mountain villages' cobble decals and the range's terrain show no glint of their lanterns; sign glints are steady (no flicker or colour cycle as the old streaks had).
 - No bins in the yards (they would be walk-through without collision); a stoop's door stands two steps up where the crowd's door point is at street level.
 - 32 shop names for every shopfront in the city (the 2048² sign atlas is packed up front and nearly full): names repeat along a street.
 

@@ -283,6 +283,7 @@
               box(leaf, X(x), top + 28.4, z - side * 9.4, 2.8, 1, 4.6, iron);
               box(leaf, X(x), top + 27.8, z - side * 9.4, 2.3, 0.3, 3.9, bridgeLampMaterial);
               kitLight(kit.lights, leaf, X(x), top + 27.4, z - side * 9.4, '#ffe7c0');
+              bridgeGlint(leaf, X(x), top + 27.6, z - side * 9.4, '#ffe7c0', 0.8, true);
               kit.pools.push({ x: hinge + X(x), z: z - side * 12, size: 38 });
               continue;
             }
@@ -292,6 +293,7 @@
             for (const dz of [-5, 5]) {
               mesh(sphereGeo, bridgeLampMaterial, leaf, X(x), top + 25.4, z + dz, 2.2, 2.2, 2.2);
               kitLight(kit.lights, leaf, X(x), top + 25.4, z + dz, '#ffe2b0');
+              bridgeGlint(leaf, X(x), top + 25.4, z + dz, '#ffe2b0', 0.45, true);
             }
             mesh(sphereGeo, bridgeLampMaterial, leaf, X(x), top + 27.5, z, 1.9, 2.4, 1.9);
             kit.pools.push({ x: hinge + X(x), z: z - side * 6, size: 34 });
