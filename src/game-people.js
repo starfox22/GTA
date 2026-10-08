@@ -143,6 +143,8 @@
         if (p.pending && gameTime >= p.pending.at) crowdPerceive(p);
         // Paramedics and street-event people (livingcity.js) step aside for a reaction.
         if (updateCityRolePerson(p, deltaSeconds)) continue;
+        // A mission's scripted walk (fortjob.js: Kessler into the Marea).
+        if (updateMissionWalker(p, deltaSeconds)) continue;
         if (updateStroller(p, deltaSeconds)) continue;
         if (updateParkGuest(p, deltaSeconds)) continue;
         if (updateIsleWalker(p, deltaSeconds)) continue;

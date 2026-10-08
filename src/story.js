@@ -92,6 +92,8 @@
         title: 'Borrowed Stripes',
         contact: 'vinny',
         reward: 6500,
+        // fortjob.js: the stakeout where the Sentinel causeway meets the coast road.
+        start: { x: 7740, y: 8060 },
         phoneMessage:
           'Vinny gave you a mission: get inside Fort Sentinel as a soldier, steal the confidential weapons papers and deliver them to a diplomat at the top of EVOLUTION.',
         brief: 'Take an off-duty soldier’s uniform and badge, walk into Fort Sentinel, steal the weapons papers and deliver them to the consul at CIRRUS.',
@@ -441,6 +443,7 @@
       if (missionState.index === 0) startHarborJob(missionState);
       else if (missionState.index === 1) startRooftopHit(missionState);
       else if (missionState.index === 2) startSummitJob(missionState);
+      else if (missionState.index === 3) startFortJob(missionState);
       else if (missionState.index <= 8) startChallengeMission(missionState);
       else if (missionState.index < SIDE_JOB_FIRST) flightMissionStart(missionState);
       else startSideJob(missionState);
@@ -624,6 +627,10 @@
       }
       if (m.index === 2) {
         updateSummitJob(m, deltaSeconds);
+        return;
+      }
+      if (m.index === 3) {
+        updateFortJob(m, deltaSeconds);
         return;
       }
       if (m.index >= 2) {
