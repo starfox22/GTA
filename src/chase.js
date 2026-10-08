@@ -501,6 +501,8 @@
             if (officers[j].car === c) officers.splice(j, 1);
           vehicles.splice(i, 1);
         }
+      // A meeting at CIRRUS (skyline-meeting.js): gone, or a finished one left to play out.
+      skyMeetingWrapUp();
       for (let i = storyActors.length - 1; i >= 0; i--)
         if (['rooftop-hit', 'flight-witness'].includes(storyActors[i].missionTag))
           storyActors.splice(i, 1);

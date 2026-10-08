@@ -71,7 +71,8 @@ MONARCH MOTORS, Ridgeline, Fort Sentinel and the stadium: places-monarch-and-cou
   `'elevator'` during the fade, `teleportPlayer()` in the dark, then the roof carrier.
 - CIRRUS people are pedestrians with `keyPerson` (state `'key'`: never recruited or
   streamed), spawned within ~900 units; one table talks at a time, only while the player
-  is up there. Console `skyline()`, `skylineVisit(spot)`.
+  is up there. Console `skyline()`, `skylineVisit(spot)`. A story meeting there:
+  places-sky-meeting.md.
 
 ## Roofs and helipads (rooftops.js)
 

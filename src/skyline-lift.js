@@ -120,6 +120,9 @@
     // The prompt on the Key and on its roofs (game-ui.js asks before the vehicle prompt).
     function northPointKeyPrompt() {
       if (skyLift || player.car || (!player.buildingRoof?.islet && !onNorthPointKey(player.x, player.y))) return null;
+      // A story scene at CIRRUS (skyline-meeting.js) speaks first while it runs.
+      const meeting = skyMeetingPrompt();
+      if (meeting) return meeting;
       const reach = skyLiftInReach();
       if (reach) return reach.up ? reach.lift.promptUp : SKY_LIFT_DOWN_PROMPT;
       return skyBarPrompt();
@@ -127,6 +130,7 @@
     // The action key on the Key: a lift, or the bar (skyline-bar.js).
     function northPointKeyInteract() {
       if (skyLift || player.car || gameMode !== 'play') return false;
+      if (skyMeetingInteract()) return true;
       const reach = skyLiftInReach();
       if (reach) {
         if (reach.up && wantedStars > 0) {
@@ -156,6 +160,8 @@
       getElement('skyLiftVenue').textContent = lift.tower.name + ' · ' + (up ? lift.venue : 'STREET LEVEL');
       getElement('skyLiftFloor').textContent = up ? 'LOBBY' : 'FLOOR ' + lift.floors;
       tone(880, 0.14, 0.07, 'sine');
+      // The diplomat of a meeting at CIRRUS steps in with the player (skyline-meeting.js).
+      skyMeetingRideStart(lift, up);
       return true;
     }
     /* The ride: 0.45 s to black, the counter runs, the move at the dark moment,
@@ -180,6 +186,7 @@
           if (L.lift.id === 'bar') skyBarArrive();
         } else teleportPlayer(L.lift.lobby.x, L.lift.lobby.y + 18);
         player.a = Math.PI / 2;
+        skyMeetingRideMoved(L);
       }
       if (t >= SKY_LIFT_SECONDS) {
         skyLift = null;
@@ -187,6 +194,7 @@
         if (gameMode === 'elevator') gameMode = 'play';
         canvas.focus();
         tone(1320, 0.12, 0.06, 'sine');
+        if (skyMeetingRideEnd(L)) return;
         if (L.up)
           tell(
             L.lift.id === 'bar'

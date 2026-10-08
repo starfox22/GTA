@@ -10,5 +10,6 @@
     // @include src/skyline-islet.js
     // @include src/skyline-lift.js
     // @include src/skyline-bar.js
+    // @include src/skyline-meeting.js
     // @include src/skyline-console.js
     // END SUBSYSTEM: src/skyline.js

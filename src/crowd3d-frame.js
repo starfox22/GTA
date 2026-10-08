@@ -270,6 +270,14 @@
         if (zoomedIn && severedParts.length) drawSeveredParts();
         goreEffects();
         crowdPackMs = performance.now() - packStart;
+        // A meeting's table (skyline-meeting.js): the RESERVED card, the envelope, glasses put down.
+        const sceneProps = skyMeetingProps();
+        for (let i = 0; i < sceneProps.length; i++) {
+          const q = sceneProps[i];
+          if (!entityInView(q, 20)) continue;
+          crowdJoint(mOut, mIdentity, q.x, q.z, q.y, 0, 0, -q.a);
+          crowdEmit(q.kind === 'card' ? P.tableCard : q.kind === 'glass' ? P.cocktail : P.envelope, mOut, 1, 1, 1);
+        }
         for (const prop of crowd.props) {
           const part = propParts[prop.kind];
           if (!part || !entityInView(prop, 30)) continue;

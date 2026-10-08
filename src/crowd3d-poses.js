@@ -229,6 +229,21 @@
             setArm(T, 1, 0.5, 0.05, 0.95);
             if (p.sipping) setArm(T, 1, 1.0, 0.25, 2.45);
             else if (carry === 'coffee') setArm(T, 1, 0.75, 0.1, 1.5);
+            {
+              // A meeting's table (skyline-meeting.js): the glass from the table edge to the lips, and the
+              // arm reached across the table (a folder passed, taken, read).
+              const lift = spec?.drinkLift ?? p.drinkLift,
+                reach = spec?.sitReach ?? p.sitReach ?? 0;
+              if (lift != null) {
+                setArm(T, 1, 0.7 + lift * 0.3, 0.12 + lift * 0.13, 1.5 + lift * 0.95);
+                T[J_HEAD_PITCH] = -0.12 * lift;
+              }
+              if (reach > 0) {
+                setArm(T, 1, 0.7 + reach * 0.75, 0.08, 1.45 - reach * 1.1);
+                T[J_LEAN] = 0.05 + reach * 0.2;
+                T[J_HEAD_PITCH] = reach * 0.25;
+              }
+            }
             break;
           case 'crawl': {
             // Prone, hauling themselves along on alternate elbows, legs dragging.
@@ -322,6 +337,13 @@
           }
           case 'wait':
             T[J_HEAD_YAW] = Math.sin(t * 0.9 + seed) * 0.5;
+            break;
+          case 'watchCheck':
+            // A glance at the wristwatch: the left forearm up and turned in, the head down to it.
+            setArm(T, 0, 0.75, -0.35, 1.85);
+            T[J_ARMFREE[0]] = 0;
+            T[J_HEAD_PITCH] = 0.4;
+            T[J_HEAD_YAW] = 0.25;
             break;
           case 'thrown': {
             // Limbs flung out in the air, gathered once sliding or down.

@@ -502,6 +502,9 @@
         BODY = bodySet;
         // Things in hand.
         const right = mHand[1];
+        // A meeting's table (skyline-meeting.js): the glass or the folder in hand, at any detail.
+        const handProp = spec?.handProp || p.handProp;
+        if (handProp && p.hp > 0 && !hold) crowdEmit(handProp === 'folder' ? P.folder : P.cocktail, right, 1, 1, 1);
         if (detail > 1 && !hold) {
           const pose = p.pose || (p.onPhone ? 'phone' : null);
           if (PHONE_POSES.has(pose)) crowdEmit(P.phone, right, 1, 1, 1);

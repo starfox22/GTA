@@ -13,6 +13,8 @@
       player.thrown = null;
       cancelCarjack();
       cleanupMissionExtras();
+      // A new or restarted job: no meeting at CIRRUS left playing out (skyline-meeting.js).
+      skyMeetingEnd();
       clearDepotFloor();
       cancelGarageJob();
       player.parachute = null;

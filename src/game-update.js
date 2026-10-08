@@ -65,7 +65,9 @@
           !updateCarjack(deltaSeconds) &&
           !updateMountainFooting(deltaSeconds) &&
           // Crouched over a body, taking the gun (ammo-supply.js).
-          !lootCrouching()
+          !lootCrouching() &&
+          // In a chair at a meeting's table: a movement key stands up (skyline-meeting.js).
+          !skyMeetingSeatHold()
         ) {
           const x = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0),
             y = (keys.KeyS || keys.ArrowDown ? 1 : 0) - (keys.KeyW || keys.ArrowUp ? 1 : 0);
@@ -104,7 +106,7 @@
         updateDriveBy(deltaSeconds);
         // On the volleyball court a click hits the ball instead (beachvolley.js);
         // nothing is fired while thrown off a bike (riders.js).
-        if (!volleyTakesFire() && !player.thrown && !player.carjack && (keys.KeyF || (!player.car && keys.Space) || mouse.down)) shoot();
+        if (!volleyTakesFire() && !player.thrown && !player.carjack && !player.sceneSeat && (keys.KeyF || (!player.car && keys.Space) || mouse.down)) shoot();
         timed('people', () => updatePeople(deltaSeconds));
         timed('bullets', () => updateBullets(deltaSeconds));
         timed('damage', () => updateDamage(deltaSeconds));

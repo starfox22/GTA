@@ -148,7 +148,8 @@
         else if (SHOWY_CAR_TYPES.has(car.type) || car.type in PRESTIGE_TYPES) kind = 'niceCar';
       } else {
         if (player.hp < 45) kind = 'playerHurt';
-        else if (!playerUnarmed()) kind = selectedWeaponIndex === KNIFE_INDEX ? 'knifeNear' : 'armedNear';
+        // Seated at a meeting's table (skyline-meeting.js) nothing is in his hand to see.
+        else if (!playerUnarmed() && !player.sceneSeat) kind = selectedWeaponIndex === KNIFE_INDEX ? 'knifeNear' : 'armedNear';
         else if (wantedStars > 0) kind = 'wanted';
       }
       if (!kind || seededRandom() > 0.35) return;
