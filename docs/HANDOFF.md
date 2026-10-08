@@ -16,7 +16,7 @@ rules, workflow), then this page, then only the area doc your task needs (`docs/
   A new session develops on its own working branch and fast-forwards `main` only when the owner approves in the
   current conversation (never assume it; the approval covers that one push).
 - **Published build**: the claude.ai artifact https://claude.ai/artifact/NtDPAmpmNsgU8LPW4hH13B (split build:
-  `index.html` + `media/`; version 54 is the chase view round from `claude/trusting-cannon-seq2mv`, published October 7; version 53 is the build that went to `main` on October 6). Version numbers on that link are the artifact's own
+  `index.html` + `media/`; version 55 is the chase detail round from `claude/trusting-cannon-seq2mv`, published October 8; version 54 the chase view round, October 7; version 53 is the build that went to `main` on October 6). Version numbers on that link are the artifact's own
   counter, not `GAME_VERSION`.
   The downloadable zip is built by CI for whatever branch is pushed.
 - **Tests**: `node tools/test.mjs` runs the whole regression suite (137 tests, ~50 minutes on the 4-core
