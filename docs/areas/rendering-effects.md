@@ -14,7 +14,8 @@ mist (`fxPuff`) to the pool (crowd3d-gore.js `goreEffects`).
 - `fxs` is a struct of typed arrays (FX_CAPACITY 1024 slots): position, velocity, life, size and growth, colour
   and opacity, `heat`/`cool` (fire), `glow` (light added), `twinkle`, rotation and spin, atlas `frame`, the
   ground height under it (`floor`), `rise` (buoyancy), `drag` (towards the wind for `wind` > 0), `gravity` and
-  `bounce`, `streak` (seconds of motion blur), `delay` and `fadeIn`. Spawn with `fxAdd`, or the recipes'
+  `bounce`, `streak` (seconds of motion blur), `delay`, `fadeIn` and `thin` (opacity times (first size / size) ^ thin:
+  a plume that spreads thins as it grows). Spawn with `fxAdd`, or the recipes'
   `fxPuff`, `fxBit`, `fxSpark`, `fxLegacy` (the old `{x, y, z, vx, ..., case, glow, smoke, glass}` record).
   Nothing allocates per particle or per frame; a dead slot is swap-removed; a full pool drops the new particle.
   Randomness is `fxRandom()`: effects never draw from the game's Math.random stream.
@@ -71,6 +72,16 @@ title) and uploads the texture once, when it is done (~10 ms of work warm, sever
   water a splash. Rockets in flight trail smoke (render3d-frame.js; the Apache's lay their own).
 - FLAMES (`fxFlames`): short-lived flame puffs that rise, streak and cool into smoke, and embers: ground fires
   after a blast (`fxGroundFire` from `fires`, with their lights), a burning engine bay, a wreck (damage3d-bodies.js).
+- WOOD SMOKE (chimney-smoke3d.js `fxWoodSmoke`, `CHIMNEY_SMOKE`): the mountain chimneys and the 4x4 club's
+  chimney, grill and fire ring. Small blue-grey puffs (0.4 m at the pot, ~3.6 m at the top, 7.5 s) with `thin` 0.8,
+  so the plume keeps one faint optical depth as it widens; they leave the pot at 1.25 m/s, settle to 0.5 m/s and
+  take the wind (`drag` 0.45: the plume bends over), each emitter wandering sideways on two slow sines. The rate
+  follows the plume's speed (puffs ~3.6 units apart, 1.6-6 a second), so a calm night does not stack them into a
+  post. Fires burn by a fixed hash per chimney (30 % by day, 60 % at night, dimmer and darker then; the club's
+  always); at most 3/5/7/8 plumes by tier, the nearest the view's centre. A plume that starts (comes into reach,
+  a teleport) is seeded whole (`chimneyPlumeSeed`: puffs at their ages, moved by fxStep's motion in closed form),
+  and the emitters keep the pool's clock (at most 0.04 s a frame). Console `chimneySmoke()`. (Before:
+  `engineSmoke` without an opacity or a floor wrote NaN into the slot.)
 - The blast, fire and smoke counts follow the tier (FX_TIER_SHARE: LOW 0.55, MEDIUM 0.8).
 
 ## Numbers (headless SwiftShader, HIGH, render scale 0.5, shadows off, a power-1 blast 30 m ahead)

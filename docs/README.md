@@ -41,6 +41,7 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/rendering.md | Cameras and view, draw-call rules |
 | areas/rendering-buildings.md | Building archetypes and roofs, the street frontage on every side (shops, lobbies, stoops, loading bays, backs, fire escapes), shop windows, the sign design system (`sign()`, `SIGN_DESIGNS`, families), billboards, the glow field |
 | areas/rendering-weather.md | Ground, wet roads, water, rain, splashes, spray, lightning, tiers, and their street-level (chase view) numbers: near rain, rain haze, wet reflections, streaks |
+| areas/rendering-weather-wet.md | Wet streets at night: the street lamps mirrored in the wet road (WET LAMP GLINTS), both views; sources, look numbers, A/B switches |
 | areas/chase-view.md | The third-person CHASE view (V): where the camera stands (game state, its projection, walls and the close-quarters crane), drawing it (draw distance, culling, shadows), the reticle and lock-on, its game rules |
 | areas/chase-view-input.md | The chase view's input: pointer lock and CURSOR LOOK, look behind, pad and touch look, camera-relative movement |
 | areas/rendering-chase.md | The chase view's draw distance and level of detail: far cells drawn from the far copy, shadow casters and proxies, small props and pools, people and vehicles by distance, the `chaseCamera().view` report |

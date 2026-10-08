@@ -135,8 +135,7 @@
       // power, switched off while a car has the lamp down (damage3d.js sets `visible`).
       for (const p of lampGlowPending) {
         p.prop.halo = glowHandle(addGlow(p.x, LAMP_HEIGHT - 1, p.z, 28, '#ffd99b', 0.55, { day: 0, phase: 0 }));
-        // Its reflection smeared down the wet street towards the camera (signage3d.js).
-        addStreak(p.x, p.z + 8, 8, 64, '#ffcf96', 0.55);
+        // (Its reflection in a wet road is the ground's own: WET LAMP GLINTS, wet-glints3d.js.)
       }
       lampGlowPending.length = 0;
       // Street signs (after the cityscape: their glow and spill live in signage3d.js).

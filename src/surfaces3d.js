@@ -30,52 +30,20 @@
       // GROUND_PARS, GROUND_SHEET_PARS, GROUND_ALBEDO, GROUND_MARKS,
       // GROUND_ROUGHNESS and GROUND_NORMAL are the ground materials (ground-shader3d.js).
       // @include src/ground-shader3d.js
-      // After the lights: the sky mirrored in the film and the puddles (what stands
-      // in the way is added by the wet reflections pass on HIGH / ULTRA), and at
-      // night the street lamps, shop windows and neon smeared down the wet road
-      // towards the camera. A lamp head ~33 units up is mirrored ~28 units on the
-      // camera's side of its pool, and wet asphalt stretches that into a streak
-      // along the view: the night light map is read at several points up the
-      // view direction and high-passed across it, so only the bright cores of the
-      // pools come through, as narrow streaks in the lamps' own colours (sharper
-      // and brighter in standing water, broken up by the rings in the rain).
-      // STREET LEVEL (the chase view sets citySheenDir to 0, weather3d.js): the
-      // streak runs away from the camera through each point, and a lamp is
-      // mirrored where its pool lies about 1.2 to 4.7 times the point's distance
-      // beyond it (a lamp head several times the camera's height); without the
-      // wet reflections pass the film mirrors more sky as the view grazes it.
+      // After the lights: the sky mirrored in the film and the puddles (what stands in the way is added by the
+      // wet reflections pass on HIGH / ULTRA), and at night the street lamps' heads mirrored in the water as
+      // glossy highlights (WET LAMP GLINTS, wet-glints3d.js). STREET LEVEL (the chase view sets citySheenDir to
+      // 0, weather3d.js): without the wet reflections pass the film mirrors more sky as the view grazes it.
+      // @include src/wet-glints3d.js
       const GROUND_WET_LIGHT = `
         {
-        vec2 along = citySheenDir;
-        float sheenAway = 0.0, wetSky = 1.0;
-        if ( dot( along, along ) < 0.25 ) {
-          vec2 away = vCityWorld.xz - cameraPosition.xz;
-          sheenAway = max( length( away ), 1.0 );
-          along = away / sheenAway;
+        float wetSky = 1.0;
+        if ( dot( citySheenDir, citySheenDir ) < 0.25 ) {
           vec3 skyward = normalize( ( viewMatrix * vec4( 0.0, 1.0, 0.0, 0.0 ) ).xyz );
           if ( cityReflectOut < 0.5 ) wetSky += 1.6 * pow( 1.0 - clamp( dot( skyward, geometryViewDir ), 0.0, 1.0 ), 5.0 );
         }
         reflectedLight.indirectSpecular += citySkyReflect * wetReflect * wetSky;
-        if ( wetReflect > 0.003 && cityLampPower > 0.001 ) {
-          vec2 across = vec2( -along.y, along.x );
-          // Rings in a puddle tilt the normal: the streak shivers sideways.
-          vec2 wobble = across * normal.x * 30.0;
-          float spread = mix( 1.0, 0.55, smoothstep( 0.4, 0.9, wetReflect ) );
-          vec3 streak = vec3( 0.0 );
-          for ( int i = 0; i < 6; i++ ) {
-            float d = sheenAway > 0.0 ? min( sheenAway * ( 1.2 + float( i ) * 0.7 ) * spread, 1200.0 ) : ( 12.0 + float( i ) * 11.0 ) * spread;
-            vec2 uvC = ( vCityWorld.xz + along * d + wobble - cityLampRect.xy ) * cityLampRect.zw;
-            vec2 side = across * 9.0 * cityLampRect.zw;
-            vec3 core = texture2D( cityLampMap, uvC ).rgb;
-            vec3 flank = 0.5 * ( texture2D( cityLampMap, uvC + side ).rgb + texture2D( cityLampMap, uvC - side ).rgb );
-            // How much brighter than its flanks: ~0.15 on a pool's axis, nothing
-            // a few units off it, so a pool ~100 units wide leaves a streak ~15 wide.
-            float c = dot( core, vec3( 0.3333 ) ), f = dot( flank, vec3( 0.3333 ) );
-            float peak = clamp( ( c - f ) / max( c, 1e-3 ) / 0.13, 0.0, 1.0 );
-            streak += core * peak * peak * ( 1.0 - float( i ) * 0.12 );
-          }
-          reflectedLight.directSpecular += streak * cityLampPower * cityPower() * wetReflect * citySheenGain;
-        }
+        ${WET_GLINT_GLSL}
         }`;
       // With the wet reflections pass on, the wet ground marks itself in the HDR
       // target's alpha, negative (nothing else writes a negative alpha), for the
@@ -130,7 +98,7 @@
             '#include <common>',
             '#include <common>\n' +
               hill +
-              'uniform vec2 cityGroundTexel;\nuniform float cityRain;\nuniform float cityRainTime;\nuniform float cityWetDetail;\nuniform float cityReflectOut;\nuniform vec3 citySkyReflect;\nuniform vec2 citySheenDir;\nuniform float citySheenGain;\n' +
+              'uniform vec2 cityGroundTexel;\nuniform float cityRain;\nuniform float cityRainTime;\nuniform float cityWetDetail;\nuniform float cityReflectOut;\nuniform vec3 citySkyReflect;\nuniform vec2 citySheenDir;\nuniform float citySheenGain;\nuniform vec4 cityGlintA[ ' + WET_GLINT_SLOTS + ' ];\nuniform vec4 cityGlintB[ ' + WET_GLINT_SLOTS + ' ];\nuniform float cityGlintCount;\n' +
               SURFACE_NOISE +
               RAIN_RINGS +
               GROUND_PARS,
