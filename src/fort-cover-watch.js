@@ -123,7 +123,7 @@
           why = 'climbing';
         }
         if (spot) {
-          rate += 12 + 10 * close;
+          rate += 6 + 6 * close;
           why = why || 'restricted';
         }
         if (e.coverFace > 3) {
@@ -131,7 +131,7 @@
           why = why || 'loitering';
         }
         if (running) {
-          rate += 16 + 22 * close;
+          rate += 10 + 18 * close;
           why = 'running';
         }
         // Marching eyes front: the drill platoon half notices.
@@ -150,7 +150,7 @@
         top = Math.max(top, rate);
         sum += rate;
       }
-      const rate = top + 0.35 * (sum - top);
+      const rate = top + 0.3 * (sum - top);
       fortCover.rate = rate;
       if (rate > 0) {
         fortCover.suspicion += rate * deltaSeconds;

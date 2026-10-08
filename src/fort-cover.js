@@ -225,6 +225,13 @@
         militarySpeak(guard, 'HEY! YOUR PAPERS!', 2.4);
         return;
       }
+      // A weapon out in the middle of it: no papers today.
+      if (selectedWeaponIndex !== FISTS_INDEX) {
+        fortCover.inspect = null;
+        fortCover.saidAt = gameTime;
+        militarySpeak(guard, 'SHOULDER THAT WEAPON, PRIVATE.', 2.6);
+        return;
+      }
       const t0 = I.t;
       I.t += deltaSeconds;
       const at = (s) => t0 < s && I.t >= s;
