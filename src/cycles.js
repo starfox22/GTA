@@ -165,8 +165,6 @@
       MISSION_STARTS = () => [
         [0, HARBOR.truck],
         [1, ROOF_HIT.outfit],
-        [2, { x: 1000, y: 666 }],
-        [3, { x: 2715, y: 1570 }],
         [4, LOC.cinema],
         [5, { x: 1420, y: 1664 }],
         [6, ROOFTOP.door],

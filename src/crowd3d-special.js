@@ -76,6 +76,12 @@
             }
             return sp;
           }
+          // Digging at the summit cairn (summitjob.js, mission 3).
+          if (summitDigging()) {
+            sp.pose = 'kneelDig';
+            sp.facing = player.digFacing ?? player.a;
+            return sp;
+          }
           if (player.tumble) {
             sp.pose = 'tumble';
             sp.elevation = entityElevation(player) + 2;

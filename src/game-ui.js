@@ -502,6 +502,7 @@
       drawWeapon();
       civicUI();
       challengeMissionUI();
+      summitJobUI();
       updateCarRadioUI();
       updateExplorationUI();
       updateTouchUI();

@@ -485,6 +485,8 @@
     }
     function cleanupMissionExtras() {
       player.disguised = false;
+      summitCleanup();
+      fortJobCleanup();
       resetDepotDoors();
       // Mission 2's ambulance, if it has not pulled up yet (roofmission-poison.js).
       settleRoofAmbulance(rooftopJob());

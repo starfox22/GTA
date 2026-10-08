@@ -128,6 +128,8 @@
       driver.color = vehicle.driverColor || driver.color;
       if (vehicle.driverFemale !== undefined) dressAsSex(driver, !!vehicle.driverFemale);
       driver.carry = null;
+      // A story character at the wheel (fortjob.js: Kessler) stays himself on foot.
+      if (vehicle.missionDriver) driver.missionDriver = vehicle.missionDriver;
       pedestrians.push(driver);
       return driver;
     }
