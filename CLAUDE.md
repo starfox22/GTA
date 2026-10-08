@@ -111,6 +111,8 @@ packs with plain `<script src>` so the zip still plays from file://.
   list holding people is retired by `updateSeveredParts` / `updateGore`). Blood decals draw only through blood3d.js (one
   instanced draw); the spray reaches walls and cars only through `bloodSprayObstacle`, flying drops land through
   `landBloodDrop`. Every rigPart carries `crowdWound`; on the player's body a lost part folds by `pbSkin.w`.
+  Blood decals' look is per instance (`aBloodLook`: fade, dry, wash) in one program, specular capped and tinted. Where
+  gore particles start is `goreJointPoint` (the drawn pose via `city3D.goreCutPoint` when there is one): cosmetic only.
 - `shooterInView()` (combat-rules.js) is the only rule for whether an NPC may fire at the
   player (on screen, from the camera footprint `screenViewHalf`): every new shooter checks it.
 - No pickups on the street at all: health is bought indoors (hospitals, diners, bars, clubs,
