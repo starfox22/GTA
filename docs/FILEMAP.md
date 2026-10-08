@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-554 files in the include tree, 190,599 lines.
+554 files in the include tree, 190,785 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -210,14 +210,14 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/citylife-civic.js ▸ City life: officers and the wanted level (updateOfficers, updateWanted), strikePerson (blood: blood.js), updateCivic(), navigation and the civic map.
 
-- `src/blood.js`   743 — Blood: wound spatter, drops, the pool a body bleeds out slowly (bleed, bodyPool, addBloodPool/Drop), their stamps (bloodStamp), growth and ageing …
+- `src/blood.js`   771 — Blood: wound spatter, drops, the pool a body bleeds out slowly (bleed, bodyPool, addBloodPool/Drop), their stamps (bloodStamp), growth and ageing …
 - `src/car-stains.js`   316 — Car stains: the blood a vehicle carries after it hits someone (c.stains), aged and washed here; carblood3d.js draws it.
-- `src/gore.js`   453 — ▸ Gore rules and state: how hard a hit lands by calibre, range and zone (goreHit), the point-blank shotgun load, limbs and heads lost to a heavy hit …
+- `src/gore.js`   456 — ▸ Gore rules and state: how hard a hit lands by calibre, range and zone (goreHit), the point-blank shotgun load, limbs and heads lost to a heavy hit …
 
 ## src/gore.js ▸ Gore rules and state: how hard a hit lands by calibre, range and zone (goreHit), the point-blank shotgun load, limbs and heads lost to a heavy hit …
 
 - `src/gore-props.js`   126 — Severed parts: a limb a heavy hit took off (gore.js goreSever), thrown as a physics prop that tumbles, bounces off walls and the ground and comes to …
-- `src/gore-console.js`   177 — Gore console (DeadEndCity, group 'gore', registered in game-console-crowd.js): goreReport, goreShot, goreBlast, goreSeed and bloodPlanTable …
+- `src/gore-console.js`   190 — Gore console (DeadEndCity, group 'gore', registered in game-console-crowd.js): goreReport, goreShot, goreBlast, goreSeed and bloodPlanTable …
 
 ## src/pursuit.js ▸ Police response and pursuit tactics
 
@@ -492,7 +492,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/render3d-resources.js`   520 — GPU resource lifecycle: shared geometries, model pruning and disposal.
 - `src/render3d-hiccups.js`   377 — Hiccup log: what each drawn frame created for the first time (shader programs, textures, geometries) and the slowest frames' renderer CPU split; read …
 - `src/payphone3d.js`   597 — The story payphone where mission 1 starts: a 1990s yellow pedestal payphone with its lit PHONE sign, handset, keypad, directory and grime, the …
-- `src/render3d-api.js`   442 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
+- `src/render3d-api.js`   444 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
 - `src/render3d-frame.js`   614 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
 
 ## src/flight-view3d.js ▸ Flight camera and aerial perspective
@@ -615,7 +615,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/civic3d.js ▸ Civic and rooftop meshes
 
 - `src/civic3d-hotels.js`   176 — Motels, inns and lodges ('sleep' places with a building of their own): a porte-cochere on slender columns over a stepped and ramped lobby with lit …
-- `src/blood3d.js`   189 — Blood decals in 3D: every pool, spatter, drop and tyre track on the ground and every splash on a wall (blood.js bloodPools) in ONE instanced draw …
+- `src/blood3d.js`   224 — Blood decals in 3D: every pool, spatter, drop and tyre track on the ground and every splash on a wall (blood.js bloodPools) in ONE instanced draw …
 
 ## src/sports3d.js ▸ Sports stadium and match meshes
 
@@ -716,8 +716,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/crowd3d-joints.js`   139 — Crowd 3D joint indices and per-person pose state (crowdState, setArm, crowdDancePose).
 - `src/crowd3d-poses.js`   901 — Crowd 3D pose targets and IK for arms and legs (crowdPoseTargets, solveLeg).
 - `src/crowd3d-roofparty.js`   141 — Crowd 3D poses for mission 2 (the Blue Hour): Vescari's poisoned toast beat by beat, and the bodyguards' heads turning with their sight cones.
-- `src/crowd3d-draw.js`   696 — drawCrowdPerson(): weapon holds, phone poses and the far-figure shortcut.
-- `src/crowd3d-gore.js`   258 — Crowd 3D gore: what the rig draws of gore.js's state: lost parts left out, a ragged stump (torn cloth and skin, raw flesh, the bone) at each cut …
+- `src/crowd3d-draw.js`   698 — drawCrowdPerson(): weapon holds, phone poses and the far-figure shortcut.
+- `src/crowd3d-gore.js`   361 — Crowd 3D gore: what the rig draws of gore.js's state: lost parts left out, a ragged stump (torn cloth and skin, raw flesh, the bone) at each cut …
 - `src/crowd3d-special.js`   484 — Crowd 3D special characters: player, officers, soldiers, gangs, swimmers, parachutes (specialSpec, applyLimbOverrides).
 - `src/crowd3d-driveby.js`   372 — Crowd 3D drive-by pose: the player at the wheel with the gun arm out of the window, torso and head turned to the aim, recoil per shot …
 - `src/crowd3d-frame.js`   377 — updateCrowd3D(): per-frame packing, car enter and exit transitions, dogs, crowd stats.

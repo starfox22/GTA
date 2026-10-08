@@ -276,11 +276,14 @@
     }
     /**
      * Where a cut is on the body now (map x, y and elevation z) and the way the missing part pointed (dx, dy,
-     * dz): the rig's joints (GORE_NECK .. GORE_KNEE) on a body standing, falling or lying along its heading
-     * (wounds.js chooseDeathFall; the renderer tips a body over about its heading, crowd3d-draw.js).
+     * dz): the drawn pose when the renderer has it (city3D.goreCutPoint: the joint as drawn last frame, the
+     * dead's last pose), else the reference adult's joints (GORE_NECK .. GORE_KNEE) on a body standing,
+     * falling or lying along its heading (wounds.js chooseDeathFall). Cosmetic only: where blood starts.
      */
     const goreScratchPoint = { x: 0, y: 0, z: 0, dx: 0, dy: 0, dz: 0 };
     function goreJointPoint(person, bit, out) {
+      // The stump as the renderer last drew it (a sprawled body too: crowd3d-gore.js POSED CUTS).
+      if (city3D?.goreCutPoint && city3D.goreCutPoint(person, bit, out)) return out;
       let fx = 0,
         up = 0,
         lat = 0,

@@ -19,6 +19,8 @@
         effectParticles: () => fxReport(),
         // Blood decals drawn (blood3d.js BLOOD DECALS): one instanced draw.
         bloodDecals: () => bloodDecalReport(),
+        // A cut joint as drawn (crowd3d-gore.js POSED CUTS) for gore.js goreJointPoint; false if not drawn lately.
+        goreCutPoint: (p, bit, out) => goreCutPoint(p, bit, out),
         // The mountain villages as drawn (mountain-village3d.js): meshes, draw calls, triangles per town.
         mountainInfo: () => mountainVillageInfo(),
         /**

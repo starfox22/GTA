@@ -55,13 +55,22 @@ Part of police-and-combat.md.
   splashes (+y down the wall: drips). Landing flight drops: `landBloodDrop` (game-update.js).
 - The renderers only read: blood3d.js (every decal in ONE instanced draw from one atlas of the
   stamps and the tread; a wall splash stands on its face, lifted by damage3d-decals.js
-  `wallOffset`; fade `bloodFade`, darker as blood dries; transparent, renderOrder 3; rewritten
-  only when the list changes, a pool spreads or every 0.5 s; `bloodDecalReport`) and
+  `wallOffset`; transparent, renderOrder 3; rewritten only when the list changes, a pool spreads
+  or every 0.5 s; `bloodDecalReport`) and
   `drawBlood2D` (walls left out; blood particles drawn round, never squares). Fire, smoke,
   sparks and drops are the effect particle pool (rendering-effects.md), drawn at `FX_SPRITE_ORDER` 8
   (render3d-effects.js): with the default 0 the floor blood was painted over an explosion's fireball
   (transparent objects sort by renderOrder before depth, and none of them write depth). The mist is a `mist`
   particle (fx3d-particles.js draws it at its height, fading and spreading).
+- THE LOOK (blood3d.js; one program, the state per instance in `aBloodLook`: fade, dryness,
+  wash): fresh blood is wet, deep dark red and glossy, its specular cut to a tenth, softly capped
+  and half tinted red, so a low sun at a grazing angle lights a small glint, never the orange-brown
+  wash a satin film took on (the sun's specular made it, not the colour). It dries from 15 s over
+  three minutes to a darker matte brown-red, the thin film first (the stamp's darkness is its
+  thickness: rims and fine drops before a pool's middle).
+- RAIN (`washBlood`, every 0.5 s): on open ground in rain over 0.3 a decal thins (`wash`, ~a
+  minute of a downpour to the full) and spreads up to a fifth wider; drawn lighter, pinker,
+  fainter and wet again. Not under cover, on walls or in tyre tracks.
 - Bounds: `BLOOD_LIMIT` 480 decals (the oldest non-pool goes first; was 240 meshes, now one
   draw), `BLOOD_LIFE` 240 s. Randomness: gore.js `goreRandom` (blood never draws on the seeded
   game stream).

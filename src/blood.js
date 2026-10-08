@@ -653,8 +653,36 @@
       p.bloodPool = b;
       return b;
     }
-    /* Pools spread (a flow that slows as the body empties); old decals go. */
+    /* RAIN: blood on open ground in rain over 0.3 thins (`wash` 0..1, about a minute of a downpour to the
+       full, BLOOD_WASH_RATE) and spreads up to a fifth wider; under cover, on walls and in tyre tracks it stays.
+       blood3d.js draws a washed decal lighter, pinker and fainter. Checked every half second. */
+    const BLOOD_WASH_RATE = 1 / 40,
+      BLOOD_WASH_SPREAD = 1.2;
+    let bloodRainClock = 0;
+    function washBlood(step) {
+      const rain = weather.rain || 0;
+      if (rain <= 0.3) return;
+      for (let i = 0; i < bloodPools.length; i++) {
+        const b = bloodPools[i];
+        if (b.wall || b.track || (b.wash || 0) >= 1 || overheadCover(b.x, b.y, b.surface ?? 0)) continue;
+        b.wash = Math.min(1, (b.wash || 0) + step * (rain - 0.3) * BLOOD_WASH_RATE);
+        const grow = 1 + 0.2 * b.wash;
+        if (b.rMax) {
+          if (b.rMax0 === undefined) b.rMax0 = b.rMax;
+          b.rMax = Math.max(b.rMax, Math.min(b.rMax0 * grow, b.rMax0 * BLOOD_WASH_SPREAD));
+        } else {
+          if (b.r0 === undefined) b.r0 = b.r;
+          b.r = Math.max(b.r, Math.min(b.r0 * grow, b.r0 * BLOOD_WASH_SPREAD));
+        }
+      }
+    }
+    /* Pools spread (a flow that slows as the body empties); old decals go; rain thins them (RAIN). */
     function updateBlood(deltaSeconds) {
+      bloodRainClock += deltaSeconds;
+      if (bloodRainClock >= 0.5) {
+        washBlood(bloodRainClock);
+        bloodRainClock = 0;
+      }
       for (let i = bloodPools.length - 1; i >= 0; i--) {
         const b = bloodPools[i];
         if (gameTime - b.created > BLOOD_LIFE) {

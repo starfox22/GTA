@@ -497,6 +497,8 @@
           if (!shinGone) rigEmit(BODY[R.shoePart], mFoot, 1, 1, 1, paints.shoe);
           if (own) playerBodyBone(13 + side, mFoot);
         }
+        // Where the cuts are as drawn, for spurts and bursts (crowd3d-gore.js POSED CUTS).
+        if (lost || dead || t - (p.hitAt ?? -9) < 3) goreRecordCuts(s, mHead, mShoulder, mElbow, mHip, mKnee);
         BODY = bodySet;
         // Things in hand.
         const right = mHand[1];

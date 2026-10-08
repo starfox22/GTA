@@ -46,7 +46,10 @@ blood, no bursts).
   change and while a stain spreads: the still figures re-record), `goreWounds` (at most 6: `zone`, `h` 0..1 along
   it, `rel` the entry round the body, `side`, `size` rig units, `exit`, `t`).
 - `goreStumps` (16): arterial spurts, a beat every 0.6-1.2 s that weakens, until the bleed-out or 3.5 s after
-  death (`goreJointPoint`: the cut on a standing, falling or lying body). `goreTracked` (64), `goreEvents` (a ring
+  death. Where a cut is (`goreJointPoint`): the joint as the renderer last drew it (`city3D.goreCutPoint`,
+  crowd3d-gore.js POSED CUTS: recorded for anyone maimed, dead or hit in the last 3 s; the dead keep their last
+  pose), so spurts, bursts and thrown pieces start at the drawn stump of a sprawled body; else (no renderer, not
+  drawn yet) the reference adult on a standing, falling or lying body. Cosmetic only. `goreReport().people[].cuts`. `goreTracked` (64), `goreEvents` (a ring
   of 16 the renderer turns into bone chips and a dark mist, fxBit/fxPuff), `severedParts` (24, gore-props.js:
   tumbling, bouncing off walls, at rest lying flat, a drop or two of blood; retired with their body (gone from its
   list), after BLOOD_LIFE, or when the owner is whole again). All listed in `soakReport()`; `resetGore()` on a
@@ -56,8 +59,10 @@ blood, no bursts).
 ## Drawing it (crowd3d-gore.js, player-body3d.js)
 
 - drawCrowdPerson leaves out the lost parts and draws `P.stump` at the cut (neck, shoulder, elbow, hip, knee):
-  one instanced part on the rig's body material (no new program): a ragged sleeve in the lost part's own colour,
-  the skin's edge, raw flesh, torn lumps and the bone. Severed pieces are the owner's own parts at the piece's
+  one instanced part (`crowd-paint-stump`: the rig's paint plus the STUMP SHADER, one program): the sleeve torn
+  into tatters and soaked dark toward the cut, a reddened skin edge, the cut itself uneven and bulging (wet muscle
+  in bundles, dark clots, a ring of yellow fat under the skin, torn lumps), the bone with red marrow and a
+  splinter. Severed pieces are the owner's own parts at the piece's
   pose with a stump at the cut end (their look from the owner's last draw, `s.goreLook`). One draw call (and one
   shadow call) whenever any stump or piece is on screen; pieces add instances to the body parts' own draws.
 - WOUNDS on the rig: `crowdWound` (vec4 per instance on every rigPart: the entry in the part's space, w = 2 + the

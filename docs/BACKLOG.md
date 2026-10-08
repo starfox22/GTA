@@ -135,12 +135,10 @@ here when polishing; delete a line when it is fixed. Newest features first.
   follows the arcs and leaves from `driveByGrip`).
 
 ## Gore (gore*.js, crowd3d-gore.js, blood3d.js; docs/areas/police-and-combat-gore.md)
-- The cut's place for spurts and bursts (`goreJointPoint`) is the reference adult's joints on a straight
-  body, not the drawn pose: on a sprawled body a spurt can start a little off the stump.
+- The first burst and the thrown piece of someone not hit in the 3 s before (no posed cut recorded yet)
+  start from the reference body (standing: close to the drawn pose).
 - A destroyed head leaves a neck stump and fragments, never a whole head as a piece; a severed piece carries
   no wound stain of its own; the 2D fallback draws neither stumps nor pieces (blood only).
-- Wet blood's gloss is one roughness for every decal: against a low sun from a grazing angle (inspection
-  views, the chase camera at dusk) pools and spatter read orange-brown; wet versus dry roughness would fix it.
 - No point-blank knock-back for a shotgun (the round rule holds): the body drops where it stood.
 - Not measured on a GPU: the stump part adds one camera and one shadow draw while any is on screen, blood
   decals went from up to 240 draws to one.

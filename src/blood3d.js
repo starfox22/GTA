@@ -6,17 +6,27 @@
        * 4 x 5 tiles of 128 px: the sixteen bloodStamp variants (pools, spatters, drops, wall splashes) and the
        * tyre track's tread. Per instance: the matrix (ground: flat, turned to `a`, `bloodDecalScale`; wall:
        * standing on the face `nx, ny` at height `surface`, a little off it by damage3d-decals.js wallOffset,
-       * the stamp's down down the wall), `aBloodTile`, `aBloodAlpha` (`bloodFade`) and the instance colour (it
-       * darkens as it dries over the first minutes). Satin, never emissive, lit and shadowed like the street;
-       * transparent at renderOrder 3, no depth write, pulled forward by polygon offset. The buffers are
-       * rewritten only when the list changed, a pool is still spreading, or every BLOOD_DECAL_REFRESH s
-       * (fades and drying), and only the used range is uploaded.
+       * the stamp's down down the wall), `aBloodTile` and `aBloodLook` (x `bloodFade`, y how dry, z how far
+       * rain has thinned it: blood.js `wash`). Never emissive, lit and shadowed like the street; transparent at
+       * renderOrder 3, no depth write, pulled forward by polygon offset. The buffers are rewritten only when the
+       * list changed, a pool is still spreading, or every BLOOD_DECAL_REFRESH s (fades and drying), and only the
+       * used range is uploaded.
+       *
+       * THE LOOK (one program for every state: the state is per instance). Fresh blood is wet: deep dark red and
+       * glossy (roughness 0.2), its specular held to a tenth (BLOOD_WET_SPECULAR), softly capped and half
+       * tinted by the blood, so a low sun at a grazing angle gives a small glint, never the broad orange-brown
+       * wash a plain satin or gloss film took on (the sun's specular, not the albedo, made it). It dries over
+       * minutes (BLOOD_DRY_START, BLOOD_DRY_SECONDS) to a darker matte brown-red, the thin film first: the
+       * stamp's own darkness is its thickness (near black in a pool's middle, lighter at its rim and in fine
+       * drops), so rims and spatter dry before the middle of a pool. Rain thins it: lighter, pinker, fainter.
        */
       const BLOOD_ATLAS_COLUMNS = 4,
         BLOOD_ATLAS_ROWS = 5,
         BLOOD_TREAD_TILE = 16,
         BLOOD_DECAL_REFRESH = 0.5,
-        BLOOD_DECAL_TONE = 0.8;
+        BLOOD_DRY_START = 15,
+        BLOOD_DRY_SECONDS = 180,
+        BLOOD_WET_SPECULAR = 0.1;
       const bloodAtlasCanvas = document.createElement('canvas');
       bloodAtlasCanvas.width = 128 * BLOOD_ATLAS_COLUMNS;
       bloodAtlasCanvas.height = 128 * BLOOD_ATLAS_ROWS;
@@ -40,8 +50,8 @@
       const bloodDecalMaterial = new Three.MeshStandardMaterial({
         map: bloodAtlas,
         color: '#ffffff',
-        // Satin, not a mirror: at roughness 0.27 a pool on the sun's mirror angle turned pale pink-white.
-        roughness: 0.62,
+        // The roughness and the specular are the shader's (THE LOOK): wet glossy, dry matte.
+        roughness: 0.6,
         envMapIntensity: 0.5,
         transparent: true,
         depthWrite: false,
@@ -51,7 +61,7 @@
       });
       bloodDecalMaterial.onBeforeCompile = (shader) => {
         shader.vertexShader = shader.vertexShader
-          .replace('#include <common>', '#include <common>\nattribute float aBloodTile;\nattribute float aBloodAlpha;\nvarying float vBloodAlpha;')
+          .replace('#include <common>', '#include <common>\nattribute float aBloodTile;\nattribute vec3 aBloodLook;\nvarying vec3 vBloodLook;')
           .replace(
             '#include <uv_vertex>',
             `#include <uv_vertex>
@@ -59,25 +69,53 @@
               float col = mod( aBloodTile, ${BLOOD_ATLAS_COLUMNS.toFixed(1)} );
               float row = floor( aBloodTile / ${BLOOD_ATLAS_COLUMNS.toFixed(1)} );
               vMapUv = vMapUv * vec2( ${(1 / BLOOD_ATLAS_COLUMNS).toFixed(4)}, ${(1 / BLOOD_ATLAS_ROWS).toFixed(4)} ) + vec2( col * ${(1 / BLOOD_ATLAS_COLUMNS).toFixed(4)}, 1.0 - ( row + 1.0 ) * ${(1 / BLOOD_ATLAS_ROWS).toFixed(4)} );
-              vBloodAlpha = aBloodAlpha;
+              vBloodLook = aBloodLook;
             }`,
           );
         shader.fragmentShader = shader.fragmentShader
-          .replace('#include <common>', '#include <common>\nvarying float vBloodAlpha;')
-          .replace('#include <map_fragment>', '#include <map_fragment>\ndiffuseColor.a *= vBloodAlpha;');
+          .replace('#include <common>', '#include <common>\nvarying vec3 vBloodLook;')
+          .replace(
+            '#include <map_fragment>',
+            `#include <map_fragment>
+            // Thickness from the stamp's darkness: the thin film (rims, fine drops) dries first.
+            float bloodThin = smoothstep( 0.025, 0.15, diffuseColor.r );
+            float bloodDry = clamp( vBloodLook.y * ( 0.55 + 1.1 * bloodThin ), 0.0, 1.0 );
+            float bloodWash = vBloodLook.z;
+            vec3 bloodColor = diffuseColor.rgb * 0.8;
+            bloodColor = mix( bloodColor, bloodColor * vec3( 0.6, 0.42, 0.34 ) + vec3( 0.005, 0.0015, 0.001 ), bloodDry );
+            bloodColor = mix( bloodColor, bloodColor * vec3( 1.45, 1.12, 1.12 ), bloodWash * 0.6 );
+            diffuseColor.rgb = bloodColor;
+            diffuseColor.a *= vBloodLook.x * ( 1.0 - 0.45 * bloodWash );`,
+          )
+          .replace(
+            '#include <roughnessmap_fragment>',
+            `#include <roughnessmap_fragment>
+            roughnessFactor = mix( mix( 0.2, 0.86, bloodDry ), 0.24, bloodWash );`,
+          )
+          .replace(
+            '#include <lights_fragment_end>',
+            `#include <lights_fragment_end>
+            {
+              // A wet sheen, not a glare: scaled down, softly capped and half taken by the blood's own red, so a
+              // low sun at a grazing angle lights a small glint and the pool stays deep red (THE LOOK).
+              float bloodSpecular = mix( ${BLOOD_WET_SPECULAR.toFixed(2)}, 0.02, bloodDry * ( 1.0 - bloodWash ) );
+              vec3 bloodGlint = reflectedLight.directSpecular * bloodSpecular;
+              bloodGlint = bloodGlint / ( 1.0 + bloodGlint * 4.0 );
+              reflectedLight.directSpecular = bloodGlint * mix( vec3( 1.0 ), vec3( 1.0, 0.35, 0.3 ), 0.5 );
+              reflectedLight.indirectSpecular *= bloodSpecular * 1.4;
+            }`,
+          );
       };
       bloodDecalMaterial.customProgramCacheKey = () => 'blood-decals';
       const bloodDecalGeometry = new Three.PlaneGeometry(1, 1),
         bloodDecalTiles = new Three.InstancedBufferAttribute(new Float32Array(BLOOD_LIMIT), 1),
-        bloodDecalAlphas = new Three.InstancedBufferAttribute(new Float32Array(BLOOD_LIMIT), 1);
+        bloodDecalLooks = new Three.InstancedBufferAttribute(new Float32Array(BLOOD_LIMIT * 3), 3);
       bloodDecalTiles.setUsage(Three.DynamicDrawUsage);
-      bloodDecalAlphas.setUsage(Three.DynamicDrawUsage);
+      bloodDecalLooks.setUsage(Three.DynamicDrawUsage);
       bloodDecalGeometry.setAttribute('aBloodTile', bloodDecalTiles);
-      bloodDecalGeometry.setAttribute('aBloodAlpha', bloodDecalAlphas);
+      bloodDecalGeometry.setAttribute('aBloodLook', bloodDecalLooks);
       const bloodDecals = new Three.InstancedMesh(bloodDecalGeometry, bloodDecalMaterial, BLOOD_LIMIT);
       bloodDecals.instanceMatrix.setUsage(Three.DynamicDrawUsage);
-      bloodDecals.setColorAt(0, new Three.Color('#ffffff'));
-      bloodDecals.instanceColor.setUsage(Three.DynamicDrawUsage);
       bloodDecals.count = 0;
       bloodDecals.frustumCulled = false;
       bloodDecals.receiveShadow = true;
@@ -107,9 +145,9 @@
         st.refreshAt = gameTime + BLOOD_DECAL_REFRESH;
         st.writes++;
         const m = bloodDecals.instanceMatrix.array,
-          c = bloodDecals.instanceColor.array,
+
           tiles = bloodDecalTiles.array,
-          alphas = bloodDecalAlphas.array;
+          looks = bloodDecalLooks.array;
         for (let i = 0; i < n; i++) {
           const b = list[i],
             o = i * 16;
@@ -161,11 +199,11 @@
             m[o + 14] = b.y;
             m[o + 15] = 1;
           }
-          // Wet blood darkens as it dries over the first minutes (and soaks into the street: never candy red).
-          const dry = BLOOD_DECAL_TONE * (1 - clamp((gameTime - b.created - 20) / 150, 0, 1) * 0.35);
-          c[i * 3] = c[i * 3 + 1] = c[i * 3 + 2] = dry;
+          // THE LOOK: the fade, how dry (over minutes), how far rain has thinned it.
           tiles[i] = b.track ? BLOOD_TREAD_TILE : b.variant || 0;
-          alphas[i] = bloodFade(b);
+          looks[i * 3] = bloodFade(b);
+          looks[i * 3 + 1] = clamp((gameTime - b.created - BLOOD_DRY_START) / BLOOD_DRY_SECONDS, 0, 1);
+          looks[i * 3 + 2] = b.wash || 0;
         }
         bloodDecals.count = n;
         st.drawn = n;
@@ -173,15 +211,12 @@
         bloodDecals.instanceMatrix.clearUpdateRanges();
         bloodDecals.instanceMatrix.addUpdateRange(0, n * 16);
         bloodDecals.instanceMatrix.needsUpdate = true;
-        bloodDecals.instanceColor.clearUpdateRanges();
-        bloodDecals.instanceColor.addUpdateRange(0, n * 3);
-        bloodDecals.instanceColor.needsUpdate = true;
         bloodDecalTiles.clearUpdateRanges();
         bloodDecalTiles.addUpdateRange(0, n);
         bloodDecalTiles.needsUpdate = true;
-        bloodDecalAlphas.clearUpdateRanges();
-        bloodDecalAlphas.addUpdateRange(0, n);
-        bloodDecalAlphas.needsUpdate = true;
+        bloodDecalLooks.clearUpdateRanges();
+        bloodDecalLooks.addUpdateRange(0, n * 3);
+        bloodDecalLooks.needsUpdate = true;
       }
       /* Console (bloodDecalReport via the renderer api): decals drawn, rewrites so far, one draw call. */
       function bloodDecalReport() {

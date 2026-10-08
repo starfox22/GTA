@@ -58,6 +58,19 @@
       }
       return goreOutcome(p, before);
     }
+    // Where each of a person's cuts is (goreJointPoint): `posed` when the renderer drew it (POSED CUTS), else the
+    // reference body; map x, y, elevation z, and the way the lost part pointed.
+    function goreCutsReport(p) {
+      const out = [],
+        pt = { x: 0, y: 0, z: 0, dx: 0, dy: 0, dz: 0 };
+      for (const [bit, name] of GORE_NAMES) {
+        if (!((p.goreLost || 0) & bit)) continue;
+        const posed = !!(city3D?.goreCutPoint && city3D.goreCutPoint(p, bit, pt));
+        if (!posed) goreJointPoint(p, bit, pt);
+        out.push({ part: name, posed, x: +pt.x.toFixed(1), y: +pt.y.toFixed(1), z: +pt.z.toFixed(1), d: [+pt.dx.toFixed(2), +pt.dy.toFixed(2), +pt.dz.toFixed(2)] });
+      }
+      return out;
+    }
     function goreConsole() {
       return {
         // The gore state: the setting, severed pieces (kind, at rest, age, where), spurting stumps, people with
@@ -69,7 +82,7 @@
             stumps: goreStumps.length,
             tracked: goreTracked.length,
             // The people with wounds or a lost part: where, dead or alive, what they lost, seconds to bleeding out.
-            people: goreTracked.map((p) => ({ x: Math.round(p.x), y: Math.round(p.y), dead: p.hp <= 0, lost: goreLostNames(p.goreLost), wounds: p.goreWounds?.length || 0, bleedOut: p.hp > 0 && p.goreBleedOut ? +(p.goreBleedOut - gameTime).toFixed(1) : null })),
+            people: goreTracked.map((p) => ({ x: Math.round(p.x), y: Math.round(p.y), dead: p.hp <= 0, lost: goreLostNames(p.goreLost), wounds: p.goreWounds?.length || 0, bleedOut: p.hp > 0 && p.goreBleedOut ? +(p.goreBleedOut - gameTime).toFixed(1) : null, cuts: goreCutsReport(p) })),
             events: goreEventCount,
             caps: { severed: GORE_PARTS_MAX, stumps: GORE_STUMPS_MAX, tracked: GORE_TRACKED_MAX, wounds: GORE_WOUNDS_MAX, decals: BLOOD_LIMIT },
             player: { lost: goreLostNames(player.goreLost), wounds: (player.goreWounds || []).map((w) => ({ zone: w.zone, size: w.size, exit: w.exit })) },
