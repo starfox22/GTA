@@ -617,12 +617,12 @@ def restyle_head(C, S, B, mesh):
     coarse = smooth(rng.random(L.shape).astype(np.float32), 3)
     dens = np.clip(beard_a * 1.25 + (coarse - 0.5) * 0.5, 0, 1)
     dens = np.where(dens < 0.85, dens * (0.55 + 0.45 * (fine > 0.45)), dens)
-    dens = smooth(dens.astype(np.float32), 0.7) * 0.92
+    dens = smooth(dens.astype(np.float32), 0.7) * 0.82
     out = C.copy()
     # Hair recoloured dark brown keeping its strands.
     hl = np.median(L[crown])
     strands = np.clip(L / max(hl, 0.05), 0.4, 1.8) ** 1.3
-    hair_col = np.array([0.15, 0.10, 0.07]) * strands[..., None]
+    hair_col = np.array([0.17, 0.115, 0.08]) * strands[..., None]
     skin_col = C * np.array([0.96, 0.88, 0.79])
     out = np.where(face[..., None], skin_col, C)
     out = out * (1 - hair[..., None]) + hair_col * hair[..., None]
@@ -630,7 +630,10 @@ def restyle_head(C, S, B, mesh):
     brow_band = face & (t < 0.6) & (y > eye[1] + 0.006) & (y < eye[1] + 0.03)
     brow = smooth((brow_band * sstep(0.0, 0.08, smooth(L, 6) - L)).astype(np.float32), 0.8)
     out = out * (1 - 0.8 * brow[..., None]) + np.array([0.12, 0.08, 0.06]) * 0.8 * brow[..., None]
-    beard_col = np.array([0.12, 0.08, 0.06]) * (0.6 + 0.5 * fine + 0.5 * np.clip(L / 0.6, 0.5, 1.2) - 0.25)[..., None]
+    # Short hairs: noise drawn out down the face (the texture's v), dark roots to brown tips.
+    hairs = sum(np.roll(fine, k, 0) for k in range(-5, 6)) / 11
+    hairs = np.clip((hairs - 0.5) * 3.2 + 0.5, 0, 1) ** 1.4
+    beard_col = (np.array([0.075, 0.05, 0.038]) * (1 - hairs[..., None]) + np.array([0.25, 0.165, 0.105]) * hairs[..., None]) * np.clip(L / 0.55, 0.7, 1.15)[..., None]
     out = out * (1 - dens[..., None]) + beard_col * dens[..., None]
     S[:] = S * (1 - 0.6 * np.maximum(dens, hair))
     return out

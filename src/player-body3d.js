@@ -1,9 +1,10 @@
-      // The player's own body: one skinned mesh (a man in his forties in a black tee, jeans and leather shoes) posed by
-      // the crowd rig's skeleton every frame, built from signed distance fields in slices behind the title.
+      // The player's own body: one skinned mesh posed by the crowd rig's skeleton every frame: the shipped model (a
+      // restyled Rocketbox avatar: skull tee, jeans, beard; player-body3d-asset.js), or the field-built fallback.
       /**
        * PLAYER BODY
        * The player is not drawn from the crowd's instanced parts but from a body of his own (one draw, one
-       * shadow draw): realistic adult proportions at the rig's joints (character-rig3d.js RIG), modelled as
+       * shadow draw). Normally that is the shipped model fitted to the rig's joints at load (player-body3d-asset.js,
+       * pbBodySteps); without it, the fallback: realistic adult proportions at the rig's joints (RIG), modelled as
        * signed distance fields and meshed by surface nets (player-body3d-mesher.js): the clothed body
        * (anatomy), the head with the face and the hair (head), hands and shoes (extremities). Each vertex
        * follows two of the rig's 15 bones as dual quaternions (shader), so the joints bend without gaps or

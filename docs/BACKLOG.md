@@ -187,10 +187,13 @@ here when polishing; delete a line when it is fixed. Newest features first.
 
 ## The player's body (player-body3d*.js; docs/areas/people-and-crowd-player.md)
 
-- The build is ~1 s of work on a desktop (2-3 s on the cloud box), sliced behind the title; a player who presses
-  play at once waits for the rest on that first frame. Caching the arrays (IndexedDB) or a worker would remove it.
-- Hands straight up (surrender) still bulge the tee's sides under the arms (no collarbone or corrective shapes).
-- The face is sculpted from primitives: no expressions; the eyes move and blink but the lids do not follow them.
+- The shipped model (Rocketbox Male_Adult_16, restyled): trainers recoloured brown, not the reference's tall work
+  boots (no boot geometry); the beard and hair are paint (no strands or cards), the beard's cheek line is a little
+  even; the model's eyes neither follow the aim nor blink (its eye and lid bones are not mapped); the wristwatch on
+  his left wrist is the asset's. The texture pages are 1024 px (2048 sources): the face is soft in a close chase view.
+- Low-poly (7k triangles): elbows and the shoulders' silhouette facet up close; the armpits fold with the arms down
+  (the A pose bind); no collarbone, so raised arms pull the tee's shoulders.
+- The field body (fallback only) is now built at PB_WIDTH 1.04 (broader than it was modelled for).
 
 ## Mountain island (mountain-village*.js, mountain-club3d.js)
 - Northridge metal roofs (rescue barn, general store) were lightened but not re-shot.

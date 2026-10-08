@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-568 files in the include tree, 196,026 lines.
+568 files in the include tree, 196,027 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -477,7 +477,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/weather3d.js`   788 — ▸ Weather and sky visuals
 - `src/character-rig3d.js`   738 — ▸ Character rig: sculpted body parts, outfits and paint
 - `src/crowd3d.js`    88 — ▸ Instanced people: skeleton, gait, poses, weapons and street props
-- `src/player-body3d.js`   439 — ▸ The player's own body: one skinned mesh (a man in his forties in a black tee, jeans and leather shoes) posed by the crowd rig's skeleton every frame …
+- `src/player-body3d.js`   440 — ▸ The player's own body: one skinned mesh posed by the crowd rig's skeleton every frame: the shipped model (a restyled Rocketbox avatar: skull tee …
 - `src/carjack3d.js`   212 — The carjack struggle drawn: the driver's door swinging, the poses of the tug of war and the player's hands on the driver (swingDriverDoor …
 - `src/clouds3d.js`    56 — ▸ Volumetric clouds and cloud shadows
 - `src/ground-data3d.js`   826 — Ground shader data
@@ -733,7 +733,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/crowd3d-driveby.js`   373 — Crowd 3D drive-by pose: the player at the wheel with the gun arm out of the window, torso and head turned to the aim, recoil per shot …
 - `src/crowd3d-frame.js`   385 — updateCrowd3D(): per-frame packing, car enter and exit transitions, dogs, crowd stats.
 
-## src/player-body3d.js ▸ The player's own body: one skinned mesh (a man in his forties in a black tee, jeans and leather shoes) posed by the crowd rig's skeleton every frame …
+## src/player-body3d.js ▸ The player's own body: one skinned mesh posed by the crowd rig's skeleton every frame: the shipped model (a restyled Rocketbox avatar: skull tee …
 
 - `src/player-body3d-mesher.js`   423 — Player body: signed distance primitives, a field of ordered operations culled per cell, and the surface-nets mesher that turns a field into a smooth …
 - `src/player-body3d-anatomy.js`   269 — Player body anatomy: the bind skeleton (the rig's joints, arms out in an A pose) and the body's field: torso in a black crew-neck tee, neck, arms …
