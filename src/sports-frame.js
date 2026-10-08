@@ -269,6 +269,7 @@
         matchDay(day = Math.floor(worldMinutes / 1440) + 1, minutesFromKickoff = 5, slot = 0, sport = 'soccer') {
           const fixture = sportsFixtureFor(sport, Math.max(0, day - 1), slot);
           worldMinutes = Math.max(0, fixture.kickoff + minutesFromKickoff);
+          snapSunClock();
           // Start that fixture afresh (players in place, a score for the time played).
           sportsAbandoned[sport] = null;
           sportsMatches[sport] = null;

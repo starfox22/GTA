@@ -215,7 +215,7 @@
       // @include src/blood3d.js
       /**
        * TIME OF DAY
-       * Sky, fog, sun and ambient colours follow daylight() through four keyframes:
+       * Sky, fog, sun and ambient colours follow litDaylight() through four keyframes:
        * night (a blue-hour moonlight, see NIGHT LOOK in lighting3d.js), dawn/dusk (amber horizon, long warm shadows), day.
        * The dusk weight peaks when daylight is near 0.3 so sunsets read as sunsets.
        */
@@ -237,7 +237,7 @@
         skyScratch = new Three.Color();
       let lastBadge = '';
       function updateCivicVisuals() {
-        const light = daylight(),
+        const light = litDaylight(),
           night = 1 - light,
           dusk = clamp(1 - Math.abs(light - 0.3) / 0.3, 0, 1);
         // Daylight is kept inside the tone curve's range: the pale pavements and

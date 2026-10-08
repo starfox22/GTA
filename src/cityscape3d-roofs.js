@@ -554,7 +554,7 @@
       for (const im of Object.values(pools)) im.instanceMatrix.needsUpdate = true;
       // ---- Night lighting update --------------------------------------------------------
       function updateCityscapeVisuals() {
-        const light = daylight(),
+        const light = litDaylight(),
           night = clamp(1 - light * 1.6, 0, 1),
           hour = (worldMinutes % 1440) / 60,
           lateNight = hour > 1 && hour < 5 ? 0.45 : 1;

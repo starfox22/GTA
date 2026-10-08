@@ -124,7 +124,7 @@
       function updateWorldVisuals() {
         updateBeachVisuals();
         updateBlueHourVisuals();
-        const light = daylight();
+        const light = litDaylight();
         waterUniforms.uRain.value = weather.rain;
         waterUniforms.uTime.value = gameTime;
         waterUniforms.uDay.value = 0.12 + 0.88 * light;

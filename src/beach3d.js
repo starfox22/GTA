@@ -769,7 +769,7 @@
           beachWasNear = false;
           return;
         }
-        const light = daylight();
+        const light = litDaylight();
         swashUniforms.uTime.value = gameTime;
         swashUniforms.uDay.value = clamp(0.25 + light * 0.85, 0, 1);
         swashUniforms.uDusk.value = clamp(1 - Math.abs(light - 0.3) / 0.28, 0, 1);

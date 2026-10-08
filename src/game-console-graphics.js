@@ -54,6 +54,9 @@
       // The see-through hole in tree crowns round the player (foliage-cutaway.js): the plan, the line of sight, the renderer's state.
       foliageCutaway: () => foliageCutawayReport(),
       treeLineup: (x = player.x, y = player.y, spacing, lod, perRow) => city3D?.treeLineup?.(x, y, spacing, lod, perRow) ?? null,
+      // The sun path and the light clock (sun-path.js): the light now, whether a time skip is still blending, and
+      // the worst turn of the shadow light per game minute over a day and per frame through a skip of `skipMinutes`.
+      sunReport: (skipMinutes = 360) => sunReport(clamp(Number(skipMinutes) || 0, -1440, 1440)),
       // Graphics quality: 'auto', 'low', 'medium', 'high' or 'ultra' (saved like the
       // Settings choice); returns what the renderer is now using.
       graphics(tier) {

@@ -429,11 +429,9 @@
       const m = Math.floor(worldMinutes) % 1440;
       return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
     }
-    // Sun up 05:40, down 19:50; the curve is flattened so golden hour lingers.
+    // Sun up 05:40, down 19:50 (sun-path.js daylightAt); the renderer draws litDaylight(), eased across time skips.
     function daylight() {
-      const hour = (worldMinutes % 1440) / 60,
-        arc = Math.sin(((hour - 5.66) / 14.17) * Math.PI);
-      return clamp(Math.pow(Math.max(0, arc), 0.75), 0, 1);
+      return daylightAt(worldMinutes);
     }
     function clubOpen() {
       const hour = (worldMinutes % 1440) / 60;

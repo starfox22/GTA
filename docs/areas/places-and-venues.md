@@ -93,6 +93,10 @@ MONARCH MOTORS, Ridgeline, Fort Sentinel and the stadium: places-monarch-and-cou
   garages-islands.mjs): a new landmass needs one. Doors face south onto an east-west street
   (`roadY`); `slab`/`forecourt` for shops off the city canvas, `style` in
   garage3d-styles.js; planting keeps off via `garageKeepOut`. Console `garage()`.
+- RESPRAY BEACON (garages.js): only while `wantedLevel` > 0 and the player drives a car a shop takes, the nearest
+  shop within 110 m (kept to 135 m) gets a blue floating arrow over its door and one RESPRAY line; out of a chase
+  nothing marks the shops (the 2D fallback's R marker follows the same rule). Renderers read `garageBeacon()`;
+  `garage().beacon`, `markers().respray`; tools/tests/respray-beacon.mjs.
 - Casino roulette: casino.js. Bike share: ui-and-settings.md.
 
 ## Motels, inns and lodges (civic3d.js, civic3d-hotels.js)

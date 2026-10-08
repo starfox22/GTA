@@ -496,7 +496,7 @@
           .copy(sun.color)
           .multiplyScalar(sun.intensity * 0.28)
           .add(wakeClearColor.copy(hemi.color).multiplyScalar(hemi.intensity * 0.36))
-          .multiplyScalar(0.3 + 0.7 * daylight());
+          .multiplyScalar(0.3 + 0.7 * litDaylight());
         sceneBufferSize(wakeBuffer);
         sprayUniforms.uPerspective.value = camera.isPerspectiveCamera ? 1 : 0;
         sprayUniforms.uPixels.value = camera.isPerspectiveCamera
