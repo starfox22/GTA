@@ -65,7 +65,9 @@
           !updateCarjack(deltaSeconds) &&
           !updateMountainFooting(deltaSeconds) &&
           // Crouched over a body, taking the gun (ammo-supply.js).
-          !lootCrouching()
+          !lootCrouching() &&
+          // On his knees digging at the summit cairn (summitjob.js).
+          !summitDigging()
         ) {
           const x = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0),
             y = (keys.KeyS || keys.ArrowDown ? 1 : 0) - (keys.KeyW || keys.ArrowUp ? 1 : 0);

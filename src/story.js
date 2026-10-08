@@ -79,18 +79,22 @@
         brief: 'Dress as a guest and kill Luciano Vescari at the Blue Hour: poison his glass unseen, or shoot it out with his detail.',
       },
       {
-        title: "Vinny's Favor",
+        title: 'High Ground',
         contact: 'vinny',
-        reward: 1400,
-        phoneMessage: 'Vinny gave you a mission: steal the coupe and deliver it to Vinny.',
-        brief: 'Steal the coupe and deliver it to Vinny.',
+        reward: 3200,
+        // summitjob.js: the RIDGELINE 4X4 CLUB's gate, where the climb is best begun.
+        start: { x: 8590, y: 3070 },
+        phoneMessage:
+          'Vinny gave you a mission: one of his men buried a package at the very top of Mount Ascent, where the 4x4 trail ends. Dig it up and bring it to his warehouse.',
+        brief: 'Get to the top of Mount Ascent, dig up the buried package and bring it to Vinny’s warehouse.',
       },
       {
-        title: 'Paper Trail',
-        contact: 'elena',
-        reward: 4600,
-        phoneMessage: 'Elena gave you a mission: collect the receipts and lose the police.',
-        brief: 'Collect the receipts and lose the police.',
+        title: 'Borrowed Stripes',
+        contact: 'vinny',
+        reward: 6500,
+        phoneMessage:
+          'Vinny gave you a mission: get inside Fort Sentinel as a soldier, steal the confidential weapons papers and deliver them to a diplomat at the top of EVOLUTION.',
+        brief: 'Take an off-duty soldier’s uniform and badge, walk into Fort Sentinel, steal the weapons papers and deliver them to the consul at CIRRUS.',
       },
       {
         title: 'No Last Ferry',
@@ -436,6 +440,7 @@
         info = missions[missionState.index];
       if (missionState.index === 0) startHarborJob(missionState);
       else if (missionState.index === 1) startRooftopHit(missionState);
+      else if (missionState.index === 2) startSummitJob(missionState);
       else if (missionState.index <= 8) startChallengeMission(missionState);
       else if (missionState.index < SIDE_JOB_FIRST) flightMissionStart(missionState);
       else startSideJob(missionState);
@@ -615,6 +620,10 @@
       }
       if (m.index >= 9) {
         flightMissionUpdate(m, deltaSeconds);
+        return;
+      }
+      if (m.index === 2) {
+        updateSummitJob(m, deltaSeconds);
         return;
       }
       if (m.index >= 2) {
