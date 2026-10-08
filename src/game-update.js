@@ -66,6 +66,8 @@
           !updateMountainFooting(deltaSeconds) &&
           // Crouched over a body, taking the gun (ammo-supply.js).
           !lootCrouching() &&
+          // On his knees digging at the summit cairn (summitjob.js).
+          !summitDigging() &&
           // In a chair at a meeting's table: a movement key stands up (skyline-meeting.js).
           !skyMeetingSeatHold()
         ) {

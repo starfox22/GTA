@@ -479,6 +479,8 @@
         if (place) offerPrompt(place.kind === 'guns' ? place.name + ' · GUNS, AMMO & ARMOR' : place.name, { id: 'place|' + place.name });
       }
       roofMissionUI();
+      // Mission 4's tail meter shares the box (fortjob.js).
+      fortJobUI();
       militaryUI();
       offroadClubUI();
     }

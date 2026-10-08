@@ -86,6 +86,35 @@
         setStage(4, ROOF_HIT.escape, 'LOSE THE POLICE · REACH CORAL PALMS MOTEL ON FOOT');
         return this.missionState();
       },
+      // Mission 3 (High Ground, summitjob.js): the job's stage, dig progress, where the
+      // package rides (hand, backpack or a vehicle), the cairn and Vinny.
+      summitJob: () => summitJobReport(),
+      // Mission 3 test shortcuts: start High Ground if needed, then 'summit' puts the player
+      // on foot beside the cairn (stage 1); 'deliver' skips the dig with the package in the
+      // backpack and stands the player on the pavement outside Vinny's warehouse (stage 3).
+      summitSkip(where = 'summit') {
+        if (mission?.index !== 2) {
+          missionIndex = 2;
+          startMission();
+        }
+        const m = mission;
+        if (where === 'summit') {
+          if (player.car) exitCar();
+          teleportPlayer(SUMMIT_JOB.cache.x - 18, SUMMIT_JOB.cache.y + 8);
+          missionUpdate(0);
+        } else if (where === 'deliver') {
+          if (player.car) exitCar();
+          m.dig = 1;
+          m.carrier = 'backpack';
+          summitDeliverStage(m, 'In the backpack, then. Don’t drop it.');
+          teleportPlayer(VINNY_DEPOT.door.x, VINNY_DEPOT.door.y - 70);
+          missionUpdate(0);
+        }
+        return summitJobReport();
+      },
+      // Mission 4 (Borrowed Stripes, fortjob.js): the stage, Kessler's car (route progress,
+      // trunk), Kessler on foot, the tail's heat, keys, the uniform.
+      fortJob: () => fortJobReport(),
       // Mission 2: put the player on the Blue Hour terrace at roof-local (x, y)
       // (default: out of the lift), starting A Seat at the Table dressed as a
       // guest if needed. Arrives the way the lift does (story.js updateElevator).

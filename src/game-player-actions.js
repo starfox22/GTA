@@ -322,6 +322,8 @@
       if (taxiInteract()) return;
       if (
         rooftopMissionInteract() ||
+        summitJobInteract() ||
+        fortJobInteract() ||
         challengeMissionInteract() ||
         militaryInteract() ||
         harborInteract() ||
