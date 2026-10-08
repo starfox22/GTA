@@ -9,7 +9,9 @@ import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
-const FILES = ['src/player-body3d-mesher.js', 'src/player-body3d-anatomy.js', 'src/player-body3d-head.js', 'src/player-body3d-extremities.js', 'src/player-body3d-build.js', 'src/player-body3d-shader.js', 'src/player-body3d-grips.js'];
+const FILES = ['src/player-body3d-mesher.js', 'src/player-body3d-anatomy.js', 'src/player-body3d-head.js', 'src/player-body3d-extremities.js', 'src/player-body3d-build.js', 'src/player-body3d-asset.js', 'src/player-body3d-shader.js', 'src/player-body3d-grips.js'];
+// The shipped model as the page has it (asset-loader.js: a data: URL).
+const MODEL = 'data:application/octet-stream;base64,' + fs.readFileSync(path.join(ROOT, 'assets/player-model.bin')).toString('base64');
 
 function load(Three) {
   const rig = fs.readFileSync(path.join(ROOT, 'src/character-rig3d.js'), 'utf8').match(/const RIG = \{[\s\S]*?\n {6}\};/)[0];
@@ -22,8 +24,8 @@ function load(Three) {
       .join('\n'),
   ).join('\n');
   const prelude = `const TAU = Math.PI * 2, PERSON_HEIGHT = 14; const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
-    function cityMaterialPatch() {} const playerRim = { value: null }; const pbUniforms = {};\n${rig}\n${near}`;
-  return new Function('Three', prelude + '\n' + source + '\nreturn { pbClock, pbBuildSteps, pbMaterialPatch, pbDepthPatch, pbGripsFor, PB_GRIPS, PB_UNITS, PB_BONES, PB_WIDTH, RIG };')(Three);
+    function cityMaterialPatch() {} const playerRim = { value: null }; const pbUniforms = {}; const ASSETS = { playerModel: ${JSON.stringify(MODEL)} };\n${rig}\n${near}`;
+  return new Function('Three', prelude + '\n' + source + '\nreturn { pbClock, pbBuildSteps, pbAssetBuildSteps, pbMaterialPatch, pbDepthPatch, pbGripsFor, PB_GRIPS, PB_UNITS, PB_BONES, PB_WIDTH, RIG };')(Three);
 }
 
 // The rig's joint chain as drawCrowdPerson builds it (crowdJoint: parent · T · Ry · Rx · Rz), for a pose.
@@ -125,28 +127,10 @@ function skinner(Three, data, frames) {
   };
 }
 
-export default async function (t) {
-  // On a rendered page (first: the node build below holds this process for seconds): the player is drawn from
-  // it in the chase view and the street view.
-  const model = await t.call('playerModel', true);
-  if (!model) t.note('no 3D renderer on this page: the in-game checks need a rendered page');
-  else {
-    t.assert(model.ready && !model.error, 'player body not built: ' + JSON.stringify(model));
-    for (const view of ['chase', 'street']) {
-      await t.call('viewMode', view);
-      await t.wait(0.5);
-      await t.call('crowdBenchmark', 1);
-      const stats = await t.call('crowdStats');
-      t.assert(stats.playerBody === true, `${view} view: the player is not drawn from his own body`);
-    }
-    await t.call('viewMode', 'street');
-  }
-  const Three = createRequire(import.meta.url)(path.join(ROOT, 'vendor/three.r160.js'));
-  const api = load(Three),
+async function checkBody(t, Three, api, kind, tick) {
+  const fields = kind === 'fields',
     started = Date.now(),
-    build = api.pbBuildSteps(),
-    // The build yields every 30 ms, so this process keeps answering the page between slices.
-    tick = () => new Promise((resolve) => setImmediate(resolve));
+    build = fields ? api.pbBuildSteps() : api.pbAssetBuildSteps();
   let step;
   api.pbClock.until = performance.now() + 30;
   while (!(step = build.next()).done) {
@@ -156,10 +140,13 @@ export default async function (t) {
   api.pbClock.until = Infinity;
   const data = step.value;
   data.unitsPerMetre = api.PB_UNITS;
-  t.note(`built in ${Date.now() - started} ms: ${data.vertices} vertices, ${data.triangles} triangles`);
-  t.near(data.triangles, 70000, 130000, 'player body triangles (HIGH and ULTRA)');
+  t.assert(data, `${kind}: no build`);
+  t.note(`${kind}: built in ${Date.now() - started} ms: ${data.vertices} vertices, ${data.triangles} triangles`);
+  // The model: one mesh on every tier (a few thousand triangles, textured); the fields mesh fine and coarse.
+  if (!fields) t.near(data.triangles, 4000, 20000, 'model: player body triangles');
+  else t.near(data.triangles, 70000, 130000, 'fields: player body triangles (HIGH and ULTRA)');
   // LOW and MEDIUM: the same body meshed coarser, about half the triangles, the same height.
-  {
+  if (fields) {
     const coarse = api.pbBuildSteps('coarse');
     let r;
     api.pbClock.until = performance.now() + 30;
@@ -203,7 +190,7 @@ export default async function (t) {
       c = I[i + 2] * 3;
     volume += (P[a] * (P[b + 1] * P[c + 2] - P[b + 2] * P[c + 1]) - P[a + 1] * (P[b] * P[c + 2] - P[b + 2] * P[c]) + P[a + 2] * (P[b] * P[c + 1] - P[b + 1] * P[c])) / 6;
   }
-  t.near(+(volume / api.PB_UNITS ** 3 * 1000).toFixed(1), 60, 120, 'body volume (litres; positive = facing out)');
+  t.near(+(volume / api.PB_UNITS ** 3 * 1000).toFixed(1), 60, 120, `${kind}: body volume (litres; positive = facing out)`);
   // Proportions in the bind pose (metres).
   let crown = -1,
     scalp = -1,
@@ -217,13 +204,15 @@ export default async function (t) {
     crown = Math.max(crown, y);
     if (mat === 1) scalp = Math.max(scalp, y - Math.max(0, Z[v * 4 + 2]));
     sole = Math.min(sole, y);
-    if (mat === 1 && x > 0.065 && Math.abs(z) < 0.012) chin = Math.min(chin, y);
+    // (The model's head texture runs down the neck: its chin is the face's lowest point near the front.)
+    if (mat === 1 && x > (fields ? 0.065 : 0.105) && Math.abs(z) < 0.012) chin = Math.min(chin, y);
   }
   const stature = scalp - sole,
     headHeight = scalp - chin;
   t.note(`hair ${crown.toFixed(3)} m, scalp ${scalp.toFixed(3)} m, soles ${sole.toFixed(3)} m, chin ${chin.toFixed(3)} m`);
   t.near(+stature.toFixed(3), 1.785, 1.815, 'stature, soles to the scalp (m)');
-  t.near(+(crown - scalp).toFixed(3), 0.008, 0.02, 'hair on the crown (m)');
+  // (The model's hair is painted on its scalp; the fields' is a thickness over it.)
+  if (fields) t.near(+(crown - scalp).toFixed(3), 0.008, 0.02, 'hair on the crown (m)');
   t.near(+(stature / headHeight).toFixed(2), 7.2, 7.9, 'heads tall (chin to scalp)');
   // In the standing pose: shoulders across the deltoids, chest depth, the fingertips at mid-thigh, knee height.
   const H = 1.8 / 1.75,
@@ -254,7 +243,7 @@ export default async function (t) {
     if (part <= 1 && y > 1.02 && y < 1.14 && Math.abs(z) < 0.06) bellyFront = Math.max(bellyFront, x);
   }
   // Athletic for his age: broad shoulders, a V from the chest to the waist, a flat stomach.
-  t.near(+shoulders.toFixed(3), 0.48, 0.56, 'shoulder breadth across the deltoids (m)');
+  t.near(+shoulders.toFixed(3), 0.48, 0.6, `${kind}: shoulder breadth across the deltoids (m)`);
   t.near(+(chestWidth / waistWidth).toFixed(3), 1.08, 1.4, 'chest over waist width (the V)');
   t.near(+((bellyFront - chestFront) * 1000).toFixed(1), -60, 5, 'belly forward of the chest (mm; flat stomach)');
   t.near(+(chestFront - chestBack).toFixed(3), 0.22, 0.31, 'chest depth (m)');
@@ -332,13 +321,13 @@ export default async function (t) {
   };
   const near = (v, c) => Math.hypot(M(v, 0) - c[0], M(v, 1) - c[1], M(v, 2) - c[2]),
     joint = (b) => data.bones[b].o;
-  const SEAMS = {
+  const SEAMS = !fields ? {} : {
     neck: seam(
       (v) => Math.round(Z[v * 4]) === 0 && M(v, 1) > 1.56 && M(v, 1) < 1.6 && Math.hypot(M(v, 0), M(v, 2)) < 0.08,
       (v) => Math.round(Z[v * 4]) === 1 && M(v, 1) < 1.6 && M(v, 0) < 0.06,
     ),
   };
-  for (const side of [0, 1]) {
+  for (const side of fields ? [0, 1] : []) {
     SEAMS['wrist' + side] = seam(
       (v) => Math.round(Z[v * 4]) === 0 && S[v * 4 + 3] === 5 + side && near(v, joint(7 + side)) < 0.03,
       (v) => Math.round(Z[v * 4]) === 3 && S[v * 4 + 3] === 7 + side && near(v, joint(7 + side)) < 0.035,
@@ -359,6 +348,17 @@ export default async function (t) {
     return worst / W;
   };
   const edgeLen2 = (Q, a, b) => (Q[a * 3] - Q[b * 3]) ** 2 + (Q[a * 3 + 1] - Q[b * 3 + 1]) ** 2 + (Q[a * 3 + 2] - Q[b * 3 + 2]) ** 2;
+  // The model's welds: vertices split only by their UVs or normals stand on one point and must stay there.
+  const welds = [];
+  if (!fields) {
+    const at = new Map();
+    for (let v = 0; v < n; v++) {
+      const key = [0, 1, 2].map((k) => Math.round(P[v * 3 + k] * 2000)).join(',');
+      if (at.has(key)) welds.push([at.get(key), v]);
+      else at.set(key, v);
+    }
+    t.assert(welds.length > 100, `model: only ${welds.length} welded vertex pairs`);
+  }
   const bindGap = Object.fromEntries(Object.entries(SEAMS).map(([k, s]) => [k, gapOf(bindH, s)]));
   // Triangles already turned against their normals in the bind (surface nets' odd sliver) are not the pose's doing.
   const bindFlipped = new Uint8Array(I.length / 3);
@@ -375,7 +375,10 @@ export default async function (t) {
     for (let i = 0; i < I.length; i += 3) if ((bindFlipped[i / 3] = faceFlipped(I[i], I[i + 1], I[i + 2]) ? 1 : 0)) count++;
     t.note(`${count} triangles face against their normals in the bind (${((count / (I.length / 3)) * 1000).toFixed(2)} per mille)`);
   }
-  const report = {};
+  const report = {},
+    // Folds the standing pose already has (skin meeting skin in the armpits with the arms down): a twist is
+    // judged on the folds it adds.
+    standFlipped = new Uint8Array(I.length / 3);
   for (const [name, pose] of Object.entries(POSES)) {
     await tick();
     const skin = skinner(Three, data, poseFrames(Three, api.RIG, H, pose, api.PB_WIDTH));
@@ -398,13 +401,16 @@ export default async function (t) {
         // Edges over 3 mm (surface nets leave some far shorter, whose ratios mean nothing).
         if (bind > 0.003 * W && a < b) ratios.push(edgeLen(posed, a, b) / bind);
       }
-      if (faceFlipped(I[i], I[i + 1], I[i + 2]) && !bindFlipped[i / 3]) flipped++;
+      const folded = faceFlipped(I[i], I[i + 1], I[i + 2]) && !bindFlipped[i / 3];
+      if (name === 'stand') standFlipped[i / 3] = folded ? 1 : 0;
+      if (folded && !(/twist/i.test(name) && standFlipped[i / 3])) flipped++;
       const before = area(bindH, I[i], I[i + 1], I[i + 2]);
       if (before > 1e-6 && area(posed, I[i], I[i + 1], I[i + 2]) < before * 0.08) collapsed++;
     }
     const gaps = {};
     for (const [k, s] of Object.entries(SEAMS)) gaps[k] = +((gapOf(posed, s) - bindGap[k]) * 1000).toFixed(1);
-    const worstGap = Math.max(...Object.values(gaps));
+    for (const [a, b] of welds) gaps.weld = Math.max(gaps.weld || 0, +((edgeLen(posed, a, b) / W) * 1000).toFixed(1));
+    const worstGap = Math.max(0, ...Object.values(gaps));
     ratios.sort((a, b) => a - b);
     const stretch = ratios[Math.floor(ratios.length * 0.999)],
       triangles = I.length / 3;
@@ -418,7 +424,32 @@ export default async function (t) {
     t.assert(flipped / triangles < (twist ? 0.001 : 0.015), `${name}: ${flipped} triangles fold over${twist ? ' (candy-wrapping)' : ''}`);
     t.assert(worstGap < 8, `${name}: a seam opens by ${worstGap} mm (${JSON.stringify(gaps)})`);
   }
-  t.note('pose set: ' + JSON.stringify(report));
+  t.note(`${kind}: pose set: ` + JSON.stringify(report));
+}
+
+export default async function (t) {
+  // On a rendered page (first: the node build below holds this process for seconds): the player is drawn from
+  // it in the chase view and the street view.
+  const model = await t.call('playerModel', true);
+  if (!model) t.note('no 3D renderer on this page: the in-game checks need a rendered page');
+  else {
+    t.assert(model.ready && !model.error, 'player body not built: ' + JSON.stringify(model));
+    for (const view of ['chase', 'street']) {
+      await t.call('viewMode', view);
+      await t.wait(0.5);
+      await t.call('crowdBenchmark', 1);
+      const stats = await t.call('crowdStats');
+      t.assert(stats.playerBody === true, `${view} view: the player is not drawn from his own body`);
+    }
+    await t.call('viewMode', 'street');
+  }
+  const Three = createRequire(import.meta.url)(path.join(ROOT, 'vendor/three.r160.js'));
+  const api = load(Three),
+    // The builds yield every 30 ms, so this process keeps answering the page between slices.
+    tick = () => new Promise((resolve) => setImmediate(resolve));
+  // The shipped model (assets/player-model.bin, player-body3d-asset.js) is what he is drawn from; the field
+  // body is the fallback for a build without it. Both take the same checks, each with its own proportions.
+  for (const kind of ['model', 'fields']) await checkBody(t, Three, api, kind, tick);
   // The shader patch's anchors in three.js's chunks.
   const shader = { uniforms: {}, vertexShader: Three.ShaderLib.standard.vertexShader, fragmentShader: Three.ShaderLib.standard.fragmentShader };
   api.pbMaterialPatch(shader);

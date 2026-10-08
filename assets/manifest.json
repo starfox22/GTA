@@ -48,6 +48,24 @@
     "original": "tools/unicorn_model.py (from tools/models/Horse.glb)"
   },
   {
+    "id": "media-player-model",
+    "file": "assets/player-model.bin",
+    "mime": "application/octet-stream",
+    "original": "tools/player_model.py (from Microsoft Rocketbox Male_Adult_20, MIT)"
+  },
+  {
+    "id": "media-player-skin",
+    "file": "assets/player-skin.webp",
+    "mime": "image/webp",
+    "original": "tools/player_model.py (Rocketbox m027 body and head colour maps)"
+  },
+  {
+    "id": "media-player-detail",
+    "file": "assets/player-detail.webp",
+    "mime": "image/webp",
+    "original": "tools/player_model.py (Rocketbox m027 normal and specular maps)"
+  },
+  {
     "id": "media-music-synth",
     "file": "assets/music/synth.mp3",
     "mime": "audio/mpeg",

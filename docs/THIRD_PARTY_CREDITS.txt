@@ -672,6 +672,29 @@ unicorn-horse.json (Aurora, the unicorn statue on Sunset Pier; src/unicorn3d.js)
   rearing with a hand-built skeleton; the game subdivides it (Loop) and adds a sculpted
   mane, tail and horn of its own. Only the posed 494-vertex cage is embedded.
 
+player-model.bin, player-skin.webp, player-detail.webp (the player character; src/player-body3d-asset.js)
+  Base model: "Male_Adult_16" from the Microsoft Rocketbox Avatar Library,
+  https://github.com/microsoft/Microsoft-Rocketbox (Assets/Avatars/Adults/Male_Adult_16)
+  Copyright (c) 2020 Microsoft. License: MIT.
+    Permission is hereby granted, free of charge, to any person obtaining a copy of this
+    software and associated documentation files (the "Software"), to deal in the Software
+    without restriction, including without limitation the rights to use, copy, modify,
+    merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
+    persons to whom the Software is furnished to do so, subject to the following conditions:
+    The above copyright notice and this permission notice shall be included in all copies or
+    substantial portions of the Software.
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+    INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+    PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+    FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+    OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+  Changes: tools/player_model.py converts the FBX mesh (7,064 triangles) and its skin weights
+  to the game's 15 bones, and restyles its textures (scaled to 1024 px): the tee recoloured
+  black with a skull print drawn for this project, the jeans dark indigo, the trainers brown,
+  the hair darkened, a beard painted on, the skin tanned. The game fits the mesh to its own
+  skeleton at load (longer legs, broader chest, heavier arms) and poses the hands itself.
+
 RENDERING TECHNIQUES
 Written for this project in src/postfx3d.js, src/lighting3d.js and src/surfaces3d.js; no
 third-party shader source is copied. The techniques follow published work:

@@ -11,7 +11,7 @@
        * the legs a little apart (PB_BIND_SPREAD); the rig's own poses then turn the bones from there.
        */
       const PB_UNITS = 14 / 1.8,
-        PB_WIDTH = 0.92,
+        PB_WIDTH = 1.04,
         PB_BIND_ARM = 0.7,
         PB_BIND_SPREAD = 0.045,
         PB_BONES = 15,
