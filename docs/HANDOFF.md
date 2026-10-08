@@ -41,6 +41,11 @@ rules, workflow), then this page, then only the area doc your task needs (`docs/
 
 ## The owner's standing preferences (keep following them)
 
+- **Assets: download first, never build from scratch.** For any model, texture, sound or other asset, look for a
+  ready-made one online first (a clean licence: CC0, MIT, CC-BY with credit; only GitHub reaches through the cloud
+  proxy) and adapt it; build one by hand only when nothing usable exists, and say so. Show the owner preview sheets of
+  a new collection before spending tokens on integrating it (October 8: Rocketbox for people; vehicles and buildings
+  were surveyed with sheets first).
 - AAA realism, never cartoonish: no floor rings or glow pads (the floating arrow is the only objective
   pointer), no stars over downed people, no health boxes on the street (health is bought indoors), blood only
   where it belongs (`bleed()`; pools only under bodies; car stains through `addCarStain`), smoke only from

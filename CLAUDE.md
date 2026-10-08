@@ -421,6 +421,9 @@ packs with plain `<script src>` so the zip still plays from file://.
   the rain's `rainCarLight`) takes the frame and mode.
 - **Dev console** `window.DeadEndCity` has explicit named methods only. **Never** add an
   eval-style hook (eval, `Function`, run-a-string, generic get/set): a security rule.
+- **Assets are downloaded, not made** (the owner's rule): any new model, texture or sound starts from a ready-made
+  asset with a clean licence (CC0/MIT/CC-BY; only GitHub reaches through the cloud proxy); a new collection is shown to
+  the owner as preview sheets before it is integrated; hand-built assets only when nothing usable exists.
 - **Third-party assets** must be credited in `docs/THIRD_PARTY_CREDITS.txt` (the build embeds
   it; never delete it). Media goes in `assets/` + `assets/manifest.json`.
 - Never hand-edit or commit `dead-end-city.html`; `dist/` is scratch.
