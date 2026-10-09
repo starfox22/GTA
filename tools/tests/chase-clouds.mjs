@@ -35,8 +35,10 @@ export default async function (t) {
     t.assert(bench && bench.error, 'the bench needs HIGH or ULTRA');
     t.note(`fair ${fair.cloudAirKm} km, overcast ${overcast.cloudAirKm} km, history ${fair.history} frames`);
   } finally {
-    await t.call('graphics', 'high');
     await t.call('viewMode', 'street');
+    await t.call('graphics', 'high');
     await t.call('sky');
+    // A frame in the street view, so the next test's cloudLayer().view is not this one's (it is the last drawn).
+    await t.realWait(3);
   }
 }
