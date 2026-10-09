@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-571 files in the include tree, 197,047 lines.
+572 files in the include tree, 197,232 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -506,7 +506,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/render3d-resources.js`   520 — GPU resource lifecycle: shared geometries, model pruning and disposal.
 - `src/render3d-hiccups.js`   377 — Hiccup log: what each drawn frame created for the first time (shader programs, textures, geometries) and the slowest frames' renderer CPU split; read …
 - `src/payphone3d.js`   597 — The story payphone where mission 1 starts: a 1990s yellow pedestal payphone with its lit PHONE sign, handset, keypad, directory and grime, the …
-- `src/render3d-api.js`   456 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
+- `src/render3d-api.js`   459 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
 - `src/render3d-frame.js`   625 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
 
 ## src/flight-view3d.js ▸ Flight camera and aerial perspective
@@ -588,7 +588,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/cityscape3d.js ▸ Building archetypes, roofs, shopfronts and street furniture
 
-- `src/cityscape3d-kit.js`   678 — ▸ Cityscape 3D kit: seeded random, instancing helpers, static materials, roof and window textures.
+- `src/cityscape3d-kit.js`   682 — ▸ Cityscape 3D kit: seeded random, instancing helpers, static materials, roof and window textures.
 - `src/cityscape3d-shopwindows.js`   322 — Shop windows: a painted atlas of eight shop and lobby interiors, the shared lit shop-window material and its panes.
 - `src/cityscape3d-frontage.js`   458 — Street frontage on every side of a building: which sides face a street, an alley or a yard, and their ground floors (shops, lobbies, stoops, loading …
 - `src/cityscape3d-roofplant.js`   120 — Roof plant extras: mushroom exhaust fans, a galvanized duct run, plumbing vent stacks and conduit on the city's flat roofs, in FRONT PAINT (no new …
@@ -597,6 +597,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/cityscape3d-kit.js ▸ Cityscape 3D kit: seeded random, instancing helpers, static materials, roof and window textures.
 
 - `src/signage3d.js`   797 — Night glows, neon and wet-street reflections
+- `src/cityscape3d-wallskin.js`   176 — Wall skin: real CC0 PBR materials (ambientCG brick, concrete, corrugated steel, plaster, clay roof tiles from assets/wall-skin.webp, packed by …
 
 ## src/cityscape3d-roofs.js ▸ Cityscape 3D roof props and facades: AC units, water towers, billboards, helipads, shopfronts, fire escapes (decorateRoof).
 
@@ -844,7 +845,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-rides.js`   104 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
 - `src/game-console-leisure.js`    75 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)
 - `src/game-console-crowd.js`   166 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
-- `src/game-console-graphics.js`   253 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
+- `src/game-console-graphics.js`   255 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
 - `src/game-console-perf.js`   272 — DeadEndCity console, simulation cost: simProfile (per-section ms, worst frames), simScenario (staged situations)
 - `src/game-console-soak.js`   369 — DeadEndCity console, long-session health: soakReport (sizes of every list that can grow, DOM, non-finite positions)
 - `src/game-console-integrity.js`   178 — DeadEndCity console: integrity(), the invariants tools/bot.mjs checks after every action
@@ -888,5 +889,5 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## Outside the include tree
 
-- `src/asset-loader.js`   173 — decodes the embedded/streamed media into ASSETS before the game starts
+- `src/asset-loader.js`   174 — decodes the embedded/streamed media into ASSETS before the game starts
 - `src/shell.html`    80 — HTML page skeleton: its src/ui/*.css and *.html fragments (in include order) and build.py's `<!-- @include-* -->` slots (game, three.js, media, credits)
