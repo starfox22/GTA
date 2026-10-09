@@ -44,13 +44,17 @@ export default async function (t) {
   await t.call('look', 860, 4450, 1.1);
   await t.call('hitchRun', 0.8);
   const badges = await t.call('carBadges'),
-    of = (type, body) => badges.find((b) => b.type === type && (!body || b.body === body) && b.badge);
+    of = (type, body) => badges.find((b) => b.type === type && (!body || b.body === body) && b.badge),
+    // A downloaded model (a motorbike, the Crown Vic patrol body) carries its maker's badges, not the game's.
+    asset = (type, body) => badges.some((b) => b.type === type && (!body || b.body === body) && b.asset);
   for (const type of others) {
+    if (asset(type)) continue;
     const b = of(type);
     t.assert(b && b.badge.text, `${type}: a badge (${JSON.stringify(b?.badge)})`);
     if (b && b.badge.letters !== undefined) t.assert(b.badge.letters > 0, `${type}: its letters laid (${b.badge.letters})`);
   }
   for (const body of ['charger', 'utility', 'crownvic', 'tahoe']) {
+    if (asset('police', body)) continue;
     const b = of('police', body) || of('suv', body);
     t.assert(b && b.badge.letters > 0 && b.badge.sub, `police ${body}: its model name on the tail (${JSON.stringify(b?.badge)})`);
   }

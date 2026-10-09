@@ -88,9 +88,9 @@
           vaEnabled = on !== false;
           return vaEnabled;
         },
-        carModels() {
+        carModels(police = false) {
           const out = [];
-          for (const [c, m] of carModels) if (m.civilian || m.moto) out.push(civilianModelReport(c, m));
+          for (const [c, m] of carModels) if (m.civilian || m.moto || (police && m.police)) out.push(civilianModelReport(c, m));
           return out;
         },
         // What every vehicle model built says on its tail (cars3d-badges.js; DeadEndCity.carBadges()).
@@ -98,7 +98,8 @@
           const out = [];
           for (const [c, m] of carModels) {
             const badge = m.badge || m.kit?.badge || null;
-            out.push({ id: c.id, type: c.type, body: m.look?.body || null, badge });
+            // `asset`: a downloaded model, which carries its maker's badges (vehicle-assets3d.js ASSET CARS).
+            out.push({ id: c.id, type: c.type, body: m.look?.body || null, badge, asset: m.asset || null });
           }
           return out;
         },

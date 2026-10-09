@@ -168,7 +168,9 @@
         if (!choice) return null;
         let { body, livery } = choice;
         if (!POLICE_BODIES[body]) body = 'charger';
-        const unmarked = livery === 'unmarked' || !POLICE_LIVERIES[livery];
+        const unmarked = livery === 'unmarked' || !POLICE_LIVERIES[livery],
+          // The 'crownvic' body is drawn from the downloaded police sedan when the build carries it (police3d-asset.js).
+          asset = body === 'crownvic' && !!vehicleAssetModel('police');
         return {
           body,
           livery: unmarked ? 'unmarked' : livery,
@@ -176,7 +178,8 @@
           equipment: livery === 'swat' ? 'swat' : unmarked ? 'unmarked' : 'marked',
           paint: unmarked ? (body === 'tahoe' ? '#1c2026' : pick(UNMARKED_PAINTS, 7)) : '#ffffff',
           unit: livery === 'swat' ? 'S' + (1 + (hash % 9)) : String((livery === 'sheriff' ? 20 : 10) + (hash % 79)),
-          key: 'police:' + body + ':' + (unmarked ? 'unmarked' : livery),
+          asset,
+          key: 'police:' + body + ':' + (unmarked ? 'unmarked' : livery) + (asset ? ':asset' : ''),
         };
       }
       // The body-impostor pool a vehicle belongs to (flight-view3d.js), or null.

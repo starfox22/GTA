@@ -48,25 +48,10 @@ vehicles-and-driving.md.
   Z06 Carbon Aero (hypercars3d.js `chevetteSE`) spreads its body and details and adds the tall wing; the ZR1X is a
   body of its own. A change to a body's glass keeps CAR_GLASS_BANDS in step and `cabinHeadroom()` at zero `through`.
 
-## Downloaded models (ASSET CARS, vehicle-assets3d.js)
+## Downloaded models
 
-- Sedan, taxi, coupe, sport, supercar and luxury are drawn from downloaded CC-BY cars (Daniel Zhabotinsky's
-  series; credits in THIRD_PARTY_CREDITS.txt), converted offline by `tools/vehicle_models.py SRC_DIR` into
-  assets/vehicle-models.bin + vehicle-atlas.webp (2048x1024, one trim material, two wheel materials). `makeVehicle`
-  takes `makeAssetCar` when `vehicleAssetModel(type)` has one, else the procedural body (a build without the block
-  falls back by itself). Muscle and rally stay procedural (the four-door '73 is no muscle car; the rally loses its
-  livery), as do every other type; only replace a type where the model clearly looks better and loses nothing.
-- The kit (`vaKit`) has civKit's shape: shell/panels/hood in the car's paint on a clear livery (the taxi's paint is
-  its texture: `paintTexture`, `liveryColor` white), five-pane glass, trim with the cabin last (`trimOuter`), four
-  lamps with baked vertex colours, wheels about their centres (tyre first). No bumpers (the crumple bends them with
-  the body); no game badges (the model's own). The hood hinges at the model's hinge (`m.hoodHinge`).
-- The converter measures the glasshouse into a CAR_BODIES `glass` record (belt, roof with a `crown` from the roof
-  line, screen and rear glass feet and tops, widths); the seat fit starts 1.15 m behind the screen's foot
-  (`carSeatPlan` `own.hipX`). A changed model re-records DRIVEBY_SEATS (cabin-headroom test) and CAR_GLASS_BANDS
-  (the model's numbers at the type's length). Fronts are fixed per model (`front`), checked in a side view.
-- Budget: decimated (quadric half-edge collapse, seams and creases kept) to the procedural bodies' triangles or
-  fewer (supercar +7 %); draw calls the same (13-14 pristine). `assetCars()` reports, `assetCarsOn(false)` builds
-  models made from then on procedurally (before/after rows).
+The traffic cars, the Crown Vic patrol body and the motorbikes drawn from downloaded models (the converter, the
+kits, what each type keeps): vehicles-and-driving-models-assets.md.
 
 ## Cabins, headroom and rear badges
 

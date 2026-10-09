@@ -58,4 +58,5 @@
       // @include src/police3d-looks.js
       // @include src/police3d-cabins.js
       // @include src/police3d-kits.js
+      // @include src/police3d-asset.js
       // END SUBSYSTEM: src/police3d.js

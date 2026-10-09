@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-578 files in the include tree, 198,796 lines.
+580 files in the include tree, 199,382 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -167,7 +167,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/chase-hud.js`    77 — Chase HUD: the reticle in the middle of the screen in the chase view (chase-view.css) and the hidden cursor while the pointer is captured; drawn …
 - `src/tyre-effects.js`   274 — What the tyres leave behind: the burnout (forward and the handbrake held at a standstill), skid marks, and the one rule for tyre smoke, dust and …
 - `src/hud.js`    34 — ▸ HUD behaviour and the title menu
-- `src/render3d.js`   240 — ▸ Three.js renderer and resource lifecycle
+- `src/render3d.js`   241 — ▸ Three.js renderer and resource lifecycle
 - `src/frame-trace.js`   324 — Frame trace: every frame's CPU split (simulation sections, renderer laps) and what happened in it (collections, DOM mutations, GL uploads and links …
 - `src/game-loop.js`   195 — Profiler: Rolling averages of simulation and render CPU time per frame, plus the renderer's draw-call and triangle counts.
 - `src/game-console.js`    48 — ▸ DeadEndCity console registry and assembly
@@ -491,17 +491,18 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/helicopter3d.js`    99 — ▸ Helicopter models
 - `src/apache3d.js`   435 — The AH-64 attack helicopter model
 - `src/vehicles3d.js`   628 — Vehicle meshes
-- `src/police3d.js`    61 — ▸ Police vehicle models
+- `src/police3d.js`    62 — ▸ Police vehicle models
 - `src/cars3d.js`    94 — ▸ Civilian car models
 - `src/vehicle-assets3d.js`   396 — Vehicle models from downloaded assets (assets/vehicle-models.bin + vehicle-atlas.webp, tools/vehicle_models.py): decoded into kits on the civilian …
 - `src/hypercars3d.js`   954 — The Prestige Collection's car models
-- `src/motorbikes3d.js`   586 — Motorbike models
+- `src/motorbikes3d.js`   588 — Motorbike models
+- `src/motorbike-assets3d.js`   143 — Motorbikes from downloaded models (vehicle-assets3d.js ASSET CARS data, tools/vehicle_models_moto.py): the frame, the steering (fork, bars, head …
 - `src/offroad3d.js`    42 — ▸ 4x4 club trucks, the club lot, trail props and mud
 - `src/vinnytruck3d.js`   599 — Vinny's truck (mission 1, the 'flatbed' type): a 1990s medium-duty conventional flatbed at real size, merged into a few draws (makeVinnyTruck), with …
 - `src/tyresmoke3d.js`   170 — Tyre smoke, dust and road spray: soft billboards thrown up from the wheels of any road vehicle in view (a burnout's smoke; sand, lawns and loose …
 - `src/mountain-village3d.js`    39 — ▸ Mountain village meshes
 - `src/plane3d.js`    48 — ▸ Airplane meshes
-- `src/render3d-vehicle-models.js`   352 — MakeVehicle()/buildVehicleModel(), modelScale, car rims, sniper sights.
+- `src/render3d-vehicle-models.js`   353 — MakeVehicle()/buildVehicleModel(), modelScale, car rims, sniper sights.
 - `src/vehicle-merge3d.js`   347 — Pristine merge: a civilian car nothing has touched draws its non-casting static parts merged per material (hood + panels + paint bumpers, black and …
 - `src/render3d-prewarm-models.js`    67 — Prewarm lists: the throwaway vehicles and the sample shadow casters the title-screen prewarm builds, so each model's kit, shared materials and shader …
 - `src/render3d-effects.js`   169 — ▸ The optional player ring, the objective arrow, the muzzle and fire lights, the effect particles (fx3d-*.js), scorch, tracers, skid marks.
@@ -790,9 +791,10 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/police3d.js ▸ Police vehicle models
 
-- `src/police3d-looks.js`   496 — Police 3D bodies, liveries and looks (POLICE_BODIES, pickPoliceLook), trim materials and shared resources.
-- `src/police3d-cabins.js`   620 — Police 3D glasshouse cabins and livery textures (policeCabinGeometry, policeLiveryTextures).
-- `src/police3d-kits.js`   636 — Police 3D kits: makePoliceVehicle(), animatePoliceVehicle(), rims, rear doors, beacons and road glow.
+- `src/police3d-looks.js`   499 — Police 3D bodies, liveries and looks (POLICE_BODIES, pickPoliceLook), trim materials and shared resources.
+- `src/police3d-cabins.js`   621 — Police 3D glasshouse cabins and livery textures (policeCabinGeometry, policeLiveryTextures).
+- `src/police3d-kits.js`   637 — Police 3D kits: makePoliceVehicle(), animatePoliceVehicle(), rims, rear doors, beacons and road glow.
+- `src/police3d-asset.js`   432 — Police 3D asset body: the 'crownvic' patrol body drawn from the downloaded police sedan (vehicle-assets3d.js ASSET CARS) in the game's own liveries …
 
 ## src/cars3d.js ▸ Civilian car models
 
@@ -854,7 +856,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-rides.js`   104 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
 - `src/game-console-leisure.js`    75 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)
 - `src/game-console-crowd.js`   167 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
-- `src/game-console-graphics.js`   260 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
+- `src/game-console-graphics.js`   261 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
 - `src/game-console-perf.js`   272 — DeadEndCity console, simulation cost: simProfile (per-section ms, worst frames), simScenario (staged situations)
 - `src/game-console-soak.js`   369 — DeadEndCity console, long-session health: soakReport (sizes of every list that can grow, DOM, non-finite positions)
 - `src/game-console-integrity.js`   178 — DeadEndCity console: integrity(), the invariants tools/bot.mjs checks after every action

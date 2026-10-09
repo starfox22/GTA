@@ -402,6 +402,7 @@
        * team. `police` marks it for animatePoliceVehicle().
        */
       function makePoliceVehicle(vehicle, look) {
+        if (look.asset) return makeAssetPoliceVehicle(vehicle, look);
         claimPoliceResources();
         // The bodies are authored for a drawn scale of 0.8 (the patrol type's);
         // the agents' 'suv' and the SWAT 'van' are real-size types (cars3d.js), so

@@ -672,8 +672,9 @@ unicorn-horse.json (Aurora, the unicorn statue on Sunset Pier; src/unicorn3d.js)
   rearing with a hand-built skeleton; the game subdivides it (Loop) and adds a sculpted
   mane, tail and horn of its own. Only the posed 494-vertex cage is embedded.
 
-vehicle-models.bin, vehicle-atlas.webp (traffic cars; src/vehicle-assets3d.js, made by tools/vehicle_models.py)
-  Six car models by Daniel Zhabotinsky (https://sketchfab.com/DanielZhabotinsky), each
+vehicle-models.bin, vehicle-atlas.webp (traffic cars, the Crown Vic patrol body; src/vehicle-assets3d.js,
+src/police3d-asset.js, made by tools/vehicle_models.py)
+  Car models by Daniel Zhabotinsky (https://sketchfab.com/DanielZhabotinsky), each
   licensed under Creative Commons Attribution 4.0 (CC-BY-4.0,
   http://creativecommons.org/licenses/by/4.0/); fetched from GitHub mirrors that carry the
   original Sketchfab license.txt. Credits as the author asks ("This work is based on ..."):
@@ -683,12 +684,15 @@ vehicle-models.bin, vehicle-atlas.webp (traffic cars; src/vehicle-assets3d.js, m
   - JDM Experimental Sportcar '90 (sport): This work is based on "JDM Experimental Sportcar '90 - Low Poly model" (https://sketchfab.com/3d-models/jdm-experimental-sportcar-90-low-poly-model-776078e51fbe4ec9addbe45ba13e1aad) by Daniel Zhabotinsky (https://sketchfab.com/DanielZhabotinsky) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
   - Italian Supercar '84 (supercar): This work is based on "Italian Supercar '84 - Low poly Model" (https://sketchfab.com/3d-models/italian-supercar-84-low-poly-model-c967ab4abbc54ae4b7933fd81a86c99c) by Daniel Zhabotinsky (https://sketchfab.com/DanielZhabotinsky) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
   - 80 American Sedan (luxury): This work is based on "80 American Sedan - Low poly model" (https://sketchfab.com/3d-models/80-american-sedan-low-poly-model-892b2684fb37442299bfad9222cf331c) by Daniel Zhabotinsky (https://sketchfab.com/DanielZhabotinsky) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+  - 80 American Police Sedan (police, the 'crownvic' body): This work is based on "80 American Police Sedan - Low poly model" (https://sketchfab.com/3d-models/80-american-police-sedan-low-poly-model-945fd09f513f4d1ab19b6388a7ea7323) by Daniel Zhabotinsky (https://sketchfab.com/DanielZhabotinsky) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
   Changes: turned to face along +x and scaled as a whole to each game type's length; split
   into paint, glass, trim, cabin, lamps and wheels; wheels turned square (the Italian
   Supercar's were posed steered); triangles reduced by quadric edge collapse; the wheels'
   inner faces and the underside below the axles left out; the paint drawn in the game's own
   car colours; textures downscaled and packed into one atlas (the 80 American Sedan's missing
-  UCB_BOTTOM texture taken from the same author's Canyon '75 Taxi).
+  UCB_BOTTOM texture taken from the same author's Canyon '75 Taxi). The police sedan wears the
+  game's own liveries and unit numbers instead of its painted ones; its light bar's lenses are
+  lit by the game's flash patterns.
 
 player-model.bin, player-skin.webp, player-detail.webp (the player character; src/player-body3d-asset.js)
   Base model: "Male_Adult_16" from the Microsoft Rocketbox Avatar Library,

@@ -11,7 +11,7 @@ downloads were unpacked into) and writes
                                  to build the damage contract: the glasshouse measured as a
                                  CAR_BODIES `glass` record, the wheels' centres, the lamps'
                                  centres, the hood's hinge, the deck line, the sill.
-    assets/vehicle-atlas.webp    one 2048 x 1024 colour atlas for all of them (each source
+    assets/vehicle-atlas.webp    one 2048 x 2048 colour atlas for all of them (each source
                                  texture once, sized by how much surface it covers).
 
 Parts per model (src/vehicle-assets3d.js builds them): shell (paint below the belt), panels
@@ -20,7 +20,7 @@ rear, roof), trim (everything else; the cabin's inside last, `trimOuter` triangl
 lamps (headLeft, headRight, tailLeft, tailRight) and the wheels (tyre and rim, about their own
 centres). No third-party Python packages beyond numpy and Pillow.
 
-    python3 tools/vehicle_models.py SRC_DIR [--only TYPE,...] [--preview DIR]
+    python3 tools/vehicle_models.py SRC_DIR [--only TYPE,...] [--preview DIR] [--out DIR (default assets/)]
 """
 import hashlib
 import io
@@ -34,8 +34,11 @@ import sys
 import numpy as np
 from PIL import Image
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from vehicle_models_moto import convert_moto  # noqa: E402
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-ATLAS_W, ATLAS_H = 2048, 1024
+ATLAS_W, ATLAS_H = 2048, 2048
 # Share of each part's triangles kept by the decimation (the street camera sees a car a few dozen pixels long).
 KEEP = dict(paint=0.45, trim=0.4, cabin=0.25, wheel=0.3)
 
@@ -65,6 +68,27 @@ MODELS = [
     dict(type='luxury', front='+x', title='80 American Sedan', author=Z, length=5.2,
          src='zhab/samhovie_levitator/scene.gltf',
          url='https://sketchfab.com/3d-models/80-american-sedan-low-poly-model'),
+    # The patrol car's 'crownvic' body (police3d-asset.js): the game's liveries over the body, the light bar's lenses
+    # on the police light channels.
+    dict(type='police', front='+x', title='80 American Police Sedan', author=Z, section=True,
+         nodeRoles=[(r'(?i)lightbar_glass', 'beacon'), (r'(?i)lightbar', 'lightbar')],
+         src='zhab/CloudDCrow_space-drive/public/models/popo/scene.gltf',
+         url='https://sketchfab.com/3d-models/80-american-police-sedan-low-poly-model-945fd09f513f4d1ab19b6388a7ea7323'),
+    dict(type='muscle', front=None, keep=dict(trim=0.3, paint=0.4, cabin=0.22, wheel=0.22), borderCos=0.85, title="American Muscle '71", author=Z,
+         src='mirror/muscle71/scene.gltf',
+         url='https://sketchfab.com/3d-models/american-muscle-71-low-poly-model-955edc733c6d44fabc0ad7c246a15896'),
+    dict(type='hotrod', front=None, title="Coupe '33 Hot Rod #3", author=Z,
+         src='mirror/coupe33/scene.gltf',
+         url='https://sketchfab.com/3d-models/coupe-33-hot-rod-3-low-poly-model-cb5b519024c7472895ef10a8663fb533'),
+    # Motorbikes (tools/vehicle_models_moto.py; src/motorbike-assets3d.js). `axis`: a point up the steering axis, `bars`:
+    # the bars' lowest y and rearmost x, `seat`: the saddle's x, `pegs`: [x, y, z] (metres, the game frame).
+    dict(type='bike', kind='moto', front='+z', keep=dict(trim=0.16, paint=0.3, wheel=0.1, lamp=0.35), borderCos=0.7, title='Honda CB 750 F Super Sport 1970', author='Alex.Ka.',
+         src='mirror/cb750/scene.gltf',
+         url='https://sketchfab.com/3d-models/honda-cb-750-f-super-sport-1970-f121301624174b179ca4d50158797b03',
+         roles=[(r'(?i)^boby$', 'paint'), (r'(?i)^tire$', 'tyre'), (r'(?i)^headlights$|^brakelight$', 'lamp'), (r'(?i)^hondabac$', 'drop')],
+         axis=(0.37, 1.0), bars=(0.0, 1.0), seat=-0.25, pegs=[-0.05, 0.33, 0.2],
+         # The maker's name: the tank badge left out (hondabac), the brake hub's and the side cover's painted over.
+         erase={'bolts_baseColor.jpeg': [(0.48, 0.28, 0.76, 0.42), (0.0, 0.0, 0.34, 0.26)], 'hondabac_baseColor.png': [(0.46, 0.56, 0.78, 0.78)]}),
 ]
 
 DEFAULT_ROLES = [
@@ -173,9 +197,10 @@ def load_primitives(g):
     out = []
     js = g.js
 
-    def walk(ni, parent):
+    def walk(ni, parent, path=''):
         n = js['nodes'][ni]
         M = parent @ node_matrix(n)
+        path = path + '/' + n.get('name', '')
         if 'mesh' in n:
             for pr in js['meshes'][n['mesh']]['primitives']:
                 if pr.get('mode', 4) != 4:
@@ -195,9 +220,9 @@ def load_primitives(g):
                     idx = idx[:, ::-1]
                 if N is None:
                     N = vertex_normals(P, idx)
-                out.append(dict(P=P, N=N, UV=UV, index=idx, material=pr.get('material'), node=n.get('name', '')))
+                out.append(dict(P=P, N=N, UV=UV, index=idx, material=pr.get('material'), node=n.get('name', ''), path=path))
         for c in n.get('children', []):
-            walk(c, M)
+            walk(c, M, path)
 
     for r in js['scenes'][js.get('scene', 0)]['nodes']:
         walk(r, np.eye(4))
@@ -234,7 +259,11 @@ def to_game_frame(prims, front):
 NODE_ROLES = [(r'(?i)(?<!steering_)(?<!steering )wheel|tire|tyre', 'tyre')]
 
 
-def role_of(name, model, node=''):
+def role_of(name, model, node='', path=''):
+    # A model's own node roles (`nodeRoles`, matched against the node's path of names) first.
+    for rx, role in model.get('nodeRoles', []):
+        if re.search(rx, path or ''):
+            return role
     for rx, role in NODE_ROLES:
         if re.search(rx, node or ''):
             return role
@@ -249,7 +278,7 @@ def triangles(prims, mats, model):
     T = []
     for pi, p in enumerate(prims):
         name = mats[p['material']]['name'] if p['material'] is not None else ''
-        role = role_of(name, model, p['node'])
+        role = role_of(name, model, p['node'], p.get('path', ''))
         P, idx = p['P'], p['index']
         a, b, c = P[idx[:, 0]], P[idx[:, 1]], P[idx[:, 2]]
         fn = np.cross(b - a, c - a)
@@ -524,16 +553,23 @@ def convert(model, src_root):
         (inner if inside else outer).append(k)
 
     keep = dict(KEEP, **model.get('keep', {}))
+    bc = model.get('borderCos', 0.985)
     parts = {
-        'shell': dict(tris=shell, keep=keep['paint']),
-        'panels': dict(tris=panels, keep=keep['paint']),
-        'hood': dict(tris=hood, keep=keep['paint']),
+        'shell': dict(tris=shell, keep=keep['paint'], borderCos=bc),
+        'panels': dict(tris=panels, keep=keep['paint'], borderCos=bc),
+        'hood': dict(tris=hood, keep=keep['paint'], borderCos=bc),
         'glass': dict(tris=sorted(gl.tolist(), key=lambda k: pane[k]), panes=[int((pane[gl] == i).sum()) for i in range(5)]),
-        'trim': dict(tris=outer, keep=keep['trim']),
-        'cabin': dict(tris=inner, keep=keep['cabin']),
+        'trim': dict(tris=outer, keep=keep['trim'], borderCos=bc),
+        'cabin': dict(tris=inner, keep=keep['cabin'], borderCos=bc),
     }
     for key in ('headLeft', 'headRight', 'tailLeft', 'tailRight'):
         parts[key] = dict(tris=np.where(lamp_key == key)[0].tolist(), colors=True)
+    # A police car's roof light bar (`nodeRoles`): its housing in the trim's atlas, its lenses with their colours
+    # (src/police3d-asset.js lights them on the police light channels).
+    if (role == 'lightbar').any():
+        parts['lightbar'] = dict(tris=np.where(role == 'lightbar')[0].tolist(), keep=keep['trim'])
+    if (role == 'beacon').any():
+        parts['beacon'] = dict(tris=np.where(role == 'beacon')[0].tolist(), colors=True)
     for wi, w in enumerate(wheels):
         # The wheel's inner face (toward the car's middle, under the arch) never shows: left out.
         tris = sorted(k for k in w['tris'] if not (fn[k, 2] * w['side'] < -0.3 and (cen[k, 2] - w['z']) * w['side'] < 0))
@@ -541,8 +577,8 @@ def convert(model, src_root):
         if not rubber:
             rubber = tris
         rubber_set = set(rubber)
-        parts['wheel%d.tyre' % wi] = dict(tris=rubber, origin=(w['x'], w['y'], w['z']), keep=keep['wheel'])
-        parts['wheel%d.rim' % wi] = dict(tris=[k for k in tris if k not in rubber_set], origin=(w['x'], w['y'], w['z']), keep=keep['wheel'])
+        parts['wheel%d.tyre' % wi] = dict(tris=rubber, origin=(w['x'], w['y'], w['z']), keep=keep['wheel'], borderCos=bc)
+        parts['wheel%d.rim' % wi] = dict(tris=[k for k in tris if k not in rubber_set], origin=(w['x'], w['y'], w['z']), keep=keep['wheel'], borderCos=bc)
     meta = dict(
         type=model['type'], title=model['title'], front=front,
         dims=[round(float(L), 3), round(float(hi[1]), 3), round(float(W), 3)],
@@ -555,6 +591,19 @@ def convert(model, src_root):
         paintTexture=bool(model.get('paintTexture')),
         paintColor=paint_colour(mats, role, tri_prim, model),
     )
+    if model.get('section'):
+        # The body below the belt (shell and hood) at 41 stations along it: [bottom, top, half width], for a livery
+        # painted in a procedural shell's frame (police3d-asset.js).
+        body_pts = np.concatenate([V(k) for k in shell + hood])
+        sec = []
+        for i in range(41):
+            x = lo[0] + (hi[0] - lo[0]) * i / 40
+            near = body_pts[np.abs(body_pts[:, 0] - x) < 0.08]
+            sec.append([round(float(near[:, 1].min()), 3), round(float(near[:, 1].max()), 3), round(float(np.abs(near[:, 2]).max()), 3)] if len(near) else None)
+        for i in range(41):
+            if sec[i] is None:
+                sec[i] = sec[i - 1] if i else next(v for v in sec if v)
+        meta['section'] = sec
     return dict(meta=meta, prims=prims, mats=mats, images=images, image_keys=image_keys, parts=parts, tri_prim=tri_prim,
                 tri_idx=tri_idx, role=role, area=area)
 
@@ -580,7 +629,7 @@ def build_atlas(results):
     solids = {}
     for r in results:
         used = {}
-        textured = ('trim', 'rim', 'interior', 'tyre') + (('paint',) if r['meta']['paintTexture'] else ())
+        textured = ('trim', 'rim', 'interior', 'tyre', 'lightbar') + (('paint',) if r['meta']['paintTexture'] else ())
         for k in range(len(r['role'])):
             if r['role'][k] not in textured:
                 continue
@@ -704,7 +753,7 @@ def shelf_pack(sizes, W, H):
 # by two triangles of the part (UV seams, creases, material and part borders are boundaries in
 # the source's own indexing, so they stay put and nothing cracks); the surviving vertex keeps its
 # own normal, UV and colour (nothing is interpolated); a collapse that would flip a face is skipped.
-def decimate(P, I, keep):
+def decimate(P, I, keep, border_cos=0.985):
     import heapq
     nv = len(P)
     F = [list(t) for t in I]
@@ -754,7 +803,7 @@ def decimate(P, I, keep):
         a, b = ends
         d1, d2 = P[u] - P[a], P[b] - P[u]
         n1, n2 = np.linalg.norm(d1), np.linalg.norm(d2)
-        if n1 < 1e-9 or n2 < 1e-9 or d1.dot(d2) < 0.985 * n1 * n2:
+        if n1 < 1e-9 or n2 < 1e-9 or d1.dot(d2) < border_cos * n1 * n2:
             return None
         return ends
 
@@ -872,9 +921,11 @@ def write_part(blob, r, name, part, rects, qlo, qext):
             tri.append(vmap[key])
         I.append(tri)
     P = np.array(P)
+    if part.get('minPiece'):
+        I = drop_small_pieces(P, I, part['minPiece'])
     keep = part.get('keep', 1.0)
     if keep < 1.0 and len(I) > 200:
-        used, I = decimate(P, I, keep)
+        used, I = decimate(P, I, keep, part.get('borderCos', 0.985))
         P = P[used]
         N = [N[i] for i in used]
         UV = [UV[i] for i in used]
@@ -891,6 +942,31 @@ def write_part(blob, r, name, part, rects, qlo, qext):
         blob.add(base + '.c', np.array(C, dtype=np.uint8), 'u1')
     blob.add(base + '.i', np.array(I, dtype=np.uint16), 'u2')
     return len(I)
+
+
+def drop_small_pieces(P, I, size):
+    """Triangles of the pieces (connected through shared positions) smaller than `size` metres across left out: the
+    bolts, nuts and clips the street camera never resolves."""
+    key = {}
+    vid = np.array([key.setdefault(tuple(np.round(p, 4)), len(key)) for p in P])
+    parent = list(range(len(key)))
+
+    def find(a):
+        while parent[a] != a:
+            parent[a] = parent[parent[a]]
+            a = parent[a]
+        return a
+    for t in I:
+        a, b, c = find(vid[t[0]]), find(vid[t[1]]), find(vid[t[2]])
+        parent[b] = a
+        parent[find(c)] = a
+    lo, hi = {}, {}
+    for t in I:
+        r = find(vid[t[0]])
+        pts = P[list(t)]
+        lo[r] = np.minimum(lo.get(r, pts.min(0)), pts.min(0))
+        hi[r] = np.maximum(hi.get(r, pts.max(0)), pts.max(0))
+    return [t for t in I if np.linalg.norm(hi[find(vid[t[0]])] - lo[find(vid[t[0]])]) >= size]
 
 
 def sample_colour(r, m, uv):
@@ -927,9 +1003,13 @@ def main(argv):
     for model in MODELS:
         if only and model['type'] not in only:
             continue
-        r = convert(model, src)
+        r = convert_moto(model, src, sys.modules[__name__]) if model.get('kind') == 'moto' else convert(model, src)
         results.append(r)
         m = r['meta']
+        if m.get('kind') == 'moto':
+            print('%-9s %-30s front %s dims %s wheels %d rake %.2f parts %s' % (m['type'], m['title'], m['front'], m['dims'], len(m['wheels']), m['rake'],
+                                                                         {k: len(v['tris']) for k, v in r['parts'].items()}))
+            continue
         counts = {k: len(v['tris']) for k, v in r['parts'].items() if not k.startswith('wheel')}
         print('%-9s %-30s front %s dims %s belt %.2f roof %.2f wheels %d parts %s' % (
             m['type'], m['title'], m['front'], m['dims'], m['glass']['base'], m['glass']['roof'], len(m['wheels']), counts))
@@ -960,11 +1040,12 @@ def main(argv):
     head_json = json.dumps(header, separators=(',', ':')).encode()
     head_json += b' ' * (-(12 + len(head_json)) % 4)  # the arrays start 4-aligned
     out = b'DECVM001' + struct.pack('<I', len(head_json)) + head_json + bytes(blob.data)
-    with open(os.path.join(ROOT, 'assets/vehicle-models.bin'), 'wb') as fh:
+    out_dir = argv[argv.index('--out') + 1] if '--out' in argv else os.path.join(ROOT, 'assets')
+    with open(os.path.join(out_dir, 'vehicle-models.bin'), 'wb') as fh:
         fh.write(out)
-    atlas.save(os.path.join(ROOT, 'assets/vehicle-atlas.webp'), 'WEBP', quality=88, method=6)
+    atlas.save(os.path.join(out_dir, 'vehicle-atlas.webp'), 'WEBP', quality=88, method=6)
     print('vehicle models: %d models, %d bytes; atlas %d bytes' % (
-        len(results), len(out), os.path.getsize(os.path.join(ROOT, 'assets/vehicle-atlas.webp'))))
+        len(results), len(out), os.path.getsize(os.path.join(out_dir, 'vehicle-atlas.webp'))))
     if '--credits' in argv:
         # The credit each mirror's license.txt asks for (paste into docs/THIRD_PARTY_CREDITS.txt).
         for model in MODELS:

@@ -17,6 +17,7 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/places-monarch-and-county.md | Monarch Isle and MONARCH ONE, Ridgeline villages and the 4x4 club, Fort Sentinel and the Apache, the stadium and GOALLINE, MONARCH MOTORS |
 | areas/vehicles-and-driving.md | Vehicle specs, handling, brakes and assists, crashes, riders, cliffs, aircraft (models: -models.md) |
 | areas/vehicles-and-driving-models.md | Vehicle models: the damage contract, draw calls and the pristine merge, body impostors, flagships |
+| areas/vehicles-and-driving-models-assets.md | Downloaded vehicle models: the converter, asset cars, the Crown Vic patrol body, asset motorbikes |
 | areas/vehicles-and-driving-cabins.md | Car cabins: see-through glass, the seat plan fitted round the drawn head (`cabinHeadroom`), seated occupants, the drive-by seat, rear badges |
 | areas/vehicles-and-driving-damage.md | Crash damage on the body: the crumple field and its limits, bent parts, bullet holes and stars pinned to the panel they hit (`vehicleDamageShape`) |
 | areas/vehicles-and-driving-handling.md | Steering and grip, brakes and assists, drifts and the handbrake (`driftTest`) |

@@ -46,7 +46,7 @@
       lafera: [-0.076, 0.203, 0.458, 0.65, 0.82],
       'law:charger': [-0.125, 0.425, 0.436, 0.25, 0.845],
       'law:utility': [-0.074, 0.555, 0.436, 0.25, 0.975],
-      'law:crownvic': [-0.176, 0.455, 0.436, 0.25, 0.875],
+      'law:crownvic': [-0.352, 0.379, 0.436, 0.25, 0.939],
       'law:tahoe': [-0.138, 0.635, 0.448, 0.25, 1.055],
     };
     // The player's rig in drive-bys (character-rig3d.js RIG, crowd3d-looks.js 'player': 1.8 m, build 1.2): rig units

@@ -74,9 +74,9 @@
       // Police vehicle review (police3d.js): parks every police model and livery in
       // a column from (x, y), `spacing` apart, facing `heading`, with their lights
       // on (`lights`: true parked at a scene, 'pursuit' running hot, false off).
-      // Parked, empty and unarmed; returns the ids and looks.
-      policeLineup(x = player.x + 60, y = player.y - 160, heading = 0, lights = true, spacing = 40) {
-        const LOOKS = [
+      // Parked, empty and unarmed; returns the ids and looks. `looks`: only these [type, body, livery] rows.
+      policeLineup(x = player.x + 60, y = player.y - 160, heading = 0, lights = true, spacing = 40, looks = null) {
+        const LOOKS = Array.isArray(looks) ? looks : [
           ['police', 'charger', 'bw'],
           ['police', 'utility', 'bw'],
           ['police', 'crownvic', 'bw'],
@@ -129,7 +129,8 @@
       helicopterModels: () => city3D?.helicopterModels?.() ?? null,
       // Every civilian car and motorbike model built: draw calls, shadow casters,
       // triangles and the heaviest parts (cars3d.js, motorbikes3d.js).
-      carModels: () => city3D?.carModels?.() ?? null,
+      // `police` true: the police models too.
+      carModels: (police) => city3D?.carModels?.(police) ?? null,
       // The downloaded vehicle models the build carries (title, triangles, size, belt and roof) and the kits built
       // from them (vehicle-assets3d.js ASSET CARS).
       assetCars: () => city3D?.assetCars?.() ?? null,

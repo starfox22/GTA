@@ -493,16 +493,17 @@
             ratio = decalLength(text);
           decalText(set, text, [roof.x, roof.y, 0], [1, 0, 0], [0, 0, -1], Math.min(roof.width, roof.length / ratio), spec.roofDigits, roof.lift);
         }
-        if (body.trunk) {
-          const x = body.trunk * l,
-            top = profileAt(body.profile, body.trunk)[1];
+        // An asset body (police3d-asset.js) measures its own trunk lid and rear fenders.
+        if (kit.trunkDecal || body.trunk) {
+          const x = kit.trunkDecal ? kit.trunkDecal.x : body.trunk * l,
+            top = kit.trunkDecal ? kit.trunkDecal.y - 0.04 : profileAt(body.profile, body.trunk)[1];
           decalText(set, look.unit, [x, top + 0.04, 0], [0, 0, 1], [1, 0, 0], 3.1, spec.roofDigits);
         }
         if (body.kind !== 'bearcat')
           for (const side of [-1, 1]) {
-            const x = -0.365 * l,
-              y = body.yb + (body.h - body.yb) * 0.6,
-              { half } = policeShellAt(body, l, w, x, y);
+            const x = kit.sideDecal ? kit.sideDecal.x : -0.365 * l,
+              y = kit.sideDecal ? kit.sideDecal.y : body.yb + (body.h - body.yb) * 0.6,
+              half = kit.sideDecal ? kit.sideDecal.half : policeShellAt(body, l, w, x, y).half;
             decalText(set, look.unit, [x, y, side * (half + 0.06)], [side, 0, 0], [0, 1, 0], 1.7, spec.sideDigits);
           }
         const geo = policeGeometry(set);
