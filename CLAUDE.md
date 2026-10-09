@@ -332,8 +332,11 @@ packs with plain `<script src>` so the zip still plays from file://.
 - NPC avatars (people-and-crowd-avatars.md): `npcAvatarPick` (npc-avatar-cast.js, from compileLook's `lookFemale`) is the
   only rule for which Rocketbox avatar a look is; `npcAvatarChoose` is the only place a person gets a level (near slot or
   mid batch, `NPC_REACH`/`NPC_KEEP` band, tier caps; the rig beyond). drawCrowdPerson hands an avatar's 15 joints to
-  `skinBone` and must pose all 15. Roles no avatar can show (gangs, traffic hi-vis, FED, children, the wounded at mid)
-  keep the rig; tools/tests/npc-avatars.mjs.
+  `skinBone` and must pose all 15. Up close every role is an avatar (the rig only beyond the
+  caps, for severed limbs, the wounded at mid and the rider's helmet); tools/tests/npc-avatars.mjs. Story characters are cast by name (`NPC_STORY_CAST`); a top garment's colour is
+  only the TINT (`npcAvatarTint`, mask in the atlas alpha, tools/npc_paint.py); a new uniform or outfit gets a downloaded
+  avatar or a painted variant in tools/npc_models.py CAST, never the rig up close; the player in a disguise is
+  `npcPlayerSlot` (`playerAvatarOn`); people drawn after `npcAvatarChoose` take late slots in `npcAvatarTake`.
 - The player's body is the shipped model when the build carries it (player-body3d-asset.js fits
   assets/player-model.bin from tools/player_model.py, Microsoft Rocketbox, MIT) and the field body otherwise; `PB_WIDTH`
   1.04 is the model's shoulders.

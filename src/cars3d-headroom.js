@@ -288,6 +288,33 @@
        * `seat`) and the game's drive-by seat beside it (`gameSeat`, `seatGap`); `through` lists who pokes out where,
        * and the top-level `through` counts the cars with anyone out.
        */
+      // The avatars drawn in car seats (motorists, police, agents, the story cast, the player in a disguise: tags), their
+      // head-bone points relative to the head joint (rig units, as the rig's clouds) at the tallest height of their sex.
+      const CABIN_AVATAR_TAGS = new Set(['street', 'summer', 'commuter', 'reveller', 'texter', 'tourist', 'elder', 'police', 'fed', 'named', 'playerArmy', 'playerDisguise']);
+      let cabinAvatarCache = null;
+      function cabinAvatarClouds() {
+        if (cabinAvatarCache) return cabinAvatarCache;
+        if (!npcAv.ready) return [];
+        const cast = npcAvatarCast(),
+          out = [];
+        for (let i = 0; i < cast.length; i++) {
+          const fit = npcAv.fits[i];
+          if (!fit || cast[i].kid || !cast[i].tags.some((t) => CABIN_AVATAR_TAGS.has(t))) continue;
+          const p = fit.geometry.attributes.position,
+            sk = fit.geometry.attributes.npcSkin,
+            o = fit.bindO[2],
+            pts = [];
+          for (let v = 0; v < p.count; v++) {
+            const a = sk.getX(v),
+              b = sk.getY(v),
+              wb = sk.getZ(v);
+            if ((a === 2 && wb < 0.5) || (b === 2 && wb >= 0.5)) pts.push(p.getX(v) - o.x, p.getY(v) - o.y, p.getZ(v) - o.z);
+          }
+          const type = CABIN_HEAD_TYPES[cast[i].sex === 'f' ? 1 : 0];
+          out.push({ name: cast[i].name, cloud: { pts: new Float32Array(pts), H: type.height * RIG_UNIT } });
+        }
+        return (cabinAvatarCache = out);
+      }
       function cabinHeadroomReport() {
         const r3 = (v) => +v.toFixed(3),
           cars = [],
@@ -296,7 +323,8 @@
           people = [
             ...CABIN_HEAD_TYPES.map((t) => ({ name: t.name, cloud: cabinHeadCloud(['head', ...t.parts], t.headScale, t.height, true) })),
             { name: 'player', cloud: cabinHeadCloud(['head', playerLook.hairPart, playerLook.hatPart].filter(Boolean), playerLook.headScale, playerLook.height, true) },
-          ];
+          ],
+          avatarClouds = cabinAvatarClouds();
         let through = 0;
         for (const [c, m] of carModels) {
           const plan = m.seats;
@@ -312,6 +340,14 @@
             entry.roof[who.name] = r3(cabinScratch.roof / M);
             if (clear < 0) entry.through.push(who.name + (cabinScratch.roof < cabinScratch.side ? ' roof' : ' side'));
           }
+          // The avatars people in cars are drawn as (npc-avatar3d.js): the least room any of them has, and who is out.
+          let least = Infinity;
+          for (const who of avatarClouds) {
+            const clear = cabinClearance(g, l, w, M, [who.cloud], plan.x, plan.y, side, plan.lean) / M;
+            if (clear < least) (least = clear), (entry.clear.avatar = who.name);
+            if (clear < 0) entry.through.push(who.name + (cabinScratch.roof < cabinScratch.side ? ' roof' : ' side'));
+          }
+          if (avatarClouds.length) entry.clear.avatarRoom = r3(least);
           // The game's seat for drive-bys (driveby-seats.js DRIVEBY_SEATS, recorded from this plan): world metres x ahead,
           // hip height, side, lean, belt; `seatGap` how far apart the two are (metres and radians added).
           entry.key = driveBySeatKey(c);

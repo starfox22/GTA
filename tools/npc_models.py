@@ -34,11 +34,12 @@ from PIL import Image
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import player_model as pm  # noqa: E402
 from mesh_decimate import decimate  # noqa: E402
+import npc_paint  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BODY, HEAD = 320, 160
 CELL_W, CELL_H = BODY + HEAD, BODY
-COLUMNS = 6
+COLUMNS = 8
 POS_SCALE = 16000.0
 NEAR_TRIANGLES, MID_TRIANGLES = 4000, 1000
 DROP = ('pistol', 'combat_knife', 'machinegun', 'shotgun', 'flashlight')
@@ -50,16 +51,16 @@ DROP = ('pistol', 'combat_knife', 'machinegun', 'shotgun', 'flashlight')
 # 0 shaved, 1 short, 2 long, 3 bun, 4 curly).
 CAST = [
     ('Male_Adult_01', 'Adults', 'm', False, 'street summer tourist', dict(garment='tee', sleeves=False, shorts=True, footwear='sneaker', hairStyle=1)),
-    ('Male_Adult_04', 'Adults', 'm', False, 'street gang reveller bouncer', dict(garment='jacket', sleeves=True, footwear='sneaker', hairStyle=4)),
+    ('Male_Adult_04', 'Adults', 'm', False, 'street gang reveller bouncer', dict(garment='jacket', sleeves=True, footwear='sneaker', hairStyle=4), {'tint': True}),
     ('Male_Adult_06', 'Adults', 'm', False, 'street reveller', dict(garment='tee', sleeves=True, footwear='sneaker', hairStyle=1)),
     ('Male_Adult_08', 'Adults', 'm', False, 'street commuter partyGuest', dict(garment='tee', sleeves=True, footwear='shoe', hairStyle=1)),
-    ('Male_Adult_12', 'Adults', 'm', False, 'street gang texter', dict(garment='jacket', sleeves=True, footwear='sneaker', hairStyle=0)),
+    ('Male_Adult_12', 'Adults', 'm', False, 'street gang texter', dict(garment='jacket', sleeves=True, footwear='sneaker', hairStyle=0), {'tint': True}),
     ('Male_Adult_14', 'Adults', 'm', False, 'elder', dict(garment='tee', sleeves=True, footwear='shoe', hairStyle=0)),
-    ('Male_Adult_17', 'Adults', 'm', False, 'street gang texter tourist', dict(garment='hoodie', sleeves=True, footwear='sneaker', hairStyle=1)),
+    ('Male_Adult_17', 'Adults', 'm', False, 'street texter tourist', dict(garment='hoodie', sleeves=True, footwear='sneaker', hairStyle=1)),
     ('Female_Adult_01', 'Adults', 'f', False, 'street summer tourist', dict(garment='tee', sleeves=False, footwear='shoe', hairStyle=2)),
     ('Female_Adult_02', 'Adults', 'f', False, 'street commuter', dict(garment='tee', sleeves=True, skirt=True, footwear='shoe', hairStyle=3)),
     ('Female_Adult_03', 'Adults', 'f', False, 'street summer reveller', dict(garment='tank', sleeves=False, footwear='shoe', hairStyle=2)),
-    ('Female_Adult_04', 'Adults', 'f', False, 'street reveller texter gang', dict(garment='jacket', sleeves=True, footwear='boot', hairStyle=2)),
+    ('Female_Adult_04', 'Adults', 'f', False, 'street reveller texter gang', dict(garment='jacket', sleeves=True, footwear='boot', hairStyle=2), {'tint': True}),
     ('Female_Adult_11', 'Adults', 'f', False, 'street reveller partyGuest', dict(garment='dress', sleeves=True, skirt=True, footwear='boot', hairStyle=2)),
     ('Female_Adult_14', 'Adults', 'f', False, 'elder', dict(garment='jacket', sleeves=True, footwear='boot', hairStyle=1)),
     ('Female_Adult_15', 'Adults', 'f', False, 'street commuter', dict(garment='tee', sleeves=True, skirt=True, footwear='boot', hairStyle=2)),
@@ -75,12 +76,56 @@ CAST = [
     ('Medical_Male_01', 'Professions', 'm', False, 'medic', dict(garment='uniform', sleeves=False, footwear='shoe', hairStyle=1)),
     ('Medical_Female_01', 'Professions', 'f', False, 'medic', dict(garment='uniform', sleeves=False, footwear='shoe', hairStyle=3)),
     ('Construction_Male_07', 'Professions', 'm', False, 'worker', dict(garment='uniform', sleeves=True, footwear='boot', hairStyle=1, hat='hardHat')),
-    ('Sports_Male_04', 'Professions', 'm', False, 'jogger', dict(garment='tank', sleeves=False, shorts=True, footwear='sneaker', hairStyle=1)),
+    ('Sports_Male_04', 'Professions', 'm', False, 'jogger basketball', dict(garment='tank', sleeves=False, shorts=True, footwear='sneaker', hairStyle=1), {'tint': True}),
     ('Sports_Female_02', 'Professions', 'f', False, 'jogger', dict(garment='tank', sleeves=False, footwear='sneaker', hairStyle=3)),
     ('Sports_Female_01', 'Professions', 'f', False, 'beach', dict(garment='bikini', sleeves=False, shorts=True, footwear='bare', hairStyle=2)),
     ('Sports_Male_01', 'Professions', 'm', False, 'beach', dict(garment='shirtless', sleeves=False, shorts=True, footwear='bare', hairStyle=1)),
     ('Male_Child_01', 'Children', 'm', True, 'kid', dict(garment='tee', sleeves=True, footwear='sneaker', hairStyle=1)),
     ('Female_Child_01', 'Children', 'f', True, 'kid', dict(garment='tee', sleeves=True, footwear='sneaker', hairStyle=2)),
+    # Avatars everywhere (2026-10): more uniforms, children, gangs (their colours tinted per person through the atlas'
+    # alpha: TINT), story characters (cast by name in src/npc-avatar-cast.js: tag 'cast'), waiters, athletes; painted
+    # variants (npc_paint.py) of downloaded avatars where no avatar wears it: traffic officers' hi-vis, the FED vests,
+    # stewards' vests. The 7th field: {'base': the avatar it is painted from, 'tint': mask the top garment,
+    # 'hood': the hood is the top's (bones of the head), 'vest': (colour, bands, tintable, letters),
+    # 'relabel': patches lettered anew}.
+    ('Police_Male_01', 'Professions', 'm', False, 'police', dict(garment='uniform', sleeves=False, footwear='shoe', hairStyle=1, hat='patrolCap')),
+    ('Security_Male_01', 'Professions', 'm', False, 'police', dict(garment='uniform', sleeves=True, footwear='shoe', hairStyle=1, hat='patrolCap')),
+    ('Traffic_Male_03', 'Professions', 'm', False, 'traffic', dict(garment='uniform', sleeves=True, footwear='shoe', hairStyle=1, hat='patrolCap'),
+     {'base': 'Police_Male_03', 'vest': ('#cfe83a', [(0.42, 0.045), (0.72, 0.045)], False, None)}),
+    ('Traffic_Male_01', 'Professions', 'm', False, 'traffic', dict(garment='uniform', sleeves=False, footwear='shoe', hairStyle=1, hat='patrolCap'),
+     {'base': 'Police_Male_01', 'vest': ('#cfe83a', [(0.42, 0.045), (0.72, 0.045)], False, None)}),
+    ('Traffic_Female_01', 'Professions', 'f', False, 'traffic', dict(garment='uniform', sleeves=True, footwear='shoe', hairStyle=3, hat='patrolCap'),
+     {'base': 'Security_Female_01', 'vest': ('#cfe83a', [(0.42, 0.045), (0.72, 0.045)], False, None)}),
+    ('Fed_Male_07', 'Professions', 'm', False, 'fed', dict(garment='suit', sleeves=True, footwear='shoe', hairStyle=1),
+     {'base': 'Police_Male_07', 'relabel': [(926, 556, 1132, 630, 'FED', 180, True), (1060, 1166, 1158, 1210, 'FED', 0, False)]}),
+    ('Fed_Female_01', 'Professions', 'f', False, 'fed', dict(garment='suit', sleeves=True, footwear='shoe', hairStyle=1),
+     {'base': 'Business_Female_01', 'vest': ('#1f2636', None, False, 'FED')}),
+    ('Military_Male_03', 'Professions', 'm', False, 'army', dict(garment='uniform', sleeves=True, footwear='boot', hairStyle=0, hat='helmet')),
+    ('Military_Male_04', 'Professions', 'm', False, 'army', dict(garment='uniform', sleeves=True, footwear='boot', hairStyle=0, hat='helmet')),
+    ('Military_Male_05', 'Professions', 'm', False, 'mp playerArmy', dict(garment='uniform', sleeves=True, footwear='boot', hairStyle=0, hat='patrolCap')),
+    ('Military_Male_06', 'Professions', 'm', False, 'mp', dict(garment='uniform', sleeves=True, footwear='boot', hairStyle=0, hat='patrolCap')),
+    ('Male_Child_02', 'Children', 'm', True, 'kid', dict(garment='tee', sleeves=False, shorts=True, footwear='shoe', hairStyle=0)),
+    ('Female_Child_02', 'Children', 'f', True, 'kid', dict(garment='dress', sleeves=True, footwear='shoe', hairStyle=2)),
+    ('Male_Adult_18', 'Adults', 'm', False, 'gang', dict(garment='hoodie', sleeves=True, footwear='shoe', hairStyle=0), {'tint': True, 'hood': True}),
+    ('Male_Adult_20', 'Adults', 'm', False, 'gang', dict(garment='hoodie', sleeves=True, footwear='shoe', hairStyle=1), {'tint': True, 'hood': True}),
+    ('Male_Adult_10', 'Adults', 'm', False, 'gang', dict(garment='jacket', sleeves=True, footwear='sneaker', hairStyle=1), {'tint': True}),
+    ('Male_Adult_09', 'Adults', 'm', False, 'gang', dict(garment='tee', sleeves=False, footwear='shoe', hairStyle=2), {'tint': True}),
+    ('Female_Adult_12', 'Adults', 'f', False, 'gang', dict(garment='hoodie', sleeves=True, shorts=True, footwear='sneaker', hairStyle=2), {'tint': True, 'hood': True}),
+    ('Business_Male_03', 'Professions', 'm', False, 'mobster', dict(garment='suit', sleeves=True, footwear='shoe', hairStyle=1)),
+    ('Business_Male_05', 'Professions', 'm', False, 'mobster boss', dict(garment='suit', sleeves=True, footwear='shoe', hairStyle=0)),
+    ('Business_Male_02', 'Professions', 'm', False, 'playerDisguise', dict(garment='suit', sleeves=True, footwear='shoe', hairStyle=1), {'tint': True}),
+    ('Business_Male_06', 'Professions', 'm', False, 'waiter', dict(garment='tee', sleeves=True, footwear='shoe', hairStyle=1)),
+    ('Male_Adult_03', 'Adults', 'm', False, 'named', dict(garment='jacket', sleeves=True, footwear='shoe', hairStyle=1)),
+    ('Male_Adult_05', 'Adults', 'm', False, 'named', dict(garment='jacket', sleeves=True, footwear='boot', hairStyle=0)),
+    ('Male_Adult_07', 'Adults', 'm', False, 'named', dict(garment='jacket', sleeves=True, footwear='shoe', hairStyle=1)),
+    ('Male_Adult_11', 'Adults', 'm', False, 'named', dict(garment='tee', sleeves=False, footwear='shoe', hairStyle=1)),
+    ('Female_Adult_07', 'Adults', 'f', False, 'named', dict(garment='jacket', sleeves=True, footwear='boot', hairStyle=2)),
+    ('Female_Adult_13', 'Adults', 'f', False, 'named', dict(garment='vneck', sleeves=False, footwear='shoe', hairStyle=1)),
+    ('Business_Male_04', 'Professions', 'm', False, 'named', dict(garment='suit', sleeves=True, footwear='shoe', hairStyle=0)),
+    ('Sports_Male_02', 'Professions', 'm', False, 'athlete football', dict(garment='tee', sleeves=False, shorts=True, footwear='shoe', hairStyle=1), {'tint': 'kit'}),
+    ('Sports_Male_03', 'Professions', 'm', False, 'athlete football', dict(garment='tee', sleeves=False, shorts=True, footwear='shoe', hairStyle=4), {'tint': 'kit'}),
+    ('Steward_Male_09', 'Adults', 'm', False, 'steward', dict(garment='tee', sleeves=False, footwear='shoe', hairStyle=2),
+     {'base': 'Male_Adult_09', 'vest': ('#e6e6e0', [(0.42, 0.04), (0.72, 0.04)], True, None)}),
 ]
 
 
@@ -303,10 +348,58 @@ def place(entry, cx, cy, atlas):
     return rects
 
 
+def paint(e, opts):
+    """The CAST entry's texture edits (npc_paint.py) on its body page; the tint mask into that page's alpha."""
+    body = e['kinds'].index('body')
+    mask = None
+    if opts.get('relabel'):
+        npc_paint.relabel(e, body, opts['relabel'])
+    if opts.get('vest'):
+        colour, bands, tintable, letters = opts['vest']
+        mask = npc_paint.vest(e, body, colour, bands, tintable, letters)
+        if mask is not None:
+            sel = mask > 0.5
+            page = np.asarray(e['pages'][body].convert('RGB'), np.float64)[sel] / 255
+            e['tintRef'] = max(0.01, float(np.mean(npc_paint.lum(npc_paint.srgb_lin(page)))))
+    if opts.get('tint'):
+        mask, e['tintRef'] = npc_paint.tint_mask(e, body, opts.get('hood', False), opts.get('tint') == 'kit')
+    if mask is not None:
+        rgba = np.asarray(e['pages'][body].convert('RGBA'), np.uint8).copy()
+        rgba[..., 3] = np.round(255 - np.clip(mask, 0, 1) * 127).astype(np.uint8)
+        e['pages'][body] = Image.fromarray(rgba, 'RGBA')
+
+
+def converted(src, name):
+    """convert_one, kept between runs in $NPC_CACHE (a folder of pickles) when it is set: re-painting is then quick."""
+    folder = os.environ.get('NPC_CACHE')
+    if not folder:
+        return convert_one(src, name)
+    import pickle
+    path = os.path.join(folder, name + '.pickle')
+    if os.path.exists(path):
+        with open(path, 'rb') as fh:
+            return pickle.load(fh)
+    e = convert_one(src, name)
+    os.makedirs(folder, exist_ok=True)
+    with open(path, 'wb') as fh:
+        pickle.dump(e, fh)
+    return e
+
+
 def main(src):
     cast = []
-    for name, group, sex, kid, tags, traits in CAST:
-        e = convert_one(os.path.join(src, group), name)
+    cache = {}
+    for item in CAST:
+        name, group, sex, kid, tags, traits = item[:6]
+        opts = item[6] if len(item) > 6 else {}
+        base = opts.get('base', name)
+        if base not in cache:
+            cache[base] = converted(os.path.join(src, group), base)
+        e = dict(cache[base])
+        e['pages'] = {k: v.copy() for k, v in e['pages'].items()}
+        e['name'] = name
+        e['tintRef'] = 0
+        paint(e, opts)
         e.update({'sex': sex, 'kid': kid, 'tags': tags.split(), 'traits': traits, 'group': group})
         cast.append(e)
         print('%-22s %5d vertices, triangles %5d full, %5d near, %5d mid' % (name, len(e['P']), e['full'], e['triangles'], e['trianglesMid']))
@@ -348,7 +441,7 @@ def main(src):
         }
         header['avatars'].append({
             'name': e['name'], 'group': e['group'], 'sex': e['sex'], 'kid': e['kid'], 'tags': e['tags'], 'traits': e['traits'],
-            'palette': e['palette'], 'height': round(e['height'], 4), 'vertices': len(e['P']), 'triangles': e['triangles'], 'trianglesMid': e['trianglesMid'], 'trianglesFull': e['full'],
+            'palette': e['palette'], 'tint': round(e['tintRef'], 5), 'height': round(e['height'], 4), 'vertices': len(e['P']), 'triangles': e['triangles'], 'trianglesMid': e['trianglesMid'], 'trianglesFull': e['full'],
             'bones': e['frames'], 'hands': e['hands'], 'arrays': arrays,
         })
     head_json = json.dumps(header, separators=(',', ':')).encode()

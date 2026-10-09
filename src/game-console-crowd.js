@@ -87,6 +87,8 @@
       // One of each kind of character in a row in front of the player, facing the
       // camera (crowd.js CHARACTER LINEUP): stance 'stand', 'walk' or 'aim'.
       characterLineup: (stance, spacing) => characterLineup(stance, spacing),
+      // A second row ahead of the player for looks checks: children, Kessler off duty, gangs, a boss, a waiter, Vinny and Elena.
+      avatarLineup: (spacing) => avatarLineup(spacing),
       // What the people cost in the last frame (crowd3d.js): parts, draw calls, instances, triangles.
       crowdStats: (byPart) => city3D?.crowdStats?.(byPart) || null,
       // Pack the people `frames` times back to back: the rig's CPU cost per frame in ms.
