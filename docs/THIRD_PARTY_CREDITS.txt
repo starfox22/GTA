@@ -672,6 +672,24 @@ unicorn-horse.json (Aurora, the unicorn statue on Sunset Pier; src/unicorn3d.js)
   rearing with a hand-built skeleton; the game subdivides it (Loop) and adds a sculpted
   mane, tail and horn of its own. Only the posed 494-vertex cage is embedded.
 
+vehicle-models.bin, vehicle-atlas.webp (traffic cars; src/vehicle-assets3d.js, made by tools/vehicle_models.py)
+  Six car models by Daniel Zhabotinsky (https://sketchfab.com/DanielZhabotinsky), each
+  licensed under Creative Commons Attribution 4.0 (CC-BY-4.0,
+  http://creativecommons.org/licenses/by/4.0/); fetched from GitHub mirrors that carry the
+  original Sketchfab license.txt. Credits as the author asks ("This work is based on ..."):
+  - Fairheaven LT '80 (sedan): This work is based on "Fairheaven LT '80 - Low poly model" (https://sketchfab.com/3d-models/fairheaven-lt-80-low-poly-model-e2678da920cc4be68dbc193727919ffb) by Daniel Zhabotinsky (https://sketchfab.com/DanielZhabotinsky) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+  - Canyon '75 Taxi (taxi): This work is based on "Canyon '75 Taxi - Low poly model" (https://sketchfab.com/3d-models/canyon-75-taxi-low-poly-model-9e8f92a215784f3d8aaaaeab1bef54c4) by Daniel Zhabotinsky (https://sketchfab.com/DanielZhabotinsky) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+  - Kiri '86 (coupe): This work is based on "Kiri '86 - Low poly model" (https://sketchfab.com/3d-models/kiri-86-low-poly-model-5c17c582ef9549798f694b660feea42a) by Daniel Zhabotinsky (https://sketchfab.com/DanielZhabotinsky) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+  - JDM Experimental Sportcar '90 (sport): This work is based on "JDM Experimental Sportcar '90 - Low Poly model" (https://sketchfab.com/3d-models/jdm-experimental-sportcar-90-low-poly-model-776078e51fbe4ec9addbe45ba13e1aad) by Daniel Zhabotinsky (https://sketchfab.com/DanielZhabotinsky) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+  - Italian Supercar '84 (supercar): This work is based on "Italian Supercar '84 - Low poly Model" (https://sketchfab.com/3d-models/italian-supercar-84-low-poly-model-c967ab4abbc54ae4b7933fd81a86c99c) by Daniel Zhabotinsky (https://sketchfab.com/DanielZhabotinsky) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+  - 80 American Sedan (luxury): This work is based on "80 American Sedan - Low poly model" (https://sketchfab.com/3d-models/80-american-sedan-low-poly-model-892b2684fb37442299bfad9222cf331c) by Daniel Zhabotinsky (https://sketchfab.com/DanielZhabotinsky) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+  Changes: turned to face along +x and scaled as a whole to each game type's length; split
+  into paint, glass, trim, cabin, lamps and wheels; wheels turned square (the Italian
+  Supercar's were posed steered); triangles reduced by quadric edge collapse; the wheels'
+  inner faces and the underside below the axles left out; the paint drawn in the game's own
+  car colours; textures downscaled and packed into one atlas (the 80 American Sedan's missing
+  UCB_BOTTOM texture taken from the same author's Canyon '75 Taxi).
+
 player-model.bin, player-skin.webp, player-detail.webp (the player character; src/player-body3d-asset.js)
   Base model: "Male_Adult_16" from the Microsoft Rocketbox Avatar Library,
   https://github.com/microsoft/Microsoft-Rocketbox (Assets/Avatars/Adults/Male_Adult_16)

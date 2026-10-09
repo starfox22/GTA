@@ -66,8 +66,9 @@ node tools/dev.mjs errors | status | reload [--render|--norender] [--keep] [--sh
 - `call` prints one compact JSON line cut at 1500 chars (`--max N`, `--full`); NaN and
   Infinity come back as strings. It only calls named methods: there is no JS-string path.
 - Every command notes new console errors; `errors` prints and clears them.
-- `node tools/test.mjs [filter...] [--verbose] [--keep]`: rebuilds, (re)boots the dev server
-  in no-render mode, runs `tools/tests/*.mjs` (one test per file; a line per test, a summary,
+- `node tools/test.mjs [filter...] [--verbose] [--keep] [--render]`: rebuilds, (re)boots the dev server
+  in no-render mode (`--render`: the rendered page, for the tests that skip themselves without WebGL, such as
+  cabin-headroom, car-cabins, rear-badges; minutes per test), runs `tools/tests/*.mjs` (one test per file; a line per test, a summary,
   exit 1 on failure; a console error fails the test). A test exports `default async (t)`
   using `t.call`, `t.keys`, `t.wait`, `t.assert`, `t.near(v, lo, hi, label)`, `t.finite(obj)`,
   `t.note`, `t.reload({ keep })` (reopen the page; `keep: true` keeps localStorage to check

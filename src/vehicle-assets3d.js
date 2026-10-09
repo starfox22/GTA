@@ -19,7 +19,8 @@
         if (vaCache !== undefined) return vaCache;
         vaCache = null;
         const url = typeof ASSETS !== 'undefined' && ASSETS.vehicleModels;
-        if (!url) return null;
+        // No models in this build (or an emptied block: an A/B build without them): every type procedural.
+        if (!url || url.length < 64) return null;
         try {
           const text = atob(url.slice(url.indexOf(',') + 1)),
             bytes = new Uint8Array(text.length);

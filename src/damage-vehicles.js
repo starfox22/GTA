@@ -71,16 +71,16 @@
     /* The glasshouses of the real-size cars (cars3d.js CAR_BODIES `glass`): the
        belt and roof heights in metres, the rear and front glass feet as shares
        of the length, and whether the car is open. Keep in step with the bodies. */
-    // The eight types drawn from downloaded models (vehicle-assets3d.js ASSET CARS) carry the models' measured glass
+    // The six types drawn from downloaded models (vehicle-assets3d.js ASSET CARS) carry the models' measured glass
     // (tools/vehicle_models.py: belt, roof with its crown, at the type's length).
     const CAR_GLASS_BANDS = {
       sedan: [0.85, 1.27, -0.289, 0.164],
       taxi: [1.07, 1.56, -0.308, 0.205],
       coupe: [0.88, 1.34, -0.358, 0.202],
-      muscle: [0.85, 1.19, -0.308, 0.171],
+      muscle: [1.0, 1.42, -0.29, 0.13],
       sport: [0.8, 1.13, -0.156, 0.214],
       roadster: [0.82, 1.2, 0.02, 0.19, true],
-      rally: [0.9, 1.25, -0.432, 0.169],
+      rally: [0.95, 1.46, -0.47, 0.21],
       hotrod: [1.02, 1.33, -0.25, 0.13],
       supercar: [0.83, 1.18, -0.179, 0.183],
       luxury: [1.02, 1.49, -0.279, 0.167],

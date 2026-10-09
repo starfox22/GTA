@@ -65,13 +65,6 @@ MODELS = [
     dict(type='luxury', front='+x', title='80 American Sedan', author=Z, length=5.2,
          src='zhab/samhovie_levitator/scene.gltf',
          url='https://sketchfab.com/3d-models/80-american-sedan-low-poly-model'),
-    dict(type='muscle', front='-x', title="American Fullsize '73", author=Z,
-         src='zhab/ayilinkou_NuaEngine/ModelViewer/Models/american_fullsize_73/scene.gltf',
-         url='https://sketchfab.com/3d-models/american-fullsize-73-low-poly-model'),
-    dict(type='rally', front='-x', title='German Modern Classic', author=Z, length=4.7,
-         src='zhab/QuiSensei_Application-4/Static/Models/Car_2/scene.gltf',
-         url='https://sketchfab.com/3d-models/german-modern-classic-low-poly-model',
-         roles=[(r'corr_doorshut|Material_574', 'trim')]),
 ]
 
 DEFAULT_ROLES = [
@@ -384,6 +377,29 @@ def convert(model, src_root):
             p3 = V(k)
             if np.all(np.hypot(p3[:, 0] - w['x'], p3[:, 1] - w['y']) <= w['r'] * 1.03) and np.all(np.abs(p3[:, 2] - w['z']) <= w['width'] / 2 + 0.07):
                 w['tris'].add(int(k))
+    # A source posed with its front wheels turned: each wheel turned back square (its axle, the tyre's flattest
+    # direction across, along z), about its own centre.
+    for w in wheels:
+        pts = np.concatenate([V(k) for k in w['tris'] if role[k] == 'tyre'])
+        xz = pts[:, [0, 2]] - pts[:, [0, 2]].mean(0)
+        vals, vecs = np.linalg.eigh(xz.T @ xz)
+        axle = vecs[:, 0]
+        yaw = math.atan2(axle[0], axle[1])
+        yaw = (yaw + math.pi / 2) % math.pi - math.pi / 2
+        if abs(yaw) > math.radians(2):
+            c, s_ = math.cos(-yaw), math.sin(-yaw)
+            done = set()
+            for k in w['tris']:
+                p = prims[tri_prim[k]]
+                for vi in tri_idx[k]:
+                    if (tri_prim[k], vi) in done:
+                        continue
+                    done.add((tri_prim[k], vi))
+                    for key, o in (('P', (w['x'], w['z'])), ('N', (0.0, 0.0))):
+                        x, z = p[key][vi, 0] - o[0], p[key][vi, 2] - o[1]
+                        p[key][vi, 0] = o[0] + c * x + s_ * z
+                        p[key][vi, 2] = o[1] - s_ * x + c * z
+            print('  wheel at %.2f, %.2f turned back %.1f degrees' % (w['x'], w['z'], math.degrees(yaw)))
     wheel_of = {}
     for wi, w in enumerate(wheels):
         for k in w['tris']:
