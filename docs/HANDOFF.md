@@ -41,6 +41,9 @@ rules, workflow), then this page, then only the area doc your task needs (`docs/
 
 ## The owner's standing preferences (keep following them)
 
+- **Only upgrades.** A change (a new asset, texture, model or system) goes in only where it is better than what the
+  game has: never a downgrade in looks, features or performance on any tier. Where a downloaded asset is worse for one
+  case, keep the current one there and say so.
 - **Assets: download first, never build from scratch.** For any model, texture, sound or other asset, look for a
   ready-made one online first (a clean licence: CC0, MIT, CC-BY with credit; only GitHub reaches through the cloud
   proxy) and adapt it; build one by hand only when nothing usable exists, and say so. Show the owner preview sheets of
