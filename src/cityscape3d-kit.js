@@ -475,6 +475,7 @@
         ),
         beaconMaterial = new Three.MeshBasicMaterial({ color: '#ff3b2f' }),
         beacons = [];
+      // @include src/cityscape3d-wallskin.js
       /**
        * SHARED FACADES
        * Every building used to have its own facade material (its own texture
@@ -498,6 +499,9 @@
         facadeClock = { value: 0 };
       function cityFacadePatch(shader) {
         cityGlassPatch(shader);
+        // The WALL SKIN's layer for this material (cityscape3d-wallskin.js; three.js calls this on the material).
+        const skin = this && this.userData && this.userData.wallSkin >= 0 ? this.userData.wallSkin : -1;
+        wallSkinPatch(shader, skin, skin >= 0 ? wallSkinKey(this.userData.wallQuadrant) : null);
         shader.uniforms.cityClock = facadeClock;
         shader.vertexShader = shader.vertexShader
           .replace('#include <common>', '#include <common>\nattribute vec2 cityLit;\nvarying vec2 vCityLit;')
@@ -556,6 +560,8 @@
               roughness: kind === 'warehouse' ? 0.6 : 0.9,
               metalness: kind === 'warehouse' ? 0.35 : 0,
             });
+            m.userData.wallSkin = WALL_SKIN_FOR_QUADRANT[quadrant];
+            m.userData.wallQuadrant = quadrant;
             if (windowGloss[quadrant]) {
               m.roughnessMap = m.metalnessMap = windowGloss[quadrant];
               m.roughness = kind === 'warehouse' ? 0.65 : 1;

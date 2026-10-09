@@ -88,11 +88,11 @@ npc-avatar-cast.js (casting, the rig's palette), tools/npc_models.py (converter,
 
 - Per level: near 4k triangles, a camera and a shadow draw each; mid 1k triangles a person, a camera and a shadow draw
   per avatar in view (at most 16), 24 KB of bones a frame; far: the rig as before.
-- Whole frame, before -> after: HIGH street 334 -> 312 draws, 1.47M -> 1.50M triangles (8 near, 9 mid); HIGH chase
-  1357 -> 1344 draws, 2.66M -> 2.38M triangles (the near rig's 17k a person replaced); LOW street 164 -> 170 draws,
-  750k -> 769k triangles (4 near, 12 mid); LOW chase 737 -> 719 draws, 1.74M -> 1.53M triangles. Programs +2
-  (near and mid; their depth programs on shadow tiers). CPU: choosing and flushing ~0.05 ms a frame (profiled);
-  `crowdBenchmark` noise (0.6-2.6 ms) was the same on both builds.
+- Whole frame, before -> after (final caps; traffic and crowd differ run to run, so +-2 % is noise): HIGH street 334 ->
+  333 draws, 1.47M -> 1.50M triangles (8 near, 9 mid); HIGH chase 1357 -> 1391 draws, 2.66M -> 2.46M triangles (the
+  near rig's 17k a person replaced by 4k); LOW street 164 -> 165 draws, 750k -> 757k triangles (4 near, 8 mid); LOW
+  chase 737 -> 754 draws, 1.74M -> 1.58M triangles. Programs +2 (near and mid; their depth programs on shadow tiers).
+  CPU: choosing and flushing ~0.05 ms a frame (profiled); `crowdBenchmark` 2.99 -> 2.70 ms (noise on a shared machine).
 - Media: npc-models.bin 3.2 MB, npc-skin.webp 0.9 MB (2880x1920 RGBA, ~29 MB on the GPU with mipmaps); geometry
   ~64 bytes a vertex (~6 MB for the cast); fitting ~0.6-0.8 s of work behind the title in slices.
 

@@ -24,6 +24,8 @@
        * The air view's far copy keeps each finish's old painting (`map`) under the same tint; the base colours here are
        * those paintings' means, so a roof keeps its tone when the copy takes over.
        */
+      const ROOF_TILE_LAYER = WALL_SKIN_LAYERS.findIndex((l) => l.name === 'roofTiles'),
+        ROOF_TILE_SKIN = WALL_SKIN_LAYERS[ROOF_TILE_LAYER];
       const ROOF_SKIN_KINDS = ['gravel', 'membrane', 'tar', 'terracotta', 'pavers', 'green', 'metal'];
       // 0 draws the old whole-roof paintings instead: an A/B in one page (lookSwitches roofSkin).
       const roofSkinSwitch = { value: 1 };
@@ -41,6 +43,11 @@
         uniform highp sampler2DArray cityDetail;
         uniform float cityGroundDetail;
         uniform float cityRoofKind;
+        uniform highp sampler2DArray cityWallAlbedo;
+        uniform highp sampler2DArray cityWallDetail;
+        uniform float cityWallSkin;
+        uniform vec3 cityRoofTile;
+        uniform vec3 cityRoofTileMean;
         uniform float cityRoofSkin;
         uniform vec3 cityRoofBase;
         uniform float cityWetDetail;
@@ -68,6 +75,7 @@
       // In place of the map: the finish, then drains, ponding, the parapet's foot and the wet film.
       const ROOF_SKIN_ALBEDO = `
         float rRough = 0.9, rMetal = 0.0, rWetFilm = 0.0, rPuddle = 0.0, rWetReflect = 0.0, rFp = 1.0;
+        vec2 rTileSlope = vec2( 0.0 );
         vec2 rWorld = vCityWorld.xz;
         if ( cityRoofSkin < 0.5 ) {
           // The A/B (lookSwitches roofSkin): the old whole-roof painting.
@@ -175,6 +183,15 @@
             porous = mix( 0.6, 0.15, max( silver, blob ) );
           } else if ( kind == 3 ) {
             // TERRACOTTA: barrel tiles, rows 40 cm apart, each tile its own clay; lichen and sun bleaching with age.
+            // MEDIUM and up: the WALL SKIN's real clay tiles (ambientCG RoofingTiles014A) over the roof's tone instead.
+            if ( rich && cityWallSkin > 0.5 ) {
+              vec3 tq = vec3( rl / cityRoofTile.xy, cityRoofTile.z );
+              vec2 tdx = rdx / cityRoofTile.xy, tdy = rdy / cityRoofTile.xy;
+              vec3 clay = textureGrad( cityWallAlbedo, tq, tdx, tdy ).rgb / cityRoofTileMean;
+              vec3 tn = textureGrad( cityWallDetail, tq, tdx, tdy ).rgb;
+              col = base * min( clay, vec3( 3.0 ) ) * ( 0.93 + 0.14 * macro );
+              rTileSlope = tn.rg * 2.0 - 1.0;
+            } else {
             float rowH = 3.0, tileW = 2.4;
             float row = floor( rl.y / rowH );
             float fx = rl.x / tileW + 0.5 * mod( row, 2.0 );
@@ -184,6 +201,7 @@
             float barrel = mix( 0.95, 0.8 + 0.3 * sin( u * 3.14159 ), resU );
             float lip = mix( 0.9, 1.0 - 0.5 * smoothstep( 0.8, 1.0, v ), resV );
             col = base * mix( vec3( 0.84, 0.88, 0.92 ), vec3( 1.12, 1.0, 0.9 ), tileTone ) * barrel * lip * ( 0.93 + 0.14 * macro );
+            }
             if ( rich ) {
               float lichen = smoothstep( 0.6, 0.82, cityNoise( rWorld * 0.085 + seed ) ) * ( 0.35 + 0.65 * age );
               col = mix( col, col * vec3( 0.66, 0.68, 0.52 ), lichen * 0.55 );
@@ -281,6 +299,7 @@
         roughnessFactor = mix( roughnessFactor, 0.09, rPuddle );`;
       // Rain landing in the roof's puddles (the ground's rings, lighting3d-sky.js RAIN_RINGS).
       const ROOF_SKIN_NORMAL = `
+        normal = normalize( normal + ( viewMatrix * vec4( rTileSlope.x, 0.0, rTileSlope.y, 0.0 ) ).xyz );
         if ( cityRain > 0.01 && rPuddle > 0.02 ) {
           float ringsResolve = 1.0 - smoothstep( 0.3, 0.8, rFp );
           vec2 tilt = ( vec2( cityNoise( rWorld * 0.09 + vec2( cityRainTime * 0.7, 0.0 ) ), cityNoise( rWorld * 0.09 + vec2( 5.3, cityRainTime * 0.6 ) ) ) - 0.5 ) * 0.35 * ( 1.0 - ringsResolve );
@@ -295,6 +314,10 @@
         shader.uniforms.cityRain = surfaceUniforms.cityRain;
         shader.uniforms.cityRainTime = surfaceUniforms.cityRainTime;
         shader.uniforms.cityRoofSkin = roofSkinSwitch;
+        // The clay tiles' layer of the WALL SKIN (cityscape3d-wallskin.js): its tile in world units, layer and mean.
+        Object.assign(shader.uniforms, wallSkin.uniforms);
+        shader.uniforms.cityRoofTile = { value: new Three.Vector3(ROOF_TILE_SKIN.tile[0], ROOF_TILE_SKIN.tile[1], ROOF_TILE_LAYER) };
+        shader.uniforms.cityRoofTileMean = { value: wallSkin.means[ROOF_TILE_LAYER] };
         shader.uniforms.cityRoofKind = { value: Math.max(0, ROOF_SKIN_KINDS.indexOf(material.userData.roofFinish)) };
         shader.uniforms.cityRoofBase = { value: new Three.Color(ROOF_SKIN_BASE[material.userData.roofFinish] || '#8b877e') };
         shader.fragmentShader = shader.fragmentShader

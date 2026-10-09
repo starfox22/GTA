@@ -713,6 +713,19 @@ npc-models.bin, npc-skin.webp (the street's people near the camera; src/npc-avat
   maps into one atlas (body 320 px, head 160 px per avatar); the game fits each mesh to its
   own skeleton at load and poses the hands itself.
 
+BUILDING AND ROOF MATERIALS
+wall-skin.webp (the WALL SKIN: src/cityscape3d-wallskin.js, and the clay tile roofs in src/roofskin3d.js)
+  PBR texture sets from ambientCG (https://ambientcg.com), by Lennart Demes, 1K JPG downloads:
+  - Bricks059 (red brick)             https://ambientcg.com/view?id=Bricks059
+  - Concrete034 (concrete)            https://ambientcg.com/view?id=Concrete034
+  - CorrugatedSteel005 (cladding)     https://ambientcg.com/view?id=CorrugatedSteel005
+  - Plaster003 (rough render)         https://ambientcg.com/view?id=Plaster003
+  - RoofingTiles014A (clay tiles)     https://ambientcg.com/view?id=RoofingTiles014A
+  License: CC0 1.0 Universal (https://creativecommons.org/publicdomain/zero/1.0/); attribution is
+  not required and is given as thanks.
+  Changes: tools/wall_skin.py scales each set to 512 px, multiplies the ambient occlusion into the
+  colour map and packs the OpenGL normal's X and Y with the roughness into one sheet.
+
 RENDERING TECHNIQUES
 Written for this project in src/postfx3d.js, src/lighting3d.js and src/surfaces3d.js; no
 third-party shader source is copied. The techniques follow published work:

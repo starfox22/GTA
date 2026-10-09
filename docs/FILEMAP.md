@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-576 files in the include tree, 198,111 lines.
+577 files in the include tree, 198,383 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -481,12 +481,12 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/character-rig3d.js`   738 — ▸ Character rig: sculpted body parts, outfits and paint
 - `src/crowd3d.js`    89 — ▸ Instanced people: skeleton, gait, poses, weapons and street props
 - `src/player-body3d.js`   440 — ▸ The player's own body: one skinned mesh posed by the crowd rig's skeleton every frame: the shipped model (a restyled Rocketbox avatar: skull tee …
-- `src/npc-avatar3d.js`   443 — ▸ Street avatars: people near the camera drawn as Microsoft Rocketbox avatars (MIT; tools/npc_models.py), skinned on the rig's skeleton like the …
+- `src/npc-avatar3d.js`   452 — ▸ Street avatars: people near the camera drawn as Microsoft Rocketbox avatars (MIT; tools/npc_models.py), skinned on the rig's skeleton like the …
 - `src/carjack3d.js`   212 — The carjack struggle drawn: the driver's door swinging, the poses of the tug of war and the player's hands on the driver (swingDriverDoor …
 - `src/clouds3d.js`    56 — ▸ Volumetric clouds and cloud shadows
 - `src/ground-data3d.js`   826 — Ground shader data
 - `src/surfaces3d.js`   218 — ▸ Procedural surface detail
-- `src/roofskin3d.js`   322 — Roof skin: the city's roof finishes drawn in world space at screen resolution (membrane sheets, gravel ballast, tar and its repairs, clay tiles …
+- `src/roofskin3d.js`   345 — Roof skin: the city's roof finishes drawn in world space at screen resolution (membrane sheets, gravel ballast, tar and its repairs, clay tiles …
 - `src/grass3d.js`   153 — Grass tufts
 - `src/helicopter3d.js`    99 — ▸ Helicopter models
 - `src/apache3d.js`   435 — The AH-64 attack helicopter model
@@ -507,7 +507,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/render3d-resources.js`   520 — GPU resource lifecycle: shared geometries, model pruning and disposal.
 - `src/render3d-hiccups.js`   377 — Hiccup log: what each drawn frame created for the first time (shader programs, textures, geometries) and the slowest frames' renderer CPU split; read …
 - `src/payphone3d.js`   597 — The story payphone where mission 1 starts: a 1990s yellow pedestal payphone with its lit PHONE sign, handset, keypad, directory and grime, the …
-- `src/render3d-api.js`   457 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
+- `src/render3d-api.js`   460 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
 - `src/render3d-frame.js`   625 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
 
 ## src/flight-view3d.js ▸ Flight camera and aerial perspective
@@ -589,7 +589,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/cityscape3d.js ▸ Building archetypes, roofs, shopfronts and street furniture
 
-- `src/cityscape3d-kit.js`   678 — ▸ Cityscape 3D kit: seeded random, instancing helpers, static materials, roof and window textures.
+- `src/cityscape3d-kit.js`   684 — ▸ Cityscape 3D kit: seeded random, instancing helpers, static materials, roof and window textures.
 - `src/cityscape3d-shopwindows.js`   322 — Shop windows: a painted atlas of eight shop and lobby interiors, the shared lit shop-window material and its panes.
 - `src/cityscape3d-frontage.js`   458 — Street frontage on every side of a building: which sides face a street, an alley or a yard, and their ground floors (shops, lobbies, stoops, loading …
 - `src/cityscape3d-roofplant.js`   120 — Roof plant extras: mushroom exhaust fans, a galvanized duct run, plumbing vent stacks and conduit on the city's flat roofs, in FRONT PAINT (no new …
@@ -598,6 +598,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/cityscape3d-kit.js ▸ Cityscape 3D kit: seeded random, instancing helpers, static materials, roof and window textures.
 
 - `src/signage3d.js`   797 — Night glows, neon and wet-street reflections
+- `src/cityscape3d-wallskin.js`   225 — Wall skin: real CC0 PBR materials (ambientCG brick, concrete, corrugated steel, plaster, clay roof tiles from assets/wall-skin.webp, packed by …
 
 ## src/cityscape3d-roofs.js ▸ Cityscape 3D roof props and facades: AC units, water towers, billboards, helipads, shopfronts, fire escapes (decorateRoof).
 
@@ -728,7 +729,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/crowd3d-parts.js`   142 — Crowd 3D instanced parts: capacity, body material, limbs, weapon and far-figure geometries (crowdParts, rigPart).
 - `src/crowd3d-bodies.js`   372 — Crowd 3D body sets (close and street detail), prop geometry and instance recording (rigBodySet, crowdEmit).
 - `src/crowd3d-looks.js`   565 — Crowd 3D looks: compiling a look into parts and paints (compileLook, compiledLook, specialLooks).
-- `src/npc-avatar-cast.js`    70 — Casting the street avatars: which Rocketbox avatar (tools/npc_models.py CAST, its role tags) a look is drawn as near the camera, and the rig's …
+- `src/npc-avatar-cast.js`    74 — Casting the street avatars: which Rocketbox avatar (tools/npc_models.py CAST, its role tags) a look is drawn as near the camera, and the rig's …
 - `src/crowd3d-joints.js`   142 — Crowd 3D joint indices and per-person pose state (crowdState, setArm, crowdDancePose).
 - `src/crowd3d-poses.js`   923 — Crowd 3D pose targets and IK for arms and legs (crowdPoseTargets, solveLeg).
 - `src/crowd3d-roofparty.js`   141 — Crowd 3D poses for mission 2 (the Blue Hour): Vescari's poisoned toast beat by beat, and the bodyguards' heads turning with their sight cones.
@@ -852,7 +853,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-rides.js`   104 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
 - `src/game-console-leisure.js`    75 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)
 - `src/game-console-crowd.js`   167 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
-- `src/game-console-graphics.js`   253 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
+- `src/game-console-graphics.js`   255 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
 - `src/game-console-perf.js`   272 — DeadEndCity console, simulation cost: simProfile (per-section ms, worst frames), simScenario (staged situations)
 - `src/game-console-soak.js`   369 — DeadEndCity console, long-session health: soakReport (sizes of every list that can grow, DOM, non-finite positions)
 - `src/game-console-integrity.js`   178 — DeadEndCity console: integrity(), the invariants tools/bot.mjs checks after every action
@@ -896,5 +897,5 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## Outside the include tree
 
-- `src/asset-loader.js`   175 — decodes the embedded/streamed media into ASSETS before the game starts
+- `src/asset-loader.js`   176 — decodes the embedded/streamed media into ASSETS before the game starts
 - `src/shell.html`    80 — HTML page skeleton: its src/ui/*.css and *.html fragments (in include order) and build.py's `<!-- @include-* -->` slots (game, three.js, media, credits)

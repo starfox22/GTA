@@ -78,6 +78,12 @@
     "original": "tools/npc_models.py (the cast's colour maps in one atlas)"
   },
   {
+    "id": "media-wall-skin",
+    "file": "assets/wall-skin.webp",
+    "mime": "image/webp",
+    "original": "tools/wall_skin.py (ambientCG CC0: Bricks059, Concrete034, CorrugatedSteel005, Plaster003, RoofingTiles014A)"
+  },
+  {
     "id": "media-music-synth",
     "file": "assets/music/synth.mp3",
     "mime": "audio/mpeg",
