@@ -25,6 +25,12 @@ street level: rendering-weather.md. Numbers: audit/performance.md (Seventh pass)
   colour in 8-bit steps (`roofCapGeometry`: tone, age, seed, hashed from its position), which the far
   copy carries too, so the chase view's far cells keep this material (`farTint`); the air's far copy
   keeps the old paintings (`map`). Roofs never mark the wet reflections pass. `groundDetail().roofs`.
+- **Wall skin** (cityscape3d-wallskin.js): ambientCG CC0 sets in two texture arrays (assets/wall-skin.webp,
+  tools/wall_skin.py; order = `WALL_SKIN_LAYERS`) drawn over the atlas's plain masonry in world space at true
+  size: the atlas at a coarse mip times the photo over its mean (tint and atlas keep the tone); the gloss map
+  masks panes, `wallSkinKey` keeps sills and frames. The layer is a per-material uniform
+  (`userData.wallSkin`), never a new material or define; unresolvable pixels draw the old wall. Normals and
+  the terracotta roofs' clay tiles on MEDIUM+. A/B `lookSwitches({ wallSkin })`, report `wallSkin()`.
 - **Roof extras** (cityscape3d-roofplant.js): fans, ducts, vent stacks, conduit in FRONT PAINT (no new
   batch), never in `b.roofKeepOuts`, under 4 units tall, clear of the recorded plant.
 
