@@ -111,6 +111,30 @@
         spoolUp: 0.9,
         spoolDown: 1.3,
       },
+      // A Cessna 172 class four-seat trainer from a downloaded model (aircraft-assets3d.js; without the model it draws
+      // as the courier): high wing, fixed tricycle gear (`fixedGear`: L does nothing), lift-off near 100 km/h, about
+      // 225 km/h flat out. Southport's GA apron (populateAircraft).
+      skyhawk: {
+        name: 'SKYLARK 172',
+        l: 66,
+        w: 88,
+        height: 22,
+        hp: 170,
+        mass: 0.9,
+        flightMass: 1050,
+        wing: 16.2,
+        drag0: 0.034,
+        thrust: 0.22 * GRAVITY,
+        brake: 0.42,
+        roll: 3,
+        bank: 1,
+        stall: 87 * KMH,
+        rotate: 100 * KMH,
+        assist: 0.6,
+        spoolUp: 1.1,
+        spoolDown: 1.5,
+        fixedGear: true,
+      },
       jet: {
         name: 'AURELIA J8 PRIVATE JET',
         l: 150,
@@ -168,6 +192,16 @@
         vehicle.airframe = airframe;
         vehicle.hp = vehicle.maxhp = vehicleSpec(vehicle).hp;
         vehicle.authorized = true;
+      }
+      // Southport's GA apron: three SKYLARK 172s where the parked couriers stood (their 460 m strip suits them).
+      for (const [x, y, a, color] of [
+        [800, 4650, 0, '#e9e9e4'],
+        [800, 4930, 0, '#e9e9e4'],
+        [1000, 5420, Math.PI / 2, '#e9e9e4'],
+      ]) {
+        const vehicle = makeCar('plane', x, y, a, false, color);
+        vehicle.airframe = 'skyhawk';
+        vehicle.hp = vehicle.maxhp = vehicleSpec(vehicle).hp;
       }
     }
     const PLANE_FLIGHT = {
@@ -273,6 +307,11 @@
       const airborne = aircraft.altitude > terrainHeight(aircraft.x, aircraft.y) + 1e-7;
       if (aircraft.gearDown && !airborne) {
         if (aircraft === player.car) tell('GEAR LOCKED DOWN · Weight on wheels', 2);
+        return false;
+      }
+      // Fixed gear (the SKYLARK 172): nothing to raise.
+      if (vehicleSpec(aircraft).fixedGear) {
+        if (aircraft === player.car) tell('FIXED GEAR', 1.5);
         return false;
       }
       aircraft.gearDown = !aircraft.gearDown;

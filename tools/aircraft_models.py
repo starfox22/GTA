@@ -47,6 +47,18 @@ MODELS = [
         keep=dict(paint=0.13, accent=0.1, trim=0.1, glass=0.3, rotor=0.18, tail=0.12), minPiece=0.04,
         borderCos=dict(trim=0.75, paint=0.85),
     ),
+    dict(
+        name='skyhawk', kind='plane', title='Cessna172', author='KOG_THORNS (https://sketchfab.com/ioai25312)',
+        url='https://sketchfab.com/3d-models/cessna172-d1b15841c29c43d0862667300bad55a4',
+        src='cessna172/C172P_1.glb', front='+z', length=8.28,
+        exterior=r'Cessna_Exterior', cabin=r'Cessna_Interior_(Seat|Inte)',
+        # Node names to parts (the source's own: control surfaces, the propeller and its spinner).
+        parts=[(r'Aileron_Left', 'aileronL'), (r'Aileron_Right', 'aileronR'), (r'Flaps_Left', 'flapL'), (r'Flaps_Right', 'flapR'),
+               (r'Elevator_Left', 'elevatorL'), (r'Elevator_Right', 'elevatorR'), (r'_Rudder', 'rudder'),
+               (r'Body_MAT_0\.001/', 'prop'), (r'Body_MAT_0\.024/', 'spinner')],
+        glassMaterials=[1], skinMaterial=0,
+        keep=dict(body=0.55, glass=0.35, cabin=0.008), minPiece=0.08, borderCos=dict(cabin=0.7),
+    ),
 ]
 
 
@@ -187,6 +199,90 @@ def convert_heli(model, src_root):
     return r
 
 
+def convert_plane(model, src_root):
+    """A flyable light aircraft: the airframe (textured), its glass and cabin, the moving parts by node name (control
+    surfaces about their hinge lines, the propeller about the spinner's axis), measured lamp points."""
+    g, mats, prims, images = load(model, src_root)
+    keep_prims = [p for p in prims if re.search(model['exterior'], p['path']) or re.search(model.get('cabin', '^$'), p['path'])]
+    prims = keep_prims
+    tri_prim, tri_idx, corners = soup(prims)
+    role = []
+    for k in range(len(tri_prim)):
+        p = prims[tri_prim[k]]
+        name = 'body'
+        for rx, rname in model['parts']:
+            if re.search(rx, p['path']):
+                name = rname
+                break
+        else:
+            if model.get('cabin') and re.search(model['cabin'], p['path']):
+                name = 'cabin'
+            elif p['material'] in model['glassMaterials']:
+                name = 'glass'
+        role.append(name)
+    role = np.array(role)
+    vm.to_game_frame(prims, model['front'])
+    allP = np.concatenate([p['P'] for p in prims if True])
+    s = model['length'] / (allP[:, 0].max() - allP[:, 0].min())
+    allP = allP * s
+    blo, bhi = allP.min(0), allP.max(0)
+    shift = np.array([-(blo[0] + bhi[0]) / 2, -blo[1], -(blo[2] + bhi[2]) / 2])
+    for p in prims:
+        p['P'] = p['P'] * s + shift
+    corners = np.stack([np.stack([prims[pi]['P'][v] for v in t]) for pi, t in zip(tri_prim, tri_idx)])
+
+    def pts(name):
+        return corners[role == name].reshape(-1, 3)
+    r = dict(prims=prims, mats=mats, images=images, tex_of={})
+    hinges = {}
+    for name in ('aileronL', 'aileronR', 'flapL', 'flapR', 'elevatorL', 'elevatorR', 'rudder'):
+        P = pts(name)
+        if not len(P):
+            continue
+        span = 1 if name == 'rudder' else 2
+        front = P[P[:, 0] > P[:, 0].max() - 0.03]
+        a = front[np.argmin(front[:, span])]
+        b = front[np.argmax(front[:, span])]
+        hinges[name] = dict(a=[round(float(v), 4) for v in a], b=[round(float(v), 4) for v in b])
+    pp = pts('prop')
+    sp = pts('spinner') if (role == 'spinner').any() else pp
+    axis = (sp.min(0) + sp.max(0)) / 2
+    axis[0] = sp[:, 0].min()
+    tips = [corners[(role == 'body')].reshape(-1, 3)]
+    body = np.concatenate([pts(n) for n in set(role) if n not in ('prop', 'spinner')])
+    wing = body[np.argmax(body[:, 2])]
+    fin = body[body[:, 0] < body[:, 0].min() + 1.2]
+    meta = dict(
+        type=model['name'], kind='plane', title=model['title'],
+        dims=[round(float(v), 3) for v in (bhi - blo) * 1],
+        length=round(float(allP[:, 0].max() - allP[:, 0].min()), 3), span=round(float(allP[:, 2].max() - allP[:, 2].min()), 3),
+        height=round(float(allP[:, 1].max() - allP[:, 1].min()), 3),
+        hinges=hinges, prop=[round(float(v), 4) for v in axis],
+        propRadius=round(float(np.hypot(pp[:, 1] - axis[1], pp[:, 2] - axis[2]).max()), 3),
+        wingtip=[round(float(wing[0]), 3), round(float(wing[1]), 3), round(float(wing[2]), 3)],
+        finTop=[round(float(fin[np.argmax(fin[:, 1])][0]), 3), round(float(fin[:, 1].max()), 3)],
+        tail=[round(float(body[:, 0].min()), 3), round(float(fin[np.argmin(fin[:, 0])][1]), 3)],
+        belly=round(float(body[np.abs(body[:, 2]) < 0.3][:, 1].min()), 3) if (np.abs(body[:, 2]) < 0.3).any() else 0.5,
+    )
+    del tips
+    parts = {}
+    keep = model['keep']
+    for name in sorted(set(str(x) for x in role)):
+        tris = [int(k) for k in np.nonzero(role == name)[0]]
+        part = dict(tris=tris, keep=keep.get(name, 1.0), uv=name not in ('glass', 'cabin'),
+                    borderCos=model.get('borderCos', {}).get(name, 0.9), minPiece=model.get('minPiece') if name == 'cabin' else None)
+        if name in hinges:
+            part['origin'] = tuple(hinges[name]['a'])
+        if name in ('prop', 'spinner'):
+            part['origin'] = tuple(axis)
+        parts[name] = part
+    r.update(meta=meta, tri_prim=tri_prim, tri_idx=tri_idx, parts=parts)
+    # The skin: the exterior texture alone (the cabin and glass are vertex coloured).
+    tex = images[model['skinMaterial']].convert('RGB').resize((model.get('skinSize', 1024),) * 2, 3)
+    r['skin'] = tex
+    return r
+
+
 def weld(P, N, C, I, cos=0.8):
     """Corners at one position whose normals agree within `cos` (and whose colours match) become one vertex, so the
     decimation sees the surface as one piece instead of a seam at every UV island or flat-shaded facet."""
@@ -220,7 +316,7 @@ def write_part(blob, r, name, part, qlo, qext):
     if not tris:
         return None
     vmap = {}
-    P, N, C, I = [], [], [], []
+    P, N, C, I, UV = [], [], [], [], []
     origin = np.array(part.get('origin', (0, 0, 0)))
     for k in tris:
         pi = r['tri_prim'][k]
@@ -234,10 +330,17 @@ def write_part(blob, r, name, part, qlo, qext):
                 N.append(p['N'][vi])
                 uv = p['UV'][vi] if p['UV'] is not None else None
                 C.append(vm.sample_colour(r, p['material'], uv))
+                UV.append((float(uv[0]), float(uv[1])) if uv is not None else (0.5, 0.5))
             tri.append(vmap[key])
         I.append(tri)
     P = np.array(P)
+    if part.get('uv'):
+        # A textured part keeps its UVs: no welding across UV seams (colours carry the UV's texel already).
+        C = [tuple(c) + tuple(np.round(np.array(UV[i]) * 4096).astype(int)) for i, c in enumerate(C)]
     P, N, C, I = weld(P, N, C, I, part.get('weldCos', 0.8))
+    if part.get('uv'):
+        UV = [(c[3] / 4096, c[4] / 4096) for c in C]
+        C = [c[:3] for c in C]
     if part.get('minPiece'):
         I = vm.drop_small_pieces(P, I, part['minPiece'])
     keep = part.get('keep', 1.0)
@@ -247,13 +350,18 @@ def write_part(blob, r, name, part, qlo, qext):
         P = P[used]
         N = N[used]
         C = [C[i] for i in used]
+        if part.get('uv'):
+            UV = [UV[i] for i in used]
     if len(P) > 65535:
         raise SystemExit('%s %s: too many vertices' % (r['meta']['type'], name))
     q = np.round((P + origin - qlo) / qext * 65534 - 32767).astype(np.int16)
     base = r['meta']['type'] + '.' + name
     blob.add(base + '.p', q, 'i2')
     blob.add(base + '.n', np.round(np.array(N) * 127).astype(np.int8), 'i1')
-    blob.add(base + '.uv', np.zeros((len(P), 2), np.uint16) + 32768, 'u2')
+    if part.get('uv'):
+        blob.add(base + '.uv', np.round(np.clip(np.array(UV), 0, 1) * 65535).astype(np.uint16), 'u2')
+    else:
+        blob.add(base + '.uv', np.zeros((len(P), 2), np.uint16) + 32768, 'u2')
     blob.add(base + '.c', np.array(C, dtype=np.uint8), 'u1')
     blob.add(base + '.i', np.array(I, dtype=np.uint16), 'u2')
     return len(I)
@@ -269,7 +377,7 @@ def main(argv):
     for model in MODELS:
         if only and model['name'] not in only:
             continue
-        r = dict(heli=convert_heli)[model['kind']](model, src)
+        r = dict(heli=convert_heli, plane=convert_plane)[model['kind']](model, src)
         results.append(r)
         m = r['meta']
         print('%-9s %-28s dims %s parts %s' % (m['type'], m['title'], m['dims'], {k: len(v['tris']) for k, v in r['parts'].items()}))
@@ -302,6 +410,11 @@ def main(argv):
     with open(os.path.join(out_dir, 'aircraft-models.bin'), 'wb') as fh:
         fh.write(out)
     print('aircraft models: %d models, %d bytes' % (len(results), len(out)))
+    skins = [r['skin'] for r in results if 'skin' in r]
+    if skins:
+        # One skin texture (the flyable plane's exterior): assets/aircraft-skin.webp.
+        skins[0].save(os.path.join(out_dir, 'aircraft-skin.webp'), 'WEBP', quality=86, method=6)
+        print('aircraft skin: %d bytes' % os.path.getsize(os.path.join(out_dir, 'aircraft-skin.webp')))
     if '--credits' in argv:
         for model in MODELS:
             print('  %s by %s, %s, CC-BY 4.0' % (model['title'], model['author'], model['url']))

@@ -55,21 +55,34 @@
           size = (dog.size || 1) * 0.85,
           trot = clamp(s.speed / 10, 0, 1),
           sit = dog.sit ? 1 : 0;
-        crowdJoint(mRoot, mIdentity, dog.x, entityElevation(p) + Math.abs(Math.sin(s.phase)) * 0.3 * trot, dog.y, sit * 0.45, 0, -dog.a);
-        mRoot.scale(crowdScale.set(size, size, size));
-        crowdEmit(P.dogBody, mRoot, 1, 1, 1, color);
-        for (let i = 0; i < 4; i++) {
-          const front = i < 2,
-            side = i % 2 ? 1 : -1,
-            swing = Math.sin(s.phase + (front === (side > 0) ? 0 : Math.PI)) * 0.6 * trot;
-          crowdJoint(mOut, mRoot, front ? 1.7 : -1.8, 2.5, side * 0.65, sit && !front ? 1.2 : swing);
-          crowdEmit(P.dogLeg, mOut, 1, 1, 1, color);
+        // The downloaded dog (dog3d.js DOG MODEL): its baked frames, blended by the trot phase, sit and sniff; the
+        // collar where its neck is. Without it in the build, the box dog.
+        let collarX = 2.8,
+          collarY = 5;
+        if (dogModelPart && dogModelOn) {
+          const sniff = !sit && dog.sniff > 0 && trot < 0.3 ? 1 - trot / 0.3 : 0;
+          crowdJoint(mRoot, mIdentity, dog.x, entityElevation(p) + Math.abs(Math.sin(s.phase)) * 0.12 * trot, dog.y, 0, 0, -dog.a);
+          mRoot.scale(crowdScale.set(size, size, size));
+          emitDogModel(mRoot, color, ((((s.phase / TAU) % 1) + 1) % 1) * 8, trot, sit, sniff);
+          collarX = dogModelPart.dog.collar[0];
+          collarY = dogModelPart.dog.collar[1] - sit * 0.5;
+        } else {
+          crowdJoint(mRoot, mIdentity, dog.x, entityElevation(p) + Math.abs(Math.sin(s.phase)) * 0.3 * trot, dog.y, sit * 0.45, 0, -dog.a);
+          mRoot.scale(crowdScale.set(size, size, size));
+          crowdEmit(P.dogBody, mRoot, 1, 1, 1, color);
+          for (let i = 0; i < 4; i++) {
+            const front = i < 2,
+              side = i % 2 ? 1 : -1,
+              swing = Math.sin(s.phase + (front === (side > 0) ? 0 : Math.PI)) * 0.6 * trot;
+            crowdJoint(mOut, mRoot, front ? 1.7 : -1.8, 2.5, side * 0.65, sit && !front ? 1.2 : swing);
+            crowdEmit(P.dogLeg, mOut, 1, 1, 1, color);
+          }
         }
         if (hand && p.hp > 0) {
           // Leash from the hand to the collar.
           const e = hand.elements;
           crowdVec.set(e[12], e[13] - 0.6, e[14]);
-          crowdVec2.set(dog.x + Math.cos(dog.a) * 2.8 * size, entityElevation(p) + 5 * size, dog.y + Math.sin(dog.a) * 2.8 * size);
+          crowdVec2.set(dog.x + Math.cos(dog.a) * collarX * size, entityElevation(p) + collarY * size, dog.y + Math.sin(dog.a) * collarX * size);
           const length = crowdVec.distanceTo(crowdVec2);
           if (length > 0.5 && length < 40) {
             const mid = crowdVec.clone().add(crowdVec2).multiplyScalar(0.5);
@@ -94,6 +107,11 @@
               mesh.instanceColor.clearUpdateRanges();
               mesh.instanceColor.addUpdateRange(0, part.n * 3);
               mesh.instanceColor.needsUpdate = true;
+            }
+            if (part.pose) {
+              part.pose.clearUpdateRanges();
+              part.pose.addUpdateRange(0, part.n * 4);
+              part.pose.needsUpdate = true;
             }
             if (part.paint) {
               part.paint.clearUpdateRanges();

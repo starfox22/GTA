@@ -84,6 +84,18 @@
     "original": "tools/aircraft_models.py (downloaded CC-BY aircraft models: docs/THIRD_PARTY_CREDITS.txt)"
   },
   {
+    "id": "media-aircraft-skin",
+    "file": "assets/aircraft-skin.webp",
+    "mime": "image/webp",
+    "original": "tools/aircraft_models.py (the SKYLARK 172's exterior texture, from the Cessna172 model)"
+  },
+  {
+    "id": "media-dog-model",
+    "file": "assets/dog-model.bin",
+    "mime": "application/octet-stream",
+    "original": "tools/dog_model.py (Labrador Dog, CC-BY 4.0: docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
     "id": "media-npc-models",
     "file": "assets/npc-models.bin",
     "mime": "application/octet-stream",

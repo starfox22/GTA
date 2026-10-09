@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-583 files in the include tree, 199,840 lines.
+584 files in the include tree, 200,218 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -193,7 +193,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/geography.js ▸ Coastlines and land regions
 
-- `src/geography-regions.js`   458 — One coastline model drives terrain, water, the map and all vehicle footprints.
+- `src/geography-regions.js`   456 — One coastline model drives terrain, water, the map and all vehicle footprints.
 - `src/geography-key.js`    69 — North Point Key: the islet off Northbank's north-east point that carries the three towers (coast and plan anchors).
 - `src/geography-land.js`   666 — Land cell cache (landAt), airport and boulevard tests, BRIDGES, bridge frames, clearance and approach piers.
 - `src/geography-ground.js`   525 — Bridge pylons and footings on the map, groundAt(), lake, coast and region paths, painted district ground and beach.
@@ -308,7 +308,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/aviation.js ▸ Fixed-wing flight and flight missions
 
-- `src/aviation-flight.js`   514 — Fixed-wing flight and two additional campaign chapters.
+- `src/aviation-flight.js`   553 — Fixed-wing flight and two additional campaign chapters.
 - `src/aviation-missions.js`   535 — Aircraft cockpit warnings and flight data, the flight missions (flightMissionStart, flightMissionUpdate) and 2D drawing of planes and airfields.
 
 ## src/streets.js ▸ Road presentation
@@ -480,7 +480,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/cycles3d.js`   465 — Bike-share station meshes
 - `src/weather3d.js`   788 — ▸ Weather and sky visuals
 - `src/character-rig3d.js`   738 — ▸ Character rig: sculpted body parts, outfits and paint
-- `src/crowd3d.js`    89 — ▸ Instanced people: skeleton, gait, poses, weapons and street props
+- `src/crowd3d.js`    90 — ▸ Instanced people: skeleton, gait, poses, weapons and street props
 - `src/player-body3d.js`   440 — ▸ The player's own body: one skinned mesh posed by the crowd rig's skeleton every frame: the shipped model (a restyled Rocketbox avatar: skull tee …
 - `src/npc-avatar3d.js`   452 — ▸ Street avatars: people near the camera drawn as Microsoft Rocketbox avatars (MIT; tools/npc_models.py), skinned on the rig's skeleton like the …
 - `src/carjack3d.js`   212 — The carjack struggle drawn: the driver's door swinging, the poses of the tug of war and the player's hands on the driver (swingDriverDoor …
@@ -490,7 +490,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/roofskin3d.js`   345 — Roof skin: the city's roof finishes drawn in world space at screen resolution (membrane sheets, gravel ballast, tar and its repairs, clay tiles …
 - `src/grass3d.js`   153 — Grass tufts
 - `src/helicopter3d.js`    99 — ▸ Helicopter models
-- `src/aircraft-assets3d.js`   273 — Aircraft from downloaded models (assets/aircraft-models.bin, tools/aircraft_models.py): the SKYRANGER 429 civil helicopter (a Bell 429) on the …
+- `src/aircraft-assets3d.js`   414 — Aircraft from downloaded models (assets/aircraft-models.bin, tools/aircraft_models.py): the SKYRANGER 429 civil helicopter (a Bell 429) on the …
 - `src/apache3d.js`   435 — The AH-64 attack helicopter model
 - `src/vehicles3d.js`   630 — Vehicle meshes
 - `src/police3d.js`    62 — ▸ Police vehicle models
@@ -512,7 +512,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/render3d-resources.js`   520 — GPU resource lifecycle: shared geometries, model pruning and disposal.
 - `src/render3d-hiccups.js`   377 — Hiccup log: what each drawn frame created for the first time (shader programs, textures, geometries) and the slowest frames' renderer CPU split; read …
 - `src/payphone3d.js`   597 — The story payphone where mission 1 starts: a 1990s yellow pedestal payphone with its lit PHONE sign, handset, keypad, directory and grime, the …
-- `src/render3d-api.js`   467 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
+- `src/render3d-api.js`   479 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
 - `src/render3d-frame.js`   625 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
 
 ## src/flight-view3d.js ▸ Flight camera and aerial perspective
@@ -647,7 +647,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/world3d-water.js`   361 — Water: the distance-to-shore field, the one water shader (bay, river, ocean, reservoir) and its surfaces.
 - `src/world3d-shore.js`   243 — Shoreline notes, street ends (barriers, gates) and the esplanade furniture along the waterfront (buildPromenade).
-- `src/world3d-resort.js`   161 — ▸ Palms, the Keys' resort hotels, the airport apron, the Blue Hour rooftop bar, updateWorldVisuals and the rescue buoy.
+- `src/world3d-resort.js`   150 — ▸ Palms, the Keys' resort hotels, the airport apron, the Blue Hour rooftop bar, updateWorldVisuals and the rescue buoy.
 
 ## src/world3d-resort.js ▸ Palms, the Keys' resort hotels, the airport apron, the Blue Hour rooftop bar, updateWorldVisuals and the rescue buoy.
 
@@ -733,6 +733,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/crowd3d-parts.js`   142 — Crowd 3D instanced parts: capacity, body material, limbs, weapon and far-figure geometries (crowdParts, rigPart).
 - `src/crowd3d-bodies.js`   372 — Crowd 3D body sets (close and street detail), prop geometry and instance recording (rigBodySet, crowdEmit).
+- `src/dog3d.js`   151 — Street dogs from a downloaded model (assets/dog-model.bin, tools/dog_model.py: a rigged Labrador, CC-BY): its baked trot, stand, sit and sniff frames …
 - `src/crowd3d-looks.js`   565 — Crowd 3D looks: compiling a look into parts and paints (compileLook, compiledLook, specialLooks).
 - `src/npc-avatar-cast.js`    74 — Casting the street avatars: which Rocketbox avatar (tools/npc_models.py CAST, its role tags) a look is drawn as near the camera, and the rig's …
 - `src/crowd3d-joints.js`   142 — Crowd 3D joint indices and per-person pose state (crowdState, setArm, crowdDancePose).
@@ -742,7 +743,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/crowd3d-gore.js`   361 — Crowd 3D gore: what the rig draws of gore.js's state: lost parts left out, a ragged stump (torn cloth and skin, raw flesh, the bone) at each cut …
 - `src/crowd3d-special.js`   582 — Crowd 3D special characters: player, officers, soldiers, gangs, swimmers, parachutes (specialSpec, applyLimbOverrides).
 - `src/crowd3d-driveby.js`   373 — Crowd 3D drive-by pose: the player at the wheel with the gun arm out of the window, torso and head turned to the aim, recoil per shot …
-- `src/crowd3d-frame.js`   391 — updateCrowd3D(): per-frame packing, car enter and exit transitions, dogs, crowd stats.
+- `src/crowd3d-frame.js`   409 — updateCrowd3D(): per-frame packing, car enter and exit transitions, dogs, crowd stats.
 
 ## src/player-body3d.js ▸ The player's own body: one skinned mesh posed by the crowd rig's skeleton every frame: the shipped model (a restyled Rocketbox avatar: skull tee …
 
@@ -834,7 +835,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/plane3d.js ▸ Airplane meshes
 
 - `src/plane3d-shapes.js`   564 — Aircraft 3D plans, airfoils, fuselage and lifting surfaces, liveries (aircraftPlans, fuselageMesh).
-- `src/plane3d-build.js`   626 — Aircraft 3D static merge, labels, control surfaces, engines, gear, makePlane() and animateAircraft().
+- `src/plane3d-build.js`   628 — Aircraft 3D static merge, labels, control surfaces, engines, gear, makePlane() and animateAircraft().
 
 ## src/render3d-effects.js ▸ The optional player ring, the objective arrow, the muzzle and fire lights, the effect particles (fx3d-*.js), scorch, tracers, skid marks.
 
@@ -854,12 +855,12 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-core.js`   191 — DeadEndCity console, core: status, teleport, look, clock, zoom, simulate, heal, god, cash, walk (+ godPanelConsole)
 - `src/game-console-missions.js`   361 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
 - `src/game-console-police.js`   271 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
-- `src/game-console-vehicles.js`   429 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
+- `src/game-console-vehicles.js`   431 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
 - `src/game-console-world.js`   241 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
 - `src/game-console-rides.js`   104 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
 - `src/game-console-leisure.js`    75 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)
-- `src/game-console-crowd.js`   167 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
-- `src/game-console-graphics.js`   263 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
+- `src/game-console-crowd.js`   188 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
+- `src/game-console-graphics.js`   267 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
 - `src/game-console-perf.js`   272 — DeadEndCity console, simulation cost: simProfile (per-section ms, worst frames), simScenario (staged situations)
 - `src/game-console-soak.js`   369 — DeadEndCity console, long-session health: soakReport (sizes of every list that can grow, DOM, non-finite positions)
 - `src/game-console-integrity.js`   178 — DeadEndCity console: integrity(), the invariants tools/bot.mjs checks after every action
@@ -903,5 +904,5 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## Outside the include tree
 
-- `src/asset-loader.js`   179 — decodes the embedded/streamed media into ASSETS before the game starts
+- `src/asset-loader.js`   181 — decodes the embedded/streamed media into ASSETS before the game starts
 - `src/shell.html`    80 — HTML page skeleton: its src/ui/*.css and *.html fragments (in include order) and build.py's `<!-- @include-* -->` slots (game, three.js, media, credits)

@@ -94,20 +94,9 @@
         ag.add(group);
         buildAircraft(kind, group, { color: kind === 'airliner' ? '#e6ebe8' : '#dfe3e0', accent: kind === 'airliner' ? '#2c6f8e' : '#8a3b46' });
       }
-      // Southport is a GA strip (airfields.js): light aircraft on its apron
-      // (AIRPORT_SCENERY_SOLIDS). The runway, its lights and markings are
-      // airfields3d.js.
-      for (const [x, z, a, color, accent] of [
-        [800, 4650, 0, '#e8e2d2', '#8a3b46'],
-        [800, 4930, 0, '#dfe6ea', '#2c6f8e'],
-        [1000, 5420, Math.PI / 2, '#ece4c8', '#3d6b4a'],
-      ]) {
-        const group = new Three.Group();
-        group.position.set(x, 0, z);
-        group.rotation.y = a;
-        ag.add(group);
-        buildAircraft('courier', group, { color, accent });
-      }
+      // Southport is a GA strip (airfields.js): its apron's light aircraft are flyable SKYLARK 172s (vehicles,
+      // aviation-flight.js populateAircraft; aircraft-assets3d.js draws them). The runway, its lights and markings
+      // are airfields3d.js.
       for (let x = 840; x < 1070; x += 30) box(ag, x, 3, 5140, 21, 6, 12, staticMat('#91836d'));
       statics.push({
         x: 750,

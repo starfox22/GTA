@@ -369,11 +369,9 @@
         height: 152,
         kind: 'tower',
       },
-      // Southport is a GA strip now: three parked couriers (their fuselages).
+      // Oceanview's parked jets (their fuselages). Southport's GA apron holds flyable SKYLARK 172s instead
+      // (aviation-flight.js populateAircraft): vehicles, colliding as such.
       ...[
-        [800, 4650, false, 0.89],
-        [800, 4930, false, 0.89],
-        [1000, 5420, true, 0.89],
         [4100, 9160, true, 1.8],
         [4460, 9160, true, 1.6],
         [5710, 9300, false, 1.4],

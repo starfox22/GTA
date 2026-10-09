@@ -45,6 +45,7 @@
        * of the first two a frame; the chase view picks per person by distance.
        */
       // @include src/crowd3d-bodies.js
+      // @include src/dog3d.js
 
       /**
        * LOOKS

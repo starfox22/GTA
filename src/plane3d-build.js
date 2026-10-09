@@ -533,6 +533,8 @@
         };
       }
       function makePlane(vehicle) {
+        // A downloaded airframe (aircraft-assets3d.js: the SKYLARK 172) when the build carries it.
+        if (vehicle.airframe && aircraftAssetModel(vehicle.airframe)?.kind === 'plane') return makeAssetPlane(vehicle);
         const group = new Three.Group();
         scene.add(group);
         const kind = vehicle.airframe === 'jet' || vehicle.airframe === 'airliner' ? vehicle.airframe : 'courier',

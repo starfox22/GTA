@@ -87,6 +87,27 @@
       // One of each kind of character in a row in front of the player, facing the
       // camera (crowd.js CHARACTER LINEUP): stance 'stand', 'walk' or 'aim'.
       characterLineup: (stance, spacing) => characterLineup(stance, spacing),
+      // The street dogs' downloaded model (dog3d.js): vertices, triangles, frames, collar, dogs drawn last frame.
+      dogModel: () => city3D?.dogModel?.() ?? null,
+      // Dog walkers in a row in front of the player for screenshots: two trotting (walking circles), one dog standing,
+      // one sitting, one sniffing, each in a coat of CROWD_DOGS (`colors` to choose). Returns what was placed.
+      dogLineup(spacing = 40, colors = null) {
+        for (let i = pedestrians.length - 1; i >= 0; i--) if (pedestrians[i].posed) pedestrians.splice(i, 1);
+        const kinds = ['trot', 'trot', 'stand', 'sit', 'sniff'],
+          coats = Array.isArray(colors) ? colors : CROWD_DOGS;
+        return kinds.map((kind, i) => {
+          const x = player.x - ((kinds.length - 1) * spacing) / 2 + i * spacing,
+            y = player.y - 70,
+            p = { x, y, a: Math.PI / 2, hp: 30, flee: 0, timer: 5, walk: 0, state: 'walk', posed: kind === 'trot' ? 'leash' : 'idle', anchor: { x, y } };
+          dressPerson(p, 'dogWalker');
+          if (!p.dog) p.dog = { x: x - 10, y: y + 6, a: 0, color: '#b98845', size: 1, sniff: 0 };
+          Object.assign(p.dog, { x: x + 12, y: y + 4, a: 0, color: coats[i % coats.length], size: 1, sit: kind === 'sit', sniff: kind === 'sniff' ? 1e6 : 0 });
+          pedestrians.push(p);
+          return { kind, color: p.dog.color };
+        });
+      },
+      // false: the old box dog (before/after shots).
+      dogModelOn: (on) => city3D?.dogModelOn?.(on) ?? null,
       // What the people cost in the last frame (crowd3d.js): parts, draw calls, instances, triangles.
       crowdStats: (byPart) => city3D?.crowdStats?.(byPart) || null,
       // Pack the people `frames` times back to back: the rig's CPU cost per frame in ms.

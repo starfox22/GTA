@@ -86,6 +86,12 @@
         assetCars: () => assetCarReport(),
         // The downloaded aircraft models (aircraft-assets3d.js ASSET AIRCRAFT) and the switch for before/after rows.
         aircraftAssets: () => aircraftAssetReport(),
+        // The street dogs' downloaded model (dog3d.js DOG MODEL).
+        dogModel: () => dogModelReport(),
+        dogModelOn(on) {
+          dogModelOn = on !== false;
+          return dogModelOn;
+        },
         aircraftAssetsOn(on) {
           acEnabled = on !== false;
           return acEnabled;

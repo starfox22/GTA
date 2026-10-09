@@ -259,6 +259,147 @@
           rayTargets: [skin, canopy, trim],
         };
       }
+      // ---- Planes (the SKYLARK 172: a Cessna 172) ----------------------------------------------------------------
+      let acSkinCache = null;
+      function acSkin() {
+        if (acSkinCache) return acSkinCache;
+        const texture = new Three.Texture();
+        texture.colorSpace = Three.SRGBColorSpace;
+        texture.flipY = false;
+        texture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+        const url = typeof ASSETS !== 'undefined' && ASSETS.aircraftSkin;
+        if (url && typeof Image !== 'undefined') {
+          const image = new Image();
+          image.onload = () => {
+            texture.image = image;
+            texture.needsUpdate = true;
+            try {
+              renderer.initTexture(texture);
+            } catch (error) {}
+          };
+          image.src = url;
+        }
+        acSkinCache = texture;
+        return texture;
+      }
+      const acPlaneKits = new Map();
+      function acPlaneKit(name) {
+        if (acPlaneKits.has(name)) return acPlaneKits.get(name);
+        const model = aircraftAssetModel(name),
+          data = acData(),
+          kit = { model, parts: {} };
+        for (const part of Object.keys(model.parts)) kit.parts[part] = acGeometry(model, data, part);
+        const shared = {
+          cabin: new Three.MeshStandardMaterial({ vertexColors: true, roughness: 0.75, metalness: 0.05 }),
+          glass: new Three.MeshStandardMaterial({ color: '#28323b', roughness: 0.05, metalness: 0.5, envMapIntensity: 1.6, transparent: true, opacity: 0.42, depthWrite: false }),
+          disc: new Three.MeshBasicMaterial({ color: '#1d1f22', transparent: true, opacity: 0, depthWrite: false, side: Three.DoubleSide }),
+        };
+        for (const m of Object.values(shared)) sharedMaterials.add(m);
+        kit.materials = shared;
+        acPlaneKits.set(name, kit);
+        return kit;
+      }
+      /*
+       * A flyable plane from a downloaded model on buildAircraft's contract (animateAircraft drives it): the airframe in
+       * its own texture (paint and wingPaint share the skin), the control surfaces in hinge pivots (positive deflection
+       * trailing edge down or right, as hingedSurface), the propeller and spinner spinning about x with a blur disc, the
+       * cabin and glass, nav lights at the wingtips, the white tail light, the beacon on the fin, a landing light.
+       * Fixed gear: no gear pivots, the belly never drops.
+       */
+      function makeAssetPlane(vehicle) {
+        const kit = acPlaneKit(vehicle.airframe),
+          model = kit.model,
+          U = UNITS_PER_METRE,
+          group = new Three.Group(),
+          body = new Three.Group();
+        group.add(body);
+        scene.add(group);
+        group.name = model.title + ' (' + vehicle.airframe + ')';
+        const skin = acSkin(),
+          paint = new Three.MeshStandardMaterial({ map: skin, color: '#ffffff', roughness: 0.42, metalness: 0.12, envMapIntensity: 0.9 }),
+          wingPaint = new Three.MeshStandardMaterial({ map: skin, color: '#ffffff', roughness: 0.42, metalness: 0.04, envMapIntensity: 0.9 }),
+          P = kit.parts,
+          M = kit.materials;
+        mesh(P.body, paint, body, 0, 0, 0);
+        if (P.cabin) {
+          const cabin = mesh(P.cabin, M.cabin, body, 0, 0, 0);
+          cabin.castShadow = false;
+        }
+        const canopy = P.glass ? mesh(P.glass, M.glass, body, 0, 0, 0) : null;
+        if (canopy) canopy.castShadow = canopy.receiveShadow = false;
+        // Control surfaces about their hinge lines.
+        const surfaces = { aileron: [], elevator: [], rudder: [], flap: [] },
+          hingeAxis = new Three.Vector3();
+        for (const [part, list, side] of [['aileronL', 'aileron', -1], ['aileronR', 'aileron', 1], ['flapL', 'flap', -1], ['flapR', 'flap', 1], ['elevatorL', 'elevator', -1], ['elevatorR', 'elevator', 1], ['rudder', 'rudder', 0]]) {
+          const h = model.hinges[part];
+          if (!h || !P[part]) continue;
+          const pivot = new Three.Group();
+          pivot.position.set(h.a[0] * U, h.a[1] * U, h.a[2] * U);
+          body.add(pivot);
+          mesh(P[part], wingPaint, pivot, 0, 0, 0);
+          hingeAxis.set(h.b[0] - h.a[0], h.b[1] - h.a[1], h.b[2] - h.a[2]).normalize();
+          const axis = hingeAxis.clone();
+          if (axis.z < -0.5 || (Math.abs(axis.z) <= 0.5 && axis.y < 0)) axis.negate();
+          surfaces[list].push({ pivot, axis, angle: 0, side });
+        }
+        // Propeller and spinner about the crankshaft (x), the blur disc in front.
+        const prop = new Three.Group(),
+          [px, py, pz] = model.prop;
+        prop.position.set(px * U, py * U, pz * U);
+        body.add(prop);
+        if (P.prop) mesh(P.prop, wingPaint, prop, 0, 0, 0);
+        if (P.spinner) mesh(P.spinner, paint, prop, 0, 0, 0);
+        const disc = new Three.Mesh(heliMaterials().discGeometry, M.disc.clone());
+        disc.rotation.y = Math.PI / 2;
+        disc.position.set(px * U + 0.3, py * U, pz * U);
+        disc.scale.setScalar(model.propRadius * U);
+        disc.visible = false;
+        disc.castShadow = disc.receiveShadow = false;
+        body.add(disc);
+        // Lights (halos, as buildAircraft's: animateAircraft runs them).
+        const lights = { nav: [], strobes: [], beacons: [], landing: [] },
+          lens = (colour) => new Three.MeshBasicMaterial({ color: colour, toneMapped: false }),
+          [wx, wy, wz] = model.wingtip;
+        for (const side of [-1, 1]) {
+          const colour = side < 0 ? '#ff4a3a' : '#4dff7a',
+            z = side * (wz * U + 0.2);
+          mesh(sphereGeo, lens(colour), body, wx * U, wy * U, z, 0.4, 0.3, 0.4).castShadow = false;
+          lights.nav.push(halo(body, wx * U, wy * U, z, 8, colour));
+          lights.strobes.push(halo(body, wx * U - 0.6, wy * U, z, 13, '#ffffff'));
+        }
+        const [tx, ty] = model.tail;
+        lights.nav.push(halo(body, tx * U - 0.3, ty * U, 0, 7, '#ffffff'));
+        const [fx, fy] = model.finTop;
+        mesh(sphereGeo, lens('#ff3b2f'), body, fx * U, fy * U + 0.2, 0, 0.35, 0.3, 0.35).castShadow = false;
+        lights.beacons.push(halo(body, fx * U, fy * U + 0.7, 0, 9, '#ff4a36'));
+        lights.landing.push(halo(body, wx * U * 0.55, wy * U - 0.6, -wz * U * 0.3, 18, '#fff3d0'));
+        for (const list of Object.values(lights)) for (const sprite of list) sprite.visible = false;
+        return {
+          body,
+          paint,
+          wingPaint,
+          canopy,
+          prop,
+          disc,
+          fans: [],
+          wheels: [],
+          gears: [],
+          surfaces,
+          lights,
+          livery: skin,
+          liveryMap: skin,
+          liveryColor: '#ffffff',
+          bellyDrop: 0,
+          nightLights: [],
+          length: model.length * U,
+          group,
+          strobes: [],
+          special: true,
+          plane: true,
+          asset: model.type,
+          propSpeed: 0,
+        };
+      }
       // Console (aircraftAssets()): the models the build carries and the kits built.
       function aircraftAssetReport() {
         const data = acData();
@@ -267,7 +408,7 @@
           loaded: true,
           enabled: acEnabled,
           models: Object.values(data.header.models).map((m) => ({ name: m.type, title: m.title, kind: m.kind, triangles: m.triangles, dims: m.dims, parts: Object.fromEntries(Object.entries(m.parts).map(([k, v]) => [k, v.triangles])) })),
-          kits: [...acHeliKits.keys()],
+          kits: [...acHeliKits.keys(), ...acPlaneKits.keys()],
           skins: acSkins.size,
         };
       }
