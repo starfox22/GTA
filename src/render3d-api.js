@@ -82,6 +82,8 @@
         // triangles and crew shown (helicopter3d.js; DeadEndCity.helicopterModels()).
         // Every civilian car and motorbike model built (cars3d.js, motorbikes3d.js):
         // type, draw calls, shadow casters and triangles, the parts by triangles.
+        // The downloaded vehicle models in the build and the kits made from them (vehicle-assets3d.js ASSET CARS).
+        assetCars: () => assetCarReport(),
         carModels() {
           const out = [];
           for (const [c, m] of carModels) if (m.civilian || m.moto) out.push(civilianModelReport(c, m));

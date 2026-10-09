@@ -113,7 +113,7 @@
       function civCabinReport(m) {
         const s = m.seats,
           M = s.M,
-          g = CAR_BODIES[m.kit?.type]?.glass || null,
+          g = m.kit?.asset ? m.kit.glass : CAR_BODIES[m.kit?.type]?.glass || null,
           r3 = (v) => +v.toFixed(3),
           trim = m.kit.trim,
           outer = m.kit.trimOuter.drawRange.count,

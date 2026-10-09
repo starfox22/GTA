@@ -107,6 +107,8 @@
         // Vinny's truck, mission 1's flatbed, at real size (vinnytruck3d.js).
         if (vehicle.type === 'flatbed') return makeVinnyTruck(vehicle);
         // Civilian cars at real size (cars3d.js).
+        // A type the build carries a downloaded model for (vehicle-assets3d.js ASSET CARS); else the procedural body.
+        if (CAR_BODIES[vehicle.type] && vehicleAssetModel(vehicle.type)) return makeAssetCar(vehicle);
         if (CAR_BODIES[vehicle.type]) return makeCivilianCar(vehicle);
         if (vehicleSpec(vehicle).truck) return makeTruck(vehicle);
         const group = new Three.Group(),

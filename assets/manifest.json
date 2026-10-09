@@ -66,6 +66,18 @@
     "original": "tools/player_model.py (Rocketbox m027 normal and specular maps)"
   },
   {
+    "id": "media-vehicle-models",
+    "file": "assets/vehicle-models.bin",
+    "mime": "application/octet-stream",
+    "original": "tools/vehicle_models.py (downloaded CC-BY car models: docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-vehicle-atlas",
+    "file": "assets/vehicle-atlas.webp",
+    "mime": "image/webp",
+    "original": "tools/vehicle_models.py (the models' colour textures)"
+  },
+  {
     "id": "media-music-synth",
     "file": "assets/music/synth.mp3",
     "mime": "audio/mpeg",

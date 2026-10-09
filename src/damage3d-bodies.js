@@ -170,7 +170,7 @@
           before = m.partState || {},
           paintColor = '#' + m.paint.color.getHexString();
         // The hood swings on a hinge; the body's parts are listed in their rest pose the first time (BODY CRUMPLE).
-        if (!m.hoodPivot && m.hood) m.hoodPivot = hingePart(m, m.hood, hingeScratch.set(l * 0.215, m.hoodBaseY, 0));
+        if (!m.hoodPivot && m.hood) m.hoodPivot = hingePart(m, m.hood, hingeScratch.set(m.hoodHinge ?? l * 0.215, m.hoodBaseY, 0));
         if (!m.crumple) m.crumple = crumpleCollect(m);
         // The dents are in world units, the model in its design units (render3d.js DESIGN SIZE).
         // (A hood springing open is bent again: it keeps more of its length open, crumpleBend.)
