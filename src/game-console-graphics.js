@@ -117,10 +117,12 @@
       // from (x, y), `spacing` apart, facing `heading`; `rotors` true spins them up (with
       // the police lights running). Returns the ids and looks.
       helicopterLineup(x = player.x + 120, y = player.y - 200, heading = 0, rotors = false, spacing = 110, looks = null) {
-        const list = Array.isArray(looks) ? looks : ['police', 'news', 'executive', 'civil:classic', 'civil:yellow', 'civil:silver', 'civil:noir', 'military'];
+        const list = Array.isArray(looks) ? looks : ['police', 'news', 'executive', 'civil:classic', 'civil:yellow', 'civil:silver', 'civil:noir', 'military', 'bell:sunrise', 'bell:harbour', 'bell:charter'];
         return list.map((heliLook, i) => {
           const c = makeCar('helicopter', x + i * spacing, y, heading, false);
           Object.assign(c, { heliLook, showRotor: !!rotors, showLights: rotors ? 'pursuit' : false });
+          // 'bell:<scheme>': the SKYRANGER 429 airframe (civil-helicopters.js).
+          if (heliLook.startsWith('bell')) c.airframe = 'bell429';
           return { id: c.id, look: heliLook };
         });
       },
@@ -136,6 +138,10 @@
       assetCars: () => city3D?.assetCars?.() ?? null,
       // Before/after: false builds every vehicle model made from now on procedurally (park new ones to compare).
       assetCarsOn: (on) => city3D?.assetCarsOn?.(on) ?? null,
+      // The downloaded aircraft models (aircraft-assets3d.js: the SKYRANGER 429) and the before/after
+      // switch (false: helicopters and aircraft built from now on are procedural).
+      aircraftAssets: () => city3D?.aircraftAssets?.() ?? null,
+      aircraftAssetsOn: (on) => city3D?.aircraftAssetsOn?.(on) ?? null,
       // The seated heads against every closed car cabin built (cars3d-headroom.js CABIN HEADROOM): room in metres for
       // the tallest man and woman, the player and the player's drive-by pose; `through` counts cars with a head out.
       cabinHeadroom: () => city3D?.cabinHeadroom?.() ?? null,

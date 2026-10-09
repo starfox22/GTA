@@ -19,6 +19,8 @@
       },
       // The 4x4 club and the trails (offroad.js): the lot and its clearances, the
       // club trucks, the members, the player's traction state, the hill climb.
+      // The SKYRANGER 429 civil helicopters (civil-helicopters.js): spec and where each one is.
+      civilHelicopters: () => civilHelicopterReport(),
       offroad: () => offroadReport(),
       clubLineup: (x, y) => clubLineup(x, y),
       // 'state', 'arm', 'reset', 'clear' (records), 'gate', 'cp0'..'cp3', 'top' (just below the summit, facing down) or 'at0.42' (that fraction of the trail): move the player's vehicle there.
@@ -315,7 +317,7 @@
       // an optional airframe ('courier' default, 'jet', 'airliner').
       drive(type = 'sedan', altitudeMeters = 0, headingRadians = player.a, airframe) {
         if (!VEHICLE_DEFINITIONS[type]) throw Error('Unknown vehicle type ' + type);
-        if (airframe && (type !== 'plane' || !AIRFRAME_SPECS[airframe])) throw Error('Unknown airframe ' + airframe);
+        if (airframe && !(type === 'plane' ? AIRFRAME_SPECS : type === 'helicopter' ? HELICOPTER_AIRFRAMES : {})[airframe]) throw Error('Unknown airframe ' + airframe);
         if (player.car) exitCar();
         // Out of a cab or off a train first: a ride left running held the player (and the new car) in place.
         if (taxiRide) endTaxiRide(false);

@@ -72,7 +72,7 @@
         m.observer.visible = alive && !!c.airUnit;
         // Glass: scuffed and sooted with the wear.
         m.glass.roughness = 0.04 + wear * 0.5;
-        m.glass.opacity = 0.46 + wear * 0.4;
+        m.glass.opacity = Math.min(1, (m.glassOpacity || 0.46) + wear * 0.4);
         // Nightsun: the head turns to what the crew are watching, else rests forward.
         const tracking = alive && c.airUnit && (c.airState === 'tracking' || c.airState === 'searching'),
           watched = tracking ? (c.airState === 'tracking' && c.airTarget && c.airTarget.hp > 0 ? c.airTarget : c.airLastSeen) : null;

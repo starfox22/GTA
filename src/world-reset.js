@@ -35,6 +35,8 @@
       populate();
       populateStoryWorld();
       populateCounty();
+      // The civil helicopters on the roof helipads (civil-helicopters.js; at boot the pads come later: game.js).
+      populateCivilHelicopters();
       if (again) randomSeed = running;
     }
     /* Counts of everything a reset puts back (worldResetReport, tools/tests/world-reset.mjs). */

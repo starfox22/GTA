@@ -21,6 +21,7 @@ const embeddedAssetReferences = {
   "playerDetail": "media-player-detail",
   "vehicleModels": "media-vehicle-models",
   "vehicleAtlas": "media-vehicle-atlas",
+  "aircraftModels": "media-aircraft-models",
   "npcModels": "media-npc-models",
   "npcSkin": "media-npc-skin",
   "wallSkin": "media-wall-skin",
@@ -153,7 +154,7 @@ function embeddedMediaDataUrl(identifier) {
 }
 
 const gameAssets = {};
-for (const name of ['architecture', 'ground', 'weapons', 'harbor', 'arsenal', 'unicorn', 'playerModel', 'playerSkin', 'playerDetail', 'vehicleModels', 'vehicleAtlas', 'npcModels', 'npcSkin', 'wallSkin']) {
+for (const name of ['architecture', 'ground', 'weapons', 'harbor', 'arsenal', 'unicorn', 'playerModel', 'playerSkin', 'playerDetail', 'vehicleModels', 'vehicleAtlas', 'aircraftModels', 'npcModels', 'npcSkin', 'wallSkin']) {
   gameAssets[name] = embeddedMediaDataUrl(embeddedAssetReferences[name]);
 }
 gameAssets.audio = {};

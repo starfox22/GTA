@@ -78,6 +78,12 @@
     "original": "tools/vehicle_models.py (the models' colour textures)"
   },
   {
+    "id": "media-aircraft-models",
+    "file": "assets/aircraft-models.bin",
+    "mime": "application/octet-stream",
+    "original": "tools/aircraft_models.py (downloaded CC-BY aircraft models: docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
     "id": "media-npc-models",
     "file": "assets/npc-models.bin",
     "mime": "application/octet-stream",

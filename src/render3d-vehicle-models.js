@@ -94,7 +94,11 @@
         // The 4x4 club's trucks (offroad3d.js).
         if (vehicleSpec(vehicle).clubModel) return makeOffroadVehicle(vehicle);
         if (vehicleSpec(vehicle).tank) return compactTank(makeTank(vehicle));
-        if (vehicle.type === 'helicopter') return vehicle.airframe === 'apache' ? makeApache(vehicle) : makeHelicopter(vehicle);
+        if (vehicle.type === 'helicopter') {
+          if (vehicle.airframe === 'apache') return makeApache(vehicle);
+          // A downloaded airframe (aircraft-assets3d.js); the look falls back to the procedural civil machine without it.
+          return helicopterLookFor(vehicle).asset ? makeAssetHelicopter(vehicle) : makeHelicopter(vehicle);
+        }
         // Motorbikes at real size (motorbikes3d.js).
         // A type the build carries a downloaded motorbike for (motorbike-assets3d.js ASSET MOTORBIKES).
         if (MOTO_BODIES[vehicle.type]) return vehicleAssetModel(vehicle.type)?.kind === 'moto' ? makeAssetMotorbike(vehicle) : makeMotorbike(vehicle);

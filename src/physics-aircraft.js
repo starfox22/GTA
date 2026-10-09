@@ -62,7 +62,12 @@
     // The rotor disc against the walls round a flying helicopter (settleVehicle).
     function rotorStrikes(c, stepSeconds) {
       if (c.type !== 'helicopter' || !aircraftAirborne(c) || (c.rotorSpeed || 0) < 0.4) return;
-      const radius = vehicleSpec(c).l * 0.5,
+      // The disc: the airframe's own rotor about its mast (HELICOPTER_AIRFRAMES rotorRadius / rotorX), else half the
+      // footprint's length about its centre.
+      const spec = vehicleSpec(c),
+        radius = spec.rotorRadius || spec.l * 0.5,
+        mastX = c.x + Math.cos(c.a) * (spec.rotorX || 0),
+        mastY = c.y + Math.sin(c.a) * (spec.rotorX || 0),
         shape = contactShape(c);
       for (const b of nearbyStatics(c)) {
         if (b.height === undefined || b.height < c.altitude + 2) continue;
@@ -70,8 +75,8 @@
         // Nearest point of the box to the rotor mast.
         const cosine = Math.cos(b.a || 0),
           sine = Math.sin(b.a || 0),
-          dx = c.x - b.x,
-          dy = c.y - b.y,
+          dx = mastX - b.x,
+          dy = mastY - b.y,
           lx = dx * cosine + dy * sine,
           ly = -dx * sine + dy * cosine,
           qx = clamp(lx, -b.hx, b.hx),

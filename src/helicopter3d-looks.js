@@ -103,6 +103,34 @@
           blade: '#2c2f2b',
           tip: '#d9c24c',
         },
+        // The SKYRANGER 429 (a Bell 429 class light twin from a downloaded model, aircraft-assets3d.js): its paint
+        // is the scheme's base and stripe (HELI_BELL_SCHEMES) on the model's own panels.
+        bell: {
+          livery: 'civil',
+          paintScale: 0.5,
+          airframe: 'bell429',
+          asset: true,
+          tail: 'rotor',
+          tex: 0,
+          finish: { roughness: 0.22, metalness: 0.12, clearcoat: 1 },
+          glass: '#26303a',
+          roofGlass: true,
+          liner: '#34373c',
+          seat: '#474b52',
+          skid: '#aab0b6',
+          suit: '#3a3f47',
+          helmet: '#2b2f34',
+          blade: '#2a2c2f',
+          tip: '#e4e0cc',
+        },
+      };
+      // The SKYRANGER 429's schemes: the panels' base and the stripes (the model's own is white and orange).
+      const HELI_BELL_SCHEMES = {
+        sunrise: { base: '#f2f2ee', stripe: '#d86c00' },
+        harbour: { base: '#f0f1f2', stripe: '#1d3a6e' },
+        crimson: { base: '#eceae6', stripe: '#a3171f' },
+        charter: { base: '#17191c', stripe: '#c9a44a', finish: { roughness: 0.14, metalness: 0.3, clearcoat: 1 } },
+        silver: { base: '#a7adb3', stripe: '#24282d', finish: { roughness: 0.2, metalness: 0.6, clearcoat: 1 } },
       };
       // The small civilian machines' paint: base, cheat line, pinstripe, the line's
       // width (share of the full stripe), finish and registration.
@@ -131,6 +159,20 @@
           [asked, askedScheme] = String(c.heliLook || '').split(':');
         let kind = HELI_LOOKS[asked] ? asked : null,
           scheme = HELI_CIVIL_SCHEMES[askedScheme] ? askedScheme : null;
+        // The SKYRANGER 429 airframe draws as itself when the build carries its model, else as a civil machine.
+        if (c.airframe === 'bell429' || kind === 'bell') {
+          const own = c.color && c.color !== HELICOPTER_AIRFRAMES.bell429.color ? c.color : null;
+          if (aircraftAssetModel('bell429')) {
+            const names = Object.keys(HELI_BELL_SCHEMES),
+              name = askedScheme && HELI_BELL_SCHEMES[askedScheme] ? askedScheme : own ? null : names[(hash >>> 13) % names.length],
+              s = name ? HELI_BELL_SCHEMES[name] : null,
+              look = heliLookOf('bell', name || 'own', s ? s.base : own, s?.finish || HELI_LOOKS.bell.finish);
+            look.stripe = s ? s.stripe : '#2d3137';
+            look.key += ':' + look.stripe;
+            return look;
+          }
+          kind = 'civil';
+        }
         if (!kind) {
           if (c.airUnit || c.cop) kind = 'police';
           else if (c.military) kind = 'military';

@@ -817,6 +817,13 @@ Distributed through FreePD, but the artist publishes his catalogue under CC BY 4
 "Complete Discography (CC BY Attribution 4.0)"), so it is used and credited under CC BY 4.0.
 Leading silence trimmed, loudness normalized to -18 LUFS target and transcoded to 96 kbps stereo MP3; no intentional musical cuts.
 
+aircraft-models.bin (the SKYRANGER 429 civil helicopter; src/aircraft-assets3d.js, made by tools/aircraft_models.py)
+  - Bell 429 Helicopter (the SKYRANGER 429): This work is based on "Bell 429 Helicopter" (https://sketchfab.com/3d-models/bell-429-helicopter-8dda855f3ab343b7b69ca7adcbf24f03) by agreene (https://sketchfab.com/davidre) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+    (licence and credit as recorded in the GLB's asset record; fetched from a GitHub mirror, openfw-game/defy).
+    Changes: turned to face along +x and scaled to the real rotor (11 m); split into paint, stripes, trim, glass, the
+    main rotor and the tail rotor; small parts left out and triangles reduced by quadric edge collapse; the texture's
+    colours baked into the vertices; the white panels and orange stripes drawn in the game's civil schemes.
+
 Hooptie With The Windows Down — HoliznaCC0 (Block 101.7)
 https://freemusicarchive.org/music/holiznacc0/city-slacker/hooptie-with-the-windows-down/
 https://freemusicarchive.org/music/holiznacc0/

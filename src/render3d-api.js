@@ -84,6 +84,12 @@
         // type, draw calls, shadow casters and triangles, the parts by triangles.
         // The downloaded vehicle models in the build and the kits made from them (vehicle-assets3d.js ASSET CARS).
         assetCars: () => assetCarReport(),
+        // The downloaded aircraft models (aircraft-assets3d.js ASSET AIRCRAFT) and the switch for before/after rows.
+        aircraftAssets: () => aircraftAssetReport(),
+        aircraftAssetsOn(on) {
+          acEnabled = on !== false;
+          return acEnabled;
+        },
         assetCarsOn(on) {
           vaEnabled = on !== false;
           return vaEnabled;

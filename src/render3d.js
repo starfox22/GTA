@@ -194,6 +194,7 @@
       // @include src/roofskin3d.js
       // @include src/grass3d.js
       // @include src/helicopter3d.js
+      // @include src/aircraft-assets3d.js
       // @include src/apache3d.js
       // @include src/vehicles3d.js
       // @include src/police3d.js
