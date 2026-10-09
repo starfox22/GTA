@@ -11,8 +11,8 @@ edits) and tools/mesh_decimate.py. The cast, painted variants and tints: people-
 
 | Level | Mesh | Chase view (from the camera) | Street view (from the player, zoom >= 1.3 x lodBias) | Cap LOW / MEDIUM / HIGH / ULTRA |
 | --- | --- | --- | --- | --- |
-| near | the avatar decimated to ~4k triangles, a slot each (uniform bones, wound soaks) | within 16 m | within 14 m | 6 / 8 / 12 / 14, +4 / 6 / 8 / 10 late |
-| mid | the same avatar's ~1k-triangle index over the same vertices, instanced, one batch per avatar | within 45 m | within 30 m | 8 / 16 / 40 / 48 (8 / 12 / 20 / 24 avatars) |
+| near | the avatar decimated to ~4k triangles, a slot each (uniform bones, wound soaks) | within 16 m | within 14 m | 8 / 10 / 12 / 14, +4 / 6 / 8 / 10 late |
+| mid | the same avatar's ~1k-triangle index over the same vertices, instanced, one batch per avatar | within 45 m | within 30 m | 16 / 24 / 40 / 48 (8 / 12 / 20 / 24 avatars) |
 | far | the rig, in the avatar's palette and cut | beyond | beyond, or zoomed out | - |
 
 - Hysteresis: someone at a level last frame ranks and keeps it as if `NPC_KEEP` (0.86) nearer, so the bands are

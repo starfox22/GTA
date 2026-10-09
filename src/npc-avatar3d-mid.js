@@ -60,7 +60,7 @@
         return { mesh, uniforms, avatar: -1, count: 0 };
       });
       // The mid people this frame (records like the near slots, without a mesh), and which batch each avatar takes.
-      const npcMidRecords = Array.from({ length: NPC_MID_MAX }, () => ({ frames: Array.from({ length: PB_BONES }, () => new Three.Matrix4()), posed: 0, person: null, avatar: -1, width: 1, gripL: 0.15, gripR: 0.15, batch: -1, uniforms: null, tint: null })),
+      const npcMidRecords = Array.from({ length: NPC_MID_MAX }, () => ({ frames: Array.from({ length: PB_BONES }, () => new Three.Matrix4()), posed: 0, person: null, avatar: -1, width: 1, gripL: 0.15, gripR: 0.15, batch: -1, uniforms: null, tint: null, late: false })),
         npcBatchOf = new Int16Array(256).fill(-1),
         npcBatchFrame = new Int32Array(256).fill(-1),
         npcBatchStart = new Int16Array(NPC_MID_BATCHES),
@@ -146,7 +146,7 @@
             data[ex + 6] = tint.z;
             data[ex + 7] = 1;
           } else data[ex + 7] = 0;
-          if (npcMidState.audit && fit.female !== personFemale(r.person)) wrongSex++;
+          if (npcMidState.audit && !r.late && fit.female !== personFemale(r.person)) wrongSex++;
           r.person = null;
         }
         for (let k = 0; k < NPC_MID_BATCHES; k++) {

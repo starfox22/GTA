@@ -30,9 +30,9 @@
       // (riders, car occupants, athletes, beachgoers: NPC_TIER_LATE more) by their own distance; the player in a
       // disguise has a slot of his own (npcPlayerSlot), at any zoom.
       const NPC_AVATAR_SLOTS = 24,
-        NPC_TIER_SLOTS = { LOW: 6, MEDIUM: 8, HIGH: 12, ULTRA: 14 },
+        NPC_TIER_SLOTS = { LOW: 8, MEDIUM: 10, HIGH: 12, ULTRA: 14 },
         NPC_TIER_LATE = { LOW: 4, MEDIUM: 6, HIGH: 8, ULTRA: 10 },
-        NPC_TIER_MID = { LOW: 8, MEDIUM: 16, HIGH: 40, ULTRA: 48 },
+        NPC_TIER_MID = { LOW: 16, MEDIUM: 24, HIGH: 40, ULTRA: 48 },
         // Different avatars drawn at mid at once (a draw each, and a shadow draw on shadow tiers).
         NPC_TIER_BATCHES = { LOW: 8, MEDIUM: 12, HIGH: 20, ULTRA: 24 },
         // Uniforms rank as if this much nearer (police, soldiers: the near mesh before a passer-by's).
@@ -103,7 +103,7 @@
         mesh.customDepthMaterial = depth;
         mesh.userData.dynamic = true;
         scene.add(mesh);
-        return { mesh, material, depth, uniforms, frames: Array.from({ length: PB_BONES }, () => new Three.Matrix4()), posed: 0, person: null, avatar: -1, width: 1, goreFor: null, goreFit: null, goreVersion: -1 };
+        return { mesh, material, depth, uniforms, frames: Array.from({ length: PB_BONES }, () => new Three.Matrix4()), posed: 0, person: null, avatar: -1, width: 1, late: false, goreFor: null, goreFit: null, goreVersion: -1 };
       }
       const npcSlots = Array.from({ length: NPC_AVATAR_SLOTS }, (_, i) => npcMakeSlot(i)),
         // The player in a disguise (his borrowed uniform, the suit: npcAvatarPick 'playerArmy', 'playerDisguise').
@@ -363,6 +363,8 @@
           else N.lateMid++;
         }
         npcAvatarTintOf(slot, R.tint);
+        // (A late taker may be a stand-in with no look of its own: the sex audit leaves it out.)
+        slot.late = s.avatarFrame !== N.frame && spec?.rim !== true;
         slot.person = p;
         slot.avatar = R.avatar;
         slot.width = fit.width;
@@ -510,7 +512,7 @@
           // `personFemale` is the game's rule (voices.js): the avatar's sex must be the same.
           slots: npcSlots
             .filter((s) => s.mesh.visible && s.person)
-            .map((s) => ({ avatar: cast[s.avatar]?.name, tint: s.uniforms.npcTint.value.w > 0, female: !!npcAv.fits[s.avatar]?.female, personFemale: personFemale(s.person), width: +s.width.toFixed(3), lost: s.uniforms.npcLost.value, wounds: s.uniforms.npcWound.value.filter((w) => w.w > 1.5).length })),
+            .map((s) => ({ avatar: cast[s.avatar]?.name, tint: s.uniforms.npcTint.value.w > 0, female: !!npcAv.fits[s.avatar]?.female, personFemale: s.late ? !!npcAv.fits[s.avatar]?.female : personFemale(s.person), late: !!s.late, width: +s.width.toFixed(3), lost: s.uniforms.npcLost.value, wounds: s.uniforms.npcWound.value.filter((w) => w.w > 1.5).length })),
           late: { cap: npcAv.capLate, near: npcAv.late, mid: npcAv.lateMid },
           // The player in a disguise drawn as his avatar (playerAvatarOn).
           player: npcPlayerSlot.mesh.visible ? { avatar: cast[npcPlayerSlot.avatar]?.name, tint: npcPlayerSlot.uniforms.npcTint.value.w > 0, lost: npcPlayerSlot.uniforms.npcLost.value, wounds: npcPlayerSlot.uniforms.npcWound.value.filter((w) => w.w > 1.5).length } : null,
