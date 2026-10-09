@@ -214,6 +214,8 @@
             crown: (gm.crown || 0) * k,
             screenCurve: 0,
             backCurve: 0,
+            // An open car (the convertible): a windscreen and no side glass (the seats, wipers and headroom read it).
+            open: !!(model.parts.glass?.panes && !model.parts.glass.panes[0] && !model.parts.glass.panes[2]),
           },
           profile = model.profile,
           topY = (x) => {

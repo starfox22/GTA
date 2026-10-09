@@ -111,6 +111,16 @@ MODELS = [
          nodeRoles=[(r'Spare_tire', 'trim'), (r'(?i)cargo_?box|cargodoor|taillights|stoplights|brakelights|turnsignals_glass_rear|reverselights|bumper_rear|numberplate_rear', 'drop')],
          src='zhab/ni7co7_camion/camionDeLosNoventa/scene.gltf',
          url='https://sketchfab.com/3d-models/90-light-commercial-truck-low-poly-model-663a0953c038434a918cb85725c88ffa'),
+    # The WORKHORSE ('pickup') and the RANGER 4X4 ('suv'): the same series' compact pickup, and the patrol SUV's
+    # Suburban in plain paint (its black and white panels both take the car's colour; bar, push bar and spot lamp out).
+    dict(type='pickup', front='-x', title="Compact Pickup '78", author=Z, length=4.6,
+         src='zhab/izabela1996_3d-model/scene.gltf',
+         url='https://sketchfab.com/3d-models/compact-pickup-78-low-poly-model-30700a84311c4bea9ef722f0773ce92a'),
+    dict(type='suv', front='+z', title='Chevrolet Suburban (Sheriff Cruiser, civilian trim)', author='Matthew (jeandiz)', keep=dict(wheel=0.15),
+         src='dl3/sap_suburban_sheriff/scene.gltf', url='https://sketchfab.com/3d-models/chevrolet-suburban-sheriff-cruiser-116f6a42deb04fd8942e6c632e37901f',
+         roles=[(r'^Body$', 'paint'), (r'^windows$', 'glass'), (r'^(front|back)_lights$', 'lensglass'), (r'^lighst_inside$', 'lamp'),
+                (r'^lights_on$', 'drop'), (r'^wheel$', 'tyre'), (r'^(roof_light|light_bar_|push_bar|spot_light|Grill_lights|side_light)', 'drop')],
+         paintTex=dict(colors=[[0, 0, 0], [255, 255, 255]], tol=30)),
     # The SOLSTICE SPIDER ('roadster'): an open four-seat convertible of the late nineties.
     dict(type='roadster', front='+z', title='Chrysler Sebring Convertible', author='BadKarma', length=4.9, keep=dict(trim=0.18, wheel=0.12, cabin=0.2),
          roles=[(r'^material_0$', 'paint'), (r'^material_29$', 'glass'), (r'^material_(25|3|4|5|11)$', 'drop'),
@@ -127,12 +137,11 @@ MODELS = [
     dict(type='army_jeep', kind='special', front='+z', title='HMMWV M998A1 (soft top)', author='42manako', length=4.6,
          roles=[(r'mat5_D|mat7_D', 'glass'), (r'mat3_D', 'tyre')], tyreBox=dict(below=0.97, out=0.55), keep=dict(trim=0.22, wheel=0.3),
          src='dl3/hmmwv/scene.gltf', url='https://sketchfab.com/3d-models/hmmwv-m998a1-soft-top-ffbc4b053628413fb84acf5b89595d96'),
-    # The SENTINEL M120 ('tank'): hull 7.9 m (`hull`: the collider's length), the gun past it; the turret and the gun split
-    # off by where they are (`split`, metres in the game frame), the whip antennas left out.
-    dict(type='army_tank', kind='special', front='+z', title='Abrams M1A2 SEPv3', author='dannzjs', length=10.1, hull=7.9,
-         split=dict(turretAbove=1.45, turretX=(-3.35, 2.35), gunFrom=2.3, gunHalf=0.35, clipAbove=3.3),
-         keep=dict(trim=0.05), minPiece=0.25, borderCos=0.6,
-         src='dl3/abrams/scene.gltf', url='https://sketchfab.com/3d-models/abrams-m1a2-sepv3-eb6f5560198740269507e9948376414c'),
+    # (Abrams M1A2 SEPv3 by dannzjs was converted for the SENTINEL M120 ('tank'; `split`, `hull`, slices): its hundreds
+    # of small parts kept it at 78k triangles and 2.2 MB after reduction, eight times a car's; the tank stays procedural
+    # until a lighter model turns up. Entry: dict(type='army_tank', kind='special', front='+z', length=10.1, hull=7.9,
+    # split=dict(turretAbove=1.45, turretX=(-3.35, 2.35), gunFrom=2.3, gunHalf=0.35, clipAbove=3.3), keep=dict(trim=0.05),
+    # minPiece=0.25, borderCos=0.6, src='dl3/abrams/scene.gltf').)
     dict(type='army_truck', kind='special', front='+z', title='Military Truck 1/2 Ton (M35)', author='Arion Digital', length=6.7,
          roles=[(r'^(79bf1742|9dd96982)', 'tyre')], tyreBox=dict(below=1.2, out=0.5), axleGap=0.06, keep=dict(trim=0.4, wheel=0.3),
          src='dl3/sap_military_half_ton/scene.gltf', url='https://sketchfab.com/3d-models/military-truck-12-ton-5d19c751b12849eeb390d637b2b686a1'),

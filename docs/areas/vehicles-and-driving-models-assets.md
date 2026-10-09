@@ -64,8 +64,8 @@ vehicles-and-driving-models.md's; credits in docs/THIRD_PARTY_CREDITS.txt. Conso
   9 m with its waterline (`waterline` m over the lowest point) at y 0; one alpha-tested body, the clear panes, a mast
   lamp; wakes and handling are the type's. The sponsor, outboard and radar names are erased in the texture.
 - Held back (`ASSET_BOATS_HELD`): beside the procedural launch the Tow Boat read flatter and lost the paint colour, so
-  the lead kept the procedural boat (owner rule: only upgrades). The data stays in the bin; drop it from the converter
-  at the next regeneration, or take it off the held list if a better boat model replaces it.
+  the lead kept the procedural boat (owner rule: only upgrades); round three dropped it from the bin (every boat is
+  procedural now; `ASSET_BOATS_HELD` waits for a better model).
 
 ## Tried and kept procedural
 
