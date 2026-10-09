@@ -97,6 +97,30 @@
         model.wheels.push({ wheel: pivot, side: Math.sign(z) || 1 });
         return pivot;
       }
+      // The gun jeep's ring mount, shield and M2 (mounted-guns.js fires it from these numbers): the turret group.
+      function militaryGunMount(model, b, p, l, keep) {
+        const ring = cylinder(b, -l * 0.08, 23, 0, 6, 1.4, oliveTrim, 14);
+        const turret = new Three.Group();
+        turret.position.set(-l * 0.08, 23.5, 0);
+        b.add(turret);
+        box(turret, 3, 4.5, 0, 1.2, 7, 11, p);
+        box(turret, 0, 3, 0, 5, 3, 3, darkMetal);
+        const barrel = new Three.Group();
+        turret.add(barrel);
+        rodTo(barrel, 2, 3.5, 0, 16, 3.5, 0, 0.45, darkMetal);
+        box(barrel, 3, 4.5, 2.2, 3, 3, 2, oliveTrim);
+        // The M2 itself (mounted-guns.js fires it): receiver, the heavy barrel's
+        // jacket, the flash hider and the spade grips back toward the gunner.
+        box(barrel, 0.6, 3.6, 0, 4.2, 1.9, 1.7, darkMetal);
+        rodTo(barrel, 2.6, 3.5, 0, 6.2, 3.5, 0, 0.8, darkMetal);
+        rodTo(barrel, 15, 3.5, 0, 16.8, 3.5, 0, 0.66, darkMetal);
+        for (const s of [-1, 1]) rodTo(barrel, -1.4, 3.6, s * 0.6, -2.6, 3.4, s * 0.95, 0.26, darkMetal);
+        model.tank = true;
+        model.turret = turret;
+        model.barrel = barrel;
+        keep.add(turret);
+        ring.castShadow = false;
+      }
       function makeMilitaryVehicle(vehicle) {
         const spec = vehicleSpec(vehicle),
           kind = spec.militaryModel,
@@ -108,7 +132,13 @@
           keep = new Set();
         p.roughness = 0.78;
         p.metalness = 0.15;
-        if (kind === 'jeep') {
+        // The utility and the cargo truck from their downloaded models when the build carries them
+        // (military-assets3d.js ASSET MILITARY); the gun jeep's ring mount and M2 as below.
+        const assetType = kind === 'jeep' || (kind === 'truck' && !vehicle.fuelBowser) ? militaryAssetType(kind) : null;
+        if (assetType) {
+          militaryAssetBody(model, vehicle, assetType, l);
+          if (kind === 'jeep' && vehicle.gunner) militaryGunMount(model, b, p, l, keep);
+        } else if (kind === 'jeep') {
           const r = 6.4;
           box(b, 0, 6, 0, l * 0.9, 3, w * 0.7, darkMetal);
           box(b, -1, 10.5, 0, l * 0.96, 7, w * 0.94, p);
@@ -140,29 +170,7 @@
           for (const s of [-1, 1]) starDecal(b, -l * 0.08, 11, s * (w * 0.47 + 0.05), 5, s > 0 ? 0 : Math.PI);
           militaryLamps(model, b, l * 0.485, 12.2, w * 0.36);
           for (const x of [l * 0.31, -l * 0.31]) for (const s of [-1, 1]) militaryWheel(model, x, s * w * 0.4, r, 4.6);
-          if (vehicle.gunner) {
-            const ring = cylinder(b, -l * 0.08, 23, 0, 6, 1.4, oliveTrim, 14);
-            const turret = new Three.Group();
-            turret.position.set(-l * 0.08, 23.5, 0);
-            b.add(turret);
-            box(turret, 3, 4.5, 0, 1.2, 7, 11, p);
-            box(turret, 0, 3, 0, 5, 3, 3, darkMetal);
-            const barrel = new Three.Group();
-            turret.add(barrel);
-            rodTo(barrel, 2, 3.5, 0, 16, 3.5, 0, 0.45, darkMetal);
-            box(barrel, 3, 4.5, 2.2, 3, 3, 2, oliveTrim);
-            // The M2 itself (mounted-guns.js fires it): receiver, the heavy barrel's
-            // jacket, the flash hider and the spade grips back toward the gunner.
-            box(barrel, 0.6, 3.6, 0, 4.2, 1.9, 1.7, darkMetal);
-            rodTo(barrel, 2.6, 3.5, 0, 6.2, 3.5, 0, 0.8, darkMetal);
-            rodTo(barrel, 15, 3.5, 0, 16.8, 3.5, 0, 0.66, darkMetal);
-            for (const s of [-1, 1]) rodTo(barrel, -1.4, 3.6, s * 0.6, -2.6, 3.4, s * 0.95, 0.26, darkMetal);
-            model.tank = true;
-            model.turret = turret;
-            model.barrel = barrel;
-            keep.add(turret);
-            ring.castShadow = false;
-          }
+          if (vehicle.gunner) militaryGunMount(model, b, p, l, keep);
         } else if (kind === 'apc') {
           const r = 6.3;
           box(b, 0, 13, 0, l * 0.9, 12, w * 0.92, p);

@@ -37,9 +37,10 @@ from PIL import Image
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from vehicle_models_moto import convert_moto  # noqa: E402
 from vehicle_models_boat import convert_boat  # noqa: E402
+from vehicle_models_special import convert_special  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-ATLAS_W, ATLAS_H = 2048, 2048
+ATLAS_W, ATLAS_H = 4096, 2048
 # Share of each part's triangles kept by the decimation (the street camera sees a car a few dozen pixels long).
 KEEP = dict(paint=0.45, trim=0.4, cabin=0.25, wheel=0.3)
 
@@ -75,20 +76,52 @@ MODELS = [
          nodeRoles=[(r'(?i)lightbar_glass', 'beacon'), (r'(?i)lightbar', 'lightbar')],
          src='zhab/CloudDCrow_space-drive/public/models/popo/scene.gltf',
          url='https://sketchfab.com/3d-models/80-american-police-sedan-low-poly-model-945fd09f513f4d1ab19b6388a7ea7323'),
+    # The pursuit sedan's 'charger' body (police3d-asset.js POLICE_ASSET_TYPES): the same series' 80s patrol car.
+    dict(type='police_charger', front='-x', title="80s Generic Police Car", author=Z, section=True,
+         nodeRoles=[(r'(?i)lightbar_glass', 'beacon'), (r'(?i)lightbar', 'lightbar')],
+         src='zhab/LuisArmando-TestCoder_3D-Scenes-Framework-Test/public/models/gltf/80s_generic_police_car/scene.gltf',
+         url='https://sketchfab.com/3d-models/80s-generic-police-car-low-poly-model-61766c1e6e1e4b2b803c174f33433a74'),
+    # The patrol and the agents' SUVs ('utility', 'tahoe' bodies): the livery goes on the body's black and white panels
+    # (`paintTex`: its paint and trim share one texture); the bar's lenses light on the police channels.
+    dict(type='police_suv', front='+z', title='Chevrolet Suburban Sheriff Cruiser', author='Matthew (jeandiz)', section=True,
+         src='dl3/sap_suburban_sheriff/scene.gltf', url='https://sketchfab.com/3d-models/chevrolet-suburban-sheriff-cruiser-116f6a42deb04fd8942e6c632e37901f',
+         roles=[(r'^Body$', 'paint'), (r'^windows$', 'glass'), (r'^(front|back)_lights$', 'lensglass'), (r'^lighst_inside$', 'lamp'),
+                (r'^lights_on$', 'drop'), (r'^wheel$', 'tyre'), (r'^roof_light_bar$', 'lightbar'), (r'^roof_light_|^light_bar_.*cover$', 'beacon')],
+         paintTex=dict(colors=[[0, 0, 0], [255, 255, 255]], tol=30)),
     dict(type='muscle', front=None, keep=dict(trim=0.3, paint=0.4, cabin=0.22, wheel=0.22), borderCos=0.85, title="American Muscle '71", author=Z,
          src='mirror/muscle71/scene.gltf',
          url='https://sketchfab.com/3d-models/american-muscle-71-low-poly-model-955edc733c6d44fabc0ad7c246a15896'),
     # (Coupe '33 Hot Rod #3 was tried for 'hotrod' and kept out: the HELLFIRE CUSTOM's flames and blower are its look.)
     # (Old Bicycle by Tidominer was tried for the private 'bicycle' with its crank (`nodeRoles` 'crank'): kept out, its
     # thin frame and light grey tyres read weaker than the procedural bike from the street camera.)
-    # The HARBOR LAUNCH (tools/vehicle_models_boat.py; src/boat-assets3d.js): the sponsor's, the outboards' and the radar's
-    # names and the registration painted over.
-    dict(type='workboat', kind='boat', front='+z', roles=[(r'.', 'trim')], title='Tow Boat', author='BoatUS Foundation', length=9.0, waterline=0.65, texCap=1024,
-         keep=dict(trim=0.08), borderCos=0.7, minPiece=0.05,
-         src='misc/duraidfakhoury_boat-simulation/models/tow_boat/scene.gltf',
-         url='https://sketchfab.com/3d-models/tow-boat-86939cf48b914951aa3c6ed2bc8bb446',
-         erase={'Tow_body_baseColor.png': [(0.62, 0.12, 0.95, 0.24), (0.75, 0.3, 0.98, 0.39), (0.72, 0.5, 0.97, 0.6), (0.72, 0.6, 0.9, 0.65),
-                                           (0.66, 0.87, 0.9, 0.98), (0.54, 0.74, 0.96, 0.88), (0.2, 0.51, 0.71, 0.69), (0.22, 0.0, 0.56, 0.14)]}),
+    # (The Tow Boat by BoatUS Foundation was tried for the HARBOR LAUNCH ('workboat') and held back: beside the
+    # procedural launch it read flatter and lost the paint colour; dropped from the data in round three.)
+    # The ATLAS BOX TRUCK ('truck'): the cab as modelled, the box behind it stretched to the type's 10 m (`stretch`: cut
+    # metres behind the front, the rear wheels and running gear moved whole).
+    dict(type='truck', front='+x', title="'90 Light Commercial Truck", author=Z, length=6.0,
+         stretch=dict(cut=1.9, length=10.0, rigid=r'(?i)wheel|tire|tyre|rim|suspension_rear|spare'), wheelsSquare=True,
+         nodeRoles=[(r'Spare_tire', 'trim')],
+         src='zhab/ni7co7_camion/camionDeLosNoventa/scene.gltf',
+         url='https://sketchfab.com/3d-models/90-light-commercial-truck-low-poly-model-663a0953c038434a918cb85725c88ffa'),
+    # The SOLSTICE SPIDER ('roadster'): an open four-seat convertible of the late nineties.
+    dict(type='roadster', front='+z', title='Chrysler Sebring Convertible', author='BadKarma', length=4.9,
+         roles=[(r'^material_0$', 'paint'), (r'^material_29$', 'glass'), (r'^material_(25|3|4|5|11)$', 'drop'),
+                (r'^material_(21|22|23|24)$', 'lamp'), (r'^material_(8|9)$', 'lamp'), (r'^material_(27|28)$', 'tyre'), (r'^material_(16|7|10)$', 'rim')],
+         src='dl3/sebring/scene.gltf', url='https://sketchfab.com/3d-models/chrysler-sebring-convertible-dac8529f24754bbd936173cbe8da92b1'),
+    # The METRO CITY BUS ('bus').
+    dict(type='bus', front='+x', title='Generic Town Bus', author='own.guest', length=12.0,
+         roles=[(r'^glass$', 'glass'), (r'^standard$', 'paint'), (r'^(standard111|standard1111|standard2)$', 'lamp'), (r'^seat$', 'interior'),
+                (r'^(material|material_4)$', 'tyre'), (r'^1616862037160$', 'drop')],
+         src='dl3/townbus/scene.gltf', url='https://sketchfab.com/3d-models/generic-town-bus-14fe03d792914d51b6c6250b393c44fd'),
+    # (Ambulance Car - Low Poly by Jasmin Daniel was looked at for the PARAMEDIC: one mesh with its glass painted on and its
+    # wheels joined to the body, so it cannot take the car contract; the ambulance stays procedural.)
+    # Fort Sentinel (tools/vehicle_models_special.py; src/military-assets3d.js): the M4 utility on the HMMWV, the M35.
+    dict(type='army_jeep', kind='special', front='+z', title='HMMWV M998A1 (soft top)', author='42manako', length=4.6,
+         roles=[(r'mat5_D|mat7_D', 'glass'), (r'mat3_D', 'tyre')], tyreBox=dict(below=0.97, out=0.55), keep=dict(trim=0.35, wheel=0.3),
+         src='dl3/hmmwv/scene.gltf', url='https://sketchfab.com/3d-models/hmmwv-m998a1-soft-top-ffbc4b053628413fb84acf5b89595d96'),
+    dict(type='army_truck', kind='special', front='+z', title='Military Truck 1/2 Ton (M35)', author='Arion Digital', length=6.7,
+         roles=[(r'^(79bf1742|9dd96982)', 'tyre')], tyreBox=dict(below=1.2, out=0.5), axleGap=0.06, keep=dict(trim=0.4, wheel=0.3),
+         src='dl3/sap_military_half_ton/scene.gltf', url='https://sketchfab.com/3d-models/military-truck-12-ton-5d19c751b12849eeb390d637b2b686a1'),
     # Motorbikes (tools/vehicle_models_moto.py; src/motorbike-assets3d.js). `axis`: a point up the steering axis, `bars`:
     # the bars' lowest y and rearmost x, `seat`: the saddle's x, `pegs`: [x, y, z] (metres, the game frame).
     dict(type='bike', kind='moto', front='+z', keep=dict(trim=0.16, paint=0.3, wheel=0.1, lamp=0.35), borderCos=0.7, title='Honda CB 750 F Super Sport 1970', author='Alex.Ka.',
@@ -173,7 +206,7 @@ SERIES_INDEX = {}
 
 def series_texture(name):
     if not SERIES_INDEX:
-        for root, dirs, files in os.walk(SERIES_ROOT):
+        for root, dirs, files in os.walk(SERIES_ROOT, followlinks=True):
             dirs[:] = [d for d in dirs if d != '.git']
             for f in files:
                 if f.lower().endswith(('.png', '.jpg', '.jpeg')):
@@ -301,6 +334,58 @@ def triangles(prims, mats, model):
     return T
 
 
+def stretch_rear(prims, mats, model):
+    """A body longer than the model (a box truck's or an ambulance's box, a bus): everything behind `cut` (metres from
+    the front, the game frame) stretched along x until the whole is `length` metres; a wheel (a primitive whose node or
+    material is a tyre's or a wheel's) moves whole with its centre instead of stretching."""
+    allP = np.concatenate([p['P'] for p in prims])
+    lo, hi = allP.min(0), allP.max(0)
+    cut = hi[0] - model['stretch']['cut']
+    s = (model['stretch']['length'] - (hi[0] - cut)) / (cut - lo[0])
+    rigid = re.compile(model['stretch'].get('rigid', r'(?i)wheel|tire|tyre|rim'))
+    for p in prims:
+        name = mats[p['material']].get('name', '') if p['material'] is not None else ''
+        if rigid.search(p.get('path', '') + '/' + name):
+            c = (p['P'][:, 0].min() + p['P'][:, 0].max()) / 2
+            if c < cut:
+                p['P'][:, 0] += (cut + (c - cut) * s) - c
+            continue
+        x = p['P'][:, 0]
+        back = x < cut
+        x[back] = cut + (x[back] - cut) * s
+    print('  stretched the rear by %.2f behind %.2f m' % (s, model['stretch']['cut']))
+
+
+def paint_by_texture(T, prims, mats, images, model):
+    """A body whose paint and trim share one texture: of the triangles in the paint role, only those whose texels (at
+    the corners and the middle) are all within `tol` of one of the paint colours stay paint; the rest are trim."""
+    spec = model['paintTex']
+    cols = np.array(spec['colors'], dtype=np.float64)
+    tol = spec.get('tol', 18)
+    arrays = {}
+    moved = 0
+    for t in T:
+        p = prims[t['prim']]
+        sel = np.where(t['role'] == 'paint')[0]
+        if not len(sel) or p['UV'] is None or p['material'] not in images:
+            continue
+        m = p['material']
+        if m not in arrays:
+            arrays[m] = np.asarray(images[m].convert('RGB')).astype(np.float64)
+        a = arrays[m]
+        h, w = a.shape[:2]
+        uv = p['UV'][t['idx'][sel]]  # (n, 3, 2)
+        pts = np.concatenate([uv, uv.mean(1, keepdims=True), (uv + uv.mean(1, keepdims=True)) / 2], 1)
+        px = np.clip(((pts[..., 0] % 1) * (w - 1)).astype(int), 0, w - 1)
+        py = np.clip(((pts[..., 1] % 1) * (h - 1)).astype(int), 0, h - 1)
+        c = a[py, px]  # (n, 7, 3)
+        d = np.min(np.linalg.norm(c[:, :, None, :] - cols[None, None, :, :], axis=3), axis=2)  # (n, 7)
+        ok = (d <= tol).all(1)
+        t['role'][sel[~ok]] = 'trim'
+        moved += int((~ok).sum())
+    print('  paint by texture: %d triangles to the trim' % moved)
+
+
 def cat(T, key):
     return np.concatenate([t[key] for t in T])
 
@@ -366,7 +451,13 @@ def convert(model, src_root):
             p['P'] = p['P'] * s
         allP = allP * s
         lo, hi = lo * s, hi * s
+    if model.get('stretch'):
+        stretch_rear(prims, mats, model)
+        allP = np.concatenate([p['P'] for p in prims])
+        lo, hi = allP.min(0), allP.max(0)
     T = triangles(prims, mats, model)
+    if model.get('paintTex'):
+        paint_by_texture(T, prims, mats, images, model)
     role = cat(T, 'role')
     cen = cat(T, 'cen')
     fn = cat(T, 'fn')
@@ -417,7 +508,7 @@ def convert(model, src_root):
                 w['tris'].add(int(k))
     # A source posed with its front wheels turned: each wheel turned back square (its axle, the tyre's flattest
     # direction across, along z), about its own centre.
-    for w in wheels:
+    for w in wheels if not model.get('wheelsSquare') else []:
         pts = np.concatenate([V(k) for k in w['tris'] if role[k] == 'tyre'])
         xz = pts[:, [0, 2]] - pts[:, [0, 2]].mean(0)
         vals, vecs = np.linalg.eigh(xz.T @ xz)
@@ -488,7 +579,9 @@ def convert(model, src_root):
             pp = pane_pts(i)
             if pp is not None:
                 print('   pane', i, len(pp), 'x', pp[:, 0].min().round(2), pp[:, 0].max().round(2), 'y', pp[:, 1].min().round(2), pp[:, 1].max().round(2))
-    side_pts = np.concatenate([p for p in (pane_pts(0), pane_pts(2)) if p is not None])
+    sides = [p for p in (pane_pts(0), pane_pts(2)) if p is not None]
+    # An open car (a convertible) has only its windscreen: the glass it has stands in for the sides.
+    side_pts = np.concatenate(sides) if sides else gpts
     xf, rf = foot_top(pane_pts(1), side_pts[:, 0].max(), side_pts[:, 0].max() - 0.5)
     xb, rb = foot_top(pane_pts(3), side_pts[:, 0].min(), side_pts[:, 0].min() + 0.3)
     lowside = side_pts[side_pts[:, 1] < belt + 0.1 * (roof - belt)]
@@ -1013,7 +1106,7 @@ def main(argv):
     for model in MODELS:
         if only and model['type'] not in only:
             continue
-        kinds = dict(moto=convert_moto, boat=convert_boat)
+        kinds = dict(moto=convert_moto, boat=convert_boat, special=convert_special)
         r = kinds[model['kind']](model, src, sys.modules[__name__]) if model.get('kind') in kinds else convert(model, src)
         r['texCap'] = model.get('texCap', 512)
         results.append(r)

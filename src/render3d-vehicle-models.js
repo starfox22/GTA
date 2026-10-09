@@ -93,7 +93,8 @@
         if (vehicleSpec(vehicle).militaryModel) return makeMilitaryVehicle(vehicle);
         // The 4x4 club's trucks (offroad3d.js).
         if (vehicleSpec(vehicle).clubModel) return makeOffroadVehicle(vehicle);
-        if (vehicleSpec(vehicle).tank) return compactTank(makeTank(vehicle));
+        // The tank from its downloaded model when the build carries one (military-assets3d.js ASSET MILITARY).
+        if (vehicleSpec(vehicle).tank) return militaryAssetType('tank') ? compactTank(makeAssetTank(vehicle)) : compactTank(makeTank(vehicle));
         if (vehicle.type === 'helicopter') return vehicle.airframe === 'apache' ? makeApache(vehicle) : makeHelicopter(vehicle);
         // Motorbikes at real size (motorbikes3d.js).
         // A type the build carries a downloaded motorbike for (motorbike-assets3d.js ASSET MOTORBIKES).
@@ -114,6 +115,9 @@
         // A type the build carries a downloaded model for (vehicle-assets3d.js ASSET CARS); else the procedural body.
         if (CAR_BODIES[vehicle.type] && vehicleAssetModel(vehicle.type)) return makeAssetCar(vehicle);
         if (CAR_BODIES[vehicle.type]) return makeCivilianCar(vehicle);
+        // The box truck, the bus and the ambulance from their downloaded models when the build carries them (the
+        // civilian car contract: crumple, marks, blood, lamps; vehicle-assets3d.js ASSET CARS).
+        if (vehicleSpec(vehicle).truck && vehicleAssetModel(vehicle.type) && !vehicleAssetModel(vehicle.type).kind) return makeAssetCar(vehicle);
         if (vehicleSpec(vehicle).truck) return makeTruck(vehicle);
         const group = new Three.Group(),
           body = new Three.Group();

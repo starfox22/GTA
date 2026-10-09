@@ -331,14 +331,22 @@
             const h = kit.halos[key] || { x: (kind === 'head' ? 0.49 : -0.49) * l, y: kit.glass.base * 0.75, z: side * w * 0.33, size: 1 };
             nightLights.push(halo(bodyGroup, h.x + (kind === 'head' ? 0.4 : -0.4), h.y, h.z, (kind === 'head' ? 11 : 7) * (h.size || 1), kind === 'head' ? '#ffe9bd' : '#ff5a44'));
           }
-        const g = kit.glass;
+        const g = kit.glass,
+          // An emergency vehicle's beacons (the ambulance): two lamps on the cab roof that flash red and blue
+          // (render3d-frame.js runs `strobes` while emergencyBeacons(c)).
+          strobes = [];
+        if (vehicle.type === 'ambulance')
+          for (const side of [-1, 1]) {
+            const p = glassPoint(g, l, w, 'front', side * 0.5, 1);
+            strobes.push(box(bodyGroup, p[0] - 0.6 * CAR_M, g.roof + g.crown + 0.12 * CAR_M, p[2], 0.35 * CAR_M, 0.2 * CAR_M, 0.45 * CAR_M, new Three.MeshBasicMaterial({ color: '#cf4545' })));
+          }
         return {
           wipers: undefined,
           group,
           body: bodyGroup,
           paint,
           color: vehicle.color,
-          strobes: [],
+          strobes,
           dead: false,
           car: true,
           civilian: true,
