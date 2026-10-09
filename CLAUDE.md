@@ -363,6 +363,11 @@ packs with plain `<script src>` so the zip still plays from file://.
 - Chase view level of detail (rendering-chase.md): anything new the far copy stands for hides with its cell
   (`cell.full` / `cell.blocks`); shadow-pass-only hiding goes through `chaseShadowCasters` (restored after the
   pass); its shadow box is `placeChaseSun` (the depth fade `cityShadowReach`); never toggle a light.
+- Downloaded vehicle models (vehicle-assets3d.js ASSET CARS; vehicles-and-driving-models.md): `tools/vehicle_models.py`
+  makes assets/vehicle-models.bin + vehicle-atlas.webp; `makeAssetCar` keeps civKit's contract (shell, panels, hood,
+  5-pane glass, trim with the cabin last, lamps, wheels with the tyre first); a type is replaced only where the model
+  clearly looks better and loses nothing (muscle, rally and police stay procedural for now); a model change re-records
+  DRIVEBY_SEATS (`test.mjs cabin-headroom --render`) and CAR_GLASS_BANDS; `assetCarsOn(false)` gives before/after.
 - Car crash damage (vehicles-and-driving-damage.md): `crumpleField(dents, limits, ...)` / `crumpleLimits(vehicle)`
   (damage-crumple.js) is the only crumple rule; damage3d-crumple.js bends every mesh under a car body with it,
   time-sliced (`crumpleSlices`), and bumps `m.shapeVersion` when a body is done. A part that animates its own matrix or
