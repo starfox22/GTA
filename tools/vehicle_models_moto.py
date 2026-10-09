@@ -75,6 +75,18 @@ def convert_moto(model, src_root, vm):
                 w['rim'].add(int(k))
                 break
     in_wheel = set().union(*[w['tyre'] | w['rim'] for w in wheels])
+    # A bicycle's crank (`nodeRoles` 'crank': chainring and pedals) turns about its own middle; the pedals' radius and
+    # the right pedal's angle there (the runtime turns it upright), its distance out from the middle.
+    crank_t = [int(k) for k in np.where(role == 'crank')[0] if k not in in_wheel]
+    crank = None
+    if crank_t:
+        ring = [k for k in crank_t if abs(cen[k, 2]) < 0.06] or crank_t
+        rp = np.concatenate([V(k) for k in ring])
+        cx, cy = (rp[:, 0].min() + rp[:, 0].max()) / 2, (rp[:, 1].min() + rp[:, 1].max()) / 2
+        pedal = np.concatenate([V(k) for k in crank_t if cen[k, 2] > 0.08])
+        pc = pedal.mean(0)
+        crank = dict(x=cx, y=cy, r=float(np.hypot(pc[0] - cx, pc[1] - cy)), angle=float(math.atan2(pc[1] - cy, pc[0] - cx)), z=float(pc[2]))
+        in_wheel |= set(crank_t)
 
     # ---- The steering: the axis from the front axle up through `axis` (x, y in metres, the game frame); everything
     # wholly ahead of the axis moved back `reach`, and the bars (wholly above `bars` y and ahead of `bars` x), turns.
@@ -121,6 +133,8 @@ def convert_moto(model, src_root, vm):
         'head': dict(tris=head, colors=True, keep=keep.get('lamp', 1.0), borderCos=model.get('borderCos', 0.985)),
         'tail': dict(tris=tail, colors=True, keep=keep.get('lamp', 1.0), borderCos=model.get('borderCos', 0.985)),
     }
+    if crank:
+        parts['crank'] = dict(tris=crank_t, origin=(crank['x'], crank['y'], 0.0), keep=keep['trim'], borderCos=model.get('borderCos', 0.985))
     for wi, w in enumerate(wheels):
         parts['wheel%d.tyre' % wi] = dict(tris=sorted(w['tyre']), origin=(w['x'], w['y'], w['z']), keep=keep['wheel'], borderCos=model.get('borderCos', 0.985))
         parts['wheel%d.rim' % wi] = dict(tris=sorted(w['rim']), origin=(w['x'], w['y'], w['z']), keep=keep['wheel'], minPiece=model.get('minPiece', 0.04), borderCos=model.get('borderCos', 0.985))
@@ -140,6 +154,7 @@ def convert_moto(model, src_root, vm):
         axis=[round(float(ax), 4), round(float(ay), 4), round(float(tx), 4), round(float(ty), 4)], rake=round(rake, 4),
         seat=[round(float(sx), 4), round(seat_y, 4)], grip=[round(v, 4) for v in grip], peg=model['pegs'],
         lean=model.get('lean', -0.3),
+        crank=[round(crank[k], 4) for k in ('x', 'y', 'r', 'angle', 'z')] if crank else None,
         x0=round(float(lo[0]), 4), x1=round(float(hi[0]), 4),
         paintTexture=bool(model.get('paintTexture')),
         paintColor=vm.paint_colour(mats, role, tri_prim, model),

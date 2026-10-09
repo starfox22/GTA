@@ -256,9 +256,10 @@
        * Built in the bike's frame; `hand` is the grips' height, `foot` the pegs'.
        */
       const motoRiders = new Map();
-      function motoRiderGeometry(type) {
+      // (An asset bike, motorbike-assets3d.js, passes its measured pose and its scale against CAR_M.)
+      function motoRiderGeometry(type, pose = MOTO_BODIES[type].rider, scale = 1) {
         if (motoRiders.has(type)) return motoRiders.get(type);
-        const pose = MOTO_BODIES[type].rider,
+        const
           set = civSet(),
           S = civShapeKit(),
           limb = (a, b, r, color, finish = 'leather') => civBar(set, a, b, r * 2 * CAR_M, r * 2 * CAR_M, r * 0.9 * CAR_M, { color, finish }),
@@ -272,7 +273,7 @@
             kz = side * 0.17,
             fz = side * 0.16,
             sz = side * 0.2,
-            az = side * (type === 'kr500' ? 0.36 : type === 'cruiser' ? 0.34 : 0.26);
+            az = side * (pose.gripZ ?? (type === 'kr500' ? 0.36 : type === 'cruiser' ? 0.34 : 0.26));
           limb(mp(hx, hy, hz), mp(kx, ky, kz), 0.085, pose.suit);
           limb(mp(kx, ky, kz), mp(fx, fy + 0.04, fz), 0.065, pose.suit);
           // Boot on the peg.
@@ -303,6 +304,7 @@
         if (pose.peak) civBar(set, mp(headX + 0.08, headY + 0.11, 0), mp(headX + 0.22, headY + 0.08, 0), 0.015 * CAR_M, 0.2 * CAR_M, 0.006 * CAR_M, { color: pose.helmet, finish: 'gloss' });
         civAdd(set, S.cylinder24, ...mp(headX - 0.02, headY - 0.14, 0), 0.06 * CAR_M, 0.06 * CAR_M, 0.06 * CAR_M, { color: pose.suit, finish: 'leather' });
         const geo = civGeometry(set);
+        if (scale !== 1) geo.scale(scale, scale, scale);
         motoRiders.set(type, geo);
         return geo;
       }
@@ -576,7 +578,7 @@
         m.wheelie = c.fallen || c.hp <= 0 ? 0 : c.wheelie || 0;
         if (Math.abs(m.wheelie) > 0.002) {
           // Pitch about the rear contact patch (x = rear axle, y = 0).
-          const xr = MOTO_BODIES[m.moto].wheels.xr * CAR_M,
+          const xr = m.rearAxleX ?? MOTO_BODIES[m.moto].wheels.xr * CAR_M,
             a = m.wheelie;
           m.body.rotation.z += a;
           m.body.position.x = xr - xr * Math.cos(a);

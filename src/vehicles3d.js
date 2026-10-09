@@ -541,6 +541,8 @@
       function makeBicycle(vehicle) {
         // A rented South Coast Cycle bike wears its livery (cycles3d.js).
         if (vehicle.shareBike) return Object.assign(makeShareBicycle(vehicle), { realSize: true });
+        // A private bicycle from the downloaded model when the build carries it (motorbike-assets3d.js).
+        if (vehicleAssetModel('bicycle')?.kind === 'moto') return makeAssetMotorbike(vehicle);
         const model = specialVehicle(vehicle),
           b = model.body;
         model.bike = true;

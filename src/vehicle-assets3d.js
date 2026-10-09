@@ -391,6 +391,6 @@
         if (!data) return { loaded: false };
         const models = {};
         for (const [type, m] of Object.entries(data.header.models))
-          models[type] = { title: m.title, triangles: m.triangles, dims: m.dims, wheels: m.wheels.length, belt: m.glass.base, roof: m.glass.roof, paintTexture: m.paintTexture };
+          models[type] = { title: m.title, kind: m.kind || 'car', triangles: m.triangles, dims: m.dims, wheels: m.wheels.length, belt: m.glass?.base ?? null, roof: m.glass?.roof ?? null, paintTexture: m.paintTexture };
         return { loaded: true, atlas: !!vaAtlasCache?.image, models, kits: [...vaKits.keys()] };
       }

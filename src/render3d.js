@@ -201,6 +201,8 @@
       // @include src/vehicle-assets3d.js
       // @include src/hypercars3d.js
       // @include src/motorbikes3d.js
+      // @include src/motorbike-assets3d.js
+      // @include src/boat-assets3d.js
       // @include src/offroad3d.js
       // @include src/vinnytruck3d.js
       // @include src/tyresmoke3d.js

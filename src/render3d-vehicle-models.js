@@ -96,9 +96,11 @@
         if (vehicleSpec(vehicle).tank) return compactTank(makeTank(vehicle));
         if (vehicle.type === 'helicopter') return vehicle.airframe === 'apache' ? makeApache(vehicle) : makeHelicopter(vehicle);
         // Motorbikes at real size (motorbikes3d.js).
-        if (MOTO_BODIES[vehicle.type]) return makeMotorbike(vehicle);
+        // A type the build carries a downloaded motorbike for (motorbike-assets3d.js ASSET MOTORBIKES).
+        if (MOTO_BODIES[vehicle.type]) return vehicleAssetModel(vehicle.type)?.kind === 'moto' ? makeAssetMotorbike(vehicle) : makeMotorbike(vehicle);
         if (vehicleSpec(vehicle).jetski) return makeJetSki(vehicle);
-        if (vehicleSpec(vehicle).boat) return makeBoat(vehicle);
+        // A boat the build carries a downloaded model for (boat-assets3d.js ASSET BOATS).
+        if (vehicleSpec(vehicle).boat) return vehicleAssetModel(vehicle.type)?.kind === 'boat' ? makeAssetBoat(vehicle) : makeBoat(vehicle);
         // Patrol cars, roadblock cruisers, the SWAT truck and agents' SUVs (police3d.js).
         if (vehicle.type === 'police' || vehicle.lawUnit === 'swat' || vehicle.lawUnit === 'fed' || vehicle.policeLook) {
           const look = policeLookFor(vehicle);

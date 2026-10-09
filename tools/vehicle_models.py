@@ -36,6 +36,7 @@ from PIL import Image
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from vehicle_models_moto import convert_moto  # noqa: E402
+from vehicle_models_boat import convert_boat  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ATLAS_W, ATLAS_H = 2048, 2048
@@ -77,9 +78,17 @@ MODELS = [
     dict(type='muscle', front=None, keep=dict(trim=0.3, paint=0.4, cabin=0.22, wheel=0.22), borderCos=0.85, title="American Muscle '71", author=Z,
          src='mirror/muscle71/scene.gltf',
          url='https://sketchfab.com/3d-models/american-muscle-71-low-poly-model-955edc733c6d44fabc0ad7c246a15896'),
-    dict(type='hotrod', front=None, title="Coupe '33 Hot Rod #3", author=Z,
-         src='mirror/coupe33/scene.gltf',
-         url='https://sketchfab.com/3d-models/coupe-33-hot-rod-3-low-poly-model-cb5b519024c7472895ef10a8663fb533'),
+    # (Coupe '33 Hot Rod #3 was tried for 'hotrod' and kept out: the HELLFIRE CUSTOM's flames and blower are its look.)
+    # (Old Bicycle by Tidominer was tried for the private 'bicycle' with its crank (`nodeRoles` 'crank'): kept out, its
+    # thin frame and light grey tyres read weaker than the procedural bike from the street camera.)
+    # The HARBOR LAUNCH (tools/vehicle_models_boat.py; src/boat-assets3d.js): the sponsor's, the outboards' and the radar's
+    # names and the registration painted over.
+    dict(type='workboat', kind='boat', front='+z', roles=[(r'.', 'trim')], title='Tow Boat', author='BoatUS Foundation', length=9.0, waterline=0.65, texCap=1024,
+         keep=dict(trim=0.08), borderCos=0.7, minPiece=0.05,
+         src='misc/duraidfakhoury_boat-simulation/models/tow_boat/scene.gltf',
+         url='https://sketchfab.com/3d-models/tow-boat-86939cf48b914951aa3c6ed2bc8bb446',
+         erase={'Tow_body_baseColor.png': [(0.62, 0.12, 0.95, 0.24), (0.75, 0.3, 0.98, 0.39), (0.72, 0.5, 0.97, 0.6), (0.72, 0.6, 0.9, 0.65),
+                                           (0.66, 0.87, 0.9, 0.98), (0.54, 0.74, 0.96, 0.88), (0.2, 0.51, 0.71, 0.69), (0.22, 0.0, 0.56, 0.14)]}),
     # Motorbikes (tools/vehicle_models_moto.py; src/motorbike-assets3d.js). `axis`: a point up the steering axis, `bars`:
     # the bars' lowest y and rearmost x, `seat`: the saddle's x, `pegs`: [x, y, z] (metres, the game frame).
     dict(type='bike', kind='moto', front='+z', keep=dict(trim=0.16, paint=0.3, wheel=0.1, lamp=0.35), borderCos=0.7, title='Honda CB 750 F Super Sport 1970', author='Alex.Ka.',
@@ -644,8 +653,9 @@ def build_atlas(results):
             if m in r['images']:
                 img = r['images'][m]
                 h = hashlib.sha1(img.tobytes()[:200000] + repr((img.size, factor[:3], blend)).encode()).hexdigest()
-                e = entries.setdefault(h, dict(img=img, area=0.0, factor=factor, blend=blend))
+                e = entries.setdefault(h, dict(img=img, area=0.0, factor=factor, blend=blend, cap=512))
                 e['area'] += a
+                e['cap'] = max(e['cap'], r.get('texCap', 512))
                 r['tex_of'][m] = h
             else:
                 key = 'solid:%s' % (factor[:3],)
@@ -662,7 +672,7 @@ def build_atlas(results):
         for h, e in order:
             w0, h0 = e['img'].size
             side = math.sqrt(e['area'] * k)
-            sc = min(1.0, side / max(w0, h0), 512.0 / max(w0, h0))
+            sc = min(1.0, side / max(w0, h0), e['cap'] / max(w0, h0))
             sizes[h] = (max(16, int(w0 * sc) // 4 * 4), max(16, int(h0 * sc) // 4 * 4))
         placed = shelf_pack(sizes, ATLAS_W, ATLAS_H - 8 * solid_rows - 4)
         if placed is None:
@@ -1003,12 +1013,13 @@ def main(argv):
     for model in MODELS:
         if only and model['type'] not in only:
             continue
-        r = convert_moto(model, src, sys.modules[__name__]) if model.get('kind') == 'moto' else convert(model, src)
+        kinds = dict(moto=convert_moto, boat=convert_boat)
+        r = kinds[model['kind']](model, src, sys.modules[__name__]) if model.get('kind') in kinds else convert(model, src)
+        r['texCap'] = model.get('texCap', 512)
         results.append(r)
         m = r['meta']
-        if m.get('kind') == 'moto':
-            print('%-9s %-30s front %s dims %s wheels %d rake %.2f parts %s' % (m['type'], m['title'], m['front'], m['dims'], len(m['wheels']), m['rake'],
-                                                                         {k: len(v['tris']) for k, v in r['parts'].items()}))
+        if m.get('kind') in kinds:
+            print('%-9s %-30s front %s dims %s parts %s' % (m['type'], m['title'], m['front'], m['dims'], {k: len(v['tris']) for k, v in r['parts'].items()}))
             continue
         counts = {k: len(v['tris']) for k, v in r['parts'].items() if not k.startswith('wheel')}
         print('%-9s %-30s front %s dims %s belt %.2f roof %.2f wheels %d parts %s' % (

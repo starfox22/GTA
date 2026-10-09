@@ -684,6 +684,7 @@ src/police3d-asset.js, made by tools/vehicle_models.py)
   - JDM Experimental Sportcar '90 (sport): This work is based on "JDM Experimental Sportcar '90 - Low Poly model" (https://sketchfab.com/3d-models/jdm-experimental-sportcar-90-low-poly-model-776078e51fbe4ec9addbe45ba13e1aad) by Daniel Zhabotinsky (https://sketchfab.com/DanielZhabotinsky) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
   - Italian Supercar '84 (supercar): This work is based on "Italian Supercar '84 - Low poly Model" (https://sketchfab.com/3d-models/italian-supercar-84-low-poly-model-c967ab4abbc54ae4b7933fd81a86c99c) by Daniel Zhabotinsky (https://sketchfab.com/DanielZhabotinsky) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
   - 80 American Sedan (luxury): This work is based on "80 American Sedan - Low poly model" (https://sketchfab.com/3d-models/80-american-sedan-low-poly-model-892b2684fb37442299bfad9222cf331c) by Daniel Zhabotinsky (https://sketchfab.com/DanielZhabotinsky) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+  - American Muscle '71 (muscle; also published as "Phoenix 455 '71"): This work is based on "American Muscle '71 - Low poly model" (https://sketchfab.com/3d-models/american-muscle-71-low-poly-model-955edc733c6d44fabc0ad7c246a15896) by Daniel Zhabotinsky (https://sketchfab.com/DanielZhabotinsky) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
   - 80 American Police Sedan (police, the 'crownvic' body): This work is based on "80 American Police Sedan - Low poly model" (https://sketchfab.com/3d-models/80-american-police-sedan-low-poly-model-945fd09f513f4d1ab19b6388a7ea7323) by Daniel Zhabotinsky (https://sketchfab.com/DanielZhabotinsky) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
   Changes: turned to face along +x and scaled as a whole to each game type's length; split
   into paint, glass, trim, cabin, lamps and wheels; wheels turned square (the Italian
@@ -693,6 +694,13 @@ src/police3d-asset.js, made by tools/vehicle_models.py)
   UCB_BOTTOM texture taken from the same author's Canyon '75 Taxi). The police sedan wears the
   game's own liveries and unit numbers instead of its painted ones; its light bar's lenses are
   lit by the game's flash patterns.
+  The motorbike and the boat below are in the same files:
+  - Honda CB 750 F Super Sport 1970 (bike, the VORTEX 900): This work is based on "Honda CB 750 F Super Sport 1970" (https://sketchfab.com/3d-models/honda-cb-750-f-super-sport-1970-f121301624174b179ca4d50158797b03) by Alex.Ka. (https://sketchfab.com/Alex.Ka.) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+    Changes: split into frame, steering, wheels and lamps; the maker's tank badge left out and its name on the brake
+    hub and side cover painted over; small parts left out and triangles reduced; the paint in the game's colours.
+  - Tow Boat (workboat, the HARBOR LAUNCH): This work is based on "Tow Boat" (https://sketchfab.com/3d-models/tow-boat-86939cf48b914951aa3c6ed2bc8bb446) by BoatUS Foundation (https://sketchfab.com/boatusfoundation) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+    Changes: scaled to 9 m; the sponsor's, outboard maker's and radar maker's names and the registration painted over
+    in the texture; triangles reduced from 147k; the texture downscaled into the atlas.
 
 player-model.bin, player-skin.webp, player-detail.webp (the player character; src/player-body3d-asset.js)
   Base model: "Male_Adult_16" from the Microsoft Rocketbox Avatar Library,
