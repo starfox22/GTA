@@ -321,6 +321,9 @@ packs with plain `<script src>` so the zip still plays from file://.
   The city ground sheet is read by colour class: anything painted over it after the fills (`paintWallGrime`) is
   translucent dark and keeps each class's hue; ground tones read the lane grid bilinearly, never `gLaneW` nearest.
   Compare looks and cost with `lookSwitches({ roofSkin, groundWear })`.
+- Wall skin (cityscape3d-wallskin.js; rendering-buildings.md): real CC0 facade and roof-tile materials are layers of
+  assets/wall-skin.webp (tools/wall_skin.py LAYERS = `WALL_SKIN_LAYERS`, keep them in step), picked per material by the
+  `cityWallLayer` uniform (`userData.wallSkin`), never a new material or define; A/B `lookSwitches({ wallSkin })`.
 - Character rig (people-and-crowd-rig.md): every body set lofts the same key rings (`RIG_*_RINGS`, `rig*Rings`), so
   outline changes go there; lofts face outwards whichever way their rings run (tools/tests/rig-geometry.mjs). Slot D
   of every body part's paint is the skin; paint bits from 32 belong to the near set (`rigNearBits`). Near hands take
