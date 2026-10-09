@@ -133,6 +133,8 @@
       // The downloaded vehicle models the build carries (title, triangles, size, belt and roof) and the kits built
       // from them (vehicle-assets3d.js ASSET CARS).
       assetCars: () => city3D?.assetCars?.() ?? null,
+      // Before/after: false builds every vehicle model made from now on procedurally (park new ones to compare).
+      assetCarsOn: (on) => city3D?.assetCarsOn?.(on) ?? null,
       // The seated heads against every closed car cabin built (cars3d-headroom.js CABIN HEADROOM): room in metres for
       // the tallest man and woman, the player and the player's drive-by pose; `through` counts cars with a head out.
       cabinHeadroom: () => city3D?.cabinHeadroom?.() ?? null,

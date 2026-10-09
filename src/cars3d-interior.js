@@ -69,7 +69,8 @@
         const width = w / 0.87,
           roof = g.roof + (g.arch || 0) * 0.6,
           floor = Math.max(0.2 * M, g.base - 0.62 * M);
-        const x0 = own?.x !== undefined ? own.x * l : g.xf * l - 1.4 * M,
+        // `own.hipX`: where the fit starts (a share of l), as an asset model's own seats sit (vehicle-assets3d.js).
+        const x0 = own?.x !== undefined ? own.x * l : own?.hipX !== undefined ? own.hipX * l : g.xf * l - 1.4 * M,
           y0 = own?.y !== undefined ? own.y * M : g.base - 0.42 * M;
         let x = x0,
           y = y0,

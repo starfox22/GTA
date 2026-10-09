@@ -11,7 +11,7 @@ downloads were unpacked into) and writes
                                  to build the damage contract: the glasshouse measured as a
                                  CAR_BODIES `glass` record, the wheels' centres, the lamps'
                                  centres, the hood's hinge, the deck line, the sill.
-    assets/vehicle-atlas.webp    one 2048 x 2048 colour atlas for all of them (each source
+    assets/vehicle-atlas.webp    one 2048 x 1024 colour atlas for all of them (each source
                                  texture once, sized by how much surface it covers).
 
 Parts per model (src/vehicle-assets3d.js builds them): shell (paint below the belt), panels
@@ -35,9 +35,9 @@ import numpy as np
 from PIL import Image
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-ATLAS = 2048
+ATLAS_W, ATLAS_H = 2048, 1024
 # Share of each part's triangles kept by the decimation (the street camera sees a car a few dozen pixels long).
-KEEP = dict(paint=0.5, trim=0.45, cabin=0.3, wheel=0.35)
+KEEP = dict(paint=0.45, trim=0.4, cabin=0.25, wheel=0.3)
 
 # ---------------------------------------------------------------------------------------------
 # The models: game type, source file (under SRC_DIR), credit, and per-model hints.
@@ -47,28 +47,28 @@ KEEP = dict(paint=0.5, trim=0.45, cabin=0.3, wheel=0.35)
 #   paintTexture: the paint carries its own texture (a taxi's livery): drawn from the atlas.
 Z = 'Daniel Zhabotinsky'
 MODELS = [
-    dict(type='sedan', title="Fairheaven LT '80", author=Z,
+    dict(type='sedan', front='+x', title="Fairheaven LT '80", author=Z,
          src='zhab/raisimTech_raisim2Lib/rsc/city/cars/fairheaven_lt80/model.gltf', up='+z',
          url='https://sketchfab.com/3d-models/fairheaven-lt-80-low-poly-model'),
-    dict(type='taxi', title="Canyon '75 Taxi", author=Z, paintTexture=True,
+    dict(type='taxi', front='+x', title="Canyon '75 Taxi", author=Z, paintTexture=True,
          src='zhab/raisimTech_raisim2Lib/rsc/city/cars/canyon75_taxi/model.gltf', up='+z',
          url='https://sketchfab.com/3d-models/canyon-75-taxi-low-poly-model'),
-    dict(type='coupe', title="Kiri '86", author=Z,
+    dict(type='coupe', front='+x', title="Kiri '86", author=Z,
          src='zhab/raisimTech_raisim2Lib/rsc/city/cars/kiri86/model.gltf', up='+z',
          url='https://sketchfab.com/3d-models/kiri-86-low-poly-model'),
-    dict(type='sport', title="JDM Experimental Sportcar '90", author=Z,
+    dict(type='sport', front='-x', title="JDM Experimental Sportcar '90", author=Z,
          src='zhab/CloudDCrow_space-drive/public/models/white_fast/scene.gltf',
          url='https://sketchfab.com/3d-models/jdm-experimental-sportcar-90-low-poly-model'),
-    dict(type='supercar', title="Italian Supercar '84", author=Z,
+    dict(type='supercar', front='-z', keep=dict(trim=0.28, paint=0.4), title="Italian Supercar '84", author=Z,
          src='zhab/CloudDCrow_space-drive/public/models/blue_slow/scene.gltf',
          url='https://sketchfab.com/3d-models/italian-supercar-84-low-poly-model'),
-    dict(type='luxury', title='80 American Sedan', author=Z, length=5.2,
+    dict(type='luxury', front='+x', title='80 American Sedan', author=Z, length=5.2,
          src='zhab/samhovie_levitator/scene.gltf',
          url='https://sketchfab.com/3d-models/80-american-sedan-low-poly-model'),
-    dict(type='muscle', title="American Fullsize '73", author=Z,
+    dict(type='muscle', front='-x', title="American Fullsize '73", author=Z,
          src='zhab/ayilinkou_NuaEngine/ModelViewer/Models/american_fullsize_73/scene.gltf',
          url='https://sketchfab.com/3d-models/american-fullsize-73-low-poly-model'),
-    dict(type='rally', title='German Modern Classic', author=Z, length=4.7,
+    dict(type='rally', front='-x', title='German Modern Classic', author=Z, length=4.7,
          src='zhab/QuiSensei_Application-4/Static/Models/Car_2/scene.gltf',
          url='https://sketchfab.com/3d-models/german-modern-classic-low-poly-model',
          roles=[(r'corr_doorshut|Material_574', 'trim')]),
@@ -275,35 +275,35 @@ def cat(T, key):
 
 
 def auto_front(prims, mats, model, images):
-    """The axis the car faces: away from its red lamps (the tail lights)."""
-    best = None
-    pts = []
-    for p in prims:
-        m = mats[p['material']] if p['material'] is not None else {}
-        if role_of(m.get('name', ''), model) not in ('lamp', 'lensglass') or p['UV'] is None:
-            continue
-        img = images.get(p['material'])
-        if img is None:
-            continue
-        w, h = img.size
-        uv = p['UV']
-        px = np.clip((uv[:, 0] % 1) * (w - 1), 0, w - 1).astype(int)
-        py = np.clip((uv[:, 1] % 1) * (h - 1), 0, h - 1).astype(int)
-        arr = np.asarray(img.convert('RGB'))
-        col = arr[py, px].astype(float)
-        red = (col[:, 0] > 120) & (col[:, 0] > col[:, 1] * 1.8) & (col[:, 0] > col[:, 2] * 1.8)
-        if red.any():
-            pts.append(p['P'][red])
-    if not pts:
-        return '+x'
-    P = np.concatenate(pts)
+    """The axis the car faces: the end whose lamps are less red (the tail lights are red, the head lamps clear)."""
     allP = np.concatenate([p['P'] for p in prims])
     lo, hi = allP.min(0), allP.max(0)
     ext = hi - lo
     axis = 0 if ext[0] > ext[2] else 2
     mid = (lo[axis] + hi[axis]) / 2
-    rear = P[:, axis].mean() - mid
-    return ('-' if rear > 0 else '+') + 'xyz'[axis]
+    count = {1: [0, 0], -1: [0, 0]}
+    for p in prims:
+        m = mats[p['material']] if p['material'] is not None else {}
+        if role_of(m.get('name', ''), model, p['node']) not in ('lamp', 'lensglass') or p['UV'] is None:
+            continue
+        img = images.get(p['material'])
+        if img is None:
+            continue
+        arr = np.asarray(img.convert('RGB'))
+        h, w = arr.shape[:2]
+        idx = p['index']
+        cen = p['P'][idx].mean(1)
+        uv = p['UV'][idx].mean(1)
+        col = arr[np.clip((uv[:, 1] % 1) * (h - 1), 0, h - 1).astype(int), np.clip((uv[:, 0] % 1) * (w - 1), 0, w - 1).astype(int)].astype(float)
+        red = (col[:, 0] > 90) & (col[:, 0] > col[:, 1] * 1.7) & (col[:, 0] > col[:, 2] * 1.7)
+        far = np.abs(cen[:, axis] - mid) > 0.3 * ext[axis]
+        for end in (1, -1):
+            sel = far & (np.sign(cen[:, axis] - mid) == end)
+            count[end][0] += int((red & sel).sum())
+            count[end][1] += int(sel.sum())
+    share = {e: c[0] / max(1, c[1]) for e, c in count.items()}
+    front = 1 if share[1] < share[-1] else -1
+    return ('+' if front > 0 else '-') + 'xyz'[axis]
 
 
 # ---------------------------------------------------------------------------------------------
@@ -429,6 +429,11 @@ def convert(model, src_root):
         highp = pts[pts[:, 1] > y1 - 0.12 * (y1 - y0)]
         return float(np.median(lowp[:, 0])), float(np.median(highp[:, 0]))
 
+    if os.environ.get('VM_DEBUG'):
+        for i in range(5):
+            pp = pane_pts(i)
+            if pp is not None:
+                print('   pane', i, len(pp), 'x', pp[:, 0].min().round(2), pp[:, 0].max().round(2), 'y', pp[:, 1].min().round(2), pp[:, 1].max().round(2))
     side_pts = np.concatenate([p for p in (pane_pts(0), pane_pts(2)) if p is not None])
     xf, rf = foot_top(pane_pts(1), side_pts[:, 0].max(), side_pts[:, 0].max() - 0.5)
     xb, rb = foot_top(pane_pts(3), side_pts[:, 0].min(), side_pts[:, 0].min() + 0.3)
@@ -485,6 +490,11 @@ def convert(model, src_root):
             profile[i] = last
         last = profile[i]
     profile = [p if p is not None else sill for p in profile]
+    # The roof over the heads: the top line's highest point between the glass tops, less the skin (4 cm;
+    # the liner's 3 cm are cabinProfile's), as a crown over the side glass's top (cars3d-headroom.js reads it as glassCrown).
+    xs = [lo[0] + (hi[0] - lo[0]) * i / 40 for i in range(41)]
+    over = [p for x, p in zip(xs, profile) if rb <= x <= rf]
+    glass['crown'] = max(0.0, (max(over) if over else roof) - 0.04 - roof)
 
     # ---- Trim: the rest, the cabin's inside last; nothing that faces the road from under the axles.
     rest = [k for k in range(len(role)) if role[k] in ('trim', 'rim', 'interior', 'tyre', 'lamp') and k not in wheel_of and lamp_key[k] == '']
@@ -497,24 +507,26 @@ def convert(model, src_root):
         inside = role[k] == 'interior' or (xb - 0.1 < cen[k, 0] < xf + 0.15 and sill + 0.05 < cen[k, 1] < roof and abs(cen[k, 2]) < half_base - 0.04)
         (inner if inside else outer).append(k)
 
+    keep = dict(KEEP, **model.get('keep', {}))
     parts = {
-        'shell': dict(tris=shell, keep=KEEP['paint']),
-        'panels': dict(tris=panels, keep=KEEP['paint']),
-        'hood': dict(tris=hood, keep=KEEP['paint']),
+        'shell': dict(tris=shell, keep=keep['paint']),
+        'panels': dict(tris=panels, keep=keep['paint']),
+        'hood': dict(tris=hood, keep=keep['paint']),
         'glass': dict(tris=sorted(gl.tolist(), key=lambda k: pane[k]), panes=[int((pane[gl] == i).sum()) for i in range(5)]),
-        'trim': dict(tris=outer, keep=KEEP['trim']),
-        'cabin': dict(tris=inner, keep=KEEP['cabin']),
+        'trim': dict(tris=outer, keep=keep['trim']),
+        'cabin': dict(tris=inner, keep=keep['cabin']),
     }
     for key in ('headLeft', 'headRight', 'tailLeft', 'tailRight'):
         parts[key] = dict(tris=np.where(lamp_key == key)[0].tolist(), colors=True)
     for wi, w in enumerate(wheels):
-        tris = sorted(w['tris'])
+        # The wheel's inner face (toward the car's middle, under the arch) never shows: left out.
+        tris = sorted(k for k in w['tris'] if not (fn[k, 2] * w['side'] < -0.3 and (cen[k, 2] - w['z']) * w['side'] < 0))
         rubber = [k for k in tris if re.search(r'(?i)tire|tyre', material_name(r_mats, prims, tri_prim[k]))]
         if not rubber:
             rubber = tris
         rubber_set = set(rubber)
-        parts['wheel%d.tyre' % wi] = dict(tris=rubber, origin=(w['x'], w['y'], w['z']), keep=KEEP['wheel'])
-        parts['wheel%d.rim' % wi] = dict(tris=[k for k in tris if k not in rubber_set], origin=(w['x'], w['y'], w['z']), keep=KEEP['wheel'])
+        parts['wheel%d.tyre' % wi] = dict(tris=rubber, origin=(w['x'], w['y'], w['z']), keep=keep['wheel'])
+        parts['wheel%d.rim' % wi] = dict(tris=[k for k in tris if k not in rubber_set], origin=(w['x'], w['y'], w['z']), keep=keep['wheel'])
     meta = dict(
         type=model['type'], title=model['title'], front=front,
         dims=[round(float(L), 3), round(float(hi[1]), 3), round(float(W), 3)],
@@ -557,7 +569,8 @@ def build_atlas(results):
             if r['role'][k] not in textured:
                 continue
             m = r['prims'][r['tri_prim'][k]]['material']
-            used[m] = used.get(m, 0) + r['area'][k]
+            # The cabin's inside is seen through tinted glass: a third of the texels.
+            used[m] = used.get(m, 0) + r['area'][k] * (0.35 if r['role'][k] == 'interior' else 1.0)
         r['tex_of'] = {}
         for m, a in used.items():
             mat = r['mats'][m] if m is not None else {}
@@ -584,16 +597,16 @@ def build_atlas(results):
         for h, e in order:
             w0, h0 = e['img'].size
             side = math.sqrt(e['area'] * k)
-            sc = min(1.0, side / max(w0, h0))
+            sc = min(1.0, side / max(w0, h0), 512.0 / max(w0, h0))
             sizes[h] = (max(16, int(w0 * sc) // 4 * 4), max(16, int(h0 * sc) // 4 * 4))
-        placed = shelf_pack(sizes, ATLAS, ATLAS - 8 * solid_rows - 4)
+        placed = shelf_pack(sizes, ATLAS_W, ATLAS_H - 8 * solid_rows - 4)
         if placed is None:
             hi_k = k
         else:
             lo_k = k
             best = (sizes, placed)
     sizes, placed = best
-    atlas = Image.new('RGBA', (ATLAS, ATLAS), (0, 0, 0, 0))
+    atlas = Image.new('RGBA', (ATLAS_W, ATLAS_H), (0, 0, 0, 0))
     rects = {}
     for h, (x, y) in placed.items():
         e = entries[h]
@@ -615,7 +628,7 @@ def build_atlas(results):
         rects[h] = (x, y, w, hh)
     # Solid colours: 8x8 swatches along the bottom.
     for i, (key, f) in enumerate(sorted(solids.items())):
-        x, y = (i % 64) * 32 + 12, ATLAS - 8 * (i // 64 + 1) - 2
+        x, y = (i % 64) * 32 + 12, ATLAS_H - 8 * (i // 64 + 1) - 2
         c = tuple(int(round(255 * min(1, max(0, v)) ** (1 / 2.2))) for v in f[:3]) + (255,)
         atlas.paste(Image.new('RGBA', (8, 8), c), (x - 2, y - 2))
         rects[key] = (x, y, 4, 4)
@@ -624,19 +637,50 @@ def build_atlas(results):
 
 
 def shelf_pack(sizes, W, H):
-    items = sorted(sizes.items(), key=lambda kv: -kv[1][1])
-    x, y, row = 4, 4, 0
+    """Skyline bottom-left packing, largest first: each rectangle (2-pixel border round it) where its top lands lowest."""
+    items = sorted(sizes.items(), key=lambda kv: -(kv[1][0] * kv[1][1]))
+    sky = [[0, W, 0]]  # segments [x, width, y]
     out = {}
-    for h, (w, hh) in items:
-        if x + w + 4 > W:
-            x, y, row = 4, y + row + 4, 0
-        if y + hh + 4 > H:
+    for h, (w0, h0) in items:
+        w, hh = w0 + 4, h0 + 4
+        best = None
+        for i in range(len(sky)):
+            x = sky[i][0]
+            if x + w > W:
+                break
+            y, need, k = 0, w, i
+            while need > 0:
+                y = max(y, sky[k][2])
+                need -= sky[k][1]
+                k += 1
+            if y + hh <= H and (best is None or (y + hh, x) < (best[0] + best[1], best[2])):
+                best = (y, hh, x, i)
+        if best is None:
             return None
+        y, _, x, i = best
         out[h] = (x + 2, y + 2)
-        x += w + 4
-        row = max(row, hh)
+        # Raise the skyline under the new rectangle.
+        new = [x, w, y + hh]
+        rest = []
+        for seg in sky:
+            a, b = seg[0], seg[0] + seg[1]
+            if b <= x or a >= x + w:
+                rest.append(seg)
+                continue
+            if a < x:
+                rest.append([a, x - a, seg[2]])
+            if b > x + w:
+                rest.append([x + w, b - x - w, seg[2]])
+        rest.append(new)
+        rest.sort()
+        merged = []
+        for seg in rest:
+            if merged and merged[-1][2] == seg[2] and merged[-1][0] + merged[-1][1] == seg[0]:
+                merged[-1][1] += seg[1]
+            else:
+                merged.append(seg)
+        sky = merged
     return out
-
 
 
 # ---------------------------------------------------------------------------------------------
@@ -681,27 +725,55 @@ def decimate(P, I, keep):
         h = H[v]
         return float(h @ (Q[u] + Q[v]) @ h)
 
+    def border_pair(u):
+        # A border vertex on a straight run of border (two border edges within ~10 degrees): its two neighbours there.
+        seen = {}
+        for fi in vf[u]:
+            for x in F[fi]:
+                if x != u:
+                    seen[x] = seen.get(x, 0) + 1
+        ends = [x for x, c in seen.items() if c == 1]
+        if len(ends) != 2 or any(c > 2 for c in seen.values()):
+            return None
+        a, b = ends
+        d1, d2 = P[u] - P[a], P[b] - P[u]
+        n1, n2 = np.linalg.norm(d1), np.linalg.norm(d2)
+        if n1 < 1e-9 or n2 < 1e-9 or d1.dot(d2) < 0.985 * n1 * n2:
+            return None
+        return ends
+
+    def push(u, v):
+        if border[u]:
+            ends = border_pair(u)
+            if not ends or v not in ends:
+                return
+        heapq.heappush(heap, (cost(u, v), u, v))
+
     heap = []
     for (a, b) in edge_count:
-        if not border[a]:
-            heapq.heappush(heap, (cost(a, b), a, b))
-        if not border[b]:
-            heapq.heappush(heap, (cost(b, a), b, a))
+        push(a, b)
+        push(b, a)
     live = len(F)
     gone = [False] * nv
     stamp = [0] * nv
     while live > target and heap:
         c, u, v = heapq.heappop(heap)
-        if gone[u] or gone[v] or border[u]:
+        if gone[u] or gone[v]:
             continue
         if abs(c - cost(u, v)) > 1e-9 * (1 + abs(c)):
             continue
+        edge = 2
+        if border[u]:
+            ends = border_pair(u)
+            if not ends or v not in ends:
+                continue
+            edge = 1
         shared = [fi for fi in vf[u] if v in F[fi]]
-        if len(shared) != 2:
+        if len(shared) != edge:
             continue
         nu = set(x for fi in vf[u] for x in F[fi]) - {u}
         nvv = set(x for fi in vf[v] for x in F[fi]) - {v}
-        if len(nu & nvv) != 2:
+        if len(nu & nvv) != edge:
             continue
         ok = True
         for fi in vf[u]:
@@ -728,10 +800,9 @@ def decimate(P, I, keep):
         gone[u] = True
         Q[v] += Q[u]
         for x in set(y for fi in vf[v] for y in F[fi]) - {v}:
-            if not border[v]:
-                heapq.heappush(heap, (cost(v, x), v, x))
-            if not border[x] and not gone[x]:
-                heapq.heappush(heap, (cost(x, v), x, v))
+            push(v, x)
+            if not gone[x]:
+                push(x, v)
     tris = [F[fi] for fi in range(len(F)) if alive[fi]]
     used = sorted(set(x for t in tris for x in t))
     remap = {o: n for n, o in enumerate(used)}
@@ -777,7 +848,7 @@ def write_part(blob, r, name, part, rects, qlo, qext):
                 rect = rects.get(r['tex_of'].get(p['material']), (0, 0, 1, 1))
                 u = min(1.0, max(0.0, float(uv[0]) - shift[0])) if not math.isnan(uv[0]) else 0.5
                 v = min(1.0, max(0.0, float(uv[1]) - shift[1])) if not math.isnan(uv[1]) else 0.5
-                UV.append(((rect[0] + u * rect[2]) / ATLAS, (rect[1] + v * rect[3]) / ATLAS))
+                UV.append(((rect[0] + u * rect[2]) / ATLAS_W, (rect[1] + v * rect[3]) / ATLAS_H))
                 if part.get('colors'):
                     C.append(sample_colour(r, p['material'], uv))
             tri.append(vmap[key])
@@ -846,7 +917,7 @@ def main(argv):
             m['type'], m['title'], m['front'], m['dims'], m['glass']['base'], m['glass']['roof'], len(m['wheels']), counts))
     atlas, rects = build_atlas(results)
     blob = Blob()
-    header = dict(version=1, atlas=ATLAS, models={})
+    header = dict(version=1, atlas=[ATLAS_W, ATLAS_H], models={})
     for r in results:
         m = r['meta']
         allP = np.concatenate([p['P'] for p in r['prims']])
@@ -869,14 +940,24 @@ def main(argv):
         header['models'][m['type']] = m
     header['arrays'] = blob.arrays
     head_json = json.dumps(header, separators=(',', ':')).encode()
+    head_json += b' ' * (-(12 + len(head_json)) % 4)  # the arrays start 4-aligned
     out = b'DECVM001' + struct.pack('<I', len(head_json)) + head_json + bytes(blob.data)
     with open(os.path.join(ROOT, 'assets/vehicle-models.bin'), 'wb') as fh:
         fh.write(out)
     atlas.save(os.path.join(ROOT, 'assets/vehicle-atlas.webp'), 'WEBP', quality=88, method=6)
     print('vehicle models: %d models, %d bytes; atlas %d bytes' % (
         len(results), len(out), os.path.getsize(os.path.join(ROOT, 'assets/vehicle-atlas.webp'))))
+    if '--credits' in argv:
+        # The credit each mirror's license.txt asks for (paste into docs/THIRD_PARTY_CREDITS.txt).
+        for model in MODELS:
+            if only and model['type'] not in only:
+                continue
+            lic = os.path.join(src, os.path.dirname(model['src']), 'license.txt')
+            text = open(lic, encoding='utf-8', errors='replace').read() if os.path.exists(lic) else ''
+            line = re.search(r'This work is based on (.*)', text)
+            print('  %s (%s): %s' % (model['title'], model['type'], line.group(1).strip() if line else model.get('url')))
     if '--preview' in argv:
-        atlas.convert('RGB').resize((1024, 1024)).save(os.path.join(argv[argv.index('--preview') + 1], 'atlas.jpg'))
+        atlas.convert('RGB').resize((1024, 512)).save(os.path.join(argv[argv.index('--preview') + 1], 'atlas.jpg'))
     return 0
 
 

@@ -84,6 +84,10 @@
         // type, draw calls, shadow casters and triangles, the parts by triangles.
         // The downloaded vehicle models in the build and the kits made from them (vehicle-assets3d.js ASSET CARS).
         assetCars: () => assetCarReport(),
+        assetCarsOn(on) {
+          vaEnabled = on !== false;
+          return vaEnabled;
+        },
         carModels() {
           const out = [];
           for (const [c, m] of carModels) if (m.civilian || m.moto) out.push(civilianModelReport(c, m));

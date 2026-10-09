@@ -101,7 +101,7 @@
           parts.push([o.material?.name || o.material?.type || '?', tris]);
         });
         parts.sort((a, b) => b[1] - a[1]);
-        return { id: c.id, type: c.type, draws, casters, triangles, heaviest: parts.slice(0, 6), cabin: m.seats ? civCabinReport(m) : null, badge: m.kit?.badge || null };
+        return { id: c.id, type: c.type, draws, casters, triangles, heaviest: parts.slice(0, 6), asset: m.asset || null, cabin: m.seats ? civCabinReport(m) : null, badge: m.kit?.badge || null };
       }
       /*
        * A model's cabin for DeadEndCity.carModels (cars3d-interior.js CABINS): the driver's hip in metres (x ahead of

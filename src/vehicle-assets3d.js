@@ -38,8 +38,11 @@
         }
         return vaCache;
       }
-      // Whether a type is drawn from its asset model.
+      // Whether a type is drawn from its asset model (`vaEnabled` off: every model built from now on is procedural, the
+      // console's before/after switch `assetCarsOn(false)`).
+      let vaEnabled = true;
       function vehicleAssetModel(type) {
+        if (!vaEnabled) return null;
         const data = vaData();
         return (data && data.header.models[type]) || null;
       }
@@ -207,7 +210,7 @@
             bow: 0,
             bulge: 0,
             arch: 0,
-            crown: 0,
+            crown: (gm.crown || 0) * k,
             screenCurve: 0,
             backCurve: 0,
           },
@@ -233,7 +236,8 @@
           paint: vaGeometry(model, data, 'panels', k, paintUv) || policeSwatchBox(CAR_SWATCH.paint),
           trim,
           trimOuter: trim ? civDrawRange(trim, outer) : null,
-          seats: carSeatPlan(g, l, w, M, type),
+          // The fit starts where real cars of this size seat the driver: 1.15 m behind the screen's foot.
+          seats: carSeatPlan(g, l, w, M, type, { hipX: ((gm.xf - 1.15) * k) / l }),
           badge: null,
           drl: null,
           lamps: {},

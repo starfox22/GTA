@@ -16,7 +16,10 @@ export default async function (t) {
   const models = await t.call('carModels'),
     seen = new Map();
   for (const r of models) if (r.badge && !seen.has(r.type)) seen.set(r.type, r);
+  // A downloaded model (vehicle-assets3d.js ASSET CARS) carries the badges its maker modelled, not the game's lettering.
+  const assets = new Set(models.filter((r) => r.asset).map((r) => r.type));
   for (const type of all) {
+    if (assets.has(type)) continue;
     const r = seen.get(type);
     t.assert(r, `${type}: a badge on the tail`);
     if (!r) continue;
@@ -28,6 +31,7 @@ export default async function (t) {
   t.assert(chevette && /CHEVETTE/.test(chevette.badge.text) && chevette.badge.sub === 'Z06', `the Chevette reads CHEVETTE Z06: ${JSON.stringify(chevette?.badge)}`);
   // No draw call of their own: a pristine civilian car is still 13 draws (the PRISTINE MERGE).
   for (const type of ['sedan', 'chevette', 'suv']) {
+    if (assets.has(type)) continue;
     const r = models.find((m) => m.type === type && m.badge);
     t.assert(r && r.draws <= 14, `${type}: ${r?.draws} draws with its badge`);
   }

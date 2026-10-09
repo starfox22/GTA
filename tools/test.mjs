@@ -1,6 +1,7 @@
 // Fast regression tests over the developer console, one file per test in tools/tests/.
 //
-//   node tools/test.mjs [filter ...] [--keep] [--html file] [--verbose]
+//   node tools/test.mjs [filter ...] [--keep] [--html file] [--verbose] [--render]
+//   (--render: the rendered page, for the tests that skip themselves without WebGL; slow)
 //
 // Builds dist/dev/game.html and boots it once in the dev server (tools/dev.mjs) in
 // no-render mode (`?dev&norender`: no WebGL, no drawing), then runs every
@@ -108,7 +109,7 @@ if (!files.length) {
 const tests = [];
 for (const f of files) {
   const mod = await import(pathToFileURL(path.join(TESTS, f)).href);
-  tests.push({ name: f.replace(/\.mjs$/, ''), run: mod.default, flags: (mod.flags || 'dev') + '&norender', fresh: !!mod.fresh });
+  tests.push({ name: f.replace(/\.mjs$/, ''), run: mod.default, flags: (mod.flags || 'dev') + (opt('--render') ? '' : '&norender'), fresh: !!mod.fresh });
 }
 // Tests needing the same page flags run together, the default ('dev') group first; in a
 // group the `fresh` tests run last (each reloads first, so the ones before them share a page).
@@ -125,7 +126,7 @@ try {
     st = await reload(tests[0].flags);
     console.log(`reused dev server (rebuilt, reloaded ?${st.flags}: boot ${st.bootSeconds}s)`);
   } else {
-    st = await start({ html, nodev: tests[0].flags.startsWith('test'), quiet: true });
+    st = await start({ html, render: opt('--render'), nodev: tests[0].flags.startsWith('test'), quiet: true });
     startedHere = true;
     console.log(`started dev server (?${st.flags}: boot ${st.bootSeconds}s)`);
   }
