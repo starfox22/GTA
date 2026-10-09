@@ -78,7 +78,8 @@ people-and-crowd-avatars-cast.md.
   ~64 bytes a vertex (~6 MB for the cast); fitting ~0.6-0.8 s of work behind the title in slices.
 - Avatars everywhere (October 2026, 64 cast entries; the same lineup, software GL on a shared machine): HIGH street
   333 -> 301 draws, 1.50M -> 1.52M triangles (12 near, 6 mid); HIGH chase 1388 -> 1340 draws, 2.49M -> 2.40M triangles
-  (the rig's people 120k -> 50k); LOW chase 716 -> 721 draws, 1.62M -> 1.55M triangles (the rig's 157k -> 39k). No new
+  (the rig's people 120k -> 50k); LOW chase 716 -> 721 draws, 1.62M -> 1.55M triangles (the rig's 157k -> 39k; LOW caps
+  were 6 near, 8 mid then, now 8 and 16: up to 8k more triangles and 2 draws, each replacing a 17k near rig). No new
   programs (the tint is a uniform and a varying). `crowdBenchmark` 9.7 -> 8.7 ms (noise). Media: npc-models.bin 6.3 MB,
   npc-skin.webp 1.85 MB (3840x2560, ~52 MB on the GPU); fitting ~2 s of work behind the title.
 
