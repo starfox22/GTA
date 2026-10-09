@@ -28,7 +28,9 @@
       // camera or (street view) the player; someone already at a level keeps it to NPC_KEEP further (1 / 0.86: +16 %).
       const NPC_AVATAR_SLOTS = 8,
         NPC_TIER_SLOTS = { LOW: 4, MEDIUM: 6, HIGH: 8, ULTRA: 8 },
-        NPC_TIER_MID = { LOW: 12, MEDIUM: 24, HIGH: 40, ULTRA: 48 },
+        NPC_TIER_MID = { LOW: 8, MEDIUM: 16, HIGH: 40, ULTRA: 48 },
+        // Different avatars drawn at mid at once (a draw each, and a shadow draw on shadow tiers).
+        NPC_TIER_BATCHES = { LOW: 6, MEDIUM: 10, HIGH: 16, ULTRA: 16 },
         NPC_MID_MAX = 48,
         NPC_REACH = { chase: { near: 16 * UNITS_PER_METRE, mid: 45 * UNITS_PER_METRE }, street: { near: 14 * UNITS_PER_METRE, mid: 30 * UNITS_PER_METRE } },
         // The street view: avatars once a figure is big enough (the zoom detail 2 starts at).
@@ -115,6 +117,7 @@
         triangles: 0,
         trianglesMid: 0,
         batches: 0,
+        batchCap: 0,
         batchesShown: 0,
         firstShow: null,
         chosen: 0,
@@ -126,9 +129,10 @@
         size: 0,
       };
       // @include src/npc-avatar3d-mid.js
-      // The body set an avatar person is drawn with: the player's (body parts empty) without the clothing kit either.
+      // The body set an avatar person is drawn with: the player's (body parts empty) without the clothing kit either, a
+      // backpack kept (no avatar wears one).
       const BODY_AVATAR = { ...BODY_PLAYER };
-      for (const name of Object.keys(BODY_AVATAR)) BODY_AVATAR[name] = PB_EMPTY_PART;
+      for (const name of Object.keys(BODY_AVATAR)) if (name !== 'backpack') BODY_AVATAR[name] = PB_EMPTY_PART;
       /* Fit and upload one avatar a slice (12 ms behind the title, 4 ms in play), from the renderer's start. */
       function* npcAvatarBuildSteps() {
         const asset = npcAvatarAsset();
@@ -257,6 +261,7 @@
         // (npcAvatars(on, level) can hold everyone in reach at one level: an A/B of the two meshes.)
         N.cap = N.force === 2 ? 0 : npcAvatarCap();
         N.capMid = N.force === 1 ? 0 : npcAvatarCapMid();
+        N.batchCap = Math.min(NPC_MID_BATCHES, NPC_TIER_BATCHES[(activeTier || graphicsTier()).name] ?? 10);
         N.size = N.cap + N.capMid;
         if (!N.size || flightViewActive) return;
         let ox = player.x,
@@ -294,7 +299,8 @@
         if (!fit || fit.female !== !!R.female) return null;
         let slot;
         if (s.avatarLevel === 1 && N.used < N.cap) slot = npcSlots[N.used++];
-        else if (!(slot = npcMidTake(R.avatar))) return null;
+        // (A mid avatar shows no wound soak: someone wounded keeps the rig there, which does.)
+        else if (p.goreWounds?.length || !(slot = npcMidTake(R.avatar))) return null;
         slot.person = p;
         slot.avatar = R.avatar;
         slot.width = fit.width;

@@ -178,12 +178,9 @@ export default async function (t) {
   const pick = (look, female, kid = false, role = 'casual', p = null) => api.npcAvatarPick(look, p, female, kid, role, false, (k) => Math.abs(h(k + (look.seed || 0))));
   const need = [
     [{ outfit: 'police' }, [false, true], 'police'],
-    [{ outfit: 'traffic' }, [false, true], 'police'],
     [{ outfit: 'swat' }, [false], 'swat'],
     [{ outfit: 'army' }, [false], 'army'],
     [{ outfit: 'mp' }, [false], 'mp'],
-    [{ outfit: 'fed' }, [false, true], 'fed'],
-    [{ outfit: 'gang' }, [false, true], 'gang'],
     [{ outfit: 'mobster' }, [false], 'mobster'],
     [{ outfit: 'partyGuest' }, [false, true], 'partyGuest'],
     [{ outfit: 'beach' }, [false, true], 'beach'],
@@ -197,14 +194,15 @@ export default async function (t) {
     const medic = pick({}, female, false, 'casual', { cityRole: { kind: 'medic' } });
     t.assert(medic >= 0 && cast[medic].tags.includes('medic') && (cast[medic].sex === 'f') === female, `paramedic (${female}): ${cast[medic]?.name}`);
     const kid = pick({}, female, true, 'kid');
-    t.assert(kid >= 0 && cast[kid].kid && (cast[kid].sex === 'f') === female, `child (${female}): ${cast[kid]?.name}`);
+    t.assert(kid === -1, `a child has an avatar: ${cast[kid]?.name}`);
     for (const role of ['casual', 'commuter', 'jogger', 'elder', 'reveller', 'worker', 'tourist'])
       for (let seed = 0; seed < 6; seed++) {
         const i = pick({ seed: seed * 7 }, female, false, role);
         t.assert(i >= 0 && !cast[i].kid && (cast[i].sex === 'f') === female, `${role} (${female ? 'woman' : 'man'}): cast ${i} ${cast[i]?.name}`);
       }
-    // Story characters, waiters and the player's disguise stay on the rig.
-    for (const outfit of ['story', 'waiter', 'playerDisguise', 'player', 'athlete']) t.assert(pick({ outfit }, female) === -1, `${outfit} has an avatar`);
+    // Story characters, waiters and the disguise stay on the rig; so do gangs (their colours), traffic officers (hi-vis)
+    // and agents (FED windbreakers), and children (no downgrade: the adult skeleton would draw small adults).
+    for (const outfit of ['story', 'waiter', 'playerDisguise', 'player', 'athlete', 'gang', 'traffic', 'fed']) t.assert(pick({ outfit }, female) === -1, `${outfit} has an avatar`);
   }
   for (let i = 0; i < cast.length; i++) t.assert(api.npcAvatarLookTraits(i)?.top, `${cast[i].name}: no rig palette`);
   // The shader patches' anchors in three.js's chunks.

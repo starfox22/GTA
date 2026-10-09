@@ -70,7 +70,7 @@
         const N = npcAv;
         if (N.usedMid >= N.capMid) return null;
         if (npcBatchFrame[avatar] !== N.frame) {
-          if (N.batches >= NPC_MID_BATCHES) return null;
+          if (N.batches >= N.batchCap) return null;
           npcBatchFrame[avatar] = N.frame;
           npcBatchOf[avatar] = N.batches;
           npcMidBatches[N.batches].avatar = avatar;

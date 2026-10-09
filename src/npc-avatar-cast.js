@@ -10,7 +10,9 @@
        * takes its clothes' colours and cut (npcAvatarLookTraits), so the rig far off and the avatar close up are the
        * same person.
        */
-      const NPC_OUTFIT_TAGS = { police: 'police', traffic: 'police', swat: 'swat', fed: 'fed', army: 'army', mp: 'mp', mobster: 'mobster', gang: 'gang', partyGuest: 'partyGuest', beach: 'beach' },
+      // (No downgrades: outfits whose look says who they are and no avatar carries stay on the rig: gangs' colours,
+      // traffic officers' hi-vis, agents' FED windbreakers; and children, whom the adult skeleton would draw as small adults.)
+      const NPC_OUTFIT_TAGS = { police: 'police', swat: 'swat', army: 'army', mp: 'mp', mobster: 'mobster', partyGuest: 'partyGuest', beach: 'beach' },
         NPC_ROLE_TAGS = { commuter: 'commuter', jogger: 'jogger', worker: 'worker', reveller: 'reveller', elder: 'elder', tourist: 'tourist', texter: 'texter', bouncer: 'bouncer' },
         NPC_UNIFORMS = new Set(['police', 'swat', 'army', 'mp', 'medic', 'fed']);
       let npcPools = null;
@@ -37,7 +39,7 @@
         let tag;
         if (p?.cityRole?.kind === 'medic') tag = 'medic';
         else if (look.outfit) tag = NPC_OUTFIT_TAGS[look.outfit];
-        else if (kid) tag = 'kid';
+        else if (kid) return -1;
         else tag = NPC_ROLE_TAGS[role] || (summer && h(21) < 0.5 ? 'summer' : 'street');
         if (!tag) return -1;
         let pool = pools.get(tag + '|' + sex);
