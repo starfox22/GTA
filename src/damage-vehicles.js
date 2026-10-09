@@ -79,18 +79,23 @@
       coupe: [0.88, 1.34, -0.358, 0.202],
       muscle: [0.91, 1.32, -0.312, 0.142],
       sport: [0.8, 1.13, -0.156, 0.214],
-      roadster: [0.82, 1.2, 0.02, 0.19, true],
+      roadster: [0.78, 1.08, -0.2, 0.263, true],
       rally: [0.95, 1.46, -0.47, 0.21],
       hotrod: [1.02, 1.33, -0.25, 0.13],
       supercar: [0.83, 1.18, -0.179, 0.183],
       luxury: [1.02, 1.49, -0.279, 0.167],
-      limousine: [0.98, 1.47, -0.4, 0.3],
-      suv: [1.15, 1.87, -0.48, 0.22],
+      limousine: [1.01, 1.46, -0.37, 0.303],
+      suv: [1.03, 1.56, -0.468, 0.24],
       van: [1.1, 2.5, -0.498, 0.3],
-      pickup: [1.27, 1.95, -0.103, 0.25],
+      pickup: [1.05, 1.48, -0.105, 0.163],
       chevette: [0.88, 1.22, -0.42, 0.13],
       brutini: [0.82, 1.13, -0.44, 0.2],
       cavalino: [0.86, 1.2, -0.4, 0.16],
+      // The downloaded box truck, flatbed cab, bus and ambulance (their cabs' glass; vehicles-and-driving-models-heavy.md).
+      truck: [1.31, 2.18, 0.346, 0.438],
+      flatbed: [1.31, 2.18, 0.338, 0.435],
+      bus: [1.51, 2.85, -0.471, 0.489],
+      ambulance: [1.29, 2.51, 0.152, 0.361],
     };
     // Where the glass is on each body, in the same numbers the renderer builds it with.
     function vehicleGlassBand(vehicle) {
