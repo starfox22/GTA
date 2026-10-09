@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Dog model: a downloaded rigged dog (glTF, CC-BY) baked into the poses the street dogs use.
 
-Reads the Labrador ("Labrador Dog" by 3D-Hub... see MODEL below) from SRC_DIR, reduces it, and writes
+Reads the Labrador ("Labrador Dog" by kenchoo, CC-BY 4.0: MODEL below) from SRC_DIR, reduces it, and writes
 assets/dog-model.bin for src/dog3d.js:
 
     header   JSON: vertex count, frame names, rows per frame, quantisation, the collar point (where the leash ties)

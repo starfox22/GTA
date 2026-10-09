@@ -69,9 +69,9 @@ vehicles-and-driving-models.md's; credits in docs/THIRD_PARTY_CREDITS.txt. Conso
 
 ## Tried and kept procedural
 
-- Helicopters: the MD-500 Defender (1.9k triangles, camouflage, a gun pod, no door gunners: not the Black Hawk the
-  military type and MOUNTED_GUNS are) and the Bell 429 (83k triangles, one painted scheme) would drop the per-look
-  liveries painted on the surface (police, news, executive, the civil schemes) and the door guns.
+- Helicopters: the MD-500 Defender (camouflage, a gun pod, no door gunners: not the Black Hawk the military type and
+  MOUNTED_GUNS are). The Bell 429 replaces no look: it is the extra SKYRANGER 429 civil helicopter
+  (vehicles-and-driving-models-aircraft.md).
 - Hot rod (the Coupe '33 lacks the HELLFIRE's flames and blower), the private bicycle (the Old Bicycle's thin frame and
   grey tyres read weaker; the converter's `crank` role and the runtime's crank are ready for another model), the
   fishing boat (no type; untextured), the NR750 and the Draco-only motorbikes (see Motorbikes).

@@ -87,3 +87,15 @@ Animals: ecology.js / ecology3d.js, sealife (world-county-and-sea.md).
 
 How everyone on foot is drawn (one instanced rig, looks, skeleton and gait, the body sets and
 the chase view's near set): people-and-crowd-rig.md.
+
+## Dogs (crowd-reactions.js DOGS, dog3d.js DOG MODEL)
+
+- A dog walker's `p.dog` (x, y, a, color, size, sit, sniff) is behaviour only; crowd3d-frame.js `drawCrowdDog` draws it.
+- The look is a downloaded rigged Labrador (CC-BY; tools/dog_model.py, assets/dog-model.bin): the converter poses its
+  skeleton (paws carried by the lower legs) into eight trot phases, standing, sitting and sniffing and stores each
+  frame; dog3d.js puts them in one float texture and blends per instance in the vertex shader (`dogPose`: trot phase,
+  trot share, sit, sniff), so every dog in view is one instanced draw (and its shadow, `customDepthMaterial`). Coat
+  colour = the dog's `color` x the texture over the coat's own colour (vertex colours), so nose and pads stay dark.
+- The leash ties at the model's collar (`collar`). Without the model in the build the old box dog is drawn. Console
+  `dogModel()`, `dogModelOn(false)` (box dog, before/after), `dogLineup()` (trotting, standing, sitting, sniffing).
+

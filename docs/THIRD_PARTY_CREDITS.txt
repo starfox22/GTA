@@ -824,6 +824,20 @@ aircraft-models.bin (the SKYRANGER 429 civil helicopter; src/aircraft-assets3d.j
     main rotor and the tail rotor; small parts left out and triangles reduced by quadric edge collapse; the texture's
     colours baked into the vertices; the white panels and orange stripes drawn in the game's civil schemes.
 
+aircraft-models.bin, aircraft-skin.webp (the SKYLARK 172; same files and tool as the helicopter above)
+  - Cessna172 (the SKYLARK 172): This work is based on "Cessna172" (https://sketchfab.com/3d-models/cessna172-d1b15841c29c43d0862667300bad55a4) by KOG_THORNS (https://sketchfab.com/ioai25312) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+    (fetched from a GitHub mirror carrying the original license.txt, Q-coder/godotjsbsim).
+    Changes: turned to face along +x and scaled to 8.3 m; the cockpit's instruments, switches and belts left out, the
+    seats and cabin reduced and coloured per vertex; split into the airframe, glass, the control surfaces on their hinge
+    lines and the propeller; the exterior texture downscaled to 1024 px.
+
+dog-model.bin (the street dogs; src/dog3d.js, made by tools/dog_model.py)
+  - Labrador Dog: This work is based on "Labrador Dog" (https://sketchfab.com/3d-models/labrador-dog-1f56cfbab07e4fe49b5d9e521c82073a) by kenchoo (https://sketchfab.com/kenchoo) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+    (fetched from a GitHub mirror carrying the original license.txt, Robspin/next-three-ascii).
+    Changes: triangles reduced by quadric edge collapse; posed with its own skeleton into trot, standing, sitting and
+    sniffing frames (the paws carried by the lower legs); the colour texture baked into the vertices over the coat
+    colour, so the game tints the coat.
+
 Hooptie With The Windows Down — HoliznaCC0 (Block 101.7)
 https://freemusicarchive.org/music/holiznacc0/city-slacker/hooptie-with-the-windows-down/
 https://freemusicarchive.org/music/holiznacc0/
