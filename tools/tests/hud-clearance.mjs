@@ -29,6 +29,9 @@ export default async function (t) {
 
     // Brake: the car comes back to the middle and the card opens for the rest of its time.
     await t.keys('KeyS', 3);
+    // The boxes are measured at a real frame's start (measureMissionCard), never inside simulate steps: let one run so
+    // the card sees the braked car, not the one at speed (on a fast machine no frame ran between these calls).
+    await t.realWait(0.5);
     await t.wait(1.5);
     c = await t.call('hudClearance');
     t.assert(!c.yielding && !c.folded, 'the card stayed folded with the car clear: ' + JSON.stringify(c));
