@@ -11,7 +11,7 @@ npc-avatar-cast.js (casting, the rig's palette), tools/npc_models.py (converter,
 | Level | Mesh | Chase view (from the camera) | Street view (from the player, zoom >= 1.3 x lodBias) | Cap LOW / MEDIUM / HIGH / ULTRA |
 | --- | --- | --- | --- | --- |
 | near | the avatar decimated to ~4k triangles, a slot each (uniform bones, wound soaks) | within 16 m | within 14 m | 4 / 6 / 8 / 8 |
-| mid | the same avatar's ~1k-triangle index over the same vertices, instanced, one batch per avatar | within 45 m | within 30 m | 12 / 24 / 40 / 48 |
+| mid | the same avatar's ~1k-triangle index over the same vertices, instanced, one batch per avatar | within 45 m | within 30 m | 8 / 16 / 40 / 48 (6 / 10 / 16 / 16 avatars) |
 | far | the rig, in the avatar's palette and cut | beyond | beyond, or zoomed out | - |
 
 - Hysteresis: someone at a level last frame ranks and keeps it as if `NPC_KEEP` (0.86) nearer, so the bands are
@@ -21,6 +21,9 @@ npc-avatar-cast.js (casting, the rig's palette), tools/npc_models.py (converter,
   avatar's colours and cut, so nobody changes clothes on the way in.
 - Never an avatar: the player (his own body), a disguise, story characters, waiters, riders, athletes, beachgoers drawn
   by the beach, cars' occupants and the drive-by ghost: no avatar (`R.avatar` -1) or drawn elsewhere.
+- NO DOWNGRADES (the owner's rule): where no avatar carries what the rig shows, the rig stays: gangs (their colours),
+  traffic officers (hi-vis), agents (FED windbreakers), children (the adult skeleton would draw small adults); a
+  wounded person at mid distance (the mid mesh has no wound soak); severed pieces and occupants are the rig's as before.
 - A person is an avatar only while `crowdState.avatarFrame` is this frame (`avatarLevel` 1 near, 2 mid) and a slot or a
   batch is free (`npcAvatarTake`, `npcMidTake`: at most `NPC_MID_BATCHES` 16 different avatars at mid); otherwise the rig,
   so a full level never hides anyone.
@@ -37,10 +40,10 @@ npc-avatar-cast.js (casting, the rig's palette), tools/npc_models.py (converter,
 
 - By role and sex: `npcAvatarPick(look, p, female, kid, role, ...)` takes compileLook's `female` (lookFemale, the rule
   voices.js shares, so `personFemale()` and the body agree) and picks from the CAST's role tags with the look's hash.
-  Uniformed roles get only their uniforms: police and traffic officers (Police_Male_03, Security_Female_01), SWAT
+  Uniformed roles get only their uniforms: patrol officers (Police_Male_03, Security_Female_01), SWAT
   (Police_Male_02), soldiers (Military_Male_01), the gate's MPs (Military_Male_02), paramedics (`cityRole.kind` medic:
-  Medical_Male_01, Medical_Female_01), agents (Business suits); gangs, mobsters, party guests, joggers, workers, elders,
-  commuters, revellers, tourists, kids and beachgoers their own tags, with the general street cast mixed in.
+  Medical_Male_01, Medical_Female_01); mobsters, party guests, joggers, workers, elders, commuters, revellers, tourists
+  and beachgoers their own tags, with the general street cast mixed in.
 - A street look with an avatar takes its clothes for the rig (`npcAvatarLookTraits`: palette and cut from the
   converter, traits from CAST), so the far figure and the near avatar are the same person. Outfits keep the rig's own
   uniforms far off.
@@ -58,10 +61,10 @@ npc-avatar-cast.js (casting, the rig's palette), tools/npc_models.py (converter,
 | worker | Construction_Male_07 | (street cast) |
 | jogger | Sports_Male_04 | Sports_Female_02 |
 | beach | Sports_Male_01 | Sports_Female_01 |
-| kid | Male_Child_01 | Female_Child_01 |
-| gang | Male_Adult_04, 12, 17 | Female_Adult_04 |
-| mobster, agent | Business_Male_01 | Business_Female_01 |
-| police, traffic | Police_Male_03 | Security_Female_01 |
+| kid | (the rig: Male_Child_01, Female_Child_01 are in the file, unused) | |
+| gang | (the rig: their colours) | |
+| mobster; agent | Business_Male_01; (the rig: FED windbreaker) | |
+| police; traffic | Police_Male_03; (the rig: hi-vis) | Security_Female_01; (the rig) |
 | SWAT, soldier, MP | Police_Male_02, Military_Male_01, Military_Male_02 | (none: those outfits are men) |
 | paramedic | Medical_Male_01 | Medical_Female_01 |
 

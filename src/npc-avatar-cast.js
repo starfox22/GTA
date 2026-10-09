@@ -40,13 +40,15 @@
         if (p?.cityRole?.kind === 'medic') tag = 'medic';
         else if (look.outfit) tag = NPC_OUTFIT_TAGS[look.outfit];
         else if (kid) return -1;
+        // Dressed for the beach on the street (shirtless or a bikini: the top is the skin): the beach's own avatars.
+        else if (look.top && look.top === look.skin) tag = 'beach';
         else tag = NPC_ROLE_TAGS[role] || (summer && h(21) < 0.5 ? 'summer' : 'street');
         if (!tag) return -1;
         let pool = pools.get(tag + '|' + sex);
         if (!pool && !NPC_UNIFORMS.has(tag) && tag !== 'kid') pool = pools.get('street|' + sex);
         if (!pool) return -1;
         // Uniforms, children and the role's own avatars; a street role mixes in the general street cast now and then.
-        if (!look.outfit && !kid && tag !== 'street' && tag !== 'medic' && h(22) < 0.35) pool = pools.get('street|' + sex) || pool;
+        if (!look.outfit && !kid && tag !== 'street' && tag !== 'medic' && tag !== 'beach' && h(22) < 0.35) pool = pools.get('street|' + sex) || pool;
         return pool[Math.min(pool.length - 1, Math.floor(h(23) * pool.length))];
       }
       /** The avatar's clothes for the rig (cast entry's palette and traits), or null. */

@@ -193,6 +193,9 @@ export default async function (t) {
   for (const female of [false, true]) {
     const medic = pick({}, female, false, 'casual', { cityRole: { kind: 'medic' } });
     t.assert(medic >= 0 && cast[medic].tags.includes('medic') && (cast[medic].sex === 'f') === female, `paramedic (${female}): ${cast[medic]?.name}`);
+    // Beachwear on the street (the top is the skin) keeps its beachwear.
+    const bare = pick({ top: '#c99169', skin: '#c99169' }, female);
+    t.assert(bare >= 0 && cast[bare].tags.includes('beach'), `beachwear on the street (${female}): ${cast[bare]?.name}`);
     const kid = pick({}, female, true, 'kid');
     t.assert(kid === -1, `a child has an avatar: ${cast[kid]?.name}`);
     for (const role of ['casual', 'commuter', 'jogger', 'elder', 'reveller', 'worker', 'tourist'])
