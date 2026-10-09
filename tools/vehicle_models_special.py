@@ -72,7 +72,8 @@ def convert_special(model, src_root, vm):
         half = (hi[2] - lo[2]) / 2
         for k in np.where(role == 'tyre')[0]:
             p3 = V(k)
-            if p3[:, 1].max() > tb['below'] or np.abs(p3[:, 2]).min() < tb.get('out', 0.6) * half:
+            # `notX`: stretches along the vehicle where no road wheel is (a spare carried behind the cab).
+            if p3[:, 1].max() > tb['below'] or np.abs(p3[:, 2]).min() < tb.get('out', 0.6) * half or any(a <= c <= b for a, b in tb.get('notX', []) for c in [p3[:, 0].mean()]):
                 role[k] = 'trim'
     tyre_t = np.where(role == 'tyre')[0]
     wheels = []

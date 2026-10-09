@@ -159,7 +159,7 @@ MODELS = [
          keep=dict(trim=0.4), minPiece=0.12, cluster=0.1,
          src='dl3/abrams/scene.gltf', url='https://sketchfab.com/3d-models/abrams-m1a2-sepv3-eb6f5560198740269507e9948376414c'),
     dict(type='army_truck', texWeight=0.35, kind='special', front='+z', title='Military Truck 1/2 Ton (M35)', author='Arion Digital', length=6.7,
-         roles=[(r'^(79bf1742|9dd96982)', 'tyre')], tyreBox=dict(below=1.2, out=0.5), axleGap=0.06, keep=dict(trim=0.4, wheel=0.3),
+         roles=[(r'^(79bf1742|9dd96982)', 'tyre')], tyreBox=dict(below=1.2, out=0.5, notX=[(-0.2, 0.9)]), axleGap=0.06, keep=dict(trim=0.4, wheel=0.3),
          src='dl3/sap_military_half_ton/scene.gltf', url='https://sketchfab.com/3d-models/military-truck-12-ton-5d19c751b12849eeb390d637b2b686a1'),
     # Motorbikes (tools/vehicle_models_moto.py; src/motorbike-assets3d.js). `axis`: a point up the steering axis, `bars`:
     # the bars' lowest y and rearmost x, `seat`: the saddle's x, `pegs`: [x, y, z] (metres, the game frame).

@@ -45,7 +45,7 @@ here when polishing; delete a line when it is fixed. Newest features first.
   over (a witness call finishing after WASTED?); it did not repeat on two later runs (seeds 5 and 7).
 
 ## Missions 1 and 2 (harbor*.js, chase.js, roofmission*.js, campaign.js)
-- Vinny's truck (vinnytruck3d.js) has no crumple shell or pane-by-pane glass damage (tyres, burn and lamps only), and a respray keeps its MORETTI & SONS door lettering.
+- Vinny's truck (vinnytruck3d.js) has no crumple shell or pane-by-pane glass damage (tyres, burn and lamps only). On the downloaded cab (round three) it carries no door lettering; the procedural fallback's respray keeps its MORETTI & SONS lettering.
 - The payphone's and newspaper boxes' foot obstacles are registered by the renderer (like the bus shelters), so a `?norender` page walks through them.
 - At night the white faces round the payphone (newspaper pages, placards) sit in the street lamp's pool and read bright.
 - The Blue Hour's limousines have no chauffeurs and never leave; the doormen and valet keep their posts (no door opened, no car taken). The forecourt fixtures are foot obstacles, which stop only the player: a street walker straying to the wall or the kerb can pass through a planter or bollard.
@@ -144,8 +144,9 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - Only the pistol fires from a vehicle, so the SMG one-hand and two-handed lean-out poses are not
   drawn; the rear, windscreen and passenger-side shots fire from inside the cabin, which the
   opaque roof hides from the street camera (only the flash, the burst screen and the tracers show).
-- Trucks, the hypercars and other special bodies have no per-pane glass: their driver's window
-  does not show wound down and a burst windscreen or rear screen shows only as the crumbs.
+- The hypercars, Vinny's flatbed and other special bodies have no per-pane glass (the box truck, bus and ambulance do
+  since round three's downloaded models): their driver's window does not show wound down and a burst windscreen or rear
+  screen shows only as the crumbs.
 - A boat's helmsman and an aircraft's pilot are not drawn during a drive-by (the shot still
   follows the arcs and leaves from `driveByGrip`).
 
@@ -180,8 +181,8 @@ here when polishing; delete a line when it is fixed. Newest features first.
   out of the driver's window comes in toward the shoulder rather than far ahead of it.
 - No badges on bicycles, the tank (armor.js), boats or aircraft.
 - The steering wheel is part of the merged trim and does not turn; the hands slide a little on the rim instead.
-- The player riding in the back of a taxi, rear passengers and a SWAT or army crew are not seated; trucks, buses and
-  the 4x4 club trucks keep opaque glass. Interiors carry no instrument glow at night.
+- The player riding in the back of a taxi, rear passengers and a SWAT or army crew are not seated; the 4x4 club
+  trucks keep opaque glass. Interiors carry no instrument glow at night.
 - Seated people are capped at 16 cars a frame (`OCCUPANT_CAP`): in a jam past that the farthest cabins in reach are
   empty behind their tint.
 
@@ -283,3 +284,6 @@ here when polishing; delete a line when it is fixed. Newest features first.
 ## Random-walk bot pass (tools/bot.mjs, October 2026)
 - Not done in that pass: the bot only ran on the no-render page (graphics tier switches mid-game, the rendered HUD, the map labels and the touch layout at phone size were not driven by it); no HUD-overlap check (two toasts or the police timer over the mission card) beyond the text sweep for NaN / undefined in `integrity()`.
 - The bot's trapped-vehicle probe fired once in 58 game minutes of seeds 2 and 3 (a luxury car near the Police HQ, not reproducible from a fresh spawn: a cruiser box-in or a wedge); `steerTo` can leave a car nose to wall.
+- Round three's downloaded vehicles (vehicles-and-driving-models-heavy.md): asset cars, trucks and the bus carry no
+  windscreen wipers (the procedural bodies did); the tank's and Fort Sentinel's atlas bodies do not darken when burnt;
+  the LAV-8, the SWAT Bearcat, the fuel bowser, the van, the hot rod, the rally car and the boats are still procedural.
