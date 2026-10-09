@@ -10,5 +10,7 @@
 - HIGH/ULTRA: the march from below has its own loop (`cloudMarchBelow`: coarse steps through clear air,
   quarter steps in cloud, 20 km reach) with a new step jitter and sub-texel offset each frame, averaged by
   SKY CLOUD HISTORY (clouds3d-sky-history.js: one half-size pass, reprojected, neighbourhood-clamped): no
-  more diagonal stripes or grain. LOW/MEDIUM's two-look layer takes the same haze.
+  more diagonal stripes or grain. The sky reads a half-float copy of the noise volume (`cloudNoiseSky`, made
+  at boot by the same generator), so far billows have no contour rings. LOW/MEDIUM's layer takes the same
+  haze and noise.
 - Console: `skyCloudBench(rounds)`; `cloudLayer().view.sky` adds `cloudAirKm`, `reachKm`, `history`.

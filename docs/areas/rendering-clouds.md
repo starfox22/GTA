@@ -43,8 +43,12 @@ The cloud layer (game side, clouds.js) and how it is drawn (clouds3d*.js inside
 - from below (clouds3d-sky.js, the chase view): the sky dome composites the layer behind all geometry.
   HIGH/ULTRA: the march with `uBelow` 1 runs its own loop (`cloudMarchBelow`, clouds3d-march.js): coarse
   steps through clear air growing with the distance (4 % of it, 25-300 m), a step back and quarter steps
-  while in cloud, out to 20 km (`SKY_CLOUD_REACH`); no pocket or veil; lit from `skyLightDirection`, the
-  base also lit by the sky round about and the sunlit ground. Each frame takes a new step jitter and a
+  (30 m at most: longer ones draw contour rings on far cloud) while in cloud, out to 20 km
+  (`SKY_CLOUD_REACH`); the detail octave fades out from 1.5 to 4 km (it only aliases there); a tower beyond
+  the drawn distance stops no ray (`uBelowDrawn`); the noise is the half-float copy of the volume
+  (`cloudNoiseSky`, made with the same generator at boot: the 8-bit quanta, sharpened by the coverage cut,
+  ring every far billow); no pocket or veil; lit from `skyLightDirection`, the base also lit by the sky
+  round about and the sunlit ground. Each frame takes a new step jitter and a
   sub-texel ray offset; SKY CLOUD HISTORY (clouds3d-sky-history.js) averages the frames (reprojected
   through the layer's base, clamped to this frame's neighbours, kept 88 %; restarts on a resize, a camera
   jump of 50 m or a frame without the march) and the dome reads that. LOW/MEDIUM: the dome reads the
