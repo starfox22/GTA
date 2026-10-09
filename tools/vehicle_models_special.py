@@ -143,13 +143,14 @@ def convert_special(model, src_root, vm):
         for i in range(n_slices):
             parts[name + (str(i) if i else '')] = dict(tris=tris[i * step:(i + 1) * step], **kw)
         return n_slices
-    meta_extra_slices = {'body': sliced('body', body, keep=keep['trim'], borderCos=bc, minPiece=mp)}
+    cl = model.get('cluster')
+    meta_extra_slices = {'body': sliced('body', body, keep=keep['trim'], borderCos=bc, minPiece=mp, cluster=cl)}
     meta_extra = {}
     if turret:
         tp = np.concatenate([V(k) for k in turret])
         # The ring: the middle of the turret's footprint at its lowest point (or the hint).
         at = model.get('turretAt') or [float((tp[:, 0].min() + tp[:, 0].max()) / 2), float(tp[:, 1].min()), 0.0]
-        meta_extra_slices['turret'] = sliced('turret', turret, keep=keep['trim'], borderCos=bc, minPiece=mp, origin=tuple(at))
+        meta_extra_slices['turret'] = sliced('turret', turret, keep=keep['trim'], borderCos=bc, minPiece=mp, cluster=cl, origin=tuple(at))
         meta_extra['turretAt'] = [round(float(v), 4) for v in at]
     if barrel:
         bp = np.concatenate([V(k) for k in barrel])

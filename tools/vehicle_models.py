@@ -83,7 +83,7 @@ MODELS = [
          url='https://sketchfab.com/3d-models/80s-generic-police-car-low-poly-model-61766c1e6e1e4b2b803c174f33433a74'),
     # The patrol and the agents' SUVs ('utility', 'tahoe' bodies): the livery goes on the body's black and white panels
     # (`paintTex`: its paint and trim share one texture); the bar's lenses light on the police channels.
-    dict(type='police_suv', front='+z', title='Chevrolet Suburban Sheriff Cruiser', author='Matthew (jeandiz)', section=True, keep=dict(wheel=0.15),
+    dict(type='police_suv', front='+z', title='Chevrolet Suburban Sheriff Cruiser', author='Matthew (jeandiz)', section=True, keep=dict(wheel=0.3), clusterParts={'wheel': 0.015},
          src='dl3/sap_suburban_sheriff/scene.gltf', url='https://sketchfab.com/3d-models/chevrolet-suburban-sheriff-cruiser-116f6a42deb04fd8942e6c632e37901f',
          roles=[(r'^Body$', 'paint'), (r'^windows$', 'glass'), (r'^(front|back)_lights$', 'lensglass'), (r'^lighst_inside$', 'lamp'),
                 (r'^lights_on$', 'drop'), (r'^wheel$', 'tyre'), (r'^roof_light_bar$', 'lightbar'), (r'^roof_light_|^light_bar_.*cover$', 'beacon')],
@@ -116,18 +116,20 @@ MODELS = [
     dict(type='pickup', front='-x', title="Compact Pickup '78", author=Z, length=4.6,
          src='zhab/izabela1996_3d-model/scene.gltf',
          url='https://sketchfab.com/3d-models/compact-pickup-78-low-poly-model-30700a84311c4bea9ef722f0773ce92a'),
-    dict(type='suv', front='+z', title='Chevrolet Suburban (Sheriff Cruiser, civilian trim)', author='Matthew (jeandiz)', keep=dict(wheel=0.15),
+    dict(type='suv', front='+z', title='Chevrolet Suburban (Sheriff Cruiser, civilian trim)', author='Matthew (jeandiz)', keep=dict(wheel=0.3), clusterParts={'wheel': 0.015},
          src='dl3/sap_suburban_sheriff/scene.gltf', url='https://sketchfab.com/3d-models/chevrolet-suburban-sheriff-cruiser-116f6a42deb04fd8942e6c632e37901f',
          roles=[(r'^Body$', 'paint'), (r'^windows$', 'glass'), (r'^(front|back)_lights$', 'lensglass'), (r'^lighst_inside$', 'lamp'),
                 (r'^lights_on$', 'drop'), (r'^wheel$', 'tyre'), (r'^(roof_light|light_bar_|push_bar|spot_light|Grill_lights|side_light)', 'drop')],
          paintTex=dict(colors=[[0, 0, 0], [255, 255, 255]], tol=30)),
     # The SOLSTICE SPIDER ('roadster'): an open four-seat convertible of the late nineties.
-    dict(type='roadster', front='+z', title='Chrysler Sebring Convertible', author='BadKarma', length=4.9, keep=dict(trim=0.18, wheel=0.12, cabin=0.2),
+    dict(type='roadster', front='+z', title='Chrysler Sebring Convertible', author='BadKarma', length=4.9, keep=dict(trim=0.3, wheel=0.3, cabin=0.2),
+         clusterParts={'trim': 0.012, 'wheel': 0.02, 'head': 0.008},
          roles=[(r'^material_0$', 'paint'), (r'^material_29$', 'glass'), (r'^material_(25|3|4|5|11)$', 'drop'),
                 (r'^material_(21|22|23|24)$', 'lamp'), (r'^material_(8|9)$', 'lamp'), (r'^material_(27|28)$', 'tyre'), (r'^material_(16|7|10)$', 'rim')],
          src='dl3/sebring/scene.gltf', url='https://sketchfab.com/3d-models/chrysler-sebring-convertible-dac8529f24754bbd936173cbe8da92b1'),
     # The METRO CITY BUS ('bus').
-    dict(type='bus', front='+x', title='Generic Town Bus', author='own.guest', length=12.0, keep=dict(wheel=0.06, cabin=0.12, trim=0.3), minPiece=0.04,
+    dict(type='bus', front='+x', title='Generic Town Bus', author='own.guest', length=12.0, keep=dict(wheel=0.3, cabin=0.2, trim=0.3), minPiece=0.04,
+         clusterParts={'wheel': 0.06, 'cabin': 0.03}, texWeight=0.4,
          roles=[(r'^glass$', 'glass'), (r'^standard$', 'paint'), (r'^(standard111|standard1111|standard2)$', 'lamp'), (r'^seat$', 'interior'),
                 (r'^(material|material_4)$', 'tyre'), (r'^1616862037160$', 'drop')],
          src='dl3/townbus/scene.gltf', url='https://sketchfab.com/3d-models/generic-town-bus-14fe03d792914d51b6c6250b393c44fd'),
@@ -135,15 +137,17 @@ MODELS = [
     # wheels joined to the body, so it cannot take the car contract; the ambulance stays procedural.)
     # Fort Sentinel (tools/vehicle_models_special.py; src/military-assets3d.js): the M4 utility on the HMMWV, the M35.
     dict(type='army_jeep', kind='special', front='+z', title='HMMWV M998A1 (soft top)', author='42manako', length=4.6,
-         roles=[(r'mat5_D|mat7_D', 'glass'), (r'mat3_D', 'tyre')], tyreBox=dict(below=0.97, out=0.55), keep=dict(trim=0.22, wheel=0.3),
+         roles=[(r'mat5_D|mat7_D', 'glass'), (r'mat3_D', 'tyre')], tyreBox=dict(below=0.97, out=0.55), keep=dict(trim=0.3, wheel=0.3), cluster=0.025, texWeight=0.6,
          src='dl3/hmmwv/scene.gltf', url='https://sketchfab.com/3d-models/hmmwv-m998a1-soft-top-ffbc4b053628413fb84acf5b89595d96'),
-    # (Abrams M1A2 SEPv3 by dannzjs was converted for the SENTINEL M120 ('tank'; `split`, `hull`, slices): its hundreds
-    # of small parts kept it at 78k triangles and 2.2 MB after reduction, eight times a car's; the tank stays procedural
-    # until a lighter model turns up. Entry: dict(type='army_tank', kind='special', front='+z', length=10.1, hull=7.9,
-    # split=dict(turretAbove=1.45, turretX=(-3.35, 2.35), gunFrom=2.3, gunHalf=0.35, clipAbove=3.3), keep=dict(trim=0.05),
-    # minPiece=0.25, borderCos=0.6, src='dl3/abrams/scene.gltf').)
+    # The SENTINEL M120 ('tank'): hull 7.9 m (`hull`: the collider's length), the gun past it; the turret and the gun split
+    # off by where they are (`split`, metres in the game frame), the whip antennas left out. Its hundreds of small closed
+    # parts resist the edge collapse, so they are clustered first (`cluster`, metres).
+    dict(type='army_tank', kind='special', front='+z', title='Abrams M1A2 SEPv3', author='dannzjs', length=10.1, hull=7.9,
+         split=dict(turretAbove=1.45, turretX=(-3.35, 2.35), gunFrom=2.3, gunHalf=0.35, clipAbove=3.3),
+         keep=dict(trim=0.4), minPiece=0.12, cluster=0.1, texWeight=0.12,
+         src='dl3/abrams/scene.gltf', url='https://sketchfab.com/3d-models/abrams-m1a2-sepv3-eb6f5560198740269507e9948376414c'),
     dict(type='army_truck', kind='special', front='+z', title='Military Truck 1/2 Ton (M35)', author='Arion Digital', length=6.7,
-         roles=[(r'^(79bf1742|9dd96982)', 'tyre')], tyreBox=dict(below=1.2, out=0.5), axleGap=0.06, keep=dict(trim=0.4, wheel=0.3),
+         roles=[(r'^(79bf1742|9dd96982)', 'tyre')], tyreBox=dict(below=1.2, out=0.5), axleGap=0.06, keep=dict(trim=0.4, wheel=0.3), texWeight=0.5,
          src='dl3/sap_military_half_ton/scene.gltf', url='https://sketchfab.com/3d-models/military-truck-12-ton-5d19c751b12849eeb390d637b2b686a1'),
     # Motorbikes (tools/vehicle_models_moto.py; src/motorbike-assets3d.js). `axis`: a point up the steering axis, `bars`:
     # the bars' lowest y and rearmost x, `seat`: the saddle's x, `pegs`: [x, y, z] (metres, the game frame).
@@ -704,6 +708,12 @@ def convert(model, src_root):
         rubber_set = set(rubber)
         parts['wheel%d.tyre' % wi] = dict(tris=rubber, origin=(w['x'], w['y'], w['z']), keep=keep['wheel'], borderCos=bc)
         parts['wheel%d.rim' % wi] = dict(tris=[k for k in tris if k not in rubber_set], origin=(w['x'], w['y'], w['z']), keep=keep['wheel'], borderCos=bc)
+    # Parts too finely built for the edge collapse (a bus's tread, a convertible's solid-colour trim) clustered first
+    # (`clusterParts`: part-name prefix -> grid cell, metres; cluster_vertices).
+    for name, part in parts.items():
+        for prefix, cell in model.get('clusterParts', {}).items():
+            if name.startswith(prefix):
+                part['cluster'] = cell
     meta = dict(
         type=model['type'], title=model['title'], front=front,
         dims=[round(float(L), 3), round(float(hi[1]), 3), round(float(W), 3)],
@@ -760,7 +770,7 @@ def build_atlas(results):
                 continue
             m = r['prims'][r['tri_prim'][k]]['material']
             # The cabin's inside is seen through tinted glass: a third of the texels.
-            used[m] = used.get(m, 0) + r['area'][k] * (0.35 if r['role'][k] == 'interior' else 1.0)
+            used[m] = used.get(m, 0) + r['area'][k] * (0.35 if r['role'][k] == 'interior' else 1.0) * r.get('texWeight', 1.0)
         r['tex_of'] = {}
         for m, a in used.items():
             mat = r['mats'][m] if m is not None else {}
@@ -1049,6 +1059,8 @@ def write_part(blob, r, name, part, rects, qlo, qext):
     P = np.array(P)
     if part.get('minPiece'):
         I = drop_small_pieces(P, I, part['minPiece'])
+    if part.get('cluster'):
+        P, N, UV, C, I = cluster_vertices(P, N, UV, C, I, part['cluster'])
     keep = part.get('keep', 1.0)
     if keep < 1.0 and len(I) > 200:
         used, I = decimate(P, I, keep, part.get('borderCos', 0.985))
@@ -1068,6 +1080,32 @@ def write_part(blob, r, name, part, rects, qlo, qext):
         blob.add(base + '.c', np.array(C, dtype=np.uint8), 'u1')
     blob.add(base + '.i', np.array(I, dtype=np.uint16), 'u2')
     return len(I)
+
+
+def cluster_vertices(P, N, UV, C, I, cell):
+    """Vertex clustering for a model too finely built for the edge collapse (hundreds of small closed parts, each all
+    border): every vertex snaps to the first one in its `cell`-metre grid cell, triangles that fold flat go, duplicates
+    go. Coarse (a texel's UV and normal from one vertex per cell), so only for parts seen from afar (a tank's tracks)."""
+    keys = np.floor(P / cell).astype(np.int64)
+    first = {}
+    remap = np.empty(len(P), dtype=np.int64)
+    for i, k in enumerate(map(tuple, keys)):
+        remap[i] = first.setdefault(k, i)
+    seen = set()
+    out = []
+    for t in I:
+        a, b, c = remap[t[0]], remap[t[1]], remap[t[2]]
+        if a == b or b == c or a == c:
+            continue
+        key = tuple(sorted((a, b, c)))
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append((a, b, c))
+    used = sorted({v for t in out for v in t})
+    new = {v: i for i, v in enumerate(used)}
+    I2 = [[new[a], new[b], new[c]] for a, b, c in out]
+    return P[used], [N[i] for i in used], [UV[i] for i in used], ([C[i] for i in used] if C else C), I2
 
 
 def drop_small_pieces(P, I, size):
@@ -1120,6 +1158,10 @@ def main(argv):
         print(__doc__)
         return 1
     src = argv[1]
+    if '--atlas' in argv:
+        # Another atlas size (W x H), to compare texel densities between sets of models.
+        global ATLAS_W, ATLAS_H
+        ATLAS_W, ATLAS_H = map(int, argv[argv.index('--atlas') + 1].split('x'))
     global SERIES_ROOT
     SERIES_ROOT = src
     only = None
@@ -1132,6 +1174,8 @@ def main(argv):
         kinds = dict(moto=convert_moto, boat=convert_boat, special=convert_special)
         r = kinds[model['kind']](model, src, sys.modules[__name__]) if model.get('kind') in kinds else convert(model, src)
         r['texCap'] = model.get('texCap', 512)
+        # A model's share of the atlas per square metre (a tank's acres of hull need fewer texels than a car's face).
+        r['texWeight'] = model.get('texWeight', 1.0)
         results.append(r)
         m = r['meta']
         if m.get('kind') in kinds:
