@@ -433,6 +433,10 @@ packs with plain `<script src>` so the zip still plays from file://.
   altitude (by weather and area); the renderer draws from the same maps
   (docs/areas/rendering-clouds.md). Console `cloudJump(metres, kind)` drops the player over
   a cloud.
+- Clouds from the street (chase view; rendering-clouds.md): the march from below is `cloudMarchBelow` (`uBelow` 1 only,
+  its own coarse/fine loop to 20 km, the half-float `cloudNoiseSky`) averaged by SKY CLOUD HISTORY
+  (clouds3d-sky-history.js); the layer seen from below is hazed only by `skyCloudHaze()` (the air's visibility), never
+  the street haze; the street and flight views' clouds (`uBelow` 0) stay pixel-identical.
 - Vehicle beams run in `headlightFrame()` (terrain-headlights.js: body pitch/roll, lamp
   height); the CAR LAMPS uniform and the horizon strip in `cityBeamShadow` must stay in step
   with `headlightHorizonLit`, and every reader of the lamp slots (lit materials, beam haze,
