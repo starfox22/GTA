@@ -7,6 +7,8 @@
        * handling, the wakes (wakes3d.js, from the type's size) and the planing pitch (`boatDynamics`) stay the type's.
        * Three draws: the body (atlas, alpha-tested), the glass, the mast lamp.
        */
+      // Types whose downloaded model is not drawn (not an upgrade over the procedural boat).
+      const ASSET_BOATS_HELD = new Set(['workboat']);
       function makeAssetBoat(vehicle) {
         const model = specialVehicle(vehicle),
           b = model.body,

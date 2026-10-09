@@ -63,7 +63,9 @@ vehicles-and-driving-models.md's; credits in docs/THIRD_PARTY_CREDITS.txt. Conso
 - `kind: 'boat'` models (tools/vehicle_models_boat.py): the HARBOR LAUNCH ('workboat') is the Tow Boat, scaled to
   9 m with its waterline (`waterline` m over the lowest point) at y 0; one alpha-tested body, the clear panes, a mast
   lamp; wakes and handling are the type's. The sponsor, outboard and radar names are erased in the texture.
-- The workboat's paint colour no longer shows (the hull is the model's texture).
+- Held back (`ASSET_BOATS_HELD`): beside the procedural launch the Tow Boat read flatter and lost the paint colour, so
+  the lead kept the procedural boat (owner rule: only upgrades). The data stays in the bin; drop it from the converter
+  at the next regeneration, or take it off the held list if a better boat model replaces it.
 
 ## Tried and kept procedural
 

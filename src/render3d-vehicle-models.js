@@ -99,8 +99,10 @@
         // A type the build carries a downloaded motorbike for (motorbike-assets3d.js ASSET MOTORBIKES).
         if (MOTO_BODIES[vehicle.type]) return vehicleAssetModel(vehicle.type)?.kind === 'moto' ? makeAssetMotorbike(vehicle) : makeMotorbike(vehicle);
         if (vehicleSpec(vehicle).jetski) return makeJetSki(vehicle);
-        // A boat the build carries a downloaded model for (boat-assets3d.js ASSET BOATS).
-        if (vehicleSpec(vehicle).boat) return vehicleAssetModel(vehicle.type)?.kind === 'boat' ? makeAssetBoat(vehicle) : makeBoat(vehicle);
+        // A boat the build carries a downloaded model for (boat-assets3d.js ASSET BOATS). The Tow Boat stays in the data but
+        // is held back: next to the procedural launch it read flatter and lost the paint colour (owner rule: only upgrades).
+        if (vehicleSpec(vehicle).boat)
+          return vehicleAssetModel(vehicle.type)?.kind === 'boat' && !ASSET_BOATS_HELD.has(vehicle.type) ? makeAssetBoat(vehicle) : makeBoat(vehicle);
         // Patrol cars, roadblock cruisers, the SWAT truck and agents' SUVs (police3d.js).
         if (vehicle.type === 'police' || vehicle.lawUnit === 'swat' || vehicle.lawUnit === 'fed' || vehicle.policeLook) {
           const look = policeLookFor(vehicle);
