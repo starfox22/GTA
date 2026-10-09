@@ -83,7 +83,7 @@ MODELS = [
          url='https://sketchfab.com/3d-models/80s-generic-police-car-low-poly-model-61766c1e6e1e4b2b803c174f33433a74'),
     # The patrol and the agents' SUVs ('utility', 'tahoe' bodies): the livery goes on the body's black and white panels
     # (`paintTex`: its paint and trim share one texture); the bar's lenses light on the police channels.
-    dict(type='police_suv', texWeight=0.6, front='+z', title='Chevrolet Suburban Sheriff Cruiser', author='Matthew (jeandiz)', section=True, keep=dict(wheel=0.3, cabin=1.0), clusterParts={'wheel': 0.015},
+    dict(type='police_suv', texWeight=0.6, front='+z', title='Chevrolet Suburban Sheriff Cruiser', author='Matthew (jeandiz)', section=True, keep=dict(wheel=0.3, cabin=1.0), clusterParts={'wheel': 0.015}, lampShade=0.35,
          src='dl3/sap_suburban_sheriff/scene.gltf', url='https://sketchfab.com/3d-models/chevrolet-suburban-sheriff-cruiser-116f6a42deb04fd8942e6c632e37901f',
          roles=[(r'^Body$', 'paint'), (r'^windows$', 'glass'), (r'^(front|back)_lights$', 'lensglass'), (r'^lighst_inside$', 'lamp'),
                 (r'^lights_on$', 'drop'), (r'^wheel$', 'tyre'), (r'^roof_light_bar$', 'lightbar'), (r'^roof_light_|^light_bar_.*cover$', 'beacon')],
@@ -116,7 +116,7 @@ MODELS = [
     dict(type='pickup', texWeight=0.7, front='-x', title="Compact Pickup '78", author=Z, length=4.6,
          src='zhab/izabela1996_3d-model/scene.gltf',
          url='https://sketchfab.com/3d-models/compact-pickup-78-low-poly-model-30700a84311c4bea9ef722f0773ce92a'),
-    dict(type='suv', texWeight=0.5, front='+z', title='Chevrolet Suburban (Sheriff Cruiser, civilian trim)', author='Matthew (jeandiz)', keep=dict(wheel=0.3, cabin=1.0), clusterParts={'wheel': 0.015},
+    dict(type='suv', texWeight=0.5, front='+z', title='Chevrolet Suburban (Sheriff Cruiser, civilian trim)', author='Matthew (jeandiz)', keep=dict(wheel=0.3, cabin=1.0), clusterParts={'wheel': 0.015}, lampShade=0.35,
          src='dl3/sap_suburban_sheriff/scene.gltf', url='https://sketchfab.com/3d-models/chevrolet-suburban-sheriff-cruiser-116f6a42deb04fd8942e6c632e37901f',
          roles=[(r'^Body$', 'paint'), (r'^windows$', 'glass'), (r'^(front|back)_lights$', 'lensglass'), (r'^lighst_inside$', 'lamp'),
                 (r'^lights_on$', 'drop'), (r'^wheel$', 'tyre'), (r'^(roof_light|light_bar_|push_bar|spot_light|Grill_lights|side_light)', 'drop')],
@@ -136,7 +136,7 @@ MODELS = [
     # The METRO CITY BUS ('bus').
     dict(type='bus', texWeight=0.25, front='+x', title='Generic Town Bus', author='own.guest', length=12.0, keep=dict(wheel=0.3, cabin=0.2, trim=0.3), minPiece=0.04,
          clusterParts={'wheel': 0.06, 'cabin': 0.03},
-         roles=[(r'^glass$', 'glass'), (r'^standard$', 'paint'), (r'^(standard111|standard1111|standard2)$', 'lamp'), (r'^seat$', 'interior'),
+         roles=[(r'^glass$', 'glass'), (r'^standard$', 'paint'), (r'^(standard111|standard1111)$', 'lamp'), (r'^standard2$', 'trim'), (r'^seat$', 'interior'),
                 (r'^(material|material_4)$', 'tyre'), (r'^1616862037160$', 'drop')],
          src='dl3/townbus/scene.gltf', url='https://sketchfab.com/3d-models/generic-town-bus-14fe03d792914d51b6c6250b393c44fd'),
     # The PARAMEDIC ('ambulance'): its livery is its texture (`paintTexture`); the box behind the cab stretched to the
@@ -1094,7 +1094,7 @@ def write_part(blob, r, name, part, rects, qlo, qext):
                 if part.get('colors'):
                     # Head lamp lenses a shade darker: their unlit material is near-mirror chrome, and a white lens in
                     # the sun blooms as if lit (animateCivilianCar's lit material brightens them again).
-                    C.append([int(c * (0.62 if name.startswith('head') else 1)) for c in sample_colour(r, p['material'], uv)])
+                    C.append([int(c * (r.get('lampShade', 0.62) if name.startswith('head') else 1)) for c in sample_colour(r, p['material'], uv)])
             tri.append(vmap[key])
         I.append(tri)
     P = np.array(P)
@@ -1217,6 +1217,8 @@ def main(argv):
         r['texCap'] = model.get('texCap', 512)
         # A model's share of the atlas per square metre (a tank's acres of hull need fewer texels than a car's face).
         r['texWeight'] = model.get('texWeight', 1.0)
+        # How much darker the head lamps' unlit lenses are drawn than their texels (a bright lamp texture blooms by day).
+        r['lampShade'] = model.get('lampShade', 0.62)
         # The earlier rounds' models keep at least the texel density they had in the 2048-square atlas (21364 px per
         # square metre of their source textures' cover, measured with --atlas 2048x2048 on that set): adding models
         # never shrinks their textures.
