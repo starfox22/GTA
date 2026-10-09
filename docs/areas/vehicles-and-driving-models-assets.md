@@ -9,7 +9,7 @@ vehicles-and-driving-models.md's; credits in docs/THIRD_PARTY_CREDITS.txt. Conso
 
 - Sedan, taxi, coupe, sport, supercar, luxury and muscle (American Muscle '71) are drawn from downloaded CC-BY cars
   (Daniel Zhabotinsky's series; credits in THIRD_PARTY_CREDITS.txt), converted offline by `tools/vehicle_models.py
-  SRC_DIR` into assets/vehicle-models.bin + vehicle-atlas.webp (2048x2048, one trim material, two wheel materials).
+  SRC_DIR` into assets/vehicle-models.bin + vehicle-atlas.webp (4096x2048 since round three, one trim material, two wheel materials).
   `makeVehicle` takes `makeAssetCar` when `vehicleAssetModel(type)` has one, else the procedural body (a build without
   the block falls back by itself). Rally (its livery) and hotrod (the HELLFIRE's flames and blower; the Coupe '33 was
   tried) stay procedural, as do every other type; only replace a type where the model clearly looks better and loses

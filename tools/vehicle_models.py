@@ -86,7 +86,7 @@ MODELS = [
     dict(type='police_suv', texWeight=0.6, front='+z', title='Chevrolet Suburban Sheriff Cruiser', author='Matthew (jeandiz)', section=True, keep=dict(wheel=0.3, cabin=1.0), clusterParts={'wheel': 0.015}, lampShade=0.35,
          src='dl3/sap_suburban_sheriff/scene.gltf', url='https://sketchfab.com/3d-models/chevrolet-suburban-sheriff-cruiser-116f6a42deb04fd8942e6c632e37901f',
          roles=[(r'^Body$', 'paint'), (r'^windows$', 'glass'), (r'^(front|back)_lights$', 'lensglass'), (r'^lighst_inside$', 'lamp'),
-                (r'^lights_on$', 'drop'), (r'^wheel$', 'tyre'), (r'^roof_light_bar$', 'lightbar'), (r'^roof_light_|^light_bar_.*cover$', 'beacon')],
+                (r'^lights_on$', 'drop'), (r'^wheel$', 'tyre'), (r'^roof_light_', 'lightbar'), (r'^light_bar_.*cover$', 'beacon')],
          paintTex=dict(colors=[[0, 0, 0], [255, 255, 255]], tol=30)),
     dict(type='muscle', front=None, keep=dict(trim=0.3, paint=0.4, cabin=0.22, wheel=0.22), borderCos=0.85, title="American Muscle '71", author=Z,
          src='mirror/muscle71/scene.gltf',

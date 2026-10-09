@@ -24,6 +24,8 @@ followed). Credits in docs/THIRD_PARTY_CREDITS.txt.
   same author's series), 'utility' and 'tahoe' the Chevrolet Suburban Sheriff Cruiser (`police_suv`). The SWAT
   Bearcat stays procedural (no armoured truck with a usable licence was found). Each body keeps its own livery canvas
   and section ring (the projection is per body), so a utility and a Tahoe on the same model still differ.
+- The Suburban's bar: its coloured lenses join the housing in the trim (`lightbar`, so the bar reads red, white and
+  blue when the lights are off) and its clear covers are the light mesh (`beacon`, the police light channels).
 - A body without the model in the build falls back to its procedural kit (police3d-kits.js), as before.
 
 ## Civilian trucks, bus, ambulance, convertible, limousine (ASSET CARS)
