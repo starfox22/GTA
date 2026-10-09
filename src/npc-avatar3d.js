@@ -26,11 +26,17 @@
       // LEVELS OF DETAIL: near (a slot, the 4k-triangle mesh) within NPC_REACH[view].near, mid (a batch, the 1k-triangle
       // mesh of the same avatar) within .mid, the rig beyond (in the avatar's colours). Reaches in units from the chase
       // camera or (street view) the player; someone already at a level keeps it to NPC_KEEP further (1 / 0.86: +16 %).
-      const NPC_AVATAR_SLOTS = 8,
-        NPC_TIER_SLOTS = { LOW: 4, MEDIUM: 6, HIGH: 8, ULTRA: 8 },
+      // Near slots: the people ranked by npcAvatarChoose up to the tier's cap, then those drawn later in the frame
+      // (riders, car occupants, athletes, beachgoers: NPC_TIER_LATE more) by their own distance; the player in a
+      // disguise has a slot of his own (npcPlayerSlot), at any zoom.
+      const NPC_AVATAR_SLOTS = 24,
+        NPC_TIER_SLOTS = { LOW: 6, MEDIUM: 8, HIGH: 12, ULTRA: 14 },
+        NPC_TIER_LATE = { LOW: 4, MEDIUM: 6, HIGH: 8, ULTRA: 10 },
         NPC_TIER_MID = { LOW: 8, MEDIUM: 16, HIGH: 40, ULTRA: 48 },
         // Different avatars drawn at mid at once (a draw each, and a shadow draw on shadow tiers).
-        NPC_TIER_BATCHES = { LOW: 6, MEDIUM: 10, HIGH: 16, ULTRA: 16 },
+        NPC_TIER_BATCHES = { LOW: 8, MEDIUM: 12, HIGH: 20, ULTRA: 24 },
+        // Uniforms rank as if this much nearer (police, soldiers: the near mesh before a passer-by's).
+        NPC_UNIFORM_RANK = 0.6,
         NPC_MID_MAX = 48,
         NPC_REACH = { chase: { near: 16 * UNITS_PER_METRE, mid: 45 * UNITS_PER_METRE }, street: { near: 14 * UNITS_PER_METRE, mid: 30 * UNITS_PER_METRE } },
         // The street view: avatars once a figure is big enough (the zoom detail 2 starts at).
@@ -70,7 +76,7 @@
         return g;
       }
       const npcPlaceholder = npcGeometry({ attributes: Object.fromEntries(NPC_ATTRIBUTES.map(([name, size]) => [name, new Float32Array(3 * size)])), index: new Uint16Array([0, 1, 2]) });
-      const npcSlots = Array.from({ length: NPC_AVATAR_SLOTS }, (_, i) => {
+      function npcMakeSlot(i) {
         const uniforms = {
             npcQr: { value: Array.from({ length: PB_BONES }, () => new Three.Vector4(0, 0, 0, 1)) },
             npcQd: { value: Array.from({ length: PB_BONES }, () => new Three.Vector4(0, 0, 0, 0)) },
@@ -79,6 +85,7 @@
             npcLost: { value: 0 },
             npcCut: { value: Array.from({ length: PB_BONES }, () => new Three.Vector3()) },
             npcWound: { value: Array.from({ length: 4 }, () => new Three.Vector4()) },
+            npcTint: { value: new Three.Vector4() },
             npcMap: { value: npcAvatarMap },
           },
           // Double-sided for the hair cards and open cuffs; the shadow from back faces, as a closed body's (no acne).
@@ -97,7 +104,10 @@
         mesh.userData.dynamic = true;
         scene.add(mesh);
         return { mesh, material, depth, uniforms, frames: Array.from({ length: PB_BONES }, () => new Three.Matrix4()), posed: 0, person: null, avatar: -1, width: 1, goreFor: null, goreFit: null, goreVersion: -1 };
-      });
+      }
+      const npcSlots = Array.from({ length: NPC_AVATAR_SLOTS }, (_, i) => npcMakeSlot(i)),
+        // The player in a disguise (his borrowed uniform, the suit: npcAvatarPick 'playerArmy', 'playerDisguise').
+        npcPlayerSlot = npcMakeSlot('player');
       const npcAv = {
         enabled: true,
         force: 0,
@@ -122,6 +132,16 @@
         firstShow: null,
         chosen: 0,
         chosenMid: 0,
+        capLate: 0,
+        late: 0,
+        lateMid: 0,
+        player: 0,
+        // This frame's origin and reaches for those drawn later (npcAvatarTake); live false: no avatars this frame.
+        live: false,
+        ox: 0,
+        oy: 0,
+        near2: 0,
+        mid2: 0,
         list: new Array(NPC_AVATAR_SLOTS + NPC_MID_MAX).fill(null),
         score: new Float32Array(NPC_AVATAR_SLOTS + NPC_MID_MAX),
         raw: new Float32Array(NPC_AVATAR_SLOTS + NPC_MID_MAX),
@@ -207,7 +227,11 @@
       setTimeout(npcAvatarBuildStep, 0);
       function npcAvatarCap() {
         if (!npcAv.enabled || !npcAv.ready) return 0;
-        return NPC_TIER_SLOTS[(activeTier || graphicsTier()).name] ?? 6;
+        return NPC_TIER_SLOTS[(activeTier || graphicsTier()).name] ?? 8;
+      }
+      function npcAvatarCapLate() {
+        if (!npcAv.enabled || !npcAv.ready) return 0;
+        return NPC_TIER_LATE[(activeTier || graphicsTier()).name] ?? 6;
       }
       function npcAvatarCapMid() {
         if (!npcAv.enabled || !npcAv.ready) return 0;
@@ -243,7 +267,8 @@
         if (d2 * NPC_KEEP * NPC_KEEP > reach2) return;
         const s = crowdState.get(p),
           kept = !!s && s.avatarFrame === npcAv.frame - 1,
-          score = kept ? d2 * NPC_KEEP * NPC_KEEP : d2;
+          rank = p.police || p.military ? NPC_UNIFORM_RANK * NPC_UNIFORM_RANK : 1,
+          score = (kept ? d2 * NPC_KEEP * NPC_KEEP : d2) * rank;
         if (score > reach2 || (npcAv.n === npcAv.size && score >= npcAv.score[npcAv.size - 1]) || !entityInView(p, 30)) return;
         if (compiledLook(special ? specialLook(p) : p.look || ensureLook(p), p).avatar < 0) return;
         npcConsider(p, score, d2);
@@ -257,9 +282,11 @@
       function npcAvatarChoose(specials) {
         const N = npcAv;
         N.frame++;
-        N.used = N.usedMid = N.chosen = N.chosenMid = N.n = N.batches = 0;
+        N.used = N.usedMid = N.chosen = N.chosenMid = N.n = N.batches = N.late = N.lateMid = N.player = 0;
+        N.live = false;
         // (npcAvatars(on, level) can hold everyone in reach at one level: an A/B of the two meshes.)
         N.cap = N.force === 2 ? 0 : npcAvatarCap();
+        N.capLate = N.force === 2 ? 0 : npcAvatarCapLate();
         N.capMid = N.force === 1 ? 0 : npcAvatarCapMid();
         N.batchCap = Math.min(NPC_MID_BATCHES, NPC_TIER_BATCHES[(activeTier || graphicsTier()).name] ?? 10);
         N.size = N.cap + N.capMid;
@@ -275,6 +302,11 @@
         const mid2 = reach.mid * reach.mid,
           near2 = reach.near * reach.near,
           keep2 = NPC_KEEP * NPC_KEEP;
+        N.live = true;
+        N.ox = ox;
+        N.oy = oy;
+        N.near2 = near2;
+        N.mid2 = mid2;
         for (let i = 0; i < pedestrians.length; i++) npcCandidate(pedestrians[i], false, mid2, ox, oy);
         for (let i = 0; i < specials.length; i++) if (specials[i] !== player) npcCandidate(specials[i], true, mid2, ox, oy);
         for (let i = 0; i < N.n; i++) {
@@ -291,21 +323,57 @@
         }
         N.n = 0;
       }
-      /** drawCrowdPerson: the near slot or mid record this person is drawn in this frame, or null (the rig). */
-      function npcAvatarTake(p, s, R, detail) {
+      /** Whether the player in `look` (a disguise: the borrowed uniform, the suit) is drawn as his avatar. */
+      function playerAvatarOn(look) {
+        if (!npcAv.enabled || !npcAv.ready || !look || (look.outfit !== 'playerArmy' && look.outfit !== 'playerDisguise')) return false;
+        const R = compiledLook(look, player);
+        return R.avatar >= 0 && !!npcAv.fits[R.avatar];
+      }
+      /**
+       * drawCrowdPerson: the near slot or mid record this person is drawn in this frame, or null (the rig). Those
+       * npcAvatarChoose ranked take their level; the player in a disguise his own slot (`rim`, any zoom or view); those
+       * drawn after the choice (riders, occupants, athletes, beachgoers) a near slot within the near reach while the
+       * late slots last, else a mid record within the mid reach.
+       */
+      function npcAvatarTake(p, s, R, detail, spec) {
         const N = npcAv;
-        if (s.avatarFrame !== N.frame || R.avatar < 0 || detail < 1) return null;
+        if (R.avatar < 0) return null;
         const fit = N.fits[R.avatar];
         if (!fit || fit.female !== !!R.female) return null;
         let slot;
-        if (s.avatarLevel === 1 && N.used < N.cap) slot = npcSlots[N.used++];
-        // (A mid avatar shows no wound soak: someone wounded keeps the rig there, which does.)
-        else if (p.goreWounds?.length || !(slot = npcMidTake(R.avatar))) return null;
+        if (spec?.rim === true) {
+          if (N.player || !N.enabled || !N.ready) return null;
+          N.player = 1;
+          slot = npcPlayerSlot;
+        } else if (s.avatarFrame === N.frame) {
+          if (detail < 1) return null;
+          if (s.avatarLevel === 1 && N.used < N.cap) slot = npcSlots[N.used++];
+          // (A mid avatar shows no wound soak: someone wounded keeps the rig there, which does.)
+          else if (p.goreWounds?.length || !(slot = npcMidTake(R.avatar))) return null;
+        } else {
+          if (!N.live || detail < 1 || p === player) return null;
+          const dx = p.x - N.ox,
+            dy = p.y - N.oy,
+            d2 = dx * dx + dy * dy;
+          if (d2 > N.mid2) return null;
+          if (d2 <= N.near2 && N.late < N.capLate && N.used < NPC_AVATAR_SLOTS) {
+            slot = npcSlots[N.used++];
+            N.late++;
+          } else if (p.goreWounds?.length || !(slot = npcMidTake(R.avatar))) return null;
+          else N.lateMid++;
+        }
+        npcAvatarTintOf(slot, R.tint);
         slot.person = p;
         slot.avatar = R.avatar;
         slot.width = fit.width;
         slot.posed = 0;
         return slot;
+      }
+      function npcAvatarTintOf(slot, tint) {
+        if (slot.uniforms) {
+          if (tint) slot.uniforms.npcTint.value.copy(tint);
+          else slot.uniforms.npcTint.value.w = 0;
+        } else slot.tint = tint;
       }
       function npcAvatarBone(slot, i, matrix) {
         slot.frames[i].copy(matrix);
@@ -329,9 +397,9 @@
         const all = (1 << PB_BONES) - 1;
         let shown = 0,
           triangles = 0;
-        for (let k = 0; k < NPC_AVATAR_SLOTS; k++) {
-          const slot = npcSlots[k],
-            fit = k < npcAv.used ? npcAv.fits[slot.avatar] : null,
+        for (let k = 0; k <= NPC_AVATAR_SLOTS; k++) {
+          const slot = k < NPC_AVATAR_SLOTS ? npcSlots[k] : npcPlayerSlot,
+            fit = (k < NPC_AVATAR_SLOTS ? k < npcAv.used : npcAv.player) ? npcAv.fits[slot.avatar] : null,
             on = !!fit && slot.posed === all;
           slot.posed = 0;
           if (slot.mesh.visible !== on) slot.mesh.visible = on;
@@ -442,7 +510,10 @@
           // `personFemale` is the game's rule (voices.js): the avatar's sex must be the same.
           slots: npcSlots
             .filter((s) => s.mesh.visible && s.person)
-            .map((s) => ({ avatar: cast[s.avatar]?.name, female: !!npcAv.fits[s.avatar]?.female, personFemale: personFemale(s.person), width: +s.width.toFixed(3), lost: s.uniforms.npcLost.value, wounds: s.uniforms.npcWound.value.filter((w) => w.w > 1.5).length })),
+            .map((s) => ({ avatar: cast[s.avatar]?.name, tint: s.uniforms.npcTint.value.w > 0, female: !!npcAv.fits[s.avatar]?.female, personFemale: personFemale(s.person), width: +s.width.toFixed(3), lost: s.uniforms.npcLost.value, wounds: s.uniforms.npcWound.value.filter((w) => w.w > 1.5).length })),
+          late: { cap: npcAv.capLate, near: npcAv.late, mid: npcAv.lateMid },
+          // The player in a disguise drawn as his avatar (playerAvatarOn).
+          player: npcPlayerSlot.mesh.visible ? { avatar: cast[npcPlayerSlot.avatar]?.name, tint: npcPlayerSlot.uniforms.npcTint.value.w > 0, lost: npcPlayerSlot.uniforms.npcLost.value, wounds: npcPlayerSlot.uniforms.npcWound.value.filter((w) => w.w > 1.5).length } : null,
           programs: npcAvatarPrograms(),
           programsAtFirstDraw: npcAv.firstShow,
           midPrograms: npcMidPrograms(),

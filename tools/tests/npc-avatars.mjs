@@ -23,7 +23,7 @@ function load(Three) {
   ).join('\n');
   const prelude = `const TAU = Math.PI * 2, PERSON_HEIGHT = 14; const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
     function cityMaterialPatch() {} const ASSETS = { npcModels: ${JSON.stringify(MODELS)} };\n${rig}`;
-  return new Function('Three', prelude + '\n' + source + '\nreturn { npcAvatarAsset, npcAvatarCast, npcAvatarFitOne, npcAvatarPick, npcAvatarLookTraits, npcMaterialPatch, npcDepthPatch, PB_UNITS, PB_BONES, RIG };')(Three);
+  return new Function('Three', prelude + '\n' + source + '\nreturn { npcAvatarAsset, npcAvatarCast, npcAvatarFitOne, npcAvatarPick, npcAvatarTint, npcAvatarLookTraits, npcMaterialPatch, npcDepthPatch, PB_UNITS, PB_BONES, RIG };')(Three);
 }
 
 // CPU dual quaternion skinning, the shader's formula, with bones turned about their own joints (a stride, arms down).
@@ -119,7 +119,7 @@ export default async function (t) {
   const api = load(Three),
     cast = api.npcAvatarCast(),
     asset = api.npcAvatarAsset();
-  t.assert(cast.length >= 24, `the cast has ${cast.length} avatars`);
+  t.assert(cast.length >= 60, `the cast has ${cast.length} avatars`);
   const M = 1.8 / 14,
     report = [];
   for (let i = 0; i < cast.length; i++) {
@@ -184,6 +184,15 @@ export default async function (t) {
     [{ outfit: 'mobster' }, [false], 'mobster'],
     [{ outfit: 'partyGuest' }, [false, true], 'partyGuest'],
     [{ outfit: 'beach' }, [false, true], 'beach'],
+    // Avatars everywhere: traffic officers (a painted hi-vis vest), agents (FED vests), gangs (tinted), waiters, the
+    // player's borrowed uniform and suit, bikers.
+    [{ outfit: 'traffic' }, [false, true], 'traffic'],
+    [{ outfit: 'fed' }, [false, true], 'fed'],
+    [{ outfit: 'gang' }, [false, true], 'gang'],
+    [{ outfit: 'waiter' }, [false], 'waiter'],
+    [{ outfit: 'playerArmy' }, [false], 'playerArmy'],
+    [{ outfit: 'playerDisguise' }, [false], 'playerDisguise'],
+    [{ outfit: 'motorcyclist' }, [false, true], 'gang'],
   ];
   for (const [look, sexes, tag] of need)
     for (const female of sexes) {
@@ -196,17 +205,39 @@ export default async function (t) {
     // Beachwear on the street (the top is the skin) keeps its beachwear.
     const bare = pick({ top: '#c99169', skin: '#c99169' }, female);
     t.assert(bare >= 0 && cast[bare].tags.includes('beach'), `beachwear on the street (${female}): ${cast[bare]?.name}`);
-    const kid = pick({}, female, true, 'kid');
-    t.assert(kid === -1, `a child has an avatar: ${cast[kid]?.name}`);
+    // Children are the Rocketbox children, on the street and at the beach.
+    for (const look of [{}, { outfit: 'beach' }]) {
+      const kid = pick(look, female, true, 'kid');
+      t.assert(kid >= 0 && cast[kid].kid && (cast[kid].sex === 'f') === female, `a child (${female}) is ${cast[kid]?.name}`);
+    }
     for (const role of ['casual', 'commuter', 'jogger', 'elder', 'reveller', 'worker', 'tourist'])
       for (let seed = 0; seed < 6; seed++) {
         const i = pick({ seed: seed * 7 }, female, false, role);
         t.assert(i >= 0 && !cast[i].kid && (cast[i].sex === 'f') === female, `${role} (${female ? 'woman' : 'man'}): cast ${i} ${cast[i]?.name}`);
       }
-    // Story characters, waiters and the disguise stay on the rig; so do gangs (their colours), traffic officers (hi-vis)
-    // and agents (FED windbreakers), and children (no downgrade: the adult skeleton would draw small adults).
-    for (const outfit of ['story', 'waiter', 'playerDisguise', 'player', 'athlete', 'gang', 'traffic', 'fed']) t.assert(pick({ outfit }, female) === -1, `${outfit} has an avatar`);
+    // Only the player in his own clothes has no avatar (his own body); everyone else has one of their sex.
+    t.assert(pick({ outfit: 'player' }, female) === -1, 'the player in his own clothes has an avatar');
+    for (const outfit of ['story', 'motorist', 'cyclist', 'jetskier', 'diplomat'] ) {
+      const i = pick({ outfit }, female);
+      t.assert(i >= 0 && !cast[i].kid && (cast[i].sex === 'f') === female, `${outfit} (${female}): ${cast[i]?.name}`);
+    }
   }
+  // Athletes by sport and kind (sports.js), their kits tinted.
+  for (const [p, tag] of [[{ sport: 'football', kind: 'athlete' }, 'football'], [{ sport: 'basketball', kind: 'athlete' }, 'basketball'], [{ kind: 'steward' }, 'steward'], [{ kind: 'referee' }, 'football']]) {
+    const i = pick({ outfit: 'athlete' }, false, false, 'casual', p);
+    t.assert(i >= 0 && cast[i].tags.includes(tag) && cast[i].tint > 0, `athlete ${JSON.stringify(p)}: ${cast[i]?.name}`);
+  }
+  // Story characters by name; a mobster boss.
+  for (const [name, avatar] of [['VINNY MORETTI', 'Male_Adult_03'], ['ELENA CRUZ', 'Female_Adult_07'], ['ANTON VARGA', 'Business_Male_04']]) {
+    const i = pick({ outfit: 'story' }, name === 'ELENA CRUZ', false, 'casual', { name });
+    t.assert(cast[i]?.name === avatar, `${name} is ${cast[i]?.name}`);
+  }
+  t.assert(cast[pick({}, false, false, 'casual', { missionDriver: 'kessler' })]?.name === 'Male_Adult_11', 'Kessler off duty');
+  t.assert(cast[pick({ outfit: 'mobster' }, false, false, 'casual', { boss: true })]?.tags.includes('boss'), 'the mobster boss');
+  // Tints: gangs wear their colour, a plain street look none.
+  const gang = pick({ outfit: 'gang' }, false);
+  t.assert(api.npcAvatarTint({ outfit: 'gang', top: '#b66951' }, gang)?.w === 1, 'a gang member has no tint');
+  t.assert(api.npcAvatarTint({}, pick({}, false)) === null, 'a passer-by is tinted');
   for (let i = 0; i < cast.length; i++) t.assert(api.npcAvatarLookTraits(i)?.top, `${cast[i].name}: no rig palette`);
   // The shader patches' anchors in three.js's chunks.
   const shader = { uniforms: {}, vertexShader: Three.ShaderLib.standard.vertexShader, fragmentShader: Three.ShaderLib.standard.fragmentShader };

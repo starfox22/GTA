@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-581 files in the include tree, 199,413 lines.
+581 files in the include tree, 199,641 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -387,7 +387,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/crowd-perception.js`   461 — Crowd perception: incidents heard and seen (crowdIncident, crowdAlarm); deciding, starting and ending reactions.
 - `src/crowd-awareness.js`   273 — Crowd awareness of vehicles: who sees or hears a car coming, how long they take, and whether they dodge, step aside, freeze, jump back or are hit …
 - `src/crowd-awareness-console.js`   102 — Console for the vehicle-awareness test (crowd-awareness.js): stage pedestrians in the player's car's path and run the passes.
-- `src/crowd-reactions.js`   514 — Crowd reactions per frame (updateReaction), pose galleries and lineups, updateCrowdPerson(), dogs and witness reports.
+- `src/crowd-reactions.js`   547 — Crowd reactions per frame (updateReaction), pose galleries and lineups, updateCrowdPerson(), dogs and witness reports.
 - `src/crowd-witnesses.js`   395 — Crowd witnesses: who really saw or heard what the player did, who runs a short way and phones 911, the call itself (phone out, the lines, cut short …
 - `src/crowd-scenes.js`   354 — Street scenes: set pieces staged round the player, their members and props (sceneOpen, spawnSceneMember, streetFrontages).
 - `src/crowd-transit.js`   323 — Crowd taxis and buses: hailing, bus arrivals, deliveries and the per-frame scene update (updateScenes).
@@ -481,7 +481,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/character-rig3d.js`   738 — ▸ Character rig: sculpted body parts, outfits and paint
 - `src/crowd3d.js`    89 — ▸ Instanced people: skeleton, gait, poses, weapons and street props
 - `src/player-body3d.js`   440 — ▸ The player's own body: one skinned mesh posed by the crowd rig's skeleton every frame: the shipped model (a restyled Rocketbox avatar: skull tee …
-- `src/npc-avatar3d.js`   452 — ▸ Street avatars: people near the camera drawn as Microsoft Rocketbox avatars (MIT; tools/npc_models.py), skinned on the rig's skeleton like the …
+- `src/npc-avatar3d.js`   523 — ▸ Street avatars: people near the camera drawn as Microsoft Rocketbox avatars (MIT; tools/npc_models.py), skinned on the rig's skeleton like the …
 - `src/carjack3d.js`   212 — The carjack struggle drawn: the driver's door swinging, the poses of the tug of war and the player's hands on the driver (swingDriverDoor …
 - `src/clouds3d.js`    56 — ▸ Volumetric clouds and cloud shadows
 - `src/ground-data3d.js`   826 — Ground shader data
@@ -490,20 +490,20 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/grass3d.js`   153 — Grass tufts
 - `src/helicopter3d.js`    99 — ▸ Helicopter models
 - `src/apache3d.js`   435 — The AH-64 attack helicopter model
-- `src/vehicles3d.js`   628 — Vehicle meshes
+- `src/vehicles3d.js`   630 — Vehicle meshes
 - `src/police3d.js`    62 — ▸ Police vehicle models
 - `src/cars3d.js`    94 — ▸ Civilian car models
 - `src/vehicle-assets3d.js`   396 — Vehicle models from downloaded assets (assets/vehicle-models.bin + vehicle-atlas.webp, tools/vehicle_models.py): decoded into kits on the civilian …
 - `src/hypercars3d.js`   954 — The Prestige Collection's car models
 - `src/motorbikes3d.js`   588 — Motorbike models
-- `src/motorbike-assets3d.js`   143 — Motorbikes from downloaded models (vehicle-assets3d.js ASSET CARS data, tools/vehicle_models_moto.py): the frame, the steering (fork, bars, head …
-- `src/boat-assets3d.js`    28 — Boats from downloaded models (vehicle-assets3d.js ASSET CARS data, tools/vehicle_models_boat.py): the hull and its fittings from the vehicle atlas …
+- `src/motorbike-assets3d.js`   161 — Motorbikes from downloaded models (vehicle-assets3d.js ASSET CARS data, tools/vehicle_models_moto.py): the frame, the steering (fork, bars, head …
+- `src/boat-assets3d.js`    30 — Boats from downloaded models (vehicle-assets3d.js ASSET CARS data, tools/vehicle_models_boat.py): the hull and its fittings from the vehicle atlas …
 - `src/offroad3d.js`    42 — ▸ 4x4 club trucks, the club lot, trail props and mud
 - `src/vinnytruck3d.js`   599 — Vinny's truck (mission 1, the 'flatbed' type): a 1990s medium-duty conventional flatbed at real size, merged into a few draws (makeVinnyTruck), with …
 - `src/tyresmoke3d.js`   170 — Tyre smoke, dust and road spray: soft billboards thrown up from the wheels of any road vehicle in view (a burnout's smoke; sand, lawns and loose …
 - `src/mountain-village3d.js`    39 — ▸ Mountain village meshes
 - `src/plane3d.js`    48 — ▸ Airplane meshes
-- `src/render3d-vehicle-models.js`   354 — MakeVehicle()/buildVehicleModel(), modelScale, car rims, sniper sights.
+- `src/render3d-vehicle-models.js`   356 — MakeVehicle()/buildVehicleModel(), modelScale, car rims, sniper sights.
 - `src/vehicle-merge3d.js`   347 — Pristine merge: a civilian car nothing has touched draws its non-casting static parts merged per material (hood + panels + paint bumpers, black and …
 - `src/render3d-prewarm-models.js`    67 — Prewarm lists: the throwaway vehicles and the sample shadow casters the title-screen prewarm builds, so each model's kit, shared materials and shader …
 - `src/render3d-effects.js`   169 — ▸ The optional player ring, the objective arrow, the muzzle and fire lights, the effect particles (fx3d-*.js), scorch, tracers, skid marks.
@@ -731,12 +731,12 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/crowd3d-parts.js`   142 — Crowd 3D instanced parts: capacity, body material, limbs, weapon and far-figure geometries (crowdParts, rigPart).
 - `src/crowd3d-bodies.js`   372 — Crowd 3D body sets (close and street detail), prop geometry and instance recording (rigBodySet, crowdEmit).
-- `src/crowd3d-looks.js`   565 — Crowd 3D looks: compiling a look into parts and paints (compileLook, compiledLook, specialLooks).
-- `src/npc-avatar-cast.js`    74 — Casting the street avatars: which Rocketbox avatar (tools/npc_models.py CAST, its role tags) a look is drawn as near the camera, and the rig's …
+- `src/crowd3d-looks.js`   569 — Crowd 3D looks: compiling a look into parts and paints (compileLook, compiledLook, specialLooks).
+- `src/npc-avatar-cast.js`   137 — Casting the street avatars: which Rocketbox avatar (tools/npc_models.py CAST, its role tags) a look is drawn as near the camera, the tint its top …
 - `src/crowd3d-joints.js`   142 — Crowd 3D joint indices and per-person pose state (crowdState, setArm, crowdDancePose).
 - `src/crowd3d-poses.js`   923 — Crowd 3D pose targets and IK for arms and legs (crowdPoseTargets, solveLeg).
 - `src/crowd3d-roofparty.js`   141 — Crowd 3D poses for mission 2 (the Blue Hour): Vescari's poisoned toast beat by beat, and the bodyguards' heads turning with their sight cones.
-- `src/crowd3d-draw.js`   713 — drawCrowdPerson(): weapon holds, phone poses and the far-figure shortcut.
+- `src/crowd3d-draw.js`   717 — drawCrowdPerson(): weapon holds, phone poses and the far-figure shortcut.
 - `src/crowd3d-gore.js`   361 — Crowd 3D gore: what the rig draws of gore.js's state: lost parts left out, a ragged stump (torn cloth and skin, raw flesh, the bone) at each cut …
 - `src/crowd3d-special.js`   582 — Crowd 3D special characters: player, officers, soldiers, gangs, swimmers, parachutes (specialSpec, applyLimbOverrides).
 - `src/crowd3d-driveby.js`   373 — Crowd 3D drive-by pose: the player at the wheel with the gun arm out of the window, torso and head turned to the aim, recoil per shot …
@@ -755,9 +755,9 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/npc-avatar3d.js ▸ Street avatars: people near the camera drawn as Microsoft Rocketbox avatars (MIT; tools/npc_models.py), skinned on the rig's skeleton like the …
 
-- `src/npc-avatar3d-fit.js`   189 — Street avatars' models (assets/npc-models.bin, tools/npc_models.py: Microsoft Rocketbox avatars, MIT): the cast header read at once, each avatar …
-- `src/npc-avatar3d-shader.js`   132 — Street avatars' shader: the player body's dual quaternion skinning on lean attributes, the colour atlas (hair cards cut out by its alpha), skin lit a …
-- `src/npc-avatar3d-mid.js`   181 — Street avatars' mid level: the same avatars' 1k-triangle meshes drawn instanced, one batch per avatar in view, each instance's bones a row of one …
+- `src/npc-avatar3d-fit.js`   200 — Street avatars' models (assets/npc-models.bin, tools/npc_models.py: Microsoft Rocketbox avatars, MIT): the cast header read at once, each avatar …
+- `src/npc-avatar3d-shader.js`   141 — Street avatars' shader: the player body's dual quaternion skinning on lean attributes, the colour atlas (hair cards cut out by its alpha), skin lit a …
+- `src/npc-avatar3d-mid.js`   188 — Street avatars' mid level: the same avatars' 1k-triangle meshes drawn instanced, one batch per avatar in view, each instance's bones a row of one …
 
 ## src/clouds3d.js ▸ Volumetric clouds and cloud shadows
 
@@ -856,7 +856,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-world.js`   241 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
 - `src/game-console-rides.js`   104 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
 - `src/game-console-leisure.js`    75 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)
-- `src/game-console-crowd.js`   167 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
+- `src/game-console-crowd.js`   169 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
 - `src/game-console-graphics.js`   261 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
 - `src/game-console-perf.js`   272 — DeadEndCity console, simulation cost: simProfile (per-section ms, worst frames), simScenario (staged situations)
 - `src/game-console-soak.js`   369 — DeadEndCity console, long-session health: soakReport (sizes of every list that can grow, DOM, non-finite positions)
