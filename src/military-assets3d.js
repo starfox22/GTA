@@ -17,16 +17,21 @@
           asset = type && vehicleAssetModel(type);
         return asset && asset.kind === 'special' ? type : null;
       }
+      // A part the converter wrote in slices (16-bit indices): every slice's name, joined into one geometry by vaGeometry.
+      function militaryAssetSlices(asset, name) {
+        const n = asset.slices?.[name] || 1;
+        return n > 1 ? Array.from({ length: n }, (_, i) => name + (i ? i : '')) : name;
+      }
       /* The model's parts into `model` (a specialVehicle) at length `l` (design units): returns the scale k. */
       function militaryAssetBody(model, vehicle, type, l) {
         const data = vaData(),
           asset = data.header.models[type],
-          k = l / asset.dims[0],
+          k = l / (asset.hull || asset.dims[0]),
           materials = vaMaterials(),
           b = model.body,
           scale = vehicleSpec(vehicle).modelScale || 1;
         model.asset = asset.title;
-        const body = vaGeometry(asset, data, 'body', k),
+        const body = vaGeometry(asset, data, militaryAssetSlices(asset, 'body'), k),
           panes = vaGeometry(asset, data, 'glass', k);
         if (body) mesh(body, materials.trim, b, 0, 0, 0);
         if (panes) mesh(panes, glass, b, 0, 0, 0).castShadow = false;
@@ -65,13 +70,14 @@
           [tx, ty, tz] = asset.turretAt || [0, asset.dims[1] * 0.6, 0];
         turret.position.set(tx * k, ty * k, tz * k);
         model.body.add(turret);
-        const top = vaGeometry(asset, data, 'turret', k);
+        const top = vaGeometry(asset, data, militaryAssetSlices(asset, 'turret'), k);
         if (top) mesh(top, materials.trim, turret, 0, 0, 0);
         if (asset.barrelAt) {
           const [bx, by, bz] = asset.barrelAt;
-          barrel.position.set((bx - tx) * k, (by - ty) * k, (bz - tz) * k);
+          // The frame recoils the gun by setting the group's x (render3d-frame.js): its offset ahead lies on the mesh.
+          barrel.position.set(0, (by - ty) * k, (bz - tz) * k);
           const gun = vaGeometry(asset, data, 'barrel', k);
-          if (gun) mesh(gun, materials.trim, barrel, 0, 0, 0);
+          if (gun) mesh(gun, materials.trim, barrel, (bx - tx) * k, 0, 0);
         }
         turret.add(barrel);
         model.turret = turret;

@@ -83,7 +83,7 @@ MODELS = [
          url='https://sketchfab.com/3d-models/80s-generic-police-car-low-poly-model-61766c1e6e1e4b2b803c174f33433a74'),
     # The patrol and the agents' SUVs ('utility', 'tahoe' bodies): the livery goes on the body's black and white panels
     # (`paintTex`: its paint and trim share one texture); the bar's lenses light on the police channels.
-    dict(type='police_suv', front='+z', title='Chevrolet Suburban Sheriff Cruiser', author='Matthew (jeandiz)', section=True,
+    dict(type='police_suv', front='+z', title='Chevrolet Suburban Sheriff Cruiser', author='Matthew (jeandiz)', section=True, keep=dict(wheel=0.15),
          src='dl3/sap_suburban_sheriff/scene.gltf', url='https://sketchfab.com/3d-models/chevrolet-suburban-sheriff-cruiser-116f6a42deb04fd8942e6c632e37901f',
          roles=[(r'^Body$', 'paint'), (r'^windows$', 'glass'), (r'^(front|back)_lights$', 'lensglass'), (r'^lighst_inside$', 'lamp'),
                 (r'^lights_on$', 'drop'), (r'^wheel$', 'tyre'), (r'^roof_light_bar$', 'lightbar'), (r'^roof_light_|^light_bar_.*cover$', 'beacon')],
@@ -103,13 +103,21 @@ MODELS = [
          nodeRoles=[(r'Spare_tire', 'trim')],
          src='zhab/ni7co7_camion/camionDeLosNoventa/scene.gltf',
          url='https://sketchfab.com/3d-models/90-light-commercial-truck-low-poly-model-663a0953c038434a918cb85725c88ffa'),
+    # Vinny's ATLAS CARGO FLATBED ('flatbed', mission 1; src/vinnytruck3d.js): the same truck as a cab and chassis, its
+    # box, rear doors, rear lamps and bumper left out (the flatbed's deck, rack and rear end are vinnytruck3d.js's),
+    # stretched to the type's 9.5 m with its rear axle near the deck's crate slots.
+    dict(type='flatbed', front='+x', title="'90 Light Commercial Truck", author=Z, length=6.0,
+         stretch=dict(cut=1.9, length=9.5, rigid=r'(?i)wheel|tire|tyre|rim|suspension_rear|spare'), wheelsSquare=True,
+         nodeRoles=[(r'Spare_tire', 'trim'), (r'(?i)cargo_?box|cargodoor|taillights|stoplights|brakelights|turnsignals_glass_rear|reverselights|bumper_rear|numberplate_rear', 'drop')],
+         src='zhab/ni7co7_camion/camionDeLosNoventa/scene.gltf',
+         url='https://sketchfab.com/3d-models/90-light-commercial-truck-low-poly-model-663a0953c038434a918cb85725c88ffa'),
     # The SOLSTICE SPIDER ('roadster'): an open four-seat convertible of the late nineties.
-    dict(type='roadster', front='+z', title='Chrysler Sebring Convertible', author='BadKarma', length=4.9,
+    dict(type='roadster', front='+z', title='Chrysler Sebring Convertible', author='BadKarma', length=4.9, keep=dict(trim=0.18, wheel=0.12, cabin=0.2),
          roles=[(r'^material_0$', 'paint'), (r'^material_29$', 'glass'), (r'^material_(25|3|4|5|11)$', 'drop'),
                 (r'^material_(21|22|23|24)$', 'lamp'), (r'^material_(8|9)$', 'lamp'), (r'^material_(27|28)$', 'tyre'), (r'^material_(16|7|10)$', 'rim')],
          src='dl3/sebring/scene.gltf', url='https://sketchfab.com/3d-models/chrysler-sebring-convertible-dac8529f24754bbd936173cbe8da92b1'),
     # The METRO CITY BUS ('bus').
-    dict(type='bus', front='+x', title='Generic Town Bus', author='own.guest', length=12.0,
+    dict(type='bus', front='+x', title='Generic Town Bus', author='own.guest', length=12.0, keep=dict(wheel=0.06, cabin=0.12, trim=0.3), minPiece=0.04,
          roles=[(r'^glass$', 'glass'), (r'^standard$', 'paint'), (r'^(standard111|standard1111|standard2)$', 'lamp'), (r'^seat$', 'interior'),
                 (r'^(material|material_4)$', 'tyre'), (r'^1616862037160$', 'drop')],
          src='dl3/townbus/scene.gltf', url='https://sketchfab.com/3d-models/generic-town-bus-14fe03d792914d51b6c6250b393c44fd'),
@@ -117,8 +125,14 @@ MODELS = [
     # wheels joined to the body, so it cannot take the car contract; the ambulance stays procedural.)
     # Fort Sentinel (tools/vehicle_models_special.py; src/military-assets3d.js): the M4 utility on the HMMWV, the M35.
     dict(type='army_jeep', kind='special', front='+z', title='HMMWV M998A1 (soft top)', author='42manako', length=4.6,
-         roles=[(r'mat5_D|mat7_D', 'glass'), (r'mat3_D', 'tyre')], tyreBox=dict(below=0.97, out=0.55), keep=dict(trim=0.35, wheel=0.3),
+         roles=[(r'mat5_D|mat7_D', 'glass'), (r'mat3_D', 'tyre')], tyreBox=dict(below=0.97, out=0.55), keep=dict(trim=0.22, wheel=0.3),
          src='dl3/hmmwv/scene.gltf', url='https://sketchfab.com/3d-models/hmmwv-m998a1-soft-top-ffbc4b053628413fb84acf5b89595d96'),
+    # The SENTINEL M120 ('tank'): hull 7.9 m (`hull`: the collider's length), the gun past it; the turret and the gun split
+    # off by where they are (`split`, metres in the game frame), the whip antennas left out.
+    dict(type='army_tank', kind='special', front='+z', title='Abrams M1A2 SEPv3', author='dannzjs', length=10.1, hull=7.9,
+         split=dict(turretAbove=1.45, turretX=(-3.35, 2.35), gunFrom=2.3, gunHalf=0.35, clipAbove=3.3),
+         keep=dict(trim=0.05), minPiece=0.25, borderCos=0.6,
+         src='dl3/abrams/scene.gltf', url='https://sketchfab.com/3d-models/abrams-m1a2-sepv3-eb6f5560198740269507e9948376414c'),
     dict(type='army_truck', kind='special', front='+z', title='Military Truck 1/2 Ton (M35)', author='Arion Digital', length=6.7,
          roles=[(r'^(79bf1742|9dd96982)', 'tyre')], tyreBox=dict(below=1.2, out=0.5), axleGap=0.06, keep=dict(trim=0.4, wheel=0.3),
          src='dl3/sap_military_half_ton/scene.gltf', url='https://sketchfab.com/3d-models/military-truck-12-ton-5d19c751b12849eeb390d637b2b686a1'),

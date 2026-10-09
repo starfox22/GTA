@@ -54,7 +54,8 @@ export default async function (t) {
     if (b && b.badge.letters !== undefined) t.assert(b.badge.letters > 0, `${type}: its letters laid (${b.badge.letters})`);
   }
   for (const body of ['charger', 'utility', 'crownvic', 'tahoe']) {
-    if (asset('police', body)) continue;
+    // The agents' Tahoe is an 'suv' in the line-up (a downloaded body like the patrol cars').
+    if (asset('police', body) || asset('suv', body)) continue;
     const b = of('police', body) || of('suv', body);
     t.assert(b && b.badge.letters > 0 && b.badge.sub, `police ${body}: its model name on the tail (${JSON.stringify(b?.badge)})`);
   }

@@ -34,7 +34,9 @@ def convert_special(model, src_root, vm):
     for p in prims:
         p['P'] = p['P'] * s
     lo, hi = lo * s, hi * s
-    shift = np.array([-(lo[0] + hi[0]) / 2, -lo[1], -(lo[2] + hi[2]) / 2])
+    # Centred on the hull when the type's length is only the hull's (a tank: the gun reaches past it).
+    mid_x = lo[0] + model['hull'] / 2 if model.get('hull') else (lo[0] + hi[0]) / 2
+    shift = np.array([-mid_x, -lo[1], -(lo[2] + hi[2]) / 2])
     for p in prims:
         p['P'] = p['P'] + shift
     T = vm.triangles(prims, mats, model)
@@ -47,6 +49,21 @@ def convert_special(model, src_root, vm):
     L = hi[0] - lo[0]
     V = lambda k: prims[tri_prim[k]]['P'][tri_idx[k]]  # noqa: E731
     n = len(role)
+    # ---- A tank's turning parts by where they are (`split`, metres): everything over `turretAbove` within `turretX` of
+    # the middle is the turret, of it whatever lies ahead of `gunFrom` (the mantlet's face) the gun; thin masts above
+    # `clipAbove` are left out (whip antennas).
+    sp = model.get('split')
+    if sp:
+        for k in range(n):
+            if role[k] == 'drop':
+                continue
+            c = cen[k]
+            if sp.get('clipAbove') and c[1] > sp['clipAbove']:
+                role[k] = 'drop'
+            elif c[1] > sp['turretAbove'] and c[0] > sp['gunFrom'] and abs(c[2]) < sp.get('gunHalf', 0.4):
+                role[k] = 'barrel'
+            elif c[1] > sp['turretAbove'] and sp['turretX'][0] < c[0] < sp['turretX'][1]:
+                role[k] = 'turret'
     # ---- Wheels: tyre triangles grouped by axle (gaps along x) and side; whatever sits inside a tyre turns with it.
     # A material that holds the wheels with the running gear (`tyreBox`): only what lies wholly below `below` metres
     # and further out than `out` of the half width is wheel; the rest of it is the body's.
@@ -117,16 +134,22 @@ def convert_special(model, src_root, vm):
     # Everything drawn from the atlas counts as trim for the atlas's texel shares (vehicle_models.py build_atlas).
     for k in body + turret + barrel:
         role[k] = 'trim'
-    parts = {
-        'body': dict(tris=body, keep=keep['trim'], borderCos=bc, minPiece=mp),
-        'glass': dict(tris=glass),
-    }
+    parts = {'glass': dict(tris=glass)}
+    # A part too big for 16-bit indices goes out in slices along the vehicle ('body', 'body1', ...; the runtime joins them).
+    def sliced(name, tris, **kw):
+        tris = sorted(tris, key=lambda k: cen[k, 0])
+        n_slices = max(1, (len(tris) + 29999) // 30000)
+        step = (len(tris) + n_slices - 1) // n_slices
+        for i in range(n_slices):
+            parts[name + (str(i) if i else '')] = dict(tris=tris[i * step:(i + 1) * step], **kw)
+        return n_slices
+    meta_extra_slices = {'body': sliced('body', body, keep=keep['trim'], borderCos=bc, minPiece=mp)}
     meta_extra = {}
     if turret:
         tp = np.concatenate([V(k) for k in turret])
         # The ring: the middle of the turret's footprint at its lowest point (or the hint).
         at = model.get('turretAt') or [float((tp[:, 0].min() + tp[:, 0].max()) / 2), float(tp[:, 1].min()), 0.0]
-        parts['turret'] = dict(tris=turret, keep=keep['trim'], borderCos=bc, minPiece=mp, origin=tuple(at))
+        meta_extra_slices['turret'] = sliced('turret', turret, keep=keep['trim'], borderCos=bc, minPiece=mp, origin=tuple(at))
         meta_extra['turretAt'] = [round(float(v), 4) for v in at]
     if barrel:
         bp = np.concatenate([V(k) for k in barrel])
@@ -147,6 +170,8 @@ def convert_special(model, src_root, vm):
                      width=round(float(w['width']), 4), side=int(w['side']), front=bool(w['front'])) for w in wheels],
         lamps={k: {kk: round(vv, 4) for kk, vv in v.items()} for k, v in lamps.items()},
         x0=round(float(lo[0]), 4), x1=round(float(hi[0]), 4), paintTexture=False, paintColor=None, **meta_extra,
+        # The length the type's collider stands for (a tank's hull, the gun reaching past it), when not the whole.
+        hull=model.get('hull'), slices=meta_extra_slices,
     )
     area = vm.cat(T, 'area')
     print('  special: body %d, glass %d, turret %d, barrel %d, wheels %d, lamps %s' % (len(body), len(glass), len(turret), len(barrel), len(wheels), sorted(lamps)))
