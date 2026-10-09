@@ -25,6 +25,7 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/people-and-crowd-rig.md | The character rig: one instanced rig for everyone, key-ring outlines, looks, skeleton and gait, body sets, the chase view's near set (sculpted faces, hands, shoes, the near paint shader) |
 | areas/people-and-crowd-player.md | The player's own body: one skinned mesh (SDF-built man in his forties, black tee, jeans), dual quaternion skinning on the rig's skeleton, the grip, the paint, its test |
 | areas/people-and-crowd-avatars.md | The street avatars: the people nearest the camera drawn as skinned Rocketbox avatars (slots by tier, casting by role and sex, the rig painted to match, fitting, gore, cost) |
+| areas/people-and-crowd-avatars-cast.md | Who is which avatar: the cast table by role and sex, story characters by name, painted variants (traffic hi-vis, FED, stewards) and tints (gangs, kits, bikers, the player's suit) |
 | areas/people-and-crowd-vehicles.md | Who sees or hears a car coming and how they react (dodge, freeze, hit unaware), the second pass over someone on the ground (harm by speed and weight, blood, dying) |
 | areas/people-and-crowd-living-city.md | Free roam's living city: traffic streamed round the player by hour and district, sirens and pulling over, ambulances and paramedics, street events |
 | areas/police-and-combat.md | Heat and stars, police response, shooting and wounds, carjacking, overhead cover, damage and breakables |

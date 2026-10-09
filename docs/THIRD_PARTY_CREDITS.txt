@@ -726,21 +726,26 @@ player-model.bin, player-skin.webp, player-detail.webp (the player character; sr
   skeleton at load (longer legs, broader chest, heavier arms) and poses the hands itself.
 
 npc-models.bin, npc-skin.webp (the street's people near the camera; src/npc-avatar3d.js)
-  32 avatars from the Microsoft Rocketbox Avatar Library,
-  https://github.com/microsoft/Microsoft-Rocketbox (Assets/Avatars), copyright (c) 2020
-  Microsoft, license MIT (the same terms as quoted above for the player's model):
-    Adults: Male_Adult_01, Male_Adult_04, Male_Adult_06, Male_Adult_08, Male_Adult_12,
-      Male_Adult_14, Male_Adult_17, Female_Adult_01, Female_Adult_02, Female_Adult_03,
-      Female_Adult_04, Female_Adult_11, Female_Adult_14, Female_Adult_15, Female_Party_02
-    Professions: Business_Male_01, Business_Female_01, Business_Female_03, Police_Male_02,
-      Police_Male_03, Security_Female_01, Military_Male_01, Military_Male_02,
-      Medical_Male_01, Medical_Female_01, Construction_Male_07, Sports_Male_01,
-      Sports_Male_04, Sports_Female_01, Sports_Female_02
-    Children: Male_Child_01, Female_Child_01
+  59 avatars from the Microsoft Rocketbox Avatar Library (64 cast entries: six are painted
+  variants of them), https://github.com/microsoft/Microsoft-Rocketbox (Assets/Avatars),
+  copyright (c) 2020 Microsoft, license MIT (the same terms as quoted above for the player's model):
+    Adults: Male_Adult_01, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 14, 17, 18, 20,
+      Female_Adult_01, 02, 03, 04, 07, 11, 12, 13, 14, 15, Female_Party_02
+    Professions: Business_Male_01, 02, 03, 04, 05, 06, Business_Female_01, Business_Female_03,
+      Police_Male_01, 02, 03, 07, Security_Male_01, Security_Female_01,
+      Military_Male_01, 02, 03, 04, 05, 06, Medical_Male_01, Medical_Female_01,
+      Construction_Male_07, Sports_Male_01, 02, 03, 04, Sports_Female_01, Sports_Female_02
+    Children: Male_Child_01, Male_Child_02, Female_Child_01, Female_Child_02
   Changes: tools/npc_models.py converts each FBX mesh and its skin weights to the game's 15
   bones (holstered pistols and knives left out, the mesh decimated to about 4,000 and 1,000
   triangles by tools/mesh_decimate.py, positions quantised) and scales the colour
-  maps into one atlas (body 320 px, head 160 px per avatar); the game fits each mesh to its
+  maps into one atlas (body 320 px, head 160 px per avatar); tools/npc_paint.py edits some
+  colour maps: a hi-vis vest with reflective bands painted over Police_Male_01, Police_Male_03
+  and Security_Female_01 (traffic officers) and over Male_Adult_09 (stewards), Police_Male_07's
+  POLICE patches relettered FED, a navy vest lettered FED over Business_Female_01, and a mask
+  in the atlas' alpha marking the top garment the game recolours (gangs, kits, the player's
+  suit). The game fits each mesh to its own skeleton at load (children at an adult's stature,
+  drawn at a child's height) and poses the hands itself.
   own skeleton at load and poses the hands itself.
 
 BUILDING AND ROOF MATERIALS
