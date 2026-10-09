@@ -76,11 +76,17 @@ people-and-crowd-avatars-cast.md.
   CPU: choosing and flushing ~0.05 ms a frame (profiled); `crowdBenchmark` 2.99 -> 2.70 ms (noise on a shared machine).
 - Media: npc-models.bin 3.2 MB, npc-skin.webp 0.9 MB (2880x1920 RGBA, ~29 MB on the GPU with mipmaps); geometry
   ~64 bytes a vertex (~6 MB for the cast); fitting ~0.6-0.8 s of work behind the title in slices.
+- Avatars everywhere (October 2026, 64 cast entries; the same lineup, software GL on a shared machine): HIGH street
+  333 -> 301 draws, 1.50M -> 1.52M triangles (12 near, 6 mid); HIGH chase 1388 -> 1340 draws, 2.49M -> 2.40M triangles
+  (the rig's people 120k -> 50k); LOW chase 716 -> 721 draws, 1.62M -> 1.55M triangles (the rig's 157k -> 39k). No new
+  programs (the tint is a uniform and a varying). `crowdBenchmark` 9.7 -> 8.7 ms (noise). Media: npc-models.bin 6.3 MB,
+  npc-skin.webp 1.85 MB (3840x2560, ~52 MB on the GPU); fitting ~2 s of work behind the title.
 
 ## Console
 
 `npcAvatars(on, level)`: `ready`, `fitted`, `workMs`, this frame's near `cap`, `chosen`, `shown`, `triangles`, `mid`
-(`cap`, `chosen`, `shown`, `batches`, `triangles`, `wrongSex`), `drawCalls`, the near slots (avatar, sex against
+(`cap`, `chosen`, `shown`, `batches`, `triangles`, `wrongSex`: late takers left out), `late` (cap, near, mid), `player`
+(the disguise's avatar, tint, gore), `drawCalls`, the near slots (avatar, sex against
 `personFemale`, width, lost bones, wounds), programs (and at first draw); `on` false/true switches the avatars off and on
 (an A/B; the rig's palette stays), `level` 'near' / 'mid' holds everyone in reach at one level, 'auto' releases it.
 `crowdStats().avatars` / `.avatarsMid` count them; tools/tests/npc-avatars.mjs.

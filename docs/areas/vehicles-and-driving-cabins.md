@@ -59,7 +59,10 @@ vehicles-and-driving-models.md.
   (`clear`, `roof`), the hip and recline, `key`, `seat` and the game's `gameSeat` / `seatGap`, `through` (who pokes out
   where); the top-level `through` counts cars with any head out and `driveByArm` is the last drive-by frame's pull-in
   (metres). tools/tests/cabin-headroom.mjs holds `through` at 0 (rendered page only: the suite's no-render page skips
-  it).
+  it). The avatars people in cars are drawn as (motorists, police, agents, the story cast, the player in a disguise:
+  `cabinAvatarClouds`, their head-bone points at the tallest height of their sex) count too: `clear.avatarRoom` is the
+  least room any of them has (`clear.avatar` who), and one out joins `through`. The seat search itself still fits the
+  rig's clouds (DRIVEBY_SEATS unchanged).
 
 ## Rear badges (cars3d-badges.js REAR BADGES)
 

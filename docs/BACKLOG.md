@@ -195,6 +195,16 @@ here when polishing; delete a line when it is fixed. Newest features first.
   (the A pose bind); no collarbone, so raised arms pull the tee's shoulders.
 - The field body (fallback only) is now built at PB_WIDTH 1.04 (broader than it was modelled for).
 
+## Street avatars (npc-avatar3d*.js, npc-avatar-cast.js; docs/areas/people-and-crowd-avatars*.md)
+
+- Still the rig up close: severed limbs (the rig's parts in the avatar's colours), a wounded person beyond the near cap
+  (the mid mesh has no wound soak), anyone past a full cap or the mid batches; a motorcyclist's helmet is the rig's part
+  over the avatar's head (no Rocketbox avatar wears one).
+- Tints are one colour on the top garment: kits keep their own shorts and socks, gang trousers stay the avatar's.
+- Children are fitted at an adult's stature and drawn at the look's 0.64: the adult rig's joints (leg length ratio)
+  pose them; a child's own skeleton would need per-person rig proportions.
+- The atlas is 3840x2560 (~52 MB on the GPU with mipmaps, was ~29 MB); fitting 64 avatars is ~2 s behind the title.
+
 ## Mountain island (mountain-village*.js, mountain-club3d.js)
 - Northridge metal roofs (rescue barn, general store) were lightened but not re-shot.
 - The Last Witness now lands at the Northridge ranger station pad: play the mission through once.
