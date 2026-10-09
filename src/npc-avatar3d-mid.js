@@ -121,7 +121,7 @@
               sz = Math.sqrt(e[8] * e[8] + e[9] * e[9] + e[10] * e[10]);
             npcRot.set(e[0] / sx, e[4] / sy, e[8] / sz, 0, e[1] / sx, e[5] / sy, e[9] / sz, 0, e[2] / sx, e[6] / sy, e[10] / sz, 0, 0, 0, 0, 1);
             npcQ.setFromRotationMatrix(npcRot);
-            npcQ.multiply(npcQInv.copy(fit.bindQ[b]).invert());
+            npcQ.multiply(fit.bindQInv[b]);
             if (b === 0) data[ex] = sx;
             npcO.copy(fit.bindO[b]).multiplyScalar(sx).applyQuaternion(npcQ);
             npcT.set(e[12] - npcO.x, e[13] - npcO.y, e[14] - npcO.z);

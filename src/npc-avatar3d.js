@@ -138,11 +138,13 @@
           const fit = npcAvatarFitOne(asset, i);
           fit.geometry = npcGeometry(fit);
           fit.bindQ = [];
+          fit.bindQInv = [];
           fit.bindO = [];
           for (let b = 0; b < PB_BONES; b++) {
             const R = fit.bones[b].R,
               m = new Three.Matrix4().set(R[0], R[3], R[6], 0, R[1], R[4], R[7], 0, R[2], R[5], R[8], 0, 0, 0, 0, 1);
             fit.bindQ[b] = new Three.Quaternion().setFromRotationMatrix(m);
+            fit.bindQInv[b] = fit.bindQ[b].clone().invert();
             fit.bindO[b] = new Three.Vector3(fit.bones[b].o[0] * PB_UNITS, fit.bones[b].o[1] * PB_UNITS, fit.bones[b].o[2] * PB_UNITS);
           }
           // The mid level: the same vertex buffers, the 1k-triangle index, drawn instanced (npc-avatar3d-mid.js).
@@ -228,16 +230,18 @@
       }
       // (ox, oy) is the camera in the chase view, the player in the street view; someone at a level last frame ranks
       // as if NPC_KEEP nearer.
-      function npcCandidate(p, look, reach2, ox, oy) {
+      function npcCandidate(p, special, reach2, ox, oy) {
         if (!p || p.hidden || p === player || p.car) return;
         const dx = p.x - ox,
           dy = p.y - oy,
-          d2 = dx * dx + dy * dy,
-          s = crowdState.get(p),
+          d2 = dx * dx + dy * dy;
+        // (Most of the street is beyond reach even with the band: one multiply, no lookups.)
+        if (d2 * NPC_KEEP * NPC_KEEP > reach2) return;
+        const s = crowdState.get(p),
           kept = !!s && s.avatarFrame === npcAv.frame - 1,
           score = kept ? d2 * NPC_KEEP * NPC_KEEP : d2;
-        if (score > reach2 || !entityInView(p, 30)) return;
-        if (compiledLook(look || p.look || ensureLook(p), p).avatar < 0) return;
+        if (score > reach2 || (npcAv.n === npcAv.size && score >= npcAv.score[npcAv.size - 1]) || !entityInView(p, 30)) return;
+        if (compiledLook(special ? specialLook(p) : p.look || ensureLook(p), p).avatar < 0) return;
         npcConsider(p, score, d2);
       }
       /**
@@ -266,8 +270,8 @@
         const mid2 = reach.mid * reach.mid,
           near2 = reach.near * reach.near,
           keep2 = NPC_KEEP * NPC_KEEP;
-        for (let i = 0; i < pedestrians.length; i++) npcCandidate(pedestrians[i], null, mid2, ox, oy);
-        for (let i = 0; i < specials.length; i++) if (specials[i] !== player) npcCandidate(specials[i], specialLook(specials[i]), mid2, ox, oy);
+        for (let i = 0; i < pedestrians.length; i++) npcCandidate(pedestrians[i], false, mid2, ox, oy);
+        for (let i = 0; i < specials.length; i++) if (specials[i] !== player) npcCandidate(specials[i], true, mid2, ox, oy);
         for (let i = 0; i < N.n; i++) {
           const s = stateFor(N.list[i]),
             wasNear = s.avatarFrame === N.frame - 1 && s.avatarLevel === 1,
@@ -312,7 +316,6 @@
       }
       const npcRot = new Three.Matrix4(),
         npcQ = new Three.Quaternion(),
-        npcQInv = new Three.Quaternion(),
         npcT = new Three.Vector3(),
         npcO = new Three.Vector3();
       /* Per frame after the crowd is packed (finishCrowd3D): the used slots' dual quaternions, gore, visibility. */
@@ -342,7 +345,7 @@
               sz = Math.sqrt(e[8] * e[8] + e[9] * e[9] + e[10] * e[10]);
             npcRot.set(e[0] / sx, e[4] / sy, e[8] / sz, 0, e[1] / sx, e[5] / sy, e[9] / sz, 0, e[2] / sx, e[6] / sy, e[10] / sz, 0, 0, 0, 0, 1);
             npcQ.setFromRotationMatrix(npcRot);
-            npcQ.multiply(npcQInv.copy(fit.bindQ[b]).invert());
+            npcQ.multiply(fit.bindQInv[b]);
             if (b === 0) slot.uniforms.npcScale.value = sx;
             npcO.copy(fit.bindO[b]).multiplyScalar(sx).applyQuaternion(npcQ);
             npcT.set(e[12] - npcO.x, e[13] - npcO.y, e[14] - npcO.z);
