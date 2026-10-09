@@ -347,6 +347,7 @@
           near: crowdNear.n,
           // People drawn as their avatars this frame (npc-avatar3d.js), one camera and one shadow draw each.
           avatars: npcAv.shown,
+          avatarsMid: npcAv.shownMid,
           packMs: Math.round(crowdPackMs * 100) / 100,
           packMsAverage: Math.round(crowdPackAverage * 100) / 100,
           // People drawn from their recorded instances (STILL FIGURES).

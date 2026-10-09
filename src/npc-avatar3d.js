@@ -23,13 +23,17 @@
        */
       // @include src/npc-avatar3d-fit.js
       // @include src/npc-avatar3d-shader.js
+      // LEVELS OF DETAIL: near (a slot, the 4k-triangle mesh) within NPC_REACH[view].near, mid (a batch, the 1k-triangle
+      // mesh of the same avatar) within .mid, the rig beyond (in the avatar's colours). Reaches in units from the chase
+      // camera or (street view) the player; someone already at a level keeps it to NPC_KEEP further (1 / 0.86: +16 %).
       const NPC_AVATAR_SLOTS = 8,
         NPC_TIER_SLOTS = { LOW: 4, MEDIUM: 6, HIGH: 8, ULTRA: 8 },
-        // The street view: avatars once a figure is big enough (the zoom detail 2 starts at), within this reach of the
-        // player (units), kept a little further once chosen.
+        NPC_TIER_MID = { LOW: 12, MEDIUM: 24, HIGH: 40, ULTRA: 48 },
+        NPC_MID_MAX = 48,
+        NPC_REACH = { chase: { near: 16 * UNITS_PER_METRE, mid: 45 * UNITS_PER_METRE }, street: { near: 14 * UNITS_PER_METRE, mid: 30 * UNITS_PER_METRE } },
+        // The street view: avatars once a figure is big enough (the zoom detail 2 starts at).
         NPC_STREET_ZOOM = 1.3,
-        NPC_STREET_REACH = 22 * UNITS_PER_METRE,
-        NPC_STREET_KEEP = 0.86;
+        NPC_KEEP = 0.86;
       const npcAvatarMap = (() => {
         const texture = new Three.Texture();
         texture.colorSpace = Three.SRGBColorSpace;
@@ -94,6 +98,7 @@
       });
       const npcAv = {
         enabled: true,
+        force: 0,
         ready: false,
         error: '',
         fits: [],
@@ -102,15 +107,25 @@
         workMs: 0,
         frame: 0,
         cap: 0,
+        capMid: 0,
         used: 0,
+        usedMid: 0,
         shown: 0,
+        shownMid: 0,
         triangles: 0,
+        trianglesMid: 0,
+        batches: 0,
+        batchesShown: 0,
         firstShow: null,
         chosen: 0,
-        list: new Array(NPC_AVATAR_SLOTS).fill(null),
-        score: new Float32Array(NPC_AVATAR_SLOTS),
+        chosenMid: 0,
+        list: new Array(NPC_AVATAR_SLOTS + NPC_MID_MAX).fill(null),
+        score: new Float32Array(NPC_AVATAR_SLOTS + NPC_MID_MAX),
+        raw: new Float32Array(NPC_AVATAR_SLOTS + NPC_MID_MAX),
         n: 0,
+        size: 0,
       };
+      // @include src/npc-avatar3d-mid.js
       // The body set an avatar person is drawn with: the player's (body parts empty) without the clothing kit either.
       const BODY_AVATAR = { ...BODY_PLAYER };
       for (const name of Object.keys(BODY_AVATAR)) BODY_AVATAR[name] = PB_EMPTY_PART;
@@ -130,23 +145,32 @@
             fit.bindQ[b] = new Three.Quaternion().setFromRotationMatrix(m);
             fit.bindO[b] = new Three.Vector3(fit.bones[b].o[0] * PB_UNITS, fit.bones[b].o[1] * PB_UNITS, fit.bones[b].o[2] * PB_UNITS);
           }
+          // The mid level: the same vertex buffers, the 1k-triangle index, drawn instanced (npc-avatar3d-mid.js).
+          fit.midGeometry = npcMidGeometry(fit.geometry, fit.indexMid);
           // Only what the slots read is kept: the arrays live on in the geometry.
           fit.attributes = null;
           fit.index = null;
+          fit.indexMid = null;
           fit.name = cast[i].name;
           npcAv.fits[i] = fit;
           // Its buffers to the GPU now, off-screen (render3d-resources.js OFF-SCREEN UPLOAD), not when first seen.
           const mesh = npcSlots[0].mesh,
-            visible = mesh.visible;
+            batch = npcMidBatches[0].mesh,
+            visible = mesh.visible,
+            batchVisible = batch.visible;
           mesh.geometry = fit.geometry;
-          mesh.visible = true;
+          batch.geometry = fit.midGeometry;
+          fit.midGeometry.instanceCount = 1;
+          mesh.visible = batch.visible = true;
           try {
-            uploadMeshes([mesh], renderer.shadowMap.enabled);
+            uploadMeshes([mesh, batch], renderer.shadowMap.enabled);
           } catch (error) {
             console.warn('npc avatars: upload', error);
           }
           mesh.geometry = npcPlaceholder;
+          batch.geometry = npcMidPlaceholder;
           mesh.visible = visible;
+          batch.visible = batchVisible;
           npcAv.built = i + 1;
           yield;
         }
@@ -179,75 +203,94 @@
         if (!npcAv.enabled || !npcAv.ready) return 0;
         return NPC_TIER_SLOTS[(activeTier || graphicsTier()).name] ?? 6;
       }
-      /* The street view's nearest people to the player (a fixed list, nearest first; nothing allocated). */
-      function npcStreetConsider(p, d2) {
+      function npcAvatarCapMid() {
+        if (!npcAv.enabled || !npcAv.ready) return 0;
+        return Math.min(NPC_MID_MAX, NPC_TIER_MID[(activeTier || graphicsTier()).name] ?? 24);
+      }
+      /* The nearest people (a fixed list ranked by score, nearest first; nothing allocated). */
+      function npcConsider(p, score, d2) {
         const N = npcAv,
-          cap = N.cap;
-        if (N.n === cap) {
-          if (d2 >= N.score[cap - 1]) return;
+          size = N.size;
+        if (N.n === size) {
+          if (score >= N.score[size - 1]) return;
           N.n--;
         }
         let i = N.n++;
-        while (i > 0 && N.score[i - 1] > d2) {
+        while (i > 0 && N.score[i - 1] > score) {
           N.list[i] = N.list[i - 1];
           N.score[i] = N.score[i - 1];
+          N.raw[i] = N.raw[i - 1];
           i--;
         }
         N.list[i] = p;
-        N.score[i] = d2;
+        N.score[i] = score;
+        N.raw[i] = d2;
       }
-      function npcStreetCandidate(p, look, reach2) {
+      // (ox, oy) is the camera in the chase view, the player in the street view; someone at a level last frame ranks
+      // as if NPC_KEEP nearer.
+      function npcCandidate(p, look, reach2, ox, oy) {
         if (!p || p.hidden || p === player || p.car) return;
-        const dx = p.x - player.x,
-          dy = p.y - player.y,
+        const dx = p.x - ox,
+          dy = p.y - oy,
+          d2 = dx * dx + dy * dy,
           s = crowdState.get(p),
           kept = !!s && s.avatarFrame === npcAv.frame - 1,
-          d2 = (dx * dx + dy * dy) * (kept ? NPC_STREET_KEEP * NPC_STREET_KEEP : 1);
-        if (d2 > reach2 || !entityInView(p, 30)) return;
+          score = kept ? d2 * NPC_KEEP * NPC_KEEP : d2;
+        if (score > reach2 || !entityInView(p, 30)) return;
         if (compiledLook(look || p.look || ensureLook(p), p).avatar < 0) return;
-        npcStreetConsider(p, d2);
+        npcConsider(p, score, d2);
       }
       /**
-       * Once a frame before packing (updateCrowd3D, after chooseNearPeople): who is drawn as their avatar. The chase
-       * view takes the near set; the street view the nearest to the player while zoomed in.
+       * Once a frame before packing (updateCrowd3D): who is drawn as their avatar and at which level, nearest first:
+       * from the chase camera, or from the player in the street view while zoomed in. The nearest (up to the tier's
+       * slots) within the near reach are near, the rest within the mid reach mid; each keeps its level to NPC_KEEP
+       * further than it would take it (a band, so nobody flickers between levels).
        */
       function npcAvatarChoose(specials) {
         const N = npcAv;
         N.frame++;
-        N.used = 0;
-        N.chosen = 0;
-        N.cap = npcAvatarCap();
-        N.n = 0;
-        if (!N.cap) return;
+        N.used = N.usedMid = N.chosen = N.chosenMid = N.n = N.batches = 0;
+        // (npcAvatars(on, level) can hold everyone in reach at one level: an A/B of the two meshes.)
+        N.cap = N.force === 2 ? 0 : npcAvatarCap();
+        N.capMid = N.force === 1 ? 0 : npcAvatarCapMid();
+        N.size = N.cap + N.capMid;
+        if (!N.size || flightViewActive) return;
+        let ox = player.x,
+          oy = player.y,
+          reach = NPC_REACH.street;
         if (chaseViewActive) {
-          for (let i = 0; i < crowdNear.n; i++) {
-            const q = crowdNear.list[i];
-            if (q && q !== player && q !== driveByGhost) {
-              stateFor(q).avatarFrame = N.frame;
-              N.chosen++;
-            }
-          }
-          return;
-        }
-        const lod = activeTier ? activeTier.lodBias : 1;
-        if ((flightViewActive ? viewZoom : worldZoom) < NPC_STREET_ZOOM * lod || flightViewActive) return;
-        const reach2 = NPC_STREET_REACH * NPC_STREET_REACH;
-        for (let i = 0; i < pedestrians.length; i++) npcStreetCandidate(pedestrians[i], null, reach2);
-        for (let i = 0; i < specials.length; i++) if (specials[i] !== player) npcStreetCandidate(specials[i], specialLook(specials[i]), reach2);
+          ox = chaseCam.x;
+          oy = chaseCam.y;
+          reach = NPC_REACH.chase;
+        } else if (worldZoom < NPC_STREET_ZOOM * (activeTier ? activeTier.lodBias : 1)) return;
+        const mid2 = reach.mid * reach.mid,
+          near2 = reach.near * reach.near,
+          keep2 = NPC_KEEP * NPC_KEEP;
+        for (let i = 0; i < pedestrians.length; i++) npcCandidate(pedestrians[i], null, mid2, ox, oy);
+        for (let i = 0; i < specials.length; i++) if (specials[i] !== player) npcCandidate(specials[i], specialLook(specials[i]), mid2, ox, oy);
         for (let i = 0; i < N.n; i++) {
-          stateFor(N.list[i]).avatarFrame = N.frame;
+          const s = stateFor(N.list[i]),
+            wasNear = s.avatarFrame === N.frame - 1 && s.avatarLevel === 1,
+            near = N.chosen < N.cap && N.raw[i] * (wasNear ? keep2 : 1) <= near2;
+          if (near || N.chosenMid < N.capMid) {
+            s.avatarFrame = N.frame;
+            s.avatarLevel = near ? 1 : 2;
+            if (near) N.chosen++;
+            else N.chosenMid++;
+          }
           N.list[i] = null;
         }
-        N.chosen = N.n;
         N.n = 0;
       }
-      /** drawCrowdPerson: the slot this person is drawn in this frame, or null (the rig). */
+      /** drawCrowdPerson: the near slot or mid record this person is drawn in this frame, or null (the rig). */
       function npcAvatarTake(p, s, R, detail) {
         const N = npcAv;
-        if (s.avatarFrame !== N.frame || R.avatar < 0 || detail < 1 || N.used >= N.cap) return null;
+        if (s.avatarFrame !== N.frame || R.avatar < 0 || detail < 1) return null;
         const fit = N.fits[R.avatar];
         if (!fit || fit.female !== !!R.female) return null;
-        const slot = npcSlots[N.used++];
+        let slot;
+        if (s.avatarLevel === 1 && N.used < N.cap) slot = npcSlots[N.used++];
+        else if (!(slot = npcMidTake(R.avatar))) return null;
         slot.person = p;
         slot.avatar = R.avatar;
         slot.width = fit.width;
@@ -264,7 +307,8 @@
         else playerBodyBone(i, matrix);
       }
       function npcAvatarGrip(slot, left, right) {
-        slot.uniforms.npcGripAmount.value.set(left, right);
+        if (slot.uniforms) slot.uniforms.npcGripAmount.value.set(left, right);
+        else (slot.gripL = left), (slot.gripR = right);
       }
       const npcRot = new Three.Matrix4(),
         npcQ = new Three.Quaternion(),
@@ -313,6 +357,7 @@
           npcAvatarGore(slot, fit);
         }
         npcAv.shown = shown;
+        npcMidFlush();
         npcAv.triangles = triangles;
         if (shown && !npcAv.firstShow) npcAv.firstShow = npcAvatarPrograms();
       }
@@ -365,8 +410,11 @@
         return { camera: !!renderer.properties.get(m.material).currentProgram, shadow: !!renderer.properties.get(m.depth).currentProgram };
       }
       /* Console (DeadEndCity.npcAvatars): the cast, the build, this frame's slots; `on` switches them (an A/B). */
-      function npcAvatarReport(on) {
+      function npcAvatarReport(on, level) {
         if (on === true || on === false) npcAv.enabled = on;
+        if (level) npcAv.force = level === 'near' ? 1 : level === 'mid' ? 2 : 0;
+        // From now on the mid flush counts people drawn of the wrong sex (personFemale against the avatar).
+        npcMidState.audit = true;
         const cast = npcAvatarCast();
         return {
           enabled: npcAv.enabled,
@@ -379,13 +427,17 @@
           chosen: npcAv.chosen,
           shown: npcAv.shown,
           triangles: npcAv.triangles,
-          drawCalls: { camera: npcAv.shown, shadow: renderer.shadowMap.enabled ? npcAv.shown : 0 },
+          // The mid level: people, avatars drawn (one batch each), triangles, and people drawn of the wrong sex (0).
+          mid: { cap: npcAv.capMid, chosen: npcAv.chosenMid, shown: npcAv.shownMid, batches: npcAv.batchesShown, triangles: npcAv.trianglesMid, wrongSex: npcMidState.wrongSex },
+          drawCalls: { camera: npcAv.shown + npcAv.batchesShown, shadow: renderer.shadowMap.enabled ? npcAv.shown + npcAv.batchesShown : 0 },
           // `personFemale` is the game's rule (voices.js): the avatar's sex must be the same.
           slots: npcSlots
             .filter((s) => s.mesh.visible && s.person)
             .map((s) => ({ avatar: cast[s.avatar]?.name, female: !!npcAv.fits[s.avatar]?.female, personFemale: personFemale(s.person), width: +s.width.toFixed(3), lost: s.uniforms.npcLost.value, wounds: s.uniforms.npcWound.value.filter((w) => w.w > 1.5).length })),
           programs: npcAvatarPrograms(),
           programsAtFirstDraw: npcAv.firstShow,
+          midPrograms: npcMidPrograms(),
+          midProgramsAtFirstDraw: npcMidState.firstShow,
           names: cast.map((a) => a.name),
         };
       }

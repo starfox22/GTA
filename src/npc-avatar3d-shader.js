@@ -14,12 +14,19 @@
         attribute vec3 npcGrip;
         attribute float npcZone;
         attribute vec2 npcUv;
-        uniform vec4 npcQr[ ${PB_BONES} ];
-        uniform vec4 npcQd[ ${PB_BONES} ];
-        uniform float npcScale;
-        uniform vec2 npcGripAmount;
-        uniform float npcLost;
         uniform vec3 npcCut[ ${PB_BONES} ];
+        #ifdef NPC_MID
+          // MID BATCH: one row of npcBones per instance from npcBase: rotations, duals, then (scale, grips, lost).
+          uniform sampler2D npcBones;
+          uniform float npcBase;
+          vec4 npcBone( int i ) { return texelFetch( npcBones, ivec2( i, int( npcBase + 0.5 ) + gl_InstanceID ), 0 ); }
+        #else
+          uniform vec4 npcQr[ ${PB_BONES} ];
+          uniform vec4 npcQd[ ${PB_BONES} ];
+          uniform float npcScale;
+          uniform vec2 npcGripAmount;
+          uniform float npcLost;
+        #endif
         varying vec2 vNpcUv;
         varying float vNpcZone;
         varying vec3 vNpcBind;
@@ -27,10 +34,20 @@
       const NPC_SKIN_VERTEX = `
         vec4 npcR, npcD;
         vec3 npcPos;
+        float npcS;
         {
           int ia = int( npcSkin.x + 0.5 );
           int ib = int( npcSkin.y + 0.5 );
-          vec4 ra = npcQr[ ia ], da = npcQd[ ia ], rb = npcQr[ ib ], db = npcQd[ ib ];
+          #ifdef NPC_MID
+            vec4 ra = npcBone( ia ), da = npcBone( ia + ${PB_BONES} ), rb = npcBone( ib ), db = npcBone( ib + ${PB_BONES} );
+            vec4 extra = npcBone( ${2 * PB_BONES} );
+            float npcScale = extra.x;
+            vec2 npcGripAmount = extra.yz;
+            float npcLost = extra.w;
+          #else
+            vec4 ra = npcQr[ ia ], da = npcQd[ ia ], rb = npcQr[ ib ], db = npcQd[ ib ];
+          #endif
+          npcS = npcScale;
           if ( dot( ra, rb ) < 0.0 ) { rb = -rb; db = -db; }
           float wb = npcSkin.z;
           npcR = ra * ( 1.0 - wb ) + rb * wb;
@@ -50,7 +67,7 @@
           vNpcBind = npcPos / ${PB_UNITS.toFixed(6)};
         }`;
       const NPC_BEGIN_VERTEX = `
-        vec3 transformed = npcQRot( npcR, npcPos * npcScale ) + 2.0 * ( npcR.w * npcD.xyz - npcD.w * npcR.xyz + cross( npcR.xyz, npcD.xyz ) );`;
+        vec3 transformed = npcQRot( npcR, npcPos * npcS ) + 2.0 * ( npcR.w * npcD.xyz - npcD.w * npcR.xyz + cross( npcR.xyz, npcD.xyz ) );`;
       const NPC_FRAGMENT_PARS = `
         uniform sampler2D npcMap;
         uniform vec4 npcWound[ 4 ];

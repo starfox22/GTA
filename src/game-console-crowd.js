@@ -94,7 +94,7 @@
       // The player's own body (player-body3d.js): build, vertices, triangles, parts, whether it drew this frame;
       // `finish` true completes a build still running behind the title at once. Null without the 3D renderer.
       playerModel: (finish) => city3D?.playerModel?.(finish === true) ?? null,
-      npcAvatars: (on) => city3D?.npcAvatars?.(on === true ? true : on === false ? false : undefined) ?? null,
+      npcAvatars: (on, level) => city3D?.npcAvatars?.(on === true ? true : on === false ? false : undefined, level === 'near' || level === 'mid' || level === 'auto' ? level : undefined) ?? null,
       // Voices (voices.js): who near the player screams as a woman or a man and, with
       // the 3D renderer, how the rig draws them (`mismatches`); the last screams played.
       voiceReport: (radius) => voiceReport(radius),

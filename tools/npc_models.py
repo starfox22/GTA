@@ -33,12 +33,14 @@ from PIL import Image
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import player_model as pm  # noqa: E402
+from mesh_decimate import decimate  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BODY, HEAD = 320, 160
 CELL_W, CELL_H = BODY + HEAD, BODY
 COLUMNS = 6
 POS_SCALE = 16000.0
+NEAR_TRIANGLES, MID_TRIANGLES = 4000, 1000
 DROP = ('pistol', 'combat_knife', 'machinegun', 'shotgun', 'flashlight')
 
 # The cast: (avatar, group, sex, child, role tags, rig traits). Tags (src/npc-avatar-cast.js): street (anyone on the
@@ -253,16 +255,27 @@ def convert_one(src, name):
         'hair': median((vkind == 'head') & (P[:, 1] > crown - 0.035) & (P[:, 0] < J('Neck')[0] + 0.02), '#231a15'),
         'arm': median(body & ((part == 5) | (part == 6)), '#44505c'),
     }
+    skin = np.stack([a[vert_cp], b[vert_cp], np.round(wb_share[vert_cp] * 255), a[vert_cp]], 1).astype('u1')
+    hand = np.where(in_hand[vert_cp, None], np.stack([sa[vert_cp], sb[vert_cp], np.round(s_share[vert_cp] * 255), np.zeros(nv)], 1), 255).astype('u1')
+    # The two levels of detail (one vertex buffer): NEAR_TRIANGLES for the near slots, MID_TRIANGLES for the mid batches.
+    full = len(index) // 3
+    near_t, mid_t = decimate(P, vert_cp, np.array(index).reshape(-1, 3), [min(NEAR_TRIANGLES, full), MID_TRIANGLES], pa, mat)
+    used = np.unique(np.concatenate([near_t.ravel(), mid_t.ravel()]))
+    remap = np.full(nv, -1, dtype=np.int64)
+    remap[used] = np.arange(len(used))
     return {
         'name': name,
-        'P': P, 'N': normal, 'uv': uvs, 'vmat': vert_mat, 'kinds': kinds, 'mats': mats, 'pages': pages,
-        'skin': np.stack([a[vert_cp], b[vert_cp], np.round(wb_share[vert_cp] * 255), a[vert_cp]], 1).astype('u1'),
-        'hand': np.where(in_hand[vert_cp, None], np.stack([sa[vert_cp], sb[vert_cp], np.round(s_share[vert_cp] * 255), np.zeros(nv)], 1), 255).astype('u1'),
-        'material': mat.astype('u1'),
-        'index': np.array(index, dtype='<u2'),
+        'P': P[used], 'N': normal[used], 'uv': uvs[used], 'vmat': vert_mat[used], 'kinds': kinds, 'mats': mats, 'pages': pages,
+        'skin': skin[used],
+        'hand': hand[used],
+        'material': mat[used].astype('u1'),
+        'index': remap[near_t].ravel().astype('<u2'),
+        'indexMid': remap[mid_t].ravel().astype('<u2'),
         'frames': frames, 'hands': hands, 'palette': palette,
         'height': float(P[:, 1].max()),
-        'triangles': len(index) // 3,
+        'full': full,
+        'triangles': len(near_t),
+        'trianglesMid': len(mid_t),
     }
 
 
@@ -296,7 +309,7 @@ def main(src):
         e = convert_one(os.path.join(src, group), name)
         e.update({'sex': sex, 'kid': kid, 'tags': tags.split(), 'traits': traits, 'group': group})
         cast.append(e)
-        print('%-22s %5d vertices %6d triangles  %s' % (name, len(e['P']), e['triangles'], e['palette']))
+        print('%-22s %5d vertices, triangles %5d full, %5d near, %5d mid' % (name, len(e['P']), e['full'], e['triangles'], e['trianglesMid']))
     rows = (len(cast) + COLUMNS - 1) // COLUMNS
     W, H = COLUMNS * CELL_W, rows * CELL_H
     atlas = Image.new('RGBA', (W, H), (128, 128, 128, 255))
@@ -331,10 +344,11 @@ def main(src):
             'hand': put(e['hand']),
             'material': put(e['material']),
             'index': put(e['index']),
+            'indexMid': put(e['indexMid']),
         }
         header['avatars'].append({
             'name': e['name'], 'group': e['group'], 'sex': e['sex'], 'kid': e['kid'], 'tags': e['tags'], 'traits': e['traits'],
-            'palette': e['palette'], 'height': round(e['height'], 4), 'vertices': len(e['P']), 'triangles': e['triangles'],
+            'palette': e['palette'], 'height': round(e['height'], 4), 'vertices': len(e['P']), 'triangles': e['triangles'], 'trianglesMid': e['trianglesMid'], 'trianglesFull': e['full'],
             'bones': e['frames'], 'hands': e['hands'], 'arrays': arrays,
         })
     head_json = json.dumps(header, separators=(',', ':')).encode()

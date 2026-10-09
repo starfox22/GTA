@@ -181,7 +181,9 @@
           female,
           attributes: { position, normal, npcSkin: skin, npcGrip: grip3, npcZone: zone, npcUv: uv },
           index: Uint16Array.from(arrays.index),
+          indexMid: Uint16Array.from(arrays.indexMid),
           vertices: n,
           triangles: entry.triangles,
+          trianglesMid: entry.trianglesMid,
         };
       }
