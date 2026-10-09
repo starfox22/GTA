@@ -126,11 +126,17 @@
         const gl = renderer.getContext(),
           u = marchUniforms,
           n = clamp(Math.round(rounds) || 8, 1, 60),
+          // A one-pixel read waits for the GPU (gl.finish alone returns at once in Chrome).
+          pixel = new Uint8Array(4),
+          settle = () => {
+            renderer.setRenderTarget(null);
+            gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel);
+          },
           time = (draw) => {
-            gl.finish();
+            settle();
             const start = performance.now();
             for (let i = 0; i < n; i++) draw();
-            gl.finish();
+            settle();
             return +((performance.now() - start) / n).toFixed(2);
           },
           march = () => {
@@ -143,12 +149,14 @@
         const uniformMarch = time(march);
         u.uBelow.value = 1;
         u.uMaxDistance.value = SKY_CLOUD_REACH;
+        if (cloudNoiseSky) u.uNoise.value = cloudNoiseSky.texture;
         const below = time(march),
           history = time(() => {
             renderer.setRenderTarget(skyHistoryTargets[1 - skyHistory.read]);
             renderer.render(skyHistoryScene, fullScreenCamera);
           });
         u.uBelow.value = 0;
+        u.uNoise.value = cloudNoise.texture;
         u.uMaxDistance.value = reach;
         renderer.setRenderTarget(null);
         return { rounds: n, size: [cloudTarget.width, cloudTarget.height], msPerFrame: { march: below, history, uniformMarch } };

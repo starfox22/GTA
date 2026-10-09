@@ -129,6 +129,8 @@
         uBelowJitter: { value: 0 },
         // ... and its rays' offset within a march texel this frame (clip units; zero for the flight view).
         uBelowOffset: { value: new Three.Vector2() },
+        // ... and how far the scene is drawn: a tall tower beyond it is not on screen, so it stops no ray.
+        uBelowDrawn: { value: 1e9 },
         ...CITY_HAZE,
       };
       const marchMaterial = new Three.ShaderMaterial({
@@ -156,18 +158,20 @@
           uniform float uMaxDistance;
           // Shafts under the layer: x strength (0 off), y haze per world unit, z the ground.
           uniform vec3 uShafts;
-          uniform float uBelowHaze, uBelowJitter;
+          uniform float uBelowHaze, uBelowJitter, uBelowDrawn;
           varying vec3 vRay;
           /* From below (the chase view, clouds3d-sky.js): the street looks up through a kilometre or more of the
              slab along a low ray, out to the horizon. Uniform steps over that span skip whole cloud cells (striped,
              grainy, soft walls), so the ray runs coarse steps through clear air, growing with the distance, and
-             on meeting cloud backs up and walks it in fine steps (a quarter) while it stays in cloud. The layer's
+             on meeting cloud backs up and walks it in fine steps (a quarter, 30 m at most: longer ones draw
+             contour rings on far cloud) while it stays in cloud. The layer's
              haze is the air's own (uBelowHaze: kilometres of visibility, thinning with height), not the street's
              short haze, so clouds stay clouds down to the horizon and sink into the sky's colour there. */
           vec4 cloudMarchBelow(vec3 ro, vec3 rd, float jitter, float phase){
             float ry = abs(rd.y) < 1e-4 ? 1e-4 : rd.y;
             float toLow = (uSlab.x - ro.y) / ry, toHigh = (uSlab.y - ro.y) / ry;
-            float t0 = max(min(toLow, toHigh), 0.), t1 = min(min(max(toLow, toHigh), uMaxDistance), cloudOccluded(ro, rd));
+            float tower = cloudOccluded(ro, rd);
+            float t0 = max(min(toLow, toHigh), 0.), t1 = min(min(max(toLow, toHigh), uMaxDistance), tower < uBelowDrawn ? tower : 1e9);
             if (t1 <= t0) return vec4(0.);
             float coarse = clamp(t0 * 0.04, 200., 2400.), fineLeft = 0.;
             float t = t0 + coarse * jitter, transmittance = 1., firstHit = -1.;
@@ -181,12 +185,19 @@
               if (fineLeft <= 0.){
                 // Clear air: the cheap field (the detail only ever erodes it) decides whether cloud starts here.
                 if (cloudDensityAt(p, area, false) > 0.){
-                  fineLeft = coarse * 2.;
+                  fineLeft = coarse * 1.25;
                   t = max(t - coarse * (0.6 + 0.4 * jitter), t0);
                 } else t += coarse;
                 continue;
               }
-              float stepLength = coarse * 0.25, d = cloudDensityAt(p, area, true);
+              // The detail octave fades out from 1.5 to 4 km: finer than a pixel there, it only aliases (in
+              // vertical streaks, along the near-level rays to the horizon).
+              float stepLength = min(coarse * 0.25, 240.), close = 1. - smoothstep(12000., 32000., t), d;
+              if (close >= 1.) d = cloudDensityAt(p, area, true);
+              else {
+                d = cloudDensityAt(p, area, false);
+                if (close > 0. && d > 0.) d = mix(d, cloudDensityAt(p, area, true), close);
+              }
               if (d > 0.003){
                 if (firstHit < 0.) firstHit = t;
                 vec3 radiance = cloudRadiance(p, area, d, phase);
@@ -194,7 +205,7 @@
                 light += transmittance * radiance * (1. - stepTransmittance);
                 transmittance *= stepTransmittance;
                 if (transmittance < 0.015) break;
-                fineLeft = coarse * 2.;
+                fineLeft = coarse * 1.25;
               } else fineLeft -= stepLength;
               t += stepLength;
             }

@@ -23,6 +23,8 @@
        */
       const skyCloudUniforms = {
         ...cloudFieldUniforms(),
+        // The half-float noise volume (clouds3d-field.js cloudNoiseSky) where there is one.
+        ...(cloudNoiseSky ? { uNoise: { value: cloudNoiseSky.texture } } : {}),
         // 0 none, 1 the layer drawn in the dome (LOW, MEDIUM), 2 the march's target (HIGH, ULTRA).
         uSkyCloudMode: { value: 0 },
         uSkyCloudMarch: { value: cloudTarget ? cloudTarget.texture : null },
@@ -139,8 +141,10 @@
         u.uNearFade.value.set(0, 1);
         u.uPocket.value.set(1, 2, 0);
         u.uMaxDistance.value = SKY_CLOUD_REACH;
+        u.uBelowDrawn.value = camera.far;
         u.uShafts.value.set(0, 0, 0);
         u.uBelowHaze.value = skyCloudUniforms.uSkyCloudHaze.value;
+        if (cloudNoiseSky) u.uNoise.value = cloudNoiseSky.texture;
         const clearAlpha = renderer.getClearAlpha();
         renderer.getClearColor(cloudClearColor);
         renderer.setRenderTarget(cloudTarget);
@@ -151,6 +155,7 @@
         renderer.setClearColor(cloudClearColor, clearAlpha);
         u.uBelow.value = 0;
         u.uBelowOffset.value.set(0, 0);
+        u.uNoise.value = cloudNoise.texture;
       }
       // The Halton sequence's k-th number in base b (in [0, 1)).
       function skyHalton(k, b) {
