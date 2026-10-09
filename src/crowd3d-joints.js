@@ -36,6 +36,9 @@
             seed: Math.random() * 100,
             seen: false,
             holdKind: null,
+            // The frame they were last chosen to be drawn as their avatar (npc-avatar3d.js npcAvatarChoose).
+            avatarFrame: -1,
+            avatarLevel: 0, // 1 near, 2 mid
           };
           s.joints[J_ARMFREE[0]] = s.joints[J_ARMFREE[1]] = 1;
           crowdState.set(p, s);

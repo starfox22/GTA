@@ -321,11 +321,19 @@ packs with plain `<script src>` so the zip still plays from file://.
   The city ground sheet is read by colour class: anything painted over it after the fills (`paintWallGrime`) is
   translucent dark and keeps each class's hue; ground tones read the lane grid bilinearly, never `gLaneW` nearest.
   Compare looks and cost with `lookSwitches({ roofSkin, groundWear })`.
+- Wall skin (cityscape3d-wallskin.js; rendering-buildings.md): real CC0 facade and roof-tile materials are layers of
+  assets/wall-skin.webp (tools/wall_skin.py LAYERS = `WALL_SKIN_LAYERS`, keep them in step), picked per material by the
+  `cityWallLayer` uniform (`userData.wallSkin`), never a new material or define; A/B `lookSwitches({ wallSkin })`.
 - Character rig (people-and-crowd-rig.md): every body set lofts the same key rings (`RIG_*_RINGS`, `rig*Rings`), so
   outline changes go there; lofts face outwards whichever way their rings run (tools/tests/rig-geometry.mjs). Slot D
   of every body part's paint is the skin; paint bits from 32 belong to the near set (`rigNearBits`). Near hands take
   their side from instance order: pack hands in pairs, left then right (`drawCrowdPerson`). `chooseNearPeople`
   (crowd3d-frame.js) is the only place a person joins the chase view's near set, at most `CROWD_NEAR_CAP`.
+- NPC avatars (people-and-crowd-avatars.md): `npcAvatarPick` (npc-avatar-cast.js, from compileLook's `lookFemale`) is the
+  only rule for which Rocketbox avatar a look is; `npcAvatarChoose` is the only place a person gets a level (near slot or
+  mid batch, `NPC_REACH`/`NPC_KEEP` band, tier caps; the rig beyond). drawCrowdPerson hands an avatar's 15 joints to
+  `skinBone` and must pose all 15. Roles no avatar can show (gangs, traffic hi-vis, FED, children, the wounded at mid)
+  keep the rig; tools/tests/npc-avatars.mjs.
 - The player's body is the shipped model when the build carries it (player-body3d-asset.js fits
   assets/player-model.bin from tools/player_model.py, Microsoft Rocketbox, MIT) and the field body otherwise; `PB_WIDTH`
   1.04 is the model's shoulders.

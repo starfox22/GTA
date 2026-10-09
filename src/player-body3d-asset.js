@@ -279,8 +279,36 @@
         gripN.set(normal);
         trig.set(position);
         trigN.set(normal);
-        const H = arrays.hand,
-          local = [0, 0, 0],
+        pbAssetHands(B, A, header.hands, arrays.hand, SK, n, position, normal, grip, gripN, trig, trigN);
+        yield;
+        // Rig units.
+        for (let i = 0; i < position.length; i++) {
+          position[i] *= PB_UNITS;
+          trig[i] *= PB_UNITS;
+        }
+        for (let v = 0; v < n; v++) for (let k = 0; k < 3; k++) grip[v * 4 + k] *= PB_UNITS;
+        return {
+          bones: B,
+          attributes: { position, normal, pbSkin: skin, pbGrip: grip, pbGripN: gripN, pbTrig: trig, pbTrigN: trigN, pbZone: zone, pbUv: uv },
+          detail,
+          model: header.source,
+          textured: true,
+          index: Uint32Array.from(arrays.index),
+          vertices: n,
+          triangles: header.triangles,
+          parts,
+          ms: Math.round(performance.now() - started),
+        };
+      }
+      /**
+       * The hands' relaxed (moved into `position`/`normal`), gripping (`grip`, its w kept) and trigger (`trig`; null
+       * to skip) shapes in bind space (metres): each hand vertex carried by its finger segments
+       * (pbAssetHandSegments). Shared by the player's model and the street's avatars (npc-avatar3d-fit.js).
+       */
+      const PB_HAND_STATES = [0, 1, 2],
+        PB_HAND_GRIPS = [0, 1];
+      function pbAssetHands(B, A, hands, H, SK, n, position, normal, grip, gripN, trig, trigN) {
+        const local = [0, 0, 0],
           localN = [0, 0, 0],
           q = [0, 0, 0],
           qn = [0, 0, 0],
@@ -292,7 +320,7 @@
             // The asset's chains in hand space are its own hand-local coordinates (the map is rigid there).
             Ra = A[7 + side].R,
             ao = A[7 + side].o,
-            chains = header.hands[side].map((chain) =>
+            chains = hands[side].map((chain) =>
               chain.map((j) => {
                 const d = [j[0] - ao[0], j[1] - ao[1], j[2] - ao[2]];
                 return [Ra[0] * d[0] + Ra[1] * d[1] + Ra[2] * d[2], Ra[3] * d[0] + Ra[4] * d[1] + Ra[5] * d[2], Ra[6] * d[0] + Ra[7] * d[1] + Ra[8] * d[2]];
@@ -317,7 +345,7 @@
               sb = H[v * 4 + 1],
               ws = H[v * 4 + 2] / 255,
               out = [];
-            for (const state of [0, 1, 2]) {
+            for (const state of trig ? PB_HAND_STATES : PB_HAND_GRIPS) {
               pbAssetCarry(shapes[state], sa, local, localN, q, qn);
               pbAssetCarry(shapes[state], sb, local, localN, r, rn);
               const P = [0, 1, 2].map((k) => local[k] + (q[k] + (r[k] - q[k]) * ws - local[k]) * handShare),
@@ -330,28 +358,11 @@
               normal[v * 3 + k] = out[1][k];
               grip[v * 4 + k] = out[2][k];
               gripN[v * 3 + k] = out[3][k];
-              trig[v * 3 + k] = out[4][k];
-              trigN[v * 3 + k] = out[5][k];
+              if (trig) {
+                trig[v * 3 + k] = out[4][k];
+                trigN[v * 3 + k] = out[5][k];
+              }
             }
           }
         }
-        yield;
-        // Rig units.
-        for (let i = 0; i < position.length; i++) {
-          position[i] *= PB_UNITS;
-          trig[i] *= PB_UNITS;
-        }
-        for (let v = 0; v < n; v++) for (let k = 0; k < 3; k++) grip[v * 4 + k] *= PB_UNITS;
-        return {
-          bones: B,
-          attributes: { position, normal, pbSkin: skin, pbGrip: grip, pbGripN: gripN, pbTrig: trig, pbTrigN: trigN, pbZone: zone, pbUv: uv },
-          detail,
-          model: header.source,
-          textured: true,
-          index: Uint32Array.from(arrays.index),
-          vertices: n,
-          triangles: header.triangles,
-          parts,
-          ms: Math.round(performance.now() - started),
-        };
       }

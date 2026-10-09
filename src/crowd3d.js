@@ -55,6 +55,7 @@
        * vendor's hat) recompile it.
        */
       // @include src/crowd3d-looks.js
+      // @include src/npc-avatar-cast.js
 
       /**
        * JOINTS

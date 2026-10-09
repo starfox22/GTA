@@ -21,6 +21,9 @@ const embeddedAssetReferences = {
   "playerDetail": "media-player-detail",
   "vehicleModels": "media-vehicle-models",
   "vehicleAtlas": "media-vehicle-atlas",
+  "npcModels": "media-npc-models",
+  "npcSkin": "media-npc-skin",
+  "wallSkin": "media-wall-skin",
   "music": {
     "synth": {
       "title": "Retroracing One more round",
@@ -150,7 +153,7 @@ function embeddedMediaDataUrl(identifier) {
 }
 
 const gameAssets = {};
-for (const name of ['architecture', 'ground', 'weapons', 'harbor', 'arsenal', 'unicorn', 'playerModel', 'playerSkin', 'playerDetail', 'vehicleModels', 'vehicleAtlas']) {
+for (const name of ['architecture', 'ground', 'weapons', 'harbor', 'arsenal', 'unicorn', 'playerModel', 'playerSkin', 'playerDetail', 'vehicleModels', 'vehicleAtlas', 'npcModels', 'npcSkin', 'wallSkin']) {
   gameAssets[name] = embeddedMediaDataUrl(embeddedAssetReferences[name]);
 }
 gameAssets.audio = {};

@@ -23,7 +23,8 @@
       // Axes after a rotation about x by a (the rig's abduction and spread turn about the forward axis).
       const pbAboutX = (a) => [1, 0, 0, 0, Math.cos(a), Math.sin(a), 0, -Math.sin(a), Math.cos(a)];
       const pbAlong = (bone, d) => [bone.o[0] + bone.R[3] * d, bone.o[1] + bone.R[4] * d, bone.o[2] + bone.R[5] * d];
-      function pbBindSkeleton(width = PB_WIDTH) {
+      function pbBindSkeleton(width = PB_WIDTH, female = false) {
+        const sex = female ? 1 : 0;
         const M = PB_RIG_M,
           I = [1, 0, 0, 0, 1, 0, 0, 0, 1],
           hips = pbBone([0, M(RIG.hip), 0], I),
@@ -33,13 +34,13 @@
         for (const side of [0, 1]) {
           const s = side ? 1 : -1,
             R = pbAboutX(-s * PB_BIND_ARM);
-          bones[3 + side] = pbBone([0, M(RIG.hip + RIG.waist + RIG.shoulderY), M(s * RIG.shoulderZ[0] * width)], R);
+          bones[3 + side] = pbBone([0, M(RIG.hip + RIG.waist + RIG.shoulderY), M(s * RIG.shoulderZ[sex] * width)], R);
         }
         for (const side of [0, 1]) bones[5 + side] = pbBone(pbAlong(bones[3 + side], -M(RIG.upperArm)), bones[3 + side].R);
         for (const side of [0, 1]) bones[7 + side] = pbBone(pbAlong(bones[5 + side], -M(RIG.forearm)), bones[5 + side].R);
         for (const side of [0, 1]) {
           const s = side ? 1 : -1;
-          bones[9 + side] = pbBone([0, M(RIG.hip), M(s * RIG.hipZ[0] * width)], pbAboutX(-s * PB_BIND_SPREAD));
+          bones[9 + side] = pbBone([0, M(RIG.hip), M(s * RIG.hipZ[sex] * width)], pbAboutX(-s * PB_BIND_SPREAD));
         }
         for (const side of [0, 1]) bones[11 + side] = pbBone(pbAlong(bones[9 + side], -M(RIG.thigh)), bones[9 + side].R);
         for (const side of [0, 1]) bones[13 + side] = pbBone(pbAlong(bones[11 + side], -M(RIG.shin)), bones[11 + side].R);

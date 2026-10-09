@@ -713,6 +713,37 @@ player-model.bin, player-skin.webp, player-detail.webp (the player character; sr
   the hair darkened, a beard painted on, the skin tanned. The game fits the mesh to its own
   skeleton at load (longer legs, broader chest, heavier arms) and poses the hands itself.
 
+npc-models.bin, npc-skin.webp (the street's people near the camera; src/npc-avatar3d.js)
+  32 avatars from the Microsoft Rocketbox Avatar Library,
+  https://github.com/microsoft/Microsoft-Rocketbox (Assets/Avatars), copyright (c) 2020
+  Microsoft, license MIT (the same terms as quoted above for the player's model):
+    Adults: Male_Adult_01, Male_Adult_04, Male_Adult_06, Male_Adult_08, Male_Adult_12,
+      Male_Adult_14, Male_Adult_17, Female_Adult_01, Female_Adult_02, Female_Adult_03,
+      Female_Adult_04, Female_Adult_11, Female_Adult_14, Female_Adult_15, Female_Party_02
+    Professions: Business_Male_01, Business_Female_01, Business_Female_03, Police_Male_02,
+      Police_Male_03, Security_Female_01, Military_Male_01, Military_Male_02,
+      Medical_Male_01, Medical_Female_01, Construction_Male_07, Sports_Male_01,
+      Sports_Male_04, Sports_Female_01, Sports_Female_02
+    Children: Male_Child_01, Female_Child_01
+  Changes: tools/npc_models.py converts each FBX mesh and its skin weights to the game's 15
+  bones (holstered pistols and knives left out, the mesh decimated to about 4,000 and 1,000
+  triangles by tools/mesh_decimate.py, positions quantised) and scales the colour
+  maps into one atlas (body 320 px, head 160 px per avatar); the game fits each mesh to its
+  own skeleton at load and poses the hands itself.
+
+BUILDING AND ROOF MATERIALS
+wall-skin.webp (the WALL SKIN: src/cityscape3d-wallskin.js, and the clay tile roofs in src/roofskin3d.js)
+  PBR texture sets from ambientCG (https://ambientcg.com), by Lennart Demes, 1K JPG downloads:
+  - Bricks059 (red brick)             https://ambientcg.com/view?id=Bricks059
+  - Concrete034 (concrete)            https://ambientcg.com/view?id=Concrete034
+  - CorrugatedSteel005 (cladding)     https://ambientcg.com/view?id=CorrugatedSteel005
+  - Plaster003 (rough render)         https://ambientcg.com/view?id=Plaster003
+  - RoofingTiles014A (clay tiles)     https://ambientcg.com/view?id=RoofingTiles014A
+  License: CC0 1.0 Universal (https://creativecommons.org/publicdomain/zero/1.0/); attribution is
+  not required and is given as thanks.
+  Changes: tools/wall_skin.py scales each set to 512 px, multiplies the ambient occlusion into the
+  colour map and packs the OpenGL normal's X and Y with the roughness into one sheet.
+
 RENDERING TECHNIQUES
 Written for this project in src/postfx3d.js, src/lighting3d.js and src/surfaces3d.js; no
 third-party shader source is copied. The techniques follow published work:

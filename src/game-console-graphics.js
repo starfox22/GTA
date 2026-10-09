@@ -187,8 +187,10 @@
         };
       },
       // A/B switches for the look: { pixelLock, fxaa, vibrance, carLamps, groundSlopeCap, terrainBeams, lightBar,
-      // foliageCoverage, vehicleLights, stagedSwitch, vehicleMerge, roofSkin, groundWear, chaseBudget, wetGlints, wetReflections } (true = as in play).
+      // foliageCoverage, vehicleLights, stagedSwitch, vehicleMerge, roofSkin, wallSkin, groundWear, chaseBudget, wetGlints, wetReflections } (true = as in play).
       lookSwitches: (options) => city3D?.lookSwitches?.(options) ?? null,
+      // The WALL SKIN (cityscape3d-wallskin.js): its CC0 layers, tile sizes, means and how many facades use each.
+      wallSkin: () => city3D?.wallSkin?.() ?? null,
       // Scene draw calls in view by object name and by map cell (render3d.js).
       drawProfile: (top) => city3D?.drawProfile?.(top) ?? null,
       // Civilian car models drawn merged while pristine (vehicle-merge3d.js): merged, split, kits, draw calls saved now.

@@ -215,6 +215,8 @@
             programs: sorted(programs),
           };
         },
+        // The WALL SKIN's layers, sheet and switch (cityscape3d-wallskin.js).
+        wallSkin: () => wallSkinReport(),
         // The police helicopter's searchlight: state and A/B switches (searchlight3d.js).
         searchlight: (options) => searchlightReport(options),
         // The cloud layer as the camera sees it this frame: in cloud, veil, wisps, lens (clouds3d-frame.js).
@@ -230,6 +232,7 @@
           groundShared.cityGroundSlopeCap.value = lookSwitchState.groundSlopeCap ? 1 : 0;
           groundShared.cityGroundWear.value = lookSwitchState.groundWear ? 1 : 0;
           roofSkinSwitch.value = lookSwitchState.roofSkin ? 1 : 0;
+          wallSkinSwitch.value = lookSwitchState.wallSkin ? 1 : 0;
           setFoliageCoverage(activeTier);
           return { ...lookSwitchState };
         },
@@ -367,6 +370,7 @@
         // People's share of the frame (crowd3d.js): parts, draw calls, triangles.
         crowdStats: (byPart) => crowdStats(byPart),
         playerModel: (finish) => playerBodyReport(!!finish),
+        npcAvatars: (on, level) => npcAvatarReport(on, level),
         // Trees (vegetation3d.js): species counts, the forests, tree draws in view.
         vegetation: () => vegetationReport(),
         // The see-through hole in the trees round the player (vegetation3d-cutaway.js; DeadEndCity.foliageCutaway).
