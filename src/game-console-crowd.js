@@ -89,19 +89,21 @@
       characterLineup: (stance, spacing) => characterLineup(stance, spacing),
       // The street dogs' downloaded model (dog3d.js): vertices, triangles, frames, collar, dogs drawn last frame.
       dogModel: () => city3D?.dogModel?.() ?? null,
-      // Dog walkers in a row in front of the player for screenshots: two trotting (walking circles), one dog standing,
+      // Dog walkers in a row 60 units ahead of the player for screenshots: two trotting (walking circles), one dog standing,
       // one sitting, one sniffing, each in a coat of CROWD_DOGS (`colors` to choose). Returns what was placed.
       dogLineup(spacing = 40, colors = null) {
         for (let i = pedestrians.length - 1; i >= 0; i--) if (pedestrians[i].posed) pedestrians.splice(i, 1);
         const kinds = ['trot', 'trot', 'stand', 'sit', 'sniff'],
           coats = Array.isArray(colors) ? colors : CROWD_DOGS;
         return kinds.map((kind, i) => {
-          const x = player.x - ((kinds.length - 1) * spacing) / 2 + i * spacing,
-            y = player.y - 70,
+          // Ahead of the player (whichever view), spread across the line of sight, the dogs side on.
+          const across = (i - (kinds.length - 1) / 2) * spacing,
+            x = player.x + Math.cos(player.a) * 60 - Math.sin(player.a) * across,
+            y = player.y + Math.sin(player.a) * 60 + Math.cos(player.a) * across,
             p = { x, y, a: Math.PI / 2, hp: 30, flee: 0, timer: 5, walk: 0, state: 'walk', posed: kind === 'trot' ? 'leash' : 'idle', anchor: { x, y } };
           dressPerson(p, 'dogWalker');
           if (!p.dog) p.dog = { x: x - 10, y: y + 6, a: 0, color: '#b98845', size: 1, sniff: 0 };
-          Object.assign(p.dog, { x: x + 12, y: y + 4, a: 0, color: coats[i % coats.length], size: 1, sit: kind === 'sit', sniff: kind === 'sniff' ? 1e6 : 0 });
+          Object.assign(p.dog, { x: x + Math.cos(player.a) * 10, y: y + Math.sin(player.a) * 10, a: player.a + Math.PI / 2, color: coats[i % coats.length], size: 1, sit: kind === 'sit', sniff: kind === 'sniff' ? 1e6 : 0 });
           pedestrians.push(p);
           return { kind, color: p.dog.color };
         });
