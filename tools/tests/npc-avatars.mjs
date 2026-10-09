@@ -1,5 +1,6 @@
 // The street avatars (npc-avatar3d*.js, npc-avatar-cast.js), fitted in node from the shipped cast: every avatar fits the
-// rig's bind skeleton at its own shoulders with a believable stature, valid bones and parts and a closed index, a walk
+// rig's bind skeleton at its own shoulders with a believable stature, valid bones and parts, near (~4k) and mid (~1k
+// triangle) indices over one vertex buffer, a walk
 // pose skins without tearing (the shader's dual quaternions), every role the game dresses has avatars of the sexes it
 // uses, and the shader patches find their anchors. On a rendered page: the lineup is drawn as avatars of the right sex.
 import fs from 'node:fs';
@@ -111,6 +112,7 @@ export default async function (t) {
     const r = await t.call('npcAvatars');
     t.assert(r.shown > 0, 'nobody in the lineup is drawn as an avatar: ' + JSON.stringify(r).slice(0, 400));
     for (const s of r.slots) t.assert(s.female === s.personFemale, `an avatar of the wrong sex: ${JSON.stringify(s)}`);
+    t.assert(r.mid.wrongSex === 0, `mid avatars of the wrong sex: ${JSON.stringify(r.mid)}`);
     await t.call('closeUp', 2);
   }
   const Three = createRequire(import.meta.url)(path.join(ROOT, 'vendor/three.r160.js'));
@@ -134,6 +136,10 @@ export default async function (t) {
       t.assert(S[v * 4] < 15 && S[v * 4 + 1] < 15 && S[v * 4 + 3] < 15, `${a.name}: vertex ${v} has a bone out of range`);
     }
     for (let k = 0; k < fit.index.length; k++) if (fit.index[k] >= n) t.assert(false, `${a.name}: index out of range`);
+    for (let k = 0; k < fit.indexMid.length; k++) if (fit.indexMid[k] >= n) t.assert(false, `${a.name}: mid index out of range`);
+    // The levels of detail: the near mesh about 4k triangles, the mid about 1k (a soldier's kit keeps a few more).
+    t.near(fit.index.length / 3, 3000, 4000, `${a.name}: near triangles`);
+    t.near(fit.indexMid.length / 3, 500, 2800, `${a.name}: mid triangles`);
     const stature = (top - bottom) * M;
     // A hat or a helmet stands a little higher than the crown.
     // (A child is fitted to the adult skeleton; the look's height, about 0.64, makes them a child.)
@@ -215,4 +221,6 @@ export default async function (t) {
   api.npcDepthPatch(depth, {});
   t.assert(depth.vertexShader.includes('vec3 transformed = npcQRot'), 'avatar depth patch: skinning missing');
   t.assert(depth.fragmentShader.includes('texture2D( npcMap, vNpcUv ).a < 0.5'), 'avatar depth patch: the hair cards cast square shadows');
+  // The mid batches read their bones from the texture row of their instance.
+  t.assert(shader.vertexShader.includes('texelFetch( npcBones') && shader.vertexShader.includes('#ifdef NPC_MID'), 'avatar patch: the mid level reads no bone texture');
 }

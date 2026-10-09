@@ -1,14 +1,14 @@
-      // Street avatars: the people nearest the camera drawn as Microsoft Rocketbox avatars (MIT; tools/npc_models.py),
-      // skinned on the rig's skeleton like the player's own body, a few reusable slots of one draw each.
+      // Street avatars: people near the camera drawn as Microsoft Rocketbox avatars (MIT; tools/npc_models.py), skinned
+      // on the rig's skeleton like the player's own body: near slots (one draw each) and mid batches, the rig beyond.
       /**
        * NPC AVATARS
-       * Everyone on foot is posed by the one rig (crowd3d-draw.js drawCrowdPerson). The few people nearest the camera
-       * are drawn from a skinned avatar instead of the rig's parts: in the chase view the NEAR PEOPLE
-       * (crowd3d-frame.js chooseNearPeople), in the street view the nearest to the player once the zoom shows a figure
-       * big enough (npcAvatarChoose), at most NPC_TIER_SLOTS by tier. Which avatar a person is comes from their
-       * look (compileLook: npcAvatarPick, npc-avatar-cast.js); further off they stay on the rig, painted in the
-       * avatar's colours. People with no avatar (story characters, waiters, the player in a disguise), riders,
-       * beachgoers, athletes and other cars' occupants stay on the rig.
+       * Everyone on foot is posed by the one rig (crowd3d-draw.js drawCrowdPerson). People near the camera (chase view)
+       * or the player (street view, zoomed in) are drawn from a skinned avatar instead of the rig's parts, by
+       * distance (npcAvatarChoose, NPC_REACH, a hysteresis band NPC_KEEP): the nearest (NPC_TIER_SLOTS) from the near
+       * mesh in a slot of their own, the next (NPC_TIER_MID) from the mid mesh in instanced batches
+       * (npc-avatar3d-mid.js), everyone beyond on the rig, painted in their avatar's colours. Which avatar a person is
+       * comes from their look (compileLook: npcAvatarPick, npc-avatar-cast.js). People with no avatar (story
+       * characters, waiters, the player in a disguise), riders, beachgoers, athletes and cars' occupants stay on the rig.
        *
        * SLOTS: NPC_AVATAR_SLOTS meshes, each with its own material and depth material (one program each between
        * them: the uniforms are per material), in the scene from the start on a placeholder so the title prewarm

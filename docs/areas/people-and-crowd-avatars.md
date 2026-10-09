@@ -1,20 +1,37 @@
 # People: the street avatars
 
-The people nearest the camera are drawn as Microsoft Rocketbox avatars (MIT; docs/THIRD_PARTY_CREDITS.txt), skinned on
-the rig's skeleton the way the player's own body is (people-and-crowd-player.md). Everyone else stays on the instanced
-rig (people-and-crowd-rig.md), painted in their avatar's colours. Files: npc-avatar3d.js (slots, choosing, flush, gore,
-console), npc-avatar3d-fit.js (decode and fit), npc-avatar3d-shader.js, npc-avatar-cast.js (casting, the rig's palette),
-tools/npc_models.py (the converter and the CAST list).
+Every NPC with an avatar is drawn as a Microsoft Rocketbox avatar (MIT; docs/THIRD_PARTY_CREDITS.txt) when close enough,
+skinned on the rig's skeleton the way the player's own body is (people-and-crowd-player.md); further off the instanced
+rig (people-and-crowd-rig.md), painted in their avatar's colours. Files: npc-avatar3d.js (levels, near slots, choosing,
+flush, gore, console), npc-avatar3d-mid.js (mid batches), npc-avatar3d-fit.js (decode and fit), npc-avatar3d-shader.js,
+npc-avatar-cast.js (casting, the rig's palette), tools/npc_models.py (converter, CAST) and tools/mesh_decimate.py.
 
-## Who is an avatar
+## Levels of detail (npcAvatarChoose, once a frame, nothing allocated)
 
-- Chase view: the NEAR PEOPLE (`chooseNearPeople`) other than the player; street view: the nearest to the player within
-  `NPC_STREET_REACH` (22 m, kept to ~25 m) once the zoom is at detail 2 (`NPC_STREET_ZOOM` x the tier's lodBias), in
-  view. At most `NPC_TIER_SLOTS` a frame: LOW 4, MEDIUM 6, HIGH and ULTRA 8 (`npcAvatarChoose`, nothing allocated).
-- Never: the player (his own body), a disguise, story characters, waiters, riders, athletes, beachgoers drawn by the
-  beach, cars' occupants and the drive-by ghost: they have no avatar (`R.avatar` -1) or are drawn elsewhere.
-- A person is drawn as an avatar only while `crowdState.avatarFrame` is this frame and a slot is free
-  (`npcAvatarTake`); otherwise the rig, so a full set of slots never hides anyone.
+| Level | Mesh | Chase view (from the camera) | Street view (from the player, zoom >= 1.3 x lodBias) | Cap LOW / MEDIUM / HIGH / ULTRA |
+| --- | --- | --- | --- | --- |
+| near | the avatar decimated to ~4k triangles, a slot each (uniform bones, wound soaks) | within 16 m | within 14 m | 4 / 6 / 8 / 8 |
+| mid | the same avatar's ~1k-triangle index over the same vertices, instanced, one batch per avatar | within 45 m | within 30 m | 12 / 24 / 40 / 48 |
+| far | the rig, in the avatar's palette and cut | beyond | beyond, or zoomed out | - |
+
+- Hysteresis: someone at a level last frame ranks and keeps it as if `NPC_KEEP` (0.86) nearer, so the bands are
+  16-18.6 m and 45-52 m (chase), 14-16.3 m and 30-35 m (street); a level whose cap is full passes the next people down.
+- The near and mid meshes share their vertices and atlas (tools/npc_models.py: quadric half-edge collapses that keep the
+  asset's own vertices, UV charts and weights), so face and clothes are the same at both levels; the far rig wears the
+  avatar's colours and cut, so nobody changes clothes on the way in.
+- Never an avatar: the player (his own body), a disguise, story characters, waiters, riders, athletes, beachgoers drawn
+  by the beach, cars' occupants and the drive-by ghost: no avatar (`R.avatar` -1) or drawn elsewhere.
+- A person is an avatar only while `crowdState.avatarFrame` is this frame (`avatarLevel` 1 near, 2 mid) and a slot or a
+  batch is free (`npcAvatarTake`, `npcMidTake`: at most `NPC_MID_BATCHES` 16 different avatars at mid); otherwise the rig,
+  so a full level never hides anyone.
+
+## Mid batches (npc-avatar3d-mid.js)
+
+- `NPC_MID_BATCHES` meshes in the scene from the start (placeholder; the prewarm compiles `npc-avatar-mid` and its depth
+  program); each frame a batch takes one avatar's InstancedBufferGeometry and draws its people as instances.
+- Bones: `npcBoneTexture` (32 x 48 RGBA float, nearest), one row per mid person grouped by batch (`npcBase` +
+  gl_InstanceID): 15 rotation quaternions, 15 duals, then (scale, grips, lost bones); 24 KB uploaded a frame while any
+  mid person is drawn. A lost part folds onto its own joint; no wound soak at this distance (decals and pools show).
 
 ## Casting (npc-avatar-cast.js; compileLook, once per look)
 
@@ -72,6 +89,8 @@ tools/npc_models.py (the converter and the CAST list).
 
 ## Console
 
-`npcAvatars(on)`: `ready`, `fitted`, `workMs`, this frame's `cap`, `chosen`, `shown`, `triangles`, `drawCalls`, the
-slots (avatar, sex, width, lost bones, wounds), `programs` and `programsAtFirstDraw`; `on` false/true switches the
-avatars off and on (an A/B; the rig's palette stays). `crowdStats().avatars` counts them.
+`npcAvatars(on, level)`: `ready`, `fitted`, `workMs`, this frame's near `cap`, `chosen`, `shown`, `triangles`, `mid`
+(`cap`, `chosen`, `shown`, `batches`, `triangles`, `wrongSex`), `drawCalls`, the near slots (avatar, sex against
+`personFemale`, width, lost bones, wounds), programs (and at first draw); `on` false/true switches the avatars off and on
+(an A/B; the rig's palette stays), `level` 'near' / 'mid' holds everyone in reach at one level, 'auto' releases it.
+`crowdStats().avatars` / `.avatarsMid` count them; tools/tests/npc-avatars.mjs.

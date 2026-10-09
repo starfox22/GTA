@@ -708,7 +708,8 @@ npc-models.bin, npc-skin.webp (the street's people near the camera; src/npc-avat
       Sports_Male_04, Sports_Female_01, Sports_Female_02
     Children: Male_Child_01, Female_Child_01
   Changes: tools/npc_models.py converts each FBX mesh and its skin weights to the game's 15
-  bones (holstered pistols and knives left out, positions quantised) and scales the colour
+  bones (holstered pistols and knives left out, the mesh decimated to about 4,000 and 1,000
+  triangles by tools/mesh_decimate.py, positions quantised) and scales the colour
   maps into one atlas (body 320 px, head 160 px per avatar); the game fits each mesh to its
   own skeleton at load and poses the hands itself.
 
