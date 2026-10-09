@@ -2,6 +2,8 @@
       // hills and the tall towers), its composite and depth quads behind the aircraft, and the shared cloud lighting.
       // ---- Ray-march pass ----------------------------------------------------------------
       const CLOUD_STEPS = cloudsMobile ? 28 : 56,
+        // The march from below (the chase view): most of a ray is clear air in coarse steps, so the cap is rarely met.
+        CLOUD_BELOW_STEPS = cloudsMobile ? 64 : 96,
         CLOUD_RESOLUTION = cloudsMobile ? 0.34 : 0.5,
         // Half float keeps sunlit tops above 1.0 before tone mapping; without it the
         // colour is stored at a quarter scale in 8 bits.
@@ -120,6 +122,13 @@
         // 1: marching up into the layer from under it (the chase view, clouds3d-sky.js): the haze is the
         // chase view's own (aerial-haze3d.js), thinning with height and coloured like the sky behind.
         uBelow: { value: 0 },
+        // From below: the air's extinction per world unit at sea level for the layer's own haze (a visibility of
+        // kilometres, not the street's short haze that hides the draw distance), and the march's step jitter offset
+        // for this frame (the history pass averages the frames: clouds3d-sky-history.js).
+        uBelowHaze: { value: 0 },
+        uBelowJitter: { value: 0 },
+        // ... and its rays' offset within a march texel this frame (clip units; zero for the flight view).
+        uBelowOffset: { value: new Three.Vector2() },
         ...CITY_HAZE,
       };
       const marchMaterial = new Three.ShaderMaterial({
@@ -129,9 +138,10 @@
         vertexShader: `
           uniform mat4 uInverseProjection;
           uniform mat4 uCameraWorld;
+          uniform vec2 uBelowOffset;
           varying vec3 vRay;
           void main(){
-            vec4 view = uInverseProjection * vec4(position.xy, 1., 1.);
+            vec4 view = uInverseProjection * vec4(position.xy + uBelowOffset, 1., 1.);
             vRay = (uCameraWorld * vec4(view.xyz / view.w, 0.)).xyz;
             gl_Position = vec4(position.xy, 0., 1.);
           }`,
@@ -146,10 +156,66 @@
           uniform float uMaxDistance;
           // Shafts under the layer: x strength (0 off), y haze per world unit, z the ground.
           uniform vec3 uShafts;
+          uniform float uBelowHaze, uBelowJitter;
           varying vec3 vRay;
+          /* From below (the chase view, clouds3d-sky.js): the street looks up through a kilometre or more of the
+             slab along a low ray, out to the horizon. Uniform steps over that span skip whole cloud cells (striped,
+             grainy, soft walls), so the ray runs coarse steps through clear air, growing with the distance, and
+             on meeting cloud backs up and walks it in fine steps (a quarter) while it stays in cloud. The layer's
+             haze is the air's own (uBelowHaze: kilometres of visibility, thinning with height), not the street's
+             short haze, so clouds stay clouds down to the horizon and sink into the sky's colour there. */
+          vec4 cloudMarchBelow(vec3 ro, vec3 rd, float jitter, float phase){
+            float ry = abs(rd.y) < 1e-4 ? 1e-4 : rd.y;
+            float toLow = (uSlab.x - ro.y) / ry, toHigh = (uSlab.y - ro.y) / ry;
+            float t0 = max(min(toLow, toHigh), 0.), t1 = min(min(max(toLow, toHigh), uMaxDistance), cloudOccluded(ro, rd));
+            if (t1 <= t0) return vec4(0.);
+            float coarse = clamp(t0 * 0.04, 200., 2400.), fineLeft = 0.;
+            float t = t0 + coarse * jitter, transmittance = 1., firstHit = -1.;
+            vec3 light = vec3(0.);
+            for (int i = 0; i < ${CLOUD_BELOW_STEPS}; i++){
+              if (t >= t1) break;
+              vec3 p = ro + rd * t;
+              vec4 area = cloudArea(p.xz);
+              if (p.y < cloudGround(area)) break;
+              coarse = clamp(t * 0.04, 200., 2400.);
+              if (fineLeft <= 0.){
+                // Clear air: the cheap field (the detail only ever erodes it) decides whether cloud starts here.
+                if (cloudDensityAt(p, area, false) > 0.){
+                  fineLeft = coarse * 2.;
+                  t = max(t - coarse * (0.6 + 0.4 * jitter), t0);
+                } else t += coarse;
+                continue;
+              }
+              float stepLength = coarse * 0.25, d = cloudDensityAt(p, area, true);
+              if (d > 0.003){
+                if (firstHit < 0.) firstHit = t;
+                vec3 radiance = cloudRadiance(p, area, d, phase);
+                float stepTransmittance = exp(-d * EXTINCTION * stepLength);
+                light += transmittance * radiance * (1. - stepTransmittance);
+                transmittance *= stepTransmittance;
+                if (transmittance < 0.015) break;
+                fineLeft = coarse * 2.;
+              } else fineLeft -= stepLength;
+              t += stepLength;
+            }
+            float alpha = 1. - transmittance;
+            if (firstHit > 0.){
+              // The air crossed to the cloud, thinning with height (the chase haze's own column), in the sky's colour.
+              float k = clamp(rd.y * firstHit * cityHazeSky.w, -20., 20.);
+              float column = abs(k) > 1e-3 ? (1. - exp(-k)) / k : 1. - 0.5 * k;
+              light = mix(light, cityHazeColor(rd) * alpha, 1. - exp(-firstHit * cityHazeView.x * column * uBelowHaze));
+            }
+            return vec4(light * ${CLOUD_STORE_SCALE.toFixed(2)}, alpha);
+          }
           void main(){
             vec3 rd = normalize(vRay), ro = uCameraPosition;
             gl_FragColor = vec4(0.);
+            if (uBelow > 0.5){
+              // A new step jitter each frame (the golden ratio walks it evenly): the history pass averages them.
+              float jitterBelow = fract(52.9829189 * fract(dot(gl_FragCoord.xy, vec2(0.06711056, 0.00583715))) + uBelowJitter);
+              gl_FragColor = cloudMarchBelow(ro, rd, jitterBelow, cloudPhase(dot(rd, uSunDirection)));
+              return;
+            }
             // Where the ray is inside the slab, less what is faded out near the camera and
             // what lies behind a tower.
             float ry = abs(rd.y) < 1e-4 ? 1e-4 : rd.y;
@@ -187,12 +253,7 @@
               t += stepLength;
             }
             float alpha = 1. - transmittance;
-            if (firstHit > 0. && uBelow > 0.5){
-              // From the street: the chase haze, thinning with height and the colour of the sky behind,
-              // so far cloud sinks into the horizon and the cloud overhead stays crisp.
-              float reach = cityHazeReach(rd * firstHit, firstHit, uHaze.x, uHaze.y);
-              light = mix(light, cityHazeColor(rd) * alpha, 1. - exp(-reach * reach));
-            } else if (firstHit > 0.){
+            if (firstHit > 0.){
               // The same aerial perspective as the scene (aerial-haze3d.js).
               float reach = max(firstHit - uHaze.x, 0.) / uHaze.y;
               light = mix(light, uHazeColor * alpha, 1. - exp(-reach * reach));

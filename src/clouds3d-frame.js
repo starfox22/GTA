@@ -307,6 +307,10 @@
           // ('march', 'layer' or ''), the sun the sky draws (elevation, degrees), the haze, the sun glare.
           sky: {
             clouds: ['', 'layer', 'march'][skyCloudView.mode],
+            // The air the layer is seen through (visibility, km), how far the march looks, frames in its history.
+            cloudAirKm: +(3.912 / Math.max(1e-9, skyCloudUniforms.uSkyCloudHaze.value) / UNITS_PER_METRE / 1000).toFixed(1),
+            reachKm: SKY_CLOUD_REACH / UNITS_PER_METRE / 1000,
+            history: skyCloudView.march && skyHistory.valid ? Math.min(99, skyHistory.frame - skyHistory.since) : 0,
             // Cloud shadows drawn per pixel (the chase view) this frame.
             shadows: chaseShade.drawn,
             sunDeg: +((Math.asin(clamp(skySunDirection.y, -1, 1)) * 180) / Math.PI).toFixed(1),

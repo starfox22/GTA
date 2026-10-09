@@ -29,9 +29,9 @@
         // The scene buffer's size in pixels (the dome's gl_FragCoord into the march target), and the target's.
         uSkyCloudBuffer: { value: new Three.Vector2(1, 1) },
         uSkyCloudMarchSize: { value: new Three.Vector2(4, 4) },
-        // The layer's base over the camera, and the chase haze's clear distance and span (scene.fog).
+        // The layer's base over the camera, and the air's extinction per world unit at sea level (skyCloudHaze).
         uSkyCloudBase: { value: 0 },
-        uSkyCloudHaze: { value: new Three.Vector2(0, 1) },
+        uSkyCloudHaze: { value: 0 },
         // The light the march uses (the same objects: clouds3d-frame.js setCloudLight fills them).
         uSkyCloudSunDir: { value: skyLightDirection },
         uSkyCloudSun: marchUniforms.uSunColor,
@@ -43,17 +43,17 @@
       // (Template-literal GLSL: no backticks in its comments.)
       const SKY_CLOUD_GLSL = `
         ${CLOUD_FIELD_GLSL}
-        uniform float uSkyCloudMode, uSkyCloudBase;
+        uniform float uSkyCloudMode, uSkyCloudBase, uSkyCloudHaze;
         uniform sampler2D uSkyCloudMarch;
-        uniform vec2 uSkyCloudBuffer, uSkyCloudMarchSize, uSkyCloudHaze;
+        uniform vec2 uSkyCloudBuffer, uSkyCloudMarchSize;
         uniform vec3 uSkyCloudSunDir, uSkyCloudSun, uSkyCloudAmbient, uSkyCloudBounce, uSkyCloudGlow, uSkyCloudTint;
         // The cloud in direction d, premultiplied (rgb) with its opacity (a); haze is the sky without its
         // sun, moon and stars in that direction (what distant cloud fades into).
         vec4 skyClouds( vec3 d, vec3 haze ) {
           if ( uSkyCloudMode > 1.5 ) {
-            // Four bilinear taps a march texel apart (the target is half size): the march's jittered
-            // grain and its stair-stepped edges come out soft.
-            vec2 uv = gl_FragCoord.xy / uSkyCloudBuffer, o = 0.75 / uSkyCloudMarchSize;
+            // The march's history (clouds3d-sky-history.js: already smooth), in four bilinear taps half a march
+            // texel apart (the target is half size), so its texels never show as steps.
+            vec2 uv = gl_FragCoord.xy / uSkyCloudBuffer, o = 0.5 / uSkyCloudMarchSize;
             vec4 c = ( texture2D( uSkyCloudMarch, uv + vec2( o.x, o.y ) ) + texture2D( uSkyCloudMarch, uv + vec2( -o.x, o.y ) )
                      + texture2D( uSkyCloudMarch, uv + vec2( o.x, -o.y ) ) + texture2D( uSkyCloudMarch, uv - o ) ) * 0.25;
             return vec4( c.rgb / ${CLOUD_STORE_SCALE.toFixed(2)}, c.a );
@@ -79,10 +79,12 @@
                      + uSkyCloudSun * sunUp * ( ( 1.0 - thick ) * 0.3 + pow( toSun, 10.0 ) * ( 1.0 - 0.75 * thick ) * 1.4 )
                      + uSkyCloudGlow * 1.4;
           light *= uSkyCloudTint;
-          // The chase haze between the street and the cloud: thinner up high, the sky's own colour.
+          // The air between the street and the cloud (kilometres of visibility, not the street's short haze):
+          // thinner up high, the sky's own colour.
           vec3 rel = mid - ro;
-          float dist = length( rel ), reach = cityHazeReach( rel, dist, uSkyCloudHaze.x, uSkyCloudHaze.y );
-          float fade = 1.0 - exp( - reach * reach );
+          float dist = length( rel ), k = clamp( rel.y * cityHazeSky.w, -20.0, 20.0 );
+          float column = abs( k ) > 1e-3 ? ( 1.0 - exp( -k ) ) / k : 1.0 - 0.5 * k;
+          float fade = 1.0 - exp( - dist * cityHazeView.x * column * uSkyCloudHaze );
           return vec4( mix( light, haze, fade ) * alpha, alpha );
         }`;
       // The dome takes the clouds where the field exists (WebGL2); its program is warmed with the scene.
@@ -91,11 +93,20 @@
         skyDome.material = makeSkyMaterial(true, { glsl: SKY_CLOUD_GLSL, uniforms: skyCloudUniforms });
       }
       const skyCloudView = { mode: 0, march: false },
-        // How far up and out the march from below looks (world units: about 4.5 km; the haze has closed by then).
-        SKY_CLOUD_REACH = 36000;
+        // How far up and out the march from below looks (world units: 20 km, where the air has hidden the layer).
+        SKY_CLOUD_REACH = 160000;
+      /* The air the layer is seen through from the street: the extinction per world unit at sea level (3.9 over the
+         visibility, Koschmieder), about 30 km on a fair day, less under a grey deck, a few km in rain. The street's
+         own haze closes within the draw distance (it hides the edge of the city) and is never used for the sky. */
+      function skyCloudHaze() {
+        const grey = clamp((weather.cloud - 0.6) / 0.4, 0, 1),
+          metres = (30000 * (1 - 0.5 * grey)) / (1 + 5 * weather.rain + 0.8 * weather.approach);
+        return 3.912 / (metres * UNITS_PER_METRE);
+      }
       /* The layer from below for this frame (from updateCloudVisuals): which way it is drawn, and on HIGH and ULTRA
          the march up into it. `cloudSunIntensity`: the sun the clouds are lit with (clouds3d-frame.js). */
       function updateSkyClouds(tier, coverage, cloudSunIntensity, light) {
+        skyHistory.frame++;
         const wanted = cloudsSupported && chaseViewActive && skyDome.visible && coverage > 0.02,
           march = wanted && (tier === 'HIGH' || tier === 'ULTRA');
         skyCloudView.mode = skyCloudUniforms.uSkyCloudMode.value = wanted ? (march ? 2 : 1) : 0;
@@ -103,7 +114,7 @@
         if (!wanted) return;
         setCloudLight(cloudSunIntensity, light);
         sceneBufferSize(skyCloudUniforms.uSkyCloudBuffer.value);
-        skyCloudUniforms.uSkyCloudHaze.value.set(scene.fog.near, scene.fog.far);
+        skyCloudUniforms.uSkyCloudHaze.value = skyCloudHaze();
         if (!march) {
           syncCloudField(skyCloudUniforms);
           skyCloudUniforms.uSkyCloudBase.value = cloudLayerAt(camera.position.x, camera.position.z).base;
@@ -114,6 +125,10 @@
         skyCloudUniforms.uSkyCloudMarchSize.value.set(size.width, size.height);
         const u = marchUniforms;
         u.uBelow.value = 1;
+        u.uBelowJitter.value = (skyHistory.frame * 0.6180339887) % 1;
+        // A Halton (2, 3) walk inside the march texel, so the history also smooths the layer's edges.
+        const k = (skyHistory.frame % 8) + 1;
+        u.uBelowOffset.value.set(((skyHalton(k, 2) - 0.5) * 2) / size.width, ((skyHalton(k, 3) - 0.5) * 2) / size.height);
         u.uInverseProjection.value.copy(camera.projectionMatrixInverse);
         u.uCameraWorld.value.copy(camera.matrixWorld);
         u.uCameraPosition.value.copy(camera.position);
@@ -125,14 +140,27 @@
         u.uPocket.value.set(1, 2, 0);
         u.uMaxDistance.value = SKY_CLOUD_REACH;
         u.uShafts.value.set(0, 0, 0);
+        u.uBelowHaze.value = skyCloudUniforms.uSkyCloudHaze.value;
         const clearAlpha = renderer.getClearAlpha();
         renderer.getClearColor(cloudClearColor);
         renderer.setRenderTarget(cloudTarget);
         renderer.setClearColor(0x000000, 0);
         renderer.render(marchScene, fullScreenCamera);
+        skyCloudUniforms.uSkyCloudMarch.value = resolveSkyCloudHistory(size.width, size.height, cloudLayerAt(camera.position.x, camera.position.z).base);
         renderer.setRenderTarget(null);
         renderer.setClearColor(cloudClearColor, clearAlpha);
         u.uBelow.value = 0;
+        u.uBelowOffset.value.set(0, 0);
+      }
+      // The Halton sequence's k-th number in base b (in [0, 1)).
+      function skyHalton(k, b) {
+        let f = 1,
+          r = 0;
+        for (let i = k; i > 0; i = Math.floor(i / b)) {
+          f /= b;
+          r += f * (i % b);
+        }
+        return r;
       }
       /**
        * CLOUD SHADOWS FROM THE STREET

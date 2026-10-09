@@ -222,6 +222,8 @@
         searchlight: (options) => searchlightReport(options),
         // The cloud layer as the camera sees it this frame: in cloud, veil, wisps, lens (clouds3d-frame.js).
         cloudView: () => cloudViewReport(),
+        // GPU time of the clouds from below on this view against the old even march (clouds3d-sky-history.js).
+        skyCloudBench: (rounds) => skyCloudBench(rounds),
         // The player's parachute as drawn this frame: stage, shape, slider, lines, pendulum, cloud light (parachute3d-rigging.js).
         parachuteView: () => parachuteViewReport(),
         // Vehicle lights this frame: CAR LAMPS slots and drive-map beams (lighting3d-vehicle-lights.js).

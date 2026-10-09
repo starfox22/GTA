@@ -41,12 +41,20 @@ The cloud layer (game side, clouds.js) and how it is drawn (clouds3d*.js inside
   aircraft 0.45 x its own immersion) so the subject stays readable. The far march starts where
   the veil hands over (`uNearFade`). LOW: no march, a flat veil from `cloudAmountAt`.
 - from below (clouds3d-sky.js, the chase view): the sky dome composites the layer behind all geometry.
-  HIGH/ULTRA: the far march with `uBelow` 1 (camera up through the slab, out to 4.5 km, no pocket or veil,
-  lit from `skyLightDirection`, the base also lit by the sky round about and the sunlit ground, hazed by
-  the chase haze) into the march target, read by the dome at its own pixel (four taps: soft grain). LOW/MEDIUM: the dome reads the
+  HIGH/ULTRA: the march with `uBelow` 1 runs its own loop (`cloudMarchBelow`, clouds3d-march.js): coarse
+  steps through clear air growing with the distance (4 % of it, 25-300 m), a step back and quarter steps
+  while in cloud, out to 20 km (`SKY_CLOUD_REACH`); no pocket or veil; lit from `skyLightDirection`, the
+  base also lit by the sky round about and the sunlit ground. Each frame takes a new step jitter and a
+  sub-texel ray offset; SKY CLOUD HISTORY (clouds3d-sky-history.js) averages the frames (reprojected
+  through the layer's base, clamped to this frame's neighbours, kept 88 %; restarts on a resize, a camera
+  jump of 50 m or a frame without the march) and the dome reads that. LOW/MEDIUM: the dome reads the
   field at two heights where the ray crosses the slab (no detail octave): a soft opacity and a shaded
-  underside. Same coverage map and noise as the shadows; WebGL1 has none. A camera inside the layer (a
-  summit in a wet deck) sees the march round it on HIGH/ULTRA, nothing on LOW/MEDIUM.
+  underside. Both haze the layer with the air's own visibility (`skyCloudHaze()`: ~30 km fair, ~15 under
+  a grey deck, a few km in rain; the chase haze's height fall-off and colour), never the street's haze,
+  which closes within the draw distance (with it, everything under ~20 degrees was a milky smear and the
+  horizon empty). Same coverage map and noise as the shadows; WebGL1 has none. A camera inside the layer
+  (a summit in a wet deck) sees the march round it on HIGH/ULTRA, nothing on LOW/MEDIUM. The flight
+  view's march (`uBelow` 0) is untouched: its pixels are identical. Console `skyCloudBench(rounds)`.
 - shadows from the street (clouds3d-sky.js): the plane only works for a camera above it, so the chase
   view hides it and finds the shadow per pixel: a quarter-size pass rebuilds each pixel's world point
   from the depth and reads `cloudShadeAt` (CLOUD_SHADE_GLSL, the plane's own field, rings and strength),
