@@ -345,9 +345,11 @@
           if (car.type === 'plane') {
             car.vx = Math.cos(car.a) * 295 * KMH;
             car.vy = Math.sin(car.a) * 295 * KMH;
-            // Cruising: gear up, cruise power.
-            car.gearDown = false;
-            car.gearPos = 0;
+            // Cruising: gear up (unless it is fixed), cruise power.
+            if (!vehicleSpec(car).fixedGear) {
+              car.gearDown = false;
+              car.gearPos = 0;
+            }
             car.throttle = car.power = 0.75;
           }
         }

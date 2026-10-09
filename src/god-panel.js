@@ -641,8 +641,10 @@
         c.vy = Math.sin(c.a) * cruise;
         c.speed = cruise;
         if (speed < 200 * KMH) {
-          c.gearDown = false;
-          c.gearPos = 0;
+          if (!vehicleSpec(c).fixedGear) {
+            c.gearDown = false;
+            c.gearPos = 0;
+          }
           c.throttle = c.power = Math.max(c.throttle || 0, 0.75);
         }
       }
