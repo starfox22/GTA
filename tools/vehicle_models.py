@@ -83,7 +83,7 @@ MODELS = [
          url='https://sketchfab.com/3d-models/80s-generic-police-car-low-poly-model-61766c1e6e1e4b2b803c174f33433a74'),
     # The patrol and the agents' SUVs ('utility', 'tahoe' bodies): the livery goes on the body's black and white panels
     # (`paintTex`: its paint and trim share one texture); the bar's lenses light on the police channels.
-    dict(type='police_suv', texWeight=0.6, front='+z', title='Chevrolet Suburban Sheriff Cruiser', author='Matthew (jeandiz)', section=True, keep=dict(wheel=0.3), clusterParts={'wheel': 0.015},
+    dict(type='police_suv', texWeight=0.6, front='+z', title='Chevrolet Suburban Sheriff Cruiser', author='Matthew (jeandiz)', section=True, keep=dict(wheel=0.3, cabin=1.0), clusterParts={'wheel': 0.015},
          src='dl3/sap_suburban_sheriff/scene.gltf', url='https://sketchfab.com/3d-models/chevrolet-suburban-sheriff-cruiser-116f6a42deb04fd8942e6c632e37901f',
          roles=[(r'^Body$', 'paint'), (r'^windows$', 'glass'), (r'^(front|back)_lights$', 'lensglass'), (r'^lighst_inside$', 'lamp'),
                 (r'^lights_on$', 'drop'), (r'^wheel$', 'tyre'), (r'^roof_light_bar$', 'lightbar'), (r'^roof_light_|^light_bar_.*cover$', 'beacon')],
@@ -116,7 +116,7 @@ MODELS = [
     dict(type='pickup', texWeight=0.7, front='-x', title="Compact Pickup '78", author=Z, length=4.6,
          src='zhab/izabela1996_3d-model/scene.gltf',
          url='https://sketchfab.com/3d-models/compact-pickup-78-low-poly-model-30700a84311c4bea9ef722f0773ce92a'),
-    dict(type='suv', texWeight=0.5, front='+z', title='Chevrolet Suburban (Sheriff Cruiser, civilian trim)', author='Matthew (jeandiz)', keep=dict(wheel=0.3), clusterParts={'wheel': 0.015},
+    dict(type='suv', texWeight=0.5, front='+z', title='Chevrolet Suburban (Sheriff Cruiser, civilian trim)', author='Matthew (jeandiz)', keep=dict(wheel=0.3, cabin=1.0), clusterParts={'wheel': 0.015},
          src='dl3/sap_suburban_sheriff/scene.gltf', url='https://sketchfab.com/3d-models/chevrolet-suburban-sheriff-cruiser-116f6a42deb04fd8942e6c632e37901f',
          roles=[(r'^Body$', 'paint'), (r'^windows$', 'glass'), (r'^(front|back)_lights$', 'lensglass'), (r'^lighst_inside$', 'lamp'),
                 (r'^lights_on$', 'drop'), (r'^wheel$', 'tyre'), (r'^(roof_light|light_bar_|push_bar|spot_light|Grill_lights|side_light)', 'drop')],
@@ -163,6 +163,12 @@ MODELS = [
          src='dl3/sap_military_half_ton/scene.gltf', url='https://sketchfab.com/3d-models/military-truck-12-ton-5d19c751b12849eeb390d637b2b686a1'),
     # Motorbikes (tools/vehicle_models_moto.py; src/motorbike-assets3d.js). `axis`: a point up the steering axis, `bars`:
     # the bars' lowest y and rearmost x, `seat`: the saddle's x, `pegs`: [x, y, z] (metres, the game frame).
+    # The NOMAD CRUISER ('cruiser'): a 2015 Seventy-Two chopper by the same author (ape-hanger bars, forward controls).
+    dict(type='cruiser', kind='moto', front='+z', length=2.45, texWeight=0.6, keep=dict(trim=0.12, paint=0.3, wheel=0.12, lamp=0.4), borderCos=0.7,
+         title='Harley-Davidson Seventy-Two HD FXT 2015', author='Alex.Ka.',
+         src='dl3/hd72/scene.gltf', url='https://sketchfab.com/3d-models/harley-davidson-seventy-two-hd-fxt-2015-15e67a3076494bb99ba7504c9913ceb5',
+         roles=[(r'^body_color$', 'paint'), (r'^tire$', 'tyre'), (r'^(headlight|brakelight)$', 'lamp'), (r'^wingblackmate$', 'drop')],
+         axis=(0.43, 1.0), bars=(0.0, 1.05), seat=-0.4, pegs=[0.25, 0.33, 0.3]),
     dict(type='bike', kind='moto', front='+z', keep=dict(trim=0.16, paint=0.3, wheel=0.1, lamp=0.35), borderCos=0.7, title='Honda CB 750 F Super Sport 1970', author='Alex.Ka.',
          src='mirror/cb750/scene.gltf',
          url='https://sketchfab.com/3d-models/honda-cb-750-f-super-sport-1970-f121301624174b179ca4d50158797b03',

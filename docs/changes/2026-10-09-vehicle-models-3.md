@@ -7,7 +7,7 @@
   modelled with its box stretched to 10 m; the flatbed on its cab and chassis with the game's hardwood deck, rack and
   crate slots behind. The METRO CITY BUS is a town bus, the PARAMEDIC a modelled ambulance (its roof bars flash), the
   SOLSTICE SPIDER a late-'90s convertible, the SOVEREIGN STRETCH the '80s sedan stretched into a limousine, the
-  WORKHORSE a compact pickup, the RANGER 4X4 a Suburban in plain paint.
+  WORKHORSE a compact pickup, the RANGER 4X4 a Suburban in plain paint, the NOMAD CRUISER a Seventy-Two chopper.
 - Fort Sentinel: the M4 utility (and the gun jeep, its ring-mounted .50 cal unchanged) is an HMMWV, the M35 cargo truck
   a 2 1/2-ton M35, the main battle tank an Abrams M1A2 (turret and gun turn and recoil as before). Kept procedural: the
   LAV-8 and the SWAT truck (no usable models found), the fuel bowser, the van, the hot rod, the rally car, boats.

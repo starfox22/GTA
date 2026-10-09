@@ -35,7 +35,8 @@ followed). Credits in docs/THIRD_PARTY_CREDITS.txt.
 - The SOLSTICE SPIDER ('roadster') is the Chrysler Sebring Convertible: an open car (a windscreen and no side glass:
   the kit's glass record gets `open`, so seats, wipers and headroom treat it as the procedural roadster).
 - The RANGER 4X4 ('suv') is the patrol SUV's Suburban in plain paint (bar, push bar, spot lamp left out); the
-  WORKHORSE ('pickup') the Compact Pickup '78; the SOVEREIGN STRETCH the 80 American Sedan stretched to 8.8 m.
+  WORKHORSE ('pickup') the Compact Pickup '78; the SOVEREIGN STRETCH the 80 American Sedan stretched to 8.8 m; the
+  NOMAD CRUISER ('cruiser', ASSET MOTORBIKES) the Seventy-Two chopper (same author and hints as the VORTEX 900).
 - CAR_GLASS_BANDS rows for these types are the models' numbers at the types' lengths (belt, roof + crown, rear and
   screen feet over the length; tools: the converter's header).
 

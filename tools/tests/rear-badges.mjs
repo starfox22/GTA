@@ -59,5 +59,6 @@ export default async function (t) {
     const b = of('police', body) || of('suv', body);
     t.assert(b && b.badge.letters > 0 && b.badge.sub, `police ${body}: its model name on the tail (${JSON.stringify(b?.badge)})`);
   }
-  t.assert(badges.some((b) => b.badge?.text === 'POLICE'), 'a marked patrol car reads POLICE');
+  // Every patrol body may be a downloaded model (police3d-asset.js POLICE_ASSET_TYPES: its maker's badges); a procedural one reads POLICE.
+  t.assert(badges.some((b) => b.badge?.text === 'POLICE' || (b.type === 'police' && b.asset)), 'a marked patrol car reads POLICE (or is a downloaded body)');
 }
