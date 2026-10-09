@@ -866,7 +866,9 @@ def write_part(blob, r, name, part, rects, qlo, qext):
                 v = min(1.0, max(0.0, float(uv[1]) - shift[1])) if not math.isnan(uv[1]) else 0.5
                 UV.append(((rect[0] + u * rect[2]) / ATLAS_W, (rect[1] + v * rect[3]) / ATLAS_H))
                 if part.get('colors'):
-                    C.append(sample_colour(r, p['material'], uv))
+                    # Head lamp lenses a shade darker: their unlit material is near-mirror chrome, and a white lens in
+                    # the sun blooms as if lit (animateCivilianCar's lit material brightens them again).
+                    C.append([int(c * (0.62 if name.startswith('head') else 1)) for c in sample_colour(r, p['material'], uv)])
             tri.append(vmap[key])
         I.append(tri)
     P = np.array(P)
