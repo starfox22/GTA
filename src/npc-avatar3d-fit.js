@@ -68,18 +68,28 @@
       }
       // The crown in bind space (metres, at look height 1): the player's PB_ASSET_CROWN.
       const NPC_CROWN = 1.81;
+      /* How much a child avatar is scaled so its crown (the head page's top) stands at NPC_CROWN. */
+      function npcChildGrow(asset, entry, arrays) {
+        let crown = 0;
+        for (let v = 0; v < entry.vertices; v++) if (arrays.material[v] === 1) crown = Math.max(crown, arrays.position[v * 3 + 1] / asset.header.scale);
+        return crown > 0.5 ? NPC_CROWN / crown : 1;
+      }
       /** One avatar's fit: { bones, width, female, attributes, index, vertices, triangles } (bind space in rig units). */
       function npcAvatarFitOne(asset, i) {
         const entry = asset.header.avatars[i],
           arrays = npcAvatarArrays(asset, entry),
-          A = entry.bones,
           female = entry.sex === 'f',
           sex = female ? 1 : 0,
+          // A child is fitted at an adult's stature (the crown at NPC_CROWN), keeping a child's head and build: the crowd
+          // draws children at their look's height (0.64), so the child comes out a child, never a small adult.
+          grow = entry.kid ? npcChildGrow(asset, entry, arrays) : 1,
+          A = grow === 1 ? entry.bones : entry.bones.map((b) => ({ o: b.o.map((v) => v * grow), R: b.R })),
+          hands = grow === 1 ? entry.hands : entry.hands.map((side) => side.map((chain) => chain.map((p) => p.map((v) => v * grow)))),
           // The rig's shoulders on the avatar's.
           width = Math.abs(A[4].o[2] - A[3].o[2]) / 2 / PB_RIG_M(RIG.shoulderZ[sex]),
           B = pbBindSkeleton(width, female),
           n = entry.vertices,
-          scale = 1 / asset.header.scale,
+          scale = grow / asset.header.scale,
           P0 = arrays.position,
           SK = arrays.skin,
           len = (o, p) => Math.hypot(p[0] - o[0], p[1] - o[1], p[2] - o[2]);
@@ -167,7 +177,7 @@
           for (let k = 0; k < 3; k++) grip[v * 4 + k] = position[v * 3 + k];
         }
         gripN.set(normal);
-        pbAssetHands(B, A, entry.hands, arrays.hand, SK, n, position, normal, grip, gripN, null, null);
+        pbAssetHands(B, A, hands, arrays.hand, SK, n, position, normal, grip, gripN, null, null);
         // Rig units; the gripping hand keeps three numbers a vertex.
         const grip3 = new Float32Array(n * 3);
         for (let v = 0; v < n; v++)
@@ -179,6 +189,7 @@
           bones: B,
           width,
           female,
+          grow,
           attributes: { position, normal, npcSkin: skin, npcGrip: grip3, npcZone: zone, npcUv: uv },
           index: Uint16Array.from(arrays.index),
           indexMid: Uint16Array.from(arrays.indexMid),

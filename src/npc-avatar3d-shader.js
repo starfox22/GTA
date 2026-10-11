@@ -7,6 +7,7 @@
        * person lost (npcLost, a bit per bone: the vertex's part npcSkin.w) folds onto its cut (npcCut, bind space),
        * where the crowd's stump stands (crowd3d-gore.js). FRAGMENT: colour from the atlas (sRGB), cut-out cards
        * (zone 5) by its alpha, wounds (npcWound, bind metres, w = 2 + radius) soak cloth or skin as on the player.
+       * TINT (vNpcTint, npcTint or the mid row's texel 31) recolours the top garment the atlas' alpha marks (npc_paint.py).
        * The depth program skins the same way and cuts the same cards, so hair casts a hair-shaped shadow.
        */
       const NPC_VERTEX_PARS = `
@@ -26,8 +27,10 @@
           uniform float npcScale;
           uniform vec2 npcGripAmount;
           uniform float npcLost;
+          uniform vec4 npcTint;
         #endif
         varying vec2 vNpcUv;
+        varying vec4 vNpcTint;
         varying float vNpcZone;
         varying vec3 vNpcBind;
         vec3 npcQRot( vec4 q, vec3 v ) { return v + 2.0 * cross( q.xyz, cross( q.xyz, v ) + q.w * v ); }`;
@@ -44,7 +47,9 @@
             float npcScale = extra.x;
             vec2 npcGripAmount = extra.yz;
             float npcLost = extra.w;
+            vNpcTint = npcBone( ${2 * PB_BONES + 1} );
           #else
+            vNpcTint = npcTint;
             vec4 ra = npcQr[ ia ], da = npcQd[ ia ], rb = npcQr[ ib ], db = npcQd[ ib ];
           #endif
           npcS = npcScale;
@@ -72,6 +77,7 @@
         uniform sampler2D npcMap;
         uniform vec4 npcWound[ 4 ];
         varying vec2 vNpcUv;
+        varying vec4 vNpcTint;
         varying float vNpcZone;
         varying vec3 vNpcBind;
         float npcRough = 0.85;
@@ -91,6 +97,9 @@
         float npcZ = floor( vNpcZone + 0.5 );
         if ( npcZ > 4.5 && npcTex.a < 0.5 ) discard;
         vec3 npcC = npcTex.rgb;
+        // TINT: the top garment (the atlas' alpha on cloth: 1 none, 0.5 all) recoloured by luminance to the person's
+        // colour (vNpcTint.rgb, linear, already divided by the garment's mean luminance; w 1 on).
+        if ( vNpcTint.w > 0.5 && npcZ < 0.5 ) npcC = mix( npcC, vNpcTint.rgb * dot( npcC, vec3( 0.2126, 0.7152, 0.0722 ) ), clamp( ( 1.0 - npcTex.a ) * 2.0, 0.0, 1.0 ) );
         // Skin (the head page and the hands) a little smoother than cloth; eyes glossy; hair cards soft.
         float npcLum = dot( npcC, vec3( 0.2126, 0.7152, 0.0722 ) );
         npcRough = npcZ > 1.5 && npcZ < 2.5 ? 0.15 : ( npcZ > 0.5 && npcZ < 3.5 ) ? mix( 0.7, 0.55, smoothstep( 0.04, 0.12, npcLum ) ) : 0.86;

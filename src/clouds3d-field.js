@@ -51,12 +51,26 @@
             generateMipmaps: false,
           })
         : null;
+      /* The same volume at half-float precision for the clouds from below (clouds3d-sky.js): a ray to the horizon
+         takes long steps, and the 8-bit volume's quanta, sharpened by the coverage cut, show there as contour
+         rings round every billow. The flight view keeps the 8-bit volume (its look is unchanged). */
+      const cloudNoiseSky =
+        cloudNoise && (renderer.extensions.has('EXT_color_buffer_float') || renderer.extensions.has('EXT_color_buffer_half_float'))
+          ? new Three.WebGL3DRenderTarget(CLOUD_NOISE_SIZE, CLOUD_NOISE_SIZE, CLOUD_NOISE_SIZE, {
+              depthBuffer: false,
+              generateMipmaps: false,
+              type: Three.HalfFloatType,
+            })
+          : null;
       const fullScreenCamera = new Three.OrthographicCamera(-1, 1, 1, -1, 0, 1),
         fullScreenGeometry = new Three.PlaneGeometry(2, 2);
       if (cloudNoise) {
-        const t = cloudNoise.texture;
-        t.wrapS = t.wrapT = t.wrapR = Three.RepeatWrapping;
-        t.magFilter = t.minFilter = Three.LinearFilter;
+        for (const volume of [cloudNoise, cloudNoiseSky]) {
+          if (!volume) continue;
+          const t = volume.texture;
+          t.wrapS = t.wrapT = t.wrapR = Three.RepeatWrapping;
+          t.magFilter = t.minFilter = Three.LinearFilter;
+        }
         const generator = new Three.ShaderMaterial({
           uniforms: { uZ: { value: 0 } },
           vertexShader: `
@@ -115,10 +129,13 @@
           noiseScene = new Three.Scene();
         quad.frustumCulled = false;
         noiseScene.add(quad);
-        for (let z = 0; z < CLOUD_NOISE_SIZE; z++) {
-          generator.uniforms.uZ.value = (z + 0.5) / CLOUD_NOISE_SIZE;
-          renderer.setRenderTarget(cloudNoise, z);
-          renderer.render(noiseScene, fullScreenCamera);
+        for (const volume of [cloudNoise, cloudNoiseSky]) {
+          if (!volume) continue;
+          for (let z = 0; z < CLOUD_NOISE_SIZE; z++) {
+            generator.uniforms.uZ.value = (z + 0.5) / CLOUD_NOISE_SIZE;
+            renderer.setRenderTarget(volume, z);
+            renderer.render(noiseScene, fullScreenCamera);
+          }
         }
         renderer.setRenderTarget(null);
         generator.dispose();

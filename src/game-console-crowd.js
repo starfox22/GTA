@@ -110,6 +110,8 @@
       },
       // false: the old box dog (before/after shots).
       dogModelOn: (on) => city3D?.dogModelOn?.(on) ?? null,
+      // A second row ahead of the player for looks checks: children, Kessler off duty, gangs, a boss, a waiter, Vinny and Elena.
+      avatarLineup: (spacing) => avatarLineup(spacing),
       // What the people cost in the last frame (crowd3d.js): parts, draw calls, instances, triangles.
       crowdStats: (byPart) => city3D?.crowdStats?.(byPart) || null,
       // Pack the people `frames` times back to back: the rig's CPU cost per frame in ms.

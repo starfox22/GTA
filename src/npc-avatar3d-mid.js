@@ -7,11 +7,11 @@
        * NPC_MID_BATCHES meshes stand in the scene from the start (a placeholder, so the title prewarm compiles the two
        * programs); each frame a batch takes one avatar's InstancedBufferGeometry and draws its people as instances
        * (gl_InstanceID from the batch's row `npcBase`). npcBoneTexture holds a row per person: the 15 bones' rotation
-       * quaternions, then their duals, then (scale, left grip, right grip, lost bones). A lost bone folds onto its own
+       * quaternions, then their duals, then (scale, left grip, right grip, lost bones), then the tint (npcAvatarTint). A lost bone folds onto its own
        * joint (gone, as on a near avatar; the crowd's stump stands there). No wound soaks at this distance (the blood
        * decals and pools still show). An avatar beyond the batches in view this frame stays on the rig.
        */
-      const NPC_MID_BATCHES = 16,
+      const NPC_MID_BATCHES = 24,
         NPC_BONE_TEXELS = 32;
       const npcBoneData = new Float32Array(NPC_BONE_TEXELS * 4 * NPC_MID_MAX),
         npcBoneTexture = new Three.DataTexture(npcBoneData, NPC_BONE_TEXELS, NPC_MID_MAX, Three.RGBAFormat, Three.FloatType);
@@ -60,9 +60,9 @@
         return { mesh, uniforms, avatar: -1, count: 0 };
       });
       // The mid people this frame (records like the near slots, without a mesh), and which batch each avatar takes.
-      const npcMidRecords = Array.from({ length: NPC_MID_MAX }, () => ({ frames: Array.from({ length: PB_BONES }, () => new Three.Matrix4()), posed: 0, person: null, avatar: -1, width: 1, gripL: 0.15, gripR: 0.15, batch: -1, uniforms: null })),
-        npcBatchOf = new Int16Array(64).fill(-1),
-        npcBatchFrame = new Int32Array(64).fill(-1),
+      const npcMidRecords = Array.from({ length: NPC_MID_MAX }, () => ({ frames: Array.from({ length: PB_BONES }, () => new Three.Matrix4()), posed: 0, person: null, avatar: -1, width: 1, gripL: 0.15, gripR: 0.15, batch: -1, uniforms: null, tint: null, late: false })),
+        npcBatchOf = new Int16Array(256).fill(-1),
+        npcBatchFrame = new Int32Array(256).fill(-1),
         npcBatchStart = new Int16Array(NPC_MID_BATCHES),
         npcBatchFill = new Int16Array(NPC_MID_BATCHES);
       /* A mid record for an avatar, or null when the mid people or the batches are used up (the rig then). */
@@ -139,7 +139,14 @@
           data[ex + 1] = r.gripL;
           data[ex + 2] = r.gripR;
           data[ex + 3] = npcLostBones(r.person.goreLost || 0);
-          if (npcMidState.audit && fit.female !== personFemale(r.person)) wrongSex++;
+          const tint = r.tint;
+          if (tint) {
+            data[ex + 4] = tint.x;
+            data[ex + 5] = tint.y;
+            data[ex + 6] = tint.z;
+            data[ex + 7] = 1;
+          } else data[ex + 7] = 0;
+          if (npcMidState.audit && !r.late && fit.female !== personFemale(r.person)) wrongSex++;
           r.person = null;
         }
         for (let k = 0; k < NPC_MID_BATCHES; k++) {

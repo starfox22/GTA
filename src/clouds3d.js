@@ -53,4 +53,5 @@
       // @include src/clouds3d-shadows.js
       // @include src/clouds3d-frame.js
       // @include src/clouds3d-sky.js
+      // @include src/clouds3d-sky-history.js
       // END SUBSYSTEM: src/clouds3d.js

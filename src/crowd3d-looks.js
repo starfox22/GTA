@@ -44,7 +44,8 @@
           downtown = DOWNTOWN_DISTRICTS.test(district),
           // The avatar drawn near the camera (npc-avatar-cast.js); a street look takes its clothes.
           avatar = npcAvatarPick(look, p, female, kid, role, summer, h),
-          dressed = look.outfit ? null : npcAvatarLookTraits(avatar);
+          // (Street people, motorists and story characters wear their avatar's clothes on the rig too; outfits keep their own.)
+          dressed = look.outfit && look.outfit !== 'story' && look.outfit !== 'motorist' ? null : npcAvatarLookTraits(avatar);
         let skin = dressed ? dressed.skin : look.skin || '#c99169',
           hair = dressed ? dressed.hair : look.hair || '#231a15',
           hairStyle = dressed ? dressed.hairStyle : look.hairStyle,
@@ -184,6 +185,8 @@
           width,
           // The cast index drawn near the camera (npc-avatar3d.js), or -1.
           avatar,
+          // The tint its top garment wears (npc-avatar-cast.js npcAvatarTint), or null.
+          tint: npcAvatarTint(look, avatar),
           garment,
           torso: female ? 'torsoF' : 'torsoM',
           pelvis: female ? 'pelvisF' : 'pelvisM',
@@ -193,6 +196,7 @@
           headScale: kid ? 1.22 : female ? 0.95 : 1,
           hairPart: helmet ? null : hairPart,
           hatPart,
+          riderHelmet: look.outfit === 'motorcyclist' && hatPart === 'helmet',
           shoePart: footwear === 'boot' ? 'boot' : 'shoe',
           skirtOn: skirt || garment === 'dress',
           collar: !!look.collar || garment === 'jacket' || garment === 'accentJacket' || garment === 'suit',
