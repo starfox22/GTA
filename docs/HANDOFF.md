@@ -17,6 +17,8 @@ rules, workflow), then this page, then only the area doc your task needs (`docs/
   free roam and missions 1-4.
 - **Branches**: `main` is the owner's approved game. On October 6 the owner approved moving the working
   branch `claude/tender-babbage-3t74xl` (rounds of October 4-6) to `main`, so both held the same commit then.
+  On October 11 the owner approved moving `claude/confident-johnson-vlpoqb` (missions 3-4, the downloaded assets rounds,
+  artifact version 62) to `main` (fast-forward to 9afe59d).
   On October 8 the owner approved moving `claude/trusting-cannon-seq2mv` (the chase view and chase detail rounds,
   artifact version 55) to `main`.
   A new session develops on its own working branch and fast-forwards `main` only when the owner approves in the
