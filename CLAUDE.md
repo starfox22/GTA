@@ -373,6 +373,11 @@ packs with plain `<script src>` so the zip still plays from file://.
   held by `ASSET_BOATS_HELD`, stay procedural); the police 'crownvic' body is police3d-asset.js (the game's livery
   projected through the crownvic's section ring), motorbikes motorbike-assets3d.js, boats boat-assets3d.js; a model change re-records
   DRIVEBY_SEATS (`test.mjs cabin-headroom --render`) and CAR_GLASS_BANDS; `assetCarsOn(false)` gives before/after.
+  Round three (vehicles-and-driving-models-heavy.md): every patrol body but the SWAT Bearcat is a model
+  (`POLICE_ASSET_TYPES`, police3d-asset.js); box truck, bus and ambulance ride `makeAssetCar`; Vinny's flatbed is the
+  downloaded cab with vinnytruck3d.js's deck (`vinnyKit(true)`, VINNY_CARGO unchanged); Fort Sentinel's HMMWV, M35 and
+  tank are `kind: 'special'` models (military-assets3d.js; the gun jeep's mount keeps MOUNTED_GUNS' numbers); atlas
+  4096x2048, earlier models keep their density (`texFloor`); regenerate the bin from every MODELS list, never pick a side.
 - Downloaded aircraft and dog (vehicles-and-driving-models-aircraft.md): `tools/aircraft_models.py` makes
   assets/aircraft-models.bin + aircraft-skin.webp (SKYRANGER 429 airframe `bell429`, flyable SKYLARK 172 airframe
   `skyhawk`, `fixedGear`) on the makeHelicopter / buildAircraft contracts; `rotorStrikes` uses an airframe's
