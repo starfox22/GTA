@@ -534,6 +534,22 @@
           if (city3D) city3D.fire(ox, oy, a, w.rocket, altitude);
           return w.pellets || 1;
         },
+        // Burn vehicle `id` out where it stands with no blast (the wreck as the tank going leaves it), `ago` game
+        // seconds back (0: the embers glow; 20 or more: cold soot); `mend` true repairs it again (repairVehicle).
+        burnVehicle(id, ago = 0, mend = false) {
+          const c = find(id);
+          if (!c) return null;
+          if (mend) repairVehicle(c);
+          else {
+            c.hp = 0;
+            c.deadTime = gameTime - Math.max(0, ago) || 0.001;
+            c.ai = false;
+            c.sprite = null;
+            wreckVehicle(c);
+            c.damage.wreckedAt = c.deadTime;
+          }
+          return { id: c.id, type: c.type, hp: Math.round(c.hp), burnt: !!c.damage?.burnt };
+        },
         // Detonate at a map point; power 1 is a rocket, 0.65 a car's fuel tank.
         blast(x, y, power = 1) {
           explode(x, y, power, 'world', terrainHeight(x, y));

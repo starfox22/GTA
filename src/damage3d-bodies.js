@@ -404,31 +404,41 @@
         if (burnt) {
           if (!m.charred) {
             m.charred = true;
-            if (m.car) {
+            // A downloaded model's atlas and paint meshes take char materials of their own (vehicle-char3d.js ASSET CHAR).
+            if (assetCharModel(m)) assetCharSwap(c, m, true);
+            else if (m.car) {
               // Soot and blistered paint; the same map masks where embers glow.
               m.paint.map = sootTexture;
               m.paint.emissiveMap = sootTexture;
               m.paint.color.set('#ffffff');
             } else m.paint.color.set('#302c28');
-            m.paint.roughness = 0.97;
-            m.paint.metalness = 0.12;
-            // Burnt paint has no clear coat left (car paint is MeshPhysicalMaterial).
-            if (m.paint.isMeshPhysicalMaterial) m.paint.clearcoat = 0;
-            m.paint.needsUpdate = true;
+            if (!m.assetChar) {
+              m.paint.roughness = 0.97;
+              m.paint.metalness = 0.12;
+              // Burnt paint has no clear coat left (car paint is MeshPhysicalMaterial).
+              if (m.paint.isMeshPhysicalMaterial) m.paint.clearcoat = 0;
+              m.paint.needsUpdate = true;
+            }
           }
           // Embers: the fresh wreck glows through the soot for a few seconds.
           const age = gameTime - (damage?.wreckedAt || c.deadTime || 0),
             glow = clamp(1 - age / 14, 0, 1) * (0.8 + 0.2 * Math.sin(gameTime * 9 + c.id));
-          m.paint.emissive.setRGB(0.85 * glow * glow, 0.2 * glow * glow, 0.03 * glow * glow);
+          if (m.assetChar && m.assetChar.shape !== m.shapeVersion) assetCharSwap(c, m, true);
+          if (m.assetChar) assetCharEmbers(m, 0.85 * glow * glow, 0.2 * glow * glow, 0.03 * glow * glow);
+          else m.paint.emissive.setRGB(0.85 * glow * glow, 0.2 * glow * glow, 0.03 * glow * glow);
           return;
         }
         if (m.charred) {
           m.charred = false;
-          // A police livery comes back with the repair (police3d.js).
-          m.paint.map = m.liveryMap || null;
-          m.paint.emissiveMap = m.liveryMap || null;
-          m.paint.emissive.setRGB(0, 0, 0);
-          m.paint.needsUpdate = true;
+          // The shared atlas and the car's own paint come back (vehicle-char3d.js); the paint itself was never sooted.
+          if (m.assetChar) assetCharRelease(m);
+          else {
+            // A police livery comes back with the repair (police3d.js).
+            m.paint.map = m.liveryMap || null;
+            m.paint.emissiveMap = m.liveryMap || null;
+            m.paint.emissive.setRGB(0, 0, 0);
+            m.paint.needsUpdate = true;
+          }
           m.paintWear = -1;
         }
         const wear = clamp(1 - c.hp / c.maxhp, 0, 1),
@@ -438,6 +448,13 @@
         if (m.paintWear === key) return;
         m.paintWear = key;
         m.paint.color.set(m.liveryColor || c.color).lerp(grime, wear * 0.22).lerp(sootColor, heat);
+        // An army model's atlas is its paint: the same grime and heat through its char materials (vehicle-char3d.js).
+        if (m.atlasPaint) {
+          if (wear > 0.01 || heat > 0) {
+            if (!m.assetChar) assetCharSwap(c, m, false);
+            assetCharState(m, wear * 0.22, heat, 0);
+          } else assetCharRelease(m);
+        }
         m.paint.roughness = 0.3 + wear * 0.6;
         m.paint.metalness = 0.63 - wear * 0.42;
         // Scuffed and dented panels lose the gloss of their clear coat.

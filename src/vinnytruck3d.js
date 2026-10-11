@@ -603,7 +603,7 @@
           // Along the foot of the downloaded cab's windscreen.
           const g = cab.glass,
             l = vehicleSpec(vehicle).l;
-          addWipers(wiperHost, body, g.xf * l + 0.3, g.base + 0.2, g.rf * l + 0.3, g.roof - 0.4, g.wb * 2.44 * VT * 0.85);
+          addWipers(wiperHost, body, g.xf * l + 0.3, g.base + 0.2, g.rf * l + 0.3, g.roof - 0.4, g.wb * 2.44 * VT * 0.85, 0.92 * Math.hypot((g.rf - g.xf) * l, g.roof - g.base));
         } else addWipers(wiperHost, body, 2.66 * VT, 1.84 * VT, 2.5 * VT, 2.28 * VT, 1.0 * VT);
         const model = {
           wipers: wiperHost.wipers,
@@ -635,8 +635,9 @@
               indicators.material = hazard ? own.markerOn : own.markerOff;
               const lights = c.damage?.lights;
               m.lampOut = lights ? [lights.headLeft, lights.tailLeft, lights.headRight, lights.tailRight] : null;
-              // A burnt shell loses its lettering with the paint (restored with a repair, paintVehicle).
-              if (m.charred && m.paint.map) {
+              // A burnt shell loses its lettering with the paint (restored with a repair, paintVehicle); the asset cab's
+              // paint meshes draw char materials instead (vehicle-char3d.js).
+              if (m.charred && m.paint.map && !m.assetChar) {
                 m.paint.map = null;
                 m.paint.needsUpdate = true;
               }

@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-586 files in the include tree, 200,951 lines.
+587 files in the include tree, 201,202 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -105,7 +105,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/aviation.js`    10 — ▸ Fixed-wing flight and flight missions
 - `src/challenges.js`   507 — Mission-specific encounters
 - `src/summitjob.js`   319 — Mission 3, High Ground: the package buried at the top of Mount Ascent
-- `src/fortjob.js`   880 — Mission 4, Borrowed Stripes: an off-duty soldier's uniform, Fort Sentinel and the consul at CIRRUS
+- `src/fortjob.js`   894 — Mission 4, Borrowed Stripes: an off-duty soldier's uniform, Fort Sentinel and the consul at CIRRUS
 - `src/sidejobs.js`   418 — Contract missions after the main story
 - `src/streets.js`    12 — ▸ Road presentation
 - `src/terrain.js`    20 — ▸ Mountains and off-road contact
@@ -168,7 +168,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/chase-hud.js`    77 — Chase HUD: the reticle in the middle of the screen in the chase view (chase-view.css) and the hidden cursor while the pointer is captured; drawn …
 - `src/tyre-effects.js`   274 — What the tyres leave behind: the burnout (forward and the handbrake held at a standstill), skid marks, and the one rule for tyre smoke, dust and …
 - `src/hud.js`    34 — ▸ HUD behaviour and the title menu
-- `src/render3d.js`   243 — ▸ Three.js renderer and resource lifecycle
+- `src/render3d.js`   244 — ▸ Three.js renderer and resource lifecycle
 - `src/frame-trace.js`   324 — Frame trace: every frame's CPU split (simulation sections, renderer laps) and what happened in it (collections, DOM mutations, GL uploads and links …
 - `src/game-loop.js`   195 — Profiler: Rolling averages of simulation and render CPU time per frame, plus the renderer's draw-call and triangle counts.
 - `src/game-console.js`    48 — ▸ DeadEndCity console registry and assembly
@@ -279,7 +279,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/damage-vehicles.js`   570 — Vehicle damage state: dents, lamps, glass bands and panes (freshDamage, ensureDamage, addDent, shatterPane).
 - `src/damage-crumple.js`   286 — Crumple field: how far a point of a vehicle's body moves for its dents (crumpleField, crumpleLimits), the one rule the renderer bends every part of a …
-- `src/damage-upkeep.js`   628 — Vehicle fire, wrecks and per-frame damage upkeep (igniteVehicle, wreckVehicle, updateDamage) and knockable street props.
+- `src/damage-upkeep.js`   644 — Vehicle fire, wrecks and per-frame damage upkeep (igniteVehicle, wreckVehicle, updateDamage) and knockable street props.
 
 ## src/county.js ▸ Outlying districts
 
@@ -495,13 +495,14 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/vehicles3d.js`   630 — Vehicle meshes
 - `src/police3d.js`    62 — ▸ Police vehicle models
 - `src/cars3d.js`    94 — ▸ Civilian car models
-- `src/vehicle-assets3d.js`   428 — Vehicle models from downloaded assets (assets/vehicle-models.bin + vehicle-atlas.webp, tools/vehicle_models.py): decoded into kits on the civilian …
+- `src/vehicle-assets3d.js`   432 — Vehicle models from downloaded assets (assets/vehicle-models.bin + vehicle-atlas.webp, tools/vehicle_models.py): decoded into kits on the civilian …
+- `src/vehicle-char3d.js`   188 — Asset char: the burnt (and, for the army's models, worn and heat-darkened) look of the downloaded vehicle models that draw from the shared vehicle …
 - `src/hypercars3d.js`   954 — The Prestige Collection's car models
 - `src/motorbikes3d.js`   588 — Motorbike models
 - `src/motorbike-assets3d.js`   161 — Motorbikes from downloaded models (vehicle-assets3d.js ASSET CARS data, tools/vehicle_models_moto.py): the frame, the steering (fork, bars, head …
 - `src/boat-assets3d.js`    30 — Boats from downloaded models (vehicle-assets3d.js ASSET CARS data, tools/vehicle_models_boat.py): the hull and its fittings from the vehicle atlas …
 - `src/offroad3d.js`    42 — ▸ 4x4 club trucks, the club lot, trail props and mud
-- `src/vinnytruck3d.js`   647 — Vinny's truck (mission 1, the 'flatbed' type): a 1990s medium-duty conventional flatbed at real size, merged into a few draws (makeVinnyTruck), with …
+- `src/vinnytruck3d.js`   648 — Vinny's truck (mission 1, the 'flatbed' type): a 1990s medium-duty conventional flatbed at real size, merged into a few draws (makeVinnyTruck), with …
 - `src/tyresmoke3d.js`   170 — Tyre smoke, dust and road spray: soft billboards thrown up from the wheels of any road vehicle in view (a burnout's smoke; sand, lawns and loose …
 - `src/mountain-village3d.js`    39 — ▸ Mountain village meshes
 - `src/plane3d.js`    48 — ▸ Airplane meshes
@@ -509,10 +510,10 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/vehicle-merge3d.js`   347 — Pristine merge: a civilian car nothing has touched draws its non-casting static parts merged per material (hood + panels + paint bumpers, black and …
 - `src/render3d-prewarm-models.js`    67 — Prewarm lists: the throwaway vehicles and the sample shadow casters the title-screen prewarm builds, so each model's kit, shared materials and shader …
 - `src/render3d-effects.js`   169 — ▸ The optional player ring, the objective arrow, the muzzle and fire lights, the effect particles (fx3d-*.js), scorch, tracers, skid marks.
-- `src/render3d-resources.js`   520 — GPU resource lifecycle: shared geometries, model pruning and disposal.
+- `src/render3d-resources.js`   526 — GPU resource lifecycle: shared geometries, model pruning and disposal.
 - `src/render3d-hiccups.js`   377 — Hiccup log: what each drawn frame created for the first time (shader programs, textures, geometries) and the slowest frames' renderer CPU split; read …
 - `src/payphone3d.js`   597 — The story payphone where mission 1 starts: a 1990s yellow pedestal payphone with its lit PHONE sign, handset, keypad, directory and grime, the …
-- `src/render3d-api.js`   481 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
+- `src/render3d-api.js`   482 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
 - `src/render3d-frame.js`   625 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
 
 ## src/flight-view3d.js ▸ Flight camera and aerial perspective
@@ -567,7 +568,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/damage3d.js ▸ Crumpling bodies, decals, debris and knocked furniture
 
 - `src/damage3d-decals.js`   673 — Damage 3D decals: the decal atlas (cracked glass, soot) and world decal layers (addDecal, flushDecals).
-- `src/damage3d-bodies.js`   539 — Damage 3D vehicle bodies: shell sections, crumpling, hinged parts and glass (carBodyDamage, crumple).
+- `src/damage3d-bodies.js`   555 — Damage 3D vehicle bodies: shell sections, crumpling, hinged parts and glass (carBodyDamage, crumple).
 - `src/damage3d-crumple.js`   536 — Damage 3D crumple: every part of a car body bent by the one crumple field (crumpleField, damage-crumple.js) at its rest place: shell, glass, paint …
 - `src/damage3d-marks.js`   581 — Damage 3D vehicle marks: bullet holes, glass stars and scrapes pinned to the triangle of the body part they hit (they bend, swing and tear off with …
 - `src/damage3d-world.js`   583 — Damage 3D world hits: shop windows, bullet holes, structure impacts and blasts, sparks, knocked props (impactEffect).
@@ -680,7 +681,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/base3d-facilities.js`   337 — Fort Sentinel control tower, radar head (radarHead), windsock and glow meshes.
 - `src/base3d-frame.js`   102 — Fort Sentinel per-frame visuals: updateBaseVisuals() and the searchlight lens.
 - `src/base3d-vehicles.js`   276 — Military vehicle models: makeMilitaryVehicle(), compactTank, wheels, lamps and star decals.
-- `src/military-assets3d.js`    86 — Fort Sentinel's vehicles from downloaded models (vehicle-assets3d.js ASSET CARS data, tools/vehicle_models_special.py): the M4 utility (HMMWV), the …
+- `src/military-assets3d.js`    88 — Fort Sentinel's vehicles from downloaded models (vehicle-assets3d.js ASSET CARS data, tools/vehicle_models_special.py): the M4 utility (HMMWV), the …
 
 ## src/boats3d.js ▸ Boat kit: lofted hulls and shared yacht parts
 
@@ -862,7 +863,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-rides.js`   104 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
 - `src/game-console-leisure.js`    75 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)
 - `src/game-console-crowd.js`   192 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
-- `src/game-console-graphics.js`   267 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
+- `src/game-console-graphics.js`   269 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
 - `src/game-console-perf.js`   272 — DeadEndCity console, simulation cost: simProfile (per-section ms, worst frames), simScenario (staged situations)
 - `src/game-console-soak.js`   369 — DeadEndCity console, long-session health: soakReport (sizes of every list that can grow, DOM, non-finite positions)
 - `src/game-console-integrity.js`   178 — DeadEndCity console: integrity(), the invariants tools/bot.mjs checks after every action

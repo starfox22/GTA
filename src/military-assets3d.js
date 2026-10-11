@@ -31,6 +31,8 @@
           b = model.body,
           scale = vehicleSpec(vehicle).modelScale || 1;
         model.asset = asset.title;
+        // The atlas is its paint: wear, heat and the burnt shell reach it through char materials (vehicle-char3d.js).
+        model.atlasPaint = true;
         const body = vaGeometry(asset, data, militaryAssetSlices(asset, 'body'), k),
           panes = vaGeometry(asset, data, 'glass', k);
         if (body) mesh(body, materials.trim, b, 0, 0, 0);

@@ -312,6 +312,7 @@
           return;
         }
         let burntWarmed = false,
+          assetCharWarmed = false,
           doneMarked = false;
         const note = (materials) => {
           for (const material of materials) {
@@ -418,6 +419,11 @@
                 model.paint.needsUpdate = true;
                 note(renderer.compile(model.group, camera, scene));
                 renderer.initTexture(sootTexture);
+              }
+              // A burnt downloaded model: its char materials (vehicle-char3d.js ASSET CHAR), kept for good.
+              if (!assetCharWarmed && assetCharWarm(model)) {
+                assetCharWarmed = true;
+                note(renderer.compile(model.group, camera, scene));
               }
               scene.remove(model.group);
               // (A builder that also hung something else on the scene would leave it there.)

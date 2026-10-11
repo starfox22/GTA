@@ -202,6 +202,8 @@
       drawProfile: (top) => city3D?.drawProfile?.(top) ?? null,
       // Civilian car models drawn merged while pristine (vehicle-merge3d.js): merged, split, kits, draw calls saved now.
       vehicleMerges: () => city3D?.vehicleMerges?.() ?? null,
+      // The ASSET CHAR (vehicle-char3d.js): downloaded models drawn with char materials now, and the pool.
+      assetChar: () => city3D?.assetChar?.() ?? null,
       // Every merged mesh against the hidden parts it replaces, vertex by vertex in world space: maxError ~0 (rendered pages).
       vehicleMergeAudit: () => city3D?.vehicleMergeAudit?.() ?? null,
       // What casts the sun's shadow onto the ground point (x, y).

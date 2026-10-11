@@ -40,6 +40,7 @@
 | `vehicleById(id)` | One vehicle by id, or null once it is gone: type, x, y, heading `a`, `kmh`, `ai`, `occupied`, altitude |
 | `shootAt(x, y, weaponIndex)` | Fire one round (or one shotgun load) from the player at a map point |
 | `blast(x, y, power)` | Detonate at a map point (1 = a rocket) |
+| `burnVehicle(id, ago, mend)` | Burn vehicle `id` out where it stands, no blast (wreckVehicle), its fire `ago` game seconds back (0: embers glow, 14 or more: cold soot); `mend` true repairs it (repairVehicle); returns id, type, hp, burnt |
 | `damageReport(id)` | Dents, zones, panels, glass, lamps, tyres, marks, handling and fire of a vehicle (default: the player's) |
 | `streetProps(x, y, radius)`, `shopWindows(x, y, radius)` | Knockable furniture and trees near a point, nearest first (id, kind, box, `breakKJ`, strain, size, down) plus counts by kind; shop panes and their state |
 | `damageStats()` | Decal and debris pool use and GPU geometry/texture counts (for leak checks) |

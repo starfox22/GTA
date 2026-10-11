@@ -29,6 +29,19 @@ vehicles-and-driving-models.md's; credits in docs/THIRD_PARTY_CREDITS.txt. Conso
   fewer (supercar +7 %); draw calls the same (13-14 pristine). `assetCars()` reports, `assetCarsOn(false)` builds
   models made from then on procedurally (before/after rows).
 
+## Burnt, worn and wet (ASSET CHAR, vehicle-char3d.js)
+
+- The shared atlas materials (`vaMaterials`) and the asset cars' one-texel paint UVs cannot take the procedural soot map,
+  so a burnt model with atlas parts swaps its atlas and paint meshes (door panels' `[paint, bay]` arrays too, and parts
+  the damage adds later, on a `shapeVersion` change) onto per-car char materials: soot projected in each mesh's frame in
+  world units on three planes, matte, embers in the emissive (`assetCharEmbers`). An army model (`m.atlasPaint`) also
+  takes the wear's grime and the fire's heat through them. Intact models keep the shared materials and the merge; a
+  repair or respray swaps back (`assetCharRelease`, materials pooled). Three programs (cut-out, atlas, plain), compiled
+  at the title prewarm (`assetCharWarm`, kept in sharedMaterials). Draw calls unchanged. Console `assetChar()`,
+  `burnVehicle(id, ago, mend)`.
+- Wipers: the truck types (box truck, bus, ambulance, pickup; Vinny's cab) take the procedural pair (`addWipers`) at the
+  foot of the measured windscreen, arms capped to the glass's height (`reach`); swept in the rain as before.
+
 ## Police: the Crown Vic body (POLICE ASSET BODY, police3d-asset.js)
 
 - `policeLookChoice` / `pickPoliceLook` still choose body and livery; only the 'crownvic' body is drawn from the
