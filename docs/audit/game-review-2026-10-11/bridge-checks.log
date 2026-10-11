@@ -1,0 +1,11 @@
+started dev server (?dev&norender: boot 21.3s)
+PASS sim-efficiency (20.7s)
+PASS coronation-bridge (29.1s)
+     GPS 373 m over coronation
+PASS drawbridge-islands (60.3s)
+     NORTHBANK ISLAND: keys-union, keys-harbor, east-bay, south-bay, pier-bridge, oceanview, sovereign, north-point-key · drawbridges keys-harbor, oceanview · RIDGELINE COUNTY: east-bay, south-bay, ridgeline, regency · drawbridges ridgeline · CORAL COAST: coral-sound, ridgeline, sentinel · drawbridges ridgeline · MONARCH ISLE: sovereign, regency, coronation · drawbridges coronation · PALM KEYS: keys-union, keys-harbor · drawbridges keys-harbor · SUNSET PIER: pier-bridge, coronation · drawbridges coronation · OCEANVIEW COUNTY: oceanview, coral-sound · drawbridges oceanview · FORT SENTINEL · RESTRICTED: sentinel · drawbridges - · NORTH POINT KEY: north-point-key · drawbridges - · keys-harbor nominal opening (minutes the span is not seated) 154.9 · oceanview nominal opening (minutes the span is not seated) 155.3 · ridgeline nominal opening (minutes the span is not seated) 155 · coronation nominal opening (minutes the span is not seated) 154.9 · open share 0.715 ({"keys-harbor":0.322,"oceanview":0.216,"ridgeline":0.215,"coronation":0.215}), longest all-shut 125 min
+PASS drawbridge-traffic (188.6s)
+     keys-harbor: 9 queued, 10 on the causeway, gap 589 · oceanview: 5 queued, 5 on the causeway, gap 361 · ridgeline: 5 queued, 5 on the causeway, gap 412 · coronation: 5 queued, 5 on the causeway, gap 488
+PASS parked-bridge-efficiency (23.7s)
+     {"shut":{"checked":2680,"changed":0,"diffs":{}},"open":{"checked":2660,"changed":0,"diffs":{}}}
+5/5 passed, 0 skipped, 0 failed in 346s

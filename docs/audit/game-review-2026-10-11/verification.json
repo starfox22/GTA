@@ -1,0 +1,1047 @@
+{
+  "base": "9afe59ddd991321debee71a12dc1a7cceb50f9b4",
+  "fullRegressionSource": "953c1eb86ff751c18bbce1d1ac20dab8eca38596",
+  "finalGameSource": "682edae89ad3c70654422a340c083851fa948900",
+  "fullRun": {
+    "PASS": 149,
+    "FAIL": 3,
+    "SKIP": 12
+  },
+  "initialFailures": [
+    {
+      "status": "FAIL",
+      "name": "living-medics",
+      "detail": "(70.1s): the lost run did not finish as lost: {\"why\":\"aborted\",\"outcome\":null,\"seconds\":60,\"cause\":\"boxed in\"}"
+    },
+    {
+      "status": "FAIL",
+      "name": "rider-falls",
+      "detail": "(38.9s): a fall survived draws no blood: 13"
+    },
+    {
+      "status": "FAIL",
+      "name": "wheelie",
+      "detail": "(36.6s): W + \u2191 lifts the front: 1.3\u00b0, lifts 3 \u2192 3"
+    }
+  ],
+  "isolatedReruns": [
+    {
+      "status": "PASS",
+      "name": "living-medics",
+      "detail": "(44.6s)"
+    },
+    {
+      "status": "FAIL",
+      "name": "rider-falls",
+      "detail": "(20.1s): a 25 km/h spill costs a few points: hp 83"
+    },
+    {
+      "status": "PASS",
+      "name": "rider-falls",
+      "detail": "(unchanged injury limits, airport fixture, final review build)"
+    },
+    {
+      "status": "PASS",
+      "name": "wheelie",
+      "detail": "(22.0s)"
+    }
+  ],
+  "combinedUniqueCoverage": {
+    "PASS": 153,
+    "FAIL": 0,
+    "SKIP": 12
+  },
+  "tests": [
+    {
+      "status": "PASS",
+      "name": "ammo-supply",
+      "detail": "(35.1s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "SKIP",
+      "name": "asset-char",
+      "detail": "(22.7s): Requires WebGL: run with --render",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "blood-amounts",
+      "detail": "(28.8s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "blood-spray",
+      "detail": "(28.2s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "blood-wounds",
+      "detail": "(68.9s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "bluehour-entrance",
+      "detail": "(25.7s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "boot-status",
+      "detail": "(2.9s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "brake-distances",
+      "detail": "(11.0s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "bullet-hits",
+      "detail": "(24.6s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "SKIP",
+      "name": "cabin-headroom",
+      "detail": "(0.1s): Requires WebGL: run with --render",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "camera-comfort",
+      "detail": "(58.5s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "camera-feel",
+      "detail": "(3.9s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "camera-framing",
+      "detail": "(24.4s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "car-blood",
+      "detail": "(145.9s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "SKIP",
+      "name": "car-cabins",
+      "detail": "(0.0s): Requires WebGL: run with --render",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "car-feet-clearance",
+      "detail": "(rendered final build)",
+      "source": "rendered final game build"
+    },
+    {
+      "status": "PASS",
+      "name": "car-window-open",
+      "detail": "(181.9s)",
+      "source": "rendered window check at 4b200cc"
+    },
+    {
+      "status": "PASS",
+      "name": "carjack",
+      "detail": "(34.9s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "carjack-traffic",
+      "detail": "(37.1s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "chase-aim",
+      "detail": "(4.2s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "chase-budget",
+      "detail": "(25.9s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "SKIP",
+      "name": "chase-clouds",
+      "detail": "(0.4s): Requires WebGL: run with --render",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "chase-crane",
+      "detail": "(2.4s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "chase-hud-box",
+      "detail": "(2.8s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "chase-hud-layout",
+      "detail": "(32.2s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "chase-in-view",
+      "detail": "(1.6s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "chase-input",
+      "detail": "(4.6s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "chase-lock",
+      "detail": "(30.6s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "chase-motion-blur",
+      "detail": "(0.5s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "chase-radio-chip",
+      "detail": "(3.0s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "chase-shooter",
+      "detail": "(0.8s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "chase-streams",
+      "detail": "(32.3s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "chase-view-mode",
+      "detail": "(0.8s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "chase-walk",
+      "detail": "(1.7s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "chase-wall-clearance",
+      "detail": "(25.9s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "cheat-helicopter",
+      "detail": "(30.1s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "SKIP",
+      "name": "chimney-smoke",
+      "detail": "(16.9s): Requires WebGL: run with --render",
+      "source": "explicit renderer-skip reporting at ae769ba"
+    },
+    {
+      "status": "PASS",
+      "name": "civil-aircraft",
+      "detail": "(37.6s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "clouds",
+      "detail": "(7.4s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "coronation-bridge",
+      "detail": "(43.1s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "demo-free-roam-markers",
+      "detail": "(118.7s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "demo-gating",
+      "detail": "(32.6s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "drawbridge-islands",
+      "detail": "(83.2s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "drawbridge-traffic",
+      "detail": "(233.1s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "drift-handling",
+      "detail": "(8.9s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "drive-no-nan",
+      "detail": "(15.9s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "driveby-arcs",
+      "detail": "(38.7s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "driveby-mouse",
+      "detail": "(39.3s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "driveby-seats",
+      "detail": "(0.2s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "enter-key",
+      "detail": "(5.3s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "falls",
+      "detail": "(112.8s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "foliage-cutaway",
+      "detail": "(0.4s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "footwork",
+      "detail": "(44.7s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "fort-cover",
+      "detail": "(45.4s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "fort-gate-talk",
+      "detail": "(36.2s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "frame-trace",
+      "detail": "(2.3s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "freeroam-respawn",
+      "detail": "(56.8s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "garages-islands",
+      "detail": "(45.6s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "god-drawbridges",
+      "detail": "(136.8s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "god-mode-codes",
+      "detail": "(39.8s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "god-teleport-map",
+      "detail": "(31.0s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "gore-dismember",
+      "detail": "(33.2s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "graphics-all-tiers",
+      "detail": "(324.3s)",
+      "source": "rendered settings matrix at 4b200cc"
+    },
+    {
+      "status": "PASS",
+      "name": "headlight-aim",
+      "detail": "(27.5s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "headlight-budget",
+      "detail": "(0.0s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "health-indoors",
+      "detail": "(48.2s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "hillclimb-physics",
+      "detail": "(134.6s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "hud-clearance",
+      "detail": "(51.7s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "hud-dom-writes",
+      "detail": "(3.7s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "hud-layout",
+      "detail": "(40.5s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "hud-touch-dispatch",
+      "detail": "(29.2s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "integrity-shore",
+      "detail": "(44.5s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "interface-hints",
+      "detail": "(37.9s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "liner-voyage",
+      "detail": "(43.2s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "living-key",
+      "detail": "(46.0s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "living-medics",
+      "detail": "(44.6s)",
+      "source": "isolated rerun of final game build"
+    },
+    {
+      "status": "PASS",
+      "name": "living-sirens",
+      "detail": "(35.0s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "living-snatch",
+      "detail": "(45.4s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "living-traffic",
+      "detail": "(44.0s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "lockpick",
+      "detail": "(70.5s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "markers-rings",
+      "detail": "(27.8s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "mission-abandon",
+      "detail": "(27.5s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "mission-brief",
+      "detail": "(36.5s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "mission-card-keys",
+      "detail": "(32.4s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "mission-card-subtitle",
+      "detail": "(31.1s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "mission-replay-frontier",
+      "detail": "(79.0s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "mission-retry",
+      "detail": "(32.6s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "mission1-bay",
+      "detail": "(100.6s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "mission1-depot",
+      "detail": "(41.8s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "mission1-truck",
+      "detail": "(32.5s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "mission2-ambulance",
+      "detail": "(56.9s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "mission2-cones",
+      "detail": "(31.8s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "mission2-getaway",
+      "detail": "(34.1s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "mission2-paths",
+      "detail": "(33.1s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "mission2-poison",
+      "detail": "(64.5s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "mission2-touch-run",
+      "detail": "(23.3s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "mission3-summit",
+      "detail": "(46.8s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "mission4-alert",
+      "detail": "(48.8s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "mission4-paths",
+      "detail": "(61.8s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "mission4-tail",
+      "detail": "(56.7s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "monarch-one",
+      "detail": "(33.0s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "mountain-road",
+      "detail": "(36.0s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "mounted-guns",
+      "detail": "(50.1s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "north-point-key",
+      "detail": "(42.8s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "npc-avatars",
+      "detail": "(1.1s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "parachute",
+      "detail": "(42.4s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "parachute-cloud",
+      "detail": "(89.0s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "parachute-deploy",
+      "detail": "(147.1s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "parachute-liner",
+      "detail": "(49.7s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "parked-bridge-efficiency",
+      "detail": "(29.1s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "parked-vehicle-hits",
+      "detail": "(54.1s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "pause-restart",
+      "detail": "(41.7s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "pedestrian-awareness",
+      "detail": "(161.2s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "player-body",
+      "detail": "(16.4s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "player-jump",
+      "detail": "(30.0s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "police-circus",
+      "detail": "(32.8s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "police-night-sight",
+      "detail": "(27.3s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "police-radio",
+      "detail": "(29.1s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "police-search-clock",
+      "detail": "(28.7s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "police-witness",
+      "detail": "(109.2s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "SKIP",
+      "name": "rear-badges",
+      "detail": "(0.0s): Requires WebGL: run with --render",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "regency-traffic",
+      "detail": "(20.2s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "render-auto-scale",
+      "detail": "(rendered final build)",
+      "source": "rendered final game build"
+    },
+    {
+      "status": "SKIP",
+      "name": "render-cell-preupload",
+      "detail": "(0.1s): Requires WebGL: run with --render",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "SKIP",
+      "name": "render-effects",
+      "detail": "(22.8s): Requires WebGL: run with --render",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "SKIP",
+      "name": "render-hiccups",
+      "detail": "(0.1s): Renderer counters require WebGL: run with --render",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "SKIP",
+      "name": "render-tier-switch",
+      "detail": "(0.0s): Requires WebGL: run with --render",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "respray-beacon",
+      "detail": "(29.7s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "restart-carriers",
+      "detail": "(47.2s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "ride-look",
+      "detail": "(59.1s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "rider-falls",
+      "detail": "(unchanged injury limits, airport fixture, final review build)",
+      "source": "isolated rerun of final game build"
+    },
+    {
+      "status": "PASS",
+      "name": "rig-geometry",
+      "detail": "(0.3s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "road-signs",
+      "detail": "(23.7s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "roof-skin",
+      "detail": "(0.0s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "second-run-over",
+      "detail": "(41.2s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "sim-audits",
+      "detail": "(1.6s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "sim-efficiency",
+      "detail": "(16.7s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "sky-meeting",
+      "detail": "(81.7s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "sound-output",
+      "detail": "(2.1s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "soundscape",
+      "detail": "(4.2s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "sportsbook-bets",
+      "detail": "(1.2s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "sun-gradual",
+      "detail": "(52.9s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "surrender-input",
+      "detail": "(35.6s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "swim-rescue",
+      "detail": "(57.2s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "taxi-fare-toast",
+      "detail": "(1.1s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "taxi-ride",
+      "detail": "(94.5s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "terrace-death",
+      "detail": "(35.4s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "traffic-pass-parked",
+      "detail": "(41.3s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "trail-trees",
+      "detail": "(31.0s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "tyre-effects",
+      "detail": "(17.3s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "vehicle-damage-shape",
+      "detail": "(46.9s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "vehicle-layouts",
+      "detail": "(5.6s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "vehicle-material-lifecycle",
+      "detail": "(0.0s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "SKIP",
+      "name": "vehicle-merge",
+      "detail": "(0.1s): Requires WebGL: run with --render",
+      "source": "explicit renderer-skip reporting at ae769ba"
+    },
+    {
+      "status": "PASS",
+      "name": "view-remembered",
+      "detail": "(80.3s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "voices",
+      "detail": "(27.9s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "SKIP",
+      "name": "wet-glints",
+      "detail": "(13.2s): Requires WebGL: run with --render",
+      "source": "explicit renderer-skip reporting at ae769ba"
+    },
+    {
+      "status": "PASS",
+      "name": "wheelie",
+      "detail": "(22.0s)",
+      "source": "isolated rerun of final game build"
+    },
+    {
+      "status": "PASS",
+      "name": "witness-car-lines",
+      "detail": "(0.1s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "witnesses-monarch",
+      "detail": "(70.2s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "witnesses-venues",
+      "detail": "(34.3s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "world-edge",
+      "detail": "(93.6s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "world-edge-land",
+      "detail": "(28.2s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "world-reset",
+      "detail": "(44.5s)",
+      "source": "full regression run at 953c1eb"
+    },
+    {
+      "status": "PASS",
+      "name": "wreck-limit",
+      "detail": "(175.7s)",
+      "source": "full regression run at 953c1eb"
+    }
+  ],
+  "limits": "Software WebGL over loopback HTTP; no laptop GPU FPS claim. Mixed logic/render tests may cover logic only. Twelve renderer-specific checks remain unrun if listed as SKIP."
+}

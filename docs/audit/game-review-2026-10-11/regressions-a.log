@@ -1,0 +1,141 @@
+started dev server (?dev&norender: boot 35.4s)
+PASS boot-status (2.9s)
+PASS camera-framing (24.4s)
+     on-foot default zoom 2 · on-foot context 1 · on-foot aim 2 · on foot: zoom 2, 26.9 m of street, person 25 px · car context 0.56 · car at rest aim 1.12 · car at rest framed after 3.5 s 1.147 · pull-back at 73 km/h 0.913 · at speed (73 km/h eased): aim 1.023, framed 1.035, speed share 0.913 · context after stepping out 1 · aim after stepping out 2 · zoomed-out on foot 1.25 · bike context 0.61 · bus context 0.48 · car context at 125 % distance 0.448 · motion comfort framing at speed 0.86 · motion comfort holds the zoom (0.963 at rest, 0.963 at 73 km/h) 0.963
+SKIP car-cabins (0.0s): Requires WebGL: run with --render
+PASS chase-aim (4.2s)
+     camera 0: aim off the camera's heading (deg) 2 · camera 120: aim off the camera's heading (deg) 2 · camera -100: aim off the camera's heading (deg) 2 · at the wheel looking left: aim off -90 (deg) 0 · drive-by: {"window":"left","relDeg":-90,"aim":"clear","out":1} · drive-by aim off the nose (deg from -90) 0
+SKIP chase-clouds (0.4s): Requires WebGL: run with --render
+PASS chase-hud-box (2.8s)
+     on foot: box centre off the player across (share of its width) 0.07426973275326283 · on foot: box centre off the player up and down (share of its height) 0.03544720311097823 · on foot: {"box":{"l":316.1,"t":263.2,"r":477,"b":597.5},"at":{"x":408.5,"y":418.5,"depth":28.9}} · in a sedan: box centre off the player across (share of its width) 0.011111111111111112 · in a sedan: box centre off the player up and down (share of its height) 0.16539050535987745 · in a sedan: {"box":{"l":348,"t":297.3,"r":618,"b":558.5},"at":{"x":480,"y":384.7,"depth":56}} · the card and the player do not meet: {"viewport":[960,600],"player":{"l":346,"t":297,"r":617,"b":558},"open":{"l":16,"t":292,"r":275,"b":393},"strip":{"l":16,"t":357,"r":275,"b":393},"story":null,"folded":false,"hidden":false,"yielding":false,"asked":false,"fadeCard":false,"fadeStory":false,"nav":{"l":373,"t":64,"r":587,"b":108},"fadeNav":false,"readLeft":5.7}
+PASS chase-in-view (1.6s)
+     120 points agree
+PASS chase-radio-chip (3.0s)
+PASS chase-streams (32.3s)
+     seen after the settle: {"people":22,"cars":7,"peopleInFrustum":57,"carsInFrustum":19} · crowd centre leaned up the street (m) 62.5 · traffic centre leaned up the street (m) 91.875 · turning 60 deg/s: {"seconds":12,"people":{"popIn":0,"popOut":0,"seen":17.9},"vehicles":{"popIn":0,"popOut":0,"seen":4.3},"examples":[]} · people seen while turning (average) 17.9 · vehicles seen while turning (average) 4.3 · walking up the avenue: {"seconds":8,"people":{"popIn":0,"popOut":0,"seen":26.2},"vehicles":{"popIn":0,"popOut":0,"seen":6.6},"examples":[]} · people seen while walking (average) 26.2 · driving north: {"seconds":10,"people":{"popIn":0,"popOut":0,"seen":45.1},"vehicles":{"popIn":0,"popOut":0,"seen":15},"examples":[]} · vehicles seen while driving (average) 15
+PASS chase-walk (1.7s)
+     heading 135: walked off the camera's heading by (deg) 0 · heading -60: walked off the camera's heading by (deg) 0.06858282186249198 · heading 10: walked off the camera's heading by (deg) 1.3099324740202292
+PASS clouds (7.4s)
+     fair base over the city (m) 383.8 · fair cumulus depth (m) 366.2 · overcast base, weather alone (m) 300.4 · overcast base over the city (m) 306 · overcast base over MOUNT ASCENT against its summit (m) 25.5 · fair 383.8-750 m (sea 347.4 m), overcast 306-568 m, Mount Ascent 134 m · jump over (1487, -1446): immersion 1.00
+PASS drive-no-nan (15.9s)
+     sedan 56 m · bike 154 m · truck 30 m
+PASS enter-key (5.3s)
+PASS foliage-cutaway (0.4s)
+     on foot: leaves below 1.5 m stay 1.5 · on foot: open box half width (m) 0.78 · on foot: open box half height (m) 1.28 · truck: leaves below 1.5 m stay 1.5
+PASS frame-trace (2.3s)
+PASS mountain-road (36.0s)
+     RIDGELINE HIGHWAY: 1301 m, top 7.1 m, grade 9.8%, R 40 m, rails 151 m · EAGLE PASS: 418 m, top 11.7 m, grade 9.9%, R 40 m, rails 144 m · REGENCY ROAD: 171 m, top 6.3 m, grade 10.1%, R 27 m, rails 32 m · STONECREEK CONNECTOR: 321 m, top 0.1 m, grade 0.6%, R 175 m, rails 0 m · EAGLE PASS up at 110: 405 m in 22.1 s, avg 66 km/h, lane 0.99 m, vertical 0.71 g · EAGLE PASS down at 90: 425 m in 23 s, avg 66 km/h, lane 0.62 m, vertical 0.6 g · RIDGELINE HIGHWAY up at 130: 173 m in 9 s, avg 69 km/h, lane 0.85 m, vertical 0.6 g · REGENCY ROAD up at 90: 158 m in 7.5 s, avg 75 km/h, lane 1.67 m, vertical 1.04 g
+Scripts "build/three.js" and "build/three.min.js" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation
+PASS player-body (16.4s)
+     no 3D renderer on this page: the in-game checks need a rendered page · model: built in 120 ms: 4237 vertices, 7064 triangles · model: player body triangles 7064 · model: body volume (litres; positive = facing out) 95.8 · hair 1.810 m, scalp 1.810 m, soles -0.004 m, chin 1.579 m · stature, soles to the scalp (m) 1.814 · heads tall (chin to scalp) 7.84 · model: shoulder breadth across the deltoids (m) 0.518 · chest over waist width (the V) 1.091 · belly forward of the chest (mm; flat stomach) -19.1 · chest depth (m) 0.285 · fingertips at mid-thigh (share of stature) 0.389 · share of the hands the trigger finger moves 0.176 · 1 triangles face against their normals in the bind (0.14 per mille) · model: pose set: {"stand":{"stretch":1.16,"collapsedPerMille":0,"flippedPerMille":0.99,"worstGapMm":0},"walk":{"stretch":1.66,"collapsedPerMille":0,"flippedPerMille":1.13,"worstGapMm":0},"run":{"stretch":2.15,"collapsedPerMille":0.42,"flippedPerMille":3.96,"worstGapMm":0},"pistolAim":{"stretch":1.87,"collapsedPerMille":0,"flippedPerMille":0.99,"worstGapMm":0},"rifle":{"stretch":1.89,"collapsedPerMille":0.14,"flippedPerMille":0.42,"worstGapMm":0},"handsUp":{"stretch":3.15,"collapsedPerMille":0.28,"flippedPerMille":4.53,"worstGapMm":0},"phone":{"stretch":1.92,"collapsedPerMille":0.14,"flippedPerMille":1.84,"worstGapMm":0},"seated":{"stretch":3.18,"collapsedPerMille":0.28,"flippedPerMille":4.67,"worstGapMm":0},"kneel":{"stretch":2.73,"collapsedPerMille":0.14,"flippedPerMille":6.23,"worstGapMm":0},"crawl":{"stretch":2.63,"collapsedPerMille":0,"flippedPerMille":1.98,"worstGapMm":0},"freefall":{"stretch":1.86,"collapsedPerMille":0,"flippedPerMille":0,"worstGapMm":0},"swim":{"stretch":3.17,"collapsedPerMille":0.14,"flippedPerMille":2.69,"worstGapMm":0},"deadBack":{"stretch":1.87,"collapsedPerMille":0,"flippedPerMille":0,"worstGapMm":0},"carjack":{"stretch":1.96,"collapsedPerMille":0.14,"flippedPerMille":0.85,"worstGapMm":0},"twistLeft":{"stretch":2.77,"collapsedPerMille":0,"flippedPerMille":0.85,"worstGapMm":0},"twistRight":{"stretch":2.89,"collapsedPerMille":0,"flippedPerMille":0.85,"worstGapMm":0},"wristBent":{"stretch":1.81,"collapsedPerMille":0,"flippedPerMille":1.56,"worstGapMm":0},"wristTwisted":{"stretch":2.16,"collapsedPerMille":0,"flippedPerMille":0,"worstGapMm":0}} · fields: built in 3836 ms: 56897 vertices, 113462 triangles · fields: player body triangles (HIGH and ULTRA) 113462 · LOW/MEDIUM triangles over HIGH 0.47 · LOW/MEDIUM: top of the hair (m) 1.814 · fields: body volume (litres; positive = facing out) 81.1 · hair 1.814 m, scalp 1.800 m, soles -0.003 m, chin 1.566 m · stature, soles to the scalp (m) 1.803 · hair on the crown (m) 0.014 · heads tall (chin to scalp) 7.7 · fields: shoulder breadth across the deltoids (m) 0.575 · chest over waist width (the V) 1.085 · belly forward of the chest (mm; flat stomach) -37.3 · chest depth (m) 0.274 · fingertips at mid-thigh (share of stature) 0.385 · share of the hands the trigger finger moves 0.113 · 332 triangles face against their normals in the bind (2.93 per mille) · fields: pose set: {"stand":{"stretch":1.4,"collapsedPerMille":0,"flippedPerMille":0.04,"worstGapMm":0},"walk":{"stretch":1.74,"collapsedPerMille":0.01,"flippedPerMille":0.13,"worstGapMm":0.9},"run":{"stretch":2.38,"collapsedPerMille":0.25,"flippedPerMille":2.27,"worstGapMm":1.1},"pistolAim":{"stretch":2.79,"collapsedPerMille":0.08,"flippedPerMille":1.36,"worstGapMm":1.6},"rifle":{"stretch":2.2,"collapsedPerMille":0.1,"flippedPerMille":0.95,"worstGapMm":0.5},"handsUp":{"stretch":5,"collapsedPerMille":0.07,"flippedPerMille":3.66,"worstGapMm":0},"phone":{"stretch":1.7,"collapsedPerMille":0.03,"flippedPerMille":0.71,"worstGapMm":3.6},"seated":{"stretch":3.37,"collapsedPerMille":0.13,"flippedPerMille":3.23,"worstGapMm":1.1},"kneel":{"stretch":3.22,"collapsedPerMille":0.14,"flippedPerMille":7.31,"worstGapMm":0},"crawl":{"stretch":3.47,"collapsedPerMille":0.1,"flippedPerMille":2.35,"worstGapMm":0},"freefall":{"stretch":1.91,"collapsedPerMille":0,"flippedPerMille":0.08,"worstGapMm":0},"swim":{"stretch":4.2,"collapsedPerMille":0.05,"flippedPerMille":1.93,"worstGapMm":0.3},"deadBack":{"stretch":2.03,"collapsedPerMille":0,"flippedPerMille":0.04,"worstGapMm":0},"carjack":{"stretch":2.16,"collapsedPerMille":0.1,"flippedPerMille":0.66,"worstGapMm":4.3},"twistLeft":{"stretch":1.8,"collapsedPerMille":0,"flippedPerMille":0.11,"worstGapMm":0},"twistRight":{"stretch":1.81,"collapsedPerMille":0.04,"flippedPerMille":0.24,"worstGapMm":0},"wristBent":{"stretch":2.68,"collapsedPerMille":0.07,"flippedPerMille":1.2,"worstGapMm":0},"wristTwisted":{"stretch":1.48,"collapsedPerMille":0,"flippedPerMille":0,"worstGapMm":2.6}}
+PASS regency-traffic (20.2s)
+     luxury: lane -2.24 m, pass gap 1.89 m, turns 1 · suv: lane -2.37 m, pass gap 16.72 m, turns 0 · taxi: lane -2.33 m, pass gap 2.09 m, turns 1
+SKIP render-cell-preupload (0.1s): Requires WebGL: run with --render
+SKIP render-hiccups (0.1s): Renderer counters require WebGL: run with --render
+PASS rig-geometry (0.3s)
+     nearHeadGeometry woman's shape (units) 0.032 · nearTorsoGeometry woman's shape (units) 0.235 · nearPelvisGeometry woman's shape (units) 0.12 · nearThighGeometry woman's shape (units) 0.068 · near set triangles, every variant 22879
+PASS roof-skin (0.0s)
+PASS soundscape (4.2s)
+     Midtown street enclosure 0.446 · steps in 2 s of running 9 · Midtown enclosure 0.446, summit echo 0.171, 9 steps in 2 s
+PASS tyre-effects (17.3s)
+     sedan burnout crept (m) 0 · muscle burnout crept (m) 0
+PASS vehicle-layouts (5.6s)
+PASS vehicle-merge (0.0s)
+PASS ammo-supply (35.1s)
+     default on-foot zoom 2 · on-foot zoom at start 2 · screen half depth 139 units; on-screen gunman fired 3
+PASS blood-amounts (28.8s)
+     plan: 9mm 15 m torso 1/9/2/2.8m, 9mm 15 m head 1.3/12/2/3m, 9mm 15 m leg 0.8/7/2/2.5m, 9mm 1 m torso 1.169/11/2/2.9m, rifle 15 m torso 1.6/16/3/3.4m, rifle 3 m torso 2.14/22/3/4m, shotgun 20 m leg 0.44/3/1/2.1m, shotgun 6 m leg 0.845/6/2/2.5m, shotgun 4 m leg 3.265/23/4/5.3m, shotgun 1.5 m leg 3.96/28/4/6m, shotgun 1.5 m head 6.435/46/5/7.1m, .50 30 m torso 2.8/29/3/4.6m · ground marks: pistol 16 {"pool":0,"spatter":2,"drop":14,"track":0,"stain":0,"wall":0}, point-blank shotgun 71 {"pool":1,"spatter":7,"drop":64,"track":0,"stain":0,"wall":0} · point-blank sides: {"downrange":70,"uprange":0,"level":1,"farthest":54.9} · walls: point blank 3, pistol 8 m 0 · cars: point blank 1 (0.22), pistol 10 m 0
+PASS blood-wounds (68.9s)
+     one round: pool r 3.08 -> 6.36 (10 s) -> 6.97 (30 s), rMax 7 · several rounds: pool r 8.79 (30 s), rMax 8.8
+PASS bullet-hits (24.6s)
+     9mm: {"civilian":1,"gang":2,"guard":2,"vescari":3,"patrol":3,"patrol4":4,"swat":7,"fed":5,"soldier":5,"garrison":6} · rifle: {"civilian":1,"gang":2,"guard":2,"vescari":2,"patrol":2,"patrol4":2,"swat":4,"fed":3,"soldier":3,"garrison":4} · swat: 9mm torso hits 7 · fed: 9mm torso hits 5 · soldier: 9mm torso hits 5 · swat: rifle torso hits 4 · fed: rifle torso hits 3 · soldier: rifle torso hits 3 · live: swat 7 torso / 2 leg, gang 2 · exit spray: {"downrange":46,"uprange":0,"level":0,"farthest":39.7}
+PASS camera-comfort (58.5s)
+     board (0 km/h, framed 1.173): {"seconds":4,"accel":{"rms":0.155,"peak":0.706},"jerk":{"rms":1.22,"peak":8.65},"zoomRate":{"rms":17,"peak":28.01},"jolt":0,"drift":{"peak":0.278,"swing":0.278}} · accelerate (102.3 km/h, framed 1.018): {"seconds":4,"accel":{"rms":0.102,"peak":0.168},"jerk":{"rms":0.05,"peak":0.1},"zoomRate":{"rms":2.97,"peak":4},"jolt":0,"drift":{"peak":0.109,"swing":0.119}} · slalom (106.2 km/h, framed 0.93): {"seconds":4,"accel":{"rms":0.063,"peak":0.136},"jerk":{"rms":0.14,"peak":0.28},"zoomRate":{"rms":1.43,"peak":2.59},"jolt":0,"drift":{"peak":0.136,"swing":0.077}} · weave (113.7 km/h, framed 0.944): {"seconds":3,"accel":{"rms":0.11,"peak":0.156},"jerk":{"rms":0.23,"peak":0.33},"zoomRate":{"rms":0.5,"peak":0.63},"jolt":0,"drift":{"peak":0.151,"swing":0.118}} · brake (13.3 km/h, framed 1.011): {"seconds":4,"accel":{"rms":0.168,"peak":0.232},"jerk":{"rms":0.24,"peak":0.9},"zoomRate":{"rms":2.4,"peak":4.58},"jolt":0,"drift":{"peak":0.147,"swing":0.068}} · turn (55.2 km/h, framed 1.08): {"seconds":3,"accel":{"rms":0.206,"peak":0.31},"jerk":{"rms":0.28,"peak":0.44},"zoomRate":{"rms":0.81,"peak":1.22},"jolt":0,"drift":{"peak":0.214,"swing":0.178}} · rough (0.2 km/h, framed 1.119): {"seconds":4,"accel":{"rms":0.011,"peak":0.035},"jerk":{"rms":0.02,"peak":0.07},"zoomRate":{"rms":0.48,"peak":0.96},"jolt":0,"drift":{"peak":0.017,"swing":0.017}} · blast jolt: on foot 0.0128, in a car 0.0049, motion comfort 0 · car context 0.56 · car at rest framed (zoom), 3 s after boarding 1.173 · pull-back at 111 km/h 0.841
+PASS carjack-traffic (37.1s)
+     traffic at a light (van, red): 4.8 s to the seat · between parked cars: 4.6 s to the seat · next lane: 4.1 s to the seat · boxed in: 2.2 s to the seat (short: no room) · rolling at 40 km/h: 1.7 s to the seat (short: rolling) · rolling: car {"type":"sedan","fitted":{"abs":true,"esc":true,"tcs":true},"lamps":{"abs":"ready","esc":"ready","tcs":"ready"},"charact
+PASS chase-hud-layout (32.2s)
+PASS chase-lock (30.6s)
+     locked: camera heading off the gunman (deg) 0.18020293714937452 · aim assist off: the camera kept its heading (deg) 0
+PASS cheat-helicopter (30.1s)
+     helicopters near: [{"id":308,"type":"helicopter","metres":9,"authorized":true,"driven":false},{"id":244,"type":"helicopter","metres":40,"authorized":false,"driven":false}]
+PASS civil-aircraft (37.6s)
+     civil helicopters: {"spec":{"name":"SKYRANGER 429","l":98,"rotorRadius":44},"list":[{"id":244,"x":896,"y":1492,"altitude":102,"roof":true,"hp":240,"player":false},{"id":245,"x":2432,"y":2516,"altitude":121,"roof":true,"hp":240,"player":false},{"id":246,"x":960,"y":4660,"altitude":0,"roof":false,"hp":240,"player":false}]}
+PASS coronation-bridge (43.1s)
+     GPS 373 m over coronation
+PASS drawbridge-traffic (233.1s)
+     keys-harbor: 9 queued, 7 on the causeway, gap 589 · oceanview: 5 queued, 5 on the causeway, gap 361 · ridgeline: 5 queued, 5 on the causeway, gap 412 · coronation: 5 queued, 5 on the causeway, gap 488
+PASS driveby-mouse (39.3s)
+PASS fort-cover (45.4s)
+PASS garages-islands (45.6s)
+     northbank eastside: 8 m · northbank south: 338 m · palmkeys palm: 30 m · ridgeline county: 30 m · monarch monarch: 245 m · oceanview oceanview: 114 m · coralcoast coral: 114 m · sunsetisle pier: 69 m · sentinel sentinel: 19 m
+PASS god-mode-codes (39.8s)
+     A taps: x 1152 → 1139 → 1123 · after the code: mode settings · ON sound: {"on":true,"seconds":4,"peak":0.742,"rms":0.061,"loudestRms":0.324} · OFF sound: {"on":false,"seconds":4,"peak":0.45,"rms":0.04,"loudestRms":0.263}
+PASS gore-dismember (33.2s)
+     shotgun 1.5 m leg: {"x":432,"y":4600,"a":0,"hp":-32,"dead":true,"down":true,"lost":["leg R"],"pieces":1,"thrown":1,"wounds":2,"bleedOut":null,"hit":{"cls":"buck","zone":"leg","close":1,"scale":0.132,"burst":0}} · severed: [["leg",true,0.55]] · after 30 loads: 24 pieces, 16 stumps, 48 tracked; decals 480
+PASS headlight-aim (27.5s)
+     spots: {"uphill":[7974,1726,-0.5880026035475675],"downhill":[8072,1674,2.5535900500422257],"crest":[7500,1556,-3.050932766389048]} · uphill: {"type":"expedition","pitchDeg":15,"rollDeg":0.1,"aim":[0.804,-0.535,0.259],"up":[-0.215,0.145,0.966],"lampHeightM":1.1,"lampOverGroundM":1.13,"horizon":true,"horizonMs":0.4,"probes":[{"m":5,"ground":12.99,"t":-0.001,"v":-0.194,"vLevel":0.204,"lit":1},{"m":10,"ground":14.32,"t":-0.001,"v":-0.1,"vLevel":0.235,"lit":1},{"m":20,"ground":16.87,"t":0,"v":-0.057,"vLevel":0.245,"lit":0.42},{"m":30,"ground":21.45,"t":-0.001,"v":0.021,"vLevel":0.316,"lit":1},{"m":40,"ground":18.28,"t":0,"v":-0.124,"vLevel":0.158,"lit":0}]} · uphill pitch (deg) 15 · uphill aim follows the pitch 0.259 · uphill lamp height over the ground (m) 1.13 · uphill 5 m: ground below the cut-off in the body frame -0.194 · uphill 5 m: in the clear 1 · uphill 10 m: ground below the cut-off in the body frame -0.1 · uphill 10 m: in the clear 1 · downhill: {"type":"expedition","pitchDeg":-15.5,"rollDeg":0.7,"aim":[-0.8,0.537,-0.268],"up":[-0.229,0.14,0.963],"lampHeightM":1.1,"lampOverGroundM":1.16,"horizon":true,"horizonMs":0.2,"probes":[{"m":5,"ground":12.61,"t":0.005,"v":-0.217,"vLevel":-0.654,"lit":1},{"m":10,"ground":11.21,"t":0.004,"v":-0.11,"vLevel":-0.467,"lit":1},{"m":20,"ground":9.1,"t":0.003,"v":-0.025,"vLevel":-0.339,"lit":1},{"m":30,"ground":8.94,"t":0.002,"v":0.066,"vLevel":-0.231,"lit":1},{"m":40,"ground":10.01,"t":0.001,"v":0.144,"vLevel":-0.147,"lit":1}]} · downhill pitch (deg) -15.5 · downhill aim follows the pitch -0.268 · downhill 5 m: ground below the cut-off in the body frame -0.217 · downhill 5 m: in the clear 1 · downhill 10 m: ground below the cut-off in the body frame -0.11 · downhill 10 m: in the clear 1 · crest: {"type":"expedition","pitchDeg":10.5,"rollDeg":0.1,"aim":[-0.979,-0.089,0.182],"up":[0.181,0.015,0.983],"lampHeightM":1.1,"lampOverGroundM":1.18,"horizon":true,"horizonMs":0.3,"probes":[{"m":5,"ground":28.87,"t":0,"v":-0.389,"vLevel":-0.108,"lit":1},{"m":10,"ground":27.79,"t":0,"v":-0.402,"vLevel":-0.162,"lit":0.3},{"m":20,"ground":25.46,"t":0,"v":-0.419,"vLevel":-0.198,"lit":0},{"m":30,"ground":20.87,"t":0,"v":-0.51,"vLevel":-0.285,"lit":0},{"m":40,"ground":13.19,"t":0,"v":-0.649,"vLevel":-0.405,"lit":0}]} · crest: the near road is lit 1
+PASS health-indoors (48.2s)
+     SAINT MARLOW HOSPITAL: hp 52 -> 100 for $150 · THE BLUE PLATE DINER: hp 52 -> 97 for $28 · STONECREEK LODGE: hp 52 -> 87 for $25
+PASS hud-clearance (51.7s)
+     at speed: player {"l":460,"t":313,"r":503,"b":492}, open card {"l":250,"t":420,"r":710,"b":536}
+PASS hud-layout (40.5s)
+     drawn: carRadio, toast, radioCaption, policeStatusPanel · touch, bus heading down: player {"l":469,"t":162,"r":493,"b":264}, open card {"l":335,"t":54,"r":675,"b":142}
+PASS integrity-shore (44.5s)
+PASS liner-voyage (43.2s)
+     lap 20.4 min, call, astern 6kn, ahead 21kn, call, ahead 21kn · lap order: HARBOR POINT > SUNSET PIER > MONARCH ISLE > SUNSET PIER > OCEAN DRIVE > PALM KEYS BEACH > OPEN SEA > HARBOR POINT; top 21 kn, 7.6 kn in the sound; started on leg 0
+FAIL living-medics (70.1s): the lost run did not finish as lost: {"why":"aborted","outcome":null,"seconds":60,"cause":"boxed in"}
+     start (revive true): jobs 1, revivable true, last null · ended after 24 s: jobs 1, {"why":"done","outcome":"revived","seconds":24} · revive run: arrived after 10.4 s, phases driving treat outcome, last {"why":"done","outcome":"revived","seconds":24} · start (revive false): jobs 2, revivable false, last {"why":"done","outcome":"revived","seconds":24} · ended after 60 s: jobs 2, {"why":"aborted","outcome":null,"seconds":60,"cause":"boxed in"} · lost run: arrived after null s, last {"why":"aborted","outcome":null,"seconds":60,"cause":"boxed in"}
+PASS living-snatch (45.4s)
+     caught: {"kind":"snatch","why":"caught","seconds":5,"reward":220}, cash 0 → 220, wanted 0 · left alone: {"kind":"snatch","why":"escaped","seconds":18,"reward":0}
+PASS lockpick (70.5s)
+     hold 0: progress 0.03 pins 0 working trunk · hold 1: progress 0.16 pins 0 working trunk · hold 2: progress 0.31 pins 1 working trunk · hold 3: progress 0.37 pins 1 working trunk · hold 4: progress 0.49 pins 2 working trunk · hold 5: progress 0.63 pins 3 working trunk · hold 6: progress 0.79 pins 3 working trunk · hold 7: progress 0.92 pins 4 working trunk · hold 8: progress 1 pins 5 working trunk · door hold 0: locked true · door hold 1: locked true · door hold 2: locked true · door hold 3: locked true · door hold 4: locked true · door hold 5: locked false
+PASS mission-abandon (27.5s)
+PASS mission-card-keys (32.4s)
+PASS mission1-bay (100.6s)
+     prompt run: truck health % at the barrier 50 · hesitant run: truck health % at the barrier 33
+PASS mission1-truck (32.5s)
+     truck y (north kerb lane) 609 · truck x (inside the block) 1830 · truck y (north kerb lane) 609 · truck x (inside the block) 1830 · truck y (north kerb lane) 609 · truck x (inside the block) 1830
+PASS mission2-cones (31.8s)
+     suspicion after 1 s seen at 60 units 6.9 · walking 1 s in the cone 4.7 · suspicion after 3 s at the far end of the cone 11.3
+PASS mission2-paths (33.1s)
+PASS mission2-touch-run (23.3s)
+PASS mission4-alert (48.8s)
+PASS mission4-tail (56.7s)
+PASS north-point-key (42.8s)
+     heard: Hong Kong changes hands in July. Money will move. | Oh my god!
+PASS parachute-cloud (89.0s)
+     pulled at 641.4 m in cloud 337.5-830.1 m (immersion 0.69) · pull to fully open in cloud (s) 4.67 · height lost opening in cloud (m) 191 · opening shock in cloud (g) 3.78 · open at 449.9 m, immersion 1 · forecast at the pull 191.7 m
+PASS parachute-liner (49.7s)
+     landed on her LIDO DECK at 18 kn, 0.7 m/s across the deck · head-on: 16 m/s across her deck at 14.4 kn, hurt · steered down onto her LIDO DECK at 14.4 kn, 8.5 m/s across the deck · yacht: down on the SUN DECK
+PASS parked-bridge-efficiency (29.1s)
+     {"shut":{"checked":2680,"changed":0,"diffs":{}},"open":{"checked":2669,"changed":0,"diffs":{}}}
+PASS pause-restart (41.7s)
+PASS police-circus (32.8s)
+     from 7164,-2560: 613 → 134 units in 8 s, 0 reversals · from 7236,-2600: 646 → 131 units in 8 s, 0 reversals · from 7236,-3330: 651 → 143 units in 8 s, 0 reversals · from 7164,-3330: 593 → 142 units in 8 s, 0 reversals
+PASS police-radio (29.1s)
+     radio: SUSPECT SWITCHED · NOW IN A BLUE PICKUP
+PASS police-witness (109.2s)
+     call started, 7.4 s long, 242 units off
+PASS respray-beacon (29.7s)
+     beacon: {"shop":"EASTSIDE GARAGE","x":1296,"y":2060,"altitude":44} · arrow not over the door 1296 · nearest shop 94 m: {"shop":"EASTSIDE GARAGE","x":1296,"y":2060,"altitude":44}
+PASS ride-look (59.1s)
+     pointer at the left edge: yaw (deg) -118.3 · pointer at the left edge: pitch (deg) 0 · pointer at the right edge: yaw (deg) 118.2 · pointer at the top: pitch (deg) 48.8 · pointer at the top: yaw (deg) 0 · pointer at the bottom: pitch (deg) -58.6 · pointer back at the centre: yaw (deg) 0 · pointer back at the centre: pitch (deg) 0 · inside the dead zone: yaw (deg) 0 · half way to the right edge: yaw (deg, eased) 36.7 · a tenth of a second into a turn: yaw (deg) 36.1 · outside view, pointer left: camera yaw (deg) -59.1 · front seat, pointer left: yaw (deg) -118.2 · front seat, pointer left: camera yaw (deg) -118.2 · front seat, pointer at the centre: yaw (deg) 0 · right stick up-right: yaw (deg) 84.8 · right stick up-right: pitch (deg) 35.3 · right stick let go: yaw (deg) 0
+PASS sky-meeting (81.7s)
+     arrival: {"him":{"name":"ANTON VARGA","x":4312,"y":-3845,"altitude":1409.9,"pose":null,"sitting":false,"hidden":false,"hand":null,"hp":100},"you":{"x":4302,"y":-3847,"altitude":1409.9,"roof":"evolution"}}
+PASS sun-gradual (52.9s)
+     day: max 1.693 deg/min (seen 0.834 at 4:50), lowest 19.882 deg; sleep: {"minutes":360,"seconds":6.03,"maxDegPerFrame":0.293} · a six-hour skip is drawn over seconds 6.03 · dawn skip: {"minutes":240,"seconds":5.03,"maxDegPerFrame":4.039}
+PASS swim-rescue (57.2s)
+     rescued with 30 hp at -1758,5981
+PASS taxi-ride (94.5s)
+PASS traffic-pass-parked (41.3s)
+     from 120 back at 30 km/h: out to 24 left of the lane line, by after 3 s, the van shoved 0 units · from 52 back at 5 km/h: out to 27 left of the lane line, by after 4 s, the van shoved 0.2 units
+PASS voices (27.9s)
+     11 people, 3 women
+PASS witnesses-monarch (70.2s)
+     call began 2 s after the shots, 221 units off, 7.8 s long; star at 10 s · call length 7.8 · nearest unit 542 → 135 units
+PASS world-edge-land (28.2s)
+     drove east on land from 3003 units off the line, fastest 15 m/s east; no card
+PASS world-reset (44.5s)
+PASS demo-gating (32.6s)
+PASS mission-replay-frontier (79.0s)
+77/82 passed, 4 skipped, 1 failed in 3724s
