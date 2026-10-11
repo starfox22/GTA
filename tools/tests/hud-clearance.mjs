@@ -41,6 +41,9 @@ export default async function (t) {
     await north();
     await t.call('hudClearance', 'read');
     await t.keys('KeyW', 0.4);
+    // As above: a real frame measures the boxes, then a step lets the card act on them.
+    await t.realWait(0.5);
+    await t.keys('KeyW', 0.1);
     c = await t.call('hudClearance');
     t.assert(c.yielding && c.folded, 'not yielding before O: ' + JSON.stringify(c));
     await t.keys('KeyO', 0.15, { real: true });
