@@ -120,6 +120,10 @@ packs with plain `<script src>` so the zip still plays from file://.
   `lootInteract` (bodies, once) and `takeVehicleArms` (police vehicles, once) in ammo-supply.js.
 - `bleed(entity, severity, heading, kind)` (blood.js) is the only way to add a wound's blood; a
   pool only forms under a body on the ground (`bodyPool`) and spreads in `updateBlood`.
+  Blast blood (blood.js BLOOD BLAST SPRAY): `bleed(p, sev, a, 'blast', hit)` with `a` the heading from the blast to the
+  victim; `bloodBlastPush(hit)` is the only rule for the cone and carry, nothing flies back toward the blast; the
+  player's `hurt(d, 'blast', a)` passes the heading. A round's air spray is `bloodShotPlan().air` (bounded by
+  `BLOOD_AIR_ROOM`); flying drops draw at least `FX_BLOOD_MIN_PX` and streak (`FX_BLOOD_STREAK`); tools/tests/blood-spray.mjs.
 - Shooting from a vehicle goes through `driveByAim(vehicle, heading)` (driveby.js): arcs per
   window and body live in `spec.driveBy`; the bullet and the pose both use `driveByGrip`. A car fires all round, a
   body with no rear window 270°; a blocked aim fires nothing and shows only the cross
@@ -162,7 +166,8 @@ packs with plain `<script src>` so the zip still plays from file://.
 - Jump on foot (player-jump.js): `player.jump` is a carrier (`cancelPlayerJump`); what a jump clears is a solid's
   `height` (foot furniture `jumpH`, props `JUMP_PROP_HEIGHT`) skipped through `solidSkipBelow` only in the jumping
   player's own step (`footSolid`), never elsewhere; Fort Sentinel, the theme park and the Marea keep their blockers out
-  of it. Space is `jump` on foot, `handbrake` driving, `rockets` in the air.
+  of it. Space is `jump` on foot, `handbrake` driving, `rockets` in the air. The take-off effort sound is
+  player-jump-audio.js `jumpEffortSound`.
 - `c.wheelie` (wheelie.js) is the only two-wheeler pitch; wheelie input is `wheelieHeld()` (controls.js).
 - Objectives have no ground ring or light pool: the floating arrow (render3d-effects.js `arrowGroup`, shown
   by `objectiveArrowShown()` in markers.js) is the only pointer; the ring under the player is the `playerRing`
@@ -455,7 +460,7 @@ packs with plain `<script src>` so the zip still plays from file://.
 - **Dev console** `window.DeadEndCity` has explicit named methods only. **Never** add an
   eval-style hook (eval, `Function`, run-a-string, generic get/set): a security rule.
 - **Assets are downloaded, not made** (the owner's rule): any new model, texture or sound starts from a ready-made
-  asset with a clean licence (CC0/MIT/CC-BY; only GitHub reaches through the cloud proxy); a new collection is shown to
+  asset with a clean licence (CC0/MIT/BSD/CC-BY; only GitHub reaches through the cloud proxy); a new collection is shown to
   the owner as preview sheets before it is integrated; hand-built assets only when nothing usable exists.
 - **Third-party assets** must be credited in `docs/THIRD_PARTY_CREDITS.txt` (the build embeds
   it; never delete it). Media goes in `assets/` + `assets/manifest.json`.
