@@ -17,7 +17,7 @@ export default async function (t) {
   t.assert(s.mission === 'Borrowed Stripes', 'mission 4 is Borrowed Stripes: ' + JSON.stringify(s));
   let r = await t.call('fortJob');
   t.assert(r.stage === 1 && r.lockpick && r.car?.occupied && /KESSLER/.test(r.instruction) && /MAREA/.test(r.instruction), 'Kessler on his way at once, with the lockpick: ' + JSON.stringify(r));
-  t.assert(r.car.x > 700 && r.car.x < 1150 && Math.abs(r.car.y - 3160) < 30 && r.car.route > 30, 'his car at his kerb on Broadway with a road route to the Marea: ' + JSON.stringify(r.car));
+  t.assert(Math.abs(r.car.x - 674) < 20 && r.car.y > 3380 && r.car.y < 3640 && r.car.route > 30, 'his car at his kerb on Broadway with a road route to the Marea: ' + JSON.stringify(r.car));
   t.assert(r.target && Math.hypot(r.target.x - r.car.x, r.target.y - r.car.y) < 5, 'the objective is his car: ' + JSON.stringify(r));
   let b = await t.call('missionBrief');
   t.assert(/leaving his house on Broadway/.test(b.queued || b.text || ''), 'the opening brief names his house: ' + JSON.stringify(b));

@@ -20,13 +20,14 @@
      * (skyline-meeting.js). The driving and the walk into the club are here.
      */
     const FORT_JOB = {
-      // Kessler's house: the building on Broadway's north side of the Palm Sound Causeway boulevard (y 3200), across
-      // from Viaduct Green; his car on the kerb outside, nose west to the causeway (the first spot along the kerb
-      // that canSpawnCar allows, stepping east by `homeStep`).
-      home: { x: 812, y: 3160, a: Math.PI, district: 'Broadway' },
+      // Kessler's house: the building at Broadway's corner of the x 640 avenue and the Palm Sound Causeway boulevard
+      // (y 3200; the elevated Shore Line runs over the boulevard, so not there); his car on the avenue's east kerb
+      // outside, nose north to the boulevard and the causeway (the first spot back along the kerb that canSpawnCar
+      // allows, by `homeStep`).
+      home: { x: 674, y: 3420, a: -Math.PI / 2, district: 'Broadway' },
       homeStep: 36,
-      // Pulling out: into the westbound lane (24 units off the boulevard's centre line).
-      homeLane: 3176,
+      // Pulling out: from the kerb into the right-hand lane, 10 units over (24 off the avenue's centre line).
+      homeLane: 10,
       // Marina Rd's north kerb opposite the Marea's door (he arrives westbound).
       park: { x: -2822, y: 5220, a: Math.PI },
       // Across the road to the door, then in (MAREA_NODES street, out, in: beachclub-plan.js).
@@ -143,10 +144,15 @@
        graph (navigation.js), held to the right-hand lane as the cabs drive it
        (taxi.js), the pull-out into the westbound lane first and the kerb last. */
     function fortRoute(home) {
-      const nodes = navigationGraph(),
-        from = { x: home.x - 70, y: FORT_JOB.homeLane },
+      const fx = Math.cos(home.a),
+        fy = Math.sin(home.a),
+        // Toward the road's middle (the right-hand vector reversed).
+        lx = Math.sin(home.a) * FORT_JOB.homeLane,
+        ly = -Math.cos(home.a) * FORT_JOB.homeLane,
+        nodes = navigationGraph(),
+        from = { x: home.x + fx * 70 + lx, y: home.y + fy * 70 + ly },
         path = navShortestPath(nodes, closestNavNode(from, nodes), closestNavNode(FORT_JOB.park, nodes)),
-        route = [{ x: home.x - 36, y: (home.y + FORT_JOB.homeLane) / 2 }, from];
+        route = [{ x: home.x + fx * 36 + lx / 2, y: home.y + fy * 36 + ly / 2 }, from];
       for (let i = 0; i < path.length; i++) {
         const prev = i ? path[i - 1] : from,
           along = headingBetween(prev, path[i]),
@@ -156,12 +162,13 @@
       route.push({ x: FORT_JOB.park.x + 60, y: FORT_JOB.park.y }, { x: FORT_JOB.park.x, y: FORT_JOB.park.y });
       return route;
     }
-    /* His car on the kerb outside his house: the first clear spot stepping east along the kerb. */
+    /* His car on the kerb outside his house: the first clear spot stepping back along the kerb. */
     function fortHomeSpot() {
       const h = FORT_JOB.home;
-      for (let i = 0; i < 8; i++) {
-        const x = h.x + i * FORT_JOB.homeStep;
-        if (canSpawnCar(FORT_JOB.car, x, h.y, h.a)) return { x, y: h.y, a: h.a };
+      for (let i = 0; i < 6; i++) {
+        const x = h.x - Math.cos(h.a) * i * FORT_JOB.homeStep,
+          y = h.y - Math.sin(h.a) * i * FORT_JOB.homeStep;
+        if (canSpawnCar(FORT_JOB.car, x, y, h.a)) return { x, y, a: h.a };
       }
       // (Traffic all along it: his own spot; the collision step parts them before he moves off.)
       return { x: h.x, y: h.y, a: h.a };

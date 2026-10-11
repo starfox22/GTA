@@ -29,15 +29,16 @@ cleanup, the demo gate) are in missions-and-demo.md; this page is what each job 
 
 ## Mission 4: Borrowed Stripes (fortjob.js with vehicle-trunk.js, fort-cover*.js, skyline-meeting.js)
 
-- `FORT_JOB`: Kessler's house (`home`: Broadway, the north kerb of the Palm Sound Causeway boulevard at (812, 3160),
-  nose west; the entry's `start` is the pavement outside), his kerb on Marina Rd opposite the Marea (north side: he
+- `FORT_JOB`: Kessler's house (`home`: Broadway, the building on the x 640 avenue just south of the Palm Sound
+  Causeway boulevard; his car on the avenue's east kerb at (674, 3420), nose north; not on the boulevard itself, which
+  the elevated Shore Line covers; the entry's `start` is the pavement outside), his kerb on Marina Rd opposite the Marea (north side: he
   arrives westbound) and his walk to the door. Stages are `FORT_STAGE` (tail 1, parked, trunk, take, change, gate,
   inside, out, meet; 0 was the old stakeout at the fort and is unused, the numbers are kept).
 - Story: Lieutenant Dale Kessler (logistics) is off duty at the Marea; his uniform and ID open Fort Sentinel's gate,
   the records office holds the HAWTHORN weapons file, Consul Anton Varga buys it at CIRRUS. Every step opens with a
   mission brief (`fortStage` = setStage + `missionBrief`, mission-brief.js) and a line from Vinny.
 - Vinny's call gives the lockpick (`giveLockpick`, arsenal slot 8) and `startFortJob` puts Kessler at once in his car
-  at his kerb (`fortHomeSpot`: the first spot east along the kerb `canSpawnCar` allows), already pulling away (about
+  at his kerb (`fortHomeSpot`: the first spot back along the kerb `canSpawnCar` allows), already pulling away (about
   50 s to the Marea over the causeway): a red `muscle` car, `mission` (never retired, burns slowly), `missionDriver:
   'kessler'`, `trunkLoot` UNIFORM AND ID, driving `countyRoute` = `fortRoute(home)` (the pull-out into the westbound
   lane, then the navigation graph held to the right lane, as the cabs drive it). The job starts after `resetWorld`
