@@ -201,7 +201,8 @@
        steps look for, every one of those steps returns at once (law-vehicle harbor hold: not a
        police car; pond, shore and boat checks need it to have moved; terrain pose: cached for
        this position; cliff and deck states: none; drawbridge: shut; rotor: not a helicopter),
-       leaving only `speed` to refresh. The long way round costs about a microsecond a vehicle a
+       leaving only `speed` to refresh. A raised bridge elsewhere must not disable this city-wide.
+       The long way round costs about a microsecond a vehicle a
        step, this about a tenth of that. Keep `settleIsTrivial` in step with those functions: the console
        `settleAudit()` runs the whole settle on every vehicle it skips and reports any change. */
     function settleIsTrivial(c, pc) {
@@ -226,7 +227,7 @@
         !c.cliffLift &&
         !(c.fallVz > 0) &&
         c !== pc &&
-        drawbridgesShut &&
+        !drawbridgeRaisedAt(c.x, c.y) &&
         !isBoat(c)
       );
     }

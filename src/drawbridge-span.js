@@ -140,6 +140,14 @@
       for (let i = 0; i < list.length; i++) if (drawbridgeNear(list[i], x, y, pad)) return list[i];
       return null;
     }
+    // The raised span that can affect a vehicle here. Shared by the settle and its parked-car shortcut.
+    function drawbridgeRaisedAt(x, y, pad = 60) {
+      if (drawbridgesShut) return null;
+      const list = drawbridgeList();
+      for (let i = 0; i < list.length; i++)
+        if (list[i].angle >= 0.004 && drawbridgeNear(list[i], x, y, pad)) return list[i];
+      return null;
+    }
     // Horizontal reach of a leaf from its trunnion at `angle` (the tip's offset).
     function drawbridgeTipReach(d, angle = d.angle) {
       const g = drawbridgeGeometry(d);

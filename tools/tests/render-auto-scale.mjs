@@ -17,6 +17,7 @@ export default async function (t) {
   t.assert(run && Array.isArray(run.changes), 'adaptiveSim returns the scale changes');
   t.note(JSON.stringify(run));
   t.assert(run.changes.length <= 30, `${run.changes.length} scale changes in the hunting run`);
+  t.assert(run.changes.every(([, scale]) => scale >= 0.6), 'AUTO stepped below its 60% minimum resolution: ' + JSON.stringify(run.changes));
   t.assert(run.ceiling < 1, 'a ceiling was set after the quick slow-down');
   await t.call('graphics', 'low');
 }

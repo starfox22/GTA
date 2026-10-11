@@ -50,6 +50,9 @@ Every island reached by more than one road bridge has a drawbridge among them
 - Hot-path gates: `drawbridgesQuiet` (all idle and seated) and `drawbridgesShut` (no leaf off
   its seat; `settleIsTrivial` reads it), refreshed every update and by every command
   (`noteDrawbridgeStates`). `drawbridgeRouting` is set while the route graph is built.
+- `drawbridgeRaisedAt(x, y)` is shared by `drawbridgeSettle` and `settleIsTrivial`: only a raised
+  span within the same 60-unit pad disables the parked-car shortcut. An opening elsewhere must
+  not force every parked car in the city through the full settle.
 - GPS links over a span carry their drawbridge (`link.drawbridge`); `navShortestPath` adds that
   bridge's `drawbridgeRouteDelay(d)`.
 - Raising and lowering from anywhere go through `drawbridgeOpenNow(d)` (the full sequence:

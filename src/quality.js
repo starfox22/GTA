@@ -174,7 +174,7 @@
         const crept = now - adaptive.lastRise < 30000;
         adaptive.lastDrop = now;
         if (adaptive.scale > ADAPTIVE_MIN_SCALE + 0.01) {
-          adaptive.scale = city3D.setRenderScale(adaptive.scale - 0.1);
+          adaptive.scale = city3D.setRenderScale(Math.max(ADAPTIVE_MIN_SCALE, adaptive.scale - 0.1));
           // Slow again soon after creeping up: that scale is more than this machine holds. Stay below it
           // for a while (longer each time) rather than hunting between two scales, each step of which
           // reallocates every post target and shows as a pulse in sharpness.

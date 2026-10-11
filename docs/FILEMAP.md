@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-587 files in the include tree, 201,220 lines.
+587 files in the include tree, 201,228 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -182,7 +182,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/physics-traffic.js`   522 — Traffic AI: signals, junction planning, road-line following (trafficControl).
 - `src/physics-aircraft.js`   278 — Aircraft strikes: An airframe is not a car: a helicopter or a plane flown into a building, a hillside or a bridge tower faster than …
 - `src/physics-driving.js`   658 — controlVehicle(): grip, cornering limit, kerb strikes, reverse; broadphase buffers.
-- `src/physics-step.js`   358 — physicsStep(): the fixed step, broadphase, contact passes, settling.
+- `src/physics-step.js`   359 — physicsStep(): the fixed step, broadphase, contact passes, settling.
 - `src/physics-knockdowns.js`   272 — People knocked down by vehicles, swept person contacts, blood tracks.
 - `src/runover.js`   224 — Second pass: a vehicle runs over someone already on the ground (knockPerson hands over): harm by speed and weight, blood, the car's stain, a death a …
 - `src/physics-update.js`   144 — updateCars(): per-frame vehicle update driving the fixed steps.
@@ -201,8 +201,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/drawbridge.js ▸ The drawbridges: schedules, gates, leaves, jumps
 
-- `src/drawbridge-span.js`   571 — Drawbridge span: the drawbridges (drawbridgeList), opening timetables, geometry, surface, gap and on-span tests (drawbridgeSurface).
-- `src/drawbridge-motion.js`   491 — Drawbridge motion: vehicles riding the leaves, pose, sounds (bell, clank, horn), motor, drips and passing vessels.
+- `src/drawbridge-span.js`   579 — Drawbridge span: the drawbridges (drawbridgeList), opening timetables, geometry, surface, gap and on-span tests (drawbridgeSurface).
+- `src/drawbridge-motion.js`   490 — Drawbridge motion: vehicles riding the leaves, pose, sounds (bell, clank, horn), motor, drips and passing vessels.
 - `src/drawbridge-opening.js`   272 — Drawbridge openings: clearing the span, camera zoom, swinging the leaves, updateDrawbridge(), map, console command and report.
 - `src/drawbridge-report.js`   420 — Drawbridges on the map, the console and god panel commands (open, close, hold), reports, the day's open share and the islands' access bridges.
 

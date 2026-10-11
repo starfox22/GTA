@@ -15,8 +15,7 @@
       // one), else a raised one it is close to.
       let d = active ? c.deckBridge : undefined;
       if (!d) {
-        const list = drawbridgeList();
-        for (let i = 0; i < list.length && !d; i++) if (list[i].angle >= 0.004 && drawbridgeNear(list[i], c.x, c.y, 60)) d = list[i];
+        d = drawbridgeRaisedAt(c.x, c.y);
         if (!d && active) d = drawbridgeAt(c.x, c.y, 60);
         if (!d) {
           if (active) drawbridgeLeaveDeck(c);

@@ -95,6 +95,8 @@ quiet play that this soak could not attribute (a heap-snapshot diff on a quiet m
 - **AUTO hold** (quality.js): a slow-down within 30 s of creeping the scale up sets a ceiling at the scale it falls to
   and holds it for 60 s, doubling each time to 10 min, so a machine on the edge stops hunting (a synthetic run of 12
   fast/slow rounds made 77 scale changes, each a reallocation; with the hold, 18). `adaptiveSim()` runs the controller.
+  Downward steps clamp to `ADAPTIVE_MIN_SCALE`: after a 5% recovery, subtracting 10% must not
+  take a 65% scale below the intended 60% floor. LOW's separate large-screen base cap still applies.
 - **Cell pre-upload** (render3d-resources.js CELL PRE-UPLOAD): every 120 ms while played, shown and past the prewarm,
   the nearest static or batch cell within the view's reach + 1700 units that is not on the GPU gets ~1.5 MB of its
   meshes drawn into the 1 x 1 upload target (no shadow pass), so the camera's first draw finds them there; a slice over
