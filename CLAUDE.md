@@ -383,6 +383,8 @@ packs with plain `<script src>` so the zip still plays from file://.
   downloaded cab with vinnytruck3d.js's deck (`vinnyKit(true)`, VINNY_CARGO unchanged); Fort Sentinel's HMMWV, M35 and
   tank are `kind: 'special'` models (military-assets3d.js; the gun jeep's mount keeps MOUNTED_GUNS' numbers); atlas
   4096x2048, earlier models keep their density (`texFloor`); regenerate the bin from every MODELS list, never pick a side.
+  Burnt or worn downloaded models (atlas parts) char only through vehicle-char3d.js ASSET CHAR
+  (`assetCharSwap`/`assetCharRelease` from paintVehicle); never set a map on the shared `vaMaterials`.
 - Downloaded aircraft and dog (vehicles-and-driving-models-aircraft.md): `tools/aircraft_models.py` makes
   assets/aircraft-models.bin + aircraft-skin.webp (SKYRANGER 429 airframe `bell429`, flyable SKYLARK 172 airframe
   `skyhawk`, `fixedGear`) on the makeHelicopter / buildAircraft contracts; `rotorStrikes` uses an airframe's
