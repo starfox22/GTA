@@ -672,8 +672,9 @@ unicorn-horse.json (Aurora, the unicorn statue on Sunset Pier; src/unicorn3d.js)
   rearing with a hand-built skeleton; the game subdivides it (Loop) and adds a sculpted
   mane, tail and horn of its own. Only the posed 494-vertex cage is embedded.
 
-vehicle-models.bin, vehicle-atlas.webp (traffic cars, the Crown Vic patrol body; src/vehicle-assets3d.js,
-src/police3d-asset.js, made by tools/vehicle_models.py)
+vehicle-models.bin, vehicle-atlas.webp (traffic cars, the patrol bodies, trucks, the bus, the convertible, Fort
+Sentinel's vehicles; src/vehicle-assets3d.js, src/police3d-asset.js, src/military-assets3d.js, src/vinnytruck3d.js,
+made by tools/vehicle_models.py)
   Car models by Daniel Zhabotinsky (https://sketchfab.com/DanielZhabotinsky), each
   licensed under Creative Commons Attribution 4.0 (CC-BY-4.0,
   http://creativecommons.org/licenses/by/4.0/); fetched from GitHub mirrors that carry the
@@ -694,13 +695,31 @@ src/police3d-asset.js, made by tools/vehicle_models.py)
   UCB_BOTTOM texture taken from the same author's Canyon '75 Taxi). The police sedan wears the
   game's own liveries and unit numbers instead of its painted ones; its light bar's lenses are
   lit by the game's flash patterns.
-  The motorbike and the boat below are in the same files:
+  The motorbike below is in the same files:
   - Honda CB 750 F Super Sport 1970 (bike, the VORTEX 900): This work is based on "Honda CB 750 F Super Sport 1970" (https://sketchfab.com/3d-models/honda-cb-750-f-super-sport-1970-f121301624174b179ca4d50158797b03) by Alex.Ka. (https://sketchfab.com/Alex.Ka.) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
     Changes: split into frame, steering, wheels and lamps; the maker's tank badge left out and its name on the brake
     hub and side cover painted over; small parts left out and triangles reduced; the paint in the game's colours.
-  - Tow Boat (workboat, the HARBOR LAUNCH): This work is based on "Tow Boat" (https://sketchfab.com/3d-models/tow-boat-86939cf48b914951aa3c6ed2bc8bb446) by BoatUS Foundation (https://sketchfab.com/boatusfoundation) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
-    Changes: scaled to 9 m; the sponsor's, outboard maker's and radar maker's names and the registration painted over
-    in the texture; triangles reduced from 147k; the texture downscaled into the atlas.
+  Round three (each CC-BY-4.0; mirrors on GitHub carrying the original Sketchfab license.txt or its credit in the
+  glTF's asset record):
+  - 80s Generic police car (police, the 'charger' body): This work is based on "80s Generic police car - Low poly model" (https://sketchfab.com/3d-models/80s-generic-police-car-low-poly-model-61766c1e6e1e4b2b803c174f33433a74) by Daniel Zhabotinsky (https://sketchfab.com/DanielZhabotinsky) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+  - '90 Light Commercial Truck (truck, the ATLAS BOX TRUCK; flatbed, the cab and chassis of Vinny's ATLAS CARGO FLATBED): This work is based on "'90 Light Commercial Truck - Low poly model" (https://sketchfab.com/3d-models/90-light-commercial-truck-low-poly-model-663a0953c038434a918cb85725c88ffa) by Daniel Zhabotinsky (https://sketchfab.com/DanielZhabotinsky) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+  - Compact Pickup '78 (pickup, the WORKHORSE): This work is based on "Compact Pickup '78 - Low poly model" (https://sketchfab.com/3d-models/compact-pickup-78-low-poly-model-30700a84311c4bea9ef722f0773ce92a) by Daniel Zhabotinsky (https://sketchfab.com/DanielZhabotinsky) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+  - Chevrolet Suburban Sheriff Cruiser (police, the 'utility' and 'tahoe' bodies; suv, the RANGER 4X4 in plain paint): This work is based on "Chevrolet Suburban Sheriff Cruiser" (https://sketchfab.com/3d-models/chevrolet-suburban-sheriff-cruiser-116f6a42deb04fd8942e6c632e37901f) by Matthew (jeandiz) (https://sketchfab.com/jeandiz) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+  - 80 American Sedan (above) also draws the limousine (the SOVEREIGN STRETCH), stretched at its rear doors to 8.8 m.
+  - ambulance car (ambulance, the PARAMEDIC): This work is based on "ambulance car" (https://sketchfab.com/3d-models/ambulance-car-ede02e5e7432438e936c7556faf602b5) by Sidra (https://sketchfab.com/Sidramax) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+  - Abrams M1A2 SEPv3 (tank, the SENTINEL M120): This work is based on "Abrams M1A2 SEPv3" (https://sketchfab.com/3d-models/abrams-m1a2-sepv3-eb6f5560198740269507e9948376414c) by dannzjs (https://sketchfab.com/dannzjs) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+  - Harley-Davidson Seventy-Two HD FXT 2015 (cruiser, the NOMAD CRUISER): This work is based on "Harley-Davidson Seventy-Two HD FXT 2015" (https://sketchfab.com/3d-models/harley-davidson-seventy-two-hd-fxt-2015-15e67a3076494bb99ba7504c9913ceb5) by Alex.Ka. (https://sketchfab.com/Alex.Ka) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+  - Chrysler Sebring Convertible (roadster, the SOLSTICE SPIDER): This work is based on "Chrysler Sebring Convertible" (https://sketchfab.com/3d-models/chrysler-sebring-convertible-dac8529f24754bbd936173cbe8da92b1) by BadKarma (https://sketchfab.com/890244234) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+  - Generic Town Bus (bus, the METRO CITY BUS): This work is based on "Generic Town Bus" (https://sketchfab.com/3d-models/generic-town-bus-14fe03d792914d51b6c6250b393c44fd) by own.guest (https://sketchfab.com/own.guest) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+  - HMMWV M998A1 (soft top) (jeep, the SENTINEL M4 UTILITY): This work is based on "HMMWV M998A1 (soft top)" (https://sketchfab.com/3d-models/hmmwv-m998a1-soft-top-ffbc4b053628413fb84acf5b89595d96) by 42manako (https://sketchfab.com/42manako) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+  - Military Truck 1/2 Ton (armytruck, the SENTINEL M35 CARGO TRUCK): This work is based on "Military Truck 1/2 Ton" (https://sketchfab.com/3d-models/military-truck-12-ton-5d19c751b12849eeb390d637b2b686a1) by Arion Digital (https://sketchfab.com/andrewswihart) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+    Changes: as above (turned, scaled, split into the game's parts, triangles reduced, textures packed into the
+    atlas); the police bodies wear the game's liveries projected over their panels (the Suburban's black and white
+    paint told from its trim by colour) with their light bars lit by the game's flash patterns; the trucks' boxes and
+    the flatbed's chassis stretched to the game's lengths, the flatbed's box, rear doors and rear lamps left out for
+    the game's own deck; the convertible's paint in the game's colours; the Abrams's turret and gun split off to turn,
+    its whip antennas and small parts left out and its 256k triangles clustered and reduced to about 21k.
+  (The Tow Boat by BoatUS Foundation, tried for the HARBOR LAUNCH in round two and held back, is no longer in the files.)
 
 player-model.bin, player-skin.webp, player-detail.webp (the player character; src/player-body3d-asset.js)
   Base model: "Male_Adult_16" from the Microsoft Rocketbox Avatar Library,

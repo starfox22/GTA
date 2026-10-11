@@ -51,7 +51,7 @@ vehicles-and-driving.md.
 ## Downloaded models
 
 The traffic cars, the Crown Vic patrol body and the motorbikes drawn from downloaded models (the converter, the
-kits, what each type keeps): vehicles-and-driving-models-assets.md.
+kits, what each type keeps): vehicles-and-driving-models-assets.md. Round three (police bodies, trucks, the convertible, Fort Sentinel): vehicles-and-driving-models-heavy.md.
 
 ## Cabins, headroom and rear badges
 
