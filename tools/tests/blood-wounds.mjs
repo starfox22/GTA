@@ -1,6 +1,6 @@
 // Blood (blood.js): one round leaves a spatter and drops, never a pool; a body on the
 // ground bleeds a pool that starts small and spreads fast (most of it in 10-15 s) to about
-// 1.75 m across, larger after several rounds; a blast pools at once and sprays round the body.
+// 1.75 m across, larger after several rounds; a blast pools at once and sprays beyond the body.
 export const fresh = true;
 const SPOTS = [
   [420, 4600],
@@ -54,12 +54,12 @@ export default async function (t) {
     t.assert(r.pools.length === 1 && r.pools[0].r > late + 0.5, `several rounds, no larger pool: ${JSON.stringify(r.pools)} vs ${late}`);
     t.note(`several rounds: pool r ${r.pools[0].r} (30 s), rMax ${r.pools[0].rMax}`);
 
-    // A blast: a pool at once and a spray round the body.
+    // A blast: a pool at once and a spray beyond the body.
     const blast = await victim(t, SPOTS[3], 1, 400, 'blast');
     t.assert(blast.dead, `the blast did not kill: ${JSON.stringify(blast)}`);
     r = await report(t, blast);
     t.assert(r.pools.length === 1 && r.pools[0].r >= 3, `no immediate pool from a blast: ${JSON.stringify(r)}`);
-    t.assert(r.near.spatter >= 4, `no spray round a blast: ${JSON.stringify(r.near)}`);
+    t.assert(r.near.spatter >= 4, `no spray from a blast: ${JSON.stringify(r.near)}`);
     const caps = (await t.call('goreReport')).caps;
     t.assert(r.total <= caps.decals, `blood decals unbounded: ${r.total} over ${caps.decals}`);
   } finally {

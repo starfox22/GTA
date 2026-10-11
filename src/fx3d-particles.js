@@ -36,6 +36,9 @@
         FX_DRAW_CAPACITY = 1536,
         FX_SORT_SLOTS = 2048,
         FX_POINT_LIGHTS = 4,
+        // Flying blood drops (the game's particles): at least this many pixels across, streaked over this many seconds of flight.
+        FX_BLOOD_MIN_PX = 2.4,
+        FX_BLOOD_STREAK = 0.03,
         // The share of a recipe's particle count each tier draws (the bigger effects: blasts, fires), and how
         // many of the flash and fire lights each tier lets light the smoke (a loop at each corner).
         FX_TIER_SHARE = { LOW: 0.55, MEDIUM: 0.8, HIGH: 1, ULTRA: 1 },
@@ -497,6 +500,12 @@
         // fire's flame particles (the renderer draws each fire itself, fx3d-recipes.js fxGroundFire) and the 2D
         // view's stand-ins for what the recipes draw (`standIn`: muzzle flashes, strikes, blasts, rocket trails).
         let legacy = 0;
+        // Blood in the air stays readable from the street camera's height: a drop is drawn at least
+        // FX_BLOOD_MIN_PX across and streaked along its flight (FX_BLOOD_STREAK seconds of motion). The game's
+        // drops are a few centimetres: without it they were a pixel or less and the spray never showed in the air.
+        const bufferH = renderer.domElement.height || 600,
+          orthoUnit = camera.isOrthographicCamera ? (camera.top - camera.bottom) / (camera.zoom || 1) / bufferH : 0,
+          perspUnit = camera.isOrthographicCamera ? 0 : (2 * Math.tan(((camera.fov || 50) * Math.PI) / 360)) / bufferH;
         for (let i = 0; i < particles.length && count < FX_DRAW_CAPACITY; i++) {
           const p = particles[i];
           if (p.flame || p.standIn) continue;
@@ -527,7 +536,17 @@
           const depth = (x - cx) * fx + (y - cy) * fy + (z - cz) * fz;
           if (depth < -size || chaseSpriteHidden(x, y, z, size)) continue;
           const color = cachedColor(p.color);
-          fxStageOne(count++, depth, x, y, z, size, color.r, color.g, color.b, alpha, twist % TAU, frame, 0, p.blood ? -1e5 : ground, 0, 0, 0, 0);
+          let sx = 0,
+            sy = 0,
+            sz = 0;
+          if (p.blood) {
+            const least = FX_BLOOD_MIN_PX * (orthoUnit || perspUnit * Math.max(depth, 1));
+            if (size < least) size = least;
+            sx = p.vx * FX_BLOOD_STREAK;
+            sy = p.vz * FX_BLOOD_STREAK;
+            sz = p.vy * FX_BLOOD_STREAK;
+          }
+          fxStageOne(count++, depth, x, y, z, size, color.r, color.g, color.b, alpha, twist % TAU, frame, 0, p.blood ? -1e5 : ground, sx, sy, sz, 0);
           legacy++;
         }
         if (fxWarmPending && count === 0) {
