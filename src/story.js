@@ -92,8 +92,8 @@
         title: 'Borrowed Stripes',
         contact: 'vinny',
         reward: 6500,
-        // fortjob.js: the stakeout where the Sentinel causeway meets the coast road.
-        start: { x: 7740, y: 8060 },
+        // fortjob.js: Kessler's house on Broadway (FORT_JOB.home), where he pulls away as the job starts.
+        start: { x: 710, y: 3420 },
         phoneMessage:
           'Vinny gave you a mission: steal an off-duty officer’s uniform and ID, walk into Fort Sentinel through the front gate, take the HAWTHORN weapons file from the records office and sell it to a consul at the top of the EVOLUTION tower.',
         brief: 'Steal Lieutenant Kessler’s uniform and ID from his car, walk into Fort Sentinel, take the HAWTHORN weapons file and deliver it to the consul at CIRRUS.',

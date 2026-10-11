@@ -1,7 +1,7 @@
 // Mission 4 (Borrowed Stripes): shot at in his car, Kessler radios the fort (fortjob.js fortAlerted): five stars at
 // once, the KESSLER ALERTED THE MILITARY headline and a red brief, Kessler out and running, the keys left in the car;
 // the trunk then opens with them. Waiting at the Marea instead (fortClubWait): his car is put on its last approach
-// out of sight and he parks opposite the door.
+// out of sight (if he is still far off) and he parks opposite the door.
 export const fresh = true;
 async function until(t, label, test, seconds, step = 1) {
   let r = await t.call('fortJob');
@@ -16,8 +16,7 @@ export default async function (t) {
   await t.call('startMission', 3);
   let b = await t.call('missionBrief');
   t.assert(/steal a military uniform/.test(b.queued || b.text || ''), 'the opening brief: ' + JSON.stringify(b));
-  await t.call('teleport', 7740, 8070);
-  let r = await until(t, 'Kessler leaves the fort', (q) => q.stage === 1 && q.car?.occupied, 14);
+  let r = await until(t, 'Kessler leaves his house', (q) => q.stage === 1 && q.car?.occupied, 2);
   await t.wait(2);
   r = await t.call('fortJob');
   await t.call('arm', 0);
@@ -36,7 +35,7 @@ export default async function (t) {
   await t.call('wanted', 0);
   await t.call('startMission', 3);
   await t.call('teleport', -2700, 5150);
-  r = await until(t, 'he leaves the fort on his own', (q) => q.stage === 1 && q.car?.occupied, 45);
+  r = await until(t, 'he leaves his house at once', (q) => q.stage === 1 && q.car?.occupied, 2);
   r = await until(t, 'waiting at the Marea', (q) => q.waitClub, 5);
   t.assert(/WAIT FOR KESSLER/.test(r.instruction), 'the club wait objective: ' + r.instruction);
   r = await until(t, 'his car put on its last approach', (q) => q.jumped, 25);

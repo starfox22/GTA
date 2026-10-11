@@ -4,10 +4,11 @@
      * Source: src/fortjob.js
      * Scope: shared game closure.
      * Vinny hands over a lockpick (vehicle-trunk.js) and a name: Lieutenant Dale
-     * Kessler, logistics, off duty, driving out of Fort Sentinel to the Marea Beach
-     * Club in his red muscle car. The player catches him at the gate and tails him
-     * (too close for too long and he makes the tail; lost, he is still going to the
-     * club) or waits for him at the club (fortClubWait). Shot at in his car he
+     * Kessler, logistics, off duty, pulling away from his house on Broadway (by the
+     * Palm Sound Causeway) the moment the job starts, for the Marea Beach Club in his
+     * red muscle car. The player intercepts and tails him (too close for too long and
+     * he makes the tail; the map always shows his car) or waits for him at the club
+     * (fortClubWait). Shot at in his car he
      * radios the fort: five stars at once (fortAlerted). Then either the quiet way
      * (wait until he is inside the club and pick his trunk) or the messy way (take
      * the car or kill him for the keys, with all the witnesses that brings). The trunk holds his
@@ -19,16 +20,14 @@
      * (skyline-meeting.js). The driving and the walk into the club are here.
      */
     const FORT_JOB = {
-      // The coast road where the Sentinel causeway reaches the mainland: every car
-      // leaving the fort passes it (the route turns north at x 7796).
-      stakeout: { x: 7740, y: 8060 },
-      // Kessler's car in the fort's lot by the gate, nose to the outbound lane.
-      depart: { x: 9440, y: 8098, a: Math.PI },
-      // Out through the gate's outbound lane (SENTINEL.gate lanes, military-base.js).
-      gateOut: [
-        { x: 9330, y: 8098 },
-        { x: 9100, y: 8112 },
-      ],
+      // Kessler's house: the building at Broadway's corner of the x 640 avenue and the Palm Sound Causeway boulevard
+      // (y 3200; the elevated Shore Line runs over the boulevard, so not there); his car on the avenue's east kerb
+      // outside, nose north to the boulevard and the causeway (the first spot back along the kerb that canSpawnCar
+      // allows, by `homeStep`).
+      home: { x: 674, y: 3420, a: -Math.PI / 2, district: 'Broadway' },
+      homeStep: 36,
+      // Pulling out: from the kerb into the right-hand lane, 10 units over (24 off the avenue's centre line).
+      homeLane: 10,
       // Marina Rd's north kerb opposite the Marea's door (he arrives westbound).
       park: { x: -2822, y: 5220, a: Math.PI },
       // Across the road to the door, then in (MAREA_NODES street, out, in: beachclub-plan.js).
@@ -41,14 +40,17 @@
       ],
       car: 'muscle',
       carColor: '#7a1c1a',
-      // Tailing: noticed when this close behind him for a while, lost past `lost`.
+      // Tailing: noticed when this close behind him for a while (out of range he is simply on his way: the map
+      // shows his car all the time, so losing him is never announced).
       close: 150,
       tooClose: 70,
-      lost: 1800,
-      lostSeconds: 15,
+      // Waiting at the club (fortClubWait): this near his kerb, his car this far off, for this long.
+      clubNear: 1100,
+      clubFar: 1700,
+      clubWaitSeconds: 10,
     };
+    // (Stage 0 was a stakeout at the fort's gate; he now leaves from his house as the job starts, so it opens on 1.)
     const FORT_STAGE = {
-      stakeout: 0,
       tail: 1,
       parked: 2,
       trunk: 3,
@@ -103,8 +105,10 @@
       m.kcar = null;
       m.kessler = null;
       m.tailHeat = 0;
-      m.lostFor = 0;
       m.stuckFor = 0;
+      m.routeIndex = 0;
+      m.touched = false;
+      m.cleanVersion = -1;
       m.beats = {};
       m.keys = false;
       m.uniform = false;
@@ -118,21 +122,12 @@
       m.shotSeen = player.lastShotAt ?? -100;
       m.later = null;
       m.meetStep = null;
-      // He signs out at the gate shortly whether or not anyone is watching (the player may be on the way to the club).
-      m.departAt = gameTime + 40;
       // Vinny's own opening line (story.js startMission leaves it on screen).
       m.ownOpening = true;
       if (!lockpickOwned()) giveLockpick(true);
-      fortStage(
-        m,
-        FORT_STAGE.stakeout,
-        FORT_JOB.stakeout,
-        'CATCH KESSLER LEAVING FORT SENTINEL · OR WAIT FOR HIM AT THE MAREA',
-        'You need to steal a military uniform to infiltrate the fort. An officer, Lieutenant Kessler, is spending his day off at the Marea Beach Club. Steal the uniform from the trunk of his car: wait for him at the beach club, or intercept him before he gets there.',
-        'vinny',
-        'Fort Sentinel keeps a file called HAWTHORN in its records office, and a consul named Varga will pay a fortune for it. You’re walking in the front gate, in Lieutenant Kessler’s uniform.',
-        { kicker: 'THE JOB' },
-      );
+      // He is already pulling away from his house: the player picks at once between the club and an intercept.
+      fortDepart(m);
+      fortLater(m, 9, 'vinny', 'One more thing: don’t shoot at that car. He’s got an army radio in it, and you’d have the whole fort on you.');
       tell(
         'Vinny’s lockpick is in your arsenal: ' +
           pressKey('lockpick', true) +
@@ -145,14 +140,19 @@
       m.beats[id] = true;
       missionLine(speaker, text);
     }
-    /* Kessler's road route from the fort's gate to the Marea's kerb: the city's
-       navigation graph (navigation.js), held to the right-hand lane as the cabs
-       drive it (taxi.js), the gate's outbound lane first and the kerb last. */
-    function fortRoute() {
-      const nodes = navigationGraph(),
-        from = FORT_JOB.gateOut[1],
+    /* Kessler's road route from his kerb to the Marea's: the city's navigation
+       graph (navigation.js), held to the right-hand lane as the cabs drive it
+       (taxi.js), the pull-out into the westbound lane first and the kerb last. */
+    function fortRoute(home) {
+      const fx = Math.cos(home.a),
+        fy = Math.sin(home.a),
+        // Toward the road's middle (the right-hand vector reversed).
+        lx = Math.sin(home.a) * FORT_JOB.homeLane,
+        ly = -Math.cos(home.a) * FORT_JOB.homeLane,
+        nodes = navigationGraph(),
+        from = { x: home.x + fx * 70 + lx, y: home.y + fy * 70 + ly },
         path = navShortestPath(nodes, closestNavNode(from, nodes), closestNavNode(FORT_JOB.park, nodes)),
-        route = FORT_JOB.gateOut.map((p) => ({ x: p.x, y: p.y }));
+        route = [{ x: home.x + fx * 36 + lx / 2, y: home.y + fy * 36 + ly / 2 }, from];
       for (let i = 0; i < path.length; i++) {
         const prev = i ? path[i - 1] : from,
           along = headingBetween(prev, path[i]),
@@ -162,8 +162,19 @@
       route.push({ x: FORT_JOB.park.x + 60, y: FORT_JOB.park.y }, { x: FORT_JOB.park.x, y: FORT_JOB.park.y });
       return route;
     }
+    /* His car on the kerb outside his house: the first clear spot stepping back along the kerb. */
+    function fortHomeSpot() {
+      const h = FORT_JOB.home;
+      for (let i = 0; i < 6; i++) {
+        const x = h.x - Math.cos(h.a) * i * FORT_JOB.homeStep,
+          y = h.y - Math.sin(h.a) * i * FORT_JOB.homeStep;
+        if (canSpawnCar(FORT_JOB.car, x, y, h.a)) return { x, y, a: h.a };
+      }
+      // (Traffic all along it: his own spot; the collision step parts them before he moves off.)
+      return { x: h.x, y: h.y, a: h.a };
+    }
     function fortDepart(m) {
-      const d = FORT_JOB.depart,
+      const d = fortHomeSpot(),
         c = makeCar(FORT_JOB.car, d.x, d.y, d.a, true, FORT_JOB.carColor);
       assignDriver(c);
       c.locked = true;
@@ -174,26 +185,38 @@
       c.mission = true;
       c.missionDriver = 'kessler';
       c.trunkLoot = { label: 'UNIFORM AND ID' };
-      c.countyRoute = fortRoute();
+      c.countyRoute = fortRoute(d);
       c.countyIndex = 0;
       m.kcar = c;
       m.departedAt = gameTime;
       m.kInCarAt = gameTime;
       m.shotSeen = player.lastShotAt ?? -100;
-      const watching = distanceBetween(player, FORT_JOB.stakeout) < 900;
+      m.cleanVersion = c.damageVersion;
       fortStage(
         m,
         FORT_STAGE.tail,
         c,
-        'TAIL KESSLER’S RED MUSCLE CAR · OR WAIT FOR HIM AT THE MAREA',
-        watching
-          ? 'That’s Kessler’s red muscle car coming out of the gate. Follow him at a distance, or go ahead and wait for him at the Marea Beach Club.'
-          : 'Kessler has just left Fort Sentinel in his red muscle car. Catch up with him, or wait for him at the Marea Beach Club.',
+        'INTERCEPT KESSLER’S RED MUSCLE CAR · OR WAIT FOR HIM AT THE MAREA',
+        'You need to steal a military uniform to infiltrate the fort. An officer, Lieutenant Kessler, is leaving his house on ' +
+          FORT_JOB.home.district +
+          ' right now for his day off at the Marea Beach Club. Steal the uniform from the trunk of his red muscle car: wait for him at the beach club, or intercept him before he gets there.',
         'vinny',
-        watching
-          ? 'There he is, the red one through the gate. Give him room. He’s army, he checks his mirrors.'
-          : 'He just signed out at the gate. Red muscle car, heading for the Marea. Your call where you take him.',
+        'Fort Sentinel keeps a file called HAWTHORN in its records office, and a consul named Varga will pay a fortune for it. You’re walking in the front gate, in Lieutenant Kessler’s uniform.',
+        { kicker: 'THE JOB' },
       );
+    }
+    /* Kessler keeps his car like a parade ground: on his way (at the wheel, not alerted, never touched by the player) a
+       knock from traffic, a kerb or a bridge leaves no mark (repairVehicle, the same frame, so no dent is ever drawn). */
+    function fortKeepPristine(m, c) {
+      if (m.touched || m.alerted || !c.occupied || m.stage > FORT_STAGE.tail) return;
+      if (c.damageVersion === m.cleanVersion && !c.stains?.length) return;
+      // The player's doing (a shot, a ram, a nudge from his car): the marks stay.
+      if ((c.lastAttacker === player && gameTime - (c.lastDamagedAt ?? -100) < 1) || (player.car && player.car !== c && distanceBetween(player.car, c) < 90)) {
+        m.touched = true;
+        return;
+      }
+      repairVehicle(c);
+      m.cleanVersion = c.damageVersion;
     }
     /* Kessler on foot (out at the club, carjacked, or thrown out of a crash): a
        pedestrian made by makeCarDriver carrying the car's `missionDriver`. */
@@ -310,8 +333,8 @@
     function fortClubWait(m, deltaSeconds) {
       const c = m.kcar,
         route = c.countyRoute,
-        atClub = distanceBetween(player, FORT_JOB.park) < 1100,
-        far = distanceBetween(c, player) > 1700;
+        atClub = distanceBetween(player, FORT_JOB.park) < FORT_JOB.clubNear,
+        far = distanceBetween(c, player) > FORT_JOB.clubFar;
       if (!atClub || !far || !route) {
         if (!atClub) m.clubWait = 0;
         return;
@@ -329,7 +352,7 @@
         );
       }
       m.clubWait += deltaSeconds;
-      if (m.jumped || m.clubWait < 14) return;
+      if (m.jumped || m.clubWait < FORT_JOB.clubWaitSeconds) return;
       const last = Math.max(3, route.length - 7);
       for (let i = last; i > Math.max(2, last - 14); i--) {
         const p = route[i],
@@ -341,7 +364,6 @@
         c.vx = c.vy = 0;
         c.countyIndex = i + 1;
         m.jumped = true;
-        m.passed = true;
         fortBeat(m, 'coming', 'Heads up. Red muscle car, coming along Marina Road now.');
         tell('Kessler’s red muscle car is turning onto Marina Road.', 3.5);
         return;
@@ -357,7 +379,8 @@
         return;
       }
       // countyRouteControl wraps to the start after the last point: never let it.
-      if (route && c.countyIndex === 0 && gameTime - m.departedAt > 20) c.countyIndex = route.length - 1;
+      if (route && c.countyIndex === 0 && m.routeIndex > 1) c.countyIndex = route.length - 1;
+      m.routeIndex = c.countyIndex;
       // Wedged in traffic: a horn, then out of sight he finds his way round.
       if (Math.abs(c.speed || 0) < 6 && c.ai) {
         m.stuckFor += deltaSeconds;
@@ -411,27 +434,10 @@
       else m.tailHeat = Math.max(0, m.tailHeat - deltaSeconds / 15);
       if (m.tailHeat > 0.45) fortBeat(m, 'close', 'Too close! Let a car or two in between you, he’s looking in his mirror.');
       if (m.tailHeat >= 1) {
-        failMission('Kessler made the tail and turned back to the fort. He’ll report it, so the job is dead.');
+        failMission('Kessler made the tail and drove straight to the fort to report it, so the job is dead.');
         return;
       }
-      // The clock for losing him starts once he has come past the stakeout.
-      if (!m.passed && (distanceBetween(c, FORT_JOB.stakeout) < 400 || gameTime - m.departedAt > 45)) m.passed = true;
-      if (d > FORT_JOB.lost && m.passed && !m.waitClub) {
-        m.lostFor += deltaSeconds;
-        if (m.lostFor > FORT_JOB.lostSeconds) {
-          m.lostFor = 0;
-          m.waitClub = true;
-          fortStage(
-            m,
-            FORT_STAGE.tail,
-            FORT_JOB.park,
-            'GET TO THE MAREA BEACH CLUB · WAIT FOR KESSLER',
-            'You lost Kessler, but you know where he is going. Get to the Marea Beach Club and wait for his car.',
-            'vinny',
-            'Lost him? Doesn’t matter. He’s going to the Marea, same as every leave. Get there first.',
-          );
-        }
-      } else m.lostFor = 0;
+      // Far behind him is nothing to announce: the objective stays on his car (the map shows it all the time).
       if (gameTime - m.departedAt > 25 && !m.waitClub)
         fortBeat(m, 'radio', 'Kessler’s been going to the Marea every leave for a year. Rum, a table by the window, the same waitress. Creature of habit.');
     }
@@ -448,17 +454,10 @@
         missionLine(m.later.speaker, m.later.text);
         m.later = null;
       }
-      if (m.stage === FORT_STAGE.stakeout) {
-        if (distanceBetween(player, FORT_JOB.stakeout) < 450 && wantedStars === 0) {
-          m.watchFor = (m.watchFor || 0) + deltaSeconds;
-          fortBeat(m, 'watch', 'Good spot. Officers sign out at the gate like everybody else. Red muscle car: Lieutenant Dale Kessler.');
-          if (m.watchFor > 6) fortDepart(m);
-        } else if (gameTime >= m.departAt) fortDepart(m);
-        return;
-      }
       const c = m.kcar;
       if (!c) return;
       if (c.occupied) m.kInCarAt = gameTime;
+      fortKeepPristine(m, c);
       // Shot at while he is at the wheel (a hit, or rounds fired close by): he radios the fort.
       if (!m.alerted && m.stage <= FORT_STAGE.tail && gameTime - m.kInCarAt < 0.6 && (player.lastShotAt ?? -100) > m.shotSeen && gameTime - player.lastShotAt < 0.6) {
         m.shotSeen = player.lastShotAt;
@@ -713,10 +712,10 @@
       if (m.stage === FORT_STAGE.tail && m.kcar?.occupied && !m.waitClub) {
         const box = getElement('stealthStatus');
         box.style.display = 'block';
-        getElement('stealthLabel').textContent = m.lostFor > 0 ? 'TAIL · YOU’RE LOSING HIM' : m.tailHeat > 0.45 ? 'TAIL · HE’S CHECKING HIS MIRRORS' : 'TAIL · KESSLER';
+        getElement('stealthLabel').textContent = m.tailHeat > 0.45 ? 'TAIL · HE’S CHECKING HIS MIRRORS' : 'TAIL · KESSLER';
         getElement('stealthFill').style.width = Math.round(Math.min(1, m.tailHeat) * 100) + '%';
-        getElement('stealthHint').textContent = m.lostFor > 0 ? 'CLOSE THE GAP, OR WAIT AT THE MAREA' : 'STAY BACK · NOT RIGHT BEHIND HIM';
-        box.classList.toggle('hot', m.tailHeat > 0.45 || m.lostFor > 0);
+        getElement('stealthHint').textContent = 'STAY BACK · NOT RIGHT BEHIND HIM';
+        box.classList.toggle('hot', m.tailHeat > 0.45);
         box.classList.toggle('seen', m.tailHeat > 0.45);
       }
       const k = fortKessler(m);
@@ -757,9 +756,8 @@
       // Always a fresh run of the job (a parked car has no route left).
       missionIndex = 3;
       startMission();
-      const m = mission;
-      fortDepart(m);
-      const c = m.kcar,
+      const m = mission,
+        c = m.kcar,
         route = c.countyRoute;
       if (where === 'arrive' || where === 'parked' || where === 'inside') {
         const i = Math.max(3, route.length - 7),
@@ -771,7 +769,7 @@
         c.vx = c.vy = 0;
         c.countyIndex = i + 1;
         m.departedAt = gameTime - 60;
-        m.passed = true;
+        m.routeIndex = c.countyIndex;
         m.tailHeat = 0;
         if (where === 'arrive') {
           const b = route[i - 3];
@@ -846,6 +844,22 @@
       });
       return person;
     }
+    /* Kessler's car's state for the report: hp share, dents, sprung parts, stains, a door swung open, the trunk. */
+    function fortCarCondition(c) {
+      const d = c.damage || {},
+        parts = d.parts || {},
+        sprung = [];
+      for (const k in parts) if (parts[k]) sprung.push(k);
+      return {
+        hp: Math.round((c.hp / (c.maxhp || 1)) * 100) / 100,
+        dents: c.dents ? c.dents.length : 0,
+        sprung,
+        front: Math.round((d.front || 0) * 100) / 100,
+        stains: c.stains ? c.stains.length : 0,
+        door: !!(c.doorSwing && !c.doorSwing.closeAt),
+        trunkOpen: !!c.trunkOpen,
+      };
+    }
     function fortJobReport() {
       const m = fortJob();
       if (!m) return null;
@@ -855,14 +869,14 @@
       return {
         stage: m.stage,
         instruction: m.instruction,
+        line: m.lastLine,
         target: pt(m.target),
         car: c
-          ? { x: Math.round(c.x), y: Math.round(c.y), a: Math.round(c.a * 100) / 100, kmh: Math.round(Math.abs(c.speed || 0) / KMH), occupied: !!c.occupied, routeIndex: c.countyIndex, behind: c.countyRoute ? pt(c.countyRoute[Math.max(0, c.countyIndex - 4)]) : null, route: c.countyRoute?.length || 0, trunkOpen: !!c.trunkOpen, trunkPick: c.trunkPick || 0 }
+          ? { id: c.id, x: Math.round(c.x), y: Math.round(c.y), a: Math.round(c.a * 100) / 100, kmh: Math.round(Math.abs(c.speed || 0) / KMH), occupied: !!c.occupied, routeIndex: c.countyIndex, behind: c.countyRoute ? pt(c.countyRoute[Math.max(0, c.countyIndex - 4)]) : null, route: c.countyRoute?.length || 0, trunkOpen: !!c.trunkOpen, trunkPick: c.trunkPick || 0, condition: fortCarCondition(c) }
           : null,
         kessler: k ? { x: Math.round(k.x), y: Math.round(k.y), hp: Math.round(k.hp), walking: !!k.missionWalk && !k.missionWalk.done } : null,
         inside: !!m.inside,
         tailHeat: Math.round(m.tailHeat * 100) / 100,
-        lostFor: Math.round(m.lostFor * 10) / 10,
         keys: m.keys,
         killed: !!m.killed,
         spotted: !!m.spotted,
