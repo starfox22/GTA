@@ -6,7 +6,7 @@ export default async function (t) {
   const report = await t.call('vehicleMerges');
   if (report === null) {
     t.assert((await t.call('vehicleMergeAudit')) === null, 'vehicleMergeAudit without a renderer');
-    return;
+    t.skip('Requires WebGL: run with --render');
   }
   await t.call('god', true);
   await t.call('setClock', 12);

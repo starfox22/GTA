@@ -25,6 +25,9 @@ vehicles-and-driving-models.md.
   (unless the drive-by pose draws them), traffic drivers dressed by `driverColor` / `driverFemale` / `driverRole`, one
   passenger (`passengers`), a patrol car's two officers while `!crewDeployed`. Hands on the rim (`carWheelRim`), the
   'riding' pose lying back with the seat (`plan.lean`, below).
+- Seated and drive-by ankle targets use the seat plan's cached `pedalY`: at least 10 cm over the
+  cabin floor, including the shoe below the ankle. A low fitted hip must not drag the feet
+  below the chassis. The seat and headroom fit are unchanged.
 - Road dirt toward the sills (civLiveryPatch ROAD DIRT): `m.dirt` is the paint's own uniform (amount, ground height),
   written by `animateCivilianCar` when it changes; impostors keep none.
 - Report: `carModels()` gives each civilian model's `cabin` (hip, recline, rear bench, `headroom` round the tallest

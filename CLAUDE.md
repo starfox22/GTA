@@ -360,6 +360,7 @@ packs with plain `<script src>` so the zip still plays from file://.
   OCCUPANTS seats people only within `OCCUPANT_REACH` (at or beyond the glass's clear reach); see-through glass never
   casts a shadow (the paint panels do).
   Broken or lowered panes use the non-drawing `missingGlass` material, never an opaque cabin stand-in.
+  Seated and drive-by feet both use the seat plan's `pedalY`, keeping ankles and shoes above the cabin floor.
 - Car seats (cars3d-headroom.js CABIN HEADROOM; vehicles-and-driving-cabins.md): `carSeatPlan` fits every closed cabin's
   seat round the head the rig draws (tallest man and woman with hair and caps, `cabinHeadPose` = drawCrowdPerson's chain
   at `seatTorsoLean`/`seatHeadPitch`); seated occupants and the drive-by pose take `plan.lean`: change the riding pose and

@@ -105,6 +105,10 @@
           x,
           y,
           z: -side,
+          floor,
+          // Keep the shoe below the ankle above the floor, even when the headroom fit lowers the hip.
+          // The seat is static: compute this once for both seated occupants and the drive-by pose.
+          pedalY: Math.max(y - 0.26 * M, floor + 0.1 * M),
           recline,
           // The seated torso's lie (crowd3d-driveby.js seatOccupant) and the glasshouse the head is fitted under.
           lean: seatTorsoLean(recline),

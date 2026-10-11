@@ -2,6 +2,7 @@
 
 - Keep the chase camera's shoulder and boom outside nearby walls, including while aiming.
 - Broken and lowered vehicle windows reveal the cabin; repair restores the panes.
+- Keep seated and drive-by feet above low cabin floors instead of protruding below the chassis.
 - Place touch dispatch captions below the measured mission card and refresh clearance when touch mode changes.
 - Holding movement, driving, jump or fire controls no longer counts as voluntary surrender when blocked.
 - Cache vehicle paint state without per-frame strings; distinguish wear from heat and retain respray updates.

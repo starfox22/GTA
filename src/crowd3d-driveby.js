@@ -152,7 +152,8 @@
           dbHands[wheelHand].set(ocRim[0] * k, ocRim[1] * k, ocRim[2] * k).applyMatrix4(dbFrame);
         } else dbHands[wheelHand].set(0.5 * M, 0.36 * M + Math.cos(clock) * 0.18 * M, Math.sin(clock) * 0.18 * M).applyMatrix4(dbSeat);
         // Feet on the pedals.
-        for (let side = 0; side < 2; side++) dbFeet[side].set(0.74 * M, -0.26 * M, (side ? 0.1 : -0.12) * M).applyMatrix4(dbSeat);
+        const pedalY = plan ? (plan.pedalY - plan.y) * k : -0.26 * M;
+        for (let side = 0; side < 2; side++) dbFeet[side].set(0.74 * M, pedalY, (side ? 0.1 : -0.12) * M).applyMatrix4(dbSeat);
         sp.handTargets = dbHands;
         sp.legTargets = dbFeet;
         // The rig's root: its hip joint on the seat's hip point.
@@ -361,7 +362,7 @@
             ocHands[hand].set(ocRim[0], ocRim[1], ocRim[2]).applyMatrix4(ocFrame);
           }
         } else for (let hand = 0; hand < 2; hand++) ocHands[hand].set(plan.x + 0.3 * M, plan.y + 0.1 * M, z + (hand ? 0.1 : -0.1) * M).applyMatrix4(ocFrame);
-        for (let foot = 0; foot < 2; foot++) ocFeet[foot].set(plan.x + 0.74 * M, plan.y - 0.26 * M, z + (foot ? 0.11 : -0.11) * M).applyMatrix4(ocFrame);
+        for (let foot = 0; foot < 2; foot++) ocFeet[foot].set(plan.x + 0.74 * M, plan.pedalY, z + (foot ? 0.11 : -0.11) * M).applyMatrix4(ocFrame);
         sp.handTargets = ocHands;
         sp.legTargets = ocFeet;
         // The rig's root: its hip joint on the seat's hip point.
