@@ -101,22 +101,36 @@
         }
         return null;
       }
-      // How many of eight points `ring` out from `point` in the plane across `normal` (world space) have the body under
-      // them within `slack` of that plane: the part `own` first, else any other but the glass.
-      const coverNormal = new Three.Vector3(),
+      // How many of the MARK_RING points `ring` out from `point` in the plane across `normal` (world space) have the body
+      // under them within `slack` of that plane: the part `own` first, else any other but the glass. The points lie on
+      // the decal's own axes (decalPose's basis from the body's up, turned by the mark's roll): the ring checked is the
+      // ring drawn, so a downloaded model's panel seam that a fixed ring's points straddle never lies under a hole's
+      // bare metal. Needs markPrepare (markInverse).
+      const MARK_RING = 16,
+        coverNormal = new Three.Vector3(),
         coverDown = new Three.Vector3(),
         coverU = new Three.Vector3(),
         coverV = new Three.Vector3(),
         coverRay = new Three.Raycaster();
-      function markRingHolds(m, point, normal, ring, slack, own, targets) {
-        coverU.set(0, 1, 0);
-        if (Math.abs(normal.dot(coverU)) > 0.9) coverU.set(1, 0, 0);
-        coverU.cross(normal).normalize();
-        coverV.crossVectors(normal, coverU);
+      function markRoll(mark) {
+        return mark.kind === 'scrape' ? 0 : (mark.id * 2.39996) % TAU;
+      }
+      function markRingHolds(m, point, normal, ring, slack, own, targets, roll) {
+        // decalPose's axes in body space, then out to the world.
+        coverDown.copy(normal).transformDirection(markInverse);
+        if (Math.abs(coverDown.y) > 0.95) coverU.set(1, 0, 0);
+        else coverU.set(0, 1, 0).cross(coverDown).normalize();
+        coverV.crossVectors(coverDown, coverU);
+        if (roll) {
+          coverU.multiplyScalar(Math.cos(roll)).addScaledVector(coverV, Math.sin(roll));
+          coverV.crossVectors(coverDown, coverU);
+        }
+        coverU.transformDirection(m.body.matrixWorld);
+        coverV.transformDirection(m.body.matrixWorld);
         coverDown.copy(normal).negate();
         let held = 0;
-        for (let k = 0; k < 8; k++) {
-          const a = (k * Math.PI) / 4;
+        for (let k = 0; k < MARK_RING; k++) {
+          const a = (k * TAU) / MARK_RING;
           markCorner.copy(point).addScaledVector(coverU, Math.cos(a) * ring).addScaledVector(coverV, Math.sin(a) * ring).addScaledVector(normal, 1);
           coverRay.set(markCorner, coverDown);
           coverRay.far = 1 + slack;
@@ -132,11 +146,11 @@
         }
         return held;
       }
-      // Whether the surface round a hit holds a chase-view hole's bare-metal ring (all eight points within 4 cm of the
-      // hit's plane): a round that clips a mirror's edge or a trim strip goes on to the panel behind.
+      // Whether the surface round a hit holds a chase-view hole's bare-metal ring (every point within 4 cm of the hit's
+      // plane): a round that clips a mirror's edge, a trim strip or a panel seam goes on to the panel behind.
       function markCovered(m, hit, targets, mark) {
         coverNormal.copy(hit.face.normal).transformDirection(hit.object.matrixWorld);
-        return markRingHolds(m, hit.point, coverNormal, MARK_SIZES.hole[2] * (mark.size || 1.4) * 0.26, 0.32, hit.object, targets) === 8;
+        return markRingHolds(m, hit.point, coverNormal, MARK_SIZES.hole[2] * (mark.size || 1.4) * 0.26, 0.32, hit.object, targets, markRoll(mark)) === MARK_RING;
       }
       // A star the round's line misses the model's pane with (the glass band's numbers are the game's): aim at the
       // pane itself, as near as it allows to where the round went in.
@@ -317,18 +331,20 @@
           markWorld.copy(m.body.matrixWorld);
           markCorner.copy(markPoint).applyMatrix4(markWorld);
           coverNormal.copy(markNormal).transformDirection(markWorld);
-          const centre = markCorner.clone(),
+          // In the decal's own (lifted) plane, on its own axes.
+          const centre = markCorner.clone().addScaledVector(coverNormal, MARK_LIFT * scale),
             ring = 0.26 * sx * scale,
-            targets = markTargets(m);
-          if (markRingHolds(m, centre, coverNormal, ring, 0.32, object, targets) < 8)
-            shrink = markRingHolds(m, centre, coverNormal, ring * 0.5, 0.32, object, targets) === 8 ? 0.5 : 0;
+            targets = markTargets(m),
+            roll = markRoll(mark);
+          if (markRingHolds(m, centre, coverNormal, ring, 0.32, object, targets, roll) < MARK_RING)
+            shrink = markRingHolds(m, centre, coverNormal, ring * 0.5, 0.32, object, targets, roll) === MARK_RING ? 0.5 : 0;
           anchor.shrink = shrink;
         } else if (view && mark.kind === 'hole') shrink = anchor.shrink ?? 1;
         if (!shrink) {
           anchor.hidden = true;
           return 0;
         }
-        decalPose(anchor.matrix, markPoint.x, markPoint.y, markPoint.z, markNormal.x, markNormal.y, markNormal.z, sx * shrink, sy * shrink, mark.kind === 'scrape' ? 0 : (mark.id * 2.39996) % TAU, MARK_LIFT);
+        decalPose(anchor.matrix, markPoint.x, markPoint.y, markPoint.z, markNormal.x, markNormal.y, markNormal.z, sx * shrink, sy * shrink, markRoll(mark), MARK_LIFT);
         return 1;
       }
       // The world matrices and the body's inverse, once per car when an anchor needs them.

@@ -36,6 +36,8 @@ the models' damage contract is vehicles-and-driving-models.md.
   later springs moves onto the door's skin (`markOntoDoor`, by the door's grid `DOOR_GRID`). Close up (the chase view)
   a hole re-posed after a crumple checks its ring again: half size if only that fits, hidden if the metal under it is
   folded away. Casts and ring checks share a budget of 12 marks a frame (a mark waiting keeps its last pose).
+  A ring check (`markRingHolds`, 16 points) lies on the decal's own axes and roll (`markRoll`) in its lifted plane:
+  the ring checked is the ring drawn, so a downloaded model's panel seam or edge never sits under a hole's metal.
 - A part that holds marks must keep its vertex order when bent (bending clones the geometry, never re-indexes it):
   anchors are vertex indices and weights. Chase view sizes are real (a hole ~12 cm
   decal), the street view keeps the large readable ones. `bulletHitVehicle` draws holes off the glasshouse under the
