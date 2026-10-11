@@ -70,7 +70,6 @@
           'SCENIC VIEW': ['highway', { ground: '#6b3f1f', icon: 'mountain' }],
           'CORAL COAST': ['enamel', { ground: '#f2ccae', ink: '#1f5f63', rim: '#1f5f63', font: 'times', subAbove: 'WELCOME TO THE', icon: 'palm', icon2: true, iconColor: '#1f5f63', shape: 'round' }],
           // The park
-          'CENTRAL GARDEN': ['wood', { plank: '#4a3522', ink: '#efe0b8', routed: true, icon: 'leaf', icon2: true, iconColor: '#9fca7a', font: 'times', sub: 'CITY PARKS · OPEN DAWN TO DUSK' }],
           '4X4 CLUB': ['wood', { plank: '#4a2f1a', ink: '#f3dca8', routed: true, icon: 'mountain', icon2: 'tyre', iconColor: '#e0a64a', iconColor2: '#4a2f1a', font: 'slab', sub: 'RIDGELINE TRAIL RIDERS · EST. 1987' }],
           // The Ridgeline mountain villages (mountain-village.js): carved and routed
           // wood, painted boards, gold leaf on the chapel; lantern-lit.
