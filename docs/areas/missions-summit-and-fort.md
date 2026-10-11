@@ -29,22 +29,32 @@ cleanup, the demo gate) are in missions-and-demo.md; this page is what each job 
 
 ## Mission 4: Borrowed Stripes (fortjob.js with vehicle-trunk.js, fort-cover*.js, skyline-meeting.js)
 
-- `FORT_JOB`: the stakeout where the Sentinel causeway meets the coast road (also the entry's `start`), Kessler's
-  car in the fort's lot, the gate's outbound lane, his kerb on Marina Rd opposite the Marea (north side: he arrives
-  westbound) and his walk to the door. Stages are `FORT_STAGE` (stakeout, tail, parked, trunk, take, change, gate,
-  inside, out, meet).
+- `FORT_JOB`: Kessler's house (`home`: Broadway, the north kerb of the Palm Sound Causeway boulevard at (812, 3160),
+  nose west; the entry's `start` is the pavement outside), his kerb on Marina Rd opposite the Marea (north side: he
+  arrives westbound) and his walk to the door. Stages are `FORT_STAGE` (tail 1, parked, trunk, take, change, gate,
+  inside, out, meet; 0 was the old stakeout at the fort and is unused, the numbers are kept).
 - Story: Lieutenant Dale Kessler (logistics) is off duty at the Marea; his uniform and ID open Fort Sentinel's gate,
   the records office holds the HAWTHORN weapons file, Consul Anton Varga buys it at CIRRUS. Every step opens with a
   mission brief (`fortStage` = setStage + `missionBrief`, mission-brief.js) and a line from Vinny.
-- Vinny's call gives the lockpick (`giveLockpick`, arsenal slot 8). Watching from the stakeout for 6 s with no stars,
-  or 40 s after the start wherever the player is (`m.departAt`), sends Kessler out: a red `muscle` car, `mission` (never retired, burns slowly), `missionDriver: 'kessler'`,
-  `trunkLoot` UNIFORM AND ID, driving `countyRoute` = `fortRoute()` (the navigation graph held to the right lane,
-  as the cabs drive it). Wedged for 9 s he skips a node only where `spotUnseen` both ends.
+- Vinny's call gives the lockpick (`giveLockpick`, arsenal slot 8) and `startFortJob` puts Kessler at once in his car
+  at his kerb (`fortHomeSpot`: the first spot east along the kerb `canSpawnCar` allows), already pulling away (about
+  50 s to the Marea over the causeway): a red `muscle` car, `mission` (never retired, burns slowly), `missionDriver:
+  'kessler'`, `trunkLoot` UNIFORM AND ID, driving `countyRoute` = `fortRoute(home)` (the pull-out into the westbound
+  lane, then the navigation graph held to the right lane, as the cabs drive it). The job starts after `resetWorld`
+  (story.js), so the reset never takes him. The opening brief (kicker THE JOB) names his house; the objective is his
+  car from the first frame. Wedged for 9 s he skips a node only where `spotUnseen` both ends. The wrap guard sends
+  `countyIndex` back to the end only when it drops to 0 from further along (`m.routeIndex`).
+- His car stays pristine on the way (`fortKeepPristine`): while he drives, not alerted and never touched by the player
+  (a hit with `lastAttacker` the player, or the player's car within 90 units), any damage or stain is mended the same
+  frame (`repairVehicle`), so nothing is ever drawn bent. The old start drove him through the fort's gate arm
+  (military-base.js), which sprang his door. The report's `car.condition` (hp share, dents, sprung parts, stains, door,
+  trunk) is what mission4-tail.mjs checks.
 - The tail: `tailHeat` rises on his bumper (within `tooClose`) or close behind him while he moves; held up behind him
-  in traffic or at a drawbridge does not count. At 1 he made the tail (fail). Farther than `lost` for `lostSeconds`
-  after he passed the stakeout is not a fail: the job sends the player to wait at the Marea (`m.waitClub`). The
-  meter shares `#stealthStatus` (fortJobUI after roofMissionUI).
-- Waiting at the club (`fortClubWait`): the player within 1100 units of his kerb, his car over 1700 away, for 14 s:
+  in traffic or at a drawbridge does not count. At 1 he made the tail (fail). Far behind him is never announced (no
+  "lost him": the map shows his car all the time); the objective stays on the car. The meter shares `#stealthStatus`
+  (fortJobUI after roofMissionUI).
+- Waiting at the club (`fortClubWait`): the player within `clubNear` (1100) of his kerb, his car over `clubFar` (1700)
+  away, for `clubWaitSeconds` (10):
   the car is put on a node 7-20 from the end of his route that `spotUnseen` and `canSpawnCar` allow (`m.jumped`).
   City traffic at the Marina Rd junction can still hold him a while (`fortJob().blocker` says what is in his lane).
 - Shot at at the wheel (`fortAlerted`): a hit on his car within 0.6 s of him driving, or a round fired within 320
