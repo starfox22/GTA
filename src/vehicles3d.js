@@ -330,7 +330,8 @@
         wiperNormal = new Three.Vector3(),
         wiperAcross = new Three.Vector3(),
         wiperBasis = new Three.Matrix4();
-      function addWipers(model, body, x0, y0, x1, y1, halfWidth) {
+      // `reach` (optional) caps the arm's length: a downloaded truck's screen is lower than half its width (vehicle-assets3d.js).
+      function addWipers(model, body, x0, y0, x1, y1, halfWidth, reach = Infinity) {
         const plane = new Three.Group();
         // The glass's own frame: x up the glass, y out of it, z across.
         wiperUp.set(x1 - x0, y1 - y0, 0).normalize();
@@ -340,7 +341,7 @@
         plane.quaternion.setFromRotationMatrix(wiperBasis.makeBasis(wiperUp, wiperNormal, wiperAcross));
         plane.position.set(x0 - wiperUp.x * 0.3, y0 + 0.4, 0);
         body.add(plane);
-        const length = halfWidth * 0.95,
+        const length = Math.min(halfWidth * 0.95, reach),
           arms = [];
         // Tandem: both park towards the same side and sweep up together.
         for (const z of [-halfWidth * 0.94, -halfWidth * 0.02]) {

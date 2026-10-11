@@ -347,8 +347,14 @@
             strobes.push(box(bodyGroup, p[0] - 0.6 * CAR_M, g.roof + g.crown + 0.12 * CAR_M, p[2], 0.35 * CAR_M, 0.2 * CAR_M, 0.45 * CAR_M, new Three.MeshBasicMaterial({ color: '#cf4545' })));
           }
         for (const s of strobes) s.castShadow = false;
+        // Wipers on a truck's upright screen, at the foot of the measured windscreen (the downloaded truck, bus,
+        // ambulance and pickup models have none of their own; vehicles3d.js addWipers, swept in the rain).
+        const wiperHost = {};
+        // The arms reach no higher than the glass (a truck's screen is lower than half its width).
+        if (spec.truck && !g.open)
+          addWipers(wiperHost, bodyGroup, g.xf * l + 0.3, g.base + 0.2, g.rf * l + 0.3, g.roof - 0.4, g.wb * w * 0.85, 0.92 * Math.hypot((g.rf - g.xf) * l, g.roof - g.base));
         return {
-          wipers: undefined,
+          wipers: wiperHost.wipers,
           group,
           body: bodyGroup,
           paint,
