@@ -9,7 +9,7 @@
      * (`tall`). `relief` is how far the ground rises or falls 500 units off (hills throw
      * an echo back), `lift` the ear's height over the ground under it (a roof, a tower,
      * the helideck), `county` whether the ear is out of town, `cover` whether a deck or a
-     * roof is overhead (the underpass, a garage, a canopy, a bridge: a concrete box that
+     * roof is overhead (a rail deck, a garage, a canopy, a bridge: a concrete box that
      * also sends the player's engine and footsteps to the room). The same probe names the
      * place (`zone`) for ambience-beds.js, so districtAt() runs three times a second at
      * most.
@@ -57,9 +57,9 @@
     // so whether the sound is on never changes what happens in the world.
     const sfxRandom = (lo, hi) => lo + Math.random() * (hi - lo);
     // How much of a room each kind of cover makes (air-cover.js overheadCover kinds): an
-    // awning, a canopy or a bus shelter (any kind not listed) hardly any, the underpass, a
+    // awning, a canopy or a bus shelter (any kind not listed) hardly any, a
     // garage or MONARCH MOTORS' showroom a hard-walled box.
-    const COVER_ROOM = { underpass: 1, building: 1, garage: 1, 'garage office': 1, roof: 0.8, railway: 0.6, bridge: 0.6 },
+    const COVER_ROOM = { building: 1, garage: 1, 'garage office': 1, roof: 0.8, railway: 0.6, bridge: 0.6 },
       PROBE_STEPS = [36, 80, 140, 210, 280],
       PROBE_DIRS = 8,
       PROBE_REACH = 320;
@@ -142,7 +142,7 @@
         }
       }
       acoustics.stats.rays += PROBE_DIRS;
-      // Under a deck or a roof (the Northbank underpass, a garage, a station canopy, a
+      // Under a deck or a roof (a rail viaduct, a garage, a station canopy, a
       // bridge over the water): a concrete box, close and loud.
       const cover = overheadCover(ear.x, ear.y, z);
       p.cover = cover ? COVER_ROOM[cover.kind] ?? 0.25 : 0;

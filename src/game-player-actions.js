@@ -85,20 +85,21 @@
           strikeWildlife(animal, Math.max(0, 200 * power - distance(animal) * 1.6));
       const pd = distance(player);
       if (pd < 95 * power && clearSight(blast, player)) {
-        hurt(Math.max(0, (95 * power - pd) * 0.75), 'blast');
+        hurt(Math.max(0, (95 * power - pd) * 0.75), 'blast', headingBetween(blast, player));
         // Killed close to it: the blast may take a limb (gore.js goreBlastDeath; only on death).
         if (player.hp <= 0) goreBlastDeath(pd, power, headingBetween(blast, player));
       }
       if (attacker === player) crime(0.5);
     }
-    function hurt(d, kind = 'ballistic') {
+    // `a` (optional) is the heading the harm travelled (a blast: from it to the player), for the blood's way out.
+    function hurt(d, kind = 'ballistic', a = null) {
       // At GOALLINE's counter (sportsbook.js) nobody lays a finger on you.
       if (player.inv > 0 || gameMode !== 'play' || player.godMode || sportsbookShelters()) return;
       d = ballisticDamage(player, d, kind);
       player.hp -= d;
       // A fall ('fall': a landing, a rider's tumble) bruises without blood
       // unless it kills (then bleed() pools under the body).
-      if (d > 1 && !player.car && (kind !== 'fall' || player.hp <= 0)) bleed(player, d / 35, player.a + Math.PI, kind);
+      if (d > 1 && !player.car && (kind !== 'fall' || player.hp <= 0)) bleed(player, d / 35, a ?? player.a + Math.PI, kind);
       flash = 0.12;
       if (player.hp <= 0) die();
     }

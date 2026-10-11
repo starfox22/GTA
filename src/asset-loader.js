@@ -94,6 +94,7 @@ const embeddedAssetReferences = {
     "civilian-scream-female-2": "media-audio-civilian-scream-female-2",
     "civilian-scream-male-1": "media-audio-civilian-scream-male-1",
     "civilian-scream-male-2": "media-audio-civilian-scream-male-2",
+    "player-jump-grunt": "media-audio-player-jump-grunt",
     "explosion": "media-audio-explosion",
     "look-out": "media-audio-look-out",
     "mission-complete": "media-audio-mission-complete",

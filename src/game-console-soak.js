@@ -232,9 +232,9 @@
       }
       return { count, blocked, ms: +(performance.now() - t0).toFixed(1), nsPerCall: Math.round(((performance.now() - t0) * 1e6) / count) };
     }
-    // The helpers solid() calls, rewritten without closures or with early-outs (railBlocked, underpassBlocked, countyBlocked,
+    // The helpers solid() calls, rewritten without closures or with early-outs (railBlocked, countyBlocked,
     // insidePondEllipse), against the code they replaced, over `count` points: random across the map, round the station
-    // lifts, the underpass, the Commons lake and the county solids, with radii 0 to 40. Returns the checks and differences (0).
+    // lifts, the Commons lake and the county solids, with radii 0 to 40. Returns the checks and differences (0).
     function solidAuditRun(count) {
       let state = 424242;
       const next = () => {
@@ -272,7 +272,6 @@
       const lake = COMMONS.lake,
         around = [
           ...RAIL_STATIONS.map((st) => railLift(st)),
-          ...UNDERPASS_WALLS.map((b) => ({ x: b.x + b.w / 2, y: b.y + b.h / 2 })),
           { x: lake.x, y: lake.y },
           ...countyStaticSolids.map((b) => ({ x: b.x + b.w / 2, y: b.y + b.h / 2 })),
         ];
@@ -282,7 +281,6 @@
           x = anchor ? anchor.x + (next() - 0.5) * 260 : -4000 + next() * 13000,
           y = anchor ? anchor.y + (next() - 0.5) * 260 : -5000 + next() * 15000;
         same('rail', x, y, r, railBlocked(x, y, r), refRail(x, y, r));
-        same('underpass', x, y, r, underpassBlocked(x, y, r), UNDERPASS_WALLS.some(hit(x, y, r)));
         same('county', x, y, r, countyBlocked(x, y, r), countyStaticSolids.some(hit(x, y, r)) || AIRPORT_SCENERY_SOLIDS.some(hit(x, y, r)));
         same('lake', x, y, r, insidePondEllipse(x, y, r, lake.x, lake.y, lake.rx, lake.ry, lake.a), refPond(x, y, r, lake.x, lake.y, lake.rx, lake.ry, lake.a));
         for (const p of parkPondList()) same('pond', x, y, r, insidePondEllipse(x, y, r, p.cx, p.cy, p.rx, p.ry, 0.25), refPond(x, y, r, p.cx, p.cy, p.rx, p.ry, 0.25));
@@ -309,11 +307,11 @@
       return { checked, bad, first };
     }
     // One helper of solid() on its own over `count` points like solidBench's: ns per call (and, with --alloc, its garbage), to
-    // find which of the twenty is dear. `name` is the helper (sports, rail, pond, underpass, airport, garage, park, monarch,
+    // find which of the twenty is dear. `name` is the helper (sports, rail, pond, airport, garage, park, monarch,
     // northpoint, marina, beach, promenade, streetend, beachclub, ground, harbor, depot, county, military, buildings).
     function solidPartRun(name, count, span, r) {
       const parts = {
-        sports: sportsBlocked, rail: railBlocked, pond: parkPondBlocked, underpass: underpassBlocked, airport: airportSceneryBlocked,
+        sports: sportsBlocked, rail: railBlocked, pond: parkPondBlocked, airport: airportSceneryBlocked,
         garage: garageBlocked, park: parkBlocked, monarch: monarchBlocked, northpoint: northPointKeyBlocked, marina: marinaBlocked,
         beach: beachBlocked, promenade: promenadeRailBlocked, streetend: streetEndBlocked, beachclub: beachClubBlocked,
         ground: (x, y, rr) => !groundAt(x, y, rr), harbor: harborBlocked, depot: depotBlocked, county: countyBlocked, military: militaryBlocked,

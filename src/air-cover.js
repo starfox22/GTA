@@ -6,61 +6,10 @@
      * Shared railway and bridge volumes for sight, bullets, vehicles and aircraft.
      */
     /* Covered routes use actual overhead volumes, separate from ground-level walls. */
-    const UNDERPASS = {
-      name: 'NORTHBANK UNDERPASS',
-      x: 2612,
-      y: 2780,
-      w: 152,
-      h: 320,
-      minHeight: 52,
-      height: 59,
-    };
-    const UNDERPASS_PORTALS = [
-      {
-        x: 2612,
-        y: 2775,
-        w: 152,
-        h: 10,
-        minHeight: 40,
-        height: 52,
-      },
-      {
-        x: 2612,
-        y: 3095,
-        w: 152,
-        h: 10,
-        minHeight: 40,
-        height: 52,
-      },
-    ];
-    const UNDERPASS_WALLS = [
-      {
-        x: 2612,
-        y: 2780,
-        w: 12,
-        h: 320,
-        height: 59,
-      },
-      {
-        x: 2752,
-        y: 2780,
-        w: 12,
-        h: 320,
-        height: 59,
-      },
-    ];
     let airCoverCache = null;
     function airCoverVolumes() {
       if (airCoverCache) return airCoverCache;
-      const blocks = [...UNDERPASS_WALLS, ...UNDERPASS_PORTALS, UNDERPASS].map((b) => ({
-        x: b.x + b.w / 2,
-        y: b.y + b.h / 2,
-        hx: b.w / 2,
-        hy: b.h / 2,
-        a: 0,
-        minHeight: b.minHeight ?? 0,
-        height: b.height,
-      }));
+      const blocks = [];
       for (const b of BRIDGES)
         blocks.push({
           x: (b.a[0] + b.b[0]) / 2,
@@ -149,16 +98,6 @@
     function boatSurfaceElevation(c) {
       return underBridgeWater(c.x, c.y) ? -30 : 0;
     }
-    function underpassContains(x, y, margin = 0) {
-      return x > 2624 + margin && x < 2752 - margin && y > 2780 + margin && y < 3100 - margin;
-    }
-    function underpassBlocked(x, y, r = 0) {
-      for (let i = 0; i < UNDERPASS_WALLS.length; i++) {
-        const b = UNDERPASS_WALLS[i];
-        if (x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h) return true;
-      }
-      return false;
-    }
     // Slab test of the segment a-b (at eye height) against each block, in the
     // block's own frame. Blocks whose bounds miss the segment's are skipped.
     function airCoverRay(a, b) {
@@ -225,7 +164,7 @@
       }
       return false;
     }
-    function addUnderpassColliders() {
+    function addRailCoverColliders() {
       for (const s of RAIL_STATIONS) {
         const p = railLift(s);
         addStatic(p.x - 8.5, p.y - 8.5, 17, 17, 60, 'station lift');
@@ -257,63 +196,6 @@
             staticGrid.get(key).push(body);
           }
       }
-      for (const b of UNDERPASS_WALLS) addStatic(b.x, b.y, b.w, b.h, b.height, 'underpass');
-      for (const b of [UNDERPASS, ...UNDERPASS_PORTALS]) {
-        addStatic(b.x, b.y, b.w, b.h, b.height, 'cover');
-        staticBodies.at(-1).minHeight = b.minHeight;
-      }
-    }
-    function drawUnderpass2D() {
-      const p = UNDERPASS;
-      if (
-        !visible(
-          {
-            x: 2688,
-            y: 2940,
-          },
-          300,
-        )
-      )
-        return;
-      worldContext.save();
-      worldContext.fillStyle = '#111d2db8';
-      worldContext.fillRect(p.x, p.y, p.w, p.h);
-      for (const w of UNDERPASS_WALLS) {
-        worldContext.fillStyle = '#9ca49e';
-        worldContext.fillRect(w.x, w.y, w.w, w.h);
-      }
-      for (const y of [p.y, p.y + p.h - 8]) {
-        worldContext.fillStyle = '#ceb877';
-        worldContext.fillRect(p.x, y, p.w, 8);
-      }
-      for (let y = p.y + 35; y < p.y + p.h; y += 52) {
-        worldContext.fillStyle = '#edcb76';
-        worldContext.fillRect(2625, y, 3, 13);
-        worldContext.fillRect(2749, y, 3, 13);
-      }
-      worldContext.textAlign = 'center';
-      worldContext.font = 'bold 12px Arial';
-      worldContext.fillStyle = '#d9e8cb';
-      worldContext.fillText('NORTHBANK UNDERPASS', 2688, 2762);
-      worldContext.fillText('AIR COVER', 2688, 3121);
-      worldContext.restore();
-    }
-    function drawAirCoverMap(drawingContext, scale) {
-      // The underpass off the map's window (game-minimap.js): nothing to draw.
-      if (!mapWindowHasRect(UNDERPASS.x, UNDERPASS.y, UNDERPASS.w, UNDERPASS.h, 40 / scale)) return;
-      drawingContext.save();
-      drawingContext.strokeStyle = '#7ad9bc';
-      drawingContext.lineWidth = 3 / scale;
-      drawingContext.setLineDash([5 / scale, 3 / scale]);
-      drawingContext.strokeRect(UNDERPASS.x, UNDERPASS.y, UNDERPASS.w, UNDERPASS.h);
-      drawingContext.setLineDash([]);
-      drawingContext.fillStyle = '#102b2b';
-      drawingContext.fillRect(2688 - 9 / scale, 2940 - 9 / scale, 18 / scale, 18 / scale);
-      drawingContext.fillStyle = '#a0f6cc';
-      drawingContext.font = 'bold 12px Arial';
-      drawingContext.textAlign = 'center';
-      mapLabel(drawingContext, 'U', 2688, 2940 + 4 / scale, scale);
-      drawingContext.restore();
     }
     /**
      * OVERHEAD COVER
@@ -324,8 +206,8 @@
      * with the ground units out of sight too the lose-police timer runs.
      *
      * What counts, from data that already exists wherever possible:
-     *   - the overhead blocks of airCoverVolumes(): the Northbank underpass roof
-     *     and portals, the elevated railway decks and the station canopies;
+     *   - the overhead blocks of airCoverVolumes(): the elevated railway decks and
+     *     the station canopies;
      *   - roofs registered with registerOverheadCover() by whoever builds them:
      *     every cutaway roof (lighting3d.js registerCutawayRoof: bus shelters,
      *     Vinny's depot), the Falcon's queue hall canopy and station roof
@@ -357,7 +239,7 @@
       overheadGrid = new Map();
       const volumes = airCoverVolumes()
         .filter((b) => !b.bridge && (b.minHeight || 0) >= 8)
-        .map((b) => ({ ...b, bottom: b.minHeight, top: b.height, kind: b.rail ? 'railway' : 'underpass' }));
+        .map((b) => ({ ...b, bottom: b.minHeight, top: b.height, kind: 'railway' }));
       for (const c of [...volumes, ...overheadCovers])
         for (let i = Math.floor(c.x0 / OVERHEAD_CELL); i <= Math.floor(c.x1 / OVERHEAD_CELL); i++)
           for (let j = Math.floor(c.y0 / OVERHEAD_CELL); j <= Math.floor(c.y1 / OVERHEAD_CELL); j++) {
@@ -393,7 +275,7 @@
      * surface) of the roof over a target standing at `elevation` at (x, y), or
      * null in the open. The helicopter's searchlight puts its pool there, on
      * the roof the target is hiding under, instead of on the target: a garage
-     * (6.9 m), the underpass deck, a station canopy, a shop awning, a building.
+     * (6.9 m), a rail deck, a station canopy, a shop awning, a building.
      * Same answer, same cost as overheadCover (a cell lookup).
      */
     function overheadCoverHeight(x, y, elevation = terrainHeight(x, y)) {

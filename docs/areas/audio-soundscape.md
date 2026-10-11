@@ -11,7 +11,7 @@ itself is in audio-and-radio.md.
   `updateAcoustics` in soundUpdate. Eight rays find walls taller than the ear within 280
   units: `acoustics.enclosure` (0 open .. 1 canyon), `wallDistance`, `tall`; plus `relief`
   (terrain 500 units off), `lift` (ear over the ground, on foot only), `county`, and
-  `cover` from `overheadCover` weighted by kind (`COVER_ROOM`: the underpass, a garage, a
+  `cover` from `overheadCover` weighted by kind (`COVER_ROOM`: a building, a garage, a
   showroom 1; rail decks and bridges 0.6; awnings, canopies, shelters 0.25). Cover raises
   the enclosure, tightens the slap and sends the player's engine (`engineTap`) and footsteps
   (`foleyBus`) into the room.

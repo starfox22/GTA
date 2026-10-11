@@ -104,7 +104,7 @@ wounds.js, carjack.js, damage.js, air-cover.js. `policeReport()` has `wounds` an
 ## Overhead cover (air-cover.js)
 
 - `overheadCover(x, y, elevation)` answers "is there a roof over this point": one grid of
-  overhead volumes (rail decks, platforms, the underpass) plus roofs the renderer registers
+  overhead volumes (rail decks, platforms) plus roofs the renderer registers
   with `registerOverheadCover()` (cutaway roofs, awnings, canopies, garage bays).
   `overheadCoverHeight` gives the roof's height. Used by police air sight, searchlights,
   rain shelter and the cutaway. Keep both functions' signatures: other code relies on them.

@@ -252,7 +252,8 @@
      * 1.6, a .50 2.8), at close range (a shotgun load's first pellet carries the whole load within 3 m, ~5x)
      * and by zone (head 1.3, a limb 0.8); null is a pistol round at mid range (scale 1, the old spray). The
      * spray: entry mist (`mist` puffs, toward the shooter, never landing), exit plume, `drops` flying on in a
-     * cone of +-`cone` at up to `speed`, `spatters` on the ground behind the body (larger by `spatterSize`),
+     * cone of +-`cone` at up to `speed`, `air` fine droplets thrown higher and wider the same way (the spray seen
+     * in the air; most land as nothing), `spatters` on the ground behind the body (larger by `spatterSize`),
      * and `reach` (units): how far the spray carries onto a wall or a vehicle (bloodSprayObstacle).
      */
     function bloodShotPlan(severity, hit) {
@@ -264,6 +265,7 @@
         mist: s >= 4 ? 3 : s >= 1.5 ? 2 : 1,
         plume: Math.min(4, Math.max(1, Math.round(1 + (s - 1) * 0.6))),
         drops: Math.min(48, Math.max(2, Math.round((3 + 4 * severity) * s))),
+        air: Math.min(40, Math.max(4, Math.round((6 + 6 * Math.min(severity, 2)) * Math.sqrt(s)))),
         cone: +(0.32 + (hit?.cls === 'buck' ? 0.14 : 0) + 0.12 * close).toFixed(3),
         speed: Math.round(100 * (1 + 0.16 * more)),
         spatters: Math.min(5, Math.max(1, Math.round((severity > 0.8 ? 2 : 1) * Math.sqrt(s)))),
@@ -447,6 +449,21 @@
     }
     /* A wound. `a` is the heading the shot travelled (blood leaves the exit side); `hit` is gore.js goreHit's
        scratch for a hit strikePerson took (calibre, range, zone: bloodShotPlan), null otherwise. */
+    /**
+     * BLOOD BLAST SPRAY: a blast beside someone drives the blood out of the far side of the body, away from it,
+     * never round them as if it went off inside. `bloodBlastPush(hit)` 0..1 is how hard (1 at the blast's heart, 0
+     * at the edge of its reach, 85 units x power as explode() reaches; 0.5 when the range is unknown): the cone
+     * narrows from +-BLOOD_BLAST_CONE[1] to [0] radians and the drops, mist and spatter carry further (the spray's
+     * reach on a wall or a car BLOOD_BLAST_REACH metres, bloodSprayObstacle).
+     */
+    const BLOOD_BLAST_CONE = [0.36, 0.7],
+      BLOOD_BLAST_REACH = [2, 7],
+      // With this many game particles alive (a firefight in a crowd) a round's fine air spray is left out.
+      BLOOD_AIR_ROOM = 900;
+    function bloodBlastPush(hit) {
+      if (!hit || hit.cls !== 'blast') return 0.5;
+      return clamp(1 - hit.range / (85 * (hit.power || 1)), 0, 1);
+    }
     const BLOOD_DROP_LAND = 0.4,
       BLOOD_DROP_COLORS = ['#5e0710', '#720a15', '#4a050c'],
       BLOOD_REDUCED_HIT = { scale: 0.6, cls: 'handgun', close: 0 };
@@ -471,6 +488,7 @@
         zone = hit?.zone ?? (p === player ? bloodPlayerZone() : p.hitZone || 'torso'),
         woundZ = z + (hit?.height ?? (impact ? 4 : round ? (GORE_ZONE_HEIGHT[zone] ?? 10) : 10)),
         plan = round ? bloodShotPlan(severity, hit || (full ? null : BLOOD_REDUCED_HIT)) : null,
+        push = blast ? bloodBlastPush(hit) : 0,
         ca = Math.cos(a),
         sa = Math.sin(a);
       // The clothes soak where it went in (gore.js WOUNDS): rounds and blades.
@@ -486,26 +504,29 @@
             vy: -sa * goreBetween(5, 14) + goreBetween(-4, 4),
             z: woundZ,
             vz: goreBetween(1, 4),
-            life: 0.3,
-            max: 0.3,
+            life: 0.36,
+            max: 0.36,
             color: '#6a0c13',
-            size: 0.8 + severity * 0.35,
+            size: 1.1 + severity * 0.45,
             mist: true,
           });
-      // The mist at the wound, drifting the way the round went.
-      particles.push({
-        x: p.x + ca * 2,
-        y: p.y + sa * 2,
-        vx: ca * 22,
-        vy: sa * 22,
-        z: impact ? z + 4 : woundZ,
-        vz: 3,
-        life: 0.35,
-        max: 0.35,
-        color: '#6a0c13',
-        size: 1.4 + severity * (blast ? 1.6 : 0.8),
-        mist: true,
-      });
+      // The mist at the wound, drifting the way the round went (a blast: a red cloud blown on, away from it).
+      for (let i = 0; i < (blast ? 3 : 1); i++) {
+        const drift = blast ? goreBetween(26, 40 + 50 * push) : 22;
+        particles.push({
+          x: p.x + ca * 2,
+          y: p.y + sa * 2,
+          vx: ca * drift,
+          vy: sa * drift,
+          z: impact ? z + 4 : blast ? z + goreBetween(5, 12) : woundZ,
+          vz: 3,
+          life: blast ? 0.6 : 0.35,
+          max: blast ? 0.6 : 0.35,
+          color: '#6a0c13',
+          size: 1.4 + severity * (blast ? 1.6 : 0.8),
+          mist: true,
+        });
+      }
       // A round's exit plume: a finer, wider cloud carried a metre or two on past the body.
       if (round)
         for (let i = 0; i < plan.plume; i++)
@@ -523,31 +544,45 @@
             mist: true,
           });
       // What the spray meets: a wall or a vehicle within its reach takes spatter, and the drops stop there.
-      const obstacle = round ? bloodSprayObstacle(p.x, p.y, a, plan.reach, woundZ - z, z) : null;
-      if (obstacle) {
+      // A blast's spray carries further the closer it went off (bloodBlastPush), at the body's middle.
+      const blastReach = (BLOOD_BLAST_REACH[0] + (BLOOD_BLAST_REACH[1] - BLOOD_BLAST_REACH[0]) * push) * UNITS_PER_METRE,
+        obstacle = round ? bloodSprayObstacle(p.x, p.y, a, plan.reach, woundZ - z, z) : blast ? bloodSprayObstacle(p.x, p.y, a, blastReach, 8, z) : null;
+      if (obstacle && round) {
         const near = 1 - obstacle.d / plan.reach;
         if (obstacle.kind === 'wall') addBloodWall(obstacle, woundZ, (2.2 + 1.1 * Math.min(plan.scale, 4)) * (0.55 + 0.45 * near), 1 + (plan.scale > 2 ? 1 : 0) + (plan.scale > 4 ? 1 : 0));
         else addCarStain(obstacle.car, obstacle, 0, false, clamp(0.06 * plan.scale * severity * (0.4 + 0.6 * near), 0.04, 0.45));
+      } else if (obstacle) {
+        const near = 1 - obstacle.d / blastReach;
+        if (obstacle.kind === 'wall') addBloodWall(obstacle, z + goreBetween(5, 10), (2.8 + 2.2 * push) * (0.55 + 0.45 * near), 2 + (push > 0.5 ? 1 : 0));
+        else addCarStain(obstacle.car, obstacle, 0, false, clamp((0.1 + 0.3 * push) * (0.4 + 0.6 * near) * (full ? 1 : 0.6), 0.05, 0.45));
       }
-      // Flying drops: for a round an exit spray, a cone of fine drops flying on along the shot and landing
-      // behind the body (or stopping at the wall or vehicle it met); a spray round a blast or a car.
-      const drops = round ? plan.drops : Math.round((blast ? 16 + Math.round(severity * 6) : 7 + Math.round(severity * 4)) * (full ? 1 : 0.6)),
-        cone = round ? plan.cone : blast ? Math.PI : 0.9;
+      // Flying drops: for a round an exit spray, a cone of drops flying on along the shot and landing behind the
+      // body (or stopping at the wall or vehicle it met), then `air` fine droplets thrown higher and wider: the
+      // spray seen in the air. A blast throws them off the far side of the body, away from it, in a cone that is
+      // tighter and faster the closer it went off (BLOOD BLAST SPRAY); a car's hit a short spray along `a`.
+      const drops = round
+          ? plan.drops + (particles.length < BLOOD_AIR_ROOM ? plan.air : 0)
+          : Math.round((blast ? (18 + 8 * Math.min(severity, 2)) * (0.7 + 0.6 * push) : 7 + Math.round(severity * 4)) * (full ? 1 : 0.6)),
+        cone = round ? plan.cone : blast ? BLOOD_BLAST_CONE[0] + (BLOOD_BLAST_CONE[1] - BLOOD_BLAST_CONE[0]) * (1 - push) : 0.9,
+        px = -sa,
+        py = ca;
       for (let i = 0; i < drops; i++) {
-        const spread = a + goreBetween(-cone, cone),
-          v = round ? goreBetween(35, plan.speed) : goreBetween(35, 115) * (blast ? 1.4 : 1),
-          life = round ? goreBetween(0.7, 1.1) : goreBetween(0.5, 1),
+        const fine = round && i >= plan.drops,
+          spread = a + goreBetween(-cone, cone) * (fine ? 1.3 : 1),
+          v = round ? (fine ? goreBetween(55, plan.speed * 1.15) : goreBetween(35, plan.speed)) : blast ? goreBetween(45, 120) * (0.55 + 0.95 * push) : goreBetween(35, 115),
+          life = round || blast ? goreBetween(0.8, 1.25) : goreBetween(0.5, 1),
+          side = blast ? goreBetween(-2.2, 2.2) : 0,
           drop = {
-            x: p.x + (round ? ca * 2 : 0),
-            y: p.y + (round ? sa * 2 : 0),
+            x: p.x + (round ? ca * 2 : blast ? ca * 1.6 + px * side : 0),
+            y: p.y + (round ? sa * 2 : blast ? sa * 1.6 + py * side : 0),
             vx: Math.cos(spread) * v,
             vy: Math.sin(spread) * v,
-            z: impact ? z + 5 : round ? woundZ : z + 10,
-            vz: round ? goreBetween(4, 24) : goreBetween(8, 34),
+            z: impact ? z + 5 : round ? woundZ + (fine ? goreBetween(-1.5, 1.5) : 0) : z + goreBetween(3, 13),
+            vz: fine ? goreBetween(10, 34) : round ? goreBetween(6, 28) : blast ? goreBetween(6, 26 + 14 * push) : goreBetween(8, 34),
             life,
             max: life,
             color: BLOOD_DROP_COLORS[Math.floor(goreRandom() * 3)],
-            size: round ? goreBetween(0.4, 1.05) : goreBetween(0.45, 1.15),
+            size: fine ? goreBetween(0.3, 0.6) : round ? goreBetween(0.45, 1.1) : goreBetween(0.45, 1.25),
             blood: true,
             surface: roof ? z : undefined,
           };
@@ -561,20 +596,30 @@
       }
       // On the ground: the spatter behind the wound (radial round a blast), more of it further on from a heavy
       // round, and a drop at the feet; never past the wall the spray met (it lands at the wall's foot).
+      // A blast's spatter fans out beyond the body, away from it, further on the closer it went off.
       const splats = round ? plan.spatters : Math.round((blast ? 5 + Math.round(severity * 2) : 2) * (full ? 1 : 0.6)),
         far = obstacle ? obstacle.d - 1.5 : Infinity;
       for (let i = 0; i < splats; i++) {
-        const aa = blast ? a + (i * TAU) / splats + goreBetween(-0.4, 0.4) : a + goreBetween(-0.25, 0.25) * (round ? 1 + plan.cone - 0.32 : 1),
+        const aa = blast ? a + goreBetween(-cone, cone) * 0.8 : a + goreBetween(-0.25, 0.25) * (round ? 1 + plan.cone - 0.32 : 1),
           r = (blast ? goreBetween(3.2, 5) : impact ? goreBetween(2.6, 3.8) : goreBetween(2.6, 3.6)) * (0.75 + Math.min(severity, 2) * 0.2) * (round ? plan.spatterSize : 1),
-          d = Math.min(far, round ? (i ? goreBetween(9, 15) * (1 + 0.15 * Math.min(i - 1, 4)) * plan.spatterSize : goreBetween(3, 7)) : goreBetween(2, 5)),
+          d = Math.min(
+            far,
+            round
+              ? i
+                ? goreBetween(9, 15) * (1 + 0.15 * Math.min(i - 1, 4)) * plan.spatterSize
+                : goreBetween(3, 7)
+              : blast
+                ? goreBetween(3, 6) + i * goreBetween(1.6, 3.4) * (0.6 + push)
+                : goreBetween(2, 5),
+          ),
           x = p.x + Math.cos(aa) * d,
           y = p.y + Math.sin(aa) * d;
-        addBloodSpatter(x, y, round && i ? r * 0.8 : r, aa, ground(x, y), blast ? 1.3 : round ? 1.8 : 1.6);
+        addBloodSpatter(x, y, round && i ? r * 0.8 : r, aa, ground(x, y), blast ? 1.6 + 0.8 * push : round ? 1.8 : 1.6);
       }
       // A point-blank load, a heavy round, a close blast: a dense burst of blood and tissue (GORE).
-      if (full && hit && hit.burst > 0.05) bloodBurst(p.x + ca * 2, p.y + sa * 2, woundZ, a, hit.burst, roof ? z : null, blast ? 1.4 : 0.45, obstacle);
+      if (full && hit && hit.burst > 0.05) bloodBurst(p.x + ca * 2, p.y + sa * 2, woundZ, a, hit.burst, roof ? z : null, blast ? cone : 0.45, obstacle);
       // The drop at the feet falls from the wound: under the body, a little to the exit side.
-      const lean = round ? goreBetween(0.3, 2) : 0,
+      const lean = round ? goreBetween(0.3, 2) : blast ? goreBetween(0.5, 2.5) : 0,
         fx = p.x + ca * lean + goreBetween(-1.5, 1.5),
         fy = p.y + sa * lean + goreBetween(-1.5, 1.5);
       addBloodDrop(fx, fy, goreBetween(0.7, 1.2), goreBetween(0, TAU), { surface: ground(fx, fy) });
@@ -754,6 +799,34 @@
             } else if (along < -2) r.uprange++;
             else r.level++;
           }
+          return r;
+        },
+        // The blood in the air within `radius` (60) of (x, y) against a heading `a` (radians: the shot's, or from a
+        // blast to its victim): `flying` drops, `align` the mean cosine of their flight with `a` (1 all along it),
+        // `against` how many fly back against it, `meanHeading` of the summed flight, `highest` drop over the ground
+        // (units) and `mist` puffs. Read it right after a hit (holdSimulation) for the spray as it leaves the body.
+        bloodFlight(x, y, a = 0, radius = 60) {
+          const ux = Math.cos(a),
+            uy = Math.sin(a),
+            r = { flying: 0, align: 0, against: 0, meanHeading: 0, highest: 0, mist: 0 };
+          let sx = 0,
+            sy = 0;
+          for (const p of particles) {
+            if (Math.hypot(p.x - x, p.y - y) > radius) continue;
+            if (p.mist) r.mist++;
+            if (!p.blood) continue;
+            const v = Math.hypot(p.vx, p.vy) || 1,
+              c = (p.vx * ux + p.vy * uy) / v;
+            r.flying++;
+            r.align += c;
+            if (c < 0) r.against++;
+            sx += p.vx;
+            sy += p.vy;
+            r.highest = Math.max(r.highest, p.z - (p.surface ?? bloodSurface(p.x, p.y)));
+          }
+          if (r.flying) r.align = +(r.align / r.flying).toFixed(3);
+          r.meanHeading = +Math.atan2(sy, sx).toFixed(3);
+          r.highest = +r.highest.toFixed(1);
           return r;
         },
         // Tests: stand a bystander `distance` ahead of the player and wound them `hits` times

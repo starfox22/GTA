@@ -193,7 +193,6 @@
       drawCountyMap(drawingContext, scale, big);
       if (mapLayerOn('garages')) drawGarageMap(drawingContext, scale);
       if (mapLayerOn('bikes')) drawBikeShareMap(drawingContext, scale, big);
-      drawAirCoverMap(drawingContext, scale);
       drawDrawbridgeMap(drawingContext, scale, big);
       if (mapLayerOn('air')) drawAviationMap(drawingContext, scale);
       if (mapLayerOn('police')) drawPoliceMap(drawingContext, scale);
