@@ -149,7 +149,6 @@
       // @include src/garage3d.js
       // @include src/landmarks3d.js
       // @include src/civic3d.js
-      // @include src/air-cover3d.js
       // @include src/renewal3d.js
       // @include src/landscape3d.js
       // @include src/sports3d.js

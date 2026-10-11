@@ -64,15 +64,12 @@
           // The betting shop beside the stadium plaza (sportsbook3d.js).
           'GOALLINE SPORTS BET': ['neonBlock', { board: '#04120a', tube: '#3dff8e', tube2: '#ffe14d', accent: '#3dff8e', lines: ['GOALLINE', 'SPORTS BET'], ratio: [1.35, 0.75], icon: 'ball', icon2: true, iconColor: '#f4fff8', track: 0.26, border: 'rect' }],
           '24 HOUR': ['lightbox', { panel: '#ffffff', ink: '#1f8a4c', font: 'black', weight: '900', stripes: ['#f47b20', '#1f8a4c', '#d7262e'], lines: ['24 HOUR STORE'], outline: null }],
-          'EXCHANGE UNDERPASS': ['highway', { arrow: 'up' }],
-          'ROAD UNDERPASS': ['highway', { arrow: 'up' }],
           'OCEANVIEW / AIRPORT': ['highway', { icon: 'plane', arrow: 'right' }],
           'EAGLE PASS · SCENIC ROUTE': ['highway', { ground: '#6b3f1f', icon: 'mountain' }],
           // The mountain roads' lay-bys (county3d-roads.js): a brown recreation sign.
           'SCENIC VIEW': ['highway', { ground: '#6b3f1f', icon: 'mountain' }],
           'CORAL COAST': ['enamel', { ground: '#f2ccae', ink: '#1f5f63', rim: '#1f5f63', font: 'times', subAbove: 'WELCOME TO THE', icon: 'palm', icon2: true, iconColor: '#1f5f63', shape: 'round' }],
           // The park
-          'CENTRAL GARDEN': ['wood', { plank: '#4a3522', ink: '#efe0b8', routed: true, icon: 'leaf', icon2: true, iconColor: '#9fca7a', font: 'times', sub: 'CITY PARKS · OPEN DAWN TO DUSK' }],
           '4X4 CLUB': ['wood', { plank: '#4a2f1a', ink: '#f3dca8', routed: true, icon: 'mountain', icon2: 'tyre', iconColor: '#e0a64a', iconColor2: '#4a2f1a', font: 'slab', sub: 'RIDGELINE TRAIL RIDERS · EST. 1987' }],
           // The Ridgeline mountain villages (mountain-village.js): carved and routed
           // wood, painted boards, gold leaf on the chapel; lantern-lit.

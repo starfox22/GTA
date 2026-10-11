@@ -467,7 +467,6 @@
           halo(t, -2, 20, -12, 26, '#ffd9a0');
         }
         sign('OUTDOOR GYM', cal.x, cal.y + cal.h / 2 + 10, 90, '#cfe6ea');
-        sign('CENTRAL GARDEN', 2688, 1812, 200, '#c7e5b9');
         sign('GARDEN LAKE · BOATHOUSE', bh.x + bh.w / 2, bh.y + bh.h + 3, 120, '#d3ecdc');
         sign('BANDSHELL · LIVE TONIGHT', bs.x, bs.y + 138, 130, '#f2d8a2');
       }

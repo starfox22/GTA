@@ -73,6 +73,12 @@ export default async function (t) {
   await t.realWait(1.5);
   r = await t.call('jumpReport');
   t.assert(r.log.jumps === before + 1, `a real Space press made ${r.log.jumps - before} jumps`);
+  // Every take-off asks for the effort ("huh", player-jump-audio.js); with sound on it plays, quietly.
+  const e = r.effort;
+  t.note(`effort: ${JSON.stringify(e)}`);
+  t.assert(e.asked === r.log.jumps, `effort asked ${e.asked} times for ${r.log.jumps} jumps`);
+  t.assert(e.loaded, 'the jump grunt sample is not loaded');
+  if (e.sound) t.assert(e.played === e.asked && e.last && e.last.level <= 0.3 && e.last.rate > 0.85 && e.last.rate < 1.15, `effort: ${JSON.stringify(e)}`);
 
   // In a car Space is the handbrake: the car slows hard and nobody jumps.
   const id = await t.call('park', 'sedan', 26, 0, 0);

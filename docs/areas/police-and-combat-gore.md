@@ -35,6 +35,8 @@ blood, no bursts).
   stand (`woundedDown`, hp 7, police `downed`) and bleeds out in 7-13 s (`goreBleedOut`), then dies as an impact
   (`strikePerson(..., 'impact')`, a bigger pool) and the kill is the shooter's (`goreSource`). Medics never revive
   anyone who lost a part.
+- A blast's burst at a cut and its drops leave along the heading from the blast (cone +-0.6, blood.js BLOOD BLAST
+  SPRAY); severed pieces fly the same way (+-0.6).
 - No knock-back: a round still never moves anyone (police-and-combat-armour.md); only a blast throws the body.
 - The player loses parts only when a blast kills him (explode -> `goreBlastDeath`); WASTED's respawn
   (`goreRestore`) makes him whole and his clothes clean; bought health (hp 100) cleans them too.

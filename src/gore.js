@@ -64,7 +64,7 @@
       // Console bloodPlanTable: the plan without the chances (no arm caught, nothing severed).
       goreDryRun = false;
     // The scratch hit goreHit fills (read straight after by strikePerson and bleed).
-    const goreLastHit = { cls: 'handgun', range: 0, zone: 'torso', close: 0, scale: 1, height: 10, burst: 0, sever: 0, fatal: false, first: true };
+    const goreLastHit = { cls: 'handgun', range: 0, power: 1, zone: 'torso', close: 0, scale: 1, height: 10, burst: 0, sever: 0, fatal: false, first: true };
     function goreRandom() {
       goreSeed ^= goreSeed << 13;
       goreSeed ^= goreSeed >>> 17;
@@ -119,6 +119,7 @@
         full = goreFull();
       h.cls = cls;
       h.range = range;
+      h.power = detail?.power || 1;
       h.zone = zone;
       h.close = 0;
       h.scale = 1;
@@ -334,7 +335,7 @@
     function goreBurst(person, bit, a, hit) {
       const pt = goreJointPoint(person, bit, goreScratchPoint),
         roof = rooftopFloor(person) ? entityElevation(person) : null;
-      bloodBurst(pt.x, pt.y, pt.z, a, bit === GORE_HEAD ? 1.3 : 0.9, roof, hit?.cls === 'blast' ? 1.2 : 0.5, null);
+      bloodBurst(pt.x, pt.y, pt.z, a, bit === GORE_HEAD ? 1.3 : 0.9, roof, hit?.cls === 'blast' ? 0.6 : 0.5, null);
       addBloodDrop(pt.x, pt.y, goreBetween(1.4, 2.2), goreBetween(0, TAU), { surface: roof ?? bloodSurface(pt.x, pt.y) });
     }
     /**

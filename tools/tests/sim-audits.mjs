@@ -1,6 +1,6 @@
 // The hot-path rewrites of the simulation pass keep their answers: hypot2 equals Math.hypot bit for bit, the promenade
 // grid's cell mask is exactly the nine-cell neighbourhood of the grid, the solid() helpers rewritten without closures
-// (rail, underpass, county, pond ellipse), the rectangle-list cell index and the dense vehicle grid agree with the code
+// (rail, county, pond ellipse), the rectangle-list cell index and the dense vehicle grid agree with the code
 // they replaced, and the long-session report is finite. (The console's audits hold the reference implementations.)
 export default async function (t) {
   await t.call('teleport', 748, 584);

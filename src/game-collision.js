@@ -191,7 +191,6 @@
         sportsBlocked(x, y, r) ||
         railBlocked(x, y, r) ||
         parkPondBlocked(x, y, r) ||
-        underpassBlocked(x, y, r) ||
         airportSceneryBlocked(x, y, r) ||
         garageBlocked(x, y, r) ||
         parkBlocked(x, y, r) ||

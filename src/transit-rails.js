@@ -428,7 +428,7 @@
       for (const line of RAIL_LINES)
         for (const bent of railTrackSamples(line, 95, 190)) {
           const { x: cx, y: cy, a } = bent;
-          if (underpassContains(cx, cy, -30) || terrainHeight(cx, cy) > 12) continue;
+          if (terrainHeight(cx, cy) > 12) continue;
           const nx = -Math.sin(a),
             ny = Math.cos(a),
             pair = (offset, kind, size) =>

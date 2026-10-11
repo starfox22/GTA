@@ -9,8 +9,16 @@ Part of police-and-combat.md.
   the wound height and an **exit spray** away from the shooter (the shot's heading `a`): a
   plume carried a metre or two on, fine drops in a cone landing 1-4 m beyond the body, a
   directional **spatter** 3-7 units behind it (more, further on, from a heavy round) and a
-  **drop** at its feet leaning to the exit side. Nothing lands toward the shooter. Never a
-  pool. The body is not moved.
+  **drop** at its feet leaning to the exit side. On top of the landing drops, `air` fine droplets
+  (6-12 a pistol round, up to 40) are thrown higher (up to ~4 m/s up) and a little wider along the
+  shot: the spray seen in the air; most land as nothing. Nothing flies or lands toward the
+  shooter. Never a pool. The body is not moved.
+- A BLAST (BLOOD BLAST SPRAY, `bloodBlastPush`): the blood leaves the far side of the body, away from
+  the blast (`a` = the heading from the blast to the victim; `hurt(d, 'blast', a)` for the player), in
+  a cone of +-0.7 rad at the edge of the blast's reach narrowing to +-0.36 at its heart; the drops'
+  speed, the mist's drift and the spatter's spread grow with the push (1 - range / (85 units x
+  power)), the spatter fanning 3-25 units beyond the body. The spray meets a wall or a car within
+  2-7 m (`bloodSprayObstacle`): wall splashes, a stain. Nothing is thrown back toward the blast.
 - HOW MUCH (bloodShotPlan, deterministic: console `bloodPlanTable`): gore.js goreHit's `scale`
   by calibre, range and zone (police-and-combat-gore.md) multiplies the drops (3 + 4 x severity,
   at most 48), the plume, the spray's speed, cone and the spatters (at most 5); a pistol round at
@@ -34,7 +42,7 @@ Part of police-and-combat.md.
   round, +0.9 a wound, 10 at most for gunfire; 8.5-13 for an impact, fall or blast; a body that
   lost a part 2.5 more (13.5 at most). `tau` 6.5 s for one round, down to 3.5 s for many (most of
   the spread in 10-15 s), 4 s for an impact or fall, 3 s for a blast (which also starts at r 3 and
-  throws a radial spray). One round: r ~3 at 1 s, 6.2 at 10 s, 7 at 30 s (6 before October 7).
+  throws its spray away from the blast). One round: r ~3 at 1 s, 6.2 at 10 s, 7 at 30 s (6 before October 7).
   A later hit only raises `rMax`/lowers `tau`.
 - Someone wounded on the floor (alive: `woundedDown` crawling, officers `downed`) who lies still
   1.5 s bleeds a small pool (`bodyPool(p, 'wounded')`, r 2.6-4, tau 9, `wounded: true`) where they
@@ -58,7 +66,9 @@ Part of police-and-combat.md.
   `wallOffset`; transparent, renderOrder 3; rewritten only when the list changes, a pool spreads
   or every 0.5 s; `bloodDecalReport`) and
   `drawBlood2D` (walls left out; blood particles drawn round, never squares). Fire, smoke,
-  sparks and drops are the effect particle pool (rendering-effects.md), drawn at `FX_SPRITE_ORDER` 8
+  sparks and drops are the effect particle pool (rendering-effects.md), drawn at `FX_SPRITE_ORDER` 8;
+  a flying drop is drawn at least `FX_BLOOD_MIN_PX` (2.4) pixels across and streaked along its
+  flight (`FX_BLOOD_STREAK` 0.03 s), so the spray reads from the street camera's height
   (render3d-effects.js): with the default 0 the floor blood was painted over an explosion's fireball
   (transparent objects sort by renderOrder before depth, and none of them write depth). The mist is a `mist`
   particle (fx3d-particles.js draws it at its height, fading and spreading).
@@ -72,7 +82,8 @@ Part of police-and-combat.md.
   minute of a downpour to the full) and spreads up to a fifth wider; drawn lighter, pinker,
   fainter and wet again. Not under cover, on walls or in tyre tracks.
 - Bounds: `BLOOD_LIMIT` 480 decals (the oldest non-pool goes first; was 240 meshes, now one
-  draw), `BLOOD_LIFE` 240 s. Randomness: gore.js `goreRandom` (blood never draws on the seeded
+  draw), `BLOOD_LIFE` 240 s; a round's fine air spray is left out while `BLOOD_AIR_ROOM` (900) game
+  particles are alive. Randomness: gore.js `goreRandom` (blood never draws on the seeded
   game stream).
 
 ## For other code
@@ -87,8 +98,10 @@ Part of police-and-combat.md.
   splash (`bleed(p, sev, heading, 'impact')`, a living body does not pool), streaks along the tyre path,
   `c.bloodTrackRemaining` for the tyres, and the pool (`bodyPool`) once they have died a second or two later.
   A non-fatal first pass leaves no blood at all.
-- Console: `bloodReport(x, y, radius)`, `bloodVictim(hits, damage, kind)`, `bloodSides(x, y, a, radius)`
-  (docs/console/crowd.md). Tests: tools/tests/blood-wounds.mjs, tools/tests/bullet-hits.mjs (exit spray).
+- Console: `bloodReport(x, y, radius)`, `bloodVictim(hits, damage, kind)`, `bloodSides(x, y, a, radius)`,
+  `bloodFlight(x, y, a, radius)` (the drops in the air; docs/console/crowd.md). Tests:
+  tools/tests/blood-wounds.mjs, tools/tests/bullet-hits.mjs (exit spray), tools/tests/blood-spray.mjs
+  (drops in the air along the shot; a blast's blood driven away from it).
 
 ## Blood on vehicles
 
