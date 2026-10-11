@@ -497,7 +497,7 @@
      * it can see them, counts as a unit with eyes on the suspect (policeSees,
      * citylife.js), so the last known position it reports keeps the ground units
      * converging and the search from running down. Under any overhead cover
-     * (a canopy, a shelter, a deck, the underpass, a building: air-cover.js
+     * (a canopy, a shelter, a deck, a building: air-cover.js
      * OVERHEAD COVER) the player is hidden from it: the searchlight sweeps round
      * the last sighting, the helicopter circles there, and unless a ground unit
      * sees them the lose-police timer runs; the HUD reads HIDDEN FROM AIR.

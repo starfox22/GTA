@@ -239,7 +239,7 @@
       staticBodies.length = 0;
       impactContacts.clear();
       physicsAccumulator = 0;
-      addUnderpassColliders();
+      addRailCoverColliders();
       addCountyColliders();
       for (const b of garageWalls()) addStatic(b.x, b.y, b.w, b.h, b.height, 'garage');
       addGarageDoorBodies();

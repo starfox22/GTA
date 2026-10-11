@@ -64,8 +64,6 @@
           // The betting shop beside the stadium plaza (sportsbook3d.js).
           'GOALLINE SPORTS BET': ['neonBlock', { board: '#04120a', tube: '#3dff8e', tube2: '#ffe14d', accent: '#3dff8e', lines: ['GOALLINE', 'SPORTS BET'], ratio: [1.35, 0.75], icon: 'ball', icon2: true, iconColor: '#f4fff8', track: 0.26, border: 'rect' }],
           '24 HOUR': ['lightbox', { panel: '#ffffff', ink: '#1f8a4c', font: 'black', weight: '900', stripes: ['#f47b20', '#1f8a4c', '#d7262e'], lines: ['24 HOUR STORE'], outline: null }],
-          'EXCHANGE UNDERPASS': ['highway', { arrow: 'up' }],
-          'ROAD UNDERPASS': ['highway', { arrow: 'up' }],
           'OCEANVIEW / AIRPORT': ['highway', { icon: 'plane', arrow: 'right' }],
           'EAGLE PASS · SCENIC ROUTE': ['highway', { ground: '#6b3f1f', icon: 'mountain' }],
           // The mountain roads' lay-bys (county3d-roads.js): a brown recreation sign.

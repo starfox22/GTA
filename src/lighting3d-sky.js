@@ -710,7 +710,7 @@
       }
       /**
        * CUTAWAY
-       * When the player is under a roof (the underpass, a rail viaduct deck, a
+       * When the player is under a roof (a rail viaduct deck, a
        * station canopy, a bus shelter, Vinny's depot, a building they are
        * inside), or hidden from the camera behind a building or a deck (a ray
        * from their middle or head towards the camera passes through its box,

@@ -465,7 +465,6 @@
       drawHarbor2D();
       drawDepot2D();
       drawRoadblocks2D();
-      drawUnderpass2D();
       drawAirSearch2D();
       drawTrafficLights2D();
       drawBlood2D();

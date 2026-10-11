@@ -14,7 +14,7 @@
      * Each loops seamlessly (its seam cross-faded when it was made, looped at
      * its exact length, LOOP_SECONDS in audio.js) from a random point. All
      * three pass through one `cabin` low-pass: open on foot, muffled under
-     * cover (the underpass, under the railway decks and station canopies,
+     * cover (under the railway decks and station canopies,
      * aboard a train or a cab, in the elevator), and through the glass inside a
      * closed vehicle, where the same recordings also drum on the roof (a
      * resonant low band of the light and steady beds, not behind the glass).
@@ -81,8 +81,8 @@
       return rainAudio;
     }
     /*
-     * 1 under a roof that keeps the rain off (the Northbank underpass, beneath
-     * the railway decks and station canopies, a bridge over a swimmer, aboard a
+     * 1 under a roof that keeps the rain off (beneath the
+     * railway decks and station canopies, a bridge over a swimmer, aboard a
      * train or a cab, in the Blue Hour elevator), 0 in the open.
      */
     function rainShelter() {
