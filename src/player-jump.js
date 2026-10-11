@@ -226,6 +226,8 @@
         k.vx = Math.cos(k.heading) * k.pace;
         k.vy = Math.sin(k.heading) * k.pace;
         player.jumpAt = gameTime;
+        // The effort as he leaves the ground (player-jump-audio.js).
+        jumpEffortSound(k.pace);
       }
       if (k.phase === 'air') {
         player.jumpUntil = gameTime + Math.max(0.02, JUMP_AIR - k.t);
@@ -294,6 +296,7 @@
         altitude: +(player.altitude || 0).toFixed(2),
         ground: +terrainHeight(player.x, player.y).toFixed(2),
         log: { ...jumpLog },
+        effort: jumpEffortReport(),
       };
     }
     /* Console: what a jump clears. jumpObstacles(x, y, radius, count): the low heighted solids, foot furniture and

@@ -152,6 +152,7 @@
     // @include src/ambience-beds.js
     // @include src/acoustics-audio.js
     // @include src/footsteps-audio.js
+    // @include src/player-jump-audio.js
     // @include src/vehicle-foley-audio.js
     // @include src/lockpick-audio.js
     // @include src/bullets-audio.js

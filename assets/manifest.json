@@ -213,6 +213,12 @@
     "original": "src/assets/audio/civilian-scream-male-2.ogg"
   },
   {
+    "id": "media-audio-player-jump-grunt",
+    "file": "assets/audio/player-jump-grunt.ogg",
+    "mime": "audio/ogg",
+    "original": "LibreQuake lq1/sound/player/plyrjmp8.wav (BSD-3-Clause)"
+  },
+  {
     "id": "media-audio-explosion",
     "file": "assets/audio/explosion.mp3",
     "mime": "audio/mpeg",
