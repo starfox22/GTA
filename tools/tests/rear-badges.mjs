@@ -54,9 +54,11 @@ export default async function (t) {
     if (b && b.badge.letters !== undefined) t.assert(b.badge.letters > 0, `${type}: its letters laid (${b.badge.letters})`);
   }
   for (const body of ['charger', 'utility', 'crownvic', 'tahoe']) {
-    if (asset('police', body)) continue;
+    // The agents' Tahoe is an 'suv' in the line-up (a downloaded body like the patrol cars').
+    if (asset('police', body) || asset('suv', body)) continue;
     const b = of('police', body) || of('suv', body);
     t.assert(b && b.badge.letters > 0 && b.badge.sub, `police ${body}: its model name on the tail (${JSON.stringify(b?.badge)})`);
   }
-  t.assert(badges.some((b) => b.badge?.text === 'POLICE'), 'a marked patrol car reads POLICE');
+  // Every patrol body may be a downloaded model (police3d-asset.js POLICE_ASSET_TYPES: its maker's badges); a procedural one reads POLICE.
+  t.assert(badges.some((b) => b.badge?.text === 'POLICE' || (b.type === 'police' && b.asset)), 'a marked patrol car reads POLICE (or is a downloaded body)');
 }

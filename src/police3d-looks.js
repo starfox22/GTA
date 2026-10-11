@@ -169,8 +169,8 @@
         let { body, livery } = choice;
         if (!POLICE_BODIES[body]) body = 'charger';
         const unmarked = livery === 'unmarked' || !POLICE_LIVERIES[livery],
-          // The 'crownvic' body is drawn from the downloaded police sedan when the build carries it (police3d-asset.js).
-          asset = body === 'crownvic' && !!vehicleAssetModel('police');
+          // A body the build carries a downloaded model for is drawn from it (police3d-asset.js POLICE_ASSET_TYPES).
+          asset = !!policeAssetType(body);
         return {
           body,
           livery: unmarked ? 'unmarked' : livery,

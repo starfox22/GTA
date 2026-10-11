@@ -9,7 +9,7 @@ vehicles-and-driving-models.md's; credits in docs/THIRD_PARTY_CREDITS.txt. Conso
 
 - Sedan, taxi, coupe, sport, supercar, luxury and muscle (American Muscle '71) are drawn from downloaded CC-BY cars
   (Daniel Zhabotinsky's series; credits in THIRD_PARTY_CREDITS.txt), converted offline by `tools/vehicle_models.py
-  SRC_DIR` into assets/vehicle-models.bin + vehicle-atlas.webp (2048x2048, one trim material, two wheel materials).
+  SRC_DIR` into assets/vehicle-models.bin + vehicle-atlas.webp (4096x2048 since round three, one trim material, two wheel materials).
   `makeVehicle` takes `makeAssetCar` when `vehicleAssetModel(type)` has one, else the procedural body (a build without
   the block falls back by itself). Rally (its livery) and hotrod (the HELLFIRE's flames and blower; the Coupe '33 was
   tried) stay procedural, as do every other type; only replace a type where the model clearly looks better and loses
@@ -64,8 +64,8 @@ vehicles-and-driving-models.md's; credits in docs/THIRD_PARTY_CREDITS.txt. Conso
   9 m with its waterline (`waterline` m over the lowest point) at y 0; one alpha-tested body, the clear panes, a mast
   lamp; wakes and handling are the type's. The sponsor, outboard and radar names are erased in the texture.
 - Held back (`ASSET_BOATS_HELD`): beside the procedural launch the Tow Boat read flatter and lost the paint colour, so
-  the lead kept the procedural boat (owner rule: only upgrades). The data stays in the bin; drop it from the converter
-  at the next regeneration, or take it off the held list if a better boat model replaces it.
+  the lead kept the procedural boat (owner rule: only upgrades); round three dropped it from the bin (every boat is
+  procedural now; `ASSET_BOATS_HELD` waits for a better model).
 
 ## Tried and kept procedural
 
