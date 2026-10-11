@@ -1,8 +1,20 @@
 # People: the player's own body
 
 The player (in his own clothes) is not drawn from the crowd's instanced parts but from one skinned mesh of his
-own: player-body3d.js and its pieces (mesher, anatomy, head, extremities, build, shader, grips). Everyone else, and the
-player in a disguise (mission 2's suit), stays on the rig (people-and-crowd-rig.md).
+own: player-body3d.js and its pieces (mesher, anatomy, head, extremities, build, shader, grips). Everyone else is an
+avatar near the camera (people-and-crowd-avatars.md) and the rig further off (people-and-crowd-rig.md).
+
+## In a disguise (an avatar)
+
+In mission 4's borrowed uniform (`player.uniform`, outfit 'playerArmy') he is Military_Male_05, the avatar the gate's
+MPs wear; in mission 2's suit ('playerDisguise') Business_Male_02 with its jacket tinted cream
+(people-and-crowd-avatars-cast.md). `playerAvatarOn(look)` (npc-avatar3d.js) says so; drawCrowdPerson then skins him
+into `npcPlayerSlot`, a near slot of his own at any zoom and in both views (`spec.rim`), so nothing else takes it;
+taking the uniform off (wearUniform(false), a reset) brings his own body back the next frame. The contracts hold: all
+15 bones posed or the slot is hidden (npcAvatarFlush), parts by `npcSkin.w` (the same bone codes as `pbSkin.w`) for
+gore folds and wound soaks from `player.goreLost` / `goreWounds`, his weapons in PB_GRIPS (`pbHands` in
+drawCrowdPerson: the avatar's hands are fitted by `pbAssetHands` to the same fist), and the same seats (the avatar's
+crown stands at the player's). He takes no place in the chase view's near set then either.
 
 ## Who he is
 

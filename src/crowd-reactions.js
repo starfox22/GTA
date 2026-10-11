@@ -284,6 +284,39 @@
       });
       return cast.map((c) => c[0]);
     }
+    /**
+     * A second row of the cast for looks checks (console avatarLineup): two children and Kessler off duty on the
+     * pavement; gang members of both crews, a mobster boss, a waiter, Vinny and Elena as story actors (drawn in their
+     * outfits), `spacing` apart in a row ahead of the player, facing him. Nothing in it acts; a new call replaces it.
+     */
+    function avatarLineup(spacing = 2.4 * UNITS_PER_METRE) {
+      for (let i = pedestrians.length - 1; i >= 0; i--) if (pedestrians[i].avatarLineup) pedestrians.splice(i, 1);
+      for (let i = storyActors.length - 1; i >= 0; i--) if (storyActors[i].avatarLineup) storyActors.splice(i, 1);
+      const y = player.y - 3 * UNITS_PER_METRE,
+        row = [
+          ['kid', { female: false }],
+          ['kid', { female: true }],
+          ['kessler'],
+          ['gang', { faction: 'harbor', color: '#b66951' }],
+          ['gang', { faction: 'harbor', color: '#b66951', lookSeed: 3.3 }],
+          ['gang', { faction: 'glass', color: '#b19bcc' }],
+          ['mobster', { faction: 'vescari', boss: true, color: '#1c1c20' }],
+          ['waiter', { guest: true, staff: true }],
+          ['VINNY MORETTI', { color: '#bb9b6e' }],
+          ['ELENA CRUZ', { color: '#7ac9c7' }],
+        ];
+      row.forEach(([kind, extra], i) => {
+        const x = player.x + (i - (row.length - 1) / 2) * spacing;
+        if (kind === 'kid' || kind === 'kessler') {
+          const p = { x, y, a: Math.PI / 2, hp: 30, flee: 0, timer: 5, walk: 0, state: 'walk', posed: 'casual', anchor: { x, y }, avatarLineup: true, role: kind === 'kid' ? 'kid' : 'casual' };
+          dressPerson(p, p.role);
+          if (kind === 'kid') p.look.hairStyle = extra.female ? 2 : 1;
+          else p.missionDriver = 'kessler';
+          pedestrians.push(p);
+        } else storyActors.push({ ...actor(kind === kind.toUpperCase() ? kind : kind.toUpperCase(), x, y, extra.color || '#6b5965'), a: Math.PI / 2, avatarLineup: true, ...extra });
+      });
+      return row.map((r) => r[0]);
+    }
     function updatePosed(p, deltaSeconds) {
       const speed = GALLERY_MOVERS[p.posed] || 0;
       p.pose = p.posed === 'walk' ? null : p.posed;

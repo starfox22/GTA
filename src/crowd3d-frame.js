@@ -198,7 +198,7 @@
         N.reach2 = reach * reach;
         N.keep2 = N.reach2 / (CROWD_NEAR_KEEP * CROWD_NEAR_KEEP);
         // The player in his own body (player-body3d.js) takes no place among the near.
-        const ownBody = playerBodyOn(specialLook(player));
+        const ownBody = playerBodyOn(specialLook(player)) || playerAvatarOn(specialLook(player));
         if (!ownBody && !player.hidden && !(player.car || transitRide || taxiRide)) nearConsider(player, Infinity);
         // At the wheel the player is drawn through their seated stand-in (crowd3d-driveby.js drawCarOccupants).
         else if (!ownBody && player.car && !transitRide && !taxiRide) nearConsider(driveByGhost, Infinity);

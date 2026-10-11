@@ -68,8 +68,10 @@
           // The player in his own outfit is drawn from his own body (player-body3d.js): no still copies.
           own = spec?.rim === true && playerBodyOn(look),
           // Someone near the camera drawn as their avatar (npc-avatar3d.js): skinned like the player, no still copies.
-          avatarSlot = own ? null : npcAvatarTake(p, s, R, detail),
+          avatarSlot = own ? null : npcAvatarTake(p, s, R, detail, spec),
           skinned = own || avatarSlot !== null,
+          // The player's hands take his grips (PB_GRIPS) on his own body and on his avatar in a disguise.
+          pbHands = own || avatarSlot === npcPlayerSlot,
           J = s.joints,
           T = poseTarget,
           t = gameTime,
@@ -376,6 +378,8 @@
           if (wounded) goreWoundFor(p, 0, 0);
           rigEmit(BODY.head, mHead, hs, hs, hs, paints.head);
           if (R.hatPart) rigEmit(BODY[R.hatPart], mHead, hs, hs, hs, paints.hat);
+          // A motorcyclist's helmet over his avatar's head (no avatar wears one), a touch roomier for the hair.
+          if (R.riderHelmet && avatarSlot) rigEmit(bodySet[R.hatPart], mHead, 1.1, 1.1, 1.1, paints.hat);
           if (R.hairPart && !(R.hatPart && R.hairPart === 'hairCurly')) rigEmit(BODY[R.hairPart], mHead, hs, hs, hs, paints.hair);
           if (wounded) goreWoundClear();
         }
@@ -393,14 +397,14 @@
           holdWeight = J[J_HOLD];
         if (hold?.inHand) {
           // The player's own hand holds it in his fist (player-body3d-grips.js).
-          if (own) mGun.multiplyMatrices(mHand[1], pbGripsFor(spec.weapon).inverse);
+          if (pbHands) mGun.multiplyMatrices(mHand[1], pbGripsFor(spec.weapon).inverse);
           else crowdJoint(mGun, mHand[1], hold.at[0], hold.at[1], hold.at[2], hold.rz);
           rigEmit(P[spec.weapon], mGun, 1, 1, 1, WEAPON_PAINTS[spec.weapon] || WEAPON_PAINTS.pistol);
-        } else if (hold && holdWeight > 0.05) drawHold(p, s, spec, hold, H, elevation, hipY, holdWeight, own);
+        } else if (hold && holdWeight > 0.05) drawHold(p, s, spec, hold, H, elevation, hipY, holdWeight, pbHands);
         // A rider's hands on the bars (RIDERS).
         if (spec?.handTargets) {
           // The player's own firing hand round the drive-by gun's grip: its wrist is the target.
-          if (own && spec.gunFrame) {
+          if (pbHands && spec.gunFrame) {
             handFrames[1].multiplyMatrices(spec.gunFrame, pbGripsFor(spec.weapon || 'pistol').fire[spec.gunHand ? 1 : 0]);
             spec.handTargets[spec.gunHand].setFromMatrixPosition(handFrames[1]);
           }
@@ -423,7 +427,7 @@
                 h[13] += gy;
                 h[14] += gz;
                 // The player's own hand (player-body3d.js) round the grip comes in with it.
-                if (own) {
+                if (pbHands) {
                   const o = handFrames[1].elements;
                   o[12] += gx;
                   o[13] += gy;
@@ -435,7 +439,7 @@
           // A drive-by (crowd3d-driveby.js): the pistol along the aim, the firing hand on its grip.
           if (spec.gunFrame) {
             rigEmit(P[spec.weapon] || P.pistol, spec.gunFrame, 1, 1, 1, WEAPON_PAINTS[spec.weapon] || WEAPON_PAINTS.pistol);
-            mHand[spec.gunHand].copy(own ? handFrames[1] : spec.gunHandFrame);
+            mHand[spec.gunHand].copy(pbHands ? handFrames[1] : spec.gunHandFrame);
           }
         }
         const armPaint = paints.upperArm,

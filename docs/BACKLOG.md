@@ -71,7 +71,7 @@ here when polishing; delete a line when it is fixed. Newest features first.
 
 ## Clouds (clouds*.js, clouds3d-*.js)
 - The flight camera never looks above ~30 degrees below the horizon: under the base the underside is never in view, only the shadows and the dimmer light (the chase view shows it: clouds3d-sky.js).
-- Chase view: the sky, haze, sun glare, shafts and the per-pixel cloud shadows were tuned on SwiftShader: check on a real GPU (and the cost of the march from below at ULTRA). The cloud shadows darken shade too (as the plane always did: a blend, not a light term); the half-size march still shows some stair-stepping on cumulus walls.
+- Chase view: the sky, haze, sun glare, shafts and the per-pixel cloud shadows were tuned on SwiftShader: check on a real GPU (and the cost of the march from below at ULTRA). The cloud shadows darken shade too (as the plane always did: a blend, not a light term). The march from below converges over ~10 frames (SKY CLOUD HISTORY): judge it in motion on a GPU (a fast turn shows the single-frame grain briefly).
 - The veil is capped so the subject stays readable, so the ground shows through it once a jumper is within ~30 m of the base (the far march covers only beyond the jumper).
 - Tower stops are boxes (lot + 0.5 m): a twisted crown (EVOLUTION) is approximated; only the six tallest towers stop rays.
 - `cloudAmountAt` (sound, lens, LOW's veil, grey-out) is a likelihood from the coverage map: in a gap the GPU carves it can still say "in cloud".
@@ -195,6 +195,16 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - Low-poly (7k triangles): elbows and the shoulders' silhouette facet up close; the armpits fold with the arms down
   (the A pose bind); no collarbone, so raised arms pull the tee's shoulders.
 - The field body (fallback only) is now built at PB_WIDTH 1.04 (broader than it was modelled for).
+
+## Street avatars (npc-avatar3d*.js, npc-avatar-cast.js; docs/areas/people-and-crowd-avatars*.md)
+
+- Still the rig up close: severed limbs (the rig's parts in the avatar's colours), a wounded person beyond the near cap
+  (the mid mesh has no wound soak), anyone past a full cap or the mid batches; a motorcyclist's helmet is the rig's part
+  over the avatar's head (no Rocketbox avatar wears one).
+- Tints are one colour on the top garment: kits keep their own shorts and socks, gang trousers stay the avatar's.
+- Children are fitted at an adult's stature and drawn at the look's 0.64: the adult rig's joints (leg length ratio)
+  pose them; a child's own skeleton would need per-person rig proportions.
+- The atlas is 3840x2560 (~52 MB on the GPU with mipmaps, was ~29 MB); fitting 64 avatars is ~2 s behind the title.
 
 ## Mountain island (mountain-village*.js, mountain-club3d.js)
 - Northridge metal roofs (rescue barn, general store) were lightened but not re-shot.
