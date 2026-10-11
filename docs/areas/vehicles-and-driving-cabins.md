@@ -10,7 +10,9 @@ vehicles-and-driving-models.md.
   `opacity` of the pane in front of the cabin, the sky's reflection lies over it unweakened and grazing angles turn
   to mirror (Fresnel). Past `CAR_GLASS_CLEAR` (24-36 m from the camera) the tint closes to `CAR_GLASS_FAR_TINT`, so a
   far cabin never shows empty. The body impostors keep the old opaque glass (`glassFar`, `policeGlass`); the
-  4x4 club trucks still use `policeGlass`. Cracked and burst panes are damage3d.js's own (opaque) materials.
+  4x4 club trucks still use `policeGlass`. Cracked panes use damage3d.js's opaque cracked material. Broken or
+  lowered panes use `missingGlass` (not drawn and never writing depth), exposing the actual cabin and occupants.
+  The trunk well and a burnt roof retain their solid dark lining. Repair restores the intact window material.
 - See-through glass casts no shadow (the sun reaches the cabin through it): the paint panels (roof panel, pillars)
   cast instead, and the pristine merge's paint set casts when they do, so a car still has three casters.
 - The cabin (`carCabinParts`: seats and headrests, dash and binnacle, wheel, mirror, parcel shelf, a patrol car's

@@ -104,7 +104,7 @@
   opacity: 0.72;
 }
 .touch-mode #radioCaption {
-  top: 96px;
+  top: var(--touch-dispatch-top, 160px);
 }
 .touch-mode #bottom {
   top: 54px;

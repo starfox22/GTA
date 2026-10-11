@@ -45,6 +45,7 @@ const filters = argv.filter((a, i) => !a.startsWith('--') && argv[i - 1] !== '--
 const verbose = opt('--verbose');
 
 class Failure extends Error {}
+class Skipped extends Error {}
 
 async function op(o) {
   const reply = await request(o);
@@ -75,6 +76,7 @@ function makeApi(notes) {
       if (bad.length) throw new Failure('non-finite: ' + bad.slice(0, 5).join(', '));
     },
     note: (text) => notes.push(text),
+    skip: (reason = 'Prerequisite unavailable') => { throw new Skipped(reason); },
     // `dev.mjs reload [--keep]`: the page reopened (and booted to free roam) with the same flags.
     async reload({ keep = false } = {}) {
       await op({ op: 'reload', keep: !!keep });
@@ -95,6 +97,19 @@ async function waitReady() {
 async function reload(flags) {
   await op({ op: 'reload', flags });
   return waitReady();
+}
+
+async function stopServer() {
+  const st = readState();
+  if (!st) return;
+  await request({ op: 'stop' });
+  // Stop acknowledges before Chromium closes. Wait before starting another build on the same port.
+  for (let i = 0; i < 40; i++) {
+    const alive = await request({ op: 'status' }, { port: st.port, timeoutMs: 1000 }).catch(() => null);
+    if (!alive) return;
+    await new Promise(r => setTimeout(r, 250));
+  }
+  throw new Error('Previous dev server did not stop');
 }
 
 const files = fs
@@ -122,6 +137,12 @@ let startedHere = false;
 let st;
 try {
   st = existing ? await request({ op: 'status' }, { timeoutMs: 5000 }).catch(() => null) : null;
+  // A running server may be showing a comparison build: honour --html and default back to the working tree.
+  const requestedFile = path.resolve(html || path.join(ROOT, 'dist/dev/game.html'));
+  if (st && st.html && path.resolve(st.html) !== requestedFile) {
+    await stopServer();
+    st = null;
+  }
   if (st && st.state === 'ready') {
     st = await reload(tests[0].flags);
     console.log(`reused dev server (rebuilt, reloaded ?${st.flags}: boot ${st.bootSeconds}s)`);
@@ -142,6 +163,7 @@ for (const test of tests) {
   const notes = [];
   const began = Date.now();
   let error = null;
+  let skipped = null;
   try {
     if (test.flags !== flags || (test.fresh && !freshPage)) {
       st = await reload(test.flags);
@@ -153,15 +175,21 @@ for (const test of tests) {
     const errs = await op({ op: 'errors' });
     if (errs.length) error = `${errs.length} console error(s): ${errs[0].split('\n')[0]}`;
   } catch (e) {
-    error = e instanceof Failure ? e.message : 'error: ' + (e.message || e);
+    if (e instanceof Skipped) {
+      skipped = e.message;
+      const errs = await op({ op: 'errors' });
+      if (errs.length) error = `${errs.length} console error(s): ${errs[0].split('\n')[0]}`;
+    } else error = e instanceof Failure ? e.message : 'error: ' + (e.message || e);
   }
   const secs = ((Date.now() - began) / 1000).toFixed(1);
-  results.push(!error);
-  console.log(`${error ? 'FAIL' : 'PASS'} ${test.name} (${secs}s)${error ? ': ' + error : ''}`);
+  const status = error ? 'FAIL' : skipped ? 'SKIP' : 'PASS';
+  results.push(status);
+  console.log(`${status} ${test.name} (${secs}s)${error || skipped ? ': ' + (error || skipped) : ''}`);
   if (verbose && notes.length) console.log('     ' + notes.join(' · '));
 }
 
-if (startedHere && !opt('--keep')) await request({ op: 'stop' }).catch(() => {});
-const failed = results.filter((ok) => !ok).length;
-console.log(`${results.length - failed}/${results.length} passed in ${((Date.now() - t0) / 1000).toFixed(0)}s`);
+if (startedHere && !opt('--keep')) await stopServer();
+const failed = results.filter((r) => r === 'FAIL').length;
+const skipped = results.filter((r) => r === 'SKIP').length;
+console.log(`${results.length - failed - skipped}/${results.length} passed, ${skipped} skipped, ${failed} failed in ${((Date.now() - t0) / 1000).toFixed(0)}s`);
 process.exit(failed ? 1 : 0);

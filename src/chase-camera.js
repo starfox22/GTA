@@ -562,7 +562,6 @@
         cam.py += (cam.fromY - cam.py) * w;
         cam.pz += (cam.fromZ - cam.pz) * w;
       }
-      cam.shoulder = shoulderM * M;
       // The boom: back along the view from the pivot, out to the right shoulder.
       const cy = Math.cos(yaw),
         sy = Math.sin(yaw),
@@ -573,9 +572,14 @@
         fz = -sp,
         rx = -sy,
         ry = cy,
-        sx0 = cam.px + rx * cam.shoulder,
-        sy0 = cam.py + ry * cam.shoulder;
-      const reach = chaseBoomReach(sx0, sy0, cam.pz, -fx, -fy, -fz, cam.wantDist, c);
+        // The near plane has width too: keep its edge clear when looking along a facade.
+        margin = Math.max(CHASE_WALL_MARGIN, CHASE_NEAR * Math.tan(fov * Math.PI / 360) * cam.aspect);
+      // Sweep the shoulder first. Starting the boom from an unchecked shoulder point could place the entire
+      // camera inside a wall while aiming parallel to it.
+      cam.shoulder = chaseBoomReach(cam.px, cam.py, cam.pz, rx, ry, 0, shoulderM * M, margin);
+      const sx0 = cam.px + rx * cam.shoulder,
+        sy0 = cam.py + ry * cam.shoulder,
+        reach = chaseBoomReach(sx0, sy0, cam.pz, -fx, -fy, -fz, cam.wantDist, margin);
       // In at once in front of a wall, out again slowly (about 4 m/s).
       if (reach < cam.dist) cam.dist = reach;
       else cam.dist = Math.min(reach, cam.dist + deltaSeconds * 4 * M * (1 + cam.speedBlend * 3));
@@ -599,25 +603,26 @@
     }
     /* How far the boom can reach from (x, y, z) along the unit direction (dx, dy, dz) before a
        building (footprint and height), up to `want`; the vehicle itself is not a wall. */
-    function chaseBoomReach(x, y, z, dx, dy, dz, want, vehicle) {
+    function chaseBoomReach(x, y, z, dx, dy, dz, want, margin = CHASE_WALL_MARGIN) {
       const step = 4,
         n = Math.ceil(want / step);
       let ok = want;
-      for (let i = 1; i <= n; i++) {
+      for (let i = 0; i <= n; i++) {
         const t = Math.min(want, i * step),
           px = x + dx * t,
           py = y + dy * t,
           pz = z + dz * t;
-        if (chaseInsideBuilding(px, py, pz)) {
-          ok = Math.max(CHASE_NEAR * 1.5, t - step - CHASE_WALL_MARGIN);
+        if (chaseInsideBuilding(px, py, pz, margin)) {
+          // A minimum boom length must never push the camera back through the wall it just hit.
+          ok = Math.max(0, t - step - CHASE_WALL_MARGIN);
           break;
         }
       }
       return ok;
     }
-    function chaseInsideBuilding(x, y, z) {
+    function chaseInsideBuilding(x, y, z, margin = CHASE_WALL_MARGIN) {
       const list = buildingsNear(x, y),
-        m = CHASE_WALL_MARGIN;
+        m = margin;
       for (let i = 0; i < list.length; i++) {
         const b = list[i];
         if (x + m > b.x && x - m < b.x + b.w && y + m > b.y && y - m < b.y + b.h) {

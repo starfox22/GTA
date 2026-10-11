@@ -5,8 +5,7 @@ const CITY = [748, 584];
 export default async function (t) {
   const first = await t.call('cloudLayer', ...CITY);
   if (!first.view) {
-    t.note('no renderer: nothing to check');
-    return;
+    t.skip('Requires WebGL: run with --render');
   }
   try {
     await t.call('teleport', ...CITY);

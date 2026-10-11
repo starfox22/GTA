@@ -80,6 +80,8 @@ navigation.js (big map, GPS), cycles.js (bike share), src/shell.html + src/ui/* 
   to the top in touch mode). Radio and weapon boxes are `.hud-pop` chips opened by
   `hudPop(id)` or hover; in touch mode only by `hudPop` (a tap), since a tapped box keeps
   `:hover` / `:focus-within` long after its pop ends (touch-hud.css).
+- Touch dispatch captions sit below the measured mission card and waypoint (`--touch-dispatch-top`,
+  `measureMissionCard`). Switching touch mode invalidates the old clearance boxes immediately.
 - Story line (`#storyLine`, the film subtitle) vs the mission card: on a short desktop window
   (max-height 620px, wider than 700px) there is no room for both above the bottom row, so
   while a line is up the card stays a strip (`missionCardYields`, game-ui.js; O still opens it)

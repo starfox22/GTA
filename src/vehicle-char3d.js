@@ -161,6 +161,7 @@
         for (const material of set.materials) {
           const free = assetCharFree[material.userData.assetChar.kind];
           if (free.length < 12) free.push(material);
+          else material.dispose();
         }
         m.assetChar = undefined;
       }

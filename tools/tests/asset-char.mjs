@@ -4,7 +4,7 @@
 export const fresh = true;
 
 export default async function (t) {
-  if ((await t.call('assetChar')) === null) return;
+  if ((await t.call('assetChar')) === null) t.skip('Requires WebGL: run with --render');
   await t.call('god', true);
   await t.call('setClock', 12);
   await t.call('teleport', 1700, 760);

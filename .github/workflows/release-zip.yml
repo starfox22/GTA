@@ -1,6 +1,6 @@
 # Builds the playable zip (DeadEndCity/index.html + media/ + README.txt) and attaches it to
 # a GitHub Release, so the game is always downloadable from the repo's Releases page:
-# - every push updates the rolling "latest" release (the newest build of the pushed branch);
+# - only main updates the rolling "latest" release; other branches produce review artifacts;
 # - pushing a tag like v31.0.0 creates a permanent release for that version;
 # - "Run workflow" on the Actions tab rebuilds on demand.
 name: Release zip
@@ -15,7 +15,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: release-zip-${{ github.ref_type }}
+  group: release-zip-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -27,8 +27,15 @@ jobs:
       - name: Build the zip
         run: python3 tools/build.py --zip dist/DeadEndCity.zip
 
+      - name: Upload the playable build for review
+        uses: actions/upload-artifact@v4
+        with:
+          name: DeadEndCity-${{ github.sha }}
+          path: dist/DeadEndCity.zip
+          if-no-files-found: error
+
       - name: Publish the rolling "latest" release
-        if: github.ref_type == 'branch'
+        if: github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

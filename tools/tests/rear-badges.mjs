@@ -2,7 +2,7 @@
 // letter of it laid (no glyph missing from the trim atlas), merged into the trim: a pristine car still draws in 13 calls.
 // On the no-render page (the suite's) carModels() is null and the test only checks that.
 export default async function (t) {
-  if ((await t.call('carModels')) === null) return;
+  if ((await t.call('carModels')) === null) t.skip('Requires WebGL: run with --render');
   await t.call('god', true);
   await t.call('setClock', 12);
   await t.call('teleport', 420, 4380);

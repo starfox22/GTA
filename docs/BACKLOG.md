@@ -171,12 +171,10 @@ here when polishing; delete a line when it is fixed. Newest features first.
   street would remove the rest.
 - Motion blur is the camera's own motion only (depth reprojection, no per-object velocity buffer): other cars
   passing fast are sharp, and anything within 12 m of the camera never smears.
-- The close-quarters crane (CHASE_CRANE) handles a wall behind the player; the camera can still come close to the
-  player's head beside a wall on the right shoulder side (the boom is marched from the shoulder point).
+- The close-quarters crane (CHASE_CRANE) handles a wall behind the player; a tight corner can still bring the
+  camera close to the player's head. Shoulder and boom now both sweep for wall clearance.
 
 ## Car cabins and glass (cars3d-interior.js, crowd3d-driveby.js SEATED OCCUPANTS)
-- A burst pane is still damage3d.js's dark `brokenGlass` frame: the cabin behind it does not show through the hole
-  (a model hook like `m.glass` for burst panes would let it).
 - The drive-by grip is clamped to the arm's reach (driveby-seats.js): from the lowest supercar seats a forward aim
   out of the driver's window comes in toward the shoulder rather than far ahead of it.
 - No badges on bicycles, the tank (armor.js), boats or aircraft.

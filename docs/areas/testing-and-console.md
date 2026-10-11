@@ -76,6 +76,10 @@ node tools/dev.mjs errors | status | reload [--render|--norender] [--keep] [--sh
   `?dev`) and `fresh = true` (page reloaded first; fresh tests run last). Set the state a test needs (cash, wanted level,
   god mode) instead of relying on the test before it. Frame-driven effects (e.g. sportsbook
   settlement) need a `t.wait()` after the call that causes them.
+- `t.skip(reason)` reports **SKIP**, separately from passes; renderer-only tests use it without WebGL. A skip
+  still fails if the page emitted console errors. `--html` switches away from a server showing another build.
+- Smoke and screenshot tours exit nonzero on runtime errors and always close their browser on failure.
+  Smoke reports warnings separately (the normal Three.js deprecation warning is not a failure).
 - **Measuring the simulation** (docs/audit/performance.md, "Simulation side"): `node tools/dev.mjs call
   <method> ... --cpu` adds the page's main-thread CPU time of the call (a busy machine inflates
   wall-clock ms, not this); `--profile N` lists the N heaviest functions of a V8 sampling profile (self

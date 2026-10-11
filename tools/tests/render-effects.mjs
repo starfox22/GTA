@@ -5,8 +5,7 @@ export const fresh = true;
 export default async function (t) {
   const before = await t.call('effectParticles');
   if (before === null) {
-    // The no-render page: no renderer, no pool.
-    return;
+    t.skip('Requires WebGL: run with --render');
   }
   t.finite(before, 'effectParticles');
   await t.call('holdSimulation', true);
