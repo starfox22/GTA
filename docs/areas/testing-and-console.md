@@ -168,3 +168,5 @@ pairs), hold keys through the shot (`hold`), wait, and screenshot unless `"shot"
 
 Rules (named methods only, how to add one) and the per-group method tables:
 `docs/console/README.md`.
+
+`rider-falls` uses the quiet airport building run near (420, 4400). After the Exchange underpass removal, its old city route crossed live traffic and nearby blood could fail the fall-only assertions. Speeds, run times and injury/blood limits are unchanged.

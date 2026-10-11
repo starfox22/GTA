@@ -6,10 +6,10 @@ export const fresh = true;
 export default async function (t) {
   await t.call('holdSimulation', true);
   try {
-    // A quiet block with a building face at the end of a clear run (physics-console rideIntoWall).
-    // 13 s: the wall search reaches 80 m (20 m run + 60 m) and 25 km/h covers it in 11.5 s (the Exchange underpass wall
-    // that stood nearer was removed on October 11).
-    let r = await t.call('rideIntoWall', 'bike', 25, 13, 20, 2500, 2500);
+    // A 45 m run beside the airport. The old Exchange search crosses live traffic after the underpass removal:
+    // unrelated impacts and nearby blood made its injury assertions depend on passers-by.
+    // Keep the same speeds, durations and injury/blood limits, on a clear run into a real building face.
+    let r = await t.call('rideIntoWall', 'bike', 25, 13, 20, 420, 4400);
     t.assert(!r.error, 'a wall with a run-up: ' + JSON.stringify(r).slice(0, 160));
     let throw_ = r.throws.at(-1);
     t.assert(throw_?.cause === 'crash', `thrown at 25 km/h: ${JSON.stringify(throw_)}`);
@@ -18,7 +18,7 @@ export default async function (t) {
     t.assert(r.bloodNear === 0, `no blood from a spill: ${r.bloodNear}`);
     const slow = r.hp;
 
-    r = await t.call('rideIntoWall', 'bike', 45, 10, 20, 2500, 2500);
+    r = await t.call('rideIntoWall', 'bike', 45, 10, 20, 420, 4400);
     throw_ = r.throws.at(-1);
     t.assert(!r.dead && r.hp > 60 && r.hp < 95, `45 km/h into a wall hurts, not badly: hp ${r.hp}`);
     t.assert(throw_.strikeKmh > 25 && !throw_.knockedOut, `struck the wall, not out cold: ${JSON.stringify(throw_)}`);
@@ -27,7 +27,7 @@ export default async function (t) {
     t.note(`25 km/h: hp ${slow}; 45 km/h: hp ${r.hp} (into the wall at ${throw_.strikeKmh} km/h)`);
 
     // Fast into the wall: the body into it is fatal (RIDER_STRIKE_LETHAL), and it pools.
-    r = await t.call('rideIntoWall', 'bike', 110, 5, 20, 2500, 2500);
+    r = await t.call('rideIntoWall', 'bike', 110, 5, 20, 420, 4400);
     throw_ = r.throws.at(-1);
     t.assert(r.dead, `110 km/h into a wall kills: hp ${r.hp} ${JSON.stringify(throw_)}`);
     t.assert(r.poolsNear >= 1, `the dead rider pools: ${r.poolsNear}`);

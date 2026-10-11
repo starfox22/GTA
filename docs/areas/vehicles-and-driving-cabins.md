@@ -94,3 +94,5 @@ vehicles-and-driving-models.md.
   a `lift` past any trim panel under it (letters stand 1.2 cm proud by default; patches lie 1-2 cm off the paint).
   `carModels()` lists each model's `badge` {text, sub, letters}; tools/tests/rear-badges.mjs checks every letter is
   laid and the draw count.
+
+The foot-clearance check compares the captured ankle bones with the posed cabin floor (`floorWorldY`), including terrain and suspension; absolute height above sea level is not floor clearance. Draw once before advancing the entry animation, then assert the seated occupant is actually drawn.
