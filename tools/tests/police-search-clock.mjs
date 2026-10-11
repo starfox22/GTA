@@ -18,7 +18,9 @@ export default async function (t) {
   t.assert(s.clock === 'holding' && !s.shown, 'units on their way: the clock should wait, hidden: ' + JSON.stringify(s));
   t.assert(s.remaining === 5, 'one star should give 5 s and not count while holding: ' + JSON.stringify(s));
   // A unit reaches the scene (350 units past it, facing away): the search starts, the player is inside its area.
-  const unit = await t.call('respondingUnit', 1152, 1950, Math.PI / 2, 0);
+  // Traffic streams back in during the wait and can stand on the spot: try a few spots down the same street.
+  let unit = null;
+  for (const y of [1950, 1990, 2030, 1910, 2070]) if (!unit) unit = await t.call('respondingUnit', 1152, y, Math.PI / 2, 0);
   t.assert(unit, 'no room for the cruiser');
   await t.wait(1);
   s = await search();
