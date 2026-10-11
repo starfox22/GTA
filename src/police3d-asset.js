@@ -14,13 +14,20 @@
        * leave the bar off and get the dash, grille and rear-deck lights. Wheels, lamps, glass and the cabin are the
        * model's; the rear badges are the model's own.
        */
+      // Which downloaded model draws each police body (the header's model key): the Crown Vic, the Charger, and the
+      // patrol and agents' SUVs on the Suburban. A body with no model in the build stays procedural (the SWAT Bearcat).
+      const POLICE_ASSET_TYPES = { crownvic: 'police', charger: 'police_charger', utility: 'police_suv', tahoe: 'police_suv' };
+      function policeAssetType(body) {
+        const type = POLICE_ASSET_TYPES[body];
+        return type && vehicleAssetModel(type) ? type : null;
+      }
       const policeAssetKits = new Map();
       function policeAssetKit(look, body, l, w) {
         const marked = look.equipment === 'marked',
           key = [body.name, look.equipment, l, w].join(':');
         if (policeAssetKits.has(key)) return policeAssetKits.get(key);
         const data = vaData(),
-          model = data.header.models.police,
+          model = data.header.models[policeAssetType(body.name)],
           M = UNITS_PER_METRE / POLICE_DRAW_SCALE,
           k = l / model.dims[0],
           gm = model.glass,
@@ -55,7 +62,7 @@
           outer = trimParts.slice(0, -1).reduce((n, part) => n + (model.parts[part]?.triangles || 0), 0) * 3,
           kit = {
             asset: model,
-            type: 'police',
+            type: model.type,
             l,
             k,
             glass: g,

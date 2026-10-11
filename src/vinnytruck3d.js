@@ -39,7 +39,10 @@
         VT_LIVERY = { x0: 0.9, x1: 4.5, y0: 0.75, y1: 1.85, size: 1024, band: 320, roof: [660, 1000], roofX: [0.96, 2.4] },
         VT_CLEAR_UV = [1 - 3 / 1024, 3 / 1024],
         VT_WHEEL = { r: 0.51, front: 3.55, rear: -1.9, frontZ: 1.03, dualZ: 0.89, dualGap: 0.145, width: 0.27 };
+      // Where the deck starts behind the downloaded cab (metres ahead of the middle; the procedural truck's is 0.72).
+      const VT_ASSET_DECK_FRONT = 2.82;
       let vinnyKitCache = null,
+        vinnyDeckKitCache = null,
         vinnyLiveryTexture = null,
         vinnyShared = null;
       // ---- Metre helpers over the civilian merging kit ----
@@ -204,8 +207,9 @@
         return [clamp(u, inset, 1 - inset), 1 - (L.roof[1] - v * (L.roof[1] - L.roof[0])) / L.size];
       }
       // ---- The kit ----
-      function vinnyKit() {
-        if (vinnyKitCache) return vinnyKitCache;
+      // `deck`: only the flatbed behind a downloaded cab (its deck, rack, rails and rear end; vinnyDeckKitCache).
+      function vinnyKit(deck = false) {
+        if (deck ? vinnyDeckKitCache : vinnyKitCache) return deck ? vinnyDeckKitCache : vinnyKitCache;
         const S = civShapeKit(),
           paint = civSet(),
           trim = civSet(),
@@ -222,164 +226,171 @@
           amber = { color: '#ffb03a', finish: 'lens' },
           red = { color: '#e0281e', finish: 'lens' },
           sides = [-1, 1];
-        // CAB: the lower shell (doors carry the livery), the greenhouse, roof and visor.
-        vtBar(paint, [2.8, 1.375, 0], [0.96, 1.375, 0], 0.85, 2.26, 0.07, plain);
-        // The door skins carry the lettering and the pinstripe (a hair proud of the flat side).
-        for (const s of sides) vtBox(paint, 1.03, 2.73, 1.02, 1.735, s * 1.13, s * 1.1335, { uvOf: vinnySideUv(s), finish: 'paintLike' });
-        // Door shut lines, handles and the step well under each door.
-        for (const s of sides) {
-          const z = s * 1.132;
-          for (const x of [2.53, 1.36]) vtBox(trim, x - 0.006, x + 0.006, 1.0, 1.79, z - 0.004, z + 0.004, black);
-          vtBox(trim, 1.36, 2.53, 0.995, 1.007, z - 0.004, z + 0.004, black);
-          vtBox(trim, 1.5, 1.66, 1.62, 1.66, z + s * 0.012, z + s * 0.03, bright);
-          vtBox(trim, 1.44, 1.47, 1.5, 1.53, z + s * 0.004, z + s * 0.012, black);
-          // The cab's floor sill and the black step well.
-          vtBox(trim, 1.02, 2.74, 0.7, 0.95, s * 0.98, s * 1.1, black);
-        }
-        // Greenhouse: A-pillars, the windscreen's centre bar and gaskets, the B pillars and rear corners.
-        const screenBase = 1.8,
-          screenTop = 2.61,
-          baseX = 2.64,
-          topX = 2.4;
-        for (const s of sides) {
-          vtBar(paint, [baseX, screenBase, s * 1.08], [topX, screenTop, s * 1.07], 0.1, 0.1, 0.03, plain, [0, 0, 1]);
-          vtBar(paint, [1.37, screenBase, s * 1.09], [1.37, screenTop + 0.02, s * 1.09], 0.1, 0.1, 0.03, plain, [1, 0, 0]);
-          vtBox(paint, 0.96, 1.33, screenBase, screenTop + 0.02, s * 1.04, s * 1.13, plain);
-          // Side glass from the A-pillar back to the B pillar, the vent window split.
-          vtPane(glass, [[baseX - 0.06, screenBase + 0.04], [topX - 0.03, screenTop - 0.03], [1.42, screenTop - 0.03], [1.42, screenBase + 0.04]], s * 1.105, 0.02, {});
-          vtBeam(trim, S.box, [2.3, screenBase + 0.04, s * 1.12], [2.3, screenTop - 0.04, s * 1.12], 0.025, 0.02, black, [0, 0, 1]);
-          vtBox(trim, 1.42, baseX - 0.05, screenBase + 0.02, screenBase + 0.045, s * 1.1, s * 1.125, rubber);
-        }
-        // Two-piece flat windscreen, raked, a black gasket round each half.
-        for (const s of sides)
-          vtBeam(glass, S.box, [baseX + 0.012, screenBase + 0.03, s * 0.54], [topX + 0.012, screenTop - 0.02, s * 0.54], 1.02, 0.02, {}, [0, 0, 1]);
-        vtBeam(trim, S.box, [baseX + 0.03, screenBase, 0], [topX + 0.03, screenTop, 0], 0.05, 0.03, rubber, [0, 0, 1]);
-        vtBar(trim, [baseX + 0.03, screenBase + 0.01, -1.06], [baseX + 0.03, screenBase + 0.01, 1.06], 0.035, 0.05, 0.01, rubber);
-        vtBar(trim, [topX + 0.03, screenTop - 0.01, -1.06], [topX + 0.03, screenTop - 0.01, 1.06], 0.035, 0.05, 0.01, rubber);
-        // Cowl panel under the windscreen, with the wiper pivots.
-        vtBox(trim, 2.66, 2.78, 1.8, 1.815, -0.9, 0.9, { color: '#202225', finish: 'satin', cell: 'louvre' });
-        // The roof (the fleet number lives in its livery), rain gutters and the sun visor.
-        vtBar(paint, [2.44, 2.68, 0], [0.96, 2.68, 0], 0.13, 2.26, 0.07, plain);
-        vtBox(paint, 1.03, 2.37, 2.745, 2.7485, -1.06, 1.06, { uvOf: vinnyRoofUv, finish: 'paintLike' });
-        for (const s of sides) vtBar(trim, [2.4, 2.63, s * 1.135], [0.98, 2.63, s * 1.135], 0.025, 0.025, 0.01, black);
-        vtBeam(paint, S.box, [2.44, 2.735, 0], [2.7, 2.71, 0], 2.08, 0.035, plain, [0, 0, 1]);
-        vtBox(trim, 2.42, 2.46, 2.66, 2.72, -1.04, 1.04, black);
-        // Five amber cab markers along the visor's edge (the three in the middle a cluster).
-        for (const z of [-0.92, -0.14, 0, 0.14, 0.92]) vtBox(markers, 2.6, 2.67, 2.715, 2.765, z - 0.05, z + 0.05, amber);
-        // Air horns on the roof, a CB whip and its spring on the left mirror arm.
-        for (const [z, len] of [[-0.42, 0.42], [-0.26, 0.3]]) {
-          // (The cone's axis is its y: turned to point the bell forward.)
-          civAdd(trim, S.cone, (1.95 + len / 2) * VT, 2.81 * VT, z * VT, 0.045 * VT, len * VT, 0.045 * VT, bright, 0, 0, Math.PI / 2);
-          vtBox(trim, 1.9, 1.98, 2.745, 2.8, z - 0.02, z + 0.02, black);
-        }
-        vtBeam(trim, S.box, [2.34, 2.34, -1.2], [2.28, 3.55, -1.2], 0.012, 0.012, black, [1, 0, 0]);
-        vtCylinder(trim, S.cylinderLow, 2.34, 2.38, -1.2, 0.018, 0.08, 'y', bright);
-        // Back wall with its small rear window.
-        vtBox(paint, 0.93, 0.98, 0.96, 2.62, -1.12, 1.12, plain);
-        vtBox(glass, 0.915, 0.93, 2.02, 2.42, -0.52, 0.52, {});
-        vtBox(trim, 0.92, 0.935, 1.99, 2.45, -0.56, 0.56, rubber);
-        // HOOD between the fenders: sloping gently to the grille, a centre crease and a badge.
-        vtProfile(
-          paint,
-          [[2.78, 1.04], [4.41, 1.04], [4.41, 1.41], [4.27, 1.515], [3.3, 1.585], [2.78, 1.605]],
-          -0.62,
-          0.62,
-          plain,
-          0.05,
-        );
-        // (The profile's bevel grows its outline by 0.04 m: the top runs 1.645 → 1.555.)
-        vtBeam(trim, S.box, [2.84, 1.646, 0], [3.3, 1.628, 0], 0.012, 0.03, bright, [0, 0, 1]);
-        vtBeam(trim, S.box, [3.3, 1.628, 0], [4.22, 1.562, 0], 0.012, 0.03, bright, [0, 0, 1]);
-        for (const s of sides) vtBox(trim, 3.6, 3.92, 1.32, 1.36, s * 0.622, s * 0.632, bright);
-        // Hood hinge line / cowl seam and the side vents.
-        for (const s of sides) vtBox(trim, 3.0, 3.34, 1.36, 1.5, s * 0.621, s * 0.628, { color: '#1b1c1e', finish: 'satin', cell: 'louvre' });
-        // FENDERS: flared, over the front wheels, cut round the arch; amber side markers.
-        const W = VT_WHEEL,
-          archR = 0.66,
-          archY = 0.8,
-          dx = Math.sqrt(archR * archR - (archY - W.r) * (archY - W.r)),
-          a0 = Math.atan2(archY - W.r, dx);
-        for (const s of sides) {
+        // The cab and its fittings: the procedural truck only (the downloaded cab stands in with `deck`).
+        if (!deck) {
+          // CAB: the lower shell (doors carry the livery), the greenhouse, roof and visor.
+          vtBar(paint, [2.8, 1.375, 0], [0.96, 1.375, 0], 0.85, 2.26, 0.07, plain);
+          // The door skins carry the lettering and the pinstripe (a hair proud of the flat side).
+          for (const s of sides) vtBox(paint, 1.03, 2.73, 1.02, 1.735, s * 1.13, s * 1.1335, { uvOf: vinnySideUv(s), finish: 'paintLike' });
+          // Door shut lines, handles and the step well under each door.
+          for (const s of sides) {
+            const z = s * 1.132;
+            for (const x of [2.53, 1.36]) vtBox(trim, x - 0.006, x + 0.006, 1.0, 1.79, z - 0.004, z + 0.004, black);
+            vtBox(trim, 1.36, 2.53, 0.995, 1.007, z - 0.004, z + 0.004, black);
+            vtBox(trim, 1.5, 1.66, 1.62, 1.66, z + s * 0.012, z + s * 0.03, bright);
+            vtBox(trim, 1.44, 1.47, 1.5, 1.53, z + s * 0.004, z + s * 0.012, black);
+            // The cab's floor sill and the black step well.
+            vtBox(trim, 1.02, 2.74, 0.7, 0.95, s * 0.98, s * 1.1, black);
+          }
+          // Greenhouse: A-pillars, the windscreen's centre bar and gaskets, the B pillars and rear corners.
+          const screenBase = 1.8,
+            screenTop = 2.61,
+            baseX = 2.64,
+            topX = 2.4;
+          for (const s of sides) {
+            vtBar(paint, [baseX, screenBase, s * 1.08], [topX, screenTop, s * 1.07], 0.1, 0.1, 0.03, plain, [0, 0, 1]);
+            vtBar(paint, [1.37, screenBase, s * 1.09], [1.37, screenTop + 0.02, s * 1.09], 0.1, 0.1, 0.03, plain, [1, 0, 0]);
+            vtBox(paint, 0.96, 1.33, screenBase, screenTop + 0.02, s * 1.04, s * 1.13, plain);
+            // Side glass from the A-pillar back to the B pillar, the vent window split.
+            vtPane(glass, [[baseX - 0.06, screenBase + 0.04], [topX - 0.03, screenTop - 0.03], [1.42, screenTop - 0.03], [1.42, screenBase + 0.04]], s * 1.105, 0.02, {});
+            vtBeam(trim, S.box, [2.3, screenBase + 0.04, s * 1.12], [2.3, screenTop - 0.04, s * 1.12], 0.025, 0.02, black, [0, 0, 1]);
+            vtBox(trim, 1.42, baseX - 0.05, screenBase + 0.02, screenBase + 0.045, s * 1.1, s * 1.125, rubber);
+          }
+          // Two-piece flat windscreen, raked, a black gasket round each half.
+          for (const s of sides)
+            vtBeam(glass, S.box, [baseX + 0.012, screenBase + 0.03, s * 0.54], [topX + 0.012, screenTop - 0.02, s * 0.54], 1.02, 0.02, {}, [0, 0, 1]);
+          vtBeam(trim, S.box, [baseX + 0.03, screenBase, 0], [topX + 0.03, screenTop, 0], 0.05, 0.03, rubber, [0, 0, 1]);
+          vtBar(trim, [baseX + 0.03, screenBase + 0.01, -1.06], [baseX + 0.03, screenBase + 0.01, 1.06], 0.035, 0.05, 0.01, rubber);
+          vtBar(trim, [topX + 0.03, screenTop - 0.01, -1.06], [topX + 0.03, screenTop - 0.01, 1.06], 0.035, 0.05, 0.01, rubber);
+          // Cowl panel under the windscreen, with the wiper pivots.
+          vtBox(trim, 2.66, 2.78, 1.8, 1.815, -0.9, 0.9, { color: '#202225', finish: 'satin', cell: 'louvre' });
+          // The roof (the fleet number lives in its livery), rain gutters and the sun visor.
+          vtBar(paint, [2.44, 2.68, 0], [0.96, 2.68, 0], 0.13, 2.26, 0.07, plain);
+          vtBox(paint, 1.03, 2.37, 2.745, 2.7485, -1.06, 1.06, { uvOf: vinnyRoofUv, finish: 'paintLike' });
+          for (const s of sides) vtBar(trim, [2.4, 2.63, s * 1.135], [0.98, 2.63, s * 1.135], 0.025, 0.025, 0.01, black);
+          vtBeam(paint, S.box, [2.44, 2.735, 0], [2.7, 2.71, 0], 2.08, 0.035, plain, [0, 0, 1]);
+          vtBox(trim, 2.42, 2.46, 2.66, 2.72, -1.04, 1.04, black);
+          // Five amber cab markers along the visor's edge (the three in the middle a cluster).
+          for (const z of [-0.92, -0.14, 0, 0.14, 0.92]) vtBox(markers, 2.6, 2.67, 2.715, 2.765, z - 0.05, z + 0.05, amber);
+          // Air horns on the roof, a CB whip and its spring on the left mirror arm.
+          for (const [z, len] of [[-0.42, 0.42], [-0.26, 0.3]]) {
+            // (The cone's axis is its y: turned to point the bell forward.)
+            civAdd(trim, S.cone, (1.95 + len / 2) * VT, 2.81 * VT, z * VT, 0.045 * VT, len * VT, 0.045 * VT, bright, 0, 0, Math.PI / 2);
+            vtBox(trim, 1.9, 1.98, 2.745, 2.8, z - 0.02, z + 0.02, black);
+          }
+          vtBeam(trim, S.box, [2.34, 2.34, -1.2], [2.28, 3.55, -1.2], 0.012, 0.012, black, [1, 0, 0]);
+          vtCylinder(trim, S.cylinderLow, 2.34, 2.38, -1.2, 0.018, 0.08, 'y', bright);
+          // Back wall with its small rear window.
+          vtBox(paint, 0.93, 0.98, 0.96, 2.62, -1.12, 1.12, plain);
+          vtBox(glass, 0.915, 0.93, 2.02, 2.42, -0.52, 0.52, {});
+          vtBox(trim, 0.92, 0.935, 1.99, 2.45, -0.56, 0.56, rubber);
+          // HOOD between the fenders: sloping gently to the grille, a centre crease and a badge.
           vtProfile(
             paint,
-            [[2.78, 0.8], [W.front - dx, 0.8]],
-            s * 0.6,
-            s * 1.2,
+            [[2.78, 1.04], [4.41, 1.04], [4.41, 1.41], [4.27, 1.515], [3.3, 1.585], [2.78, 1.605]],
+            -0.62,
+            0.62,
             plain,
-            0.035,
-            (shape) => {
-              shape.absarc(W.front * VT, W.r * VT, archR * VT, Math.PI - a0, a0, true);
-              shape.lineTo(4.4 * VT, 0.8 * VT);
-              shape.lineTo(4.4 * VT, 1.18 * VT);
-              shape.quadraticCurveTo(4.37 * VT, 1.285 * VT, 4.1 * VT, 1.3 * VT);
-              shape.lineTo(3.05 * VT, 1.29 * VT);
-              shape.quadraticCurveTo(2.84 * VT, 1.27 * VT, 2.78 * VT, 1.18 * VT);
-            },
+            0.05,
           );
-          // The arch's black rubber lip.
-          for (let k = 0; k < 9; k++) {
-            const a = Math.PI - a0 - ((Math.PI - 2 * a0) * (k + 0.5)) / 9,
-              b = Math.PI - a0 - ((Math.PI - 2 * a0) * (k + 1.5)) / 9;
-            if (k === 8) break;
-            vtBeam(trim, S.box, [W.front + Math.cos(a) * (archR + 0.015), W.r + Math.sin(a) * (archR + 0.015), s * 1.19], [W.front + Math.cos(b) * (archR + 0.015), W.r + Math.sin(b) * (archR + 0.015), s * 1.19], 0.05, 0.04, rubber, [0, 0, 1]);
+          // (The profile's bevel grows its outline by 0.04 m: the top runs 1.645 → 1.555.)
+          vtBeam(trim, S.box, [2.84, 1.646, 0], [3.3, 1.628, 0], 0.012, 0.03, bright, [0, 0, 1]);
+          vtBeam(trim, S.box, [3.3, 1.628, 0], [4.22, 1.562, 0], 0.012, 0.03, bright, [0, 0, 1]);
+          for (const s of sides) vtBox(trim, 3.6, 3.92, 1.32, 1.36, s * 0.622, s * 0.632, bright);
+          // Hood hinge line / cowl seam and the side vents.
+          for (const s of sides) vtBox(trim, 3.0, 3.34, 1.36, 1.5, s * 0.621, s * 0.628, { color: '#1b1c1e', finish: 'satin', cell: 'louvre' });
+          // FENDERS: flared, over the front wheels, cut round the arch; amber side markers.
+          const W = VT_WHEEL,
+            archR = 0.66,
+            archY = 0.8,
+            dx = Math.sqrt(archR * archR - (archY - W.r) * (archY - W.r)),
+            a0 = Math.atan2(archY - W.r, dx);
+          for (const s of sides) {
+            vtProfile(
+              paint,
+              [[2.78, 0.8], [W.front - dx, 0.8]],
+              s * 0.6,
+              s * 1.2,
+              plain,
+              0.035,
+              (shape) => {
+                shape.absarc(W.front * VT, W.r * VT, archR * VT, Math.PI - a0, a0, true);
+                shape.lineTo(4.4 * VT, 0.8 * VT);
+                shape.lineTo(4.4 * VT, 1.18 * VT);
+                shape.quadraticCurveTo(4.37 * VT, 1.285 * VT, 4.1 * VT, 1.3 * VT);
+                shape.lineTo(3.05 * VT, 1.29 * VT);
+                shape.quadraticCurveTo(2.84 * VT, 1.27 * VT, 2.78 * VT, 1.18 * VT);
+              },
+            );
+            // The arch's black rubber lip.
+            for (let k = 0; k < 9; k++) {
+              const a = Math.PI - a0 - ((Math.PI - 2 * a0) * (k + 0.5)) / 9,
+                b = Math.PI - a0 - ((Math.PI - 2 * a0) * (k + 1.5)) / 9;
+              if (k === 8) break;
+              vtBeam(trim, S.box, [W.front + Math.cos(a) * (archR + 0.015), W.r + Math.sin(a) * (archR + 0.015), s * 1.19], [W.front + Math.cos(b) * (archR + 0.015), W.r + Math.sin(b) * (archR + 0.015), s * 1.19], 0.05, 0.04, rubber, [0, 0, 1]);
+            }
+            vtBox(indicators, 4.2, 4.32, 1.07, 1.12, s * 1.2, s * 1.215, amber);
           }
-          vtBox(indicators, 4.2, 4.32, 1.07, 1.12, s * 1.2, s * 1.215, amber);
+          // GRILLE: chrome surround, horizontal bars over black, the ATLAS badge.
+          vtBox(trim, 4.45, 4.465, 0.84, 1.44, -0.5, 0.5, { color: '#0f1011', finish: 'satin', cell: 'mesh' });
+          for (const [y0, y1, z0, z1] of [[1.41, 1.47, -0.53, 0.53], [0.8, 0.86, -0.53, 0.53], [0.8, 1.47, -0.53, -0.47], [0.8, 1.47, 0.47, 0.53]])
+            vtBox(trim, 4.45, 4.49, y0, y1, z0, z1, bright);
+          for (let k = 0; k < 7; k++) {
+            const y = 0.9 + k * 0.075;
+            vtBar(trim, [4.472, y, -0.47], [4.472, y, 0.47], 0.025, 0.02, 0.008, bright);
+          }
+          vtBox(trim, 4.485, 4.5, 1.3, 1.37, -0.14, 0.14, { color: '#c9a646', finish: 'chrome', cell: 'badge' });
+          // Headlamp bezels (the lenses are the lamp meshes) and the amber indicators under them.
+          for (const s of sides) {
+            vtBox(trim, 4.428, 4.442, 0.9, 1.14, s * 0.66, s * 1.14, bright);
+            vtBox(indicators, 4.43, 4.455, 0.83, 0.88, s * 0.9, s * 1.12, amber);
+          }
+          // BUMPER: chrome, rounded, the plate and two tow hooks.
+          vtBar(trim, [4.6, 0.6, -1.22], [4.6, 0.6, 1.22], 0.3, 0.22, 0.05, bright);
+          vtBox(trim, 4.705, 4.72, 0.51, 0.66, -0.16, 0.16, { color: '#f2f2ec', finish: 'plastic', cell: 'plate' });
+          for (const s of sides) vtBox(trim, 4.62, 4.74, 0.42, 0.48, s * 0.5, s * 0.58, { color: '#8c1c1c', finish: 'gloss' });
+          vtBox(trim, 4.45, 4.52, 0.5, 0.8, -0.9, 0.9, black);
+          // MIRRORS: West Coast heads on tube arms from the doors, a round spot mirror under each.
+          for (const s of sides) {
+            for (const y of [1.88, 2.3]) vtBar(trim, [2.46, y, s * 1.11], [2.33, y, s * 1.32], 0.022, 0.022, 0.01, bright);
+            vtBar(trim, [2.46, 1.95, s * 1.11], [2.33, 2.26, s * 1.32], 0.018, 0.018, 0.008, bright);
+            vtBox(trim, 2.3, 2.38, 1.8, 2.38, s * 1.29, s * 1.4, black);
+            vtBox(glass, 2.285, 2.3, 1.83, 2.35, s * 1.3, s * 1.39, {});
+            vtCylinder(trim, S.cylinderLow, 2.34, 1.68, s * 1.33, 0.085, 0.05, 'x', black);
+          }
+          // FUEL TANK (left, the driver's step) and BATTERY BOX (right, a step on its lid).
+          vtCylinder(trim, S.cylinder, 1.75, 0.68, -0.96, 0.26, 1.34, 'x', alloy);
+          for (const x of [1.3, 2.2]) vtCylinder(trim, S.cylinderLow, x, 0.68, -0.96, 0.272, 0.06, 'x', black);
+          vtCylinder(trim, S.cylinderLow, 1.95, 0.95, -0.98, 0.06, 0.04, 'y', bright);
+          vtBox(trim, 1.4, 2.12, 0.94, 0.965, -1.2, -0.88, tread);
+          vtBox(trim, 1.15, 2.3, 0.45, 0.93, 0.82, 1.17, black);
+          vtBox(trim, 1.15, 2.3, 0.93, 0.955, 0.82, 1.19, tread);
+          vtBox(trim, 1.45, 2.05, 0.5, 0.52, 0.82, 1.2, tread);
+          // EXHAUST STACK behind the cab (right), perforated heat shield, curved tip.
+          vtCylinder(trim, S.cylinder, 0.8, 2.05, 0.94, 0.065, 2.2, 'y', bright);
+          vtCylinder(trim, S.tube, 0.8, 2.3, 0.94, 0.085, 0.9, 'y', { color: '#c5c9cc', finish: 'alloy', cell: 'perforated' });
+          civAdd(trim, S.cylinder, 0.75 * VT, 3.19 * VT, 0.94 * VT, 0.065 * VT, 0.172 * VT, 0.065 * VT, bright, 0, 0, 0.62);
+          for (const y of [1.55, 2.85]) vtBox(trim, 0.84, 0.95, y - 0.02, y + 0.02, 0.9, 0.98, black);
         }
-        // GRILLE: chrome surround, horizontal bars over black, the ATLAS badge.
-        vtBox(trim, 4.45, 4.465, 0.84, 1.44, -0.5, 0.5, { color: '#0f1011', finish: 'satin', cell: 'mesh' });
-        for (const [y0, y1, z0, z1] of [[1.41, 1.47, -0.53, 0.53], [0.8, 0.86, -0.53, 0.53], [0.8, 1.47, -0.53, -0.47], [0.8, 1.47, 0.47, 0.53]])
-          vtBox(trim, 4.45, 4.49, y0, y1, z0, z1, bright);
-        for (let k = 0; k < 7; k++) {
-          const y = 0.9 + k * 0.075;
-          vtBar(trim, [4.472, y, -0.47], [4.472, y, 0.47], 0.025, 0.02, 0.008, bright);
-        }
-        vtBox(trim, 4.485, 4.5, 1.3, 1.37, -0.14, 0.14, { color: '#c9a646', finish: 'chrome', cell: 'badge' });
-        // Headlamp bezels (the lenses are the lamp meshes) and the amber indicators under them.
-        for (const s of sides) {
-          vtBox(trim, 4.428, 4.442, 0.9, 1.14, s * 0.66, s * 1.14, bright);
-          vtBox(indicators, 4.43, 4.455, 0.83, 0.88, s * 0.9, s * 1.12, amber);
-        }
-        // BUMPER: chrome, rounded, the plate and two tow hooks.
-        vtBar(trim, [4.6, 0.6, -1.22], [4.6, 0.6, 1.22], 0.3, 0.22, 0.05, bright);
-        vtBox(trim, 4.705, 4.72, 0.51, 0.66, -0.16, 0.16, { color: '#f2f2ec', finish: 'plastic', cell: 'plate' });
-        for (const s of sides) vtBox(trim, 4.62, 4.74, 0.42, 0.48, s * 0.5, s * 0.58, { color: '#8c1c1c', finish: 'gloss' });
-        vtBox(trim, 4.45, 4.52, 0.5, 0.8, -0.9, 0.9, black);
-        // MIRRORS: West Coast heads on tube arms from the doors, a round spot mirror under each.
-        for (const s of sides) {
-          for (const y of [1.88, 2.3]) vtBar(trim, [2.46, y, s * 1.11], [2.33, y, s * 1.32], 0.022, 0.022, 0.01, bright);
-          vtBar(trim, [2.46, 1.95, s * 1.11], [2.33, 2.26, s * 1.32], 0.018, 0.018, 0.008, bright);
-          vtBox(trim, 2.3, 2.38, 1.8, 2.38, s * 1.29, s * 1.4, black);
-          vtBox(glass, 2.285, 2.3, 1.83, 2.35, s * 1.3, s * 1.39, {});
-          vtCylinder(trim, S.cylinderLow, 2.34, 1.68, s * 1.33, 0.085, 0.05, 'x', black);
-        }
-        // FUEL TANK (left, the driver's step) and BATTERY BOX (right, a step on its lid).
-        vtCylinder(trim, S.cylinder, 1.75, 0.68, -0.96, 0.26, 1.34, 'x', alloy);
-        for (const x of [1.3, 2.2]) vtCylinder(trim, S.cylinderLow, x, 0.68, -0.96, 0.272, 0.06, 'x', black);
-        vtCylinder(trim, S.cylinderLow, 1.95, 0.95, -0.98, 0.06, 0.04, 'y', bright);
-        vtBox(trim, 1.4, 2.12, 0.94, 0.965, -1.2, -0.88, tread);
-        vtBox(trim, 1.15, 2.3, 0.45, 0.93, 0.82, 1.17, black);
-        vtBox(trim, 1.15, 2.3, 0.93, 0.955, 0.82, 1.19, tread);
-        vtBox(trim, 1.45, 2.05, 0.5, 0.52, 0.82, 1.2, tread);
-        // EXHAUST STACK behind the cab (right), perforated heat shield, curved tip.
-        vtCylinder(trim, S.cylinder, 0.8, 2.05, 0.94, 0.065, 2.2, 'y', bright);
-        vtCylinder(trim, S.tube, 0.8, 2.3, 0.94, 0.085, 0.9, 'y', { color: '#c5c9cc', finish: 'alloy', cell: 'perforated' });
-        civAdd(trim, S.cylinder, 0.75 * VT, 3.19 * VT, 0.94 * VT, 0.065 * VT, 0.172 * VT, 0.065 * VT, bright, 0, 0, 0.62);
-        for (const y of [1.55, 2.85]) vtBox(trim, 0.84, 0.95, y - 0.02, y + 0.02, 0.9, 0.98, black);
         // CHASSIS: rails, crossmembers, front axle and springs, driveshaft, rear axle and diff, air tanks.
+        // (Under the downloaded cab only the rails behind it, which carry the deck: its own chassis, axles and wheels.)
+        const railFront = deck ? VT_ASSET_DECK_FRONT : 4.3;
         for (const s of sides) {
-          vtBox(trim, -4.6, 4.3, 0.72, 0.98, s * 0.4, s * 0.48, frame);
-          vtBox(trim, 3.0, 4.1, 0.58, 0.66, s * 0.38, s * 0.5, frame);
-          vtBox(trim, -2.7, -1.1, 0.6, 0.7, s * 0.38, s * 0.5, frame);
+          vtBox(trim, -4.6, railFront, 0.72, 0.98, s * 0.4, s * 0.48, frame);
+          if (!deck) vtBox(trim, 3.0, 4.1, 0.58, 0.66, s * 0.38, s * 0.5, frame);
+          if (!deck) vtBox(trim, -2.7, -1.1, 0.6, 0.7, s * 0.38, s * 0.5, frame);
         }
-        for (const x of [4.25, 2.5, 0.2, -1.4, -3.2, -4.5]) vtBox(trim, x - 0.05, x + 0.05, 0.76, 0.94, -0.4, 0.4, frame);
-        vtBox(trim, W.front - 0.06, W.front + 0.06, 0.44, 0.56, -0.98, 0.98, frame);
-        vtCylinder(trim, S.cylinderLow, 0.2, 0.62, 0, 0.05, 3.7, 'x', frame);
-        vtCylinder(trim, S.cylinderLow, W.rear, W.r, 0, 0.09, 1.52, 'z', frame);
-        civAdd(trim, S.sphere, W.rear * VT, W.r * VT, 0.08 * VT, 0.24 * VT, 0.22 * VT, 0.2 * VT, frame);
+        for (const x of [4.25, 2.5, 0.2, -1.4, -3.2, -4.5]) if (x < railFront) vtBox(trim, x - 0.05, x + 0.05, 0.76, 0.94, -0.4, 0.4, frame);
+        if (!deck) {
+          vtBox(trim, W.front - 0.06, W.front + 0.06, 0.44, 0.56, -0.98, 0.98, frame);
+          vtCylinder(trim, S.cylinderLow, 0.2, 0.62, 0, 0.05, 3.7, 'x', frame);
+          vtCylinder(trim, S.cylinderLow, W.rear, W.r, 0, 0.09, 1.52, 'z', frame);
+          civAdd(trim, S.sphere, W.rear * VT, W.r * VT, 0.08 * VT, 0.24 * VT, 0.22 * VT, 0.2 * VT, frame);
+        }
         for (const z of [0.66, -0.66]) vtCylinder(trim, S.cylinderLow, -0.3, 0.74, z, 0.13, 1.05, 'x', { color: '#2a2c2f', finish: 'satin' });
         // DECK: hardwood planks over steel crossmembers, C-channel side rails with stake pockets,
         // rub rail and rope hooks; red and white conspicuity tape along the rails.
-        const deckFront = 0.72,
+        const deckFront = deck ? VT_ASSET_DECK_FRONT : 0.72,
           deckRear = -4.74,
           deckTop = VINNY_CARGO.deck;
         const plankColors = ['#7a5a3b', '#6d4f33', '#846341', '#735538', '#7c6a55', '#6a4c31', '#80603f', '#71533a', '#7a5d40', '#68513b', '#7f5f3d'];
@@ -405,7 +416,7 @@
           vtBox(markers, deckFront - 0.24, deckFront - 0.14, 1.14, 1.2, s * 1.228, s * 1.244, amber);
         }
         // HEADACHE RACK: square-tube frame, black mesh panel, two work lamps facing aft.
-        const rackX = 0.66;
+        const rackX = deckFront - 0.06;
         for (const z of [-1.16, 0, 1.16]) vtBox(trim, rackX - 0.04, rackX + 0.04, deckTop, 2.88, z - 0.04, z + 0.04, frame);
         for (const y of [2.86, 2.08]) vtBox(trim, rackX - 0.04, rackX + 0.04, y - 0.035, y + 0.035, -1.2, 1.2, frame);
         vtBox(trim, rackX - 0.01, rackX + 0.01, deckTop + 0.04, 2.82, -1.12, 1.12, { color: '#141517', finish: 'satin', cell: 'mesh' });
@@ -446,9 +457,9 @@
         for (const s of sides) {
           const head = civSet(),
             tail = civSet();
-          for (const z of [0.8, 1.02]) vtBox(head, 4.435, 4.452, 0.93, 1.11, s * (z - 0.095), s * (z + 0.095), { color: '#f7f4ea', finish: 'lens' });
+          if (!deck) for (const z of [0.8, 1.02]) vtBox(head, 4.435, 4.452, 0.93, 1.11, s * (z - 0.095), s * (z + 0.095), { color: '#f7f4ea', finish: 'lens' });
           vtBox(tail, deckRear - 0.014, deckRear, 0.98, 1.1, s * 0.84, s * 1.1, { color: '#e3261c', finish: 'lens' });
-          lamps['head' + (s < 0 ? 'Left' : 'Right')] = civGeometry(head);
+          lamps['head' + (s < 0 ? 'Left' : 'Right')] = deck ? null : civGeometry(head);
           lamps['tail' + (s < 0 ? 'Left' : 'Right')] = civGeometry(tail);
         }
         // WHEELS: a tyre, a dual pair, and steel Budd discs (front with a chrome cap, rear dished out).
@@ -482,10 +493,10 @@
           if (kind === 'dual') disc(R * 0.95, 0.03, -side * (W2.dualGap - W2.width * 0.36), { color: '#9a9994', finish: 'satin' });
           return civGeometry(set);
         };
-        vinnyKitCache = {
-          paint: civGeometry(paint),
+        const kit = {
+          paint: deck ? null : civGeometry(paint),
           trim: civGeometry(trim),
-          glass: civGeometry(glass, { colors: false, finish: false }),
+          glass: deck ? null : civGeometry(glass, { colors: false, finish: false }),
           markers: civGeometry(markers),
           indicators: civGeometry(indicators),
           lamps,
@@ -493,7 +504,9 @@
           dual,
           rims: { front: [rim(-1, 'front'), rim(1, 'front')], dual: [rim(-1, 'dual'), rim(1, 'dual')] },
         };
-        return vinnyKitCache;
+        if (deck) vinnyDeckKitCache = kit;
+        else vinnyKitCache = kit;
+        return kit;
       }
       function vinnySharedMaterials() {
         if (vinnyShared) return vinnyShared;
@@ -506,7 +519,11 @@
       }
       // ---- The model ----
       function makeVinnyTruck(vehicle) {
-        const kit = vinnyKit(),
+        // The cab, chassis and wheels from the downloaded truck when the build carries it (tools/vehicle_models.py
+        // 'flatbed'; vehicle-assets3d.js vaKit), the deck, rack and rear end this file's: VINNY ASSET CAB.
+        const asset = !!vehicleAssetModel('flatbed') && !vehicleAssetModel('flatbed').kind,
+          kit = vinnyKit(asset),
+          cab = asset ? vaKit('flatbed', vehicleSpec(vehicle).l, 2.44 * VT) : null,
           materials = civSharedMaterials(),
           lampMaterials = civLampSet(),
           own = vinnySharedMaterials(),
@@ -514,39 +531,64 @@
           body = new Three.Group();
         group.add(body);
         scene.add(group);
-        const livery = vinnyLivery(),
+        const livery = asset ? vaLivery() : vinnyLivery(),
           finish = { roughness: 0.38, metalness: 0.08 },
           paint = civPaintMaterial(vehicle.color, livery, finish);
-        mesh(kit.paint, paint, body, 0, 0, 0);
+        if (cab) {
+          mesh(cab.shell, paint, body, 0, 0, 0);
+          mesh(cab.hood, paint, body, 0, 0, 0).castShadow = false;
+          mesh(cab.paint, paint, body, 0, 0, 0);
+          if (cab.trim) mesh(cab.trim, vaMaterials().trim, body, 0, 0, 0);
+          if (cab.cabin) mesh(cab.cabin, materials.glass, body, 0, 0, 0).castShadow = false;
+        } else {
+          mesh(kit.paint, paint, body, 0, 0, 0);
+          mesh(kit.glass, materials.glass, body, 0, 0, 0).castShadow = false;
+        }
         mesh(kit.trim, materials.trim, body, 0, 0, 0);
-        const glass = mesh(kit.glass, materials.glass, body, 0, 0, 0),
-          markers = mesh(kit.markers, own.markerOff, body, 0, 0, 0),
+        const markers = mesh(kit.markers, own.markerOff, body, 0, 0, 0),
           indicators = mesh(kit.indicators, own.markerOff, body, 0, 0, 0);
-        glass.castShadow = markers.castShadow = indicators.castShadow = false;
+        markers.castShadow = indicators.castShadow = false;
         const W = VT_WHEEL,
           wheels = [];
-        for (const [front, x] of [[true, W.front], [false, W.rear]])
-          for (const side of [-1, 1]) {
+        if (cab)
+          for (const wh of cab.assetWheels) {
             const wheel = new Three.Group();
-            wheel.position.set(x * VT, W.r * VT, side * (front ? W.frontZ : W.dualZ) * VT);
+            wheel.position.set(wh.x, wh.y, wh.z);
             body.add(wheel);
             // The tyre stays the wheel's first child (hidden on a burnt wreck).
-            mesh(front ? kit.tyre : kit.dual, materials.rubber, wheel, 0, 0, 0);
-            mesh(kit.rims[front ? 'front' : 'dual'][side < 0 ? 0 : 1], materials.wheel, wheel, 0, 0, 0);
-            wheels.push({ wheel, side, front, radius: W.r * VT });
+            mesh(wh.tyre || policeSwatchBox(CAR_SWATCH.black), vaMaterials().rubber, wheel, 0, 0, 0).castShadow = false;
+            if (wh.rim) mesh(wh.rim, vaMaterials().rim, wheel, 0, 0, 0).castShadow = false;
+            wheels.push({ wheel, side: wh.side, front: wh.front, radius: wh.r });
           }
+        else
+          for (const [front, x] of [[true, W.front], [false, W.rear]])
+            for (const side of [-1, 1]) {
+              const wheel = new Three.Group();
+              wheel.position.set(x * VT, W.r * VT, side * (front ? W.frontZ : W.dualZ) * VT);
+              body.add(wheel);
+              // The tyre stays the wheel's first child (hidden on a burnt wreck).
+              mesh(front ? kit.tyre : kit.dual, materials.rubber, wheel, 0, 0, 0);
+              mesh(kit.rims[front ? 'front' : 'dual'][side < 0 ? 0 : 1], materials.wheel, wheel, 0, 0, 0);
+              wheels.push({ wheel, side, front, radius: W.r * VT });
+            }
         const lamps = [],
           nightLights = [];
         for (const side of [-1, 1]) {
           for (const kind of ['head', 'tail']) {
             const key = kind + (side < 0 ? 'Left' : 'Right'),
               lit = kind === 'head' ? lampMaterials.headOff : lampMaterials.tailOff,
-              lamp = mesh(kit.lamps[key], lit, body, 0, 0, 0);
+              geo = cab && kind === 'head' ? cab.lamps[key] : kit.lamps[key];
+            if (!geo) continue;
+            const lamp = mesh(geo, lit, body, 0, 0, 0);
             lamp.castShadow = false;
             lamps.push({ mesh: lamp, key, lit, kind });
           }
           // Head, tail per side: the order lampOut expects (damage3d.js).
-          nightLights.push(halo(body, 4.5 * VT, 1.02 * VT, side * 0.91 * VT, 11, '#ffe9bd'), halo(body, -4.8 * VT, 1.04 * VT, side * 0.97 * VT, 7, '#ff5a44'));
+          const head = cab?.halos['head' + (side < 0 ? 'Left' : 'Right')];
+          nightLights.push(
+            head ? halo(body, head.x + 0.5, head.y, head.z, 11 * (head.size || 1), '#ffe9bd') : halo(body, 4.5 * VT, 1.02 * VT, side * 0.91 * VT, 11, '#ffe9bd'),
+            halo(body, -4.8 * VT, 1.04 * VT, side * 0.97 * VT, 7, '#ff5a44'),
+          );
         }
         // The crates the crane loads, one per VINNY_CARGO slot (shown by cargoCount, render3d-frame.js).
         const cargo = VINNY_CARGO.slots.map((x) => {
@@ -557,7 +599,12 @@
           return crate;
         });
         const wiperHost = {};
-        addWipers(wiperHost, body, 2.66 * VT, 1.84 * VT, 2.5 * VT, 2.28 * VT, 1.0 * VT);
+        if (cab) {
+          // Along the foot of the downloaded cab's windscreen.
+          const g = cab.glass,
+            l = vehicleSpec(vehicle).l;
+          addWipers(wiperHost, body, g.xf * l + 0.3, g.base + 0.2, g.rf * l + 0.3, g.roof - 0.4, g.wb * 2.44 * VT * 0.85);
+        } else addWipers(wiperHost, body, 2.66 * VT, 1.84 * VT, 2.5 * VT, 2.28 * VT, 1.0 * VT);
         const model = {
           wipers: wiperHost.wipers,
           group,
@@ -569,6 +616,7 @@
           civilian: true,
           vinnyTruck: true,
           realSize: true,
+          asset: cab ? cab.asset.title : undefined,
           wheels,
           lamps,
           damageVersion: -1,

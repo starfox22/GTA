@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-585 files in the include tree, 200,621 lines.
+586 files in the include tree, 200,906 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -38,7 +38,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-worldgen.js`   480 — buildWorld(): the city plan, buildings (makeBuilding), trees, the 2D ground canvas.
 - `src/game-populate.js`   231 — Initial population: showcase parking (SHOWCASE_PARKING, parkShowcase) and populate().
 - `src/world-reset.js`   130 — World reset: resetWorld(reason) puts the city back as it was at boot (vehicles, people, wrecks, damage, blood, gore, fires, knocked furniture, shop …
-- `src/game-player-actions.js`   638 — Player verbs: enter and exit vehicles, interact, aim, shoot, reload, hurt, die, explode.
+- `src/game-player-actions.js`   639 — Player verbs: enter and exit vehicles, interact, aim, shoot, reload, hurt, die, explode.
 - `src/game-cops.js`   174 — resetMissionState(), spawnCop(), copRoute(): mission reset and patrol spawning.
 - `src/physics.js`    19 — ▸ Vehicle and pedestrian physics
 - `src/game-people.js`   168 — Pedestrian life: Everyday chatter lives here; how people walk, what they do and how they react to danger is in src/crowd.js, which also has the …
@@ -221,9 +221,9 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/citylife-civic.js ▸ City life: officers and the wanted level (updateOfficers, updateWanted), strikePerson (blood: blood.js), updateCivic(), navigation and the civic map.
 
-- `src/blood.js`   771 — Blood: wound spatter, drops, the pool a body bleeds out slowly (bleed, bodyPool, addBloodPool/Drop), their stamps (bloodStamp), growth and ageing …
+- `src/blood.js`   844 — Blood: wound spatter, drops, the pool a body bleeds out slowly (bleed, bodyPool, addBloodPool/Drop), their stamps (bloodStamp), growth and ageing …
 - `src/car-stains.js`   316 — Car stains: the blood a vehicle carries after it hits someone (c.stains), aged and washed here; carblood3d.js draws it.
-- `src/gore.js`   456 — ▸ Gore rules and state: how hard a hit lands by calibre, range and zone (goreHit), the point-blank shotgun load, limbs and heads lost to a heavy hit …
+- `src/gore.js`   457 — ▸ Gore rules and state: how hard a hit lands by calibre, range and zone (goreHit), the point-blank shotgun load, limbs and heads lost to a heavy hit …
 
 ## src/gore.js ▸ Gore rules and state: how hard a hit lands by calibre, range and zone (goreHit), the point-blank shotgun load, limbs and heads lost to a heavy hit …
 
@@ -278,7 +278,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/damage.js ▸ Vehicle damage, bullet impacts and breakable street furniture
 
-- `src/damage-vehicles.js`   565 — Vehicle damage state: dents, lamps, glass bands and panes (freshDamage, ensureDamage, addDent, shatterPane).
+- `src/damage-vehicles.js`   570 — Vehicle damage state: dents, lamps, glass bands and panes (freshDamage, ensureDamage, addDent, shatterPane).
 - `src/damage-crumple.js`   286 — Crumple field: how far a point of a vehicle's body moves for its dents (crumpleField, crumpleLimits), the one rule the renderer bends every part of a …
 - `src/damage-upkeep.js`   628 — Vehicle fire, wrecks and per-frame damage upkeep (igniteVehicle, wreckVehicle, updateDamage) and knockable street props.
 
@@ -458,7 +458,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/beachvolley3d.js`   178 — Beach volleyball court meshes
 - `src/beach3d.js`   806 — Palm Keys Beach meshes
 - `src/county3d.js`    14 — ▸ County and mountain meshes
-- `src/base3d.js`    62 — ▸ Fort Sentinel meshes
+- `src/base3d.js`    63 — ▸ Fort Sentinel meshes
 - `src/airfields3d.js`   487 — Runways, taxiways and airfield lighting
 - `src/boats3d.js`    21 — ▸ Boat kit: lofted hulls and shared yacht parts
 - `src/drawbridge3d.js`    60 — ▸ The drawbridges in 3D
@@ -495,17 +495,17 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/vehicles3d.js`   630 — Vehicle meshes
 - `src/police3d.js`    62 — ▸ Police vehicle models
 - `src/cars3d.js`    94 — ▸ Civilian car models
-- `src/vehicle-assets3d.js`   396 — Vehicle models from downloaded assets (assets/vehicle-models.bin + vehicle-atlas.webp, tools/vehicle_models.py): decoded into kits on the civilian …
+- `src/vehicle-assets3d.js`   428 — Vehicle models from downloaded assets (assets/vehicle-models.bin + vehicle-atlas.webp, tools/vehicle_models.py): decoded into kits on the civilian …
 - `src/hypercars3d.js`   954 — The Prestige Collection's car models
 - `src/motorbikes3d.js`   588 — Motorbike models
 - `src/motorbike-assets3d.js`   161 — Motorbikes from downloaded models (vehicle-assets3d.js ASSET CARS data, tools/vehicle_models_moto.py): the frame, the steering (fork, bars, head …
 - `src/boat-assets3d.js`    30 — Boats from downloaded models (vehicle-assets3d.js ASSET CARS data, tools/vehicle_models_boat.py): the hull and its fittings from the vehicle atlas …
 - `src/offroad3d.js`    42 — ▸ 4x4 club trucks, the club lot, trail props and mud
-- `src/vinnytruck3d.js`   599 — Vinny's truck (mission 1, the 'flatbed' type): a 1990s medium-duty conventional flatbed at real size, merged into a few draws (makeVinnyTruck), with …
+- `src/vinnytruck3d.js`   647 — Vinny's truck (mission 1, the 'flatbed' type): a 1990s medium-duty conventional flatbed at real size, merged into a few draws (makeVinnyTruck), with …
 - `src/tyresmoke3d.js`   170 — Tyre smoke, dust and road spray: soft billboards thrown up from the wheels of any road vehicle in view (a burnout's smoke; sand, lawns and loose …
 - `src/mountain-village3d.js`    39 — ▸ Mountain village meshes
 - `src/plane3d.js`    48 — ▸ Airplane meshes
-- `src/render3d-vehicle-models.js`   360 — MakeVehicle()/buildVehicleModel(), modelScale, car rims, sniper sights.
+- `src/render3d-vehicle-models.js`   364 — MakeVehicle()/buildVehicleModel(), modelScale, car rims, sniper sights.
 - `src/vehicle-merge3d.js`   347 — Pristine merge: a civilian car nothing has touched draws its non-casting static parts merged per material (hood + panels + paint bumpers, black and …
 - `src/render3d-prewarm-models.js`    67 — Prewarm lists: the throwaway vehicles and the sample shadow casters the title-screen prewarm builds, so each model's kit, shared materials and shader …
 - `src/render3d-effects.js`   169 — ▸ The optional player ring, the objective arrow, the muzzle and fire lights, the effect particles (fx3d-*.js), scorch, tracers, skid marks.
@@ -679,7 +679,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/base3d-buildings.js`   340 — Fort Sentinel buildings from SENTINEL.buildings (planOf): window rows and flags.
 - `src/base3d-facilities.js`   337 — Fort Sentinel control tower, radar head (radarHead), windsock and glow meshes.
 - `src/base3d-frame.js`   102 — Fort Sentinel per-frame visuals: updateBaseVisuals() and the searchlight lens.
-- `src/base3d-vehicles.js`   268 — Military vehicle models: makeMilitaryVehicle(), compactTank, wheels, lamps and star decals.
+- `src/base3d-vehicles.js`   276 — Military vehicle models: makeMilitaryVehicle(), compactTank, wheels, lamps and star decals.
+- `src/military-assets3d.js`    86 — Fort Sentinel's vehicles from downloaded models (vehicle-assets3d.js ASSET CARS data, tools/vehicle_models_special.py): the M4 utility (HMMWV), the …
 
 ## src/boats3d.js ▸ Boat kit: lofted hulls and shared yacht parts
 
@@ -799,7 +800,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/police3d-looks.js`   499 — Police 3D bodies, liveries and looks (POLICE_BODIES, pickPoliceLook), trim materials and shared resources.
 - `src/police3d-cabins.js`   621 — Police 3D glasshouse cabins and livery textures (policeCabinGeometry, policeLiveryTextures).
 - `src/police3d-kits.js`   637 — Police 3D kits: makePoliceVehicle(), animatePoliceVehicle(), rims, rear doors, beacons and road glow.
-- `src/police3d-asset.js`   432 — Police 3D asset body: the 'crownvic' patrol body drawn from the downloaded police sedan (vehicle-assets3d.js ASSET CARS) in the game's own liveries …
+- `src/police3d-asset.js`   439 — Police 3D asset body: the 'crownvic' patrol body drawn from the downloaded police sedan (vehicle-assets3d.js ASSET CARS) in the game's own liveries …
 
 ## src/cars3d.js ▸ Civilian car models
 
@@ -842,7 +843,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/parachute3d.js`    51 — ▸ Ram-air parachute
 - `src/fx3d-atlas.js`   272 — The effect particles' texture atlas (fx3d-particles.js): four billowed smoke puffs with their surface normals, a glow, a muzzle flash star, the …
-- `src/fx3d-particles.js`   607 — Effect particles: smoke, dust, fire, sparks, flashes, glass and drops in one instanced billboard pool, stepped from a struct-of-arrays store (fxAdd) …
+- `src/fx3d-particles.js`   626 — Effect particles: smoke, dust, fire, sparks, flashes, glass and drops in one instanced billboard pool, stepped from a struct-of-arrays store (fxAdd) …
 - `src/fx3d-recipes.js`   426 — Effect recipes on the particle pool (fx3d-particles.js): a blast's flash, fireball, smoke column, dust ring, sparks and debris; muzzle flashes …
 
 ## src/parachute3d.js ▸ Ram-air parachute
