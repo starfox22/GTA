@@ -7,7 +7,9 @@ export default async function (t) {
   await t.call('holdSimulation', true);
   try {
     // A quiet block with a building face at the end of a clear run (physics-console rideIntoWall).
-    let r = await t.call('rideIntoWall', 'bike', 25, 8, 20, 2500, 2500);
+    // 13 s: the wall search reaches 80 m (20 m run + 60 m) and 25 km/h covers it in 11.5 s (the Exchange underpass wall
+    // that stood nearer was removed on October 11).
+    let r = await t.call('rideIntoWall', 'bike', 25, 13, 20, 2500, 2500);
     t.assert(!r.error, 'a wall with a run-up: ' + JSON.stringify(r).slice(0, 160));
     let throw_ = r.throws.at(-1);
     t.assert(throw_?.cause === 'crash', `thrown at 25 km/h: ${JSON.stringify(throw_)}`);
