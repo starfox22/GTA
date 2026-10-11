@@ -373,6 +373,12 @@ packs with plain `<script src>` so the zip still plays from file://.
   held by `ASSET_BOATS_HELD`, stay procedural); the police 'crownvic' body is police3d-asset.js (the game's livery
   projected through the crownvic's section ring), motorbikes motorbike-assets3d.js, boats boat-assets3d.js; a model change re-records
   DRIVEBY_SEATS (`test.mjs cabin-headroom --render`) and CAR_GLASS_BANDS; `assetCarsOn(false)` gives before/after.
+- Downloaded aircraft and dog (vehicles-and-driving-models-aircraft.md): `tools/aircraft_models.py` makes
+  assets/aircraft-models.bin + aircraft-skin.webp (SKYRANGER 429 airframe `bell429`, flyable SKYLARK 172 airframe
+  `skyhawk`, `fixedGear`) on the makeHelicopter / buildAircraft contracts; `rotorStrikes` uses an airframe's
+  `rotorRadius`/`rotorX`; civil helicopters are parked only by `populateCivilHelicopters()`; `tools/dog_model.py` bakes
+  assets/dog-model.bin, drawn by dog3d.js as one instanced vertex-blend draw (`dogPose`); `aircraftAssetsOn(false)` /
+  `dogModelOn(false)` give before/after.
 - Car crash damage (vehicles-and-driving-damage.md): `crumpleField(dents, limits, ...)` / `crumpleLimits(vehicle)`
   (damage-crumple.js) is the only crumple rule; damage3d-crumple.js bends every mesh under a car body with it,
   time-sliced (`crumpleSlices`), and bumps `m.shapeVersion` when a body is done. A part that animates its own matrix or
