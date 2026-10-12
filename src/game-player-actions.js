@@ -385,6 +385,9 @@
        cars missions hand you, so every entry sets the same state. */
     function enterVehicle(c) {
         player.buildingRoof = null;
+        // A slide down the scree stops at the vehicle: the footing update that would end it does not run at the
+        // wheel, so it used to ride along and resume when he got out (terrain-field.js endTumble).
+        endTumble(false);
         player.car = c;
         // Any of Fort Sentinel's vehicles under cover or on the base: the alarm at once (fort-cover.js).
         if (c.military) fortCoverBoarded(c);
