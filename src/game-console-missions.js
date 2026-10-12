@@ -128,6 +128,8 @@
       fortJob: () => fortJobReport(),
       // Mission 4 test shortcuts (fortjob.js fortJobSkip): 'arrive', 'parked', 'inside', 'changed', 'meet'.
       fortSkip: (where) => fortJobSkip(where),
+      // The objective's GPS road route (map-objective.js): on the minimap and the big map, or why not.
+      gpsReport: () => gpsReport(),
       // The big centred brief of a story step (mission-brief.js): phase show/fold/idle, its text, seconds left.
       missionBrief: () => missionBriefReport(),
       // Mission 2: put the player on the Blue Hour terrace at roof-local (x, y)
