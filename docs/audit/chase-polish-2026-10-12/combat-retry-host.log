@@ -1,0 +1,32 @@
+Baseline findings: [
+  "unfired gun stays lowered with right aim: 0",
+  "unfired gun stays lowered with controller aim: 0",
+  "unfired gun stays lowered with right aim: 1",
+  "unfired gun stays lowered with controller aim: 1",
+  "unfired gun stays lowered with right aim: 2",
+  "unfired gun stays lowered with controller aim: 2",
+  "unfired gun stays lowered with right aim: 4",
+  "unfired gun stays lowered with controller aim: 4",
+  "unfired gun stays lowered with right aim: 5",
+  "unfired gun stays lowered with controller aim: 5",
+  "world reset plays a false door exit",
+  "world reset retained the previous car or plays a false entry",
+  "reselect cancelled the reload",
+  "reselect rewrote inventory/UI",
+  "a real weapon switch was not saved/drawn",
+  "active demo job not saved for restart: 0",
+  "unfinished demo job lost after reload: 0",
+  "active demo job not saved for restart: 1",
+  "unfinished demo job lost after reload: 1",
+  "active demo job not saved for restart: 2",
+  "unfinished demo job lost after reload: 2",
+  "active demo job not saved for restart: 3",
+  "unfinished demo job lost after reload: 3",
+  "completed replay lost its retry",
+  "failed-job retry lost after saving",
+  "completion left a saved retry",
+  "new game left a saved retry"
+]
+five firearm poses for mouse/controller; normal/reset car transitions; reload-preserving reselect and real switch
+demo 1–4 and replay retry persistence; locked/invalid/legacy saves; completion/new-game clearing; inventory/reward unchanged
+PASS current host checks

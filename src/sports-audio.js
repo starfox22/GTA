@@ -60,7 +60,7 @@
         // whole stadium is one direction.
         spread = clamp(hearing.distance / 400, 0, 1),
         from = { x: source.x + (STADIUM_SOUND_CENTRE.x - source.x) * spread, y: source.y },
-        pan = clamp((from.x - player.x) / 500, -0.85, 0.85);
+        pan = clamp(soundRight(from.x - player.x, from.y - player.y) / 500, -0.85, 0.85);
       return {
         gain: gain * hearing.level,
         pan,

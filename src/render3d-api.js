@@ -1,6 +1,7 @@
         // The object the renderer returns (city3D.*): draw API and debug/info hooks.
         // bulletHole, structureBlast, structureImpact, groundStain, sparks, damageInfo.
         ...damageApi,
+        sceneryPools: (on) => sceneryPoolsReport(on),
         // The mud effects' pools (offroad3d.js): clumps and mist flying, splats and tracks laid.
         offroadInfo: () => offroadEffectsInfo(),
         // Markers as drawn (markers.js `markersReport`): the player ring, the arrow, and any
@@ -141,7 +142,10 @@
               let inView = !o.frustumCulled;
               if (!inView) {
                 if (o.isSprite) sphere.set(o.getWorldPosition(new Three.Vector3()), 20);
-                else {
+                else if (o.isInstancedMesh) {
+                  if (!o.boundingSphere) o.computeBoundingSphere();
+                  sphere.copy(o.boundingSphere).applyMatrix4(o.matrixWorld);
+                } else {
                   if (!o.geometry.boundingSphere) o.geometry.computeBoundingSphere();
                   sphere.copy(o.geometry.boundingSphere).applyMatrix4(o.matrixWorld);
                 }

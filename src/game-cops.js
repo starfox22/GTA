@@ -63,7 +63,7 @@
         y: clamp(t.y + (t.vy || 0) * seconds, WORLD_TOP + 40, WORLD_SIZE - 40),
       };
     }
-    function copRoute(c, destination = null) {
+    function copRoute(c, destination = null, avoid = null) {
       // An interceptor routes to where the runner will be, not to where they are:
       // half the patrol chases, the other half tries to be there first. A search
       // passes its own destination (pursuit.js).
@@ -117,6 +117,10 @@
             mx = (ROAD_CENTERS[p.x] + nx) / 2,
             my = (ROAD_ROWS[p.y] + ny) / 2;
           if (
+            // Optional local road closures for a medic's bounded jam detour. Ordinary patrol and
+            // mission routes pass no closures and keep their existing breadth-first search.
+            (avoid && avoid.some((b) => segmentDistance(b.x, b.y,
+              [ROAD_CENTERS[p.x], ROAD_ROWS[p.y]], [nx, ny]) < b.r)) ||
             harborPoliceProtected(nx, ny, 45) ||
             harborPoliceProtected(mx, my, 45) ||
             !groundAt(nx, ny, 10) ||

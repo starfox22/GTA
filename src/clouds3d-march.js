@@ -122,6 +122,8 @@
         // 1: marching up into the layer from under it (the chase view, clouds3d-sky.js): the haze is the
         // chase view's own (aerial-haze3d.js), thinning with height and coloured like the sky behind.
         uBelow: { value: 0 },
+        uBelowSteps: { value: CLOUD_BELOW_STEPS },
+        uBelowQuality: { value: 2 },
         // From below: the air's extinction per world unit at sea level for the layer's own haze (a visibility of
         // kilometres, not the street's short haze that hides the draw distance), and the march's step jitter offset
         // for this frame (the history pass averages the frames: clouds3d-sky-history.js).
@@ -158,7 +160,7 @@
           uniform float uMaxDistance;
           // Shafts under the layer: x strength (0 off), y haze per world unit, z the ground.
           uniform vec3 uShafts;
-          uniform float uBelowHaze, uBelowJitter, uBelowDrawn;
+          uniform float uBelowHaze, uBelowJitter, uBelowDrawn, uBelowSteps, uBelowQuality;
           varying vec3 vRay;
           /* From below (the chase view, clouds3d-sky.js): the street looks up through a kilometre or more of the
              slab along a low ray, out to the horizon. Uniform steps over that span skip whole cloud cells (striped,
@@ -167,6 +169,28 @@
              contour rings on far cloud) while it stays in cloud. The layer's
              haze is the air's own (uBelowHaze: kilometres of visibility, thinning with height), not the street's
              short haze, so clouds stay clouds down to the horizon and sink into the sky's colour there. */
+          // Keep the nearby field identical to the cloud shadows and flight view. Beyond 400 m,
+          // slowly decorrelate the repeating volume with a world-anchored kilometre-scale warp.
+          // Wind is included before the warp: the distant formations drift as one field.
+          vec3 skyCloudSamplePoint(vec3 p, vec3 eye){
+            float farField = smoothstep(3200., 16000., length(p.xz - eye.xz));
+            if (farField <= 0.) return p;
+            vec3 q = vec3(p.x + uWind.x, p.y, p.z + uWind.y);
+            vec3 broad = texture(uNoise, q / 76000. + vec3(0.17, 0.31, 0.73)).gba;
+            vec2 warp = (broad.xy - vec2(0.5)) * 18000.;
+            // Distant billows form broad banks instead of a carpet of identical little towers.
+            vec2 distant = mat2(0.8, -0.6, 0.6, 0.8) * q.xz * 0.42 + warp;
+            vec2 offset = (distant - q.xz) * farField;
+            return p + vec3(offset.x, 0., offset.y);
+          }
+          // Low tiers use one lighting probe, preserving depth and a sunlit rim at a bounded cost.
+          vec3 skyCloudFastLight(vec3 p, vec4 area, float d, float phase){
+            float shade = cloudDensityAt(p + uSunDirection * 260., area, false);
+            float h = clamp((p.y - cloudSlab(area).x) / max(1., cloudSlab(area).y - cloudSlab(area).x), 0., 1.);
+            float through = exp(-shade * 5.) * 0.65 + exp(-shade * 1.2) * 0.35;
+            return (uSkyColor * (1.2 - 0.35 * d) + uGroundColor * (1. - h)
+                  + uSunColor * through * (0.3 + 0.45 * phase) + uGlowColor * (1. - h)) * uCloudTint;
+          }
           vec4 cloudMarchBelow(vec3 ro, vec3 rd, float jitter, float phase){
             float ry = abs(rd.y) < 1e-4 ? 1e-4 : rd.y;
             float toLow = (uSlab.x - ro.y) / ry, toHigh = (uSlab.y - ro.y) / ry;
@@ -177,14 +201,15 @@
             float t = t0 + coarse * jitter, transmittance = 1., firstHit = -1.;
             vec3 light = vec3(0.);
             for (int i = 0; i < ${CLOUD_BELOW_STEPS}; i++){
-              if (t >= t1) break;
+              if (t >= t1 || float(i) >= uBelowSteps) break;
               vec3 p = ro + rd * t;
               vec4 area = cloudArea(p.xz);
               if (p.y < cloudGround(area)) break;
+              vec3 fieldPoint = skyCloudSamplePoint(p, ro);
               coarse = clamp(t * 0.04, 200., 2400.);
               if (fineLeft <= 0.){
                 // Clear air: the cheap field (the detail only ever erodes it) decides whether cloud starts here.
-                if (cloudDensityAt(p, area, false) > 0.){
+                if (cloudDensityAt(fieldPoint, area, false) > 0.){
                   fineLeft = coarse * 1.25;
                   t = max(t - coarse * (0.6 + 0.4 * jitter), t0);
                 } else t += coarse;
@@ -193,14 +218,15 @@
               // The detail octave fades out from 1.5 to 4 km: finer than a pixel there, it only aliases (in
               // vertical streaks, along the near-level rays to the horizon).
               float stepLength = min(coarse * 0.25, 240.), close = 1. - smoothstep(12000., 32000., t), d;
-              if (close >= 1.) d = cloudDensityAt(p, area, true);
+              if (uBelowQuality < 1.5) close = 0.;
+              if (close >= 1.) d = cloudDensityAt(fieldPoint, area, true);
               else {
-                d = cloudDensityAt(p, area, false);
-                if (close > 0. && d > 0.) d = mix(d, cloudDensityAt(p, area, true), close);
+                d = cloudDensityAt(fieldPoint, area, false);
+                if (close > 0. && d > 0.) d = mix(d, cloudDensityAt(fieldPoint, area, true), close);
               }
               if (d > 0.003){
                 if (firstHit < 0.) firstHit = t;
-                vec3 radiance = cloudRadiance(p, area, d, phase);
+                vec3 radiance = uBelowQuality < 1.5 ? skyCloudFastLight(fieldPoint, area, d, phase) : cloudRadiance(fieldPoint, area, d, phase);
                 float stepTransmittance = exp(-d * EXTINCTION * stepLength);
                 light += transmittance * radiance * (1. - stepTransmittance);
                 transmittance *= stepTransmittance;

@@ -26,7 +26,7 @@
                 }),
             )
           : null,
-        skyHistory = { read: 0, valid: false, frame: 0, lastFrame: -2, since: 0, x: 0, y: 0, z: 0 },
+        skyHistory = { read: 0, valid: false, frame: 0, lastFrame: -2, since: 0, x: 0, y: 0, z: 0, windX: 0, windY: 0, coverage: -1, quality: -1, base: 0 },
         skyHistoryView = new Three.Matrix4(),
         skyHistoryUniforms = {
           tCurrent: { value: cloudTarget ? cloudTarget.texture : null },
@@ -36,6 +36,7 @@
           uPrevViewProjection: { value: new Three.Matrix4() },
           uCameraPosition: { value: new Three.Vector3() },
           uTexel: { value: new Three.Vector2(0.25, 0.25) },
+          uWindDelta: { value: new Three.Vector2() },
           // The layer's base over the camera (the depth the reprojection assumes), and how much history is kept.
           uBase: { value: 0 },
           uKeep: { value: 0 },
@@ -55,7 +56,7 @@
               uniform sampler2D tCurrent, tHistory;
               uniform mat4 uInverseProjection, uCameraWorld, uPrevViewProjection;
               uniform vec3 uCameraPosition;
-              uniform vec2 uTexel;
+              uniform vec2 uTexel, uWindDelta;
               uniform float uBase, uKeep;
               varying vec2 vUv;
               void main(){
@@ -74,7 +75,7 @@
                 vec4 view = uInverseProjection * vec4(vUv * 2. - 1., 1., 1.);
                 vec3 rd = normalize((uCameraWorld * vec4(view.xyz / view.w, 0.)).xyz);
                 float t = rd.y > 0.02 ? (uBase - uCameraPosition.y) / rd.y : 160000.;
-                vec4 prev = uPrevViewProjection * vec4(uCameraPosition + rd * clamp(t, 800., 160000.), 1.);
+                vec4 prev = uPrevViewProjection * vec4(uCameraPosition + rd * clamp(t, 800., 160000.) + vec3(uWindDelta.x, 0., uWindDelta.y), 1.);
                 vec2 puv = prev.xy / max(prev.w, 1e-6) * 0.5 + 0.5;
                 if (prev.w <= 0. || puv.x < 0. || puv.y < 0. || puv.x > 1. || puv.y > 1.){ gl_FragColor = c; return; }
                 gl_FragColor = mix(c, clamp(texture2D(tHistory, puv), lo, hi), uKeep);
@@ -98,7 +99,10 @@
           H.valid = false;
         }
         if (H.lastFrame !== H.frame - 1 || Math.abs(p.x - H.x) + Math.abs(p.y - H.y) + Math.abs(p.z - H.z) > SKY_HISTORY_JUMP) H.valid = false;
+        // A preset or weather jump has different opacity/detail; never trail the previous deck behind it.
+        if (H.quality !== marchUniforms.uBelowQuality.value || Math.abs(H.coverage - cloudLayer.coverage) > 0.04 || Math.abs(H.base - base) > 80) H.valid = false;
         if (!H.valid) H.since = H.frame;
+        u.uWindDelta.value.set(cloudLayer.windX - H.windX, cloudLayer.windY - H.windY);
         u.tHistory.value = read.texture;
         u.uKeep.value = H.valid ? SKY_HISTORY_KEEP : 0;
         u.uTexel.value.set(1 / width, 1 / height);
@@ -110,6 +114,11 @@
         renderer.render(skyHistoryScene, fullScreenCamera);
         // This frame's view for the next one's reprojection.
         u.uPrevViewProjection.value.multiplyMatrices(camera.projectionMatrix, skyHistoryView.copy(camera.matrixWorld).invert());
+        H.windX = cloudLayer.windX;
+        H.windY = cloudLayer.windY;
+        H.coverage = cloudLayer.coverage;
+        H.quality = marchUniforms.uBelowQuality.value;
+        H.base = base;
         H.x = p.x;
         H.y = p.y;
         H.z = p.z;
@@ -118,11 +127,10 @@
         H.read = 1 - H.read;
         return write.texture;
       }
-      /* Console skyCloudBench(rounds): GPU time of the clouds from below on this frame's view (the chase view, HIGH or
-         ULTRA), each pass drawn `rounds` times and waited for: `march` (cloudMarchBelow) plus `history`, against
+      /* Console skyCloudBench(rounds): GPU time of the clouds from below on this frame's view (the chase view on any tier), each pass drawn `rounds` times and waited for: `march` (cloudMarchBelow) plus `history`, against
          `uniformMarch`, the same view marched the old way (56 even steps to 4.5 km, the flight view's loop). */
       function skyCloudBench(rounds = 8) {
-        if (!skyCloudView.march) return { error: 'the march from below runs only in the chase view on HIGH or ULTRA' };
+        if (!chaseCameraLive() || !skyCloudView.march) return { error: 'the march from below runs only in the chase view with clouds' };
         const gl = renderer.getContext(),
           u = marchUniforms,
           n = clamp(Math.round(rounds) || 8, 1, 60),

@@ -8,8 +8,9 @@
     /* Campaign frontier is independent from the mission currently selected for replay. */
     let missionMenuOrigin = 'menu',
       // The job RESTART CURRENT JOB restarts when none is running: the last one that
-      // ended without a win (failed, WASTED, BUSTED). None after a win, at a new game
-      // or after a reload (story.js restartableJob).
+      // ended without a win (failed, WASTED, BUSTED), or was in progress at the last
+      // save. Reload keeps only its index, not its stage/world (story.js restartableJob).
+      // None after a win or at a new game.
       retryJobIndex = null;
     /* Jobs the picker offers: everything up to the frontier, or every job while
        the godmode cheat is on. A public demo build stops at DEMO_MISSIONS. */
@@ -182,11 +183,14 @@
         localStorage.setItem(
           'dead-end-city-v1',
           JSON.stringify({
-            saveVersion: 11,
+            saveVersion: 12,
             selectedWeaponIndex,
             missionIndex,
             completed,
             highestCompleted: completed,
+            // A tab closed mid-job can restart it from the beginning after reload.
+            // Mission state is not serialized; cash, ammo and rewards keep their usual rules.
+            retryJobIndex: mission ? mission.index : retryJobIndex,
             stats: campaignStats,
             cash,
             worldMinutes,
@@ -212,6 +216,10 @@
             : Math.max(campaignCount(s.completed), campaignCount(s.missionIndex));
         missionIndex = Math.min(campaignCount(s.missionIndex), completed);
         settleDemoStoryIndex();
+        // Old saves have no retry, and malformed/locked indices never bypass
+        // the story or public-demo gates (including old god-mode jobs).
+        retryJobIndex = Number.isInteger(s.retryJobIndex) && s.retryJobIndex >= 0 &&
+          s.retryJobIndex < missions.length && missionUnlocked(s.retryJobIndex) ? s.retryJobIndex : null;
         cash = clamp(Number(s.cash) || 0, 0, 99999999);
         worldMinutes = Number.isFinite(s.worldMinutes) ? Math.max(0, s.worldMinutes) : worldMinutes;
         snapSunClock();

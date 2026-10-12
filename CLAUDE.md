@@ -18,7 +18,7 @@ sh tools/check.sh [tag]                  # syntax gate only (dist/check/<tag>.{h
 python3 tools/build.py                   # dead-end-city.html (local, git-ignored: never commit it)
 python3 tools/build.py --out dist/game.html            # scratch build
 python3 tools/build.py --split-media dist/publish      # dist/publish/index.html + media/ (*.mp3 + pack-*.js): the artifact
-python3 tools/build.py --zip dist/DeadEndCity.zip      # DeadEndCity/{index.html,media/,README.txt}; CI uploads branch artifacts, updates "latest" only from main, and publishes versioned releases for tags v*. The October 11 Codex review branch also publishes a commit-specific prerelease.
+python3 tools/build.py --zip dist/DeadEndCity.zip      # DeadEndCity/{index.html,media/,README.txt}; CI uploads branch artifacts, updates "latest" only from main, and publishes versioned releases for tags v*. The named October 11 and chase-clouds Codex review branches also publish commit-specific prereleases.
 python3 tools/filemap.py                 # regenerate docs/FILEMAP.md after adding/removing/renaming files
 node tools/smoke.mjs dist/game.html dist/smoke         # boot, FPS, walk, drive, map, both cameras: 6 screenshots
 node tools/tour.mjs steps.json dist/tour dist/game.html   # scripted screenshots (?dev console)
@@ -100,6 +100,14 @@ packs with plain `<script src>` so the zip still plays from file://.
   `pressKey()`/`keyPrefix()` (input-hints.js), never `'Press ' + keyName()`.
 - FPS is on by default (preserve an explicit saved opt-out); only live frame intervals enter its sample,
   reset on visibility changes. Left and right mouse releases are independent; focus loss, pause, help and the map clear both.
+- Positioned audio uses `soundRight(dx, dy)` for horizontal placement: final chase-camera yaw in chase view,
+  unchanged world-X placement in the overhead view. Keep attenuation and occlusion relative to the player.
+- Saved `retryJobIndex` remembers an unlocked unfinished/failed job for restart from its beginning; it never
+  restores a mission stage/world snapshot. Wins and new games clear it; old saves and demo/story gates stay valid.
+- Chase cloud budgets live in `SKY_CLOUD_QUALITY`; the distant chase sampling approximation never alters the
+  original flight/overhead cloud field. History resets on discontinuities and compensates wind drift.
+- The chase shoulder, boom and upward crane respect indexed overhead-cover slabs as well as buildings;
+  preserve open space below/above canopies and query adjacent grid cells for the near-plane margin.
 - NPC body armour: `ballisticDamage(person, damage, kind, calibre, zone)` with `VEST_STOP` (combat-rules.js NPC BODY
   ARMOUR) is the only rule for what an NPC vest stops: torso only (`strikePerson` picks the zone first), soft vs
   `vestPlate`, by calibre (weapon `cal`, `bulletCalibre`). A new armoured NPC sets `vest`/`vestPlate`; a new gun sets

@@ -26,6 +26,8 @@ The owner's rule: when the player dies or picks a new mission, everything in the
 - The renderer reads `worldResetSerial`: damage3d-world.js `clearWorldDamage` empties the world decal ring (chips,
   cracks, scorch, craters, oil, shards, blown windows), rubble and torn panels, and stands the shop panes whole.
   fx3d-particles.js empties the effect pool (the old world's smoke and flames) on the same serial.
+- The crowd renderer's vehicle transition tracker also reads the serial. A respawn/retry cut does not
+  animate a door exit from the previous world's car, or an entry into a car supplied by the new world.
 - A new system that keeps world damage or holds vehicles or people outside these lists adds its own reset helper
   and calls it from `resetWorld`; renderer-held damage watches `worldResetSerial`.
 

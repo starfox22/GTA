@@ -240,7 +240,7 @@
         g.gain.setValueAtTime(0.0001, at);
         g.gain.exponentialRampToValueAtTime(level * (i ? 0.7 : 1), at + 0.012);
         g.gain.exponentialRampToValueAtTime(0.0001, at + dur);
-        pan.pan.value = clamp((p.x - player.x) / 450, -0.9, 0.9);
+        pan.pan.value = clamp(soundRight(p.x - player.x, p.y - player.y) / 450, -0.9, 0.9);
         s.connect(f).connect(g).connect(pan).connect(voiceBus);
         s.start(at, Math.random() * 0.3, dur + 0.05);
         s.onended = () => {

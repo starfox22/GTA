@@ -1,0 +1,37 @@
+started dev server (?dev&norender: boot 19.7s)
+PASS chase-aim (4.8s)
+     camera 0: aim off the camera's heading (deg) 2 · camera 120: aim off the camera's heading (deg) 2 · camera -100: aim off the camera's heading (deg) 2 · at the wheel looking left: aim off -90 (deg) 0 · drive-by: {"window":"left","relDeg":-90,"aim":"clear","out":1} · drive-by aim off the nose (deg from -90) 0
+PASS chase-audio-pan (0.1s)
+     500 camera-basis cases; unchanged top-down offsets/gain; real sample, horn, water, impact, stadium, siren, engine, skid, footstep, whizz and pass-by callers
+PASS chase-cover-clearance (0.0s)
+     12 finite-volume, rotated-cover, grid-edge, and upward/downward boom assertions
+PASS chase-crane (5.2s)
+     against the wall: crane (m) 0.49 · aiming: crane (m) 0.01 · in the open: boom (m) 3.5 · in the open: crane (m) 0
+PASS chase-input (5.4s)
+     on foot: boom (m) 3.5 · on foot: camera height over the street (m) 2.14 · right stick right for 0.5 s: turn (deg) 92 · half sensitivity: share of the turn 0.5 · LT held: aim blend 1 · LT held: boom (m) 1.86 · LT held: lens (deg) 44 · LT let go: aim blend 0 · zoom out key: boom factor 1.25 · zoom reset: boom factor 1 · in the car: the camera looks along the car (deg off) 1 · looking behind: the camera looks back along the car (deg off) 1 · C let go: the camera looks along the car again (deg off) 0
+PASS chase-walk (2.3s)
+     heading 135: walked off the camera's heading by (deg) 0 · heading -60: walked off the camera's heading by (deg) 0.06858282186249198 · heading 10: walked off the camera's heading by (deg) 1.3099324740202292
+PASS cloud-history (0.0s)
+     first frame, continuous wind, weather, tier, teleport, resize, altitude and skipped draws
+PASS combat-continuity (0.0s)
+     five firearm poses for mouse/controller; normal/reset car transitions; reload-preserving reselect and real switch
+PASS medic-routing (0.0s)
+PASS sound-output (2.1s)
+PASS soundscape (7.7s)
+     Midtown street enclosure 0.446 · steps in 2 s of running 9 · Midtown enclosure 0.446, summit echo 0.197, 9 steps in 2 s
+PASS chase-wall-clearance (33.3s)
+PASS drawbridge-traffic (217.8s)
+     keys-harbor: 10 queued, 7 on the causeway, gap 589 · oceanview: 5 queued, 5 on the causeway, gap 361 · ridgeline: 5 queued, 5 on the causeway, gap 412 · coronation: 5 queued, 5 on the causeway, gap 488
+PASS fps-counter (92.7s)
+PASS living-medics (54.3s)
+     start (revive true): jobs 1, revivable true, last null · ended after 32 s: jobs 1, {"why":"done","outcome":"revived","seconds":33} · revive run: arrived after 18.5 s, phases driving treat outcome, last {"why":"done","outcome":"revived","seconds":33} · start (revive false): jobs 2, revivable false, last {"why":"done","outcome":"revived","seconds":33} · ended after 40 s: jobs 2, {"why":"done","outcome":"lost","seconds":40} · lost run: arrived after 10.3 s, last {"why":"done","outcome":"lost","seconds":40}
+PASS living-sirens (21.0s)
+     car: lane 25 → 31, down to 9 km/h; ambulance never under 54 km/h, by after 1.5 s; then back within 0 of its lane line, up to 44 km/h
+FAIL mission-retry-save (45.7s): retry restored or refilled an old ammunition snapshot
+     demo 1–4 and replay retry persistence; locked/invalid/legacy saves; completion/new-game clearing; inventory/reward unchanged
+PASS mission-retry (62.5s)
+PASS pause-restart (47.0s)
+PASS restart-carriers (65.3s)
+PASS view-remembered (99.5s)
+PASS world-reset (54.3s)
+21/22 passed, 0 skipped, 1 failed in 848s

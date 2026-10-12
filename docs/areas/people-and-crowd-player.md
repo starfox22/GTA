@@ -66,6 +66,12 @@ the Microsoft Rocketbox avatar Male_Adult_16 (MIT, docs/THIRD_PARTY_CREDITS.txt)
   other hand cups the firing hand on a pistol, holds the handguard from below on long guns, or a front grip.
   drawHold and the drive-by take these frames for the player (the IK reaches their wrists); a gun carried at
   the side sits in his fist (`inverse`). A new weapon adds its grip there.
+- Holding shoulder aim in chase view raises an unfired pistol, SMG or long gun through the same
+  existing aiming hold used after shooting (`specialSpec`, `chaseAiming` for mouse/controller).
+  Releasing aim returns to the carried hold unless a shot/reload still needs the raised gun.
+  Street-view poses are unchanged. `tools/tests/combat-continuity.mjs` checks the five firearm poses.
+- World resets discard the old car-entry/exit transition (`trackCarTransition`, `worldResetSerial`),
+  so a job retry or hospital respawn never plays a door-exit animation at the new spawn point.
 - Eyes (`pbEyes`, shader `pbEye`; the field body only, the model's eyes are painted): they lead the head to where he aims (the chase camera's pitch in the chase
   view), else glance about in quick jumps; a blink every 2-6 s draws the upper lid down over the eyeball.
 

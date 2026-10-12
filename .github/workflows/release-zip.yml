@@ -1,7 +1,7 @@
 # Builds the playable zip (DeadEndCity/index.html + media/ + README.txt) and attaches it to
 # a GitHub Release, so the game is always downloadable from the repo's Releases page:
 # - only main updates the rolling "latest" release; other branches produce review artifacts;
-# - codex/game-fixes-2026-10-11 also publishes its requested public prerelease download;
+# - the named Codex review branches also publish the requested public prerelease download;
 # - pushing a tag like v31.0.0 creates a permanent release for that version;
 # - "Run workflow" on the Actions tab rebuilds on demand.
 name: Release zip
@@ -47,7 +47,7 @@ jobs:
             --notes "Newest build of \`${GITHUB_REF_NAME}\` (${GITHUB_SHA::7}). Download DeadEndCity.zip, unzip it and double-click DeadEndCity/index.html (Chrome, Edge, Firefox or Safari)."
 
       - name: Publish the requested Codex review download
-        if: github.ref == 'refs/heads/codex/game-fixes-2026-10-11'
+        if: github.ref == 'refs/heads/codex/game-fixes-2026-10-11' || github.ref == 'refs/heads/codex/chase-clouds-polish-2026-10-12'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

@@ -41,7 +41,7 @@
       g.gain.value = base * (1 / (1 + d / 150)) * (occluded ? 0.55 : 1);
       f.type = 'lowpass';
       f.frequency.value = airCutoff(d) * (occluded ? 0.22 : 1);
-      p.pan.value = clamp((x - player.x) / 450, -0.9, 0.9);
+      p.pan.value = clamp(soundRight(x - player.x, y - player.y) / 450, -0.9, 0.9);
       g.connect(f).connect(p).connect(master);
       setTimeout(() => {
         g.disconnect();
@@ -167,9 +167,10 @@
         // Past the ear, and only just: it went by during this frame.
         if (along > 0 || -along > speed * deltaSeconds * 1.3 || Math.abs(across) > WHIZZ_REACH) continue;
         bulletAudio.whizzed.add(b);
-        // The side it passed on, as the screen shows it: the x of the line's nearest point.
-        const nearX = b.x + (along * b.vx) / speed - ear.x;
-        bulletWhizz(clamp(nearX / 16, -1, 1), 1 - Math.abs(across) / WHIZZ_REACH, speed > 1600 || b.damageKind === 'sniper');
+        // The side it passed on, as the screen shows it: the line's nearest point.
+        const nearX = b.x + (along * b.vx) / speed - ear.x,
+          nearY = b.y + (along * b.vy) / speed - ear.y;
+        bulletWhizz(clamp(soundRight(nearX, nearY) / 16, -1, 1), 1 - Math.abs(across) / WHIZZ_REACH, speed > 1600 || b.damageKind === 'sniper');
       }
     }
     // Console (part of DeadEndCity.acoustics): strikes, dropped strikes, whizzes and cracks.

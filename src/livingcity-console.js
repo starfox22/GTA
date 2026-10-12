@@ -46,6 +46,42 @@
         // The ambulance service (livingcity-medics.js): jobs, outcomes and the one
         // under way (phase, the ambulance and its siren, the medics and their poses).
         medicReport: () => medicReport(),
+        // A blocked junction in the actual city graph/collision field. Temporary test vehicles are
+        // removed synchronously; the audit neither advances the world nor changes the live medic job.
+        medicRoutingAudit() {
+          const before = soakHashRun();
+          let checked = 0, result = null;
+          for (const x of ROAD_CENTERS) {
+            if (result || !ROAD_CENTERS.includes(x + BLOCK_SIZE)) continue;
+            for (const y of ROAD_ROWS) {
+              if (result || checked >= 80 || !inCityGrid(x, y) || !cityStreetAt(x + 100, y)) continue;
+              checked++;
+              const c = { type: 'ambulance', x, y, a: 0, vx: 0, vy: 0, speed: 0, hp: 265 },
+                blocker = { type: 'bus', x: x + 100, y, a: Math.PI / 2, vx: 0, vy: 0, hp: 480 },
+                body = { x: x + 350, y: y + 60 }, plan = medicStopFor(body, 1),
+                job = { ambulance: c, body, stop: plan.stop, heading: plan.heading, phase: 'driving', stuckFor: 6 };
+              c.emergency = { running: true, blocker, job };
+              const bs = vehicleSpec(blocker),
+                avoid = [{ x: blocker.x, y: blocker.y, r: Math.max(bs.l, bs.w) / 2 + vehicleSpec(c).w / 2 + 6 }],
+                original = copRoute(c, { x: x + BLOCK_SIZE, y });
+              vehicles.push(c, blocker);
+              try {
+                const changed = tryMedicDetour(job);
+                if (changed) result = {
+                  junction: { x, y }, baselineBlocked: !medicRouteAvoids(c, original, avoid),
+                  detours: job.detours, tries: job.routeTries,
+                  avoidsBlocker: medicRouteAvoids(c, c.countyRoute.slice(0, -1), avoid),
+                  positionUnchanged: c.x === x && c.y === y && c.a === 0 && c.vx === 0 && c.vy === 0 && blocker.x === x + 100 && blocker.y === y,
+                  points: c.countyRoute.length, stop: job.stop,
+                };
+              } finally {
+                vehicles.splice(vehicles.indexOf(blocker), 1);
+                vehicles.splice(vehicles.indexOf(c), 1);
+              }
+            }
+          }
+          return { checked, result, stateBefore: before, stateAfter: soakHashRun() };
+        },
         // North Point Key visitors (livingcity-key.js): the hour's target, counts
         // (spawned, handed back to city traffic, drop-offs by the valet) and each
         // visitor's leg (avenue, ring, stop, exit), speed and place.

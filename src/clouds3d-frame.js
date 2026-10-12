@@ -236,9 +236,9 @@
       // The LOW tier marches the layer at the phones' resolution (a third of the screen rather than a half:
       // under half the fragments), with no recompile.
       const cloudTargetSize = { width: 4, height: 4 };
-      function sizeCloudTarget(tier) {
+      function sizeCloudTarget(tier, skyResolution = null) {
         sceneBufferSize(cloudBuffer);
-        const resolution = tier === 'LOW' ? Math.min(CLOUD_RESOLUTION, 0.34) : CLOUD_RESOLUTION,
+        const resolution = skyResolution ?? (tier === 'LOW' ? Math.min(CLOUD_RESOLUTION, 0.34) : CLOUD_RESOLUTION),
           width = Math.max(4, Math.round((viewportWidth || cloudBuffer.x) * resolution)),
           height = Math.max(4, Math.round((viewportHeight || cloudBuffer.y) * resolution));
         if (cloudTarget.width !== width || cloudTarget.height !== height) cloudTarget.setSize(width, height);
@@ -307,6 +307,7 @@
           // ('march', 'layer' or ''), the sun the sky draws (elevation, degrees), the haze, the sun glare.
           sky: {
             clouds: ['', 'layer', 'march'][skyCloudView.mode],
+            budget: skyCloudView.march ? { ...skyCloudView.quality, tier: skyCloudView.tier, width: cloudTarget.width, height: cloudTarget.height } : null,
             // The air the layer is seen through (visibility, km), how far the march looks, frames in its history.
             cloudAirKm: +(3.912 / skyCloudHaze() / UNITS_PER_METRE / 1000).toFixed(1),
             reachKm: SKY_CLOUD_REACH / UNITS_PER_METRE / 1000,

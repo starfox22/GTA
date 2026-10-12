@@ -51,7 +51,7 @@
         voices = 2 + Math.floor(seededRandom() * 3),
         out = audio.createGain(),
         pan = audio.createStereoPanner();
-      pan.pan.value = clamp((x - player.x) / 450, -0.9, 0.9);
+      pan.pan.value = clamp(soundRight(x - player.x, y - player.y) / 450, -0.9, 0.9);
       out.gain.setValueAtTime(0.0001, t);
       out.gain.exponentialRampToValueAtTime(0.09 * g0, t + 0.12);
       out.gain.exponentialRampToValueAtTime(0.0001, t + dur);

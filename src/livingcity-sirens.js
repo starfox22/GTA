@@ -224,5 +224,8 @@
       };
       forEachPedestrianNear(c.x + ca * 85, c.y + sa * 85, 100, yieldTo);
       if (!player.car) yieldTo(player);
+      // Lights permit passing a traffic signal, never a raised bridge. countyRouteControl returns
+      // early for an emergency run, so its ordinary drawbridge limit does not run for this branch.
+      desired = drawbridgeTrafficLimit(c, desired);
       return { steer: clamp(da * 2.6, -1.6, 1.6), desired: Math.max(0, desired) };
     }

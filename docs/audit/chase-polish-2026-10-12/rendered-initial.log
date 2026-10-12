@@ -1,0 +1,8 @@
+started dev server (?dev: boot 136s)
+FAIL chase-clouds (102.3s): LOW did not reduce cloud pixels
+     the march looks out about 20 km 20 · fair visibility for the layer (km) 30
+PASS graphics-all-tiers (355.6s)
+     {"tier":"low","view":"street","activeTier":"LOW","scale":1,"draws":140,"triangles":610181} · {"tier":"low","view":"chase","activeTier":"LOW","scale":1,"draws":359,"triangles":676572} · {"tier":"medium","view":"street","activeTier":"MEDIUM","scale":1,"draws":140,"triangles":596869} · {"tier":"medium","view":"chase","activeTier":"MEDIUM","scale":1,"draws":498,"triangles":740268} · {"tier":"high","view":"street","activeTier":"HIGH","scale":1,"draws":141,"triangles":710725} · {"tier":"high","view":"chase","activeTier":"HIGH","scale":1,"draws":571,"triangles":865260} · {"tier":"ultra","view":"street","activeTier":"ULTRA","scale":1,"draws":141,"triangles":714977} · {"tier":"ultra","view":"chase","activeTier":"ULTRA","scale":1,"draws":693,"triangles":913890} · {"tier":"auto","view":"street","activeTier":"LOW","scale":1,"draws":140,"triangles":603899} · {"tier":"auto","view":"chase","activeTier":"LOW","scale":1,"draws":364,"triangles":661469}
+PASS render-tier-switch (4.5s)
+PASS render-effects (130.9s)
+3/4 passed, 0 skipped, 1 failed in 794s

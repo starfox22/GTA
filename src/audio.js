@@ -294,6 +294,14 @@
       if (loudDuck.depth < 0.005) loudDuck.depth = 0;
       glideParam(ambienceDuck.gain, 1 - loudDuck.depth, audio.currentTime, 0.12);
     }
+    // Signed horizontal offset in the listener's view. Keep the top-down world-X mix exact;
+    // chaseFrame's right vector follows the final camera yaw (including looking behind).
+    // Callers retain their own distance falloff and pan limits; no vectors are allocated.
+    function soundRight(dx, dy) {
+      if (!chaseCameraLive()) return dx;
+      const yaw = chaseCam.viewYaw ?? chaseCam.yaw;
+      return -Math.sin(yaw) * dx + Math.cos(yaw) * dy;
+    }
     /* A recorded sample, optionally from a map position (attenuated and panned
        from the player; a position with an `elevation` also counts the height
        between it and the player, e.g. the Falcon's train) and `delay` seconds
@@ -318,7 +326,7 @@
         const rise = position.elevation === undefined ? 0 : position.elevation - entityElevation(player);
         distance = Math.hypot(distanceBetween(position, player), rise);
         attenuation = 1 / (1 + distance / 230);
-        pan.pan.value = clamp((position.x - player.x) / 450, -0.9, 0.9);
+        pan.pan.value = clamp(soundRight(position.x - player.x, position.y - player.y) / 450, -0.9, 0.9);
         if (distance > 24) {
           const shade = soundShade(position, distance);
           attenuation *= shade.gain;
@@ -510,7 +518,7 @@
             dd = Math.max(1, d),
             ear = player.car || null,
             closing = ((nearest.vx || 0) * -dx + (nearest.vy || 0) * -dy) / dd - ((ear?.vx || 0) * -dx + (ear?.vy || 0) * -dy) / dd;
-          glideParam(siren.pan.pan, clamp(dx / 450, -0.8, 0.8), audio.currentTime, 0.15);
+          glideParam(siren.pan.pan, clamp(soundRight(dx, dy) / 450, -0.8, 0.8), audio.currentTime, 0.15);
           glideParam(siren.source.playbackRate, clamp(SOUND_SPEED / (SOUND_SPEED - closing), 0.86, 1.16), audio.currentTime, 0.12);
         }
       }

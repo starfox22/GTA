@@ -28,7 +28,7 @@
         rootMatrixScratch = new Three.Matrix4(),
         unitScale = new Three.Vector3(1, 1, 1);
       // Car transitions (render side only): when the player got in or out.
-      const carTransition = { car: null, at: -10, kind: null, x: 0, y: 0, a: 0 };
+      const carTransition = { car: null, at: -10, kind: null, x: 0, y: 0, a: 0, worldSerial: worldResetSerial };
       const recoilSince = (at) => (at != null ? clamp(1 - (gameTime - at) / 0.13, 0, 1) : 0);
       function specialSpec(p) {
         const sp = specScratch;
@@ -112,7 +112,10 @@
           }
           if (incapacitated || holstered) return sp;
           const weapon = PLAYER_WEAPONS[selectedWeaponIndex] ?? null,
-            firedRecently = gameTime - (player.lastShotAt ?? -100) < 1.6;
+            firedRecently = gameTime - (player.lastShotAt ?? -100) < 1.6,
+            // Shoulder aiming must raise the gun before the first shot too. Use
+            // the same mouse/gamepad rule as the camera; the rig eases the hold.
+            aiming = firedRecently || (chaseCameraLive() && chaseAiming());
           if (selectedWeaponIndex === FISTS_INDEX) {
             const guard = gameTime - (player.punchAt ?? -100) < 2.5;
             if (guard) {
@@ -132,9 +135,9 @@
             sp.knifeSwing = Math.max(0, ((player.knifeSwingUntil || 0) - gameTime) / 0.28);
           } else if (weapon === 'lockpick') sp.hold = HOLD_POSES.lockpick;
           else if (weapon === 'rocket') sp.hold = HOLD_POSES.rocket;
-          else if (weapon === 'pistol') sp.hold = firedRecently || sp.reload >= 0 ? HOLD_POSES.pistolAim : HOLD_POSES.pistolSide;
-          else if (weapon === 'smg') sp.hold = firedRecently || sp.reload >= 0 ? HOLD_POSES.smgAim : HOLD_POSES.smgSide;
-          else sp.hold = firedRecently || sp.reload >= 0 ? HOLD_POSES.longAim : HOLD_POSES.longReady;
+          else if (weapon === 'pistol') sp.hold = aiming || sp.reload >= 0 ? HOLD_POSES.pistolAim : HOLD_POSES.pistolSide;
+          else if (weapon === 'smg') sp.hold = aiming || sp.reload >= 0 ? HOLD_POSES.smgAim : HOLD_POSES.smgSide;
+          else sp.hold = aiming || sp.reload >= 0 ? HOLD_POSES.longAim : HOLD_POSES.longReady;
           return sp;
         }
         if (p.dazedFor > 0) sp.dazed = true;

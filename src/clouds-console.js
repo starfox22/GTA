@@ -49,7 +49,7 @@
           report.view = city3D?.cloudView?.() ?? null;
           return report;
         },
-        // GPU time of the clouds from below (the chase view, HIGH or ULTRA) against the old even march.
+        // GPU time of the clouds from below (the chase view, any preset) against the old even march.
         skyCloudBench: (rounds) => city3D?.skyCloudBench?.(rounds) ?? null,
         // A spot within ~3 km where the layer is thickest ('cloud') or clear ('gap') `lead` seconds on.
         cloudSpot: (kind, lead) => cloudSpot(kind, player.x, player.y, lead || 0),

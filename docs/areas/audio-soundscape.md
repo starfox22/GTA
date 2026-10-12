@@ -33,6 +33,19 @@ itself is in audio-and-radio.md.
 
 ## Placing one-shots
 
+- `soundRight(dx, dy)` (audio.js) is the horizontal stereo placement rule. In chase view
+  it projects the source offset onto `chaseFrame`'s right vector from the final
+  `chaseCam.viewYaw` (including looking behind); in top-down view it returns `dx`
+  unchanged. The ear position, distance falloff, occlusion, Doppler and each caller's pan
+  clamp remain player-relative. Positioned samples, impacts, runners, horns, venues,
+  water/sea life, thunder, drawbridges and the siren/engine/skid loops all use it.
+- Loops follow camera rotation on their existing audio update cadence. One-shots use
+  orientation at emission; pass-bys project both position and travel direction. Ambient
+  stereo beds and the player's own alternating footsteps remain unpositioned. The
+  allocation-free helper neither changes world state nor draws random numbers.
+- `tools/tests/chase-audio-pan.mjs` runs production panning and caller functions against
+  recording Web Audio nodes, with the actual camera basis as the screen-right reference.
+
 - `soundShade(position, distance)` returns a scratch `{ cutoff, gain, occluded }` (do not
   keep it): the air-absorption cut-off (`airCutoff`) times 0.22 and gain 0.55 when a
   building (or a hill out of town) is between the ear and the source (`earBlocked`,

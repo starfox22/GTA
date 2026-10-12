@@ -277,7 +277,7 @@
             ? stage.state.shadows && !renderer.shadowMap.enabled
               ? prewarmShadowSamples()
               : []
-            : [...farScenery.children, ...(renderer.shadowMap.enabled ? prewarmShadowSamples() : [])],
+            : [...farScenery.children, ...sceneryPoolWarmMeshes, ...(renderer.shadowMap.enabled ? prewarmShadowSamples() : [])],
           info = stage ? litStageInfo : prewarmInfo,
           slice = new Three.Object3D(),
           // Programs compiled but not yet linked. compile() only starts the work:
@@ -448,7 +448,7 @@
             }
           }
           renderer.setRenderTarget(previous);
-          // The far copy of the city, about 3 MB of buffers a step, once every program is ready.
+          // The far copy and spatial rooftop pools, about 3 MB of buffers a step, once every program is ready.
           if ((titleUp || stage) && !queue.length && !passes.length && !models.length && !unlinked.size && uploads.length) {
             const batch = [];
             for (let bytes = 0; uploads.length && bytes < 3e6; ) {
@@ -457,6 +457,7 @@
               batch.push(mesh);
               for (const name in g.attributes) bytes += g.attributes[name].array?.byteLength || 0;
               if (g.index?.array) bytes += g.index.array.byteLength;
+              if (mesh.instanceMatrix?.array) bytes += mesh.instanceMatrix.array.byteLength;
             }
             try {
               uploadMeshes(batch);

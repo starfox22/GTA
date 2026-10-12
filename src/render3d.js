@@ -213,6 +213,7 @@
       // @include src/vehicle-merge3d.js
       // @include src/render3d-prewarm-models.js
       // @include src/render3d-effects.js
+      // @include src/scenery-pools3d.js
       // @include src/render3d-resources.js
       // @include src/render3d-hiccups.js
       // The story payphone uses the shared-resource sets (render3d-resources.js).
@@ -231,6 +232,7 @@
       buildFarScenery(staticBatchMeshes);
       bootMark('far-scenery');
       cellStatics();
+      buildSceneryPools();
       paintLampLight();
       bootMark('cells-lamps');
       applyRendererQuality(graphicsTier());

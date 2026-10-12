@@ -70,7 +70,7 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - Mission briefs are only used by missions 3-4 so far; the other jobs keep the title card and the strip.
 
 ## Clouds (clouds*.js, clouds3d-*.js)
-- LOW/MEDIUM's two-slice approximation visibly repeats a cloud grid near the chase-view horizon: the noise tiles every 275 m and coverage every 1.125 km. [October 12 capture](audit/game-review-2026-10-12/chase-low-clouds.png). Improve shared cloud sampling and horizon filtering, retaining cheap LOW/MEDIUM rendering; validate weather, shadows and both cameras across tiers on real GPUs.
+- October 12 chase follow-up replaces LOW/MEDIUM's repeating slices with bounded volumetric integration and decorrelates distant chase formations. Review [before/after captures](audit/chase-polish-2026-10-12/README.md); real-GPU profiling and motion review remain necessary, particularly Ultra on the target M4 Max.
 - The flight camera never looks above ~30 degrees below the horizon: under the base the underside is never in view, only the shadows and the dimmer light (the chase view shows it: clouds3d-sky.js).
 - Chase view: the sky, haze, sun glare, shafts and the per-pixel cloud shadows were tuned on SwiftShader: check on a real GPU (and the cost of the march from below at ULTRA). The cloud shadows darken shade too (as the plane always did: a blend, not a light term). The march from below converges over ~10 frames (SKY CLOUD HISTORY): judge it in motion on a GPU (a fast turn shows the single-frame grain briefly).
 - The veil is capped so the subject stays readable, so the ground shows through it once a jumper is within ~30 m of the base (the far march covers only beyond the jumper).

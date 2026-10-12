@@ -60,7 +60,7 @@
         g.connect(f);
         tail = f;
       }
-      p.pan.value = position ? clamp((position.x - player.x) / 450, -0.9, 0.9) : 0;
+      p.pan.value = position ? clamp(soundRight(position.x - player.x, position.y - player.y) / 450, -0.9, 0.9) : 0;
       tail.connect(p).connect(options.bus || ambienceBus);
       s.start(t, start, duration);
       s.onended = () => {

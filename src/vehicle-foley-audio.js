@@ -318,8 +318,9 @@
         band = audio.createBiquadFilter(),
         g = audio.createGain(),
         p = audio.createStereoPanner(),
-        from = clamp((c.x - (player.car || player).x) / 60, -0.9, 0.9),
-        to = clamp(from + ((c.vx || 0) > 0 ? 0.9 : -0.9), -0.9, 0.9);
+        ear = player.car || player,
+        from = clamp(soundRight(c.x - ear.x, c.y - ear.y) / 60, -0.9, 0.9),
+        to = clamp(from + (soundRight(c.vx || 0, c.vy || 0) > 0 ? 0.9 : -0.9), -0.9, 0.9);
       s.buffer = fa.white;
       band.type = 'bandpass';
       band.Q.value = 0.8;
@@ -377,7 +378,7 @@
         d = car ? distanceBetween(car, player) : 500;
       glideParam(f.skid.gain.gain, active && car ? 0.17 * f.skidLevel : 0, now, 0.08);
       if (car) {
-        glideParam(f.skid.pan.pan, clamp((car.x - player.x) / 450, -0.85, 0.85), now, 0.1);
+        glideParam(f.skid.pan.pan, clamp(soundRight(car.x - player.x, car.y - player.y) / 450, -0.85, 0.85), now, 0.1);
         glideParam(f.skid.filter.frequency, airCutoff(d) * 0.5, now, 0.15);
         glideParam(f.skid.source.playbackRate, 0.96 + ((car.id || 0) % 5) * 0.02, now, 0.2);
       }

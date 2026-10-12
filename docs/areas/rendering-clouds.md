@@ -40,25 +40,22 @@ The cloud layer (game side, clouds.js) and how it is drawn (clouds3d*.js inside
   over everything (renderOrder 1100), with a soft cap (`NEAR_CAP`: freefall 0.62, canopy 0.55,
   aircraft 0.45 x its own immersion) so the subject stays readable. The far march starts where
   the veil hands over (`uNearFade`). LOW: no march, a flat veil from `cloudAmountAt`.
-- from below (clouds3d-sky.js, the chase view): the sky dome composites the layer behind all geometry.
-  HIGH/ULTRA: the march with `uBelow` 1 runs its own loop (`cloudMarchBelow`, clouds3d-march.js): coarse
-  steps through clear air growing with the distance (4 % of it, 25-300 m), a step back and quarter steps
-  (30 m at most: longer ones draw contour rings on far cloud) while in cloud, out to 20 km
-  (`SKY_CLOUD_REACH`); the detail octave fades out from 1.5 to 4 km (it only aliases there); a tower beyond
-  the drawn distance stops no ray (`uBelowDrawn`); the noise is the half-float copy of the volume
-  (`cloudNoiseSky`, made with the same generator at boot: the 8-bit quanta, sharpened by the coverage cut,
-  ring every far billow); no pocket or veil; lit from `skyLightDirection`, the base also lit by the sky
-  round about and the sunlit ground. Each frame takes a new step jitter and a
-  sub-texel ray offset; SKY CLOUD HISTORY (clouds3d-sky-history.js) averages the frames (reprojected
-  through the layer's base, clamped to this frame's neighbours, kept 88 %; restarts on a resize, a camera
-  jump of 50 m or a frame without the march) and the dome reads that. LOW/MEDIUM: the dome reads the
-  field at two heights where the ray crosses the slab (no detail octave): a soft opacity and a shaded
-  underside. Both haze the layer with the air's own visibility (`skyCloudHaze()`: ~30 km fair, ~15 under
-  a grey deck, a few km in rain; the chase haze's height fall-off and colour), never the street's haze,
-  which closes within the draw distance (with it, everything under ~20 degrees was a milky smear and the
-  horizon empty). Same coverage map and noise as the shadows; WebGL1 has none. A camera inside the layer
-  (a summit in a wet deck) sees the march round it on HIGH/ULTRA, nothing on LOW/MEDIUM. The flight
-  view's march (`uBelow` 0) is untouched: its pixels are identical. Console `skyCloudBench(rounds)`.
+- from below (clouds3d-sky.js): every chase preset integrates the volume behind opaque geometry.
+  `SKY_CLOUD_QUALITY` caps LOW at quarter resolution/24 steps, MEDIUM at 0.34/40,
+  HIGH at half/64, ULTRA at half/96 (touch HIGH/ULTRA resolution 0.34, max64 steps).
+  LOW/MEDIUM use one light probe; HIGH/ULTRA retain self-shadowing and multiple scattering.
+  Coarse empty-space steps and early opacity exit bound work. No full-resolution slice carpet.
+- Only the distant **chase** sample coordinates change (`skyCloudSamplePoint`): from 400 m
+  horizontal distance, blend into a rotated, broader field with a world-anchored, wind-driven
+  kilometre-scale warp; fully distant by 2 km. Nearby cloud and its shadows retain the original
+  field. This is a visual distance approximation; distant chase silhouettes are not pixel-identical
+  to the overhead field. `clouds3d-field.js`, cloud heights, flight march, shadows and immersion
+  are unchanged. The half-float chase noise avoids 8-bit contour quantization.
+- All chase tiers keep reprojected, neighbourhood-clamped history. Reprojection accounts for wind;
+  resize, camera jumps, a gap in drawing, tier changes or abrupt weather/base changes reset it.
+  Haze uses atmospheric visibility (~30 km fair, shorter in rain), never the street draw-distance
+  fog. `cloudLayer().view.sky.budget` reports actual resolution/step bounds; `skyCloudBench` works
+  on any chase tier. Readback timings under SwiftShader are not laptop GPU benchmarks.
 - shadows from the street (clouds3d-sky.js): the plane only works for a camera above it, so the chase
   view hides it and finds the shadow per pixel: a quarter-size pass rebuilds each pixel's world point
   from the depth and reads `cloudShadeAt` (CLOUD_SHADE_GLSL, the plane's own field, rings and strength),

@@ -1,0 +1,9 @@
+{
+  "passed": 27,
+  "directRoadBlocked": true,
+  "detourAvoidsRoad": true,
+  "noPositionChanges": true,
+  "maximumAttempts": 3,
+  "retrySeconds": 8,
+  "emergencyBridgeStop": true
+}

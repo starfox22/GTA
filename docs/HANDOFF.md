@@ -5,10 +5,16 @@ rules, workflow), then this page, then only the area doc your task needs (`docs/
 
 ## Latest Codex review branches (12 October 2026)
 
+- **Current follow-up: `codex/chase-clouds-polish-2026-10-12`**, based on `cbd5668` and containing both
+  earlier Codex branches. [The chase-polish report](audit/chase-polish-2026-10-12/README.md) covers
+  volumetric chase clouds, camera/positional audio, weapon/retry continuity, ambulance recovery
+  and conservative rooftop culling, with actual captures and validation limits. The owner's
+  high-end target is comfortable Ultra on M4 Max; [hardware profiling](audit/laptop-profiling.md)
+  remains necessary. Main and the existing hosted site are unchanged.
 - `codex/game-polish-2026-10-12` continues `codex/game-fixes-2026-10-11` at `370c1cf` and
   contains all of that earlier pass. Both start from main's October 11 version 62 (`9afe59d`).
   The branches are review work; Codex has not merged or pushed them to `main`.
-- Start with [the October 12 report](audit/game-review-2026-10-12/README.md) for the current
+- Start with [the October 12 report](audit/game-review-2026-10-12/README.md) for the preceding
   fixes, exact verification coverage, screenshots and suggested next work. The
   [October 11 report](audit/game-review-2026-10-11/README.md) documents the inherited fixes.
 - This follow-up enables FPS by default (preserving a saved opt-out), corrects input release
