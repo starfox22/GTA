@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-591 files in the include tree, 202,525 lines.
+591 files in the include tree, 202,544 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -136,7 +136,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/mobile.js`   300 — Touch controls
 - `src/input-hints.js`   155 — Input-aware hints: which device the player is using (keyboard and mouse, touch, gamepad) and what an action is called on it (keyName's touch and …
 - `src/gamepad.js`   360 — Gamepad (standard mapping): play through the same actions as the bound keys, menus by focus, the city map by a cursor; the button names hints use …
-- `src/world-view.js`   343 — World camera gestures
+- `src/world-view.js`   344 — World camera gestures
 - `src/car-radio.js`   871 — Vehicle radio stations
 - `src/garages.js`   782 — ▸ Drive-in repair and respray
 - `src/payphones.js`   215 — Story payphones: PAYPHONES (the original `phone` first, at least two on every island including North Point Key, PAYPHONE_ISLANDS), the one the job …
@@ -166,7 +166,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/god-panel.js`   805 — God mode settings
 - `src/god-drawbridges.js`   134 — God mode settings · DRAWBRIDGES: raise or lower every drawbridge or one at a time, through each bridge's own opening (godDrawbridges).
 - `src/driving.js`   542 — Tyres, brakes and driving assists
-- `src/chase-camera.js`   866 — Chase camera: the third-person view behind the player that V switches with the street view: where it stands and looks, mouse / stick / touch look …
+- `src/chase-camera.js`   880 — Chase camera: the third-person view behind the player that V switches with the street view: where it stands and looks, mouse / stick / touch look …
 - `src/chase-rules.js`   599 — Chase rules: what the player can see in the chase view, for the game's rules (who may fire, spawning and recycling out of sight, the HUD's player …
 - `src/chase-hud.js`    77 — Chase HUD: the reticle in the middle of the screen in the chase view (chase-view.css) and the hidden cursor while the pointer is captured; drawn …
 - `src/tyre-effects.js`   274 — What the tyres leave behind: the burnout (forward and the handbrake held at a standstill), skid marks, and the one rule for tyre smoke, dust and …
@@ -287,7 +287,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/county.js ▸ Outlying districts
 
 - `src/county-map.js`   565 — South Coast County: shared playable geography, roads and map data.
-- `src/county-build.js`   578 — South Coast County build: buildCounty(), populateCounty(), colliders, bridge bodies, 2D and map drawing, county police.
+- `src/county-build.js`   580 — South Coast County build: buildCounty(), populateCounty(), colliders, bridge bodies, 2D and map drawing, county police.
 - `src/county-guide-signs.js`    78 — The county's roadside guide signs as a plan (verge, two posts, real size) and the audit that no board of any kind stands on or across asphalt …
 
 ## src/monarch.js ▸ Monarch Isle: the plan, the land and the streets
@@ -395,7 +395,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/crowd-witnesses.js`   395 — Crowd witnesses: who really saw or heard what the player did, who runs a short way and phones 911, the call itself (phone out, the lines, cut short …
 - `src/crowd-scenes.js`   354 — Street scenes: set pieces staged round the player, their members and props (sceneOpen, spawnSceneMember, streetFrontages).
 - `src/crowd-transit.js`   323 — Crowd taxis and buses: hailing, bus arrivals, deliveries and the per-frame scene update (updateScenes).
-- `src/crowd-traffic.js`   301 — Traffic life: drivers getting out, arguments, returning to cars, crashes (updateTrafficLife) and knocked scene props.
+- `src/crowd-traffic.js`   303 — Traffic life: drivers getting out, arguments, returning to cars, crashes (updateTrafficLife) and knocked scene props.
 
 ## src/livingcity.js ▸ The living city in free roam
 
