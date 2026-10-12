@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-591 files in the include tree, 202,544 lines.
+591 files in the include tree, 202,648 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -303,9 +303,9 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/military.js ▸ Fort Sentinel
 
-- `src/military-base.js`   608 — Fort Sentinel rules: plans, walls, gates, lockdown, solids and alarms (MILITARY, SENTINEL, militaryBlocked, militaryAlarm).
-- `src/military-life.js`   603 — Fort Sentinel life: buildMilitary(), soldiers and drill, gunners and tanks firing, supply runs, updateMilitary().
-- `src/fort-cover.js`   420 — Fort Sentinel cover: the borrowed army uniform (wearUniform), the stolen pass shown at the gate, the cover state and its small API for a mission …
+- `src/military-base.js`   636 — Fort Sentinel rules: plans, walls, gates, lockdown, solids and alarms (MILITARY, SENTINEL, militaryBlocked, militaryAlarm).
+- `src/military-life.js`   645 — Fort Sentinel life: buildMilitary(), soldiers and drill, gunners and tanks firing, supply runs, updateMilitary().
+- `src/fort-cover.js`   438 — Fort Sentinel cover: the borrowed army uniform (wearUniform), the stolen pass shown at the gate, the cover state and its small API for a mission …
 - `src/fort-cover-watch.js`   165 — Fort Sentinel cover, the garrison's eyes: each soldier's forward cone (fortSoldierSees), the restricted spots, and the suspicion it fills while the …
 - `src/fort-cover-records.js`   117 — Fort Sentinel's HQ records office: its side door (FORT_RECORDS), the fade inside, the timed search for the weapons file on a card (#fortRecords) and …
 
@@ -395,7 +395,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/crowd-witnesses.js`   395 — Crowd witnesses: who really saw or heard what the player did, who runs a short way and phones 911, the call itself (phone out, the lines, cut short …
 - `src/crowd-scenes.js`   354 — Street scenes: set pieces staged round the player, their members and props (sceneOpen, spawnSceneMember, streetFrontages).
 - `src/crowd-transit.js`   323 — Crowd taxis and buses: hailing, bus arrivals, deliveries and the per-frame scene update (updateScenes).
-- `src/crowd-traffic.js`   303 — Traffic life: drivers getting out, arguments, returning to cars, crashes (updateTrafficLife) and knocked scene props.
+- `src/crowd-traffic.js`   304 — Traffic life: drivers getting out, arguments, returning to cars, crashes (updateTrafficLife) and knocked scene props.
 
 ## src/livingcity.js ▸ The living city in free roam
 
@@ -679,9 +679,9 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/base3d-materials.js`   186 — Fort Sentinel textures and materials: fences, nets, plates, containers (baseTexture, plateMaterial).
 - `src/base3d-helpers.js`   157 — Fort Sentinel geometry helpers: rodTo, strip, coil, vault and arch walls, gableRoof, cylinder, mergeUnder.
-- `src/base3d-ground.js`   361 — Fort Sentinel ground sheet: the base plot rectangle G and its painted ground.
+- `src/base3d-ground.js`   377 — Fort Sentinel ground sheet: the base plot rectangle G and its painted ground.
 - `src/base3d-perimeter.js`   344 — Fort Sentinel perimeter: double fence, razor wire, towers, CCTV, signs, searchlights and gate parts.
-- `src/base3d-buildings.js`   340 — Fort Sentinel buildings from SENTINEL.buildings (planOf): window rows and flags.
+- `src/base3d-buildings.js`   336 — Fort Sentinel buildings from SENTINEL.buildings (planOf): window rows and flags.
 - `src/base3d-facilities.js`   337 — Fort Sentinel control tower, radar head (radarHead), windsock and glow meshes.
 - `src/base3d-frame.js`   102 — Fort Sentinel per-frame visuals: updateBaseVisuals() and the searchlight lens.
 - `src/base3d-vehicles.js`   276 — Military vehicle models: makeMilitaryVehicle(), compactTank, wheels, lamps and star decals.
@@ -861,7 +861,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/game-console-core.js`   191 — DeadEndCity console, core: status, teleport, look, clock, zoom, simulate, heal, god, cash, walk (+ godPanelConsole)
 - `src/game-console-missions.js`   367 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
-- `src/game-console-police.js`   279 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
+- `src/game-console-police.js`   282 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
 - `src/game-console-vehicles.js`   475 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
 - `src/game-console-world.js`   277 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
 - `src/game-console-rides.js`   104 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
