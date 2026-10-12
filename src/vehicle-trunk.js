@@ -16,6 +16,9 @@
      * Releasing or moving off pauses it. A lockpick at a lock looks like someone at their own car: only a person
      * close by and looking at him (`lockpickWatcher`: LOCKPICK_NOTICE, facing him, a clear line) notices, and phones
      * it in as a theft (witnessReport); a police officer in sight makes it a crime seen. Nobody watching, it is silent. Missions poll `trunkOpen`, `trunkPickProgress(c)` and `trunkPicking(c)`.
+     * Shutting it: on foot at an open trunk (a mission vehicle's only once its loot is taken), the action key closes
+     * it (`trunkCloseTarget`, prompt CLOSE THE TRUNK); a vehicle that moves off faster than walking pace
+     * (TRUNK_SLAM_SPEED) slams its open lid shut (`slamMovingTrunks`). Both go through `closeTrunk`.
      */
     const TRUNK_PICK_SECONDS = 5,
       TRUNK_PINS = 5,
@@ -32,6 +35,8 @@
       LOCK_PICK_KEEP = 10,
       // A vehicle rolling faster than this cannot be worked on.
       PICK_STOPPED = 3 * KMH,
+      // An open lid slams shut once its vehicle moves faster than walking pace.
+      TRUNK_SLAM_SPEED = 6 * KMH,
       // The heat of each pin set (a whole trunk 0.35, a door 0.24: under a punch on a police officer).
       // Who notices a lock being picked: a passer-by this close who is looking his way; an officer much further.
       LOCKPICK_NOTICE = 15 * UNITS_PER_METRE,
@@ -116,8 +121,47 @@
       if (!lockpickEquipped()) return false;
       return !!(trunkPickTarget() || doorPickTarget());
     }
-    /* Every frame (game-update.js): the hold at a lock steps in, kneels and works the pins. */
+    /* An open trunk the player stands at on foot (nearest first), or null: the action key shuts it. A mission
+       vehicle's trunk with its loot still in it is the mission's (the key takes the loot first). */
+    function trunkCloseTarget() {
+      if (!lockpickFooting()) return null;
+      let best = null,
+        bestDistance = Infinity;
+      for (let i = 0; i < vehicles.length; i++) {
+        const c = vehicles[i];
+        if (!c.trunkOpen || (c.trunkLoot && c.mission) || c.hp <= 0) continue;
+        if (Math.abs(c.x - player.x) > 120 || Math.abs(c.y - player.y) > 120) continue;
+        trunkPoint(c, pickSpot);
+        const d = hypot2(pickSpot.x - player.x, pickSpot.y - player.y);
+        if (d < bestDistance && vehicleStopped(c) && Math.abs(entityElevation(c) - entityElevation(player)) < 10) {
+          best = c;
+          bestDistance = d;
+        }
+      }
+      return best && withinRange('trunk-close', bestDistance, TRUNK_REACH) ? best : null;
+    }
+    /* The action key at an open, empty trunk: the lid comes down (interact, game-player-actions.js). */
+    function trunkCloseInteract() {
+      const c = trunkCloseTarget();
+      if (!c) return false;
+      closeTrunk(c);
+      trunkSlamSound(c, 0.8);
+      tell('TRUNK CLOSED', 1.5, { id: 'lockpick' });
+      return true;
+    }
+    /* A vehicle moving off with its trunk open: past walking pace the lid slams shut (never left swinging open). */
+    function slamMovingTrunks() {
+      for (let i = 0; i < vehicles.length; i++) {
+        const c = vehicles[i];
+        if (!c.trunkOpen) continue;
+        if (Math.abs(c.speed || 0) < TRUNK_SLAM_SPEED && Math.abs(c.vx || 0) + Math.abs(c.vy || 0) < TRUNK_SLAM_SPEED) continue;
+        closeTrunk(c);
+        trunkSlamSound(c, 1.1);
+      }
+    }
+    /* Every frame (game-update.js): open lids on the move slam shut; the hold at a lock steps in, kneels and works the pins. */
     function updateLockpick(deltaSeconds) {
+      slamMovingTrunks();
       const w = lockpickWork;
       let target = null,
         kind = null;
@@ -232,7 +276,7 @@
       // The renderer re-reads the body (damage3d-bodies.js swings the lid).
       c.damageVersion = (c.damageVersion || 0) + 1;
     }
-    /* Shuts it again (a mission's reset): what was picked stays picked only while it is open. */
+    /* Shuts it again (the action key at it, moving off, a mission's reset): what was picked stays picked only while it is open. */
     function closeTrunk(c) {
       if (!c || !c.trunkOpen) return;
       c.trunkOpen = false;
@@ -256,6 +300,10 @@
     /* The prompt at a trunk with something in it, or at a locked driver's door with the lockpick in hand (updateUI,
        after the vehicle prompts, which it replaces). */
     function offerLockpickPrompt() {
+      if (trunkCloseTarget()) {
+        offerPrompt('CLOSE THE TRUNK', { id: 'trunk-close' });
+        return;
+      }
       const trunk = trunkPickTarget();
       if (trunk) {
         if (!lockpickOwned()) offerPrompt('TRUNK LOCKED', { key: null, id: 'trunk-locked' });
@@ -308,6 +356,7 @@
               progress: Math.round(trunkPickProgress(best) * 100) / 100,
               pins: Math.floor(trunkPickProgress(best) * TRUNK_PINS + 1e-6),
               inReach: trunkPickTarget() === best,
+              closeInReach: trunkCloseTarget() === best,
               stopped: vehicleStopped(best),
             }
           : null,
