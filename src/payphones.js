@@ -1,4 +1,4 @@
-    // Story payphones: PAYPHONES (the original `phone` first, at least two on every island, PAYPHONE_ISLANDS),
+    // Story payphones: PAYPHONES (the original `phone` first, at least two on every island incl. North Point Key, PAYPHONE_ISLANDS),
     // the one the job pointer guides to (nearest, with hysteresis), the one in reach, map icons and the console report.
     /**
      * STORY PAYPHONES
@@ -10,11 +10,12 @@
      * and one on another island counts as further (PAYPHONE_OTHER_ISLAND), so
      * the pointer neither flickers nor sends the player across a bridge.
      *
-     * Every drivable island (the garage islands, garages-shops.js
-     * GARAGE_ISLANDS) has at least two, spread over it, on a pavement against a
-     * building or a kerb, clear of roads, doors (their prompt wins inside
-     * PLACE_REACH), bus stops, bike stations, the Blue Hour's forecourt and the
-     * garage lots (payphoneAudit(), tools/tests/payphones-islands.mjs).
+     * Every island (every land region maps to one in PAYPHONE_REGION_ISLAND:
+     * the garage islands, garages-shops.js GARAGE_ISLANDS, and North Point Key)
+     * has at least two, spread over it, on a pavement against a building or a
+     * kerb, clear of roads, the Key's visitor lanes, doors (their prompt wins
+     * inside PLACE_REACH), bus stops, bike stations, the Blue Hour's forecourt
+     * and the garage lots (payphoneAudit(), tools/tests/payphones-islands.mjs).
      * `style` 'yellow' is the 1990s pedestal booth of payphone3d.js (facing
      * south, the street camera's way); 'isle' is one of Monarch Isle's green
      * booths (MONARCH_PAYPHONES, monarch-streets3d.js). Index 0 is the original
@@ -37,6 +38,7 @@
         coralcoast: 'coralcoast',
         sunsetisle: 'sunsetisle',
         sentinel: 'sentinel',
+        northpointkey: 'northpointkey',
       };
     const PAYPHONES = [
       Object.assign(phone, { id: 'armory', island: 'northbank', name: 'ARMORY STREET', style: 'yellow' }),
@@ -64,6 +66,10 @@
         ['pier-drive', 'sunsetisle', 3814, -5960, 'PIER ISLAND DRIVE'],
         ['causeway', 'sentinel', 9342, 8071, 'SENTINEL CAUSEWAY'],
         ['causeway-west', 'sentinel', 8830, 8071, 'CAUSEWAY STRIP'],
+        // North Point Key: on the forecourt, its back to MERCURY TOWER west of the entrance canopy, and on the
+        // circle's outer pavement south of the drive, its back to the kerb (off the visitors' lanes).
+        ['key-forecourt', 'northpointkey', 3828, -3690, 'KEY FORECOURT'],
+        ['key-circle', 'northpointkey', 4135, -3350, 'KEY CIRCLE'],
       ].map(([id, island, x, y, name]) => ({ id, island, x, y, name, style: 'yellow' })),
       ...MONARCH_PAYPHONES.map((p, i) => ({ id: 'monarch-' + (i + 1), island: 'monarch', x: p.x, y: p.y, name: p.name, style: 'isle' })),
     ];
@@ -71,7 +77,7 @@
     const PAYPHONE_ISLANDS = {};
     for (const p of PAYPHONES) (PAYPHONE_ISLANDS[p.island] ||= []).push(p.id);
     const storyPayphoneState = { index: 0, island: null, checkAt: -Infinity };
-    /* The island a point stands on (PAYPHONE_REGION_ISLAND), or null at sea, on a bridge or the Key. */
+    /* The island a point stands on (PAYPHONE_REGION_ISLAND), or null at sea or on a bridge. */
     function payphoneIslandAt(x, y) {
       for (let i = 0; i < LAND_REGIONS.length; i++) {
         const r = LAND_REGIONS[i];
@@ -170,7 +176,18 @@
         otherPayphone: near(PAYPHONES.filter((q) => q !== p)),
         forecourt: blueHourForecourt(p.x, p.y, 20),
         garageLot: inGarageLot(p.x, p.y, 20),
+        // North Point Key: units to the visitors' run (livingcity-key.js keyRunRoute, lane centres), else null.
+        visitorLane: onNorthPointKey(p.x, p.y) ? payphoneLaneDistance(p, keyRunRoute().points) : null,
       };
+    }
+    function payphoneLaneDistance(p, points) {
+      let best = Infinity;
+      for (let i = 1; i < points.length; i++) {
+        const a = points[i - 1],
+          b = points[i];
+        best = Math.min(best, segmentDistance(p.x, p.y, [a.x, a.y], [b.x, b.y]));
+      }
+      return Math.round(best);
     }
     function payphonesReport() {
       const chosen = storyPayphone(),
@@ -182,6 +199,8 @@
         inReach: reach ? reach.id : null,
         callWaiting: !mission && storyCallWaiting(),
         playerIsland: payphoneIslandAt(player.x, player.y),
+        // Every land region and the island it counts as (null: unmapped, which the island test fails).
+        regions: LAND_REGIONS.filter((r) => !r.lake).map((r) => ({ id: r.id, island: PAYPHONE_REGION_ISLAND[r.id] || null })),
         list: PAYPHONES.map((p) => ({
           id: p.id,
           island: p.island,

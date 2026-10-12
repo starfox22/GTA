@@ -1,11 +1,14 @@
-// Every island a car can reach (the garage islands) has at least two story payphones (payphones.js PAYPHONES),
-// each on that island's land, off the road and clear of doors, bus stops, bike stations, the Blue Hour forecourt and
-// the garage lots; the call's pointer guides to the nearest one with hysteresis; a Monarch Isle booth takes the call;
+// Every island (every land region maps to one; the garage islands and North Point Key) has at least two story
+// payphones (payphones.js PAYPHONES), each on that island's land, off the road and the Key's visitor lanes and clear of
+// doors, bus stops, bike stations, the Blue Hour forecourt and the garage lots; the call's pointer guides to the nearest one with hysteresis; a Monarch Isle booth takes the call;
 // a call taken at a payphone other than the original starts the job.
 export const fresh = true;
 export default async function (t) {
   const report = await t.call('payphones');
-  const islands = Object.keys((await t.call('garage')).islands);
+  const unmapped = report.regions.filter((r) => !r.island).map((r) => r.id);
+  t.assert(unmapped.length === 0, 'land regions with no island: ' + unmapped.join(', '));
+  const islands = [...new Set([...Object.keys((await t.call('garage')).islands), ...report.regions.map((r) => r.island)])];
+  t.assert(islands.includes('northpointkey'), 'North Point Key is not an island: ' + islands.join(', '));
   const byId = Object.fromEntries(report.list.map((p) => [p.id, p]));
   t.assert(report.list[0].x === 790 && report.list[0].y === 553, 'the original payphone is not first: ' + JSON.stringify(report.list[0]));
   for (const island of islands) {
@@ -22,6 +25,7 @@ export default async function (t) {
       t.assert(a.prop === null || a.prop >= 10, `${id}: ${a.prop} units from a street prop`);
       t.assert(!a.forecourt && !a.garageLot, `${id}: on the Blue Hour forecourt or a garage lot`);
       t.assert(a.otherPayphone >= 400, `${id}: another payphone ${a.otherPayphone} units away`);
+      t.assert(a.visitorLane === null || a.visitorLane >= 30, `${id}: ${a.visitorLane} units from the Key's visitor lane`);
     }
     t.note(`${island}: ${ids.length} (${ids.join(', ')})`);
   }

@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-590 files in the include tree, 202,116 lines.
+590 files in the include tree, 202,135 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -138,7 +138,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/world-view.js`   345 — World camera gestures
 - `src/car-radio.js`   871 — Vehicle radio stations
 - `src/garages.js`   782 — ▸ Drive-in repair and respray
-- `src/payphones.js`   196 — Story payphones: PAYPHONES (the original `phone` first, at least two on every island, PAYPHONE_ISLANDS), the one the job pointer guides to (nearest …
+- `src/payphones.js`   215 — Story payphones: PAYPHONES (the original `phone` first, at least two on every island incl.
 - `src/crowd.js`   194 — ▸ Crowd life, perception and reactions
 - `src/livingcity.js`    32 — ▸ The living city in free roam
 - `src/monarch-life.js`    38 — ▸ Monarch Isle: traffic, people, boats and sound
