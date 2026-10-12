@@ -63,7 +63,7 @@ street level: rendering-weather.md. Numbers: audit/performance.md (Seventh pass)
   rule, is cut away); on a north side nothing stands more than 3 units off the wall, inside the
   cutaway round a player hidden behind the building (lighting3d-cutaway.js: its box plus 3), so
   shallow valance awnings, no canopy, no fire escape. The pavement before a place's door (56
-  units), the story payphone (20), the Blue Hour's forecourt, the betting shop and the garage
+  units), the yellow story payphones (20), the Blue Hour's forecourt, the betting shop and the garage
   lots is kept clear (`frontKeepClear`).
 - **Draw calls**: a material is a batch per cell, so the frontage uses few: every plain-painted
   part (panels, doors, shutters, fascias, frames, awnings, the classic shopfront's too) is FRONT

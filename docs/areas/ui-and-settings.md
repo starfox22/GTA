@@ -180,7 +180,8 @@ navigation.js (big map, GPS), cycles.js (bike share), src/shell.html + src/ui/* 
 
 ## Bike share (cycles.js, cycles3d.js)
 
-- South Coast Cycle stations stand by every payphone, at each job's first destination
+- South Coast Cycle stations stand by the original story payphone (`phone`; the other story payphones only keep
+  stations 88 units off their reach, `payphoneKeepOuts`), at each job's first destination
   (`missions[i].start` or `MISSION_STARTS`), at rail stations and at the old rack sites;
   other systems can call `addBikeShareAnchor({ x, y, label })` before the city is populated.
 - Placement tries kerb-side pavement then open ground and takes the first dry, clear

@@ -46,7 +46,7 @@ here when polishing; delete a line when it is fixed. Newest features first.
 
 ## Missions 1 and 2 (harbor*.js, chase.js, roofmission*.js, campaign.js)
 - Vinny's truck (vinnytruck3d.js) has no crumple shell or pane-by-pane glass damage (tyres, burn and lamps only). On the downloaded cab (round three) it carries no door lettering; the procedural fallback's respray keeps its MORETTI & SONS lettering.
-- The payphone's and newspaper boxes' foot obstacles are registered by the renderer (like the bus shelters), so a `?norender` page walks through them.
+- The payphones' and newspaper boxes' foot obstacles are registered by the renderer (like the bus shelters), so a `?norender` page walks through them.
 - At night the white faces round the payphone (newspaper pages, placards) sit in the street lamp's pool and read bright.
 - The Blue Hour's limousines have no chauffeurs and never leave; the doormen and valet keep their posts (no door opened, no car taken). The forecourt fixtures are foot obstacles, which stop only the player: a street walker straying to the wall or the kerb can pass through a planter or bollard.
 - At a fresh boot a double-parked delivery van (crowd-scenes.js) often holds the truck's first kerb spot: the truck then waits further east along the same kerb (x ≈ 1950), still in view.
