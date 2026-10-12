@@ -186,9 +186,10 @@
     const bikeShareLog = { rented: 0, docked: 0, spent: 0, refunded: 0, skipped: [] },
       // Places other systems ask for a station at (addBikeShareAnchor).
       bikeShareExtraAnchors = [];
-    /* The station network is data-driven: every payphone and every job's start
-       gets one. Payphones are the ringing `phone`, any `PAYPHONES` list a
-       district declares, and PLACES of kind 'payphone'; a job's start is its
+    /* The station network is data-driven: the story payphone and every job's start
+       gets one. Payphones are the original `phone` (the other story payphones,
+       payphones.js PAYPHONES, only keep stations off their reach: payphoneKeepOuts)
+       and PLACES of kind 'payphone'; a job's start is its
        `missions[i].start`, else MISSION_STARTS. Anything else (a new district's
        plaza, a ferry pier) can call addBikeShareAnchor before the city is
        populated. */
@@ -198,14 +199,13 @@
     }
     function payphoneAnchors() {
       const list = [{ x: phone.x, y: phone.y, label: 'PAYPHONE' }];
-      try {
-        // eslint-disable-next-line no-undef
-        if (typeof PAYPHONES !== 'undefined' && Array.isArray(PAYPHONES))
-          PAYPHONES.forEach((p, i) => list.push({ x: p.x, y: p.y, label: p.name || p.label || 'PAYPHONE ' + (i + 2) }));
-      } catch {}
       for (const p of PLACES)
         if (p.kind === 'payphone' || p.payphone) list.push({ x: (p.door || p).x, y: (p.door || p).y, label: p.name || 'PAYPHONE' });
       return list.filter((p, i) => Number.isFinite(p.x) && list.findIndex((q) => Math.hypot(q.x - p.x, q.y - p.y) < 4) === i);
+    }
+    // Every payphone a station keeps off (its prompt wins there): the anchors and the story payphones.
+    function payphoneKeepOuts() {
+      return [...payphoneAnchors(), ...PAYPHONES.filter((p) => p.style === 'yellow')];
     }
     function missionStartAnchors() {
       const known = new Map(MISSION_STARTS());
@@ -379,7 +379,7 @@
           benches: [],
           parked: [],
           spawn: null,
-          payphones: payphoneAnchors(),
+          payphones: payphoneKeepOuts(),
         };
       const started = performance.now(),
         crosswalks = cityCrosswalks();
@@ -502,7 +502,7 @@
           // Every kept alternative has furniture in it: search again with the
           // furniture as part of the test.
           const near = gatherBikeKeepOuts(
-            { stations: [], doors: PLACES.filter((p) => p.door).map((p) => p.door), entries: RAIL_STATIONS.map((s) => s.entry), payphones: payphoneAnchors() },
+            { stations: [], doors: PLACES.filter((p) => p.door).map((p) => p.door), entries: RAIL_STATIONS.map((s) => s.entry), payphones: payphoneKeepOuts() },
             st.anchor,
             cityCrosswalks(),
           );

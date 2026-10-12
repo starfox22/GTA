@@ -358,4 +358,8 @@
     });
     // The CIRRUS meeting scene a story job drives: skyMeeting(action), skyMeetingSkip(stage) (skyline-meeting.js).
     addConsoleMethods('missions', skyMeetingConsole());
+    addConsoleMethods('missions', {
+      // Every story payphone (payphones.js): island, site audit, the one the pointer guides to and the one in reach.
+      payphones: () => payphonesReport(),
+    });
     // END SUBSYSTEM: src/game-console-missions.js

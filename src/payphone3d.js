@@ -1,5 +1,6 @@
       // The story payphone where mission 1 starts: a 1990s yellow pedestal payphone with its lit PHONE sign, handset,
-      // keypad, directory and grime, the newspaper boxes beside it and the pavement dressing round it (litter, leaves, weeds).
+      // keypad, directory and grime, the newspaper boxes beside it and the pavement dressing round it (litter, leaves, weeds);
+      // the other yellow story payphones (payphones.js) are copies of its booth.
       /**
        * THE YELLOW PAYPHONE
        * Scope: createCityRenderer() closure, after vinnytruck3d.js (its metre
@@ -376,6 +377,32 @@
         set.count += 4;
       }
       let payphoneHandset = null;
+      const payphoneHandsets = [];
+      /* THE OTHER STORY PAYPHONES (payphones.js PAYPHONES, style 'yellow'): the same booth, its
+         meshes sharing the original's geometry and materials (no new program), its own trembling
+         handset, without the newspaper boxes and the pavement dressing that frame the first. */
+      function payphoneBooths(booth, handsetMesh) {
+        for (const p of PAYPHONES) {
+          if (p === phone || p.style !== 'yellow') continue;
+          const group = new Three.Group();
+          group.position.set(p.x, terrainHeight(p.x, p.y), p.y);
+          for (const m of booth) {
+            const copy = new Three.Mesh(m.geometry, m.material);
+            copy.castShadow = m.castShadow;
+            copy.receiveShadow = m.receiveShadow;
+            group.add(copy);
+          }
+          const handset = new Three.Mesh(handsetMesh.geometry, handsetMesh.material);
+          handset.castShadow = handset.receiveShadow = true;
+          handset.position.copy(handsetMesh.position);
+          handset.userData.dynamic = true;
+          group.add(handset);
+          payphoneHandsets.push(handset);
+          scene.add(group);
+          registerFootObstacle(p.x, p.y + 0.08 * PP, 0.44 * PP, 0.27 * PP);
+          signLightPools.push({ x: p.x, y: p.y + 0.9 * PP, r: 2.6 * PP, color: [1, 0.86, 0.5], strength: 0.16 });
+        }
+      }
       // ---- The booth ----
       (function buildPayphone() {
         const S = civShapeKit(),
@@ -464,14 +491,15 @@
           payphoneGroup.add(m);
           return m;
         };
-        toMesh(trim, civSharedMaterials().trim);
-        toMesh(yellow, payphonePaint, false);
-        toMesh(placards, payphonePlacardMaterial, false).castShadow = false;
-        toMesh(sign, payphoneSignMaterial, false).castShadow = false;
+        const booth = [toMesh(trim, civSharedMaterials().trim), toMesh(yellow, payphonePaint, false)];
+        booth.push(toMesh(placards, payphonePlacardMaterial, false), toMesh(sign, payphoneSignMaterial, false));
+        booth[2].castShadow = booth[3].castShadow = false;
         const handsetMesh = toMesh(handset, civSharedMaterials().trim);
         handsetMesh.position.set(-0.14 * PP, 1.42 * PP, 0.035 * PP);
         handsetMesh.userData.dynamic = true;
         payphoneHandset = handsetMesh;
+        payphoneHandsets.push(handsetMesh);
+        payphoneBooths(booth, handsetMesh);
         // NEWSPAPER BOXES either side: coin-op, a paper behind the window, the masthead band.
         newspaperBox(-0.95, 'SOUTH COAST', 'TIMES', '#1d4f93');
         newspaperBox(0.95, 'THE WEEKLY', 'FREE', '#c33a2a');
@@ -587,11 +615,15 @@
         add(cut, payphoneDecalCut, false);
         add(trim, civSharedMaterials().trim, true);
       }
-      // Per frame: the handset trembles on its hook while the story call rings.
+      // Per frame: every handset trembles on its hook while the story call rings (any payphone answers it).
       function updatePayphoneVisuals() {
         if (!payphoneHandset) return;
         const ringing = !mission && storyCallWaiting() && gameTime % 3 < 1.6,
-          buzz = ringing ? Math.sin(gameTime * 90) * 0.012 : 0;
-        payphoneHandset.rotation.z = buzz;
-        payphoneHandset.position.y = (1.42 + (ringing ? Math.abs(buzz) * 0.3 : 0)) * PP;
+          buzz = ringing ? Math.sin(gameTime * 90) * 0.012 : 0,
+          lift = (1.42 + (ringing ? Math.abs(buzz) * 0.3 : 0)) * PP;
+        for (let i = 0; i < payphoneHandsets.length; i++) {
+          const h = payphoneHandsets[i];
+          if (h.rotation.z !== buzz) h.rotation.z = buzz;
+          if (h.position.y !== lift) h.position.y = lift;
+        }
       }

@@ -41,7 +41,7 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/missions-and-demo.md | Mission list and lifecycle, adding a mission, saves, the demo build, RESTART CURRENT JOB and the story index |
 | areas/missions-and-demo-godmode.md | God mode (the cheat, its panel, teleport) and skipping a cab, train or liner ride |
 | areas/missions-and-demo-world-reset.md | The world reset on WASTED, BUSTED and a new game (never on taking a job): triggers, what resets, what is kept |
-| areas/missions-and-demo-mission1.md | Mission 1's look: Vinny's truck model (livery, lamps, crate slots) and the yellow payphone and its dressing |
+| areas/missions-and-demo-mission1.md | Mission 1's look: Vinny's truck model (livery, lamps, crate slots), the yellow payphone and its dressing, and the story payphones on every island |
 | areas/missions-bluehour.md | The Blue Hour hotel (mission 2) in 3D: terrace, the VIP table and reserved glass, the street entrance, the limousines and doormen |
 | areas/missions-summit-and-fort.md | Missions 3 and 4: the package on Mount Ascent (dig, carrier, Vinny's warehouse) and Borrowed Stripes (Kessler's tail, the trunk, the uniform, Fort Sentinel, the consul at CIRRUS) |
 | areas/audio-and-radio.md | The mix and buses, sound systems, media and credits, the car radio |

@@ -11,11 +11,11 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-589 files in the include tree, 201,866 lines.
+590 files in the include tree, 202,116 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
-- `src/game.js`   201 — ▸ Game orchestration and shared state
+- `src/game.js`   202 — ▸ Game orchestration and shared state
 
 ## src/game.js ▸ Game orchestration and shared state
 
@@ -38,16 +38,16 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-worldgen.js`   480 — buildWorld(): the city plan, buildings (makeBuilding), trees, the 2D ground canvas.
 - `src/game-populate.js`   231 — Initial population: showcase parking (SHOWCASE_PARKING, parkShowcase) and populate().
 - `src/world-reset.js`   130 — World reset: resetWorld(reason) puts the city back as it was at boot (vehicles, people, wrecks, damage, blood, gore, fires, knocked furniture, shop …
-- `src/game-player-actions.js`   639 — Player verbs: enter and exit vehicles, interact, aim, shoot, reload, hurt, die, explode.
+- `src/game-player-actions.js`   635 — Player verbs: enter and exit vehicles, interact, aim, shoot, reload, hurt, die, explode.
 - `src/game-cops.js`   183 — resetMissionState(), spawnCop(), copRoute(): mission reset and patrol spawning.
 - `src/physics.js`    19 — ▸ Vehicle and pedestrian physics
 - `src/game-people.js`   168 — Pedestrian life: Everyday chatter lives here; how people walk, what they do and how they react to danger is in src/crowd.js, which also has the …
 - `src/game-combat.js`   348 — updateCombat(), bullets, shot line-of-sight (shotBlocked) and bullet targets.
-- `src/game-update.js`   192 — update(dt): the per-frame simulation step (only active play advances clocks).
+- `src/game-update.js`   194 — update(dt): the per-frame simulation step (only active play advances clocks).
 - `src/world-edge.js`   521 — Open-sea countdown: 10 s flying or sailing away from all land starts RETURN TO THE CITY and 10 s more; at zero a missile comes in from the coast and …
-- `src/game-draw2d.js`   610 — 2D canvas fallback renderer: drawWorld, drawCar, drawPerson, markers.
-- `src/game-minimap.js`   277 — Minimap base layer: The minimap used to repaint the whole county (coast, every street, parks, promenades, county ground and every building footprint) …
-- `src/map-view.js`   375 — Map views: the city map's filters (MAP LAYERS) and GO TO list, sharp canvases on HiDPI screens, the minimap's speed pull-back and its edge arrows …
+- `src/game-draw2d.js`   614 — 2D canvas fallback renderer: drawWorld, drawCar, drawPerson, markers.
+- `src/game-minimap.js`   278 — Minimap base layer: The minimap used to repaint the whole county (coast, every street, parks, promenades, county ground and every building footprint) …
+- `src/map-view.js`   377 — Map views: the city map's filters (MAP LAYERS) and GO TO list, sharp canvases on HiDPI screens, the minimap's speed pull-back and its edge arrows …
 - `src/game-ui.js`   521 — Weapon chip, mission card and updateUI() (HUD text refresh).
 - `src/game-menus.js`   196 — Resize, begin/newGame, pause, help, big map toggle.
 - `src/god-splash.js`   114 — ▸ God mode splash: the full-screen card and fanfare when a cheat code toggles god mode (game-input.js godModeCheat): ON charges up, slams a gold "GOD …
@@ -106,7 +106,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/challenges.js`   507 — Mission-specific encounters
 - `src/summitjob.js`   319 — Mission 3, High Ground: the package buried at the top of Mount Ascent
 - `src/fortjob.js`   894 — Mission 4, Borrowed Stripes: an off-duty soldier's uniform, Fort Sentinel and the consul at CIRRUS
-- `src/sidejobs.js`   418 — Contract missions after the main story
+- `src/sidejobs.js`   426 — Contract missions after the main story
 - `src/streets.js`    12 — ▸ Road presentation
 - `src/terrain.js`    20 — ▸ Mountains and off-road contact
 - `src/offroad.js`    53 — ▸ The 4x4 club, trail mud, off-road traction and the hill climb
@@ -138,6 +138,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/world-view.js`   345 — World camera gestures
 - `src/car-radio.js`   871 — Vehicle radio stations
 - `src/garages.js`   782 — ▸ Drive-in repair and respray
+- `src/payphones.js`   196 — Story payphones: PAYPHONES (the original `phone` first, at least two on every island, PAYPHONE_ISLANDS), the one the job pointer guides to (nearest …
 - `src/crowd.js`   194 — ▸ Crowd life, perception and reactions
 - `src/livingcity.js`    32 — ▸ The living city in free roam
 - `src/monarch-life.js`    38 — ▸ Monarch Isle: traffic, people, boats and sound
@@ -409,7 +410,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/monarch-life.js ▸ Monarch Isle: traffic, people, boats and sound
 
 - `src/monarch-life-traffic.js`   638 — Monarch Isle road graph, traffic control, car types and populateMonarchIsle().
-- `src/monarch-life-crowd.js`   483 — Monarch Isle walkers and staff: walk routes, destinations, dress and updateMonarchCrowd().
+- `src/monarch-life-crowd.js`   484 — Monarch Isle walkers and staff: walk routes, destinations, dress and updateMonarchCrowd().
 
 ## src/dealership.js ▸ MONARCH MOTORS: the plan, the sale, the garage and the alarm
 
@@ -514,7 +515,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/scenery-pools3d.js`   126 — Immutable rooftop instance pools: spatial chunks for close views, whole-pool fallback for wide views.
 - `src/render3d-resources.js`   527 — GPU resource lifecycle: shared geometries, model pruning and disposal.
 - `src/render3d-hiccups.js`   377 — Hiccup log: what each drawn frame created for the first time (shader programs, textures, geometries) and the slowest frames' renderer CPU split; read …
-- `src/payphone3d.js`   597 — The story payphone where mission 1 starts: a 1990s yellow pedestal payphone with its lit PHONE sign, handset, keypad, directory and grime, the …
+- `src/payphone3d.js`   629 — The story payphone where mission 1 starts: a 1990s yellow pedestal payphone with its lit PHONE sign, handset, keypad, directory and grime, the …
 - `src/render3d-api.js`   486 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
 - `src/render3d-frame.js`   626 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
 
@@ -599,7 +600,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/cityscape3d-kit.js`   684 — ▸ Cityscape 3D kit: seeded random, instancing helpers, static materials, roof and window textures.
 - `src/cityscape3d-shopwindows.js`   322 — Shop windows: a painted atlas of eight shop and lobby interiors, the shared lit shop-window material and its panes.
-- `src/cityscape3d-frontage.js`   458 — Street frontage on every side of a building: which sides face a street, an alley or a yard, and their ground floors (shops, lobbies, stoops, loading …
+- `src/cityscape3d-frontage.js`   461 — Street frontage on every side of a building: which sides face a street, an alley or a yard, and their ground floors (shops, lobbies, stoops, loading …
 - `src/cityscape3d-roofplant.js`   120 — Roof plant extras: mushroom exhaust fans, a galvanized duct run, plumbing vent stacks and conduit on the city's flat roofs, in FRONT PAINT (no new …
 - `src/cityscape3d-roofs.js`   579 — ▸ Cityscape 3D roof props and facades: AC units, water towers, billboards, helipads, shopfronts, fire escapes (decorateRoof).
 
@@ -858,7 +859,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/game-console.js ▸ DeadEndCity console registry and assembly
 
 - `src/game-console-core.js`   191 — DeadEndCity console, core: status, teleport, look, clock, zoom, simulate, heal, god, cash, walk (+ godPanelConsole)
-- `src/game-console-missions.js`   361 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
+- `src/game-console-missions.js`   365 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
 - `src/game-console-police.js`   279 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
 - `src/game-console-vehicles.js`   433 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
 - `src/game-console-world.js`   277 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch

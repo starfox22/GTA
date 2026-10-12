@@ -33,6 +33,8 @@
         timed('drawbridge', () => updateDrawbridge(deltaSeconds));
         timed('taxi', () => updateTaxiRide(deltaSeconds));
         updateCycling(deltaSeconds);
+        // The payphone a waiting call's pointer guides to: the nearest (payphones.js).
+        updateStoryPayphone();
         // The on-foot figure in the speed box (hud.js SPEED BOX).
         trackPlayerPace(deltaSeconds);
         updateWeather(deltaSeconds);

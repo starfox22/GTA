@@ -49,3 +49,24 @@ rules for the job are in missions-and-demo.md; this page is the models and the d
   1.1 m south of the phone: keep pavement decals off local z 0.94..1.31 m.
 - The car park behind it (bays y 498..537) has three parked cars (game-populate.js); the
   bay behind the booth stays empty so the booth reads against the tarmac.
+
+## Story payphones on every island (payphones.js)
+
+- `PAYPHONES` is the one list: index 0 is the original `phone` (Armory St; mission 1's opening shot, the
+  bike-share anchor, the Rush Hour car), then yellow booths and Monarch Isle's two green `isle` booths
+  (`MONARCH_PAYPHONES`). Every garage island (`GARAGE_ISLANDS`) has at least two (`PAYPHONE_ISLANDS`);
+  tools/tests/payphones-islands.mjs holds the count and each site's `payphoneAudit()`: on the island's land,
+  off the road, 120+ units from a door (a door's prompt wins inside `PLACE_REACH`), clear of bus stops, bike
+  stations (88), the Blue Hour forecourt and the garage lots, 400+ units from the next payphone.
+- A waiting call is answered at any of them: `payphoneInReach()` returns the one in reach (each keeps its
+  own prompt hysteresis), and a Monarch booth steps aside for the call (`monarchPayphoneNear`).
+- `objective()` guides to `storyPayphone()`: the nearest, re-chosen every frame in play
+  (`updateStoryPayphone`) only when another is 20 % and 40 units nearer, one on another island counting
+  1.6x as far (`payphoneIslandAt`).
+- Timed side jobs whose clock runs from the call (Rush Hour, Fireworks Night, Repo Man) add the extra drive
+  from a farther payphone to their first point (`sideJobCallAllowance`): unchanged at the original phone.
+- 3D: the other yellow booths share the original booth's geometry and materials (no new program), each with
+  its own trembling handset, foot obstacle and sign pool, without the newspaper boxes and dressing.
+  2D draws every yellow one; the maps show them on the PAYPHONES layer (`drawPayphoneMap`) and GO TO lists
+  the nearest. Console `payphones()`.
+- A new payphone: add it to the list with its island, then run the test (and `payphones()`'s audit).
