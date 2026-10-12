@@ -31,11 +31,13 @@
      * missions and stay open: the hill climb, beach volleyball, the stadium ball,
      * the Sunset Pier rides, the bike share, cabs, rail and the liner, the
      * casino, garages and the gun shop, Fort Sentinel and the Apache.
-     * Completing mission 4 shows the DEMO COMPLETE card (thanks, a stats recap,
-     * CONTINUE FREE ROAM / MAIN MENU); it is remembered in its own storage key,
-     * `dead-end-city-demo`, which NEW GAME does not erase. God mode (the godmode
-     * cheat) lifts every gate and never shows the card. The developer console's
-     * startMission reaches a gated job only with god mode or `?dev` in the URL.
+     * Winning mission 4 with the story at its end (`completed` reaches DEMO_MISSIONS) shows the DEMO COMPLETE card
+     * (thanks, the buy note, a stats recap, CONTINUE FREE ROAM / MAIN MENU), with god mode on too. It shows once per
+     * save (`demoCardSeen`, saved with the story): a save that finished the demo before the card was saved with
+     * it (or never showed it) brings it up shortly after play resumes. The demo being finished at all is
+     * also kept in its own storage key, `dead-end-city-demo`, which NEW GAME does not erase (the title's badge).
+     * God mode (the godmode cheat) lifts every gate. The developer console's startMission reaches a gated job
+     * only with god mode or `?dev` in the URL.
      */
     const DEMO_MISSIONS = 4;
     const DEMO_BUY_MESSAGE = 'Thanks for playing the demo! If you liked it, please buy the full game.';
@@ -45,6 +47,7 @@
     const campaignStats = { playSeconds: 0, cashEarned: 0, wantedPeak: 0 };
     let statsCashSeen = null,
       demoCardIn = 0,
+      demoCardSeen = false,
       demoCompleted = false;
     try {
       demoCompleted = !!JSON.parse(localStorage.getItem(DEMO_KEY))?.complete;
@@ -89,10 +92,10 @@
       }
     }
     /* winMission: the last demo mission (4) closes the demo; the card follows the payday headline.
-       Only the first time the story reaches the end (`firstTime`): a replay of
-       it is just a payday. */
-    function demoMissionWon(index, firstTime = true) {
-      if (!DEMO_BUILD || player.godMode || index !== DEMO_MISSIONS - 1 || !firstTime) return false;
+       Once per save (`demoCardSeen`): a replay after the card is just a payday. A job played ahead of the story
+       under god mode does not finish it (finishCampaignMission), so it brings no card. */
+    function demoMissionWon(index) {
+      if (!DEMO_BUILD || index !== DEMO_MISSIONS - 1 || completed < DEMO_MISSIONS || demoCardSeen) return false;
       demoCompleted = true;
       try {
         localStorage.setItem(DEMO_KEY, JSON.stringify({ complete: true, version: GAME_VERSION }));
@@ -107,12 +110,17 @@
         ? h + 'h ' + String(minutes % 60).padStart(2, '0') + 'm'
         : minutes + 'm ' + String(Math.floor(seconds % 60)).padStart(2, '0') + 's';
     }
+    /* A save loaded (load()) that finished the demo without showing the card brings it up soon after play starts. */
+    function demoCardOwed() {
+      if (DEMO_BUILD && completed >= DEMO_MISSIONS && !demoCardSeen && demoCardIn === 0) demoCardIn = 2;
+    }
     function showDemoComplete() {
-      // Wait out a menu, a call or a death screen: the card comes up in play.
-      if (gameMode !== 'play') {
+      // Wait out a menu, a call, a death screen or a job: the card comes up in free play.
+      if (gameMode !== 'play' || mission) {
         demoCardIn = 0.5;
         return;
       }
+      demoCardSeen = true;
       if (mapOpen) toggleMap();
       gameMode = 'demo';
       keys = {};
@@ -192,6 +200,8 @@
             // Mission state is not serialized; cash, ammo and rewards keep their usual rules.
             retryJobIndex: mission ? mission.index : retryJobIndex,
             stats: campaignStats,
+            // PUBLIC DEMO: the DEMO COMPLETE card was shown to this story (once per save).
+            demoCardSeen,
             cash,
             worldMinutes,
             owned: weapons.map((w) => w.owned),
@@ -237,6 +247,10 @@
         if (s.stats && typeof s.stats === 'object')
           for (const k of Object.keys(campaignStats))
             campaignStats[k] = Number.isFinite(s.stats[k]) ? Math.max(0, s.stats[k]) : 0;
+        // Older saves never recorded the card: one that finished the demo gets it once.
+        demoCardSeen = s.demoCardSeen === true;
+        demoCardIn = 0;
+        demoCardOwed();
       } catch {}
     }
     function clearMissionOverlays() {
@@ -512,6 +526,7 @@
     function resetCampaign() {
       resetCampaignStats();
       demoCardIn = 0;
+      demoCardSeen = false;
       completed = 0;
       missionIndex = 0;
       retryJobIndex = null;

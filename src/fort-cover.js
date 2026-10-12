@@ -229,7 +229,7 @@
         withinRange('fort-papers', distanceBetween(player, FORT_COVER_GATE.check), FORT_COVER_GATE.reach)
       );
     }
-    // A line at the gate: the speech bubble and, while a story job runs, the subtitle.
+    // A line at the gate: the speech bubble (a talk line) and, while a story job runs, the subtitle.
     function fortGateLine(who, text) {
       const p = who === 'you' ? player : who;
       if (!p) return;
@@ -243,6 +243,8 @@
         player.speech = text.toUpperCase();
         player.speechUntil = gameTime + seconds;
       } else militarySpeak(p, text.toUpperCase(), seconds);
+      // A conversation line (crowd-speech.js TALK LINES): it takes a bubble slot and holds it in both views.
+      speechMarkTalk(p);
       if (mission) missionLine(who === 'you' ? 'YOU' : 'GATE SERGEANT', text);
     }
     // In the middle of showing the papers: the feet stay put (game-update.js), he faces the sergeant.

@@ -82,6 +82,8 @@
       talk: { text: 'TALK TO VARGA', id: 'sky-meet-talk' },
       sit: { text: 'SIT WITH VARGA', id: 'sky-meet-sit' },
       hand: { text: 'HAND OVER THE PAPERS', id: 'sky-meet-hand' },
+      // A line being spoken: the action key moves the talk on (skyMeetingNextLine).
+      next: { text: 'NEXT LINE', id: 'sky-meet-next' },
       // Seated with nothing to do: no prompt, and the action key does nothing else.
       quiet: { text: '', id: 'sky-meet-quiet', key: null },
     };
@@ -108,6 +110,9 @@
       sat: false,
       leaveAt: 0,
       playerName: 'YOU',
+      // NEXT LINE pressed: the talk's next line comes without its pause; the hint shown this meeting.
+      hurry: false,
+      hinted: false,
       // Wrapping up after the job (skyMeetingWrapUp).
       closing: false,
       walkAt: 0,
@@ -195,6 +200,8 @@
         leaveAt: 0,
         closing: false,
         walkAt: 0,
+        hurry: false,
+        hinted: false,
         props: [{ kind: 'card', owner: null, x: P.table.x - 1.5, y: P.table.y - 1.2, z: P.H + 6.55, a: 0.3 }],
       });
       SKY_MEETING_PROMPTS.talk.text = 'TALK TO ' + M.speaker;
@@ -212,7 +219,8 @@
         if (i >= 0) storyActors.splice(i, 1);
       }
       for (let i = storyActors.length - 1; i >= 0; i--) if (storyActors[i].missionTag === 'sky-meeting') storyActors.splice(i, 1);
-      if (player.sceneSeat) player.sceneSeat = null;
+      // Out of the chair onto clear deck (a job abandoned or failed mid-drink), never left inside the table.
+      if (player.sceneSeat) skyMeetingRise();
       for (const p of skyBar.people) if (p.keyPerson?.errand) p.keyPerson.errand = null;
       Object.assign(M, { active: false, stage: null, diplomat: null, script: null, service: null, hand: null, props: [], closing: false });
     }
@@ -226,16 +234,19 @@
       const M = skyMeeting,
         d = M.diplomat,
         r = (v) => Math.round(v * 10) / 10,
-        seat = player.sceneSeat;
+        seat = player.sceneSeat,
+        P = skyMeetingPlaces();
       return {
         active: M.active,
         stage: M.stage,
         failed: M.failed,
         diplomat: d
-          ? { name: d.name, x: r(d.x), y: r(d.y), altitude: r(entityElevation(d)), pose: d.pose || null, sitting: !!d.sitting, hidden: !!d.hidden, hand: d.handProp, hp: d.hp }
+          ? { name: d.name, x: r(d.x), y: r(d.y), altitude: r(entityElevation(d)), pose: d.pose || null, sitting: !!d.sitting, hidden: !!d.hidden, hand: d.handProp, hp: d.hp, speech: d.speechUntil > gameTime ? d.speech : null }
           : null,
         player: { x: r(player.x), y: r(player.y), altitude: r(entityElevation(player)), roof: player.buildingRoof?.skyline?.id || null },
         playerSeated: !!seat,
+        // Whether a step from where the player is can go anywhere (false: boxed in by a keep-out).
+        playerFree: !!P && player.buildingRoof === P.b ? roofPointFreeOn(P.b, player.x, player.y, 8) : null,
         seat: seat ? { lift: r(seat.lift || 0), hand: seat.hand, reach: r(seat.reach || 0), a: r(seat.a) } : null,
         service: M.service ? M.service.phase : null,
         waiter: M.service?.waiter
@@ -307,9 +318,31 @@
         p = player;
         name = M.playerName;
       } else p = skyBar.people.find((q) => q.keyPerson?.role === who && q.hp > 0);
-      if (p) keySay(p, text);
+      if (p) {
+        keySay(p, text);
+        // A talk line (crowd-speech.js TALK LINES): its bubble holds a slot in the street and chase views.
+        speechMarkTalk(p);
+      }
       // The subtitle line on the HUD, while a story job runs (story.js).
       if (who === 'them' || who === 'you') missionLine(name, text);
+      // The first line of the scene says how to move it on (once a meeting).
+      if (!skyMeeting.hinted && (who === 'them' || who === 'you')) {
+        skyMeeting.hinted = true;
+        tell(pressKey('interact') + ' for the next line', 4, { id: 'sky-meet-next' });
+      }
+    }
+    /* The action key while a line is spoken (NEXT LINE): the line on now ends and the next comes at once; in the
+       talk over the drinks the line after it too, without the pause between them. True when there was a line. */
+    function skyMeetingNextLine() {
+      const M = skyMeeting,
+        S = M.script;
+      if (!S) return false;
+      S.wait = 0;
+      M.hurry = true;
+      // Cut the bubbles of the line on now, so the next one has the slot straight away.
+      for (const p of [M.diplomat, player]) if (p && p.speechTalk === p.speech) p.speechUntil = Math.min(p.speechUntil || 0, gameTime);
+      for (const p of skyBar.people) if (p.speechTalk && p.speechTalk === p.speech) p.speechUntil = Math.min(p.speechUntil || 0, gameTime);
+      return true;
     }
     function skyMeetingStepScript(dt) {
       const S = skyMeeting.script;
@@ -323,6 +356,7 @@
       const [who, text] = S.lines[S.at++];
       skyMeetingSpeak(who, text);
       S.wait = Math.max(1.8, speechReadSeconds(text) * 0.85) + 0.2;
+      skyMeeting.hurry = false;
     }
     /* ---- Moving him ------------------------------------------------------------------------ */
     // One step along `path` from d.leg; true once at its end.
@@ -453,7 +487,9 @@
       }
       const line = talk[M.talkLine++];
       skyMeetingSay([line]);
-      M.script.wait = M.talkLine === 1 ? 1.2 : 0.6;
+      // Moved on with the action key: the next line without the pause.
+      M.script.wait = M.hurry ? 0 : M.talkLine === 1 ? 1.2 : 0.6;
+      M.hurry = false;
     }
     /* The drinks: the diplomat catches the waiter's eye, the waiter takes the order, fetches two
        glasses from the bar and serves them. Without a waiter on the floor they come anyway. */
@@ -621,14 +657,40 @@
         skyMeetingSay(M.lines.sit);
       }
     }
-    function skyMeetingStand() {
-      const P = skyMeetingPlaces(),
-        M = skyMeeting;
+    /* Where the player gets up: north of his chair when that is clear for his steps (roofPointFreeOn, what
+       moveOnBuildingRoof asks of every step: the tables' keep-outs, the parapet), else the nearest clear spot round
+       the chair. Standing inside a keep-out left every step blocked: stuck at the table after the meeting. */
+    function skyMeetingStandSpot(P) {
+      const free = (x, y) => roofPointFreeOn(P.b, x, y, 9);
+      if (free(P.stand.x, P.stand.y)) return P.stand;
+      const s = P.mine;
+      for (let r = 10; r <= 64; r += 4)
+        for (let k = 0; k < 16; k++) {
+          const a = -Math.PI / 2 + ((k % 2 ? 1 : -1) * Math.ceil(k / 2) * TAU) / 16,
+            x = s.x + Math.cos(a) * r,
+            y = s.y + Math.sin(a) * r;
+          if (free(x, y)) return { x, y };
+        }
+      return P.stand;
+    }
+    // Out of the chair, on his feet on clear deck (on the roof; anywhere else the seat just goes).
+    function skyMeetingRise() {
+      const P = skyMeetingPlaces();
+      if (!P || player.car || player.buildingRoof !== P.b) {
+        player.sceneSeat = null;
+        return;
+      }
+      const spot = skyMeetingStandSpot(P);
       player.sceneSeat = null;
-      teleportPlayer(P.stand.x, P.stand.y);
+      teleportPlayer(spot.x, spot.y);
       player.buildingRoof = P.b;
       player.altitude = P.H;
       player.a = -Math.PI / 2;
+    }
+    function skyMeetingStand() {
+      const P = skyMeetingPlaces(),
+        M = skyMeeting;
+      skyMeetingRise();
       // A served drink is left on the table.
       if (M.drinks > 0) M.props.push({ kind: 'glass', owner: 'mine', x: P.mine.x + 3.6, y: P.table.y + 1, z: P.H + 7.1, a: 0 });
       if (M.stage === 'done') {
@@ -644,7 +706,7 @@
       if (!seat) return false;
       const P = skyMeetingPlaces();
       if (!skyMeeting.active || player.car || !P || player.buildingRoof !== P.b) {
-        player.sceneSeat = null;
+        skyMeetingRise();
         return false;
       }
       if (playerMoveHeading() !== null && !skyMeeting.hand && gameTime - seat.at > 0.6) {
@@ -659,10 +721,15 @@
       if (!M.active || !M.diplomat || M.diplomat.hp <= 0 || player.car) return null;
       const P = skyMeetingPlaces(),
         d = M.diplomat;
-      if (player.sceneSeat) return M.stage === 'handover' && !M.hand ? SKY_MEETING_PROMPTS.hand : SKY_MEETING_PROMPTS.quiet;
+      const talking = !!M.script && !M.hand && distanceBetween(d, player) < 120;
+      if (player.sceneSeat) {
+        if (M.stage === 'handover' && !M.hand && !M.script) return SKY_MEETING_PROMPTS.hand;
+        return talking ? SKY_MEETING_PROMPTS.next : SKY_MEETING_PROMPTS.quiet;
+      }
       if (M.stage === 'waiting' && !player.buildingRoof && withinRange('sky-meet-talk', distanceBetween(d, player), 30)) return SKY_MEETING_PROMPTS.talk;
       if (['terrace', 'seated', 'drinks', 'handover'].includes(M.stage) && d.sitting && player.buildingRoof === P.b && withinRange('sky-meet-sit', distanceBetween(P.mine, player), 22))
         return SKY_MEETING_PROMPTS.sit;
+      if (talking) return SKY_MEETING_PROMPTS.next;
       return null;
     }
     function skyMeetingInteract() {
@@ -674,7 +741,8 @@
         M.diplomat.pose = 'chat';
         M.diplomat.leg = 0;
         skyMeetingSay(M.lines.door);
-      } else if (offer === SKY_MEETING_PROMPTS.sit) skyMeetingSit();
+      } else if (offer === SKY_MEETING_PROMPTS.next) skyMeetingNextLine();
+      else if (offer === SKY_MEETING_PROMPTS.sit) skyMeetingSit();
       else if (offer === SKY_MEETING_PROMPTS.hand) {
         M.script = null;
         M.hand = { t: 0, his: 'cocktail' };
