@@ -189,7 +189,8 @@
       return settings.eventCamera;
     }
     /* MOTION COMFORT (Settings · Gameplay): a steadier camera. In a vehicle the framing
-       holds still whatever the speed (world-view.js speedZoomTarget) and the lead is
+       holds still whatever the speed, from boarding (world-view.js speedZoomTarget; no
+       SLOW FRAMING: the one fixed zoom even below 30 km/h) and the lead is
        shorter and turns more slowly (camera-drive.js); no camera kicks or tremor
        (camera-feel.js kickCamera, cameraShakeLevel); on foot the view does not lean
        toward the aim; the flight camera does not bank (flight-view3d.js). */

@@ -1,5 +1,5 @@
-// Driving camera comfort (camera-drive.js follow, world-view.js framing, camera-comfort.js metric): boarding
-// frames two steps wider than the old 1.75 (1.12), the pull-back keeps widening with speed and eases without pumping, and the
+// Driving camera comfort (camera-drive.js follow, world-view.js framing, camera-comfort.js metric): boarding at rest
+// keeps the walking framing (SLOW FRAMING), from 31 km/h the car frames two steps wider than the old 1.75 (1.12), the pull-back keeps widening with speed and eases without pumping, and the
 // view's acceleration, jerk and zoom rate stay low through a slalom, hard braking, a turn and a rough county
 // drive; a blast jolts the view less in a car than on foot, and not at all with Motion comfort on. All numbers are noted first, then checked.
 export const fresh = true;
@@ -13,19 +13,19 @@ export default async function (t) {
   await t.call('holdSimulation', true);
   await t.call('god', true);
   await t.call('wanted', 0);
-  // Calibrated at 100 % camera distance and look-ahead (the defaults are 120 % and 150 %, restored at the end).
+  // Calibrated at 100 % camera distance and look-ahead (the defaults are 120 % and 200 %, restored at the end).
   await t.call('settings', { cameraDistance: 100, lookAhead: 100 });
   const m = {};
   const comfort = async (label, seconds = 4) => {
     const v = await t.call('cameraView'),
       c = await t.call('cameraComfort', seconds),
       pose = await t.call('pose');
-    m[label] = { ...c, kmh: pose.kmh, framed: v.framed, speed: v.speed, eased: v.kmh, context: v.context };
+    m[label] = { ...c, kmh: pose.kmh, framed: v.framed, speed: v.speed, eased: v.kmh, context: v.context, vehicleContext: v.vehicleContext };
     t.note(`${label} (${pose.kmh} km/h, framed ${v.framed}): ${JSON.stringify(c)}`);
     return v;
   };
   try {
-    // Boarding a sports car at rest: the view eases out to 0.56 of the on-foot zoom.
+    // Boarding a sports car at rest: the walking view holds (SLOW FRAMING).
     await t.call('teleport', SPOT.x, SPOT.y);
     await t.call('setZoom', 2);
     await t.wait(1.5);
@@ -88,9 +88,9 @@ export default async function (t) {
 
     // Framing: two zoom steps wider than the old 1.75 at rest; the pull-back follows its curve and is
     // well wider than the old camera's at highway speed.
-    t.near(parked.context, 0.56, 0.56, 'car context');
-    // Three seconds after boarding: still settling the last few per cent.
-    t.near(parked.framed, 1.1, 1.19, 'car at rest framed (zoom), 3 s after boarding');
+    t.near(parked.vehicleContext, 0.56, 0.56, 'car context');
+    // Three seconds after boarding: still the walking zoom.
+    t.near(parked.framed, 1.99, 2.01, 'car at rest framed (zoom), 3 s after boarding');
     t.assert(cruise.kmh >= 95, `cruise too slow for the highway check: ${cruise.kmh} km/h`);
     t.near(cruise.speed, pull(cruise.kmh) - 0.01, pull(cruise.kmh) + 0.01, `pull-back at ${cruise.kmh} km/h`);
     // The old camera held 1.37 at 110 km/h (0.78 of its 1.75 at rest).
@@ -102,8 +102,10 @@ export default async function (t) {
       const value = path.split('.').reduce((o, k) => o?.[k], m[label]);
       t.assert(Number.isFinite(value) && value <= limit, `${label} ${path} ${value} > ${limit}`);
     };
-    below('board', 'zoomRate.peak', 32);
-    below('accelerate', 'zoomRate.peak', 12);
+    // Boarding at rest no longer zooms; the old boarding zoom (peak ~28 %/s) now comes at 31 km/h, and back in after
+    // braking under 30 km/h (SLOW FRAMING), under the same ceiling boarding had.
+    below('board', 'zoomRate.peak', 1);
+    below('accelerate', 'zoomRate.peak', 32);
     below('accelerate', 'jerk.peak', 1.2);
     below('slalom', 'accel.rms', 0.12);
     below('slalom', 'jerk.rms', 0.4);
@@ -112,7 +114,7 @@ export default async function (t) {
     below('weave', 'jerk.rms', 0.4);
     below('brake', 'accel.rms', 0.26);
     below('brake', 'jerk.rms', 0.5);
-    below('brake', 'zoomRate.peak', 10);
+    below('brake', 'zoomRate.peak', 32);
     below('turn', 'jerk.peak', 1.5);
     below('rough', 'accel.rms', 0.25);
     below('rough', 'jerk.peak', 2.5);

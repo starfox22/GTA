@@ -36,23 +36,36 @@
      *
      * DRIVING SETTINGS (Settings · Driving, saved under 'dead-end-city-driving'):
      * ABS, stability control, traction control, steering sensitivity, speed units
-     * (hud.js), the driving camera's look-ahead and the vehicle camera's distance.
+     * (hud.js), the driving camera's look-ahead, the vehicle camera's distance and
+     * the walking camera's distance. Saved records carry DRIVING_SETTINGS_VERSION:
+     * version 2 raised the look-ahead's reach (0-300 %, default 200 %), so an older
+     * record still at the old default 150 % moves to 200 %; other values are kept.
      */
     const DRIVING_STORAGE = 'dead-end-city-driving',
-      DRIVING_DEFAULTS = { abs: true, esc: true, tcs: true, steering: 100, lookAhead: 150, cameraDistance: 120 };
+      DRIVING_SETTINGS_VERSION = 2,
+      DRIVING_DEFAULTS = { abs: true, esc: true, tcs: true, steering: 100, lookAhead: 200, cameraDistance: 120, walkDistance: 100 },
+      DRIVING_LOOK_AHEAD_MAX = 300;
     const drivingSettings = { ...DRIVING_DEFAULTS };
-    try {
-      const saved = JSON.parse(localStorage.getItem(DRIVING_STORAGE));
-      if (saved && typeof saved === 'object') {
-        for (const key of ['abs', 'esc', 'tcs']) if (typeof saved[key] === 'boolean') drivingSettings[key] = saved[key];
-        if (Number.isFinite(saved.steering)) drivingSettings.steering = clamp(Math.round(saved.steering), 50, 150);
-        if (Number.isFinite(saved.lookAhead)) drivingSettings.lookAhead = clamp(Math.round(saved.lookAhead), 0, 150);
-        if (Number.isFinite(saved.cameraDistance)) drivingSettings.cameraDistance = clamp(Math.round(saved.cameraDistance), 80, 160);
+    // A saved record (parsed) onto `into`, validated; a record before version 2 still at the old 150 % look-ahead
+    // default takes the new default (tools/tests/driving-settings-migrate.mjs).
+    function applySavedDrivingSettings(saved, into) {
+      if (!saved || typeof saved !== 'object') return into;
+      for (const key of ['abs', 'esc', 'tcs']) if (typeof saved[key] === 'boolean') into[key] = saved[key];
+      if (Number.isFinite(saved.steering)) into.steering = clamp(Math.round(saved.steering), 50, 150);
+      if (Number.isFinite(saved.lookAhead)) {
+        const old = !(saved.version >= 2) && Math.round(saved.lookAhead) === 150;
+        into.lookAhead = old ? DRIVING_DEFAULTS.lookAhead : clamp(Math.round(saved.lookAhead), 0, DRIVING_LOOK_AHEAD_MAX);
       }
+      if (Number.isFinite(saved.cameraDistance)) into.cameraDistance = clamp(Math.round(saved.cameraDistance), 80, 160);
+      if (Number.isFinite(saved.walkDistance)) into.walkDistance = clamp(Math.round(saved.walkDistance), 60, 160);
+      return into;
+    }
+    try {
+      applySavedDrivingSettings(JSON.parse(localStorage.getItem(DRIVING_STORAGE)), drivingSettings);
     } catch {}
     function saveDrivingSettings() {
       try {
-        localStorage.setItem(DRIVING_STORAGE, JSON.stringify(drivingSettings));
+        localStorage.setItem(DRIVING_STORAGE, JSON.stringify({ ...drivingSettings, version: DRIVING_SETTINGS_VERSION }));
       } catch {}
     }
     function drivingSettingsAreDefault() {
@@ -67,18 +80,25 @@
     function setDrivingSetting(key, value) {
       if (['abs', 'esc', 'tcs'].includes(key)) drivingSettings[key] = !!value;
       else if (key === 'steering') drivingSettings.steering = clamp(Math.round(Number(value) || 100), 50, 150);
-      else if (key === 'lookAhead') drivingSettings.lookAhead = clamp(Math.round(Number(value) || 0), 0, 150);
+      else if (key === 'lookAhead') drivingSettings.lookAhead = clamp(Math.round(Number(value) || 0), 0, DRIVING_LOOK_AHEAD_MAX);
       else if (key === 'cameraDistance') drivingSettings.cameraDistance = clamp(Math.round(Number(value) || 100), 80, 160);
+      else if (key === 'walkDistance') drivingSettings.walkDistance = clamp(Math.round(Number(value) || 100), 60, 160);
       else return;
       saveDrivingSettings();
     }
-    // The camera's lead ahead of a moving vehicle (game.js), as a factor.
+    // The camera's lead ahead of a moving vehicle (camera-drive.js), as a factor. The on-foot and
+    // helicopter leads (camera-feel.js cameraLeadTarget) read it only up to the old top, 150 %.
     function drivingLookAhead() {
       return drivingSettings.lookAhead / 100;
     }
     // The vehicle camera's distance (world-view.js cameraContextZoom), as a factor on the zoom: 125 % is one zoom step out.
     function vehicleCameraFactor() {
       return 100 / drivingSettings.cameraDistance;
+    }
+    // The walking camera's distance (world-view.js cameraContextZoom), the same kind of factor: 100 % is the on-foot
+    // framing exactly (factor 1), and a road vehicle or boat below SLOW_FRAMING_OUT frames with it too.
+    function walkCameraFactor() {
+      return 100 / drivingSettings.walkDistance;
     }
 
     /**
@@ -459,10 +479,11 @@
         kind: 'slider',
         label: 'Camera look-ahead',
         min: 0,
-        max: 150,
+        max: DRIVING_LOOK_AHEAD_MAX,
         step: 10,
         format: (v) => v + '%',
-        note: () => 'How far the camera leads a moving vehicle, so you see the road coming. 0 keeps the car in the middle of the screen.',
+        note: () =>
+          'How far the camera leads a moving vehicle, so you see the road coming. 0 keeps the car in the middle of the screen; 300% puts it well down the screen with the road far ahead in view.',
         get: () => drivingSettings.lookAhead,
         set: (value) => setDrivingSetting('lookAhead', value),
       },
@@ -475,9 +496,22 @@
         step: 10,
         format: (v) => v + '%',
         note: () =>
-          'How far back the camera stands in a car, on a bike or in a boat. Further back, the street slides past the screen more slowly, which is easier on players who get motion sick. The mouse wheel zooms on top of it.',
+          'How far back the camera stands in a car, on a bike or in a boat once it passes 30 km/h (slower, it keeps the walking distance). Further back, the street slides past the screen more slowly, which is easier on players who get motion sick. The mouse wheel zooms on top of it.',
         get: () => drivingSettings.cameraDistance,
         set: (value) => setDrivingSetting('cameraDistance', value),
+      },
+      {
+        id: 'walkDistance',
+        kind: 'slider',
+        label: 'Walking camera distance',
+        min: 60,
+        max: 160,
+        step: 10,
+        format: (v) => v + '%',
+        note: () =>
+          'How far back the camera stands on foot, and in a vehicle below 30 km/h. Higher shows more of the street round you; lower brings the camera in close. The mouse wheel zooms on top of it.',
+        get: () => drivingSettings.walkDistance,
+        set: (value) => setDrivingSetting('walkDistance', value),
       },
       {
         id: 'units',
@@ -496,7 +530,7 @@
         id: 'drivingReset',
         kind: 'action',
         label: 'Default driving settings',
-        note: () => 'ABS, stability and traction control on, steering at 100%, look-ahead at 150%, camera distance at 120%, km/h.',
+        note: () => 'ABS, stability and traction control on, steering at 100%, look-ahead at 200%, vehicle camera distance at 120%, walking camera distance at 100%, km/h.',
         button: 'RESET DRIVING TO DEFAULTS',
         disabled: drivingSettingsAreDefault,
         run: () => {

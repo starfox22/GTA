@@ -24,14 +24,18 @@
     /* CAMERA CONTEXT: the share of the player's zoom the camera frames at for
        what the player is in, so entering a car pulls the view back over a
        couple of seconds and stepping out brings it in again (both eased with
-       the speed framing in updateCameraFraming). A car at rest frames at 0.56
+       the speed framing in updateCameraFraming). A car (from 31 km/h) frames at 0.56
        of the on-foot zoom (1.12 by default: two zoom steps further out than the
        old 1.75, so the street flows past the screen more slowly, which is what
        eases motion sickness, and more of the road ahead is in view); motorbikes,
        bicycles, long vehicles and boats keep their proportions to it. Settings ·
        Driving · Vehicle camera distance is a factor on every vehicle's share
        (vehicleCameraFactor, driving.js). Rides keep 0.7; aircraft keep the
-       framing the flight view was tuned at (1.6 by default), the parachute its own. */
+       framing the flight view was tuned at (1.6 by default), the parachute its own.
+       On foot (and in a carjack) the share is Settings · Driving · Walking camera
+       distance (walkCameraFactor: 1 at the default 100 %, so the default on-foot view
+       is exactly STREET_ZOOM). SLOW FRAMING (below) holds a slow road vehicle or boat
+       at that walking share. */
     const CAMERA_CONTEXT = {
       car: 0.56,
       bike: 0.61,
@@ -44,22 +48,67 @@
       // Pulling a driver out of a car (carjack-struggle.js): in close on the struggle.
       carjack: 1.3,
     };
-    function cameraContextZoom() {
+    /* SLOW FRAMING. In a road vehicle or a boat the camera keeps the walking framing
+       (the on-foot share, no speed pull-back) until the vehicle reaches
+       SLOW_FRAMING_OUT km/h, then eases out to the vehicle's framing (its CAMERA
+       CONTEXT share × Vehicle camera distance, with the SPEED PULL-BACK); it comes back
+       in only after SLOW_FRAMING_HOLD seconds held under SLOW_FRAMING_IN, so a stop at
+       a junction or a slow corner never pumps the zoom. It reads the vehicle's own
+       speed (not the eased one), so the switch happens at the speed the box shows.
+       Boarding at rest keeps the walking view. Aircraft, rides and the parachute keep
+       their own framing; a garage's show keeps the vehicle's (garages.js); with Motion
+       comfort on there is no slow framing: the vehicle holds its one fixed zoom
+       (MOTION_COMFORT_FRAMING) from boarding. */
+    const SLOW_FRAMING_OUT = 31,
+      SLOW_FRAMING_IN = 30,
+      SLOW_FRAMING_HOLD = 1;
+    const slowFraming = { on: true, below: 0 };
+    function updateSlowFraming(deltaSeconds) {
+      const c = player.car,
+        S = slowFraming;
+      if (!c || isAircraft(c)) {
+        S.on = true;
+        S.below = 0;
+        return;
+      }
+      const vx = c.vx === c.vx ? c.vx || 0 : Math.cos(c.a) * (c.speed || 0),
+        vy = c.vy === c.vy ? c.vy || 0 : Math.sin(c.a) * (c.speed || 0),
+        kmh = hypot2(vx, vy) / KMH;
+      if (kmh >= SLOW_FRAMING_OUT) {
+        S.on = false;
+        S.below = 0;
+      } else if (!S.on && kmh < SLOW_FRAMING_IN) {
+        S.below += deltaSeconds;
+        if (S.below >= SLOW_FRAMING_HOLD) S.on = true;
+      } else S.below = 0;
+    }
+    // A road vehicle or a boat framed like walking (SLOW FRAMING).
+    function slowFramingOn() {
+      const c = player.car;
+      return slowFraming.on && !!c && !isAircraft(c) && !motionComfortOn();
+    }
+    // The share of the player's zoom a road vehicle or boat frames at, at speed (CAMERA CONTEXT).
+    function vehicleContextZoom(c) {
+      const spec = vehicleSpec(c),
+        far = vehicleCameraFactor();
+      if (spec.boat || spec.jetski) return CAMERA_CONTEXT.boat * far;
+      if (spec.bicycle) return CAMERA_CONTEXT.bicycle * far;
+      if (spec.bike) return CAMERA_CONTEXT.bike * far;
+      if (spec.truck || spec.tank || spec.l > 7 * UNITS_PER_METRE) return CAMERA_CONTEXT.long * far;
+      return CAMERA_CONTEXT.car * far;
+    }
+    // `garageFrame`: a garage's show in force (garageCameraFrame), which frames from the vehicle's share.
+    function cameraContextZoom(garageFrame = null) {
       const c = player.car;
       if (c) {
-        const spec = vehicleSpec(c);
         if (isAircraft(c)) return CAMERA_CONTEXT.air;
-        const far = vehicleCameraFactor();
-        if (spec.boat || spec.jetski) return CAMERA_CONTEXT.boat * far;
-        if (spec.bicycle) return CAMERA_CONTEXT.bicycle * far;
-        if (spec.bike) return CAMERA_CONTEXT.bike * far;
-        if (spec.truck || spec.tank || spec.l > 7 * UNITS_PER_METRE) return CAMERA_CONTEXT.long * far;
-        return CAMERA_CONTEXT.car * far;
+        if (!garageFrame && slowFramingOn()) return walkCameraFactor();
+        return vehicleContextZoom(c);
       }
       if (player.parachute) return CAMERA_CONTEXT.parachute;
       if (transitRide || taxiRide || player.coaster) return CAMERA_CONTEXT.ride;
-      if (player.carjack && player.carjack.phase !== 'approach') return CAMERA_CONTEXT.carjack;
-      return 1;
+      if (player.carjack && player.carjack.phase !== 'approach') return CAMERA_CONTEXT.carjack * walkCameraFactor();
+      return walkCameraFactor();
     }
     let worldZoom = STREET_ZOOM,
       worldZoomTarget = STREET_ZOOM,
@@ -79,7 +128,7 @@
     function cameraFramingTarget() {
       // A garage's drive-in show eases in closer, and quicker (garages.js).
       const garageFrame = garageCameraFrame(),
-        context = cameraContextZoom();
+        context = cameraContextZoom(garageFrame);
       // So does a drawbridge opening close by, the other way: back a little (drawbridge.js).
       return context * (garageFrame ? garageFrame.zoom : speedZoomTarget(context) * drawbridgeCameraZoom());
     }
@@ -108,6 +157,7 @@
       FRAMING_IN = 0.9,
       FRAMING_QUICK = 5;
     function updateCameraFraming(deltaSeconds) {
+      updateSlowFraming(deltaSeconds);
       const aim = cameraFramingTarget(),
         quick = repairJob || player.carjack,
         // A smaller factor is a wider view.
@@ -130,8 +180,9 @@
        own flight view. With Motion comfort on (motionComfortOn, settings.js) the
        framing never follows the speed: it holds MOTION_COMFORT_FRAMING (the
        default curve's 100 km/h). A player who zoomed out keeps the proportional
-       pull-back. `context` is the vehicle's share of the player's zoom
-       (cameraContextZoom); returns a factor on top of it. */
+       pull-back. Below SLOW_FRAMING_OUT (SLOW FRAMING) it is 1: the walking view.
+       `context` is the vehicle's share of the player's zoom (cameraContextZoom);
+       returns a factor on top of it. */
     const DRIVE_PULL = 0.0025,
       DRIVE_PULL_FROM = 20,
       DRIVE_PULL_SOFT = 30,
@@ -141,6 +192,8 @@
       const c = player.car;
       if (!c || isAircraft(c)) return 1;
       if (motionComfortOn()) return MOTION_COMFORT_FRAMING;
+      // Below SLOW_FRAMING_OUT the walking framing, with no pull-back (SLOW FRAMING).
+      if (slowFramingOn()) return 1;
       const over = Math.max(0, drivingCameraSpeed() / KMH - DRIVE_PULL_FROM),
         g = over < DRIVE_PULL_SOFT ? (over * over) / (2 * DRIVE_PULL_SOFT) : over - DRIVE_PULL_SOFT / 2;
       return Math.max(DRIVE_PULL_LIMIT, 1 / (1 + DRIVE_PULL * g));
@@ -155,7 +208,8 @@
        person stands on screen (the street camera looks down at STREET_PITCH,
        flight-view3d.js). */
     function cameraViewReport() {
-      const context = cameraContextZoom(),
+      const context = cameraContextZoom(garageCameraFrame()),
+        c = player.car,
         frameH = clamp(viewportHeight * 0.68, 430, 630),
         viewH = frameH / Math.max(1e-3, worldZoom),
         standing = PERSON_HEIGHT * Math.cos(Math.atan2(680, 560));
@@ -163,6 +217,9 @@
         zoom: +worldZoom.toFixed(3),
         target: +worldZoomTarget.toFixed(3),
         context: +context.toFixed(3),
+        // SLOW FRAMING: a road vehicle or boat framed like walking, and the vehicle's own share at speed.
+        slowFraming: slowFramingOn(),
+        vehicleContext: c && !isAircraft(c) ? +vehicleContextZoom(c).toFixed(3) : null,
         speed: +speedZoomTarget(context).toFixed(3),
         kmh: Math.round(drivingCameraSpeed() / KMH),
         framing: +speedZoom.toFixed(3),
@@ -177,6 +234,7 @@
         // Settings: Motion comfort (settings.js) and Vehicle camera distance (driving.js, %).
         motionComfort: motionComfortOn(),
         vehicleDistance: drivingSettings.cameraDistance,
+        walkDistance: drivingSettings.walkDistance,
         // How the view has moved over the last few seconds (camera-comfort.js).
         comfort: cameraComfortReport(),
       };

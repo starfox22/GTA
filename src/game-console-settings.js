@@ -38,9 +38,9 @@
           if (typeof changes.footSpeed === 'boolean') setFootSpeed(changes.footSpeed);
           if (Number.isFinite(changes.minimapZoom)) setMinimapZoom(changes.minimapZoom);
           // Settings · Driving (driving.js): abs, esc, tcs (booleans), steering
-          // (50-150 %), lookAhead (0-150 %), cameraDistance (80-160 %); drivingReset: true restores them.
+          // (50-150 %), lookAhead (0-300 %), cameraDistance (80-160 %), walkDistance (60-160 %); drivingReset: true restores them.
           for (const key of ['abs', 'esc', 'tcs']) if (typeof changes[key] === 'boolean') setDrivingSetting(key, changes[key]);
-          for (const key of ['steering', 'lookAhead', 'cameraDistance']) if (Number.isFinite(changes[key])) setDrivingSetting(key, changes[key]);
+          for (const key of ['steering', 'lookAhead', 'cameraDistance', 'walkDistance']) if (Number.isFinite(changes[key])) setDrivingSetting(key, changes[key]);
           if (changes.drivingReset === true) resetDrivingSettings();
           if (typeof changes.touch === 'string') setTouchMode(changes.touch);
           applyVolumes();
@@ -83,6 +83,7 @@
           steering: drivingSettings.steering,
           lookAhead: drivingSettings.lookAhead,
           cameraDistance: drivingSettings.cameraDistance,
+          walkDistance: drivingSettings.walkDistance,
           gpsRoute: gpsRoute.points.length,
           touch: touchMode,
           screen: gameMode === 'settings' ? settingsTab : null,

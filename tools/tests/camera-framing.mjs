@@ -1,14 +1,14 @@
-// The street camera's framing (world-view.js CAMERA CONTEXT): close on foot, two zoom steps
-// wider than the old 1.75 in a car at rest (1.12; motorbikes, long vehicles and boats keep their
-// proportions), further back at speed, and back in again on foot; the wheel zoom and Settings ·
+// The street camera's framing (world-view.js CAMERA CONTEXT): close on foot and in a car below 30 km/h (SLOW
+// FRAMING; tools/tests/camera-slow-framing.mjs), two zoom steps wider than the old 1.75 in a car from 31 km/h
+// (1.12 before the pull-back; motorbikes, long vehicles and boats keep their proportions), further back at speed, and back in again on foot; the wheel zoom and Settings ·
 // Driving · Vehicle camera distance stay factors on all of it; Motion comfort holds the framing still
 // whatever the speed. The framing eases with the simulation, so `framed` (the zoom it holds)
 // follows `aim` (the zoom it eases to) under console simulate() too.
 export default async function (t) {
-  // Settings · Driving defaults: the street camera stands 120 % back in a vehicle and leads 150 %; the framing
-  // below is measured at 100 % and the defaults restored at the end.
+  // Settings · Driving defaults: the street camera stands 120 % back in a vehicle, 100 % on foot, and leads 200 %;
+  // the framing below is measured at 100 % and the defaults restored at the end.
   const defaults = await t.call('settings');
-  t.assert(defaults.cameraDistance === 120 && defaults.lookAhead === 150, 'driving camera defaults: ' + JSON.stringify(defaults));
+  t.assert(defaults.cameraDistance === 120 && defaults.lookAhead === 200 && defaults.walkDistance === 100, 'driving camera defaults: ' + JSON.stringify(defaults));
   await t.call('settings', { cameraDistance: 100 });
   // On the airport runway, heading south down it: clear of traffic and of the spot other
   // tests drive from.
@@ -25,18 +25,17 @@ export default async function (t) {
 
   await t.call('drive', 'sedan', 0, Math.PI / 2);
   const parked = await t.call('cameraView');
-  // Two zoom steps wider than the old 1.75 at the default: 1.12.
-  t.near(parked.context, 0.56, 0.56, 'car context');
-  t.near(parked.aim, 1.11, 1.13, 'car at rest aim');
-  // Boarding eases out over about two seconds, without overshooting.
-  await t.wait(1);
+  // At rest the walking framing; its own share (from 31 km/h) two zoom steps wider than the old 1.75: 1.12.
+  t.near(parked.context, 1, 1, 'car context at rest (walking)');
+  t.near(parked.vehicleContext, 0.56, 0.56, 'car context');
+  t.near(parked.aim, 2, 2, 'car at rest aim');
+  // Past 31 km/h it eases out over a couple of seconds, without overshooting.
+  await t.keys('KeyW', 2);
   const easing = await t.call('cameraView');
-  t.assert(easing.framed < 2 && easing.framed > 1.12, `framing a second after boarding: ${easing.framed}`);
-  await t.wait(2.5);
-  const settled = await t.call('cameraView');
-  t.near(settled.framed, 1.11, 1.16, 'car at rest framed after 3.5 s');
+  t.assert(!easing.slowFraming && easing.context === 0.56, `the car framing at ${easing.kmh} km/h: ${JSON.stringify(easing)}`);
+  t.assert(easing.framed < 2 && easing.framed > easing.aim, `framing easing out: ${easing.framed} (aim ${easing.aim})`);
 
-  await t.keys('KeyW', 9);
+  await t.keys('KeyW', 7);
   const fast = await t.call('cameraView');
   t.finite(fast, 'at speed');
   // The pull-back (world-view.js SPEED PULL-BACK) on the eased speed: 1 / (1 + 0.0025 g).
@@ -44,8 +43,10 @@ export default async function (t) {
     pull = 1 / (1 + 0.0025 * (over < 30 ? (over * over) / 60 : over - 15));
   t.assert(fast.kmh > 50 && fast.speed < 0.95, `no pull-back at speed: ${JSON.stringify(fast)}`);
   t.near(fast.speed, pull - 0.01, pull + 0.01, `pull-back at ${fast.kmh} km/h`);
-  t.assert(fast.aim < parked.aim - 0.08 && fast.aim >= 0.7, `aim at speed ${fast.aim} (at rest ${parked.aim})`);
-  t.assert(fast.framed < parked.aim - 0.05, `the framing did not follow the speed: ${fast.framed}`);
+  // The car's framing before the pull-back: 2 × 0.56 = 1.12.
+  const carRest = 2 * parked.vehicleContext;
+  t.assert(fast.aim < carRest - 0.08 && fast.aim >= 0.7, `aim at speed ${fast.aim} (the car's framing before the pull-back ${carRest})`);
+  t.assert(fast.framed < carRest - 0.05, `the framing did not follow the speed: ${fast.framed}`);
   t.note(`at speed (${fast.kmh} km/h eased): aim ${fast.aim}, framed ${fast.framed}, speed share ${fast.speed}`);
 
   // Stop, step out: the view aims back in.
@@ -71,7 +72,7 @@ export default async function (t) {
     await t.call('teleport', 420, 4600);
     await t.call('drive', type, 0, Math.PI / 2);
     const v = await t.call('cameraView');
-    t.near(v.context, share, share, `${type} context`);
+    t.near(v.vehicleContext, share, share, `${type} context`);
     await t.call('interact');
     await t.wait(0.5);
   }
@@ -82,7 +83,7 @@ export default async function (t) {
     await t.call('teleport', 420, 4600);
     await t.call('drive', 'sedan', 0, Math.PI / 2);
     const far = await t.call('cameraView');
-    t.near(far.context, 0.448 - 0.002, 0.448 + 0.002, 'car context at 125 % distance');
+    t.near(far.vehicleContext, 0.448 - 0.002, 0.448 + 0.002, 'car context at 125 % distance');
     t.assert(far.vehicleDistance === 125, 'distance reported: ' + far.vehicleDistance);
     await t.call('settings', { cameraDistance: 100 });
     // Motion comfort: the framing holds one zoom whatever the speed.
