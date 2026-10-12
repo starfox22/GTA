@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-589 files in the include tree, 201,750 lines.
+589 files in the include tree, 201,763 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -39,7 +39,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-populate.js`   231 — Initial population: showcase parking (SHOWCASE_PARKING, parkShowcase) and populate().
 - `src/world-reset.js`   130 — World reset: resetWorld(reason) puts the city back as it was at boot (vehicles, people, wrecks, damage, blood, gore, fires, knocked furniture, shop …
 - `src/game-player-actions.js`   639 — Player verbs: enter and exit vehicles, interact, aim, shoot, reload, hurt, die, explode.
-- `src/game-cops.js`   178 — resetMissionState(), spawnCop(), copRoute(): mission reset and patrol spawning.
+- `src/game-cops.js`   183 — resetMissionState(), spawnCop(), copRoute(): mission reset and patrol spawning.
 - `src/physics.js`    19 — ▸ Vehicle and pedestrian physics
 - `src/game-people.js`   168 — Pedestrian life: Everyday chatter lives here; how people walk, what they do and how they react to danger is in src/crowd.js, which also has the …
 - `src/game-combat.js`   348 — updateCombat(), bullets, shot line-of-sight (shotBlocked) and bullet targets.
@@ -63,7 +63,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/pursuit.js`    27 — ▸ Police response and pursuit tactics
 - `src/swat.js`   236 — SWAT teams, riot shields and rooftop snipers
 - `src/wounds.js`   184 — Wounds, hit reactions and death falls
-- `src/story.js`   996 — Story characters and mission stages
+- `src/story.js`   994 — Story characters and mission stages
 - `src/campaign.js`   534 — Campaign saves and replay
 - `src/chase.js`   554 — Cargo pursuit
 - `src/roadblocks.js`   436 — Police containment and roadblocks
@@ -234,7 +234,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/pursuit-dispatch.js`   764 — Police tiers and dispatch: sighting, unit kinds, wanted announcements, spawning and routing units (dispatchPolice, planPursuit).
 - `src/pursuit-steering.js`   107 — Pursuit steering aids: room to swing onto a straight run (roomToTurn), the speed the corners on the route ahead allow (routeCornerSpeed) and traffic …
-- `src/pursuit-officers.js`   691 — Officers on foot in a pursuit: suppressive fire, cover, drags, surrender and arrest (updateArrest).
+- `src/pursuit-officers.js`   693 — Officers on foot in a pursuit: suppressive fire, cover, drags, surrender and arrest (updateArrest).
 
 ## src/themepark.js ▸ Sunset Pier resort and theme park
 
@@ -859,7 +859,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/game-console-core.js`   191 — DeadEndCity console, core: status, teleport, look, clock, zoom, simulate, heal, god, cash, walk (+ godPanelConsole)
 - `src/game-console-missions.js`   361 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
-- `src/game-console-police.js`   271 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
+- `src/game-console-police.js`   279 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
 - `src/game-console-vehicles.js`   433 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
 - `src/game-console-world.js`   277 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
 - `src/game-console-rides.js`   104 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
