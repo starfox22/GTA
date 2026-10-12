@@ -17,10 +17,15 @@
      *                 leadSeconds of travel, at most leadShare of the frame's half
      *                 height on the ground (so the vehicle sits centre-low, the road
      *                 ahead in view, at any zoom), leadBack reversing, eased in two
-     *                 stages; Camera look-ahead and the chase framing scale it, but the
-     *                 frame's share grows at most to leadShareMax (a look-ahead past
-     *                 ~120 % lengthens the lead at lower speeds only, so a fast bus
-     *                 never reaches the strip and prompt along the bottom)
+     *                 stages; Camera look-ahead (0-300 %, default 200 %) and the chase
+     *                 framing scale both the seconds and the frame's share, the share
+     *                 so far that the vehicle's far end (half its length beyond the
+     *                 lead) stays within leadShareTop of the half height: clear of the
+     *                 HUD along the screen's edges (the pager strip starts ~0.73 of
+     *                 the half height below the middle at 960x600), so a long bus
+     *                 leads less than a car at 300 %; at 100 km/h a car leads ~1.5x as
+     *                 far at 150 % as at 100 %, 2x at 200 % and ~2.6x at 300 %
+     *                 (tools/tests/camera-lead-setting.mjs)
      *   follow        cameraSpring: an exact critically damped spring (no overshoot,
      *                 stable at any step), `along` the lead's heading with the vehicle's
      *                 own speed fed forward (no lag), `across` it a softer one with no
@@ -43,7 +48,7 @@
       velocityRate: 3,
       leadSeconds: 0.55,
       leadShare: 0.25,
-      leadShareMax: 0.3,
+      leadShareTop: 0.7,
       leadBack: 60,
       leadMinSpeed: 12,
       leadHeadRate: 2,
@@ -119,8 +124,9 @@
           // Ground units from the middle of the frame to its top edge at the framing in force.
           half = clamp(viewportHeight * 0.68, 430, 630) / Math.max(1e-3, worldZoomTarget * speedZoom) / 2 / COMFORT_SIN,
           chase = 1 - CAMERA_CHASE_PULL * cameraChaseCloseness(c, D.vx, D.vy, sv),
-          aim = Math.atan2(D.vy, D.vx);
-        want = Math.min(sv * K.leadSeconds * scale, forward ? half * Math.min(K.leadShare * scale, K.leadShareMax) : K.leadBack * scale) * chase;
+          aim = Math.atan2(D.vy, D.vx),
+          room = Math.max(0, half * K.leadShareTop - (vehicleSpec(c).l || 0) / 2);
+        want = Math.min(sv * K.leadSeconds * scale, forward ? Math.min(half * K.leadShare * scale, room) : K.leadBack * scale) * chase;
         let turn = Math.atan2(Math.sin(aim - D.h), Math.cos(aim - D.h));
         if (Math.abs(turn) > K.leadFlip) {
           // Forward to reverse (or back): shrink the lead to nothing, then face the new way at once.

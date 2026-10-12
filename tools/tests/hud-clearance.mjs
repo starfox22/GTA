@@ -7,6 +7,13 @@ export default async function (t) {
   await t.call('holdSimulation', true);
   try {
     await t.call('god', true);
+    // At 100 % look-ahead, like the other camera tests. The box is drawn at the drawn zoom, which eases only on real
+    // frames (world-view.js updateWorldView) and lags the framing far behind under console steps (a frame or two a
+    // second here), while the lead is framed for the eased framing: at the 200 % default (and at 150 % about one run in
+    // three) the bus was boxed lower on screen than it ever sits in play. In play the default and 300 % keep the
+    // vehicle's far end within 0.7 of the half frame (camera-drive.js leadShareTop; tools/tests/camera-lead-setting.mjs
+    // checks a bus heading up the screen).
+    await t.call('settings', { lookAhead: 100 });
     const north = async () => {
       await t.call('teleport', 420, 5600); // Southport airport, up the runway
       await t.call('drive', 'bus', 0, -Math.PI / 2);
@@ -54,6 +61,7 @@ export default async function (t) {
     c = await t.call('hudClearance');
     t.assert(c.folded, 'a second O did not fold it: ' + JSON.stringify(c));
   } finally {
+    await t.call('settings', { drivingReset: true });
     await t.call('holdSimulation', false);
   }
 }

@@ -31,6 +31,7 @@
     const CAMERA_LEAD_SECONDS = 0.45,
       CAMERA_LEAD_AHEAD = 300,
       CAMERA_LEAD_BEHIND = 80,
+      CAMERA_LEAD_SETTING_TOP = 1.5,
       CAMERA_LEAD_RATE = 2.4,
       CAMERA_FOOT_LEAD_SECONDS = 0.3,
       CAMERA_FOOT_LEAD_MAX = 28,
@@ -131,7 +132,9 @@
     const cameraLeadAim = { x: 0, y: 0 };
     function cameraLeadTarget(out) {
       out.x = out.y = 0;
-      const scale = drivingLookAhead(),
+      // The look-ahead setting reaches 300 % for the driving follow (camera-drive.js); on foot and in a
+      // helicopter it counts only up to the old top, CAMERA_LEAD_SETTING_TOP (the defaults' view unchanged).
+      const scale = Math.min(drivingLookAhead(), CAMERA_LEAD_SETTING_TOP),
         c = player.car;
       if (!scale) return out;
       if (c) {
