@@ -5,6 +5,7 @@
 | Method | Purpose |
 | --- | --- |
 | `wanted(stars)` | Set the police level (0 clears it as an escape would) |
+| `arrest()` | BUSTED now (one star at least): release, fine and world reset follow 4.2 s of wall clock later |
 | `shotLog(reset)` | Every hostile round aimed at the player since the last reset, by source (`police-patrol`, `police-swat`, `army-jeep-gunner`, `police-helicopter`, `police-rooftop-sniper`...): shots, hits, damage, nearest / farthest shooter, how many were fired from off screen, and the last 40 rounds |
 | `cover(x, y)` | Overhead cover at a point (default the player): the cover (kind, underside, top) or null, `roofHeight` (`overheadCoverHeight`: where the searchlight lands), whether the player is hidden from the police helicopter, the air unit's status line, the registered covers by kind with an example point each |
 | `apache()`, `apacheAim(x, y)`, `apacheReset()` | Fort Sentinel's Apache: position, pad, altitude, hp, aboard / taken, ammunition (rounds, rockets, rearming), turret and gun pitch, aim point and a parked-clearance check; fix the gun's aim point on the ground as the mouse would (no arguments hands it back); put a fresh one on its pad. Fire with `simulate(s, ['KeyF'])` (gun) and `simulate(s, ['RocketSalvo'])` (rockets: the action's virtual code) |

@@ -41,8 +41,8 @@ cleanup, the demo gate) are in missions-and-demo.md; this page is what each job 
   at his kerb (`fortHomeSpot`: the first spot back along the kerb `canSpawnCar` allows), already pulling away (about
   50 s to the Marea over the causeway): a red `muscle` car, `mission` (never retired, burns slowly), `missionDriver:
   'kessler'`, `trunkLoot` UNIFORM AND ID, driving `countyRoute` = `fortRoute(home)` (the pull-out into the westbound
-  lane, then the navigation graph held to the right lane, as the cabs drive it). The job starts after `resetWorld`
-  (story.js), so the reset never takes him. The opening brief (kicker THE JOB) names his house; the objective is his
+  lane, then the navigation graph held to the right lane, as the cabs drive it). Taking the job never resets the world
+  (only WASTED / BUSTED do, and those fail the job), so a reset never takes him; a wreck at his kerb is skipped. The opening brief (kicker THE JOB) names his house; the objective is his
   car from the first frame. Wedged for 9 s he skips a node only where `spotUnseen` both ends. The wrap guard sends
   `countyIndex` back to the end only when it drops to 0 from further along (`m.routeIndex`).
 - His car stays pristine on the way (`fortKeepPristine`): while he drives, not alerted and never touched by the player

@@ -1,5 +1,8 @@
     // resetMissionState(), spawnCop(), copRoute(): mission reset and patrol spawning.
-    function resetMissionState() {
+    /* Mission state only: the jobs' own vehicles, actors and set pieces, the player's ride, health and clips. The
+       world is never reset here (world-reset.js: WASTED and BUSTED). `livePursuit` (a job call taken at the
+       payphone) also leaves the police as they are: stars, units on foot and in cars, bullets in flight. */
+    function resetMissionState(livePursuit = false) {
       if (transitRide) leaveTransit(transitRide.from, true);
       if (taxiRide) endTaxiRide(false);
       player.deck = null;
@@ -28,12 +31,14 @@
       }
       leaveBuildingRoof();
       enemies.length = 0;
-      bullets.length = 0;
-      clearPolice();
+      if (!livePursuit) {
+        bullets.length = 0;
+        clearPolice();
+        resetOfficerCrews();
+      }
       // A chip left over from before the job (a "POLICE CLEARED!" from a chase
       // that ended as the payphone was answered) must not sit over its headline.
       hidePoliceNotice();
-      resetOfficerCrews();
       player.hp = 100;
       player.armor = Math.max(player.armor, 50);
       player.inv = 2;
@@ -50,12 +55,12 @@
           if (player.car === c) player.car = null;
           if (i >= 0) vehicles.splice(i, 1);
         });
-      vehicles
-        .filter((c) => c.cop)
-        .forEach((c) => {
-          c.cop = false;
-          c.ai = true;
-        });
+      if (!livePursuit)
+        for (const c of vehicles)
+          if (c.cop) {
+            c.cop = false;
+            c.ai = true;
+          }
     }
     function aheadOf(t, seconds) {
       return {

@@ -282,6 +282,10 @@
       }
       // Already standing in the shallows: deeper is allowed (you start to swim).
       if (!fromDry) return false;
+      // A jump on foot carries him off a quay, a sea wall, rocks or a dock into the sea (player-jump.js OFF THE
+      // QUAY); never off a bridge or the pier.
+      if (playerJumpFlying() && !onBridge(fromX, fromY, r) && !onBeachPier(fromX, fromY, r) && (landAt(fromX, fromY) || onDock(fromX, fromY, r)))
+        return false;
       // Stepping off: only from natural ground, and only where the shore is a beach.
       if (onBridge(fromX, fromY, r) || onDock(fromX, fromY, r) || onBeachPier(fromX, fromY, r) || !landAt(fromX, fromY)) {
         wallHint();
@@ -371,6 +375,8 @@
         updateLadderClimb(deltaSeconds);
         return;
       }
+      // In the air off a quay (a jump, then its fall): the body reaches the water through the fall (fallIntoWater).
+      if (!player.swimming && (playerJumpFlying() || player.fall?.jumped)) return;
       // A swimmer is in the water anywhere that is not land or a dock (a bridge
       // or the pier is overhead); someone on foot is in it once they are off
       // whatever they were standing on.

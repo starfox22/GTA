@@ -1,7 +1,8 @@
-// The world reset (world-reset.js): WASTED and a mission pick put the city back as it was at boot. Wreck cars (a blast,
-// a crash, bonnet blood), then die: no wrecks, damage, stains, blood, bodies, fires or scorch, the parked coupe by the
-// payphone back on its spot unhurt, the test's own cars gone. Then the same for a pick in the mission picker, its call
-// taken without a second reset, and RESTART CURRENT JOB. (No-render page: the renderer's decals, panes and props are
+// The world reset (world-reset.js): WASTED and BUSTED put the city back as it was at boot; taking a job never does.
+// Wreck cars (a blast, a crash, bonnet blood), then die: no wrecks, damage, stains, blood, bodies, fires or scorch, the
+// parked coupe by the payphone back on its spot unhurt, the test's own cars gone. Then a pick in the mission picker
+// and its call taken with two stars: the wreck and the stars are still there, no reset. RESTART CURRENT JOB: no reset
+// either. Then BUSTED during the job: the city clean again. (No-render page: the renderer's decals, panes and props are
 // checked by hand with `dev.mjs start --render`.)
 export const fresh = true;
 const COUPE = { x: 782, y: 576 }; // game-populate.js: the first car populate() parks
@@ -56,29 +57,49 @@ export default async function (t) {
     const s = await t.call('status');
     t.assert(s.mode === 'play' && s.hp === 100, 'not back on his feet: ' + JSON.stringify(s));
 
-    // ---- A pick in the mission picker, then its call taken (no second reset), then RESTART CURRENT JOB.
+    // ---- A pick in the mission picker, then its call taken (the payphone's accept) with two stars: no reset at all.
     await wreckSome(t);
-    t.assert((await t.call('worldResetReport')).now.wrecks >= 1, 'no wreck before the pick');
+    const wrecksBefore = (await t.call('worldResetReport')).now.wrecks;
+    t.assert(wrecksBefore >= 1, 'no wreck before the pick');
     await t.call('teleport', OPEN.x, OPEN.y); // on foot
     const c = await t.call('chooseMission', 0);
     t.assert(c.chosen && c.mode === 'dialogue', 'the pick: ' + JSON.stringify(c));
     r = await t.call('worldResetReport');
-    t.assert(r.byReason.mission === 1 && r.last.reason === 'mission', 'no reset on the pick: ' + JSON.stringify(r.byReason));
-    clean(t, r.last.after, 'mission pick');
+    t.assert(r.count === 1 && !r.byReason.mission, 'the pick reset the world: ' + JSON.stringify(r.byReason));
+    t.assert(r.now.wrecks >= wrecksBefore, 'the pick took the wrecks: ' + r.now.wrecks + ' < ' + wrecksBefore);
+    await t.call('wanted', 2);
     await t.keys('Enter', 0.2, { real: true }); // take the call
     let m = await t.call('missionState');
-    t.assert(m.index === 0, 'the call did not start the job: ' + JSON.stringify(m));
+    t.assert(m.index === 0 && (await t.call('status')).mode === 'play', 'the call did not start the job: ' + JSON.stringify(m));
+    t.assert(m.wanted >= 2, 'taking the call lost the police: ' + JSON.stringify(m));
     r = await t.call('worldResetReport');
-    t.assert(!r.byReason.job && r.count === 2, 'the call reset the world again: ' + JSON.stringify(r.byReason));
+    t.assert(r.count === 1 && !r.byReason.job, 'the call reset the world: ' + JSON.stringify(r.byReason));
+    t.assert(r.now.wrecks >= wrecksBefore && r.now.wanted >= 2, 'the call did not keep the world: ' + JSON.stringify(r.now));
+    await t.call('wanted', 0);
+
+    // ---- RESTART CURRENT JOB: the job starts again, the world carries on (a fresh wreck stays).
     await t.call('teleport', OPEN.x, OPEN.y);
     await t.call('park', 'sedan', 160, 0, 0);
     await t.call('blast', OPEN.x + 160, OPEN.y, 1);
     await t.wait(0.3);
+    const wrecksRestart = (await t.call('worldResetReport')).now.wrecks;
     m = await t.call('retryMission');
     t.assert(m.index === 0 && m.stage === 0, 'RESTART: ' + JSON.stringify(m));
     r = await t.call('worldResetReport');
-    t.assert(r.byReason.retry === 1, 'no reset on RESTART CURRENT JOB: ' + JSON.stringify(r.byReason));
-    clean(t, r.now, 'restart');
+    t.assert(r.count === 1 && !r.byReason.retry, 'RESTART CURRENT JOB reset the world: ' + JSON.stringify(r.byReason));
+    t.assert(r.now.wrecks >= wrecksRestart && wrecksRestart >= 1, 'RESTART took the wrecks: ' + JSON.stringify(r.now));
+
+    // ---- BUSTED during the job: the job fails and the city is put back.
+    await t.call('teleport', OPEN.x, OPEN.y + 600);
+    await t.wait(0.2);
+    const busted = await t.call('arrest');
+    t.assert(busted.mode === 'dead', 'not arrested: ' + JSON.stringify(busted));
+    await new Promise((r) => setTimeout(r, 4800)); // BUSTED runs on the wall clock
+    r = await t.call('worldResetReport');
+    t.assert(r.byReason.busted === 1 && r.last.reason === 'busted' && r.count === 2, 'no reset on BUSTED: ' + JSON.stringify(r.byReason));
+    clean(t, r.last.after, 'BUSTED');
+    m = await t.call('missionState');
+    t.assert((await t.call('status')).mode === 'play' && !m.mission && m.last?.result === 'failed', 'BUSTED did not fail the job: ' + JSON.stringify(m));
     const g = await t.call('integrity');
     t.assert(!g.problems.length, 'integrity after the resets: ' + JSON.stringify(g.problems));
   } finally {

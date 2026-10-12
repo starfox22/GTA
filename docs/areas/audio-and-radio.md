@@ -51,7 +51,7 @@ doors, tyre ground) is in audio-soundscape.md.
 - Rain (weather-audio.js): three recorded beds cross-faded by intensity, muffled under cover
   (`rainShelter()`) and inside closed vehicles. Thunder is queued at distance / speed of sound.
 - The jump on foot (player-jump-audio.js `jumpEffortSound`, from player-jump.js at take-off): one recorded
-  breathy "huh" (`player-jump-grunt`, LibreQuake, BSD-3), a full or a softer delivery pitched by `sfxRandom`, on
+  voiced adult-male "huh" (`player-jump-grunt`, arther1974 jump_grunt_01, CC0), a full or a softer delivery pitched by `sfxRandom`, on
   the effects bus at the player (`JUMP_EFFORT_LEVEL` 0.3); `jumpReport().effort` counts it.
 - Stadium: silent between goals (a filtered-noise bed read as white noise and was removed);
   a goal plays a recorded cheer from the scoring end and a groan from the other, scaled by
