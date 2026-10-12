@@ -193,6 +193,9 @@
             )
               continue;
             if (!pointInCar(b.x, b.y, c, 1)) continue;
+            // A hole in the skin, a star in the glass, a dead lamp or a flat tyre; it also
+            // notes the zone the round went into (vehicle-gunfire.js VEHICLE GUNFIRE).
+            hitKind = bulletHitVehicle(c, b);
             if (
               bulletDamagesVehicle(b, c) &&
               !(
@@ -212,16 +215,16 @@
                 vehicleArmorShare(c, b) *
                   (b.enemy && c.mission && b.faction !== 'police' && !b.rocket
                     ? b.dmg * missionCageShare(c)
-                    : // Police rounds are meant for the driver: they chew a car up
-                      // slowly rather than wrecking it in a dozen hits.
-                      b.faction === 'police' && c === player.car && !b.rocket
-                      ? b.dmg * 0.45
-                      : b.dmg),
+                    : // What the round does to a road vehicle by calibre and where it went in
+                      // (vehicle-gunfire.js: small arms never past an engine fire). Police
+                      // rounds are meant for the driver: they chew a car up slowly.
+                      vehicleRoundDamage(c, b) * (b.faction === 'police' && c === player.car && !b.rocket ? 0.45 : 1)),
                 b.x,
                 b.y,
                 b.owner || (!b.enemy ? player : null),
                 {
                   kind: 'bullet',
+                  panel: b.dmg,
                 },
               );
             impact = true;
@@ -240,8 +243,6 @@
               hurt((b.playerDmg ?? b.dmg) * 0.6, b.damageKind);
               shotLogHit(b);
             }
-            // A hole in the skin, a star in the glass, a dead lamp or a flat tyre.
-            hitKind = bulletHitVehicle(c, b);
             break;
           }
           if (impact) break;
