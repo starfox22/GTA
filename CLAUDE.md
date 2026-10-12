@@ -310,7 +310,11 @@ packs with plain `<script src>` so the zip still plays from file://.
   `retireVehicle`. Console `wreckReport()`.
 - The street camera's follow is a critically damped spring (`cameraSpring`, camera-drive.js: smoothed look-ahead
   that turns at most ~52 deg/s, smoothed camera height); vehicle framing is `CAMERA_CONTEXT` × `speedZoomTarget`
-  (world-view.js; `vehicleCameraFactor()` is Settings · Driving · Vehicle camera distance). Renderers read only
+  (world-view.js; `vehicleCameraFactor()` is Settings · Driving · Vehicle camera distance). Below 30 km/h a road vehicle or boat frames like
+  walking (`slowFramingOn()`, world-view.js SLOW FRAMING: out at 31 km/h, back after 1 s under 30; never with Motion
+  comfort); the on-foot share is `walkCameraFactor()` (Settings · Driving · Walking camera distance); the driving lead's
+  frame share stops where the vehicle's far end reaches `leadShareTop` 0.7 of the half frame (look-ahead 0-300 %,
+  default 200 %). Renderers read only
   `streetCameraAltitude()` and `cameraShakeLevel()`. `motionComfortOn()` (settings.js MOTION COMFORT) is the one
   switch for the steady camera (fixed vehicle zoom, short slow lead, no kicks/tremor/aim lean/flight bank): a new
   camera motion checks it. Check `cameraComfort()` / tools/tests/camera-comfort.mjs after any camera change.
