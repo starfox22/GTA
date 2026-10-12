@@ -39,7 +39,7 @@ export default async function (t) {
   r = await until(t, 'waiting at the Marea', (q) => q.waitClub, 5);
   t.assert(/WAIT FOR KESSLER/.test(r.instruction), 'the club wait objective: ' + r.instruction);
   r = await until(t, 'his car put on its last approach', (q) => q.jumped, 25);
-  // (City traffic at the Marina Rd junction can hold him a while.)
-  r = await until(t, 'parked at the Marea', (q) => q.stage >= 2, 100, 2);
-  t.assert(Math.abs(r.car.y - 5220) < 40 && !r.car.occupied, 'parked opposite the door: ' + JSON.stringify(r.car));
+  // (He comes on a couple of blocks out, through Palm Keys' junctions: city traffic can hold him a while.)
+  r = await until(t, 'parked at the Marea', (q) => q.stage >= 2, 180, 2);
+  t.assert(Math.abs(r.car.y - 5214) < 40 && !r.car.occupied, 'parked opposite the door: ' + JSON.stringify(r.car));
 }

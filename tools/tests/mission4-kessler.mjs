@@ -40,7 +40,7 @@ export default async function (t) {
   t.note('brought on ' + Math.round(away) + ' units from his kerb');
   t.assert(away >= 1024, 'brought on too close to the Marea: ' + Math.round(away));
   // He parks at the kerb, at rest, opposite the club.
-  for (let i = 0; i < 40 && r.stage === 1; i++) {
+  for (let i = 0; i < 90 && r.stage === 1; i++) {
     await t.wait(2);
     r = await t.call('fortJob');
   }
