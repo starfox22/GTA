@@ -44,6 +44,8 @@
       try {
         city3D = createCityRenderer();
         bootMark('renderer');
+        // A lost WebGL context pauses the game and comes back by a reload (gpu-context.js GPU CONTEXT).
+        watchGpuContext(getElement('scene'));
         getElement('renderBadge').textContent = 'SOUTH COAST · DUSK';
         // The 2D fallback's ground bitmap (~21 MP) is never drawn with the 3D
         // renderer running: free it (late paints into it are harmless no-ops).

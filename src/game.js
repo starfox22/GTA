@@ -170,6 +170,7 @@
     // @include src/chase-hud.js
     // @include src/tyre-effects.js
     // @include src/hud.js
+    // @include src/gpu-context.js
     // @include src/render3d.js
     // STARTUP ORDER: geometry -> collision -> entities -> saved progression -> UI -> graphics.
     bootMark('game-start');
@@ -192,6 +193,7 @@
     loadVisuals();
     bootMark('visuals-queued');
     // @include src/frame-trace.js
+    // @include src/frame-guard.js
     // @include src/game-loop.js
     requestAnimationFrame(frame);
     bootMark('loop-ready');
