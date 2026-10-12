@@ -88,7 +88,32 @@
     function speechReadSeconds(text) {
       return clamp(1.5 + text.length * 0.065, 2.4, 6);
     }
+    /**
+     * TALK LINES
+     * A line of a conversation the player is part of: a chat at the Marea (clubtalk.js), the Marea's door speaking
+     * to him (beachclub-people.js), the CIRRUS meeting (skyline-meeting.js), Fort Sentinel's gate (fort-cover.js).
+     * Whoever sets the line marks it with speechMarkTalk(p) (`p.speechTalk`, the text it marked). A talk line ranks
+     * above every other (it bumps any bubble on screen), the view's height never fades it, in the chase view it
+     * needs no line of sight to keep its slot, and the renderer draws it a size up and inside the frame, with a
+     * pointer to a speaker off the drawable band, never culled (render3d-frame.js).
+     */
+    function speechMarkTalk(p) {
+      if (p && p.speech) p.speechTalk = p.speech;
+    }
+    function speechIsTalk(p) {
+      return !!p.speech && p.speechTalk === p.speech;
+    }
+    /* The chase view: a line takes a bubble slot only if its speaker is in the camera's frame (or near it), so
+       people behind the camera do not hold both slots while those in front speak unseen. The street view's band is
+       the range round the view's centre (speechLive); a talk line or a 911 call is drawn held in the frame. */
+    function speechInChaseFrame(p) {
+      if (!chaseCameraLive() || !chaseCam.ready || speechIsTalk(p)) return true;
+      if (p.speechKind === 'call911' && p.speechKindText === p.speech) return true;
+      return chaseSees(p.x, p.y, entityElevation(p) + PERSON_HEIGHT, 8, 0, SPEECH_RANGE * 1.5);
+    }
     function speechPriority(p) {
+      // A conversation with the player comes first (TALK LINES).
+      if (speechIsTalk(p)) return 5;
       // The Falcon's riders come first while the player rides with them (themepark.js).
       if (p.coasterRider && player.coaster?.kind === 'train') return 4;
       if (p.military || p.police || p.missionTag || p.ally || p.inConversation) return 3;
@@ -104,7 +129,8 @@
         p.speechUntil >= gameTime &&
         p.hp > 0 &&
         distanceBetween(p, cameraTarget) <= SPEECH_RANGE &&
-        speechHeightFade(p) > 0
+        speechHeightFade(p) > 0 &&
+        speechInChaseFrame(p)
       );
     }
     /**
@@ -122,7 +148,10 @@
      *     flight-view3d.js: about 30 m at zoom 0.8, 50 m at 0.64) plus the
      *     player's elevation over the speaker (looking down from a roof). The
      *     player's own zoom counts, not the pull-back at speed, which is
-     *     momentary and is when drivers shout at the player.
+     *     momentary and is when drivers shout at the player;
+     *   - in the chase view the chase camera's own height over the speaker
+     *     (it stands a few metres off the ground: the street zoom says nothing
+     *     about it, and a zoomed-out street view hid every bubble there).
      * Someone above the view (riders on the Falcon watched from the ground)
      * counts as level. Covers every bubble: the street (crowd, drivers,
      * carjacks, police, soldiers, Falcon riders) and the Blue Hour rooftop.
@@ -130,6 +159,7 @@
     const SPEECH_FADE_FROM = 40 * UNITS_PER_METRE,
       SPEECH_HIDDEN = 50 * UNITS_PER_METRE;
     function speechViewHeight(p) {
+      if (chaseCameraLive() && chaseCam.ready && !player.coaster) return Math.max(0, chaseCam.z - entityElevation(p));
       let eye = entityElevation(player);
       if (!player.coaster && !player.parachute && !isAircraft(player.car)) {
         const zoom = worldZoom / Math.max(0.1, speedZoom);
@@ -138,10 +168,14 @@
       return Math.max(0, eye - entityElevation(p));
     }
     function speechHeightFade(p) {
+      // The player's own conversation is heard whatever the zoom (TALK LINES).
+      if (speechIsTalk(p)) return 1;
       return clamp((SPEECH_HIDDEN - speechViewHeight(p)) / (SPEECH_HIDDEN - SPEECH_FADE_FROM), 0, 1);
     }
     // DeadEndCity.speechView(): the rule as it stands for someone on the ground at the view's centre.
     function speechViewReport() {
+      // The bubbles as the renderer would pick them this frame (a no-render page never asks otherwise).
+      speechBubbles();
       const ground = { x: cameraTarget.x, y: cameraTarget.y };
       return {
         viewHeight: +worldMeters(speechViewHeight(ground)).toFixed(1),

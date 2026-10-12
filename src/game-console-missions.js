@@ -23,10 +23,21 @@
         completed: demoCompleted,
         cardShown: gameMode === 'demo',
         cardIn: Math.round(demoCardIn * 10) / 10,
+        // The card was shown to this save (once per save).
+        cardSeen: demoCardSeen,
         // What the mission picker lists: locked jobs read ???.
         picker: missions.map((m, i) => missionPickerTitle(i)),
         stats: { ...campaignStats, playSeconds: Math.round(campaignStats.playSeconds) },
       }),
+      // Tests: the story's frontier set to `n` finished jobs (missionIndex follows); `cardSeen` sets whether this
+      // save has shown the DEMO COMPLETE card, and `owed` asks for it as a loaded save would. Returns demo().
+      storyProgress(n, cardSeen, owed = false) {
+        completed = clamp(Math.trunc(Number(n) || 0), 0, missions.length);
+        missionIndex = completed;
+        if (typeof cardSeen === 'boolean') demoCardSeen = cardSeen;
+        if (owed) demoCardOwed();
+        return this.demo();
+      },
       // Every on-screen pointer that refers to the story (HUD refreshed first):
       // the objective the 3D arrow, minimap and map draw, the navigation pill,
       // the pager, the flight strip's bearing and the ringing payphone.

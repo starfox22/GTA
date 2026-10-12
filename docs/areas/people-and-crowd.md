@@ -71,6 +71,16 @@ Animals: ecology.js / ecology3d.js, sealife (world-county-and-sea.md).
   then the nearest. The renderer culls bubbles outside x 40..W-40, y 90..H-190 (the HUD
   strip), which at the street zoom is only ~50-100 units north/south of the player; a 911
   bubble is instead held inside the frame (red edge, tail toward the caller).
+- TALK LINES (crowd-speech.js): a line of a conversation the player is in (a Marea chat, the Marea door speaking to
+  him, the CIRRUS meeting, Fort Sentinel's gate) is marked by `speechMarkTalk(p)` where it is said. It ranks first
+  (5, bumps anything), never fades with height, and is drawn two sizes up and bold with a dark edge (the player's own
+  pale blue), held inside the frame like a 911 call (behind the chase camera: on its lower edge). A new
+  conversation with the player marks its lines the same way. The player's own Marea lines also read in the subtitle
+  (story.js `sceneLine`, free roam too).
+- Chase view: a line takes a slot only while its speaker is in the chase frame (`speechInChaseFrame`, `chaseSees`),
+  so people behind the camera no longer hold both slots; the anchor is 3 units over the head there (9.5 in the
+  street view, which put a close speaker's bubble a metre up and off the top); the height rule uses the chase
+  camera's own height; `#storyLine` never yield-fades over the player in the chase view (his body is always under it).
 - SPEECH SEEN FROM ABOVE: every bubble fades from 40 to 50 m of height between view and
   speaker (`speechHeightFade`, `speechViewHeight`); a hidden line takes no slot.
 - Settings · Gameplay · NPC chatter off hides street bubbles; mission dialogue (`#storyLine`,
