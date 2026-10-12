@@ -1,0 +1,239 @@
+[
+  {
+    "side": "before",
+    "layout": {
+      "viewport": [
+        960,
+        600
+      ],
+      "touch": true,
+      "boxes": [
+        {
+          "id": "hudLocation",
+          "l": 12,
+          "t": 11,
+          "r": 206,
+          "b": 43
+        },
+        {
+          "id": "cash",
+          "l": 735,
+          "t": 17,
+          "r": 815,
+          "b": 37
+        },
+        {
+          "id": "stars",
+          "l": 825,
+          "t": 19,
+          "r": 900,
+          "b": 35
+        },
+        {
+          "id": "pauseBtn",
+          "l": 910,
+          "t": 8,
+          "r": 948,
+          "b": 46
+        },
+        {
+          "id": "navigation",
+          "l": 379,
+          "t": 8,
+          "r": 581,
+          "b": 44
+        },
+        {
+          "id": "minimapBox",
+          "l": 12,
+          "t": 54,
+          "r": 212,
+          "b": 189
+        },
+        {
+          "id": "vehicleStats",
+          "l": 816,
+          "t": 54,
+          "r": 948,
+          "b": 128
+        },
+        {
+          "id": "weaponButton",
+          "l": 798,
+          "t": 136,
+          "r": 948,
+          "b": 178
+        },
+        {
+          "id": "moveStick",
+          "l": 20,
+          "t": 446,
+          "r": 152,
+          "b": 578
+        },
+        {
+          "id": "fpsCounter",
+          "l": 428,
+          "t": 4,
+          "r": 532,
+          "b": 22
+        },
+        {
+          "id": "touch-utility",
+          "l": 174,
+          "t": 528,
+          "r": 786,
+          "b": 576
+        },
+        {
+          "id": "touch-actions",
+          "l": 712,
+          "t": 276,
+          "r": 942,
+          "b": 434
+        }
+      ],
+      "overlaps": [
+        [
+          "navigation",
+          "fpsCounter",
+          104,
+          14
+        ]
+      ],
+      "overPlayer": []
+    },
+    "fpsOverlaps": [
+      [
+        "navigation",
+        "fpsCounter",
+        104,
+        14
+      ]
+    ],
+    "errors": []
+  },
+  {
+    "side": "after",
+    "layout": {
+      "viewport": [
+        960,
+        600
+      ],
+      "touch": true,
+      "boxes": [
+        {
+          "id": "hudLocation",
+          "l": 12,
+          "t": 11,
+          "r": 174,
+          "b": 43
+        },
+        {
+          "id": "cash",
+          "l": 735,
+          "t": 17,
+          "r": 815,
+          "b": 37
+        },
+        {
+          "id": "stars",
+          "l": 825,
+          "t": 19,
+          "r": 900,
+          "b": 35
+        },
+        {
+          "id": "pauseBtn",
+          "l": 910,
+          "t": 8,
+          "r": 948,
+          "b": 46
+        },
+        {
+          "id": "navigation",
+          "l": 379,
+          "t": 8,
+          "r": 581,
+          "b": 44
+        },
+        {
+          "id": "carRadio",
+          "l": 798,
+          "t": 180,
+          "r": 948,
+          "b": 211
+        },
+        {
+          "id": "toast",
+          "l": 279,
+          "t": 435,
+          "r": 681,
+          "b": 514
+        },
+        {
+          "id": "minimapBox",
+          "l": 12,
+          "t": 54,
+          "r": 162,
+          "b": 175
+        },
+        {
+          "id": "pager",
+          "l": 310,
+          "t": 54,
+          "r": 650,
+          "b": 142
+        },
+        {
+          "id": "vehicleStats",
+          "l": 816,
+          "t": 54,
+          "r": 948,
+          "b": 128
+        },
+        {
+          "id": "weaponButton",
+          "l": 816,
+          "t": 136,
+          "r": 948,
+          "b": 172
+        },
+        {
+          "id": "moveStick",
+          "l": 20,
+          "t": 446,
+          "r": 152,
+          "b": 578
+        },
+        {
+          "id": "fpsCounter",
+          "l": 428,
+          "t": 580,
+          "r": 532,
+          "b": 598
+        },
+        {
+          "id": "touch-utility",
+          "l": 174,
+          "t": 528,
+          "r": 786,
+          "b": 576
+        },
+        {
+          "id": "touch-actions",
+          "l": 712,
+          "t": 276,
+          "r": 942,
+          "b": 434
+        }
+      ],
+      "overlaps": [],
+      "overPlayer": [
+        "pager"
+      ]
+    },
+    "fpsOverlaps": [],
+    "errors": []
+  }
+]

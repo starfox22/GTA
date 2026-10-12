@@ -1,0 +1,19 @@
+{
+ "seed": 12,
+ "minutes": 5,
+ "simSeconds": 96,
+ "realSeconds": 183,
+ "actions": 43,
+ "histogram": {
+  "drive": 12,
+  "menus": 3,
+  "gamepad": 2,
+  "walk": 10,
+  "mouseFire": 2,
+  "exitVehicle": 8,
+  "graphicsAndSettings": 4,
+  "chaseView": 2
+ },
+ "crashed": null,
+ "findings": []
+}

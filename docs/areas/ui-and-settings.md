@@ -23,6 +23,9 @@ navigation.js (big map, GPS), cycles.js (bike share), src/shell.html + src/ui/* 
   vehicle is `ascend`. The HUD strip has a `moto` context and a `wheelie` pseudo-key
   (`keyName('forward') + '+' + keyName('ascend')`, left out on touch).
 - Menu keys (Escape, Enter, the map's arrows / + / − / 0 / C) are fixed.
+- Left fire and right aim/secondary fire release independently. Blur and hidden tabs clear
+  physical and virtual keys and both buttons; pause, help and the map clear both firing
+  buttons. A missing mouseup outside the game must not leave firing or aiming held.
 - **Hints follow the device** (input-hints.js): `keyName(id)` returns the touch button's
   label (`touchButtonLabel`, mobile.js: the same text the button shows, so ACTION / EXIT /
   GAS follow the context) or the gamepad button (`gamepadKeyName`) while that device was
@@ -52,6 +55,12 @@ navigation.js (big map, GPS), cycles.js (bike share), src/shell.html + src/ui/* 
 - Graphics · Ring under your character (`settings.playerRing`, `playerRingOn()`): off by
   default, also for saves that predate it; drives the 3D `playerRing` and the 2D fallback's
   circle under the player. Objectives have no ring at all (markers.js): the floating arrow only.
+- Graphics · FPS counter is on for a fresh profile, including when browser storage is blocked.
+  An explicit `dead-end-city-fps: off` preference is preserved. The half-second sample counts
+  live rendered-frame intervals only; loading, hidden-tab time and console-stepped frames do
+  not enter it. Returning to the tab starts a fresh sample (`game-loop.js`, `resetFpsSample`).
+  The readout sits above the desktop waypoint, and below the touch buttons to avoid the
+  touch waypoint's top row. `hud-layout` checks the enabled counter in both layouts.
 - Storage keys: see core-and-contracts.md. `DeadEndCity.settings({...})` sets rows from the
   console (e.g. `{ units: 'mph', footSpeed: true }`).
 

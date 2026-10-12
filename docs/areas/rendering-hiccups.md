@@ -56,6 +56,13 @@ Steps 3 and 4 stop when the game starts (they cost a build each); the rest conti
 
 - A dynamic buffer bigger than what is drawn (instance pools, the skid marks, contact shadows) sends only the used
   part: `attribute.addUpdateRange(0, n * itemSize)` before `needsUpdate` (the crowd, halos and car blood do too).
+  Traffic impostors, debris, drive-light quads and beam haze also send only their packed prefix; replace their
+  pending range when repacking so skipped draws cannot grow a list of identical ranges. Persistent damage decals
+  are different: `writeDecal` tracks the changed interval and `decalUploadRange` unions it with any unconsumed
+  interval until Three uploads it, preserving older writes across skipped draws. `instance-upload-ranges.mjs`
+  exercises the shipped Three.js uploader in WebGL1 and WebGL2 modes (host-side, no GPU timing): one changed world
+  decal sends 84 bytes instead of 201,600; two debris pieces 152 instead of 53,200; three body and five box impostors
+  928 instead of 101,760. These are transfer sizes in fixed fixtures, not measured laptop FPS improvements.
 - The 2D overlay over the scene (`worldContext`) is cleared only after a frame drew on it (OVERLAY INK,
   render3d-resources.js wraps its draw calls): never clear or touch it every frame, an untouched canvas is not repainted.
 - An animation restart takes a style pass, not a layout: `void getComputedStyle(el).animationName` (or `opacity`), never

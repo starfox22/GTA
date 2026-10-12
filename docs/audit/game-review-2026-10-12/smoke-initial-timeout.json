@@ -1,0 +1,46 @@
+{
+  "file": "/workspace/GTA/dist/pass2-publish/index.html",
+  "checks": {
+    "menu": {
+      "mode": "menu",
+      "x": 748,
+      "y": 584,
+      "district": "NORTHBANK · OLD QUARTER",
+      "hp": 100,
+      "cash": 0,
+      "wanted": 0,
+      "mission": null,
+      "completed": 0,
+      "vehicle": null,
+      "weapon": "9MM PISTOL",
+      "clock": "17:20",
+      "renderer": "3d",
+      "vehicles": 246,
+      "pedestrians": 595
+    },
+    "defaultFps": "0 FPS · 4349.8 ms",
+    "started": {
+      "mode": "play",
+      "x": 748,
+      "y": 584,
+      "district": "NORTHBANK · OLD QUARTER",
+      "hp": 100,
+      "cash": 0,
+      "wanted": 0,
+      "mission": null,
+      "completed": 0,
+      "vehicle": null,
+      "weapon": "9MM PISTOL",
+      "clock": "17:20",
+      "renderer": "3d",
+      "vehicles": 262,
+      "pedestrians": 603
+    }
+  },
+  "errors": [
+    "[smoke] page.waitForFunction: Timeout 60000ms exceeded."
+  ],
+  "warnings": [
+    "[warning] Scripts \"build/three.js\" and \"build/three.min.js\" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation"
+  ]
+}

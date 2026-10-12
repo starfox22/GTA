@@ -708,13 +708,14 @@
        when it has no bikes). Sizes are in screen pixels. */
     function drawBikeShareMap(g, scale, big) {
       if (!bikeStationCache) return;
-      const size = (big ? 6 : 5.5) / scale,
-        view = big ? Infinity : 700 / minimapZoom();
+      const size = (big ? 6 : 5.5) / scale;
       g.save();
       g.lineCap = 'round';
       g.lineJoin = 'round';
       for (const st of bikeStationCache) {
-        if (Math.abs(st.x - player.x) > view || Math.abs(st.y - player.y) > view) continue;
+        // The actual map window follows speed, aspect, zoom and (on the big map) panning. Keep an icon
+        // crossing the edge, including its outline; the old fixed radius hid visible stations at speed.
+        if (!mapWindowHas(st.x, st.y, size * 1.7)) continue;
         const x = st.x,
           y = st.y;
         g.fillStyle = dockedBikes(st) ? BIKE_SHARE_TEAL : '#4b6664';

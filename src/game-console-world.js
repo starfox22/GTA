@@ -170,6 +170,42 @@
       // Every free-standing roadside board the county places (guide, scenic-view, town, trailhead signs) with
       // `onAsphalt` and `clearance` (units to the nearest carriageway); none may stand on a road.
       guideSigns: () => guideSignReport(),
+      // Compare the bounded GPS shortlist against the old full sort on the actual road graph and collision
+      // field, including the order of visibility probes. This audit does not move people or consume randoms.
+      navigationAudit(samples = 120) {
+        const before = soakHashRun(), nodes = navigationGraph(), examples = [];
+        let queries = 0, mismatches = 0, probeMismatches = 0, probes = 0, referenceMs = 0, shortlistMs = 0;
+        const count = clamp(Math.floor(Number(samples) || 120), 1, 400);
+        for (let n = 0; n < count && nodes.length; n++) {
+          const base = nodes[Math.floor(n * nodes.length / count)],
+            p = { x: base.x + (n % 5 - 2) * 83, y: base.y + (n % 7 - 3) * 57 },
+            started = performance.now(),
+            candidates = nodes.map((q, i) => ({ i, d: distanceBetween(p, q) }))
+              .filter((q) => nodes[q.i].links.length).sort((a, b) => a.d - b.d),
+            oldProbes = [], newProbes = [],
+            expected = (candidates.slice(0, 18).find((q) => {
+              if (q.d >= 380) return false;
+              oldProbes.push(nodes[q.i]);
+              return navSegmentClear(p, nodes[q.i]);
+            }) || candidates[0])?.i,
+            referenceEnd = performance.now(),
+            actual = closestNavNode(p, nodes, (a, b) => {
+              newProbes.push(b);
+              return navSegmentClear(a, b);
+            });
+          shortlistMs += performance.now() - referenceEnd;
+          referenceMs += referenceEnd - started;
+          queries++;
+          probes += newProbes.length;
+          if (expected !== actual) mismatches++;
+          const probeMatch = oldProbes.length === newProbes.length && oldProbes.every((q, i) => q === newProbes[i]);
+          if (!probeMatch) probeMismatches++;
+          if ((expected !== actual || !probeMatch) && examples.length < 5) examples.push({ p, expected, actual, probeMatch });
+        }
+        return { nodes: nodes.length, queries, mismatches, probeMismatches, probes, examples,
+          referenceMs: +referenceMs.toFixed(2), shortlistMs: +shortlistMs.toFixed(2),
+          stateBefore: before, stateAfter: soakHashRun() };
+      },
       // GPS: set a map waypoint and report the route the navigation graph finds
       // from the player (status, road length, the islands it passes through).
       route(x, y) {

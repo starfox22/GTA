@@ -422,7 +422,7 @@
         decals.renderOrder = order;
         decals.name = 'damage decals';
         scene.add(decals);
-        return { mesh: decals, tiles, alphas, capacity, next: 0, used: 0, dirty: false };
+        return { mesh: decals, tiles, alphas, capacity, next: 0, used: 0, dirty: false, dirtyFirst: capacity, dirtyLast: -1 };
       }
       const worldDecals = decalLayer(2400, 3),
         vehicleDecals = decalLayer(1200, 4);
@@ -458,6 +458,8 @@
         layer.alphas.array[index] = alpha;
         layer.mesh.setColorAt(index, color ? scratchColor.set(color) : white);
         layer.dirty = true;
+        layer.dirtyFirst = Math.min(layer.dirtyFirst, index);
+        layer.dirtyLast = Math.max(layer.dirtyLast, index);
       }
       // World decal in Three.js coordinates (x, height, z). The oldest is overwritten when full.
       function addDecal(tile, x, y, z, nx, ny, nz, sx, sy, roll = Math.random() * TAU, alpha = 1, color = null, lift = 0.06) {
@@ -468,13 +470,29 @@
         layer.mesh.count = layer.used;
         writeDecal(layer, index, decalPose(decalMatrix, x, y, z, nx, ny, nz, sx, sy, roll, lift), tile, alpha, color);
       }
+      // World decals persist between frames. Keep earlier writes pending until Three uploads them, with at most one
+      // dirty span per attribute (a hidden/skipped pass must neither lose old writes nor accumulate range objects).
+      function decalUploadRange(attribute, first, count) {
+        const pending = attribute.updateRanges[0];
+        if (pending) {
+          const end = Math.max(pending.start + pending.count, first + count);
+          pending.start = Math.min(pending.start, first);
+          pending.count = end - pending.start;
+        } else attribute.addUpdateRange(first, count);
+        attribute.needsUpdate = true;
+      }
       function flushDecals(layer) {
         if (!layer.dirty) return;
         layer.dirty = false;
-        layer.mesh.instanceMatrix.needsUpdate = true;
-        layer.mesh.instanceColor.needsUpdate = true;
-        layer.tiles.needsUpdate = true;
-        layer.alphas.needsUpdate = true;
+        const first = layer.dirtyFirst,
+          count = layer.dirtyLast - first + 1;
+        layer.dirtyFirst = layer.capacity;
+        layer.dirtyLast = -1;
+        if (count <= 0) return;
+        decalUploadRange(layer.mesh.instanceMatrix, first * 16, count * 16);
+        decalUploadRange(layer.mesh.instanceColor, first * 3, count * 3);
+        decalUploadRange(layer.tiles, first, count);
+        decalUploadRange(layer.alphas, first, count);
       }
       // How far a wall decal must stand off the collision face to sit on the visible
       // surface: shopfronts, plinths and tower podiums project past the footprint.
@@ -668,6 +686,13 @@
           n++;
         }
         pool.count = n;
+        if (!n) return;
+        pool.instanceMatrix.clearUpdateRanges();
+        pool.instanceMatrix.addUpdateRange(0, n * 16);
         pool.instanceMatrix.needsUpdate = true;
-        if (pool.instanceColor) pool.instanceColor.needsUpdate = true;
+        if (pool.instanceColor) {
+          pool.instanceColor.clearUpdateRanges();
+          pool.instanceColor.addUpdateRange(0, n * 3);
+          pool.instanceColor.needsUpdate = true;
+        }
       }

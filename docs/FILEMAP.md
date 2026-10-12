@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-587 files in the include tree, 201,237 lines.
+587 files in the include tree, 201,355 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -49,9 +49,9 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-minimap.js`   277 — Minimap base layer: The minimap used to repaint the whole county (coast, every street, parks, promenades, county ground and every building footprint) …
 - `src/map-view.js`   375 — Map views: the city map's filters (MAP LAYERS) and GO TO list, sharp canvases on HiDPI screens, the minimap's speed pull-back and its edge arrows …
 - `src/game-ui.js`   521 — Weapon chip, mission card and updateUI() (HUD text refresh).
-- `src/game-menus.js`   195 — Resize, begin/newGame, pause, help, big map toggle.
+- `src/game-menus.js`   196 — Resize, begin/newGame, pause, help, big map toggle.
 - `src/god-splash.js`   114 — ▸ God mode splash: the full-screen card and fanfare when a cheat code toggles god mode (game-input.js godModeCheat): ON charges up, slams a gold "GOD …
-- `src/game-input.js`   517 — Cheat code: Letters typed during play accumulate in a short ring; when the tail spells a known code it fires.
+- `src/game-input.js`   529 — Cheat code: Letters typed during play accumulate in a short ring; when the tail spells a known code it fires.
 - `src/controls.js`   326 — Key bindings
 - `src/geography.js`    12 — ▸ Coastlines and land regions
 - `src/drawbridge.js`    83 — ▸ The drawbridges: schedules, gates, leaves, jumps
@@ -75,7 +75,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/themepark.js`    64 — ▸ Sunset Pier resort and theme park
 - `src/marina.js`    11 — ▸ Harbor Point marina, the superyacht and the cruise liners
 - `src/taxi.js`   287 — Yellow cabs
-- `src/cycles.js`   801 — City bicycles
+- `src/cycles.js`   802 — City bicycles
 - `src/weather.js`   216 — Weather
 - `src/weather-audio.js`   271 — Rain and thunder sound
 - `src/clouds.js`   329 — Cloud layer (game side): cloudBaseAt/cloudTopAt, the only source of the cloud altitude, by weather and area; the coverage and area maps the renderer …
@@ -128,7 +128,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/ecology.js`   339 — Wildlife behavior
 - `src/sealife.js`    17 — ▸ Sea life: dolphins, gulls and the great white
 - `src/sealife-audio.js`   356 — Sea life sound
-- `src/navigation.js`   707 — City map and route planning
+- `src/navigation.js`   716 — City map and route planning
 - `src/parachute.js`   734 — Bailout and parachute
 - `src/deck-landing.js`   361 — Landing on a ship from the sky: canopy touchdowns and freefall impacts on the liners' and the superyacht's decks (deckSurfaceAt, deckLandingStep) …
 - `src/falls.js`    22 — ▸ Falls: bodies and vehicles off cliffs, fatal impacts
@@ -171,7 +171,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/hud.js`    34 — ▸ HUD behaviour and the title menu
 - `src/render3d.js`   243 — ▸ Three.js renderer and resource lifecycle
 - `src/frame-trace.js`   324 — Frame trace: every frame's CPU split (simulation sections, renderer laps) and what happened in it (collections, DOM mutations, GL uploads and links …
-- `src/game-loop.js`   195 — Profiler: Rolling averages of simulation and render CPU time per frame, plus the renderer's draw-call and triangle counts.
+- `src/game-loop.js`   207 — Profiler: Rolling averages of simulation and render CPU time per frame, plus the renderer's draw-call and triangle counts.
 - `src/game-console.js`    48 — ▸ DeadEndCity console registry and assembly
 - `src/game-agent-tools.js`    72 — Optional browser agent access uses exactly the same actions as the controls.
 
@@ -429,7 +429,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/render3d.js ▸ Three.js renderer and resource lifecycle
 
-- `src/flight-view3d.js`   616 — ▸ Flight camera and aerial perspective
+- `src/flight-view3d.js`   629 — ▸ Flight camera and aerial perspective
 - `src/chase-view3d.js`   226 — ▸ Chase view 3D: the perspective camera behind the player (chase-camera.js says where it stands), the ground it sees for culling and level of detail …
 - `src/postfx3d.js`   870 — ▸ HDR post-processing pipeline
 - `src/lighting3d.js`    27 — ▸ Sun, sky, reflections and night light
@@ -542,7 +542,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/lighting3d-sky.js`   771 — ▸ Lighting 3D sun path (updateSunPath: the light, and the sun the sky draws), the sky (lighting3d-sky-dome.js), the night light map, the city light and …
 - `src/lighting3d-cutaway.js`   167 — Lighting 3D cutaway occluders (updateCutaway, setCharacterCutaway) and the default material patches.
-- `src/lighting3d-vehicle-lights.js`   647 — Lighting 3D vehicle lights: the nearest cars' low beams as real lights (CAR LAMPS), the drive light map and beam haze.
+- `src/lighting3d-vehicle-lights.js`   656 — Lighting 3D vehicle lights: the nearest cars' low beams as real lights (CAR LAMPS), the drive light map and beam haze.
 - `src/lighting3d-vehicle-shadows.js`   314 — Lighting 3D vehicle lights, part 2: BEAM SHADOWS (people, cars, trees and posts in the CAR LAMPS beams), the TERRAIN HORIZON strip kept in the same …
 - `src/lighting3d-look.js`   458 — Lighting 3D time-of-day look (updateLighting, NIGHT_LOOK, grade), contact shadows and the quality tier switch.
 
@@ -567,7 +567,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/damage3d.js ▸ Crumpling bodies, decals, debris and knocked furniture
 
-- `src/damage3d-decals.js`   673 — Damage 3D decals: the decal atlas (cracked glass, soot) and world decal layers (addDecal, flushDecals).
+- `src/damage3d-decals.js`   698 — Damage 3D decals: the decal atlas (cracked glass, soot) and world decal layers (addDecal, flushDecals).
 - `src/damage3d-bodies.js`   560 — Damage 3D vehicle bodies: shell sections, crumpling, hinged parts and glass (carBodyDamage, crumple).
 - `src/damage3d-crumple.js`   536 — Damage 3D crumple: every part of a car body bent by the one crumple field (crumpleField, damage-crumple.js) at its rest place: shell, glass, paint …
 - `src/damage3d-marks.js`   597 — Damage 3D vehicle marks: bullet holes, glass stars and scrapes pinned to the triangle of the body part they hit (they bend, swing and tear off with …
@@ -859,7 +859,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-missions.js`   361 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
 - `src/game-console-police.js`   271 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
 - `src/game-console-vehicles.js`   433 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
-- `src/game-console-world.js`   241 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
+- `src/game-console-world.js`   277 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
 - `src/game-console-rides.js`   104 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
 - `src/game-console-leisure.js`    75 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)
 - `src/game-console-crowd.js`   192 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
@@ -887,7 +887,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/ui/sportsbook-bets.css`   505 — styles: .sb-summary, .sb-summary span, .sb-summary b, .sb-summary .plus b, …
 - `src/ui/demo.css`   231 — PUBLIC DEMO (campaign.js): The DEMO badge by the title menu's version, the picker's FULL GAME badges and buy note, and the DEMO COMPLETE card after …
 - `src/ui/settings.css`   480 — styles: .mission-choice, button:focus-visible, body.no-key-hints .quickkeys, #settingsOverlay, …
-- `src/ui/touch-hud.css`   345 — Touch play: thumbs own the lower corners, so the HUD moves up
+- `src/ui/touch-hud.css`   350 — Touch play: thumbs own the lower corners, so the HUD moves up
 - `src/ui/title-radio.css`   148 — TITLE RADIO (car-radio.js): the car radio box docked on the title menu.
 - `src/ui/flight-hud.css`   276 — Flight HUD (hud.js, FLIGHT HUD): Shown only in an aircraft, compact and against the screen edges so the view stays clear: attitude, airspeed and …
 - `src/ui/freefall.css`   205 — Freefall cue (parachute.js FREEFALL CUE): While the canopy is still packed: the call to open it with its key, the height above whatever is below, a …

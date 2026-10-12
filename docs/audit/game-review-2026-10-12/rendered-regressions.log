@@ -1,0 +1,8 @@
+note: running server has ?test&norender (wanted ?dev); use reload --render/--norender or stop
+reusing dev server on port 18235 (?test&norender, dist/dev/game.html)
+reused dev server (rebuilt, reloaded ?dev: boot 155.5s)
+PASS graphics-all-tiers (259.5s)
+     {"tier":"low","view":"street","activeTier":"LOW","scale":1,"draws":149,"triangles":659456} · {"tier":"low","view":"chase","activeTier":"LOW","scale":1,"draws":372,"triangles":717467} · {"tier":"medium","view":"street","activeTier":"MEDIUM","scale":1,"draws":145,"triangles":628937} · {"tier":"medium","view":"chase","activeTier":"MEDIUM","scale":1,"draws":494,"triangles":753187} · {"tier":"high","view":"street","activeTier":"HIGH","scale":1,"draws":145,"triangles":742745} · {"tier":"high","view":"chase","activeTier":"HIGH","scale":1,"draws":560,"triangles":857880} · {"tier":"ultra","view":"street","activeTier":"ULTRA","scale":1,"draws":145,"triangles":746969} · {"tier":"ultra","view":"chase","activeTier":"ULTRA","scale":1,"draws":694,"triangles":943581} · {"tier":"auto","view":"street","activeTier":"LOW","scale":1,"draws":154,"triangles":646184} · {"tier":"auto","view":"chase","activeTier":"LOW","scale":1,"draws":360,"triangles":710819}
+PASS render-tier-switch (15.1s)
+PASS render-effects (115.1s)
+3/3 passed, 0 skipped, 0 failed in 557s

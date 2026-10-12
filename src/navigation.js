@@ -182,18 +182,27 @@
       routeGraphGates = gateState;
       return (routeGraph = nodes);
     }
-    function closestNavNode(p, nodes) {
-      const candidates = nodes
-        .map((q, i) => ({
-          i,
-          d: distanceBetween(p, q),
-        }))
-        .filter((q) => nodes[q.i].links.length)
-        .sort((a, b) => a.d - b.d);
-      return (
-        candidates.slice(0, 18).find((q) => q.d < 380 && navSegmentClear(p, nodes[q.i])) ||
-        candidates[0]
-      )?.i;
+    function closestNavNode(p, nodes, clear = navSegmentClear) {
+      // Only the nearest 18 connected nodes can be tried. Keep that small ordered shortlist instead
+      // of allocating and sorting one record per node every GPS refresh. Strict comparisons preserve
+      // the graph's original order at equal distances, including the line-of-sight probe order.
+      const indices = [], distances = [];
+      for (let i = 0; i < nodes.length; i++) {
+        if (!nodes[i].links.length) continue;
+        const d = distanceBetween(p, nodes[i]), n = indices.length;
+        if (n === 18 && d >= distances[n - 1]) continue;
+        let at = Math.min(n, 17);
+        while (at > 0 && distances[at - 1] > d) {
+          indices[at] = indices[at - 1];
+          distances[at] = distances[at - 1];
+          at--;
+        }
+        indices[at] = i;
+        distances[at] = d;
+      }
+      for (let i = 0; i < indices.length; i++)
+        if (distances[i] < 380 && clear(p, nodes[indices[i]])) return indices[i];
+      return indices[0];
     }
     function navShortestPath(nodes, start, end) {
       const heap = [],

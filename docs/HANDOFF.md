@@ -3,6 +3,24 @@
 Written for the next AI session (or human) picking this work up. Read `/CLAUDE.md` first (commands,
 rules, workflow), then this page, then only the area doc your task needs (`docs/README.md`).
 
+## Latest Codex review branches (12 October 2026)
+
+- `codex/game-polish-2026-10-12` continues `codex/game-fixes-2026-10-11` at `370c1cf` and
+  contains all of that earlier pass. Both start from main's October 11 version 62 (`9afe59d`).
+  The branches are review work; Codex has not merged or pushed them to `main`.
+- Start with [the October 12 report](audit/game-review-2026-10-12/README.md) for the current
+  fixes, exact verification coverage, screenshots and suggested next work. The
+  [October 11 report](audit/game-review-2026-10-11/README.md) documents the inherited fixes.
+- This follow-up enables FPS by default (preserving a saved opt-out), corrects input release
+  and focus handling, bounds night-traffic light instances, limits GPU uploads to changed
+  or visible data, restores minimap bike icons, and reduces GPS nearest-node allocation/sorting.
+- To integrate with concurrent Claude work, commit that work, create an integration branch
+  from it, and merge this whole Codex branch. Preserve newer features and the documented fixes
+  when resolving overlaps; regenerate FILEMAP and rerun affected checks on the combined version.
+  Ask the owner to review the combined build before moving main.
+- The historical state below describes the preceding Claude release. The dated reports take
+  precedence for Codex review results; they do not claim real laptop GPU frame rates.
+
 ## State
 
 - **The game**: Dead End City, a browser top-down 1997 crime game (Three.js 3D with a 2D fallback), now with a

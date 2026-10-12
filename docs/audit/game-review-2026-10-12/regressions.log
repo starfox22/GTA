@@ -1,0 +1,28 @@
+Scripts "build/three.js" and "build/three.min.js" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation
+started dev server (?dev&norender: boot 17s)
+PASS chase-aim (3.4s)
+     camera 0: aim off the camera's heading (deg) 2 · camera 120: aim off the camera's heading (deg) 2 · camera -100: aim off the camera's heading (deg) 2 · at the wheel looking left: aim off -90 (deg) 0 · drive-by: {"window":"left","relDeg":-90,"aim":"clear","out":1} · drive-by aim off the nose (deg from -90) 0
+PASS chase-input (4.8s)
+     on foot: boom (m) 3.5 · on foot: camera height over the street (m) 2.14 · right stick right for 0.5 s: turn (deg) 92 · half sensitivity: share of the turn 0.5 · LT held: aim blend 1 · LT held: boom (m) 1.86 · LT held: lens (deg) 44 · LT let go: aim blend 0 · zoom out key: boom factor 1.25 · zoom reset: boom factor 1 · in the car: the camera looks along the car (deg off) 1 · looking behind: the camera looks back along the car (deg off) 1 · C let go: the camera looks along the car again (deg off) 0
+PASS chase-view-mode (0.7s)
+     after the switch: camera to player (m) 3.476078969183528 · after a teleport: camera to player (m) 3.4760789691835154
+PASS chase-walk (1.5s)
+     heading 135: walked off the camera's heading by (deg) 0 · heading -60: walked off the camera's heading by (deg) 0.06858282186249198 · heading 10: walked off the camera's heading by (deg) 1.3099324740202292
+PASS enter-key (5.2s)
+PASS hud-dom-writes (5.3s)
+PASS instance-upload-ranges (0.0s)
+     WebGL1: decal 201600 -> 84 B; debris 53200 -> 152 B; impostors 101760 -> 928 B; dense tail draw capped at 160 · WebGL2: decal 201600 -> 84 B; debris 53200 -> 152 B; impostors 101760 -> 928 B; dense tail draw capped at 160
+PASS mouse-buttons (0.1s)
+     real input listeners: independent left/right/middle release; blur and hidden tab in play/help; pause/help/map clear both buttons
+PASS navigation-shortlist (0.4s)
+PASS vehicle-layouts (11.9s)
+PASS chase-hud-layout (52.3s)
+PASS fps-counter (115.2s)
+PASS hud-layout (68.8s)
+     drawn: carRadio, toast, radioCaption, policeStatusPanel · touch, bus heading down: player {"l":466,"t":129,"r":496,"b":256}, open card {"l":335,"t":54,"r":675,"b":142}
+PASS hud-touch-dispatch (79.3s)
+     street: {"card":{"id":"pager","l":310,"t":58,"r":650,"b":146},"caption":{"id":"radioCaption","l":354,"t":159,"r":606,"b":213}} · chase: {"card":{"id":"pager","l":310,"t":54,"r":650,"b":142},"caption":{"id":"radioCaption","l":354,"t":150,"r":606,"b":204}}
+PASS surrender-input (68.5s)
+PASS view-remembered (117.6s)
+PASS world-reset (37.9s)
+17/17 passed, 0 skipped, 0 failed in 594s

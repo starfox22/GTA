@@ -100,9 +100,16 @@ lies north of Northbank across North Sound; **Monarch Isle** north of the Ridgel
 
 - navigation.js: road graph, A* routes, waypoints, map gestures, the minimap GPS
   (`updateGpsRoute`). `DeadEndCity.route(x, y)` reports a route and the bridges it uses.
+  `closestNavNode` keeps only the nearest 18 connected nodes, with source order breaking distance
+  ties; visibility probes keep their old order and 380-unit limit. `navigationAudit()` compares it
+  with the prior full sort on the generated graph. `node tools/map-navigation-check.mjs` also
+  checks ties, disconnected nodes, fallback and visibility order without a browser.
 - `DeadEndCity.layout()` returns the whole plan as data (coast, streets, rail, buildings,
   helipads, docks, ships, props, static colliders, bridges, reserved plots).
   `node tools/layout-audit.mjs <html>` checks it for overlaps (28-39 oblique-junction notes
   are expected); `docs/audit/world-layout.md` explains the audit.
 - The minimap base layer is painted once (`minimapBaseLayer`); anything added to
   `paintMapBase()` must be static.
+  Bike-share icons use `mapWindowHas`, including their outline: the map's current window follows
+  zoom, speed pullback, aspect and city-map panning. A fixed player-centred radius both misses visible
+  edge stations and spends canvas work on offscreen stations.
