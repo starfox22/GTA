@@ -304,7 +304,8 @@
        * Air: the push-off straightens the legs, then they tuck, the lead leg
        * reaching forward over the obstacle and the trail leg folded under, the
        * soles drawn up by `rise` (the clearance the game tests), arms forward for
-       * balance; the legs reach down again for the ground. Landing: the knees take
+       * balance (a vault leans over and reaches down to the top, `vault`); the
+       * legs reach down again for the ground. Landing: the knees take
        * it and straighten. The weight blends in over the crouch, so the run's
        * stride hands over smoothly; after the landing the pose eases back by itself.
        * With a weapon held the arms are left to the hold.
@@ -335,8 +336,9 @@
             set(J_HIP[side], leg.hip);
             set(J_KNEE[side], leg.knee);
           }
-          lean = -0.18 * tuck - 0.12 * jp.crouch;
-          arm = 0.35 + 0.75 * tuck;
+          // A vault (player-jump.js THE VAULT): leaning over the top, the arms reaching down to it straight.
+          lean = -0.18 * tuck - 0.12 * jp.crouch - 0.2 * jp.vault;
+          arm = 0.35 + 0.75 * tuck + (0.95 - (0.35 + 0.75 * tuck)) * jp.vault;
           spread = 0.1 + 0.08 * tuck;
         } else {
           // Feet planted under the hips, the knees bent by the drop.
@@ -356,7 +358,7 @@
           for (let side = 0; side < 2; side++) {
             set(J_SH[side], arm);
             set(J_AB[side], 0.22 + 0.15 * Math.abs(arm));
-            set(J_EL[side], 0.35 + 0.5 * Math.max(0, arm));
+            set(J_EL[side], (0.35 + 0.5 * Math.max(0, arm)) * (1 - 0.8 * (jp.vault || 0)));
             set(J_ARMFREE[side], 0);
           }
         }

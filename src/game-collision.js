@@ -309,7 +309,7 @@
        a low thing at the legs' width may leave it (a landing on top slides off). */
     function footSolid(body, x, y, r, swimmer) {
       if (body !== player || !jumpLow.on) return solid(x, y, r, swimmer);
-      solidSkipBelow = JUMP_LOW_MAX;
+      solidSkipBelow = JUMP_VAULT_MAX;
       let hit = solid(x, y, r, swimmer);
       if (!hit) {
         solidSkipBelow = jumpLow.clear;
@@ -320,7 +320,7 @@
     }
     function footFurnitureBlocked(body, x, y) {
       if (body !== player || !jumpLow.on) return footObstacleBlocked(x, y, 4.5);
-      solidSkipBelow = JUMP_LOW_MAX;
+      solidSkipBelow = JUMP_VAULT_MAX;
       let hit = footObstacleBlocked(x, y, 4.5);
       if (!hit) {
         solidSkipBelow = jumpLow.clear;
