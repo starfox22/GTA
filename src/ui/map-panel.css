@@ -6,6 +6,7 @@
   width: min(96vw, calc(74vh * 800 / 660 + 330px));
 }
 .map-body {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 250px;
   gap: 14px;
@@ -19,6 +20,30 @@
   height: auto;
   max-height: none;
   aspect-ratio: 800 / 660;
+}
+/* The car the job is after (map-objective.js MAP HIGHLIGHT): a red ring breathing over the canvas's own. */
+.map-highlight {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  margin: -13px 0 0 -13px;
+  border: 2px solid #ff4d3f;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: map-highlight-pulse 1.3s ease-out infinite;
+}
+.map-highlight.hidden {
+  display: none;
+}
+@keyframes map-highlight-pulse {
+  from {
+    transform: scale(0.8);
+    opacity: 0.95;
+  }
+  to {
+    transform: scale(2.1);
+    opacity: 0;
+  }
 }
 .map-side {
   display: flex;

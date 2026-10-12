@@ -130,7 +130,9 @@
         // Police and Fort Sentinel's drivers (supply truck, patrols, QRF) never stop to argue or walk off in civvies.
         if (!c || c === player.car || !c.occupied || !c.ai || c.hp <= 0 || c.type === 'police' || c.military) continue;
         if (isBoat(c) || isAircraft(c) || c.ramUntil > gameTime || c.crashStop) continue;
-        if (closing < 75) {
+        // A story character on his way (Kessler, missionDriver) only honks at a knock from traffic: he never gets out
+        // to argue mid-job (fortjob.js would read an empty car as taken from him).
+        if (closing < 75 || (c.missionDriver && (c === a ? b : a) !== player.car)) {
           c.honkAt = gameTime + randomBetween(0.2, 0.6);
           continue;
         }

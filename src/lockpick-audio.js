@@ -1,5 +1,6 @@
     // The lockpick's sounds (vehicle-trunk.js): the pick raking the pins, the soft click of a pin setting, the latch
-    // giving (a trunk's clunk and the lid lifting, or a door's lock knob), all quiet foley close to the player.
+    // giving (a trunk's clunk and the lid lifting, or a door's lock knob), all quiet foley close to the player; and a trunk
+    // lid shutting (trunkSlamSound).
     function lockpickRakeSound() {
       const fa = foleyBuffers();
       if (!fa || !soundOn) return;
@@ -33,4 +34,16 @@
         foleyNoise(out, fa.white, 'bandpass', 1800, 5, 0.06, t + 0.05, 0.001, 0.025);
         foleyNoise(out, fa.white, 'lowpass', 420, 1, 0.07, t + 0.055, 0.002, 0.06);
       }
+    }
+    /* A trunk lid coming down (closed at the bumper, or slammed by the car moving off): the thump of the panel into its
+       seal and the latch, fading with distance from the player. */
+    function trunkSlamSound(c, level = 1) {
+      const fa = foleyBuffers();
+      if (!fa || !soundOn || !c) return;
+      const d = distanceBetween(c, player);
+      if (d > 320) return;
+      const t = audio.currentTime,
+        out = foleyBus(level * (1 - d / 360), clamp(soundRight(c.x - player.x, c.y - player.y) / 450, -0.8, 0.8), 1.2);
+      foleyNoise(out, fa.grit, 'bandpass', 2100, 4, 0.03, t, 0.002, 0.03);
+      doorThunk(out, fa, t + 0.02, false, 1);
     }

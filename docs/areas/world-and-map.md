@@ -104,6 +104,13 @@ lies north of Northbank across North Sound; **Monarch Isle** north of the Ridgel
   ties; visibility probes keep their old order and 380-unit limit. `navigationAudit()` compares it
   with the prior full sort on the generated graph. `node tools/map-navigation-check.mjs` also
   checks ties, disconnected nodes, fallback and visibility order without a browser.
+- Route ends (map-objective.js `navRouteEnds`): the GPS and the map waypoint take the nearest nodes, but when those
+  lie in pieces of the graph that do not join (a scrap of service road in Fort Sentinel's gate island was the fort's
+  nearest node: no route at all), both ends move to the largest piece. The GPS skips a route whose ends are further
+  off than the target itself (on foot inside the fort: the straight line stays). Both maps draw the objective's road
+  route (gold, chevrons) and a dashed last leg where the roads stop short; the city map's waypoint keeps its cyan
+  line. A mission vehicle the player is after has its own red ring and name (`mapHighlightVehicle`; on the city map
+  a CSS ring `#mapHighlight` pulses over the canvas). Console `gpsReport()`; tools/tests/mission4-kessler.mjs.
 - `DeadEndCity.layout()` returns the whole plan as data (coast, streets, rail, buildings,
   helipads, docks, ships, props, static colliders, bridges, reserved plots).
   `node tools/layout-audit.mjs <html>` checks it for overlaps (28-39 oblique-junction notes

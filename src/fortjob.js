@@ -28,8 +28,15 @@
       homeStep: 36,
       // Pulling out: from the kerb into the right-hand lane, 10 units over (24 off the avenue's centre line).
       homeLane: 10,
-      // Marina Rd's north kerb opposite the Marea's door (he arrives westbound).
-      park: { x: -2822, y: 5220, a: Math.PI },
+      // Marina Rd's north kerb opposite the Marea's door (he arrives westbound): parked flush with the kerb (the row's
+      // centre line y 5248, the kerb 44 north at y 5204, his car's half width and a hand's breadth), out of the
+      // westbound lane (25 off the centre line) that he drives in on.
+      park: { x: -2822, y: 5214, a: Math.PI },
+      // The pull-in: this far back along the kerb he leaves the lane, eases over and comes to rest at `park`
+      // (countyRouteStop: the route's last point is a stop, county-build.js).
+      parkRun: 210,
+      // His lane's line (24 off the centre line) is this far from the kerb spot, toward the road's middle.
+      parkLane: 10,
       // Across the road to the door, then in (MAREA_NODES street, out, in: beachclub-plan.js).
       walkIn: [
         { x: -2800, y: 5236 },
@@ -48,6 +55,9 @@
       clubNear: 1100,
       clubFar: 1700,
       clubWaitSeconds: 10,
+      // Where the wait puts his car on its way in (out of sight): at least this far from the Marea (a couple of blocks
+      // and more), never round the corner from it.
+      clubJumpMin: 1150,
     };
     // (Stage 0 was a stakeout at the fort's gate; he now leaves from his house as the job starts, so it opens on 1.)
     const FORT_STAGE = {
@@ -159,7 +169,26 @@
           lane = 24;
         route.push({ x: path[i].x - Math.sin(along) * lane, y: path[i].y + Math.cos(along) * lane });
       }
-      route.push({ x: FORT_JOB.park.x + 60, y: FORT_JOB.park.y }, { x: FORT_JOB.park.x, y: FORT_JOB.park.y });
+      // The pull-in to the kerb: no lane point within the run-in or past the spot (the nearest graph node can lie a
+      // little beyond it), then along his lane, over to the kerb and to rest.
+      const park = FORT_JOB.park,
+        ux = Math.cos(park.a),
+        uy = Math.sin(park.a),
+        // Right-hand side of his heading (the kerb's side) and his lane's line, that far toward the middle.
+        rx = -Math.sin(park.a),
+        ry = Math.cos(park.a),
+        kerbShift = FORT_JOB.parkLane;
+      while (route.length > 2) {
+        const q = route[route.length - 1],
+          along = (q.x - park.x) * ux + (q.y - park.y) * uy;
+        if (along > -FORT_JOB.parkRun - 60 && distanceBetween(q, park) < FORT_JOB.parkRun + 140) route.pop();
+        else break;
+      }
+      route.push(
+        { x: park.x - ux * FORT_JOB.parkRun - rx * kerbShift, y: park.y - uy * FORT_JOB.parkRun - ry * kerbShift },
+        { x: park.x - ux * 80, y: park.y - uy * 80 },
+        { x: park.x, y: park.y },
+      );
       return route;
     }
     /* His car on the kerb outside his house: the first clear spot stepping back along the kerb. */
@@ -186,6 +215,7 @@
       c.missionDriver = 'kessler';
       c.trunkLoot = { label: 'UNIFORM AND ID' };
       c.countyRoute = fortRoute(d);
+      c.countyRouteStop = true;
       c.countyIndex = 0;
       m.kcar = c;
       m.departedAt = gameTime;
@@ -262,6 +292,7 @@
       const c = m.kcar;
       c.ai = false;
       c.countyRoute = null;
+      c.countyRouteStop = undefined;
       c.vx = c.vy = c.speed = c.av = 0;
       c.occupied = false;
       m.parkedAt = gameTime;
@@ -353,19 +384,22 @@
       }
       m.clubWait += deltaSeconds;
       if (m.jumped || m.clubWait < FORT_JOB.clubWaitSeconds) return;
-      const last = Math.max(3, route.length - 7);
+      // The nearest route point at least clubJumpMin from his kerb (and a few points before it), out of sight.
+      let last = route.length - 4;
+      while (last > 2 && distanceBetween(route[last], FORT_JOB.park) < FORT_JOB.clubJumpMin) last--;
       for (let i = last; i > Math.max(2, last - 14); i--) {
         const p = route[i],
           q = route[i + 1];
-        if (i <= c.countyIndex || !spotUnseen(p.x, p.y, 70, SPOT_CAR) || !canSpawnCar(c.type, p.x, p.y, headingBetween(p, q))) continue;
+        if (i <= c.countyIndex || distanceBetween(p, FORT_JOB.park) < FORT_JOB.clubJumpMin) continue;
+        if (!spotUnseen(p.x, p.y, 70, SPOT_CAR) || !canSpawnCar(c.type, p.x, p.y, headingBetween(p, q))) continue;
         c.x = p.x;
         c.y = p.y;
         c.a = headingBetween(p, q);
         c.vx = c.vy = 0;
         c.countyIndex = i + 1;
         m.jumped = true;
-        fortBeat(m, 'coming', 'Heads up. Red muscle car, coming along Marina Road now.');
-        tell('Kessler’s red muscle car is turning onto Marina Road.', 3.5);
+        fortBeat(m, 'coming', 'Heads up. Red muscle car, a few blocks out and coming your way.');
+        tell('Kessler’s red muscle car is a few blocks from the Marea.', 3.5);
         return;
       }
     }
@@ -373,10 +407,15 @@
       const c = m.kcar;
       if (!c.occupied) return;
       const route = c.countyRoute;
-      // Arrived: the kerb opposite the club.
-      if (route && c.countyIndex === route.length - 1 && distanceBetween(c, route[route.length - 1]) < 60) {
-        fortParkCar(m);
-        return;
+      // Arrived: at rest at the kerb opposite the club (countyRouteControl eases him to a stop on the route's last
+      // point); held short of it a while by something in his spot, he parks where he stands, already by the kerb.
+      if (route && c.countyIndex === route.length - 1) {
+        const left = distanceBetween(c, route[route.length - 1]),
+          still = Math.abs(c.speed || 0) < 2 * KMH;
+        if ((left < 8 && still) || (left < 70 && still && m.stuckFor > 3)) {
+          fortParkCar(m);
+          return;
+        }
       }
       // countyRouteControl wraps to the start after the last point: never let it.
       if (route && c.countyIndex === 0 && m.routeIndex > 1) c.countyIndex = route.length - 1;
@@ -546,6 +585,11 @@
         }
         if (m.keys && m.instruction.indexOf('OPEN') !== 0) setStage(FORT_STAGE.trunk, trunkPoint(c, { x: 0, y: 0 }), fortTrunkText(m) + (m.alerted ? ' · THEN LOSE THE ARMY' : ''));
         if (m.stage === FORT_STAGE.trunk) trunkPoint(c, m.target);
+        return;
+      }
+      // The lid came down with the bag still in it (the car moved off and it slammed, vehicle-trunk.js): open it again.
+      if (m.stage === FORT_STAGE.take && c.trunkLoot && !c.trunkOpen) {
+        setStage(FORT_STAGE.trunk, trunkPoint(c, { x: 0, y: 0 }), fortTrunkText(m));
         return;
       }
       if (m.stage === FORT_STAGE.change) {
@@ -723,7 +767,8 @@
       if (m.keys && fortTrunkOpenOffer(m)) offerPrompt('OPEN THE TRUNK', { id: 'fort-trunk' });
       if (m.stage === FORT_STAGE.take && m.kcar && !player.car && distanceBetween(player, trunkPoint(m.kcar, fortScratch)) < 34)
         offerPrompt('TAKE THE UNIFORM AND ID', { id: 'fort-take' });
-      if (m.stage === FORT_STAGE.change) {
+      // At the open trunk once the bag is out, the key shuts the lid first (vehicle-trunk.js CLOSE THE TRUNK).
+      if (m.stage === FORT_STAGE.change && !(!player.car && trunkCloseTarget())) {
         if (fortChangeSpot())
           offerPrompt(
             m.changeProgress > 0 ? 'CHANGING · ' + Math.round((m.changeProgress / 3) * 100) + ' %' : 'CHANGE INTO THE UNIFORM',

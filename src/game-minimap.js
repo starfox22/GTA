@@ -170,8 +170,8 @@
       drawHarborMap(drawingContext, big);
       const target = objective();
       if (target) {
-        // On the minimap the GPS draws the road route instead (navigation.js).
-        if (big || !gpsRouteShown()) {
+        // With a GPS road route both maps draw that instead (navigation.js, map-objective.js).
+        if (!gpsRouteShown()) {
           drawingContext.strokeStyle = '#f3d791aa';
           drawingContext.lineWidth = big ? 9 : 8;
           drawingContext.setLineDash([22, 19]);
@@ -189,7 +189,7 @@
       if (mapLayerOn('transit')) drawTransitMap(drawingContext, scale, big);
       if (mapLayerOn('sports')) drawSportsMap(drawingContext, scale, big);
       drawUserRoute(drawingContext, scale, big);
-      if (!big) drawGpsRoutes(drawingContext, scale);
+      drawGpsRoutes(drawingContext, scale, big);
       drawCountyMap(drawingContext, scale, big);
       if (mapLayerOn('garages')) drawGarageMap(drawingContext, scale);
       if (mapLayerOn('payphones')) drawPayphoneMap(drawingContext, scale);
@@ -199,11 +199,14 @@
       if (mapLayerOn('police')) drawPoliceMap(drawingContext, scale);
       // A street event's runner (livingcity-events.js).
       drawLivingCityMap(drawingContext, scale);
+      // The mission vehicle the player is after (Kessler's car): a red ring and its name (map-objective.js).
+      drawMapHighlight(drawingContext, scale, big);
       mapWindow.x0 = mapWindow.y0 = -Infinity;
       mapWindow.x1 = mapWindow.y1 = Infinity;
       drawingContext.restore();
       // Off the minimap's edge: an arrow on the rim toward the job and the waypoint.
       if (!big) drawMinimapEdgeBlips(drawingContext, width, height, scale, cx, cy, target);
+      else placeMapHighlightPulse(width, height, scale, cx, cy);
       if (big) {
         drawingContext.save();
         drawingContext.strokeStyle = '#d3ddd5';
