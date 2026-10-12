@@ -63,8 +63,9 @@ export default async function (t) {
   await t.wait(0.5);
   r = await t.call('fortJob');
   t.assert(r.stage === 7, 'at the records stage: ' + JSON.stringify(r));
-  // No roads inside the wire in the graph: the route ends at the causeway and a dashed leg goes in by the gate.
-  await routed(t, 'the records office', 700);
+  // No roads inside the wire in the graph: the route ends at the causeway and a dashed leg goes in by the gate
+  // (the records door is at the HQ's far east end, about 870 units on from the causeway's last node).
+  await routed(t, 'the records office', 950);
   await t.call('fortSkip', 'meet');
   r = await t.call('fortJob');
   t.assert(r.stage === 9, 'at the meeting stage: ' + JSON.stringify(r));
