@@ -212,6 +212,8 @@ packs with plain `<script src>` so the zip still plays from file://.
   Fort Sentinel cover (fort-cover*.js): `fortCoverShielded()` is the only exception to `militaryThreatened`,
   `fortCoverOwnsGate()` the only replacement for the gate challenge, `fortCoverBoarded(c)` the only military-vehicle
   rule; every hook checks `fortCover.active`, so free roam is unchanged; `player.uniform` is the borrowed uniform.
+  The gate arm blocks people too and lifts only via `fortCoverGatePass()`, military traffic or a forced gate; boarding any
+  military vehicle under cover or inside the fence is five stars (`fortCoverBoarded`); `militaryAudit()` stays ok.
   The CIRRUS meeting (skyline-meeting.js) is driven only through `skyMeetingBegin/End/Report/Target` and
   `skyMeeting.stage`; a seated player is `player.sceneSeat` (`teleportPlayer` clears it); CIRRUS staff are lent only
   through `keyPerson.errand`.
