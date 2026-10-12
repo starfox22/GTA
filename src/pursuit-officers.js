@@ -293,7 +293,7 @@
         fortCoverReset();
         const spot = policeRespawnPoint();
         if (player.car) {
-          // Pulled from the car: it stays where it stopped.
+          // Pulled from the car (the world reset below puts the city back without it).
           const car = player.car;
           car.vx = car.vy = car.speed = car.av = 0;
           player.car = null;
@@ -305,6 +305,8 @@
         const note = 'Released from Police HQ. Fine: $' + fine + (seized ? ' · ammunition confiscated' : '') + '.';
         if (mission) failMission(note);
         else tell(note, 5);
+        // The city is put back as after WASTED: wrecks, damage, blood and bodies gone (world-reset.js).
+        resetWorld('busted');
         save();
       }, 4200);
     }

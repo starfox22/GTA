@@ -99,7 +99,8 @@ index plus one.
 - `save()` runs on events (a job's end, WASTED, BUSTED, a purchase, a garage, a skipped
   ride) and whenever play pauses, which leaving the tab does: nothing earned in free roam
   waits for the next event. Check a save with `node tools/dev.mjs reload --keep`.
-- WASTED, a mission pick and RESTART CURRENT JOB reset the world (`resetWorld`, missions-and-demo-world-reset.md).
+- WASTED and BUSTED reset the world (`resetWorld`, missions-and-demo-world-reset.md); taking a job (payphone, picker, RESTART
+  CURRENT JOB) never does, it removes only the jobs' own vehicles and actors (`resetMissionState`).
 - WASTED wakes the player at `nearestHospital()` (game-player-actions.js; THE HALCYON CLINIC
   only on and round Monarch Isle), BUSTED at the Police HQ (`policeRespawnPoint`). The first
   hospital in `PLACES` (Saint Marlow) keeps the rooftop helipad.

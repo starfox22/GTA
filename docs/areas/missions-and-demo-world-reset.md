@@ -1,17 +1,21 @@
 # World reset (world-reset.js)
 
-The owner's rule: when the player dies or picks a new mission, everything in the world returns to normal.
+The owner's rule: when the player dies or is arrested, everything in the world returns to normal. Taking a job never
+resets it: the world carries on exactly as it is.
 
 ## When
 
 - **WASTED**: in the respawn (game-player-actions.js `die`), after the hospital teleport and `failMission`.
-- **A pick in the mission picker** (campaign.js `chooseMission`, after the teleport to the spawn).
-- **RESTART CURRENT JOB** (story.js `retryMission`: the job's leftovers first, `resetMissionState`, then the reset,
-  then `startMission`).
-- **A job call taken** (story.js `offerMission`'s accept), skipped when no game time has passed since the last reset
-  (`resetWorld(reason, true)`: a pick and its call are one reset).
+- **BUSTED**: in the release (pursuit-officers.js `bust`), after the Police HQ teleport, the fine and `failMission`.
+  The car he was pulled from goes with the old world (owned dealership cars come back to their bays).
 - **New game** (game-menus.js `newGame`).
-- Not on BUSTED, not on the console's `startMission(i)` shortcuts (tests start jobs mid-world on purpose).
+- **Never on a job**: the payphone call taken (story.js `offerMission` → `startMission(true)`), a pick in the mission
+  picker (campaign.js `chooseMission`) and RESTART CURRENT JOB (story.js `retryMission`) leave traffic, wrecks, damage,
+  blood and bodies alone. `resetMissionState` (game-cops.js) still removes the jobs' own entities: `mission` /
+  `failedMission` vehicles, `missionPursuit` / `reconPatrol` cars and their officers, tagged story actors, Elena,
+  enemies, set pieces (`cleanupMissionExtras`). The payphone call (`livePursuit`) also keeps the police pursuit and
+  wanted level; the picker and RESTART still clear the police, as a fresh start of the job (they teleport to the
+  spawn). The console's `startMission(i)` shortcuts behave like the picker.
 
 ## What resets
 

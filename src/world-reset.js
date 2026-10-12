@@ -1,9 +1,11 @@
     // World reset: resetWorld(reason) puts the city back as it was at boot (vehicles, people, wrecks, damage, blood,
-    // gore, fires, knocked furniture, shop glass, scorch) on WASTED, a mission pick, RESTART CURRENT JOB, a taken
-    // job call and a new game; populateWorld() is the one population pass (boot and reset); worldResetReport().
+    // gore, fires, knocked furniture, shop glass, scorch) on WASTED, BUSTED and a new game only; populateWorld() is the
+    // one population pass (boot and reset); worldResetReport().
     /**
      * WORLD RESET
-     * The owner's rule: when the player dies or picks a new mission, everything in the world returns to normal.
+     * The owner's rule: when the player dies or is arrested, everything in the world returns to normal. Taking a job
+     * (the payphone call, a pick in the mission picker, RESTART CURRENT JOB) never resets it: the world carries on as
+     * it is, and only the jobs' own vehicles and actors go (resetMissionState, game-cops.js).
      * The world is entities (game-populate.js populate, story.js populateStoryWorld, county-build.js
      * populateCounty: every vehicle, walker, gang member, crew and ship) plus the damage that outlives them
      * (knocked street props, the renderer's wall decals, blown shop and upper windows, rubble). A reset
@@ -98,10 +100,8 @@
       void getComputedStyle(el).animationName; // restarts the animation
       el.classList.add('run');
     }
-    /* `reason`: 'wasted', 'mission' (a pick in the mission picker), 'retry', 'job' (a job call taken), 'new-game'.
-       `onlyIfStale`: skip when no game time has passed since the last reset (a pick then its call, back to back). */
-    function resetWorld(reason, onlyIfStale = false) {
-      if (onlyIfStale && worldResetLog.last && worldResetLog.last.gameTime === gameTime) return false;
+    /* `reason`: 'wasted', 'busted', 'new-game'. */
+    function resetWorld(reason) {
       const started = performance.now(),
         before = worldDamageCounts();
       // Callers step the player out first (teleportPlayer); a car still held would be dropped from the world.

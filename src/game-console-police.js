@@ -19,6 +19,14 @@
         }
         return this.status();
       },
+      // BUSTED now (pursuit-officers.js bust): the arrest at the current wanted level (at least one star),
+      // then the release, fine and world reset 4.2 s of wall clock later. Returns the status.
+      arrest() {
+        if (gameMode !== 'play') return { error: 'not in play: ' + gameMode };
+        if (wantedStars <= 0) setWantedLevel(1);
+        bust();
+        return this.status();
+      },
       // The police response as data: stars, heat and the next star's threshold,
       // the incident's body count, the search, arrest progress, the tier's
       // allowances and every unit (patrol, swat, fed, army, air) and officer.
