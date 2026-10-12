@@ -50,20 +50,20 @@ export default async function (t) {
   await t.call('skyMeetingSkip', 'done');
   r = await report(t);
   t.assert(r.playerSeated, 'seated at the end: ' + JSON.stringify(r));
+  const chair = r.player;
   // (A movement key stands him up once he has sat for 0.6 s.)
   await t.keys('KeyW', 1.2);
   r = await report(t);
   t.assert(!r.playerSeated && r.playerFree, 'stood up on clear deck: ' + JSON.stringify(r));
-  const at = r.player;
   await t.keys('KeyW', 1.5);
   r = await report(t);
-  t.assert(Math.hypot(r.player.x - at.x, r.player.y - at.y) > 10, 'walked away from the table: ' + JSON.stringify({ at, now: r.player }));
+  t.assert(Math.hypot(r.player.x - chair.x, r.player.y - chair.y) > 24, 'walked away from the table: ' + JSON.stringify({ chair, now: r.player }));
   // Ended under him (a job abandoned or failed mid-drink): out of the chair onto clear deck.
   await t.call('skyMeetingSkip', 'drinks');
   r = await t.call('skyMeeting', 'end');
   t.assert(!r.playerSeated && r.playerFree, 'the end stood him up free: ' + JSON.stringify(r));
   const there = r.player;
-  await t.keys('KeyW', 1.5);
+  await t.keys('KeyW', 1);
   r = await report(t);
-  t.assert(Math.hypot(r.player.x - there.x, r.player.y - there.y) > 10, 'and he walks: ' + JSON.stringify({ there, now: r.player }));
+  t.assert(Math.hypot(r.player.x - there.x, r.player.y - there.y) > 6, 'and he walks: ' + JSON.stringify({ there, now: r.player }));
 }

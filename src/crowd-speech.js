@@ -228,8 +228,13 @@
         for (const p of waiting) {
           if (speechShown.length >= SPEECH_BUBBLES_MAX) {
             // An important line bumps the least important idle remark on screen.
-            const weakest = speechShown.reduce((w, q) => (!w || speechPriority(q) < speechPriority(w) ? q : w), null);
-            if (p.speechRank >= 2 && speechPriority(weakest) < p.speechRank) {
+            // (Between equals, the line said first is the weaker: a new talk line takes over from an older one.)
+            const weakest = speechShown.reduce(
+                (w, q) => (!w || speechPriority(q) < speechPriority(w) || (speechPriority(q) === speechPriority(w) && (q.speechSaidAt ?? 0) < (w.speechSaidAt ?? 0)) ? q : w),
+                null,
+              ),
+              newerTalk = speechIsTalk(p) && speechIsTalk(weakest) && (weakest.speechSaidAt ?? 0) < (p.speechSaidAt ?? 0);
+            if ((p.speechRank >= 2 && speechPriority(weakest) < p.speechRank) || newerTalk) {
               weakest.speechUntil = gameTime;
               speechShown = speechShown.filter((q) => q !== weakest);
             }
