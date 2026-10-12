@@ -1,4 +1,4 @@
-    // Story payphones: PAYPHONES (the original `phone` first, at least two on every island incl. North Point Key, PAYPHONE_ISLANDS),
+    // Story payphones: PAYPHONES (the original `phone` first, at least two on every island including North Point Key, PAYPHONE_ISLANDS),
     // the one the job pointer guides to (nearest, with hysteresis), the one in reach, map icons and the console report.
     /**
      * STORY PAYPHONES

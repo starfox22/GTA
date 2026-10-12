@@ -138,7 +138,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/world-view.js`   345 — World camera gestures
 - `src/car-radio.js`   871 — Vehicle radio stations
 - `src/garages.js`   782 — ▸ Drive-in repair and respray
-- `src/payphones.js`   215 — Story payphones: PAYPHONES (the original `phone` first, at least two on every island incl.
+- `src/payphones.js`   215 — Story payphones: PAYPHONES (the original `phone` first, at least two on every island including North Point Key, PAYPHONE_ISLANDS), the one the job …
 - `src/crowd.js`   194 — ▸ Crowd life, perception and reactions
 - `src/livingcity.js`    32 — ▸ The living city in free roam
 - `src/monarch-life.js`    38 — ▸ Monarch Isle: traffic, people, boats and sound
