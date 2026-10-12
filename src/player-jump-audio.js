@@ -1,5 +1,5 @@
-    // The player's jump effort: a short breathy "huh" at take-off (player-jump.js calls jumpEffortSound when the
-    // crouch ends), a recorded sample (assets/audio/player-jump-grunt.ogg, LibreQuake, BSD-3) varied per jump.
+    // The player's jump effort: a short voiced "huh" at take-off (player-jump.js calls jumpEffortSound when the
+    // crouch ends), a recorded adult male grunt (assets/audio/player-jump-grunt.ogg, arther1974, CC0) varied per jump.
     /**
      * JUMP EFFORT
      * One sample, two deliveries: a full "huh" (most jumps) and a softer, quicker breath (a standing hop, or one jump
