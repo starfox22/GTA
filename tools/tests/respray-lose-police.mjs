@@ -81,7 +81,7 @@ export default async function (t) {
     await t.wait(5);
     p = await t.call('policeReport');
     if (p.stars) t.note('re-detected: crimes ' + JSON.stringify(p.crimes) + ' witnesses ' + JSON.stringify(await t.call('witnesses')).slice(0, 600));
-    t.assert(p.stars === 0 && p.search.clock === 'off', `re-detected ${5 * (k + 1) + 2} s after the respray: ${p.stars} stars, ${JSON.stringify(p.search)}`);
+    t.assert(p.stars === 0 && p.search.clock === 'off', `re-detected ${5 * (k + 1) + 2} s after the respray: ${p.stars} stars, ${JSON.stringify(p.search)}, crimes ${JSON.stringify(p.crimes)}`);
   }
   await t.call('god', false);
   await t.call('holdSimulation', false);
