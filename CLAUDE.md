@@ -196,6 +196,9 @@ packs with plain `<script src>` so the zip still plays from file://.
   `populateWorld()` (boot seed replayed); a system that keeps world damage or holds vehicles or people outside the
   populate lists adds a reset helper next to its state, called from `resetWorld`; renderer-held damage clears when
   `worldResetSerial` changes; progress (cash, weapons, story, owned cars, settings) is never reset.
+- Road routes for the GPS and the waypoint pick their ends through `navRouteEnds()` (map-objective.js), which keeps both on one
+  connected road network; a mission vehicle the player is after is marked on the maps only through `mapHighlightVehicle()`.
+  Trunks close only through `closeTrunk` (the action key via `trunkCloseTarget`, or `slamMovingTrunks` past walking pace).
 - `missionIndex` is both the story frontier and the job a replay picked: anything that ends or declines a replay
   calls `settleDemoStoryIndex()` (campaign.js: back to `completed` for any player without god mode), or the
   payphone offers the old job. RESTART CURRENT JOB restarts only `restartableJob()` (story.js: the running job or
