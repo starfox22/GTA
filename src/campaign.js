@@ -495,8 +495,8 @@
       teleportPlayer(spawn.x, spawn.y);
       cameraTarget.x = player.x;
       cameraTarget.y = player.y;
-      // A new mission starts in a city back to normal (world-reset.js).
-      resetWorld('mission');
+      // The city carries on as it is (only WASTED and BUSTED reset it: world-reset.js); the old job's own
+      // vehicles and actors went with resetMissionState above.
       missionIndex = index;
       gameMode = 'play';
       save();

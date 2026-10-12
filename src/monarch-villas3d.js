@@ -29,6 +29,8 @@
        *                  (A reserve design since MONARCH ONE became the island's
        *                  only tower; MONARCH ONE is built by monarch-one3d.js.)
        */
+      // `wall` and the heights buildIsleVillaGarden draws are mirrored by monarch-towers.js villaWallHeight (what the
+      // jump clears): change them together.
       const VILLA_LOOK = {
         modern: { facade: 'villaGlass', roof: 'flat', wall: 'render' },
         mediterranean: { facade: 'villaTerracotta', roof: 'hip', roofColor: ISLE.terracotta, wall: 'stone' },

@@ -29,6 +29,13 @@ grid, shores and bridges, navigation and layout data: world-and-map.md.
   `SOLID_LOW_MIN` (3 units) marks water and never clears. A new low wall or bench joins by
   carrying its height there; a new restricted area keeps its blocker out of it (Fort
   Sentinel, the theme park and the Marea club are). Landing lower than the take-off is a fall.
+  A running jump (>= 15 km/h) whose first blocker ahead is 1.05-1.5 m is a vault
+  (`jumpVaultAhead`): clearance held at `JUMP_VAULT_MAX` over the flight, so timing does not
+  decide it (villa walls 1.35 m and railings 1.41 m, `villaWallHeight` mirrors what
+  monarch-villas3d.js draws; the quays' sea railing `PROMENADE_RAIL_HEIGHT` 1.49 m; hedges,
+  1.5 m square railings, court and street-end fences stay solid). In the air the shoreline
+  rule lets him off land or a dock into the sea (never a bridge or the pier); the fall carries
+  `fall.jumped`, which `updateSwimming` waits for, and ends swimming (`fallIntoWater`).
   Console `jumpReport()`, `jumpObstacles()`; tools/tests/player-jump.mjs.
 - Parachute (parachute.js; parachute3d.js draws it): only an aircraft bail-out (60 m clear)
   starts one; the ripcord is a second `bail` press once the first is let go, and

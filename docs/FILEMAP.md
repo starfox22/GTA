@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-590 files in the include tree, 201,905 lines.
+590 files in the include tree, 202,013 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -33,13 +33,13 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/heat.js`   283 — Heat and wanted stars
 - `src/witnesses.js`   529 — Witnesses and 911 calls, the police side: crimes nobody has reported yet, what the police see and hear for themselves, and how a report brings them …
 - `src/game-collision.js`   401 — Building grid: solid() and shotBlocked() run thousands of times per frame (every pedestrian step, bullet and spawn test).
-- `src/player-jump.js`   345 — The player's jump on foot (the jump action, Space): a crouch, a tucked hop over low walls, railings, benches and fences that stop a walker, and a …
+- `src/player-jump.js`   418 — The player's jump on foot (the jump action, Space): a crouch, a tucked hop over low walls, railings, benches and fences that stop a walker, and a …
 - `src/game-car-spawn.js`   377 — makeCar(), canSpawnCar(), spawnClearCar(): creating vehicles with one shared object layout.
 - `src/game-worldgen.js`   480 — buildWorld(): the city plan, buildings (makeBuilding), trees, the 2D ground canvas.
 - `src/game-populate.js`   231 — Initial population: showcase parking (SHOWCASE_PARKING, parkShowcase) and populate().
 - `src/world-reset.js`   130 — World reset: resetWorld(reason) puts the city back as it was at boot (vehicles, people, wrecks, damage, blood, gore, fires, knocked furniture, shop …
 - `src/game-player-actions.js`   635 — Player verbs: enter and exit vehicles, interact, aim, shoot, reload, hurt, die, explode.
-- `src/game-cops.js`   178 — resetMissionState(), spawnCop(), copRoute(): mission reset and patrol spawning.
+- `src/game-cops.js`   183 — resetMissionState(), spawnCop(), copRoute(): mission reset and patrol spawning.
 - `src/physics.js`    19 — ▸ Vehicle and pedestrian physics
 - `src/game-people.js`   168 — Pedestrian life: Everyday chatter lives here; how people walk, what they do and how they react to danger is in src/crowd.js, which also has the …
 - `src/game-combat.js`   348 — updateCombat(), bullets, shot line-of-sight (shotBlocked) and bullet targets.
@@ -63,7 +63,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/pursuit.js`    27 — ▸ Police response and pursuit tactics
 - `src/swat.js`   236 — SWAT teams, riot shields and rooftop snipers
 - `src/wounds.js`   184 — Wounds, hit reactions and death falls
-- `src/story.js`   996 — Story characters and mission stages
+- `src/story.js`   994 — Story characters and mission stages
 - `src/campaign.js`   534 — Campaign saves and replay
 - `src/chase.js`   554 — Cargo pursuit
 - `src/roadblocks.js`   436 — Police containment and roadblocks
@@ -81,7 +81,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/clouds.js`   329 — Cloud layer (game side): cloudBaseAt/cloudTopAt, the only source of the cloud altitude, by weather and area; the coverage and area maps the renderer …
 - `src/clouds-audio.js`    61 — Cloud sound: inside a cloud the rush of air goes deep and damp (a low, soft roar and a fine hiss of droplets), following cloudLayer.immersion and the …
 - `src/clouds-console.js`    66 — Cloud console (registered by game-console-world.js as 'clouds'): cloudLayer() report, cloudSpot() and cloudJump(), a freefall from a given altitude …
-- `src/water.js`   696 — Swimming and sinking
+- `src/water.js`   702 — Swimming and sinking
 - `src/water-audio.js`   400 — Water and beach sound
 - `src/beachvolley.js`    43 — ▸ Beach volleyball on Palm Keys Beach
 - `src/beach.js`    12 — ▸ Palm Keys Beach life
@@ -153,7 +153,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/ambience-beds.js`   346 — Ambience beds by place and time: the city's far wash, gusting wind (the open, the heights, the range), leaves, cicadas and the night chorus, harbour …
 - `src/acoustics-audio.js`   360 — Acoustics: the space round the ear (street canyons, open country, height) and how a positioned sound reaches it (air absorption, occlusion by …
 - `src/footsteps-audio.js`   346 — Footsteps and foley on foot: the ground under each step (footSurfaceAt), a step's sound for that ground and pace, puddles in the wet, landings, and …
-- `src/player-jump-audio.js`    31 — The player's jump effort: a short breathy "huh" at take-off (player-jump.js calls jumpEffortSound when the crouch ends), a recorded sample …
+- `src/player-jump-audio.js`    31 — The player's jump effort: a short voiced "huh" at take-off (player-jump.js calls jumpEffortSound when the crouch ends), a recorded adult male grunt …
 - `src/vehicle-foley-audio.js`   470 — Vehicle foley: horns by class (the player's and traffic's), doors and a locked handle, the tyres' ground (squeal or scrub), traffic skids, suspension …
 - `src/lockpick-audio.js`    36 — The lockpick's sounds (vehicle-trunk.js): the pick raking the pins, the soft click of a pin setting, the latch giving (a trunk's clunk and the lid …
 - `src/bullets-audio.js`   180 — Bullet sound: strikes by surface (concrete chips and ricochets, metal, glass, dirt) and the crack and whizz of an enemy round passing close to the …
@@ -235,7 +235,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/pursuit-dispatch.js`   764 — Police tiers and dispatch: sighting, unit kinds, wanted announcements, spawning and routing units (dispatchPolice, planPursuit).
 - `src/pursuit-steering.js`   107 — Pursuit steering aids: room to swing onto a straight run (roomToTurn), the speed the corners on the route ahead allow (routeCornerSpeed) and traffic …
-- `src/pursuit-officers.js`   691 — Officers on foot in a pursuit: suppressive fire, cover, drags, surrender and arrest (updateArrest).
+- `src/pursuit-officers.js`   693 — Officers on foot in a pursuit: suppressive fire, cover, drags, surrender and arrest (updateArrest).
 
 ## src/themepark.js ▸ Sunset Pier resort and theme park
 
@@ -294,7 +294,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/monarch-grid.js`    47 — Monarch Isle grid: columns, blocks, kerbs and floors (ISLE_COLS, isleBlock).
 - `src/monarch-coast.js`   247 — Monarch Isle outline and coast (MONARCH_ISLE, onMonarchIsle), marina berths and superyachts.
 - `src/monarch-streets.js`   397 — Monarch Isle streets, circles, carriageways, roads, bridges, parcels and villas (ISLE_STREETS, MONARCH_ROADS).
-- `src/monarch-towers.js`   282 — Monarch Isle towers, businesses, payphones, plazas and buildMonarchIsle().
+- `src/monarch-towers.js`   290 — Monarch Isle towers, businesses, payphones, plazas and buildMonarchIsle().
 - `src/monarch-one.js`   373 — Monarch Isle's MONARCH ONE estate: the supertall's gated grounds, porte-cochère, pool deck, private cove, gate arm, staff and ground paint …
 - `src/monarch-blocks.js`   397 — Monarch Isle block planning (planIsleBlock, planIsleStreetscape), solids, districts and shore styles.
 - `src/monarch-ground.js`   594 — Monarch Isle ground sheet: one painted canvas tile (paintMonarchGround) with junctions, villas, blocks, garden, marina.
@@ -317,7 +317,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/streets-grid.js`   274 — City street footprints (cityStreets), street names, Ocean Drive palms, benches, street ends (closed and gate ends) and cityStreetAt.
 - `src/streets-markings.js`   173 — Road markings as data (cityMarkingShapes), painting the city grid's streets, and crosswalks.
-- `src/streets-waterfront.js`   372 — Waterfront: shore helpers, esplanade spots (promenadeSpots), sea railing, foot obstacles, strollers and paintPromenades.
+- `src/streets-waterfront.js`   376 — Waterfront: shore helpers, esplanade spots (promenadeSpots), sea railing, foot obstacles, strollers and paintPromenades.
 - `src/streets-county-map.js`   156 — County road centre dashes (countyMarkingShapes, paintCountyRoads) and the player's map marker (centerMapOnPlayer).
 
 ## src/terrain.js ▸ Mountains and off-road contact
@@ -472,7 +472,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/roofmission3d.js`   175 — Mission 2 (the Blue Hour) in 3D: the bodyguards' sight cones on the terrace floor and the speech bubbles and name label over the party.
 - `src/marina3d.js`    17 — ▸ Marina, superyacht and cruise liner meshes
 - `src/monarch3d.js`   773 — Monarch Isle in 3D
-- `src/monarch-villas3d.js`   434 — Monarch Isle: villas and towers
+- `src/monarch-villas3d.js`   436 — Monarch Isle: villas and towers
 - `src/monarch-one3d.js`   310 — MONARCH ONE in 3D: the supertall (a quarter-turn twist, balcony bands, sky gardens, LED crown, mast) and its grounds, gate arm, pool deck and cove.
 - `src/monarch-marina3d.js`   229 — Monarch Harbour in 3D
 - `src/monarch-garden3d.js`   463 — The Royal Botanic Garden and its Palm House
@@ -746,7 +746,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/crowd3d-roofparty.js`   141 — Crowd 3D poses for mission 2 (the Blue Hour): Vescari's poisoned toast beat by beat, and the bodyguards' heads turning with their sight cones.
 - `src/crowd3d-draw.js`   717 — drawCrowdPerson(): weapon holds, phone poses and the far-figure shortcut.
 - `src/crowd3d-gore.js`   361 — Crowd 3D gore: what the rig draws of gore.js's state: lost parts left out, a ragged stump (torn cloth and skin, raw flesh, the bone) at each cut …
-- `src/crowd3d-special.js`   585 — Crowd 3D special characters: player, officers, soldiers, gangs, swimmers, parachutes (specialSpec, applyLimbOverrides).
+- `src/crowd3d-special.js`   587 — Crowd 3D special characters: player, officers, soldiers, gangs, swimmers, parachutes (specialSpec, applyLimbOverrides).
 - `src/crowd3d-driveby.js`   374 — Crowd 3D drive-by pose: the player at the wheel with the gun arm out of the window, torso and head turned to the aim, recoil per shot …
 - `src/crowd3d-frame.js`   418 — updateCrowd3D(): per-frame packing, car enter and exit transitions, dogs, crowd stats.
 
@@ -860,7 +860,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/game-console-core.js`   191 — DeadEndCity console, core: status, teleport, look, clock, zoom, simulate, heal, god, cash, walk (+ godPanelConsole)
 - `src/game-console-missions.js`   365 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
-- `src/game-console-police.js`   271 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
+- `src/game-console-police.js`   279 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
 - `src/game-console-vehicles.js`   433 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
 - `src/game-console-world.js`   277 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
 - `src/game-console-rides.js`   104 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht

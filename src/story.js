@@ -352,12 +352,9 @@
         info.contact,
         jobLabel(missionIndex) + ' · ' + info.title,
         info.phoneMessage,
-        () => {
-          // Taking a job: the city back to normal first (world-reset.js), unless a pick in the
-          // mission picker has just done it.
-          resetWorld('job', true);
-          startMission();
-        },
+        // Taking a job: the city carries on exactly as it is (no world reset, world-reset.js), the
+        // police pursuit and wanted level included; only earlier jobs' vehicles and actors go.
+        () => startMission(true),
       );
     }
     function setContactPortrait(el, id) {
@@ -427,10 +424,11 @@
         });
       }
     }
-    function startMission() {
+    /* `livePursuit`: a job call taken at the payphone keeps the police pursuit and wanted level as they are. */
+    function startMission(livePursuit = false) {
       if (missionIndex >= missions.length) return;
       incomingCallRemaining = 0;
-      resetMissionState();
+      resetMissionState(livePursuit);
       const missionState = (mission = {
           index: missionIndex,
           stage: 0,
@@ -532,10 +530,10 @@
       // The one way to move the player: it lets go of a fall, a ladder or a pool that would pull them back.
       teleportPlayer(spawn.x, spawn.y);
       gameMode = 'play';
-      // The job's leftovers go first (its vehicles and actors), then the city is put back (world-reset.js).
+      // The job's leftovers go (its vehicles and actors); the city carries on as it is (only WASTED and
+      // BUSTED reset it: world-reset.js).
       resetMissionState();
       mission = null;
-      resetWorld('retry');
       missionIndex = index;
       startMission();
       getElement('pauseMenu').classList.add('hidden');

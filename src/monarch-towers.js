@@ -128,6 +128,14 @@
       buildings.push(b);
       return b;
     }
+    /* A villa's boundary as drawn (monarch-villas3d.js VILLA_LOOK `wall`, buildIsleVillaGarden): a rendered or stone
+       wall with its coping 10.8 units (1.35 m), railings on a low wall 11.3 (1.41 m), a privet hedge 14.6 (1.83 m).
+       The jump reads it (player-jump.js THE VAULT): a running jump vaults the walls and railings, never a hedge. */
+    const VILLA_WALL_HEIGHTS = { hedge: 14.6, railings: 11.3, wall: 10.8 },
+      VILLA_WALL_KIND = { hamptons: 'hedge', tudor: 'hedge', neoclassical: 'railings', georgian: 'railings' };
+    function villaWallHeight(style) {
+      return VILLA_WALL_HEIGHTS[VILLA_WALL_KIND[style] || 'wall'];
+    }
     /* A wall round a lot with a gap for the gate: four thin solids (two on the gate side). */
     function isleLotWall(lot, gateAt, gateAxis, gateWidth, height = 8, thickness = 4, kind = 'garden wall') {
       const L = lot,
@@ -167,7 +175,7 @@
           ...plan.wings.map((w) => isleBuilding(w.x, w.y, w.w, w.h, w.height, { style: 2, villa: v.id })),
           isleBuilding(plan.garage.x, plan.garage.y, plan.garage.w, plan.garage.h, plan.garage.height, { style: 2, villa: v.id }),
         ];
-        plan.walls = isleLotWall(v.lot, plan.gateAt, plan.gateAxis, plan.gateWidth, v.style === 'modern' ? 7 : 9);
+        plan.walls = isleLotWall(v.lot, plan.gateAt, plan.gateAxis, plan.gateWidth, villaWallHeight(v.style), 4, 'garden ' + (VILLA_WALL_KIND[v.style] || 'wall'));
         if (plan.pool) isleSolid(plan.pool.x, plan.pool.y, plan.pool.w, plan.pool.h, 2, 'pool');
         if (plan.tennis) {
           const t = plan.tennis;

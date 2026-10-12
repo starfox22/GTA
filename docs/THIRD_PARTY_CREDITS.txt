@@ -376,33 +376,18 @@ AUDIO EFFECTS / VOICES
 }
 
 PLAYER JUMP EFFORT ("huh")
-player-jump-grunt.ogg (src/player-jump-audio.js: the player's short effort breath at take-off)
-  "plyrjmp8.wav" (the player's jump grunt) from LibreQuake, by the contributors to the
-  LibreQuake project (docs/CREDITS in the repository)
-  https://github.com/lavenderdotpet/LibreQuake/blob/main/lq1/sound/player/plyrjmp8.wav
-  License: BSD 3-Clause (all LibreQuake models, textures and sounds; docs/COPYING):
-    Copyright (c) 2019-2023 Contributors to the LibreQuake project. All rights reserved.
-    Redistribution and use in source and binary forms, with or without modification, are
-    permitted provided that the following conditions are met: redistributions of source code
-    must retain the above copyright notice, this list of conditions and the following
-    disclaimer; redistributions in binary form must reproduce the above copyright notice, this
-    list of conditions and the following disclaimer in the documentation and/or other materials
-    provided with the distribution; neither the name of the LibreQuake project nor the names of
-    its contributors may be used to endorse or promote products derived from this software
-    without specific prior written permission. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT
-    HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-    ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
-    NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
-    OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-    CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-    OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-  Source sha256 52e080fd4d7b8ed624e909998650f2346b24bce6cc484899edaf53e8ceb332ba (22.05 kHz mono
-  PCM, 0.36 s). Changes: 100 Hz high-pass, silence trimmed, loudness normalized, resampled to
-  24 kHz mono OGG Vorbis (quality 4): 6008 bytes, sha256
-  9e4076ece2fe8c6023bedcbd15df01b008dcb0890d20c9b856c7e615b792f010. The game varies its pitch
-  and level per jump.
+player-jump-grunt.ogg (src/player-jump-audio.js: the player's short voiced effort at take-off)
+  "jump_grunt_01" by arther1974 (Freesound), an adult male's short jump grunt
+  https://freesound.org/people/arther1974/sounds/808213/
+  License: Creative Commons 0 (CC0 1.0, public domain dedication); no attribution required,
+  credited anyway. Downloaded from the trimmed copy in the Odyssey Cyclops Cave repository
+  (its public/assets/sfx/CREDITS.md lists the three jump_grunt takes as its "effort" set):
+  https://github.com/Taishi-Y/odyssey-cyclops-cave/blob/HEAD/public/assets/sfx/effort_0.mp3
+  Source sha256 d9e5a46d03286ef7bcb00b99622d7ac1306c4efd62d8f497e502b86d8f141fdb (44.1 kHz
+  mono MP3, 0.34 s). Changes: leading and trailing silence trimmed, 25 ms fade-out, -0.5 dB
+  (RMS matched to the sample it replaced), 44.1 kHz mono OGG Vorbis (quality 4): 6108 bytes,
+  sha256 e73f988d1a99106e6cc0ce4f091adc0ca368c6672a98b47b687648fc9bd0196a. The game varies
+  its pitch and level per jump. (It replaces LibreQuake's plyrjmp8.wav, no longer shipped.)
 
 VEHICLE CRASH SOUNDS
 Played by src/crash-audio.js: one recorded crash per impact, picked by closing speed, plus

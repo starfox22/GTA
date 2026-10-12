@@ -174,17 +174,21 @@ packs with plain `<script src>` so the zip still plays from file://.
   (flight-view3d.js `tagSceneryDetail` otherwise hides small meshes from the flight camera).
 - `tyreEmission(c)` (tyre-effects.js) is the only rule for tyre smoke, dust and spray: smoke only
   from a burnout (`burnoutStep`); skid marks only through `layTyreMarks`; renderers only draw them.
-- Jump on foot (player-jump.js): `player.jump` is a carrier (`cancelPlayerJump`); what a jump clears is a solid's
-  `height` (foot furniture `jumpH`, props `JUMP_PROP_HEIGHT`) skipped through `solidSkipBelow` only in the jumping
-  player's own step (`footSolid`), never elsewhere; Fort Sentinel, the theme park and the Marea keep their blockers out
-  of it. Space is `jump` on foot, `handbrake` driving, `rockets` in the air. The take-off effort sound is
-  player-jump-audio.js `jumpEffortSound`.
+- Jump on foot (player-jump.js): `player.jump` is a carrier (`cancelPlayerJump`); what a jump clears is a solid's `height`
+  (foot furniture `jumpH`, props `JUMP_PROP_HEIGHT`, the sea railing `PROMENADE_RAIL_HEIGHT`, villa walls `villaWallHeight`
+  = what monarch-villas3d.js draws) skipped through `solidSkipBelow` only in the jumping player's own step (`footSolid`),
+  never elsewhere: a hop clears 1.05 m, a running vault (`jumpVaultAhead`) up to `JUMP_VAULT_MAX` 1.5 m. In the air
+  `shoreStepBlocked` lets him off land or a dock (never a bridge or the pier) into the sea; the fall carries `fall.jumped`
+  and ends swimming. Fort Sentinel, the theme park and the Marea keep their blockers out of it. Space is `jump` on foot,
+  `handbrake` driving, `rockets` in the air. The take-off effort sound is player-jump-audio.js `jumpEffortSound`.
 - `c.wheelie` (wheelie.js) is the only two-wheeler pitch; wheelie input is `wheelieHeld()` (controls.js).
 - Objectives have no ground ring or light pool: the floating arrow (render3d-effects.js `arrowGroup`, shown
   by `objectiveArrowShown()` in markers.js) is the only pointer; the ring under the player is the `playerRing`
   setting (off by default, `playerRingOn()`). Console `markers()` lists what marks the objective and the player.
 - World reset (missions-and-demo-world-reset.md): `resetWorld(reason)` (world-reset.js) is the only way the world goes
-  back to normal (WASTED, a mission pick, RESTART CURRENT JOB, a taken job call, new game); entities come only from
+  back to normal, and only on WASTED, BUSTED and a new game; taking a job (the payphone call, a mission pick, RESTART
+  CURRENT JOB) never resets it: `resetMissionState` removes only the jobs' own vehicles and actors (the payphone call,
+  `startMission(true)`, also keeps the police pursuit); entities come only from
   `populateWorld()` (boot seed replayed); a system that keeps world damage or holds vehicles or people outside the
   populate lists adds a reset helper next to its state, called from `resetWorld`; renderer-held damage clears when
   `worldResetSerial` changes; progress (cash, weapons, story, owned cars, settings) is never reset.

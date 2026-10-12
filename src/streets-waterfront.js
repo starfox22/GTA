@@ -78,7 +78,9 @@
     const ESPLANADE_LANDWARD = 32,
       ESPLANADE_SEAWARD = 40,
       // The sea railing stands on the quay coping, 3 units in from the edge.
-      ESPLANADE_RAIL_Z = 37;
+      ESPLANADE_RAIL_Z = 37,
+      // Its top rail (world3d-shore.js draws it 11 units up, 1.8 thick): a running jump vaults it (player-jump.js).
+      PROMENADE_RAIL_HEIGHT = 11.9;
     /* The yaw whose local +z points out to sea at a promenade spot (or coast
        segment with its normal). The coast heading alone does not say which side
        the sea is on: it depends on how the land polygon is wound, and on every
@@ -143,7 +145,9 @@
      * [u0, u1] along the spot's local x). It breaks where people really cross
      * the quay edge: the swimmers' ladders, the marina's finger pontoons, the
      * superyacht's passerelle. The same runs are the railing's collider
-     * (`promenadeRailBlocked`), so what you see is what stops you.
+     * (`promenadeRailBlocked`), so what you see is what stops you, at its
+     * height (PROMENADE_RAIL_HEIGHT): the jumping player's own step may vault it
+     * (solidSkipBelow), and the shoreline rule then lets him into the sea.
      */
     let promenadeRailGrid = null;
     function addPromenadeRailRuns(spots) {
@@ -194,7 +198,7 @@
       // built); until then, and while the ladders they make room for are being
       // placed (which tests solid()), there is no railing yet.
       const grid = promenadeRailGrid;
-      if (!grid) return false;
+      if (!grid || (solidSkipBelow && jumpedOver(PROMENADE_RAIL_HEIGHT))) return false;
       const i0 = Math.floor(x / 128),
         j0 = Math.floor(y / 128);
       // Nothing in any of the nine cells: one byte read instead of nine lookups (game-collision.js cellMask).
