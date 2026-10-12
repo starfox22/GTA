@@ -117,6 +117,9 @@
       },
       // Fort Sentinel security: alert, lockdown, gate pieces, garrison and vehicles.
       military: () => militaryReport(),
+      // Fort Sentinel's layout check: parked vehicles in solids, buildings or each other, soldiers posted inside solids,
+      // the papers window, records door and pads clear (military-life.js militaryLayoutAudit; `ok` when none).
+      militaryAudit: () => militaryLayoutAudit(),
       // Fort Sentinel cover (fort-cover.js): the disguise and the base's cover rules, as a mission polls them.
       fortCover: () => fortCoverReport(),
       // Stage the cover for a test: 'gate' (cover on, uniform on, west of the booth), 'inside' (cleared, on the

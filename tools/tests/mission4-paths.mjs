@@ -79,7 +79,8 @@ export default async function (t) {
   await t.wait(10);
   r = await t.call('fortJob');
   t.assert(r.stage === 7 && /RECORDS/.test(r.instruction), 'cleared at the gate: ' + JSON.stringify(r));
-  await t.call('teleport', 9624, 8052);
+  cover = await t.call('fortCover');
+  await t.call('teleport', cover.recordsDoor.x, cover.recordsDoor.y + 16);
   await t.wait(1);
   await E(t);
   await t.wait(10);

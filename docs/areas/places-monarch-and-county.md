@@ -46,9 +46,16 @@ roofs, garages): the plan is a game file, the meshes its `*3d.js` twin, coordina
 
 ## Fort Sentinel, the Apache, the tank (military.js, apache.js, armor.js, base3d-*.js)
 
-- The base plan `SENTINEL`: gate with drop arms, anti-ram bollards and a sliding gate (arms
-  and bollards stop vehicles only). Trespass or attack raises the alarm: lockdown, sentries,
+- The base plan `SENTINEL`: gate with drop arms, anti-ram bollards and a sliding gate (a lowered
+  arm stops vehicles and people on foot, the booth seals the island between the lanes; bollards
+  stop vehicles only). Arms lift only for military traffic, the forced controls and a man the
+  cover has cleared (`fortCoverGatePass`). Trespass or attack raises the alarm: lockdown, sentries,
   QRF jeeps, and the wanted level held while near. E at the gate forces it for a moment.
+- Parked hardware on the walk from the gate: the HQ pad (`SENTINEL.helipads[2]`, a utility helicopter;
+  [0] stays the Apache's pad) with the QRF jeeps at the HQ lot's south end, and the ready line
+  (`SENTINEL.readyLine`: an M35 and a LAV-8 on the avenue's south kerb; the supply truck's route
+  keeps off their noses). Boarding any military vehicle inside the fence or under cover is five
+  stars at once (`fortCoverBoarded`), the Apache included.
 - The AH-64 (`airframe: 'apache'`, `HELICOPTER_AIRFRAMES`) is only ever flown by the
   player; stealing it is like taking a tank plus maximum heat. Console `military()`,
   `apache()`.
@@ -57,12 +64,12 @@ roofs, garages): the plan is a game file, the meshes its `*3d.js` twin, coordina
   `fortCoverReport()`; state `fortCover` {active, cleared, suspicion 0-100, alarmed, papers, insideBase,
   leftWithPapers, entered, blownBy}. With the cover inactive nothing changes (every hook checks `fortCover.active`).
   `fortCoverOwnsGate()` (on foot, uniform, no stars, no alert) replaces the gate challenge: papers at
-  `FORT_COVER_GATE.check` (9236, 8182), cleared after a 3.1 s inspection. `fortCoverShielded()` (cleared, not
+  `FORT_COVER_GATE.check` (9236, 8182), cleared after the `FORT_GATE_TALK` (the arm lifts at `FORT_GATE_OPEN_AT`). `fortCoverShielded()` (cleared, not
   alarmed, uniform, on foot, off roofs) is the exception in `militaryThreatened`. Any alarm while cleared sets
   `alarmed`. The watch (`fortSoldierSees`: 55° half-cone, 420 units, towers 650, `clearSight`) runs after the
   garrison's step (end of `updateMilitary`), so a watcher may turn to him; `FORT_RESTRICTED` lists the off-limits
-  rectangles. `fortCoverBoarded(c)` in `enterVehicle` is the only vehicle rule. Records door
-  `FORT_RECORDS.door` (9624, 8035; drawn by base3d-buildings.js in place of a ground-floor window), the search runs
+  rectangles. `fortCoverBoarded(c)` in `enterVehicle` is the only vehicle rule (alarm, five stars). Records door
+  `FORT_RECORDS.door` (9884, 8035, the HQ's far east end, ~83 m from the papers window; drawn by base3d-buildings.js in place of a ground-floor window), the search runs
   in gameMode 'elevator' on the frame clock (`updateFortRecords`, also stepped by `simulate`) and steps him out with
   `teleportPlayer`. The meter shares mission 2's `#stealthStatus` (roofMissionUI keeps it shown for
   `fortCoverMeterShown()`); the foot strip context is `cover`. `fortCoverReset()` runs on mission cleanup, new

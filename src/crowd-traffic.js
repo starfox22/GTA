@@ -127,7 +127,8 @@
         culprit = other && other.occupied && playerFaster && closing > RECKLESS_CRASH_SPEED ? player : null;
       const inc = crowdAlarm('crash', hit, culprit, clamp(closing / 160, 0.5, 2));
       for (const c of [a, b]) {
-        if (!c || c === player.car || !c.occupied || !c.ai || c.hp <= 0 || c.type === 'police') continue;
+        // Police and Fort Sentinel's drivers (supply truck, patrols, QRF) never stop to argue or walk off in civvies.
+        if (!c || c === player.car || !c.occupied || !c.ai || c.hp <= 0 || c.type === 'police' || c.military) continue;
         if (isBoat(c) || isAircraft(c) || c.ramUntil > gameTime || c.crashStop) continue;
         if (closing < 75) {
           c.honkAt = gameTime + randomBetween(0.2, 0.6);

@@ -563,10 +563,10 @@
             m,
             FORT_STAGE.inside,
             FORT_RECORDS.door,
-            'WALK TO THE RECORDS OFFICE · LEFT SIDE OF HEADQUARTERS',
-            'You’re in. Walk, don’t run, to the Records Office: the side door on the left of Headquarters. Stay out of restricted areas.',
+            'WALK TO THE RECORDS OFFICE · FAR END OF HEADQUARTERS',
+            'You’re in. Walk, don’t run, along the avenue to the Records Office: the side door at the far east end of Headquarters. Leave the army’s vehicles alone and stay out of restricted areas.',
             'vinny',
-            'You’re in. Walk like you’ve been there two years. Side door, left of the main entrance. Not past the sentries.',
+            'You’re in. Walk like you’ve been there two years. Side door at the far end of headquarters, not the main entrance. And don’t touch their trucks: you take one, you’ve got the whole army on you.',
           );
         } else if (wantedStars > 0 && m.instruction.indexOf('LOSE') !== 0) {
           m.instruction = 'LOSE THE POLICE · THEN WALK UP TO THE GATE';

@@ -17,9 +17,9 @@
      * STEALING IT: boarding it is theft of military hardware. The base's own
      * rules apply as they do for its tanks (militaryAlarm: siren, lockdown, the
      * garrison engages an intruder near the ground), and the heat goes to the
-     * top of the scale, so the wanted level climbs star by star to the military
-     * response (five stars) at the normal pace (heat.js ESCALATE_SECONDS). No
-     * snipers come (swat.js SNIPERS_ENABLED).
+     * top of the scale. Taken from its pad (inside the fence) it is five stars
+     * at once, as for every vehicle of the base (fort-cover.js
+     * fortCoverBoarded). No snipers come (swat.js SNIPERS_ENABLED).
      *
      * WEAPONS (player only):
      *   - the M230-style 30 mm chin gun (`fire`, F / left click): the turret turns
