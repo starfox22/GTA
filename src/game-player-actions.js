@@ -316,6 +316,8 @@
       // Mission 4: Kessler's keys open his trunk before the lockpick is asked (fortjob.js).
       if (fortKeysOpenTrunk()) return;
       if (lockpickInteract()) return;
+      // An open trunk with nothing left in it: the lid comes down (vehicle-trunk.js).
+      if (trunkCloseInteract()) return;
       // A lobby lift on North Point Key (skyline-lift.js).
       if (northPointKeyInteract()) return;
       if (transitInteract()) return;

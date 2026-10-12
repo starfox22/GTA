@@ -56,8 +56,9 @@
        speed (not the eased one), so the switch happens at the speed the box shows.
        Boarding at rest keeps the walking view. Aircraft, rides and the parachute keep
        their own framing; a garage's show keeps the vehicle's (garages.js); with Motion
-       comfort on there is no slow framing: the vehicle holds its one fixed zoom
-       (MOTION_COMFORT_FRAMING) from boarding. */
+       comfort on the slow framing holds too, and at speed the vehicle holds its one
+       fixed zoom (MOTION_COMFORT_FRAMING). The chase view's boom follows the same
+       switch (chase-camera.js slowShare). */
     const SLOW_FRAMING_OUT = 31,
       SLOW_FRAMING_IN = 30,
       SLOW_FRAMING_HOLD = 1;
@@ -84,7 +85,7 @@
     // A road vehicle or a boat framed like walking (SLOW FRAMING).
     function slowFramingOn() {
       const c = player.car;
-      return slowFraming.on && !!c && !isAircraft(c) && !motionComfortOn();
+      return slowFraming.on && !!c && !isAircraft(c);
     }
     // The share of the player's zoom a road vehicle or boat frames at, at speed (CAMERA CONTEXT).
     function vehicleContextZoom(c) {
@@ -189,9 +190,9 @@
     function speedZoomTarget(context = 1) {
       const c = player.car;
       if (!c || isAircraft(c)) return 1;
-      if (motionComfortOn()) return MOTION_COMFORT_FRAMING;
-      // Below SLOW_FRAMING_OUT the walking framing, with no pull-back (SLOW FRAMING).
+      // Below SLOW_FRAMING_OUT the walking framing, with no pull-back (SLOW FRAMING), Motion comfort too.
       if (slowFramingOn()) return 1;
+      if (motionComfortOn()) return MOTION_COMFORT_FRAMING;
       const over = Math.max(0, drivingCameraSpeed() / KMH - DRIVE_PULL_FROM),
         g = over < DRIVE_PULL_SOFT ? (over * over) / (2 * DRIVE_PULL_SOFT) : over - DRIVE_PULL_SOFT / 2;
       return Math.max(DRIVE_PULL_LIMIT, 1 / (1 + DRIVE_PULL * g));

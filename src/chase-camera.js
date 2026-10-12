@@ -81,6 +81,8 @@
       // The over-the-shoulder aim blend (0..1), the speed share (0..1) and the slope pitch.
       aimBlend: 0,
       speedBlend: 0,
+      // SLOW FRAMING's share in the chase view (1: the walking boom, 0: the vehicle's own).
+      slowShare: 1,
       slope: 0,
       shoulder: CHASE_FOOT.shoulder * UNITS_PER_METRE,
       // The player's wheel / zoom keys: a factor on the boom.
@@ -443,6 +445,18 @@
         comfort = motionComfortOn(),
         shape = chaseShapeFor(c),
         M = UNITS_PER_METRE;
+      /* SLOW FRAMING (world-view.js) in the chase view: in a road vehicle or a boat under 31 km/h the boom
+         keeps the walking length (CHASE_FOOT, or just clear of a long vehicle's back) and lens, so getting in
+         never pulls the camera back; it eases out to the vehicle's own boom at speed, back in after a second
+         under 30 (the same switch and rates as the street view's framing). */
+      const slowWant = !c || train || isAircraft(c) || slowFramingOn() ? 1 : 0;
+      cam.slowShare += (slowWant - cam.slowShare) * (1 - Math.exp(-deltaSeconds * (slowWant < cam.slowShare ? 1.5 : 0.9)));
+      if (c && !train && !isAircraft(c) && cam.slowShare > 0) {
+        const near = Math.max(CHASE_FOOT.dist, vehicleSpec(c).l / UNITS_PER_METRE / 2 + 1.2),
+          k = cam.slowShare;
+        shape.dist += (Math.min(near, shape.dist) - shape.dist) * k;
+        shape.fov += (CHASE_FOOT.fov - shape.fov) * k;
+      }
       cam.idle += deltaSeconds;
       // Pivot: the shoulders on foot, above the middle of a vehicle.
       const body = c || player,

@@ -129,6 +129,7 @@
     // @include src/sealife.js
     // @include src/sealife-audio.js
     // @include src/navigation.js
+    // @include src/map-objective.js
     // @include src/parachute.js
     // @include src/deck-landing.js
     // @include src/falls.js

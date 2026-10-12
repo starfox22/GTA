@@ -50,13 +50,23 @@ cleanup, the demo gate) are in missions-and-demo.md; this page is what each job 
   frame (`repairVehicle`), so nothing is ever drawn bent. The old start drove him through the fort's gate arm
   (military-base.js), which sprang his door. The report's `car.condition` (hp share, dents, sprung parts, stains, door,
   trunk) is what mission4-tail.mjs checks.
+- Parking (`FORT_JOB.park`, y 5214): flush with Marina Rd's north kerb (kerb gap ~1 unit, inner side 25 off the
+  centre line: clear of the lane's line), never in his lane. `fortRoute` trims lane points within the run-in and
+  ends with the pull-in (`parkRun` back along his lane, `parkLane` 10 over to the kerb, then the spot); his car
+  carries `countyRouteStop` (county-build.js countyRouteControl: holds the last point and eases to rest at a quarter
+  g), and he parks once at rest within 8 units (or, held short by something in his spot, at rest within 70 after 3 s).
+  His house spot is the avenue's east kerb (gap ~1). Console `kerbFit()` measures it; tools/tests/mission4-kessler.mjs.
+  On his way a knock from traffic only makes him honk (crowd-traffic.js `crowdCrash`: a `missionDriver` never gets out
+  to argue, which read as his car taken), and on the city grid he slows only for people on the road, not the
+  pavement's crowd (countyRouteControl).
 - The tail: `tailHeat` rises on his bumper (within `tooClose`) or close behind him while he moves; held up behind him
   in traffic or at a drawbridge does not count. At 1 he made the tail (fail). Far behind him is never announced (no
   "lost him": the map shows his car all the time); the objective stays on the car. The meter shares `#stealthStatus`
   (fortJobUI after roofMissionUI).
 - Waiting at the club (`fortClubWait`): the player within `clubNear` (1100) of his kerb, his car over `clubFar` (1700)
   away, for `clubWaitSeconds` (10):
-  the car is put on a node 7-20 from the end of his route that `spotUnseen` and `canSpawnCar` allow (`m.jumped`).
+  the car is put on the nearest route point at least `clubJumpMin` (1150) from his kerb, or a few before it, that
+  `spotUnseen` and `canSpawnCar` allow (`m.jumped`): never round the corner from the club.
   City traffic at the Marina Rd junction can still hold him a while (`fortJob().blocker` says what is in his lane).
 - Shot at at the wheel (`fortAlerted`): a hit on his car within 0.6 s of him driving, or a round fired within 320
   units: KESSLER ALERTED THE MILITARY (announce), `crime(32, 'seen')` + `setWantedLevel(5)`, a red brief; he bails
@@ -69,7 +79,10 @@ cleanup, the demo gate) are in missions-and-demo.md; this page is what each job 
 - Quiet way: once he is inside, pick the trunk (vehicle-trunk.js; only someone within ~15 m looking at the player,
   `lockpickWatcher`, phones it in; an officer in sight is a crime seen). Kessler seeing the pick while he is still
   outside shouts and reports a theft. Messy way: his car taken (keys in it) or Kessler down (take his keys from the
-  body); `fortKeysOpenTrunk` runs before `lockpickInteract`, so keys win over a pick in hand.
+  body); `fortKeysOpenTrunk` runs before `lockpickInteract`, so keys win over a pick in hand. Once the bag is out the
+  action key at the open trunk shuts it (vehicle-trunk.js `trunkCloseTarget`, CLOSE THE TRUNK; a mission car's trunk
+  is never offered while its loot is in it); any car moving off past walking pace slams its lid (`slamMovingTrunks`).
+  Slammed during TAKE (the bag still in), the stage goes back to opening it.
 - The change: in a car standing still it happens by itself (3 s); on foot, a held interact where no pedestrian
   within 260 units has a clear line and not inside the base. Then `wearUniform(true)` and `fortCoverBegin()`.
 - Gate (fort-cover.js): driven up in uniform the cover still owns the gate (`fortCoverOwnsGate` true short of the

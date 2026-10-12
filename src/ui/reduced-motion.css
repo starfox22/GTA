@@ -27,6 +27,7 @@
   .bindings-clash,
   #flightHud *,
   #worldEdgeCue,
+  .map-highlight,
   #worldEdgeCue *,
   #missionBrief *,
   #pager.brief-land {

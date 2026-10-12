@@ -2,6 +2,48 @@
     // Vehicles and driving: spawn/board/place/steer, telemetry (ride, flight, drivingState,
     // speedBox), repair and respray, off-road trails; damage, handling and dealership consoles.
     addConsoleMethods('vehicles', {
+      // Where a vehicle (by id; the current mission's marked car when none) stands on the city grid street under it:
+      // the street's width, its offset from the centre line, the gap from its body to the kerb, how far its inner
+      // side is from the centre line (the lanes' lines are 25 off it) and whether it stands in a junction. A parked
+      // car at the kerb has a gap of a few units and its inner side at the lane's line or beyond. null off the grid.
+      kerbFit(id) {
+        const c = id === undefined ? fortJob()?.kcar || mission?.car : vehicles.find((v) => v.id === id);
+        if (!c) return null;
+        const spec = vehicleSpec(c);
+        let best = null;
+        for (const r of cityStreets()) {
+          const [a, b] = r.points,
+            len = Math.hypot(b[0] - a[0], b[1] - a[1]),
+            ux = (b[0] - a[0]) / len,
+            uy = (b[1] - a[1]) / len,
+            along = (c.x - a[0]) * ux + (c.y - a[1]) * uy,
+            off = -(c.x - a[0]) * uy + (c.y - a[1]) * ux;
+          if (along < 0 || along > len || Math.abs(off) > r.width / 2) continue;
+          if (!best || Math.abs(off) < Math.abs(best.off)) best = { r, off, cross: Math.abs(Math.cos(c.a) * uy - Math.sin(c.a) * ux) };
+        }
+        if (!best) return null;
+        const half = spec.w / 2,
+          offset = Math.abs(best.off),
+          // Another street crossing this one under the car's footprint: a junction.
+          junction = cityStreets().some((r) => {
+            if (r === best.r) return false;
+            const [a, b] = r.points;
+            return segmentDistance(c.x, c.y, a, b) < r.width / 2 + spec.l / 2;
+          });
+        return {
+          id: c.id,
+          x: Math.round(c.x),
+          y: Math.round(c.y),
+          width: best.r.width,
+          offset: Math.round(offset * 10) / 10,
+          kerbGap: Math.round((best.r.width / 2 - offset - half) * 10) / 10,
+          innerSide: Math.round((offset - half) * 10) / 10,
+          // 0 along the street, 1 across it.
+          across: Math.round(best.cross * 100) / 100,
+          junction,
+          speed: Math.round(Math.abs(c.speed || 0) / KMH),
+        };
+      },
       // Mend the player's vehicle as a repair bay would (for repeatable physics tests).
       repair() {
         if (!player.car) return null;
