@@ -184,7 +184,9 @@ packs with plain `<script src>` so the zip still plays from file://.
   by `objectiveArrowShown()` in markers.js) is the only pointer; the ring under the player is the `playerRing`
   setting (off by default, `playerRingOn()`). Console `markers()` lists what marks the objective and the player.
 - World reset (missions-and-demo-world-reset.md): `resetWorld(reason)` (world-reset.js) is the only way the world goes
-  back to normal (WASTED, a mission pick, RESTART CURRENT JOB, a taken job call, new game); entities come only from
+  back to normal, and only on WASTED, BUSTED and a new game; taking a job (the payphone call, a mission pick, RESTART
+  CURRENT JOB) never resets it: `resetMissionState` removes only the jobs' own vehicles and actors (the payphone call,
+  `startMission(true)`, also keeps the police pursuit); entities come only from
   `populateWorld()` (boot seed replayed); a system that keeps world damage or holds vehicles or people outside the
   populate lists adds a reset helper next to its state, called from `resetWorld`; renderer-held damage clears when
   `worldResetSerial` changes; progress (cash, weapons, story, owned cars, settings) is never reset.
