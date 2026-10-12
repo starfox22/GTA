@@ -216,7 +216,9 @@ packs with plain `<script src>` so the zip still plays from file://.
   military vehicle under cover or inside the fence is five stars (`fortCoverBoarded`); `militaryAudit()` stays ok.
   The CIRRUS meeting (skyline-meeting.js) is driven only through `skyMeetingBegin/End/Report/Target` and
   `skyMeeting.stage`; a seated player is `player.sceneSeat` (`teleportPlayer` clears it); CIRRUS staff are lent only
-  through `keyPerson.errand`.
+  through `keyPerson.errand`. A conversation with the player marks its lines with `speechMarkTalk(p)` (crowd-speech.js TALK LINES);
+  a player line outside a job reads in the subtitle via `sceneLine`; leaving a scene seat goes through `skyMeetingRise`;
+  E advances the meeting's lines.
 - Mission briefs (mission-brief.js): `missionBrief(text, opts)` is the only writer of the big centred step sentence;
   it waits for a centred headline (`#announcement`) and folds into the pager strip (O folds it early). A long line of
   dialogue goes in the subtitle (`missionLine`), never a speech bubble that size (`fortGateLine`); Fort Sentinel's
