@@ -120,6 +120,8 @@
         bad,
         dom: { total: domTotal, top: domTop },
         heapMB: heap,
+        // The renderer's live GPU objects (programs linked, textures, geometries); null on a no-render page.
+        gpu: city3D?.traceCounters ? city3D.traceCounters() : null,
       };
     }
     // A fingerprint of the world's state (every number that decides what happens next), so two builds or two runs
