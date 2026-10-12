@@ -89,7 +89,10 @@ MONARCH MOTORS, Ridgeline, Fort Sentinel and the stadium: places-monarch-and-cou
 ## Garages, casino, bike share
 
 - Respray garages (garages*.js, garage3d-*.js): price list `garageOffer`; a respray clears
-  the stars only if no unit saw you drive in. One on every island (`GARAGE_ISLANDS`, test
+  the stars only if no unit watched you drive in: `garageWatchStep` needs sight held `GARAGE_SEEN_CONFIRM` (0.5 s)
+  during roll-in and door-down (a glimpse does not count; a skip counts whoever watches as the door slams). The
+  prompt adds COPS WATCHING while a unit has eyes on the player; seen, THE COPS SAW YOU GO IN is told at once.
+  tools/tests/respray-lose-police.mjs (chase, seen and unseen jobs, 20 s with no re-detection). One on every island (`GARAGE_ISLANDS`, test
   garages-islands.mjs): a new landmass needs one. Doors face south onto an east-west street
   (`roadY`); `slab`/`forecourt` for shops off the city canvas, `style` in
   garage3d-styles.js; planting keeps off via `garageKeepOut`. Console `garage()`.

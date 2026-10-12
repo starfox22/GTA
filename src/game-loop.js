@@ -111,8 +111,13 @@
     }
     let firstFrameMarked = false,
       firstPlayFrameMarked = false;
+    // The next frame is booked whatever this one does (frame-guard.js FRAME GUARD).
     function frame(t) {
-      if (frameDue(t)) runFrame(t, true);
+      try {
+        if (frameDue(t)) runFrame(t, true);
+      } catch (error) {
+        frameFault(error, 'frame');
+      }
       requestAnimationFrame(frame);
     }
     // One frame's work at time t (ms): input, the simulation step, the draw. `live` is false for a frame
@@ -175,23 +180,36 @@
       // The city keeps living behind the title menu, and behind settings opened
       // from it. WASTED and BUSTED play out in slow motion.
       // A test holding the simulation (console `holdSimulation`) still draws.
-      if (simulationHeld) soundUpdate(0);
-      else if (
-        gameMode === 'play' ||
-        gameMode === 'menu' ||
-        (gameMode === 'settings' && settingsOrigin === 'menu')
-      )
-        update(deltaSeconds);
-      else if (gameMode === 'dead') update(deltaSeconds * 0.35);
-      else {
-        soundUpdate(deltaSeconds);
-        updateAmbience(deltaSeconds);
+      // A fault in the step costs the rest of this step only, and the frame still draws (frame-guard.js).
+      try {
+        if (frameFaultState.drill) frameFaultDrillAt('update');
+        if (simulationHeld) soundUpdate(0);
+        else if (
+          gameMode === 'play' ||
+          gameMode === 'menu' ||
+          (gameMode === 'settings' && settingsOrigin === 'menu')
+        )
+          update(deltaSeconds);
+        else if (gameMode === 'dead') update(deltaSeconds * 0.35);
+        else {
+          soundUpdate(deltaSeconds);
+          updateAmbience(deltaSeconds);
+        }
+      } catch (error) {
+        frameFault(error, 'update');
       }
       syncPanelCover();
       // The light clock (sun-path.js) on the frame clock, also behind menus: a time skip is drawn over a few seconds.
       stepSunClock(deltaSeconds);
       const drawStart = performance.now();
-      if (!NO_RENDER && !frameTrace.skipDraw) drawWorld(); // ?dev&norender (render3d.js): logic tests draw nothing
+      // ?dev&norender (render3d.js): logic tests draw nothing. A draw fault leaves the simulation running.
+      if (!NO_RENDER && !frameTrace.skipDraw)
+        try {
+          if (frameFaultState.drill) frameFaultDrillAt('draw');
+          drawWorld();
+        } catch (error) {
+          frameFault(error, 'draw');
+        }
       updateTankReticle();
       updateDriveByCross();
       // The chase view's reticle (chase-hud.js).

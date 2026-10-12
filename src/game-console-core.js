@@ -180,6 +180,19 @@
         simulationHeld = !!on;
         return simulationHeld;
       },
+      // Faults the frame guard caught (frame-guard.js): where, the message, how often, first and last game time.
+      frameFaults: () => frameFaultReport(),
+      // The 3D canvas's WebGL context (gpu-context.js): watched, lost now, losses, restores, a reload pending.
+      // With 'lose' or 'restore' (rendered page only) it forces that first.
+      gpuContext(kind) {
+        if ((kind === 'lose' || kind === 'restore') && city3D) city3D.gpuContextDrill(kind);
+        return gpuContextReport();
+      },
+      // Throw once in the next live frame's 'update' or 'draw' part, to prove the loop survives it (anything else disarms).
+      frameFaultDrill(where = 'update') {
+        frameFaultState.drill = where === 'draw' || where === 'update' ? where : null;
+        return frameFaultState.drill;
+      },
     });
     // GOD PANEL: godPanel(), godTeleport(x, y), godRefill(), godLosePolice(), godFreeze(on), mapScreenPoint(x, y) (god-panel.js).
     addConsoleMethods('godPanel', godPanelConsole());

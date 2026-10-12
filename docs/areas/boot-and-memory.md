@@ -73,6 +73,13 @@ the renderer: every runtime texture is cached by key (liveries, trim atlas, glyp
 and decal layers are ring buffers. No disposal bug found. Left: a creep of ~0.1-0.2 MB of JS heap per stop in
 quiet play that this soak could not attribute (a heap-snapshot diff on a quiet machine would).
 
+Mission 3's return leg (2026-10-12; HIGH, software GL, `soakReport().gpu`): the package in a 4x4 from the summit to
+Vinny's warehouse, 24 hops along the GPS route with real frames at each (the chase view from the county road on),
+then back to the trailhead and down again. Programs 120 -> 153 -> 155, textures 80 -> 151 -> 161, geometries 417 ->
+958 -> 1018 (first sight of the city, then flat on the repeat passes), heap 520 -> 532 -> 538 MB with no climb on
+the repeats; no console errors. No leak on that leg: what freezes a session there is a lost GPU context or a thrown
+error, now survived (frame-guard.js, gpu-context.js: core-and-contracts.md).
+
 ## Tier changes, cells and AUTO
 
 - **Staged tier change** (lighting3d-look.js LIT STATE, render3d-resources.js `prewarmShaders(stage)`). The sun's and

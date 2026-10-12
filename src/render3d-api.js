@@ -51,6 +51,12 @@
           geometries: renderer.info.memory.geometries,
           models: modelsBuiltTotal,
         }),
+        // Lose or restore the WebGL context on purpose (WEBGL_lose_context), for the GPU CONTEXT test (gpu-context.js).
+        gpuContextDrill(kind) {
+          if (kind === 'lose') renderer.forceContextLoss();
+          else if (kind === 'restore') renderer.forceContextRestore();
+          return renderer.getContext().isContextLost();
+        },
         info() {
           let objects = 0;
           const byType = {};
