@@ -2,7 +2,7 @@
 // frames exactly like walking (boarding at rest keeps the walking zoom); from 31 km/h it eases out to the vehicle's
 // framing (CAMERA CONTEXT × Vehicle camera distance × the speed pull-back), and comes back in only after a second held
 // under 30 km/h. The walking distance is a factor on the on-foot framing (100 % = today's view exactly) and so on the
-// slow vehicle's; a carjack never zooms; Motion comfort keeps its one fixed vehicle zoom.
+// slow vehicle's; a carjack never zooms; Motion comfort and the chase view's boom keep the walking framing at rest too.
 export const fresh = true;
 const KMH = 1 / 3.6;
 export default async function (t) {
@@ -104,16 +104,41 @@ export default async function (t) {
     t.near(seated.context, 1, 1, 'context after a carjack at rest');
     await t.call('interact');
     await t.wait(0.5);
-    // Motion comfort: no slow framing, the vehicle holds its one fixed zoom from boarding.
+    // Motion comfort: the walking zoom at rest too; at speed the one fixed vehicle zoom.
     await t.call('settings', { motionComfort: true });
     await t.call('teleport', 420, 4400);
     await t.call('drive', 'sedan', 0, Math.PI / 2);
     await t.wait(0.5);
     const steady = await t.call('cameraView');
-    t.assert(!steady.slowFraming, 'slow framing with motion comfort on');
-    t.near(steady.context, 0.56, 0.56, 'motion comfort context at rest');
-    t.near(steady.speed, 0.86, 0.86, 'motion comfort framing at rest');
-    t.note(`foot ${foot.aim}; parked ${parked.aim}; 20 km/h ${slow.aim}; 40 km/h aim ${fast.aim} framed ${fast.framed} (0.1 s after the switch ${just.framed}); walk 125 % ${footFar.aim}, 60 % ${footNear.aim}`);
+    t.assert(steady.slowFraming, 'no slow framing with motion comfort on');
+    t.near(steady.context, 1, 1, 'motion comfort context at rest');
+    t.near(steady.speed, 1, 1, 'motion comfort framing at rest');
+    await t.call('launch', 60 * KMH);
+    await t.wait(0.2);
+    const steadyFast = await t.call('cameraView');
+    t.near(steadyFast.speed, 0.86, 0.86, 'motion comfort framing at speed');
+    await t.call('interact');
+    await t.wait(0.5);
+    await t.call('settings', { motionComfort: false });
+    // The chase view: getting in keeps the walking boom; it eases out only from 31 km/h.
+    await t.call('teleport', 420, 4400);
+    await t.call('viewMode', 'chase');
+    await t.wait(2);
+    const footBoom = (await t.call('chaseCamera')).boomMetres;
+    await t.call('drive', 'sedan', 0, Math.PI / 2);
+    let boomMax = 0;
+    for (let s = 0; s < 4 - 1e-6; s += 0.5) {
+      await t.wait(0.5);
+      boomMax = Math.max(boomMax, (await t.call('chaseCamera')).wantMetres);
+    }
+    t.assert(boomMax < Math.max(footBoom, 4.6 / 2 + 1.2) + 0.3, `the chase boom pulled back at rest: ${footBoom} m on foot, up to ${boomMax} m in the car`);
+    await t.call('launch', 60 * KMH);
+    await t.wait(2);
+    const chaseFast = (await t.call('chaseCamera')).wantMetres;
+    t.assert(chaseFast > boomMax + 1.5, `the chase boom did not ease out at speed: ${chaseFast} m`);
+    await t.call('interact');
+    await t.call('viewMode', 'street');
+    t.note(`chase boom foot ${footBoom} m, car at rest ≤ ${boomMax} m, 60 km/h ${chaseFast} m; foot ${foot.aim}; parked ${parked.aim}; 20 km/h ${slow.aim}; 40 km/h aim ${fast.aim} framed ${fast.framed} (0.1 s after the switch ${just.framed}); walk 125 % ${footFar.aim}, 60 % ${footNear.aim}`);
   } finally {
     await t.call('settings', { motionComfort: false, drivingReset: true });
     await t.call('god', false);

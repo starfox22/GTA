@@ -315,8 +315,8 @@ packs with plain `<script src>` so the zip still plays from file://.
 - The street camera's follow is a critically damped spring (`cameraSpring`, camera-drive.js: smoothed look-ahead
   that turns at most ~52 deg/s, smoothed camera height); vehicle framing is `CAMERA_CONTEXT` × `speedZoomTarget`
   (world-view.js; `vehicleCameraFactor()` is Settings · Driving · Vehicle camera distance). Below 30 km/h a road vehicle or boat frames like
-  walking (`slowFramingOn()`, world-view.js SLOW FRAMING: out at 31 km/h, back after 1 s under 30; never with Motion
-  comfort; a carjack never zooms); with no lead the follow's axis turns with the travel (look-ahead 0 % = centred); the on-foot share is `walkCameraFactor()` (Settings · Driving · Walking camera distance); the driving lead's
+  walking (`slowFramingOn()`, world-view.js SLOW FRAMING: out at 31 km/h, back after 1 s under 30; Motion comfort
+  too; the chase view's boom follows it, chase-camera.js `slowShare`; a carjack never zooms); with no lead the follow's axis turns with the travel (look-ahead 0 % = centred); the on-foot share is `walkCameraFactor()` (Settings · Driving · Walking camera distance); the driving lead's
   frame share stops where the vehicle's far end reaches `leadShareTop` 0.7 of the half frame (look-ahead 0-300 %,
   default 200 %). Renderers read only
   `streetCameraAltitude()` and `cameraShakeLevel()`. `motionComfortOn()` (settings.js MOTION COMFORT) is the one

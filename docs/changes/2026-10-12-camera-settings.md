@@ -16,3 +16,4 @@
   `applySavedDrivingSettings` (record `version` 2), camera-drive.js `leadShareTop`; the on-foot and helicopter leads
   read the look-ahead only up to 150 %. Console `settings({ walkDistance })`; `cameraView()` adds `slowFraming`,
   `vehicleContext`, `walkDistance`. Tests: camera-slow-framing, camera-lead-setting, driving-settings-migrate.
+- The chase view keeps the walking camera distance in a vehicle under 31 km/h too (getting in no longer pulls the camera back from 3.5 to 6.8 m); it eases out at speed and back after a second under 30. Motion comfort keeps the walking zoom at rest as well.
