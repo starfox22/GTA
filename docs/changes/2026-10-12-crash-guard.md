@@ -6,3 +6,4 @@
 - Internals: frame-guard.js (`frameFault`, console `frameFaults()`, `frameFaultDrill(where)`), gpu-context.js
   (`watchGpuContext`, console `gpuContext('lose'|'restore')`); `soakReport().gpu` lists programs, textures and
   geometries; tools/tests/frame-guard.mjs.
+- A slide down the summit scree no longer carries on after you board a vehicle and get out again.
