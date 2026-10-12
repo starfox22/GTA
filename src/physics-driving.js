@@ -11,7 +11,7 @@
       broadphasePairCount = 0;
     // One vehicle's controls and integration for a physics step (player input,
     // pursuit, traffic, boats and aircraft).
-    // Reverse gear tops out at about 25 km/h; steering reaches full lock by 30 km/h.
+    // Reverse gear tops out at about 25 km/h (REVERSE GEAR below); steering reaches full lock by 30 km/h.
     // Set only while the console's turnTest runs on the open strip by the runway,
     // so the measurement is of the tyres on tarmac, not of the grass's drag.
     let handlingTestPaved = false;
@@ -28,7 +28,22 @@
       // On the handbrake (the rear locked, sliding): how fast the yaw takes up the
       // wheel (1/s) and how far past the tyres' cornering limit the front can swing it.
       HANDBRAKE_YAW_RESPONSE = 5,
-      HANDBRAKE_CORNER = 2.1;
+      HANDBRAKE_CORNER = 2.1,
+      /* HANDBRAKE SLIDE (a car's locked rear): the rear tyres slide, and a sliding tyre's
+         friction acts against the way it slides, in every direction alike: HANDBRAKE_DECEL
+         (g) against the body's travel, so held in a straight line the car slows at half a g,
+         and sideways the rear still holds. The rolling fronts keep their sideways grip
+         (tyreSideShare past the peak, front load share of cornerG). The whole slide is
+         Coulomb friction, so it stops where it stops (no creeping glide at the end). */
+      HANDBRAKE_DECEL = 0.5,
+      // REVERSE GEAR: the brake key brakes to a standstill (below REVERSE_STOP) and selects
+      // reverse after REVERSE_ENGAGE seconds stopped; backing up pulls REVERSE_PULL of the
+      // tyres' traction (gentler than first gear), easing off toward REVERSE_TOP. The
+      // throttle while rolling backwards brakes the car first, at REVERSE_BRAKE of its brakes.
+      REVERSE_STOP = 1 * KMH,
+      REVERSE_ENGAGE = 0.25,
+      REVERSE_PULL = 0.5,
+      REVERSE_BRAKE = 0.8;
     /* The yaw rate (radians a second) the tyres' sideways grip allows at `along`:
        lateral acceleration is speed times yaw rate, capped at cornerG. */
     function corneringLimit(spec, along) {
@@ -186,7 +201,10 @@
           unattended = 0,
           // Brake lights (render3d.js): the player's brake pedal, or a driver
           // slowing hard or holding the car at a stop.
-          braking = false;
+          braking = false,
+          // A handbrake slide (HANDBRAKE SLIDE): the sideways friction the tyres give (u/s²),
+          // in place of the rolling tyres' stiffness; 0 when the tyres roll.
+          handbrakeSide = 0;
         c.counterSteer = false;
         c.handbrakeTurn = false;
         if (c.hp > 0 && c === pc && active) {
@@ -219,26 +237,41 @@
           if (brake) tyres.handbrakeAt = physicsClock;
           // The brake pedal ramps in (a tap is gentle, a hold is full), and each
           // axle gives what its slip allows (ABS keeps it near the peak).
-          const pedal = modelled ? brakePedal(tyres, !!down && !up && along > 10, stepSeconds) : down && along > 10 ? 1 : 0;
+          /* REVERSE GEAR: rolling forward, the brake key is the brakes all the way to a
+             standstill; stopped with it held, reverse goes in after REVERSE_ENGAGE (the
+             brakes hold the car meanwhile) and stays in while the car backs up. */
+          const rollingOn = along > REVERSE_STOP;
+          tyres.reverseWait = down && !up && !rollingOn ? tyres.reverseWait + stepSeconds : 0;
+          const reversing = !!down && !up && !rollingOn && (along < -REVERSE_STOP || tyres.reverseWait >= REVERSE_ENGAGE),
+            stopHold = !!down && !up && !rollingOn && !reversing;
+          const pedal = modelled ? brakePedal(tyres, !!down && !up && rollingOn, stepSeconds) : down && rollingOn ? 1 : 0;
           let brakeDecel = 0;
-          if (modelled && pedal > 0 && along > 10) {
+          if (modelled && pedal > 0 && rollingOn) {
             const mu = ((vehicleDefinition.brakeG || 1) / ABS_EFFICIENCY) * surface * handling.brake;
             brakeDecel = brakeStep(c, tyres, character, assists.abs, pedal, mu, wet, lateralUse, along, stepSeconds);
           } else if (modelled) brakesOff(tyres);
-          braking = pedal > 0.05 && along > 10;
+          braking = (pedal > 0.05 && rollingOn) || stopHold;
           // The engine's pull at this speed (game.js ROAD PERFORMANCE); a bicycle's
           // push comes from the rider's legs instead.
           const engineAsk = up && !pedalled ? (engineAcceleration(vehicleDefinition, along) * handling.power) / (1 + (c.cargoCount || 0) * 0.1) : 0,
             tractionLimit = vehicleDefinition.acc * surface;
+          const fullBrake = (vehicleDefinition.brake || GRAVITY) * surface * handling.brake,
+            reverseTop = pedalled ? CYCLE_REVERSE_MAX : REVERSE_TOP;
           acceleration =
             up && !pedalled
-              ? Math.min(engineAsk, tractionLimit)
+              ? along < -REVERSE_STOP
+                ? // Rolling backwards: the throttle is the brakes until the car stops.
+                  Math.min(-along / stepSeconds, REVERSE_BRAKE * fullBrake)
+                : Math.min(engineAsk, tractionLimit)
               : modelled && brakeDecel > 0
                 ? -brakeDecel
                 : down
-                  ? along > 10
-                    ? -(vehicleDefinition.brake || GRAVITY) * surface * handling.brake
-                    : -vehicleDefinition.acc * 0.5 * surface
+                  ? rollingOn
+                    ? -fullBrake
+                    : stopHold
+                      ? -Math.sign(along) * Math.min(Math.abs(along) / stepSeconds, fullBrake)
+                      : // Reverse: easing off over the last quarter toward its top speed.
+                        -vehicleDefinition.acc * REVERSE_PULL * surface * (pedalled ? 1 : handling.power) * clamp((reverseTop + along) / (0.25 * reverseTop), 0, 1)
                   : pedalled
                     ? pedalDrive(along, topSpeed)
                     : 0;
@@ -246,13 +279,25 @@
             (along > vehicleDefinition.max * (0.65 + (0.35 * c.hp) / c.maxhp) * handling.top &&
               up &&
               !pedalled) ||
-            (along < -(pedalled ? CYCLE_REVERSE_MAX : REVERSE_TOP) && down)
+            (along < -reverseTop && down)
           )
             acceleration = 0;
           // Rolling with nothing pressed (or pedalling): air, tyres and engine braking.
           if (!up && !down) acceleration -= Math.sign(along) * Math.min(Math.abs(along) / stepSeconds, coastDeceleration(vehicleDefinition, along));
-          // The handbrake locks the rear wheels: a sliding stop at about half a g.
-          if (brake) acceleration -= Math.sign(along) * Math.min(Math.abs(along) / stepSeconds, 0.45 * GRAVITY * surface);
+          // HANDBRAKE SLIDE: a car's rear wheels locked. Their friction acts against the
+          // body's travel (along and across alike); the rolling fronts hold sideways with
+          // what their slip angle leaves them (the weight thrown forward onto them).
+          const handbrakeSlide = !!brake && modelled && !character.bike;
+          if (handbrakeSlide) {
+            const travel = hypot2(along, lateral);
+            if (travel > 0.01) {
+              const rear = HANDBRAKE_DECEL * GRAVITY * surface,
+                slipAngle = Math.atan2(Math.abs(lateral), Math.abs(along) + 0.01),
+                frontLoad = Math.min(0.9, character.front + character.hL * HANDBRAKE_DECEL);
+              acceleration -= Math.sign(along) * Math.min(Math.abs(along) / stepSeconds, (rear * Math.abs(along)) / travel);
+              handbrakeSide = (rear * Math.abs(lateral)) / travel + (vehicleDefinition.cornerG || 1.2) * GRAVITY * surface * handling.grip * frontLoad * tyreSideShare(slipAngle);
+            }
+          } else if (brake) acceleration -= Math.sign(along) * Math.min(Math.abs(along) / stepSeconds, 0.45 * GRAVITY * surface);
           // Off the tarmac (verges, lawns, dirt): more rolling resistance.
           if ((up || down) && !pedalled && !handlingTestPaved && !onRoad(c.x, c.y))
             acceleration -= Math.sign(along) * Math.min(Math.abs(along) / stepSeconds, (vehicleDefinition.dirt ? 0.02 : vehicleDefinition.offroad ? 0.05 : 0.14) * GRAVITY);
@@ -263,7 +308,7 @@
           grip = brake ? 1.9 : (vehicleDefinition.grip || 7) * handling.grip;
           // Resistance is in engineAcceleration / coastDeceleration; drag here only
           // scrubs a handbrake slide (and a bicycle's brake).
-          drag = pedalled ? (brake ? 0.6 : 0.03) : brake ? 0.25 : 0;
+          drag = pedalled ? (brake ? 0.6 : 0.03) : brake && !handbrakeSlide ? 0.25 : 0;
           /* FRICTION CIRCLE AND BALANCE
              A tyre has one budget of grip for driving, braking and cornering
              together. Cornering at the limit leaves nothing to accelerate or brake
@@ -390,7 +435,9 @@
             });
             if (acceleration > 0) acceleration *= 1 - stability.cut;
             if (stability.brake > 0 && along > 5 * KMH) acceleration -= Math.min(along / stepSeconds, stability.brake);
-            lateralScale *= stability.hold;
+            // Past the tyres' peak slip angle their sideways grip eases off toward the sliding share
+            // (driving.js tyreSideShare), on top of the rear's slide.
+            lateralScale *= stability.hold * tyreSideShare(Math.atan2(Math.abs(lateral), Math.abs(along) + 0.01));
             steer += tyres.yawSlide;
             if (assists.esc && stability.cut + stability.brake > 0) braking = braking || stability.brake > 0.1 * GRAVITY;
             // A pulse in the brake lamps while ABS works (render3d.js reads c.braking).
@@ -540,6 +587,7 @@
           if (Math.abs(along) > terrain.limit && acceleration * along > 0) acceleration = 0;
           grip *= ground.grip;
           lateralScale *= ground.lateral;
+          handbrakeSide *= ground.lateral;
         } else if (c.wheelSpin || c.surfaceMud) offroadRoll(c, stepSeconds);
         // On a raised drawbridge leaf: gravity down the slope, grip up to ~40 degrees.
         if (c.deckLeaf) acceleration = drawbridgeSlopeDrive(c, acceleration, stepSeconds);
@@ -579,8 +627,10 @@
             (((vehicleDefinition.cornerG || 1.2) * 1.25 * GRAVITY * Math.max(grip, 5)) / Math.max(specGrip, 5)) *
             lateralScale *
             stepSeconds,
+          // A handbrake slide is friction: all of the sideways speed up to what the tyres give this step.
+          sideLimit = handbrakeSide > 0 ? handbrakeSide * stepSeconds : lateralLimit,
           // clamp() written out (every moving vehicle, every step: see the traffic branch above).
-          traction = Math.max(-lateralLimit, Math.min(lateralLimit, lateral * (1 - Math.exp(-tyreRate * stepSeconds))));
+          traction = Math.max(-sideLimit, Math.min(sideLimit, handbrakeSide > 0 ? lateral : lateral * (1 - Math.exp(-tyreRate * stepSeconds))));
         c.vx += headingSine * traction;
         c.vy -= headingCosine * traction;
         c.vx *= Math.exp(-drag * stepSeconds);
