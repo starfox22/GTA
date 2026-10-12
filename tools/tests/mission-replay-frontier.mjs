@@ -1,7 +1,7 @@
 // A replay picked with job 1 done (campaign.js chooseMission) that is hung up on or failed gives the
 // payphone back to the story's frontier, job 2 (it used to offer the replayed job again);
 // RESTART CURRENT JOB still retries the failed replay, and a save made mid-replay reloads at the
-// frontier with nothing to restart. The demo gate is live (no ?dev).
+// frontier with the replay still restartable from its beginning. The demo gate is live (no ?dev).
 export const flags = 'test';
 export const fresh = true;
 async function failJob(t) {
@@ -76,12 +76,12 @@ export default async function (t) {
     m = await t.call('retryMission');
     t.assert(m.index === 0 && m.stage === 0, 'RESTART did not retry the replay: ' + JSON.stringify(m));
 
-    // A reload mid-replay (the save holds the replay's index): the frontier, nothing to restart,
-    // and the payphone offers job 2.
+    // A reload mid-replay (the save holds the replay's index): the frontier, RESTART CURRENT JOB
+    // offers the replay from its beginning (saved retryJobIndex, campaign.js), and the payphone offers job 2.
     await t.reload({ keep: true });
     await frontier(t, 'after a reload mid-replay');
     const after = await t.call('pauseMenu', true);
-    t.assert(after.restart.disabled && after.restart.note === 'NO JOB TO RESTART', 'restart after the reload: ' + JSON.stringify(after));
+    t.assert(!after.restart.disabled, 'restart after the reload: ' + JSON.stringify(after));
     await t.call('pauseMenu', false);
     await t.call('teleport', 748, 584);
     await t.call('interact');
