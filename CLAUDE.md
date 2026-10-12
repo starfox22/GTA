@@ -166,7 +166,8 @@ packs with plain `<script src>` so the zip still plays from file://.
   read it.
 - Every drivable island has a respray garage (`GARAGE_ISLANDS`, garages-shops.js; checked by
   tools/tests/garages-islands.mjs).
-- Every drivable island has at least two story payphones (`PAYPHONES` / `PAYPHONE_ISLANDS`, payphones.js; the original
+- Every island, North Point Key included (every LAND_REGIONS id maps to one in `PAYPHONE_REGION_ISLAND`), has at least
+  two story payphones (`PAYPHONES` / `PAYPHONE_ISLANDS`, payphones.js; the original
   `phone` is index 0): a waiting call is answered at any of them (`payphoneInReach()`), the pointer guides to
   `storyPayphone()` (nearest, with hysteresis); a new one passes `payphoneAudit()` (tools/tests/payphones-islands.mjs).
 - `playerImpact()` / `fallInjury()` / `riderInjury()` (falls-body.js) are the only fall-damage
