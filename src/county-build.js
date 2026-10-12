@@ -221,15 +221,21 @@
       if (c.keyRun) return keyRunControl(c);
       const route = c.countyRoute;
       let i = c.countyIndex || 0;
-      if (distanceBetween(c, route[i]) < 65) {
+      // A route that ends in a stop (`countyRouteStop`: a car parking at a kerb) holds its last point instead of wrapping.
+      const stopping = c.countyRouteStop && i === route.length - 1;
+      if (!stopping && distanceBetween(c, route[i]) < 65) {
         i = (i + 1) % route.length;
         c.countyIndex = i;
       }
       const target = route[i],
-        da = normalizeAngle(headingBetween(c, target) - c.a);
+        toGo = distanceBetween(c, target),
+        // Over the last few units the heading is left alone (a point alongside would swing the wheel).
+        da = stopping && toGo < 12 ? 0 : normalizeAngle(headingBetween(c, target) - c.a);
       // County roads: about 60 km/h through the towns, 90 in a panic.
       let desired = (c.panicUntil > gameTime ? 90 : 60) * KMH;
       desired *= clamp(1 - Math.abs(da) * 0.55, 0.18, 1);
+      // Easing to the stop: a gentle quarter-g to rest at the point.
+      if (stopping) desired = Math.min(desired, Math.sqrt(2 * 0.25 * GRAVITY * Math.max(0, toGo - 3)));
       const headingCosine = Math.cos(c.a),
         headingSine = Math.sin(c.a);
       for (const o of vehicles) {

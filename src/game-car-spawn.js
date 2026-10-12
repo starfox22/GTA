@@ -134,6 +134,7 @@
           isleBoat: undefined,
           isle: undefined,
           countyRoute: undefined,
+          countyRouteStop: undefined,
           streamed: undefined,
           trafficIdle: undefined,
           taxiHire: undefined,

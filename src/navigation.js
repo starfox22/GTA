@@ -279,9 +279,10 @@
         routeStatus = 'DIRECTION ONLY';
         return;
       }
-      const start = closestNavNode(player, nodes),
-        end = closestNavNode(userWaypoint, nodes);
-      userRoute = navShortestPath(nodes, start, end);
+      // Both ends on the road network the player can drive (map-objective.js ROUTE ENDS).
+      const ends = navRouteEnds(player, userWaypoint, nodes),
+        end = ends.end;
+      userRoute = navShortestPath(nodes, ends.start, end);
       routeOrigin = {
         x: player.x,
         y: player.y,
@@ -404,8 +405,10 @@
      * objective route is the same A* over the road graph as the waypoint's; it is
      * worked out again every couple of seconds once the player or the target has
      * moved, and trimmed as its points are passed. In an aircraft, on a boat or on
-     * a ride there is no road to follow and the straight line stays. The big map
-     * is unaffected.
+     * a ride there is no road to follow and the straight line stays. The city map
+     * draws the objective's route too (the waypoint's is its own cyan line); where
+     * the roads stop short of the objective a dashed leg finishes it
+     * (map-objective.js, which also keeps both ends on one road network).
      */
     const gpsRoute = { points: [], target: null, origin: null, timer: 0 };
     function gpsRoadless() {
@@ -437,8 +440,12 @@
         const nodes = navigationGraph();
         gpsRoute.points = [];
         if (nodes.length && distanceBetween(player, target) > 90) {
-          const path = navShortestPath(nodes, closestNavNode(player, nodes), closestNavNode(target, nodes));
-          if (path.length) {
+          const ends = navRouteEnds(player, target, nodes),
+            path = navShortestPath(nodes, ends.start, ends.end),
+            // Roads that only lead away (both ends further off than the target itself: on foot inside the fort) are
+            // no help: the maps keep the straight line.
+            off = distanceBetween(player, nodes[ends.start]) + distanceBetween(nodes[ends.end], target);
+          if (path.length && off < distanceBetween(player, target)) {
             if (navSegmentClear(path.at(-1), target)) path.push({ x: target.x, y: target.y });
             gpsRoute.points = path;
           }
@@ -500,11 +507,16 @@
       }
       drawingContext.restore();
     }
-    /* Minimap only (drawMap): the objective's road route and the waypoint's. */
-    function drawGpsRoutes(drawingContext, scale) {
+    /* drawMap: the objective's road route on both maps (with its last leg off the roads, map-objective.js), the
+       waypoint's on the minimap (the city map draws its own cyan line, drawUserRoute). */
+    function drawGpsRoutes(drawingContext, scale, big = false) {
       if (!hudState.gps) return;
-      if (gpsRoute.points.length > 1) drawGpsLine(drawingContext, scale, gpsRoute.points, '#f5c64a');
-      if (userWaypoint && userRoute.length && !gpsRoadless()) drawGpsLine(drawingContext, scale, userRoute, '#5ef0f2');
+      if (gpsRoute.points.length > 1) {
+        drawGpsLine(drawingContext, scale, gpsRoute.points, '#f5c64a');
+        const target = objective();
+        if (target) drawGpsLastLeg(drawingContext, scale, target);
+      }
+      if (!big && userWaypoint && userRoute.length && !gpsRoadless()) drawGpsLine(drawingContext, scale, userRoute, '#5ef0f2');
     }
     function mapLocalPoint(e) {
       const r = getElement('bigmap').getBoundingClientRect(),
