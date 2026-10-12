@@ -350,7 +350,8 @@
     };
     /* ---- Payphones ---- */
     function monarchPayphoneNear() {
-      if (player.car) return null;
+      // A waiting story call is answered here like at any payphone (payphones.js PAYPHONES).
+      if (player.car || (!mission && storyCallWaiting())) return null;
       return MONARCH_PAYPHONES.find((p) => withinRange('isle-phone-' + p.name, distanceBetween(player, p), 40, 52)) || null;
     }
     function monarchInteract() {
@@ -361,7 +362,7 @@
         'Harbour master. The Sovereign Lady sails at dawn.',
         'Crown Private Bank. Your balance is… confidential.',
         'The Regent Hotel. The penthouse is available from Friday.',
-        'A voice: “Not on this line. Try the yellow phone in the city.”',
+        'A voice: “Not on this line. Wait for my call.”',
       ];
       tell(randomChoice(lines), 4);
       tone(620, 0.08, 0.12, 'sine');

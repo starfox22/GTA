@@ -10,6 +10,7 @@
     const MAP_LAYERS = [
       { id: 'services', label: 'SHOPS & SERVICES', key: '+ GUN ZZ EAT' },
       { id: 'garages', label: 'RESPRAY', key: 'R' },
+      { id: 'payphones', label: 'PAYPHONES', key: '☎' },
       { id: 'transit', label: 'CITY RAIL', key: 'M' },
       { id: 'bikes', label: 'BIKE SHARE', key: '◆' },
       { id: 'sports', label: 'SPORTS', key: '●' },
@@ -84,6 +85,7 @@
     /* [heading, finder] pairs; a finder that throws (a system not built) is skipped. */
     const MAP_DESTINATIONS = [
       ['HOSPITAL', () => nearestOf(placeDoors('hospital'))],
+      ['PAYPHONE', () => nearestOf(PAYPHONES.map((p) => ({ x: p.x, y: p.y, name: 'PAYPHONE · ' + p.name })))],
       ['RESPRAY & REPAIRS', () => nearestOf(GARAGES.map((g) => ({ x: g.x, y: g.y, name: g.name })))],
       ['ARMORY', () => nearestOf(placeDoors('guns'))],
       ['CLOTHES · CHANGE YOUR LOOK', () => nearestOf(placeDoors('clothes'))],

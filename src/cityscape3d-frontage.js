@@ -141,9 +141,12 @@
         if (to - from > 1) faceBox(group, f, (from + to) / 2, 2.5, 0.8, to - from, 5, 2, material);
       }
       // Pavement a building's dressing keeps off (a map point): a place's entrance, the story
-      // payphone, the Blue Hour's forecourt, the betting shop and the garage lots.
+      // payphones, the Blue Hour's forecourt, the betting shop and the garage lots.
       function frontKeepClear(x, y) {
-        if (Math.abs(x - phone.x) < 20 && Math.abs(y - phone.y) < 20) return true;
+        for (let k = 0; k < PAYPHONES.length; k++) {
+          const p = PAYPHONES[k];
+          if (p.style === 'yellow' && Math.abs(x - p.x) < 20 && Math.abs(y - p.y) < 20) return true;
+        }
         for (let k = 0; k < PLACES.length; k++) {
           const door = PLACES[k].door;
           if (door && Math.abs(x - door.x) < 56 && Math.abs(y - door.y) < 56) return true;

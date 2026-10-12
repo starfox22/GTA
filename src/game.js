@@ -138,6 +138,7 @@
     // @include src/world-view.js
     // @include src/car-radio.js
     // @include src/garages.js
+    // @include src/payphones.js
     // @include src/crowd.js
     // @include src/livingcity.js
     // @include src/monarch-life.js

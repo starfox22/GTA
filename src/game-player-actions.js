@@ -181,10 +181,6 @@
       }
       return best || PLACES.find((p) => p.kind === 'hospital');
     }
-    /* The ringing payphone's reach, shared by its prompt and E (hysteresis). */
-    function payphoneInReach() {
-      return withinRange('payphone', distanceBetween(player, phone), 68, 84);
-    }
     function nearestCar() {
       if (player.parachute) return null;
       let best = null,

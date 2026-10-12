@@ -192,6 +192,7 @@
       if (!big) drawGpsRoutes(drawingContext, scale);
       drawCountyMap(drawingContext, scale, big);
       if (mapLayerOn('garages')) drawGarageMap(drawingContext, scale);
+      if (mapLayerOn('payphones')) drawPayphoneMap(drawingContext, scale);
       if (mapLayerOn('bikes')) drawBikeShareMap(drawingContext, scale, big);
       drawDrawbridgeMap(drawingContext, scale, big);
       if (mapLayerOn('air')) drawAviationMap(drawingContext, scale);

@@ -485,17 +485,21 @@
           worldContext.ellipse(d.x, d.y, 38, 31, 0, 0, TAU);
           worldContext.fill();
         }
-      // The yellow payphone you can spot from the street (payphone3d.js in 3D).
-      worldContext.fillStyle = '#2a2410';
-      worldContext.fillRect(phone.x - 8, phone.y - 6, 16, 18);
-      worldContext.fillStyle = '#e3b21f';
-      worldContext.fillRect(phone.x - 7, phone.y - 6, 14, 13);
-      worldContext.fillStyle = '#3a3c3e';
-      worldContext.fillRect(phone.x - 4, phone.y - 3, 8, 9);
-      worldContext.fillStyle = '#d7dbde';
-      worldContext.fillRect(phone.x - 2, phone.y - 1, 4, 5);
-      worldContext.fillStyle = '#3a3e41';
-      worldContext.fillRect(phone.x - 2, phone.y + 10, 4, 7);
+      // The yellow payphones you can spot from the street (payphones.js; payphone3d.js in 3D).
+      for (let i = 0; i < PAYPHONES.length; i++) {
+        const p = PAYPHONES[i];
+        if (p.style !== 'yellow' || !visible(p)) continue;
+        worldContext.fillStyle = '#2a2410';
+        worldContext.fillRect(p.x - 8, p.y - 6, 16, 18);
+        worldContext.fillStyle = '#e3b21f';
+        worldContext.fillRect(p.x - 7, p.y - 6, 14, 13);
+        worldContext.fillStyle = '#3a3c3e';
+        worldContext.fillRect(p.x - 4, p.y - 3, 8, 9);
+        worldContext.fillStyle = '#d7dbde';
+        worldContext.fillRect(p.x - 2, p.y - 1, 4, 5);
+        worldContext.fillStyle = '#3a3e41';
+        worldContext.fillRect(p.x - 2, p.y + 10, 4, 7);
+      }
       drawWildlife2D();
       drawSports(worldContext);
       drawTransit2D();

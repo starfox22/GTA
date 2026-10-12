@@ -132,6 +132,14 @@
       if (job === 2) return m.substations;
       return null;
     }
+    /* A clock that runs from the call was set for a call taken at the original payphone
+       (`phone`): a call taken at a payphone further from the job's first point
+       (payphones.js) gets the extra drive on top, at a town average of 45 km/h
+       over roads about a third longer than the straight line. */
+    function sideJobCallAllowance(first) {
+      const extra = Math.hypot(player.x - first.x, player.y - first.y) - Math.hypot(phone.x - first.x, phone.y - first.y);
+      return extra > 0 ? Math.round((extra * 1.3) / (45 * KMH)) : 0;
+    }
     function startSideJob(missionState) {
       const job = sideJobIndex(missionState);
       if (job === 0) {
@@ -143,8 +151,8 @@
         // The last three checkpoints and the depot are on Palm Keys, across the
         // Palm Sound causeway (the run is about a sixth longer than when the Keys
         // were across Marlow Bay; the clock grew with it).
-        missionState.timeLimit = 390;
-        missionState.timer = 390;
+        missionState.timeLimit = 390 + sideJobCallAllowance(missionState.car);
+        missionState.timer = missionState.timeLimit;
         missionState.awayTimer = 0;
         setStage(0, missionState.car, 'GET IN THE RED MUSCLE CAR', 'vinny', 'The car is hot and the buyer is waiting. Eight checkpoints, then my depot. Don’t stop for anyone.');
       }
@@ -157,8 +165,8 @@
           tag: 'bomb-' + i,
         }));
         missionState.bombs.forEach((b) => challengeGuards('glass', 3, b, b.tag));
-        missionState.timeLimit = 360;
-        missionState.timer = 360;
+        missionState.timeLimit = 360 + sideJobCallAllowance(missionState.bombs[0]);
+        missionState.timer = missionState.timeLimit;
         missionState.defused = 0;
         setStage(0, missionState.bombs[0], 'BOMB 1 / 3 · CASINO · ON FOOT, HOLD ' + keyName('interact') + ' TO DEFUSE', 'mara', 'Kit’s crew wired three of my neighbours. The fireworks start in six minutes, and I want them to be the only bang tonight.');
       }
@@ -211,8 +219,8 @@
         // twice, about 39,500 units of road in all (~12 minutes at a town
         // average of 45 km/h with the car changes; the clock was 660 s when
         // cars ran at two to three times real speed).
-        missionState.timeLimit = 780;
-        missionState.timer = 780;
+        missionState.timeLimit = 780 + sideJobCallAllowance(missionState.repos[0].car);
+        missionState.timer = missionState.timeLimit;
         setStage(0, missionState.repos[0].car, 'COLLECT ' + missionState.repos[0].label, 'vinny', 'Four rides, four deadbeats. Bring each one to my depot. Scratches come out of your cut.');
       }
     }

@@ -595,7 +595,7 @@
       updateUI();
     }
     function objective() {
-      return mission ? mission.target : storyCallWaiting() ? phone : null;
+      return mission ? mission.target : storyCallWaiting() ? storyPayphone() : null;
     }
     function passengerCar(vehicle) {
       return (
