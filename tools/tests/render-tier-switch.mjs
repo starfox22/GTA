@@ -4,7 +4,7 @@
 // elsewhere (the no-render test page, software GL without ?prewarm) it checks the immediate switch still works.
 export default async function (t) {
   const report = await t.call('renderHiccups');
-  if (report === null) return; // no renderer on the no-render page
+  if (report === null) t.skip('Requires WebGL: run with --render');
   t.assert(report.litStage && typeof report.litStage.switches === 'number', 'renderHiccups has litStage');
   await t.call('graphics', 'low');
   // Let any staged switch to LOW finish (immediate where staging is off).

@@ -519,7 +519,8 @@
         cityLightUniforms.cityCarLampCount.value = carLampCount;
         if (night > 0.2)
           for (const c of vehicles) {
-            if (heads >= BEAM_CAPACITY) break;
+            // Analytic CAR LAMPS cars still get a tail wash but no head quad, so tails can reach capacity first.
+            if (tails >= BEAM_CAPACITY) break;
             if (c.hp <= 0 || isAircraft(c)) continue;
             // A flashing police car washes the road either side red and blue
             // (police3d.js), parked at a roadblock or not.
@@ -590,6 +591,10 @@
         if (!heads && !tails && !strobes) return;
         for (const m of [headBeams, tailGlows, strobeGlows])
           if (m.count) {
+            m.instanceMatrix.clearUpdateRanges();
+            m.instanceMatrix.addUpdateRange(0, m.count * 16);
+            m.instanceColor.clearUpdateRanges();
+            m.instanceColor.addUpdateRange(0, m.count * 3);
             m.instanceMatrix.needsUpdate = true;
             m.instanceColor.needsUpdate = true;
           }
@@ -642,6 +647,10 @@
         carLampStats.haze = n;
         if (!n) return;
         hazeUniforms.uTime.value = gameTime;
+        beamHaze.instanceMatrix.clearUpdateRanges();
+        beamHaze.instanceMatrix.addUpdateRange(0, n * 16);
+        beamHaze.instanceColor.clearUpdateRanges();
+        beamHaze.instanceColor.addUpdateRange(0, n * 3);
         beamHaze.instanceMatrix.needsUpdate = true;
         beamHaze.instanceColor.needsUpdate = true;
       }

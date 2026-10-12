@@ -451,12 +451,19 @@
     window.addEventListener('blur', () => {
       keys = {};
       releaseAllControlKeys();
-      mouse.down = false;
+      mouse.down = mouse.alt = false;
       if (gameMode === 'play') togglePause();
       syncCarRadio();
     });
     document.addEventListener('visibilitychange', () => {
-      if (document.hidden && gameMode === 'play') togglePause();
+      if (document.hidden) {
+        // Some browsers hide a tab without a window blur, and releases made in
+        // another tab never reach us. Neither firing button may survive that gap.
+        keys = {};
+        releaseAllControlKeys();
+        mouse.down = mouse.alt = false;
+        if (gameMode === 'play') togglePause();
+      }
       syncCarRadio();
     });
     canvas.addEventListener('mousemove', (e) => {
@@ -491,7 +498,12 @@
         shoot();
       }
     });
-    window.addEventListener('mouseup', () => (mouse.down = mouse.alt = false));
+    window.addEventListener('mouseup', (e) => {
+      // Left fire and right aim/secondary fire are independent: firing a shot
+      // must not release a held aim, nor may releasing aim stop held fire.
+      if (e.button === 0) mouse.down = false;
+      if (e.button === 2) mouse.alt = false;
+    });
     canvas.addEventListener('contextmenu', (e) => e.preventDefault());
     getElement('creditsBtn').onclick = () => openCredits(getElement('creditsBtn'));
     getElement('closeCredits').onclick = () => {

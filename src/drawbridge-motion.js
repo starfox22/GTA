@@ -15,8 +15,7 @@
       // one), else a raised one it is close to.
       let d = active ? c.deckBridge : undefined;
       if (!d) {
-        const list = drawbridgeList();
-        for (let i = 0; i < list.length && !d; i++) if (list[i].angle >= 0.004 && drawbridgeNear(list[i], c.x, c.y, 60)) d = list[i];
+        d = drawbridgeRaisedAt(c.x, c.y);
         if (!d && active) d = drawbridgeAt(c.x, c.y, 60);
         if (!d) {
           if (active) drawbridgeLeaveDeck(c);
@@ -185,7 +184,7 @@
     /* A warning bell: one strike, a few inharmonic partials ringing down (a
        struck bell's spectrum), repeated by the phase clock. */
     function drawbridgeBell(x, y) {
-      drawbridgeVoice(drawbridgeSoundLevel(x, y) * 0.16, (x - player.x) / 500, (out, t) => {
+      drawbridgeVoice(drawbridgeSoundLevel(x, y) * 0.16, soundRight(x - player.x, y - player.y) / 500, (out, t) => {
         for (const [ratio, gain, decay] of [
           [1, 1, 0.5],
           [2.76, 0.45, 0.28],
@@ -206,7 +205,7 @@
     }
     // A clank: the locks driving home, an arm reaching its stop.
     function drawbridgeClank(x, y, weight = 1) {
-      drawbridgeVoice(drawbridgeSoundLevel(x, y) * 0.3 * weight, (x - player.x) / 500, (out, t) => {
+      drawbridgeVoice(drawbridgeSoundLevel(x, y) * 0.3 * weight, soundRight(x - player.x, y - player.y) / 500, (out, t) => {
         const n = Math.floor(audio.sampleRate * 0.35),
           buffer = audio.createBuffer(1, n, audio.sampleRate),
           data = buffer.getChannelData(0);
@@ -231,7 +230,7 @@
     }
     // A ship's or the tender's horn: a prolonged and a short blast.
     function drawbridgeHorn(x, y, pitch, pattern = [1.6, 0.5]) {
-      drawbridgeVoice(drawbridgeSoundLevel(x, y) * 0.22, (x - player.x) / 500, (out, t) => {
+      drawbridgeVoice(drawbridgeSoundLevel(x, y) * 0.22, soundRight(x - player.x, y - player.y) / 500, (out, t) => {
         let at = t;
         for (const length of pattern) {
           const filter = audio.createBiquadFilter(),
@@ -314,7 +313,7 @@
     }
     // A drop of water off a rising leaf into the Sound: a small plink.
     function drawbridgeDrip(x, y, size = 1) {
-      drawbridgeVoice(drawbridgeSoundLevel(x, y) * 0.05 * size, (x - player.x) / 500, (out, t) => {
+      drawbridgeVoice(drawbridgeSoundLevel(x, y) * 0.05 * size, soundRight(x - player.x, y - player.y) / 500, (out, t) => {
         const o = audio.createOscillator(),
           g = audio.createGain(),
           f = 700 + Math.random() * 900;

@@ -1,0 +1,91 @@
+{
+  "viewport": [
+    960,
+    600
+  ],
+  "devicePixelRatio": 1,
+  "renderer": "Chromium SwiftShader",
+  "scope": "Visible-scene profile at one clear-day city position, excluding postprocessing and shadow passes; not a GPU frame-rate benchmark.",
+  "samples": [
+    {
+      "tier": "low",
+      "view": "street",
+      "activeTier": "LOW",
+      "scale": 1,
+      "draws": 150,
+      "triangles": 659666
+    },
+    {
+      "tier": "low",
+      "view": "chase",
+      "activeTier": "LOW",
+      "scale": 1,
+      "draws": 377,
+      "triangles": 725117
+    },
+    {
+      "tier": "medium",
+      "view": "street",
+      "activeTier": "MEDIUM",
+      "scale": 1,
+      "draws": 144,
+      "triangles": 627938
+    },
+    {
+      "tier": "medium",
+      "view": "chase",
+      "activeTier": "MEDIUM",
+      "scale": 1,
+      "draws": 505,
+      "triangles": 770244
+    },
+    {
+      "tier": "high",
+      "view": "street",
+      "activeTier": "HIGH",
+      "scale": 1,
+      "draws": 144,
+      "triangles": 741746
+    },
+    {
+      "tier": "high",
+      "view": "chase",
+      "activeTier": "HIGH",
+      "scale": 1,
+      "draws": 579,
+      "triangles": 892851
+    },
+    {
+      "tier": "ultra",
+      "view": "street",
+      "activeTier": "ULTRA",
+      "scale": 1,
+      "draws": 144,
+      "triangles": 745980
+    },
+    {
+      "tier": "ultra",
+      "view": "chase",
+      "activeTier": "ULTRA",
+      "scale": 1,
+      "draws": 726,
+      "triangles": 975605
+    },
+    {
+      "tier": "auto",
+      "view": "street",
+      "activeTier": "LOW",
+      "scale": 1,
+      "draws": 153,
+      "triangles": 645197
+    },
+    {
+      "tier": "auto",
+      "view": "chase",
+      "activeTier": "LOW",
+      "scale": 1,
+      "draws": 375,
+      "triangles": 723987
+    }
+  ]
+}

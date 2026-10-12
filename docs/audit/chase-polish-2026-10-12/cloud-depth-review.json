@@ -1,0 +1,848 @@
+{
+  "frozen": "dist/cloud-depth-review.html",
+  "viewport": [
+    960,
+    600
+  ],
+  "solar": [
+    {
+      "pools": {
+        "enabled": false,
+        "cellSize": 2048,
+        "pools": 1,
+        "chunks": 8,
+        "originalInstances": 199,
+        "viewInstancesBound": 199,
+        "originalDraws": 1,
+        "viewDrawsBound": 1,
+        "addedInstanceBytes": 12736,
+        "list": [
+          {
+            "name": "solar",
+            "sourceInstances": 199,
+            "chunks": 8,
+            "split": false,
+            "invalid": false,
+            "viewDrawsBound": 1,
+            "viewInstancesBound": 199
+          }
+        ]
+      },
+      "stats": {
+        "drawCalls": 131,
+        "viewCalls": 131,
+        "shadowCalls": 0,
+        "triangles": 811126
+      },
+      "hash": "125fe3c53555c04d"
+    },
+    {
+      "pools": {
+        "enabled": true,
+        "cellSize": 2048,
+        "pools": 1,
+        "chunks": 8,
+        "originalInstances": 199,
+        "viewInstancesBound": 30,
+        "originalDraws": 1,
+        "viewDrawsBound": 1,
+        "addedInstanceBytes": 12736,
+        "list": [
+          {
+            "name": "solar",
+            "sourceInstances": 199,
+            "chunks": 8,
+            "split": true,
+            "invalid": false,
+            "viewDrawsBound": 1,
+            "viewInstancesBound": 30
+          }
+        ]
+      },
+      "stats": {
+        "drawCalls": 131,
+        "viewCalls": 131,
+        "shadowCalls": 0,
+        "triangles": 809098
+      },
+      "hash": "125fe3c53555c04d"
+    }
+  ],
+  "results": [
+    {
+      "name": "cloud-depth-fair-off",
+      "on": false,
+      "trace": {
+        "mode": "stepped",
+        "frames": 3,
+        "seconds": 0.05,
+        "avgMs": 12373.43,
+        "p50Ms": 285.1,
+        "p95Ms": 36678.6,
+        "maxMs": 36678.6,
+        "totals": {
+          "texUploads": 4,
+          "texMB": 1.02,
+          "bufUploads": 236,
+          "bufMB": 0.28,
+          "allocKB": 2834,
+          "gcMB": 0.5,
+          "links": 2,
+          "programs": 2,
+          "textures": 1
+        }
+      },
+      "status": {
+        "mode": "play",
+        "x": 480,
+        "y": 4400,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "13:00",
+        "renderer": "3d",
+        "vehicles": 261,
+        "pedestrians": 595
+      },
+      "graphics": {
+        "setting": "ultra",
+        "tier": "ULTRA",
+        "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "hdr": true,
+        "shadowMap": 4096,
+        "pixelRatio": 1,
+        "renderScale": 1,
+        "shadows": "high",
+        "shadowSetting": "auto",
+        "adaptive": {
+          "averageFrameMs": 0,
+          "tierDrops": 0,
+          "ceiling": 1,
+          "holdSeconds": 0
+        }
+      },
+      "clouds": {
+        "weather": "fair",
+        "x": 480,
+        "y": 4400,
+        "baseM": 382.3,
+        "topM": 748.6,
+        "cover": 0.57,
+        "coverage": 0.42,
+        "area": {
+          "sea": 0,
+          "mountain": 0,
+          "city": 0.9,
+          "groundM": 0
+        },
+        "altitudeM": 0,
+        "amount": 0,
+        "immersion": 0,
+        "weatherBaseM": 369.2,
+        "weatherTopM": 735.5,
+        "scudM": 0,
+        "view": {
+          "context": "",
+          "active": false,
+          "cameraM": 0.9,
+          "baseM": 382.3,
+          "topM": 748.6,
+          "cameraAmount": 0,
+          "inCloud": 0,
+          "veil": {
+            "steps": 0,
+            "cap": 0,
+            "flat": 0
+          },
+          "wisps": 0,
+          "wispOpacity": 0,
+          "lensWet": 0,
+          "subjectDistanceM": 3.6,
+          "towers": 4,
+          "light": [
+            [
+              2.22,
+              1.97,
+              1.64
+            ],
+            [
+              0.17,
+              0.22,
+              0.3
+            ],
+            [
+              0.04,
+              0.04,
+              0.03
+            ]
+          ],
+          "sky": {
+            "clouds": "march",
+            "budget": {
+              "resolution": 0.5,
+              "steps": 96,
+              "light": 3,
+              "absorption": 1,
+              "width": 480,
+              "height": 300
+            },
+            "cloudAirKm": 30,
+            "reachKm": 20,
+            "history": 7,
+            "shadows": true,
+            "sunDeg": 58.4,
+            "haze": true,
+            "horizon": [
+              0.59,
+              0.69,
+              0.76
+            ],
+            "zenith": [
+              0.09,
+              0.22,
+              0.5
+            ],
+            "glare": {
+              "level": 2,
+              "amount": 0,
+              "screen": [
+                0.5,
+                0.5
+              ],
+              "onScreen": 0,
+              "shafts": false
+            }
+          }
+        }
+      },
+      "camera": {
+        "mode": "chase",
+        "live": true,
+        "position": [
+          476.6,
+          4372.6,
+          6.8
+        ],
+        "pivot": [
+          480,
+          4400,
+          12.6
+        ],
+        "yawDeg": 90,
+        "pitchDeg": -12,
+        "fov": 52
+      },
+      "weather": {
+        "state": "fair",
+        "next": "cloudy",
+        "locked": true,
+        "secondsToNext": 251,
+        "cloud": 0.34,
+        "rain": 0,
+        "wet": 0,
+        "wind": 0.42,
+        "approach": 0,
+        "shower": 0,
+        "strikes": 0,
+        "thunderPending": 0
+      },
+      "stats": {
+        "drawCalls": 707,
+        "viewCalls": 438,
+        "shadowCalls": 269,
+        "triangles": 1360182
+      },
+      "switches": {
+        "cloudSoftDepth": false
+      }
+    },
+    {
+      "name": "cloud-depth-fair-on",
+      "on": true,
+      "trace": {
+        "mode": "stepped",
+        "frames": 3,
+        "seconds": 0.05,
+        "avgMs": 64.13,
+        "p50Ms": 59.7,
+        "p95Ms": 95.4,
+        "maxMs": 95.4,
+        "totals": {
+          "texUploads": 3,
+          "texMB": 0.02,
+          "bufUploads": 240,
+          "bufMB": 0.28,
+          "canvasText": 10,
+          "allocKB": 1862,
+          "canvasDraws": 2
+        }
+      },
+      "status": {
+        "mode": "play",
+        "x": 480,
+        "y": 4400,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "13:00",
+        "renderer": "3d",
+        "vehicles": 261,
+        "pedestrians": 595
+      },
+      "graphics": {
+        "setting": "ultra",
+        "tier": "ULTRA",
+        "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "hdr": true,
+        "shadowMap": 4096,
+        "pixelRatio": 1,
+        "renderScale": 1,
+        "shadows": "high",
+        "shadowSetting": "auto",
+        "adaptive": {
+          "averageFrameMs": 0,
+          "tierDrops": 0,
+          "ceiling": 1,
+          "holdSeconds": 0
+        }
+      },
+      "clouds": {
+        "weather": "fair",
+        "x": 480,
+        "y": 4400,
+        "baseM": 382.3,
+        "topM": 748.6,
+        "cover": 0.57,
+        "coverage": 0.42,
+        "area": {
+          "sea": 0,
+          "mountain": 0,
+          "city": 0.9,
+          "groundM": 0
+        },
+        "altitudeM": 0,
+        "amount": 0,
+        "immersion": 0,
+        "weatherBaseM": 369.2,
+        "weatherTopM": 735.5,
+        "scudM": 0,
+        "view": {
+          "context": "",
+          "active": false,
+          "cameraM": 0.9,
+          "baseM": 382.3,
+          "topM": 748.6,
+          "cameraAmount": 0,
+          "inCloud": 0,
+          "veil": {
+            "steps": 0,
+            "cap": 0,
+            "flat": 0
+          },
+          "wisps": 0,
+          "wispOpacity": 0,
+          "lensWet": 0,
+          "subjectDistanceM": 3.6,
+          "towers": 4,
+          "light": [
+            [
+              2.22,
+              1.97,
+              1.64
+            ],
+            [
+              0.17,
+              0.22,
+              0.3
+            ],
+            [
+              0.04,
+              0.04,
+              0.03
+            ]
+          ],
+          "sky": {
+            "clouds": "march",
+            "budget": {
+              "resolution": 0.5,
+              "steps": 96,
+              "light": 3,
+              "absorption": 0.5,
+              "width": 480,
+              "height": 300
+            },
+            "cloudAirKm": 30,
+            "reachKm": 20,
+            "history": 6,
+            "shadows": true,
+            "sunDeg": 58.4,
+            "haze": true,
+            "horizon": [
+              0.59,
+              0.69,
+              0.76
+            ],
+            "zenith": [
+              0.09,
+              0.22,
+              0.5
+            ],
+            "glare": {
+              "level": 2,
+              "amount": 0,
+              "screen": [
+                0.5,
+                0.5
+              ],
+              "onScreen": 0,
+              "shafts": false
+            }
+          }
+        }
+      },
+      "camera": {
+        "mode": "chase",
+        "live": true,
+        "position": [
+          476.6,
+          4372.6,
+          6.8
+        ],
+        "pivot": [
+          480,
+          4400,
+          12.6
+        ],
+        "yawDeg": 90,
+        "pitchDeg": -12,
+        "fov": 52
+      },
+      "weather": {
+        "state": "fair",
+        "next": "cloudy",
+        "locked": true,
+        "secondsToNext": 251,
+        "cloud": 0.34,
+        "rain": 0,
+        "wet": 0,
+        "wind": 0.42,
+        "approach": 0,
+        "shower": 0,
+        "strikes": 0,
+        "thunderPending": 0
+      },
+      "stats": {
+        "drawCalls": 709,
+        "viewCalls": 440,
+        "shadowCalls": 269,
+        "triangles": 1360186
+      },
+      "switches": {
+        "cloudSoftDepth": true
+      }
+    },
+    {
+      "name": "cloud-depth-storm-off",
+      "on": false,
+      "trace": {
+        "mode": "stepped",
+        "frames": 3,
+        "seconds": 0.05,
+        "avgMs": 1136.6,
+        "p50Ms": 60.6,
+        "p95Ms": 3293.3,
+        "maxMs": 3293.3,
+        "totals": {
+          "texUploads": 4,
+          "texMB": 3.02,
+          "bufUploads": 264,
+          "bufMB": 0.36,
+          "canvasText": 10,
+          "allocKB": 761,
+          "gcMB": 1,
+          "canvasDraws": 2,
+          "dom": 1
+        }
+      },
+      "status": {
+        "mode": "play",
+        "x": 480,
+        "y": 4400,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "18:00",
+        "renderer": "3d",
+        "vehicles": 261,
+        "pedestrians": 595
+      },
+      "graphics": {
+        "setting": "ultra",
+        "tier": "ULTRA",
+        "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "hdr": true,
+        "shadowMap": 4096,
+        "pixelRatio": 1,
+        "renderScale": 1,
+        "shadows": "high",
+        "shadowSetting": "auto",
+        "adaptive": {
+          "averageFrameMs": 0,
+          "tierDrops": 0,
+          "ceiling": 1,
+          "holdSeconds": 0
+        }
+      },
+      "clouds": {
+        "weather": "storm",
+        "x": 480,
+        "y": 4400,
+        "baseM": 253.5,
+        "topM": 803.5,
+        "cover": 1,
+        "coverage": 1,
+        "area": {
+          "sea": 0,
+          "mountain": 0,
+          "city": 0.9,
+          "groundM": 0
+        },
+        "altitudeM": 0,
+        "amount": 0,
+        "immersion": 0,
+        "weatherBaseM": 250,
+        "weatherTopM": 800,
+        "scudM": 65,
+        "view": {
+          "context": "",
+          "active": false,
+          "cameraM": 0.9,
+          "baseM": 253.6,
+          "topM": 803.6,
+          "cameraAmount": 0,
+          "inCloud": 0,
+          "veil": {
+            "steps": 0,
+            "cap": 0,
+            "flat": 0
+          },
+          "wisps": 0,
+          "wispOpacity": 0,
+          "lensWet": 0,
+          "subjectDistanceM": 3.6,
+          "towers": 4,
+          "light": [
+            [
+              1.2,
+              0.88,
+              0.6
+            ],
+            [
+              0.15,
+              0.2,
+              0.27
+            ],
+            [
+              0.04,
+              0.04,
+              0.03
+            ]
+          ],
+          "sky": {
+            "clouds": "march",
+            "budget": {
+              "resolution": 0.5,
+              "steps": 96,
+              "light": 3,
+              "absorption": 1,
+              "width": 480,
+              "height": 300
+            },
+            "cloudAirKm": 2.5,
+            "reachKm": 20,
+            "history": 7,
+            "shadows": false,
+            "sunDeg": 27.8,
+            "haze": true,
+            "horizon": [
+              0.36,
+              0.35,
+              0.35
+            ],
+            "zenith": [
+              0.1,
+              0.16,
+              0.27
+            ],
+            "glare": {
+              "level": 2,
+              "amount": 0,
+              "screen": [
+                8.567,
+                7.231
+              ],
+              "onScreen": 0,
+              "shafts": false
+            }
+          }
+        }
+      },
+      "camera": {
+        "mode": "chase",
+        "live": true,
+        "position": [
+          476.6,
+          4372.6,
+          6.8
+        ],
+        "pivot": [
+          480,
+          4400,
+          12.6
+        ],
+        "yawDeg": 90,
+        "pitchDeg": -12,
+        "fov": 52
+      },
+      "weather": {
+        "state": "storm",
+        "next": "rain",
+        "locked": true,
+        "secondsToNext": -279,
+        "cloud": 1,
+        "rain": 1,
+        "wet": 1,
+        "wind": 0.42,
+        "approach": 0,
+        "shower": 0,
+        "strikes": 0,
+        "thunderPending": 0
+      },
+      "stats": {
+        "drawCalls": 679,
+        "viewCalls": 422,
+        "shadowCalls": 257,
+        "triangles": 1225104
+      },
+      "switches": {
+        "cloudSoftDepth": false
+      }
+    },
+    {
+      "name": "cloud-depth-storm-on",
+      "on": true,
+      "trace": {
+        "mode": "stepped",
+        "frames": 3,
+        "seconds": 0.05,
+        "avgMs": 131.43,
+        "p50Ms": 139.1,
+        "p95Ms": 139.9,
+        "maxMs": 139.9,
+        "totals": {
+          "texUploads": 3,
+          "texMB": 0.02,
+          "bufUploads": 264,
+          "bufMB": 0.36,
+          "allocKB": 1694,
+          "gcMB": 0.5
+        }
+      },
+      "status": {
+        "mode": "play",
+        "x": 480,
+        "y": 4400,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "18:00",
+        "renderer": "3d",
+        "vehicles": 261,
+        "pedestrians": 595
+      },
+      "graphics": {
+        "setting": "ultra",
+        "tier": "ULTRA",
+        "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "hdr": true,
+        "shadowMap": 4096,
+        "pixelRatio": 1,
+        "renderScale": 1,
+        "shadows": "high",
+        "shadowSetting": "auto",
+        "adaptive": {
+          "averageFrameMs": 0,
+          "tierDrops": 0,
+          "ceiling": 1,
+          "holdSeconds": 0
+        }
+      },
+      "clouds": {
+        "weather": "storm",
+        "x": 480,
+        "y": 4400,
+        "baseM": 253.5,
+        "topM": 803.5,
+        "cover": 1,
+        "coverage": 1,
+        "area": {
+          "sea": 0,
+          "mountain": 0,
+          "city": 0.9,
+          "groundM": 0
+        },
+        "altitudeM": 0,
+        "amount": 0,
+        "immersion": 0,
+        "weatherBaseM": 250,
+        "weatherTopM": 800,
+        "scudM": 65,
+        "view": {
+          "context": "",
+          "active": false,
+          "cameraM": 0.9,
+          "baseM": 253.6,
+          "topM": 803.6,
+          "cameraAmount": 0,
+          "inCloud": 0,
+          "veil": {
+            "steps": 0,
+            "cap": 0,
+            "flat": 0
+          },
+          "wisps": 0,
+          "wispOpacity": 0,
+          "lensWet": 0,
+          "subjectDistanceM": 3.6,
+          "towers": 4,
+          "light": [
+            [
+              1.2,
+              0.88,
+              0.6
+            ],
+            [
+              0.15,
+              0.2,
+              0.27
+            ],
+            [
+              0.04,
+              0.04,
+              0.03
+            ]
+          ],
+          "sky": {
+            "clouds": "march",
+            "budget": {
+              "resolution": 0.5,
+              "steps": 96,
+              "light": 3,
+              "absorption": 0.5,
+              "width": 480,
+              "height": 300
+            },
+            "cloudAirKm": 2.5,
+            "reachKm": 20,
+            "history": 6,
+            "shadows": false,
+            "sunDeg": 27.8,
+            "haze": true,
+            "horizon": [
+              0.36,
+              0.35,
+              0.35
+            ],
+            "zenith": [
+              0.1,
+              0.16,
+              0.27
+            ],
+            "glare": {
+              "level": 2,
+              "amount": 0,
+              "screen": [
+                8.569,
+                7.23
+              ],
+              "onScreen": 0,
+              "shafts": false
+            }
+          }
+        }
+      },
+      "camera": {
+        "mode": "chase",
+        "live": true,
+        "position": [
+          476.6,
+          4372.6,
+          6.8
+        ],
+        "pivot": [
+          480,
+          4400,
+          12.6
+        ],
+        "yawDeg": 90,
+        "pitchDeg": -12,
+        "fov": 52
+      },
+      "weather": {
+        "state": "storm",
+        "next": "rain",
+        "locked": true,
+        "secondsToNext": -279,
+        "cloud": 1,
+        "rain": 1,
+        "wet": 1,
+        "wind": 0.42,
+        "approach": 0,
+        "shower": 0,
+        "strikes": 0,
+        "thunderPending": 0
+      },
+      "stats": {
+        "drawCalls": 681,
+        "viewCalls": 424,
+        "shadowCalls": 257,
+        "triangles": 1225108
+      },
+      "switches": {
+        "cloudSoftDepth": true
+      }
+    }
+  ],
+  "errors": [],
+  "warnings": [
+    "Scripts \"build/three.js\" and \"build/three.min.js\" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation"
+  ],
+  "review": {
+    "decision": "Reject the 0.5 below-cloud absorption experiment; retain original extinction 1. The temporary uniform and lookSwitches option were removed from shipping source.",
+    "fair": "No convincing improvement in perceived cloud volume; slightly weaker underside contrast / flatter appearance.",
+    "storm": "No material depth benefit, and the softer density does not justify changing the storm appearance.",
+    "work": "Halving extinction can delay opacity early-out and execute additional march steps even though the configured 96-step cap is unchanged.",
+    "validation": "Four 960x600 captures at airport (480,4400), chase yaw90/pitch-12, Ultra. Each toggle rendered 3 stepped frames, wrappers restored. No console/GLSL errors; only existing Three UMD deprecation warning.",
+    "limits": "SwiftShader software rendering and stepped traces are not laptop FPS measurements. Minor simulation/rain/history changes between captures prevent a strict pixel-equality claim for this artistic comparison."
+  }
+}

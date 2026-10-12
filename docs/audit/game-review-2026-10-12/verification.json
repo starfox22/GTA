@@ -1,0 +1,226 @@
+{
+  "branch": "codex/game-polish-2026-10-12",
+  "base": "370c1cfcb733bcf66cd81769e835800efd9e9912",
+  "inheritedMain": "9afe59ddd991321debee71a12dc1a7cceb50f9b4",
+  "scope": "Targeted follow-up, not a repeat of the October 11 full suite",
+  "sourceSha256": {
+    "src/cycles.js": "43b08a35c391ce54fffbcbe088a48edda0f29f58c61fce9b3d5c7c8107b1abdc",
+    "src/damage3d-decals.js": "42e79cac26845dac3679f89904883c6c68426f7d4403ed1ca467b04f315f30ff",
+    "src/flight-view3d.js": "ec26ca9c3155068111279d0684a3b5fc429e9697d030bd963e86f66e42abf02c",
+    "src/game-console-world.js": "9d6ae2e142a084451e428c89eea616f7d29c0caa7b5175200b48281048ef0aa2",
+    "src/game-input.js": "32d458872feef29ef9f295ccc529a906346d1b313b2a728038f68d0805e68054",
+    "src/game-loop.js": "ae7ab9d9889d843b83e5fc3bc6db2a7912ef1a391ab059550296f1482630102d",
+    "src/game-menus.js": "ef7b83622421b17b988e7a63cc880c028354f0a6df9a5c2f1cd98ddc1a9d13ba",
+    "src/lighting3d-vehicle-lights.js": "6e4b7c4512876db0b3402110ad50f3c17dbc6fc0a3911203b4d3e2c1e5dc909f",
+    "src/navigation.js": "2e59060ab6141d307623d4397a8c820e9aedb2de34c7a1b50d25316643c773c3",
+    "src/ui/hud-top.css": "c6107d04884351ce2fa80030f0fa77ff5a7e29c810efdfed8aaaff99bec53b36",
+    "src/ui/touch-hud.css": "5cf8158f8bd81af632c51c755ca66f43807e753c6ba7723f10de0bbcad30e429"
+  },
+  "environment": {
+    "browser": "Chromium 154 with SwiftShader",
+    "viewport": [
+      960,
+      600
+    ],
+    "setup": "source /workspace/setup/GTA-env.sh; HTTP adapter for repository file URLs"
+  },
+  "commands": [
+    "node tools/test.mjs fps-counter mouse-buttons instance-upload-ranges navigation-shortlist hud-layout hud-touch-dispatch chase-input chase-walk chase-aim chase-view-mode view-remembered input-hints world-reset save enter-key surrender-input vehicle-layouts hud-dom-writes --verbose",
+    "node tools/test.mjs graphics-all-tiers render-effects render-tier-switch --render --verbose",
+    "node tools/map-navigation-check.mjs",
+    "node tools/dev.mjs start dist/pass2-ab.html --seed 1",
+    "node tools/hitches.mjs --ab dist/review-20261012-before.html dist/review-20261012-after.html --order AB --hash --stages walk,drive,chase,map,pause --scale 0.3 --tag pass2",
+    "node tools/dev.mjs call navigationAudit 120 --full",
+    "node tools/bot.mjs --seed 12 --minutes 5 --wall 180 --only walk,drive,exitVehicle,menus,inputAlive,gamepad,chaseView,mouseFire,touchMode,graphicsAndSettings,saveLoad --verbose",
+    "DEC_SMOKE_MOVE_TIMEOUT_MS=240000 node tools/smoke.mjs dist/pass2-publish/index.html dist/pass2-smoke-rerun --size 960x600",
+    "python3 tools/build.py --split-media dist/pass2-publish",
+    "python3 tools/build.py --zip dist/DeadEndCity-pass2.zip",
+    "sh tools/quick-check.sh pass2-final"
+  ],
+  "focused": {
+    "PASS": 17,
+    "FAIL": 0,
+    "SKIP": 0,
+    "tests": [
+      {
+        "status": "PASS",
+        "name": "chase-aim",
+        "detail": "(3.4s)"
+      },
+      {
+        "status": "PASS",
+        "name": "chase-input",
+        "detail": "(4.8s)"
+      },
+      {
+        "status": "PASS",
+        "name": "chase-view-mode",
+        "detail": "(0.7s)"
+      },
+      {
+        "status": "PASS",
+        "name": "chase-walk",
+        "detail": "(1.5s)"
+      },
+      {
+        "status": "PASS",
+        "name": "enter-key",
+        "detail": "(5.2s)"
+      },
+      {
+        "status": "PASS",
+        "name": "hud-dom-writes",
+        "detail": "(5.3s)"
+      },
+      {
+        "status": "PASS",
+        "name": "instance-upload-ranges",
+        "detail": "(0.0s)"
+      },
+      {
+        "status": "PASS",
+        "name": "mouse-buttons",
+        "detail": "(0.1s)"
+      },
+      {
+        "status": "PASS",
+        "name": "navigation-shortlist",
+        "detail": "(0.4s)"
+      },
+      {
+        "status": "PASS",
+        "name": "vehicle-layouts",
+        "detail": "(11.9s)"
+      },
+      {
+        "status": "PASS",
+        "name": "chase-hud-layout",
+        "detail": "(52.3s)"
+      },
+      {
+        "status": "PASS",
+        "name": "fps-counter",
+        "detail": "(115.2s)"
+      },
+      {
+        "status": "PASS",
+        "name": "hud-layout",
+        "detail": "(68.8s)"
+      },
+      {
+        "status": "PASS",
+        "name": "hud-touch-dispatch",
+        "detail": "(79.3s)"
+      },
+      {
+        "status": "PASS",
+        "name": "surrender-input",
+        "detail": "(68.5s)"
+      },
+      {
+        "status": "PASS",
+        "name": "view-remembered",
+        "detail": "(117.6s)"
+      },
+      {
+        "status": "PASS",
+        "name": "world-reset",
+        "detail": "(37.9s)"
+      }
+    ]
+  },
+  "rendered": {
+    "PASS": 3,
+    "FAIL": 0,
+    "SKIP": 0,
+    "tests": [
+      {
+        "status": "PASS",
+        "name": "graphics-all-tiers",
+        "detail": "(259.5s)"
+      },
+      {
+        "status": "PASS",
+        "name": "render-tier-switch",
+        "detail": "(15.1s)"
+      },
+      {
+        "status": "PASS",
+        "name": "render-effects",
+        "detail": "(115.1s)"
+      }
+    ],
+    "graphicsCombinations": 10
+  },
+  "simulationAB": {
+    "equalStateHashes": true,
+    "stages": [
+      "walk",
+      "drive",
+      "chase",
+      "map",
+      "pause"
+    ],
+    "log": "simulation-ab.log",
+    "data": "simulation-ab.json"
+  },
+  "navigationAudit": {
+    "nodes": 4055,
+    "queries": 120,
+    "mismatches": 0,
+    "probeMismatches": 0,
+    "probes": 318,
+    "examples": [],
+    "referenceMs": 444.8,
+    "shortlistMs": 105,
+    "stateBefore": "4a8f6789dc83a46a",
+    "stateAfter": "4a8f6789dc83a46a"
+  },
+  "bot": {
+    "actions": 43,
+    "simulatedSeconds": 96,
+    "wallSeconds": 183,
+    "findings": 0,
+    "crashed": null,
+    "limit": "180-second wall budget ended the run before the five-minute simulation target; saveLoad was not selected"
+  },
+  "smoke": {
+    "passed": true,
+    "runtimeErrors": 0,
+    "expectedWarnings": 1,
+    "walkDistance": 16,
+    "driveDistance": 24,
+    "mapTransitions": true,
+    "bothViews": true,
+    "defaultFpsVisible": true,
+    "viewport": [
+      960,
+      600
+    ],
+    "moveTimeoutMs": 240000
+  },
+  "initialFailures": [
+    {
+      "check": "hud-layout",
+      "result": "14-pixel FPS/touch waypoint overlap",
+      "resolution": "Fixed counter CSS placement; final regression passed; screenshot pair included"
+    },
+    {
+      "check": "rendered smoke at 1280x800",
+      "result": "60-second real-input movement timeout on SwiftShader",
+      "resolution": "Same movement assertions passed at 960x600 with 240-second allowance; original failure preserved"
+    }
+  ],
+  "remainingVisualFinding": {
+    "issue": "Repeated clouds near LOW/AUTO chase horizon (LOW/MEDIUM share approximation)",
+    "image": "chase-low-clouds.png",
+    "status": "Pre-existing, unresolved; tracked in BACKLOG"
+  },
+  "limitations": [
+    "Software-rendered FPS does not predict laptop GPU performance.",
+    "Tier-switch test covers software-GL immediate fallback; hardware asynchronous prewarming requires hardware validation.",
+    "Navigation and GPU transfer figures are fixture measurements, not whole-game FPS gains.",
+    "Smoke uses a boarded sedan fixture and does not test car theft.",
+    "Existing chatgpt.site deployment was not updated."
+  ]
+}

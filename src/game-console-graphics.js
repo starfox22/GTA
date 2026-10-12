@@ -8,6 +8,7 @@
       // The effect particles (fx3d-particles.js): live, waiting on a delay, drawn last frame (and of them the
       // game's particles), capacity, peak, emitted, dropped, the tier's share and the draw calls (null without WebGL).
       effectParticles: () => (city3D ? city3D.effectParticles() : null),
+      sceneryPools: (on) => city3D?.sceneryPools?.(on) ?? null,
       chimneySmoke: (options) => (city3D?.chimneySmoke ? city3D.chimneySmoke(options) : null),
       // The rain and the wet street as drawn (weather3d-chase.js): both boxes of rain, the near box at
       // street level, the splashes, the haze, the wet reflections' street-level terms (null without WebGL).

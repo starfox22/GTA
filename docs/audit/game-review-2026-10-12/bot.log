@@ -1,0 +1,89 @@
+bot seed 12: 5 game minutes, 111 anchors, 37 doors
+    drive: play 1553,807 NORTHBANK · OLD QUARTER hp 100 ambulance stars 0
+#1 6s drive ambulance 3 legs -> ambulance | play NORTHBANK · OLD QUARTER ambulance hp 100 *0
+    menus: play 1553,807 NORTHBANK · OLD QUARTER hp 100 ambulance stars 0
+#2 6s menus arsenal | play NORTHBANK · OLD QUARTER ambulance hp 100 *0
+    gamepad: play 1553,808 NORTHBANK · OLD QUARTER hp 100 ambulance stars 0
+#3 6s gamepad D-PAD →+Y | play NORTHBANK · OLD QUARTER ambulance hp 100 *0
+    walk: play 1553,808 NORTHBANK · OLD QUARTER hp 100 ambulance stars 0
+#4 6s walk skip (in a vehicle) | play NORTHBANK · OLD QUARTER ambulance hp 100 *0
+    drive: play 1842,1218 NORTHBANK · OLD QUARTER hp 97 hotrod stars 0
+#5 10s drive hotrod 1 legs -> hotrod | play NORTHBANK · OLD QUARTER hotrod hp 97 *0
+    drive: play 1928,1200 NORTHBANK · OLD QUARTER hp 97 limousine stars 1
+#6 11s drive limousine 1 legs -> limousine | play NORTHBANK · OLD QUARTER limousine hp 97 *1
+    mouseFire: play 1957,1214 NORTHBANK · OLD QUARTER hp 97 limousine stars 1
+#7 11s mouseFire mouse fire | play NORTHBANK · OLD QUARTER limousine hp 97 *1
+    drive: play 1909,1163 NORTHBANK · OLD QUARTER hp 97 kr500 stars 2
+#8 15s drive kr500 1 legs -> kr500 | play NORTHBANK · OLD QUARTER kr500 hp 97 *2
+    exitVehicle: play 1792,1201 NORTHBANK · OLD QUARTER hp 86 foot stars 2
+#9 17s exitVehicle out | play NORTHBANK · OLD QUARTER foot hp 86 *2
+    walk: dead 1792,1190 NORTHBANK · OLD QUARTER hp 86 foot stars 2
+#10 24s walk 3 legs | dead NORTHBANK · OLD QUARTER foot hp 86 *2
+    drive: play 1556,4070 SOUTH BANK hp 86 bus stars 0
+#11 30s drive bus 2 legs -> bus | play SOUTH BANK bus hp 86 *0
+    graphicsAndSettings: play 1574,4070 SOUTH BANK hp 86 bus stars 0
+#12 31s graphicsAndSettings auto | play SOUTH BANK bus hp 86 *0
+    walk: play 1575,4070 SOUTH BANK hp 86 bus stars 0
+#13 31s walk skip (in a vehicle) | play SOUTH BANK bus hp 86 *0
+    graphicsAndSettings: play 1589,4070 SOUTH BANK hp 86 bus stars 0
+#14 32s graphicsAndSettings medium | play SOUTH BANK bus hp 86 *0
+    graphicsAndSettings: play 1600,4070 SOUTH BANK hp 86 bus stars 0
+#15 33s graphicsAndSettings high | play SOUTH BANK bus hp 86 *0
+    drive: play 1707,4020 SOUTH BANK hp 85 suv stars 0
+#16 45s drive suv 3 legs -> suv | play SOUTH BANK suv hp 85 *0
+    drive: play 1711,4104 SOUTH BANK hp 85 limousine stars 0
+#17 50s drive limousine 2 legs -> limousine | play SOUTH BANK limousine hp 85 *0
+    exitVehicle: play 1691,4071 SOUTH BANK hp 85 foot stars 0
+#18 52s exitVehicle out | play SOUTH BANK foot hp 85 *0
+    drive: play 1695,4004 SOUTH BANK hp 85 brutini stars 0
+#19 53s drive brutini 1 legs -> brutini | play SOUTH BANK brutini hp 85 *0
+    drive: play 1655,4104 SOUTH BANK hp 85 ambulance stars 0
+#20 55s drive ambulance 1 legs -> ambulance | play SOUTH BANK ambulance hp 85 *0
+    graphicsAndSettings: play 1655,4104 SOUTH BANK hp 85 ambulance stars 0
+#21 56s graphicsAndSettings medium | play SOUTH BANK ambulance hp 85 *0
+    chaseView: play 1655,4104 SOUTH BANK hp 85 ambulance stars 0
+#22 57s chaseView chase | play SOUTH BANK ambulance hp 85 *0
+    walk: play 1655,4104 SOUTH BANK hp 85 ambulance stars 0
+#23 57s walk skip (in a vehicle) | play SOUTH BANK ambulance hp 85 *0
+    walk: play 1655,4104 SOUTH BANK hp 85 ambulance stars 0
+#24 57s walk skip (in a vehicle) | play SOUTH BANK ambulance hp 85 *0
+    walk: play 1655,4104 SOUTH BANK hp 85 ambulance stars 0
+#25 57s walk skip (in a vehicle) | play SOUTH BANK ambulance hp 85 *0
+    exitVehicle: play 1635,4128 SOUTH BANK hp 85 foot stars 0
+#26 58s exitVehicle out | play SOUTH BANK foot hp 85 *0
+    walk: play 1614,4190 SOUTH BANK hp 85 foot stars 0
+#27 64s walk 2 legs | play SOUTH BANK foot hp 85 *0
+    walk: play 1549,4148 SOUTH BANK hp 85 foot stars 0
+#28 68s walk 2 legs | play SOUTH BANK foot hp 85 *0
+    walk: play 1653,4267 SOUTH BANK hp 85 foot stars 0
+#29 71s walk 1 legs | play SOUTH BANK foot hp 85 *0
+    walk: play 1712,4141 SOUTH BANK hp 85 foot stars 0
+#30 74s walk 1 legs | play SOUTH BANK foot hp 85 *0
+    chaseView: play 1712,4141 SOUTH BANK hp 85 foot stars 0
+#31 74s chaseView street | play SOUTH BANK foot hp 85 *0
+    menus: play 1712,4141 SOUTH BANK hp 85 foot stars 0
+#32 74s menus arsenal | play SOUTH BANK foot hp 85 *0
+    mouseFire: play 1712,4141 SOUTH BANK hp 85 foot stars 0
+#33 74s mouseFire mouse fire | play SOUTH BANK foot hp 85 *0
+    exitVehicle: play 1712,4141 SOUTH BANK hp 85 foot stars 0
+#34 74s exitVehicle skip (on foot) | play SOUTH BANK foot hp 85 *0
+    drive: play 1521,4302 SOUTH BANK hp 84 limousine stars 1
+#35 76s drive limousine 1 legs -> limousine | play SOUTH BANK limousine hp 84 *1
+    menus: play 1404,4311 SOUTH BANK hp 84 limousine stars 1
+#36 78s menus random | play SOUTH BANK limousine hp 84 *1
+    exitVehicle: play 1388,4288 SOUTHPORT AIRPORT hp 84 foot stars 1
+#37 80s exitVehicle out | play SOUTHPORT AIRPORT foot hp 84 *1
+    exitVehicle: play 1388,4288 SOUTHPORT AIRPORT hp 84 foot stars 1
+#38 80s exitVehicle skip (on foot) | play SOUTHPORT AIRPORT foot hp 84 *1
+    exitVehicle: play 1388,4288 SOUTHPORT AIRPORT hp 84 foot stars 1
+#39 80s exitVehicle skip (on foot) | play SOUTHPORT AIRPORT foot hp 84 *1
+    gamepad: play 1384,4286 SOUTHPORT AIRPORT hp 84 foot stars 1
+#40 80s gamepad R3+L3 | play SOUTHPORT AIRPORT foot hp 84 *1
+    drive: play 1199,4185 SOUTHPORT AIRPORT hp 23 foot stars 1
+#41 88s drive cruiser 2 legs -> foot | play SOUTHPORT AIRPORT foot hp 23 *1
+    exitVehicle: play 1200,4184 SOUTHPORT AIRPORT hp 23 foot stars 1
+#42 88s exitVehicle skip (on foot) | play SOUTHPORT AIRPORT foot hp 23 *1
+    drive: play 1245,4132 SOUTHPORT AIRPORT hp 23 truck stars 1
+#43 96s drive truck 3 legs -> truck | play SOUTHPORT AIRPORT truck hp 23 *1
+
+seed 12: 43 actions, 2 game minutes in 183 s, 0 distinct finding(s) -> dist/bot/seed-12.json

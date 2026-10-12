@@ -1,0 +1,191 @@
+{
+  "snapshot": "dist/rooftop-final-review.html",
+  "viewport": [
+    960,
+    600
+  ],
+  "simulation": "held, seed=1",
+  "narrowing": "Final opt-in keeps only solar, the only family split in the broad-policy cases. Fresh narrowed-build verification below reproduces exact calls, triangles and hash.",
+  "cases": [
+    {
+      "case": "low-avenue-street",
+      "camera": "street",
+      "actualChaseYawPitch": null,
+      "off": {
+        "drawCalls": 131,
+        "viewCalls": 131,
+        "shadowCalls": 0,
+        "triangles": 811126
+      },
+      "on": {
+        "drawCalls": 131,
+        "viewCalls": 131,
+        "shadowCalls": 0,
+        "triangles": 809098
+      },
+      "stateHashEqual": true,
+      "pixelsChangedBelow30": 0,
+      "pixelsChangedBelow200": 0,
+      "maxChannelDifferenceBelow30": 0,
+      "splitFamilies": [
+        "solar"
+      ]
+    },
+    {
+      "case": "low-avenue-chase",
+      "camera": "chase",
+      "actualChaseYawPitch": [
+        0,
+        9
+      ],
+      "off": {
+        "drawCalls": 389,
+        "viewCalls": 389,
+        "shadowCalls": 0,
+        "triangles": 884833
+      },
+      "on": {
+        "drawCalls": 389,
+        "viewCalls": 389,
+        "shadowCalls": 0,
+        "triangles": 884833
+      },
+      "stateHashEqual": true,
+      "pixelsChangedBelow30": 31817,
+      "pixelsChangedBelow200": 0,
+      "maxChannelDifferenceBelow30": 24,
+      "splitFamilies": []
+    },
+    {
+      "case": "high-avenue-street",
+      "camera": "street",
+      "actualChaseYawPitch": null,
+      "off": {
+        "drawCalls": 280,
+        "viewCalls": 131,
+        "shadowCalls": 149,
+        "triangles": 1463640
+      },
+      "on": {
+        "drawCalls": 280,
+        "viewCalls": 131,
+        "shadowCalls": 149,
+        "triangles": 1463640
+      },
+      "stateHashEqual": true,
+      "pixelsChangedBelow30": 0,
+      "pixelsChangedBelow200": 0,
+      "maxChannelDifferenceBelow30": 0,
+      "splitFamilies": []
+    },
+    {
+      "case": "ultra-avenue-chase",
+      "camera": "chase",
+      "actualChaseYawPitch": [
+        0,
+        9
+      ],
+      "off": {
+        "drawCalls": 1151,
+        "viewCalls": 787,
+        "shadowCalls": 364,
+        "triangles": 2728088
+      },
+      "on": {
+        "drawCalls": 1151,
+        "viewCalls": 787,
+        "shadowCalls": 364,
+        "triangles": 2728088
+      },
+      "stateHashEqual": true,
+      "pixelsChangedBelow30": 20568,
+      "pixelsChangedBelow200": 0,
+      "maxChannelDifferenceBelow30": 11,
+      "splitFamilies": []
+    }
+  ],
+  "errors": [],
+  "warnings": [
+    "Scripts \"build/three.js\" and \"build/three.min.js\" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation"
+  ],
+  "rejectedPolicy": {
+    "maxMainChunksPerPool": 4,
+    "shadowBudget": "unbounded independent frusta",
+    "case": "HIGH Midtown close street",
+    "off": {
+      "drawCalls": 288,
+      "viewCalls": 141,
+      "shadowCalls": 147,
+      "triangles": 1595092
+    },
+    "on": {
+      "drawCalls": 320,
+      "viewCalls": 157,
+      "shadowCalls": 163,
+      "triangles": 1504172
+    },
+    "pixelsChangedBelow30": 0,
+    "stateHashEqual": true,
+    "reason": "32 extra calls for only 5.7% fewer triangles; no laptop timing evidence supporting the tradeoff"
+  },
+  "narrowedBuildVerification": {
+    "snapshot": "dist/cloud-depth-review.html",
+    "case": "LOW Royal Avenue street",
+    "offOn": [
+      {
+        "pools": {
+          "enabled": false,
+          "cellSize": 2048,
+          "pools": 1,
+          "chunks": 8,
+          "originalInstances": 199,
+          "viewInstancesBound": 199,
+          "originalDraws": 1,
+          "viewDrawsBound": 1,
+          "addedInstanceBytes": 12736,
+          "list": [
+            {
+              "name": "solar",
+              "sourceInstances": 199,
+              "chunks": 8,
+              "split": false,
+              "invalid": false,
+              "viewDrawsBound": 1,
+              "viewInstancesBound": 199
+            }
+          ]
+        },
+        "calls": 131,
+        "triangles": 811126,
+        "hash": "125fe3c53555c04d"
+      },
+      {
+        "pools": {
+          "enabled": true,
+          "cellSize": 2048,
+          "pools": 1,
+          "chunks": 8,
+          "originalInstances": 199,
+          "viewInstancesBound": 30,
+          "originalDraws": 1,
+          "viewDrawsBound": 1,
+          "addedInstanceBytes": 12736,
+          "list": [
+            {
+              "name": "solar",
+              "sourceInstances": 199,
+              "chunks": 8,
+              "split": true,
+              "invalid": false,
+              "viewDrawsBound": 1,
+              "viewInstancesBound": 30
+            }
+          ]
+        },
+        "calls": 131,
+        "triangles": 809098,
+        "hash": "125fe3c53555c04d"
+      }
+    ]
+  }
+}

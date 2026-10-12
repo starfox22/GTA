@@ -14,8 +14,9 @@
         pristineCabins = new Map(),
         carGlass = new Three.MeshStandardMaterial({ color: '#182b3c', roughness: 0.12, metalness: 0.65 }),
         crackedGlass = new Three.MeshStandardMaterial({ map: crackedGlassTexture, roughness: 0.32, metalness: 0.45 }),
-        // An empty frame: the dark cabin seen through where the glass was.
+        // Solid dark lining for the trunk well and a burnt roof; never a replacement for an open window.
         brokenGlass = new Three.MeshStandardMaterial({ color: '#0d0f11', roughness: 0.95 }),
+        missingGlass = new Three.MeshBasicMaterial({ visible: false, colorWrite: false, depthWrite: false }),
         deadLamp = new Three.MeshStandardMaterial({ color: '#2b2824', roughness: 0.45, metalness: 0.35 }),
         burntMetal = new Three.MeshStandardMaterial({ color: '#2c2a27', roughness: 0.95, metalness: 0.25 }),
         engineBay = new Three.MeshStandardMaterial({ color: '#25282a', roughness: 0.6, metalness: 0.5 });
@@ -24,7 +25,7 @@
       function claimDamageResources() {
         if (damageResourcesClaimed) return;
         damageResourcesClaimed = true;
-        for (const material of [carGlass, crackedGlass, brokenGlass, deadLamp, burntMetal, engineBay]) sharedMaterials.add(material);
+        for (const material of [carGlass, crackedGlass, brokenGlass, missingGlass, deadLamp, burntMetal, engineBay]) sharedMaterials.add(material);
       }
       function shellSection(t) {
         for (let k = 0; k < SHELL_SECTIONS.length - 1; k++) {
@@ -309,15 +310,15 @@
         // Glass: one material per pane once any pane is damaged.
         const glass = damage.glass,
           // `m.glass`: a model's own intact glass (police3d.js).
-          paneMaterial = (state) => (state === 2 ? brokenGlass : state === 1 ? crackedGlass : m.glass || carGlass);
+          paneMaterial = (state, pane) => (state === 2 ? (pane === 'roof' ? brokenGlass : missingGlass) : state === 1 ? crackedGlass : m.glass || carGlass);
         if (m.cabinBase) {
-          // A side window wound down for a drive-by (driveby.js) shows the dark cabin, as an empty frame does.
+          // Broken and lowered panes leave the modelled cabin and occupants visible through the opening.
           const down = c.windowsDown,
             paneState = (pane) => (pane === 'roof' ? (damage.burnt ? 2 : 0) : down?.[pane] ? 2 : glass[pane]),
             hurt = damage.burnt || glass.front || glass.rear || glass.left || glass.right || down?.left || down?.right;
           if (hurt) {
             m.paneMaterials = m.paneMaterials || [carGlass, carGlass, carGlass, carGlass, carGlass].map(() => m.glass || carGlass);
-            PANE_ORDER.forEach((pane, i) => (m.paneMaterials[i] = paneMaterial(paneState(pane))));
+            PANE_ORDER.forEach((pane, i) => (m.paneMaterials[i] = paneMaterial(paneState(pane), pane)));
             m.cabin.material = m.paneMaterials;
           } else m.cabin.material = m.glass || carGlass;
         } else m.cabin.material = paneMaterial(glass.front);
@@ -443,11 +444,14 @@
         }
         const wear = clamp(1 - c.hp / c.maxhp, 0, 1),
           heat = damage?.burning ? clamp(damage.burning / 8, 0, 0.7) : 0,
-          // The colour is part of the key: a respray changes it with the wear unchanged.
-          key = wear + heat * 10 + (m.liveryColor || c.color);
-        if (m.paintWear === key) return;
-        m.paintWear = key;
-        m.paint.color.set(m.liveryColor || c.color).lerp(grime, wear * 0.22).lerp(sootColor, heat);
+          color = m.liveryColor || c.color;
+        // Compare the state directly: no temporary string per visible vehicle per frame, and different
+        // wear/heat pairs cannot collide in a combined numeric key. Resprays still invalidate the cache.
+        if (m.paintWear === wear && m.paintHeat === heat && m.paintColor === color) return;
+        m.paintWear = wear;
+        m.paintHeat = heat;
+        m.paintColor = color;
+        m.paint.color.set(color).lerp(grime, wear * 0.22).lerp(sootColor, heat);
         // An army model's atlas is its paint: the same grime and heat through its char materials (vehicle-char3d.js).
         if (m.atlasPaint) {
           if (wear > 0.01 || heat > 0) {

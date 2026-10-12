@@ -1,0 +1,16 @@
+started dev server (?dev&norender: boot 19s)
+PASS living-medics (44.6s)
+     start (revive true): jobs 1, revivable true, last null · ended after 36 s: jobs 1, {"why":"done","outcome":"revived","seconds":35} · revive run: arrived after 20.6 s, phases driving scene treat outcome leave, last {"why":"done","outcome":"revived","seconds":35} · start (revive false): jobs 2, revivable false, last {"why":"done","outcome":"revived","seconds":35} · ended after 32 s: jobs 2, {"why":"done","outcome":"lost","seconds":33} · lost run: arrived after 18.6 s, last {"why":"done","outcome":"lost","seconds":33}
+FAIL rider-falls (20.1s): a 25 km/h spill costs a few points: hp 83
+1/2 passed, 0 skipped, 1 failed in 86s
+
+25 km/h: hp 97; 45 km/h: hp 79 (into the wall at 39 km/h)
+PASS rider-falls (unchanged injury limits, airport fixture, final review build)
+
+started dev server (?dev&norender: boot 14.6s)
+SKIP vehicle-merge (0.1s): Requires WebGL: run with --render
+SKIP chimney-smoke (16.9s): Requires WebGL: run with --render
+SKIP wet-glints (13.2s): Requires WebGL: run with --render
+PASS wheelie (22.0s)
+     sport bike: 16.1° after 1.2 s, looped at 67 km/h
+1/4 passed, 3 skipped, 0 failed in 69s

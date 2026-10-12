@@ -1,0 +1,9 @@
+started dev server (?dev&norender: boot 17.6s)
+PASS mouse-buttons (0.1s)
+     real input listeners: independent left/right/middle release; blur and hidden tab in play/help; pause/help/map clear both buttons
+PASS chase-hud-layout (26.5s)
+FAIL hud-layout (27.4s): touch, in a bus: HUD boxes overlap: [["navigation","fpsCounter",104,14]]
+     drawn: carRadio, toast, radioCaption, policeStatusPanel
+PASS hud-touch-dispatch (31.9s)
+     street: {"card":{"id":"pager","l":310,"t":54,"r":650,"b":142},"caption":{"id":"radioCaption","l":354,"t":150,"r":606,"b":204}} · chase: {"card":{"id":"pager","l":310,"t":54,"r":650,"b":142},"caption":{"id":"radioCaption","l":354,"t":150,"r":606,"b":204}}
+3/4 passed, 0 skipped, 1 failed in 109s

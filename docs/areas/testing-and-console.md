@@ -76,6 +76,10 @@ node tools/dev.mjs errors | status | reload [--render|--norender] [--keep] [--sh
   `?dev`) and `fresh = true` (page reloaded first; fresh tests run last). Set the state a test needs (cash, wanted level,
   god mode) instead of relying on the test before it. Frame-driven effects (e.g. sportsbook
   settlement) need a `t.wait()` after the call that causes them.
+- `t.skip(reason)` reports **SKIP**, separately from passes; renderer-only tests use it without WebGL. A skip
+  still fails if the page emitted console errors. `--html` switches away from a server showing another build.
+- Smoke and screenshot tours exit nonzero on runtime errors and always close their browser on failure.
+  Smoke reports warnings separately (the normal Three.js deprecation warning is not a failure).
 - **Measuring the simulation** (docs/audit/performance.md, "Simulation side"): `node tools/dev.mjs call
   <method> ... --cpu` adds the page's main-thread CPU time of the call (a busy machine inflates
   wall-clock ms, not this); `--profile N` lists the N heaviest functions of a V8 sampling profile (self
@@ -164,3 +168,5 @@ pairs), hold keys through the shot (`hold`), wait, and screenshot unless `"shot"
 
 Rules (named methods only, how to add one) and the per-group method tables:
 `docs/console/README.md`.
+
+`rider-falls` uses the quiet airport building run near (420, 4400). After the Exchange underpass removal, its old city route crossed live traffic and nearby blood could fail the fall-only assertions. Speeds, run times and injury/blood limits are unchanged.

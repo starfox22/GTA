@@ -571,14 +571,27 @@
             // (An empty pool is not drawn: a no-op instanced draw still costs a program switch.)
             part.mesh.visible = pool.count > 0;
             if (!pool.count) continue;
+            // Packed from zero every frame: old pending ranges can be replaced, even if a pass skipped the pool.
+            part.mesh.instanceMatrix.clearUpdateRanges();
+            part.mesh.instanceMatrix.addUpdateRange(0, pool.count * 16);
             part.mesh.instanceMatrix.needsUpdate = true;
-            if (part.mesh.instanceColor) part.mesh.instanceColor.needsUpdate = true;
+            if (part.mesh.instanceColor) {
+              part.mesh.instanceColor.clearUpdateRanges();
+              part.mesh.instanceColor.addUpdateRange(0, pool.count * 3);
+              part.mesh.instanceColor.needsUpdate = true;
+            }
           }
           pool.count = 0;
         }
         impostorBodies.count = impostorCabins.count = impostorCount;
         impostorBodies.visible = impostorCabins.visible = impostorCount > 0;
         if (!impostorCount) return;
+        impostorBodies.instanceMatrix.clearUpdateRanges();
+        impostorBodies.instanceMatrix.addUpdateRange(0, impostorCount * 16);
+        impostorCabins.instanceMatrix.clearUpdateRanges();
+        impostorCabins.instanceMatrix.addUpdateRange(0, impostorCount * 16);
+        impostorBodies.instanceColor.clearUpdateRanges();
+        impostorBodies.instanceColor.addUpdateRange(0, impostorCount * 3);
         impostorBodies.instanceMatrix.needsUpdate = impostorCabins.instanceMatrix.needsUpdate = true;
         impostorBodies.instanceColor.needsUpdate = true;
       }

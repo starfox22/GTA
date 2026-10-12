@@ -74,7 +74,7 @@
     function spatial(position, reach = 230) {
       if (!position) return { gain: 1, pan: 0 };
       const d = distanceBetween(position, player);
-      return { gain: 1 / (1 + d / reach), pan: clamp((position.x - player.x) / 450, -0.9, 0.9), d };
+      return { gain: 1 / (1 + d / reach), pan: clamp(soundRight(position.x - player.x, position.y - player.y) / 450, -0.9, 0.9), d };
     }
     function voice(type, frequency, start, length, peak, to, panValue = 0, filterFrequency = 0) {
       const o = audio.createOscillator(),
@@ -284,11 +284,11 @@
       }
       if (club && clock.beat <= 0) {
         clock.beat = 60 / 124 / 2;
-        clubBeat((1 - club.d / 320) * (club.s.place.kind === 'club' ? 1 : 0.6), clamp((club.s.x - player.x) / 450, -0.9, 0.9));
+        clubBeat((1 - club.d / 320) * (club.s.place.kind === 'club' ? 1 : 0.6), clamp(soundRight(club.s.x - player.x, club.s.y - player.y) / 450, -0.9, 0.9));
       }
       if (busker && clock.pluck <= 0) {
         clock.pluck = 0.24;
-        buskerPluck(1 - busker.d / 340, clamp((busker.s.x - player.x) / 450, -0.9, 0.9));
+        buskerPluck(1 - busker.d / 340, clamp(soundRight(busker.s.x - player.x, busker.s.y - player.y) / 450, -0.9, 0.9));
       }
       // Dogs bark when people panic near them.
       if (clock.bark <= 0) {

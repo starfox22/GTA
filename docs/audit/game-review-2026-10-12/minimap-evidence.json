@@ -1,0 +1,312 @@
+[
+  {
+    "side": "before",
+    "fixture": {
+      "station": {
+        "id": 0,
+        "kind": "payphone",
+        "label": "PAYPHONE",
+        "serves": [
+          "PAYPHONE",
+          "CONTRACT 1"
+        ],
+        "street": "ARMORY ST",
+        "x": 904,
+        "y": 587,
+        "a": 3.142,
+        "docks": 8,
+        "docked": 7,
+        "rack": true,
+        "totem": true,
+        "knocked": 0
+      },
+      "x": 104,
+      "y": 587
+    },
+    "state": {
+      "status": {
+        "mode": "play",
+        "x": 104,
+        "y": 587,
+        "district": "NORTHBANK · OLD QUARTER",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "17:20",
+        "renderer": "2d",
+        "vehicles": 246,
+        "pedestrians": 595
+      },
+      "map": {
+        "layers": {
+          "services": true,
+          "garages": true,
+          "transit": true,
+          "bikes": true,
+          "sports": true,
+          "air": true,
+          "police": true,
+          "gangs": true
+        },
+        "destinations": [
+          {
+            "heading": "HOSPITAL",
+            "name": "SAINT MARLOW HOSPITAL",
+            "metres": 57
+          },
+          {
+            "heading": "RESPRAY & REPAIRS",
+            "name": "EASTSIDE GARAGE",
+            "metres": 235
+          },
+          {
+            "heading": "ARMORY",
+            "name": "SOUTH COAST ARMORY",
+            "metres": 99
+          },
+          {
+            "heading": "CLOTHES · CHANGE YOUR LOOK",
+            "name": "SOUTH COAST OUTFITTERS",
+            "metres": 396
+          },
+          {
+            "heading": "SAFEHOUSE · SLEEP",
+            "name": "SUNSET MOTEL",
+            "metres": 198
+          },
+          {
+            "heading": "FOOD",
+            "name": "THE BLUE PLATE DINER",
+            "metres": 167
+          },
+          {
+            "heading": "BAR",
+            "name": "THE RUSTY ANCHOR",
+            "metres": 33
+          },
+          {
+            "heading": "NIGHTCLUB",
+            "name": "AFTERHOURS",
+            "metres": 195
+          },
+          {
+            "heading": "CITY RAIL",
+            "name": "OLD QUARTER STATION",
+            "metres": 39
+          },
+          {
+            "heading": "BIKE SHARE",
+            "name": "STAND AT OLD QUARTER STATION",
+            "metres": 51
+          },
+          {
+            "heading": "CASINO",
+            "name": "GOLDEN TIDE CASINO",
+            "metres": 418
+          },
+          {
+            "heading": "BEACH CLUB",
+            "name": "MAREA BEACH CLUB",
+            "metres": 697
+          },
+          {
+            "heading": "BASKETBALL",
+            "name": "CITY COURTS",
+            "metres": 338
+          },
+          {
+            "heading": "SOCCER STADIUM",
+            "name": "SOUTH COAST STADIUM",
+            "metres": 628
+          },
+          {
+            "heading": "OFF-ROAD",
+            "name": "RIDGELINE 4X4 CLUB",
+            "metres": 1108
+          }
+        ],
+        "bigmap": {
+          "width": 800,
+          "height": 660,
+          "shown": {
+            "width": 0,
+            "height": 0,
+            "viewport": [
+              1280,
+              800
+            ]
+          }
+        },
+        "minimap": {
+          "width": 238,
+          "height": 158,
+          "logical": {
+            "w": 240,
+            "h": 159
+          }
+        },
+        "speedZoom": 1
+      }
+    },
+    "errors": []
+  },
+  {
+    "side": "after",
+    "fixture": {
+      "station": {
+        "id": 0,
+        "kind": "payphone",
+        "label": "PAYPHONE",
+        "serves": [
+          "PAYPHONE",
+          "CONTRACT 1"
+        ],
+        "street": "ARMORY ST",
+        "x": 904,
+        "y": 587,
+        "a": 3.142,
+        "docks": 8,
+        "docked": 7,
+        "rack": true,
+        "totem": true,
+        "knocked": 0
+      },
+      "x": 104,
+      "y": 587
+    },
+    "state": {
+      "status": {
+        "mode": "play",
+        "x": 104,
+        "y": 587,
+        "district": "NORTHBANK · OLD QUARTER",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "17:20",
+        "renderer": "2d",
+        "vehicles": 246,
+        "pedestrians": 595
+      },
+      "map": {
+        "layers": {
+          "services": true,
+          "garages": true,
+          "transit": true,
+          "bikes": true,
+          "sports": true,
+          "air": true,
+          "police": true,
+          "gangs": true
+        },
+        "destinations": [
+          {
+            "heading": "HOSPITAL",
+            "name": "SAINT MARLOW HOSPITAL",
+            "metres": 57
+          },
+          {
+            "heading": "RESPRAY & REPAIRS",
+            "name": "EASTSIDE GARAGE",
+            "metres": 235
+          },
+          {
+            "heading": "ARMORY",
+            "name": "SOUTH COAST ARMORY",
+            "metres": 99
+          },
+          {
+            "heading": "CLOTHES · CHANGE YOUR LOOK",
+            "name": "SOUTH COAST OUTFITTERS",
+            "metres": 396
+          },
+          {
+            "heading": "SAFEHOUSE · SLEEP",
+            "name": "SUNSET MOTEL",
+            "metres": 198
+          },
+          {
+            "heading": "FOOD",
+            "name": "THE BLUE PLATE DINER",
+            "metres": 167
+          },
+          {
+            "heading": "BAR",
+            "name": "THE RUSTY ANCHOR",
+            "metres": 33
+          },
+          {
+            "heading": "NIGHTCLUB",
+            "name": "AFTERHOURS",
+            "metres": 195
+          },
+          {
+            "heading": "CITY RAIL",
+            "name": "OLD QUARTER STATION",
+            "metres": 39
+          },
+          {
+            "heading": "BIKE SHARE",
+            "name": "STAND AT OLD QUARTER STATION",
+            "metres": 51
+          },
+          {
+            "heading": "CASINO",
+            "name": "GOLDEN TIDE CASINO",
+            "metres": 418
+          },
+          {
+            "heading": "BEACH CLUB",
+            "name": "MAREA BEACH CLUB",
+            "metres": 697
+          },
+          {
+            "heading": "BASKETBALL",
+            "name": "CITY COURTS",
+            "metres": 338
+          },
+          {
+            "heading": "SOCCER STADIUM",
+            "name": "SOUTH COAST STADIUM",
+            "metres": 628
+          },
+          {
+            "heading": "OFF-ROAD",
+            "name": "RIDGELINE 4X4 CLUB",
+            "metres": 1108
+          }
+        ],
+        "bigmap": {
+          "width": 800,
+          "height": 660,
+          "shown": {
+            "width": 0,
+            "height": 0,
+            "viewport": [
+              1280,
+              800
+            ]
+          }
+        },
+        "minimap": {
+          "width": 238,
+          "height": 158,
+          "logical": {
+            "w": 240,
+            "h": 159
+          }
+        },
+        "speedZoom": 1
+      }
+    },
+    "errors": []
+  }
+]

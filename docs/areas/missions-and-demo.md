@@ -91,6 +91,9 @@ index plus one.
 
 - Save schema in localStorage `dead-end-city-v1`: campaign indices, cash, clock, weapons,
   ammunition, `stats` (`campaignStats`: play time, cash earned, wanted peak), sportsbook bets.
+  Schema 12 also stores `retryJobIndex`: the running job's index, or the last failed/abandoned
+  job. Load accepts only an integer within the mission list that the story/demo picker allows.
+  Old saves without the field load normally with no pending retry.
   Progression frontier decides what the picker offers; a job played ahead of the story does
   not advance the campaign.
 - `save()` runs on events (a job's end, WASTED, BUSTED, a purchase, a garage, a skipped
@@ -117,9 +120,15 @@ index plus one.
   pager and HUD pill up). God mode keeps its pick. Every pointer reads `objective()`; console
   `pointers()` reports them all.
 - RESTART CURRENT JOB (`retryMission`) restarts `restartableJob()` (story.js): the job running,
-  else the last one failed (WASTED and BUSTED fail it), remembered in `retryJobIndex` (not saved)
-  while the picker offers it. After a win, at a new game or after a reload there is none: the
+  else the last one failed (WASTED and BUSTED fail it), or an unfinished job restored from a
+  save, remembered in `retryJobIndex` while the picker offers it. After a win or at a new game there is none: the
   pause menu shows it disabled, NO JOB TO RESTART; a waiting call is taken at the payphone.
+  After reopening the browser, an unfinished job can be restarted from its beginning. This is
+  **not a mid-stage checkpoint**: its vehicles, actors, timer and stage are rebuilt normally;
+  reload preserves saved ammunition, while restarting retains `resetMissionState()`'s existing
+  restock (owned weapons get a full magazine and at least five spare magazines). Cash and
+  rewards keep their existing rules. `tools/tests/mission-retry-save.mjs`
+  covers demo jobs 1–4, replays, invalid/locked/old saves and clearing on completion/new game.
 - CHOOSE MISSION while a job runs asks ABANDON <JOB>? (`showAbandonConfirm`, campaign.js; the
   `#abandonConfirm` dialog over the picker): ABANDON JOB (Enter, A, E) ends it through
   `abandonMission` (no JOB FAILED card; RESTART CURRENT JOB can bring it back) and the pick's

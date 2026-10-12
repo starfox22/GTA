@@ -3,9 +3,9 @@
 // report only.
 export default async function (t) {
   const first = await t.call('renderHiccups');
-  if (first === null) return; // the no-render page
+  if (first === null) t.skip('Requires WebGL: run with --render');
   t.assert(first.cells && first.cells.preUpload && typeof first.cells.preUpload.meshes === 'number', 'cells.preUpload is reported');
-  if (!first.litStage.staging) return; // no prewarm: the pre-upload does not run
+  if (!first.litStage.staging) t.skip('Requires a page with title prewarm enabled');
   await t.call('graphics', 'low');
   await t.call('look', 748, 584, 2);
   for (let i = 0; i < 120 && !(await t.call('renderHiccups')).prewarm.done; i++) await t.realWait(5);

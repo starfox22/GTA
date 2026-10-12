@@ -1,0 +1,13 @@
+{
+  "sourceBase": "370c1cfcb733bcf66cd81769e835800efd9e9912",
+  "sourceState": "Current follow-up branch worktree; source hashes in verification.json",
+  "indexBytes": 11674703,
+  "files": 14,
+  "mediaReferences": 13,
+  "missingReferences": [],
+  "missingZipReferences": [],
+  "largestFileBytes": 11674703,
+  "zipEntries": 15,
+  "zipCorruptEntry": null,
+  "zipSha256": "671f7769dc258099440e61276ddfbac96ba626e046a25514e5afff0fed79d463"
+}

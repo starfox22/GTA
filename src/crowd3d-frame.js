@@ -2,6 +2,15 @@
       /* Where the player got into or out of a car, for the transition poses. */
       function trackCarTransition() {
         const car = player.car && !transitRide && !taxiRide ? player.car : null;
+        // A respawn/retry replaces the world and cuts to a new location. It is
+        // not a door exit from the vehicle remembered by the previous frame.
+        if (carTransition.worldSerial !== worldResetSerial) {
+          carTransition.worldSerial = worldResetSerial;
+          carTransition.car = car;
+          carTransition.kind = null;
+          carTransition.at = -10;
+          return;
+        }
         if (car !== carTransition.car) {
           if (carTransition.car && !car) carTransition.kind = 'exit';
           else if (car && !carTransition.car) {

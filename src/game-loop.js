@@ -18,29 +18,39 @@
     }
     /**
      * FPS COUNTER
-     * Optional readout switched from Settings · Graphics and remembered in
+     * Enabled by default; switched from Settings · Graphics and remembered in
      * localStorage beside the touch-controls setting. It averages over half a
      * second so the number is readable, and shows the average frame time too.
      */
-    const fpsMeter = { shown: false, frames: 0, since: 0 };
+    const fpsMeter = { shown: true, frames: 0, since: null };
     try {
-      fpsMeter.shown = localStorage.getItem('dead-end-city-fps') === 'on';
+      fpsMeter.shown = localStorage.getItem('dead-end-city-fps') !== 'off';
     } catch {}
+    function resetFpsSample() {
+      fpsMeter.frames = 0;
+      fpsMeter.since = null;
+      const el = getElement('fpsCounter');
+      el.textContent = '-- FPS';
+      el.classList.remove('slow');
+    }
     function applyFpsSetting() {
       getElement('fpsCounter').classList.toggle('hidden', !fpsMeter.shown);
     }
     function toggleFpsCounter() {
       fpsMeter.shown = !fpsMeter.shown;
-      fpsMeter.frames = 0;
-      fpsMeter.since = performance.now();
-      getElement('fpsCounter').textContent = '-- FPS';
+      resetFpsSample();
       try {
         localStorage.setItem('dead-end-city-fps', fpsMeter.shown ? 'on' : 'off');
       } catch {}
       applyFpsSetting();
     }
     function updateFpsCounter(t) {
-      if (!fpsMeter.shown) return;
+      if (!fpsMeter.shown || document.hidden) return;
+      // Loading and time spent in another tab are not rendered frame intervals.
+      if (fpsMeter.since === null) {
+        fpsMeter.since = t;
+        return;
+      }
       fpsMeter.frames++;
       const elapsed = t - fpsMeter.since;
       if (elapsed < 500) return;
@@ -51,7 +61,9 @@
       fpsMeter.frames = 0;
       fpsMeter.since = t;
     }
+    resetFpsSample();
     applyFpsSetting();
+    document.addEventListener('visibilitychange', resetFpsSample);
     /**
      * FRAME LIMITER
      * Settings · Graphics caps the frame rate at 30, 60 or 120 FPS, or leaves it
@@ -123,7 +135,7 @@
       syncTouchInput();
       // The gamepad's buttons and sticks (gamepad.js), through the same actions.
       pollGamepad();
-      updateFpsCounter(t);
+      if (live) updateFpsCounter(t);
       // At a 30 FPS cap a frame is 33.3 ms: the step limit allows it, so the
       // simulation keeps real time rather than running 1% slow.
       const deltaSeconds = Math.min(frameLimiter.limit === 30 ? 0.04 : 0.033, Math.max(0, (t - lastTime) / 1000));

@@ -250,7 +250,7 @@
       body.Q.value = 0.9;
       body.gain.value = 6;
       gain.gain.value = (0.18 + strength * 0.5) * (0.35 + 0.65 * (1 - far));
-      pan.pan.value = at ? clamp((at.x - player.x) / Math.max(400, distance), -0.8, 0.8) : 0;
+      pan.pan.value = at ? clamp(soundRight(at.x - player.x, at.y - player.y) / Math.max(400, distance), -0.8, 0.8) : 0;
       source.connect(low).connect(body).connect(gain).connect(pan);
       pan.connect(rainAudio ? rainAudio.cabin : master);
       // Near claps fill the room: the reverb, a street's slap-back, the hills' echo.

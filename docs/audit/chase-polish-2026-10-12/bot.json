@@ -1,0 +1,30 @@
+{
+ "seed": 121026,
+ "minutes": 4,
+ "simSeconds": 206,
+ "realSeconds": 187,
+ "actions": 26,
+ "histogram": {
+  "swimAndFall": 2,
+  "garageJob": 1,
+  "idle": 2,
+  "die": 2,
+  "chaseView": 2,
+  "runOver": 1,
+  "drive": 3,
+  "menus": 1,
+  "walk": 1,
+  "graphicsAndSettings": 1,
+  "door": 1,
+  "wanted": 1,
+  "skyAndClock": 1,
+  "crime": 2,
+  "shoot": 1,
+  "exitVehicle": 1,
+  "mouseFire": 1,
+  "garageAndShops": 1,
+  "carjack": 1
+ },
+ "crashed": null,
+ "findings": []
+}

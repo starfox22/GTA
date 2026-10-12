@@ -96,7 +96,8 @@ frame from `updateCivic` (`timed('citylife')`). Console group `livingCity`
   metre each side), runs red lights, slows for its turns, creeps round a car stopped in its way
   on whichever side clears it with the least swing within 26 units of the centre line
   (`run.dodge`; a car pulled over and stopped for it used to deadlock it), and never loops
-  its route (`countyIndex` does not wrap).
+  its route (`countyIndex` does not wrap). It also obeys `drawbridgeTrafficLimit`: the emergency
+  branch returns before countyRouteControl's ordinary bridge check, so it must apply that limit itself.
 
 ## Ambulances (livingcity-medics.js)
 
@@ -111,6 +112,14 @@ frame from `updateCivic` (`timed('citylife')`). Console group `livingCity`
   (or 70 s on the way) out of view: at the stop if that is out of view too, else at the
   point of its route nearest the stop that is out of view, on the street and clear
   (`hopMedicPastJam`, `hops` in medicReport); boxed in 35 s (or 90 s on the way): job off.
+- Before the unseen hop, a vehicle-blocked job stuck 4 s can try a junction detour
+  (`livingcity-medic-routing.js`): at most 3 attempts, 8 s apart, including failed plans.
+  The ambulance's footprint must have a clear approach to the nearby junction; no mid-block
+  reversing or U-turn into a queue. The BFS avoids the blocking vehicle's road link and tries
+  both ends of the victim's block, including the final segment to the stop. Only route/control
+  state changes: positions, collisions, siren yielding and mission drivers are untouched.
+  `medicReport` lists `detours`/`routeTries`; `medicRoutingAudit()` checks the actual graph without
+  advancing the world. Completely boxed vehicles still use the existing wait/hop/abort rules.
 - A person knocked down against a stopped car crawls out from under it (`stepClearOfCar`,
   physics-knockdowns.js; a medic caught in a car's outline steps out the same way): before, one lying at an ambulance's bumper held it for good.
   On scene: two paramedics (whites over navy, `cityRole.kind 'medic'`) get out on the

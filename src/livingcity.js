@@ -15,6 +15,7 @@
     // @include src/livingcity-traffic.js
     // @include src/livingcity-sirens.js
     // @include src/livingcity-medics.js
+    // @include src/livingcity-medic-routing.js
     // @include src/livingcity-events.js
     // @include src/livingcity-key.js
     // @include src/livingcity-wrecks.js

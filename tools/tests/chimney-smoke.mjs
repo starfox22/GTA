@@ -4,7 +4,7 @@
 export const fresh = true;
 export default async function (t) {
   const first = await t.call('chimneySmoke');
-  if (first === null) return; // the no-render page: no renderer
+  if (first === null) t.skip('Requires WebGL: run with --render');
   await t.call('holdSimulation', true);
   try {
     await t.call('god', true);

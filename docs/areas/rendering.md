@@ -78,6 +78,9 @@ The image pipeline, light, searchlights and the cutaway: rendering-lighting.md.
   building part uses those or `staticMat()`, **never a per-building `mat()`** (a draw call per
   building).
 - Small repeated props: add an InstancedMesh pool in cityscape3d.js `pools`.
+  Immutable rooftop equipment is partitioned after construction by `scenery-pools3d.js`;
+  close views submit spatial chunks while wide/flight views retain the original pool.
+  See rendering-scenery-pools.md before adding mutable objects to that path.
 - Effect sprites (smoke, fire, sparks, flashes, glass, drops) are slots in one instanced pool drawn in one call
   (`fxAdd`, fx3d-particles.js): never a `Three.Sprite` per particle (**rendering-effects.md**).
 - Boat-kit groups are merged by `kitMerge` and must not go into `batchGroups`.

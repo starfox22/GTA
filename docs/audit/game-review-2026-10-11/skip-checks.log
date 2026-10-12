@@ -1,0 +1,7 @@
+started dev server (?dev&norender: boot 14.6s)
+SKIP vehicle-merge (0.1s): Requires WebGL: run with --render
+SKIP chimney-smoke (16.9s): Requires WebGL: run with --render
+SKIP wet-glints (13.2s): Requires WebGL: run with --render
+PASS wheelie (22.0s)
+     sport bike: 16.1° after 1.2 s, looped at 67 km/h
+1/4 passed, 3 skipped, 0 failed in 69s

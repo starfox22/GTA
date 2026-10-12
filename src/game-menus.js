@@ -109,7 +109,7 @@
         captureChasePointer(true);
       }
       keys = {};
-      mouse.down = false;
+      mouse.down = mouse.alt = false;
       syncCarRadio();
     }
     function openHelp() {
@@ -130,6 +130,7 @@
       getElement('closeHelp').focus({ preventScroll: true });
       getElement('help').querySelector('.dialog').scrollTop = 0;
       keys = {};
+      mouse.down = mouse.alt = false;
     }
     function closeHelp() {
       gameMode = previousMode;
@@ -145,7 +146,7 @@
       gameMode = mapOpen ? 'map' : 'play';
       getElement('mapOverlay').classList.toggle('hidden', !mapOpen);
       keys = {};
-      mouse.down = false;
+      mouse.down = mouse.alt = false;
       if (mapOpen) {
         if (taxiPicking)
           getElement('mapRouteStatus').textContent = 'CAB WAITING · Tap where you want to be dropped off';

@@ -10,7 +10,9 @@ vehicles-and-driving-models.md.
   `opacity` of the pane in front of the cabin, the sky's reflection lies over it unweakened and grazing angles turn
   to mirror (Fresnel). Past `CAR_GLASS_CLEAR` (24-36 m from the camera) the tint closes to `CAR_GLASS_FAR_TINT`, so a
   far cabin never shows empty. The body impostors keep the old opaque glass (`glassFar`, `policeGlass`); the
-  4x4 club trucks still use `policeGlass`. Cracked and burst panes are damage3d.js's own (opaque) materials.
+  4x4 club trucks still use `policeGlass`. Cracked panes use damage3d.js's opaque cracked material. Broken or
+  lowered panes use `missingGlass` (not drawn and never writing depth), exposing the actual cabin and occupants.
+  The trunk well and a burnt roof retain their solid dark lining. Repair restores the intact window material.
 - See-through glass casts no shadow (the sun reaches the cabin through it): the paint panels (roof panel, pillars)
   cast instead, and the pristine merge's paint set casts when they do, so a car still has three casters.
 - The cabin (`carCabinParts`: seats and headrests, dash and binnacle, wheel, mirror, parcel shelf, a patrol car's
@@ -23,6 +25,9 @@ vehicles-and-driving-models.md.
   (unless the drive-by pose draws them), traffic drivers dressed by `driverColor` / `driverFemale` / `driverRole`, one
   passenger (`passengers`), a patrol car's two officers while `!crewDeployed`. Hands on the rim (`carWheelRim`), the
   'riding' pose lying back with the seat (`plan.lean`, below).
+- Seated and drive-by ankle targets use the seat plan's cached `pedalY`: at least 10 cm over the
+  cabin floor, including the shoe below the ankle. A low fitted hip must not drag the feet
+  below the chassis. The seat and headroom fit are unchanged.
 - Road dirt toward the sills (civLiveryPatch ROAD DIRT): `m.dirt` is the paint's own uniform (amount, ground height),
   written by `animateCivilianCar` when it changes; impostors keep none.
 - Report: `carModels()` gives each civilian model's `cabin` (hip, recline, rear bench, `headroom` round the tallest
@@ -89,3 +94,5 @@ vehicles-and-driving-models.md.
   a `lift` past any trim panel under it (letters stand 1.2 cm proud by default; patches lie 1-2 cm off the paint).
   `carModels()` lists each model's `badge` {text, sub, letters}; tools/tests/rear-badges.mjs checks every letter is
   laid and the draw count.
+
+The foot-clearance check compares the captured ankle bones with the posed cabin floor (`floorWorldY`), including terrain and suspension; absolute height above sea level is not floor clearance. Draw once before advancing the entry animation, then assert the seated occupant is actually drawn.

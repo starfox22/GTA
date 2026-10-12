@@ -479,7 +479,7 @@
         glideParam(v.source.playbackRate, v.rate, now, 0.12);
         glideParam(v.gain.gain, v.level, now, 0.15);
         glideParam(v.filter.frequency, clamp(9000 - d * 20, 700, 9000), now, 0.2);
-        glideParam(v.pan.pan, clamp(dx / 450, -0.85, 0.85), now, 0.15);
+        glideParam(v.pan.pan, clamp(soundRight(dx, dy) / 450, -0.85, 0.85), now, 0.15);
       }
     }
     function updateEngineAudio(dt) {

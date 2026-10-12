@@ -179,8 +179,10 @@
     /* Standing (or sitting in a stopped car) still, not fighting: giving up. */
     function trackSurrender(deltaSeconds) {
       const fought = Math.min(gameTime - (player.lastShotAt ?? -100), gameTime - (player.lastStrikeAt ?? -100)) < 3,
+        resisting = actionHeld('forward') || actionHeld('back') || actionHeld('left') || actionHeld('right') ||
+          actionHeld('jump') || actionHeld('fire') || mouse.down,
         afloat = isAircraft(player.car) || (player.car && isBoat(player.car));
-      if (!surrenderAnchor || distanceBetween(player, surrenderAnchor) > 6 || fought || afloat || wantedStars <= 0) {
+      if (!surrenderAnchor || distanceBetween(player, surrenderAnchor) > 6 || fought || resisting || afloat || wantedStars <= 0) {
         surrenderAnchor = { x: player.x, y: player.y };
         surrenderFor = 0;
         return;

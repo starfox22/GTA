@@ -568,7 +568,7 @@
       if (w.ammo <= 0) {
         if (w.reserve > 0) startReload();
         else {
-          tell('Empty. Find a purple ammo crate or switch weapon.');
+          tell('Empty. Buy ammunition at a gun shop or switch weapon.');
           shotCooldownSeconds = 0.5;
           tone(100, 0.03, 0.06);
         }

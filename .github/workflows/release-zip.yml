@@ -1,6 +1,7 @@
 # Builds the playable zip (DeadEndCity/index.html + media/ + README.txt) and attaches it to
 # a GitHub Release, so the game is always downloadable from the repo's Releases page:
-# - every push updates the rolling "latest" release (the newest build of the pushed branch);
+# - only main updates the rolling "latest" release; other branches produce review artifacts;
+# - the named Codex review branches also publish the requested public prerelease download;
 # - pushing a tag like v31.0.0 creates a permanent release for that version;
 # - "Run workflow" on the Actions tab rebuilds on demand.
 name: Release zip
@@ -15,7 +16,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: release-zip-${{ github.ref_type }}
+  group: release-zip-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -27,8 +28,15 @@ jobs:
       - name: Build the zip
         run: python3 tools/build.py --zip dist/DeadEndCity.zip
 
+      - name: Upload the playable build for review
+        uses: actions/upload-artifact@v4
+        with:
+          name: DeadEndCity-${{ github.sha }}
+          path: dist/DeadEndCity.zip
+          if-no-files-found: error
+
       - name: Publish the rolling "latest" release
-        if: github.ref_type == 'branch'
+        if: github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -37,6 +45,26 @@ jobs:
             --title "Latest build" \
             --target "$GITHUB_SHA" \
             --notes "Newest build of \`${GITHUB_REF_NAME}\` (${GITHUB_SHA::7}). Download DeadEndCity.zip, unzip it and double-click DeadEndCity/index.html (Chrome, Edge, Firefox or Safari)."
+
+      - name: Publish the requested Codex review download
+        if: github.ref == 'refs/heads/codex/game-fixes-2026-10-11' || github.ref == 'refs/heads/codex/chase-clouds-polish-2026-10-12'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          review_tag="codex-review-${GITHUB_SHA::12}"
+          cat > /tmp/review-notes.md <<'NOTES'
+          Review build on a separate branch. Main and its latest release are unchanged.
+
+          Download DeadEndCity.zip, extract it, and open DeadEndCity/index.html in your browser.
+          This is a downloadable build; the existing chatgpt.site website has not been updated.
+          NOTES
+          if gh release view "$review_tag" > /dev/null 2>&1; then
+            gh release upload "$review_tag" dist/DeadEndCity.zip --clobber
+          else
+            gh release create "$review_tag" dist/DeadEndCity.zip \
+              --target "$GITHUB_SHA" --prerelease --latest=false \
+              --title "Codex review ${GITHUB_SHA::7}" --notes-file /tmp/review-notes.md
+          fi
 
       - name: Publish the version release
         if: github.ref_type == 'tag'

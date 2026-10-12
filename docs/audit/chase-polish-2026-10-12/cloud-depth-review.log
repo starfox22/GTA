@@ -1,0 +1,7 @@
+final-solar-only [{"pools":{"enabled":false,"cellSize":2048,"pools":1,"chunks":8,"originalInstances":199,"viewInstancesBound":199,"originalDraws":1,"viewDrawsBound":1,"addedInstanceBytes":12736,"list":[{"name":"solar","sourceInstances":199,"chunks":8,"split":false,"invalid":false,"viewDrawsBound":1,"viewInstancesBound":199}]},"calls":131,"triangles":811126,"hash":"125fe3c53555c04d"},{"pools":{"enabled":true,"cellSize":2048,"pools":1,"chunks":8,"originalInstances":199,"viewInstancesBound":30,"originalDraws":1,"viewDrawsBound":1,"addedInstanceBytes":12736,"list":[{"name":"solar","sourceInstances":199,"chunks":8,"split":true,"invalid":false,"viewDrawsBound":1,"viewInstancesBound":30}]},"calls":131,"triangles":809098,"hash":"125fe3c53555c04d"}]
+initialized
+cloud-depth-fair-off {"budget":{"resolution":0.5,"steps":96,"light":3,"absorption":1,"width":480,"height":300},"errors":0}
+cloud-depth-fair-on {"budget":{"resolution":0.5,"steps":96,"light":3,"absorption":0.5,"width":480,"height":300},"errors":0}
+cloud-depth-storm-off {"budget":{"resolution":0.5,"steps":96,"light":3,"absorption":1,"width":480,"height":300},"errors":0}
+cloud-depth-storm-on {"budget":{"resolution":0.5,"steps":96,"light":3,"absorption":0.5,"width":480,"height":300},"errors":0}
+closed {"errors":[],"warnings":1}

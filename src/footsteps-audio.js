@@ -327,7 +327,7 @@
       }
       npcSteps.tokens--;
       npcSteps.heard++;
-      footstepSound(footSurfaceAt(p.x, p.y), 1, p.police ? 1.2 : 0.9, npcSteps.wet, clamp((p.x - player.x) / 300, -0.8, 0.8), 0, gain);
+      footstepSound(footSurfaceAt(p.x, p.y), 1, p.police ? 1.2 : 0.9, npcSteps.wet, clamp(soundRight(p.x - player.x, p.y - player.y) / 300, -0.8, 0.8), 0, gain);
     }
     // Console (DeadEndCity.footsteps): the last steps, and the ground at a point.
     function footstepsReport(x, y) {

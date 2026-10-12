@@ -39,6 +39,9 @@ vehicles-and-driving-models.md's; credits in docs/THIRD_PARTY_CREDITS.txt. Conso
   repair or respray swaps back (`assetCharRelease`, materials pooled). Three programs (cut-out, atlas, plain), compiled
   at the title prewarm (`assetCharWarm`, kept in sharedMaterials). Draw calls unchanged. Console `assetChar()`,
   `burnVehicle(id, ago, mend)`.
+- Each released char-material pool keeps at most 12 materials; overflow is disposed immediately so repaired cars
+  do not retain GPU program references. Vehicle paint caches wear, heat and colour separately: unchanged paint
+  allocates no string per frame, and distinct damage states cannot collide in the cache.
 - Wipers: the truck types (box truck, bus, ambulance, pickup; Vinny's cab) take the procedural pair (`addWipers`) at the
   foot of the measured windscreen, arms capped to the glass's height (`reach`); swept in the rain as before.
 

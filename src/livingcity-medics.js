@@ -204,6 +204,9 @@
         job.pace = { x: c.x, y: c.y, at: gameTime };
       }
       job.stuckFor = (speed < 3 || job.slow) && left > 40 ? job.stuckFor + deltaSeconds : 0;
+      // While a junction is still reachable, drive another block round the obstruction. This changes
+      // only the route; the ambulance remains visible and subject to the ordinary traffic physics.
+      if (job.stuckFor > 4 && tryMedicDetour(job)) return;
       if ((job.stuckFor > 8 || gameTime - job.startedAt > 70) && !crowdInView(c.x, c.y, 120)) {
         if (spotUnseen(job.stop.x, job.stop.y, 60, SPOT_AMBULANCE) && canSpawnCar('ambulance', job.stop.x, job.stop.y, job.heading, 4)) {
           Object.assign(c, { x: job.stop.x, y: job.stop.y, a: job.heading, vx: 0, vy: 0, speed: 0 });
@@ -514,6 +517,8 @@
               stuckFor: +job.stuckFor.toFixed(1),
               // Times it went on past a jam out of sight (hopMedicPastJam).
               hops: job.hops || 0,
+              detours: job.detours || 0,
+              routeTries: job.routeTries || 0,
               // The ambulance's wanted speed and whatever stands nearest ahead of it.
               desiredKmh: c?.aiControl ? Math.round(c.aiControl.desired / KMH) : null,
               // What held it last (car / person / player), null when nothing did.

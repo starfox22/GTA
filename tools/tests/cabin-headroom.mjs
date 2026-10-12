@@ -5,7 +5,7 @@
 // page (the suite's) cabinHeadroom() is null and the test only checks that.
 export default async function (t) {
   const first = await t.call('cabinHeadroom');
-  if (first === null) return;
+  if (first === null) t.skip('Requires WebGL: run with --render');
   await t.call('god', true);
   await t.call('setClock', 12);
   await t.call('teleport', 420, 4380);

@@ -30,6 +30,7 @@
           viewFrustum.setFromProjectionMatrix(
             viewProjection.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse),
           );
+          updateSceneryPools();
           // Weather runs after the time-of-day pass so it modifies that day's light
           // rather than being overwritten by it; the clouds need the final camera.
           lap = profileLap('r:camera', lap);

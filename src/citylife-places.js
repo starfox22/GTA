@@ -447,6 +447,9 @@
         if (index !== LOCKPICK_INDEX) tell('Discover this weapon at South Coast Armory. Look for GUN on the map.', 3);
         return false;
       }
+      // Reselecting the gun already in hand (its hotkey or arsenal card) is
+      // not a weapon switch: keep its reload running and avoid another save.
+      if (index === selectedWeaponIndex) return true;
       selectedWeaponIndex = index;
       reloadSecondsRemaining = 0;
       drawWeapon();

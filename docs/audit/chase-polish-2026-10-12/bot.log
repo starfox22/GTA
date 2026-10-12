@@ -1,0 +1,55 @@
+bot seed 121026: 4 game minutes, 111 anchors, 37 doors
+    swimAndFall: dead 1004,618 NORTHBANK · OLD QUARTER hp 0 foot stars 0
+#1 17s swimAndFall bail 94 m | dead NORTHBANK · OLD QUARTER foot hp 0 *0
+    garageJob: play 6926,3750 STONECREEK hp 100 muscle stars 0
+#2 34s garageJob STONECREEK GARAGE: RESPRAY -> muscle | play STONECREEK muscle hp 100 *0
+    idle: play 6926,3703 STONECREEK hp 98 muscle stars 0
+#3 70s idle 36 s | play STONECREEK muscle hp 98 *0
+    die: dead 6926,3703 STONECREEK hp 0 foot stars 0
+#4 74s die blasted | dead STONECREEK foot hp 0 *0
+    idle: play 376,948 NORTHBANK · OLD QUARTER hp 100 foot stars 0
+#5 121s idle 47 s | play NORTHBANK · OLD QUARTER foot hp 100 *0
+    chaseView: play 331,937 NORTHBANK · OLD QUARTER hp 100 foot stars 0
+#6 122s chaseView chase | play NORTHBANK · OLD QUARTER foot hp 100 *0
+    runOver: play 487,982 NORTHBANK · OLD QUARTER hp 99 foot stars 0
+#7 122s runOver ran people over | play NORTHBANK · OLD QUARTER foot hp 99 *0
+    chaseView: play 488,983 NORTHBANK · OLD QUARTER hp 99 foot stars 0
+#8 122s chaseView street | play NORTHBANK · OLD QUARTER foot hp 99 *0
+    drive: play 548,983 NORTHBANK · OLD QUARTER hp 99 helicopter stars 0
+#9 129s drive helicopter 2 legs -> helicopter | play NORTHBANK · OLD QUARTER helicopter hp 99 *0
+    menus: play 548,983 NORTHBANK · OLD QUARTER hp 99 helicopter stars 0
+#10 129s menus arsenal | play NORTHBANK · OLD QUARTER helicopter hp 99 *0
+    walk: play 548,983 NORTHBANK · OLD QUARTER hp 99 helicopter stars 0
+#11 129s walk skip (in a vehicle) | play NORTHBANK · OLD QUARTER helicopter hp 99 *0
+    graphicsAndSettings: play 548,983 NORTHBANK · OLD QUARTER hp 99 helicopter stars 0
+#12 130s graphicsAndSettings playerRing | play NORTHBANK · OLD QUARTER helicopter hp 99 *0
+    swimAndFall: play 941,527 NORTHBANK · OLD QUARTER hp 100 foot stars 0
+#13 142s swimAndFall bail 434 m | play NORTHBANK · OLD QUARTER foot hp 100 *0
+    door: play -2183,1998 OCEAN DRIVE hp 100 foot stars 0
+#14 143s door CORAL PALMS MOTEL prompt "E CORAL PALMS MOTEL" -> service | play OCEAN DRIVE foot hp 100 *0
+    wanted: play -1809,1978 OCEAN DRIVE hp 100 foot stars 0
+#15 158s wanted 2 stars | play OCEAN DRIVE foot hp 100 *0
+    skyAndClock: play -1809,1978 OCEAN DRIVE hp 100 foot stars 0
+#16 162s skyAndClock rain at 6.5 | play OCEAN DRIVE foot hp 100 *0
+    crime: play -1935,1804 OCEAN DRIVE hp 100 foot stars 1
+#17 173s crime crime, ran: stars 1 (was 1) | play OCEAN DRIVE foot hp 100 *1
+    shoot: play -1935,1804 OCEAN DRIVE hp 100 foot stars 1
+#18 174s shoot 1 shots at civilian | play OCEAN DRIVE foot hp 100 *1
+    exitVehicle: play -1935,1804 OCEAN DRIVE hp 100 foot stars 1
+#19 174s exitVehicle skip (on foot) | play OCEAN DRIVE foot hp 100 *1
+    die: dead -1935,1804 OCEAN DRIVE hp 0 foot stars 1
+#20 177s die blasted | dead OCEAN DRIVE foot hp 0 *1
+    drive: play -1545,1978 OCEAN DRIVE hp 100 rally stars 0
+#21 179s drive rally 1 legs -> rally | play OCEAN DRIVE rally hp 100 *0
+    mouseFire: play -1543,1978 OCEAN DRIVE hp 100 rally stars 0
+#22 179s mouseFire mouse fire | play OCEAN DRIVE rally hp 100 *0
+    crime: play -1544,2241 OCEAN DRIVE hp 100 foot stars 1
+#23 195s crime crime, ran: stars 1 (was 0) | play OCEAN DRIVE foot hp 100 *1
+    garageAndShops: play 9058,-3024 CROWN AVENUE hp 100 foot stars 1
+#24 195s garageAndShops THE HALCYON CLINIC | play CROWN AVENUE foot hp 100 *1
+    carjack: play 9058,-3024 CROWN AVENUE hp 100 foot stars 1
+#25 201s carjack carjack -> foot | play CROWN AVENUE foot hp 100 *1
+    drive: play 8946,-2926 CROWN AVENUE hp 88 foot stars 0
+#26 206s drive bicycle 2 legs -> foot | play CROWN AVENUE foot hp 88 *0
+
+seed 121026: 26 actions, 3 game minutes in 187 s, 0 distinct finding(s) -> dist/bot/seed-121026.json

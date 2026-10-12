@@ -2,7 +2,7 @@
 // at once it holds below that scale for a while, so the post targets are not reallocated back and forth.
 // Needs the 3D renderer (adaptiveSim returns null on the no-render page: nothing to check there).
 export default async function (t) {
-  if ((await t.call('renderHiccups')) === null) return;
+  if ((await t.call('renderHiccups')) === null) t.skip('Requires WebGL: run with --render');
   await t.call('graphics', 'auto');
   const plan = [
     [4, 66, 20], // 15 fps and GPU-bound: steps down
@@ -17,6 +17,7 @@ export default async function (t) {
   t.assert(run && Array.isArray(run.changes), 'adaptiveSim returns the scale changes');
   t.note(JSON.stringify(run));
   t.assert(run.changes.length <= 30, `${run.changes.length} scale changes in the hunting run`);
+  t.assert(run.changes.every(([, scale]) => scale >= 0.6), 'AUTO stepped below its 60% minimum resolution: ' + JSON.stringify(run.changes));
   t.assert(run.ceiling < 1, 'a ceiling was set after the quick slow-down');
   await t.call('graphics', 'low');
 }

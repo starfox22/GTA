@@ -419,6 +419,8 @@
           rebuilding: pbState.ready && !!pbState.build,
           shown: pbState.shown,
           visible: playerBodyMesh.visible,
+          // Captured ankle joint positions in world units, for checking seated feet against the cabin floor.
+          ankles: pbState.shown ? [13, 14].map(i => pbState.frames[i].elements.slice(12, 15)) : null,
           buildMs: d ? d.ms : null,
           workMs: Math.round(pbState.workMs),
           slices: pbState.slices,

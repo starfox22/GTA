@@ -41,6 +41,8 @@
       vw: 0,
       vh: 0,
       chaseLayout: false,
+      touchLayout: false,
+      touchDispatchTop: -1,
       // The chase layout's card: how far up from the bottom it stands (the minimap's top, chase-view.css).
       cardBottom: -1,
       measuredAt: -1,
@@ -108,11 +110,13 @@
         now = hudNow();
       // A new window size, or a switch between the street and the chase view's layouts (chase-view.css), moves
       // the card: what was measured no longer holds.
-      const chaseLayout = document.body.classList.contains('chase-view');
-      if (C.vw !== viewportWidth || C.vh !== viewportHeight || C.chaseLayout !== chaseLayout) {
+      const chaseLayout = document.body.classList.contains('chase-view'),
+        touchLayout = document.body.classList.contains('touch-mode');
+      if (C.vw !== viewportWidth || C.vh !== viewportHeight || C.chaseLayout !== chaseLayout || C.touchLayout !== touchLayout) {
         C.vw = viewportWidth;
         C.vh = viewportHeight;
         C.chaseLayout = chaseLayout;
+        C.touchLayout = touchLayout;
         C.open.ok = C.strip.ok = C.story.ok = false;
         // (A fold for the old layout's card is no reason to keep this one folded.)
         C.yielding = false;
@@ -130,9 +134,11 @@
         }
       }
       const pager = getElement('pager');
+      let dispatchTop = 96;
       if (!pager.classList.contains('hidden')) {
         const box = pager.getBoundingClientRect();
         if (box.height > 0) {
+          dispatchTop = Math.max(dispatchTop, Math.ceil(box.bottom + 8));
           const into = pager.classList.contains('compact') ? C.strip : C.open;
           into.l = box.left;
           into.t = box.top;
@@ -151,6 +157,7 @@
           C.nav.r = box.right;
           C.nav.b = box.bottom;
           C.nav.ok = true;
+          dispatchTop = Math.max(dispatchTop, Math.ceil(box.bottom + 8));
         }
       }
       const story = getElement('storyLine');
@@ -164,6 +171,12 @@
           C.story.ok = true;
         }
       } else C.story.ok = false;
+      // Touch layouts put the mission card at the top. Place dispatch below its measured height rather than
+      // a fixed 96 px that runs through the objective; write only after the layout reads above.
+      if (touchLayout && dispatchTop !== C.touchDispatchTop) {
+        C.touchDispatchTop = dispatchTop;
+        document.body.style.setProperty('--touch-dispatch-top', dispatchTop + 'px');
+      }
     }
     /* The card's state changed: measure again at the next frame start. */
     function remeasureMissionCard() {

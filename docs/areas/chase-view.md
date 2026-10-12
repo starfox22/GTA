@@ -34,6 +34,14 @@ rendering.md Cameras and view.
   cut shorter than 1.6 m cranes the camera up to 0.55 m over the head (`CHASE_CRANE`, eased; never
   while aiming), so the head drops out of the frame. The camera never goes below the ground or the
   water (`chaseFloor`), and then looks down at the shoulder instead.
+- Canopies and elevated decks use the existing indexed overhead-cover geometry as finite slabs.
+  The camera may remain underneath or above, but neither the boom nor the upward close-wall crane
+  may pass through a slab. Grid queries include the camera margin across cell boundaries.
+  If a tall vehicle fits below a cover but its usual above-roof pivot does not, `chaseCoverPivot`
+  lowers the pivot beneath the underside before sweeping. A subject standing on that deck
+  keeps its above-deck pivot.
+- The shoulder offset is swept from the pivot before the boom. Clearance includes the near plane's half-width;
+  collision may reduce either offset to zero, since a minimum boom must never push the camera through a wall.
 - MOTION COMFORT (`motionComfortOn()`): the lens and boom do not change with speed, the heading spring
   is slower, no auto-follow on foot, and the renderer takes 0.12 of the kicks and tremor (none with
   comfort on, as in the street view).

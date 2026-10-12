@@ -52,7 +52,7 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - At a fresh boot a double-parked delivery van (crowd-scenes.js) often holds the truck's first kerb spot: the truck then waits further east along the same kerb (x ≈ 1950), still in view.
 - Bug pass 2026-10-02 (docs/changes/2026-10-02-missions-bug-pass.md) found no soft-lock: death, busting and retry at every stage, saving and reloading mid-job, the respray route with the truck, the truck rolled to the quay edge (it stops at the kerb, never in the sea), spiking the glass and leaving before he drinks, a parachute onto the hotel roof (not landable), 70-step random-action runs on both jobs, and `settleAudit()` at every parked truck, limousine and ambulance moment (0 changes). Not covered: a gamepad-only run.
 - Bug pass 2026-10-04 (docs/changes/2026-10-04-missions-bug-pass-2.md), no god mode: the cargo chase keeps `searchClock` 'off' (no countdown) as designed; a truck wedged by the console pilot near (290, 1739) on the GPS route was BUSTED, failing the job with the payphone line. A truck driven fast at the east quay edge (x ≈ 3390) goes into the sea ("THE CAR IS GOING UNDER · E to get out"); one rolled slowly stops at the kerb. A player who loads and then sits in the bay keeps the truck at 8 % once the crew's 45 s alert runs out (the cage share and the fire floor): the police chase then finishes a truck that weak unless it is resprayed.
-- Mission 1's chase end to end (no god mode), driven by the console's `followRoute` (the GPS road route with steering keys): from the harbour with three stars, 11-12 cruisers, the helicopter and two roadblocks the truck crossed the Keys bridge and reached Palm Keys (x -1408, y ~3600-4000) in 5 of 7 runs (66-106 s), but the last two turns and the 90 degree turn in at the warehouse door with a dozen officers converging defeated the pilot every time: an overshoot past y 4224, then wedged and BUSTED, or the truck shot down while boxed in (police rounds 45 %, ~6 hp/s). Not stable enough for the suite (tools/tests has no mission1-chase); the drop is covered by mission1-depot. Owner's call: the surrender rule (pursuit-officers.js `trackSurrender`, 1.5 s within 6 units) counts a wedged vehicle whose driver holds the throttle as giving up, so a truck pushing against a cruiser is pulled out at three stars.
+- Mission 1's chase end to end (no god mode), driven by the console's `followRoute` (the GPS road route with steering keys): from the harbour with three stars, 11-12 cruisers, the helicopter and two roadblocks the truck crossed the Keys bridge and reached Palm Keys (x -1408, y ~3600-4000) in 5 of 7 runs (66-106 s), but the last two turns and the 90 degree turn in at the warehouse door with a dozen officers converging defeated the pilot every time: an overshoot past y 4224, then wedged and BUSTED, or the truck shot down while boxed in (police rounds 45 %, ~6 hp/s). Not stable enough for the suite (tools/tests has no mission1-chase); the drop is covered by mission1-depot. The October 11 Codex fix prevents held throttle/steering/fire from counting as voluntary surrender; close forced arrests still apply. The route-following/traffic blockage described above remains open.
 
 ## Missions 3 and 4 (summitjob.js, fortjob.js, vehicle-trunk.js, fort-cover*.js, skyline-meeting.js)
 
@@ -70,6 +70,7 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - Mission briefs are only used by missions 3-4 so far; the other jobs keep the title card and the strip.
 
 ## Clouds (clouds*.js, clouds3d-*.js)
+- October 12 chase follow-up replaces LOW/MEDIUM's repeating slices with bounded volumetric integration and decorrelates distant chase formations. Review [before/after captures](audit/chase-polish-2026-10-12/README.md); real-GPU profiling and motion review remain necessary, particularly Ultra on the target M4 Max.
 - The flight camera never looks above ~30 degrees below the horizon: under the base the underside is never in view, only the shadows and the dimmer light (the chase view shows it: clouds3d-sky.js).
 - Chase view: the sky, haze, sun glare, shafts and the per-pixel cloud shadows were tuned on SwiftShader: check on a real GPU (and the cost of the march from below at ULTRA). The cloud shadows darken shade too (as the plane always did: a blend, not a light term). The march from below converges over ~10 frames (SKY CLOUD HISTORY): judge it in motion on a GPU (a fast turn shows the single-frame grain briefly).
 - The veil is capped so the subject stays readable, so the ground shows through it once a jumper is within ~30 m of the base (the far march covers only beyond the jumper).
@@ -171,12 +172,10 @@ here when polishing; delete a line when it is fixed. Newest features first.
   street would remove the rest.
 - Motion blur is the camera's own motion only (depth reprojection, no per-object velocity buffer): other cars
   passing fast are sharp, and anything within 12 m of the camera never smears.
-- The close-quarters crane (CHASE_CRANE) handles a wall behind the player; the camera can still come close to the
-  player's head beside a wall on the right shoulder side (the boom is marched from the shoulder point).
+- The close-quarters crane (CHASE_CRANE) handles a wall behind the player; a tight corner can still bring the
+  camera close to the player's head. Shoulder and boom now both sweep for wall clearance.
 
 ## Car cabins and glass (cars3d-interior.js, crowd3d-driveby.js SEATED OCCUPANTS)
-- A burst pane is still damage3d.js's dark `brokenGlass` frame: the cabin behind it does not show through the hole
-  (a model hook like `m.glass` for burst panes would let it).
 - The drive-by grip is clamped to the arm's reach (driveby-seats.js): from the lowest supercar seats a forward aim
   out of the driver's window comes in toward the shoulder rather than far ahead of it.
 - No badges on bicycles, the tank (armor.js), boats or aircraft.

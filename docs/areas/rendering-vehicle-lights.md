@@ -21,6 +21,10 @@ pipeline: rendering-lighting.md.
   the camera adds a soft glare of fixed screen size (`HALO_GLARE_ANGLE`, growing in over
   `HALO_GLARE_NEAR` 5-18 m, where the lamp's own bloom is the glare, and fading over
   `HALO_GLARE_FADE` 70-260 m). Halos and glare light no surface: they are outside the budget.
+- The drive-map car loop is bounded by tail count (`BEAM_CAPACITY` 160), because analytic CAR LAMPS cars still
+  produce tail washes without increasing the head-quad count. Bounding only heads could draw 164 tail instances
+  from a 160-instance buffer with four analytic cars. All drive-map and haze buffers upload only their active
+  prefix; tests in `instance-upload-ranges.mjs` cover the dense-traffic bound and actual Three.js upload sizes.
 - VEHICLE LIGHT BUDGET (headlight-beam.js): all vehicle light a surface takes shares one soft
   cap, filled in order (street lamps' pool at half, the drive map, then each slot:
   `cap * left * (1 - exp(-E / cap))`, `left *= exp(-E / cap)`), so one beam looks as its own

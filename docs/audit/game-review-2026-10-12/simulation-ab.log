@@ -1,0 +1,26 @@
+A run 1 done
+B run 1 done
+
+A = dist/review-20261012-before.html, B = dist/review-20261012-after.html; medians of 1 / 1 runs
+stage      cpu/frame A>B  p95 A>B       p99 A>B       max A>B       long A>B   >33 A>B
+walk       22.1>19.1      73>124.7      690.1>1117.6  1134>1335.5   16>17      10>29
+drive      9.1>10.2       24.4>52.7     32.3>84.9     35>129.6      18>26      1>23
+chase      8.9>9.2        23>41.7       30.9>86.9     35.1>91.4     15>33      1>14
+map        3.6>4.2        12.4>25.4     13.3>40.5     13.3>40.5     26>26      0>1
+pause      2.9>2.8        12.1>17.8     14.3>33.4     14.3>33.4     18>18      0>1
+  walk       stateHash equal in every run
+  drive      stateHash equal in every run
+  chase      stateHash equal in every run
+  map        stateHash equal in every run
+  pause      stateHash equal in every run
+  allocKB per frame: 757.9 > 728.7
+  gcMB per frame: 560.3 > 572.4 (KB)
+  dom per frame: 0.6 > 0.6
+  bufMB per frame: 0 > 0 (KB)
+  texMB per frame: 0 > 0 (KB)
+  models per frame: 0 > 0
+  geometries per frame: 0 > 0
+  textures per frame: 0 > 0
+  programs per frame: 0 > 0
+  audioNodes per frame: 0 > 0
+  canvasText per frame: 1.4 > 1.4

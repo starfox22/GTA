@@ -42,7 +42,7 @@
     function waterPlacement(position) {
       if (!position) return { gain: 1, pan: 0 };
       const d = distanceBetween(position, player);
-      return { gain: 1 / (1 + d / 230), pan: clamp((position.x - player.x) / 450, -0.9, 0.9) };
+      return { gain: 1 / (1 + d / 230), pan: clamp(soundRight(position.x - player.x, position.y - player.y) / 450, -0.9, 0.9) };
     }
     /**
      * One shaped burst of filtered noise: `type`/`freq`/`q` set the band, the

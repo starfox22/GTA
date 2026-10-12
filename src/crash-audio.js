@@ -217,7 +217,7 @@
       tone.type = 'lowpass';
       tone.frequency.value = Math.min(clamp(16000 - d * 11, 2500, 16000), Math.max(900, shade.cutoff));
       bus.gain.value = attenuation * shade.gain;
-      pan.pan.value = clamp((o.x - player.x) / 450, -0.9, 0.9);
+      pan.pan.value = clamp(soundRight(o.x - player.x, o.y - player.y) / 450, -0.9, 0.9);
       bus.connect(tone).connect(pan).connect(master);
       // The street's slap-back or the county's echo as well as the reverb.
       if (c.set !== 'bump' && c.set !== 'scrape') pan.connect(reverbSend || reverb);

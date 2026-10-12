@@ -1,0 +1,29 @@
+{
+  "navigation": {
+    "queries": 1604,
+    "visibilityProbes": 6391,
+    "mismatches": 0
+  },
+  "mapCases": [
+    {
+      "name": "station inside the default minimap edge",
+      "stations": 4,
+      "painted": 2
+    },
+    {
+      "name": "speed pullback reveals further stations",
+      "stations": 2,
+      "painted": 1
+    },
+    {
+      "name": "panned city map ignores stations outside its own window",
+      "stations": 4,
+      "painted": 2
+    },
+    {
+      "name": "icon crossing the edge keeps its outline",
+      "stations": 2,
+      "painted": 1
+    }
+  ]
+}

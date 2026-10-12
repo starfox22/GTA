@@ -18,9 +18,9 @@ sh tools/check.sh [tag]                  # syntax gate only (dist/check/<tag>.{h
 python3 tools/build.py                   # dead-end-city.html (local, git-ignored: never commit it)
 python3 tools/build.py --out dist/game.html            # scratch build
 python3 tools/build.py --split-media dist/publish      # dist/publish/index.html + media/ (*.mp3 + pack-*.js): the artifact
-python3 tools/build.py --zip dist/DeadEndCity.zip      # DeadEndCity/{index.html,media/,README.txt}; CI (.github/workflows/release-zip.yml) attaches it to the "latest" GitHub Release on every push, and to a versioned release for tags v*
+python3 tools/build.py --zip dist/DeadEndCity.zip      # DeadEndCity/{index.html,media/,README.txt}; CI uploads branch artifacts, updates "latest" only from main, and publishes versioned releases for tags v*. The named October 11 and chase-clouds Codex review branches also publish commit-specific prereleases.
 python3 tools/filemap.py                 # regenerate docs/FILEMAP.md after adding/removing/renaming files
-node tools/smoke.mjs dist/game.html dist/smoke         # headless boot, walk, drive, map: errors + 5 screenshots
+node tools/smoke.mjs dist/game.html dist/smoke         # boot, FPS, walk, drive, map, both cameras: 6 screenshots
 node tools/tour.mjs steps.json dist/tour dist/game.html   # scripted screenshots (?dev console)
 node tools/layout-audit.mjs dist/game.html             # city-plan overlaps (~59 oblique-junction notes, county and Monarch, are expected)
 node tools/media-check.mjs dist/publish/index.html     # streamed tracks load over file://
@@ -98,6 +98,16 @@ packs with plain `<script src>` so the zip still plays from file://.
   and steps the player out of a vehicle with nowhere to step out to; only an aircraft in the air comes along.
 - `tell(text, s, {id, tone})` (hud-notify.js) is the only notification writer; hints use
   `pressKey()`/`keyPrefix()` (input-hints.js), never `'Press ' + keyName()`.
+- FPS is on by default (preserve an explicit saved opt-out); only live frame intervals enter its sample,
+  reset on visibility changes. Left and right mouse releases are independent; focus loss, pause, help and the map clear both.
+- Positioned audio uses `soundRight(dx, dy)` for horizontal placement: final chase-camera yaw in chase view,
+  unchanged world-X placement in the overhead view. Keep attenuation and occlusion relative to the player.
+- Saved `retryJobIndex` remembers an unlocked unfinished/failed job for restart from its beginning; it never
+  restores a mission stage/world snapshot. Wins and new games clear it; old saves and demo/story gates stay valid.
+- Chase cloud budgets live in `SKY_CLOUD_QUALITY`; the distant chase sampling approximation never alters the
+  original flight/overhead cloud field. History resets on discontinuities and compensates wind drift.
+- The chase shoulder, boom and upward crane respect indexed overhead-cover slabs as well as buildings;
+  preserve open space below/above canopies and query adjacent grid cells for the near-plane margin.
 - NPC body armour: `ballisticDamage(person, damage, kind, calibre, zone)` with `VEST_STOP` (combat-rules.js NPC BODY
   ARMOUR) is the only rule for what an NPC vest stops: torso only (`strikePerson` picks the zone first), soft vs
   `vestPlate`, by calibre (weapon `cal`, `bulletCalibre`). A new armoured NPC sets `vest`/`vestPlate`; a new gun sets
@@ -146,6 +156,7 @@ packs with plain `<script src>` so the zip still plays from file://.
   carries `c.deckBridge`. Every island with more than one road bridge keeps a drawbridge (`bridgeIslands()`) and the
   timetables keep `drawbridgeOpenShare().share` >= 0.5 (tools/tests/drawbridge-islands.mjs). A bridge appended later
   that lands on a sea wall keeps the coastline rhythms through `lateBridgeLanding(e)`.
+  `drawbridgeRaisedAt()` is the shared proximity gate for deck settling and the parked-vehicle shortcut.
 - North Point Key visitors (livingcity-key.js) are the only traffic on the Key; its inbound
   lane runs 17 units off the centre line, not 24 (the sea-wall rail reaches onto the deck).
 - The Blue Hour: `BLUE_HOUR_ENTRANCE` (roofmission-entrance.js) is the only plan for the hotel's
@@ -309,6 +320,7 @@ packs with plain `<script src>` so the zip still plays from file://.
   is the aim for every device: aim code reads `aim()`, `chaseAimScreen()` or `chaseGroundPoint()`, never
   `mouse.x/y` with `city3D.groundPoint` alone. Movement keys go through `playerMoveHeading()`; the street view's
   paths stay bit-identical when the chase view is off. Its HUD layout is `body.chase-view` (chase-view.css).
+  Sweep both the shoulder and boom against walls; no minimum boom may override collision clearance.
 - Chase view budget (rendering-chase-budget.md): a static group's small parts and glows, scene signs, small batches,
   vehicles' unlit small parts and effect sprites step out by size against distance and haze (`chasePropShown`); hide
   only by layer mask or castShadow (never `visible`, never a light); a part that moves sits in a `userData.dynamic`
@@ -357,6 +369,8 @@ packs with plain `<script src>` so the zip still plays from file://.
   so exterior trim goes before the cabin); `carSeatPlan` (`m.seats`) is the one seat rule; crowd3d-driveby.js SEATED
   OCCUPANTS seats people only within `OCCUPANT_REACH` (at or beyond the glass's clear reach); see-through glass never
   casts a shadow (the paint panels do).
+  Broken or lowered panes use the non-drawing `missingGlass` material, never an opaque cabin stand-in.
+  Seated and drive-by feet both use the seat plan's `pedalY`, keeping ankles and shoes above the cabin floor.
 - Car seats (cars3d-headroom.js CABIN HEADROOM; vehicles-and-driving-cabins.md): `carSeatPlan` fits every closed cabin's
   seat round the head the rig draws (tallest man and woman with hair and caps, `cabinHeadPose` = drawCrowdPerson's chain
   at `seatTorsoLean`/`seatHeadPitch`); seated occupants and the drive-by pose take `plan.lean`: change the riding pose and

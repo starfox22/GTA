@@ -4,9 +4,8 @@
 export default async function (t) {
   const report = await t.call('renderHiccups');
   if (report === null) {
-    // The no-render page: no renderer, nothing to log.
     t.assert((await t.call('drawProfile')) === null, 'drawProfile without a renderer');
-    return;
+    t.skip('Renderer counters require WebGL: run with --render');
   }
   t.finite(report, 'renderHiccups');
   for (const key of ['frames', 'programsLinked', 'texturesCreated', 'geometriesCreated', 'worstCpuMs'])

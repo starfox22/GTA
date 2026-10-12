@@ -510,8 +510,9 @@
     }
     /* The job RESTART CURRENT JOB restarts: the one running, else the last one that
        failed (WASTED and BUSTED fail it too) while the picker still offers it. After a
-       win, at a new game or after a reload there is none: the pause menu shows the
-       button disabled, NO JOB TO RESTART (game-menus.js), and a waiting call is taken
+       win or at a new game there is none. Reload may restore an unfinished job's
+       index (campaign.js), but restarts its beginning, never a saved stage. With no
+       retry the pause menu shows NO JOB TO RESTART (game-menus.js), and a waiting call is taken
        at the payphone, never skipped from the menu. */
     function restartableJob() {
       if (mission) return mission.index;

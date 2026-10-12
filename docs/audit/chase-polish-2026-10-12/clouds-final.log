@@ -1,0 +1,6 @@
+PASS chase-clouds, actual rendered tier/size and all four budgets; zero console errors
+the march looks out about 20 km: 20
+fair visibility for the layer (km): 30
+{"low":{"resolution":0.25,"steps":24,"light":0,"tier":"LOW","width":240,"height":150},"medium":{"resolution":0.34,"steps":40,"light":1,"tier":"MEDIUM","width":326,"height":204},"high":{"resolution":0.5,"steps":64,"light":2,"tier":"HIGH","width":480,"height":300},"ultra":{"resolution":0.5,"steps":96,"light":3,"tier":"ULTRA","width":480,"height":300}}
+fair 30 km, overcast 15.6 km, history 6 frames
+Ready for final captures

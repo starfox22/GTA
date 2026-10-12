@@ -2,7 +2,7 @@
 // the seat backs inside the rear glass, the cabin is merged into the trim (no draw call of its own), and the people in
 // a car near the camera are drawn through the glass. On the no-render page (the suite's) every report is null.
 export default async function (t) {
-  if ((await t.call('carModels')) === null) return;
+  if ((await t.call('carModels')) === null) t.skip('Requires WebGL: run with --render');
   await t.call('god', true);
   await t.call('setClock', 12);
   await t.call('teleport', 420, 4380);

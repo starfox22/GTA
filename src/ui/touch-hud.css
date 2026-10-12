@@ -39,6 +39,11 @@
   padding: 4px 12px 4px 4px;
   max-width: 34vw;
 }
+/* Touch's waypoint shares the top row. The counter uses the narrow strip below the buttons. */
+.touch-mode #fpsCounter {
+  top: auto;
+  bottom: 2px;
+}
 .touch-mode #navArrow {
   width: 24px;
   height: 24px;
@@ -104,7 +109,7 @@
   opacity: 0.72;
 }
 .touch-mode #radioCaption {
-  top: 96px;
+  top: var(--touch-dispatch-top, 160px);
 }
 .touch-mode #bottom {
   top: 54px;
