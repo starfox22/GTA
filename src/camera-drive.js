@@ -119,14 +119,16 @@
         scale = drivingLookAhead() * (steady ? K.steadyLead : 1),
         turnMax = K.leadTurnMax * (steady ? K.steadyTurn : 1);
       let want = 0;
-      if (scale && sv > K.leadMinSpeed) {
-        const forward = D.vx * Math.cos(c.a) + D.vy * Math.sin(c.a) >= 0,
-          // Ground units from the middle of the frame to its top edge at the framing in force.
-          half = clamp(viewportHeight * 0.68, 430, 630) / Math.max(1e-3, worldZoomTarget * speedZoom) / 2 / COMFORT_SIN,
-          chase = 1 - CAMERA_CHASE_PULL * cameraChaseCloseness(c, D.vx, D.vy, sv),
-          aim = Math.atan2(D.vy, D.vx),
-          room = Math.max(0, half * K.leadShareTop - (vehicleSpec(c).l || 0) / 2);
-        want = Math.min(sv * K.leadSeconds * scale, forward ? Math.min(half * K.leadShare * scale, room) : K.leadBack * scale) * chase;
+      if (sv > K.leadMinSpeed) {
+        const aim = Math.atan2(D.vy, D.vx);
+        if (scale) {
+          const forward = D.vx * Math.cos(c.a) + D.vy * Math.sin(c.a) >= 0,
+            // Ground units from the middle of the frame to its top edge at the framing in force.
+            half = clamp(viewportHeight * 0.68, 430, 630) / Math.max(1e-3, worldZoomTarget * speedZoom) / 2 / COMFORT_SIN,
+            chase = 1 - CAMERA_CHASE_PULL * cameraChaseCloseness(c, D.vx, D.vy, sv),
+            room = Math.max(0, half * K.leadShareTop - (vehicleSpec(c).l || 0) / 2);
+          want = Math.min(sv * K.leadSeconds * scale, forward ? Math.min(half * K.leadShare * scale, room) : K.leadBack * scale) * chase;
+        }
         let turn = Math.atan2(Math.sin(aim - D.h), Math.cos(aim - D.h));
         if (Math.abs(turn) > K.leadFlip) {
           // Forward to reverse (or back): shrink the lead to nothing, then face the new way at once.
@@ -136,7 +138,11 @@
             turn = 0;
           }
         }
-        D.h += clamp(turn * (1 - Math.exp(-dt * K.leadHeadRate)), -turnMax * dt, turnMax * dt);
+        // With no lead to swing (look-ahead 0 %, or the lead shrunk away) the heading is only the axis the
+        // vehicle's speed is fed forward along: it follows the smoothed travel at once, so the view keeps
+        // the vehicle centred whichever way it turns. A lead turns no faster than turnMax (a swinging view).
+        if (!scale && D.len < 1) D.h = aim;
+        else D.h += clamp(turn * (1 - Math.exp(-dt * K.leadHeadRate)), -turnMax * dt, turnMax * dt);
       }
       const kl = 1 - Math.exp(-dt * K.leadLengthRate);
       D.len1 += (want - D.len1) * kl;

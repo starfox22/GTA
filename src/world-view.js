@@ -32,7 +32,8 @@
        Driving · Vehicle camera distance is a factor on every vehicle's share
        (vehicleCameraFactor, driving.js). Rides keep 0.7; aircraft keep the
        framing the flight view was tuned at (1.6 by default), the parachute its own.
-       On foot (and in a carjack) the share is Settings · Driving · Walking camera
+       On foot and through a carjack (no close-up: getting into a car never moves
+       the zoom, the owner's rule) the share is Settings · Driving · Walking camera
        distance (walkCameraFactor: 1 at the default 100 %, so the default on-foot view
        is exactly STREET_ZOOM). SLOW FRAMING (below) holds a slow road vehicle or boat
        at that walking share. */
@@ -45,8 +46,6 @@
       air: 1.6 / STREET_ZOOM,
       ride: 0.7,
       parachute: 0.78 * STREET_ZOOM_STEP,
-      // Pulling a driver out of a car (carjack-struggle.js): in close on the struggle.
-      carjack: 1.3,
     };
     /* SLOW FRAMING. In a road vehicle or a boat the camera keeps the walking framing
        (the on-foot share, no speed pull-back) until the vehicle reaches
@@ -107,7 +106,6 @@
       }
       if (player.parachute) return CAMERA_CONTEXT.parachute;
       if (transitRide || taxiRide || player.coaster) return CAMERA_CONTEXT.ride;
-      if (player.carjack && player.carjack.phase !== 'approach') return CAMERA_CONTEXT.carjack * walkCameraFactor();
       return walkCameraFactor();
     }
     let worldZoom = STREET_ZOOM,

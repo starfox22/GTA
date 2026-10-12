@@ -52,6 +52,28 @@ export default async function (t) {
     await t.call('launch', 0);
 
     t.near(rows[0].lead, 0, 0.3, 'lead at 0 %');
+    // 0 % after a turn: the view keeps the vehicle centred whichever way it now drives (the follow's axis turns with
+    // the travel; it used to stay on the boarding heading, so the car slid toward the edge it was driving at). Then
+    // 200 %: the view stands ahead of the car, which sits back from the middle against the way it drives.
+    for (const pct of [0, 200]) {
+      await t.call('settings', { lookAhead: pct });
+      await t.call('teleport', 420, 4300);
+      await t.call('drive', 'sport', 0, Math.PI / 2);
+      await t.keys('KeyW,KeyD', 1.2);
+      await t.keys('KeyW', 3);
+      const feel = await t.call('cameraFeel'),
+        st = await t.call('status'),
+        off = Math.hypot(feel.offset[0], feel.offset[1]) / 8;
+      t.note(`${pct} % after a turn: view ${off.toFixed(1)} m from the car (offset ${feel.offset}, heading ${feel.driveHeading})`);
+      if (pct === 0) t.assert(off < 2, `0 %: the car is off centre after a turn by ${off.toFixed(1)} m`);
+      else {
+        const h = (feel.driveHeading * Math.PI) / 180,
+          ahead = (feel.offset[0] * Math.cos(h) + feel.offset[1] * Math.sin(h)) / 8;
+        t.assert(ahead > 5, `200 %: the view is not ahead of the car after a turn: ${ahead.toFixed(1)} m`);
+      }
+      await t.call('interact');
+      await t.wait(0.3);
+    }
     for (const [a, b] of [
       [100, 150],
       [150, 200],

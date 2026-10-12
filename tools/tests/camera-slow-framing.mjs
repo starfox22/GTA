@@ -2,7 +2,7 @@
 // frames exactly like walking (boarding at rest keeps the walking zoom); from 31 km/h it eases out to the vehicle's
 // framing (CAMERA CONTEXT × Vehicle camera distance × the speed pull-back), and comes back in only after a second held
 // under 30 km/h. The walking distance is a factor on the on-foot framing (100 % = today's view exactly) and so on the
-// slow vehicle's; Motion comfort keeps its one fixed vehicle zoom.
+// slow vehicle's; a carjack never zooms; Motion comfort keeps its one fixed vehicle zoom.
 export const fresh = true;
 const KMH = 1 / 3.6;
 export default async function (t) {
@@ -81,6 +81,29 @@ export default async function (t) {
     const footBack = await t.call('cameraView');
     t.near(footBack.aim, 2, 2, 'on-foot aim back at 100 %');
 
+    // A carjack (the real E path's struggle) never zooms in or out: the framing holds the walking zoom from the
+    // approach to the seat, so nothing zooms out after boarding at rest.
+    await t.call('settings', { motionComfort: false });
+    await t.call('teleport', 420, 4400);
+    // Let the walking-distance steps above settle back to the on-foot framing first.
+    await t.wait(6);
+    const jack = await t.call('carjackTest');
+    t.assert(jack.running, 'carjack did not start: ' + JSON.stringify(jack));
+    let jackMin = Infinity,
+      jackMax = 0,
+      seated = null;
+    for (let s = 0; s < 6 - 1e-6; s += 0.25) {
+      await t.wait(0.25);
+      const v = await t.call('cameraView');
+      jackMin = Math.min(jackMin, v.framing);
+      jackMax = Math.max(jackMax, v.framing);
+      if ((await t.call('status')).vehicle) seated = v;
+    }
+    t.assert(seated, 'the carjack never seated the player');
+    t.assert(jackMin > 0.99 && jackMax < 1.01, `the zoom moved through the carjack: framing ${jackMin}-${jackMax}`);
+    t.near(seated.context, 1, 1, 'context after a carjack at rest');
+    await t.call('interact');
+    await t.wait(0.5);
     // Motion comfort: no slow framing, the vehicle holds its one fixed zoom from boarding.
     await t.call('settings', { motionComfort: true });
     await t.call('teleport', 420, 4400);

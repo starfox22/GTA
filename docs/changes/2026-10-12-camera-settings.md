@@ -2,7 +2,11 @@
 
 - Below 30 km/h a car, bike or boat keeps the walking camera; it eases out to the vehicle camera only from 31 km/h
   and comes back in after a second under 30 km/h (no pumping at a junction). Boarding at rest no longer zooms out.
-  With Motion comfort on, a vehicle keeps its one fixed zoom as before.
+  A carjack no longer zooms in on the struggle (and so no longer zooms back out once seated). With Motion comfort
+  on, a vehicle keeps its one fixed zoom as before.
+- Look-ahead 0 % keeps the vehicle in the middle of the screen whichever way it turns (the follow's feed-forward axis
+  stayed on the boarding heading, so after a turn the car slid toward the edge it was driving at); higher settings move
+  it back from the middle against the way it drives.
 - Settings · Driving · Camera look-ahead now reaches 300 % and defaults to 200 %; the higher settings really lead
   further (at 100 km/h: 100 % 10.8 m, 150 % 16.2 m, 200 % 21.6 m, 300 % 27.9 m; the old 150 % stopped at ~13 m),
   stopping where the vehicle's far end would reach the HUD. A saved 150 % (the old default) loads as 200 %.
