@@ -187,7 +187,7 @@ measure GPU cost, so real-GPU gains of render changes are unverified.
     play compiles the rain-only shaders at the first shower; the 40-slot glint list's uniform count is untested on
     low-end GPUs (HIGH/ULTRA only use 40).
   - Crumple: a sprung door covers the lower door only; street-view mark sizes unchanged.
-  - Street camera: look-ahead defaults to 150 % but its frame share stops at `leadShareMax` 0.3 (HUD clearance).
+  - Street camera: look-ahead 0-300 % (default 200 %); its frame share stops where the vehicle's far end reaches `leadShareTop` 0.7 of the half frame (HUD clearance). Below 30 km/h vehicles keep the walking framing (world-view.js SLOW FRAMING).
 
 - The night-and-rain mission scenario at HIGH graphics was never re-run after a container restart; real-GPU
   frame costs of the prewarm, staged tier change and cell pre-upload are unmeasured (only counts were).

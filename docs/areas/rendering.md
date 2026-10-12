@@ -11,11 +11,12 @@ The image pipeline, light, searchlights and the cutaway: rendering-lighting.md.
   tallest roof (`streetCeiling()`); no distance haze on the street.
 - Framing (world-view.js): the player's zoom (`STREET_ZOOM` 2 on foot, one `STREET_ZOOM_STEP`
   (x1.25) out from the old 2.5: a person ~26 px tall at 1280x800, ~34 m of street on screen;
-  not saved) times a CAMERA CONTEXT share for what they are in (car 0.56 = 1.12 at rest, two
-  steps wider than the old 1.75, for motion sickness: the street slides past more slowly;
+  not saved) times a CAMERA CONTEXT share for what they are in (on foot `walkCameraFactor()`,
+  Walking camera distance 60-160 %, 1 by default; car 0.56 = 1.12, two steps wider than the old 1.75;
   motorbike 0.61, bicycle 0.66, bus/truck/boat 0.48, rides 0.7; aircraft 0.8 = the flight
   view's 1.6; every vehicle share times `vehicleCameraFactor()`, Settings · Driving · Vehicle
-  camera distance 80-160 %) times the SPEED PULL-BACK `1 / (1 + 0.0025 g)` on the eased speed
+  camera distance 80-160 %; SLOW FRAMING: a road vehicle or boat frames like walking under 30 km/h, out
+  at 31, back in after 1 s under 30, never with Motion comfort) times the SPEED PULL-BACK `1 / (1 + 0.0025 g)` on the eased speed
   (`drivingCameraSpeed`, camera-drive.js: a bump, crash or wheelspin never pumps it): 1.08 at
   50 km/h, 0.97 at 100, 0.87 at 150, 0.79 at 200 by default (a x1.4 swing, not x1.75: a zoom in
   motion is a looming flow), no wider than 0.5 of the rest framing; with Motion comfort
@@ -39,7 +40,8 @@ The image pipeline, light, searchlights and the cutaway: rendering-lighting.md.
   the car on screen, not the view); the camera's height (`streetCameraAltitude`) is the ground
   height smoothed with its climb fed forward, so terrain triangles and crests no longer bob the
   view. On foot and in aircraft the old lead and lag (spring at twice the old easing rate).
-  Settings · Driving · Camera look-ahead scales the leads.
+  Camera look-ahead (0-300 %, default 200 %) scales the leads; the driving lead's frame share stops where the
+  vehicle's far end reaches 0.7 of the half frame (`leadShareTop`, HUD clear); on foot and in helicopters it counts up to 150 %.
   `kickCamera(heading, units)` drives a spring (`cameraKick`), `shake` a smooth tremor
   (`cameraShakeOffset` at `cameraShakeLevel()`); in a road vehicle kicks are 0.7 as far and
   critically damped, the tremor 0.45 of `shake`. The renderers add both, nothing reads them back.

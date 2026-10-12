@@ -72,8 +72,9 @@ police3d.js, helicopter3d-*.js, apache3d.js, plane3d.js, vehicles3d.js, boats3d.
 - Helicopters: `helicopterControl` (physics); rooftop landings in rooftops.js. The police
   helicopter is unarmed (police-and-combat.md). The Apache (apache.js) is player-only; the
   military Black Hawk's door guns, the LAV-8 and the gun jeep: police-and-combat-mounted.md.
-- Camera: a vehicle frames at its CAMERA CONTEXT share of `STREET_ZOOM` (a car 0.7) and eases
-  back from ~45 km/h (`speedZoomTarget`); in the air a perspective camera (rendering.md).
+- Camera: under 30 km/h a road vehicle or boat keeps the walking framing (world-view.js SLOW FRAMING); from 31 km/h
+  it frames at its CAMERA CONTEXT share of `STREET_ZOOM` (a car 0.56 × Vehicle camera distance) and eases back with
+  speed (`speedZoomTarget`); in the air a perspective camera (rendering.md).
 
 ## Vehicle models
 
