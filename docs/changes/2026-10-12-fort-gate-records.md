@@ -7,6 +7,10 @@
   LAV-8 on the avenue's kerb. The sergeant, the brief and Vinny point to the new door.
 - Taking any of the base's vehicles or helicopters inside the fence (or anywhere under Kessler's cover) is five stars
   at once with the base alarmed, the Apache included.
-- Fixed: a static staff car in the HQ lot stood inside a QRF jeep (the lot is now the HQ pad and the jeeps' bays).
+- Fixed: a static staff car in the HQ lot stood inside a QRF jeep (the lot is now the HQ pad and the jeeps' bays);
+  the inner gate guard stood inside the fence post between the lanes; after a bump at the gate crossing the supply
+  truck's driver got out in civilian clothes and left the truck in the inbound lane for good (army drivers now
+  carry on, and a run whose driver is gone ends).
+- Console `militaryAudit()`: parked vehicles in walls, buildings or each other, posts inside solids, key spots clear.
 - Internals: `fortCoverGatePass()`, `FORT_GATE_OPEN_AT` (fort-cover.js); `SENTINEL.helipads[2]`, `SENTINEL.readyLine`;
   tests fort-gate-barrier, fort-records-route, fort-vehicle-theft.
