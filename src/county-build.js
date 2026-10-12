@@ -256,6 +256,8 @@
       }
       // People within 100 units ahead (from the crowd's grid, not a copy of everyone).
       const yieldTo = (p) => {
+        // A story character's car on the city grid (Kessler) minds only people on the road, not the pavement's crowd.
+        if (c.missionDriver && p !== player && inCityGrid(p.x, p.y) && !crowdOnRoad(p.x, p.y)) return;
         if (p.hp > 0 && distanceBetween(c, p) < 160) {
           const a = normalizeAngle(headingBetween(c, p) - c.a);
           if (Math.abs(a) < 0.45) desired = Math.min(desired, Math.sqrt(2 * 0.6 * GRAVITY * Math.max(0, distanceBetween(c, p) - 60)));

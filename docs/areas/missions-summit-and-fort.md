@@ -56,6 +56,9 @@ cleanup, the demo gate) are in missions-and-demo.md; this page is what each job 
   carries `countyRouteStop` (county-build.js countyRouteControl: holds the last point and eases to rest at a quarter
   g), and he parks once at rest within 8 units (or, held short by something in his spot, at rest within 70 after 3 s).
   His house spot is the avenue's east kerb (gap ~1). Console `kerbFit()` measures it; tools/tests/mission4-kessler.mjs.
+  On his way a knock from traffic only makes him honk (crowd-traffic.js `crowdCrash`: a `missionDriver` never gets out
+  to argue, which read as his car taken), and on the city grid he slows only for people on the road, not the
+  pavement's crowd (countyRouteControl).
 - The tail: `tailHeat` rises on his bumper (within `tooClose`) or close behind him while he moves; held up behind him
   in traffic or at a drawbridge does not count. At 1 he made the tail (fail). Far behind him is never announced (no
   "lost him": the map shows his car all the time); the objective stays on the car. The meter shares `#stealthStatus`
