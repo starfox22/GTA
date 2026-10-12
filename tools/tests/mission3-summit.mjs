@@ -8,7 +8,7 @@ export default async function (t) {
     let s = await t.call('startMission', 2);
     t.assert(s.mission === 'High Ground', 'mission 3 is not High Ground: ' + JSON.stringify(s));
     let m = await t.call('summitJob');
-    t.assert(m.stage === 0 && /SUMMIT OF MOUNT ASCENT/.test(m.instruction), 'stage 0: ' + JSON.stringify(m));
+    t.assert(m.stage === 0 && /TOP OF THE MOUNTAIN/.test(m.instruction), 'stage 0: ' + JSON.stringify(m));
     t.near(m.target.x, 7759, 7761, 'stage 0 points at the summit');
 
     // On foot by the cairn: the arrival, then the dig (held key; a release keeps the progress).

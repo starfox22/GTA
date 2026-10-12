@@ -91,9 +91,15 @@ cleanup, the demo gate) are in missions-and-demo.md; this page is what each job 
 ## Mission briefs (mission-brief.js, ui/mission-brief.css)
 
 - `missionBrief(text, { kicker, tone, seconds })` puts one sentence in the upper middle (22% from the top, above the
-  player, under the waypoint pill) for its reading time (`missionBriefSeconds`: 4.5-10 game seconds), then folds it
+  player, under the waypoint pill) for its reading time (`missionBriefSeconds`: 3-6.5 game seconds), then folds it
   down into the pager strip, which glows once (`#pager.brief-land`). A brief waits while a headline card
   (`#announcement`) is centred and folds when one comes up; a newer brief replaces the one showing; O folds it early
-  (`toggleMissionCard`); with no job it folds. Missions 3 and 4 use it; the strip keeps setStage's instruction.
+  (`toggleMissionCard`), and so does Escape (`dismissMissionCentre`, game-input.js; the gamepad's MENU taps
+  Escape): it folds a brief, or clears a job's centred headline card and lands a brief waiting behind it straight in
+  the strip, without pausing; with nothing to clear Escape pauses as before. With no job it folds. Missions 3 and 4
+  use it; the strip keeps setStage's instruction.
+- Mission 3's opening says what, never how (the owner's words, `SUMMIT_OPENING`): the brief, the call
+  (`phoneMessage`) and the strip name the package at the top of the mountain only; the 4x4 trail and the parachute
+  are the player's to find (Vinny's radio beats at the trailhead or in a jump still react).
 - Jobs that open with their own line from the contact set `m.ownOpening` (story.js then skips the brief line).
 - Console `missionBrief()`; test tools/tests/mission-brief.mjs.
