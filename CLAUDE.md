@@ -271,6 +271,8 @@ packs with plain `<script src>` so the zip still plays from file://.
   (`retryMission`, `chooseMission`, new game) move the player with `teleportPlayer`. Mission stage texts that embed
   a key name put it right after "·" or "HOLD" (`missionSummary` keeps it upper case only there); a hint naming the
   walk action reads `keyName('walk')` or the touch label, never a literal "WALK".
+- `frame()` books the next frame whatever `runFrame` does (frame-guard.js: each distinct error logged once, `frameFaults()`);
+  a caught fault is still a bug. A lost WebGL context pauses, then saves and reloads on restore (gpu-context.js).
 - `node tools/bot.mjs --seed N --minutes M` is the random-walk bot (console `integrity()`): run it after changes to
   input, modes, carriers or saving (docs/areas/testing-and-console.md).
 - A tier or shadow change goes through `litStateFor` / `applyLitState` (lighting3d-look.js LIT STATE) and is staged
