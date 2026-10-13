@@ -1,34 +1,60 @@
-      // Off-road 3D mud, dust, splats and tyre tracks: clumps, mist and ground decals.
+      // Off-road 3D mud, dust, splats and tyre tracks: thrown clods, spray sprites, fine drops and mist (the effect
+      // pool), and lit ground decals (ruts and splats); TRAIL MUD maps from offroad3d-models.js.
       // ---- Mud, dust, splats and tracks -----------------------------------------------------------
+      /*
+       * TRAIL MUD (rendering-effects.md): what a tyre throws in mud is four layers. CLODS: instanced lit lumps
+       * (a dented, smooth-shaded ball) with the mud photo and its relief on them, glossy when wet, stretched
+       * along their flight at speed. SPRAY: textured sprite clusters of droplets (Kenney's dirt cells) lit
+       * through their own normals, streaked along their screen motion. DROPS: the effect pool's streaked drops
+       * (fxBit). MIST and dust: the effect pool's lit puffs (fxPuff), lingering longer in the chase view, at most
+       * MUD_TIER.puffs alive. Splats and ruts are decals lit through their own normals (the mud photo's normal
+       * map; a rut's basin, lips and tread lugs; a splat cell's domes) as a 2x modulate of the ground, so the
+       * ground's own light and shadow stay, with a wet gloss (sun and sky) relative to it. Randomness is
+       * mudRandom (its own stream); a vehicle far enough off in the chase view throws only what still shows
+       * (chaseSpriteHidden).
+       */
       const MUD_CLUMPS = 640,
-        MUD_MIST = 360,
+        MUD_SPRAY = 360,
         MUD_SPLATS = 700,
-        MUD_TRACKS = 1800;
-      // Clumps: lit, instanced lumps flying ballistic arcs.
-      const clumpMesh = new Three.InstancedMesh(
-          new Three.IcosahedronGeometry(1, 0),
-          new Three.MeshStandardMaterial({ color: '#ffffff', roughness: 0.4, metalness: 0 }),
-          MUD_CLUMPS,
-        ),
-        clump = {
-          x: new Float32Array(MUD_CLUMPS),
-          y: new Float32Array(MUD_CLUMPS),
-          z: new Float32Array(MUD_CLUMPS),
-          vx: new Float32Array(MUD_CLUMPS),
-          vy: new Float32Array(MUD_CLUMPS),
-          vz: new Float32Array(MUD_CLUMPS),
-          life: new Float32Array(MUD_CLUMPS),
-          size: new Float32Array(MUD_CLUMPS),
-          wet: new Float32Array(MUD_CLUMPS),
-          count: 0,
+        MUD_TRACKS = 1800,
+        MUD_PUFF_RING = 128,
+        // The sprite cells of the trail-mud sheet (tools/trail_mud.py CELLS: keep them in step).
+        MUD_SPRITE_CELLS = { clumpA: 0, clumpB: 1, clumpC: 2, splash: 3, mist: 4, drop: 5, burst: 6, cloud: 7 },
+        // Per tier: clods in flight at most and a throw (the second a small one), fine drops a throw (effect
+        // pool), the share of throws that add a spray sprite, mist and dust puffs alive at most (effect pool), how
+        // much longer mist lingers in the chase view, the clod ball's detail (1: 80 faces, 2: 320). LOW and
+        // MEDIUM throw one clod a throw where there were two.
+        MUD_TIER = {
+          LOW: { clumps: 200, clods: 1, drops: 1, spray: 0.35, puffs: 24, linger: 1, detail: 1 },
+          MEDIUM: { clumps: 360, clods: 1, drops: 2, spray: 0.6, puffs: 48, linger: 1.3, detail: 1 },
+          HIGH: { clumps: 640, clods: 2, drops: 3, spray: 1, puffs: 96, linger: 1.7, detail: 2 },
+          ULTRA: { clumps: 640, clods: 2, drops: 4, spray: 1, puffs: 128, linger: 2, detail: 2 },
         };
-      clumpMesh.count = 0;
-      clumpMesh.frustumCulled = false;
-      clumpMesh.castShadow = false;
-      clumpMesh.userData.dynamic = true;
-      clumpMesh.name = 'mud clumps';
-      clumpMesh.setColorAt(0, new Three.Color(1, 1, 1));
-      scene.add(clumpMesh);
+      let mudSeed = 0x6d2b79f5;
+      // The mud's own random numbers (xorshift): never the game's Math.random, nor the effect pool's stream.
+      function mudRandom() {
+        mudSeed ^= mudSeed << 13;
+        mudSeed ^= mudSeed >>> 17;
+        mudSeed ^= mudSeed << 5;
+        return (mudSeed >>> 0) / 4294967296;
+      }
+      function mudTier() {
+        return MUD_TIER[(activeTier || graphicsTier()).name] || MUD_TIER.MEDIUM;
+      }
+      // The light the mud's own programs share with the effect pool (fx3d-particles.js fxLightUniforms, each over pi).
+      const mudLight = {
+        uSunDir: { value: new Three.Vector3(0, 1, 0) },
+        uSunColor: { value: new Three.Color(1, 1, 1) },
+        uSky: { value: new Three.Color(0.3, 0.3, 0.3) },
+        uGround: { value: new Three.Color(0.1, 0.1, 0.1) },
+      };
+      function mudLightUpdate() {
+        const u = fxUniforms;
+        mudLight.uSunDir.value.copy(u.uSunDir.value);
+        mudLight.uSunColor.value.copy(u.uSunColor.value);
+        mudLight.uSky.value.copy(u.uSky.value);
+        mudLight.uGround.value.copy(u.uGround.value);
+      }
       // Mist and dust: soft billboards with their own size and opacity.
       function billboardPool(capacity, name) {
         const geo = new Three.InstancedBufferGeometry();
@@ -91,13 +117,255 @@
           capacity,
         };
       }
-      const mist = billboardPool(MUD_MIST, 'mud mist');
+      // ---- Clods: a dented ball, welded and smooth-shaded ------------------------------------------
+      function mudClumpGeometry(detail) {
+        const ball = new Three.IcosahedronGeometry(1, detail),
+          pos = ball.attributes.position,
+          seen = new Map(),
+          index = [],
+          verts = [];
+        for (let i = 0; i < pos.count; i++) {
+          const x = pos.getX(i),
+            y = pos.getY(i),
+            z = pos.getZ(i),
+            key = Math.round(x * 1e4) + ',' + Math.round(y * 1e4) + ',' + Math.round(z * 1e4);
+          let k = seen.get(key);
+          if (k === undefined) {
+            k = verts.length / 3;
+            seen.set(key, k);
+            // A fixed lumpy field over the sphere: a squashed clod with a few knobs.
+            const r = 1 + 0.2 * Math.sin(x * 5.1 + y * 2.3) * Math.cos(z * 4.7 - x * 1.9) + 0.1 * Math.sin(y * 9.3 + z * 7.1) + 0.06 * Math.cos(x * 13.7 - z * 11.3);
+            verts.push(x * r, y * r * 0.8, z * r);
+          }
+          index.push(k);
+        }
+        ball.dispose();
+        const g = new Three.BufferGeometry();
+        g.setAttribute('position', new Three.Float32BufferAttribute(verts, 3));
+        g.setIndex(index);
+        g.computeVertexNormals();
+        return g;
+      }
+      const clumpGeometries = [null, mudClumpGeometry(1), mudClumpGeometry(2)],
+        clumpLook = new Three.InstancedBufferAttribute(new Float32Array(MUD_CLUMPS * 2), 2).setUsage(Three.DynamicDrawUsage);
+      // Per clod: x its wetness, y its seed (where on the photo it sits).
+      clumpGeometries[1].setAttribute('iMud', clumpLook);
+      clumpGeometries[2].setAttribute('iMud', clumpLook);
+      const clumpMaterial = new Three.MeshStandardMaterial({ color: '#ffffff', roughness: 0.5, metalness: 0 });
+      clumpMaterial.onBeforeCompile = (shader) => {
+        Object.assign(shader.uniforms, trailMud.uniforms);
+        shader.vertexShader = shader.vertexShader
+          .replace('#include <common>', '#include <common>\nattribute vec2 iMud;\nvarying vec2 vMudLook;\nvarying vec3 vClodLocal;\nvarying vec3 vClodNormal;')
+          .replace('#include <begin_vertex>', '#include <begin_vertex>\nvMudLook = iMud;\nvClodLocal = position + iMud.y * 7.31;\nvClodNormal = normal;');
+        shader.fragmentShader = shader.fragmentShader
+          .replace('#include <common>', '#include <common>\nuniform sampler2D mudColorMap;\nuniform vec3 mudMean;\nvarying vec2 vMudLook;\nvarying vec3 vClodLocal;\nvarying vec3 vClodNormal;\n' + MUD_PHOTO)
+          .replace(
+            '#include <color_fragment>',
+            `#include <color_fragment>
+            vec4 clodPhoto = mudPhoto( vClodLocal * 0.42, vClodNormal );
+            float clodWet = clamp( vMudLook.x, 0.0, 1.0 );
+            diffuseColor.rgb *= clamp( clodPhoto.rgb, vec3( 0.45 ), vec3( 1.9 ) );
+            float clodRelief = clodPhoto.a;`,
+          )
+          .replace(
+            '#include <roughnessmap_fragment>',
+            '#include <roughnessmap_fragment>\nroughnessFactor = clamp( mix( 0.9, 0.2, clodWet ) + ( 0.5 - clodRelief ) * 0.25 * clodWet, 0.1, 1.0 );',
+          )
+          .replace(
+            '#include <normal_fragment_maps>',
+            '#include <normal_fragment_maps>\nnormal = mudPerturb( - vViewPosition, normal, vec2( dFdx( clodRelief ), dFdy( clodRelief ) ) * 0.8, faceDirection );',
+          );
+      };
+      clumpMaterial.customProgramCacheKey = () => 'mud-clod';
+      const clumpMesh = new Three.InstancedMesh(clumpGeometries[2], clumpMaterial, MUD_CLUMPS),
+        clump = {
+          x: new Float32Array(MUD_CLUMPS),
+          y: new Float32Array(MUD_CLUMPS),
+          z: new Float32Array(MUD_CLUMPS),
+          vx: new Float32Array(MUD_CLUMPS),
+          vy: new Float32Array(MUD_CLUMPS),
+          vz: new Float32Array(MUD_CLUMPS),
+          life: new Float32Array(MUD_CLUMPS),
+          size: new Float32Array(MUD_CLUMPS),
+          wet: new Float32Array(MUD_CLUMPS),
+          seed: new Float32Array(MUD_CLUMPS),
+          count: 0,
+        };
+      const CLUMP_FIELDS = ['x', 'y', 'z', 'vx', 'vy', 'vz', 'life', 'size', 'wet', 'seed'];
+      clumpMesh.count = 0;
+      clumpMesh.frustumCulled = false;
+      clumpMesh.castShadow = false;
+      clumpMesh.userData.dynamic = true;
+      clumpMesh.name = 'mud clumps';
+      clumpMesh.setColorAt(0, new Three.Color(1, 1, 1));
+      scene.add(clumpMesh);
+      // ---- Spray: sprite clusters of droplets, lit through their own normals ------------------------
+      const mudSprayGeometry = new Three.InstancedBufferGeometry();
+      mudSprayGeometry.setAttribute('position', new Three.Float32BufferAttribute([-0.5, -0.5, 0, 0.5, -0.5, 0, 0.5, 0.5, 0, -0.5, 0.5, 0], 3));
+      mudSprayGeometry.setIndex([0, 1, 2, 0, 2, 3]);
+      const mudSprayAttribute = (name, n) => {
+        const a = new Three.InstancedBufferAttribute(new Float32Array(MUD_SPRAY * n), n).setUsage(Three.DynamicDrawUsage);
+        mudSprayGeometry.setAttribute(name, a);
+        return a;
+      };
+      // iPos: position and size; iVel: velocity and turn; iLook: opacity, wetness, cell, water (1) or mud (0).
+      const mudSprayPos = mudSprayAttribute('iPos', 4),
+        mudSprayVel = mudSprayAttribute('iVel', 4),
+        mudSprayLook = mudSprayAttribute('iLook', 4),
+        mudSprayColor = mudSprayAttribute('iColor', 3);
+      mudSprayGeometry.instanceCount = 0;
+      const mudSprayMaterial = new Three.ShaderMaterial({
+        uniforms: { ...mudLight, uSprites: { value: trailMud.sprites }, uStreak: { value: 0.045 } },
+        vertexShader: `
+          attribute vec4 iPos; attribute vec4 iVel; attribute vec4 iLook; attribute vec3 iColor;
+          uniform float uStreak;
+          varying vec2 vUv; varying vec4 vLook; varying vec3 vColor; varying vec3 vRight; varying vec3 vUp; varying vec3 vToEye;
+          void main() {
+            vec3 right = vec3( viewMatrix[ 0 ][ 0 ], viewMatrix[ 1 ][ 0 ], viewMatrix[ 2 ][ 0 ] );
+            vec3 up = vec3( viewMatrix[ 0 ][ 1 ], viewMatrix[ 1 ][ 1 ], viewMatrix[ 2 ][ 1 ] );
+            vec3 toEye = vec3( viewMatrix[ 0 ][ 2 ], viewMatrix[ 1 ][ 2 ], viewMatrix[ 2 ][ 2 ] );
+            float c = cos( iVel.w ), s = sin( iVel.w );
+            vec3 r = right * c + up * s, u = up * c - right * s;
+            // Streaked along its motion across the view: the frame turns to the motion as the streak grows.
+            vec2 sv = vec2( dot( iVel.xyz, right ), dot( iVel.xyz, up ) );
+            float sl = length( sv );
+            float stretch = 1.0 + min( 2.2, sl * uStreak / max( iPos.w, 0.5 ) );
+            if ( sl > 1e-3 ) {
+              vec2 d = sv / sl;
+              float k = smoothstep( 1.05, 1.4, stretch );
+              r = normalize( mix( r, right * d.x + up * d.y, k ) );
+              u = normalize( cross( toEye, r ) );
+            }
+            vec3 p = iPos.xyz + ( r * position.x * stretch + u * position.y ) * iPos.w;
+            vUv = position.xy + 0.5;
+            vLook = iLook;
+            vColor = iColor;
+            vRight = r;
+            vUp = u;
+            vToEye = toEye;
+            gl_Position = projectionMatrix * viewMatrix * vec4( p, 1.0 );
+          }`,
+        fragmentShader: `
+          uniform sampler2D uSprites; uniform vec3 uSunDir; uniform vec3 uSunColor; uniform vec3 uSky; uniform vec3 uGround;
+          varying vec2 vUv; varying vec4 vLook; varying vec3 vColor; varying vec3 vRight; varying vec3 vUp; varying vec3 vToEye;
+          void main() {
+            float cell = vLook.z;
+            float col = mod( cell, 4.0 ), row = floor( cell / 4.0 );
+            vec4 t = texture2D( uSprites, vec2( ( col + vUv.x ) * 0.25, 1.0 - ( row + 1.0 - vUv.y ) * 0.5 ) );
+            float a = t.r * vLook.x;
+            if ( a < 0.01 ) discard;
+            vec2 nxy = t.gb * 2.0 - 1.0;
+            vec3 n = normalize( vRight * nxy.x + vUp * nxy.y + vToEye * sqrt( max( 0.0, 1.0 - dot( nxy, nxy ) ) ) );
+            float wet = vLook.y;
+            float water = vLook.w;
+            // Lambert from the sun, wrapped a little (a cluster is thin), the sky and ground by the normal's lean.
+            float sunLit = max( dot( n, uSunDir ) * 0.8 + 0.2, 0.0 );
+            vec3 light = uSunColor * sunLit + mix( uGround, uSky, n.y * 0.5 + 0.5 );
+            vec3 colour = vColor * light;
+            // Wet gloss: the sun's highlight and the sky in it at a glance.
+            vec3 h = normalize( uSunDir + vToEye );
+            float gloss = max( wet, water );
+            colour += uSunColor * pow( max( dot( n, h ), 0.0 ), mix( 10.0, 80.0, gloss ) ) * gloss * mix( 0.12, 0.6, water );
+            colour += uSky * pow( 1.0 - max( dot( n, vToEye ), 0.0 ), 4.0 ) * gloss * 0.3;
+            gl_FragColor = vec4( colour, a * mix( 1.0, 0.7, water ) );
+            #include <colorspace_fragment>
+          }`,
+        transparent: true,
+        depthWrite: false,
+      });
+      const mudSprayMesh = new Three.Mesh(mudSprayGeometry, mudSprayMaterial);
+      mudSprayMesh.frustumCulled = false;
+      mudSprayMesh.renderOrder = 3;
+      mudSprayMesh.name = 'mud spray';
+      mudSprayMesh.userData.dynamic = true;
+      scene.add(mudSprayMesh);
+      const mudSpray = { count: 0 };
+      const MUD_SPRAY_FIELDS = ['x', 'y', 'z', 'vx', 'vy', 'vz', 'life', 'max', 'size', 'grow', 'alpha', 'turn', 'spin', 'wet', 'cell', 'water', 'r', 'g', 'b'];
+      for (const name of MUD_SPRAY_FIELDS) mudSpray[name] = new Float32Array(MUD_SPRAY);
       /*
-       * Ground decals (splats and tracks): a quad per instance laid on the ground
-       * along `iAxis` (its length) and `iSide` (its width), multiplied into what is
-       * under it, fading from its birth over `iLife.y` seconds.
+       * Ground decals (splats and ruts): a quad per instance laid on the ground along `iAxis` (its length) and
+       * `iSide` (its width), fading from its birth over `iLife.y` seconds; `iLife.z` its wetness, `iLife.w` its
+       * sprite cell (a splat) or -1 (a rut). Lit through its own normal and drawn as a 2x modulate of the ground
+       * (0.5 leaves it as it is), so the ground's light and shadow stay under it.
        */
-      function decalPool(capacity, texture, name) {
+      const DECAL_VERTEX = `
+        attribute vec3 iPos; attribute vec3 iAxis; attribute vec3 iSide; attribute vec4 iLife;
+        uniform float uTime;
+        varying vec2 vUv; varying float vFade; varying float vWet; varying float vCell; varying float vLength;
+        varying vec3 vAxis; varying vec3 vSide; varying vec3 vWorld;
+        void main() {
+          vec3 p = iPos + iAxis * position.x + iSide * position.y;
+          vUv = uv;
+          float age = uTime - iLife.x;
+          vFade = clamp( 1.0 - age / iLife.y, 0.0, 1.0 ) * step( 0.0, age );
+          vWet = iLife.z;
+          vCell = iLife.w;
+          vLength = length( iAxis );
+          vAxis = iAxis / max( vLength, 1e-4 );
+          vSide = normalize( iSide );
+          vWorld = p;
+          gl_Position = projectionMatrix * viewMatrix * vec4( p, 1.0 );
+        }`;
+      const DECAL_FRAGMENT = `
+        uniform sampler2D uSprites; uniform sampler2D uMudColor; uniform sampler2D uMudDetail; uniform vec3 uMudMean;
+        uniform vec3 uSunDir; uniform vec3 uSunColor; uniform vec3 uSky;
+        varying vec2 vUv; varying float vFade; varying float vWet; varying float vCell; varying float vLength;
+        varying vec3 vAxis; varying vec3 vSide; varying vec3 vWorld;
+        void main() {
+          // The mud photo laid in world space, about 2.75 m a repeat.
+          vec2 wuv = vWorld.xz / 22.0;
+          vec3 photo = texture2D( uMudColor, wuv ).rgb / max( uMudMean, vec3( 1e-4 ) );
+          vec3 detail = texture2D( uMudDetail, wuv ).rgb;
+          float lum = dot( photo, vec3( 0.3, 0.55, 0.15 ) );
+          vec3 up = normalize( cross( vAxis, vSide ) );
+          if ( up.y < 0.0 ) up = -up;
+          vec3 n;
+          float cover;
+          float pool = 1.0;
+          if ( vCell < 0.0 ) {
+            // A RUT: a basin across (y from -1 to 1) with raised lips, chevron lugs pressed along it every ~0.4 m;
+            // the edges ragged by the photo, the ends feathered into the last print.
+            float y = vUv.y * 2.0 - 1.0;
+            float ay = abs( y );
+            cover = ( 1.0 - smoothstep( 0.72 + ( lum - 1.0 ) * 0.2, 1.0, ay ) ) * smoothstep( 0.0, 0.1, vUv.x ) * ( 1.0 - smoothstep( 0.9, 1.0, vUv.x ) );
+            float phase = 6.2832 * ( vUv.x * vLength / 3.2 + ay * 0.55 );
+            float lug = smoothstep( -0.2, 0.5, sin( phase ) ) * ( 1.0 - smoothstep( 0.6, 0.86, ay ) );
+            // Height slopes (per unit along the decal's own axes): the basin, the lips, the lugs.
+            float across = 0.55 * sin( y * 1.5708 ) - 0.9 * sign( y ) * smoothstep( 0.7, 0.95, ay ) * ( 1.0 - smoothstep( 0.95, 1.0, ay ) );
+            float along = 0.35 * cos( phase ) * ( 1.0 - smoothstep( 0.6, 0.86, ay ) );
+            n = normalize( up - vAxis * along - vSide * across );
+            pool = 1.0 - ay * 0.5 - lug * 0.25;
+          } else {
+            // A SPLAT: the cell's coverage and its domed lumps.
+            float col = mod( vCell, 4.0 ), row = floor( vCell / 4.0 );
+            vec4 t = texture2D( uSprites, vec2( ( col + vUv.x ) * 0.25, 1.0 - ( row + 1.0 - vUv.y ) * 0.5 ) );
+            cover = smoothstep( 0.05, 0.5, t.r );
+            vec2 nxy = ( t.gb * 2.0 - 1.0 ) * 1.3;
+            n = normalize( up * 0.8 + vAxis * nxy.x + vSide * nxy.y );
+          }
+          float a = cover * vFade;
+          if ( a < 0.01 ) discard;
+          // The photo's own relief on top (its normal map in world x and z).
+          vec2 dn = ( detail.rg * 2.0 - 1.0 ) * 0.55;
+          n = normalize( n + vec3( dn.x, 0.0, -dn.y ) );
+          float wet = clamp( vWet, 0.0, 1.0 );
+          // Light against the bare ground's: the decal's lean shades it, a ratio so shadow stays shadow.
+          float sunK = dot( uSunColor, vec3( 0.3, 0.55, 0.15 ) ), skyK = dot( uSky, vec3( 0.3, 0.55, 0.15 ) ) + 1e-4;
+          float flatLit = sunK * max( dot( up, uSunDir ), 0.0 ) + skyK;
+          float lit = sunK * max( dot( n, uSunDir ), 0.0 ) + skyK * ( 0.55 + 0.45 * n.y );
+          vec3 tint = mix( vec3( 0.74, 0.64, 0.54 ), vec3( 0.44, 0.35, 0.27 ), wet ) * clamp( photo, vec3( 0.55 ), vec3( 1.7 ) );
+          vec3 m = min( tint * ( lit / flatLit ), vec3( 0.9 ) );
+          // Wet gloss (relative to the lit bare ground, ~0.15 albedo): the sun's highlight and the sky at a glance.
+          vec3 v = normalize( cameraPosition - vWorld );
+          float gloss = wet * ( 1.0 - detail.b * 0.55 ) * clamp( pool, 0.3, 1.0 );
+          vec3 h = normalize( uSunDir + v );
+          float spec = pow( max( dot( n, h ), 0.0 ), mix( 16.0, 140.0, gloss ) ) * gloss * sunK * 0.3;
+          float sheen = pow( 1.0 - max( dot( n, v ), 0.0 ), 5.0 ) * gloss * skyK * 0.7;
+          // Capped: overlapping decals multiply, so a brightening compounds (a few wet splats must not burn white).
+          m = min( m + vec3( min( ( spec + sheen ) / ( flatLit * 0.15 ), 0.5 ) ), vec3( 1.3 ) );
+          gl_FragColor = vec4( mix( vec3( 1.0 ), m, a ) * 0.5, 1.0 );
+        }`;
+      function decalPool(capacity, name) {
         const geo = new Three.InstancedBufferGeometry();
         geo.setAttribute('position', new Three.Float32BufferAttribute([-0.5, -0.5, 0, 0.5, -0.5, 0, 0.5, 0.5, 0, -0.5, 0.5, 0], 3));
         geo.setAttribute('uv', new Three.Float32BufferAttribute([0, 0, 1, 0, 1, 1, 0, 1], 2));
@@ -106,37 +374,30 @@
         geo.setAttribute('iPos', at(3));
         geo.setAttribute('iAxis', at(3));
         geo.setAttribute('iSide', at(3));
-        geo.setAttribute('iLife', at(3));
+        geo.setAttribute('iLife', at(4));
         geo.instanceCount = 0;
+        // Both pools share one program (the same source; a rut or a splat is per instance).
         const material = new Three.ShaderMaterial({
-          uniforms: { uTime: { value: 0 }, uMap: { value: texture } },
-          vertexShader: `
-            attribute vec3 iPos; attribute vec3 iAxis; attribute vec3 iSide; attribute vec3 iLife;
-            varying vec2 vUv; varying float vFade; varying float vWet;
-            uniform float uTime;
-            void main() {
-              vec3 p = iPos + iAxis * position.x + iSide * position.y;
-              vUv = uv;
-              float age = uTime - iLife.x;
-              vFade = clamp( 1.0 - age / iLife.y, 0.0, 1.0 ) * step( 0.0, age );
-              vWet = iLife.z;
-              gl_Position = projectionMatrix * viewMatrix * vec4( p, 1.0 );
-            }`,
-          fragmentShader: `
-            uniform sampler2D uMap; varying vec2 vUv; varying float vFade; varying float vWet;
-            void main() {
-              vec4 t = texture2D( uMap, vUv );
-              float a = t.a * vFade;
-              if ( a < 0.01 ) discard;
-              // Multiplied into the ground: dark, wet mud darker still.
-              vec3 tint = mix( vec3( 0.7, 0.6, 0.5 ), vec3( 0.46, 0.37, 0.29 ), vWet ) * ( 0.85 + 0.3 * t.r );
-              gl_FragColor = vec4( mix( vec3( 1.0 ), tint, a ), 1.0 );
-            }`,
+          uniforms: {
+            uTime: { value: 0 },
+            uSprites: { value: trailMud.sprites },
+            uMudColor: { value: trailMud.colour },
+            uMudDetail: { value: trailMud.detail },
+            uMudMean: { value: trailMud.mean },
+            uSunDir: mudLight.uSunDir,
+            uSunColor: mudLight.uSunColor,
+            uSky: mudLight.uSky,
+          },
+          vertexShader: DECAL_VERTEX,
+          fragmentShader: DECAL_FRAGMENT,
           transparent: true,
           depthWrite: false,
+          // 2x modulate: dst * src * 2, the destination's alpha kept.
           blending: Three.CustomBlending,
           blendSrc: Three.DstColorFactor,
-          blendDst: Three.ZeroFactor,
+          blendDst: Three.SrcColorFactor,
+          blendSrcAlpha: Three.ZeroFactor,
+          blendDstAlpha: Three.OneFactor,
           polygonOffset: true,
           polygonOffsetFactor: -3,
           polygonOffsetUnits: -3,
@@ -149,65 +410,13 @@
         scene.add(meshPool);
         return { mesh: meshPool, geo, material, next: 0, used: 0, capacity };
       }
-      function decalTexture(paint) {
-        const canvas = document.createElement('canvas');
-        canvas.width = canvas.height = 128;
-        const g = canvas.getContext('2d');
-        paint(g);
-        const tx = new Three.CanvasTexture(canvas);
-        tx.anisotropy = 4;
-        return tx;
-      }
-      // A splat: a lumpy blob with droplets flung round it.
-      const splatTexture = decalTexture((g) => {
-        let seed = 7;
-        const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
-        g.fillStyle = 'rgba(255,255,255,0.95)';
-        g.beginPath();
-        for (let i = 0; i <= 24; i++) {
-          const a = (i / 24) * TAU,
-            rr = 30 + rnd() * 16;
-          if (i) g.lineTo(64 + Math.cos(a) * rr, 64 + Math.sin(a) * rr);
-          else g.moveTo(64 + Math.cos(a) * rr, 64 + Math.sin(a) * rr);
-        }
-        g.fill();
-        for (let i = 0; i < 26; i++) {
-          const a = rnd() * TAU,
-            d = 36 + rnd() * 26;
-          g.beginPath();
-          g.arc(64 + Math.cos(a) * d, 64 + Math.sin(a) * d, 1.5 + rnd() * 5, 0, TAU);
-          g.fill();
-        }
-        g.globalCompositeOperation = 'source-atop';
-        for (let i = 0; i < 120; i++) {
-          g.fillStyle = `rgba(${rnd() < 0.5 ? 60 : 255},0,0,0.25)`;
-          g.fillRect(rnd() * 128, rnd() * 128, 5, 5);
-        }
-      });
-      // A tread print: chevron lugs across the track, soft edges.
-      const trackTexture = decalTexture((g) => {
-        g.fillStyle = 'rgba(255,255,255,0.45)';
-        g.fillRect(0, 22, 128, 84);
-        g.fillStyle = 'rgba(255,255,255,0.9)';
-        for (let x = -16; x < 144; x += 16) {
-          g.beginPath();
-          g.moveTo(x, 24);
-          g.lineTo(x + 7, 24);
-          g.lineTo(x + 13, 64);
-          g.lineTo(x + 7, 104);
-          g.lineTo(x, 104);
-          g.lineTo(x + 6, 64);
-          g.fill();
-        }
-      });
-      trackTexture.wrapS = Three.RepeatWrapping;
-      const mudSplats = decalPool(MUD_SPLATS, splatTexture, 'mud splats'),
-        tyreTracks = decalPool(MUD_TRACKS, trackTexture, 'tyre tracks');
+      const mudSplats = decalPool(MUD_SPLATS, 'mud splats'),
+        tyreTracks = decalPool(MUD_TRACKS, 'tyre tracks');
       const decalNormal = new Three.Vector3(),
         decalAlong = new Three.Vector3(),
         decalAcross = new Three.Vector3();
-      // Lays one decal on the ground at (x, y) along heading `a`.
-      function addGroundDecal(pool, x, y, a, length, width, seconds, wet) {
+      // Lays one decal on the ground at (x, y) along heading `a`: `cell` a splat's sprite cell, -1 a rut.
+      function addGroundDecal(pool, x, y, a, length, width, seconds, wet, cell) {
         const i = pool.next;
         pool.next = (pool.next + 1) % pool.capacity;
         pool.used = Math.min(pool.capacity, pool.used + 1);
@@ -224,16 +433,17 @@
         at.iPos.setXYZ(i, x + decalNormal.x * lift, h + 0.06 + decalNormal.y * lift, y + decalNormal.z * lift);
         at.iAxis.setXYZ(i, decalAlong.x * length, decalAlong.y * length, decalAlong.z * length);
         at.iSide.setXYZ(i, decalAcross.x * width, decalAcross.y * width, decalAcross.z * width);
-        at.iLife.setXYZ(i, gameTime, seconds, wet);
+        at.iLife.setXYZW(i, gameTime, seconds, wet, cell);
         // Only the decal written goes up (uploadChurn).
-        for (const name of ['iPos', 'iAxis', 'iSide', 'iLife']) {
+        for (const name of DECAL_ATTRIBUTES) {
           at[name].addUpdateRange(i * at[name].itemSize, at[name].itemSize);
           at[name].needsUpdate = true;
         }
         pool.geo.instanceCount = pool.used;
       }
+      const DECAL_ATTRIBUTES = ['iPos', 'iAxis', 'iSide', 'iLife'];
       function spawnClump(x, y, z, vx, vy, vz, size, wet) {
-        if (clump.count >= MUD_CLUMPS) return;
+        if (clump.count >= Math.min(MUD_CLUMPS, mudTierNow.clumps)) return;
         const i = clump.count++;
         clump.x[i] = x;
         clump.y[i] = y;
@@ -244,33 +454,69 @@
         clump.life[i] = 2.2;
         clump.size[i] = size;
         clump.wet[i] = wet;
+        clump.seed[i] = mudRandom();
       }
-      function spawnMist(x, y, z, vx, vy, vz, size, grow, alpha, life, color) {
-        if (mist.count >= mist.capacity) return;
-        const i = mist.count++;
-        mist.x[i] = x;
-        mist.y[i] = y;
-        mist.z[i] = z;
-        mist.vx[i] = vx;
-        mist.vy[i] = vy;
-        mist.vz[i] = vz;
-        mist.size[i] = size;
-        mist.grow[i] = grow;
-        mist.alpha[i] = alpha;
-        mist.life[i] = mist.max[i] = life;
-        mist.r[i] = color.r;
-        mist.g[i] = color.g;
-        mist.b[i] = color.b;
+      // A spray sprite: `cell` of the sheet, `grow` times its size over its life, `water` 1 for a ford's water.
+      function spawnSpray(x, y, z, vx, vy, vz, size, grow, alpha, life, cell, wet, water, color) {
+        if (mudSpray.count >= MUD_SPRAY) return;
+        const i = mudSpray.count++,
+          s = mudSpray;
+        s.x[i] = x;
+        s.y[i] = y;
+        s.z[i] = z;
+        s.vx[i] = vx;
+        s.vy[i] = vy;
+        s.vz[i] = vz;
+        s.life[i] = s.max[i] = life;
+        s.size[i] = size;
+        s.grow[i] = grow;
+        s.alpha[i] = alpha;
+        s.turn[i] = mudRandom() * TAU;
+        s.spin[i] = (mudRandom() - 0.5) * 3;
+        s.wet[i] = wet;
+        s.cell[i] = cell;
+        s.water[i] = water;
+        s.r[i] = color.r;
+        s.g[i] = color.g;
+        s.b[i] = color.b;
       }
+      // Mist and dust are the effect pool's lit puffs, at most MUD_TIER.puffs alive (a ring of their end times).
+      const mudPuffEnds = new Float32Array(MUD_PUFF_RING);
+      let mudPuffNext = 0,
+        mudPuffs = 0,
+        mudDrops = 0;
+      function mudPuff(x, y, z, vx, vy, vz, life, size, grow, color, alpha, ground) {
+        const cap = Math.min(MUD_PUFF_RING, mudTierNow.puffs),
+          k = mudPuffNext % cap;
+        if (mudPuffEnds[k] > gameTime) return;
+        if (chaseViewActive) life *= mudTierNow.linger;
+        if (fxPuff(x, y, z, vx, vy, vz, life, size, grow, color, alpha, ground, 2.2, 3) < 0) return;
+        mudPuffEnds[k] = gameTime + life;
+        mudPuffNext = k + 1;
+        mudPuffs++;
+      }
+      // A fine drop: the effect pool's streaked drop, falling with the clods.
+      function mudDrop(x, y, z, vx, vy, vz, size, color, ground) {
+        const i = fxBit(x, y, z, vx, vy, vz, 0.9 + mudRandom() * 0.5, size, color, 1, ground, FX_DROP);
+        if (i < 0) return;
+        fxs.streak[i] = 0.035;
+        fxs.bounce[i] = 0;
+        fxs.drag[i] = 0.35;
+        mudDrops++;
+      }
+      let mudTierNow = MUD_TIER.MEDIUM;
       const MUD_WET = new Three.Color('#35261a'),
         MUD_DRY = new Three.Color('#8c7353'),
         DUST = new Three.Color('#a8957a'),
         clumpColor = new Three.Color(),
+        mudShade = new Three.Color(),
         clumpMatrix = new Three.Matrix4(),
         clumpQuat = new Three.Quaternion(),
-        clumpEuler = new Three.Euler(),
+        clumpRoll = new Three.Quaternion(),
         clumpScale = new Three.Vector3(),
-        clumpPos = new Three.Vector3();
+        clumpPos = new Three.Vector3(),
+        clumpDir = new Three.Vector3(),
+        CLUMP_AXIS = new Three.Vector3(1, 0, 0);
       // Wheel contact points of a model in body space (club trucks: their knuckles).
       function contactWheels(c, m) {
         if (m.contacts) return m.contacts;
@@ -288,7 +534,7 @@
         m.contacts = list;
         return list;
       }
-      // Wading a ford (tyreEmission 'ford'): sheets of water off every wheel, droplets
+      // Wading a ford (tyreEmission 'ford'): sheets of water off every wheel (spray sprites), streaked drops
       // and a white mist, the bow wave's spray ahead at speed.
       const FORD_SPRAY = new Three.Color('#dfe8ea'),
         FORD_MIST = new Three.Color('#eef3f4');
@@ -303,13 +549,16 @@
             wy = c.y + sin * w.x + cos * w.z;
           while (w.emit >= 1) {
             w.emit -= 1;
-            const out = Math.sign(w.z) * (6 + Math.random() * 14),
-              fwd = (Math.random() - 0.3) * speed * 0.5,
+            const out = Math.sign(w.z) * (6 + mudRandom() * 14),
+              fwd = (mudRandom() - 0.3) * speed * 0.5,
               vx = cos * fwd - sin * out + (c.vx || 0) * 0.6,
               vy = sin * fwd + cos * out + (c.vy || 0) * 0.6,
-              up = 10 + Math.random() * 18 + speed * 0.25;
-            spawnClump(wx, level, wy, vx, up, vy, 0.25 + Math.random() * 0.35, 2);
-            if (Math.random() < 0.35) spawnMist(wx, level + 1, wy, vx * 0.4, up * 0.3, vy * 0.4, 2.2 + Math.random() * 2, 6, 0.4, 0.8 + Math.random() * 0.5, FORD_MIST);
+              up = 10 + mudRandom() * 18 + speed * 0.25;
+            if (chaseSpriteHidden(wx, level, wy, 1)) continue;
+            for (let k = 0; k < mudTierNow.drops; k++)
+              mudDrop(wx, level, wy, vx * (0.8 + mudRandom() * 0.5), up * (0.7 + mudRandom() * 0.6), vy * (0.8 + mudRandom() * 0.5), 0.3 + mudRandom() * 0.3, FORD_SPRAY, level - 0.5);
+            if (mudRandom() < mudTierNow.spray) spawnSpray(wx, level, wy, vx, up, vy, 3 + mudRandom() * 3, 1.8, 0.75, 0.5 + mudRandom() * 0.4, (mudRandom() * 3) | 0, 1, 1, FORD_SPRAY);
+            if (mudRandom() < 0.35) mudPuff(wx, level + 1, wy, vx * 0.4, up * 0.3, vy * 0.4, 0.8 + mudRandom() * 0.5, 2.6 + mudRandom() * 2, 3.5, FORD_MIST, 0.32, level);
           }
         }
       }
@@ -328,7 +577,10 @@
           sin = Math.sin(c.a),
           wheelSpeed = speed + (c.spinSpeed || 0),
           dir = along < -2 ? -1 : 1,
-          base = entityElevation(c);
+          base = entityElevation(c),
+          tier = mudTierNow;
+        // The thrown mud's colour: drier is paler.
+        mudShade.copy(MUD_DRY).lerp(MUD_WET, wet);
         for (const w of contactWheels(c, m)) {
           const wx = c.x + cos * w.x - sin * w.z,
             wy = c.y + sin * w.x + cos * w.z;
@@ -339,10 +591,10 @@
           }
           const moved = Math.hypot(wx - w.lastX, wy - w.lastY);
           if (moved > 12 || (moved > 2 && spin > 0.5 && moved > 6)) {
-            if (moved < 40) addGroundDecal(tyreTracks, (wx + w.lastX) / 2, (wy + w.lastY) / 2, Math.atan2(wy - w.lastY, wx - w.lastX), moved + 1, w.width * 0.95, 90 + mud * 120, mud > 0.15 ? wet : 0.1);
+            if (moved < 40) addGroundDecal(tyreTracks, (wx + w.lastX) / 2, (wy + w.lastY) / 2, Math.atan2(wy - w.lastY, wx - w.lastX), moved + 1, w.width * 0.95, 90 + mud * 120, mud > 0.15 ? wet : 0.1, -1);
             w.lastX = wx;
             w.lastY = wy;
-          } else if (spin > 0.6 && speed < 8 && Math.random() < deltaSeconds * 4) addGroundDecal(tyreTracks, wx, wy, c.a, w.r * 1.2, w.width, 120, wet);
+          } else if (spin > 0.6 && speed < 8 && mudRandom() < deltaSeconds * 4) addGroundDecal(tyreTracks, wx, wy, c.a, w.r * 1.2, w.width, 120, wet, -1);
           if (!w.driven && spin > 0.1) continue;
           // How much is thrown: spin in mud throws the most, speed through mud some; dry
           // ground gives dust by speed and spin, more from a 4x4, none when wet
@@ -351,23 +603,30 @@
           w.emit += rate * deltaSeconds;
           while (w.emit >= 1) {
             w.emit -= 1;
-            const throwSpeed = Math.min(160, wheelSpeed) * (0.25 + Math.random() * 0.35),
-              up = 14 + Math.random() * 28 + throwSpeed * 0.35,
-              sideways = (Math.random() - 0.5) * 16 + Math.sign(w.z) * Math.random() * 10,
+            const throwSpeed = Math.min(160, wheelSpeed) * (0.25 + mudRandom() * 0.35),
+              up = 14 + mudRandom() * 28 + throwSpeed * 0.35,
+              sideways = (mudRandom() - 0.5) * 16 + Math.sign(w.z) * mudRandom() * 10,
               ox = wx - cos * dir * w.r * 0.8,
               oy = wy - sin * dir * w.r * 0.8,
-              oz = base + w.r * (0.35 + Math.random() * 0.5),
+              oz = base + w.r * (0.35 + mudRandom() * 0.5),
               vx = -cos * dir * throwSpeed - sin * sideways + (c.vx || 0) * 0.85,
               vy = -sin * dir * throwSpeed + cos * sideways + (c.vy || 0) * 0.85;
+            // Far off in the chase view a clod is under a pixel: nothing is thrown that would not show.
+            if (chaseSpriteHidden(ox, oz, oy, 1.2)) continue;
             if (mud > 0.1) {
-              spawnClump(ox, oz, oy, vx, up, vy, 0.45 + Math.random() * 0.75, wet);
-              // Droplets fly off with it, faster and smaller.
-              spawnClump(ox, oz, oy, vx * 1.2 + (Math.random() - 0.5) * 20, up * (0.7 + Math.random() * 0.6), vy * 1.2 + (Math.random() - 0.5) * 20, 0.2 + Math.random() * 0.2, wet);
-              if (Math.random() < 0.5) {
-                clumpColor.copy(MUD_DRY).lerp(MUD_WET, wet).multiplyScalar(0.8);
-                spawnMist(ox, oz, oy, vx * 0.5, up * 0.4, vy * 0.5, 1.6 + Math.random() * 1.2, 4, 0.5, 0.7 + Math.random() * 0.5, clumpColor);
+              spawnClump(ox, oz, oy, vx, up, vy, 0.45 + mudRandom() * 0.75, wet);
+              if (tier.clods > 1) spawnClump(ox, oz, oy, vx * 1.15 + (mudRandom() - 0.5) * 16, up * (0.75 + mudRandom() * 0.5), vy * 1.15 + (mudRandom() - 0.5) * 16, 0.22 + mudRandom() * 0.22, wet);
+              // Fine drops fly off with it, faster and smaller (the effect pool).
+              for (let k = 0; k < tier.drops; k++)
+                mudDrop(ox, oz, oy, vx * 1.2 + (mudRandom() - 0.5) * 20, up * (0.7 + mudRandom() * 0.6), vy * 1.2 + (mudRandom() - 0.5) * 20, 0.28 + mudRandom() * 0.3, mudShade, base - 1);
+              // A cluster of spray: a sheet of droplets thrown off the tread, streaked at speed.
+              if (mudRandom() < tier.spray)
+                spawnSpray(ox, oz, oy, vx * 0.9, up * 0.85, vy * 0.9, 3.2 + mudRandom() * 3.6, 1.5, 0.95, 0.45 + mudRandom() * 0.35, (mudRandom() * 3) | 0, wet, 0, mudShade);
+              if (mudRandom() < 0.4) {
+                clumpColor.copy(mudShade).lerp(DUST, 0.35).multiplyScalar(0.85);
+                mudPuff(ox, oz, oy, vx * 0.35, up * 0.25, vy * 0.35, 1.1 + mudRandom() * 0.8, 2.2 + mudRandom() * 1.6, 3.2, clumpColor, 0.26, base);
               }
-            } else spawnMist(ox, oz - w.r * 0.3, oy, vx * 0.3, 4 + Math.random() * 6, vy * 0.3, 3 + Math.random() * 3, 12, 0.28, 1.8 + Math.random() * 1.2, DUST);
+            } else mudPuff(ox, oz - w.r * 0.3, oy, vx * 0.3, 4 + mudRandom() * 6, vy * 0.3, 1.8 + mudRandom() * 1.2, 3.5 + mudRandom() * 3, 5, DUST, 0.3, base);
           }
         }
       }
@@ -388,223 +647,107 @@
             const ground = terrainHeight(clump.x[i], clump.z[i]);
             if (clump.y[i] <= ground + 0.1) {
               dead = true;
-              // A splat where it lands (the bigger lumps).
-              if (clump.size[i] > 0.4 || Math.random() < 0.35) addGroundDecal(mudSplats, clump.x[i], clump.z[i], Math.random() * TAU, clump.size[i] * 7, clump.size[i] * 7, 70, clump.wet[i]);
+              // A splat where it lands (the bigger lumps): one of the clump cells, or the splash.
+              if (clump.size[i] > 0.4 || mudRandom() < 0.35) {
+                const cell = mudRandom() < 0.25 ? MUD_SPRITE_CELLS.splash : (mudRandom() * 3) | 0;
+                addGroundDecal(mudSplats, clump.x[i], clump.z[i], mudRandom() * TAU, clump.size[i] * 8, clump.size[i] * 8, 70, clump.wet[i], cell);
+              }
             }
           }
           if (dead) {
             n--;
-            for (const k of ['x', 'y', 'z', 'vx', 'vy', 'vz', 'life', 'size', 'wet']) clump[k][i] = clump[k][n];
+            for (let k = 0; k < CLUMP_FIELDS.length; k++) {
+              const column = clump[CLUMP_FIELDS[k]];
+              column[i] = column[n];
+            }
             i--;
           }
         }
         clump.count = n;
         for (let i = 0; i < n; i++) {
-          const s = clump.size[i];
-          clumpEuler.set(clump.life[i] * 7, clump.life[i] * 5, i);
-          clumpQuat.setFromEuler(clumpEuler);
-          clumpScale.set(s * 1.2, s * 0.8, s);
+          const s = clump.size[i],
+            vx = clump.vx[i],
+            vy = clump.vy[i],
+            vz = clump.vz[i],
+            v = Math.sqrt(vx * vx + vy * vy + vz * vz),
+            // Stretched along its flight at speed (a clod smears in a frame), tumbling about that line.
+            stretch = 1 + Math.min(0.9, v * 0.0055);
+          if (v > 1e-3) clumpQuat.setFromUnitVectors(CLUMP_AXIS, clumpDir.set(vx / v, vy / v, vz / v));
+          else clumpQuat.identity();
+          clumpRoll.setFromAxisAngle(CLUMP_AXIS, clump.seed[i] * 40 + clump.life[i] * 9);
+          clumpQuat.multiply(clumpRoll);
+          clumpScale.set(s * 1.15 * stretch, s * 0.85, s / Math.sqrt(stretch));
           clumpPos.set(clump.x[i], clump.y[i], clump.z[i]);
           clumpMatrix.compose(clumpPos, clumpQuat, clumpScale);
           clumpMesh.setMatrixAt(i, clumpMatrix);
-          // (`wet` past 1.5: water off a ford, not mud.)
-          clumpMesh.setColorAt(i, clump.wet[i] > 1.5 ? clumpColor.copy(FORD_SPRAY) : clumpColor.copy(MUD_DRY).lerp(MUD_WET, clump.wet[i]));
+          // Each clod a little lighter or darker, warmer or cooler.
+          const k = clump.seed[i];
+          clumpColor.copy(MUD_DRY).lerp(MUD_WET, clump.wet[i]);
+          clumpColor.r *= 0.82 + 0.36 * k;
+          clumpColor.g *= 0.82 + 0.3 * k;
+          clumpColor.b *= 0.84 + 0.24 * ((k * 7.3) % 1);
+          clumpMesh.setColorAt(i, clumpColor);
+          clumpLook.setXY(i, clump.wet[i], k);
         }
         clumpMesh.count = n;
         // Only the clumps in flight go up, and nothing when there are none (uploadChurn).
         if (n) {
           clumpMesh.instanceMatrix.addUpdateRange(0, n * 16);
           clumpMesh.instanceMatrix.needsUpdate = true;
+          clumpLook.addUpdateRange(0, n * 2);
+          clumpLook.needsUpdate = true;
           if (clumpMesh.instanceColor) {
             clumpMesh.instanceColor.addUpdateRange(0, n * 3);
             clumpMesh.instanceColor.needsUpdate = true;
           }
         }
-        // Mist and dust.
-        const at = mist.geo.attributes,
-          mistDrag = Math.exp(-2.2 * deltaSeconds);
-        n = mist.count;
+        // Spray sprites: ballistic, slowed by the air, spreading; gone at the ground.
+        const s = mudSpray,
+          mudSprayDrag = Math.exp(-1.1 * deltaSeconds);
+        n = s.count;
         for (let i = 0; i < n; i++) {
-          mist.life[i] -= deltaSeconds;
-          if (mist.life[i] <= 0) {
+          s.life[i] -= deltaSeconds;
+          let dead = s.life[i] <= 0;
+          if (!dead) {
+            s.vx[i] *= mudSprayDrag;
+            s.vz[i] *= mudSprayDrag;
+            s.vy[i] = s.vy[i] * mudSprayDrag - g * 0.85 * deltaSeconds;
+            s.x[i] += s.vx[i] * deltaSeconds;
+            s.y[i] += s.vy[i] * deltaSeconds;
+            s.z[i] += s.vz[i] * deltaSeconds;
+            s.turn[i] += s.spin[i] * deltaSeconds;
+            if (s.vy[i] < 0 && s.y[i] < terrainHeight(s.x[i], s.z[i]) - 0.5) dead = true;
+          }
+          if (dead) {
             n--;
-            for (const k of ['x', 'y', 'z', 'vx', 'vy', 'vz', 'life', 'max', 'size', 'grow', 'alpha', 'r', 'g', 'b']) mist[k][i] = mist[k][n];
-            i--;
-            continue;
-          }
-          mist.vx[i] *= mistDrag;
-          mist.vz[i] *= mistDrag;
-          mist.vy[i] = mist.vy[i] * mistDrag - g * 0.08 * deltaSeconds;
-          mist.x[i] += mist.vx[i] * deltaSeconds;
-          mist.y[i] += mist.vy[i] * deltaSeconds;
-          mist.z[i] += mist.vz[i] * deltaSeconds;
-          mist.size[i] += mist.grow[i] * deltaSeconds;
-        }
-        mist.count = n;
-        for (let i = 0; i < n; i++) {
-          const t = mist.life[i] / mist.max[i];
-          at.iPos.setXYZ(i, mist.x[i], mist.y[i], mist.z[i]);
-          at.iSize.setX(i, mist.size[i]);
-          at.iAlpha.setX(i, mist.alpha[i] * t * Math.min(1, (1 - t) * 8));
-          at.iColor.setXYZ(i, mist.r[i], mist.g[i], mist.b[i]);
-        }
-        if (n)
-          for (const name of ['iPos', 'iSize', 'iAlpha', 'iColor']) {
-            at[name].addUpdateRange(0, n * at[name].itemSize);
-            at[name].needsUpdate = true;
-          }
-        mist.geo.instanceCount = n;
-        mist.mesh.material.uniforms.uLight.value = (1 - 0.8 * nightAmount) * 0.72;
-      }
-      // ---- The club's flag pole (the flag itself below) ----------------------------------------------
-      const trailClubGroup = new Three.Group();
-      trailClubGroup.name = '4x4 club';
-      scene.add(trailClubGroup);
-      batchGroups.push(trailClubGroup);
-      const trailClubLive = new Three.Group();
-      trailClubLive.name = '4x4 club (animated)';
-      scene.add(trailClubLive);
-      const clubStone = staticMat('#77756d', 0.95);
-      function canvasMap(width, height, paint) {
-        const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
-        paint(canvas.getContext('2d'), width, height);
-        const tx = new Three.CanvasTexture(canvas);
-        tx.colorSpace = Three.SRGBColorSpace;
-        tx.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
-        return tx;
-      }
-      // The club block itself (clubhouse, workshop, yard, lot, gate and its carved
-      // sign) is built with the mountain village kit: mountain-club3d.js.
-      statics.push({ x: OFFROAD_CLUB.lot.x + OFFROAD_CLUB.lot.w / 2, y: OFFROAD_CLUB.lot.y + OFFROAD_CLUB.lot.h / 2, group: trailClubGroup, radius: 420 });
-      // ---- The flag: club colours on a pole, flying ----------------------------------------------
-      const flagPoint = OFFROAD_CLUB.flag,
-        flagGeometry = new Three.PlaneGeometry(14, 9, 12, 4);
-      flagGeometry.translate(7, 0, 0);
-      const flagBase = Float32Array.from(flagGeometry.attributes.position.array),
-        clubFlag = new Three.Mesh(
-          flagGeometry,
-          new Three.MeshStandardMaterial({
-            map: canvasMap(256, 160, (g) => {
-              g.fillStyle = '#2f5d3a';
-              g.fillRect(0, 0, 256, 160);
-              g.fillStyle = '#d9a441';
-              g.fillRect(0, 118, 256, 14);
-              g.fillStyle = '#f2e8cf';
-              g.beginPath();
-              g.moveTo(40, 110);
-              g.lineTo(96, 34);
-              g.lineTo(122, 70);
-              g.lineTo(150, 28);
-              g.lineTo(214, 110);
-              g.fill();
-              g.fillStyle = '#2f5d3a';
-              g.font = `bold 34px ${POLICE_FONT}`;
-              g.textAlign = 'center';
-              g.fillText('4X4', 128, 100);
-            }),
-            side: Three.DoubleSide,
-            roughness: 0.85,
-          }),
-        );
-      clubFlag.position.set(flagPoint.x + 0.4, 50, flagPoint.y);
-      clubFlag.castShadow = true;
-      trailClubLive.add(clubFlag);
-      box(trailClubGroup, flagPoint.x, 28, flagPoint.y, 0.7, 56, 0.7, staticMat('#d8dadc', 0.3, 0.7));
-      mesh(sphereGeo, staticMat('#d9a441', 0.3, 0.8), trailClubGroup, flagPoint.x, 56.4, flagPoint.y, 0.8, 0.8, 0.8);
-      function waveFlag() {
-        const pos = flagGeometry.attributes.position,
-          wind = weather.wind || 0.4,
-          t = gameTime * (4 + wind * 4),
-          angle = weather.windAngle || 0;
-        for (let i = 0; i < pos.count; i++) {
-          const x = flagBase[i * 3],
-            y = flagBase[i * 3 + 1],
-            f = x / 14;
-          pos.setXYZ(i, x * (0.96 + 0.04 * Math.cos(t)), y - f * f * (1.6 - wind), Math.sin(x * 0.55 - t + y * 0.08) * f * (1.2 + wind * 1.4));
-        }
-        pos.needsUpdate = true;
-        flagGeometry.computeVertexNormals();
-        clubFlag.rotation.y = -angle;
-      }
-      // ---- Trail furniture: start gate, checkpoints, rock steps, finish ------------------------------
-      const trailGroup = new Three.Group();
-      trailGroup.name = 'hill climb course';
-      scene.add(trailGroup);
-      batchGroups.push(trailGroup);
-      const bannerMaterial = (text, colors = ['#1d1f22', '#f6ead0', '#e2721f']) =>
-        new Three.MeshStandardMaterial({
-          map: canvasMap(512, 96, (g, W, H) => {
-            g.fillStyle = colors[0];
-            g.fillRect(0, 0, W, H);
-            // Chequered ends.
-            for (let i = 0; i < 6; i++) for (let j = 0; j < 3; j++) if ((i + j) % 2) {
-              g.fillStyle = colors[1];
-              g.fillRect(i * 16, j * 32, 16, 32);
-              g.fillRect(W - 96 + i * 16, j * 32, 16, 32);
+            for (let k = 0; k < MUD_SPRAY_FIELDS.length; k++) {
+              const column = s[MUD_SPRAY_FIELDS[k]];
+              column[i] = column[n];
             }
-            g.fillStyle = colors[1];
-            g.font = `bold 54px ${POLICE_FONT}`;
-            g.textAlign = 'center';
-            g.textBaseline = 'middle';
-            g.fillText(text, W / 2, H / 2 + 3);
-            g.fillStyle = colors[2];
-            g.fillRect(96, H - 8, W - 192, 5);
-          }),
-          side: Three.DoubleSide,
-          roughness: 0.8,
-        });
-      function gateAt(trail, point, text, width, height) {
-        const path = trail.path,
-          i = point.i,
-          next = path[Math.min(path.length - 1, i + 1)],
-          prev = path[Math.max(0, i - 1)],
-          dx = next[0] - prev[0],
-          dy = next[1] - prev[1],
-          len = Math.hypot(dx, dy) || 1,
-          px = -dy / len,
-          py = dx / len,
-          half = trail.width / 2 + 5,
-          ground = terrainHeight(point.x, point.y);
-        for (const side of [-1, 1]) {
-          const x = point.x + px * half * side,
-            y = point.y + py * half * side,
-            h = terrainHeight(x, y);
-          box(trailGroup, x, h + height / 2 - 2, y, 1.1, height + 4, 1.1, staticMat('#e8e6df', 0.5));
-          box(trailGroup, x, h + 1.2, y, 2.4, 2.4, 2.4, staticMat('#e2721f', 0.7));
-        }
-        if (text) {
-          const banner = new Three.Mesh(new Three.PlaneGeometry(half * 2, width), bannerMaterial(text));
-          banner.position.set(point.x, ground + height - 1, point.y);
-          banner.rotation.y = -Math.atan2(py, px);
-          trailGroup.add(banner);
-        } else {
-          for (const side of [-1, 1]) {
-            const x = point.x + px * half * side,
-              y = point.y + py * half * side,
-              h = terrainHeight(x, y),
-              f = new Three.Mesh(new Three.PlaneGeometry(6, 4), bannerMaterial('', ['#f6ead0', '#1d1f22', '#1d1f22']));
-            f.position.set(x + px * 3 * side, h + height - 1, y + py * 3 * side);
-            f.rotation.y = -Math.atan2(py, px);
-            trailGroup.add(f);
+            i--;
           }
         }
+        s.count = n;
+        for (let i = 0; i < n; i++) {
+          const t = s.life[i] / s.max[i];
+          mudSprayPos.setXYZW(i, s.x[i], s.y[i], s.z[i], s.size[i] * (1 + (s.grow[i] - 1) * (1 - t)));
+          mudSprayVel.setXYZW(i, s.vx[i], s.vy[i], s.vz[i], s.turn[i]);
+          mudSprayLook.setXYZW(i, s.alpha[i] * Math.min(1, t * 2.5) * Math.min(1, (1 - t) * 12), s.wet[i], s.cell[i], s.water[i]);
+          mudSprayColor.setXYZ(i, s.r[i], s.g[i], s.b[i]);
+        }
+        if (n) {
+          for (const attribute of MUD_SPRAY_ATTRIBUTES) {
+            attribute.addUpdateRange(0, n * attribute.itemSize);
+            attribute.needsUpdate = true;
+          }
+        }
+        mudSprayGeometry.instanceCount = n;
       }
-      MOUNTAIN_TRAILS.forEach((trail, t) => {
-        const course = trailCourse(t);
-        gateAt(trail, course.start, 'HILL CLIMB · START', 5, 26);
-        course.checkpoints.forEach((cp) => gateAt(trail, cp, null, 0, 16));
-        // (The rock sections' rock, the markers, cairns and logs: offroad3d-trail.js.)
-        const top = trail.path.at(-1),
-          prevTop = trail.path.at(-6);
-        gateAt(trail, { x: prevTop[0], y: prevTop[1], i: trail.path.length - 6 }, 'SUMMIT · FINISH', 5, 24);
-        statics.push({ x: (course.start.x + top[0]) / 2, y: (course.start.y + top[1]) / 2, group: trailGroup, radius: 1400 });
-      });
-      // SIGN_DESIGNS gets the club's own board (signdesigns3d.js).
+      const MUD_SPRAY_ATTRIBUTES = [mudSprayPos, mudSprayVel, mudSprayLook, mudSprayColor];
       // ---- Per frame -----------------------------------------------------------------------------
       function updateOffroadVisuals(deltaSeconds) {
         if (deltaSeconds <= 0) return;
+        const mudStart = performance.now();
         const L = OFFROAD_CLUB.lot,
           nearClub = Math.abs(viewCenter.x - L.x - L.w / 2) < viewReach + 300 && Math.abs(viewCenter.y - L.y - L.h / 2) < viewReach + 300;
         trailClubLive.visible = nearClub;
@@ -613,13 +756,48 @@
           // The grill smokes; the fire ring smoulders by day and burns at night (chimney-smoke3d.js).
           updateClubYardSmoke(deltaSeconds, true);
         }
+        mudTierNow = mudTier();
+        if (clumpMesh.geometry !== clumpGeometries[mudTierNow.detail]) clumpMesh.geometry = clumpGeometries[mudTierNow.detail];
         for (const [c, m] of carModels)
           if (m.group.visible && (c.offroadState || c.x > CITY_SIZE - 200) && Math.abs(c.x - viewCenter.x) < viewReach + 100 && Math.abs(c.y - viewCenter.y) < viewReach + 100)
             vehicleSpray(c, m, deltaSeconds);
         updateMudParticles(deltaSeconds);
+        // The spray and the decals light with the effect pool's light (a frame old: it is set as the pool draws).
+        if (clump.count || mudSpray.count || mudSplats.used || tyreTracks.used) mudLightUpdate();
+        mudSplats.material.uniforms.uTime.value = gameTime;
+        tyreTracks.material.uniforms.uTime.value = gameTime;
+        // CPU of this pass (ms, smoothed over ~30 frames or staged steps, without the effect pool; offroad().effects.cpuMs).
+        mudCpuMs += (performance.now() - mudStart - mudCpuMs) * 0.033;
+      }
+      let mudCpuMs = 0;
+      /* Console trailMud (a scene staged without drawing): one step of what updateOffroadVisuals throws and moves,
+         and of the effect pool the drops and mist went into. */
+      function trailMudStage(deltaSeconds) {
+        const mudStart = performance.now();
+        mudTierNow = mudTier();
+        if (clumpMesh.geometry !== clumpGeometries[mudTierNow.detail]) clumpMesh.geometry = clumpGeometries[mudTierNow.detail];
+        for (const [c, m] of carModels)
+          if (m.group.visible && (c.offroadState || c.x > CITY_SIZE - 200) && Math.abs(c.x - viewCenter.x) < viewReach + 100 && Math.abs(c.y - viewCenter.y) < viewReach + 100)
+            vehicleSpray(c, m, deltaSeconds);
+        updateMudParticles(deltaSeconds);
+        mudCpuMs += (performance.now() - mudStart - mudCpuMs) * 0.05;
+        fxStep(deltaSeconds);
         mudSplats.material.uniforms.uTime.value = gameTime;
         tyreTracks.material.uniforms.uTime.value = gameTime;
       }
       function offroadEffectsInfo() {
-        return { clumps: clump.count, mist: mist.count, splats: mudSplats.used, tracks: tyreTracks.used, capacity: { clumps: MUD_CLUMPS, mist: MUD_MIST, splats: MUD_SPLATS, tracks: MUD_TRACKS }, dressing: trailDressing };
+        return {
+          clumps: clump.count,
+          spray: mudSpray.count,
+          splats: mudSplats.used,
+          tracks: tyreTracks.used,
+          // Thrown into the effect pool since the page loaded: fine drops and mist or dust puffs.
+          drops: mudDrops,
+          puffs: mudPuffs,
+          cpuMs: Math.round(mudCpuMs * 1000) / 1000,
+          tier: { ...mudTierNow },
+          textures: trailMud.ready,
+          capacity: { clumps: MUD_CLUMPS, spray: MUD_SPRAY, splats: MUD_SPLATS, tracks: MUD_TRACKS, puffs: MUD_PUFF_RING },
+          dressing: trailDressing,
+        };
       }
