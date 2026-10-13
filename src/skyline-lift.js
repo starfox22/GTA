@@ -205,6 +205,14 @@
         else tell('NORTH POINT KEY · Back at street level.', 3);
       }
     }
+    /* The action key during a ride while the CIRRUS meeting runs (skyline-meeting.js: the scene moves on a beat a
+       press): straight to the dark moment's end, the move done there, then the 0.5 s back. True when it hurried one. */
+    function skyLiftHurry() {
+      const L = skyLift;
+      if (!L || !skyMeeting.active || L.t >= SKY_LIFT_SECONDS - 0.5) return false;
+      L.t = SKY_LIFT_SECONDS - 0.5;
+      return true;
+    }
     // Any ride under way is dropped (a new game or a reload, populate()).
     function resetSkyLift() {
       skyLift = null;

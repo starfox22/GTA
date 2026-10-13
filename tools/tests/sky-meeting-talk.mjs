@@ -1,6 +1,8 @@
 // The CIRRUS meeting's talk (skyline-meeting.js): each line in a bubble over its speaker and in the subtitle, the
 // action key (real presses) moving it on a line at a time with NEXT LINE offered, and the player able to walk away
-// from the table once it is over, also when the scene is ended under him (skyMeetingEnd).
+// from the table once it is over, also when the scene is ended under him (skyMeetingEnd). Then the whole scene on
+// real presses of the action key alone, in under 20 s of game time: every beat with nobody speaking (the walk to the
+// lift and the ride, the walk in to his table, the waiter's walks, the folder) moves on too, and nothing is lost.
 export const fresh = true;
 const report = (t) => t.call('skyMeeting', 'report');
 export default async function (t) {
@@ -66,4 +68,34 @@ export default async function (t) {
   await t.keys('KeyW', 1);
   r = await report(t);
   t.assert(Math.hypot(r.player.x - there.x, r.player.y - there.y) > 6, 'and he walks: ' + JSON.stringify({ there, now: r.player }));
+
+  // The whole meeting on the action key alone, from the pavement to the envelope.
+  await t.call('skyMeeting', 'begin');
+  await t.call('skyMeetingSkip', 'waiting');
+  await t.call('holdSimulation', true);
+  try {
+    const STEP = 0.3,
+      seen = ['waiting'],
+      offered = new Set();
+    let game = 0,
+      presses = 0;
+    r = await report(t);
+    while (r.stage !== 'done' && game < 40) {
+      const prompt = await t.call('promptState');
+      offered.add(prompt.offered || prompt.text || '');
+      await t.keys('KeyE', 0.05, { real: true });
+      presses++;
+      await t.wait(STEP);
+      game += STEP;
+      r = await report(t);
+      if (seen.at(-1) !== r.stage) seen.push(r.stage);
+    }
+    t.note(`the whole meeting: ${presses} presses, ${game.toFixed(1)} s of game time; stages ${seen.join(' > ')}`);
+    t.assert(r.stage === 'done' && game <= 20, 'E alone did not get through the meeting in 20 s: ' + JSON.stringify({ game, presses, seen, r }));
+    t.assert(seen.join(' > ') === 'waiting > greeted > lift > terrace > seated > drinks > handover > done', 'the stages out of order: ' + seen.join(' > '));
+    t.assert(r.drinks === 2 && r.talkDone && r.handedOver && r.props.includes('envelope') && !r.props.includes('card'), 'the scene lost a beat: ' + JSON.stringify(r));
+    t.assert([...offered].some((o) => /SKIP AHEAD/.test(o)) && [...offered].some((o) => /GO UP WITH/.test(o)), 'SKIP AHEAD and GO UP offered: ' + JSON.stringify([...offered]));
+  } finally {
+    await t.call('holdSimulation', false);
+  }
 }

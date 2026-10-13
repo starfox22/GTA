@@ -273,6 +273,8 @@
       }
       if (gameMode === 'elevator') {
         e.preventDefault();
+        // The CIRRUS meeting's lift ride moves on with the action key too (skyline-lift.js skyLiftHurry).
+        if (!e.repeat && is('interact')) skyLiftHurry();
         return;
       }
       if (gameMode === 'transit' || gameMode === 'taxi') {
