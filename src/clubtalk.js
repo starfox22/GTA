@@ -20,9 +20,10 @@
      * fits has been heard (`clubTalk.used`).
      *
      * The bubbles go through the crowd's speech (crowd.js speechBubbles): the
-     * player is offered as a speaker by `clubTalkSpeakers`, and both speakers are
-     * marked `inConversation`, which ranks their lines first so the conversation
-     * holds the two bubble slots while it runs. With Settings · Gameplay · NPC
+     * player is offered as a speaker by `clubTalkSpeakers`, and every line is a
+     * TALK LINE (crowd-speech.js), which ranks it first so the conversation
+     * holds the two bubble slots while it runs, in the street and chase views;
+     * the player's own lines also read in the subtitle (story.js sceneLine). With Settings · Gameplay · NPC
      * chatter off there are no conversations. Walking away ends one politely: the
      * club-goer calls a goodbye after the player.
      */
@@ -194,11 +195,15 @@
       }
       return best;
     }
+    // A conversation line: a bubble over the speaker that holds its slot (crowd-speech.js TALK LINES), and what the
+    // player says also in the subtitle at the bottom of the screen (story.js sceneLine).
     function clubTalkSay(speaker, text) {
       speaker.speech = text;
       speaker.speechUntil = gameTime + speechReadSeconds(text);
       speaker.speechKind = 'clubTalk';
       speaker.speechKindText = text;
+      speechMarkTalk(speaker);
+      if (speaker === player) sceneLine('YOU', text, speechReadSeconds(text) + CLUB_TALK.gap);
     }
     function startClubTalk(p) {
       const script = pickClubTalk(clubPersona(p), clubTalkTime());
@@ -354,6 +359,8 @@
         heard: clubTalk.heard.slice(-10),
         used: clubTalk.used.size,
         playerSpeech: player.speech && player.speechUntil >= gameTime ? player.speech : null,
+        // The subtitle at the bottom of the screen (the player's own lines read there too).
+        subtitle: getElement('storyLine').classList.contains('show') ? getElement('storyLine').textContent : null,
         bubbles: speechBubbles().map((p) => ({ who: p === player ? 'player' : p.club ? 'club-goer' : 'other', text: p.speech })),
       };
     }

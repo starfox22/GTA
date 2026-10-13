@@ -66,7 +66,8 @@ wounds.js, carjack.js, damage.js, air-cover.js. `policeReport()` has `wounds` an
   `policeDescribeSuspect`: a new car (or the player out of one) seen for 1.5 s while wanted
   is called in once ("SUSPECT SWITCHED · NOW IN A RED PICKUP"); 5 s between captions.
 - Rain affects pursuit drivers too (vehicles-and-driving.md). A respray clears the stars only
-  if no unit saw the player drive in.
+  if no unit watched the player drive in (sight held 0.5 s, `GARAGE_SEEN_CONFIRM`); then `clearPolice` sends every
+  unit back to patrol (places-and-venues.md).
 - Voluntary surrender requires released movement, throttle/steering, jump and fire controls as well as stillness.
   Holding a control against an obstacle resets the surrender timer (`trackSurrender`, pursuit-officers.js);
   releasing it still allows surrender. Existing close-range arrest rules remain in force.
@@ -127,6 +128,14 @@ wounds.js, carjack.js, damage.js, air-cover.js. `policeReport()` has `wounds` an
   lamps, tyres and `damage.pull`. `vehicleHandling(c)` turns damage into power, grip and
   steering pull. Below 25% health the engine burns to the explosion; `wreckVehicle` guts once;
   `repairVehicle` / `freshDamage` reset.
+- Gunfire on road vehicles (vehicle-gunfire.js VEHICLE GUNFIRE): `vehicleRoundDamage(c, b)` is the only rule for the hp
+  a round takes: `VEHICLE_GUNFIRE[calibre].engine` x zone share (engine bay / body / boot / glass, noted by
+  `bulletHitVehicle` in `vehicleRoundHit`) x the round's weight. Small arms (handgun, buck, rifle, `mg` rounds) stop just
+  under the fire line and do nothing while it burns, so only the engine fire's countdown blows a car up (about 25 pistol
+  rounds into a sedan's bonnet light it); heavy rounds (`heavyRound`, goreCal 'heavy') go on to the explosion; rockets,
+  shells and blasts keep their own damage. Dents follow the round's own `dmg` (`detail.panel`). Mission vehicles under
+  gang fire keep the MISSION CAGE share of `b.dmg` (mission1-bay balance). Console `vehicleDurability(type)`,
+  `gunfireTest(type, weapon, zone)`; tools/tests/vehicle-gunfire.mjs.
 - Breakable street furniture and trees register as they are placed
   (`registerStreetProp(kind, x, y, yaw, options)`); a prop breaks when the vehicle's kinetic
   energy along the normal plus earlier strain reaches its `breakKJ` (table in damage.js

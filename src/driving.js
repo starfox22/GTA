@@ -202,6 +202,17 @@
       PEDAL_APPLY = 0.2,
       PEDAL_RELEASE = 0.08,
       PEDAL_CURVE = 1.5;
+    /* Sideways, the same shape over the slip angle (radians): full force at the peak
+       (SIDE_PEAK_ANGLE, about 7 degrees), then easing down toward the sliding share
+       SIDE_SLIDE by SIDE_SLIDE_ANGLE (50 degrees) and holding it: past the peak the grip
+       falls off gradually, it never drops off a cliff. */
+    const SIDE_PEAK_ANGLE = 0.12,
+      SIDE_SLIDE = 0.72,
+      SIDE_SLIDE_ANGLE = 0.87;
+    function tyreSideShare(angle) {
+      if (angle <= SIDE_PEAK_ANGLE) return 1;
+      return 1 - (1 - SIDE_SLIDE) * Math.pow(Math.min(1, (angle - SIDE_PEAK_ANGLE) / (SIDE_SLIDE_ANGLE - SIDE_PEAK_ANGLE)), 0.7);
+    }
     // Force over the axle's peak capacity at slip s.
     function tyreForceShare(s, slideRatio) {
       if (s <= MU_PEAK_SLIP) return s / MU_PEAK_SLIP;
@@ -228,6 +239,8 @@
           spin: 0,
           frontLockTime: 0,
           handbrakeAt: -10,
+          // Seconds stopped with the brake key held (physics-driving.js REVERSE GEAR).
+          reverseWait: 0,
         })
       );
     }
@@ -339,7 +352,9 @@
     // power slide settles at; HANDBRAKE_SWING: the tail's swing on the handbrake.
     const DRIFT_ANGLE = 0.4,
       DRIFT_ANGLE_BALANCE = 0.3,
-      HANDBRAKE_SWING = 0.8;
+      HANDBRAKE_SWING = 0.8,
+      HANDBRAKE_WANDER = 0.06,
+      STABILITY_HOLD_FLOOR = 0.6;
     const stabilityOut = { cut: 0, brake: 0, hold: 1 };
     function yawStability(c, t, ch, assists, s) {
       // The speed along the path (in a slide the nose-on share is far less).
@@ -376,6 +391,10 @@
       // HANDBRAKE: the rear wheels locked with the fronts steering swing the tail
       // out (held, the car goes on round: a 180).
       if (s.handbrake && !ch.bike) deficit += HANDBRAKE_SWING * Math.abs(s.turnKey) * clamp((speed - 12 * KMH) / (25 * KMH), 0, 1);
+      // Locked rears are unstable even dead straight: the tail wanders a few degrees
+      // (HANDBRAKE_WANDER) and the driver has to hold it.
+      const wander = s.handbrake && !ch.bike && s.turnKey === 0 ? HANDBRAKE_WANDER * clamp((speed - 30 * KMH) / (40 * KMH), 0, 1) : 0;
+      deficit += wander;
       deficit *= wetness;
       /* POWER OVERSTEER: wheelspin at the back lets the tail out, but it drifts
          rather than spins: as the body turns past its path toward DRIFT_ANGLE
@@ -395,7 +414,7 @@
         esc = assists.esc && !relaxed;
       // Dead straight with nothing turning it, there is nothing to swing the tail
       // either way (a real car needs a nudge too).
-      const nudged = size > 0.01 || Math.abs(c.av) > 0.02 || s.turnKey !== 0,
+      const nudged = size > 0.01 || Math.abs(c.av) > 0.02 || s.turnKey !== 0 || wander > 0,
         grow = nudged ? (deficit * (1 + 1.4 * size) + power) * 2.3 * clamp(speed / (70 * KMH), 0.3, 1.4) * dir : 0,
         // The rear finds its grip again as the cause goes; slower once the car is well round.
         settle = (1.7 * clamp(1 - deficit, 0, 1)) / (1 + Math.max(0, size - 0.8) * 1.5) + (counter ? (esc ? 5.5 : 3.6) : 0) + caught;
@@ -415,8 +434,9 @@
       // Spinning wheels mid-slide with TCS off: ESC still cuts the throttle.
       if (esc && t.spin > 0.2 && size > 0.1) out.cut = Math.max(out.cut, 0.7);
       t.yawSlide = clamp(slide + (grow - slide * (settle + escDamp)) * dt, -3.2, 3.2);
-      // The rear tyres sliding hold the car less sideways.
-      out.hold = 1 / (1 + 0.7 * Math.abs(t.yawSlide));
+      // The rear tyres sliding hold the car less sideways, but a sliding tyre still grips
+      // (STABILITY_HOLD_FLOOR): a slide scrubs its speed off instead of skating on.
+      out.hold = Math.max(STABILITY_HOLD_FLOOR, 1 / (1 + 0.7 * Math.abs(t.yawSlide)));
       return out;
     }
     /* The assists' HUD indicators: 'na' (the vehicle has none), 'off' (switched

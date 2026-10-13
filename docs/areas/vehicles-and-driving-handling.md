@@ -22,14 +22,25 @@ driving.js). Specs, crashes, aircraft and models: vehicles-and-driving.md.
   peak is brakeG / 0.93, `ABS_EFFICIENCY`). Fitment: cars all three, motorbikes ABS (some
   TCS), classics none; `spec.abs` / `esc` / `tcs` override. `c.braking` and
   `drivingAssistStates` feed the HUD lamps. Tests: `brakeTest`, `liftOffTest`, `accelTest`,
-  `drivingState`. Settings · Driving is saved as `dead-end-city-driving`.
+  `drivingState`. Settings · Driving is saved as `dead-end-city-driving`. `brakeG` figures are the 1990s fleet's
+  (sedan 0.9: 46 m from 100 km/h, 12 m from 50; trucks 0.6, the bus 0.52); the Prestige Collection and flagships keep
+  their modern figures. The AI reads the same `spec.brake`.
+- **Reverse** (physics-driving.js REVERSE GEAR): the brake key brakes to a standstill (`REVERSE_STOP` 1 km/h), reverse
+  goes in after `REVERSE_ENGAGE` 0.25 s stopped (the brakes hold the car meanwhile, `tyres.reverseWait`), pulls
+  `REVERSE_PULL` 0.5 of the traction (a sedan 0.3 g) and eases off toward `REVERSE_TOP` 25 km/h; the throttle while
+  rolling backwards brakes first. Steering follows the travel (`sign(along)`). Measure with `reverseTest(type, kmh)`.
+- **Tyre fall-off**: past the peak slip angle the sideways grip eases to `SIDE_SLIDE` 0.72 by 50 degrees
+  (`tyreSideShare`, driving.js), and the rear's slide (`stability.hold`) never takes it under `STABILITY_HOLD_FLOOR`.
 - **Drifts** (driving.js `yawStability`): wheelspin at the back swings the tail only up to
   `DRIFT_ANGLE` (+ `DRIFT_ANGLE_BALANCE` x balance, halved counter-steering), then holds it:
   floored through a bend a tail-happy car drifts instead of spinning, a counter-steer or a
   lift catches it. Lift-off with the lock held and a locked rear still spin. The handbrake
   swings the tail (`HANDBRAKE_SWING`; `HANDBRAKE_CORNER`, `HANDBRAKE_YAW_RESPONSE` in
   physics-driving.js): a 0.5 s flick at 55 km/h turns a sedan ~40 degrees, held ~1.5 s it
-  makes a 180. Slide maths reads the speed along the path (`hypot(along, lateral)`), and the yaw
+  makes a 180. The slide itself is friction (HANDBRAKE SLIDE, a car only): the locked rear's `HANDBRAKE_DECEL` 0.5 g
+  against the travel in every direction plus the rolling fronts' sideways grip (`handbrakeSide`, Coulomb, so it stops
+  dead: no creeping glide); straight on, a sedan slows at ~0.6 g with a slight wander (`HANDBRAKE_WANDER`); a 50 km/h
+  handbrake turn stops in ~13 m. Motorbikes, bicycles and the tank keep the old 0.45 g drag. Slide maths reads the speed along the path (`hypot(along, lateral)`), and the yaw
   cap takes it past ~37 degrees of slip (a nose-on speed there let a slide spin itself up;
   below that the trail pilot's crabbing needs the nose-on one: falls.mjs drive-trail). Measure with `driftTest`
   (tools/tests/drift-handling.mjs).

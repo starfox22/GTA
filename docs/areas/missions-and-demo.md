@@ -110,10 +110,13 @@ index plus one.
 - `DEMO_BUILD = true` today. A normal player gets missions 1 to 4 (`DEMO_MISSIONS` = 4); later
   jobs show locked and nameless (`???`, `missionPickerTitle`) with a FULL GAME badge and a buy note
   (a story job not reached yet is `???` too). The payphone stops ringing after
-  mission 4 (`storyCallWaiting`), and completing it shows the DEMO COMPLETE card
-  (`showDemoComplete`, game mode `'demo'`, a recap from `campaignStats`) the first time only; a
-  replay of mission 4 is just a payday. Completion is kept
-  in `dead-end-city-demo`. `demoLocked()` is the gate.
+  mission 4 (`storyCallWaiting`), and winning it with the story at its end (`completed` reaches 4, god mode
+  too) shows the DEMO COMPLETE card (`showDemoComplete`, game mode `'demo'`, thanks, the buy note, a recap from
+  `campaignStats`; Escape or CONTINUE FREE ROAM dismisses it) once per save: `demoCardSeen` is saved with the
+  story, and a loaded save that finished the demo without it gets the card soon after play resumes
+  (`demoCardOwed`); after that a replay of mission 4 is just a payday. Completion is also kept
+  in `dead-end-city-demo` (the title badge). `demoLocked()` is the gate. Console `storyProgress(n, cardSeen, owed)`
+  (tests); tools/tests/demo-complete-card.mjs.
 - `missionIndex` is the frontier **and** the job a replay picked (`chooseMission`), so a
   declined or failed replay calls `settleDemoStoryIndex()` (also on load and when god mode is
   switched off): without god mode the index goes back to `completed`, so the payphone offers the

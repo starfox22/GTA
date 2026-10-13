@@ -84,9 +84,9 @@
         reward: 3200,
         // summitjob.js: the RIDGELINE 4X4 CLUB's gate, where the climb is best begun.
         start: { x: 8590, y: 3070 },
-        phoneMessage:
-          'Vinny gave you a mission: before the Feds picked him up, Tommy Russo buried a package of Vinny’s at the very top of Mount Ascent, where the 4x4 trail ends. Dig it up and bring it to his warehouse.',
-        brief: 'Get to the top of Mount Ascent, dig up the buried package and bring it to Vinny’s warehouse.',
+        // The opening only says what (summitjob.js SUMMIT_OPENING): how to get up there is the player's to find.
+        phoneMessage: 'Vinny asked you to collect a package hidden at the top of the mountain.',
+        brief: 'Collect a package hidden at the top of the mountain and bring it to Vinny’s warehouse.',
       },
       {
         title: 'Borrowed Stripes',
@@ -400,6 +400,20 @@
       getElement('storyLine').textContent = mission.lastLine;
       getElement('storyLine').classList.add('show');
     }
+    /* A spoken line of a conversation outside a job's script (a chat at the Marea): the same subtitle, named, for
+       `seconds`. In a job it is the job's line (missionLine); in free roam it holds on its own clock (storyUI). */
+    let sceneLineUntil = 0;
+    function sceneLine(speaker, text, seconds) {
+      if (mission) {
+        missionLine(speaker, text);
+        mission.lineUntil = gameTime + seconds;
+        return;
+      }
+      sceneLineUntil = gameTime + seconds;
+      const el = getElement('storyLine');
+      el.textContent = speaker + ': ' + text;
+      el.classList.add('show');
+    }
     function setStage(stage, target, instruction, speaker, text) {
       mission.stage = stage;
       mission.target = target;
@@ -553,7 +567,7 @@
       finishCampaignMission(missionState);
       mission = null;
       // PUBLIC DEMO: mission 4 brings up the DEMO COMPLETE card (campaign.js).
-      const demoEnd = demoMissionWon(missionState.index, completed > previousCompleted);
+      const demoEnd = demoMissionWon(missionState.index);
       if (completed > previousCompleted) newCallNotice();
       enemies.length = 0;
       storyActors
@@ -892,7 +906,7 @@
     function storyUI() {
       const contact = missions[mission?.index ?? missionIndex]?.contact || 'vinny';
       setContactPortrait(getElement('missionPortrait'), contact);
-      if (!mission || gameTime > (mission.lineUntil || 0))
+      if ((!mission || gameTime > (mission.lineUntil || 0)) && gameTime > sceneLineUntil)
         getElement('storyLine').classList.remove('show');
       if (player.roof) {
         if (distanceBetween(player, ROOFTOP.lift) < 48) offerPrompt('ELEVATOR TO STREET', { id: 'roof-lift' });

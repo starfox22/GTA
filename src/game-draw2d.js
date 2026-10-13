@@ -431,7 +431,9 @@
     // FRAME PRESENTATION: WebGL when available, otherwise the complete 2D fallback.
     function drawWorld() {
       if (city3D) {
-        city3D.render();
+        // Nothing to draw into while the GPU context is gone (gpu-context.js).
+        if (gpuContext.lost) gpuContextWaiting();
+        else city3D.render();
         return;
       }
       drawWater2D();

@@ -555,21 +555,31 @@
           // bubble inside the frame, with a pointer toward them.
           // Text size: 11 px, 12 on a phone-sized screen; the 911 call a size up
           // and bold (the canvas is already at the screen's pixel ratio).
+          // A line of the player's own conversation (TALK LINES, crowd-speech.js) is two sizes up and bold, with
+          // a dark edge (his own lines pale blue), and like the 911 call it is held inside the frame, never culled:
+          // behind the camera in the chase view it rides the frame's lower edge.
           const bubbleRects = [],
             bubbleFont = viewportWidth <= 600 || viewportHeight <= 480 ? 12 : 11;
           for (const p of speechBubbles()) {
-            const q = api.project(p.x, p.y, p.bubbleZ ?? entityElevation(p) + (p.type ? 19 : PERSON_HEIGHT + 9.5));
-            if (q.behind) continue;
+            const talk = speechIsTalk(p);
+            // The anchor over the head: 9.5 units up suits the street view's distant camera; the chase view stands a
+            // few metres off, where that is a metre over the head and a close speaker's bubble left the top of the frame.
+            const q = api.project(p.x, p.y, p.bubbleZ ?? entityElevation(p) + (p.type ? 19 : PERSON_HEIGHT + (chaseViewActive ? 3 : 9.5)));
+            if (q.behind) {
+              if (!talk) continue;
+              q.x = viewportWidth - q.x;
+              q.y = viewportHeight;
+            }
             const call911 = p.speechKind === 'call911' && p.speechKindText === p.speech;
-            const fs = bubbleFont + (call911 ? 1 : 0),
+            const fs = bubbleFont + (talk ? 2 : call911 ? 1 : 0),
               bh = fs + 6;
-            worldContext.font = (call911 ? '700 ' : '600 ') + fs + 'px Arial';
+            worldContext.font = (call911 || talk ? '700 ' : '600 ') + fs + 'px Arial';
             const tw = worldContext.measureText(p.speech).width + 12,
               fade = clamp((p.speechUntil - gameTime) / 0.4, 0, 1) * speechHeightFade(p);
             if (fade <= 0.01) continue;
             let pointTo = null;
             if (q.x < 40 || q.x > viewportWidth - 40 || q.y < 90 || q.y > viewportHeight - 190) {
-              if (!call911) continue;
+              if (!call911 && !talk) continue;
               pointTo = { x: q.x, y: q.y };
               q.x = clamp(q.x, tw / 2 + 10, viewportWidth - tw / 2 - 10);
               // (Clear of the district name and the notices along the top.)
@@ -581,15 +591,15 @@
             bubbleRects.push({ x: q.x, y: q.y, w: tw });
             const mid = q.y - 4 - bh / 2;
             worldContext.globalAlpha = fade;
-            worldContext.fillStyle = '#f4efe2';
+            worldContext.fillStyle = talk && p === player ? '#dcebf6' : '#f4efe2';
             worldContext.beginPath();
             if (worldContext.roundRect) worldContext.roundRect(q.x - tw / 2, q.y - 4 - bh, tw, bh, 5);
             else worldContext.rect(q.x - tw / 2, q.y - 4 - bh, tw, bh);
             worldContext.fill();
-            if (call911) {
-              // The emergency call stands out: a red edge round the bubble.
+            if (call911 || talk) {
+              // The emergency call stands out: a red edge round the bubble; a conversation line a dark one.
               const width = worldContext.lineWidth;
-              worldContext.strokeStyle = '#c7583e';
+              worldContext.strokeStyle = call911 ? '#c7583e' : p === player ? '#3d6f8f' : '#2b3440';
               worldContext.lineWidth = 1.5;
               worldContext.stroke();
               worldContext.lineWidth = width;
