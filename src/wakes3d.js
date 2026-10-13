@@ -295,6 +295,16 @@
         wakeEmitters.set(key, emitter);
         return emitter;
       }
+      /*
+       * WAKE KEEPER: an emitter that never draws (both its geometries hold no range) and is never retired, so the trail and
+       * hull programs are compiled by the prewarm (registerPrewarmPass above) and stay linked while no craft is on the
+       * water. Without it the first boat after a quiet spell (the police launches of a five-star chase along the coast,
+       * Fort Sentinel's included) linked both programs mid-frame, and retiring the last wake released them again.
+       */
+      const wakeKeeper = makeWakeEmitter('wake keeper');
+      wakeEmitters.delete('wake keeper');
+      wakeKeeper.hull.geometry = hullGeometry.clone();
+      wakeKeeper.hull.geometry.setDrawRange(0, 0);
       function writeTrailPoint(e, i, x, y, nx, ny, time, speed) {
         for (const side of [0, 1]) {
           const o = (i * 2 + side) * 4;

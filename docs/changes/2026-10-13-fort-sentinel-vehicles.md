@@ -6,6 +6,8 @@
   clustering, which broke it apart. Its credit is withdrawn.
 - Chase view at Fort Sentinel: far away the M4 utility draws a coarse body (MILITARY LOD, military-assets3d.js), and the
   tank costs a few thousand triangles instead of about 21 thousand.
+- No shader compile when the first boat, dolphin or shark fin of a quiet spell leaves a wake: the wake programs are
+  prewarmed and kept (WAKE KEEPER, wakes3d.js).
 - Every other downloaded vehicle's texture gains texels (the atlas no longer holds the tank's textures).
 - Converter: a `far` hint for special models writes a coarser `bodyFar` part.
 - tools/hitches.mjs: opt-in stages `fort` and `fortChase` (the base at war, street then chase view).
