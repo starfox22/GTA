@@ -1,7 +1,7 @@
 // The street camera's framing (world-view.js CAMERA CONTEXT): close on foot and in a car below 30 km/h (SLOW
 // FRAMING; tools/tests/camera-slow-framing.mjs), two zoom steps wider than the old 1.75 in a car from 31 km/h
 // (1.12 before the pull-back; motorbikes, long vehicles and boats keep their proportions), further back at speed, and back in again on foot; the wheel zoom and Settings ·
-// Driving · Vehicle camera distance stay factors on all of it; Motion comfort holds the framing still
+// Driving · Vehicle camera distance stay factors on all of it; Motion comfort holds one framing at speed
 // whatever the speed. The framing eases with the simulation, so `framed` (the zoom it holds)
 // follows `aim` (the zoom it eases to) under console simulate() too.
 export default async function (t) {
@@ -86,15 +86,17 @@ export default async function (t) {
     t.near(far.vehicleContext, 0.448 - 0.002, 0.448 + 0.002, 'car context at 125 % distance');
     t.assert(far.vehicleDistance === 125, 'distance reported: ' + far.vehicleDistance);
     await t.call('settings', { cameraDistance: 100 });
-    // Motion comfort: the framing holds one zoom whatever the speed.
+    // Motion comfort: the walking zoom at rest (SLOW FRAMING), then one fixed zoom at any speed over 31 km/h.
     await t.call('settings', { motionComfort: true });
     await t.wait(3);
     const still = await t.call('cameraView');
+    t.assert(still.slowFraming && still.speed === 1, 'motion comfort at rest is not the walking framing: ' + JSON.stringify(still));
     await t.keys('KeyW', 9);
     const quick = await t.call('cameraView');
     t.assert(quick.kmh > 60 && still.motionComfort, 'comfort run too slow: ' + quick.kmh);
     t.near(quick.speed, 0.86, 0.86, 'motion comfort framing at speed');
-    t.near(quick.aim, still.aim - 0.001, still.aim + 0.001, `motion comfort holds the zoom (${still.aim} at rest, ${quick.aim} at ${quick.kmh} km/h)`);
+    const fixed = quick.target * quick.vehicleContext * 0.86;
+    t.near(quick.aim, fixed - 0.002, fixed + 0.002, `motion comfort holds one zoom at speed (${quick.aim} at ${quick.kmh} km/h)`);
     await t.keys('KeyS', 3.5);
     await t.call('interact');
   } finally {
