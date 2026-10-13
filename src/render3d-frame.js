@@ -192,6 +192,8 @@
             if (m.wipers) updateWipers(c, m, deltaSeconds);
             const wear = clamp(1 - c.hp / c.maxhp, 0, 1);
             paintVehicle(c, m);
+            // Four wheels on their springs over rough ground (ride-wheels3d.js).
+            if (c.ride || m.rideWheelsOn) rideWheels(c, m, deltaSeconds);
             // The player's cranks turn at their pedalling cadence (still when
             // coasting); anyone else's follow road speed.
             if (m.crank)

@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-593 files in the include tree, 202,823 lines.
+594 files in the include tree, 202,907 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -38,7 +38,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-worldgen.js`   480 — buildWorld(): the city plan, buildings (makeBuilding), trees, the 2D ground canvas.
 - `src/game-populate.js`   231 — Initial population: showcase parking (SHOWCASE_PARKING, parkShowcase) and populate().
 - `src/world-reset.js`   130 — World reset: resetWorld(reason) puts the city back as it was at boot (vehicles, people, wrecks, damage, blood, gore, fires, knocked furniture, shop …
-- `src/game-player-actions.js`   640 — Player verbs: enter and exit vehicles, interact, aim, shoot, reload, hurt, die, explode.
+- `src/game-player-actions.js`   642 — Player verbs: enter and exit vehicles, interact, aim, shoot, reload, hurt, die, explode.
 - `src/game-cops.js`   183 — resetMissionState(), spawnCop(), copRoute(): mission reset and patrol spawning.
 - `src/physics.js`    19 — ▸ Vehicle and pedestrian physics
 - `src/game-people.js`   168 — Pedestrian life: Everyday chatter lives here; how people walk, what they do and how they react to danger is in src/crowd.js, which also has the …
@@ -71,7 +71,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/carjack-struggle.js`   566 — The carjack struggle: walking round to the driver's door, the door, reaching in, a tug of war, hauling the driver out and taking the seat …
 - `src/vehicle-trunk.js`   399 — Vehicle trunks and the lockpick at work: a trunk with something in it (`c.trunkLoot`, set by a mission), picked pin by pin by holding interact with …
 - `src/riders.js`   482 — Riders thrown from motorbikes and bicycles
-- `src/wheelie.js`   167 — Wheelies: a motorbike's or bicycle's front wheel lifted by the throttle and the rider's weight, pitching about the rear tyre (c.wheelie, radians; the …
+- `src/wheelie.js`   185 — Wheelies: a motorbike's or bicycle's front wheel lifted by the throttle and the rider's weight, pitching about the rear tyre (c.wheelie, radians; the …
 - `src/themepark.js`    64 — ▸ Sunset Pier resort and theme park
 - `src/marina.js`    11 — ▸ Harbor Point marina, the superyacht and the cruise liners
 - `src/taxi.js`   287 — Yellow cabs
@@ -133,8 +133,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/parachute.js`   734 — Bailout and parachute
 - `src/deck-landing.js`   361 — Landing on a ship from the sky: canopy touchdowns and freefall impacts on the liners' and the superyacht's decks (deckSurfaceAt, deckLandingStep) …
 - `src/falls.js`    22 — ▸ Falls: bodies and vehicles off cliffs, fatal impacts
-- `src/mobile.js`   300 — Touch controls
-- `src/input-hints.js`   155 — Input-aware hints: which device the player is using (keyboard and mouse, touch, gamepad) and what an action is called on it (keyName's touch and …
+- `src/mobile.js`   303 — Touch controls
+- `src/input-hints.js`   156 — Input-aware hints: which device the player is using (keyboard and mouse, touch, gamepad) and what an action is called on it (keyName's touch and …
 - `src/gamepad.js`   360 — Gamepad (standard mapping): play through the same actions as the bound keys, menus by focus, the city map by a cursor; the button names hints use …
 - `src/world-view.js`   344 — World camera gestures
 - `src/car-radio.js`   871 — Vehicle radio stations
@@ -520,7 +520,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/render3d-hiccups.js`   377 — Hiccup log: what each drawn frame created for the first time (shader programs, textures, geometries) and the slowest frames' renderer CPU split; read …
 - `src/payphone3d.js`   629 — The story payphone where mission 1 starts: a 1990s yellow pedestal payphone with its lit PHONE sign, handset, keypad, directory and grime, the …
 - `src/render3d-api.js`   492 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
-- `src/render3d-frame.js`   626 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
+- `src/render3d-frame.js`   628 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
 
 ## src/flight-view3d.js ▸ Flight camera and aerial perspective
 
@@ -566,7 +566,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/render3d-streetprops.js ▸ Street lamps and their glow halos, vehicle halos, blossom, sign() boards.
 
-- `src/damage3d.js`    33 — ▸ Crumpling bodies, decals, debris and knocked furniture
+- `src/damage3d.js`    35 — ▸ Crumpling bodies, decals, debris and knocked furniture
 - `src/carblood3d.js`   194 — ▸ Car blood 3D: stains on a vehicle's bodywork, decal geometry clipped to the model's own surface, painted and fitted in time slices.
 - `src/signkit3d.js`   156 — ▸ Sign lettering kit: stroke font, letter treatments, boards, emblems
 - `src/signdesigns3d.js`    82 — ▸ Business sign designs: families, the style table, hotels, towers, billboards
@@ -574,7 +574,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/damage3d.js ▸ Crumpling bodies, decals, debris and knocked furniture
 
 - `src/damage3d-decals.js`   698 — Damage 3D decals: the decal atlas (cracked glass, soot) and world decal layers (addDecal, flushDecals).
-- `src/damage3d-bodies.js`   560 — Damage 3D vehicle bodies: shell sections, crumpling, hinged parts and glass (carBodyDamage, crumple).
+- `src/damage3d-bodies.js`   563 — Damage 3D vehicle bodies: shell sections, crumpling, hinged parts and glass (carBodyDamage, crumple).
+- `src/ride-wheels3d.js`    53 — Ride wheels: every four-wheeled model's wheels follow their springs' travel on terrain (terrain-suspension.js ride.d), as the 4x4 club trucks' axles …
 - `src/damage3d-crumple.js`   536 — Damage 3D crumple: every part of a car body bent by the one crumple field (crumpleField, damage-crumple.js) at its rest place: shell, glass, paint …
 - `src/damage3d-marks.js`   597 — Damage 3D vehicle marks: bullet holes, glass stars and scrapes pinned to the triangle of the body part they hit (they bend, swing and tear off with …
 - `src/damage3d-world.js`   583 — Damage 3D world hits: shop windows, bullet holes, structure impacts and blasts, sparks, knocked props (impactEffect).

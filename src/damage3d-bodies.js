@@ -330,7 +330,9 @@
             burnt = damage.burnt;
           wheel.rotation.x = side * damage[side > 0 ? 'right' : 'left'] * 0.16;
           wheel.scale.y = flat && !burnt ? 0.8 : 1;
-          wheel.position.y = wheel.userData.baseY - (burnt ? 1.6 : flat ? 0.8 : 0);
+          // The drop stays with the wheel: on terrain it rides its spring from there (ride-wheels3d.js).
+          wheel.userData.drop = burnt ? 1.6 : flat ? 0.8 : 0;
+          wheel.position.y = wheel.userData.baseY - wheel.userData.drop + (wheel.userData.rideY || 0);
           if (wheel.children[0]) wheel.children[0].visible = !burnt;
         });
         m.partState = { ...parts };
@@ -344,7 +346,8 @@
           const key = (wheel.position.x > 0 ? 'front' : 'rear') + (side < 0 ? 'Left' : 'Right'),
             flat = damage.tires?.[key];
           wheel.scale.y = flat && !damage.burnt ? 0.82 : 1;
-          wheel.position.y = wheel.userData.baseY - (damage.burnt ? 1.6 : flat ? 0.8 : 0);
+          wheel.userData.drop = damage.burnt ? 1.6 : flat ? 0.8 : 0;
+          wheel.position.y = wheel.userData.baseY - wheel.userData.drop + (wheel.userData.rideY || 0);
           if (wheel.children[0] && damage.burnt) wheel.children[0].visible = false;
         }
       }
