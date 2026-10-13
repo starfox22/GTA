@@ -135,7 +135,28 @@ const STAGES = {
     await call('pauseMenu', false);
     return measure(1, []);
   },
+  // Opt-in (--stages fort,fortChase): Fort Sentinel at war on foot by the motor pool (alarm, five stars, the garrison
+  // firing, the crewed tanks and the QRF gun jeeps engaging), in the street view and then the chase view.
+  async fort() {
+    await call('viewMode', 'street');
+    await call('teleport', 9560, 8880);
+    await call('wanted', 5);
+    await measure(2, [], true);
+    return measure(6, []);
+  },
+  async fortChase() {
+    await call('viewMode', 'chase');
+    await measure(0.5, [], true);
+    // Turn to face the motor pool and the crewed tanks (south; 600 px of mouse is a quarter turn).
+    await call('chaseLook', 600, 0);
+    await measure(0.5, []);
+    const r = await measure(6, []);
+    await call('viewMode', 'street');
+    return r;
+  },
 };
+// Stages run only when named in --stages.
+const OPT_IN_STAGES = new Set(['fort', 'fortChase']);
 // --scenes: three fixed views for the renderer's draw counts (drawProfile, stats, vehicleMerges) instead of the tour:
 // a city street at noon, a sports car at speed on the Keys Bridge (the driving camera pulled back) and the street at
 // night with headlights. Use on a rendered page started with --seed, so both builds of an A/B see the same world.
@@ -177,7 +198,7 @@ if (flag('scenes')) {
   for (const k of Object.keys(STAGES)) delete STAGES[k];
   Object.assign(STAGES, SCENES);
 }
-const ORDER = opt('stages', Object.keys(STAGES).join(',')).split(',');
+const ORDER = opt('stages', Object.keys(STAGES).filter((k) => !OPT_IN_STAGES.has(k)).join(',')).split(',');
 
 const r1 = (v) => (v == null ? '' : String(+(+v).toFixed(1)));
 function row(cells, widths) {
