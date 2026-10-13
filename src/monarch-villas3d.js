@@ -238,12 +238,15 @@
           if (look.roof === 'flat') isleRoofCap(w.x, w.y, w.x + w.w, w.y + w.h, w.height + 0.2, isleRoofMaterials.green);
           else roofOver(w, w.height, look.roof === 'mansard' ? 'hip' : look.roof, Math.min(w.w, w.h) * 0.3);
         }
-        const G = plan.garage;
-        houseBox(G, G.height, face);
+        const G = plan.garage,
+          GD = plan.garageDoor;
+        // A hollow garage with its roll-up door (monarch-garages.js), or the old closed block.
+        if (GD) buildVillaGarage(G, GD, face, look, root);
+        else houseBox(G, G.height, face);
         if (look.roof === 'flat') isleRoofCap(G.x, G.y, G.x + G.w, G.y + G.h, G.height + 0.2, isleRoofMaterials.gravel);
         else isleHipRoof(G.x, G.y, G.x + G.w, G.y + G.h, G.height, 12, look.roofColor || ISLE.slate, 2);
         // Garage doors on the drive side.
-        const gz = v.gate === 'west' ? null : v.gate === 'south' ? G.y + G.h : G.y;
+        const gz = GD || v.gate === 'west' ? null : v.gate === 'south' ? G.y + G.h : G.y;
         if (gz !== null) isleBox(G.x + G.w / 2, 11, gz + (v.gate === 'south' ? 0.4 : -0.4), G.w - 12, 22, 0.6, tint(look.roof === 'flat' ? '#3a3e42' : '#e8e2d4', 'satin'), root);
         // The front door (if the style did not build a portico).
         if (!['neoclassical', 'georgian'].includes(v.style)) {
@@ -253,6 +256,90 @@
         // Night: the house is lit through its windows (the facade mask) and by
         // uplights on the front.
         for (let x = H.x + 10; x < H.x + H.w; x += 30) addGlow(x, 1.2, (south ? H.y + H.h : H.y) + (south ? 3 : -3), 7, '#ffe2b0', 0.8, { day: 0 });
+      }
+      /* VILLA GARAGE (monarch-garages.js plan.garageDoor): the shell in the villa's facade with the opening on the
+         drive side (piers and a lintel), a concrete floor and plain inner walls, the roof a cutaway roof (the player
+         inside sees the car), and the roll-up door: a live group per garage that follows `door.open`
+         (updateVillaGarageVisuals), its panel shortening into the drum over the opening. */
+      function villaGarageDoors() {
+        return villaGarageDoors.list || (villaGarageDoors.list = []);
+      }
+      function buildVillaGarage(G, D, face, look, root) {
+        const t = 4,
+          half = D.width / 2,
+          H = G.height,
+          dh = D.height,
+          west = D.side === 'west',
+          x1 = G.x + G.w,
+          z1 = G.y + G.h;
+        // The shell without its door face (south, east, north, west).
+        isleMesh(isleWallGeometry(G.x, G.y, x1, z1, 0, H, 0, [D.side !== 'south', true, D.side !== 'north', !west]), face, 0, 0, 0, 1, 1, 1, root);
+        // The piers either side of the opening (outer face, inner face, reveal) and the lintel over it.
+        const piece = (a0, b0, a1, b1, y0, faces) =>
+          isleMesh(isleWallGeometry(a0, b0, a1, b1, y0, H, y0, faces), face, 0, 0, 0, 1, 1, 1, root);
+        if (west) {
+          piece(G.x, G.y, G.x + t, D.cy - half, 0, [true, true, false, true]);
+          piece(G.x, D.cy + half, G.x + t, z1, 0, [false, true, true, true]);
+          piece(G.x, D.cy - half, G.x + t, D.cy + half, dh, [false, true, false, true]);
+        } else {
+          const w0 = D.side === 'south' ? z1 - t : G.y,
+            w1 = w0 + t;
+          piece(G.x, w0, D.cx - half, w1, 0, [true, true, true, false]);
+          piece(D.cx + half, w0, x1, w1, 0, [true, false, true, true]);
+          piece(D.cx - half, w0, D.cx + half, w1, dh, [true, false, true, false]);
+        }
+        // The plinth round the outside, broken at the opening.
+        const stone = ISLE.stoneWarm;
+        if (west) {
+          isleBox(G.x + G.w / 2, 1, G.y, G.w + 1.4, 2, 1.4, stone, root);
+          isleBox(G.x + G.w / 2, 1, z1, G.w + 1.4, 2, 1.4, stone, root);
+          isleBox(x1, 1, G.y + G.h / 2, 1.4, 2, G.h, stone, root);
+          isleBox(G.x, 1, (G.y + D.cy - half) / 2, 1.4, 2, D.cy - half - G.y, stone, root);
+          isleBox(G.x, 1, (D.cy + half + z1) / 2, 1.4, 2, z1 - D.cy - half, stone, root);
+        } else {
+          const front = D.side === 'south' ? z1 : G.y;
+          isleBox(G.x + G.w / 2, 1, D.side === 'south' ? G.y : z1, G.w + 1.4, 2, 1.4, stone, root);
+          isleBox(G.x, 1, G.y + G.h / 2, 1.4, 2, G.h, stone, root);
+          isleBox(x1, 1, G.y + G.h / 2, 1.4, 2, G.h, stone, root);
+          isleBox((G.x + D.cx - half) / 2, 1, front, D.cx - half - G.x, 2, 1.4, stone, root);
+          isleBox((D.cx + half + x1) / 2, 1, front, x1 - D.cx - half, 2, 1.4, stone, root);
+        }
+        // Inside: the floor and plain walls (the shell's own faces look outwards).
+        const inner = tint('#d9d3c8', 'matte');
+        isleBox(G.x + G.w / 2, 0.2, G.y + G.h / 2, G.w - 2 * t, 0.4, G.h - 2 * t, tint('#8f8b85', 'matte'), root);
+        if (D.side !== 'south') isleBox(G.x + G.w / 2, H / 2, z1 - t - 0.2, G.w - 2 * t, H, 0.4, inner, root);
+        if (D.side !== 'north') isleBox(G.x + G.w / 2, H / 2, G.y + t + 0.2, G.w - 2 * t, H, 0.4, inner, root);
+        if (!west) isleBox(G.x + t + 0.2, H / 2, G.y + G.h / 2, 0.4, H, G.h - 2 * t, inner, root);
+        isleBox(x1 - t - 0.2, H / 2, G.y + G.h / 2, 0.4, H, G.h - 2 * t, inner, root);
+        // Inside, the roof lifts off over the player (lighting3d.js cutaway; also cover from the helicopter).
+        registerCutawayRoof(G.x + G.w / 2, G.y + G.h / 2, G.w / 2 + 3, G.h / 2 + 3, 0, H, H + 16);
+        // The door: its drum over the opening (static) and the live panel and bottom rail.
+        const doorMat = tint(look.roof === 'flat' ? '#3a3e42' : '#e8e2d4', 'satin'),
+          px = west ? G.x + t / 2 : D.cx,
+          pz = west ? D.cy : D.side === 'south' ? z1 - t / 2 : G.y + t / 2,
+          inward = west ? [1, 0] : [0, D.side === 'south' ? -1 : 1];
+        isleBox(px + inward[0] * 3.5, dh + 2, pz + inward[1] * 3.5, west ? 4 : D.width + 2, 4, west ? D.width + 2 : 4, ISLE.black, root);
+        const group = new Three.Group();
+        group.userData.dynamic = true;
+        scene.add(group);
+        statics.push({ x: D.cx, y: D.cy, group, radius: 60 });
+        const panel = box(group, px, dh / 2, pz, west ? 0.6 : D.width, dh, west ? D.width : 0.6, doorMat),
+          rail = box(group, px, 0.6, pz, west ? 1 : D.width, 1.2, west ? D.width : 1, ISLE.black);
+        villaGarageDoors().push({ door: D, panel, rail, open: 0 });
+      }
+      // Per frame near the island (updateMonarchVisuals): each door follows its `open`.
+      function updateVillaGarageVisuals() {
+        const list = villaGarageDoors();
+        for (let i = 0; i < list.length; i++) {
+          const g = list[i],
+            open = g.door.open;
+          if (open === g.open) continue;
+          g.open = open;
+          const h = Math.max(0.5, g.door.height * (1 - open));
+          g.panel.scale.y = h;
+          g.panel.position.y = g.door.height - h / 2;
+          g.rail.position.y = g.door.height - h + 0.6;
+        }
       }
       function buildIsleVillaGarden(plan, look, root) {
         const v = plan.villa,
@@ -346,16 +433,27 @@
           for (const dx of [-8, 8]) for (const dz of [-8, 8]) isleBox(tx + dx, 13, tz + dz, 1, 24, 1, ISLE.white, root);
           for (let k = -8; k <= 8; k += 4) isleBox(tx + k, 25, tz, 0.8, 0.8, 20, ISLE.white, root);
         }
+        // A side gate beside a forward garage (monarch-garages.js villaSideGate): plain stone piers.
+        const side = plan.sideGate;
+        if (side)
+          for (const px of [side.x0 - 3, side.x1 + 3]) {
+            isleBox(px, 8, gate.y + (v.gate === 'south' ? -2 : 2), 6, 16, 6, ISLE.stone, root);
+            isleBox(px, 16.6, gate.y + (v.gate === 'south' ? -2 : 2), 7.4, 1.2, 7.4, ISLE.stoneDark, root);
+          }
         if (plan.tennis) buildIsleCourt(plan.tennis, root, v.style === 'mediterranean' || v.style === 'spanish' ? 'clay' : 'hard');
-        // Garden lamps along the drive.
-        const H = plan.house;
+        // Garden lamps along the drive (none inside a garage built across it: they line the side gate's drive).
+        const H = plan.house,
+          G = plan.garage,
+          lampX = side ? side.x : gate.x;
         if (plan.gateAxis === 'y') {
           const front = v.gate === 'south' ? H.y + H.h + 36 : H.y - 36;
           for (let z = Math.min(front, gate.y) + 20; z < Math.max(front, gate.y) - 10; z += 40)
             for (const s of [-1, 1]) {
-              isleBox(gate.x + s * 20, 3, z, 1.2, 6, 1.2, ISLE.iron, root);
-              addGlow(gate.x + s * 20, 6.2, z, 5, '#ffe0b0', 0.8, { day: 0 });
-              isleLightPools.push({ x: gate.x + s * 20, y: z, r: 34, color: [255, 214, 160], strength: 0.32 });
+              const gx = lampX + s * 20;
+              if (gx > G.x - 4 && gx < G.x + G.w + 4 && z > G.y - 4 && z < G.y + G.h + 4) continue;
+              isleBox(gx, 3, z, 1.2, 6, 1.2, ISLE.iron, root);
+              addGlow(gx, 6.2, z, 5, '#ffe0b0', 0.8, { day: 0 });
+              isleLightPools.push({ x: gx, y: z, r: 34, color: [255, 214, 160], strength: 0.32 });
             }
         }
       }

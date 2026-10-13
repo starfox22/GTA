@@ -16,7 +16,10 @@
       if (vehicleEntranceCache) return vehicleEntranceCache;
       const list = [];
       for (const [u0, v0, u1, v1, name] of OFFROAD_CLUB.entrances) list.push({ name, ...clubRect(u0, v0, u1, v1) });
-      for (const plan of monarchPlan.villas) if (plan.garageDrive) list.push({ name: plan.villa.name + ' DRIVE', ...plan.garageDrive });
+      for (const plan of monarchPlan.villas) {
+        if (plan.garageDrive) list.push({ name: plan.villa.name + ' DRIVE', ...plan.garageDrive });
+        if (plan.sideDrive) list.push({ name: plan.villa.name + ' SIDE GATE', ...plan.sideDrive });
+      }
       // Cached once the island exists (bike stations are planned after the world is built).
       if (monarchPlan.built) vehicleEntranceCache = list;
       return list;

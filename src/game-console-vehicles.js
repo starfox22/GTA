@@ -67,6 +67,8 @@
       clubLineup: (x, y) => clubLineup(x, y),
       // Gate lanes and drives kept clear, and anything parked or docked in them (vehicle-entrances.js).
       vehicleEntrances: () => vehicleEntranceReport(),
+      // Monarch villa garages: the door, its state, the car inside, the drive (monarch-garages.js).
+      villaGarages: () => villaGarageReport(),
       // 'state', 'arm', 'reset', 'clear' (records), 'gate', 'cp0'..'cp3', 'top' (just below the summit, facing down) or 'at0.42' (that fraction of the trail): move the player's vehicle there.
       hillClimb: (action, trail) => hillClimbConsole(action, trail),
       // Drive the player's vehicle up a trail (or 'down' it) through the real physics (a line-following
