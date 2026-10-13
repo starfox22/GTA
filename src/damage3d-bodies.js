@@ -56,6 +56,30 @@
         }
         return material;
       }
+      /*
+       * FLAT TYRE SQUASH: a flat tyre sits down on its rim with the flat spot at the bottom, wherever the wheel has
+       * rolled to. The squash (`wheel.scale.y`) goes outside the spin: the wheel's matrix is its place, its camber and
+       * steer (rotation x, y), the squash, then the roll (rotation z), instead of three.js's place, turn, scale, which
+       * rolled the squashed shape round like an egg. `userData.squashTilt` turns the squash's axis for a wheel whose
+       * parent is tilted (a motorbike's front wheel on its raked fork). Only a squashed wheel takes this matrix;
+       * scale 1 goes back to the plain one.
+       */
+      const squashEuler = new Three.Euler(),
+        squashTurn = new Three.Quaternion(),
+        squashRoll = new Three.Matrix4();
+      function squashedWheelMatrix() {
+        const r = this.rotation,
+          tilt = this.userData.squashTilt || 0;
+        squashTurn.setFromEuler(squashEuler.set(r.x, r.y, tilt, 'XYZ'));
+        this.matrix.compose(this.position, squashTurn, this.scale).multiply(squashRoll.makeRotationZ(r.z - tilt));
+        this.matrixWorldNeedsUpdate = true;
+      }
+      function squashWheel(wheel, squash) {
+        wheel.scale.y = squash;
+        if (squash !== 1 && wheel.rotation.order === 'XYZ') {
+          if (wheel.updateMatrix !== squashedWheelMatrix) wheel.updateMatrix = squashedWheelMatrix;
+        } else if (Object.prototype.hasOwnProperty.call(wheel, 'updateMatrix')) delete wheel.updateMatrix;
+      }
       function vehicleDoor(c, m, side) {
         m.doors = m.doors || {};
         let door = m.doors[side];
@@ -379,7 +403,7 @@
           const flat = damage.tires[key],
             burnt = damage.burnt;
           wheel.rotation.x = side * damage[side > 0 ? 'right' : 'left'] * 0.16;
-          wheel.scale.y = flat && !burnt ? 0.8 : 1;
+          squashWheel(wheel, flat && !burnt ? 0.8 : 1);
           // The drop stays with the wheel: on terrain it rides its spring from there (ride-wheels3d.js).
           wheel.userData.drop = burnt ? 1.6 : flat ? 0.8 : 0;
           wheel.position.y = wheel.userData.baseY - wheel.userData.drop + (wheel.userData.rideY || 0);
@@ -395,7 +419,7 @@
           if (wheel.userData.baseY === undefined) wheel.userData.baseY = wheel.position.y;
           const key = (wheel.position.x > 0 ? 'front' : 'rear') + (side < 0 ? 'Left' : 'Right'),
             flat = damage.tires?.[key];
-          wheel.scale.y = flat && !damage.burnt ? 0.82 : 1;
+          squashWheel(wheel, flat && !damage.burnt ? 0.82 : 1);
           wheel.userData.drop = damage.burnt ? 1.6 : flat ? 0.8 : 0;
           wheel.position.y = wheel.userData.baseY - wheel.userData.drop + (wheel.userData.rideY || 0);
           if (wheel.children[0] && damage.burnt) wheel.children[0].visible = false;

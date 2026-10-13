@@ -118,6 +118,8 @@
         front.rotation.z = -kit.pivot[2];
         const rear = addWheel(b, kit.rear);
         front.userData.front = true;
+        // A flat front tyre squashes square to the bike, not along the raked fork (damage3d-bodies.js FLAT TYRE SQUASH).
+        front.userData.squashTilt = -kit.pivot[2];
         model.wheels.push({ wheel: front, side: 1, radius: kit.front.r, front: true }, { wheel: rear, side: 1, radius: kit.rear.r });
         model.rearAxleX = kit.rear.at.x;
         const head = kit.head ? mesh(kit.head, lampMaterials.headOff, steer, 0, 0, 0) : null,
