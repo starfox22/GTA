@@ -114,6 +114,12 @@
     "original": "tools/wall_skin.py (ambientCG CC0: Bricks059, Concrete034, CorrugatedSteel005, Plaster003, RoofingTiles014A)"
   },
   {
+    "id": "media-trail-mud",
+    "file": "assets/trail-mud.webp",
+    "mime": "image/webp",
+    "original": "tools/trail_mud.py (Poly Haven CC0: Brown Mud 03; Kenney Particle Pack CC0: dirt, scorch, smoke, circle sprites)"
+  },
+  {
     "id": "media-music-synth",
     "file": "assets/music/synth.mp3",
     "mime": "audio/mpeg",

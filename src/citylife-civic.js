@@ -486,7 +486,11 @@
       fortCoverUI();
       offroadClubUI();
     }
-    function drawCivicMap(drawingContext, big) {
+    function drawCivicMap(drawingContext, big, scale) {
+      if (!big) {
+        drawCivicMinimap(drawingContext, scale);
+        return;
+      }
       const font = big ? 90 : 65,
         fontName = big ? 'bold 90px monospace' : 'bold 65px monospace';
       for (const p of PLACES) {
@@ -526,6 +530,33 @@
         }
       }
     }
+    /* The minimap (minimap-rules.js MINIMAP MARKS): the rental docks as ground, and a place only on foot within
+       MINIMAP_NEAR: a small chip of a fixed size with its symbol. */
+    function drawCivicMinimap(g, scale) {
+      g.save();
+      g.fillStyle = '#8fbad5';
+      for (const d of DOCKS) if (mapWindowHasRect(d.x, d.y, d.w, d.h, 150)) g.fillRect(d.x, d.y, d.w, d.h);
+      if (player.car) {
+        g.restore();
+        return;
+      }
+      g.font = 'bold 7px Arial';
+      g.textAlign = 'center';
+      for (const p of PLACES) {
+        if (!minimapPlaceNear(p.door.x, p.door.y) || !mapWindowHas(p.door.x, p.door.y, 30 / scale)) continue;
+        const w = (p.symbol.length * 4.6 + 6) / scale,
+          h = 10 / scale;
+        g.fillStyle = '#101d25';
+        g.fillRect(p.door.x - w / 2, p.door.y - h / 2, w, h);
+        g.strokeStyle = p.color;
+        g.lineWidth = 1.2 / scale;
+        g.strokeRect(p.door.x - w / 2, p.door.y - h / 2, w, h);
+        g.fillStyle = p.color;
+        mapLabel(g, p.symbol, p.door.x, p.door.y + 2.5 / scale, scale);
+        mapMarkCount(1, 1);
+      }
+      g.restore();
+    }
     function policeMapUnits() {
       const units = [];
       for (const c of vehicles)
@@ -545,10 +576,14 @@
           });
       return units;
     }
-    function drawPoliceMap(drawingContext, scale) {
+    function drawPoliceMap(drawingContext, scale, big = true) {
       drawPoliceSearch(drawingContext, scale);
-      // Markers retain a readable screen size on both the local radar and city map.
+      // Markers retain a readable screen size on both the local radar and city map. The minimap shows them only while
+      // the player is wanted or the unit is on a job of its own (minimap-rules.js); off the window, nothing is drawn.
       for (const { unit: u, kind, alerted } of policeMapUnits()) {
+        if (!big && !minimapPoliceShown(alerted)) continue;
+        if (!mapWindowHas(u.x, u.y, 12 / scale)) continue;
+        mapMarkCount(1, 0);
         drawingContext.save();
         drawingContext.translate(u.x, u.y);
         drawingContext.scale(1 / scale, 1 / scale);

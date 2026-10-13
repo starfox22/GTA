@@ -9,6 +9,7 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | BACKLOG.md | Known issues and loose ends per feature (check before polishing an area) |
 | areas/core-and-contracts.md | The closure and include model, units and scale, entity contracts, carriers, saves, performance rules |
 | areas/world-and-map.md | Layout and coordinates, frames, the Northbank grid, shores, bridges, navigation, `layout()` and the layout audit |
+| areas/world-and-map-minimap.md | What the minimap draws over its base (MINIMAP MARKS: objective, GPS, police and respray while wanted, places on foot nearby), the mark counts, and Sunset Pier's coaster track and Ferris wheel on both maps |
 | areas/world-and-map-drawbridges.md | The four drawbridges: which island needs which, the state list and its contracts, timetables and the open share, looks and ships, the Coronation Bridge |
 | areas/world-county-and-sea.md | The county, falls off cliffs, rail, airfields, parks, sea life |
 | areas/world-county-and-sea-terrain.md | Ridgeline terrain: the height field, the 4x4 trails and their grading, the ride on the terrain (suspension), trail dressing, scenic roads |
@@ -55,6 +56,7 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/rendering-chase.md | The chase view's draw distance and level of detail: far cells drawn from the far copy, shadow casters and proxies, small props and pools, people and vehicles by distance, the `chaseCamera().view` report |
 | areas/rendering-chase-budget.md | The chase view's draw budget: props, static groups' parts, signs, small batches, vehicle parts and effect sprites by their size against distance and the haze (CHASE PROPS, PARTS, HAZE SIZES), per-batch / pool / part shadow tests, the `chaseBudget` A/B, calls per tier |
 | areas/rendering-effects.md | Effect particles: smoke, fire, sparks, muzzle flashes, glass and drops in one sorted, lit, instanced pool (`fxAdd`), the atlas, the recipes (blasts, muzzle, bullet strikes, flames), `effectParticles()` |
+| areas/rendering-effects-mud.md | The 4x4 trail mud: the TRAIL MUD sheet (Poly Haven and Kenney CC0, tools/trail_mud.py), textured clods, lit spray sprites, drops and mist in the effect pool, lit rut and splat decals (2x modulate), mud on bodies, `MUD_TIER`, `trailMud()` |
 | areas/rendering-hiccups.md | First-use hitches: what the title-screen prewarm warms (programs, off-screen passes, stand-in models, the far copy), the first-use log (`renderHiccups`), the rules a new effect follows, dormant lights, numbers |
 | areas/boot-and-memory.md | The boot timeline (`bootTimings()`) and what each stage costs, what was cut, the renderer memory soak, the staged tier change, the cell pre-upload and AUTO's resolution hold |
 | areas/rendering-lighting.md | HDR pipeline, post passes and the film grade, sun and time of day, night light map, searchlights, the cutaway |

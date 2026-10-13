@@ -298,7 +298,6 @@
         w = currentWeapon(),
         c = player.car;
       getElement('district').textContent = d;
-      getElement('mapDistrict').textContent = d;
       getElement('streetName').textContent = streetNameAt(player.x, player.y);
       getElement('cash').textContent = '$' + String(Math.floor(visibleCash())).padStart(6, '0');
       // Stars, the pending star, heat meter and body count (heat.js, hud.js).

@@ -59,6 +59,7 @@
     // @include src/ride-look.js
     // @include src/themepark-colliders.js
     // @include src/themepark-grounds.js
+    // @include src/park-map.js
     // @include src/themepark-crowd.js
     // @include src/themepark-sound.js
     // END SUBSYSTEM: src/themepark.js

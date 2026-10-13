@@ -2,8 +2,10 @@
         // bulletHole, structureBlast, structureImpact, groundStain, sparks, damageInfo.
         ...damageApi,
         sceneryPools: (on) => sceneryPoolsReport(on),
-        // The mud effects' pools (offroad3d.js): clumps and mist flying, splats and tracks laid.
+        // The mud effects (offroad3d-mud.js): clods and spray flying, splats and ruts laid, drops and puffs thrown.
         offroadInfo: () => offroadEffectsInfo(),
+        // One staged step of the mud (console trailMud): what the tyres throw, its flight, the effect pool.
+        trailMudStep: (dt) => trailMudStage(dt),
         // Markers as drawn (markers.js `markersReport`): the player ring, the arrow, and any
         // flat ring-like mesh left standing in the scene's root within 60 units of the objective.
         markerProbe() {

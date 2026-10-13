@@ -168,6 +168,7 @@
       drawingContext.lineWidth = 2 / scale;
       drawingContext.beginPath();
       drawingContext.arc(t.x, t.y, r, 0, TAU);
+      mapMarkCount(1, 0);
       drawingContext.fill();
       drawingContext.stroke();
     }

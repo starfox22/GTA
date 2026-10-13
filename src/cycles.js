@@ -708,7 +708,8 @@
        when it has no bikes). Sizes are in screen pixels. */
     function drawBikeShareMap(g, scale, big) {
       if (!bikeStationCache) return;
-      const size = (big ? 6 : 5.5) / scale;
+      const size = (big ? 6 : 4.2) / scale,
+        riding = !big && onShareBike();
       g.save();
       g.lineCap = 'round';
       g.lineJoin = 'round';
@@ -716,6 +717,9 @@
         // The actual map window follows speed, aspect, zoom and (on the big map) panning. Keep an icon
         // crossing the edge, including its outline; the old fixed radius hid visible stations at speed.
         if (!mapWindowHas(st.x, st.y, size * 1.7)) continue;
+        // The minimap: a dock only on foot nearby, or anywhere in view while riding a share bike (minimap-rules.js).
+        if (!big && !riding && !minimapPlaceNear(st.x, st.y)) continue;
+        mapMarkCount(1, 0);
         const x = st.x,
           y = st.y;
         g.fillStyle = dockedBikes(st) ? BIKE_SHARE_TEAL : '#4b6664';

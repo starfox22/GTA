@@ -117,6 +117,7 @@ lies north of Northbank across North Sound; **Monarch Isle** north of the Ridgel
   are expected); `docs/audit/world-layout.md` explains the audit.
 - The minimap base layer is painted once (`minimapBaseLayer`); anything added to
   `paintMapBase()` must be static.
+  What the minimap draws over it (and the park rides on both maps): world-and-map-minimap.md.
   Bike-share icons use `mapWindowHas`, including their outline: the map's current window follows
   zoom, speed pullback, aspect and city-map panning. A fixed player-centred radius both misses visible
   edge stations and spends canvas work on offscreen stations.

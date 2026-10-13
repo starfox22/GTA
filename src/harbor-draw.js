@@ -168,16 +168,20 @@
       }
     }
     function drawHarborMap(drawingContext, big) {
-      drawingContext.fillStyle = '#ad996b55';
-      drawingContext.fillRect(HARBOR.x, HARBOR.y, HARBOR.w, HARBOR.h);
-      drawingContext.strokeStyle = '#b69965';
-      drawingContext.lineWidth = big ? 8 : 5;
-      drawingContext.strokeRect(HARBOR.x, HARBOR.y, HARBOR.w, HARBOR.h);
+      // The minimap keeps the ship and the job's crates, not the yard's outline (minimap-rules.js MINIMAP MARKS).
+      if (big) {
+        drawingContext.fillStyle = '#ad996b55';
+        drawingContext.fillRect(HARBOR.x, HARBOR.y, HARBOR.w, HARBOR.h);
+        drawingContext.strokeStyle = '#b69965';
+        drawingContext.lineWidth = 8;
+        drawingContext.strokeRect(HARBOR.x, HARBOR.y, HARBOR.w, HARBOR.h);
+      } else if (!mapWindowHasRect(HARBOR.x, HARBOR.y, HARBOR.w, HARBOR.h, 60)) return;
       drawingContext.fillStyle = '#b7bab1';
       drawingContext.fillRect(HARBOR.ship.x - 64, HARBOR.ship.y - 187, 128, 374);
       const m = harborCargoJob();
       for (let i = 0; i < 3; i++) {
         if (m?.packages?.[i]?.got || (!m && missionIndex > 0)) continue;
+        if (!big) mapMarkCount(1, 0);
         const p = HARBOR.crates[i];
         drawingContext.fillStyle = '#f4cf72';
         drawingContext.fillRect(p.x - 18, p.y - 18, 36, 36);

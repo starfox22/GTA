@@ -18,16 +18,20 @@
        * turns at the wheel speed: spinning in the mud it runs ahead of the truck.
        *
        * MUD ON BODIES (vehicleMudPatch): a shader layer on the paint, trim and
-       * tyres, driven by c.mudCoat / c.mudWet: splatter heaviest low down and
-       * behind the wheels, dark and glossy when fresh, pale and matt when dry.
-       * Ordinary cars get it on their paint the first time they get muddy.
+       * tyres, driven by c.mudCoat / c.mudWet: the TRAIL MUD photo (trailMud,
+       * assets/trail-mud.webp) thrown up from the wheels, a ragged line with
+       * streaks and flecks above it and its own relief (a derivative bump), dark
+       * and glossy when fresh, pale and matt when dry. Ordinary cars get it on
+       * their paint the first time they get muddy.
        *
-       * MUD EFFECTS (updateOffroadVisuals): pooled clumps (instanced, lit) thrown
-       * rearward and up from spinning or fast tyres in mud, flying ballistic arcs
-       * and leaving splats where they land; a finer mist; pale dust on dry dirt;
-       * tyre tracks laid behind every wheel on dirt that fade over minutes. Splats
-       * and tracks are decals in one instanced multiply-blend shader each, laid on
-       * the ground's own slope. Nothing allocates per frame.
+       * MUD EFFECTS (updateOffroadVisuals, offroad3d-mud.js TRAIL MUD): textured,
+       * lit clods (instanced) stretched along their flight, sprite clusters of
+       * spray lit through their own normals, fine drops and mist or dust in the
+       * effect pool, all thrown rearward and up from spinning or fast tyres and
+       * capped per tier (MUD_TIER); clods leave splats where they land; ruts with
+       * lugs, lips and a wet gloss laid behind every wheel on dirt fade over
+       * minutes. Splats and ruts are lit decals (a 2x modulate of the ground) in
+       * one program, laid on the ground's own slope. Nothing allocates per frame.
        *
        * THE LOT (built once): the gravel pad, log rails, the carved 4X4 CLUB sign
        * on log posts with a rusted steel emblem, a pop-up canopy with a table,
@@ -38,5 +42,6 @@
       // @include src/offroad3d-models.js
       // @include src/offroad3d-kits.js
       // @include src/offroad3d-mud.js
+      // @include src/offroad3d-course.js
       // @include src/offroad3d-trail.js
       // END SUBSYSTEM: src/offroad3d.js

@@ -388,6 +388,7 @@
       drawingContext.lineWidth = 2 / scale;
       drawingContext.beginPath();
       drawingContext.arc(userWaypoint.x, userWaypoint.y, 8 / scale, 0, TAU);
+      mapMarkCount(1, 0);
       drawingContext.fill();
       drawingContext.stroke();
       drawingContext.fillStyle = '#aaffdf';
@@ -513,10 +514,16 @@
       if (!hudState.gps) return;
       if (gpsRoute.points.length > 1) {
         drawGpsLine(drawingContext, scale, gpsRoute.points, '#f5c64a');
+        mapMarkCount(1, 0);
+        mapMarks.route = true;
         const target = objective();
         if (target) drawGpsLastLeg(drawingContext, scale, target);
       }
-      if (!big && userWaypoint && userRoute.length && !gpsRoadless()) drawGpsLine(drawingContext, scale, userRoute, '#5ef0f2');
+      if (!big && userWaypoint && userRoute.length && !gpsRoadless()) {
+        drawGpsLine(drawingContext, scale, userRoute, '#5ef0f2');
+        mapMarkCount(1, 0);
+        mapMarks.waypoint = true;
+      }
     }
     function mapLocalPoint(e) {
       const r = getElement('bigmap').getBoundingClientRect(),

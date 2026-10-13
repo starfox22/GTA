@@ -88,6 +88,22 @@
         c.mudWet = clamp(wet, 0, 1);
         return { mudCoat: c.mudCoat, mudWet: c.mudWet };
       },
+      // Stage the 4x4 mud without drawing (offroad3d-mud.js): `seconds` of 1/30 s steps of the game holding `held`
+      // keys and of the mud the tyres throw (with the effect pool); returns offroad().effects (null without WebGL).
+      trailMud: (seconds = 0, held = []) => {
+        if (!city3D?.trailMudStep) return null;
+        const steps = Math.round(clamp(Number(seconds) || 0, 0, 20) * 30);
+        for (const code of held) keys[code] = true;
+        try {
+          for (let i = 0; i < steps && gameMode === 'play'; i++) {
+            update(1 / 30);
+            city3D.trailMudStep(1 / 30);
+          }
+        } finally {
+          for (const code of held) keys[code] = false;
+        }
+        return city3D.offroadInfo();
+      },
       // Drive the player's road vehicle or boat toward (x, y) through the real
       // physics for up to `seconds`, holding W and steering with A/D, easing off
       // near the point. A straight-line pilot for checking that a route is
