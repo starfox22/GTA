@@ -9,7 +9,7 @@ const diff = (a, b) => ((a - b + 540) % 360) - 180;
 export default async function (t) {
   await t.call('god', true);
   // Turn one way, then the other: the camera's heading is checked between the two (a following camera turns it).
-  const travel = async (code, seconds = 0.45) => {
+  const travel = async (code, seconds = 0.3) => {
     const cam = await t.call('chaseCamera'),
       a = await t.call('status');
     await t.keys(code, seconds);
@@ -36,12 +36,16 @@ export default async function (t) {
     await t.call('chaseLook', 0, 0, 0, 9);
     await t.wait(0.1);
     await t.call('viewMode', 'street');
-    await t.keys('KeyW', 0.4);
-    // V pressed with W held (real keys): the keys took the stale east heading for the first step and the camera
-    // started behind that; now the run keeps going north and the camera stands behind it.
+    await t.keys('KeyW', 0.15);
+    // V pressed (a real key) with the run going on: the keys took the stale east heading for the first step and the
+    // camera started behind that; now the run keeps going north and the camera stands behind it. The simulation is
+    // held so that the first step after the switch is the one with W held (the live loop does not step between).
+    await t.call('holdSimulation', true);
     const a = await t.call('status');
-    await t.keys(['KeyW', 'KeyV'], 0.5, { real: true });
+    await t.keys('KeyV', 0.1, { real: true });
+    await t.keys('KeyW', 0.3);
     const b = await t.call('status');
+    await t.call('holdSimulation', false);
     let cam = await t.call('chaseCamera');
     t.assert(cam.mode === 'chase' && cam.ready, `V did not switch to a placed chase view: ${JSON.stringify(cam)}`);
     t.near(Math.abs(diff((Math.atan2(b.y - a.y, b.x - a.x) * 180) / Math.PI, -90)), 0, 15, 'W held across the switch: off north (deg)');
@@ -99,6 +103,7 @@ export default async function (t) {
     await t.mouse(480, 300);
     t.near(Math.abs(diff((await t.call('chaseCamera')).yawDeg, y0)), 0, 2, 'cursor at the edge before any capture: camera turn (deg)');
   } finally {
+    await t.call('holdSimulation', false);
     await t.call('viewMode', 'street');
     await t.call('god', false);
   }
