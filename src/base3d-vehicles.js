@@ -137,6 +137,7 @@
         const assetType = kind === 'jeep' || (kind === 'truck' && !vehicle.fuelBowser) ? militaryAssetType(kind) : null;
         if (assetType) {
           militaryAssetBody(model, vehicle, assetType, l);
+          if (model.lod) keep.add(model.lod.near).add(model.lod.far);
           if (kind === 'jeep' && vehicle.gunner) militaryGunMount(model, b, p, l, keep);
         } else if (kind === 'jeep') {
           const r = 6.4;

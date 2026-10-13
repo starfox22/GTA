@@ -58,10 +58,22 @@ followed). Credits in docs/THIRD_PARTY_CREDITS.txt.
   slices (`slices`, joined by `militaryAssetSlices`). Drawn at the type's design size: makeVehicle scales by the
   type's modelScale as before; `hull` is the length the collider stands for (the tank's gun reaches past it).
 - M4 utility ('jeep') = HMMWV M998A1 soft top; the gun jeep keeps its procedural ring mount and M2 at the same design
-  numbers (`militaryGunMount`), so MOUNTED_GUNS (pivot -2.9, height 17.5) is unchanged. M35 ('armytruck') = Military
-  Truck 1/2 Ton (an M35 2 1/2-ton); the fuel bowser stays procedural. Tank = Abrams M1A2 SEPv3 (`makeAssetTank`; the
-  frame turns `model.turret` and recoils `model.barrel` by its x, so the gun's offset lies on its mesh; ~21k
-  triangles after clustering). The LAV-8 stays procedural (no LAV/Stryker model with a usable licence was found).
+  numbers (`militaryGunMount`), so MOUNTED_GUNS (pivot -2.9, height 17.5) is unchanged. It is converted without
+  `cluster`: vertex clustering folded its thin hood, wings and canvas into each other (the hood was lost and the top
+  went inside out, so the single-sided atlas material showed holes); the edge collapse alone stops near 17k triangles.
+  Its clustered body (~4.4k triangles) ships as `bodyFar` (the converter's `far` hint) and draws instead in the chase
+  view where the jeep is small (MILITARY LOD, `militaryLod`: chase zoom under `MILITARY_LOD_ZOOM` 1 times the tier's
+  lodBias, about 55 m on HIGH; never the player's vehicle, never the street or flight view); the levels are two groups
+  kept out of the merge and swapped by their visibility. The fort's motor pool fills a chase view with these, so a
+  new special model with a heavy body gets a `far` level too.
+  M35 ('armytruck') = Military Truck 1/2 Ton (an M35 2 1/2-ton); the fuel bowser stays procedural.
+- The tank is procedural again (county3d-forest.js makeTank, merged by compactTank): the downloaded MBT's ~300k
+  triangles of small closed parts reached a budget only by clustering, which broke it apart. `makeAssetTank` and the
+  converter's `split` (turret and gun by position; `turretAt`, `barrelAt` pivots) stay for a tank model that converts
+  cleanly: give `MILITARY_ASSET_TYPES` a `tank` entry. The LAV-8 stays procedural (no LAV/Stryker model with a usable
+  licence was found).
+- Check a special model's conversion before shipping it: render the bin's parts with back faces marked (the atlas
+  material is single-sided, so a face wound inwards is a hole in the game); `cluster` is the usual cause.
 - Burnt special vehicles hide their wheels (specialDamage); the shared atlas body does not darken per vehicle.
 
 ## Console

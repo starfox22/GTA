@@ -236,6 +236,8 @@
               m.barrel.position.x = (-Math.max(0, (c.cannonRecoilUntil || 0) - gameTime) / 0.25) * 4;
             }
             if (m.special) {
+              // Far away in the chase view a downloaded army model draws its coarse body (military-assets3d.js MILITARY LOD).
+              if (m.lod) militaryLod(c, m);
               if (!m.plane) m.body.rotation.z = -wear * 0.025 + stance.pitch;
               if (m.bike) {
                 // Leaning into the turn, or down on its side after a crash (riders.js).

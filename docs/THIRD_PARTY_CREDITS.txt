@@ -721,7 +721,6 @@ made by tools/vehicle_models.py)
   - Chevrolet Suburban Sheriff Cruiser (police, the 'utility' and 'tahoe' bodies; suv, the RANGER 4X4 in plain paint): This work is based on "Chevrolet Suburban Sheriff Cruiser" (https://sketchfab.com/3d-models/chevrolet-suburban-sheriff-cruiser-116f6a42deb04fd8942e6c632e37901f) by Matthew (jeandiz) (https://sketchfab.com/jeandiz) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
   - 80 American Sedan (above) also draws the limousine (the SOVEREIGN STRETCH), stretched at its rear doors to 8.8 m.
   - ambulance car (ambulance, the PARAMEDIC): This work is based on "ambulance car" (https://sketchfab.com/3d-models/ambulance-car-ede02e5e7432438e936c7556faf602b5) by Sidra (https://sketchfab.com/Sidramax) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
-  - Abrams M1A2 SEPv3 (tank, the SENTINEL M120): This work is based on "Abrams M1A2 SEPv3" (https://sketchfab.com/3d-models/abrams-m1a2-sepv3-eb6f5560198740269507e9948376414c) by dannzjs (https://sketchfab.com/dannzjs) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
   - Harley-Davidson Seventy-Two HD FXT 2015 (cruiser, the NOMAD CRUISER): This work is based on "Harley-Davidson Seventy-Two HD FXT 2015" (https://sketchfab.com/3d-models/harley-davidson-seventy-two-hd-fxt-2015-15e67a3076494bb99ba7504c9913ceb5) by Alex.Ka. (https://sketchfab.com/Alex.Ka) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
   - Chrysler Sebring Convertible (roadster, the SOLSTICE SPIDER): This work is based on "Chrysler Sebring Convertible" (https://sketchfab.com/3d-models/chrysler-sebring-convertible-dac8529f24754bbd936173cbe8da92b1) by BadKarma (https://sketchfab.com/890244234) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
   - Generic Town Bus (bus, the METRO CITY BUS): This work is based on "Generic Town Bus" (https://sketchfab.com/3d-models/generic-town-bus-14fe03d792914d51b6c6250b393c44fd) by own.guest (https://sketchfab.com/own.guest) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
@@ -731,8 +730,10 @@ made by tools/vehicle_models.py)
     atlas); the police bodies wear the game's liveries projected over their panels (the Suburban's black and white
     paint told from its trim by colour) with their light bars lit by the game's flash patterns; the trucks' boxes and
     the flatbed's chassis stretched to the game's lengths, the flatbed's box, rear doors and rear lamps left out for
-    the game's own deck; the convertible's paint in the game's colours; the Abrams's turret and gun split off to turn,
-    its whip antennas and small parts left out and its 256k triangles clustered and reduced to about 21k.
+    the game's own deck; the convertible's paint in the game's colours.
+  (The Abrams M1A2 SEPv3 by dannzjs, converted for the SENTINEL M120 in round three, was taken out again: its
+  triangles could not be reduced without breaking it apart, and the tank is the game's own model; it is no longer in
+  the files.)
   (The Tow Boat by BoatUS Foundation, tried for the HARBOR LAUNCH in round two and held back, is no longer in the files.)
   The enduro (CC-BY-4.0; a mirror on GitHub carrying the original Sketchfab license.txt):
   - KTM Dirt Bike (kr500, the KR 500): This work is based on "KTM Dirt Bike" (https://sketchfab.com/3d-models/ktm-dirt-bike-e31415580d7a4a0d95ebd53895566b8f) by OCTbuilds (https://sketchfab.com/OCTbuilds) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
