@@ -37,7 +37,7 @@
       populate();
       populateStoryWorld();
       populateCounty();
-      // The civil helicopters on the roof helipads (civil-helicopters.js; at boot the pads come later: game.js).
+      // The civil helicopters on the roof helipads (civil-helicopters.js; the pads are chosen before the first call: game.js).
       populateCivilHelicopters();
       if (again) randomSeed = running;
     }

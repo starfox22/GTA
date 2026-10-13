@@ -184,11 +184,12 @@
     buildBuildingGrid();
     buildColliders();
     bootMark('colliders');
-    populateWorld();
+    // The roof helipads are geometry (buildings only): known before the first populate, so the boot's entities are the
+    // ones every reset replays (populateWorld: Monarch One's helicopter and the civil helicopters on the pads).
     chooseRoofHelipads();
     addMonarchHelipads();
+    populateWorld();
     prepareRoofLifts();
-    populateCivilHelicopters();
     bootMark('populated');
     load();
     resize();

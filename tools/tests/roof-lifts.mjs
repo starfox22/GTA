@@ -7,6 +7,8 @@ export default async function (t) {
   t.assert(r.roofs.length >= 7 && r.roofs.filter((x) => x.helipad).length >= 7, 'helipad roofs: ' + r.roofs.length);
   t.assert(r.roofs.filter((x) => x.helicopters > 0).length >= 3, 'roofs with a parked helicopter: ' + JSON.stringify(r.roofs.map((x) => [x.lift, x.helicopters])));
   t.assert(r.roofs.some((x) => x.name === 'MONARCH ONE'), 'Monarch One has a lift: ' + JSON.stringify(r.roofs.map((x) => x.name)));
+  // From boot, not only after the first world reset (the pads are chosen before the first populateWorld).
+  t.assert(r.roofs.some((x) => x.name === 'MONARCH ONE' && x.helicopters === 1), "Monarch One's helicopter at boot: " + JSON.stringify(r.roofs.map((x) => [x.name, x.helicopters])));
   const ride = async (what) => {
     await t.keys('KeyE', 0.2, { real: true });
     // The ride runs in the frame loop on wall time (2.6 s, capped per frame): wait it out.
