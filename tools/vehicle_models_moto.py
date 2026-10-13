@@ -16,6 +16,10 @@ def convert_moto(model, src_root, vm):
     import os
     g = vm.Gltf(os.path.join(src_root, model['src']))
     mats = g.js.get('materials', [])
+    # `baseColor`: a material's colour factor replaced (a texture exported under a darkening factor).
+    for m in mats:
+        if m.get('name') in model.get('baseColor', {}):
+            m.setdefault('pbrMetallicRoughness', {})['baseColorFactor'] = list(model['baseColor'][m['name']])
     prims = vm.load_primitives(g)
     images, image_keys = {}, {}
     for mi, m in enumerate(mats):
@@ -38,6 +42,9 @@ def convert_moto(model, src_root, vm):
         for p in prims:
             p['P'] = p['P'] * s
     T = vm.triangles(prims, mats, model)
+    if model.get('paintTex'):
+        # Paint and graphics in one texture: only the triangles in the paint's own colour take the bike's paint.
+        vm.paint_by_texture(T, prims, mats, images, model)
     role = vm.cat(T, 'role')
     tri_prim = np.concatenate([np.full(len(t['idx']), t['prim']) for t in T])
     tri_idx = np.concatenate([t['idx'] for t in T])
@@ -50,7 +57,24 @@ def convert_moto(model, src_root, vm):
         p['P'] = p['P'] + shift
     V = lambda k: prims[tri_prim[k]]['P'][tri_idx[k]]  # noqa: E731
     n = len(role)
+    if model.get('unsteer'):
+        unsteer(prims, tri_prim, tri_idx, n, model['unsteer'], role)
+        # Centred again with the front wheel straight.
+        tyre_pts = np.concatenate([V(k) for k in np.where(role == 'tyre')[0]])
+        allP = np.concatenate([p['P'] for p in prims])
+        shift = np.array([-(allP[:, 0].min() + allP[:, 0].max()) / 2, -tyre_pts[:, 1].min(), -(tyre_pts[:, 2].min() + tyre_pts[:, 2].max()) / 2])
+        for p in prims:
+            p['P'] = p['P'] + shift
     cen = np.array([V(k).mean(0) for k in range(n)])
+    # `dropBox`: triangles wholly inside a box ((x0, y0, z0), (x1, y1, z1), metres in the game frame) are left out
+    # (a side stand folded down in the model).
+    for b0, b1 in model.get('dropBox', []):
+        b0, b1 = np.array(b0), np.array(b1)
+        for k in range(n):
+            p3 = V(k)
+            if np.all(p3 >= b0) and np.all(p3 <= b1):
+                role[k] = 'drop'
+    keep_tri = role != 'drop'
     fn = vm.cat(T, 'fn')
     allP = np.concatenate([p['P'] for p in prims])
     lo, hi = allP.min(0), allP.max(0)
@@ -71,9 +95,36 @@ def convert_moto(model, src_root, vm):
     for k in np.where(keep_tri & ~np.isin(role, ['tyre', 'paint', 'lamp']))[0]:
         p3 = V(k)
         for w in wheels:
-            if np.all(np.hypot(p3[:, 0] - w['x'], p3[:, 1] - w['y']) <= w['r'] * hub) and np.all(np.abs(p3[:, 2] - w['z']) <= w['width'] / 2 + model.get('hubWidth', 0.03)):
+            if np.all(np.hypot(p3[:, 0] - w['x'], p3[:, 1] - w['y']) <= w['r'] * hub) and np.all(np.abs(p3[:, 2] - w['z']) <= w['width'] / 2 + model.get('hubWidth', 0.06)):
                 w['rim'].add(int(k))
                 break
+    # Of those, only whole pieces that go round the axle (rim, hub, disc, sprocket), run from the hub out to the rim
+    # (a spoke) or are small bits on the hub or the rim (bolts, nipples) turn: a caliper, a fork's foot or a chain link
+    # inside the hub's circle stays put.
+    piece = pieces(prims, tri_prim, tri_idx, n)
+    for w in wheels:
+        by_piece = {}
+        for k in w['rim']:
+            by_piece.setdefault(piece[k], []).append(k)
+        whole = {}
+        for k in np.where(np.isin(piece, list(by_piece)))[0]:
+            whole[piece[k]] = whole.get(piece[k], 0) + 1
+        keep, out, shape = set(), 0, 0
+        for pid, ks in by_piece.items():
+            if whole[pid] != len(ks):
+                out += 1
+                continue  # part of the piece lies outside the hub (a fork leg, the chain)
+            q = np.concatenate([V(k) for k in ks])
+            rad = np.hypot(q[:, 0] - w['x'], q[:, 1] - w['y'])
+            ang = np.floor((np.arctan2(q[:, 1] - w['y'], q[:, 0] - w['x']) + math.pi) / (2 * math.pi) * 36).astype(int) % 36
+            small = (q.max(0) - q.min(0)).max() < 0.03 and np.abs(q[:, 2] - w['z']).max() < 0.075
+            if (len(np.unique(ang)) >= 27 or (rad.min() < 0.3 * w['r'] and rad.max() > 0.55 * w['r'])
+                    or (small and (rad.max() < 0.25 * w['r'] or rad.min() > 0.5 * w['r']))):
+                keep.update(ks)
+            else:
+                shape += 1
+        print('  wheel at x %.2f: %d triangles turn; pieces left: %d reach out of the hub, %d neither round nor spokes' % (w['x'], len(keep), out, shape))
+        w['rim'] = keep
     in_wheel = set().union(*[w['tyre'] | w['rim'] for w in wheels])
     # A bicycle's crank (`nodeRoles` 'crank': chainring and pedals) turns about its own middle; the pedals' radius and
     # the right pedal's angle there (the runtime turns it upright), its distance out from the middle.
@@ -100,14 +151,30 @@ def convert_moto(model, src_root, vm):
         normal = -normal
     reach = model.get('reach', 0.06)
     bx, by = model['bars']
+    # `barsWide` (y, z): what lies wholly above y and further out than z is the bars' ends (levers, hand guards).
+    wide_y, wide_z = model.get('barsWide', (1e9, 1e9))
+    fork = model.get('fork')
+    fork_at = np.array([wf['x'], wf['y'], wf['z']])
+    fork_pieces = set()
+    if fork:
+        far = {}
+        for k in range(n):
+            d = np.linalg.norm(V(k) - fork_at, axis=1).max()
+            far[piece[k]] = max(far.get(piece[k], 0), d)
+        fork_pieces = {pid for pid, d in far.items() if d <= fork['sphere'] * wf['r']}
     steer = set()
     for k in range(n):
         if not keep_tri[k] or k in in_wheel:
             continue
         p3 = V(k)
         ahead = ((p3[:, 0] - ax) * normal[0] + (p3[:, 1] - ay) * normal[1]).min() > -reach
-        bar = p3[:, 1].min() > by and p3[:, 0].min() > bx
-        if (ahead or bar) and p3[:, 1].max() < ty + 0.5:
+        bar = (p3[:, 1].min() > by and p3[:, 0].min() > bx) or (p3[:, 1].min() > wide_y and np.abs(p3[:, 2]).min() > wide_z)
+        # `fork`: what hangs round the front wheel (fork feet, caliper, a fender wrapping the tyre) turns with it too:
+        # wholly within `sphere` tyre radii of the axle and less than `reach` metres behind the axis, or a whole piece
+        # within the sphere.
+        near = fork and np.linalg.norm(p3 - fork_at, axis=1).max() <= fork['sphere'] * wf['r'] and (
+            piece[k] in fork_pieces or ((p3[:, 0] - ax) * normal[0] + (p3[:, 1] - ay) * normal[1]).min() > -fork.get('reach', 9))
+        if (ahead or bar or near) and p3[:, 1].max() < ty + 0.5:
             steer.add(k)
     rake = math.atan2(-(tx - ax), ty - ay)  # the axis leaning back from upright (radians, positive: top behind)
 
@@ -139,6 +206,12 @@ def convert_moto(model, src_root, vm):
         parts['wheel%d.tyre' % wi] = dict(tris=sorted(w['tyre']), origin=(w['x'], w['y'], w['z']), keep=keep['wheel'], borderCos=model.get('borderCos', 0.985))
         parts['wheel%d.rim' % wi] = dict(tris=sorted(w['rim']), origin=(w['x'], w['y'], w['z']), keep=keep['wheel'], minPiece=model.get('minPiece', 0.04), borderCos=model.get('borderCos', 0.985))
 
+    # Parts too finely built for the edge collapse (split at every hard edge: a knobbly tyre, a chain) clustered first
+    # (`clusterParts`: part-name prefix -> grid cell, metres; vehicle_models.py cluster_vertices).
+    for name, part in parts.items():
+        for prefix, cell in model.get('clusterParts', {}).items():
+            if name.startswith(prefix):
+                part['cluster'] = cell
     # ---- The rider: the saddle's top at `seat` x, the grips (the bars' outer ends), the pegs (`pegs` hint).
     sx = model['seat']
     near = [V(k) for k in range(n) if keep_tri[k] and k not in in_wheel and abs(cen[k, 0] - sx) < 0.06 and abs(cen[k, 2]) < 0.08]
@@ -146,6 +219,9 @@ def convert_moto(model, src_root, vm):
     bar_pts = np.concatenate([V(k) for k in steer if V(k)[:, 1].min() > by] or [np.zeros((1, 3))])
     far = bar_pts[np.abs(bar_pts[:, 2]) > np.abs(bar_pts[:, 2]).max() - 0.05]
     grip = [float(far[:, 0].mean()), float(far[:, 1].mean()), float(np.abs(far[:, 2]).max() - 0.05)]
+    if model.get('grip'):
+        # The grips given outright (bars whose ends carry hand guards).
+        grip = [float(v) for v in model['grip']]
     meta = dict(
         type=model['type'], title=model['title'], front=front, kind='moto',
         dims=[round(float(L), 3), round(float(hi[1]), 3), round(float(hi[2] - lo[2]), 3)],
@@ -162,6 +238,68 @@ def convert_moto(model, src_root, vm):
     area = vm.cat(T, 'area')
     return dict(meta=meta, prims=prims, mats=mats, images=images, image_keys=image_keys, parts=parts, tri_prim=tri_prim,
                 tri_idx=tri_idx, role=role, area=area)
+
+
+def pieces(prims, tri_prim, tri_idx, n):
+    """Each triangle's connected piece (triangles sharing a corner's position within one primitive)."""
+    out = np.zeros(n, dtype=np.int64)
+    base = 0
+    for pi, p in enumerate(prims):
+        ks = np.where(tri_prim == pi)[0]
+        if not len(ks):
+            continue
+        _, weld = np.unique(np.round(p['P'], 5), axis=0, return_inverse=True)
+        weld = weld.reshape(-1)
+        parent = np.arange(weld.max() + 1)
+
+        def find(a):
+            while parent[a] != a:
+                parent[a] = parent[parent[a]]
+                a = parent[a]
+            return a
+        tri = weld[tri_idx[ks]]
+        for a, b, c in tri:
+            ra, rb, rc = find(a), find(b), find(c)
+            parent[rb] = ra
+            parent[rc] = ra
+        out[ks] = [base + find(t[0]) for t in tri]
+        base += len(parent)
+    return out
+
+
+def unsteer(prims, tri_prim, tri_idx, n, plan, role):
+    """A model posed with its bars turned, turned straight (`unsteer`): every triangle wholly ahead of the steering axis
+    (through `top` (x, y), leaning back `rake` degrees; less `reach` metres), wholly above `above` metres or out at
+    the bars' ends (`wide`: above y and further out than z, metres) turns
+    `angle` degrees about the axis (positions and normals; a vertex shared with the frame moves with it)."""
+    r = math.radians(plan['rake'])
+    # The axis in the bike's middle plane: the rear tyre's.
+    tyre_all = np.concatenate([prims[tri_prim[k]]['P'][tri_idx[k]] for k in np.where(role == 'tyre')[0]])
+    rear = tyre_all[tyre_all[:, 0] < (tyre_all[:, 0].min() + tyre_all[:, 0].max()) / 2]
+    top = np.array([plan['top'][0], plan['top'][1], (rear[:, 2].min() + rear[:, 2].max()) / 2])
+    d = np.array([-math.sin(r), math.cos(r), 0.0])
+    ahead = np.array([math.cos(r), math.sin(r), 0.0])
+    a = math.radians(plan['angle'])
+    reach, above = plan.get('reach', 0.06), plan.get('above', 1e9)
+    wide_y, wide_z = plan.get('wide', (1e9, 1e9))
+    tyre = np.concatenate([prims[tri_prim[k]]['P'][tri_idx[k]] for k in np.where(role == 'tyre')[0]])
+    tyre = tyre[tyre[:, 0] > (tyre[:, 0].min() + tyre[:, 0].max()) / 2]
+    wc = (tyre.min(0) + tyre.max(0)) / 2
+    wr = np.linalg.norm(tyre - wc, axis=1).max() * 1.01
+    moved = {}
+    for k in range(n):
+        pi = tri_prim[k]
+        p3 = prims[pi]['P'][tri_idx[k]]
+        if np.linalg.norm(p3 - wc, axis=1).max() <= wr or ((p3 - top) @ ahead).min() > -reach or p3[:, 1].min() > above or (p3[:, 1].min() > wide_y and np.abs(p3[:, 2]).min() > wide_z):
+            moved.setdefault(pi, set()).update(tri_idx[k].tolist())
+
+    def turn(v, about):
+        return about + (v - about) * math.cos(a) + np.cross(d, v - about) * math.sin(a) + np.outer((v - about) @ d, d) * (1 - math.cos(a))
+    for pi, verts in moved.items():
+        ix = np.array(sorted(verts))
+        prims[pi]['P'][ix] = turn(prims[pi]['P'][ix], top)
+        prims[pi]['N'][ix] = turn(prims[pi]['N'][ix], np.zeros(3))
+    print('  unsteer: %d vertices turned %.1f deg' % (sum(len(v) for v in moved.values()), plan['angle']))
 
 
 def erase(img, key, plan):
