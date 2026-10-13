@@ -429,6 +429,9 @@ packs with plain `<script src>` so the zip still plays from file://.
 - Downloaded motorbikes: a source posed with its bars turned is straightened by `unsteer` (vehicle_models_moto.py); a wheel
   turns only whole round pieces (spokes, hub, rim); car wheels stop at the tyre's inner wall; four-wheeled models' wheels
   follow their springs (`ride.d`) through ride-wheels3d.js. The KR 500 is a CC-BY model (credits).
+- Fort Sentinel models (vehicles-and-driving-models-heavy.md): never `cluster` a body seen up close (the atlas material is
+  single-sided: an inward face is a hole); a heavy special body gets a `far` level (`bodyFar`, `militaryLod`, chase view only);
+  the tank is procedural (`makeAssetTank` kept for a future model).
 - Downloaded aircraft and dog (vehicles-and-driving-models-aircraft.md): `tools/aircraft_models.py` makes
   assets/aircraft-models.bin + aircraft-skin.webp (SKYRANGER 429 airframe `bell429`, flyable SKYLARK 172 airframe
   `skyhawk`, `fixedGear`) on the makeHelicopter / buildAircraft contracts; `rotorStrikes` uses an airframe's
