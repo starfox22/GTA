@@ -75,6 +75,7 @@
     // @include src/themepark.js
     // @include src/marina.js
     // @include src/taxi.js
+    // @include src/vehicle-entrances.js
     // @include src/cycles.js
     // @include src/weather.js
     // @include src/weather-audio.js
