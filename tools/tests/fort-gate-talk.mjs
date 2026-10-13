@@ -1,6 +1,6 @@
 // Fort Sentinel's gate in Kessler's uniform (fort-cover.js): driven up, the sergeant sends the car back to park outside
 // (no challenge, no FORCE THE GATE prompt, no stars); on foot the ID is shown and the conversation runs with the feet held,
-// then the gate clears him.
+// then the gate clears him; its lines show as bubbles and in the subtitle.
 export const fresh = true;
 export default async function (t) {
   await t.call('fortSkip', 'changed');
@@ -30,6 +30,11 @@ export default async function (t) {
   t.assert(/SHOW YOUR ID/.test(p.text || ''), 'the ID prompt on foot: ' + JSON.stringify(p));
   await t.keys('KeyE', 0.2, { real: true });
   await t.wait(1);
+  // The sergeant's line is a talk line: a bubble over him (TALK LINES, crowd-speech.js) and the subtitle.
+  const view = await t.call('speechView');
+  t.assert(view.bubbles.some((b) => /KESSLER, D\./.test(b.text)), 'the sergeant\'s line in a bubble: ' + JSON.stringify(view.bubbles));
+  const card = await t.call('missionCard');
+  t.assert(/Kessler, D\./.test(card.line || ''), 'and in the subtitle: ' + JSON.stringify(card.line));
   // The feet stay put while the sergeant reads.
   await t.keys('KeyA', 2);
   let c = await t.call('fortCover');

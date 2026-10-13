@@ -29,6 +29,8 @@
       loadReach: 44,
       handReach: 46,
     };
+    // The job's opening, the owner's words: what to do, never how to get up there.
+    const SUMMIT_OPENING = 'Vinny asked you to collect a package hidden at the top of the mountain.';
     function summitJob() {
       return mission?.index === 2 ? mission : null;
     }
@@ -62,17 +64,10 @@
       m.lastCar = null;
       m.beats = {};
       m.ownOpening = true;
-      setStage(
-        0,
-        m.summit,
-        'REACH THE SUMMIT OF MOUNT ASCENT · A 4X4 MAKES THE CLIMB',
-        'vinny',
-        'Before the Feds picked him up, Tommy Russo buried something of mine on top of Mount Ascent. Under the cairn at the summit. Go get it, and don’t open it.',
-      );
-      missionBrief(
-        'Vinny asked you to collect a buried package from the very top of Mount Ascent. Get up there, with a 4x4 up the trail or a parachute onto the summit, and dig it up for him.',
-        { kicker: 'THE JOB' },
-      );
+      // The opening says what, never how: the 4x4 trail and the parachute are the player's to find (Vinny's radio
+      // beats along the way still react to either).
+      setStage(0, m.summit, 'COLLECT THE PACKAGE HIDDEN AT THE TOP OF THE MOUNTAIN');
+      missionBrief(SUMMIT_OPENING, { kicker: 'THE JOB' });
     }
     /* Vinny in his warehouse, for the handover; the Vinny who stands at his usual
        corner (story.js populateStoryWorld) steps out of sight meanwhile. */

@@ -216,7 +216,9 @@ packs with plain `<script src>` so the zip still plays from file://.
   military vehicle under cover or inside the fence is five stars (`fortCoverBoarded`); `militaryAudit()` stays ok.
   The CIRRUS meeting (skyline-meeting.js) is driven only through `skyMeetingBegin/End/Report/Target` and
   `skyMeeting.stage`; a seated player is `player.sceneSeat` (`teleportPlayer` clears it); CIRRUS staff are lent only
-  through `keyPerson.errand`.
+  through `keyPerson.errand`. A conversation with the player marks its lines with `speechMarkTalk(p)` (crowd-speech.js TALK LINES);
+  a player line outside a job reads in the subtitle via `sceneLine`; leaving a scene seat goes through `skyMeetingRise`;
+  E advances the meeting's lines.
 - Mission briefs (mission-brief.js): `missionBrief(text, opts)` is the only writer of the big centred step sentence;
   it waits for a centred headline (`#announcement`) and folds into the pager strip (O folds it early). A long line of
   dialogue goes in the subtitle (`missionLine`), never a speech bubble that size (`fortGateLine`); Fort Sentinel's
@@ -431,6 +433,10 @@ packs with plain `<script src>` so the zip still plays from file://.
   (damage3d-marks.js) are pinned to a triangle of the part they hit, so a part holding marks keeps its vertex order when
   bent; a mark with no surface is not drawn; holes never on glass or the cabin, stars only on their own pane
   (`crumpleAudit()`, tools/tests/vehicle-damage-shape.mjs).
+- Gunfire on road vehicles goes only through `vehicleRoundDamage` (vehicle-gunfire.js): calibre × hit zone; pistols, shotguns
+  and rifles never take a car past the engine-fire line (the fire's countdown does the rest); a new heavy gun sets `heavyRound`
+  or goreCal 'heavy', a new machine gun `mg`; tools/tests/vehicle-gunfire.mjs. Handbrake slides are friction, not a glide
+  (`tyreSideShare` falls off past the peak slip); reverse engages only from a stop (`reverseTest()`).
 - `carStainSeverity(kph, fatal)` (car-stains.js) is the only rule for how much bonnet blood a hit leaves (none under
   14 km/h); further hits add to a car's 3 stain records (`adds`, painted by `cbTopUpJob`), never replace one.
 - Military mounted guns the player fires (LAV-8 25 mm + coax, gun jeep M2, Black Hawk door guns) live in

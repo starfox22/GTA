@@ -648,7 +648,11 @@
           let turned = 0,
             lastA = c.a,
             peak = 0,
-            time = 0;
+            time = 0,
+            path = 0,
+            stoppedAt = null,
+            lastX = c.x,
+            lastY = c.y;
           handlingTestPaved = true;
           for (const [codes, seconds] of phases) {
             const down = String(codes || '').split(',').filter(Boolean);
@@ -659,15 +663,84 @@
               time += 1 / 30;
               turned += normalizeAngle(c.a - lastA);
               lastA = c.a;
+              path += Math.hypot(c.x - lastX, c.y - lastY);
+              lastX = c.x;
+              lastY = c.y;
+              if (stoppedAt === null && Math.hypot(c.vx, c.vy) < 1 * KMH) stoppedAt = time;
               peak = Math.max(peak, Math.abs(slipOf()));
               if (trace && i % 3 === 2) samples.push([+time.toFixed(1), deg(slipOf()), deg(turned), Math.round(Math.hypot(c.vx, c.vy) / KMH)]);
             }
-            ends.push({ keys: codes, slip: deg(slipOf()), turned: deg(turned), kmh: Math.round(Math.hypot(c.vx, c.vy) / KMH) });
+            ends.push({ keys: codes, slip: deg(slipOf()), turned: deg(turned), kmh: Math.round(Math.hypot(c.vx, c.vy) / KMH), metres: +worldMeters(path).toFixed(1) });
           }
           for (const k of held) keys[k] = false;
           handlingTestPaved = false;
           weather.wet = savedWet;
-          return { type, kmh, wet, ends, peakSlip: deg(peak), spun: peak > (100 * Math.PI) / 180, ...(trace ? { samples } : {}) };
+          // metres: the path driven; stoppedAt: the time the car came to rest (under 1 km/h), or null.
+          return { type, kmh, wet, ends, peakSlip: deg(peak), spun: peak > (100 * Math.PI) / 180, metres: +worldMeters(path).toFixed(1), stoppedAt: stoppedAt === null ? null : +stoppedAt.toFixed(2), ...(trace ? { samples } : {}) };
+        },
+        /* Reverse: a fresh `type` rolling forward at `kmh` (0: from rest) with the
+           brake/reverse key (S) held for `seconds`, `steer` (1 right, -1 left) held
+           with it. Returns when the car stopped (s) and when it began to back up
+           (moving backwards faster than 1 km/h), whether it rolled back before it had
+           stopped, the reverse top speed (km/h), the time from 1 to 15 km/h backwards
+           and its mean acceleration (g), and the heading turned while backing up
+           (degrees; backing with the wheel right swings the nose left: negative). */
+        reverseTest(type = 'sedan', kmh = 0, options = {}) {
+          const { seconds = 8, steer = 0, wet = 0, x = TRACK.x, y = TRACK.y } = options;
+          if (!VEHICLE_DEFINITIONS[type]) throw Error('Unknown vehicle type ' + type);
+          const savedWet = weather.wet,
+            held = ['KeyW', 'KeyS', 'Space', 'KeyA', 'KeyD'];
+          if (player.car) exitCar();
+          if (testCar && vehicles.includes(testCar)) vehicles.splice(vehicles.indexOf(testCar), 1);
+          teleportPlayer(x, y - 60);
+          const c = (testCar = spawnClearCar(type, x, y, 0, false));
+          c.authorized = true;
+          enterVehicle(c);
+          Object.assign(c, { x, y, a: 0, av: 0, vx: kmh * KMH, vy: 0, speed: kmh * KMH });
+          player.x = x;
+          player.y = y;
+          let time = 0,
+            stoppedAt = kmh > 0 ? null : 0,
+            backAt = null,
+            to15 = null,
+            top = 0,
+            turned = 0,
+            lastA = c.a,
+            rolledBackBeforeStop = false;
+          handlingTestPaved = true;
+          for (let i = 0; i < Math.round(seconds * 30) && gameMode === 'play' && player.car === c; i++) {
+            weather.wet = wet;
+            for (const k of held) keys[k] = false;
+            keys.KeyS = true;
+            if (steer) keys[steer > 0 ? 'KeyD' : 'KeyA'] = true;
+            update(1 / 30);
+            time += 1 / 30;
+            const along = c.vx * Math.cos(c.a) + c.vy * Math.sin(c.a);
+            if (stoppedAt === null && along < -1 * KMH) rolledBackBeforeStop = true;
+            if (stoppedAt === null && Math.abs(along) < 1 * KMH) stoppedAt = time;
+            if (backAt === null && along < -1 * KMH) backAt = time;
+            if (backAt !== null) {
+              turned += normalizeAngle(c.a - lastA);
+              top = Math.max(top, -along / KMH);
+              if (to15 === null && -along >= 15 * KMH) to15 = time - backAt;
+            }
+            lastA = c.a;
+          }
+          for (const k of held) keys[k] = false;
+          handlingTestPaved = false;
+          weather.wet = savedWet;
+          return {
+            type,
+            kmh,
+            steer,
+            stoppedAt: stoppedAt === null ? null : +stoppedAt.toFixed(2),
+            backAt: backAt === null ? null : +backAt.toFixed(2),
+            rolledBackBeforeStop,
+            topKmh: +top.toFixed(1),
+            to15: to15 === null ? null : +to15.toFixed(2),
+            meanG: to15 ? +((14 * KMH) / UNITS_PER_METRE / to15 / 9.81).toFixed(2) : null,
+            turnedDeg: Math.round((turned * 180) / Math.PI),
+          };
         },
       };
     }

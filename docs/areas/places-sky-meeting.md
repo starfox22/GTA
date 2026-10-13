@@ -35,8 +35,16 @@ the poses and the props.
   `skyMeetingRideMoved` puts him beside the player at the dark moment, `skyMeetingRideEnd`
   replaces the venue notice with his line. Wanted: the lift refuses as always, he waits.
 - Prompts: `northPointKeyPrompt/Interact` ask `skyMeetingPrompt/Interact` first (TALK TO, SIT
-  WITH, HAND OVER THE PAPERS; seated with nothing to do: an empty keyless prompt that swallows
-  the key). Nothing is offered without an active meeting.
+  WITH, HAND OVER THE PAPERS, NEXT LINE while a line is spoken; seated with nothing to do: an empty keyless prompt
+  that swallows the key). NEXT LINE (`skyMeetingNextLine`) ends the line on now and brings the next at once (the
+  talk over the drinks without its pause); the scene's first line tells `pressKey('interact')` once. Every line is a
+  talk line (crowd-speech.js TALK LINES: a bubble over the speaker in both views) plus the subtitle. Nobody is
+  voiced: the game has no recorded dialogue, the text carries the scene.
+- Standing up always lands on clear deck (`skyMeetingStandSpot`: `P.stand`, else the nearest spot round the chair
+  that `roofPointFreeOn` passes, as every step on a roof asks): `P.stand` lay in the table's keep-out, and every step
+  from there was blocked (stuck at the table after the job). `skyMeetingRise` is the one way out of the chair:
+  a movement key, his death, `skyMeetingEnd` (abandon, a job start, failure) and the seat hold's own checks;
+  WASTED goes through `teleportPlayer`. Report `playerFree`. Nothing is offered without an active meeting.
 - The reserved table is `SKY_BAR.tables[SKY_MEETING_TABLE]` (the south-east date table by the
   glass): `skyBarArrive` seats no guests there; `skyMeetingBegin` empties a filled terrace so it
   refills without them. Other tables hush while the player sits (`skyMeetingBusy`).
@@ -47,4 +55,4 @@ the poses and the props.
   are crowd prop parts (crowd3d-bodies.js `folder`, `envelope`, `tableCard`, the `cocktail`).
 
 Console (missions group): `skyMeeting('begin' | 'end' | 'report', opts)`, `skyMeetingSkip(stage)`.
-Test: tools/tests/sky-meeting.mjs.
+Tests: tools/tests/sky-meeting.mjs, tools/tests/sky-meeting-talk.mjs.
