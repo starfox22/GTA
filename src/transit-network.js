@@ -512,7 +512,8 @@
       worldContext.restore();
     }
     function drawTransitMap(drawingContext, scale, big) {
-      for (const line of RAIL_LINES) {
+      // The minimap: no lines, a station only on foot nearby (minimap-rules.js MINIMAP MARKS).
+      if (big) for (const line of RAIL_LINES) {
         drawingContext.save();
         drawingContext.setLineDash([7 / scale, 3 / scale]);
         strokeRoad(drawingContext, line.points, 2 / scale, line.color);
@@ -523,7 +524,8 @@
       drawingContext.textAlign = 'center';
       for (const s of RAIL_STATIONS) {
         // Off the map's window (game-minimap.js): nothing to draw (the state is saved and restored).
-        if (!mapWindowHas(s.x, s.y, 130 / scale)) continue;
+        if (!mapWindowHas(s.x, s.y, 130 / scale) || (!big && !minimapPlaceNear(s.x, s.y))) continue;
+        mapMarkCount(1, 1);
         drawingContext.fillStyle = '#173f4b';
         drawingContext.beginPath();
         drawingContext.arc(s.x, s.y, 7 / scale, 0, TAU);

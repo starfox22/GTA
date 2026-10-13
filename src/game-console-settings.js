@@ -114,6 +114,9 @@
         if (change && typeof change.layer === 'string') setMapLayer(change.layer, change.on !== false);
         return mapViewReport();
       },
+      // What the minimap drew on its last refresh (blips, labels, the GPS route) and the rules that chose it
+      // (minimap-rules.js MINIMAP MARKS); true starts a new peak count.
+      minimapReport: (reset) => minimapReport(reset),
       // Open (true) or close (false) the city map as the map key does; returns the mode and whether it is open.
       cityMap(open) {
         if (open !== undefined && !!open !== mapOpen) toggleMap();

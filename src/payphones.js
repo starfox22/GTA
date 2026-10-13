@@ -129,11 +129,16 @@
       return found;
     }
     /* The city map and the minimap: a yellow disc with a handset at every payphone. */
-    function drawPayphoneMap(g, scale) {
+    function drawPayphoneMap(g, scale, big = true) {
+      // The minimap shows only the payphone a waiting call guides to (minimap-rules.js MINIMAP MARKS).
+      const only = big ? null : minimapPayphone();
+      if (!big && !only) return;
       g.save();
       for (let i = 0; i < PAYPHONES.length; i++) {
         const p = PAYPHONES[i];
+        if (only && p !== only) continue;
         if (!mapWindowHas(p.x, p.y, 40 / scale)) continue;
+        mapMarkCount(1, 0);
         const r = 7 / scale;
         g.fillStyle = '#e3b21f';
         g.strokeStyle = '#2a2410';

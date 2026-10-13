@@ -723,12 +723,17 @@
       }
     }
     /* The city map: a spray-gun badge in the shop's colour and, zoomed in, its name. */
-    function drawGarageMap(drawingContext, scale) {
+    function drawGarageMap(drawingContext, scale, big = true) {
+      // The minimap shows only the nearest respray, while wanted, and no names (minimap-rules.js MINIMAP MARKS).
+      const only = big ? null : minimapRespray();
+      if (!big && !only) return;
       drawingContext.save();
       drawingContext.textAlign = 'center';
       for (const s of GARAGES) {
+        if (only && s !== only) continue;
         // Off the map's window (game-minimap.js): nothing to draw (the state is saved and restored).
         if (!mapWindowHas(s.x, s.y, 110 / scale)) continue;
+        mapMarkCount(1, 1);
         const r = 10 / scale;
         drawingContext.fillStyle = '#122e38';
         drawingContext.beginPath();
@@ -740,7 +745,7 @@
         drawingContext.fillStyle = s.color;
         drawingContext.font = 'bold 11px Arial';
         mapLabel(drawingContext, 'R', s.x, s.y + 4 / scale, scale);
-        if (scale > 0.09) {
+        if (big && scale > 0.09) {
           drawingContext.font = 'bold 9px Arial';
           drawingContext.fillStyle = '#e9f1ee';
           mapLabel(drawingContext, s.name, s.x, s.y + 22 / scale, scale);

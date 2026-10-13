@@ -46,6 +46,8 @@
       context.scale(MINIMAP_SCALE, MINIMAP_SCALE);
       context.translate(-x0, -y0);
       paintMapBase(context, false);
+      // Static: drawn once here rather than on every refresh (the city map paints it in drawMap).
+      paintSportsGround(context, false);
       minimapBase = { canvas, x0, y0 };
       return minimapBase;
     }
@@ -154,9 +156,12 @@
           drawingContext.lineWidth = 7;
           drawingContext.stroke();
         }
-      paintSportsGround(drawingContext, false);
-      if (mapLayerOn('services')) drawCivicMap(drawingContext, big);
-      if (mapLayerOn('air')) {
+      // The basketball court is in the minimap's base layer (minimapBaseLayer).
+      if (big) paintSportsGround(drawingContext, false);
+      // What the minimap shows over its base: minimap-rules.js MINIMAP MARKS (the city map shows every layer).
+      mapMarksBegin();
+      if (mapLayerOn('services')) drawCivicMap(drawingContext, big, scale);
+      if (big && mapLayerOn('air')) {
         for (const pad of HELIPADS) {
           drawingContext.fillStyle = '#e4d3a3';
           drawingContext.font = 'bold 90px monospace';
@@ -168,6 +173,7 @@
         for (const pad of roofHelipads) if (mapWindowHas(pad.x, pad.y, 50)) drawingContext.fillText('H', pad.x, pad.y + 20);
       }
       drawHarborMap(drawingContext, big);
+      drawParkRidesMap(drawingContext, scale, big);
       const target = objective();
       if (target) {
         // With a GPS road route both maps draw that instead (navigation.js, map-objective.js).
@@ -181,30 +187,39 @@
           drawingContext.stroke();
           drawingContext.setLineDash([]);
         }
-        drawingContext.fillStyle = '#f2d485';
-        drawingContext.beginPath();
-        drawingContext.arc(target.x, target.y, 36, 0, TAU);
-        drawingContext.fill();
       }
       if (mapLayerOn('transit')) drawTransitMap(drawingContext, scale, big);
-      if (mapLayerOn('sports')) drawSportsMap(drawingContext, scale, big);
+      if (big && mapLayerOn('sports')) drawSportsMap(drawingContext, scale, big);
       drawUserRoute(drawingContext, scale, big);
       drawGpsRoutes(drawingContext, scale, big);
       drawCountyMap(drawingContext, scale, big);
-      if (mapLayerOn('garages')) drawGarageMap(drawingContext, scale);
-      if (mapLayerOn('payphones')) drawPayphoneMap(drawingContext, scale);
+      if (mapLayerOn('garages')) drawGarageMap(drawingContext, scale, big);
+      if (mapLayerOn('payphones')) drawPayphoneMap(drawingContext, scale, big);
       if (mapLayerOn('bikes')) drawBikeShareMap(drawingContext, scale, big);
       drawDrawbridgeMap(drawingContext, scale, big);
-      if (mapLayerOn('air')) drawAviationMap(drawingContext, scale);
-      if (mapLayerOn('police')) drawPoliceMap(drawingContext, scale);
+      if (big && mapLayerOn('air')) drawAviationMap(drawingContext, scale);
+      if (mapLayerOn('police')) drawPoliceMap(drawingContext, scale, big);
       // A street event's runner (livingcity-events.js).
       drawLivingCityMap(drawingContext, scale);
+      // The job's blip, over its route: a gold disc of a fixed size on the glass (never under 36 units).
+      if (target) {
+        const r = Math.max(36, (big ? 7 : 5.5) / scale);
+        drawingContext.fillStyle = '#081822';
+        drawingContext.beginPath();
+        drawingContext.arc(target.x, target.y, r + 1.6 / scale, 0, TAU);
+        drawingContext.fill();
+        drawingContext.fillStyle = '#f2d485';
+        drawingContext.beginPath();
+        drawingContext.arc(target.x, target.y, r, 0, TAU);
+        drawingContext.fill();
+        mapMarkCount(1, 0);
+      }
       // The mission vehicle the player is after (Kessler's car): a red ring and its name (map-objective.js).
       drawMapHighlight(drawingContext, scale, big);
       mapWindow.x0 = mapWindow.y0 = -Infinity;
       mapWindow.x1 = mapWindow.y1 = Infinity;
       drawingContext.restore();
-      // Off the minimap's edge: an arrow on the rim toward the job and the waypoint.
+      // Off the minimap's edge: an arrow on the rim toward the job, the waypoint and (wanted) the respray.
       if (!big) drawMinimapEdgeBlips(drawingContext, width, height, scale, cx, cy, target);
       else placeMapHighlightPulse(width, height, scale, cx, cy);
       if (big) {
@@ -278,4 +293,6 @@
         if (hintDevice() === 'gamepad') drawMapCross(drawingContext, width, height);
       }
       drawPlayerMapMarker(drawingContext, width, height, scale, cx, cy, big);
+      mapMarkCount(1, 0);
+      mapMarksEnd(big);
     }

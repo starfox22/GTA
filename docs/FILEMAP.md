@@ -11,11 +11,11 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-595 files in the include tree, 203,443 lines.
+597 files in the include tree, 203,735 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
-- `src/game.js`   206 — ▸ Game orchestration and shared state
+- `src/game.js`   207 — ▸ Game orchestration and shared state
 
 ## src/game.js ▸ Game orchestration and shared state
 
@@ -46,9 +46,10 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-update.js`   194 — update(dt): the per-frame simulation step (only active play advances clocks).
 - `src/world-edge.js`   521 — Open-sea countdown: 10 s flying or sailing away from all land starts RETURN TO THE CITY and 10 s more; at zero a missile comes in from the coast and …
 - `src/game-draw2d.js`   616 — 2D canvas fallback renderer: drawWorld, drawCar, drawPerson, markers.
-- `src/game-minimap.js`   281 — Minimap base layer: The minimap used to repaint the whole county (coast, every street, parks, promenades, county ground and every building footprint) …
-- `src/map-view.js`   377 — Map views: the city map's filters (MAP LAYERS) and GO TO list, sharp canvases on HiDPI screens, the minimap's speed pull-back and its edge arrows …
-- `src/game-ui.js`   521 — Weapon chip, mission card and updateUI() (HUD text refresh).
+- `src/game-minimap.js`   298 — Minimap base layer: The minimap used to repaint the whole county (coast, every street, parks, promenades, county ground and every building footprint) …
+- `src/map-view.js`   390 — Map views: the city map's filters (MAP LAYERS) and GO TO list, sharp canvases on HiDPI screens, the minimap's speed pull-back and its edge arrows …
+- `src/minimap-rules.js`    97 — Minimap rules (MINIMAP MARKS): what the small map draws over its base layer (the job and its GPS route, the player, police while wanted, the nearest …
+- `src/game-ui.js`   520 — Weapon chip, mission card and updateUI() (HUD text refresh).
 - `src/game-menus.js`   196 — Resize, begin/newGame, pause, help, big map toggle.
 - `src/god-splash.js`   114 — ▸ God mode splash: the full-screen card and fanfare when a cheat code toggles god mode (game-input.js godModeCheat): ON charges up, slams a gold "GOD …
 - `src/game-input.js`   532 — Cheat code: Letters typed during play accumulate in a short ring; when the tail spells a known code it fires.
@@ -72,10 +73,10 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/vehicle-trunk.js`   399 — Vehicle trunks and the lockpick at work: a trunk with something in it (`c.trunkLoot`, set by a mission), picked pin by pin by holding interact with …
 - `src/riders.js`   482 — Riders thrown from motorbikes and bicycles
 - `src/wheelie.js`   185 — Wheelies: a motorbike's or bicycle's front wheel lifted by the throttle and the rider's weight, pitching about the rear tyre (c.wheelie, radians; the …
-- `src/themepark.js`    64 — ▸ Sunset Pier resort and theme park
+- `src/themepark.js`    65 — ▸ Sunset Pier resort and theme park
 - `src/marina.js`    11 — ▸ Harbor Point marina, the superyacht and the cruise liners
 - `src/taxi.js`   287 — Yellow cabs
-- `src/cycles.js`   802 — City bicycles
+- `src/cycles.js`   806 — City bicycles
 - `src/weather.js`   216 — Weather
 - `src/weather-audio.js`   271 — Rain and thunder sound
 - `src/clouds.js`   329 — Cloud layer (game side): cloudBaseAt/cloudTopAt, the only source of the cloud altitude, by weather and area; the coverage and area maps the renderer …
@@ -129,8 +130,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/ecology.js`   339 — Wildlife behavior
 - `src/sealife.js`    17 — ▸ Sea life: dolphins, gulls and the great white
 - `src/sealife-audio.js`   356 — Sea life sound
-- `src/navigation.js`   728 — City map and route planning
-- `src/map-objective.js`   210 — The objective on the maps: road routes that always reach the road network
+- `src/navigation.js`   735 — City map and route planning
+- `src/map-objective.js`   211 — The objective on the maps: road routes that always reach the road network
 - `src/parachute.js`   734 — Bailout and parachute
 - `src/deck-landing.js`   361 — Landing on a ship from the sky: canopy touchdowns and freefall impacts on the liners' and the superyacht's decks (deckSurfaceAt, deckLandingStep) …
 - `src/falls.js`    22 — ▸ Falls: bodies and vehicles off cliffs, fatal impacts
@@ -139,8 +140,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/gamepad.js`   360 — Gamepad (standard mapping): play through the same actions as the bound keys, menus by focus, the city map by a cursor; the button names hints use …
 - `src/world-view.js`   344 — World camera gestures
 - `src/car-radio.js`   871 — Vehicle radio stations
-- `src/garages.js`   799 — ▸ Drive-in repair and respray
-- `src/payphones.js`   215 — Story payphones: PAYPHONES (the original `phone` first, at least two on every island including North Point Key, PAYPHONE_ISLANDS), the one the job …
+- `src/garages.js`   804 — ▸ Drive-in repair and respray
+- `src/payphones.js`   220 — Story payphones: PAYPHONES (the original `phone` first, at least two on every island including North Point Key, PAYPHONE_ISLANDS), the one the job …
 - `src/crowd.js`   194 — ▸ Crowd life, perception and reactions
 - `src/livingcity.js`    32 — ▸ The living city in free roam
 - `src/monarch-life.js`    38 — ▸ Monarch Isle: traffic, people, boats and sound
@@ -167,7 +168,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/god-panel.js`   805 — God mode settings
 - `src/god-drawbridges.js`   134 — God mode settings · DRAWBRIDGES: raise or lower every drawbridge or one at a time, through each bridge's own opening (godDrawbridges).
 - `src/driving.js`   562 — Tyres, brakes and driving assists
-- `src/chase-camera.js`   880 — Chase camera: the third-person view behind the player that V switches with the street view: where it stands and looks, mouse / stick / touch look …
+- `src/chase-camera.js`   889 — Chase camera: the third-person view behind the player that V switches with the street view: where it stands and looks, mouse / stick / touch look …
 - `src/chase-rules.js`   599 — Chase rules: what the player can see in the chase view, for the game's rules (who may fire, spawning and recycling out of sight, the HUD's player …
 - `src/chase-hud.js`    77 — Chase HUD: the reticle in the middle of the screen in the chase view (chase-view.css) and the hidden cursor while the pointer is captured; drawn …
 - `src/tyre-effects.js`   274 — What the tyres leave behind: the burnout (forward and the handbrake held at a standstill), skid marks, and the one rule for tyre smoke, dust and …
@@ -209,20 +210,20 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/drawbridge-span.js`   579 — Drawbridge span: the drawbridges (drawbridgeList), opening timetables, geometry, surface, gap and on-span tests (drawbridgeSurface).
 - `src/drawbridge-motion.js`   490 — Drawbridge motion: vehicles riding the leaves, pose, sounds (bell, clank, horn), motor, drips and passing vessels.
 - `src/drawbridge-opening.js`   272 — Drawbridge openings: clearing the span, camera zoom, swinging the leaves, updateDrawbridge(), map, console command and report.
-- `src/drawbridge-report.js`   420 — Drawbridges on the map, the console and god panel commands (open, close, hold), reports, the day's open share and the islands' access bridges.
+- `src/drawbridge-report.js`   426 — Drawbridges on the map, the console and god panel commands (open, close, hold), reports, the day's open share and the islands' access bridges.
 
 ## src/harbor.js ▸ Ironworks cargo terminal
 
 - `src/harbor-terminal.js`   287 — Ironworks terminal geometry: HARBOR, the gate, solids, police hold, cargo slots and gang alerts (alertGang, notifyViolence).
 - `src/harbor-cargo-job.js`   447 — The cargo job: loading bay range, crane loading, the depot drop and stakeout, updateHarborMission and updateHarbor (gate, witnesses).
-- `src/harbor-draw.js`   258 — Harbor drawing: ground paint, buildHarbor, the 2D view, map and 3D labels, and the 2D traffic lights.
+- `src/harbor-draw.js`   262 — Harbor drawing: ground paint, buildHarbor, the 2D view, map and 3D labels, and the 2D traffic lights.
 
 ## src/citylife.js ▸ Civic services and police
 
 - `src/citylife-places.js`   499 — The civic layer: places, clock, services, police on foot, navigation and injury effects.
 - `src/sun-path.js`   213 — Sun path: where the shadow light (the sun, the moon by night) and the sun the sky draws stand at a time of day (sunPathAt), and the light clock the …
 - `src/citylife-police.js`   642 — City life services and police sight: service menus, crowd density, search, gang targets, deploying officers (renderService, policeSees).
-- `src/citylife-civic.js`   602 — ▸ City life: officers and the wanted level (updateOfficers, updateWanted), strikePerson (blood: blood.js), updateCivic(), navigation and the civic map.
+- `src/citylife-civic.js`   633 — ▸ City life: officers and the wanted level (updateOfficers, updateWanted), strikePerson (blood: blood.js), updateCivic(), navigation and the civic map.
 
 ## src/citylife-civic.js ▸ City life: officers and the wanted level (updateOfficers, updateWanted), strikePerson (blood: blood.js), updateCivic(), navigation and the civic map.
 
@@ -249,6 +250,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/ride-look.js`   245 — Ride head-look: on the Sunset Eye and the Falcon the pointer's place on screen, a touch drag or the gamepad's right stick turns the rider's head …
 - `src/themepark-colliders.js`   293 — Theme park colliders: solids, air solids, kiosks, coaster footings, lagoon and paths (parkBlocked).
 - `src/themepark-grounds.js`   337 — Theme park grounds: the log flume, the pier ground paint, buildSunsetPier() and park palms.
+- `src/park-map.js`    86 — Sunset Pier's rides on both maps (drawMap): the Falcon's track as its real plan, traced from the ride's own circuit (coasterCircuit), and a Ferris …
 - `src/themepark-crowd.js`   268 — Theme park crowd: lines, spots, queues and guests (spawnParkGuest).
 - `src/themepark-sound.js`   316 — Theme park sound: screams, fountain music, fireworks and splashes (updateParkAudio).
 
@@ -365,7 +367,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/transit.js ▸ Public railway simulation
 
 - `src/transit-rails.js`   478 — Railway lines and stations, track geometry, speeds and decks (RAIL_LINES, railTrackGeometry, railGraph).
-- `src/transit-network.js`   542 — Railway stations, lifts and piers, network and routes; boarding and the transit menu (openTransit, boardTransit).
+- `src/transit-network.js`   544 — Railway stations, lifts and piers, network and routes; boarding and the transit menu (openTransit, boardTransit).
 
 ## src/sealife.js ▸ Sea life: dolphins, gulls and the great white
 
@@ -406,7 +408,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/livingcity-sirens.js`   231 — Sirens: which vehicles run with lights (emergencyBeacons, sirenUnit), and traffic making way for them: pulling over to the kerb and stopping …
 - `src/livingcity-medics.js`   530 — Ambulances in free roam: a body left in a city street brings an ambulance under lights and siren (dispatchMedics); two paramedics work on the victim …
 - `src/livingcity-medic-routing.js`    73 — Bounded, physical ambulance detours around a stopped vehicle near a junction; no entity is moved.
-- `src/livingcity-events.js`   195 — Street events in free roam: a bag snatch the player can stop by catching the thief on foot (updateStreetEvents, stageSnatch), his marker on the radar …
+- `src/livingcity-events.js`   196 — Street events in free roam: a bag snatch the player can stop by catching the thief on foot (updateStreetEvents, stageSnatch), his marker on the radar …
 - `src/livingcity-key.js`   306 — North Point Key visitors: cabs, limousines and fine cars that come over the Key bridge, round the drop-off circle (a pause by the valet), and back …
 - `src/livingcity-wrecks.js`   210 — Wreck limit: wrecks and abandoned cars nobody can see go after a timeout, with a hard cap on each (retireWrecks, wreckReport).
 - `src/livingcity-console.js`   187 — DeadEndCity console methods for the living city (registered by game-console-crowd.js as 'livingCity'): traffic reports and switches, the siren pass …
@@ -875,7 +877,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-perf.js`   272 — DeadEndCity console, simulation cost: simProfile (per-section ms, worst frames), simScenario (staged situations)
 - `src/game-console-soak.js`   369 — DeadEndCity console, long-session health: soakReport (sizes of every list that can grow, DOM, non-finite positions)
 - `src/game-console-integrity.js`   178 — DeadEndCity console: integrity(), the invariants tools/bot.mjs checks after every action
-- `src/game-console-settings.js`   143 — DeadEndCity console, settings: settings, openSettings, bindings, radio (+ audioConsole)
+- `src/game-console-settings.js`   146 — DeadEndCity console, settings: settings, openSettings, bindings, radio (+ audioConsole)
 
 ## src/shell.html ▸ HTML page skeleton: its src/ui/*.css and *.html fragments (in include order) and build.py's `<!-- @include-* -->` slots (game, three.js, media, credits)
 
@@ -886,7 +888,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/ui/police-arsenal.css`   523 — POLICE FEEDBACK AND ARSENAL — readable interface additions, v23.
 - `src/ui/wanted-effects.css`   206 — Wanted level (heat.js, pursuit.js, hud.js): the next star flashes red while dispatch escalates, earned stars grey out during a search, a thin meter …
 - `src/ui/hud-top.css`   642 — INTERFACE 30 — design tokens, HUD, title menu, settings (v30 UI pass).
-- `src/ui/hud-bottom.css`   703 — Bottom row: minimap + vitals, mission card, equipment
+- `src/ui/hud-bottom.css`   688 — Bottom row: minimap + vitals, mission card, equipment
 - `src/ui/radio.css`   579 — Car radio: a station chip that opens on a change or on hover
 - `src/ui/title.css`   308 — Title screen
 - `src/ui/dialogs.css`   251 — Dialogs: one panel style for pause, calls, shops, help
@@ -895,7 +897,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/ui/sportsbook-bets.css`   505 — styles: .sb-summary, .sb-summary span, .sb-summary b, .sb-summary .plus b, …
 - `src/ui/demo.css`   231 — PUBLIC DEMO (campaign.js): The DEMO badge by the title menu's version, the picker's FULL GAME badges and buy note, and the DEMO COMPLETE card after …
 - `src/ui/settings.css`   480 — styles: .mission-choice, button:focus-visible, body.no-key-hints .quickkeys, #settingsOverlay, …
-- `src/ui/touch-hud.css`   350 — Touch play: thumbs own the lower corners, so the HUD moves up
+- `src/ui/touch-hud.css`   349 — Touch play: thumbs own the lower corners, so the HUD moves up
 - `src/ui/title-radio.css`   148 — TITLE RADIO (car-radio.js): the car radio box docked on the title menu.
 - `src/ui/flight-hud.css`   276 — Flight HUD (hud.js, FLIGHT HUD): Shown only in an aircraft, compact and against the screen edges so the view stays clear: attitude, airspeed and …
 - `src/ui/freefall.css`   205 — Freefall cue (parachute.js FREEFALL CUE): While the canopy is still packed: the call to open it with its key, the height above whatever is below, a …
@@ -906,7 +908,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/ui/chase-view.css`    86 — Chase view (chase-hud.js): the reticle in the middle of the screen.
 - `src/ui/mission-brief.css`   123 — Mission brief (mission-brief.js): one sentence for a story step in the upper middle of the screen, above the player and under the waypoint pill, then …
 - `src/ui/reduced-motion.css`    75 — Reduced motion: keep the states, drop the movement
-- `src/ui/hud.html`   305 — HUD. Layout and motion live in the HUD section of the stylesheet; the collapse/expand behaviour of the radio and weapon boxes and the minimap fold …
+- `src/ui/hud.html`   304 — HUD. Layout and motion live in the HUD section of the stylesheet; the collapse/expand behaviour of the radio and weapon boxes and the minimap fold …
 - `src/ui/menus.html`   254 — markup: #menu, #coverArt, #startBtn, #startMeta, #newGameStart, …
 - `src/ui/panels.html`   220 — markup: #sportsbook, #sbTitle, #sbFormat, #sbCash, #sbClose, …
 - `src/ui/credits.html`   299 — markup: #credits, #closeCredits
