@@ -18,17 +18,18 @@
         MUD_SPLATS = 700,
         MUD_TRACKS = 1800,
         MUD_PUFF_RING = 128,
+        MUD_DROP_RING = 256,
         // The sprite cells of the trail-mud sheet (tools/trail_mud.py CELLS: keep them in step).
         MUD_SPRITE_CELLS = { clumpA: 0, clumpB: 1, clumpC: 2, splash: 3, mist: 4, drop: 5, burst: 6, cloud: 7 },
-        // Per tier: clods in flight at most and a throw (the second a small one), fine drops a throw (effect
-        // pool), the share of throws that add a spray sprite, mist and dust puffs alive at most (effect pool), how
+        // Per tier: clods in flight at most and a throw (the second a small one), fine drops a throw and alive at
+        // most (effect pool), the share of throws that add a spray sprite, mist and dust puffs alive at most (effect pool), how
         // much longer mist lingers in the chase view, the clod ball's detail (1: 80 faces, 2: 320). LOW and
         // MEDIUM throw one clod a throw where there were two.
         MUD_TIER = {
-          LOW: { clumps: 200, clods: 1, drops: 1, spray: 0.35, puffs: 24, linger: 1, detail: 1 },
-          MEDIUM: { clumps: 360, clods: 1, drops: 2, spray: 0.6, puffs: 48, linger: 1.3, detail: 1 },
-          HIGH: { clumps: 640, clods: 2, drops: 3, spray: 1, puffs: 96, linger: 1.7, detail: 2 },
-          ULTRA: { clumps: 640, clods: 2, drops: 4, spray: 1, puffs: 128, linger: 2, detail: 2 },
+          LOW: { clumps: 200, clods: 1, drops: 1, dropsLive: 48, spray: 0.35, puffs: 24, linger: 1, detail: 1 },
+          MEDIUM: { clumps: 360, clods: 1, drops: 2, dropsLive: 96, spray: 0.6, puffs: 48, linger: 1.3, detail: 1 },
+          HIGH: { clumps: 640, clods: 2, drops: 3, dropsLive: 192, spray: 1, puffs: 96, linger: 1.7, detail: 2 },
+          ULTRA: { clumps: 640, clods: 2, drops: 4, dropsLive: 256, spray: 1, puffs: 128, linger: 2, detail: 2 },
         };
       let mudSeed = 0x6d2b79f5;
       // The mud's own random numbers (xorshift): never the game's Math.random, nor the effect pool's stream.
@@ -454,7 +455,17 @@
         clump.life[i] = 2.2;
         clump.size[i] = size;
         clump.wet[i] = wet;
-        clump.seed[i] = mudRandom();
+        const k = (clump.seed[i] = mudRandom()),
+          colours = clumpMesh.instanceColor.array,
+          dry = 1 - wet,
+          // Clods are the trail's own churned mud: darker than the dust and drops thrown with them.
+          tone = 0.68;
+        // Its colour (each clod a little lighter or darker, warmer or cooler) and look, once.
+        colours[i * 3] = (MUD_DRY.r * dry + MUD_WET.r * wet) * tone * (0.82 + 0.36 * k);
+        colours[i * 3 + 1] = (MUD_DRY.g * dry + MUD_WET.g * wet) * tone * (0.82 + 0.3 * k);
+        colours[i * 3 + 2] = (MUD_DRY.b * dry + MUD_WET.b * wet) * tone * (0.84 + 0.24 * ((k * 7.3) % 1));
+        clumpLook.array[i * 2] = wet;
+        clumpLook.array[i * 2 + 1] = k;
       }
       // A spray sprite: `cell` of the sheet, `grow` times its size over its life, `water` 1 for a ford's water.
       function spawnSpray(x, y, z, vx, vy, vz, size, grow, alpha, life, cell, wet, water, color) {
@@ -496,12 +507,22 @@
         mudPuffs++;
       }
       // A fine drop: the effect pool's streaked drop, falling with the clods.
+      // At most MUD_TIER.dropsLive alive (a ring of end times, as the puffs): the mud never fills the pool that the
+      // guns, blasts and fires share.
+      const mudDropEnds = new Float32Array(MUD_DROP_RING);
+      let mudDropNext = 0;
       function mudDrop(x, y, z, vx, vy, vz, size, color, ground) {
-        const i = fxBit(x, y, z, vx, vy, vz, 0.9 + mudRandom() * 0.5, size, color, 1, ground, FX_DROP);
+        const cap = Math.min(MUD_DROP_RING, mudTierNow.dropsLive),
+          k = mudDropNext % cap;
+        if (mudDropEnds[k] > gameTime) return;
+        const life = 0.9 + mudRandom() * 0.5,
+          i = fxBit(x, y, z, vx, vy, vz, life, size, color, 1, ground, FX_DROP);
         if (i < 0) return;
         fxs.streak[i] = 0.035;
         fxs.bounce[i] = 0;
         fxs.drag[i] = 0.35;
+        mudDropEnds[k] = gameTime + life;
+        mudDropNext = k + 1;
         mudDrops++;
       }
       let mudTierNow = MUD_TIER.MEDIUM;
@@ -509,14 +530,7 @@
         MUD_DRY = new Three.Color('#8c7353'),
         DUST = new Three.Color('#a8957a'),
         clumpColor = new Three.Color(),
-        mudShade = new Three.Color(),
-        clumpMatrix = new Three.Matrix4(),
-        clumpQuat = new Three.Quaternion(),
-        clumpRoll = new Three.Quaternion(),
-        clumpScale = new Three.Vector3(),
-        clumpPos = new Three.Vector3(),
-        clumpDir = new Three.Vector3(),
-        CLUMP_AXIS = new Three.Vector3(1, 0, 0);
+        mudShade = new Three.Color();
       // Wheel contact points of a model in body space (club trucks: their knuckles).
       function contactWheels(c, m) {
         if (m.contacts) return m.contacts;
@@ -614,7 +628,7 @@
             // Far off in the chase view a clod is under a pixel: nothing is thrown that would not show.
             if (chaseSpriteHidden(ox, oz, oy, 1.2)) continue;
             if (mud > 0.1) {
-              spawnClump(ox, oz, oy, vx, up, vy, 0.45 + mudRandom() * 0.75, wet);
+              spawnClump(ox, oz, oy, vx, up, vy, 0.38 + mudRandom() * 0.6, wet);
               if (tier.clods > 1) spawnClump(ox, oz, oy, vx * 1.15 + (mudRandom() - 0.5) * 16, up * (0.75 + mudRandom() * 0.5), vy * 1.15 + (mudRandom() - 0.5) * 16, 0.22 + mudRandom() * 0.22, wet);
               // Fine drops fly off with it, faster and smaller (the effect pool).
               for (let k = 0; k < tier.drops; k++)
@@ -660,10 +674,19 @@
               const column = clump[CLUMP_FIELDS[k]];
               column[i] = column[n];
             }
+            // Its colour and look were written once, at its throw: the last clod's move with it.
+            const colours = clumpMesh.instanceColor.array,
+              looks = clumpLook.array;
+            colours[i * 3] = colours[n * 3];
+            colours[i * 3 + 1] = colours[n * 3 + 1];
+            colours[i * 3 + 2] = colours[n * 3 + 2];
+            looks[i * 2] = looks[n * 2];
+            looks[i * 2 + 1] = looks[n * 2 + 1];
             i--;
           }
         }
         clump.count = n;
+        const te = clumpMesh.instanceMatrix.array;
         for (let i = 0; i < n; i++) {
           const s = clump.size[i],
             vx = clump.vx[i],
@@ -671,23 +694,54 @@
             vz = clump.vz[i],
             v = Math.sqrt(vx * vx + vy * vy + vz * vz),
             // Stretched along its flight at speed (a clod smears in a frame), tumbling about that line.
-            stretch = 1 + Math.min(0.9, v * 0.0055);
-          if (v > 1e-3) clumpQuat.setFromUnitVectors(CLUMP_AXIS, clumpDir.set(vx / v, vy / v, vz / v));
-          else clumpQuat.identity();
-          clumpRoll.setFromAxisAngle(CLUMP_AXIS, clump.seed[i] * 40 + clump.life[i] * 9);
-          clumpQuat.multiply(clumpRoll);
-          clumpScale.set(s * 1.15 * stretch, s * 0.85, s / Math.sqrt(stretch));
-          clumpPos.set(clump.x[i], clump.y[i], clump.z[i]);
-          clumpMatrix.compose(clumpPos, clumpQuat, clumpScale);
-          clumpMesh.setMatrixAt(i, clumpMatrix);
-          // Each clod a little lighter or darker, warmer or cooler.
-          const k = clump.seed[i];
-          clumpColor.copy(MUD_DRY).lerp(MUD_WET, clump.wet[i]);
-          clumpColor.r *= 0.82 + 0.36 * k;
-          clumpColor.g *= 0.82 + 0.3 * k;
-          clumpColor.b *= 0.84 + 0.24 * ((k * 7.3) % 1);
-          clumpMesh.setColorAt(i, clumpColor);
-          clumpLook.setXY(i, clump.wet[i], k);
+            stretch = 1 + Math.min(0.9, v * 0.0055),
+            roll = clump.seed[i] * 40 + clump.life[i] * 9,
+            rc = Math.cos(roll),
+            rs = Math.sin(roll);
+          // The flight's frame written straight into the matrix: x along the velocity, y and z round it.
+          let ax = 1,
+            ay = 0,
+            az = 0;
+          if (v > 1e-3) {
+            ax = vx / v;
+            ay = vy / v;
+            az = vz / v;
+          }
+          let zx, zy, zz;
+          if (ay < 0.9 && ay > -0.9) {
+            const k = 1 / Math.sqrt(ax * ax + az * az);
+            zx = -az * k;
+            zy = 0;
+            zz = ax * k;
+          } else {
+            const k = 1 / Math.sqrt(ay * ay + az * az);
+            zx = 0;
+            zy = az * k;
+            zz = -ay * k;
+          }
+          const yx = zy * az - zz * ay,
+            yy = zz * ax - zx * az,
+            yz = zx * ay - zy * ax,
+            sx = s * 1.15 * stretch,
+            sy = s * 0.85,
+            sz = s / Math.sqrt(stretch),
+            o = i * 16;
+          te[o] = ax * sx;
+          te[o + 1] = ay * sx;
+          te[o + 2] = az * sx;
+          te[o + 3] = 0;
+          te[o + 4] = (yx * rc + zx * rs) * sy;
+          te[o + 5] = (yy * rc + zy * rs) * sy;
+          te[o + 6] = (yz * rc + zz * rs) * sy;
+          te[o + 7] = 0;
+          te[o + 8] = (zx * rc - yx * rs) * sz;
+          te[o + 9] = (zy * rc - yy * rs) * sz;
+          te[o + 10] = (zz * rc - yz * rs) * sz;
+          te[o + 11] = 0;
+          te[o + 12] = clump.x[i];
+          te[o + 13] = clump.y[i];
+          te[o + 14] = clump.z[i];
+          te[o + 15] = 1;
         }
         clumpMesh.count = n;
         // Only the clumps in flight go up, and nothing when there are none (uploadChurn).
@@ -701,7 +755,8 @@
             clumpMesh.instanceColor.needsUpdate = true;
           }
         }
-        // Spray sprites: ballistic, slowed by the air, spreading; gone at the ground.
+        // Spray sprites: ballistic, slowed by the air, spreading; short-lived (no ground test: the depth hides one
+        // that lands).
         const s = mudSpray,
           mudSprayDrag = Math.exp(-1.1 * deltaSeconds);
         n = s.count;
@@ -716,7 +771,6 @@
             s.y[i] += s.vy[i] * deltaSeconds;
             s.z[i] += s.vz[i] * deltaSeconds;
             s.turn[i] += s.spin[i] * deltaSeconds;
-            if (s.vy[i] < 0 && s.y[i] < terrainHeight(s.x[i], s.z[i]) - 0.5) dead = true;
           }
           if (dead) {
             n--;
@@ -797,7 +851,7 @@
           cpuMs: Math.round(mudCpuMs * 1000) / 1000,
           tier: { ...mudTierNow },
           textures: trailMud.ready,
-          capacity: { clumps: MUD_CLUMPS, spray: MUD_SPRAY, splats: MUD_SPLATS, tracks: MUD_TRACKS, puffs: MUD_PUFF_RING },
+          capacity: { clumps: MUD_CLUMPS, spray: MUD_SPRAY, splats: MUD_SPLATS, tracks: MUD_TRACKS, puffs: MUD_PUFF_RING, drops: MUD_DROP_RING },
           dressing: trailDressing,
         };
       }

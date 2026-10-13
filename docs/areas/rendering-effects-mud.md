@@ -23,12 +23,14 @@ order is `CELLS` there and `MUD_SPRITE_CELLS` in the renderer: keep them in step
 - CLODS: one InstancedMesh (cap `MUD_TIER.clumps`, at most 640), a dented, welded, smooth-shaded ball (icosahedron
   detail `MUD_TIER.detail`: 80 faces on LOW and MEDIUM, 320 above), the mud photo triplanar in its own space (`iMud.y` the seed shifts it), a derivative bump from the
   photo, roughness 0.9 dry to 0.2 wet (`iMud.x`); each stretched along its velocity at speed and tumbling about it,
-  its colour jittered by its seed. A landing clod lays a splat (a dirt cell or the splash).
+  its colour jittered by its seed (colour and look written once, at the throw; the matrix written straight from
+  the flight's frame). A landing clod lays a splat (a dirt cell or the splash).
 - SPRAY: `mudSpray`, one instanced quad program (360): sprite clusters of droplets thrown with the clods, lit through
   the cell's normal by the effect pool's light (`mudLight`, copied from `fxUniforms` a frame late), a wet sun
   highlight and sky sheen, streaked along the motion across the view (the quad turns to the motion as it
   stretches). A ford's water is the same sprites with `water` 1 (pale, glossier, thinner).
-- DROPS: the effect pool's `fxBit` drops (`FX_DROP`, `streak` 0.035, no bounce), `MUD_TIER.drops` a throw.
+- DROPS: the effect pool's `fxBit` drops (`FX_DROP`, `streak` 0.035, no bounce), `MUD_TIER.drops` a throw, at most
+  `MUD_TIER.dropsLive` alive (`mudDropEnds`, a ring of end times): the mud never fills the pool guns and fires share.
 - MIST and DUST: the effect pool's lit `fxPuff`s (soft into the ground, the chase haze), at most `MUD_TIER.puffs`
   alive (`mudPuffEnds`, a ring of end times); mist lingers `MUD_TIER.linger` times longer in the chase view.
 - RUTS and SPLATS: `decalPool` (ruts 1800, splats 700; one program for both: `iLife.w` the cell, -1 a rut), laid on
