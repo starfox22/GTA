@@ -273,8 +273,8 @@
             }
             // Blood on the bodywork (carblood3d.js; the records are c.stains).
             if (c.stains || m.bloodSkin) updateCarBlood(c, m);
-            // The driver's door in a carjack (carjack3d.js).
-            if (c.doorSwing || m.carjackDoor) swingDriverDoor(c, m);
+            // The front doors in a carjack and as the player gets in or out (carjack3d.js DOOR SWING).
+            if (c.doorSwing || m.carjackDoor || c === carTransition.door) swingDriverDoor(c, m);
             // SWAT van rear doors swing open for the team and stay open (swat.js).
             if (m.rearDoors) {
               const open = c.doorsOpenAt ? clamp((gameTime - c.doorsOpenAt) / 0.7, 0, 1) : 0;

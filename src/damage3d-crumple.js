@@ -122,8 +122,8 @@
       // A sprung door cut from the body's own side: a grid over the door's rectangle (body space, x0..x1 along, y0..y1
       // up) laid on the pristine shell by rays from the side, with the shell's own UVs (so the paint and a livery carry
       // on), as the door (outer skin in paint, inner trim dark, edges in paint; positions relative to `origin`, its
-      // hinge) and as the opening left in the body (the dark inner panel flush with the side). Null when no ray meets
-      // the shell (the old flat panels are used).
+      // hinge) and as the opening left in the body (flush with the side: the jambs in paint, the cabin's side inside;
+      // two material groups). Null when no ray meets the shell (the old flat panels are used).
       // The door's grid (points along, up): the outer skin's vertices come first, row by row (damage3d-marks.js
       // markOntoDoor reads them so).
       const DOOR_GRID = [8, 6],
@@ -200,24 +200,125 @@
         doorGeometry.addGroup(0, door.groups[0].length, 0);
         doorGeometry.addGroup(door.groups[0].length, door.groups[1].length, 1);
         doorGeometry.computeVertexNormals();
-        // The opening: the inner panel left flush with the side (body space, not relative to the hinge).
-        const openingIndex = [];
+        // The opening: the inner panel left flush with the side (body space, not relative to the hinge): the door
+        // jambs round it (the sill and both pillars' edges: the outer ring of cells) in paint, the cabin inside.
+        const jambIndex = [],
+          cabinIndex = [];
         for (const p of grid) {
           opening.position.push(p[0], p[1], p[2] + side * 0.02);
           opening.uv.push(p[3], p[4]);
         }
         for (let j = 0; j < NY - 1; j++)
           for (let i = 0; i < NX - 1; i++) {
-            const k = j * NX + i;
-            if (side > 0) quad(openingIndex, k, k + 1, k + NX + 1, k + NX);
-            else quad(openingIndex, k + 1, k, k + NX, k + NX + 1);
+            const k = j * NX + i,
+              list = j === 0 || i === 0 || i === NX - 2 ? jambIndex : cabinIndex;
+            if (side > 0) quad(list, k, k + 1, k + NX + 1, k + NX);
+            else quad(list, k + 1, k, k + NX, k + NX + 1);
           }
         const openingGeometry = new Three.BufferGeometry();
         openingGeometry.setAttribute('position', new Three.Float32BufferAttribute(opening.position, 3));
         openingGeometry.setAttribute('uv', new Three.Float32BufferAttribute(opening.uv, 2));
-        openingGeometry.setIndex(openingIndex);
+        openingGeometry.setIndex([...jambIndex, ...cabinIndex]);
+        openingGeometry.addGroup(0, jambIndex.length, 0);
+        openingGeometry.addGroup(jambIndex.length, cabinIndex.length, 1);
         openingGeometry.computeVertexNormals();
         return { door: doorGeometry, opening: openingGeometry };
+      }
+      // A door's window: the side pane's own surface (the glasshouse, `m.cabin`, its 'left' or 'right' pane) over the
+      // door's length from the belt up, laid by rays from the side as the door is, each row running between the pane's
+      // edges there (found by halving), so the window follows the screen pillar's slope and the roof line. Positions
+      // relative to `origin` (the hinge). Null when the rays find no pane.
+      const doorGlassHit = { x: 0, y: 0, z: 0, u: 0, v: 0 };
+      function doorGlassGeometries(m, side, x0, x1, belt, origin) {
+        const cabin = m.cabin;
+        if (!cabin?.geometry?.attributes?.position || cabin.parent !== m.body) return null;
+        cabin.updateMatrix();
+        const probe = new Three.Mesh(cabin.geometry);
+        probe.matrixAutoUpdate = false;
+        probe.matrixWorld.copy(cabin.matrix);
+        const groups = cabin.geometry.groups,
+          pane = side < 0 ? 0 : 2,
+          reach = m.dims.w * 1.5,
+          hitAt = (x, y) => {
+            doorRay.set(doorFrom.set(x, y, side * reach), doorDir.set(0, 0, -side));
+            doorRay.far = reach * 2;
+            const hits = doorRay.intersectObject(probe, false);
+            for (const hit of hits) {
+              if (hit.point.z * side <= 0) break;
+              if (groups.length) {
+                const at = hit.faceIndex * 3;
+                let index = -1;
+                for (const g of groups) if (at >= g.start && at < g.start + g.count) index = g.materialIndex;
+                if (index !== pane) continue;
+              }
+              doorGlassHit.x = x;
+              doorGlassHit.y = y;
+              doorGlassHit.z = hit.point.z;
+              doorGlassHit.u = hit.uv ? hit.uv.x : 0.5;
+              doorGlassHit.v = hit.uv ? hit.uv.y : 0.5;
+              return doorGlassHit;
+            }
+            return null;
+          },
+          // The last point from `inside` (a hit) towards `outside` (a miss) still on the pane.
+          edge = (ax, ay, bx, by) => {
+            let lo = 0,
+              hi = 1;
+            for (let k = 0; k < 7; k++) {
+              const t = (lo + hi) / 2;
+              if (hitAt(ax + (bx - ax) * t, ay + (by - ay) * t)) lo = t;
+              else hi = t;
+            }
+            return lo;
+          };
+        // The window's top over the door's middle.
+        const mid = x0 + (x1 - x0) * 0.45,
+          roof = (m.dims.roof || belt * 1.6) + 2,
+          base = belt + 0.08;
+        if (!hitAt(mid, base)) return null;
+        const top = base + (roof - base) * edge(mid, base, mid, roof) - 0.05;
+        if (top - base < 1) return null;
+        const NX = 7,
+          NY = 5,
+          rows = [];
+        for (let j = 0; j < NY; j++) {
+          const y = base + ((top - base) * j) / (NY - 1);
+          if (!hitAt(mid, y)) return null;
+          const a = mid + (x0 - mid) * edge(mid, y, x0, y),
+            b = mid + (x1 - mid) * edge(mid, y, x1, y),
+            row = [];
+          for (let i = 0; i < NX; i++) {
+            const x = a + ((b - a) * i) / (NX - 1),
+              hit = hitAt(x, y) || hitAt(x + (mid - x) * 0.04, y);
+            if (!hit) return null;
+            row.push([x, y, hit.z, hit.u, hit.v]);
+          }
+          rows.push(row);
+        }
+        const position = [],
+          uv = [],
+          index = [];
+        for (const row of rows)
+          for (const p of row) {
+            position.push(p[0] - origin.x, p[1] - origin.y, p[2] - origin.z);
+            uv.push(p[3], p[4]);
+          }
+        for (let j = 0; j < NY - 1; j++)
+          for (let i = 0; i < NX - 1; i++) {
+            const a = j * NX + i,
+              b = a + 1,
+              c = a + NX + 1,
+              d = a + NX;
+            // Wound to face out on this side (as the door's skin).
+            if (side > 0) index.push(a, b, d, b, c, d);
+            else index.push(b, a, c, a, d, c);
+          }
+        const geometry = new Three.BufferGeometry();
+        geometry.setAttribute('position', new Three.Float32BufferAttribute(position, 3));
+        geometry.setAttribute('uv', new Three.Float32BufferAttribute(uv, 2));
+        geometry.setIndex(index);
+        geometry.computeVertexNormals();
+        return geometry;
       }
       // A part or hinge made after the first damage (door opening and hinge, boot lid, engine bay) joins the crumple.
       // `hinged`: a mesh inside a hinge just adopted as a point (a door): bent relative to that hinge's own move.
@@ -455,8 +556,10 @@
       function crumpleStep(m, until, first) {
         const record = m.crumple,
           parts = record.parts,
-          started = performance.now();
-        while (record.next < parts.length) {
+          started = performance.now(),
+          // A part adopted while a pass runs is past its order: the next pass (crumpleStart) takes it.
+          total = record.order ? Math.min(record.order.length, parts.length) : parts.length;
+        while (record.next < total) {
           if (!first && performance.now() > until) {
             record.ms += performance.now() - started;
             return false;
