@@ -43,6 +43,9 @@ people-and-crowd.md. Tests: pedestrian-awareness, second-run-over.
 - `knockPerson` hands anyone for whom `personOnGround(p)` (alive and knocked down, groaning or
   dying) to `runOverDowned`: at 4 km/h or more, and not the same car again within `RUNOVER_SAME_CAR`
   (2 s: its own first pass). Nothing else of the first-pass code runs for them.
+- Where the first pass leaves them: a hit that hurts (20 km/h and up) throws them ahead of the car; a nudge at
+  walking pace (no harm, no crime) sets them down beside it, out of its path, so a car that stops and drives on
+  does not run them over and turn the accident into a crime (tools/tests/nudge-aside.mjs).
 - `runOverHarm`: `(10 + 0.8 kph) x weight(0.6..2.2 from spec.mass) x zone(legs 0.8, torso 1.05,
   head 1.35)`, judged against health (at most 40): under 40% an injury (stay down 4.5 s, limp),
   from 40% a maiming (health capped at 12, down 7+ s, then groaning: crowd-reactions adoptLegacyFlee),

@@ -114,16 +114,18 @@
         headingCosine = Math.cos(c.a),
         headingSine = Math.sin(c.a),
         side = Math.sign(-(person.x - c.x) * headingSine + (person.y - c.y) * headingCosine) || 1;
-      const candidates = [
-        {
+      const ahead = {
           x: person.x + Math.cos(a) * clamp(speed * 0.15, 12, 45),
           y: person.y + Math.sin(a) * clamp(speed * 0.15, 12, 45),
         },
-        ...[side, -side].map((s) => ({
+        beside = [side, -side].map((s) => ({
           x: person.x - headingSine * s * (vehicleDefinition.w / 2 + 14),
           y: person.y + headingCosine * s * (vehicleDefinition.w / 2 + 14),
         })),
-      ];
+        // A hit that hurts throws them on ahead of the car; a nudge at walking pace (no harm, no crime) sets them
+        // down beside it, out of its path: put 12 units ahead of a car still creeping on, the next touch was a run
+        // over (runover.js) and a crime for what was an accident (a respray's car rolling out onto the pavement).
+        candidates = damage > 0 ? [ahead, ...beside] : [...beside, ahead];
       for (const q of candidates)
         if (
           !solid(q.x, q.y, 6) &&
