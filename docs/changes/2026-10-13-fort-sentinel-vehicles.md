@@ -8,6 +8,9 @@
   tank costs a few thousand triangles instead of about 21 thousand.
 - No shader compile when the first boat, dolphin or shark fin of a quiet spell leaves a wake: the wake programs are
   prewarmed and kept (WAKE KEEPER, wakes3d.js).
+- The army helicopter's livery is painted while the title is up, before its stand-in compiles (as the police
+  machine's is). A 45 s Fort Sentinel war in the chase view, prewarmed on HIGH, compiles no shader.
+- renderHiccups names a shader with no uniforms of its own by its varyings (the sea life's silhouettes).
 - Every other downloaded vehicle's texture gains texels (the atlas no longer holds the tank's textures).
 - Converter: a `far` hint for special models writes a coarser `bodyFar` part.
 - tools/hitches.mjs: opt-in stages `fort` and `fortChase` (the base at war, street then chase view).

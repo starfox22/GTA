@@ -48,6 +48,13 @@ answer is to do that work behind the title, a few milliseconds at a time (render
    cached and the kits stay in their caches. It also builds each type's body-impostor pool (flight-
    view3d.js) and warms the burnt-car paint (soot map, no clear coat). A new vehicle type is picked
    up from the table; a new model builder must work on a bare `{id, type, color, x, y, a}` record.
+   A look whose livery is painted in slices (helicopters: `prewarmHelicopters`, the police and army
+   machines first) must be painted before its stand-in compiles, or the live one adds the map variant.
+   The stand-ins compile for the tier the title ran at: a tier or shadow change later stages the scene's
+   programs (LIT STATE) but not models off the scene, which link on first sight. So a hitch hunt sets the
+   tier before the prewarm (`call graphics high`, then `reload --render --keep --prewarm`); a Fort
+   Sentinel fight checked that way (tools/hitches.mjs `fort`/`fortChase`, or 45 s of war then
+   `renderHiccups`) compiles nothing.
 4. While the title is up: the far copy of the city (42 MB in ~500 meshes) and sample shadow casters
    are drawn once into a 1 x 1 target (`uploadMeshes`) so their buffers and shadow-depth programs
    (side, alpha cut-out, instancing, and a stand-in for each custom depth material: the trees, sea life,
