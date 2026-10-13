@@ -206,7 +206,9 @@
        * so the air unit's first call costs no hitch.
        */
       function prewarmHelicopters() {
-        const looks = [heliLookOf('police'), heliLookOf('news'), ...Object.entries(HELI_CIVIL_SCHEMES).map(([name, s]) => heliLookOf('civil', name, s.base, s.finish))];
+        // (The army's machine second: it comes with five stars, Fort Sentinel's air support included, and its stand-in in
+        // the shader prewarm compiles with the livery map only once the livery is painted.)
+        const looks = [heliLookOf('police'), heliLookOf('military', null, '#4d5641'), heliLookOf('news'), ...Object.entries(HELI_CIVIL_SCHEMES).map(([name, s]) => heliLookOf('civil', name, s.base, s.finish))];
         let job = null;
         const step = () => {
           const started = performance.now();

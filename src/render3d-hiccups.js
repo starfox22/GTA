@@ -45,6 +45,12 @@
               const id = name.trim();
               if (id && !HICCUP_BUILTIN_UNIFORMS.test(id)) names.push(id);
             }
+          // A fragment shader with no uniforms of its own (the sea life's silhouettes): its varyings and defines say which.
+          if (!names.length) {
+            for (const match of source.matchAll(/(?:varying|in)\s+\w+\s+(v\w+)\s*;/g)) names.push(match[1]);
+            for (const match of source.matchAll(/#define\s+([A-Z][A-Z0-9_]+)\s+(\S+)/g))
+              if (!/^(SHADER_|HIGH_|precision|GAMMA|LINEAR|USE_|PI|RECIPROCAL|EPSILON|LOG2|saturate|whiteComplement|varying|texture|gl_)/.test(match[1])) names.push(match[1] + '=' + match[2]);
+          }
           return label + ':' + names.slice(-3).join(',');
         } catch {
           return label;
