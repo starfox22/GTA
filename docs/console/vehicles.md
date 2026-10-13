@@ -5,6 +5,7 @@
 | Method | Purpose |
 | --- | --- |
 | `placeVehicle(x, y, heading, altitudeMeters)` | Move the player's vehicle (stopped, aircraft at an altitude) |
+| `doorSwing(id, open)` | Yank vehicle `id`'s driver door open as a carjack does (or shut it with `open` false): to look at where the door sits on a body (damage3d-bodies.js `vehicleDoorSpan`; `carModels(true)` lists each cabin's `hip` and `door` in metres) |
 | `vehiclesNear(metres)` | Vehicles within `metres` (60) of the player, nearest first: id, type, distance in metres, `authorized` (taking it is no theft), `driven` |
 | `bike(heading)` | Rack a bicycle beside the player |
 | `ride()` | Current vehicle telemetry (speed, pedal cadence and effort; in a tank the hull, turret and aim headings in degrees, the traverse rate and the ammunition) |
@@ -14,6 +15,8 @@
 | `civilHelicopters()` | The SKYRANGER 429s (civil-helicopters.js): spec (name, length, rotor radius) and each one's id, position, altitude, roof, health, flown by the player |
 | `offroad()` | The 4x4 club and the trails: the lot, its pad height and clearances from the roads and trails, each club truck (dimensions, mass, performance, tyres, drive, parked), the members and what they say, the player's traction state (speed, wheel speed, wheelspin, low range, mud, rock, grade, body mud), the running climb, the challenge, the last result, best times, the courses, `effects` (mud clods and spray in flight, splats and ruts laid, drops and puffs thrown into the effect pool) |
 | `clubLineup(x, y)` | Park one of every club truck side by side facing the camera |
+| `vehicleEntrances()` | The gate lanes and drives kept clear (4x4 club gate and track, Monarch villa drives; vehicle-entrances.js) and the parked vehicles and bike-share docks standing in each (`parked`, `docks`: empty) |
+| `villaGarages()` | Monarch villa garages (monarch-garages.js): door side, `open` 0..1, the car inside, the drive to the gate |
 | `hillClimb(action, trail)` | `'arm'` the challenge, `'reset'`, `'clear'` the best times, `'gate'` or `'cp0'`..`'cp3'` puts the player's vehicle there facing up the trail, `'top'` just below the summit facing down, `'at0.42'` at that fraction of the trail; returns `offroad()` |
 | `trailDrive(seconds, maxKmh, trail, frame, direction)` | Drive the player's vehicle up a trail (`direction` `'down'`: down it) through the real physics with frames of `frame` s (1/30 default; a line-following pilot, crawling rock, three-point turns at hairpins); reports how far it got, the time, mean wheelspin, slide-back, why it stopped, `cliffFlights` and `ride` (time with every wheel off the ground, the highest wheel gap and where, body lift and vertical speeds, bump-stop blows, flights) |
 | `rideBenchmark(n)` | What the terrain ride costs: µs per `rideStep` of the player's vehicle where it stands (`n` steps), how many vehicles are on the terrain and how many rides are still working (the rest are settled and skipped) |

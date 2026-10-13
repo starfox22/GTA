@@ -304,8 +304,11 @@
       // On a building roof: a North Point Key lift or bar (skyline-lift.js), else fly off again.
       if (player.buildingRoof && !player.car) {
         if (northPointKeyInteract()) return;
+        // A helipad roof's lift (roof-lifts.js).
+        if (roofLiftInteract()) return;
         const c = nearestCar();
         if (c) enterVehicle(c);
+        else if (roofLiftFor(player.buildingRoof)) tell('ROOFTOP · ' + keyName('interact') + ' at the lift door to go down, or by a helicopter to fly.', 2.5);
         else tell('ROOFTOP · The helicopter is the only way down.', 2.5);
         return;
       }
@@ -318,8 +321,9 @@
       if (lockpickInteract()) return;
       // An open trunk with nothing left in it: the lid comes down (vehicle-trunk.js).
       if (trunkCloseInteract()) return;
-      // A lobby lift on North Point Key (skyline-lift.js).
+      // A lobby lift on North Point Key (skyline-lift.js), or one up to a helipad roof (roof-lifts.js).
       if (northPointKeyInteract()) return;
+      if (roofLiftInteract()) return;
       if (transitInteract()) return;
       if (parkInteract()) return;
       if (beachClubInteract()) return;

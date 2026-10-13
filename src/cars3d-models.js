@@ -124,7 +124,8 @@
           cabinTriangles = Math.round(((trim.index ? trim.index.count : 0) - (outer === Infinity ? trim.index.count : outer)) / 3);
         m.body.updateWorldMatrix(true, false);
         const floorWorldY = new Three.Vector3(s.x, s.floor, s.z).applyMatrix4(m.body.matrixWorld).y / UNITS_PER_METRE;
-        const report = { hip: [r3(s.x / M), r3(s.y / M), r3(s.z / M)], floor: r3(s.floor / M), floorWorldY: r3(floorWorldY), pedalHeight: r3(s.pedalY / M), recline: r3(s.recline), rear: s.rear !== null, two: s.two, cabinTriangles, seated: m.seated || 0 };
+        const door = vehicleDoorSpan(m),
+          report = { hip: [r3(s.x / M), r3(s.y / M), r3(s.z / M)], door: [r3(door[0] / M), r3(door[1] / M)], floor: r3(s.floor / M), floorWorldY: r3(floorWorldY), pedalHeight: r3(s.pedalY / M), recline: r3(s.recline), rear: s.rear !== null, two: s.two, cabinTriangles, seated: m.seated || 0 };
         if (g && !g.open) {
           const headX = s.x - 0.06 * M - Math.sin(s.recline) * 0.86 * M,
             headY = s.y + 0.02 * M + Math.cos(s.recline) * 0.86 * M;
@@ -238,7 +239,8 @@
           car: true,
           civilian: true,
           realSize: true,
-          dims: { l, w, h: body.h, roof: g ? g.roof : body.h, van: !!body.hatch, sill: body.yb + 0.1 * CAR_M },
+          // `door`: the front door's own shut lines, back and front (damage3d-bodies.js vehicleDoorSpan swings it there).
+          dims: { l, w, h: body.h, roof: g ? g.roof : body.h, van: !!body.hatch, sill: body.yb + 0.1 * CAR_M, door: body.doors?.length ? [body.doors[0][1] * l, body.doors[0][0] * l] : null },
           shell,
           shellBase: shell.geometry.attributes.position.array,
           // The kit and the paint panels, for the pristine merge (vehicle-merge3d.js).

@@ -86,6 +86,11 @@
       next: { text: 'NEXT LINE', id: 'sky-meet-next' },
       // Seated with nothing to do: no prompt, and the action key does nothing else.
       quiet: { text: '', id: 'sky-meet-quiet', key: null },
+      // SKIP AHEAD (skyMeetingHurry): a beat with nobody speaking (the waiter's walks, the pour, the folder passed
+      // across) comes to its end at once, one beat a press.
+      skip: { text: 'SKIP AHEAD', id: 'sky-meet-skip' },
+      // The door talk over: up with him at once (the walk to the lift cut short by the lift's own fade).
+      follow: { text: 'GO UP WITH VARGA', id: 'sky-meet-follow' },
     };
     const skyMeeting = {
       active: false,
@@ -206,6 +211,7 @@
       });
       SKY_MEETING_PROMPTS.talk.text = 'TALK TO ' + M.speaker;
       SKY_MEETING_PROMPTS.sit.text = 'SIT WITH ' + M.speaker;
+      SKY_MEETING_PROMPTS.follow.text = 'GO UP WITH ' + M.speaker;
       // A terrace already filled had guests at the reserved table: it fills again without them.
       if (skyBar.live) skyBarLeave();
       return true;
@@ -503,19 +509,29 @@
       const S = M.service,
         waiter = S.waiter && S.waiter.hp > 0 && !(S.waiter.keyPerson.scaredUntil > gameTime) ? S.waiter : null;
       S.t += dt;
+      // SKIP AHEAD (skyMeetingHurry) rushes the beat on now: the waiter is where he was going, a pause is over.
+      const rush = S.rush;
       const go = (phase) => {
         S.phase = phase;
         S.t = 0;
+        S.rush = false;
       };
       const errand = (spot) => {
         if (!waiter) return true;
         const k = waiter.keyPerson;
         if (!k.errand || k.errand.to !== spot) k.errand = { to: spot, at: false };
+        if (rush && !k.errand.at) {
+          waiter.x = spot.x;
+          waiter.y = spot.y;
+          if (spot.a != null) waiter.a = spot.a;
+          waiter.walking = false;
+          k.errand.at = true;
+        }
         return k.errand.at;
       };
       switch (S.phase) {
         case 'call':
-          if (S.t < 1.2) return;
+          if (S.t < 1.2 && !rush) return;
           S.waiter = skyBar.people.find((p) => p.keyPerson?.role === 'waiter' && p.hp > 0) || null;
           go('come');
           return;
@@ -526,7 +542,7 @@
           }
           return;
         case 'order':
-          if (!M.script && S.t > 1) go('fetch');
+          if (!M.script && (S.t > 1 || rush)) go('fetch');
           return;
         case 'fetch':
           if (errand(P.pickup) || S.t > 25) {
@@ -535,7 +551,7 @@
           }
           return;
         case 'pour':
-          if (S.t > 3 && !M.script) go('bring');
+          if ((S.t > 3 || rush) && !M.script) go('bring');
           return;
         case 'bring':
           if (errand(P.waiterSpot) || S.t > 25) {
@@ -547,7 +563,7 @@
           }
           return;
         case 'served':
-          if (S.t > 2.5) {
+          if (S.t > 2.5 || rush) {
             if (waiter) waiter.keyPerson.errand = null;
             M.service = null;
             if (M.stage === 'seated') M.stage = 'drinks';
@@ -721,14 +737,21 @@
       if (!M.active || !M.diplomat || M.diplomat.hp <= 0 || player.car) return null;
       const P = skyMeetingPlaces(),
         d = M.diplomat;
-      const talking = !!M.script && !M.hand && distanceBetween(d, player) < 120;
+      const talking = !!M.script && distanceBetween(d, player) < 120;
       if (player.sceneSeat) {
         if (M.stage === 'handover' && !M.hand && !M.script) return SKY_MEETING_PROMPTS.hand;
-        return talking ? SKY_MEETING_PROMPTS.next : SKY_MEETING_PROMPTS.quiet;
+        return talking ? SKY_MEETING_PROMPTS.next : skyMeetingHurry(false) ? SKY_MEETING_PROMPTS.skip : SKY_MEETING_PROMPTS.quiet;
       }
       if (M.stage === 'waiting' && !player.buildingRoof && withinRange('sky-meet-talk', distanceBetween(d, player), 30)) return SKY_MEETING_PROMPTS.talk;
-      if (['terrace', 'seated', 'drinks', 'handover'].includes(M.stage) && d.sitting && player.buildingRoof === P.b && withinRange('sky-meet-sit', distanceBetween(P.mine, player), 22))
-        return SKY_MEETING_PROMPTS.sit;
+      if (['terrace', 'seated', 'drinks', 'handover'].includes(M.stage) && player.buildingRoof === P.b) {
+        if (d.sitting && withinRange('sky-meet-sit', distanceBetween(P.mine, player), 22)) return SKY_MEETING_PROMPTS.sit;
+        // Just up on the terrace: the walk in to his table is cut short (skyMeetingWalkIn).
+        if (M.stage === 'terrace' && !M.script && !M.sat) return SKY_MEETING_PROMPTS.sit;
+      }
+      // The door talk over, on the street short of the lobby door: up with him (skyMeetingGoUp); at the door the
+      // lift's own ELEVATOR TO CIRRUS does the same.
+      if (M.stage === 'greeted' && !M.script && !player.buildingRoof && !player.swimming && !player.parachute && distanceBetween(P.lift.lobby, player) < 160 && !skyLiftInReach())
+        return SKY_MEETING_PROMPTS.follow;
       if (talking) return SKY_MEETING_PROMPTS.next;
       return null;
     }
@@ -742,11 +765,59 @@
         M.diplomat.leg = 0;
         skyMeetingSay(M.lines.door);
       } else if (offer === SKY_MEETING_PROMPTS.next) skyMeetingNextLine();
-      else if (offer === SKY_MEETING_PROMPTS.sit) skyMeetingSit();
-      else if (offer === SKY_MEETING_PROMPTS.hand) {
+      else if (offer === SKY_MEETING_PROMPTS.skip) skyMeetingHurry(true);
+      else if (offer === SKY_MEETING_PROMPTS.follow) skyMeetingGoUp();
+      else if (offer === SKY_MEETING_PROMPTS.sit) {
+        if (M.diplomat.sitting && distanceBetween(skyMeetingPlaces().mine, player) < 30) skyMeetingSit();
+        else skyMeetingWalkIn();
+      } else if (offer === SKY_MEETING_PROMPTS.hand) {
         M.script = null;
         M.hand = { t: 0, his: 'cocktail' };
       }
+      return true;
+    }
+    /* ---- Hurrying the scene (the action key, repeatedly) --------------------------------------
+       Every line moves on with the action key (skyMeetingNextLine); so does every beat with nobody speaking: the
+       waiter's walks and the pour (the service's `rush`), the folder passed across and the envelope slid back, the
+       walk to the lift and the ride (skyMeetingGoUp, skyLiftHurry), and the walk in to his table (skyMeetingWalkIn,
+       under a fade). What happens is unchanged: two drinks served, the folder handed over, the envelope, the stages
+       in order. `act` false only asks whether there is a beat to hurry (the SKIP AHEAD prompt). */
+    function skyMeetingHurry(act) {
+      const M = skyMeeting,
+        H = M.hand;
+      if (M.script || !player.sceneSeat) return false;
+      if (H) {
+        // To the reading, then (after his line) the envelope's slide and the moment before he stands.
+        const to = !H.read ? 1.6 : H.slid && !H.stood ? H.slid + 2 : 0;
+        if (!(to > H.t)) return false;
+        if (act) H.t = to;
+        return true;
+      }
+      const S = M.service;
+      if (!S || S.rush) return false;
+      if (act) S.rush = true;
+      return true;
+    }
+    // GO UP WITH him: the door talk over, the lift's fade takes them both up from wherever the player stood.
+    function skyMeetingGoUp() {
+      const P = skyMeetingPlaces();
+      if (!P || gameMode !== 'play') return false;
+      if (wantedStars > 0) {
+        needToLosePolice();
+        return true;
+      }
+      return startSkyLift(P.lift, true);
+    }
+    // Up on the terrace: under a fade, he is at his table and the player in the chair opposite.
+    function skyMeetingWalkIn() {
+      const M = skyMeeting,
+        P = skyMeetingPlaces(),
+        d = M.diplomat;
+      if (!P || !d) return false;
+      worldResetFade();
+      Object.assign(d, { x: P.his.x, y: P.his.y, a: P.his.a, sitting: true, pose: 'sit', leg: P.path.length });
+      M.walkAt = 0;
+      skyMeetingSit();
       return true;
     }
     /* ---- The lift (skyline-lift.js): he rides with the player, one ride -------------------- */

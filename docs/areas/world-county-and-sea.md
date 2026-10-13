@@ -1,7 +1,7 @@
 # World: county, terrain, rail, airfields and sea life
 
 The land beyond the Northbank grid and what lives in the water. Coordinates, frames, the
-grid, shores and bridges, navigation and layout data: world-and-map.md.
+grid, navigation and layout data: world-and-map.md; shores and bridges: world-and-map-shores.md.
 
 ## County, terrain, scenic roads, rail, airfields
 

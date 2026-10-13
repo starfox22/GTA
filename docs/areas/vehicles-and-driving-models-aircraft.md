@@ -14,8 +14,9 @@ aircraft-assets3d.js (ASSET AIRCRAFT). Credits in docs/THIRD_PARTY_CREDITS.txt. 
   (real size 98 x 26 units, 4.25 m tall), so helicopterControl, roofs, bail-outs, wrecks and retirement are the
   helicopter's own. `rotorRadius` 44 / `rotorX` 10 are its main rotor for `rotorStrikes` (an airframe without them
   keeps half its length about the centre).
-- Parked by `populateCivilHelicopters()`: from populateWorld once the roof helipads exist (at boot game.js calls it
-  after chooseRoofHelipads), on the first two office-roof pads (never the Police HQ, a hospital or a tower deck) and
+- Parked by `populateCivilHelicopters()`: from populateWorld (the roof helipads are geometry, chosen before the first
+  populate at boot: game.js runs chooseRoofHelipads and addMonarchHelipads first, so Monarch One's helicopter and
+  these are there from boot and every reset replays the same entities), on the first two office-roof pads (never the Police HQ, a hospital or a tower deck) and
   on Southport's apron. No randomness drawn. There are no civil helicopter flight routes in the game yet.
 - The converter splits the model by its flat-colour texture: `paint` (white panels), `accent` (orange stripes),
   `trim` (vertex colours), `glass`, `rotor` (pieces wholly above the mast) and `tail` (the tail rotor's box), and

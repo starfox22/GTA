@@ -340,6 +340,20 @@
       else g.arc(H.x - 40, H.y + H.h / 2, 40, 0, TAU);
       g.fill();
       fill({ x: plan.garage.x - 6, y: plan.garage.y + plan.garage.h, w: plan.garage.w + 12, h: 40 }, surface);
+      // A side gate beside a forward garage (monarch-garages.js villaSideGate): its drive up to the forecourt.
+      if (plan.sideGate) {
+        const sg = plan.sideGate;
+        g.strokeStyle = surface;
+        g.lineWidth = 30;
+        g.lineCap = 'round';
+        g.beginPath();
+        g.moveTo(sg.x, sg.y);
+        g.lineTo(sg.x, sg.front);
+        g.lineTo(H.x + H.w / 2, sg.front);
+        g.stroke();
+      }
+      // A garage opening west (monarch-garages.js): its apron joins the drive from the gate.
+      if (plan.garageDoor?.side === 'west') fill({ x: plan.gateAt.x, y: plan.garage.y - 6, w: plan.garage.x - plan.gateAt.x, h: plan.garage.h + 12 }, surface);
       // The terrace and the pool deck.
       if (plan.terrace) fill(plan.terrace, P.stone);
       if (plan.pool) {

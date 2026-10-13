@@ -35,6 +35,8 @@
         // The revolving door on the south face, under the porte-cochère.
         mesh(new Three.CylinderGeometry(7, 7, 20, 20, 1, true), skyLobby, group, T.cx, 10, T.D + 2);
         box(group, T.cx, 20.6, T.D + 2, 16, 1.2, 16, white);
+        // The lift to the helipad is through it (roof-lifts.js): the HELIPAD sign over the door.
+        if (b.roofLift) liftSign(group, frontageFace(b, 0), T.cx, 30, 1.5);
         // The shaft.
         const shape = (u) => ({ r: u * (Math.PI / 2), s: 1 - 0.1 * u - 0.03 * Math.sin(u * Math.PI) }),
           at = (y) => shape(clamp((y - base) / (H - base), 0, 1)),

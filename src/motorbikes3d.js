@@ -509,6 +509,8 @@
         const rear = addWheel(b, wd.xr * M, wd.rr * M, wd.rr * M, wd.wr * M, 1);
         // Front x > 0 and its world position for the damage model's flat tyres.
         front.userData.front = true;
+        // A flat front tyre squashes square to the bike, not along the raked fork (damage3d-bodies.js FLAT TYRE SQUASH).
+        front.userData.squashTilt = -body.rake;
         model.wheels.push({ wheel: front, side: 1, radius: wd.rf * M, front: true }, { wheel: rear, side: 1, radius: wd.rr * M });
         const head = mesh(kit.head, lampMaterials.headOff, b, 0, 0, 0),
           tail = mesh(kit.tail, lampMaterials.tailOff, b, 0, 0, 0);

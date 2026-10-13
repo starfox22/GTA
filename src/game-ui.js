@@ -451,6 +451,11 @@
           prompt = key.text;
           promptId = key.id;
           if (key.key === null) promptKey = null;
+        } else if (roofLiftPrompt()) {
+          // A lift to a helipad roof, or back down from one (roof-lifts.js).
+          const lift = roofLiftPrompt();
+          prompt = lift.text;
+          promptId = lift.id;
         } else if (taxiRide) prompt = taxiRide.arrival > 0 ? '' : 'STOP HERE · $' + taxiRide.fare;
         else if (hailableTaxi()) prompt = 'HAIL THIS CAB';
         else if (player.deck)

@@ -179,6 +179,8 @@
             steerShare: +wheelieSteerShare(c).toFixed(2),
             log: { ...wheelieLog },
             hint: { ...wheelieHint, due: wheelieHintDue(c) },
+            // The game clock (a test holding real keys measures how fast the live frame loop runs).
+            at: +gameTime.toFixed(2),
           };
         },
       };

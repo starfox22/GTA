@@ -76,6 +76,7 @@
     // @include src/themepark.js
     // @include src/marina.js
     // @include src/taxi.js
+    // @include src/vehicle-entrances.js
     // @include src/cycles.js
     // @include src/weather.js
     // @include src/weather-audio.js
@@ -88,6 +89,7 @@
     // @include src/beach.js
     // @include src/roofmission.js
     // @include src/rooftops.js
+    // @include src/roof-lifts.js
     // @include src/air-cover.js
     // @include src/combat-rules.js
     // @include src/vehicle-gunfire.js
@@ -182,10 +184,12 @@
     buildBuildingGrid();
     buildColliders();
     bootMark('colliders');
-    populateWorld();
+    // The roof helipads are geometry (buildings only): known before the first populate, so the boot's entities are the
+    // ones every reset replays (populateWorld: Monarch One's helicopter and the civil helicopters on the pads).
     chooseRoofHelipads();
     addMonarchHelipads();
-    populateCivilHelicopters();
+    populateWorld();
+    prepareRoofLifts();
     bootMark('populated');
     load();
     resize();

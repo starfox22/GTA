@@ -463,6 +463,8 @@
         const b = makeCar(type, p[0], p[1], headingBetween({ x: p[0], y: p[1] }, { x: route[1][0], y: route[1][1] }), false);
         b.isleBoat = { route, index: 1 };
       }
+      // A car in every villa's garage (monarch-garages.js; after the rest: it draws nothing from `random`).
+      populateVillaGarageCars(park);
       // A helicopter on Monarch One's pad.
       const pad = MONARCH_TOWERS.find((t) => t.helipad && t.building?.helipad);
       if (pad) {

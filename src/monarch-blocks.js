@@ -306,7 +306,9 @@
           clear = (x, y) =>
             keepOff.every((k) => x < k.x - 22 || x > k.x + k.w + 22 || y < k.y - 22 || y > k.y + k.h + 22) &&
             Math.hypot(x - plan.gateAt.x, y - plan.gateAt.y) > 60 &&
-            (plan.gateAxis === 'y' ? Math.abs(x - plan.gateAt.x) > 26 : Math.abs(y - plan.gateAt.y) > 26);
+            (plan.gateAxis === 'y' ? Math.abs(x - plan.gateAt.x) > 26 : Math.abs(y - plan.gateAt.y) > 26) &&
+            // A side gate's lane (monarch-garages.js villaSideGate).
+            !(plan.sideDrive && x > plan.sideDrive.x - 22 && x < plan.sideDrive.x + plan.sideDrive.w + 22 && y > plan.sideDrive.y - 22 && y < plan.sideDrive.y + plan.sideDrive.h + 22);
         const step = kind === 'cypress' ? 34 : 56;
         for (let x = L.x + 20; x < L.x + L.w - 18; x += step)
           for (const y of [L.y + 20, L.y + L.h - 20]) if (clear(x, y)) tree(x, y, kind === 'cypress' ? 9 : 17 + random() * 4, kind);
@@ -322,6 +324,8 @@
     function monarchBlocked(x, y, r = 0) {
       if (!nearMonarchIsle(x, y, r + 20)) return false;
       if (rectListBlocked(monarchSolidList, x, y, r)) return true;
+      // A villa garage's door while it is down (monarch-garages.js).
+      if (villaGarageBlocked(x, y, r)) return true;
       // Moored hulls (people cannot walk onto them from a pontoon).
       if (y > MONARCH_MARINA.basin.y - 10 && y < -440 && x > 7600)
         for (const h of isleMooredHulls()) {

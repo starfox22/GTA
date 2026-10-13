@@ -65,6 +65,10 @@
       civilHelicopters: () => civilHelicopterReport(),
       offroad: () => offroadReport(),
       clubLineup: (x, y) => clubLineup(x, y),
+      // Gate lanes and drives kept clear, and anything parked or docked in them (vehicle-entrances.js).
+      vehicleEntrances: () => vehicleEntranceReport(),
+      // Monarch villa garages: the door, its state, the car inside, the drive (monarch-garages.js).
+      villaGarages: () => villaGarageReport(),
       // 'state', 'arm', 'reset', 'clear' (records), 'gate', 'cp0'..'cp3', 'top' (just below the summit, facing down) or 'at0.42' (that fraction of the trail): move the player's vehicle there.
       hillClimb: (action, trail) => hillClimbConsole(action, trail),
       // Drive the player's vehicle up a trail (or 'down' it) through the real physics (a line-following
@@ -299,6 +303,15 @@
         cameraTarget.x = x;
         cameraTarget.y = y;
         return this.status();
+      },
+      // Vehicle `id`'s driver door yanked open as a carjack's (carjack3d.js DOOR SWING), or shut with `open` false:
+      // where the door sits on a body (damage3d-bodies.js vehicleDoorSpan; carModels(true) lists hip and door).
+      doorSwing(id, open = true) {
+        const c = vehicles.find((v) => v.id === id);
+        if (!c) return null;
+        if (open) c.doorSwing = { openAt: gameTime - 1, closeAt: 0 };
+        else if (c.doorSwing) c.doorSwing.closeAt = gameTime;
+        return { id: c.id, type: c.type, open: !!open };
       },
       // The respray garages (garages.js): shops, doors, prices, the offer for the
       // player's vehicle, the drive-in job in progress and the last service.

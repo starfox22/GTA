@@ -37,7 +37,14 @@ the poses and the props.
 - Prompts: `northPointKeyPrompt/Interact` ask `skyMeetingPrompt/Interact` first (TALK TO, SIT
   WITH, HAND OVER THE PAPERS, NEXT LINE while a line is spoken; seated with nothing to do: an empty keyless prompt
   that swallows the key). NEXT LINE (`skyMeetingNextLine`) ends the line on now and brings the next at once (the
-  talk over the drinks without its pause); the scene's first line tells `pressKey('interact')` once. Every line is a
+  talk over the drinks without its pause); the scene's first line tells `pressKey('interact')` once. The beats with
+  nobody speaking move on with the key too, so pressing it repeatedly gets through the scene in about 12 s of game
+  time: GO UP WITH (the door talk over: `skyMeetingGoUp`, the lift's fade from wherever the player stands), the ride
+  (`skyLiftHurry`, game-input.js in 'elevator' mode), SIT WITH from anywhere on the terrace before the first sit
+  (`skyMeetingWalkIn`: under `worldResetFade` he is at his table and the player in his chair), SKIP AHEAD while seated
+  (`skyMeetingHurry`: one beat a press; the service's `rush` puts the waiter where he was going and ends a pause, the
+  folder's pass jumps to the reading, then to his standing). The drinks, the folder, the envelope and the stages are
+  unchanged (tools/tests/sky-meeting-talk.mjs). Every line is a
   talk line (crowd-speech.js TALK LINES: a bubble over the speaker in both views) plus the subtitle. Nobody is
   voiced: the game has no recorded dialogue, the text carries the scene.
 - Standing up always lands on clear deck (`skyMeetingStandSpot`: `P.stand`, else the nearest spot round the chair

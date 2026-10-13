@@ -8,7 +8,8 @@ const FULL = 'approach > door > reach > tug > pull > enter';
 async function pressAndFinish(t, label, limit = 6.5) {
   await t.keys('KeyE', 0.1, { real: true });
   let s = await t.call('carjack');
-  t.assert(s.running && s.phase === 'approach', label + ': the action key did not start the struggle: ' + JSON.stringify(s));
+  const why = s.running ? '' : ' prompt ' + JSON.stringify(await t.call('promptState')) + ' mode ' + (await t.call('status')).mode;
+  t.assert(s.running && s.phase === 'approach', label + ': the action key did not start the struggle: ' + JSON.stringify(s) + why);
   let waited = 0;
   while (s.running && waited < limit) {
     await t.wait(0.1);
@@ -38,10 +39,23 @@ export default async function (t) {
     await t.wait(4);
     await t.call('holdSimulation', true);
     const near = await t.call('carjackScan', 2600, 120, 'kerb');
-    pick = near.find((c) => c.kmh === 0 && c.ai && !c.locked && !c.why && !c.quick && c.light && c.light !== 'green' && c.type !== 'bus');
+    // ... and one the action key is about from its passenger side: E takes the nearest vehicle (no car parked at the
+    // kerb nearer to that spot), and a bike-share dock or a door on the pavement there comes first (its prompt says
+    // so: RENT BIKE). The prompt there must offer this car's driver.
+    for (const c of near) {
+      if (!(c.kmh === 0 && c.ai && !c.locked && !c.why && !c.quick && c.light && c.light !== 'green' && c.type !== 'bus' && c.nearer === 0)) continue;
+      await t.call('teleport', c.passengerSide.x, c.passengerSide.y);
+      // One step: the HUD pass (and so the prompt) runs in the simulation step, which is held.
+      await t.wait(0.04);
+      const prompt = await t.call('promptState');
+      if (/PULL OUT THE DRIVER/.test(prompt.offered || '')) {
+        pick = c;
+        break;
+      }
+      t.note(`skipped a ${c.type} at a light: the prompt there is ${prompt.offered}`);
+    }
   }
   t.assert(pick, 'no traffic car waiting at a light');
-  await t.call('teleport', pick.passengerSide.x, pick.passengerSide.y);
   let s = await pressAndFinish(t, 'traffic at a light (' + pick.type + ', ' + pick.light + ')');
   t.assert(!s.quick, 'a car at a light got the short version: ' + s.quick);
 

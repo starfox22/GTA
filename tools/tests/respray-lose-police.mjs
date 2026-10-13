@@ -63,6 +63,11 @@ export default async function (t) {
     r = await t.call('garage');
     t.note(id + ' job: ' + JSON.stringify(r.last));
     t.assert(!r.job && r.last && r.last.shop === id, 'no service at ' + id + ': ' + JSON.stringify(r.last));
+    // Nobody saw the car for the whole job and the search ran out before the paint went on: nothing left to clear.
+    if (!r.last.seenEntering && !r.last.cleared && r.last.starsAfter === 0) {
+      t.note(id + ': the chase lapsed before the paint');
+      continue;
+    }
     if (r.last.seenEntering) {
       t.assert(r.last.starsAfter > 0 && !r.last.cleared, 'seen going in, yet the stars cleared');
       continue;
@@ -74,9 +79,11 @@ export default async function (t) {
   p = await t.call('policeReport');
   t.assert(p.stars === 0, 'stars after an unseen respray: ' + p.stars);
   t.assert(p.units.length === 0, 'units still chasing: ' + JSON.stringify(p.units.map((u) => [u.kind, u.mode])));
-  // Out of the shop and onto the street at a crawl (a blind sprint can hit someone, a fresh crime and a fair
-  // new chase): nobody picks the car up again for 20 s.
+  // Out of the shop at a crawl and stopped at the kerb (rolling on blind across the pavement and into the street can
+  // hit someone, or roll over someone traffic knocked down: a fresh crime and a fair new chase, which is not what
+  // this checks): nobody picks the car up again for 20 s.
   await t.keys('KeyW', 0.6);
+  await t.keys('KeyS', 0.6);
   for (let k = 0; k < 4; k++) {
     await t.wait(5);
     p = await t.call('policeReport');

@@ -532,6 +532,9 @@
           tight: job.standOut < CARJACK.stand,
           driverSide: r(carjackLocal(c, 0, spec.w / 2 + 14, {})),
           passengerSide: r(carjackLocal(c, 0, -spec.w / 2 - 14, {})),
+          // Vehicles nearer than this one to the spot asked from (`from`): E there takes the nearest (nearestCar), so
+          // with any nearer (a car parked at the kerb beside it) the key is not about this car.
+          nearer: vehicles.reduce((n, v) => n + (v !== c && v.hp > 0 && !v.overturned && distanceBetween(v, at) < distanceBetween(c, at) ? 1 : 0), 0),
         };
       });
     }

@@ -29,83 +29,8 @@ cleanup, the demo gate) are in missions-and-demo.md; this page is what each job 
 
 ## Mission 4: Borrowed Stripes (fortjob.js with vehicle-trunk.js, fort-cover*.js, skyline-meeting.js)
 
-- `FORT_JOB`: Kessler's house (`home`: Broadway, the building on the x 640 avenue just south of the Palm Sound
-  Causeway boulevard; his car on the avenue's east kerb at (674, 3420), nose north; not on the boulevard itself, which
-  the elevated Shore Line covers; the entry's `start` is the pavement outside), his kerb on Marina Rd opposite the Marea (north side: he
-  arrives westbound) and his walk to the door. Stages are `FORT_STAGE` (tail 1, parked, trunk, take, change, gate,
-  inside, out, meet; 0 was the old stakeout at the fort and is unused, the numbers are kept).
-- Story: Lieutenant Dale Kessler (logistics) is off duty at the Marea; his uniform and ID open Fort Sentinel's gate,
-  the records office holds the HAWTHORN weapons file, Consul Anton Varga buys it at CIRRUS. Every step opens with a
-  mission brief (`fortStage` = setStage + `missionBrief`, mission-brief.js) and a line from Vinny.
-- Vinny's call gives the lockpick (`giveLockpick`, arsenal slot 8) and `startFortJob` puts Kessler at once in his car
-  at his kerb (`fortHomeSpot`: the first spot back along the kerb `canSpawnCar` allows), already pulling away (about
-  50 s to the Marea over the causeway): a red `muscle` car, `mission` (never retired, burns slowly), `missionDriver:
-  'kessler'`, `trunkLoot` UNIFORM AND ID, driving `countyRoute` = `fortRoute(home)` (the pull-out into the westbound
-  lane, then the navigation graph held to the right lane, as the cabs drive it). Taking the job never resets the world
-  (only WASTED / BUSTED do, and those fail the job), so a reset never takes him; a wreck at his kerb is skipped. The opening brief (kicker THE JOB) names his house; the objective is his
-  car from the first frame. Wedged for 9 s he skips a node only where `spotUnseen` both ends. The wrap guard sends
-  `countyIndex` back to the end only when it drops to 0 from further along (`m.routeIndex`).
-- His car stays pristine on the way (`fortKeepPristine`): while he drives, not alerted and never touched by the player
-  (a hit with `lastAttacker` the player, or the player's car within 90 units), any damage or stain is mended the same
-  frame (`repairVehicle`), so nothing is ever drawn bent. The old start drove him through the fort's gate arm
-  (military-base.js), which sprang his door. The report's `car.condition` (hp share, dents, sprung parts, stains, door,
-  trunk) is what mission4-tail.mjs checks.
-- Parking (`FORT_JOB.park`, y 5214): flush with Marina Rd's north kerb (kerb gap ~1 unit, inner side 25 off the
-  centre line: clear of the lane's line), never in his lane. `fortRoute` trims lane points within the run-in and
-  ends with the pull-in (`parkRun` back along his lane, `parkLane` 10 over to the kerb, then the spot); his car
-  carries `countyRouteStop` (county-build.js countyRouteControl: holds the last point and eases to rest at a quarter
-  g), and he parks once at rest within 8 units (or, held short by something in his spot, at rest within 70 after 3 s).
-  His house spot is the avenue's east kerb (gap ~1). Console `kerbFit()` measures it; tools/tests/mission4-kessler.mjs.
-  On his way a knock from traffic only makes him honk (crowd-traffic.js `crowdCrash`: a `missionDriver` never gets out
-  to argue, which read as his car taken), and on the city grid he slows only for people on the road, not the
-  pavement's crowd (countyRouteControl).
-- The tail: `tailHeat` rises on his bumper (within `tooClose`) or close behind him while he moves; held up behind him
-  in traffic or at a drawbridge does not count. At 1 he made the tail (fail). Far behind him is never announced (no
-  "lost him": the map shows his car all the time); the objective stays on the car. The meter shares `#stealthStatus`
-  (fortJobUI after roofMissionUI).
-- Waiting at the club (`fortClubWait`): the player within `clubNear` (1100) of his kerb, his car over `clubFar` (1700)
-  away, for `clubWaitSeconds` (10):
-  the car is put on the nearest route point at least `clubJumpMin` (1150) from his kerb, or a few before it, that
-  `spotUnseen` and `canSpawnCar` allow (`m.jumped`): never round the corner from the club.
-  City traffic at the Marina Rd junction can still hold him a while (`fortJob().blocker` says what is in his lane).
-- Shot at at the wheel (`fortAlerted`): a hit on his car within 0.6 s of him driving, or a round fired within 320
-  units: KESSLER ALERTED THE MILITARY (announce), `crime(32, 'seen')` + `setWantedLevel(5)`, a red brief; he bails
-  and runs (`ejectDriver`), the car unlocked with the keys in it (`m.keys`). His ID still works at the gate once
-  the stars are gone (Vinny: the army takes days to cancel anything). Carjacking him is not an alert.
-- `missionDriver` is declared in makeCar and copied to the driver on foot by `makeCarDriver` (carjack.js), so a
-  carjacked, crashed or parked Kessler is still `fortKessler(m)`; the crowd streamer never moves him
-  (`streamableWalker`). His walk to the door is `p.missionWalk`, run by `updateMissionWalker` (game-people.js) until
-  a reaction takes over; at the door he leaves the world.
-- Quiet way: once he is inside, pick the trunk (vehicle-trunk.js; only someone within ~15 m looking at the player,
-  `lockpickWatcher`, phones it in; an officer in sight is a crime seen). Kessler seeing the pick while he is still
-  outside shouts and reports a theft. Messy way: his car taken (keys in it) or Kessler down (take his keys from the
-  body); `fortKeysOpenTrunk` runs before `lockpickInteract`, so keys win over a pick in hand. Once the bag is out the
-  action key at the open trunk shuts it (vehicle-trunk.js `trunkCloseTarget`, CLOSE THE TRUNK; a mission car's trunk
-  is never offered while its loot is in it); any car moving off past walking pace slams its lid (`slamMovingTrunks`).
-  Slammed during TAKE (the bag still in), the stage goes back to opening it.
-- The change: in a car standing still it happens by itself (3 s); on foot, a held interact where no pedestrian
-  within 260 units has a clear line and not inside the base. Then `wearUniform(true)` and `fortCoverBegin()`.
-- Gate (fort-cover.js): driven up in uniform the cover still owns the gate (`fortCoverOwnsGate` true short of the
-  arm in a non-military car): the sergeant sends the car back to park outside, no challenge, no FORCE THE GATE
-  prompt (`militaryInteract`/`militaryUI` skip it). On foot he halts the player within 160 units; past the arm without
-  papers he calls him back until `FORT_COVER_GATE.grace` (56 units), then the challenge. Showing the ID runs
-  `FORT_GATE_TALK` (about 16 s, `FORT_GATE_CLEARED_AT`) with the feet held (`fortGateTalking`, game-update.js);
-  lines go through `fortGateLine` (bubble when short, subtitle via `missionLine` always). A weapon drawn cancels it.
-  The gate arm is solid on foot (military-base.js): it lifts for him only through `fortCoverGatePass()` (waved
-  through at `FORT_GATE_OPEN_AT`, or cleared and believed, on foot, no stars), in and out, and drops behind him.
-- The records door (`FORT_RECORDS`) is at the HQ's far east end, about 83 m from the papers window: the walk along
-  Sentinel Avenue passes the HQ pad's helicopter, the QRF jeeps and the ready line (M35, LAV-8). Boarding any of
-  them (any military vehicle inside the fence or under cover) is `fortCoverBoarded`: cover blown, five stars.
-  Tests: fort-gate-barrier.mjs, fort-records-route.mjs, fort-vehicle-theft.mjs.
-- Base: fort-cover.js does the gate's papers (`FORT_COVER_GATE.check`), the soldiers' suspicion, the military-vehicle
-  alarm and the records office (`FORT_RECORDS.door`, `fortCover.papers`). Blown before the papers: the job fails;
-  after: get out with them however. Out (calm crossing, or off the base 260 units from the gate): `skyMeetingBegin`.
-- Meeting: the stage text follows `skyMeeting.stage` (skyline-meeting.js, places-sky-meeting.md); 'failed' (the
-  consul killed) fails the job, 'done' wins it. A won job keeps the uniform on (`fortJobKeepsUniform`,
-  cleanupMissionExtras); the next job, a death or a new game takes it off.
-- Console: `fortJob()`, `fortSkip('arrive' | 'parked' | 'inside' | 'changed' | 'meet')` (always a fresh run).
-  Tests: mission4-tail.mjs, mission4-paths.mjs, mission4-alert.mjs, fort-gate-talk.mjs (and fort-cover, lockpick,
-  sky-meeting for the systems).
+The job, Kessler and the tail: missions-summit-and-fort-kessler.md. The trunk, the change, the gate, the records
+office and the meeting at CIRRUS: missions-summit-and-fort-fort.md.
 
 ## Mission briefs (mission-brief.js, ui/mission-brief.css)
 

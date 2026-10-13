@@ -429,6 +429,7 @@
         updateIsleGarden(night, nearIsle);
         if (!nearIsle) return;
         updateMonarchOneVisuals();
+        updateVillaGarageVisuals();
         animateIsleFountains(gameTime);
       }
       // END SUBSYSTEM: src/monarch-streets3d.js
