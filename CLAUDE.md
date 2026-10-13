@@ -162,6 +162,10 @@ packs with plain `<script src>` so the zip still plays from file://.
 - The Blue Hour: `BLUE_HOUR_ENTRANCE` (roofmission-entrance.js) is the only plan for the hotel's
   forecourt (canopy, limousines, staff); street furniture stays off it via `blueHourForecourt()`.
   Terrace furniture stays inside `roofCover` footprints or the 14-unit strip along the railings.
+- Roof lifts: every roof in `roofHelipads` or with a parked helicopter gets a lift (roof-lifts.js `ROOF_LIFTS`, `b.roofLift`);
+  the ride is skyline-lift.js `startSkyLift`/`updateSkyLift` on the lift's own fields; `roofLifts().missing` stays 0.
+  Vehicle entrances (vehicle-entrances.js): parked things keep off `vehicleEntranceAt()`; villa garage doors are
+  `plan.garageDoor.open` (monarch-garages.js), people via `villaGarageBlocked`, vehicles via the door body's `minHeight`.
 - Respray garages are marked only in a chase: `garageBeacon()` (garages.js RESPRAY BEACON) is the one rule; renderers
   read it.
 - Every drivable island has a respray garage (`GARAGE_ISLANDS`, garages-shops.js; checked by

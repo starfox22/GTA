@@ -57,6 +57,10 @@
       }
       // A rooftop helipad sized for the helicopter (b.helipad, rooftops.js): the
       // pad replaces the usual roof clutter, with one stair bulkhead in a corner.
+      // The lift house's lamp (one shared unlit material, made on first use).
+      function liftLampMaterial() {
+        return liftLampMaterial.m || (liftLampMaterial.m = new Three.MeshBasicMaterial({ color: '#8fe3ff' }));
+      }
       function roofHelipad(group, b, top) {
         const pad = b.helipad,
           x = pad.x - b.x,
@@ -79,7 +83,19 @@
           const a = (k * TAU) / 12;
           addGroupGlow(group, x + Math.cos(a) * (r - 1), top + 1.5, z + Math.sin(a) * (r - 1), 6, '#a9f5c2', 1.8, { day: 0.15 });
         }
-        bulkhead(group, 20, top, 16);
+        // The stair bulkhead is the lift house when the roof has a lift (roof-lifts.js b.roofLift: the game's keep-out).
+        const lift = b.roofLift;
+        if (lift) {
+          const hx = lift.house.x - group.position.x,
+            hz = lift.house.y - group.position.z,
+            front = hz + lift.house.d / 2;
+          bulkhead(group, hx, top, hz, lift.house.w, lift.house.d, lift.house.h);
+          // Steel lift doors and a lit HELIPAD lamp on its south face, where the game's door is.
+          box(group, hx, top + 4.4, front + 0.45, 8.4, 8.8, 0.4, darkMetal);
+          for (const dx of [-2, 2]) box(group, hx + dx, top + 4.2, front + 0.7, 3.8, 8.2, 0.3, chrome);
+          box(group, hx, top + 9.9, front + 0.6, 6, 1.4, 0.4, liftLampMaterial());
+          addGroupGlow(group, hx, top + 9.9, front + 2, 7, '#9fe8ff', 1.2, { day: 0.12 });
+        } else bulkhead(group, 20, top, 16);
       }
       function pergola(group, x, top, z, w, d) {
         roofKeepOut(group.position.x + x, group.position.z + z + 5, w + 4, d + 14);

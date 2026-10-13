@@ -218,6 +218,27 @@
           // The odd fire escape over a side street (never on a north side: see frontAwning).
           if (kind === 'brick' && !f.rx && b.height > SHOP_FLOOR + 2 * STOREY && frontRandom() < 0.3) frontFireEscape(group, b, f, f.length / 2);
         }
+        // A helipad roof's lift door on its street side (roof-lifts.js b.roofLift): drawn last, no random draws.
+        const lift = b.roofLift?.street;
+        if (lift && !lift.lobbyDoor) frontLiftDoor(group, frontageFace(b, lift.side), lift.u);
+      }
+      /* ROOF LIFT DOOR: steel lift doors in a steel surround, proud of whatever the side has there (a stair door, a
+         plinth), under a lit HELIPAD sign: a navy plate with the pad's H and an up-down lamp. FRONT PAINT only,
+         flush to the wall (2.2 units at most, inside the north-side 3-unit rule). */
+      function frontLiftDoor(group, f, u) {
+        facePaint(group, f, u, (DOOR_HEIGHT + 1.4) / 2, 1.5, 14, DOOR_HEIGHT + 1.4, 0.6, FRONT_COLORS.steel);
+        for (const du of [-2.75, 2.75]) facePaint(group, f, u + du, DOOR_HEIGHT / 2, 1.9, 5.3, DOOR_HEIGHT, 0.3, FRONT_COLORS.chrome);
+        facePaint(group, f, u, DOOR_HEIGHT / 2, 2, 0.35, DOOR_HEIGHT, 0.2, FRONT_COLORS.panel);
+        liftSign(group, f, u, DOOR_HEIGHT + 5.6, 1.9);
+      }
+      // The HELIPAD sign over a lift door (also Monarch One's revolving door, monarch-one3d.js).
+      function liftSign(group, f, u, y, out) {
+        facePaint(group, f, u, y, out, 13, 8, 0.4, '#1c3550');
+        for (const du of [-2.4, 2.4]) facePaint(group, f, u - 2.2 + du, y, out + 0.25, 1.2, 5.4, 0.15, '#f1e3ad');
+        facePaint(group, f, u - 2.2, y, out + 0.25, 4.8, 1.2, 0.15, '#f1e3ad');
+        // The up-down lamp beside the H.
+        for (const dy of [-1.5, 1.5]) facePaint(group, f, u + 3.6, y + dy, out + 0.25, 2.2, 1.6, 0.15, '#8fe3ff');
+        addGroupGlow(group, faceX(f, u, out + 1.5), y, faceZ(f, u, out + 1.5), 9, '#9fe8ff', 1.1, { day: 0.12 });
       }
       // ---- Street sides -----------------------------------------------------------------
       // Shop units either side of the stair door in the middle (the crowd's door).

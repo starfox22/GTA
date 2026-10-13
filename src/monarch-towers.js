@@ -137,7 +137,8 @@
       return VILLA_WALL_HEIGHTS[VILLA_WALL_KIND[style] || 'wall'];
     }
     /* A wall round a lot with a gap for the gate: four thin solids (two on the gate side). */
-    function isleLotWall(lot, gateAt, gateAxis, gateWidth, height = 8, thickness = 4, kind = 'garden wall') {
+    // `sideGap` [x0, x1]: a second opening on the gate side (a villa's side gate, monarch-garages.js villaSideGate).
+    function isleLotWall(lot, gateAt, gateAxis, gateWidth, height = 8, thickness = 4, kind = 'garden wall', sideGap = null) {
       const L = lot,
         pieces = [];
       const add = (x, y, w, h) => w > 1 && h > 1 && pieces.push(isleSolid(x, y, w, h, height, kind));
@@ -147,8 +148,15 @@
         ['south', L.y + L.h - thickness],
       ]) {
         if (gateAxis === 'y' && Math.abs(gateAt.y - (side === 'north' ? L.y : L.y + L.h)) < 2) {
-          add(L.x, y, gateAt.x - gateWidth / 2 - L.x, thickness);
-          add(gateAt.x + gateWidth / 2, y, L.x + L.w - gateAt.x - gateWidth / 2, thickness);
+          const gaps = [[gateAt.x - gateWidth / 2, gateAt.x + gateWidth / 2]];
+          if (sideGap) gaps.push(sideGap);
+          gaps.sort((a, b) => a[0] - b[0]);
+          let from = L.x;
+          for (const [a, b] of gaps) {
+            add(from, y, a - from, thickness);
+            from = b;
+          }
+          add(from, y, L.x + L.w - from, thickness);
         } else add(L.x, y, L.w, thickness);
       }
       for (const [side, x] of [
@@ -173,9 +181,11 @@
         plan.buildings = [
           isleBuilding(plan.house.x, plan.house.y, plan.house.w, plan.house.h, plan.height, { style: v.style === 'modern' ? 0 : 2, villa: v.id, archetype: 'stucco' }),
           ...plan.wings.map((w) => isleBuilding(w.x, w.y, w.w, w.h, w.height, { style: 2, villa: v.id })),
-          isleBuilding(plan.garage.x, plan.garage.y, plan.garage.w, plan.garage.h, plan.garage.height, { style: 2, villa: v.id }),
+          // The garage is hollow: thin walls round an opening on the drive side, closed by its door (monarch-garages.js).
+          ...planVillaGarage(plan).map((w) => isleBuilding(w.x, w.y, w.w, w.h, plan.garage.height, { style: 2, villa: v.id, garageWall: true })),
         ];
-        plan.walls = isleLotWall(v.lot, plan.gateAt, plan.gateAxis, plan.gateWidth, villaWallHeight(v.style), 4, 'garden ' + (VILLA_WALL_KIND[v.style] || 'wall'));
+        plan.sideGate = villaSideGate(plan);
+        plan.walls = isleLotWall(v.lot, plan.gateAt, plan.gateAxis, plan.gateWidth, villaWallHeight(v.style), 4, 'garden ' + (VILLA_WALL_KIND[v.style] || 'wall'), plan.sideGate && [plan.sideGate.x0, plan.sideGate.x1]);
         if (plan.pool) isleSolid(plan.pool.x, plan.pool.y, plan.pool.w, plan.pool.h, 2, 'pool');
         if (plan.tennis) {
           const t = plan.tennis;

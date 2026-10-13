@@ -57,6 +57,7 @@
      */
     // @include src/monarch-towers.js
     // @include src/monarch-one.js
+    // @include src/monarch-garages.js
     /**
      * A block's buildings, by use. Commercial blocks carry a frontage of shop
      * units along their south side (the camera's side) with residences over,

@@ -68,6 +68,10 @@
       // The Blue Hour's street entrance (roofmission-entrance.js): the forecourt kept
       // clear, the limousines at the kerb and the doormen and valet on post.
       blueHourEntrance: () => blueHourEntranceReport(),
+      // Every helipad roof and every roof with a parked helicopter, and its lift (roof-lifts.js); `missing` is 0.
+      roofLifts: () => roofLiftReport(),
+      // Stand at a roof lift's street door ('lobby') or on its roof by the lift door ('roof').
+      roofLiftVisit: (id, where) => roofLiftVisit(id, where),
       // Rooftop helipads, the roof the player stands on and the roof under the
       // player's helicopter (rooftops.js); with a map point, that roof and its plant.
       rooftops: (x, y) => ({
