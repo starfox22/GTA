@@ -734,6 +734,12 @@ made by tools/vehicle_models.py)
     the game's own deck; the convertible's paint in the game's colours; the Abrams's turret and gun split off to turn,
     its whip antennas and small parts left out and its 256k triangles clustered and reduced to about 21k.
   (The Tow Boat by BoatUS Foundation, tried for the HARBOR LAUNCH in round two and held back, is no longer in the files.)
+  The enduro (CC-BY-4.0; a mirror on GitHub carrying the original Sketchfab license.txt):
+  - KTM Dirt Bike (kr500, the KR 500): This work is based on "KTM Dirt Bike" (https://sketchfab.com/3d-models/ktm-dirt-bike-e31415580d7a4a0d95ebd53895566b8f) by OCTbuilds (https://sketchfab.com/OCTbuilds) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+    Changes: its bars, fork and front wheel turned straight, its side stand left out, split into frame, steering,
+    wheels and lamps; the plastics' orange in the game's paint (the white and black graphics kept), the maker's
+    logos on the graphics painted over; triangles reduced. The VORTEX 900 and NOMAD CRUISER above likewise had their
+    turned bars and front wheels turned straight and their stands left out.
 
 player-model.bin, player-skin.webp, player-detail.webp (the player character; src/player-body3d-asset.js)
   Base model: "Male_Adult_16" from the Microsoft Rocketbox Avatar Library,

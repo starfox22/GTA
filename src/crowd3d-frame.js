@@ -9,14 +9,24 @@
           carTransition.car = car;
           carTransition.kind = null;
           carTransition.at = -10;
+          carTransition.door = null;
           return;
         }
         if (car !== carTransition.car) {
-          if (carTransition.car && !car) carTransition.kind = 'exit';
-          else if (car && !carTransition.car) {
+          // The car whose front door swings for it (carjack3d.js DOOR SWING): in by the driver's door, out by the side
+          // the player stands on.
+          carTransition.door = null;
+          if (carTransition.car && !car) {
+            carTransition.kind = 'exit';
+            const from = carTransition.car;
+            carTransition.door = from;
+            carTransition.doorSide = (player.x - from.x) * Math.sin(from.a) - (player.y - from.y) * Math.cos(from.a) > 0 ? -1 : 1;
+          } else if (car && !carTransition.car) {
             carTransition.kind = 'enter';
             carTransition.x = player.x;
             carTransition.y = player.y;
+            carTransition.door = car;
+            carTransition.doorSide = -1;
           } else carTransition.kind = null;
           carTransition.at = gameTime;
           carTransition.car = car;

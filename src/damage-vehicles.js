@@ -185,9 +185,10 @@
         kind = detail?.kind || (central ? 'wear' : 'impact'),
         share = amount / vehicle.maxhp;
       if (kind === 'bullet') {
-        // Holes and glass are handled by bulletHitVehicle; the panel barely moves.
+        // Holes and glass are handled by bulletHitVehicle; the panel barely moves (by the round's own weight,
+        // `panel`, not the little a pistol takes off the engine: vehicle-gunfire.js).
         const zone = damageZone(spec, lx, ly);
-        damage[zone] = clamp(damage[zone] + share * 0.25, 0, 1);
+        damage[zone] = clamp(damage[zone] + ((detail.panel ?? amount) / vehicle.maxhp) * 0.25, 0, 1);
         return;
       }
       if (kind === 'wear') {
@@ -362,8 +363,10 @@
           }
         }
         vehicle.damageVersion++;
+        noteVehicleRoundZone(vehicle, entry.x, true);
         return kind;
       }
+      noteVehicleRoundZone(vehicle, entry.x, false);
       // Off the glasshouse (bonnet, boot, the ends) the round went into metal under the belt line: a chest-high line
       // over a bonnet would have met the screen, so the hole is drawn on the panel below it (the rules above keep `z`).
       const holeZ = band && (entry.x <= band.back || entry.x >= band.front) ? Math.min(z, band.belt - 0.6) : z;

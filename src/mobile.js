@@ -112,6 +112,9 @@
         } else {
           if (x > radius * 0.24) list.push('KeyD');
           if (x < -radius * 0.24) list.push('KeyA');
+          // On a motorbike or a bicycle the stick pushed well up is the climb action: with GAS, a wheelie (wheelie.js),
+          // as the gamepad's left stick does.
+          if (player.car && vehicleSpec(player.car).bike && y < -radius * 0.5) list.push(actionCode('ascend'));
           if (!player.car && !player.parachute) {
             if (y > radius * 0.24) list.push('KeyS');
             if (y < -radius * 0.24) list.push('KeyW');

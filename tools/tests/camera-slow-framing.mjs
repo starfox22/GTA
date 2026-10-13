@@ -120,7 +120,7 @@ export default async function (t) {
     await t.call('interact');
     await t.wait(0.5);
     await t.call('settings', { motionComfort: false });
-    // The chase view: getting in keeps the walking boom; it eases out only from 31 km/h.
+    // The chase view: getting in keeps the camera 3.8 m behind the car's back (a 4.4 m boom from a pivot moved back, not 6.8 m); it eases out only from 31 km/h.
     await t.call('teleport', 420, 4400);
     await t.call('viewMode', 'chase');
     await t.wait(2);
@@ -131,11 +131,11 @@ export default async function (t) {
       await t.wait(0.5);
       boomMax = Math.max(boomMax, (await t.call('chaseCamera')).wantMetres);
     }
-    t.assert(boomMax < Math.max(footBoom, 4.6 / 2 + 1.2) + 0.3, `the chase boom pulled back at rest: ${footBoom} m on foot, up to ${boomMax} m in the car`);
+    t.assert(boomMax < 4.6, `the chase boom pulled back at rest: ${footBoom} m on foot, up to ${boomMax} m in the car`);
     await t.call('launch', 60 * KMH);
-    await t.wait(2);
+    await t.keys('KeyW', 4);
     const chaseFast = (await t.call('chaseCamera')).wantMetres;
-    t.assert(chaseFast > boomMax + 1.5, `the chase boom did not ease out at speed: ${chaseFast} m`);
+    t.assert(chaseFast > 6.3, `the chase boom did not ease out at speed: ${chaseFast} m`);
     await t.call('interact');
     await t.call('viewMode', 'street');
     t.note(`chase boom foot ${footBoom} m, car at rest ≤ ${boomMax} m, 60 km/h ${chaseFast} m; foot ${foot.aim}; parked ${parked.aim}; 20 km/h ${slow.aim}; 40 km/h aim ${fast.aim} framed ${fast.framed} (0.1 s after the switch ${just.framed}); walk 125 % ${footFar.aim}, 60 % ${footNear.aim}`);

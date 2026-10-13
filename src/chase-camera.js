@@ -43,6 +43,9 @@
       CHASE_PITCH_MAX = 1.15,
       CHASE_LOOK_RETURN = 1.6,
       CHASE_FOOT = { pivot: 1.58, dist: 3.5, shoulder: 0.42, fov: 52, pitch: 0.16 },
+      // SLOW FRAMING in a vehicle: metres from the vehicle's back to the camera, how far the pivot moves back from
+      // the middle (the vehicle sits higher in the closer frame) and the steeper pitch.
+      CHASE_SLOW = { behind: 3.8, back: 1.8, pitch: 0.26 },
       CHASE_AIM = { pivot: 1.62, dist: 1.85, shoulder: 0.66, fov: 44 },
       CHASE_NEAR = 4,
       // Seconds the pivot takes to slide from the old subject to the new one (in or out of a vehicle).
@@ -57,7 +60,9 @@
       // How far the camera's reticle reaches when it meets nothing (the convergence of the shoulder offset).
       CHASE_AIM_REACH = 70 * UNITS_PER_METRE,
       // How far a camera ray looks for people and vehicles to stop on (chaseAimPoint).
-      CHASE_PICK_REACH = 120 * UNITS_PER_METRE;
+      CHASE_PICK_REACH = 120 * UNITS_PER_METRE,
+      // On foot the camera eases behind a run only within this of its heading (radians; the keys' diagonals are 0.79).
+      CHASE_FOLLOW_ARC = 0.6;
     const chaseCam = {
       x: 0,
       y: 0,
@@ -88,6 +93,8 @@
       // The player's wheel / zoom keys: a factor on the boom.
       zoom: 1,
       ready: false,
+      // KEYS ON A FRESH CAMERA: the heading the movement keys took before the first placement (chaseMoveYaw).
+      primed: false,
       // What the camera followed last frame (a change of vehicle snaps the heading round).
       subject: null,
       locked: false,
@@ -99,6 +106,8 @@
       // The page could not capture the pointer (CURSOR LOOK instead); the last request was a soft one.
       lockFailed: false,
       lockSoft: false,
+      // The cursor left the game's canvas (CURSOR LOOK stops turning until it comes back).
+      cursorOut: false,
       // CLOSE QUARTERS: how far the camera is craned up over the head (map units).
       crane: 0,
       // HAND-OVER: seconds left of the pivot's slide, and where it slides from.
@@ -228,16 +237,26 @@
         if (!chaseCam.lockSoft) chaseCam.lockFailed = true;
         chaseCam.locked = false;
       });
+      // The cursor leaving the page (no element to go to) stops CURSOR LOOK; coming back starts it again.
+      document.addEventListener('mouseout', (e) => {
+        if (!e.relatedTarget) chaseCam.cursorOut = true;
+      });
+      document.addEventListener('mouseover', () => {
+        chaseCam.cursorOut = false;
+      });
     }
     /**
      * CURSOR LOOK
      * Without a captured pointer the cursor stays on screen: the aim is the cursor (the camera's
      * ray through it), and the camera turns while the cursor stands in a band along the left or
      * right edge of the frame (faster the deeper in), and pitches in a band along the top and
-     * bottom. Called every simulation step.
+     * bottom. Called every simulation step. Only once the page has refused the capture (`lockFailed`):
+     * before the first click captures the pointer the cursor is left where the street view's aim had it,
+     * often near an edge, and turning there would swing the camera (and the movement keys with it) round
+     * on its own; nor while the cursor is off the canvas (its last place would turn the camera for ever).
      */
     function updateCursorLook(deltaSeconds) {
-      if (!chaseCameraLive() || chaseCam.locked || !mouse.active || gameMode !== 'play' || touchModeOn() || !(deltaSeconds > 0)) return;
+      if (!chaseCameraLive() || chaseCam.locked || !chaseCam.lockFailed || chaseCam.cursorOut || !mouse.active || gameMode !== 'play' || touchModeOn() || !(deltaSeconds > 0)) return;
       const band = 0.1,
         u = mouse.x / Math.max(1, viewportWidth),
         v = mouse.y / Math.max(1, viewportHeight),
@@ -437,7 +456,7 @@
       cam.aspect = viewportWidth / Math.max(1, viewportHeight);
       if (cam.locked && gameMode === 'play') placeMouseOnReticle();
       if (!chaseCameraLive()) {
-        cam.ready = false;
+        cam.ready = cam.primed = false;
         return;
       }
       const c = chaseRideVehicle(),
@@ -445,17 +464,23 @@
         comfort = motionComfortOn(),
         shape = chaseShapeFor(c),
         M = UNITS_PER_METRE;
-      /* SLOW FRAMING (world-view.js) in the chase view: in a road vehicle or a boat under 31 km/h the boom
-         keeps the walking length (CHASE_FOOT, or just clear of a long vehicle's back) and lens, so getting in
-         never pulls the camera back; it eases out to the vehicle's own boom at speed, back in after a second
-         under 30 (the same switch and rates as the street view's framing). */
+      /* SLOW FRAMING (world-view.js) in the chase view: in a road vehicle or a boat under 31 km/h the camera
+         stays close: the walking boom's reach behind the vehicle's back (CHASE_SLOW), the pivot moved back
+         from the middle and the pitch a little steeper so the whole vehicle stays in frame, the walking lens; so getting in never pulls the camera far back; it
+         eases out to the vehicle's own boom at speed, back in after a second under 30 (the same switch and
+         rates as the street view's framing). */
       const slowWant = !c || train || isAircraft(c) || slowFramingOn() ? 1 : 0;
       cam.slowShare += (slowWant - cam.slowShare) * (1 - Math.exp(-deltaSeconds * (slowWant < cam.slowShare ? 1.5 : 0.9)));
+      let slowBack = 0;
       if (c && !train && !isAircraft(c) && cam.slowShare > 0) {
-        const near = Math.max(CHASE_FOOT.dist, vehicleSpec(c).l / UNITS_PER_METRE / 2 + 1.2),
+        const half = vehicleSpec(c).l / UNITS_PER_METRE / 2,
+          back = Math.min(CHASE_SLOW.back, half * 0.75),
+          near = Math.max(CHASE_FOOT.dist, half + CHASE_SLOW.behind) - back,
           k = cam.slowShare;
+        slowBack = back * k;
         shape.dist += (Math.min(near, shape.dist) - shape.dist) * k;
         shape.fov += (CHASE_FOOT.fov - shape.fov) * k;
+        shape.pitch += (Math.max(CHASE_SLOW.pitch, shape.pitch) - shape.pitch) * k;
       }
       cam.idle += deltaSeconds;
       // Pivot: the shoulders on foot, above the middle of a vehicle.
@@ -465,8 +490,10 @@
         bz = train ? entityElevation(player) : c && isBoat(c) ? Math.max(0, entityElevation(c)) : entityElevation(body);
       const subject = c || player;
       if (!cam.ready) {
-        // A fresh start (a new game, a teleport, a switch of view): behind the subject at once.
-        cam.yaw = c ? c.a : player.a;
+        // A fresh start (a new game, a teleport, a switch of view): behind the subject at once (where the
+        // movement keys already took it this step: chaseMoveYaw).
+        if (!cam.primed) cam.yaw = chaseStartYaw();
+        cam.primed = false;
         cam.yawVel = 0;
         cam.lookYaw = cam.lookPitch = 0;
         cam.pitch = shape.pitch;
@@ -546,11 +573,14 @@
         cam.wantDist = distM * M * cam.zoom;
         // On foot the camera turns only when looked about, except that it eases round
         // behind a run after a while without looking (never swinging to face a run toward it).
+        // Only a run already near the view's heading (CHASE_FOLLOW_ARC): the movement keys point
+        // off the camera's heading, so following a sideways or diagonal run would turn the run
+        // with it, round and round (A, D or W+D held would run in circles).
         const m = cameraFootMotion,
           run = Math.hypot(m.vx, m.vy);
         if (!comfort && cam.idle > 2 && run > 2.5 * M && a < 0.05 && !player.carjack) {
           const error = normalizeAngle(Math.atan2(m.vy, m.vx) - cam.yaw);
-          if (Math.abs(error) < 2) cam.yaw = normalizeAngle(cam.yaw + error * (1 - Math.exp(-deltaSeconds * 0.9 * clamp(run / (5 * M), 0, 1))));
+          if (Math.abs(error) < CHASE_FOLLOW_ARC) cam.yaw = normalizeAngle(cam.yaw + error * (1 - Math.exp(-deltaSeconds * 0.9 * clamp(run / (5 * M), 0, 1))));
         }
       }
       cam.fov = fov;
@@ -564,8 +594,8 @@
       }
       const yaw = normalizeAngle(cam.yaw + (behind ? Math.PI : cam.lookYaw)),
         pitch = clamp(cam.pitch + (behind ? 0 : cam.lookPitch) - (behind ? -cam.slope : cam.slope), CHASE_PITCH_MIN, CHASE_PITCH_MAX);
-      cam.px = bx;
-      cam.py = by;
+      cam.px = bx - (slowBack ? Math.cos(c.a) * slowBack * M : 0);
+      cam.py = by - (slowBack ? Math.sin(c.a) * slowBack * M : 0);
       cam.pz = bz + pivotM * M;
       if (cam.handover > 0) {
         // The pivot slides over from the last subject (a smooth step over the hand-over).
@@ -688,7 +718,7 @@
     }
     /* A teleport, a new game or a switch of view starts the camera behind the player. */
     function resetChaseCamera() {
-      chaseCam.ready = false;
+      chaseCam.ready = chaseCam.primed = false;
       chaseCam.crane = 0;
       chaseCam.subject = null;
       chaseCam.idle = 99;
@@ -834,11 +864,34 @@
       if (Math.hypot(dx, dy) < 4) return chaseCam.viewYaw ?? chaseCam.yaw;
       return Math.atan2(dy, dx);
     }
+    /* Where a fresh camera starts: behind the vehicle it follows, else behind the player. */
+    function chaseStartYaw() {
+      const c = chaseRideVehicle();
+      return c ? c.a : player.a;
+    }
+    /**
+     * KEYS ON A FRESH CAMERA
+     * The movement keys are read before the camera's step (game-update.js), so on the step after a switch of
+     * view, a teleport, a load or a new game the camera has not been placed yet and its last heading is
+     * stale (the last chase view's, or the default). The keys then take the heading the fresh camera will
+     * start at (behind the player, as they faced before the step) and the camera keeps it (`primed`), so a
+     * key held across the switch goes the new view's way at once and the camera stands behind it.
+     */
+    function chaseMoveYaw() {
+      const cam = chaseCam;
+      if (!cam.ready) {
+        if (!cam.primed) {
+          cam.yaw = cam.viewYaw = chaseStartYaw();
+          cam.primed = true;
+        }
+        return cam.yaw;
+      }
+      return cam.viewYaw ?? cam.yaw;
+    }
     /* The way the movement keys point in the chase view: rotated from the screen to the camera's heading. */
     function chaseMoveHeading(x, y) {
       // x: right (+1) / left (-1), y: back (+1) / forward (-1), as the street view's screen axes.
-      const yaw = chaseCam.viewYaw ?? chaseCam.yaw;
-      return normalizeAngle(Math.atan2(y, x) + yaw + Math.PI / 2);
+      return normalizeAngle(Math.atan2(y, x) + chaseMoveYaw() + Math.PI / 2);
     }
     /* DeadEndCity.chaseCamera(): the view mode and where the chase camera stands and looks. */
     function chaseCameraReport() {

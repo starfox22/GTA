@@ -325,7 +325,8 @@ packs with plain `<script src>` so the zip still plays from file://.
   that turns at most ~52 deg/s, smoothed camera height); vehicle framing is `CAMERA_CONTEXT` × `speedZoomTarget`
   (world-view.js; `vehicleCameraFactor()` is Settings · Driving · Vehicle camera distance). Below 30 km/h a road vehicle or boat frames like
   walking (`slowFramingOn()`, world-view.js SLOW FRAMING: out at 31 km/h, back after 1 s under 30; Motion comfort
-  too; the chase view's boom follows it, chase-camera.js `slowShare`; a carjack never zooms); with no lead the follow's axis turns with the travel (look-ahead 0 % = centred); the on-foot share is `walkCameraFactor()` (Settings · Driving · Walking camera distance); the driving lead's
+  too; the chase view follows it, chase-camera.js `slowShare`/`CHASE_SLOW`: close behind the vehicle's back with the
+  whole vehicle in frame and the HUD clear; a carjack never zooms); with no lead the follow's axis turns with the travel (look-ahead 0 % = centred); the on-foot share is `walkCameraFactor()` (Settings · Driving · Walking camera distance); the driving lead's
   frame share stops where the vehicle's far end reaches `leadShareTop` 0.7 of the half frame (look-ahead 0-300 %,
   default 200 %). Renderers read only
   `streetCameraAltitude()` and `cameraShakeLevel()`. `motionComfortOn()` (settings.js MOTION COMFORT) is the one
@@ -339,7 +340,8 @@ packs with plain `<script src>` so the zip still plays from file://.
   `CHASE_FIRE_REACH` or within `CHASE_FIRE_NEAR` of the player, never through a building), never a `cameraTarget`
   box; `viewPopAudit()` stays at 0 (tools/tests/chase-streams.mjs). The reticle (the cursor without pointer lock)
   is the aim for every device: aim code reads `aim()`, `chaseAimScreen()` or `chaseGroundPoint()`, never
-  `mouse.x/y` with `city3D.groundPoint` alone. Movement keys go through `playerMoveHeading()`; the street view's
+  `mouse.x/y` with `city3D.groundPoint` alone. Movement keys go through `playerMoveHeading()` (chase heading `chaseMoveYaw`, primed
+  behind the player on a switch, teleport or reload; the on-foot camera follows a run only within `CHASE_FOLLOW_ARC`); the street view's
   paths stay bit-identical when the chase view is off. Its HUD layout is `body.chase-view` (chase-view.css).
   Sweep both the shoulder and boom against walls; no minimum boom may override collision clearance.
 - Chase view budget (rendering-chase-budget.md): a static group's small parts and glows, scene signs, small batches,
@@ -420,12 +422,17 @@ packs with plain `<script src>` so the zip still plays from file://.
   4096x2048, earlier models keep their density (`texFloor`); regenerate the bin from every MODELS list, never pick a side.
   Burnt or worn downloaded models (atlas parts) char only through vehicle-char3d.js ASSET CHAR
   (`assetCharSwap`/`assetCharRelease` from paintVehicle); never set a map on the shared `vaMaterials`.
+- Downloaded motorbikes: a source posed with its bars turned is straightened by `unsteer` (vehicle_models_moto.py); a wheel
+  turns only whole round pieces (spokes, hub, rim); car wheels stop at the tyre's inner wall; four-wheeled models' wheels
+  follow their springs (`ride.d`) through ride-wheels3d.js. The KR 500 is a CC-BY model (credits).
 - Downloaded aircraft and dog (vehicles-and-driving-models-aircraft.md): `tools/aircraft_models.py` makes
   assets/aircraft-models.bin + aircraft-skin.webp (SKYRANGER 429 airframe `bell429`, flyable SKYLARK 172 airframe
   `skyhawk`, `fixedGear`) on the makeHelicopter / buildAircraft contracts; `rotorStrikes` uses an airframe's
   `rotorRadius`/`rotorX`; civil helicopters are parked only by `populateCivilHelicopters()`; `tools/dog_model.py` bakes
   assets/dog-model.bin, drawn by dog3d.js as one instanced vertex-blend draw (`dogPose`); `aircraftAssetsOn(false)` /
   `dogModelOn(false)` give before/after.
+- Front doors (damage, carjack, getting in and out) come only from `vehicleDoor` (damage3d-bodies.js DOORS): cut from the
+  body's own paint with an inside panel and window; swings are carjack3d.js DOOR SWING; no dark box over an opening.
 - Car crash damage (vehicles-and-driving-damage.md): `crumpleField(dents, limits, ...)` / `crumpleLimits(vehicle)`
   (damage-crumple.js) is the only crumple rule; damage3d-crumple.js bends every mesh under a car body with it,
   time-sliced (`crumpleSlices`), and bumps `m.shapeVersion` when a body is done. A part that animates its own matrix or
@@ -433,6 +440,10 @@ packs with plain `<script src>` so the zip still plays from file://.
   (damage3d-marks.js) are pinned to a triangle of the part they hit, so a part holding marks keeps its vertex order when
   bent; a mark with no surface is not drawn; holes never on glass or the cabin, stars only on their own pane
   (`crumpleAudit()`, tools/tests/vehicle-damage-shape.mjs).
+- Gunfire on road vehicles goes only through `vehicleRoundDamage` (vehicle-gunfire.js): calibre × hit zone; pistols, shotguns
+  and rifles never take a car past the engine-fire line (the fire's countdown does the rest); a new heavy gun sets `heavyRound`
+  or goreCal 'heavy', a new machine gun `mg`; tools/tests/vehicle-gunfire.mjs. Handbrake slides are friction, not a glide
+  (`tyreSideShare` falls off past the peak slip); reverse engages only from a stop (`reverseTest()`).
 - `carStainSeverity(kph, fatal)` (car-stains.js) is the only rule for how much bonnet blood a hit leaves (none under
   14 km/h); further hits add to a car's 3 stain records (`adds`, painted by `cbTopUpJob`), never replace one.
 - Military mounted guns the player fires (LAV-8 25 mm + coax, gun jeep M2, Black Hawk door guns) live in

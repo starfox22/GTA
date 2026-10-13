@@ -479,6 +479,8 @@
     addConsoleMethods('damage', damageConsole());
     // dentVehicle(), crumpleAudit(), vehicleDamageShape() (see damage-crumple.js crumpleConsole).
     addConsoleMethods('damage', crumpleConsole());
+    // vehicleDurability(), gunfireTest() (see vehicle-gunfire.js VEHICLE GUNFIRE).
+    addConsoleMethods('damage', vehicleGunfireConsole());
     // Handling: turnTest(), pose(), aiDriving(), riderReport(), rideInto(),
     // bridgeJump() (see physics-console.js handlingConsole).
     addConsoleMethods('handling', handlingConsole());

@@ -451,14 +451,16 @@
               keyName('back') + ' brake · ' + keyName('forward') + '+' + keyName('ascend') + ' wheelie',
             6,
           );
-        else if (vehicleSpec(c).bike)
+        else if (vehicleSpec(c).bike) {
           // A motorbike: the throttle and the climb key together pull a wheelie (wheelie.js).
           tell(
             vehicleSpec(c).name + ' · ' + keyName('forward') + ' throttle · ' + keyName('left') + '/' + keyName('right') +
               ' steer · ' + keyName('forward') + '+' + keyName('ascend') + ' wheelie',
             4,
           );
-        else
+          // The first rides spell the wheelie out (wheelie.js WHEELIE HINT).
+          offerWheelieHint(c);
+        } else
           tell(
             vehicleSpec(c).name + ' · ' + keyName('forward') + ' accelerate · ' + keyName('left') + '/' + keyName('right') +
               ' steer · ' + keyName('handbrake') + ' handbrake',

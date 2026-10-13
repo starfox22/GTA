@@ -70,8 +70,21 @@ vehicles-and-driving-models.md's; credits in docs/THIRD_PARTY_CREDITS.txt. Conso
 - The kit puts the steering geometry in the fork pivot's frame (axis top, tilted by the model's `rake`), the front wheel
   under it; `m.rearAxleX` is the wheelie's pivot (animateMotorbike); the rider's pose (`riderSeat`, the stand-in
   `motoRiderGeometry(type, pose, scale)`) comes from the measured saddle, grips and pegs.
-- Kept procedural: dolcati, yamasaki, cruiser, kr500 (the matching models are Draco-compressed with no plain mirror on
-  GitHub, or their paint and maker's logos are baked into one texture: the NR750 cannot take the traffic colours).
+- The KR 500 ('kr500') is OCTbuilds' KTM Dirt Bike: its plastics' orange takes the paint (`paintTex`, so a respray
+  shows), the white and black graphics stay their texture, the maker's logos erased.
+- Sources posed with the bars turned (all three bikes) are turned straight first (`unsteer`: everything ahead of the
+  head tube's axis, above `above`, out at the bars' ends `wide`, and inside the front tyre's sphere turns back about
+  the axis; the axis passes the rear tyre's middle plane). Without it the front wheel spun about an axle that was not
+  its own and wobbled.
+  Check a new bike: its front tyre's flattest direction must come out along z.
+- A wheel turns only whole pieces inside its hub circle that go round the axle (rim, hub, disc, sprocket), run from
+  hub to rim (a spoke) or are small bits on hub or rim (nipples, bolts): a caliper, a fork's foot or a chain link
+  stays put (the converter prints what it left). `fork` (sphere in tyre radii, `reach` behind the axis) puts what
+  hangs round the front wheel (fork feet, caliper, a wrapping fender) in the steering; `barsWide` the levers and hand
+  guards. Stands modelled down are left out with `dropBox`. Hints after `unsteer` are in the re-centred frame.
+- Cars (convert): a wheel takes nothing past its tyre's inner wall (the Suburban's arch lining turned with its wheels).
+- Kept procedural: dolcati, yamasaki (the matching models are Draco-compressed with no plain mirror on GitHub, or their
+  paint and maker's logos are baked into one texture: the NR750 cannot take the traffic colours).
 - 11 draws (as procedural), ~14k triangles with the rider stand-in (procedural 6.9k).
 
 ## Boats (ASSET BOATS, boat-assets3d.js)
