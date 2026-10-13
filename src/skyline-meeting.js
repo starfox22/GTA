@@ -748,8 +748,9 @@
         // Just up on the terrace: the walk in to his table is cut short (skyMeetingWalkIn).
         if (M.stage === 'terrace' && !M.script && !M.sat) return SKY_MEETING_PROMPTS.sit;
       }
-      // The door talk over, on the street: up with him (skyMeetingGoUp).
-      if (M.stage === 'greeted' && !M.script && !player.buildingRoof && !player.swimming && !player.parachute && distanceBetween(P.lift.lobby, player) < 160)
+      // The door talk over, on the street short of the lobby door: up with him (skyMeetingGoUp); at the door the
+      // lift's own ELEVATOR TO CIRRUS does the same.
+      if (M.stage === 'greeted' && !M.script && !player.buildingRoof && !player.swimming && !player.parachute && distanceBetween(P.lift.lobby, player) < 160 && !skyLiftInReach())
         return SKY_MEETING_PROMPTS.follow;
       if (talking) return SKY_MEETING_PROMPTS.next;
       return null;

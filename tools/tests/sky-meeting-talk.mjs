@@ -69,9 +69,12 @@ export default async function (t) {
   r = await report(t);
   t.assert(Math.hypot(r.player.x - there.x, r.player.y - there.y) > 6, 'and he walks: ' + JSON.stringify({ there, now: r.player }));
 
-  // The whole meeting on the action key alone, from the pavement to the envelope.
+  // The whole meeting on the action key alone, from the pavement to the envelope: talked to from his far side, out of
+  // the lobby door's reach, so the walk to the lift is GO UP WITH (at the door the lift's own prompt does the same).
   await t.call('skyMeeting', 'begin');
   await t.call('skyMeetingSkip', 'waiting');
+  const him = (await report(t)).diplomat;
+  await t.call('teleport', him.x - 20, him.y + 10);
   await t.call('holdSimulation', true);
   try {
     const STEP = 0.3,

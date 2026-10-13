@@ -63,6 +63,11 @@ export default async function (t) {
     r = await t.call('garage');
     t.note(id + ' job: ' + JSON.stringify(r.last));
     t.assert(!r.job && r.last && r.last.shop === id, 'no service at ' + id + ': ' + JSON.stringify(r.last));
+    // Nobody saw the car for the whole job and the search ran out before the paint went on: nothing left to clear.
+    if (!r.last.seenEntering && !r.last.cleared && r.last.starsAfter === 0) {
+      t.note(id + ': the chase lapsed before the paint');
+      continue;
+    }
     if (r.last.seenEntering) {
       t.assert(r.last.starsAfter > 0 && !r.last.cleared, 'seen going in, yet the stars cleared');
       continue;
