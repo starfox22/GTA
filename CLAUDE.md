@@ -249,6 +249,7 @@ packs with plain `<script src>` so the zip still plays from file://.
   arrival times only, as generators that yield on `cbOver()`; the shader (`cbMaterial`, carblood3d-skin.js) owns
   colour, gloss and drying. Work goes through `cbSlice` (about 3 ms a frame); new vehicle GL resources are pooled
   or made in `cbWarmStep`.
+- A nudge under 20 km/h drops the person beside the car (`knockPerson`), never in its path.
 - Pedestrians react to a car only through `watchVehicle()` (crowd-awareness.js: sight, hearing, attention,
   reaction time); never start a 'dodge' directly. `carHorn(c, length)` is the only way a car honks (it sets
   `c.hornUntil`, which the awareness model hears). Someone on the ground (`personOnGround(p)`) who is run over
