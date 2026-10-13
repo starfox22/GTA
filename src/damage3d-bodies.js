@@ -35,7 +35,8 @@
        * (damage3d-crumple.js doorPanelGeometries: its curve, paint and livery outside, the door card inside) and the
        * opening it leaves is the cabin seen side-on, both in the body's upholstery (CAR_CABIN_TRIM, in shade), never
        * a dark slab; its window (`glass`: the side pane's own surface within the door, laid by rays) swings with it.
-       * Without a shell to probe, the old flat panels. The hinge is the door's front edge (`l * 0.2`).
+       * Without a shell to probe, the old flat panels. The hinge is the door's front edge; where the door sits along the
+       * body is vehicleDoorSpan (at the driver's seat on every body, long ones included).
        */
       const doorTrimMaterials = new Map();
       function doorTrimMaterial(c, inner) {
@@ -80,19 +81,38 @@
           if (wheel.updateMatrix !== squashedWheelMatrix) wheel.updateMatrix = squashedWheelMatrix;
         } else if (Object.prototype.hasOwnProperty.call(wheel, 'updateMatrix')) delete wheel.updateMatrix;
       }
+      /* The front door's back and front edges along the body ([x0, x1], the body's units). A body with its own shut
+         lines (cars3d-bodies.js `doors`, `m.dims.door`) opens there. Otherwise from the cabin and the seat plan
+         (cars3d-interior.js carSeatPlan, `m.seats`): the hinge at the windscreen's foot (the A-pillar, `glass.g.xf`, where
+         every drawn door starts), the back edge just behind the driver's hip, 0.95 to 1.3 m long; so a van's or a
+         truck's door is its cab's, not the middle of the body. With neither, the old share of the length. */
+      function vehicleDoorSpan(m) {
+        const l = m.dims.l;
+        if (m.dims.door) return m.dims.door;
+        const seat = m.seats,
+          glass = seat?.glass;
+        if (seat && seat.M > 0 && Number.isFinite(seat.x) && Number.isFinite(glass?.g?.xf) && glass.l > 0) {
+          const M = seat.M,
+            front = glass.g.xf * glass.l;
+          return [clamp(seat.x - 0.1 * M, front - 1.3 * M, front - 0.95 * M), front];
+        }
+        return [-0.06 * l, 0.2 * l];
+      }
       function vehicleDoor(c, m, side) {
         m.doors = m.doors || {};
         let door = m.doors[side];
         if (door) return door;
         claimDamageResources();
-        const { l, w, h } = m.dims,
+        const { w, h } = m.dims,
+          [x0, x1] = vehicleDoorSpan(m),
+          span = x1 - x0,
           pivot = new Three.Group();
-        pivot.position.set(l * 0.2, 0, side * w * 0.5);
+        pivot.position.set(x1, 0, side * w * 0.5);
         m.body.add(pivot);
         // From the sill (`dims.sill`: a real-size body's, cars3d.js) to the belt.
         // The door is cut from the body's own side (its curve, paint and livery; damage3d-crumple.js), else a slab.
         const sill = m.dims.sill ?? 4.8,
-          rect = { x0: l * -0.06, x1: l * 0.2, y0: sill + 0.2, y1: h - 0.15 },
+          rect = { x0, x1, y0: sill + 0.2, y1: h - 0.15 },
           shaped = m.shell ? doorPanelGeometries(m, side, rect.x0, rect.x1, rect.y0, rect.y1, pivot.position) : null;
         let panel,
           opening,
@@ -112,13 +132,13 @@
             pivot.add(glass);
           }
         } else {
-          panel = box(pivot, -l * 0.13, (sill + h + 0.4) / 2, side * 0.25, l * 0.26, h + 0.4 - sill, 0.45, m.paint);
-          opening = box(m.body, l * 0.07, (sill + h) / 2, side * (w * 0.5 + 0.04), l * 0.24, h - sill - 0.2, 0.3, engineBay);
+          panel = box(pivot, -span / 2, (sill + h + 0.4) / 2, side * 0.25, span, h + 0.4 - sill, 0.45, m.paint);
+          opening = box(m.body, (x0 + x1) / 2, (sill + h) / 2, side * (w * 0.5 + 0.04), span * 0.92, h - sill - 0.2, 0.3, engineBay);
           // A livery samples its door colour through the panel's UVs (police3d.js).
           if (m.panelGeometry) panel.geometry = m.panelGeometry;
         }
         // `rect`: the shaped door's place in the side (holes in that metal go with it, damage3d-marks.js).
-        door = m.doors[side] = { pivot, panel, opening, glass, rect: shaped ? rect : null };
+        door = m.doors[side] = { pivot, panel, opening, glass, rect: shaped ? rect : null, span };
         // The hinge moves with the crumpled side; the opening and the door (in its closed place, relative to the
         // hinge) bend with it.
         crumpleAdopt(m, pivot, true);
@@ -343,7 +363,7 @@
           door.pivot.rotation.set(0, side * (state === 1 ? 0.95 : 0), state === 1 ? -0.09 : 0);
           // (A shut door, its panel hidden, is torn off too: the body's own side flies off as the panel.)
           if (state === 2 && before[key] !== 2 && !first && (door.panel.visible || !before[key]))
-            spawnPanel(door.panel, paintColor, c, l * 0.26, h - 4.4, 0.45, 1.2);
+            spawnPanel(door.panel, paintColor, c, door.span, h - 4.4, 0.45, 1.2);
           door.panel.visible = state < 2;
           // A sprung or torn door's window is gone (the body's pane stays as the damage leaves it).
           if (door.glass) door.glass.visible = false;

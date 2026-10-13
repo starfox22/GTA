@@ -53,4 +53,11 @@ the models' damage contract is vehicles-and-driving-models.md.
   `carTransition.door`). Its window (`doorGlassGeometries`, the side pane's surface within the door, `userData.doorGlass`:
   never a mark) shows only while a whole door swings, and the body's side pane is then left out (`doorSidePane`, put back
   as the damage pass last set it). Door colours come from `CAR_CABIN_TRIM` (`doorTrimMaterial`, shared, never near black).
-  The door rect is the old one (hinge at `l * 0.2`), so a bus or box truck swings no door on the way in or out.
+  Where it sits is `vehicleDoorSpan(m)`: a procedural body's own front shut lines (`m.dims.door`), else the hinge at the
+  windscreen's foot (the seat plan's `glass.g.xf`, where every drawn door starts) and the back edge 0.1 m behind the
+  driver's hip (`m.seats.x`), 0.95-1.3 m long, so a van's, pickup's or truck's door is its cab's; the old `l * 0.2`
+  share only for a body with neither. `carModels(true)` lists each cabin's `hip` and `door` (m); console `doorSwing(id)`.
+  Getting in and out still swings no door on a truck (`vehicleSpec(c).truck`, carjack3d.js swingDriverDoor).
+- FLAT TYRE SQUASH (damage3d-bodies.js `squashWheel`): a flat tyre's `scale.y` is applied outside the wheel's roll
+  (`squashedWheelMatrix`: place, camber and steer, squash, then the roll), so the flat spot stays at the bottom; a
+  motorbike's front wheel on its raked fork turns the squash back square to the bike (`userData.squashTilt`).

@@ -284,6 +284,15 @@
         cameraTarget.y = y;
         return this.status();
       },
+      // Vehicle `id`'s driver door yanked open as a carjack's (carjack3d.js DOOR SWING), or shut with `open` false:
+      // where the door sits on a body (damage3d-bodies.js vehicleDoorSpan; carModels(true) lists hip and door).
+      doorSwing(id, open = true) {
+        const c = vehicles.find((v) => v.id === id);
+        if (!c) return null;
+        if (open) c.doorSwing = { openAt: gameTime - 1, closeAt: 0 };
+        else if (c.doorSwing) c.doorSwing.closeAt = gameTime;
+        return { id: c.id, type: c.type, open: !!open };
+      },
       // The respray garages (garages.js): shops, doors, prices, the offer for the
       // player's vehicle, the drive-in job in progress and the last service.
       garage: () => garageReport(),
