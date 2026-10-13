@@ -276,7 +276,8 @@ packs with plain `<script src>` so the zip still plays from file://.
   lights too); light and shadow counts are part of every lit program's key, so never toggle a light's
   `visible`/`castShadow`/layers in play; after adding an effect check `renderHiccups()` (a program, texture or
   geometry on its first frame is a hitch to warm). `dev.mjs start --render --prewarm` runs the title prewarm on
-  software GL (compile only); `dev.mjs cpucost 45` is CPU ms per drawn frame per browser process.
+  software GL (compile only; set the tier first: `call graphics high`, then `reload --render --keep --prewarm`; a tier change
+  in play leaves vehicles built only at the title uncompiled for the new lit state); `dev.mjs cpucost 45` is CPU ms per drawn frame per browser process.
 - Top-level function declarations share one closure: a name declared in two files silently replaces the first for
   every caller (quick-check.sh fails on it); prefix area-specific helpers (`medicRouteLength`). Job restarts
   (`retryMission`, `chooseMission`, new game) move the player with `teleportPlayer`. Mission stage texts that embed
