@@ -14,6 +14,8 @@ export default async function (t) {
       await t.call('graphics', tier);
       await t.call('hillClimb', 'at0.036', 0);
       await t.call('mud', 0.8, 1);
+      // Two drawn frames: the view comes to the truck and its model is posed (the mud is thrown from drawn models).
+      await t.call('hitchRun', 2 / 60, [], 3, false, true);
       const pool = await t.call('effectParticles');
       const e = await t.call('trailMud', 2.5, ['KeyW']);
       t.finite(e, `trailMud on ${tier}`);
