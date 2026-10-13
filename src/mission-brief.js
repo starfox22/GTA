@@ -7,7 +7,8 @@
      * (game time, so a pause holds it) it drops into the pager strip, which keeps the short objective
      * (setStage's instruction). One at a time: a brief asked for while another shows replaces it; one asked
      * for while a headline card (#announcement) is still centred waits for it, so a title card or COVER
-     * BLOWN reads first. The mission card key (O) folds it early. Missions only: with no job it folds.
+     * BLOWN reads first. The mission card key (O) folds it early, and so does Escape (dismissMissionCentre,
+     * game-input.js: the pause menu opens only when there was nothing to clear). Missions only: with no job it folds.
      */
     const MISSION_BRIEF_FOLD = 0.8;
     const missionBriefState = { text: '', kicker: '', tone: '', queued: null, phase: 'idle', until: 0, foldEnd: 0, shown: 0 };
@@ -16,9 +17,9 @@
       if (!mission || !text) return;
       missionBriefState.queued = { text, kicker: options.kicker || 'NEW OBJECTIVE', tone: options.tone || '', seconds: options.seconds || 0 };
     }
-    // Reading time: about a word every 0.28 s on top of two seconds, between 4.5 and 10.
+    // Reading time: about a word every 0.22 s on top of 1.2 seconds, between 3 and 6.5 (it stays in the strip).
     function missionBriefSeconds(text) {
-      return clamp(2 + text.split(/\s+/).length * 0.28, 4.5, 10);
+      return clamp(1.2 + text.split(/\s+/).length * 0.22, 3, 6.5);
     }
     function missionBriefShowing() {
       return missionBriefState.phase === 'show';
@@ -31,11 +32,29 @@
       const el = getElement('missionBrief');
       el.classList.remove('show');
       el.classList.add('fold');
-      // The strip it lands in glows as it arrives.
+      missionBriefLand();
+      return true;
+    }
+    // The strip a brief lands in glows as it arrives.
+    function missionBriefLand() {
       const pager = getElement('pager');
       pager.classList.remove('brief-land');
       void getComputedStyle(pager).animationName;
       pager.classList.add('brief-land');
+    }
+    /* Escape in play (game-input.js): the middle of the screen cleared at once. A brief on screen folds into the
+       strip; a job's headline card still centred (the title card, COVER BLOWN) goes, and a brief waiting behind it
+       lands straight in the strip, which already holds the step's objective. False when there was nothing to
+       clear, and Escape pauses as before. */
+    function dismissMissionCentre() {
+      if (foldMissionBrief()) return true;
+      if (!mission || !headlineCentred()) return false;
+      announceTime = 0;
+      getElement('announcement').classList.remove('show');
+      if (missionBriefState.queued) {
+        missionBriefState.queued = null;
+        missionBriefLand();
+      }
       return true;
     }
     function headlineCentred() {

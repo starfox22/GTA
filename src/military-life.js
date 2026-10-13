@@ -80,8 +80,14 @@
       for (const x of [9835, 9880, 9925]) park('jeep', x, 9080, north);
       // The fuel bowser at the pump island.
       park('armytruck', 10160, 9042, 0, { fuelBowser: true });
-      // Quick-reaction jeeps with gunners at HQ.
-      for (const x of [9470, 9512]) park('jeep', x, 7962, Math.PI / 2, { gunner: true, qrf: true, qrfHome: { x, y: 7962, a: Math.PI / 2 } });
+      // Quick-reaction jeeps with gunners at HQ: the south end of the HQ lot, nose to the avenue (the pad is north).
+      for (const x of [9470, 9512]) park('jeep', x, 8018, Math.PI / 2, { gunner: true, qrf: true, qrfHome: { x, y: 8018, a: Math.PI / 2 } });
+      // The walk from the gate to the records office passes the HQ pad's helicopter and the ready line.
+      const hqPad = SENTINEL.helipads[2],
+        ready = SENTINEL.readyLine;
+      park('helicopter', hqPad.x, hqPad.y, Math.PI / 2, { color: '#4d5641' });
+      park('armytruck', ready.slots[0], ready.y + ready.h / 2 + 2, north);
+      park('apc', ready.slots[1], ready.y + ready.h / 2 + 2, north);
       // Perimeter patrol jeeps drive the ring road clockwise.
       const pr = SENTINEL.perimeterRoad,
         ring = [
@@ -119,7 +125,8 @@
       const g = SENTINEL.gate;
       soldier(g.island.x + 8, 8150, Math.PI, 'gate');
       soldier(g.booth.x + g.booth.w / 2, 8150, Math.PI, 'gate', { hold: true });
-      soldier(g.island.x + g.island.w - 16, 8150, Math.PI, 'gate');
+      // The inner guard stands on the island between the arm and the fence post that splits the lanes (x 9300).
+      soldier(g.armX + 18, 8150, Math.PI, 'gate');
       for (const n of SENTINEL.nests) soldier(n.x + 6, n.y, n.a, 'post', { hold: true });
       for (const t of SENTINEL.towers) soldier(t.x, t.y, t.a, 'tower', { altitude: SENTINEL.towerFloor, hold: true, elevated: true });
       soldier(9725, 8050, Math.PI / 2, 'post', { hold: true });
@@ -268,6 +275,8 @@
           { x: 9100, y: 8192 },
           { x: g.checkpoint - 30, y: inbound },
           { x: 9360, y: inbound },
+          // Off the ready line's noses (SENTINEL.readyLine).
+          { x: 9440, y: 8170 },
           { x: 9960, y: 8178 },
           { x: 9990, y: 8700 },
           { x: 9990, y: 9175 },
@@ -279,7 +288,8 @@
       }
       const s = militarySupply,
         c = s.car;
-      if (c.hp <= 0 || c === player.car || !vehicles.includes(c)) {
+      // Wrecked, taken, gone, or its driver out of the cab: the run is over (the truck stays where it is).
+      if (c.hp <= 0 || c === player.car || !vehicles.includes(c) || !c.occupied) {
         militarySupply = null;
         return;
       }
@@ -298,7 +308,7 @@
             c.countyIndex = 2;
           }
         }
-        if (c.countyIndex === 0 && c.ai && distanceBetween(c, c.countyRoute[6]) < 70) {
+        if (c.countyIndex === 0 && c.ai && distanceBetween(c, c.countyRoute[c.countyRoute.length - 1]) < 70) {
           // Arrived: park until the load is off.
           c.ai = false;
           s.stage = 'parked';
@@ -576,6 +586,38 @@
         worldContext.font = 'bold 12px Arial';
         worldContext.fillText('FORT SENTINEL · RESTRICTED', 9120, 8030);
       }
+    }
+    /* The base's own layout check (console militaryAudit, tools/tests/fort-records-route.mjs): parked military vehicles
+       standing in a fixed solid, a base building or each other; soldiers whose post is inside a solid (the booth guard,
+       the sandbag nests' gunners and the tower sentries stand in theirs by design: `expected`); the papers window,
+       the records door and the pads kept clear. Each entry names what and where. */
+    function militaryLayoutAudit() {
+      const out = { vehicles: [], soldiers: [], expected: 0, spots: [] },
+        parked = vehicles.filter((c) => c.military && !c.ai && c.hp > 0 && (c.altitude || 0) < 2 && inMilitary(c.x, c.y, 300)),
+        boxOf = (b) => ({ x: b.x + b.w / 2, y: b.y + b.h / 2, hx: b.w / 2, hy: b.h / 2, a: 0 }),
+        name = (c) => c.type + '@' + Math.round(c.x) + ',' + Math.round(c.y);
+      for (let i = 0; i < parked.length; i++) {
+        const c = parked[i],
+          shape = vehicleShape(c);
+        for (const b of militaryWalls) if (boxContact(shape, boxOf(b))) out.vehicles.push(name(c) + ' in ' + (b.kind || 'solid') + '@' + b.x + ',' + b.y);
+        for (const b of buildings) if (b.military && boxContact(shape, boxOf(b))) out.vehicles.push(name(c) + ' in ' + b.baseName);
+        for (let j = i + 1; j < parked.length; j++) if (boxContact(shape, vehicleShape(parked[j]))) out.vehicles.push(name(c) + ' touches ' + name(parked[j]));
+      }
+      for (const e of gangMembers) {
+        if (!e.military || e.hp <= 0 || !e.home) continue;
+        if (!militaryBlocked(e.home.x, e.home.y, 5) && !buildings.some((b) => b.military && e.home.x > b.x && e.home.x < b.x + b.w && e.home.y > b.y && e.home.y < b.y + b.h)) continue;
+        const nest = SENTINEL.nests.some((n) => Math.abs(e.home.x - n.x) < 18 && Math.abs(e.home.y - n.y) < 11);
+        if (e.elevated || nest || (e.role === 'gate' && e.hold)) out.expected++;
+        else out.soldiers.push(e.role + '@' + Math.round(e.home.x) + ',' + Math.round(e.home.y));
+      }
+      const spots = [
+        ['papers', FORT_COVER_GATE.check.x, FORT_COVER_GATE.check.y],
+        ['records', FORT_RECORDS.spot.x, FORT_RECORDS.spot.y],
+        ...SENTINEL.helipads.map((p, i) => ['pad' + i, p.x, p.y]),
+      ];
+      for (const [label, x, y] of spots) if (militaryBlocked(x, y, 8)) out.spots.push(label);
+      out.ok = !out.vehicles.length && !out.soldiers.length && !out.spots.length;
+      return out;
     }
     // Console snapshot of the base's security state (tests and tuning).
     function militaryReport() {

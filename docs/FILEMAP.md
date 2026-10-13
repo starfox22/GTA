@@ -11,16 +11,16 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-592 files in the include tree, 202,885 lines.
+594 files in the include tree, 203,359 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
-- `src/game.js`   204 — ▸ Game orchestration and shared state
+- `src/game.js`   206 — ▸ Game orchestration and shared state
 
 ## src/game.js ▸ Game orchestration and shared state
 
 - `src/game-state.js`   432 — Shared data contracts: Map coordinates are (x, y), measured in world units: UNITS_PER_METRE (8) to the metre, 512 units = 64 m.
-- `src/game-vehicles.js`   755 — VEHICLE_DEFINITIONS (real sizes, masses, top speeds), vehicleSpec(), road and air resistance.
+- `src/game-vehicles.js`   758 — VEHICLE_DEFINITIONS (real sizes, masses, top speeds), vehicleSpec(), road and air resistance.
 - `src/game-weapons.js`    84 — Weapon table (weapons) and mission list (missions).
 - `src/audio.js`   721 — Effects and voice audio
 - `src/voices.js`   174 — People's voices: whether someone is drawn as a woman or a man (personFemale) and the recorded scream that fits them (screamVoice, playPersonScream …
@@ -29,7 +29,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/camera-drive.js`   200 — Camera drive: the street camera's follow in a road vehicle or a boat, built for comfort: a steady lead, critically damped springs (firm along the …
 - `src/camera-comfort.js`   133 — Camera comfort: what the street camera's motion does to the eye, sampled as it runs (cameraView().comfort): the view's acceleration and jerk in …
 - `src/hud-notify.js`   166 — Notification feed behind tell(): lines stack in #toast, newest first, at most NOTICE_MAX (two on a phone); a repeat refreshes its own line; readable …
-- `src/mission-brief.js`    98 — Mission briefs: the big centred sentence that says what a story step is about (missions 3-4), held a few seconds, then folded down into the mission …
+- `src/mission-brief.js`   117 — Mission briefs: the big centred sentence that says what a story step is about (missions 3-4), held a few seconds, then folded down into the mission …
 - `src/heat.js`   283 — Heat and wanted stars
 - `src/witnesses.js`   529 — Witnesses and 911 calls, the police side: crimes nobody has reported yet, what the police see and hear for themselves, and how a report brings them …
 - `src/game-collision.js`   401 — Building grid: solid() and shotBlocked() run thousands of times per frame (every pedestrian step, bullet and spawn test).
@@ -38,20 +38,20 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-worldgen.js`   480 — buildWorld(): the city plan, buildings (makeBuilding), trees, the 2D ground canvas.
 - `src/game-populate.js`   231 — Initial population: showcase parking (SHOWCASE_PARKING, parkShowcase) and populate().
 - `src/world-reset.js`   130 — World reset: resetWorld(reason) puts the city back as it was at boot (vehicles, people, wrecks, damage, blood, gore, fires, knocked furniture, shop …
-- `src/game-player-actions.js`   637 — Player verbs: enter and exit vehicles, interact, aim, shoot, reload, hurt, die, explode.
+- `src/game-player-actions.js`   640 — Player verbs: enter and exit vehicles, interact, aim, shoot, reload, hurt, die, explode.
 - `src/game-cops.js`   183 — resetMissionState(), spawnCop(), copRoute(): mission reset and patrol spawning.
 - `src/physics.js`    19 — ▸ Vehicle and pedestrian physics
 - `src/game-people.js`   168 — Pedestrian life: Everyday chatter lives here; how people walk, what they do and how they react to danger is in src/crowd.js, which also has the …
 - `src/game-combat.js`   349 — updateCombat(), bullets, shot line-of-sight (shotBlocked) and bullet targets.
 - `src/game-update.js`   194 — update(dt): the per-frame simulation step (only active play advances clocks).
 - `src/world-edge.js`   521 — Open-sea countdown: 10 s flying or sailing away from all land starts RETURN TO THE CITY and 10 s more; at zero a missile comes in from the coast and …
-- `src/game-draw2d.js`   614 — 2D canvas fallback renderer: drawWorld, drawCar, drawPerson, markers.
+- `src/game-draw2d.js`   616 — 2D canvas fallback renderer: drawWorld, drawCar, drawPerson, markers.
 - `src/game-minimap.js`   281 — Minimap base layer: The minimap used to repaint the whole county (coast, every street, parks, promenades, county ground and every building footprint) …
 - `src/map-view.js`   377 — Map views: the city map's filters (MAP LAYERS) and GO TO list, sharp canvases on HiDPI screens, the minimap's speed pull-back and its edge arrows …
 - `src/game-ui.js`   521 — Weapon chip, mission card and updateUI() (HUD text refresh).
 - `src/game-menus.js`   196 — Resize, begin/newGame, pause, help, big map toggle.
 - `src/god-splash.js`   114 — ▸ God mode splash: the full-screen card and fanfare when a cheat code toggles god mode (game-input.js godModeCheat): ON charges up, slams a gold "GOD …
-- `src/game-input.js`   529 — Cheat code: Letters typed during play accumulate in a short ring; when the tail spells a known code it fires.
+- `src/game-input.js`   532 — Cheat code: Letters typed during play accumulate in a short ring; when the tail spells a known code it fires.
 - `src/controls.js`   326 — Key bindings
 - `src/geography.js`    12 — ▸ Coastlines and land regions
 - `src/drawbridge.js`    83 — ▸ The drawbridges: schedules, gates, leaves, jumps
@@ -63,8 +63,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/pursuit.js`    27 — ▸ Police response and pursuit tactics
 - `src/swat.js`   236 — SWAT teams, riot shields and rooftop snipers
 - `src/wounds.js`   184 — Wounds, hit reactions and death falls
-- `src/story.js`   994 — Story characters and mission stages
-- `src/campaign.js`   534 — Campaign saves and replay
+- `src/story.js`  1008 — Story characters and mission stages
+- `src/campaign.js`   549 — Campaign saves and replay
 - `src/chase.js`   554 — Cargo pursuit
 - `src/roadblocks.js`   436 — Police containment and roadblocks
 - `src/carjack.js`   340 — Carjacking and driver reactions
@@ -105,7 +105,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/mounted-guns.js`   458 — Mounted guns the player fires from Fort Sentinel's vehicles: the LAV-8's 25 mm cannon and coax MG, the gun jeep's ring-mounted .50 cal and the Black …
 - `src/aviation.js`    10 — ▸ Fixed-wing flight and flight missions
 - `src/challenges.js`   507 — Mission-specific encounters
-- `src/summitjob.js`   319 — Mission 3, High Ground: the package buried at the top of Mount Ascent
+- `src/summitjob.js`   314 — Mission 3, High Ground: the package buried at the top of Mount Ascent
 - `src/fortjob.js`   939 — Mission 4, Borrowed Stripes: an off-duty soldier's uniform, Fort Sentinel and the consul at CIRRUS
 - `src/sidejobs.js`   426 — Contract missions after the main story
 - `src/streets.js`    12 — ▸ Road presentation
@@ -139,7 +139,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/gamepad.js`   360 — Gamepad (standard mapping): play through the same actions as the bound keys, menus by focus, the city map by a cursor; the button names hints use …
 - `src/world-view.js`   344 — World camera gestures
 - `src/car-radio.js`   871 — Vehicle radio stations
-- `src/garages.js`   782 — ▸ Drive-in repair and respray
+- `src/garages.js`   799 — ▸ Drive-in repair and respray
 - `src/payphones.js`   215 — Story payphones: PAYPHONES (the original `phone` first, at least two on every island including North Point Key, PAYPHONE_ISLANDS), the one the job …
 - `src/crowd.js`   194 — ▸ Crowd life, perception and reactions
 - `src/livingcity.js`    32 — ▸ The living city in free roam
@@ -149,7 +149,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/beachclub.js`    63 — ▸ Marea Beach Club (plan, people, door, schedule)
 - `src/beachclub-audio.js`   370 — Marea Beach Club music
 - `src/clubpool.js`   285 — Marea pool: in, swim, out
-- `src/clubtalk.js`   380 — Conversations with Marea club-goers
+- `src/clubtalk.js`   387 — Conversations with Marea club-goers
 - `src/leisure.js`    45 — Beach and club leisure: prompt and action key
 - `src/ambience.js`   301 — City soundscape
 - `src/ambience-beds.js`   346 — Ambience beds by place and time: the city's far wash, gusting wind (the open, the heights, the range), leaves, cicadas and the night chorus, harbour …
@@ -172,9 +172,11 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/chase-hud.js`    77 — Chase HUD: the reticle in the middle of the screen in the chase view (chase-view.css) and the hidden cursor while the pointer is captured; drawn …
 - `src/tyre-effects.js`   274 — What the tyres leave behind: the burnout (forward and the handbrake held at a standstill), skid marks, and the one rule for tyre smoke, dust and …
 - `src/hud.js`    34 — ▸ HUD behaviour and the title menu
-- `src/render3d.js`   245 — ▸ Three.js renderer and resource lifecycle
+- `src/gpu-context.js`    66 — GPU context loss: when the browser takes the 3D canvas's WebGL context away (GPU memory, a driver reset), the game pauses, says so, skips drawing …
+- `src/render3d.js`   247 — ▸ Three.js renderer and resource lifecycle
 - `src/frame-trace.js`   324 — Frame trace: every frame's CPU split (simulation sections, renderer laps) and what happened in it (collections, DOM mutations, GL uploads and links …
-- `src/game-loop.js`   207 — Profiler: Rolling averages of simulation and render CPU time per frame, plus the renderer's draw-call and triangle counts.
+- `src/frame-guard.js`    44 — Frame guard: an exception in one part of a frame (pre-step, simulation, draw) is logged once per message and counted, and the frame loop keeps …
+- `src/game-loop.js`   225 — Profiler: Rolling averages of simulation and render CPU time per frame, plus the renderer's draw-call and triangle counts.
 - `src/game-console.js`    48 — ▸ DeadEndCity console registry and assembly
 - `src/game-agent-tools.js`    72 — Optional browser agent access uses exactly the same actions as the controls.
 
@@ -304,9 +306,9 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/military.js ▸ Fort Sentinel
 
-- `src/military-base.js`   608 — Fort Sentinel rules: plans, walls, gates, lockdown, solids and alarms (MILITARY, SENTINEL, militaryBlocked, militaryAlarm).
-- `src/military-life.js`   603 — Fort Sentinel life: buildMilitary(), soldiers and drill, gunners and tanks firing, supply runs, updateMilitary().
-- `src/fort-cover.js`   420 — Fort Sentinel cover: the borrowed army uniform (wearUniform), the stolen pass shown at the gate, the cover state and its small API for a mission …
+- `src/military-base.js`   636 — Fort Sentinel rules: plans, walls, gates, lockdown, solids and alarms (MILITARY, SENTINEL, militaryBlocked, militaryAlarm).
+- `src/military-life.js`   645 — Fort Sentinel life: buildMilitary(), soldiers and drill, gunners and tanks firing, supply runs, updateMilitary().
+- `src/fort-cover.js`   440 — Fort Sentinel cover: the borrowed army uniform (wearUniform), the stolen pass shown at the gate, the cover state and its small API for a mission …
 - `src/fort-cover-watch.js`   165 — Fort Sentinel cover, the garrison's eyes: each soldier's forward cone (fortSoldierSees), the restricted spots, and the suspicion it fills while the …
 - `src/fort-cover-records.js`   117 — Fort Sentinel's HQ records office: its side door (FORT_RECORDS), the fade inside, the timed search for the weapons file on a card (#fortRecords) and …
 
@@ -348,7 +350,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/skyline-islet.js`   310 — North Point Key built: its land and bridge, the three towers, palms, fountain and ground tile, shore rules and map paint.
 - `src/skyline-lift.js`   233 — North Point Key's lifts: the roof decks (FEDERATION EAST's helideck, EVOLUTION's sky-bar terrace), lobby and roof doors, the ride and its fade, the …
 - `src/skyline-bar.js`   490 — CIRRUS, the sky bar on EVOLUTION's roof: the terrace plan, its guests and staff, their conversations, drinks at the bar; the Key's doormen.
-- `src/skyline-meeting.js`   768 — The meeting at CIRRUS, a scene a story job drives: a diplomat waiting at EVOLUTION's door, the lift up together, his reserved table, two cocktails, a …
+- `src/skyline-meeting.js`   836 — The meeting at CIRRUS, a scene a story job drives: a diplomat waiting at EVOLUTION's door, the lift up together, his reserved table, two cocktails, a …
 - `src/skyline-console.js`   104 — DeadEndCity console methods for North Point Key: skyline() report and skylineVisit(spot) (registered by game-console-world.js).
 
 ## src/sports.js ▸ Live basketball and soccer matches
@@ -384,7 +386,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/crowd.js ▸ Crowd life, perception and reactions
 
 - `src/crowd-looks.js`   167 — Crowd appearance: palettes, role weights, dressPerson() and ensureLook().
-- `src/crowd-speech.js`   217 — Crowd spoken lines (CROWD_LINES, crowdSay) and speech bubbles.
+- `src/crowd-speech.js`   256 — Crowd spoken lines (CROWD_LINES, crowdSay) and speech bubbles.
 - `src/crowd-chatter.js`   298 — Street chatter that fits the moment (the hour, the weather, the district, what the player looks like and drives, what just happened), the lines …
 - `src/crowd-space.js`   281 — Crowd shared state (crowd), bus stops, view culling, sidewalk snapping, sight and building doors.
 - `src/crowd-streaming.js`   238 — Crowd streaming: spawning and placing street walkers round the camera (streamCrowd, makeStreetWalker).
@@ -396,7 +398,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/crowd-witnesses.js`   395 — Crowd witnesses: who really saw or heard what the player did, who runs a short way and phones 911, the call itself (phone out, the lines, cut short …
 - `src/crowd-scenes.js`   354 — Street scenes: set pieces staged round the player, their members and props (sceneOpen, spawnSceneMember, streetFrontages).
 - `src/crowd-transit.js`   323 — Crowd taxis and buses: hailing, bus arrivals, deliveries and the per-frame scene update (updateScenes).
-- `src/crowd-traffic.js`   303 — Traffic life: drivers getting out, arguments, returning to cars, crashes (updateTrafficLife) and knocked scene props.
+- `src/crowd-traffic.js`   304 — Traffic life: drivers getting out, arguments, returning to cars, crashes (updateTrafficLife) and knocked scene props.
 
 ## src/livingcity.js ▸ The living city in free roam
 
@@ -422,14 +424,14 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/beachclub.js ▸ Marea Beach Club (plan, people, door, schedule)
 
 - `src/beachclub-plan.js`   539 — Marea beach club plan: plot, solids, gates, walk graph and opening hours (MAREA, mareaPath, mareaPhase).
-- `src/beachclub-people.js`   465 — Marea beach club people: door talk, spawning, routing, walking and leaving (mareaSay, mareaSpawn, mareaWalk).
+- `src/beachclub-people.js`   472 — Marea beach club people: door talk, spawning, routing, walking and leaving (mareaSay, mareaSpawn, mareaWalk).
 - `src/beachclub-queue.js`   514 — Marea beach club queue, bouncers, host and taxis (updateMareaQueue, updateMareaTaxis) and its reaction to violence.
 
 ## src/hud.js ▸ HUD behaviour and the title menu
 
 - `src/hud-state.js`   660 — HUD state and pop boxes, saved settings, weapon and radio watches, stars, minimap fold and zoom (hudState, hudPop).
 - `src/hud-panels.js`   644 — HUD panels: prompts, centre cards and toasts, sniper warning, panel covers, updateHud() and the flight HUD.
-- `src/hud-clearance.js`   337 — HUD clearance: the mission card never covers the player (and the dialogue line and the waypoint pill fade if they would).
+- `src/hud-clearance.js`   339 — HUD clearance: the mission card never covers the player (and the dialogue line and the waypoint pill fade if they would).
 
 ## src/render3d.js ▸ Three.js renderer and resource lifecycle
 
@@ -518,8 +520,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/render3d-resources.js`   527 — GPU resource lifecycle: shared geometries, model pruning and disposal.
 - `src/render3d-hiccups.js`   377 — Hiccup log: what each drawn frame created for the first time (shader programs, textures, geometries) and the slowest frames' renderer CPU split; read …
 - `src/payphone3d.js`   629 — The story payphone where mission 1 starts: a 1990s yellow pedestal payphone with its lit PHONE sign, handset, keypad, directory and grime, the …
-- `src/render3d-api.js`   486 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
-- `src/render3d-frame.js`   626 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
+- `src/render3d-api.js`   492 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
+- `src/render3d-frame.js`   636 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
 
 ## src/flight-view3d.js ▸ Flight camera and aerial perspective
 
@@ -680,9 +682,9 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/base3d-materials.js`   186 — Fort Sentinel textures and materials: fences, nets, plates, containers (baseTexture, plateMaterial).
 - `src/base3d-helpers.js`   157 — Fort Sentinel geometry helpers: rodTo, strip, coil, vault and arch walls, gableRoof, cylinder, mergeUnder.
-- `src/base3d-ground.js`   361 — Fort Sentinel ground sheet: the base plot rectangle G and its painted ground.
+- `src/base3d-ground.js`   377 — Fort Sentinel ground sheet: the base plot rectangle G and its painted ground.
 - `src/base3d-perimeter.js`   344 — Fort Sentinel perimeter: double fence, razor wire, towers, CCTV, signs, searchlights and gate parts.
-- `src/base3d-buildings.js`   340 — Fort Sentinel buildings from SENTINEL.buildings (planOf): window rows and flags.
+- `src/base3d-buildings.js`   336 — Fort Sentinel buildings from SENTINEL.buildings (planOf): window rows and flags.
 - `src/base3d-facilities.js`   337 — Fort Sentinel control tower, radar head (radarHead), windsock and glow meshes.
 - `src/base3d-frame.js`   102 — Fort Sentinel per-frame visuals: updateBaseVisuals() and the searchlight lens.
 - `src/base3d-vehicles.js`   276 — Military vehicle models: makeMilitaryVehicle(), compactTank, wheels, lamps and star decals.
@@ -860,9 +862,9 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/game-console.js ▸ DeadEndCity console registry and assembly
 
-- `src/game-console-core.js`   191 — DeadEndCity console, core: status, teleport, look, clock, zoom, simulate, heal, god, cash, walk (+ godPanelConsole)
-- `src/game-console-missions.js`   367 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
-- `src/game-console-police.js`   279 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
+- `src/game-console-core.js`   204 — DeadEndCity console, core: status, teleport, look, clock, zoom, simulate, heal, god, cash, walk (+ godPanelConsole)
+- `src/game-console-missions.js`   378 — DeadEndCity console, missions: startMission, missionState, missionTargets, demo, stage-skip shortcuts
+- `src/game-console-police.js`   282 — DeadEndCity console, police: wanted, policeReport, shotLog, cover, Apache, arm, roadblocks, military
 - `src/game-console-vehicles.js`   477 — DeadEndCity console, vehicles: drive, ride, steerTo, flight, drivingState, garage, off-road (+ damage, handling, dealership consoles)
 - `src/game-console-world.js`   277 — DeadEndCity console, world: probe, places, layout, barriers, terrain, weather, airfields, rooftops, drawbridge, route, monarch
 - `src/game-console-rides.js`   104 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
@@ -870,7 +872,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-crowd.js`   192 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
 - `src/game-console-graphics.js`   270 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
 - `src/game-console-perf.js`   272 — DeadEndCity console, simulation cost: simProfile (per-section ms, worst frames), simScenario (staged situations)
-- `src/game-console-soak.js`   367 — DeadEndCity console, long-session health: soakReport (sizes of every list that can grow, DOM, non-finite positions)
+- `src/game-console-soak.js`   369 — DeadEndCity console, long-session health: soakReport (sizes of every list that can grow, DOM, non-finite positions)
 - `src/game-console-integrity.js`   178 — DeadEndCity console: integrity(), the invariants tools/bot.mjs checks after every action
 - `src/game-console-settings.js`   143 — DeadEndCity console, settings: settings, openSettings, bindings, radio (+ audioConsole)
 

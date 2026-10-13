@@ -67,6 +67,8 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - Kessler's car waits in ordinary traffic like everyone else; in the player's view it never skips a jam (the Marina
   Rd junction by the club can hold him half a minute).
 - The gate conversation (about 16 s) cannot be skipped; the player's feet are held while it runs.
+- The gate arm cannot be vaulted (Fort Sentinel keeps its blockers out of the jump rule): blown on foot, the way out
+  is forcing the gate controls (E, the FORCE THE GATE prompt) or a vehicle.
 - Mission briefs are only used by missions 3-4 so far; the other jobs keep the title card and the strip.
 
 ## Clouds (clouds*.js, clouds3d-*.js)

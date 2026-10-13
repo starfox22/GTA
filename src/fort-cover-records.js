@@ -1,14 +1,14 @@
     // Fort Sentinel's HQ records office: its side door (FORT_RECORDS), the fade inside, the timed search for the
     // weapons file on a card (#fortRecords) and stepping back out with the papers (fortCover.papers).
-    /* The door is on the HQ's south front, west of the portico and away from its sentries (base3d-buildings.js
-       draws it). In uniform, cleared and not alarmed the action key goes in: the screen fades to black (gameMode
+    /* The door is on the HQ's south front at its far east end, away from the portico's sentries (base3d-buildings.js
+       draws it): the walk from the gate passes the HQ pad's helicopter, the QRF jeeps and the ready line. In uniform, cleared and not alarmed the action key goes in: the screen fades to black (gameMode
        'elevator', as North Point Key's lifts), the search runs on the card, and he steps back out of the same door
        (teleportPlayer) holding the papers. Walked in under a heavy look (suspicion over FORT_RECORDS.tailAbove), a duty
        officer follows him in: the alarm on the way out. */
     const FORT_RECORDS = {
-      door: { x: 9624, y: 8035 },
+      door: { x: 9884, y: 8035 },
       // Where he stands to go in and where he comes out, on the pavement in front of the door.
-      spot: { x: 9624, y: 8050 },
+      spot: { x: 9884, y: 8050 },
       reach: 24,
       seconds: 7.4,
       tailAbove: 60,

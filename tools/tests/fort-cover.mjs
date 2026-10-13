@@ -88,6 +88,8 @@ export default async function (t) {
   // Out past the checkpoint with the papers, calm.
   c = await t.call('fortCoverTest', 'exit');
   t.assert(c.papers && c.cleared && !c.alarmed, 'exit staging: ' + JSON.stringify(c));
+  // The gate arm lifts for him as he comes up to it (fortCoverGatePass); walk() moves him at once, so let it rise.
+  await t.wait(1.5);
   await t.call('walk', Math.PI, 160);
   await t.wait(0.5);
   c = await cover();

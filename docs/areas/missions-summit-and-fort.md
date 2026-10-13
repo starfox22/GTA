@@ -91,6 +91,12 @@ cleanup, the demo gate) are in missions-and-demo.md; this page is what each job 
   papers he calls him back until `FORT_COVER_GATE.grace` (56 units), then the challenge. Showing the ID runs
   `FORT_GATE_TALK` (about 16 s, `FORT_GATE_CLEARED_AT`) with the feet held (`fortGateTalking`, game-update.js);
   lines go through `fortGateLine` (bubble when short, subtitle via `missionLine` always). A weapon drawn cancels it.
+  The gate arm is solid on foot (military-base.js): it lifts for him only through `fortCoverGatePass()` (waved
+  through at `FORT_GATE_OPEN_AT`, or cleared and believed, on foot, no stars), in and out, and drops behind him.
+- The records door (`FORT_RECORDS`) is at the HQ's far east end, about 83 m from the papers window: the walk along
+  Sentinel Avenue passes the HQ pad's helicopter, the QRF jeeps and the ready line (M35, LAV-8). Boarding any of
+  them (any military vehicle inside the fence or under cover) is `fortCoverBoarded`: cover blown, five stars.
+  Tests: fort-gate-barrier.mjs, fort-records-route.mjs, fort-vehicle-theft.mjs.
 - Base: fort-cover.js does the gate's papers (`FORT_COVER_GATE.check`), the soldiers' suspicion, the military-vehicle
   alarm and the records office (`FORT_RECORDS.door`, `fortCover.papers`). Blown before the papers: the job fails;
   after: get out with them however. Out (calm crossing, or off the base 260 units from the gate): `skyMeetingBegin`.
@@ -104,9 +110,15 @@ cleanup, the demo gate) are in missions-and-demo.md; this page is what each job 
 ## Mission briefs (mission-brief.js, ui/mission-brief.css)
 
 - `missionBrief(text, { kicker, tone, seconds })` puts one sentence in the upper middle (22% from the top, above the
-  player, under the waypoint pill) for its reading time (`missionBriefSeconds`: 4.5-10 game seconds), then folds it
+  player, under the waypoint pill) for its reading time (`missionBriefSeconds`: 3-6.5 game seconds), then folds it
   down into the pager strip, which glows once (`#pager.brief-land`). A brief waits while a headline card
   (`#announcement`) is centred and folds when one comes up; a newer brief replaces the one showing; O folds it early
-  (`toggleMissionCard`); with no job it folds. Missions 3 and 4 use it; the strip keeps setStage's instruction.
+  (`toggleMissionCard`), and so does Escape (`dismissMissionCentre`, game-input.js; the gamepad's MENU taps
+  Escape): it folds a brief, or clears a job's centred headline card and lands a brief waiting behind it straight in
+  the strip, without pausing; with nothing to clear Escape pauses as before. With no job it folds. Missions 3 and 4
+  use it; the strip keeps setStage's instruction.
+- Mission 3's opening says what, never how (the owner's words, `SUMMIT_OPENING`): the brief, the call
+  (`phoneMessage`) and the strip name the package at the top of the mountain only; the 4x4 trail and the parachute
+  are the player's to find (Vinny's radio beats at the trailhead or in a jump still react).
 - Jobs that open with their own line from the contact set `m.ownOpening` (story.js then skips the brief line).
 - Console `missionBrief()`; test tools/tests/mission-brief.mjs.

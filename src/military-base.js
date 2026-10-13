@@ -72,10 +72,15 @@
       apron: { x: 9440, y: 9445, w: 995, h: 155 },
       taxiway: { x: 9960, y: 9600, w: 60, h: 65 },
       runway: { x: 9450, y: 9665, w: 960, h: 90 },
+      // [0] is the Apache's (apache.js APACHE_PAD); the third is the HQ pad on the HQ lot, beside the walk from the
+      // gate to the records office (fort-cover-records.js), with a utility helicopter on it (populateMilitary).
       helipads: [
         { x: 10200, y: 9365, r: 46 },
         { x: 10340, y: 9365, r: 46 },
+        { x: 9492, y: 7936, r: 40 },
       ],
+      // The ready line: hardstanding on the avenue's south kerb opposite the HQ lot, an M35 and a LAV-8 nose to the road.
+      readyLine: { x: 9440, y: 8204, w: 112, h: 56, slots: [9466, 9514] },
       obstacleCourse: { x: 9440, y: 8260, w: 100, h: 460 },
       range: { x: 10040, y: 9150, w: 390, h: 80, targetsX: 10362 },
       fuel: {
@@ -281,8 +286,11 @@
     })();
     /* ---- Gate state -----------------------------------------------------------------
        Per lane: the drop arm (0 down .. 1 up), the bollards (0 down .. 1 raised) and
-       the sliding gate (0 open .. 1 closed). Arms and bollards stop vehicles only; the
-       sliding gate stops everyone. Rammed pieces break (`broken`) until repaired. */
+       the sliding gate (0 open .. 1 closed). A lowered arm stops vehicles and people on
+       foot (the booth and the island close the gap between the lanes); bollards stop
+       vehicles only; the sliding gate stops everyone. The arm lifts for military
+       traffic, for the forced controls and for a man the gate has cleared on foot
+       (fort-cover.js fortCoverGatePass). Rammed pieces break (`broken`) until repaired. */
     const militaryGateState = SENTINEL.gate.lanes.map((lane) => ({
       lane,
       arm: 0,
@@ -326,7 +334,7 @@
         out = (gateSolidsCache = []);
       for (const s of militaryGateState) {
         const { y0, y1 } = s.lane;
-        if (!s.armBroken && s.arm < 0.55) out.push({ x: g.armX - 3, y: y0, w: 6, h: y1 - y0, height: 9, barrier: true, vehicleOnly: true, part: 'arm', state: s });
+        if (!s.armBroken && s.arm < 0.55) out.push({ x: g.armX - 3, y: y0, w: 6, h: y1 - y0, height: 9, barrier: true, part: 'arm', state: s });
         if (!s.bollardsBroken && s.bollards > 0.5)
           out.push({ x: g.bollardX - 3, y: y0, w: 6, h: y1 - y0, height: 9, barrier: true, vehicleOnly: true, part: 'bollards', state: s });
         if (!s.slideBroken && s.slide > 0.85) out.push({ x: g.slideX - 4, y: y0, w: 8, h: y1 - y0, height: 24, barrier: true, part: 'slide', state: s });
@@ -414,7 +422,21 @@
     }
     /* ---- Gate interaction ---------------------------------------------------------- */
     function militaryGateClosedToPlayer() {
-      return militaryGateState.some((s) => s.slide > 0.85 && !s.slideBroken) || (!!player.car && militaryGate < 0.85);
+      return militaryGateState.some((s) => s.slide > 0.85 && !s.slideBroken) || (!!player.car && militaryGate < 0.85) || (!player.car && militaryArmDownAtPlayer());
+    }
+    // On foot: the arm of the lane he stands in (or the nearer one) is down.
+    function militaryArmDownAtPlayer() {
+      let best = null,
+        bestD = Infinity;
+      for (let i = 0; i < militaryGateState.length; i++) {
+        const s = militaryGateState[i],
+          d = Math.abs(player.y - SENTINEL.laneCenter(s.lane));
+        if (d < bestD) {
+          bestD = d;
+          best = s;
+        }
+      }
+      return !!best && !best.armBroken && best.arm < 0.55;
     }
     function militaryInteract() {
       // In the borrowed uniform the gate is talked through (fort-cover.js), never forced by the action key.
@@ -485,10 +507,12 @@
     function updateGatePieces(deltaSeconds) {
       const g = SENTINEL.gate,
         lockdown = militaryLockdown(),
-        forced = gameTime < militaryGateUntil;
+        forced = gameTime < militaryGateUntil,
+        pass = fortCoverGatePass();
       for (const s of militaryGateState) {
         const cy = SENTINEL.laneCenter(s.lane),
-          half = (s.lane.y1 - s.lane.y0) / 2;
+          half = (s.lane.y1 - s.lane.y0) / 2,
+          laneY = Math.abs(player.y - cy) < half + 10;
         let friendly = false,
           inLane = false;
         // (Indexed: a for-of over every vehicle allocated an iterator result per vehicle in this once-a-frame code.)
@@ -501,8 +525,12 @@
           if (Math.abs(dx) < vehicleSpec(c).l / 2 + 22) inLane = true;
           if (c.military && c.ai && Math.abs(dx) < 150) friendly = true;
         }
-        if (Math.abs(player.y - cy) < half + 10 && Math.abs(player.x - g.slideX) < 40) inLane = true;
-        const armUp = forced || friendly || (inLane && s.arm > 0.6);
+        if (laneY && Math.abs(player.x - g.slideX) < 40) inLane = true;
+        // Cleared at the booth on foot: his lane's arm lifts as he comes up to it, either way, and drops behind him.
+        const walker = pass && laneY && Math.abs(player.x - g.armX) < 90,
+          // Never down onto a man standing under it (once up past the solid point he may have stepped in).
+          under = !player.car && laneY && Math.abs(player.x - g.armX) < 14;
+        const armUp = forced || friendly || walker || (inLane && s.arm > 0.6) || (under && s.arm > 0.5);
         s.arm = clamp(s.arm + (armUp ? 1 : -1) * deltaSeconds * 0.8, 0, 1);
         const raise = lockdown && !forced && !friendly && !inLane;
         s.bollards = clamp(s.bollards + (raise ? 1 : -1) * deltaSeconds * 0.9, 0, 1);
@@ -581,7 +609,7 @@
         d.stroke();
       }
       d.fillStyle = '#8c8c82';
-      for (const a of [SENTINEL.hqLot, SENTINEL.motorPool, SENTINEL.apron, SENTINEL.taxiway, SENTINEL.parade])
+      for (const a of [SENTINEL.hqLot, SENTINEL.motorPool, SENTINEL.apron, SENTINEL.taxiway, SENTINEL.parade, SENTINEL.readyLine])
         d.fillRect(a.x, a.y, a.w, a.h);
       d.fillStyle = '#434a4b';
       const rw = SENTINEL.runway;

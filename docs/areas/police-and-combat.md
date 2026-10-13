@@ -66,7 +66,8 @@ wounds.js, carjack.js, damage.js, air-cover.js. `policeReport()` has `wounds` an
   `policeDescribeSuspect`: a new car (or the player out of one) seen for 1.5 s while wanted
   is called in once ("SUSPECT SWITCHED · NOW IN A RED PICKUP"); 5 s between captions.
 - Rain affects pursuit drivers too (vehicles-and-driving.md). A respray clears the stars only
-  if no unit saw the player drive in.
+  if no unit watched the player drive in (sight held 0.5 s, `GARAGE_SEEN_CONFIRM`); then `clearPolice` sends every
+  unit back to patrol (places-and-venues.md).
 - Voluntary surrender requires released movement, throttle/steering, jump and fire controls as well as stillness.
   Holding a control against an obstacle resets the surrender timer (`trackSurrender`, pursuit-officers.js);
   releasing it still allows surrender. Existing close-range arrest rules remain in force.

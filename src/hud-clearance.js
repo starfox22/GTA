@@ -230,7 +230,9 @@
       // A fade comes at once and goes CLEAR_HOLD after the player has moved clear (no flicker at the edge).
       if (!hidden && folded && C.strip.ok && gameMode === 'play' && clearBoxesMeet(p, C.strip.l, C.strip.t, C.strip.r, C.strip.b, 2))
         C.fadeCardAt = gameTime;
-      if (C.story.ok && story.classList.contains('show') && gameMode === 'play' && clearBoxesMeet(p, C.story.l, C.story.t, C.story.r, C.story.b, 2))
+      // In the chase view the player's body fills the lower middle of the frame, under the line whenever it shows:
+      // the subtitle reads over him at full strength there, as film subtitles do (it faded every conversation).
+      if (C.story.ok && story.classList.contains('show') && gameMode === 'play' && !chaseCameraLive() && clearBoxesMeet(p, C.story.l, C.story.t, C.story.r, C.story.b, 2))
         C.fadeStoryAt = gameTime;
       const fadeCard = !hidden && folded && gameTime - C.fadeCardAt < CLEAR_HOLD,
         fadeStory = story.classList.contains('show') && gameTime - C.fadeStoryAt < CLEAR_HOLD;

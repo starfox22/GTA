@@ -31,10 +31,13 @@
      *   driveout  the car rolls out onto the apron and the player has it back
      *
      * THE POLICE RULE: a respray clears the wanted level only when no police
-     * unit (on the ground or in the air) had eyes on the player between the
-     * order and the door shutting. Seen driving in, the paint fools nobody: the
-     * stars stay (the roof still hides you, so the search timer keeps running).
-     * The first mission's cargo truck is the exception its script needs.
+     * unit (on the ground or in the air) watched the car go in: sight held for
+     * GARAGE_SEEN_CONFIRM while it rolls in and the door comes down (a glimpse,
+     * like the search's, does not count). Seen driving in, the paint fools
+     * nobody: the stars stay, the player is told at once (THE COPS SAW YOU GO IN)
+     * and the prompt says COPS WATCHING beforehand. Cleared, every unit goes
+     * back to patrol (clearPolice). The first mission's cargo truck is the
+     * exception its script needs.
      */
     // @include src/garages-shops.js
     let repairJob = null,
@@ -236,10 +239,11 @@
       const offer = garageOffer(vehicle);
       if (offer.free) return offer.label + ' · VINNY PAYS';
       if (!offer.service) return 'RESPRAY $' + offer.respray + ' · COME BACK WITH CASH';
-      return offer.label + ' · $' + offer.total;
+      return offer.label + ' · $' + offer.total + (garageWatched() ? ' · COPS WATCHING' : '');
     }
     /* Whether any police unit, on the ground or in the air, has eyes on the
        player this frame (the same test the search uses, citylife.js). */
+    const GARAGE_SEEN_CONFIRM = 0.5;
     function garageWatched() {
       return wantedStars > 0 && policeHaveEyesOnPlayer();
     }
@@ -292,7 +296,9 @@
         heading,
         colorFrom: car.color,
         colorTo: pickNewPaint(car.color),
-        seen: garageWatched(),
+        seen: false,
+        // Seconds the police have had eyes on the car without a break (THE POLICE RULE).
+        watched: 0,
         wantedAtStart: wantedStars,
         cashBefore: cash,
         sound: 0,
@@ -339,6 +345,8 @@
       if (!job || job.phase === 'driveout') return;
       job.skipped = true;
       if (['rollin', 'doorDown', 'work'].includes(job.phase)) {
+        // Skipping the drive-in skips no one's eyes: a unit watching now saw it go in.
+        if (job.phase !== 'work') garageWatchStep(job, GARAGE_SEEN_CONFIRM);
         placeGarageCar(job, job.shop.service.x, job.shop.service.y, job.heading);
         setGarageDoor(job.shop, 0);
         nextGaragePhase(job, 'fade');
@@ -392,7 +400,7 @@
           B.point.altitude = terrainHeight(pick.bayX, pick.front) + GARAGE_PLAN.doorHeight + 4;
           if (B.told !== pick) {
             B.told = pick;
-            tell('RESPRAY · ' + pick.name + ' · drive in to change the paint and lose the police', 4, { id: 'respray-beacon' });
+            tell('RESPRAY · ' + pick.name + ' · drive in out of their sight to change the paint and lose the police', 4, { id: 'respray-beacon' });
           }
         }
       }
@@ -417,7 +425,7 @@
       job.t += deltaSeconds;
       const k = clamp(job.t / job.duration, 0, 1);
       // Anyone watching while the car goes in and the door comes down saw it go in.
-      if ((job.phase === 'rollin' || job.phase === 'doorDown') && garageWatched()) job.seen = true;
+      if (job.phase === 'rollin' || job.phase === 'doorDown') garageWatchStep(job, deltaSeconds);
       if (job.phase === 'rollin') {
         // Centre on the door first (the sides clear the jambs), then roll on to the lift.
         const side = smoothstep01(k / 0.55),
@@ -473,6 +481,15 @@
         }
       }
     }
+    /* Sight held for GARAGE_SEEN_CONFIRM marks the job seen, and the player hears it then, not after paying.
+       (A skip passes the whole confirm time: whoever watches as the door slams saw it go in.) */
+    function garageWatchStep(job, deltaSeconds) {
+      job.watched = garageWatched() ? job.watched + deltaSeconds : 0;
+      if (job.seen || job.watched < GARAGE_SEEN_CONFIRM) return;
+      job.seen = true;
+      // Mission 1's cargo truck has its own way out (evadeCargoPolice).
+      if (!cargoChase()) tell('THE COPS SAW YOU GO IN · fresh paint won’t fool them', 4, { id: 'garage-seen' });
+    }
     /* Pay, paint, mend, and the police rule. Runs once, under the fade. */
     function applyGarageService(job) {
       const { car, shop, offer } = job;
@@ -514,7 +531,7 @@
         escaped
           ? 'Cops lost · Vinny covered the paint · Deliver the crates'
           : job.seen && wantedStars > 0
-            ? 'They saw you drive in: fresh paint won’t fool them. Lose them first.'
+            ? 'THE COPS SAW YOU GO IN · fresh paint won’t fool them · lose them first'
             : (offer.service === 'full' && offer.repair ? 'Fresh paint · Full repair' : 'Fresh paint') +
               (offer.total ? ' · $' + offer.total : '') +
               (cleared ? ' · Cops lost' : ''),
@@ -772,7 +789,7 @@
             }
           : null,
         job: repairJob
-          ? { shop: repairJob.shop.id, phase: repairJob.phase, t: +repairJob.t.toFixed(2), seen: repairJob.seen, color: repairJob.car.color, applied: repairJob.applied }
+          ? { shop: repairJob.shop.id, phase: repairJob.phase, t: +repairJob.t.toFixed(2), seen: repairJob.seen, watched: +repairJob.watched.toFixed(2), color: repairJob.car.color, applied: repairJob.applied }
           : null,
         last: garageLastService,
         // The respray arrow (RESPRAY BEACON): the shop it floats over while the police want the player.

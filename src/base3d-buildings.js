@@ -79,12 +79,8 @@
         const dish = cylinder(baseGroup, b.x + 90, 47, cz + 30, 6, 1, B.white, 16, 1.2);
         dish.rotation.z = -0.6;
         redBeacon(b.x + 50, 73, cz + 30, 2.2);
-        // Parking lot: staff cars (static props).
-        for (let i = 0; i < 3; i++) {
-          const z = SENTINEL.hqLot.y + 31 + i * 38;
-          box(baseGroup, SENTINEL.hqLot.x + 30, 5, z, 46, 7, 22, [B.oliveDark, B.cream, B.steel][i]);
-          box(baseGroup, SENTINEL.hqLot.x + 28, 11, z, 24, 5, 19, B.window);
-        }
+        // The HQ lot holds the HQ pad's helicopter and the QRF jeeps (military-life.js populateMilitary): real vehicles,
+        // so no static staff cars any more (one stood inside a QRF jeep).
       }
       // Flags (waving) on the poles in front of HQ and beside the stand.
       const flagTextures = {

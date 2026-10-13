@@ -50,8 +50,10 @@
         [5.3, 'you', 'Tell that to the colonel. He moved the inventory audit up and wants the manifests on his desk by oh-six-hundred.'],
         [9.4, 'guard', 'This photo doesn’t look much like you, sir.'],
         [11.9, 'you', 'Three days at the Marea will do that to a man, Sergeant.'],
-        [14.2, 'guard', 'Can’t argue with that. Go on through, Lieutenant. Records is the side door, left of headquarters.'],
+        [14.2, 'guard', 'Can’t argue with that. Go on through, Lieutenant. Records is the side door at the far end of headquarters.'],
       ],
+      // The sergeant waves him through on the last line: the arm lifts then (fortCoverGatePass); cleared a moment later.
+      FORT_GATE_OPEN_AT = 14.2,
       FORT_GATE_CLEARED_AT = 16.4;
     /* ---- The uniform ------------------------------------------------------------------ */
     // An off-duty soldier's field uniform (personOutfit 'playerArmy': camo, belt, boots, patrol cap) on the player's
@@ -165,6 +167,13 @@
       if (!fortCover.cleared && !fortCover.inspect && player.x > SENTINEL.gate.armX + FORT_COVER_GATE.grace) return false;
       return true;
     }
+    // The gate's arm lifts for him (military-base.js updateGatePieces): on foot, no stars, waved through at the window
+    // (FORT_GATE_OPEN_AT) or cleared and still believed, in or out. Anyone else meets a lowered arm.
+    function fortCoverGatePass() {
+      if (!fortCover.active || player.car || wantedStars > 0) return false;
+      if (fortCover.inspect) return fortCover.inspect.t >= FORT_GATE_OPEN_AT && fortCoverOwnsGate();
+      return fortCoverShielded();
+    }
     function fortCoverInGateZone() {
       const z = FORT_COVER_GATE.zone;
       return player.x > z.x0 && player.x < z.x1 && player.y > z.y0 && player.y < z.y1;
@@ -182,11 +191,20 @@
       }
       return best;
     }
-    // Any vehicle of the base's taken while the cover is on, or inside the base: the alarm at once.
+    /* The one military-vehicle rule (enterVehicle, carjacks included): any vehicle of the base's taken while the
+       cover is on, or anywhere inside the fence, is stolen army hardware. The base alarm at once (the cover blown)
+       and five stars straight away, as when Kessler radios the base (fortjob.js fortAlerted). */
     function fortCoverBoarded(c) {
-      if (!c.military || !(fortCover.active || inMilitary(c.x, c.y))) return;
+      if (!c.military || !(fortCover.active || inMilitary(c.x, c.y, 40))) return;
       if (fortCover.active) fortCoverBlow('vehicle', null);
       else militaryAlarm();
+      crime(32, 'seen');
+      if (wantedStars < 5) {
+        setWantedLevel(5);
+        searchActive = false;
+        searchRemaining = policeSearchSeconds(5);
+        lastSeen = { x: player.x, y: player.y };
+      }
     }
     // The cover is blown: the whole base turns on him.
     function fortCoverBlow(reason, by) {
@@ -211,7 +229,7 @@
         withinRange('fort-papers', distanceBetween(player, FORT_COVER_GATE.check), FORT_COVER_GATE.reach)
       );
     }
-    // A line at the gate: the speech bubble and, while a story job runs, the subtitle.
+    // A line at the gate: the speech bubble (a talk line) and, while a story job runs, the subtitle.
     function fortGateLine(who, text) {
       const p = who === 'you' ? player : who;
       if (!p) return;
@@ -225,6 +243,8 @@
         player.speech = text.toUpperCase();
         player.speechUntil = gameTime + seconds;
       } else militarySpeak(p, text.toUpperCase(), seconds);
+      // A conversation line (crowd-speech.js TALK LINES): it takes a bubble slot and holds it in both views.
+      speechMarkTalk(p);
       if (mission) missionLine(who === 'you' ? 'YOU' : 'GATE SERGEANT', text);
     }
     // In the middle of showing the papers: the feet stay put (game-update.js), he faces the sergeant.

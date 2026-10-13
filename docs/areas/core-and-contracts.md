@@ -86,6 +86,14 @@ Where a file lives: `grep -i <word> docs/FILEMAP.md`.
   share the prefix: `dead-end-city-settings`, `-controls`, `-hud`, `-graphics`,
   `-frame-limit`, `-fps`, `-touch`, `-cutaway`, `-shadows`, `-radio-v2`, `-driving`,
   `-garage` (owned cars), `-hillclimb`, `-demo`. Adding a mission needs no schema change.
+- The frame loop never dies of one fault (frame-guard.js FRAME GUARD): `frame()` books the next
+  requestAnimationFrame whatever runFrame does, and the step (`update`) and the draw each run in their own catch;
+  `frameFault` writes each distinct message once with console.error (tests still fail on it) and counts repeats
+  (console `frameFaults()`, drill `frameFaultDrill('update'|'draw')`, tools/tests/frame-guard.mjs). A fault is
+  still a bug to fix: the guard only keeps the game playable.
+- A lost WebGL context (gpu-context.js GPU CONTEXT): pause, a line to the player, no drawing while lost; on
+  restore a save and a page reload (released baked canvases cannot be re-uploaded; a dev page only sets
+  `reloadPending`). Console `gpuContext('lose'|'restore')`; `node tools/test.mjs gpu-context --render`.
 
 ## Performance rules (docs/audit/performance.md)
 

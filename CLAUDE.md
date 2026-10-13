@@ -212,9 +212,13 @@ packs with plain `<script src>` so the zip still plays from file://.
   Fort Sentinel cover (fort-cover*.js): `fortCoverShielded()` is the only exception to `militaryThreatened`,
   `fortCoverOwnsGate()` the only replacement for the gate challenge, `fortCoverBoarded(c)` the only military-vehicle
   rule; every hook checks `fortCover.active`, so free roam is unchanged; `player.uniform` is the borrowed uniform.
+  The gate arm blocks people too and lifts only via `fortCoverGatePass()`, military traffic or a forced gate; boarding any
+  military vehicle under cover or inside the fence is five stars (`fortCoverBoarded`); `militaryAudit()` stays ok.
   The CIRRUS meeting (skyline-meeting.js) is driven only through `skyMeetingBegin/End/Report/Target` and
   `skyMeeting.stage`; a seated player is `player.sceneSeat` (`teleportPlayer` clears it); CIRRUS staff are lent only
-  through `keyPerson.errand`.
+  through `keyPerson.errand`. A conversation with the player marks its lines with `speechMarkTalk(p)` (crowd-speech.js TALK LINES);
+  a player line outside a job reads in the subtitle via `sceneLine`; leaving a scene seat goes through `skyMeetingRise`;
+  E advances the meeting's lines.
 - Mission briefs (mission-brief.js): `missionBrief(text, opts)` is the only writer of the big centred step sentence;
   it waits for a centred headline (`#announcement`) and folds into the pager strip (O folds it early). A long line of
   dialogue goes in the subtitle (`missionLine`), never a speech bubble that size (`fortGateLine`); Fort Sentinel's
@@ -269,6 +273,8 @@ packs with plain `<script src>` so the zip still plays from file://.
   (`retryMission`, `chooseMission`, new game) move the player with `teleportPlayer`. Mission stage texts that embed
   a key name put it right after "·" or "HOLD" (`missionSummary` keeps it upper case only there); a hint naming the
   walk action reads `keyName('walk')` or the touch label, never a literal "WALK".
+- `frame()` books the next frame whatever `runFrame` does (frame-guard.js: each distinct error logged once, `frameFaults()`);
+  a caught fault is still a bug. A lost WebGL context pauses, then saves and reloads on restore (gpu-context.js).
 - `node tools/bot.mjs --seed N --minutes M` is the random-walk bot (console `integrity()`): run it after changes to
   input, modes, carriers or saving (docs/areas/testing-and-console.md).
 - A tier or shadow change goes through `litStateFor` / `applyLitState` (lighting3d-look.js LIT STATE) and is staged

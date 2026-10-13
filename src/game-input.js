@@ -313,6 +313,9 @@
         return;
       }
       if (code === 'Escape') {
+        // A mission brief or a job's headline card in the middle of the screen goes first (mission-brief.js);
+        // the pause menu only when there was nothing to clear. The gamepad's MENU button taps Escape too.
+        if (gameMode === 'play' && dismissMissionCentre()) return;
         togglePause();
         return;
       }

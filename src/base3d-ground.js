@@ -162,10 +162,11 @@
         slab(SENTINEL.hqLot, '#55595a', 1000);
         g.strokeStyle = '#e1ddcf';
         g.lineWidth = 1.5;
-        for (let y = SENTINEL.hqLot.y + 12; y < SENTINEL.hqLot.y + SENTINEL.hqLot.h - 10; y += 38) {
+        // The QRF jeeps' two bays at the lot's south end (the HQ pad, SENTINEL.helipads[2], takes the rest).
+        for (let x = SENTINEL.hqLot.x + 8; x < SENTINEL.hqLot.x + SENTINEL.hqLot.w; x += 42) {
           g.beginPath();
-          g.moveTo(SENTINEL.hqLot.x + 6, y);
-          g.lineTo(SENTINEL.hqLot.x + 60, y);
+          g.moveTo(x, SENTINEL.hqLot.y + SENTINEL.hqLot.h - 50);
+          g.lineTo(x, SENTINEL.hqLot.y + SENTINEL.hqLot.h - 4);
           g.stroke();
         }
         slab(SENTINEL.motorPool, '#8f8d84', 40);
@@ -324,6 +325,21 @@
           g.arc(p.x, p.y, p.r - 4, 0, TAU);
           g.stroke();
           text('H', p.x, p.y + 2, 54, '#e6e2d2');
+        }
+        // The ready line on the avenue's south kerb (drawn last: no draws from rnd, the stream above is unchanged).
+        {
+          const r = SENTINEL.readyLine;
+          g.fillStyle = '#8c8a80';
+          g.fillRect(r.x, r.y, r.w, r.h);
+          g.strokeStyle = '#d8b23a';
+          g.lineWidth = 2;
+          g.beginPath();
+          for (let k = 0; k <= r.slots.length; k++) {
+            const x = k < r.slots.length ? r.slots[k] - 24 : r.slots[k - 1] + 24;
+            g.moveTo(x, r.y + 4);
+            g.lineTo(x, r.y + r.h - 2);
+          }
+          g.stroke();
         }
         // Lawn in front of HQ with a gravel crest.
         g.fillStyle = '#6f7d54';
