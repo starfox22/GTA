@@ -43,6 +43,9 @@
       CHASE_PITCH_MAX = 1.15,
       CHASE_LOOK_RETURN = 1.6,
       CHASE_FOOT = { pivot: 1.58, dist: 3.5, shoulder: 0.42, fov: 52, pitch: 0.16 },
+      // SLOW FRAMING in a vehicle: metres from the vehicle's back to the camera, how far the pivot moves back from
+      // the middle (the vehicle sits higher in the closer frame) and the steeper pitch.
+      CHASE_SLOW = { behind: 3.8, back: 1.8, pitch: 0.26 },
       CHASE_AIM = { pivot: 1.62, dist: 1.85, shoulder: 0.66, fov: 44 },
       CHASE_NEAR = 4,
       // Seconds the pivot takes to slide from the old subject to the new one (in or out of a vehicle).
@@ -445,17 +448,23 @@
         comfort = motionComfortOn(),
         shape = chaseShapeFor(c),
         M = UNITS_PER_METRE;
-      /* SLOW FRAMING (world-view.js) in the chase view: in a road vehicle or a boat under 31 km/h the boom
-         keeps the walking length (CHASE_FOOT, or just clear of a long vehicle's back) and lens, so getting in
-         never pulls the camera back; it eases out to the vehicle's own boom at speed, back in after a second
-         under 30 (the same switch and rates as the street view's framing). */
+      /* SLOW FRAMING (world-view.js) in the chase view: in a road vehicle or a boat under 31 km/h the camera
+         stays close: the walking boom's reach behind the vehicle's back (CHASE_SLOW), the pivot moved back
+         from the middle and the pitch a little steeper so the whole vehicle stays in frame, the walking lens; so getting in never pulls the camera far back; it
+         eases out to the vehicle's own boom at speed, back in after a second under 30 (the same switch and
+         rates as the street view's framing). */
       const slowWant = !c || train || isAircraft(c) || slowFramingOn() ? 1 : 0;
       cam.slowShare += (slowWant - cam.slowShare) * (1 - Math.exp(-deltaSeconds * (slowWant < cam.slowShare ? 1.5 : 0.9)));
+      let slowBack = 0;
       if (c && !train && !isAircraft(c) && cam.slowShare > 0) {
-        const near = Math.max(CHASE_FOOT.dist, vehicleSpec(c).l / UNITS_PER_METRE / 2 + 1.2),
+        const half = vehicleSpec(c).l / UNITS_PER_METRE / 2,
+          back = Math.min(CHASE_SLOW.back, half * 0.75),
+          near = Math.max(CHASE_FOOT.dist, half + CHASE_SLOW.behind) - back,
           k = cam.slowShare;
+        slowBack = back * k;
         shape.dist += (Math.min(near, shape.dist) - shape.dist) * k;
         shape.fov += (CHASE_FOOT.fov - shape.fov) * k;
+        shape.pitch += (Math.max(CHASE_SLOW.pitch, shape.pitch) - shape.pitch) * k;
       }
       cam.idle += deltaSeconds;
       // Pivot: the shoulders on foot, above the middle of a vehicle.
@@ -564,8 +573,8 @@
       }
       const yaw = normalizeAngle(cam.yaw + (behind ? Math.PI : cam.lookYaw)),
         pitch = clamp(cam.pitch + (behind ? 0 : cam.lookPitch) - (behind ? -cam.slope : cam.slope), CHASE_PITCH_MIN, CHASE_PITCH_MAX);
-      cam.px = bx;
-      cam.py = by;
+      cam.px = bx - (slowBack ? Math.cos(c.a) * slowBack * M : 0);
+      cam.py = by - (slowBack ? Math.sin(c.a) * slowBack * M : 0);
       cam.pz = bz + pivotM * M;
       if (cam.handover > 0) {
         // The pivot slides over from the last subject (a smooth step over the hand-over).
