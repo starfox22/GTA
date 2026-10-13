@@ -801,6 +801,25 @@ wall-skin.webp (the WALL SKIN: src/cityscape3d-wallskin.js, and the clay tile ro
   Changes: tools/wall_skin.py scales each set to 512 px, multiplies the ambient occlusion into the
   colour map and packs the OpenGL normal's X and Y with the roughness into one sheet.
 
+TRAIL MUD
+trail-mud.webp (the 4x4 trails' thrown mud, spray, splats, tyre ruts and mud on vehicles:
+src/offroad3d-mud.js, src/offroad3d-models.js)
+  - "Brown Mud 03" PBR texture set from Poly Haven (https://polyhaven.com/a/brown_mud_03), 1K:
+    colour, OpenGL normal and roughness maps. Retrieved 2026-10-12 from copies on GitHub
+    (raw.githubusercontent.com: Joshkaki00/godotmark art/nature-benchmark-archive-20260311_173846/
+    brown_mud_03_1k.gltf/textures/brown_mud_03_{diff,nor_gl}_1k.jpg and rtyh12/multiplayer
+    textures/brown_mud_03_rough_1k.png).
+    License: CC0 1.0 Universal (https://creativecommons.org/publicdomain/zero/1.0/), as every Poly
+    Haven asset; attribution is not required and is given as thanks.
+  - Particle Pack (1.1) by Kenney Vleugels (https://kenney.nl/assets/particle-pack): dirt_01,
+    dirt_02, dirt_03, scorch_01, scorch_02, smoke_04, smoke_08 and circle_05. Retrieved 2026-10-12
+    from a copy on GitHub (marinho/godot-visual-effects addons/kenney_particle_pack); the pack's
+    License.txt: "License (Creative Commons Zero, CC0) ... Credit (Kenney or www.kenney.nl) would
+    be nice but is not mandatory."
+  Changes: tools/trail_mud.py scales the mud set to 512 px (colour; normal X and Y with the
+  roughness in one tile) and the sprites to 256 px cells holding their coverage and a normal
+  derived from it.
+
 RENDERING TECHNIQUES
 Written for this project in src/postfx3d.js, src/lighting3d.js and src/surfaces3d.js; no
 third-party shader source is copied. The techniques follow published work:

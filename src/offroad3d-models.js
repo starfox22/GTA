@@ -1,4 +1,67 @@
       // Off-road 3D mud on vehicles, body plans, liveries, shapes, tubes, tyres and rims.
+      // ---- TRAIL MUD maps (assets/trail-mud.webp, tools/trail_mud.py; Poly Haven and Kenney, CC0) -------
+      /*
+       * One sheet cut into three textures: the wet mud's colour (sRGB, tiling), its detail (normal X and Y in
+       * R and G, OpenGL convention; roughness in B; tiling) and the sprite cells (MUD_SPRITE_CELLS: coverage in
+       * R, a domed normal's X and Y in G and B). `mean` is the colour map's linear mean: shaders use colour /
+       * mean as a detail ratio, so a build without the sheet (neutral 1-pixel maps) keeps the plain tints.
+       */
+      const trailMud = (() => {
+        const image = visualAssets.trailMud,
+          ready = !!(image && image.width >= 64 && image.height === image.width),
+          half = ready ? image.width / 2 : 1,
+          mean = new Three.Vector3(0.5, 0.5, 0.5);
+        const cut = (sx, sy, w, h, fallback, colour, repeat) => {
+          let t;
+          if (ready) {
+            const canvas = document.createElement('canvas');
+            canvas.width = w;
+            canvas.height = h;
+            canvas.getContext('2d').drawImage(image, sx, sy, w, h, 0, 0, w, h);
+            t = new Three.CanvasTexture(canvas);
+            t.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+          } else {
+            t = new Three.DataTexture(new Uint8Array(fallback), 1, 1);
+            t.needsUpdate = true;
+          }
+          t.colorSpace = colour ? Three.SRGBColorSpace : Three.NoColorSpace;
+          t.wrapS = t.wrapT = repeat ? Three.RepeatWrapping : Three.ClampToEdgeWrapping;
+          t.magFilter = Three.LinearFilter;
+          t.minFilter = ready ? Three.LinearMipmapLinearFilter : Three.LinearFilter;
+          t.generateMipmaps = ready;
+          return t;
+        };
+        const colour = cut(0, 0, half, half, [128, 128, 128, 255], true, true),
+          detail = cut(half, 0, half, half, [128, 128, 160, 255], false, true),
+          sprites = cut(0, half, half * 2, half, [255, 128, 128, 255], false, false);
+        if (ready) {
+          // The colour map's linear mean (a 4 x 4 reduction of the cut).
+          const small = document.createElement('canvas');
+          small.width = small.height = 4;
+          const g = small.getContext('2d', { willReadFrequently: true });
+          g.drawImage(colour.image, 0, 0, 4, 4);
+          const px = g.getImageData(0, 0, 4, 4).data,
+            linear = (c) => ((c /= 255) <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
+          let r = 0,
+            gr = 0,
+            b = 0;
+          for (let i = 0; i < 64; i += 4) {
+            r += linear(px[i]);
+            gr += linear(px[i + 1]);
+            b += linear(px[i + 2]);
+          }
+          mean.set(r / 16, gr / 16, b / 16);
+        } else {
+          // The stand-in's 128 grey, linear.
+          mean.setScalar(0.2158);
+        }
+        for (const t of [colour, detail, sprites]) {
+          // On the GPU from the start (the first muddy wheel must not upload them), the canvases then freed.
+          renderer.initTexture(t);
+          if (ready) bakedCanvases.push(t);
+        }
+        return { ready, colour, detail, sprites, mean, uniforms: { mudColorMap: { value: colour }, mudMean: { value: mean } } };
+      })();
       // ---- Mud on a vehicle's materials ---------------------------------------------------
       const MUD_NOISE = `
         float mudHash( vec3 p ) {
@@ -12,11 +75,33 @@
           return mix( mix( mix( mudHash( i ), mudHash( i + vec3( 1.0, 0.0, 0.0 ) ), f.x ), mix( mudHash( i + vec3( 0.0, 1.0, 0.0 ) ), mudHash( i + vec3( 1.0, 1.0, 0.0 ) ), f.x ), f.y ),
                       mix( mix( mudHash( i + vec3( 0.0, 0.0, 1.0 ) ), mudHash( i + vec3( 1.0, 0.0, 1.0 ) ), f.x ), mix( mudHash( i + vec3( 0.0, 1.0, 1.0 ) ), mudHash( i + vec3( 1.0, 1.0, 1.0 ) ), f.x ), f.y ), f.z );
         }`;
+      // The mud photo (trailMud) on a surface, triplanar in the body's own space so it rides with the body: rgb its
+      // colour over its mean (a detail ratio, 1 on average), a its relief (relative luminance, 0..1); and a bump from
+      // a height's screen derivatives (three.js perturbNormalArb, which needs no tangents).
+      const MUD_PHOTO = `
+        vec4 mudPhoto( vec3 p, vec3 n ) {
+          vec3 w = pow( abs( n ), vec3( 4.0 ) );
+          w /= max( w.x + w.y + w.z, 1e-4 );
+          vec3 c = texture2D( mudColorMap, p.zy ).rgb * w.x + texture2D( mudColorMap, p.xz ).rgb * w.y + texture2D( mudColorMap, p.xy ).rgb * w.z;
+          float luma = dot( c, vec3( 0.3, 0.55, 0.15 ) ) / max( dot( mudMean, vec3( 0.3, 0.55, 0.15 ) ), 1e-4 );
+          return vec4( c / max( mudMean, vec3( 1e-4 ) ), clamp( luma * 0.5, 0.0, 1.0 ) );
+        }
+        vec3 mudPerturb( vec3 surfPos, vec3 surfNorm, vec2 dHdxy, float faceDir ) {
+          vec3 vSigmaX = normalize( dFdx( surfPos ) );
+          vec3 vSigmaY = normalize( dFdy( surfPos ) );
+          vec3 R1 = cross( vSigmaY, surfNorm );
+          vec3 R2 = cross( surfNorm, vSigmaX );
+          float fDet = dot( vSigmaX, R1 ) * faceDir;
+          vec3 vGrad = sign( fDet ) * ( dHdxy.x * R1 + dHdxy.y * R2 );
+          return normalize( abs( fDet ) * surfNorm - vGrad );
+        }`;
       function mudUniforms() {
         return { mudAmount: { value: 0 }, mudWet: { value: 1 }, mudBase: { value: new Three.Vector2(0, 16) } };
       }
       /*
-       * Adds the mud layer to a lit material (chained after any patch it has).
+       * Adds the mud layer to a lit material (chained after any patch it has): the mud photo (trailMud) thrown up
+       * from the ground, a ragged line from the wheels up with streaks and flecks above it, its own relief (a bump
+       * from the photo, deeper where thick), dark and glossy wet, pale and matt dry.
        * `tyre`: the whole tread and sidewall take it, whatever the height.
        */
       function vehicleMudPatch(material, uniforms, tyre = false) {
@@ -24,35 +109,62 @@
           previousKey = material.customProgramCacheKey;
         material.onBeforeCompile = (shader, renderer) => {
           if (previous) previous.call(material, shader, renderer);
-          Object.assign(shader.uniforms, uniforms);
+          Object.assign(shader.uniforms, uniforms, trailMud.uniforms);
           shader.vertexShader = shader.vertexShader
-            .replace('#include <common>', '#include <common>\nvarying vec3 vMudLocal;\nvarying vec3 vMudWorld;\nvarying float vMudUp;')
-            .replace('#include <beginnormal_vertex>', '#include <beginnormal_vertex>\nvMudUp = normalize( mat3( modelMatrix ) * objectNormal ).y;')
+            .replace('#include <common>', '#include <common>\nvarying vec3 vMudLocal;\nvarying vec3 vMudWorld;\nvarying float vMudUp;\nvarying vec3 vMudNormal;')
+            .replace('#include <beginnormal_vertex>', '#include <beginnormal_vertex>\nvMudUp = normalize( mat3( modelMatrix ) * objectNormal ).y;\nvMudNormal = objectNormal;')
             .replace('#include <begin_vertex>', '#include <begin_vertex>\nvMudLocal = transformed;\nvMudWorld = ( modelMatrix * vec4( transformed, 1.0 ) ).xyz;');
           shader.fragmentShader = shader.fragmentShader
             .replace(
               '#include <common>',
-              '#include <common>\nvarying vec3 vMudLocal;\nvarying vec3 vMudWorld;\nvarying float vMudUp;\nuniform float mudAmount;\nuniform float mudWet;\nuniform vec2 mudBase;\n' + MUD_NOISE,
+              '#include <common>\nvarying vec3 vMudLocal;\nvarying vec3 vMudWorld;\nvarying float vMudUp;\nvarying vec3 vMudNormal;\nuniform float mudAmount;\nuniform float mudWet;\nuniform vec2 mudBase;\nuniform sampler2D mudColorMap;\nuniform vec3 mudMean;\n' +
+                MUD_NOISE +
+                MUD_PHOTO,
             )
             .replace(
               '#include <color_fragment>',
               `#include <color_fragment>
               float mudMask = 0.0;
               float mudGrain = 0.5;
+              float mudRelief = 0.0;
               if ( mudAmount > 0.002 ) {
                 float h = clamp( ( vMudWorld.y - mudBase.x ) / mudBase.y, 0.0, 1.5 );
-                mudGrain = mudNoise( vMudLocal * 0.55 ) * 0.6 + mudNoise( vMudLocal * 2.3 + 3.7 ) * 0.4;
-                float spray = ${tyre ? 'mudAmount * 2.6 - 0.35' : 'mudAmount * 2.2 - h * 1.5 - max( vMudUp, 0.0 ) * 0.3'} + ( mudGrain - 0.5 ) * 1.15;
-                mudMask = smoothstep( 0.0, 0.16, spray );
-                vec3 mudColor = mix( vec3( 0.3, 0.24, 0.17 ), vec3( 0.07, 0.048, 0.03 ), mudWet ) * ( 0.72 + 0.56 * mudGrain );
+                // The photo about 2.8 m a repeat (world units, 8 to the metre); large patches from the noise; streaks
+                // thrown up and back off the wheels (noise stretched up the body); the photo's clods rag the edge.
+                vec4 photo = mudPhoto( vMudLocal * 0.045, vMudNormal );
+                float streak = mudNoise( vec3( vMudLocal.x * 0.32, vMudLocal.y * 0.05, vMudLocal.z * 0.9 ) );
+                float mudBlotch = mudNoise( vMudLocal * 0.55 );
+                mudGrain = mudBlotch * 0.45 + photo.a * 0.55;
+                // The line's rag: mostly smooth noise (blotches), a little of the photo's clods (no salt and pepper).
+                float rag = mudBlotch * 0.75 + photo.a * 0.25;
+                float spray = ${tyre ? 'mudAmount * 2.6 - 0.35' : 'mudAmount * 2.2 - h * 1.5 - max( vMudUp, 0.0 ) * 0.3'} + ( rag - 0.5 ) * 1.15 + ( streak - 0.5 ) * 0.5;
+                mudMask = smoothstep( 0.0, 0.12, spray );
+                ${
+                  tyre
+                    ? ''
+                    : `// Flecks above the line: round spatter (smooth noise blobs), fewer with height and on faces looking up.
+                float blob = mudNoise( vMudLocal * 0.7 + 11.0 ) * 0.75 + mudNoise( vMudLocal * 2.1 + 5.0 ) * 0.25;
+                float fleck = smoothstep( 0.66, 0.72, blob * 0.85 + photo.a * 0.15 ) * smoothstep( -0.7, -0.05, spray ) * ( 1.0 - max( vMudUp, 0.0 ) * 0.75 ) * step( 0.05, mudAmount );
+                mudMask = max( mudMask, fleck * 0.92 );`
+                }
+                // Thick well inside the line: deeper relief.
+                float thick = clamp( spray * 2.5, 0.0, 1.0 );
+                // The relief fades as the photo is minified (past ~1 texel a pixel a bump only sparkles).
+                float mudTexels = length( fwidth( vMudLocal * 0.045 ) ) * 512.0;
+                mudRelief = mudMask * ( 0.35 + 0.65 * thick ) * photo.a * clamp( 1.6 - mudTexels * 0.6, 0.0, 1.0 );
+                vec3 mudColor = mix( vec3( 0.3, 0.24, 0.17 ), vec3( 0.07, 0.048, 0.03 ), mudWet ) * mix( vec3( 1.0 ), clamp( photo.rgb, vec3( 0.5 ), vec3( 1.6 ) ), 0.7 ) * ( 0.84 + 0.32 * mudGrain );
                 diffuseColor.rgb = mix( diffuseColor.rgb, mudColor, mudMask );
               }`,
             )
             .replace(
               '#include <roughnessmap_fragment>',
-              '#include <roughnessmap_fragment>\nroughnessFactor = mix( roughnessFactor, mix( 0.96, 0.38, mudWet ) + ( mudGrain - 0.5 ) * 0.1, mudMask );',
+              '#include <roughnessmap_fragment>\nroughnessFactor = mix( roughnessFactor, clamp( mix( 0.96, 0.3, mudWet ) + ( 0.5 - mudRelief ) * 0.22 * mudWet + ( mudGrain - 0.5 ) * 0.1, 0.12, 1.0 ), mudMask );',
             )
             .replace('#include <metalnessmap_fragment>', '#include <metalnessmap_fragment>\nmetalnessFactor *= 1.0 - mudMask;')
+            .replace(
+              '#include <normal_fragment_maps>',
+              '#include <normal_fragment_maps>\nif ( mudAmount > 0.002 ) normal = mudPerturb( - vViewPosition, normal, vec2( dFdx( mudRelief ), dFdy( mudRelief ) ), faceDirection );',
+            )
             .replace(
               '#include <lights_physical_fragment>',
               '#include <lights_physical_fragment>\n#ifdef USE_CLEARCOAT\nmaterial.clearcoat *= 1.0 - mudMask;\n#endif',

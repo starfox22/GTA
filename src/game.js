@@ -48,6 +48,7 @@
     // @include src/game-draw2d.js
     // @include src/game-minimap.js
     // @include src/map-view.js
+    // @include src/minimap-rules.js
     // @include src/game-ui.js
     // @include src/game-menus.js
     // @include src/god-splash.js

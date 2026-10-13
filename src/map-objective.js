@@ -133,6 +133,7 @@
       const w = (g.measureText(h.label).width + 8) / scale,
         tall = (big ? 15 : 12) / scale;
       g.fillRect(x - w / 2, y - lift - tall * 0.8, w, tall);
+      mapMarkCount(1, 1);
       g.fillStyle = '#ffd7d2';
       mapLabel(g, h.label, x, y - lift, scale);
       g.restore();

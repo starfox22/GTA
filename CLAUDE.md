@@ -196,6 +196,10 @@ packs with plain `<script src>` so the zip still plays from file://.
   `populateWorld()` (boot seed replayed); a system that keeps world damage or holds vehicles or people outside the
   populate lists adds a reset helper next to its state, called from `resetWorld`; renderer-held damage clears when
   `worldResetSerial` changes; progress (cash, weapons, story, owned cars, settings) is never reset.
+- Minimap marks (world-and-map-minimap.md): minimap-rules.js MINIMAP MARKS decides what the minimap draws over its base
+  (objective/GPS, waypoint, mission entities, police and nearest respray while wanted, the waiting call's payphone, places
+  only on foot within `MINIMAP_NEAR`); a new map painter takes `big`, follows these rules on the minimap and counts its
+  marks with `mapMarkCount` (tools/tests/minimap-clutter.mjs); the big map keeps every layer. Sunset Pier's rides: park-map.js.
 - Road routes for the GPS and the waypoint pick their ends through `navRouteEnds()` (map-objective.js), which keeps both on one
   connected road network; a mission vehicle the player is after is marked on the maps only through `mapHighlightVehicle()`.
   Trunks close only through `closeTrunk` (the action key via `trunkCloseTarget`, or `slamMovingTrunks` past walking pace).
@@ -340,7 +344,8 @@ packs with plain `<script src>` so the zip still plays from file://.
   `CHASE_FIRE_REACH` or within `CHASE_FIRE_NEAR` of the player, never through a building), never a `cameraTarget`
   box; `viewPopAudit()` stays at 0 (tools/tests/chase-streams.mjs). The reticle (the cursor without pointer lock)
   is the aim for every device: aim code reads `aim()`, `chaseAimScreen()` or `chaseGroundPoint()`, never
-  `mouse.x/y` with `city3D.groundPoint` alone. Movement keys go through `playerMoveHeading()`; the street view's
+  `mouse.x/y` with `city3D.groundPoint` alone. Movement keys go through `playerMoveHeading()` (chase heading `chaseMoveYaw`, primed
+  behind the player on a switch, teleport or reload; the on-foot camera follows a run only within `CHASE_FOLLOW_ARC`); the street view's
   paths stay bit-identical when the chase view is off. Its HUD layout is `body.chase-view` (chase-view.css).
   Sweep both the shoulder and boom against walls; no minimum boom may override collision clearance.
 - Chase view budget (rendering-chase-budget.md): a static group's small parts and glows, scene signs, small batches,
@@ -430,6 +435,8 @@ packs with plain `<script src>` so the zip still plays from file://.
   `rotorRadius`/`rotorX`; civil helicopters are parked only by `populateCivilHelicopters()`; `tools/dog_model.py` bakes
   assets/dog-model.bin, drawn by dog3d.js as one instanced vertex-blend draw (`dogPose`); `aircraftAssetsOn(false)` /
   `dogModelOn(false)` give before/after.
+- Front doors (damage, carjack, getting in and out) come only from `vehicleDoor` (damage3d-bodies.js DOORS): cut from the
+  body's own paint with an inside panel and window; swings are carjack3d.js DOOR SWING; no dark box over an opening.
 - Car crash damage (vehicles-and-driving-damage.md): `crumpleField(dents, limits, ...)` / `crumpleLimits(vehicle)`
   (damage-crumple.js) is the only crumple rule; damage3d-crumple.js bends every mesh under a car body with it,
   time-sliced (`crumpleSlices`), and bumps `m.shapeVersion` when a body is done. A part that animates its own matrix or
@@ -455,6 +462,10 @@ packs with plain `<script src>` so the zip still plays from file://.
   only read `cameraKick` and `cameraShakeOffset`.
 - Roomy one-shots (shots, blasts, crashes, near thunder) connect to `reverbSend`
   (acoustics-audio.js), never `reverb`; audio randomness uses `sfxRandom`, not `randomBetween`.
+- Trail mud (rendering-effects-mud.md): the 4x4 mud draws from `trailMud` (assets/trail-mud.webp; tools/trail_mud.py `CELLS` =
+  `MUD_SPRITE_CELLS`); drops and mist go to the effect pool under `MUD_TIER` caps; mud randomness is `mudRandom`; rut and
+  splat decals multiply when they overlap, so their brightening stays capped. A renderer setup error drops to REDUCED
+  GRAPHICS with only a `console.warn` (not in `dev.mjs errors`): after renderer edits check `status().renderer` is '3d'.
 - Trees: every tree, palm, shrub and grass clump uses `treeMaterial`, which carries the foliage cutaway
   (`FOLIAGE_HOLE_CUT`; uniforms from `updateFoliageCutaway` / `foliageCutawayPlan()`, foliage-cutaway.js; the same
   Settings switch as the building cutaway). A new plant must use it to be see-through; keep `foliageHoleCut()` in

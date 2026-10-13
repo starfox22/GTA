@@ -33,10 +33,16 @@
         for (const u of g.gates) drawingContext.fillRect(u - g.m - 5, -g.road, 10, g.road * 2);
       }
       drawingContext.restore();
-      // The icon: a disc with two leaves, raised or down, off the deck's left side.
+      // The icon: a disc with two leaves, raised or down, off the deck's left side. The minimap shows it only while
+      // the bridge is not simply down (minimap-rules.js MINIMAP MARKS).
+      if (!big && d.phase === 'idle' && d.angle <= 0.004) return;
       const r = Math.max(big ? 70 : 60, (big ? 11 : 9) / scale),
         colour = d.phase === 'idle' ? '#e9e4d2' : d.angle > 0.004 ? '#ff5a48' : '#ffb03a',
         at = bridgePoint(g.bridge, g.m, -g.half - r * 1.25);
+      if (!big) {
+        if (!mapWindowHas(at.x, at.y, r)) return;
+        mapMarkCount(1, 0);
+      }
       drawingContext.save();
       drawingContext.translate(at.x, at.y);
       drawingContext.fillStyle = '#102d3ddd';

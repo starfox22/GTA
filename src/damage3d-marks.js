@@ -76,6 +76,8 @@
         if (!hit.face) return false;
         if (mark.kind === 'star') return o === m.cabin && markPaneOf(o.geometry, hit.faceIndex) === PANE_ORDER.indexOf(mark.pane);
         if (m.cabin && o === m.cabin) return false;
+        // An open door's window (damage3d-bodies.js DOORS) is glass too.
+        if (o.userData.doorGlass) return false;
         // The trim's cabin share (seats, dash) is seen through the glass: never a place for a hole.
         const trim = m.kit?.trim;
         if (trim && (o.userData.crumpleSource || o.geometry) === trim) {

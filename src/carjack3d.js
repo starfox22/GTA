@@ -6,49 +6,127 @@
        * seconds into it, the driver's temper) and the driver's `pose`
        * ('carjackCling' in the seat, 'carjackHauled' dragged out, 'carjackStagger'
        * let go, or 'handsUp' for one who gives up), `carjackT`, `carjackPull` and
-       * `punchAt`. The door is the damage model's hinged panel (damage3d-bodies.js
-       * doors), made on first use and shown only while it is open, so a closed,
-       * undamaged door is the body's own. The player's hands go to the driver's
+       * `punchAt`. The door is the damage model's hinged door (damage3d-bodies.js
+       * DOORS), made on first use and shown only while it is open, so a closed,
+       * undamaged door is the body's own (DOOR SWING). The player's hands go to the driver's
        * collar by IK (`handTargets`), read off the driver's torso as it was drawn
        * this frame (the street is drawn before the player).
        */
       const carjackGrip = [new Three.Vector3(), new Three.Vector3()];
-      function carjackDoorShape(m) {
-        claimDamageResources();
-        const { l, w, h } = m.dims,
-          side = -1,
-          pivot = new Three.Group();
-        pivot.position.set(l * 0.2, 0, side * w * 0.5);
-        m.body.add(pivot);
-        const sill = m.dims.sill ?? 4.8,
-          panel = box(pivot, -l * 0.13, (sill + h + 0.4) / 2, side * 0.25, l * 0.26, h + 0.4 - sill, 0.45, m.paint),
-          opening = box(m.body, l * 0.07, (sill + h) / 2, side * (w * 0.5 + 0.04), l * 0.24, h - sill - 0.2, 0.3, engineBay);
-        if (m.panelGeometry) panel.geometry = m.panelGeometry;
-        m.doors = m.doors || {};
-        return (m.doors[side] = { pivot, panel, opening });
+      /**
+       * DOOR SWING
+       * The carjack's door (`c.doorSwing`, carjack-struggle.js) and the player's own way in and out
+       * (crowd3d-frame.js `carTransition.door`) swing the body's front door on its front hinge (damage3d-bodies.js
+       * DOORS: the door cut from the body's side with its window, the cabin seen through the opening). Yanked open:
+       * the latch gives (a crack), the door swings out fast and is caught by its check strap with a small bounce;
+       * pulled shut it speeds up to the latch. While a door with its window stands open the body's side pane is
+       * left out (`missingGlass`, as a lowered window), so the window goes with the door.
+       */
+      const DOOR_OPEN = 1.1;
+      // The carjack's yank: radians open `t` seconds after the hand pulled the handle (sw.openAt).
+      function doorYank(t) {
+        if (t <= 0) return 0;
+        if (t < 0.07) return 0.1 * Math.sin((t / 0.07) * Math.PI * 0.5);
+        if (t < 0.33) {
+          const k = (t - 0.07) / 0.26;
+          return 0.1 + (DOOR_OPEN + 0.07 - 0.1) * (1 - (1 - k) * (1 - k) * (1 - k));
+        }
+        const s = t - 0.33;
+        return DOOR_OPEN + 0.07 * Math.exp(-s * 9) * Math.cos(s * 22);
       }
-      /* Per vehicle with a carjack door (render3d-frame.js): yanked open, swung shut. */
+      // Pulled shut over 0.28 s from `closeAt`, quicker as it goes (a share 1 to 0 of the open angle).
+      function doorShutShare(since) {
+        if (since <= 0) return 1;
+        const k = clamp(since / 0.28, 0, 1);
+        return 1 - k * k;
+      }
+      // Getting in and out of a car without a struggle: open as the player steps up, shut behind them (seconds since).
+      function doorStepOpen(kind, since) {
+        if (kind === 'enter') {
+          // The duck in is 0.4 s (drawEnterCar): the door opens ahead of it and is pulled shut once they sit.
+          if (since < 0.16) return DOOR_OPEN * 0.85 * Math.sin((since / 0.16) * Math.PI * 0.5);
+          return DOOR_OPEN * 0.85 * doorShutShare(since - 0.42);
+        }
+        // Out (exitCar puts the player beside the door at once; the step out is 0.5 s): open, then pushed shut.
+        if (since < 0.12) return DOOR_OPEN * 0.85 * Math.sin((since / 0.12) * Math.PI * 0.5);
+        return DOOR_OPEN * 0.85 * doorShutShare(since - 0.5);
+      }
+      /* Per vehicle with a swinging door (render3d-frame.js): a carjack, or the player getting in or out. */
       function swingDriverDoor(c, m) {
         if (!m.car || !m.dims || !m.body) return;
-        const state = c.damage?.parts?.doorLeft || 0;
-        if (state === 2) return;
+        let left = 0,
+          right = 0;
         const sw = c.doorSwing;
-        let open = 0;
         if (sw) {
-          const k = clamp((gameTime - sw.openAt) / 0.22, 0, 1);
-          open = 1 - (1 - k) * (1 - k);
-          if (sw.closeAt) open *= 1 - clamp((gameTime - sw.closeAt) / 0.3, 0, 1);
+          left = doorYank(gameTime - sw.openAt);
+          if (sw.closeAt) left *= doorShutShare(gameTime - sw.closeAt);
         }
-        let door = m.doors?.[-1];
-        if (!door) {
-          if (open <= 0) return;
-          door = carjackDoorShape(m);
+        const tr = carTransition;
+        if (tr.door === c && tr.kind) {
+          const since = gameTime - tr.at;
+          if (since < 1.2 && !vehicleSpec(c).truck && Math.hypot(c.vx || 0, c.vy || 0) < 30) {
+            const open = doorStepOpen(tr.kind, since);
+            if (tr.doorSide > 0) right = open;
+            else left = Math.max(left, open);
+          }
         }
-        m.carjackDoor = true;
-        door.pivot.rotation.set(0, -Math.max(state === 1 ? 0.95 : 0, open * 1.1), state === 1 ? -0.09 : 0);
-        const shown = state > 0 || open > 0.002;
-        door.panel.visible = shown;
-        door.opening.visible = shown;
+        // Nothing swinging and nothing left to put back: the damage pass draws any sprung door.
+        const active = left > 0.002 || right > 0.002;
+        if (!active && m.doorsIdle) return;
+        m.doorsIdle = !active;
+        let paneOpen = false;
+        for (let side = -1; side <= 1; side += 2) {
+          const open = side < 0 ? left : right,
+            state = c.damage?.parts?.[side < 0 ? 'doorLeft' : 'doorRight'] || 0;
+          if (state === 2) continue;
+          let door = m.doors?.[side];
+          if (!door) {
+            if (open <= 0.002) continue;
+            door = vehicleDoor(c, m, side);
+          }
+          m.carjackDoor = true;
+          door.pivot.rotation.set(0, side * Math.max(state === 1 ? 0.95 : 0, open), state === 1 ? -0.09 : 0);
+          const shown = state > 0 || open > 0.002;
+          door.panel.visible = shown;
+          door.opening.visible = shown;
+          // The window rides with a whole door; a sprung one has lost it (damage3d-bodies.js).
+          const glassShown = !!door.glass && state === 0 && open > 0.002;
+          if (door.glass) door.glass.visible = glassShown;
+          if (glassShown) paneOpen = side;
+        }
+        doorSidePane(m, paneOpen);
+      }
+      /* The body's side pane left out while its door (with the window) stands open: `side` -1 or 1, or false. */
+      function doorSidePane(m, side) {
+        const cabin = m.cabin;
+        if (!cabin || !m.cabinBase) return;
+        const held = m.doorPane;
+        if (held && held.side !== side) {
+          // Put back what the pane was (the damage pass may have changed it since: then it is its own).
+          const list = cabin.material;
+          if (Array.isArray(list)) {
+            if (list === held.list) cabin.material = held.one;
+            else if (list[held.index] === missingGlass && held.was) list[held.index] = held.was;
+          }
+          m.doorPane = null;
+        }
+        if (!side) return;
+        const index = side < 0 ? 0 : 2;
+        let hold = m.doorPane;
+        if (!hold) hold = m.doorPane = { side, index, list: null, one: null, was: null };
+        const now = cabin.material;
+        if (!Array.isArray(now)) {
+          // One material for the whole glasshouse: five slots of it with the side's left out.
+          hold.one = now;
+          hold.list = hold.list || [now, now, now, now, now];
+          hold.list.fill(now);
+          hold.list[index] = missingGlass;
+          cabin.material = hold.list;
+        } else if (now !== hold.list && now[index] !== missingGlass) {
+          // The damage pass's own panes: leave its side out until the door shuts.
+          hold.was = now[index];
+          now[index] = missingGlass;
+        }
       }
       /* Leg angles for an ankle `fx` ahead of the hip with the hips `drop` lower (rig units). */
       function carjackLeg(T, side, fx, drop, lift = 0) {

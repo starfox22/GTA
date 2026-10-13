@@ -28,7 +28,7 @@
         rootMatrixScratch = new Three.Matrix4(),
         unitScale = new Three.Vector3(1, 1, 1);
       // Car transitions (render side only): when the player got in or out.
-      const carTransition = { car: null, at: -10, kind: null, x: 0, y: 0, a: 0, worldSerial: worldResetSerial };
+      const carTransition = { car: null, at: -10, kind: null, x: 0, y: 0, a: 0, worldSerial: worldResetSerial, door: null, doorSide: -1 };
       const recoilSince = (at) => (at != null ? clamp(1 - (gameTime - at) / 0.13, 0, 1) : 0);
       function specialSpec(p) {
         const sp = specScratch;
