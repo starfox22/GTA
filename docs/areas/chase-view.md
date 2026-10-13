@@ -23,7 +23,8 @@ rendering.md Cameras and view.
 - On foot (`CHASE_FOOT`): 3.5 m boom, 0.42 m over the right shoulder, 52° lens; the right mouse
   button (LT on a pad) aims over the shoulder (`CHASE_AIM`: 1.85 m, 0.66 m, 44°) with `aimBlend`.
   The camera turns only when the player looks round, except that it eases behind a run after two
-  seconds without looking. In a vehicle (`chaseShapeFor`): the boom by the vehicle's length, a
+  seconds without looking, and only a run within `CHASE_FOLLOW_ARC` (0.6 rad) of its heading: the keys
+  point off the camera's heading, so following a sideways or diagonal run would turn the run with it (circles). In a vehicle (`chaseShapeFor`): the boom by the vehicle's length, a
   critically damped heading spring after the way it goes (`chaseVehicleHeading`: the nose, blending to
   the velocity in a slide), the pitch following the slope, the lens widening 7° and the boom 12% with
   speed. Looking round in a vehicle (`lookYaw`, `lookPitch`) eases back `CHASE_LOOK_RETURN` s after the

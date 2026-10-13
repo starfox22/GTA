@@ -19,4 +19,10 @@ and its game rules).
   view. Touch: the aim stick turns the camera and fires past two thirds of its throw (CHASE TOUCH); a
   one-finger drag on the game looks round. The wheel and the zoom keys move the boom (`chaseZoom`).
 - The movement keys walk along the camera's heading (`chaseMoveHeading`, used by game-update.js and
-  footwork.js `playerMoveHeading`); the street view keeps its screen-up keys, bit for bit.
+  footwork.js `playerMoveHeading`); the street view keeps its screen-up keys, bit for bit. The keys are read
+  before the camera's step, so on the first step after a switch of view, a teleport, a load or a new game
+  they take the heading the fresh camera will start at (KEYS ON A FRESH CAMERA, `chaseMoveYaw`: behind the
+  player, `primed`) and the camera keeps it: a key held across V re-maps to the new view at once and never
+  takes the last chase view's stale heading. CURSOR LOOK runs only after a refused capture (`lockFailed`)
+  and not while the cursor is off the page (`cursorOut`): a cursor the street view's aim left by an edge
+  never turns the camera, and the keys with it. tools/tests/chase-move-keys.mjs.
