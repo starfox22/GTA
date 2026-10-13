@@ -18,7 +18,7 @@
     async function loadVisuals() {
       // Native simulation tests have no image decoder; canvas geometry stays usable.
       if (typeof Image === 'undefined') return;
-      const names = ['architecture', 'ground', 'arsenal', 'harbor', 'wallSkin'];
+      const names = ['architecture', 'ground', 'arsenal', 'harbor', 'wallSkin', 'trailMud'];
       await Promise.all(
         names.map(
           (name) =>

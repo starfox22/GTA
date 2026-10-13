@@ -85,6 +85,14 @@ MONARCH MOTORS, Ridgeline, Fort Sentinel and the stadium: places-monarch-and-cou
   the player on it is carried by `player.buildingRoof`; `playerOnRoof()` answers "not at
   street level" for police sight, shops, stations, taxis.
 - Rooftop helipads (`chooseRoofHelipads`, `b.helipad`). Console `rooftops(x, y)`.
+- Roof lifts (roof-lifts.js): every helipad roof and every roof a helicopter is parked on has a lift (`ROOF_LIFTS`,
+  the Key's joined first). `b.roofLift`: the stair bulkhead in the roof's north-west corner is the lift house (a game
+  keep-out in `b.deckKeepOuts`; Monarch One's opposite its mast), the street door the middle of the first open
+  street side (a place's own door keeps 40 units), drawn as steel doors under a lit HELIPAD sign (frontage
+  `frontLiftDoor`, renderer reads only). The ride is skyline-lift.js `startSkyLift`/`updateSkyLift` on the lift's
+  fields (`name`, `topLabel`, `exit`, `upText`...): change it there for every lift. City lifts run wanted or not.
+  A new helipad or roof-parked helicopter needs no code if it is in `roofHelipads`; `roofLifts().missing` stays 0
+  (tools/tests/roof-lifts.mjs).
 
 ## Garages, casino, bike share
 

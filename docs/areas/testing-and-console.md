@@ -94,7 +94,8 @@ node tools/dev.mjs errors | status | reload [--render|--norender] [--keep] [--sh
   `hitchRun` (every frame's sections and what happened in it, src/frame-trace.js) and prints long frames
   and their causes per stage; `--ab A.html B.html` runs both builds ABBA on one server; `--live` records
   real frames with the browser's style and layout time (`node tools/dev.mjs metrics`); `--counts` adds the
-  renderer's counters per stage on a rendered page.
+  renderer's counters per stage on a rendered page. `--stages fort,fortChase` runs the opt-in Fort Sentinel
+  fight (alarm, five stars, garrison, tanks and gun jeeps; street view, then the chase view facing the motor pool).
 - **Exactness of a performance change**: `node tools/dev.mjs start dist/ab.html --seed 1` opens the page
   with a seeded Math.random from the first line, the simulation held from the first frame and no sound
   (game-state.js DETERMINISTIC BOOT), so every boot holds the same world; `node tools/hitches.mjs --ab

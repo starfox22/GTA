@@ -2,7 +2,7 @@
 
 The vehicle in the game's frame (x ahead, y up, z to the right; the ground at y 0, centred in x and z), scaled to
 `length`: the body in one atlas-textured part (`body`: its own paint is its texture, camouflage and markings and all),
-the glass (`glass` roles), four lamps (`lamp` roles, head ahead and tail behind, by side, with their colours), the road
+the glass (`glass` roles), optionally a coarser body for far away (`far`: `bodyFar`), four lamps (`lamp` roles, head ahead and tail behind, by side, with their colours), the road
 wheels about their own centres (`tyre` roles grouped by axle and side, with whatever sits inside them), and a tank's
 turning parts: the turret (`turret` roles, about its ring: `turretAt`) and the gun (`barrel` roles, about its
 trunnion: `barrelAt`, in the turret's frame). src/military-assets3d.js builds it.
@@ -146,6 +146,12 @@ def convert_special(model, src_root, vm):
         return n_slices
     cl = model.get('cluster')
     meta_extra_slices = {'body': sliced('body', body, keep=keep['trim'], borderCos=bc, minPiece=mp, cluster=cl)}
+    # A coarser copy of the body for far away (`far`: its own `cluster` and `keep`), drawn in place of the body beyond the
+    # runtime's switch distance (military-assets3d.js MILITARY LOD).
+    far = model.get('far')
+    if far:
+        parts['bodyFar'] = dict(tris=sorted(body, key=lambda k: cen[k, 0]), keep=far.get('keep', keep['trim']), borderCos=bc,
+                                minPiece=mp, cluster=far.get('cluster'))
     meta_extra = {}
     if turret:
         tp = np.concatenate([V(k) for k in turret])

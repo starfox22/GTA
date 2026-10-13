@@ -36,7 +36,10 @@ answer is to do that work behind the title, a few milliseconds at a time (render
 2. Off-screen passes with a scene, camera and target of their own: register one with
    `registerPrewarmPass(scene, camera, target)` (render3d.js) next to its definition: the drive
    map, the beam shadows, the cloud march and veil, sea life and wakes are. The target is bound
-   while it compiles because its colour space is part of the program. The wet-reflection passes
+   while it compiles because its colour space is part of the program. A pass whose meshes come and
+   go (the wakes' per-craft trail and hull) keeps a never-drawn copy in its scene (WAKE KEEPER,
+   wakes3d.js) so the prewarm compiles them and retiring the last one never releases the programs.
+   The wet-reflection passes
    (HIGH and ULTRA) are `postWarmPasses()`. Every `Points` material is compiled with
    `sizeAttenuation` both ways (the flight camera flips it).
 3. While the title is up: one stand-in vehicle per model (`prewarmModelList`, render3d-prewarm-

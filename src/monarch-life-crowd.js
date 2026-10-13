@@ -440,6 +440,7 @@
     }
     function updateMonarchIsle(deltaSeconds) {
       updateMonarchOneGate(deltaSeconds);
+      updateVillaGarages(deltaSeconds);
       updateMonarchTraffic(deltaSeconds);
       updateMonarchCrowd(deltaSeconds);
       updateMonarchSound(deltaSeconds);

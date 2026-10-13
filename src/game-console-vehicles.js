@@ -65,6 +65,10 @@
       civilHelicopters: () => civilHelicopterReport(),
       offroad: () => offroadReport(),
       clubLineup: (x, y) => clubLineup(x, y),
+      // Gate lanes and drives kept clear, and anything parked or docked in them (vehicle-entrances.js).
+      vehicleEntrances: () => vehicleEntranceReport(),
+      // Monarch villa garages: the door, its state, the car inside, the drive (monarch-garages.js).
+      villaGarages: () => villaGarageReport(),
       // 'state', 'arm', 'reset', 'clear' (records), 'gate', 'cp0'..'cp3', 'top' (just below the summit, facing down) or 'at0.42' (that fraction of the trail): move the player's vehicle there.
       hillClimb: (action, trail) => hillClimbConsole(action, trail),
       // Drive the player's vehicle up a trail (or 'down' it) through the real physics (a line-following
@@ -83,6 +87,22 @@
         c.mudCoat = clamp(amount, 0, 1);
         c.mudWet = clamp(wet, 0, 1);
         return { mudCoat: c.mudCoat, mudWet: c.mudWet };
+      },
+      // Stage the 4x4 mud without drawing (offroad3d-mud.js): `seconds` of 1/30 s steps of the game holding `held`
+      // keys and of the mud the tyres throw (with the effect pool); returns offroad().effects (null without WebGL).
+      trailMud: (seconds = 0, held = []) => {
+        if (!city3D?.trailMudStep) return null;
+        const steps = Math.round(clamp(Number(seconds) || 0, 0, 20) * 30);
+        for (const code of held) keys[code] = true;
+        try {
+          for (let i = 0; i < steps && gameMode === 'play'; i++) {
+            update(1 / 30);
+            city3D.trailMudStep(1 / 30);
+          }
+        } finally {
+          for (const code of held) keys[code] = false;
+        }
+        return city3D.offroadInfo();
       },
       // Drive the player's road vehicle or boat toward (x, y) through the real
       // physics for up to `seconds`, holding W and steering with A/D, easing off

@@ -98,6 +98,20 @@
           Object.assign(lift, { venue: 'CIRRUS · SKY BAR', house: plan.house, door: plan.door, bar: plan });
         }
         lift.arrive = { x: lift.door.x, y: lift.door.y + 12 };
+        // What the shared ride reads (roof-lifts.js has the city's lifts in the same shape).
+        Object.assign(lift, {
+          name: t.name,
+          topLabel: t.roof === 'bar' ? 'ROOF TERRACE' : 'HELIPAD',
+          arriveA: Math.PI / 2,
+          exit: { x: lobby.x, y: lobby.y + 18 },
+          exitA: Math.PI / 2,
+          // The arrival notice, given the action key's name when it is told.
+          upText:
+            t.roof === 'bar'
+              ? (key) => 'CIRRUS · ' + key + ' at the bar for a drink · the lift is behind you.'
+              : (key) => 'THE HELIPAD · ' + key + ' by the helicopter to fly · the lift is behind you.',
+          downText: 'NORTH POINT KEY · Back at street level.',
+        });
         // Made once: the prompt asks every frame on the Key.
         lift.reachUp = { lift, up: true };
         lift.reachDown = { lift, up: false };
@@ -157,7 +171,7 @@
       const el = getElement('skyLift');
       el.style.opacity = '0';
       el.classList.remove('hidden');
-      getElement('skyLiftVenue').textContent = lift.tower.name + ' · ' + (up ? lift.venue : 'STREET LEVEL');
+      getElement('skyLiftVenue').textContent = lift.name + ' · ' + (up ? lift.venue : 'STREET LEVEL');
       getElement('skyLiftFloor').textContent = up ? 'LOBBY' : 'FLOOR ' + lift.floors;
       tone(880, 0.14, 0.07, 'sine');
       // The diplomat of a meeting at CIRRUS steps in with the player (skyline-meeting.js).
@@ -175,7 +189,7 @@
         run = clamp((t - 0.45) / (SKY_LIFT_SECONDS - 0.95), 0, 1),
         floor = Math.round((L.up ? run : 1 - run) * L.lift.floors);
       getElement('skyLift').style.opacity = fade.toFixed(3);
-      getElement('skyLiftFloor').textContent = floor <= 0 ? 'LOBBY' : floor >= L.lift.floors ? (L.lift.id === 'bar' ? 'ROOF TERRACE' : 'HELIPAD') : 'FLOOR ' + String(floor).padStart(2, '0');
+      getElement('skyLiftFloor').textContent = floor <= 0 ? 'LOBBY' : floor >= L.lift.floors ? L.lift.topLabel : 'FLOOR ' + String(floor).padStart(2, '0');
       if (!L.moved && t >= 0.5) {
         L.moved = true;
         const b = L.lift.b;
@@ -184,8 +198,8 @@
           player.buildingRoof = b;
           player.altitude = b.height;
           if (L.lift.id === 'bar') skyBarArrive();
-        } else teleportPlayer(L.lift.lobby.x, L.lift.lobby.y + 18);
-        player.a = Math.PI / 2;
+        } else teleportPlayer(L.lift.exit.x, L.lift.exit.y);
+        player.a = L.up ? L.lift.arriveA : L.lift.exitA;
         skyMeetingRideMoved(L);
       }
       if (t >= SKY_LIFT_SECONDS) {
@@ -195,14 +209,8 @@
         canvas.focus();
         tone(1320, 0.12, 0.06, 'sine');
         if (skyMeetingRideEnd(L)) return;
-        if (L.up)
-          tell(
-            L.lift.id === 'bar'
-              ? 'CIRRUS · ' + keyName('interact') + ' at the bar for a drink · the lift is behind you.'
-              : 'THE HELIPAD · ' + keyName('interact') + ' by the helicopter to fly · the lift is behind you.',
-            4,
-          );
-        else tell('NORTH POINT KEY · Back at street level.', 3);
+        if (L.up) tell(L.lift.upText(keyName('interact')), 4);
+        else tell(L.lift.downText, 3);
       }
     }
     /* The action key during a ride while the CIRRUS meeting runs (skyline-meeting.js: the scene moves on a beat a

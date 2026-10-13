@@ -76,6 +76,7 @@
     // @include src/themepark.js
     // @include src/marina.js
     // @include src/taxi.js
+    // @include src/vehicle-entrances.js
     // @include src/cycles.js
     // @include src/weather.js
     // @include src/weather-audio.js
@@ -88,6 +89,7 @@
     // @include src/beach.js
     // @include src/roofmission.js
     // @include src/rooftops.js
+    // @include src/roof-lifts.js
     // @include src/air-cover.js
     // @include src/combat-rules.js
     // @include src/vehicle-gunfire.js
@@ -185,6 +187,7 @@
     populateWorld();
     chooseRoofHelipads();
     addMonarchHelipads();
+    prepareRoofLifts();
     populateCivilHelicopters();
     bootMark('populated');
     load();

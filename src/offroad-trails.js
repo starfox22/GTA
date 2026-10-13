@@ -54,6 +54,12 @@
       // The timber gate in the south rail, the carved sign on its beam facing
       // the avenue: E there arms the hill climb.
       gate: { u0: 74, u1: 178, v: 401 },
+      // The lanes a car uses in and out (vehicle-entrances.js: nothing parked stands in them): the gate's lane from
+      // the avenue's kerb up to the track, and the track east along the front of the veranda to the workshop.
+      entrances: [
+        [74, 226, 178, 420, 'RIDGELINE 4X4 CLUB GATE'],
+        [100, 192, 424, 228, 'RIDGELINE 4X4 CLUB TRACK'],
+      ],
       sign: clubPoint(126, 401),
       grill: clubPoint(38, 40),
       smoker: clubPoint(62, 34),

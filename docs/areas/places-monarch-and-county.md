@@ -28,6 +28,13 @@ roofs, garages): the plan is a game file, the meshes its `*3d.js` twin, coordina
   Crescent corner over to Sunset Pier and turns round on Pier Island Drive by the car park;
   island cars stop at its stop lines (`drawbridgeTrafficLimit` in `isleTrafficControl`).
 - Night: its own lamp light map over `MONARCH_BOUNDS`. Console `monarch()`.
+- Villa garages (monarch-garages.js): hollow (thin wall buildings round a 52-unit opening on the drive side, west
+  for the Lighthouse Road villas), a car parked inside nose out, a roll-up door (`plan.garageDoor.open`, game
+  state; people through `villaGarageBlocked`, vehicles through its static body's `minHeight`) that rises while the
+  player is within 9 m and stays up over anything in the doorway; the roof is a cutaway roof. `plan.garageDrive` is
+  a kept vehicle entrance. A garage built just inside the gate (the six narrow south lots) stands across the drive,
+  so those villas get a side gate beside it (`plan.sideGate`, `sideDrive`; `isleLotWall`'s `sideGap`) for the
+  forecourt's cars. Console `villaGarages()`; tools/tests/monarch-garages.mjs drives every car out.
 
 ## Ridgeline: villages, 4x4 club, hill climb (mountain-village*.js, offroad*.js, mountain-club3d.js)
 
@@ -37,6 +44,9 @@ roofs, garages): the plan is a game file, the meshes its `*3d.js` twin, coordina
   vertex (`offroadTrailBake`), traction on the range in `offroadDrive` (called by the
   physics: surface μ × load × driven share), the hill climb (`trailCourse`, best times in
   `dead-end-city-hillclimb`).
+- Vehicle entrances (vehicle-entrances.js): the club's gate lane and track (`OFFROAD_CLUB.entrances`) and the villa
+  drives are kept clear by parked things (the bike-share placer asks `vehicleEntranceAt`); console
+  `vehicleEntrances()`, tools/tests/club-entrance.mjs.
 - MOUNT ASCENT course (512 m, 93 → 762): forest two-track, THE BOG, the CREEK CROSSING ford
   (real water: drag, wash, spray), the east-bank hairpin, THE TRAVERSE (off-camber), the MUDDY
   HAIRPIN, bermed keyhole switchbacks, the ROCK GARDEN (0.3 m rock relief the tyres climb,
