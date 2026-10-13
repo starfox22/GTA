@@ -325,7 +325,8 @@ packs with plain `<script src>` so the zip still plays from file://.
   that turns at most ~52 deg/s, smoothed camera height); vehicle framing is `CAMERA_CONTEXT` × `speedZoomTarget`
   (world-view.js; `vehicleCameraFactor()` is Settings · Driving · Vehicle camera distance). Below 30 km/h a road vehicle or boat frames like
   walking (`slowFramingOn()`, world-view.js SLOW FRAMING: out at 31 km/h, back after 1 s under 30; Motion comfort
-  too; the chase view's boom follows it, chase-camera.js `slowShare`; a carjack never zooms); with no lead the follow's axis turns with the travel (look-ahead 0 % = centred); the on-foot share is `walkCameraFactor()` (Settings · Driving · Walking camera distance); the driving lead's
+  too; the chase view follows it, chase-camera.js `slowShare`/`CHASE_SLOW`: close behind the vehicle's back with the
+  whole vehicle in frame and the HUD clear; a carjack never zooms); with no lead the follow's axis turns with the travel (look-ahead 0 % = centred); the on-foot share is `walkCameraFactor()` (Settings · Driving · Walking camera distance); the driving lead's
   frame share stops where the vehicle's far end reaches `leadShareTop` 0.7 of the half frame (look-ahead 0-300 %,
   default 200 %). Renderers read only
   `streetCameraAltitude()` and `cameraShakeLevel()`. `motionComfortOn()` (settings.js MOTION COMFORT) is the one
@@ -420,6 +421,9 @@ packs with plain `<script src>` so the zip still plays from file://.
   4096x2048, earlier models keep their density (`texFloor`); regenerate the bin from every MODELS list, never pick a side.
   Burnt or worn downloaded models (atlas parts) char only through vehicle-char3d.js ASSET CHAR
   (`assetCharSwap`/`assetCharRelease` from paintVehicle); never set a map on the shared `vaMaterials`.
+- Downloaded motorbikes: a source posed with its bars turned is straightened by `unsteer` (vehicle_models_moto.py); a wheel
+  turns only whole round pieces (spokes, hub, rim); car wheels stop at the tyre's inner wall; four-wheeled models' wheels
+  follow their springs (`ride.d`) through ride-wheels3d.js. The KR 500 is a CC-BY model (credits).
 - Downloaded aircraft and dog (vehicles-and-driving-models-aircraft.md): `tools/aircraft_models.py` makes
   assets/aircraft-models.bin + aircraft-skin.webp (SKYRANGER 429 airframe `bell429`, flyable SKYLARK 172 airframe
   `skyhawk`, `fixedGear`) on the makeHelicopter / buildAircraft contracts; `rotorStrikes` uses an airframe's
