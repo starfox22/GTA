@@ -1,7 +1,7 @@
 // Wheelies (wheelie.js): throttle + climb lifts the front about the rear tyre, the throttle
 // alone lets it settle, off the throttle it drops; held too long a sport bike loops out and
-// the rider falls off the back; a cruiser barely lifts; the real keys: W + up lifts, up alone
-// (riding on the arrows) is only the throttle.
+// the rider falls off the back; a cruiser barely lifts; the real keys: W + up lifts (on every motorbike that can),
+// up alone (riding on the arrows) is only the throttle.
 export const fresh = true;
 
 export default async function (t) {
@@ -50,7 +50,7 @@ export default async function (t) {
   await t.call('rideInto', 'bike', 20, 'none', 25, 0.05);
   let w = await t.call('wheelieState');
   const lifts = w.log.lifts;
-  await t.keys(['KeyW', 'ArrowUp'], 1.2, { real: true });
+  await realHold(t, ['KeyW', 'ArrowUp'], 1.2);
   w = await t.call('wheelieState');
   t.assert(w.log.lifts > lifts || w.deg > 3, `W + ↑ lifts the front: ${w.deg}°, lifts ${lifts} → ${w.log.lifts}`);
   // ... and ↑ alone is only the throttle.
@@ -58,8 +58,32 @@ export default async function (t) {
   w = await t.call('wheelieState');
   const before = w.log.lifts,
     kmh = w.kmh;
-  await t.keys(['ArrowUp'], 1.2, { real: true });
+  await realHold(t, ['ArrowUp'], 1.2);
   w = await t.call('wheelieState');
   t.assert(w.log.lifts === before && w.deg < 1, `↑ alone does not lift it: ${w.deg}°`);
   t.assert(w.kmh > kmh + 5, `↑ alone is the throttle: ${kmh} → ${w.kmh} km/h`);
+  // Every other motorbike that can pull one (the wheelie hint's list) lifts on the real keys too.
+  for (const type of ['dolcati', 'yamasaki', 'kr500']) {
+    await t.call('rideInto', type, 20, 'none', 25, 0.05);
+    w = await t.call('wheelieState');
+    const from = w.log.lifts;
+    t.assert(w.onBike && w.type === type, `on the ${type}: ${JSON.stringify({ onBike: w.onBike, type: w.type })}`);
+    await realHold(t, ['KeyW', 'ArrowUp'], 1.2);
+    w = await t.call('wheelieState');
+    t.assert(w.log.lifts > from || w.deg > 3, `${type}: W + ↑ lifts the front: ${w.deg}°, lifts ${from} → ${w.log.lifts}`);
+  }
+}
+
+/* Real key presses run through the live frame loop, whose step is capped at 33 ms: on a loaded machine (a few frames
+   a second) 1.2 s of wall clock was a third of a second of riding, too short to lift the front. Measure how fast the
+   game clock runs now and hold the keys for the wall time that gives `gameSeconds` of riding. */
+async function realHold(t, codes, gameSeconds) {
+  const a = await t.call('wheelieState'),
+    from = Date.now();
+  await t.realWait(0.4);
+  const b = await t.call('wheelieState'),
+    rate = (b.at - a.at) / Math.max(0.4, (Date.now() - from) / 1000),
+    wall = Math.min(10, gameSeconds / Math.min(1, Math.max(0.1, rate)));
+  if (wall > gameSeconds * 1.2) t.note(`slow page: ${rate.toFixed(2)} game s per s, keys held ${wall.toFixed(1)} s`);
+  await t.keys(codes, wall, { real: true });
 }
