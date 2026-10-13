@@ -462,6 +462,10 @@ packs with plain `<script src>` so the zip still plays from file://.
   only read `cameraKick` and `cameraShakeOffset`.
 - Roomy one-shots (shots, blasts, crashes, near thunder) connect to `reverbSend`
   (acoustics-audio.js), never `reverb`; audio randomness uses `sfxRandom`, not `randomBetween`.
+- Trail mud (rendering-effects-mud.md): the 4x4 mud draws from `trailMud` (assets/trail-mud.webp; tools/trail_mud.py `CELLS` =
+  `MUD_SPRITE_CELLS`); drops and mist go to the effect pool under `MUD_TIER` caps; mud randomness is `mudRandom`; rut and
+  splat decals multiply when they overlap, so their brightening stays capped. A renderer setup error drops to REDUCED
+  GRAPHICS with only a `console.warn` (not in `dev.mjs errors`): after renderer edits check `status().renderer` is '3d'.
 - Trees: every tree, palm, shrub and grass clump uses `treeMaterial`, which carries the foliage cutaway
   (`FOLIAGE_HOLE_CUT`; uniforms from `updateFoliageCutaway` / `foliageCutawayPlan()`, foliage-cutaway.js; the same
   Settings switch as the building cutaway). A new plant must use it to be see-through; keep `foliageHoleCut()` in
