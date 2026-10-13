@@ -85,7 +85,8 @@
         case 'jump':
           return foot ? touchButtonLabel('touchUp') : null;
         case 'ascend':
-          return air ? touchButtonLabel('touchUp') : 'RISE';
+          // On a two-wheeler the steering stick pushed up is the climb (a wheelie, mobile.js).
+          return air ? touchButtonLabel('touchUp') : c && vehicleSpec(c).bike ? 'STEER ↑' : 'RISE';
         case 'descend':
           return air ? touchButtonLabel('touchDown') : 'DESCEND';
         case 'bail':
