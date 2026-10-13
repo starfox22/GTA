@@ -11,11 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-<<<<<<< HEAD
-598 files in the include tree, 204,582 lines.
-=======
-601 files in the include tree, 205,217 lines.
->>>>>>> worktree-agent-a95b648aa475030cf
+601 files in the include tree, 205,259 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
