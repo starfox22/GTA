@@ -136,6 +136,23 @@
       }
       return a * UNITS_PER_METRE;
     }
+    /* WHEELIE HINT: getting on a motorbike that can lift its front (not the cruiser's hop, not a bicycle) says how,
+       in the names of the device in use (keyName: keys, gamepad or touch), until the player has pulled one, at most
+       WHEELIE_HINT_RIDES rides a session (enterVehicle, game-player-actions.js). */
+    const WHEELIE_HINT_RIDES = 3,
+      wheelieHint = { shown: 0, last: '' };
+    function wheelieHintDue(c) {
+      const spec = c && vehicleSpec(c);
+      if (!spec?.bike || spec.bicycle) return false;
+      return wheelieGeometry(c, spec).rise >= 1 && wheelieLog.lifts === 0 && wheelieHint.shown < WHEELIE_HINT_RIDES;
+    }
+    function offerWheelieHint(c) {
+      if (!wheelieHintDue(c)) return false;
+      wheelieHint.shown++;
+      wheelieHint.last = 'WHEELIE · HOLD ' + keyName('forward') + ' + ' + keyName('ascend') + ' to lift the front';
+      tell(wheelieHint.last, 6, { id: 'wheelieHint', tone: 'info' });
+      return true;
+    }
     // The steering a lifted front leaves (the bike steers by leaning alone).
     function wheelieSteerShare(c) {
       return 1 - (1 - WHEELIE_STEER) * clamp((c.wheelie || 0) / 0.3, 0, 1);
@@ -146,7 +163,7 @@
         wheelieState() {
           const c = player.car,
             spec = c && vehicleSpec(c);
-          if (!spec?.bike) return { onBike: false, log: { ...wheelieLog } };
+          if (!spec?.bike) return { onBike: false, log: { ...wheelieLog }, hint: { ...wheelieHint, due: false } };
           const geo = wheelieGeometry(c, spec);
           return {
             onBike: true,
@@ -161,6 +178,7 @@
             loopDeg: Math.round((geo.loop * 180) / Math.PI),
             steerShare: +wheelieSteerShare(c).toFixed(2),
             log: { ...wheelieLog },
+            hint: { ...wheelieHint, due: wheelieHintDue(c) },
           };
         },
       };

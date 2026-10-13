@@ -168,14 +168,36 @@ MODELS = [
          title='Harley-Davidson Seventy-Two HD FXT 2015', author='Alex.Ka.',
          src='dl3/hd72/scene.gltf', url='https://sketchfab.com/3d-models/harley-davidson-seventy-two-hd-fxt-2015-15e67a3076494bb99ba7504c9913ceb5',
          roles=[(r'^body_color$', 'paint'), (r'^tire$', 'tyre'), (r'^(headlight|brakelight)$', 'lamp'), (r'^wingblackmate$', 'drop')],
+         # Modelled with the bars turned (`unsteer`, tools/vehicle_models_moto.py): turned straight first.
+         unsteer=dict(top=(0.43, 1.0), rake=32, angle=-26.25, above=1.05, wide=(0.9, 0.3)), fork=dict(sphere=1.25), barsWide=(0.9, 0.3),
+         dropBox=[((-0.45, -0.01, -0.33), (-0.36, 0.33, -0.15))],
          axis=(0.43, 1.0), bars=(0.0, 1.05), seat=-0.4, pegs=[0.25, 0.33, 0.3]),
     dict(type='bike', kind='moto', front='+z', keep=dict(trim=0.16, paint=0.3, wheel=0.1, lamp=0.35), borderCos=0.7, title='Honda CB 750 F Super Sport 1970', author='Alex.Ka.',
          src='mirror/cb750/scene.gltf',
          url='https://sketchfab.com/3d-models/honda-cb-750-f-super-sport-1970-f121301624174b179ca4d50158797b03',
          roles=[(r'(?i)^boby$', 'paint'), (r'(?i)^tire$', 'tyre'), (r'(?i)^headlights$|^brakelight$', 'lamp'), (r'(?i)^hondabac$', 'drop')],
+         unsteer=dict(top=(0.37, 1.0), rake=30, angle=-30, above=1.0, wide=(0.9, 0.3)), fork=dict(sphere=1.2, reach=0.12), barsWide=(0.9, 0.3),
+         dropBox=[((-0.30, -0.01, -0.145), (-0.12, 0.28, 0.145))],
          axis=(0.37, 1.0), bars=(0.0, 1.0), seat=-0.25, pegs=[-0.05, 0.33, 0.2],
          # The maker's name: the tank badge left out (hondabac), the brake hub's and the side cover's painted over.
          erase={'bolts_baseColor.jpeg': [(0.48, 0.28, 0.76, 0.42), (0.0, 0.0, 0.34, 0.26)], 'hondabac_baseColor.png': [(0.46, 0.56, 0.78, 0.78)]}),
+    # The KR 500 ('kr500'): a 500 cc enduro (in metres already). Its plastics' orange takes the bike's paint, the white
+    # and black graphics stay their texture (`paintTex`); the side stand, modelled down, is left out (`dropBox`); the
+    # plastics' texture was exported under a darkening colour factor (`baseColor`); the maker's four small logos on
+    # the graphics are painted over (`erase`).
+    dict(type='kr500', kind='moto', front='+z', texWeight=0.5, keep=dict(trim=0.1, paint=0.3, wheel=0.1, lamp=0.5), borderCos=0.7,
+         title='KTM Dirt Bike', author='OCTbuilds', src='mirror/ktm_dirt_bike/scene.gltf',
+         url='https://sketchfab.com/3d-models/ktm-dirt-bike-e31415580d7a4a0d95ebd53895566b8f',
+         roles=[(r'^Orange_Plastics$', 'paint'), (r'^Tyres$', 'tyre'), (r'^Rims$', 'rim'), (r'^(Glass|Red_Reflector)$', 'lamp')],
+         baseColor={'Orange_Plastics': (1, 1, 1, 1)}, paintTex=dict(colors=[[255, 77, 0]], tol=40),
+         clusterParts={'trim': 0.012, 'steer': 0.01, 'paint': 0.008, 'wheel0.rim': 0.01, 'wheel1.rim': 0.01, 'wheel0.tyre': 0.006, 'wheel1.tyre': 0.006},
+         # Modelled with the bars turned: turned straight about the head tube's axis (`unsteer`, in the frame
+         # before re-centring) first.
+         unsteer=dict(top=(0.36, 0.98), rake=26.5, angle=-26.25, above=1.12, wide=(0.95, 0.28)), fork=dict(sphere=1.2, reach=0.15), barsWide=(0.95, 0.28),
+         dropBox=[((-0.26, -0.08, -0.36), (-0.1, 0.43, -0.04))],
+         axis=(0.40, 1.05), bars=(0.1, 1.12), seat=-0.2, pegs=[-0.05, 0.4, 0.22], grip=(0.27, 1.21, 0.35), lean=-0.32,
+         erase={'Orange_Plastics_baseColor.png': [(0.3442, 0.2429, 0.3552, 0.2649), (0.4919, 0.0500, 0.5017, 0.0732),
+                                                  (0.8386, 0.2515, 0.8679, 0.2729), (0.6494, 0.8594, 0.6628, 0.8887)]}),
 ]
 
 DEFAULT_ROLES = [
@@ -566,12 +588,14 @@ def convert(model, src_root):
     front_x = max(w['x'] for w in wheels) if wheels else 0
     for w in wheels:
         w['front'] = abs(w['x'] - front_x) < 0.2
-    # Whatever else sits wholly inside a tyre (rims, discs, nuts) turns with it.
+    # Whatever else sits wholly inside a tyre (rims, discs, nuts) turns with it: out to 7 cm past the tyre's outer wall,
+    # but not past its inner wall (the arch's lining, brake parts and the body behind the wheel stay put).
     cand = np.where(np.isin(role, ['trim', 'rim', 'interior', 'lamp']))[0]
     for w in wheels:
         for k in cand:
             p3 = V(k)
-            if np.all(np.hypot(p3[:, 0] - w['x'], p3[:, 1] - w['y']) <= w['r'] * 1.03) and np.all(np.abs(p3[:, 2] - w['z']) <= w['width'] / 2 + 0.07):
+            out = (p3[:, 2] - w['z']) * w['side']
+            if np.all(np.hypot(p3[:, 0] - w['x'], p3[:, 1] - w['y']) <= w['r'] * 1.03) and np.all(out <= w['width'] / 2 + 0.07) and np.all(out >= -w['width'] / 2 - 0.01):
                 w['tris'].add(int(k))
     # A source posed with its front wheels turned: each wheel turned back square (its axle, the tyre's flattest
     # direction across, along z), about its own centre.

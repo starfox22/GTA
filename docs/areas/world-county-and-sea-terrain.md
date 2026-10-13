@@ -25,7 +25,10 @@ there). The hill climb course, the 4x4 club and its trucks: places-monarch-and-c
   the falls state is pinned to the ground; every wheel 0.6 m clear hands it to
   `startCliffFlight`. `rideLift` is drawn only (`entityElevation` stays on the ground);
   `rideActive` false = settled (`settleIsTrivial` checks it). Console `ride3d()`, `trailDrive`
-  telemetry; tools/tests/hillclimb-physics.mjs.
+  telemetry; tools/tests/hillclimb-physics.mjs. Each wheel's travel `ride.d` is drawn: the club
+  trucks' knuckles (offroad3d-kits.js) and every other unmerged 4-wheel model's wheel groups
+  (ride-wheels3d.js `rideWheels`, within droop and bump; a wheel's height is `baseY - drop + rideY`,
+  damage3d-bodies.js keeps `drop` for flat and burnt tyres).
 - **Scenic roads** (terrain-roads/-grading/-roadside.js, `SCENIC_ROAD_NAMES`): corners are
   filleted arcs (kept out of towns; the layout audit notes a crossing per arc segment);
   `road.points` is what everything reads, `road.dense` (4-unit samples) what grading and
