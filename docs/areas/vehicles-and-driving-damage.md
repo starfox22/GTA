@@ -24,8 +24,9 @@ the models' damage contract is vehicles-and-driving-models.md.
   `kit.trunkDeck`, and a picked-open trunk swings it up over a dark well: police-and-combat-ammo.md);
   bumpers keep only the hanging droop as a pose (turned about the attached bracket, never below the road); wheels move
   with the arches in x and across, never up. A sprung door is cut from the pristine shell's side by rays
-  (`doorPanelGeometries`: curve and UVs, so paint and liveries carry on; skin, dark trim and edges, 2 draw calls) and its
-  opening is a dark panel flush with the side; both bend with the crumple (the door in its closed place, relative to its
+  (`doorPanelGeometries`: curve and UVs, so paint and liveries carry on; skin, a door card in the cabin's upholstery and
+  edges, 2 draw calls) and its opening is a panel flush with the side (painted jambs round the cabin's side, never a dark
+  slab); both bend with the crumple (the door in its closed place, relative to its
   hinge). A rollover landing on its roof or a side (falls-vehicles.js `cliffFaceDown`) records a dent on that face (`nz`
   -1 for the roof).
 - VEHICLE MARKS (damage3d-marks.js): a hole, star or scrape is pinned to the triangle a ray along the round's line met
@@ -47,3 +48,9 @@ the models' damage contract is vehicles-and-driving-models.md.
 - Console: `dentVehicle(id, side, kmh, offset)`, `shootVehicle(id, side, rounds)`, `crumpleAudit(id)` (field limits
   on a box hull, works without WebGL) and `vehicleDamageShape(id)` (parts bent or missed, shell crossed / into cabin /
   flipped faces, each mark's part and gap to the surface in cm); tools/tests/vehicle-damage-shape.mjs.
+- DOORS (damage3d-bodies.js `vehicleDoor(c, m, side)`): the one builder of a front door, shared by the damage (sprung or
+  torn off) and the door swings (carjack3d.js DOOR SWING: a carjack's yank, the player's own way in and out from
+  `carTransition.door`). Its window (`doorGlassGeometries`, the side pane's surface within the door, `userData.doorGlass`:
+  never a mark) shows only while a whole door swings, and the body's side pane is then left out (`doorSidePane`, put back
+  as the damage pass last set it). Door colours come from `CAR_CABIN_TRIM` (`doorTrimMaterial`, shared, never near black).
+  The door rect is the old one (hinge at `l * 0.2`), so a bus or box truck swings no door on the way in or out.
