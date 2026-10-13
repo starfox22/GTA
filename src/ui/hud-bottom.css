@@ -66,21 +66,6 @@
     900 9px/1 var(--ui-font);
   z-index: 1;
 }
-.mini-district {
-  position: absolute;
-  left: 9px;
-  bottom: 7px;
-  max-width: 60%;
-  z-index: 1;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  color: #eef1e8;
-  font:
-    800 9px/1.2 var(--ui-font);
-  letter-spacing: 0.12em;
-  text-shadow: 0 1px 3px #000, 0 0 6px #000;
-}
 .mini-zoom {
   position: absolute;
   top: 50%;

@@ -273,19 +273,32 @@
      * The job (gold) and the waypoint (cyan) are drawn where they are; once off
      * the minimap a small arrow on its rim points the way, with the distance.
      */
+    const minimapEdge = [
+      { x: 0, y: 0, color: '#f2d485', on: false },
+      { x: 0, y: 0, color: '#8effed', on: false },
+      { x: 0, y: 0, color: '#e9e4d2', on: false },
+    ];
     function drawMinimapEdgeBlips(g, width, height, scale, cx, cy, target) {
-      const blips = [];
-      if (target) blips.push({ x: target.x, y: target.y, color: '#f2d485' });
-      if (userWaypoint) blips.push({ x: userWaypoint.x, y: userWaypoint.y, color: '#8effed' });
-      for (const b of blips) {
-        // The rim inset; deeper at the bottom, where the district name and the
-        // MAP chip sit over the minimap.
+      // The job, the waypoint and, while wanted, the nearest respray (minimap-rules.js; when the respray layer is on).
+      const respray = mapLayerOn('garages') ? minimapRespray() : null,
+        blips = minimapEdge;
+      blips[0].on = !!target;
+      if (target) (blips[0].x = target.x), (blips[0].y = target.y);
+      blips[1].on = !!userWaypoint;
+      if (userWaypoint) (blips[1].x = userWaypoint.x), (blips[1].y = userWaypoint.y);
+      blips[2].on = !!respray;
+      if (respray) (blips[2].x = respray.x), (blips[2].y = respray.y), (blips[2].color = respray.color || '#e9e4d2');
+      for (let i = 0; i < blips.length; i++) {
+        const b = blips[i];
+        if (!b.on) continue;
+        // The rim inset; deeper at the bottom, where the MAP chip sits over the minimap.
         const dx = (b.x - cx) * scale,
           dy = (b.y - cy) * scale,
           m = 11,
           hx = width / 2 - m,
           hy = dy > 0 ? height / 2 - 30 : height / 2 - m;
         if (Math.abs(dx) <= hx && Math.abs(dy) <= hy) continue;
+        mapMarkCount(1, 1);
         const k = Math.min(hx / Math.max(1e-6, Math.abs(dx)), hy / Math.max(1e-6, Math.abs(dy))),
           x = width / 2 + dx * k,
           y = height / 2 + dy * k,

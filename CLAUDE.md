@@ -196,6 +196,10 @@ packs with plain `<script src>` so the zip still plays from file://.
   `populateWorld()` (boot seed replayed); a system that keeps world damage or holds vehicles or people outside the
   populate lists adds a reset helper next to its state, called from `resetWorld`; renderer-held damage clears when
   `worldResetSerial` changes; progress (cash, weapons, story, owned cars, settings) is never reset.
+- Minimap marks (world-and-map-minimap.md): minimap-rules.js MINIMAP MARKS decides what the minimap draws over its base
+  (objective/GPS, waypoint, mission entities, police and nearest respray while wanted, the waiting call's payphone, places
+  only on foot within `MINIMAP_NEAR`); a new map painter takes `big`, follows these rules on the minimap and counts its
+  marks with `mapMarkCount` (tools/tests/minimap-clutter.mjs); the big map keeps every layer. Sunset Pier's rides: park-map.js.
 - Road routes for the GPS and the waypoint pick their ends through `navRouteEnds()` (map-objective.js), which keeps both on one
   connected road network; a mission vehicle the player is after is marked on the maps only through `mapHighlightVehicle()`.
   Trunks close only through `closeTrunk` (the action key via `trunkCloseTarget`, or `slamMovingTrunks` past walking pace).
