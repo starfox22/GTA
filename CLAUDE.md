@@ -340,7 +340,8 @@ packs with plain `<script src>` so the zip still plays from file://.
   `CHASE_FIRE_REACH` or within `CHASE_FIRE_NEAR` of the player, never through a building), never a `cameraTarget`
   box; `viewPopAudit()` stays at 0 (tools/tests/chase-streams.mjs). The reticle (the cursor without pointer lock)
   is the aim for every device: aim code reads `aim()`, `chaseAimScreen()` or `chaseGroundPoint()`, never
-  `mouse.x/y` with `city3D.groundPoint` alone. Movement keys go through `playerMoveHeading()`; the street view's
+  `mouse.x/y` with `city3D.groundPoint` alone. Movement keys go through `playerMoveHeading()` (chase heading `chaseMoveYaw`, primed
+  behind the player on a switch, teleport or reload; the on-foot camera follows a run only within `CHASE_FOLLOW_ARC`); the street view's
   paths stay bit-identical when the chase view is off. Its HUD layout is `body.chase-view` (chase-view.css).
   Sweep both the shoulder and boom against walls; no minimum boom may override collision clearance.
 - Chase view budget (rendering-chase-budget.md): a static group's small parts and glows, scene signs, small batches,
@@ -430,6 +431,8 @@ packs with plain `<script src>` so the zip still plays from file://.
   `rotorRadius`/`rotorX`; civil helicopters are parked only by `populateCivilHelicopters()`; `tools/dog_model.py` bakes
   assets/dog-model.bin, drawn by dog3d.js as one instanced vertex-blend draw (`dogPose`); `aircraftAssetsOn(false)` /
   `dogModelOn(false)` give before/after.
+- Front doors (damage, carjack, getting in and out) come only from `vehicleDoor` (damage3d-bodies.js DOORS): cut from the
+  body's own paint with an inside panel and window; swings are carjack3d.js DOOR SWING; no dark box over an opening.
 - Car crash damage (vehicles-and-driving-damage.md): `crumpleField(dents, limits, ...)` / `crumpleLimits(vehicle)`
   (damage-crumple.js) is the only crumple rule; damage3d-crumple.js bends every mesh under a car body with it,
   time-sliced (`crumpleSlices`), and bumps `m.shapeVersion` when a body is done. A part that animates its own matrix or
