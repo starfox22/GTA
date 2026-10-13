@@ -8,7 +8,8 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | FILEMAP.md | Which file holds what (generated; grep it first) |
 | BACKLOG.md | Known issues and loose ends per feature (check before polishing an area) |
 | areas/core-and-contracts.md | The closure and include model, units and scale, entity contracts, carriers, saves, performance rules |
-| areas/world-and-map.md | Layout and coordinates, frames, the Northbank grid, shores, bridges, navigation, `layout()` and the layout audit |
+| areas/world-and-map.md | Layout and coordinates, frames, the Northbank grid, navigation, `layout()` and the layout audit |
+| areas/world-and-map-shores.md | The shoreline rule and swimming, `BRIDGES` and `bridgeStructure` (channels, footings, deck solids), the thirteen bridges |
 | areas/world-and-map-minimap.md | What the minimap draws over its base (MINIMAP MARKS: objective, GPS, police and respray while wanted, places on foot nearby), the mark counts, and Sunset Pier's coaster track and Ferris wheel on both maps |
 | areas/world-and-map-drawbridges.md | The four drawbridges: which island needs which, the state list and its contracts, timetables and the open share, looks and ships, the Coronation Bridge |
 | areas/world-county-and-sea.md | The county, falls off cliffs, rail, airfields, parks, sea life |
@@ -44,7 +45,9 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/missions-and-demo-world-reset.md | The world reset on WASTED, BUSTED and a new game (never on taking a job): triggers, what resets, what is kept |
 | areas/missions-and-demo-mission1.md | Mission 1's look: Vinny's truck model (livery, lamps, crate slots), the yellow payphone and its dressing, and the story payphones on every island |
 | areas/missions-bluehour.md | The Blue Hour hotel (mission 2) in 3D: terrace, the VIP table and reserved glass, the street entrance, the limousines and doormen |
-| areas/missions-summit-and-fort.md | Missions 3 and 4: the package on Mount Ascent (dig, carrier, Vinny's warehouse) and Borrowed Stripes (Kessler's tail, the trunk, the uniform, Fort Sentinel, the consul at CIRRUS) |
+| areas/missions-summit-and-fort.md | Missions 3 and 4: the package on Mount Ascent (dig, carrier, Vinny's warehouse), the mission briefs, and where mission 4's pages are |
+| areas/missions-summit-and-fort-kessler.md | Mission 4, Borrowed Stripes: the job, Kessler's drive and parking, the tail, waiting at the club, the alert |
+| areas/missions-summit-and-fort-fort.md | Mission 4, Borrowed Stripes: the trunk (quiet or messy), the change, the gate, the records office, the base, the consul at CIRRUS |
 | areas/audio-and-radio.md | The mix and buses, sound systems, media and credits, the car radio |
 | areas/audio-soundscape.md | Free-roam sound: the ear probe and the room (slap-back, echo, occlusion), ambience beds by place, footsteps by surface, horns, doors, tyre ground |
 | areas/rendering.md | Cameras and view, draw-call rules |

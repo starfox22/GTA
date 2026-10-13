@@ -15,7 +15,7 @@ index plus one.
 | 1 | 0 | Dockside Favor | harbor.js, chase.js (ends in Vinny's warehouse: harbor.js THE DROP) |
 | 2 | 1 | A Seat at the Table | roofmission.js (the Blue Hour hit) |
 | 3 | 2 | High Ground | summitjob.js (the package on Mount Ascent; missions-summit-and-fort.md) |
-| 4 | 3 | Borrowed Stripes | fortjob.js + vehicle-trunk.js, fort-cover.js, skyline-meeting.js (missions-summit-and-fort.md) |
+| 4 | 3 | Borrowed Stripes | fortjob.js + vehicle-trunk.js, fort-cover.js, skyline-meeting.js (missions-summit-and-fort-kessler.md, -fort.md) |
 | 5-9 | 4-8 | No Last Ferry … One Clean Exit | challenges.js |
 | 10-11 | 9-10 | The Last Witness, The Manifest | aviation.js |
 | C1-C5 | 11-15 | Rush Hour, Fireworks Night, Blackout, Ring Run, Repo Man | sidejobs.js (`SIDE_JOB_FIRST`) |

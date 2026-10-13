@@ -2,7 +2,7 @@
 
 drawbridge.js (`-span`, `-motion`, `-opening`, `-report`), drawbridge3d.js (`-kit`, `-houses`,
 `-build`), coronation-bridge.js / coronation3d.js, god-drawbridges.js. Bridges in general:
-world-and-map.md "Water, shores and bridges".
+world-and-map-shores.md.
 
 ## Which bridges
 
