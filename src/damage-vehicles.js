@@ -384,6 +384,14 @@
           ])
             if (Math.abs(entry.x - wheelX) < 5.5 && (entry.face === 'left' || entry.face === 'right') && Math.random() < 0.75)
               damage.tires[end + (entry.face === 'left' ? 'Left' : 'Right')] = true;
+      } else if (type === 'bike' && z <= 0.8 * UNITS_PER_METRE && (entry.face === 'left' || entry.face === 'right')) {
+        // A motorcycle has no glass band, but a low side shot can still puncture its
+        // tyre. Its two axles are much closer than a car's: the car's fixed 5.5-unit
+        // reach would incorrectly flatten both tyres on an engine/body hit.
+        const end = entry.x > 0 ? 'front' : 'rear',
+          wheelX = (entry.x > 0 ? 0.34 : -0.34) * spec.l;
+        if (Math.abs(entry.x - wheelX) <= 0.14 * spec.l && Math.random() < 0.75)
+          damage.tires[end + (entry.face === 'left' ? 'Left' : 'Right')] = true;
       }
       vehicle.damageVersion++;
       return kind;
@@ -553,15 +561,17 @@
       if (vehicle.handling && vehicle.handlingVersion === vehicle.damageVersion && vehicle.handlingHp === vehicle.hp)
         return vehicle.handling;
       const tires = damage.tires,
+        bike = type === 'bike',
         flatLeft = (tires.frontLeft ? 1 : 0) + (tires.rearLeft ? 1 : 0),
         flatRight = (tires.frontRight ? 1 : 0) + (tires.rearRight ? 1 : 0),
-        flats = flatLeft + flatRight,
+        // Left/right flags identify the face struck; a bike still has only one tyre per axle.
+        flats = bike ? (tires.frontLeft || tires.frontRight ? 1 : 0) + (tires.rearLeft || tires.rearRight ? 1 : 0) : flatLeft + flatRight,
         engine = clamp(vehicle.hp / vehicle.maxhp / 0.55, 0, 1);
       vehicle.handling = {
         power: (0.5 + 0.5 * engine) * (1 - damage.front * 0.25),
         top: clamp(1 - flats * 0.11 - damage.front * 0.2, 0.45, 1),
         grip: 1 - flats * 0.12,
-        pull: clamp(damage.pull + (flatRight - flatLeft) * 0.22, -0.8, 0.8),
+        pull: clamp(damage.pull + (bike ? 0 : (flatRight - flatLeft) * 0.22), -0.8, 0.8),
         // A bent front end (track rods, a wheel knocked back) steers less; flat
         // tyres brake worse.
         steer: clamp(1 - damage.front * 0.25 - flats * 0.04, 0.6, 1),

@@ -1,0 +1,20 @@
+{
+  "baseline": "bde9ee4",
+  "assertions": 30,
+  "failures": [
+    "summit cleanup changed the carrier's previous mission flag: false",
+    "repeated summit cleanup changed the previous flag: false",
+    "destroyed Kessler trunk did not fail before bag recovery: stage 1",
+    "destroyed Kessler trunk did not fail before bag recovery: stage 2",
+    "destroyed Kessler trunk did not fail before bag recovery: stage 3",
+    "destroyed Kessler trunk did not fail before bag recovery: stage 4",
+    "a player-caused wreck did not fail with the uniform lost",
+    "later Kessler death regressed a recovered-bag stage: 5",
+    "later Kessler death regressed a recovered-bag stage: 6",
+    "later Kessler death regressed a recovered-bag stage: 7",
+    "later Kessler death regressed a recovered-bag stage: 8",
+    "later Kessler death regressed a recovered-bag stage: 9",
+    "pre-papers cover alarm left a dead gate/records objective: stage 6",
+    "unchanged meeting snapshots refreshed the HUD every frame: 30"
+  ]
+}

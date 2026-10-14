@@ -220,13 +220,14 @@ def convert_moto(model, src_root, vm):
     far = bar_pts[np.abs(bar_pts[:, 2]) > np.abs(bar_pts[:, 2]).max() - 0.05]
     grip = [float(far[:, 0].mean()), float(far[:, 1].mean()), float(np.abs(far[:, 2]).max() - 0.05)]
     if model.get('grip'):
-        # The grips given outright (bars whose ends carry hand guards).
+        # Authored grips avoid selecting mirror tips or hand guards as the bars.
         grip = [float(v) for v in model['grip']]
     meta = dict(
         type=model['type'], title=model['title'], front=front, kind='moto',
         dims=[round(float(L), 3), round(float(hi[1]), 3), round(float(hi[2] - lo[2]), 3)],
         wheels=[dict(x=round(float(w['x']), 4), y=round(float(w['y']), 4), z=round(float(w['z']), 4), r=round(float(w['r']), 4),
-                     width=round(float(w['width']), 4), side=1, front=wi == 0) for wi, w in enumerate(wheels)],
+                     width=round(float(w['width']), 4), side=1, front=wi == 0,
+                     **({'axle': list(model['wheelAxes'][wi])} if model.get('wheelAxes') else {})) for wi, w in enumerate(wheels)],
         axis=[round(float(ax), 4), round(float(ay), 4), round(float(tx), 4), round(float(ty), 4)], rake=round(rake, 4),
         seat=[round(float(sx), 4), round(seat_y, 4)], grip=[round(v, 4) for v in grip], peg=model['pegs'],
         lean=model.get('lean', -0.3),
@@ -235,6 +236,9 @@ def convert_moto(model, src_root, vm):
         paintTexture=bool(model.get('paintTexture')),
         paintColor=vm.paint_colour(mats, role, tri_prim, model),
     )
+    if model.get('grips'):
+        # Preserve the converted source's display lean/asymmetry per side.
+        meta['grips'] = [[round(float(v), 4) for v in point] for point in model['grips']]
     area = vm.cat(T, 'area')
     return dict(meta=meta, prims=prims, mats=mats, images=images, image_keys=image_keys, parts=parts, tri_prim=tri_prim,
                 tri_idx=tri_idx, role=role, area=area)

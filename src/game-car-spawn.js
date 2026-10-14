@@ -18,6 +18,7 @@
           hitWait: 0,
           deadTime: 0,
           mission: false,
+          depotDelivered: false,
           sprite: null,
           altitude: 0,
           vz: 0,

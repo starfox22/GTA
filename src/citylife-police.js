@@ -602,7 +602,9 @@
             break;
           }
         }
-        if (!spawnPoint) continue;
+        // A door on the far side of Vinny's sealed shutter is not an exit:
+        // neither a patrol crew nor a SWAT rear deployment crosses the wall.
+        if (!spawnPoint || depotPoliceBlocked(c, spawnPoint.x, spawnPoint.y)) continue;
         const o = makeOfficer(spawnPoint.x, spawnPoint.y, c.a, unit, {
           car: c,
           timer: 0.8 + c.crew.length * 0.2,

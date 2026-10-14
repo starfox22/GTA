@@ -26,7 +26,19 @@ police3d.js, helicopter3d-*.js, apache3d.js, plane3d.js, vehicles3d.js, boats3d.
 
 ## Handling
 
+- The 120 Hz broadphase visits only current moving Fort Sentinel gate pieces in its gate pass:
+  the base's fixed structures already belong to the static collider grid. Depot, base and harbor
+  gate contact shapes are refreshed from their current rectangles once per step, then shared
+  by that step's ordered vehicle pairs. Contact passes only read these reusable records; never
+  retain/mutate them or cache an opening across steps. Gate heights, IDs and contact order stay
+  authoritative. `tools/performance-kernels-check.mjs` compares production readers with the
+  previous ordered visitors and gate contacts across migration/sweep and opening/break states.
 - Steering, grip, brakes and assists, drifts and the handbrake: vehicles-and-driving-handling.md.
+- `trailDrive()` uses the console-only `trailPilot` in offroad-club.js, through ordinary vehicle
+  controls and the real physics. Uphill rounded hairpins turn about 0.5 radians over six dense
+  path samples: the pilot switches to its close look at 0.45 radians. Descent retains its previous
+  1.1-radian threshold. This helper has no player/AI/update-loop callers; changing its line must
+  not change terrain, handling, suspension, requested speed or the hillclimb-physics bounds.
 
 ## Crashes, riders, aircraft strikes (physics-collisions.js, riders.js, physics-aircraft.js)
 

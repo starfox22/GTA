@@ -355,6 +355,7 @@
             truckInsideDepot(missionState.car) &&
             Math.abs(missionState.car.speed) < 15
           ) {
+            missionState.car.depotDelivered = true;
             clearPolice(true);
             winMission();
           }

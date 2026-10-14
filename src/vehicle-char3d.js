@@ -11,14 +11,14 @@
        * takes it too), matte, no clear coat, the embers in the emissive (`assetCharEmbers`). A model whose atlas is its
        * paint (`m.atlasPaint`: the army's) also takes the wear's grime and the fire's heat through them before it burns,
        * as procedural paint does. Intact models keep the shared materials (and the pristine merge); a repair or respray
-       * swaps them back (`assetCharRelease`). The materials are made per car and pooled on release; their three programs
-       * (atlas cut-out, atlas, plain) are compiled at the title prewarm (`assetCharWarm`, kept in sharedMaterials, so the
+       * swaps them back (`assetCharRelease`). The materials are made per car and pooled on release; their four programs
+       * (atlas cut-out, atlas, plain, vertex finish) are compiled at the title prewarm (`assetCharWarm`, kept in sharedMaterials, so the
        * programs outlive every wreck).
        */
       const ASSET_CHAR_TILE = 1 / 12,
         assetCharGrime = new Three.Color('#585451'),
         assetCharHeat = new Three.Color('#1d1a17'),
-        assetCharFree = { cut: [], atlas: [], plain: [] },
+        assetCharFree = { cut: [], atlas: [], plain: [], finish: [] },
         ASSET_CHAR_GLSL = `
         vec3 charW = abs( normalize( vCharNormal ) );
         charW *= charW * charW;
@@ -51,14 +51,23 @@
             .replace('#include <map_fragment>', '#include <map_fragment>\n' + ASSET_CHAR_GLSL)
             // The embers glow through the soot where the texture's blistered paint shows (the procedural emissiveMap).
             .replace('#include <emissivemap_fragment>', 'totalEmissiveRadiance *= charSootTexel * charState.z;');
+          if (own.kind === 'finish') {
+            shader.vertexShader = shader.vertexShader
+              .replace('#include <common>', '#include <common>\nattribute vec2 finish;\nvarying vec2 vFinish;')
+              .replace('#include <begin_vertex>', '#include <begin_vertex>\nvFinish = finish;');
+            shader.fragmentShader = shader.fragmentShader
+              .replace('#include <common>', '#include <common>\nvarying vec2 vFinish;')
+              .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\nroughnessFactor = charState.z > 0.5 ? 0.97 : min(1.0, vFinish.x + charState.x * 2.7 + charState.y * 0.4);')
+              .replace('#include <metalnessmap_fragment>', '#include <metalnessmap_fragment>\nmetalnessFactor = charState.z > 0.5 ? 0.12 : max(0.0, vFinish.y * (1.0 - charState.x * 2.7));');
+          }
         };
-        material.customProgramCacheKey = () => 'asset-char';
+        material.customProgramCacheKey = () => 'asset-char' + (own.kind === 'finish' ? '-finish' : '');
       }
-      // A char material of `kind` ('cut': the atlas with the trim's alpha test, 'atlas', 'plain': no map) from the pool.
+      // Char kind: atlas cut-out, atlas, plain (no map), or atlas with per-vertex finish.
       function assetCharMaterial(kind) {
         const free = assetCharFree[kind];
         if (free.length) return free.pop();
-        const material = new Three.MeshStandardMaterial({ color: '#ffffff', map: kind === 'plain' ? null : vaAtlas(), alphaTest: kind === 'cut' ? 0.5 : 0 });
+        const material = new Three.MeshStandardMaterial({ color: '#ffffff', map: kind === 'plain' ? null : vaAtlas(), alphaTest: kind === 'cut' || kind === 'finish' ? 0.5 : 0 });
         material.userData.assetChar = { kind, state: { value: new Three.Vector4(0, 0, 0, ASSET_CHAR_TILE) }, seed: { value: new Three.Vector3() } };
         assetCharPatch(material);
         return material;
@@ -70,7 +79,7 @@
           let found = false;
           if (shared)
             m.group.traverse((o) => {
-              if (o.isMesh && (o.material === shared.trim || o.material === shared.rubber || o.material === shared.rim)) found = true;
+              if (o.isMesh && (o.material === shared.trim || o.material === shared.rubber || o.material === shared.rim || o.material?.userData?.assetAtlas)) found = true;
             });
           m.assetAtlas = found;
         }
@@ -94,7 +103,7 @@
           set.tile = tile;
         }
         const kindOf = (material) =>
-          material === shared.trim ? 'cut' : material === shared.rubber || material === shared.rim ? 'atlas' : burnt && material === m.paint ? 'plain' : null;
+          material.userData?.assetAtlas || (material === shared.trim ? 'cut' : material === shared.rubber || material === shared.rim ? 'atlas' : burnt && material === m.paint ? 'plain' : null);
         const charFor = (source) => {
           const kind = kindOf(source);
           if (!kind) return source;
@@ -166,7 +175,7 @@
         m.assetChar = undefined;
       }
       /*
-       * Title prewarm (render3d-resources.js): a stand-in asset model burnt so the three char programs compile; its char
+       * Title prewarm (render3d-resources.js): a stand-in asset model burnt so the four char programs compile; its char
        * materials stay in sharedMaterials (never disposed), which keeps the programs for every later wreck.
        */
       function assetCharWarm(m) {
@@ -174,10 +183,17 @@
         assetCharSwap({ id: 1 }, m, true);
         const kinds = new Set(m.assetChar.materials.map((material) => material.userData.assetChar.kind));
         // A kind the stand-in lacks (an asset car has trim, rims and paint) gets a material on a box in its group.
-        for (const kind of ['cut', 'atlas', 'plain'])
+        for (const kind of ['cut', 'atlas', 'plain', 'finish'])
           if (!kinds.has(kind)) {
             const material = assetCharMaterial(kind),
-              stand = new Three.Mesh(boxGeo, material);
+              geometry = kind === 'finish' ? boxGeo.clone() : boxGeo,
+              stand = new Three.Mesh(geometry, material);
+            if (kind === 'finish') {
+              const finish = new Float32Array(geometry.attributes.position.count * 2);
+              for (let i = 0; i < finish.length; i += 2) { finish[i] = 0.9; finish[i + 1] = 0.02; }
+              geometry.setAttribute('finish', new Three.BufferAttribute(finish, 2));
+              sharedGeometries.add(geometry);
+            }
             m.group.add(stand);
           }
         m.group.traverse((o) => {
@@ -199,5 +215,5 @@
               state: Array.from(m.assetChar.materials[0]?.userData.assetChar.state.value.toArray() || []).map((v) => Math.round(v * 1000) / 1000),
               ember: Math.round(Math.max(0, m.assetChar.ember) * 1000) / 1000,
             });
-        return { models: out, pooled: { cut: assetCharFree.cut.length, atlas: assetCharFree.atlas.length, plain: assetCharFree.plain.length } };
+        return { models: out, pooled: { cut: assetCharFree.cut.length, atlas: assetCharFree.atlas.length, plain: assetCharFree.plain.length, finish: assetCharFree.finish.length } };
       }

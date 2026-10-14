@@ -1,0 +1,43 @@
+{
+  "comparison": "bde9ee4 source with corrected actual packed assets and remaining current sources",
+  "assertions": 102,
+  "failures": [
+    "bike: hand left actual steering contact by 0.04599130352577549",
+    "bike: wrist does not follow its target or its finite arm reach",
+    "bike: hand left actual steering contact by 0.04642757801133985",
+    "bike: wrist does not follow its target or its finite arm reach",
+    "bike: hand left actual steering contact by 1.215506916226165",
+    "bike: wrist does not follow its target or its finite arm reach",
+    "bike: hand left actual steering contact by 1.203339706389189",
+    "bike: wrist does not follow its target or its finite arm reach",
+    "bike: hand left actual steering contact by 1.1931582042777333",
+    "bike: wrist does not follow its target or its finite arm reach",
+    "bike: hand left actual steering contact by 1.1809512461728064",
+    "bike: wrist does not follow its target or its finite arm reach",
+    "cruiser: hand left actual steering contact by 0.4452407887873725",
+    "cruiser: wrist does not follow its target or its finite arm reach",
+    "cruiser: hand left actual steering contact by 0.4441563688612357",
+    "cruiser: wrist does not follow its target or its finite arm reach",
+    "cruiser: hand left actual steering contact by 1.3530461654933061",
+    "cruiser: wrist does not follow its target or its finite arm reach",
+    "cruiser: hand left actual steering contact by 1.1608948219765305",
+    "cruiser: wrist does not follow its target or its finite arm reach",
+    "cruiser: hand left actual steering contact by 1.5292261042583257",
+    "cruiser: wrist does not follow its target or its finite arm reach",
+    "cruiser: hand left actual steering contact by 1.3614198986665702",
+    "cruiser: wrist does not follow its target or its finite arm reach",
+    "kr500: hand left actual steering contact by 1.287263872176176",
+    "kr500: wrist does not follow its target or its finite arm reach",
+    "kr500: hand left actual steering contact by 1.2872638721761804",
+    "kr500: wrist does not follow its target or its finite arm reach",
+    "kr500: hand left actual steering contact by 1.2872638721761804",
+    "kr500: wrist does not follow its target or its finite arm reach",
+    "kr500: hand left actual steering contact by 1.2872638721761789",
+    "kr500: wrist does not follow its target or its finite arm reach",
+    "rider contact/bone transform error",
+    "straight bars beyond actual arm reach: 0.4452407887873725"
+  ],
+  "notes": [
+    "{\"maxTargetError\":1.5292261042583257,\"maxWristError\":1.5292261042583257,\"maxRestWristError\":0.4452407887873725,\"maxBoneError\":1.2434497875801753e-14,\"formerSteeringGap\":1.4716794259796324}"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "originalFullSuite": {
+    "modules": 208,
+    "passed": 182,
+    "skipped": 18,
+    "failed": 8,
+    "inputHTMLSHA256": "b5c774e071fe74415e3715c0522dffea17ef21c5b5bf9fe2794905d7067cf26e"
+  },
+  "focusedFollowups": {
+    "originalFailuresResolved": 8,
+    "assertionsNotWaived": true,
+    "fullSuiteNotRepeated": true
+  },
+  "additionalRiderModule": {
+    "passed": true,
+    "assertions": 102,
+    "currentPack": true
+  },
+  "cumulativeCoverage": {
+    "modules": 209,
+    "passed": 191,
+    "skipped": 18,
+    "unresolvedFailures": 0
+  },
+  "finalPublicationHTMLSHA256": "ccf195e35e4ae7b87d09133c317abcb1b54ddb2d3f3e9d30acb5923b6daeee92",
+  "rendered": "Separate frozen-source model/shader/preset checks and final package smoke; see actual receipts",
+  "limitations": [
+    "No real M4 Max or laptop GPU benchmark",
+    "No four continuous normal-input mission wins",
+    "Not AAA/GTA parity or production readiness certification"
+  ],
+  "renderedRuntimeHTMLSHA256": "b8d8713019cbb4d265496897859b2d2a11bd38edcf3e319c48b2dbffe9069b4f",
+  "identicalGameJSSHA256": "0a4aec162f1bfebc2757893df2297c707aa1c6296f3b15ed98f45b8908d0600b",
+  "publicationCreditDelta": "publication-credit-delta.json"
+}

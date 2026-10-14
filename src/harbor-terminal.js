@@ -184,7 +184,7 @@
       return mission?.index === 0 && Array.isArray(mission.packages) ? mission : null;
     }
     function harborPoliceHold() {
-      return mission?.index === 0 && !mission.policeArrived && !mission.cargoDisguised;
+      return mission?.index === 0 && !mission.harborLivePursuit && !mission.policeArrived && !mission.cargoDisguised;
     }
     function harborPoliceProtected(x, y, margin = 0) {
       return harborPoliceHold() && inHarbor(x, y, margin);

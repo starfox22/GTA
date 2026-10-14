@@ -191,6 +191,10 @@
       return Math.floor(x / CROWD_CELL) * 65536 + Math.floor(y / CROWD_CELL);
     }
     const CROWD_GRID_REACH = 1300;
+    // The Map still owns stable cell arrays and encounter iteration order. This small moving mirror only
+    // replaces hot lookups inside the current nearby square; distant queries retain the original Map.
+    const CROWD_DENSE_SIZE = Math.ceil((CROWD_GRID_REACH * 2) / CROWD_CELL) + 2,
+      crowdDense = { i0: 0, j0: 0, cells: new Array(CROWD_DENSE_SIZE * CROWD_DENSE_SIZE).fill(null) };
     function buildCrowdGrid() {
       // Cell arrays are reused frame to frame (each holds `n` people; entries past it are
       // stale: `length = 0` would free the backing store and every frame regrow every cell);
@@ -200,13 +204,19 @@
         for (const [k, cell] of crowd.grid) if (!cell.n) crowd.grid.delete(k);
       }
       for (const cell of crowd.grid.values()) cell.n = 0;
+      crowdDense.cells.fill(null);
+      crowdDense.i0 = Math.floor((player.x - CROWD_GRID_REACH) / CROWD_CELL);
+      crowdDense.j0 = Math.floor((player.y - CROWD_GRID_REACH) / CROWD_CELL);
       crowd.gridX = player.x;
       crowd.gridY = player.y;
       for (const p of pedestrians) {
         if (p.hp <= 0 || Math.abs(p.x - player.x) > CROWD_GRID_REACH || Math.abs(p.y - player.y) > CROWD_GRID_REACH) continue;
-        const k = crowdKey(p.x, p.y);
+        const ci = Math.floor(p.x / CROWD_CELL),
+          cj = Math.floor(p.y / CROWD_CELL),
+          k = ci * 65536 + cj;
         let cell = crowd.grid.get(k);
         if (!cell) crowd.grid.set(k, (cell = Object.assign([], { n: 0 })));
+        crowdDense.cells[(ci - crowdDense.i0) * CROWD_DENSE_SIZE + cj - crowdDense.j0] = cell;
         cell[cell.n++] = p;
       }
     }
@@ -222,11 +232,13 @@
           x1 = Math.floor((x + r) / CROWD_CELL),
           y0 = Math.floor((y - r) / CROWD_CELL),
           y1 = Math.floor((y + r) / CROWD_CELL);
-        for (let i = x0; i <= x1; i++)
+        for (let i = x0; i <= x1; i++) {
+          const row = (i - crowdDense.i0) * CROWD_DENSE_SIZE - crowdDense.j0;
           for (let j = y0; j <= y1; j++) {
-            const cell = crowd.grid.get(i * 65536 + j);
+            const cell = crowdDense.cells[row + j];
             if (cell) for (let k = 0; k < cell.n; k++) fn(cell[k]);
           }
+        }
         return;
       }
       // Far from the player (distant traffic yielding to walkers): a second grid of
@@ -268,9 +280,11 @@
         x1 = Math.floor((x + r) / CROWD_CELL),
         y0 = Math.floor((y - r) / CROWD_CELL),
         y1 = Math.floor((y + r) / CROWD_CELL);
-      for (let i = x0; i <= x1; i++)
+      const dense = x0 >= crowdDense.i0 && y0 >= crowdDense.j0 && x1 < crowdDense.i0 + CROWD_DENSE_SIZE && y1 < crowdDense.j0 + CROWD_DENSE_SIZE;
+      for (let i = x0; i <= x1; i++) {
+        const row = (i - crowdDense.i0) * CROWD_DENSE_SIZE - crowdDense.j0;
         for (let j = y0; j <= y1; j++) {
-          const cell = crowd.grid.get(i * 65536 + j);
+          const cell = dense ? crowdDense.cells[row + j] : crowd.grid.get(i * 65536 + j);
           if (!cell) continue;
           for (let k = 0; k < cell.n; k++) {
             const p = cell[k],
@@ -278,4 +292,5 @@
             if (d <= r) fn(p, d);
           }
         }
+      }
     }

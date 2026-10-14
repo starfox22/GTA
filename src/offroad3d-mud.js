@@ -539,6 +539,14 @@
         if (m.knuckles) for (const k of m.knuckles) list.push({ x: k.x, z: k.z, driven: k.driven, r: m.wheelRadius, width: OFFROAD_BODIES[spec.clubModel].wheel.width, emit: 0, lastX: NaN, lastY: NaN });
         else if (m.wheels?.length && m.wheels[0].wheel.position)
           for (const { wheel } of m.wheels) {
+            // Motorcycle fronts sit inside a steering/axle rig, so their local position
+            // is not a body-space tyre contact. The kit records the original body-space
+            // location and real wheel dimensions once, independent of steering and roll.
+            const bike = wheel.userData.bikeContact;
+            if (bike) {
+              list.push({ x: bike.x, z: bike.z, driven: !bike.front, r: bike.r, width: bike.width, emit: 0, lastX: NaN, lastY: NaN });
+              continue;
+            }
             // Other models are built at design size and drawn at modelScale.
             const k = m.modelScale || 1,
               x = wheel.position.x * k,

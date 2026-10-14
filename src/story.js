@@ -453,11 +453,12 @@
           packages: [],
           route: [],
           collected: 0,
+          harborLivePursuit: false,
           instruction: '',
           lastLine: '',
         }),
         info = missions[missionState.index];
-      if (missionState.index === 0) startHarborJob(missionState);
+      if (missionState.index === 0) startHarborJob(missionState, livePursuit);
       else if (missionState.index === 1) startRooftopHit(missionState);
       else if (missionState.index === 2) startSummitJob(missionState);
       else if (missionState.index === 3) startFortJob(missionState);

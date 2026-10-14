@@ -1,0 +1,63 @@
+{
+  "status": {
+    "mode": "play",
+    "x": 1544,
+    "y": 1483,
+    "district": "MIDTOWN",
+    "hp": 100,
+    "cash": 0,
+    "wanted": 0,
+    "mission": null,
+    "completed": 0,
+    "vehicle": null,
+    "weapon": "9MM PISTOL",
+    "clock": "17:38",
+    "renderer": "2d",
+    "vehicles": 307,
+    "pedestrians": 620
+  },
+  "vehiclesNear": [
+    {
+      "id": 344,
+      "type": "sedan",
+      "metres": 2.9,
+      "authorized": true,
+      "driven": false
+    }
+  ],
+  "chaseCamera": {
+    "mode": "street",
+    "live": false,
+    "ready": false,
+    "locked": false,
+    "position": [
+      1516.3,
+      1486.3,
+      17.1
+    ],
+    "pivot": [
+      1544,
+      1483.5,
+      12.6
+    ],
+    "yawDeg": 1,
+    "pitchDeg": 9,
+    "lookYawDeg": 0,
+    "fov": 52,
+    "boomMetres": 3.5,
+    "wantMetres": 3.5,
+    "heightMetres": 2.14,
+    "aiming": 0,
+    "behind": false,
+    "craneMetres": 0,
+    "lockOn": null,
+    "aimAssist": true,
+    "speedBlend": 0,
+    "zoom": 1,
+    "aim": null,
+    "sensitivity": 100,
+    "invert": false,
+    "motionBlur": false,
+    "view": null
+  }
+}

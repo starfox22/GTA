@@ -85,24 +85,16 @@
           return makeCar('flatbed', t.x + dx, t.y, t.a, false, '#b69b68');
       return spawnClearCar('flatbed', t.x, t.y, t.a, false, '#b69b68');
     }
-    function startHarborJob(m) {
-      clearHarborPolice();
+    function startHarborJob(m, livePursuit = false) {
+      // A payphone answered during a chase inherits it. Do not remove existing
+      // units or turn the terminal into a safe zone for that incoming pursuit.
+      m.harborLivePursuit = !!livePursuit && wantedStars > 0;
+      if (!livePursuit) clearHarborPolice();
       harborGateUntil = 0;
       resetDepotDoors();
-      for (const e of gangMembers)
-        if (e.faction === 'harbor' && inHarbor(e.home.x, e.home.y)) {
-          Object.assign(e, e.home, {
-            hp: 80,
-            knockedFor: 0,
-            dazedFor: 0,
-            impactCooldown: 0,
-            playerThreatUntil: 0,
-            policeThreatUntil: 0,
-            lastShotAt: -100,
-            aiming: false,
-            timer: 1.5,
-          });
-        }
+      // The Harbor Kings belong to the populated city, not this job. Starting
+      // or retrying the delivery must keep their damage, deaths and positions;
+      // only WASTED, BUSTED or a new game repopulates them (world-reset.js).
       m.packages = HARBOR.crates.map((p, i) => ({
         ...p,
         id: i,
@@ -220,7 +212,10 @@
     }
     function depotEscapeStage(m) {
       // The truck is parked for good: losing it now cannot fail the job.
-      if (m.truck) m.truck.mission = false;
+      if (m.truck) {
+        m.truck.mission = false;
+        m.truck.depotDelivered = true;
+      }
       m.car = null;
       setDepotDoors(1, 0);
       noise(0.2, 0.2, 220);

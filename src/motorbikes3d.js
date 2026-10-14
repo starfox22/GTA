@@ -265,7 +265,6 @@
           limb = (a, b, r, color, finish = 'leather') => civBar(set, a, b, r * 2 * CAR_M, r * 2 * CAR_M, r * 0.9 * CAR_M, { color, finish }),
           [hx, hy] = pose.hip,
           [sx, sy] = pose.shoulder,
-          [ax, ay] = pose.hand,
           [kx, ky] = pose.knee,
           [fx, fy] = pose.foot;
         for (const side of [-1, 1]) {
@@ -273,7 +272,8 @@
             kz = side * 0.17,
             fz = side * 0.16,
             sz = side * 0.2,
-            az = side * (pose.gripZ ?? (type === 'kr500' ? 0.36 : type === 'cruiser' ? 0.34 : 0.26));
+            [ax, ay, az] = pose.hands?.[side < 0 ? 0 : 1] ||
+              [pose.hand[0], pose.hand[1], side * (pose.gripZ ?? (type === 'kr500' ? 0.36 : type === 'cruiser' ? 0.34 : 0.26))];
           limb(mp(hx, hy, hz), mp(kx, ky, kz), 0.085, pose.suit);
           limb(mp(kx, ky, kz), mp(fx, fy + 0.04, fz), 0.065, pose.suit);
           // Boot on the peg.
@@ -459,6 +459,18 @@
         const m = new Three.MeshPhysicalMaterial({ color, vertexColors: true, roughness: 0.26, metalness: 0.1, clearcoat: 1, clearcoatRoughness: 0.05 });
         return m;
       }
+      // The fork's rake belongs to the steering carrier, not to tyre deformation or roll.
+      // An un-raked axle carrier gives damage's vertical drop/squash an upright wheel frame.
+      // Object3D groups add no draw calls; the wheel itself keeps the tyre-first contract.
+      function motoFrontAxle(steer, at, rake) {
+        const axle = new Three.Group();
+        axle.position.copy(at);
+        axle.rotation.z = -rake;
+        axle.updateMatrix();
+        axle.matrixAutoUpdate = false;
+        steer.add(axle);
+        return axle;
+      }
       /*
        * A motorbike on the special-vehicle contract (see the header). Built at
        * real size (`realSize`); the wheels roll at their own radius.
@@ -503,14 +515,13 @@
           mesh(kit.rims[i], materials.wheel, wheel, 0, 0, 0);
           return wheel;
         };
-        // The front wheel hangs from the fork (it steers with it), undone from the rake.
-        // (x a hair past 0: the damage model reads x > 0 as the front wheel.)
-        const front = addWheel(steer, 0.001, -kit.forkLength, wd.rf * M, wd.wf * M, 0);
+        // The front wheel steers with the fork, but rolls and flattens in its upright axle frame.
+        const frontAxle = motoFrontAxle(steer, new Three.Vector3(0.001, -kit.forkLength, 0), body.rake),
+          front = addWheel(frontAxle, 0, 0, wd.rf * M, wd.wf * M, 0);
         const rear = addWheel(b, wd.xr * M, wd.rr * M, wd.rr * M, wd.wr * M, 1);
-        // Front x > 0 and its world position for the damage model's flat tyres.
         front.userData.front = true;
-        // A flat front tyre squashes square to the bike, not along the raked fork (damage3d-bodies.js FLAT TYRE SQUASH).
-        front.userData.squashTilt = -body.rake;
+        front.userData.bikeContact = { x: wd.xf * M, z: 0, r: wd.rf * M, width: wd.wf * M, front: true };
+        rear.userData.bikeContact = { x: wd.xr * M, z: 0, r: wd.rr * M, width: wd.wr * M, front: false };
         model.wheels.push({ wheel: front, side: 1, radius: wd.rf * M, front: true }, { wheel: rear, side: 1, radius: wd.rr * M });
         const head = mesh(kit.head, lampMaterials.headOff, b, 0, 0, 0),
           tail = mesh(kit.tail, lampMaterials.tailOff, b, 0, 0, 0);
@@ -569,12 +580,21 @@
           if (m.drl.material !== material) m.drl.material = material;
         }
         const player_ = c === player.car,
-          turn = player_ ? (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0) : clamp(c.av * 0.4, -1, 1),
+          turn = player_ ? clamp(c.tyres?.steer ?? ((actionHeld('right') ? 1 : 0) - (actionHeld('left') ? 1 : 0)), -1, 1) : clamp(c.av * 0.4, -1, 1),
           speed = Math.abs(c.speed || 0),
           // Little steering at speed: a bike countersteers and leans instead.
           target = -turn * 0.35 * clamp(1 - speed / (60 * KMH), 0.15, 1);
         m.steerAngle = (m.steerAngle || 0) + (target - (m.steerAngle || 0)) * Math.min(1, deltaSeconds * 7);
         m.steer.rotation.y = m.steerAngle;
+        // Use the tyre model's lock and rear wheelspin. Generic special-wheel rolling must skip
+        // bikes with bikeUpdate so each wheel is advanced once, at its own real-size radius.
+        const lock = player_ && c.tyres ? c.tyres.lock : null,
+          spinning = (c.spinSpeed || 0) > 1,
+          rearSpeed = (c.speed || 0) + (spinning ? c.spinSpeed * (c.speed < -2 ? -1 : 1) : 0);
+        for (const { wheel, radius, front } of m.wheels) {
+          const wheelSpeed = front ? (c.speed || 0) * (1 - (lock?.[0] || 0)) : spinning ? rearSpeed : (c.speed || 0) * (1 - (lock?.[1] || 0));
+          wheel.rotation.z = (wheel.rotation.z - wheelSpeed * deltaSeconds / radius) % TAU;
+        }
         // The wheelie is the physics' (wheelie.js c.wheelie: the pitch about the
         // rear tyre, a little below zero while the fork takes the landing).
         m.wheelie = c.fallen || c.hp <= 0 ? 0 : c.wheelie || 0;

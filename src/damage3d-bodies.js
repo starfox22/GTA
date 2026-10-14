@@ -437,12 +437,14 @@
         for (const { wheel, side } of m.wheels || []) {
           if (!wheel.position) continue;
           if (wheel.userData.baseY === undefined) wheel.userData.baseY = wheel.position.y;
-          const key = (wheel.position.x > 0 ? 'front' : 'rear') + (side < 0 ? 'Left' : 'Right'),
-            flat = damage.tires?.[key];
+          const end = wheel.userData.front || wheel.position.x > 0 ? 'front' : 'rear',
+            key = end + (side < 0 ? 'Left' : 'Right'),
+            // A motorcycle has one tyre per axle; either side's puncture is visible on it.
+            flat = m.bike ? damage.tires?.[end + 'Left'] || damage.tires?.[end + 'Right'] : damage.tires?.[key];
           squashWheel(wheel, flat && !damage.burnt ? 0.82 : 1);
           wheel.userData.drop = damage.burnt ? 1.6 : flat ? 0.8 : 0;
           wheel.position.y = wheel.userData.baseY - wheel.userData.drop + (wheel.userData.rideY || 0);
-          if (wheel.children[0] && damage.burnt) wheel.children[0].visible = false;
+          if (wheel.children[0]) wheel.children[0].visible = !damage.burnt;
         }
       }
       // Glass that bursts throws a glitter of crumbs out of the frame.

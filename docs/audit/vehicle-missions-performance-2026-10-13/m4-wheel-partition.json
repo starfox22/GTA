@@ -1,0 +1,91 @@
+{
+  "sourcePackSha256": "63908560d08068f6b6df9859b9bb6040ad38028c2a0d9a0268f7d9cd4c2649ae",
+  "helperSha256": "e96c63b2f9da14eeeda9c84d877d9d0559232cfa925919cb5c521dc8c746d4ae",
+  "sourceTriangles": 2389,
+  "rollingTriangles": 2128,
+  "fixedTriangles": 261,
+  "restMaxErrorUnits": 4.665e-07,
+  "normals": "exact",
+  "atlasUvs": "exact",
+  "spinPhasesPerWheel": 48,
+  "wheels": [
+    {
+      "wheel": 0,
+      "at": [
+        1.7261375807285309,
+        0.43411974403858183,
+        0.9090009858489037
+      ],
+      "radius": 0.4341118186712265,
+      "sourceTriangles": 549,
+      "rollingTriangles": 532,
+      "fixedTriangles": 17,
+      "sourceCenterM": [
+        3.758072853088379e-05,
+        1.9744038581848145e-05,
+        -0.000299014151096344
+      ],
+      "previousCircleOrbitM": 8.483576978290941e-05,
+      "correctedCircleOrbitM": 0
+    },
+    {
+      "wheel": 1,
+      "at": [
+        1.7261375797748566,
+        0.43411974403858183,
+        -0.902394918268919
+      ],
+      "radius": 0.4341118186712265,
+      "sourceTriangles": 562,
+      "rollingTriangles": 532,
+      "fixedTriangles": 30,
+      "sourceCenterM": [
+        0.11353757977485657,
+        1.9744038581848145e-05,
+        -0.01779491826891899
+      ],
+      "previousCircleOrbitM": 0.22707515954971313,
+      "correctedCircleOrbitM": 0
+    },
+    {
+      "wheel": 2,
+      "at": [
+        -1.4255351285815239,
+        0.4342473226070404,
+        0.9079786788105965
+      ],
+      "radius": 0.43412598967552185,
+      "sourceTriangles": 647,
+      "rollingTriangles": 532,
+      "fixedTriangles": 115,
+      "sourceCenterM": [
+        -0.3547351285815239,
+        -0.045052677392959595,
+        -0.00032132118940353394
+      ],
+      "previousCircleOrbitM": 0.7151617496207023,
+      "correctedCircleOrbitM": 0
+    },
+    {
+      "wheel": 3,
+      "at": [
+        -1.4255351553380489,
+        0.4342473358154297,
+        -0.9013726065874099
+      ],
+      "radius": 0.43412598967552185,
+      "sourceTriangles": 631,
+      "rollingTriangles": 532,
+      "fixedTriangles": 99,
+      "sourceCenterM": [
+        -0.35433515533804893,
+        -0.04515266418457031,
+        0.00032739341259002686
+      ],
+      "previousCircleOrbitM": 0.7143947485772043,
+      "correctedCircleOrbitM": 0
+    }
+  ],
+  "sourcePayloadSha256": "9c84efee358a7d53354bb67a34a233bb32d8efda9c20bb1c818775322cfdff02",
+  "headerNote": "Actual-pack host rerun after CB750 and cruiser paired-grip metadata calibration; mesh payload and wheel axle metadata unchanged."
+}

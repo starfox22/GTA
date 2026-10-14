@@ -20,12 +20,16 @@ cleanup, the demo gate) are in missions-and-demo.md; this page is what each job 
 - `m.carrier`: 'hand' (just dug, a vehicle near), 'backpack' (no vehicle near, or walked away from it), 'car'
   (`m.carryCar`, flagged `mission` so it burns down slowly instead of exploding and is never retired). Inside the
   warehouse getting out of the carrier takes the package along.
+- The carrier is borrowed from free roam. `m.carryCarWasMission` records its previous mission protection;
+  `summitCleanup()` restores it before generic failure/retry/abandon cleanup. An ordinary player's truck survives
+  a job retry with its world damage intact; a vehicle already owned by a job keeps its original ownership.
 - Vinny refuses the package with police on the player. The Vinny who stands at `LOC.vinny` is hidden while his
   warehouse copy (`missionTag` 'summit-job') is out; `summitCleanup()` (cleanupMissionExtras) restores him.
 - The renderer reads only `summitCacheView()`: stones lifted onto a pile over the first third of the dig, a dark
   hole and spoil heap that grow, the case once the dig passes 62 %. Shared standard materials only (no new
   program, nothing to prewarm).
-- Console: `summitJob()` (report), `summitSkip('summit' | 'deliver')`. Test: tools/tests/mission3-summit.mjs.
+- Console: `summitJob()` (report), `summitSkip('summit' | 'deliver')`. Tests: tools/tests/mission3-summit.mjs,
+  mission34-lifecycle.mjs (borrowed carrier, production functions plus actual retry cleanup).
 
 ## Mission 4: Borrowed Stripes (fortjob.js with vehicle-trunk.js, fort-cover*.js, skyline-meeting.js)
 

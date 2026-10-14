@@ -1,0 +1,302 @@
+{
+  "metadata": {
+    "html": "/workspace/GTA/dist/review-2026-10-13-pilot-uphill-candidate.html",
+    "flags": "dev&norender&seed=1&hold",
+    "sha256": "ea9f1ca24878433ef896bb96f4b93581a0e51cbda5e0b5b6dd11b5355a697a34",
+    "utc": "2026-10-14T00:00:41.919Z",
+    "fixture": "fresh seeded1 held world; one crawler reused for 1/30 climb,1/60 climb,1/30 descent and rest as original test"
+  },
+  "stages": [
+    {
+      "direction": "up",
+      "frame": 0.03333333333333333,
+      "maxKmh": 45,
+      "result": {
+        "direction": "up",
+        "frame": 0.0333,
+        "ride": {
+          "airS": 0.03,
+          "hops": 0,
+          "maxGapM": 0.01,
+          "gapAt": [
+            7418,
+            1548,
+            45
+          ],
+          "maxLiftM": 2.29,
+          "liftAt": [
+            8098,
+            1583,
+            17.7,
+            [
+              -0.19,
+              0.23,
+              -0.07,
+              0.72
+            ]
+          ],
+          "minLiftM": -0.16,
+          "maxRiseMs": 7.22,
+          "maxUpMs": 5.28,
+          "maxDownMs": -4.58,
+          "stops": 9,
+          "maxBlowMs": 2.2,
+          "blowAt": [
+            8056,
+            1583,
+            3,
+            0.18,
+            22
+          ],
+          "flights": 0,
+          "maxPitchRate": 2.33,
+          "maxRollRate": 6.51,
+          "nan": 0
+        },
+        "cliffFlights": 0,
+        "cliffAirS": 0,
+        "nan": false,
+        "overturned": false,
+        "reason": "summit",
+        "seconds": 72.8,
+        "sample": 696,
+        "of": 700,
+        "progress": 0.994,
+        "height": 762,
+        "meanSpin": 0.08,
+        "slidBackM": 0,
+        "maxKmh": 45,
+        "hp": 240,
+        "mudCoat": 0.3,
+        "last": {
+          "peak": "MOUNT ASCENT",
+          "time": 72.57,
+          "clean": true,
+          "challenge": false,
+          "splits": [
+            6.67,
+            19.33,
+            44.07,
+            64.93
+          ]
+        }
+      }
+    },
+    {
+      "direction": "up",
+      "frame": 0.016666666666666666,
+      "maxKmh": 45,
+      "result": {
+        "direction": "up",
+        "frame": 0.0167,
+        "ride": {
+          "airS": 0.03,
+          "hops": 0,
+          "maxGapM": 0.01,
+          "gapAt": [
+            7418,
+            1548,
+            44
+          ],
+          "maxLiftM": 1.93,
+          "liftAt": [
+            7928,
+            1370,
+            42.6,
+            [
+              0.15,
+              0.48,
+              -0.29,
+              1.85
+            ]
+          ],
+          "minLiftM": -0.18,
+          "maxRiseMs": 5.25,
+          "maxUpMs": 5.01,
+          "maxDownMs": -4.6,
+          "stops": 13,
+          "maxBlowMs": 1.97,
+          "blowAt": [
+            7897,
+            1387,
+            3,
+            0.29,
+            24
+          ],
+          "flights": 0,
+          "maxPitchRate": 2.42,
+          "maxRollRate": 6.33,
+          "nan": 0
+        },
+        "cliffFlights": 0,
+        "cliffAirS": 0,
+        "nan": false,
+        "overturned": false,
+        "reason": "summit",
+        "seconds": 75.2,
+        "sample": 696,
+        "of": 700,
+        "progress": 0.994,
+        "height": 762,
+        "meanSpin": 0.09,
+        "slidBackM": 0.2,
+        "maxKmh": 46,
+        "hp": 240,
+        "mudCoat": 0.54,
+        "last": {
+          "peak": "MOUNT ASCENT",
+          "time": 74.92,
+          "clean": true,
+          "challenge": false,
+          "splits": [
+            6.63,
+            19.97,
+            46.28,
+            67.45
+          ]
+        }
+      }
+    },
+    {
+      "direction": "down",
+      "frame": 0.03333333333333333,
+      "maxKmh": 35,
+      "result": {
+        "direction": "down",
+        "frame": 0.0333,
+        "ride": {
+          "airS": 0,
+          "hops": 0,
+          "maxGapM": 0,
+          "gapAt": null,
+          "maxLiftM": 0.93,
+          "liftAt": [
+            7712,
+            1183,
+            76.8,
+            [
+              -0.21,
+              -0.26,
+              0.69,
+              0.68
+            ]
+          ],
+          "minLiftM": -0.1,
+          "maxRiseMs": 12.62,
+          "maxUpMs": 2.03,
+          "maxDownMs": -4.4,
+          "stops": 11,
+          "maxBlowMs": 0.71,
+          "blowAt": [
+            7683,
+            1181,
+            0,
+            0.36,
+            25
+          ],
+          "flights": 0,
+          "maxPitchRate": 1.51,
+          "maxRollRate": 4.37,
+          "nan": 0
+        },
+        "cliffFlights": 0,
+        "cliffAirS": 0,
+        "nan": false,
+        "overturned": false,
+        "reason": "trailhead",
+        "seconds": 72.6,
+        "sample": 698,
+        "of": 700,
+        "progress": 0.997,
+        "height": 94,
+        "meanSpin": 0.03,
+        "slidBackM": 0,
+        "maxKmh": 35,
+        "hp": 240,
+        "mudCoat": 0.77,
+        "last": {
+          "peak": "MOUNT ASCENT",
+          "time": 74.92,
+          "clean": true,
+          "challenge": false,
+          "splits": [
+            6.63,
+            19.97,
+            46.28,
+            67.45
+          ]
+        }
+      }
+    }
+  ],
+  "rest": {
+    "first": {
+      "type": "crawler",
+      "onTerrain": true,
+      "active": true,
+      "air": false,
+      "liftM": 0.072,
+      "pitchDeg": -3.37,
+      "rollDeg": 1.43,
+      "loadG": 1,
+      "wheelTravelM": [
+        -0.01,
+        0.021,
+        0.003,
+        -0.014
+      ],
+      "wheelLoadG": [
+        0.235,
+        0.281,
+        0.255,
+        0.229
+      ],
+      "model": {
+        "hz": 1.23,
+        "sagM": 0.166,
+        "droopM": 0.166,
+        "bumpM": 0.166,
+        "tyreM": 0.404,
+        "wheelbaseM": 2.511,
+        "trackM": 1.68
+      }
+    },
+    "second": {
+      "type": "crawler",
+      "onTerrain": true,
+      "active": true,
+      "air": false,
+      "liftM": 0.072,
+      "pitchDeg": -3.36,
+      "rollDeg": 1.43,
+      "loadG": 1,
+      "wheelTravelM": [
+        -0.01,
+        0.02,
+        0.003,
+        -0.014
+      ],
+      "wheelLoadG": [
+        0.235,
+        0.281,
+        0.255,
+        0.229
+      ],
+      "model": {
+        "hz": 1.23,
+        "sagM": 0.166,
+        "droopM": 0.166,
+        "bumpM": 0.166,
+        "tyreM": 0.404,
+        "wheelbaseM": 2.511,
+        "trackM": 1.68
+      }
+    }
+  },
+  "faults": {
+    "count": 0,
+    "gameTime": 225.65,
+    "drill": null,
+    "kinds": []
+  }
+}

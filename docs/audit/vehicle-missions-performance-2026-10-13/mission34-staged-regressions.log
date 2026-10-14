@@ -1,0 +1,20 @@
+started dev server (?dev&norender: boot 21.8s)
+PASS fort-cover (12.7s)
+PASS fort-gate-barrier (37.7s)
+PASS fort-gate-talk (36.3s)
+PASS fort-records-route (22.0s)
+PASS fort-vehicle-theft (31.5s)
+PASS mission3-summit (54.1s)
+     stage 0 points at the summit 7760
+FAIL mission34-lifecycle (27.9s): destroyed-uniform retry did not restart the job: {"mode":"play","mission":null,"last":{"result":"failed","index":3,"stage":3,"reason":"Kessler’s car was destroyed with the uniform and ID inside."},"completed":0,"depotShutter":0,"depotBackDoor":1}
+     production mission functions: carrier protection restored, pre-bag wreck failure, recovered bag survives wreck/death, corpse keys retained, pre-papers alarm fails and post-papers escape retained · meeting update loop: 30 identical target snapshots cause one HUD refresh; moving x, roof height and wanted text still refresh
+PASS mission4-alert (69.7s)
+PASS mission4-kessler (70.7s)
+     brought on 1200 units from his kerb
+PASS mission4-paths (49.1s)
+PASS mission4-tail (56.0s)
+PASS sky-meeting-talk (53.3s)
+     the whole meeting: 41 presses, 12.3 s of game time; stages waiting > greeted > lift > terrace > seated > drinks > handover > done
+PASS sky-meeting (69.8s)
+     arrival: {"him":{"name":"ANTON VARGA","x":4312,"y":-3845,"altitude":1409.9,"pose":null,"sitting":false,"hidden":false,"hand":null,"hp":100,"speech":"This way. I keep a table by the glass."},"you":{"x":4302,"y":-3847,"altitude":1409.9,"roof":"evolution"}}
+12/13 passed, 0 skipped, 1 failed in 614s

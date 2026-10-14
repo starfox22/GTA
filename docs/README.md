@@ -19,7 +19,9 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/places-monarch-and-county.md | Monarch Isle and MONARCH ONE, Ridgeline villages and the 4x4 club, Fort Sentinel and the Apache, the stadium and GOALLINE, MONARCH MOTORS |
 | areas/vehicles-and-driving.md | Vehicle specs, handling, brakes and assists, crashes, riders, cliffs, aircraft (models: -models.md) |
 | areas/vehicles-and-driving-models.md | Vehicle models: the damage contract, draw calls and the pristine merge, body impostors, flagships |
-| areas/vehicles-and-driving-models-assets.md | Downloaded vehicle models: the converter, asset cars, the Crown Vic patrol body, asset motorbikes |
+| areas/vehicles-and-driving-models-assets.md | Downloaded vehicle models: the converter, asset cars, the Crown Vic patrol body, boats |
+| areas/vehicles-and-driving-models-motorcycles.md | Motorcycle models: downloaded parts, source unsteering, measured rolling axles, steering/lock/spin, flat tyres and real-size mud contacts |
+| areas/vehicles-and-driving-models-military.md | Military geometry kits, original HMMWV lamp lenses, matte finishes, steering and far LOD |
 | areas/vehicles-and-driving-models-aircraft.md | Downloaded aircraft: the SKYRANGER 429 civil helicopter, the SKYLARK 172 light aircraft |
 | areas/vehicles-and-driving-models-heavy.md | Downloaded models, round three: converter knobs (stretch, paintTex, clustering, atlas weights), the police bodies by model (POLICE_ASSET_TYPES), trucks, bus, ambulance, convertible, limousine, Vinny's truck on a downloaded cab, Fort Sentinel's HMMWV, M35 and tank (ASSET MILITARY) |
 | areas/vehicles-and-driving-cabins.md | Car cabins: see-through glass, the seat plan fitted round the drawn head (`cabinHeadroom`), seated occupants, the drive-by seat, rear badges |
@@ -40,7 +42,8 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/police-and-combat-armour.md | NPC body armour: soft vests and plates by calibre and hit zone, shots to kill per weapon, no knock-back from rounds |
 | areas/police-and-combat-driveby.md | Drive-bys: firing arcs per window and body, the aim clamp, the rear screen, the lean-out pose |
 | areas/police-and-combat-mounted.md | Mounted guns: the LAV-8's 25 mm and coax, the gun jeep's .50 cal, the Black Hawk's door guns |
-| areas/missions-and-demo.md | Mission list and lifecycle, adding a mission, saves, the demo build, RESTART CURRENT JOB and the story index |
+| areas/missions-and-demo.md | Mission list and lifecycle, adding a mission, harbor/hotel mission contracts |
+| areas/missions-and-demo-campaign.md | Campaign saves, public demo gates, story frontier, retry, replay and abandon |
 | areas/missions-and-demo-godmode.md | God mode (the cheat, its panel, teleport) and skipping a cab, train or liner ride |
 | areas/missions-and-demo-world-reset.md | The world reset on WASTED, BUSTED and a new game (never on taking a job): triggers, what resets, what is kept |
 | areas/missions-and-demo-mission1.md | Mission 1's look: Vinny's truck model (livery, lamps, crate slots), the yellow payphone and its dressing, and the story payphones on every island |
@@ -66,7 +69,8 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/rendering-sky.md | The sky dome and environment map (one sky), the sky's sun, the chase view's aerial haze (`cityHaze*`), sun glare and shafts |
 | areas/rendering-vehicle-lights.md | Vehicle lamps: CAR LAMPS, the drive light map, beam shadows, beams on slopes and the terrain horizon |
 | areas/rendering-clouds.md | The cloud layer's altitude by weather and area (`cloudBaseAt`), the march, the veil, wisps and lens in cloud, cloud shadows |
-| areas/ui-and-settings.md | Input actions, settings, HUD and the interaction prompt, touch, bike share |
+| areas/ui-and-settings.md | Input actions, settings, page fragments, touch and bike share |
+| areas/ui-and-settings-hud.md | HUD/maps, prompt arbitration, DOM write guards, notices, clearance and movement readouts |
 | areas/testing-and-console.md | Checks, the headless browser and slots, the dev server, writing tests, tours |
 | console/README.md | `window.DeadEndCity` rules (named methods only, adding one) and the index of the per-group method tables in console/ |
 | changes/ | Changelog fragments, one per change (see changes/README.md) |

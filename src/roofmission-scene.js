@@ -66,7 +66,8 @@
         ],
         [
           [128, 300],
-          [212, 296],
+          // The front of the DJ booth is y 298; keep the walking margin clear.
+          [212, 286],
           [212, 214],
         ],
       ];

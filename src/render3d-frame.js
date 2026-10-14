@@ -273,7 +273,11 @@
                   wakeEmit(c, c.x, c.y, c.a, c.speed, boatSpec.l, boatSpec.w, boatSpec.max || 300, !underBridge);
                 if (m.boatUpdate) m.boatUpdate(c);
               }
-              for (const { wheel, radius } of m.wheels) wheel.rotation.z -= (c.speed * deltaSeconds) / (radius || 5 * (m.modelScale || 1));
+              if (m.militaryWheels) {
+                animateMilitaryWheels(c, m, deltaSeconds);
+                animateMilitaryLamps(c, m);
+              }
+              else if (!m.bikeUpdate) for (const { wheel, radius } of m.wheels) wheel.rotation.z -= (c.speed * deltaSeconds) / (radius || 5 * (m.modelScale || 1));
             }
             // Blood on the bodywork (carblood3d.js; the records are c.stains).
             if (c.stains || m.bloodSkin) updateCarBlood(c, m);
@@ -309,6 +313,13 @@
             chaseVehicleParts(c, m);
           }
           endVehicleImpostors();
+          // Finish the chassis pose before copying rider/occupant matrices.
+          // Otherwise bodies on hills tilt after their people have been uploaded.
+          for (const [c, m] of carModels)
+            if (m.group.visible && !isAircraft(c) && !isBoat(c)) {
+              m.body.rotation.x += c.slopeRoll || 0;
+              m.body.rotation.z += c.slopePitch || 0;
+            }
           // Riders on the vehicles just posed, then the people's instance upload (crowd3d.js).
           finishCrowd3D(deltaSeconds);
           lap = profileLap('r:vehicles', lap);
@@ -321,11 +332,6 @@
           updateOffroadVisuals(deltaSeconds);
           // Smoke, dust and road spray off the tyres (tyresmoke3d.js).
           updateTyreSmoke(deltaSeconds);
-          for (const [c, m] of carModels)
-            if (m.group.visible && !isAircraft(c) && !isBoat(c)) {
-              m.body.rotation.x += c.slopeRoll || 0;
-              m.body.rotation.z += c.slopePitch || 0;
-            }
           // Marks on vehicles, debris, knocked furniture and decal uploads (damage3d.js).
           updateDamageVisuals(deltaSeconds);
           lap = profileLap('r:damage', lap);

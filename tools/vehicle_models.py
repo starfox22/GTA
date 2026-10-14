@@ -164,12 +164,20 @@ MODELS = [
     # the bars' lowest y and rearmost x, `seat`: the saddle's x, `pegs`: [x, y, z] (metres, the game frame).
     # The NOMAD CRUISER ('cruiser'): a 2015 Seventy-Two chopper by the same author (ape-hanger bars, forward controls).
     dict(type='cruiser', kind='moto', front='+z', length=2.45, texWeight=0.6, keep=dict(trim=0.12, paint=0.3, wheel=0.12, lamp=0.4), borderCos=0.7,
+         # Measured from the converted source tyres: retain the source's small display lean while rolling
+         # about its true axle (front, rear), rather than wobbling about the bike's nominal +Z.
+         wheelAxes=[[-0.02346499917588191, 0.041217707839917045, 0.9988746139401579],
+                    [0.0006549456739837876, 0.043582761191437204, 0.9990496053615628]],
          title='Harley-Davidson Seventy-Two HD FXT 2015', author='Alex.Ka.',
          src='dl3/hd72/scene.gltf', url='https://sketchfab.com/3d-models/harley-davidson-seventy-two-hd-fxt-2015-15e67a3076494bb99ba7504c9913ceb5',
          roles=[(r'^body_color$', 'paint'), (r'^tire$', 'tyre'), (r'^(headlight|brakelight)$', 'lamp'), (r'^wingblackmate$', 'drop')],
          # Modelled with the bars turned (`unsteer`, tools/vehicle_models_moto.py): turned straight first.
          unsteer=dict(top=(0.43, 1.0), rake=32, angle=-26.25, above=1.05, wide=(0.9, 0.3)), fork=dict(sphere=1.25), barsWide=(0.9, 0.3),
          dropBox=[((-0.45, -0.01, -0.33), (-0.36, 0.33, -0.15))],
+         # Actual rubber-grip axes, negative-Z then positive-Z. The widest
+         # high source vertices were rear grab bars, not the steering grips.
+         grip=(0.16442, 1.216375, 0.33892),
+         grips=[[0.17248, 1.20221, -0.39207], [0.15636, 1.23054, 0.28577]],
          axis=(0.43, 1.0), bars=(0.0, 1.05), seat=-0.4, pegs=[0.25, 0.33, 0.3]),
     dict(type='bike', kind='moto', front='+z', keep=dict(trim=0.16, paint=0.3, wheel=0.1, lamp=0.35), borderCos=0.7, title='Honda CB 750 F Super Sport 1970', author='Alex.Ka.',
          src='mirror/cb750/scene.gltf',
@@ -177,6 +185,10 @@ MODELS = [
          roles=[(r'(?i)^boby$', 'paint'), (r'(?i)^tire$', 'tyre'), (r'(?i)^headlights$|^brakelight$', 'lamp'), (r'(?i)^hondabac$', 'drop')],
          unsteer=dict(top=(0.37, 1.0), rake=30, angle=-30, above=1.0, wide=(0.9, 0.3)), fork=dict(sphere=1.2, reach=0.12), barsWide=(0.9, 0.3),
          dropBox=[((-0.30, -0.01, -0.145), (-0.12, 0.28, 0.145))],
+         # Cylinder axes fitted to the retained rubber grip surfaces; the
+         # automatic outermost-high-vertex pick incorrectly selected mirrors.
+         grip=(0.289605, 1.0617, 0.32586),
+         grips=[[0.28578, 1.06470, -0.32901], [0.29343, 1.05870, 0.32271]],
          axis=(0.37, 1.0), bars=(0.0, 1.0), seat=-0.25, pegs=[-0.05, 0.33, 0.2],
          # The maker's name: the tank badge left out (hondabac), the brake hub's and the side cover's painted over.
          erase={'bolts_baseColor.jpeg': [(0.48, 0.28, 0.76, 0.42), (0.0, 0.0, 0.34, 0.26)], 'hondabac_baseColor.png': [(0.46, 0.56, 0.78, 0.78)]}),
@@ -185,6 +197,8 @@ MODELS = [
     # plastics' texture was exported under a darkening colour factor (`baseColor`); the maker's four small logos on
     # the graphics are painted over (`erase`).
     dict(type='kr500', kind='moto', front='+z', texWeight=0.5, keep=dict(trim=0.1, paint=0.3, wheel=0.1, lamp=0.5), borderCos=0.7,
+         wheelAxes=[[-0.021675173438157946, 0.03918431926516561, 0.9989968848700937],
+                    [-0.0002932941459499877, 0.06187659976993649, 0.998083764209926]],
          title='KTM Dirt Bike', author='OCTbuilds', src='mirror/ktm_dirt_bike/scene.gltf',
          url='https://sketchfab.com/3d-models/ktm-dirt-bike-e31415580d7a4a0d95ebd53895566b8f',
          roles=[(r'^Orange_Plastics$', 'paint'), (r'^Tyres$', 'tyre'), (r'^Rims$', 'rim'), (r'^(Glass|Red_Reflector)$', 'lamp')],

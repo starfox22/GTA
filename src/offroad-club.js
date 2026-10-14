@@ -541,8 +541,9 @@
         const speed = c.speed || 0,
           kmh = speed / KMH,
           heading = (i) => Math.atan2(path[Math.min(n, i + 1)][1] - path[Math.min(n, i)][1], path[Math.min(n, i + 1)][0] - path[Math.min(n, i)][0]),
-          // In a hairpin, follow the line closely (a long look cuts across the bank inside it).
-          tight = Math.abs(normalizeAngle(heading(idx + 6) - heading(idx))) > 1.1,
+          // Uphill rounded hairpins turn about half a radian over six dense path samples. Follow their
+          // line closely before the long look pulls the pilot onto a bank; retain the descent's look.
+          tight = Math.abs(normalizeAngle(heading(idx + 6) - heading(idx))) > (down ? 1.1 : 0.45),
           look = Math.min(n, idx + (tight ? 2 : 4 + Math.floor(Math.max(0, kmh) / 8))),
           [tx, ty] = path[look],
           err = normalizeAngle(Math.atan2(ty - c.y, tx - c.x) - c.a);

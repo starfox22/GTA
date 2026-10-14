@@ -1,0 +1,47 @@
+{
+  "note": "Frozen inputs; hashes alone do not claim a rendered check has run. Per-run capture report records the actual supplied HTML hash.",
+  "baseline": "dist/review-2026-10-13-before.html",
+  "after": "dist/review-2026-10-14-ready.html",
+  "inputs": {
+    "dist/review-2026-10-13-before.html": {
+      "purpose": "baseline capture",
+      "bytes": 64093394,
+      "sha256": "9b2a5633fdad0f37579d3bee505d8b55f1efddba095872e3e591ea9f8069c41b"
+    },
+    "dist/review-2026-10-13-final.html": {
+      "purpose": "original full logic-suite snapshot",
+      "bytes": 64116841,
+      "sha256": "b5c774e071fe74415e3715c0522dffea17ef21c5b5bf9fe2794905d7067cf26e"
+    },
+    "dist/review-2026-10-13-render-final.html": {
+      "purpose": "earlier final rendered snapshot; superseded by shipping",
+      "bytes": 64117294,
+      "sha256": "fa8497d89f2f1104a5fbbc0ca40a716bab5ef167de8da3b8487eca9558009e05"
+    },
+    "tools/motorcycle-render-review.mjs": {
+      "purpose": "portable matching18-stage named-method fixture; comments distinguish actual tyre flags",
+      "bytes": 8565,
+      "sha256": "5bcecd43f1956bc018706859a2c326c312d61973d003baf3ac66229a83e7bf96"
+    },
+    "dist/review-2026-10-13-shipping.html": {
+      "purpose": "earlier render candidate; superseded after rider grip calibration",
+      "bytes": 64119138,
+      "sha256": "2399af32b917bf9f05be600257742cdea4c64e6454ab45cea57c1efd08b89c11"
+    },
+    "dist/review-2026-10-14-ready.html": {
+      "purpose": "final frozen motorcycle rendered capture input",
+      "bytes": 64120512,
+      "sha256": "b8d8713019cbb4d265496897859b2d2a11bd38edcf3e319c48b2dbffe9069b4f"
+    },
+    "tools/motorcycle-puncture-render-review.mjs": {
+      "purpose": "supplemental fixed40-shot actual-puncture chase fixture",
+      "bytes": 5583,
+      "sha256": "87df176b01ca66f30ce38fe169d199646e0bff5c9693e8f33a082eec858b73a2"
+    },
+    "assets/vehicle-models.bin": {
+      "purpose": "actual-pack70wheel/31289M4 host check input after CB/cruiser paired-grip calibration",
+      "bytes": 5274832,
+      "sha256": "63908560d08068f6b6df9859b9bb6040ad38028c2a0d9a0268f7d9cd4c2649ae"
+    }
+  }
+}

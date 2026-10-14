@@ -1,0 +1,98 @@
+{
+  "reviewedAt": "2026-10-14",
+  "model": "kr500",
+  "scope": "Read-only packed geometry, normals and atlas analysis; no browser, source fix or asset mutation.",
+  "units": "Model-space metres; x forward, y up, z across the vehicle.",
+  "decision": "Preserve the existing authored KR500 grip hint. The negative rubber grip does not provide a defensible paired cylindrical fit in this simplified packed mesh.",
+  "authoredGrip": [0.27, 1.21, 0.35],
+  "assets": {
+    "vehicle-models.bin": {
+      "sha256": "63908560d08068f6b6df9859b9bb6040ad38028c2a0d9a0268f7d9cd4c2649ae",
+      "format": "DECVM001; position i16 decoded with models.kr500.quant; normals i8 divided by 127; UV u16 divided by 65535."
+    },
+    "vehicle-atlas.webp": {
+      "sha256": "1dbbb7ea292956c3280e52c0d8121dc47d009bfe043717d1d2c55d90c87865f2",
+      "sampleMethod": "Nearest packed vertex UV pixel, RGB. Vertex samples alone do not identify a source material."
+    }
+  },
+  "method": "For each narrow shaft ring, take the axis as the smallest right singular vector of its packed vertex normals. Project the positions onto the perpendicular plane, solve a circle by linear least squares, and retain the mean axial coordinate. These are shaft cross sections, not independently proven rubber-grip midpoints.",
+  "shaftRings": [
+    {
+      "side": "negative-z",
+      "part": "steer.trim",
+      "vertexIds": [349, 350, 351, 359, 360, 361, 362, 374, 375],
+      "atlasRGB": [61, 61, 61],
+      "center": [0.26292657, 1.20593259, -0.36253026],
+      "axis": [0.17477073, 0.02008986, 0.98440418],
+      "radius": 0.01515110,
+      "normalSingularValues": [2.31537698, 1.91068454, 0.00969696],
+      "maximumCircleResidual": 0.0000343,
+      "residuals": [0.0000217656, 0.0000105330, 0.0000161795, 0.0000012276, 0.0000059040, 0.0000177293, 0.0000010527, 0.0000264958, 0.0000342864]
+    },
+    {
+      "side": "positive-z",
+      "part": "steer.trim",
+      "vertexIds": [355, 356, 357, 365, 366, 367, 371, 372, 378],
+      "atlasRGB": [61, 61, 61],
+      "center": [0.24924011, 1.23112610, 0.27849817],
+      "axis": [-0.21549555, 0.05612713, 0.97489046],
+      "radius": 0.01514306,
+      "normalSingularValues": [2.37151609, 1.84193409, 0.01335146],
+      "maximumCircleResidual": 0.0000298,
+      "residuals": [0.0000119598, 0.0000046992, 0.0000215874, 0.0000141365, 0.0000115302, 0.0000292752, 0.0000274337, 0.0000191560, 0.0000297678]
+    }
+  ],
+  "positiveRubberBound": {
+    "part": "steer.trim",
+    "atlasRGB": [17, 17, 17],
+    "outerVertexIds": [475, 476, 477, 482],
+    "outerAxialCoordinatesFromShaftRing": [0.12886, 0.12884, 0.12302, 0.14309],
+    "outerRadialDistancesFromShaftAxis": [0.01967, 0.01945, 0.01947, 0.02014],
+    "innerFlangeAxialRange": [0.00297, 0.00690],
+    "representativeInnerFlangePlane": 0.0067,
+    "representativeOuterEndPlane": 0.132,
+    "boundedMidpoint": [0.23429549, 1.23501852, 0.34610682],
+    "longitudinalUncertainty": "Approximately +/- 0.007 m from sparse outer points and simplification; this is a bounded inference, not an exact authored grip coordinate.",
+    "limit": "Only four surviving outer tube points. The radius and position are consistent with the positive shaft axis, but vertex colours and simplified end geometry cannot identify the original rubber surface exactly."
+  },
+  "negativeGeometryFollowup": {
+    "status": "Suspected grip/shaft discontinuity; causal explanation unconfirmed.",
+    "shaftOutlier": {
+      "part": "trim",
+      "vertexId": 758,
+      "position": [0.113370, 1.119701, -0.330029],
+      "normal": [-0.228, -0.898, 0.378],
+      "atlasRGB": [61, 61, 61],
+      "distanceFromMeasuredNegativeShaftAxis": 0.17562002,
+      "triangles": [
+        {"triangleIndexZeroBased": 1421, "vertexIds": [754, 758, 755]},
+        {"triangleIndexZeroBased": 1422, "vertexIds": [756, 757, 758]}
+      ],
+      "sharedPositionsAcrossParts": [
+        {"trimVertex": 755, "steerTrimVertex": 375, "position": [0.273853, 1.195760, -0.365024]},
+        {"trimVertex": 757, "steerTrimVertex": 360, "position": [0.252803, 1.194751, -0.360971]}
+      ]
+    },
+    "rubberLongTriangle": {
+      "part": "steer.trim",
+      "triangleIndexZeroBased": 1000,
+      "vertexIds": [491, 493, 492],
+      "positions": [
+        [0.258529, 1.175459, -0.350076],
+        [0.297698, 1.191381, -0.345674],
+        [0.119264, 1.107209, -0.301223]
+      ],
+      "atlasRGB": [17, 17, 17]
+    },
+    "lowEndVertexIds": [492, 501, 505, 506, 508, 509, 510, 511, 512],
+    "lowEndBounds": [[0.111046, 1.106120, -0.331148], [0.166213, 1.146137, -0.283849]],
+    "fitLimit": "Broad colour/spatial selection mixes flange, controls and low-end geometry. An unrestricted cylinder fit has multiple local solutions and inconsistent packed surface normals, so its centre is not a reliable grip anchor.",
+    "suspectedConverterCause": {
+      "source": "tools/vehicle_models_moto.py:unsteer",
+      "relatedConfiguration": "tools/vehicle_models.py: KR500 unsteer top=(0.36,0.98), rake=26.5, angle=-26.25, above=1.12, wide=(0.95,0.28).",
+      "hypothesis": "The triangle-wide ahead/above/wide thresholds may rotate only part of the original negative grip/shaft vertices before packed trim/steer partitioning, leaving long triangles across a transformed boundary. Source geometry or an isolated converter reproduction is needed to confirm this hypothesis.",
+      "notEstablished": "No original source glTF comparison, converter reproduction or rendered visual confirmation was performed in this follow-up."
+    }
+  },
+  "implementationChanges": "None. Authored KR500 hint remains unchanged."
+}

@@ -1,0 +1,23 @@
+[
+  {
+    "file": "m4-wheel-partition",
+    "assertions": 31289,
+    "notes": [
+      "2389 source triangles = 2128 rolling + 261 fixed; rest max error 4.665e-7u; all source normals/UVs exact; 48 spin phases per wheel; [{\"wheel\":0,\"at\":[1.7261375807285309,0.43411974403858183,0.9090009858489037],\"radius\":0.4341118186712265,\"sourceTriangles\":549,\"rollingTriangles\":532,\"fixedTriangles\":17,\"sourceCenterM\":[0.00003758072853088379,0.000019744038581848145,-0.000299014151096344],\"previousCircleOrbitM\":0.00008483576978290941,\"correctedCircleOrbitM\":0},{\"wheel\":1,\"at\":[1.7261375797748566,0.43411974403858183,-0.902394918268919],\"radius\":0.4341118186712265,\"sourceTriangles\":562,\"rollingTriangles\":532,\"fixedTriangles\":30,\"sourceCenterM\":[0.11353757977485657,0.000019744038581848145,-0.01779491826891899],\"previousCircleOrbitM\":0.22707515954971313,\"correctedCircleOrbitM\":0},{\"wheel\":2,\"at\":[-1.4255351285815239,0.4342473226070404,0.9079786788105965],\"radius\":0.43412598967552185,\"sourceTriangles\":647,\"rollingTriangles\":532,\"fixedTriangles\":115,\"sourceCenterM\":[-0.3547351285815239,-0.045052677392959595,-0.00032132118940353394],\"previousCircleOrbitM\":0.7151617496207023,\"correctedCircleOrbitM\":0},{\"wheel\":3,\"at\":[-1.4255351553380489,0.4342473358154297,-0.9013726065874099],\"radius\":0.43412598967552185,\"sourceTriangles\":631,\"rollingTriangles\":532,\"fixedTriangles\":99,\"sourceCenterM\":[-0.35433515533804893,-0.04515266418457031,0.00032739341259002686],\"previousCircleOrbitM\":0.7143947485772043,\"correctedCircleOrbitM\":0}]"
+    ]
+  },
+  {
+    "file": "military-model-rig",
+    "assertions": 468,
+    "notes": [
+      "Original 156 lamp triangles reassigned; no geometry/texture replacement; two military kits reused across 20 repeated spawns."
+    ]
+  },
+  {
+    "file": "mission-modal-input",
+    "assertions": 8,
+    "notes": [
+      "Corrected actual mouse.alt fixture: baseline and previous render candidate each fail 2/8; publication source passes 8/8. See modal-input-host.json."
+    ]
+  }
+]

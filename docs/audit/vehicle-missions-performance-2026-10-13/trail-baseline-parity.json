@@ -1,0 +1,75 @@
+{
+  "before": {
+    "html": "/workspace/GTA/dist/trail-probe-page.html",
+    "flags": "dev&norender&seed=1&hold",
+    "sha256": "9b2a5633fdad0f37579d3bee505d8b55f1efddba095872e3e591ea9f8069c41b",
+    "utc": "2026-10-13T23:51:57.055Z",
+    "fixture": "fresh seeded1 held world; one crawler reused for 1/30 climb,1/60 climb,1/30 descent and rest as original test",
+    "originalHTML": "/workspace/GTA/dist/review-2026-10-13-before.html",
+    "originalSHA256": "9b2a5633fdad0f37579d3bee505d8b55f1efddba095872e3e591ea9f8069c41b"
+  },
+  "after": {
+    "html": "/workspace/GTA/dist/trail-probe-page.html",
+    "flags": "dev&norender&seed=1&hold",
+    "sha256": "b5c774e071fe74415e3715c0522dffea17ef21c5b5bf9fe2794905d7067cf26e",
+    "utc": "2026-10-13T23:53:58.878Z",
+    "fixture": "fresh seeded1 held world; one crawler reused for 1/30 climb,1/60 climb,1/30 descent and rest as original test",
+    "originalHTML": "/workspace/GTA/dist/review-2026-10-13-final.html",
+    "originalSHA256": "b5c774e071fe74415e3715c0522dffea17ef21c5b5bf9fe2794905d7067cf26e"
+  },
+  "strictEqualStages": 3,
+  "strictEqualRest": true,
+  "strictEqualFaults": true,
+  "consoleErrors": 0,
+  "stageHash": "3f2f2cea0a7fb35000c67506b2135879222e3f19d43be9dccf698019c7cbddd5",
+  "results": [
+    {
+      "direction": "up",
+      "dt": 0.03333333333333333,
+      "reason": "summit",
+      "seconds": 72.2,
+      "time": 71.97,
+      "maxBlowMs": 3.1,
+      "blowAt": [
+        7299,
+        1438,
+        2,
+        5.25,
+        18
+      ],
+      "hp": 240
+    },
+    {
+      "direction": "up",
+      "dt": 0.016666666666666666,
+      "reason": "summit",
+      "seconds": 73.8,
+      "time": 73.57,
+      "maxBlowMs": 5.04,
+      "blowAt": [
+        7344,
+        1445,
+        2,
+        4.79,
+        24
+      ],
+      "hp": 237
+    },
+    {
+      "direction": "down",
+      "dt": 0.03333333333333333,
+      "reason": "trailhead",
+      "seconds": 72.9,
+      "time": 73.57,
+      "maxBlowMs": 1.61,
+      "blowAt": [
+        7683,
+        1183,
+        0,
+        0.36,
+        25
+      ],
+      "hp": 237
+    }
+  ]
+}

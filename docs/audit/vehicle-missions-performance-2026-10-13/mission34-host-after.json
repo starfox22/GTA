@@ -1,0 +1,8 @@
+{
+  "assertions": 30,
+  "failures": [],
+  "notes": [
+    "production mission functions: carrier protection restored, pre-bag wreck failure, recovered bag survives wreck/death, corpse keys retained, pre-papers alarm fails and post-papers escape retained",
+    "meeting update loop: 30 identical target snapshots cause one HUD refresh; moving x, roof height and wanted text still refresh"
+  ]
+}

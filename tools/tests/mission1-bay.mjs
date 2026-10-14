@@ -55,9 +55,14 @@ export default async function (t) {
     const prompt = await leave(t);
     t.near(prompt, 33, 62, 'prompt run: truck health % at the barrier');
 
-    // The hesitant first try.
-    let m = await t.call('retryMission');
-    t.assert(m.index === 0 && m.stage === 0, 'the retry did not restart the job: ' + JSON.stringify(m));
+    // Independent first-try balance scenario. A retry deliberately preserves
+    // the gang's casualties/positions, so it cannot reset this combat fixture.
+    // Retry continuity itself is covered by mission-world-preservation.
+    await t.reload();
+    await t.call('holdSimulation', true);
+    await t.call('god', false);
+    await t.call('startMission', 0);
+    let m;
     await toBay(t);
     await t.call('interact'); // still rolling: "Stop the truck inside the marked loading bay."
     await stop(t);

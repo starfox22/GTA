@@ -1,0 +1,150 @@
+{
+  "packedAssetSha256": "63908560d08068f6b6df9859b9bb6040ad38028c2a0d9a0268f7d9cd4c2649ae",
+  "geometryPayloadSha256": "9c84efee358a7d53354bb67a34a233bb32d8efda9c20bb1c818775322cfdff02",
+  "bodySpaceUnits": "metres, negative-Z then positive-Z",
+  "decodedPositionFormula": "(q+32767)/65534 * quant[3:] + quant[:3]",
+  "bike": {
+    "grips": [
+      [
+        0.2858,
+        1.0647,
+        -0.329
+      ],
+      [
+        0.2934,
+        1.0587,
+        0.3227
+      ]
+    ],
+    "evidence": [
+      {
+        "point": [
+          0.28578,
+          1.0647,
+          -0.32901
+        ],
+        "axis": [
+          0.35111,
+          0.22955,
+          0.90776
+        ],
+        "radius": 0.01437,
+        "points": 22,
+        "rms": 0.0012,
+        "medianResidual": 0.00097,
+        "bbox": [
+          [
+            0.25778,
+            1.03805,
+            -0.38797
+          ],
+          [
+            0.32575,
+            1.07967,
+            -0.26274
+          ]
+        ]
+      },
+      {
+        "point": [
+          0.29343,
+          1.0587,
+          0.32271
+        ],
+        "axis": [
+          -0.40097,
+          -0.1084,
+          0.90966
+        ],
+        "radius": 0.01444,
+        "points": 46,
+        "rms": 0.00106,
+        "medianResidual": 0.00091,
+        "bbox": [
+          [
+            0.25104,
+            1.0358,
+            0.25152
+          ],
+          [
+            0.32595,
+            1.07936,
+            0.39365
+          ]
+        ]
+      }
+    ],
+    "oldGrip": [
+      0.2699,
+      1.2579,
+      0.4431
+    ],
+    "partitionCaveat": {
+      "steerTrimUniqueRubberPoints": 22,
+      "bodyTrimUniqueRubberPoints": 13,
+      "bodyTrimIndexedPoints": 18,
+      "note": "Steering surface contains all fitted left rubber samples; body trim duplicates some crossing control/cable positions."
+    }
+  },
+  "cruiser": {
+    "grips": [
+      [
+        0.1725,
+        1.2022,
+        -0.3921
+      ],
+      [
+        0.1564,
+        1.2305,
+        0.2858
+      ]
+    ],
+    "evidence": [
+      {
+        "point": [
+          0.17248,
+          1.20221,
+          -0.39207
+        ],
+        "axis": [
+          0.55431,
+          0.42589,
+          0.71509
+        ],
+        "radius": 0.01967,
+        "points": 52,
+        "rms": 0.00277,
+        "medianResidual": 0.00333
+      },
+      {
+        "point": [
+          0.15636,
+          1.23054,
+          0.28577
+        ],
+        "axis": [
+          -0.58289,
+          -0.3702,
+          0.72332
+        ],
+        "radius": 0.01931,
+        "points": 58,
+        "rms": 0.00281,
+        "medianResidual": 0.00312
+      }
+    ],
+    "oldGrip": [
+      -0.9707,
+      1.1817,
+      0.5949
+    ]
+  },
+  "kr500": {
+    "grip": [
+      0.27,
+      1.21,
+      0.35
+    ],
+    "decision": "Preserve authored hint; no defensible paired grip midpoint yet."
+  }
+}

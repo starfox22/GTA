@@ -1,0 +1,33 @@
+{
+  "source": "main-bde9ee4",
+  "assertions": 69,
+  "failures": [
+    "taking the cargo job revived/moved/healed ambient Harbor Kings",
+    "retrying the cargo job changed ambient gang damage/position",
+    "live payphone call removed existing harbor police",
+    "live payphone call deleted an existing officer round",
+    "incoming chase turned into a harbor safe zone",
+    "a clean live call removed existing ambient police",
+    "depot cleanup deleted retained vehicle 1",
+    "depot cleanup deleted retained vehicle 2",
+    "depot cleanup removed ambient crew or retained deleted-car crew",
+    "gate camera erased an incoming five-star chase",
+    "sealed depot patrol crew appeared across the shutter",
+    "sealed depot patrol crew appeared across the shutter",
+    "sealed depot swat crew appeared across the shutter",
+    "hotel bay replaced ordinary car during job start",
+    "replacement limousine overlaps a retained car",
+    "hotel bay replaced owned car during job start",
+    "replacement limousine overlaps a retained car",
+    "hotel bay replaced owned car during initial dressing",
+    "replacement limousine overlaps a retained car",
+    "TITO MARCHETTI patrol leg 0 cannot route around rooftop cover",
+    "TITO MARCHETTI patrol goal 1 overlaps rooftop cover",
+    "TITO MARCHETTI patrol leg 1 cannot route around rooftop cover",
+    "watched glass changed suspicion 95 to 90, expected 95",
+    "stuck ambulance cut into view while ambulance was visible",
+    "visible stuck ambulance deployed crew before parking",
+    "stuck ambulance cut into view while stop was visible",
+    "visible stuck ambulance deployed crew before parking"
+  ]
+}

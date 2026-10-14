@@ -1,0 +1,6 @@
+reused dev server (rebuilt, reloaded ?dev&norender: boot 21.8s)
+PASS chase-aim (5.9s)
+     camera 0: aim off the camera's heading (deg) 2 · camera 120: aim off the camera's heading (deg) 2 · camera -100: aim off the camera's heading (deg) 2 · at the wheel looking left: aim off -90 (deg) 9 · drive-by: {"window":"left","relDeg":-103,"aim":"clear","out":1} · drive-by aim off the nose (deg from -90) 13
+FAIL chase-move-keys (5.8s): KeyD moved the player only 0.88 m
+     W held across the switch: off north (deg) 0 · W held across the switch: the camera off behind the run (deg) 0 · after the switch: W off the camera's heading (deg) 0 · after six switches: KeyW off the camera's 0 deg (deg) 0 · after six switches: the camera turned during KeyW (deg) 1
+1/2 passed, 0 skipped, 1 failed in 34s

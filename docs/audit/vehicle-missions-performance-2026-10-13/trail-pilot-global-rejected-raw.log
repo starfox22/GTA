@@ -1,0 +1,11 @@
+{"frame":0.03333333333333333,"reason":"summit","maxBlowMs":2.2,"blowAt":[8056,1583,3,0.18,22],"seconds":72.8,"hp":240}
+{"frame":0.016666666666666666,"reason":"summit","maxBlowMs":1.97,"blowAt":[7897,1387,3,0.29,24],"seconds":75.2,"hp":240}
+file:///tmp/GTA-qa13-suite1/trail-raw.mjs:22
+console.log(JSON.stringify({downReason:down.reason,maxBlowMs:down.ride.maxBlowMs,blowAt:down.ride.blowAt,restPitch:second.pitchDeg,restRoll:second.rollDeg}));
+                                                                                                                          ^
+
+TypeError: Cannot read properties of null (reading 'pitchDeg')
+    at file:///tmp/GTA-qa13-suite1/trail-raw.mjs:22:123
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+
+Node.js v24.19.0

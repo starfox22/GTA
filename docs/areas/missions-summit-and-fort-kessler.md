@@ -50,3 +50,7 @@ and the tail. The trunk, the uniform, Fort Sentinel and the meeting: missions-su
   carjacked, crashed or parked Kessler is still `fortKessler(m)`; the crowd streamer never moves him
   (`streamableWalker`). His walk to the door is `p.missionWalk`, run by `updateMissionWalker` (game-people.js) until
   a reaction takes over; at the door he leaves the world.
+- Destroying his car before taking the bag fails the job with a uniform-and-ID loss message and the normal
+  saved retry route. A wreck's trunk cannot be picked. After `m.bag` is true the player keeps it even if the car
+  is destroyed or a still-living Kessler later dies; that death never sends the gate/records/meeting back to keys.
+  A dead Kessler still offers his keys before bag recovery. Test: tools/tests/mission34-lifecycle.mjs.

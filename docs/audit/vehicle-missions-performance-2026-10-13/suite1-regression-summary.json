@@ -1,0 +1,85 @@
+{
+  "html": "dist/review-2026-10-13-final.html",
+  "sha256": "b5c774e071fe74415e3715c0522dffea17ef21c5b5bf9fe2794905d7067cf26e",
+  "original": {
+    "selected": 104,
+    "passed": 91,
+    "skipped": 7,
+    "failed": 6,
+    "seconds": 3722
+  },
+  "failures": {
+    "vehicle-material-lifecycle": {
+      "type": "fixture coverage missing new finish pool",
+      "recheck": "PASS; all 4 kinds tested, every pool 12, actual overflow 32"
+    },
+    "soundscape": {
+      "type": "shared world contamination; fresh independent sidewalk required",
+      "recheck": "PASS; 9 steps/2.00 stepped game seconds with actual running audio context"
+    },
+    "lockpick": {
+      "type": "real walltime holds advanced insufficient capped game time under load",
+      "recheck": "PASS; unchanged pin counts, crouch, ownership assertions; original 10 holds .93 trunk progress, 11th open 5.94 game seconds"
+    },
+    "driveby-mouse": {
+      "type": "real input holds/live game time under load",
+      "recheck": "PASS final actual runner 24.2 s; all rear/front glass/refusal/sidewindow assertions retained",
+      "intermediateFailuresPreserved": true
+    },
+    "hud-touch-dispatch": {
+      "type": "expired transient incoming call/caption or CSS visibility race under load",
+      "recheck": "PASS final actual runner 22.6 s; actual mission card and FIRST card/caption visibility pair before geometry assertion; original height/gap bounds retained",
+      "intermediateFailuresPreserved": true
+    },
+    "hillclimb-physics": {
+      "type": "preexisting unsafe console-only uphill pilot line; full baseline/review three-stage outputs strictly identical",
+      "baselineMaximumBlowMs": 5.04,
+      "baselineBlowAt": [
+        7344,
+        1445,
+        2,
+        4.79,
+        24
+      ],
+      "sourceChange": "uphill-only close-look threshold 1.1 to 0.45; descent 1.1 unchanged",
+      "recheck": "PASS hillclimb-physics actual normal fresh runner 151.2 s, all original 4.5 m/s and 75-second bounds retained",
+      "rawClimbTimes": [
+        72.57,
+        74.92
+      ],
+      "rawMaximumClimbBlowsMs": [
+        2.2,
+        1.97
+      ],
+      "rawDescentMaximumBlowMs": 0.71,
+      "rejectedGlobalPrototypePreserved": true
+    }
+  },
+  "cumulativeAfterFocusedRechecks": {
+    "passed": 97,
+    "skipped": 7,
+    "unresolvedFailures": 0,
+    "selected": 104,
+    "fullShardNotRepeated": true
+  },
+  "additionalFocusedFoliageCheck": {
+    "passed": true,
+    "seconds": 2.8
+  },
+  "shippingBuild": {
+    "html": "dist/review-2026-10-13-shipping.html",
+    "htmlSHA256": "2399af32b917bf9f05be600257742cdea4c64e6454ab45cea57c1efd08b89c11",
+    "javascript": "dist/review-2026-10-13-shipping.js",
+    "javascriptSHA256": "73e901d11fd94a537f7f9c61286bc7e42c7c8729d1b7cf1a0daa79ceaeab0d3f",
+    "syntaxCheck": "node --check: PASS",
+    "contains": "full frozen current source, including root lamp state update and console-only uphill pilot correction",
+    "renderVerification": "root owns affected final lamp/model/shader checks; no claim of complete GPU or laptop FPS measurement here"
+  },
+  "sourceHashes": {
+    "src/crowd-space.js": "dc088bc526d474363a67f7bc1a70d8f64096aa3a87a30a06b901139a991bd460",
+    "src/physics-step.js": "a06e51b52c7888966eb6d6734b7b0784c732ffc8880b39a238348a6af55295a8",
+    "src/offroad-club.js": "3f0392fdffee03fa2eda1a4a0129270553f28bbaa9bec9aea50707f826cb0939",
+    "src/military-assets3d.js": "de7919181a609cd10d6aa651afdbcd3b751a9abbb4c8210a6de61f88794a4c8f",
+    "src/render3d-frame.js": "4ed32d1b03235d8ee4bb8349eebdea4e6cf24b87c3f16d395a22f20e2cef24ab"
+  }
+}

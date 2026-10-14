@@ -15,8 +15,7 @@ export default async function (t) {
   // Behind: the pointer 12 m back, then the forward key and the fire key held.
   let p = await t.call('driveByScreenPoint', 180, 12);
   await t.mouse(p.x, p.y);
-  await t.keys(['KeyW', 'KeyF'], 2.5, { real: true });
-  r = await t.call('driveBy');
+  r = await realUntil(t, wall => t.keys(['KeyW', 'KeyF'], wall, { real: true }), state => state.stats.shots > 0);
   t.assert(r.stats.shots > 0, 'no shot behind: ' + JSON.stringify(r));
   t.assert(r.window === 'rear' && Math.abs(r.relDeg) > 145, 'the shot behind left another way: ' + JSON.stringify(r));
   t.assert(r.rearGlass === 2 && r.stats.rearScreens === 1, 'rear screen not burst: ' + JSON.stringify(r));
@@ -26,8 +25,8 @@ export default async function (t) {
   // Ahead: the button held while steering (fresh key presses), through the windscreen,
   // which bursts on the first shot.
   p = await t.call('driveByScreenPoint', 0, 14);
-  await t.mouse(p.x, p.y, { seconds: 2.5, down: true, keys: ['KeyW'], taps: ['KeyA'] });
-  r = await t.call('driveBy');
+  t.note('front pointer: ' + JSON.stringify({ point: p, boxes: (await t.call('hudOverlaps')).boxes }));
+  r = await realUntil(t, wall => t.mouse(p.x, p.y, { seconds: wall, down: true, keys: ['KeyW'], taps: ['KeyA'] }), state => state.stats.shots > back);
   // The car keeps turning under a fixed pointer, so later shots may leave by the side
   // window: the windscreen burst proves the first one went ahead.
   t.assert(r.stats.shots > back && r.stats.windscreens === 1, 'no shot ahead: ' + JSON.stringify(r));
@@ -42,13 +41,34 @@ export default async function (t) {
   const before = (await t.call('driveBy')).stats;
   p = await t.call('driveByScreenPoint', 180, 14);
   await t.mouse(p.x, p.y);
-  await t.keys('KeyF', 1, { real: true });
-  r = await t.call('driveBy');
+  r = await realUntil(t, wall => t.keys('KeyF', wall, { real: true }), state => state.stats.refused > before.refused);
   t.assert(r.stats.shots === before.shots && r.stats.refused > before.refused, 'the truck fired straight back: ' + JSON.stringify(r));
   t.assert(Math.abs(r.crossDeg) > 140 && r.out === 0, 'no cross behind the truck (or an arm out): ' + JSON.stringify(r));
   // Out of the side: fires.
   p = await t.call('driveByScreenPoint', -90, 14);
-  await t.mouse(p.x, p.y, { seconds: 2.5, down: true });
-  r = await t.call('driveBy');
+  r = await realUntil(t, wall => t.mouse(p.x, p.y, { seconds: wall, down: true }), state => state.stats.shots > before.shots);
   t.assert(r.stats.shots > before.shots && r.window === 'left', 'the truck did not fire out of its window: ' + JSON.stringify(r));
+}
+
+// The capped live loop may advance only 0.2 game seconds per wall second under headless load.
+// Keep each real mouse/key hold continuous (short releases can interrupt raising the gun), the fixed
+// pointer and all aim/glass/refusal assertions. Calibrate the live clock and bound retries by game/wall time.
+async function realUntil(t, action, done) {
+  const start = (await t.call('frameFaults')).gameTime, wallStart = Date.now();
+  let result;
+  do {
+    const from = (await t.call('frameFaults')).gameTime, sampledAt = Date.now();
+    await t.realWait(0.4);
+    const now = (await t.call('frameFaults')).gameTime,
+      rate = (now - from) / Math.max(0.4, (Date.now() - sampledAt) / 1000),
+      remainingWall = Math.max(0, 20 - (Date.now() - wallStart) / 1000),
+      hold = Math.min(remainingWall, Math.max(2.5, 1 / Math.max(0.05, Math.min(1, rate))));
+    if (hold <= 0) break;
+    await action(hold);
+    result = await t.call('driveBy');
+    const elapsed = (await t.call('frameFaults')).gameTime - start;
+    t.note(`continuous real hold ${hold.toFixed(1)} wall s, ${elapsed.toFixed(2)} game s at ${rate.toFixed(2)} game s/s`);
+    if (done(result) || elapsed >= 2) break;
+  } while (Date.now() - wallStart < 20000);
+  return result || t.call('driveBy');
 }

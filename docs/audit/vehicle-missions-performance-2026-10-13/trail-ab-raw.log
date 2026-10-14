@@ -1,0 +1,11 @@
+before: /workspace/GTA/dist/review-2026-10-13-before.html 9b2a5633fdad0f37579d3bee505d8b55f1efddba095872e3e591ea9f8069c41b
+{"frame":0.03333333333333333,"reason":"summit","maxBlowMs":3.1,"blowAt":[7299,1438,2,5.25,18],"seconds":72.2,"hp":240}
+{"frame":0.016666666666666666,"reason":"summit","maxBlowMs":5.04,"blowAt":[7344,1445,2,4.79,24],"seconds":73.8,"hp":237}
+{"downReason":"trailhead","maxBlowMs":1.61,"blowAt":[7683,1183,0,0.36,25],"restPitch":-3.36,"restRoll":1.43}
+before console errors: []
+after: /workspace/GTA/dist/review-2026-10-13-final.html b5c774e071fe74415e3715c0522dffea17ef21c5b5bf9fe2794905d7067cf26e
+{"frame":0.03333333333333333,"reason":"summit","maxBlowMs":3.1,"blowAt":[7299,1438,2,5.25,18],"seconds":72.2,"hp":240}
+{"frame":0.016666666666666666,"reason":"summit","maxBlowMs":5.04,"blowAt":[7344,1445,2,4.79,24],"seconds":73.8,"hp":237}
+{"downReason":"trailhead","maxBlowMs":1.61,"blowAt":[7683,1183,0,0.36,25],"restPitch":-3.36,"restRoll":1.43}
+after console errors: []
+raw baseline/current complete; current server retained for focused assertions

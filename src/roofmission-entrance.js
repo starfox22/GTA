@@ -53,12 +53,15 @@
       for (const spot of BLUE_HOUR_ENTRANCE.limos) {
         let car = vehicles.find((c) => c.type === 'limousine' && c.blueHourLimo && Math.hypot(c.x - spot.x, c.y - spot.y) < 30);
         if (!car && !(hidden && crowdInView(spot.x, spot.y, 60))) {
-          // A parked car left in the bay by populate() gives way to the hotel's car.
-          for (let i = vehicles.length - 1; i >= 0; i--) {
-            const c = vehicles[i];
-            if (c !== player.car && !c.ai && !c.mission && !c.blueHourLimo && !isAircraft(c) && Math.hypot(c.x - spot.x, c.y - spot.y) < 50)
-              vehicles.splice(i, 1);
-          }
+          // Initial dressing may replace a generic parked car in this bay.
+          // A mission call never removes the player's changes to the city;
+          // an occupied bay simply waits, and owned cars always keep their spot.
+          if (!hidden)
+            for (let i = vehicles.length - 1; i >= 0; i--) {
+              const c = vehicles[i];
+              if (c !== player.car && !c.owned && !c.ai && !c.mission && !c.blueHourLimo && !isAircraft(c) && Math.hypot(c.x - spot.x, c.y - spot.y) < 50)
+                vehicles.splice(i, 1);
+            }
           for (let d = 0; d <= 9 && !car; d += 3)
             if (canSpawnCar('limousine', spot.x, spot.y + d, spot.a, 3)) {
               car = makeCar('limousine', spot.x, spot.y + d, spot.a, false, spot.color);

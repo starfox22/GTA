@@ -1,0 +1,6 @@
+reused dev server (rebuilt, reloaded ?dev&norender: boot 23.1s)
+FAIL driveby-mouse (20.0s): no shot ahead: {"vehicle":"sedan","body":"cabin","front":"glass","rear":"glass","arcs":[{"window":"left","from":-145,"to":-35},{"window":"right","from":35,"to":145},{"window":"front","from":-35,"to":35},{"window":"rear","from":145,"to":215}],"armed":"yes","out":0,"window":null,"relDeg":143,"aim":"clear","pending":false,"cross":false,"crossDeg":0,"frontGlass":0,"rearGlass":2,"windowsDown":{"left":false,"right":true},"stats":{"shots":1,"refused":0,"rearScreens":1,"windscreens":0,"windowsDown":1}}
+     continuous real hold 2.5 wall s, 0.82 game s at 0.43 game s/s · continuous real hold 14.5 wall s, 4.68 game s at 0.07 game s/s
+PASS hud-touch-dispatch (27.6s)
+     street: {"card":{"id":"pager","l":310,"t":54,"r":650,"b":142},"caption":{"id":"radioCaption","l":354,"t":150,"r":606,"b":204}} · chase: {"card":{"id":"pager","l":310,"t":54,"r":650,"b":142},"caption":{"id":"radioCaption","l":354,"t":150,"r":606,"b":204}}
+1/2 passed, 0 skipped, 1 failed in 71s

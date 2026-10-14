@@ -730,7 +730,9 @@ made by tools/vehicle_models.py)
     atlas); the police bodies wear the game's liveries projected over their panels (the Suburban's black and white
     paint told from its trim by colour) with their light bars lit by the game's flash patterns; the trucks' boxes and
     the flatbed's chassis stretched to the game's lengths, the flatbed's box, rear doors and rear lamps left out for
-    the game's own deck; the convertible's paint in the game's colours.
+    the game's own deck; the convertible's paint in the game's colours. October 13 adaptations keep the HMMWV's
+    original lamp triangles as separate working lenses, apply matte coated-body/tyre finishes, and share military
+    geometry between vehicles; these do not replace the authors' meshes or atlas textures.
   (The Abrams M1A2 SEPv3 by dannzjs, converted for the SENTINEL M120 in round three, was taken out again: its
   triangles could not be reduced without breaking it apart, and the tank is the game's own model; it is no longer in
   the files.)
@@ -740,7 +742,12 @@ made by tools/vehicle_models.py)
     Changes: its bars, fork and front wheel turned straight, its side stand left out, split into frame, steering,
     wheels and lamps; the plastics' orange in the game's paint (the white and black graphics kept), the maker's
     logos on the graphics painted over; triangles reduced. The VORTEX 900 and NOMAD CRUISER above likewise had their
-    turned bars and front wheels turned straight and their stands left out.
+    turned bars and front wheels turned straight and their stands left out. October 13: the cruiser and enduro
+    wheel meshes are transformed into their measured rolling-axle frames; a constant carrier restores the original
+    pose at rest. No source triangles, atlas pixels or attribution are removed by that axle correction.
+    October 14: the CB750/cruiser grips are measured from the retained rubber surfaces instead of mirror/rear
+    grab-bar tips; paired metadata preserves the display lean. Detailed and coarse rider poses use those actual
+    contacts and follow steering. The original packed model geometry and atlas remain unchanged.
 
 player-model.bin, player-skin.webp, player-detail.webp (the player character; src/player-body3d-asset.js)
   Base model: "Male_Adult_16" from the Microsoft Rocketbox Avatar Library,

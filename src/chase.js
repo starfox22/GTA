@@ -213,14 +213,19 @@
       if (Math.abs(depotBackTarget - depotBackDoor) > 1e-4)
         depotBackDoor = clamp(depotBackDoor + Math.sign(depotBackTarget - depotBackDoor) * deltaSeconds * 0.9, 0, 1);
     }
-    // Vinny's crew clears the warehouse floor: parked vehicles left inside (the
-    // mission 1 truck, a delivered hot car or repo) are taken away, so the next
-    // job that ends by driving in (The Manifest, Rush Hour, Repo Man) finds
-    // room. The player's own vehicle is never touched.
+    // Vinny's crew takes the jobs' delivered vehicles off the warehouse floor,
+    // so later deliveries find room. The city persists across job starts: an
+    // ordinary/owned car parked here keeps its damage and its occupants.
     function clearDepotFloor() {
       for (let i = vehicles.length - 1; i >= 0; i--) {
         const c = vehicles[i];
-        if (c === player.car || isAircraft(c) || !insideDepot(c.x, c.y)) continue;
+        if (
+          c === player.car ||
+          c.owned ||
+          isAircraft(c) ||
+          !(c.mission || c.depotDelivered) ||
+          !insideDepot(c.x, c.y)
+        ) continue;
         for (let j = officers.length - 1; j >= 0; j--) if (officers[j].car === c) officers.splice(j, 1);
         vehicles.splice(i, 1);
       }
@@ -362,7 +367,9 @@
       // and the force helicopter is five seconds behind them.
       m.policeArrivalIn = 0;
       m.airDelay = 5;
-      clearPolice();
+      // Gate dispatch adds to a pursuit inherited from the payphone; it must
+      // not erase the original units or lower that chase's existing heat.
+      if (!m.harborLivePursuit) clearPolice();
       announce('HARBOR SECURITY · STOLEN CARGO', 'UNITS ROLLING', 3);
       tell('Gate camera got the plate. Units are already moving — air support in 5.', 6);
       radio('call-backup');

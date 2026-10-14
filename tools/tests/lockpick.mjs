@@ -26,13 +26,17 @@ export default async function (t) {
   // Fire with the lockpick: nothing happens (no shot, no strike, still in hand).
   await t.call('fireShot', target.x, target.y);
   t.assert((await t.call('status')).weapon === 'LOCKPICK', 'fire changed the weapon');
+  // The live loop caps a long frame at 33 ms: fixed wall-time holds can finish before the five game seconds
+  // needed to pick a trunk. Keep real key events and wait on its actual result, within game/wall deadlines.
   let crouched = false;
-  for (let i = 0; i < 10; i++) {
+  const trunkStartedAt = (await t.call('frameFaults')).gameTime, trunkWallStart = Date.now();
+  for (let i = 0; Date.now() - trunkWallStart < 60000; i++) {
     await t.keys('KeyE', 1.2, { real: true });
     r = await t.call('trunkReport');
     if (r.lockpick.working === 'trunk') crouched = true;
-    t.note(`hold ${i}: progress ${r.car.progress} pins ${r.car.pins} working ${r.lockpick.working}`);
-    if (r.car.open) break;
+    const elapsed = (await t.call('frameFaults')).gameTime - trunkStartedAt;
+    t.note(`hold ${i}: progress ${r.car.progress} pins ${r.car.pins} working ${r.lockpick.working}, ${elapsed.toFixed(2)} game s`);
+    if (r.car.open || elapsed >= 8) break;
   }
   t.assert(r.car.open, 'trunk still shut after holding the action key: ' + JSON.stringify(r));
   t.assert(r.stats.pins >= 5 && r.stats.trunks === 1, 'pins/trunks: ' + JSON.stringify(r.stats));
@@ -46,11 +50,13 @@ export default async function (t) {
   await t.call('teleport', locked.door.x, locked.door.y - 4);
   await t.wait(0.2);
   let scan = null;
-  for (let i = 0; i < 8; i++) {
+  const doorStartedAt = (await t.call('frameFaults')).gameTime, doorWallStart = Date.now();
+  for (let i = 0; Date.now() - doorWallStart < 60000; i++) {
     await t.keys('KeyE', 1.2, { real: true });
     scan = (await t.call('carjackScan', 120, 1))[0];
-    t.note(`door hold ${i}: locked ${scan?.locked}`);
-    if (scan && !scan.locked) break;
+    const elapsed = (await t.call('frameFaults')).gameTime - doorStartedAt;
+    t.note(`door hold ${i}: locked ${scan?.locked}, ${elapsed.toFixed(2)} game s`);
+    if ((scan && !scan.locked) || elapsed >= 6) break;
   }
   t.assert(scan && !scan.locked, 'driver door still locked: ' + JSON.stringify(scan));
   s = await t.call('status');

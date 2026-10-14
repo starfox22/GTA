@@ -24,51 +24,169 @@
         const n = asset.slices?.[name] || 1;
         return n > 1 ? Array.from({ length: n }, (_, i) => name + (i ? i : '')) : name;
       }
-      /* The model's parts into `model` (a specialVehicle) at length `l` (design units): returns the scale k. */
-      function militaryAssetBody(model, vehicle, type, l) {
-        const data = vaData(),
-          asset = data.header.models[type],
+      const militaryAssetKits = new Map();
+      // The HMMWV source uses its glass material for the lamps too. Partition its
+      // existing lens triangles, preserving vertices/UVs and leaving the windows alone.
+      function militaryLensParts(panes, k) {
+        const groups = { glass: [], headLeft: [], headRight: [], tailLeft: [], tailRight: [] },
+          p = panes.attributes.position,
+          index = panes.index;
+        for (let i = 0; i < index.count; i += 3) {
+          const a = index.getX(i), b = index.getX(i + 1), c = index.getX(i + 2),
+            x = (p.getX(a) + p.getX(b) + p.getX(c)) / (3 * k),
+            y = (p.getY(a) + p.getY(b) + p.getY(c)) / (3 * k),
+            z = p.getZ(a) + p.getZ(b) + p.getZ(c),
+            key = y < 1.2 && x > 2.1 ? 'head' + (z < 0 ? 'Left' : 'Right') :
+              y < 1.2 && x < -2.1 ? 'tail' + (z < 0 ? 'Left' : 'Right') : 'glass';
+          groups[key].push(a, b, c);
+        }
+        const parts = {};
+        for (const [key, indices] of Object.entries(groups)) {
+          if (!indices.length) continue;
+          const geo = new Three.BufferGeometry();
+          for (const [name, attribute] of Object.entries(panes.attributes)) geo.setAttribute(name, attribute);
+          geo.setIndex(indices);
+          // BufferGeometry's default bounds include every shared vertex, including
+          // the windows. Bound only this part's indices so tiny lamps can cull and
+          // leave the distant chase view at their actual size; keep one shared VBO.
+          const bounds = new Three.Box3(), point = new Three.Vector3();
+          for (const i of indices) bounds.expandByPoint(point.fromBufferAttribute(p, i));
+          geo.boundingBox = bounds;
+          geo.boundingSphere = bounds.getBoundingSphere(new Three.Sphere());
+          sharedGeometries.add(geo);
+          parts[key] = geo;
+        }
+        sharedGeometries.delete(panes);
+        return parts;
+      }
+      // Shared immutable geometry: spawning a patrol no longer decodes/retains another
+      // full body and wheel set. Damage moves pivots and swaps materials, never these buffers.
+      function militaryAssetKit(type, l) {
+        const key = type + ':' + l;
+        if (militaryAssetKits.has(key)) return militaryAssetKits.get(key);
+        const data = vaData(), asset = data.header.models[type],
           k = l / (asset.hull || asset.dims[0]),
+          kit = { asset, k, body: vaGeometry(asset, data, militaryAssetSlices(asset, 'body'), k),
+            farBody: asset.parts.bodyFar ? vaGeometry(asset, data, 'bodyFar', k) : null,
+            panes: vaGeometry(asset, data, 'glass', k), lamps: {}, wheels: [] };
+        if (type === 'army_jeep' && kit.panes) {
+          const parts = militaryLensParts(kit.panes, k);
+          kit.panes = parts.glass || null;
+          for (const name of ['headLeft', 'headRight', 'tailLeft', 'tailRight']) if (parts[name]) kit.lamps[name] = parts[name];
+        }
+        for (const name of ['headLeft', 'headRight', 'tailLeft', 'tailRight']) {
+          const geo = vaGeometry(asset, data, name, k);
+          if (geo) kit.lamps[name] = geo;
+        }
+        const fixed = [];
+        asset.wheels.forEach((wh, i) => {
+          const packed = vaGeometry(asset, data, 'wheel' + i + '.tyre', k),
+            part = packed ? militaryAssetWheelPartition(packed, wh, k, type) : null,
+            geo = part?.wheel;
+          if (part?.fixed) fixed.push(part.fixed);
+          if (geo) {
+            const p = geo.attributes.position, finish = new Float32Array(p.count * 2);
+            for (let v = 0; v < p.count; v++) {
+              const tyre = Math.hypot(p.getX(v), p.getY(v)) > part.r * 0.68;
+              finish[v * 2] = tyre ? 0.9 : 0.78;
+              finish[v * 2 + 1] = tyre ? 0.02 : 0.15;
+            }
+            geo.setAttribute('finish', new Three.BufferAttribute(finish, 2));
+          }
+          kit.wheels.push(part);
+        });
+        if (fixed.length) {
+          kit.body = vaJoin([kit.body, ...fixed].filter(Boolean));
+          if (kit.farBody) kit.farBody = vaJoin([kit.farBody, ...fixed]);
+        }
+        militaryAssetKits.set(key, kit);
+        return kit;
+      }
+      /* The model's parts into `model` (a specialVehicle) at length `l` (design units): returns the scale k. */
+      let militaryLampMaterials = null;
+      function militaryLampSet() {
+        if (militaryLampMaterials) return militaryLampMaterials;
+        militaryLampMaterials = {
+          headOff: new Three.MeshStandardMaterial({ color: '#b9b7aa', roughness: 0.18, metalness: 0.65, envMapIntensity: 1.2 }),
+          headOn: new Three.MeshBasicMaterial({ color: new Three.Color(2.6, 2.3, 1.8) }),
+          tailOff: new Three.MeshStandardMaterial({ color: '#5b1410', roughness: 0.18, metalness: 0.1 }),
+          tailOn: tailLamp,
+          brake: brakeLamp,
+        };
+        sharedMaterials.add(militaryLampMaterials.headOff);
+        sharedMaterials.add(militaryLampMaterials.headOn);
+        sharedMaterials.add(militaryLampMaterials.tailOff);
+        return militaryLampMaterials;
+      }
+      function militaryAssetBody(model, vehicle, type, l) {
+        const kit = militaryAssetKit(type, l),
+          { asset, k, body, farBody, panes } = kit,
           materials = vaMaterials(),
           b = model.body,
           scale = vehicleSpec(vehicle).modelScale || 1;
         model.asset = asset.title;
         // The atlas is its paint: wear, heat and the burnt shell reach it through char materials (vehicle-char3d.js).
         model.atlasPaint = true;
-        const body = vaGeometry(asset, data, militaryAssetSlices(asset, 'body'), k),
-          farBody = asset.parts.bodyFar ? vaGeometry(asset, data, 'bodyFar', k) : null,
-          panes = vaGeometry(asset, data, 'glass', k);
+        model.militaryWheels = true;
+        model.militaryLamps = !!kit.lamps.headLeft;
         if (body && farBody) {
           // MILITARY LOD: the full body near, the coarser one far (militaryLod switches them); both are kept out of
           // makeMilitaryVehicle's merge.
           const near = new Three.Group(),
             far = new Three.Group();
           b.add(near, far);
-          mesh(body, materials.trim, near, 0, 0, 0);
-          mesh(farBody, materials.trim, far, 0, 0, 0);
+          mesh(body, materials.armyBody, near, 0, 0, 0);
+          mesh(farBody, materials.armyBody, far, 0, 0, 0);
           far.visible = false;
           model.lod = { near, far, isFar: false };
-        } else if (body) mesh(body, materials.trim, b, 0, 0, 0);
+        } else if (body) mesh(body, materials.armyBody, b, 0, 0, 0);
         if (panes) mesh(panes, glass, b, 0, 0, 0).castShadow = false;
         for (const key of ['headLeft', 'headRight', 'tailLeft', 'tailRight']) {
-          const geo = vaGeometry(asset, data, key, k);
+          const geo = kit.lamps[key];
           if (!geo) continue;
-          const lit = key.startsWith('head') ? warmLamp : tailLamp,
+          const lights = militaryLampSet(),
+            lit = key.startsWith('head') ? lights.headOff : lights.tailOff,
             lamp = mesh(geo, lit, b, 0, 0, 0);
           lamp.castShadow = false;
           model.lamps.push({ mesh: lamp, key, lit });
         }
         asset.wheels.forEach((wh, i) => {
-          const geo = vaGeometry(asset, data, 'wheel' + i + '.tyre', k);
+          const part = kit.wheels[i], geo = part?.wheel;
           if (!geo) return;
           const pivot = new Three.Group();
-          pivot.position.set(wh.x * k, wh.y * k, wh.z * k);
+          pivot.position.set(...part.at);
           b.add(pivot);
           // The wheel is the pivot's first child (hidden on a burnt wreck, damage3d-bodies.js specialDamage).
-          mesh(geo, materials.trim, pivot, 0, 0, 0).castShadow = false;
-          model.wheels.push({ wheel: pivot, side: wh.side, radius: wh.r * k * scale });
+          mesh(geo, materials.armyWheel, pivot, 0, 0, 0).castShadow = false;
+          model.wheels.push({ wheel: pivot, side: wh.side, front: !!wh.front, radius: part.r * scale });
         });
         return k;
+      }
+      // Physics owns the steer/lock/spin values. The model only poses the wheels;
+      // damage squash and terrain travel remain in the same un-raked wheel frame.
+      function animateMilitaryWheels(c, m, deltaSeconds) {
+        const steer = -clamp(c.tyres?.steer || 0, -0.7, 0.7),
+          spin = c.spinSpeed || 0,
+          rearSpeed = c.speed + (spin > 1 ? spin * (c.speed < -2 ? -1 : 1) : 0);
+        for (const { wheel, radius, front } of m.wheels) {
+          wheel.rotation.y = front ? steer : 0;
+          const lock = c.tyres?.lock?.[front ? 0 : 1] || 0;
+          wheel.rotation.z -= ((front ? c.speed : rearSpeed) * (1 - lock) * deltaSeconds) / radius;
+        }
+      }
+      function animateMilitaryLamps(c, m) {
+        if (!m.militaryLamps) return;
+        const lights = militaryLampSet(),
+          alive = c.hp > 0 && !c.damage?.burnt,
+          driven = alive && (c.ai || c === player.car || !!c.showLamps),
+          on = driven && vehicleLampAmount() > 0.05,
+          braking = alive && (!!c.braking || c.showLamps === 'brake');
+        for (const lamp of m.lamps) {
+          const broken = !alive || c.damage?.lights?.[lamp.key],
+            next = broken ? deadLamp : lamp.key.startsWith('head') ? (on ? lights.headOn : lights.headOff) :
+              braking ? lights.brake : on ? lights.tailOn : lights.tailOff;
+          if (lamp.mesh.material !== next) lamp.mesh.material = next;
+        }
       }
       /**
        * MILITARY LOD
@@ -80,7 +198,8 @@
       const MILITARY_LOD_ZOOM = 1;
       function militaryLod(c, m) {
         const lod = m.lod,
-          far = chaseViewActive && c !== player.car && chaseZoomAt(c.x, c.y) < MILITARY_LOD_ZOOM * (activeTier ? activeTier.lodBias : 1);
+          // A little hysteresis avoids swapping both levels repeatedly at the threshold.
+          far = chaseViewActive && c !== player.car && chaseZoomAt(c.x, c.y) < MILITARY_LOD_ZOOM * (activeTier ? activeTier.lodBias : 1) * (lod.isFar ? 1.1 : 0.9);
         if (far === lod.isFar) return;
         lod.isFar = far;
         lod.near.visible = !far;

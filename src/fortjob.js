@@ -497,6 +497,13 @@
       if (!c) return;
       if (c.occupied) m.kInCarAt = gameTime;
       fortKeepPristine(m, c);
+      // A wreck's trunk cannot be picked (vehicle-trunk.js). Before the bag is
+      // recovered the uniform is lost with it: end the job, rather than leave an
+      // unreachable PICK/TALK objective. Once taken, the bag belongs to the player.
+      if (!m.bag && c.hp <= 0) {
+        failMission('Kessler’s car was destroyed with the uniform and ID inside.');
+        return;
+      }
       // Shot at while he is at the wheel (a hit, or rounds fired close by): he radios the fort.
       if (!m.alerted && m.stage <= FORT_STAGE.tail && gameTime - m.kInCarAt < 0.6 && (player.lastShotAt ?? -100) > m.shotSeen && gameTime - player.lastShotAt < 0.6) {
         m.shotSeen = player.lastShotAt;
@@ -512,7 +519,7 @@
       // The messy way: out of the car before the club (carjacked, crashed), or down.
       if (k && k.hp <= 0 && !m.killed) {
         m.killed = true;
-        if (!m.keys)
+        if (!m.bag && !m.keys)
           fortStage(
             m,
             FORT_STAGE.trunk,
@@ -522,7 +529,7 @@
             'vinny',
             'Christ. Well, he won’t need the uniform. His keys are on him. Be quick.',
           );
-        else fortBeat(m, 'killed', 'Christ. Well, he won’t need the uniform. Get that trunk open and get gone.');
+        else if (!m.bag) fortBeat(m, 'killed', 'Christ. Well, he won’t need the uniform. Get that trunk open and get gone.');
       }
       if (!c.occupied && m.stage === FORT_STAGE.tail) {
         // Taken from him on the road: the keys are in it.
@@ -601,6 +608,12 @@
         } else m.changeProgress = Math.max(0, m.changeProgress - deltaSeconds * 0.5);
         return;
       }
+      // Blown cover cannot be presented at the gate again, even once the police
+      // are gone. The same pre-papers lockdown applies before clearance too.
+      if ((m.stage === FORT_STAGE.gate || m.stage === FORT_STAGE.inside) && fortCover.alarmed && !fortCover.papers) {
+        failMission('Your cover is blown. The records office is locked down.');
+        return;
+      }
       if (m.stage === FORT_STAGE.gate) {
         if (fortCover.cleared) {
           fortStage(
@@ -619,10 +632,6 @@
         return;
       }
       if (m.stage === FORT_STAGE.inside) {
-        if (fortCover.alarmed && !fortCover.papers) {
-          failMission('Your cover is blown. The records office is locked down.');
-          return;
-        }
         if (fortCover.papers)
           fortStage(
             m,
@@ -663,7 +672,11 @@
           step = FORT_MEETING_STEPS[s] || FORT_MEETING_STEPS.handover,
           text = wantedStars > 0 ? 'LOSE THE POLICE · VARGA WON’T MEET WITH HEAT ON YOU' : step[0];
         const target = skyMeetingTarget() || m.target;
-        if (text !== m.instruction || target !== m.target) {
+        // The meeting returns coordinate snapshots, so object identity changes
+        // even while everyone stands still. Refresh only for a real marker move
+        // or instruction change; a moving diplomat still updates the objective.
+        const targetChanged = target !== m.target && (!target || !m.target || target.x !== m.target.x || target.y !== m.target.y || target.altitude !== m.target.altitude);
+        if (text !== m.instruction || targetChanged) {
           m.instruction = text;
           m.target = target;
           updateUI();

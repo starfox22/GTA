@@ -271,6 +271,7 @@
           distanceBetween(player, VINNY_DEPOT.inside) < 70 &&
           Math.abs(missionState.car.speed) < 12
         ) {
+          missionState.car.depotDelivered = true;
           clearPolice();
           winMission();
         }
@@ -375,6 +376,7 @@
         ) {
           repo.delivered = true;
           repo.car.mission = false;
+          repo.car.depotDelivered = true;
           repo.car.repo = false;
           exitCar();
           // Vinny's crew takes it off the floor: left parked in the warehouse, each

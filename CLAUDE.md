@@ -41,6 +41,7 @@ next command thaws it, state kept).
 
 ```sh
 node tools/test.mjs [filter] [--verbose]      # regression suite (~40 s, no-render page): after logic changes
+node tools/test.mjs name.mjs --exact --html dist/frozen.html # exact selection against an immutable candidate
                                               # (`dev.mjs stop` between separate runs: a leftover server fails boots with
                                               #  'browser.newContext: Target page ... closed')
 node tools/dev.mjs start [--render]           # ONE persistent headless page (~7 s no-render, ~35 s rendered)
@@ -427,17 +428,27 @@ packs with plain `<script src>` so the zip still plays from file://.
   DRIVEBY_SEATS (`test.mjs cabin-headroom --render`) and CAR_GLASS_BANDS; `assetCarsOn(false)` gives before/after.
   Round three (vehicles-and-driving-models-heavy.md): every patrol body but the SWAT Bearcat is a model
   (`POLICE_ASSET_TYPES`, police3d-asset.js); box truck, bus and ambulance ride `makeAssetCar`; Vinny's flatbed is the
-  downloaded cab with vinnytruck3d.js's deck (`vinnyKit(true)`, VINNY_CARGO unchanged); Fort Sentinel's HMMWV, M35 and
-  tank are `kind: 'special'` models (military-assets3d.js; the gun jeep's mount keeps MOUNTED_GUNS' numbers); atlas
+  downloaded cab with vinnytruck3d.js's deck (`vinnyKit(true)`, VINNY_CARGO unchanged); Fort Sentinel's HMMWV and M35
+  are `kind: 'special'` models (military-assets3d.js; the gun jeep's mount keeps MOUNTED_GUNS' numbers); atlas
   4096x2048, earlier models keep their density (`texFloor`); regenerate the bin from every MODELS list, never pick a side.
   Burnt or worn downloaded models (atlas parts) char only through vehicle-char3d.js ASSET CHAR
   (`assetCharSwap`/`assetCharRelease` from paintVehicle); never set a map on the shared `vaMaterials`.
+  The military matte/vertex-finish materials tag `userData.assetAtlas`; all four char kinds, including finish,
+  prewarm and pool at most 12 each. Shared military kits are immutable (models-military.md).
 - Downloaded motorbikes: a source posed with its bars turned is straightened by `unsteer` (vehicle_models_moto.py); a wheel
   turns only whole round pieces (spokes, hub, rim); car wheels stop at the tyre's inner wall; four-wheeled models' wheels
   follow their springs (`ride.d`) through ride-wheels3d.js. The KR 500 is a CC-BY model (credits).
+  Recorded `wheelAxes` preserve the source pose with a constant carrier while rolling about the actual axle.
+  Measured `grips` are two raw body-space contacts (negative-Z, positive-Z), preserving source asymmetry;
+  never infer them from mirror tips or rear grab bars. Riders use the cached fork inverse/current steering
+  frame; legacy `grip` keeps its compensated wrist convention. Apply chassis slopes before `finishCrowd3D`.
+  A bike has one tyre per axle: either side puncture flag affects it, never two counts or opposite side pull.
 - Fort Sentinel models (vehicles-and-driving-models-heavy.md): never `cluster` a body seen up close (the atlas material is
   single-sided: an inward face is a hole); a heavy special body gets a `far` level (`bodyFar`, `militaryLod`, chase view only);
   the tank is procedural (`makeAssetTank` kept for a future model).
+  The HMMWV's packed wheel bounds include fixed running gear: `militaryAssetWheelPartition` validates the dominant
+  tyre ring once per kit, restores its true centres/radii, and joins fixed pieces into the body without deleting
+  triangles. Preserve the original rest pose/UVs/normals. Lamps reuse original lenses with indexed bounds.
 - Downloaded aircraft and dog (vehicles-and-driving-models-aircraft.md): `tools/aircraft_models.py` makes
   assets/aircraft-models.bin + aircraft-skin.webp (SKYRANGER 429 airframe `bell429`, flyable SKYLARK 172 airframe
   `skyhawk`, `fixedGear`) on the makeHelicopter / buildAircraft contracts; `rotorStrikes` uses an airframe's
@@ -586,6 +597,10 @@ packs with plain `<script src>` so the zip still plays from file://.
 
 ## Agent workflow (parallel sessions)
 
+- **Codex continuity (owner instruction, October 13)**: all future Codex development stays on
+  `codex/chase-clouds-polish-2026-10-12`. Fetch and merge newer approved `origin/main` into that
+  branch when reviewing Claude's changes; commit and push improvements there. Do not create a
+  new branch for each prompt. Claude can track this one permanent GitHub branch.
 - **Branches and `main`**: develop on the session's working branch. `main` holds the owner's
   approved game. When the owner says they are satisfied with a version **and** approves
   moving it to main in the current conversation, merge the working branch into `main`

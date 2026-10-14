@@ -74,7 +74,9 @@ followed). Credits in docs/THIRD_PARTY_CREDITS.txt.
   licence was found).
 - Check a special model's conversion before shipping it: render the bin's parts with back faces marked (the atlas
   material is single-sided, so a face wound inwards is a hole in the game); `cluster` is the usual cause.
-- Burnt special vehicles hide their wheels (specialDamage); the shared atlas body does not darken per vehicle.
+- Military runtime kit sharing, original HMMWV lamp lenses, matte finishes, char/repair and wheel animation:
+  [military model contracts](vehicles-and-driving-models-military.md). Special tyres hide on burn and restore
+  on repair; per-car atlas char materials darken the body.
 
 ## Console
 

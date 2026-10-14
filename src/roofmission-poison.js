@@ -74,7 +74,9 @@
       }
       const witness = poisonWitness(m);
       if (witness) {
-        m.suspicion = Math.min(90, m.suspicion + 24);
+        // The refusal may cap a new warning at 90, but an already higher meter
+        // never goes down because the player touches the watched glass again.
+        m.suspicion = Math.max(m.suspicion, Math.min(90, m.suspicion + 24));
         guardLine(witness, 'glass', 'Hey. That’s Mr. Vescari’s glass.', 6);
         tell('A bodyguard is watching. Wait until he looks away before you touch the glass.', 3);
         return true;
@@ -503,11 +505,17 @@
           c.speed = Math.sign(c.speed || 1) * Math.min(Math.abs(c.speed || 0), limit);
         }
       }
-      // Held up (traffic, a car across the lane) for long: it is simply there.
+      // A blocked ambulance can finish the approach while both endpoints are
+      // outside the camera. Never jump it across the player's view.
       const speed = Math.hypot(c.vx || 0, c.vy || 0);
       med.stuckFor = speed < 3 && left > 30 ? (med.stuckFor || 0) + (gameTime - (med.checkedAt ?? gameTime)) : 0;
       med.checkedAt = gameTime;
-      if ((med.stuckFor > 6 || gameTime - med.ambulanceAt > 45) && canSpawnCar('ambulance', stop.x, stop.y, Math.PI)) {
+      if (
+        (med.stuckFor > 6 || gameTime - med.ambulanceAt > 45) &&
+        !crowdInView(c.x, c.y, 80) &&
+        !crowdInView(stop.x, stop.y, 80) &&
+        canSpawnCar('ambulance', stop.x, stop.y, Math.PI)
+      ) {
         Object.assign(c, { x: stop.x, y: stop.y, a: Math.PI });
         left = 0;
       }

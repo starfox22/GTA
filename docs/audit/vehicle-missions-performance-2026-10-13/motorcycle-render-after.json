@@ -1,0 +1,1275 @@
+{
+  "label": "after",
+  "html": "/workspace/GTA/dist/review-2026-10-14-ready.html",
+  "htmlSha256": "b8d8713019cbb4d265496897859b2d2a11bd38edcf3e319c48b2dbffe9069b4f",
+  "fixture": {
+    "seed": 1,
+    "origin": [
+      680,
+      4520
+    ],
+    "heading": 0,
+    "tier": "high",
+    "clock": 13,
+    "view": "street inspection",
+    "inspect": [
+      18,
+      10,
+      6
+    ],
+    "closeUp": 12,
+    "viewport": [
+      1000,
+      700
+    ],
+    "crop": [
+      280,
+      140,
+      400,
+      410
+    ],
+    "noticeWallClockSettleMs": 6500
+  },
+  "cases": [
+    {
+      "type": "bike",
+      "captures": [],
+      "id": 314,
+      "rest": {
+        "status": {
+          "mode": "play",
+          "x": 680,
+          "y": 4520,
+          "district": "SOUTHPORT AIRPORT",
+          "hp": 100,
+          "cash": 0,
+          "wanted": 0,
+          "mission": null,
+          "completed": 0,
+          "vehicle": "bike",
+          "weapon": "9MM PISTOL",
+          "clock": "13:12",
+          "renderer": "3d",
+          "vehicles": 288,
+          "pedestrians": 570
+        },
+        "model": {
+          "id": 314,
+          "type": "bike",
+          "draws": 11,
+          "casters": 4,
+          "triangles": 13642,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              3926
+            ],
+            [
+              "MeshStandardMaterial",
+              3204
+            ],
+            [
+              "MeshStandardMaterial",
+              2650
+            ],
+            [
+              "MeshStandardMaterial",
+              1607
+            ],
+            [
+              "MeshStandardMaterial",
+              1242
+            ],
+            [
+              "MeshPhysicalMaterial",
+              312
+            ]
+          ],
+          "asset": "Honda CB 750 F Super Sport 1970",
+          "cabin": null,
+          "panes": null,
+          "badge": null
+        },
+        "camera": {
+          "zoom": 12,
+          "target": 12,
+          "context": 1,
+          "slowFraming": true,
+          "vehicleContext": 0.508,
+          "speed": 1,
+          "kmh": 0,
+          "framing": 1,
+          "framed": 12,
+          "aim": 12,
+          "defaultZoom": 2,
+          "limits": [
+            0.14,
+            4.5
+          ],
+          "viewport": [
+            1000,
+            700
+          ],
+          "viewMetres": 5,
+          "personPx": 157,
+          "motionComfort": false,
+          "vehicleDistance": 120,
+          "walkDistance": 100,
+          "comfort": {
+            "seconds": 4,
+            "accel": {
+              "rms": 0,
+              "peak": 0
+            },
+            "jerk": {
+              "rms": 0,
+              "peak": 0
+            },
+            "zoomRate": {
+              "rms": 0,
+              "peak": 0
+            },
+            "jolt": 0,
+            "drift": {
+              "peak": 0,
+              "swing": 0
+            }
+          }
+        },
+        "radio": {
+          "shown": true,
+          "open": false,
+          "station": "ODDBALL 99.3",
+          "title": {
+            "enabled": true,
+            "shown": false,
+            "station": "NEON 88.7",
+            "power": true,
+            "waiting": false,
+            "inMenu": false
+          },
+          "carStation": "ODDBALL 99.3",
+          "blocked": false,
+          "unavailable": false,
+          "loaded": "synth/synth",
+          "src": "data:audio/mpeg;base64,SUQzBAAAAAABOFRJVDIAAAAcAAADUmV0cm9yYWNpbmcgT25lIG1vcmUgc",
+          "time": 69.37,
+          "fading": false,
+          "enabled": true,
+          "saved": true,
+          "playing": false,
+          "volume": 0,
+          "muted": true,
+          "unmuteTo": 100,
+          "volumeSet": true,
+          "master": 80,
+          "elementVolume": 0.0013,
+          "scale": 0,
+          "knob": {
+            "value": 0,
+            "angle": -135,
+            "lit": 0,
+            "readout": "OFF",
+            "valueText": "Muted",
+            "dragging": false,
+            "mode": null,
+            "lastDrag": null,
+            "pixelsPerStep": 1.6,
+            "sweep": 270
+          }
+        }
+      },
+      "rolling": {
+        "id": 314,
+        "type": "bike",
+        "x": 682,
+        "y": 4520,
+        "a": 0,
+        "kmh": 7,
+        "ai": false,
+        "occupied": false,
+        "altitude": 0
+      },
+      "steering": {
+        "type": "bike",
+        "fitted": {
+          "abs": true,
+          "esc": false,
+          "tcs": true
+        },
+        "lamps": {
+          "abs": "off",
+          "esc": "na",
+          "tcs": "off"
+        },
+        "character": {
+          "front": 0.5,
+          "cgOverWheelbase": 0.5,
+          "bias": 0.72,
+          "drive": "rwd",
+          "liftOff": 0
+        },
+        "settings": {
+          "abs": false,
+          "esc": false,
+          "tcs": false,
+          "steering": 100,
+          "lookAhead": 0,
+          "cameraDistance": 120,
+          "walkDistance": 100
+        },
+        "tyres": {
+          "pedal": 0,
+          "steer": 0.65,
+          "slip": [
+            0,
+            0
+          ],
+          "lock": [
+            0,
+            0
+          ],
+          "pressure": [
+            1,
+            1
+          ],
+          "lateral": [
+            1,
+            1
+          ],
+          "spin": 0,
+          "yawSlide": 0,
+          "decelG": 0
+        },
+        "absActive": false,
+        "tyreSlip": 0
+      },
+      "puncture": {
+        "hits": {
+          "kinds": [
+            "metal",
+            "metal"
+          ],
+          "marks": {
+            "hole": 2
+          }
+        },
+        "damage": {
+          "id": 314,
+          "type": "bike",
+          "hp": 85,
+          "maxhp": 85,
+          "zones": {
+            "front": 0,
+            "rear": 0,
+            "left": 0,
+            "right": 0
+          },
+          "dents": [],
+          "parts": {
+            "hood": 0,
+            "bumperFront": 0,
+            "bumperRear": 0,
+            "doorLeft": 0,
+            "doorRight": 0,
+            "trunk": 0
+          },
+          "glass": {
+            "front": 0,
+            "rear": 0,
+            "left": 0,
+            "right": 0
+          },
+          "lights": [],
+          "flatTires": [],
+          "marks": {
+            "hole": 2
+          },
+          "pull": 0,
+          "handling": {
+            "power": 1,
+            "top": 1,
+            "grip": 1,
+            "pull": 0,
+            "steer": 1,
+            "brake": 1
+          },
+          "burning": 0,
+          "fireSpent": false,
+          "burnt": false,
+          "speed": 0,
+          "spin": 0,
+          "x": 680,
+          "y": 4520,
+          "a": 0
+        }
+      },
+      "burnt": {
+        "id": 314,
+        "type": "bike",
+        "hp": 0,
+        "maxhp": 85,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {
+          "hole": 2
+        },
+        "pull": 0,
+        "handling": {
+          "power": 0.5,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": true,
+        "speed": 0,
+        "spin": 0,
+        "x": 680,
+        "y": 4520,
+        "a": 0
+      },
+      "repaired": {
+        "id": 314,
+        "type": "bike",
+        "hp": 85,
+        "maxhp": 85,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 680,
+        "y": 4520,
+        "a": 0
+      },
+      "finalModel": {
+        "id": 314,
+        "type": "bike",
+        "draws": 11,
+        "casters": 4,
+        "triangles": 13642,
+        "heaviest": [
+          [
+            "MeshStandardMaterial",
+            3926
+          ],
+          [
+            "MeshStandardMaterial",
+            3204
+          ],
+          [
+            "MeshStandardMaterial",
+            2650
+          ],
+          [
+            "MeshStandardMaterial",
+            1607
+          ],
+          [
+            "MeshStandardMaterial",
+            1242
+          ],
+          [
+            "MeshPhysicalMaterial",
+            312
+          ]
+        ],
+        "asset": "Honda CB 750 F Super Sport 1970",
+        "cabin": null,
+        "panes": null,
+        "badge": null
+      }
+    },
+    {
+      "type": "cruiser",
+      "captures": [],
+      "id": 343,
+      "rest": {
+        "status": {
+          "mode": "play",
+          "x": 680,
+          "y": 4520,
+          "district": "SOUTHPORT AIRPORT",
+          "hp": 100,
+          "cash": 0,
+          "wanted": 0,
+          "mission": null,
+          "completed": 0,
+          "vehicle": "cruiser",
+          "weapon": "9MM PISTOL",
+          "clock": "13:18",
+          "renderer": "3d",
+          "vehicles": 289,
+          "pedestrians": 566
+        },
+        "model": {
+          "id": 343,
+          "type": "cruiser",
+          "draws": 11,
+          "casters": 4,
+          "triangles": 13608,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              5431
+            ],
+            [
+              "MeshStandardMaterial",
+              3204
+            ],
+            [
+              "MeshStandardMaterial",
+              3080
+            ],
+            [
+              "MeshStandardMaterial",
+              405
+            ],
+            [
+              "MeshStandardMaterial",
+              405
+            ],
+            [
+              "MeshPhysicalMaterial",
+              393
+            ]
+          ],
+          "asset": "Harley-Davidson Seventy-Two HD FXT 2015",
+          "cabin": null,
+          "panes": null,
+          "badge": null
+        },
+        "camera": {
+          "zoom": 12,
+          "target": 12,
+          "context": 1,
+          "slowFraming": true,
+          "vehicleContext": 0.508,
+          "speed": 1,
+          "kmh": 0,
+          "framing": 1,
+          "framed": 12,
+          "aim": 12,
+          "defaultZoom": 2,
+          "limits": [
+            0.14,
+            4.5
+          ],
+          "viewport": [
+            1000,
+            700
+          ],
+          "viewMetres": 5,
+          "personPx": 157,
+          "motionComfort": false,
+          "vehicleDistance": 120,
+          "walkDistance": 100,
+          "comfort": {
+            "seconds": 4,
+            "accel": {
+              "rms": 0,
+              "peak": 0
+            },
+            "jerk": {
+              "rms": 0,
+              "peak": 0
+            },
+            "zoomRate": {
+              "rms": 0,
+              "peak": 0
+            },
+            "jolt": 0,
+            "drift": {
+              "peak": 0,
+              "swing": 0
+            }
+          }
+        },
+        "radio": {
+          "shown": true,
+          "open": false,
+          "station": "ODDBALL 99.3",
+          "title": {
+            "enabled": true,
+            "shown": false,
+            "station": "NEON 88.7",
+            "power": true,
+            "waiting": false,
+            "inMenu": false
+          },
+          "carStation": "ODDBALL 99.3",
+          "blocked": false,
+          "unavailable": false,
+          "loaded": "synth/synth",
+          "src": "data:audio/mpeg;base64,SUQzBAAAAAABOFRJVDIAAAAcAAADUmV0cm9yYWNpbmcgT25lIG1vcmUgc",
+          "time": 69.37,
+          "fading": false,
+          "enabled": true,
+          "saved": true,
+          "playing": false,
+          "volume": 0,
+          "muted": true,
+          "unmuteTo": 100,
+          "volumeSet": true,
+          "master": 80,
+          "elementVolume": 0.0013,
+          "scale": 0,
+          "knob": {
+            "value": 0,
+            "angle": -135,
+            "lit": 0,
+            "readout": "OFF",
+            "valueText": "Muted",
+            "dragging": false,
+            "mode": null,
+            "lastDrag": null,
+            "pixelsPerStep": 1.6,
+            "sweep": 270
+          }
+        }
+      },
+      "rolling": {
+        "id": 343,
+        "type": "cruiser",
+        "x": 682,
+        "y": 4520,
+        "a": 0,
+        "kmh": 7,
+        "ai": false,
+        "occupied": false,
+        "altitude": 0
+      },
+      "steering": {
+        "type": "cruiser",
+        "fitted": {
+          "abs": true,
+          "esc": false,
+          "tcs": false
+        },
+        "lamps": {
+          "abs": "off",
+          "esc": "na",
+          "tcs": "na"
+        },
+        "character": {
+          "front": 0.5,
+          "cgOverWheelbase": 0.5,
+          "bias": 0.72,
+          "drive": "rwd",
+          "liftOff": 0
+        },
+        "settings": {
+          "abs": false,
+          "esc": false,
+          "tcs": false,
+          "steering": 100,
+          "lookAhead": 0,
+          "cameraDistance": 120,
+          "walkDistance": 100
+        },
+        "tyres": {
+          "pedal": 0,
+          "steer": 0.65,
+          "slip": [
+            0,
+            0
+          ],
+          "lock": [
+            0,
+            0
+          ],
+          "pressure": [
+            1,
+            1
+          ],
+          "lateral": [
+            1,
+            1
+          ],
+          "spin": 0,
+          "yawSlide": 0,
+          "decelG": 0
+        },
+        "absActive": false,
+        "tyreSlip": 0
+      },
+      "puncture": {
+        "hits": {
+          "kinds": [
+            "metal",
+            "metal"
+          ],
+          "marks": {
+            "hole": 2
+          }
+        },
+        "damage": {
+          "id": 343,
+          "type": "cruiser",
+          "hp": 110,
+          "maxhp": 110,
+          "zones": {
+            "front": 0,
+            "rear": 0,
+            "left": 0,
+            "right": 0
+          },
+          "dents": [],
+          "parts": {
+            "hood": 0,
+            "bumperFront": 0,
+            "bumperRear": 0,
+            "doorLeft": 0,
+            "doorRight": 0,
+            "trunk": 0
+          },
+          "glass": {
+            "front": 0,
+            "rear": 0,
+            "left": 0,
+            "right": 0
+          },
+          "lights": [],
+          "flatTires": [],
+          "marks": {
+            "hole": 2
+          },
+          "pull": 0,
+          "handling": {
+            "power": 1,
+            "top": 1,
+            "grip": 1,
+            "pull": 0,
+            "steer": 1,
+            "brake": 1
+          },
+          "burning": 0,
+          "fireSpent": false,
+          "burnt": false,
+          "speed": 0,
+          "spin": 0,
+          "x": 680,
+          "y": 4520,
+          "a": 0
+        }
+      },
+      "burnt": {
+        "id": 343,
+        "type": "cruiser",
+        "hp": 0,
+        "maxhp": 110,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {
+          "hole": 2
+        },
+        "pull": 0,
+        "handling": {
+          "power": 0.5,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": true,
+        "speed": 0,
+        "spin": 0,
+        "x": 680,
+        "y": 4520,
+        "a": 0
+      },
+      "repaired": {
+        "id": 343,
+        "type": "cruiser",
+        "hp": 110,
+        "maxhp": 110,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 680,
+        "y": 4520,
+        "a": 0
+      },
+      "finalModel": {
+        "id": 343,
+        "type": "cruiser",
+        "draws": 11,
+        "casters": 4,
+        "triangles": 13608,
+        "heaviest": [
+          [
+            "MeshStandardMaterial",
+            5431
+          ],
+          [
+            "MeshStandardMaterial",
+            3204
+          ],
+          [
+            "MeshStandardMaterial",
+            3080
+          ],
+          [
+            "MeshStandardMaterial",
+            405
+          ],
+          [
+            "MeshStandardMaterial",
+            405
+          ],
+          [
+            "MeshPhysicalMaterial",
+            393
+          ]
+        ],
+        "asset": "Harley-Davidson Seventy-Two HD FXT 2015",
+        "cabin": null,
+        "panes": null,
+        "badge": null
+      }
+    },
+    {
+      "type": "kr500",
+      "captures": [],
+      "id": 348,
+      "rest": {
+        "status": {
+          "mode": "play",
+          "x": 680,
+          "y": 4520,
+          "district": "SOUTHPORT AIRPORT",
+          "hp": 100,
+          "cash": 0,
+          "wanted": 0,
+          "mission": null,
+          "completed": 0,
+          "vehicle": "kr500",
+          "weapon": "9MM PISTOL",
+          "clock": "13:25",
+          "renderer": "3d",
+          "vehicles": 290,
+          "pedestrians": 565
+        },
+        "model": {
+          "id": 348,
+          "type": "kr500",
+          "draws": 11,
+          "casters": 5,
+          "triangles": 16676,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              6130
+            ],
+            [
+              "MeshStandardMaterial",
+              3204
+            ],
+            [
+              "MeshStandardMaterial",
+              2262
+            ],
+            [
+              "MeshStandardMaterial",
+              1732
+            ],
+            [
+              "MeshStandardMaterial",
+              1428
+            ],
+            [
+              "MeshStandardMaterial",
+              500
+            ]
+          ],
+          "asset": "KTM Dirt Bike",
+          "cabin": null,
+          "panes": null,
+          "badge": null
+        },
+        "camera": {
+          "zoom": 12,
+          "target": 12,
+          "context": 1,
+          "slowFraming": true,
+          "vehicleContext": 0.508,
+          "speed": 1,
+          "kmh": 0,
+          "framing": 1,
+          "framed": 12,
+          "aim": 12,
+          "defaultZoom": 2,
+          "limits": [
+            0.14,
+            4.5
+          ],
+          "viewport": [
+            1000,
+            700
+          ],
+          "viewMetres": 5,
+          "personPx": 157,
+          "motionComfort": false,
+          "vehicleDistance": 120,
+          "walkDistance": 100,
+          "comfort": {
+            "seconds": 4,
+            "accel": {
+              "rms": 0,
+              "peak": 0
+            },
+            "jerk": {
+              "rms": 0,
+              "peak": 0
+            },
+            "zoomRate": {
+              "rms": 0,
+              "peak": 0
+            },
+            "jolt": 0,
+            "drift": {
+              "peak": 0,
+              "swing": 0
+            }
+          }
+        },
+        "radio": {
+          "shown": true,
+          "open": false,
+          "station": "ODDBALL 99.3",
+          "title": {
+            "enabled": true,
+            "shown": false,
+            "station": "NEON 88.7",
+            "power": true,
+            "waiting": false,
+            "inMenu": false
+          },
+          "carStation": "ODDBALL 99.3",
+          "blocked": false,
+          "unavailable": false,
+          "loaded": "synth/synth",
+          "src": "data:audio/mpeg;base64,SUQzBAAAAAABOFRJVDIAAAAcAAADUmV0cm9yYWNpbmcgT25lIG1vcmUgc",
+          "time": 69.37,
+          "fading": false,
+          "enabled": true,
+          "saved": true,
+          "playing": false,
+          "volume": 0,
+          "muted": true,
+          "unmuteTo": 100,
+          "volumeSet": true,
+          "master": 80,
+          "elementVolume": 0.0013,
+          "scale": 0,
+          "knob": {
+            "value": 0,
+            "angle": -135,
+            "lit": 0,
+            "readout": "OFF",
+            "valueText": "Muted",
+            "dragging": false,
+            "mode": null,
+            "lastDrag": null,
+            "pixelsPerStep": 1.6,
+            "sweep": 270
+          }
+        }
+      },
+      "rolling": {
+        "id": 348,
+        "type": "kr500",
+        "x": 682,
+        "y": 4520,
+        "a": 0,
+        "kmh": 7,
+        "ai": false,
+        "occupied": false,
+        "altitude": 0
+      },
+      "steering": {
+        "type": "kr500",
+        "fitted": {
+          "abs": true,
+          "esc": false,
+          "tcs": false
+        },
+        "lamps": {
+          "abs": "off",
+          "esc": "na",
+          "tcs": "na"
+        },
+        "character": {
+          "front": 0.5,
+          "cgOverWheelbase": 0.5,
+          "bias": 0.72,
+          "drive": "rwd",
+          "liftOff": 0
+        },
+        "settings": {
+          "abs": false,
+          "esc": false,
+          "tcs": false,
+          "steering": 100,
+          "lookAhead": 0,
+          "cameraDistance": 120,
+          "walkDistance": 100
+        },
+        "tyres": {
+          "pedal": 0,
+          "steer": 0.65,
+          "slip": [
+            0,
+            0
+          ],
+          "lock": [
+            0,
+            0
+          ],
+          "pressure": [
+            1,
+            1
+          ],
+          "lateral": [
+            1,
+            1
+          ],
+          "spin": 0,
+          "yawSlide": 0,
+          "decelG": 0
+        },
+        "absActive": false,
+        "tyreSlip": 0
+      },
+      "puncture": {
+        "hits": {
+          "kinds": [
+            "metal",
+            "metal"
+          ],
+          "marks": {
+            "hole": 2
+          }
+        },
+        "damage": {
+          "id": 348,
+          "type": "kr500",
+          "hp": 70,
+          "maxhp": 70,
+          "zones": {
+            "front": 0,
+            "rear": 0,
+            "left": 0,
+            "right": 0
+          },
+          "dents": [],
+          "parts": {
+            "hood": 0,
+            "bumperFront": 0,
+            "bumperRear": 0,
+            "doorLeft": 0,
+            "doorRight": 0,
+            "trunk": 0
+          },
+          "glass": {
+            "front": 0,
+            "rear": 0,
+            "left": 0,
+            "right": 0
+          },
+          "lights": [],
+          "flatTires": [
+            "frontRight"
+          ],
+          "marks": {
+            "hole": 2
+          },
+          "pull": 0,
+          "handling": {
+            "power": 1,
+            "top": 0.89,
+            "grip": 0.88,
+            "pull": 0,
+            "steer": 0.96,
+            "brake": 0.88
+          },
+          "burning": 0,
+          "fireSpent": false,
+          "burnt": false,
+          "speed": 0,
+          "spin": 0,
+          "x": 680,
+          "y": 4520,
+          "a": 0
+        }
+      },
+      "burnt": {
+        "id": 348,
+        "type": "kr500",
+        "hp": 0,
+        "maxhp": 70,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [
+          "frontRight"
+        ],
+        "marks": {
+          "hole": 2
+        },
+        "pull": 0,
+        "handling": {
+          "power": 0.5,
+          "top": 0.89,
+          "grip": 0.88,
+          "pull": 0,
+          "steer": 0.96,
+          "brake": 0.88
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": true,
+        "speed": 0,
+        "spin": 0,
+        "x": 680,
+        "y": 4520,
+        "a": 0
+      },
+      "repaired": {
+        "id": 348,
+        "type": "kr500",
+        "hp": 70,
+        "maxhp": 70,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 680,
+        "y": 4520,
+        "a": 0
+      },
+      "finalModel": {
+        "id": 348,
+        "type": "kr500",
+        "draws": 11,
+        "casters": 5,
+        "triangles": 16676,
+        "heaviest": [
+          [
+            "MeshStandardMaterial",
+            6130
+          ],
+          [
+            "MeshStandardMaterial",
+            3204
+          ],
+          [
+            "MeshStandardMaterial",
+            2262
+          ],
+          [
+            "MeshStandardMaterial",
+            1732
+          ],
+          [
+            "MeshStandardMaterial",
+            1428
+          ],
+          [
+            "MeshStandardMaterial",
+            500
+          ]
+        ],
+        "asset": "KTM Dirt Bike",
+        "cabin": null,
+        "panes": null,
+        "badge": null
+      }
+    }
+  ],
+  "errors": [],
+  "frameFaults": {
+    "count": 0,
+    "gameTime": 25.55,
+    "drill": null,
+    "kinds": []
+  },
+  "gpuContext": {
+    "watched": true,
+    "lost": false,
+    "losses": 0,
+    "restores": 0,
+    "reloadPending": false,
+    "lostSeconds": 0
+  }
+}

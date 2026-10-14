@@ -24,10 +24,25 @@
           front = model.wheels.find((w) => w.front),
           rear = model.wheels.find((w) => !w.front),
           frontAt = new Three.Vector3(front.x * k, front.y * k, front.z * k).applyMatrix4(toSteer),
-          box = (geo) => (geo ? (geo.computeBoundingBox(), geo.boundingBox) : null);
+          box = (geo) => (geo ? (geo.computeBoundingBox(), geo.boundingBox) : null),
+          wheelKit = (w, at) => {
+            const index = model.wheels.indexOf(w),
+              axis = new Three.Vector3(...(w.axle || [0, 0, 1])).normalize(),
+              rotation = new Three.Quaternion().setFromUnitVectors(new Three.Vector3(0, 0, 1), axis),
+              inverse = new Three.Matrix4().makeRotationFromQuaternion(rotation.clone().invert()),
+              tyre = vaGeometry(model, data, 'wheel' + index + '.tyre', k),
+              rim = vaGeometry(model, data, 'wheel' + index + '.rim', k);
+            // Source bikes may lean slightly in their display pose even with bars straight.
+            // Put geometry into the actual axle frame once; the constant carrier restores
+            // every original vertex at rest, and local Z roll then uses that source axle.
+            if (tyre) tyre.applyMatrix4(inverse);
+            if (rim) rim.applyMatrix4(inverse);
+            return { at, rotation, bodyAt: new Three.Vector3(w.x * k, w.y * k, w.z * k), r: w.r * k, width: w.width * k, tyre, rim };
+          };
         const kit = {
           model,
           k,
+          riderGripInverse: toSteer,
           pivot: [tx * k, ty * k, model.rake],
           paint: vaGeometry(model, data, 'paint', k, [0.5, 0.5]),
           trim: vaGeometry(model, data, 'trim', k),
@@ -35,8 +50,8 @@
           steerTrim: inSteer(vaGeometry(model, data, 'steer.trim', k)),
           head: vaGeometry(model, data, 'head', k),
           tail: vaGeometry(model, data, 'tail', k),
-          front: { at: frontAt, r: front.r * k, tyre: vaGeometry(model, data, 'wheel' + model.wheels.indexOf(front) + '.tyre', k), rim: vaGeometry(model, data, 'wheel' + model.wheels.indexOf(front) + '.rim', k) },
-          rear: { at: new Three.Vector3(rear.x * k, rear.y * k, rear.z * k), r: rear.r * k, tyre: vaGeometry(model, data, 'wheel' + model.wheels.indexOf(rear) + '.tyre', k), rim: vaGeometry(model, data, 'wheel' + model.wheels.indexOf(rear) + '.rim', k) },
+          front: wheelKit(front, frontAt),
+          rear: wheelKit(rear, new Three.Vector3(rear.x * k, rear.y * k, rear.z * k)),
         };
         // Lamp glows at the lamps' middles (the head lamp's taken before it moves into the fork's frame).
         const head = box(kit.head),
@@ -56,6 +71,7 @@
           shoulder,
           hand: [gx, gy],
           gripZ: gz,
+          hands: model.grips,
           knee: [(hip[0] + px) / 2 + 0.16, (hip[1] + py) / 2 + 0.1],
           foot: [px, py],
           head: shoulder[1] + 0.2,
@@ -106,20 +122,25 @@
         if (kit.steerTrim) mesh(kit.steerTrim, assetMaterials.trim, steer, 0, 0, 0);
         // Wheels: the tyre first (damage3d.js hides it on a burnt wreck), then the rim.
         const addWheel = (parent, w) => {
-          const wheel = new Three.Group();
-          wheel.position.copy(w.at);
-          parent.add(wheel);
+          const axle = new Three.Group(),
+            wheel = new Three.Group();
+          axle.position.copy(w.at);
+          axle.quaternion.copy(w.rotation);
+          axle.updateMatrix();
+          axle.matrixAutoUpdate = false;
+          parent.add(axle);
+          axle.add(wheel);
           mesh(w.tyre || policeSwatchBox(CAR_SWATCH.black), assetMaterials.rubber, wheel, 0, 0, 0).castShadow = false;
           if (w.rim) mesh(w.rim, assetMaterials.rim, wheel, 0, 0, 0);
           return wheel;
         };
-        // The front wheel hangs from the fork (it steers with it), turned back square to the bike.
-        const front = addWheel(steer, kit.front);
-        front.rotation.z = -kit.pivot[2];
+        // Cancel the rake on a carrier, leaving roll/drop/squash independent of the fork's pitch.
+        const frontAxle = motoFrontAxle(steer, kit.front.at, kit.pivot[2]),
+          front = addWheel(frontAxle, { ...kit.front, at: new Three.Vector3() });
         const rear = addWheel(b, kit.rear);
         front.userData.front = true;
-        // A flat front tyre squashes square to the bike, not along the raked fork (damage3d-bodies.js FLAT TYRE SQUASH).
-        front.userData.squashTilt = -kit.pivot[2];
+        front.userData.bikeContact = { x: kit.front.bodyAt.x, z: kit.front.bodyAt.z, r: kit.front.r, width: kit.front.width, front: true };
+        rear.userData.bikeContact = { x: kit.rear.at.x, z: kit.rear.at.z, r: kit.rear.r, width: kit.rear.width, front: false };
         model.wheels.push({ wheel: front, side: 1, radius: kit.front.r, front: true }, { wheel: rear, side: 1, radius: kit.rear.r });
         model.rearAxleX = kit.rear.at.x;
         const head = kit.head ? mesh(kit.head, lampMaterials.headOff, steer, 0, 0, 0) : null,
@@ -142,9 +163,13 @@
           M = k;
         mesh(motoRiderGeometry('asset:' + type, pose, k / CAR_M), materials.trim, rider, 0, 0, 0);
         model.rider = rider;
+        model.riderGripInverse = kit.riderGripInverse;
         model.riderSeat = {
           seat: [pose.hip[0] * M, pose.hip[1] * M, 0],
           grip: [pose.hand[0] * M + 0.4, pose.hand[1] * M - 0.2, pose.gripZ * M],
+          // Actual asymmetric bar contacts, in the body's rest frame. The rider
+          // applies the fixed fork inverse and the current steering world frame.
+          grips: pose.hands?.map(point => point.map(value => value * M)),
           peg: [pose.foot[0] * M, (pose.foot[1] - 0.04) * M, kit.pegZ * M],
           lean: pose.lean,
         };

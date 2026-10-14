@@ -61,6 +61,7 @@
       m.digKnock = false;
       m.carrier = null;
       m.carryCar = null;
+      m.carryCarWasMission = false;
       m.lastCar = null;
       m.beats = {};
       m.ownOpening = true;
@@ -81,6 +82,11 @@
       return (m.vinny = v);
     }
     function summitCleanup() {
+      const m = summitJob();
+      // This is the player's own vehicle, borrowed for the package rather than spawned
+      // for the job. Restore its protection before the generic job cleanup removes only
+      // mission-owned vehicles or labels them failedMission.
+      if (m?.carryCar && !m.carryCarWasMission) m.carryCar.mission = false;
       for (let i = storyActors.length - 1; i >= 0; i--) {
         const p = storyActors[i];
         if (p.missionTag === 'summit-job') storyActors.splice(i, 1);
@@ -236,6 +242,7 @@
     function summitStow(m, c) {
       m.carrier = 'car';
       m.carryCar = c;
+      m.carryCarWasMission = !!c.mission;
       c.mission = true;
       tone(160, 0.06, 0.12, 'triangle');
       summitDeliverStage(m, 'Good. Bring it to the warehouse. Easy on the way down, the mountain doesn’t forgive.');

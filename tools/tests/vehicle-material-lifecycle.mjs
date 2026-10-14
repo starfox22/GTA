@@ -8,9 +8,10 @@ export default async function (t) {
   const charSource = fs.readFileSync(new URL('../../src/vehicle-char3d.js', import.meta.url), 'utf8');
   const { assetCharRelease, assetCharFree } = new Function('Three', charSource + '\nreturn { assetCharRelease, assetCharFree };')(Three);
   let disposed = 0;
-  const originals = [];
+  const kinds = Object.keys(assetCharFree), originals = [];
+  t.assert(['cut', 'atlas', 'plain', 'finish'].every(kind => kinds.includes(kind)), 'a required char material kind is missing');
   for (let n = 0; n < 20; n++) {
-    const materials = ['cut', 'atlas', 'plain'].map(kind => {
+    const materials = kinds.map(kind => {
       const material = new Three.MeshStandardMaterial();
       material.userData.assetChar = { kind };
       material.addEventListener('dispose', () => disposed++);
@@ -24,7 +25,8 @@ export default async function (t) {
     t.assert(mesh.material === original && model.assetChar === undefined, 'repair did not restore the original material');
   }
   t.assert(Object.values(assetCharFree).every(pool => pool.length === 12), 'char reuse pools are not bounded to 12');
-  t.assert(disposed === 24, `overflow char materials were not disposed: ${disposed}/24`);
+  const expectedDisposed = (20 - 12) * kinds.length;
+  t.assert(disposed === expectedDisposed, `overflow char materials were not disposed: ${disposed}/${expectedDisposed}`);
   for (const material of [...originals, ...Object.values(assetCharFree).flat()]) material.dispose();
 
   const bodySource = fs.readFileSync(new URL('../../src/damage3d-bodies.js', import.meta.url), 'utf8');

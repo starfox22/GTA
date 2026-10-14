@@ -1,0 +1,1149 @@
+{
+  "baselineCommit": "bde9ee4",
+  "scope": "Stepped whole-game CPU/HUD/simulation comparison with WebGL disabled. No GPU work, presented FPS, laptop performance or M4 Max inference.",
+  "viewport": [
+    960,
+    600
+  ],
+  "seed": 1,
+  "order": "ABBA",
+  "runsPerBuildPerTier": 2,
+  "cpuTiming": "CDP Performance ThreadTime per stepped frame; section averages/worsts are wall stopwatch samples. Another mission QA browser was active on the shared cloud machine. Cold navigation setup, JIT, GC, canvases and contention affect measurements.",
+  "heapCounters": "frameTrace allocKB measures positive per-frame sampled heap growth; gcMB measures observed heap drops, not a complete allocation/GC profiler.",
+  "snapshots": {
+    "beforeSha256": "9b2a5633fdad0f37579d3bee505d8b55f1efddba095872e3e591ea9f8069c41b",
+    "perfOnlyAfterSha256": "a0043f383a21363c9223ea7c2b5c07f59f28cf6f9ede96de83c390d6038258fc",
+    "changedSourceFiles": [
+      "src/crowd-space.js",
+      "src/physics-step.js"
+    ]
+  },
+  "tiers": {
+    "low": {
+      "stages": {
+        "walk": {
+          "before": {
+            "framesPerRun": 360,
+            "hashes": [
+              "4b5ae9a6d3d3345f",
+              "4b5ae9a6d3d3345f"
+            ],
+            "cpuMsPerFrameSamples": [
+              21.36,
+              9.56
+            ],
+            "cpuMsPerFrameMedian": 15.46,
+            "wallSectionAveragesMs": {
+              "phys:broadphase": [
+                1.47,
+                0.91
+              ],
+              "people": [
+                3.42,
+                2.01
+              ],
+              "cars": [
+                8.19,
+                4.59
+              ],
+              "ui": [
+                3.06,
+                1.1
+              ]
+            },
+            "positiveHeapGrowthKBPerFrameSamples": [
+              826.9972222222223,
+              780.7805555555556
+            ]
+          },
+          "after": {
+            "framesPerRun": 360,
+            "hashes": [
+              "4b5ae9a6d3d3345f",
+              "4b5ae9a6d3d3345f"
+            ],
+            "cpuMsPerFrameSamples": [
+              11.19,
+              10.1
+            ],
+            "cpuMsPerFrameMedian": 10.645,
+            "wallSectionAveragesMs": {
+              "phys:broadphase": [
+                1.06,
+                0.85
+              ],
+              "people": [
+                2.34,
+                1.96
+              ],
+              "cars": [
+                5.25,
+                4.68
+              ],
+              "ui": [
+                1.79,
+                1.18
+              ]
+            },
+            "positiveHeapGrowthKBPerFrameSamples": [
+              701.1861111111111,
+              740.4472222222222
+            ]
+          },
+          "hashEqualInEveryRun": true
+        },
+        "drive": {
+          "before": {
+            "framesPerRun": 480,
+            "hashes": [
+              "b9afbccae574679f",
+              "b9afbccae574679f"
+            ],
+            "cpuMsPerFrameSamples": [
+              9.2,
+              10.85
+            ],
+            "cpuMsPerFrameMedian": 10.024999999999999,
+            "wallSectionAveragesMs": {
+              "phys:broadphase": [
+                0.98,
+                1.29
+              ],
+              "people": [
+                1.9,
+                2.15
+              ],
+              "cars": [
+                5.18,
+                6.5
+              ],
+              "ui": [
+                0.28,
+                0.49
+              ]
+            },
+            "positiveHeapGrowthKBPerFrameSamples": [
+              589.4666666666667,
+              585.8854166666666
+            ]
+          },
+          "after": {
+            "framesPerRun": 480,
+            "hashes": [
+              "b9afbccae574679f",
+              "b9afbccae574679f"
+            ],
+            "cpuMsPerFrameSamples": [
+              11.79,
+              8.79
+            ],
+            "cpuMsPerFrameMedian": 10.29,
+            "wallSectionAveragesMs": {
+              "phys:broadphase": [
+                1.31,
+                0.85
+              ],
+              "people": [
+                2.33,
+                1.55
+              ],
+              "cars": [
+                8.94,
+                4.82
+              ],
+              "ui": [
+                0.72,
+                0.24
+              ]
+            },
+            "positiveHeapGrowthKBPerFrameSamples": [
+              557.14375,
+              549.3854166666666
+            ]
+          },
+          "hashEqualInEveryRun": true
+        },
+        "county": {
+          "before": {
+            "framesPerRun": 360,
+            "hashes": [
+              "384a421988822dc2",
+              "384a421988822dc2"
+            ],
+            "cpuMsPerFrameSamples": [
+              8.21,
+              5.86
+            ],
+            "cpuMsPerFrameMedian": 7.035,
+            "wallSectionAveragesMs": {
+              "phys:broadphase": [
+                1.08,
+                1.3
+              ],
+              "people": [
+                0.58,
+                0.61
+              ],
+              "cars": [
+                5.72,
+                7.05
+              ],
+              "ui": [
+                0.3,
+                0.73
+              ]
+            },
+            "positiveHeapGrowthKBPerFrameSamples": [
+              569.6166666666667,
+              586.0666666666667
+            ]
+          },
+          "after": {
+            "framesPerRun": 360,
+            "hashes": [
+              "384a421988822dc2",
+              "384a421988822dc2"
+            ],
+            "cpuMsPerFrameSamples": [
+              6.72,
+              6.53
+            ],
+            "cpuMsPerFrameMedian": 6.625,
+            "wallSectionAveragesMs": {
+              "phys:broadphase": [
+                1.06,
+                0.98
+              ],
+              "people": [
+                0.47,
+                0.45
+              ],
+              "cars": [
+                4.83,
+                4.76
+              ],
+              "ui": [
+                0.33,
+                0.38
+              ]
+            },
+            "positiveHeapGrowthKBPerFrameSamples": [
+              596.0222222222222,
+              604.3833333333333
+            ]
+          },
+          "hashEqualInEveryRun": true
+        },
+        "chase": {
+          "before": {
+            "framesPerRun": 600,
+            "hashes": [
+              "1cdcd968b89b6575",
+              "1cdcd968b89b6575"
+            ],
+            "cpuMsPerFrameSamples": [
+              8.47,
+              8.08
+            ],
+            "cpuMsPerFrameMedian": 8.275,
+            "wallSectionAveragesMs": {
+              "phys:broadphase": [
+                1.02,
+                1.67
+              ],
+              "people": [
+                1.94,
+                2.92
+              ],
+              "cars": [
+                5.65,
+                9.07
+              ],
+              "ui": [
+                0.49,
+                0.73
+              ]
+            },
+            "positiveHeapGrowthKBPerFrameSamples": [
+              546.3433333333334,
+              537.255
+            ]
+          },
+          "after": {
+            "framesPerRun": 600,
+            "hashes": [
+              "1cdcd968b89b6575",
+              "1cdcd968b89b6575"
+            ],
+            "cpuMsPerFrameSamples": [
+              7.67,
+              7.83
+            ],
+            "cpuMsPerFrameMedian": 7.75,
+            "wallSectionAveragesMs": {
+              "phys:broadphase": [
+                0.95,
+                0.95
+              ],
+              "people": [
+                1.93,
+                1.75
+              ],
+              "cars": [
+                5.54,
+                5.36
+              ],
+              "ui": [
+                0.35,
+                0.34
+              ]
+            },
+            "positiveHeapGrowthKBPerFrameSamples": [
+              508.12166666666667,
+              511.605
+            ]
+          },
+          "hashEqualInEveryRun": true
+        },
+        "fort": {
+          "before": {
+            "framesPerRun": 480,
+            "hashes": [
+              "21fbae1e409c8ebc",
+              "21fbae1e409c8ebc"
+            ],
+            "cpuMsPerFrameSamples": [
+              7.4,
+              6.01
+            ],
+            "cpuMsPerFrameMedian": 6.705,
+            "wallSectionAveragesMs": {
+              "phys:broadphase": [
+                1.31,
+                1.78
+              ],
+              "people": [
+                0.16,
+                0.23
+              ],
+              "cars": [
+                5.41,
+                7.16
+              ],
+              "ui": [
+                0.47,
+                0.61
+              ]
+            },
+            "positiveHeapGrowthKBPerFrameSamples": [
+              512.45625,
+              505.1625
+            ]
+          },
+          "after": {
+            "framesPerRun": 480,
+            "hashes": [
+              "21fbae1e409c8ebc",
+              "21fbae1e409c8ebc"
+            ],
+            "cpuMsPerFrameSamples": [
+              6.81,
+              6.2
+            ],
+            "cpuMsPerFrameMedian": 6.505,
+            "wallSectionAveragesMs": {
+              "phys:broadphase": [
+                1.01,
+                0.96
+              ],
+              "people": [
+                0.16,
+                0.14
+              ],
+              "cars": [
+                4.61,
+                4.41
+              ],
+              "ui": [
+                0.45,
+                0.36
+              ]
+            },
+            "positiveHeapGrowthKBPerFrameSamples": [
+              455.8041666666667,
+              455.50208333333336
+            ]
+          },
+          "hashEqualInEveryRun": true
+        },
+        "fortChase": {
+          "before": {
+            "framesPerRun": 420,
+            "hashes": [
+              "a070f58e372d03f0",
+              "a070f58e372d03f0"
+            ],
+            "cpuMsPerFrameSamples": [
+              14.02,
+              5.82
+            ],
+            "cpuMsPerFrameMedian": 9.92,
+            "wallSectionAveragesMs": {
+              "phys:broadphase": [
+                2.06,
+                1.16
+              ],
+              "people": [
+                0.43,
+                0.27
+              ],
+              "cars": [
+                7.78,
+                5.12
+              ],
+              "ui": [
+                0.8,
+                0.45
+              ]
+            },
+            "positiveHeapGrowthKBPerFrameSamples": [
+              498.34761904761905,
+              491.6952380952381
+            ]
+          },
+          "after": {
+            "framesPerRun": 420,
+            "hashes": [
+              "a070f58e372d03f0",
+              "a070f58e372d03f0"
+            ],
+            "cpuMsPerFrameSamples": [
+              5.57,
+              5.94
+            ],
+            "cpuMsPerFrameMedian": 5.755000000000001,
+            "wallSectionAveragesMs": {
+              "phys:broadphase": [
+                0.73,
+                0.81
+              ],
+              "people": [
+                0.09,
+                0.12
+              ],
+              "cars": [
+                3.21,
+                3.61
+              ],
+              "ui": [
+                0.31,
+                0.28
+              ]
+            },
+            "positiveHeapGrowthKBPerFrameSamples": [
+              434.10714285714283,
+              439.87857142857143
+            ]
+          },
+          "hashEqualInEveryRun": true
+        }
+      },
+      "aggregatePerFrame": {
+        "allocKB": {
+          "before": {
+            "samples": [
+              581.042962962963,
+              572.0862962962963
+            ],
+            "median": 576.5646296296296
+          },
+          "after": {
+            "samples": [
+              533.4844444444444,
+              540.072962962963
+            ],
+            "median": 536.7787037037037
+          }
+        },
+        "gcMB": {
+          "before": {
+            "samples": [
+              0.49725925925925923,
+              0.5394074074074074
+            ],
+            "median": 0.5183333333333333
+          },
+          "after": {
+            "samples": [
+              0.4925555555555556,
+              0.47003703703703703
+            ],
+            "median": 0.48129629629629633
+          }
+        },
+        "gcBetweenMB": {
+          "before": {
+            "samples": [
+              0.0002962962962962963,
+              0.0006296296296296296
+            ],
+            "median": 0.000462962962962963
+          },
+          "after": {
+            "samples": [
+              0.0008148148148148149,
+              0.0003333333333333333
+            ],
+            "median": 0.0005740740740740741
+          }
+        },
+        "dom": {
+          "before": {
+            "samples": [
+              0.3188888888888889,
+              0.32222222222222224
+            ],
+            "median": 0.3205555555555556
+          },
+          "after": {
+            "samples": [
+              0.31962962962962965,
+              0.31703703703703706
+            ],
+            "median": 0.31833333333333336
+          }
+        },
+        "canvasDraws": {
+          "before": {
+            "samples": [
+              0.3348148148148148,
+              0.3348148148148148
+            ],
+            "median": 0.3348148148148148
+          },
+          "after": {
+            "samples": [
+              0.3348148148148148,
+              0.3348148148148148
+            ],
+            "median": 0.3348148148148148
+          }
+        },
+        "canvasText": {
+          "before": {
+            "samples": [
+              0.6074074074074074,
+              0.6096296296296296
+            ],
+            "median": 0.6085185185185185
+          },
+          "after": {
+            "samples": [
+              0.6088888888888889,
+              0.6088888888888889
+            ],
+            "median": 0.6088888888888889
+          }
+        },
+        "vehicles": {
+          "before": {
+            "samples": [
+              0.015185185185185185,
+              0.015185185185185185
+            ],
+            "median": 0.015185185185185185
+          },
+          "after": {
+            "samples": [
+              0.015185185185185185,
+              0.015185185185185185
+            ],
+            "median": 0.015185185185185185
+          }
+        },
+        "people": {
+          "before": {
+            "samples": [
+              -0.0011111111111111111,
+              -0.0011111111111111111
+            ],
+            "median": -0.0011111111111111111
+          },
+          "after": {
+            "samples": [
+              -0.0011111111111111111,
+              -0.0011111111111111111
+            ],
+            "median": -0.0011111111111111111
+          }
+        }
+      }
+    },
+    "ultra": {
+      "stages": {
+        "walk": {
+          "before": {
+            "framesPerRun": 360,
+            "hashes": [
+              "4b5ae9a6d3d3345f",
+              "4b5ae9a6d3d3345f"
+            ],
+            "cpuMsPerFrameSamples": [
+              17.34,
+              13.72
+            ],
+            "cpuMsPerFrameMedian": 15.530000000000001,
+            "wallSectionAveragesMs": {
+              "phys:broadphase": [
+                1.94,
+                1.63
+              ],
+              "people": [
+                4.32,
+                3.38
+              ],
+              "cars": [
+                9.72,
+                7.97
+              ],
+              "ui": [
+                2.87,
+                2.78
+              ]
+            },
+            "positiveHeapGrowthKBPerFrameSamples": [
+              785.7416666666667,
+              788.7916666666666
+            ]
+          },
+          "after": {
+            "framesPerRun": 360,
+            "hashes": [
+              "4b5ae9a6d3d3345f",
+              "4b5ae9a6d3d3345f"
+            ],
+            "cpuMsPerFrameSamples": [
+              10.89,
+              10.34
+            ],
+            "cpuMsPerFrameMedian": 10.615,
+            "wallSectionAveragesMs": {
+              "phys:broadphase": [
+                0.99,
+                1
+              ],
+              "people": [
+                2.07,
+                1.92
+              ],
+              "cars": [
+                5.1,
+                4.81
+              ],
+              "ui": [
+                1.21,
+                1.36
+              ]
+            },
+            "positiveHeapGrowthKBPerFrameSamples": [
+              753.7333333333333,
+              730.5
+            ]
+          },
+          "hashEqualInEveryRun": true
+        },
+        "drive": {
+          "before": {
+            "framesPerRun": 480,
+            "hashes": [
+              "b9afbccae574679f",
+              "b9afbccae574679f"
+            ],
+            "cpuMsPerFrameSamples": [
+              12.19,
+              8.71
+            ],
+            "cpuMsPerFrameMedian": 10.45,
+            "wallSectionAveragesMs": {
+              "phys:broadphase": [
+                1.42,
+                1.26
+              ],
+              "people": [
+                2.56,
+                2.23
+              ],
+              "cars": [
+                7.69,
+                6.02
+              ],
+              "ui": [
+                0.62,
+                0.45
+              ]
+            },
+            "positiveHeapGrowthKBPerFrameSamples": [
+              593.5958333333333,
+              595.5666666666667
+            ]
+          },
+          "after": {
+            "framesPerRun": 480,
+            "hashes": [
+              "b9afbccae574679f",
+              "b9afbccae574679f"
+            ],
+            "cpuMsPerFrameSamples": [
+              7.13,
+              7.42
+            ],
+            "cpuMsPerFrameMedian": 7.275,
+            "wallSectionAveragesMs": {
+              "phys:broadphase": [
+                0.73,
+                1.29
+              ],
+              "people": [
+                1.38,
+                2.12
+              ],
+              "cars": [
+                3.92,
+                6.46
+              ],
+              "ui": [
+                0.23,
+                0.42
+              ]
+            },
+            "positiveHeapGrowthKBPerFrameSamples": [
+              555.2958333333333,
+              551.5125
+            ]
+          },
+          "hashEqualInEveryRun": true
+        },
+        "county": {
+          "before": {
+            "framesPerRun": 360,
+            "hashes": [
+              "384a421988822dc2",
+              "384a421988822dc2"
+            ],
+            "cpuMsPerFrameSamples": [
+              7.32,
+              7.44
+            ],
+            "cpuMsPerFrameMedian": 7.380000000000001,
+            "wallSectionAveragesMs": {
+              "phys:broadphase": [
+                1.33,
+                1.21
+              ],
+              "people": [
+                0.64,
+                0.54
+              ],
+              "cars": [
+                7.4,
+                5.92
+              ],
+              "ui": [
+                0.57,
+                0.42
+              ]
+            },
+            "positiveHeapGrowthKBPerFrameSamples": [
+              618.2111111111111,
+              616.1416666666667
+            ]
+          },
+          "after": {
+            "framesPerRun": 360,
+            "hashes": [
+              "384a421988822dc2",
+              "384a421988822dc2"
+            ],
+            "cpuMsPerFrameSamples": [
+              7.7,
+              5.44
+            ],
+            "cpuMsPerFrameMedian": 6.57,
+            "wallSectionAveragesMs": {
+              "phys:broadphase": [
+                1,
+                1.06
+              ],
+              "people": [
+                0.58,
+                0.69
+              ],
+              "cars": [
+                5.53,
+                5.75
+              ],
+              "ui": [
+                0.39,
+                1.02
+              ]
+            },
+            "positiveHeapGrowthKBPerFrameSamples": [
+              588.8527777777778,
+              541.3111111111111
+            ]
+          },
+          "hashEqualInEveryRun": true
+        },
+        "chase": {
+          "before": {
+            "framesPerRun": 600,
+            "hashes": [
+              "1cdcd968b89b6575",
+              "1cdcd968b89b6575"
+            ],
+            "cpuMsPerFrameSamples": [
+              9.34,
+              8.56
+            ],
+            "cpuMsPerFrameMedian": 8.95,
+            "wallSectionAveragesMs": {
+              "phys:broadphase": [
+                1.01,
+                1.05
+              ],
+              "people": [
+                2,
+                2.18
+              ],
+              "cars": [
+                7.15,
+                6.13
+              ],
+              "ui": [
+                0.67,
+                0.4
+              ]
+            },
+            "positiveHeapGrowthKBPerFrameSamples": [
+              539.18,
+              539.7766666666666
+            ]
+          },
+          "after": {
+            "framesPerRun": 600,
+            "hashes": [
+              "1cdcd968b89b6575",
+              "1cdcd968b89b6575"
+            ],
+            "cpuMsPerFrameSamples": [
+              7.86,
+              7.03
+            ],
+            "cpuMsPerFrameMedian": 7.445,
+            "wallSectionAveragesMs": {
+              "phys:broadphase": [
+                0.92,
+                1.31
+              ],
+              "people": [
+                1.89,
+                2.56
+              ],
+              "cars": [
+                5.28,
+                6.92
+              ],
+              "ui": [
+                0.38,
+                0.56
+              ]
+            },
+            "positiveHeapGrowthKBPerFrameSamples": [
+              517.4116666666666,
+              515.0666666666667
+            ]
+          },
+          "hashEqualInEveryRun": true
+        },
+        "fort": {
+          "before": {
+            "framesPerRun": 480,
+            "hashes": [
+              "21fbae1e409c8ebc",
+              "21fbae1e409c8ebc"
+            ],
+            "cpuMsPerFrameSamples": [
+              6.83,
+              6.61
+            ],
+            "cpuMsPerFrameMedian": 6.720000000000001,
+            "wallSectionAveragesMs": {
+              "phys:broadphase": [
+                1.33,
+                1.2
+              ],
+              "people": [
+                0.15,
+                0.17
+              ],
+              "cars": [
+                5.81,
+                5.44
+              ],
+              "ui": [
+                0.44,
+                0.76
+              ]
+            },
+            "positiveHeapGrowthKBPerFrameSamples": [
+              516.7708333333334,
+              511.9
+            ]
+          },
+          "after": {
+            "framesPerRun": 480,
+            "hashes": [
+              "21fbae1e409c8ebc",
+              "21fbae1e409c8ebc"
+            ],
+            "cpuMsPerFrameSamples": [
+              6.33,
+              6.28
+            ],
+            "cpuMsPerFrameMedian": 6.305,
+            "wallSectionAveragesMs": {
+              "phys:broadphase": [
+                0.98,
+                1.23
+              ],
+              "people": [
+                0.12,
+                0.18
+              ],
+              "cars": [
+                4.36,
+                5.51
+              ],
+              "ui": [
+                0.3,
+                0.61
+              ]
+            },
+            "positiveHeapGrowthKBPerFrameSamples": [
+              463.6125,
+              457.20625
+            ]
+          },
+          "hashEqualInEveryRun": true
+        },
+        "fortChase": {
+          "before": {
+            "framesPerRun": 420,
+            "hashes": [
+              "a070f58e372d03f0",
+              "a070f58e372d03f0"
+            ],
+            "cpuMsPerFrameSamples": [
+              7.15,
+              6.69
+            ],
+            "cpuMsPerFrameMedian": 6.92,
+            "wallSectionAveragesMs": {
+              "phys:broadphase": [
+                1.11,
+                0.89
+              ],
+              "people": [
+                0.18,
+                0.14
+              ],
+              "cars": [
+                5.01,
+                4.08
+              ],
+              "ui": [
+                0.46,
+                0.38
+              ]
+            },
+            "positiveHeapGrowthKBPerFrameSamples": [
+              494.12857142857143,
+              495.0571428571429
+            ]
+          },
+          "after": {
+            "framesPerRun": 420,
+            "hashes": [
+              "a070f58e372d03f0",
+              "a070f58e372d03f0"
+            ],
+            "cpuMsPerFrameSamples": [
+              7.75,
+              9.1
+            ],
+            "cpuMsPerFrameMedian": 8.425,
+            "wallSectionAveragesMs": {
+              "phys:broadphase": [
+                0.85,
+                1.79
+              ],
+              "people": [
+                0.73,
+                0.49
+              ],
+              "cars": [
+                3.95,
+                10.05
+              ],
+              "ui": [
+                0.49,
+                1.36
+              ]
+            },
+            "positiveHeapGrowthKBPerFrameSamples": [
+              443.97857142857146,
+              441.26428571428573
+            ]
+          },
+          "hashEqualInEveryRun": true
+        }
+      },
+      "aggregatePerFrame": {
+        "allocKB": {
+          "before": {
+            "samples": [
+              581.2744444444445,
+              581.1666666666666
+            ],
+            "median": 581.2205555555556
+          },
+          "after": {
+            "samples": [
+              544.1944444444445,
+              532.002962962963
+            ],
+            "median": 538.0987037037037
+          }
+        },
+        "gcMB": {
+          "before": {
+            "samples": [
+              0.5163333333333333,
+              0.5284814814814816
+            ],
+            "median": 0.5224074074074074
+          },
+          "after": {
+            "samples": [
+              0.4947407407407408,
+              0.48314814814814816
+            ],
+            "median": 0.4889444444444445
+          }
+        },
+        "gcBetweenMB": {
+          "before": {
+            "samples": [
+              0.0,
+              0.0012962962962962963
+            ],
+            "median": 0.0006481481481481481
+          },
+          "after": {
+            "samples": [
+              0.0005185185185185185,
+              0.000962962962962963
+            ],
+            "median": 0.0007407407407407408
+          }
+        },
+        "dom": {
+          "before": {
+            "samples": [
+              0.32185185185185183,
+              0.31925925925925924
+            ],
+            "median": 0.32055555555555554
+          },
+          "after": {
+            "samples": [
+              0.31851851851851853,
+              0.31962962962962965
+            ],
+            "median": 0.31907407407407407
+          }
+        },
+        "canvasDraws": {
+          "before": {
+            "samples": [
+              0.3348148148148148,
+              0.3348148148148148
+            ],
+            "median": 0.3348148148148148
+          },
+          "after": {
+            "samples": [
+              0.3348148148148148,
+              0.3348148148148148
+            ],
+            "median": 0.3348148148148148
+          }
+        },
+        "canvasText": {
+          "before": {
+            "samples": [
+              0.6096296296296296,
+              0.6081481481481481
+            ],
+            "median": 0.6088888888888888
+          },
+          "after": {
+            "samples": [
+              0.6088888888888889,
+              0.6088888888888889
+            ],
+            "median": 0.6088888888888889
+          }
+        },
+        "vehicles": {
+          "before": {
+            "samples": [
+              0.015185185185185185,
+              0.015185185185185185
+            ],
+            "median": 0.015185185185185185
+          },
+          "after": {
+            "samples": [
+              0.015185185185185185,
+              0.015185185185185185
+            ],
+            "median": 0.015185185185185185
+          }
+        },
+        "people": {
+          "before": {
+            "samples": [
+              -0.0011111111111111111,
+              -0.0011111111111111111
+            ],
+            "median": -0.0011111111111111111
+          },
+          "after": {
+            "samples": [
+              -0.0011111111111111111,
+              -0.0011111111111111111
+            ],
+            "median": -0.0011111111111111111
+          }
+        }
+      }
+    }
+  },
+  "consoleErrors": 0,
+  "recordedHashObservations": 48,
+  "steppedFramesCompared": 21600,
+  "allPerTierHashesEqual": true,
+  "sameStageHashesEqualAcrossTiers": true,
+  "timingCaveat": "Full-frame medians were mixed: LOW drive rose 10.0 to 10.3 ms and ULTRA fortChase rose 6.9 to 8.4 ms. Counts demonstrate less lookup/copy/allocation work; these samples cannot establish a blanket full-frame speedup."
+}

@@ -1,0 +1,15 @@
+{
+  "crowd": {
+    "checked": 31684,
+    "encounterFrames": 240,
+    "denseSlots": 1849,
+    "operations": null,
+    "timing": null
+  },
+  "gates": {
+    "checked": 4360,
+    "reusedContacts": 4360,
+    "frames": 120,
+    "fixedFortSightSolids": 20
+  }
+}

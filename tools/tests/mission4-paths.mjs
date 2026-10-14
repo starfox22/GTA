@@ -46,13 +46,17 @@ export default async function (t) {
   t.assert(r.stage === 3 && r.inside, 'inside: ' + JSON.stringify(r));
   await t.call('lockpick', true, true);
   await t.wait(0.3);
-  // A passer-by looking pauses the pick (lockpickWatcher): keep at it until it gives.
-  for (let i = 0; i < 4; i++) {
-    await t.keys('KeyE', 5.8, { real: true });
-    await t.wait(0.5);
+  // A watcher can report the theft; the work itself takes five game seconds. The
+  // live frame delta is capped, so a loaded headless browser can advance far less
+  // game time than wall time. Keep the real action key and bound both clocks.
+  const pickStarted = (await t.call('frameFaults')).gameTime;
+  for (let i = 0; i < 50; i++) {
+    await t.keys('KeyE', 1.2, { real: true });
     r = await t.call('fortJob');
     if (r.car.trunkOpen) break;
+    if ((await t.call('frameFaults')).gameTime - pickStarted >= 8) break;
   }
+  t.note(`quiet trunk open=${r.car.trunkOpen} after ${((await t.call('frameFaults')).gameTime - pickStarted).toFixed(2)} game seconds`);
   t.assert(r.stage === 4 && r.car.trunkOpen, 'trunk picked open: ' + JSON.stringify(r));
   await E(t);
   await t.wait(0.5);

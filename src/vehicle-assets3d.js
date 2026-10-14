@@ -78,7 +78,14 @@
           trim: new Three.MeshStandardMaterial({ map: atlas, roughness: 0.48, metalness: 0.32, envMapIntensity: 1.1, alphaTest: 0.5 }),
           rubber: new Three.MeshStandardMaterial({ map: atlas, roughness: 0.86, metalness: 0.02 }),
           rim: new Three.MeshStandardMaterial({ map: atlas, roughness: 0.3, metalness: 0.75, envMapIntensity: 1.2 }),
+          // Coated military bodywork and canvas are matte, unlike civilian chrome/trim.
+          armyBody: new Three.MeshStandardMaterial({ map: atlas, roughness: 0.86, metalness: 0.04, envMapIntensity: 0.7, alphaTest: 0.5 }),
+          // The packed military wheel contains both tyre and painted hub. A vertex finish
+          // keeps the rubber matte without splitting every wheel into another draw call.
+          armyWheel: civFinishPatch(new Three.MeshStandardMaterial({ map: atlas, roughness: 0.86, metalness: 0.04, alphaTest: 0.5 }), 'army-wheel'),
         };
+        vaMaterialSet.armyBody.userData.assetAtlas = 'cut';
+        vaMaterialSet.armyWheel.userData.assetAtlas = 'finish';
         for (const m of Object.values(vaMaterialSet)) sharedMaterials.add(m);
         return vaMaterialSet;
       }

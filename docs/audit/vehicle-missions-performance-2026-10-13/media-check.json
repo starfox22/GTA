@@ -1,0 +1,55 @@
+{
+  "tracksPassed": 9,
+  "tracksFailed": 0,
+  "page": "HTTP-mapped held-aim-corrected local package; final tracks byte-verified",
+  "sourceHTMLSHA256": "47a584c004795d2ae6c1595e4804bcbec365fc86b788d255f549f615665f5bfd",
+  "tracks": [
+    {
+      "file": "media/island-colada.mp3",
+      "bytes": 1925823,
+      "sha256": "f695b7de584edc492810fed41a1cbfd9cd0ccaf1cf6447f3c0889eb058a70d12"
+    },
+    {
+      "file": "media/island-dub.mp3",
+      "bytes": 2487833,
+      "sha256": "be282aaaf7bee116a3348db3248e9a70bcaa30898de4675d3455a6bf0c7616be"
+    },
+    {
+      "file": "media/lofi-freeway.mp3",
+      "bytes": 2120191,
+      "sha256": "11d8e376ad5e5b53a9f2e1604e588a09ce02360fb97cb06ccc6fe69de33754db"
+    },
+    {
+      "file": "media/lofi-hooptie.mp3",
+      "bytes": 2637757,
+      "sha256": "435a8efd2e05add54f37f2cfbeb765b48386bf48909cd52523829d0f868a23f1"
+    },
+    {
+      "file": "media/lounge-heists.mp3",
+      "bytes": 2209481,
+      "sha256": "46db5bd44a5938d98978d37725836462c5ba2b388d3874b877cb194f5ab7f1f1"
+    },
+    {
+      "file": "media/lounge-martini.mp3",
+      "bytes": 2063086,
+      "sha256": "a75e273b7afa3dc9fed814baff6ba3759380caab3d14e1b09042b6657be66d76"
+    },
+    {
+      "file": "media/oddball.mp3",
+      "bytes": 1733978,
+      "sha256": "9ffe2ec825e2c01ccba1b66da1e032a0148d3895e5c72fcb7e4e729584b65111"
+    },
+    {
+      "file": "media/rock.mp3",
+      "bytes": 811108,
+      "sha256": "a1d9d63cd8af19387969f541cce96dd2c1f7791c4b05ae61691b9a1b6620180d"
+    },
+    {
+      "file": "media/synth.mp3",
+      "bytes": 1550927,
+      "sha256": "914b506fcf2fe116752f22b478ef09cf30fd6dc3b86632e22d7370507bf2f934"
+    }
+  ],
+  "note": "Final publication tracks are byte-identical to these nine verified canplay tracks.",
+  "finalPackageIdenticalTracks": true
+}

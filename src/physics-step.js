@@ -1,5 +1,21 @@
     // physicsStep(): the fixed step, broadphase, contact passes, settling.
     // Rest flags, vehicle pairs, nearby walls and barriers for this step's contacts.
+    // Reuse the immutable-for-this-step gate shapes. Contact passes read these bodies synchronously and
+    // never retain or mutate them; refresh every field from the current opening's rectangle before pairing.
+    const broadphaseDepotShapes = [],
+      broadphaseMilitaryShapes = [],
+      broadphaseHarborShapes = [];
+    function broadphaseGateShape(pool, at, r, kind, id) {
+      const b = pool[at] || (pool[at] = { x: 0, y: 0, hx: 0, hy: 0, a: 0, height: 0, kind: '', id: '' });
+      b.x = r.x + r.w / 2;
+      b.y = r.y + r.h / 2;
+      b.hx = r.w / 2;
+      b.hy = r.h / 2;
+      b.height = r.height;
+      b.kind = kind;
+      b.id = id;
+      return b;
+    }
     function vehicleBroadphase(pc) {
       // Vehicles that are far from the player, barely moving and untouched for a while
       // "rest": they skip static-contact passes (they cannot have moved into a wall).
@@ -104,39 +120,42 @@
       // Vinny's depot shutters open and close mid-mission, so they live outside
       // the baked static grid and are resolved from this short list.
       const depot = depotBarriers(),
-        blockBodies = depot.length
-          ? depot.map((r, i) => ({
-              x: r.x + r.w / 2,
-              y: r.y + r.h / 2,
-              hx: r.w / 2,
-              hy: r.h / 2,
-              a: 0,
-              height: r.height,
-              kind: 'roadblock',
-              id: 'block' + i,
-            }))
-          : noStatics;
-      // The base gate and harbor barriers, for the few vehicles near them.
+        depotCount = depot.length;
+      for (let i = 0; i < depotCount; i++) broadphaseGateShape(broadphaseDepotShapes, i, depot[i], 'roadblock', 'block' + i);
+      // Fixed base solids already belong to the static grid. Only the moving gate pieces belong in this
+      // pass: militarySolids() copied the entire sight-solid list for every car, 120 times a second.
       const barrierCars = broadphaseBarrierCars,
         barrierBodies = broadphaseBarrierBodies;
+      let militaryCount = -1,
+        harborCount = -1;
       barrierCars.length = barrierBodies.length = 0;
       for (let v = 0; v < vehicles.length; v++) {
         const c = vehicles[v];
         if (isBoat(c) || (c.altitude || 0) >= 20) continue;
-        if (inMilitary(c.x, c.y, 130))
-          for (const r of militarySolids())
-            if (r.barrier) {
-              barrierCars.push(c);
-              barrierBodies.push({ x: r.x + r.w / 2, y: r.y + r.h / 2, hx: r.w / 2, hy: r.h / 2, a: 0, height: r.height, kind: 'military', id: 'basegate' });
-            }
-        if (inHarbor(c.x, c.y, 100))
-          for (const r of harborSolids())
-            if (r.barrier) {
-              barrierCars.push(c);
-              barrierBodies.push({ x: r.x + r.w / 2, y: r.y + r.h / 2, hx: r.w / 2, hy: r.h / 2, a: 0, height: r.height, kind: 'harbor', id: 'port' + r.x + ',' + r.y });
-            }
-        for (let k = 0; k < blockBodies.length; k++) {
-          const b = blockBodies[k];
+        if (inMilitary(c.x, c.y, 130)) {
+          if (militaryCount < 0) {
+            militaryCount = 0;
+            for (const r of militaryGateSolids())
+              if (r.barrier) broadphaseGateShape(broadphaseMilitaryShapes, militaryCount++, r, 'military', 'basegate');
+          }
+          for (let k = 0; k < militaryCount; k++) {
+            barrierCars.push(c);
+            barrierBodies.push(broadphaseMilitaryShapes[k]);
+          }
+        }
+        if (inHarbor(c.x, c.y, 100)) {
+          if (harborCount < 0) {
+            harborCount = 0;
+            for (const r of harborSolids())
+              if (r.barrier) broadphaseGateShape(broadphaseHarborShapes, harborCount++, r, 'harbor', 'port' + r.x + ',' + r.y);
+          }
+          for (let k = 0; k < harborCount; k++) {
+            barrierCars.push(c);
+            barrierBodies.push(broadphaseHarborShapes[k]);
+          }
+        }
+        for (let k = 0; k < depotCount; k++) {
+          const b = broadphaseDepotShapes[k];
           if (Math.abs(c.x - b.x) <= 90 && Math.abs(c.y - b.y) <= 90) {
             barrierCars.push(c);
             barrierBodies.push(b);

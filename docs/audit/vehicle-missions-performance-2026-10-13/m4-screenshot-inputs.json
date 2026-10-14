@@ -1,0 +1,70 @@
+{
+  "method": "Native Playwright screenshots/crops; no image generation or retouching",
+  "camera": [
+    65,
+    18,
+    8
+  ],
+  "closeUp": 12,
+  "viewport": [
+    960,
+    600
+  ],
+  "tier": "high",
+  "sky": "clear",
+  "clock": 13,
+  "rollingSpeedFixture": 6,
+  "repairFixture": "burnVehicle(id,20), burnVehicle(id,0,true), same timed draw sequence",
+  "publicationDelta": "Final publication adds actual held-aim input, motorcycle paired grips/steering and terrain attachment order; flat-scene M4 geometry/materials are unchanged. Motorcycle GPU comparisons use the final publication build directly. Final embedded credits have a plain-text annotation; game JS and all media unchanged.",
+  "note": "Visible FPS values reflect held/manual-clock SwiftShader captures, not laptop performance",
+  "images": [
+    {
+      "file": "screenshots/m4-after-materials.png",
+      "bytes": 636170,
+      "sha256": "44c3501732f2ea31577ba37f155914c863a8da72793ca3057f2681cb6336e79a",
+      "width": 960,
+      "height": 600,
+      "htmlSHA256": "2399af32b917bf9f05be600257742cdea4c64e6454ab45cea57c1efd08b89c11"
+    },
+    {
+      "file": "screenshots/m4-after-repair.png",
+      "bytes": 373101,
+      "sha256": "d1c0f8e512faaea5de911fdf6c2ca1d94fbe3e319f8f4465d97bae15a5c186c2",
+      "width": 615,
+      "height": 445,
+      "htmlSHA256": "2399af32b917bf9f05be600257742cdea4c64e6454ab45cea57c1efd08b89c11"
+    },
+    {
+      "file": "screenshots/m4-after-rolling.png",
+      "bytes": 354144,
+      "sha256": "2dda182514ca3e80f8f49455c935da3dd9c938a08c4dfd438de33e7f7f02b029",
+      "width": 615,
+      "height": 445,
+      "htmlSHA256": "2399af32b917bf9f05be600257742cdea4c64e6454ab45cea57c1efd08b89c11"
+    },
+    {
+      "file": "screenshots/m4-before-materials.png",
+      "bytes": 640634,
+      "sha256": "800cad3d28a3b48bc22cab55097e08984e6c727793bec74f15eee8ddc6e612fc",
+      "width": 960,
+      "height": 600,
+      "htmlSHA256": "9b2a5633fdad0f37579d3bee505d8b55f1efddba095872e3e591ea9f8069c41b"
+    },
+    {
+      "file": "screenshots/m4-before-repair.png",
+      "bytes": 374069,
+      "sha256": "77dadb76166090b462486c7544ba6ae179fe3629dcd0a1cb9733d70261712039",
+      "width": 615,
+      "height": 445,
+      "htmlSHA256": "9b2a5633fdad0f37579d3bee505d8b55f1efddba095872e3e591ea9f8069c41b"
+    },
+    {
+      "file": "screenshots/m4-before-rolling.png",
+      "bytes": 358233,
+      "sha256": "2ad8f8123aec2af1210d34f3960bd151bf5dd3d55eccd71a29b9bef8d0eed031",
+      "width": 615,
+      "height": 445,
+      "htmlSHA256": "9b2a5633fdad0f37579d3bee505d8b55f1efddba095872e3e591ea9f8069c41b"
+    }
+  ]
+}

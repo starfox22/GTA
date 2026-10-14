@@ -1,0 +1,46 @@
+{
+  "frozenBaseline": {
+    "file": "/workspace/GTA/dist/review-2026-10-13-before.html",
+    "sha256": "9b2a5633fdad0f37579d3bee505d8b55f1efddba095872e3e591ea9f8069c41b",
+    "commit": "bde9ee4",
+    "exactEmbeddedFunctionSources": true
+  },
+  "previousCandidate": {
+    "file": "/workspace/GTA/dist/review-2026-10-13-shipping.html",
+    "sha256": "2399af32b917bf9f05be600257742cdea4c64e6454ab45cea57c1efd08b89c11",
+    "exactEmbeddedFunctionSources": true,
+    "result": {
+      "assertions": 8,
+      "failures": [
+        "records: aiming/firing/movement stuck across modal",
+        "lift: aiming/firing/movement stuck across modal"
+      ]
+    },
+    "issue": "mouse.rightDown does not clear actual game-input mouse.alt"
+  },
+  "sources": {
+    "fort-cover-records.js": {
+      "baselineSHA256": "9b7c7a5b276211c3bb9acb99cd533bb14db1982da4ec1032b55a6fc1ea57bbc1",
+      "previousCandidateSHA256": "5ddde50ceb37311825db1d433dd48e1541bbe5d16eb7547b2f3eb9ef9543d683",
+      "currentSHA256": "bc626a88aac658b9563f5065775ce39d38f002d396e8eec499a5b02ea949c4ac"
+    },
+    "skyline-lift.js": {
+      "baselineSHA256": "ca1ac07aaaabcd8b9a919689d82125492a9d2c5276b40b720b4bea19548454a0",
+      "previousCandidateSHA256": "ab1cf280139be20cd74d5f7cf47eedf995f856acf8a6e5e9366238f2ab8f498c",
+      "currentSHA256": "59f1c293b51b26a6bde9e2d61c8d03735097118c76c0be66811c7b162749ff8d"
+    }
+  },
+  "fixtureSHA256": "88b858a9c61e9c80cc2324eefc67f473c750028ca647a18720f7cd06f0c40480",
+  "before": {
+    "assertions": 8,
+    "failures": [
+      "records: aiming/firing/movement stuck across modal",
+      "lift: aiming/firing/movement stuck across modal"
+    ]
+  },
+  "after": {
+    "assertions": 8,
+    "failures": []
+  },
+  "note": "Actual production entry functions, real input property mouse.alt used by game-input/chase-camera/armor; no browser or renderer needed. Duplicate-rejection behavior retained. Existing frozen HTML files unchanged."
+}

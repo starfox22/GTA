@@ -36,7 +36,7 @@ vehicles-and-driving-models.md's; credits in docs/THIRD_PARTY_CREDITS.txt. Conso
   the damage adds later, on a `shapeVersion` change) onto per-car char materials: soot projected in each mesh's frame in
   world units on three planes, matte, embers in the emissive (`assetCharEmbers`). An army model (`m.atlasPaint`) also
   takes the wear's grime and the fire's heat through them. Intact models keep the shared materials and the merge; a
-  repair or respray swaps back (`assetCharRelease`, materials pooled). Three programs (cut-out, atlas, plain), compiled
+  repair or respray swaps back (`assetCharRelease`, materials pooled). Four programs (cut-out, atlas, plain, military vertex finish), compiled
   at the title prewarm (`assetCharWarm`, kept in sharedMaterials). Draw calls unchanged. Console `assetChar()`,
   `burnVehicle(id, ago, mend)`.
 - Each released char-material pool keeps at most 12 materials; overflow is disposed immediately so repaired cars
@@ -61,31 +61,15 @@ vehicles-and-driving-models.md's; credits in docs/THIRD_PARTY_CREDITS.txt. Conso
 - 11 draws pristine (21 procedural), 3 shadow casters (11), ~10k triangles. DRIVEBY_SEATS `'law:crownvic'` is the
   model's seat (re-record with `test.mjs --render cabin-headroom` after a model change).
 
-## Motorbikes (ASSET MOTORBIKES, motorbike-assets3d.js)
+## Motorbikes
 
-- `kind: 'moto'` models (tools/vehicle_models_moto.py): the VORTEX 900 ('bike') is the Honda CB 750 F (1970). The
-  converter splits frame paint / trim, the steering (everything wholly ahead of the steering axis moved back `reach`,
-  and the bars above `bars`; hints `axis`, `bars`, `seat`, `pegs` in the game frame), the head lamp (in the fork), the
-  tail lamp and both wheels; brand badges go by material (`roles` 'drop') or `erase` rectangles in the texture.
-- The kit puts the steering geometry in the fork pivot's frame (axis top, tilted by the model's `rake`), the front wheel
-  under it; `m.rearAxleX` is the wheelie's pivot (animateMotorbike); the rider's pose (`riderSeat`, the stand-in
-  `motoRiderGeometry(type, pose, scale)`) comes from the measured saddle, grips and pegs.
-- The KR 500 ('kr500') is OCTbuilds' KTM Dirt Bike: its plastics' orange takes the paint (`paintTex`, so a respray
-  shows), the white and black graphics stay their texture, the maker's logos erased.
-- Sources posed with the bars turned (all three bikes) are turned straight first (`unsteer`: everything ahead of the
-  head tube's axis, above `above`, out at the bars' ends `wide`, and inside the front tyre's sphere turns back about
-  the axis; the axis passes the rear tyre's middle plane). Without it the front wheel spun about an axle that was not
-  its own and wobbled.
-  Check a new bike: its front tyre's flattest direction must come out along z.
-- A wheel turns only whole pieces inside its hub circle that go round the axle (rim, hub, disc, sprocket), run from
-  hub to rim (a spoke) or are small bits on hub or rim (nipples, bolts): a caliper, a fork's foot or a chain link
-  stays put (the converter prints what it left). `fork` (sphere in tyre radii, `reach` behind the axis) puts what
-  hangs round the front wheel (fork feet, caliper, a wrapping fender) in the steering; `barsWide` the levers and hand
-  guards. Stands modelled down are left out with `dropBox`. Hints after `unsteer` are in the re-centred frame.
-- Cars (convert): a wheel takes nothing past its tyre's inner wall (the Suburban's arch lining turned with its wheels).
-- Kept procedural: dolcati, yamasaki (the matching models are Draco-compressed with no plain mirror on GitHub, or their
-  paint and maker's logos are baked into one texture: the NR750 cannot take the traffic colours).
-- 11 draws (as procedural), ~14k triangles with the rider stand-in (procedural 6.9k).
+Downloaded motorcycle parts, source unsteering, recorded rolling axles, front tyre rigs,
+steering/lock/spin animation and validation: [motorcycle models](vehicles-and-driving-models-motorcycles.md).
+
+## Military vehicles
+
+Shared immutable geometry, the HMMWV's original lamp lenses, matte coatings,
+single-draw tyre/hub finish, steering and far LOD: [military models](vehicles-and-driving-models-military.md).
 
 ## Boats (ASSET BOATS, boat-assets3d.js)
 

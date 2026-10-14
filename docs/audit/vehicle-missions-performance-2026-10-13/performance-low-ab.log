@@ -1,0 +1,30 @@
+A run 1 done
+B run 1 done
+B run 2 done
+A run 2 done
+
+A = ../../workspace/GTA/dist/review-2026-10-13-before.html, B = ../../workspace/GTA/dist/performance-kernels-after.html; medians of 2 / 2 runs
+stage      cpu/frame A>B  p95 A>B       p99 A>B       max A>B       long A>B   >33 A>B
+walk       15.5>10.6      31.6>23.5     149.2>114.7   1680.3>684    43.5>43.5  17>11
+drive      10>10.3        28>25.1       60.3>76.6     162.9>880.4   81>64      15.5>14.5
+county     7>6.6          29.8>16.9     60.8>25.8     161.9>124.6   68.5>35    10.5>2
+chase      8.3>7.8        33>21.5       56.6>30.8     106.9>62.9    84>69.5    33.5>3
+fort       6.7>6.5        27.6>18.5     47.8>26.9     66.1>50.5     76.5>57    15>3
+fortChase  9.9>5.8        36.9>10.3     65.7>19.3     144.9>53.3    76.5>20    24.5>2
+  walk       stateHash equal in every run
+  drive      stateHash equal in every run
+  county     stateHash equal in every run
+  chase      stateHash equal in every run
+  fort       stateHash equal in every run
+  fortChase  stateHash equal in every run
+  allocKB per frame: 576.6 > 536.8
+  gcMB per frame: 530.8 > 492.8 (KB)
+  dom per frame: 0.3 > 0.3
+  bufMB per frame: 0 > 0 (KB)
+  texMB per frame: 0 > 0 (KB)
+  models per frame: 0 > 0
+  geometries per frame: 0 > 0
+  textures per frame: 0 > 0
+  programs per frame: 0 > 0
+  audioNodes per frame: 0 > 0
+  canvasText per frame: 0.6 > 0.6

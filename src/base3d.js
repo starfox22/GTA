@@ -59,5 +59,6 @@
       // @include src/base3d-frame.js
       /* ---- Military vehicle models ------------------------------------------------------ */
       // @include src/base3d-vehicles.js
+      // @include src/military-asset-wheels3d.js
       // @include src/military-assets3d.js
       // END SUBSYSTEM: src/base3d.js

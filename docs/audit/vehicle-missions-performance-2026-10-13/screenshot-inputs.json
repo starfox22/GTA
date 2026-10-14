@@ -1,0 +1,153 @@
+{
+  "method": "Native Playwright browser captures/crops; no generated or retouched images",
+  "militaryFixture": "m4-screenshot-inputs.json",
+  "motorcycleFixture": "motorcycle-capture-inputs.json",
+  "publicationDelta": "publication-credit-delta.json",
+  "note": "M4 uses frozen military candidate; motorcycle AFTER uses final tested runtime. FPS during held/manual SwiftShader capture is not a laptop benchmark.",
+  "images": [
+    {
+      "file": "screenshots/m4-after-materials.png",
+      "bytes": 636170,
+      "width": 960,
+      "height": 600,
+      "sha256": "44c3501732f2ea31577ba37f155914c863a8da72793ca3057f2681cb6336e79a",
+      "sourceHTMLSHA256": "2399af32b917bf9f05be600257742cdea4c64e6454ab45cea57c1efd08b89c11"
+    },
+    {
+      "file": "screenshots/m4-after-repair.png",
+      "bytes": 373101,
+      "width": 615,
+      "height": 445,
+      "sha256": "d1c0f8e512faaea5de911fdf6c2ca1d94fbe3e319f8f4465d97bae15a5c186c2",
+      "sourceHTMLSHA256": "2399af32b917bf9f05be600257742cdea4c64e6454ab45cea57c1efd08b89c11"
+    },
+    {
+      "file": "screenshots/m4-after-rolling.png",
+      "bytes": 354144,
+      "width": 615,
+      "height": 445,
+      "sha256": "2dda182514ca3e80f8f49455c935da3dd9c938a08c4dfd438de33e7f7f02b029",
+      "sourceHTMLSHA256": "2399af32b917bf9f05be600257742cdea4c64e6454ab45cea57c1efd08b89c11"
+    },
+    {
+      "file": "screenshots/m4-before-materials.png",
+      "bytes": 640634,
+      "width": 960,
+      "height": 600,
+      "sha256": "800cad3d28a3b48bc22cab55097e08984e6c727793bec74f15eee8ddc6e612fc",
+      "sourceHTMLSHA256": "9b2a5633fdad0f37579d3bee505d8b55f1efddba095872e3e591ea9f8069c41b"
+    },
+    {
+      "file": "screenshots/m4-before-repair.png",
+      "bytes": 374069,
+      "width": 615,
+      "height": 445,
+      "sha256": "77dadb76166090b462486c7544ba6ae179fe3629dcd0a1cb9733d70261712039",
+      "sourceHTMLSHA256": "9b2a5633fdad0f37579d3bee505d8b55f1efddba095872e3e591ea9f8069c41b"
+    },
+    {
+      "file": "screenshots/m4-before-rolling.png",
+      "bytes": 358233,
+      "width": 615,
+      "height": 445,
+      "sha256": "2ad8f8123aec2af1210d34f3960bd151bf5dd3d55eccd71a29b9bef8d0eed031",
+      "sourceHTMLSHA256": "9b2a5633fdad0f37579d3bee505d8b55f1efddba095872e3e591ea9f8069c41b"
+    },
+    {
+      "file": "screenshots/moto-after-bike-repaired.png",
+      "bytes": 226687,
+      "width": 400,
+      "height": 410,
+      "sha256": "eda0eccc80d820596b14a48712b0dddaafcb2c58277bdd259967e4bcbcb9e25a",
+      "sourceHTMLSHA256": "b8d8713019cbb4d265496897859b2d2a11bd38edcf3e319c48b2dbffe9069b4f"
+    },
+    {
+      "file": "screenshots/moto-after-bike-rest.png",
+      "bytes": 228526,
+      "width": 400,
+      "height": 410,
+      "sha256": "3e5582d49a6d20effc3de12f498365810bfc5cb032fda4e069882f5617fe0e78",
+      "sourceHTMLSHA256": "b8d8713019cbb4d265496897859b2d2a11bd38edcf3e319c48b2dbffe9069b4f"
+    },
+    {
+      "file": "screenshots/moto-after-cruiser-rest.png",
+      "bytes": 229599,
+      "width": 400,
+      "height": 410,
+      "sha256": "1558f8e905c033f1120f1012d7a54f5460a1e4738d624b4eda43cf2450af0339",
+      "sourceHTMLSHA256": "b8d8713019cbb4d265496897859b2d2a11bd38edcf3e319c48b2dbffe9069b4f"
+    },
+    {
+      "file": "screenshots/moto-after-kr500-front-shot.png",
+      "bytes": 229461,
+      "width": 400,
+      "height": 410,
+      "sha256": "e39b3c02d98aa88a5a0bde7f1e7f181f42cbc7d4df713e1ccd4e3ba2c343f3c1",
+      "sourceHTMLSHA256": "b8d8713019cbb4d265496897859b2d2a11bd38edcf3e319c48b2dbffe9069b4f"
+    },
+    {
+      "file": "screenshots/moto-after-kr500-rolling.png",
+      "bytes": 230727,
+      "width": 400,
+      "height": 410,
+      "sha256": "28dd657ada65ad0a84ea954a4367051409c1173aef1bb3594315721c9499ef32",
+      "sourceHTMLSHA256": "b8d8713019cbb4d265496897859b2d2a11bd38edcf3e319c48b2dbffe9069b4f"
+    },
+    {
+      "file": "screenshots/moto-after-puncture-chase.png",
+      "bytes": 398635,
+      "width": 600,
+      "height": 530,
+      "sha256": "64069d322a0fb079df4270e6134016ac138cb076ca0a2e3f013177b491b1bae1",
+      "sourceHTMLSHA256": "b8d8713019cbb4d265496897859b2d2a11bd38edcf3e319c48b2dbffe9069b4f"
+    },
+    {
+      "file": "screenshots/moto-before-bike-repaired.png",
+      "bytes": 225738,
+      "width": 400,
+      "height": 410,
+      "sha256": "61faa6015db0dc9aba826209213187ae4ebfa0210fd1d2ad110fd706d01a61df",
+      "sourceHTMLSHA256": "9b2a5633fdad0f37579d3bee505d8b55f1efddba095872e3e591ea9f8069c41b"
+    },
+    {
+      "file": "screenshots/moto-before-bike-rest.png",
+      "bytes": 228222,
+      "width": 400,
+      "height": 410,
+      "sha256": "6e459d1a6679dd0ecb6d4af01b1827df46bf07b075d4dd894ba7464b5d94fdca",
+      "sourceHTMLSHA256": "9b2a5633fdad0f37579d3bee505d8b55f1efddba095872e3e591ea9f8069c41b"
+    },
+    {
+      "file": "screenshots/moto-before-cruiser-rest.png",
+      "bytes": 228959,
+      "width": 400,
+      "height": 410,
+      "sha256": "b3d09b0553238a5a02128a24c248d2aea698c721db78a574377835b4dd1405a3",
+      "sourceHTMLSHA256": "9b2a5633fdad0f37579d3bee505d8b55f1efddba095872e3e591ea9f8069c41b"
+    },
+    {
+      "file": "screenshots/moto-before-kr500-front-shot.png",
+      "bytes": 229388,
+      "width": 400,
+      "height": 410,
+      "sha256": "246f681e2c210368d69e3564e1b02421bd5d7836e719e4f2c9d311d7dc56795d",
+      "sourceHTMLSHA256": "9b2a5633fdad0f37579d3bee505d8b55f1efddba095872e3e591ea9f8069c41b"
+    },
+    {
+      "file": "screenshots/moto-before-kr500-rolling.png",
+      "bytes": 230700,
+      "width": 400,
+      "height": 410,
+      "sha256": "1a9451c76e98bfeee8f7c66c12083b81b374274477c1a99a479af944d3fbb9d6",
+      "sourceHTMLSHA256": "9b2a5633fdad0f37579d3bee505d8b55f1efddba095872e3e591ea9f8069c41b"
+    },
+    {
+      "file": "screenshots/moto-before-puncture-chase.png",
+      "bytes": 398423,
+      "width": 600,
+      "height": 530,
+      "sha256": "6209c9c1d18e6a80a41cf46cdcebc324e4692bf340b4cbe398372bd95aa292c2",
+      "sourceHTMLSHA256": "9b2a5633fdad0f37579d3bee505d8b55f1efddba095872e3e591ea9f8069c41b"
+    }
+  ]
+}

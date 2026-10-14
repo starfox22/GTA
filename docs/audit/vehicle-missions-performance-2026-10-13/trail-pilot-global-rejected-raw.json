@@ -1,0 +1,246 @@
+{
+  "metadata": {
+    "html": "/workspace/GTA/dist/review-2026-10-13-pilot-candidate.html",
+    "flags": "dev&norender&seed=1&hold",
+    "sha256": "9b0c30fc1c0fcaa5ca0098a8ce282ca0b97cef5af6b84fd080a292b2d3c189a3",
+    "utc": "2026-10-13T23:57:45.604Z",
+    "fixture": "fresh seeded1 held world; one crawler reused for 1/30 climb,1/60 climb,1/30 descent and rest as original test"
+  },
+  "stages": [
+    {
+      "direction": "up",
+      "frame": 0.03333333333333333,
+      "maxKmh": 45,
+      "result": {
+        "direction": "up",
+        "frame": 0.0333,
+        "ride": {
+          "airS": 0.03,
+          "hops": 0,
+          "maxGapM": 0.01,
+          "gapAt": [
+            7418,
+            1548,
+            45
+          ],
+          "maxLiftM": 2.29,
+          "liftAt": [
+            8098,
+            1583,
+            17.7,
+            [
+              -0.19,
+              0.23,
+              -0.07,
+              0.72
+            ]
+          ],
+          "minLiftM": -0.16,
+          "maxRiseMs": 7.22,
+          "maxUpMs": 5.28,
+          "maxDownMs": -4.58,
+          "stops": 9,
+          "maxBlowMs": 2.2,
+          "blowAt": [
+            8056,
+            1583,
+            3,
+            0.18,
+            22
+          ],
+          "flights": 0,
+          "maxPitchRate": 2.33,
+          "maxRollRate": 6.51,
+          "nan": 0
+        },
+        "cliffFlights": 0,
+        "cliffAirS": 0,
+        "nan": false,
+        "overturned": false,
+        "reason": "summit",
+        "seconds": 72.8,
+        "sample": 696,
+        "of": 700,
+        "progress": 0.994,
+        "height": 762,
+        "meanSpin": 0.08,
+        "slidBackM": 0,
+        "maxKmh": 45,
+        "hp": 240,
+        "mudCoat": 0.3,
+        "last": {
+          "peak": "MOUNT ASCENT",
+          "time": 72.57,
+          "clean": true,
+          "challenge": false,
+          "splits": [
+            6.67,
+            19.33,
+            44.07,
+            64.93
+          ]
+        }
+      }
+    },
+    {
+      "direction": "up",
+      "frame": 0.016666666666666666,
+      "maxKmh": 45,
+      "result": {
+        "direction": "up",
+        "frame": 0.0167,
+        "ride": {
+          "airS": 0.03,
+          "hops": 0,
+          "maxGapM": 0.01,
+          "gapAt": [
+            7418,
+            1548,
+            44
+          ],
+          "maxLiftM": 1.93,
+          "liftAt": [
+            7928,
+            1370,
+            42.6,
+            [
+              0.15,
+              0.48,
+              -0.29,
+              1.85
+            ]
+          ],
+          "minLiftM": -0.18,
+          "maxRiseMs": 5.25,
+          "maxUpMs": 5.01,
+          "maxDownMs": -4.6,
+          "stops": 13,
+          "maxBlowMs": 1.97,
+          "blowAt": [
+            7897,
+            1387,
+            3,
+            0.29,
+            24
+          ],
+          "flights": 0,
+          "maxPitchRate": 2.42,
+          "maxRollRate": 6.33,
+          "nan": 0
+        },
+        "cliffFlights": 0,
+        "cliffAirS": 0,
+        "nan": false,
+        "overturned": false,
+        "reason": "summit",
+        "seconds": 75.2,
+        "sample": 696,
+        "of": 700,
+        "progress": 0.994,
+        "height": 762,
+        "meanSpin": 0.09,
+        "slidBackM": 0.2,
+        "maxKmh": 46,
+        "hp": 240,
+        "mudCoat": 0.54,
+        "last": {
+          "peak": "MOUNT ASCENT",
+          "time": 74.92,
+          "clean": true,
+          "challenge": false,
+          "splits": [
+            6.63,
+            19.97,
+            46.28,
+            67.45
+          ]
+        }
+      }
+    },
+    {
+      "direction": "down",
+      "frame": 0.03333333333333333,
+      "maxKmh": 35,
+      "result": {
+        "direction": "down",
+        "frame": 0.0333,
+        "ride": {
+          "airS": 0.06,
+          "hops": 0,
+          "maxGapM": 0.62,
+          "gapAt": [
+            7477,
+            1197,
+            17
+          ],
+          "maxLiftM": 4.62,
+          "liftAt": [
+            7475,
+            1195,
+            81.7,
+            [
+              3.85,
+              4.03,
+              4.29,
+              -5.5
+            ]
+          ],
+          "minLiftM": -0.21,
+          "maxRiseMs": 17.93,
+          "maxUpMs": 4.78,
+          "maxDownMs": -2.29,
+          "stops": 4,
+          "maxBlowMs": 3.53,
+          "blowAt": [
+            7470,
+            1192,
+            1,
+            0.37,
+            12
+          ],
+          "flights": 1,
+          "maxPitchRate": 3,
+          "maxRollRate": 8.33,
+          "nan": 0
+        },
+        "cliffFlights": 1,
+        "cliffAirS": 2.83,
+        "nan": false,
+        "overturned": true,
+        "reason": "lost vehicle",
+        "seconds": 10.8,
+        "sample": 99,
+        "of": 700,
+        "progress": 0.141,
+        "height": 468,
+        "meanSpin": 0.51,
+        "slidBackM": 4.1,
+        "maxKmh": 27,
+        "hp": 0,
+        "mudCoat": 0.54,
+        "last": {
+          "peak": "MOUNT ASCENT",
+          "time": 74.92,
+          "clean": true,
+          "challenge": false,
+          "splits": [
+            6.63,
+            19.97,
+            46.28,
+            67.45
+          ]
+        }
+      }
+    }
+  ],
+  "rest": {
+    "first": null,
+    "second": null
+  },
+  "faults": {
+    "count": 0,
+    "gameTime": 158.88,
+    "drill": null,
+    "kinds": []
+  }
+}

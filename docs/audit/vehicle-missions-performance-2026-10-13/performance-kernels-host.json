@@ -1,0 +1,65 @@
+{
+  "crowd": {
+    "checked": 31684,
+    "encounterFrames": 240,
+    "denseSlots": 1849,
+    "operations": {
+      "queries": 120,
+      "beforeNearMapGets": 4581,
+      "afterNearMapGets": 182
+    },
+    "timing": {
+      "framesPerSample": 300,
+      "queriesPerFrame": 120,
+      "samples": [
+        {
+          "beforeMs": 740.2479899999998,
+          "afterMs": 598.3780360000005
+        },
+        {
+          "afterMs": 477.8093079999999,
+          "beforeMs": 616.7549239999998
+        },
+        {
+          "beforeMs": 714.6437219999998,
+          "afterMs": 535.0887039999998
+        },
+        {
+          "afterMs": 727.7636920000004,
+          "beforeMs": 688.3880339999996
+        },
+        {
+          "beforeMs": 753.071301,
+          "afterMs": 439.1857490000002
+        },
+        {
+          "afterMs": 508.765730000001,
+          "beforeMs": 732.7227050000001
+        }
+      ],
+      "beforeMedianMs": 723.6832135,
+      "afterMedianMs": 521.9272170000004,
+      "sink": 905788800
+    }
+  },
+  "gates": {
+    "checked": 4360,
+    "reusedContacts": 4360,
+    "frames": 120,
+    "fixedFortSightSolids": 20
+  },
+  "metadata": {
+    "baselineCommit": "bde9ee4",
+    "scope": "Host production-function kernel fixtures; timings are not full-game CPU time, displayed FPS, GPU time or M4 Max results.",
+    "seed": 42,
+    "browserUsed": false,
+    "noFeatureDowngrade": true,
+    "sources": {
+      "src/crowd-space.js": "dc088bc526d474363a67f7bc1a70d8f64096aa3a87a30a06b901139a991bd460",
+      "src/physics-step.js": "a06e51b52c7888966eb6d6734b7b0784c732ffc8880b39a238348a6af55295a8",
+      "tools/performance-kernels-check.mjs": "13c587f0cd5c378504242d106dc2a1ef3fdf47eae91cd71e403d974a0e6b76c3"
+    },
+    "beforeHtmlSha256": "9b2a5633fdad0f37579d3bee505d8b55f1efddba095872e3e591ea9f8069c41b",
+    "perfOnlyAfterHtmlSha256": "a0043f383a21363c9223ea7c2b5c07f59f28cf6f9ede96de83c390d6038258fc"
+  }
+}

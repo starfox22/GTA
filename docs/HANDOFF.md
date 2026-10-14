@@ -3,16 +3,36 @@
 Written for the next AI session (or human) picking this work up. Read `/CLAUDE.md` first (commands,
 rules, workflow), then this page, then only the area doc your task needs (`docs/README.md`).
 
-## Latest Codex review branches (12 October 2026)
+## Permanent Codex branch and current review (13 October 2026)
+
+- **Permanent Codex development branch (owner instruction, October 13):
+  `codex/chase-clouds-polish-2026-10-12`.** Future Codex prompts update this same GitHub branch.
+  This review continues from approved main `bde9ee4` (version 65), which already contains the
+  previous Codex work. Merge newer approved main into this branch as needed; never reset or
+  force-push it, and never push main without the owner's explicit approval. Shared checkout
+  helpers use disjoint file scopes in this cloud session; no new worktrees were created.
+
+- **Current review:** [vehicle, mission and performance report](audit/vehicle-missions-performance-2026-10-13/README.md).
+  It covers the M4's displaced rolling pivots and fixed running gear, motorcycle axle
+  normalization/punctures, persistent mission-world cleanup, depot deployment, mission
+  3/4 lifecycle, measured asymmetric rider grips/steering, terrain-aligned rider and
+  occupant attachments, and exact-order crowd/gate optimizations. The report records the frozen
+  inputs, actual validation and before/after captures. Read its limitations before
+  treating a staged mission test or software-rendering timing as acceptance evidence.
+  Original 208-module run plus focused follow-ups and one late rider module give cumulative
+  **191 passed / 18 expected no-WebGL skips** across 209 modules; final package rendered smoke
+  passes with default FPS and both cameras. Four continuous normal-input mission wins and
+  actual M4 Max/laptop GPU frame rates remain unverified. Read the rider audit for small
+  full-lock reach and source partition limitations before changing contact hints.
 
 - **Integrating Codex**: the owner uses Codex as a bug tester on `codex/*` branches and asks the lead to integrate
   them from time to time: `git fetch origin <branch>`, review the src diff against CLAUDE.md (only upgrades), merge it
   into the working branch (no PR), regenerate FILEMAP, run the suite. `codex/chase-clouds-polish-2026-10-12` was merged
-  on October 12 (f0f3321, version 63). Codex's tools/smoke.mjs needs real movement within 60 s: on this 4-core cloud
-  container software GL draws a frame in 3-5 s and the drive step times out for every build (v62 too); the v62 smoke
-  script passes. Audit screenshots Codex commits under docs/audit/ make the repo bigger.
+  on October 12 (f0f3321, version 63). Codex's tools/smoke.mjs requires real key-driven movement. Slow software GL can use
+  `DEC_SMOKE_MOVE_TIMEOUT_MS=240000`; this changes only wall-time allowance, retaining the
+  original movement assertions. Audit screenshots committed under docs/audit/ make the repo bigger.
 
-- **Current follow-up: `codex/chase-clouds-polish-2026-10-12`**, based on `cbd5668` and containing both
+- **Previous October 12 follow-up: `codex/chase-clouds-polish-2026-10-12`**, based on `cbd5668` and containing both
   earlier Codex branches. [The chase-polish report](audit/chase-polish-2026-10-12/README.md) covers
   volumetric chase clouds, camera/positional audio, weapon/retry continuity, ambulance recovery
   and conservative rooftop culling, with actual captures and validation limits. The owner's
@@ -52,8 +72,9 @@ rules, workflow), then this page, then only the area doc your task needs (`docs/
   artifact version 62) to `main` (fast-forward to 9afe59d).
   On October 8 the owner approved moving `claude/trusting-cannon-seq2mv` (the chase view and chase detail rounds,
   artifact version 55) to `main`.
-  A new session develops on its own working branch and fast-forwards `main` only when the owner approves in the
-  current conversation (never assume it; the approval covers that one push).
+  Codex sessions continue on `codex/chase-clouds-polish-2026-10-12`, the owner's permanent
+  review branch. Claude keeps its own working branch. Moving `main` requires the owner's approval
+  in the current conversation (never assume it; the approval covers that one push).
 - **Published build**: the claude.ai artifact https://claude.ai/artifact/NtDPAmpmNsgU8LPW4hH13B (split build:
   `index.html` + `media/`; version 65 (October 13) is the owner's 25-point list: mission 3 opening line, briefs folded by Escape, Varga's meeting skipped with E, no stuck seat, the DEMO COMPLETE card, visible talk bubbles, Kessler parked off the lane with a closable trunk and his car marked, the GPS to the fort (`navRouteEnds`), the fort's solid gate arm, records office farther in past a ready line and helicopter (theft = 5 stars), the frame guard and GPU context-loss recovery, respray that loses the police, 1990s brakes/handbrake/reverse, gradual gunfire damage (engine fire then explosion), chase-view movement keys and real car doors, the KR 500 dirt bike (CC-BY) and straightened bike wheels, the wheelie hint, CC0 trail mud, a decluttered minimap with the pier's rides, roof lifts on every helipad roof, villa garage doors, the HMMWV rebuilt and the procedural tank back, and the walking camera kept in vehicles below 31 km/h in the chase view too (the fort fight's chase slowdown did not reproduce on software GL); version 63 (October 12) merges Codex's `codex/chase-clouds-polish-2026-10-12` (volumetric chase clouds on every tier, chase camera cover clearance, chase-relative sound panning, FPS counter on by default, remembered restart across reloads, ambulance detours, input fixes) and adds the walking zoom below 30 km/h in vehicles, look-ahead up to 300 % (default 200 %), the walking camera distance slider, running vaults over villa walls and the sea railing into the sea, a CC0 jump grunt (arther1974), world reset only on WASTED/BUSTED/new game, and 27 story payphones (two or more on every island); version 62 (October 11) adds the Kessler fixes (house on Broadway, pristine car, no 'lost' text), the Exchange underpass and CENTRAL GARDEN sign removed, the jump grunt (LibreQuake, BSD-3), airborne bullet blood and directional blast blood, charred downloaded wrecks and truck wipers, bullet-hole rings on downloaded bodies; version 61 (October 11) is assets round three (avatars for every role up close incl. the player in uniform, chase-view clouds, police/trucks/military/convertible/bus/ambulance models, the SKYRANGER 429, the SKYLARK 172, the Labrador); version 60 (October 9) adds vehicle round two (the crownvic police body in the game's liveries, the DUKE V8 muscle car, the VORTEX 900 as a 1970 four-cylinder; the tow boat held back); version 59 (October 9) adds the Rocketbox NPC avatars (near/mid/far), the CC0 wall skin and the first six downloaded period cars (sedan, taxi, coupe, sport, supercar, luxury); version 58 (October 8) is the jump on Space, the Rocketbox player model, the gradual sun, the world reset (WASTED / mission pick), the HELICOPTER cheat, god mode cash and the chase-only respray arrow; version 57 (October 8) is the missions 3-4 polish (step briefs, Kessler's alarm, the gate talked through) and version 56 demo missions 3-4, both from `claude/confident-johnson-vlpoqb`; version 55 is the chase detail round from `claude/trusting-cannon-seq2mv`, published October 8; version 54 the chase view round, October 7; version 53 is the build that went to `main` on October 6). Version numbers on that link are the artifact's own
   counter, not `GAME_VERSION`.

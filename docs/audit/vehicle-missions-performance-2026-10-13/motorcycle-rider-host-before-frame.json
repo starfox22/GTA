@@ -1,0 +1,11 @@
+{
+  "comparison": "bde9ee4 frame with corrected actual packed assets and remaining current sources",
+  "assertions": 102,
+  "failures": [
+    "motorbike: rider/occupant uploaded before current terrain tilt",
+    "car: rider/occupant uploaded before current terrain tilt"
+  ],
+  "notes": [
+    "{\"maxTargetError\":0,\"maxWristError\":0.48314257402214855,\"maxRestWristError\":0.03311148324819847,\"maxBoneError\":8.881784197001252e-15,\"formerSteeringGap\":1.4716794259796324}"
+  ]
+}

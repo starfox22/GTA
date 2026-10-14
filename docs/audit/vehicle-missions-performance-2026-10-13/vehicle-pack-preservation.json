@@ -1,0 +1,24 @@
+{
+  "originalMainBytes": 5274440,
+  "finalBytes": 5274832,
+  "headerGrowthBytes": 392,
+  "payloadBytes": 5177624,
+  "payloadSHA256": "9c84efee358a7d53354bb67a34a233bb32d8efda9c20bb1c818775322cfdff02",
+  "finalPackSHA256": "63908560d08068f6b6df9859b9bb6040ad38028c2a0d9a0268f7d9cd4c2649ae",
+  "modelCount": 23,
+  "allModelsAndGeometryPreserved": true,
+  "changedMetadataPaths": [
+    "models.bike.grip[0]",
+    "models.bike.grip[1]",
+    "models.bike.grip[2]",
+    "models.bike.grips",
+    "models.cruiser.grip[0]",
+    "models.cruiser.grip[1]",
+    "models.cruiser.grip[2]",
+    "models.cruiser.grips",
+    "models.cruiser.wheels[0].axle",
+    "models.cruiser.wheels[1].axle",
+    "models.kr500.wheels[0].axle",
+    "models.kr500.wheels[1].axle"
+  ]
+}

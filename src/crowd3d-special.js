@@ -514,8 +514,16 @@
           sp.elevation = riderSeat.y;
           sp.facing = c.a;
           for (let side = 0; side < 2; side++) {
-            const z = (side ? 1 : -1) * seat.grip[2];
-            riderHands[side].set(seat.grip[0] - 0.4, seat.grip[1] + 0.2, z).applyMatrix4(M);
+            // Measured asset grips are separate body-space points: a source can
+            // retain a small display lean, so mirroring one point misses a bar.
+            // Legacy seats already compensate this wrist offset in their builder.
+            const grip = seat.grips?.[side];
+            if (grip) riderHands[side].set(...grip);
+            else riderHands[side].set(seat.grip[0] - 0.4, seat.grip[1] + 0.2, (side ? 1 : -1) * seat.grip[2]);
+            // The bars turn about the raked fork, independently of the body. The
+            // cached rest inverse takes a body-space grip into that steering frame.
+            if (m.riderGripInverse && m.steer) riderHands[side].applyMatrix4(m.riderGripInverse).applyMatrix4(m.steer.matrixWorld);
+            else riderHands[side].applyMatrix4(M);
             if (seat.crank && m.crank) {
               // The pedal on this side, then the ankle just above it.
               const a = (m.crank.rotation.z || 0) + (side ? 0 : Math.PI);

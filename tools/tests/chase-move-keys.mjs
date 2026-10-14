@@ -3,6 +3,9 @@
 // V switches (real key presses) several times, with W held across the switch (it keeps the way the player ran and
 // the camera stands behind it), after a look round and after getting out of a car; a sideways run never swings the
 // camera round (no circles), and a cursor left near the screen's edge does not turn the camera before it is captured.
+// Other camera tests spawn and leave parked cars; use a clean world for the
+// unobstructed foot paths below, rather than running into their sedan at 1560,1500.
+export const fresh = true;
 const OFFSETS = { KeyW: 0, KeyD: 90, KeyS: 180, KeyA: -90 };
 const diff = (a, b) => ((a - b + 540) % 360) - 180;
 

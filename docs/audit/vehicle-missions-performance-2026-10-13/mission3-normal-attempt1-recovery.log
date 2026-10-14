@@ -1,0 +1,11 @@
+{"reason":"left vehicle","seconds":13,"x":7858,"y":1158,"speed":0,"hp":0,"left":116,"wanted":0}
+{"type":null,"speed":0,"vx":0,"vy":0,"cadence":0,"effort":0,"altitude":0}
+{"mode":"dead","x":7846,"y":1179,"district":"RIDGELINE COUNTY","hp":0,"cash":0,"wanted":0,"mission":"High Ground","completed":2,"vehicle":null,"weapon":"9MM PISTOL","clock":"18:49","renderer":"2d","vehicles":297,"pedestrians":609}
+{"type":null,"speed":0,"vx":0,"vy":0,"cadence":0,"effort":0,"altitude":0}
+{"mode":"dead","x":7846,"y":1179,"district":"RIDGELINE COUNTY","hp":0,"cash":0,"wanted":0,"mission":"High Ground","completed":2,"vehicle":null,"weapon":"9MM PISTOL","clock":"18:49","renderer":"2d","vehicles":297,"pedestrians":609}
+{"stage":1,"instruction":"GET OUT · DIG UP THE PACKAGE AT THE CAIRN","target":{"x":7791,"y":1082},"dig":0,"digging":false,"carrier":null,"carryCar":null,"lastCar":"crawler","arrived":false,"cache":{"x":7791,"y":1082,"altitude":761.8644348144531},"summit":{"x":7760,"y":1090,"altitude":761.9031982421875},"vinny":null,"insideDepot":false,"beats":["trailhead"]}
+false
+{"mode":"play","x":376,"y":948,"district":"NORTHBANK · OLD QUARTER","hp":100,"cash":0,"wanted":0,"mission":null,"completed":2,"vehicle":null,"weapon":"9MM PISTOL","clock":"18:51","renderer":"2d","vehicles":291,"pedestrians":619}
+{"mission":null,"last":{"result":"failed","index":2,"stage":1,"reason":"Hospital bill: $250. Your job is ready to retry."},"completed":2,"depotShutter":0,"depotBackDoor":1}
+no console errors
+stopped

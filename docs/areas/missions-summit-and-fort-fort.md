@@ -26,6 +26,7 @@ Kessler's tail: missions-summit-and-fort-kessler.md.
   Tests: fort-gate-barrier.mjs, fort-records-route.mjs, fort-vehicle-theft.mjs.
 - Base: fort-cover.js does the gate's papers (`FORT_COVER_GATE.check`), the soldiers' suspicion, the military-vehicle
   alarm and the records office (`FORT_RECORDS.door`, `fortCover.papers`). Blown before the papers: the job fails;
+  this includes the gate stage before clearance (an alarmed identity can never be presented again).
   after: get out with them however. Out (calm crossing, or off the base 260 units from the gate): `skyMeetingBegin`.
 - Meeting: the stage text follows `skyMeeting.stage` (skyline-meeting.js, places-sky-meeting.md); 'failed' (the
   consul killed) fails the job, 'done' wins it. A won job keeps the uniform on (`fortJobKeepsUniform`,

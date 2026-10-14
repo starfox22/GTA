@@ -60,4 +60,8 @@ the models' damage contract is vehicles-and-driving-models.md.
   Getting in and out still swings no door on a truck (`vehicleSpec(c).truck`, carjack3d.js swingDriverDoor).
 - FLAT TYRE SQUASH (damage3d-bodies.js `squashWheel`): a flat tyre's `scale.y` is applied outside the wheel's roll
   (`squashedWheelMatrix`: place, camber and steer, squash, then the roll), so the flat spot stays at the bottom; a
-  motorbike's front wheel on its raked fork turns the squash back square to the bike (`userData.squashTilt`).
+  motorcycle's front wheel cancels fork rake on an axle carrier (`motoFrontAxle`) so its drop and squash use the
+  wheel frame too. Other nested wheel rigs may use `userData.squashTilt` to turn the squash's axis. Special-vehicle
+  damage honors `wheel.userData.front` because a steering/axle rig's wheel position need not be body-space.
+  Special-vehicle tyre visibility follows `damage.burnt` both ways, so repairing a burnt bike/truck/military vehicle
+  restores the first-child tyre rather than leaving an intact vehicle on bare rims.

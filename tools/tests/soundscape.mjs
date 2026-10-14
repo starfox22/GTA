@@ -16,6 +16,8 @@ const GROUND = [
 ];
 const SIDEWALK = [1730, 2432],
   SUMMIT = [7760, 1090];
+// This straight sidewalk fixture needs an independent world: earlier movement tests can leave vehicles/poses here.
+export const fresh = true;
 export default async function (t) {
   try {
     // The Mount Ascent trail just past its trailhead, read off its path (it starts on the road's asphalt).

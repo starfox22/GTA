@@ -33,6 +33,7 @@
       gameMode = 'elevator';
       keys = {};
       mouse.down = false;
+      mouse.alt = false;
       const el = getElement('fortRecords');
       el.style.opacity = '0';
       el.classList.remove('hidden');

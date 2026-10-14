@@ -1,0 +1,4 @@
+{"event":"shipping QA ready","html":"/workspace/GTA/dist/review-2026-10-13-shipping.html","flags":"dev&norender","utc":"2026-10-14T00:26:09.277Z"}
+{"event":"attempt ended","file":"play-mission3-gentle.mjs","exitCode":1,"utc":"2026-10-14T00:26:58.406Z"}
+{"event":"attempt ended","file":"play-mission4.mjs","exitCode":1,"utc":"2026-10-14T00:29:45.703Z"}
+{"event":"QA stopped","reply":{"result":"stopped","newErrors":0},"utc":"2026-10-14T00:29:45.710Z"}

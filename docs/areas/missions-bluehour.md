@@ -51,4 +51,6 @@ included from world3d-resort.js inside one IIFE (their helpers are private; only
 - The limousines (black and pearl) are ordinary parked cars (`blueHourLimo`) nose to tail
   west of the door; the east kerb stays free for mission 2's ambulance (stop x -1618).
   The player may steal one like any parked car. A missing one is parked again at a new
-  game and when mission 2 starts, only out of view. Console `blueHourEntrance()`.
+  game and when mission 2 starts, only out of view and into a free bay. A mission call
+  never removes an ordinary or owned car left there, and initial hotel dressing also
+  preserves owned vehicles. Console `blueHourEntrance()`.

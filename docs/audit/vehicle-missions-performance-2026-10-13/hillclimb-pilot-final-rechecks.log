@@ -1,0 +1,6 @@
+reused dev server (rebuilt, reloaded ?dev&norender: boot 22.6s)
+PASS foliage-cutaway (2.8s)
+     on foot: leaves below 1.5 m stay 1.5 · on foot: open box half width (m) 0.78 · on foot: open box half height (m) 1.28 · truck: leaves below 1.5 m stay 1.5
+PASS hillclimb-physics (151.2s)
+     climb at 1/30: summit in 72.57 s (splits 6.67, 19.33, 44.07, 64.93), air 0.03 s, gap 0.01 m, up 5.28 m/s, stops 9 (max 2.2 m/s) · climb at 1/60: summit in 74.92 s (splits 6.63, 19.97, 46.28, 67.45), air 0.03 s, gap 0.01 m, up 5.01 m/s, stops 13 (max 1.97 m/s) · descent: 72.6 s, air 0 s, gap 0 m, stops 11 · at rest on the climb: pitch -3.36 deg, front 0.52 g, rear 0.48 g
+2/2 passed, 0 skipped, 0 failed in 177s

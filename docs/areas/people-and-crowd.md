@@ -49,7 +49,9 @@ Animals: ecology.js / ecology3d.js, sealife (world-county-and-sea.md).
   people-and-crowd-living-city.md.
 - Rain: remarks before a shower, umbrellas, sheltering (`rainReaction`).
 - Neighbour grid: rebuilt once a frame at 64 units; perception, panic, yielding, car contacts,
-  bullet targets and near misses all query `forEachPedestrianNear` instead of scanning.
+  bullets and near misses use `forEachPedestrianNear`. Its 43×43 pointer mirror refreshes each
+  rebuild/teleport; Map cells still own people and their order. Outside queries use the Map;
+  far-grid behavior, range and caps stay unchanged. Never reorder people or tighten reach.
 
 ## Voices (voices.js)
 
