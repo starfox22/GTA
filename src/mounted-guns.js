@@ -103,11 +103,15 @@
           guns: slots.map((w) => ({ belt: w.belt, stowed: w.stowed, nextAt: 0, loadAt: 0, fired: 0 })),
           // The door guns' angles off the nose, left (negative) and right.
           rel: spec.door ? [-DOOR_GUN_REST, DOOR_GUN_REST] : null,
+          // Control angles stay hull-referenced; physical barrels converge from their own mounts.
+          barrelRel: spec.door ? [-DOOR_GUN_REST, DOOR_GUN_REST] : null,
           side: 1,
           emptySaidAt: -100,
           shots: 0,
         };
       }
+      // Older restored arms records did not have the separate physical lay state.
+      if (MOUNTED_GUNS[kind].door && !c.arms.barrelRel) c.arms.barrelRel = c.arms.rel.slice();
       return c.arms;
     }
     /* The slot that fires now: the selected weapon, or the door gun on the aim's side. */
@@ -138,6 +142,28 @@
         y = c.y + Math.sin(a) * range;
       return { x, y, altitude: terrainHeight(x, y) + 4, range, a };
     }
+    const mountedDoorMountPoint = { x: 0, y: 0, altitude: 0 };
+    // One measured mount feeds physical lay, projectiles and the inspection report.
+    function mountedDoorMount(c, slot, out) {
+      const side = c.a + Math.PI / 2,
+        sign = slot ? 1 : -1;
+      out.x = c.x + Math.cos(c.a) * DOOR_GUN_MOUNT.x + Math.cos(side) * DOOR_GUN_MOUNT.z * sign;
+      out.y = c.y + Math.sin(c.a) * DOOR_GUN_MOUNT.x + Math.sin(side) * DOOR_GUN_MOUNT.z * sign;
+      out.altitude = entityElevation(c) + DOOR_GUN_MOUNT.y;
+      return out;
+    }
+    function mountedDoorAim(c, slot, groundPoint) {
+      const mount = mountedDoorMount(c, slot, mountedDoorMountPoint),
+        relative = normalizeAngle(Math.atan2(groundPoint.y - mount.y, groundPoint.x - mount.x) - c.a),
+        sign = slot ? 1 : -1,
+        signed = sign * relative;
+      if (signed >= DOOR_GUN_ARC[0] && signed <= DOOR_GUN_ARC[1]) return relative;
+      // A point just past the tail can wrap across ±PI after moving the origin
+      // to the mount. Choose the nearest stop instead of swinging to the nose.
+      const frontError = Math.abs(normalizeAngle(signed - DOOR_GUN_ARC[0])),
+        rearError = Math.abs(normalizeAngle(signed - DOOR_GUN_ARC[1]));
+      return sign * (frontError < rearError ? DOOR_GUN_ARC[0] : DOOR_GUN_ARC[1]);
+    }
     /* Per frame while the player commands an armed vehicle (after updatePlayerArmor). */
     function updatePlayerMountedGun(deltaSeconds) {
       const c = player.car,
@@ -155,8 +181,10 @@
         for (let i = 0; i < 2; i++) {
           const s = i ? 1 : -1,
             target = s === arms.side ? s * clamp(Math.abs(rel), DOOR_GUN_ARC[0], DOOR_GUN_ARC[1]) : s * DOOR_GUN_REST,
+            barrelTarget = s === arms.side ? mountedDoorAim(c, i, want) : s * DOOR_GUN_REST,
             step = spec.traverse * deltaSeconds;
           arms.rel[i] += clamp(target - arms.rel[i], -step, step);
+          arms.barrelRel[i] += clamp(barrelTarget - arms.barrelRel[i], -step, step);
         }
         c.turretA = normalizeAngle(c.a + arms.rel[arms.side > 0 ? 1 : 0]);
       } else {
@@ -219,19 +247,23 @@
       g.belt--;
       g.fired++;
       arms.shots++;
-      const a = (c.turretA ?? c.a) + randomBetween(-w.spread, w.spread),
+      const scatter = randomBetween(-w.spread, w.spread),
         elevation = entityElevation(c),
         tracer = g.fired % w.tracerEvery === 0 ? 0.024 : undefined;
-      let origin, velocity, life, flashBase, flashHeight;
+      let a = (c.turretA ?? c.a) + scatter,
+        origin, velocity, life, flashBase, flashHeight;
       if (spec.door) {
-        // From the mount on that side, down to the ground point at the aim's range.
-        const s = slot ? 1 : -1,
-          side = c.a + Math.PI / 2,
-          mx = c.x + Math.cos(c.a) * DOOR_GUN_MOUNT.x + Math.cos(side) * DOOR_GUN_MOUNT.z * s,
-          my = c.y + Math.sin(c.a) * DOOR_GUN_MOUNT.x + Math.sin(side) * DOOR_GUN_MOUNT.z * s,
-          gun = elevation + DOOR_GUN_MOUNT.y,
+        // Fire along the physical barrel, which traverses toward the actual ground
+        // point from this mount, rather than a parallel ray from the hull's heading.
+        a = c.a + arms.barrelRel[slot] + scatter;
+        const mount = mountedDoorMount(c, slot, mountedDoorMountPoint),
+          mx = mount.x,
+          my = mount.y,
+          gun = mount.altitude,
           aimAt = c.gunAim || mountedHeliAim(c),
-          reach = Math.max(40, Math.hypot(aimAt.x - mx, aimAt.y - my)) + randomBetween(-8, 8),
+          // mountedHeliAim already clamps hull range. A second 40-unit clamp at
+          // this offset mount would pitch past a valid nearby ground point.
+          reach = Math.hypot(aimAt.x - mx, aimAt.y - my) + randomBetween(-8, 8),
           target = { x: mx + Math.cos(a) * reach, y: my + Math.sin(a) * reach, altitude: aimAt.altitude };
         // Bullets are drawn 9 units over their altitude (render3d-frame.js tracers).
         origin = { x: mx + Math.cos(a) * w.muzzle, y: my + Math.sin(a) * w.muzzle, altitude: gun - 9 };
@@ -389,7 +421,10 @@
       if (!kind) return out;
       const arms = mountedArms(c, kind),
         slot = mountedSlot(c, arms),
-        w = mountedWeapon(arms, slot);
+        w = mountedWeapon(arms, slot),
+        physicalMount = arms.barrelRel ? mountedDoorMount(c, slot, mountedDoorMountPoint) : null,
+        physicalAim = physicalMount && c.gunAim
+          ? Math.atan2(c.gunAim.y - physicalMount.y, c.gunAim.x - physicalMount.x) : null;
       return {
         ...out,
         title: MOUNTED_GUNS[kind].title,
@@ -399,11 +434,13 @@
         x: Math.round(c.x),
         y: Math.round(c.y),
         hull: deg(c.a),
-        // The barrel off the nose, and the aim off the nose (degrees).
+        // Existing hull-referenced control/aim angles; physical door barrels are reported separately.
         turret: deg(normalizeAngle((c.turretA ?? c.a) - c.a)),
         aim: deg(normalizeAngle((c.turretAim ?? c.a) - c.a)),
         laidError: deg(Math.abs(normalizeAngle((c.turretA ?? c.a) - (c.turretAim ?? c.a)))),
         doors: arms.rel ? arms.rel.map(deg) : null,
+        physicalBarrels: arms.barrelRel ? arms.barrelRel.map(deg) : null,
+        physicalLaidError: physicalAim === null ? null : deg(Math.abs(normalizeAngle(c.a + arms.barrelRel[slot] - physicalAim))),
         shots: arms.shots,
         guns: arms.guns.map((g, i) => ({ id: mountedWeapon(arms, i).id, belt: g.belt, stowed: g.stowed, loading: g.loadAt ? +(g.loadAt - gameTime).toFixed(1) : 0 })),
         override: mountedAimOverride,

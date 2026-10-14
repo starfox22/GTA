@@ -1,0 +1,10 @@
+acquired after
+shot after-bike-street
+page.screenshot: Timeout 180000ms exceeded.
+Call log:
+[2m  - taking page screenshot[22m
+[2m  - waiting for fonts to load...[22m
+[2m  - fonts loaded[22m
+
+    at shot (/workspace/GTA/tools/approved-motorcycle-render-review.mjs:61:14)
+    at /workspace/GTA/tools/approved-motorcycle-render-review.mjs:89:44

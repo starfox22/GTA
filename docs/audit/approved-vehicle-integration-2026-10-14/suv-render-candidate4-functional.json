@@ -1,0 +1,6332 @@
+{
+  "label": "after",
+  "htmlSha256": "2e8fa954b875d3b0b15d9c7d4bc68c87f856266a7c11899d73689cc7ab17b813",
+  "fixture": {
+    "seed": 1,
+    "origin": [
+      680,
+      4520
+    ],
+    "heading": 0,
+    "viewport": [
+      1000,
+      700
+    ],
+    "inspect": [
+      65,
+      18,
+      8
+    ],
+    "closeUp": 10,
+    "crop": [
+      170,
+      90,
+      660,
+      460
+    ],
+    "noticesWallClock": 6500,
+    "boardingDrawFirst": true,
+    "portraitsOnly": false
+  },
+  "cases": [
+    {
+      "key": "s3-offroad",
+      "id": 314,
+      "model": {
+        "id": 314,
+        "type": "suv",
+        "draws": 18,
+        "casters": 3,
+        "triangles": 8266,
+        "heaviest": [
+          [
+            "MeshStandardMaterial",
+            1764
+          ],
+          [
+            "MeshStandardMaterial",
+            1724
+          ],
+          [
+            "MeshPhysicalMaterial",
+            1340
+          ],
+          [
+            "MeshPhysicalMaterial",
+            858
+          ],
+          [
+            "MeshStandardMaterial",
+            280
+          ],
+          [
+            "MeshStandardMaterial",
+            280
+          ]
+        ],
+        "asset": "Generic Offroad",
+        "cabin": {
+          "hip": [
+            -0.661,
+            0.533,
+            -0.392
+          ],
+          "door": [
+            -0.761,
+            0.489
+          ],
+          "floor": 0.48,
+          "floorWorldY": 0.492,
+          "pedalHeight": 0.58,
+          "recline": 0.3,
+          "rear": true,
+          "two": false,
+          "cabinTriangles": 283,
+          "seated": 0,
+          "headroom": 0.02,
+          "behind": 0.528
+        },
+        "panes": {
+          "left": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "front": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "right": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "rear": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "roof": {
+            "drawn": true,
+            "depthWrite": true
+          }
+        },
+        "badge": null
+      },
+      "vehicle": {
+        "id": 314,
+        "type": "suv",
+        "x": 680,
+        "y": 4520,
+        "a": 0,
+        "altitude": 0
+      },
+      "camera": {
+        "zoom": 10,
+        "target": 10,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 10,
+        "aim": 10,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 6,
+        "personPx": 131,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.22,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "cabins": [
+        {
+          "type": "suv",
+          "body": null,
+          "hip": [
+            -0.384,
+            0.454
+          ],
+          "recline": 0.3,
+          "fitMs": 0.1,
+          "clear": {
+            "man": 0.175,
+            "woman": 0.194,
+            "player": 0.209,
+            "avatar": "Female_Party_02",
+            "avatarRoom": 0.121
+          },
+          "roof": {
+            "man": 0.417,
+            "woman": 0.481,
+            "player": 0.5
+          },
+          "through": [],
+          "key": "s1_jimny",
+          "seat": [
+            -0.384,
+            0.454,
+            0.372,
+            0.25,
+            0.874
+          ],
+          "gameSeat": [
+            -0.384,
+            0.454,
+            0.372,
+            0.25,
+            0.874
+          ],
+          "seatGap": 0
+        },
+        {
+          "type": "suv",
+          "body": null,
+          "hip": [
+            -0.661,
+            0.533
+          ],
+          "recline": 0.3,
+          "fitMs": 0.7,
+          "clear": {
+            "man": 0.02,
+            "woman": 0.084,
+            "player": 0.103,
+            "avatar": "Male_Adult_04",
+            "avatarRoom": 0.038
+          },
+          "roof": {
+            "man": 0.02,
+            "woman": 0.084,
+            "player": 0.103
+          },
+          "through": [],
+          "key": "s3_offroad",
+          "seat": [
+            -0.661,
+            0.533,
+            0.392,
+            0.25,
+            1.1
+          ],
+          "gameSeat": [
+            -0.661,
+            0.533,
+            0.392,
+            0.25,
+            1.1
+          ],
+          "seatGap": 0
+        }
+      ]
+    },
+    {
+      "key": "s2-suv",
+      "id": 337,
+      "model": {
+        "id": 337,
+        "type": "suv",
+        "draws": 18,
+        "casters": 3,
+        "triangles": 10088,
+        "heaviest": [
+          [
+            "MeshStandardMaterial",
+            4530
+          ],
+          [
+            "MeshStandardMaterial",
+            2140
+          ],
+          [
+            "MeshPhysicalMaterial",
+            455
+          ],
+          [
+            "MeshStandardMaterial",
+            288
+          ],
+          [
+            "MeshStandardMaterial",
+            280
+          ],
+          [
+            "MeshStandardMaterial",
+            280
+          ]
+        ],
+        "asset": "Generic SUV",
+        "cabin": {
+          "hip": [
+            -0.184,
+            0.686,
+            -0.414
+          ],
+          "door": [
+            -0.284,
+            0.966
+          ],
+          "floor": 0.536,
+          "floorWorldY": 0.549,
+          "pedalHeight": 0.636,
+          "recline": 0.3,
+          "rear": true,
+          "two": false,
+          "cabinTriangles": 992,
+          "seated": 0,
+          "headroom": 0.02,
+          "behind": 1.502
+        },
+        "panes": {
+          "left": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "front": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "right": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "rear": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "roof": {
+            "drawn": true,
+            "depthWrite": true
+          }
+        },
+        "badge": null
+      },
+      "vehicle": {
+        "id": 337,
+        "type": "suv",
+        "x": 680,
+        "y": 4520,
+        "a": 0,
+        "altitude": 0
+      },
+      "camera": {
+        "zoom": 10,
+        "target": 10,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 10,
+        "aim": 10,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 6,
+        "personPx": 131,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.22,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "cabins": [
+        {
+          "type": "suv",
+          "body": null,
+          "hip": [
+            -0.384,
+            0.454
+          ],
+          "recline": 0.3,
+          "fitMs": 0.1,
+          "clear": {
+            "man": 0.175,
+            "woman": 0.194,
+            "player": 0.209,
+            "avatar": "Female_Party_02",
+            "avatarRoom": 0.121
+          },
+          "roof": {
+            "man": 0.417,
+            "woman": 0.481,
+            "player": 0.5
+          },
+          "through": [],
+          "key": "s1_jimny",
+          "seat": [
+            -0.384,
+            0.454,
+            0.372,
+            0.25,
+            0.874
+          ],
+          "gameSeat": [
+            -0.384,
+            0.454,
+            0.372,
+            0.25,
+            0.874
+          ],
+          "seatGap": 0
+        },
+        {
+          "type": "suv",
+          "body": null,
+          "hip": [
+            -0.661,
+            0.533
+          ],
+          "recline": 0.3,
+          "fitMs": 0.7,
+          "clear": {
+            "man": 0.02,
+            "woman": 0.084,
+            "player": 0.103,
+            "avatar": "Male_Adult_04",
+            "avatarRoom": 0.038
+          },
+          "roof": {
+            "man": 0.02,
+            "woman": 0.084,
+            "player": 0.103
+          },
+          "through": [],
+          "key": "s3_offroad",
+          "seat": [
+            -0.661,
+            0.533,
+            0.392,
+            0.25,
+            1.1
+          ],
+          "gameSeat": [
+            -0.661,
+            0.533,
+            0.392,
+            0.25,
+            1.1
+          ],
+          "seatGap": 0
+        },
+        {
+          "type": "suv",
+          "body": null,
+          "hip": [
+            -0.184,
+            0.686
+          ],
+          "recline": 0.3,
+          "fitMs": 4.5,
+          "clear": {
+            "man": 0.02,
+            "woman": 0.084,
+            "player": 0.103,
+            "avatar": "Male_Adult_04",
+            "avatarRoom": 0.035
+          },
+          "roof": {
+            "man": 0.02,
+            "woman": 0.084,
+            "player": 0.103
+          },
+          "through": [],
+          "key": "s2_suv",
+          "seat": [
+            -0.184,
+            0.686,
+            0.414,
+            0.25,
+            1.156
+          ],
+          "gameSeat": [
+            -0.184,
+            0.686,
+            0.414,
+            0.25,
+            1.156
+          ],
+          "seatGap": 0
+        }
+      ]
+    },
+    {
+      "key": "s1-jimny",
+      "id": 348,
+      "model": {
+        "id": 348,
+        "type": "suv",
+        "draws": 17,
+        "casters": 3,
+        "triangles": 63280,
+        "heaviest": [
+          [
+            "MeshStandardMaterial",
+            40052
+          ],
+          [
+            "MeshPhysicalMaterial",
+            3689
+          ],
+          [
+            "MeshStandardMaterial",
+            2889
+          ],
+          [
+            "MeshStandardMaterial",
+            2056
+          ],
+          [
+            "MeshStandardMaterial",
+            2055
+          ],
+          [
+            "MeshStandardMaterial",
+            2055
+          ]
+        ],
+        "asset": "Suzuki Jimny 2023",
+        "cabin": {
+          "hip": [
+            -0.384,
+            0.454,
+            -0.372
+          ],
+          "door": [
+            -0.484,
+            0.766
+          ],
+          "floor": 0.254,
+          "floorWorldY": 0.266,
+          "pedalHeight": 0.354,
+          "recline": 0.3,
+          "rear": true,
+          "two": false,
+          "cabinTriangles": 13838,
+          "seated": 0,
+          "headroom": 0.175,
+          "behind": 0.794
+        },
+        "panes": {
+          "left": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "front": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "right": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "rear": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "roof": {
+            "drawn": true,
+            "depthWrite": true
+          }
+        },
+        "badge": null
+      },
+      "vehicle": {
+        "id": 348,
+        "type": "suv",
+        "x": 680,
+        "y": 4520,
+        "a": 0,
+        "altitude": 0
+      },
+      "camera": {
+        "zoom": 10,
+        "target": 10,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 10,
+        "aim": 10,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 6,
+        "personPx": 131,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.22,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "cabins": [
+        {
+          "type": "suv",
+          "body": null,
+          "hip": [
+            -0.384,
+            0.454
+          ],
+          "recline": 0.3,
+          "fitMs": 0.1,
+          "clear": {
+            "man": 0.175,
+            "woman": 0.194,
+            "player": 0.209,
+            "avatar": "Female_Party_02",
+            "avatarRoom": 0.121
+          },
+          "roof": {
+            "man": 0.417,
+            "woman": 0.481,
+            "player": 0.5
+          },
+          "through": [],
+          "key": "s1_jimny",
+          "seat": [
+            -0.384,
+            0.454,
+            0.372,
+            0.25,
+            0.874
+          ],
+          "gameSeat": [
+            -0.384,
+            0.454,
+            0.372,
+            0.25,
+            0.874
+          ],
+          "seatGap": 0
+        },
+        {
+          "type": "suv",
+          "body": null,
+          "hip": [
+            -0.661,
+            0.533
+          ],
+          "recline": 0.3,
+          "fitMs": 0.7,
+          "clear": {
+            "man": 0.02,
+            "woman": 0.084,
+            "player": 0.103,
+            "avatar": "Male_Adult_04",
+            "avatarRoom": 0.038
+          },
+          "roof": {
+            "man": 0.02,
+            "woman": 0.084,
+            "player": 0.103
+          },
+          "through": [],
+          "key": "s3_offroad",
+          "seat": [
+            -0.661,
+            0.533,
+            0.392,
+            0.25,
+            1.1
+          ],
+          "gameSeat": [
+            -0.661,
+            0.533,
+            0.392,
+            0.25,
+            1.1
+          ],
+          "seatGap": 0
+        },
+        {
+          "type": "suv",
+          "body": null,
+          "hip": [
+            -0.184,
+            0.686
+          ],
+          "recline": 0.3,
+          "fitMs": 4.5,
+          "clear": {
+            "man": 0.02,
+            "woman": 0.084,
+            "player": 0.103,
+            "avatar": "Male_Adult_04",
+            "avatarRoom": 0.035
+          },
+          "roof": {
+            "man": 0.02,
+            "woman": 0.084,
+            "player": 0.103
+          },
+          "through": [],
+          "key": "s2_suv",
+          "seat": [
+            -0.184,
+            0.686,
+            0.414,
+            0.25,
+            1.156
+          ],
+          "gameSeat": [
+            -0.184,
+            0.686,
+            0.414,
+            0.25,
+            1.156
+          ],
+          "seatGap": 0
+        }
+      ]
+    },
+    {
+      "key": "sheriff",
+      "id": 352,
+      "model": {
+        "id": 352,
+        "type": "police",
+        "draws": 21,
+        "casters": 4,
+        "triangles": 10520,
+        "heaviest": [
+          [
+            "MeshStandardMaterial",
+            4530
+          ],
+          [
+            "MeshStandardMaterial",
+            2248
+          ],
+          [
+            "MeshPhysicalMaterial",
+            455
+          ],
+          [
+            "MeshStandardMaterial",
+            288
+          ],
+          [
+            "MeshStandardMaterial",
+            280
+          ],
+          [
+            "MeshStandardMaterial",
+            280
+          ]
+        ],
+        "asset": "Generic SUV",
+        "cabin": {
+          "hip": [
+            -0.184,
+            0.686,
+            -0.436
+          ],
+          "door": [
+            -0.284,
+            0.966
+          ],
+          "floor": 0.536,
+          "floorWorldY": 0.549,
+          "pedalHeight": 0.636,
+          "recline": 0.3,
+          "rear": true,
+          "two": false,
+          "cabinTriangles": 992,
+          "seated": 0,
+          "headroom": 0.02,
+          "behind": 1.502
+        },
+        "panes": {
+          "left": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "front": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "right": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "rear": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "roof": {
+            "drawn": true,
+            "depthWrite": true
+          }
+        },
+        "badge": null
+      },
+      "vehicle": {
+        "id": 352,
+        "type": "police",
+        "x": 680,
+        "y": 4520,
+        "a": 0,
+        "altitude": 0
+      },
+      "camera": {
+        "zoom": 10,
+        "target": 10,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 10,
+        "aim": 10,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 6,
+        "personPx": 131,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.22,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "testId": 366,
+      "testModel": {
+        "id": 366,
+        "type": "police",
+        "draws": 21,
+        "casters": 4,
+        "triangles": 10520,
+        "heaviest": [
+          [
+            "MeshStandardMaterial",
+            4530
+          ],
+          [
+            "MeshStandardMaterial",
+            2248
+          ],
+          [
+            "MeshPhysicalMaterial",
+            455
+          ],
+          [
+            "MeshStandardMaterial",
+            288
+          ],
+          [
+            "MeshStandardMaterial",
+            280
+          ],
+          [
+            "MeshStandardMaterial",
+            280
+          ]
+        ],
+        "asset": "Generic SUV",
+        "cabin": {
+          "hip": [
+            -0.184,
+            0.686,
+            -0.436
+          ],
+          "door": [
+            -0.284,
+            0.966
+          ],
+          "floor": 0.536,
+          "floorWorldY": 0.549,
+          "pedalHeight": 0.636,
+          "recline": 0.3,
+          "rear": true,
+          "two": false,
+          "cabinTriangles": 992,
+          "seated": 0,
+          "headroom": 0.02,
+          "behind": 1.502
+        },
+        "panes": {
+          "left": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "front": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "right": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "rear": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "roof": {
+            "drawn": true,
+            "depthWrite": true
+          }
+        },
+        "badge": null
+      },
+      "moving": {
+        "vehicle": {
+          "id": 366,
+          "type": "police",
+          "x": 686,
+          "y": 4520,
+          "a": 0.03983695943904948,
+          "kmh": 21,
+          "ai": false,
+          "occupied": false,
+          "altitude": 0
+        },
+        "state": {
+          "type": "police",
+          "fitted": {
+            "abs": true,
+            "esc": true,
+            "tcs": true
+          },
+          "lamps": {
+            "abs": "ready",
+            "esc": "ready",
+            "tcs": "ready"
+          },
+          "character": {
+            "front": 0.55,
+            "cgOverWheelbase": 0.2,
+            "bias": 0.79,
+            "drive": "rwd",
+            "liftOff": 0.35
+          },
+          "settings": {
+            "abs": true,
+            "esc": true,
+            "tcs": true,
+            "steering": 100,
+            "lookAhead": 0,
+            "cameraDistance": 120,
+            "walkDistance": 100
+          },
+          "tyres": {
+            "pedal": 0,
+            "steer": 0.867,
+            "slip": [
+              0,
+              0
+            ],
+            "lock": [
+              0,
+              0
+            ],
+            "pressure": [
+              1,
+              1
+            ],
+            "lateral": [
+              1,
+              1
+            ],
+            "spin": 0,
+            "yawSlide": 0,
+            "decelG": 0
+          },
+          "absActive": false,
+          "tyreSlip": 0
+        }
+      },
+      "burnt": {
+        "id": 366,
+        "type": "police",
+        "materials": [
+          "approved",
+          "approved",
+          "finish",
+          "approved"
+        ],
+        "swapped": 15,
+        "state": [
+          0,
+          0,
+          1,
+          0.083
+        ],
+        "ember": 0
+      },
+      "repaired": {
+        "damage": {
+          "id": 366,
+          "type": "police",
+          "hp": 180,
+          "maxhp": 180,
+          "zones": {
+            "front": 0,
+            "rear": 0,
+            "left": 0,
+            "right": 0
+          },
+          "dents": [],
+          "parts": {
+            "hood": 0,
+            "bumperFront": 0,
+            "bumperRear": 0,
+            "doorLeft": 0,
+            "doorRight": 0,
+            "trunk": 0
+          },
+          "glass": {
+            "front": 0,
+            "rear": 0,
+            "left": 0,
+            "right": 0
+          },
+          "lights": [],
+          "flatTires": [],
+          "marks": {},
+          "pull": 0,
+          "handling": {
+            "power": 1,
+            "top": 1,
+            "grip": 1,
+            "pull": 0,
+            "steer": 1,
+            "brake": 1
+          },
+          "burning": 0,
+          "fireSpent": false,
+          "burnt": false,
+          "speed": 0,
+          "spin": 0,
+          "x": 680,
+          "y": 4520,
+          "a": 0
+        },
+        "model": {
+          "id": 366,
+          "type": "police",
+          "draws": 25,
+          "casters": 8,
+          "triangles": 10596,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              4530
+            ],
+            [
+              "MeshStandardMaterial",
+              2248
+            ],
+            [
+              "MeshPhysicalMaterial",
+              455
+            ],
+            [
+              "MeshStandardMaterial",
+              288
+            ],
+            [
+              "MeshStandardMaterial",
+              280
+            ],
+            [
+              "MeshStandardMaterial",
+              280
+            ]
+          ],
+          "asset": "Generic SUV",
+          "cabin": {
+            "hip": [
+              -0.184,
+              0.686,
+              -0.436
+            ],
+            "door": [
+              -0.284,
+              0.966
+            ],
+            "floor": 0.536,
+            "floorWorldY": 0.549,
+            "pedalHeight": 0.636,
+            "recline": 0.3,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 992,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 1.502
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        }
+      }
+    }
+  ],
+  "errors": [],
+  "civilianChecks": [
+    {
+      "key": "s3-offroad",
+      "id": 356,
+      "model": {
+        "id": 356,
+        "type": "suv",
+        "draws": 18,
+        "casters": 3,
+        "triangles": 8266,
+        "heaviest": [
+          [
+            "MeshStandardMaterial",
+            1764
+          ],
+          [
+            "MeshStandardMaterial",
+            1724
+          ],
+          [
+            "MeshPhysicalMaterial",
+            1340
+          ],
+          [
+            "MeshPhysicalMaterial",
+            858
+          ],
+          [
+            "MeshStandardMaterial",
+            280
+          ],
+          [
+            "MeshStandardMaterial",
+            280
+          ]
+        ],
+        "asset": "Generic Offroad",
+        "cabin": {
+          "hip": [
+            -0.661,
+            0.533,
+            -0.392
+          ],
+          "door": [
+            -0.761,
+            0.489
+          ],
+          "floor": 0.48,
+          "floorWorldY": 0.492,
+          "pedalHeight": 0.58,
+          "recline": 0.3,
+          "rear": true,
+          "two": false,
+          "cabinTriangles": 283,
+          "seated": 0,
+          "headroom": 0.02,
+          "behind": 0.528
+        },
+        "panes": {
+          "left": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "front": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "right": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "rear": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "roof": {
+            "drawn": true,
+            "depthWrite": true
+          }
+        },
+        "badge": null
+      },
+      "vehicle": {
+        "id": 356,
+        "type": "suv",
+        "x": 680,
+        "y": 4520,
+        "a": 0,
+        "altitude": 0
+      },
+      "cabins": [
+        {
+          "type": "suv",
+          "body": null,
+          "hip": [
+            -0.384,
+            0.454
+          ],
+          "recline": 0.3,
+          "fitMs": 0.1,
+          "clear": {
+            "man": 0.175,
+            "woman": 0.194,
+            "player": 0.209,
+            "avatar": "Female_Party_02",
+            "avatarRoom": 0.121
+          },
+          "roof": {
+            "man": 0.417,
+            "woman": 0.481,
+            "player": 0.5
+          },
+          "through": [],
+          "key": "s1_jimny",
+          "seat": [
+            -0.384,
+            0.454,
+            0.372,
+            0.25,
+            0.874
+          ],
+          "gameSeat": [
+            -0.384,
+            0.454,
+            0.372,
+            0.25,
+            0.874
+          ],
+          "seatGap": 0
+        },
+        {
+          "type": "suv",
+          "body": null,
+          "hip": [
+            -0.661,
+            0.533
+          ],
+          "recline": 0.3,
+          "fitMs": 0.7,
+          "clear": {
+            "man": 0.02,
+            "woman": 0.084,
+            "player": 0.103,
+            "avatar": "Male_Adult_04",
+            "avatarRoom": 0.038
+          },
+          "roof": {
+            "man": 0.02,
+            "woman": 0.084,
+            "player": 0.103
+          },
+          "through": [],
+          "key": "s3_offroad",
+          "seat": [
+            -0.661,
+            0.533,
+            0.392,
+            0.25,
+            1.1
+          ],
+          "gameSeat": [
+            -0.661,
+            0.533,
+            0.392,
+            0.25,
+            1.1
+          ],
+          "seatGap": 0
+        },
+        {
+          "type": "suv",
+          "body": null,
+          "hip": [
+            -0.184,
+            0.686
+          ],
+          "recline": 0.3,
+          "fitMs": 4.5,
+          "clear": {
+            "man": 0.02,
+            "woman": 0.084,
+            "player": 0.103,
+            "avatar": "Male_Adult_04",
+            "avatarRoom": 0.035
+          },
+          "roof": {
+            "man": 0.02,
+            "woman": 0.084,
+            "player": 0.103
+          },
+          "through": [],
+          "key": "s2_suv",
+          "seat": [
+            -0.184,
+            0.686,
+            0.414,
+            0.25,
+            1.156
+          ],
+          "gameSeat": [
+            -0.184,
+            0.686,
+            0.414,
+            0.25,
+            1.156
+          ],
+          "seatGap": 0
+        }
+      ],
+      "driveBy": {
+        "gap": 0,
+        "window": "left",
+        "relDeg": -90,
+        "type": "suv"
+      },
+      "glassHits": {
+        "kinds": [
+          "glass",
+          "glass",
+          "metal",
+          "metal",
+          "metal",
+          "metal",
+          "metal",
+          "metal",
+          "metal",
+          "metal",
+          "metal",
+          "metal"
+        ],
+        "marks": {
+          "star": 1,
+          "hole": 6
+        }
+      },
+      "damage": {
+        "id": 356,
+        "type": "suv",
+        "hp": 250,
+        "maxhp": 250,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 2,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [
+          "frontLeft"
+        ],
+        "marks": {
+          "star": 1,
+          "hole": 6
+        },
+        "pull": -0.22,
+        "handling": {
+          "power": 1,
+          "top": 0.89,
+          "grip": 0.88,
+          "pull": -0.22,
+          "steer": 0.96,
+          "brake": 0.88
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 680,
+        "y": 4520,
+        "a": 0
+      },
+      "damagedModel": {
+        "id": 356,
+        "type": "suv",
+        "draws": 22,
+        "casters": 3,
+        "triangles": 8266,
+        "heaviest": [
+          [
+            "MeshStandardMaterial",
+            1764
+          ],
+          [
+            "MeshStandardMaterial",
+            1724
+          ],
+          [
+            "MeshPhysicalMaterial",
+            1340
+          ],
+          [
+            "MeshPhysicalMaterial",
+            858
+          ],
+          [
+            "MeshStandardMaterial",
+            280
+          ],
+          [
+            "MeshStandardMaterial",
+            280
+          ]
+        ],
+        "asset": "Generic Offroad",
+        "cabin": {
+          "hip": [
+            -0.661,
+            0.533,
+            -0.392
+          ],
+          "door": [
+            -0.761,
+            0.489
+          ],
+          "floor": 0.48,
+          "floorWorldY": 0.493,
+          "pedalHeight": 0.58,
+          "recline": 0.3,
+          "rear": true,
+          "two": false,
+          "cabinTriangles": 283,
+          "seated": 0,
+          "headroom": 0.02,
+          "behind": 0.528
+        },
+        "panes": {
+          "left": {
+            "drawn": false,
+            "depthWrite": false
+          },
+          "front": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "right": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "rear": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "roof": {
+            "drawn": true,
+            "depthWrite": true
+          }
+        },
+        "badge": null
+      },
+      "repaired": {
+        "damage": {
+          "id": 356,
+          "type": "suv",
+          "hp": 250,
+          "maxhp": 250,
+          "zones": {
+            "front": 0,
+            "rear": 0,
+            "left": 0,
+            "right": 0
+          },
+          "dents": [],
+          "parts": {
+            "hood": 0,
+            "bumperFront": 0,
+            "bumperRear": 0,
+            "doorLeft": 0,
+            "doorRight": 0,
+            "trunk": 0
+          },
+          "glass": {
+            "front": 0,
+            "rear": 0,
+            "left": 0,
+            "right": 0
+          },
+          "lights": [],
+          "flatTires": [],
+          "marks": {},
+          "pull": 0,
+          "handling": {
+            "power": 1,
+            "top": 1,
+            "grip": 1,
+            "pull": 0,
+            "steer": 1,
+            "brake": 1
+          },
+          "burning": 0,
+          "fireSpent": false,
+          "burnt": false,
+          "speed": 0,
+          "spin": 0,
+          "x": 680,
+          "y": 4520,
+          "a": 0
+        },
+        "model": {
+          "id": 356,
+          "type": "suv",
+          "draws": 18,
+          "casters": 3,
+          "triangles": 8266,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              1764
+            ],
+            [
+              "MeshStandardMaterial",
+              1724
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1340
+            ],
+            [
+              "MeshPhysicalMaterial",
+              858
+            ],
+            [
+              "MeshStandardMaterial",
+              280
+            ],
+            [
+              "MeshStandardMaterial",
+              280
+            ]
+          ],
+          "asset": "Generic Offroad",
+          "cabin": {
+            "hip": [
+              -0.661,
+              0.533,
+              -0.392
+            ],
+            "door": [
+              -0.761,
+              0.489
+            ],
+            "floor": 0.48,
+            "floorWorldY": 0.492,
+            "pedalHeight": 0.58,
+            "recline": 0.3,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 283,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 0.528
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        }
+      }
+    },
+    {
+      "key": "s1-jimny",
+      "id": 357,
+      "model": {
+        "id": 357,
+        "type": "suv",
+        "draws": 17,
+        "casters": 3,
+        "triangles": 63280,
+        "heaviest": [
+          [
+            "MeshStandardMaterial",
+            40052
+          ],
+          [
+            "MeshPhysicalMaterial",
+            3689
+          ],
+          [
+            "MeshStandardMaterial",
+            2889
+          ],
+          [
+            "MeshStandardMaterial",
+            2056
+          ],
+          [
+            "MeshStandardMaterial",
+            2055
+          ],
+          [
+            "MeshStandardMaterial",
+            2055
+          ]
+        ],
+        "asset": "Suzuki Jimny 2023",
+        "cabin": {
+          "hip": [
+            -0.384,
+            0.454,
+            -0.372
+          ],
+          "door": [
+            -0.484,
+            0.766
+          ],
+          "floor": 0.254,
+          "floorWorldY": 0.266,
+          "pedalHeight": 0.354,
+          "recline": 0.3,
+          "rear": true,
+          "two": false,
+          "cabinTriangles": 13838,
+          "seated": 0,
+          "headroom": 0.175,
+          "behind": 0.794
+        },
+        "panes": {
+          "left": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "front": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "right": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "rear": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "roof": {
+            "drawn": true,
+            "depthWrite": true
+          }
+        },
+        "badge": null
+      },
+      "vehicle": {
+        "id": 357,
+        "type": "suv",
+        "x": 680,
+        "y": 4520,
+        "a": 0,
+        "altitude": 0
+      },
+      "cabins": [
+        {
+          "type": "suv",
+          "body": null,
+          "hip": [
+            -0.384,
+            0.454
+          ],
+          "recline": 0.3,
+          "fitMs": 0.1,
+          "clear": {
+            "man": 0.175,
+            "woman": 0.194,
+            "player": 0.209,
+            "avatar": "Female_Party_02",
+            "avatarRoom": 0.121
+          },
+          "roof": {
+            "man": 0.417,
+            "woman": 0.481,
+            "player": 0.5
+          },
+          "through": [],
+          "key": "s1_jimny",
+          "seat": [
+            -0.384,
+            0.454,
+            0.372,
+            0.25,
+            0.874
+          ],
+          "gameSeat": [
+            -0.384,
+            0.454,
+            0.372,
+            0.25,
+            0.874
+          ],
+          "seatGap": 0
+        },
+        {
+          "type": "suv",
+          "body": null,
+          "hip": [
+            -0.661,
+            0.533
+          ],
+          "recline": 0.3,
+          "fitMs": 0.7,
+          "clear": {
+            "man": 0.02,
+            "woman": 0.084,
+            "player": 0.103,
+            "avatar": "Male_Adult_04",
+            "avatarRoom": 0.038
+          },
+          "roof": {
+            "man": 0.02,
+            "woman": 0.084,
+            "player": 0.103
+          },
+          "through": [],
+          "key": "s3_offroad",
+          "seat": [
+            -0.661,
+            0.533,
+            0.392,
+            0.25,
+            1.1
+          ],
+          "gameSeat": [
+            -0.661,
+            0.533,
+            0.392,
+            0.25,
+            1.1
+          ],
+          "seatGap": 0
+        },
+        {
+          "type": "suv",
+          "body": null,
+          "hip": [
+            -0.184,
+            0.686
+          ],
+          "recline": 0.3,
+          "fitMs": 4.5,
+          "clear": {
+            "man": 0.02,
+            "woman": 0.084,
+            "player": 0.103,
+            "avatar": "Male_Adult_04",
+            "avatarRoom": 0.035
+          },
+          "roof": {
+            "man": 0.02,
+            "woman": 0.084,
+            "player": 0.103
+          },
+          "through": [],
+          "key": "s2_suv",
+          "seat": [
+            -0.184,
+            0.686,
+            0.414,
+            0.25,
+            1.156
+          ],
+          "gameSeat": [
+            -0.184,
+            0.686,
+            0.414,
+            0.25,
+            1.156
+          ],
+          "seatGap": 0
+        }
+      ],
+      "driveBy": {
+        "gap": 0,
+        "window": "left",
+        "relDeg": -98,
+        "type": "suv"
+      },
+      "glassHits": {
+        "kinds": [
+          "metal",
+          "glass",
+          "glass",
+          "metal",
+          "metal",
+          "metal",
+          "metal",
+          "metal",
+          "metal",
+          "metal",
+          "metal",
+          "metal"
+        ],
+        "marks": {
+          "hole": 6,
+          "star": 1
+        }
+      },
+      "damage": {
+        "id": 357,
+        "type": "suv",
+        "hp": 250,
+        "maxhp": 250,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 2,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [
+          "frontLeft",
+          "rearLeft"
+        ],
+        "marks": {
+          "hole": 6,
+          "star": 1
+        },
+        "pull": -0.44,
+        "handling": {
+          "power": 1,
+          "top": 0.78,
+          "grip": 0.76,
+          "pull": -0.44,
+          "steer": 0.92,
+          "brake": 0.76
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 680,
+        "y": 4520,
+        "a": 0
+      },
+      "damagedModel": {
+        "id": 357,
+        "type": "suv",
+        "draws": 21,
+        "casters": 3,
+        "triangles": 63280,
+        "heaviest": [
+          [
+            "MeshStandardMaterial",
+            40052
+          ],
+          [
+            "MeshPhysicalMaterial",
+            3689
+          ],
+          [
+            "?",
+            2889
+          ],
+          [
+            "MeshStandardMaterial",
+            2056
+          ],
+          [
+            "MeshStandardMaterial",
+            2055
+          ],
+          [
+            "MeshStandardMaterial",
+            2055
+          ]
+        ],
+        "asset": "Suzuki Jimny 2023",
+        "cabin": {
+          "hip": [
+            -0.384,
+            0.454,
+            -0.372
+          ],
+          "door": [
+            -0.484,
+            0.766
+          ],
+          "floor": 0.254,
+          "floorWorldY": 0.245,
+          "pedalHeight": 0.354,
+          "recline": 0.3,
+          "rear": true,
+          "two": false,
+          "cabinTriangles": 13838,
+          "seated": 0,
+          "headroom": 0.175,
+          "behind": 0.794
+        },
+        "panes": {
+          "left": {
+            "drawn": false,
+            "depthWrite": false
+          },
+          "front": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "right": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "rear": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "roof": {
+            "drawn": true,
+            "depthWrite": true
+          }
+        },
+        "badge": null
+      },
+      "repaired": {
+        "damage": {
+          "id": 357,
+          "type": "suv",
+          "hp": 250,
+          "maxhp": 250,
+          "zones": {
+            "front": 0,
+            "rear": 0,
+            "left": 0,
+            "right": 0
+          },
+          "dents": [],
+          "parts": {
+            "hood": 0,
+            "bumperFront": 0,
+            "bumperRear": 0,
+            "doorLeft": 0,
+            "doorRight": 0,
+            "trunk": 0
+          },
+          "glass": {
+            "front": 0,
+            "rear": 0,
+            "left": 0,
+            "right": 0
+          },
+          "lights": [],
+          "flatTires": [],
+          "marks": {},
+          "pull": 0,
+          "handling": {
+            "power": 1,
+            "top": 1,
+            "grip": 1,
+            "pull": 0,
+            "steer": 1,
+            "brake": 1
+          },
+          "burning": 0,
+          "fireSpent": false,
+          "burnt": false,
+          "speed": 0,
+          "spin": 0,
+          "x": 680,
+          "y": 4520,
+          "a": 0
+        },
+        "model": {
+          "id": 357,
+          "type": "suv",
+          "draws": 17,
+          "casters": 3,
+          "triangles": 63280,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              40052
+            ],
+            [
+              "MeshPhysicalMaterial",
+              3689
+            ],
+            [
+              "MeshStandardMaterial",
+              2889
+            ],
+            [
+              "MeshStandardMaterial",
+              2056
+            ],
+            [
+              "MeshStandardMaterial",
+              2055
+            ],
+            [
+              "MeshStandardMaterial",
+              2055
+            ]
+          ],
+          "asset": "Suzuki Jimny 2023",
+          "cabin": {
+            "hip": [
+              -0.384,
+              0.454,
+              -0.372
+            ],
+            "door": [
+              -0.484,
+              0.766
+            ],
+            "floor": 0.254,
+            "floorWorldY": 0.266,
+            "pedalHeight": 0.354,
+            "recline": 0.3,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 13838,
+            "seated": 0,
+            "headroom": 0.175,
+            "behind": 0.794
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        }
+      },
+      "worn": {
+        "vehicle": {
+          "id": 357,
+          "type": "suv",
+          "x": 680,
+          "y": 4520,
+          "a": 0,
+          "kmh": 0,
+          "ai": false,
+          "occupied": false,
+          "altitude": 0
+        },
+        "model": {
+          "id": 357,
+          "type": "suv",
+          "draws": 17,
+          "casters": 3,
+          "triangles": 63280,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              40052
+            ],
+            [
+              "MeshPhysicalMaterial",
+              3689
+            ],
+            [
+              "MeshStandardMaterial",
+              2889
+            ],
+            [
+              "MeshStandardMaterial",
+              2056
+            ],
+            [
+              "MeshStandardMaterial",
+              2055
+            ],
+            [
+              "MeshStandardMaterial",
+              2055
+            ]
+          ],
+          "asset": "Suzuki Jimny 2023",
+          "cabin": {
+            "hip": [
+              -0.384,
+              0.454,
+              -0.372
+            ],
+            "door": [
+              -0.484,
+              0.766
+            ],
+            "floor": 0.254,
+            "floorWorldY": 0.266,
+            "pedalHeight": 0.354,
+            "recline": 0.3,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 13838,
+            "seated": 0,
+            "headroom": 0.175,
+            "behind": 0.794
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        }
+      }
+    },
+    {
+      "key": "s2-suv",
+      "id": 361,
+      "model": {
+        "id": 361,
+        "type": "suv",
+        "draws": 18,
+        "casters": 3,
+        "triangles": 10088,
+        "heaviest": [
+          [
+            "MeshStandardMaterial",
+            4530
+          ],
+          [
+            "MeshStandardMaterial",
+            2140
+          ],
+          [
+            "MeshPhysicalMaterial",
+            455
+          ],
+          [
+            "MeshStandardMaterial",
+            288
+          ],
+          [
+            "MeshStandardMaterial",
+            280
+          ],
+          [
+            "MeshStandardMaterial",
+            280
+          ]
+        ],
+        "asset": "Generic SUV",
+        "cabin": {
+          "hip": [
+            -0.184,
+            0.686,
+            -0.414
+          ],
+          "door": [
+            -0.284,
+            0.966
+          ],
+          "floor": 0.536,
+          "floorWorldY": 0.549,
+          "pedalHeight": 0.636,
+          "recline": 0.3,
+          "rear": true,
+          "two": false,
+          "cabinTriangles": 992,
+          "seated": 0,
+          "headroom": 0.02,
+          "behind": 1.502
+        },
+        "panes": {
+          "left": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "front": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "right": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "rear": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "roof": {
+            "drawn": true,
+            "depthWrite": true
+          }
+        },
+        "badge": null
+      },
+      "vehicle": {
+        "id": 361,
+        "type": "suv",
+        "x": 680,
+        "y": 4520,
+        "a": 0,
+        "altitude": 0
+      },
+      "cabins": [
+        {
+          "type": "suv",
+          "body": null,
+          "hip": [
+            -0.384,
+            0.454
+          ],
+          "recline": 0.3,
+          "fitMs": 0.1,
+          "clear": {
+            "man": 0.175,
+            "woman": 0.194,
+            "player": 0.209,
+            "avatar": "Female_Party_02",
+            "avatarRoom": 0.121
+          },
+          "roof": {
+            "man": 0.417,
+            "woman": 0.481,
+            "player": 0.5
+          },
+          "through": [],
+          "key": "s1_jimny",
+          "seat": [
+            -0.384,
+            0.454,
+            0.372,
+            0.25,
+            0.874
+          ],
+          "gameSeat": [
+            -0.384,
+            0.454,
+            0.372,
+            0.25,
+            0.874
+          ],
+          "seatGap": 0
+        },
+        {
+          "type": "suv",
+          "body": null,
+          "hip": [
+            -0.661,
+            0.533
+          ],
+          "recline": 0.3,
+          "fitMs": 0.7,
+          "clear": {
+            "man": 0.02,
+            "woman": 0.084,
+            "player": 0.103,
+            "avatar": "Male_Adult_04",
+            "avatarRoom": 0.038
+          },
+          "roof": {
+            "man": 0.02,
+            "woman": 0.084,
+            "player": 0.103
+          },
+          "through": [],
+          "key": "s3_offroad",
+          "seat": [
+            -0.661,
+            0.533,
+            0.392,
+            0.25,
+            1.1
+          ],
+          "gameSeat": [
+            -0.661,
+            0.533,
+            0.392,
+            0.25,
+            1.1
+          ],
+          "seatGap": 0
+        },
+        {
+          "type": "suv",
+          "body": null,
+          "hip": [
+            -0.184,
+            0.686
+          ],
+          "recline": 0.3,
+          "fitMs": 4.5,
+          "clear": {
+            "man": 0.02,
+            "woman": 0.084,
+            "player": 0.103,
+            "avatar": "Male_Adult_04",
+            "avatarRoom": 0.035
+          },
+          "roof": {
+            "man": 0.02,
+            "woman": 0.084,
+            "player": 0.103
+          },
+          "through": [],
+          "key": "s2_suv",
+          "seat": [
+            -0.184,
+            0.686,
+            0.414,
+            0.25,
+            1.156
+          ],
+          "gameSeat": [
+            -0.184,
+            0.686,
+            0.414,
+            0.25,
+            1.156
+          ],
+          "seatGap": 0
+        }
+      ],
+      "driveBy": {
+        "gap": 0,
+        "window": "left",
+        "relDeg": -105,
+        "type": "suv"
+      },
+      "glassHits": {
+        "kinds": [
+          "metal",
+          "metal",
+          "glass",
+          "metal",
+          "metal",
+          "metal",
+          "metal",
+          "metal",
+          "metal",
+          "metal",
+          "metal",
+          "metal"
+        ],
+        "marks": {
+          "hole": 9
+        }
+      },
+      "damage": {
+        "id": 361,
+        "type": "suv",
+        "hp": 250,
+        "maxhp": 250,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 2,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [
+          "frontLeft",
+          "rearLeft"
+        ],
+        "marks": {
+          "hole": 9
+        },
+        "pull": -0.44,
+        "handling": {
+          "power": 1,
+          "top": 0.78,
+          "grip": 0.76,
+          "pull": -0.44,
+          "steer": 0.92,
+          "brake": 0.76
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 680,
+        "y": 4520,
+        "a": 0
+      },
+      "damagedModel": {
+        "id": 361,
+        "type": "suv",
+        "draws": 22,
+        "casters": 3,
+        "triangles": 10088,
+        "heaviest": [
+          [
+            "MeshStandardMaterial",
+            4530
+          ],
+          [
+            "MeshStandardMaterial",
+            2140
+          ],
+          [
+            "MeshPhysicalMaterial",
+            455
+          ],
+          [
+            "?",
+            288
+          ],
+          [
+            "MeshStandardMaterial",
+            280
+          ],
+          [
+            "MeshStandardMaterial",
+            280
+          ]
+        ],
+        "asset": "Generic SUV",
+        "cabin": {
+          "hip": [
+            -0.184,
+            0.686,
+            -0.414
+          ],
+          "door": [
+            -0.284,
+            0.966
+          ],
+          "floor": 0.536,
+          "floorWorldY": 0.525,
+          "pedalHeight": 0.636,
+          "recline": 0.3,
+          "rear": true,
+          "two": false,
+          "cabinTriangles": 992,
+          "seated": 0,
+          "headroom": 0.02,
+          "behind": 1.502
+        },
+        "panes": {
+          "left": {
+            "drawn": false,
+            "depthWrite": false
+          },
+          "front": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "right": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "rear": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "roof": {
+            "drawn": true,
+            "depthWrite": true
+          }
+        },
+        "badge": null
+      },
+      "repaired": {
+        "damage": {
+          "id": 361,
+          "type": "suv",
+          "hp": 250,
+          "maxhp": 250,
+          "zones": {
+            "front": 0,
+            "rear": 0,
+            "left": 0,
+            "right": 0
+          },
+          "dents": [],
+          "parts": {
+            "hood": 0,
+            "bumperFront": 0,
+            "bumperRear": 0,
+            "doorLeft": 0,
+            "doorRight": 0,
+            "trunk": 0
+          },
+          "glass": {
+            "front": 0,
+            "rear": 0,
+            "left": 0,
+            "right": 0
+          },
+          "lights": [],
+          "flatTires": [],
+          "marks": {},
+          "pull": 0,
+          "handling": {
+            "power": 1,
+            "top": 1,
+            "grip": 1,
+            "pull": 0,
+            "steer": 1,
+            "brake": 1
+          },
+          "burning": 0,
+          "fireSpent": false,
+          "burnt": false,
+          "speed": 0,
+          "spin": 0,
+          "x": 680,
+          "y": 4520,
+          "a": 0
+        },
+        "model": {
+          "id": 361,
+          "type": "suv",
+          "draws": 18,
+          "casters": 3,
+          "triangles": 10088,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              4530
+            ],
+            [
+              "MeshStandardMaterial",
+              2140
+            ],
+            [
+              "MeshPhysicalMaterial",
+              455
+            ],
+            [
+              "MeshStandardMaterial",
+              288
+            ],
+            [
+              "MeshStandardMaterial",
+              280
+            ],
+            [
+              "MeshStandardMaterial",
+              280
+            ]
+          ],
+          "asset": "Generic SUV",
+          "cabin": {
+            "hip": [
+              -0.184,
+              0.686,
+              -0.414
+            ],
+            "door": [
+              -0.284,
+              0.966
+            ],
+            "floor": 0.536,
+            "floorWorldY": 0.549,
+            "pedalHeight": 0.636,
+            "recline": 0.3,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 992,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 1.502
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        }
+      }
+    }
+  ],
+  "presets": [
+    {
+      "view": "street",
+      "tier": "low",
+      "quality": {
+        "setting": "low",
+        "tier": "LOW",
+        "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "hdr": true,
+        "shadowMap": 0,
+        "pixelRatio": 1,
+        "renderScale": 1,
+        "shadows": "off",
+        "shadowSetting": "auto",
+        "adaptive": {
+          "averageFrameMs": 0,
+          "tierDrops": 0,
+          "ceiling": 1,
+          "holdSeconds": 0
+        }
+      },
+      "profile": {
+        "total": 160,
+        "byLayer": {
+          "detail": 1,
+          "farDetail": 0,
+          "other": 159
+        },
+        "byName": [
+          [
+            "vehicle in vehicle",
+            23
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            22
+          ],
+          [
+            "breakable scenery",
+            15
+          ]
+        ],
+        "byCell": [
+          [
+            "0,0",
+            130
+          ],
+          [
+            "512,4096",
+            24
+          ],
+          [
+            "1024,4608",
+            2
+          ]
+        ],
+        "triangles": 673720,
+        "byTriangles": [
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            114588
+          ],
+          [
+            "Mesh SphereGeometry MeshBasicMaterial",
+            101808
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            98616
+          ]
+        ],
+        "instanced": [
+          [
+            "Mesh SphereGeometry MeshBasicMaterial",
+            606,
+            168,
+            false,
+            false
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            4519,
+            12,
+            false,
+            true
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            262,
+            168,
+            false,
+            false
+          ]
+        ],
+        "programs": [
+          [
+            "physical",
+            91
+          ],
+          [
+            "depth",
+            12
+          ],
+          [
+            "basic",
+            10
+          ]
+        ]
+      },
+      "assets": {
+        "loaded": true,
+        "keys": [
+          "m1_enduro",
+          "m2_sport",
+          "s1_jimny",
+          "s2_suv",
+          "s3_offroad"
+        ],
+        "atlasSizes": [
+          [
+            2048,
+            2048
+          ],
+          [
+            2048,
+            2048
+          ]
+        ],
+        "reducedTextures": true,
+        "models": [
+          {
+            "id": 3,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 5,
+            "type": "bike",
+            "asset": "m2_sport",
+            "far": true,
+            "triangles": 12820,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 314,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 332,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 337,
+            "type": "suv",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 341,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 343,
+            "type": "suv",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 347,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 348,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 352,
+            "type": "police",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 356,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 357,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 360,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 361,
+            "type": "suv",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 366,
+            "type": "police",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": true,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "view": "street",
+      "tier": "medium",
+      "quality": {
+        "setting": "medium",
+        "tier": "MEDIUM",
+        "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "hdr": true,
+        "shadowMap": 2048,
+        "pixelRatio": 1,
+        "renderScale": 1,
+        "shadows": "low",
+        "shadowSetting": "auto",
+        "adaptive": {
+          "averageFrameMs": 0,
+          "tierDrops": 0,
+          "ceiling": 1,
+          "holdSeconds": 0
+        }
+      },
+      "profile": {
+        "total": 160,
+        "byLayer": {
+          "detail": 1,
+          "farDetail": 0,
+          "other": 159
+        },
+        "byName": [
+          [
+            "vehicle in vehicle",
+            23
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            22
+          ],
+          [
+            "breakable scenery",
+            15
+          ]
+        ],
+        "byCell": [
+          [
+            "0,0",
+            130
+          ],
+          [
+            "512,4096",
+            24
+          ],
+          [
+            "1024,4608",
+            2
+          ]
+        ],
+        "triangles": 676390,
+        "byTriangles": [
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            114588
+          ],
+          [
+            "Mesh SphereGeometry MeshBasicMaterial",
+            101808
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            98616
+          ]
+        ],
+        "instanced": [
+          [
+            "Mesh SphereGeometry MeshBasicMaterial",
+            606,
+            168,
+            false,
+            false
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            4519,
+            12,
+            false,
+            true
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            262,
+            168,
+            false,
+            false
+          ]
+        ],
+        "programs": [
+          [
+            "physical",
+            91
+          ],
+          [
+            "depth",
+            12
+          ],
+          [
+            "basic",
+            10
+          ]
+        ]
+      },
+      "assets": {
+        "loaded": true,
+        "keys": [
+          "m1_enduro",
+          "m2_sport",
+          "s1_jimny",
+          "s2_suv",
+          "s3_offroad"
+        ],
+        "atlasSizes": [
+          [
+            2048,
+            2048
+          ],
+          [
+            2048,
+            2048
+          ]
+        ],
+        "reducedTextures": true,
+        "models": [
+          {
+            "id": 3,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 5,
+            "type": "bike",
+            "asset": "m2_sport",
+            "far": true,
+            "triangles": 12820,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 314,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 332,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 337,
+            "type": "suv",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 341,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 343,
+            "type": "suv",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 347,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 348,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 352,
+            "type": "police",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 356,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 357,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 360,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 361,
+            "type": "suv",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 366,
+            "type": "police",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": true,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "view": "street",
+      "tier": "high",
+      "quality": {
+        "setting": "high",
+        "tier": "HIGH",
+        "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "hdr": true,
+        "shadowMap": 3072,
+        "pixelRatio": 1,
+        "renderScale": 1,
+        "shadows": "high",
+        "shadowSetting": "auto",
+        "adaptive": {
+          "averageFrameMs": 0,
+          "tierDrops": 0,
+          "ceiling": 1,
+          "holdSeconds": 0
+        }
+      },
+      "profile": {
+        "total": 161,
+        "byLayer": {
+          "detail": 2,
+          "farDetail": 0,
+          "other": 159
+        },
+        "byName": [
+          [
+            "vehicle in vehicle",
+            23
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            22
+          ],
+          [
+            "breakable scenery",
+            15
+          ]
+        ],
+        "byCell": [
+          [
+            "0,0",
+            131
+          ],
+          [
+            "512,4096",
+            24
+          ],
+          [
+            "1024,4608",
+            2
+          ]
+        ],
+        "triangles": 783910,
+        "byTriangles": [
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            114588
+          ],
+          [
+            "grass tufts",
+            107520
+          ],
+          [
+            "Mesh SphereGeometry MeshBasicMaterial",
+            101808
+          ]
+        ],
+        "instanced": [
+          [
+            "grass tufts",
+            21504,
+            5,
+            false,
+            false
+          ],
+          [
+            "Mesh SphereGeometry MeshBasicMaterial",
+            606,
+            168,
+            false,
+            false
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            4519,
+            12,
+            false,
+            true
+          ]
+        ],
+        "programs": [
+          [
+            "physical",
+            91
+          ],
+          [
+            "depth",
+            12
+          ],
+          [
+            "basic",
+            10
+          ]
+        ]
+      },
+      "assets": {
+        "loaded": true,
+        "keys": [
+          "m1_enduro",
+          "m2_sport",
+          "s1_jimny",
+          "s2_suv",
+          "s3_offroad"
+        ],
+        "atlasSizes": [
+          [
+            4096,
+            4096
+          ],
+          [
+            4096,
+            4096
+          ]
+        ],
+        "reducedTextures": false,
+        "models": [
+          {
+            "id": 3,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 5,
+            "type": "bike",
+            "asset": "m2_sport",
+            "far": true,
+            "triangles": 12820,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 314,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 332,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 337,
+            "type": "suv",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 341,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 343,
+            "type": "suv",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 347,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 348,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 352,
+            "type": "police",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 356,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 357,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 360,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 361,
+            "type": "suv",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 366,
+            "type": "police",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": true,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "view": "street",
+      "tier": "ultra",
+      "quality": {
+        "setting": "ultra",
+        "tier": "ULTRA",
+        "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "hdr": true,
+        "shadowMap": 4096,
+        "pixelRatio": 1,
+        "renderScale": 1,
+        "shadows": "high",
+        "shadowSetting": "auto",
+        "adaptive": {
+          "averageFrameMs": 0,
+          "tierDrops": 0,
+          "ceiling": 1,
+          "holdSeconds": 0
+        }
+      },
+      "profile": {
+        "total": 161,
+        "byLayer": {
+          "detail": 2,
+          "farDetail": 0,
+          "other": 159
+        },
+        "byName": [
+          [
+            "vehicle in vehicle",
+            23
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            22
+          ],
+          [
+            "breakable scenery",
+            15
+          ]
+        ],
+        "byCell": [
+          [
+            "0,0",
+            131
+          ],
+          [
+            "512,4096",
+            24
+          ],
+          [
+            "1024,4608",
+            2
+          ]
+        ],
+        "triangles": 783910,
+        "byTriangles": [
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            114588
+          ],
+          [
+            "grass tufts",
+            107520
+          ],
+          [
+            "Mesh SphereGeometry MeshBasicMaterial",
+            101808
+          ]
+        ],
+        "instanced": [
+          [
+            "grass tufts",
+            21504,
+            5,
+            false,
+            false
+          ],
+          [
+            "Mesh SphereGeometry MeshBasicMaterial",
+            606,
+            168,
+            false,
+            false
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            4519,
+            12,
+            false,
+            true
+          ]
+        ],
+        "programs": [
+          [
+            "physical",
+            91
+          ],
+          [
+            "depth",
+            12
+          ],
+          [
+            "basic",
+            10
+          ]
+        ]
+      },
+      "assets": {
+        "loaded": true,
+        "keys": [
+          "m1_enduro",
+          "m2_sport",
+          "s1_jimny",
+          "s2_suv",
+          "s3_offroad"
+        ],
+        "atlasSizes": [
+          [
+            4096,
+            4096
+          ],
+          [
+            4096,
+            4096
+          ]
+        ],
+        "reducedTextures": false,
+        "models": [
+          {
+            "id": 3,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 5,
+            "type": "bike",
+            "asset": "m2_sport",
+            "far": true,
+            "triangles": 12820,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 314,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 332,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 337,
+            "type": "suv",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 341,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 343,
+            "type": "suv",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 347,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 348,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 352,
+            "type": "police",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 356,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 357,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 360,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 361,
+            "type": "suv",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 366,
+            "type": "police",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": true,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "view": "street",
+      "tier": "auto",
+      "quality": {
+        "setting": "auto",
+        "tier": "LOW",
+        "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "hdr": true,
+        "shadowMap": 0,
+        "pixelRatio": 1,
+        "renderScale": 1,
+        "shadows": "off",
+        "shadowSetting": "auto",
+        "adaptive": {
+          "averageFrameMs": 0,
+          "tierDrops": 0,
+          "ceiling": 1,
+          "holdSeconds": 0
+        }
+      },
+      "profile": {
+        "total": 160,
+        "byLayer": {
+          "detail": 1,
+          "farDetail": 0,
+          "other": 159
+        },
+        "byName": [
+          [
+            "vehicle in vehicle",
+            23
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            22
+          ],
+          [
+            "breakable scenery",
+            15
+          ]
+        ],
+        "byCell": [
+          [
+            "0,0",
+            130
+          ],
+          [
+            "512,4096",
+            24
+          ],
+          [
+            "1024,4608",
+            2
+          ]
+        ],
+        "triangles": 673720,
+        "byTriangles": [
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            114588
+          ],
+          [
+            "Mesh SphereGeometry MeshBasicMaterial",
+            101808
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            98616
+          ]
+        ],
+        "instanced": [
+          [
+            "Mesh SphereGeometry MeshBasicMaterial",
+            606,
+            168,
+            false,
+            false
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            4519,
+            12,
+            false,
+            true
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            262,
+            168,
+            false,
+            false
+          ]
+        ],
+        "programs": [
+          [
+            "physical",
+            91
+          ],
+          [
+            "depth",
+            12
+          ],
+          [
+            "basic",
+            10
+          ]
+        ]
+      },
+      "assets": {
+        "loaded": true,
+        "keys": [
+          "m1_enduro",
+          "m2_sport",
+          "s1_jimny",
+          "s2_suv",
+          "s3_offroad"
+        ],
+        "atlasSizes": [
+          [
+            2048,
+            2048
+          ],
+          [
+            2048,
+            2048
+          ]
+        ],
+        "reducedTextures": true,
+        "models": [
+          {
+            "id": 3,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 5,
+            "type": "bike",
+            "asset": "m2_sport",
+            "far": true,
+            "triangles": 12820,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 314,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 332,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 337,
+            "type": "suv",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 341,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 343,
+            "type": "suv",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 347,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 348,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 352,
+            "type": "police",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 356,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 357,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 360,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 361,
+            "type": "suv",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 366,
+            "type": "police",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": true,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "view": "chase",
+      "tier": "low",
+      "quality": {
+        "setting": "low",
+        "tier": "LOW",
+        "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "hdr": true,
+        "shadowMap": 0,
+        "pixelRatio": 1,
+        "renderScale": 1,
+        "shadows": "off",
+        "shadowSetting": "auto",
+        "adaptive": {
+          "averageFrameMs": 0,
+          "tierDrops": 0,
+          "ceiling": 1,
+          "holdSeconds": 0
+        }
+      },
+      "profile": {
+        "total": 806,
+        "byLayer": {
+          "detail": 80,
+          "farDetail": 33,
+          "other": 693
+        },
+        "byName": [
+          [
+            "vehicle in vehicle",
+            45
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            44
+          ],
+          [
+            "Stadium enclosure in Stadium enclosure",
+            32
+          ]
+        ],
+        "byCell": [
+          [
+            "0,0",
+            381
+          ],
+          [
+            "512,4096",
+            118
+          ],
+          [
+            "3072,5632",
+            44
+          ]
+        ],
+        "triangles": 1618988,
+        "byTriangles": [
+          [
+            "Crowd heads",
+            413280
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            115236
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            98616
+          ]
+        ],
+        "instanced": [
+          [
+            "Crowd heads",
+            2460,
+            168,
+            true,
+            false
+          ],
+          [
+            "Mesh SphereGeometry MeshBasicMaterial",
+            546,
+            168,
+            false,
+            false
+          ],
+          [
+            "Stadium crowd (2460 seats) in Stadium crowd (2460 seats)",
+            4920,
+            12,
+            true,
+            false
+          ]
+        ],
+        "programs": [
+          [
+            "physical",
+            105
+          ],
+          [
+            "basic",
+            16
+          ],
+          [
+            "depth",
+            12
+          ]
+        ]
+      },
+      "assets": {
+        "loaded": true,
+        "keys": [
+          "m1_enduro",
+          "m2_sport",
+          "s1_jimny",
+          "s2_suv",
+          "s3_offroad"
+        ],
+        "atlasSizes": [
+          [
+            2048,
+            2048
+          ],
+          [
+            2048,
+            2048
+          ]
+        ],
+        "reducedTextures": true,
+        "models": [
+          {
+            "id": 3,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 5,
+            "type": "bike",
+            "asset": "m2_sport",
+            "far": true,
+            "triangles": 12820,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 314,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 332,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 337,
+            "type": "suv",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 341,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 343,
+            "type": "suv",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 347,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 348,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 352,
+            "type": "police",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 356,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 357,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 360,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 361,
+            "type": "suv",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 366,
+            "type": "police",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": true,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "view": "chase",
+      "tier": "medium",
+      "quality": {
+        "setting": "medium",
+        "tier": "MEDIUM",
+        "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "hdr": true,
+        "shadowMap": 2048,
+        "pixelRatio": 1,
+        "renderScale": 1,
+        "shadows": "low",
+        "shadowSetting": "auto",
+        "adaptive": {
+          "averageFrameMs": 0,
+          "tierDrops": 0,
+          "ceiling": 1,
+          "holdSeconds": 0
+        }
+      },
+      "profile": {
+        "total": 937,
+        "byLayer": {
+          "detail": 87,
+          "farDetail": 39,
+          "other": 811
+        },
+        "byName": [
+          [
+            "vehicle in vehicle",
+            53
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            45
+          ],
+          [
+            "breakable scenery",
+            35
+          ]
+        ],
+        "byCell": [
+          [
+            "0,0",
+            464
+          ],
+          [
+            "512,4096",
+            118
+          ],
+          [
+            "3072,5632",
+            44
+          ]
+        ],
+        "triangles": 1715708,
+        "byTriangles": [
+          [
+            "Crowd heads",
+            413280
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            115080
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            98616
+          ]
+        ],
+        "instanced": [
+          [
+            "Crowd heads",
+            2460,
+            168,
+            true,
+            false
+          ],
+          [
+            "Mesh SphereGeometry MeshBasicMaterial",
+            558,
+            168,
+            false,
+            false
+          ],
+          [
+            "Stadium crowd (2460 seats) in Stadium crowd (2460 seats)",
+            4920,
+            12,
+            true,
+            false
+          ]
+        ],
+        "programs": [
+          [
+            "physical",
+            125
+          ],
+          [
+            "basic",
+            16
+          ],
+          [
+            "depth",
+            16
+          ]
+        ]
+      },
+      "assets": {
+        "loaded": true,
+        "keys": [
+          "m1_enduro",
+          "m2_sport",
+          "s1_jimny",
+          "s2_suv",
+          "s3_offroad"
+        ],
+        "atlasSizes": [
+          [
+            2048,
+            2048
+          ],
+          [
+            2048,
+            2048
+          ]
+        ],
+        "reducedTextures": true,
+        "models": [
+          {
+            "id": 3,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 5,
+            "type": "bike",
+            "asset": "m2_sport",
+            "far": true,
+            "triangles": 12820,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 314,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 332,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 337,
+            "type": "suv",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 341,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 343,
+            "type": "suv",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 347,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 348,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 352,
+            "type": "police",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 356,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 357,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 360,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 361,
+            "type": "suv",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 366,
+            "type": "police",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": true,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 47,
+            "type": "police",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": true,
+              "instances": 0,
+              "triangles": 3327
+            }
+          }
+        ]
+      }
+    },
+    {
+      "view": "chase",
+      "tier": "high",
+      "quality": {
+        "setting": "high",
+        "tier": "HIGH",
+        "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "hdr": true,
+        "shadowMap": 3072,
+        "pixelRatio": 1,
+        "renderScale": 1,
+        "shadows": "high",
+        "shadowSetting": "auto",
+        "adaptive": {
+          "averageFrameMs": 0,
+          "tierDrops": 0,
+          "ceiling": 1,
+          "holdSeconds": 0
+        }
+      },
+      "profile": {
+        "total": 988,
+        "byLayer": {
+          "detail": 92,
+          "farDetail": 41,
+          "other": 855
+        },
+        "byName": [
+          [
+            "vehicle in vehicle",
+            47
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            45
+          ],
+          [
+            "breakable scenery",
+            38
+          ]
+        ],
+        "byCell": [
+          [
+            "0,0",
+            496
+          ],
+          [
+            "512,4096",
+            118
+          ],
+          [
+            "2560,4608",
+            45
+          ]
+        ],
+        "triangles": 1934628,
+        "byTriangles": [
+          [
+            "Crowd heads",
+            413280
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            114912
+          ],
+          [
+            "grass tufts",
+            107520
+          ]
+        ],
+        "instanced": [
+          [
+            "Crowd heads",
+            2460,
+            168,
+            true,
+            false
+          ],
+          [
+            "grass tufts",
+            21504,
+            5,
+            false,
+            false
+          ],
+          [
+            "Mesh SphereGeometry MeshBasicMaterial",
+            558,
+            168,
+            false,
+            false
+          ]
+        ],
+        "programs": [
+          [
+            "physical",
+            128
+          ],
+          [
+            "depth",
+            17
+          ],
+          [
+            "basic",
+            16
+          ]
+        ]
+      },
+      "assets": {
+        "loaded": true,
+        "keys": [
+          "m1_enduro",
+          "m2_sport",
+          "s1_jimny",
+          "s2_suv",
+          "s3_offroad"
+        ],
+        "atlasSizes": [
+          [
+            4096,
+            4096
+          ],
+          [
+            4096,
+            4096
+          ]
+        ],
+        "reducedTextures": false,
+        "models": [
+          {
+            "id": 3,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 5,
+            "type": "bike",
+            "asset": "m2_sport",
+            "far": true,
+            "triangles": 12820,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 314,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 332,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 337,
+            "type": "suv",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 341,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 343,
+            "type": "suv",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 347,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 348,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 352,
+            "type": "police",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 356,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 357,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 360,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 361,
+            "type": "suv",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 366,
+            "type": "police",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": true,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 47,
+            "type": "police",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": true,
+              "instances": 0,
+              "triangles": 3327
+            }
+          }
+        ]
+      }
+    },
+    {
+      "view": "chase",
+      "tier": "ultra",
+      "quality": {
+        "setting": "ultra",
+        "tier": "ULTRA",
+        "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "hdr": true,
+        "shadowMap": 4096,
+        "pixelRatio": 1,
+        "renderScale": 1,
+        "shadows": "high",
+        "shadowSetting": "auto",
+        "adaptive": {
+          "averageFrameMs": 0,
+          "tierDrops": 0,
+          "ceiling": 1,
+          "holdSeconds": 0
+        }
+      },
+      "profile": {
+        "total": 1276,
+        "byLayer": {
+          "detail": 104,
+          "farDetail": 43,
+          "other": 1129
+        },
+        "byName": [
+          [
+            "drawbridge leaf",
+            56
+          ],
+          [
+            "vehicle in vehicle",
+            54
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            45
+          ]
+        ],
+        "byCell": [
+          [
+            "0,0",
+            586
+          ],
+          [
+            "512,4096",
+            118
+          ],
+          [
+            "7168,6144",
+            60
+          ]
+        ],
+        "triangles": 2156298,
+        "byTriangles": [
+          [
+            "Crowd heads",
+            413280
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            115272
+          ],
+          [
+            "grass tufts",
+            107520
+          ]
+        ],
+        "instanced": [
+          [
+            "Crowd heads",
+            2460,
+            168,
+            true,
+            false
+          ],
+          [
+            "grass tufts",
+            21504,
+            5,
+            false,
+            false
+          ],
+          [
+            "Mesh SphereGeometry MeshBasicMaterial",
+            510,
+            168,
+            false,
+            false
+          ]
+        ],
+        "programs": [
+          [
+            "physical",
+            132
+          ],
+          [
+            "basic",
+            18
+          ],
+          [
+            "depth",
+            17
+          ]
+        ]
+      },
+      "assets": {
+        "loaded": true,
+        "keys": [
+          "m1_enduro",
+          "m2_sport",
+          "s1_jimny",
+          "s2_suv",
+          "s3_offroad"
+        ],
+        "atlasSizes": [
+          [
+            4096,
+            4096
+          ],
+          [
+            4096,
+            4096
+          ]
+        ],
+        "reducedTextures": false,
+        "models": [
+          {
+            "id": 3,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 5,
+            "type": "bike",
+            "asset": "m2_sport",
+            "far": true,
+            "triangles": 12820,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 314,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 332,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 337,
+            "type": "suv",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 341,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 343,
+            "type": "suv",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 347,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 348,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 352,
+            "type": "police",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 356,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 357,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 360,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 361,
+            "type": "suv",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 366,
+            "type": "police",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": true,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 47,
+            "type": "police",
+            "asset": "s2_suv",
+            "far": true,
+            "triangles": 4243,
+            "visible": true,
+            "pool": {
+              "ready": true,
+              "instances": 0,
+              "triangles": 3327
+            }
+          }
+        ]
+      }
+    },
+    {
+      "view": "chase",
+      "tier": "auto",
+      "quality": {
+        "setting": "auto",
+        "tier": "LOW",
+        "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "hdr": true,
+        "shadowMap": 0,
+        "pixelRatio": 1,
+        "renderScale": 1,
+        "shadows": "off",
+        "shadowSetting": "auto",
+        "adaptive": {
+          "averageFrameMs": 0,
+          "tierDrops": 0,
+          "ceiling": 1,
+          "holdSeconds": 0
+        }
+      },
+      "profile": {
+        "total": 846,
+        "byLayer": {
+          "detail": 80,
+          "farDetail": 33,
+          "other": 733
+        },
+        "byName": [
+          [
+            "vehicle in vehicle",
+            45
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            44
+          ],
+          [
+            "Stadium enclosure in Stadium enclosure",
+            32
+          ]
+        ],
+        "byCell": [
+          [
+            "0,0",
+            421
+          ],
+          [
+            "512,4096",
+            118
+          ],
+          [
+            "3072,5632",
+            44
+          ]
+        ],
+        "triangles": 1717324,
+        "byTriangles": [
+          [
+            "Crowd heads",
+            413280
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            114900
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            98616
+          ]
+        ],
+        "instanced": [
+          [
+            "Crowd heads",
+            2460,
+            168,
+            true,
+            false
+          ],
+          [
+            "Mesh SphereGeometry MeshBasicMaterial",
+            498,
+            168,
+            false,
+            false
+          ],
+          [
+            "Stadium crowd (2460 seats) in Stadium crowd (2460 seats)",
+            4920,
+            12,
+            true,
+            false
+          ]
+        ],
+        "programs": [
+          [
+            "physical",
+            137
+          ],
+          [
+            "basic",
+            18
+          ],
+          [
+            "depth",
+            17
+          ]
+        ]
+      },
+      "assets": {
+        "loaded": true,
+        "keys": [
+          "m1_enduro",
+          "m2_sport",
+          "s1_jimny",
+          "s2_suv",
+          "s3_offroad"
+        ],
+        "atlasSizes": [
+          [
+            2048,
+            2048
+          ],
+          [
+            2048,
+            2048
+          ]
+        ],
+        "reducedTextures": true,
+        "models": [
+          {
+            "id": 3,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 5,
+            "type": "bike",
+            "asset": "m2_sport",
+            "far": true,
+            "triangles": 12820,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 314,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 332,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 337,
+            "type": "suv",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 341,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 343,
+            "type": "suv",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 347,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 348,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 352,
+            "type": "police",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 356,
+            "type": "suv",
+            "asset": "s3_offroad",
+            "far": false,
+            "triangles": 6416,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 357,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 360,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 58910,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 361,
+            "type": "suv",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 366,
+            "type": "police",
+            "asset": "s2_suv",
+            "far": false,
+            "triangles": 7742,
+            "visible": true,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 47,
+            "type": "police",
+            "asset": "s2_suv",
+            "far": true,
+            "triangles": 4243,
+            "visible": false,
+            "pool": {
+              "ready": true,
+              "instances": 0,
+              "triangles": 3327
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "farPool": {
+    "id": 369,
+    "initial": {
+      "id": 369,
+      "type": "suv",
+      "x": 680,
+      "y": 4520,
+      "a": 0,
+      "kmh": 0,
+      "ai": false,
+      "occupied": false,
+      "altitude": 0
+    },
+    "model": {
+      "id": 369,
+      "type": "suv",
+      "draws": 17,
+      "casters": 3,
+      "triangles": 63280,
+      "heaviest": [
+        [
+          "MeshStandardMaterial",
+          40052
+        ],
+        [
+          "MeshPhysicalMaterial",
+          3689
+        ],
+        [
+          "MeshStandardMaterial",
+          2889
+        ],
+        [
+          "MeshStandardMaterial",
+          2056
+        ],
+        [
+          "MeshStandardMaterial",
+          2055
+        ],
+        [
+          "MeshStandardMaterial",
+          2055
+        ]
+      ],
+      "asset": "Suzuki Jimny 2023",
+      "cabin": {
+        "hip": [
+          -0.384,
+          0.454,
+          -0.372
+        ],
+        "door": [
+          -0.484,
+          0.766
+        ],
+        "floor": 0.254,
+        "floorWorldY": 0.266,
+        "pedalHeight": 0.354,
+        "recline": 0.3,
+        "rear": true,
+        "two": false,
+        "cabinTriangles": 13838,
+        "seated": 0,
+        "headroom": 0.175,
+        "behind": 0.794
+      },
+      "panes": {
+        "left": {
+          "drawn": true,
+          "depthWrite": true
+        },
+        "front": {
+          "drawn": true,
+          "depthWrite": true
+        },
+        "right": {
+          "drawn": true,
+          "depthWrite": true
+        },
+        "rear": {
+          "drawn": true,
+          "depthWrite": true
+        },
+        "roof": {
+          "drawn": true,
+          "depthWrite": true
+        }
+      },
+      "badge": null
+    },
+    "farFirst": {
+      "model": {
+        "id": 369,
+        "type": "suv",
+        "asset": "s1_jimny",
+        "far": true,
+        "triangles": 9726,
+        "visible": true,
+        "pool": {
+          "ready": false,
+          "instances": 0,
+          "triangles": 0
+        }
+      },
+      "status": {
+        "mode": "play",
+        "x": 420,
+        "y": 4520,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "13:33",
+        "renderer": "3d",
+        "vehicles": 305,
+        "pedestrians": 554
+      },
+      "camera": {
+        "zoom": 1.1,
+        "target": 1.1,
+        "context": 1,
+        "slowFraming": false,
+        "vehicleContext": null,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 1.1,
+        "aim": 1.1,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 54.1,
+        "personPx": 14,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 0.8,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "vehicle": {
+        "id": 369,
+        "type": "suv",
+        "x": 680,
+        "y": 4520,
+        "a": 0,
+        "kmh": 0,
+        "ai": false,
+        "occupied": false,
+        "altitude": 0
+      }
+    },
+    "pooled": {
+      "model": {
+        "id": 369,
+        "type": "suv",
+        "asset": "s1_jimny",
+        "far": true,
+        "triangles": 9726,
+        "visible": false,
+        "pool": {
+          "ready": true,
+          "instances": 0,
+          "triangles": 7994
+        }
+      },
+      "status": {
+        "mode": "play",
+        "x": 420,
+        "y": 4520,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "13:33",
+        "renderer": "3d",
+        "vehicles": 305,
+        "pedestrians": 554
+      },
+      "camera": {
+        "zoom": 0.3,
+        "target": 0.3,
+        "context": 1,
+        "slowFraming": false,
+        "vehicleContext": null,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 0.3,
+        "aim": 0.3,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 198.3,
+        "personPx": 4,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": null
+      },
+      "vehicle": {
+        "id": 369,
+        "type": "suv",
+        "x": 680,
+        "y": 4520,
+        "a": 0,
+        "kmh": 0,
+        "ai": false,
+        "occupied": false,
+        "altitude": 0
+      }
+    }
+  },
+  "failure": "Error: Fresh visible SUV did not render through instanced body pool: {\"model\":{\"id\":369,\"type\":\"suv\",\"asset\":\"s1_jimny\",\"far\":true,\"triangles\":9726,\"visible\":false,\"pool\":{\"ready\":true,\"instances\":0,\"triangles\":7994}},\"status\":{\"mode\":\"play\",\"x\":420,\"y\":4520,\"district\":\"SOUTHPORT AIRPORT\",\"hp\":100,\"cash\":0,\"wanted\":0,\"mission\":null,\"completed\":0,\"vehicle\":null,\"weapon\":\"9MM PISTOL\",\"clock\":\"13:33\",\"renderer\":\"3d\",\"vehicles\":305,\"pedestrians\":554},\"camera\":{\"zoom\":0.3,\"target\":0.3,\"context\":1,\"slowFraming\":false,\"vehicleContext\":null,\"speed\":1,\"kmh\":0,\"framing\":1,\"framed\":0.3,\"aim\":0.3,\"defaultZoom\":2,\"limits\":[0.14,4.5],\"viewport\":[1000,700],\"viewMetres\":198.3,\"personPx\":4,\"motionComfort\":false,\"vehicleDistance\":120,\"walkDistance\":100,\"comfort\":null},\"vehicle\":{\"id\":369,\"type\":\"suv\",\"x\":680,\"y\":4520,\"a\":0,\"kmh\":0,\"ai\":false,\"occupied\":false,\"altitude\":0}}\n    at checkFarPool (file:///workspace/GTA/tools/suv-render-review.mjs:86:87)\n    at async file:///workspace/GTA/tools/suv-render-review.mjs:174:5"
+}

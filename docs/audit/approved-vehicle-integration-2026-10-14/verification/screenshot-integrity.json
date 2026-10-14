@@ -1,0 +1,17 @@
+{
+  "checks": [
+    {
+      "manifest": "motorcycle-screenshot-manifest.json",
+      "nativeImages": 28,
+      "hashesDimensionsBytesPassed": true
+    },
+    {
+      "manifest": "suv-screenshot-manifest.json",
+      "nativeImages": 29,
+      "hashesDimensionsBytesPassed": true
+    }
+  ],
+  "renderedReceiptErrors": 0,
+  "frameFaults": 0,
+  "contextLosses": 0
+}

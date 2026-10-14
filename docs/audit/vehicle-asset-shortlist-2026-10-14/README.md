@@ -1,5 +1,9 @@
 # Free replacement vehicle shortlist
 
+**Owner approved M1, M2, S1, S2 and S3 on 14 October 2026.** This page records the
+original proposal and source previews; the approved import is documented in
+[the integration audit](../approved-vehicle-integration-2026-10-14/README.md).
+
 Owner request: find new motorcycle and sheriff/RANGER 4X4 assets, show previews,
 and obtain individual approvals before importing. **Free assets only.** All work
 continues on `codex/chase-clouds-polish-2026-10-12`. This proposal changes documentation
@@ -85,5 +89,5 @@ and verify damage, seats/doors, both cameras and every graphics tier. Preserve e
 unselected model and the existing mission/handling contracts. Production credits
 and area documentation join the eventual approved import.
 
-Selection status: **awaiting individual owner approvals**. No purchase or game import
-is included in this research-only commit.
+Selection status: **all five approved by the owner**. The original shortlist commit
+was research only; the subsequent integration retains the attribution evidence above.

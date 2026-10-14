@@ -1,0 +1,819 @@
+{
+  "htmlSha256": "8ed4ef3185e3e3f10819241d44254cc6aafc2215beaa8ec90006c641ce4f1e02",
+  "originalTestSha256": "c8e5a1f1b38f0303fee490e9eaba9c18a3b9a98cad406e0474327b1936f4f951",
+  "proposedTestSha256": "0ac57d1962092a3938af98c452c71153313bd954a17967da05ed9a7d6ac764ff",
+  "proposedFullTestSha256": "39fac6f9b965f2e4342755d885c56010a7a47f252108122b8f4036c7e641fad6",
+  "focused": true,
+  "recorderSha256": "5f78e9054d0794012fa066c5b321af1ffd7a12ce7c606d16d559f7ce9d00a77d",
+  "assertions": 55,
+  "pilots": [
+    {
+      "args": [
+        5874,
+        -3975,
+        15,
+        14
+      ],
+      "before": {
+        "type": "suv",
+        "x": 5864.4,
+        "y": -3934.8,
+        "heading": -78.5,
+        "yawRate": 0,
+        "kmh": 0,
+        "slip": 0,
+        "hp": 250,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "time",
+        "seconds": 15,
+        "x": 5873,
+        "y": -3959,
+        "speed": 0,
+        "hp": 247,
+        "left": 16,
+        "wanted": 0
+      },
+      "after": {
+        "type": "suv",
+        "x": 5872.9,
+        "y": -3959.1,
+        "heading": -101.7,
+        "yawRate": 0.047,
+        "kmh": 0.3,
+        "slip": 0,
+        "hp": 247,
+        "lift": 0,
+        "air": false
+      },
+      "garages": [
+        {
+          "villa": "VILLA AZZURRA",
+          "garage": {
+            "x": 5684,
+            "y": -4794.3730657063425,
+            "w": 64,
+            "h": 70
+          },
+          "door": {
+            "side": "south",
+            "x": 5716,
+            "y": -4724,
+            "open": 0,
+            "want": false
+          },
+          "gate": {
+            "x": 5716,
+            "y": -4632
+          },
+          "sideGate": null,
+          "forecourt": [
+            {
+              "id": 211,
+              "type": "roadster",
+              "x": 5964,
+              "y": -4664,
+              "player": false
+            }
+          ],
+          "drive": {
+            "x": 5690,
+            "y": -4724,
+            "w": 52,
+            "h": 132
+          },
+          "cars": [
+            {
+              "id": 240,
+              "type": "supercar",
+              "x": 5716,
+              "y": -4762,
+              "a": 1.57,
+              "player": false
+            }
+          ]
+        },
+        {
+          "villa": "THE GLASS HOUSE",
+          "garage": {
+            "x": 6354,
+            "y": -4789.281495857984,
+            "w": 64,
+            "h": 70
+          },
+          "door": {
+            "side": "south",
+            "x": 6386,
+            "y": -4719,
+            "open": 0,
+            "want": false
+          },
+          "gate": {
+            "x": 6386,
+            "y": -4632
+          },
+          "sideGate": null,
+          "forecourt": [],
+          "drive": {
+            "x": 6360,
+            "y": -4719,
+            "w": 52,
+            "h": 127
+          },
+          "cars": [
+            {
+              "id": 241,
+              "type": "luxury",
+              "x": 6386,
+              "y": -4757,
+              "a": 1.57,
+              "player": false
+            }
+          ]
+        },
+        {
+          "villa": "HALCYON HOUSE",
+          "garage": {
+            "x": 7962,
+            "y": -4782.873140349984,
+            "w": 64,
+            "h": 70
+          },
+          "door": {
+            "side": "south",
+            "x": 7994,
+            "y": -4713,
+            "open": 0,
+            "want": false
+          },
+          "gate": {
+            "x": 7994,
+            "y": -4632
+          },
+          "sideGate": null,
+          "forecourt": [],
+          "drive": {
+            "x": 7968,
+            "y": -4713,
+            "w": 52,
+            "h": 121
+          },
+          "cars": [
+            {
+              "id": 242,
+              "type": "roadster",
+              "x": 7994,
+              "y": -4751,
+              "a": 1.57,
+              "player": false
+            }
+          ]
+        },
+        {
+          "villa": "BELVEDERE",
+          "garage": {
+            "x": 8672,
+            "y": -4797.502326857299,
+            "w": 64,
+            "h": 70
+          },
+          "door": {
+            "side": "south",
+            "x": 8704,
+            "y": -4728,
+            "open": 0,
+            "want": false
+          },
+          "gate": {
+            "x": 8704,
+            "y": -4632
+          },
+          "sideGate": null,
+          "forecourt": [
+            {
+              "id": 212,
+              "type": "supercar",
+              "x": 8390,
+              "y": -4668,
+              "player": false
+            },
+            {
+              "id": 213,
+              "type": "luxury",
+              "x": 8436,
+              "y": -4664,
+              "player": false
+            }
+          ],
+          "drive": {
+            "x": 8678,
+            "y": -4728,
+            "w": 52,
+            "h": 136
+          },
+          "cars": [
+            {
+              "id": 243,
+              "type": "suv",
+              "x": 8704,
+              "y": -4766,
+              "a": 1.57,
+              "player": false
+            }
+          ]
+        },
+        {
+          "villa": "CASA DEL SOL",
+          "garage": {
+            "x": 8874,
+            "y": -4855.2034556888975,
+            "w": 64,
+            "h": 70
+          },
+          "door": {
+            "side": "south",
+            "x": 8906,
+            "y": -4785,
+            "open": 0,
+            "want": false
+          },
+          "gate": {
+            "x": 8906,
+            "y": -4632
+          },
+          "sideGate": null,
+          "forecourt": [
+            {
+              "id": 214,
+              "type": "suv",
+              "x": 9074,
+              "y": -4725,
+              "player": false
+            },
+            {
+              "id": 215,
+              "type": "luxury",
+              "x": 9120,
+              "y": -4721,
+              "player": false
+            }
+          ],
+          "drive": {
+            "x": 8880,
+            "y": -4785,
+            "w": 52,
+            "h": 193
+          },
+          "cars": [
+            {
+              "id": 244,
+              "type": "sport",
+              "x": 8906,
+              "y": -4823,
+              "a": 1.57,
+              "player": false
+            }
+          ]
+        },
+        {
+          "villa": "CLIFFTOP",
+          "garage": {
+            "x": 9782.875520657748,
+            "y": -3948,
+            "w": 70,
+            "h": 64
+          },
+          "door": {
+            "side": "west",
+            "x": 9783,
+            "y": -3916,
+            "open": 0,
+            "want": false
+          },
+          "gate": {
+            "x": 9688,
+            "y": -3916
+          },
+          "sideGate": null,
+          "forecourt": [
+            {
+              "id": 216,
+              "type": "luxury",
+              "x": 9723,
+              "y": -4158,
+              "player": false
+            }
+          ],
+          "drive": {
+            "x": 9648,
+            "y": -3942,
+            "w": 135,
+            "h": 52
+          },
+          "cars": [
+            {
+              "id": 245,
+              "type": "coupe",
+              "x": 9821,
+              "y": -3916,
+              "a": 3.14,
+              "player": false
+            }
+          ]
+        },
+        {
+          "villa": "ROSEMOOR",
+          "garage": {
+            "x": 9771.410709299147,
+            "y": -3128,
+            "w": 70,
+            "h": 64
+          },
+          "door": {
+            "side": "west",
+            "x": 9771,
+            "y": -3096,
+            "open": 0,
+            "want": false
+          },
+          "gate": {
+            "x": 9688,
+            "y": -3096
+          },
+          "sideGate": null,
+          "forecourt": [
+            {
+              "id": 217,
+              "type": "luxury",
+              "x": 9711,
+              "y": -3341,
+              "player": false
+            }
+          ],
+          "drive": {
+            "x": 9648,
+            "y": -3122,
+            "w": 123,
+            "h": 52
+          },
+          "cars": [
+            {
+              "id": 246,
+              "type": "supercar",
+              "x": 9809,
+              "y": -3096,
+              "a": 3.14,
+              "player": false
+            }
+          ]
+        },
+        {
+          "villa": "SEACLIFF MANOR",
+          "garage": {
+            "x": 9768.140135776252,
+            "y": -2836,
+            "w": 70,
+            "h": 64
+          },
+          "door": {
+            "side": "west",
+            "x": 9768,
+            "y": -2804,
+            "open": 0,
+            "want": false
+          },
+          "gate": {
+            "x": 9688,
+            "y": -2804
+          },
+          "sideGate": null,
+          "forecourt": [
+            {
+              "id": 218,
+              "type": "luxury",
+              "x": 9708,
+              "y": -2530,
+              "player": false
+            }
+          ],
+          "drive": {
+            "x": 9648,
+            "y": -2830,
+            "w": 120,
+            "h": 52
+          },
+          "cars": [
+            {
+              "id": 247,
+              "type": "luxury",
+              "x": 9806,
+              "y": -2804,
+              "a": 3.14,
+              "player": false
+            }
+          ]
+        },
+        {
+          "villa": "VILLA TOSCANA",
+          "garage": {
+            "x": 5908,
+            "y": -3924,
+            "w": 64,
+            "h": 70
+          },
+          "door": {
+            "side": "south",
+            "x": 5940,
+            "y": -3854,
+            "open": 0,
+            "want": false
+          },
+          "gate": {
+            "x": 5940,
+            "y": -3832
+          },
+          "sideGate": {
+            "x": 5874,
+            "y": -3832,
+            "width": 48
+          },
+          "forecourt": [
+            {
+              "id": 219,
+              "type": "suv",
+              "x": 5818,
+              "y": -3939,
+              "player": false
+            },
+            {
+              "id": 220,
+              "type": "suv",
+              "x": 5873,
+              "y": -3959,
+              "player": true
+            }
+          ],
+          "drive": {
+            "x": 5914,
+            "y": -3854,
+            "w": 52,
+            "h": 62
+          },
+          "cars": [
+            {
+              "id": 248,
+              "type": "roadster",
+              "x": 5940,
+              "y": -3892,
+              "a": 1.57,
+              "player": false
+            }
+          ]
+        },
+        {
+          "villa": "WHITEHALL",
+          "garage": {
+            "x": 6028,
+            "y": -3924,
+            "w": 64,
+            "h": 70
+          },
+          "door": {
+            "side": "south",
+            "x": 6060,
+            "y": -3854,
+            "open": 0,
+            "want": false
+          },
+          "gate": {
+            "x": 6060,
+            "y": -3832
+          },
+          "sideGate": {
+            "x": 6126,
+            "y": -3832,
+            "width": 48
+          },
+          "forecourt": [
+            {
+              "id": 221,
+              "type": "luxury",
+              "x": 6139,
+              "y": -3936,
+              "player": false
+            },
+            {
+              "id": 222,
+              "type": "suv",
+              "x": 6185,
+              "y": -3932,
+              "player": false
+            }
+          ],
+          "drive": {
+            "x": 6034,
+            "y": -3854,
+            "w": 52,
+            "h": 62
+          },
+          "cars": [
+            {
+              "id": 249,
+              "type": "suv",
+              "x": 6060,
+              "y": -3892,
+              "a": 1.57,
+              "player": false
+            }
+          ]
+        },
+        {
+          "villa": "SHINGLE HOUSE",
+          "garage": {
+            "x": 6702,
+            "y": -3924,
+            "w": 64,
+            "h": 70
+          },
+          "door": {
+            "side": "south",
+            "x": 6734,
+            "y": -3854,
+            "open": 0,
+            "want": false
+          },
+          "gate": {
+            "x": 6734,
+            "y": -3832
+          },
+          "sideGate": {
+            "x": 6668,
+            "y": -3832,
+            "width": 48
+          },
+          "forecourt": [
+            {
+              "id": 223,
+              "type": "supercar",
+              "x": 6614,
+              "y": -3919,
+              "player": false
+            },
+            {
+              "id": 224,
+              "type": "sport",
+              "x": 6660,
+              "y": -3915,
+              "player": false
+            }
+          ],
+          "drive": {
+            "x": 6708,
+            "y": -3854,
+            "w": 52,
+            "h": 62
+          },
+          "cars": [
+            {
+              "id": 250,
+              "type": "sport",
+              "x": 6734,
+              "y": -3892,
+              "a": 1.57,
+              "player": false
+            }
+          ]
+        },
+        {
+          "villa": "KORA PAVILION",
+          "garage": {
+            "x": 7012,
+            "y": -3924,
+            "w": 64,
+            "h": 70
+          },
+          "door": {
+            "side": "south",
+            "x": 7044,
+            "y": -3854,
+            "open": 0,
+            "want": false
+          },
+          "gate": {
+            "x": 7044,
+            "y": -3832
+          },
+          "sideGate": {
+            "x": 6978,
+            "y": -3832,
+            "width": 48
+          },
+          "forecourt": [
+            {
+              "id": 225,
+              "type": "supercar",
+              "x": 6924,
+              "y": -3929,
+              "player": false
+            },
+            {
+              "id": 226,
+              "type": "suv",
+              "x": 6970,
+              "y": -3925,
+              "player": false
+            }
+          ],
+          "drive": {
+            "x": 7018,
+            "y": -3854,
+            "w": 52,
+            "h": 62
+          },
+          "cars": [
+            {
+              "id": 251,
+              "type": "coupe",
+              "x": 7044,
+              "y": -3892,
+              "a": 1.57,
+              "player": false
+            }
+          ]
+        },
+        {
+          "villa": "VILLA MIRAMAR",
+          "garage": {
+            "x": 9108,
+            "y": -3924,
+            "w": 64,
+            "h": 70
+          },
+          "door": {
+            "side": "south",
+            "x": 9140,
+            "y": -3854,
+            "open": 0,
+            "want": false
+          },
+          "gate": {
+            "x": 9140,
+            "y": -3832
+          },
+          "sideGate": {
+            "x": 9074,
+            "y": -3832,
+            "width": 48
+          },
+          "forecourt": [
+            {
+              "id": 227,
+              "type": "suv",
+              "x": 9019,
+              "y": -3936,
+              "player": false
+            },
+            {
+              "id": 228,
+              "type": "suv",
+              "x": 9065,
+              "y": -3932,
+              "player": false
+            }
+          ],
+          "drive": {
+            "x": 9114,
+            "y": -3854,
+            "w": 52,
+            "h": 62
+          },
+          "cars": [
+            {
+              "id": 252,
+              "type": "supercar",
+              "x": 9140,
+              "y": -3892,
+              "a": 1.57,
+              "player": false
+            }
+          ]
+        },
+        {
+          "villa": "LAUREL COURT",
+          "garage": {
+            "x": 9228,
+            "y": -3924,
+            "w": 64,
+            "h": 70
+          },
+          "door": {
+            "side": "south",
+            "x": 9260,
+            "y": -3854,
+            "open": 0,
+            "want": false
+          },
+          "gate": {
+            "x": 9260,
+            "y": -3832
+          },
+          "sideGate": {
+            "x": 9326,
+            "y": -3832,
+            "width": 48
+          },
+          "forecourt": [
+            {
+              "id": 229,
+              "type": "roadster",
+              "x": 9338,
+              "y": -3923,
+              "player": false
+            },
+            {
+              "id": 230,
+              "type": "luxury",
+              "x": 9384,
+              "y": -3919,
+              "player": false
+            }
+          ],
+          "drive": {
+            "x": 9234,
+            "y": -3854,
+            "w": 52,
+            "h": 62
+          },
+          "cars": [
+            {
+              "id": 253,
+              "type": "luxury",
+              "x": 9260,
+              "y": -3892,
+              "a": 1.57,
+              "player": false
+            }
+          ]
+        }
+      ],
+      "integrity": {
+        "problems": [],
+        "mode": "play",
+        "overlays": [],
+        "player": {
+          "x": 5873,
+          "y": -3959,
+          "hp": 100,
+          "vehicle": "suv",
+          "onFoot": false
+        },
+        "carriers": {
+          "swimming": false,
+          "wading": false,
+          "parachute": false,
+          "fall": false,
+          "jump": false,
+          "climbing": false,
+          "carjack": false,
+          "thrown": false,
+          "tumble": false,
+          "coaster": false,
+          "pool": false,
+          "deck": false,
+          "roof": false,
+          "transit": false,
+          "taxi": false,
+          "loot": false,
+          "rideSkip": false,
+          "hidden": false,
+          "conversation": false
+        },
+        "counts": {
+          "vehicles": 279,
+          "pedestrians": 731,
+          "officers": 0,
+          "particles": 0,
+          "skids": 0,
+          "debris": 0,
+          "bullets": 0,
+          "fires": 0,
+          "notices": 0,
+          "carsInBuildings": 0,
+          "carsOff": 0,
+          "carsBroken": 0,
+          "peopleInBuildings": 0,
+          "peopleBroken": 0,
+          "stuckReactions": 0
+        },
+        "stuckPeople": []
+      }
+    }
+  ],
+  "errors": [],
+  "notes": [],
+  "status": "FAIL",
+  "failure": "Error: VILLA TOSCANA: could not align with the side gate: {\"reason\":\"time\",\"seconds\":15,\"x\":5873,\"y\":-3959,\"speed\":0,\"hp\":247,\"left\":16,\"wanted\":0}\n    at Object.assert (file:///workspace/GTA/dist/villa-waypoint-probe.mjs:23:54)\n    at default (data:text/javascript;base64,Ly8gTW9uYXJjaCB2aWxsYSBnYXJhZ2VzIChtb25hcmNoLWdhcmFnZXMuanMpOiBldmVyeSBnYXJhZ2UgaG9sZHMgYSByZWFsIGNhciwgaXRzIHJvbGwtdXAgZG9vciBvcGVucyBhcyB0aGUgcGxheWVyCi8vIGNvbWVzIHVwIHRoZSBkcml2ZSwgdGhlIGNhciBpcyBlbnRlcmVkICh0aGUgcmVhbCBhY3Rpb24ga2V5IG9uIHRoZSBmaXJzdCkgYW5kIGRyaXZlbiBvdXQgb2YgdGhlIGdhcmFnZSwgZG93biB0aGUKLy8gZHJpdmUgYW5kIHRocm91Z2ggdGhlIGdhdGUgdG8gdGhlIHN0cmVldCwgYW5kIHRoZSBkb29yIHJvbGxzIGRvd24gYmVoaW5kIGl0LgpleHBvcnQgY29uc3QgZnJlc2ggPSB0cnVlOwpleHBvcnQgZGVmYXVsdCBhc3luYyBmdW5jdGlvbiAodCkgewogIGF3YWl0IHQuY2FsbCgnZ29kJywgdHJ1ZSk7CiAgY29uc3QgZ2FyYWdlcyA9IGF3YWl0IHQuY2FsbCgndmlsbGFHYXJhZ2VzJyk7CiAgdC5hc3NlcnQoZ2FyYWdlcy5sZW5ndGggPT09IDE0LCAnZ2FyYWdlczogJyArIGdhcmFnZXMubGVuZ3RoKTsKICBmb3IgKGNvbnN0IGcgb2YgZ2FyYWdlcykgewogICAgdC5hc3NlcnQoZy5kb29yICYmIGcuZHJpdmUsIGcudmlsbGEgKyAnIGhhcyBubyBkb29yIG9yIGRyaXZlOiAnICsgSlNPTi5zdHJpbmdpZnkoZykpOwogICAgdC5hc3NlcnQoZy5jYXJzLmxlbmd0aCA9PT0gMSwgZy52aWxsYSArICcgc2hvdWxkIGhvbGQgb25lIGNhcjogJyArIEpTT04uc3RyaW5naWZ5KGcuY2FycykpOwogIH0KICB0LmFzc2VydChnYXJhZ2VzLmV2ZXJ5KChnKSA9PiBnLmRvb3Iub3BlbiA9PT0gMCksICdkb29ycyBzdGFydCBzaHV0OiAnICsgSlNPTi5zdHJpbmdpZnkoZ2FyYWdlcy5tYXAoKGcpID0+IGcuZG9vci5vcGVuKSkpOwogIGNvbnN0IGxhbmVzID0gYXdhaXQgdC5jYWxsKCd2ZWhpY2xlRW50cmFuY2VzJyk7CiAgZm9yIChjb25zdCBlIG9mIGxhbmVzKSB0LmFzc2VydCghZS5wYXJrZWQubGVuZ3RoLCBlLm5hbWUgKyAnIGlzIGJsb2NrZWQ6ICcgKyBKU09OLnN0cmluZ2lmeShlLnBhcmtlZCkpOwogIGxldCBmaXJzdCA9IHRydWU7CiAgYXdhaXQgdC5jYWxsKCdob2xkU2ltdWxhdGlvbicsIHRydWUpOwogIGZvciAoY29uc3QgZyBvZiBbXSkgewogICAgY29uc3QgbiA9IGcuZG9vci5zaWRlID09PSAnd2VzdCcgPyBbLTEsIDBdIDogZy5kb29yLnNpZGUgPT09ICdzb3V0aCcgPyBbMCwgMV0gOiBbMCwgLTFdLAogICAgICBhdCA9IChkKSA9PiBbZy5kb29yLnggKyBuWzBdICogZCwgZy5kb29yLnkgKyBuWzFdICogZF07CiAgICAvLyBXYWxraW5nIHVwIHRoZSBkcml2ZSBvcGVucyB0aGUgZG9vci4KICAgIGF3YWl0IHQuY2FsbCgndGVsZXBvcnQnLCAuLi5hdCg0MCkpOwogICAgYXdhaXQgdC53YWl0KDIuMik7CiAgICBsZXQgcyA9IChhd2FpdCB0LmNhbGwoJ3ZpbGxhR2FyYWdlcycpKS5maW5kKChvKSA9PiBvLnZpbGxhID09PSBnLnZpbGxhKTsKICAgIHQuYXNzZXJ0KHMuZG9vci5vcGVuID4gMC45NSwgZy52aWxsYSArICcgZG9vciBkaWQgbm90IG9wZW46ICcgKyBKU09OLnN0cmluZ2lmeShzLmRvb3IpKTsKICAgIC8vIEludG8gdGhlIGdhcmFnZSwgYmVzaWRlIHRoZSBjYXIsIGFuZCBpbi4KICAgIGF3YWl0IHQuY2FsbCgndGVsZXBvcnQnLCAuLi5hdCgtNikpOwogICAgYXdhaXQgdC53YWl0KDAuMik7CiAgICBpZiAoZmlyc3QpIHsKICAgICAgYXdhaXQgdC5rZXlzKCdLZXlFJywgMC4yLCB7IHJlYWw6IHRydWUgfSk7CiAgICAgIGF3YWl0IHQucmVhbFdhaXQoMik7CiAgICAgIGF3YWl0IHQuY2FsbCgnaG9sZFNpbXVsYXRpb24nLCB0cnVlKTsKICAgICAgZmlyc3QgPSBmYWxzZTsKICAgIH0gZWxzZSBhd2FpdCB0LmNhbGwoJ2ludGVyYWN0Jyk7CiAgICBhd2FpdCB0LndhaXQoMS41KTsKICAgIGNvbnN0IHN0YXR1cyA9IGF3YWl0IHQuY2FsbCgnc3RhdHVzJyk7CiAgICB0LmFzc2VydChzdGF0dXMudmVoaWNsZSA9PT0gZy5jYXJzWzBdLnR5cGUsIGcudmlsbGEgKyAnOiBub3QgaW4gdGhlIGdhcmFnZSBjYXI6ICcgKyBKU09OLnN0cmluZ2lmeShzdGF0dXMpKTsKICAgIC8vIE91dCBvZiB0aGUgZ2FyYWdlLCBkb3duIHRoZSBkcml2ZSwgdGhyb3VnaCB0aGUgZ2F0ZSBvbnRvIHRoZSBzdHJlZXQuCiAgICBsZXQgciA9IGF3YWl0IHQuY2FsbCgnc3RlZXJUbycsIC4uLmF0KDM0KSwgMTIsIDE0KTsKICAgIHQuYXNzZXJ0KHIgJiYgci5yZWFzb24gPT09ICdhcnJpdmVkJywgZy52aWxsYSArICc6IHN0dWNrIGxlYXZpbmcgdGhlIGdhcmFnZTogJyArIEpTT04uc3RyaW5naWZ5KHIpKTsKICAgIGNvbnN0IGdhdGUgPSBbZy5nYXRlLnggKyBuWzBdICogNjAsIGcuZ2F0ZS55ICsgblsxXSAqIDYwXTsKICAgIHIgPSBhd2FpdCB0LmNhbGwoJ3N0ZWVyVG8nLCBnYXRlWzBdLCBnYXRlWzFdLCAyMCwgMjIpOwogICAgdC5hc3NlcnQociAmJiByLnJlYXNvbiA9PT0gJ2Fycml2ZWQnLCBnLnZpbGxhICsgJzogc3R1Y2sgb24gdGhlIHdheSB0byB0aGUgc3RyZWV0OiAnICsgSlNPTi5zdHJpbmdpZnkocikpOwogICAgY29uc3QgcGFzdCA9IG5bMF0gPyAoZy5nYXRlLnggLSByLngpICogLW5bMF0gOiAoci55IC0gZy5nYXRlLnkpICogblsxXTsKICAgIHQuYXNzZXJ0KHBhc3QgPiAzMCwgZy52aWxsYSArICc6IG5vdCBvdXQgdGhyb3VnaCB0aGUgZ2F0ZTogJyArIEpTT04uc3RyaW5naWZ5KHIpKTsKICAgIGF3YWl0IHQud2FpdCgzLjUpOwogICAgcyA9IChhd2FpdCB0LmNhbGwoJ3ZpbGxhR2FyYWdlcycpKS5maW5kKChvKSA9PiBvLnZpbGxhID09PSBnLnZpbGxhKTsKICAgIHQuYXNzZXJ0KHMuZG9vci5vcGVuIDwgMC4xLCBnLnZpbGxhICsgJyBkb29yIHN0YXllZCB1cCBiZWhpbmQgdGhlIGNhcjogJyArIEpTT04uc3RyaW5naWZ5KHMuZG9vcikpOwogICAgYXdhaXQgdC5jYWxsKCdpbnRlcmFjdCcpOwogICAgYXdhaXQgdC53YWl0KDEpOwogIH0KICAvLyBBIGdhcmFnZSBidWlsdCBqdXN0IGluc2lkZSB0aGUgZ2F0ZSBzdG9vZCBhY3Jvc3MgdGhlIGRyaXZlOiB0aGUgZm9yZWNvdXJ0J3MgY2FycyBsZWF2ZSBieSB0aGUgc2lkZSBnYXRlLgogIGZvciAoY29uc3QgZyBvZiBnYXJhZ2VzLmZpbHRlcigobykgPT4gby5zaWRlR2F0ZSAmJiBbJ1ZJTExBIFRPU0NBTkEnLCdWSUxMQSBNSVJBTUFSJ10uaW5jbHVkZXMoby52aWxsYSkpKSB7CiAgICBjb25zdCBzID0gKGF3YWl0IHQuY2FsbCgndmlsbGFHYXJhZ2VzJykpLmZpbmQoKG8pID0+IG8udmlsbGEgPT09IGcudmlsbGEpLAogICAgICBzaWRlID0gcy5zaWRlR2F0ZSwKICAgICAgY2FyID0gcy5mb3JlY291cnQuc29ydCgoYSwgYikgPT4gTWF0aC5hYnMoYS54IC0gc2lkZS54KSAtIE1hdGguYWJzKGIueCAtIHNpZGUueCkpWzBdOwogICAgdC5hc3NlcnQoY2FyLCBnLnZpbGxhICsgJzogbm8gY2FyIG9uIHRoZSBmb3JlY291cnQ6ICcgKyBKU09OLnN0cmluZ2lmeShzKSk7CiAgICBhd2FpdCB0LmNhbGwoJ3RlbGVwb3J0JywgY2FyLngsIGNhci55IC0gMjQpOwogICAgYXdhaXQgdC53YWl0KDAuMik7CiAgICBhd2FpdCB0LmNhbGwoJ2ludGVyYWN0Jyk7CiAgICBhd2FpdCB0LndhaXQoMS41KTsKICAgIHQuYXNzZXJ0KChhd2FpdCB0LmNhbGwoJ3N0YXR1cycpKS52ZWhpY2xlID09PSBjYXIudHlwZSwgZy52aWxsYSArICc6IG5vdCBpbiB0aGUgZm9yZWNvdXJ0IGNhcicpOwogICAgLy8gQWxpZ24gaW4gdGhlIG9wZW4gZm9yZWNvdXJ0IGJlZm9yZSBhc2tpbmcgdGhlIHN0cmFpZ2h0LWxpbmUgcGlsb3QgdG8gYXBwcm9hY2ggdGhlIG5hcnJvdyBnYXRlLgogICAgbGV0IHIgPSBhd2FpdCB0LmNhbGwoJ3N0ZWVyVG8nLCBzaWRlLngsIGNhci55IC0gNDAsIDE1LCAxNCk7CiAgICB0LmFzc2VydChyICYmIHIucmVhc29uID09PSAnYXJyaXZlZCcsIGcudmlsbGEgKyAnOiBjb3VsZCBub3QgYWxpZ24gd2l0aCB0aGUgc2lkZSBnYXRlOiAnICsgSlNPTi5zdHJpbmdpZnkocikpOwogICAgciA9IGF3YWl0IHQuY2FsbCgnc3RlZXJUbycsIHNpZGUueCwgc2lkZS55IC0gMzQsIDE1LCAxNCk7CiAgICB0LmFzc2VydChyICYmIHIucmVhc29uID09PSAnYXJyaXZlZCcsIGcudmlsbGEgKyAnOiBzdHVjayBvbiB0aGUgd2F5IHRvIHRoZSBzaWRlIGdhdGU6ICcgKyBKU09OLnN0cmluZ2lmeShyKSk7CiAgICByID0gYXdhaXQgdC5jYWxsKCdzdGVlclRvJywgc2lkZS54LCBzaWRlLnkgKyA2MCwgMTUsIDIyKTsKICAgIHQuYXNzZXJ0KHIgJiYgci5yZWFzb24gPT09ICdhcnJpdmVkJyAmJiByLnkgPiBzaWRlLnkgKyAzMCwgZy52aWxsYSArICc6IG5vdCBvdXQgdGhyb3VnaCB0aGUgc2lkZSBnYXRlOiAnICsgSlNPTi5zdHJpbmdpZnkocikpOwogICAgYXdhaXQgdC5jYWxsKCdpbnRlcmFjdCcpOwogICAgYXdhaXQgdC53YWl0KDEpOwogIH0KfQo=:65:7)\n    at async file:///workspace/GTA/dist/villa-waypoint-probe.mjs:26:130",
+  "browserClosed": true
+}

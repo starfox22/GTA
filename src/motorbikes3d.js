@@ -527,6 +527,7 @@
           tail = mesh(kit.tail, lampMaterials.tailOff, b, 0, 0, 0);
         head.castShadow = tail.castShadow = false;
         model.lamps.push({ mesh: head, key: 'headLeft', lit: lampMaterials.headOff, kind: 'head' }, { mesh: tail, key: 'tailLeft', lit: lampMaterials.tailOff, kind: 'tail' });
+        model.lampOut = [!!vehicle.damage?.lights?.headLeft, !!vehicle.damage?.lights?.tailLeft];
         // Head and tail glow, in the [head, tail] order the halo pass expects.
         model.nightLights = [halo(b, (wd.xf - 0.02) * M, 1.02 * M, 0, 9, '#ffe9bd'), halo(b, (wd.xr - 0.1) * M, 1.04 * M, 0, 6, '#ff5a44')];
         // The rider: the anchor the vehicle pass shows and hides (riders.js throws them off).
@@ -561,7 +562,10 @@
           braking = (!!c.braking || c.showLamps === 'brake') && c.hp > 0,
           lamps = civLampSet(),
           broken = c.damage?.lights;
+        let headPresent = false, tailPresent = false;
         for (const lamp of m.lamps) {
+          if (lamp.kind === 'head') headPresent = true;
+          else if (lamp.kind === 'tail') tailPresent = true;
           const material = broken?.[lamp.key]
             ? lamp.mesh.material
             : lamp.kind === 'head'
@@ -575,6 +579,11 @@
                   : lamps.tailOff;
           if (lamp.mesh.material !== material) lamp.mesh.material = material;
         }
+        // Halos use head/tail order, while motorcycles have one physical lamp at
+        // each end. A broken or absent lens must not retain a floating glow.
+        if (!m.lampOut) m.lampOut = [false, false];
+        m.lampOut[0] = !headPresent || !!broken?.headLeft;
+        m.lampOut[1] = !tailPresent || !!broken?.tailLeft;
         if (m.drl) {
           const material = driven ? civSharedMaterials().drlOn : civSharedMaterials().drlOff;
           if (m.drl.material !== material) m.drl.material = material;

@@ -201,6 +201,8 @@
       // @include src/police3d.js
       // @include src/cars3d.js
       // @include src/vehicle-assets3d.js
+      // @include src/approved-vehicle-assets3d.js
+      // @include src/approved-suv3d.js
       // @include src/vehicle-char3d.js
       // @include src/hypercars3d.js
       // @include src/motorbikes3d.js

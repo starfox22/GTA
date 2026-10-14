@@ -3,14 +3,42 @@
 Written for the next AI session (or human) picking this work up. Read `/CLAUDE.md` first (commands,
 rules, workflow), then this page, then only the area doc your task needs (`docs/README.md`).
 
-## Permanent Codex branch and current review (13 October 2026)
+## Permanent Codex branch and current review (14 October 2026)
 
-- **October 14 asset selection pending:** the owner wants replacement motorcycle and
-  sheriff/RANGER 4X4 models, **free assets only**, and individual approval before import.
+- **October 14 asset approval:** the owner approved all five replacement motorcycle and
+  sheriff/RANGER 4X4 assets, **free assets only**.
   [Five actual-source candidates and ten native previews](audit/vehicle-asset-shortlist-2026-10-14/README.md)
   record source/licence evidence, detail budgets and period/body-role limits. This is
-  research only; production models are unchanged. Do not treat the proposal as asset
-  approval. Preserve authored close-view materials/detail when an approved import starts.
+  the original research. The [approved integration audit](audit/approved-vehicle-integration-2026-10-14/README.md)
+  records the import and validation. Preserve close-view materials/detail and the
+  separate original 23-model pack; future work stays on the permanent branch below.
+
+- **October 14 implementation:** VORTEX 900 uses the approved M2 sport bike and KR 500
+  the M1 enduro; civilian RANGERs cycle deterministically through S1 Jimny, S2 four-door
+  and S3 compact offroad. Sheriff utility/Tahoe uses S2 with its actual look palette,
+  livery and equipment. Real source axles and measured rider/driver contacts drive the
+  rigs. Native civilian footprints match their bodies. Near/far kits and material pools
+  are shared; Low/Medium use 2048px atlases, High/Ultra 4096px. The original 23-model
+  pack and atlas remain byte-identical. See the integration audit for pinned source
+  licences, complete clean conversion instructions and input/output hashes.
+  Jimny optical covers, S2 exterior paint ownership and the closed repaired trunk lid
+  are fixed. Helicopter side-gun barrels and rounds now converge from their physical
+  mounts, including close targets, while keeping original controls and traverse stops.
+  The audit retains native before/after images, original failing receipts and focused
+  passing follow-ups. Candidate hashes in those receipts are deliberate: do not replace
+  them with the final published hash or treat earlier screenshots as final-build captures.
+
+- **October 14 verification:** cumulative **196 passed / 18 expected no-WebGL skips /
+  0 failures across 214 modules**; final host receipt has **3,105 assertions in 10 modules**.
+  Motorcycle20 and SUV10 preset/camera cases pass; source optics, actual instancing and
+  final sheriff burn/repair pass. Final packaged rendered smoke has zero errors and
+  confirms real-key walking/driving, map, both cameras and default FPS. All57 vehicle
+  PNGs have verified manifest hashes/native dimensions, plus six packaged smoke captures.
+  Retained receipts distinguish original failures and focused fixes from a one-shot
+  final full-suite run. Source, license and regeneration docs are complete for continuing
+  these vehicle changes. Hardware frame rates and four continuous mission wins remain
+  unverified. The branch workflow publishes a commit-specific review ZIP; this session
+  cannot update the existing chatgpt.site website.
 
 - **Permanent Codex development branch (owner instruction, October 13):
   `codex/chase-clouds-polish-2026-10-12`.** Future Codex prompts update this same GitHub branch.
@@ -19,7 +47,7 @@ rules, workflow), then this page, then only the area doc your task needs (`docs/
   force-push it, and never push main without the owner's explicit approval. Shared checkout
   helpers use disjoint file scopes in this cloud session; no new worktrees were created.
 
-- **Current review:** [vehicle, mission and performance report](audit/vehicle-missions-performance-2026-10-13/README.md).
+- **Previous October 13 review:** [vehicle, mission and performance report](audit/vehicle-missions-performance-2026-10-13/README.md).
   It covers the M4's displaced rolling pivots and fixed running gear, motorcycle axle
   normalization/punctures, persistent mission-world cleanup, depot deployment, mission
   3/4 lifecycle, measured asymmetric rider grips/steering, terrain-aligned rider and

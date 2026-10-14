@@ -1,0 +1,140 @@
+{
+  "approvedPackSHA256": "9fc2408fd1f8b7b2649a4e69d6868854c22987856ef6868e0f8d0c3b51d28512",
+  "sourceMaterialChecks": {
+    "s1_jimny": {
+      "materialsChecked": 26,
+      "allVisibleAlbedoTexelsAndAllOrmBytesExact": true,
+      "hiddenRGBBehindZeroAlphaNotClaimed": true
+    },
+    "s2_suv": {
+      "bodyAtlasRGBAAndOrmByteIdenticalToFrozen": true,
+      "onlyOriginalCoating93PigmentNeutralized": true
+    }
+  },
+  "authoredOpticalAlpha": [
+    {
+      "material": "Carro_Reflect",
+      "opacity": 0.4,
+      "tileRect": [
+        3602,
+        2,
+        256,
+        256
+      ],
+      "sourceAlphaRange": [
+        102,
+        102
+      ],
+      "actualAlphaRange": [
+        102,
+        102
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": "Carro_Reflector",
+      "opacity": 0.4,
+      "tileRect": [
+        3602,
+        2,
+        256,
+        256
+      ],
+      "sourceAlphaRange": [
+        102,
+        102
+      ],
+      "actualAlphaRange": [
+        102,
+        102
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": "Carro_Vidro_Laranja",
+      "opacity": 0.4,
+      "tileRect": [
+        3898,
+        26,
+        8,
+        8
+      ],
+      "sourceAlphaRange": [
+        102,
+        102
+      ],
+      "actualAlphaRange": [
+        102,
+        102
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": "Carro_Vidros",
+      "opacity": 0.4,
+      "tileRect": [
+        3910,
+        26,
+        8,
+        8
+      ],
+      "sourceAlphaRange": [
+        102,
+        102
+      ],
+      "actualAlphaRange": [
+        102,
+        102
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": "Carro_Vidros_Vermelhos",
+      "opacity": 0.5,
+      "tileRect": [
+        3922,
+        26,
+        8,
+        8
+      ],
+      "sourceAlphaRange": [
+        128,
+        128
+      ],
+      "actualAlphaRange": [
+        128,
+        128
+      ],
+      "allVisibleTexelsExact": true
+    }
+  ],
+  "unaffectedModels": {
+    "m1_enduro": {
+      "arrayCount": 144,
+      "changedArrays": [],
+      "metadataIdenticalExceptPaintUv": true,
+      "positionsNormalsIndicesRawUVFinishIdentical": true
+    },
+    "m2_sport": {
+      "arrayCount": 158,
+      "changedArrays": [],
+      "metadataIdenticalExceptPaintUv": true,
+      "positionsNormalsIndicesRawUVFinishIdentical": true
+    },
+    "s3_offroad": {
+      "arrayCount": 260,
+      "changedArrays": [
+        "s3_offroad.glass.uv",
+        "s3_offroad.glass.t",
+        "s3_offroad.glassFar.uv",
+        "s3_offroad.glassFar.t"
+      ],
+      "metadataIdenticalExceptPaintUv": true,
+      "positionsNormalsIndicesRawUVFinishIdentical": true
+    }
+  },
+  "allOrmAtlasPixelsByteIdenticalToPrevious": true,
+  "sourcePixelsDownsampledForHQ": false,
+  "lowAtlas": "Separate 2048x2048 variants; HQ source texels retained.",
+  "scope": "Exact source-factor visible albedo/alpha and ORM checks for all26 Jimny materials; S2 body tile byte-identical to prior candidate; M1/M2 packed arrays unchanged. Hidden RGB behind zero alpha is not asserted."
+}

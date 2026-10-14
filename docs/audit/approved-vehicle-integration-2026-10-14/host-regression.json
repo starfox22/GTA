@@ -1,0 +1,352 @@
+{
+  "packSha256": "9fc2408fd1f8b7b2649a4e69d6868854c22987856ef6868e0f8d0c3b51d28512",
+  "tests": [
+    {
+      "name": "approved-vehicle-pipeline",
+      "assertions": 1401,
+      "passed": true,
+      "notes": [
+        "{\"models\":[\"m1_enduro\",\"m2_sport\",\"s1_jimny\",\"s2_suv\",\"s3_offroad\"],\"parts\":152,\"repeatUVParts\":13,\"textureUploads\":6,\"legacyAssets\":\"byte-identical\",\"sourceBodyEnvelopes\":\"matched\",\"gpuCompile\":\"requires rendered checks\"}"
+      ],
+      "testSha256": "4b144cf87fbc1854b8319cb9ba7df5650a20d1254cd89ffea0bd859e47c20a22"
+    },
+    {
+      "name": "approved-suv-rigs",
+      "assertions": 438,
+      "passed": true,
+      "notes": [
+        {
+          "doorProof": {
+            "key": "s1_jimny",
+            "actualShaped": false,
+            "actualAttributes": [
+              "position",
+              "normal",
+              "uv",
+              "finish",
+              "color",
+              "avSourceUv",
+              "avAtlasRect",
+              "liveryUv"
+            ],
+            "probeShaped": true,
+            "probeAttributes": [
+              "position",
+              "uv",
+              "avSourceUv",
+              "avAtlasRect",
+              "finish",
+              "color",
+              "normal"
+            ]
+          }
+        },
+        {
+          "doorProof": {
+            "key": "s2_suv",
+            "actualShaped": false,
+            "actualAttributes": [
+              "position",
+              "normal",
+              "uv",
+              "finish",
+              "color",
+              "avSourceUv",
+              "avAtlasRect",
+              "liveryUv"
+            ],
+            "probeShaped": false,
+            "probeAttributes": []
+          }
+        },
+        {
+          "doorProof": {
+            "key": "s3_offroad",
+            "actualShaped": false,
+            "actualAttributes": [
+              "position",
+              "normal",
+              "uv",
+              "finish",
+              "color",
+              "avSourceUv",
+              "avAtlasRect",
+              "liveryUv"
+            ],
+            "probeShaped": false,
+            "probeAttributes": []
+          }
+        },
+        {
+          "trunkVisibility": {
+            "source": "production carBodyDamage + actual Generic SUV Sheriff",
+            "opened": true,
+            "closedHidden": true,
+            "sprung": true,
+            "repairedHidden": true,
+            "sourceGlassPreserved": true
+          }
+        },
+        {
+          "approvedSUVs": [
+            {
+              "key": "s1_jimny",
+              "nearTriangles": 62925,
+              "farTriangles": 9894,
+              "seat": [
+                -0.3836971163749693,
+                0.4537090229987146,
+                0.3719811916351319,
+                0.25,
+                0.8737090229987146
+              ],
+              "clearance": 0.17544762401897573,
+              "pivots": [
+                [
+                  9.336581687535054,
+                  2.779711800197189,
+                  -5.586644929423751,
+                  2.789101404920368
+                ],
+                [
+                  9.339219978907872,
+                  2.7796009605548986,
+                  5.589057228952147,
+                  2.7890112051722245
+                ],
+                [
+                  -8.587354085216234,
+                  2.7797089149544183,
+                  -5.586614325847132,
+                  2.788922967933447
+                ],
+                [
+                  -8.58473558481856,
+                  2.7797130274430235,
+                  5.5893446282277255,
+                  2.7889289173091525
+                ]
+              ]
+            },
+            {
+              "key": "s2_suv",
+              "nearTriangles": 7742,
+              "farTriangles": 4244,
+              "seat": [
+                -0.1839768178645893,
+                0.6860059643489217,
+                0.4135218032504037,
+                0.25,
+                1.1561036205989217
+              ],
+              "clearance": 0.020078717686848917,
+              "pivots": [
+                [
+                  11.45684062322659,
+                  3.0070733291297667,
+                  -5.791175406812156,
+                  3.007073349845253
+                ],
+                [
+                  11.456836697553427,
+                  3.0070733291297693,
+                  5.791173877969153,
+                  3.0070733291311944
+                ],
+                [
+                  -10.387537069938418,
+                  3.0070741969769457,
+                  -5.791177615055597,
+                  3.0070733498452515
+                ],
+                [
+                  -10.38754099561158,
+                  3.007074196976948,
+                  5.791171669725713,
+                  3.0070733291311944
+                ]
+              ]
+            },
+            {
+              "key": "s3_offroad",
+              "nearTriangles": 6416,
+              "farTriangles": 3517,
+              "seat": [
+                -0.6608686069240979,
+                0.53328720396407,
+                0.39200535496992184,
+                0.25,
+                1.09977157896407
+              ],
+              "clearance": 0.020168540219054364,
+              "pivots": [
+                [
+                  9.775246875438732,
+                  2.860813959541758,
+                  -5.87991094769413,
+                  2.8608139779042547
+                ],
+                [
+                  9.77525397179484,
+                  2.86081395954176,
+                  5.87991119696003,
+                  2.860813959543117
+                ],
+                [
+                  -8.790665542619635,
+                  2.860814827388934,
+                  -5.879900865277287,
+                  2.8608139779042654
+                ],
+                [
+                  -8.790653720780135,
+                  2.8608148273889364,
+                  5.8799133561993315,
+                  2.860813959543117
+                ]
+              ]
+            }
+          ],
+          "lawRows": [
+            {
+              "equipment": "marked",
+              "body": "utility",
+              "seat": [
+                -0.18397681786458933,
+                0.6860059643489216,
+                0.43600000000000005,
+                0.25,
+                1.1561036205989217
+              ],
+              "rear": true
+            },
+            {
+              "equipment": "unmarked",
+              "body": "utility",
+              "seat": [
+                -0.18397681786458933,
+                0.6860059643489216,
+                0.43600000000000005,
+                0.25,
+                1.1561036205989217
+              ],
+              "rear": true
+            },
+            {
+              "equipment": "unmarked",
+              "body": "tahoe",
+              "seat": [
+                -0.18397681786458933,
+                0.6860059643489216,
+                0.44800000000000006,
+                0.25,
+                1.1561036205989217
+              ],
+              "rear": true
+            }
+          ],
+          "policeSource": "s2_suv",
+          "headroom": "actual production head geometry and fit; rendered check separate"
+        }
+      ],
+      "testSha256": "e37a6c114901f77751637c65d7b6032521db59d084be294947332817461aca4e",
+      "receipt": "suv-host.json"
+    },
+    {
+      "name": "approved-motorcycle-rigs",
+      "assertions": 167,
+      "passed": true,
+      "notes": [
+        "{\"restError\":1.2917073125271293e-7,\"normalError\":4.423433763540704e-8,\"rollingWobble\":5.551115123125783e-17,\"models\":[{\"type\":\"kr500\",\"key\":\"m1_enduro\",\"nearLodTriangles\":12350,\"farLodTriangles\":2707,\"pairs\":10,\"sourceTriangles\":12350,\"grips\":[[0.20460008339352115,1.3637767135858536,-0.3328997466802597],[0.20460008339352115,1.3637767135858536,0.33290025331974027]],\"cachedParts\":10},{\"type\":\"bike\",\"key\":\"m2_sport\",\"nearLodTriangles\":50795,\"farLodTriangles\":12820,\"pairs\":11,\"sourceTriangles\":50795,\"grips\":[[0.43523815564945734,1.006513867682728,-0.3086999999999997],[0.43523815564945734,1.006513867682728,0.30870000000000025]],\"cachedParts\":11}]}"
+      ],
+      "testSha256": "5fda776f1db5391b2cc1a9a884540035b288293b5d204f1bb5f44866f67b0122"
+    },
+    {
+      "name": "approved-motorcycle-rider-fit",
+      "assertions": 222,
+      "passed": true,
+      "notes": [
+        "{\"riderHeight\":1.65,\"maxTargetError\":0,\"maxWristError\":0.12122533882768248,\"maxRestWristError\":0,\"maxBoneError\":7.771561172376096e-15,\"formerSteeringGap\":1.19677433390081}",
+        "{\"riderHeight\":1.8,\"maxTargetError\":0,\"maxWristError\":0,\"maxRestWristError\":0,\"maxBoneError\":8.43769498715119e-15,\"formerSteeringGap\":1.19677433390081}",
+        "{\"riderHeight\":1.9,\"maxTargetError\":0,\"maxWristError\":0,\"maxRestWristError\":0,\"maxBoneError\":8.43769498715119e-15,\"formerSteeringGap\":1.19677433390081}"
+      ],
+      "testSha256": "6c2db1441f161bf24be0a249e866de115c8b265fd3fbdb5cc05912492ba4d19c"
+    },
+    {
+      "name": "motorcycle-wheel-rig",
+      "assertions": 70,
+      "passed": true,
+      "notes": [
+        "actual packed tyres/rims: rest vertex error 1.31e-7u, normal error 4.46e-8; worst previous axial rim wobble 2.95cm -> 2.78e-15cm; signed roll, brakes, spin, steering and flat damage pass"
+      ],
+      "testSha256": "8c750b1781bdc0f250c73983fc2ad2b9b9c40101a5d09b21b819a1961924b4f7"
+    },
+    {
+      "name": "motorcycle-rider-fit",
+      "assertions": 102,
+      "passed": true,
+      "notes": [
+        "{\"riderHeight\":1.8,\"maxTargetError\":0,\"maxWristError\":0.48314257402214855,\"maxRestWristError\":0.03311148324819847,\"maxBoneError\":8.881784197001252e-15,\"formerSteeringGap\":1.4716794259796324}"
+      ],
+      "testSha256": "995d53ae7d7eec91d75a52c2235d26afff0acdad353d718d92e3caa8b0ce0260"
+    },
+    {
+      "name": "vehicle-material-lifecycle",
+      "assertions": 37,
+      "passed": true,
+      "notes": [],
+      "testSha256": "9dad973bf2cf214dd27f0413e3abbe73b538e0cc011322fff72d275dba6cdd08"
+    },
+    {
+      "name": "military-model-rig",
+      "assertions": 468,
+      "passed": true,
+      "notes": [
+        "Original 156 lamp triangles reassigned; no geometry/texture replacement; two military kits reused across 20 repeated spawns."
+      ],
+      "testSha256": "3f5d7ebac03aefa1db4978c646187e21e7afca6087306b1deeb3e77a9e9f3aa0"
+    },
+    {
+      "name": "motorcycle-puncture",
+      "assertions": 121,
+      "passed": true,
+      "notes": [
+        "actual side-entry rays: 3 headings \u00d7 2 elevations \u00d7 2 sides \u00d7 2 axles; engine/end/high/probability misses and car/truck/glass rules pass"
+      ],
+      "testSha256": "4641c01098e3530b2e345560deaa1a344e9c33d26f96d8f068f72aeb90b25c75"
+    },
+    {
+      "name": "mounted-gun-projection",
+      "assertions": 79,
+      "passed": true,
+      "notes": [
+        "{\"maximumGroundMiss\":1.1368683772161603e-13,\"stationaryBystanderMiss\":2.4829684351146257,\"oldParallelRayMiss\":21,\"physicalTraverseDegreesPerSecond\":150,\"physicalStopsDegrees\":[20,160]}"
+      ],
+      "testSha256": "5818498c442b43b63446eb93145d5ea426a1647438a7714eda4d3e1f8596efe4"
+    }
+  ],
+  "assertions": 3105,
+  "runtimeSources": {
+    "vehicle-assets3d": "1bb6309340e23ff3310c242e9a5b84df5912c2f6508914cf47fa601586e2f0b0",
+    "approved-vehicle-assets3d": "d86db3629410b6a6b330811ec6727e5581ff59e072a24d4f264a5f6f1fdcb33e",
+    "approved-suv3d": "f330fe7fd09e57103f872c80061e74bef1536ec945f3c30e9e66a8f56dd0807e",
+    "vehicle-char3d": "ac09a19b326caae6498e8c768dd20062b66dd274e626be4ff62115d1a5487784",
+    "motorbike-assets3d": "f8c0d2a8798fabcf3c8818dc6c5cf5001f98e447597440f77c3bc650a24b718b",
+    "motorbikes3d": "28550d3af9e40e984bd0eb15c212bcbf3353e1b059650a752f94f8f45b00dcd2",
+    "game-vehicles": "8bb77b2161ad295cffd18dde59f27a8d5fb131103feaa7a02c2a921b00b73cb5",
+    "driveby-seats": "d919b10b82c416d72ae56c4df0e92adb5a51f64ba16b5073adf3ea28dbaed211",
+    "damage3d-crumple": "bd707cd79e3ae7b3d4e5b20068542e2d9ccbe029a822d412fe27502ffa326c17",
+    "flight-view3d": "f7180cdbf8549f50bd223475a3e003c8fc86bf9b0926fa0ca61fe814d7c32352",
+    "mounted-guns": "bab4e251ff9713cdacd101a45eaf35bbbbe02189e81779ee55a703dfc9e4fdb2",
+    "helicopter3d-animate": "8e5d50ae177628536e4e847fcef1d30f9e1f5feabc40991cc664b93158ce6597",
+    "render3d-api": "2cb80a1e365e98cb41d91639e302525d1b6e0c3fcfbfbcb412d3d178e7d2b34e",
+    "police3d-asset": "dc22aac8043dccaba9cc42c282618a91c6e74cbfed7df3ee9ecb9cd0cf04e5da",
+    "damage3d-bodies": "c7bb3bb737b4b04532a7f2b2567804c132012fc1544cf3adc146f3202bcbdd55",
+    "damage-crumple": "6e66b42bc6cae6b78df6578c2514dc861ae87c83514d4bd056edaca24c6b60e0",
+    "cars3d-materials": "28b2553290bda50e7b1b79ac8f30bffc13c9228aae9500d2137699a0d106bbad"
+  },
+  "candidate": "8",
+  "runtimeJsSha256": "d5ca3c913a71d9a4295bd73f6a0d0a0646c2b985e559de1cf6442ac48cabb574",
+  "standaloneSha256": "5b199b249eeb301af2722c21e84470c6b20902ff0976d17c3e439be1ab3e58da",
+  "scope": "Cumulative host checks on final source: 10 modules. SUV rechecked after the render-only trunk fix; unaffected modules retain their passing input receipts. GPU evidence is recorded separately."
+}

@@ -21,13 +21,16 @@ export default async function(t) {
     brakeLamp: new Three.MeshBasicMaterial(), deadLamp: new Three.MeshStandardMaterial(), lampAmount: 0,
     vehicleLampAmount: () => scope.lampAmount,
     clamp: (v, lo, hi) => Math.max(lo, Math.min(hi, v)), cityMaterialPatch: () => {},
+    // Char prewarm now includes the approved atlas program. Exercise its real
+    // factory; this host fixture has no GPU/image decoder to upload to.
+    renderer: { capabilities: { getMaxAnisotropy: () => 8 }, initTexture() {} },
     vehicleSpec: c => ({ modelScale: c.scale || 1 }), chaseViewActive: true,
     activeTier: { lodBias: 1 }, zoom: 1, chaseZoomAt: () => scope.zoom,
     mesh(geometry, material, parent) { const o = new Three.Mesh(geometry, material); parent.add(o); return o; }
   });
   const finishSource = read('cars3d-materials.js'),
     finish = finishSource.slice(finishSource.indexOf('      function civFinishPatch('), finishSource.indexOf('      let civMaterials')),
-    api = vm.runInContext(finish + read('vehicle-assets3d.js') + read('military-asset-wheels3d.js') + read('military-assets3d.js') + read('vehicle-char3d.js') + `
+    api = vm.runInContext(finish + read('vehicle-assets3d.js') + read('approved-vehicle-assets3d.js') + read('military-asset-wheels3d.js') + read('military-assets3d.js') + read('vehicle-char3d.js') + `
       vaData = () => fixture; vaAtlas = () => sootTexture;
       ({ militaryAssetBody, militaryAssetKit, animateMilitaryWheels, animateMilitaryLamps, militaryLampSet, militaryLod,
          vaMaterials, assetCharModel, assetCharSwap, assetCharState, assetCharRelease, assetCharWarm })`, scope),

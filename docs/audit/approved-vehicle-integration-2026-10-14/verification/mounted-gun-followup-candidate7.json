@@ -1,0 +1,2790 @@
+{
+  "htmlSha256": "8ed4ef3185e3e3f10819241d44254cc6aafc2215beaa8ec90006c641ce4f1e02",
+  "originalTestSha256": "ed872d75f3b4f6cdd23b2fd770fe1ff717a98e15cae3d958cd33682f603431fd",
+  "recorderSha256": "0e9da4cb03c4165ed68bb509473d9a61319b3061e433d1e77f96d29fe0e374bd",
+  "mode": "private NoRender page",
+  "checks": 112,
+  "calls": [
+    {
+      "phase": "original unchanged assertions",
+      "method": "status",
+      "args": [],
+      "result": {
+        "mode": "play",
+        "x": 748,
+        "y": 584,
+        "district": "NORTHBANK · OLD QUARTER",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "17:20",
+        "renderer": "2d",
+        "vehicles": 279,
+        "pedestrians": 600
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "holdSimulation",
+      "args": [
+        true
+      ],
+      "result": true
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "god",
+      "args": [
+        true
+      ],
+      "result": true
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "teleport",
+      "args": [
+        420,
+        5000
+      ],
+      "result": {
+        "mode": "play",
+        "x": 420,
+        "y": 5000,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "17:20",
+        "renderer": "2d",
+        "vehicles": 279,
+        "pedestrians": 600
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "driveArmed",
+      "args": [
+        "apc",
+        1.5707963267948966
+      ],
+      "result": {
+        "kind": "apc",
+        "targets": {
+          "car": null,
+          "person": null
+        },
+        "title": "LAV-8",
+        "weapon": "cannon",
+        "name": "25 MM CANNON",
+        "slot": 0,
+        "x": 480,
+        "y": 5000,
+        "hull": 90,
+        "turret": 0,
+        "aim": 0,
+        "laidError": 0,
+        "doors": null,
+        "physicalBarrels": null,
+        "physicalLaidError": null,
+        "shots": 0,
+        "guns": [
+          {
+            "id": "cannon",
+            "belt": 210,
+            "stowed": 420,
+            "loading": 0
+          },
+          {
+            "id": "coax",
+            "belt": 400,
+            "stowed": 1200,
+            "loading": 0
+          }
+        ],
+        "override": null,
+        "reticle": {
+          "shown": false,
+          "ring": "",
+          "pip": "",
+          "ready": false
+        }
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "mountedGunAim",
+      "args": [
+        283.0384493975584,
+        5034.7296355333865
+      ],
+      "result": {
+        "kind": "apc",
+        "targets": {
+          "car": null,
+          "person": null
+        },
+        "title": "LAV-8",
+        "weapon": "cannon",
+        "name": "25 MM CANNON",
+        "slot": 0,
+        "x": 480,
+        "y": 5000,
+        "hull": 90,
+        "turret": 0,
+        "aim": 0,
+        "laidError": 0,
+        "doors": null,
+        "physicalBarrels": null,
+        "physicalLaidError": null,
+        "shots": 0,
+        "guns": [
+          {
+            "id": "cannon",
+            "belt": 210,
+            "stowed": 420,
+            "loading": 0
+          },
+          {
+            "id": "coax",
+            "belt": 400,
+            "stowed": 1200,
+            "loading": 0
+          }
+        ],
+        "override": {
+          "x": 283.0384493975584,
+          "y": 5034.7296355333865
+        },
+        "reticle": {
+          "shown": false,
+          "ring": "",
+          "pip": "",
+          "ready": false
+        }
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "simulate",
+      "args": [
+        0.6,
+        []
+      ],
+      "result": {
+        "type": "apc",
+        "speed": 0,
+        "vx": 0,
+        "vy": 0,
+        "cadence": 0,
+        "effort": 0,
+        "altitude": 0
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "mountedGuns",
+      "args": [],
+      "result": {
+        "kind": "apc",
+        "targets": {
+          "car": null,
+          "person": null
+        },
+        "title": "LAV-8",
+        "weapon": "cannon",
+        "name": "25 MM CANNON",
+        "slot": 0,
+        "x": 480,
+        "y": 5000,
+        "hull": 90,
+        "turret": 24,
+        "aim": 80,
+        "laidError": 56,
+        "doors": null,
+        "physicalBarrels": null,
+        "physicalLaidError": null,
+        "shots": 0,
+        "guns": [
+          {
+            "id": "cannon",
+            "belt": 210,
+            "stowed": 420,
+            "loading": 0
+          },
+          {
+            "id": "coax",
+            "belt": 400,
+            "stowed": 1200,
+            "loading": 0
+          }
+        ],
+        "override": {
+          "x": 283.0384493975584,
+          "y": 5034.7296355333865
+        },
+        "reticle": {
+          "shown": false,
+          "ring": "",
+          "pip": "",
+          "ready": false
+        }
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "simulate",
+      "args": [
+        2,
+        []
+      ],
+      "result": {
+        "type": "apc",
+        "speed": 0,
+        "vx": 0,
+        "vy": 0,
+        "cadence": 0,
+        "effort": 0,
+        "altitude": 0
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "mountedGuns",
+      "args": [],
+      "result": {
+        "kind": "apc",
+        "targets": {
+          "car": null,
+          "person": null
+        },
+        "title": "LAV-8",
+        "weapon": "cannon",
+        "name": "25 MM CANNON",
+        "slot": 0,
+        "x": 480,
+        "y": 5000,
+        "hull": 90,
+        "turret": 80,
+        "aim": 80,
+        "laidError": 0,
+        "doors": null,
+        "physicalBarrels": null,
+        "physicalLaidError": null,
+        "shots": 0,
+        "guns": [
+          {
+            "id": "cannon",
+            "belt": 210,
+            "stowed": 420,
+            "loading": 0
+          },
+          {
+            "id": "coax",
+            "belt": 400,
+            "stowed": 1200,
+            "loading": 0
+          }
+        ],
+        "override": {
+          "x": 283.0384493975584,
+          "y": 5034.7296355333865
+        },
+        "reticle": {
+          "shown": false,
+          "ring": "",
+          "pip": "",
+          "ready": false
+        }
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "mountedGunTargets",
+      "args": [
+        220,
+        0
+      ],
+      "result": {
+        "car": {
+          "hp": 150,
+          "x": 480,
+          "y": 5220,
+          "d": 220
+        },
+        "person": {
+          "hp": 100,
+          "x": 480,
+          "y": 5190,
+          "d": 190
+        }
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "mountedGunAim",
+      "args": [
+        480,
+        5220
+      ],
+      "result": {
+        "kind": "apc",
+        "targets": {
+          "car": {
+            "hp": 150,
+            "x": 480,
+            "y": 5220,
+            "d": 220
+          },
+          "person": {
+            "hp": 100,
+            "x": 480,
+            "y": 5190,
+            "d": 190
+          }
+        },
+        "title": "LAV-8",
+        "weapon": "cannon",
+        "name": "25 MM CANNON",
+        "slot": 0,
+        "x": 480,
+        "y": 5000,
+        "hull": 90,
+        "turret": 80,
+        "aim": 80,
+        "laidError": 0,
+        "doors": null,
+        "physicalBarrels": null,
+        "physicalLaidError": null,
+        "shots": 0,
+        "guns": [
+          {
+            "id": "cannon",
+            "belt": 210,
+            "stowed": 420,
+            "loading": 0
+          },
+          {
+            "id": "coax",
+            "belt": 400,
+            "stowed": 1200,
+            "loading": 0
+          }
+        ],
+        "override": {
+          "x": 480,
+          "y": 5220
+        },
+        "reticle": {
+          "shown": false,
+          "ring": "",
+          "pip": "",
+          "ready": false
+        }
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "simulate",
+      "args": [
+        2.5,
+        []
+      ],
+      "result": {
+        "type": "apc",
+        "speed": 0,
+        "vx": 0,
+        "vy": 0,
+        "cadence": 0,
+        "effort": 0,
+        "altitude": 0
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "mountedGuns",
+      "args": [],
+      "result": {
+        "kind": "apc",
+        "targets": {
+          "car": {
+            "hp": 150,
+            "x": 480,
+            "y": 5220,
+            "d": 220
+          },
+          "person": {
+            "hp": 100,
+            "x": 480,
+            "y": 5190,
+            "d": 190
+          }
+        },
+        "title": "LAV-8",
+        "weapon": "cannon",
+        "name": "25 MM CANNON",
+        "slot": 0,
+        "x": 480,
+        "y": 5000,
+        "hull": 90,
+        "turret": 0,
+        "aim": 0,
+        "laidError": 0,
+        "doors": null,
+        "physicalBarrels": null,
+        "physicalLaidError": null,
+        "shots": 0,
+        "guns": [
+          {
+            "id": "cannon",
+            "belt": 210,
+            "stowed": 420,
+            "loading": 0
+          },
+          {
+            "id": "coax",
+            "belt": 400,
+            "stowed": 1200,
+            "loading": 0
+          }
+        ],
+        "override": {
+          "x": 480,
+          "y": 5220
+        },
+        "reticle": {
+          "shown": false,
+          "ring": "",
+          "pip": "",
+          "ready": false
+        }
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "simulate",
+      "args": [
+        3,
+        [
+          "KeyF"
+        ]
+      ],
+      "result": {
+        "type": "apc",
+        "speed": 0,
+        "vx": 0,
+        "vy": 0,
+        "cadence": 0,
+        "effort": 0,
+        "altitude": 0
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "simulate",
+      "args": [
+        1,
+        []
+      ],
+      "result": {
+        "type": "apc",
+        "speed": 0,
+        "vx": 0,
+        "vy": 0,
+        "cadence": 0,
+        "effort": 0,
+        "altitude": 0
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "mountedGuns",
+      "args": [],
+      "result": {
+        "kind": "apc",
+        "targets": {
+          "car": {
+            "hp": 16,
+            "x": 480,
+            "y": 5220,
+            "d": 220
+          },
+          "person": {
+            "hp": 0,
+            "x": 480,
+            "y": 5190,
+            "d": 190
+          }
+        },
+        "title": "LAV-8",
+        "weapon": "cannon",
+        "name": "25 MM CANNON",
+        "slot": 0,
+        "x": 480,
+        "y": 5000,
+        "hull": 90,
+        "turret": 0,
+        "aim": 0,
+        "laidError": 0,
+        "doors": null,
+        "physicalBarrels": null,
+        "physicalLaidError": null,
+        "shots": 9,
+        "guns": [
+          {
+            "id": "cannon",
+            "belt": 201,
+            "stowed": 420,
+            "loading": 0
+          },
+          {
+            "id": "coax",
+            "belt": 400,
+            "stowed": 1200,
+            "loading": 0
+          }
+        ],
+        "override": {
+          "x": 480,
+          "y": 5220
+        },
+        "reticle": {
+          "shown": false,
+          "ring": "",
+          "pip": "",
+          "ready": false
+        }
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "status",
+      "args": [],
+      "result": {
+        "mode": "play",
+        "x": 480,
+        "y": 5000,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 10,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "apc",
+        "weapon": "9MM PISTOL",
+        "clock": "17:29",
+        "renderer": "2d",
+        "vehicles": 281,
+        "pedestrians": 603
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "simulate",
+      "args": [
+        0.2,
+        []
+      ],
+      "result": {
+        "type": "apc",
+        "speed": 0,
+        "vx": 0,
+        "vy": 0,
+        "cadence": 0,
+        "effort": 0,
+        "altitude": 0
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "mountedGuns",
+      "args": [],
+      "result": {
+        "kind": "apc",
+        "targets": {
+          "car": {
+            "hp": 15,
+            "x": 480,
+            "y": 5220,
+            "d": 220
+          },
+          "person": {
+            "hp": 0,
+            "x": 480,
+            "y": 5190,
+            "d": 190
+          }
+        },
+        "title": "LAV-8",
+        "weapon": "coax",
+        "name": "COAX MG 7.62",
+        "slot": 1,
+        "x": 480,
+        "y": 5000,
+        "hull": 90,
+        "turret": 0,
+        "aim": 0,
+        "laidError": 0,
+        "doors": null,
+        "physicalBarrels": null,
+        "physicalLaidError": null,
+        "shots": 9,
+        "guns": [
+          {
+            "id": "cannon",
+            "belt": 201,
+            "stowed": 420,
+            "loading": 0
+          },
+          {
+            "id": "coax",
+            "belt": 400,
+            "stowed": 1200,
+            "loading": 0
+          }
+        ],
+        "override": {
+          "x": 480,
+          "y": 5220
+        },
+        "reticle": {
+          "shown": false,
+          "ring": "",
+          "pip": "",
+          "ready": false
+        }
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "simulate",
+      "args": [
+        1,
+        [
+          "KeyF"
+        ]
+      ],
+      "result": {
+        "type": "apc",
+        "speed": 0,
+        "vx": 0,
+        "vy": 0,
+        "cadence": 0,
+        "effort": 0,
+        "altitude": 0
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "mountedGuns",
+      "args": [],
+      "result": {
+        "kind": "apc",
+        "targets": {
+          "car": {
+            "hp": 9,
+            "x": 480,
+            "y": 5220,
+            "d": 220
+          },
+          "person": {
+            "hp": 0,
+            "x": 480,
+            "y": 5190,
+            "d": 190
+          }
+        },
+        "title": "LAV-8",
+        "weapon": "coax",
+        "name": "COAX MG 7.62",
+        "slot": 1,
+        "x": 480,
+        "y": 5000,
+        "hull": 90,
+        "turret": 0,
+        "aim": 0,
+        "laidError": 0,
+        "doors": null,
+        "physicalBarrels": null,
+        "physicalLaidError": null,
+        "shots": 19,
+        "guns": [
+          {
+            "id": "cannon",
+            "belt": 201,
+            "stowed": 420,
+            "loading": 0
+          },
+          {
+            "id": "coax",
+            "belt": 390,
+            "stowed": 1200,
+            "loading": 0
+          }
+        ],
+        "override": {
+          "x": 480,
+          "y": 5220
+        },
+        "reticle": {
+          "shown": false,
+          "ring": "",
+          "pip": "",
+          "ready": false
+        }
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "teleport",
+      "args": [
+        420,
+        5900
+      ],
+      "result": {
+        "mode": "play",
+        "x": 420,
+        "y": 5900,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 10,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "17:30",
+        "renderer": "2d",
+        "vehicles": 281,
+        "pedestrians": 603
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "driveArmed",
+      "args": [
+        "jeep",
+        1.5707963267948966
+      ],
+      "result": {
+        "kind": "jeep",
+        "targets": {
+          "car": {
+            "hp": 9,
+            "x": 480,
+            "y": 5220,
+            "d": 680
+          },
+          "person": {
+            "hp": 0,
+            "x": 480,
+            "y": 5190,
+            "d": 710
+          }
+        },
+        "title": "GUN JEEP",
+        "weapon": "hmg",
+        "name": "M2 .50 CAL",
+        "slot": 0,
+        "x": 480,
+        "y": 5900,
+        "hull": 90,
+        "turret": 0,
+        "aim": 0,
+        "laidError": 0,
+        "doors": null,
+        "physicalBarrels": null,
+        "physicalLaidError": null,
+        "shots": 0,
+        "guns": [
+          {
+            "id": "hmg",
+            "belt": 100,
+            "stowed": 500,
+            "loading": 0
+          }
+        ],
+        "override": {
+          "x": 480,
+          "y": 5220
+        },
+        "reticle": {
+          "shown": false,
+          "ring": "",
+          "pip": "",
+          "ready": false
+        }
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "mountedGunAim",
+      "args": [
+        283.0384493975584,
+        5934.7296355333865
+      ],
+      "result": {
+        "kind": "jeep",
+        "targets": {
+          "car": {
+            "hp": 9,
+            "x": 480,
+            "y": 5220,
+            "d": 680
+          },
+          "person": {
+            "hp": 0,
+            "x": 480,
+            "y": 5190,
+            "d": 710
+          }
+        },
+        "title": "GUN JEEP",
+        "weapon": "hmg",
+        "name": "M2 .50 CAL",
+        "slot": 0,
+        "x": 480,
+        "y": 5900,
+        "hull": 90,
+        "turret": 0,
+        "aim": 0,
+        "laidError": 0,
+        "doors": null,
+        "physicalBarrels": null,
+        "physicalLaidError": null,
+        "shots": 0,
+        "guns": [
+          {
+            "id": "hmg",
+            "belt": 100,
+            "stowed": 500,
+            "loading": 0
+          }
+        ],
+        "override": {
+          "x": 283.0384493975584,
+          "y": 5934.7296355333865
+        },
+        "reticle": {
+          "shown": false,
+          "ring": "",
+          "pip": "",
+          "ready": false
+        }
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "simulate",
+      "args": [
+        0.4,
+        []
+      ],
+      "result": {
+        "type": "jeep",
+        "speed": 0,
+        "vx": 0,
+        "vy": 0,
+        "cadence": 0,
+        "effort": 0,
+        "altitude": 0
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "mountedGuns",
+      "args": [],
+      "result": {
+        "kind": "jeep",
+        "targets": {
+          "car": {
+            "hp": 7,
+            "x": 480,
+            "y": 5220,
+            "d": 680
+          },
+          "person": {
+            "hp": 0,
+            "x": 480,
+            "y": 5190,
+            "d": 710
+          }
+        },
+        "title": "GUN JEEP",
+        "weapon": "hmg",
+        "name": "M2 .50 CAL",
+        "slot": 0,
+        "x": 480,
+        "y": 5900,
+        "hull": 90,
+        "turret": 20,
+        "aim": 80,
+        "laidError": 60,
+        "doors": null,
+        "physicalBarrels": null,
+        "physicalLaidError": null,
+        "shots": 0,
+        "guns": [
+          {
+            "id": "hmg",
+            "belt": 100,
+            "stowed": 500,
+            "loading": 0
+          }
+        ],
+        "override": {
+          "x": 283.0384493975584,
+          "y": 5934.7296355333865
+        },
+        "reticle": {
+          "shown": false,
+          "ring": "",
+          "pip": "",
+          "ready": false
+        }
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "simulate",
+      "args": [
+        2,
+        []
+      ],
+      "result": {
+        "type": "jeep",
+        "speed": 0,
+        "vx": 0,
+        "vy": 0,
+        "cadence": 0,
+        "effort": 0,
+        "altitude": 0
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "mountedGuns",
+      "args": [],
+      "result": {
+        "kind": "jeep",
+        "targets": {
+          "car": {
+            "hp": 0,
+            "x": 480,
+            "y": 5220,
+            "d": 680
+          },
+          "person": {
+            "hp": 0,
+            "x": 480,
+            "y": 5190,
+            "d": 710
+          }
+        },
+        "title": "GUN JEEP",
+        "weapon": "hmg",
+        "name": "M2 .50 CAL",
+        "slot": 0,
+        "x": 480,
+        "y": 5900,
+        "hull": 90,
+        "turret": 80,
+        "aim": 80,
+        "laidError": 0,
+        "doors": null,
+        "physicalBarrels": null,
+        "physicalLaidError": null,
+        "shots": 0,
+        "guns": [
+          {
+            "id": "hmg",
+            "belt": 100,
+            "stowed": 500,
+            "loading": 0
+          }
+        ],
+        "override": {
+          "x": 283.0384493975584,
+          "y": 5934.7296355333865
+        },
+        "reticle": {
+          "shown": false,
+          "ring": "",
+          "pip": "",
+          "ready": false
+        }
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "mountedGunTargets",
+      "args": [
+        220,
+        0
+      ],
+      "result": {
+        "car": {
+          "hp": 150,
+          "x": 480,
+          "y": 6120,
+          "d": 220
+        },
+        "person": {
+          "hp": 100,
+          "x": 480,
+          "y": 6090,
+          "d": 190
+        }
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "mountedGunAim",
+      "args": [
+        480,
+        6120
+      ],
+      "result": {
+        "kind": "jeep",
+        "targets": {
+          "car": {
+            "hp": 150,
+            "x": 480,
+            "y": 6120,
+            "d": 220
+          },
+          "person": {
+            "hp": 100,
+            "x": 480,
+            "y": 6090,
+            "d": 190
+          }
+        },
+        "title": "GUN JEEP",
+        "weapon": "hmg",
+        "name": "M2 .50 CAL",
+        "slot": 0,
+        "x": 480,
+        "y": 5900,
+        "hull": 90,
+        "turret": 80,
+        "aim": 80,
+        "laidError": 0,
+        "doors": null,
+        "physicalBarrels": null,
+        "physicalLaidError": null,
+        "shots": 0,
+        "guns": [
+          {
+            "id": "hmg",
+            "belt": 100,
+            "stowed": 500,
+            "loading": 0
+          }
+        ],
+        "override": {
+          "x": 480,
+          "y": 6120
+        },
+        "reticle": {
+          "shown": false,
+          "ring": "",
+          "pip": "",
+          "ready": false
+        }
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "simulate",
+      "args": [
+        2.5,
+        []
+      ],
+      "result": {
+        "type": "jeep",
+        "speed": 0,
+        "vx": 0,
+        "vy": 0,
+        "cadence": 0,
+        "effort": 0,
+        "altitude": 0
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "mountedGuns",
+      "args": [],
+      "result": {
+        "kind": "jeep",
+        "targets": {
+          "car": {
+            "hp": 150,
+            "x": 480,
+            "y": 6120,
+            "d": 220
+          },
+          "person": {
+            "hp": 100,
+            "x": 480,
+            "y": 6090,
+            "d": 190
+          }
+        },
+        "title": "GUN JEEP",
+        "weapon": "hmg",
+        "name": "M2 .50 CAL",
+        "slot": 0,
+        "x": 480,
+        "y": 5900,
+        "hull": 90,
+        "turret": 0,
+        "aim": 0,
+        "laidError": 0,
+        "doors": null,
+        "physicalBarrels": null,
+        "physicalLaidError": null,
+        "shots": 0,
+        "guns": [
+          {
+            "id": "hmg",
+            "belt": 100,
+            "stowed": 500,
+            "loading": 0
+          }
+        ],
+        "override": {
+          "x": 480,
+          "y": 6120
+        },
+        "reticle": {
+          "shown": false,
+          "ring": "",
+          "pip": "",
+          "ready": false
+        }
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "simulate",
+      "args": [
+        3,
+        [
+          "KeyF"
+        ]
+      ],
+      "result": {
+        "type": "jeep",
+        "speed": 0,
+        "vx": 0,
+        "vy": 0,
+        "cadence": 0,
+        "effort": 0,
+        "altitude": 0
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "simulate",
+      "args": [
+        1,
+        []
+      ],
+      "result": {
+        "type": "jeep",
+        "speed": 0,
+        "vx": 0,
+        "vy": 0,
+        "cadence": 0,
+        "effort": 0,
+        "altitude": 0
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "mountedGuns",
+      "args": [],
+      "result": {
+        "kind": "jeep",
+        "targets": {
+          "car": {
+            "hp": 0,
+            "x": 480,
+            "y": 6120,
+            "d": 220
+          },
+          "person": {
+            "hp": -39,
+            "x": 480,
+            "y": 6092,
+            "d": 192
+          }
+        },
+        "title": "GUN JEEP",
+        "weapon": "hmg",
+        "name": "M2 .50 CAL",
+        "slot": 0,
+        "x": 480,
+        "y": 5900,
+        "hull": 90,
+        "turret": 0,
+        "aim": 0,
+        "laidError": 0,
+        "doors": null,
+        "physicalBarrels": null,
+        "physicalLaidError": null,
+        "shots": 23,
+        "guns": [
+          {
+            "id": "hmg",
+            "belt": 77,
+            "stowed": 500,
+            "loading": 0
+          }
+        ],
+        "override": {
+          "x": 480,
+          "y": 6120
+        },
+        "reticle": {
+          "shown": false,
+          "ring": "",
+          "pip": "",
+          "ready": false
+        }
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "teleport",
+      "args": [
+        420,
+        6800
+      ],
+      "result": {
+        "mode": "play",
+        "x": 420,
+        "y": 6800,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 20,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "17:39",
+        "renderer": "2d",
+        "vehicles": 283,
+        "pedestrians": 604
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "driveArmed",
+      "args": [
+        "heli",
+        0
+      ],
+      "result": {
+        "kind": "heli",
+        "targets": {
+          "car": {
+            "hp": 0,
+            "x": 480,
+            "y": 6120,
+            "d": 680
+          },
+          "person": {
+            "hp": -39,
+            "x": 480,
+            "y": 6092,
+            "d": 708
+          }
+        },
+        "title": "BLACK HAWK",
+        "weapon": "door",
+        "name": "M240H DOOR GUN",
+        "slot": 1,
+        "x": 480,
+        "y": 6800,
+        "hull": 0,
+        "turret": 0,
+        "aim": 0,
+        "laidError": 0,
+        "doors": [
+          -25,
+          25
+        ],
+        "physicalBarrels": [
+          -25,
+          25
+        ],
+        "physicalLaidError": null,
+        "shots": 0,
+        "guns": [
+          {
+            "id": "door",
+            "belt": 200,
+            "stowed": 600,
+            "loading": 0
+          },
+          {
+            "id": "door",
+            "belt": 200,
+            "stowed": 600,
+            "loading": 0
+          }
+        ],
+        "override": {
+          "x": 480,
+          "y": 6120
+        },
+        "reticle": {
+          "shown": false,
+          "ring": "",
+          "pip": "",
+          "ready": false
+        }
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "mountedGunAim",
+      "args": [
+        514.729635533386,
+        6996.961550602442
+      ],
+      "result": {
+        "kind": "heli",
+        "targets": {
+          "car": {
+            "hp": 0,
+            "x": 480,
+            "y": 6120,
+            "d": 680
+          },
+          "person": {
+            "hp": -39,
+            "x": 480,
+            "y": 6092,
+            "d": 708
+          }
+        },
+        "title": "BLACK HAWK",
+        "weapon": "door",
+        "name": "M240H DOOR GUN",
+        "slot": 1,
+        "x": 480,
+        "y": 6800,
+        "hull": 0,
+        "turret": 0,
+        "aim": 0,
+        "laidError": 0,
+        "doors": [
+          -25,
+          25
+        ],
+        "physicalBarrels": [
+          -25,
+          25
+        ],
+        "physicalLaidError": null,
+        "shots": 0,
+        "guns": [
+          {
+            "id": "door",
+            "belt": 200,
+            "stowed": 600,
+            "loading": 0
+          },
+          {
+            "id": "door",
+            "belt": 200,
+            "stowed": 600,
+            "loading": 0
+          }
+        ],
+        "override": {
+          "x": 514.729635533386,
+          "y": 6996.961550602442
+        },
+        "reticle": {
+          "shown": false,
+          "ring": "",
+          "pip": "",
+          "ready": false
+        }
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "simulate",
+      "args": [
+        0.2,
+        []
+      ],
+      "result": {
+        "type": "helicopter",
+        "speed": 0,
+        "vx": 0,
+        "vy": 0,
+        "cadence": 0,
+        "effort": 0,
+        "altitude": 0
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "mountedGuns",
+      "args": [],
+      "result": {
+        "kind": "heli",
+        "targets": {
+          "car": {
+            "hp": 0,
+            "x": 480,
+            "y": 6120,
+            "d": 680
+          },
+          "person": {
+            "hp": -39,
+            "x": 480,
+            "y": 6092,
+            "d": 708
+          }
+        },
+        "title": "BLACK HAWK",
+        "weapon": "door",
+        "name": "M240H DOOR GUN",
+        "slot": 1,
+        "x": 480,
+        "y": 6800,
+        "hull": 0,
+        "turret": 55,
+        "aim": 80,
+        "laidError": 25,
+        "doors": [
+          -25,
+          55
+        ],
+        "physicalBarrels": [
+          -25,
+          55
+        ],
+        "physicalLaidError": 31,
+        "shots": 0,
+        "guns": [
+          {
+            "id": "door",
+            "belt": 200,
+            "stowed": 600,
+            "loading": 0
+          },
+          {
+            "id": "door",
+            "belt": 200,
+            "stowed": 600,
+            "loading": 0
+          }
+        ],
+        "override": {
+          "x": 514.729635533386,
+          "y": 6996.961550602442
+        },
+        "reticle": {
+          "shown": false,
+          "ring": "",
+          "pip": "",
+          "ready": false
+        }
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "simulate",
+      "args": [
+        2,
+        []
+      ],
+      "result": {
+        "type": "helicopter",
+        "speed": 0,
+        "vx": 0,
+        "vy": 0,
+        "cadence": 0,
+        "effort": 0,
+        "altitude": 0
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "mountedGuns",
+      "args": [],
+      "result": {
+        "kind": "heli",
+        "targets": {
+          "car": {
+            "hp": 0,
+            "x": 480,
+            "y": 6120,
+            "d": 680
+          },
+          "person": {
+            "hp": -39,
+            "x": 480,
+            "y": 6092,
+            "d": 708
+          }
+        },
+        "title": "BLACK HAWK",
+        "weapon": "door",
+        "name": "M240H DOOR GUN",
+        "slot": 1,
+        "x": 480,
+        "y": 6800,
+        "hull": 0,
+        "turret": 80,
+        "aim": 80,
+        "laidError": 0,
+        "doors": [
+          -25,
+          80
+        ],
+        "physicalBarrels": [
+          -25,
+          86
+        ],
+        "physicalLaidError": 0,
+        "shots": 0,
+        "guns": [
+          {
+            "id": "door",
+            "belt": 200,
+            "stowed": 600,
+            "loading": 0
+          },
+          {
+            "id": "door",
+            "belt": 200,
+            "stowed": 600,
+            "loading": 0
+          }
+        ],
+        "override": {
+          "x": 514.729635533386,
+          "y": 6996.961550602442
+        },
+        "reticle": {
+          "shown": false,
+          "ring": "",
+          "pip": "",
+          "ready": false
+        }
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "mountedGunAim",
+      "args": [
+        679.8781654038191,
+        6806.9798993405
+      ],
+      "result": {
+        "kind": "heli",
+        "targets": {
+          "car": {
+            "hp": 0,
+            "x": 480,
+            "y": 6120,
+            "d": 680
+          },
+          "person": {
+            "hp": -39,
+            "x": 480,
+            "y": 6092,
+            "d": 708
+          }
+        },
+        "title": "BLACK HAWK",
+        "weapon": "door",
+        "name": "M240H DOOR GUN",
+        "slot": 1,
+        "x": 480,
+        "y": 6800,
+        "hull": 0,
+        "turret": 80,
+        "aim": 80,
+        "laidError": 0,
+        "doors": [
+          -25,
+          80
+        ],
+        "physicalBarrels": [
+          -25,
+          86
+        ],
+        "physicalLaidError": 0,
+        "shots": 0,
+        "guns": [
+          {
+            "id": "door",
+            "belt": 200,
+            "stowed": 600,
+            "loading": 0
+          },
+          {
+            "id": "door",
+            "belt": 200,
+            "stowed": 600,
+            "loading": 0
+          }
+        ],
+        "override": {
+          "x": 679.8781654038191,
+          "y": 6806.9798993405
+        },
+        "reticle": {
+          "shown": false,
+          "ring": "",
+          "pip": "",
+          "ready": false
+        }
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "simulate",
+      "args": [
+        1.5,
+        []
+      ],
+      "result": {
+        "type": "helicopter",
+        "speed": 0,
+        "vx": 0,
+        "vy": 0,
+        "cadence": 0,
+        "effort": 0,
+        "altitude": 0
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "mountedGuns",
+      "args": [],
+      "result": {
+        "kind": "heli",
+        "targets": {
+          "car": {
+            "hp": 0,
+            "x": 480,
+            "y": 6120,
+            "d": 680
+          },
+          "person": {
+            "hp": -39,
+            "x": 480,
+            "y": 6092,
+            "d": 708
+          }
+        },
+        "title": "BLACK HAWK",
+        "weapon": "door",
+        "name": "M240H DOOR GUN",
+        "slot": 1,
+        "x": 480,
+        "y": 6800,
+        "hull": 0,
+        "turret": 20,
+        "aim": 2,
+        "laidError": 18,
+        "doors": [
+          -25,
+          20
+        ],
+        "physicalBarrels": [
+          -25,
+          20
+        ],
+        "physicalLaidError": 21,
+        "shots": 0,
+        "guns": [
+          {
+            "id": "door",
+            "belt": 200,
+            "stowed": 600,
+            "loading": 0
+          },
+          {
+            "id": "door",
+            "belt": 200,
+            "stowed": 600,
+            "loading": 0
+          }
+        ],
+        "override": {
+          "x": 679.8781654038191,
+          "y": 6806.9798993405
+        },
+        "reticle": {
+          "shown": false,
+          "ring": "",
+          "pip": "",
+          "ready": false
+        }
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "mountedGunAim",
+      "args": [
+        445.27036446661396,
+        6603.038449397558
+      ],
+      "result": {
+        "kind": "heli",
+        "targets": {
+          "car": {
+            "hp": 0,
+            "x": 480,
+            "y": 6120,
+            "d": 680
+          },
+          "person": {
+            "hp": -39,
+            "x": 480,
+            "y": 6092,
+            "d": 708
+          }
+        },
+        "title": "BLACK HAWK",
+        "weapon": "door",
+        "name": "M240H DOOR GUN",
+        "slot": 1,
+        "x": 480,
+        "y": 6800,
+        "hull": 0,
+        "turret": 20,
+        "aim": 2,
+        "laidError": 18,
+        "doors": [
+          -25,
+          20
+        ],
+        "physicalBarrels": [
+          -25,
+          20
+        ],
+        "physicalLaidError": 21,
+        "shots": 0,
+        "guns": [
+          {
+            "id": "door",
+            "belt": 200,
+            "stowed": 600,
+            "loading": 0
+          },
+          {
+            "id": "door",
+            "belt": 200,
+            "stowed": 600,
+            "loading": 0
+          }
+        ],
+        "override": {
+          "x": 445.27036446661396,
+          "y": 6603.038449397558
+        },
+        "reticle": {
+          "shown": false,
+          "ring": "",
+          "pip": "",
+          "ready": false
+        }
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "simulate",
+      "args": [
+        1.5,
+        []
+      ],
+      "result": {
+        "type": "helicopter",
+        "speed": 0,
+        "vx": 0,
+        "vy": 0,
+        "cadence": 0,
+        "effort": 0,
+        "altitude": 0
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "mountedGuns",
+      "args": [],
+      "result": {
+        "kind": "heli",
+        "targets": {
+          "car": {
+            "hp": 0,
+            "x": 480,
+            "y": 6120,
+            "d": 680
+          },
+          "person": {
+            "hp": -39,
+            "x": 480,
+            "y": 6092,
+            "d": 708
+          }
+        },
+        "title": "BLACK HAWK",
+        "weapon": "door",
+        "name": "M240H DOOR GUN",
+        "slot": 0,
+        "x": 480,
+        "y": 6800,
+        "hull": 0,
+        "turret": -100,
+        "aim": -100,
+        "laidError": 0,
+        "doors": [
+          -100,
+          25
+        ],
+        "physicalBarrels": [
+          -107,
+          25
+        ],
+        "physicalLaidError": 0,
+        "shots": 0,
+        "guns": [
+          {
+            "id": "door",
+            "belt": 200,
+            "stowed": 600,
+            "loading": 0
+          },
+          {
+            "id": "door",
+            "belt": 200,
+            "stowed": 600,
+            "loading": 0
+          }
+        ],
+        "override": {
+          "x": 445.27036446661396,
+          "y": 6603.038449397558
+        },
+        "reticle": {
+          "shown": false,
+          "ring": "",
+          "pip": "",
+          "ready": false
+        }
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "mountedGunTargets",
+      "args": [
+        220,
+        90
+      ],
+      "result": {
+        "car": {
+          "hp": 150,
+          "x": 480,
+          "y": 7020,
+          "d": 220
+        },
+        "person": {
+          "hp": 100,
+          "x": 480,
+          "y": 6990,
+          "d": 190
+        }
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "mountedGunAim",
+      "args": [
+        480,
+        7020
+      ],
+      "result": {
+        "kind": "heli",
+        "targets": {
+          "car": {
+            "hp": 150,
+            "x": 480,
+            "y": 7020,
+            "d": 220
+          },
+          "person": {
+            "hp": 100,
+            "x": 480,
+            "y": 6990,
+            "d": 190
+          }
+        },
+        "title": "BLACK HAWK",
+        "weapon": "door",
+        "name": "M240H DOOR GUN",
+        "slot": 0,
+        "x": 480,
+        "y": 6800,
+        "hull": 0,
+        "turret": -100,
+        "aim": -100,
+        "laidError": 0,
+        "doors": [
+          -100,
+          25
+        ],
+        "physicalBarrels": [
+          -107,
+          25
+        ],
+        "physicalLaidError": 0,
+        "shots": 0,
+        "guns": [
+          {
+            "id": "door",
+            "belt": 200,
+            "stowed": 600,
+            "loading": 0
+          },
+          {
+            "id": "door",
+            "belt": 200,
+            "stowed": 600,
+            "loading": 0
+          }
+        ],
+        "override": {
+          "x": 480,
+          "y": 7020
+        },
+        "reticle": {
+          "shown": false,
+          "ring": "",
+          "pip": "",
+          "ready": false
+        }
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "simulate",
+      "args": [
+        2.5,
+        []
+      ],
+      "result": {
+        "type": "helicopter",
+        "speed": 0,
+        "vx": 0,
+        "vy": 0,
+        "cadence": 0,
+        "effort": 0,
+        "altitude": 0
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "mountedGuns",
+      "args": [],
+      "result": {
+        "kind": "heli",
+        "targets": {
+          "car": {
+            "hp": 150,
+            "x": 480,
+            "y": 7020,
+            "d": 220
+          },
+          "person": {
+            "hp": 100,
+            "x": 480,
+            "y": 6990,
+            "d": 190
+          }
+        },
+        "title": "BLACK HAWK",
+        "weapon": "door",
+        "name": "M240H DOOR GUN",
+        "slot": 1,
+        "x": 480,
+        "y": 6800,
+        "hull": 0,
+        "turret": 90,
+        "aim": 90,
+        "laidError": 0,
+        "doors": [
+          -25,
+          90
+        ],
+        "physicalBarrels": [
+          -25,
+          96
+        ],
+        "physicalLaidError": 0,
+        "shots": 0,
+        "guns": [
+          {
+            "id": "door",
+            "belt": 200,
+            "stowed": 600,
+            "loading": 0
+          },
+          {
+            "id": "door",
+            "belt": 200,
+            "stowed": 600,
+            "loading": 0
+          }
+        ],
+        "override": {
+          "x": 480,
+          "y": 7020
+        },
+        "reticle": {
+          "shown": false,
+          "ring": "",
+          "pip": "",
+          "ready": false
+        }
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "simulate",
+      "args": [
+        3,
+        [
+          "KeyF"
+        ]
+      ],
+      "result": {
+        "type": "helicopter",
+        "speed": 0,
+        "vx": 0,
+        "vy": 0,
+        "cadence": 0,
+        "effort": 0,
+        "altitude": 0
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "simulate",
+      "args": [
+        1,
+        []
+      ],
+      "result": {
+        "type": "helicopter",
+        "speed": 0,
+        "vx": 0,
+        "vy": 0,
+        "cadence": 0,
+        "effort": 0,
+        "altitude": 0
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "mountedGuns",
+      "args": [],
+      "result": {
+        "kind": "heli",
+        "targets": {
+          "car": {
+            "hp": 144,
+            "x": 480,
+            "y": 7020,
+            "d": 220
+          },
+          "person": {
+            "hp": -23,
+            "x": 480,
+            "y": 6992,
+            "d": 192
+          }
+        },
+        "title": "BLACK HAWK",
+        "weapon": "door",
+        "name": "M240H DOOR GUN",
+        "slot": 1,
+        "x": 480,
+        "y": 6800,
+        "hull": 0,
+        "turret": 90,
+        "aim": 90,
+        "laidError": 0,
+        "doors": [
+          -25,
+          90
+        ],
+        "physicalBarrels": [
+          -25,
+          96
+        ],
+        "physicalLaidError": 0,
+        "shots": 30,
+        "guns": [
+          {
+            "id": "door",
+            "belt": 200,
+            "stowed": 600,
+            "loading": 0
+          },
+          {
+            "id": "door",
+            "belt": 170,
+            "stowed": 600,
+            "loading": 0
+          }
+        ],
+        "override": {
+          "x": 480,
+          "y": 7020
+        },
+        "reticle": {
+          "shown": false,
+          "ring": "",
+          "pip": "",
+          "ready": false
+        }
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "mountedGunAim",
+      "args": [],
+      "result": {
+        "kind": "heli",
+        "targets": {
+          "car": {
+            "hp": 144,
+            "x": 480,
+            "y": 7020,
+            "d": 220
+          },
+          "person": {
+            "hp": -23,
+            "x": 480,
+            "y": 6992,
+            "d": 192
+          }
+        },
+        "title": "BLACK HAWK",
+        "weapon": "door",
+        "name": "M240H DOOR GUN",
+        "slot": 1,
+        "x": 480,
+        "y": 6800,
+        "hull": 0,
+        "turret": 90,
+        "aim": 90,
+        "laidError": 0,
+        "doors": [
+          -25,
+          90
+        ],
+        "physicalBarrels": [
+          -25,
+          96
+        ],
+        "physicalLaidError": 0,
+        "shots": 30,
+        "guns": [
+          {
+            "id": "door",
+            "belt": 200,
+            "stowed": 600,
+            "loading": 0
+          },
+          {
+            "id": "door",
+            "belt": 170,
+            "stowed": 600,
+            "loading": 0
+          }
+        ],
+        "override": null,
+        "reticle": {
+          "shown": false,
+          "ring": "",
+          "pip": "",
+          "ready": false
+        }
+      }
+    },
+    {
+      "phase": "original unchanged assertions",
+      "method": "holdSimulation",
+      "args": [
+        false
+      ],
+      "result": false
+    },
+    {
+      "phase": "fresh short stationary-target burst",
+      "method": "status",
+      "args": [],
+      "result": {
+        "mode": "play",
+        "x": 748,
+        "y": 584,
+        "district": "NORTHBANK · OLD QUARTER",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "17:20",
+        "renderer": "2d",
+        "vehicles": 279,
+        "pedestrians": 600
+      }
+    },
+    {
+      "phase": "fresh short stationary-target burst",
+      "method": "holdSimulation",
+      "args": [
+        true
+      ],
+      "result": true
+    },
+    {
+      "phase": "fresh short stationary-target burst",
+      "method": "god",
+      "args": [
+        true
+      ],
+      "result": true
+    },
+    {
+      "phase": "fresh short stationary-target burst",
+      "method": "teleport",
+      "args": [
+        420,
+        6800
+      ],
+      "result": {
+        "mode": "play",
+        "x": 420,
+        "y": 6800,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "17:20",
+        "renderer": "2d",
+        "vehicles": 279,
+        "pedestrians": 600
+      }
+    },
+    {
+      "phase": "fresh short stationary-target burst",
+      "method": "driveArmed",
+      "args": [
+        "heli",
+        0
+      ],
+      "result": {
+        "kind": "heli",
+        "targets": {
+          "car": null,
+          "person": null
+        },
+        "title": "BLACK HAWK",
+        "weapon": "door",
+        "name": "M240H DOOR GUN",
+        "slot": 1,
+        "x": 480,
+        "y": 6800,
+        "hull": 0,
+        "turret": 0,
+        "aim": 0,
+        "laidError": 0,
+        "doors": [
+          -25,
+          25
+        ],
+        "physicalBarrels": [
+          -25,
+          25
+        ],
+        "physicalLaidError": null,
+        "shots": 0,
+        "guns": [
+          {
+            "id": "door",
+            "belt": 200,
+            "stowed": 600,
+            "loading": 0
+          },
+          {
+            "id": "door",
+            "belt": 200,
+            "stowed": 600,
+            "loading": 0
+          }
+        ],
+        "override": null,
+        "reticle": {
+          "shown": false,
+          "ring": "",
+          "pip": "",
+          "ready": false
+        }
+      }
+    },
+    {
+      "phase": "fresh short stationary-target burst",
+      "method": "mountedGunTargets",
+      "args": [
+        220,
+        90
+      ],
+      "result": {
+        "car": {
+          "hp": 150,
+          "x": 480,
+          "y": 7020,
+          "d": 220
+        },
+        "person": {
+          "hp": 100,
+          "x": 480,
+          "y": 6990,
+          "d": 190
+        }
+      }
+    },
+    {
+      "phase": "fresh short stationary-target burst",
+      "method": "mountedGunAim",
+      "args": [
+        480,
+        6990
+      ],
+      "result": {
+        "kind": "heli",
+        "targets": {
+          "car": {
+            "hp": 150,
+            "x": 480,
+            "y": 7020,
+            "d": 220
+          },
+          "person": {
+            "hp": 100,
+            "x": 480,
+            "y": 6990,
+            "d": 190
+          }
+        },
+        "title": "BLACK HAWK",
+        "weapon": "door",
+        "name": "M240H DOOR GUN",
+        "slot": 1,
+        "x": 480,
+        "y": 6800,
+        "hull": 0,
+        "turret": 0,
+        "aim": 0,
+        "laidError": 0,
+        "doors": [
+          -25,
+          25
+        ],
+        "physicalBarrels": [
+          -25,
+          25
+        ],
+        "physicalLaidError": null,
+        "shots": 0,
+        "guns": [
+          {
+            "id": "door",
+            "belt": 200,
+            "stowed": 600,
+            "loading": 0
+          },
+          {
+            "id": "door",
+            "belt": 200,
+            "stowed": 600,
+            "loading": 0
+          }
+        ],
+        "override": {
+          "x": 480,
+          "y": 6990
+        },
+        "reticle": {
+          "shown": false,
+          "ring": "",
+          "pip": "",
+          "ready": false
+        }
+      }
+    },
+    {
+      "phase": "fresh short stationary-target burst",
+      "method": "simulate",
+      "args": [
+        2.5,
+        []
+      ],
+      "result": {
+        "type": "helicopter",
+        "speed": 0,
+        "vx": 0,
+        "vy": 0,
+        "cadence": 0,
+        "effort": 0,
+        "altitude": 0
+      }
+    },
+    {
+      "phase": "fresh short stationary-target burst",
+      "method": "mountedGuns",
+      "args": [],
+      "result": {
+        "kind": "heli",
+        "targets": {
+          "car": {
+            "hp": 150,
+            "x": 480,
+            "y": 7020,
+            "d": 220
+          },
+          "person": {
+            "hp": 100,
+            "x": 480,
+            "y": 6990,
+            "d": 190
+          }
+        },
+        "title": "BLACK HAWK",
+        "weapon": "door",
+        "name": "M240H DOOR GUN",
+        "slot": 1,
+        "x": 480,
+        "y": 6800,
+        "hull": 0,
+        "turret": 90,
+        "aim": 90,
+        "laidError": 0,
+        "doors": [
+          -25,
+          90
+        ],
+        "physicalBarrels": [
+          -25,
+          97
+        ],
+        "physicalLaidError": 0,
+        "shots": 0,
+        "guns": [
+          {
+            "id": "door",
+            "belt": 200,
+            "stowed": 600,
+            "loading": 0
+          },
+          {
+            "id": "door",
+            "belt": 200,
+            "stowed": 600,
+            "loading": 0
+          }
+        ],
+        "override": {
+          "x": 480,
+          "y": 6990
+        },
+        "reticle": {
+          "shown": false,
+          "ring": "",
+          "pip": "",
+          "ready": false
+        }
+      }
+    },
+    {
+      "phase": "fresh short stationary-target burst",
+      "method": "simulate",
+      "args": [
+        0.1,
+        [
+          "KeyF"
+        ]
+      ],
+      "result": {
+        "type": "helicopter",
+        "speed": 0,
+        "vx": 0,
+        "vy": 0,
+        "cadence": 0,
+        "effort": 0,
+        "altitude": 0
+      }
+    },
+    {
+      "phase": "fresh short stationary-target burst",
+      "method": "simulate",
+      "args": [
+        0.35,
+        []
+      ],
+      "result": {
+        "type": "helicopter",
+        "speed": 0,
+        "vx": 0,
+        "vy": 0,
+        "cadence": 0,
+        "effort": 0,
+        "altitude": 0
+      }
+    },
+    {
+      "phase": "fresh short stationary-target burst",
+      "method": "mountedGuns",
+      "args": [],
+      "result": {
+        "kind": "heli",
+        "targets": {
+          "car": {
+            "hp": 150,
+            "x": 480,
+            "y": 7020,
+            "d": 220
+          },
+          "person": {
+            "hp": 59,
+            "x": 480,
+            "y": 6995,
+            "d": 195
+          }
+        },
+        "title": "BLACK HAWK",
+        "weapon": "door",
+        "name": "M240H DOOR GUN",
+        "slot": 1,
+        "x": 480,
+        "y": 6800,
+        "hull": 0,
+        "turret": 90,
+        "aim": 90,
+        "laidError": 0,
+        "doors": [
+          -25,
+          90
+        ],
+        "physicalBarrels": [
+          -25,
+          97
+        ],
+        "physicalLaidError": 0,
+        "shots": 1,
+        "guns": [
+          {
+            "id": "door",
+            "belt": 200,
+            "stowed": 600,
+            "loading": 0
+          },
+          {
+            "id": "door",
+            "belt": 199,
+            "stowed": 600,
+            "loading": 0
+          }
+        ],
+        "override": {
+          "x": 480,
+          "y": 6990
+        },
+        "reticle": {
+          "shown": false,
+          "ring": "",
+          "pip": "",
+          "ready": false
+        }
+      }
+    },
+    {
+      "phase": "fresh short stationary-target burst",
+      "method": "frameFaults",
+      "args": [],
+      "result": {
+        "count": 0,
+        "gameTime": 3.49,
+        "drill": null,
+        "kinds": []
+      }
+    }
+  ],
+  "notes": [],
+  "errors": [],
+  "phase": "fresh short stationary-target burst",
+  "originalAssertions": "PASS",
+  "shortBurst": {
+    "before": {
+      "kind": "heli",
+      "targets": {
+        "car": {
+          "hp": 150,
+          "x": 480,
+          "y": 7020,
+          "d": 220
+        },
+        "person": {
+          "hp": 100,
+          "x": 480,
+          "y": 6990,
+          "d": 190
+        }
+      },
+      "title": "BLACK HAWK",
+      "weapon": "door",
+      "name": "M240H DOOR GUN",
+      "slot": 1,
+      "x": 480,
+      "y": 6800,
+      "hull": 0,
+      "turret": 90,
+      "aim": 90,
+      "laidError": 0,
+      "doors": [
+        -25,
+        90
+      ],
+      "physicalBarrels": [
+        -25,
+        97
+      ],
+      "physicalLaidError": 0,
+      "shots": 0,
+      "guns": [
+        {
+          "id": "door",
+          "belt": 200,
+          "stowed": 600,
+          "loading": 0
+        },
+        {
+          "id": "door",
+          "belt": 200,
+          "stowed": 600,
+          "loading": 0
+        }
+      ],
+      "override": {
+        "x": 480,
+        "y": 6990
+      },
+      "reticle": {
+        "shown": false,
+        "ring": "",
+        "pip": "",
+        "ready": false
+      }
+    },
+    "after": {
+      "kind": "heli",
+      "targets": {
+        "car": {
+          "hp": 150,
+          "x": 480,
+          "y": 7020,
+          "d": 220
+        },
+        "person": {
+          "hp": 59,
+          "x": 480,
+          "y": 6995,
+          "d": 195
+        }
+      },
+      "title": "BLACK HAWK",
+      "weapon": "door",
+      "name": "M240H DOOR GUN",
+      "slot": 1,
+      "x": 480,
+      "y": 6800,
+      "hull": 0,
+      "turret": 90,
+      "aim": 90,
+      "laidError": 0,
+      "doors": [
+        -25,
+        90
+      ],
+      "physicalBarrels": [
+        -25,
+        97
+      ],
+      "physicalLaidError": 0,
+      "shots": 1,
+      "guns": [
+        {
+          "id": "door",
+          "belt": 200,
+          "stowed": 600,
+          "loading": 0
+        },
+        {
+          "id": "door",
+          "belt": 199,
+          "stowed": 600,
+          "loading": 0
+        }
+      ],
+      "override": {
+        "x": 480,
+        "y": 6990
+      },
+      "reticle": {
+        "shown": false,
+        "ring": "",
+        "pip": "",
+        "ready": false
+      }
+    },
+    "triggerSeconds": 0.1,
+    "followSeconds": 0.35
+  },
+  "frameFaults": {
+    "count": 0,
+    "gameTime": 3.49,
+    "drill": null,
+    "kinds": []
+  },
+  "status": "PASS",
+  "browserClosed": true
+}

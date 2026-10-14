@@ -11,6 +11,9 @@ const diff = (a, b) => ((a - b + 540) % 360) - 180;
 
 export default async function (t) {
   await t.call('god', true);
+  // Every movement sample advances explicitly below. Live frames between RPC
+  // snapshots otherwise add an arbitrary follow tail after the keys release.
+  await t.call('holdSimulation', true);
   // Turn one way, then the other: the camera's heading is checked between the two (a following camera turns it).
   const travel = async (code, seconds = 0.3) => {
     const cam = await t.call('chaseCamera'),
@@ -48,7 +51,6 @@ export default async function (t) {
     await t.keys('KeyV', 0.1, { real: true });
     await t.keys('KeyW', 0.3);
     const b = await t.call('status');
-    await t.call('holdSimulation', false);
     let cam = await t.call('chaseCamera');
     t.assert(cam.mode === 'chase' && cam.ready, `V did not switch to a placed chase view: ${JSON.stringify(cam)}`);
     t.near(Math.abs(diff((Math.atan2(b.y - a.y, b.x - a.x) * 180) / Math.PI, -90)), 0, 15, 'W held across the switch: off north (deg)');

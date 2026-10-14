@@ -5,6 +5,13 @@ Types drawn from downloaded ready-made models (assets/vehicle-models.bin + vehic
 vehicles-and-driving-models.md's; credits in docs/THIRD_PARTY_CREDITS.txt. Console `assetCars()`,
 `assetCarsOn(false)` (models built from then on procedural: park a second row for before/after).
 
+October 14 replacements use a **separate** pack and albedo/roughness-metallic atlases;
+all original 23 models stay intact. See [approved SUVs](vehicles-and-driving-models-approved-suvs.md),
+[motorcycles](vehicles-and-driving-models-motorcycles.md), and `approvedAssets()` for
+loaded keys, atlas sizes and LODs. Source UVs repeat inside each atlas rectangle.
+Low/Medium use 2048px images; High/Ultra use 4096px, replacing texture images on tier
+changes. Approved PBR/livery also pass through pooled wear/char shaders.
+
 ## Cars (ASSET CARS, vehicle-assets3d.js)
 
 - Sedan, taxi, coupe, sport, supercar, luxury and muscle (American Muscle '71) are drawn from downloaded CC-BY cars
@@ -36,7 +43,7 @@ vehicles-and-driving-models.md's; credits in docs/THIRD_PARTY_CREDITS.txt. Conso
   the damage adds later, on a `shapeVersion` change) onto per-car char materials: soot projected in each mesh's frame in
   world units on three planes, matte, embers in the emissive (`assetCharEmbers`). An army model (`m.atlasPaint`) also
   takes the wear's grime and the fire's heat through them. Intact models keep the shared materials and the merge; a
-  repair or respray swaps back (`assetCharRelease`, materials pooled). Four programs (cut-out, atlas, plain, military vertex finish), compiled
+  repair or respray swaps back (`assetCharRelease`, materials pooled). Programs (cut-out, atlas, plain, military vertex finish, approved PBR and approved livery), compiled
   at the title prewarm (`assetCharWarm`, kept in sharedMaterials). Draw calls unchanged. Console `assetChar()`,
   `burnVehicle(id, ago, mend)`.
 - Each released char-material pool keeps at most 12 materials; overflow is disposed immediately so repaired cars

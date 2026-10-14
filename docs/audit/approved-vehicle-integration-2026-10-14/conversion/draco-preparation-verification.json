@@ -1,0 +1,31 @@
+{
+  "input": {
+    "path": "/tmp/GTA-asset-research/suv/jimny-2023.glb",
+    "bytes": 4603920,
+    "sha256": "0f70478e347b1bf19410e45ade6f0b1037041df5417b7bc8da4d9739bdb5f6ce"
+  },
+  "output": {
+    "path": "/tmp/GTA-jimny-repro/jimny-decoded.glb",
+    "bytes": 45908032,
+    "sha256": "5e9062ad80993b33b716a003de8f0a766299daadfa36ba7caeef99c26b13c2d7"
+  },
+  "primitives": 146,
+  "triangles": 456991,
+  "points": 1203752,
+  "decoder": {
+    "version": "Google Draco 1.5.6 glTF build",
+    "files": {
+      "draco_wasm_wrapper.js": {
+        "sha256": "8bb2952d2ba7d67e1414f8df819410cb0434a666be53f671fff75f68843d76f6",
+        "url": "https://raw.githubusercontent.com/google/draco/1.5.6/javascript/draco_wasm_wrapper_gltf.js"
+      },
+      "draco_decoder.wasm": {
+        "sha256": "a680d927bed9cb864ddbd63521868891af2bfbe755092761b4837487618df8ac",
+        "url": "https://raw.githubusercontent.com/google/draco/1.5.6/javascript/draco_decoder_gltf.wasm"
+      }
+    }
+  },
+  "geometryOperation": "Official Draco decompression only; no simplification or modelling edits.",
+  "materialsOperation": "None; original embedded texture bytes and material metadata retained.",
+  "verification": "The new repository decoder reproduced the audited decoded GLB byte-for-byte in a fresh /tmp output directory; no approved game assets were written."
+}

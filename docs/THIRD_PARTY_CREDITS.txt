@@ -928,3 +928,45 @@ Loudness normalized to -18 LUFS target, resampled from 48 kHz and transcoded to 
 
 Station idents (the tuning static and jingle heard on changing station) are synthesized at run time
 in src/car-radio.js and contain no recorded material.
+
+APPROVED REPLACEMENT VEHICLES (14 October 2026)
+Files: approved-vehicle-models.bin, approved-vehicle-albedo.webp, approved-vehicle-orm.webp
+and their reduced-resolution -low.webp atlases. Converted by tools/approved_vehicle_models.py.
+All five models are used under CC BY 4.0: https://creativecommons.org/licenses/by/4.0/
+
+Real Motorbike02(Unity3D), by jsa201077 (Sketchfab unityjsa7)
+https://sketchfab.com/3d-models/real-motorbike-02-unity3d-f24e366933c54835b562e5210d93047f
+Source: vimontgames/vgframework, commit b3173a3814790af7061f1949437a3c958b00000b,
+data/Meshes/Cars/Motorbike. The repository README explicitly credits this model as CC BY 4.0.
+Changes: assembled the authored body/fork/wheel prefab; normalized coordinates and measured axles;
+split materials and articulated parts; baked scalar finishes, adapted paint and added near/far LODs.
+
+Sport motorcycle, by nouter2077
+https://skfb.ly/oIYFv
+Source: thomasfork/Nonplanar-Vehicle-Control, commit 8cb0ee51e2cf5cf7b3abbf21d3bdadc538a6c672,
+assets/motorcycle.glb. The repository README explicitly credits this motorcycle as CC BY 4.0.
+Changes: normalized coordinates; split the steering assembly, tyres, rims, paint, trim and windscreen;
+measured wheel axles and rider contacts; consolidated scalar materials; adapted paint/glass and added LODs.
+The node name does not establish a particular make or production year.
+
+2023 Suzuki Jimny Sierra, by tonielpro520 (https://sketchfab.com/tonielpro520)
+https://sketchfab.com/3d-models/2023-suzuki-jimny-sierra-8b7c4d136f6742e180faf654d874f14a
+Source: PatrickRuan/Jimny3D, public/models/jimny.glb. The GLB embeds this attribution and CC BY 4.0.
+Changes: decoded Draco geometry; normalized coordinates; retained the source cabin and albedo textures;
+split wheels, paint, trim, glass and lamps; measured axles, cabin and size; adapted paint and added LODs.
+
+Generic passenger car pack, SUV and Offroad bodies, by Comrade1280
+https://sketchfab.com/3d-models/generic-passenger-car-pack-20f9af9b8a404d5cb022ac6fe87f21f5
+Source: clarkbar-sys/done-rite-detailing,
+src-models/generic_passenger_car_pack/generic_passenger_car_pack.glb.
+The GLB embeds this attribution and CC BY 4.0. Only the approved SUV and Offroad bodies are used.
+Changes: normalized coordinates; split wheels, glass, paint, trim and lamps; retained albedo and
+roughness/metallic maps; corrected tyre finish, adapted paint and added LODs. The game adds its own
+seats, sheriff livery, emergency lighting and equipment to the SUV patrol variant.
+
+Common conversion changes: source textures packed into shared atlases with padded edges;
+source texture repetition preserved; paint pigments neutralized for game resprays; vertex data
+quantized and triangles reduced with material/UV boundaries retained; 2048px atlases generated
+for Low/Medium while High/Ultra use 4096px atlases. Original creator pages were blocked in this
+environment; attribution/license evidence is the asset-specific records identified above.
+No unrelated non-commercial assets from these repositories are included.

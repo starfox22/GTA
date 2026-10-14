@@ -20,6 +20,9 @@
       coupe: [-0.282, 0.362, 0.414, 0.35, 0.882],
       sedan: [-0.318, 0.275, 0.426, 0.25, 0.846],
       suv: [0.321, 0.512, 0.448, 0.25, 1.029],
+      s1_jimny: [-0.384, 0.454, 0.372, 0.25, 0.874],
+      s2_suv: [-0.184, 0.686, 0.414, 0.25, 1.156],
+      s3_offroad: [-0.661, 0.533, 0.392, 0.25, 1.100],
       taxi: [-0.058, 0.561, 0.426, 0.25, 1.07],
       muscle: [-0.464, 0.325, 0.44, 0.25, 0.913],
       sport: [0.029, 0.202, 0.426, 0.61, 0.8],
@@ -45,10 +48,30 @@
       w1: [-0.242, 0.221, 0.468, 0.51, 0.84],
       lafera: [-0.076, 0.203, 0.458, 0.65, 0.82],
       'law:charger': [-0.313, 0.331, 0.436, 0.25, 0.883],
-      'law:utility': [0.331, 0.557, 0.436, 0.25, 1.061],
+      'law:utility': [-0.184, 0.686, 0.436, 0.25, 1.156],
       'law:crownvic': [-0.352, 0.379, 0.436, 0.25, 0.939],
-      'law:tahoe': [0.321, 0.512, 0.448, 0.25, 1.029],
+      'law:tahoe': [-0.184, 0.686, 0.448, 0.25, 1.156],
     };
+    // Approved Ranger bodies share the existing SUV gameplay type. IDs choose their art once without
+    // consuming either random stream; the same key addresses the renderer, glass and drive-by seat records.
+    const APPROVED_SUV_KEYS = ['s1_jimny', 's2_suv', 's3_offroad'];
+    function approvedSuvKey(vehicle) {
+      if (vehicle.type !== 'suv' || vehicle.lawUnit || vehicle.policeLook) return null;
+      return APPROVED_SUV_KEYS[(vehicle.id >>> 0) % APPROVED_SUV_KEYS.length];
+    }
+    // Source metres, matching native-scale SUV kits. Gameplay returns world-unit bands without decoding assets.
+    const APPROVED_SUV_GLASS = {
+      s1_jimny: { belt: 0.8737090229987146, roof: 1.8481164789198883, back: -1.5115798115730286, front: 0.7663028836250306 },
+      s2_suv: { belt: 1.1561036205989217, roof: 1.693233275472012, back: -2.2000084589379414, front: 0.9660231821354106 },
+      s3_offroad: { belt: 1.09977157896407, roof: 1.5296125417427886, back: -1.5813662361297505, front: 0.48913139307590203 },
+    };
+    function approvedSuvGlassBand(vehicle) {
+      const key = approvedSuvKey(vehicle);
+      if (key) return APPROVED_SUV_GLASS[key];
+      if (vehicle.type !== 'police' && !vehicle.lawUnit && !vehicle.policeLook) return null;
+      const body = policeLookChoice(vehicle)?.body;
+      return body === 'utility' || body === 'tahoe' ? APPROVED_SUV_GLASS.s2_suv : null;
+    }
     // The player's rig in drive-bys (character-rig3d.js RIG, crowd3d-looks.js 'player': 1.8 m, build 1.2): rig units
     // to world units, the torso joint over the hip, the shoulder up the torso and out to its side, the arm.
     const DRIVEBY_RIG = {
@@ -87,7 +110,7 @@
     // The DRIVEBY_SEATS key of a vehicle: its type, or its police body.
     function driveBySeatKey(vehicle) {
       const law = vehicle.policeLook || vehicle.lawUnit || vehicle.type === 'police' ? policeLookChoice(vehicle) : null;
-      return law ? 'law:' + law.body : vehicle.type;
+      return law ? 'law:' + law.body : approvedSuvKey(vehicle) || vehicle.type;
     }
     const driveByShoulderOut = { x: 0, y: 0, z: 0 };
     /*

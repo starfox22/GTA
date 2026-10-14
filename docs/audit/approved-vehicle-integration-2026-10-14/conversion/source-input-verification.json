@@ -1,0 +1,124 @@
+{
+  "files": [
+    {
+      "path": "motorcycles/vgframework/data--Meshes--Cars--Motorbike--motorbike.fbx",
+      "status": 200,
+      "bytes": 268684,
+      "sha256": "a347eaa03ea29854c45d78dd1f1136f9ff2b29d57b0ff8ef5179687629ce7aca",
+      "matches": true
+    },
+    {
+      "path": "motorcycles/vgframework/data--Meshes--Cars--Motorbike--motorbike_fork.fbx",
+      "status": 200,
+      "bytes": 78716,
+      "sha256": "fe930b7bbf1e342ccc1128b97e186bcda216c75ebdb7c46ff5a2e8a058a76ee4",
+      "matches": true
+    },
+    {
+      "path": "motorcycles/vgframework/data--Meshes--Cars--Motorbike--motorbike_wheel.fbx",
+      "status": 200,
+      "bytes": 99740,
+      "sha256": "bd3daed591a5d8df47ca2a8e1e83ed247131bd419de5eb417b5e1e264e0194ce",
+      "matches": true
+    },
+    {
+      "path": "motorcycles/vgframework/data--Textures--Cars--Motorbike--motorbike_albedo.png",
+      "status": 200,
+      "bytes": 1507745,
+      "sha256": "e23eeb2303592d05c5f11504b6e1a1160fd8e49f4a8c6c015b97b33238912f2a",
+      "matches": true
+    },
+    {
+      "path": "motorcycles/vgframework/data--Materials--Cars--Motorbike--Motorbike.mat",
+      "status": 200,
+      "bytes": 4495,
+      "sha256": "302b26ad620f278a4d07b71dc90ef38672518609782c07024a1d694205ac295c",
+      "matches": true
+    },
+    {
+      "path": "motorcycles/vgframework/data--Materials--Cars--Motorbike--MotorbikeLights.mat",
+      "status": 200,
+      "bytes": 4540,
+      "sha256": "e7dac76ffcd25e49817d2ffdb32a32d8df14e5533acdcb5efdac37777ab14b5e",
+      "matches": true
+    },
+    {
+      "path": "motorcycles/vgframework/data--Materials--Cars--Scooter--ScooterMetal.mat",
+      "status": 200,
+      "bytes": 4483,
+      "sha256": "4ac4867347d30ba26e91ea6753ca496b15f1841a2b475e04e60919bc9cc43a53",
+      "matches": true
+    },
+    {
+      "path": "motorcycles/vgframework/data--Materials--Cars--Scooter--ScooterPlastic.mat",
+      "status": 200,
+      "bytes": 4490,
+      "sha256": "0a63e4d5541a690c9414ae227e14a9c47bdf16bd33f618062cd373c296712264",
+      "matches": true
+    },
+    {
+      "path": "motorcycles/vgframework/data--Materials--Cars--Scooter--ScooterWheel.mat",
+      "status": 200,
+      "bytes": 4486,
+      "sha256": "a3b2bb2d13c94623b14892e8c678f58e26db6794995aa1d0440f21f8afb7c92e",
+      "matches": true
+    },
+    {
+      "path": "motorcycles/vgframework/prefab.xml",
+      "status": 200,
+      "bytes": 73241,
+      "sha256": "65028afbcdb0c1d48e2488526050d13602c6531b0b4d879b4d1ae14be73b8f55",
+      "matches": true
+    },
+    {
+      "path": "motorcycles/vgframework/README.md",
+      "status": 200,
+      "bytes": 39149,
+      "sha256": "e4d542a09d5caba9338e20942311f39141769d45021783e3496c481731e55f8c",
+      "matches": true
+    },
+    {
+      "path": "motorcycles/nonplanar/assets--motorcycle.glb",
+      "status": 200,
+      "bytes": 15428024,
+      "sha256": "228b3f088ac348c40b55bd2881c7271304614ecc0ad422b21506c6d82708228c",
+      "matches": true
+    },
+    {
+      "path": "motorcycles/nonplanar/README.md",
+      "status": 200,
+      "bytes": 4717,
+      "sha256": "9e8095d2fb6b0f936a1fe31cd6892a04b020dbfbd4d6fc5d2f1e3276acaeb97d",
+      "matches": true
+    },
+    {
+      "path": "suv/jimny-2023.glb",
+      "status": 200,
+      "bytes": 4603920,
+      "sha256": "0f70478e347b1bf19410e45ade6f0b1037041df5417b7bc8da4d9739bdb5f6ce",
+      "matches": true
+    },
+    {
+      "path": "suv/carpack-4.glb",
+      "status": 200,
+      "bytes": 11761956,
+      "sha256": "a2d5667f3a1d47fa0dbb84cf2cf76b8aeee6a69f7fff209af09973c625f9be6e",
+      "matches": true
+    },
+    {
+      "path": "draco/draco_wasm_wrapper.js",
+      "status": 200,
+      "bytes": 58456,
+      "sha256": "8bb2952d2ba7d67e1414f8df819410cb0434a666be53f671fff75f68843d76f6",
+      "matches": true
+    },
+    {
+      "path": "draco/draco_decoder.wasm",
+      "status": 200,
+      "bytes": 192420,
+      "sha256": "a680d927bed9cb864ddbd63521868891af2bfbe755092761b4837487618df8ac",
+      "matches": true
+    }
+  ],
+  "allPinnedDownloadsMatch": true
+}

@@ -41,7 +41,7 @@
         m.tailDisc.material.uniforms.uPhase.value = m.ghost * 3;
         // The door guns follow the angles mounted-guns.js lays (off the nose, left then right).
         if (m.doorGuns) {
-          const rel = c.arms?.rel;
+          const rel = c.arms?.barrelRel || c.arms?.rel;
           for (let i = 0; i < m.doorGuns.length; i++) m.doorGuns[i].rotation.y = -(rel ? rel[i] : (i ? 1 : -1) * DOOR_GUN_REST);
         }
         // The disc darkens at night (it only scatters the light around it).

@@ -1,0 +1,25 @@
+boot after
+ready after
+shot after s1-jimny-front
+shot after s1-jimny-rear
+shot after s2-suv-front
+shot after s2-suv-rear
+shot after sheriff-front
+shot after sheriff-rear
+shot after sheriff-moving
+shot after sheriff-burnt
+shot after sheriff-repaired
+PASS preset street low
+PASS preset street medium
+PASS preset street high
+PASS preset street ultra
+PASS preset street auto
+PASS preset chase low
+PASS preset chase medium
+PASS preset chase high
+PASS preset chase ultra
+PASS preset chase auto
+shot after jimny-optics-day-front
+shot after jimny-optics-night-front
+PASS far-pool actual instances 3
+PASS native SUV rendered review after

@@ -1,0 +1,189 @@
+started dev server (?dev&norender: boot 30.7s)
+Scripts "build/three.js" and "build/three.min.js" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation
+PASS military-model-rig (0.7s)
+     army_jeep: front follows physics steer -0.38 · army_truck: front follows physics steer -0.38 · Original 156 lamp triangles reassigned; no geometry/texture replacement; two military kits reused across 20 repeated spawns.
+PASS motorcycle-puncture (0.0s)
+     actual side-entry rays: 3 headings × 2 elevations × 2 sides × 2 axles; engine/end/high/probability misses and car/truck/glass rules pass
+PASS chase-move-keys (43.4s)
+     W held across the switch: off north (deg) 0 · W held across the switch: the camera off behind the run (deg) 0 · after the switch: W off the camera's heading (deg) 0 · after six switches: KeyW off the camera's 0 deg (deg) 1 · after six switches: the camera turned during KeyW (deg) 1 · after six switches: KeyD off the camera's 90 deg (deg) 1.366460663429848 · after six switches: the camera turned during KeyD (deg) 2 · after six switches: KeyS off the camera's 180 deg (deg) 0.42366562500262717 · after six switches: the camera turned during KeyS (deg) 0 · after six switches: KeyA off the camera's -90 deg (deg) 0.6335393365702657 · after six switches: the camera turned during KeyA (deg) 0 · three seconds of D: the camera turned (deg) 0 · three seconds of W+D: the camera turned (deg) 0 · W+D off the camera's 45 deg (deg) 2.709836807756915 · after a look round: KeyW off the camera's 0 deg (deg) 0.25511870305786033 · after a look round: the camera turned during KeyW (deg) 0 · after a look round: KeyD off the camera's 90 deg (deg) 1.9275130641470355 · after a look round: the camera turned during KeyD (deg) 0 · after a look round: KeyS off the camera's 180 deg (deg) 0.25511870305774664 · after a look round: the camera turned during KeyS (deg) 0 · after a look round: KeyA off the camera's -90 deg (deg) 1.9275130641470923 · after a look round: the camera turned during KeyA (deg) 0 · after a mouse turn: KeyW off the camera's 0 deg (deg) 2.9275130641469786 · after a mouse turn: the camera turned during KeyW (deg) 0 · after a mouse turn: KeyD off the camera's 90 deg (deg) 1.2551187030577466 · after a mouse turn: the camera turned during KeyD (deg) 0 · after a mouse turn: KeyS off the camera's 180 deg (deg) 1.7352262721076386 · after a mouse turn: the camera turned during KeyS (deg) 0 · after a mouse turn: KeyA off the camera's -90 deg (deg) 0.036243467926510675 · after a mouse turn: the camera turned during KeyA (deg) 0 · after getting out of a car: KeyW off the camera's 0 deg (deg) 0 · after getting out of a car: the camera turned during KeyW (deg) 0 · after getting out of a car: KeyD off the camera's 90 deg (deg) 0 · after getting out of a car: the camera turned during KeyD (deg) 1 · after getting out of a car: KeyS off the camera's 180 deg (deg) 2.366460663429848 · after getting out of a car: the camera turned during KeyS (deg) 0 · after getting out of a car: KeyA off the camera's -90 deg (deg) 1 · after getting out of a car: the camera turned during KeyA (deg) 0 · after a teleport: W+D off the fresh camera's 45 deg (deg) 3.5104470780008796 · cursor at the edge before any capture: camera turn (deg) 0
+PASS driveby-mouse (47.3s)
+     continuous real hold 5.1 wall s, 1.73 game s at 0.20 game s/s · front pointer: {"point":{"x":638,"y":290,"viewport":[960,600]},"boxes":[{"id":"hudLocation","l":16,"t":20,"r":277,"b":70},{"id":"cash","l":779,"t":20,"r":892,"b":48},{"id":"stars","l":795,"t":50,"r":892,"b":71},{"id":"worldClock","l":806,"t":73,"r":892,"b":87},{"id":"pauseBtn","l":910,"t":20,"r":944,"b":54},{"id":"navigation","l":373,"t":64,"r":587,"b":108},{"id":"carRadio","l":754,"t":397,"r":944,"b":428},{"id":"toast","l":16,"t":116,"r":269,"b":154},{"id":"minimapBox","l":16,"t":445,"r":216,"b":580},{"id":"pager","l":250,"t":440,"r":710,"b":556},{"id":"quickKeys","l":247,"t":564,"r":713,"b":580},{"id":"vehicleStats","l":774,"t":370,"r":944,"b":455},{"id":"weaponButton","l":744,"t":463,"r":944,"b":580},{"id":"fpsCounter","l":428,"t":0,"r":532,"b":18}]} · continuous real hold 3.7 wall s, 2.12 game s at 0.27 game s/s · continuous real hold 5.9 wall s, 2.28 game s at 0.17 game s/s · continuous real hold 2.5 wall s, 0.91 game s at 0.52 game s/s
+PASS falls (68.2s)
+     cliff at 7360,1380 (49.9 m): down 20.6 m at 20.1 m/s · car off 73.6 m: {"hp":0,"destroyed":true,"overturned":"roof","airborne":false}, player dead
+PASS footwork (38.4s)
+     backpedal share (aim north, moving south) 0.6060606060606061 · side-step share (aim north, moving east) 0.8181818181818182 · forward share (aim north, moving north) 1
+PASS fort-cover (46.2s)
+PASS fort-gate-barrier (39.1s)
+PASS fort-gate-talk (38.9s)
+PASS fort-records-route (26.0s)
+PASS fort-vehicle-theft (31.0s)
+PASS fps-counter (82.5s)
+PASS frame-guard (34.0s)
+     {"count":1,"gameTime":3.01,"drill":null,"kinds":[{"where":"update","message":"Error: frame fault drill (update) |     at frameFaultDrillAt (http://127.0.0.1:8765/dist/review-approved-vehicles-2026-10-14-candidate4.html?dev&norender:212439:21) |     at runFrame (http://127.0.0.1:8765/dist/review-approved-vehicles-2026-10-14-candidate4.html?dev&norender:212651:36)","count":1,"first":2.1,"last":2.1}]} · game time in 3 s: 1.14 before, 0.98 after the fault
+PASS freeroam-respawn (54.2s)
+PASS garages-islands (33.7s)
+     northbank eastside: 8 m · northbank south: 338 m · palmkeys palm: 30 m · ridgeline county: 30 m · monarch monarch: 245 m · oceanview oceanview: 114 m · coralcoast coral: 114 m · sunsetisle pier: 69 m · sentinel sentinel: 19 m
+PASS god-drawbridges (110.7s)
+PASS god-mode-codes (38.4s)
+     A taps: x 1152 → 1140 → 1126 · after the code: mode settings · ON sound: {"on":true,"seconds":4,"peak":0.825,"rms":0.061,"loudestRms":0.33} · OFF sound: {"on":false,"seconds":4,"peak":0.464,"rms":0.04,"loudestRms":0.265}
+PASS god-teleport-map (27.4s)
+     map on screen 609 x 502 of 960 x 600; pixels 609 x 502 · clicked (559, 240) → player at (6398, -2000), 2 units from the target; TELEPORTED
+PASS gore-dismember (34.4s)
+     shotgun 1.5 m leg: {"x":432,"y":4600,"a":0,"hp":-32,"dead":true,"down":true,"lost":["leg R"],"pieces":1,"thrown":1,"wounds":2,"bleedOut":null,"hit":{"cls":"buck","zone":"leg","close":1,"scale":0.132,"burst":0}} · severed: [["leg",true,0.55]] · after 30 loads: 24 pieces, 16 stumps, 48 tracked; decals 480
+SKIP gpu-context (21.9s): no 3D renderer on this page (run with --render)
+PASS headlight-aim (23.6s)
+     spots: {"uphill":[7974,1726,-0.5880026035475675],"downhill":[8072,1674,2.5535900500422257],"crest":[7500,1556,-3.050932766389048]} · uphill: {"type":"expedition","pitchDeg":15,"rollDeg":0.1,"aim":[0.804,-0.535,0.259],"up":[-0.215,0.145,0.966],"lampHeightM":1.1,"lampOverGroundM":1.13,"horizon":true,"horizonMs":0.7,"probes":[{"m":5,"ground":12.99,"t":-0.001,"v":-0.194,"vLevel":0.204,"lit":1},{"m":10,"ground":14.32,"t":-0.001,"v":-0.1,"vLevel":0.235,"lit":1},{"m":20,"ground":16.87,"t":0,"v":-0.057,"vLevel":0.245,"lit":0.42},{"m":30,"ground":21.45,"t":-0.001,"v":0.021,"vLevel":0.316,"lit":1},{"m":40,"ground":18.28,"t":0,"v":-0.124,"vLevel":0.158,"lit":0}]} · uphill pitch (deg) 15 · uphill aim follows the pitch 0.259 · uphill lamp height over the ground (m) 1.13 · uphill 5 m: ground below the cut-off in the body frame -0.194 · uphill 5 m: in the clear 1 · uphill 10 m: ground below the cut-off in the body frame -0.1 · uphill 10 m: in the clear 1 · downhill: {"type":"expedition","pitchDeg":-15.5,"rollDeg":0.7,"aim":[-0.8,0.537,-0.268],"up":[-0.229,0.14,0.963],"lampHeightM":1.1,"lampOverGroundM":1.16,"horizon":true,"horizonMs":0.3,"probes":[{"m":5,"ground":12.61,"t":0.005,"v":-0.217,"vLevel":-0.654,"lit":1},{"m":10,"ground":11.21,"t":0.004,"v":-0.11,"vLevel":-0.467,"lit":1},{"m":20,"ground":9.1,"t":0.003,"v":-0.025,"vLevel":-0.339,"lit":1},{"m":30,"ground":8.94,"t":0.002,"v":0.066,"vLevel":-0.231,"lit":1},{"m":40,"ground":10.01,"t":0.001,"v":0.144,"vLevel":-0.147,"lit":1}]} · downhill pitch (deg) -15.5 · downhill aim follows the pitch -0.268 · downhill 5 m: ground below the cut-off in the body frame -0.217 · downhill 5 m: in the clear 1 · downhill 10 m: ground below the cut-off in the body frame -0.11 · downhill 10 m: in the clear 1 · crest: {"type":"expedition","pitchDeg":10.5,"rollDeg":0.1,"aim":[-0.979,-0.089,0.182],"up":[0.181,0.015,0.983],"lampHeightM":1.1,"lampOverGroundM":1.18,"horizon":true,"horizonMs":0.4,"probes":[{"m":5,"ground":28.87,"t":0,"v":-0.389,"vLevel":-0.108,"lit":1},{"m":10,"ground":27.79,"t":0,"v":-0.402,"vLevel":-0.162,"lit":0.3},{"m":20,"ground":25.46,"t":0,"v":-0.419,"vLevel":-0.198,"lit":0},{"m":30,"ground":20.87,"t":0,"v":-0.51,"vLevel":-0.285,"lit":0},{"m":40,"ground":13.19,"t":0,"v":-0.649,"vLevel":-0.405,"lit":0}]} · crest: the near road is lit 1
+PASS health-indoors (38.8s)
+     SAINT MARLOW HOSPITAL: hp 52 -> 100 for $150 · THE BLUE PLATE DINER: hp 52 -> 97 for $28 · STONECREEK LODGE: hp 52 -> 87 for $25
+PASS hillclimb-physics (98.2s)
+     climb at 1/30: summit in 72.57 s (splits 6.67, 19.33, 44.07, 64.93), air 0.03 s, gap 0.01 m, up 5.28 m/s, stops 9 (max 2.2 m/s) · climb at 1/60: summit in 74.92 s (splits 6.63, 19.97, 46.28, 67.45), air 0.03 s, gap 0.01 m, up 5.01 m/s, stops 13 (max 1.97 m/s) · descent: 72.6 s, air 0 s, gap 0 m, stops 11 · at rest on the climb: pitch -3.36 deg, front 0.52 g, rear 0.48 g
+PASS hud-clearance (20.4s)
+     at speed: player {"l":462,"t":292,"r":501,"b":457}, open card {"l":250,"t":420,"r":710,"b":536}
+PASS hud-layout (25.0s)
+     drawn: carRadio, toast, radioCaption, policeStatusPanel · touch, bus heading down: player {"l":468,"t":119,"r":493,"b":227}, open card {"l":310,"t":54,"r":650,"b":142}
+PASS hud-touch-dispatch (16.9s)
+     street: {"card":{"id":"pager","l":310,"t":55,"r":650,"b":173},"caption":{"id":"radioCaption","l":354,"t":189,"r":606,"b":243}} · chase: {"card":{"id":"pager","l":310,"t":57,"r":650,"b":175},"caption":{"id":"radioCaption","l":354,"t":190,"r":606,"b":244}}
+PASS integrity-shore (18.5s)
+PASS interface-hints (17.4s)
+     GO TO: 16 places; minimap 198x108
+PASS liner-voyage (19.4s)
+     lap 20.4 min, call, astern 6kn, ahead 21kn, call, ahead 21kn · lap order: HARBOR POINT > SUNSET PIER > MONARCH ISLE > SUNSET PIER > OCEAN DRIVE > PALM KEYS BEACH > OPEN SEA > HARBOR POINT; top 21 kn, 7.6 kn in the sound; started on leg 0
+PASS living-key (36.5s)
+     legs avenue,ring,stop,exit ring distance min 78 {"spawned":4,"handedBack":4,"dropOffs":2}
+PASS living-medics (46.1s)
+     start (revive true): jobs 1, revivable true, last null · ended after 32 s: jobs 1, {"why":"done","outcome":"revived","seconds":33} · revive run: arrived after 18.6 s, phases driving treat outcome, last {"why":"done","outcome":"revived","seconds":33} · start (revive false): jobs 2, revivable false, last {"why":"done","outcome":"revived","seconds":33} · ended after 44 s: jobs 2, {"why":"done","outcome":"lost","seconds":43} · lost run: arrived after 26.8 s, last {"why":"done","outcome":"lost","seconds":43}
+PASS living-sirens (20.3s)
+     car: lane 25 → 32, down to 9 km/h; ambulance never under 54 km/h, by after 1.5 s; then back within 0 of its lane line, up to 39 km/h
+PASS living-snatch (25.3s)
+     caught: {"kind":"snatch","why":"caught","seconds":6,"reward":120}, cash 0 → 120, wanted 0 · left alone: {"kind":"snatch","why":"escaped","seconds":20,"reward":0}
+PASS living-traffic (42.1s)
+     Broadway 08:12: target 45, near 45, moving 34, pool 52, vehicles 304, {"muscle":4,"luxury":2,"coupe":4,"sedan":12,"pickup":5,"van":2,"taxi":5,"truck":3,"supercar":1,"cruiser":1,"brutini":1,"bike":1,"suv":2,"roadster":2} · Broadway mix: {"taxi":77,"sedan":80,"truck":21,"hotrod":4,"van":45,"sport":11,"suv":25,"coupe":21,"bike":9,"pickup":25,"limousine":5,"brutini":3,"luxury":18,"yamasaki":4,"muscle":18,"roadster":7,"cruiser":14,"rally":5,"cavalino":3,"supercar":2,"chevette":2,"dolcati":1} · 20 s on: near 45, moving 20, stopped 25 {"signal":11,"other":5,"queue":8,"junction":1}, idle30 0, stream 0.3 ms · THE RECLAMATION: target 37, near 35, trucks/pickups/vans 167 of 400 · EXCHANGE DISTRICT 03:00: target 9, near 9, pool 23, {"pickup":2,"sport":1,"bike":1,"cavalino":1,"muscle":2,"taxi":2} · physics 1.622 ms per 60 fps frame with 275 vehicles
+PASS lockpick (71.5s)
+     hold 0: progress 0.01 pins 0 working trunk, 0.20 game s · hold 1: progress 0.05 pins 0 working trunk, 0.43 game s · hold 2: progress 0.09 pins 0 working trunk, 0.69 game s · hold 3: progress 0.12 pins 0 working trunk, 0.86 game s · hold 4: progress 0.17 pins 0 working trunk, 1.10 game s · hold 5: progress 0.27 pins 1 working trunk, 1.62 game s · hold 6: progress 0.36 pins 1 working trunk, 2.05 game s · hold 7: progress 0.48 pins 2 working trunk, 2.64 game s · hold 8: progress 0.58 pins 2 working trunk, 3.17 game s · hold 9: progress 0.7 pins 3 working trunk, 3.80 game s · hold 10: progress 0.87 pins 4 working trunk, 4.68 game s · hold 11: progress 0.98 pins 4 working trunk, 5.27 game s · hold 12: progress 1 pins 5 working trunk, 5.85 game s · door hold 0: locked true, 0.55 game s · door hold 1: locked true, 1.26 game s · door hold 2: locked true, 2.07 game s · door hold 3: locked true, 2.85 game s · door hold 4: locked true, 3.71 game s · door hold 5: locked false, 4.42 game s
+PASS marea-talk (30.4s)
+PASS markers-rings (26.9s)
+PASS minimap-clutter (51.0s)
+     Midtown on foot: 6 blips, 2 labels at most · the docks: 5 blips, 1 labels at most · Monarch Isle: 5 blips, 1 labels at most · Sunset Pier: 5 blips, 0 labels at most · Midtown driving: 8 blips, 1 labels at most · five stars: 13 blips, 2 labels at most
+PASS mission-abandon (18.6s)
+PASS mission-brief (27.1s)
+PASS mission-card-keys (20.4s)
+PASS mission-card-subtitle (25.5s)
+PASS mission-retry-save (53.6s)
+     demo 1–4 and replay retry persistence; locked/invalid/legacy saves; completion/new-game clearing; inventory/reward unchanged · reload kept pistol 4/23; restart began stage zero with the existing 12/60 job-start restock
+PASS mission-retry (29.2s)
+PASS mission1-bay (137.9s)
+     prompt run: truck health % at the barrier 53 · hesitant run: truck health % at the barrier 33
+PASS mission1-depot (42.6s)
+PASS mission1-truck (25.3s)
+     truck y (north kerb lane) 609 · truck x (inside the block) 1830 · truck y (north kerb lane) 609 · truck x (inside the block) 1830 · truck y (north kerb lane) 609 · truck x (inside the block) 1830
+PASS mission2-ambulance (54.5s)
+PASS mission2-cones (36.9s)
+     suspicion after 1 s seen at 60 units 6.9 · walking 1 s in the cone 4.7 · suspicion after 3 s at the far end of the cone 11.3
+PASS mission2-getaway (47.2s)
+PASS mission2-paths (36.6s)
+PASS mission2-poison (50.4s)
+PASS mission2-touch-run (27.9s)
+PASS mission3-summit (39.0s)
+     stage 0 points at the summit 7760
+PASS mission34-lifecycle (34.5s)
+     production mission functions: carrier protection restored, pre-bag wreck failure, recovered bag survives wreck/death, corpse keys retained, pre-papers alarm fails and post-papers escape retained · meeting update loop: 30 identical target snapshots cause one HUD refresh; moving x, roof height and wanted text still refresh · god off; public frontier set to three prior jobs; summit climb bypassed with teleport, real dig/load key and actual retry; named Kessler wreck fixture fails/restarts; real jeep boarding before ID fails the blown-cover job
+PASS mission4-alert (85.8s)
+PASS mission4-kessler (93.4s)
+     brought on 1199 units from his kerb
+PASS mission4-paths (71.4s)
+     quiet trunk open=true after 5.41 game seconds
+PASS mission4-tail (64.6s)
+FAIL monarch-garages (128.4s): VILLA MIRAMAR: stuck on the way to the side gate: {"reason":"time","seconds":15,"x":9056,"y":-3845,"speed":-1,"hp":250,"left":28,"wanted":0}
+PASS monarch-one (21.5s)
+     Monarch One to the top of its mast (m) 302
+FAIL mounted-guns (41.7s): heli: the bystander was not hit: {"car":{"hp":140,"x":480,"y":7020,"d":220},"person":{"hp":100,"x":480,"y":6995,"d":195}}
+PASS north-point-key (39.2s)
+     heard: Forty floors of offices and a hotel on top of Mercury. | And a waiting list for every one.
+PASS nudge-aside (28.2s)
+     down 23 units off the car's line (victim placed at 506,4600)
+PASS parachute-cloud (80.8s)
+     pulled at 641.4 m in cloud 337.5-830.1 m (immersion 0.69) · pull to fully open in cloud (s) 4.67 · height lost opening in cloud (m) 191 · opening shock in cloud (g) 3.78 · open at 449.9 m, immersion 1 · forecast at the pull 191.7 m
+PASS parachute-deploy (160.4s)
+     cue: height a pull at terminal speed needs (m) 198.5 · pilot chute: throw, inflation, pin and bag lift (s) 0.83 · pull to line stretch (s) 1.8 · fall while the lines pay out (m) 50.200000000000045 · line stretch snatch (g) 1.88 · snivel (s) 1.9999999999999998 · pull to fully open (s) 4.7 · height lost opening (m) 198 · opening shock (g) 3.78 · forecast minus actual height to a landable rate (m) 0 · terminal pull at 598.8 m: line stretch 1.8 s, open 4.7 s and 198 m later, 3.78 g; forecast 198.5 m, actual 198.5 m at 4.77 s · 80 m pull: hit at 52 m/s (dead) · soon: pulled at 414.9 m (needs 199.8 m) · now: pulled at 281.1 m (needs 200.6 m)
+PASS parachute-liner (35.5s)
+     landed on her LIDO DECK at 17.9 kn, 0.6 m/s across the deck · head-on: 16 m/s across her deck at 14.4 kn, hurt · steered down onto her LIDO DECK at 14.4 kn, 8.7 m/s across the deck · yacht: down on the SUN DECK
+PASS parachute (34.7s)
+     no canopy: hit at 44.8 m/s · opened at 105 m · opened at 17.1 m: hit at 43 m/s
+PASS parked-bridge-efficiency (19.9s)
+     {"shut":{"checked":3000,"changed":0,"diffs":{}},"open":{"checked":2980,"changed":0,"diffs":{}}}
+PASS parked-vehicle-hits (34.2s)
+PASS pause-restart (30.4s)
+PASS payphones-islands (20.9s)
+     northbank: 9 (armory, harbor-north, cruise, old-quarter, financial, midtown, eastside, bayside, southport) · palmkeys: 3 (keys-north, keys-sound, keys-south) · ridgeline: 3 (stonecreek, northridge, eastgate) · monarch: 2 (monarch-1, monarch-2) · oceanview: 2 (oceanview, oceanview-east) · coralcoast: 2 (palmshore, palmshore-south) · sunsetisle: 2 (pier-gate, pier-drive) · sentinel: 2 (causeway, causeway-west) · northpointkey: 2 (key-forecourt, key-circle)
+PASS pedestrian-awareness (83.9s)
+     toward 40 km/h, 27 m: noticed 100% (eyes 10, ears 0), dodged 90% (cleared 90%), hit 10% (0 without a cry) {"sidestep":9,"freeze":1} · away 40 km/h, 27 m: noticed 10% (eyes 0, ears 1), dodged 0% (cleared 0%), hit 100% (9 without a cry) {"none":9,"pending":1} · away 40 km/h, 27 m, horn: noticed 80% (eyes 0, ears 8), dodged 40% (cleared 30%), hit 70% (2 without a cry) {"dodge":3,"none":2,"late":1,"back":1,"pending":2,"freeze":1} · side 40 km/h, 27 m: noticed 100% (eyes 9, ears 1), dodged 80% (cleared 80%), hit 10% (0 without a cry) {"dodge":7,"pending":1,"sidestep":1,"passed":1} · toward 80 km/h, 41 m: noticed 100% (eyes 10, ears 0), dodged 90% (cleared 80%), hit 20% (0 without a cry) {"dodge":9,"freeze":1} · toward 40 km/h, 5 m: noticed 100% (eyes 10, ears 0), dodged 0% (cleared 0%), hit 100% (0 without a cry) {"pending":10} · toward 80 km/h, 12 m: noticed 100% (eyes 10, ears 0), dodged 0% (cleared 0%), hit 100% (0 without a cry) {"pending":10} · toward 40 km/h, texting: noticed 90% (eyes 8, ears 1), dodged 10% (cleared 10%), hit 90% (1 without a cry) {"dodge":1,"none":1,"pending":8} · toward 40 km/h, same gap: noticed 100% (eyes 10, ears 0), dodged 80% (cleared 80%), hit 20% (0 without a cry) {"freeze":2,"dodge":8} · rates: {"toward 40 km/h, 27 m":{"noticed":1,"tried":0.9,"cleared":0.9,"hit":0.1,"silent":0,"outcomes":{"sidestep":9,"freeze":1}},"away 40 km/h, 27 m":{"noticed":0.1,"tried":0,"cleared":0,"hit":1,"silent":0.9,"outcomes":{"none":9,"pending":1}},"away 40 km/h, 27 m, horn":{"noticed":0.8,"tried":0.4,"cleared":0.3,"hit":0.7,"silent":0.2,"outcomes":{"dodge":3,"none":2,"late":1,"back":1,"pending":2,"freeze":1}},"side 40 km/h, 27 m":{"noticed":1,"tried":0.8,"cleared":0.8,"hit":0.1,"silent":0,"outcomes":{"dodge":7,"pending":1,"sidestep":1,"passed":1}},"toward 80 km/h, 41 m":{"noticed":1,"tried":0.9,"cleared":0.8,"hit":0.2,"silent":0,"outcomes":{"dodge":9,"freeze":1}},"toward 40 km/h, 5 m":{"noticed":1,"tried":0,"cleared":0,"hit":1,"silent":0,"outcomes":{"pending":10}},"toward 80 km/h, 12 m":{"noticed":1,"tried":0,"cleared":0,"hit":1,"silent":0,"outcomes":{"pending":10}},"toward 40 km/h, texting":{"noticed":0.9,"tried":0.1,"cleared":0.1,"hit":0.9,"silent":0.1,"outcomes":{"dodge":1,"none":1,"pending":8}},"toward 40 km/h, same gap":{"noticed":1,"tried":0.8,"cleared":0.8,"hit":0.2,"silent":0,"outcomes":{"freeze":2,"dodge":8}}}
+PASS player-jump (27.6s)
+     jump height (m) 0.5 · air time (s) 0.639 · villa garden wall (m) 1.35 · feet back on the ground (units) 0 · sea railing at 3417,1152.5: landed 3466,1153; {"from":[3411,1153],"to":[3448,1153],"metres":4.62,"maxClearance":1.5,"vault":true,"into":"water"} · effort: {"sample":"player-jump-grunt","loaded":true,"sound":true,"asked":6,"played":6,"soft":2,"last":{"soft":true,"rate":1.082,"level":0.17,"at":16.17}} · speed 54.2 -> 11.1
+PASS police-circus (28.6s)
+     from 7164,-2560: 613 → 115 units in 8 s, 0 reversals · from 7236,-2600: 646 → 111 units in 8 s, 0 reversals · from 7236,-3330: 651 → 122 units in 8 s, 0 reversals · from 7164,-3330: 593 → 124 units in 8 s, 0 reversals
+PASS police-night-sight (14.4s)
+     day {"sees":true,"range":440}, night at 350 {"sees":false,"range":317}, night at 240 {"sees":true,"range":317} · night in a car: sight 405
+PASS police-radio (22.9s)
+     radio: SUSPECT SWITCHED · NOW IN A BLUE PICKUP
+PASS police-search-clock (23.5s)
+     holding: {"active":true,"remaining":5,"clock":"holding","shown":false,"lastSeen":{"x":1152,"y":1600}} · zone: 4.7 → {"active":true,"remaining":4.2,"clock":"zone","shown":false,"lastSeen":{"x":1152,"y":1600}} · running: 3.2 → {"active":true,"remaining":1.7,"clock":"running","shown":true,"lastSeen":{"x":1152,"y":1600}} · after: stars 0 {"active":false,"remaining":0,"clock":"off","shown":false,"lastSeen":{"x":1152,"y":1600}}
+PASS police-witness (42.6s)
+     call started, 6.1 s long, 222 units off
+SKIP render-effects (15.9s): Requires WebGL: run with --render
+PASS respray-beacon (16.6s)
+     beacon: {"shop":"EASTSIDE GARAGE","x":1296,"y":2060,"altitude":44} · arrow not over the door 1296 · nearest shop 96 m: {"shop":"EASTSIDE GARAGE","x":1296,"y":2060,"altitude":44}
+PASS respray-lose-police (44.4s)
+     chase: 2 stars, 3 patrols, 2 officers, seen true · prompt: RESPRAY · $300 · COPS WATCHING · seen job: {"shop":"eastside","name":"EASTSIDE GARAGE","service":"full","label":"RESPRAY","vehicleClass":"SALOON","respray":300,"repair":0,"charged":300,"cashBefore":5000,"cashAfter":4700,"colorFrom":"#b9bdc1","colorTo":"#c2b3a1","seenEntering":true,"starsBefore":2,"starsAfter":2,"cleared":false,"skipped":false} · south job: {"shop":"south","name":"SOUTH BANK MOTOR WORKS","service":"full","label":"RESPRAY + REPAIR","vehicleClass":"SALOON","respray":300,"repair":220,"charged":440,"cashBefore":4700,"cashAfter":4260,"colorFrom":"#c2b3a1","colorTo":"#736244","seenEntering":false,"starsBefore":2,"starsAfter":0,"cleared":true,"skipped":false}
+PASS restart-carriers (31.7s)
+PASS ride-look (37.3s)
+     pointer at the left edge: yaw (deg) -118.3 · pointer at the left edge: pitch (deg) 0 · pointer at the right edge: yaw (deg) 118.2 · pointer at the top: pitch (deg) 48.8 · pointer at the top: yaw (deg) 0 · pointer at the bottom: pitch (deg) -58.6 · pointer back at the centre: yaw (deg) 0 · pointer back at the centre: pitch (deg) 0 · inside the dead zone: yaw (deg) 0 · half way to the right edge: yaw (deg, eased) 36.7 · a tenth of a second into a turn: yaw (deg) 36.1 · outside view, pointer left: camera yaw (deg) -59.1 · front seat, pointer left: yaw (deg) -118.2 · front seat, pointer left: camera yaw (deg) -118.2 · front seat, pointer at the centre: yaw (deg) 0 · right stick up-right: yaw (deg) 84.8 · right stick up-right: pitch (deg) 35.3 · right stick let go: yaw (deg) 0
+PASS rider-falls (26.9s)
+     25 km/h: hp 97; 45 km/h: hp 79 (into the wall at 39 km/h)
+PASS road-signs (23.3s)
+     12 boards, nearest to a road: 14 units · slept 6.0 h at the SUNSET MOTEL door
+PASS roof-lifts (57.7s)
+     POLICE HQ: east side, 120 up · OFFICES · LINDEN ST: south side, 102 up · OFFICES · EXCHANGE ST: south side, 121 up · OFFICES · HARBOR AVE: north side, 115 up · OFFICES · ARMORY ST: south side, 93 up · OFFICES · MARINA RD: south side, 92 up · MONARCH ONE: south side, 2131 up
+PASS second-run-over (28.9s)
+     harm: sedan 6 km/h 12.3/16.1/20.7, 30 km/h 28.2/36.9/47.5; truck 8 km/h 37.9; bicycle 20 km/h 17.4 · two passes: dying 1.5 s after the second at 29 km/h, 2 stains on the car · 6 km/h over someone down: hp 30 -> 10.9, still down 3.1
+PASS sky-meeting-talk (32.2s)
+     the whole meeting: 41 presses, 12.3 s of game time; stages waiting > greeted > lift > terrace > seated > drinks > handover > done
+PASS sky-meeting (52.3s)
+     arrival: {"him":{"name":"ANTON VARGA","x":4312,"y":-3845,"altitude":1409.9,"pose":null,"sitting":false,"hidden":false,"hand":null,"hp":100,"speech":"This way. I keep a table by the glass."},"you":{"x":4302,"y":-3847,"altitude":1409.9,"roof":"evolution"}}
+PASS soundscape (32.8s)
+     Midtown street enclosure 0.446 · steps in 2 s of running 9 · Midtown enclosure 0.446, summit echo 0.18, 9 steps in 2 s
+PASS sun-gradual (44.7s)
+     day: max 1.693 deg/min (seen 0.834 at 4:50), lowest 19.882 deg; sleep: {"minutes":360,"seconds":6.03,"maxDegPerFrame":0.293} · a six-hour skip is drawn over seconds 6.03 · dawn skip: {"minutes":240,"seconds":5.03,"maxDegPerFrame":4.039}
+PASS surrender-input (36.3s)
+PASS swim-rescue (36.0s)
+     rescued with 30 hp at -1758,5981
+PASS taxi-ride (35.7s)
+PASS terrace-death (39.0s)
+PASS traffic-pass-parked (37.6s)
+     from 120 back at 30 km/h: out to 27 left of the lane line, by after 2.5 s, the van shoved 0 units · from 52 back at 5 km/h: out to 27 left of the lane line, by after 4 s, the van shoved 0.2 units
+SKIP trail-mud (19.0s): Requires WebGL: run with --render
+PASS trail-trees (26.7s)
+     corridor: 437 forest trees out, 100 thinned, 0 plan trees; closest 7.4 / 13.3 · crawler into the tree at 7616, 2025: stopped at 7597, hp 240 -> 221
+PASS trunk-close (77.6s)
+PASS vehicle-damage-shape (49.3s)
+PASS view-remembered (85.8s)
+PASS voices (27.6s)
+     15 people, 3 women
+SKIP wet-glints (23.4s): Requires WebGL: run with --render
+PASS wheelie-hint (46.6s)
+PASS wheelie (57.8s)
+     sport bike: 16.1° after 1.2 s, looped at 67 km/h · slow page: 0.24 game s per s, keys held 5.0 s · slow page: 0.18 game s per s, keys held 6.8 s · slow page: 0.33 game s per s, keys held 3.6 s · slow page: 0.39 game s per s, keys held 3.1 s · slow page: 0.24 game s per s, keys held 5.0 s
+PASS witnesses-monarch (61.4s)
+     call began 4.5 s after the shots, 152 units off, 5.6 s long; star at 10 s · call length 5.6 · nearest unit 462 → 114 units
+PASS witnesses-venues (29.1s)
+     venue call {"x":4124,"y":-3712,"kind":"gunfire","about":"player","seconds":0.7,"callSeconds":7,"reported":false,"offstage":true,"hidden":false,"waiting":false,"line":"Police? I think those were shots.","d":223} star at 10.5 stats {"banked":2,"reports":1,"calls":1,"dropped":0,"silenced":0,"seenByPolice":0,"heardByPolice":0,"stumbledOn":0,"bodiesFound":0,"venueCalls":1,"crowdReports":1}
+PASS world-edge-land (32.8s)
+     drove east on land from 3003 units off the line, fastest 15 m/s east; no card
+PASS world-edge (123.5s)
+     three game seconds 2.999999999999999 · resumes after the pause 1 · missile reached a plane flying away in 2.5 s · boat sailing west from Palm Keys: countdown after 10.5 s, 395 m out
+PASS world-reset (40.2s)
+PASS wreck-limit (195.7s)
+     timeouts ok · wreck cap ok: 16 · retired {"total":17,"wrecks":12,"abandoned":5,"byTimeout":3,"byCap":14}; world 16 wrecks, 24 abandoned, 333 vehicles; pass 0 ms
+PASS demo-gating (23.4s)
+PASS demo-free-roam-markers (76.8s)
+PASS mission-replay-frontier (76.4s)
+109/115 passed, 4 skipped, 2 failed in 5778s

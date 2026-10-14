@@ -1,0 +1,1333 @@
+{
+  "label": "before",
+  "htmlSha256": "ccf195e35e4ae7b87d09133c317abcb1b54ddb2d3f3e9d30acb5923b6daeee92",
+  "fixture": {
+    "seed": 1,
+    "origin": [
+      680,
+      4520
+    ],
+    "heading": 0,
+    "viewport": [
+      1000,
+      700
+    ],
+    "inspect": [
+      65,
+      18,
+      8
+    ],
+    "closeUp": 10,
+    "crop": [
+      170,
+      90,
+      660,
+      460
+    ],
+    "noticesWallClock": 6500,
+    "boardingDrawFirst": true,
+    "portraitsOnly": true
+  },
+  "cases": [
+    {
+      "key": "s3-offroad",
+      "id": 314,
+      "model": {
+        "id": 314,
+        "type": "suv",
+        "draws": 13,
+        "casters": 3,
+        "triangles": 4406,
+        "heaviest": [
+          [
+            "MeshStandardMaterial",
+            743
+          ],
+          [
+            "MeshPhysicalMaterial",
+            736
+          ],
+          [
+            "MeshPhysicalMaterial",
+            657
+          ],
+          [
+            "MeshStandardMaterial",
+            429
+          ],
+          [
+            "MeshStandardMaterial",
+            425
+          ],
+          [
+            "MeshStandardMaterial",
+            417
+          ]
+        ],
+        "asset": "Chevrolet Suburban (Sheriff Cruiser, civilian trim)",
+        "cabin": {
+          "hip": [
+            0.321,
+            0.512,
+            -0.448
+          ],
+          "door": [
+            0.221,
+            1.186
+          ],
+          "floor": 0.409,
+          "floorWorldY": 0.422,
+          "pedalHeight": 0.509,
+          "recline": 0.3,
+          "rear": true,
+          "two": false,
+          "cabinTriangles": 324,
+          "seated": 0,
+          "headroom": 0.02,
+          "behind": 2.172
+        },
+        "panes": {
+          "left": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "front": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "right": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "rear": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "roof": {
+            "drawn": true,
+            "depthWrite": true
+          }
+        },
+        "badge": null
+      },
+      "vehicle": {
+        "id": 314,
+        "type": "suv",
+        "x": 680,
+        "y": 4520,
+        "a": 0,
+        "altitude": 0
+      },
+      "camera": {
+        "zoom": 10,
+        "target": 10,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 10,
+        "aim": 10,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 6,
+        "personPx": 131,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.22,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "cabins": [
+        {
+          "type": "suv",
+          "body": null,
+          "hip": [
+            0.321,
+            0.512
+          ],
+          "recline": 0.3,
+          "fitMs": 1.6,
+          "clear": {
+            "man": 0.02,
+            "woman": 0.084,
+            "player": 0.103,
+            "avatar": "Male_Adult_04",
+            "avatarRoom": 0.033
+          },
+          "roof": {
+            "man": 0.02,
+            "woman": 0.084,
+            "player": 0.103
+          },
+          "through": [],
+          "key": "suv",
+          "seat": [
+            0.321,
+            0.512,
+            0.448,
+            0.25,
+            1.029
+          ],
+          "gameSeat": [
+            0.321,
+            0.512,
+            0.448,
+            0.25,
+            1.029
+          ],
+          "seatGap": 0
+        }
+      ]
+    },
+    {
+      "key": "s2-suv",
+      "id": 337,
+      "model": {
+        "id": 337,
+        "type": "suv",
+        "draws": 13,
+        "casters": 3,
+        "triangles": 4406,
+        "heaviest": [
+          [
+            "MeshStandardMaterial",
+            743
+          ],
+          [
+            "MeshPhysicalMaterial",
+            736
+          ],
+          [
+            "MeshPhysicalMaterial",
+            657
+          ],
+          [
+            "MeshStandardMaterial",
+            429
+          ],
+          [
+            "MeshStandardMaterial",
+            425
+          ],
+          [
+            "MeshStandardMaterial",
+            417
+          ]
+        ],
+        "asset": "Chevrolet Suburban (Sheriff Cruiser, civilian trim)",
+        "cabin": {
+          "hip": [
+            0.321,
+            0.512,
+            -0.448
+          ],
+          "door": [
+            0.221,
+            1.186
+          ],
+          "floor": 0.409,
+          "floorWorldY": 0.422,
+          "pedalHeight": 0.509,
+          "recline": 0.3,
+          "rear": true,
+          "two": false,
+          "cabinTriangles": 324,
+          "seated": 0,
+          "headroom": 0.02,
+          "behind": 2.172
+        },
+        "panes": {
+          "left": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "front": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "right": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "rear": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "roof": {
+            "drawn": true,
+            "depthWrite": true
+          }
+        },
+        "badge": null
+      },
+      "vehicle": {
+        "id": 337,
+        "type": "suv",
+        "x": 680,
+        "y": 4520,
+        "a": 0,
+        "altitude": 0
+      },
+      "camera": {
+        "zoom": 10,
+        "target": 10,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 10,
+        "aim": 10,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 6,
+        "personPx": 131,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.22,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "cabins": [
+        {
+          "type": "suv",
+          "body": null,
+          "hip": [
+            0.321,
+            0.512
+          ],
+          "recline": 0.3,
+          "fitMs": 1.6,
+          "clear": {
+            "man": 0.02,
+            "woman": 0.084,
+            "player": 0.103,
+            "avatar": "Male_Adult_04",
+            "avatarRoom": 0.033
+          },
+          "roof": {
+            "man": 0.02,
+            "woman": 0.084,
+            "player": 0.103
+          },
+          "through": [],
+          "key": "suv",
+          "seat": [
+            0.321,
+            0.512,
+            0.448,
+            0.25,
+            1.029
+          ],
+          "gameSeat": [
+            0.321,
+            0.512,
+            0.448,
+            0.25,
+            1.029
+          ],
+          "seatGap": 0
+        }
+      ]
+    },
+    {
+      "key": "s1-jimny",
+      "id": 348,
+      "model": {
+        "id": 348,
+        "type": "suv",
+        "draws": 13,
+        "casters": 3,
+        "triangles": 4406,
+        "heaviest": [
+          [
+            "MeshStandardMaterial",
+            743
+          ],
+          [
+            "MeshPhysicalMaterial",
+            736
+          ],
+          [
+            "MeshPhysicalMaterial",
+            657
+          ],
+          [
+            "MeshStandardMaterial",
+            429
+          ],
+          [
+            "MeshStandardMaterial",
+            425
+          ],
+          [
+            "MeshStandardMaterial",
+            417
+          ]
+        ],
+        "asset": "Chevrolet Suburban (Sheriff Cruiser, civilian trim)",
+        "cabin": {
+          "hip": [
+            0.321,
+            0.512,
+            -0.448
+          ],
+          "door": [
+            0.221,
+            1.186
+          ],
+          "floor": 0.409,
+          "floorWorldY": 0.422,
+          "pedalHeight": 0.509,
+          "recline": 0.3,
+          "rear": true,
+          "two": false,
+          "cabinTriangles": 324,
+          "seated": 0,
+          "headroom": 0.02,
+          "behind": 2.172
+        },
+        "panes": {
+          "left": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "front": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "right": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "rear": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "roof": {
+            "drawn": true,
+            "depthWrite": true
+          }
+        },
+        "badge": null
+      },
+      "vehicle": {
+        "id": 348,
+        "type": "suv",
+        "x": 680,
+        "y": 4520,
+        "a": 0,
+        "altitude": 0
+      },
+      "camera": {
+        "zoom": 10,
+        "target": 10,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 10,
+        "aim": 10,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 6,
+        "personPx": 131,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.22,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "cabins": [
+        {
+          "type": "suv",
+          "body": null,
+          "hip": [
+            0.321,
+            0.512
+          ],
+          "recline": 0.3,
+          "fitMs": 1.6,
+          "clear": {
+            "man": 0.02,
+            "woman": 0.084,
+            "player": 0.103,
+            "avatar": "Male_Adult_04",
+            "avatarRoom": 0.033
+          },
+          "roof": {
+            "man": 0.02,
+            "woman": 0.084,
+            "player": 0.103
+          },
+          "through": [],
+          "key": "suv",
+          "seat": [
+            0.321,
+            0.512,
+            0.448,
+            0.25,
+            1.029
+          ],
+          "gameSeat": [
+            0.321,
+            0.512,
+            0.448,
+            0.25,
+            1.029
+          ],
+          "seatGap": 0
+        }
+      ]
+    },
+    {
+      "key": "sheriff",
+      "id": 354,
+      "model": {
+        "id": 354,
+        "type": "police",
+        "draws": 15,
+        "casters": 3,
+        "triangles": 6651,
+        "heaviest": [
+          [
+            "MeshStandardMaterial",
+            2868
+          ],
+          [
+            "MeshPhysicalMaterial",
+            736
+          ],
+          [
+            "MeshPhysicalMaterial",
+            657
+          ],
+          [
+            "MeshStandardMaterial",
+            429
+          ],
+          [
+            "MeshStandardMaterial",
+            425
+          ],
+          [
+            "MeshStandardMaterial",
+            417
+          ]
+        ],
+        "asset": "Chevrolet Suburban Sheriff Cruiser",
+        "cabin": {
+          "hip": [
+            0.331,
+            0.557,
+            -0.436
+          ],
+          "door": [
+            0.231,
+            1.222
+          ],
+          "floor": 0.441,
+          "floorWorldY": 0.453,
+          "pedalHeight": 0.541,
+          "recline": 0.3,
+          "rear": true,
+          "two": false,
+          "cabinTriangles": 918,
+          "seated": 0,
+          "headroom": 0.02,
+          "behind": 2.245
+        },
+        "panes": {
+          "left": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "front": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "right": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "rear": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "roof": {
+            "drawn": true,
+            "depthWrite": true
+          }
+        },
+        "badge": null
+      },
+      "vehicle": {
+        "id": 354,
+        "type": "police",
+        "x": 680,
+        "y": 4520,
+        "a": 0,
+        "altitude": 0
+      },
+      "camera": {
+        "zoom": 10,
+        "target": 10,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 10,
+        "aim": 10,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 6,
+        "personPx": 131,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.22,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      }
+    }
+  ],
+  "errors": [],
+  "assetCars": {
+    "loaded": true,
+    "atlas": true,
+    "models": {
+      "sedan": {
+        "title": "Fairheaven LT '80",
+        "kind": "car",
+        "triangles": 10067,
+        "dims": [
+          5.001,
+          1.349,
+          1.832
+        ],
+        "wheels": 4,
+        "belt": 0.8727,
+        "roof": 1.2991,
+        "paintTexture": false
+      },
+      "taxi": {
+        "title": "Canyon '75 Taxi",
+        "kind": "car",
+        "triangles": 10340,
+        "dims": [
+          5.307,
+          1.827,
+          2.131
+        ],
+        "wheels": 4,
+        "belt": 1.1593,
+        "roof": 1.622,
+        "paintTexture": true
+      },
+      "coupe": {
+        "title": "Kiri '86",
+        "kind": "car",
+        "triangles": 10608,
+        "dims": [
+          4.314,
+          1.32,
+          1.761
+        ],
+        "wheels": 4,
+        "belt": 0.8646,
+        "roof": 1.3174,
+        "paintTexture": false
+      },
+      "sport": {
+        "title": "JDM Experimental Sportcar '90",
+        "kind": "car",
+        "triangles": 8866,
+        "dims": [
+          4.438,
+          1.155,
+          1.97
+        ],
+        "wheels": 4,
+        "belt": 0.7888,
+        "roof": 1.113,
+        "paintTexture": false
+      },
+      "supercar": {
+        "title": "Italian Supercar '84",
+        "kind": "car",
+        "triangles": 11433,
+        "dims": [
+          4.555,
+          1.18,
+          2.026
+        ],
+        "wheels": 4,
+        "belt": 0.8046,
+        "roof": 1.1213,
+        "paintTexture": false
+      },
+      "luxury": {
+        "title": "80 American Sedan",
+        "kind": "car",
+        "triangles": 9256,
+        "dims": [
+          5.2,
+          1.497,
+          1.974
+        ],
+        "wheels": 4,
+        "belt": 1.0055,
+        "roof": 1.4461,
+        "paintTexture": false
+      },
+      "police": {
+        "title": "80 American Police Sedan",
+        "kind": "car",
+        "triangles": 9993,
+        "dims": [
+          4.98,
+          1.589,
+          1.875
+        ],
+        "wheels": 4,
+        "belt": 0.9166,
+        "roof": 1.3328,
+        "paintTexture": false
+      },
+      "police_charger": {
+        "title": "80s Generic Police Car",
+        "kind": "car",
+        "triangles": 10757,
+        "dims": [
+          5.045,
+          1.574,
+          1.832
+        ],
+        "wheels": 4,
+        "belt": 0.8733,
+        "roof": 1.3005,
+        "paintTexture": false
+      },
+      "police_suv": {
+        "title": "Chevrolet Suburban Sheriff Cruiser",
+        "kind": "car",
+        "triangles": 6611,
+        "dims": [
+          6.584,
+          2.159,
+          2.645
+        ],
+        "wheels": 4,
+        "belt": 1.3693,
+        "roof": 1.9515,
+        "paintTexture": false
+      },
+      "muscle": {
+        "title": "American Muscle '71",
+        "kind": "car",
+        "triangles": 9801,
+        "dims": [
+          4.89,
+          1.331,
+          2.088
+        ],
+        "wheels": 4,
+        "belt": 0.8928,
+        "roof": 1.2787,
+        "paintTexture": false
+      },
+      "truck": {
+        "title": "'90 Light Commercial Truck",
+        "kind": "car",
+        "triangles": 10442,
+        "dims": [
+          10,
+          2.843,
+          2.604
+        ],
+        "wheels": 4,
+        "belt": 1.3053,
+        "roof": 2.085,
+        "paintTexture": false
+      },
+      "flatbed": {
+        "title": "'90 Light Commercial Truck",
+        "kind": "car",
+        "triangles": 8791,
+        "dims": [
+          9.5,
+          2.843,
+          2.604
+        ],
+        "wheels": 4,
+        "belt": 1.3053,
+        "roof": 2.085,
+        "paintTexture": false
+      },
+      "pickup": {
+        "title": "Compact Pickup '78",
+        "kind": "car",
+        "triangles": 11033,
+        "dims": [
+          4.6,
+          1.357,
+          1.708
+        ],
+        "wheels": 4,
+        "belt": 0.8622,
+        "roof": 1.2036,
+        "paintTexture": false
+      },
+      "suv": {
+        "title": "Chevrolet Suburban (Sheriff Cruiser, civilian trim)",
+        "kind": "car",
+        "triangles": 4406,
+        "dims": [
+          6.584,
+          2.159,
+          2.645
+        ],
+        "wheels": 4,
+        "belt": 1.3693,
+        "roof": 1.9515,
+        "paintTexture": false
+      },
+      "limousine": {
+        "title": "80 American Sedan (stretched)",
+        "kind": "car",
+        "triangles": 9183,
+        "dims": [
+          8.8,
+          1.497,
+          1.974
+        ],
+        "wheels": 4,
+        "belt": 1.0055,
+        "roof": 1.4461,
+        "paintTexture": false
+      },
+      "roadster": {
+        "title": "Chrysler Sebring Convertible",
+        "kind": "car",
+        "triangles": 16223,
+        "dims": [
+          4.9,
+          1.305,
+          1.915
+        ],
+        "wheels": 4,
+        "belt": 0.9136,
+        "roof": 1.2599,
+        "paintTexture": false
+      },
+      "bus": {
+        "title": "Generic Town Bus",
+        "kind": "car",
+        "triangles": 17521,
+        "dims": [
+          12,
+          2.969,
+          2.924
+        ],
+        "wheels": 4,
+        "belt": 1.5096,
+        "roof": 2.8475,
+        "paintTexture": false
+      },
+      "ambulance": {
+        "title": "ambulance car",
+        "kind": "car",
+        "triangles": 11145,
+        "dims": [
+          6.7,
+          2.552,
+          2.388
+        ],
+        "wheels": 4,
+        "belt": 1.2869,
+        "roof": 2.011,
+        "paintTexture": true
+      },
+      "army_jeep": {
+        "title": "HMMWV M998A1 (soft top)",
+        "kind": "special",
+        "triangles": 21900,
+        "dims": [
+          4.6,
+          1.838,
+          2.508
+        ],
+        "wheels": 4,
+        "belt": null,
+        "roof": null,
+        "paintTexture": false
+      },
+      "army_truck": {
+        "title": "Military Truck 1/2 Ton (M35)",
+        "kind": "special",
+        "triangles": 11371,
+        "dims": [
+          6.7,
+          3.231,
+          2.727
+        ],
+        "wheels": 6,
+        "belt": null,
+        "roof": null,
+        "paintTexture": false
+      },
+      "cruiser": {
+        "title": "Harley-Davidson Seventy-Two HD FXT 2015",
+        "kind": "moto",
+        "triangles": 10404,
+        "dims": [
+          2.473,
+          1.406,
+          1.043
+        ],
+        "wheels": 2,
+        "belt": null,
+        "roof": null,
+        "paintTexture": false
+      },
+      "bike": {
+        "title": "Honda CB 750 F Super Sport 1970",
+        "kind": "moto",
+        "triangles": 10438,
+        "dims": [
+          2.166,
+          1.323,
+          0.98
+        ],
+        "wheels": 2,
+        "belt": null,
+        "roof": null,
+        "paintTexture": false
+      },
+      "kr500": {
+        "title": "KTM Dirt Bike",
+        "kind": "moto",
+        "triangles": 13472,
+        "dims": [
+          2.187,
+          1.296,
+          0.932
+        ],
+        "wheels": 2,
+        "belt": null,
+        "roof": null,
+        "paintTexture": false
+      }
+    },
+    "kits": [
+      "coupe:35.20:14.41",
+      "sedan:38.80:14.82",
+      "suv:39.60:15.59",
+      "supercar:37.60:16.01"
+    ]
+  },
+  "cabins": {
+    "through": 0,
+    "cars": [
+      {
+        "type": "coupe",
+        "body": null,
+        "hip": [
+          -0.282,
+          0.362
+        ],
+        "recline": 0.4,
+        "fitMs": 52.3,
+        "clear": {
+          "man": 0.02,
+          "woman": 0.082,
+          "player": 0.103,
+          "avatar": "Female_Party_02",
+          "avatarRoom": 0.032
+        },
+        "roof": {
+          "man": 0.02,
+          "woman": 0.084,
+          "player": 0.103
+        },
+        "through": [],
+        "key": "coupe",
+        "seat": [
+          -0.282,
+          0.362,
+          0.414,
+          0.35,
+          0.882
+        ],
+        "gameSeat": [
+          -0.282,
+          0.362,
+          0.414,
+          0.35,
+          0.882
+        ],
+        "seatGap": 0
+      },
+      {
+        "type": "sedan",
+        "body": null,
+        "hip": [
+          -0.318,
+          0.275
+        ],
+        "recline": 0.3,
+        "fitMs": 1.1,
+        "clear": {
+          "man": 0.02,
+          "woman": 0.084,
+          "player": 0.103,
+          "avatar": "Male_Adult_04",
+          "avatarRoom": 0.037
+        },
+        "roof": {
+          "man": 0.02,
+          "woman": 0.084,
+          "player": 0.103
+        },
+        "through": [],
+        "key": "sedan",
+        "seat": [
+          -0.318,
+          0.275,
+          0.426,
+          0.25,
+          0.846
+        ],
+        "gameSeat": [
+          -0.318,
+          0.275,
+          0.426,
+          0.25,
+          0.846
+        ],
+        "seatGap": 0
+      },
+      {
+        "type": "suv",
+        "body": null,
+        "hip": [
+          0.321,
+          0.512
+        ],
+        "recline": 0.3,
+        "fitMs": 1.6,
+        "clear": {
+          "man": 0.02,
+          "woman": 0.084,
+          "player": 0.103,
+          "avatar": "Male_Adult_04",
+          "avatarRoom": 0.033
+        },
+        "roof": {
+          "man": 0.02,
+          "woman": 0.084,
+          "player": 0.103
+        },
+        "through": [],
+        "key": "suv",
+        "seat": [
+          0.321,
+          0.512,
+          0.448,
+          0.25,
+          1.029
+        ],
+        "gameSeat": [
+          0.321,
+          0.512,
+          0.448,
+          0.25,
+          1.029
+        ],
+        "seatGap": 0
+      },
+      {
+        "type": "van",
+        "body": null,
+        "hip": [
+          0.919,
+          0.68
+        ],
+        "recline": 0.3,
+        "fitMs": 0.4,
+        "clear": {
+          "man": 0.152,
+          "woman": 0.143,
+          "player": 0.186,
+          "avatar": "Female_Adult_01",
+          "avatarRoom": 0.093
+        },
+        "roof": {
+          "man": 0.152,
+          "woman": 0.143,
+          "player": 0.186
+        },
+        "through": [],
+        "key": "van",
+        "seat": [
+          0.919,
+          0.68,
+          0.46,
+          0.25,
+          1.1
+        ],
+        "gameSeat": [
+          0.919,
+          0.68,
+          0.46,
+          0.25,
+          1.1
+        ],
+        "seatGap": 0
+      },
+      {
+        "type": "supercar",
+        "body": null,
+        "hip": [
+          -0.268,
+          0.214
+        ],
+        "recline": 0.52,
+        "fitMs": 13.6,
+        "clear": {
+          "man": 0.02,
+          "woman": 0.083,
+          "player": 0.102,
+          "avatar": "Male_Adult_04",
+          "avatarRoom": 0.037
+        },
+        "roof": {
+          "man": 0.02,
+          "woman": 0.083,
+          "player": 0.102
+        },
+        "through": [],
+        "key": "supercar",
+        "seat": [
+          -0.268,
+          0.214,
+          0.46,
+          0.47,
+          0.83
+        ],
+        "gameSeat": [
+          -0.268,
+          0.214,
+          0.46,
+          0.47,
+          0.83
+        ],
+        "seatGap": 0
+      },
+      {
+        "type": "police",
+        "body": null,
+        "hip": [
+          -0.352,
+          0.379
+        ],
+        "recline": 0.3,
+        "fitMs": 68.7,
+        "clear": {
+          "man": 0.02,
+          "woman": 0.084,
+          "player": 0.103,
+          "avatar": "Male_Adult_04",
+          "avatarRoom": 0.037
+        },
+        "roof": {
+          "man": 0.02,
+          "woman": 0.084,
+          "player": 0.103
+        },
+        "through": [],
+        "key": "law:crownvic",
+        "seat": [
+          -0.352,
+          0.379,
+          0.436,
+          0.25,
+          0.939
+        ],
+        "gameSeat": [
+          -0.352,
+          0.379,
+          0.436,
+          0.25,
+          0.939
+        ],
+        "seatGap": 0
+      },
+      {
+        "type": "police",
+        "body": null,
+        "hip": [
+          0.331,
+          0.557
+        ],
+        "recline": 0.3,
+        "fitMs": 7.5,
+        "clear": {
+          "man": 0.02,
+          "woman": 0.084,
+          "player": 0.103,
+          "avatar": "Male_Adult_04",
+          "avatarRoom": 0.033
+        },
+        "roof": {
+          "man": 0.02,
+          "woman": 0.084,
+          "player": 0.103
+        },
+        "through": [],
+        "key": "law:utility",
+        "seat": [
+          0.331,
+          0.557,
+          0.436,
+          0.25,
+          1.061
+        ],
+        "gameSeat": [
+          0.331,
+          0.557,
+          0.436,
+          0.25,
+          1.061
+        ],
+        "seatGap": 0.001
+      }
+    ],
+    "driveByArm": {
+      "gap": 0,
+      "window": null,
+      "relDeg": 0,
+      "type": null
+    }
+  },
+  "frameFaults": {
+    "count": 0,
+    "gameTime": 17.17,
+    "drill": null,
+    "kinds": []
+  },
+  "gpu": {
+    "watched": true,
+    "lost": false,
+    "losses": 0,
+    "restores": 0,
+    "reloadPending": false,
+    "lostSeconds": 0
+  }
+}

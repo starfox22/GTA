@@ -22,9 +22,14 @@ door guns 150 deg/s inside `DOOR_GUN_ARC` (20-160 deg off the nose each side; th
 - State lives on the vehicle: `c.arms` (`mounted: kind`, `weapon`, `guns[]` with belt, stowed, `loadAt`,
   `fired`; the door guns' `rel` angles off the nose and the active `side`), plus the tank's own fields
   `turretA`, `turretRate`, `turretAim`, `gunAim`, `cannonRecoilUntil`. No new vehicle fields.
+- Black Hawk control/report angles remain hull-referenced. `c.arms.barrelRel` stores each physical
+  door barrel's lay from its measured mount toward the actual ground target, at the same 150°/s and
+  signed 20–160° stops. This corrects muzzle parallax without snapping or moving mounts. The inactive
+  barrel returns to its rest; older saved arms initialize this state from their control angles.
 - The renderer only reads: `render3d-frame.js` turns any model with `m.tank` (APC, gun jeep) by
   `c.turretA` and recoils `m.barrel` by `cannonRecoilUntil`; `animateHelicopter` swings
-  `m.doorGuns[i]` by `c.arms.rel[i]` (the pivots come from `kit.doorGuns`, heliHawkEquipment).
+  `m.doorGuns[i]` by `c.arms.barrelRel[i]`, with `rel` as a legacy fallback (the pivots come from
+  `kit.doorGuns`, heliHawkEquipment). Projectiles leave along that same physical barrel direction.
 - Muzzle offsets in `MOUNTED_GUNS` (`pivot`, `muzzle`, `side`, `height`) and `DOOR_GUN_MOUNT` match the
   models in base3d-vehicles.js (design units x `modelScale`) and helicopter3d-equipment.js: move
   them together.
@@ -37,4 +42,8 @@ door guns 150 deg/s inside `DOOR_GUN_ARC` (20-160 deg off the nose each side; th
 - Not drawn in the 2D fallback (only the tank's turret is).
 
 Console: `mountedGuns()`, `driveArmed(kind)`, `mountedGunAim(x, y)`, `mountedGunTargets(distance, deg)`
-(docs/console/police.md); test tools/tests/mounted-guns.mjs.
+(docs/console/police.md); test tools/tests/mounted-guns.mjs. `mountedGuns()` additionally reports
+`physicalBarrels` and `physicalLaidError` in degrees for the door guns, without changing existing
+`doors`, `turret`, `aim` or `laidError` fields. `tools/tests/mounted-gun-projection.mjs` loads the
+production lay/fire and projectile functions to check ground convergence, measured muzzle offsets,
+both physical arcs/traverse, moving aim, speed/lifetime, spread, saved state and ground-gun compatibility.

@@ -1,0 +1,50 @@
+{
+  "packSha256": "6e2268924198c8f7531084aee9d9afcdace61d808b979bfef57aeab5cbc4722e",
+  "source": {
+    "assetBuilder": "f8c0d2a8798fabcf3c8818dc6c5cf5001f98e447597440f77c3bc650a24b718b",
+    "animation": "28550d3af9e40e984bd0eb15c212bcbf3353e1b059650a752f94f8f45b00dcd2",
+    "geometry": "808b5aba1021e5ad56a5aed31ba2432276c3de4b038ff91ae785b61c3b417d89"
+  },
+  "cases": [
+    {
+      "name": "motorcycle-wheel-rig",
+      "checks": 70,
+      "notes": [
+        "actual packed tyres/rims: rest vertex error 1.31e-7u, normal error 4.46e-8; worst previous axial rim wobble 2.95cm -> 2.78e-15cm; signed roll, brakes, spin, steering and flat damage pass"
+      ],
+      "testSha256": "8c750b1781bdc0f250c73983fc2ad2b9b9c40101a5d09b21b819a1961924b4f7",
+      "status": "PASS"
+    },
+    {
+      "name": "motorcycle-rider-fit",
+      "checks": 102,
+      "notes": [
+        "{\"riderHeight\":1.8,\"maxTargetError\":0,\"maxWristError\":0.48314257402214855,\"maxRestWristError\":0.03311148324819847,\"maxBoneError\":8.881784197001252e-15,\"formerSteeringGap\":1.4716794259796324}"
+      ],
+      "testSha256": "995d53ae7d7eec91d75a52c2235d26afff0acdad353d718d92e3caa8b0ce0260",
+      "status": "PASS"
+    },
+    {
+      "name": "approved-motorcycle-rigs",
+      "checks": 167,
+      "notes": [
+        "{\"restError\":1.2917073125271293e-7,\"normalError\":4.423433763540704e-8,\"rollingWobble\":5.551115123125783e-17,\"models\":[{\"type\":\"kr500\",\"key\":\"m1_enduro\",\"nearLodTriangles\":12350,\"farLodTriangles\":2707,\"pairs\":10,\"sourceTriangles\":12350,\"grips\":[[0.20460008339352115,1.3637767135858536,-0.3328997466802597],[0.20460008339352115,1.3637767135858536,0.33290025331974027]],\"cachedParts\":10},{\"type\":\"bike\",\"key\":\"m2_sport\",\"nearLodTriangles\":50795,\"farLodTriangles\":12820,\"pairs\":11,\"sourceTriangles\":50795,\"grips\":[[0.43523815564945734,1.006513867682728,-0.3086999999999997],[0.43523815564945734,1.006513867682728,0.30870000000000025]],\"cachedParts\":11}]}"
+      ],
+      "testSha256": "5fda776f1db5391b2cc1a9a884540035b288293b5d204f1bb5f44866f67b0122",
+      "status": "PASS"
+    },
+    {
+      "name": "approved-motorcycle-rider-fit",
+      "checks": 222,
+      "notes": [
+        "{\"riderHeight\":1.65,\"maxTargetError\":0,\"maxWristError\":0.12122533882768248,\"maxRestWristError\":0,\"maxBoneError\":7.771561172376096e-15,\"formerSteeringGap\":1.19677433390081}",
+        "{\"riderHeight\":1.8,\"maxTargetError\":0,\"maxWristError\":0,\"maxRestWristError\":0,\"maxBoneError\":8.43769498715119e-15,\"formerSteeringGap\":1.19677433390081}",
+        "{\"riderHeight\":1.9,\"maxTargetError\":0,\"maxWristError\":0,\"maxRestWristError\":0,\"maxBoneError\":8.43769498715119e-15,\"formerSteeringGap\":1.19677433390081}"
+      ],
+      "testSha256": "6c2db1441f161bf24be0a249e866de115c8b265fd3fbdb5cc05912492ba4d19c",
+      "status": "PASS"
+    }
+  ],
+  "errors": [],
+  "totalChecks": 561
+}

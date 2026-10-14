@@ -1,0 +1,108 @@
+{
+  "approvedPackSHA256": "9fc2408fd1f8b7b2649a4e69d6868854c22987856ef6868e0f8d0c3b51d28512",
+  "independentChecks": 150,
+  "models": [
+    {
+      "model": "m1_enduro",
+      "sourceTriangles": 12351,
+      "allSourceTrianglesAssignedExactlyOnce": true,
+      "nearTriangles": 12350,
+      "farTriangles": 2707,
+      "LODMapsComplete": true,
+      "wheelPartOriginErrorMetres": 0.0,
+      "hasAuthoredInterior": false
+    },
+    {
+      "model": "m2_sport",
+      "sourceTriangles": 403396,
+      "allSourceTrianglesAssignedExactlyOnce": true,
+      "nearTriangles": 50795,
+      "farTriangles": 12820,
+      "LODMapsComplete": true,
+      "wheelPartOriginErrorMetres": 0.0,
+      "hasAuthoredInterior": false
+    },
+    {
+      "model": "s1_jimny",
+      "sourceTriangles": 456991,
+      "allSourceTrianglesAssignedExactlyOnce": true,
+      "nearTriangles": 65000,
+      "farTriangles": 10043,
+      "LODMapsComplete": true,
+      "wheelPartOriginErrorMetres": 0.0,
+      "hasAuthoredInterior": true
+    },
+    {
+      "model": "s2_suv",
+      "sourceTriangles": 7951,
+      "allSourceTrianglesAssignedExactlyOnce": true,
+      "nearTriangles": 7948,
+      "farTriangles": 4354,
+      "LODMapsComplete": true,
+      "wheelPartOriginErrorMetres": 0.0,
+      "hasAuthoredInterior": false
+    },
+    {
+      "model": "s3_offroad",
+      "sourceTriangles": 6502,
+      "allSourceTrianglesAssignedExactlyOnce": true,
+      "nearTriangles": 6502,
+      "farTriangles": 3563,
+      "LODMapsComplete": true,
+      "wheelPartOriginErrorMetres": 0.0,
+      "hasAuthoredInterior": false
+    }
+  ],
+  "allOriginalSourceFaces": 887191,
+  "legacyModelsRetained": 23,
+  "legacyPackSHA256": "63908560d08068f6b6df9859b9bb6040ad38028c2a0d9a0268f7d9cd4c2649ae",
+  "legacyAtlasSHA256": "1dbbb7ea292956c3280e52c0d8121dc47d009bfe043717d1d2c55d90c87865f2",
+  "authoredOpticalGlass": {
+    "sourceTriangles": 17818,
+    "sourceAlpha": "BLEND opacity retained in albedo alpha; dedicated two-sided transparent draw",
+    "materials": [
+      {
+        "index": 16,
+        "name": "Carro_Reflect",
+        "opacity": 0.4,
+        "triangles": 196
+      },
+      {
+        "index": 17,
+        "name": "Carro_Reflector",
+        "opacity": 0.4,
+        "triangles": 516
+      },
+      {
+        "index": 23,
+        "name": "Carro_Vidro_Laranja",
+        "opacity": 0.4,
+        "triangles": 4728
+      },
+      {
+        "index": 24,
+        "name": "Carro_Vidros",
+        "opacity": 0.4,
+        "triangles": 10148
+      },
+      {
+        "index": 25,
+        "name": "Carro_Vidros_Vermelhos",
+        "opacity": 0.5,
+        "triangles": 2230
+      }
+    ]
+  },
+  "s2ExteriorPaint": {
+    "movedFaces": 840,
+    "roofFaces": 406,
+    "upperDoorFaces": 434,
+    "allMovedOriginalOrmMetallicZero": true,
+    "verifiedFirstHitRays": 45,
+    "allRaysNowShellOrPanels": true,
+    "sourceFaceIDsSHA256": "fc55f60f9f7eac20e3a881bd7f4053b1e2df1810bec6d6fc0bffba75555074d4",
+    "positionsNormalsUvRgbOrmNotReshaped": true
+  },
+  "sourceMaterialProof": "source-optics-exterior-proof.json",
+  "scope": "Source face ownership, actual near/far wheel origins, complete LOD maps and reported triangle totals; no browser/FPS claim."
+}

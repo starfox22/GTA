@@ -137,6 +137,7 @@
       // The downloaded vehicle models the build carries (title, triangles, size, belt and roof) and the kits built
       // from them (vehicle-assets3d.js ASSET CARS).
       assetCars: () => city3D?.assetCars?.() ?? null,
+      approvedAssets: () => city3D?.approvedAssets?.() ?? null,
       // Before/after: false builds every vehicle model made from now on procedurally (park new ones to compare).
       assetCarsOn: (on) => city3D?.assetCarsOn?.(on) ?? null,
       // The downloaded aircraft models (aircraft-assets3d.js: the SKYRANGER 429) and the before/after

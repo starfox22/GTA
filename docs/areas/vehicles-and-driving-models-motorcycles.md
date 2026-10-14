@@ -1,7 +1,39 @@
 # Vehicles and driving: motorcycle models
 
-Runtime: `motorbikes3d.js`, `motorbike-assets3d.js`; converter: `tools/vehicle_models_moto.py`.
+Runtime: `motorbikes3d.js`, `motorbike-assets3d.js`; converters: `tools/vehicle_models_moto.py`,
+`tools/approved_vehicle_models.py` (approved pack).
 Handling and wheelies stay in the game rules; renderer rigs only read their state.
+
+## Approved replacement pack
+
+The owner's October 14 selection uses the separate approved vehicle pack: `m1_enduro`
+replaces the KR 500 (`kr500`), and `m2_sport` replaces the VORTEX 900 (`bike`). The
+cruiser and bicycle still use the original pack and keep their styles and rigs. The
+game's type, collision size, handling and mission rules stay the same. When the
+approved pack is missing or asset rendering is disabled, the prior asset/procedural
+fallback remains available.
+
+`motoAssetKit` accepts the same measured `kind: 'moto'` contract from either pack.
+Approved paint keeps the source UVs; its own atlas and surface finishes are provided
+by `approvedVehiclePaint` / `approvedVehicleMaterials`. Glass stays a separate
+transparent mesh. Kits are cached by source key and game length, so repeated bikes
+share geometry while their wheels, forks, paint and damage remain independent.
+
+`lodParts` maps each near part to its reduced counterpart. Both levels receive the
+same fixed fork/axle transform once, then `motoAssetLod` swaps geometry on the existing
+meshes. Body, fork and wheels have no extra LOD draws. The screen-scale threshold
+uses either street `viewZoom` or chase `chaseZoomAt`, at 1.65 times the preset's `lodBias` and
+10% hysteresis. The player's bike always keeps the detailed level. Bullet-marked or
+dented bikes retain near geometry to preserve the triangle order of pinned marks.
+
+Approved `seatProof` records vertical barycentric rays onto the actual front driver
+saddle, rather than rear plastic/pillion positions. M1's mild lean is -.10 radians;
+M2 uses a -.95 sport tuck. Paired grips stay on the source rubber bars. Rider checks
+use the production 2.1/2.2 m game lengths and adults 1.65–1.9 m tall. Head mounting is
+source-specific: M1 lens/halo steers, M2 fairing lamp stays fixed. `lampOut` masks both
+broken and absent lenses, and a repair restores the head/tail halos.
+
+## Existing pack and shared rig
 
 - `kind: 'moto'` models (tools/vehicle_models_moto.py): the VORTEX 900 ('bike') is the Honda CB 750 F (1970). The
   converter splits frame paint / trim, the steering (everything wholly ahead of the steering axis moved back `reach`,

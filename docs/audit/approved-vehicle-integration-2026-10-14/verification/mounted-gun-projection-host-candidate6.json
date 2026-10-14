@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "checks": 72,
+  "notes": [
+    "{\"maximumGroundMiss\":1.1368683772161603e-13,\"stationaryBystanderMiss\":2.4829684351146257,\"oldParallelRayMiss\":21,\"physicalTraverseDegreesPerSecond\":150,\"physicalStopsDegrees\":[20,160]}"
+  ],
+  "sourceSha256": {
+    "mountedGuns": "2910066d97793a9971ca2efcedda7b3fe48fabaedeb2a356c98a2b26bafe0862",
+    "helicopterAnimation": "8e5d50ae177628536e4e847fcef1d30f9e1f5feabc40991cc664b93158ce6597",
+    "projectileRules": "2b7e65c80495793e8a1e5c8afdc7f008c4afc29eb98cecbdb00b1f925e9b7a1c",
+    "test": "603f0132f6ccc384afe53eef144e14a8d2c35073f252fffdffc822f841666701"
+  },
+  "frozenHtmlSha256": "6f8ec191f8b2d8d0ceb98ba28c116d05071d52741086a96e84cc4da183bc710e"
+}

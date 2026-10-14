@@ -28,6 +28,7 @@ export default async function (t) {
     if (first) {
       await t.keys('KeyE', 0.2, { real: true });
       await t.realWait(2);
+      await t.call('holdSimulation', true);
       first = false;
     } else await t.call('interact');
     await t.wait(1.5);
@@ -58,7 +59,14 @@ export default async function (t) {
     await t.call('interact');
     await t.wait(1.5);
     t.assert((await t.call('status')).vehicle === car.type, g.villa + ': not in the forecourt car');
-    let r = await t.call('steerTo', side.x, side.y - 34, 15, 14);
+    let r;
+    // Miramar's north-facing forecourt SUV needs a short open-space alignment
+    // before the straight-line pilot turns near its 48-unit frontage opening.
+    if (g.villa === 'VILLA MIRAMAR') {
+      r = await t.call('steerTo', side.x, car.y - 12, 15, 7);
+      t.assert(r && r.reason === 'arrived', g.villa + ': could not align with the side gate: ' + JSON.stringify(r));
+    }
+    r = await t.call('steerTo', side.x, side.y - 34, 15, 14);
     t.assert(r && r.reason === 'arrived', g.villa + ': stuck on the way to the side gate: ' + JSON.stringify(r));
     r = await t.call('steerTo', side.x, side.y + 60, 15, 22);
     t.assert(r && r.reason === 'arrived' && r.y > side.y + 30, g.villa + ': not out through the side gate: ' + JSON.stringify(r));

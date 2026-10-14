@@ -1,0 +1,64 @@
+{
+  "candidate": "8",
+  "splitIndexSha256": "df5325231ab3321894a38732ed7ddcc0cc996397820aae27547743f29782dc38",
+  "runtimeJsSha256": "d5ca3c913a71d9a4295bd73f6a0d0a0646c2b985e559de1cf6442ac48cabb574",
+  "renderer": "Chromium software WebGL via prescribed cloud browser adapter; file URLs mapped to HTTP",
+  "errors": 0,
+  "defaultFpsVisible": true,
+  "screenshots": [
+    {
+      "file": "01-menu.png",
+      "sha256": "7a0a3985c302f457b97801f96bee89b5c0d5a87b25c727aa86f75d09f48563d6",
+      "bytes": 728948,
+      "dimensions": [
+        960,
+        600
+      ]
+    },
+    {
+      "file": "02-start.png",
+      "sha256": "6778f8095e7e2e4010b7924b02b424bd04314e63e38c71c17f62f58e78cfd75f",
+      "bytes": 613874,
+      "dimensions": [
+        960,
+        600
+      ]
+    },
+    {
+      "file": "03-walk.png",
+      "sha256": "3ae76c16a55d7b6b57ac419c4ed8e8b2dcbd0066c1e2a9b5896ef499e6e7febb",
+      "bytes": 677202,
+      "dimensions": [
+        960,
+        600
+      ]
+    },
+    {
+      "file": "04-drive.png",
+      "sha256": "c9f361966bcdeec876c3c1d7b36b57b66c778e7c06397578fcf31b62a5b8d58f",
+      "bytes": 683352,
+      "dimensions": [
+        960,
+        600
+      ]
+    },
+    {
+      "file": "05-map.png",
+      "sha256": "387c9ea6deced5712e8a31e82e14fa2db49339570bf3c54b8bc07928090707bd",
+      "bytes": 178763,
+      "dimensions": [
+        960,
+        600
+      ]
+    },
+    {
+      "file": "06-chase.png",
+      "sha256": "bde9ed234c9dd9df8221a661476625372fa80aeaa8b5547859a1071b6e1d1750",
+      "bytes": 664895,
+      "dimensions": [
+        960,
+        600
+      ]
+    }
+  ]
+}

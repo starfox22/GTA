@@ -1,0 +1,190 @@
+{
+  "purpose": "Version-pinned source preparation for all five approved assets; download bytes must match before conversion.",
+  "sourceRepositories": {
+    "M1": "vimontgames/vgframework@b3173a3814790af7061f1949437a3c958b00000b",
+    "M2": "thomasfork/Nonplanar-Vehicle-Control@8cb0ee51e2cf5cf7b3abbf21d3bdadc538a6c672",
+    "S1": "PatrickRuan/Jimny3D@e582c466ae61c4543168fbacfe8e57e94d94101f",
+    "S2_S3": "clarkbar-sys/done-rite-detailing@299ee2e33d72828281a8f7048242a42c60339b01",
+    "Draco": "google/draco@1.5.6, glTF decoder build"
+  },
+  "files": [
+    {
+      "models": [
+        "M1"
+      ],
+      "path": "motorcycles/vgframework/data--Meshes--Cars--Motorbike--motorbike.fbx",
+      "sourcePath": "data/Meshes/Cars/Motorbike/motorbike.fbx",
+      "url": "https://raw.githubusercontent.com/vimontgames/vgframework/b3173a3814790af7061f1949437a3c958b00000b/data/Meshes/Cars/Motorbike/motorbike.fbx",
+      "bytes": 268684,
+      "sha256": "a347eaa03ea29854c45d78dd1f1136f9ff2b29d57b0ff8ef5179687629ce7aca"
+    },
+    {
+      "models": [
+        "M1"
+      ],
+      "path": "motorcycles/vgframework/data--Meshes--Cars--Motorbike--motorbike_fork.fbx",
+      "sourcePath": "data/Meshes/Cars/Motorbike/motorbike_fork.fbx",
+      "url": "https://raw.githubusercontent.com/vimontgames/vgframework/b3173a3814790af7061f1949437a3c958b00000b/data/Meshes/Cars/Motorbike/motorbike_fork.fbx",
+      "bytes": 78716,
+      "sha256": "fe930b7bbf1e342ccc1128b97e186bcda216c75ebdb7c46ff5a2e8a058a76ee4"
+    },
+    {
+      "models": [
+        "M1"
+      ],
+      "path": "motorcycles/vgframework/data--Meshes--Cars--Motorbike--motorbike_wheel.fbx",
+      "sourcePath": "data/Meshes/Cars/Motorbike/motorbike_wheel.fbx",
+      "url": "https://raw.githubusercontent.com/vimontgames/vgframework/b3173a3814790af7061f1949437a3c958b00000b/data/Meshes/Cars/Motorbike/motorbike_wheel.fbx",
+      "bytes": 99740,
+      "sha256": "bd3daed591a5d8df47ca2a8e1e83ed247131bd419de5eb417b5e1e264e0194ce"
+    },
+    {
+      "models": [
+        "M1"
+      ],
+      "path": "motorcycles/vgframework/data--Textures--Cars--Motorbike--motorbike_albedo.png",
+      "sourcePath": "data/Textures/Cars/Motorbike/motorbike_albedo.png",
+      "url": "https://raw.githubusercontent.com/vimontgames/vgframework/b3173a3814790af7061f1949437a3c958b00000b/data/Textures/Cars/Motorbike/motorbike_albedo.png",
+      "bytes": 1507745,
+      "sha256": "e23eeb2303592d05c5f11504b6e1a1160fd8e49f4a8c6c015b97b33238912f2a"
+    },
+    {
+      "models": [
+        "M1"
+      ],
+      "path": "motorcycles/vgframework/data--Materials--Cars--Motorbike--Motorbike.mat",
+      "sourcePath": "data/Materials/Cars/Motorbike/Motorbike.mat",
+      "url": "https://raw.githubusercontent.com/vimontgames/vgframework/b3173a3814790af7061f1949437a3c958b00000b/data/Materials/Cars/Motorbike/Motorbike.mat",
+      "bytes": 4495,
+      "sha256": "302b26ad620f278a4d07b71dc90ef38672518609782c07024a1d694205ac295c"
+    },
+    {
+      "models": [
+        "M1"
+      ],
+      "path": "motorcycles/vgframework/data--Materials--Cars--Motorbike--MotorbikeLights.mat",
+      "sourcePath": "data/Materials/Cars/Motorbike/MotorbikeLights.mat",
+      "url": "https://raw.githubusercontent.com/vimontgames/vgframework/b3173a3814790af7061f1949437a3c958b00000b/data/Materials/Cars/Motorbike/MotorbikeLights.mat",
+      "bytes": 4540,
+      "sha256": "e7dac76ffcd25e49817d2ffdb32a32d8df14e5533acdcb5efdac37777ab14b5e"
+    },
+    {
+      "models": [
+        "M1"
+      ],
+      "path": "motorcycles/vgframework/data--Materials--Cars--Scooter--ScooterMetal.mat",
+      "sourcePath": "data/Materials/Cars/Scooter/ScooterMetal.mat",
+      "url": "https://raw.githubusercontent.com/vimontgames/vgframework/b3173a3814790af7061f1949437a3c958b00000b/data/Materials/Cars/Scooter/ScooterMetal.mat",
+      "bytes": 4483,
+      "sha256": "4ac4867347d30ba26e91ea6753ca496b15f1841a2b475e04e60919bc9cc43a53"
+    },
+    {
+      "models": [
+        "M1"
+      ],
+      "path": "motorcycles/vgframework/data--Materials--Cars--Scooter--ScooterPlastic.mat",
+      "sourcePath": "data/Materials/Cars/Scooter/ScooterPlastic.mat",
+      "url": "https://raw.githubusercontent.com/vimontgames/vgframework/b3173a3814790af7061f1949437a3c958b00000b/data/Materials/Cars/Scooter/ScooterPlastic.mat",
+      "bytes": 4490,
+      "sha256": "0a63e4d5541a690c9414ae227e14a9c47bdf16bd33f618062cd373c296712264"
+    },
+    {
+      "models": [
+        "M1"
+      ],
+      "path": "motorcycles/vgframework/data--Materials--Cars--Scooter--ScooterWheel.mat",
+      "sourcePath": "data/Materials/Cars/Scooter/ScooterWheel.mat",
+      "url": "https://raw.githubusercontent.com/vimontgames/vgframework/b3173a3814790af7061f1949437a3c958b00000b/data/Materials/Cars/Scooter/ScooterWheel.mat",
+      "bytes": 4486,
+      "sha256": "a3b2bb2d13c94623b14892e8c678f58e26db6794995aa1d0440f21f8afb7c92e"
+    },
+    {
+      "models": [
+        "M1"
+      ],
+      "path": "motorcycles/vgframework/prefab.xml",
+      "sourcePath": "data/Prefabs/Cars/Motorbike.prefab",
+      "url": "https://raw.githubusercontent.com/vimontgames/vgframework/b3173a3814790af7061f1949437a3c958b00000b/data/Prefabs/Cars/Motorbike.prefab",
+      "bytes": 73241,
+      "sha256": "65028afbcdb0c1d48e2488526050d13602c6531b0b4d879b4d1ae14be73b8f55"
+    },
+    {
+      "models": [
+        "M1"
+      ],
+      "path": "motorcycles/vgframework/README.md",
+      "sourcePath": "README.md",
+      "url": "https://raw.githubusercontent.com/vimontgames/vgframework/b3173a3814790af7061f1949437a3c958b00000b/README.md",
+      "bytes": 39149,
+      "sha256": "e4d542a09d5caba9338e20942311f39141769d45021783e3496c481731e55f8c"
+    },
+    {
+      "models": [
+        "M2"
+      ],
+      "path": "motorcycles/nonplanar/assets--motorcycle.glb",
+      "sourcePath": "assets/motorcycle.glb",
+      "url": "https://raw.githubusercontent.com/thomasfork/Nonplanar-Vehicle-Control/8cb0ee51e2cf5cf7b3abbf21d3bdadc538a6c672/assets/motorcycle.glb",
+      "bytes": 15428024,
+      "sha256": "228b3f088ac348c40b55bd2881c7271304614ecc0ad422b21506c6d82708228c"
+    },
+    {
+      "models": [
+        "M2"
+      ],
+      "path": "motorcycles/nonplanar/README.md",
+      "sourcePath": "README.md",
+      "url": "https://raw.githubusercontent.com/thomasfork/Nonplanar-Vehicle-Control/8cb0ee51e2cf5cf7b3abbf21d3bdadc538a6c672/README.md",
+      "bytes": 4717,
+      "sha256": "9e8095d2fb6b0f936a1fe31cd6892a04b020dbfbd4d6fc5d2f1e3276acaeb97d"
+    },
+    {
+      "models": [
+        "S1"
+      ],
+      "path": "suv/jimny-2023.glb",
+      "sourcePath": "public/models/jimny.glb",
+      "url": "https://raw.githubusercontent.com/PatrickRuan/Jimny3D/e582c466ae61c4543168fbacfe8e57e94d94101f/public/models/jimny.glb",
+      "bytes": 4603920,
+      "sha256": "0f70478e347b1bf19410e45ade6f0b1037041df5417b7bc8da4d9739bdb5f6ce"
+    },
+    {
+      "models": [
+        "S2",
+        "S3"
+      ],
+      "path": "suv/carpack-4.glb",
+      "sourcePath": "src-models/generic_passenger_car_pack/generic_passenger_car_pack.glb",
+      "url": "https://raw.githubusercontent.com/clarkbar-sys/done-rite-detailing/299ee2e33d72828281a8f7048242a42c60339b01/src-models/generic_passenger_car_pack/generic_passenger_car_pack.glb",
+      "bytes": 11761956,
+      "sha256": "a2d5667f3a1d47fa0dbb84cf2cf76b8aeee6a69f7fff209af09973c625f9be6e"
+    },
+    {
+      "models": [
+        "S1"
+      ],
+      "path": "draco/draco_wasm_wrapper.js",
+      "sourcePath": "javascript/draco_wasm_wrapper_gltf.js",
+      "url": "https://raw.githubusercontent.com/google/draco/1.5.6/javascript/draco_wasm_wrapper_gltf.js",
+      "bytes": 58456,
+      "sha256": "8bb2952d2ba7d67e1414f8df819410cb0434a666be53f671fff75f68843d76f6"
+    },
+    {
+      "models": [
+        "S1"
+      ],
+      "path": "draco/draco_decoder.wasm",
+      "sourcePath": "javascript/draco_decoder_gltf.wasm",
+      "url": "https://raw.githubusercontent.com/google/draco/1.5.6/javascript/draco_decoder_gltf.wasm",
+      "bytes": 192420,
+      "sha256": "a680d927bed9cb864ddbd63521868891af2bfbe755092761b4837487618df8ac"
+    }
+  ],
+  "decodedJimny": {
+    "path": "suv/jimny-decoded.glb",
+    "bytes": 45908032,
+    "sha256": "5e9062ad80993b33b716a003de8f0a766299daadfa36ba7caeef99c26b13c2d7",
+    "helper": "tools/approved_vehicle_models_decode.cjs"
+  },
+  "publishedApprovedPackSHA256": "9fc2408fd1f8b7b2649a4e69d6868854c22987856ef6868e0f8d0c3b51d28512"
+}

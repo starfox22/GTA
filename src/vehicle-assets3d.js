@@ -30,7 +30,7 @@
             headerLength = view.getUint32(8, true),
             header = JSON.parse(new TextDecoder().decode(bytes.subarray(12, 12 + headerLength))),
             base = 12 + headerLength,
-            types = { f4: Float32Array, i1: Int8Array, u1: Uint8Array, i2: Int16Array, u2: Uint16Array },
+            types = { f4: Float32Array, i1: Int8Array, u1: Uint8Array, i2: Int16Array, u2: Uint16Array, u4: Uint32Array },
             arrays = {};
           for (const [name, [type, offset, count]] of Object.entries(header.arrays)) arrays[name] = new types[type](bytes.buffer, base + offset, count);
           vaCache = { header, arrays };
@@ -44,6 +44,9 @@
       let vaEnabled = true;
       function vehicleAssetModel(type) {
         if (!vaEnabled) return null;
+        const approvedKey = type === 'bike' ? 'm2_sport' : type === 'kr500' ? 'm1_enduro' : type === 'suv' ? 's1_jimny' : type.startsWith('s') ? type : null,
+          approved = approvedKey && typeof approvedVehicleModel === 'function' ? approvedVehicleModel(approvedKey) : null;
+        if (approved) return approved;
         const data = vaData();
         return (data && data.header.models[type]) || null;
       }
@@ -148,7 +151,14 @@
         geo.setAttribute('normal', new Three.BufferAttribute(normal, 3));
         geo.setAttribute('uv', new Three.BufferAttribute(uvs, 2));
         if (c) geo.setAttribute('color', new Three.BufferAttribute(new Uint8Array(c), 3, true));
-        geo.setIndex(new Three.BufferAttribute(new Uint16Array(index), 1));
+        else if (model.approved) geo.setAttribute('color', new Three.BufferAttribute(new Uint8Array(q.length).fill(255), 3, true));
+        // Approved models retain authored material finish independently of their atlas UVs.
+        const finish = a[key + '.f'];
+        if (finish) geo.setAttribute('finish', new Three.BufferAttribute(new Uint8Array(finish), 2, true));
+        const sourceUv = a[key + '.a'], atlasRect = a[key + '.t'];
+        if (sourceUv) geo.setAttribute('avSourceUv', new Three.BufferAttribute(new Float32Array(sourceUv), 2));
+        if (atlasRect) geo.setAttribute('avAtlasRect', new Three.BufferAttribute(new Uint16Array(atlasRect), 4, true));
+        geo.setIndex(new Three.BufferAttribute(index.BYTES_PER_ELEMENT === 4 ? new Uint32Array(index) : new Uint16Array(index), 1));
         if (info.panes) {
           let start = 0;
           info.panes.forEach((tris, pane) => {
@@ -165,13 +175,18 @@
       function vaJoin(list) {
         if (list.length < 2) return list[0] || null;
         const geo = new Three.BufferGeometry();
-        for (const name of ['position', 'normal', 'uv']) {
+        for (const name of Object.keys(list[0].attributes)) {
+          // All joined approved parts have the same layout. Legacy optional colours stay outside the trim join.
+          if (!list.every(g => g.attributes[name]?.itemSize === list[0].attributes[name].itemSize)) continue;
           const size = list[0].attributes[name].itemSize,
             out = new Float32Array(list.reduce((n, g) => n + g.attributes[name].array.length, 0));
           let at = 0;
           for (const g of list) {
-            out.set(g.attributes[name].array, at);
-            at += g.attributes[name].array.length;
+            const attr = g.attributes[name];
+            if (attr.normalized) {
+              for (let i = 0; i < attr.count; i++) for (let c = 0; c < size; c++) out[at + i * size + c] = attr.getComponent(i, c);
+            } else out.set(attr.array, at);
+            at += attr.array.length;
           }
           geo.setAttribute(name, new Three.BufferAttribute(out, size));
         }
@@ -196,15 +211,15 @@
        * blood and seat code reads it the same: shell, cabin (panes), hood, paint (panels), trim and trimOuter, lamps,
        * halos, seats, trunkDeck; `assetWheels` replaces the procedural tyre and rims.
        */
-      function vaKit(type, l, w) {
-        const key = type + ':' + l.toFixed(2) + ':' + w.toFixed(2);
+      function vaKit(type, l, w, approvedKey = null) {
+        const key = (approvedKey || type) + ':' + l.toFixed(2) + ':' + w.toFixed(2);
         if (vaKits.has(key)) return vaKits.get(key);
-        const data = vaData(),
-          model = data.header.models[type],
+        const data = approvedKey ? approvedVehicleData() : vaData(),
+          model = data.header.models[approvedKey || type],
           M = CAR_M,
-          k = l / model.dims[0],
+          k = approvedKey ? Math.min(l / model.dims[0], w / 0.87 / model.dims[2], M) : l / model.dims[0],
           clearUv = swatchUv(CAR_SWATCH.paint),
-          paintUv = model.paintTexture ? null : clearUv,
+          paintUv = approvedKey || model.paintTexture ? null : clearUv,
           gm = model.glass,
           g = {
             base: gm.base * k,
@@ -234,6 +249,7 @@
           outer = model.parts.trim ? model.parts.trim.triangles * 3 : 0;
         const kit = {
           type,
+          approvedKey,
           asset: model,
           l,
           k,
@@ -246,6 +262,7 @@
           paint: vaGeometry(model, data, 'panels', k, paintUv) || policeSwatchBox(CAR_SWATCH.paint),
           trim,
           trimOuter: trim ? civDrawRange(trim, outer) : null,
+          opticalGlass: approvedKey ? vaGeometry(model, data, 'opticalGlass', k) : null,
           // The fit starts where real cars of this size seat the driver: 1.15 m behind the screen's foot.
           seats: carSeatPlan(g, l, w, M, type, { hipX: ((gm.xf - 1.15) * k) / l }),
           badge: null,
@@ -254,11 +271,11 @@
           halos: {},
           bumpers: [],
           assetWheels: [],
-          door: policeSwatchBox(CAR_SWATCH.paint),
-          trunk: policeSwatchBox(CAR_SWATCH.paint),
+          door: approvedKey ? approvedSuvPanelBox(model, CAR_SWATCH.paint) : policeSwatchBox(CAR_SWATCH.paint),
+          trunk: approvedKey ? approvedSuvPanelBox(model, CAR_SWATCH.paint) : policeSwatchBox(CAR_SWATCH.paint),
           sill: model.sill * k,
           trunkDeck: (() => {
-            const tailX = -0.48 * l,
+            const tailX = approvedKey ? model.x0 * k : -0.48 * l,
               hingeX = Math.max(g.xb * l + 0.02 * M, tailX + 0.06 * l);
             return { hingeX, hingeY: topY(hingeX), tailX, tailY: topY(tailX) };
           })(),
@@ -281,7 +298,8 @@
           });
         });
         // Axle by axle, left then right (the order the merge plan pairs wheels in: vehicle-merge3d.js).
-        kit.assetWheels.sort((a, b) => b.x - a.x || a.side - b.side);
+        kit.assetWheels.sort((a, b) => approvedKey ? Number(b.front) - Number(a.front) || a.side - b.side : b.x - a.x || a.side - b.side);
+        if (approvedKey) approvedSuvFarKit(kit, model, data, k);
         vaKits.set(key, kit);
         return kit;
       }
@@ -293,23 +311,32 @@
         const spec = vehicleSpec(vehicle),
           l = spec.l,
           w = spec.w * 0.87,
-          kit = vaKit(vehicle.type, l, w),
+          approvedKey = approvedSuvKey(vehicle),
+          approvedModel = approvedKey && vaEnabled ? approvedVehicleModel(approvedKey) : null,
+          kit = vaKit(vehicle.type, l, w, approvedModel ? approvedKey : null),
           model = kit.asset,
-          materials = civSharedMaterials(),
-          assetMaterials = vaMaterials(),
+          materials = kit.approvedKey ? approvedVehicleMaterials(model) : civSharedMaterials(),
+          assetMaterials = kit.approvedKey ? materials : vaMaterials(),
           lampMaterials = civLampSet(),
           group = new Three.Group(),
           bodyGroup = new Three.Group();
         group.add(bodyGroup);
         scene.add(group);
-        const livery = model.paintTexture ? vaAtlas() : vaLivery(),
+        if (kit.approvedKey && !kit.impostorPaint) {
+          kit.impostorPaint = approvedVehicleImpostorPaint(model);
+        }
+        const livery = kit.approvedKey ? approvedVehicleMaterials(model).trim.map : model.paintTexture ? vaAtlas() : vaLivery(),
           finish = civFinish(vehicle.color, vehicle.id),
-          paint = civPaintMaterial(model.paintTexture ? '#ffffff' : vehicle.color, livery, finish);
+          paint = kit.approvedKey ? approvedVehiclePaint(vehicle, model) : civPaintMaterial(model.paintTexture ? '#ffffff' : vehicle.color, livery, finish);
         const shell = mesh(kit.shell, paint, bodyGroup, 0, 0, 0),
           cabin = kit.cabin ? mesh(kit.cabin, materials.glass, bodyGroup, 0, 0, 0) : null,
           hood = mesh(kit.hood, paint, bodyGroup, 0, 0, 0),
           panels = mesh(kit.paint, paint, bodyGroup, 0, 0, 0),
           trim = kit.trim ? mesh(kit.trim, assetMaterials.trim, bodyGroup, 0, 0, 0) : null;
+        const approvedInterior = kit.interiorFallback ? mesh(kit.interiorFallback, approvedSuvCabinMaterial(), bodyGroup, 0, 0, 0) : null;
+        if (approvedInterior) approvedInterior.castShadow = false;
+        const opticalGlass = kit.opticalGlass ? mesh(kit.opticalGlass, assetMaterials.opticalGlass, bodyGroup, 0, 0, 0) : null;
+        if (opticalGlass) opticalGlass.castShadow = opticalGlass.receiveShadow = false;
         // The shell, the paint panels and the trim cast the car's shadow (cars3d-interior.js CAR GLASS).
         hood.castShadow = false;
         panels.castShadow = true;
@@ -360,7 +387,7 @@
         // The arms reach no higher than the glass (a truck's screen is lower than half its width).
         if (spec.truck && !g.open)
           addWipers(wiperHost, bodyGroup, g.xf * l + 0.3, g.base + 0.2, g.rf * l + 0.3, g.roof - 0.4, g.wb * w * 0.85, 0.92 * Math.hypot((g.rf - g.xf) * l, g.roof - g.base));
-        return {
+        const result = {
           wipers: wiperHost.wipers,
           group,
           body: bodyGroup,
@@ -374,6 +401,9 @@
           realSize: true,
           dims: { l, w, h: g.base, roof: g.roof, van: false, sill: kit.sill + 0.1 * CAR_M },
           shell,
+          assetTrim: trim,
+          approvedInterior,
+          opticalGlass,
           shellBase: shell.geometry.attributes.position.array,
           kit,
           panels,
@@ -392,7 +422,7 @@
           drl: null,
           extra: null,
           liveryMap: livery,
-          liveryColor: model.paintTexture ? '#ffffff' : null,
+          liveryColor: !kit.approvedKey && model.paintTexture ? '#ffffff' : null,
           finish,
           bumperMaterial: null,
           bumperMaterials: [],
@@ -405,13 +435,16 @@
           dirt: paint.userData.carDirt,
           dirtBase: 0.12 + (((vehicle.id * 2654435761) % 1000) / 1000) * 0.36,
           impostorParts: [
-            { mesh: shell, material: civImpostorPaint(livery), tint: !model.paintTexture, shadow: true },
-            ...(cabin ? [{ mesh: cabin, material: materials.glassFar, shadow: true }] : []),
-            { mesh: hood, material: civImpostorPaint(livery), tint: !model.paintTexture },
-            { mesh: panels, material: civImpostorPaint(livery), tint: !model.paintTexture },
-            ...(kit.trimOuter ? [{ geometry: kit.trimOuter, material: assetMaterials.trim }] : []),
+            { mesh: shell, geometry: kit.far?.shell, material: kit.approvedKey ? kit.impostorPaint : civImpostorPaint(livery), tint: !!kit.approvedKey || !model.paintTexture, shadow: true },
+            ...(cabin ? [{ mesh: cabin, geometry: kit.far?.cabin, material: materials.glassFar, shadow: true }] : []),
+            { mesh: hood, geometry: kit.far?.hood, material: kit.approvedKey ? kit.impostorPaint : civImpostorPaint(livery), tint: !!kit.approvedKey || !model.paintTexture },
+            { mesh: panels, geometry: kit.far?.paint, material: kit.approvedKey ? kit.impostorPaint : civImpostorPaint(livery), tint: !!kit.approvedKey || !model.paintTexture },
+            ...(kit.trimOuter ? [{ geometry: kit.far?.trimOuter || kit.trimOuter, material: assetMaterials.trim }] : []),
+            ...(opticalGlass ? [{ mesh: opticalGlass, geometry: kit.far?.opticalGlass || kit.opticalGlass, material: assetMaterials.opticalGlass }] : []),
           ],
         };
+        if (kit.approvedKey) approvedSuvLodParts(result);
+        return result;
       }
       // A geometry's triangles on the left (z < 0) and on the right, as two geometries (an ambulance's two beacon halves).
       function vaSplitSides(geo) {
@@ -434,8 +467,13 @@
       function assetCarReport() {
         const data = vaData();
         if (!data) return { loaded: false };
-        const models = {};
-        for (const [type, m] of Object.entries(data.header.models))
-          models[type] = { title: m.title, kind: m.kind || 'car', triangles: m.triangles, dims: m.dims, wheels: m.wheels.length, belt: m.glass?.base ?? null, roof: m.glass?.roof ?? null, paintTexture: m.paintTexture };
-        return { loaded: true, atlas: !!vaAtlasCache?.image, models, kits: [...vaKits.keys()] };
+        const models = {}, effective = { ...data.header.models }, approved = approvedVehicleData();
+        if (vaEnabled && approved) {
+          if (approved.header.models.m2_sport) effective.bike = approved.header.models.m2_sport;
+          if (approved.header.models.m1_enduro) effective.kr500 = approved.header.models.m1_enduro;
+          for (const key of APPROVED_SUV_KEYS) if (approved.header.models[key]) effective[key] = approved.header.models[key];
+        }
+        for (const [type, m] of Object.entries(effective))
+          models[type] = { title: m.title, sourceKey: m.type, kind: m.kind || 'car', triangles: m.triangles, farTriangles: m.farTriangles || null, dims: m.dims, wheels: m.wheels.length, belt: m.glass?.base ?? null, roof: m.glass?.roof ?? null, paintTexture: m.paintTexture };
+        return { loaded: true, enabled: vaEnabled, atlas: !!vaAtlasCache?.image, approvedAtlas: !!approvedVehicleTextures[0]?.image, rangerStyles: vaEnabled && approved ? APPROVED_SUV_KEYS : [], models, kits: [...vaKits.keys()] };
       }

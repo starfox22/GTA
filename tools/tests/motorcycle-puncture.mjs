@@ -6,11 +6,14 @@ import vm from 'node:vm';
 export default async function (t) {
   let scatter = -3.5, chance = .4;
   const fixtureMath = Object.create(Math); fixtureMath.random = () => chance;
-  const scope = vm.createContext({ Math: fixtureMath, UNITS_PER_METRE: 8,
+  const scope = vm.createContext({ Math: fixtureMath, UNITS_PER_METRE: 8, PERSON_HEIGHT: 14,
     vehicleSpec: c => c.spec, isAircraft: c => !!c.aircraft, isBoat: c => !!c.boat,
     entityElevation: c => c.altitude || 0, randomBetween: () => scatter,
     noteVehicleRoundZone: () => {}, clamp: (v, low, high) => Math.max(low, Math.min(high, v)) });
-  const api = vm.runInContext(fs.readFileSync(new URL('../../src/damage-vehicles.js', import.meta.url), 'utf8') +
+  // The actual shared glass route selects approved SUV bands and leaves these
+  // bike/car/truck controls on their original branches; do not stub the route.
+  const api = vm.runInContext(fs.readFileSync(new URL('../../src/driveby-seats.js', import.meta.url), 'utf8') +
+    String.fromCharCode(10) + fs.readFileSync(new URL('../../src/damage-vehicles.js', import.meta.url), 'utf8') +
     String.fromCharCode(10) + '({ bulletEntry, bulletHitVehicle, freshDamage, vehicleWorldPoint, vehicleHandling })', scope);
   const make = (type = 'bike', heading = 0, altitude = 0, length = 17.6) => ({
     type, x: 100, y: 300, a: heading, altitude, hp: 100, maxhp: 100, damageVersion: 0,

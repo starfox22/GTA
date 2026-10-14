@@ -1,0 +1,1034 @@
+[
+  {
+    "part": "m1_enduro.paint",
+    "before": 399,
+    "after": 399,
+    "ratio": 1.0
+  },
+  {
+    "part": "m1_enduro.paintFar",
+    "before": 399,
+    "after": 87,
+    "ratio": 0.22
+  },
+  {
+    "part": "m1_enduro.trim",
+    "before": 5933,
+    "after": 5932,
+    "ratio": 1.0
+  },
+  {
+    "part": "m1_enduro.trimFar",
+    "before": 5933,
+    "after": 1304,
+    "ratio": 0.22
+  },
+  {
+    "part": "m1_enduro.steer.paint",
+    "before": 456,
+    "after": 456,
+    "ratio": 1.0
+  },
+  {
+    "part": "m1_enduro.steer.paintFar",
+    "before": 456,
+    "after": 99,
+    "ratio": 0.22
+  },
+  {
+    "part": "m1_enduro.steer.trim",
+    "before": 1052,
+    "after": 1052,
+    "ratio": 1.0
+  },
+  {
+    "part": "m1_enduro.steer.trimFar",
+    "before": 1052,
+    "after": 231,
+    "ratio": 0.22
+  },
+  {
+    "part": "m1_enduro.head",
+    "before": 8,
+    "after": 8,
+    "ratio": 1.0
+  },
+  {
+    "part": "m1_enduro.headFar",
+    "before": 8,
+    "after": 1,
+    "ratio": 0.22
+  },
+  {
+    "part": "m1_enduro.tail",
+    "before": 103,
+    "after": 103,
+    "ratio": 1.0
+  },
+  {
+    "part": "m1_enduro.tailFar",
+    "before": 103,
+    "after": 21,
+    "ratio": 0.22
+  },
+  {
+    "part": "m1_enduro.wheel0.tyre",
+    "before": 1344,
+    "after": 1344,
+    "ratio": 1.0
+  },
+  {
+    "part": "m1_enduro.wheel0.tyreFar",
+    "before": 1344,
+    "after": 294,
+    "ratio": 0.22
+  },
+  {
+    "part": "m1_enduro.wheel0.rim",
+    "before": 856,
+    "after": 856,
+    "ratio": 1.0
+  },
+  {
+    "part": "m1_enduro.wheel0.rimFar",
+    "before": 856,
+    "after": 188,
+    "ratio": 0.22
+  },
+  {
+    "part": "m1_enduro.wheel1.tyre",
+    "before": 1344,
+    "after": 1344,
+    "ratio": 1.0
+  },
+  {
+    "part": "m1_enduro.wheel1.tyreFar",
+    "before": 1344,
+    "after": 294,
+    "ratio": 0.22
+  },
+  {
+    "part": "m1_enduro.wheel1.rim",
+    "before": 856,
+    "after": 856,
+    "ratio": 1.0
+  },
+  {
+    "part": "m1_enduro.wheel1.rimFar",
+    "before": 856,
+    "after": 188,
+    "ratio": 0.22
+  },
+  {
+    "part": "m2_sport.paint",
+    "before": 46720,
+    "after": 5605,
+    "ratio": 0.12
+  },
+  {
+    "part": "m2_sport.paintFar",
+    "before": 46720,
+    "after": 1027,
+    "ratio": 0.022
+  },
+  {
+    "part": "m2_sport.glass",
+    "before": 1792,
+    "after": 536,
+    "ratio": 0.3
+  },
+  {
+    "part": "m2_sport.glassFar",
+    "before": 1792,
+    "after": 38,
+    "ratio": 0.022
+  },
+  {
+    "part": "m2_sport.trim",
+    "before": 209729,
+    "after": 25166,
+    "ratio": 0.12
+  },
+  {
+    "part": "m2_sport.trimFar",
+    "before": 209729,
+    "after": 4614,
+    "ratio": 0.022
+  },
+  {
+    "part": "m2_sport.steer.paint",
+    "before": 11416,
+    "after": 1369,
+    "ratio": 0.12
+  },
+  {
+    "part": "m2_sport.steer.paintFar",
+    "before": 11416,
+    "after": 250,
+    "ratio": 0.022
+  },
+  {
+    "part": "m2_sport.steer.trim",
+    "before": 20253,
+    "after": 2429,
+    "ratio": 0.12
+  },
+  {
+    "part": "m2_sport.steer.trimFar",
+    "before": 20253,
+    "after": 444,
+    "ratio": 0.022
+  },
+  {
+    "part": "m2_sport.head",
+    "before": 7620,
+    "after": 2286,
+    "ratio": 0.3
+  },
+  {
+    "part": "m2_sport.headFar",
+    "before": 7620,
+    "after": 973,
+    "ratio": 0.022
+  },
+  {
+    "part": "m2_sport.tail",
+    "before": 3904,
+    "after": 1170,
+    "ratio": 0.3
+  },
+  {
+    "part": "m2_sport.tailFar",
+    "before": 3904,
+    "after": 84,
+    "ratio": 0.022
+  },
+  {
+    "part": "m2_sport.wheel0.tyre",
+    "before": 9860,
+    "after": 1183,
+    "ratio": 0.12
+  },
+  {
+    "part": "m2_sport.wheel0.tyreFar",
+    "before": 9860,
+    "after": 216,
+    "ratio": 0.022
+  },
+  {
+    "part": "m2_sport.wheel0.rim",
+    "before": 47772,
+    "after": 5732,
+    "ratio": 0.12
+  },
+  {
+    "part": "m2_sport.wheel0.rimFar",
+    "before": 47772,
+    "after": 3759,
+    "ratio": 0.022
+  },
+  {
+    "part": "m2_sport.wheel1.tyre",
+    "before": 10404,
+    "after": 1248,
+    "ratio": 0.12
+  },
+  {
+    "part": "m2_sport.wheel1.tyreFar",
+    "before": 10404,
+    "after": 227,
+    "ratio": 0.022
+  },
+  {
+    "part": "m2_sport.wheel1.rim",
+    "before": 33926,
+    "after": 4071,
+    "ratio": 0.12
+  },
+  {
+    "part": "m2_sport.wheel1.rimFar",
+    "before": 33926,
+    "after": 1188,
+    "ratio": 0.022
+  },
+  {
+    "part": "s1_jimny.opticalGlass",
+    "before": 17818,
+    "after": 5329,
+    "ratio": 0.3
+  },
+  {
+    "part": "s1_jimny.opticalGlassFar",
+    "before": 17818,
+    "after": 390,
+    "ratio": 0.022
+  },
+  {
+    "part": "s1_jimny.glass:0",
+    "before": 2304,
+    "after": 691,
+    "ratio": 0.3
+  },
+  {
+    "part": "s1_jimny.glass:0Far",
+    "before": 2304,
+    "after": 50,
+    "ratio": 0.022
+  },
+  {
+    "part": "s1_jimny.glass:1",
+    "before": 3284,
+    "after": 930,
+    "ratio": 0.3
+  },
+  {
+    "part": "s1_jimny.glass:1Far",
+    "before": 3284,
+    "after": 81,
+    "ratio": 0.022
+  },
+  {
+    "part": "s1_jimny.glass:2",
+    "before": 1840,
+    "after": 551,
+    "ratio": 0.3
+  },
+  {
+    "part": "s1_jimny.glass:2Far",
+    "before": 1840,
+    "after": 40,
+    "ratio": 0.022
+  },
+  {
+    "part": "s1_jimny.glass:3",
+    "before": 1467,
+    "after": 434,
+    "ratio": 0.3
+  },
+  {
+    "part": "s1_jimny.glass:3Far",
+    "before": 1467,
+    "after": 31,
+    "ratio": 0.022
+  },
+  {
+    "part": "s1_jimny.glass:4",
+    "before": 944,
+    "after": 283,
+    "ratio": 0.3
+  },
+  {
+    "part": "s1_jimny.glass:4Far",
+    "before": 944,
+    "after": 24,
+    "ratio": 0.022
+  },
+  {
+    "part": "s1_jimny.wheel0.tyre",
+    "before": 15824,
+    "after": 2055,
+    "ratio": 0.13
+  },
+  {
+    "part": "s1_jimny.wheel0.tyreFar",
+    "before": 15824,
+    "after": 347,
+    "ratio": 0.022
+  },
+  {
+    "part": "s1_jimny.wheel0.rim",
+    "before": 3964,
+    "after": 515,
+    "ratio": 0.13
+  },
+  {
+    "part": "s1_jimny.wheel0.rimFar",
+    "before": 3964,
+    "after": 87,
+    "ratio": 0.022
+  },
+  {
+    "part": "s1_jimny.wheel1.tyre",
+    "before": 15824,
+    "after": 2055,
+    "ratio": 0.13
+  },
+  {
+    "part": "s1_jimny.wheel1.tyreFar",
+    "before": 15824,
+    "after": 347,
+    "ratio": 0.022
+  },
+  {
+    "part": "s1_jimny.wheel1.rim",
+    "before": 3964,
+    "after": 515,
+    "ratio": 0.13
+  },
+  {
+    "part": "s1_jimny.wheel1.rimFar",
+    "before": 3964,
+    "after": 86,
+    "ratio": 0.022
+  },
+  {
+    "part": "s1_jimny.wheel2.tyre",
+    "before": 15824,
+    "after": 2055,
+    "ratio": 0.13
+  },
+  {
+    "part": "s1_jimny.wheel2.tyreFar",
+    "before": 15824,
+    "after": 346,
+    "ratio": 0.022
+  },
+  {
+    "part": "s1_jimny.wheel2.rim",
+    "before": 3964,
+    "after": 514,
+    "ratio": 0.13
+  },
+  {
+    "part": "s1_jimny.wheel2.rimFar",
+    "before": 3964,
+    "after": 86,
+    "ratio": 0.022
+  },
+  {
+    "part": "s1_jimny.wheel3.tyre",
+    "before": 15824,
+    "after": 2056,
+    "ratio": 0.13
+  },
+  {
+    "part": "s1_jimny.wheel3.tyreFar",
+    "before": 15824,
+    "after": 346,
+    "ratio": 0.022
+  },
+  {
+    "part": "s1_jimny.wheel3.rim",
+    "before": 3964,
+    "after": 515,
+    "ratio": 0.13
+  },
+  {
+    "part": "s1_jimny.wheel3.rimFar",
+    "before": 3964,
+    "after": 87,
+    "ratio": 0.022
+  },
+  {
+    "part": "s1_jimny.headLeft",
+    "before": 1805,
+    "after": 527,
+    "ratio": 0.3
+  },
+  {
+    "part": "s1_jimny.headLeftFar",
+    "before": 1805,
+    "after": 37,
+    "ratio": 0.022
+  },
+  {
+    "part": "s1_jimny.tailLeft",
+    "before": 1704,
+    "after": 510,
+    "ratio": 0.3
+  },
+  {
+    "part": "s1_jimny.tailLeftFar",
+    "before": 1704,
+    "after": 37,
+    "ratio": 0.022
+  },
+  {
+    "part": "s1_jimny.headRight",
+    "before": 1805,
+    "after": 527,
+    "ratio": 0.3
+  },
+  {
+    "part": "s1_jimny.headRightFar",
+    "before": 1805,
+    "after": 38,
+    "ratio": 0.022
+  },
+  {
+    "part": "s1_jimny.tailRight",
+    "before": 1704,
+    "after": 511,
+    "ratio": 0.3
+  },
+  {
+    "part": "s1_jimny.tailRightFar",
+    "before": 1704,
+    "after": 37,
+    "ratio": 0.022
+  },
+  {
+    "part": "s1_jimny.shell",
+    "before": 11635,
+    "after": 1510,
+    "ratio": 0.13
+  },
+  {
+    "part": "s1_jimny.shellFar",
+    "before": 11635,
+    "after": 254,
+    "ratio": 0.022
+  },
+  {
+    "part": "s1_jimny.panels",
+    "before": 28399,
+    "after": 3689,
+    "ratio": 0.13
+  },
+  {
+    "part": "s1_jimny.panelsFar",
+    "before": 28399,
+    "after": 624,
+    "ratio": 0.022
+  },
+  {
+    "part": "s1_jimny.hood",
+    "before": 3776,
+    "after": 490,
+    "ratio": 0.13
+  },
+  {
+    "part": "s1_jimny.hoodFar",
+    "before": 3776,
+    "after": 113,
+    "ratio": 0.022
+  },
+  {
+    "part": "s1_jimny.cabin",
+    "before": 106814,
+    "after": 13838,
+    "ratio": 0.13
+  },
+  {
+    "part": "s1_jimny.cabinFar",
+    "before": 106814,
+    "after": 2341,
+    "ratio": 0.022
+  },
+  {
+    "part": "s1_jimny.trim",
+    "before": 192540,
+    "after": 24900,
+    "ratio": 0.13
+  },
+  {
+    "part": "s1_jimny.trimFar",
+    "before": 192540,
+    "after": 4214,
+    "ratio": 0.022
+  },
+  {
+    "part": "s2_suv.glass:0",
+    "before": 86,
+    "after": 86,
+    "ratio": 1.0
+  },
+  {
+    "part": "s2_suv.glass:0Far",
+    "before": 86,
+    "after": 46,
+    "ratio": 0.55
+  },
+  {
+    "part": "s2_suv.glass:1",
+    "before": 68,
+    "after": 68,
+    "ratio": 1.0
+  },
+  {
+    "part": "s2_suv.glass:1Far",
+    "before": 68,
+    "after": 36,
+    "ratio": 0.55
+  },
+  {
+    "part": "s2_suv.glass:2",
+    "before": 86,
+    "after": 86,
+    "ratio": 1.0
+  },
+  {
+    "part": "s2_suv.glass:2Far",
+    "before": 86,
+    "after": 46,
+    "ratio": 0.55
+  },
+  {
+    "part": "s2_suv.glass:3",
+    "before": 48,
+    "after": 48,
+    "ratio": 1.0
+  },
+  {
+    "part": "s2_suv.glass:3Far",
+    "before": 48,
+    "after": 26,
+    "ratio": 0.55
+  },
+  {
+    "part": "s2_suv.wheel0.tyre",
+    "before": 280,
+    "after": 280,
+    "ratio": 1.0
+  },
+  {
+    "part": "s2_suv.wheel0.tyreFar",
+    "before": 280,
+    "after": 154,
+    "ratio": 0.55
+  },
+  {
+    "part": "s2_suv.wheel0.rim",
+    "before": 268,
+    "after": 268,
+    "ratio": 1.0
+  },
+  {
+    "part": "s2_suv.wheel0.rimFar",
+    "before": 268,
+    "after": 146,
+    "ratio": 0.55
+  },
+  {
+    "part": "s2_suv.wheel1.tyre",
+    "before": 280,
+    "after": 280,
+    "ratio": 1.0
+  },
+  {
+    "part": "s2_suv.wheel1.tyreFar",
+    "before": 280,
+    "after": 154,
+    "ratio": 0.55
+  },
+  {
+    "part": "s2_suv.wheel1.rim",
+    "before": 268,
+    "after": 268,
+    "ratio": 1.0
+  },
+  {
+    "part": "s2_suv.wheel1.rimFar",
+    "before": 268,
+    "after": 146,
+    "ratio": 0.55
+  },
+  {
+    "part": "s2_suv.wheel2.tyre",
+    "before": 280,
+    "after": 280,
+    "ratio": 1.0
+  },
+  {
+    "part": "s2_suv.wheel2.tyreFar",
+    "before": 280,
+    "after": 154,
+    "ratio": 0.55
+  },
+  {
+    "part": "s2_suv.wheel2.rim",
+    "before": 268,
+    "after": 268,
+    "ratio": 1.0
+  },
+  {
+    "part": "s2_suv.wheel2.rimFar",
+    "before": 268,
+    "after": 146,
+    "ratio": 0.55
+  },
+  {
+    "part": "s2_suv.wheel3.tyre",
+    "before": 280,
+    "after": 280,
+    "ratio": 1.0
+  },
+  {
+    "part": "s2_suv.wheel3.tyreFar",
+    "before": 280,
+    "after": 154,
+    "ratio": 0.55
+  },
+  {
+    "part": "s2_suv.wheel3.rim",
+    "before": 268,
+    "after": 268,
+    "ratio": 1.0
+  },
+  {
+    "part": "s2_suv.wheel3.rimFar",
+    "before": 268,
+    "after": 146,
+    "ratio": 0.55
+  },
+  {
+    "part": "s2_suv.headLeft",
+    "before": 24,
+    "after": 24,
+    "ratio": 1.0
+  },
+  {
+    "part": "s2_suv.headLeftFar",
+    "before": 24,
+    "after": 13,
+    "ratio": 0.55
+  },
+  {
+    "part": "s2_suv.tailLeft",
+    "before": 79,
+    "after": 79,
+    "ratio": 1.0
+  },
+  {
+    "part": "s2_suv.tailLeftFar",
+    "before": 79,
+    "after": 42,
+    "ratio": 0.55
+  },
+  {
+    "part": "s2_suv.headRight",
+    "before": 24,
+    "after": 24,
+    "ratio": 1.0
+  },
+  {
+    "part": "s2_suv.headRightFar",
+    "before": 24,
+    "after": 13,
+    "ratio": 0.55
+  },
+  {
+    "part": "s2_suv.tailRight",
+    "before": 79,
+    "after": 79,
+    "ratio": 1.0
+  },
+  {
+    "part": "s2_suv.tailRightFar",
+    "before": 79,
+    "after": 42,
+    "ratio": 0.55
+  },
+  {
+    "part": "s2_suv.shell",
+    "before": 538,
+    "after": 538,
+    "ratio": 1.0
+  },
+  {
+    "part": "s2_suv.shellFar",
+    "before": 538,
+    "after": 295,
+    "ratio": 0.55
+  },
+  {
+    "part": "s2_suv.panels",
+    "before": 1013,
+    "after": 1013,
+    "ratio": 1.0
+  },
+  {
+    "part": "s2_suv.panelsFar",
+    "before": 1013,
+    "after": 556,
+    "ratio": 0.55
+  },
+  {
+    "part": "s2_suv.hood",
+    "before": 21,
+    "after": 21,
+    "ratio": 1.0
+  },
+  {
+    "part": "s2_suv.hoodFar",
+    "before": 21,
+    "after": 11,
+    "ratio": 0.55
+  },
+  {
+    "part": "s2_suv.cabin",
+    "before": 934,
+    "after": 934,
+    "ratio": 1.0
+  },
+  {
+    "part": "s2_suv.cabinFar",
+    "before": 934,
+    "after": 513,
+    "ratio": 0.55
+  },
+  {
+    "part": "s2_suv.trim",
+    "before": 2759,
+    "after": 2756,
+    "ratio": 1.0
+  },
+  {
+    "part": "s2_suv.trimFar",
+    "before": 2759,
+    "after": 1515,
+    "ratio": 0.55
+  },
+  {
+    "part": "s3_offroad.glass:0",
+    "before": 36,
+    "after": 36,
+    "ratio": 1.0
+  },
+  {
+    "part": "s3_offroad.glass:0Far",
+    "before": 36,
+    "after": 19,
+    "ratio": 0.55
+  },
+  {
+    "part": "s3_offroad.glass:1",
+    "before": 12,
+    "after": 12,
+    "ratio": 1.0
+  },
+  {
+    "part": "s3_offroad.glass:1Far",
+    "before": 12,
+    "after": 6,
+    "ratio": 0.55
+  },
+  {
+    "part": "s3_offroad.glass:2",
+    "before": 36,
+    "after": 36,
+    "ratio": 1.0
+  },
+  {
+    "part": "s3_offroad.glass:2Far",
+    "before": 36,
+    "after": 19,
+    "ratio": 0.55
+  },
+  {
+    "part": "s3_offroad.glass:3",
+    "before": 24,
+    "after": 24,
+    "ratio": 1.0
+  },
+  {
+    "part": "s3_offroad.glass:3Far",
+    "before": 24,
+    "after": 13,
+    "ratio": 0.55
+  },
+  {
+    "part": "s3_offroad.wheel0.tyre",
+    "before": 280,
+    "after": 280,
+    "ratio": 1.0
+  },
+  {
+    "part": "s3_offroad.wheel0.tyreFar",
+    "before": 280,
+    "after": 154,
+    "ratio": 0.55
+  },
+  {
+    "part": "s3_offroad.wheel0.rim",
+    "before": 262,
+    "after": 262,
+    "ratio": 1.0
+  },
+  {
+    "part": "s3_offroad.wheel0.rimFar",
+    "before": 262,
+    "after": 143,
+    "ratio": 0.55
+  },
+  {
+    "part": "s3_offroad.wheel1.tyre",
+    "before": 280,
+    "after": 280,
+    "ratio": 1.0
+  },
+  {
+    "part": "s3_offroad.wheel1.tyreFar",
+    "before": 280,
+    "after": 154,
+    "ratio": 0.55
+  },
+  {
+    "part": "s3_offroad.wheel1.rim",
+    "before": 262,
+    "after": 262,
+    "ratio": 1.0
+  },
+  {
+    "part": "s3_offroad.wheel1.rimFar",
+    "before": 262,
+    "after": 143,
+    "ratio": 0.55
+  },
+  {
+    "part": "s3_offroad.wheel2.tyre",
+    "before": 280,
+    "after": 280,
+    "ratio": 1.0
+  },
+  {
+    "part": "s3_offroad.wheel2.tyreFar",
+    "before": 280,
+    "after": 154,
+    "ratio": 0.55
+  },
+  {
+    "part": "s3_offroad.wheel2.rim",
+    "before": 262,
+    "after": 262,
+    "ratio": 1.0
+  },
+  {
+    "part": "s3_offroad.wheel2.rimFar",
+    "before": 262,
+    "after": 143,
+    "ratio": 0.55
+  },
+  {
+    "part": "s3_offroad.wheel3.tyre",
+    "before": 280,
+    "after": 280,
+    "ratio": 1.0
+  },
+  {
+    "part": "s3_offroad.wheel3.tyreFar",
+    "before": 280,
+    "after": 154,
+    "ratio": 0.55
+  },
+  {
+    "part": "s3_offroad.wheel3.rim",
+    "before": 262,
+    "after": 262,
+    "ratio": 1.0
+  },
+  {
+    "part": "s3_offroad.wheel3.rimFar",
+    "before": 262,
+    "after": 143,
+    "ratio": 0.55
+  },
+  {
+    "part": "s3_offroad.headLeft",
+    "before": 19,
+    "after": 19,
+    "ratio": 1.0
+  },
+  {
+    "part": "s3_offroad.headLeftFar",
+    "before": 19,
+    "after": 10,
+    "ratio": 0.55
+  },
+  {
+    "part": "s3_offroad.tailLeft",
+    "before": 24,
+    "after": 24,
+    "ratio": 1.0
+  },
+  {
+    "part": "s3_offroad.tailLeftFar",
+    "before": 24,
+    "after": 13,
+    "ratio": 0.55
+  },
+  {
+    "part": "s3_offroad.headRight",
+    "before": 19,
+    "after": 19,
+    "ratio": 1.0
+  },
+  {
+    "part": "s3_offroad.headRightFar",
+    "before": 19,
+    "after": 10,
+    "ratio": 0.55
+  },
+  {
+    "part": "s3_offroad.tailRight",
+    "before": 24,
+    "after": 24,
+    "ratio": 1.0
+  },
+  {
+    "part": "s3_offroad.tailRightFar",
+    "before": 24,
+    "after": 13,
+    "ratio": 0.55
+  },
+  {
+    "part": "s3_offroad.shell",
+    "before": 1340,
+    "after": 1340,
+    "ratio": 1.0
+  },
+  {
+    "part": "s3_offroad.shellFar",
+    "before": 1340,
+    "after": 737,
+    "ratio": 0.55
+  },
+  {
+    "part": "s3_offroad.panels",
+    "before": 858,
+    "after": 858,
+    "ratio": 1.0
+  },
+  {
+    "part": "s3_offroad.panelsFar",
+    "before": 858,
+    "after": 470,
+    "ratio": 0.55
+  },
+  {
+    "part": "s3_offroad.hood",
+    "before": 218,
+    "after": 218,
+    "ratio": 1.0
+  },
+  {
+    "part": "s3_offroad.hoodFar",
+    "before": 218,
+    "after": 118,
+    "ratio": 0.55
+  },
+  {
+    "part": "s3_offroad.cabin",
+    "before": 283,
+    "after": 283,
+    "ratio": 1.0
+  },
+  {
+    "part": "s3_offroad.cabinFar",
+    "before": 283,
+    "after": 155,
+    "ratio": 0.55
+  },
+  {
+    "part": "s3_offroad.trim",
+    "before": 1441,
+    "after": 1441,
+    "ratio": 1.0
+  },
+  {
+    "part": "s3_offroad.trimFar",
+    "before": 1441,
+    "after": 792,
+    "ratio": 0.55
+  }
+]

@@ -129,14 +129,21 @@
       const DOOR_GRID = [8, 6],
         doorRay = new Three.Raycaster(),
         doorFrom = new Three.Vector3(),
-        doorDir = new Three.Vector3();
+        doorDir = new Three.Vector3(),
+        doorAttrA = new Three.Vector3(), doorAttrB = new Three.Vector3(), doorAttrC = new Three.Vector3(),
+        doorAttrWeight = new Three.Vector3();
       function doorPanelGeometries(m, side, x0, x1, y0, y1, origin) {
         const shellPart = m.crumple?.parts.find((p) => p.mesh === m.shell),
           probe = new Three.Mesh(shellPart ? shellPart.source : m.shell.geometry);
         probe.updateMatrixWorld(true);
         const [NX, NY] = DOOR_GRID,
           grid = [],
-          reach = m.dims.w * 1.5;
+          reach = m.dims.w * 1.5,
+          // A new vehicle's paint samples source repeat UVs, atlas rectangle, vertex finish and a separate
+          // sheriff livery. A shaped door must inherit those just as it inherits the original legacy UVs.
+          inherited = m.approvedAsset ? ['avSourceUv', 'avAtlasRect', 'finish', 'color', 'liveryUv']
+            .filter(name => probe.geometry.attributes[name]) : [],
+          inheritedSizes = Object.fromEntries(inherited.map(name => [name, probe.geometry.attributes[name].itemSize]));
         for (let j = 0; j < NY; j++)
           for (let i = 0; i < NX; i++) {
             const x = x0 + ((x1 - x0) * i) / (NX - 1),
@@ -145,7 +152,19 @@
             doorRay.far = reach * 2;
             const hit = doorRay.intersectObject(probe, false)[0];
             if (!hit) return null;
-            grid.push([x, y, hit.point.z, hit.uv ? hit.uv.x : 0.5, hit.uv ? hit.uv.y : 0.5]);
+            const values = {};
+            if (inherited.length) {
+              const pos = probe.geometry.attributes.position, face = hit.face;
+              doorAttrA.fromBufferAttribute(pos, face.a); doorAttrB.fromBufferAttribute(pos, face.b); doorAttrC.fromBufferAttribute(pos, face.c);
+              Three.Triangle.getBarycoord(hit.point, doorAttrA, doorAttrB, doorAttrC, doorAttrWeight);
+              for (const name of inherited) {
+                const attribute = probe.geometry.attributes[name], out = [];
+                for (let component = 0; component < attribute.itemSize; component++)
+                  out.push(attribute.getComponent(face.a, component) * doorAttrWeight.x + attribute.getComponent(face.b, component) * doorAttrWeight.y + attribute.getComponent(face.c, component) * doorAttrWeight.z);
+                values[name] = out;
+              }
+            }
+            grid.push([x, y, hit.point.z, hit.uv ? hit.uv.x : 0.5, hit.uv ? hit.uv.y : 0.5, values]);
           }
         const at = (i, j) => grid[j * NX + i],
           door = { position: [], uv: [], groups: [[], []] },
@@ -154,6 +173,7 @@
           push = (set, p, dz, list) => {
             set.position.push(p[0] - origin.x, p[1] - origin.y, p[2] + side * dz - origin.z);
             set.uv.push(p[3], p[4]);
+            for (const name of inherited) (set[name] || (set[name] = [])).push(...p[5][name]);
             if (list) list.push(set.position.length / 3 - 1);
           },
           quad = (list, a, b, c, d) => list.push(a, b, d, b, c, d);
@@ -196,6 +216,7 @@
         const doorGeometry = new Three.BufferGeometry();
         doorGeometry.setAttribute('position', new Three.Float32BufferAttribute(door.position, 3));
         doorGeometry.setAttribute('uv', new Three.Float32BufferAttribute(door.uv, 2));
+        for (const name of inherited) doorGeometry.setAttribute(name, new Three.Float32BufferAttribute(door[name], inheritedSizes[name]));
         doorGeometry.setIndex([...door.groups[0], ...door.groups[1]]);
         doorGeometry.addGroup(0, door.groups[0].length, 0);
         doorGeometry.addGroup(door.groups[0].length, door.groups[1].length, 1);
@@ -207,6 +228,7 @@
         for (const p of grid) {
           opening.position.push(p[0], p[1], p[2] + side * 0.02);
           opening.uv.push(p[3], p[4]);
+          for (const name of inherited) (opening[name] || (opening[name] = [])).push(...p[5][name]);
         }
         for (let j = 0; j < NY - 1; j++)
           for (let i = 0; i < NX - 1; i++) {
@@ -218,6 +240,7 @@
         const openingGeometry = new Three.BufferGeometry();
         openingGeometry.setAttribute('position', new Three.Float32BufferAttribute(opening.position, 3));
         openingGeometry.setAttribute('uv', new Three.Float32BufferAttribute(opening.uv, 2));
+        for (const name of inherited) openingGeometry.setAttribute(name, new Three.Float32BufferAttribute(opening[name], inheritedSizes[name]));
         openingGeometry.setIndex([...jambIndex, ...cabinIndex]);
         openingGeometry.addGroup(0, jambIndex.length, 0);
         openingGeometry.addGroup(jambIndex.length, cabinIndex.length, 1);

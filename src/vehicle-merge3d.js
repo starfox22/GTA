@@ -204,6 +204,8 @@
         return (
           // lookSwitches({ vehicleMerge: false }) draws every car from its own parts (an A/B in one page).
           lookSwitchState.vehicleMerge &&
+          // Approved models swap immutable near/far parts: a near-only merge would defeat their LOD budget.
+          !m.approvedLodParts &&
           c !== player.car &&
           c.hp > 0 &&
           c.hp >= c.maxhp &&

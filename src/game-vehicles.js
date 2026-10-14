@@ -728,6 +728,14 @@
       return spec;
     }
     Object.values(VEHICLE_DEFINITIONS).forEach(roadPerformance);
+    // Approved civilian bodies retain the RANGER drivetrain; their physical envelope
+    // follows the authored mesh. Cached records keep this hot lookup allocation-free.
+    const approvedSuvSpecs = [
+      [3.6378701925, 1.8881164789, 1.8599059582],
+      [4.6112673570, 1.7332332755, 2.0676090163],
+      [3.9394364708, 1.5696125417, 1.9600267748],
+    ].map(([length, height, width]) => ({ ...VEHICLE_DEFINITIONS.suv,
+      l: length * UNITS_PER_METRE, w: width * UNITS_PER_METRE, height: height * UNITS_PER_METRE }));
     // A plane's spec is the base plane with its airframe's numbers on top. The
     // merged record is made once per airframe: this is asked many times per car
     // per physics step, and a fresh copy each time was a steady stream of garbage.
@@ -738,6 +746,8 @@
       // Asked ~10,000 times a frame. The type is read first and `airframe` only for an
       // aircraft: for a car, reading a property it does not carry costs four times the whole call.
       const type = vehicle?.type;
+      if (type === 'suv' && typeof vehicle.id === 'number' && Number.isFinite(vehicle.id) && !vehicle.lawUnit && !vehicle.policeLook)
+        return approvedSuvSpecs[(vehicle.id >>> 0) % approvedSuvSpecs.length];
       if ((type === 'plane' || type === 'helicopter') && vehicle.airframe) {
         const key = vehicle.type + ':' + vehicle.airframe;
         let spec = airframeSpecCache.get(key);

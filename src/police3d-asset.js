@@ -18,6 +18,7 @@
       // patrol and agents' SUVs on the Suburban. A body with no model in the build stays procedural (the SWAT Bearcat).
       const POLICE_ASSET_TYPES = { crownvic: 'police', charger: 'police_charger', utility: 'police_suv', tahoe: 'police_suv' };
       function policeAssetType(body) {
+        if ((body === 'utility' || body === 'tahoe') && vaEnabled && approvedVehicleModel('s2_suv')) return 's2_suv';
         const type = POLICE_ASSET_TYPES[body];
         return type && vehicleAssetModel(type) ? type : null;
       }
@@ -26,10 +27,11 @@
         const marked = look.equipment === 'marked',
           key = [body.name, look.equipment, l, w].join(':');
         if (policeAssetKits.has(key)) return policeAssetKits.get(key);
-        const data = vaData(),
+        const approvedKey = policeAssetType(body.name) === 's2_suv' ? 's2_suv' : null,
+          data = approvedKey ? approvedVehicleData() : vaData(),
           model = data.header.models[policeAssetType(body.name)],
           M = UNITS_PER_METRE / POLICE_DRAW_SCALE,
-          k = l / model.dims[0],
+          k = approvedKey ? Math.min(l / model.dims[0], w / 0.87 / model.dims[2], M) : l / model.dims[0],
           gm = model.glass,
           g = {
             base: gm.base * k,
@@ -56,24 +58,27 @@
             return { yb: lerpNumber(sec[i][0], sec[i + 1][0], f) * k, top: lerpNumber(sec[i][1], sec[i + 1][1], f) * k, half: lerpNumber(sec[i][2], sec[i + 1][2], f) * k };
           },
           shell = vaGeometry(model, data, 'shell', k);
-        policeAssetLiveryUv(shell, body, l, w, station);
+        if (approvedKey) shell.setAttribute('liveryUv', shell.attributes.uv.clone());
+        policeAssetLiveryUv(shell, body, l, w, station, approvedKey ? 'liveryUv' : 'uv');
         const trimParts = marked ? ['trim', 'lightbar', 'cabin'] : ['trim', 'cabin'],
           trim = vaGeometry(model, data, trimParts, k),
           outer = trimParts.slice(0, -1).reduce((n, part) => n + (model.parts[part]?.triangles || 0), 0) * 3,
           kit = {
             asset: model,
+            approvedKey,
+            police: true,
             type: model.type,
             l,
             k,
             glass: g,
             shell,
             cabin: vaGeometry(model, data, 'glass', k, swatchUv(POLICE_SWATCH.black)),
-            hood: vaGeometry(model, data, 'hood', k, swatchUv(POLICE_SWATCH.hood)) || policeSwatchBox(POLICE_SWATCH.hood),
+            hood: approvedKey ? policeApprovedSwatch(vaGeometry(model, data, 'hood', k), POLICE_SWATCH.hood) : vaGeometry(model, data, 'hood', k, swatchUv(POLICE_SWATCH.hood)) || policeSwatchBox(POLICE_SWATCH.hood),
             hoodBaseY: model.hinge[1] * k,
             hoodHinge: model.hinge[0] * k,
-            paint: policeAssetPanels(vaGeometry(model, data, 'panels', k)),
-            door: policeSwatchBox(POLICE_SWATCH.door),
-            trunk: policeSwatchBox(POLICE_SWATCH.trunk),
+            paint: approvedKey ? policeApprovedPanels(vaGeometry(model, data, 'panels', k)) : policeAssetPanels(vaGeometry(model, data, 'panels', k)),
+            door: approvedKey ? approvedSuvPanelBox(model, POLICE_SWATCH.door) : policeSwatchBox(POLICE_SWATCH.door),
+            trunk: approvedKey ? approvedSuvPanelBox(model, POLICE_SWATCH.trunk) : policeSwatchBox(POLICE_SWATCH.trunk),
             wheel: body.wheel,
             trim,
             trimOuter: trim ? civDrawRange(trim, outer) : null,
@@ -86,7 +91,7 @@
             roofDecal: null,
             seats: carSeatPlan(g, l, w, M, body.name, { hipX: ((gm.xf - 1.15) * k) / l }),
           };
-        const tailX = -0.48 * l,
+        const tailX = approvedKey ? model.x0 * k : -0.48 * l,
           hingeX = Math.max(g.xb * l + 0.02 * M, tailX + 0.06 * l);
         kit.trunkDeck = { hingeX, hingeY: station(hingeX).top, tailX, tailY: station(tailX).top };
         for (const name of ['headLeft', 'headRight', 'tailLeft', 'tailRight']) {
@@ -97,7 +102,7 @@
         model.wheels.forEach((wh, i) => {
           kit.assetWheels.push({ x: wh.x * k, y: wh.y * k, z: wh.z * k, r: wh.r * k, side: wh.side, front: wh.front, tyre: vaGeometry(model, data, 'wheel' + i + '.tyre', k), rim: vaGeometry(model, data, 'wheel' + i + '.rim', k) });
         });
-        kit.assetWheels.sort((a, b) => b.x - a.x || a.side - b.side);
+        kit.assetWheels.sort((a, b) => approvedKey ? Number(b.front) - Number(a.front) || a.side - b.side : b.x - a.x || a.side - b.side);
         // ---- Lights: the bar's lenses (marked) or the dash, grille and deck lights (unmarked), and the rear window bar.
         const lights = policeSet(),
           beaconLeft = policeSet(),
@@ -144,6 +149,33 @@
             if (x >= rear - 0.5 && x <= front + 0.5) top = Math.max(top, profile[i] * k);
           }
           kit.roofDecal = { x: (front + rear) / 2, y: top + 0.05, length: front - rear, width: 2 * g.wt * w * 0.84, lift: null };
+        } else if (marked && approvedKey) {
+          // Civilian source bodies have no police bar. Fit real marked equipment to their measured roof,
+          // rather than silently giving a sheriff vehicle only the unmarked dash lights.
+          const equipment = policeSet(), barX = lerpNumber(g.rf, g.rb, 0.42) * l,
+            barY = roofTop + 0.14 * M, length = 2 * g.wt * w * 0.92;
+          for (const side of [-1, 1])
+            policeAdd(equipment, boxGeo, barX, roofTop + 0.055 * M, side * length * 0.26, 0.16 * M, 0.10 * M, 0.14 * M, '#171b21');
+          policeAdd(equipment, roundedBar(length, 0.11 * M, 0.22 * M, 0.025 * M), barX, barY, 0, 1, 1, 1, '#20252b');
+          const segments = [[POLICE_RED, 0], [POLICE_RED, 1], [POLICE_WHITE, 4], [POLICE_WHITE, 4], [POLICE_BLUE, 2], [POLICE_BLUE, 3]];
+          segments.forEach(([color, channel], i) => {
+            const z = ((i + 0.5) / segments.length - 0.5) * length;
+            policeAdd(lights, boxGeo, barX, barY + 0.055 * M, z, 0.20 * M, 0.095 * M, length / segments.length * 0.94, color, { channel });
+            policeAdd(i < 3 ? beaconLeft : beaconRight, boxGeo, barX, barY + 0.06 * M, z, 0.20 * M, 0.09 * M, length / segments.length * 0.94, color);
+          });
+          kit.equipment = policeGeometry(equipment);
+          kit.lightbarX = barX;
+          kit.lightbarDepth = 0.22 * M;
+          anchor(barX, barY + 0.12 * M, -length * 0.32, 'red', 22, [0, 1]);
+          anchor(barX, barY + 0.12 * M, length * 0.32, 'blue', 22, [2, 3]);
+          anchor(barX + 0.14 * M, barY, 0, 'white', 12, [4], 0.45);
+          for (const side of [-1, 1]) {
+            const front = model.x1 * k - 0.05 * M, grilleY = kit.halos.headLeft?.y || g.base * 0.75;
+            policeAdd(lights, boxGeo, front, grilleY, side * w * 0.12, 0.04 * M, 0.075 * M, 0.19 * M, side < 0 ? POLICE_RED : POLICE_BLUE, { channel: side < 0 ? 5 : 6 });
+            anchor(front + 0.3, grilleY, side * w * 0.12, side < 0 ? 'red' : 'blue', 10, [side < 0 ? 5 : 6], 0.8);
+          }
+          const decalFront = barX - 0.18 * M, decalRear = g.rb * l + 0.08 * M;
+          kit.roofDecal = { x: (decalFront + decalRear) / 2, y: roofTop + 0.05, length: Math.max(0.3 * M, decalFront - decalRear), width: 2 * g.wt * w * 0.84, lift: null };
         } else {
           for (const [s, color, channel] of [[-0.62, POLICE_RED, 0], [-0.3, POLICE_RED, 1], [0.3, POLICE_BLUE, 2], [0.62, POLICE_BLUE, 3]]) {
             const p = glassPoint(g, l, w, 'front', s, 0.9),
@@ -177,6 +209,13 @@
           sideY = side.yb + (side.top - side.yb) * 0.6;
         kit.trunkDecal = { x: trunkX, y: station(trunkX).top + 0.04 };
         kit.sideDecal = { x: sideX, y: sideY, half: policeAssetHalf(shell, sideX, sideY, 0.15 * M, 0.1 * M) || side.half };
+        if (approvedKey) {
+          approvedSuvFarKit(kit, model, data, k);
+          kit.far.shell.setAttribute('liveryUv', kit.far.shell.attributes.uv.clone());
+          policeAssetLiveryUv(kit.far.shell, body, l, w, station, 'liveryUv');
+          kit.far.hood = policeApprovedSwatch(kit.far.hood, POLICE_SWATCH.hood);
+          kit.far.paint = policeApprovedPanels(kit.far.paint);
+        }
         policeAssetKits.set(key, kit);
         return kit;
       }
@@ -184,12 +223,12 @@
        * The livery's UVs on the model's shell: u along the car as the lofted shell's, v the point of the crownvic's
        * section ring (policeRing / policeRingV) nearest the vertex, the ring scaled to the model's section there.
        */
-      function policeAssetLiveryUv(geo, body, l, w, station) {
+      function policeAssetLiveryUv(geo, body, l, w, station, attribute = 'uv') {
         const ring = policeRing(body),
           vs = policeRingV(body, w),
           n = ring.length,
           pos = geo.attributes.position,
-          uv = geo.attributes.uv;
+          uv = geo.attributes[attribute];
         for (let i = 0; i < pos.count; i++) {
           const x = pos.getX(i),
             s = station(x),
@@ -216,6 +255,42 @@
           uv.setXY(i, clamp(x / l + 0.5, 0, 1), v);
         }
         uv.needsUpdate = true;
+      }
+      // A second UV set carries sheriff paint while retaining the source atlas and finish in the first set.
+      function policeApprovedSwatch(geo, swatch) {
+        if (!geo) return policeSwatchBox(swatch);
+        const uvAt = swatchUv(swatch), uv = new Float32Array(geo.attributes.position.count * 2);
+        for (let i = 0; i < uv.length; i += 2) { uv[i] = uvAt[0]; uv[i + 1] = uvAt[1]; }
+        geo.setAttribute('liveryUv', new Three.BufferAttribute(uv, 2));
+        return geo;
+      }
+      function policeApprovedPanels(geo) {
+        if (!geo) return policeApprovedSwatch(policeSwatchBox(POLICE_SWATCH.roof), POLICE_SWATCH.roof);
+        const attributes = Object.fromEntries(Object.keys(geo.attributes).map(name => [name, []])),
+          roofUv = swatchUv(POLICE_SWATCH.roof), pillarUv = swatchUv(POLICE_SWATCH.pillar),
+          map = new Map(), index = [], livery = [], pos = geo.attributes.position,
+          a = new Three.Vector3(), b = new Three.Vector3(), c = new Three.Vector3();
+        for (let i = 0; i < geo.index.count; i += 3) {
+          a.fromBufferAttribute(pos, geo.index.getX(i)); b.fromBufferAttribute(pos, geo.index.getX(i + 1)); c.fromBufferAttribute(pos, geo.index.getX(i + 2));
+          const roof = b.sub(a).cross(c.sub(a)).normalize().y > 0.7, uv = roof ? roofUv : pillarUv;
+          for (let j = 0; j < 3; j++) {
+            const source = geo.index.getX(i + j), key = source * 2 + (roof ? 1 : 0);
+            let target = map.get(key);
+            if (target === undefined) {
+              target = livery.length / 2; map.set(key, target); livery.push(...uv);
+              for (const [name, out] of Object.entries(attributes)) {
+                const attr = geo.attributes[name];
+                for (let component = 0; component < attr.itemSize; component++) out.push(attr.getComponent(source, component));
+              }
+            }
+            index.push(target);
+          }
+        }
+        const split = new Three.BufferGeometry();
+        for (const [name, values] of Object.entries(attributes)) split.setAttribute(name, new Three.Float32BufferAttribute(values, geo.attributes[name].itemSize));
+        split.setAttribute('liveryUv', new Three.Float32BufferAttribute(livery, 2)); split.setIndex(index);
+        split.computeBoundingSphere(); split.computeBoundingBox(); sharedGeometries.add(split);
+        return split;
       }
       // Pillars and roof: each triangle on the livery's roof swatch (facing up) or its pillar swatch, vertices unshared
       // where the two meet (a triangle never blends across the swatch band).
@@ -316,14 +391,14 @@
           kit = policeAssetKit(look, body, l, w),
           g = kit.glass,
           M = UNITS_PER_METRE / POLICE_DRAW_SCALE,
-          assetMaterials = vaMaterials(),
+          assetMaterials = kit.approvedKey ? approvedVehicleMaterials(kit.asset) : vaMaterials(),
           group = new Three.Group(),
           bodyGroup = new Three.Group();
         group.add(bodyGroup);
         scene.add(group);
         const livery = look.unmarked ? null : policeLiveryTexture(look.livery, body, l, w),
           finish = look.unmarked ? { roughness: 0.3, metalness: 0.45 } : { roughness: 0.3, metalness: 0.06 },
-          paint = new Three.MeshPhysicalMaterial({
+          paint = kit.approvedKey ? approvedVehiclePaint({ color: look.paint }, kit.asset, { livery, police: true }) : new Three.MeshPhysicalMaterial({
             color: look.paint,
             map: livery,
             emissive: '#000000',
@@ -341,7 +416,10 @@
         hood.castShadow = false;
         cabin.castShadow = false;
         panels.castShadow = true;
-        if (kit.trim) mesh(kit.trim, assetMaterials.trim, bodyGroup, 0, 0, 0);
+        const assetTrim = kit.trim ? mesh(kit.trim, assetMaterials.trim, bodyGroup, 0, 0, 0) : null;
+        const approvedInterior = kit.interiorFallback ? mesh(kit.interiorFallback, approvedSuvCabinMaterial(), bodyGroup, 0, 0, 0) : null;
+        if (approvedInterior) approvedInterior.castShadow = false;
+        if (kit.equipment) mesh(kit.equipment, policeTrimMaterial, bodyGroup, 0, 0, 0);
         const lightMaterial = policeLightMaterial(),
           lights = mesh(kit.lights, lightMaterial, bodyGroup, 0, 0, 0);
         lights.castShadow = lights.receiveShadow = false;
@@ -381,7 +459,8 @@
           return { sprite, channels: a.channels, strength: a.strength };
         });
         const livePaint = livery ? policeImpostorPaint(livery) : null;
-        return {
+        const approvedImpostorPaint = kit.approvedKey ? approvedVehicleImpostorPaint(kit.asset, { livery, police: true }) : null;
+        const result = {
           wipers: undefined,
           group,
           body: bodyGroup,
@@ -396,6 +475,8 @@
           look,
           dims: { l, w, h: g.base, roof: g.roof, van: false, sill: kit.sill + 0.1 * M },
           shell,
+          assetTrim,
+          approvedInterior,
           shellBase: shell.geometry.attributes.position.array,
           kit,
           panels,
@@ -428,12 +509,15 @@
           wigwag: 0,
           reflective: -1,
           impostorParts: [
-            { mesh: shell, material: livePaint || null, tint: true, shadow: true },
-            { mesh: cabin, material: policeGlass, shadow: true },
-            { mesh: hood, material: livePaint || null, tint: true },
-            { mesh: panels, material: livePaint || null, tint: true },
-            ...(kit.trimOuter ? [{ geometry: kit.trimOuter, material: assetMaterials.trim }] : []),
+            { mesh: shell, geometry: kit.far?.shell, material: kit.approvedKey ? approvedImpostorPaint : livePaint || null, tint: true, shadow: true },
+            { mesh: cabin, geometry: kit.far?.cabin, material: policeGlass, shadow: true },
+            { mesh: hood, geometry: kit.far?.hood, material: kit.approvedKey ? approvedImpostorPaint : livePaint || null, tint: true },
+            { mesh: panels, geometry: kit.far?.paint, material: kit.approvedKey ? approvedImpostorPaint : livePaint || null, tint: true },
+            ...(kit.trimOuter ? [{ geometry: kit.far?.trimOuter || kit.trimOuter, material: assetMaterials.trim }] : []),
+            ...(kit.equipment ? [{ geometry: kit.equipment, material: policeTrimMaterial }] : []),
             ...(kit.beaconLeft ? [{ geometry: kit.beaconLeft, beacon: 'left' }, { geometry: kit.beaconRight, beacon: 'right' }] : []),
           ],
         };
+        if (kit.approvedKey) approvedSuvLodParts(result);
+        return result;
       }

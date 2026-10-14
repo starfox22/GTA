@@ -94,6 +94,7 @@
         // type, draw calls, shadow casters and triangles, the parts by triangles.
         // The downloaded vehicle models in the build and the kits made from them (vehicle-assets3d.js ASSET CARS).
         assetCars: () => assetCarReport(),
+        approvedAssets: () => approvedVehicleReport(),
         // The downloaded aircraft models (aircraft-assets3d.js ASSET AIRCRAFT) and the switch for before/after rows.
         aircraftAssets: () => aircraftAssetReport(),
         // The street dogs' downloaded model (dog3d.js DOG MODEL).
@@ -121,7 +122,8 @@
           for (const [c, m] of carModels) {
             const badge = m.badge || m.kit?.badge || null;
             // `asset`: a downloaded model, which carries its maker's badges (vehicle-assets3d.js ASSET CARS).
-            out.push({ id: c.id, type: c.type, body: m.look?.body || null, badge, asset: m.asset || null });
+            out.push({ id: c.id, type: c.type, body: m.look?.body || null, livery: m.look?.livery || null,
+              paint: m.look?.paint || null, badge, asset: m.asset || null });
           }
           return out;
         },

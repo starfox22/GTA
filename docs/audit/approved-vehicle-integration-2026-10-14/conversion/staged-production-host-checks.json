@@ -1,0 +1,21 @@
+{
+  "stagedPack": "/tmp/GTA-optical-exterior-rebuild-fresh/assets/approved-vehicle-models.bin",
+  "totalChecks": 1790,
+  "tests": [
+    {
+      "test": "approved-vehicle-pipeline",
+      "checks": 1401,
+      "pass": true
+    },
+    {
+      "test": "approved-motorcycle-rigs",
+      "checks": 167,
+      "pass": true
+    },
+    {
+      "test": "approved-motorcycle-rider-fit",
+      "checks": 222,
+      "pass": true
+    }
+  ]
+}

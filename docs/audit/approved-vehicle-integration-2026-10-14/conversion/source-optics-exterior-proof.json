@@ -1,0 +1,172 @@
+{
+  "approvedPackSHA256": "9fc2408fd1f8b7b2649a4e69d6868854c22987856ef6868e0f8d0c3b51d28512",
+  "frozenPackSHA256": "6e2268924198c8f7531084aee9d9afcdace61d808b979bfef57aeab5cbc4722e",
+  "integrityChecks": 1483,
+  "sourcePartition": {
+    "m1_enduro": {
+      "faces": 12351,
+      "allSourceFacesAssignedExactlyOnce": true
+    },
+    "m2_sport": {
+      "faces": 403396,
+      "allSourceFacesAssignedExactlyOnce": true
+    },
+    "s1_jimny": {
+      "faces": 456991,
+      "allSourceFacesAssignedExactlyOnce": true
+    },
+    "s2_suv": {
+      "faces": 7951,
+      "allSourceFacesAssignedExactlyOnce": true
+    },
+    "s3_offroad": {
+      "faces": 6502,
+      "allSourceFacesAssignedExactlyOnce": true
+    }
+  },
+  "unaffectedModels": {
+    "m1_enduro": {
+      "arrayCount": 144,
+      "changedArrays": [],
+      "metadataIdenticalExceptPaintUv": true,
+      "positionsNormalsIndicesRawUVFinishIdentical": true
+    },
+    "m2_sport": {
+      "arrayCount": 158,
+      "changedArrays": [],
+      "metadataIdenticalExceptPaintUv": true,
+      "positionsNormalsIndicesRawUVFinishIdentical": true
+    },
+    "s3_offroad": {
+      "arrayCount": 260,
+      "changedArrays": [
+        "s3_offroad.glass.uv",
+        "s3_offroad.glass.t",
+        "s3_offroad.glassFar.uv",
+        "s3_offroad.glassFar.t"
+      ],
+      "metadataIdenticalExceptPaintUv": true,
+      "positionsNormalsIndicesRawUVFinishIdentical": true
+    }
+  },
+  "opticalAlpha": [
+    {
+      "material": "Carro_Reflect",
+      "opacity": 0.4,
+      "tileRect": [
+        3602,
+        2,
+        256,
+        256
+      ],
+      "sourceAlphaRange": [
+        102,
+        102
+      ],
+      "actualAlphaRange": [
+        102,
+        102
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": "Carro_Reflector",
+      "opacity": 0.4,
+      "tileRect": [
+        3602,
+        2,
+        256,
+        256
+      ],
+      "sourceAlphaRange": [
+        102,
+        102
+      ],
+      "actualAlphaRange": [
+        102,
+        102
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": "Carro_Vidro_Laranja",
+      "opacity": 0.4,
+      "tileRect": [
+        3898,
+        26,
+        8,
+        8
+      ],
+      "sourceAlphaRange": [
+        102,
+        102
+      ],
+      "actualAlphaRange": [
+        102,
+        102
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": "Carro_Vidros",
+      "opacity": 0.4,
+      "tileRect": [
+        3910,
+        26,
+        8,
+        8
+      ],
+      "sourceAlphaRange": [
+        102,
+        102
+      ],
+      "actualAlphaRange": [
+        102,
+        102
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": "Carro_Vidros_Vermelhos",
+      "opacity": 0.5,
+      "tileRect": [
+        3922,
+        26,
+        8,
+        8
+      ],
+      "sourceAlphaRange": [
+        128,
+        128
+      ],
+      "actualAlphaRange": [
+        128,
+        128
+      ],
+      "allVisibleTexelsExact": true
+    }
+  ],
+  "sourceTexelProof": {
+    "s1_jimny": {
+      "materialsChecked": 26,
+      "allVisibleAlbedoTexelsAndAllOrmBytesExact": true,
+      "hiddenRGBBehindZeroAlphaNotClaimed": true
+    },
+    "s2_suv": {
+      "bodyAtlasRGBAAndOrmByteIdenticalToFrozen": true,
+      "onlyOriginalCoating93PigmentNeutralized": true
+    }
+  },
+  "s2Exterior": {
+    "movedFaces": 840,
+    "roofFaces": 406,
+    "upperDoorFaces": 434,
+    "allMovedOriginalOrmMetallicZero": true,
+    "verifiedFirstHitRays": 45,
+    "allRaysNowShellOrPanels": true,
+    "sourceFaceIDsSHA256": "fc55f60f9f7eac20e3a881bd7f4053b1e2df1810bec6d6fc0bffba75555074d4",
+    "positionsNormalsUvRgbOrmNotReshaped": true
+  },
+  "legacyHashesStillExact": true,
+  "scope": "CPU source/packing/material evidence only; no rendered appearance or FPS claim."
+}

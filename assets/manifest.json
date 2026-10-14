@@ -565,5 +565,35 @@
     "file": "assets/audio/sealife-blow.ogg",
     "mime": "audio/ogg",
     "original": "src/assets/audio/sealife-blow.ogg"
+  },
+  {
+    "id": "media-approved-vehicle-models",
+    "file": "assets/approved-vehicle-models.bin",
+    "mime": "application/octet-stream",
+    "original": "assets/approved-vehicle-models.bin"
+  },
+  {
+    "id": "media-approved-vehicle-albedo",
+    "file": "assets/approved-vehicle-albedo.webp",
+    "mime": "image/webp",
+    "original": "assets/approved-vehicle-albedo.webp"
+  },
+  {
+    "id": "media-approved-vehicle-orm",
+    "file": "assets/approved-vehicle-orm.webp",
+    "mime": "image/webp",
+    "original": "assets/approved-vehicle-orm.webp"
+  },
+  {
+    "id": "media-approved-vehicle-albedo-low",
+    "file": "assets/approved-vehicle-albedo-low.webp",
+    "mime": "image/webp",
+    "original": "assets/approved-vehicle-albedo-low.webp"
+  },
+  {
+    "id": "media-approved-vehicle-orm-low",
+    "file": "assets/approved-vehicle-orm-low.webp",
+    "mime": "image/webp",
+    "original": "assets/approved-vehicle-orm-low.webp"
   }
 ]

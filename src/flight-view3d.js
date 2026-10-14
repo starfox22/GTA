@@ -465,13 +465,15 @@
       // lightbar's beacons (police3d.js `impostorParts`); other cars by type.
       const impostorBeaconMaterial = new Three.MeshBasicMaterial({ vertexColors: true });
       function bodyPoolFor(c) {
-        const key = policeImpostorKey(c) || c.type;
+        const key = policeImpostorKey(c) || approvedSuvKey(c) || c.type;
         let pool = bodyPools.get(key);
         if (pool !== undefined) return pool;
         const m = carModels.get(c);
         if (!m) return null;
         // A dented body is its own copy: wait for a pristine one of this type.
-        if (m.car && m.shell.geometry.attributes.position.array !== m.shellBase) return null;
+        if (m.car && m.shell.geometry.attributes.position.array !== m.shellBase &&
+          // An approved far shell is an immutable kit part too, not a dented per-car copy.
+          !(m.approvedAsset && m.shell.geometry === m.kit?.far?.shell)) return null;
         pool = false;
         // Only a closed body (not the roadster's open cockpit) makes a pool.
         if (m.car && m.cabin && m.cabinBase) {
@@ -494,7 +496,7 @@
           pool = {
             parts: specs.map((spec) => {
               const part = {
-                mesh: make(spec.mesh ? spec.mesh.geometry : spec.geometry, spec.beacon ? impostorBeaconMaterial : spec.material || bodyPaint, spec.shadow),
+                mesh: make(spec.geometry || spec.mesh?.geometry, spec.beacon ? impostorBeaconMaterial : spec.material || bodyPaint, spec.shadow),
                 // Relative to the body, whatever hinge or pivot the part hangs from.
                 local: spec.mesh ? new Three.Matrix4().multiplyMatrices(bodyInverse, spec.mesh.matrixWorld) : new Three.Matrix4(),
                 tint: !!spec.tint,

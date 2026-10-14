@@ -20,6 +20,7 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/vehicles-and-driving.md | Vehicle specs, handling, brakes and assists, crashes, riders, cliffs, aircraft (models: -models.md) |
 | areas/vehicles-and-driving-models.md | Vehicle models: the damage contract, draw calls and the pristine merge, body impostors, flagships |
 | areas/vehicles-and-driving-models-assets.md | Downloaded vehicle models: the converter, asset cars, the Crown Vic patrol body, boats |
+| areas/vehicles-and-driving-models-approved-suvs.md | Approved SUV replacements: source bodies, wheel pivots, livery, cabins, doors and near/far geometry |
 | areas/vehicles-and-driving-models-motorcycles.md | Motorcycle models: downloaded parts, source unsteering, measured rolling axles, steering/lock/spin, flat tyres and real-size mud contacts |
 | areas/vehicles-and-driving-models-military.md | Military geometry kits, original HMMWV lamp lenses, matte finishes, steering and far LOD |
 | areas/vehicles-and-driving-models-aircraft.md | Downloaded aircraft: the SKYRANGER 429 civil helicopter, the SKYLARK 172 light aircraft |

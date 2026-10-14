@@ -1,0 +1,1353 @@
+{
+  "htmlSha256": "8ed4ef3185e3e3f10819241d44254cc6aafc2215beaa8ec90006c641ce4f1e02",
+  "testSha256": "c8e5a1f1b38f0303fee490e9eaba9c18a3b9a98cad406e0474327b1936f4f951",
+  "assertions": 155,
+  "notes": [],
+  "pilots": [
+    {
+      "args": [
+        5716,
+        -4690,
+        12,
+        14
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 5716,
+        "y": -4695,
+        "speed": 8,
+        "hp": 130,
+        "left": 5,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        5716,
+        -4572,
+        20,
+        22
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 3,
+        "x": 5716,
+        "y": -4583,
+        "speed": 7,
+        "hp": 130,
+        "left": 11,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        6386,
+        -4685,
+        12,
+        14
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 6386,
+        "y": -4687,
+        "speed": 8,
+        "hp": 205,
+        "left": 2,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        6386,
+        -4572,
+        20,
+        22
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 3,
+        "x": 6386,
+        "y": -4582,
+        "speed": 7,
+        "hp": 205,
+        "left": 10,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        7994,
+        -4679,
+        12,
+        14
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 7994,
+        "y": -4683,
+        "speed": 8,
+        "hp": 120,
+        "left": 4,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        7994,
+        -4572,
+        20,
+        22
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 3,
+        "x": 7994,
+        "y": -4581,
+        "speed": 7,
+        "hp": 120,
+        "left": 9,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        8704,
+        -4694,
+        12,
+        14
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 3,
+        "x": 8704,
+        "y": -4691,
+        "speed": 6,
+        "hp": 250,
+        "left": 3,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        8704,
+        -4572,
+        20,
+        22
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 3,
+        "x": 8705,
+        "y": -4582,
+        "speed": 8,
+        "hp": 250,
+        "left": 10,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        8906,
+        -4751,
+        12,
+        14
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 8906,
+        "y": -4756,
+        "speed": 7,
+        "hp": 110,
+        "left": 5,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        8906,
+        -4572,
+        20,
+        22
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 3,
+        "x": 8906,
+        "y": -4582,
+        "speed": 8,
+        "hp": 110,
+        "left": 10,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        9749,
+        -3916,
+        12,
+        14
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 9750,
+        "y": -3916,
+        "speed": 7,
+        "hp": 130,
+        "left": 1,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        9628,
+        -3916,
+        20,
+        22
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 3,
+        "x": 9639,
+        "y": -3916,
+        "speed": 8,
+        "hp": 130,
+        "left": 11,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        9737,
+        -3096,
+        12,
+        14
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 9742,
+        "y": -3096,
+        "speed": 8,
+        "hp": 130,
+        "left": 5,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        9628,
+        -3096,
+        20,
+        22
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 3,
+        "x": 9637,
+        "y": -3096,
+        "speed": 7,
+        "hp": 130,
+        "left": 9,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        9734,
+        -2804,
+        12,
+        14
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 9736,
+        "y": -2804,
+        "speed": 8,
+        "hp": 205,
+        "left": 2,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        9628,
+        -2804,
+        20,
+        22
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 3,
+        "x": 9633,
+        "y": -2804,
+        "speed": 8,
+        "hp": 205,
+        "left": 5,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        5940,
+        -3820,
+        12,
+        14
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 5940,
+        "y": -3824,
+        "speed": 8,
+        "hp": 120,
+        "left": 4,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        5940,
+        -3772,
+        20,
+        22
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 5940,
+        "y": -3781,
+        "speed": 7,
+        "hp": 120,
+        "left": 9,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        6060,
+        -3820,
+        12,
+        14
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 3,
+        "x": 6060,
+        "y": -3818,
+        "speed": 6,
+        "hp": 250,
+        "left": 2,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        6060,
+        -3772,
+        20,
+        22
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 6060,
+        "y": -3778,
+        "speed": 7,
+        "hp": 250,
+        "left": 6,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        6734,
+        -3820,
+        12,
+        14
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 6734,
+        "y": -3825,
+        "speed": 7,
+        "hp": 110,
+        "left": 5,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        6734,
+        -3772,
+        20,
+        22
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 1,
+        "x": 6734,
+        "y": -3782,
+        "speed": 6,
+        "hp": 110,
+        "left": 10,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        7044,
+        -3820,
+        12,
+        14
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 7044,
+        "y": -3822,
+        "speed": 7,
+        "hp": 130,
+        "left": 2,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        7044,
+        -3772,
+        20,
+        22
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 7044,
+        "y": -3779,
+        "speed": 6,
+        "hp": 130,
+        "left": 7,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        9140,
+        -3820,
+        12,
+        14
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 9140,
+        "y": -3824,
+        "speed": 8,
+        "hp": 130,
+        "left": 4,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        9140,
+        -3772,
+        20,
+        22
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 1,
+        "x": 9140,
+        "y": -3780,
+        "speed": 8,
+        "hp": 130,
+        "left": 8,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        9260,
+        -3820,
+        12,
+        14
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 9260,
+        "y": -3822,
+        "speed": 8,
+        "hp": 205,
+        "left": 2,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        9260,
+        -3772,
+        20,
+        22
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 9260,
+        "y": -3781,
+        "speed": 7,
+        "hp": 205,
+        "left": 9,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        5874,
+        -3866,
+        15,
+        14
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 10,
+        "x": 5875,
+        "y": -3866,
+        "speed": 6,
+        "hp": 250,
+        "left": 1,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        5874,
+        -3772,
+        15,
+        22
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 3,
+        "x": 5875,
+        "y": -3777,
+        "speed": 8,
+        "hp": 250,
+        "left": 5,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        6126,
+        -3866,
+        15,
+        14
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 6126,
+        "y": -3867,
+        "speed": 7,
+        "hp": 205,
+        "left": 1,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        6126,
+        -3772,
+        15,
+        22
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 6126,
+        "y": -3790,
+        "speed": 7,
+        "hp": 205,
+        "left": 18,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        6668,
+        -3866,
+        15,
+        14
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 5,
+        "x": 6674,
+        "y": -3860,
+        "speed": 7,
+        "hp": 110,
+        "left": 8,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        6668,
+        -3772,
+        15,
+        22
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 6,
+        "x": 6670,
+        "y": -3782,
+        "speed": 8,
+        "hp": 107,
+        "left": 10,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        6978,
+        -3866,
+        15,
+        14
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 10,
+        "x": 6976,
+        "y": -3866,
+        "speed": 6,
+        "hp": 250,
+        "left": 2,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        6978,
+        -3772,
+        15,
+        22
+      ],
+      "result": {
+        "reason": "arrived",
+        "seconds": 3,
+        "x": 6977,
+        "y": -3780,
+        "speed": 7,
+        "hp": 250,
+        "left": 8,
+        "wanted": 0
+      }
+    },
+    {
+      "args": [
+        9074,
+        -3866,
+        15,
+        14
+      ],
+      "result": {
+        "reason": "time",
+        "seconds": 15,
+        "x": 9056,
+        "y": -3845,
+        "speed": -1,
+        "hp": 250,
+        "left": 28,
+        "wanted": 0
+      },
+      "status": {
+        "mode": "play",
+        "x": 9056,
+        "y": -3845,
+        "district": "THE CRESCENT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "suv",
+        "weapon": "9MM PISTOL",
+        "clock": "21:35",
+        "renderer": "2d",
+        "vehicles": 289,
+        "pedestrians": 740
+      },
+      "pose": {
+        "type": "suv",
+        "x": 9055.5,
+        "y": -3844.9,
+        "heading": -159.3,
+        "yawRate": 0.007,
+        "kmh": 0.4,
+        "slip": 0,
+        "hp": 250,
+        "lift": 0,
+        "air": false
+      },
+      "villaGarages": [
+        {
+          "villa": "VILLA AZZURRA",
+          "garage": {
+            "x": 5684,
+            "y": -4794.3730657063425,
+            "w": 64,
+            "h": 70
+          },
+          "door": {
+            "side": "south",
+            "x": 5716,
+            "y": -4724,
+            "open": 0,
+            "want": false
+          },
+          "gate": {
+            "x": 5716,
+            "y": -4632
+          },
+          "sideGate": null,
+          "forecourt": [
+            {
+              "id": 211,
+              "type": "roadster",
+              "x": 5964,
+              "y": -4664,
+              "player": false
+            }
+          ],
+          "drive": {
+            "x": 5690,
+            "y": -4724,
+            "w": 52,
+            "h": 132
+          },
+          "cars": []
+        },
+        {
+          "villa": "THE GLASS HOUSE",
+          "garage": {
+            "x": 6354,
+            "y": -4789.281495857984,
+            "w": 64,
+            "h": 70
+          },
+          "door": {
+            "side": "south",
+            "x": 6386,
+            "y": -4719,
+            "open": 0,
+            "want": false
+          },
+          "gate": {
+            "x": 6386,
+            "y": -4632
+          },
+          "sideGate": null,
+          "forecourt": [],
+          "drive": {
+            "x": 6360,
+            "y": -4719,
+            "w": 52,
+            "h": 127
+          },
+          "cars": []
+        },
+        {
+          "villa": "HALCYON HOUSE",
+          "garage": {
+            "x": 7962,
+            "y": -4782.873140349984,
+            "w": 64,
+            "h": 70
+          },
+          "door": {
+            "side": "south",
+            "x": 7994,
+            "y": -4713,
+            "open": 0,
+            "want": false
+          },
+          "gate": {
+            "x": 7994,
+            "y": -4632
+          },
+          "sideGate": null,
+          "forecourt": [],
+          "drive": {
+            "x": 7968,
+            "y": -4713,
+            "w": 52,
+            "h": 121
+          },
+          "cars": []
+        },
+        {
+          "villa": "BELVEDERE",
+          "garage": {
+            "x": 8672,
+            "y": -4797.502326857299,
+            "w": 64,
+            "h": 70
+          },
+          "door": {
+            "side": "south",
+            "x": 8704,
+            "y": -4728,
+            "open": 0,
+            "want": false
+          },
+          "gate": {
+            "x": 8704,
+            "y": -4632
+          },
+          "sideGate": null,
+          "forecourt": [
+            {
+              "id": 212,
+              "type": "supercar",
+              "x": 8390,
+              "y": -4668,
+              "player": false
+            },
+            {
+              "id": 213,
+              "type": "luxury",
+              "x": 8436,
+              "y": -4664,
+              "player": false
+            }
+          ],
+          "drive": {
+            "x": 8678,
+            "y": -4728,
+            "w": 52,
+            "h": 136
+          },
+          "cars": []
+        },
+        {
+          "villa": "CASA DEL SOL",
+          "garage": {
+            "x": 8874,
+            "y": -4855.2034556888975,
+            "w": 64,
+            "h": 70
+          },
+          "door": {
+            "side": "south",
+            "x": 8906,
+            "y": -4785,
+            "open": 0,
+            "want": false
+          },
+          "gate": {
+            "x": 8906,
+            "y": -4632
+          },
+          "sideGate": null,
+          "forecourt": [
+            {
+              "id": 214,
+              "type": "suv",
+              "x": 9074,
+              "y": -4725,
+              "player": false
+            },
+            {
+              "id": 215,
+              "type": "luxury",
+              "x": 9120,
+              "y": -4721,
+              "player": false
+            }
+          ],
+          "drive": {
+            "x": 8880,
+            "y": -4785,
+            "w": 52,
+            "h": 193
+          },
+          "cars": []
+        },
+        {
+          "villa": "CLIFFTOP",
+          "garage": {
+            "x": 9782.875520657748,
+            "y": -3948,
+            "w": 70,
+            "h": 64
+          },
+          "door": {
+            "side": "west",
+            "x": 9783,
+            "y": -3916,
+            "open": 0,
+            "want": false
+          },
+          "gate": {
+            "x": 9688,
+            "y": -3916
+          },
+          "sideGate": null,
+          "forecourt": [
+            {
+              "id": 216,
+              "type": "luxury",
+              "x": 9723,
+              "y": -4158,
+              "player": false
+            }
+          ],
+          "drive": {
+            "x": 9648,
+            "y": -3942,
+            "w": 135,
+            "h": 52
+          },
+          "cars": []
+        },
+        {
+          "villa": "ROSEMOOR",
+          "garage": {
+            "x": 9771.410709299147,
+            "y": -3128,
+            "w": 70,
+            "h": 64
+          },
+          "door": {
+            "side": "west",
+            "x": 9771,
+            "y": -3096,
+            "open": 0,
+            "want": false
+          },
+          "gate": {
+            "x": 9688,
+            "y": -3096
+          },
+          "sideGate": null,
+          "forecourt": [
+            {
+              "id": 217,
+              "type": "luxury",
+              "x": 9711,
+              "y": -3341,
+              "player": false
+            }
+          ],
+          "drive": {
+            "x": 9648,
+            "y": -3122,
+            "w": 123,
+            "h": 52
+          },
+          "cars": []
+        },
+        {
+          "villa": "SEACLIFF MANOR",
+          "garage": {
+            "x": 9768.140135776252,
+            "y": -2836,
+            "w": 70,
+            "h": 64
+          },
+          "door": {
+            "side": "west",
+            "x": 9768,
+            "y": -2804,
+            "open": 0,
+            "want": false
+          },
+          "gate": {
+            "x": 9688,
+            "y": -2804
+          },
+          "sideGate": null,
+          "forecourt": [
+            {
+              "id": 218,
+              "type": "luxury",
+              "x": 9708,
+              "y": -2530,
+              "player": false
+            }
+          ],
+          "drive": {
+            "x": 9648,
+            "y": -2830,
+            "w": 120,
+            "h": 52
+          },
+          "cars": []
+        },
+        {
+          "villa": "VILLA TOSCANA",
+          "garage": {
+            "x": 5908,
+            "y": -3924,
+            "w": 64,
+            "h": 70
+          },
+          "door": {
+            "side": "south",
+            "x": 5940,
+            "y": -3854,
+            "open": 0,
+            "want": false
+          },
+          "gate": {
+            "x": 5940,
+            "y": -3832
+          },
+          "sideGate": {
+            "x": 5874,
+            "y": -3832,
+            "width": 48
+          },
+          "forecourt": [
+            {
+              "id": 219,
+              "type": "suv",
+              "x": 5818,
+              "y": -3939,
+              "player": false
+            }
+          ],
+          "drive": {
+            "x": 5914,
+            "y": -3854,
+            "w": 52,
+            "h": 62
+          },
+          "cars": []
+        },
+        {
+          "villa": "WHITEHALL",
+          "garage": {
+            "x": 6028,
+            "y": -3924,
+            "w": 64,
+            "h": 70
+          },
+          "door": {
+            "side": "south",
+            "x": 6060,
+            "y": -3854,
+            "open": 0,
+            "want": false
+          },
+          "gate": {
+            "x": 6060,
+            "y": -3832
+          },
+          "sideGate": {
+            "x": 6126,
+            "y": -3832,
+            "width": 48
+          },
+          "forecourt": [
+            {
+              "id": 222,
+              "type": "suv",
+              "x": 6185,
+              "y": -3932,
+              "player": false
+            }
+          ],
+          "drive": {
+            "x": 6034,
+            "y": -3854,
+            "w": 52,
+            "h": 62
+          },
+          "cars": []
+        },
+        {
+          "villa": "SHINGLE HOUSE",
+          "garage": {
+            "x": 6702,
+            "y": -3924,
+            "w": 64,
+            "h": 70
+          },
+          "door": {
+            "side": "south",
+            "x": 6734,
+            "y": -3854,
+            "open": 0,
+            "want": false
+          },
+          "gate": {
+            "x": 6734,
+            "y": -3832
+          },
+          "sideGate": {
+            "x": 6668,
+            "y": -3832,
+            "width": 48
+          },
+          "forecourt": [
+            {
+              "id": 223,
+              "type": "supercar",
+              "x": 6614,
+              "y": -3919,
+              "player": false
+            }
+          ],
+          "drive": {
+            "x": 6708,
+            "y": -3854,
+            "w": 52,
+            "h": 62
+          },
+          "cars": []
+        },
+        {
+          "villa": "KORA PAVILION",
+          "garage": {
+            "x": 7012,
+            "y": -3924,
+            "w": 64,
+            "h": 70
+          },
+          "door": {
+            "side": "south",
+            "x": 7044,
+            "y": -3854,
+            "open": 0,
+            "want": false
+          },
+          "gate": {
+            "x": 7044,
+            "y": -3832
+          },
+          "sideGate": {
+            "x": 6978,
+            "y": -3832,
+            "width": 48
+          },
+          "forecourt": [
+            {
+              "id": 225,
+              "type": "supercar",
+              "x": 6924,
+              "y": -3929,
+              "player": false
+            }
+          ],
+          "drive": {
+            "x": 7018,
+            "y": -3854,
+            "w": 52,
+            "h": 62
+          },
+          "cars": []
+        },
+        {
+          "villa": "VILLA MIRAMAR",
+          "garage": {
+            "x": 9108,
+            "y": -3924,
+            "w": 64,
+            "h": 70
+          },
+          "door": {
+            "side": "south",
+            "x": 9140,
+            "y": -3854,
+            "open": 0,
+            "want": false
+          },
+          "gate": {
+            "x": 9140,
+            "y": -3832
+          },
+          "sideGate": {
+            "x": 9074,
+            "y": -3832,
+            "width": 48
+          },
+          "forecourt": [
+            {
+              "id": 227,
+              "type": "suv",
+              "x": 9019,
+              "y": -3936,
+              "player": false
+            },
+            {
+              "id": 228,
+              "type": "suv",
+              "x": 9056,
+              "y": -3845,
+              "player": true
+            }
+          ],
+          "drive": {
+            "x": 9114,
+            "y": -3854,
+            "w": 52,
+            "h": 62
+          },
+          "cars": []
+        },
+        {
+          "villa": "LAUREL COURT",
+          "garage": {
+            "x": 9228,
+            "y": -3924,
+            "w": 64,
+            "h": 70
+          },
+          "door": {
+            "side": "south",
+            "x": 9260,
+            "y": -3854,
+            "open": 0,
+            "want": false
+          },
+          "gate": {
+            "x": 9260,
+            "y": -3832
+          },
+          "sideGate": {
+            "x": 9326,
+            "y": -3832,
+            "width": 48
+          },
+          "forecourt": [
+            {
+              "id": 229,
+              "type": "roadster",
+              "x": 9338,
+              "y": -3923,
+              "player": false
+            },
+            {
+              "id": 230,
+              "type": "luxury",
+              "x": 9384,
+              "y": -3919,
+              "player": false
+            }
+          ],
+          "drive": {
+            "x": 9234,
+            "y": -3854,
+            "w": 52,
+            "h": 62
+          },
+          "cars": []
+        }
+      ],
+      "integrity": {
+        "problems": [],
+        "mode": "play",
+        "overlays": [],
+        "player": {
+          "x": 9056,
+          "y": -3845,
+          "hp": 100,
+          "vehicle": "suv",
+          "onFoot": false
+        },
+        "carriers": {
+          "swimming": false,
+          "wading": false,
+          "parachute": false,
+          "fall": false,
+          "jump": false,
+          "climbing": false,
+          "carjack": false,
+          "thrown": false,
+          "tumble": false,
+          "coaster": false,
+          "pool": false,
+          "deck": false,
+          "roof": false,
+          "transit": false,
+          "taxi": false,
+          "loot": false,
+          "rideSkip": false,
+          "hidden": false,
+          "conversation": false
+        },
+        "counts": {
+          "vehicles": 289,
+          "pedestrians": 740,
+          "officers": 0,
+          "particles": 0,
+          "skids": 22,
+          "debris": 0,
+          "bullets": 0,
+          "fires": 0,
+          "notices": 1,
+          "carsInBuildings": 0,
+          "carsOff": 0,
+          "carsBroken": 0,
+          "peopleInBuildings": 0,
+          "peopleBroken": 0,
+          "stuckReactions": 0
+        },
+        "stuckPeople": []
+      },
+      "nearStatics": [
+        {
+          "x": 8969,
+          "y": -3834,
+          "hx": 81,
+          "hy": 2,
+          "a": 0,
+          "kind": "isle garden wall"
+        },
+        {
+          "x": 9108,
+          "y": -3834,
+          "hx": 10,
+          "hy": 2,
+          "a": 0,
+          "kind": "isle garden wall"
+        },
+        {
+          "x": 9179,
+          "y": -3834,
+          "hx": 17,
+          "hy": 2,
+          "a": 0,
+          "kind": "isle garden wall"
+        },
+        {
+          "x": 9221,
+          "y": -3834,
+          "hx": 17,
+          "hy": 2,
+          "a": 0,
+          "kind": "isle garden railings"
+        },
+        {
+          "x": 9140,
+          "y": -3856,
+          "hx": 26,
+          "hy": 2,
+          "a": 0,
+          "kind": "villa garage door"
+        }
+      ]
+    }
+  ],
+  "failure": "Error: VILLA MIRAMAR: stuck on the way to the side gate: {\"reason\":\"time\",\"seconds\":15,\"x\":9056,\"y\":-3845,\"speed\":-1,\"hp\":250,\"left\":28,\"wanted\":0}\n    at Object.assert (file:///workspace/GTA/dist/garage-followup.mjs:25:48)\n    at default (file:///workspace/GTA/tools/tests/monarch-garages.mjs:62:7)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async file:///workspace/GTA/dist/garage-followup.mjs:28:5"
+}

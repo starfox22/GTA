@@ -1,0 +1,484 @@
+{
+  "schema": 1,
+  "status": "PASS: final6 rendered presets/optics/pool + final8 corrected repair review",
+  "capture": "Native Chromium/Playwright screenshots copied byte-for-byte. No image edit, resize, composite or generated image. Portrait clipping happened in page.screenshot itself.",
+  "sharedFixture": {
+    "seed": 1,
+    "origin": [
+      680,
+      4520
+    ],
+    "heading": 0,
+    "clock": 13,
+    "graphics": "high",
+    "viewport": [
+      1000,
+      700
+    ],
+    "inspectFront": [
+      65,
+      18,
+      8
+    ],
+    "inspectRear": [
+      245,
+      18,
+      8
+    ],
+    "closeUp": 10,
+    "crop": [
+      170,
+      90,
+      660,
+      460
+    ],
+    "heldSimulation": true,
+    "boardingDrawFirst": true
+  },
+  "inputs": {
+    "before": {
+      "htmlSha256": "ccf195e35e4ae7b87d09133c317abcb1b54ddb2d3f3e9d30acb5923b6daeee92",
+      "receipt": "suv-render-before.json"
+    },
+    "candidate4": {
+      "htmlSha256": "2e8fa954b875d3b0b15d9c7d4bc68c87f856266a7c11899d73689cc7ab17b813",
+      "runtimeJsSha256": "711ae993349e465c4dcc6940d7a2d411fe317cf52ab6757e21a5f943f852a151",
+      "packSha256": "6e2268924198c8f7531084aee9d9afcdace61d808b979bfef57aeab5cbc4722e",
+      "receipt": "suv-render-candidate4-functional.json"
+    },
+    "candidate6": {
+      "htmlSha256": "6f8ec191f8b2d8d0ceb98ba28c116d05071d52741086a96e84cc4da183bc710e",
+      "runtimeJsSha256": "873224e12fae360a83259c69a3e5f0f9438d215c373c279224c460127c6dd57c",
+      "packSha256": "9fc2408fd1f8b7b2649a4e69d6868854c22987856ef6868e0f8d0c3b51d28512",
+      "receipt": "suv-render-candidate6.json"
+    },
+    "candidate8": {
+      "htmlSha256": "5b199b249eeb301af2722c21e84470c6b20902ff0976d17c3e439be1ab3e58da",
+      "runtimeJsSha256": "d5ca3c913a71d9a4295bd73f6a0d0a0646c2b985e559de1cf6442ac48cabb574",
+      "packSha256": "9fc2408fd1f8b7b2649a4e69d6868854c22987856ef6868e0f8d0c3b51d28512",
+      "receipt": "suv-render-candidate8-repair.json"
+    },
+    "candidate5": {
+      "htmlSha256": "40de35da2e90ba2c613f4ffb6814de6a857205cd581af51f5ff5be5268c30b8b",
+      "runtimeJsSha256": "c464ab27fb9ac3e9f463d5223cab52df18ca5299638b47f4dc093671b94316a6",
+      "packSha256": "6e2268924198c8f7531084aee9d9afcdace61d808b979bfef57aeab5cbc4722e",
+      "receiptNote": "Obsolete diagnostic run closed after known pack defects; livery identity not exposed."
+    }
+  },
+  "mixedInputNote": "Final civilianS1/S2 and cleanSheriff portraits use6; S3 uses4 because its effective renderer/source appearance did not change. Candidate7 changed only mounted-gun projection;8 adds only repaired/closed synthetic lid visibility to approvedvehicle rendering, which is checked separately. Do not relabel older native captures with final8 hashes.",
+  "manualFinding": "Candidate6 automated GPU checks passed but manual repair-photo review found an unwanted closed synthetic paint lid over rear glass. Exact original PNG/receipt retained; final8 native repair capture visibly restores glass after the fix. Ordinary transient shatter particles remain in the immediate repair photo.",
+  "images": [
+    {
+      "file": "screenshots/suv-after-far-pool-context.png",
+      "sha256": "f50235b7115e90d457d2398b904e039f419369264a7c775b86aad5ca083afc1e",
+      "bytes": 952125,
+      "dimensions": [
+        1000,
+        700
+      ],
+      "captureInput": "candidate6",
+      "purpose": "functional proof",
+      "nativeBrowserScreenshot": true
+    },
+    {
+      "file": "screenshots/suv-after-jimny-optics-day-front.png",
+      "sha256": "263a4d27fb08e63b39bb47c05d30a5043f76702fc2f1396ef3d604da45c137bf",
+      "bytes": 412406,
+      "dimensions": [
+        660,
+        460
+      ],
+      "captureInput": "candidate6",
+      "purpose": "functional proof",
+      "nativeBrowserScreenshot": true
+    },
+    {
+      "file": "screenshots/suv-after-jimny-optics-night-front.png",
+      "sha256": "9dd1af3e30059da909cf909be801315b49a4d251fbb9b93daac408954800f7ca",
+      "bytes": 397188,
+      "dimensions": [
+        660,
+        460
+      ],
+      "captureInput": "candidate6",
+      "purpose": "functional proof",
+      "nativeBrowserScreenshot": true
+    },
+    {
+      "file": "screenshots/suv-after-s1-jimny-front.png",
+      "sha256": "841dbda975d581952bbfc5e3e34bef9658b39631604214569494613b39b855e2",
+      "bytes": 407508,
+      "dimensions": [
+        660,
+        460
+      ],
+      "captureInput": "candidate6",
+      "purpose": "matched portrait",
+      "nativeBrowserScreenshot": true
+    },
+    {
+      "file": "screenshots/suv-after-s1-jimny-rear.png",
+      "sha256": "140a654719c946e6c787d2c4e6d86150b382bc3cc56a6f633988b7d598e27831",
+      "bytes": 379404,
+      "dimensions": [
+        660,
+        460
+      ],
+      "captureInput": "candidate6",
+      "purpose": "matched portrait",
+      "nativeBrowserScreenshot": true
+    },
+    {
+      "file": "screenshots/suv-after-s2-suv-front.png",
+      "sha256": "65cd26d51cb6835908a4093305b0f1feaf7b18aaad154a44a15b5fedac687042",
+      "bytes": 414299,
+      "dimensions": [
+        660,
+        460
+      ],
+      "captureInput": "candidate6",
+      "purpose": "matched portrait",
+      "nativeBrowserScreenshot": true
+    },
+    {
+      "file": "screenshots/suv-after-s2-suv-rear.png",
+      "sha256": "9d99f9cec07398497acd3268badc82676296fef0173ae4898d52a0c3de5ef248",
+      "bytes": 375643,
+      "dimensions": [
+        660,
+        460
+      ],
+      "captureInput": "candidate6",
+      "purpose": "matched portrait",
+      "nativeBrowserScreenshot": true
+    },
+    {
+      "file": "screenshots/suv-after-s3-offroad-front.png",
+      "sha256": "767eb57dccdc8d1727abe5398c02772fc7ab7fce0b7cd7d90c97cbfae116c2af",
+      "bytes": 403738,
+      "dimensions": [
+        660,
+        460
+      ],
+      "captureInput": "candidate4",
+      "purpose": "matched portrait",
+      "nativeBrowserScreenshot": true
+    },
+    {
+      "file": "screenshots/suv-after-s3-offroad-rear.png",
+      "sha256": "771d3a2c6bf3db6223aa274f39e2c1c883095b43366b02f0d9c5cf09238e9cf7",
+      "bytes": 372827,
+      "dimensions": [
+        660,
+        460
+      ],
+      "captureInput": "candidate4",
+      "purpose": "matched portrait",
+      "nativeBrowserScreenshot": true
+    },
+    {
+      "file": "screenshots/suv-after-sheriff-burnt.png",
+      "sha256": "e80d5bae9fc3758258b7fca23a27f4b389bb183d5daaceead8e9dbe0d1ec1da7",
+      "bytes": 388621,
+      "dimensions": [
+        660,
+        460
+      ],
+      "captureInput": "candidate8",
+      "purpose": "functional proof",
+      "nativeBrowserScreenshot": true
+    },
+    {
+      "file": "screenshots/suv-after-sheriff-final8-clean-rear.png",
+      "sha256": "2672dfa39a39a9697ea3e6dd2a0b60e44f05c9dffce78a43c82129b39501b826",
+      "bytes": 386026,
+      "dimensions": [
+        660,
+        460
+      ],
+      "captureInput": "candidate8",
+      "purpose": "matched portrait",
+      "nativeBrowserScreenshot": true
+    },
+    {
+      "file": "screenshots/suv-after-sheriff-front.png",
+      "sha256": "c74a7f2cba7e25aaf0c4660e2f0c982eba4779498aa90ed9f00d56156bd6b897",
+      "bytes": 422285,
+      "dimensions": [
+        660,
+        460
+      ],
+      "captureInput": "candidate6",
+      "purpose": "matched portrait",
+      "nativeBrowserScreenshot": true
+    },
+    {
+      "file": "screenshots/suv-after-sheriff-moving.png",
+      "sha256": "53737c12d378697e0596452e598ea218bb7c68f94a43c1c1609a4a7cd89f791c",
+      "bytes": 386426,
+      "dimensions": [
+        660,
+        460
+      ],
+      "captureInput": "candidate6",
+      "purpose": "functional proof",
+      "nativeBrowserScreenshot": true
+    },
+    {
+      "file": "screenshots/suv-after-sheriff-rear.png",
+      "sha256": "8fb664d5b2af55ff12ec00d06575c4552b86081c83faec20585cd0ddfab3a233",
+      "bytes": 386576,
+      "dimensions": [
+        660,
+        460
+      ],
+      "captureInput": "candidate6",
+      "purpose": "matched portrait",
+      "nativeBrowserScreenshot": true
+    },
+    {
+      "file": "screenshots/suv-after-sheriff-repaired.png",
+      "sha256": "052df57657ff04b365a283f1b3a656e41bc19ee89f9f8d005706e8a39ab84fd3",
+      "bytes": 397411,
+      "dimensions": [
+        660,
+        460
+      ],
+      "captureInput": "candidate8",
+      "purpose": "functional proof",
+      "nativeBrowserScreenshot": true
+    },
+    {
+      "file": "screenshots/suv-before-s1-jimny-front.png",
+      "sha256": "77e3841047f6a838d0f3603deffff9419b47a05cdde6cf786c88f8d1189649bc",
+      "bytes": 416702,
+      "dimensions": [
+        660,
+        460
+      ],
+      "captureInput": "before",
+      "purpose": "matched portrait",
+      "nativeBrowserScreenshot": true
+    },
+    {
+      "file": "screenshots/suv-before-s1-jimny-rear.png",
+      "sha256": "3a16b1dd2728c8aad8eb82a36c0d87fd2a543972cf8c726acff672f8ba74bbca",
+      "bytes": 384029,
+      "dimensions": [
+        660,
+        460
+      ],
+      "captureInput": "before",
+      "purpose": "matched portrait",
+      "nativeBrowserScreenshot": true
+    },
+    {
+      "file": "screenshots/suv-before-s2-suv-front.png",
+      "sha256": "f695c66a8d169fe7909da865df5fd3b2a35e8161324f2e7f729a0772fe2c090a",
+      "bytes": 417013,
+      "dimensions": [
+        660,
+        460
+      ],
+      "captureInput": "before",
+      "purpose": "matched portrait",
+      "nativeBrowserScreenshot": true
+    },
+    {
+      "file": "screenshots/suv-before-s2-suv-rear.png",
+      "sha256": "976081292b5a80d898d03ed812928ac552dd59f20ca94c93d034df2a6396f5a0",
+      "bytes": 384745,
+      "dimensions": [
+        660,
+        460
+      ],
+      "captureInput": "before",
+      "purpose": "matched portrait",
+      "nativeBrowserScreenshot": true
+    },
+    {
+      "file": "screenshots/suv-before-s3-offroad-front.png",
+      "sha256": "fe6afde557a35e6cb00f3f5ee225991c4addb07baae6f2dce4ad204fb06077d0",
+      "bytes": 416352,
+      "dimensions": [
+        660,
+        460
+      ],
+      "captureInput": "before",
+      "purpose": "matched portrait",
+      "nativeBrowserScreenshot": true
+    },
+    {
+      "file": "screenshots/suv-before-s3-offroad-rear.png",
+      "sha256": "8b92f3f6df2630d887f6bdce17806f0420f49f0ad38fb0407ecd0366d83065a1",
+      "bytes": 383556,
+      "dimensions": [
+        660,
+        460
+      ],
+      "captureInput": "before",
+      "purpose": "matched portrait",
+      "nativeBrowserScreenshot": true
+    },
+    {
+      "file": "screenshots/suv-before-sheriff-front.png",
+      "sha256": "bd56c79295228c94317e3154b98b03bbf6ad7d9171148681c330af43a7797991",
+      "bytes": 422240,
+      "dimensions": [
+        660,
+        460
+      ],
+      "captureInput": "before",
+      "purpose": "matched portrait",
+      "nativeBrowserScreenshot": true
+    },
+    {
+      "file": "screenshots/suv-before-sheriff-rear.png",
+      "sha256": "8af019a48e353380e89a0891fbce1cdf077d041a95cf5c9a72b0d0e8d5cb8805",
+      "bytes": 391315,
+      "dimensions": [
+        660,
+        460
+      ],
+      "captureInput": "before",
+      "purpose": "matched portrait",
+      "nativeBrowserScreenshot": true
+    },
+    {
+      "file": "screenshots/suv-bug-jimny-opaque-optics.png",
+      "sha256": "fd35261787fb10c856fbbd1243f88c0c16dda6e22fa59c99391b4a32a522c1c8",
+      "bytes": 407220,
+      "dimensions": [
+        660,
+        460
+      ],
+      "captureInput": "candidate4",
+      "purpose": "pre-fix graphical bug evidence",
+      "nativeBrowserScreenshot": true
+    },
+    {
+      "file": "screenshots/suv-bug-patrol-exterior-trim.png",
+      "sha256": "b38bad4352062e131e92a77a57c12446c9d3bef5445a3ebbac54c6a78b57116b",
+      "bytes": 417220,
+      "dimensions": [
+        660,
+        460
+      ],
+      "captureInput": "candidate5",
+      "purpose": "pre-fix graphical bug evidence",
+      "nativeBrowserScreenshot": true
+    },
+    {
+      "file": "screenshots/suv-bug-repair-closed-lid.png",
+      "sha256": "d1bbdc3baf6f28b2062055926ee5aa0382a3d2f51d9cd7920b3c9e384aa29c11",
+      "bytes": 395137,
+      "dimensions": [
+        660,
+        460
+      ],
+      "captureInput": "candidate6",
+      "purpose": "pre-fix graphical bug evidence",
+      "nativeBrowserScreenshot": true
+    },
+    {
+      "file": "verification/suv-candidate4-s1-jimny-worn-dirty.png",
+      "sha256": "1ede26add78e7cb71eee010d172270939f056f70316ecc285fa5e9d2afb6c08e",
+      "bytes": 412015,
+      "dimensions": [
+        660,
+        460
+      ],
+      "captureInput": "candidate4",
+      "purpose": "superseded QA capture; not a final hero",
+      "nativeBrowserScreenshot": true
+    },
+    {
+      "file": "verification/suv-candidate4-sheriff-chase-context.png",
+      "sha256": "342c54755f1ed217c714a5ca32d3172204fbc82bed14ab1eda5f65df1b126f7f",
+      "bytes": 903375,
+      "dimensions": [
+        1000,
+        700
+      ],
+      "captureInput": "candidate4",
+      "purpose": "superseded QA capture; not a final hero",
+      "nativeBrowserScreenshot": true
+    },
+    {
+      "file": "verification/suv-candidate6-chase-before-lid-fix.png",
+      "sha256": "dfaf8fc471ab86458c427a11f7d446bf446a618a17005bc7e58e0d815e1428b6",
+      "bytes": 895513,
+      "dimensions": [
+        1000,
+        700
+      ],
+      "captureInput": "candidate6",
+      "purpose": "superseded QA capture; not a final hero",
+      "nativeBrowserScreenshot": true
+    }
+  ],
+  "browserClosed": true,
+  "verification": {
+    "hostAssertions": 438,
+    "final6": {
+      "presets": 10,
+      "rendererErrors": 0,
+      "frameFaults": 0,
+      "contextLosses": 0,
+      "farPoolActualInstances": 3,
+      "explicitSheriffLivery": "sheriff",
+      "sourceOpticsDayNightVisible": true
+    },
+    "final8Repair": {
+      "rendererErrors": 0,
+      "frameFaults": 0,
+      "contextLosses": 0,
+      "explicitSheriffLivery": "sheriff",
+      "rearWindowRestored": true,
+      "burnRepairSourcePaintRestored": true
+    },
+    "performanceLimit": "Software WebGL correctness/draw budgets; not a physical M4 Max FPS benchmark."
+  },
+  "receiptFiles": [
+    {
+      "file": "suv-render-before.json",
+      "sha256": "11df534900f5ee656c10d8240ab02da1f6586d922601d6276e5e060969e9b0b6"
+    },
+    {
+      "file": "suv-render-before.log",
+      "sha256": "4d135d121df259c9056ad6eb44a73ae7e16dfba5be8f1b17c96e8babf3258866"
+    },
+    {
+      "file": "suv-render-candidate4-functional.json",
+      "sha256": "2eb0ed2c7ae03c0b6be2ae724b8273168b3d1e509bb51828a46e58c7e6d85d78"
+    },
+    {
+      "file": "suv-render-candidate4-functional.log",
+      "sha256": "f24f0ce127b3b01bc7f60f06afef1224904fe6b31efa8db914484e6fb10c8fcd"
+    },
+    {
+      "file": "suv-render-candidate6.json",
+      "sha256": "615a7736a48e297e63cf873ebb8673046cb301f43dda88f4cfdc047b38b59986"
+    },
+    {
+      "file": "suv-render-candidate6.log",
+      "sha256": "c6e6b887851d06e366c08cb571293f52fea51b01ced759faedbc4844cd2c9f2d"
+    },
+    {
+      "file": "suv-render-candidate8-repair.json",
+      "sha256": "360fc56684056033c7c43b1b7c43e209471660f066f287a562f8cef193310c6b"
+    },
+    {
+      "file": "suv-render-candidate8-repair.log",
+      "sha256": "a3c90fd08da48236a97ebe5db37157c306028c227699278bc2bd415535bb2330"
+    },
+    {
+      "file": "suv-host.json",
+      "sha256": "e4f5666ea8cf596fb1d2cdad66399d0633a8d1fc3ba5d6e6c98880c86b926315"
+    },
+    {
+      "file": "suv-host.log",
+      "sha256": "51ee9915df2c32787b77c08d45be54c9af29c093a749aa2eef9f0e733cded30a"
+    }
+  ]
+}

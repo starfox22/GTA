@@ -1,0 +1,41 @@
+[
+  {
+    "image": "screenshots/suv-bug-jimny-opaque-optics.png",
+    "sha256": "fd35261787fb10c856fbbd1243f88c0c16dda6e22fa59c99391b4a32a522c1c8",
+    "candidate": "candidate4",
+    "note": "Black authored BLEND lens covers were rendered as opaque trim, hiding retained reflector detail.",
+    "nativeBrowserScreenshot": true,
+    "crop": [
+      170,
+      90,
+      660,
+      460
+    ]
+  },
+  {
+    "image": "screenshots/suv-bug-patrol-exterior-trim.png",
+    "sha256": "b38bad4352062e131e92a77a57c12446c9d3bef5445a3ebbac54c6a78b57116b",
+    "candidate": "candidate5",
+    "note": "Actual outer roof/upper-door body faces remained trim and could not receive patrol livery; cached livery identity was not exposed by this candidate.",
+    "nativeBrowserScreenshot": true,
+    "crop": [
+      170,
+      90,
+      660,
+      460
+    ]
+  },
+  {
+    "image": "screenshots/suv-bug-repair-closed-lid.png",
+    "sha256": "d1bbdc3baf6f28b2062055926ee5aa0382a3d2f51d9cd7920b3c9e384aa29c11",
+    "candidate": "candidate6",
+    "note": "After burn/repair, a synthetic paint lid remained visible at angle zero across upper rear glass despite damage.parts.trunk=0/burnt=false. Fixed in production carBodyDamage and verified by438hostchecks and final8 native repair PNG; source rear glass returns, while open/sprung lids remain visible.",
+    "nativeBrowserScreenshot": true,
+    "crop": [
+      170,
+      90,
+      660,
+      460
+    ]
+  }
+]

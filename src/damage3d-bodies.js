@@ -398,7 +398,12 @@
           crumpleAdopt(m, m.trunkWell, false);
         }
         if (m.trunkWell) m.trunkWell.visible = !!c.trunkOpen;
-        if (m.trunk) m.trunk.rotation.z = trunkLidAngle(c, parts);
+        if (m.trunk) {
+          // The synthetic open/sprung lid overlays the body's intact tailgate.
+          // A repair or close restores that source surface, including its rear glass.
+          m.trunk.visible = !!parts.trunk || !!c.trunkOpen;
+          m.trunk.rotation.z = trunkLidAngle(c, parts);
+        }
         // Bend the body with its dents (all of it when they changed, else only parts made just now), in time slices.
         if (reshape || m.crumple.fresh) crumpleStart(c, m, dents, reshape);
         // Glass: one material per pane once any pane is damaged.

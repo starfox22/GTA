@@ -1,0 +1,906 @@
+{
+  "scope": "Cumulative regression coverage with retained original failures and passing focused follow-ups; not a single final-candidate full-suite rerun.",
+  "modules": {
+    "approved-motorcycle-rider-fit": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "approved-motorcycle-rigs": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "approved-suv-rigs": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "approved-vehicle-pipeline": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "boot-status": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "brake-distances": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "cabin-headroom": {
+      "status": "SKIP",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "camera-feel": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "camera-framing": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "car-cabins": {
+      "status": "SKIP",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "chase-aim": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "chase-audio-pan": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "chase-clouds": {
+      "status": "SKIP",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "chase-cover-clearance": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "chase-crane": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "chase-hud-box": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "chase-in-view": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "chase-input": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "chase-motion-blur": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "chase-radio-chip": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "chase-shooter": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "chase-streams": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "chase-view-mode": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "chase-walk": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "cloud-history": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "clouds": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "combat-continuity": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "drift-handling": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "drive-no-nan": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "driveby-seats": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "driving-settings-migrate": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "enter-key": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "foliage-cutaway": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "frame-trace": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "graphics-all-tiers": {
+      "status": "SKIP",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "headlight-budget": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "hud-dom-writes": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "instance-upload-ranges": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "m4-wheel-partition": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "medic-routing": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "military-model-rig": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "mission-modal-input": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "mission-world-preservation": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "motorcycle-puncture": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "motorcycle-rider-fit": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "motorcycle-wheel-rig": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "mountain-road": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "mouse-buttons": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "navigation-shortlist": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "npc-avatars": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "performance-kernels": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "player-body": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "rear-badges": {
+      "status": "SKIP",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "regency-traffic": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "render-auto-scale": {
+      "status": "SKIP",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "render-cell-preupload": {
+      "status": "SKIP",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "render-hiccups": {
+      "status": "SKIP",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "render-tier-switch": {
+      "status": "SKIP",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "rig-geometry": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "roof-skin": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "scenery-pools": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "sim-audits": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "sim-efficiency": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "sound-output": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "sportsbook-bets": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "taxi-fare-toast": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "tyre-effects": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "vehicle-gunfire": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "vehicle-layouts": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "vehicle-material-lifecycle": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "vehicle-merge": {
+      "status": "SKIP",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "witness-car-lines": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "ammo-supply": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "asset-char": {
+      "status": "SKIP",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "blood-amounts": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "blood-spray": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "blood-wounds": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "bluehour-entrance": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "bullet-hits": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "camera-comfort": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "camera-lead-setting": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "camera-slow-framing": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "car-blood": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "car-feet-clearance": {
+      "status": "SKIP",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "car-window-open": {
+      "status": "SKIP",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "carjack-traffic": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "carjack": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "chase-budget": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "chase-hud-layout": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "chase-lock": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "chase-move-keys": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "chase-wall-clearance": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "cheat-helicopter": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "chimney-smoke": {
+      "status": "SKIP",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "civil-aircraft": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "club-entrance": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "coronation-bridge": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "demo-complete-card": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "drawbridge-islands": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "drawbridge-traffic": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "driveby-arcs": {
+      "status": "PASS",
+      "receipt": "gameplay-initial-partial.log"
+    },
+    "driveby-mouse": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "falls": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "footwork": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "fort-cover": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "fort-gate-barrier": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "fort-gate-talk": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "fort-records-route": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "fort-vehicle-theft": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "fps-counter": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "frame-guard": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "freeroam-respawn": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "garages-islands": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "god-drawbridges": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "god-mode-codes": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "god-teleport-map": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "gore-dismember": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "gpu-context": {
+      "status": "SKIP",
+      "receipt": "gameplay-resumed.log"
+    },
+    "headlight-aim": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "health-indoors": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "hillclimb-physics": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "hud-clearance": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "hud-layout": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "hud-touch-dispatch": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "integrity-shore": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "interface-hints": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "liner-voyage": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "living-key": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "living-medics": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "living-sirens": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "living-snatch": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "living-traffic": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "lockpick": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "marea-talk": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "markers-rings": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "minimap-clutter": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "mission-abandon": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "mission-brief": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "mission-card-keys": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "mission-card-subtitle": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "mission-retry-save": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "mission-retry": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "mission1-bay": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "mission1-depot": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "mission1-truck": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "mission2-ambulance": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "mission2-cones": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "mission2-getaway": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "mission2-paths": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "mission2-poison": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "mission2-touch-run": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "mission3-summit": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "mission34-lifecycle": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "mission4-alert": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "mission4-kessler": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "mission4-paths": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "mission4-tail": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "monarch-garages": {
+      "status": "PASS",
+      "receipt": "villa-exit-final-candidate7.json",
+      "assertions": 161,
+      "originalGoalsRadiiTimeoutsRetained": true
+    },
+    "monarch-one": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "mounted-guns": {
+      "status": "PASS",
+      "receipt": "mounted-gun-followup-candidate7.json",
+      "assertions": 112,
+      "originalTestUnchanged": true
+    },
+    "north-point-key": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "nudge-aside": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "parachute-cloud": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "parachute-deploy": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "parachute-liner": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "parachute": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "parked-bridge-efficiency": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "parked-vehicle-hits": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "pause-restart": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "payphones-islands": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "pedestrian-awareness": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "player-jump": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "police-circus": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "police-night-sight": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "police-radio": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "police-search-clock": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "police-witness": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "render-effects": {
+      "status": "SKIP",
+      "receipt": "gameplay-resumed.log"
+    },
+    "respray-beacon": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "respray-lose-police": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "restart-carriers": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "ride-look": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "rider-falls": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "road-signs": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "roof-lifts": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "second-run-over": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "sky-meeting-talk": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "sky-meeting": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "soundscape": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "sun-gradual": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "surrender-input": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "swim-rescue": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "taxi-ride": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "terrace-death": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "traffic-pass-parked": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "trail-mud": {
+      "status": "SKIP",
+      "receipt": "gameplay-resumed.log"
+    },
+    "trail-trees": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "trunk-close": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "vehicle-damage-shape": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "view-remembered": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "voices": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "wet-glints": {
+      "status": "SKIP",
+      "receipt": "gameplay-resumed.log"
+    },
+    "wheelie-hint": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "wheelie": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "witnesses-monarch": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "witnesses-venues": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "world-edge-land": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "world-edge": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "world-reset": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "wreck-limit": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "demo-gating": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "demo-free-roam-markers": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "mission-replay-frontier": {
+      "status": "PASS",
+      "receipt": "gameplay-resumed.log"
+    },
+    "mounted-gun-projection": {
+      "status": "PASS",
+      "receipt": "mounted-gun-projection-host.json",
+      "assertions": 79
+    }
+  },
+  "counts": {
+    "PASS": 196,
+    "SKIP": 18,
+    "FAIL": 0
+  },
+  "totalModules": 214,
+  "inputs": {
+    "initialPartial": {
+      "candidate": "2",
+      "standaloneSha256": "20ebaf27c2b5295b9460986ef5250ba24a3801acbbe825a78b0ffee60ed39732",
+      "completedModules": 101
+    },
+    "resumed": {
+      "candidate": "4",
+      "standaloneSha256": "2e8fa954b875d3b0b15d9c7d4bc68c87f856266a7c11899d73689cc7ab17b813",
+      "selectedModules": 115
+    },
+    "gunAndGarageFollowups": {
+      "candidate": "7",
+      "standaloneSha256": "8ed4ef3185e3e3f10819241d44254cc6aafc2215beaa8ec90006c641ce4f1e02"
+    },
+    "finalHostAndPackage": {
+      "candidate": "8",
+      "standaloneSha256": "5b199b249eeb301af2722c21e84470c6b20902ff0976d17c3e439be1ab3e58da",
+      "hostReceipt": "../host-regression.json",
+      "renderedPackageSmoke": "final8-smoke/smoke.json"
+    }
+  },
+  "corrections": {
+    "military-model-rig": "Fixture now loads the real approved material factory required by char prewarm; original assertions retained.",
+    "motorcycle-puncture": "Fixture loads the actual shared approved-SUV glass-band dependency; original assertions retained.",
+    "chase-move-keys": "Simulation held between explicitly stepped RPC samples; existing movement and camera-angle thresholds retained.",
+    "mounted-guns": "Production physical-mount convergence and close-range pitch fixed; original test and short stationary-target burst pass.",
+    "monarch-garages": "Test follows a proven short Miramar interior alignment before its unchanged gate goals; game physics unchanged. First real-E phase remains; later RPC samples hold simulation."
+  },
+  "limits": [
+    "18 modules explicitly skip WebGL-only checks in NoRender; rendered motorcycle/SUV reviews and packaged smoke are separate receipts.",
+    "Mission1-4 staged route/state regressions pass; four continuous normal-input mission wins remain unverified.",
+    "Cloud software WebGL results are not M4 Max/laptop performance measurements."
+  ]
+}

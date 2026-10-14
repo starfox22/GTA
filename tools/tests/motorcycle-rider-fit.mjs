@@ -6,25 +6,38 @@ import { createRequire } from 'node:module';
 const Three = createRequire(import.meta.url)('../../vendor/three.r160.js');
 const read = name => fs.readFileSync(new URL('../../src/' + name + '.js', import.meta.url), 'utf8');
 
-export default async function (t) {
-  const bytes = fs.readFileSync(new URL('../../assets/vehicle-models.bin', import.meta.url));
+export async function runMotorcycleRiderFit(t, approvedPack = false, riderHeight = 1.8) {
+  const bytes = fs.readFileSync(new URL('../../assets/' + (approvedPack ? 'approved-vehicle-models.bin' : 'vehicle-models.bin'), import.meta.url));
   const length = bytes.readUInt32LE(8), header = JSON.parse(bytes.subarray(12, 12 + length));
   const base = length + 12, types = { f4: Float32Array, i1: Int8Array, u1: Uint8Array, i2: Int16Array, u2: Uint16Array }, arrays = {};
   for (const [name, [type, offset, count]] of Object.entries(header.arrays)) {
     const raw = bytes.subarray(base + offset, base + offset + count * types[type].BYTES_PER_ELEMENT);
     arrays[name] = new types[type](Uint8Array.from(raw).buffer);
   }
-  const materials = Object.fromEntries(['trim', 'rubber', 'rim', 'headOff', 'tailOff', 'headOn', 'tailOn', 'brake', 'drlOn', 'drlOff']
+  const mapping = approvedPack ? { bike: 'm2_sport', kr500: 'm1_enduro' } : {},
+    packedModel = type => header.models[mapping[type] || type], fixture = { header, arrays },
+    materials = Object.fromEntries(['trim', 'rubber', 'rim', 'glass', 'headOff', 'tailOff', 'headOn', 'tailOn', 'brake', 'drlOn', 'drlOff']
     .map(name => [name, new Three.MeshStandardMaterial()]));
-  const player = { car: null }, captures = [], look = { height: 1.8 / 1.75, width: 1, shoulderZ: 1.56 }, M = 8;
-  const scope = vm.createContext({ Three, fixture: { header, arrays }, materials, player, captures, look,
+  const player = { car: null }, captures = [], look = { height: riderHeight / 1.75, width: 1, shoulderZ: 1.56 }, M = 8;
+  const actualLengths = {};
+  if (approvedPack) for (const type of ['bike', 'kr500']) {
+    const match = new RegExp('\\b' + type + ':\\s*\\{[\\s\\S]*?\\bl:\\s*([0-9.]+) \\* UNITS_PER_METRE').exec(read('game-vehicles'));
+    if (!match) throw Error(type + ': production length missing');
+    actualLengths[type] = Number(match[1]) * M;
+  }
+  const scope = vm.createContext({ Three, fixture, materials, player, captures, look,
     CAR_M: M, KMH: M / 3.6, TAU: 2 * Math.PI, PERSON_HEIGHT: 14, gameTime: 0, worldResetSerial: 0,
     sharedGeometries: new Set(), specialLooks: new WeakMap(),
     crowdQuat: new Three.Quaternion(), crowdEuler: new Three.Euler(), mLocal: new Three.Matrix4(),
     clamp: (v, lo, hi) => Math.max(lo, Math.min(hi, v)),
     isAircraft: () => false, isBoat: () => false, vehicleLampAmount: () => 0,
     hitFlinch: () => null, personFallAmount: () => 0,
-    vehicleSpec: c => ({ l: header.models[c.type].dims[0] * M }),
+    vehicleSpec: c => ({ l: approvedPack ? actualLengths[c.type] : packedModel(c.type).dims[0] * M }),
+    approvedVehicleData: () => fixture,
+    approvedVehicleModel: key => approvedPack ? header.models[key] : null,
+    approvedVehicleGeometry: (model, part, k, uvAt) => api.vaGeometry(model, fixture, part, k, uvAt),
+    approvedVehicleMaterials: () => materials,
+    approvedVehiclePaint: c => new Three.MeshPhysicalMaterial({ color: c.color }),
     civSharedMaterials: () => materials, civLampSet: () => materials,
     outfitLook: () => look, compiledLook: () => look,
     driveByRiderArm() {},
@@ -50,7 +63,7 @@ export default async function (t) {
       motoRiderGeometry = () => new Three.BoxGeometry(.1, .1, .1);
       // Other player activities are outside this renderer-only host. Keep the actual rider branch.
       specialSpec = () => { resetSpec(specScratch); specScratch.look = look; return specScratch; };
-      ({ makeAssetMotorbike, queueRider, drawQueuedRiders, crowdPoseTargets, crowdJoint, ikArm,
+      ({ makeAssetMotorbike, vaGeometry, queueRider, drawQueuedRiders, crowdPoseTargets, crowdJoint, ikArm,
         RIG, RIG_UNIT, J_COUNT, J_LEAN, J_DROP, J_ROLL, J_TWIST })`, scope);
   const pos = matrix => new Three.Vector3().setFromMatrixPosition(matrix);
   const capture = (c, model, own = false) => {
@@ -59,19 +72,21 @@ export default async function (t) {
     return captures.at(-1);
   };
   let maxTargetError = 0, maxWristError = 0, maxRestWristError = 0, maxBoneError = 0, formerSteeringGap = 0;
-  for (const type of ['bike', 'cruiser', 'kr500']) {
-    const packed = header.models[type], grips = packed.grips || [-1, 1].map(side => [packed.grip[0], packed.grip[1], side * packed.grip[2]]);
-    t.assert(type === 'kr500' || !!packed.grips, type + ': measured paired grips missing');
+  const restReach = [];
+  for (const type of approvedPack ? ['bike', 'kr500'] : ['bike', 'cruiser', 'kr500']) {
+    const packed = packedModel(type), assetScale = approvedPack ? actualLengths[type] / packed.dims[0] : M,
+      grips = packed.grips || [-1, 1].map(side => [packed.grip[0], packed.grip[1], side * packed.grip[2]]);
+    t.assert(!approvedPack && type === 'kr500' || !!packed.grips, type + ': measured paired grips missing');
     t.assert(grips.length === 2 && grips.every(v => v.length === 3 && v.every(Number.isFinite)), type + ': authored grips missing');
     t.assert(grips[0][2] < grips[1][2], type + ': left/right grip order reversed');
     const c = { type, color: '#d95121', x: 0, y: 0, a: 0, hp: 100, wheelie: 0 }, model = api.makeAssetMotorbike(c);
     const fixedInverse = model.riderGripInverse.clone();
-    if (packed.grips) t.assert(model.riderSeat.grips.every((point, side) => point.every((v, axis) => Math.abs(v - grips[side][axis] * M) < 1e-10)),
+    if (packed.grips) t.assert(model.riderSeat.grips.every((point, side) => point.every((v, axis) => Math.abs(v - grips[side][axis] * assetScale) < 1e-10)),
       type + ': optional grips scaled twice or have a wrist offset');
     // A physical marker parented to each handlebar moves with the production raked fork.
     const markers = grips.map(point => {
       const marker = new Three.Object3D();
-      marker.position.set(...point).multiplyScalar(M).applyMatrix4(model.riderGripInverse);
+      marker.position.set(...point).multiplyScalar(assetScale).applyMatrix4(model.riderGripInverse);
       model.steer.add(marker); return marker;
     });
     for (const [steer, bank, pitch, yaw, wheelie] of [[0, 0, 0, 0, 0], [.46, .2, 0, 1.2, 0], [-.46, -.25, .35, -2.1, .35]]) {
@@ -91,7 +106,7 @@ export default async function (t) {
         const expected = markers[side].getWorldPosition(new Three.Vector3());
         const gap = drawn.hands[side].distanceTo(expected); maxTargetError = Math.max(maxTargetError, gap);
         t.assert(gap < 1e-8, `${type}: hand left actual steering contact by ${gap}`);
-        const former = new Three.Vector3(...grips[side]).multiplyScalar(M).applyMatrix4(model.body.matrixWorld);
+        const former = new Three.Vector3(...grips[side]).multiplyScalar(assetScale).applyMatrix4(model.body.matrixWorld);
         formerSteeringGap = Math.max(formerSteeringGap, former.distanceTo(expected));
         // Use the actual crowd shoulder transform and production IK, preserving arm lengths.
         const upper = new Three.Matrix4(), lower = new Three.Matrix4(), hand = new Three.Matrix4();
@@ -100,7 +115,10 @@ export default async function (t) {
         api.ikArm(upper, lower, hand, shoulder, drawn.hands[side], pole, api.RIG.upperArm * H, api.RIG.forearm * H, H);
         const wristGap = pos(hand).distanceTo(expected), reach = (api.RIG.upperArm + api.RIG.forearm) * H * .998;
         maxWristError = Math.max(maxWristError, wristGap);
-        if (steer === 0) maxRestWristError = Math.max(maxRestWristError, wristGap);
+        if (steer === 0) {
+          maxRestWristError = Math.max(maxRestWristError, wristGap);
+          restReach.push({ type, side, lean: packed.lean, wristGap, shoulder: shoulder.toArray(), grip: expected.toArray() });
+        }
         // Preserve anatomy: a full-lock grip may exceed the real arm's finite reach.
         // Require the exact existing physical clamp rather than extending the bones.
         t.assert(Math.abs(wristGap - Math.max(0, shoulder.distanceTo(expected) - reach)) < 1e-8,
@@ -123,7 +141,7 @@ export default async function (t) {
     t.assert(model.riderGripInverse.equals(fixedInverse), type + ': cached inverse was mutated');
   }
   t.assert(maxTargetError < 1e-8 && maxBoneError < 1e-8, 'rider contact/bone transform error');
-  t.assert(maxRestWristError < .08, `straight bars beyond actual arm reach: ${maxRestWristError}`);
+  t.assert(maxRestWristError < .08, `straight bars beyond actual arm reach: ${maxRestWristError}; ${JSON.stringify(restReach)}`);
   t.assert(formerSteeringGap > .5, 'test did not exercise independent raked steering');
   // Procedural motorbikes, bicycles and jet skis keep the established compensated single-grip convention.
   const group = new Three.Group(), body = new Three.Group(), rider = new Three.Group(); group.add(body); body.add(rider);
@@ -167,5 +185,7 @@ export default async function (t) {
     const finalContact = localContact.clone().applyMatrix4(m.body.matrixWorld);
     t.assert(copied.get(c).distanceTo(finalContact) < 1e-9, c.kind + ': rider/occupant uploaded before current terrain tilt');
   }
-  t.note(JSON.stringify({ maxTargetError, maxWristError, maxRestWristError, maxBoneError, formerSteeringGap }));
+  t.note(JSON.stringify({ riderHeight, maxTargetError, maxWristError, maxRestWristError, maxBoneError, formerSteeringGap }));
 }
+
+export default function (t) { return runMotorcycleRiderFit(t); }

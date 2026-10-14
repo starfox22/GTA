@@ -1,0 +1,33 @@
+{
+  "scope": "Direct execution of isolated production-source host regressions; same original assertions retained, no browser/GPU claims.",
+  "results": [
+    {
+      "name": "military-model-rig",
+      "passed": true,
+      "assertions": 468,
+      "seconds": 1.2610853050000002,
+      "moduleSHA256": "3f5d7ebac03aefa1db4978c646187e21e7afca6087306b1deeb3e77a9e9f3aa0",
+      "notes": [
+        "Original 156 lamp triangles reassigned; no geometry/texture replacement; two military kits reused across 20 repeated spawns."
+      ]
+    },
+    {
+      "name": "motorcycle-puncture",
+      "passed": true,
+      "assertions": 121,
+      "seconds": 0.020907486999999947,
+      "moduleSHA256": "4641c01098e3530b2e345560deaa1a344e9c33d26f96d8f068f72aeb90b25c75",
+      "notes": [
+        "actual side-entry rays: 3 headings × 2 elevations × 2 sides × 2 axles; engine/end/high/probability misses and car/truck/glass rules pass"
+      ]
+    }
+  ],
+  "sources": {
+    "approved-vehicle-assets3d.js": "8a04daf532077ff557fdb183defc5e3b92ec445f3a768e8d242d6785c4ccbfbb",
+    "vehicle-char3d.js": "a6b1754fb76f3ed02202ec69a0d48371e482ec040288f50dbecee05bf52e47ac",
+    "vehicle-assets3d.js": "808b5aba1021e5ad56a5aed31ba2432276c3de4b038ff91ae785b61c3b417d89",
+    "military-assets3d.js": "de7919181a609cd10d6aa651afdbcd3b751a9abbb4c8210a6de61f88794a4c8f",
+    "driveby-seats.js": "d919b10b82c416d72ae56c4df0e92adb5a51f64ba16b5073adf3ea28dbaed211",
+    "damage-vehicles.js": "637aad803bca774345ef50568e9fcc90f451d91de1bf4340563c633d0f77f316"
+  }
+}

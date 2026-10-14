@@ -1,0 +1,273 @@
+{
+  "htmlSha256": "8ed4ef3185e3e3f10819241d44254cc6aafc2215beaa8ec90006c641ce4f1e02",
+  "originalTestSha256": "c8e5a1f1b38f0303fee490e9eaba9c18a3b9a98cad406e0474327b1936f4f951",
+  "proposedTestSha256": "69986d0a3e0601c56810275e847c9cafe2ec75a5b0344074359dad3eacff57b8",
+  "proposedFullTestSha256": "72a3fae04311163301e3da62b1584cefcff220b2351549ae56b123fc1b32b6a5",
+  "focused": true,
+  "recorderSha256": "a933abeb91c66d9f26cc0e081557a3c5206bd9735686c11d3df00cceb36e3248",
+  "assertions": 62,
+  "pilots": [
+    {
+      "args": [
+        5874,
+        -3947,
+        15,
+        7
+      ],
+      "before": {
+        "type": "suv",
+        "x": 5864.4,
+        "y": -3934.8,
+        "heading": -78.5,
+        "yawRate": 0,
+        "kmh": 0,
+        "slip": 0,
+        "hp": 250,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 1,
+        "x": 5872,
+        "y": -3953,
+        "speed": 7,
+        "hp": 250,
+        "left": 6,
+        "wanted": 0
+      },
+      "after": {
+        "type": "suv",
+        "x": 5871.6,
+        "y": -3952.7,
+        "heading": -58.5,
+        "yawRate": -0.079,
+        "kmh": 3.3,
+        "slip": 0.1,
+        "hp": 250,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        5874,
+        -3866,
+        15,
+        14
+      ],
+      "before": {
+        "type": "suv",
+        "x": 5871.6,
+        "y": -3952.7,
+        "heading": -58.5,
+        "yawRate": -0.079,
+        "kmh": 3.3,
+        "slip": 0.1,
+        "hp": 250,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 10,
+        "x": 5874,
+        "y": -3868,
+        "speed": 8,
+        "hp": 247,
+        "left": 2,
+        "wanted": 0
+      },
+      "after": {
+        "type": "suv",
+        "x": 5873.9,
+        "y": -3867.6,
+        "heading": 109,
+        "yawRate": 0.007,
+        "kmh": 3.6,
+        "slip": 0,
+        "hp": 247,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        5874,
+        -3772,
+        15,
+        22
+      ],
+      "before": {
+        "type": "suv",
+        "x": 5873.9,
+        "y": -3867.6,
+        "heading": 109,
+        "yawRate": 0.007,
+        "kmh": 3.6,
+        "slip": 0,
+        "hp": 247,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 3,
+        "x": 5873,
+        "y": -3780,
+        "speed": 8,
+        "hp": 247,
+        "left": 8,
+        "wanted": 0
+      },
+      "after": {
+        "type": "suv",
+        "x": 5873,
+        "y": -3779.7,
+        "heading": 95.3,
+        "yawRate": 0.009,
+        "kmh": 3.5,
+        "slip": 0,
+        "hp": 247,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        9074,
+        -3944,
+        15,
+        7
+      ],
+      "before": {
+        "type": "suv",
+        "x": 9065.4,
+        "y": -3932.4,
+        "heading": -78.5,
+        "yawRate": 0,
+        "kmh": 0,
+        "slip": 0,
+        "hp": 250,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 1,
+        "x": 9072,
+        "y": -3949,
+        "speed": 6,
+        "hp": 250,
+        "left": 6,
+        "wanted": 0
+      },
+      "after": {
+        "type": "suv",
+        "x": 9071.7,
+        "y": -3949,
+        "heading": -60.3,
+        "yawRate": -0.066,
+        "kmh": 2.6,
+        "slip": 0.1,
+        "hp": 250,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        9074,
+        -3866,
+        15,
+        14
+      ],
+      "before": {
+        "type": "suv",
+        "x": 9071.7,
+        "y": -3949,
+        "heading": -60.3,
+        "yawRate": -0.066,
+        "kmh": 2.6,
+        "slip": 0.1,
+        "hp": 250,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 10,
+        "x": 9071,
+        "y": -3866,
+        "speed": 7,
+        "hp": 246,
+        "left": 3,
+        "wanted": 0
+      },
+      "after": {
+        "type": "suv",
+        "x": 9071.1,
+        "y": -3865.5,
+        "heading": 155.9,
+        "yawRate": 0.165,
+        "kmh": 3,
+        "slip": -0.4,
+        "hp": 246,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        9074,
+        -3772,
+        15,
+        22
+      ],
+      "before": {
+        "type": "suv",
+        "x": 9071.1,
+        "y": -3865.5,
+        "heading": 155.9,
+        "yawRate": 0.165,
+        "kmh": 3,
+        "slip": -0.4,
+        "hp": 246,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 11,
+        "x": 9073,
+        "y": -3781,
+        "speed": 8,
+        "hp": 246,
+        "left": 9,
+        "wanted": 0
+      },
+      "after": {
+        "type": "suv",
+        "x": 9073.1,
+        "y": -3780.6,
+        "heading": 80.6,
+        "yawRate": 0.001,
+        "kmh": 3.6,
+        "slip": 0,
+        "hp": 246,
+        "lift": 0,
+        "air": false
+      }
+    }
+  ],
+  "errors": [],
+  "notes": [],
+  "frameFaults": {
+    "count": 0,
+    "gameTime": 42.76,
+    "drill": null,
+    "kinds": []
+  },
+  "status": "PASS",
+  "browserClosed": true
+}

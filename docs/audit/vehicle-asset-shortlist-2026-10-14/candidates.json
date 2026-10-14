@@ -1,6 +1,12 @@
 {
   "ownerConstraints": "Free assets only; individual approval before game import; same permanent Codex branch",
-  "approved": [],
+  "approved": [
+    "M1",
+    "M2",
+    "S1",
+    "S2",
+    "S3"
+  ],
   "candidates": [
     {
       "approvalID": "M1",
@@ -353,5 +359,7 @@
       "period": "Modern body; not1997accurate",
       "licenseEvidenceStrength": "Author/source/CC-BY-4.0 explicitly embedded in actual GLB asset.extras"
     }
-  ]
+  ],
+  "approvalRecord": "Owner: i approve all of the assets (14 October 2026)",
+  "integrationAudit": "../approved-vehicle-integration-2026-10-14/README.md"
 }

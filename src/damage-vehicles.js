@@ -99,6 +99,9 @@
     };
     // Where the glass is on each body, in the same numbers the renderer builds it with.
     function vehicleGlassBand(vehicle) {
+      const approved = approvedSuvGlassBand(vehicle);
+      if (approved) return { belt: approved.belt * UNITS_PER_METRE, roof: approved.roof * UNITS_PER_METRE,
+        back: approved.back * UNITS_PER_METRE, front: approved.front * UNITS_PER_METRE, open: false };
       const spec = vehicleSpec(vehicle),
         l = spec.l,
         t = vehicle.type,

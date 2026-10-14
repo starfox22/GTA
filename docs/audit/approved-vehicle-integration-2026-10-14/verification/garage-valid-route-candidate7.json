@@ -1,0 +1,1743 @@
+{
+  "htmlSha256": "8ed4ef3185e3e3f10819241d44254cc6aafc2215beaa8ec90006c641ce4f1e02",
+  "originalTestSha256": "c8e5a1f1b38f0303fee490e9eaba9c18a3b9a98cad406e0474327b1936f4f951",
+  "proposedTestSha256": "611da15a8d484e7c434d4f1b87a8464394cd364109fcb1e21a23bbba52887d02",
+  "proposedFullTestSha256": "611da15a8d484e7c434d4f1b87a8464394cd364109fcb1e21a23bbba52887d02",
+  "focused": false,
+  "recorderSha256": "04a807f2be34cfc36dbf4c28e7355ff5fb4711be92fc73e3d9fa1cb5440ffa7a",
+  "assertions": 161,
+  "pilots": [
+    {
+      "args": [
+        5716,
+        -4690,
+        12,
+        14
+      ],
+      "before": {
+        "type": "supercar",
+        "x": 5716,
+        "y": -4762.4,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 0,
+        "slip": 0,
+        "hp": 130,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 5716,
+        "y": -4695,
+        "speed": 8,
+        "hp": 130,
+        "left": 5,
+        "wanted": 0
+      },
+      "after": {
+        "type": "supercar",
+        "x": 5716,
+        "y": -4694.6,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 3.5,
+        "slip": 0,
+        "hp": 130,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        5716,
+        -4572,
+        20,
+        22
+      ],
+      "before": {
+        "type": "supercar",
+        "x": 5716,
+        "y": -4694.6,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 3.5,
+        "slip": 0,
+        "hp": 130,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 3,
+        "x": 5716,
+        "y": -4584,
+        "speed": 8,
+        "hp": 130,
+        "left": 12,
+        "wanted": 0
+      },
+      "after": {
+        "type": "supercar",
+        "x": 5716,
+        "y": -4584,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 3.4,
+        "slip": 0,
+        "hp": 130,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        6386,
+        -4685,
+        12,
+        14
+      ],
+      "before": {
+        "type": "luxury",
+        "x": 6386,
+        "y": -4757.3,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 0,
+        "slip": 0,
+        "hp": 205,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 6386,
+        "y": -4687,
+        "speed": 8,
+        "hp": 205,
+        "left": 2,
+        "wanted": 0
+      },
+      "after": {
+        "type": "luxury",
+        "x": 6386,
+        "y": -4686.9,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 3.4,
+        "slip": 0,
+        "hp": 205,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        6386,
+        -4572,
+        20,
+        22
+      ],
+      "before": {
+        "type": "luxury",
+        "x": 6386,
+        "y": -4686.9,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 3.4,
+        "slip": 0,
+        "hp": 205,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 3,
+        "x": 6386,
+        "y": -4581,
+        "speed": 7,
+        "hp": 205,
+        "left": 9,
+        "wanted": 0
+      },
+      "after": {
+        "type": "luxury",
+        "x": 6386,
+        "y": -4581.3,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 3.2,
+        "slip": 0,
+        "hp": 205,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        7994,
+        -4679,
+        12,
+        14
+      ],
+      "before": {
+        "type": "roadster",
+        "x": 7994,
+        "y": -4750.9,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 0,
+        "slip": 0,
+        "hp": 120,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 7994,
+        "y": -4683,
+        "speed": 8,
+        "hp": 120,
+        "left": 4,
+        "wanted": 0
+      },
+      "after": {
+        "type": "roadster",
+        "x": 7994,
+        "y": -4682.5,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 3.4,
+        "slip": 0,
+        "hp": 120,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        7994,
+        -4572,
+        20,
+        22
+      ],
+      "before": {
+        "type": "roadster",
+        "x": 7994,
+        "y": -4682.5,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 3.4,
+        "slip": 0,
+        "hp": 120,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 3,
+        "x": 7994,
+        "y": -4583,
+        "speed": 6,
+        "hp": 120,
+        "left": 11,
+        "wanted": 0
+      },
+      "after": {
+        "type": "roadster",
+        "x": 7994,
+        "y": -4583.5,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 2.9,
+        "slip": 0,
+        "hp": 120,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        8704,
+        -4694,
+        12,
+        14
+      ],
+      "before": {
+        "type": "suv",
+        "x": 8704,
+        "y": -4765.5,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 0,
+        "slip": 0,
+        "hp": 250,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 3,
+        "x": 8704,
+        "y": -4691,
+        "speed": 6,
+        "hp": 250,
+        "left": 3,
+        "wanted": 0
+      },
+      "after": {
+        "type": "suv",
+        "x": 8704,
+        "y": -4691.5,
+        "heading": 89.9,
+        "yawRate": -0.045,
+        "kmh": 2.8,
+        "slip": 0.1,
+        "hp": 250,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        8704,
+        -4572,
+        20,
+        22
+      ],
+      "before": {
+        "type": "suv",
+        "x": 8704,
+        "y": -4691.5,
+        "heading": 89.9,
+        "yawRate": -0.045,
+        "kmh": 2.8,
+        "slip": 0.1,
+        "hp": 250,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 3,
+        "x": 8705,
+        "y": -4578,
+        "speed": 7,
+        "hp": 250,
+        "left": 6,
+        "wanted": 0
+      },
+      "after": {
+        "type": "suv",
+        "x": 8704.7,
+        "y": -4577.9,
+        "heading": 89.6,
+        "yawRate": 0,
+        "kmh": 3.1,
+        "slip": 0,
+        "hp": 250,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        8906,
+        -4751,
+        12,
+        14
+      ],
+      "before": {
+        "type": "sport",
+        "x": 8906,
+        "y": -4823.2,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 0,
+        "slip": 0,
+        "hp": 110,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 8906,
+        "y": -4756,
+        "speed": 7,
+        "hp": 110,
+        "left": 5,
+        "wanted": 0
+      },
+      "after": {
+        "type": "sport",
+        "x": 8906,
+        "y": -4756.2,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 3.2,
+        "slip": 0,
+        "hp": 110,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        8906,
+        -4572,
+        20,
+        22
+      ],
+      "before": {
+        "type": "sport",
+        "x": 8906,
+        "y": -4756.2,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 3.2,
+        "slip": 0,
+        "hp": 110,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 3,
+        "x": 8906,
+        "y": -4593,
+        "speed": 4,
+        "hp": 110,
+        "left": 21,
+        "wanted": 0
+      },
+      "after": {
+        "type": "sport",
+        "x": 8905.7,
+        "y": -4593.1,
+        "heading": 90,
+        "yawRate": -0.088,
+        "kmh": 2.1,
+        "slip": 0,
+        "hp": 110,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        9749,
+        -3916,
+        12,
+        14
+      ],
+      "before": {
+        "type": "coupe",
+        "x": 9820.9,
+        "y": -3916,
+        "heading": 180,
+        "yawRate": 0,
+        "kmh": 0,
+        "slip": 0,
+        "hp": 130,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 9750,
+        "y": -3916,
+        "speed": 7,
+        "hp": 130,
+        "left": 1,
+        "wanted": 0
+      },
+      "after": {
+        "type": "coupe",
+        "x": 9750.4,
+        "y": -3916,
+        "heading": 180,
+        "yawRate": 0,
+        "kmh": 3.3,
+        "slip": 0,
+        "hp": 130,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        9628,
+        -3916,
+        20,
+        22
+      ],
+      "before": {
+        "type": "coupe",
+        "x": 9750.4,
+        "y": -3916,
+        "heading": 180,
+        "yawRate": 0,
+        "kmh": 3.3,
+        "slip": 0,
+        "hp": 130,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 3,
+        "x": 9636,
+        "y": -3916,
+        "speed": 6,
+        "hp": 130,
+        "left": 8,
+        "wanted": 0
+      },
+      "after": {
+        "type": "coupe",
+        "x": 9636.1,
+        "y": -3916,
+        "heading": 180,
+        "yawRate": 0,
+        "kmh": 2.8,
+        "slip": 0,
+        "hp": 130,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        9737,
+        -3096,
+        12,
+        14
+      ],
+      "before": {
+        "type": "supercar",
+        "x": 9809.4,
+        "y": -3096,
+        "heading": 180,
+        "yawRate": 0,
+        "kmh": 0,
+        "slip": 0,
+        "hp": 130,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 9742,
+        "y": -3096,
+        "speed": 8,
+        "hp": 130,
+        "left": 5,
+        "wanted": 0
+      },
+      "after": {
+        "type": "supercar",
+        "x": 9741.6,
+        "y": -3096,
+        "heading": 180,
+        "yawRate": 0,
+        "kmh": 3.5,
+        "slip": 0,
+        "hp": 130,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        9628,
+        -3096,
+        20,
+        22
+      ],
+      "before": {
+        "type": "supercar",
+        "x": 9741.6,
+        "y": -3096,
+        "heading": 180,
+        "yawRate": 0,
+        "kmh": 3.5,
+        "slip": 0,
+        "hp": 130,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 3,
+        "x": 9636,
+        "y": -3096,
+        "speed": 8,
+        "hp": 130,
+        "left": 8,
+        "wanted": 0
+      },
+      "after": {
+        "type": "supercar",
+        "x": 9636.2,
+        "y": -3096,
+        "heading": 180,
+        "yawRate": 0,
+        "kmh": 3.4,
+        "slip": 0,
+        "hp": 130,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        9734,
+        -2804,
+        12,
+        14
+      ],
+      "before": {
+        "type": "luxury",
+        "x": 9806.1,
+        "y": -2804,
+        "heading": 180,
+        "yawRate": 0,
+        "kmh": 0,
+        "slip": 0,
+        "hp": 205,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 9736,
+        "y": -2804,
+        "speed": 8,
+        "hp": 205,
+        "left": 2,
+        "wanted": 0
+      },
+      "after": {
+        "type": "luxury",
+        "x": 9735.8,
+        "y": -2804,
+        "heading": 180,
+        "yawRate": 0,
+        "kmh": 3.4,
+        "slip": 0,
+        "hp": 205,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        9628,
+        -2804,
+        20,
+        22
+      ],
+      "before": {
+        "type": "luxury",
+        "x": 9735.8,
+        "y": -2804,
+        "heading": 180,
+        "yawRate": 0,
+        "kmh": 3.4,
+        "slip": 0,
+        "hp": 205,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 3,
+        "x": 9637,
+        "y": -2804,
+        "speed": 8,
+        "hp": 205,
+        "left": 9,
+        "wanted": 0
+      },
+      "after": {
+        "type": "luxury",
+        "x": 9636.8,
+        "y": -2804,
+        "heading": 180,
+        "yawRate": 0,
+        "kmh": 3.4,
+        "slip": 0,
+        "hp": 205,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        5940,
+        -3820,
+        12,
+        14
+      ],
+      "before": {
+        "type": "roadster",
+        "x": 5940,
+        "y": -3892,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 0,
+        "slip": 0,
+        "hp": 120,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 5940,
+        "y": -3824,
+        "speed": 8,
+        "hp": 120,
+        "left": 4,
+        "wanted": 0
+      },
+      "after": {
+        "type": "roadster",
+        "x": 5940,
+        "y": -3823.6,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 3.4,
+        "slip": 0,
+        "hp": 120,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        5940,
+        -3772,
+        20,
+        22
+      ],
+      "before": {
+        "type": "roadster",
+        "x": 5940,
+        "y": -3823.6,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 3.4,
+        "slip": 0,
+        "hp": 120,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 5940,
+        "y": -3779,
+        "speed": 7,
+        "hp": 120,
+        "left": 7,
+        "wanted": 0
+      },
+      "after": {
+        "type": "roadster",
+        "x": 5940,
+        "y": -3778.9,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 3.2,
+        "slip": 0,
+        "hp": 120,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        6060,
+        -3820,
+        12,
+        14
+      ],
+      "before": {
+        "type": "suv",
+        "x": 6060,
+        "y": -3892,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 0,
+        "slip": 0,
+        "hp": 250,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 3,
+        "x": 6060,
+        "y": -3818,
+        "speed": 6,
+        "hp": 250,
+        "left": 2,
+        "wanted": 0
+      },
+      "after": {
+        "type": "suv",
+        "x": 6060,
+        "y": -3818,
+        "heading": 89.9,
+        "yawRate": -0.045,
+        "kmh": 2.8,
+        "slip": 0.1,
+        "hp": 250,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        6060,
+        -3772,
+        20,
+        22
+      ],
+      "before": {
+        "type": "suv",
+        "x": 6060,
+        "y": -3818,
+        "heading": 89.9,
+        "yawRate": -0.045,
+        "kmh": 2.8,
+        "slip": 0.1,
+        "hp": 250,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 6060,
+        "y": -3779,
+        "speed": 8,
+        "hp": 250,
+        "left": 7,
+        "wanted": 0
+      },
+      "after": {
+        "type": "suv",
+        "x": 6060.2,
+        "y": -3779.2,
+        "heading": 89.6,
+        "yawRate": 0,
+        "kmh": 3.6,
+        "slip": 0,
+        "hp": 250,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        6734,
+        -3820,
+        12,
+        14
+      ],
+      "before": {
+        "type": "sport",
+        "x": 6734,
+        "y": -3892,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 0,
+        "slip": 0,
+        "hp": 110,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 6734,
+        "y": -3825,
+        "speed": 7,
+        "hp": 110,
+        "left": 5,
+        "wanted": 0
+      },
+      "after": {
+        "type": "sport",
+        "x": 6734,
+        "y": -3825,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 3.2,
+        "slip": 0,
+        "hp": 110,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        6734,
+        -3772,
+        20,
+        22
+      ],
+      "before": {
+        "type": "sport",
+        "x": 6734,
+        "y": -3825,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 3.2,
+        "slip": 0,
+        "hp": 110,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 1,
+        "x": 6734,
+        "y": -3782,
+        "speed": 7,
+        "hp": 110,
+        "left": 10,
+        "wanted": 0
+      },
+      "after": {
+        "type": "sport",
+        "x": 6734,
+        "y": -3782,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 3.1,
+        "slip": 0,
+        "hp": 110,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        7044,
+        -3820,
+        12,
+        14
+      ],
+      "before": {
+        "type": "coupe",
+        "x": 7044,
+        "y": -3892,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 0,
+        "slip": 0,
+        "hp": 130,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 7044,
+        "y": -3822,
+        "speed": 7,
+        "hp": 130,
+        "left": 2,
+        "wanted": 0
+      },
+      "after": {
+        "type": "coupe",
+        "x": 7044,
+        "y": -3821.5,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 3.3,
+        "slip": 0,
+        "hp": 130,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        7044,
+        -3772,
+        20,
+        22
+      ],
+      "before": {
+        "type": "coupe",
+        "x": 7044,
+        "y": -3821.5,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 3.3,
+        "slip": 0,
+        "hp": 130,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 7044,
+        "y": -3780,
+        "speed": 6,
+        "hp": 130,
+        "left": 8,
+        "wanted": 0
+      },
+      "after": {
+        "type": "coupe",
+        "x": 7044,
+        "y": -3779.6,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 2.8,
+        "slip": 0,
+        "hp": 130,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        9140,
+        -3820,
+        12,
+        14
+      ],
+      "before": {
+        "type": "supercar",
+        "x": 9140,
+        "y": -3892,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 0,
+        "slip": 0,
+        "hp": 130,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 9140,
+        "y": -3824,
+        "speed": 8,
+        "hp": 130,
+        "left": 4,
+        "wanted": 0
+      },
+      "after": {
+        "type": "supercar",
+        "x": 9140,
+        "y": -3824.2,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 3.5,
+        "slip": 0,
+        "hp": 130,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        9140,
+        -3772,
+        20,
+        22
+      ],
+      "before": {
+        "type": "supercar",
+        "x": 9140,
+        "y": -3824.2,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 3.5,
+        "slip": 0,
+        "hp": 130,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 1,
+        "x": 9140,
+        "y": -3781,
+        "speed": 7,
+        "hp": 130,
+        "left": 9,
+        "wanted": 0
+      },
+      "after": {
+        "type": "supercar",
+        "x": 9140,
+        "y": -3781,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 3.3,
+        "slip": 0,
+        "hp": 130,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        9260,
+        -3820,
+        12,
+        14
+      ],
+      "before": {
+        "type": "luxury",
+        "x": 9260,
+        "y": -3892,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 0,
+        "slip": 0,
+        "hp": 205,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 9260,
+        "y": -3822,
+        "speed": 8,
+        "hp": 205,
+        "left": 2,
+        "wanted": 0
+      },
+      "after": {
+        "type": "luxury",
+        "x": 9260,
+        "y": -3821.6,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 3.4,
+        "slip": 0,
+        "hp": 205,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        9260,
+        -3772,
+        20,
+        22
+      ],
+      "before": {
+        "type": "luxury",
+        "x": 9260,
+        "y": -3821.6,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 3.4,
+        "slip": 0,
+        "hp": 205,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 9260,
+        "y": -3781,
+        "speed": 8,
+        "hp": 205,
+        "left": 9,
+        "wanted": 0
+      },
+      "after": {
+        "type": "luxury",
+        "x": 9260,
+        "y": -3781,
+        "heading": 90,
+        "yawRate": 0,
+        "kmh": 3.4,
+        "slip": 0,
+        "hp": 205,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        5874,
+        -3866,
+        15,
+        14
+      ],
+      "before": {
+        "type": "suv",
+        "x": 5864.4,
+        "y": -3934.8,
+        "heading": -78.5,
+        "yawRate": 0,
+        "kmh": 0,
+        "slip": 0,
+        "hp": 250,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 10,
+        "x": 5875,
+        "y": -3866,
+        "speed": 6,
+        "hp": 250,
+        "left": 1,
+        "wanted": 0
+      },
+      "after": {
+        "type": "suv",
+        "x": 5875.3,
+        "y": -3866.5,
+        "heading": 89.2,
+        "yawRate": -0.006,
+        "kmh": 2.9,
+        "slip": 0,
+        "hp": 250,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        5874,
+        -3772,
+        15,
+        22
+      ],
+      "before": {
+        "type": "suv",
+        "x": 5875.3,
+        "y": -3866.5,
+        "heading": 89.2,
+        "yawRate": -0.006,
+        "kmh": 2.9,
+        "slip": 0,
+        "hp": 250,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 3,
+        "x": 5875,
+        "y": -3779,
+        "speed": 8,
+        "hp": 250,
+        "left": 7,
+        "wanted": 0
+      },
+      "after": {
+        "type": "suv",
+        "x": 5874.7,
+        "y": -3779,
+        "heading": 93.1,
+        "yawRate": 0,
+        "kmh": 3.4,
+        "slip": 0,
+        "hp": 250,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        6126,
+        -3866,
+        15,
+        14
+      ],
+      "before": {
+        "type": "luxury",
+        "x": 6138.7,
+        "y": -3935.7,
+        "heading": 107.2,
+        "yawRate": 0,
+        "kmh": 0,
+        "slip": 0,
+        "hp": 205,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 6126,
+        "y": -3867,
+        "speed": 7,
+        "hp": 205,
+        "left": 1,
+        "wanted": 0
+      },
+      "after": {
+        "type": "luxury",
+        "x": 6126,
+        "y": -3866.6,
+        "heading": 104.9,
+        "yawRate": 0.002,
+        "kmh": 3,
+        "slip": 0,
+        "hp": 205,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        6126,
+        -3772,
+        15,
+        22
+      ],
+      "before": {
+        "type": "luxury",
+        "x": 6126,
+        "y": -3866.6,
+        "heading": 104.9,
+        "yawRate": 0.002,
+        "kmh": 3,
+        "slip": 0,
+        "hp": 205,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 3,
+        "x": 6126,
+        "y": -3778,
+        "speed": 8,
+        "hp": 205,
+        "left": 6,
+        "wanted": 0
+      },
+      "after": {
+        "type": "luxury",
+        "x": 6125.9,
+        "y": -3777.6,
+        "heading": 91.7,
+        "yawRate": 0.003,
+        "kmh": 3.5,
+        "slip": 0,
+        "hp": 205,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        6668,
+        -3866,
+        15,
+        14
+      ],
+      "before": {
+        "type": "sport",
+        "x": 6660.3,
+        "y": -3915.1,
+        "heading": -78.5,
+        "yawRate": 0,
+        "kmh": 0,
+        "slip": 0,
+        "hp": 110,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 5,
+        "x": 6674,
+        "y": -3860,
+        "speed": 7,
+        "hp": 110,
+        "left": 8,
+        "wanted": 0
+      },
+      "after": {
+        "type": "sport",
+        "x": 6673.6,
+        "y": -3860.3,
+        "heading": 154.6,
+        "yawRate": 0.1,
+        "kmh": 3.4,
+        "slip": -0.3,
+        "hp": 110,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        6668,
+        -3772,
+        15,
+        22
+      ],
+      "before": {
+        "type": "sport",
+        "x": 6673.6,
+        "y": -3860.3,
+        "heading": 154.6,
+        "yawRate": 0.1,
+        "kmh": 3.4,
+        "slip": -0.3,
+        "hp": 110,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 6,
+        "x": 6669,
+        "y": -3782,
+        "speed": 8,
+        "hp": 107,
+        "left": 10,
+        "wanted": 0
+      },
+      "after": {
+        "type": "sport",
+        "x": 6669.3,
+        "y": -3781.8,
+        "heading": 78.1,
+        "yawRate": -0.024,
+        "kmh": 3.6,
+        "slip": 0.1,
+        "hp": 107,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        6978,
+        -3866,
+        15,
+        14
+      ],
+      "before": {
+        "type": "suv",
+        "x": 6969.9,
+        "y": -3924.9,
+        "heading": -78.5,
+        "yawRate": 0,
+        "kmh": 0,
+        "slip": 0,
+        "hp": 250,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 10,
+        "x": 6976,
+        "y": -3866,
+        "speed": 6,
+        "hp": 250,
+        "left": 2,
+        "wanted": 0
+      },
+      "after": {
+        "type": "suv",
+        "x": 6976.2,
+        "y": -3865.8,
+        "heading": 120.5,
+        "yawRate": 0.032,
+        "kmh": 2.7,
+        "slip": -0.1,
+        "hp": 250,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        6978,
+        -3772,
+        15,
+        22
+      ],
+      "before": {
+        "type": "suv",
+        "x": 6976.2,
+        "y": -3865.8,
+        "heading": 120.5,
+        "yawRate": 0.032,
+        "kmh": 2.7,
+        "slip": -0.1,
+        "hp": 250,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 3,
+        "x": 6976,
+        "y": -3782,
+        "speed": 8,
+        "hp": 250,
+        "left": 10,
+        "wanted": 0
+      },
+      "after": {
+        "type": "suv",
+        "x": 6976,
+        "y": -3781.7,
+        "heading": 85.7,
+        "yawRate": 0,
+        "kmh": 3.4,
+        "slip": 0,
+        "hp": 250,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        9074,
+        -3944,
+        15,
+        7
+      ],
+      "before": {
+        "type": "suv",
+        "x": 9065.4,
+        "y": -3932.4,
+        "heading": -78.5,
+        "yawRate": 0,
+        "kmh": 0,
+        "slip": 0,
+        "hp": 250,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 1,
+        "x": 9072,
+        "y": -3949,
+        "speed": 6,
+        "hp": 250,
+        "left": 6,
+        "wanted": 0
+      },
+      "after": {
+        "type": "suv",
+        "x": 9071.7,
+        "y": -3949,
+        "heading": -60.3,
+        "yawRate": -0.066,
+        "kmh": 2.6,
+        "slip": 0.1,
+        "hp": 250,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        9074,
+        -3866,
+        15,
+        14
+      ],
+      "before": {
+        "type": "suv",
+        "x": 9071.7,
+        "y": -3949,
+        "heading": -60.3,
+        "yawRate": -0.066,
+        "kmh": 2.6,
+        "slip": 0.1,
+        "hp": 250,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 10,
+        "x": 9071,
+        "y": -3866,
+        "speed": 7,
+        "hp": 246,
+        "left": 3,
+        "wanted": 0
+      },
+      "after": {
+        "type": "suv",
+        "x": 9071.1,
+        "y": -3865.5,
+        "heading": 155.9,
+        "yawRate": 0.165,
+        "kmh": 3,
+        "slip": -0.4,
+        "hp": 246,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        9074,
+        -3772,
+        15,
+        22
+      ],
+      "before": {
+        "type": "suv",
+        "x": 9071.1,
+        "y": -3865.5,
+        "heading": 155.9,
+        "yawRate": 0.165,
+        "kmh": 3,
+        "slip": -0.4,
+        "hp": 246,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 11,
+        "x": 9073,
+        "y": -3780,
+        "speed": 7,
+        "hp": 246,
+        "left": 8,
+        "wanted": 0
+      },
+      "after": {
+        "type": "suv",
+        "x": 9073.1,
+        "y": -3780.2,
+        "heading": 80.6,
+        "yawRate": 0.001,
+        "kmh": 3,
+        "slip": 0,
+        "hp": 246,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        9326,
+        -3866,
+        15,
+        14
+      ],
+      "before": {
+        "type": "roadster",
+        "x": 9338.3,
+        "y": -3923.1,
+        "heading": 107.2,
+        "yawRate": 0,
+        "kmh": 0,
+        "slip": 0,
+        "hp": 120,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 9327,
+        "y": -3866,
+        "speed": 7,
+        "hp": 120,
+        "left": 1,
+        "wanted": 0
+      },
+      "after": {
+        "type": "roadster",
+        "x": 9326.9,
+        "y": -3866.2,
+        "heading": 100.9,
+        "yawRate": 0,
+        "kmh": 3.3,
+        "slip": 0,
+        "hp": 120,
+        "lift": 0,
+        "air": false
+      }
+    },
+    {
+      "args": [
+        9326,
+        -3772,
+        15,
+        22
+      ],
+      "before": {
+        "type": "roadster",
+        "x": 9326.9,
+        "y": -3866.2,
+        "heading": 100.9,
+        "yawRate": 0,
+        "kmh": 3.3,
+        "slip": 0,
+        "hp": 120,
+        "lift": 0,
+        "air": false
+      },
+      "result": {
+        "reason": "arrived",
+        "seconds": 2,
+        "x": 9327,
+        "y": -3782,
+        "speed": 7,
+        "hp": 120,
+        "left": 10,
+        "wanted": 0
+      },
+      "after": {
+        "type": "roadster",
+        "x": 9327.1,
+        "y": -3782.1,
+        "heading": 76.2,
+        "yawRate": -0.026,
+        "kmh": 3.4,
+        "slip": 0.1,
+        "hp": 120,
+        "lift": 0,
+        "air": false
+      }
+    }
+  ],
+  "errors": [],
+  "notes": [],
+  "frameFaults": {
+    "count": 0,
+    "gameTime": 266.6,
+    "drill": null,
+    "kinds": []
+  },
+  "status": "PASS",
+  "browserClosed": true
+}

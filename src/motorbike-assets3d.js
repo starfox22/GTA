@@ -10,17 +10,37 @@
        * pegs; the wheelie pitches about the rear axle (`m.rearAxleX`). Same draw calls as a procedural bike.
        */
       const motoAssetKits = new Map();
+      // Owner-approved replacements keep the game's type/handling identities. Missing packs
+      // retain the existing assets; cruisers and bicycles retain their own model and rig.
+      const APPROVED_MOTO_MODELS = { bike: 'm2_sport', kr500: 'm1_enduro' };
       function motoAssetKit(type, l) {
-        const key = type + ':' + l.toFixed(2);
+        const approvedKey = APPROVED_MOTO_MODELS[type],
+          approved = approvedKey && typeof approvedVehicleModel === 'function' ? approvedVehicleModel(approvedKey) : null,
+          data = approved ? approvedVehicleData() : vaData(),
+          model = approved || data.header.models[type],
+          key = model.type + ':' + l.toFixed(2);
         if (motoAssetKits.has(key)) return motoAssetKits.get(key);
-        const data = vaData(),
-          model = data.header.models[type],
+        const lodGeometries = new Map(),
+          geometry = (name, uvAt) => {
+            const load = part => approved ? approvedVehicleGeometry(model, part, k, uvAt) : vaGeometry(model, data, part, k, uvAt),
+              near = load(name),
+              farName = approved && model.lodParts?.[name],
+              far = farName ? load(farName) : null;
+            if (near && far) lodGeometries.set(near, far);
+            return near;
+          },
+          inFrame = (geo, matrix) => {
+            if (geo) geo.applyMatrix4(matrix);
+            const far = lodGeometries.get(geo);
+            if (far) far.applyMatrix4(matrix);
+            return geo;
+          },
           k = l / model.dims[0],
           [ax, ay, tx, ty] = model.axis,
           // The steering frame: on the axis top, tilted back by the rake (motorbikes3d.js forkPivot).
           pivot = new Three.Matrix4().makeRotationZ(model.rake).setPosition(tx * k, ty * k, 0),
           toSteer = pivot.clone().invert(),
-          inSteer = (geo) => (geo ? geo.applyMatrix4(toSteer) : null),
+          inSteer = (geo) => inFrame(geo, toSteer),
           front = model.wheels.find((w) => w.front),
           rear = model.wheels.find((w) => !w.front),
           frontAt = new Three.Vector3(front.x * k, front.y * k, front.z * k).applyMatrix4(toSteer),
@@ -30,26 +50,31 @@
               axis = new Three.Vector3(...(w.axle || [0, 0, 1])).normalize(),
               rotation = new Three.Quaternion().setFromUnitVectors(new Three.Vector3(0, 0, 1), axis),
               inverse = new Three.Matrix4().makeRotationFromQuaternion(rotation.clone().invert()),
-              tyre = vaGeometry(model, data, 'wheel' + index + '.tyre', k),
-              rim = vaGeometry(model, data, 'wheel' + index + '.rim', k);
+              tyre = geometry('wheel' + index + '.tyre'),
+              rim = geometry('wheel' + index + '.rim');
             // Source bikes may lean slightly in their display pose even with bars straight.
             // Put geometry into the actual axle frame once; the constant carrier restores
             // every original vertex at rest, and local Z roll then uses that source axle.
-            if (tyre) tyre.applyMatrix4(inverse);
-            if (rim) rim.applyMatrix4(inverse);
+            inFrame(tyre, inverse);
+            inFrame(rim, inverse);
             return { at, rotation, bodyAt: new Three.Vector3(w.x * k, w.y * k, w.z * k), r: w.r * k, width: w.width * k, tyre, rim };
           };
         const kit = {
           model,
+          approved: !!approved,
+          lodGeometries,
+          headSteers: model.headSteers !== false,
           k,
           riderGripInverse: toSteer,
           pivot: [tx * k, ty * k, model.rake],
-          paint: vaGeometry(model, data, 'paint', k, [0.5, 0.5]),
-          trim: vaGeometry(model, data, 'trim', k),
-          steerPaint: inSteer(vaGeometry(model, data, 'steer.paint', k, [0.5, 0.5])),
-          steerTrim: inSteer(vaGeometry(model, data, 'steer.trim', k)),
-          head: vaGeometry(model, data, 'head', k),
-          tail: vaGeometry(model, data, 'tail', k),
+          paint: geometry('paint', approved ? null : [0.5, 0.5]),
+          trim: geometry('trim'),
+          glass: geometry('glass'),
+          steerPaint: inSteer(geometry('steer.paint', approved ? null : [0.5, 0.5])),
+          steerTrim: inSteer(geometry('steer.trim')),
+          steerGlass: inSteer(geometry('steer.glass')),
+          head: geometry('head'),
+          tail: geometry('tail'),
           front: wheelKit(front, frontAt),
           rear: wheelKit(rear, new Three.Vector3(rear.x * k, rear.y * k, rear.z * k)),
         };
@@ -58,7 +83,8 @@
           tail = box(kit.tail);
         kit.headGlow = head ? head.getCenter(new Three.Vector3()) : new Three.Vector3(0.45 * l, 1.0 * k, 0);
         kit.tailGlow = tail ? tail.getCenter(new Three.Vector3()) : new Three.Vector3(-0.45 * l, 0.8 * k, 0);
-        inSteer(kit.head);
+        if (kit.headSteers) inSteer(kit.head);
+        if (approved && kit.headSteers) kit.steerHeadGlow = kit.headGlow.clone().add(new Three.Vector3(0.1 * k, 0, 0)).applyMatrix4(toSteer);
         // The rider (metres): hips on the saddle, hands on the grips, soles on the pegs; the torso leaning `lean`.
         const [sx, sy] = model.seat,
           [gx, gy, gz] = model.grip,
@@ -85,7 +111,7 @@
         // follow `m.crank.rotation.z` from there: crowd3d-special.js RIDERS).
         if (model.crank) {
           const [cx, cy, r, angle, z] = model.crank,
-            geo = vaGeometry(model, data, 'crank', k);
+            geo = geometry('crank');
           if (geo) geo.rotateZ(Math.PI / 2 - angle);
           kit.crank = { at: [cx * k, cy * k], r: r * k, z: z * k, geo };
           kit.pose.foot = [cx, cy - r];
@@ -99,7 +125,7 @@
           kit = motoAssetKit(type, spec.l),
           k = kit.k,
           materials = civSharedMaterials(),
-          assetMaterials = vaMaterials(),
+          assetMaterials = kit.approved ? approvedVehicleMaterials(kit.model) : vaMaterials(),
           lampMaterials = civLampSet(),
           model = specialVehicle(vehicle),
           b = model.body;
@@ -109,17 +135,42 @@
         model.bicycle = !!kit.crank;
         model.asset = kit.model.title;
         model.badge = null;
-        model.paint = new Three.MeshPhysicalMaterial({ color: vehicle.color, roughness: 0.26, metalness: 0.1, clearcoat: 1, clearcoatRoughness: 0.05 });
-        if (kit.paint) mesh(kit.paint, model.paint, b, 0, 0, 0);
-        if (kit.trim) mesh(kit.trim, assetMaterials.trim, b, 0, 0, 0);
+        model.paint = kit.approved ? approvedVehiclePaint(vehicle, kit.model) :
+          new Three.MeshPhysicalMaterial({ color: vehicle.color, roughness: 0.26, metalness: 0.1, clearcoat: 1, clearcoatRoughness: 0.05 });
+        if (kit.approved) {
+          model.approvedAsset = kit.model.type;
+          model.finish = kit.model.paintFinish || { roughness: 0.3, metalness: 0.08 };
+          model.liveryMap = model.paint.map;
+          model.atlasPaint = true;
+          model.motoLod = { pairs: [], glass: [], isFar: false };
+        }
+        const add = (geometry, material, parent) => {
+          if (!geometry) return null;
+          const part = mesh(geometry, material, parent, 0, 0, 0),
+            far = kit.lodGeometries.get(geometry);
+          if (far) model.motoLod.pairs.push({ mesh: part, near: geometry, far });
+          return part;
+        };
+        add(kit.paint, model.paint, b);
+        add(kit.trim, assetMaterials.trim, b);
+        const glass = add(kit.glass, assetMaterials.glass || materials.glass, b);
+        if (glass) {
+          glass.castShadow = false;
+          if (model.motoLod) model.motoLod.glass.push({ mesh: glass, near: glass.material, far: assetMaterials.glassFar || glass.material });
+        }
         const forkPivot = new Three.Group(),
           steer = new Three.Group();
         forkPivot.position.set(kit.pivot[0], kit.pivot[1], 0);
         forkPivot.rotation.z = kit.pivot[2];
         b.add(forkPivot);
         forkPivot.add(steer);
-        if (kit.steerPaint) mesh(kit.steerPaint, model.paint, steer, 0, 0, 0);
-        if (kit.steerTrim) mesh(kit.steerTrim, assetMaterials.trim, steer, 0, 0, 0);
+        add(kit.steerPaint, model.paint, steer);
+        add(kit.steerTrim, assetMaterials.trim, steer);
+        const steerGlass = add(kit.steerGlass, assetMaterials.glass || materials.glass, steer);
+        if (steerGlass) {
+          steerGlass.castShadow = false;
+          if (model.motoLod) model.motoLod.glass.push({ mesh: steerGlass, near: steerGlass.material, far: assetMaterials.glassFar || steerGlass.material });
+        }
         // Wheels: the tyre first (damage3d.js hides it on a burnt wreck), then the rim.
         const addWheel = (parent, w) => {
           const axle = new Three.Group(),
@@ -130,8 +181,8 @@
           axle.matrixAutoUpdate = false;
           parent.add(axle);
           axle.add(wheel);
-          mesh(w.tyre || policeSwatchBox(CAR_SWATCH.black), assetMaterials.rubber, wheel, 0, 0, 0).castShadow = false;
-          if (w.rim) mesh(w.rim, assetMaterials.rim, wheel, 0, 0, 0);
+          add(w.tyre || policeSwatchBox(CAR_SWATCH.black), assetMaterials.rubber, wheel).castShadow = false;
+          add(w.rim, assetMaterials.rim, wheel);
           return wheel;
         };
         // Cancel the rake on a carrier, leaving roll/drop/squash independent of the fork's pitch.
@@ -143,8 +194,8 @@
         rear.userData.bikeContact = { x: kit.rear.at.x, z: kit.rear.at.z, r: kit.rear.r, width: kit.rear.width, front: false };
         model.wheels.push({ wheel: front, side: 1, radius: kit.front.r, front: true }, { wheel: rear, side: 1, radius: kit.rear.r });
         model.rearAxleX = kit.rear.at.x;
-        const head = kit.head ? mesh(kit.head, lampMaterials.headOff, steer, 0, 0, 0) : null,
-          tail = kit.tail ? mesh(kit.tail, lampMaterials.tailOff, b, 0, 0, 0) : null;
+        const head = add(kit.head, lampMaterials.headOff, kit.headSteers ? steer : b),
+          tail = add(kit.tail, lampMaterials.tailOff, b);
         if (head) {
           head.castShadow = false;
           model.lamps.push({ mesh: head, key: 'headLeft', lit: lampMaterials.headOff, kind: 'head' });
@@ -153,15 +204,19 @@
           tail.castShadow = false;
           model.lamps.push({ mesh: tail, key: 'tailLeft', lit: lampMaterials.tailOff, kind: 'tail' });
         }
+        model.lampOut = [!head || !!vehicle.damage?.lights?.headLeft, !tail || !!vehicle.damage?.lights?.tailLeft];
         // Head and tail glow, in the [head, tail] order the halo pass expects.
-        model.nightLights = [halo(b, kit.headGlow.x + 0.1 * k, kit.headGlow.y, 0, 9, '#ffe9bd'), halo(b, kit.tailGlow.x - 0.05 * k, kit.tailGlow.y, 0, 6, '#ff5a44')];
+        model.nightLights = [kit.steerHeadGlow
+          ? halo(steer, kit.steerHeadGlow.x, kit.steerHeadGlow.y, kit.steerHeadGlow.z, 9, '#ffe9bd')
+          : halo(b, kit.headGlow.x + 0.1 * k, kit.headGlow.y, 0, 9, '#ffe9bd'),
+          halo(b, kit.tailGlow.x - 0.05 * k, kit.tailGlow.y, 0, 6, '#ff5a44')];
         // The rider: the anchor the vehicle pass shows and hides (riders.js throws them off).
         const rider = new Three.Group();
         rider.userData.dynamic = true;
         b.add(rider);
         const pose = kit.pose,
           M = k;
-        mesh(motoRiderGeometry('asset:' + type, pose, k / CAR_M), materials.trim, rider, 0, 0, 0);
+        mesh(motoRiderGeometry('asset:' + kit.model.type + ':' + k.toFixed(5), pose, k / CAR_M), materials.trim, rider, 0, 0, 0);
         model.rider = rider;
         model.riderGripInverse = kit.riderGripInverse;
         model.riderSeat = {
@@ -183,6 +238,24 @@
         }
         model.drl = null;
         model.steer = steer;
-        model.bikeUpdate = (c, deltaSeconds) => animateMotorbike(c, model, deltaSeconds);
+        model.bikeUpdate = (c, deltaSeconds) => {
+          if (model.motoLod) motoAssetLod(c, model);
+          animateMotorbike(c, model, deltaSeconds);
+        };
         return model;
+      }
+      // Swap cached geometry on the existing meshes: no doubled wheel meshes or damage
+      // children. The player's motorcycle stays detailed. Marked bikes retain the exact
+      // source triangle order their pinned bullet marks use. Both cameras use screen scale.
+      const MOTO_ASSET_LOD_ZOOM = 1.65;
+      function motoAssetLod(c, m) {
+        const lod = m.motoLod,
+          bias = activeTier ? activeTier.lodBias : 1,
+          zoom = chaseViewActive ? chaseZoomAt(c.x, c.y) : viewZoom,
+          pinned = c.damage?.marks?.length > 0 || c.dents?.length > 0,
+          far = c !== player.car && !pinned && zoom < MOTO_ASSET_LOD_ZOOM * bias * (lod.isFar ? 1.1 : 0.9);
+        if (far === lod.isFar) return;
+        lod.isFar = far;
+        for (const part of lod.pairs) part.mesh.geometry = far ? part.far : part.near;
+        for (const part of lod.glass) part.mesh.material = far ? part.far : part.near;
       }

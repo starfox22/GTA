@@ -1,0 +1,1027 @@
+{
+  "schema": 1,
+  "status": "PASS",
+  "capture": "Native Playwright page screenshots; identical 520x520 clip coordinates. Copied byte-for-byte; no resize, edit, composite, or generated image. Full street contexts preserve HUD/FPS.",
+  "browserClosed": true,
+  "beforeHtmlSha256": "ccf195e35e4ae7b87d09133c317abcb1b54ddb2d3f3e9d30acb5923b6daeee92",
+  "afterHtmlSha256": "2e8fa954b875d3b0b15d9c7d4bc68c87f856266a7c11899d73689cc7ab17b813",
+  "afterRuntimeJsSha256": "711ae993349e465c4dcc6940d7a2d411fe317cf52ab6757e21a5f943f852a151",
+  "packSha256": "6e2268924198c8f7531084aee9d9afcdace61d808b979bfef57aeab5cbc4722e",
+  "sharedFixture": {
+    "seed": 1,
+    "origin": [
+      680,
+      4520
+    ],
+    "heading": 0,
+    "clock": 13,
+    "tier": "high",
+    "viewport": [
+      1000,
+      700
+    ],
+    "street": {
+      "inspect": [
+        18,
+        10,
+        6
+      ],
+      "closeUp": 10
+    },
+    "crop": [
+      220,
+      110,
+      520,
+      520
+    ],
+    "heldSimulation": true
+  },
+  "cameraRequestNote": "Both scripts requested chaseLook(0,0,72,18). Initial camera readiness resets that first request. The matched static chase hero images actually show normal rear chase yaw/look0 pitch15. Later rolling/damage images show yaw/look72 pitch17. Street mode chaseCamera position/FOV fields are stale; verified street view settings and staged vehicle instead.",
+  "matchedStaticHeroes": [
+    {
+      "type": "bike",
+      "heroComparisons": [
+        {
+          "stage": "street",
+          "matched": true,
+          "vehicle": {
+            "type": "bike",
+            "x": 680,
+            "y": 4520,
+            "a": 0,
+            "kmh": 0
+          },
+          "clock": "13:12",
+          "observedCamera": {
+            "active": false,
+            "viewZoom": 10,
+            "near": 4,
+            "far": 9000
+          }
+        },
+        {
+          "stage": "chase",
+          "matched": true,
+          "vehicle": {
+            "type": "bike",
+            "x": 680,
+            "y": 4520,
+            "a": 0,
+            "kmh": 0
+          },
+          "clock": "13:12",
+          "observedCamera": {
+            "mode": "chase",
+            "position": [
+              642.3,
+              4520,
+              18.4
+            ],
+            "pivot": [
+              673.7,
+              4520,
+              10
+            ],
+            "yawDeg": 0,
+            "pitchDeg": 15,
+            "lookYawDeg": 0,
+            "fov": 52,
+            "zoom": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "kr500",
+      "heroComparisons": [
+        {
+          "stage": "street",
+          "matched": true,
+          "vehicle": {
+            "type": "kr500",
+            "x": 680,
+            "y": 4520,
+            "a": 0,
+            "kmh": 0
+          },
+          "clock": "13:18",
+          "observedCamera": {
+            "active": false,
+            "viewZoom": 10,
+            "near": 4,
+            "far": 5184
+          }
+        },
+        {
+          "stage": "chase",
+          "matched": true,
+          "vehicle": {
+            "type": "kr500",
+            "x": 680,
+            "y": 4520,
+            "a": 0,
+            "kmh": 0
+          },
+          "clock": "13:18",
+          "observedCamera": {
+            "mode": "chase",
+            "position": [
+              641.9,
+              4520,
+              18.4
+            ],
+            "pivot": [
+              673.4,
+              4520,
+              10
+            ],
+            "yawDeg": 0,
+            "pitchDeg": 15,
+            "lookYawDeg": 0,
+            "fov": 52,
+            "zoom": 1
+          }
+        }
+      ]
+    }
+  ],
+  "motionDamageComparisonNote": "Behavioral comparisons, not exact pixel matching: AFTER additionally draws20 quality/camera cases before motion, and replacement geometry can change which actual seeded side shots hit tyres. Reported clocks/camera poses/damage outcomes are retained verbatim.",
+  "presetResults": [
+    {
+      "type": "bike",
+      "view": "street",
+      "requestedTier": "low",
+      "actualTier": "LOW",
+      "atlasSizes": [
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ]
+      ],
+      "draws": 12,
+      "PASS": true
+    },
+    {
+      "type": "bike",
+      "view": "street",
+      "requestedTier": "medium",
+      "actualTier": "MEDIUM",
+      "atlasSizes": [
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ]
+      ],
+      "draws": 12,
+      "PASS": true
+    },
+    {
+      "type": "bike",
+      "view": "street",
+      "requestedTier": "high",
+      "actualTier": "HIGH",
+      "atlasSizes": [
+        [
+          4096,
+          4096
+        ],
+        [
+          4096,
+          4096
+        ]
+      ],
+      "draws": 12,
+      "PASS": true
+    },
+    {
+      "type": "bike",
+      "view": "street",
+      "requestedTier": "ultra",
+      "actualTier": "ULTRA",
+      "atlasSizes": [
+        [
+          4096,
+          4096
+        ],
+        [
+          4096,
+          4096
+        ]
+      ],
+      "draws": 12,
+      "PASS": true
+    },
+    {
+      "type": "bike",
+      "view": "street",
+      "requestedTier": "auto",
+      "actualTier": "LOW",
+      "atlasSizes": [
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ]
+      ],
+      "draws": 12,
+      "PASS": true
+    },
+    {
+      "type": "bike",
+      "view": "chase",
+      "requestedTier": "low",
+      "actualTier": "LOW",
+      "atlasSizes": [
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ]
+      ],
+      "draws": 12,
+      "PASS": true
+    },
+    {
+      "type": "bike",
+      "view": "chase",
+      "requestedTier": "medium",
+      "actualTier": "MEDIUM",
+      "atlasSizes": [
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ]
+      ],
+      "draws": 12,
+      "PASS": true
+    },
+    {
+      "type": "bike",
+      "view": "chase",
+      "requestedTier": "high",
+      "actualTier": "HIGH",
+      "atlasSizes": [
+        [
+          4096,
+          4096
+        ],
+        [
+          4096,
+          4096
+        ]
+      ],
+      "draws": 12,
+      "PASS": true
+    },
+    {
+      "type": "bike",
+      "view": "chase",
+      "requestedTier": "ultra",
+      "actualTier": "ULTRA",
+      "atlasSizes": [
+        [
+          4096,
+          4096
+        ],
+        [
+          4096,
+          4096
+        ]
+      ],
+      "draws": 12,
+      "PASS": true
+    },
+    {
+      "type": "bike",
+      "view": "chase",
+      "requestedTier": "auto",
+      "actualTier": "LOW",
+      "atlasSizes": [
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ]
+      ],
+      "draws": 12,
+      "PASS": true
+    },
+    {
+      "type": "kr500",
+      "view": "street",
+      "requestedTier": "low",
+      "actualTier": "LOW",
+      "atlasSizes": [
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ]
+      ],
+      "draws": 11,
+      "PASS": true
+    },
+    {
+      "type": "kr500",
+      "view": "street",
+      "requestedTier": "medium",
+      "actualTier": "MEDIUM",
+      "atlasSizes": [
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ]
+      ],
+      "draws": 11,
+      "PASS": true
+    },
+    {
+      "type": "kr500",
+      "view": "street",
+      "requestedTier": "high",
+      "actualTier": "HIGH",
+      "atlasSizes": [
+        [
+          4096,
+          4096
+        ],
+        [
+          4096,
+          4096
+        ]
+      ],
+      "draws": 11,
+      "PASS": true
+    },
+    {
+      "type": "kr500",
+      "view": "street",
+      "requestedTier": "ultra",
+      "actualTier": "ULTRA",
+      "atlasSizes": [
+        [
+          4096,
+          4096
+        ],
+        [
+          4096,
+          4096
+        ]
+      ],
+      "draws": 11,
+      "PASS": true
+    },
+    {
+      "type": "kr500",
+      "view": "street",
+      "requestedTier": "auto",
+      "actualTier": "LOW",
+      "atlasSizes": [
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ]
+      ],
+      "draws": 11,
+      "PASS": true
+    },
+    {
+      "type": "kr500",
+      "view": "chase",
+      "requestedTier": "low",
+      "actualTier": "LOW",
+      "atlasSizes": [
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ]
+      ],
+      "draws": 11,
+      "PASS": true
+    },
+    {
+      "type": "kr500",
+      "view": "chase",
+      "requestedTier": "medium",
+      "actualTier": "MEDIUM",
+      "atlasSizes": [
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ]
+      ],
+      "draws": 11,
+      "PASS": true
+    },
+    {
+      "type": "kr500",
+      "view": "chase",
+      "requestedTier": "high",
+      "actualTier": "HIGH",
+      "atlasSizes": [
+        [
+          4096,
+          4096
+        ],
+        [
+          4096,
+          4096
+        ]
+      ],
+      "draws": 11,
+      "PASS": true
+    },
+    {
+      "type": "kr500",
+      "view": "chase",
+      "requestedTier": "ultra",
+      "actualTier": "ULTRA",
+      "atlasSizes": [
+        [
+          4096,
+          4096
+        ],
+        [
+          4096,
+          4096
+        ]
+      ],
+      "draws": 11,
+      "PASS": true
+    },
+    {
+      "type": "kr500",
+      "view": "chase",
+      "requestedTier": "auto",
+      "actualTier": "LOW",
+      "atlasSizes": [
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ]
+      ],
+      "draws": 11,
+      "PASS": true
+    }
+  ],
+  "afterBehavior": [
+    {
+      "type": "bike",
+      "speedKmh": 7,
+      "punctured": [
+        "rearRight"
+      ],
+      "charMaterials": [
+        "approved",
+        "approved",
+        "approved"
+      ],
+      "draws": {
+        "street": 12,
+        "burnt": 10,
+        "repaired": 12
+      },
+      "restoredHp": 85,
+      "PASS": true
+    },
+    {
+      "type": "kr500",
+      "speedKmh": 7,
+      "punctured": [
+        "frontRight",
+        "rearRight"
+      ],
+      "charMaterials": [
+        "approved",
+        "approved",
+        "approved"
+      ],
+      "draws": {
+        "street": 11,
+        "burnt": 9,
+        "repaired": 11
+      },
+      "restoredHp": 70,
+      "PASS": true
+    }
+  ],
+  "errors": {
+    "before": [],
+    "after": [],
+    "frameFaults": 0,
+    "contextLosses": 0,
+    "afterWarnings": [
+      "Scripts \"build/three.js\" and \"build/three.min.js\" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation"
+    ]
+  },
+  "hostAssertions": 561,
+  "archives": [
+    {
+      "path": "docs/audit/approved-vehicle-integration-2026-10-14/motorcycle-render-before.json",
+      "sha256": "38c249b268d9252d789366c7acff3c9f9e7ef88265b882d4dc250ffee0f7c459",
+      "bytes": 611761
+    },
+    {
+      "path": "docs/audit/approved-vehicle-integration-2026-10-14/motorcycle-render-before.log",
+      "sha256": "0495440dca14dd01d8c9f58ae04ee2c76c0df9f4005d7468f0d0a98d80c83f33",
+      "bytes": 383
+    },
+    {
+      "path": "docs/audit/approved-vehicle-integration-2026-10-14/motorcycle-render-after.json",
+      "sha256": "4a23e2343a214631ccaff81d6536f7005386537f4aa0d2ba7d09fbe4f7b1ee76",
+      "bytes": 721987
+    },
+    {
+      "path": "docs/audit/approved-vehicle-integration-2026-10-14/motorcycle-render-after.log",
+      "sha256": "4e7d66ea4cfd9e5dcc3752bf6571a1d90a53a1ce5c4975f6e2a933e4bf207a95",
+      "bytes": 880
+    },
+    {
+      "path": "docs/audit/approved-vehicle-integration-2026-10-14/motorcycle-host.json",
+      "sha256": "60ecdf2b53e21070bfb2c2a262ee5dfb57c28114d783e77eb4961a4cada7915a",
+      "bytes": 2927
+    }
+  ],
+  "sourceHashesAtArchive": [
+    {
+      "path": "tools/approved-motorcycle-render-review.mjs",
+      "sha256": "9399c78360bf279662d32a9217ceed545fa175b1442680c6faafe5610e621658",
+      "bytes": 10476
+    },
+    {
+      "path": "tools/browser.mjs",
+      "sha256": "35961799c4a7706ab6a28148a2e5275e780feae8ed4f64f2a5ad34c8d9d1badb",
+      "bytes": 6939
+    },
+    {
+      "path": "src/motorbike-assets3d.js",
+      "sha256": "f8c0d2a8798fabcf3c8818dc6c5cf5001f98e447597440f77c3bc650a24b718b",
+      "bytes": 14292
+    },
+    {
+      "path": "src/motorbikes3d.js",
+      "sha256": "28550d3af9e40e984bd0eb15c212bcbf3353e1b059650a752f94f8f45b00dcd2",
+      "bytes": 42394
+    },
+    {
+      "path": "src/vehicle-assets3d.js",
+      "sha256": "808b5aba1021e5ad56a5aed31ba2432276c3de4b038ff91ae785b61c3b417d89",
+      "bytes": 25972
+    },
+    {
+      "path": "src/approved-vehicle-assets3d.js",
+      "sha256": "eaac925621ce94c930bf2e098667eb0f0965ad05cc25e10576da048e03cd0880",
+      "bytes": 13204
+    },
+    {
+      "path": "tools/tests/motorcycle-wheel-rig.mjs",
+      "sha256": "8c750b1781bdc0f250c73983fc2ad2b9b9c40101a5d09b21b819a1961924b4f7",
+      "bytes": 15372
+    },
+    {
+      "path": "tools/tests/motorcycle-rider-fit.mjs",
+      "sha256": "995d53ae7d7eec91d75a52c2235d26afff0acdad353d718d92e3caa8b0ce0260",
+      "bytes": 13812
+    },
+    {
+      "path": "tools/tests/approved-motorcycle-rigs.mjs",
+      "sha256": "5fda776f1db5391b2cc1a9a884540035b288293b5d204f1bb5f44866f67b0122",
+      "bytes": 14493
+    },
+    {
+      "path": "tools/tests/approved-motorcycle-rider-fit.mjs",
+      "sha256": "6c2db1441f161bf24be0a249e866de115c8b265fd3fbdb5cc05912492ba4d19c",
+      "bytes": 359
+    },
+    {
+      "path": "assets/approved-vehicle-models.bin",
+      "sha256": "6e2268924198c8f7531084aee9d9afcdace61d808b979bfef57aeab5cbc4722e",
+      "bytes": 5374200
+    }
+  ],
+  "recorderHashScope": "Current recorder source hash identifies the successful final4 AFTER run. Earlier BEFORE receipt did not record its recorder source hash; its immutable input HTML, fixture, observed camera states, log, and native image hashes are retained.",
+  "screenshots": [
+    {
+      "path": "docs/audit/approved-vehicle-integration-2026-10-14/screenshots/moto-before-bike-street.png",
+      "sha256": "10b5ad62db46abcebc3862e5d92631a293d2ba3bb62d232783a3d00f4d38bc5a",
+      "bytes": 343488,
+      "phase": "before",
+      "type": "bike",
+      "stage": "street",
+      "width": 520,
+      "height": 520,
+      "native": true,
+      "fullViewport": false,
+      "sourceHtmlSha256": "ccf195e35e4ae7b87d09133c317abcb1b54ddb2d3f3e9d30acb5923b6daeee92"
+    },
+    {
+      "path": "docs/audit/approved-vehicle-integration-2026-10-14/screenshots/moto-before-bike-street-full.png",
+      "sha256": "3da3aa803e894e047c5a1872d6b45a2a880e137e58c1891c3279e82de8e175e7",
+      "bytes": 837480,
+      "phase": "before",
+      "type": "bike",
+      "stage": "street",
+      "width": 1000,
+      "height": 700,
+      "native": true,
+      "fullViewport": true,
+      "sourceHtmlSha256": "ccf195e35e4ae7b87d09133c317abcb1b54ddb2d3f3e9d30acb5923b6daeee92"
+    },
+    {
+      "path": "docs/audit/approved-vehicle-integration-2026-10-14/screenshots/moto-before-bike-chase.png",
+      "sha256": "696f5357a84e23d4442131accae9c0e7ca814dabfa2de3e711a5a156562bf63a",
+      "bytes": 329847,
+      "phase": "before",
+      "type": "bike",
+      "stage": "chase",
+      "width": 520,
+      "height": 520,
+      "native": true,
+      "fullViewport": false,
+      "sourceHtmlSha256": "ccf195e35e4ae7b87d09133c317abcb1b54ddb2d3f3e9d30acb5923b6daeee92"
+    },
+    {
+      "path": "docs/audit/approved-vehicle-integration-2026-10-14/screenshots/moto-before-bike-rolling.png",
+      "sha256": "ce8f6577269867e91cedb0fe50e17d4fa6080017f7193c23851e40dc7d57596c",
+      "bytes": 348347,
+      "phase": "before",
+      "type": "bike",
+      "stage": "rolling",
+      "width": 520,
+      "height": 520,
+      "native": true,
+      "fullViewport": false,
+      "sourceHtmlSha256": "ccf195e35e4ae7b87d09133c317abcb1b54ddb2d3f3e9d30acb5923b6daeee92"
+    },
+    {
+      "path": "docs/audit/approved-vehicle-integration-2026-10-14/screenshots/moto-before-bike-puncture.png",
+      "sha256": "c587099238a860353b5d5d7c4034966d2aca2c14a97102d82dd980cd599a25bc",
+      "bytes": 348855,
+      "phase": "before",
+      "type": "bike",
+      "stage": "puncture",
+      "width": 520,
+      "height": 520,
+      "native": true,
+      "fullViewport": false,
+      "sourceHtmlSha256": "ccf195e35e4ae7b87d09133c317abcb1b54ddb2d3f3e9d30acb5923b6daeee92"
+    },
+    {
+      "path": "docs/audit/approved-vehicle-integration-2026-10-14/screenshots/moto-before-bike-burnt.png",
+      "sha256": "1999f42909d6e6d247b4f16eac4533949b1d1197bf3f3c81c20fcf06fc25ba0c",
+      "bytes": 334391,
+      "phase": "before",
+      "type": "bike",
+      "stage": "burnt",
+      "width": 520,
+      "height": 520,
+      "native": true,
+      "fullViewport": false,
+      "sourceHtmlSha256": "ccf195e35e4ae7b87d09133c317abcb1b54ddb2d3f3e9d30acb5923b6daeee92"
+    },
+    {
+      "path": "docs/audit/approved-vehicle-integration-2026-10-14/screenshots/moto-before-bike-repaired.png",
+      "sha256": "cd92bece2351b17ff56a60eac70decac289ca5be85bdfc6e9e2683e0dec0de90",
+      "bytes": 348532,
+      "phase": "before",
+      "type": "bike",
+      "stage": "repaired",
+      "width": 520,
+      "height": 520,
+      "native": true,
+      "fullViewport": false,
+      "sourceHtmlSha256": "ccf195e35e4ae7b87d09133c317abcb1b54ddb2d3f3e9d30acb5923b6daeee92"
+    },
+    {
+      "path": "docs/audit/approved-vehicle-integration-2026-10-14/screenshots/moto-before-kr500-street.png",
+      "sha256": "380b7c766c845a697802ed2011220cf76129ae75cbf2a710afb5a84342e9d4c5",
+      "bytes": 350183,
+      "phase": "before",
+      "type": "kr500",
+      "stage": "street",
+      "width": 520,
+      "height": 520,
+      "native": true,
+      "fullViewport": false,
+      "sourceHtmlSha256": "ccf195e35e4ae7b87d09133c317abcb1b54ddb2d3f3e9d30acb5923b6daeee92"
+    },
+    {
+      "path": "docs/audit/approved-vehicle-integration-2026-10-14/screenshots/moto-before-kr500-street-full.png",
+      "sha256": "582a059db4012de7b584ef67169a47dd3ed0326993a5788d95e180a0891235da",
+      "bytes": 871599,
+      "phase": "before",
+      "type": "kr500",
+      "stage": "street",
+      "width": 1000,
+      "height": 700,
+      "native": true,
+      "fullViewport": true,
+      "sourceHtmlSha256": "ccf195e35e4ae7b87d09133c317abcb1b54ddb2d3f3e9d30acb5923b6daeee92"
+    },
+    {
+      "path": "docs/audit/approved-vehicle-integration-2026-10-14/screenshots/moto-before-kr500-chase.png",
+      "sha256": "c0150128de1838e8462844583def5341a3ac4e51861ffd1fee64d203454595d2",
+      "bytes": 331501,
+      "phase": "before",
+      "type": "kr500",
+      "stage": "chase",
+      "width": 520,
+      "height": 520,
+      "native": true,
+      "fullViewport": false,
+      "sourceHtmlSha256": "ccf195e35e4ae7b87d09133c317abcb1b54ddb2d3f3e9d30acb5923b6daeee92"
+    },
+    {
+      "path": "docs/audit/approved-vehicle-integration-2026-10-14/screenshots/moto-before-kr500-rolling.png",
+      "sha256": "e8a4b9a16a8bc0e74d3fa6ed98b089c9ee3016f053670ad80417b7c188d146d0",
+      "bytes": 352366,
+      "phase": "before",
+      "type": "kr500",
+      "stage": "rolling",
+      "width": 520,
+      "height": 520,
+      "native": true,
+      "fullViewport": false,
+      "sourceHtmlSha256": "ccf195e35e4ae7b87d09133c317abcb1b54ddb2d3f3e9d30acb5923b6daeee92"
+    },
+    {
+      "path": "docs/audit/approved-vehicle-integration-2026-10-14/screenshots/moto-before-kr500-puncture.png",
+      "sha256": "73f273d9de0156b94f69d622694da8de182eb3fe20b098dcf390adfcf017d464",
+      "bytes": 352441,
+      "phase": "before",
+      "type": "kr500",
+      "stage": "puncture",
+      "width": 520,
+      "height": 520,
+      "native": true,
+      "fullViewport": false,
+      "sourceHtmlSha256": "ccf195e35e4ae7b87d09133c317abcb1b54ddb2d3f3e9d30acb5923b6daeee92"
+    },
+    {
+      "path": "docs/audit/approved-vehicle-integration-2026-10-14/screenshots/moto-before-kr500-burnt.png",
+      "sha256": "ebff72afe5f8574ba7f9921d05cb77660b685df32a4d7ab5dbc687ad12de48d0",
+      "bytes": 336581,
+      "phase": "before",
+      "type": "kr500",
+      "stage": "burnt",
+      "width": 520,
+      "height": 520,
+      "native": true,
+      "fullViewport": false,
+      "sourceHtmlSha256": "ccf195e35e4ae7b87d09133c317abcb1b54ddb2d3f3e9d30acb5923b6daeee92"
+    },
+    {
+      "path": "docs/audit/approved-vehicle-integration-2026-10-14/screenshots/moto-before-kr500-repaired.png",
+      "sha256": "9d099835e943f874ec8f93dbe3b56b1cd3736c61e6d0a8adab1db27e9017ffe4",
+      "bytes": 352431,
+      "phase": "before",
+      "type": "kr500",
+      "stage": "repaired",
+      "width": 520,
+      "height": 520,
+      "native": true,
+      "fullViewport": false,
+      "sourceHtmlSha256": "ccf195e35e4ae7b87d09133c317abcb1b54ddb2d3f3e9d30acb5923b6daeee92"
+    },
+    {
+      "path": "docs/audit/approved-vehicle-integration-2026-10-14/screenshots/moto-after-bike-street.png",
+      "sha256": "e2e62885bd28e09140047daf6a742f62a6605f7bca35af4412717f4ae714a349",
+      "bytes": 341587,
+      "phase": "after",
+      "type": "bike",
+      "stage": "street",
+      "width": 520,
+      "height": 520,
+      "native": true,
+      "fullViewport": false,
+      "sourceHtmlSha256": "2e8fa954b875d3b0b15d9c7d4bc68c87f856266a7c11899d73689cc7ab17b813"
+    },
+    {
+      "path": "docs/audit/approved-vehicle-integration-2026-10-14/screenshots/moto-after-bike-street-full.png",
+      "sha256": "4ecc23577ea9b851e7668f84fb7cb11e93f3888f3c9e91feec9b8d23a37fb71f",
+      "bytes": 858415,
+      "phase": "after",
+      "type": "bike",
+      "stage": "street",
+      "width": 1000,
+      "height": 700,
+      "native": true,
+      "fullViewport": true,
+      "sourceHtmlSha256": "2e8fa954b875d3b0b15d9c7d4bc68c87f856266a7c11899d73689cc7ab17b813"
+    },
+    {
+      "path": "docs/audit/approved-vehicle-integration-2026-10-14/screenshots/moto-after-bike-chase.png",
+      "sha256": "9f52126fd979f621fd0025eb3cb7120bf2c84f6a2a24014c7fcbf372e612cc02",
+      "bytes": 328985,
+      "phase": "after",
+      "type": "bike",
+      "stage": "chase",
+      "width": 520,
+      "height": 520,
+      "native": true,
+      "fullViewport": false,
+      "sourceHtmlSha256": "2e8fa954b875d3b0b15d9c7d4bc68c87f856266a7c11899d73689cc7ab17b813"
+    },
+    {
+      "path": "docs/audit/approved-vehicle-integration-2026-10-14/screenshots/moto-after-bike-rolling.png",
+      "sha256": "a4156bba84a5390370445830042a195c91eaf81e01cdd3f0053aa4fd28fc33b3",
+      "bytes": 351689,
+      "phase": "after",
+      "type": "bike",
+      "stage": "rolling",
+      "width": 520,
+      "height": 520,
+      "native": true,
+      "fullViewport": false,
+      "sourceHtmlSha256": "2e8fa954b875d3b0b15d9c7d4bc68c87f856266a7c11899d73689cc7ab17b813"
+    },
+    {
+      "path": "docs/audit/approved-vehicle-integration-2026-10-14/screenshots/moto-after-bike-puncture.png",
+      "sha256": "eaf6b258936f29992e7cd9f34ee92d11233561e2398daba3c6b4eacca9835d4b",
+      "bytes": 351536,
+      "phase": "after",
+      "type": "bike",
+      "stage": "puncture",
+      "width": 520,
+      "height": 520,
+      "native": true,
+      "fullViewport": false,
+      "sourceHtmlSha256": "2e8fa954b875d3b0b15d9c7d4bc68c87f856266a7c11899d73689cc7ab17b813"
+    },
+    {
+      "path": "docs/audit/approved-vehicle-integration-2026-10-14/screenshots/moto-after-bike-burnt.png",
+      "sha256": "ad96f9a21fabf3e359d3d0198f8bc943ac57be1db65f70e1a2a6089a76dfa875",
+      "bytes": 331832,
+      "phase": "after",
+      "type": "bike",
+      "stage": "burnt",
+      "width": 520,
+      "height": 520,
+      "native": true,
+      "fullViewport": false,
+      "sourceHtmlSha256": "2e8fa954b875d3b0b15d9c7d4bc68c87f856266a7c11899d73689cc7ab17b813"
+    },
+    {
+      "path": "docs/audit/approved-vehicle-integration-2026-10-14/screenshots/moto-after-bike-repaired.png",
+      "sha256": "4bb01f98fd3f72df2ab98bc2e016524f01ed75f67211d981366c2c2f7c4e66af",
+      "bytes": 348999,
+      "phase": "after",
+      "type": "bike",
+      "stage": "repaired",
+      "width": 520,
+      "height": 520,
+      "native": true,
+      "fullViewport": false,
+      "sourceHtmlSha256": "2e8fa954b875d3b0b15d9c7d4bc68c87f856266a7c11899d73689cc7ab17b813"
+    },
+    {
+      "path": "docs/audit/approved-vehicle-integration-2026-10-14/screenshots/moto-after-kr500-street.png",
+      "sha256": "f7e0d741a522da86193c1bb38f94fb507881d2f10d9fd07913424923567c5c69",
+      "bytes": 347136,
+      "phase": "after",
+      "type": "kr500",
+      "stage": "street",
+      "width": 520,
+      "height": 520,
+      "native": true,
+      "fullViewport": false,
+      "sourceHtmlSha256": "2e8fa954b875d3b0b15d9c7d4bc68c87f856266a7c11899d73689cc7ab17b813"
+    },
+    {
+      "path": "docs/audit/approved-vehicle-integration-2026-10-14/screenshots/moto-after-kr500-street-full.png",
+      "sha256": "37c8e0cedacb42d0a1b5c341a627d461ad97c47b8de7ce991dcf925c5cec1f7f",
+      "bytes": 868994,
+      "phase": "after",
+      "type": "kr500",
+      "stage": "street",
+      "width": 1000,
+      "height": 700,
+      "native": true,
+      "fullViewport": true,
+      "sourceHtmlSha256": "2e8fa954b875d3b0b15d9c7d4bc68c87f856266a7c11899d73689cc7ab17b813"
+    },
+    {
+      "path": "docs/audit/approved-vehicle-integration-2026-10-14/screenshots/moto-after-kr500-chase.png",
+      "sha256": "5ee07e58e348aed80cff614a61a0f4c8a66bf8c731516ed1a4e8a0a7154c74ef",
+      "bytes": 330516,
+      "phase": "after",
+      "type": "kr500",
+      "stage": "chase",
+      "width": 520,
+      "height": 520,
+      "native": true,
+      "fullViewport": false,
+      "sourceHtmlSha256": "2e8fa954b875d3b0b15d9c7d4bc68c87f856266a7c11899d73689cc7ab17b813"
+    },
+    {
+      "path": "docs/audit/approved-vehicle-integration-2026-10-14/screenshots/moto-after-kr500-rolling.png",
+      "sha256": "d0eb3bec02e19459600a0739bdde62da6020c604cd092c26117b6412cebdcf82",
+      "bytes": 348790,
+      "phase": "after",
+      "type": "kr500",
+      "stage": "rolling",
+      "width": 520,
+      "height": 520,
+      "native": true,
+      "fullViewport": false,
+      "sourceHtmlSha256": "2e8fa954b875d3b0b15d9c7d4bc68c87f856266a7c11899d73689cc7ab17b813"
+    },
+    {
+      "path": "docs/audit/approved-vehicle-integration-2026-10-14/screenshots/moto-after-kr500-puncture.png",
+      "sha256": "a8bd1a6f8f2140332215be9971b0edc3c42d270aeba747e3dd1fc41e64b4d970",
+      "bytes": 348108,
+      "phase": "after",
+      "type": "kr500",
+      "stage": "puncture",
+      "width": 520,
+      "height": 520,
+      "native": true,
+      "fullViewport": false,
+      "sourceHtmlSha256": "2e8fa954b875d3b0b15d9c7d4bc68c87f856266a7c11899d73689cc7ab17b813"
+    },
+    {
+      "path": "docs/audit/approved-vehicle-integration-2026-10-14/screenshots/moto-after-kr500-burnt.png",
+      "sha256": "d022a6ec93f9cfd709b79982c01053baa7d7fa2316000240caf5f6f07761b3bb",
+      "bytes": 333976,
+      "phase": "after",
+      "type": "kr500",
+      "stage": "burnt",
+      "width": 520,
+      "height": 520,
+      "native": true,
+      "fullViewport": false,
+      "sourceHtmlSha256": "2e8fa954b875d3b0b15d9c7d4bc68c87f856266a7c11899d73689cc7ab17b813"
+    },
+    {
+      "path": "docs/audit/approved-vehicle-integration-2026-10-14/screenshots/moto-after-kr500-repaired.png",
+      "sha256": "18cba3c4ec97d767858d2926a4b038d75e5fae70aeb9a32e62619b215badc05f",
+      "bytes": 348060,
+      "phase": "after",
+      "type": "kr500",
+      "stage": "repaired",
+      "width": 520,
+      "height": 520,
+      "native": true,
+      "fullViewport": false,
+      "sourceHtmlSha256": "2e8fa954b875d3b0b15d9c7d4bc68c87f856266a7c11899d73689cc7ab17b813"
+    }
+  ],
+  "immutableInputs": [
+    {
+      "phase": "before",
+      "path": "dist/review-2026-10-14-publication.html",
+      "sha256": "ccf195e35e4ae7b87d09133c317abcb1b54ddb2d3f3e9d30acb5923b6daeee92",
+      "bytes": 64120823
+    },
+    {
+      "phase": "after",
+      "path": "dist/review-approved-vehicles-2026-10-14-candidate4.html",
+      "sha256": "2e8fa954b875d3b0b15d9c7d4bc68c87f856266a7c11899d73689cc7ab17b813",
+      "bytes": 79379172
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "label": "after",
+  "htmlSha256": "594adf11297669e7eab9ae4b2c0ac3e6d398b70163a2a9f00c1fa33bd7bc945e",
+  "fixture": {
+    "seed": 1,
+    "origin": [
+      680,
+      4520
+    ],
+    "heading": 0,
+    "clock": 13,
+    "tier": "high",
+    "viewport": [
+      1000,
+      700
+    ],
+    "street": {
+      "inspect": [
+        18,
+        10,
+        6
+      ],
+      "closeUp": 10
+    },
+    "chase": {
+      "requestedHeadingDeg": 72,
+      "requestedPitchDeg": 18,
+      "note": "Initial camera readiness resets the first request; case reports preserve the actual normal chase hero pose."
+    },
+    "crop": [
+      220,
+      110,
+      520,
+      520
+    ],
+    "heldSimulation": true
+  },
+  "cases": [],
+  "errors": [],
+  "warnings": [
+    "Scripts \"build/three.js\" and \"build/three.min.js\" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation"
+  ],
+  "failure": "page.screenshot: Timeout 180000ms exceeded.\nCall log:\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\n    at shot (/workspace/GTA/tools/approved-motorcycle-render-review.mjs:61:14)\n    at /workspace/GTA/tools/approved-motorcycle-render-review.mjs:89:44"
+}

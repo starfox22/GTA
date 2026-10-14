@@ -11,14 +11,14 @@
        * takes it too), matte, no clear coat, the embers in the emissive (`assetCharEmbers`). A model whose atlas is its
        * paint (`m.atlasPaint`: the army's) also takes the wear's grime and the fire's heat through them before it burns,
        * as procedural paint does. Intact models keep the shared materials (and the pristine merge); a repair or respray
-       * swaps them back (`assetCharRelease`). The materials are made per car and pooled on release; their four programs
-       * (atlas cut-out, atlas, plain, vertex finish) are compiled at the title prewarm (`assetCharWarm`, kept in sharedMaterials, so the
+       * swaps them back (`assetCharRelease`). The materials are made per car and pooled on release; their programs
+       * (atlas cut-out, atlas, plain, vertex finish, approved PBR and livery) are compiled at the title prewarm (`assetCharWarm`, kept in sharedMaterials, so the
        * programs outlive every wreck).
        */
       const ASSET_CHAR_TILE = 1 / 12,
         assetCharGrime = new Three.Color('#585451'),
         assetCharHeat = new Three.Color('#1d1a17'),
-        assetCharFree = { cut: [], atlas: [], plain: [], finish: [] },
+        assetCharFree = { cut: [], atlas: [], plain: [], finish: [], approved: [] },
         ASSET_CHAR_GLSL = `
         vec3 charW = abs( normalize( vCharNormal ) );
         charW *= charW * charW;
@@ -51,24 +51,46 @@
             .replace('#include <map_fragment>', '#include <map_fragment>\n' + ASSET_CHAR_GLSL)
             // The embers glow through the soot where the texture's blistered paint shows (the procedural emissiveMap).
             .replace('#include <emissivemap_fragment>', 'totalEmissiveRadiance *= charSootTexel * charState.z;');
-          if (own.kind === 'finish') {
+          if (own.kind === 'finish' || own.kind === 'approved') {
+            if (own.kind === 'approved') shader.uniforms.charRoughnessFloor = own.roughnessFloor;
             shader.vertexShader = shader.vertexShader
               .replace('#include <common>', '#include <common>\nattribute vec2 finish;\nvarying vec2 vFinish;')
               .replace('#include <begin_vertex>', '#include <begin_vertex>\nvFinish = finish;');
             shader.fragmentShader = shader.fragmentShader
-              .replace('#include <common>', '#include <common>\nvarying vec2 vFinish;')
-              .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\nroughnessFactor = charState.z > 0.5 ? 0.97 : min(1.0, vFinish.x + charState.x * 2.7 + charState.y * 0.4);')
-              .replace('#include <metalnessmap_fragment>', '#include <metalnessmap_fragment>\nmetalnessFactor = charState.z > 0.5 ? 0.12 : max(0.0, vFinish.y * (1.0 - charState.x * 2.7));');
+              .replace('#include <common>', '#include <common>\nvarying vec2 vFinish;' + (own.kind === 'approved' ? '\nuniform float charRoughnessFloor;' : ''))
+              .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\nroughnessFactor = charState.z > 0.5 ? 0.97 : ' + (own.kind === 'approved' ? 'max(charRoughnessFloor, ' : '') + 'min(1.0, ' + (own.kind === 'approved' ? 'roughnessFactor * vFinish.x' : 'vFinish.x') + ' + charState.x * 2.7 + charState.y * 0.4)' + (own.kind === 'approved' ? ')' : '') + ';')
+              .replace('#include <metalnessmap_fragment>', '#include <metalnessmap_fragment>\nmetalnessFactor = charState.z > 0.5 ? 0.12 : max(0.0, ' + (own.kind === 'approved' ? 'metalnessFactor * vFinish.y' : 'vFinish.y') + ' * (1.0 - charState.x * 2.7));');
+          }
+          if (own.kind === 'approved' && own.livery.value) {
+            shader.uniforms.approvedLivery = own.livery;
+            shader.vertexShader = shader.vertexShader
+              .replace('#include <common>', '#include <common>\nattribute vec2 liveryUv;\nvarying vec2 vApprovedLiveryUv;')
+              .replace('#include <begin_vertex>', '#include <begin_vertex>\nvApprovedLiveryUv = liveryUv;');
+            // The underlying livery is sampled before soot, so a burnt marked car
+            // cannot retain a clean sheriff star or white panel over the char.
+            shader.fragmentShader = shader.fragmentShader
+              .replace('#include <common>', '#include <common>\nuniform sampler2D approvedLivery;\nvarying vec2 vApprovedLiveryUv;')
+              .replace('#include <map_fragment>', '#include <map_fragment>\nvec4 approvedDecal = texture2D(approvedLivery, vApprovedLiveryUv);\ndiffuseColor.rgb = mix(diffuseColor.rgb, approvedDecal.rgb * diffuse, approvedDecal.a);');
+          }
+          if (own.kind === 'approved') {
+            shader.uniforms.carDirt = own.dirt || own.noDirt;
+            shader.fragmentShader = shader.fragmentShader
+              .replace('#include <common>', '#include <common>\nuniform vec2 carDirt;')
+              .replace(ASSET_CHAR_GLSL, CIV_DIRT_GLSL + '\n' + ASSET_CHAR_GLSL);
+            approvedVehicleAtlasPatch(shader);
           }
         };
-        material.customProgramCacheKey = () => 'asset-char' + (own.kind === 'finish' ? '-finish' : '');
+        material.customProgramCacheKey = () => 'asset-char-' + own.kind + (own.livery?.value ? '-livery' : '');
       }
       // Char kind: atlas cut-out, atlas, plain (no map), or atlas with per-vertex finish.
       function assetCharMaterial(kind) {
         const free = assetCharFree[kind];
         if (free.length) return free.pop();
-        const material = new Three.MeshStandardMaterial({ color: '#ffffff', map: kind === 'plain' ? null : vaAtlas(), alphaTest: kind === 'cut' || kind === 'finish' ? 0.5 : 0 });
-        material.userData.assetChar = { kind, state: { value: new Three.Vector4(0, 0, 0, ASSET_CHAR_TILE) }, seed: { value: new Three.Vector3() } };
+        const material = new Three.MeshStandardMaterial({ color: '#ffffff', map: kind === 'plain' ? null : kind === 'approved' ? approvedVehicleTexture() : vaAtlas(),
+          roughnessMap: kind === 'approved' ? approvedVehicleTexture(true) : null,
+          metalnessMap: kind === 'approved' ? approvedVehicleTexture(true) : null,
+          vertexColors: kind === 'approved', alphaTest: kind === 'cut' || kind === 'finish' || kind === 'approved' ? 0.5 : 0 });
+        material.userData.assetChar = { kind, state: { value: new Three.Vector4(0, 0, 0, ASSET_CHAR_TILE) }, seed: { value: new Three.Vector3() }, livery: { value: null }, roughnessFloor: { value: 0 }, noDirt: { value: new Three.Vector2(0, -1e6) }, dirt: null };
         assetCharPatch(material);
         return material;
       }
@@ -77,10 +99,9 @@
         if (m.assetAtlas === undefined) {
           const shared = vaMaterialSet;
           let found = false;
-          if (shared)
-            m.group.traverse((o) => {
-              if (o.isMesh && (o.material === shared.trim || o.material === shared.rubber || o.material === shared.rim || o.material?.userData?.assetAtlas)) found = true;
-            });
+          m.group.traverse((o) => {
+            if (o.isMesh && (o.material?.userData?.assetAtlas || shared && (o.material === shared.trim || o.material === shared.rubber || o.material === shared.rim))) found = true;
+          });
           m.assetAtlas = found;
         }
         return m.assetAtlas;
@@ -114,6 +135,26 @@
             material.roughness = source.roughness;
             material.metalness = source.metalness;
             material.envMapIntensity = source.envMapIntensity;
+            if (kind === 'finish' || kind === 'approved') {
+              material.map = source.map;
+              material.vertexColors = source.vertexColors;
+              material.needsUpdate = true;
+            }
+            if (kind === 'approved') {
+              // A reused approved material can switch between opaque bodywork and
+              // authored transparent optics; restore every render flag from its source.
+              material.transparent = source.transparent;
+              material.opacity = source.opacity;
+              material.alphaTest = source.alphaTest;
+              material.depthWrite = source.depthWrite;
+              material.side = source.side;
+              material.forceSinglePass = source.forceSinglePass;
+              material.roughnessMap = source.roughnessMap;
+              material.metalnessMap = source.metalnessMap;
+              own.livery.value = source.userData.approvedLivery || null;
+              own.roughnessFloor.value = source.userData.approvedRubber ? 0.78 : source.userData.approvedPaint ? 0.22 : 0;
+              own.dirt = source.userData.carDirt || null;
+            }
             material.emissive.setRGB(0, 0, 0);
             own.state.value.set(0, 0, 0, set.tile);
             own.seed.value.set(set.seed[0], set.seed[1], set.seed[2]);
@@ -175,7 +216,7 @@
         m.assetChar = undefined;
       }
       /*
-       * Title prewarm (render3d-resources.js): a stand-in asset model burnt so the four char programs compile; its char
+       * Title prewarm (render3d-resources.js): a stand-in asset model burnt so the char programs compile; its char
        * materials stay in sharedMaterials (never disposed), which keeps the programs for every later wreck.
        */
       function assetCharWarm(m) {
@@ -183,15 +224,32 @@
         assetCharSwap({ id: 1 }, m, true);
         const kinds = new Set(m.assetChar.materials.map((material) => material.userData.assetChar.kind));
         // A kind the stand-in lacks (an asset car has trim, rims and paint) gets a material on a box in its group.
-        for (const kind of ['cut', 'atlas', 'plain', 'finish'])
+        for (const kind of ['cut', 'atlas', 'plain', 'finish', 'approved'])
           if (!kinds.has(kind)) {
             const material = assetCharMaterial(kind),
-              geometry = kind === 'finish' ? boxGeo.clone() : boxGeo,
+              geometry = kind === 'finish' || kind === 'approved' ? boxGeo.clone() : boxGeo,
               stand = new Three.Mesh(geometry, material);
-            if (kind === 'finish') {
+            if (kind === 'finish' || kind === 'approved') {
               const finish = new Float32Array(geometry.attributes.position.count * 2);
               for (let i = 0; i < finish.length; i += 2) { finish[i] = 0.9; finish[i + 1] = 0.02; }
               geometry.setAttribute('finish', new Three.BufferAttribute(finish, 2));
+              if (kind === 'approved') {
+                geometry.setAttribute('color', new Three.BufferAttribute(new Float32Array(geometry.attributes.position.count * 3).fill(1), 3));
+                geometry.setAttribute('avSourceUv', geometry.attributes.uv.clone());
+                const rect = new Float32Array(geometry.attributes.position.count * 4);
+                for (let i = 0; i < rect.length; i += 4) { rect[i + 2] = 1; rect[i + 3] = 1; }
+                geometry.setAttribute('avAtlasRect', new Three.BufferAttribute(rect, 4));
+                const liveryMaterial = assetCharMaterial('approved');
+                liveryMaterial.userData.assetChar.livery.value = sootTexture;
+                geometry.setAttribute('liveryUv', geometry.attributes.uv.clone());
+                m.group.add(new Three.Mesh(geometry, liveryMaterial));
+                // Optical covers use the same atlas shader with a distinct sidedness
+                // and alpha path; compile that variant before the first burnt Jimny.
+                const opticalMaterial = assetCharMaterial('approved');
+                Object.assign(opticalMaterial, { transparent: true, opacity: 1, alphaTest: 0,
+                  depthWrite: false, side: Three.DoubleSide, forceSinglePass: true });
+                m.group.add(new Three.Mesh(geometry, opticalMaterial));
+              }
               sharedGeometries.add(geometry);
             }
             m.group.add(stand);
@@ -215,5 +273,5 @@
               state: Array.from(m.assetChar.materials[0]?.userData.assetChar.state.value.toArray() || []).map((v) => Math.round(v * 1000) / 1000),
               ember: Math.round(Math.max(0, m.assetChar.ember) * 1000) / 1000,
             });
-        return { models: out, pooled: { cut: assetCharFree.cut.length, atlas: assetCharFree.atlas.length, plain: assetCharFree.plain.length, finish: assetCharFree.finish.length } };
+        return { models: out, pooled: { cut: assetCharFree.cut.length, atlas: assetCharFree.atlas.length, plain: assetCharFree.plain.length, finish: assetCharFree.finish.length, approved: assetCharFree.approved.length } };
       }

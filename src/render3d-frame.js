@@ -112,6 +112,7 @@
           newModelsThisFrame = 0;
           modelBuildMs = 0;
           beginVehicleImpostors();
+          approvedVehicleTextureQuality();
           for (const c of vehicles) {
             let m = carModels.get(c);
             const near =
@@ -191,6 +192,8 @@
             // Windscreen wipers in the rain (vehicles3d.js).
             if (m.wipers) updateWipers(c, m, deltaSeconds);
             const wear = clamp(1 - c.hp / c.maxhp, 0, 1);
+            // Restore close geometry before a new dent, fire or opened panel is applied.
+            approvedVehicleLod(c, m);
             paintVehicle(c, m);
             // Four wheels on their springs over rough ground (ride-wheels3d.js).
             if (c.ride || m.rideWheelsOn) rideWheels(c, m, deltaSeconds);
@@ -279,6 +282,7 @@
               }
               else if (!m.bikeUpdate) for (const { wheel, radius } of m.wheels) wheel.rotation.z -= (c.speed * deltaSeconds) / (radius || 5 * (m.modelScale || 1));
             }
+            if (m.approvedAsset && !m.bikeUpdate) animateApprovedSuvWheels(c, m, deltaSeconds);
             // Blood on the bodywork (carblood3d.js; the records are c.stains).
             if (c.stains || m.bloodSkin) updateCarBlood(c, m);
             // The front doors in a carjack and as the player gets in or out (carjack3d.js DOOR SWING).
