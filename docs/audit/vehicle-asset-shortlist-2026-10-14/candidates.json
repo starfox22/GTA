@@ -1,0 +1,357 @@
+{
+  "ownerConstraints": "Free assets only; individual approval before game import; same permanent Codex branch",
+  "approved": [],
+  "candidates": [
+    {
+      "approvalID": "M1",
+      "model": {
+        "id": "real-motorbike02",
+        "title": "Real Motorbike02(Unity3D)",
+        "author": "jsa201077 (Sketchfab unityjsa7)",
+        "sourcePage": "https://sketchfab.com/3d-models/real-motorbike-02-unity3d-f24e366933c54835b562e5210d93047f",
+        "license": "CC-BY4.0 according to repository third-party credit; first-party verification pending before production import",
+        "cost": "Public FBX available; marketplace current price/download terms not verified",
+        "sourceEvidence": "https://github.com/vimontgames/vgframework/blob/b3173a3814790af7061f1949437a3c958b00000b/README.md",
+        "sourceFilesRoot": "https://github.com/vimontgames/vgframework/tree/b3173a3814790af7061f1949437a3c958b00000b/data/Meshes/Cars/Motorbike",
+        "localFilesRoot": "/tmp/GTA-asset-research/motorcycles/vgframework",
+        "format": "FBX",
+        "triangles": 12351,
+        "trianglesParts": {
+          "body": 6435,
+          "fork": 1516,
+          "wheelEach": 2200
+        },
+        "texture": "1024x1024RGBalbedoPNG, actual source archive has no normal/ORM maps",
+        "PBR": "PublicFBXcopy/repositorymaterialshavediffusetexturedbody/distinctmetal/rubbervalues;originalmarketplacePBRpackageunknown",
+        "separation": "Body,forkandwheelare separateFBX;prefabinstancesfrontandrearwheel,independentHandleBar",
+        "period": "Generic dual-sport/dirtbike withrectangularheadlightandconventionalforks, plausibly80s/90ssilhouette; exactmake/yearunverified.",
+        "integration": "Practicalpolygonbudget,wouldstillneedroughness/normalmaterialpolishandLOD/rigvalidation",
+        "previewAssessment": "Complete coherentdual-sport model, 12,351triangles; diffuse1Kwhite/blackbodyandsimplemetal/rubbermaterials; separatebody/fork/wheels; nofullPBRtexturepack.",
+        "previews": [
+          {
+            "local": "/tmp/GTA-asset-research/motorcycles/real-motorbike02-front-three-quarter.png",
+            "bytes": 1184652,
+            "width": 1000,
+            "height": 750,
+            "sha256": "a9d2d17e351c73fc71a559be88ab604e50eaf71d926a0f43abe5f6b1b1e59ae4",
+            "kind": "actual source model CPU render, nativePNG,noAIgeneratedimage/noimageediting",
+            "caption": "Source geometry/materials in neutral lighting;preview only,not integratedgame."
+          },
+          {
+            "local": "/tmp/GTA-asset-research/motorcycles/real-motorbike02-rear-three-quarter.png",
+            "bytes": 1181963,
+            "width": 1000,
+            "height": 750,
+            "sha256": "f15ae89035fd2087e7907a045588c42e468b90eb9179ae15d9fec8e99dc394c3",
+            "kind": "actual source model CPU render, nativePNG,noAIgeneratedimage/noimageediting",
+            "caption": "Source geometry/materials in neutral lighting;preview only,not integratedgame."
+          }
+        ],
+        "cleanPreviews": [
+          {
+            "local": "/tmp/GTA-asset-research/motorcycles/real-motorbike02-front-three-quarter-clean.png",
+            "bytes": 1030299,
+            "width": 1000,
+            "height": 750,
+            "sha256": "8dbb5673c029e183cdd298e7eda77958f29b660b778fbc3bb478fa391baaf179",
+            "samples": 32,
+            "render": "NativeBlenderCyclesCPU;actualsources;neutralfloor/lights;noAIgeneration/retouch/materialalteration"
+          }
+        ]
+      },
+      "licenseEvidenceStrength": "Asset-specific repository credit; primary creator page not independently checked"
+    },
+    {
+      "approvalID": "M2",
+      "model": {
+        "id": "srad750",
+        "title": "GSX-R/SRAD-style sports motorcycle (actual GLB node name; marketplace title/year unverified)",
+        "author": "nouter2077 (credited by source repository README)",
+        "sourcePage": "https://skfb.ly/oIYFv",
+        "license": "CC-BY4.0 according to repository third-party credit; first-party verification pending before production import",
+        "cost": "Public GLB available; marketplace current price/download terms not verified",
+        "sourceEvidence": "https://github.com/thomasfork/Nonplanar-Vehicle-Control/blob/8cb0ee51e2cf5cf7b3abbf21d3bdadc538a6c672/README.md",
+        "sourceDownload": "https://raw.githubusercontent.com/thomasfork/Nonplanar-Vehicle-Control/8cb0ee51e2cf5cf7b3abbf21d3bdadc538a6c672/assets/motorcycle.glb",
+        "localFile": "/tmp/GTA-asset-research/motorcycles/nonplanar/assets--motorcycle.glb",
+        "format": "GLB",
+        "triangles": 403396,
+        "vertices": 329113,
+        "meshes": 51,
+        "materials": 38,
+        "images": 0,
+        "textures": 0,
+        "PBR": "DownloadedpublicGLBcopyhas38scalarmetallic/roughnessmaterials and0textures;originalmarketplacepackageunknown",
+        "separation": "Several top-level Srad750 groups present; precise axle/steering/pivots not yet functionally audited",
+        "period": "Exact model/year UNVERIFIED: SRAD750 node name does not prove1996; actualsharp/angularfrontfairingmaybelater-generationGSX-R. Treatasmodernsportdesignoptionorverifyfirst-partylistingbefore1997use.",
+        "integration": "High-detail source, requiresbaking/retopology/LODs/materialbatching,not suitableas-isforlaptopbrowsertraffic",
+        "sha256": "228b3f088ac348c40b55bd2881c7271304614ecc0ad422b21506c6d82708228c",
+        "previewAssessment": "Detailed complete body, mirrors, brake hardware, engine and tyres; scalarPBR export gives chrome-whitepanels/opaquepalewindscreen, so sourcegeometryapproval doesnotmeanmaterialsready.",
+        "previews": [
+          {
+            "local": "/tmp/GTA-asset-research/motorcycles/srad750-front-three-quarter.png",
+            "bytes": 1199602,
+            "width": 1000,
+            "height": 750,
+            "sha256": "ea1e13b5915c0224d734172286901f3d9b84e7b7e438f902b3389e289a2de5c0",
+            "kind": "actual source model CPU render, nativePNG,noAIgeneratedimage/noimageediting",
+            "caption": "Source geometry/materials in neutral lighting;preview only,not integratedgame."
+          },
+          {
+            "local": "/tmp/GTA-asset-research/motorcycles/srad750-rear-three-quarter.png",
+            "bytes": 1207885,
+            "width": 1000,
+            "height": 750,
+            "sha256": "6a93c755462c7f8750acb6b42e45300681655ef941aaf2af991e1f240a1873a0",
+            "kind": "actual source model CPU render, nativePNG,noAIgeneratedimage/noimageediting",
+            "caption": "Source geometry/materials in neutral lighting;preview only,not integratedgame."
+          }
+        ],
+        "cleanPreviews": [
+          {
+            "local": "/tmp/GTA-asset-research/motorcycles/srad750-front-three-quarter-clean.png",
+            "bytes": 968704,
+            "width": 1000,
+            "height": 750,
+            "sha256": "b8e9a1b23c247b7456965c4b3b4f5b1f7e5b750aceb344c0a438f1769acd959d",
+            "samples": 64,
+            "render": "NativeBlenderCyclesCPU;actualsources;neutralfloor/lights;noAIgeneration/retouch/materialalteration"
+          },
+          {
+            "local": "/tmp/GTA-asset-research/motorcycles/srad750-rear-three-quarter-clean.png",
+            "bytes": 982852,
+            "width": 1000,
+            "height": 750,
+            "sha256": "4aa4a06ba95b84373d79171c4469bd4465171b445b1ad004a6a92c1618390e14",
+            "samples": 64,
+            "render": "NativeBlenderCyclesCPU;actualsources;neutralfloor/lights;noAIgeneration/retouch/materialalteration"
+          }
+        ]
+      },
+      "licenseEvidenceStrength": "Asset-specific repository credit; primary creator page not independently checked"
+    },
+    {
+      "approvalID": "S1",
+      "model": {
+        "variant": "2023 Suzuki Jimny Sierra",
+        "author": "tonielpro520 (https://sketchfab.com/tonielpro520)",
+        "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+        "source": "https://sketchfab.com/3d-models/2023-suzuki-jimny-sierra-8b7c4d136f6742e180faf654d874f14a",
+        "downloadURL": "https://raw.githubusercontent.com/PatrickRuan/Jimny3D/main/public/models/jimny.glb",
+        "sourceSHA256": "0f70478e347b1bf19410e45ade6f0b1037041df5417b7bc8da4d9739bdb5f6ce",
+        "bytes": 4603920,
+        "triangles": 456991,
+        "meshes": 146,
+        "materials": 26,
+        "hasInterior": "Dashboard, steering wheel and seats visually confirmed in both original-source renders",
+        "hasNormalMaps": false,
+        "hasMetallicRoughnessMaps": false,
+        "separateWheelParts": "Tyre/wheel/brake materials and separate primitive meshes; steering/rolling pivots not authored or validated",
+        "limitations": [
+          "Modern 2023 vehicle is outside the game\u2019s 1997 setting.",
+          "Original 456,991 triangles / 146 meshes require optimization and LODs for laptop browser traffic.",
+          "Not rigged or validated inside the game. Import only after user approval."
+        ],
+        "embeddedAssetMetadata": {
+          "author": "tonielpro520 (https://sketchfab.com/tonielpro520)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/2023-suzuki-jimny-sierra-8b7c4d136f6742e180faf654d874f14a",
+          "title": "2023 Suzuki Jimny Sierra"
+        },
+        "codecReceipt": "jimny-decode-receipt.json",
+        "materialNames": [
+          "Carro_Cromado",
+          "Carro_Disco",
+          "Carro_Espelhos",
+          "Carro_Freio",
+          "Carro_Interno",
+          "Carro_Interno_1",
+          "Carro_Metal_Farol",
+          "Carro_Metal_Preto",
+          "Carro_Metal_Preto_1",
+          "Carro_Painel4",
+          "Carro_Pintura",
+          "Carro_Plastico",
+          "Carro_Plastico_1",
+          "Carro_Pneu",
+          "Carro_Ref",
+          "Carro_Refl",
+          "Carro_Reflect",
+          "Carro_Reflector",
+          "Carro_Refletor_Farol",
+          "Carro_Refletor_Farol_1",
+          "Carro_Refletor_Lanterna",
+          "Carro_Refletor_Lanterna_1",
+          "Carro_Roda",
+          "Carro_Vidro_Laranja",
+          "Carro_Vidros",
+          "Carro_Vidros_Vermelhos"
+        ]
+      },
+      "licenseEvidenceStrength": "Author/source/CC-BY-4.0 explicitly embedded in actual GLB asset.extras"
+    },
+    {
+      "approvalID": "S2",
+      "model": {
+        "variant": "suv",
+        "meshIds": [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66
+        ],
+        "triangles": 7951,
+        "vertices": 8444,
+        "separateWheels": 4,
+        "format": "GLB",
+        "hasMetallicRoughnessTextures": true,
+        "hasNormalMaps": false,
+        "hasInterior": "not yet visually confirmed; no separate interior node",
+        "textures": [
+          {
+            "texture": 6,
+            "name": null,
+            "size": [
+              1024,
+              1024
+            ],
+            "bytes": 818702
+          },
+          {
+            "texture": 23,
+            "name": null,
+            "size": [
+              1024,
+              1024
+            ],
+            "bytes": 402119
+          },
+          {
+            "texture": 24,
+            "name": null,
+            "size": [
+              1024,
+              1024
+            ],
+            "bytes": 51661
+          },
+          {
+            "texture": 35,
+            "name": null,
+            "size": [
+              1024,
+              1024
+            ],
+            "bytes": 136398
+          },
+          {
+            "texture": 36,
+            "name": null,
+            "size": [
+              1024,
+              1024
+            ],
+            "bytes": 36119
+          }
+        ],
+        "sourceAsset": {
+          "author": "Comrade1280 (https://sketchfab.com/comrade1280)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/generic-passenger-car-pack-20f9af9b8a404d5cb022ac6fe87f21f5",
+          "title": "Generic passenger car pack"
+        },
+        "downloadURL": "https://raw.githubusercontent.com/clarkbar-sys/done-rite-detailing/main/src-models/generic_passenger_car_pack/generic_passenger_car_pack.glb",
+        "sourceSHA256": "a2d5667f3a1d47fa0dbb84cf2cf76b8aeee6a69f7fff209af09973c625f9be6e",
+        "originalPackBytes": 11761956
+      },
+      "period": "Modern body; not1997accurate",
+      "licenseEvidenceStrength": "Author/source/CC-BY-4.0 explicitly embedded in actual GLB asset.extras"
+    },
+    {
+      "approvalID": "S3",
+      "model": {
+        "variant": "offroad",
+        "meshIds": [
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34
+        ],
+        "triangles": 6502,
+        "vertices": 6484,
+        "separateWheels": 4,
+        "format": "GLB",
+        "hasMetallicRoughnessTextures": true,
+        "hasNormalMaps": false,
+        "hasInterior": "not yet visually confirmed; no separate interior node",
+        "textures": [
+          {
+            "texture": 6,
+            "name": null,
+            "size": [
+              1024,
+              1024
+            ],
+            "bytes": 818702
+          },
+          {
+            "texture": 19,
+            "name": null,
+            "size": [
+              1024,
+              1024
+            ],
+            "bytes": 381327
+          },
+          {
+            "texture": 20,
+            "name": null,
+            "size": [
+              1024,
+              1024
+            ],
+            "bytes": 40679
+          },
+          {
+            "texture": 21,
+            "name": null,
+            "size": [
+              1024,
+              1024
+            ],
+            "bytes": 197387
+          },
+          {
+            "texture": 22,
+            "name": null,
+            "size": [
+              1024,
+              1024
+            ],
+            "bytes": 46627
+          }
+        ],
+        "sourceAsset": {
+          "author": "Comrade1280 (https://sketchfab.com/comrade1280)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/generic-passenger-car-pack-20f9af9b8a404d5cb022ac6fe87f21f5",
+          "title": "Generic passenger car pack"
+        },
+        "downloadURL": "https://raw.githubusercontent.com/clarkbar-sys/done-rite-detailing/main/src-models/generic_passenger_car_pack/generic_passenger_car_pack.glb",
+        "sourceSHA256": "a2d5667f3a1d47fa0dbb84cf2cf76b8aeee6a69f7fff209af09973c625f9be6e",
+        "originalPackBytes": 11761956
+      },
+      "period": "Modern body; not1997accurate",
+      "licenseEvidenceStrength": "Author/source/CC-BY-4.0 explicitly embedded in actual GLB asset.extras"
+    }
+  ]
+}

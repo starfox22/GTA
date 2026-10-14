@@ -1,0 +1,107 @@
+{
+  "renderer": "Blender4.3.2CyclesCPU",
+  "method": "Native actual-asset renders, source geometry/materials retained, neutral studio lights/camera/floor, no retouching or generated textures",
+  "images": [
+    {
+      "file": "previews/m1-front.png",
+      "approvalID": "M1",
+      "bytes": 1030299,
+      "width": 1000,
+      "height": 750,
+      "samples": 32,
+      "sha256": "8dbb5673c029e183cdd298e7eda77958f29b660b778fbc3bb478fa391baaf179",
+      "source": "candidates.json"
+    },
+    {
+      "file": "previews/m1-rear.png",
+      "approvalID": "M1",
+      "bytes": 1181963,
+      "width": 1000,
+      "height": 750,
+      "samples": 12,
+      "sha256": "f15ae89035fd2087e7907a045588c42e468b90eb9179ae15d9fec8e99dc394c3",
+      "source": "candidates.json"
+    },
+    {
+      "file": "previews/m2-front.png",
+      "approvalID": "M2",
+      "bytes": 968704,
+      "width": 1000,
+      "height": 750,
+      "samples": 64,
+      "sha256": "b8e9a1b23c247b7456965c4b3b4f5b1f7e5b750aceb344c0a438f1769acd959d",
+      "source": "candidates.json"
+    },
+    {
+      "file": "previews/m2-rear.png",
+      "approvalID": "M2",
+      "bytes": 982852,
+      "width": 1000,
+      "height": 750,
+      "samples": 64,
+      "sha256": "4aa4a06ba95b84373d79171c4469bd4465171b445b1ad004a6a92c1618390e14",
+      "source": "candidates.json"
+    },
+    {
+      "file": "previews/s1-front.png",
+      "approvalID": "S1",
+      "bytes": 1525675,
+      "width": 1200,
+      "height": 900,
+      "samples": 64,
+      "sha256": "37f55872515f935eb037b6ede06638f2f259201f2feb7fb184d4f29e37377860",
+      "source": "candidates.json"
+    },
+    {
+      "file": "previews/s1-rear.png",
+      "approvalID": "S1",
+      "bytes": 1493720,
+      "width": 1200,
+      "height": 900,
+      "samples": 64,
+      "sha256": "d6d5a3d21b9d75e98c8804636eacf38f81f701487e0b358b46801d8528437b91",
+      "source": "candidates.json"
+    },
+    {
+      "file": "previews/s2-front.png",
+      "approvalID": "S2",
+      "bytes": 1467002,
+      "width": 1200,
+      "height": 900,
+      "samples": 64,
+      "sha256": "312d2ae60179c3b3d34a029bf4bd7f75d472c1ed9178ab6bc6e9ffddbf5cf45f",
+      "source": "candidates.json"
+    },
+    {
+      "file": "previews/s2-rear.png",
+      "approvalID": "S2",
+      "bytes": 1432960,
+      "width": 1200,
+      "height": 900,
+      "samples": 64,
+      "sha256": "b63b9d85f35db627e10a18c629ad22c94caabf68723fbbed9c8d095b999d94f6",
+      "source": "candidates.json"
+    },
+    {
+      "file": "previews/s3-front.png",
+      "approvalID": "S3",
+      "bytes": 1486504,
+      "width": 1200,
+      "height": 900,
+      "samples": 64,
+      "sha256": "cb41f27b31b046e438eb683175aaf4c14388f76224f72142fa61344f3ddc2f5f",
+      "source": "candidates.json"
+    },
+    {
+      "file": "previews/s3-rear.png",
+      "approvalID": "S3",
+      "bytes": 1453015,
+      "width": 1200,
+      "height": 900,
+      "samples": 64,
+      "sha256": "7d85653fbe35fdbf67f68d8f160e371ab3bddaa4f2f9dcf17c282593c69ae39c",
+      "source": "candidates.json"
+    }
+  ],
+  "gameImported": false
+}

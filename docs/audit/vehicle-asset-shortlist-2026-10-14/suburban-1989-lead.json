@@ -1,0 +1,33 @@
+{
+  "status": "unverified source-page lead, not approved/import-ready",
+  "metadataSource": "https://raw.githubusercontent.com/pedrosoandre/carros/main/cars.json",
+  "metadata": {
+    "id": "chevrolet-suburban",
+    "brand": "Chevrolet",
+    "model": "Suburban",
+    "years": [
+      1989,
+      2000
+    ],
+    "category": "suv",
+    "file": "chevrolet-suburban.glb",
+    "bytes": 6014200,
+    "paint": {
+      "materials": [
+        "Reference4ref002reference4ref002paintmetallic1Mtl"
+      ],
+      "textured": false,
+      "confidence": "alta"
+    },
+    "credit": {
+      "author": "Randomness",
+      "authorUrl": "https://sketchfab.com/throwbackthursdaymodels",
+      "license": "CC Attribution",
+      "sourceName": "1989 Chevrolet Suburban",
+      "sourceUrl": "https://sketchfab.com/3d-models/44bdb8317f0840b3bc858e606f86db6b"
+    }
+  },
+  "licenseEvidenceSource": "https://raw.githubusercontent.com/pedrosoandre/carros/main/LICENSE-3D-MODELS.md",
+  "licenseEvidenceExcerptPortuguese": "Todos os modelos foram baixados da plataforma p\u00fablica Sketchfab, usando a Sketchfab Data API v3 ... by \u2014 Creative Commons Attribution (CC BY 4.0). ... A URL da obra original e o autor foram lidos do pr\u00f3prio retorno da API e est\u00e3o preservados em cars.json (campo credit) e em CREDITS.md.",
+  "verificationLimit": "Sketchfab page/API/CDN blocked by network proxy; no original GLB, preview, copyright provenance, wheels or interior checked. Metadata-only GitHub repository excludes model files."
+}

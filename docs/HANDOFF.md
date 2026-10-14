@@ -5,6 +5,13 @@ rules, workflow), then this page, then only the area doc your task needs (`docs/
 
 ## Permanent Codex branch and current review (13 October 2026)
 
+- **October 14 asset selection pending:** the owner wants replacement motorcycle and
+  sheriff/RANGER 4X4 models, **free assets only**, and individual approval before import.
+  [Five actual-source candidates and ten native previews](audit/vehicle-asset-shortlist-2026-10-14/README.md)
+  record source/licence evidence, detail budgets and period/body-role limits. This is
+  research only; production models are unchanged. Do not treat the proposal as asset
+  approval. Preserve authored close-view materials/detail when an approved import starts.
+
 - **Permanent Codex development branch (owner instruction, October 13):
   `codex/chase-clouds-polish-2026-10-12`.** Future Codex prompts update this same GitHub branch.
   This review continues from approved main `bde9ee4` (version 65), which already contains the

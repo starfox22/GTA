@@ -1,0 +1,58 @@
+[
+  {
+    "repo": "thomasfork/Nonplanar-Vehicle-Control",
+    "commit": "8cb0ee51e2cf5cf7b3abbf21d3bdadc538a6c672",
+    "url": "https://raw.githubusercontent.com/thomasfork/Nonplanar-Vehicle-Control/8cb0ee51e2cf5cf7b3abbf21d3bdadc538a6c672/assets/motorcycle.glb",
+    "status": 200,
+    "bytes": 15428024,
+    "local": "/tmp/GTA-asset-research/motorcycles/nonplanar/assets--motorcycle.glb"
+  },
+  {
+    "repo": "thomasfork/Nonplanar-Vehicle-Control",
+    "commit": "8cb0ee51e2cf5cf7b3abbf21d3bdadc538a6c672",
+    "url": "https://raw.githubusercontent.com/thomasfork/Nonplanar-Vehicle-Control/8cb0ee51e2cf5cf7b3abbf21d3bdadc538a6c672/README.md",
+    "status": 200,
+    "bytes": 4717,
+    "local": "/tmp/GTA-asset-research/motorcycles/nonplanar/README.md"
+  },
+  {
+    "repo": "vimontgames/vgframework",
+    "commit": "b3173a3814790af7061f1949437a3c958b00000b",
+    "url": "https://raw.githubusercontent.com/vimontgames/vgframework/b3173a3814790af7061f1949437a3c958b00000b/data/Meshes/Cars/Motorbike/motorbike.fbx",
+    "status": 200,
+    "bytes": 268684,
+    "local": "/tmp/GTA-asset-research/motorcycles/vgframework/data--Meshes--Cars--Motorbike--motorbike.fbx"
+  },
+  {
+    "repo": "vimontgames/vgframework",
+    "commit": "b3173a3814790af7061f1949437a3c958b00000b",
+    "url": "https://raw.githubusercontent.com/vimontgames/vgframework/b3173a3814790af7061f1949437a3c958b00000b/data/Meshes/Cars/Motorbike/motorbike_fork.fbx",
+    "status": 200,
+    "bytes": 78716,
+    "local": "/tmp/GTA-asset-research/motorcycles/vgframework/data--Meshes--Cars--Motorbike--motorbike_fork.fbx"
+  },
+  {
+    "repo": "vimontgames/vgframework",
+    "commit": "b3173a3814790af7061f1949437a3c958b00000b",
+    "url": "https://raw.githubusercontent.com/vimontgames/vgframework/b3173a3814790af7061f1949437a3c958b00000b/data/Meshes/Cars/Motorbike/motorbike_wheel.fbx",
+    "status": 200,
+    "bytes": 99740,
+    "local": "/tmp/GTA-asset-research/motorcycles/vgframework/data--Meshes--Cars--Motorbike--motorbike_wheel.fbx"
+  },
+  {
+    "repo": "vimontgames/vgframework",
+    "commit": "b3173a3814790af7061f1949437a3c958b00000b",
+    "url": "https://raw.githubusercontent.com/vimontgames/vgframework/b3173a3814790af7061f1949437a3c958b00000b/data/Textures/Cars/Motorbike/motorbike_albedo.png",
+    "status": 200,
+    "bytes": 1507745,
+    "local": "/tmp/GTA-asset-research/motorcycles/vgframework/data--Textures--Cars--Motorbike--motorbike_albedo.png"
+  },
+  {
+    "repo": "vimontgames/vgframework",
+    "commit": "b3173a3814790af7061f1949437a3c958b00000b",
+    "url": "https://raw.githubusercontent.com/vimontgames/vgframework/b3173a3814790af7061f1949437a3c958b00000b/data/Materials/Cars/Motorbike/Motorbike.mat",
+    "status": 200,
+    "bytes": 4495,
+    "local": "/tmp/GTA-asset-research/motorcycles/vgframework/data--Materials--Cars--Motorbike--Motorbike.mat"
+  }
+]

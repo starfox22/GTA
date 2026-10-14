@@ -1,0 +1,10 @@
+{
+  "primitives": 146,
+  "triangles": 456991,
+  "points": 1203752,
+  "sourceBytes": 4603920,
+  "decodedBytes": 45908032,
+  "geometryOperation": "Official Draco decompression only; no simplification or modeling edits.",
+  "materialsOperation": "None",
+  "decoderSource": "https://raw.githubusercontent.com/PatrickRuan/Jimny3D/main/public/draco/draco_wasm_wrapper.js"
+}

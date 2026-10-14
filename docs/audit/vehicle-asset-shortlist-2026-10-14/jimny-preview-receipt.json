@@ -1,0 +1,32 @@
+{
+  "images": [
+    {
+      "file": "jimny-2023-front.png",
+      "bytes": 1525675,
+      "dimensions": [
+        1200,
+        900
+      ],
+      "sha256": "37f55872515f935eb037b6ede06638f2f259201f2feb7fb184d4f29e37377860",
+      "sourceSHA256": "0f70478e347b1bf19410e45ade6f0b1037041df5417b7bc8da4d9739bdb5f6ce"
+    },
+    {
+      "file": "jimny-2023-rear.png",
+      "bytes": 1493720,
+      "dimensions": [
+        1200,
+        900
+      ],
+      "sha256": "d6d5a3d21b9d75e98c8804636eacf38f81f701487e0b358b46801d8528437b91",
+      "sourceSHA256": "0f70478e347b1bf19410e45ade6f0b1037041df5417b7bc8da4d9739bdb5f6ce"
+    }
+  ],
+  "renderer": "Blender 4.3.2 Cycles CPU, 64 samples; native 1200\u00d7900 PNG",
+  "geometryOperation": "Official Draco decompression only. All 146 primitives / 456,991 triangles retained. No simplification or modelling edits.",
+  "materialOperation": "Source 26 materials and WebP textures preserved. A neutral floor, three area lights and camera were added.",
+  "sourceGeometryBytes": "jimny-2023.glb",
+  "sourceURL": "https://raw.githubusercontent.com/PatrickRuan/Jimny3D/main/public/models/jimny.glb",
+  "decoderReceipt": "jimny-decode-receipt.json",
+  "script": "render-jimny.py",
+  "viewInspection": "Both real renders inspected. Dashboard, steering wheel and seats visible. Tyres, rims, grille, lenses, spare wheel and rear defroster detail visible. Modern 2023 compact two-door shape confirmed."
+}
