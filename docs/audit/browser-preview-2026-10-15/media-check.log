@@ -1,0 +1,11 @@
+page http://127.0.0.1:8765/dist/pages/index.html
+ok   media/synth.mp3  canplay (129 s)
+ok   media/rock.mp3  canplay (68 s)
+ok   media/oddball.mp3  canplay (144 s)
+ok   media/lounge-martini.mp3  canplay (172 s)
+ok   media/lounge-heists.mp3  canplay (184 s)
+ok   media/island-dub.mp3  canplay (207 s)
+ok   media/island-colada.mp3  canplay (160 s)
+ok   media/lofi-hooptie.mp3  canplay (220 s)
+ok   media/lofi-freeway.mp3  canplay (177 s)
+9 streamed tracks, 0 failed

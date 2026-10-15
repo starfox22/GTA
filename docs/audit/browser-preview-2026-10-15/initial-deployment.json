@@ -1,0 +1,22 @@
+{
+  "branch": "codex-reviews",
+  "workflowCommit": "c023479f2eac0462f45523e7dbad6f4c212b3fc2",
+  "workflowRun": "https://github.com/starfox22/GTA/actions/runs/38792992642",
+  "observedUtc": "2026-10-15 19:21 UTC",
+  "deploymentStatus": "BLOCKED: Pages configuration not found",
+  "annotations": [
+    "HttpError: Not Found - https://docs.github.com/rest/pages/pages#get-a-apiname-pages-site",
+    "Get Pages site failed. Please verify that the repository has Pages enabled and configured to build using GitHub Actions, or consider exploring the `enablement` parameter for this action. Error: Not Found - https://docs.github.com/rest/pages/pages#get-a-apiname-pages-site",
+    "Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/configure-pages@v5. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/",
+    "\"The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748\""
+  ],
+  "requiredOwnerStep": "Repository Settings > Pages > Build and deployment > Source: GitHub Actions; then rerun the deployment or push to codex-reviews",
+  "localSplitFilesExactTestedFinal4Package": 18,
+  "localHttpFullFileHashes": "PASS (18 files, 85,560,331 bytes)",
+  "localStreamedMedia": "9 canplay; zero failures",
+  "requiredQuickCheck": "PASS: sh tools/quick-check.sh browser-preview",
+  "independentWorkflowReview": "PASS; branch guard, Pages permissions, artifact name and dedicated environment checked against upstream action documentation",
+  "publicSiteVerified": false,
+  "publicUrl": null,
+  "qualification": "Local loopback packaging checks do not establish a public deployment. The first workflow did not deploy because initial repository Pages setup requires an administrator setting."
+}

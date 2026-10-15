@@ -58,3 +58,9 @@ The loopback check verifies the packaging/relative paths, not a public deploymen
 Record actual workflow status and any settings blocker before handing off to the
 owner or Claude. If direct access to `*.github.io` is blocked in an execution
 environment, distinguish that network limitation from the site's deployment state.
+
+The [initial run](https://github.com/starfox22/GTA/actions/runs/38792992642) stopped
+with Pages configuration `Not Found`; it did not publish a site. Local packaging,
+full-file HTTP comparison and all nine streamed tracks passed. The owner was asked
+to enable GitHub Actions as the Pages source. Future successful runs supply the
+actual browser URL; this historical failure is not proof of their later status.

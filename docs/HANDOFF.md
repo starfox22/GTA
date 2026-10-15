@@ -15,6 +15,15 @@ may require the owner to select **Settings → Pages → Source: GitHub Actions*
 the workflow token cannot enable it. Use the deployment's actual URL and status,
 not an assumed link. The claude.ai/chatgpt.site publications remain separate.
 
+The [first deployment](https://github.com/starfox22/GTA/actions/runs/38792992642)
+on `c023479` stopped at Pages configuration with `HttpError: Not Found`: the owner
+must enable Pages as described above. No public preview URL was verified at this
+point. Local checks passed: all 18 split files match the rendered FINAL4 package,
+all files serve with exact hashes under a project subpath, nine radio tracks reach
+`canplay`, and the required quick check passes. The
+[initial receipt](audit/browser-preview-2026-10-15/initial-deployment.json) records
+the blocker; after setup, rerun or push and record the actual successful site URL.
+
 ## October 15: source fidelity, real door openings and Chevette replacement
 
 Continue on **`codex-reviews`**, the permanent GitHub branch. The owner renamed it
