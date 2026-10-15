@@ -48,16 +48,22 @@
         for (const [field, names] of Object.entries({ shell: 'shell', cabin: 'glass', hood: 'hood', paint: 'panels', trim: ['trim', 'cabin'], opticalGlass: 'opticalGlass' }))
           far[field] = approvedSuvFarPart(model, data, names, k) || kit[field];
         const trimName = model.lodParts?.trim || 'trim',
-          outer = (model.parts[trimName]?.triangles || 0) * 3;
+          outer = (model.assetPack === 'sports' ? sportsRoleTriangles(model, trimName) : model.parts[trimName]?.triangles || 0) * 3;
         far.trimOuter = far.trim ? civDrawRange(far.trim, outer) : null;
         far.wheels = kit.assetWheels.map((wheel, i) => ({
           tyre: approvedSuvFarPart(model, data, 'wheel' + i + '.tyre', k) || wheel.tyre,
           rim: approvedSuvFarPart(model, data, 'wheel' + i + '.rim', k) || wheel.rim,
+          caliper: wheel.caliper ? approvedSuvFarPart(model, data, 'wheel' + i + '.caliper', k) : null,
         }));
         // Both resolutions use the same measured axle order and origins.
         const order = model.wheels.map((wheel, i) => ({ x: wheel.x, front: wheel.front, side: wheel.side, i }))
           .sort((a, b) => Number(b.front) - Number(a.front) || a.side - b.side);
         far.wheels = order.map(wheel => far.wheels[wheel.i]);
+        if (model.assetPack === 'sports') {
+          far.lamps = {};
+          for (const [name, geometry] of Object.entries(kit.lamps))
+            far.lamps[name] = approvedSuvFarPart(model, data, name, k) || geometry;
+        }
         kit.far = far;
         kit.interiorFallback = approvedSuvInteriorGeometry(kit);
       }
@@ -72,9 +78,14 @@
           parts.push({ mesh: model.assetTrim, near: model.assetTrim.geometry, far: far.trim });
         if (model.opticalGlass && far.opticalGlass !== model.opticalGlass.geometry)
           parts.push({ mesh: model.opticalGlass, near: model.opticalGlass.geometry, far: far.opticalGlass });
-        for (let i = 0; i < model.wheels.length; i++) for (const [child, field] of [[0, 'tyre'], [1, 'rim']]) {
+        for (let i = 0; i < model.wheels.length; i++) for (const [child, field] of [[0, 'tyre'], [1, 'rim'], [2, 'caliper']]) {
           const mesh = model.wheels[i].wheel.children[child], geometry = far.wheels[i]?.[field];
           if (mesh && geometry && geometry !== mesh.geometry) parts.push({ mesh, near: mesh.geometry, far: geometry });
+        }
+        for (const lamp of model.lamps || []) {
+          const geometry = far.lamps?.[lamp.key];
+          if (geometry && geometry !== lamp.mesh.geometry)
+            parts.push({ mesh: lamp.mesh, near: lamp.mesh.geometry, far: geometry });
         }
         model.approvedAsset = kit.approvedKey;
         model.approvedLodParts = parts;

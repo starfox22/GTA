@@ -348,6 +348,15 @@
             if (clear < 0) entry.through.push(who.name + (cabinScratch.roof < cabinScratch.side ? ' roof' : ' side'));
           }
           if (avatarClouds.length) entry.clear.avatarRoom = r3(least);
+          if (plan.passenger) {
+            const p = plan.passenger;
+            entry.passenger = { hip: [r3(p.x / M), r3(p.y / M), r3(-p.z / M)], lean: r3(p.lean), clear: {} };
+            for (const who of [...people, ...avatarClouds]) {
+              const clear = cabinClearance(g, l, w, M, [who.cloud], p.x, p.y, Math.abs(p.z), p.lean) / M;
+              entry.passenger.clear[who.name] = r3(clear);
+              if (clear < 0) entry.through.push('passenger ' + who.name + (cabinScratch.roof < cabinScratch.side ? ' roof' : ' side'));
+            }
+          }
           // The game's seat for drive-bys (driveby-seats.js DRIVEBY_SEATS, recorded from this plan): world metres x ahead,
           // hip height, side, lean, belt; `seatGap` how far apart the two are (metres and radians added).
           entry.key = driveBySeatKey(c);

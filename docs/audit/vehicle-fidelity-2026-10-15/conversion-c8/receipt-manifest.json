@@ -1,0 +1,99 @@
+{
+  "files": {
+    "native-source-inspection.json": {
+      "bytes": 56952,
+      "sha256": "14caa31fc40b831916514f2b6f0844c05d9cf4f40e8214b4dbbd4b2f7cb7d428"
+    },
+    "sports-integrity-proof.json": {
+      "bytes": 56368,
+      "sha256": "a95a3aa836648a72b6c3b7941d426772b4583756f17b673be1f40275780d0b69"
+    },
+    "three-quarter-b.png": {
+      "bytes": 1300156,
+      "sha256": "e88e50eeca828b295d6fc458a2818e2e7de0b9827ae36ad91789bd7af308f9e0"
+    },
+    "source-normal-repairs.json": {
+      "bytes": 1413,
+      "sha256": "6ea1b89bd8da96eab6107da0cb4b780d041b9de58133e85befc6bb7af1661730"
+    },
+    "sports-models-header.json": {
+      "bytes": 81039,
+      "sha256": "5fa4afad670e818ea635247a83b23e2afd577a093fbfe3de926033bed3917b3a"
+    },
+    "model-metadata.json": {
+      "bytes": 27144,
+      "sha256": "8e22a5b17721885fe3e86b1ac16f2f6f5c6024d3d057bb9155f154cbb48040c9"
+    },
+    "source-download-receipt.json": {
+      "bytes": 10994,
+      "sha256": "40e29ccfd9d1fc5cd4dfa64ce2a72f5fb9b325606f5ada24e975d9d36039a4b3"
+    },
+    "source-metadata.json": {
+      "bytes": 10890,
+      "sha256": "d29cddebb82e643356b3784a70861c2c1532a24173a04e4f75674e7b67b3a87c"
+    },
+    "source-license.txt": {
+      "bytes": 748,
+      "sha256": "1a4ae9a1a94e384cff7650e4334b3a1ceff15188dd031be75a4e4a1d3fe54ce9"
+    },
+    "parts-output.npz.json": {
+      "bytes": 8979,
+      "sha256": "038245ff7366a21b54f81a1e80d935791b8e7ddd1b4a175f809404f7fe2bdf27"
+    },
+    "three-quarter-a.png": {
+      "bytes": 1313925,
+      "sha256": "ca0d3a62df5f77020d255fbb6c16d553b9d666f752f78d1a3b68a0ed628cb101"
+    },
+    "native-open-door-proof.json": {
+      "bytes": 2902,
+      "sha256": "bb8f85d255e46c163e7240e08c40bd87b69892707103bf434e4bb080c72bffe4"
+    },
+    "sports-host-proof.json": {
+      "bytes": 1355,
+      "sha256": "8991c8fe16cd701b771f41eaabf3a08492fbd3f1d1f3e4f9f43be86c9f9f58fd"
+    },
+    "native-open-doors.png": {
+      "bytes": 1508661,
+      "sha256": "ef2bf22db0721959ea659b14e8c8c42ea4127870b50d43b1c79c404cfaf275f4"
+    },
+    "sports-conversion-receipt.json": {
+      "bytes": 43456,
+      "sha256": "a9490ba039e1028c6396e427ce0f8a51935f28dcd08178f870f48c132d8a7139"
+    },
+    "parts-manifest.json": {
+      "bytes": 7655,
+      "sha256": "e3ff0f2e06ac3b3534c1d4a2da3e43da930841160b27458b8fff54cba695e421"
+    },
+    "parts-lookup.json": {
+      "bytes": 5630,
+      "sha256": "305ff86fda1ba3e426b62589eeb8d91f9ada5807ea4d8ec657b438ac96a8325a"
+    },
+    "source-partition.json.gz": {
+      "bytes": 671852,
+      "sha256": "af4701bf6a21130ca0a9f9b44dcf73007dc0d9f375b468c35b7f1667e5ef8830"
+    },
+    "final-render-ownership-proof.json": {
+      "bytes": 834,
+      "sha256": "33aca18e86e7a0951c190025845ccd912f8520b60a5f07336b7b38b2007055d2"
+    },
+    "source-texel-proof.json": {
+      "bytes": 41812,
+      "sha256": "f73566e3cad3fa249ec7e7115a524a4f35532c82c946e306d1cf76456508fff4"
+    }
+  },
+  "tools": {
+    "tools/sports_vehicle_models.py": "bde3625ae2e93ee0f74d30ea7f2c31f9ac1f82a1d6a3eacb034efd7212d82d2f",
+    "tools/sports_vehicle_models_verify.py": "4ba490d3afe410360f0c5f295b6cf577756d1d6ddaf21306e7d73718ed934730",
+    "tools/sports_vehicle_source.py": "85f4e806cc29cae1832e697ded315341072a4b113ccf7a661452eeba12065afe",
+    "tools/sports_vehicle_source.json": "214b9adf9f4121fe732905bbec0ad210cb076fd71249f864fa67f9f266c21325",
+    "tools/sports_vehicle_preview.py": "5a0418849bc25519efd5d8fc08bb3a9d3beb8197706bc03605361ab46fe28543",
+    "tools/tests/sports-vehicle-assets.mjs": "f34dcbcb626f66873131e52d64708c0d9fdbd2e4f4e414f0c36b038105fd2c5e",
+    "tools/sports_vehicle_models_texels.py": "720066de9fcacd047d96c05c930e6f75281140c71ffb4e972071daf3226f5dea"
+  },
+  "versions": {
+    "Python": "3.12.14",
+    "NumPy": "2.3.5",
+    "Pillow": "12.3.0",
+    "Blender": "4.3.2"
+  }
+}

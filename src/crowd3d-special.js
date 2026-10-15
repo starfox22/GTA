@@ -109,6 +109,7 @@
           if (carTransition.kind === 'exit' && gameTime - carTransition.at < 0.5) {
             sp.pose = 'exitCar';
             sp.transition = clamp((gameTime - carTransition.at) / 0.5, 0, 1);
+            sp.legTargets = carExitFootTargets(p, sp);
           }
           if (incapacitated || holstered) return sp;
           const weapon = PLAYER_WEAPONS[selectedWeaponIndex] ?? null,

@@ -58,8 +58,10 @@
           right = 0;
         const sw = c.doorSwing;
         if (sw) {
-          left = doorYank(gameTime - sw.openAt);
-          if (sw.closeAt) left *= doorShutShare(gameTime - sw.closeAt);
+          let open = doorYank(gameTime - sw.openAt);
+          if (sw.closeAt) open *= doorShutShare(gameTime - sw.closeAt);
+          if (sw.side > 0) right = open;
+          else left = open;
         }
         const tr = carTransition;
         if (tr.door === c && tr.kind) {
@@ -74,26 +76,28 @@
         const active = left > 0.002 || right > 0.002;
         if (!active && m.doorsIdle) return;
         m.doorsIdle = !active;
-        let paneOpen = false;
+        let paneOpen = false, doorMask = 0;
         for (let side = -1; side <= 1; side += 2) {
           const open = side < 0 ? left : right,
             state = c.damage?.parts?.[side < 0 ? 'doorLeft' : 'doorRight'] || 0;
-          if (state === 2) continue;
+          if (state === 2) { doorMask |= side < 0 ? 1 : 2; continue; }
           let door = m.doors?.[side];
           if (!door) {
             if (open <= 0.002) continue;
             door = vehicleDoor(c, m, side);
           }
           m.carjackDoor = true;
-          door.pivot.rotation.set(0, side * Math.max(state === 1 ? 0.95 : 0, open), state === 1 ? -0.09 : 0);
+          vehicleDoorPose(door, side, Math.max(state === 1 ? .95 : 0, open), state === 1 ? -.09 : 0);
           const shown = state > 0 || open > 0.002;
-          door.panel.visible = shown;
-          door.opening.visible = shown;
+          if (shown) doorMask |= side < 0 ? 1 : 2;
           // The window rides with a whole door; a sprung one has lost it (damage3d-bodies.js).
-          const glassShown = !!door.glass && state === 0 && open > 0.002;
-          if (door.glass) door.glass.visible = glassShown;
-          if (glassShown) paneOpen = side;
+          const pane = side < 0 ? 'left' : 'right',
+            glassShown = !!door.glass && state === 0 && open > 0.002 && !c.windowsDown?.[pane] && c.damage?.glass?.[pane] !== 2;
+          if (glassShown) door.glass.material = vehicleDoorGlassMaterial(Array.isArray(m.cabin?.material) ? m.cabin.material[side < 0 ? 0 : 2] : m.cabin?.material || m.glass || carGlass);
+          vehicleDoorShown(door, shown, glassShown);
+          if (glassShown && !door.sourceExtracted) paneOpen = side;
         }
+        vehicleDoorBodyState(c, m, doorMask);
         doorSidePane(m, paneOpen);
       }
       /* The body's side pane left out while its door (with the window) stands open: `side` -1 or 1, or false. */
@@ -253,6 +257,22 @@
         if (!s.grip) s.grip = [new Three.Vector3(), new Three.Vector3()];
         for (let side = 0; side < 2; side++) s.grip[side].set(1.05 * w, RIG.shoulderY - 0.35, (side ? 1 : -1) * 0.55 * w).applyMatrix4(mTorso);
         s.gripAt = gameTime;
+      }
+      // The exit crouch lowers the hips, but both shoes stay on the ground through
+      // the existing leg-target IK. Reuse the targets only during that transition.
+      const carExitFeet = [new Three.Vector3(), new Three.Vector3()];
+      function carExitFootTargets(p, spec) {
+        const R = compiledLook(spec.look, p), H = R.height * RIG_UNIT,
+          width = R.hipZ * R.width * H, heading = spec.facing ?? p.a ?? 0,
+          sin = Math.sin(heading), cos = Math.cos(heading), floor = entityElevation(p);
+        for (let side = 0; side < 2; side++) {
+          const across = (side ? 1 : -1) * width,
+            x = p.x - sin * across, y = p.y + cos * across;
+          // About two cm covers the source sole's small ankle offset and raised visual
+          // road surfaces (the runway is 1.5cm above its collision ground).
+          carExitFeet[side].set(x, Math.max(floor, terrainHeight(x, y)) + RIG.ankle * H + .021 * UNITS_PER_METRE, y);
+        }
+        return carExitFeet;
       }
       /* The player in the struggle (crowd3d-special.js specialSpec). */
       function playerCarjackSpec(sp) {

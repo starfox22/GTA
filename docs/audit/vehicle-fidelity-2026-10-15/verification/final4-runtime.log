@@ -1,0 +1,7 @@
+PASS actual lamp LOD low 9407
+PASS actual lamp LOD ultra 9407
+PASS actual first-door-after-burn repair/reopen
+PASS actual exit midpoint and settled capture
+Scripts "build/three.js" and "build/three.min.js" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation
+PASS unchanged full player-body hybrid 267
+PASS actual recovery resume guard 293

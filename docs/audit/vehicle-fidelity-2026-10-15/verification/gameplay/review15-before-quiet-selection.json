@@ -1,0 +1,35 @@
+{
+  "status": "PASS",
+  "queuedUTC": "2026-10-15T14:38:26.632319+00:00",
+  "reason": "Retain original failures and rerun unchanged whole modules quietly; no timing/assertion/runtime changes",
+  "html": "dist/review-2026-10-15-before.html",
+  "htmlSha256": "5b199b249eeb301af2722c21e84470c6b20902ff0976d17c3e439be1ab3e58da",
+  "selectedModules": 2,
+  "selectedTests": [
+    "lockpick.mjs",
+    "player-jump.mjs"
+  ],
+  "testHashes": {
+    "lockpick.mjs": "a11c5eaedb3c075df206de51108d0d2a0d3db14d3488daaeac2ab65f1979e8cb",
+    "player-jump.mjs": "35756debc36be5a1371981a9a71139b306f9671939b6ca7c675c7494228e8441"
+  },
+  "originalTestHashesMatch": true,
+  "command": [
+    "node",
+    "tools/test.mjs",
+    "lockpick",
+    "player-jump",
+    "--exact",
+    "--html",
+    "dist/review-2026-10-15-before.html",
+    "--verbose"
+  ],
+  "startedUTC": "2026-10-15T14:50:37.042009+00:00",
+  "quietQualification": "Read-only process inspection found no live Chromium/Node/Blender workload; parent native GPU after log completed PASS more than20min earlier. Parent stream disconnected. Owned dev-state file absent; test runner may start its own fresh NoRender server.",
+  "finishedUTC": "2026-10-15T14:51:52.218202+00:00",
+  "moduleResults": {
+    "PASS": 2,
+    "SKIP": 0,
+    "FAIL": 0
+  }
+}

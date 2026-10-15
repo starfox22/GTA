@@ -95,6 +95,8 @@
         // The downloaded vehicle models in the build and the kits made from them (vehicle-assets3d.js ASSET CARS).
         assetCars: () => assetCarReport(),
         approvedAssets: () => approvedVehicleReport(),
+        sportsAssets: () => sportsVehicleReport(),
+        vehicleDoors: (id) => vehicleDoorsReport(id),
         // The downloaded aircraft models (aircraft-assets3d.js ASSET AIRCRAFT) and the switch for before/after rows.
         aircraftAssets: () => aircraftAssetReport(),
         // The street dogs' downloaded model (dog3d.js DOG MODEL).

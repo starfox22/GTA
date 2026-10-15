@@ -1,0 +1,2258 @@
+{
+  "packSHA256": "e83f2d0f38b64ca743717eb50054ea15dfa56488fe8346ee423790815f375328",
+  "comparisons": 150,
+  "allVisibleSourceTexelsExact": true,
+  "intentionalModification": "Only material0 untextured body red pigment is neutral white for resprays; source finish preserved. Transparent RGB beneath zero alpha is invisible and may be cleared by lossless WebP.",
+  "comparisonsByMaterial": [
+    {
+      "material": 0,
+      "name": "Body_Color",
+      "channel": "albedo",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 0,
+      "name": "Body_Color",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 0,
+      "name": "Body_Color",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 4,
+      "name": "Chrome",
+      "channel": "albedo",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 4,
+      "name": "Chrome",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 4,
+      "name": "Chrome",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 27,
+      "name": "Interior_Aluminium",
+      "channel": "albedo",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 27,
+      "name": "Interior_Aluminium",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 27,
+      "name": "Interior_Aluminium",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 49,
+      "name": "License_Plate",
+      "channel": "albedo",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 49,
+      "name": "License_Plate",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 49,
+      "name": "License_Plate",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 1,
+      "name": "Black",
+      "channel": "albedo",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 1,
+      "name": "Black",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 1,
+      "name": "Black",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 2,
+      "name": "Plastic",
+      "channel": "albedo",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 2,
+      "name": "Plastic",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 2,
+      "name": "Plastic",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 3,
+      "name": "Invisible_Unimportant_Black",
+      "channel": "albedo",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 3,
+      "name": "Invisible_Unimportant_Black",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 3,
+      "name": "Invisible_Unimportant_Black",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 5,
+      "name": "Painted_Black",
+      "channel": "albedo",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 5,
+      "name": "Painted_Black",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 5,
+      "name": "Painted_Black",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 21,
+      "name": "Engine_Cover",
+      "channel": "albedo",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 21,
+      "name": "Engine_Cover",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 21,
+      "name": "Engine_Cover",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 6,
+      "name": "Mirror",
+      "channel": "albedo",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 6,
+      "name": "Mirror",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 6,
+      "name": "Mirror",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 19,
+      "name": "License_Plate_Lights",
+      "channel": "albedo",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 19,
+      "name": "License_Plate_Lights",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 19,
+      "name": "License_Plate_Lights",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 35,
+      "name": "Bolt_2_Interior",
+      "channel": "albedo",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 35,
+      "name": "Bolt_2_Interior",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 35,
+      "name": "Bolt_2_Interior",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 7,
+      "name": "Grille_6",
+      "channel": "albedo",
+      "sourceTexture": "textures/Grille_6_baseColor.png",
+      "nativeSize": [
+        64,
+        64
+      ],
+      "atlasSize": [
+        64,
+        64
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 7,
+      "name": "Grille_6",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        64,
+        64
+      ],
+      "atlasSize": [
+        64,
+        64
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 7,
+      "name": "Grille_6",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        64,
+        64
+      ],
+      "atlasSize": [
+        64,
+        64
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 8,
+      "name": "Grille_7",
+      "channel": "albedo",
+      "sourceTexture": "textures/Grille_7_baseColor.png",
+      "nativeSize": [
+        128,
+        128
+      ],
+      "atlasSize": [
+        128,
+        128
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 8,
+      "name": "Grille_7",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        128,
+        128
+      ],
+      "atlasSize": [
+        128,
+        128
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 8,
+      "name": "Grille_7",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        128,
+        128
+      ],
+      "atlasSize": [
+        128,
+        128
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 9,
+      "name": "Misc",
+      "channel": "albedo",
+      "sourceTexture": "textures/Misc_baseColor.png",
+      "nativeSize": [
+        1024,
+        1024
+      ],
+      "atlasSize": [
+        1024,
+        1024
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 9,
+      "name": "Misc",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        1024,
+        1024
+      ],
+      "atlasSize": [
+        1024,
+        1024
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 9,
+      "name": "Misc",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        1024,
+        1024
+      ],
+      "atlasSize": [
+        1024,
+        1024
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 42,
+      "name": "Misc_2",
+      "channel": "albedo",
+      "sourceTexture": "textures/Misc_baseColor.png",
+      "nativeSize": [
+        1024,
+        1024
+      ],
+      "atlasSize": [
+        1024,
+        1024
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 42,
+      "name": "Misc_2",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        1024,
+        1024
+      ],
+      "atlasSize": [
+        1024,
+        1024
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 42,
+      "name": "Misc_2",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        1024,
+        1024
+      ],
+      "atlasSize": [
+        1024,
+        1024
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 10,
+      "name": "Badges",
+      "channel": "albedo",
+      "sourceTexture": "textures/Badges_baseColor.png",
+      "nativeSize": [
+        512,
+        512
+      ],
+      "atlasSize": [
+        512,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 10,
+      "name": "Badges",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        512,
+        512
+      ],
+      "atlasSize": [
+        512,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 10,
+      "name": "Badges",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        512,
+        512
+      ],
+      "atlasSize": [
+        512,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 11,
+      "name": "Lights",
+      "channel": "albedo",
+      "sourceTexture": "textures/Lights_baseColor.png",
+      "nativeSize": [
+        1024,
+        512
+      ],
+      "atlasSize": [
+        1024,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 11,
+      "name": "Lights",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        1024,
+        512
+      ],
+      "atlasSize": [
+        1024,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 11,
+      "name": "Lights",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        1024,
+        512
+      ],
+      "atlasSize": [
+        1024,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 12,
+      "name": "Day_Lights",
+      "channel": "albedo",
+      "sourceTexture": "textures/Lights_baseColor.png",
+      "nativeSize": [
+        1024,
+        512
+      ],
+      "atlasSize": [
+        1024,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 12,
+      "name": "Day_Lights",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        1024,
+        512
+      ],
+      "atlasSize": [
+        1024,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 12,
+      "name": "Day_Lights",
+      "channel": "emissive",
+      "sourceTexture": "textures/Lights_baseColor.png",
+      "nativeSize": [
+        1024,
+        512
+      ],
+      "atlasSize": [
+        1024,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 13,
+      "name": "Headlights",
+      "channel": "albedo",
+      "sourceTexture": "textures/Lights_baseColor.png",
+      "nativeSize": [
+        1024,
+        512
+      ],
+      "atlasSize": [
+        1024,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 13,
+      "name": "Headlights",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        1024,
+        512
+      ],
+      "atlasSize": [
+        1024,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 13,
+      "name": "Headlights",
+      "channel": "emissive",
+      "sourceTexture": "textures/Lights_baseColor.png",
+      "nativeSize": [
+        1024,
+        512
+      ],
+      "atlasSize": [
+        1024,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 14,
+      "name": "Right_Indicator",
+      "channel": "albedo",
+      "sourceTexture": "textures/Lights_baseColor.png",
+      "nativeSize": [
+        1024,
+        512
+      ],
+      "atlasSize": [
+        1024,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 14,
+      "name": "Right_Indicator",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        1024,
+        512
+      ],
+      "atlasSize": [
+        1024,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 14,
+      "name": "Right_Indicator",
+      "channel": "emissive",
+      "sourceTexture": "textures/Lights_baseColor.png",
+      "nativeSize": [
+        1024,
+        512
+      ],
+      "atlasSize": [
+        1024,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 15,
+      "name": "Left_Indicator",
+      "channel": "albedo",
+      "sourceTexture": "textures/Lights_baseColor.png",
+      "nativeSize": [
+        1024,
+        512
+      ],
+      "atlasSize": [
+        1024,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 15,
+      "name": "Left_Indicator",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        1024,
+        512
+      ],
+      "atlasSize": [
+        1024,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 15,
+      "name": "Left_Indicator",
+      "channel": "emissive",
+      "sourceTexture": "textures/Lights_baseColor.png",
+      "nativeSize": [
+        1024,
+        512
+      ],
+      "atlasSize": [
+        1024,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 16,
+      "name": "Taillights",
+      "channel": "albedo",
+      "sourceTexture": "textures/Lights_baseColor.png",
+      "nativeSize": [
+        1024,
+        512
+      ],
+      "atlasSize": [
+        1024,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 16,
+      "name": "Taillights",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        1024,
+        512
+      ],
+      "atlasSize": [
+        1024,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 16,
+      "name": "Taillights",
+      "channel": "emissive",
+      "sourceTexture": "textures/Lights_baseColor.png",
+      "nativeSize": [
+        1024,
+        512
+      ],
+      "atlasSize": [
+        1024,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 17,
+      "name": "Reverse_Lights",
+      "channel": "albedo",
+      "sourceTexture": "textures/Lights_baseColor.png",
+      "nativeSize": [
+        1024,
+        512
+      ],
+      "atlasSize": [
+        1024,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 17,
+      "name": "Reverse_Lights",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        1024,
+        512
+      ],
+      "atlasSize": [
+        1024,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 17,
+      "name": "Reverse_Lights",
+      "channel": "emissive",
+      "sourceTexture": "textures/Lights_baseColor.png",
+      "nativeSize": [
+        1024,
+        512
+      ],
+      "atlasSize": [
+        1024,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 18,
+      "name": "Brake_Lights",
+      "channel": "albedo",
+      "sourceTexture": "textures/Lights_baseColor.png",
+      "nativeSize": [
+        1024,
+        512
+      ],
+      "atlasSize": [
+        1024,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 18,
+      "name": "Brake_Lights",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        1024,
+        512
+      ],
+      "atlasSize": [
+        1024,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 18,
+      "name": "Brake_Lights",
+      "channel": "emissive",
+      "sourceTexture": "textures/Lights_baseColor.png",
+      "nativeSize": [
+        1024,
+        512
+      ],
+      "atlasSize": [
+        1024,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 20,
+      "name": "Interior",
+      "channel": "albedo",
+      "sourceTexture": "textures/Interior_baseColor.png",
+      "nativeSize": [
+        512,
+        512
+      ],
+      "atlasSize": [
+        512,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 20,
+      "name": "Interior",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        512,
+        512
+      ],
+      "atlasSize": [
+        512,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 20,
+      "name": "Interior",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        512,
+        512
+      ],
+      "atlasSize": [
+        512,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 22,
+      "name": "Chrome_Engine_Pipes_Use_Grill_5_as_BW_to_Bump_to_Normal",
+      "channel": "albedo",
+      "sourceTexture": null,
+      "nativeSize": [
+        64,
+        64
+      ],
+      "atlasSize": [
+        64,
+        64
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 22,
+      "name": "Chrome_Engine_Pipes_Use_Grill_5_as_BW_to_Bump_to_Normal",
+      "channel": "orm",
+      "sourceTexture": "textures/Chrome_Engine_Pipes_Use_Grill_5_as_BW_to_Bump_to_Normal_metallicRoughness.png",
+      "nativeSize": [
+        64,
+        64
+      ],
+      "atlasSize": [
+        64,
+        64
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 22,
+      "name": "Chrome_Engine_Pipes_Use_Grill_5_as_BW_to_Bump_to_Normal",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        64,
+        64
+      ],
+      "atlasSize": [
+        64,
+        64
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 23,
+      "name": "Engine_Decals",
+      "channel": "albedo",
+      "sourceTexture": "textures/Engine_Decals_baseColor.png",
+      "nativeSize": [
+        512,
+        512
+      ],
+      "atlasSize": [
+        512,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 23,
+      "name": "Engine_Decals",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        512,
+        512
+      ],
+      "atlasSize": [
+        512,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 23,
+      "name": "Engine_Decals",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        512,
+        512
+      ],
+      "atlasSize": [
+        512,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 24,
+      "name": "Grille_1",
+      "channel": "albedo",
+      "sourceTexture": "textures/Grille_1_baseColor.png",
+      "nativeSize": [
+        64,
+        64
+      ],
+      "atlasSize": [
+        64,
+        64
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 24,
+      "name": "Grille_1",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        64,
+        64
+      ],
+      "atlasSize": [
+        64,
+        64
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 24,
+      "name": "Grille_1",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        64,
+        64
+      ],
+      "atlasSize": [
+        64,
+        64
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 25,
+      "name": "Grille_3",
+      "channel": "albedo",
+      "sourceTexture": "textures/Grille_3_baseColor.png",
+      "nativeSize": [
+        64,
+        64
+      ],
+      "atlasSize": [
+        64,
+        64
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 25,
+      "name": "Grille_3",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        64,
+        64
+      ],
+      "atlasSize": [
+        64,
+        64
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 25,
+      "name": "Grille_3",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        64,
+        64
+      ],
+      "atlasSize": [
+        64,
+        64
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 26,
+      "name": "Carbon_Fiber",
+      "channel": "albedo",
+      "sourceTexture": "textures/Carbon_Fiber_baseColor.png",
+      "nativeSize": [
+        256,
+        256
+      ],
+      "atlasSize": [
+        256,
+        256
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 26,
+      "name": "Carbon_Fiber",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        256,
+        256
+      ],
+      "atlasSize": [
+        256,
+        256
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 26,
+      "name": "Carbon_Fiber",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        256,
+        256
+      ],
+      "atlasSize": [
+        256,
+        256
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 28,
+      "name": "Grill_4_Speakers",
+      "channel": "albedo",
+      "sourceTexture": "textures/Grill_4_Speakers_baseColor.png",
+      "nativeSize": [
+        128,
+        128
+      ],
+      "atlasSize": [
+        128,
+        128
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 28,
+      "name": "Grill_4_Speakers",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        128,
+        128
+      ],
+      "atlasSize": [
+        128,
+        128
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 28,
+      "name": "Grill_4_Speakers",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        128,
+        128
+      ],
+      "atlasSize": [
+        128,
+        128
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 29,
+      "name": "Carpet",
+      "channel": "albedo",
+      "sourceTexture": "textures/Carpet_baseColor.png",
+      "nativeSize": [
+        256,
+        256
+      ],
+      "atlasSize": [
+        256,
+        256
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 29,
+      "name": "Carpet",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        256,
+        256
+      ],
+      "atlasSize": [
+        256,
+        256
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 29,
+      "name": "Carpet",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        256,
+        256
+      ],
+      "atlasSize": [
+        256,
+        256
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 30,
+      "name": "Seats_Adjust_the_leather_texture_using_Color_Ramp_or_using_HSV",
+      "channel": "albedo",
+      "sourceTexture": "textures/Seats_Adjust_the_leather_texture_using_Color_Ramp_or_using_HSV_baseColor.jpeg",
+      "nativeSize": [
+        1024,
+        1024
+      ],
+      "atlasSize": [
+        1024,
+        1024
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 30,
+      "name": "Seats_Adjust_the_leather_texture_using_Color_Ramp_or_using_HSV",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        1024,
+        1024
+      ],
+      "atlasSize": [
+        1024,
+        1024
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 30,
+      "name": "Seats_Adjust_the_leather_texture_using_Color_Ramp_or_using_HSV",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        1024,
+        1024
+      ],
+      "atlasSize": [
+        1024,
+        1024
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 31,
+      "name": "Interior_Buttons",
+      "channel": "albedo",
+      "sourceTexture": "textures/Interior_baseColor.png",
+      "nativeSize": [
+        512,
+        512
+      ],
+      "atlasSize": [
+        512,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 31,
+      "name": "Interior_Buttons",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        512,
+        512
+      ],
+      "atlasSize": [
+        512,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 31,
+      "name": "Interior_Buttons",
+      "channel": "emissive",
+      "sourceTexture": "textures/Interior_baseColor.png",
+      "nativeSize": [
+        512,
+        512
+      ],
+      "atlasSize": [
+        512,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 32,
+      "name": "Gauges",
+      "channel": "albedo",
+      "sourceTexture": "textures/Gauges_baseColor.png",
+      "nativeSize": [
+        1024,
+        512
+      ],
+      "atlasSize": [
+        1024,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 32,
+      "name": "Gauges",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        1024,
+        512
+      ],
+      "atlasSize": [
+        1024,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 32,
+      "name": "Gauges",
+      "channel": "emissive",
+      "sourceTexture": "textures/Gauges_baseColor.png",
+      "nativeSize": [
+        1024,
+        512
+      ],
+      "atlasSize": [
+        1024,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 33,
+      "name": "Interior_Display",
+      "channel": "albedo",
+      "sourceTexture": "textures/Interior_Display_baseColor.png",
+      "nativeSize": [
+        512,
+        512
+      ],
+      "atlasSize": [
+        512,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 33,
+      "name": "Interior_Display",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        512,
+        512
+      ],
+      "atlasSize": [
+        512,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 33,
+      "name": "Interior_Display",
+      "channel": "emissive",
+      "sourceTexture": "textures/Interior_Display_baseColor.png",
+      "nativeSize": [
+        512,
+        512
+      ],
+      "atlasSize": [
+        512,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 34,
+      "name": "Interior_Trim",
+      "channel": "albedo",
+      "sourceTexture": "textures/Interior_Trim_baseColor.png",
+      "nativeSize": [
+        128,
+        128
+      ],
+      "atlasSize": [
+        128,
+        128
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 34,
+      "name": "Interior_Trim",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        128,
+        128
+      ],
+      "atlasSize": [
+        128,
+        128
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 34,
+      "name": "Interior_Trim",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        128,
+        128
+      ],
+      "atlasSize": [
+        128,
+        128
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 36,
+      "name": "Windshield",
+      "channel": "albedo",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 36,
+      "name": "Windshield",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 36,
+      "name": "Windshield",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 37,
+      "name": "Other_Glasses_than_Windshield",
+      "channel": "albedo",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 37,
+      "name": "Other_Glasses_than_Windshield",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 37,
+      "name": "Other_Glasses_than_Windshield",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 38,
+      "name": "Brake_Disc",
+      "channel": "albedo",
+      "sourceTexture": "textures/Brake_Disc_baseColor.png",
+      "nativeSize": [
+        256,
+        256
+      ],
+      "atlasSize": [
+        256,
+        256
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 38,
+      "name": "Brake_Disc",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        256,
+        256
+      ],
+      "atlasSize": [
+        256,
+        256
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 38,
+      "name": "Brake_Disc",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        256,
+        256
+      ],
+      "atlasSize": [
+        256,
+        256
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 39,
+      "name": "Tire_Treads",
+      "channel": "albedo",
+      "sourceTexture": "textures/Tire_Treads_baseColor.png",
+      "nativeSize": [
+        512,
+        512
+      ],
+      "atlasSize": [
+        512,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 39,
+      "name": "Tire_Treads",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        512,
+        512
+      ],
+      "atlasSize": [
+        512,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 39,
+      "name": "Tire_Treads",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        512,
+        512
+      ],
+      "atlasSize": [
+        512,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 40,
+      "name": "Tire_Sidewall",
+      "channel": "albedo",
+      "sourceTexture": "textures/Tire_Sidewall_baseColor.png",
+      "nativeSize": [
+        1024,
+        1024
+      ],
+      "atlasSize": [
+        1024,
+        1024
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 40,
+      "name": "Tire_Sidewall",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        1024,
+        1024
+      ],
+      "atlasSize": [
+        1024,
+        1024
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 40,
+      "name": "Tire_Sidewall",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        1024,
+        1024
+      ],
+      "atlasSize": [
+        1024,
+        1024
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 41,
+      "name": "material",
+      "channel": "albedo",
+      "sourceTexture": "textures/material_baseColor.png",
+      "nativeSize": [
+        512,
+        512
+      ],
+      "atlasSize": [
+        512,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 41,
+      "name": "material",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        512,
+        512
+      ],
+      "atlasSize": [
+        512,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 41,
+      "name": "material",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        512,
+        512
+      ],
+      "atlasSize": [
+        512,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 43,
+      "name": "Aluminium",
+      "channel": "albedo",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 43,
+      "name": "Aluminium",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 43,
+      "name": "Aluminium",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 44,
+      "name": "Interior_Trim_2",
+      "channel": "albedo",
+      "sourceTexture": "textures/Interior_Trim_2_baseColor.png",
+      "nativeSize": [
+        64,
+        64
+      ],
+      "atlasSize": [
+        64,
+        64
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 44,
+      "name": "Interior_Trim_2",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        64,
+        64
+      ],
+      "atlasSize": [
+        64,
+        64
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 44,
+      "name": "Interior_Trim_2",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        64,
+        64
+      ],
+      "atlasSize": [
+        64,
+        64
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 45,
+      "name": "Dark_Engine_View_Glass",
+      "channel": "albedo",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 45,
+      "name": "Dark_Engine_View_Glass",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 45,
+      "name": "Dark_Engine_View_Glass",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 46,
+      "name": "Interior_Badge",
+      "channel": "albedo",
+      "sourceTexture": "textures/Interior_Badge_baseColor.png",
+      "nativeSize": [
+        512,
+        512
+      ],
+      "atlasSize": [
+        512,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 46,
+      "name": "Interior_Badge",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        512,
+        512
+      ],
+      "atlasSize": [
+        512,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 46,
+      "name": "Interior_Badge",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        512,
+        512
+      ],
+      "atlasSize": [
+        512,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 47,
+      "name": "Mat_supergt.209",
+      "channel": "albedo",
+      "sourceTexture": "textures/Mat_supergt.209_baseColor.png",
+      "nativeSize": [
+        512,
+        512
+      ],
+      "atlasSize": [
+        512,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 47,
+      "name": "Mat_supergt.209",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        512,
+        512
+      ],
+      "atlasSize": [
+        512,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 47,
+      "name": "Mat_supergt.209",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        512,
+        512
+      ],
+      "atlasSize": [
+        512,
+        512
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 48,
+      "name": "License_Plate_Background",
+      "channel": "albedo",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 48,
+      "name": "License_Plate_Background",
+      "channel": "orm",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    },
+    {
+      "material": 48,
+      "name": "License_Plate_Background",
+      "channel": "emissive",
+      "sourceTexture": null,
+      "nativeSize": [
+        8,
+        8
+      ],
+      "atlasSize": [
+        8,
+        8
+      ],
+      "allVisibleTexelsExact": true
+    }
+  ]
+}

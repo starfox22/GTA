@@ -40,7 +40,7 @@
       }
       sportsbook.open = true;
       keys = {};
-      mouse.down = false;
+      mouse.down = mouse.alt = false;
       sportsbook.tab = 'markets';
       sportsbook.stake = clamp(Math.floor(sportsbook.stake) || 10, 1, Math.max(1, Math.floor(cash)));
       sportsbookUi.structure = sportsbookUi.header = sportsbookUi.slip = sportsbookUi.bets = sportsbookUi.crests = '';

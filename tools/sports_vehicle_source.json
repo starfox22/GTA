@@ -1,0 +1,181 @@
+{
+  "key": "c8-hari-original",
+  "repo": "zymantas-dev/corvette-c8-threejs-exp",
+  "commit": "1811c2f116145a409131839be5b2411e4f4f92de",
+  "path": "static/models/2019_chevrolet_corvette_c8_stingray",
+  "sourceGeometry": {
+    "extras": {
+      "author": "Hari (https://sketchfab.com/Hari31)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/2019-chevrolet-corvette-c8-stingray-790c40ccff6843eab0b7b4bd18421ff8",
+      "title": "2019 Chevrolet Corvette C8 Stingray"
+    },
+    "generator": "Sketchfab-12.68.0",
+    "version": "2.0"
+  },
+  "files": [
+    {
+      "path": "scene.gltf",
+      "bytes": 222840,
+      "sha256": "840aac54739d1c18b3996eebcdfbbc66bc4d9531a5a578b80c30e5923053699b",
+      "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/scene.gltf"
+    },
+    {
+      "path": "license.txt",
+      "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/license.txt",
+      "bytes": 748,
+      "sha256": "1a4ae9a1a94e384cff7650e4334b3a1ceff15188dd031be75a4e4a1d3fe54ce9"
+    },
+    {
+      "path": "scene.bin",
+      "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/scene.bin",
+      "bytes": 11431588,
+      "sha256": "50bd85f55741f7135783f8c0b3d9fa0422b16dbaef78836bbb15dd831574fd14"
+    },
+    {
+      "path": "textures/Grille_6_baseColor.png",
+      "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Grille_6_baseColor.png",
+      "bytes": 1300,
+      "sha256": "ed0a5a453ca3f1bc5af6b7f4d0fa3f711383b2ba22f5626188a055edcc726003"
+    },
+    {
+      "path": "textures/Grille_7_baseColor.png",
+      "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Grille_7_baseColor.png",
+      "bytes": 3654,
+      "sha256": "bd542b6883188bb232f765a85aac081e364596abb3ad5354643f990407eb7f5f"
+    },
+    {
+      "path": "textures/Misc_baseColor.png",
+      "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Misc_baseColor.png",
+      "bytes": 191308,
+      "sha256": "733e55d25545d8b2d06fbf975f350cef8f771f3e236b02d09db5c1ef308943c7"
+    },
+    {
+      "path": "textures/Badges_baseColor.png",
+      "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Badges_baseColor.png",
+      "bytes": 52856,
+      "sha256": "51787232da7bf542f9e215fe492478479420aa112f9d2348b160f763183329ec"
+    },
+    {
+      "path": "textures/Lights_baseColor.png",
+      "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Lights_baseColor.png",
+      "bytes": 244586,
+      "sha256": "23eb6ed222b2b1af0136489aa11693d267d9de6c82e78e3b3618a604ede88ecd"
+    },
+    {
+      "path": "textures/Interior_baseColor.png",
+      "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Interior_baseColor.png",
+      "bytes": 105325,
+      "sha256": "24a84aa7e2cde824cdbb50e50e0ac608456c92c4a4e8407fe90361b22e32fbdf"
+    },
+    {
+      "path": "textures/Chrome_Engine_Pipes_Use_Grill_5_as_BW_to_Bump_to_Normal_metallicRoughness.png",
+      "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Chrome_Engine_Pipes_Use_Grill_5_as_BW_to_Bump_to_Normal_metallicRoughness.png",
+      "bytes": 321,
+      "sha256": "c878c542fc7434ef9b2eb999e225d1e323449c7fd88aff5e3a092a71dbcf3843"
+    },
+    {
+      "path": "textures/Engine_Decals_baseColor.png",
+      "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Engine_Decals_baseColor.png",
+      "bytes": 107109,
+      "sha256": "f837dd54239781588884a190cc8d2d7d59eeb6ceaf9e95ca8f6d6ec18edf7075"
+    },
+    {
+      "path": "textures/Grille_1_baseColor.png",
+      "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Grille_1_baseColor.png",
+      "bytes": 1327,
+      "sha256": "5b9d5548cdbb535cdaff37f11737d89e2307beb51da9a7a25e1c677c205e4e31"
+    },
+    {
+      "path": "textures/Grille_3_baseColor.png",
+      "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Grille_3_baseColor.png",
+      "bytes": 906,
+      "sha256": "011ace4f2c2c2d287ac5944c89fc10533cf08bc49b901f8bbcc1fa182d0af5ce"
+    },
+    {
+      "path": "textures/Carbon_Fiber_baseColor.png",
+      "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Carbon_Fiber_baseColor.png",
+      "bytes": 12458,
+      "sha256": "ea2e3e6183f0cb9113820c64bb2489fc64bb607814dad91bc8e904e081c1a6f4"
+    },
+    {
+      "path": "textures/Grill_4_Speakers_baseColor.png",
+      "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Grill_4_Speakers_baseColor.png",
+      "bytes": 4475,
+      "sha256": "298bb6543a8fa9217f4f3db33c1b4874cd35d7cd477aca37b0ee52aab0ad7dd7"
+    },
+    {
+      "path": "textures/Carpet_baseColor.png",
+      "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Carpet_baseColor.png",
+      "bytes": 36967,
+      "sha256": "2acc732a9ac63827c33021766e1809fd54820d2a249e845c3d9c9992b370477f"
+    },
+    {
+      "path": "textures/Seats_Adjust_the_leather_texture_using_Color_Ramp_or_using_HSV_baseColor.jpeg",
+      "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Seats_Adjust_the_leather_texture_using_Color_Ramp_or_using_HSV_baseColor.jpeg",
+      "bytes": 509430,
+      "sha256": "82590174d91c25ee7b4d60e37554ef329c9caf89b4994caf882ebb5bae804115"
+    },
+    {
+      "path": "textures/Gauges_baseColor.png",
+      "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Gauges_baseColor.png",
+      "bytes": 85422,
+      "sha256": "0befb9c51d82ae6e6b28445b2b0fa54fb99143482354508274c39e869594b414"
+    },
+    {
+      "path": "textures/Interior_Display_baseColor.png",
+      "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Interior_Display_baseColor.png",
+      "bytes": 92796,
+      "sha256": "57ad5cc99f4c52411f286e31ff29e4cbe16a2604e069d8eda76f6eaba90757dc"
+    },
+    {
+      "path": "textures/Interior_Trim_baseColor.png",
+      "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Interior_Trim_baseColor.png",
+      "bytes": 6569,
+      "sha256": "86abe97bfa51ae3224e30ee2c17deb8fdd8d0b9859e10cce8c680fffbc8c775a"
+    },
+    {
+      "path": "textures/Brake_Disc_baseColor.png",
+      "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Brake_Disc_baseColor.png",
+      "bytes": 25610,
+      "sha256": "d62521c9fad60f8a1fdef369b46cb2ad09d7dab2db71e46809ff5db9f2f76c19"
+    },
+    {
+      "path": "textures/Tire_Treads_baseColor.png",
+      "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Tire_Treads_baseColor.png",
+      "bytes": 74619,
+      "sha256": "c4060e8f7a959d26799185c8aa84f585ac55b8e56b6ddba60e64a7a1b7ab9fec"
+    },
+    {
+      "path": "textures/Tire_Sidewall_baseColor.png",
+      "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Tire_Sidewall_baseColor.png",
+      "bytes": 230701,
+      "sha256": "62e36ba4a850736d21c6144a7fecb963719a2c06580b2de30d3763d0a5316f8a"
+    },
+    {
+      "path": "textures/material_baseColor.png",
+      "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/material_baseColor.png",
+      "bytes": 41225,
+      "sha256": "7eb1ef0df8a49a76cd0d06375f413e0d6d12d34fc9de1e76765af39a48327c20"
+    },
+    {
+      "path": "textures/Interior_Trim_2_baseColor.png",
+      "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Interior_Trim_2_baseColor.png",
+      "bytes": 370,
+      "sha256": "de6da0cfe8ab8cae6822d375ee78718937fcd6cf404e7d8c33ae9e8daf46f41f"
+    },
+    {
+      "path": "textures/Interior_Badge_baseColor.png",
+      "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Interior_Badge_baseColor.png",
+      "bytes": 32569,
+      "sha256": "29aaa5251ace944b4bec0c59d2f2e8d40daa0aafed737704b3be34c269ff1d36"
+    },
+    {
+      "path": "textures/Mat_supergt.209_baseColor.png",
+      "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Mat_supergt.209_baseColor.png",
+      "bytes": 953,
+      "sha256": "84ae54f49d44d6f212dd5b6a92ce7a71a39941df53c6450586d4808d0a24997c"
+    }
+  ],
+  "verificationLimit": "The original Sketchfab page was inaccessible in this environment. Licence evidence is the asset-specific exported license.txt and matching GLTF asset.extras in the pinned mirror; independent original-account ownership was not verified."
+}

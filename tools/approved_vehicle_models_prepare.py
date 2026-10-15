@@ -76,6 +76,15 @@ def simplify(source, output, manifest):
         uv = arrays[name + '.uv']
         normals = arrays[name + '.n']
         material = arrays[name + '.m']
+        preserve_normals = description.get('preserveSourceNormals', False)
+        if preserve_normals and float(description['ratio']) >= .999999:
+            # Rebuilding an unchanged mesh through weld/smooth changes authored
+            # split normals, even when the decimator removes no triangles.
+            for field in ('p', 'n', 'uv', 'i', 'm'):
+                result[name + '.' + field] = arrays[name + '.' + field]
+            rows.append({'part': name, 'before': len(triangles), 'after': len(triangles),
+                         'ratio': 1., 'normals': 'exact authored attributes'})
+            continue
         mesh = bpy.data.meshes.new(name)
         mesh.from_pydata(vertices.tolist(), [], triangles.tolist())
         mesh.update()
@@ -93,6 +102,13 @@ def simplify(source, output, manifest):
         bpy.context.collection.objects.link(obj)
         bpy.context.view_layer.objects.active = obj
         obj.select_set(True)
+        source_obj = None
+        if preserve_normals:
+            source_obj = obj.copy()
+            source_obj.data = mesh.copy()
+            source_obj.name = name + ':authored normals'
+            bpy.context.collection.objects.link(source_obj)
+            source_obj.select_set(False)
         # glTF primitive chunks may duplicate identical vertices. Weld only exact
         # positions; corner UVs and split normals remain attached to mesh loops.
         bpy.ops.object.mode_set(mode='EDIT')
@@ -103,6 +119,14 @@ def simplify(source, output, manifest):
         modifier.decimate_type = 'COLLAPSE'
         modifier.ratio = float(description['ratio'])
         modifier.use_collapse_triangulate = True
+        if source_obj:
+            transfer = obj.modifiers.new('Restore authored corner shading', 'DATA_TRANSFER')
+            transfer.object = source_obj
+            transfer.use_loop_data = True
+            transfer.data_types_loops = {'CUSTOM_NORMAL'}
+            transfer.loop_mapping = 'POLYINTERP_NEAREST'
+            transfer.mix_mode = 'REPLACE'
+            transfer.mix_factor = 1.
         evaluated = obj.evaluated_get(bpy.context.evaluated_depsgraph_get())
         final = evaluated.to_mesh(preserve_all_data_layers=True, depsgraph=bpy.context.evaluated_depsgraph_get())
         final.calc_loop_triangles()
@@ -122,6 +146,8 @@ def simplify(source, output, manifest):
         rows.append({'part': name, 'before': len(triangles), 'after': len(indices), 'ratio': description['ratio']})
         evaluated.to_mesh_clear()
         bpy.data.objects.remove(obj, do_unlink=True)
+        if source_obj:
+            bpy.data.objects.remove(source_obj, do_unlink=True)
         print('SIMPLIFIED', name, len(triangles), len(indices), flush=True)
     np.savez(output, **result)
     Path(str(output) + '.json').write_text(json.dumps(rows, indent=2))

@@ -1,0 +1,29 @@
+{
+  "status": "UNMODIFIED_BASELINE_AND_INTEGRATED_FOLLOWUPS_PASS",
+  "runtimeChangeForThisCase": false,
+  "testChanged": false,
+  "testSha256": "77b9c9e86e8e83026c98267379834270a250de8dd149ba1345acd89fe9c8481e",
+  "baselineHtmlSha256": "5b199b249eeb301af2722c21e84470c6b20902ff0976d17c3e439be1ab3e58da",
+  "integratedHtmlSha256": "a59af721e5c0c880521421abf9ad94bff55f94023549c810b154a90386afef63",
+  "evidence": [
+    {
+      "stage": "interrupted-baseline",
+      "log": "review15-before-resume.log",
+      "outcome": "FAIL god-mode-codes (32.2s): both A taps should walk the player left: 1152 \u2192 1150 \u2192 1148",
+      "notes": "     A taps: x 1152 \u2192 1150 \u2192 1148"
+    },
+    {
+      "stage": "focused-integrated",
+      "log": "review15-final-affected.log",
+      "outcome": "PASS god-mode-codes (45.2s)",
+      "notes": "     A taps: x 1152 \u2192 1147 \u2192 1139 \u00b7 after the code: mode settings \u00b7 ON sound: {\"on\":true,\"seconds\":4,\"peak\":0.767,\"rms\":0.061,\"loudestRms\":0.325} \u00b7 OFF sound: {\"on\":false,\"seconds\":4,\"peak\":0.435,\"rms\":0.04,\"loudestRms\":0.258}"
+    },
+    {
+      "stage": "same-baseline-rerun",
+      "log": "review15-before-third.log",
+      "outcome": "PASS god-mode-codes (11.8s)",
+      "notes": "     A taps: x 1152 \u2192 1148 \u2192 1145 \u00b7 after the code: mode settings \u00b7 ON sound: {\"on\":true,\"seconds\":4,\"peak\":0.743,\"rms\":0.061,\"loudestRms\":0.324} \u00b7 OFF sound: {\"on\":false,\"seconds\":4,\"peak\":0.492,\"rms\":0.04,\"loudestRms\":0.264}"
+    }
+  ],
+  "interpretation": "Initial rounded displacement was exactly2u for each0.5s real hold; both inputs reached movement. Unmodified full test passed on same frozen baseline and on integrated runtime. No reproducible input defect; prior failure retained as live-frame timing sensitivity, without assertion/wait waiver."
+}

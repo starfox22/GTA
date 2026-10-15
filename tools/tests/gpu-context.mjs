@@ -14,6 +14,8 @@ export default async function (t) {
   t.note('lost: ' + JSON.stringify(g) + ' mode ' + s.mode);
   t.assert(g.lost && g.losses === 1, 'the loss was not noticed: ' + JSON.stringify(lost) + ' ' + JSON.stringify(g));
   t.assert(s.mode === 'pause', 'the game did not pause on the loss: ' + s.mode);
+  await t.call('pauseMenu', false);
+  t.assert((await t.call('status')).mode === 'pause', 'resume was allowed while the graphics context was lost');
   const n = await t.call('notices');
   t.assert(JSON.stringify(n).includes('DROPPED THE PICTURE'), 'the player was not told');
   // The loop keeps going while the context is away (no frame faults from drawing into a lost context).
@@ -24,4 +26,6 @@ export default async function (t) {
   g = await t.call('gpuContext');
   t.note('restored: ' + JSON.stringify(g));
   t.assert(!g.lost && g.restores === 1 && g.reloadPending, 'no recovery after the restore: ' + JSON.stringify(g));
+  await t.call('pauseMenu', false);
+  t.assert((await t.call('status')).mode === 'pause', 'resume was allowed before the recovery reload');
 }

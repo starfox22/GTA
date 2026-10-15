@@ -1,0 +1,104 @@
+{
+  "status": "PASS",
+  "assertions": 361,
+  "cases": [
+    {
+      "name": "modal-pointer-lifecycle",
+      "status": "PASS",
+      "checks": 56,
+      "failures": [],
+      "notes": [
+        "13 production modal transitions release both buttons; rejected entries preserve input and campaign state"
+      ],
+      "testSha256": "bbb7689c1dce4362eb7431ec8f3338c34ee913f1b16704497c3693ff2cec17ca"
+    },
+    {
+      "name": "travel-focus-pause",
+      "status": "PASS",
+      "checks": 30,
+      "failures": [],
+      "notes": [
+        "actual roof/sky/records completion functions: hidden and blurred live frames freeze; focused return and explicit stepping finish"
+      ],
+      "testSha256": "cfb8056321b5f94f179a38e249a5b5bbf76f38b9a3b18be5f3ec3be0497d6e75"
+    },
+    {
+      "name": "respawn-focus-pause",
+      "status": "PASS",
+      "checks": 112,
+      "failures": [],
+      "notes": [
+        "actual death/arrest callbacks and pause: focused return stays live; hidden/blurred return pauses; timing, costs, ammo, mission identity and world reset preserved"
+      ],
+      "testSha256": "29a2fd31ee30343fe54f72931027fb4ed387b5b22a17d592fb808056ae131511"
+    },
+    {
+      "name": "world-reset-sportsbook",
+      "status": "PASS",
+      "checks": 54,
+      "failures": [],
+      "notes": [
+        "actual city/sports reset chain, bet placement, save restore and settlement: death/arrest retain progress; interrupted live stakes refund once; new game clears"
+      ],
+      "testSha256": "31f56600c87b45ed27a2e3a65d56db214b901dfc6f973c9261e49596d7fc149e"
+    },
+    {
+      "name": "gpu-context-lifecycle",
+      "status": "PASS",
+      "checks": 42,
+      "failures": [],
+      "notes": [
+        "actual loss/restore/pause + actual frame dispatch and roof/sky/records/respawn completion: lost/pending live progress blocked, prior pause kept, explicit stepping retained"
+      ],
+      "testSha256": "0165bfede8d3ee846c430586f016961bb035b48623e12d0fb0851afc8bff5795"
+    },
+    {
+      "name": "mouse-buttons",
+      "status": "PASS",
+      "checks": 26,
+      "failures": [],
+      "notes": [
+        "real input listeners: independent left/right/middle release; blur and hidden tab in play/help; pause/help/map clear both buttons"
+      ],
+      "testSha256": "455461c7b6f7d8af582a3bc93636473f193be1eb4850519526809557f3aa9b1a"
+    },
+    {
+      "name": "mission-modal-input",
+      "status": "PASS",
+      "checks": 8,
+      "failures": [],
+      "notes": [],
+      "testSha256": "88b858a9c61e9c80cc2324eefc67f473c750028ca647a18720f7cd06f0c40480"
+    },
+    {
+      "name": "campaign-retry-save-host",
+      "status": "PASS",
+      "checks": 33,
+      "failures": [],
+      "notes": [
+        "demo 1–4 and replay retry persistence; locked/invalid/legacy saves; completion/new-game clearing; inventory/reward unchanged"
+      ]
+    }
+  ],
+  "sourceHashes": {
+    "src/gpu-context.js": "f528314b6f72e39d7e512abc35bb0e78d51759389dfbe76b5d45f871a958a3e0",
+    "src/game-loop.js": "316e59c409341303ea075ca2c255916b8403839d1b010059d1267c95b5bf8004",
+    "src/game-menus.js": "b6d45c4b73bd019614150cf8a0d3e680fe050a5446208bf0963cbd1c59086c63",
+    "src/arsenal.js": "f66253d63b336a03318ce94121fe3e27c13afcf79f6d209ad57e7cee190ba89c",
+    "src/campaign.js": "345e01b002e2e0d5a9cea0f38dffa6665108bddf7fa8e81d6999729b0f242654",
+    "src/story.js": "d9218fc6a59734248d904f5cf55b7b717dd3990e1eae44c233ffaa5730eccf57",
+    "src/settings.js": "29c48c02db3318b8ae18f5c90f82b522e3fa7f4bf003cd5d3c6e0b496b8c2d18",
+    "src/citylife-places.js": "a329e332200bf6cf35fdf4f9337c40a2f68d96d0c7aa1af685360fd9e94e5086",
+    "src/transit-network.js": "2d51093a097738023d9d2145d7c91006b29c42f814068d650bfa4121c9076325",
+    "src/taxi.js": "19a607bbf95fb0ba8b65c2c201177ecbabfac6e2048ba8a52a6378c2fea102a6",
+    "src/sportsbook-ui.js": "cce40c04187fd610c7628e6791d8d7a084b2e0b03cc122515ffd50d3bd987a89",
+    "src/dealership-lot.js": "62efd0002536b0bd2e2faea8dbbf19ed8538aca51c36ad4df94e1a04d7175846",
+    "src/world-reset.js": "2374f3539ad688df3e22bd97ece709bb1fc9a67824d134773c6089c54367f29a",
+    "src/game-player-actions.js": "06c705f36908ad8986ac391e107558b9d635cd2a27c3796d246fd88ae8cb2e5a",
+    "src/pursuit-officers.js": "d9f86e9e7e8cca5023bbc83aed72849dadbc460c4345c4aacf32e275e326f0a1",
+    "src/skyline-lift.js": "59f1c293b51b26a6bde9e2d61c8d03735097118c76c0be66811c7b162749ff8d",
+    "src/fort-cover-records.js": "bc626a88aac658b9563f5065775ce39d38f002d396e8eec499a5b02ea949c4ac",
+    "src/sportsbook.js": "ba1dae7c569cedeca528f3cae4df60866e2d4f591d6bdaeb21fe9d7459516092",
+    "src/sports-setup.js": "3a15ce2f32e08dcfe4171f7c862b3bd9e06decb0ebd57807123e3fb0cdc4ec36"
+  }
+}

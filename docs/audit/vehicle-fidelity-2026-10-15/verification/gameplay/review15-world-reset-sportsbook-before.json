@@ -1,0 +1,350 @@
+{
+  "status": "FAIL",
+  "assertions": 54,
+  "failures": [
+    {
+      "ok": false,
+      "message": "wasted/upcoming: reset discarded open bets or history"
+    },
+    {
+      "ok": false,
+      "message": "wasted/upcoming: reset discarded betting statistics"
+    },
+    {
+      "ok": false,
+      "message": "wasted/upcoming: reset lost format or next id"
+    },
+    {
+      "ok": false,
+      "message": "wasted/upcoming: settled history changed"
+    },
+    {
+      "ok": false,
+      "message": "wasted/upcoming: upcoming stake was not rebound to its rebuilt fixture"
+    },
+    {
+      "ok": false,
+      "message": "wasted/upcoming: retained bet did not pay its original price"
+    },
+    {
+      "ok": false,
+      "message": "wasted/upcoming: win statistics wrong"
+    },
+    {
+      "ok": false,
+      "message": "wasted/upcoming: preserved book cannot round-trip through save data"
+    },
+    {
+      "ok": false,
+      "message": "wasted/live: reset discarded open bets or history"
+    },
+    {
+      "ok": false,
+      "message": "wasted/live: reset discarded betting statistics"
+    },
+    {
+      "ok": false,
+      "message": "wasted/live: reset lost format or next id"
+    },
+    {
+      "ok": false,
+      "message": "wasted/live: settled history changed"
+    },
+    {
+      "ok": false,
+      "message": "wasted/live: interrupted live stake was not voided"
+    },
+    {
+      "ok": false,
+      "message": "wasted/live: interrupted live stake was not refunded exactly"
+    },
+    {
+      "ok": false,
+      "message": "wasted/live: preserved book cannot round-trip through save data"
+    },
+    {
+      "ok": false,
+      "message": "busted/upcoming: reset discarded open bets or history"
+    },
+    {
+      "ok": false,
+      "message": "busted/upcoming: reset discarded betting statistics"
+    },
+    {
+      "ok": false,
+      "message": "busted/upcoming: reset lost format or next id"
+    },
+    {
+      "ok": false,
+      "message": "busted/upcoming: settled history changed"
+    },
+    {
+      "ok": false,
+      "message": "busted/upcoming: upcoming stake was not rebound to its rebuilt fixture"
+    },
+    {
+      "ok": false,
+      "message": "busted/upcoming: retained bet did not pay its original price"
+    },
+    {
+      "ok": false,
+      "message": "busted/upcoming: win statistics wrong"
+    },
+    {
+      "ok": false,
+      "message": "busted/upcoming: preserved book cannot round-trip through save data"
+    },
+    {
+      "ok": false,
+      "message": "busted/live: reset discarded open bets or history"
+    },
+    {
+      "ok": false,
+      "message": "busted/live: reset discarded betting statistics"
+    },
+    {
+      "ok": false,
+      "message": "busted/live: reset lost format or next id"
+    },
+    {
+      "ok": false,
+      "message": "busted/live: settled history changed"
+    },
+    {
+      "ok": false,
+      "message": "busted/live: interrupted live stake was not voided"
+    },
+    {
+      "ok": false,
+      "message": "busted/live: interrupted live stake was not refunded exactly"
+    },
+    {
+      "ok": false,
+      "message": "busted/live: preserved book cannot round-trip through save data"
+    }
+  ],
+  "sourceHashes": {
+    "src/world-reset.js": "51c22c8be962ef93a621176eaa87d13fc16844965e8da70c1dcae70a859dc435",
+    "src/sports-setup.js": "3a15ce2f32e08dcfe4171f7c862b3bd9e06decb0ebd57807123e3fb0cdc4ec36",
+    "src/sportsbook.js": "ba1dae7c569cedeca528f3cae4df60866e2d4f591d6bdaeb21fe9d7459516092",
+    "tools/tests/world-reset-sportsbook.mjs": "31f56600c87b45ed27a2e3a65d56db214b901dfc6f973c9261e49596d7fc149e"
+  },
+  "checks": [
+    {
+      "ok": true,
+      "message": "wasted/upcoming: setup did not deduct the stakes"
+    },
+    {
+      "ok": true,
+      "message": "wasted/upcoming: world did not rebuild the match"
+    },
+    {
+      "ok": false,
+      "message": "wasted/upcoming: reset discarded open bets or history"
+    },
+    {
+      "ok": false,
+      "message": "wasted/upcoming: reset discarded betting statistics"
+    },
+    {
+      "ok": false,
+      "message": "wasted/upcoming: reset lost format or next id"
+    },
+    {
+      "ok": true,
+      "message": "wasted/upcoming: reset charged/refunded a stake before existing restore rules"
+    },
+    {
+      "ok": false,
+      "message": "wasted/upcoming: settled history changed"
+    },
+    {
+      "ok": false,
+      "message": "wasted/upcoming: upcoming stake was not rebound to its rebuilt fixture"
+    },
+    {
+      "ok": true,
+      "message": "wasted/upcoming: restoring an upcoming stake changed cash"
+    },
+    {
+      "ok": false,
+      "message": "wasted/upcoming: retained bet did not pay its original price"
+    },
+    {
+      "ok": false,
+      "message": "wasted/upcoming: win statistics wrong"
+    },
+    {
+      "ok": true,
+      "message": "wasted/upcoming: repeated update paid twice"
+    },
+    {
+      "ok": false,
+      "message": "wasted/upcoming: preserved book cannot round-trip through save data"
+    },
+    {
+      "ok": true,
+      "message": "wasted/live: setup did not deduct the stakes"
+    },
+    {
+      "ok": true,
+      "message": "wasted/live: world did not rebuild the match"
+    },
+    {
+      "ok": false,
+      "message": "wasted/live: reset discarded open bets or history"
+    },
+    {
+      "ok": false,
+      "message": "wasted/live: reset discarded betting statistics"
+    },
+    {
+      "ok": false,
+      "message": "wasted/live: reset lost format or next id"
+    },
+    {
+      "ok": true,
+      "message": "wasted/live: reset charged/refunded a stake before existing restore rules"
+    },
+    {
+      "ok": false,
+      "message": "wasted/live: settled history changed"
+    },
+    {
+      "ok": false,
+      "message": "wasted/live: interrupted live stake was not voided"
+    },
+    {
+      "ok": false,
+      "message": "wasted/live: interrupted live stake was not refunded exactly"
+    },
+    {
+      "ok": true,
+      "message": "wasted/live: repeated update paid twice"
+    },
+    {
+      "ok": false,
+      "message": "wasted/live: preserved book cannot round-trip through save data"
+    },
+    {
+      "ok": true,
+      "message": "busted/upcoming: setup did not deduct the stakes"
+    },
+    {
+      "ok": true,
+      "message": "busted/upcoming: world did not rebuild the match"
+    },
+    {
+      "ok": false,
+      "message": "busted/upcoming: reset discarded open bets or history"
+    },
+    {
+      "ok": false,
+      "message": "busted/upcoming: reset discarded betting statistics"
+    },
+    {
+      "ok": false,
+      "message": "busted/upcoming: reset lost format or next id"
+    },
+    {
+      "ok": true,
+      "message": "busted/upcoming: reset charged/refunded a stake before existing restore rules"
+    },
+    {
+      "ok": false,
+      "message": "busted/upcoming: settled history changed"
+    },
+    {
+      "ok": false,
+      "message": "busted/upcoming: upcoming stake was not rebound to its rebuilt fixture"
+    },
+    {
+      "ok": true,
+      "message": "busted/upcoming: restoring an upcoming stake changed cash"
+    },
+    {
+      "ok": false,
+      "message": "busted/upcoming: retained bet did not pay its original price"
+    },
+    {
+      "ok": false,
+      "message": "busted/upcoming: win statistics wrong"
+    },
+    {
+      "ok": true,
+      "message": "busted/upcoming: repeated update paid twice"
+    },
+    {
+      "ok": false,
+      "message": "busted/upcoming: preserved book cannot round-trip through save data"
+    },
+    {
+      "ok": true,
+      "message": "busted/live: setup did not deduct the stakes"
+    },
+    {
+      "ok": true,
+      "message": "busted/live: world did not rebuild the match"
+    },
+    {
+      "ok": false,
+      "message": "busted/live: reset discarded open bets or history"
+    },
+    {
+      "ok": false,
+      "message": "busted/live: reset discarded betting statistics"
+    },
+    {
+      "ok": false,
+      "message": "busted/live: reset lost format or next id"
+    },
+    {
+      "ok": true,
+      "message": "busted/live: reset charged/refunded a stake before existing restore rules"
+    },
+    {
+      "ok": false,
+      "message": "busted/live: settled history changed"
+    },
+    {
+      "ok": false,
+      "message": "busted/live: interrupted live stake was not voided"
+    },
+    {
+      "ok": false,
+      "message": "busted/live: interrupted live stake was not refunded exactly"
+    },
+    {
+      "ok": true,
+      "message": "busted/live: repeated update paid twice"
+    },
+    {
+      "ok": false,
+      "message": "busted/live: preserved book cannot round-trip through save data"
+    },
+    {
+      "ok": true,
+      "message": "upcoming: new game kept old bets"
+    },
+    {
+      "ok": true,
+      "message": "upcoming: new game kept old betting statistics"
+    },
+    {
+      "ok": true,
+      "message": "upcoming: book reset unexpectedly changed the caller-owned new-game cash"
+    },
+    {
+      "ok": true,
+      "message": "live: new game kept old bets"
+    },
+    {
+      "ok": true,
+      "message": "live: new game kept old betting statistics"
+    },
+    {
+      "ok": true,
+      "message": "live: book reset unexpectedly changed the caller-owned new-game cash"
+    }
+  ]
+}

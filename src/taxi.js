@@ -46,7 +46,7 @@
       taxiOffer = car;
       gameMode = 'taxi';
       keys = {};
-      mouse.down = false;
+      mouse.down = mouse.alt = false;
       getElement('taxiText').textContent =
         wantedStars > 0
           ? 'The driver has the radio on and both hands on the wheel. ' + (car.driverFemale === false ? 'He' : 'She') + ' is not taking you anywhere.'

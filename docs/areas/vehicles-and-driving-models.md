@@ -43,10 +43,11 @@ vehicles-and-driving.md.
 - Flagships: one traffic car in forty (`FLAGSHIP_TYPES`); SHOWCASE PARKING in
   game-populate.js (`showcase()`). The Prestige Collection and MONARCH MOTORS:
   places-monarch-and-county.md.
-- CHEVETTE Z06 (cars3d-bodies-b.js, after the C8 Z06): its glass keeps the numbers of damage-vehicles.js
-  `CAR_GLASS_BANDS` (belt 0.88, roof 1.22, rear foot -0.42, screen foot 0.13) with a `crown` over the driver; the
-  Z06 Carbon Aero (hypercars3d.js `chevetteSE`) spreads its body and details and adds the tall wing; the ZR1X is a
-  body of its own. A change to a body's glass keeps CAR_GLASS_BANDS in step and `cabinHeadroom()` at zero `through`.
+- CHEVETTE Z06 uses the [downloaded C8](vehicles-and-driving-models-sports.md),
+  with measured glass, cushion and source door hinges. `cars3d-bodies-b.js` retains
+  the procedural fallback; Z06 Carbon Aero (`chevetteSE`) keeps that wider body,
+  equipment and wing. The ZR1X is a separate body. Keep each active body's glass
+  and recorded drive-by seat in step, and `cabinHeadroom()` at zero `through`.
 
 ## Downloaded models
 

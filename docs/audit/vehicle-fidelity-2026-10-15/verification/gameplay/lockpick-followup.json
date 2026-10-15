@@ -1,0 +1,32 @@
+{
+  "status": "RESOLVED_UNCHANGED_QUIET_FOLLOWUP_PASS",
+  "test": "lockpick.mjs",
+  "testSha256": "a11c5eaedb3c075df206de51108d0d2a0d3db14d3488daaeac2ab65f1979e8cb",
+  "baselineHtmlSha256": "5b199b249eeb301af2722c21e84470c6b20902ff0976d17c3e439be1ab3e58da",
+  "failure": "FAIL lockpick (93.2s): trunk still shut after holding the action key: {\"lockpick\":{\"owned\":true,\"equipped\":true,\"working\":\"trunk\",\"active\":true},\"stats\":{\"pins\":4,\"trunks\":0,\"doors\":0},\"car\":{\"id\":316,\"type\":\"sedan\",\"loot\":\"UNIFORM AND ID\",\"distance\":0.2,\"trunkPoint\":{\"x\":1076,\"y\":1000},\"open\":false,\"progress\":0.92,\"pins\":4,\"inReach\":true,\"closeInReach\":false,\"stopped\":true}}",
+  "notes": "     hold 0: progress 0 pins 0 working null, 0.17 game s \u00b7 hold 1: progress 0.03 pins 0 working trunk, 0.33 game s \u00b7 hold 2: progress 0.06 pins 0 working trunk, 0.48 game s \u00b7 hold 3: progress 0.08 pins 0 working trunk, 0.58 game s \u00b7 hold 4: progress 0.1 pins 0 working trunk, 0.64 game s \u00b7 hold 5: progress 0.16 pins 0 working trunk, 0.98 game s \u00b7 hold 6: progress 0.26 pins 1 working trunk, 1.49 game s \u00b7 hold 7: progress 0.41 pins 2 working trunk, 2.23 game s \u00b7 hold 8: progress 0.45 pins 2 working trunk, 2.43 game s \u00b7 hold 9: progress 0.51 pins 2 working trunk, 2.71 game s \u00b7 hold 10: progress 0.55 pins 2 working trunk, 2.94 game s \u00b7 hold 11: progress 0.61 pins 3 working trunk, 3.26 game s \u00b7 hold 12: progress 0.73 pins 3 working trunk, 3.90 game s \u00b7 hold 13: progress 0.78 pins 3 working trunk, 4.25 game s \u00b7 hold 14: progress 0.79 pins 3 working trunk, 4.32 game s \u00b7 hold 15: progress 0.81 pins 4 working trunk, 4.41 game s \u00b7 hold 16: progress 0.82 pins 4 working trunk, 4.51 game s \u00b7 hold 17: progress 0.84 pins 4 working trunk, 4.68 game s \u00b7 hold 18: progress 0.88 pins 4 working trunk, 4.88 game s \u00b7 hold 19: progress 0.89 pins 4 working trunk, 5.01 game s \u00b7 hold 20: progress 0.92 pins 4 working trunk, 5.17 game s",
+  "testDeadlines": {
+    "wallSeconds": 60,
+    "gameSeconds": 8
+  },
+  "observedGameSeconds": 5.17,
+  "observedProgress": 0.92,
+  "observedPins": 4,
+  "sourceConstants": [
+    "const TRUNK_PICK_SECONDS = 5,",
+    "TRUNK_PINS = 5,"
+  ],
+  "runtimeOrTestChanged": false,
+  "interpretation": "The unchanged whole module passes on the same frozen baseline after external software GPU load ends. The initial live-input/deadline result remains retained as a timing-sensitive run; no corresponding production defect was reproduced and no runtime or test change was made for it.",
+  "quietFollowup": {
+    "status": "PASS",
+    "summary": "PASS lockpick (28.0s)",
+    "notes": "     hold 0: progress 0.08 pins 0 working trunk, 0.58 game s \u00b7 hold 1: progress 0.29 pins 1 working trunk, 1.66 game s \u00b7 hold 2: progress 0.5 pins 2 working trunk, 2.69 game s \u00b7 hold 3: progress 0.65 pins 3 working trunk, 3.46 game s \u00b7 hold 4: progress 0.86 pins 4 working trunk, 4.54 game s \u00b7 hold 5: progress 1 pins 5 working trunk, 5.42 game s \u00b7 door hold 0: locked true, 0.78 game s \u00b7 door hold 1: locked true, 1.89 game s \u00b7 door hold 2: locked true, 2.95 game s \u00b7 door hold 3: locked false, 4.11 game s",
+    "log": "review15-before-quiet.log",
+    "selection": "review15-before-quiet-selection.json",
+    "exitReceipt": "review15-before-quiet-exit.json",
+    "sameFrozenBaseline": true,
+    "testHashUnchanged": true,
+    "originalTimersAndAssertionsUnchanged": true
+  }
+}

@@ -1,0 +1,3325 @@
+{
+  "htmlSha256": "5b199b249eeb301af2722c21e84470c6b20902ff0976d17c3e439be1ab3e58da",
+  "recorderSha256": "d725b27c5ae57da6a737f8c2f6ce12fc1fd5f717a944c9d31a9e8043d1b0843c",
+  "label": "before",
+  "after": false,
+  "fixture": {
+    "seed": 1,
+    "origin": [
+      418,
+      6000
+    ],
+    "staging": {
+      "x": 418,
+      "firstY": 6200,
+      "stepY": 80
+    },
+    "heading": 0,
+    "clock": 13,
+    "graphics": "high",
+    "viewport": [
+      960,
+      600
+    ],
+    "crop": [
+      150,
+      70,
+      660,
+      460
+    ],
+    "frontInspect": [
+      65,
+      12,
+      4
+    ],
+    "doorInspect": [
+      115,
+      7,
+      5
+    ],
+    "passengerInspect": [
+      65,
+      7,
+      5
+    ],
+    "closeUp": 11,
+    "playerTransitionSeconds": 0.22,
+    "input": "Named drive/place, carjack doorSwing, and actual interact boarding/exit; first rendered frame starts transition before aging."
+  },
+  "captures": [
+    {
+      "name": "chevette-closed-front",
+      "id": 265,
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6000,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "chevette",
+        "weapon": "9MM PISTOL",
+        "clock": "13:09",
+        "renderer": "3d",
+        "vehicles": 280,
+        "pedestrians": 595
+      },
+      "camera": {
+        "zoom": 11,
+        "target": 11,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 11,
+        "aim": 11,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          960,
+          600
+        ],
+        "viewMetres": 4.9,
+        "personPx": 137,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 4,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "model": {
+        "id": 265,
+        "type": "chevette",
+        "draws": 22,
+        "casters": 3,
+        "triangles": 11184,
+        "heaviest": [
+          [
+            "MeshStandardMaterial",
+            3936
+          ],
+          [
+            "MeshPhysicalMaterial",
+            1520
+          ],
+          [
+            "MeshPhysicalMaterial",
+            724
+          ],
+          [
+            "MeshStandardMaterial",
+            484
+          ],
+          [
+            "MeshStandardMaterial",
+            484
+          ],
+          [
+            "MeshStandardMaterial",
+            484
+          ]
+        ],
+        "asset": null,
+        "cabin": {
+          "hip": [
+            -0.79,
+            0.261,
+            -0.464
+          ],
+          "door": [
+            -0.399,
+            0.563
+          ],
+          "floor": 0.26,
+          "floorWorldY": 0.273,
+          "pedalHeight": 0.36,
+          "recline": 0.46,
+          "rear": false,
+          "two": true,
+          "cabinTriangles": 1640,
+          "seated": 0,
+          "headroom": 0.02,
+          "behind": 0.254
+        },
+        "panes": {
+          "left": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "front": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "right": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "rear": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "roof": {
+            "drawn": true,
+            "depthWrite": true
+          }
+        },
+        "badge": {
+          "text": "CHEVETTE",
+          "sub": "Z06",
+          "style": "wide",
+          "letters": 11
+        }
+      },
+      "doors": null,
+      "sportsAssets": null,
+      "headroom": {
+        "through": 0,
+        "cars": [
+          {
+            "type": "coupe",
+            "body": null,
+            "hip": [
+              -0.282,
+              0.362
+            ],
+            "recline": 0.4,
+            "fitMs": 27.9,
+            "clear": {
+              "man": 0.02,
+              "woman": 0.082,
+              "player": 0.103
+            },
+            "roof": {
+              "man": 0.02,
+              "woman": 0.084,
+              "player": 0.103
+            },
+            "through": [],
+            "key": "coupe",
+            "seat": [
+              -0.282,
+              0.362,
+              0.414,
+              0.35,
+              0.882
+            ],
+            "gameSeat": [
+              -0.282,
+              0.362,
+              0.414,
+              0.35,
+              0.882
+            ],
+            "seatGap": 0
+          },
+          {
+            "type": "sedan",
+            "body": null,
+            "hip": [
+              -0.318,
+              0.275
+            ],
+            "recline": 0.3,
+            "fitMs": 25.3,
+            "clear": {
+              "man": 0.02,
+              "woman": 0.084,
+              "player": 0.103
+            },
+            "roof": {
+              "man": 0.02,
+              "woman": 0.084,
+              "player": 0.103
+            },
+            "through": [],
+            "key": "sedan",
+            "seat": [
+              -0.318,
+              0.275,
+              0.426,
+              0.25,
+              0.846
+            ],
+            "gameSeat": [
+              -0.318,
+              0.275,
+              0.426,
+              0.25,
+              0.846
+            ],
+            "seatGap": 0
+          },
+          {
+            "type": "suv",
+            "body": null,
+            "hip": [
+              -0.384,
+              0.454
+            ],
+            "recline": 0.3,
+            "fitMs": 0.3,
+            "clear": {
+              "man": 0.175,
+              "woman": 0.194,
+              "player": 0.209
+            },
+            "roof": {
+              "man": 0.417,
+              "woman": 0.481,
+              "player": 0.5
+            },
+            "through": [],
+            "key": "s1_jimny",
+            "seat": [
+              -0.384,
+              0.454,
+              0.372,
+              0.25,
+              0.874
+            ],
+            "gameSeat": [
+              -0.384,
+              0.454,
+              0.372,
+              0.25,
+              0.874
+            ],
+            "seatGap": 0
+          },
+          {
+            "type": "van",
+            "body": null,
+            "hip": [
+              0.919,
+              0.68
+            ],
+            "recline": 0.3,
+            "fitMs": 0.7,
+            "clear": {
+              "man": 0.152,
+              "woman": 0.143,
+              "player": 0.186
+            },
+            "roof": {
+              "man": 0.152,
+              "woman": 0.143,
+              "player": 0.186
+            },
+            "through": [],
+            "key": "van",
+            "seat": [
+              0.919,
+              0.68,
+              0.46,
+              0.25,
+              1.1
+            ],
+            "gameSeat": [
+              0.919,
+              0.68,
+              0.46,
+              0.25,
+              1.1
+            ],
+            "seatGap": 0
+          },
+          {
+            "type": "supercar",
+            "body": null,
+            "hip": [
+              -0.268,
+              0.214
+            ],
+            "recline": 0.52,
+            "fitMs": 10.6,
+            "clear": {
+              "man": 0.02,
+              "woman": 0.083,
+              "player": 0.102
+            },
+            "roof": {
+              "man": 0.02,
+              "woman": 0.083,
+              "player": 0.102
+            },
+            "through": [],
+            "key": "supercar",
+            "seat": [
+              -0.268,
+              0.214,
+              0.46,
+              0.47,
+              0.83
+            ],
+            "gameSeat": [
+              -0.268,
+              0.214,
+              0.46,
+              0.47,
+              0.83
+            ],
+            "seatGap": 0
+          },
+          {
+            "type": "chevette",
+            "body": null,
+            "hip": [
+              -0.79,
+              0.261
+            ],
+            "recline": 0.46,
+            "fitMs": 4.1,
+            "clear": {
+              "man": 0.02,
+              "woman": 0.084,
+              "player": 0.102
+            },
+            "roof": {
+              "man": 0.02,
+              "woman": 0.084,
+              "player": 0.102
+            },
+            "through": [],
+            "key": "chevette",
+            "seat": [
+              -0.79,
+              0.261,
+              0.464,
+              0.41,
+              0.88
+            ],
+            "gameSeat": [
+              -0.79,
+              0.261,
+              0.464,
+              0.41,
+              0.88
+            ],
+            "seatGap": 0.001
+          }
+        ],
+        "driveByArm": {
+          "gap": 0,
+          "window": null,
+          "relDeg": 0,
+          "type": null
+        }
+      },
+      "vehicleIdentity": {
+        "id": 265,
+        "type": "chevette",
+        "x": 418,
+        "y": 6000,
+        "a": 0,
+        "kmh": 0,
+        "ai": false,
+        "occupied": false,
+        "altitude": 0
+      },
+      "damage": {
+        "id": 265,
+        "type": "chevette",
+        "hp": 140,
+        "maxhp": 140,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 418,
+        "y": 6000,
+        "a": 0
+      },
+      "char": null
+    },
+    {
+      "name": "chevette-closed-chase",
+      "id": 265,
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6000,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "chevette",
+        "weapon": "9MM PISTOL",
+        "clock": "13:09",
+        "renderer": "3d",
+        "vehicles": 280,
+        "pedestrians": 595
+      },
+      "camera": {
+        "zoom": 11,
+        "target": 11,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 11,
+        "aim": 11,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          960,
+          600
+        ],
+        "viewMetres": 4.9,
+        "personPx": 137,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 4,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "model": {
+        "id": 265,
+        "type": "chevette",
+        "draws": 22,
+        "casters": 3,
+        "triangles": 11184,
+        "heaviest": [
+          [
+            "MeshStandardMaterial",
+            3936
+          ],
+          [
+            "MeshPhysicalMaterial",
+            1520
+          ],
+          [
+            "MeshPhysicalMaterial",
+            724
+          ],
+          [
+            "MeshStandardMaterial",
+            484
+          ],
+          [
+            "MeshStandardMaterial",
+            484
+          ],
+          [
+            "MeshStandardMaterial",
+            484
+          ]
+        ],
+        "asset": null,
+        "cabin": {
+          "hip": [
+            -0.79,
+            0.261,
+            -0.464
+          ],
+          "door": [
+            -0.399,
+            0.563
+          ],
+          "floor": 0.26,
+          "floorWorldY": 0.273,
+          "pedalHeight": 0.36,
+          "recline": 0.46,
+          "rear": false,
+          "two": true,
+          "cabinTriangles": 1640,
+          "seated": 1,
+          "headroom": 0.02,
+          "behind": 0.254
+        },
+        "panes": {
+          "left": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "front": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "right": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "rear": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "roof": {
+            "drawn": true,
+            "depthWrite": true
+          }
+        },
+        "badge": {
+          "text": "CHEVETTE",
+          "sub": "Z06",
+          "style": "wide",
+          "letters": 11
+        }
+      },
+      "doors": null,
+      "sportsAssets": null,
+      "headroom": {
+        "through": 0,
+        "cars": [
+          {
+            "type": "coupe",
+            "body": null,
+            "hip": [
+              -0.282,
+              0.362
+            ],
+            "recline": 0.4,
+            "fitMs": 27.9,
+            "clear": {
+              "man": 0.02,
+              "woman": 0.082,
+              "player": 0.103,
+              "avatar": "Female_Party_02",
+              "avatarRoom": 0.032
+            },
+            "roof": {
+              "man": 0.02,
+              "woman": 0.084,
+              "player": 0.103
+            },
+            "through": [],
+            "key": "coupe",
+            "seat": [
+              -0.282,
+              0.362,
+              0.414,
+              0.35,
+              0.882
+            ],
+            "gameSeat": [
+              -0.282,
+              0.362,
+              0.414,
+              0.35,
+              0.882
+            ],
+            "seatGap": 0
+          },
+          {
+            "type": "sedan",
+            "body": null,
+            "hip": [
+              -0.318,
+              0.275
+            ],
+            "recline": 0.3,
+            "fitMs": 25.3,
+            "clear": {
+              "man": 0.02,
+              "woman": 0.084,
+              "player": 0.103,
+              "avatar": "Male_Adult_04",
+              "avatarRoom": 0.037
+            },
+            "roof": {
+              "man": 0.02,
+              "woman": 0.084,
+              "player": 0.103
+            },
+            "through": [],
+            "key": "sedan",
+            "seat": [
+              -0.318,
+              0.275,
+              0.426,
+              0.25,
+              0.846
+            ],
+            "gameSeat": [
+              -0.318,
+              0.275,
+              0.426,
+              0.25,
+              0.846
+            ],
+            "seatGap": 0
+          },
+          {
+            "type": "suv",
+            "body": null,
+            "hip": [
+              -0.384,
+              0.454
+            ],
+            "recline": 0.3,
+            "fitMs": 0.3,
+            "clear": {
+              "man": 0.175,
+              "woman": 0.194,
+              "player": 0.209,
+              "avatar": "Female_Party_02",
+              "avatarRoom": 0.121
+            },
+            "roof": {
+              "man": 0.417,
+              "woman": 0.481,
+              "player": 0.5
+            },
+            "through": [],
+            "key": "s1_jimny",
+            "seat": [
+              -0.384,
+              0.454,
+              0.372,
+              0.25,
+              0.874
+            ],
+            "gameSeat": [
+              -0.384,
+              0.454,
+              0.372,
+              0.25,
+              0.874
+            ],
+            "seatGap": 0
+          },
+          {
+            "type": "van",
+            "body": null,
+            "hip": [
+              0.919,
+              0.68
+            ],
+            "recline": 0.3,
+            "fitMs": 0.7,
+            "clear": {
+              "man": 0.152,
+              "woman": 0.143,
+              "player": 0.186,
+              "avatar": "Female_Adult_01",
+              "avatarRoom": 0.093
+            },
+            "roof": {
+              "man": 0.152,
+              "woman": 0.143,
+              "player": 0.186
+            },
+            "through": [],
+            "key": "van",
+            "seat": [
+              0.919,
+              0.68,
+              0.46,
+              0.25,
+              1.1
+            ],
+            "gameSeat": [
+              0.919,
+              0.68,
+              0.46,
+              0.25,
+              1.1
+            ],
+            "seatGap": 0
+          },
+          {
+            "type": "supercar",
+            "body": null,
+            "hip": [
+              -0.268,
+              0.214
+            ],
+            "recline": 0.52,
+            "fitMs": 10.6,
+            "clear": {
+              "man": 0.02,
+              "woman": 0.083,
+              "player": 0.102,
+              "avatar": "Male_Adult_04",
+              "avatarRoom": 0.037
+            },
+            "roof": {
+              "man": 0.02,
+              "woman": 0.083,
+              "player": 0.102
+            },
+            "through": [],
+            "key": "supercar",
+            "seat": [
+              -0.268,
+              0.214,
+              0.46,
+              0.47,
+              0.83
+            ],
+            "gameSeat": [
+              -0.268,
+              0.214,
+              0.46,
+              0.47,
+              0.83
+            ],
+            "seatGap": 0
+          },
+          {
+            "type": "chevette",
+            "body": null,
+            "hip": [
+              -0.79,
+              0.261
+            ],
+            "recline": 0.46,
+            "fitMs": 4.1,
+            "clear": {
+              "man": 0.02,
+              "woman": 0.084,
+              "player": 0.102,
+              "avatar": "Male_Adult_04",
+              "avatarRoom": 0.039
+            },
+            "roof": {
+              "man": 0.02,
+              "woman": 0.084,
+              "player": 0.102
+            },
+            "through": [],
+            "key": "chevette",
+            "seat": [
+              -0.79,
+              0.261,
+              0.464,
+              0.41,
+              0.88
+            ],
+            "gameSeat": [
+              -0.79,
+              0.261,
+              0.464,
+              0.41,
+              0.88
+            ],
+            "seatGap": 0.001
+          }
+        ],
+        "driveByArm": {
+          "gap": 0,
+          "window": null,
+          "relDeg": 0,
+          "type": null
+        }
+      },
+      "vehicleIdentity": {
+        "id": 265,
+        "type": "chevette",
+        "x": 418,
+        "y": 6000,
+        "a": 0,
+        "kmh": 0,
+        "ai": false,
+        "occupied": false,
+        "altitude": 0
+      },
+      "damage": {
+        "id": 265,
+        "type": "chevette",
+        "hp": 140,
+        "maxhp": 140,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 418,
+        "y": 6000,
+        "a": 0
+      },
+      "char": null
+    },
+    {
+      "name": "chevette-door-left",
+      "id": 265,
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6000,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "chevette",
+        "weapon": "9MM PISTOL",
+        "clock": "13:09",
+        "renderer": "3d",
+        "vehicles": 280,
+        "pedestrians": 595
+      },
+      "camera": {
+        "zoom": 11,
+        "target": 11,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 11,
+        "aim": 11,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          960,
+          600
+        ],
+        "viewMetres": 4.9,
+        "personPx": 137,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 4,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "model": {
+        "id": 265,
+        "type": "chevette",
+        "draws": 24,
+        "casters": 5,
+        "triangles": 11208,
+        "heaviest": [
+          [
+            "MeshStandardMaterial",
+            3936
+          ],
+          [
+            "MeshPhysicalMaterial",
+            1520
+          ],
+          [
+            "MeshPhysicalMaterial",
+            724
+          ],
+          [
+            "MeshStandardMaterial",
+            484
+          ],
+          [
+            "MeshStandardMaterial",
+            484
+          ],
+          [
+            "MeshStandardMaterial",
+            484
+          ]
+        ],
+        "asset": null,
+        "cabin": {
+          "hip": [
+            -0.79,
+            0.261,
+            -0.464
+          ],
+          "door": [
+            -0.399,
+            0.563
+          ],
+          "floor": 0.26,
+          "floorWorldY": 0.273,
+          "pedalHeight": 0.36,
+          "recline": 0.46,
+          "rear": false,
+          "two": true,
+          "cabinTriangles": 1640,
+          "seated": 1,
+          "headroom": 0.02,
+          "behind": 0.254
+        },
+        "panes": {
+          "left": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "front": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "right": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "rear": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "roof": {
+            "drawn": true,
+            "depthWrite": true
+          }
+        },
+        "badge": {
+          "text": "CHEVETTE",
+          "sub": "Z06",
+          "style": "wide",
+          "letters": 11
+        }
+      },
+      "doors": null,
+      "sportsAssets": null,
+      "headroom": {
+        "through": 0,
+        "cars": [
+          {
+            "type": "coupe",
+            "body": null,
+            "hip": [
+              -0.282,
+              0.362
+            ],
+            "recline": 0.4,
+            "fitMs": 27.9,
+            "clear": {
+              "man": 0.02,
+              "woman": 0.082,
+              "player": 0.103,
+              "avatar": "Female_Party_02",
+              "avatarRoom": 0.032
+            },
+            "roof": {
+              "man": 0.02,
+              "woman": 0.084,
+              "player": 0.103
+            },
+            "through": [],
+            "key": "coupe",
+            "seat": [
+              -0.282,
+              0.362,
+              0.414,
+              0.35,
+              0.882
+            ],
+            "gameSeat": [
+              -0.282,
+              0.362,
+              0.414,
+              0.35,
+              0.882
+            ],
+            "seatGap": 0
+          },
+          {
+            "type": "sedan",
+            "body": null,
+            "hip": [
+              -0.318,
+              0.275
+            ],
+            "recline": 0.3,
+            "fitMs": 25.3,
+            "clear": {
+              "man": 0.02,
+              "woman": 0.084,
+              "player": 0.103,
+              "avatar": "Male_Adult_04",
+              "avatarRoom": 0.037
+            },
+            "roof": {
+              "man": 0.02,
+              "woman": 0.084,
+              "player": 0.103
+            },
+            "through": [],
+            "key": "sedan",
+            "seat": [
+              -0.318,
+              0.275,
+              0.426,
+              0.25,
+              0.846
+            ],
+            "gameSeat": [
+              -0.318,
+              0.275,
+              0.426,
+              0.25,
+              0.846
+            ],
+            "seatGap": 0
+          },
+          {
+            "type": "suv",
+            "body": null,
+            "hip": [
+              -0.384,
+              0.454
+            ],
+            "recline": 0.3,
+            "fitMs": 0.3,
+            "clear": {
+              "man": 0.175,
+              "woman": 0.194,
+              "player": 0.209,
+              "avatar": "Female_Party_02",
+              "avatarRoom": 0.121
+            },
+            "roof": {
+              "man": 0.417,
+              "woman": 0.481,
+              "player": 0.5
+            },
+            "through": [],
+            "key": "s1_jimny",
+            "seat": [
+              -0.384,
+              0.454,
+              0.372,
+              0.25,
+              0.874
+            ],
+            "gameSeat": [
+              -0.384,
+              0.454,
+              0.372,
+              0.25,
+              0.874
+            ],
+            "seatGap": 0
+          },
+          {
+            "type": "van",
+            "body": null,
+            "hip": [
+              0.919,
+              0.68
+            ],
+            "recline": 0.3,
+            "fitMs": 0.7,
+            "clear": {
+              "man": 0.152,
+              "woman": 0.143,
+              "player": 0.186,
+              "avatar": "Female_Adult_01",
+              "avatarRoom": 0.093
+            },
+            "roof": {
+              "man": 0.152,
+              "woman": 0.143,
+              "player": 0.186
+            },
+            "through": [],
+            "key": "van",
+            "seat": [
+              0.919,
+              0.68,
+              0.46,
+              0.25,
+              1.1
+            ],
+            "gameSeat": [
+              0.919,
+              0.68,
+              0.46,
+              0.25,
+              1.1
+            ],
+            "seatGap": 0
+          },
+          {
+            "type": "supercar",
+            "body": null,
+            "hip": [
+              -0.268,
+              0.214
+            ],
+            "recline": 0.52,
+            "fitMs": 10.6,
+            "clear": {
+              "man": 0.02,
+              "woman": 0.083,
+              "player": 0.102,
+              "avatar": "Male_Adult_04",
+              "avatarRoom": 0.037
+            },
+            "roof": {
+              "man": 0.02,
+              "woman": 0.083,
+              "player": 0.102
+            },
+            "through": [],
+            "key": "supercar",
+            "seat": [
+              -0.268,
+              0.214,
+              0.46,
+              0.47,
+              0.83
+            ],
+            "gameSeat": [
+              -0.268,
+              0.214,
+              0.46,
+              0.47,
+              0.83
+            ],
+            "seatGap": 0
+          },
+          {
+            "type": "chevette",
+            "body": null,
+            "hip": [
+              -0.79,
+              0.261
+            ],
+            "recline": 0.46,
+            "fitMs": 4.1,
+            "clear": {
+              "man": 0.02,
+              "woman": 0.084,
+              "player": 0.102,
+              "avatar": "Male_Adult_04",
+              "avatarRoom": 0.039
+            },
+            "roof": {
+              "man": 0.02,
+              "woman": 0.084,
+              "player": 0.102
+            },
+            "through": [],
+            "key": "chevette",
+            "seat": [
+              -0.79,
+              0.261,
+              0.464,
+              0.41,
+              0.88
+            ],
+            "gameSeat": [
+              -0.79,
+              0.261,
+              0.464,
+              0.41,
+              0.88
+            ],
+            "seatGap": 0.001
+          }
+        ],
+        "driveByArm": {
+          "gap": 0,
+          "window": null,
+          "relDeg": 0,
+          "type": null
+        }
+      },
+      "vehicleIdentity": {
+        "id": 265,
+        "type": "chevette",
+        "x": 418,
+        "y": 6000,
+        "a": 0,
+        "kmh": 0,
+        "ai": false,
+        "occupied": false,
+        "altitude": 0
+      },
+      "damage": {
+        "id": 265,
+        "type": "chevette",
+        "hp": 140,
+        "maxhp": 140,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 418,
+        "y": 6000,
+        "a": 0
+      },
+      "char": null
+    },
+    {
+      "name": "chevette-player-exit",
+      "id": 265,
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 5973,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "13:10",
+        "renderer": "3d",
+        "vehicles": 280,
+        "pedestrians": 595
+      },
+      "camera": {
+        "zoom": 11,
+        "target": 11,
+        "context": 1,
+        "slowFraming": false,
+        "vehicleContext": null,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 11,
+        "aim": 11,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          960,
+          600
+        ],
+        "viewMetres": 4.9,
+        "personPx": 137,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 4,
+          "accel": {
+            "rms": 2.524,
+            "peak": 18.623
+          },
+          "jerk": {
+            "rms": 42.57,
+            "peak": 235.57
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0.519,
+            "swing": 0.519
+          }
+        }
+      },
+      "model": {
+        "id": 265,
+        "type": "chevette",
+        "draws": 24,
+        "casters": 5,
+        "triangles": 11208,
+        "heaviest": [
+          [
+            "MeshStandardMaterial",
+            3936
+          ],
+          [
+            "MeshPhysicalMaterial",
+            1520
+          ],
+          [
+            "MeshPhysicalMaterial",
+            724
+          ],
+          [
+            "MeshStandardMaterial",
+            484
+          ],
+          [
+            "MeshStandardMaterial",
+            484
+          ],
+          [
+            "MeshStandardMaterial",
+            484
+          ]
+        ],
+        "asset": null,
+        "cabin": {
+          "hip": [
+            -0.79,
+            0.261,
+            -0.464
+          ],
+          "door": [
+            -0.399,
+            0.563
+          ],
+          "floor": 0.26,
+          "floorWorldY": 0.273,
+          "pedalHeight": 0.36,
+          "recline": 0.46,
+          "rear": false,
+          "two": true,
+          "cabinTriangles": 1640,
+          "seated": 1,
+          "headroom": 0.02,
+          "behind": 0.254
+        },
+        "panes": {
+          "left": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "front": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "right": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "rear": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "roof": {
+            "drawn": true,
+            "depthWrite": true
+          }
+        },
+        "badge": {
+          "text": "CHEVETTE",
+          "sub": "Z06",
+          "style": "wide",
+          "letters": 11
+        }
+      },
+      "doors": null,
+      "sportsAssets": null,
+      "headroom": {
+        "through": 0,
+        "cars": [
+          {
+            "type": "coupe",
+            "body": null,
+            "hip": [
+              -0.282,
+              0.362
+            ],
+            "recline": 0.4,
+            "fitMs": 27.9,
+            "clear": {
+              "man": 0.02,
+              "woman": 0.082,
+              "player": 0.103,
+              "avatar": "Female_Party_02",
+              "avatarRoom": 0.032
+            },
+            "roof": {
+              "man": 0.02,
+              "woman": 0.084,
+              "player": 0.103
+            },
+            "through": [],
+            "key": "coupe",
+            "seat": [
+              -0.282,
+              0.362,
+              0.414,
+              0.35,
+              0.882
+            ],
+            "gameSeat": [
+              -0.282,
+              0.362,
+              0.414,
+              0.35,
+              0.882
+            ],
+            "seatGap": 0
+          },
+          {
+            "type": "sedan",
+            "body": null,
+            "hip": [
+              -0.318,
+              0.275
+            ],
+            "recline": 0.3,
+            "fitMs": 25.3,
+            "clear": {
+              "man": 0.02,
+              "woman": 0.084,
+              "player": 0.103,
+              "avatar": "Male_Adult_04",
+              "avatarRoom": 0.037
+            },
+            "roof": {
+              "man": 0.02,
+              "woman": 0.084,
+              "player": 0.103
+            },
+            "through": [],
+            "key": "sedan",
+            "seat": [
+              -0.318,
+              0.275,
+              0.426,
+              0.25,
+              0.846
+            ],
+            "gameSeat": [
+              -0.318,
+              0.275,
+              0.426,
+              0.25,
+              0.846
+            ],
+            "seatGap": 0
+          },
+          {
+            "type": "suv",
+            "body": null,
+            "hip": [
+              -0.384,
+              0.454
+            ],
+            "recline": 0.3,
+            "fitMs": 0.3,
+            "clear": {
+              "man": 0.175,
+              "woman": 0.194,
+              "player": 0.209,
+              "avatar": "Female_Party_02",
+              "avatarRoom": 0.121
+            },
+            "roof": {
+              "man": 0.417,
+              "woman": 0.481,
+              "player": 0.5
+            },
+            "through": [],
+            "key": "s1_jimny",
+            "seat": [
+              -0.384,
+              0.454,
+              0.372,
+              0.25,
+              0.874
+            ],
+            "gameSeat": [
+              -0.384,
+              0.454,
+              0.372,
+              0.25,
+              0.874
+            ],
+            "seatGap": 0
+          },
+          {
+            "type": "van",
+            "body": null,
+            "hip": [
+              0.919,
+              0.68
+            ],
+            "recline": 0.3,
+            "fitMs": 0.7,
+            "clear": {
+              "man": 0.152,
+              "woman": 0.143,
+              "player": 0.186,
+              "avatar": "Female_Adult_01",
+              "avatarRoom": 0.093
+            },
+            "roof": {
+              "man": 0.152,
+              "woman": 0.143,
+              "player": 0.186
+            },
+            "through": [],
+            "key": "van",
+            "seat": [
+              0.919,
+              0.68,
+              0.46,
+              0.25,
+              1.1
+            ],
+            "gameSeat": [
+              0.919,
+              0.68,
+              0.46,
+              0.25,
+              1.1
+            ],
+            "seatGap": 0
+          },
+          {
+            "type": "supercar",
+            "body": null,
+            "hip": [
+              -0.268,
+              0.214
+            ],
+            "recline": 0.52,
+            "fitMs": 10.6,
+            "clear": {
+              "man": 0.02,
+              "woman": 0.083,
+              "player": 0.102,
+              "avatar": "Male_Adult_04",
+              "avatarRoom": 0.037
+            },
+            "roof": {
+              "man": 0.02,
+              "woman": 0.083,
+              "player": 0.102
+            },
+            "through": [],
+            "key": "supercar",
+            "seat": [
+              -0.268,
+              0.214,
+              0.46,
+              0.47,
+              0.83
+            ],
+            "gameSeat": [
+              -0.268,
+              0.214,
+              0.46,
+              0.47,
+              0.83
+            ],
+            "seatGap": 0
+          },
+          {
+            "type": "chevette",
+            "body": null,
+            "hip": [
+              -0.79,
+              0.261
+            ],
+            "recline": 0.46,
+            "fitMs": 4.1,
+            "clear": {
+              "man": 0.02,
+              "woman": 0.084,
+              "player": 0.102,
+              "avatar": "Male_Adult_04",
+              "avatarRoom": 0.039
+            },
+            "roof": {
+              "man": 0.02,
+              "woman": 0.084,
+              "player": 0.102
+            },
+            "through": [],
+            "key": "chevette",
+            "seat": [
+              -0.79,
+              0.261,
+              0.464,
+              0.41,
+              0.88
+            ],
+            "gameSeat": [
+              -0.79,
+              0.261,
+              0.464,
+              0.41,
+              0.88
+            ],
+            "seatGap": 0.001
+          }
+        ],
+        "driveByArm": {
+          "gap": 0,
+          "window": null,
+          "relDeg": 0,
+          "type": null
+        }
+      },
+      "vehicleIdentity": {
+        "id": 265,
+        "type": "chevette",
+        "x": 418,
+        "y": 6000,
+        "a": 0,
+        "kmh": 0,
+        "ai": false,
+        "occupied": false,
+        "altitude": 0
+      },
+      "damage": {
+        "id": 265,
+        "type": "chevette",
+        "hp": 140,
+        "maxhp": 140,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 418,
+        "y": 6000,
+        "a": 0
+      },
+      "char": null
+    },
+    {
+      "name": "chevette-player-entry",
+      "id": 265,
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6000,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "chevette",
+        "weapon": "9MM PISTOL",
+        "clock": "13:12",
+        "renderer": "3d",
+        "vehicles": 280,
+        "pedestrians": 595
+      },
+      "camera": {
+        "zoom": 11,
+        "target": 11,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 11,
+        "aim": 11,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          960,
+          600
+        ],
+        "viewMetres": 4.9,
+        "personPx": 137,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 4,
+          "accel": {
+            "rms": 2.83,
+            "peak": 18.543
+          },
+          "jerk": {
+            "rms": 43.54,
+            "peak": 259.63
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0.538,
+            "swing": 1.071
+          }
+        }
+      },
+      "model": {
+        "id": 265,
+        "type": "chevette",
+        "draws": 24,
+        "casters": 5,
+        "triangles": 11208,
+        "heaviest": [
+          [
+            "MeshStandardMaterial",
+            3936
+          ],
+          [
+            "MeshPhysicalMaterial",
+            1520
+          ],
+          [
+            "MeshPhysicalMaterial",
+            724
+          ],
+          [
+            "MeshStandardMaterial",
+            484
+          ],
+          [
+            "MeshStandardMaterial",
+            484
+          ],
+          [
+            "MeshStandardMaterial",
+            484
+          ]
+        ],
+        "asset": null,
+        "cabin": {
+          "hip": [
+            -0.79,
+            0.261,
+            -0.464
+          ],
+          "door": [
+            -0.399,
+            0.563
+          ],
+          "floor": 0.26,
+          "floorWorldY": 0.273,
+          "pedalHeight": 0.36,
+          "recline": 0.46,
+          "rear": false,
+          "two": true,
+          "cabinTriangles": 1640,
+          "seated": 1,
+          "headroom": 0.02,
+          "behind": 0.254
+        },
+        "panes": {
+          "left": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "front": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "right": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "rear": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "roof": {
+            "drawn": true,
+            "depthWrite": true
+          }
+        },
+        "badge": {
+          "text": "CHEVETTE",
+          "sub": "Z06",
+          "style": "wide",
+          "letters": 11
+        }
+      },
+      "doors": null,
+      "sportsAssets": null,
+      "headroom": {
+        "through": 0,
+        "cars": [
+          {
+            "type": "coupe",
+            "body": null,
+            "hip": [
+              -0.282,
+              0.362
+            ],
+            "recline": 0.4,
+            "fitMs": 27.9,
+            "clear": {
+              "man": 0.02,
+              "woman": 0.082,
+              "player": 0.103,
+              "avatar": "Female_Party_02",
+              "avatarRoom": 0.032
+            },
+            "roof": {
+              "man": 0.02,
+              "woman": 0.084,
+              "player": 0.103
+            },
+            "through": [],
+            "key": "coupe",
+            "seat": [
+              -0.282,
+              0.362,
+              0.414,
+              0.35,
+              0.882
+            ],
+            "gameSeat": [
+              -0.282,
+              0.362,
+              0.414,
+              0.35,
+              0.882
+            ],
+            "seatGap": 0
+          },
+          {
+            "type": "sedan",
+            "body": null,
+            "hip": [
+              -0.318,
+              0.275
+            ],
+            "recline": 0.3,
+            "fitMs": 25.3,
+            "clear": {
+              "man": 0.02,
+              "woman": 0.084,
+              "player": 0.103,
+              "avatar": "Male_Adult_04",
+              "avatarRoom": 0.037
+            },
+            "roof": {
+              "man": 0.02,
+              "woman": 0.084,
+              "player": 0.103
+            },
+            "through": [],
+            "key": "sedan",
+            "seat": [
+              -0.318,
+              0.275,
+              0.426,
+              0.25,
+              0.846
+            ],
+            "gameSeat": [
+              -0.318,
+              0.275,
+              0.426,
+              0.25,
+              0.846
+            ],
+            "seatGap": 0
+          },
+          {
+            "type": "suv",
+            "body": null,
+            "hip": [
+              -0.384,
+              0.454
+            ],
+            "recline": 0.3,
+            "fitMs": 0.3,
+            "clear": {
+              "man": 0.175,
+              "woman": 0.194,
+              "player": 0.209,
+              "avatar": "Female_Party_02",
+              "avatarRoom": 0.121
+            },
+            "roof": {
+              "man": 0.417,
+              "woman": 0.481,
+              "player": 0.5
+            },
+            "through": [],
+            "key": "s1_jimny",
+            "seat": [
+              -0.384,
+              0.454,
+              0.372,
+              0.25,
+              0.874
+            ],
+            "gameSeat": [
+              -0.384,
+              0.454,
+              0.372,
+              0.25,
+              0.874
+            ],
+            "seatGap": 0
+          },
+          {
+            "type": "van",
+            "body": null,
+            "hip": [
+              0.919,
+              0.68
+            ],
+            "recline": 0.3,
+            "fitMs": 0.7,
+            "clear": {
+              "man": 0.152,
+              "woman": 0.143,
+              "player": 0.186,
+              "avatar": "Female_Adult_01",
+              "avatarRoom": 0.093
+            },
+            "roof": {
+              "man": 0.152,
+              "woman": 0.143,
+              "player": 0.186
+            },
+            "through": [],
+            "key": "van",
+            "seat": [
+              0.919,
+              0.68,
+              0.46,
+              0.25,
+              1.1
+            ],
+            "gameSeat": [
+              0.919,
+              0.68,
+              0.46,
+              0.25,
+              1.1
+            ],
+            "seatGap": 0
+          },
+          {
+            "type": "supercar",
+            "body": null,
+            "hip": [
+              -0.268,
+              0.214
+            ],
+            "recline": 0.52,
+            "fitMs": 10.6,
+            "clear": {
+              "man": 0.02,
+              "woman": 0.083,
+              "player": 0.102,
+              "avatar": "Male_Adult_04",
+              "avatarRoom": 0.037
+            },
+            "roof": {
+              "man": 0.02,
+              "woman": 0.083,
+              "player": 0.102
+            },
+            "through": [],
+            "key": "supercar",
+            "seat": [
+              -0.268,
+              0.214,
+              0.46,
+              0.47,
+              0.83
+            ],
+            "gameSeat": [
+              -0.268,
+              0.214,
+              0.46,
+              0.47,
+              0.83
+            ],
+            "seatGap": 0
+          },
+          {
+            "type": "chevette",
+            "body": null,
+            "hip": [
+              -0.79,
+              0.261
+            ],
+            "recline": 0.46,
+            "fitMs": 4.1,
+            "clear": {
+              "man": 0.02,
+              "woman": 0.084,
+              "player": 0.102,
+              "avatar": "Male_Adult_04",
+              "avatarRoom": 0.039
+            },
+            "roof": {
+              "man": 0.02,
+              "woman": 0.084,
+              "player": 0.102
+            },
+            "through": [],
+            "key": "chevette",
+            "seat": [
+              -0.79,
+              0.261,
+              0.464,
+              0.41,
+              0.88
+            ],
+            "gameSeat": [
+              -0.79,
+              0.261,
+              0.464,
+              0.41,
+              0.88
+            ],
+            "seatGap": 0.001
+          }
+        ],
+        "driveByArm": {
+          "gap": 0,
+          "window": null,
+          "relDeg": 0,
+          "type": null
+        }
+      },
+      "vehicleIdentity": {
+        "id": 265,
+        "type": "chevette",
+        "x": 418,
+        "y": 6000,
+        "a": 0,
+        "kmh": 0,
+        "ai": false,
+        "occupied": false,
+        "altitude": 0
+      },
+      "damage": {
+        "id": 265,
+        "type": "chevette",
+        "hp": 140,
+        "maxhp": 140,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 418,
+        "y": 6000,
+        "a": 0
+      },
+      "char": null
+    },
+    {
+      "name": "jimny-door-left",
+      "id": 282,
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6000,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "suv",
+        "weapon": "9MM PISTOL",
+        "clock": "13:23",
+        "renderer": "3d",
+        "vehicles": 282,
+        "pedestrians": 595
+      },
+      "camera": {
+        "zoom": 11,
+        "target": 11,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 11,
+        "aim": 11,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          960,
+          600
+        ],
+        "viewMetres": 4.9,
+        "personPx": 137,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 4,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "model": {
+        "id": 282,
+        "type": "suv",
+        "draws": 20,
+        "casters": 5,
+        "triangles": 65024,
+        "heaviest": [
+          [
+            "MeshStandardMaterial",
+            38738
+          ],
+          [
+            "MeshStandardMaterial",
+            5329
+          ],
+          [
+            "MeshPhysicalMaterial",
+            3689
+          ],
+          [
+            "MeshStandardMaterial",
+            2889
+          ],
+          [
+            "MeshStandardMaterial",
+            2056
+          ],
+          [
+            "MeshStandardMaterial",
+            2055
+          ]
+        ],
+        "asset": "Suzuki Jimny 2023",
+        "cabin": {
+          "hip": [
+            -0.384,
+            0.454,
+            -0.372
+          ],
+          "door": [
+            -0.484,
+            0.766
+          ],
+          "floor": 0.254,
+          "floorWorldY": 0.266,
+          "pedalHeight": 0.354,
+          "recline": 0.3,
+          "rear": true,
+          "two": false,
+          "cabinTriangles": 13838,
+          "seated": 0,
+          "headroom": 0.175,
+          "behind": 0.794
+        },
+        "panes": {
+          "left": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "front": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "right": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "rear": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "roof": {
+            "drawn": true,
+            "depthWrite": true
+          }
+        },
+        "badge": null
+      },
+      "doors": null,
+      "sportsAssets": null,
+      "headroom": {
+        "through": 0,
+        "cars": [
+          {
+            "type": "coupe",
+            "body": null,
+            "hip": [
+              -0.282,
+              0.362
+            ],
+            "recline": 0.4,
+            "fitMs": 27.9,
+            "clear": {
+              "man": 0.02,
+              "woman": 0.082,
+              "player": 0.103,
+              "avatar": "Female_Party_02",
+              "avatarRoom": 0.032
+            },
+            "roof": {
+              "man": 0.02,
+              "woman": 0.084,
+              "player": 0.103
+            },
+            "through": [],
+            "key": "coupe",
+            "seat": [
+              -0.282,
+              0.362,
+              0.414,
+              0.35,
+              0.882
+            ],
+            "gameSeat": [
+              -0.282,
+              0.362,
+              0.414,
+              0.35,
+              0.882
+            ],
+            "seatGap": 0
+          },
+          {
+            "type": "sedan",
+            "body": null,
+            "hip": [
+              -0.318,
+              0.275
+            ],
+            "recline": 0.3,
+            "fitMs": 25.3,
+            "clear": {
+              "man": 0.02,
+              "woman": 0.084,
+              "player": 0.103,
+              "avatar": "Male_Adult_04",
+              "avatarRoom": 0.037
+            },
+            "roof": {
+              "man": 0.02,
+              "woman": 0.084,
+              "player": 0.103
+            },
+            "through": [],
+            "key": "sedan",
+            "seat": [
+              -0.318,
+              0.275,
+              0.426,
+              0.25,
+              0.846
+            ],
+            "gameSeat": [
+              -0.318,
+              0.275,
+              0.426,
+              0.25,
+              0.846
+            ],
+            "seatGap": 0
+          },
+          {
+            "type": "suv",
+            "body": null,
+            "hip": [
+              -0.384,
+              0.454
+            ],
+            "recline": 0.3,
+            "fitMs": 0.3,
+            "clear": {
+              "man": 0.175,
+              "woman": 0.194,
+              "player": 0.209,
+              "avatar": "Female_Party_02",
+              "avatarRoom": 0.121
+            },
+            "roof": {
+              "man": 0.417,
+              "woman": 0.481,
+              "player": 0.5
+            },
+            "through": [],
+            "key": "s1_jimny",
+            "seat": [
+              -0.384,
+              0.454,
+              0.372,
+              0.25,
+              0.874
+            ],
+            "gameSeat": [
+              -0.384,
+              0.454,
+              0.372,
+              0.25,
+              0.874
+            ],
+            "seatGap": 0
+          },
+          {
+            "type": "van",
+            "body": null,
+            "hip": [
+              0.919,
+              0.68
+            ],
+            "recline": 0.3,
+            "fitMs": 0.7,
+            "clear": {
+              "man": 0.152,
+              "woman": 0.143,
+              "player": 0.186,
+              "avatar": "Female_Adult_01",
+              "avatarRoom": 0.093
+            },
+            "roof": {
+              "man": 0.152,
+              "woman": 0.143,
+              "player": 0.186
+            },
+            "through": [],
+            "key": "van",
+            "seat": [
+              0.919,
+              0.68,
+              0.46,
+              0.25,
+              1.1
+            ],
+            "gameSeat": [
+              0.919,
+              0.68,
+              0.46,
+              0.25,
+              1.1
+            ],
+            "seatGap": 0
+          },
+          {
+            "type": "supercar",
+            "body": null,
+            "hip": [
+              -0.268,
+              0.214
+            ],
+            "recline": 0.52,
+            "fitMs": 10.6,
+            "clear": {
+              "man": 0.02,
+              "woman": 0.083,
+              "player": 0.102,
+              "avatar": "Male_Adult_04",
+              "avatarRoom": 0.037
+            },
+            "roof": {
+              "man": 0.02,
+              "woman": 0.083,
+              "player": 0.102
+            },
+            "through": [],
+            "key": "supercar",
+            "seat": [
+              -0.268,
+              0.214,
+              0.46,
+              0.47,
+              0.83
+            ],
+            "gameSeat": [
+              -0.268,
+              0.214,
+              0.46,
+              0.47,
+              0.83
+            ],
+            "seatGap": 0
+          },
+          {
+            "type": "chevette",
+            "body": null,
+            "hip": [
+              -0.79,
+              0.261
+            ],
+            "recline": 0.46,
+            "fitMs": 4.1,
+            "clear": {
+              "man": 0.02,
+              "woman": 0.084,
+              "player": 0.102,
+              "avatar": "Male_Adult_04",
+              "avatarRoom": 0.039
+            },
+            "roof": {
+              "man": 0.02,
+              "woman": 0.084,
+              "player": 0.102
+            },
+            "through": [],
+            "key": "chevette",
+            "seat": [
+              -0.79,
+              0.261,
+              0.464,
+              0.41,
+              0.88
+            ],
+            "gameSeat": [
+              -0.79,
+              0.261,
+              0.464,
+              0.41,
+              0.88
+            ],
+            "seatGap": 0.001
+          }
+        ],
+        "driveByArm": {
+          "gap": 0,
+          "window": null,
+          "relDeg": 0,
+          "type": null
+        }
+      },
+      "vehicleIdentity": {
+        "id": 282,
+        "type": "suv",
+        "x": 418,
+        "y": 6000,
+        "a": 0,
+        "kmh": 0,
+        "ai": false,
+        "occupied": false,
+        "altitude": 0
+      },
+      "damage": {
+        "id": 282,
+        "type": "suv",
+        "hp": 250,
+        "maxhp": 250,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 418,
+        "y": 6000,
+        "a": 0
+      },
+      "char": null
+    },
+    {
+      "name": "sedan-door-left",
+      "id": 283,
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6000,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "sedan",
+        "weapon": "9MM PISTOL",
+        "clock": "13:33",
+        "renderer": "3d",
+        "vehicles": 283,
+        "pedestrians": 595
+      },
+      "camera": {
+        "zoom": 11,
+        "target": 11,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 11,
+        "aim": 11,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          960,
+          600
+        ],
+        "viewMetres": 4.9,
+        "personPx": 137,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 4,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "model": {
+        "id": 283,
+        "type": "sedan",
+        "draws": 21,
+        "casters": 4,
+        "triangles": 10325,
+        "heaviest": [
+          [
+            "MeshStandardMaterial",
+            4807
+          ],
+          [
+            "MeshPhysicalMaterial",
+            1880
+          ],
+          [
+            "MeshStandardMaterial",
+            531
+          ],
+          [
+            "MeshStandardMaterial",
+            531
+          ],
+          [
+            "MeshStandardMaterial",
+            527
+          ],
+          [
+            "MeshStandardMaterial",
+            527
+          ]
+        ],
+        "asset": "Fairheaven LT '80",
+        "cabin": {
+          "hip": [
+            -0.318,
+            0.275,
+            -0.426
+          ],
+          "door": [
+            -0.418,
+            0.798
+          ],
+          "floor": 0.226,
+          "floorWorldY": 0.239,
+          "pedalHeight": 0.326,
+          "recline": 0.3,
+          "rear": true,
+          "two": false,
+          "cabinTriangles": 2134,
+          "seated": 0,
+          "headroom": 0.02,
+          "behind": 0.549
+        },
+        "panes": {
+          "left": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "front": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "right": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "rear": {
+            "drawn": true,
+            "depthWrite": true
+          },
+          "roof": {
+            "drawn": true,
+            "depthWrite": true
+          }
+        },
+        "badge": null
+      },
+      "doors": null,
+      "sportsAssets": null,
+      "headroom": {
+        "through": 0,
+        "cars": [
+          {
+            "type": "coupe",
+            "body": null,
+            "hip": [
+              -0.282,
+              0.362
+            ],
+            "recline": 0.4,
+            "fitMs": 27.9,
+            "clear": {
+              "man": 0.02,
+              "woman": 0.082,
+              "player": 0.103,
+              "avatar": "Female_Party_02",
+              "avatarRoom": 0.032
+            },
+            "roof": {
+              "man": 0.02,
+              "woman": 0.084,
+              "player": 0.103
+            },
+            "through": [],
+            "key": "coupe",
+            "seat": [
+              -0.282,
+              0.362,
+              0.414,
+              0.35,
+              0.882
+            ],
+            "gameSeat": [
+              -0.282,
+              0.362,
+              0.414,
+              0.35,
+              0.882
+            ],
+            "seatGap": 0
+          },
+          {
+            "type": "sedan",
+            "body": null,
+            "hip": [
+              -0.318,
+              0.275
+            ],
+            "recline": 0.3,
+            "fitMs": 25.3,
+            "clear": {
+              "man": 0.02,
+              "woman": 0.084,
+              "player": 0.103,
+              "avatar": "Male_Adult_04",
+              "avatarRoom": 0.037
+            },
+            "roof": {
+              "man": 0.02,
+              "woman": 0.084,
+              "player": 0.103
+            },
+            "through": [],
+            "key": "sedan",
+            "seat": [
+              -0.318,
+              0.275,
+              0.426,
+              0.25,
+              0.846
+            ],
+            "gameSeat": [
+              -0.318,
+              0.275,
+              0.426,
+              0.25,
+              0.846
+            ],
+            "seatGap": 0
+          },
+          {
+            "type": "suv",
+            "body": null,
+            "hip": [
+              -0.384,
+              0.454
+            ],
+            "recline": 0.3,
+            "fitMs": 0.3,
+            "clear": {
+              "man": 0.175,
+              "woman": 0.194,
+              "player": 0.209,
+              "avatar": "Female_Party_02",
+              "avatarRoom": 0.121
+            },
+            "roof": {
+              "man": 0.417,
+              "woman": 0.481,
+              "player": 0.5
+            },
+            "through": [],
+            "key": "s1_jimny",
+            "seat": [
+              -0.384,
+              0.454,
+              0.372,
+              0.25,
+              0.874
+            ],
+            "gameSeat": [
+              -0.384,
+              0.454,
+              0.372,
+              0.25,
+              0.874
+            ],
+            "seatGap": 0
+          },
+          {
+            "type": "van",
+            "body": null,
+            "hip": [
+              0.919,
+              0.68
+            ],
+            "recline": 0.3,
+            "fitMs": 0.7,
+            "clear": {
+              "man": 0.152,
+              "woman": 0.143,
+              "player": 0.186,
+              "avatar": "Female_Adult_01",
+              "avatarRoom": 0.093
+            },
+            "roof": {
+              "man": 0.152,
+              "woman": 0.143,
+              "player": 0.186
+            },
+            "through": [],
+            "key": "van",
+            "seat": [
+              0.919,
+              0.68,
+              0.46,
+              0.25,
+              1.1
+            ],
+            "gameSeat": [
+              0.919,
+              0.68,
+              0.46,
+              0.25,
+              1.1
+            ],
+            "seatGap": 0
+          },
+          {
+            "type": "supercar",
+            "body": null,
+            "hip": [
+              -0.268,
+              0.214
+            ],
+            "recline": 0.52,
+            "fitMs": 10.6,
+            "clear": {
+              "man": 0.02,
+              "woman": 0.083,
+              "player": 0.102,
+              "avatar": "Male_Adult_04",
+              "avatarRoom": 0.037
+            },
+            "roof": {
+              "man": 0.02,
+              "woman": 0.083,
+              "player": 0.102
+            },
+            "through": [],
+            "key": "supercar",
+            "seat": [
+              -0.268,
+              0.214,
+              0.46,
+              0.47,
+              0.83
+            ],
+            "gameSeat": [
+              -0.268,
+              0.214,
+              0.46,
+              0.47,
+              0.83
+            ],
+            "seatGap": 0
+          },
+          {
+            "type": "chevette",
+            "body": null,
+            "hip": [
+              -0.79,
+              0.261
+            ],
+            "recline": 0.46,
+            "fitMs": 4.1,
+            "clear": {
+              "man": 0.02,
+              "woman": 0.084,
+              "player": 0.102,
+              "avatar": "Male_Adult_04",
+              "avatarRoom": 0.039
+            },
+            "roof": {
+              "man": 0.02,
+              "woman": 0.084,
+              "player": 0.102
+            },
+            "through": [],
+            "key": "chevette",
+            "seat": [
+              -0.79,
+              0.261,
+              0.464,
+              0.41,
+              0.88
+            ],
+            "gameSeat": [
+              -0.79,
+              0.261,
+              0.464,
+              0.41,
+              0.88
+            ],
+            "seatGap": 0.001
+          }
+        ],
+        "driveByArm": {
+          "gap": 0,
+          "window": null,
+          "relDeg": 0,
+          "type": null
+        }
+      },
+      "vehicleIdentity": {
+        "id": 283,
+        "type": "sedan",
+        "x": 418,
+        "y": 6000,
+        "a": 0,
+        "kmh": 0,
+        "ai": false,
+        "occupied": false,
+        "altitude": 0
+      },
+      "damage": {
+        "id": 283,
+        "type": "sedan",
+        "hp": 150,
+        "maxhp": 150,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 418,
+        "y": 6000,
+        "a": 0
+      },
+      "char": null
+    }
+  ],
+  "errors": [],
+  "passengerBefore": "Original named doorSwing has no side selector; no unsupported right-door before image is fabricated.",
+  "profile": {
+    "total": 117,
+    "byLayer": {
+      "detail": 1,
+      "farDetail": 0,
+      "other": 116
+    },
+    "byName": [
+      [
+        "Mesh BoxGeometry MeshStandardMaterial",
+        22
+      ],
+      [
+        "vehicle in vehicle",
+        17
+      ],
+      [
+        "Mesh CylinderGeometry MeshStandardMaterial",
+        7
+      ]
+    ],
+    "byCell": [
+      [
+        "0,0",
+        95
+      ],
+      [
+        "0,5632",
+        20
+      ],
+      [
+        "0,512",
+        1
+      ]
+    ],
+    "triangles": 1153007,
+    "byTriangles": [
+      [
+        "Crowd heads",
+        413280
+      ],
+      [
+        "Mesh BoxGeometry MeshStandardMaterial",
+        114576
+      ],
+      [
+        "Mesh SphereGeometry MeshStandardMaterial",
+        98616
+      ]
+    ],
+    "instanced": [
+      [
+        "Crowd heads",
+        2460,
+        168,
+        true,
+        false
+      ],
+      [
+        "Mesh SphereGeometry MeshBasicMaterial",
+        534,
+        168,
+        false,
+        false
+      ],
+      [
+        "Stadium crowd (2460 seats) in Stadium crowd (2460 seats)",
+        4920,
+        12,
+        true,
+        false
+      ]
+    ],
+    "programs": [
+      [
+        "physical",
+        103
+      ],
+      [
+        "basic",
+        18
+      ],
+      [
+        "depth",
+        16
+      ]
+    ]
+  },
+  "frameFaults": {
+    "count": 0,
+    "gameTime": 35.23,
+    "drill": null,
+    "kinds": []
+  },
+  "gpu": {
+    "watched": true,
+    "lost": false,
+    "losses": 0,
+    "restores": 0,
+    "reloadPending": false,
+    "lostSeconds": 0
+  }
+}

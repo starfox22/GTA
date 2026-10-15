@@ -1,0 +1,104 @@
+{
+  "baselinePackSha256": "9fc2408fd1f8b7b2649a4e69d6868854c22987856ef6868e0f8d0c3b51d28512",
+  "correctedPackSha256": "a459f926e4e832a60ce2bf61b969f38a319881e93af0cf6a535a88b0bd80d094",
+  "bodySurfaces": [
+    {
+      "model": "s1_jimny",
+      "part": "shell",
+      "sampledVertices": 120,
+      "newMaxAngularErrorDegrees": 0.014205787801918394,
+      "oldMissingSourceVertices": 115,
+      "oldMaxRetainedAngularErrorDegrees": 8.371691915780834
+    },
+    {
+      "model": "s1_jimny",
+      "part": "panels",
+      "sampledVertices": 120,
+      "newMaxAngularErrorDegrees": 0.01492234353853944,
+      "oldMissingSourceVertices": 116,
+      "oldMaxRetainedAngularErrorDegrees": 0.7714510279845377
+    },
+    {
+      "model": "s1_jimny",
+      "part": "hood",
+      "sampledVertices": 120,
+      "newMaxAngularErrorDegrees": 0.01577597075876855,
+      "oldMissingSourceVertices": 113,
+      "oldMaxRetainedAngularErrorDegrees": 27.157904830515083
+    },
+    {
+      "model": "s2_suv",
+      "part": "shell",
+      "sampledVertices": 120,
+      "newMaxAngularErrorDegrees": 0.01449891126992065,
+      "oldMissingSourceVertices": 0,
+      "oldMaxRetainedAngularErrorDegrees": 109.92748422484702
+    },
+    {
+      "model": "s2_suv",
+      "part": "panels",
+      "sampledVertices": 120,
+      "newMaxAngularErrorDegrees": 0.015954274780120112,
+      "oldMissingSourceVertices": 0,
+      "oldMaxRetainedAngularErrorDegrees": 133.6261572304827
+    },
+    {
+      "model": "s2_suv",
+      "part": "hood",
+      "sampledVertices": 37,
+      "newMaxAngularErrorDegrees": 0.0153453134725596,
+      "oldMissingSourceVertices": 0,
+      "oldMaxRetainedAngularErrorDegrees": 98.42885337643892
+    },
+    {
+      "model": "s3_offroad",
+      "part": "shell",
+      "sampledVertices": 120,
+      "newMaxAngularErrorDegrees": 0.014492170394984728,
+      "oldMissingSourceVertices": 0,
+      "oldMaxRetainedAngularErrorDegrees": 109.90331689804523
+    },
+    {
+      "model": "s3_offroad",
+      "part": "panels",
+      "sampledVertices": 120,
+      "newMaxAngularErrorDegrees": 0.013945163444501111,
+      "oldMissingSourceVertices": 0,
+      "oldMaxRetainedAngularErrorDegrees": 115.11343618539291
+    },
+    {
+      "model": "s3_offroad",
+      "part": "hood",
+      "sampledVertices": 120,
+      "newMaxAngularErrorDegrees": 0.014772949603707498,
+      "oldMissingSourceVertices": 0,
+      "oldMaxRetainedAngularErrorDegrees": 89.60042993797461
+    }
+  ],
+  "normalStorage": "signed16bitfornearSUVs;legacyandmotorcyclesunchanged",
+  "nativeUvsAndAllFourAtlasesByteIdentical": true,
+  "motorcycleArraysByteIdentical": 302,
+  "triangles": {
+    "m1_enduro": {
+      "near": 12350,
+      "far": 2707
+    },
+    "m2_sport": {
+      "near": 50795,
+      "far": 12820
+    },
+    "s1_jimny": {
+      "near": 122277,
+      "far": 10043
+    },
+    "s2_suv": {
+      "near": 7951,
+      "far": 4354
+    },
+    "s3_offroad": {
+      "near": 6502,
+      "far": 3563
+    }
+  },
+  "qualification": "Exploratory nearest-position source normal sampling. Old maximum angles can be ambiguous at coincident seam vertices with different authored normals. The accepted independent source fixture gate searches all matching-position normals; see source-fidelity-host.json and vehicle-source-fidelity.mjs. Corrected hero paint arrays remain identical in the final zero-normal-repair pack, as proved separately."
+}

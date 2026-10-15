@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "checks": 30,
+  "notes": [
+    "actual roof/sky/records completion functions: hidden and blurred live frames freeze; focused return and explicit stepping finish"
+  ],
+  "sourceHashes": {
+    "src/game-loop.js": "e44df68407e53921844eee606dac0586c8c703c807dd587072fa38d346e49e5f",
+    "src/story.js": "d9218fc6a59734248d904f5cf55b7b717dd3990e1eae44c233ffaa5730eccf57",
+    "src/skyline-lift.js": "59f1c293b51b26a6bde9e2d61c8d03735097118c76c0be66811c7b162749ff8d",
+    "src/fort-cover-records.js": "bc626a88aac658b9563f5065775ce39d38f002d396e8eec499a5b02ea949c4ac"
+  },
+  "testSha256": "716db94c94c64f5ff5955d29e2c314dbb190428e41ce17eee61722b985a8b3c4"
+}

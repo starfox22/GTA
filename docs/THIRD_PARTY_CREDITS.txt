@@ -970,3 +970,26 @@ quantized and triangles reduced with material/UV boundaries retained; 2048px atl
 for Low/Medium while High/Ultra use 4096px atlases. Original creator pages were blocked in this
 environment; attribution/license evidence is the asset-specific records identified above.
 No unrelated non-commercial assets from these repositories are included.
+
+
+CHEVETTE Z06 replacement — 2019 Chevrolet Corvette C8 Stingray
+Author: Hari (Hari31), https://sketchfab.com/Hari31
+Source: https://sketchfab.com/3d-models/2019-chevrolet-corvette-c8-stingray-790c40ccff6843eab0b7b4bd18421ff8
+License: Creative Commons Attribution 4.0 International (CC BY 4.0)
+https://creativecommons.org/licenses/by/4.0/
+Pinned download mirror: zymantas-dev/corvette-c8-threejs-exp, commit
+1811c2f116145a409131839be5b2411e4f4f92de,
+static/models/2019_chevrolet_corvette_c8_stingray/.
+Embedded glTF extras and the model-specific license.txt identify Hari, the original
+model URL and CC BY 4.0; that licence permits commercial use with attribution. The
+original Sketchfab page could not be retrieved in this environment. Evidence, exact
+27 input file hashes and URLs: tools/sports_vehicle_source.json. No unrelated assets
+from the mirror are included.
+Changes: rigid axis normalization and uniform 4.69m length fit; source face partition
+into damage/pane/native-door/wheel/caliper roles; conservative close/far reduction
+with authored normals restored; quantization; lossless shared albedo/ORM/emissive
+atlases, with 2048px Low/Medium derivatives of the 4096px High/Ultra atlases. Source
+UV repetition, transparency, cabin, emission and real door/wheel pivots retained;
+paint is neutralized for game resprays. Five collapsed trim zero normals recover
+from nearby same-material authored vertices, recorded in the conversion receipt.
+Base Chevette Z06 only; the separate carbon-aero Chevette SE remains unchanged.

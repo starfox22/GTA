@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-15",
+  "purpose": "Read-only metadata audit of the same HMMWV already imported; no replacement/import",
+  "repo": "jstxw/CyberSea",
+  "commit": "54322bd29eb43082ba49dbd4e96554c69fdb0651",
+  "path": "main/public/models/hmmwv_m998a1_soft_top",
+  "files": [
+    {
+      "path": "scene.gltf",
+      "url": "https://raw.githubusercontent.com/jstxw/CyberSea/54322bd29eb43082ba49dbd4e96554c69fdb0651/main/public/models/hmmwv_m998a1_soft_top/scene.gltf",
+      "bytes": 42756,
+      "sha256": "55e96b72d34f607053d2157609b74a6fcd98f925388390b7ec9f297a5fd5cdbc"
+    },
+    {
+      "path": "license.txt",
+      "url": "https://raw.githubusercontent.com/jstxw/CyberSea/54322bd29eb43082ba49dbd4e96554c69fdb0651/main/public/models/hmmwv_m998a1_soft_top/license.txt",
+      "bytes": 708,
+      "sha256": "80a892d79740c21a69e1a7799fc5967e409ef3842c1202e2777d696cac1ca54b"
+    }
+  ],
+  "currentPackSha256": "63908560d08068f6b6df9859b9bb6040ad38028c2a0d9a0268f7d9cd4c2649ae",
+  "sourceGeometryBinNotDownloaded": true
+}

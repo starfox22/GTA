@@ -1,0 +1,48 @@
+{
+  "status": "PASS",
+  "cases": [
+    {
+      "name": "modal-pointer-lifecycle",
+      "checks": 56,
+      "notes": [
+        "13 production modal transitions release both buttons; rejected entries preserve input and campaign state"
+      ],
+      "status": "PASS"
+    },
+    {
+      "name": "mouse-buttons",
+      "checks": 26,
+      "notes": [
+        "real input listeners: independent left/right/middle release; blur and hidden tab in play/help; pause/help/map clear both buttons"
+      ],
+      "status": "PASS"
+    },
+    {
+      "name": "mission-modal-input",
+      "checks": 8,
+      "notes": [],
+      "status": "PASS"
+    },
+    {
+      "name": "campaign-retry-save-host",
+      "checks": 33,
+      "notes": [
+        "demo 1–4 and replay retry persistence; locked/invalid/legacy saves; completion/new-game clearing; inventory/reward unchanged"
+      ],
+      "status": "PASS"
+    }
+  ],
+  "checks": 123,
+  "testSha256": "bbb7689c1dce4362eb7431ec8f3338c34ee913f1b16704497c3693ff2cec17ca",
+  "sourceHashes": {
+    "src/arsenal.js": "f66253d63b336a03318ce94121fe3e27c13afcf79f6d209ad57e7cee190ba89c",
+    "src/campaign.js": "345e01b002e2e0d5a9cea0f38dffa6665108bddf7fa8e81d6999729b0f242654",
+    "src/story.js": "d9218fc6a59734248d904f5cf55b7b717dd3990e1eae44c233ffaa5730eccf57",
+    "src/settings.js": "29c48c02db3318b8ae18f5c90f82b522e3fa7f4bf003cd5d3c6e0b496b8c2d18",
+    "src/citylife-places.js": "a329e332200bf6cf35fdf4f9337c40a2f68d96d0c7aa1af685360fd9e94e5086",
+    "src/transit-network.js": "2d51093a097738023d9d2145d7c91006b29c42f814068d650bfa4121c9076325",
+    "src/taxi.js": "19a607bbf95fb0ba8b65c2c201177ecbabfac6e2048ba8a52a6378c2fea102a6",
+    "src/sportsbook-ui.js": "cce40c04187fd610c7628e6791d8d7a084b2e0b03cc122515ffd50d3bd987a89",
+    "src/dealership-lot.js": "62efd0002536b0bd2e2faea8dbbf19ed8538aca51c36ad4df94e1a04d7175846"
+  }
+}

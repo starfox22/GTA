@@ -701,7 +701,15 @@ def geometry_parts(results, work):
                     # while removing invisible subdivisions, without clustering.
                     delicate = name in ('glass', 'opticalGlass', 'head', 'tail') or name.startswith(('head', 'tail'))
                     chosen_ratio = (.30 if key in ('m2_sport', 's1_jimny') else 1.) if delicate and not suffix else ratio
-                    manifest[ident] = {'ratio': chosen_ratio}
+                    if key == 's1_jimny' and not suffix:
+                        # Keep the authored body creases and broad painted surfaces
+                        # exact up close; small exterior fittings may still reduce.
+                        if name in ('shell', 'panels', 'hood'):
+                            chosen_ratio = 1.
+                        elif name == 'trim':
+                            chosen_ratio = .23
+                    manifest[ident] = {'ratio': chosen_ratio,
+                                       'preserveSourceNormals': key.startswith('s')}
                     lookup[ident] = [key, name + suffix, pane]
             r['meta']['lodParts'][name] = name + 'Far'
     np.savez(work / 'parts-input.npz', **arrays)
@@ -722,6 +730,7 @@ def write_pack(results, work, output, rects, entries, lookup):
         extent = np.maximum(hi - lo, 1e-5)
         meta['quant'] = lo.tolist() + extent.tolist()
         meta['parts'] = {}
+        normal_repairs = []
         combined = {}
         for ident, (model, part, pane) in lookup.items():
             if model != key:
@@ -748,7 +757,26 @@ def write_pack(results, work, output, rects, entries, lookup):
                     if token not in vertex_map:
                         vertex_map[token] = len(group['points'])
                         group['points'].append(p[vi])
-                        group['normals'].append(n[vi])
+                        normal = n[vi]
+                        if key.startswith('s') and np.linalg.norm(normal) < 1e-8:
+                            # Collapsed decorative/cabin points can have a zero
+                            # Blender corner normal. Recover authored shading
+                            # from the same material; keep all source geometry.
+                            choices = []
+                            for source in r['prims']:
+                                if source['material'] != mi:
+                                    continue
+                                distances = np.linalg.norm(source['P'] - p[vi], axis=1)
+                                distances[np.linalg.norm(source['N'], axis=1) < .5] = np.inf
+                                nearest = int(np.argmin(distances))
+                                choices.append((distances[nearest], source, nearest))
+                            distance, source, nearest = min(choices, key=lambda row: row[0])
+                            if distance > .1:
+                                raise RuntimeError(key + ': no nearby authored normal for ' + part)
+                            normal = source['N'][nearest]
+                            normal_repairs.append(dict(part=part, material=mi, distance=float(distance),
+                                                       sourceVertex=nearest, position=p[vi].tolist()))
+                        group['normals'].append(normal)
                         raw_u, raw_v = uv[vi]
                         u, v = np.mod([raw_u, raw_v], 1)
                         group['uv'].append([(x + u * w) / ATLAS, (y + v * h) / ATLAS])
@@ -763,18 +791,20 @@ def write_pack(results, work, output, rects, entries, lookup):
                 group['panes'][pane] = len(indices)
         for name, group in combined.items():
             count = len(group['points'])
-            if count > 65535:
-                raise RuntimeError('%s.%s exceeds uint16 vertex budget: %d' % (key, name, count))
             points = np.asarray(group['points'])
             q = np.round((points - lo) / extent * 65534 - 32767).astype(np.int16)
             norm = np.asarray(group['normals'])
             norm /= np.maximum(np.linalg.norm(norm, axis=1, keepdims=True), 1e-9)
-            for field, arr, kind in (('p', q, 'i2'), ('n', np.round(norm * 127).astype(np.int8), 'i1'),
+            precise_normals = key.startswith('s') and not name.endswith('Far')
+            normal_bits = 32767 if precise_normals else 127
+            normal_dtype = np.int16 if precise_normals else np.int8
+            index_dtype = np.uint32 if count > 65535 else np.uint16
+            for field, arr, kind in (('p', q, 'i2'), ('n', np.round(norm * normal_bits).astype(normal_dtype), 'i2' if precise_normals else 'i1'),
                                      ('uv', np.round(np.asarray(group['uv']) * 65535).astype(np.uint16), 'u2'),
                                      ('a', np.asarray(group['sourceUV'], dtype=np.float32), 'f4'),
                                      ('t', np.round(np.asarray(group['atlasRect']) * 65535).astype(np.uint16), 'u2'),
                                      ('f', np.round(np.asarray(group['finish']) * 255).astype(np.uint8), 'u1'),
-                                     ('i', np.asarray(group['indices'], dtype=np.uint16), 'u2')):
+                                     ('i', np.asarray(group['indices'], dtype=index_dtype), 'u4' if count > 65535 else 'u2')):
                 blob.add(key + '.' + name + '.' + field, arr, kind)
             if name.startswith(('head', 'tail')):
                 blob.add(key + '.' + name + '.c', np.asarray(group['colors'], dtype=np.uint8), 'u1')
@@ -789,6 +819,8 @@ def write_pack(results, work, output, rects, entries, lookup):
         # including --reuse-geometry metadata-only rebuilds.
         meta['lodParts'] = {name: name + 'Far' for name in meta['parts'] if not name.endswith('Far') and name + 'Far' in meta['parts']}
         meta['sourceTriangles'] = int(sum(len(p['index']) for p in r['prims']))
+        if normal_repairs:
+            meta['sourceNormalRepairs'] = normal_repairs
         header['models'][key] = meta
     header['arrays'] = blob.arrays
     encoded = json.dumps(header, separators=(',', ':')).encode()
@@ -802,11 +834,11 @@ def verify_pack(header, output):
     data = (output / 'approved-vehicle-models.bin').read_bytes()
     length = struct.unpack('<I', data[8:12])[0]
     base = 12 + length
-    types = {'i2': '<i2', 'i1': 'i1', 'u2': '<u2', 'u1': 'u1', 'f4': '<f4'}
+    types = {'i2': '<i2', 'i1': 'i1', 'u2': '<u2', 'u4': '<u4', 'u1': 'u1', 'f4': '<f4'}
     checks = 0
     if tuple(header['models']) != IDS or base % 4:
         raise RuntimeError('complete five-model pack/alignment contract failed')
-    budgets = dict(m1_enduro=15000, m2_sport=60000, s1_jimny=70000, s2_suv=10000, s3_offroad=10000)
+    budgets = dict(m1_enduro=15000, m2_sport=60000, s1_jimny=140000, s2_suv=10000, s3_offroad=10000)
     for key, model in header['models'].items():
         if model['triangles'] > budgets[key] or model['farTriangles'] >= model['triangles'] * .6:
             raise RuntimeError(key + ': laptop close/far triangle budget exceeded')
@@ -911,7 +943,7 @@ def main():
                   'files': {key: [{'path': name, 'bytes': (args.source / name).stat().st_size, 'sha256': sha(args.source / name)} for name in names] for key, names in source_files.items()},
                   'assembly': {'m1': 'Source prefab transforms applied to raw FBX vertex coordinates, matching the source UFBX importer', 'm2': 'Rigid source Z-up → game Y-up rotation', 's1': 'Rigid GLTF +Z front → game +X front rotation', 's2_s3': 'Vehicle selection from original passenger pack, whole-vehicle wheel-baseline rigid orientation and authored red-tail colour sign'},
                   'optimization': 'Blender edge collapse preserves mesh/material/UV surfaces; exact coincident vertices welded within 0.1 micrometre, no vertex clustering, no part removal',
-                  'changes': 'Damage/render part partition, measured wheel origins/axes, driver seat/grip contacts, skin/trim paint palette separation, PBR atlas packing and close/far levels; Jimny authored non-cabin BLEND optical covers retain their exact source face ownership, tint and alpha in a dedicated transparent role; S2 verified outer roof and upper-door faces move from trim to paint roles without changing their source positions, normals, UVs, RGB or ORM'}
+                  'changes': 'Source-authored SUV split normals retained at ratio one and transferred after reduction; Jimny painted shell, panels and hood retained at full source resolution; near SUV normals use signed16 precision. Zero reduced SUV normals recover from nearby same-material source vertices, recorded in model metadata. Motorcycle arrays and all four existing atlases remain unchanged. Existing optical-glass and exterior-paint ownership retained.'}
     (args.work / 'source-provenance.json').write_text(json.dumps(provenance, indent=2))
     (args.work / 'exterior-paint-proof.json').write_text(json.dumps(next(r['exteriorPaintProof'] for r in results if 'exteriorPaintProof' in r), indent=2))
     (args.work / 'approved-vehicle-conversion-receipt.json').write_text(json.dumps(receipt, indent=2))

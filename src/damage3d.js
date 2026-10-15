@@ -25,6 +25,8 @@
 
       // @include src/damage3d-bodies.js
 
+      // @include src/vehicle-doors3d.js
+
       // @include src/ride-wheels3d.js
 
       // @include src/damage3d-crumple.js

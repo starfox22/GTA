@@ -1,0 +1,90 @@
+{
+  "key": "tank-chieftain-mk5",
+  "repo": "sannzana/Graphics_project_military_base",
+  "commit": "523e7e7197c36655b3b8b3b17d99db9eab87c7c5",
+  "path": "Tank_model",
+  "sourceGeometry": {
+    "extras": {
+      "author": "Muhamad Mirza Arrafi (https://sketchfab.com/nazidefenseforceofficial)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/chieftain-mk-5-main-battle-tank-1afc838ca30c4dac99c15e731d0d2ab8",
+      "title": "Chieftain MK-5 Main Battle Tank"
+    },
+    "generator": "Sketchfab-16.59.0",
+    "version": "2.0"
+  },
+  "files": [
+    {
+      "path": "scene.gltf",
+      "bytes": 20561,
+      "sha256": "c62a38be6623b4b50b0c30fb081e683ff378d939c907537c44e80c43b4151556",
+      "url": "https://raw.githubusercontent.com/sannzana/Graphics_project_military_base/523e7e7197c36655b3b8b3b17d99db9eab87c7c5/Tank_model/scene.gltf"
+    },
+    {
+      "path": "license.txt",
+      "url": "https://raw.githubusercontent.com/sannzana/Graphics_project_military_base/523e7e7197c36655b3b8b3b17d99db9eab87c7c5/Tank_model/license.txt",
+      "bytes": 800,
+      "sha256": "30132645272af298a76af752f47b095efd9f8be338de165ad9bd17d62e5e019c"
+    },
+    {
+      "path": "scene.bin",
+      "url": "https://raw.githubusercontent.com/sannzana/Graphics_project_military_base/523e7e7197c36655b3b8b3b17d99db9eab87c7c5/Tank_model/scene.bin",
+      "bytes": 2571524,
+      "sha256": "d2decd8e56fcc6581c26cce5200f819a34ed15958e43c9d73a371241cd8dafa3"
+    },
+    {
+      "path": "textures/Applique_155_baseColor.png",
+      "url": "https://raw.githubusercontent.com/sannzana/Graphics_project_military_base/523e7e7197c36655b3b8b3b17d99db9eab87c7c5/Tank_model/textures/Applique_155_baseColor.png",
+      "bytes": 711546,
+      "sha256": "33e735d792d0f8a7bea5f91ce512b9db787a7416f8e71b052e68bbf7df56bb1c"
+    },
+    {
+      "path": "textures/Cannon_128_baseColor.png",
+      "url": "https://raw.githubusercontent.com/sannzana/Graphics_project_military_base/523e7e7197c36655b3b8b3b17d99db9eab87c7c5/Tank_model/textures/Cannon_128_baseColor.png",
+      "bytes": 752490,
+      "sha256": "354c7b4a67ce5cfdce3c6ff3cd4b44217a5719ef33f9f7e0c8925a77fe7ef616"
+    },
+    {
+      "path": "textures/Gear_921_baseColor.png",
+      "url": "https://raw.githubusercontent.com/sannzana/Graphics_project_military_base/523e7e7197c36655b3b8b3b17d99db9eab87c7c5/Tank_model/textures/Gear_921_baseColor.png",
+      "bytes": 1106485,
+      "sha256": "3e9165104fd0ff15ca8e759e36583b4aa64e5ebbe4f984b63e113e8445220ed3"
+    },
+    {
+      "path": "textures/Gear_938_baseColor.png",
+      "url": "https://raw.githubusercontent.com/sannzana/Graphics_project_military_base/523e7e7197c36655b3b8b3b17d99db9eab87c7c5/Tank_model/textures/Gear_938_baseColor.png",
+      "bytes": 1737066,
+      "sha256": "3f5fd113a11fbbf9d29f88e82a50559e6da5ee3663be7b12a85da94549e1659c"
+    },
+    {
+      "path": "textures/Hull_361_baseColor.png",
+      "url": "https://raw.githubusercontent.com/sannzana/Graphics_project_military_base/523e7e7197c36655b3b8b3b17d99db9eab87c7c5/Tank_model/textures/Hull_361_baseColor.png",
+      "bytes": 583210,
+      "sha256": "c70912aa2f874b27e007c38bb266fc8e8b0ea379b487d5238b4c215589200ef7"
+    },
+    {
+      "path": "textures/SideSkirts_361_baseColor.png",
+      "url": "https://raw.githubusercontent.com/sannzana/Graphics_project_military_base/523e7e7197c36655b3b8b3b17d99db9eab87c7c5/Tank_model/textures/SideSkirts_361_baseColor.png",
+      "bytes": 868225,
+      "sha256": "cf311cf48bc8a28380c69f58134eaf83c4eb49d203d8c10c180e695ef4f3e776"
+    },
+    {
+      "path": "textures/Track_494_baseColor.png",
+      "url": "https://raw.githubusercontent.com/sannzana/Graphics_project_military_base/523e7e7197c36655b3b8b3b17d99db9eab87c7c5/Tank_model/textures/Track_494_baseColor.png",
+      "bytes": 415686,
+      "sha256": "7cbad06dd8c3e10e1e461f5ba9e548af6416b31b667854fe64d9cbbaba3a2c90"
+    },
+    {
+      "path": "textures/Turret_995_baseColor.png",
+      "url": "https://raw.githubusercontent.com/sannzana/Graphics_project_military_base/523e7e7197c36655b3b8b3b17d99db9eab87c7c5/Tank_model/textures/Turret_995_baseColor.png",
+      "bytes": 1192835,
+      "sha256": "f19c7fed98e2b5f3fc8dbf38ce6b4f20c16d5d30136737a7b24471e4ae44d3ee"
+    },
+    {
+      "path": "textures/Wheels_310_baseColor.png",
+      "url": "https://raw.githubusercontent.com/sannzana/Graphics_project_military_base/523e7e7197c36655b3b8b3b17d99db9eab87c7c5/Tank_model/textures/Wheels_310_baseColor.png",
+      "bytes": 1209006,
+      "sha256": "8d5f41666e00a5d80871b1298b4256915d2b405e72fdfa60d387abeec3d1ff2c"
+    }
+  ]
+}

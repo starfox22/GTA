@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-15",
+  "status": "PASS",
+  "kind": "NoRender named-method browser checks plus selected production-function host cases",
+  "checkedHtmlSha256": "a59af721e5c0c880521421abf9ad94bff55f94023549c810b154a90386afef63",
+  "originalExecutionPath": "dist/review-2026-10-15-integrated.html",
+  "preservedExecutable": "dist/review-2026-10-15-gameplay-checked-a59af721.html",
+  "selectedModules": 15,
+  "moduleResults": {
+    "PASS": 15,
+    "SKIP": 0,
+    "FAIL": 0
+  },
+  "separateWorldResetBrowserAssertions": 38,
+  "worldResetBrowserErrors": [],
+  "laterRendererOnlyBuildsRequireSeparateHashLabels": true,
+  "files": [
+    {
+      "file": "review15-final-affected-selection.json",
+      "sha256": "5d469b4c9b8d288040511406acc14e4f9594cd0db7f94bd8d1ee1feb3f0743bf"
+    },
+    {
+      "file": "review15-final-affected.log",
+      "sha256": "3093d505adf4d24ebea4412e05f563036c7755b410931874c763383c19cc02f6"
+    },
+    {
+      "file": "review15-final-affected-exit.json",
+      "sha256": "64aafc9c3390beee6a608ee6b7e8ffa93e6d0efd92b5154f080f5c583fed4e32"
+    },
+    {
+      "file": "review15-world-reset-browser-after.json",
+      "sha256": "afe164734845e6bea64f84cadc57fe8803be2117c3744cbaa1a1258438f52d22"
+    },
+    {
+      "file": "review15-world-reset-browser-after.log",
+      "sha256": "c25c5eb224d2156e152e696cd6aa3121a2d350243c426fcaa0f7f5b14ddb6406"
+    },
+    {
+      "file": "world-reset-original-fixture.txt",
+      "sha256": "27641f533d442ee1cba935f5a27a8db5e26dd653f08a554c23e70630d90f2033"
+    },
+    {
+      "file": "world-reset-strengthened-fixture.txt",
+      "sha256": "81f0810da7f135dda535797d6ea23f820cd6f57aaeba9458311da3ab237c9750"
+    },
+    {
+      "file": "world-reset-followup-runner.mjs",
+      "sha256": "2451ab927d29423ef50a80bfc0fb0dd8152c0752cd8d1de747bf767913e63e6e"
+    }
+  ],
+  "canonicalWorldResetTestAppliedAfterOriginalBaselineCompleted": true,
+  "canonicalWorldResetTestSha256": "81f0810da7f135dda535797d6ea23f820cd6f57aaeba9458311da3ab237c9750"
+}

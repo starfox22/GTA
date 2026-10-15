@@ -1,0 +1,33 @@
+{
+  "canonicalFixture": {
+    "path": "tools/tests/approved-suv-rigs.mjs",
+    "sha256": "f5932b0ecdb3e8a8f3198f1f8361083c1e1628bb4aa9aa4f9c08b8ad0094ac88"
+  },
+  "generatedDistFixtureSha256": "5b8c0fbcb42baff58411d86a6041e768a7730b934a0825ad807cf0fa82907e32",
+  "productionSources": {
+    "damage3d-bodies": "ee927c75d9276a9ed9a8b490c4d8b610e83620b0f00f4b7841276cb0e2019b80",
+    "damage3d-decals": "42e79cac26845dac3679f89904883c6c68426f7d4403ed1ca467b04f315f30ff",
+    "damage3d-world": "610a30afe4d7a0082c4501bb7f60e5ab95c5df18b30e3235c562dda61ee50e63",
+    "physics-collisions": "508f955b624969d1a1338e6b7bbcb54d713e4645ad7f73b11a5cbffb7ca99c38",
+    "game-console-perf": "fdc386368956eb164d58a476142caf1727a0904207959447538e598ae1f721cd"
+  },
+  "observedFinal4": {
+    "htmlSha256": "21403cd7c63950f619da9e8818a60be14ef306b0d08ced79ac336cd247c4df1a",
+    "recorderSha256": "a1b1fc48ef3ab80eddcf69f0bf3929b562a5edf4e79fabfe9dd71aa912f3aa51",
+    "runtimeReceiptSha256": "d5e27da4c83f4a43da981bf1ff4aa22f8be63ebb39d422667df13d077b88566e",
+    "images": {
+      "c8-open-cabin-detail.png": "b7e54419c58d42c1c844853b5dd3fd9701ccbb2a79689585a5db74b545fb51f7",
+      "late-door-burnt.png": "3d25d8cc8d11419be482e9c1f694db5579db65279923cd5a5eb1e5649c366141",
+      "late-door-repaired-reopened.png": "e67ce2d1fa3f404732d7a03c0a0a36f3767c04f2c0e75fed8cbac6ea48e7154b",
+      "exit-feet-midpoint.png": "abf7a6359bec05eba72ffbc3b2a774fb15c770b9e6e7f4dbb3d88238ad25cbf6",
+      "exit-feet-settled.png": "d604dfb1724fa68e7c412cf5914371b502f8cb01bef819c0643e589c29e85521"
+    }
+  },
+  "localEvidence": {
+    "diagnostic.patch": "c86240b6ab77654d3621c5efc96ee1c63928b38c08807a0a629a29fb21acf57e",
+    "receipt.json": "a59a4817f266122ef2ebf25bb0ef717c7f503a8faedb09473b2339fc0f23bade",
+    "initial-fixture-missing-material.json": "8388a3ad80287e0a674abe182ef22b5514a5efebb5ebf8300f8630ee9e08db27",
+    "README.md": "9fc179069c1920564ac09354479d18e0753efab0998a33fcaec43eac5b02f0d2",
+    "replay.py": "755af690ca43371edb6fd948e8b6f32e554f9b2eef7692b9b9113f69e2088041"
+  }
+}

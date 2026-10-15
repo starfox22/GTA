@@ -1,0 +1,73 @@
+--- tools/tests/approved-suv-rigs.mjs
++++ diagnostic-approved-suv-rigs.mjs
+@@ -31,11 +31,11 @@
+   const glass = new Three.MeshStandardMaterial(), trim = new Three.MeshStandardMaterial(),
+     materials = { trim, rubber: trim, rim: trim, glass, glassFar: glass },
+     lamps = Object.fromEntries(['headOff', 'tailOff', 'headOn', 'tailOn', 'brake'].map(name => [name, new Three.MeshStandardMaterial()])),
+-    player = { car: null }, scope = vm.createContext({ Three, fixture: { header, arrays }, fixtureLegacy: { header: legacyHeader, arrays: legacyArrays }, fixtureSports: { header: sportsHeader, arrays: sportsArrays }, materials, lamps, player, carTransition: {}, Uint8Array, Uint16Array, Uint32Array, Float32Array,
++    player = { car: null }, scope = vm.createContext({ Three, fixture: { header, arrays }, fixtureLegacy: { header: legacyHeader, arrays: legacyArrays }, fixtureSports: { header: sportsHeader, arrays: sportsArrays }, materials, lamps, player, darkMetal: trim, cylinderGeo: new Three.CylinderGeometry(), carTransition: {}, Uint8Array, Uint16Array, Uint32Array, Float32Array,
+       UNITS_PER_METRE: 8, PERSON_HEIGHT: 14, CAR_M: 8, TAU: Math.PI * 2, performance, gameTime: 10, vehicleGlassBand: () => null, CAR_SWATCH: { paint: 0, black: 2 }, CITY_SIZE: 4096,
+       crackedGlassTexture: new Three.Texture(), fixtureTexture: new Three.Texture(), cityMaterialPatch() {}, approvedVehicleAtlasPatch() {}, carGlassMaterial: () => glass, bodyPools: new Map(), carModels: new Map(), BODY_POOL_CAPACITY: 160, bodyPaint: trim, impostorBeaconMaterial: trim, impostorColor: new Three.Color(), boxGeo: new Three.BoxGeometry(), scene: new Three.Scene(), sharedGeometries: new Set(), sharedMaterials: new Set(),
+       clamp: (value, lo, hi) => Math.max(lo, Math.min(hi, value)), lerpNumber: (a, b, t) => a + (b - a) * t,
+-      vehicleSpec: c => c.type === 'police' ? { l: 5.1 * 8, w: 2.18 * 8 } : c.policeLook ? { l: 4.95 * 8, w: 2.24 * 8 } : c.type === 'chevette' ? { l: 4.69 * 8, w: 2.32 * 8 } : c.type !== 'suv' ? { l: 4.7 * 8, w: 1.9 * 8 } : { l: header.models[['s1_jimny', 's2_suv', 's3_offroad'][(c.id >>> 0) % 3]].dims[0] * 8, w: header.models[['s1_jimny', 's2_suv', 's3_offroad'][(c.id >>> 0) % 3]].dims[2] * 8 }, drivenAxle: () => 'rear', spawnPanel() {},
++      vehicleSpec: c => c.type === 'police' ? { l: 5.1 * 8, w: 2.18 * 8 } : c.policeLook ? { l: 4.95 * 8, w: 2.24 * 8 } : c.type === 'chevette' ? { l: 4.69 * 8, w: 2.32 * 8 } : c.type !== 'suv' ? { l: 4.7 * 8, w: 1.9 * 8 } : { l: header.models[['s1_jimny', 's2_suv', 's3_offroad'][(c.id >>> 0) % 3]].dims[0] * 8, w: header.models[['s1_jimny', 's2_suv', 's3_offroad'][(c.id >>> 0) % 3]].dims[2] * 8 }, drivenAxle: () => 'rear', terrainHeight: () => 0, clearCarStains() {},
+       civDrawRange(geometry, count) { const far = geometry.clone(); far.setDrawRange(0, count); return far; },
+       civSharedMaterials: () => materials, civLampSet: () => lamps, civFinish: () => ({ roughness: .3, metalness: .06 }),
+       civImpostorPaint: () => trim, policeCabinGlass: () => glass, policeImpostorPaint: () => trim,
+@@ -57,8 +57,13 @@
+     approvedPaint = approvedSource.slice(approvedSource.indexOf('      function approvedVehiclePaint('), approvedSource.indexOf('      const approvedVehicleImpostorPaints')),
+     occupantSource = read('crowd3d-driveby'), occupantDeclarations = occupantSource.slice(occupantSource.indexOf('      const OCCUPANT_REACH'), occupantSource.indexOf('      let occupantCount')),
+     actualSeatOccupant = occupantSource.slice(occupantSource.indexOf('      function seatOccupant('));
++  const debrisText = read('damage3d-decals'), physicsText = read('physics-collisions'), damageText = read('damage-vehicles'),
++    liveDiagnostics = debrisText.slice(debrisText.indexOf('      const chunks = []'), debrisText.indexOf('      // Broken masonry:')) +
++      debrisText.slice(debrisText.indexOf('      function spawnPanel('), debrisText.indexOf('      function drawDebris(')) +
++      damageText.slice(damageText.indexOf('    function freshDamage('), damageText.indexOf('    function ensureDamage(')) +
++      physicsText.slice(physicsText.indexOf('    function repairVehicle('), physicsText.indexOf('    // Closing speed'));
+   const api = vm.runInContext(materialHeader + finishPatch + dirtSource + legacyPaint + approvedPatch + approvedMaterials + approvedPaint + read('sports-vehicle-assets3d') + read('cars3d-geometry') + read('character-rig3d') + read('character-near3d') + read('character-near3d-head') + read('driveby-seats') + read('vehicle-assets3d') + read('approved-suv3d') +
+-    read('police3d-looks') + read('police3d-cabins') + read('cars3d-interior') + read('cars3d-headroom') + read('police3d-asset') + read('damage-crumple') + read('damage3d-crumple') + read('vehicle-doors3d') + read('vehicle-char3d') + read('damage3d-bodies') + read('carjack3d') + sourceMarkHook + poolSource + occupantDeclarations + actualSeatOccupant + `
++    read('police3d-looks') + read('police3d-cabins') + read('cars3d-interior') + read('cars3d-headroom') + read('police3d-asset') + read('damage-crumple') + read('damage3d-crumple') + read('vehicle-doors3d') + read('vehicle-char3d') + read('damage3d-bodies') + read('carjack3d') + liveDiagnostics + sourceMarkHook + poolSource + occupantDeclarations + actualSeatOccupant + `
+       const BODY_CLOSE = { head: { mesh: { geometry: rigHeadGeometry() } } };
+       for (const [name, geometry] of Object.entries({ ...rigHairGeometries(), ...rigHatGeometries() })) BODY_CLOSE[name] = { mesh: { geometry } };
+       const BODY_NEAR = { head: { mesh: { geometry: nearHeadGeometry() } } };
+@@ -85,7 +90,7 @@
+         fixturePose = { hip: new Three.Vector3(0, RIG.hip * RIG_UNIT, 0).applyMatrix4(sp.rootOverride).toArray(),
+           lean: sp.riderLean, hands: sp.handTargets.map(v => v.toArray()), feet: sp.legTargets.map(v => v.toArray()) };
+       }
+-      ({ makeAssetCar, makeAssetPoliceVehicle, approvedSuvKey, approvedSuvGlassBand, vaGeometry, policeApprovedPanels, animateApprovedSuvWheels, vehicleAssetModel, bodyPoolFor, vehicleDoor, vehicleDoorsReport, doorPanelGeometries, carBodyDamage, swingDriverDoor, markOntoDoor, crumpleSlices, crumplePending: () => crumpleQueue.size, assetCharSwap, assetCharRelease, seatOccupant, fixtureOccupantPose: () => fixturePose, carSeatPlan, cabinClearance, cabinSeatClouds, DRIVEBY_SEATS })`, scope);
++      ({ repairVehicle, freshDamage, fixturePanels: () => panels, stepDebris, makeAssetCar, makeAssetPoliceVehicle, approvedSuvKey, approvedSuvGlassBand, vaGeometry, policeApprovedPanels, animateApprovedSuvWheels, vehicleAssetModel, bodyPoolFor, vehicleDoor, vehicleDoorsReport, doorPanelGeometries, carBodyDamage, swingDriverDoor, markOntoDoor, crumpleSlices, crumplePending: () => crumpleQueue.size, assetCharSwap, assetCharRelease, seatOccupant, fixtureOccupantPose: () => fixturePose, carSeatPlan, cabinClearance, cabinSeatClouds, DRIVEBY_SEATS })`, scope);
+   const clearDamage = () => ({ parts: { hood: 0, bumperFront: 0, bumperRear: 0, doorLeft: 0, doorRight: 0, trunk: 0 }, glass: { front: 0, rear: 0, left: 0, right: 0 }, tires: {}, front: 0, rear: 0, left: 0, right: 0, burnt: false });
+   function checkAperture(vehicle, model, key) {
+     const drainCrumple = () => { for (let i = 0; i < 500 && api.crumplePending(); i++) api.crumpleSlices(); t.assert(!api.crumplePending(), key + ': actual crumple budget queue did not drain'); };
+@@ -469,5 +474,32 @@
+     }
+     t.note(JSON.stringify({ lateDoorCharRepair: { type, builder: 'actual packed production builder', sourceLayers: layers.length, inheritedCharAdopted: true, reopenedSourceMaterials: true, shaderOrGeometryChange: false } }));
+   }
++  const hoodDiagnostics = [];
++  for (const damagedState of [1, 2]) {
++    const vehicle = { type: 'chevette', id: 9980 + damagedState, color: '#b72228', hp: 100, maxhp: 100, dents: [], damage: api.freshDamage() }, model = api.makeAssetCar(vehicle);
++    scope.carModels.set(vehicle, model);
++    api.carBodyDamage(vehicle, model, vehicle.damage);
++    model.body.updateMatrixWorld(true);
++    const cleanWorld = model.hood.matrixWorld.clone(), cleanGeometry = model.hood.geometry;
++    const oldCount = api.fixturePanels().length;
++    vehicle.damage.parts.hood = damagedState; vehicle.damage.burnt = true; vehicle.hp = 0;
++    api.carBodyDamage(vehicle, model, vehicle.damage);
++    t.assert(model.hood.visible === (damagedState < 2), 'diagnostic hood damaged visibility');
++    t.assert(api.fixturePanels().length === oldCount + Number(damagedState === 2), 'only detached hood creates separate world panel debris');
++    api.repairVehicle(vehicle); api.carBodyDamage(vehicle, model, vehicle.damage); model.body.updateMatrixWorld(true);
++    t.assert(vehicle.damage.parts.hood === 0 && model.hood.visible, 'actual repair restores native hood');
++    t.assert(model.hoodPivot.rotation.x === 0 && model.hoodPivot.rotation.y === 0 && model.hoodPivot.rotation.z === 0, 'actual repair closes hood hinge');
++    t.assert(model.hood.matrixWorld.elements.every((value,index) => Math.abs(value - cleanWorld.elements[index]) < 1e-10), 'hood returns to its pristine source world transform');
++    t.assert(model.hood.geometry === cleanGeometry, 'no dents: hood retains original native geometry');
++    if (damagedState === 2) {
++      const panel = api.fixturePanels().at(-1), initial = [panel.x,panel.y,panel.z,...panel.q.toArray()];
++      scope.gameTime += 1.3;
++      t.assert([panel.x,panel.y,panel.z,...panel.q.toArray()].every((value,index) => value === initial[index]), 'game-clock-only staging leaves world debris motion frozen');
++      api.stepDebris(api.fixturePanels(), 1/60, 150);
++      t.assert(panel.y !== initial[1] && panel.q.toArray().some((value,index) => value !== initial[index+3]), 'real rendered damage step moves/spins the separate torn panel');
++    }
++    hoodDiagnostics.push({damagedState, repairedPart:vehicle.damage.parts.hood, hoodVisible:model.hood.visible, hinge:model.hoodPivot.rotation.toArray(), pristineWorldTransform:true, separatePanelCount:api.fixturePanels().length-oldCount});
++  }
++  t.note(JSON.stringify({hoodRepairDiagnosis:hoodDiagnostics}));
+   t.note(JSON.stringify({ approvedSUVs: rows, lawRows, policeSource: 's2_suv', headroom: 'actual production head geometry and fit; rendered check separate' }));
+ }

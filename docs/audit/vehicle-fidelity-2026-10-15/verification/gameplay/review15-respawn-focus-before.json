@@ -1,0 +1,526 @@
+{
+  "status": "FAIL",
+  "assertions": 112,
+  "failures": [
+    {
+      "ok": false,
+      "message": "die/hidden: unattended respawn resumed live gameplay"
+    },
+    {
+      "ok": false,
+      "message": "die/hidden: pause retained held input"
+    },
+    {
+      "ok": false,
+      "message": "die/hidden/job: unattended respawn resumed live gameplay"
+    },
+    {
+      "ok": false,
+      "message": "die/hidden/job: pause retained held input"
+    },
+    {
+      "ok": false,
+      "message": "die/blurred: unattended respawn resumed live gameplay"
+    },
+    {
+      "ok": false,
+      "message": "die/blurred: pause retained held input"
+    },
+    {
+      "ok": false,
+      "message": "die/blurred/job: unattended respawn resumed live gameplay"
+    },
+    {
+      "ok": false,
+      "message": "die/blurred/job: pause retained held input"
+    },
+    {
+      "ok": false,
+      "message": "bust/hidden: unattended respawn resumed live gameplay"
+    },
+    {
+      "ok": false,
+      "message": "bust/hidden: pause retained held input"
+    },
+    {
+      "ok": false,
+      "message": "bust/hidden/job: unattended respawn resumed live gameplay"
+    },
+    {
+      "ok": false,
+      "message": "bust/hidden/job: pause retained held input"
+    },
+    {
+      "ok": false,
+      "message": "bust/blurred: unattended respawn resumed live gameplay"
+    },
+    {
+      "ok": false,
+      "message": "bust/blurred: pause retained held input"
+    },
+    {
+      "ok": false,
+      "message": "bust/blurred/job: unattended respawn resumed live gameplay"
+    },
+    {
+      "ok": false,
+      "message": "bust/blurred/job: pause retained held input"
+    }
+  ],
+  "checks": [
+    {
+      "ok": true,
+      "message": "die/focused: death/arrest schedule changed"
+    },
+    {
+      "ok": true,
+      "message": "die/focused: unattended respawn resumed live gameplay"
+    },
+    {
+      "ok": true,
+      "message": "die/focused: hospital bill or fine changed"
+    },
+    {
+      "ok": true,
+      "message": "die/focused: respawn health/armour/invulnerability changed"
+    },
+    {
+      "ok": true,
+      "message": "die/focused: respawn destination changed"
+    },
+    {
+      "ok": true,
+      "message": "die/focused: world reset changed"
+    },
+    {
+      "ok": true,
+      "message": "die/focused: mission failure identity changed"
+    },
+    {
+      "ok": true,
+      "message": "die/focused: final progress was not saved"
+    },
+    {
+      "ok": true,
+      "message": "die/focused/job: death/arrest schedule changed"
+    },
+    {
+      "ok": true,
+      "message": "die/focused/job: unattended respawn resumed live gameplay"
+    },
+    {
+      "ok": true,
+      "message": "die/focused/job: hospital bill or fine changed"
+    },
+    {
+      "ok": true,
+      "message": "die/focused/job: respawn health/armour/invulnerability changed"
+    },
+    {
+      "ok": true,
+      "message": "die/focused/job: respawn destination changed"
+    },
+    {
+      "ok": true,
+      "message": "die/focused/job: world reset changed"
+    },
+    {
+      "ok": true,
+      "message": "die/focused/job: mission failure identity changed"
+    },
+    {
+      "ok": true,
+      "message": "die/focused/job: final progress was not saved"
+    },
+    {
+      "ok": true,
+      "message": "die/hidden: death/arrest schedule changed"
+    },
+    {
+      "ok": false,
+      "message": "die/hidden: unattended respawn resumed live gameplay"
+    },
+    {
+      "ok": true,
+      "message": "die/hidden: hospital bill or fine changed"
+    },
+    {
+      "ok": true,
+      "message": "die/hidden: respawn health/armour/invulnerability changed"
+    },
+    {
+      "ok": true,
+      "message": "die/hidden: respawn destination changed"
+    },
+    {
+      "ok": true,
+      "message": "die/hidden: world reset changed"
+    },
+    {
+      "ok": true,
+      "message": "die/hidden: mission failure identity changed"
+    },
+    {
+      "ok": false,
+      "message": "die/hidden: pause retained held input"
+    },
+    {
+      "ok": true,
+      "message": "die/hidden: final progress was not saved"
+    },
+    {
+      "ok": true,
+      "message": "die/hidden/job: death/arrest schedule changed"
+    },
+    {
+      "ok": false,
+      "message": "die/hidden/job: unattended respawn resumed live gameplay"
+    },
+    {
+      "ok": true,
+      "message": "die/hidden/job: hospital bill or fine changed"
+    },
+    {
+      "ok": true,
+      "message": "die/hidden/job: respawn health/armour/invulnerability changed"
+    },
+    {
+      "ok": true,
+      "message": "die/hidden/job: respawn destination changed"
+    },
+    {
+      "ok": true,
+      "message": "die/hidden/job: world reset changed"
+    },
+    {
+      "ok": true,
+      "message": "die/hidden/job: mission failure identity changed"
+    },
+    {
+      "ok": false,
+      "message": "die/hidden/job: pause retained held input"
+    },
+    {
+      "ok": true,
+      "message": "die/hidden/job: final progress was not saved"
+    },
+    {
+      "ok": true,
+      "message": "die/blurred: death/arrest schedule changed"
+    },
+    {
+      "ok": false,
+      "message": "die/blurred: unattended respawn resumed live gameplay"
+    },
+    {
+      "ok": true,
+      "message": "die/blurred: hospital bill or fine changed"
+    },
+    {
+      "ok": true,
+      "message": "die/blurred: respawn health/armour/invulnerability changed"
+    },
+    {
+      "ok": true,
+      "message": "die/blurred: respawn destination changed"
+    },
+    {
+      "ok": true,
+      "message": "die/blurred: world reset changed"
+    },
+    {
+      "ok": true,
+      "message": "die/blurred: mission failure identity changed"
+    },
+    {
+      "ok": false,
+      "message": "die/blurred: pause retained held input"
+    },
+    {
+      "ok": true,
+      "message": "die/blurred: final progress was not saved"
+    },
+    {
+      "ok": true,
+      "message": "die/blurred/job: death/arrest schedule changed"
+    },
+    {
+      "ok": false,
+      "message": "die/blurred/job: unattended respawn resumed live gameplay"
+    },
+    {
+      "ok": true,
+      "message": "die/blurred/job: hospital bill or fine changed"
+    },
+    {
+      "ok": true,
+      "message": "die/blurred/job: respawn health/armour/invulnerability changed"
+    },
+    {
+      "ok": true,
+      "message": "die/blurred/job: respawn destination changed"
+    },
+    {
+      "ok": true,
+      "message": "die/blurred/job: world reset changed"
+    },
+    {
+      "ok": true,
+      "message": "die/blurred/job: mission failure identity changed"
+    },
+    {
+      "ok": false,
+      "message": "die/blurred/job: pause retained held input"
+    },
+    {
+      "ok": true,
+      "message": "die/blurred/job: final progress was not saved"
+    },
+    {
+      "ok": true,
+      "message": "bust/focused: death/arrest schedule changed"
+    },
+    {
+      "ok": true,
+      "message": "bust/focused: unattended respawn resumed live gameplay"
+    },
+    {
+      "ok": true,
+      "message": "bust/focused: hospital bill or fine changed"
+    },
+    {
+      "ok": true,
+      "message": "bust/focused: respawn health/armour/invulnerability changed"
+    },
+    {
+      "ok": true,
+      "message": "bust/focused: respawn destination changed"
+    },
+    {
+      "ok": true,
+      "message": "bust/focused: world reset changed"
+    },
+    {
+      "ok": true,
+      "message": "bust/focused: mission failure identity changed"
+    },
+    {
+      "ok": true,
+      "message": "bust/focused: ammunition confiscation changed"
+    },
+    {
+      "ok": true,
+      "message": "bust/focused: final progress was not saved"
+    },
+    {
+      "ok": true,
+      "message": "bust/focused/job: death/arrest schedule changed"
+    },
+    {
+      "ok": true,
+      "message": "bust/focused/job: unattended respawn resumed live gameplay"
+    },
+    {
+      "ok": true,
+      "message": "bust/focused/job: hospital bill or fine changed"
+    },
+    {
+      "ok": true,
+      "message": "bust/focused/job: respawn health/armour/invulnerability changed"
+    },
+    {
+      "ok": true,
+      "message": "bust/focused/job: respawn destination changed"
+    },
+    {
+      "ok": true,
+      "message": "bust/focused/job: world reset changed"
+    },
+    {
+      "ok": true,
+      "message": "bust/focused/job: mission failure identity changed"
+    },
+    {
+      "ok": true,
+      "message": "bust/focused/job: ammunition confiscation changed"
+    },
+    {
+      "ok": true,
+      "message": "bust/focused/job: final progress was not saved"
+    },
+    {
+      "ok": true,
+      "message": "bust/hidden: death/arrest schedule changed"
+    },
+    {
+      "ok": false,
+      "message": "bust/hidden: unattended respawn resumed live gameplay"
+    },
+    {
+      "ok": true,
+      "message": "bust/hidden: hospital bill or fine changed"
+    },
+    {
+      "ok": true,
+      "message": "bust/hidden: respawn health/armour/invulnerability changed"
+    },
+    {
+      "ok": true,
+      "message": "bust/hidden: respawn destination changed"
+    },
+    {
+      "ok": true,
+      "message": "bust/hidden: world reset changed"
+    },
+    {
+      "ok": true,
+      "message": "bust/hidden: mission failure identity changed"
+    },
+    {
+      "ok": true,
+      "message": "bust/hidden: ammunition confiscation changed"
+    },
+    {
+      "ok": false,
+      "message": "bust/hidden: pause retained held input"
+    },
+    {
+      "ok": true,
+      "message": "bust/hidden: final progress was not saved"
+    },
+    {
+      "ok": true,
+      "message": "bust/hidden/job: death/arrest schedule changed"
+    },
+    {
+      "ok": false,
+      "message": "bust/hidden/job: unattended respawn resumed live gameplay"
+    },
+    {
+      "ok": true,
+      "message": "bust/hidden/job: hospital bill or fine changed"
+    },
+    {
+      "ok": true,
+      "message": "bust/hidden/job: respawn health/armour/invulnerability changed"
+    },
+    {
+      "ok": true,
+      "message": "bust/hidden/job: respawn destination changed"
+    },
+    {
+      "ok": true,
+      "message": "bust/hidden/job: world reset changed"
+    },
+    {
+      "ok": true,
+      "message": "bust/hidden/job: mission failure identity changed"
+    },
+    {
+      "ok": true,
+      "message": "bust/hidden/job: ammunition confiscation changed"
+    },
+    {
+      "ok": false,
+      "message": "bust/hidden/job: pause retained held input"
+    },
+    {
+      "ok": true,
+      "message": "bust/hidden/job: final progress was not saved"
+    },
+    {
+      "ok": true,
+      "message": "bust/blurred: death/arrest schedule changed"
+    },
+    {
+      "ok": false,
+      "message": "bust/blurred: unattended respawn resumed live gameplay"
+    },
+    {
+      "ok": true,
+      "message": "bust/blurred: hospital bill or fine changed"
+    },
+    {
+      "ok": true,
+      "message": "bust/blurred: respawn health/armour/invulnerability changed"
+    },
+    {
+      "ok": true,
+      "message": "bust/blurred: respawn destination changed"
+    },
+    {
+      "ok": true,
+      "message": "bust/blurred: world reset changed"
+    },
+    {
+      "ok": true,
+      "message": "bust/blurred: mission failure identity changed"
+    },
+    {
+      "ok": true,
+      "message": "bust/blurred: ammunition confiscation changed"
+    },
+    {
+      "ok": false,
+      "message": "bust/blurred: pause retained held input"
+    },
+    {
+      "ok": true,
+      "message": "bust/blurred: final progress was not saved"
+    },
+    {
+      "ok": true,
+      "message": "bust/blurred/job: death/arrest schedule changed"
+    },
+    {
+      "ok": false,
+      "message": "bust/blurred/job: unattended respawn resumed live gameplay"
+    },
+    {
+      "ok": true,
+      "message": "bust/blurred/job: hospital bill or fine changed"
+    },
+    {
+      "ok": true,
+      "message": "bust/blurred/job: respawn health/armour/invulnerability changed"
+    },
+    {
+      "ok": true,
+      "message": "bust/blurred/job: respawn destination changed"
+    },
+    {
+      "ok": true,
+      "message": "bust/blurred/job: world reset changed"
+    },
+    {
+      "ok": true,
+      "message": "bust/blurred/job: mission failure identity changed"
+    },
+    {
+      "ok": true,
+      "message": "bust/blurred/job: ammunition confiscation changed"
+    },
+    {
+      "ok": false,
+      "message": "bust/blurred/job: pause retained held input"
+    },
+    {
+      "ok": true,
+      "message": "bust/blurred/job: final progress was not saved"
+    },
+    {
+      "ok": true,
+      "message": "die: stale respawn callback changed a replaced session"
+    },
+    {
+      "ok": true,
+      "message": "bust: stale respawn callback changed a replaced session"
+    }
+  ],
+  "sourceHashes": {
+    "src/game-player-actions.js": "f6446f3ceef92c46b07e19739342a2abcefd10d37156e08eff3e009574aa49a5",
+    "src/pursuit-officers.js": "6f5c955d4461c8a95539ece9cd83c008af2ce727d0da461ef945fc459a742024",
+    "src/game-menus.js": "ef7b83622421b17b988e7a63cc880c028354f0a6df9a5c2f1cd98ddc1a9d13ba",
+    "tools/tests/respawn-focus-pause.mjs": "7f5b8aa68ac449787d84dc15b7bf94aed58ff6b0c20115f3c6b86666a1c83574"
+  }
+}

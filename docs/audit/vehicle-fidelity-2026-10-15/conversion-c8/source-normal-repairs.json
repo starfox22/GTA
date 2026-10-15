@@ -1,0 +1,62 @@
+[
+  {
+    "part": "trim",
+    "position": [
+      -1.7628283500671387,
+      0.778545081615448,
+      -0.5254786610603333
+    ],
+    "material": 23,
+    "sourceNode": "6.2L LT2 V8 Engine and Engine Bay_Engine Decals_0",
+    "sourceVertex": 398,
+    "distance": 0.003262661765375917
+  },
+  {
+    "part": "trim",
+    "position": [
+      -1.762560248374939,
+      0.7855449914932251,
+      1.5309493619497516e-06
+    ],
+    "material": 23,
+    "sourceNode": "6.2L LT2 V8 Engine and Engine Bay_Engine Decals_0",
+    "sourceVertex": 405,
+    "distance": 0.00269454278114408
+  },
+  {
+    "part": "trimFar",
+    "position": [
+      1.743277907371521,
+      0.5004180073738098,
+      -0.37690943479537964
+    ],
+    "material": 1,
+    "sourceNode": "Main Chassis_Black_0",
+    "sourceVertex": 14096,
+    "distance": 0.0012991888409561725
+  },
+  {
+    "part": "trimFar",
+    "position": [
+      -1.7628283500671387,
+      0.778545081615448,
+      -0.5254786610603333
+    ],
+    "material": 23,
+    "sourceNode": "6.2L LT2 V8 Engine and Engine Bay_Engine Decals_0",
+    "sourceVertex": 398,
+    "distance": 0.003262661765375917
+  },
+  {
+    "part": "trimFar",
+    "position": [
+      -1.762560248374939,
+      0.7855449914932251,
+      1.5309493619497516e-06
+    ],
+    "material": 23,
+    "sourceNode": "6.2L LT2 V8 Engine and Engine Bay_Engine Decals_0",
+    "sourceVertex": 405,
+    "distance": 0.00269454278114408
+  }
+]

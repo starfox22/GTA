@@ -1,0 +1,354 @@
+{
+  "c8_hari.shell": [
+    "shell",
+    null
+  ],
+  "c8_hari.shellFar": [
+    "shellFar",
+    null
+  ],
+  "c8_hari.panels": [
+    "panels",
+    null
+  ],
+  "c8_hari.panelsFar": [
+    "panelsFar",
+    null
+  ],
+  "c8_hari.trim": [
+    "trim",
+    null
+  ],
+  "c8_hari.trimFar": [
+    "trimFar",
+    null
+  ],
+  "c8_hari.headLeft": [
+    "headLeft",
+    null
+  ],
+  "c8_hari.headLeftFar": [
+    "headLeftFar",
+    null
+  ],
+  "c8_hari.headRight": [
+    "headRight",
+    null
+  ],
+  "c8_hari.headRightFar": [
+    "headRightFar",
+    null
+  ],
+  "c8_hari.indicatorRight": [
+    "indicatorRight",
+    null
+  ],
+  "c8_hari.indicatorRightFar": [
+    "indicatorRightFar",
+    null
+  ],
+  "c8_hari.indicatorLeft": [
+    "indicatorLeft",
+    null
+  ],
+  "c8_hari.indicatorLeftFar": [
+    "indicatorLeftFar",
+    null
+  ],
+  "c8_hari.tailLeft": [
+    "tailLeft",
+    null
+  ],
+  "c8_hari.tailLeftFar": [
+    "tailLeftFar",
+    null
+  ],
+  "c8_hari.tailRight": [
+    "tailRight",
+    null
+  ],
+  "c8_hari.tailRightFar": [
+    "tailRightFar",
+    null
+  ],
+  "c8_hari.cabin": [
+    "cabin",
+    null
+  ],
+  "c8_hari.cabinFar": [
+    "cabinFar",
+    null
+  ],
+  "c8_hari.cabin.seats": [
+    "cabin.seats",
+    null
+  ],
+  "c8_hari.cabin.seatsFar": [
+    "cabin.seatsFar",
+    null
+  ],
+  "c8_hari.cabin.controls": [
+    "cabin.controls",
+    null
+  ],
+  "c8_hari.cabin.controlsFar": [
+    "cabin.controlsFar",
+    null
+  ],
+  "c8_hari.hood": [
+    "hood",
+    null
+  ],
+  "c8_hari.hoodFar": [
+    "hoodFar",
+    null
+  ],
+  "c8_hari.hood.trim": [
+    "hood.trim",
+    null
+  ],
+  "c8_hari.hood.trimFar": [
+    "hood.trimFar",
+    null
+  ],
+  "c8_hari.glass:1": [
+    "glass",
+    1
+  ],
+  "c8_hari.glassFar:1": [
+    "glassFar",
+    1
+  ],
+  "c8_hari.glass:3": [
+    "glass",
+    3
+  ],
+  "c8_hari.glassFar:3": [
+    "glassFar",
+    3
+  ],
+  "c8_hari.opticalGlass": [
+    "opticalGlass",
+    null
+  ],
+  "c8_hari.opticalGlassFar": [
+    "opticalGlassFar",
+    null
+  ],
+  "c8_hari.wheel1.rim": [
+    "wheel1.rim",
+    null
+  ],
+  "c8_hari.wheel1.rimFar": [
+    "wheel1.rimFar",
+    null
+  ],
+  "c8_hari.wheel1.tyre": [
+    "wheel1.tyre",
+    null
+  ],
+  "c8_hari.wheel1.tyreFar": [
+    "wheel1.tyreFar",
+    null
+  ],
+  "c8_hari.wheel1.caliper": [
+    "wheel1.caliper",
+    null
+  ],
+  "c8_hari.wheel1.caliperFar": [
+    "wheel1.caliperFar",
+    null
+  ],
+  "c8_hari.wheel0.caliper": [
+    "wheel0.caliper",
+    null
+  ],
+  "c8_hari.wheel0.caliperFar": [
+    "wheel0.caliperFar",
+    null
+  ],
+  "c8_hari.wheel0.rim": [
+    "wheel0.rim",
+    null
+  ],
+  "c8_hari.wheel0.rimFar": [
+    "wheel0.rimFar",
+    null
+  ],
+  "c8_hari.wheel0.tyre": [
+    "wheel0.tyre",
+    null
+  ],
+  "c8_hari.wheel0.tyreFar": [
+    "wheel0.tyreFar",
+    null
+  ],
+  "c8_hari.wheel3.rim": [
+    "wheel3.rim",
+    null
+  ],
+  "c8_hari.wheel3.rimFar": [
+    "wheel3.rimFar",
+    null
+  ],
+  "c8_hari.wheel3.tyre": [
+    "wheel3.tyre",
+    null
+  ],
+  "c8_hari.wheel3.tyreFar": [
+    "wheel3.tyreFar",
+    null
+  ],
+  "c8_hari.wheel2.rim": [
+    "wheel2.rim",
+    null
+  ],
+  "c8_hari.wheel2.rimFar": [
+    "wheel2.rimFar",
+    null
+  ],
+  "c8_hari.wheel2.tyre": [
+    "wheel2.tyre",
+    null
+  ],
+  "c8_hari.wheel2.tyreFar": [
+    "wheel2.tyreFar",
+    null
+  ],
+  "c8_hari.doorRight.paint": [
+    "doorRight.paint",
+    null
+  ],
+  "c8_hari.doorRight.paintFar": [
+    "doorRight.paintFar",
+    null
+  ],
+  "c8_hari.doorRight.trim": [
+    "doorRight.trim",
+    null
+  ],
+  "c8_hari.doorRight.trimFar": [
+    "doorRight.trimFar",
+    null
+  ],
+  "c8_hari.doorRight.cabin": [
+    "doorRight.cabin",
+    null
+  ],
+  "c8_hari.doorRight.cabinFar": [
+    "doorRight.cabinFar",
+    null
+  ],
+  "c8_hari.doorRight.opticalGlass": [
+    "doorRight.opticalGlass",
+    null
+  ],
+  "c8_hari.doorRight.opticalGlassFar": [
+    "doorRight.opticalGlassFar",
+    null
+  ],
+  "c8_hari.doorRight.glass:2": [
+    "doorRight.glass",
+    2
+  ],
+  "c8_hari.doorRight.glassFar:2": [
+    "doorRight.glassFar",
+    2
+  ],
+  "c8_hari.doorRight.indicator": [
+    "doorRight.indicator",
+    null
+  ],
+  "c8_hari.doorRight.indicatorFar": [
+    "doorRight.indicatorFar",
+    null
+  ],
+  "c8_hari.doorLeft.paint": [
+    "doorLeft.paint",
+    null
+  ],
+  "c8_hari.doorLeft.paintFar": [
+    "doorLeft.paintFar",
+    null
+  ],
+  "c8_hari.doorLeft.trim": [
+    "doorLeft.trim",
+    null
+  ],
+  "c8_hari.doorLeft.trimFar": [
+    "doorLeft.trimFar",
+    null
+  ],
+  "c8_hari.doorLeft.cabin": [
+    "doorLeft.cabin",
+    null
+  ],
+  "c8_hari.doorLeft.cabinFar": [
+    "doorLeft.cabinFar",
+    null
+  ],
+  "c8_hari.doorLeft.indicator": [
+    "doorLeft.indicator",
+    null
+  ],
+  "c8_hari.doorLeft.indicatorFar": [
+    "doorLeft.indicatorFar",
+    null
+  ],
+  "c8_hari.doorLeft.opticalGlass": [
+    "doorLeft.opticalGlass",
+    null
+  ],
+  "c8_hari.doorLeft.opticalGlassFar": [
+    "doorLeft.opticalGlassFar",
+    null
+  ],
+  "c8_hari.doorLeft.glass:0": [
+    "doorLeft.glass",
+    0
+  ],
+  "c8_hari.doorLeft.glassFar:0": [
+    "doorLeft.glassFar",
+    0
+  ],
+  "c8_hari.trunk.paint": [
+    "trunk.paint",
+    null
+  ],
+  "c8_hari.trunk.paintFar": [
+    "trunk.paintFar",
+    null
+  ],
+  "c8_hari.trunk.trim": [
+    "trunk.trim",
+    null
+  ],
+  "c8_hari.trunk.trimFar": [
+    "trunk.trimFar",
+    null
+  ],
+  "c8_hari.trunk.glass": [
+    "trunk.glass",
+    null
+  ],
+  "c8_hari.trunk.glassFar": [
+    "trunk.glassFar",
+    null
+  ],
+  "c8_hari.wheel2.caliper": [
+    "wheel2.caliper",
+    null
+  ],
+  "c8_hari.wheel2.caliperFar": [
+    "wheel2.caliperFar",
+    null
+  ],
+  "c8_hari.wheel3.caliper": [
+    "wheel3.caliper",
+    null
+  ],
+  "c8_hari.wheel3.caliperFar": [
+    "wheel3.caliperFar",
+    null
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "status": "FAIL",
+  "checks": 30,
+  "failures": [
+    "roof: hidden completed into live gameplay",
+    "roof: hidden travel timer advanced",
+    "roof: blurred completed into live gameplay",
+    "roof: blurred travel timer advanced",
+    "sky: hidden completed into live gameplay",
+    "sky: hidden travel timer advanced",
+    "sky: blurred completed into live gameplay",
+    "sky: blurred travel timer advanced",
+    "records: hidden completed into live gameplay",
+    "records: hidden travel timer advanced",
+    "records: blurred completed into live gameplay",
+    "records: blurred travel timer advanced"
+  ],
+  "baselineCommit": "7a0f6f3",
+  "productionLoopSha256": "2c935eede81db94e91ed636ef82d78cd8de1d3d7231c7114831d383c8f50ba2b",
+  "testSha256": "716db94c94c64f5ff5955d29e2c314dbb190428e41ce17eee61722b985a8b3c4"
+}

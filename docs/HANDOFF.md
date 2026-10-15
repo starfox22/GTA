@@ -3,6 +3,77 @@
 Written for the next AI session (or human) picking this work up. Read `/CLAUDE.md` first (commands,
 rules, workflow), then this page, then only the area doc your task needs (`docs/README.md`).
 
+## October 15: source fidelity, real door openings and Chevette replacement
+
+Continue on **`codex-reviews`**, the permanent GitHub branch. The owner renamed it
+on October 15 from `codex/chase-clouds-polish-2026-10-12` because reviews now cover
+the whole game; its history is preserved. Main is not an output of this review. The
+[October 15 audit](audit/vehicle-fidelity-2026-10-15/README.md) is the evidence index,
+including native before/after captures, exact build/asset hashes, reproducible
+source intake and qualified regression results.
+
+- SUV paint defects came from conversion changing authored split normals, even
+  at reduction ratio one. The Jimny now retains full near painted shell/panels/hood;
+  all near SUVs retain precise source shading. Reduced zero normals recover only
+  from nearby same-material source data with recorded repairs. Preserve the
+  [source fidelity contract](areas/vehicles-and-driving-source-fidelity.md), all
+  302 motorcycle arrays and the original 23-model pack. Do not smooth or aggressively
+  decimate these hero paint surfaces again.
+- Front doors now create an actual source-body aperture and move their source
+  paint, trim and front window. The original filled panel/uncut hull hid the cabin.
+  [Door contracts](areas/vehicles-and-driving-doors.md) cover source triangle IDs,
+  clipping caches, both doors, marks, crumple, source closure/repair and native hinges.
+  `assetCharAdopt` registers new layers inheriting a burnt body's existing material;
+  otherwise doors first built after a fire stay scorched after repair.
+  [Exit transitions](areas/vehicles-and-driving-door-transitions.md) use the existing
+  foot IK during the half-second exit crouch. Preserve the actual pose/IK/easing
+  source and shipped-shoe regression; the former pose buried feet up to 21 cm.
+- Ordinary Chevette Z06 uses Hari's licensed C8 **Stingray** source, with a detailed
+  cabin, native doors and separate steering/rolling/caliper frames. The existing
+  Chevette identity/handling/collider and separate Carbon Aero SE remain intact.
+  [Sports runtime](areas/vehicles-and-driving-models-sports.md) and
+  [clean source recipe](areas/vehicles-and-driving-models-sports-source.md) cover the
+  separate pack, exact ownership, source textures/emission and measured contacts.
+  Driver and passenger cushions differ: each has a fitted plan. The steering rim
+  centre differs from its authored column pivot; use the measured grip circle.
+  All four lamps belong to the real near/far mesh pairs; the actual distant source
+  draw is 9,407 triangles, including lamps, rather than the former 11,365.
+- Five reproduced gameplay/input defects are fixed: right aim retained by modal
+  transitions; travel/records completing while unfocused; death/arrest respawning
+  into unattended play; paid sportsbook progress lost during world reset; and live
+  gameplay/resume allowed while WebGL was lost or awaiting its recovery reload.
+  [Gameplay review](audit/vehicle-fidelity-2026-10-15/gameplay-review.md) retains
+  failing-before/passing-after production-function evidence and browser follow-ups.
+- Military work is [proposal only](audit/vehicle-fidelity-2026-10-15/military-proposal.md).
+  The HMMWV/M35 have not been replaced. A free Chieftain reference is previewed and
+  licensed, but changes tank identity and requires owner approval before import.
+- Keep native source previews distinct from in-game captures. The isolated SUV
+  normal experiment deliberately uses old runtime + corrected data; integrated
+  doors/C8 evidence uses its separately hashed candidate. Do not relabel inputs.
+  A corrected door screenshot fixture stages `look` before `drive`: `look` teleports
+  and exits land vehicles. Actual boarded identity is now asserted before capture.
+  The first corrected origin crossed an airport building at the low camera angle;
+  accepted door comparisons use the clear runway at (418, 6000).
+- **Final October 15 rendered checks pass.** The separately frozen FINAL4 runtime
+  (SHA-256 `21403cd7c63950f619da9e8818a60be14ef306b0d08ced79ac336cd247c4df1a`)
+  has [293 passing runtime assertions](audit/vehicle-fidelity-2026-10-15/verification/final4-runtime.json),
+  including the complete 267-assertion hybrid player-body test, the C8 near draw
+  (85,031 triangles) on High and Far draw (9,407) on Low and Ultra, doors first
+  opened after burning and then repaired, and entry/exit transitions. One deliberately induced WebGL loss
+  and restoration kept resume blocked during recovery; errors and frame faults
+  remained zero. The [packaged smoke](audit/vehicle-fidelity-2026-10-15/verification/final4-smoke.json)
+  then passed with real-key walking/driving (16/24 world units), map, both cameras,
+  visible default FPS, six PNGs and zero errors. The
+  [sequential pipeline](audit/vehicle-fidelity-2026-10-15/verification/corrected-render-pipeline.json)
+  records both successful exits. These used software WebGL through the managed
+  file-to-HTTP adapter; they do not test native `file://` loading or hardware FPS.
+  The earlier a59 gameplay checks and FINAL2 model comparison captures retain
+  their original build/hash labels; do not relabel them as FINAL4 evidence.
+- Hardware FPS on an M4 Max and four uninterrupted normal-input mission wins remain
+  unverified. Software WebGL, lifecycle tests and budgets do not establish AAA
+  production readiness. The branch workflow publishes a commit-specific playable
+  ZIP; this environment has no tool to update the existing chatgpt.site website.
+
 ## Permanent Codex branch and current review (14 October 2026)
 
 - **October 14 asset approval:** the owner approved all five replacement motorcycle and
@@ -40,8 +111,8 @@ rules, workflow), then this page, then only the area doc your task needs (`docs/
   unverified. The branch workflow publishes a commit-specific review ZIP; this session
   cannot update the existing chatgpt.site website.
 
-- **Permanent Codex development branch (owner instruction, October 13):
-  `codex/chase-clouds-polish-2026-10-12`.** Future Codex prompts update this same GitHub branch.
+- **Permanent Codex development branch (owner instruction, October 13; renamed October 15):
+  `codex-reviews` (formerly `codex/chase-clouds-polish-2026-10-12`).** Future Codex prompts update this same GitHub branch.
   This review continues from approved main `bde9ee4` (version 65), which already contains the
   previous Codex work. Merge newer approved main into this branch as needed; never reset or
   force-push it, and never push main without the owner's explicit approval. Shared checkout
@@ -60,8 +131,8 @@ rules, workflow), then this page, then only the area doc your task needs (`docs/
   actual M4 Max/laptop GPU frame rates remain unverified. Read the rider audit for small
   full-lock reach and source partition limitations before changing contact hints.
 
-- **Integrating Codex**: the owner uses Codex as a bug tester on `codex/*` branches and asks the lead to integrate
-  them from time to time: `git fetch origin <branch>`, review the src diff against CLAUDE.md (only upgrades), merge it
+- **Integrating Codex**: current work accumulates on `codex-reviews`; the owner asks the lead to integrate
+  it from time to time: `git fetch origin codex-reviews`, review the src diff against CLAUDE.md (only upgrades), merge it
   into the working branch (no PR), regenerate FILEMAP, run the suite. `codex/chase-clouds-polish-2026-10-12` was merged
   on October 12 (f0f3321, version 63). Codex's tools/smoke.mjs requires real key-driven movement. Slow software GL can use
   `DEC_SMOKE_MOVE_TIMEOUT_MS=240000`; this changes only wall-time allowance, retaining the
@@ -107,7 +178,7 @@ rules, workflow), then this page, then only the area doc your task needs (`docs/
   artifact version 62) to `main` (fast-forward to 9afe59d).
   On October 8 the owner approved moving `claude/trusting-cannon-seq2mv` (the chase view and chase detail rounds,
   artifact version 55) to `main`.
-  Codex sessions continue on `codex/chase-clouds-polish-2026-10-12`, the owner's permanent
+  Codex sessions continue on `codex-reviews`, the owner's permanent
   review branch. Claude keeps its own working branch. Moving `main` requires the owner's approval
   in the current conversation (never assume it; the approval covers that one push).
 - **Published build**: the claude.ai artifact https://claude.ai/artifact/NtDPAmpmNsgU8LPW4hH13B (split build:

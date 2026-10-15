@@ -4,6 +4,8 @@
 
 | Method | Purpose |
 | --- | --- |
+| `sportsAssets()` | Read-only C8 pack identity, near/far triangle counts, loaded atlas sizes, reduced-texture state and native door names. `assetCars()` also includes the active Chevette source. |
+| `vehicleDoors(id)` | Read-only actual rendered front-door hinges, angles, source layers, aperture masks and cabin geometry; omit `id` to report all built models. |
 | `sceneryPools(on)` | Immutable rooftop pools, currently solar panels (`scenery-pools3d.js`): `false` restores whole pools for A/B, `true` restores automatic spatial chunks with shadows off and no extra draws. Reports source/chunk counts, extra matrix bytes, per-pool `split`/`invalid`, and `viewInstancesBound` / `viewDrawsBound` (camera-frustum upper bounds, not GPU timings or shadow draw counts). Use `stats()` / `drawProfile()` for actual submitted work; real-device procedure: `docs/audit/laptop-profiling.md` |
 | `tyreSmoke()` | Tyre smoke, dust and road spray (tyresmoke3d.js): puffs alive, the graphics tier's cap, the pool's capacity, puffs emitted since boot and the peak alive (`null` without the 3D renderer) |
 | `effectParticles()` | The effect particle pool (fx3d-particles.js: smoke, dust, fire, sparks, flashes, glass, drops in one sorted, lit, instanced draw): `live` slots, `waiting` (on a delay), `drawn` last frame and of them `game` (the game's `particles`), `capacity` and `drawCapacity`, `peak`, `emitted` since boot, `dropped` for want of room, the tier's `tierShare` of the big recipes, `drawCalls` (0 or 1: the pool's own pass after the scene), `atlas` (`baked`, CPU `ms` of the sliced bake) and `blastAge` (seconds since the last blast, null before one); `null` without the 3D renderer |

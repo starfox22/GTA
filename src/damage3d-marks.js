@@ -78,12 +78,15 @@
         if (m.cabin && o === m.cabin) return false;
         // An open door's window (damage3d-bodies.js DOORS) is glass too.
         if (o.userData.doorGlass) return false;
+        if (o.userData.vehicleDoorInside) return false;
         // The trim's cabin share (seats, dash) is seen through the glass: never a place for a hole.
         const trim = m.kit?.trim;
-        if (trim && (o.userData.crumpleSource || o.geometry) === trim) {
+        const source = m.doorBodySources?.get(o.userData.vehicleDoorSource || o) || o.userData.crumpleSource || o.geometry;
+        if (trim && source === trim) {
           const outer = m.kit.trimOuter,
             count = outer && outer !== trim ? Math.min(outer.drawRange.count, trim.index ? trim.index.count : Infinity) : Infinity;
-          if (hit.faceIndex * 3 >= count) return false;
+          const face = o.geometry.userData.vehicleSourceFaces?.[hit.faceIndex] ?? hit.faceIndex;
+          if (face * 3 >= count) return false;
         }
         return true;
       }
@@ -236,6 +239,7 @@
       // A hole in the side's metal where a door has since sprung goes with the door: the same place on the door's skin
       // (its grid was laid on the pristine shell, damage3d-crumple.js doorPanelGeometries).
       function markOntoDoor(m, anchor) {
+        if (vehicleDoorMoveMark(m, anchor)) return;
         if (anchor.object !== m.shell || !m.doors || !m.crumple) return;
         const shell = m.crumple.parts.find((p) => p.mesh === m.shell);
         if (!shell) return;

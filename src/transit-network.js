@@ -176,7 +176,7 @@
       transitStation = s;
       gameMode = 'transit';
       keys = {};
-      mouse.down = false;
+      mouse.down = mouse.alt = false;
       getElement('transitOverlay').classList.remove('hidden');
       getElement('transitTitle').textContent = s.name;
       getElement('transitKey').textContent = keyName('interact');

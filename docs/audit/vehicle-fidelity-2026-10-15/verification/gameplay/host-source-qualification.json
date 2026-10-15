@@ -1,0 +1,221 @@
+{
+  "note": "Static inventory of original214 selection: these modules read workspace source; frozen HTML alone does not freeze them. Literal source names can omit dynamically generated paths. Final affected host rerun required.",
+  "originalSelectedModules": 214,
+  "modules": [
+    {
+      "test": "approved-motorcycle-rigs.mjs",
+      "sourceLiterals": [
+        "r160.js"
+      ]
+    },
+    {
+      "test": "approved-suv-rigs.mjs",
+      "sourceLiterals": [
+        "r160.js"
+      ]
+    },
+    {
+      "test": "approved-vehicle-pipeline.mjs",
+      "sourceLiterals": [
+        "r160.js"
+      ]
+    },
+    {
+      "test": "chase-audio-pan.mjs",
+      "sourceLiterals": []
+    },
+    {
+      "test": "chase-cover-clearance.mjs",
+      "sourceLiterals": []
+    },
+    {
+      "test": "cloud-history.mjs",
+      "sourceLiterals": [
+        "clouds3d-sky-history.js"
+      ]
+    },
+    {
+      "test": "combat-continuity.mjs",
+      "sourceLiterals": []
+    },
+    {
+      "test": "driving-settings-migrate.mjs",
+      "sourceLiterals": [
+        "driving.js"
+      ]
+    },
+    {
+      "test": "fps-counter.mjs",
+      "sourceLiterals": [
+        "game-loop.js"
+      ]
+    },
+    {
+      "test": "frame-trace.mjs",
+      "sourceLiterals": [
+        "frame-trace.js"
+      ]
+    },
+    {
+      "test": "instance-upload-ranges.mjs",
+      "sourceLiterals": [
+        "Three.js",
+        "damage3d-decals.js",
+        "flight-view3d.js",
+        "lighting3d-vehicle-lights.js",
+        "r160.js"
+      ]
+    },
+    {
+      "test": "m4-wheel-partition.mjs",
+      "sourceLiterals": [
+        "military-asset-wheels3d.js",
+        "r160.js",
+        "vehicle-assets3d.js"
+      ]
+    },
+    {
+      "test": "military-model-rig.mjs",
+      "sourceLiterals": [
+        "Three.js",
+        "approved-vehicle-assets3d.js",
+        "cars3d-materials.js",
+        "military-asset-wheels3d.js",
+        "military-assets3d.js",
+        "r160.js",
+        "vehicle-assets3d.js",
+        "vehicle-char3d.js"
+      ]
+    },
+    {
+      "test": "mission-modal-input.mjs",
+      "sourceLiterals": [
+        "fort-cover-records.js",
+        "skyline-lift.js"
+      ]
+    },
+    {
+      "test": "mission-retry-save.mjs",
+      "sourceLiterals": []
+    },
+    {
+      "test": "mission-world-preservation.mjs",
+      "sourceLiterals": []
+    },
+    {
+      "test": "mission34-lifecycle.mjs",
+      "sourceLiterals": []
+    },
+    {
+      "test": "motorcycle-puncture.mjs",
+      "sourceLiterals": [
+        "damage-vehicles.js",
+        "driveby-seats.js"
+      ]
+    },
+    {
+      "test": "motorcycle-rider-fit.mjs",
+      "sourceLiterals": [
+        "r160.js"
+      ]
+    },
+    {
+      "test": "motorcycle-wheel-rig.mjs",
+      "sourceLiterals": [
+        "Three.js",
+        "damage3d-bodies.js",
+        "motorbike-assets3d.js",
+        "motorbikes3d.js",
+        "offroad3d-mud.js",
+        "r160.js",
+        "render3d-frame.js",
+        "vehicle-assets3d.js"
+      ]
+    },
+    {
+      "test": "mounted-gun-projection.mjs",
+      "sourceLiterals": [
+        "combat-rules.js",
+        "mounted-guns.js"
+      ]
+    },
+    {
+      "test": "mouse-buttons.mjs",
+      "sourceLiterals": []
+    },
+    {
+      "test": "npc-avatars.mjs",
+      "sourceLiterals": [
+        "character-rig3d.js",
+        "npc-avatar-cast.js",
+        "npc-avatar3d-fit.js",
+        "npc-avatar3d-shader.js",
+        "player-body3d-anatomy.js",
+        "player-body3d-asset.js",
+        "player-body3d-extremities.js",
+        "r160.js",
+        "sports.js",
+        "three.js",
+        "voices.js"
+      ]
+    },
+    {
+      "test": "player-body.mjs",
+      "sourceLiterals": [
+        "asset-loader.js",
+        "character-near3d-shader.js",
+        "character-rig3d.js",
+        "player-body3d-anatomy.js",
+        "player-body3d-asset.js",
+        "player-body3d-build.js",
+        "player-body3d-extremities.js",
+        "player-body3d-grips.js",
+        "player-body3d-head.js",
+        "player-body3d-mesher.js",
+        "player-body3d-shader.js",
+        "r160.js",
+        "three.js"
+      ]
+    },
+    {
+      "test": "rig-geometry.mjs",
+      "sourceLiterals": [
+        "character-near3d-head.js",
+        "character-near3d-shader.js",
+        "character-near3d.js",
+        "character-rig3d-kit.js",
+        "character-rig3d.js",
+        "r160.js",
+        "three.js"
+      ]
+    },
+    {
+      "test": "road-signs.mjs",
+      "sourceLiterals": [
+        "civic3d.js"
+      ]
+    },
+    {
+      "test": "scenery-pools.mjs",
+      "sourceLiterals": [
+        "Three.js",
+        "r160.js",
+        "scenery-pools3d.js"
+      ]
+    },
+    {
+      "test": "vehicle-material-lifecycle.mjs",
+      "sourceLiterals": [
+        "damage3d-bodies.js",
+        "r160.js",
+        "vehicle-char3d.js"
+      ]
+    },
+    {
+      "test": "vehicle-merge.mjs",
+      "sourceLiterals": [
+        "vehicle-merge3d.js"
+      ]
+    }
+  ]
+}

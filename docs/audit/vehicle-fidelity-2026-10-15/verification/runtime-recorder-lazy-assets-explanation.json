@@ -1,0 +1,3 @@
+{
+  "qualification": "Fixture waited for nonempty sports atlasSizes before carLineup built the first C8. Sports maps are initialized lazily by the actual model/material builder. The timeout occurs before the first car/model assertions; zero console errors. Correct order creates/renders C8, then retains the same actual atlas dimension checks. No production source or model assertion weakened."
+}

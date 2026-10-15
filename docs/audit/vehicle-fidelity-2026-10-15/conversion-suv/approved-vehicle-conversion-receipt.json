@@ -1,0 +1,1286 @@
+{
+  "models": {
+    "m1_enduro": {
+      "title": "Real Motorbike 02",
+      "sourceTriangles": 12351,
+      "triangles": 12350,
+      "farTriangles": 2707,
+      "dims": [
+        2.2430405332680894,
+        1.6277218014001846,
+        0.9387188255786896
+      ],
+      "wheels": [
+        {
+          "x": 0.7549644814951904,
+          "y": 0.3712850035193205,
+          "z": 0.0017204985970389183,
+          "r": 0.36794245443769835,
+          "width": 0.10119472235444549,
+          "side": 1,
+          "front": true,
+          "axle": [
+            0.0006901146014644387,
+            -4.115013554351066e-07,
+            0.9999997618708054
+          ]
+        },
+        {
+          "x": -0.7549713905034041,
+          "y": 0.36654175971816827,
+          "z": -0.001719972228351302,
+          "r": 0.3679424424385121,
+          "width": 0.10119468070393643,
+          "side": 1,
+          "front": false,
+          "axle": [
+            0.00034480208317952025,
+            5.390694943763208e-07,
+            0.9999999405556146
+          ]
+        }
+      ]
+    },
+    "m2_sport": {
+      "title": "Sport motorcycle (SRAD 750)",
+      "sourceTriangles": 403396,
+      "triangles": 50795,
+      "farTriangles": 12820,
+      "dims": [
+        2.3499084459232287,
+        1.3225039827046685,
+        0.8953110834292488
+      ],
+      "wheels": [
+        {
+          "x": 0.8332154047885676,
+          "y": 0.34205489846613235,
+          "z": -0.001701435259651514,
+          "r": 0.3417080310802304,
+          "width": 0.13586916270716476,
+          "side": 1,
+          "front": true,
+          "axle": [
+            -2.79565882827243e-07,
+            1.5416033703085546e-08,
+            0.9999999999999608
+          ]
+        },
+        {
+          "x": -0.8097510422008045,
+          "y": 0.3601503386206522,
+          "z": 0.0022005932923876512,
+          "r": 0.36518308753211803,
+          "width": 0.21831704986741346,
+          "side": 1,
+          "front": false,
+          "axle": [
+            -5.866106136678458e-08,
+            5.568160558096913e-08,
+            0.9999999999999968
+          ]
+        }
+      ]
+    },
+    "s1_jimny": {
+      "title": "Suzuki Jimny 2023",
+      "sourceTriangles": 456991,
+      "triangles": 122277,
+      "farTriangles": 10043,
+      "dims": [
+        3.637870192527771,
+        1.8881164789198883,
+        1.8599059581756592
+      ],
+      "wheels": [
+        {
+          "x": 1.1670727109418817,
+          "y": 0.34746397502464865,
+          "z": -0.6983306161779689,
+          "r": 0.348637675615046,
+          "width": 0.20245601337574542,
+          "side": -1,
+          "front": true,
+          "axle": [
+            0.0003613080257103274,
+            -0.000682982485844863,
+            0.9999997014956726
+          ]
+        },
+        {
+          "x": 1.167402497363484,
+          "y": 0.3474501200693623,
+          "z": 0.6986321536190184,
+          "r": 0.34862640064652806,
+          "width": 0.20238712450700863,
+          "side": 1,
+          "front": true,
+          "axle": [
+            0.00027378447664400194,
+            0.0005741042496572035,
+            0.9999997977231649
+          ]
+        },
+        {
+          "x": -1.0734192606520292,
+          "y": 0.3474636143693023,
+          "z": -0.6983267907308915,
+          "r": 0.3486153709916809,
+          "width": 0.20239067829714333,
+          "side": -1,
+          "front": false,
+          "axle": [
+            0.00032335494403851195,
+            -0.0006624391104479432,
+            0.9999997283079659
+          ]
+        },
+        {
+          "x": -1.07309194810232,
+          "y": 0.34746412843037794,
+          "z": 0.6986680785284657,
+          "r": 0.34861611466364406,
+          "width": 0.20245157815179343,
+          "side": 1,
+          "front": false,
+          "axle": [
+            0.00035207156572869547,
+            0.0006775358417691058,
+            0.9999997084953555
+          ]
+        }
+      ]
+    },
+    "s2_suv": {
+      "title": "Generic SUV",
+      "sourceTriangles": 7951,
+      "triangles": 7951,
+      "farTriangles": 4354,
+      "dims": [
+        4.611267357026888,
+        1.7332332754720121,
+        2.0676090162520184
+      ],
+      "wheels": [
+        {
+          "x": 1.4321050779033238,
+          "y": 0.37588416614122083,
+          "z": -0.7238969258515195,
+          "r": 0.3758841687306566,
+          "width": 0.31688654546161166,
+          "side": -1,
+          "front": true,
+          "axle": [
+            4.89726559446366e-08,
+            3.2219350502348683e-16,
+            0.999999999999999
+          ]
+        },
+        {
+          "x": 1.4321045871941784,
+          "y": 0.37588416614122117,
+          "z": 0.7238967347461441,
+          "r": 0.3758841661413993,
+          "width": 0.31688654546161177,
+          "side": 1,
+          "front": true,
+          "axle": [
+            4.89726559446366e-08,
+            3.2219350502348683e-16,
+            0.999999999999999
+          ]
+        },
+        {
+          "x": -1.2984421337423022,
+          "y": 0.3758842746221182,
+          "z": -0.7238972018819496,
+          "r": 0.37588416873065644,
+          "width": 0.31688654546161155,
+          "side": -1,
+          "front": false,
+          "axle": [
+            4.89726559446366e-08,
+            3.2219350502348683e-16,
+            0.999999999999999
+          ]
+        },
+        {
+          "x": -1.2984426244514475,
+          "y": 0.3758842746221185,
+          "z": 0.7238964587157142,
+          "r": 0.3758841661413993,
+          "width": 0.31688654546161166,
+          "side": 1,
+          "front": false,
+          "axle": [
+            4.89726559446366e-08,
+            3.2219350502348683e-16,
+            0.999999999999999
+          ]
+        }
+      ]
+    },
+    "s3_offroad": {
+      "title": "Generic Offroad",
+      "sourceTriangles": 6502,
+      "triangles": 6502,
+      "farTriangles": 3563,
+      "dims": [
+        3.9394364708438196,
+        1.5696125417427886,
+        1.960026774849609
+      ],
+      "wheels": [
+        {
+          "x": 1.221906746474355,
+          "y": 0.35760174494272,
+          "z": 0.7349888996200038,
+          "r": 0.3576017449428896,
+          "width": 0.30147366095463035,
+          "side": 1,
+          "front": true,
+          "axle": [
+            5.899801754533612e-07,
+            2.666861368371689e-16,
+            0.999999999999826
+          ]
+        },
+        {
+          "x": 1.2219058594298415,
+          "y": 0.35760174494271973,
+          "z": -0.7349888684617663,
+          "r": 0.35760174723803184,
+          "width": 0.30147366095463046,
+          "side": -1,
+          "front": true,
+          "axle": [
+            5.899801754533612e-07,
+            2.666861368371689e-16,
+            0.999999999999826
+          ]
+        },
+        {
+          "x": -1.0988317150975169,
+          "y": 0.35760185342361706,
+          "z": 0.7349891695249164,
+          "r": 0.3576017449428896,
+          "width": 0.30147366095463035,
+          "side": 1,
+          "front": false,
+          "axle": [
+            5.899801754533612e-07,
+            2.666861368371689e-16,
+            0.999999999999826
+          ]
+        },
+        {
+          "x": -1.0988331928274544,
+          "y": 0.3576018534236167,
+          "z": -0.7349876081596609,
+          "r": 0.3576017472380332,
+          "width": 0.30147366095463046,
+          "side": -1,
+          "front": false,
+          "axle": [
+            5.899801754533612e-07,
+            2.666861368371689e-16,
+            0.999999999999826
+          ]
+        }
+      ]
+    }
+  },
+  "legacyUntouched": {
+    "vehicle-models.bin": "63908560d08068f6b6df9859b9bb6040ad38028c2a0d9a0268f7d9cd4c2649ae",
+    "vehicle-atlas.webp": "1dbbb7ea292956c3280e52c0d8121dc47d009bfe043717d1d2c55d90c87865f2"
+  },
+  "output": {
+    "approved-vehicle-models.bin": {
+      "sha256": "f21c4d91d34df544ffab87b895551b3ef7712746fd25c394e33738056b71e895",
+      "bytes": 7562096
+    },
+    "approved-vehicle-albedo.webp": {
+      "sha256": "efd56ff941652ed28c64507ed239b8ced3f812f0960409fd217149a8dba4cdbe",
+      "bytes": 4428044
+    },
+    "approved-vehicle-orm.webp": {
+      "sha256": "bd38bd3f94a11f72855ba1401c3135e7092b31553a57944b9727e782879456dc",
+      "bytes": 98718
+    },
+    "approved-vehicle-albedo-low.webp": {
+      "sha256": "f4f7583617c32339d2ca91e00722a6f5c3295b10451a783f291aed0b9b7ab1f2",
+      "bytes": 1340078
+    },
+    "approved-vehicle-orm-low.webp": {
+      "sha256": "39a3bf2ec95a6481c622d1c22c4ab56385d63f9894de11cdf84c3276f61a5182",
+      "bytes": 53742
+    }
+  },
+  "sourcePixelsDownsampled": false,
+  "sourcePartition": {
+    "m1_enduro": {
+      "triangles": 12351,
+      "allSourceFacesAssignedExactlyOnce": true
+    },
+    "m2_sport": {
+      "triangles": 403396,
+      "allSourceFacesAssignedExactlyOnce": true
+    },
+    "s1_jimny": {
+      "triangles": 456991,
+      "allSourceFacesAssignedExactlyOnce": true
+    },
+    "s2_suv": {
+      "triangles": 7951,
+      "allSourceFacesAssignedExactlyOnce": true
+    },
+    "s3_offroad": {
+      "triangles": 6502,
+      "allSourceFacesAssignedExactlyOnce": true
+    }
+  },
+  "authoredOpticalGlass": {
+    "sourceTriangles": 17818,
+    "sourceAlpha": "BLEND opacity retained in albedo alpha; dedicated two-sided transparent draw",
+    "materials": [
+      {
+        "index": 16,
+        "name": "Carro_Reflect",
+        "opacity": 0.4,
+        "triangles": 196
+      },
+      {
+        "index": 17,
+        "name": "Carro_Reflector",
+        "opacity": 0.4,
+        "triangles": 516
+      },
+      {
+        "index": 23,
+        "name": "Carro_Vidro_Laranja",
+        "opacity": 0.4,
+        "triangles": 4728
+      },
+      {
+        "index": 24,
+        "name": "Carro_Vidros",
+        "opacity": 0.4,
+        "triangles": 10148
+      },
+      {
+        "index": 25,
+        "name": "Carro_Vidros_Vermelhos",
+        "opacity": 0.5,
+        "triangles": 2230
+      }
+    ]
+  },
+  "sourceExteriorPaint": {
+    "sourcePrimitive": "SUV Body_Body_0",
+    "sourceMaterial": "Body_7",
+    "mainBodyFaces": 3997,
+    "movedFaces": 840,
+    "roofFaces": 406,
+    "upperDoorFaces": 434,
+    "sourceFacesSHA256": "fc55f60f9f7eac20e3a881bd7f4053b1e2df1810bec6d6fc0bffba75555074d4",
+    "operation": "Role classification only; original positions, normals, RGB, ORM and source UV retained. Pigment normalization remains limited to original coating93."
+  },
+  "integrityChecks": 1483,
+  "lowAtlas": {
+    "size": [
+      2048,
+      2048
+    ],
+    "purpose": "LOW/MEDIUM GPU storage and upload reduction; HQ source texels retained"
+  },
+  "sourceUVRepeat": {
+    "attributes": {
+      "a": "f4 source UV vec2",
+      "t": "u2 normalized atlas rectangle vec4"
+    },
+    "sampling": "rect.xy + fract(sourceUV) * rect.zw",
+    "solidUV": "constant 0.5 for materials without any image"
+  },
+  "atlasTiles": {
+    "b3c1cc354343b7c904e77abb5f2439c7a6e6b5edefc484b6f5bfb782acb1f837": {
+      "rect": [
+        2,
+        2,
+        1024,
+        1024
+      ],
+      "users": [
+        [
+          "m1_enduro",
+          0,
+          "data--Materials--Cars--Motorbike--Motorbike"
+        ],
+        [
+          "m1_enduro",
+          1,
+          "data--Materials--Cars--Motorbike--MotorbikeLights"
+        ]
+      ]
+    },
+    "1881115af454e491b7a893b4fc9f6bf4125029a023479e265e23a0c92ec3b1da": {
+      "rect": [
+        3898,
+        2,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "m1_enduro",
+          2,
+          "data--Materials--Cars--Scooter--ScooterMetal"
+        ],
+        [
+          "m1_enduro",
+          4,
+          "data--Materials--Cars--Scooter--ScooterWheel"
+        ]
+      ]
+    },
+    "b339139697fdd88f5f95af9f4927d1aa244e08b361bea64211f6275110785d3a": {
+      "rect": [
+        3910,
+        2,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "m1_enduro",
+          3,
+          "data--Materials--Cars--Scooter--ScooterPlastic"
+        ]
+      ]
+    },
+    "b937311e1753358c8a6c15aa47f1e8a82273cfb185711a08c6c60591c59c706d": {
+      "rect": [
+        3922,
+        2,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "m2_sport",
+          0,
+          "Car_Paint_-_Red.001"
+        ],
+        [
+          "m2_sport",
+          1,
+          "Car_Paint_-_Black"
+        ],
+        [
+          "m2_sport",
+          3,
+          "Matte__FF00FFC8__spec_FR"
+        ],
+        [
+          "m2_sport",
+          4,
+          "Matte__FFCCCCCC__spec"
+        ],
+        [
+          "m2_sport",
+          5,
+          "Matte__FFFFFFFF__env_6_spec"
+        ],
+        [
+          "m2_sport",
+          6,
+          "Matte__FFFF3C00__spec_RR"
+        ],
+        [
+          "m2_sport",
+          7,
+          "Matte__FFFFFFFF"
+        ],
+        [
+          "m2_sport",
+          11,
+          "metalpipegold__spec"
+        ],
+        [
+          "m2_sport",
+          14,
+          "dourado__spec"
+        ],
+        [
+          "m2_sport",
+          20,
+          "Matte__57CCCCCC__trans"
+        ],
+        [
+          "m2_sport",
+          21,
+          "Matte__6BFFFFFF__prim_spec_trans"
+        ],
+        [
+          "m2_sport",
+          22,
+          "branco__spec"
+        ],
+        [
+          "m2_sport",
+          23,
+          "Matte__662F2F2F__spec_trans"
+        ],
+        [
+          "m2_sport",
+          26,
+          "Matte__FFAAAAAA__env_29_spec"
+        ],
+        [
+          "m2_sport",
+          31,
+          "Material.002"
+        ],
+        [
+          "m2_sport",
+          32,
+          "Material.003"
+        ],
+        [
+          "damage-panels",
+          -1,
+          "neutral white"
+        ]
+      ]
+    },
+    "3cc0df74589757e736061e7fad71585eaa24604c0a172d6c7855e7f7a24ef7f8": {
+      "rect": [
+        3934,
+        2,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "m2_sport",
+          2,
+          "renan__spec"
+        ]
+      ]
+    },
+    "e2473ea785cbe80dc636dae77d28525e9c650e23627935f5075e636dced71c73": {
+      "rect": [
+        3946,
+        2,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "m2_sport",
+          8,
+          "Matte__FFCCCCCC"
+        ]
+      ]
+    },
+    "0d07a8c317dc6b21f672816d7d63761170851709eef16b586bc8af6cb6690cfd": {
+      "rect": [
+        3958,
+        2,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "m2_sport",
+          9,
+          "aluminium__spec"
+        ]
+      ]
+    },
+    "284405c55231ba1b6aa827705a1e206784e4156d78231c303de9f3231c295f30": {
+      "rect": [
+        3970,
+        2,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "m2_sport",
+          10,
+          "renan"
+        ]
+      ]
+    },
+    "7071859510116ab70a8eaeb1f9930126edef5e17d798615dd7a142a7698fb684": {
+      "rect": [
+        3982,
+        2,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "m2_sport",
+          12,
+          "fronts__spec"
+        ]
+      ]
+    },
+    "c2a041eed322d71ab95cc55d44835505c09d3b8a19017bf71aa21b0926ee31ea": {
+      "rect": [
+        3994,
+        2,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "m2_sport",
+          13,
+          "Matte__FFCCCCCC__env_50"
+        ],
+        [
+          "m2_sport",
+          30,
+          "Material.004"
+        ],
+        [
+          "m2_sport",
+          34,
+          "Material"
+        ]
+      ]
+    },
+    "d5c030903eea7aa83b65ee58d28d4d116924eef2560b5e53daa520f984ed7e4d": {
+      "rect": [
+        4006,
+        2,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "m2_sport",
+          15,
+          "Matte__FFFF0000"
+        ]
+      ]
+    },
+    "426d4592168e214d1efbab92c069b247bc5b4a6c32cddfe20021938730e18e2f": {
+      "rect": [
+        4018,
+        2,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "m2_sport",
+          16,
+          "Matte__FF0000FF"
+        ]
+      ]
+    },
+    "2625f3e7b90e2ef79c3e3bb69474b97a28b0320fb1517ef40eb2a5aa59b908c7": {
+      "rect": [
+        4030,
+        2,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "m2_sport",
+          17,
+          "Matte__FFFFFF00"
+        ]
+      ]
+    },
+    "189e8e8b48e16a5f2f7f5dba9ef3aa007641564190c4d07c48fb409d68b7682d": {
+      "rect": [
+        4042,
+        2,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "m2_sport",
+          18,
+          "Matte__FF00FF00"
+        ]
+      ]
+    },
+    "97f7201f0d1a04ad18d32f2d570d7246a884210a0abfe9514f5701565752bff4": {
+      "rect": [
+        4054,
+        2,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "m2_sport",
+          19,
+          "Matte__FFFF6666"
+        ]
+      ]
+    },
+    "35283770fa76c46950cc74f1bc3c2905b004daef5106cb8a514b4b27770f5aa6": {
+      "rect": [
+        4066,
+        2,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "m2_sport",
+          24,
+          "Matte__FF292929"
+        ]
+      ]
+    },
+    "71828fb6892d74d327a8fb2629bd67971f1ebe64beed99ba1bd7e1d683724583": {
+      "rect": [
+        4078,
+        2,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "m2_sport",
+          25,
+          "Matte__FFB90000"
+        ]
+      ]
+    },
+    "5a5732ddc44baaac86138b30f544213900c28c2b218d2f81b2343970ec74efba": {
+      "rect": [
+        3898,
+        14,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "m2_sport",
+          27,
+          "Matte__FFFFF2C6__spec"
+        ]
+      ]
+    },
+    "7dbf92afe64a3ac2ebf7126e6c767aae3c9bf18319cc9d0ef37490613a2fae2c": {
+      "rect": [
+        3910,
+        14,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "m2_sport",
+          28,
+          "Motor"
+        ]
+      ]
+    },
+    "46d226c13d15f9abcdaa4bd384ee3b570a8a209030906da8f95aa98351d0102b": {
+      "rect": [
+        3922,
+        14,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "m2_sport",
+          29,
+          "Echape"
+        ]
+      ]
+    },
+    "fccd133f48480dfb33d13f49f531beb81e80de87d513241adbacccd3443f9bfb": {
+      "rect": [
+        3934,
+        14,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "m2_sport",
+          33,
+          "Roue"
+        ]
+      ]
+    },
+    "441e5dad1d7539ada5e311680e50513d058cd9a9b6da693ea630b270630d0821": {
+      "rect": [
+        3946,
+        14,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "m2_sport",
+          35,
+          "Material.001"
+        ]
+      ]
+    },
+    "aff688887cd7aa70e48abc8bbdb8de8dc0112f9c8977d9356e896cda40d59be1": {
+      "rect": [
+        3958,
+        14,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "m2_sport",
+          36,
+          "Matte__FFAAAAAA__env_11_spec"
+        ]
+      ]
+    },
+    "3c159ab3fc47a7cd72e8673bcde34703598880be4ad6d187d2a17cbc1119830c": {
+      "rect": [
+        3970,
+        14,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "m2_sport",
+          37,
+          "Matte__FF8C0000__spec"
+        ]
+      ]
+    },
+    "df298abc162fa75032b20b0b65ae212707eb3c754e33690c31ed770514b93ed9": {
+      "rect": [
+        3982,
+        14,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "s1_jimny",
+          0,
+          "Carro_Cromado"
+        ],
+        [
+          "s1_jimny",
+          6,
+          "Carro_Metal_Farol"
+        ]
+      ]
+    },
+    "6ec6af0379fa43e2a03e1d58a5548c2229819f087699156f74fa26044bd82b1f": {
+      "rect": [
+        3086,
+        2,
+        512,
+        512
+      ],
+      "users": [
+        [
+          "s1_jimny",
+          1,
+          "Carro_Disco"
+        ]
+      ]
+    },
+    "e9e068e3080e42dc6e95fefe0f1d5c0c0e16e6b31c90a24031ede8134de27e61": {
+      "rect": [
+        3994,
+        14,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "s1_jimny",
+          2,
+          "Carro_Espelhos"
+        ]
+      ]
+    },
+    "831614ae64800e4b77ac2dc2b47c310f5a4852c654c26ea6ef070bedfde6af48": {
+      "rect": [
+        1030,
+        2,
+        1024,
+        1024
+      ],
+      "users": [
+        [
+          "s1_jimny",
+          3,
+          "Carro_Freio"
+        ]
+      ]
+    },
+    "71b03ada0228bf00fc7eb6b66e216bb49cc7c59db2302cac6eb754fb43309cb0": {
+      "rect": [
+        4006,
+        14,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "s1_jimny",
+          4,
+          "Carro_Interno"
+        ]
+      ]
+    },
+    "00e42907fbaee4e7335ebfdd6248a19b68772b435aa45fde9cc4d0b245831301": {
+      "rect": [
+        4018,
+        14,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "s1_jimny",
+          5,
+          "Carro_Interno_1"
+        ]
+      ]
+    },
+    "d9f1cd9a9188f299bca7e316eab17bd4e0d9551407321bb69213f7dc7fb3ba0d": {
+      "rect": [
+        4030,
+        14,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "s1_jimny",
+          7,
+          "Carro_Metal_Preto"
+        ],
+        [
+          "s1_jimny",
+          8,
+          "Carro_Metal_Preto_1"
+        ]
+      ]
+    },
+    "4da3e531a16ddcc8451d169e826d1c3f658225593d41c6adcad78b3be583c6ea": {
+      "rect": [
+        2058,
+        2,
+        1024,
+        1024
+      ],
+      "users": [
+        [
+          "s1_jimny",
+          9,
+          "Carro_Painel4"
+        ]
+      ]
+    },
+    "4fbdbb74bf39a0a5564e61cc0cb3044c9b5adc391de6888df564b89fe23698ba": {
+      "rect": [
+        4042,
+        14,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "s1_jimny",
+          10,
+          "Carro_Pintura"
+        ]
+      ]
+    },
+    "3b728fbc2b62996de6f4d282c90f8762142359d3170ae1147026b69c7f5a6d16": {
+      "rect": [
+        4054,
+        14,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "s1_jimny",
+          11,
+          "Carro_Plastico"
+        ],
+        [
+          "s1_jimny",
+          12,
+          "Carro_Plastico_1"
+        ]
+      ]
+    },
+    "18506fadf7762e830a7213b9bb2410f147ee41c197adbfcc164783d75faa873a": {
+      "rect": [
+        4066,
+        14,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "s1_jimny",
+          13,
+          "Carro_Pneu"
+        ]
+      ]
+    },
+    "77dfc915e00f7db41cc3e771f6315454f7e7eb7ce369a221e20e370e6df68564": {
+      "rect": [
+        3086,
+        518,
+        512,
+        512
+      ],
+      "users": [
+        [
+          "s1_jimny",
+          14,
+          "Carro_Ref"
+        ],
+        [
+          "s1_jimny",
+          15,
+          "Carro_Refl"
+        ]
+      ]
+    },
+    "9b7700968b6b682641be96cf11b0606c1bbafb0ad903bd76155581e71c0637eb": {
+      "rect": [
+        3602,
+        2,
+        256,
+        256
+      ],
+      "users": [
+        [
+          "s1_jimny",
+          16,
+          "Carro_Reflect"
+        ],
+        [
+          "s1_jimny",
+          17,
+          "Carro_Reflector"
+        ]
+      ]
+    },
+    "c31089b317ad15f2f2c75db03adadfe04e500bc1e92b55b9f2a5291ad1fc41bb": {
+      "rect": [
+        3862,
+        2,
+        32,
+        32
+      ],
+      "users": [
+        [
+          "s1_jimny",
+          18,
+          "Carro_Refletor_Farol"
+        ],
+        [
+          "s1_jimny",
+          19,
+          "Carro_Refletor_Farol_1"
+        ],
+        [
+          "s1_jimny",
+          20,
+          "Carro_Refletor_Lanterna"
+        ],
+        [
+          "s1_jimny",
+          21,
+          "Carro_Refletor_Lanterna_1"
+        ]
+      ]
+    },
+    "177bbd79477cc380204dd9abfeb8034ffc276fbb928fb91e6b0962d342289906": {
+      "rect": [
+        4078,
+        14,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "s1_jimny",
+          22,
+          "Carro_Roda"
+        ]
+      ]
+    },
+    "70aaec13d04edf4359f10e2560329bf06d1220a07e586931f31c48246c9b2836": {
+      "rect": [
+        3898,
+        26,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "s1_jimny",
+          23,
+          "Carro_Vidro_Laranja"
+        ]
+      ]
+    },
+    "8d1eb3b6e2f9d44c970654d2e145dee20fad9551873cce3ae9fd8e54ebc94594": {
+      "rect": [
+        3910,
+        26,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "s1_jimny",
+          24,
+          "Carro_Vidros"
+        ]
+      ]
+    },
+    "86331b768b2926507a27d6aae6c84227447fb82f9cacfb930443f0b8d13479fb": {
+      "rect": [
+        3922,
+        26,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "s1_jimny",
+          25,
+          "Carro_Vidros_Vermelhos"
+        ]
+      ]
+    },
+    "6643fd23d2f6ec94a51571b63b01e152fe6747e5f342321c523d96f0e51305b6": {
+      "rect": [
+        2,
+        1030,
+        1024,
+        1024
+      ],
+      "users": [
+        [
+          "s2_suv",
+          33,
+          "Wheel_6"
+        ]
+      ]
+    },
+    "35bab9a55f77eae8282dca5d93791aa2eff315296015f22d1620a210b3869a01": {
+      "rect": [
+        1030,
+        1030,
+        1024,
+        1024
+      ],
+      "users": [
+        [
+          "s2_suv",
+          34,
+          "Body_7 (neutral coating; original trim texels)"
+        ]
+      ]
+    },
+    "d955386650c913267e0536fa0ae5071cdbdde93d4bf87c6037485171ea5695e6": {
+      "rect": [
+        3934,
+        26,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "s2_suv",
+          35,
+          "Glass_7"
+        ]
+      ]
+    },
+    "2589ab1b43e313172bf731007288bf960a07866b5c08aa98afdb1a82f53aac73": {
+      "rect": [
+        2058,
+        1030,
+        1024,
+        1024
+      ],
+      "users": [
+        [
+          "s2_suv",
+          36,
+          "Optics_7"
+        ],
+        [
+          "s3_offroad",
+          20,
+          "Optics_3"
+        ]
+      ]
+    },
+    "5b3b3524be1a1b7442309053dc97388936c3da9b20bbe59e84e957ec094db5f6": {
+      "rect": [
+        2,
+        2058,
+        1024,
+        1024
+      ],
+      "users": [
+        [
+          "s3_offroad",
+          17,
+          "Wheel_2"
+        ]
+      ]
+    },
+    "a75045b5f797bfb65f02936ae23aadf373f8fdd7a4d921c393c7e5bf168ba5ce": {
+      "rect": [
+        1030,
+        2058,
+        1024,
+        1024
+      ],
+      "users": [
+        [
+          "s3_offroad",
+          18,
+          "Body_3 (neutral coating; original trim texels)"
+        ]
+      ]
+    },
+    "2315f3a8ffe2211e5a8f3a7c489e3aecedae99348bd8fe5b69a7b4ea82d0637c": {
+      "rect": [
+        3946,
+        26,
+        8,
+        8
+      ],
+      "users": [
+        [
+          "s3_offroad",
+          19,
+          "Glass_3"
+        ]
+      ]
+    }
+  }
+}

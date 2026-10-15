@@ -1,0 +1,14 @@
+{
+  "htmlSha256": "21403cd7c63950f619da9e8818a60be14ef306b0d08ced79ac336cd247c4df1a",
+  "recorderSha256": "bbf3f06a51a0aa105d1437ccf482ca962905c5a1e209e644b535139a5786c006",
+  "gpuTestSha256": "042fe03009559f796d7851750d03078c7d2006f216ddfecb192751a7b467cc85",
+  "checks": 1,
+  "notes": [],
+  "errors": [],
+  "warnings": [
+    "Scripts \"build/three.js\" and \"build/three.min.js\" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation"
+  ],
+  "lod": [],
+  "playerBodyTestSha256": "bbb4c503dd7175965173155090f863df71f4774c08e09883f8242ddf3ea5368a",
+  "failure": "page.waitForFunction: Timeout 240000ms exceeded.\n    at tier (/workspace/GTA/tools/vehicle-runtime-final-review.mjs:40:13)\n    at async file:///workspace/GTA/tools/vehicle-runtime-final-review.mjs:52:2"
+}

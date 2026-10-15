@@ -18,7 +18,7 @@ sh tools/check.sh [tag]                  # syntax gate only (dist/check/<tag>.{h
 python3 tools/build.py                   # dead-end-city.html (local, git-ignored: never commit it)
 python3 tools/build.py --out dist/game.html            # scratch build
 python3 tools/build.py --split-media dist/publish      # dist/publish/index.html + media/ (*.mp3 + pack-*.js): the artifact
-python3 tools/build.py --zip dist/DeadEndCity.zip      # DeadEndCity/{index.html,media/,README.txt}; CI uploads branch artifacts, updates "latest" only from main, and publishes versioned releases for tags v*. The named October 11 and chase-clouds Codex review branches also publish commit-specific prereleases.
+python3 tools/build.py --zip dist/DeadEndCity.zip      # DeadEndCity/{index.html,media/,README.txt}; CI uploads branch artifacts, updates "latest" only from main, and publishes versioned releases for tags v*. The October 11 legacy review branch and permanent `codex-reviews` branch also publish commit-specific prereleases.
 python3 tools/filemap.py                 # regenerate docs/FILEMAP.md after adding/removing/renaming files
 node tools/smoke.mjs dist/game.html dist/smoke         # boot, FPS, walk, drive, map, both cameras: 6 screenshots
 node tools/tour.mjs steps.json dist/tour dist/game.html   # scripted screenshots (?dev console)
@@ -597,8 +597,8 @@ packs with plain `<script src>` so the zip still plays from file://.
 
 ## Agent workflow (parallel sessions)
 
-- **Codex continuity (owner instruction, October 13)**: all future Codex development stays on
-  `codex/chase-clouds-polish-2026-10-12`. Fetch and merge newer approved `origin/main` into that
+- **Codex continuity (owner instruction, October 13; renamed October 15)**: all future Codex development stays on
+  `codex-reviews`, renamed from `codex/chase-clouds-polish-2026-10-12` with its history preserved. Fetch and merge newer approved `origin/main` into that
   branch when reviewing Claude's changes; commit and push improvements there. Do not create a
   new branch for each prompt. Claude can track this one permanent GitHub branch.
 - **Branches and `main`**: develop on the session's working branch. `main` holds the owner's

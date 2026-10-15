@@ -15,14 +15,27 @@ export default async function(t) {
     arrays[name] = new types[type](Uint8Array.from(raw).buffer);
   }
   for (const model of Object.values(header.models)) model.approved = true;
+  const legacyBytes = fs.readFileSync(new URL('../../assets/vehicle-models.bin', import.meta.url)),
+    legacyLength = legacyBytes.readUInt32LE(8), legacyHeader = JSON.parse(legacyBytes.subarray(12, 12 + legacyLength)), legacyArrays = {};
+  for (const [name, [type, offset, count]] of Object.entries(legacyHeader.arrays)) {
+    const raw = legacyBytes.subarray(12 + legacyLength + offset, 12 + legacyLength + offset + count * types[type].BYTES_PER_ELEMENT);
+    legacyArrays[name] = new types[type](Uint8Array.from(raw).buffer);
+  }
+  const sportsBytes = fs.readFileSync(process.env.GTA_SPORTS_PACK || new URL('../../assets/sports-vehicle-models.bin', import.meta.url)),
+    sportsLength = sportsBytes.readUInt32LE(8), sportsHeader = JSON.parse(sportsBytes.subarray(12, 12 + sportsLength)), sportsArrays = {};
+  for (const [name, [type, offset, count]] of Object.entries(sportsHeader.arrays)) {
+    const raw = sportsBytes.subarray(12 + sportsLength + offset, 12 + sportsLength + offset + count * types[type].BYTES_PER_ELEMENT);
+    sportsArrays[name] = new types[type](Uint8Array.from(raw).buffer);
+  }
+  for (const model of Object.values(sportsHeader.models)) { model.approved = true; model.assetPack = 'sports'; }
   const glass = new Three.MeshStandardMaterial(), trim = new Three.MeshStandardMaterial(),
     materials = { trim, rubber: trim, rim: trim, glass, glassFar: glass },
     lamps = Object.fromEntries(['headOff', 'tailOff', 'headOn', 'tailOn', 'brake'].map(name => [name, new Three.MeshStandardMaterial()])),
-    player = { car: null }, scope = vm.createContext({ Three, fixture: { header, arrays }, materials, lamps, player, Uint8Array, Uint16Array, Uint32Array, Float32Array,
+    player = { car: null }, scope = vm.createContext({ Three, fixture: { header, arrays }, fixtureLegacy: { header: legacyHeader, arrays: legacyArrays }, fixtureSports: { header: sportsHeader, arrays: sportsArrays }, materials, lamps, player, carTransition: {}, Uint8Array, Uint16Array, Uint32Array, Float32Array,
       UNITS_PER_METRE: 8, PERSON_HEIGHT: 14, CAR_M: 8, TAU: Math.PI * 2, performance, gameTime: 10, vehicleGlassBand: () => null, CAR_SWATCH: { paint: 0, black: 2 }, CITY_SIZE: 4096,
       crackedGlassTexture: new Three.Texture(), fixtureTexture: new Three.Texture(), cityMaterialPatch() {}, approvedVehicleAtlasPatch() {}, carGlassMaterial: () => glass, bodyPools: new Map(), carModels: new Map(), BODY_POOL_CAPACITY: 160, bodyPaint: trim, impostorBeaconMaterial: trim, impostorColor: new Three.Color(), boxGeo: new Three.BoxGeometry(), scene: new Three.Scene(), sharedGeometries: new Set(), sharedMaterials: new Set(),
       clamp: (value, lo, hi) => Math.max(lo, Math.min(hi, value)), lerpNumber: (a, b, t) => a + (b - a) * t,
-      vehicleSpec: c => c.type === 'police' ? { l: 5.1 * 8, w: 2.18 * 8 } : c.policeLook ? { l: 4.95 * 8, w: 2.24 * 8 } : { l: header.models[['s1_jimny', 's2_suv', 's3_offroad'][(c.id >>> 0) % 3]].dims[0] * 8, w: header.models[['s1_jimny', 's2_suv', 's3_offroad'][(c.id >>> 0) % 3]].dims[2] * 8 }, drivenAxle: () => 'rear',
+      vehicleSpec: c => c.type === 'police' ? { l: 5.1 * 8, w: 2.18 * 8 } : c.policeLook ? { l: 4.95 * 8, w: 2.24 * 8 } : c.type === 'chevette' ? { l: 4.69 * 8, w: 2.32 * 8 } : c.type !== 'suv' ? { l: 4.7 * 8, w: 1.9 * 8 } : { l: header.models[['s1_jimny', 's2_suv', 's3_offroad'][(c.id >>> 0) % 3]].dims[0] * 8, w: header.models[['s1_jimny', 's2_suv', 's3_offroad'][(c.id >>> 0) % 3]].dims[2] * 8 }, drivenAxle: () => 'rear', spawnPanel() {},
       civDrawRange(geometry, count) { const far = geometry.clone(); far.setDrawRange(0, count); return far; },
       civSharedMaterials: () => materials, civLampSet: () => lamps, civFinish: () => ({ roughness: .3, metalness: .06 }),
       civImpostorPaint: () => trim, policeCabinGlass: () => glass, policeImpostorPaint: () => trim,
@@ -35,25 +48,168 @@ export default async function(t) {
     });
   const materialSource = read('cars3d-materials'), materialHeader = materialSource.slice(0, materialSource.indexOf('      let civTrimAtlasTexture')),
     dirtSource = materialSource.slice(materialSource.indexOf('      const CIV_NO_DIRT'), materialSource.indexOf('      function civLiveryPatch')),
-    finishPatch = materialSource.slice(materialSource.indexOf('      function trimCellRect('), materialSource.indexOf('      let civMaterials'));
+    finishPatch = materialSource.slice(materialSource.indexOf('      function trimCellRect('), materialSource.indexOf('      let civMaterials')),
+    legacyPaint = materialSource.slice(materialSource.indexOf('      function civLiveryPatch('), materialSource.indexOf('      // The pooled impostor paint')),
+    markSource = read('damage3d-marks'), sourceMarkHook = markSource.slice(markSource.indexOf('      function markOntoDoor('), markSource.indexOf('      // The normal at an anchor:'));
   const flightSource = read('flight-view3d'), poolSource = flightSource.slice(flightSource.indexOf('      function bodyPoolFor('), flightSource.indexOf('      function bodyImpostor('));
   const approvedSource = read('approved-vehicle-assets3d'), approvedPatch = approvedSource.slice(approvedSource.indexOf('      function approvedVehicleMaterialPatch('), approvedSource.indexOf('      let approvedVehicleMaterialSet;')),
     approvedMaterials = approvedSource.slice(approvedSource.indexOf('      let approvedVehicleMaterialSet;'), approvedSource.indexOf('      function approvedVehiclePaint(')),
-    approvedPaint = approvedSource.slice(approvedSource.indexOf('      function approvedVehiclePaint('), approvedSource.indexOf('      const approvedVehicleImpostorPaints'));
-  const api = vm.runInContext(materialHeader + finishPatch + dirtSource + approvedPatch + approvedMaterials + approvedPaint + read('cars3d-geometry') + read('character-rig3d') + read('character-near3d') + read('character-near3d-head') + read('driveby-seats') + read('vehicle-assets3d') + read('approved-suv3d') +
-    read('police3d-looks') + read('police3d-cabins') + read('cars3d-interior') + read('cars3d-headroom') + read('police3d-asset') + read('damage-crumple') + read('damage3d-crumple') + read('damage3d-bodies') + poolSource + `
+    approvedPaint = approvedSource.slice(approvedSource.indexOf('      function approvedVehiclePaint('), approvedSource.indexOf('      const approvedVehicleImpostorPaints')),
+    occupantSource = read('crowd3d-driveby'), occupantDeclarations = occupantSource.slice(occupantSource.indexOf('      const OCCUPANT_REACH'), occupantSource.indexOf('      let occupantCount')),
+    actualSeatOccupant = occupantSource.slice(occupantSource.indexOf('      function seatOccupant('));
+  const api = vm.runInContext(materialHeader + finishPatch + dirtSource + legacyPaint + approvedPatch + approvedMaterials + approvedPaint + read('sports-vehicle-assets3d') + read('cars3d-geometry') + read('character-rig3d') + read('character-near3d') + read('character-near3d-head') + read('driveby-seats') + read('vehicle-assets3d') + read('approved-suv3d') +
+    read('police3d-looks') + read('police3d-cabins') + read('cars3d-interior') + read('cars3d-headroom') + read('police3d-asset') + read('damage-crumple') + read('damage3d-crumple') + read('vehicle-doors3d') + read('vehicle-char3d') + read('damage3d-bodies') + read('carjack3d') + sourceMarkHook + poolSource + occupantDeclarations + actualSeatOccupant + `
       const BODY_CLOSE = { head: { mesh: { geometry: rigHeadGeometry() } } };
       for (const [name, geometry] of Object.entries({ ...rigHairGeometries(), ...rigHatGeometries() })) BODY_CLOSE[name] = { mesh: { geometry } };
       const BODY_NEAR = { head: { mesh: { geometry: nearHeadGeometry() } } };
       function approvedVehicleData() { return fixture; }
       function approvedVehicleModel(key) { return fixture.header.models[key] || null; }
+      function vaData() { return fixtureLegacy; }
+      function sportsVehicleData() { return fixtureSports; }
+      function sportsVehicleTexture() { return fixtureTexture; }
+      vaAtlas = () => fixtureTexture;
+      vaLivery = () => fixtureTexture;
       civSharedMaterials = () => materials;
       function approvedVehicleTexture() { return fixtureTexture; }
       function approvedVehicleImpostorPaint() { return materials.trim; }
       policeLiveryTexture = () => new Three.Texture();
       policeGlyphs = () => ({ material: materials.trim });
       policeDecalGeometry = () => new Three.BoxGeometry(.01, .01, .01);
-      ({ makeAssetCar, makeAssetPoliceVehicle, approvedSuvKey, approvedSuvGlassBand, vaGeometry, policeApprovedPanels, animateApprovedSuvWheels, vehicleAssetModel, bodyPoolFor, vehicleDoor, doorPanelGeometries, carBodyDamage, cabinClearance, cabinSeatClouds, DRIVEBY_SEATS })`, scope);
+      let fixturePose = null;
+      const chaseViewActive = false, specScratch = {};
+      function occupantLooksFor() { return { proxies: [{}, {}], looks: [{}, {}] }; }
+      function resetSpec() { return {}; }
+      function compiledLook() { return { height: 1 }; }
+      function stateFor() { return {}; }
+      function drawCrowdPerson(proxy, state, dt, detail, sp) {
+        fixturePose = { hip: new Three.Vector3(0, RIG.hip * RIG_UNIT, 0).applyMatrix4(sp.rootOverride).toArray(),
+          lean: sp.riderLean, hands: sp.handTargets.map(v => v.toArray()), feet: sp.legTargets.map(v => v.toArray()) };
+      }
+      ({ makeAssetCar, makeAssetPoliceVehicle, approvedSuvKey, approvedSuvGlassBand, vaGeometry, policeApprovedPanels, animateApprovedSuvWheels, vehicleAssetModel, bodyPoolFor, vehicleDoor, vehicleDoorsReport, doorPanelGeometries, carBodyDamage, swingDriverDoor, markOntoDoor, crumpleSlices, crumplePending: () => crumpleQueue.size, assetCharSwap, assetCharRelease, seatOccupant, fixtureOccupantPose: () => fixturePose, carSeatPlan, cabinClearance, cabinSeatClouds, DRIVEBY_SEATS })`, scope);
+  const clearDamage = () => ({ parts: { hood: 0, bumperFront: 0, bumperRear: 0, doorLeft: 0, doorRight: 0, trunk: 0 }, glass: { front: 0, rear: 0, left: 0, right: 0 }, tires: {}, front: 0, rear: 0, left: 0, right: 0, burnt: false });
+  function checkAperture(vehicle, model, key) {
+    const drainCrumple = () => { for (let i = 0; i < 500 && api.crumplePending(); i++) api.crumpleSlices(); t.assert(!api.crumplePending(), key + ': actual crumple budget queue did not drain'); };
+    vehicle.dents = []; vehicle.damage = clearDamage();
+    api.carBodyDamage(vehicle, model, vehicle.damage);
+    const door = api.vehicleDoor(vehicle, model, -1), rect = door.rect,
+      targets = [...model.doorBodySources.keys()], originals = targets.map(mesh => mesh.geometry),
+      pristineAttributes = originals.map(geometry => Object.fromEntries(Object.entries(geometry.attributes).map(([name, attribute]) => [name, Array.from({ length: attribute.count * attribute.itemSize }, (_, i) => attribute.getComponent(Math.floor(i / attribute.itemSize), i % attribute.itemSize))]))),
+      pristineIndices = originals.map(geometry => geometry.index ? Array.from(geometry.index.array) : null),
+      x = (rect.x0 + rect.x1) / 2, y = (rect.y0 + model.dims.h) / 2,
+      origin = new Three.Vector3(x, y, -model.dims.w), direction = new Three.Vector3(0, 0, 1),
+      ray = new Three.Raycaster(origin, direction, 0, model.dims.w - door.volume.z0 - .001),
+      sourceProbe = () => { model.body.updateMatrixWorld(true); return ray.intersectObjects(targets, false); },
+      prefix = model.shell.geometry.attributes.position.array.slice(), cacheSize = scope.sharedGeometries.size;
+    t.assert(sourceProbe().length > 0, key + ': closed-source door proof ray misses the actual body');
+    vehicle.doorSwing = { openAt: 8, closeAt: 0 };
+    api.swingDriverDoor(vehicle, model);
+    t.assert(model.doorBodyMask === 1 && door.panel.visible && Math.abs(door.pivot.rotation.y) > .8, key + ': actual carjack draw does not open source door');
+    scope.carModels.set(vehicle, model);
+    const reported = api.vehicleDoorsReport(vehicle.id).cars[0];
+    t.assert(reported?.mask === 1 && reported.doors['-1'].layers.filter(layer => layer.visible).length === door.layers.filter(layer => layer.visible).length, key + ': named door report does not reflect actual rendered layers');
+    if (door.native) {
+      const axis = door.native.axis[0], part = door.native.partNames[0];
+      reported.doors['-1'].axis[0] = 99; reported.doors['-1'].sourceParts[0] = 'changed';
+      t.assert(door.native.axis[0] === axis && door.native.partNames[0] === part, key + ': read-only door report exposes mutable source metadata');
+    }
+    scope.carModels.delete(vehicle);
+    t.assert(door.opening.children.length === 0 && !door.opening.geometry, key + ': upholstery/engine-bay wall still fills doorway');
+    t.assert(sourceProbe().length === 0, key + ': fixed closed body/trim still occludes actual open doorway');
+    const interiorTargets = [...targets, model.approvedInterior].filter(Boolean), visibleInterior = [];
+    for (const forward of [-.2, -.1, .15, .5]) for (const up of [0, .2, .45]) {
+      const start = new Three.Vector3(rect.x0 + .25 * model.seats.M, Math.max(rect.y0 + .12 * model.seats.M, model.seats.y + .4 * model.seats.M), -model.dims.w),
+        end = new Three.Vector3(model.seats.x + forward * model.seats.M, model.seats.y + up * model.seats.M, model.seats.z * .5),
+        probe = new Three.Raycaster(start, end.clone().sub(start).normalize(), 0, end.distanceTo(start) + .2 * model.seats.M),
+        hits = probe.intersectObjects(interiorTargets, false).filter(hit => hit.object !== model.cabin);
+      if (!hits.length) continue;
+      const hit = hits[0], source = model.doorBodySources.get(hit.object),
+        sourceFace = hit.object.geometry.userData.vehicleSourceFaces?.[hit.faceIndex] ?? hit.faceIndex,
+        authored = source === model.kit.trim && sourceFace * 3 >= model.kit.trimOuter.drawRange.count;
+      if (hit.object === model.approvedInterior || authored) visibleInterior.push({ part: hit.object === model.approvedInterior ? 'production seats/dashboard fallback' : 'authored source cabin', face: sourceFace });
+    }
+    t.assert(visibleInterior.length > 0, key + ': real source/fitted seats or dashboard cannot be seen through actual doorway');
+    t.assert(model.shell.geometry.attributes.position.array.slice(0, prefix.length).every((value, i) => value === prefix[i]), key + ': aperture changes original vertex IDs/positions used by bullet anchors');
+    t.assert(door.glass?.visible && door.glass.material.side === Three.DoubleSide && door.glass.material.forceSinglePass, key + ': intact front window does not ride with door in one two-sided pass');
+    const pane = model.cabin.geometry.groups.find(group => group.materialIndex === 0);
+    if (model.kit.nativeDoors) t.assert(model.cabin.geometry.index.count === originals[targets.indexOf(model.cabin)].index.count - door.glass.geometry.index.count, key + ': native front-window removal loses other panes');
+    else t.assert(pane?.count > 0, key + ': opening a front door also removes all rear-quarter glass');
+    const sourceLayer = door.layers.find(layer => layer.userData.vehicleDoorSource && !layer.userData.doorGlass), sourceMesh = sourceLayer.userData.vehicleDoorSource,
+      p = sourceLayer.geometry.attributes.position, ix = sourceLayer.geometry.index;
+    let anchor;
+    for (let at = 0; at < ix.count && !anchor; at += 3) {
+      const a = ix.getX(at), b = ix.getX(at + 1), c = ix.getX(at + 2),
+        px = (p.getX(a) + p.getX(b) + p.getX(c)) / 3 + door.pivot.position.x,
+        py = (p.getY(a) + p.getY(b) + p.getY(c)) / 3 + door.pivot.position.y;
+      if (px > rect.x0 + .05 && px < rect.x1 - .05 && py > rect.y0 + .05 && py < model.dims.h - .05)
+        anchor = { object: sourceMesh, a, b, c, u: 1 / 3, v: 1 / 3, w: 1 / 3, sign: 1 };
+    }
+    t.assert(!!anchor, key + ': source door skin has no interior triangle for mark transfer proof');
+    api.markOntoDoor(model, anchor);
+    t.assert(anchor.object === sourceLayer, key + ': production mark hook does not transfer source triangle to moving door');
+    vehicle.windowsDown = { left: true }; api.swingDriverDoor(vehicle, model);
+    t.assert(!door.glass.visible, key + ': lowered window reappears on open door');
+    vehicle.windowsDown = null; vehicle.damage.glass.left = 2; api.swingDriverDoor(vehicle, model);
+    t.assert(!door.glass.visible, key + ': shattered window reappears on open door');
+    vehicle.damage.glass.left = 0;
+    delete vehicle.doorSwing; api.swingDriverDoor(vehicle, model);
+    t.assert(!model.doorBodyMask && !door.panel.visible && !door.glass.visible, key + ': closure leaves source door/window duplicate visible');
+    t.assert(targets.every((mesh, i) => mesh.geometry === originals[i]), key + ': closure fails to restore exact original geometry references');
+    api.markOntoDoor(model, anchor);
+    t.assert(anchor.object === sourceMesh, key + ': closing door fails to return source bullet anchor');
+    t.assert(sourceProbe().length > 0, key + ': closed-source body no longer fills doorway');
+    vehicle.damage.parts.doorLeft = 1; api.carBodyDamage(vehicle, model, vehicle.damage);
+    t.assert(model.doorBodyMask === 1 && sourceProbe().length === 0, key + ': sprung damage door lacks genuine body aperture');
+    vehicle.damage.parts.doorLeft = 2; api.carBodyDamage(vehicle, model, vehicle.damage);
+    t.assert(model.doorBodyMask === 1 && door.layers.every(layer => !layer.visible), key + ': torn door leaves a duplicate skin or closes its hole');
+    vehicle.damage.parts.doorLeft = 0; api.carBodyDamage(vehicle, model, vehicle.damage);
+    t.assert(!model.doorBodyMask && targets.every((mesh, i) => mesh.geometry === originals[i]), key + ': repair does not restore original body/window');
+    vehicle.doorSwing = { openAt: 8, closeAt: 0 }; api.swingDriverDoor(vehicle, model);
+    delete vehicle.doorSwing; api.swingDriverDoor(vehicle, model);
+    t.assert(scope.sharedGeometries.size <= cacheSize + targets.length * 2, key + ': repeating door animation allocates new source clipping geometry');
+    Object.assign(scope.carTransition, { door: vehicle, kind: 'enter', at: 9.8, doorSide: -1 });
+    api.swingDriverDoor(vehicle, model);
+    t.assert(model.doorBodyMask === 1 && door.glass.visible, key + ': player boarding does not use the same real doorway');
+    Object.assign(scope.carTransition, { kind: 'exit', doorSide: 1 }); api.swingDriverDoor(vehicle, model);
+    t.assert(model.doorBodyMask === 2 && model.doors[1].glass.visible && !door.panel.visible, key + ': passenger-side exit leaves wrong window or body open');
+    vehicle.doorSwing = { openAt: 8, closeAt: 0 }; api.swingDriverDoor(vehicle, model);
+    t.assert(model.doorBodyMask === 3 && door.panel.visible && model.doors[1].panel.visible, key + ': simultaneous front doors do not preserve both apertures');
+    const rightRay = new Three.Raycaster(new Three.Vector3(x, y, model.dims.w), new Three.Vector3(0, 0, -1), 0, model.dims.w - door.volume.z0 - .001);
+    model.body.updateMatrixWorld(true);
+    t.assert(sourceProbe().length === 0 && rightRay.intersectObjects(targets, false).length === 0, key + ': one source side reappears when both doors open');
+    delete vehicle.doorSwing; scope.carTransition.at = 8; api.swingDriverDoor(vehicle, model); scope.carTransition.kind = null;
+    t.assert(!model.doorBodyMask && targets.every((mesh, i) => mesh.geometry === originals[i]), key + ': final entry/exit closure leaves a clipped source variant');
+    scope.carModels.set(vehicle, model);
+    const repaired = api.vehicleDoorsReport(vehicle.id).cars[0];
+    scope.carModels.delete(vehicle);
+    t.assert(Object.values(repaired.closedSourceGeometry).every(Boolean) && repaired.materials.shell.uuid === model.shell.material.uuid && repaired.materials.shell.map === (model.shell.material.map?.uuid || null), key + ': named repair report loses actual source geometry/material/map references');
+    let nearest = 0, distance = Infinity;
+    for (let i = 0; i < prefix.length; i += 3) {
+      const d = Math.hypot(prefix[i] - x, prefix[i + 1] - y, prefix[i + 2] + model.dims.w * .45);
+      if (d < distance) { nearest = i; distance = d; }
+    }
+    vehicle.dents = [{ x: prefix[nearest], y: prefix[nearest + 2], z: prefix[nearest + 1], r: 3, depth: .9, nx: 0, ny: prefix[nearest + 2] < 0 ? 1 : -1 }];
+    api.carBodyDamage(vehicle, model, vehicle.damage); drainCrumple();
+    const deformed = model.shell.geometry.attributes.position.array.slice(0, prefix.length);
+    t.assert(deformed.some((value, i) => Math.abs(value - prefix[i]) > .001), key + ': crumple proof did not reach the actual source shell');
+    vehicle.doorSwing = { openAt: 8, closeAt: 0 }; api.swingDriverDoor(vehicle, model);
+    t.assert(deformed.every((value, i) => Math.abs(value - model.shell.geometry.attributes.position.array[i]) < .00001), key + ': opening dented door flashes a pristine source body');
+    drainCrumple();
+    delete vehicle.doorSwing; api.swingDriverDoor(vehicle, model);
+    t.assert(deformed.every((value, i) => Math.abs(value - model.shell.geometry.attributes.position.array[i]) < .00001), key + ': closing dented door discards its current deformation');
+    drainCrumple();
+    vehicle.dents = []; api.carBodyDamage(vehicle, model, vehicle.damage); drainCrumple();
+    t.assert(prefix.every((value, i) => Math.abs(value - model.shell.geometry.attributes.position.array[i]) < .00001), key + ': repair after aperture/crumple fails to restore source positions');
+    for (const [index, mesh] of targets.entries()) {
+      const geometry = mesh.geometry;
+      t.assert(Object.entries(pristineAttributes[index]).every(([name, values]) => geometry.attributes[name]?.count * geometry.attributes[name].itemSize === values.length && values.every((value, i) => geometry.attributes[name].getComponent(Math.floor(i / geometry.attributes[name].itemSize), i % geometry.attributes[name].itemSize) === value)), key + ': dent/door repair loses authored source normals, UVs or other attributes');
+      t.assert(JSON.stringify(geometry.index ? Array.from(geometry.index.array) : null) === JSON.stringify(pristineIndices[index]), key + ': dent/door repair changes original triangle indices');
+    }
+    scope.carModels.set(vehicle, model);
+    const pristineReport = api.vehicleDoorsReport(vehicle.id).cars[0];
+    scope.carModels.delete(vehicle);
+    t.assert(Object.values(pristineReport.sourceGeometryRestored).every(Boolean), key + ': repaired owned clone no longer exactly matches its authored source geometry');
+    t.note(JSON.stringify({ apertureProof: { key, actualRayOpenHits: 0, visibleInterior, sourceRestored: true, windowMoves: true, marksFollowSource: true, layers: door.layers.length } }));
+  }
   t.assert(api.vehicleAssetModel('suv') === header.models.s1_jimny, 'makeVehicle availability gate does not select approved SUV builder');
   const rows = [], lawRows = [], seen = new Set();
   for (let id = 0; id < 3; id++) {
@@ -135,7 +291,7 @@ export default async function(t) {
     const door = api.vehicleDoor(vehicle, model, -1);
     const shapedProbe = api.doorPanelGeometries(model, -1, -.5 * seat.M, .3 * seat.M, .70 * seat.M, .78 * seat.M, new Three.Vector3(.3 * seat.M, 0, -.5 * model.dims.w));
     const expectedAttributes = ['finish', 'color', 'avSourceUv', 'avAtlasRect', 'liveryUv'];
-    t.assert(expectedAttributes.every(name => door.panel.geometry.attributes[name]), key + ': actual door loses approved material attributes');
+    t.assert(expectedAttributes.filter(name => model.shell.geometry.attributes[name]).every(name => door.panel.geometry.attributes[name]), key + ': actual door loses approved source material attributes');
     if (key === 's1_jimny') {
       t.assert(!!shapedProbe, 'Jimny actual source side-ray cut did not produce shaped geometry');
       for (const geometry of [shapedProbe.door, shapedProbe.opening]) for (const name of expectedAttributes.filter(name => model.shell.geometry.attributes[name])) {
@@ -157,6 +313,7 @@ export default async function(t) {
       t.assert(legacy && !legacy.door.attributes.avAtlasRect && legacy.door.attributes.position.array.every((value, i) => value === shapedProbe.door.attributes.position.array[i]) && legacy.door.attributes.uv.array.every((value, i) => value === shapedProbe.door.attributes.uv.array[i]), 'approved material inheritance changes existing door position/UV contract');
     }
     t.note(JSON.stringify({ doorProof: { key, actualShaped: !!door.rect, actualAttributes: Object.keys(door.panel.geometry.attributes), probeShaped: !!shapedProbe, probeAttributes: shapedProbe ? Object.keys(shapedProbe.door.attributes) : [] } }));
+    checkAperture(vehicle, model, key);
     rows.push({ key, nearTriangles, farTriangles, seat: seatLine, clearance, pivots: model.wheels.map(wheel => [wheel.wheel.position.x, wheel.wheel.position.y, wheel.wheel.position.z, wheel.radius]) });
   }
   t.assert(seen.size === 3, 'all three approved SUV styles are not accessible from stable IDs');
@@ -230,7 +387,87 @@ export default async function(t) {
       t.assert(sourceGlass.attributes.position.array.every((value, index) => value === sourcePositions[index]), 'trunk open/damage/repair modifies shared source cabin geometry');
       t.assert(model.shell.visible && model.panels.visible, 'hidden repaired lid also hides the intact source closed hatch/body');
       t.note(JSON.stringify({ trunkVisibility: { source: 'production carBodyDamage + actual Generic SUV Sheriff', opened: true, closedHidden: true, sprung: true, repairedHidden: true, sourceGlassPreserved: true } }));
+      checkAperture(vehicle, model, 'marked-sheriff');
     }
+  }
+  for (const type of ['sedan', 'coupe']) checkAperture({ type, id: 102, color: '#719260' }, api.makeAssetCar({ type, id: 102, color: '#719260' }), 'legacy-' + type);
+  const oldPatrol = { type: 'police', id: 103, color: '#123014' }, oldLook = { body: 'crownvic', livery: 'sheriff', equipment: 'marked', unmarked: false, paint: '#ffffff', unit: '27' };
+  checkAperture(oldPatrol, api.makeAssetPoliceVehicle(oldPatrol, oldLook), 'legacy-crownvic');
+  const sportsVehicle = { type: 'chevette', id: 105, color: '#e9b82a' }, sportsModel = api.makeAssetCar(sportsVehicle), sports = sportsModel.kit.asset, seat = sportsModel.seats;
+  t.assert(sports.type === 'c8_hari' && sportsModel.kit.nativeDoors[-1] && sportsModel.kit.nativeDoors[1], 'C8 native source doors not wired into actual builder');
+  t.assert(sports.hasInterior === true && sports.parts['cabin.seats']?.triangles > 0 && !sportsModel.approvedInterior, 'C8 authored seats were lost or replaced by a fallback');
+  checkAperture(sportsVehicle, sportsModel, 'native-c8');
+  for (const side of [-1, 1]) {
+    const door = sportsModel.doors[side], authored = sports.doors[side < 0 ? 'left' : 'right'];
+    t.assert(door.native && door.layers.every(layer => !layer.userData.vehicleDoorInside), 'C8 genuine door card is covered by a procedural panel');
+    t.assert(door.pivot.position.toArray().every((value, i) => Math.abs(value - authored.hinge[i] * sportsModel.kit.k) < .00001), 'C8 authored door hinge moved');
+    t.assert(door.layers.some(layer => layer.userData.vehicleDoorSource === sportsModel.opticalGlass), 'C8 native mirror optical covers do not travel with door');
+  }
+  const sportsClearance = api.cabinClearance(sportsModel.kit.glass, sportsModel.kit.l, seat.glass.w, seat.M, api.cabinSeatClouds(), seat.x, seat.y, Math.abs(seat.z), seat.lean) / seat.M;
+  const seatGeometry = api.vaGeometry(sports, scope.fixtureSports, 'cabin.seats', sportsModel.kit.k), seatMesh = new Three.Mesh(seatGeometry, new Three.MeshBasicMaterial({ side: Three.DoubleSide })), probes = [];
+  seatMesh.updateMatrixWorld(true);
+  // The pose's hip is a joint reference, not the cushion's top: procedural seatAt
+  // places that top 2cm above the hip. Probe the actual authored cushions, not just
+  // the analytic roof; a low generic fit could otherwise pass while inside a backrest.
+  for (const side of [-1, 1]) for (const dz of [-.04, 0, .04]) {
+    const plan = side > 0 ? seat.passenger : seat;
+    t.assert(!!plan, 'C8 asymmetric authored passenger cushion has no independent seat plan');
+    const z = side * Math.abs(plan.z) + dz * plan.M,
+      ray = new Three.Raycaster(new Three.Vector3(plan.x, 2 * plan.M, z), new Three.Vector3(0, -1, 0)),
+      hit = ray.intersectObject(seatMesh, false)[0], gap = hit ? (hit.point.y - plan.y) / plan.M : Infinity;
+    // Lateral samples include the source's raised bolster; the joint itself must
+    // be above the flatter cushion, not the higher inboard rim of that cushion.
+    t.assert(hit && (dz !== 0 || hit.face.normal.y > .7 && gap >= 0 && gap < .035), 'C8 fitted hip misses its authored upward cushion or lies in the backrest: ' + JSON.stringify({ x: plan.x / plan.M, z: z / plan.M, hipY: plan.y / plan.M, hitY: hit?.point.y / plan.M, gap, upward: hit?.face.normal.y }));
+    probes.push({ x: plan.x / plan.M, z: z / plan.M, hipY: plan.y / plan.M, cushionY: hit.point.y / plan.M, cushionAboveHip: gap, upward: hit.face.normal.y });
+  }
+  t.note(JSON.stringify({ sportsSeatProbe: { hipY: seat.y / seat.M, probes } }));
+  const passenger = seat.passenger, passengerClearance = api.cabinClearance(sportsModel.kit.glass, sportsModel.kit.l, seat.glass.w, seat.M, api.cabinSeatClouds(), passenger.x, passenger.y, Math.abs(passenger.z), passenger.lean) / seat.M;
+  t.assert(passengerClearance >= .02, 'C8 independent physical passenger fit pushes actual production heads through roof/glass');
+  t.assert(sportsClearance >= .02, 'C8 physical cushion fit pushes actual production head geometry through roof/glass');
+  const fittedSeat = [seat.x / seat.M, seat.y / seat.M, -seat.z / seat.M, seat.lean, sportsModel.kit.glass.base / seat.M];
+  t.assert(fittedSeat.every((value, index) => Math.abs(value - api.DRIVEBY_SEATS.chevette[index]) < .002), 'C8 gameplay drive-by seat drifts from its real cushion/headroom fit');
+  const occupantPoses = [];
+  const wheel = seat.wheel, measuredWheel = [.31392, .72501, -.358883, .165, .25284];
+  t.assert([wheel.x / seat.M, wheel.y / seat.M, wheel.z / seat.M, wheel.r / seat.M, wheel.tilt].every((v, i) => Math.abs(v - measuredWheel[i]) < .00001), 'C8 seat wheel targets drift from measured source steering rim');
+  for (const index of [0, 1]) {
+    const plan = index ? passenger : seat, expected = [plan.x, plan.y, index ? -plan.z : plan.z];
+    t.assert(api.seatOccupant(sportsVehicle, sportsModel, index, 1 / 60, 0), 'C8 actual production occupant pose was not drawn');
+    const pose = api.fixtureOccupantPose();
+    t.assert(pose.hip.every((v, axis) => Math.abs(v - expected[axis]) < 1e-7) && pose.lean === plan.lean, 'C8 production occupant ignores its actual source-backed driver/passenger seat');
+    t.assert(pose.feet.every(foot => Math.abs(foot[1] - plan.pedalY) < 1e-7), 'C8 occupant feet use a different seat plan than hips');
+    if (index === 0) for (const hand of pose.hands) {
+      const x = hand[0] - wheel.x, y = hand[1] - wheel.y, z = hand[2] - wheel.z;
+      t.assert(Math.abs(Math.hypot(x, y, z) - wheel.r) < 1e-7 && Math.abs(x * Math.cos(wheel.tilt) - y * Math.sin(wheel.tilt)) < 1e-7, 'C8 actual driver hand misses the source steering rim');
+    } else t.assert(pose.hands.every(hand => Math.abs(hand[0] - plan.x - .3 * plan.M) < 1e-7 && Math.abs(hand[1] - plan.y - .1 * plan.M) < 1e-7), 'C8 passenger hands use driver wheel targets instead of their actual lap');
+    occupantPoses.push(pose);
+  }
+  t.note(JSON.stringify({ sportsPassengerSeat: { fitted: [passenger.x / passenger.M, passenger.y / passenger.M, -passenger.z / passenger.M, passenger.lean], clearanceMetres: passengerClearance, measuredWheel, actualProductionOccupantPoses: occupantPoses } }));
+  t.note(JSON.stringify({ sportsSeat: { key: sports.type, M: seat.M, fitted: [seat.x / seat.M, seat.y / seat.M, -seat.z / seat.M, seat.lean, sportsModel.kit.glass.base / seat.M], clearanceMetres: sportsClearance, sourceSeats: sports.parts['cabin.seats'], glass: sports.glass } }));
+  for (const [type, id] of [['chevette', 981], ['suv', 984], ['sedan', 985]]) {
+    const vehicle = { type, id, color: '#e9b82a', hp: 0, maxhp: 100, dents: [], damage: clearDamage() }, model = api.makeAssetCar(vehicle),
+      originals = new Map([model.shell, model.panels, model.assetTrim, model.opticalGlass].filter(Boolean).map(mesh => [mesh, mesh.material]));
+    t.assert(!model.doors, type + ': late-door proof accidentally prebuilds a door');
+    // Real frame order: paintVehicle swaps the closed body before applyVehicleDamage
+    // builds its first sprung door. Test this without pre-opening review doors.
+    api.assetCharSwap(vehicle, model, true);
+    vehicle.damage.burnt = true; vehicle.damage.parts.doorLeft = 1;
+    api.carBodyDamage(vehicle, model, vehicle.damage);
+    const layers = model.doors[-1].layers.filter(layer => layer.userData.vehicleDoorSource && !layer.userData.doorGlass);
+    t.assert(layers.some(layer => layer.material.userData.assetChar), type + ': newly created wreck door does not immediately share source char');
+    t.assert(layers.filter(layer => layer.material.userData.assetChar).every(layer => model.assetChar.swaps.includes(layer)), type + ': late charred source door cannot restore its original material on repair');
+    // A later shape-driven swap must neither lose that source nor add duplicate releases.
+    if (type !== 'chevette') api.assetCharSwap(vehicle, model, true);
+    const swappedMeshes = model.assetChar.swaps.filter((_, i) => !(i % 2));
+    t.assert(swappedMeshes.length === new Set(swappedMeshes).size, type + ': late door registers duplicate char release records');
+    api.assetCharRelease(model); vehicle.hp = 100; vehicle.damage = clearDamage();
+    api.carBodyDamage(vehicle, model, vehicle.damage);
+    vehicle.doorSwing = { openAt: 8, closeAt: 0 }; api.swingDriverDoor(vehicle, model);
+    for (const layer of layers) {
+      const original = originals.get(layer.userData.vehicleDoorSource);
+      t.assert(layer.visible && original && layer.material === original && !layer.material.userData.assetChar, type + ': first door remains charred when reopened after repair');
+      t.assert(layer.material.map === original.map && layer.material.roughnessMap === original.roughnessMap && layer.material.metalnessMap === original.metalnessMap && layer.material.emissiveMap === original.emissiveMap, type + ': late-door repair loses authored PBR/emission maps');
+    }
+    t.note(JSON.stringify({ lateDoorCharRepair: { type, builder: 'actual packed production builder', sourceLayers: layers.length, inheritedCharAdopted: true, reopenedSourceMaterials: true, shaderOrGeometryChange: false } }));
   }
   t.note(JSON.stringify({ approvedSUVs: rows, lawRows, policeSource: 's2_suv', headroom: 'actual production head geometry and fit; rendered check separate' }));
 }

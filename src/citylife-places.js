@@ -485,7 +485,7 @@
       servicePlace = place;
       gameMode = 'service';
       keys = {};
-      mouse.down = false;
+      mouse.down = mouse.alt = false;
       renderService();
       getElement('serviceOverlay').classList.remove('hidden');
       getElement('closeService').focus();

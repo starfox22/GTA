@@ -5,7 +5,7 @@
 | Method | Purpose |
 | --- | --- |
 | `placeVehicle(x, y, heading, altitudeMeters)` | Move the player's vehicle (stopped, aircraft at an altitude) |
-| `doorSwing(id, open)` | Yank vehicle `id`'s driver door open as a carjack does (or shut it with `open` false): to look at where the door sits on a body (damage3d-bodies.js `vehicleDoorSpan`; `carModels(true)` lists each cabin's `hip` and `door` in metres) |
+| `doorSwing(id, open, side)` | Open/shut a front door as a carjack does; `side` defaults to driver `-1`, passenger `1`. `vehicleDoors(id)` reports the actual rendered hinge, layers and cabin without changing gameplay. |
 | `vehiclesNear(metres)` | Vehicles within `metres` (60) of the player, nearest first: id, type, distance in metres, `authorized` (taking it is no theft), `driven` |
 | `bike(heading)` | Rack a bicycle beside the player |
 | `ride()` | Current vehicle telemetry (speed, pedal cadence and effort; in a tank the hull, turret and aim headings in degrees, the traverse rate and the ammunition) |

@@ -1,0 +1,4555 @@
+{
+  "version": 1,
+  "atlas": [
+    4096,
+    4096
+  ],
+  "normalScale": 32767,
+  "finish": "roughnessMetalness",
+  "models": {
+    "c8_hari": {
+      "type": "c8_hari",
+      "kind": "car",
+      "title": "2019 Chevrolet Corvette C8 Stingray",
+      "author": "Hari (Hari31)",
+      "dims": [
+        4.69,
+        1.2028457182176802,
+        2.171102649767788
+      ],
+      "x0": -2.345,
+      "x1": 2.345,
+      "wheels": [
+        {
+          "x": 1.2962455185986526,
+          "y": 0.3269237090298931,
+          "z": -0.8336502489010409,
+          "r": 0.32622960802098044,
+          "width": 0.2692457200896368,
+          "axle": [
+            1.5099579909783704e-07,
+            -1.2246466496560403e-16,
+            0.9999999999999886
+          ],
+          "side": -1,
+          "front": true,
+          "caliper": "wheel0.caliper",
+          "sourceNode": "Front Left Wheel"
+        },
+        {
+          "x": 1.2962455185986526,
+          "y": 0.3269237090298931,
+          "z": 0.8336502531616562,
+          "r": 0.32622960802098044,
+          "width": 0.26924572008963676,
+          "axle": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "side": 1,
+          "front": true,
+          "caliper": "wheel1.caliper",
+          "sourceNode": "Front Right Wheel"
+        },
+        {
+          "x": -1.455925425814372,
+          "y": 0.3424597869337497,
+          "z": -0.8309696742898126,
+          "r": 0.34254106353268554,
+          "width": 0.26924572008963693,
+          "axle": [
+            1.5099579909783707e-07,
+            5.007446000667229e-15,
+            0.9999999999999886
+          ],
+          "side": -1,
+          "front": false,
+          "caliper": "wheel2.caliper",
+          "sourceNode": "Rear Left Wheel"
+        },
+        {
+          "x": -1.4569046174555826,
+          "y": 0.34343891040511615,
+          "z": 0.8309696785504278,
+          "r": 0.3425410635326855,
+          "width": 0.2692457200896369,
+          "axle": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "side": 1,
+          "front": false,
+          "caliper": "wheel3.caliper",
+          "sourceNode": "Rear Right Wheel"
+        }
+      ],
+      "lamps": {
+        "headLeft": {
+          "x": 1.796723875075909,
+          "y": 0.6597534280961386,
+          "z": -0.7204047562523007,
+          "size": 0.14887160636268845
+        },
+        "headRight": {
+          "x": 1.7967239632583076,
+          "y": 0.6597533643050136,
+          "z": 0.7204050382031535,
+          "size": 0.14887152115038324
+        },
+        "tailLeft": {
+          "x": -2.1463579886567388,
+          "y": 0.7851004982006039,
+          "z": -0.593822166330243,
+          "size": 0.35708549420688174
+        },
+        "tailRight": {
+          "x": -2.146357988115941,
+          "y": 0.785100504672504,
+          "z": 0.5938217795085461,
+          "size": 0.35708550345681567
+        }
+      },
+      "glass": {
+        "base": 0.7997014025149419,
+        "roof": 1.12627682494793,
+        "xf": 0.9269057208442372,
+        "rf": 0.4149687968481118,
+        "xb": -0.7263078442876373,
+        "rb": -0.7187354177625122,
+        "halfBase": 0.7594208256622118,
+        "halfTop": 0.6314556429638732,
+        "crown": 0.06156889326975014
+      },
+      "hinge": [
+        1.056220451763534,
+        0.7889385219704533
+      ],
+      "sill": 0.1534779256360115,
+      "profile": [
+        0.9728967207882555,
+        0.9926708613691135,
+        0.9926708613691135,
+        0.9878587016935118,
+        0.9646980863727747,
+        0.9492708352957261,
+        0.9553465604055117,
+        0.970237819489668,
+        1.0059443112880173,
+        1.0221597725633746,
+        1.0399726429034448,
+        1.1001641385450993,
+        1.1289052747615158,
+        1.1409859068308754,
+        1.1496094239061343,
+        1.1658250940460384,
+        1.1815349214683244,
+        1.1972855364077999,
+        1.2015416642188448,
+        1.2028457182176802,
+        1.2028457182176802,
+        1.2007631153510532,
+        1.1901886728398372,
+        1.1714255426794506,
+        1.144675888548691,
+        0.999696498946221,
+        0.9644145462084845,
+        0.8880477890038343,
+        0.8141276936328123,
+        0.7993375050504575,
+        0.8011875024461614,
+        0.8011875024461614,
+        0.7982153335921037,
+        0.7898345861785232,
+        0.7681700304149511,
+        0.736345452438404,
+        0.697646583647849,
+        0.6579569820595432,
+        0.6263548618579876,
+        0.5843197002503657,
+        0.5227734417235063
+      ],
+      "section": [
+        [
+          0.46904248573785023,
+          0.9728967207882555,
+          0.6872396889483774
+        ],
+        [
+          0.4175247839458769,
+          0.9926708613691135,
+          0.9135697493815272
+        ],
+        [
+          0.24132741956058448,
+          0.9926708613691135,
+          0.9323529912955577
+        ],
+        [
+          0.20421566531268323,
+          0.9878587016935118,
+          0.9482248482879514
+        ],
+        [
+          0.17761772528835246,
+          0.9646980863727747,
+          0.9613974989985905
+        ],
+        [
+          0.17761772528835246,
+          0.9492708352957261,
+          0.9666544591355115
+        ],
+        [
+          0.5711173751919183,
+          0.9553465604055117,
+          0.971173161163485
+        ],
+        [
+          0.6527106402862831,
+          0.970237819489668,
+          0.9726391323586149
+        ],
+        [
+          0.6590390926855798,
+          1.0059443112880173,
+          0.9727907037464424
+        ],
+        [
+          0.5862409759636885,
+          1.0221597725633746,
+          0.9727907037464424
+        ],
+        [
+          0.10707395313466853,
+          1.0399726429034448,
+          0.9722852882613816
+        ],
+        [
+          0.1063056437958082,
+          1.1001641385450993,
+          0.9695253682121908
+        ],
+        [
+          0.10537552340826509,
+          1.1289052747615158,
+          0.962337603755418
+        ],
+        [
+          0.10537552340826509,
+          1.1409859068308754,
+          0.9700307836972516
+        ],
+        [
+          0.1027369453588111,
+          1.1496094239061343,
+          0.9700307836972516
+        ],
+        [
+          0.1027369453588111,
+          1.1658250940460384,
+          0.9686761210757546
+        ],
+        [
+          0.10366696421930735,
+          1.1815349214683244,
+          0.9590520302986878
+        ],
+        [
+          0.10036112375246312,
+          1.1972855364077999,
+          0.9342634810018562
+        ],
+        [
+          0.10036112375246312,
+          1.2015416642188448,
+          0.9336570889351646
+        ],
+        [
+          0.10126083705885625,
+          1.2028457182176802,
+          0.9329796511090347
+        ],
+        [
+          0.10213024974926167,
+          1.2028457182176802,
+          0.9324236408177772
+        ],
+        [
+          0.10242341737450525,
+          1.2007631153510532,
+          0.9320091894684891
+        ],
+        [
+          0.10316139330202798,
+          1.1901886728398372,
+          0.9315947381192011
+        ],
+        [
+          0.10398025155769132,
+          1.1714255426794506,
+          1.068658411444758
+        ],
+        [
+          0.10446546563392788,
+          1.144675888548691,
+          1.068658411444758
+        ],
+        [
+          0.1044755652781753,
+          0.999696498946221,
+          1.068658411444758
+        ],
+        [
+          0.10465747398039087,
+          0.9644145462084845,
+          1.0417471938017457
+        ],
+        [
+          0.1048394868410883,
+          0.8880477890038343,
+          0.9617108715114816
+        ],
+        [
+          0.10542578580551495,
+          0.8141276936328123,
+          0.968261673987082
+        ],
+        [
+          0.4132176559339538,
+          0.7993375050504575,
+          0.9708497847259664
+        ],
+        [
+          0.5724716333647415,
+          0.8011875024461614,
+          0.9717392946765971
+        ],
+        [
+          0.6383851430803454,
+          0.8011875024461614,
+          0.9719515798318608
+        ],
+        [
+          0.5901327148337341,
+          0.7982153335921037,
+          0.9719515798318608
+        ],
+        [
+          0.439431377350721,
+          0.7898345861785232,
+          0.9715473539591937
+        ],
+        [
+          0.11122845754723658,
+          0.7681700304149511,
+          0.9700006441049117
+        ],
+        [
+          0.11122845754723658,
+          0.736345452438404,
+          0.9656331939186215
+        ],
+        [
+          0.11882064358447547,
+          0.697646583647849,
+          0.9472948667529785
+        ],
+        [
+          0.1261803055263766,
+          0.6579569820595432,
+          0.915035618321891
+        ],
+        [
+          0.13413639990966592,
+          0.6263548618579876,
+          0.7733012987766982
+        ],
+        [
+          0.14754149533753202,
+          0.5843197002503657,
+          0.6447496956456932
+        ],
+        [
+          0.1626146337238072,
+          0.5227734417235063,
+          0.48262471056475176
+        ]
+      ],
+      "hasInterior": true,
+      "doors": {
+        "left": {
+          "side": -1,
+          "hinge": [
+            0.7753259272909084,
+            0.534219342976437,
+            -0.8595622201868199
+          ],
+          "axis": [
+            1.6292067916978678e-07,
+            0.9999999999999867,
+            0.0
+          ],
+          "sourceNode": "Left Door",
+          "pivotEvidence": "Authored GLTF parent translation near the front door seam, not body centre",
+          "parts": {
+            "paint": [
+              "doorLeft.paint"
+            ],
+            "trim": [
+              "doorLeft.trim"
+            ],
+            "cabin": [
+              "doorLeft.cabin"
+            ],
+            "indicator": [
+              "doorLeft.indicator"
+            ],
+            "opticalGlass": [
+              "doorLeft.opticalGlass"
+            ],
+            "glass": [
+              "doorLeft.glass"
+            ]
+          },
+          "bounds": {
+            "x0": -0.5321484388648562,
+            "x1": 0.8582480008457026,
+            "y0": 0.16116932054464608,
+            "y1": 1.1142164020732759,
+            "z0": -1.085551324883894,
+            "z1": -0.5650670022915918
+          }
+        },
+        "right": {
+          "side": 1,
+          "hinge": [
+            0.7754900802755947,
+            0.5333647317253901,
+            0.8602533984971591
+          ],
+          "axis": [
+            1.6292067916978678e-07,
+            0.9999999999999867,
+            0.0
+          ],
+          "sourceNode": "Right Door",
+          "pivotEvidence": "Authored GLTF parent translation near the front door seam, not body centre",
+          "parts": {
+            "paint": [
+              "doorRight.paint"
+            ],
+            "trim": [
+              "doorRight.trim"
+            ],
+            "cabin": [
+              "doorRight.cabin"
+            ],
+            "opticalGlass": [
+              "doorRight.opticalGlass"
+            ],
+            "glass": [
+              "doorRight.glass"
+            ],
+            "indicator": [
+              "doorRight.indicator"
+            ]
+          },
+          "bounds": {
+            "x0": -0.5321485324591513,
+            "x1": 0.8582478539937167,
+            "y0": 0.16116936211243005,
+            "y1": 1.1142164170121887,
+            "z0": 0.5650668957762104,
+            "z1": 1.085551324883894
+          }
+        }
+      },
+      "roleParts": {
+        "shell": [
+          "shell"
+        ],
+        "panels": [
+          "panels",
+          "doorLeft.paint",
+          "doorRight.paint",
+          "trunk.paint"
+        ],
+        "hood": [
+          "hood"
+        ],
+        "glass": [
+          "glass",
+          "doorLeft.glass",
+          "doorRight.glass"
+        ],
+        "trim": [
+          "trim",
+          "hood.trim",
+          "trunk.trim",
+          "doorLeft.trim",
+          "doorRight.trim",
+          "indicatorLeft",
+          "indicatorRight",
+          "doorLeft.indicator",
+          "doorRight.indicator"
+        ],
+        "cabin": [
+          "cabin",
+          "cabin.seats",
+          "cabin.controls",
+          "doorLeft.cabin",
+          "doorRight.cabin"
+        ],
+        "opticalGlass": [
+          "opticalGlass",
+          "trunk.glass",
+          "doorLeft.opticalGlass",
+          "doorRight.opticalGlass"
+        ],
+        "shellFar": [
+          "shellFar"
+        ],
+        "panelsFar": [
+          "panelsFar",
+          "doorLeft.paintFar",
+          "doorRight.paintFar",
+          "trunk.paintFar"
+        ],
+        "hoodFar": [
+          "hoodFar"
+        ],
+        "glassFar": [
+          "glassFar",
+          "doorLeft.glassFar",
+          "doorRight.glassFar"
+        ],
+        "trimFar": [
+          "trimFar",
+          "hood.trimFar",
+          "trunk.trimFar",
+          "doorLeft.trimFar",
+          "doorRight.trimFar",
+          "indicatorLeftFar",
+          "indicatorRightFar",
+          "doorLeft.indicatorFar",
+          "doorRight.indicatorFar"
+        ],
+        "cabinFar": [
+          "cabinFar",
+          "cabin.seatsFar",
+          "cabin.controlsFar",
+          "doorLeft.cabinFar",
+          "doorRight.cabinFar"
+        ],
+        "opticalGlassFar": [
+          "opticalGlassFar",
+          "trunk.glassFar",
+          "doorLeft.opticalGlassFar",
+          "doorRight.opticalGlassFar"
+        ]
+      },
+      "paintTexture": true,
+      "paintColor": "#ffffff",
+      "normalScale": 32767,
+      "sourceTriangles": 263683,
+      "sourceUniformScale": 0.8935158010685379,
+      "sourceShift": [
+        0.002724939658789838,
+        -0.008115326713555915,
+        2.38418573772492e-09
+      ],
+      "hasEmissiveAtlas": true,
+      "lampVertexColorsBaked": false,
+      "source": "https://sketchfab.com/3d-models/2019-chevrolet-corvette-c8-stingray-790c40ccff6843eab0b7b4bd18421ff8",
+      "license": "CC BY 4.0",
+      "sourceNodePivots": "Authored door/wheel node transforms retained; all vertices rigidly rotated and uniformly fitted to4.69m",
+      "paintUv": [
+        0.99267578125,
+        0.00146484375
+      ],
+      "quant": [
+        -2.345,
+        0.0,
+        -1.085551324883894,
+        4.69,
+        1.2028457182176802,
+        2.171102649767788
+      ],
+      "parts": {
+        "shell": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 4537,
+          "triangles": 7496
+        },
+        "shellFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 436,
+          "triangles": 461
+        },
+        "panels": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 3781,
+          "triangles": 6112
+        },
+        "panelsFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 384,
+          "triangles": 375
+        },
+        "trim": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 17089,
+          "triangles": 19549
+        },
+        "trimFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 2917,
+          "triangles": 2442
+        },
+        "headLeft": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 191,
+          "triangles": 256
+        },
+        "headLeftFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 45,
+          "triangles": 42
+        },
+        "headRight": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 191,
+          "triangles": 256
+        },
+        "headRightFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 45,
+          "triangles": 42
+        },
+        "indicatorRight": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 345,
+          "triangles": 359
+        },
+        "indicatorRightFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 90,
+          "triangles": 60
+        },
+        "indicatorLeft": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 345,
+          "triangles": 359
+        },
+        "indicatorLeftFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 90,
+          "triangles": 60
+        },
+        "tailLeft": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 683,
+          "triangles": 916
+        },
+        "tailLeftFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 169,
+          "triangles": 151
+        },
+        "tailRight": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 683,
+          "triangles": 916
+        },
+        "tailRightFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 169,
+          "triangles": 151
+        },
+        "cabin": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 10939,
+          "triangles": 12088
+        },
+        "cabinFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 1548,
+          "triangles": 1125
+        },
+        "cabin.seats": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 2828,
+          "triangles": 3128
+        },
+        "cabin.seatsFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 272,
+          "triangles": 250
+        },
+        "cabin.controls": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 2887,
+          "triangles": 3303
+        },
+        "cabin.controlsFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 489,
+          "triangles": 367
+        },
+        "hood": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 374,
+          "triangles": 646
+        },
+        "hoodFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 33,
+          "triangles": 39
+        },
+        "hood.trim": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 402,
+          "triangles": 522
+        },
+        "hood.trimFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 68,
+          "triangles": 65
+        },
+        "glass": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 139,
+          "triangles": 155,
+          "panes": [
+            0,
+            118,
+            0,
+            37,
+            0
+          ]
+        },
+        "glassFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 23,
+          "triangles": 19,
+          "panes": [
+            0,
+            15,
+            0,
+            4,
+            0
+          ]
+        },
+        "opticalGlass": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 1300,
+          "triangles": 2058
+        },
+        "opticalGlassFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 234,
+          "triangles": 274
+        },
+        "wheel1.rim": {
+          "origin": [
+            1.2962455185986526,
+            0.3269237090298931,
+            0.8336502531616562
+          ],
+          "vertices": 2358,
+          "triangles": 2897
+        },
+        "wheel1.rimFar": {
+          "origin": [
+            1.2962455185986526,
+            0.3269237090298931,
+            0.8336502531616562
+          ],
+          "vertices": 457,
+          "triangles": 442
+        },
+        "wheel1.tyre": {
+          "origin": [
+            1.2962455185986526,
+            0.3269237090298931,
+            0.8336502531616562
+          ],
+          "vertices": 617,
+          "triangles": 972
+        },
+        "wheel1.tyreFar": {
+          "origin": [
+            1.2962455185986526,
+            0.3269237090298931,
+            0.8336502531616562
+          ],
+          "vertices": 114,
+          "triangles": 129
+        },
+        "wheel1.caliper": {
+          "origin": [
+            1.2962455185986526,
+            0.3269237090298931,
+            0.8336502531616562
+          ],
+          "vertices": 321,
+          "triangles": 433
+        },
+        "wheel1.caliperFar": {
+          "origin": [
+            1.2962455185986526,
+            0.3269237090298931,
+            0.8336502531616562
+          ],
+          "vertices": 48,
+          "triangles": 59
+        },
+        "wheel0.caliper": {
+          "origin": [
+            1.2962455185986526,
+            0.3269237090298931,
+            -0.8336502489010409
+          ],
+          "vertices": 321,
+          "triangles": 433
+        },
+        "wheel0.caliperFar": {
+          "origin": [
+            1.2962455185986526,
+            0.3269237090298931,
+            -0.8336502489010409
+          ],
+          "vertices": 54,
+          "triangles": 59
+        },
+        "wheel0.rim": {
+          "origin": [
+            1.2962455185986526,
+            0.3269237090298931,
+            -0.8336502489010409
+          ],
+          "vertices": 2358,
+          "triangles": 2897
+        },
+        "wheel0.rimFar": {
+          "origin": [
+            1.2962455185986526,
+            0.3269237090298931,
+            -0.8336502489010409
+          ],
+          "vertices": 454,
+          "triangles": 441
+        },
+        "wheel0.tyre": {
+          "origin": [
+            1.2962455185986526,
+            0.3269237090298931,
+            -0.8336502489010409
+          ],
+          "vertices": 617,
+          "triangles": 972
+        },
+        "wheel0.tyreFar": {
+          "origin": [
+            1.2962455185986526,
+            0.3269237090298931,
+            -0.8336502489010409
+          ],
+          "vertices": 114,
+          "triangles": 129
+        },
+        "wheel3.rim": {
+          "origin": [
+            -1.4569046174555826,
+            0.34343891040511615,
+            0.8309696785504278
+          ],
+          "vertices": 2360,
+          "triangles": 2898
+        },
+        "wheel3.rimFar": {
+          "origin": [
+            -1.4569046174555826,
+            0.34343891040511615,
+            0.8309696785504278
+          ],
+          "vertices": 450,
+          "triangles": 442
+        },
+        "wheel3.tyre": {
+          "origin": [
+            -1.4569046174555826,
+            0.34343891040511615,
+            0.8309696785504278
+          ],
+          "vertices": 617,
+          "triangles": 972
+        },
+        "wheel3.tyreFar": {
+          "origin": [
+            -1.4569046174555826,
+            0.34343891040511615,
+            0.8309696785504278
+          ],
+          "vertices": 114,
+          "triangles": 128
+        },
+        "wheel2.rim": {
+          "origin": [
+            -1.455925425814372,
+            0.3424597869337497,
+            -0.8309696742898126
+          ],
+          "vertices": 2360,
+          "triangles": 2897
+        },
+        "wheel2.rimFar": {
+          "origin": [
+            -1.455925425814372,
+            0.3424597869337497,
+            -0.8309696742898126
+          ],
+          "vertices": 456,
+          "triangles": 442
+        },
+        "wheel2.tyre": {
+          "origin": [
+            -1.455925425814372,
+            0.3424597869337497,
+            -0.8309696742898126
+          ],
+          "vertices": 617,
+          "triangles": 972
+        },
+        "wheel2.tyreFar": {
+          "origin": [
+            -1.455925425814372,
+            0.3424597869337497,
+            -0.8309696742898126
+          ],
+          "vertices": 114,
+          "triangles": 128
+        },
+        "doorRight.paint": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 880,
+          "triangles": 1420
+        },
+        "doorRight.paintFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 84,
+          "triangles": 87
+        },
+        "doorRight.trim": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 396,
+          "triangles": 425
+        },
+        "doorRight.trimFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 87,
+          "triangles": 52
+        },
+        "doorRight.cabin": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 843,
+          "triangles": 886
+        },
+        "doorRight.cabinFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 102,
+          "triangles": 63
+        },
+        "doorRight.opticalGlass": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 48,
+          "triangles": 74
+        },
+        "doorRight.opticalGlassFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 9,
+          "triangles": 9
+        },
+        "doorRight.glass": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 55,
+          "triangles": 73,
+          "panes": [
+            0,
+            0,
+            73,
+            0,
+            0
+          ]
+        },
+        "doorRight.glassFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 10,
+          "triangles": 9,
+          "panes": [
+            0,
+            0,
+            9,
+            0,
+            0
+          ]
+        },
+        "doorRight.indicator": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 47,
+          "triangles": 68
+        },
+        "doorRight.indicatorFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 10,
+          "triangles": 11
+        },
+        "doorLeft.paint": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 883,
+          "triangles": 1420
+        },
+        "doorLeft.paintFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 85,
+          "triangles": 87
+        },
+        "doorLeft.trim": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 394,
+          "triangles": 425
+        },
+        "doorLeft.trimFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 87,
+          "triangles": 52
+        },
+        "doorLeft.cabin": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 865,
+          "triangles": 890
+        },
+        "doorLeft.cabinFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 102,
+          "triangles": 63
+        },
+        "doorLeft.indicator": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 47,
+          "triangles": 68
+        },
+        "doorLeft.indicatorFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 10,
+          "triangles": 11
+        },
+        "doorLeft.opticalGlass": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 48,
+          "triangles": 74
+        },
+        "doorLeft.opticalGlassFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 9,
+          "triangles": 9
+        },
+        "doorLeft.glass": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 57,
+          "triangles": 78,
+          "panes": [
+            78,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "doorLeft.glassFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 11,
+          "triangles": 10,
+          "panes": [
+            10,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "trunk.paint": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 841,
+          "triangles": 1444
+        },
+        "trunk.paintFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 76,
+          "triangles": 88
+        },
+        "trunk.trim": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 1801,
+          "triangles": 2256
+        },
+        "trunk.trimFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 420,
+          "triangles": 407
+        },
+        "trunk.glass": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 121,
+          "triangles": 102
+        },
+        "trunk.glassFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 20,
+          "triangles": 13
+        },
+        "wheel2.caliper": {
+          "origin": [
+            -1.455925425814372,
+            0.3424597869337497,
+            -0.8309696742898126
+          ],
+          "vertices": 324,
+          "triangles": 433
+        },
+        "wheel2.caliperFar": {
+          "origin": [
+            -1.455925425814372,
+            0.3424597869337497,
+            -0.8309696742898126
+          ],
+          "vertices": 47,
+          "triangles": 57
+        },
+        "wheel3.caliper": {
+          "origin": [
+            -1.4569046174555826,
+            0.34343891040511615,
+            0.8309696785504278
+          ],
+          "vertices": 324,
+          "triangles": 433
+        },
+        "wheel3.caliperFar": {
+          "origin": [
+            -1.4569046174555826,
+            0.34343891040511615,
+            0.8309696785504278
+          ],
+          "vertices": 47,
+          "triangles": 57
+        }
+      },
+      "lodParts": {
+        "shell": "shellFar",
+        "panels": "panelsFar",
+        "trim": "trimFar",
+        "headLeft": "headLeftFar",
+        "headRight": "headRightFar",
+        "indicatorRight": "indicatorRightFar",
+        "indicatorLeft": "indicatorLeftFar",
+        "tailLeft": "tailLeftFar",
+        "tailRight": "tailRightFar",
+        "cabin": "cabinFar",
+        "cabin.seats": "cabin.seatsFar",
+        "cabin.controls": "cabin.controlsFar",
+        "hood": "hoodFar",
+        "hood.trim": "hood.trimFar",
+        "glass": "glassFar",
+        "opticalGlass": "opticalGlassFar",
+        "wheel1.rim": "wheel1.rimFar",
+        "wheel1.tyre": "wheel1.tyreFar",
+        "wheel1.caliper": "wheel1.caliperFar",
+        "wheel0.caliper": "wheel0.caliperFar",
+        "wheel0.rim": "wheel0.rimFar",
+        "wheel0.tyre": "wheel0.tyreFar",
+        "wheel3.rim": "wheel3.rimFar",
+        "wheel3.tyre": "wheel3.tyreFar",
+        "wheel2.rim": "wheel2.rimFar",
+        "wheel2.tyre": "wheel2.tyreFar",
+        "doorRight.paint": "doorRight.paintFar",
+        "doorRight.trim": "doorRight.trimFar",
+        "doorRight.cabin": "doorRight.cabinFar",
+        "doorRight.opticalGlass": "doorRight.opticalGlassFar",
+        "doorRight.glass": "doorRight.glassFar",
+        "doorRight.indicator": "doorRight.indicatorFar",
+        "doorLeft.paint": "doorLeft.paintFar",
+        "doorLeft.trim": "doorLeft.trimFar",
+        "doorLeft.cabin": "doorLeft.cabinFar",
+        "doorLeft.indicator": "doorLeft.indicatorFar",
+        "doorLeft.opticalGlass": "doorLeft.opticalGlassFar",
+        "doorLeft.glass": "doorLeft.glassFar",
+        "trunk.paint": "trunk.paintFar",
+        "trunk.trim": "trunk.trimFar",
+        "trunk.glass": "trunk.glassFar",
+        "wheel2.caliper": "wheel2.caliperFar",
+        "wheel3.caliper": "wheel3.caliperFar"
+      },
+      "triangles": 85031,
+      "farTriangles": 9407,
+      "rolePanes": {
+        "glass": [
+          78,
+          118,
+          73,
+          37,
+          0
+        ],
+        "glassFar": [
+          10,
+          15,
+          9,
+          4,
+          0
+        ]
+      }
+    }
+  },
+  "arrays": {
+    "c8_hari.shell.p": [
+      "i2",
+      0,
+      13611
+    ],
+    "c8_hari.shell.n": [
+      "i2",
+      27224,
+      13611
+    ],
+    "c8_hari.shell.uv": [
+      "u2",
+      54448,
+      9074
+    ],
+    "c8_hari.shell.a": [
+      "f4",
+      72596,
+      9074
+    ],
+    "c8_hari.shell.t": [
+      "u2",
+      108892,
+      18148
+    ],
+    "c8_hari.shell.f": [
+      "u1",
+      145188,
+      9074
+    ],
+    "c8_hari.shell.i": [
+      "u2",
+      154264,
+      22488
+    ],
+    "c8_hari.shellFar.p": [
+      "i2",
+      199240,
+      1308
+    ],
+    "c8_hari.shellFar.n": [
+      "i2",
+      201856,
+      1308
+    ],
+    "c8_hari.shellFar.uv": [
+      "u2",
+      204472,
+      872
+    ],
+    "c8_hari.shellFar.a": [
+      "f4",
+      206216,
+      872
+    ],
+    "c8_hari.shellFar.t": [
+      "u2",
+      209704,
+      1744
+    ],
+    "c8_hari.shellFar.f": [
+      "u1",
+      213192,
+      872
+    ],
+    "c8_hari.shellFar.i": [
+      "u2",
+      214064,
+      1383
+    ],
+    "c8_hari.panels.p": [
+      "i2",
+      216832,
+      11343
+    ],
+    "c8_hari.panels.n": [
+      "i2",
+      239520,
+      11343
+    ],
+    "c8_hari.panels.uv": [
+      "u2",
+      262208,
+      7562
+    ],
+    "c8_hari.panels.a": [
+      "f4",
+      277332,
+      7562
+    ],
+    "c8_hari.panels.t": [
+      "u2",
+      307580,
+      15124
+    ],
+    "c8_hari.panels.f": [
+      "u1",
+      337828,
+      7562
+    ],
+    "c8_hari.panels.i": [
+      "u2",
+      345392,
+      18336
+    ],
+    "c8_hari.panelsFar.p": [
+      "i2",
+      382064,
+      1152
+    ],
+    "c8_hari.panelsFar.n": [
+      "i2",
+      384368,
+      1152
+    ],
+    "c8_hari.panelsFar.uv": [
+      "u2",
+      386672,
+      768
+    ],
+    "c8_hari.panelsFar.a": [
+      "f4",
+      388208,
+      768
+    ],
+    "c8_hari.panelsFar.t": [
+      "u2",
+      391280,
+      1536
+    ],
+    "c8_hari.panelsFar.f": [
+      "u1",
+      394352,
+      768
+    ],
+    "c8_hari.panelsFar.i": [
+      "u2",
+      395120,
+      1125
+    ],
+    "c8_hari.trim.p": [
+      "i2",
+      397372,
+      51267
+    ],
+    "c8_hari.trim.n": [
+      "i2",
+      499908,
+      51267
+    ],
+    "c8_hari.trim.uv": [
+      "u2",
+      602444,
+      34178
+    ],
+    "c8_hari.trim.a": [
+      "f4",
+      670800,
+      34178
+    ],
+    "c8_hari.trim.t": [
+      "u2",
+      807512,
+      68356
+    ],
+    "c8_hari.trim.f": [
+      "u1",
+      944224,
+      34178
+    ],
+    "c8_hari.trim.i": [
+      "u2",
+      978404,
+      58647
+    ],
+    "c8_hari.trimFar.p": [
+      "i2",
+      1095700,
+      8751
+    ],
+    "c8_hari.trimFar.n": [
+      "i2",
+      1113204,
+      8751
+    ],
+    "c8_hari.trimFar.uv": [
+      "u2",
+      1130708,
+      5834
+    ],
+    "c8_hari.trimFar.a": [
+      "f4",
+      1142376,
+      5834
+    ],
+    "c8_hari.trimFar.t": [
+      "u2",
+      1165712,
+      11668
+    ],
+    "c8_hari.trimFar.f": [
+      "u1",
+      1189048,
+      5834
+    ],
+    "c8_hari.trimFar.i": [
+      "u2",
+      1194884,
+      7326
+    ],
+    "c8_hari.headLeft.p": [
+      "i2",
+      1209536,
+      573
+    ],
+    "c8_hari.headLeft.n": [
+      "i2",
+      1210684,
+      573
+    ],
+    "c8_hari.headLeft.uv": [
+      "u2",
+      1211832,
+      382
+    ],
+    "c8_hari.headLeft.a": [
+      "f4",
+      1212596,
+      382
+    ],
+    "c8_hari.headLeft.t": [
+      "u2",
+      1214124,
+      764
+    ],
+    "c8_hari.headLeft.f": [
+      "u1",
+      1215652,
+      382
+    ],
+    "c8_hari.headLeft.i": [
+      "u2",
+      1216036,
+      768
+    ],
+    "c8_hari.headLeft.c": [
+      "u1",
+      1217572,
+      573
+    ],
+    "c8_hari.headLeftFar.p": [
+      "i2",
+      1218148,
+      135
+    ],
+    "c8_hari.headLeftFar.n": [
+      "i2",
+      1218420,
+      135
+    ],
+    "c8_hari.headLeftFar.uv": [
+      "u2",
+      1218692,
+      90
+    ],
+    "c8_hari.headLeftFar.a": [
+      "f4",
+      1218872,
+      90
+    ],
+    "c8_hari.headLeftFar.t": [
+      "u2",
+      1219232,
+      180
+    ],
+    "c8_hari.headLeftFar.f": [
+      "u1",
+      1219592,
+      90
+    ],
+    "c8_hari.headLeftFar.i": [
+      "u2",
+      1219684,
+      126
+    ],
+    "c8_hari.headLeftFar.c": [
+      "u1",
+      1219936,
+      135
+    ],
+    "c8_hari.headRight.p": [
+      "i2",
+      1220072,
+      573
+    ],
+    "c8_hari.headRight.n": [
+      "i2",
+      1221220,
+      573
+    ],
+    "c8_hari.headRight.uv": [
+      "u2",
+      1222368,
+      382
+    ],
+    "c8_hari.headRight.a": [
+      "f4",
+      1223132,
+      382
+    ],
+    "c8_hari.headRight.t": [
+      "u2",
+      1224660,
+      764
+    ],
+    "c8_hari.headRight.f": [
+      "u1",
+      1226188,
+      382
+    ],
+    "c8_hari.headRight.i": [
+      "u2",
+      1226572,
+      768
+    ],
+    "c8_hari.headRight.c": [
+      "u1",
+      1228108,
+      573
+    ],
+    "c8_hari.headRightFar.p": [
+      "i2",
+      1228684,
+      135
+    ],
+    "c8_hari.headRightFar.n": [
+      "i2",
+      1228956,
+      135
+    ],
+    "c8_hari.headRightFar.uv": [
+      "u2",
+      1229228,
+      90
+    ],
+    "c8_hari.headRightFar.a": [
+      "f4",
+      1229408,
+      90
+    ],
+    "c8_hari.headRightFar.t": [
+      "u2",
+      1229768,
+      180
+    ],
+    "c8_hari.headRightFar.f": [
+      "u1",
+      1230128,
+      90
+    ],
+    "c8_hari.headRightFar.i": [
+      "u2",
+      1230220,
+      126
+    ],
+    "c8_hari.headRightFar.c": [
+      "u1",
+      1230472,
+      135
+    ],
+    "c8_hari.indicatorRight.p": [
+      "i2",
+      1230608,
+      1035
+    ],
+    "c8_hari.indicatorRight.n": [
+      "i2",
+      1232680,
+      1035
+    ],
+    "c8_hari.indicatorRight.uv": [
+      "u2",
+      1234752,
+      690
+    ],
+    "c8_hari.indicatorRight.a": [
+      "f4",
+      1236132,
+      690
+    ],
+    "c8_hari.indicatorRight.t": [
+      "u2",
+      1238892,
+      1380
+    ],
+    "c8_hari.indicatorRight.f": [
+      "u1",
+      1241652,
+      690
+    ],
+    "c8_hari.indicatorRight.i": [
+      "u2",
+      1242344,
+      1077
+    ],
+    "c8_hari.indicatorRight.c": [
+      "u1",
+      1244500,
+      1035
+    ],
+    "c8_hari.indicatorRightFar.p": [
+      "i2",
+      1245536,
+      270
+    ],
+    "c8_hari.indicatorRightFar.n": [
+      "i2",
+      1246076,
+      270
+    ],
+    "c8_hari.indicatorRightFar.uv": [
+      "u2",
+      1246616,
+      180
+    ],
+    "c8_hari.indicatorRightFar.a": [
+      "f4",
+      1246976,
+      180
+    ],
+    "c8_hari.indicatorRightFar.t": [
+      "u2",
+      1247696,
+      360
+    ],
+    "c8_hari.indicatorRightFar.f": [
+      "u1",
+      1248416,
+      180
+    ],
+    "c8_hari.indicatorRightFar.i": [
+      "u2",
+      1248596,
+      180
+    ],
+    "c8_hari.indicatorRightFar.c": [
+      "u1",
+      1248956,
+      270
+    ],
+    "c8_hari.indicatorLeft.p": [
+      "i2",
+      1249228,
+      1035
+    ],
+    "c8_hari.indicatorLeft.n": [
+      "i2",
+      1251300,
+      1035
+    ],
+    "c8_hari.indicatorLeft.uv": [
+      "u2",
+      1253372,
+      690
+    ],
+    "c8_hari.indicatorLeft.a": [
+      "f4",
+      1254752,
+      690
+    ],
+    "c8_hari.indicatorLeft.t": [
+      "u2",
+      1257512,
+      1380
+    ],
+    "c8_hari.indicatorLeft.f": [
+      "u1",
+      1260272,
+      690
+    ],
+    "c8_hari.indicatorLeft.i": [
+      "u2",
+      1260964,
+      1077
+    ],
+    "c8_hari.indicatorLeft.c": [
+      "u1",
+      1263120,
+      1035
+    ],
+    "c8_hari.indicatorLeftFar.p": [
+      "i2",
+      1264156,
+      270
+    ],
+    "c8_hari.indicatorLeftFar.n": [
+      "i2",
+      1264696,
+      270
+    ],
+    "c8_hari.indicatorLeftFar.uv": [
+      "u2",
+      1265236,
+      180
+    ],
+    "c8_hari.indicatorLeftFar.a": [
+      "f4",
+      1265596,
+      180
+    ],
+    "c8_hari.indicatorLeftFar.t": [
+      "u2",
+      1266316,
+      360
+    ],
+    "c8_hari.indicatorLeftFar.f": [
+      "u1",
+      1267036,
+      180
+    ],
+    "c8_hari.indicatorLeftFar.i": [
+      "u2",
+      1267216,
+      180
+    ],
+    "c8_hari.indicatorLeftFar.c": [
+      "u1",
+      1267576,
+      270
+    ],
+    "c8_hari.tailLeft.p": [
+      "i2",
+      1267848,
+      2049
+    ],
+    "c8_hari.tailLeft.n": [
+      "i2",
+      1271948,
+      2049
+    ],
+    "c8_hari.tailLeft.uv": [
+      "u2",
+      1276048,
+      1366
+    ],
+    "c8_hari.tailLeft.a": [
+      "f4",
+      1278780,
+      1366
+    ],
+    "c8_hari.tailLeft.t": [
+      "u2",
+      1284244,
+      2732
+    ],
+    "c8_hari.tailLeft.f": [
+      "u1",
+      1289708,
+      1366
+    ],
+    "c8_hari.tailLeft.i": [
+      "u2",
+      1291076,
+      2748
+    ],
+    "c8_hari.tailLeft.c": [
+      "u1",
+      1296572,
+      2049
+    ],
+    "c8_hari.tailLeftFar.p": [
+      "i2",
+      1298624,
+      507
+    ],
+    "c8_hari.tailLeftFar.n": [
+      "i2",
+      1299640,
+      507
+    ],
+    "c8_hari.tailLeftFar.uv": [
+      "u2",
+      1300656,
+      338
+    ],
+    "c8_hari.tailLeftFar.a": [
+      "f4",
+      1301332,
+      338
+    ],
+    "c8_hari.tailLeftFar.t": [
+      "u2",
+      1302684,
+      676
+    ],
+    "c8_hari.tailLeftFar.f": [
+      "u1",
+      1304036,
+      338
+    ],
+    "c8_hari.tailLeftFar.i": [
+      "u2",
+      1304376,
+      453
+    ],
+    "c8_hari.tailLeftFar.c": [
+      "u1",
+      1305284,
+      507
+    ],
+    "c8_hari.tailRight.p": [
+      "i2",
+      1305792,
+      2049
+    ],
+    "c8_hari.tailRight.n": [
+      "i2",
+      1309892,
+      2049
+    ],
+    "c8_hari.tailRight.uv": [
+      "u2",
+      1313992,
+      1366
+    ],
+    "c8_hari.tailRight.a": [
+      "f4",
+      1316724,
+      1366
+    ],
+    "c8_hari.tailRight.t": [
+      "u2",
+      1322188,
+      2732
+    ],
+    "c8_hari.tailRight.f": [
+      "u1",
+      1327652,
+      1366
+    ],
+    "c8_hari.tailRight.i": [
+      "u2",
+      1329020,
+      2748
+    ],
+    "c8_hari.tailRight.c": [
+      "u1",
+      1334516,
+      2049
+    ],
+    "c8_hari.tailRightFar.p": [
+      "i2",
+      1336568,
+      507
+    ],
+    "c8_hari.tailRightFar.n": [
+      "i2",
+      1337584,
+      507
+    ],
+    "c8_hari.tailRightFar.uv": [
+      "u2",
+      1338600,
+      338
+    ],
+    "c8_hari.tailRightFar.a": [
+      "f4",
+      1339276,
+      338
+    ],
+    "c8_hari.tailRightFar.t": [
+      "u2",
+      1340628,
+      676
+    ],
+    "c8_hari.tailRightFar.f": [
+      "u1",
+      1341980,
+      338
+    ],
+    "c8_hari.tailRightFar.i": [
+      "u2",
+      1342320,
+      453
+    ],
+    "c8_hari.tailRightFar.c": [
+      "u1",
+      1343228,
+      507
+    ],
+    "c8_hari.cabin.p": [
+      "i2",
+      1343736,
+      32817
+    ],
+    "c8_hari.cabin.n": [
+      "i2",
+      1409372,
+      32817
+    ],
+    "c8_hari.cabin.uv": [
+      "u2",
+      1475008,
+      21878
+    ],
+    "c8_hari.cabin.a": [
+      "f4",
+      1518764,
+      21878
+    ],
+    "c8_hari.cabin.t": [
+      "u2",
+      1606276,
+      43756
+    ],
+    "c8_hari.cabin.f": [
+      "u1",
+      1693788,
+      21878
+    ],
+    "c8_hari.cabin.i": [
+      "u2",
+      1715668,
+      36264
+    ],
+    "c8_hari.cabinFar.p": [
+      "i2",
+      1788196,
+      4644
+    ],
+    "c8_hari.cabinFar.n": [
+      "i2",
+      1797484,
+      4644
+    ],
+    "c8_hari.cabinFar.uv": [
+      "u2",
+      1806772,
+      3096
+    ],
+    "c8_hari.cabinFar.a": [
+      "f4",
+      1812964,
+      3096
+    ],
+    "c8_hari.cabinFar.t": [
+      "u2",
+      1825348,
+      6192
+    ],
+    "c8_hari.cabinFar.f": [
+      "u1",
+      1837732,
+      3096
+    ],
+    "c8_hari.cabinFar.i": [
+      "u2",
+      1840828,
+      3375
+    ],
+    "c8_hari.cabin.seats.p": [
+      "i2",
+      1847580,
+      8484
+    ],
+    "c8_hari.cabin.seats.n": [
+      "i2",
+      1864548,
+      8484
+    ],
+    "c8_hari.cabin.seats.uv": [
+      "u2",
+      1881516,
+      5656
+    ],
+    "c8_hari.cabin.seats.a": [
+      "f4",
+      1892828,
+      5656
+    ],
+    "c8_hari.cabin.seats.t": [
+      "u2",
+      1915452,
+      11312
+    ],
+    "c8_hari.cabin.seats.f": [
+      "u1",
+      1938076,
+      5656
+    ],
+    "c8_hari.cabin.seats.i": [
+      "u2",
+      1943732,
+      9384
+    ],
+    "c8_hari.cabin.seatsFar.p": [
+      "i2",
+      1962500,
+      816
+    ],
+    "c8_hari.cabin.seatsFar.n": [
+      "i2",
+      1964132,
+      816
+    ],
+    "c8_hari.cabin.seatsFar.uv": [
+      "u2",
+      1965764,
+      544
+    ],
+    "c8_hari.cabin.seatsFar.a": [
+      "f4",
+      1966852,
+      544
+    ],
+    "c8_hari.cabin.seatsFar.t": [
+      "u2",
+      1969028,
+      1088
+    ],
+    "c8_hari.cabin.seatsFar.f": [
+      "u1",
+      1971204,
+      544
+    ],
+    "c8_hari.cabin.seatsFar.i": [
+      "u2",
+      1971748,
+      750
+    ],
+    "c8_hari.cabin.controls.p": [
+      "i2",
+      1973248,
+      8661
+    ],
+    "c8_hari.cabin.controls.n": [
+      "i2",
+      1990572,
+      8661
+    ],
+    "c8_hari.cabin.controls.uv": [
+      "u2",
+      2007896,
+      5774
+    ],
+    "c8_hari.cabin.controls.a": [
+      "f4",
+      2019444,
+      5774
+    ],
+    "c8_hari.cabin.controls.t": [
+      "u2",
+      2042540,
+      11548
+    ],
+    "c8_hari.cabin.controls.f": [
+      "u1",
+      2065636,
+      5774
+    ],
+    "c8_hari.cabin.controls.i": [
+      "u2",
+      2071412,
+      9909
+    ],
+    "c8_hari.cabin.controlsFar.p": [
+      "i2",
+      2091232,
+      1467
+    ],
+    "c8_hari.cabin.controlsFar.n": [
+      "i2",
+      2094168,
+      1467
+    ],
+    "c8_hari.cabin.controlsFar.uv": [
+      "u2",
+      2097104,
+      978
+    ],
+    "c8_hari.cabin.controlsFar.a": [
+      "f4",
+      2099060,
+      978
+    ],
+    "c8_hari.cabin.controlsFar.t": [
+      "u2",
+      2102972,
+      1956
+    ],
+    "c8_hari.cabin.controlsFar.f": [
+      "u1",
+      2106884,
+      978
+    ],
+    "c8_hari.cabin.controlsFar.i": [
+      "u2",
+      2107864,
+      1101
+    ],
+    "c8_hari.hood.p": [
+      "i2",
+      2110068,
+      1122
+    ],
+    "c8_hari.hood.n": [
+      "i2",
+      2112312,
+      1122
+    ],
+    "c8_hari.hood.uv": [
+      "u2",
+      2114556,
+      748
+    ],
+    "c8_hari.hood.a": [
+      "f4",
+      2116052,
+      748
+    ],
+    "c8_hari.hood.t": [
+      "u2",
+      2119044,
+      1496
+    ],
+    "c8_hari.hood.f": [
+      "u1",
+      2122036,
+      748
+    ],
+    "c8_hari.hood.i": [
+      "u2",
+      2122784,
+      1938
+    ],
+    "c8_hari.hoodFar.p": [
+      "i2",
+      2126660,
+      99
+    ],
+    "c8_hari.hoodFar.n": [
+      "i2",
+      2126860,
+      99
+    ],
+    "c8_hari.hoodFar.uv": [
+      "u2",
+      2127060,
+      66
+    ],
+    "c8_hari.hoodFar.a": [
+      "f4",
+      2127192,
+      66
+    ],
+    "c8_hari.hoodFar.t": [
+      "u2",
+      2127456,
+      132
+    ],
+    "c8_hari.hoodFar.f": [
+      "u1",
+      2127720,
+      66
+    ],
+    "c8_hari.hoodFar.i": [
+      "u2",
+      2127788,
+      117
+    ],
+    "c8_hari.hood.trim.p": [
+      "i2",
+      2128024,
+      1206
+    ],
+    "c8_hari.hood.trim.n": [
+      "i2",
+      2130436,
+      1206
+    ],
+    "c8_hari.hood.trim.uv": [
+      "u2",
+      2132848,
+      804
+    ],
+    "c8_hari.hood.trim.a": [
+      "f4",
+      2134456,
+      804
+    ],
+    "c8_hari.hood.trim.t": [
+      "u2",
+      2137672,
+      1608
+    ],
+    "c8_hari.hood.trim.f": [
+      "u1",
+      2140888,
+      804
+    ],
+    "c8_hari.hood.trim.i": [
+      "u2",
+      2141692,
+      1566
+    ],
+    "c8_hari.hood.trimFar.p": [
+      "i2",
+      2144824,
+      204
+    ],
+    "c8_hari.hood.trimFar.n": [
+      "i2",
+      2145232,
+      204
+    ],
+    "c8_hari.hood.trimFar.uv": [
+      "u2",
+      2145640,
+      136
+    ],
+    "c8_hari.hood.trimFar.a": [
+      "f4",
+      2145912,
+      136
+    ],
+    "c8_hari.hood.trimFar.t": [
+      "u2",
+      2146456,
+      272
+    ],
+    "c8_hari.hood.trimFar.f": [
+      "u1",
+      2147000,
+      136
+    ],
+    "c8_hari.hood.trimFar.i": [
+      "u2",
+      2147136,
+      195
+    ],
+    "c8_hari.glass.p": [
+      "i2",
+      2147528,
+      417
+    ],
+    "c8_hari.glass.n": [
+      "i2",
+      2148364,
+      417
+    ],
+    "c8_hari.glass.uv": [
+      "u2",
+      2149200,
+      278
+    ],
+    "c8_hari.glass.a": [
+      "f4",
+      2149756,
+      278
+    ],
+    "c8_hari.glass.t": [
+      "u2",
+      2150868,
+      556
+    ],
+    "c8_hari.glass.f": [
+      "u1",
+      2151980,
+      278
+    ],
+    "c8_hari.glass.i": [
+      "u2",
+      2152260,
+      465
+    ],
+    "c8_hari.glassFar.p": [
+      "i2",
+      2153192,
+      69
+    ],
+    "c8_hari.glassFar.n": [
+      "i2",
+      2153332,
+      69
+    ],
+    "c8_hari.glassFar.uv": [
+      "u2",
+      2153472,
+      46
+    ],
+    "c8_hari.glassFar.a": [
+      "f4",
+      2153564,
+      46
+    ],
+    "c8_hari.glassFar.t": [
+      "u2",
+      2153748,
+      92
+    ],
+    "c8_hari.glassFar.f": [
+      "u1",
+      2153932,
+      46
+    ],
+    "c8_hari.glassFar.i": [
+      "u2",
+      2153980,
+      57
+    ],
+    "c8_hari.opticalGlass.p": [
+      "i2",
+      2154096,
+      3900
+    ],
+    "c8_hari.opticalGlass.n": [
+      "i2",
+      2161896,
+      3900
+    ],
+    "c8_hari.opticalGlass.uv": [
+      "u2",
+      2169696,
+      2600
+    ],
+    "c8_hari.opticalGlass.a": [
+      "f4",
+      2174896,
+      2600
+    ],
+    "c8_hari.opticalGlass.t": [
+      "u2",
+      2185296,
+      5200
+    ],
+    "c8_hari.opticalGlass.f": [
+      "u1",
+      2195696,
+      2600
+    ],
+    "c8_hari.opticalGlass.i": [
+      "u2",
+      2198296,
+      6174
+    ],
+    "c8_hari.opticalGlassFar.p": [
+      "i2",
+      2210644,
+      702
+    ],
+    "c8_hari.opticalGlassFar.n": [
+      "i2",
+      2212048,
+      702
+    ],
+    "c8_hari.opticalGlassFar.uv": [
+      "u2",
+      2213452,
+      468
+    ],
+    "c8_hari.opticalGlassFar.a": [
+      "f4",
+      2214388,
+      468
+    ],
+    "c8_hari.opticalGlassFar.t": [
+      "u2",
+      2216260,
+      936
+    ],
+    "c8_hari.opticalGlassFar.f": [
+      "u1",
+      2218132,
+      468
+    ],
+    "c8_hari.opticalGlassFar.i": [
+      "u2",
+      2218600,
+      822
+    ],
+    "c8_hari.wheel1.rim.p": [
+      "i2",
+      2220244,
+      7074
+    ],
+    "c8_hari.wheel1.rim.n": [
+      "i2",
+      2234392,
+      7074
+    ],
+    "c8_hari.wheel1.rim.uv": [
+      "u2",
+      2248540,
+      4716
+    ],
+    "c8_hari.wheel1.rim.a": [
+      "f4",
+      2257972,
+      4716
+    ],
+    "c8_hari.wheel1.rim.t": [
+      "u2",
+      2276836,
+      9432
+    ],
+    "c8_hari.wheel1.rim.f": [
+      "u1",
+      2295700,
+      4716
+    ],
+    "c8_hari.wheel1.rim.i": [
+      "u2",
+      2300416,
+      8691
+    ],
+    "c8_hari.wheel1.rimFar.p": [
+      "i2",
+      2317800,
+      1371
+    ],
+    "c8_hari.wheel1.rimFar.n": [
+      "i2",
+      2320544,
+      1371
+    ],
+    "c8_hari.wheel1.rimFar.uv": [
+      "u2",
+      2323288,
+      914
+    ],
+    "c8_hari.wheel1.rimFar.a": [
+      "f4",
+      2325116,
+      914
+    ],
+    "c8_hari.wheel1.rimFar.t": [
+      "u2",
+      2328772,
+      1828
+    ],
+    "c8_hari.wheel1.rimFar.f": [
+      "u1",
+      2332428,
+      914
+    ],
+    "c8_hari.wheel1.rimFar.i": [
+      "u2",
+      2333344,
+      1326
+    ],
+    "c8_hari.wheel1.tyre.p": [
+      "i2",
+      2335996,
+      1851
+    ],
+    "c8_hari.wheel1.tyre.n": [
+      "i2",
+      2339700,
+      1851
+    ],
+    "c8_hari.wheel1.tyre.uv": [
+      "u2",
+      2343404,
+      1234
+    ],
+    "c8_hari.wheel1.tyre.a": [
+      "f4",
+      2345872,
+      1234
+    ],
+    "c8_hari.wheel1.tyre.t": [
+      "u2",
+      2350808,
+      2468
+    ],
+    "c8_hari.wheel1.tyre.f": [
+      "u1",
+      2355744,
+      1234
+    ],
+    "c8_hari.wheel1.tyre.i": [
+      "u2",
+      2356980,
+      2916
+    ],
+    "c8_hari.wheel1.tyreFar.p": [
+      "i2",
+      2362812,
+      342
+    ],
+    "c8_hari.wheel1.tyreFar.n": [
+      "i2",
+      2363496,
+      342
+    ],
+    "c8_hari.wheel1.tyreFar.uv": [
+      "u2",
+      2364180,
+      228
+    ],
+    "c8_hari.wheel1.tyreFar.a": [
+      "f4",
+      2364636,
+      228
+    ],
+    "c8_hari.wheel1.tyreFar.t": [
+      "u2",
+      2365548,
+      456
+    ],
+    "c8_hari.wheel1.tyreFar.f": [
+      "u1",
+      2366460,
+      228
+    ],
+    "c8_hari.wheel1.tyreFar.i": [
+      "u2",
+      2366688,
+      387
+    ],
+    "c8_hari.wheel1.caliper.p": [
+      "i2",
+      2367464,
+      963
+    ],
+    "c8_hari.wheel1.caliper.n": [
+      "i2",
+      2369392,
+      963
+    ],
+    "c8_hari.wheel1.caliper.uv": [
+      "u2",
+      2371320,
+      642
+    ],
+    "c8_hari.wheel1.caliper.a": [
+      "f4",
+      2372604,
+      642
+    ],
+    "c8_hari.wheel1.caliper.t": [
+      "u2",
+      2375172,
+      1284
+    ],
+    "c8_hari.wheel1.caliper.f": [
+      "u1",
+      2377740,
+      642
+    ],
+    "c8_hari.wheel1.caliper.i": [
+      "u2",
+      2378384,
+      1299
+    ],
+    "c8_hari.wheel1.caliperFar.p": [
+      "i2",
+      2380984,
+      144
+    ],
+    "c8_hari.wheel1.caliperFar.n": [
+      "i2",
+      2381272,
+      144
+    ],
+    "c8_hari.wheel1.caliperFar.uv": [
+      "u2",
+      2381560,
+      96
+    ],
+    "c8_hari.wheel1.caliperFar.a": [
+      "f4",
+      2381752,
+      96
+    ],
+    "c8_hari.wheel1.caliperFar.t": [
+      "u2",
+      2382136,
+      192
+    ],
+    "c8_hari.wheel1.caliperFar.f": [
+      "u1",
+      2382520,
+      96
+    ],
+    "c8_hari.wheel1.caliperFar.i": [
+      "u2",
+      2382616,
+      177
+    ],
+    "c8_hari.wheel0.caliper.p": [
+      "i2",
+      2382972,
+      963
+    ],
+    "c8_hari.wheel0.caliper.n": [
+      "i2",
+      2384900,
+      963
+    ],
+    "c8_hari.wheel0.caliper.uv": [
+      "u2",
+      2386828,
+      642
+    ],
+    "c8_hari.wheel0.caliper.a": [
+      "f4",
+      2388112,
+      642
+    ],
+    "c8_hari.wheel0.caliper.t": [
+      "u2",
+      2390680,
+      1284
+    ],
+    "c8_hari.wheel0.caliper.f": [
+      "u1",
+      2393248,
+      642
+    ],
+    "c8_hari.wheel0.caliper.i": [
+      "u2",
+      2393892,
+      1299
+    ],
+    "c8_hari.wheel0.caliperFar.p": [
+      "i2",
+      2396492,
+      162
+    ],
+    "c8_hari.wheel0.caliperFar.n": [
+      "i2",
+      2396816,
+      162
+    ],
+    "c8_hari.wheel0.caliperFar.uv": [
+      "u2",
+      2397140,
+      108
+    ],
+    "c8_hari.wheel0.caliperFar.a": [
+      "f4",
+      2397356,
+      108
+    ],
+    "c8_hari.wheel0.caliperFar.t": [
+      "u2",
+      2397788,
+      216
+    ],
+    "c8_hari.wheel0.caliperFar.f": [
+      "u1",
+      2398220,
+      108
+    ],
+    "c8_hari.wheel0.caliperFar.i": [
+      "u2",
+      2398328,
+      177
+    ],
+    "c8_hari.wheel0.rim.p": [
+      "i2",
+      2398684,
+      7074
+    ],
+    "c8_hari.wheel0.rim.n": [
+      "i2",
+      2412832,
+      7074
+    ],
+    "c8_hari.wheel0.rim.uv": [
+      "u2",
+      2426980,
+      4716
+    ],
+    "c8_hari.wheel0.rim.a": [
+      "f4",
+      2436412,
+      4716
+    ],
+    "c8_hari.wheel0.rim.t": [
+      "u2",
+      2455276,
+      9432
+    ],
+    "c8_hari.wheel0.rim.f": [
+      "u1",
+      2474140,
+      4716
+    ],
+    "c8_hari.wheel0.rim.i": [
+      "u2",
+      2478856,
+      8691
+    ],
+    "c8_hari.wheel0.rimFar.p": [
+      "i2",
+      2496240,
+      1362
+    ],
+    "c8_hari.wheel0.rimFar.n": [
+      "i2",
+      2498964,
+      1362
+    ],
+    "c8_hari.wheel0.rimFar.uv": [
+      "u2",
+      2501688,
+      908
+    ],
+    "c8_hari.wheel0.rimFar.a": [
+      "f4",
+      2503504,
+      908
+    ],
+    "c8_hari.wheel0.rimFar.t": [
+      "u2",
+      2507136,
+      1816
+    ],
+    "c8_hari.wheel0.rimFar.f": [
+      "u1",
+      2510768,
+      908
+    ],
+    "c8_hari.wheel0.rimFar.i": [
+      "u2",
+      2511676,
+      1323
+    ],
+    "c8_hari.wheel0.tyre.p": [
+      "i2",
+      2514324,
+      1851
+    ],
+    "c8_hari.wheel0.tyre.n": [
+      "i2",
+      2518028,
+      1851
+    ],
+    "c8_hari.wheel0.tyre.uv": [
+      "u2",
+      2521732,
+      1234
+    ],
+    "c8_hari.wheel0.tyre.a": [
+      "f4",
+      2524200,
+      1234
+    ],
+    "c8_hari.wheel0.tyre.t": [
+      "u2",
+      2529136,
+      2468
+    ],
+    "c8_hari.wheel0.tyre.f": [
+      "u1",
+      2534072,
+      1234
+    ],
+    "c8_hari.wheel0.tyre.i": [
+      "u2",
+      2535308,
+      2916
+    ],
+    "c8_hari.wheel0.tyreFar.p": [
+      "i2",
+      2541140,
+      342
+    ],
+    "c8_hari.wheel0.tyreFar.n": [
+      "i2",
+      2541824,
+      342
+    ],
+    "c8_hari.wheel0.tyreFar.uv": [
+      "u2",
+      2542508,
+      228
+    ],
+    "c8_hari.wheel0.tyreFar.a": [
+      "f4",
+      2542964,
+      228
+    ],
+    "c8_hari.wheel0.tyreFar.t": [
+      "u2",
+      2543876,
+      456
+    ],
+    "c8_hari.wheel0.tyreFar.f": [
+      "u1",
+      2544788,
+      228
+    ],
+    "c8_hari.wheel0.tyreFar.i": [
+      "u2",
+      2545016,
+      387
+    ],
+    "c8_hari.wheel3.rim.p": [
+      "i2",
+      2545792,
+      7080
+    ],
+    "c8_hari.wheel3.rim.n": [
+      "i2",
+      2559952,
+      7080
+    ],
+    "c8_hari.wheel3.rim.uv": [
+      "u2",
+      2574112,
+      4720
+    ],
+    "c8_hari.wheel3.rim.a": [
+      "f4",
+      2583552,
+      4720
+    ],
+    "c8_hari.wheel3.rim.t": [
+      "u2",
+      2602432,
+      9440
+    ],
+    "c8_hari.wheel3.rim.f": [
+      "u1",
+      2621312,
+      4720
+    ],
+    "c8_hari.wheel3.rim.i": [
+      "u2",
+      2626032,
+      8694
+    ],
+    "c8_hari.wheel3.rimFar.p": [
+      "i2",
+      2643420,
+      1350
+    ],
+    "c8_hari.wheel3.rimFar.n": [
+      "i2",
+      2646120,
+      1350
+    ],
+    "c8_hari.wheel3.rimFar.uv": [
+      "u2",
+      2648820,
+      900
+    ],
+    "c8_hari.wheel3.rimFar.a": [
+      "f4",
+      2650620,
+      900
+    ],
+    "c8_hari.wheel3.rimFar.t": [
+      "u2",
+      2654220,
+      1800
+    ],
+    "c8_hari.wheel3.rimFar.f": [
+      "u1",
+      2657820,
+      900
+    ],
+    "c8_hari.wheel3.rimFar.i": [
+      "u2",
+      2658720,
+      1326
+    ],
+    "c8_hari.wheel3.tyre.p": [
+      "i2",
+      2661372,
+      1851
+    ],
+    "c8_hari.wheel3.tyre.n": [
+      "i2",
+      2665076,
+      1851
+    ],
+    "c8_hari.wheel3.tyre.uv": [
+      "u2",
+      2668780,
+      1234
+    ],
+    "c8_hari.wheel3.tyre.a": [
+      "f4",
+      2671248,
+      1234
+    ],
+    "c8_hari.wheel3.tyre.t": [
+      "u2",
+      2676184,
+      2468
+    ],
+    "c8_hari.wheel3.tyre.f": [
+      "u1",
+      2681120,
+      1234
+    ],
+    "c8_hari.wheel3.tyre.i": [
+      "u2",
+      2682356,
+      2916
+    ],
+    "c8_hari.wheel3.tyreFar.p": [
+      "i2",
+      2688188,
+      342
+    ],
+    "c8_hari.wheel3.tyreFar.n": [
+      "i2",
+      2688872,
+      342
+    ],
+    "c8_hari.wheel3.tyreFar.uv": [
+      "u2",
+      2689556,
+      228
+    ],
+    "c8_hari.wheel3.tyreFar.a": [
+      "f4",
+      2690012,
+      228
+    ],
+    "c8_hari.wheel3.tyreFar.t": [
+      "u2",
+      2690924,
+      456
+    ],
+    "c8_hari.wheel3.tyreFar.f": [
+      "u1",
+      2691836,
+      228
+    ],
+    "c8_hari.wheel3.tyreFar.i": [
+      "u2",
+      2692064,
+      384
+    ],
+    "c8_hari.wheel2.rim.p": [
+      "i2",
+      2692832,
+      7080
+    ],
+    "c8_hari.wheel2.rim.n": [
+      "i2",
+      2706992,
+      7080
+    ],
+    "c8_hari.wheel2.rim.uv": [
+      "u2",
+      2721152,
+      4720
+    ],
+    "c8_hari.wheel2.rim.a": [
+      "f4",
+      2730592,
+      4720
+    ],
+    "c8_hari.wheel2.rim.t": [
+      "u2",
+      2749472,
+      9440
+    ],
+    "c8_hari.wheel2.rim.f": [
+      "u1",
+      2768352,
+      4720
+    ],
+    "c8_hari.wheel2.rim.i": [
+      "u2",
+      2773072,
+      8691
+    ],
+    "c8_hari.wheel2.rimFar.p": [
+      "i2",
+      2790456,
+      1368
+    ],
+    "c8_hari.wheel2.rimFar.n": [
+      "i2",
+      2793192,
+      1368
+    ],
+    "c8_hari.wheel2.rimFar.uv": [
+      "u2",
+      2795928,
+      912
+    ],
+    "c8_hari.wheel2.rimFar.a": [
+      "f4",
+      2797752,
+      912
+    ],
+    "c8_hari.wheel2.rimFar.t": [
+      "u2",
+      2801400,
+      1824
+    ],
+    "c8_hari.wheel2.rimFar.f": [
+      "u1",
+      2805048,
+      912
+    ],
+    "c8_hari.wheel2.rimFar.i": [
+      "u2",
+      2805960,
+      1326
+    ],
+    "c8_hari.wheel2.tyre.p": [
+      "i2",
+      2808612,
+      1851
+    ],
+    "c8_hari.wheel2.tyre.n": [
+      "i2",
+      2812316,
+      1851
+    ],
+    "c8_hari.wheel2.tyre.uv": [
+      "u2",
+      2816020,
+      1234
+    ],
+    "c8_hari.wheel2.tyre.a": [
+      "f4",
+      2818488,
+      1234
+    ],
+    "c8_hari.wheel2.tyre.t": [
+      "u2",
+      2823424,
+      2468
+    ],
+    "c8_hari.wheel2.tyre.f": [
+      "u1",
+      2828360,
+      1234
+    ],
+    "c8_hari.wheel2.tyre.i": [
+      "u2",
+      2829596,
+      2916
+    ],
+    "c8_hari.wheel2.tyreFar.p": [
+      "i2",
+      2835428,
+      342
+    ],
+    "c8_hari.wheel2.tyreFar.n": [
+      "i2",
+      2836112,
+      342
+    ],
+    "c8_hari.wheel2.tyreFar.uv": [
+      "u2",
+      2836796,
+      228
+    ],
+    "c8_hari.wheel2.tyreFar.a": [
+      "f4",
+      2837252,
+      228
+    ],
+    "c8_hari.wheel2.tyreFar.t": [
+      "u2",
+      2838164,
+      456
+    ],
+    "c8_hari.wheel2.tyreFar.f": [
+      "u1",
+      2839076,
+      228
+    ],
+    "c8_hari.wheel2.tyreFar.i": [
+      "u2",
+      2839304,
+      384
+    ],
+    "c8_hari.doorRight.paint.p": [
+      "i2",
+      2840072,
+      2640
+    ],
+    "c8_hari.doorRight.paint.n": [
+      "i2",
+      2845352,
+      2640
+    ],
+    "c8_hari.doorRight.paint.uv": [
+      "u2",
+      2850632,
+      1760
+    ],
+    "c8_hari.doorRight.paint.a": [
+      "f4",
+      2854152,
+      1760
+    ],
+    "c8_hari.doorRight.paint.t": [
+      "u2",
+      2861192,
+      3520
+    ],
+    "c8_hari.doorRight.paint.f": [
+      "u1",
+      2868232,
+      1760
+    ],
+    "c8_hari.doorRight.paint.i": [
+      "u2",
+      2869992,
+      4260
+    ],
+    "c8_hari.doorRight.paintFar.p": [
+      "i2",
+      2878512,
+      252
+    ],
+    "c8_hari.doorRight.paintFar.n": [
+      "i2",
+      2879016,
+      252
+    ],
+    "c8_hari.doorRight.paintFar.uv": [
+      "u2",
+      2879520,
+      168
+    ],
+    "c8_hari.doorRight.paintFar.a": [
+      "f4",
+      2879856,
+      168
+    ],
+    "c8_hari.doorRight.paintFar.t": [
+      "u2",
+      2880528,
+      336
+    ],
+    "c8_hari.doorRight.paintFar.f": [
+      "u1",
+      2881200,
+      168
+    ],
+    "c8_hari.doorRight.paintFar.i": [
+      "u2",
+      2881368,
+      261
+    ],
+    "c8_hari.doorRight.trim.p": [
+      "i2",
+      2881892,
+      1188
+    ],
+    "c8_hari.doorRight.trim.n": [
+      "i2",
+      2884268,
+      1188
+    ],
+    "c8_hari.doorRight.trim.uv": [
+      "u2",
+      2886644,
+      792
+    ],
+    "c8_hari.doorRight.trim.a": [
+      "f4",
+      2888228,
+      792
+    ],
+    "c8_hari.doorRight.trim.t": [
+      "u2",
+      2891396,
+      1584
+    ],
+    "c8_hari.doorRight.trim.f": [
+      "u1",
+      2894564,
+      792
+    ],
+    "c8_hari.doorRight.trim.i": [
+      "u2",
+      2895356,
+      1275
+    ],
+    "c8_hari.doorRight.trimFar.p": [
+      "i2",
+      2897908,
+      261
+    ],
+    "c8_hari.doorRight.trimFar.n": [
+      "i2",
+      2898432,
+      261
+    ],
+    "c8_hari.doorRight.trimFar.uv": [
+      "u2",
+      2898956,
+      174
+    ],
+    "c8_hari.doorRight.trimFar.a": [
+      "f4",
+      2899304,
+      174
+    ],
+    "c8_hari.doorRight.trimFar.t": [
+      "u2",
+      2900000,
+      348
+    ],
+    "c8_hari.doorRight.trimFar.f": [
+      "u1",
+      2900696,
+      174
+    ],
+    "c8_hari.doorRight.trimFar.i": [
+      "u2",
+      2900872,
+      156
+    ],
+    "c8_hari.doorRight.cabin.p": [
+      "i2",
+      2901184,
+      2529
+    ],
+    "c8_hari.doorRight.cabin.n": [
+      "i2",
+      2906244,
+      2529
+    ],
+    "c8_hari.doorRight.cabin.uv": [
+      "u2",
+      2911304,
+      1686
+    ],
+    "c8_hari.doorRight.cabin.a": [
+      "f4",
+      2914676,
+      1686
+    ],
+    "c8_hari.doorRight.cabin.t": [
+      "u2",
+      2921420,
+      3372
+    ],
+    "c8_hari.doorRight.cabin.f": [
+      "u1",
+      2928164,
+      1686
+    ],
+    "c8_hari.doorRight.cabin.i": [
+      "u2",
+      2929852,
+      2658
+    ],
+    "c8_hari.doorRight.cabinFar.p": [
+      "i2",
+      2935168,
+      306
+    ],
+    "c8_hari.doorRight.cabinFar.n": [
+      "i2",
+      2935780,
+      306
+    ],
+    "c8_hari.doorRight.cabinFar.uv": [
+      "u2",
+      2936392,
+      204
+    ],
+    "c8_hari.doorRight.cabinFar.a": [
+      "f4",
+      2936800,
+      204
+    ],
+    "c8_hari.doorRight.cabinFar.t": [
+      "u2",
+      2937616,
+      408
+    ],
+    "c8_hari.doorRight.cabinFar.f": [
+      "u1",
+      2938432,
+      204
+    ],
+    "c8_hari.doorRight.cabinFar.i": [
+      "u2",
+      2938636,
+      189
+    ],
+    "c8_hari.doorRight.opticalGlass.p": [
+      "i2",
+      2939016,
+      144
+    ],
+    "c8_hari.doorRight.opticalGlass.n": [
+      "i2",
+      2939304,
+      144
+    ],
+    "c8_hari.doorRight.opticalGlass.uv": [
+      "u2",
+      2939592,
+      96
+    ],
+    "c8_hari.doorRight.opticalGlass.a": [
+      "f4",
+      2939784,
+      96
+    ],
+    "c8_hari.doorRight.opticalGlass.t": [
+      "u2",
+      2940168,
+      192
+    ],
+    "c8_hari.doorRight.opticalGlass.f": [
+      "u1",
+      2940552,
+      96
+    ],
+    "c8_hari.doorRight.opticalGlass.i": [
+      "u2",
+      2940648,
+      222
+    ],
+    "c8_hari.doorRight.opticalGlassFar.p": [
+      "i2",
+      2941092,
+      27
+    ],
+    "c8_hari.doorRight.opticalGlassFar.n": [
+      "i2",
+      2941148,
+      27
+    ],
+    "c8_hari.doorRight.opticalGlassFar.uv": [
+      "u2",
+      2941204,
+      18
+    ],
+    "c8_hari.doorRight.opticalGlassFar.a": [
+      "f4",
+      2941240,
+      18
+    ],
+    "c8_hari.doorRight.opticalGlassFar.t": [
+      "u2",
+      2941312,
+      36
+    ],
+    "c8_hari.doorRight.opticalGlassFar.f": [
+      "u1",
+      2941384,
+      18
+    ],
+    "c8_hari.doorRight.opticalGlassFar.i": [
+      "u2",
+      2941404,
+      27
+    ],
+    "c8_hari.doorRight.glass.p": [
+      "i2",
+      2941460,
+      165
+    ],
+    "c8_hari.doorRight.glass.n": [
+      "i2",
+      2941792,
+      165
+    ],
+    "c8_hari.doorRight.glass.uv": [
+      "u2",
+      2942124,
+      110
+    ],
+    "c8_hari.doorRight.glass.a": [
+      "f4",
+      2942344,
+      110
+    ],
+    "c8_hari.doorRight.glass.t": [
+      "u2",
+      2942784,
+      220
+    ],
+    "c8_hari.doorRight.glass.f": [
+      "u1",
+      2943224,
+      110
+    ],
+    "c8_hari.doorRight.glass.i": [
+      "u2",
+      2943336,
+      219
+    ],
+    "c8_hari.doorRight.glassFar.p": [
+      "i2",
+      2943776,
+      30
+    ],
+    "c8_hari.doorRight.glassFar.n": [
+      "i2",
+      2943836,
+      30
+    ],
+    "c8_hari.doorRight.glassFar.uv": [
+      "u2",
+      2943896,
+      20
+    ],
+    "c8_hari.doorRight.glassFar.a": [
+      "f4",
+      2943936,
+      20
+    ],
+    "c8_hari.doorRight.glassFar.t": [
+      "u2",
+      2944016,
+      40
+    ],
+    "c8_hari.doorRight.glassFar.f": [
+      "u1",
+      2944096,
+      20
+    ],
+    "c8_hari.doorRight.glassFar.i": [
+      "u2",
+      2944116,
+      27
+    ],
+    "c8_hari.doorRight.indicator.p": [
+      "i2",
+      2944172,
+      141
+    ],
+    "c8_hari.doorRight.indicator.n": [
+      "i2",
+      2944456,
+      141
+    ],
+    "c8_hari.doorRight.indicator.uv": [
+      "u2",
+      2944740,
+      94
+    ],
+    "c8_hari.doorRight.indicator.a": [
+      "f4",
+      2944928,
+      94
+    ],
+    "c8_hari.doorRight.indicator.t": [
+      "u2",
+      2945304,
+      188
+    ],
+    "c8_hari.doorRight.indicator.f": [
+      "u1",
+      2945680,
+      94
+    ],
+    "c8_hari.doorRight.indicator.i": [
+      "u2",
+      2945776,
+      204
+    ],
+    "c8_hari.doorRight.indicator.c": [
+      "u1",
+      2946184,
+      141
+    ],
+    "c8_hari.doorRight.indicatorFar.p": [
+      "i2",
+      2946328,
+      30
+    ],
+    "c8_hari.doorRight.indicatorFar.n": [
+      "i2",
+      2946388,
+      30
+    ],
+    "c8_hari.doorRight.indicatorFar.uv": [
+      "u2",
+      2946448,
+      20
+    ],
+    "c8_hari.doorRight.indicatorFar.a": [
+      "f4",
+      2946488,
+      20
+    ],
+    "c8_hari.doorRight.indicatorFar.t": [
+      "u2",
+      2946568,
+      40
+    ],
+    "c8_hari.doorRight.indicatorFar.f": [
+      "u1",
+      2946648,
+      20
+    ],
+    "c8_hari.doorRight.indicatorFar.i": [
+      "u2",
+      2946668,
+      33
+    ],
+    "c8_hari.doorRight.indicatorFar.c": [
+      "u1",
+      2946736,
+      30
+    ],
+    "c8_hari.doorLeft.paint.p": [
+      "i2",
+      2946768,
+      2649
+    ],
+    "c8_hari.doorLeft.paint.n": [
+      "i2",
+      2952068,
+      2649
+    ],
+    "c8_hari.doorLeft.paint.uv": [
+      "u2",
+      2957368,
+      1766
+    ],
+    "c8_hari.doorLeft.paint.a": [
+      "f4",
+      2960900,
+      1766
+    ],
+    "c8_hari.doorLeft.paint.t": [
+      "u2",
+      2967964,
+      3532
+    ],
+    "c8_hari.doorLeft.paint.f": [
+      "u1",
+      2975028,
+      1766
+    ],
+    "c8_hari.doorLeft.paint.i": [
+      "u2",
+      2976796,
+      4260
+    ],
+    "c8_hari.doorLeft.paintFar.p": [
+      "i2",
+      2985316,
+      255
+    ],
+    "c8_hari.doorLeft.paintFar.n": [
+      "i2",
+      2985828,
+      255
+    ],
+    "c8_hari.doorLeft.paintFar.uv": [
+      "u2",
+      2986340,
+      170
+    ],
+    "c8_hari.doorLeft.paintFar.a": [
+      "f4",
+      2986680,
+      170
+    ],
+    "c8_hari.doorLeft.paintFar.t": [
+      "u2",
+      2987360,
+      340
+    ],
+    "c8_hari.doorLeft.paintFar.f": [
+      "u1",
+      2988040,
+      170
+    ],
+    "c8_hari.doorLeft.paintFar.i": [
+      "u2",
+      2988212,
+      261
+    ],
+    "c8_hari.doorLeft.trim.p": [
+      "i2",
+      2988736,
+      1182
+    ],
+    "c8_hari.doorLeft.trim.n": [
+      "i2",
+      2991100,
+      1182
+    ],
+    "c8_hari.doorLeft.trim.uv": [
+      "u2",
+      2993464,
+      788
+    ],
+    "c8_hari.doorLeft.trim.a": [
+      "f4",
+      2995040,
+      788
+    ],
+    "c8_hari.doorLeft.trim.t": [
+      "u2",
+      2998192,
+      1576
+    ],
+    "c8_hari.doorLeft.trim.f": [
+      "u1",
+      3001344,
+      788
+    ],
+    "c8_hari.doorLeft.trim.i": [
+      "u2",
+      3002132,
+      1275
+    ],
+    "c8_hari.doorLeft.trimFar.p": [
+      "i2",
+      3004684,
+      261
+    ],
+    "c8_hari.doorLeft.trimFar.n": [
+      "i2",
+      3005208,
+      261
+    ],
+    "c8_hari.doorLeft.trimFar.uv": [
+      "u2",
+      3005732,
+      174
+    ],
+    "c8_hari.doorLeft.trimFar.a": [
+      "f4",
+      3006080,
+      174
+    ],
+    "c8_hari.doorLeft.trimFar.t": [
+      "u2",
+      3006776,
+      348
+    ],
+    "c8_hari.doorLeft.trimFar.f": [
+      "u1",
+      3007472,
+      174
+    ],
+    "c8_hari.doorLeft.trimFar.i": [
+      "u2",
+      3007648,
+      156
+    ],
+    "c8_hari.doorLeft.cabin.p": [
+      "i2",
+      3007960,
+      2595
+    ],
+    "c8_hari.doorLeft.cabin.n": [
+      "i2",
+      3013152,
+      2595
+    ],
+    "c8_hari.doorLeft.cabin.uv": [
+      "u2",
+      3018344,
+      1730
+    ],
+    "c8_hari.doorLeft.cabin.a": [
+      "f4",
+      3021804,
+      1730
+    ],
+    "c8_hari.doorLeft.cabin.t": [
+      "u2",
+      3028724,
+      3460
+    ],
+    "c8_hari.doorLeft.cabin.f": [
+      "u1",
+      3035644,
+      1730
+    ],
+    "c8_hari.doorLeft.cabin.i": [
+      "u2",
+      3037376,
+      2670
+    ],
+    "c8_hari.doorLeft.cabinFar.p": [
+      "i2",
+      3042716,
+      306
+    ],
+    "c8_hari.doorLeft.cabinFar.n": [
+      "i2",
+      3043328,
+      306
+    ],
+    "c8_hari.doorLeft.cabinFar.uv": [
+      "u2",
+      3043940,
+      204
+    ],
+    "c8_hari.doorLeft.cabinFar.a": [
+      "f4",
+      3044348,
+      204
+    ],
+    "c8_hari.doorLeft.cabinFar.t": [
+      "u2",
+      3045164,
+      408
+    ],
+    "c8_hari.doorLeft.cabinFar.f": [
+      "u1",
+      3045980,
+      204
+    ],
+    "c8_hari.doorLeft.cabinFar.i": [
+      "u2",
+      3046184,
+      189
+    ],
+    "c8_hari.doorLeft.indicator.p": [
+      "i2",
+      3046564,
+      141
+    ],
+    "c8_hari.doorLeft.indicator.n": [
+      "i2",
+      3046848,
+      141
+    ],
+    "c8_hari.doorLeft.indicator.uv": [
+      "u2",
+      3047132,
+      94
+    ],
+    "c8_hari.doorLeft.indicator.a": [
+      "f4",
+      3047320,
+      94
+    ],
+    "c8_hari.doorLeft.indicator.t": [
+      "u2",
+      3047696,
+      188
+    ],
+    "c8_hari.doorLeft.indicator.f": [
+      "u1",
+      3048072,
+      94
+    ],
+    "c8_hari.doorLeft.indicator.i": [
+      "u2",
+      3048168,
+      204
+    ],
+    "c8_hari.doorLeft.indicator.c": [
+      "u1",
+      3048576,
+      141
+    ],
+    "c8_hari.doorLeft.indicatorFar.p": [
+      "i2",
+      3048720,
+      30
+    ],
+    "c8_hari.doorLeft.indicatorFar.n": [
+      "i2",
+      3048780,
+      30
+    ],
+    "c8_hari.doorLeft.indicatorFar.uv": [
+      "u2",
+      3048840,
+      20
+    ],
+    "c8_hari.doorLeft.indicatorFar.a": [
+      "f4",
+      3048880,
+      20
+    ],
+    "c8_hari.doorLeft.indicatorFar.t": [
+      "u2",
+      3048960,
+      40
+    ],
+    "c8_hari.doorLeft.indicatorFar.f": [
+      "u1",
+      3049040,
+      20
+    ],
+    "c8_hari.doorLeft.indicatorFar.i": [
+      "u2",
+      3049060,
+      33
+    ],
+    "c8_hari.doorLeft.indicatorFar.c": [
+      "u1",
+      3049128,
+      30
+    ],
+    "c8_hari.doorLeft.opticalGlass.p": [
+      "i2",
+      3049160,
+      144
+    ],
+    "c8_hari.doorLeft.opticalGlass.n": [
+      "i2",
+      3049448,
+      144
+    ],
+    "c8_hari.doorLeft.opticalGlass.uv": [
+      "u2",
+      3049736,
+      96
+    ],
+    "c8_hari.doorLeft.opticalGlass.a": [
+      "f4",
+      3049928,
+      96
+    ],
+    "c8_hari.doorLeft.opticalGlass.t": [
+      "u2",
+      3050312,
+      192
+    ],
+    "c8_hari.doorLeft.opticalGlass.f": [
+      "u1",
+      3050696,
+      96
+    ],
+    "c8_hari.doorLeft.opticalGlass.i": [
+      "u2",
+      3050792,
+      222
+    ],
+    "c8_hari.doorLeft.opticalGlassFar.p": [
+      "i2",
+      3051236,
+      27
+    ],
+    "c8_hari.doorLeft.opticalGlassFar.n": [
+      "i2",
+      3051292,
+      27
+    ],
+    "c8_hari.doorLeft.opticalGlassFar.uv": [
+      "u2",
+      3051348,
+      18
+    ],
+    "c8_hari.doorLeft.opticalGlassFar.a": [
+      "f4",
+      3051384,
+      18
+    ],
+    "c8_hari.doorLeft.opticalGlassFar.t": [
+      "u2",
+      3051456,
+      36
+    ],
+    "c8_hari.doorLeft.opticalGlassFar.f": [
+      "u1",
+      3051528,
+      18
+    ],
+    "c8_hari.doorLeft.opticalGlassFar.i": [
+      "u2",
+      3051548,
+      27
+    ],
+    "c8_hari.doorLeft.glass.p": [
+      "i2",
+      3051604,
+      171
+    ],
+    "c8_hari.doorLeft.glass.n": [
+      "i2",
+      3051948,
+      171
+    ],
+    "c8_hari.doorLeft.glass.uv": [
+      "u2",
+      3052292,
+      114
+    ],
+    "c8_hari.doorLeft.glass.a": [
+      "f4",
+      3052520,
+      114
+    ],
+    "c8_hari.doorLeft.glass.t": [
+      "u2",
+      3052976,
+      228
+    ],
+    "c8_hari.doorLeft.glass.f": [
+      "u1",
+      3053432,
+      114
+    ],
+    "c8_hari.doorLeft.glass.i": [
+      "u2",
+      3053548,
+      234
+    ],
+    "c8_hari.doorLeft.glassFar.p": [
+      "i2",
+      3054016,
+      33
+    ],
+    "c8_hari.doorLeft.glassFar.n": [
+      "i2",
+      3054084,
+      33
+    ],
+    "c8_hari.doorLeft.glassFar.uv": [
+      "u2",
+      3054152,
+      22
+    ],
+    "c8_hari.doorLeft.glassFar.a": [
+      "f4",
+      3054196,
+      22
+    ],
+    "c8_hari.doorLeft.glassFar.t": [
+      "u2",
+      3054284,
+      44
+    ],
+    "c8_hari.doorLeft.glassFar.f": [
+      "u1",
+      3054372,
+      22
+    ],
+    "c8_hari.doorLeft.glassFar.i": [
+      "u2",
+      3054396,
+      30
+    ],
+    "c8_hari.trunk.paint.p": [
+      "i2",
+      3054456,
+      2523
+    ],
+    "c8_hari.trunk.paint.n": [
+      "i2",
+      3059504,
+      2523
+    ],
+    "c8_hari.trunk.paint.uv": [
+      "u2",
+      3064552,
+      1682
+    ],
+    "c8_hari.trunk.paint.a": [
+      "f4",
+      3067916,
+      1682
+    ],
+    "c8_hari.trunk.paint.t": [
+      "u2",
+      3074644,
+      3364
+    ],
+    "c8_hari.trunk.paint.f": [
+      "u1",
+      3081372,
+      1682
+    ],
+    "c8_hari.trunk.paint.i": [
+      "u2",
+      3083056,
+      4332
+    ],
+    "c8_hari.trunk.paintFar.p": [
+      "i2",
+      3091720,
+      228
+    ],
+    "c8_hari.trunk.paintFar.n": [
+      "i2",
+      3092176,
+      228
+    ],
+    "c8_hari.trunk.paintFar.uv": [
+      "u2",
+      3092632,
+      152
+    ],
+    "c8_hari.trunk.paintFar.a": [
+      "f4",
+      3092936,
+      152
+    ],
+    "c8_hari.trunk.paintFar.t": [
+      "u2",
+      3093544,
+      304
+    ],
+    "c8_hari.trunk.paintFar.f": [
+      "u1",
+      3094152,
+      152
+    ],
+    "c8_hari.trunk.paintFar.i": [
+      "u2",
+      3094304,
+      264
+    ],
+    "c8_hari.trunk.trim.p": [
+      "i2",
+      3094832,
+      5403
+    ],
+    "c8_hari.trunk.trim.n": [
+      "i2",
+      3105640,
+      5403
+    ],
+    "c8_hari.trunk.trim.uv": [
+      "u2",
+      3116448,
+      3602
+    ],
+    "c8_hari.trunk.trim.a": [
+      "f4",
+      3123652,
+      3602
+    ],
+    "c8_hari.trunk.trim.t": [
+      "u2",
+      3138060,
+      7204
+    ],
+    "c8_hari.trunk.trim.f": [
+      "u1",
+      3152468,
+      3602
+    ],
+    "c8_hari.trunk.trim.i": [
+      "u2",
+      3156072,
+      6768
+    ],
+    "c8_hari.trunk.trimFar.p": [
+      "i2",
+      3169608,
+      1260
+    ],
+    "c8_hari.trunk.trimFar.n": [
+      "i2",
+      3172128,
+      1260
+    ],
+    "c8_hari.trunk.trimFar.uv": [
+      "u2",
+      3174648,
+      840
+    ],
+    "c8_hari.trunk.trimFar.a": [
+      "f4",
+      3176328,
+      840
+    ],
+    "c8_hari.trunk.trimFar.t": [
+      "u2",
+      3179688,
+      1680
+    ],
+    "c8_hari.trunk.trimFar.f": [
+      "u1",
+      3183048,
+      840
+    ],
+    "c8_hari.trunk.trimFar.i": [
+      "u2",
+      3183888,
+      1221
+    ],
+    "c8_hari.trunk.glass.p": [
+      "i2",
+      3186332,
+      363
+    ],
+    "c8_hari.trunk.glass.n": [
+      "i2",
+      3187060,
+      363
+    ],
+    "c8_hari.trunk.glass.uv": [
+      "u2",
+      3187788,
+      242
+    ],
+    "c8_hari.trunk.glass.a": [
+      "f4",
+      3188272,
+      242
+    ],
+    "c8_hari.trunk.glass.t": [
+      "u2",
+      3189240,
+      484
+    ],
+    "c8_hari.trunk.glass.f": [
+      "u1",
+      3190208,
+      242
+    ],
+    "c8_hari.trunk.glass.i": [
+      "u2",
+      3190452,
+      306
+    ],
+    "c8_hari.trunk.glassFar.p": [
+      "i2",
+      3191064,
+      60
+    ],
+    "c8_hari.trunk.glassFar.n": [
+      "i2",
+      3191184,
+      60
+    ],
+    "c8_hari.trunk.glassFar.uv": [
+      "u2",
+      3191304,
+      40
+    ],
+    "c8_hari.trunk.glassFar.a": [
+      "f4",
+      3191384,
+      40
+    ],
+    "c8_hari.trunk.glassFar.t": [
+      "u2",
+      3191544,
+      80
+    ],
+    "c8_hari.trunk.glassFar.f": [
+      "u1",
+      3191704,
+      40
+    ],
+    "c8_hari.trunk.glassFar.i": [
+      "u2",
+      3191744,
+      39
+    ],
+    "c8_hari.wheel2.caliper.p": [
+      "i2",
+      3191824,
+      972
+    ],
+    "c8_hari.wheel2.caliper.n": [
+      "i2",
+      3193768,
+      972
+    ],
+    "c8_hari.wheel2.caliper.uv": [
+      "u2",
+      3195712,
+      648
+    ],
+    "c8_hari.wheel2.caliper.a": [
+      "f4",
+      3197008,
+      648
+    ],
+    "c8_hari.wheel2.caliper.t": [
+      "u2",
+      3199600,
+      1296
+    ],
+    "c8_hari.wheel2.caliper.f": [
+      "u1",
+      3202192,
+      648
+    ],
+    "c8_hari.wheel2.caliper.i": [
+      "u2",
+      3202840,
+      1299
+    ],
+    "c8_hari.wheel2.caliperFar.p": [
+      "i2",
+      3205440,
+      141
+    ],
+    "c8_hari.wheel2.caliperFar.n": [
+      "i2",
+      3205724,
+      141
+    ],
+    "c8_hari.wheel2.caliperFar.uv": [
+      "u2",
+      3206008,
+      94
+    ],
+    "c8_hari.wheel2.caliperFar.a": [
+      "f4",
+      3206196,
+      94
+    ],
+    "c8_hari.wheel2.caliperFar.t": [
+      "u2",
+      3206572,
+      188
+    ],
+    "c8_hari.wheel2.caliperFar.f": [
+      "u1",
+      3206948,
+      94
+    ],
+    "c8_hari.wheel2.caliperFar.i": [
+      "u2",
+      3207044,
+      171
+    ],
+    "c8_hari.wheel3.caliper.p": [
+      "i2",
+      3207388,
+      972
+    ],
+    "c8_hari.wheel3.caliper.n": [
+      "i2",
+      3209332,
+      972
+    ],
+    "c8_hari.wheel3.caliper.uv": [
+      "u2",
+      3211276,
+      648
+    ],
+    "c8_hari.wheel3.caliper.a": [
+      "f4",
+      3212572,
+      648
+    ],
+    "c8_hari.wheel3.caliper.t": [
+      "u2",
+      3215164,
+      1296
+    ],
+    "c8_hari.wheel3.caliper.f": [
+      "u1",
+      3217756,
+      648
+    ],
+    "c8_hari.wheel3.caliper.i": [
+      "u2",
+      3218404,
+      1299
+    ],
+    "c8_hari.wheel3.caliperFar.p": [
+      "i2",
+      3221004,
+      141
+    ],
+    "c8_hari.wheel3.caliperFar.n": [
+      "i2",
+      3221288,
+      141
+    ],
+    "c8_hari.wheel3.caliperFar.uv": [
+      "u2",
+      3221572,
+      94
+    ],
+    "c8_hari.wheel3.caliperFar.a": [
+      "f4",
+      3221760,
+      94
+    ],
+    "c8_hari.wheel3.caliperFar.t": [
+      "u2",
+      3222136,
+      188
+    ],
+    "c8_hari.wheel3.caliperFar.f": [
+      "u1",
+      3222512,
+      94
+    ],
+    "c8_hari.wheel3.caliperFar.i": [
+      "u2",
+      3222608,
+      171
+    ]
+  }
+}

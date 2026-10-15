@@ -68,7 +68,7 @@
       function carSeatPlan(g, l, w, M, name, own = null) {
         const width = w / 0.87,
           roof = g.roof + (g.arch || 0) * 0.6,
-          floor = Math.max(0.2 * M, g.base - 0.62 * M);
+          floor = Math.max(0.2 * M, g.base - 0.62 * M, (own?.minY || 0) * M);
         // `own.hipX`: where the fit starts (a share of l), as an asset model's own seats sit (vehicle-assets3d.js).
         const x0 = own?.x !== undefined ? own.x * l : own?.hipX !== undefined ? own.hipX * l : g.xf * l - 1.4 * M,
           y0 = own?.y !== undefined ? own.y * M : g.base - 0.42 * M;
@@ -120,7 +120,8 @@
           // How far up the rear back reaches (metres, headrests included when it is 0.7 or more).
           rearBack,
           rearRecline,
-          wheel: { x: wheel.x, y: wheel.y, z: -side, r: 0.185 * M, tilt: own?.tilt ?? 0.4 },
+          wheel: { x: wheel.x, y: wheel.y, z: own?.wheelZ !== undefined ? own.wheelZ * M : -side,
+            r: (own?.radius ?? 0.185) * M, tilt: own?.tilt ?? 0.4 },
           two: CAR_TWO_SEATERS.has(name),
         };
       }

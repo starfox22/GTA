@@ -13,7 +13,7 @@ const FILES = ['src/player-body3d-mesher.js', 'src/player-body3d-anatomy.js', 's
 // The shipped model as the page has it (asset-loader.js: a data: URL).
 const MODEL = 'data:application/octet-stream;base64,' + fs.readFileSync(path.join(ROOT, 'assets/player-model.bin')).toString('base64');
 
-function load(Three) {
+export function load(Three) {
   const rig = fs.readFileSync(path.join(ROOT, 'src/character-rig3d.js'), 'utf8').match(/const RIG = \{[\s\S]*?\n {6}\};/)[0];
   const near = fs.readFileSync(path.join(ROOT, 'src/character-near3d-shader.js'), 'utf8').match(/const RIG_LAMBERT_DIRECT = [^\n]*/)[0];
   const source = FILES.map((f) =>
@@ -29,7 +29,7 @@ function load(Three) {
 }
 
 // The rig's joint chain as drawCrowdPerson builds it (crowdJoint: parent · T · Ry · Rx · Rz), for a pose.
-function poseFrames(Three, RIG, H, pose, w) {
+export function poseFrames(Three, RIG, H, pose, w) {
   const e = new Three.Euler(0, 0, 0, 'YXZ'),
     joint = (parent, x, y, z, rz = 0, rx = 0, ry = 0) => {
       e.set(rx, ry, rz, 'YXZ');
@@ -84,7 +84,7 @@ const POSES = {
 };
 
 // The shader's skinning on the CPU: per bone R R0^T and the translation, blended as dual quaternions.
-function skinner(Three, data, frames) {
+export function skinner(Three, data, frames) {
   const U = data.unitsPerMetre,
     bones = data.bones.map((bone, b) => {
       const R = bone.R,

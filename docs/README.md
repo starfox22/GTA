@@ -21,6 +21,11 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/vehicles-and-driving-models.md | Vehicle models: the damage contract, draw calls and the pristine merge, body impostors, flagships |
 | areas/vehicles-and-driving-models-assets.md | Downloaded vehicle models: the converter, asset cars, the Crown Vic patrol body, boats |
 | areas/vehicles-and-driving-models-approved-suvs.md | Approved SUV replacements: source bodies, wheel pivots, livery, cabins, doors and near/far geometry |
+| areas/vehicles-and-driving-source-fidelity.md | Preserve authored SUV shading, close body detail, source fixtures and regeneration |
+| areas/vehicles-and-driving-models-sports.md | Downloaded Chevette C8: native cabin/doors, PBR/emission, calipers and shared tier/LOD budgets |
+| areas/vehicles-and-driving-models-sports-source.md | C8 licence, pinned source hashes, clean conversion recipe and independent texel/ownership checks |
+| areas/vehicles-and-driving-doors.md | Real door apertures, native hinges, pane motion, damage anchors and closure/repair |
+| areas/vehicles-and-driving-door-transitions.md | Exit foot placement, shipped-mesh ground checks and pose-easing/IK contracts |
 | areas/vehicles-and-driving-models-motorcycles.md | Motorcycle models: downloaded parts, source unsteering, measured rolling axles, steering/lock/spin, flat tyres and real-size mud contacts |
 | areas/vehicles-and-driving-models-military.md | Military geometry kits, original HMMWV lamp lenses, matte finishes, steering and far LOD |
 | areas/vehicles-and-driving-models-aircraft.md | Downloaded aircraft: the SKYRANGER 429 civil helicopter, the SKYLARK 172 light aircraft |
@@ -71,6 +76,7 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/rendering-vehicle-lights.md | Vehicle lamps: CAR LAMPS, the drive light map, beam shadows, beams on slopes and the terrain horizon |
 | areas/rendering-clouds.md | The cloud layer's altitude by weather and area (`cloudBaseAt`), the march, the veil, wisps and lens in cloud, cloud shadows |
 | areas/ui-and-settings.md | Input actions, settings, page fragments, touch and bike share |
+| areas/input-lifecycle.md | Pointer resets across menus and focus-aware travel/death/arrest completion |
 | areas/ui-and-settings-hud.md | HUD/maps, prompt arbitration, DOM write guards, notices, clearance and movement readouts |
 | areas/testing-and-console.md | Checks, the headless browser and slots, the dev server, writing tests, tours |
 | console/README.md | `window.DeadEndCity` rules (named methods only, adding one) and the index of the per-group method tables in console/ |

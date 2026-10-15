@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "originalFixtureSha256": "27641f533d442ee1cba935f5a27a8db5e26dd653f08a554c23e70630d90f2033",
+  "strengthenedFixtureSha256": "81f0810da7f135dda535797d6ea23f820cd6f57aaeba9458311da3ab237c9750",
+  "originalWaitsUnchanged": true,
+  "originalAssertionsPreserved": "One status response assigned a name before the identical dead-mode assertion; all other existing assertions unchanged. New betting assertions are additional.",
+  "assertions": 38,
+  "testedHtmlSha256": "a59af721e5c0c880521421abf9ad94bff55f94023549c810b154a90386afef63",
+  "trackedTestAppliedUTC": "2026-10-15T14:36:27.480175+00:00",
+  "trackedTestSha256": "81f0810da7f135dda535797d6ea23f820cd6f57aaeba9458311da3ab237c9750",
+  "applicationQualification": "Applied byte-identical to the proven 38-assertion source only after all original 214 modules completed; original baseline world-reset passed its unmodified 29 assertions."
+}

@@ -103,7 +103,10 @@
     /* `reason`: 'wasted', 'busted', 'new-game'. */
     function resetWorld(reason) {
       const started = performance.now(),
-        before = worldDamageCounts();
+        before = worldDamageCounts(),
+        // Bets are progress, while populateWorld rebuilds the match objects.
+        // Existing restore rules rebind upcoming bets or refund interrupted play.
+        book = reason === 'new-game' ? null : sportsbookSaveData();
       // Callers step the player out first (teleportPlayer); a car still held would be dropped from the world.
       if (player.car) player.car = null;
       clearPolice();
@@ -114,6 +117,7 @@
       clearBleeders();
       resetCrowdLife();
       populateWorld();
+      if (book) loadSportsbook(book);
       restoreAllStreetProps();
       dealershipWorldReset();
       worldResetSerial++;

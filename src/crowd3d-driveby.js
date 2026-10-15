@@ -313,7 +313,7 @@
       /* One person in seat 0 (the driver's) or 1 (the front passenger's) of `c`. */
       function seatOccupant(c, m, seat, deltaSeconds, detail) {
         const isPlayer = c === player.car && seat === 0,
-          plan = m.seats;
+          plan = seat === 1 && m.seats.passenger ? m.seats.passenger : m.seats;
         if (isPlayer) {
           // The drive-by pose draws them while the gun is out; the car-entry stand-in for its first moments.
           const d = driveBy;

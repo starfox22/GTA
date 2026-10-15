@@ -1,0 +1,92 @@
+{
+  "kind": "host production builder and material lifecycle; no WebGL claim",
+  "before": {
+    "implementation": "before assetCharAdopt fix",
+    "actualSequence": [
+      "makeAssetCar(chevette), no prebuilt doors",
+      "assetCharSwap(true)",
+      "damage.burnt=true; damage.parts.doorLeft=1; actual carBodyDamage",
+      "next actual assetCharSwap(true)",
+      "assetCharRelease; clear damage; actual carBodyDamage"
+    ],
+    "observedNonGlassSourceLayers": 3,
+    "observations": [
+      {
+        "charBeforeRepair": true,
+        "registeredForRelease": false,
+        "charAfterRepair": true,
+        "sourceMaterialRestored": false
+      },
+      {
+        "charBeforeRepair": true,
+        "registeredForRelease": false,
+        "charAfterRepair": true,
+        "sourceMaterialRestored": false
+      },
+      {
+        "charBeforeRepair": true,
+        "registeredForRelease": false,
+        "charAfterRepair": true,
+        "sourceMaterialRestored": false
+      }
+    ],
+    "baseHostAssertionsPassingDespiteBug": 826
+  },
+  "fix": {
+    "files": [
+      "src/vehicle-char3d.js",
+      "src/vehicle-doors3d.js"
+    ],
+    "behavior": "Register newly created source-door meshes that inherit existing vehicle char materials with their original material references. Existing shader/material instance and geometry remain shared.",
+    "shaderChanged": false,
+    "geometryChanged": false
+  },
+  "after": {
+    "receipt": "vehicle-doors-host.json",
+    "assertions": 856,
+    "pass": true,
+    "cases": [
+      {
+        "type": "chevette",
+        "builder": "actual packed production builder",
+        "sourceLayers": 3,
+        "inheritedCharAdopted": true,
+        "reopenedSourceMaterials": true,
+        "shaderOrGeometryChange": false
+      },
+      {
+        "type": "suv",
+        "builder": "actual packed production builder",
+        "sourceLayers": 3,
+        "inheritedCharAdopted": true,
+        "reopenedSourceMaterials": true,
+        "shaderOrGeometryChange": false
+      },
+      {
+        "type": "sedan",
+        "builder": "actual packed production builder",
+        "sourceLayers": 3,
+        "inheritedCharAdopted": true,
+        "reopenedSourceMaterials": true,
+        "shaderOrGeometryChange": false
+      }
+    ],
+    "testedInputHashes": {
+      "assets/approved-vehicle-models.bin": "f21c4d91d34df544ffab87b895551b3ef7712746fd25c394e33738056b71e895",
+      "assets/sports-vehicle-models.bin": "e83f2d0f38b64ca743717eb50054ea15dfa56488fe8346ee423790815f375328",
+      "assets/vehicle-models.bin": "63908560d08068f6b6df9859b9bb6040ad38028c2a0d9a0268f7d9cd4c2649ae",
+      "src/vehicle-doors3d.js": "1f0f47884045db7ddbf8e38e3856eb8e8bbd7f4d36ad163b5eb7ce3945d81772",
+      "src/vehicle-char3d.js": "77fa8966e444f1797618c885d77b7d5a26cb68c77f1df8cf9cbed24eead18db0",
+      "src/damage3d-bodies.js": "ee927c75d9276a9ed9a8b490c4d8b610e83620b0f00f4b7841276cb0e2019b80",
+      "src/carjack3d.js": "d5f5e860a61ebe5c71a924062b63f66ec5017372957106892a1df16d01e201fe",
+      "src/damage3d-crumple.js": "4aeda0f54f21a1859e583da1fe48bbe9779f60513f4cdf3181daca2413ac1ef1",
+      "src/damage3d-marks.js": "9a00f733d3304db45e7c250d381946ab9caacb14e4e6e543e6dacd39513d0cdf",
+      "src/vehicle-assets3d.js": "a5896067f11e776498110833dcc9cbd4ccb58da9cbf3569e193f191318c39784",
+      "src/cars3d-interior.js": "a88f3aee1f81e0eb09fdcded061d083aaad45a61a41a55ceb6cb5331ffc2d705",
+      "src/cars3d-headroom.js": "159e0a94d45d1edf7d6842fe200feb8dcfb0f6b28bc34c960817d5475d6c2d1c",
+      "src/crowd3d-driveby.js": "68ea4f7d1f364807be65bf6898f5128165814d6ba2fc905dcf899c0906047703",
+      "src/driveby-seats.js": "d69aa475b6ead35651eae36e7f1e8005e362a1c5b390ff0cf6be739a118025db",
+      "tools/tests/approved-suv-rigs.mjs": "f5932b0ecdb3e8a8f3198f1f8361083c1e1628bb4aa9aa4f9c08b8ad0094ac88"
+    }
+  }
+}

@@ -114,6 +114,14 @@
           skip.add(door.pivot);
           points.push(crumplePoint(m, door.pivot, false));
         }
+        for (const door of Object.values(m.doors || {})) {
+          skip.add(door.pivot);
+          const hinge = crumplePoint(m, door.pivot, false); points.push(hinge);
+          for (const layer of door.layers || [door.panel]) {
+            const part = crumplePart(m, layer, hinge.at);
+            if (part) parts.push(part);
+          }
+        }
         crumpleWalk(m, m.body, skip, parts);
         // The trim's outer share (exterior trim before the cabin: cars3d-interior.js), for marks that must not land inside.
         const outer = m.kit?.trimOuter;

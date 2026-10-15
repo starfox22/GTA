@@ -1,0 +1,10 @@
+{
+  "packSHA256": "e83f2d0f38b64ca743717eb50054ea15dfa56488fe8346ee423790815f375328",
+  "preceding80fCandidateArraysIdentical": 618,
+  "metadataOnlyCorrection": "Four preserved indicator parts added to trim/trimFar aliases; all actual source parts now have exactly one active render owner at each LOD.",
+  "sourcePartitionSHA256": "5aee80ace75f8bb98c12a4155b99278ceff49758346cb068faea37ab7f29b94b",
+  "sourcePartitionCompression": "gzip; decompress to original source-partition.json; counts and per-primitive/triangle IDs enumerate all263683 faces exactly once",
+  "preparedGeometryInputSHA256": "7de69b304f86857694d097217d3ed684463ff9e0b147d1ac270d734297c9bcbc",
+  "preparedGeometryOutputSHA256": "3f514cd6d56cf966bfa5ffbb33aebb2b81d15909cd57f4183a8864fafeb4f3b3",
+  "allPreparedGeometryReusedUnchangedForMetadataCorrection": true
+}

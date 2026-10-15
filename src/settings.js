@@ -548,7 +548,7 @@
       gameMode = 'settings';
       if (tab) settingsTab = tab;
       keys = {};
-      mouse.down = false;
+      mouse.down = mouse.alt = false;
       settingsListen = settingsClash = null;
       getElement('pauseMenu').classList.add('hidden');
       getElement('menu').classList.add('settings-behind');

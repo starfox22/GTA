@@ -1,0 +1,34 @@
+{
+  "status": "FAIL",
+  "checks": 56,
+  "failures": [
+    "openArsenal: modal retained held fire/aim",
+    "closeArsenal: modal retained held fire/aim",
+    "showDemoComplete: modal retained held fire/aim",
+    "clearMissionOverlays: modal retained held fire/aim",
+    "openMissionSelect: modal retained held fire/aim",
+    "showDialogue: modal retained held fire/aim",
+    "travelRoof: modal retained held fire/aim",
+    "openSettings: modal retained held fire/aim",
+    "openService: modal retained held fire/aim",
+    "openTransit: modal retained held fire/aim",
+    "openTaxiOffer: modal retained held fire/aim",
+    "openSportsbook: modal retained held fire/aim",
+    "openDealerMenu: modal retained held fire/aim"
+  ],
+  "notes": [
+    "13 production modal transitions release both buttons; rejected entries preserve input and campaign state"
+  ],
+  "testSha256": "bbb7689c1dce4362eb7431ec8f3338c34ee913f1b16704497c3693ff2cec17ca",
+  "sourceHashes": {
+    "src/arsenal.js": "e7167856b21f826d2bd6a898c570c465ceb7323545fdc84d757941877004725b",
+    "src/campaign.js": "371d2102ed4c14753b00269853cdb70701b1e7d1ec95292b7eab918b93253a60",
+    "src/story.js": "7f0d3c68590658ae3d42742a8ebe793ee13b0b64af3f313d40f5a23f81124274",
+    "src/settings.js": "02300128877a889e7354ce1a1be43f29573a5314e1e7398eef2a6a4965fc12c7",
+    "src/citylife-places.js": "28dfb99aaefd38a2da38d068d69fd046bc6e0a24d6008f9434641b30a619694e",
+    "src/transit-network.js": "cd3a741a18a27c38c0ff021a37b1684982508199d3fb7a87f70e8203e8bb334e",
+    "src/taxi.js": "5058e2177e34856681dadead01fbccb4556edd3eac5fcb1037a4806605b57843",
+    "src/sportsbook-ui.js": "68b6e2f7081eeb51a2bec1c1761eaea6b6b33e18e4f32c0f4386324097c93eaf",
+    "src/dealership-lot.js": "9aba0307face2454c9b1da786ca3e279cda28ac0a63023cdf3212d674ae3ddc4"
+  }
+}

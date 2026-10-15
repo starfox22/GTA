@@ -169,11 +169,16 @@
       if (!(DEV_BOOT_SEED && simulationHeld && live)) {
         updateWorldView(deltaSeconds);
         updateCasino(deltaSeconds);
-        updateElevator(deltaSeconds);
-        // North Point Key's tower lifts ride on the frame clock too (skyline-lift.js).
-        updateSkyLift(deltaSeconds);
-        // So does Fort Sentinel's records office (fort-cover-records.js).
-        updateFortRecords(deltaSeconds);
+        // Timed travel must not finish into unpaused gameplay while the player
+        // is in another tab/window. Explicit developer steps still advance it.
+        if (!live || (!gpuContext.lost && !gpuContext.reloadPending && !document.hidden &&
+          (typeof document.hasFocus !== 'function' || document.hasFocus()))) {
+          updateElevator(deltaSeconds);
+          // North Point Key's tower lifts ride on the frame clock too (skyline-lift.js).
+          updateSkyLift(deltaSeconds);
+          // So does Fort Sentinel's records office (fort-cover-records.js).
+          updateFortRecords(deltaSeconds);
+        }
       }
       // Everything the frame does before the simulation step (the `f:pre` part of stats()).
       const updateStart = profileLap('f:pre', frameStart);
@@ -183,7 +188,12 @@
       // A fault in the step costs the rest of this step only, and the frame still draws (frame-guard.js).
       try {
         if (frameFaultState.drill) frameFaultDrillAt('update');
-        if (simulationHeld) soundUpdate(0);
+        if (live && (gpuContext.lost || gpuContext.reloadPending)) {
+          // A deferred respawn can reach play after the original loss event.
+          // Keep its saved result paused until recovery reloads the picture.
+          if (gameMode === 'play') togglePause();
+          soundUpdate(0);
+        } else if (simulationHeld) soundUpdate(0);
         else if (
           gameMode === 'play' ||
           gameMode === 'menu' ||

@@ -1,0 +1,64 @@
+{
+  "date": "2026-10-15",
+  "kind": "production-function host regressions; not browser/render proof",
+  "baselineCommit": "7a0f6f3",
+  "newTests": {
+    "modal-pointer-lifecycle": 56,
+    "travel-focus-pause": 30,
+    "world-reset-sportsbook": 54,
+    "respawn-focus-pause": 112,
+    "gpu-context-lifecycle": 42
+  },
+  "newAssertions": 294,
+  "additionalExistingHostAssertions": 67,
+  "passingFocusedHostAssertions": 361,
+  "files": [
+    {
+      "file": "review15-modal-pointer-before.json",
+      "sha256": "ec3260f1bd563f15bb5ca330adc715f08c3190076ce190b16aafbf0dc1614efc"
+    },
+    {
+      "file": "review15-modal-pointer-after.json",
+      "sha256": "c935254f204a9de0bf29979ac955521dcf9fa7523cd431dff684ffbc07801e14"
+    },
+    {
+      "file": "review15-travel-focus-before.json",
+      "sha256": "e53a8e43b838dfdbdd200d76ed5a932fbd3e74a9c5ebc9a30a3c4e0acd4e2e77"
+    },
+    {
+      "file": "review15-travel-focus-after.json",
+      "sha256": "f794ad2b09ee6ea498ef793e09888850f62350a81c822356ed312dccba38d663"
+    },
+    {
+      "file": "review15-world-reset-sportsbook-before.json",
+      "sha256": "b806bef01ceb837123ca555a765d585dff32910b487e63ed29fe9c6e0eeb1d97"
+    },
+    {
+      "file": "review15-world-reset-sportsbook-after.json",
+      "sha256": "b04e179075eb98f39fa5c38de36a5bf6c205bcbf724f2a016ceec993de89f96f"
+    },
+    {
+      "file": "review15-respawn-focus-before.json",
+      "sha256": "75b0aea9562f1a8bb9cffbce0699f29d03dc5e6835174ea8ff825bd456957189"
+    },
+    {
+      "file": "review15-respawn-focus-after.json",
+      "sha256": "6b0cf409e626ab53d1ba945267bdbafff9038a8584c470a7faf53679e7aa4f4d"
+    },
+    {
+      "file": "review15-gpu-context-before.json",
+      "sha256": "58de1de84414c5ffd56a5c1ec9403b934ab844ae5c94bde50485c61c57bd7d6c"
+    },
+    {
+      "file": "review15-gpu-context-after.json",
+      "sha256": "f6614a44d0d72a10cdfdd1a1a144b958d8c24eb6d194a680d118cd8c36e56cd5"
+    },
+    {
+      "file": "review15-core-host-final.json",
+      "sha256": "2e53987ccc5b910ef6f8d33e55dae241deac99f8d7f105983129d2c6ced152da"
+    }
+  ],
+  "baselineQualification": "The first four defect baselines use committed 7a0f6f3. GPU context lifecycle was reproduced after those fixes, on production sources corresponding to gameplay-checked a59af721; exact per-receipt source hashes are retained. Historical receipts are not relabelled as current source.",
+  "latestGate": "review15-core-host-final.json",
+  "gpuLifecycleBaselineHtmlSha256": "a59af721e5c0c880521421abf9ad94bff55f94023549c810b154a90386afef63"
+}

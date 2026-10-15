@@ -1,0 +1,27 @@
+{
+  "status": "RESOLVED_UNCHANGED_QUIET_FOLLOWUP_PASS",
+  "test": "player-jump.mjs",
+  "testSha256": "35756debc36be5a1371981a9a71139b306f9671939b6ca7c675c7494228e8441",
+  "baselineHtmlSha256": "5b199b249eeb301af2722c21e84470c6b20902ff0976d17c3e439be1ab3e58da",
+  "failure": "FAIL player-jump (54.7s): a real Space press made 0 jumps",
+  "notes": "     jump height (m) 0.5 \u00b7 air time (s) 0.639 \u00b7 villa garden wall (m) 1.35 \u00b7 feet back on the ground (units) 0 \u00b7 sea railing at 3417,1152.5: landed 3466,1153; {\"from\":[3411,1153],\"to\":[3448,1153],\"metres\":4.62,\"maxClearance\":1.5,\"vault\":true,\"into\":\"water\"}",
+  "realInputContract": {
+    "pressSeconds": 0.2,
+    "settleBeforeSeconds": 0.5,
+    "settleAfterSeconds": 1.5
+  },
+  "productionContract": "updatePlayerJump samples the held jump action and its prior frame state; a true rising edge starts the jump when playerJumpRefusal permits. The real key test follows successful deterministic jump/vault/water checks. No refusal report was recorded at the failing Space phase.",
+  "runtimeOrTestChanged": false,
+  "interpretation": "The unchanged whole module passes on the same frozen baseline after external software GPU load ends. The initial live-input/deadline result remains retained as a timing-sensitive run; no corresponding production defect was reproduced and no runtime or test change was made for it.",
+  "quietFollowup": {
+    "status": "PASS",
+    "summary": "PASS player-jump (26.3s)",
+    "notes": "     jump height (m) 0.5 \u00b7 air time (s) 0.639 \u00b7 villa garden wall (m) 1.35 \u00b7 feet back on the ground (units) 0 \u00b7 sea railing at 3417,1152.5: landed 3466,1153; {\"from\":[3411,1153],\"to\":[3448,1153],\"metres\":4.62,\"maxClearance\":1.5,\"vault\":true,\"into\":\"water\"} \u00b7 effort: {\"sample\":\"player-jump-grunt\",\"loaded\":true,\"sound\":true,\"asked\":6,\"played\":6,\"soft\":3,\"last\":{\"soft\":true,\"rate\":1.101,\"level\":0.173,\"at\":16.17}} \u00b7 speed 54.2 -> 11",
+    "log": "review15-before-quiet.log",
+    "selection": "review15-before-quiet-selection.json",
+    "exitReceipt": "review15-before-quiet-exit.json",
+    "sameFrozenBaseline": true,
+    "testHashUnchanged": true,
+    "originalTimersAndAssertionsUnchanged": true
+  }
+}

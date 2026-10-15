@@ -124,7 +124,7 @@
       if (mapOpen) toggleMap();
       gameMode = 'demo';
       keys = {};
-      mouse.down = false;
+      mouse.down = mouse.alt = false;
       getElement('demoArt').style.backgroundImage = getElement('coverArt').style.backgroundImage;
       getElement('demoTime').textContent = playTimeText(campaignStats.playSeconds);
       getElement('demoCash').textContent = '$' + Math.floor(campaignStats.cashEarned).toLocaleString();
@@ -272,14 +272,14 @@
       servicePlace = null;
       mapOpen = false;
       keys = {};
-      mouse.down = false;
+      mouse.down = mouse.alt = false;
     }
     function openMissionSelect() {
       if (!['menu', 'pause', 'play'].includes(gameMode)) return;
       missionMenuOrigin = gameMode;
       gameMode = 'missions';
       keys = {};
-      mouse.down = false;
+      mouse.down = mouse.alt = false;
       const list = getElement('missionChoices');
       list.replaceChildren();
       const demo = DEMO_BUILD && !player.godMode;

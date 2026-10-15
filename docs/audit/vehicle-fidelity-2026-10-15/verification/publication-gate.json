@@ -1,0 +1,23 @@
+{
+  "branch": "codex-reviews",
+  "renamedFrom": "codex/chase-clouds-polish-2026-10-12",
+  "startingCommit": "7a0f6f3cecee95c22c320809732555a369c5ef18",
+  "originMainObserved": "bde9ee4c7f295b096fe71f6924b84d491a56a86e",
+  "mainModified": false,
+  "preservedRenameHistory": true,
+  "requiredQuickCheck": "sh tools/quick-check.sh review15-final-commit",
+  "quickCheck": "PASS",
+  "filemapFresh": true,
+  "currentRuntimeSourceHashesMatchFinal4": 641,
+  "currentModelPackHashesMatchFinal4": 3,
+  "freshlyBuiltHtmlExactFinal4": true,
+  "htmlSha256": "21403cd7c63950f619da9e8818a60be14ef306b0d08ced79ac336cd247c4df1a",
+  "nativeImageManifestFilesVerified": 47,
+  "imageBytesDimensionsAndHashes": "PASS",
+  "gitDiffCheck": "PASS",
+  "hostAssertions": 38948,
+  "browserRuntimeAssertions": 293,
+  "fullHybridBodyAssertionsIncluded": 267,
+  "packagedSmoke": "PASS; zero errors; six native images",
+  "qualification": "Software WebGL over managed file-to-HTTP adapter. Model comparison images retain FINAL2 labels. Native file-protocol launch, real hardware FPS and four uninterrupted normal-input mission wins are not established."
+}

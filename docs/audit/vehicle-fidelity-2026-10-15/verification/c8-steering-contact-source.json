@@ -1,0 +1,60 @@
+{
+  "sourceGLTFSHA256": "840aac54739d1c18b3996eebcdfbbc66bc4d9531a5a578b80c30e5923053699b",
+  "geometry": "Steering Wheel_Interior_0",
+  "sourceVertices": 4835,
+  "fitVertices": 1406,
+  "columnPivot": [
+    0.4169866423652625,
+    0.6805621037584889,
+    -0.35888494831274775
+  ],
+  "columnAxis": [
+    0.9682062467686167,
+    -0.25015349608317533,
+    0.0
+  ],
+  "rimUp": [
+    0.25015349608317533,
+    0.9682062467686168,
+    0.0
+  ],
+  "columnTilt": 0.25283877452346254,
+  "fittedContactCircleCentre": [
+    0.3139192467773927,
+    0.7250098707933751,
+    -0.35888269182123117
+  ],
+  "medianContactRadius": 0.1647144651242159,
+  "fitMethod": "Original normalized leather mesh; source-parent plane axes. Keep upper arc qUp>.09m or outer sides abs(qSide)>.14m, excluding flat bottom/hub. Least-squares 2D circle with median radial grip distance and median depth. Shaped D rim and thickness make this approximate; subset centres vary5\u201310mm.",
+  "recommendedRadius": 0.165,
+  "handTargetsAtGameClocks": [
+    {
+      "clock": -1.2,
+      "target": [
+        0.32887568072461587,
+        0.7828979795099081,
+        -0.5126691410058235
+      ],
+      "nearestSourceSurfaceDistance": 0.011341585900824156,
+      "nearestSourceSurface": [
+        0.32442381251108726,
+        0.7761869698179816,
+        -0.5046832290935861
+      ]
+    },
+    {
+      "clock": 1.2,
+      "target": [
+        0.32887568072461587,
+        0.7828979795099081,
+        -0.20509624263663884
+      ],
+      "nearestSourceSurfaceDistance": 0.011344754686951416,
+      "nearestSourceSurface": [
+        0.32442381251108726,
+        0.7761869698179816,
+        -0.21308665421748674
+      ]
+    }
+  ]
+}

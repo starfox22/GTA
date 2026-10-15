@@ -1,0 +1,21 @@
+{
+  "at": "2026-10-15T14:21:02.168Z",
+  "module": "tools/tests/car-exit-feet.mjs",
+  "assertions": 2884,
+  "notes": [
+    "{\"exitFeet\":{\"source\":\"actual production targets/specialSpec/solveLeg; shipped mesh + existing body-test DQ skinning\",\"phases\":30,\"headings\":4,\"elevations\":2,\"modes\":[\"target\",\"eased\"],\"actualShoeVertices\":395,\"rows\":[{\"floor\":0,\"heading\":0,\"mode\":\"target\",\"phase\":13,\"minimumMetresAboveGround\":[0.015628689474427568,0.015613309327056332],\"shoeVertices\":395,\"below\":0},{\"floor\":0,\"heading\":0,\"mode\":\"eased\",\"phase\":13,\"minimumMetresAboveGround\":[0.01562694073589656,0.015611560616345414],\"shoeVertices\":395,\"below\":0},{\"floor\":0,\"heading\":0.7853981633974483,\"mode\":\"target\",\"phase\":13,\"minimumMetresAboveGround\":[0.01562868947442069,0.015613309327058508],\"shoeVertices\":395,\"below\":0},{\"floor\":0,\"heading\":0.7853981633974483,\"mode\":\"eased\",\"phase\":13,\"minimumMetresAboveGround\":[0.015626940735897637,0.015611560616350321],\"shoeVertices\":395,\"below\":0},{\"floor\":0,\"heading\":1.5707963267948966,\"mode\":\"target\",\"phase\":13,\"minimumMetresAboveGround\":[0.015628689474424088,0.01561330932705746],\"shoeVertices\":395,\"below\":0},{\"floor\":0,\"heading\":1.5707963267948966,\"mode\":\"eased\",\"phase\":13,\"minimumMetresAboveGround\":[0.015626940735900322,0.015611560616345473],\"shoeVertices\":395,\"below\":0},{\"floor\":0,\"heading\":-2.199114857512855,\"mode\":\"target\",\"phase\":13,\"minimumMetresAboveGround\":[0.015628689474421788,0.015613309327058518],\"shoeVertices\":395,\"below\":0},{\"floor\":0,\"heading\":-2.199114857512855,\"mode\":\"eased\",\"phase\":13,\"minimumMetresAboveGround\":[0.015626940735896912,0.015611560616344985],\"shoeVertices\":395,\"below\":0},{\"floor\":12,\"heading\":0,\"mode\":\"target\",\"phase\":13,\"minimumMetresAboveGround\":[0.01562868947442353,0.015613309327051406],\"shoeVertices\":395,\"below\":0},{\"floor\":12,\"heading\":0,\"mode\":\"eased\",\"phase\":13,\"minimumMetresAboveGround\":[0.01562694073589399,0.015611560616346054],\"shoeVertices\":395,\"below\":0},{\"floor\":12,\"heading\":0.7853981633974483,\"mode\":\"target\",\"phase\":13,\"minimumMetresAboveGround\":[0.015628689474424196,0.015613309327057845],\"shoeVertices\":395,\"below\":0},{\"floor\":12,\"heading\":0.7853981633974483,\"mode\":\"eased\",\"phase\":13,\"minimumMetresAboveGround\":[0.015626940735903316,0.01561156061634228],\"shoeVertices\":395,\"below\":0},{\"floor\":12,\"heading\":1.5707963267948966,\"mode\":\"target\",\"phase\":13,\"minimumMetresAboveGround\":[0.015628689474423085,0.015613309327056735],\"shoeVertices\":395,\"below\":0},{\"floor\":12,\"heading\":1.5707963267948966,\"mode\":\"eased\",\"phase\":13,\"minimumMetresAboveGround\":[0.01562694073589954,0.015611560616348052],\"shoeVertices\":395,\"below\":0},{\"floor\":12,\"heading\":-2.199114857512855,\"mode\":\"target\",\"phase\":13,\"minimumMetresAboveGround\":[0.01562868947442353,0.015613309327055847],\"shoeVertices\":395,\"below\":0},{\"floor\":12,\"heading\":-2.199114857512855,\"mode\":\"eased\",\"phase\":13,\"minimumMetresAboveGround\":[0.015626940735899764,0.015611560616344722],\"shoeVertices\":395,\"below\":0}]}}"
+  ],
+  "inputs": {
+    "assets/player-model.bin": "78608bc4f6a03a74645cb0064b91420f9447b0bff62b1fa28aee88e61a90b6eb",
+    "src/carjack3d.js": "d5f5e860a61ebe5c71a924062b63f66ec5017372957106892a1df16d01e201fe",
+    "src/crowd3d-special.js": "f023e11961e5640b1df9a3da6291c6377ea2409e7e82982d3cce9f2fee398380",
+    "src/crowd3d-joints.js": "71b649c22354e5a072ef81d660a23141746a1e14e621755f8db52e9c3abeb210",
+    "src/crowd3d-poses.js": "29ce527e00f846b43776c8db034953572132314afeeafab04cf52c295e29471d",
+    "src/crowd3d-draw.js": "d8e91259d6571d93a53f517f471a0cf3a57a3ce33e8bc8163308de65743296c0",
+    "src/character-rig3d.js": "9e771bdd76a6bc1626f2acf2e93f15cd928f7c138d639c354d24c9761e6e534a",
+    "src/airfields3d.js": "64ca42c8fc2d6606cbf001e406e44eede7a837cff59d98771b763f4bb2c80d47",
+    "tools/tests/player-body.mjs": "bbb4c503dd7175965173155090f863df71f4774c08e09883f8242ddf3ea5368a",
+    "tools/tests/car-exit-feet.mjs": "ad99abd0ae93a115b80c271abbb77aa45dad401e344f353a79eb12fc4b02fd31"
+  },
+  "pass": true
+}

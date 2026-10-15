@@ -23,18 +23,18 @@ the models' damage contract is vehicles-and-driving-models.md.
   a boot lid the same toward its front hinge, sprung 22-30 degrees; the lid lies on the kit's rear deck line,
   `kit.trunkDeck`, and a picked-open trunk swings it up over a dark well: police-and-combat-ammo.md);
   bumpers keep only the hanging droop as a pose (turned about the attached bracket, never below the road); wheels move
-  with the arches in x and across, never up. A sprung door is cut from the pristine shell's side by rays
-  (`doorPanelGeometries`: curve and UVs, so paint and liveries carry on; skin, a door card in the cabin's upholstery and
-  edges, 2 draw calls) and its opening is a panel flush with the side (painted jambs round the cabin's side, never a dark
-  slab); both bend with the crumple (the door in its closed place, relative to its
-  hinge). A rollover landing on its roof or a side (falls-vehicles.js `cliffFaceDown`) records a dent on that face (`nz`
+  with the arches in x and across, never up. Doors extract their actual moving surfaces from the body, leaving a real
+  aperture; separated source doors retain their native parts and hinges. Both body and door bend with the crumple
+  (the door in its closed place, relative to its hinge); see `vehicles-and-driving-doors.md` for geometry, interior and
+  mark ownership. A rollover landing on its roof or a side (falls-vehicles.js `cliffFaceDown`) records a dent on that face (`nz`
   -1 for the roof).
 - VEHICLE MARKS (damage3d-marks.js): a hole, star or scrape is pinned to the triangle a ray along the round's line met
   (barycentric anchor), so it rides crumples, hinges and pristine-merge splits; holes never on glass or the cabin seen
   through it, stars only on their pane, and a hole only where the panel holds its whole ring (`markCovered`: else the ray
   goes on to the panel behind a mirror or a trim edge); a mark with no surface is not drawn. The decal is posed on
   the part's own smooth normal there (re-made where a crumple moved it), facing out the way it faced the round. A hole in the side's metal where a door
-  later springs moves onto the door's skin (`markOntoDoor`, by the door's grid `DOOR_GRID`). Close up (the chase view)
+  later springs moves onto the door's skin (`markOntoDoor`, preserving the original source triangle; grid fallback for
+  older synthetic doors). Close up (the chase view)
   a hole re-posed after a crumple checks its ring again: half size if only that fits, hidden if the metal under it is
   folded away. Casts and ring checks share a budget of 12 marks a frame (a mark waiting keeps its last pose).
   A ring check (`markRingHolds`, 16 points) lies on the decal's own axes and roll (`markRoll`) in its lifted plane:
@@ -50,12 +50,13 @@ the models' damage contract is vehicles-and-driving-models.md.
   flipped faces, each mark's part and gap to the surface in cm); tools/tests/vehicle-damage-shape.mjs.
 - DOORS (damage3d-bodies.js `vehicleDoor(c, m, side)`): the one builder of a front door, shared by the damage (sprung or
   torn off) and the door swings (carjack3d.js DOOR SWING: a carjack's yank, the player's own way in and out from
-  `carTransition.door`). Its window (`doorGlassGeometries`, the side pane's surface within the door, `userData.doorGlass`:
-  never a mark) shows only while a whole door swings, and the body's side pane is then left out (`doorSidePane`, put back
-  as the damage pass last set it). Door colours come from `CAR_CABIN_TRIM` (`doorTrimMaterial`, shared, never near black).
+  `carTransition.door`). Its window (`userData.doorGlass`: never a mark) travels with the door while the fixed body's
+  corresponding front surface is removed. Rear-quarter glass stays drawn. Native source cards retain their materials;
+  fallback moving cards use shared `CAR_CABIN_TRIM` (`doorTrimMaterial`). The aperture contains no centre panel.
   Where it sits is `vehicleDoorSpan(m)`: a procedural body's own front shut lines (`m.dims.door`), else the hinge at the
   windscreen's foot (the seat plan's `glass.g.xf`, where every drawn door starts) and the back edge 0.1 m behind the
-  driver's hip (`m.seats.x`), 0.95-1.3 m long, so a van's, pickup's or truck's door is its cab's; the old `l * 0.2`
+  driver's hip (`m.seats.x`), 0.95-1.3 m long, so a van's, pickup's or truck's door is its cab's; native doors use authored
+  source ranges/hinges. The old `l * 0.2`
   share only for a body with neither. `carModels(true)` lists each cabin's `hip` and `door` (m); console `doorSwing(id)`.
   Getting in and out still swings no door on a truck (`vehicleSpec(c).truck`, carjack3d.js swingDriverDoor).
 - FLAT TYRE SQUASH (damage3d-bodies.js `squashWheel`): a flat tyre's `scale.y` is applied outside the wheel's roll

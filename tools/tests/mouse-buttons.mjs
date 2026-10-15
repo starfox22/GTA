@@ -30,7 +30,7 @@ export default async function (t) {
     canvas: { addEventListener: register('canvas'), focus: noop },
     getElement: element,
     performance: { now: () => 100 }, worldTouchUntil: 0,
-    gameMode: 'play', keys: {}, mouse: { down: false, alt: false },
+    gameMode: 'play', keys: {}, mouse: { down: false, alt: false }, gpuContext: { lost: false, reloadPending: false },
     chaseCam: { locked: false }, chaseCameraLive: () => false,
     initAudio: noop, shoot: noop, syncCarRadio: noop,
     physicalHeld: true,

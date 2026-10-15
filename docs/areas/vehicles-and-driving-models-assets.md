@@ -1,9 +1,10 @@
 # Vehicles and driving: downloaded models
 
-Types drawn from downloaded ready-made models (assets/vehicle-models.bin + vehicle-atlas.webp, made offline by
-`tools/vehicle_models.py SRC_DIR`; motorbikes through tools/vehicle_models_moto.py). The contracts the models keep are
-vehicles-and-driving-models.md's; credits in docs/THIRD_PARTY_CREDITS.txt. Console `assetCars()`,
-`assetCarsOn(false)` (models built from then on procedural: park a second row for before/after).
+Downloaded kits retain the common damage, seats and impostor contracts
+(vehicles-and-driving-models.md). The original vehicle pack and atlas come from
+`tools/vehicle_models.py`; credits are in `docs/THIRD_PARTY_CREDITS.txt`.
+`assetCars()` reports models; `assetCarsOn(false)` selects procedural builders for
+newly spawned vehicles, useful for before/after comparisons.
 
 October 14 replacements use a **separate** pack and albedo/roughness-metallic atlases;
 all original 23 models stay intact. See [approved SUVs](vehicles-and-driving-models-approved-suvs.md),
@@ -11,6 +12,12 @@ all original 23 models stay intact. See [approved SUVs](vehicles-and-driving-mod
 loaded keys, atlas sizes and LODs. Source UVs repeat inside each atlas rectangle.
 Low/Medium use 2048px images; High/Ultra use 4096px, replacing texture images on tier
 changes. Approved PBR/livery also pass through pooled wear/char shaders.
+
+October 15: the base Chevette Z06 uses the separate
+[licensed C8 pack](vehicles-and-driving-models-sports.md). SUV source shading is
+covered by [source fidelity](vehicles-and-driving-source-fidelity.md), and real
+openings by [front doors](vehicles-and-driving-doors.md). The carbon-aero Chevette
+SE keeps its existing body and equipment.
 
 ## Cars (ASSET CARS, vehicle-assets3d.js)
 

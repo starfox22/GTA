@@ -1,0 +1,354 @@
+{
+  "c8_hari.shell": {
+    "ratio": 0.65,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.shellFar": {
+    "ratio": 0.04,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.panels": {
+    "ratio": 0.65,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.panelsFar": {
+    "ratio": 0.04,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.trim": {
+    "ratio": 0.2,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.trimFar": {
+    "ratio": 0.025,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.headLeft": {
+    "ratio": 0.6,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.headLeftFar": {
+    "ratio": 0.1,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.headRight": {
+    "ratio": 0.6,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.headRightFar": {
+    "ratio": 0.1,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.indicatorRight": {
+    "ratio": 0.6,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.indicatorRightFar": {
+    "ratio": 0.1,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.indicatorLeft": {
+    "ratio": 0.6,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.indicatorLeftFar": {
+    "ratio": 0.1,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.tailLeft": {
+    "ratio": 0.6,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.tailLeftFar": {
+    "ratio": 0.1,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.tailRight": {
+    "ratio": 0.6,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.tailRightFar": {
+    "ratio": 0.1,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.cabin": {
+    "ratio": 0.28,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.cabinFar": {
+    "ratio": 0.02,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.cabin.seats": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.cabin.seatsFar": {
+    "ratio": 0.08,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.cabin.controls": {
+    "ratio": 0.45,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.cabin.controlsFar": {
+    "ratio": 0.05,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.hood": {
+    "ratio": 0.65,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.hoodFar": {
+    "ratio": 0.04,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.hood.trim": {
+    "ratio": 0.2,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.hood.trimFar": {
+    "ratio": 0.025,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.glass:1": {
+    "ratio": 0.6,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.glassFar:1": {
+    "ratio": 0.08,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.glass:3": {
+    "ratio": 0.6,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.glassFar:3": {
+    "ratio": 0.08,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.opticalGlass": {
+    "ratio": 0.6,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.opticalGlassFar": {
+    "ratio": 0.08,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.wheel1.rim": {
+    "ratio": 0.36,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.wheel1.rimFar": {
+    "ratio": 0.055,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.wheel1.tyre": {
+    "ratio": 0.45,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.wheel1.tyreFar": {
+    "ratio": 0.06,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.wheel1.caliper": {
+    "ratio": 0.2,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.wheel1.caliperFar": {
+    "ratio": 0.025,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.wheel0.caliper": {
+    "ratio": 0.2,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.wheel0.caliperFar": {
+    "ratio": 0.025,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.wheel0.rim": {
+    "ratio": 0.36,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.wheel0.rimFar": {
+    "ratio": 0.055,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.wheel0.tyre": {
+    "ratio": 0.45,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.wheel0.tyreFar": {
+    "ratio": 0.06,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.wheel3.rim": {
+    "ratio": 0.36,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.wheel3.rimFar": {
+    "ratio": 0.055,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.wheel3.tyre": {
+    "ratio": 0.45,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.wheel3.tyreFar": {
+    "ratio": 0.06,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.wheel2.rim": {
+    "ratio": 0.36,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.wheel2.rimFar": {
+    "ratio": 0.055,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.wheel2.tyre": {
+    "ratio": 0.45,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.wheel2.tyreFar": {
+    "ratio": 0.06,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.doorRight.paint": {
+    "ratio": 0.65,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.doorRight.paintFar": {
+    "ratio": 0.04,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.doorRight.trim": {
+    "ratio": 0.2,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.doorRight.trimFar": {
+    "ratio": 0.025,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.doorRight.cabin": {
+    "ratio": 0.28,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.doorRight.cabinFar": {
+    "ratio": 0.02,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.doorRight.opticalGlass": {
+    "ratio": 0.6,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.doorRight.opticalGlassFar": {
+    "ratio": 0.08,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.doorRight.glass:2": {
+    "ratio": 0.6,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.doorRight.glassFar:2": {
+    "ratio": 0.08,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.doorRight.indicator": {
+    "ratio": 0.6,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.doorRight.indicatorFar": {
+    "ratio": 0.1,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.doorLeft.paint": {
+    "ratio": 0.65,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.doorLeft.paintFar": {
+    "ratio": 0.04,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.doorLeft.trim": {
+    "ratio": 0.2,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.doorLeft.trimFar": {
+    "ratio": 0.025,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.doorLeft.cabin": {
+    "ratio": 0.28,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.doorLeft.cabinFar": {
+    "ratio": 0.02,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.doorLeft.indicator": {
+    "ratio": 0.6,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.doorLeft.indicatorFar": {
+    "ratio": 0.1,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.doorLeft.opticalGlass": {
+    "ratio": 0.6,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.doorLeft.opticalGlassFar": {
+    "ratio": 0.08,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.doorLeft.glass:0": {
+    "ratio": 0.6,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.doorLeft.glassFar:0": {
+    "ratio": 0.08,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.trunk.paint": {
+    "ratio": 0.65,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.trunk.paintFar": {
+    "ratio": 0.04,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.trunk.trim": {
+    "ratio": 0.2,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.trunk.trimFar": {
+    "ratio": 0.025,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.trunk.glass": {
+    "ratio": 0.6,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.trunk.glassFar": {
+    "ratio": 0.08,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.wheel2.caliper": {
+    "ratio": 0.2,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.wheel2.caliperFar": {
+    "ratio": 0.025,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.wheel3.caliper": {
+    "ratio": 0.2,
+    "preserveSourceNormals": true
+  },
+  "c8_hari.wheel3.caliperFar": {
+    "ratio": 0.025,
+    "preserveSourceNormals": true
+  }
+}

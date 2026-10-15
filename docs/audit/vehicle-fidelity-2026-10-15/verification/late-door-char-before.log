@@ -1,0 +1,6 @@
+Observed before fix using production C8 builder/vehicleDoor/carBodyDamage and production assetCharSwap/assetCharRelease in an isolated host VM:
+LATE_BEFORE_REPAIR [{"char":true,"inSwap":false,"source":"trim/optics"},{"char":true,"inSwap":false,"source":"trim/optics"},{"char":true,"inSwap":false,"source":"trim/optics"}]
+LATE_AFTER_REPAIR [{"char":true,"sourceRestored":false},{"char":true,"sourceRestored":false},{"char":true,"sourceRestored":false}]
+BASE_HOST_PASS 826
+
+Source labels above are the original diagnostic labels: it distinguished m.shell from all other source meshes, not the individual trim/panels/optics roles. All three are actual non-glass source-backed native door layers.

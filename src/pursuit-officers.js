@@ -308,6 +308,8 @@
         // The city is put back as after WASTED: wrecks, damage, blood and bodies gone (world-reset.js).
         resetWorld('busted');
         save();
+        // Blur during BUSTED had no play mode to pause; keep the respawn safe.
+        if (document.hidden || (typeof document.hasFocus === 'function' && !document.hasFocus())) togglePause();
       }, 4200);
     }
 

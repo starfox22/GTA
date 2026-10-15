@@ -1,0 +1,241 @@
+{
+  "experimentPackSha256": "a459f926e4e832a60ce2bf61b969f38a319881e93af0cf6a535a88b0bd80d094",
+  "finalPackSha256": "f21c4d91d34df544ffab87b895551b3ef7712746fd25c394e33738056b71e895",
+  "changedArrays": [
+    "s1_jimny.cabin.n",
+    "s1_jimny.cabinFar.n",
+    "s1_jimny.trim.n",
+    "s1_jimny.trimFar.n",
+    "s2_suv.trimFar.n"
+  ],
+  "paintGeometryAndNormalArraysUnchanged": true,
+  "allSUVZeroNormalsRemoved": true,
+  "motorcycleArraysUnchanged": 302,
+  "repairs": {
+    "s1_jimny": [
+      {
+        "part": "cabin",
+        "material": 7,
+        "distance": 2.7079620699818752e-05,
+        "sourceVertex": 1506,
+        "position": [
+          -1.478041410446167,
+          1.4659022092819214,
+          0.4081301689147949
+        ]
+      },
+      {
+        "part": "cabin",
+        "material": 7,
+        "distance": 0.0012489265985060293,
+        "sourceVertex": 12475,
+        "position": [
+          0.46837595105171204,
+          1.5395992994308472,
+          -0.04420053958892822
+        ]
+      },
+      {
+        "part": "cabin",
+        "material": 11,
+        "distance": 0.0008186674374169681,
+        "sourceVertex": 80,
+        "position": [
+          -1.5139440298080444,
+          1.1670913696289062,
+          -0.45684659481048584
+        ]
+      },
+      {
+        "part": "cabin",
+        "material": 11,
+        "distance": 0.0024060195284830253,
+        "sourceVertex": 65,
+        "position": [
+          -1.5141676664352417,
+          1.1699784994125366,
+          -0.12579041719436646
+        ]
+      },
+      {
+        "part": "cabinFar",
+        "material": 7,
+        "distance": 2.7079620699818752e-05,
+        "sourceVertex": 1506,
+        "position": [
+          -1.478041410446167,
+          1.4659022092819214,
+          0.4081301689147949
+        ]
+      },
+      {
+        "part": "cabinFar",
+        "material": 11,
+        "distance": 0.0008186674374169681,
+        "sourceVertex": 80,
+        "position": [
+          -1.5139440298080444,
+          1.1670913696289062,
+          -0.45684659481048584
+        ]
+      },
+      {
+        "part": "cabinFar",
+        "material": 11,
+        "distance": 0.0024060195284830253,
+        "sourceVertex": 65,
+        "position": [
+          -1.5141676664352417,
+          1.1699784994125366,
+          -0.12579041719436646
+        ]
+      },
+      {
+        "part": "cabinFar",
+        "material": 11,
+        "distance": 0.01832518116191344,
+        "sourceVertex": 1510,
+        "position": [
+          -0.5200818181037903,
+          0.4855234920978546,
+          -0.5720600485801697
+        ]
+      },
+      {
+        "part": "trim",
+        "material": 5,
+        "distance": 5.960464477546691e-08,
+        "sourceVertex": 4601,
+        "position": [
+          1.698030948638916,
+          0.8245420455932617,
+          -0.013867020606994629
+        ]
+      },
+      {
+        "part": "trim",
+        "material": 5,
+        "distance": 5.960464477546691e-08,
+        "sourceVertex": 4611,
+        "position": [
+          1.698030948638916,
+          0.9431946873664856,
+          -0.01115494966506958
+        ]
+      },
+      {
+        "part": "trim",
+        "material": 5,
+        "distance": 5.960464477546691e-08,
+        "sourceVertex": 5817,
+        "position": [
+          1.6980352401733398,
+          0.8956801295280457,
+          -0.00555497407913208
+        ]
+      },
+      {
+        "part": "trim",
+        "material": 11,
+        "distance": 0.00027799034415815265,
+        "sourceVertex": 3492,
+        "position": [
+          -1.4930317401885986,
+          1.8624299764633179,
+          0.532410740852356
+        ]
+      },
+      {
+        "part": "trimFar",
+        "material": 6,
+        "distance": 0.001699716849397543,
+        "sourceVertex": 249,
+        "position": [
+          -1.6157350540161133,
+          0.5105108618736267,
+          -0.4189341068267822
+        ]
+      },
+      {
+        "part": "trimFar",
+        "material": 8,
+        "distance": 0.0189962963002601,
+        "sourceVertex": 1395,
+        "position": [
+          -0.2946842908859253,
+          0.2577672600746155,
+          0.4338207542896271
+        ]
+      },
+      {
+        "part": "trimFar",
+        "material": 5,
+        "distance": 5.960464477546691e-08,
+        "sourceVertex": 4601,
+        "position": [
+          1.698030948638916,
+          0.8245420455932617,
+          -0.013867020606994629
+        ]
+      },
+      {
+        "part": "trimFar",
+        "material": 5,
+        "distance": 5.960464477546691e-08,
+        "sourceVertex": 4611,
+        "position": [
+          1.698030948638916,
+          0.9431946873664856,
+          -0.01115494966506958
+        ]
+      },
+      {
+        "part": "trimFar",
+        "material": 5,
+        "distance": 5.960464477546691e-08,
+        "sourceVertex": 5817,
+        "position": [
+          1.6980352401733398,
+          0.8956801295280457,
+          -0.00555497407913208
+        ]
+      },
+      {
+        "part": "trimFar",
+        "material": 11,
+        "distance": 0.00040421360069766696,
+        "sourceVertex": 9430,
+        "position": [
+          1.7397152185440063,
+          0.588491678237915,
+          -0.2985515892505646
+        ]
+      }
+    ],
+    "s2_suv": [
+      {
+        "part": "trimFar",
+        "material": 34,
+        "distance": 3.290450500529074e-08,
+        "sourceVertex": 5255,
+        "position": [
+          2.1241872310638428,
+          0.8829365372657776,
+          -0.47060978412628174
+        ]
+      },
+      {
+        "part": "trimFar",
+        "material": 34,
+        "distance": 7.576724957794308e-08,
+        "sourceVertex": 5540,
+        "position": [
+          2.1532366275787354,
+          0.8134980797767639,
+          0.4641548693180084
+        ]
+      }
+    ],
+    "s3_offroad": []
+  }
+}

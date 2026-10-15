@@ -1,0 +1,1812 @@
+{
+  "verifiedUTC": "2026-10-15T18:01:00.982584+00:00",
+  "kind": "Independent test inventory and retained-receipt integrity check; not a new test execution",
+  "originalModules": 214,
+  "currentModules": 222,
+  "addedModules": [
+    "car-exit-feet.mjs",
+    "gpu-context-lifecycle.mjs",
+    "modal-pointer-lifecycle.mjs",
+    "respawn-focus-pause.mjs",
+    "sports-vehicle-assets.mjs",
+    "travel-focus-pause.mjs",
+    "vehicle-source-fidelity.mjs",
+    "world-reset-sportsbook.mjs"
+  ],
+  "removedModules": [],
+  "originalBaselineOutcomes": {
+    "PASS": 196,
+    "SKIP": 18,
+    "unresolvedFAIL": 0
+  },
+  "frozenOriginalHtmlSha256": "5b199b249eeb301af2722c21e84470c6b20902ff0976d17c3e439be1ab3e58da",
+  "qualification": "Original 214 outcomes are a resumed Oct14-runtime baseline, including source-reading host modules using workspace inputs. Later changed tests and eight additions require their separate final-source/browser evidence. This inventory does not assert 222 final-build module passes. Historical logs and unchanged whole-module timing follow-ups remain retained; no original threshold or wait was relaxed.",
+  "quietFollowupCurrentTestHashesMatchRetainedSelection": true,
+  "canonicalWorldResetEqualsTestedStrengthenedFixture": true,
+  "canonicalWorldResetTestSha256": "81f0810da7f135dda535797d6ea23f820cd6f57aaeba9458311da3ab237c9750",
+  "linkedReceiptHashesVerified": true,
+  "files": [
+    {
+      "file": "review15-before-suite-selection.json",
+      "sha256": "882da90c1375630866dc5d7e714f67c38a9c40a85807743290cf580907c997c8"
+    },
+    {
+      "file": "original-baseline-progress.json",
+      "sha256": "429432e39e2f6339f9b4f23811888e0f9f12f12bd095e186431ddd821950411c"
+    },
+    {
+      "file": "review15-before-quiet-selection.json",
+      "sha256": "245f4ff84ea6d31f188dc25fd27eef2266fae5456144c1f6aed7602bac7240a6"
+    },
+    {
+      "file": "review15-before-quiet.log",
+      "sha256": "edce4374f2f21a526a3aee04b5ef034a15eadf1d261edd5c4ab6437870caa7a8"
+    },
+    {
+      "file": "review15-before-quiet-exit.json",
+      "sha256": "74397bfc690aba894e5652dcd42d6028fcd3a1083791e45ce1e09d872fc80773"
+    },
+    {
+      "file": "host-proof-manifest.json",
+      "sha256": "b6f80433fc338e5f6ccc75a1615fa118d048719e628ae34f228bc7b6fbc491dc"
+    },
+    {
+      "file": "browser-proof-manifest.json",
+      "sha256": "b9351d96790a2266d3a8c0c9bd09003771d46983420da47f5193ad235d86ca10"
+    }
+  ],
+  "modules": [
+    {
+      "module": "ammo-supply.mjs",
+      "currentTestSha256": "4ecd5ef99994c9de008283eafeface800233856b134644a5cb171f94ee23275d",
+      "originalSelection": true,
+      "originalTestSha256": "4ecd5ef99994c9de008283eafeface800233856b134644a5cb171f94ee23275d",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "approved-motorcycle-rider-fit.mjs",
+      "currentTestSha256": "6c2db1441f161bf24be0a249e866de115c8b265fd3fbdb5cc05912492ba4d19c",
+      "originalSelection": true,
+      "originalTestSha256": "6c2db1441f161bf24be0a249e866de115c8b265fd3fbdb5cc05912492ba4d19c",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "approved-motorcycle-rigs.mjs",
+      "currentTestSha256": "5fda776f1db5391b2cc1a9a884540035b288293b5d204f1bb5f44866f67b0122",
+      "originalSelection": true,
+      "originalTestSha256": "5fda776f1db5391b2cc1a9a884540035b288293b5d204f1bb5f44866f67b0122",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "approved-suv-rigs.mjs",
+      "currentTestSha256": "f5932b0ecdb3e8a8f3198f1f8361083c1e1628bb4aa9aa4f9c08b8ad0094ac88",
+      "originalSelection": true,
+      "originalTestSha256": "e37a6c114901f77751637c65d7b6032521db59d084be294947332817461aca4e",
+      "changedSinceOriginalSelection": true,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "approved-vehicle-pipeline.mjs",
+      "currentTestSha256": "4b144cf87fbc1854b8319cb9ba7df5650a20d1254cd89ffea0bd859e47c20a22",
+      "originalSelection": true,
+      "originalTestSha256": "4b144cf87fbc1854b8319cb9ba7df5650a20d1254cd89ffea0bd859e47c20a22",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "asset-char.mjs",
+      "currentTestSha256": "f7cfab52180e95f6629cd8918300b0f4548d6f08edd87bf51e6b9b54cba52152",
+      "originalSelection": true,
+      "originalTestSha256": "f7cfab52180e95f6629cd8918300b0f4548d6f08edd87bf51e6b9b54cba52152",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "SKIP"
+    },
+    {
+      "module": "blood-amounts.mjs",
+      "currentTestSha256": "2d8cf84bb4d0347c698420e733ad3364e87a9128457915b8f9c140cd6b9f69c0",
+      "originalSelection": true,
+      "originalTestSha256": "2d8cf84bb4d0347c698420e733ad3364e87a9128457915b8f9c140cd6b9f69c0",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "blood-spray.mjs",
+      "currentTestSha256": "8a5ca374571efa145d08783d83b48fc0af6685ae62a4f1480d132b0c8b3e945e",
+      "originalSelection": true,
+      "originalTestSha256": "8a5ca374571efa145d08783d83b48fc0af6685ae62a4f1480d132b0c8b3e945e",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "blood-wounds.mjs",
+      "currentTestSha256": "9324916d525849522224da92db600a6672f8f71716e97d47db5e073f052885a9",
+      "originalSelection": true,
+      "originalTestSha256": "9324916d525849522224da92db600a6672f8f71716e97d47db5e073f052885a9",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "bluehour-entrance.mjs",
+      "currentTestSha256": "83170cd0761801e4c392f8dc3ec54d5e90d1ee5f47d2334f2062bd11b00f9de2",
+      "originalSelection": true,
+      "originalTestSha256": "83170cd0761801e4c392f8dc3ec54d5e90d1ee5f47d2334f2062bd11b00f9de2",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "boot-status.mjs",
+      "currentTestSha256": "22932994820a1bb23311c358e5d07cdfb39bf20a465b47a27642f2fcf635e96b",
+      "originalSelection": true,
+      "originalTestSha256": "22932994820a1bb23311c358e5d07cdfb39bf20a465b47a27642f2fcf635e96b",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "brake-distances.mjs",
+      "currentTestSha256": "50f525fe03b735db3c86fed4a8913a518efbcffe13713bd314e6f2c191154cce",
+      "originalSelection": true,
+      "originalTestSha256": "50f525fe03b735db3c86fed4a8913a518efbcffe13713bd314e6f2c191154cce",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "bullet-hits.mjs",
+      "currentTestSha256": "c11c01cdcd0ee89b2d3de913e009797cd5ee77336dcde5fc71783e5d724f702f",
+      "originalSelection": true,
+      "originalTestSha256": "c11c01cdcd0ee89b2d3de913e009797cd5ee77336dcde5fc71783e5d724f702f",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "cabin-headroom.mjs",
+      "currentTestSha256": "92c2a48f934db25fa42de6d87ebcdad6541aac196c47731ea039dd2311d99257",
+      "originalSelection": true,
+      "originalTestSha256": "92c2a48f934db25fa42de6d87ebcdad6541aac196c47731ea039dd2311d99257",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "SKIP"
+    },
+    {
+      "module": "camera-comfort.mjs",
+      "currentTestSha256": "7a3ff0eec3ebfe20b5075d0172d0672c9fef8f75496786d1552a5ac3611a3584",
+      "originalSelection": true,
+      "originalTestSha256": "7a3ff0eec3ebfe20b5075d0172d0672c9fef8f75496786d1552a5ac3611a3584",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "camera-feel.mjs",
+      "currentTestSha256": "ed007b8af3ab18e0f97b6b8b2eb259e7455e1db573a19432179c1be835611c39",
+      "originalSelection": true,
+      "originalTestSha256": "ed007b8af3ab18e0f97b6b8b2eb259e7455e1db573a19432179c1be835611c39",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "camera-framing.mjs",
+      "currentTestSha256": "a66555bcd5c9235496ff682ab4218cda4938639cd41edbba2dd43ab962c129f5",
+      "originalSelection": true,
+      "originalTestSha256": "a66555bcd5c9235496ff682ab4218cda4938639cd41edbba2dd43ab962c129f5",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "camera-lead-setting.mjs",
+      "currentTestSha256": "631915db6b4203154de1f9cc6a7053c7a21419947c522e1b3a904e5f4df351f8",
+      "originalSelection": true,
+      "originalTestSha256": "631915db6b4203154de1f9cc6a7053c7a21419947c522e1b3a904e5f4df351f8",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "camera-slow-framing.mjs",
+      "currentTestSha256": "70b8cbbe93b239ee25471dc89028a17f4ba9d233b6547f9d1458a7f7c95b7f53",
+      "originalSelection": true,
+      "originalTestSha256": "70b8cbbe93b239ee25471dc89028a17f4ba9d233b6547f9d1458a7f7c95b7f53",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "car-blood.mjs",
+      "currentTestSha256": "5d3fe79ce85c56e77d48429d9af243078de78cf5686bffaede1a628276407da3",
+      "originalSelection": true,
+      "originalTestSha256": "5d3fe79ce85c56e77d48429d9af243078de78cf5686bffaede1a628276407da3",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "car-cabins.mjs",
+      "currentTestSha256": "dadfd16faddbc09001e61c0b3731ec070f508d2d3be1f33475a97f82574fccd9",
+      "originalSelection": true,
+      "originalTestSha256": "dadfd16faddbc09001e61c0b3731ec070f508d2d3be1f33475a97f82574fccd9",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "SKIP"
+    },
+    {
+      "module": "car-exit-feet.mjs",
+      "currentTestSha256": "ad99abd0ae93a115b80c271abbb77aa45dad401e344f353a79eb12fc4b02fd31",
+      "originalSelection": false
+    },
+    {
+      "module": "car-feet-clearance.mjs",
+      "currentTestSha256": "781df49c81c652797455497dcd9c095884af3b211c41062c1217f18fceed9b5d",
+      "originalSelection": true,
+      "originalTestSha256": "781df49c81c652797455497dcd9c095884af3b211c41062c1217f18fceed9b5d",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "SKIP"
+    },
+    {
+      "module": "car-window-open.mjs",
+      "currentTestSha256": "e5ab8bec46e832671ab2b09d96db45c37f7a7fe95ac50fabcf87247ace2001ba",
+      "originalSelection": true,
+      "originalTestSha256": "e5ab8bec46e832671ab2b09d96db45c37f7a7fe95ac50fabcf87247ace2001ba",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "SKIP"
+    },
+    {
+      "module": "carjack-traffic.mjs",
+      "currentTestSha256": "4d0af2032457dbec8e9aefd1459dec4a301ea230395ee035ffa0062a58c272fb",
+      "originalSelection": true,
+      "originalTestSha256": "4d0af2032457dbec8e9aefd1459dec4a301ea230395ee035ffa0062a58c272fb",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "carjack.mjs",
+      "currentTestSha256": "5209cb253c260f844368a67e7df14b61c4a021f4bd1b5aeda504e7e1de8b8ecb",
+      "originalSelection": true,
+      "originalTestSha256": "5209cb253c260f844368a67e7df14b61c4a021f4bd1b5aeda504e7e1de8b8ecb",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "chase-aim.mjs",
+      "currentTestSha256": "51990b83b136f20a102a649150521142fbd90a2e6c25c60cd1ad854be3468445",
+      "originalSelection": true,
+      "originalTestSha256": "51990b83b136f20a102a649150521142fbd90a2e6c25c60cd1ad854be3468445",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "chase-audio-pan.mjs",
+      "currentTestSha256": "d6a6c273fc21d5c7ae3af81a5115b38329a7329fdb3af1ffbd098e76fa9b5472",
+      "originalSelection": true,
+      "originalTestSha256": "d6a6c273fc21d5c7ae3af81a5115b38329a7329fdb3af1ffbd098e76fa9b5472",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "chase-budget.mjs",
+      "currentTestSha256": "5de20b4fec3f4018b83f6b1a2c5217b57176d42d1c8a7930a6e837c2250444c9",
+      "originalSelection": true,
+      "originalTestSha256": "5de20b4fec3f4018b83f6b1a2c5217b57176d42d1c8a7930a6e837c2250444c9",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "chase-clouds.mjs",
+      "currentTestSha256": "fbf464802baa319a3edc5ab671aa223e8522b7f7ac3e207830a6a5cbc51c8c95",
+      "originalSelection": true,
+      "originalTestSha256": "fbf464802baa319a3edc5ab671aa223e8522b7f7ac3e207830a6a5cbc51c8c95",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "SKIP"
+    },
+    {
+      "module": "chase-cover-clearance.mjs",
+      "currentTestSha256": "cef5c9472102124e15556bb4bdf3645f46bc932d32c9902f77216563e2a3238d",
+      "originalSelection": true,
+      "originalTestSha256": "cef5c9472102124e15556bb4bdf3645f46bc932d32c9902f77216563e2a3238d",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "chase-crane.mjs",
+      "currentTestSha256": "10beb06ff159243401fc2f59ca05c92ad44c355adb0d653f29644daf1c720727",
+      "originalSelection": true,
+      "originalTestSha256": "10beb06ff159243401fc2f59ca05c92ad44c355adb0d653f29644daf1c720727",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "chase-hud-box.mjs",
+      "currentTestSha256": "ed7ee79fc838d2740ab5589990b15dab40f03e2febf532c6ea968a39b40ead7d",
+      "originalSelection": true,
+      "originalTestSha256": "ed7ee79fc838d2740ab5589990b15dab40f03e2febf532c6ea968a39b40ead7d",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "chase-hud-layout.mjs",
+      "currentTestSha256": "980dec625571e6c0d5ad023d48234c575b9ed53716c5f96afa6639d941067703",
+      "originalSelection": true,
+      "originalTestSha256": "980dec625571e6c0d5ad023d48234c575b9ed53716c5f96afa6639d941067703",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "chase-in-view.mjs",
+      "currentTestSha256": "be9ca3d9618b4857bc5ac028f697db95e255ad251056ff3d4811758402fd2b3b",
+      "originalSelection": true,
+      "originalTestSha256": "be9ca3d9618b4857bc5ac028f697db95e255ad251056ff3d4811758402fd2b3b",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "chase-input.mjs",
+      "currentTestSha256": "dba3d64cf1cec802153761b5ddfc17d7451ac3620512870bd760efe9a529be82",
+      "originalSelection": true,
+      "originalTestSha256": "dba3d64cf1cec802153761b5ddfc17d7451ac3620512870bd760efe9a529be82",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "chase-lock.mjs",
+      "currentTestSha256": "c2698642b9d834e05b4af394ddba89847131b6e57823f32c153f767f52f0c6b1",
+      "originalSelection": true,
+      "originalTestSha256": "c2698642b9d834e05b4af394ddba89847131b6e57823f32c153f767f52f0c6b1",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "chase-motion-blur.mjs",
+      "currentTestSha256": "9780809de3a4d0ea5feace0bde8a7f447fa361852dd8ccfed1356cb019f73e37",
+      "originalSelection": true,
+      "originalTestSha256": "9780809de3a4d0ea5feace0bde8a7f447fa361852dd8ccfed1356cb019f73e37",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "chase-move-keys.mjs",
+      "currentTestSha256": "b152ce333fe62a6fcf516b779683e11596d7e3e14145a13f950e8b76f4d864f6",
+      "originalSelection": true,
+      "originalTestSha256": "b152ce333fe62a6fcf516b779683e11596d7e3e14145a13f950e8b76f4d864f6",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "chase-radio-chip.mjs",
+      "currentTestSha256": "c06c3dd897a29e630021c9685bd4d650039e2c8066b03b1a2151dd5211ddcc37",
+      "originalSelection": true,
+      "originalTestSha256": "c06c3dd897a29e630021c9685bd4d650039e2c8066b03b1a2151dd5211ddcc37",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "chase-shooter.mjs",
+      "currentTestSha256": "00f1c11e37af7526ded3fe31d66bef0ffd0923ba7f5c497367883253f14b3b8f",
+      "originalSelection": true,
+      "originalTestSha256": "00f1c11e37af7526ded3fe31d66bef0ffd0923ba7f5c497367883253f14b3b8f",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "chase-streams.mjs",
+      "currentTestSha256": "b857bd377b3d5f6d414ebea370c3fb037c3d3dd72ccc5fffe7bb51cff03388b4",
+      "originalSelection": true,
+      "originalTestSha256": "b857bd377b3d5f6d414ebea370c3fb037c3d3dd72ccc5fffe7bb51cff03388b4",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "chase-view-mode.mjs",
+      "currentTestSha256": "8cde701ae17c146b1f3d2b4bcb3ff8c04fb5a5420bd3c7ae8c25472eefd65df6",
+      "originalSelection": true,
+      "originalTestSha256": "8cde701ae17c146b1f3d2b4bcb3ff8c04fb5a5420bd3c7ae8c25472eefd65df6",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "chase-walk.mjs",
+      "currentTestSha256": "69d02b363fdb03e94379c592e11723f6149b7e76c8cdc47ed013d6fae3b48cb6",
+      "originalSelection": true,
+      "originalTestSha256": "69d02b363fdb03e94379c592e11723f6149b7e76c8cdc47ed013d6fae3b48cb6",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "chase-wall-clearance.mjs",
+      "currentTestSha256": "241720d85c490e159d497aeb60b60763ab438a8ee7234ab17963eba03f2641a6",
+      "originalSelection": true,
+      "originalTestSha256": "241720d85c490e159d497aeb60b60763ab438a8ee7234ab17963eba03f2641a6",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "cheat-helicopter.mjs",
+      "currentTestSha256": "35b52ba41de92df153e01b552225335839e9e0f656d7dee64f0b7af0956a1ad2",
+      "originalSelection": true,
+      "originalTestSha256": "35b52ba41de92df153e01b552225335839e9e0f656d7dee64f0b7af0956a1ad2",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "chimney-smoke.mjs",
+      "currentTestSha256": "47e9f04bb770e44ff89cdbfad11458301c5483ec755febe9fe31293c1c2971bf",
+      "originalSelection": true,
+      "originalTestSha256": "47e9f04bb770e44ff89cdbfad11458301c5483ec755febe9fe31293c1c2971bf",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "SKIP"
+    },
+    {
+      "module": "civil-aircraft.mjs",
+      "currentTestSha256": "dc86c670bce189ba7f6ae7273d20b479fffdf72c1b5d389d5d5742050b64e1c5",
+      "originalSelection": true,
+      "originalTestSha256": "dc86c670bce189ba7f6ae7273d20b479fffdf72c1b5d389d5d5742050b64e1c5",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "cloud-history.mjs",
+      "currentTestSha256": "72d337a45760d85987519a200d65c11219e245c07d023bf894253cb9507e60d7",
+      "originalSelection": true,
+      "originalTestSha256": "72d337a45760d85987519a200d65c11219e245c07d023bf894253cb9507e60d7",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "clouds.mjs",
+      "currentTestSha256": "bf789a5d60a3688db1207e18a20c55082c61380d6eea87f3949586c6ca4550f4",
+      "originalSelection": true,
+      "originalTestSha256": "bf789a5d60a3688db1207e18a20c55082c61380d6eea87f3949586c6ca4550f4",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "club-entrance.mjs",
+      "currentTestSha256": "5afc2523dfbb79dfe6e0f02c3ad0ff721160e9d6aeac7b223fc08d268f98fe23",
+      "originalSelection": true,
+      "originalTestSha256": "5afc2523dfbb79dfe6e0f02c3ad0ff721160e9d6aeac7b223fc08d268f98fe23",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "combat-continuity.mjs",
+      "currentTestSha256": "01d779ea74d4330cf239869d312b222e0f98515bbe58e1448ef8352a9f1d9b21",
+      "originalSelection": true,
+      "originalTestSha256": "01d779ea74d4330cf239869d312b222e0f98515bbe58e1448ef8352a9f1d9b21",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "coronation-bridge.mjs",
+      "currentTestSha256": "1b2f7ce723e7ada7c9867398e5f0491d9f1a57e78af193151d76b78cc65348a4",
+      "originalSelection": true,
+      "originalTestSha256": "1b2f7ce723e7ada7c9867398e5f0491d9f1a57e78af193151d76b78cc65348a4",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "demo-complete-card.mjs",
+      "currentTestSha256": "188bd2c8df0b2f5d084f80c9519dcd133bb9cba4e9963af67034e0942c440d82",
+      "originalSelection": true,
+      "originalTestSha256": "188bd2c8df0b2f5d084f80c9519dcd133bb9cba4e9963af67034e0942c440d82",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "demo-free-roam-markers.mjs",
+      "currentTestSha256": "6ad9762b584cb4feea92e698e329772b013e10dce44f8700b483c435abe41abc",
+      "originalSelection": true,
+      "originalTestSha256": "6ad9762b584cb4feea92e698e329772b013e10dce44f8700b483c435abe41abc",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "demo-gating.mjs",
+      "currentTestSha256": "2bef2f022217a31b383aa204f74233e4537bd13e8adaa4703bf7c02155936c5c",
+      "originalSelection": true,
+      "originalTestSha256": "2bef2f022217a31b383aa204f74233e4537bd13e8adaa4703bf7c02155936c5c",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "drawbridge-islands.mjs",
+      "currentTestSha256": "a854fe8032d02b07330da7231f5647be44562383cf41fb70639f8ee590606018",
+      "originalSelection": true,
+      "originalTestSha256": "a854fe8032d02b07330da7231f5647be44562383cf41fb70639f8ee590606018",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "drawbridge-traffic.mjs",
+      "currentTestSha256": "3977814f1e7a9084ebd5eec4d04feef25462e5d90f77450a4870fb606f5864cd",
+      "originalSelection": true,
+      "originalTestSha256": "3977814f1e7a9084ebd5eec4d04feef25462e5d90f77450a4870fb606f5864cd",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "drift-handling.mjs",
+      "currentTestSha256": "f1be1971e9fe418261add3d18f8f8a7d6f78c9748742ad2d79461944542efa81",
+      "originalSelection": true,
+      "originalTestSha256": "f1be1971e9fe418261add3d18f8f8a7d6f78c9748742ad2d79461944542efa81",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "drive-no-nan.mjs",
+      "currentTestSha256": "a2c13e601c3ac85031ce352444986de2f51fb4e604284f0b40352b9ff761bd4d",
+      "originalSelection": true,
+      "originalTestSha256": "a2c13e601c3ac85031ce352444986de2f51fb4e604284f0b40352b9ff761bd4d",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "driveby-arcs.mjs",
+      "currentTestSha256": "4026405ed63f8b167f8ad28cc0dab3e874081815fad3c647bf06170a17c88c7d",
+      "originalSelection": true,
+      "originalTestSha256": "4026405ed63f8b167f8ad28cc0dab3e874081815fad3c647bf06170a17c88c7d",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "driveby-mouse.mjs",
+      "currentTestSha256": "b2c69ea9d1f1d64a97c815e5c202e210b1d2a199c601e29f4fe4de56482db5e2",
+      "originalSelection": true,
+      "originalTestSha256": "b2c69ea9d1f1d64a97c815e5c202e210b1d2a199c601e29f4fe4de56482db5e2",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "driveby-seats.mjs",
+      "currentTestSha256": "88d5d2e6d86038be97de21c4831d1f724c2aa2fb366e0d3e15e823c2fffe78a2",
+      "originalSelection": true,
+      "originalTestSha256": "88d5d2e6d86038be97de21c4831d1f724c2aa2fb366e0d3e15e823c2fffe78a2",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "driving-settings-migrate.mjs",
+      "currentTestSha256": "61de83dff327deb10478dbf0583d650d85e13f4b5a62e9532d85687e840aedd8",
+      "originalSelection": true,
+      "originalTestSha256": "61de83dff327deb10478dbf0583d650d85e13f4b5a62e9532d85687e840aedd8",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "enter-key.mjs",
+      "currentTestSha256": "3b37e8018136d2610d442c1351b2b966ea901f82a4af2eab6ec06cdea480923c",
+      "originalSelection": true,
+      "originalTestSha256": "3b37e8018136d2610d442c1351b2b966ea901f82a4af2eab6ec06cdea480923c",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "falls.mjs",
+      "currentTestSha256": "848bff688faed24577f34cc4070ce94de14a694ad339e1de357ce27de58102ae",
+      "originalSelection": true,
+      "originalTestSha256": "848bff688faed24577f34cc4070ce94de14a694ad339e1de357ce27de58102ae",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "foliage-cutaway.mjs",
+      "currentTestSha256": "b563a723adad5eb62a4f528c708e7d635f4927f7c961806ef8f086947ade013f",
+      "originalSelection": true,
+      "originalTestSha256": "b563a723adad5eb62a4f528c708e7d635f4927f7c961806ef8f086947ade013f",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "footwork.mjs",
+      "currentTestSha256": "7849db27785b061239217aae99bdb55886e10e5781e7d6574e4c25ddf2e63627",
+      "originalSelection": true,
+      "originalTestSha256": "7849db27785b061239217aae99bdb55886e10e5781e7d6574e4c25ddf2e63627",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "fort-cover.mjs",
+      "currentTestSha256": "36f6a160f75fceee4d1c435a497984ae555d8b5393afdfaf5a29aea5b6cbe75d",
+      "originalSelection": true,
+      "originalTestSha256": "36f6a160f75fceee4d1c435a497984ae555d8b5393afdfaf5a29aea5b6cbe75d",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "fort-gate-barrier.mjs",
+      "currentTestSha256": "758012c7a6b6d47eaf21e42ab58fe6c4fd007907feeea940451414e30bf5a217",
+      "originalSelection": true,
+      "originalTestSha256": "758012c7a6b6d47eaf21e42ab58fe6c4fd007907feeea940451414e30bf5a217",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "fort-gate-talk.mjs",
+      "currentTestSha256": "4100523ace5a71cb68ed1eeeb2de376c66df1a569852135a09119648c55e2f99",
+      "originalSelection": true,
+      "originalTestSha256": "4100523ace5a71cb68ed1eeeb2de376c66df1a569852135a09119648c55e2f99",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "fort-records-route.mjs",
+      "currentTestSha256": "f14f5cf43499d4a51ac0cae5b2e72b4f748690dbe83fab480266291cc63b0cd8",
+      "originalSelection": true,
+      "originalTestSha256": "f14f5cf43499d4a51ac0cae5b2e72b4f748690dbe83fab480266291cc63b0cd8",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "fort-vehicle-theft.mjs",
+      "currentTestSha256": "595287884c8818b4f3b5e20d20bff2995a3c52c5fc173c3c27fd30cbd92fd6b1",
+      "originalSelection": true,
+      "originalTestSha256": "595287884c8818b4f3b5e20d20bff2995a3c52c5fc173c3c27fd30cbd92fd6b1",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "fps-counter.mjs",
+      "currentTestSha256": "bfc622cb04ceaead4ade46cee906c362743fc5cab58ba59ef4ba8fae96f51f97",
+      "originalSelection": true,
+      "originalTestSha256": "bfc622cb04ceaead4ade46cee906c362743fc5cab58ba59ef4ba8fae96f51f97",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "frame-guard.mjs",
+      "currentTestSha256": "b5b8d62d6e1769a650a6ca77ea175384e3e4cafce31fe0899203cc9e9d506323",
+      "originalSelection": true,
+      "originalTestSha256": "b5b8d62d6e1769a650a6ca77ea175384e3e4cafce31fe0899203cc9e9d506323",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "frame-trace.mjs",
+      "currentTestSha256": "473a2ba6d1bf15c41181ab71c59548a6ce2663155672e73020a6f07fd19db995",
+      "originalSelection": true,
+      "originalTestSha256": "473a2ba6d1bf15c41181ab71c59548a6ce2663155672e73020a6f07fd19db995",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "freeroam-respawn.mjs",
+      "currentTestSha256": "b267be8a17b45a17edcd636a8237e1991e9ca5739bc4c0fa7008ba0c9ec43e62",
+      "originalSelection": true,
+      "originalTestSha256": "b267be8a17b45a17edcd636a8237e1991e9ca5739bc4c0fa7008ba0c9ec43e62",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "garages-islands.mjs",
+      "currentTestSha256": "8728d2f283415e16cb99d6e3f92f95c0fed9f85a4356cfc918921c3053915172",
+      "originalSelection": true,
+      "originalTestSha256": "8728d2f283415e16cb99d6e3f92f95c0fed9f85a4356cfc918921c3053915172",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "god-drawbridges.mjs",
+      "currentTestSha256": "9182a527165982cde3f3be403ec1a8d229e59c05c9c63cfd8b4d28274d350724",
+      "originalSelection": true,
+      "originalTestSha256": "9182a527165982cde3f3be403ec1a8d229e59c05c9c63cfd8b4d28274d350724",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "god-mode-codes.mjs",
+      "currentTestSha256": "77b9c9e86e8e83026c98267379834270a250de8dd149ba1345acd89fe9c8481e",
+      "originalSelection": true,
+      "originalTestSha256": "77b9c9e86e8e83026c98267379834270a250de8dd149ba1345acd89fe9c8481e",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "god-teleport-map.mjs",
+      "currentTestSha256": "ffdd36f6dae9a8267510261cbcf128dda98b632f7a6b6af6a9bbffdadccc46be",
+      "originalSelection": true,
+      "originalTestSha256": "ffdd36f6dae9a8267510261cbcf128dda98b632f7a6b6af6a9bbffdadccc46be",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "gore-dismember.mjs",
+      "currentTestSha256": "029cacc53e76c7d1c3ec9e849bc31f843ce3f101ed09a65b27ffd09d11ae3ad2",
+      "originalSelection": true,
+      "originalTestSha256": "029cacc53e76c7d1c3ec9e849bc31f843ce3f101ed09a65b27ffd09d11ae3ad2",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "gpu-context-lifecycle.mjs",
+      "currentTestSha256": "0165bfede8d3ee846c430586f016961bb035b48623e12d0fb0851afc8bff5795",
+      "originalSelection": false
+    },
+    {
+      "module": "gpu-context.mjs",
+      "currentTestSha256": "042fe03009559f796d7851750d03078c7d2006f216ddfecb192751a7b467cc85",
+      "originalSelection": true,
+      "originalTestSha256": "e82dd6d8faaf6f545d02275e79eb3e10b53ddc2d4fa6150cd10b2a8bc00dc538",
+      "changedSinceOriginalSelection": true,
+      "originalBaselineLatestValidOutcome": "SKIP"
+    },
+    {
+      "module": "graphics-all-tiers.mjs",
+      "currentTestSha256": "43f1c8a3d202b11d202f625e2f831b177f2d2743fca4bef710e8b4f9eecc0ffd",
+      "originalSelection": true,
+      "originalTestSha256": "43f1c8a3d202b11d202f625e2f831b177f2d2743fca4bef710e8b4f9eecc0ffd",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "SKIP"
+    },
+    {
+      "module": "headlight-aim.mjs",
+      "currentTestSha256": "55e890c3c014d78343e0e5bc4d306437e90d58d9220aac6e47d978cc9fc61b19",
+      "originalSelection": true,
+      "originalTestSha256": "55e890c3c014d78343e0e5bc4d306437e90d58d9220aac6e47d978cc9fc61b19",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "headlight-budget.mjs",
+      "currentTestSha256": "ad90f3b4dcf195a42945d07a29a308657aa1a2848cdcf02948a51bd2dcb05d0b",
+      "originalSelection": true,
+      "originalTestSha256": "ad90f3b4dcf195a42945d07a29a308657aa1a2848cdcf02948a51bd2dcb05d0b",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "health-indoors.mjs",
+      "currentTestSha256": "e7bb8ce6883c2300dc0b0ac1813c6305344a184488d26b43cbb308c460610a66",
+      "originalSelection": true,
+      "originalTestSha256": "e7bb8ce6883c2300dc0b0ac1813c6305344a184488d26b43cbb308c460610a66",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "hillclimb-physics.mjs",
+      "currentTestSha256": "2992acf477b47f4f093e2b831890d83787df33784e266ad8794674179f5f164c",
+      "originalSelection": true,
+      "originalTestSha256": "2992acf477b47f4f093e2b831890d83787df33784e266ad8794674179f5f164c",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "hud-clearance.mjs",
+      "currentTestSha256": "cc07a20994911889f2372748898539d104970b0c02a9dafcca392ec07bc72133",
+      "originalSelection": true,
+      "originalTestSha256": "cc07a20994911889f2372748898539d104970b0c02a9dafcca392ec07bc72133",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "hud-dom-writes.mjs",
+      "currentTestSha256": "520d4fbac190e6d8174d99759b121635843eb0b8318b11fac97d732ad0386de4",
+      "originalSelection": true,
+      "originalTestSha256": "520d4fbac190e6d8174d99759b121635843eb0b8318b11fac97d732ad0386de4",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "hud-layout.mjs",
+      "currentTestSha256": "c3fa67bbf121a207316ecde9188db8736d088822eb1279a3dc7def6ec69229e2",
+      "originalSelection": true,
+      "originalTestSha256": "c3fa67bbf121a207316ecde9188db8736d088822eb1279a3dc7def6ec69229e2",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "hud-touch-dispatch.mjs",
+      "currentTestSha256": "c8c985e1703582159df6e8376aaa9ec37177b822002871dfcaac23d1261a3a54",
+      "originalSelection": true,
+      "originalTestSha256": "c8c985e1703582159df6e8376aaa9ec37177b822002871dfcaac23d1261a3a54",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "instance-upload-ranges.mjs",
+      "currentTestSha256": "fc31322b052c73219e24d973efd6b0ffb7bac87364718d974c37b035d2bec6ab",
+      "originalSelection": true,
+      "originalTestSha256": "fc31322b052c73219e24d973efd6b0ffb7bac87364718d974c37b035d2bec6ab",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "integrity-shore.mjs",
+      "currentTestSha256": "e0f88160a1134c3ec6fa9c30d9b73a3ef31e1538c1367a7566f3999e220c3e7b",
+      "originalSelection": true,
+      "originalTestSha256": "e0f88160a1134c3ec6fa9c30d9b73a3ef31e1538c1367a7566f3999e220c3e7b",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "interface-hints.mjs",
+      "currentTestSha256": "13743bc5a7e9f85d20a33ab74e5d61c5835ff23be99074cc9d9670dd4205bd72",
+      "originalSelection": true,
+      "originalTestSha256": "13743bc5a7e9f85d20a33ab74e5d61c5835ff23be99074cc9d9670dd4205bd72",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "liner-voyage.mjs",
+      "currentTestSha256": "9a9a3a594697770a44c2defee1b06f918e7e18fc24033144ecc4a2ae90cd97b0",
+      "originalSelection": true,
+      "originalTestSha256": "9a9a3a594697770a44c2defee1b06f918e7e18fc24033144ecc4a2ae90cd97b0",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "living-key.mjs",
+      "currentTestSha256": "3cff241e2a131d7f3252e62a81535bdc577fd9edd91c5809012f0719014accc9",
+      "originalSelection": true,
+      "originalTestSha256": "3cff241e2a131d7f3252e62a81535bdc577fd9edd91c5809012f0719014accc9",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "living-medics.mjs",
+      "currentTestSha256": "62ee498ee34b3a1be0da9a0915773c7749d0a6e20e591a354528e1a6eb8b5b80",
+      "originalSelection": true,
+      "originalTestSha256": "62ee498ee34b3a1be0da9a0915773c7749d0a6e20e591a354528e1a6eb8b5b80",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "living-sirens.mjs",
+      "currentTestSha256": "ce90f91af1abb2a131e800fd045b212d1a16951d06de6a0fa5b75f2906b38f18",
+      "originalSelection": true,
+      "originalTestSha256": "ce90f91af1abb2a131e800fd045b212d1a16951d06de6a0fa5b75f2906b38f18",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "living-snatch.mjs",
+      "currentTestSha256": "9e7f396df85f71cd45620bd2e4a3ea0af4c134fd34d38e193fa4caf407385a38",
+      "originalSelection": true,
+      "originalTestSha256": "9e7f396df85f71cd45620bd2e4a3ea0af4c134fd34d38e193fa4caf407385a38",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "living-traffic.mjs",
+      "currentTestSha256": "f1e281f26589a18cd5f99030390db4236921692276314a38fe3448aa6943f015",
+      "originalSelection": true,
+      "originalTestSha256": "f1e281f26589a18cd5f99030390db4236921692276314a38fe3448aa6943f015",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "lockpick.mjs",
+      "currentTestSha256": "a11c5eaedb3c075df206de51108d0d2a0d3db14d3488daaeac2ab65f1979e8cb",
+      "originalSelection": true,
+      "originalTestSha256": "a11c5eaedb3c075df206de51108d0d2a0d3db14d3488daaeac2ab65f1979e8cb",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "m4-wheel-partition.mjs",
+      "currentTestSha256": "b80a7c49a0fae299cc01a1f53f4e3f4ea609ed1aac9a94cf76bc158c4a926625",
+      "originalSelection": true,
+      "originalTestSha256": "b80a7c49a0fae299cc01a1f53f4e3f4ea609ed1aac9a94cf76bc158c4a926625",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "marea-talk.mjs",
+      "currentTestSha256": "738bc8669d3efd6e3075427c077472dbae451645789bedc1965e08c09abb6e1e",
+      "originalSelection": true,
+      "originalTestSha256": "738bc8669d3efd6e3075427c077472dbae451645789bedc1965e08c09abb6e1e",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "markers-rings.mjs",
+      "currentTestSha256": "98702046ca50f939c03b8714d340ef42d8bcb2814f3f6846e055129002e1eb75",
+      "originalSelection": true,
+      "originalTestSha256": "98702046ca50f939c03b8714d340ef42d8bcb2814f3f6846e055129002e1eb75",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "medic-routing.mjs",
+      "currentTestSha256": "96b9eb95d75e01547166c6bcb8ad53c2c98abface12f7909a079b4b50dd72d33",
+      "originalSelection": true,
+      "originalTestSha256": "96b9eb95d75e01547166c6bcb8ad53c2c98abface12f7909a079b4b50dd72d33",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "military-model-rig.mjs",
+      "currentTestSha256": "3f5d7ebac03aefa1db4978c646187e21e7afca6087306b1deeb3e77a9e9f3aa0",
+      "originalSelection": true,
+      "originalTestSha256": "3f5d7ebac03aefa1db4978c646187e21e7afca6087306b1deeb3e77a9e9f3aa0",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "minimap-clutter.mjs",
+      "currentTestSha256": "d92bf44a7d3989c2fcfa8dc672fc43ab1cf0dedc2a063d6869de9ef1263a0a69",
+      "originalSelection": true,
+      "originalTestSha256": "d92bf44a7d3989c2fcfa8dc672fc43ab1cf0dedc2a063d6869de9ef1263a0a69",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "mission-abandon.mjs",
+      "currentTestSha256": "b6520a591fc4eee4aa0aaff95ec6d3bd3102b16a1ab7bfe536cf399bdb1e8e8d",
+      "originalSelection": true,
+      "originalTestSha256": "b6520a591fc4eee4aa0aaff95ec6d3bd3102b16a1ab7bfe536cf399bdb1e8e8d",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "mission-brief.mjs",
+      "currentTestSha256": "a3e6e75ec7d5d9ac24175c79677880bbd92591a9d0d44c827ae22158f13debc8",
+      "originalSelection": true,
+      "originalTestSha256": "a3e6e75ec7d5d9ac24175c79677880bbd92591a9d0d44c827ae22158f13debc8",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "mission-card-keys.mjs",
+      "currentTestSha256": "d8adb5b5cd3230020f65afcf517654ea44b19935838905c6135cf74778eb865d",
+      "originalSelection": true,
+      "originalTestSha256": "d8adb5b5cd3230020f65afcf517654ea44b19935838905c6135cf74778eb865d",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "mission-card-subtitle.mjs",
+      "currentTestSha256": "59b93fc5111dd8f1fa27dc26701bad32dca5af10280bccd84c27f0c6f9bb6889",
+      "originalSelection": true,
+      "originalTestSha256": "59b93fc5111dd8f1fa27dc26701bad32dca5af10280bccd84c27f0c6f9bb6889",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "mission-modal-input.mjs",
+      "currentTestSha256": "88b858a9c61e9c80cc2324eefc67f473c750028ca647a18720f7cd06f0c40480",
+      "originalSelection": true,
+      "originalTestSha256": "88b858a9c61e9c80cc2324eefc67f473c750028ca647a18720f7cd06f0c40480",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "mission-replay-frontier.mjs",
+      "currentTestSha256": "80c2b77e0e7fe2b265275b3345b1d8d8bc82696364c1f692f66e1291c5b80e7f",
+      "originalSelection": true,
+      "originalTestSha256": "80c2b77e0e7fe2b265275b3345b1d8d8bc82696364c1f692f66e1291c5b80e7f",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "mission-retry-save.mjs",
+      "currentTestSha256": "584a4423f9b18916b0480c06cab4c089d6ab8fe02dfc36fc3a87c8e75d5e2c52",
+      "originalSelection": true,
+      "originalTestSha256": "584a4423f9b18916b0480c06cab4c089d6ab8fe02dfc36fc3a87c8e75d5e2c52",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "mission-retry.mjs",
+      "currentTestSha256": "b76e2a80b45a714b640466ad60caa44691478637844baca075d2945d49a37489",
+      "originalSelection": true,
+      "originalTestSha256": "b76e2a80b45a714b640466ad60caa44691478637844baca075d2945d49a37489",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "mission-world-preservation.mjs",
+      "currentTestSha256": "ba662c0696d8c4531edfc830ccd57341a3fd493445e31097723bb7d082a99ce2",
+      "originalSelection": true,
+      "originalTestSha256": "ba662c0696d8c4531edfc830ccd57341a3fd493445e31097723bb7d082a99ce2",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "mission1-bay.mjs",
+      "currentTestSha256": "0a8e6b2c6058afcb60612bd9ec5ea0bf12c68a98e9e9fd41078774de74941bbe",
+      "originalSelection": true,
+      "originalTestSha256": "0a8e6b2c6058afcb60612bd9ec5ea0bf12c68a98e9e9fd41078774de74941bbe",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "mission1-depot.mjs",
+      "currentTestSha256": "bee9b8e56ee94638c9248afd2ecdb18cb080110a22a2d3f22ee47e38e0ddb0e3",
+      "originalSelection": true,
+      "originalTestSha256": "bee9b8e56ee94638c9248afd2ecdb18cb080110a22a2d3f22ee47e38e0ddb0e3",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "mission1-truck.mjs",
+      "currentTestSha256": "64933bc550aa62989b5a609f72315625d0c56c7439c86ba6d654c3821ca90853",
+      "originalSelection": true,
+      "originalTestSha256": "64933bc550aa62989b5a609f72315625d0c56c7439c86ba6d654c3821ca90853",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "mission2-ambulance.mjs",
+      "currentTestSha256": "db606ce798924a802d82689a78e1a62c3e174822a1c15adf16213ba1687263aa",
+      "originalSelection": true,
+      "originalTestSha256": "db606ce798924a802d82689a78e1a62c3e174822a1c15adf16213ba1687263aa",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "mission2-cones.mjs",
+      "currentTestSha256": "f324c9776c937b3faa9584b668452f0665c05786fe5fc50387838a9dd335d1fb",
+      "originalSelection": true,
+      "originalTestSha256": "f324c9776c937b3faa9584b668452f0665c05786fe5fc50387838a9dd335d1fb",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "mission2-getaway.mjs",
+      "currentTestSha256": "32a1995b3a8ca6e9ce6c7d4e1a72430c7a62ef18877961734e90f2160cc1c4eb",
+      "originalSelection": true,
+      "originalTestSha256": "32a1995b3a8ca6e9ce6c7d4e1a72430c7a62ef18877961734e90f2160cc1c4eb",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "mission2-paths.mjs",
+      "currentTestSha256": "d24364d2719c7308264d1f1f76f514ae110389d692bf5a724370dcb9feb67214",
+      "originalSelection": true,
+      "originalTestSha256": "d24364d2719c7308264d1f1f76f514ae110389d692bf5a724370dcb9feb67214",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "mission2-poison.mjs",
+      "currentTestSha256": "a69fbfa38b85b9a04ec87796471ec9701d9a4a74eac8ff149c197a28b5bd4903",
+      "originalSelection": true,
+      "originalTestSha256": "a69fbfa38b85b9a04ec87796471ec9701d9a4a74eac8ff149c197a28b5bd4903",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "mission2-touch-run.mjs",
+      "currentTestSha256": "05091802f13e18f04ef4d849b0e3b3387e6314985de9f9bae8b183c253a83eb9",
+      "originalSelection": true,
+      "originalTestSha256": "05091802f13e18f04ef4d849b0e3b3387e6314985de9f9bae8b183c253a83eb9",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "mission3-summit.mjs",
+      "currentTestSha256": "12935dbab7ca9c952e3b445c9b661993428355b94bcb6231aeabb2dce10f53f4",
+      "originalSelection": true,
+      "originalTestSha256": "12935dbab7ca9c952e3b445c9b661993428355b94bcb6231aeabb2dce10f53f4",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "mission34-lifecycle.mjs",
+      "currentTestSha256": "b64b336fe538e308230cb29393af7870468396fd3ce1a50c19d6d4338ca8b21c",
+      "originalSelection": true,
+      "originalTestSha256": "b64b336fe538e308230cb29393af7870468396fd3ce1a50c19d6d4338ca8b21c",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "mission4-alert.mjs",
+      "currentTestSha256": "1b497977573e1bc31f4b3c1e6076707d93763e7616be755c2e9933b64a5c392c",
+      "originalSelection": true,
+      "originalTestSha256": "1b497977573e1bc31f4b3c1e6076707d93763e7616be755c2e9933b64a5c392c",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "mission4-kessler.mjs",
+      "currentTestSha256": "e180245fa79d0fef93e21bc179bd55628352dc73d8dcd00f53f05fdfac818d98",
+      "originalSelection": true,
+      "originalTestSha256": "e180245fa79d0fef93e21bc179bd55628352dc73d8dcd00f53f05fdfac818d98",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "mission4-paths.mjs",
+      "currentTestSha256": "ccc9fcca61fb708c5fa1da6e4ea80ae5b3b02892384b8748fe1dbf4c1c4055c2",
+      "originalSelection": true,
+      "originalTestSha256": "ccc9fcca61fb708c5fa1da6e4ea80ae5b3b02892384b8748fe1dbf4c1c4055c2",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "mission4-tail.mjs",
+      "currentTestSha256": "801f29585058b127752560e0a7d1b0c0ed9521f5a2ea0873dbf7a0d1d87ea20a",
+      "originalSelection": true,
+      "originalTestSha256": "801f29585058b127752560e0a7d1b0c0ed9521f5a2ea0873dbf7a0d1d87ea20a",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "modal-pointer-lifecycle.mjs",
+      "currentTestSha256": "bbb7689c1dce4362eb7431ec8f3338c34ee913f1b16704497c3693ff2cec17ca",
+      "originalSelection": false
+    },
+    {
+      "module": "monarch-garages.mjs",
+      "currentTestSha256": "611da15a8d484e7c434d4f1b87a8464394cd364109fcb1e21a23bbba52887d02",
+      "originalSelection": true,
+      "originalTestSha256": "611da15a8d484e7c434d4f1b87a8464394cd364109fcb1e21a23bbba52887d02",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "monarch-one.mjs",
+      "currentTestSha256": "c24d2a896417ae42da5d72465197635584d52499a143fad3fde5376bd63cbe94",
+      "originalSelection": true,
+      "originalTestSha256": "c24d2a896417ae42da5d72465197635584d52499a143fad3fde5376bd63cbe94",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "motorcycle-puncture.mjs",
+      "currentTestSha256": "4641c01098e3530b2e345560deaa1a344e9c33d26f96d8f068f72aeb90b25c75",
+      "originalSelection": true,
+      "originalTestSha256": "4641c01098e3530b2e345560deaa1a344e9c33d26f96d8f068f72aeb90b25c75",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "motorcycle-rider-fit.mjs",
+      "currentTestSha256": "995d53ae7d7eec91d75a52c2235d26afff0acdad353d718d92e3caa8b0ce0260",
+      "originalSelection": true,
+      "originalTestSha256": "995d53ae7d7eec91d75a52c2235d26afff0acdad353d718d92e3caa8b0ce0260",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "motorcycle-wheel-rig.mjs",
+      "currentTestSha256": "8c750b1781bdc0f250c73983fc2ad2b9b9c40101a5d09b21b819a1961924b4f7",
+      "originalSelection": true,
+      "originalTestSha256": "8c750b1781bdc0f250c73983fc2ad2b9b9c40101a5d09b21b819a1961924b4f7",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "mountain-road.mjs",
+      "currentTestSha256": "5c1f2583841e95f36f3b1d15b148febf55cf3a895c57c818daf17aa9c47249a9",
+      "originalSelection": true,
+      "originalTestSha256": "5c1f2583841e95f36f3b1d15b148febf55cf3a895c57c818daf17aa9c47249a9",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "mounted-gun-projection.mjs",
+      "currentTestSha256": "5818498c442b43b63446eb93145d5ea426a1647438a7714eda4d3e1f8596efe4",
+      "originalSelection": true,
+      "originalTestSha256": "5818498c442b43b63446eb93145d5ea426a1647438a7714eda4d3e1f8596efe4",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "mounted-guns.mjs",
+      "currentTestSha256": "ed872d75f3b4f6cdd23b2fd770fe1ff717a98e15cae3d958cd33682f603431fd",
+      "originalSelection": true,
+      "originalTestSha256": "ed872d75f3b4f6cdd23b2fd770fe1ff717a98e15cae3d958cd33682f603431fd",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "mouse-buttons.mjs",
+      "currentTestSha256": "455461c7b6f7d8af582a3bc93636473f193be1eb4850519526809557f3aa9b1a",
+      "originalSelection": true,
+      "originalTestSha256": "42d71b2229d8832ac250387fda84f1a71bf571be8e93d1b92ba3f79851e10454",
+      "changedSinceOriginalSelection": true,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "navigation-shortlist.mjs",
+      "currentTestSha256": "f3faa8a111f86d753eb8b322286a92f3164c5e18808257250309021199ca27ea",
+      "originalSelection": true,
+      "originalTestSha256": "f3faa8a111f86d753eb8b322286a92f3164c5e18808257250309021199ca27ea",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "north-point-key.mjs",
+      "currentTestSha256": "573541491d9cdf1c95ea145474dcb3b456c782ae4ccd02054735fe78fe8d1b00",
+      "originalSelection": true,
+      "originalTestSha256": "573541491d9cdf1c95ea145474dcb3b456c782ae4ccd02054735fe78fe8d1b00",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "npc-avatars.mjs",
+      "currentTestSha256": "cb65448c73175e4bd89b6f6dec8598787727b91eac8e2e6c44376e3969b8042a",
+      "originalSelection": true,
+      "originalTestSha256": "cb65448c73175e4bd89b6f6dec8598787727b91eac8e2e6c44376e3969b8042a",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "nudge-aside.mjs",
+      "currentTestSha256": "e09e539306706930673d2ab954f2c63fe7c0383878b460985e4c602f201759dc",
+      "originalSelection": true,
+      "originalTestSha256": "e09e539306706930673d2ab954f2c63fe7c0383878b460985e4c602f201759dc",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "parachute-cloud.mjs",
+      "currentTestSha256": "43b881448a052534adda0f010ed93b1ab4407a7ed88cb6c1baf294237a8f83d8",
+      "originalSelection": true,
+      "originalTestSha256": "43b881448a052534adda0f010ed93b1ab4407a7ed88cb6c1baf294237a8f83d8",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "parachute-deploy.mjs",
+      "currentTestSha256": "5c05803227bfaa03b6726d7df48eb87499133640c45de1b016c7c5458d85b780",
+      "originalSelection": true,
+      "originalTestSha256": "5c05803227bfaa03b6726d7df48eb87499133640c45de1b016c7c5458d85b780",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "parachute-liner.mjs",
+      "currentTestSha256": "e3bd3e0f9ea091237ee0ccf6904dd25a26b74faf90e593a3c234873e5567fb33",
+      "originalSelection": true,
+      "originalTestSha256": "e3bd3e0f9ea091237ee0ccf6904dd25a26b74faf90e593a3c234873e5567fb33",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "parachute.mjs",
+      "currentTestSha256": "23c1ecf073fb71e84c848276366c44401ac9255a2f4c42efe21c94611dc54fa2",
+      "originalSelection": true,
+      "originalTestSha256": "23c1ecf073fb71e84c848276366c44401ac9255a2f4c42efe21c94611dc54fa2",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "parked-bridge-efficiency.mjs",
+      "currentTestSha256": "a556fd35e2ec597ad76ff7f0bc5ab64366100938db80b59d1e059cab8800739b",
+      "originalSelection": true,
+      "originalTestSha256": "a556fd35e2ec597ad76ff7f0bc5ab64366100938db80b59d1e059cab8800739b",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "parked-vehicle-hits.mjs",
+      "currentTestSha256": "ecdf21eef4d28fad147d045588e9d89442b361dcb820928fd384ef6b22dee8d3",
+      "originalSelection": true,
+      "originalTestSha256": "ecdf21eef4d28fad147d045588e9d89442b361dcb820928fd384ef6b22dee8d3",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "pause-restart.mjs",
+      "currentTestSha256": "4782bd59aa4c8204b8b18434f77c6e1b0f893327a63658bf480813091bc31043",
+      "originalSelection": true,
+      "originalTestSha256": "4782bd59aa4c8204b8b18434f77c6e1b0f893327a63658bf480813091bc31043",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "payphones-islands.mjs",
+      "currentTestSha256": "989d30259120f397d9f36cf8d89720440f35b88e536214ae6976ca1ccc672c1c",
+      "originalSelection": true,
+      "originalTestSha256": "989d30259120f397d9f36cf8d89720440f35b88e536214ae6976ca1ccc672c1c",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "pedestrian-awareness.mjs",
+      "currentTestSha256": "3f9b226789cbfd21db06187405715d83ab9e3fa3664bc1105ed273e609462731",
+      "originalSelection": true,
+      "originalTestSha256": "3f9b226789cbfd21db06187405715d83ab9e3fa3664bc1105ed273e609462731",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "performance-kernels.mjs",
+      "currentTestSha256": "c0b825f77b5774b8cf5a72b94a7f31d4a53279a0f5b90bf8e65325637971ce35",
+      "originalSelection": true,
+      "originalTestSha256": "c0b825f77b5774b8cf5a72b94a7f31d4a53279a0f5b90bf8e65325637971ce35",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "player-body.mjs",
+      "currentTestSha256": "bbb4c503dd7175965173155090f863df71f4774c08e09883f8242ddf3ea5368a",
+      "originalSelection": true,
+      "originalTestSha256": "d399ca5bf627a945f7f89d17dc6ed7726846962d16fcfe80aea8d2cb795ba543",
+      "changedSinceOriginalSelection": true,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "player-jump.mjs",
+      "currentTestSha256": "35756debc36be5a1371981a9a71139b306f9671939b6ca7c675c7494228e8441",
+      "originalSelection": true,
+      "originalTestSha256": "35756debc36be5a1371981a9a71139b306f9671939b6ca7c675c7494228e8441",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "police-circus.mjs",
+      "currentTestSha256": "301142464c310b78a5663683d8841b51ee8b74c731c07ad27ce18ec980e35376",
+      "originalSelection": true,
+      "originalTestSha256": "301142464c310b78a5663683d8841b51ee8b74c731c07ad27ce18ec980e35376",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "police-night-sight.mjs",
+      "currentTestSha256": "b7890bac53c5276856113d95aadaa417cfc7551a58df0dcea341070c01b2edf9",
+      "originalSelection": true,
+      "originalTestSha256": "b7890bac53c5276856113d95aadaa417cfc7551a58df0dcea341070c01b2edf9",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "police-radio.mjs",
+      "currentTestSha256": "f8d3184c753cca10d89aa4440d230c86a4fe7c0c9ca5e71df0905971a4baa638",
+      "originalSelection": true,
+      "originalTestSha256": "f8d3184c753cca10d89aa4440d230c86a4fe7c0c9ca5e71df0905971a4baa638",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "police-search-clock.mjs",
+      "currentTestSha256": "5709b29b6ac69f083cd7e08424572f368f7a41791a08211a9560989fb8330e79",
+      "originalSelection": true,
+      "originalTestSha256": "5709b29b6ac69f083cd7e08424572f368f7a41791a08211a9560989fb8330e79",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "police-witness.mjs",
+      "currentTestSha256": "afa1130e03902550275a16b80b30fee69baa595be5218824b49d9151acfaf2c4",
+      "originalSelection": true,
+      "originalTestSha256": "afa1130e03902550275a16b80b30fee69baa595be5218824b49d9151acfaf2c4",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "rear-badges.mjs",
+      "currentTestSha256": "24894860f16ef2ff7b46654546a8820925bea5b86a285661d612842f7990a292",
+      "originalSelection": true,
+      "originalTestSha256": "24894860f16ef2ff7b46654546a8820925bea5b86a285661d612842f7990a292",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "SKIP"
+    },
+    {
+      "module": "regency-traffic.mjs",
+      "currentTestSha256": "b30d51e44773005bc42c87332b42be5245b388d498522eab4acb2ba82e911fff",
+      "originalSelection": true,
+      "originalTestSha256": "b30d51e44773005bc42c87332b42be5245b388d498522eab4acb2ba82e911fff",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "render-auto-scale.mjs",
+      "currentTestSha256": "c000dd41272eddfcdb1b132a05366b0db283874383bda22712e4cad2ea8e9894",
+      "originalSelection": true,
+      "originalTestSha256": "c000dd41272eddfcdb1b132a05366b0db283874383bda22712e4cad2ea8e9894",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "SKIP"
+    },
+    {
+      "module": "render-cell-preupload.mjs",
+      "currentTestSha256": "3e99a57cbb74cd90d70a3cf6e722fb6cf32ff57e717744cd11d306de80c911e2",
+      "originalSelection": true,
+      "originalTestSha256": "3e99a57cbb74cd90d70a3cf6e722fb6cf32ff57e717744cd11d306de80c911e2",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "SKIP"
+    },
+    {
+      "module": "render-effects.mjs",
+      "currentTestSha256": "191fbcc0673a72c0025e1441276a5e4233817d8aa9300f7867764ab5c9389a86",
+      "originalSelection": true,
+      "originalTestSha256": "191fbcc0673a72c0025e1441276a5e4233817d8aa9300f7867764ab5c9389a86",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "SKIP"
+    },
+    {
+      "module": "render-hiccups.mjs",
+      "currentTestSha256": "284aebc8c95220c5bf34be16aa616fb75515cd2df68424b53fe58bb5a10d9bd9",
+      "originalSelection": true,
+      "originalTestSha256": "284aebc8c95220c5bf34be16aa616fb75515cd2df68424b53fe58bb5a10d9bd9",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "SKIP"
+    },
+    {
+      "module": "render-tier-switch.mjs",
+      "currentTestSha256": "d3f655c6328d3eb4f69a625f1c87798277bebe6530aa93192f494313a9bd6fd3",
+      "originalSelection": true,
+      "originalTestSha256": "d3f655c6328d3eb4f69a625f1c87798277bebe6530aa93192f494313a9bd6fd3",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "SKIP"
+    },
+    {
+      "module": "respawn-focus-pause.mjs",
+      "currentTestSha256": "29a2fd31ee30343fe54f72931027fb4ed387b5b22a17d592fb808056ae131511",
+      "originalSelection": false
+    },
+    {
+      "module": "respray-beacon.mjs",
+      "currentTestSha256": "5c301cb6aff3bf6793a9c188e12c43c9998bc378c49ccca991dbbe762da4f9e8",
+      "originalSelection": true,
+      "originalTestSha256": "5c301cb6aff3bf6793a9c188e12c43c9998bc378c49ccca991dbbe762da4f9e8",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "respray-lose-police.mjs",
+      "currentTestSha256": "89a918bd9ec535e8c4b092e426432b22cd2110c96d2c0f27f55fd9175cdd2258",
+      "originalSelection": true,
+      "originalTestSha256": "89a918bd9ec535e8c4b092e426432b22cd2110c96d2c0f27f55fd9175cdd2258",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "restart-carriers.mjs",
+      "currentTestSha256": "1d6383b9b7fa0f3fe4ea2b0596c444e4b5bc2b07e01dc374d749b7f309a82519",
+      "originalSelection": true,
+      "originalTestSha256": "1d6383b9b7fa0f3fe4ea2b0596c444e4b5bc2b07e01dc374d749b7f309a82519",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "ride-look.mjs",
+      "currentTestSha256": "1c9ffd99109bb3249e9a97bd72c5c8f71c21d8cdc2375def7ca55c3decb146b2",
+      "originalSelection": true,
+      "originalTestSha256": "1c9ffd99109bb3249e9a97bd72c5c8f71c21d8cdc2375def7ca55c3decb146b2",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "rider-falls.mjs",
+      "currentTestSha256": "1aff6143f47d9c92cc11233dd61cf1a284643d7640009cc85e0d0ae93f44709e",
+      "originalSelection": true,
+      "originalTestSha256": "1aff6143f47d9c92cc11233dd61cf1a284643d7640009cc85e0d0ae93f44709e",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "rig-geometry.mjs",
+      "currentTestSha256": "189426d0b68640a32834961e97898301de241f3f790352c1d9734fe7b7acd4ba",
+      "originalSelection": true,
+      "originalTestSha256": "189426d0b68640a32834961e97898301de241f3f790352c1d9734fe7b7acd4ba",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "road-signs.mjs",
+      "currentTestSha256": "43cd5d6fb852546404ebc1bca5c4a448f832db2e2d45a10233da380b2e68ad91",
+      "originalSelection": true,
+      "originalTestSha256": "43cd5d6fb852546404ebc1bca5c4a448f832db2e2d45a10233da380b2e68ad91",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "roof-lifts.mjs",
+      "currentTestSha256": "0fcbaa071e5d62a86e1d3c8d8df7fc2e21a87d2ee768687bbf4c04897b55a682",
+      "originalSelection": true,
+      "originalTestSha256": "0fcbaa071e5d62a86e1d3c8d8df7fc2e21a87d2ee768687bbf4c04897b55a682",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "roof-skin.mjs",
+      "currentTestSha256": "f08df66a4f9bbfda43dd29b2bdfc343648829b75ee8158367238724e6f00a772",
+      "originalSelection": true,
+      "originalTestSha256": "f08df66a4f9bbfda43dd29b2bdfc343648829b75ee8158367238724e6f00a772",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "scenery-pools.mjs",
+      "currentTestSha256": "83335e044d4ab5dd585484bc9f2246d8d5bba2ad969bccacbd9e7cc97bb95d67",
+      "originalSelection": true,
+      "originalTestSha256": "83335e044d4ab5dd585484bc9f2246d8d5bba2ad969bccacbd9e7cc97bb95d67",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "second-run-over.mjs",
+      "currentTestSha256": "77e63424e19f14419fbf72266b7606bd4f7df1f1284c16d7d4ebf84154141a01",
+      "originalSelection": true,
+      "originalTestSha256": "77e63424e19f14419fbf72266b7606bd4f7df1f1284c16d7d4ebf84154141a01",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "sim-audits.mjs",
+      "currentTestSha256": "724c0709c6166f124851cde9f744548e7fc939de4c57899b739f73f2bfa9d3a2",
+      "originalSelection": true,
+      "originalTestSha256": "724c0709c6166f124851cde9f744548e7fc939de4c57899b739f73f2bfa9d3a2",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "sim-efficiency.mjs",
+      "currentTestSha256": "d52dd59808083380ca749986c28eb1a821e9f011d542ccc8300562fdc7a9e63d",
+      "originalSelection": true,
+      "originalTestSha256": "d52dd59808083380ca749986c28eb1a821e9f011d542ccc8300562fdc7a9e63d",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "sky-meeting-talk.mjs",
+      "currentTestSha256": "cec0289816a234f9057b98607251fff4deebc3e0d485bacd304b8bd85adf2385",
+      "originalSelection": true,
+      "originalTestSha256": "cec0289816a234f9057b98607251fff4deebc3e0d485bacd304b8bd85adf2385",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "sky-meeting.mjs",
+      "currentTestSha256": "d5e78e37c8d8ff6d3133155c729014c51ed6ff0740ab9026ba032bc52e0ccbe4",
+      "originalSelection": true,
+      "originalTestSha256": "d5e78e37c8d8ff6d3133155c729014c51ed6ff0740ab9026ba032bc52e0ccbe4",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "sound-output.mjs",
+      "currentTestSha256": "2f9fb9c28dd6fb9c558ad4808ab3a8af17fb4b2f303d5649a907660c7e3c0042",
+      "originalSelection": true,
+      "originalTestSha256": "2f9fb9c28dd6fb9c558ad4808ab3a8af17fb4b2f303d5649a907660c7e3c0042",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "soundscape.mjs",
+      "currentTestSha256": "a7a346dd6b88467bc56bd00ea01d1f7dce5bb28b8c5ef37df6e5043f01fe5ec4",
+      "originalSelection": true,
+      "originalTestSha256": "a7a346dd6b88467bc56bd00ea01d1f7dce5bb28b8c5ef37df6e5043f01fe5ec4",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "sports-vehicle-assets.mjs",
+      "currentTestSha256": "f34dcbcb626f66873131e52d64708c0d9fdbd2e4f4e414f0c36b038105fd2c5e",
+      "originalSelection": false
+    },
+    {
+      "module": "sportsbook-bets.mjs",
+      "currentTestSha256": "47616b06a8680ba169b63a2ef600612bd0168c0fae5476a331b4ccd35bada444",
+      "originalSelection": true,
+      "originalTestSha256": "47616b06a8680ba169b63a2ef600612bd0168c0fae5476a331b4ccd35bada444",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "sun-gradual.mjs",
+      "currentTestSha256": "79a2f9808c869e8e77e353fac0c5d5f40614f3ae0108e968904ba094083fa11b",
+      "originalSelection": true,
+      "originalTestSha256": "79a2f9808c869e8e77e353fac0c5d5f40614f3ae0108e968904ba094083fa11b",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "surrender-input.mjs",
+      "currentTestSha256": "27d92b954a02793586b7cfce34b0b03693ef7f74750664b8952a69a1ab8b64a1",
+      "originalSelection": true,
+      "originalTestSha256": "27d92b954a02793586b7cfce34b0b03693ef7f74750664b8952a69a1ab8b64a1",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "swim-rescue.mjs",
+      "currentTestSha256": "6515efdb3d5addbf851b4d5e3d88dff040e5a1b5d8c269a5947e79a0368fce21",
+      "originalSelection": true,
+      "originalTestSha256": "6515efdb3d5addbf851b4d5e3d88dff040e5a1b5d8c269a5947e79a0368fce21",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "taxi-fare-toast.mjs",
+      "currentTestSha256": "767ff238bb1afb952a7d44b08587107abdb5d6ef88b9265b81c5e56346fe2033",
+      "originalSelection": true,
+      "originalTestSha256": "767ff238bb1afb952a7d44b08587107abdb5d6ef88b9265b81c5e56346fe2033",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "taxi-ride.mjs",
+      "currentTestSha256": "1377cb8a5efc834b30667ca71878fbc83d296fcbc4746ea3539014a453de3f94",
+      "originalSelection": true,
+      "originalTestSha256": "1377cb8a5efc834b30667ca71878fbc83d296fcbc4746ea3539014a453de3f94",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "terrace-death.mjs",
+      "currentTestSha256": "c2eeea27d61821a27df01d44c2d97f0d4a56a2dbcdbc14ae87eebc5d53618c06",
+      "originalSelection": true,
+      "originalTestSha256": "c2eeea27d61821a27df01d44c2d97f0d4a56a2dbcdbc14ae87eebc5d53618c06",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "traffic-pass-parked.mjs",
+      "currentTestSha256": "0cccb32871f6975b5ecb62d6011ec1cac56017a26cd550f2a4a3a98119cc836a",
+      "originalSelection": true,
+      "originalTestSha256": "0cccb32871f6975b5ecb62d6011ec1cac56017a26cd550f2a4a3a98119cc836a",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "trail-mud.mjs",
+      "currentTestSha256": "e77af50b985e6f5c2ca617c3e02a55a88683bfb4ef8e960d858c818533b1c801",
+      "originalSelection": true,
+      "originalTestSha256": "e77af50b985e6f5c2ca617c3e02a55a88683bfb4ef8e960d858c818533b1c801",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "SKIP"
+    },
+    {
+      "module": "trail-trees.mjs",
+      "currentTestSha256": "d8df9901632a47e46b53e4e5663a0601ad076d396122ca8d388f815769c458a0",
+      "originalSelection": true,
+      "originalTestSha256": "d8df9901632a47e46b53e4e5663a0601ad076d396122ca8d388f815769c458a0",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "travel-focus-pause.mjs",
+      "currentTestSha256": "cfb8056321b5f94f179a38e249a5b5bbf76f38b9a3b18be5f3ec3be0497d6e75",
+      "originalSelection": false
+    },
+    {
+      "module": "trunk-close.mjs",
+      "currentTestSha256": "230bb1e9d43f8e48224ef7219bb057bdbcf99ea674260081d355f94999349928",
+      "originalSelection": true,
+      "originalTestSha256": "230bb1e9d43f8e48224ef7219bb057bdbcf99ea674260081d355f94999349928",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "tyre-effects.mjs",
+      "currentTestSha256": "ffa197f559b7bba114cd155e51763f20cac88fc41e5fb7970afb34b3cf46b19f",
+      "originalSelection": true,
+      "originalTestSha256": "ffa197f559b7bba114cd155e51763f20cac88fc41e5fb7970afb34b3cf46b19f",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "vehicle-damage-shape.mjs",
+      "currentTestSha256": "d794b35d1e2c1e189c861bd9aac8faf4bed2cba36a2fa6462f0ddc7859439e4d",
+      "originalSelection": true,
+      "originalTestSha256": "d794b35d1e2c1e189c861bd9aac8faf4bed2cba36a2fa6462f0ddc7859439e4d",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "vehicle-gunfire.mjs",
+      "currentTestSha256": "a662b58e2ee21498f99b32d6e67e984e8ed3963da6383621b44237541784e36e",
+      "originalSelection": true,
+      "originalTestSha256": "a662b58e2ee21498f99b32d6e67e984e8ed3963da6383621b44237541784e36e",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "vehicle-layouts.mjs",
+      "currentTestSha256": "8084e473fab47f087236e04df7441d696eab052537ee47264a4ee4f8a99ca8a8",
+      "originalSelection": true,
+      "originalTestSha256": "8084e473fab47f087236e04df7441d696eab052537ee47264a4ee4f8a99ca8a8",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "vehicle-material-lifecycle.mjs",
+      "currentTestSha256": "9dad973bf2cf214dd27f0413e3abbe73b538e0cc011322fff72d275dba6cdd08",
+      "originalSelection": true,
+      "originalTestSha256": "9dad973bf2cf214dd27f0413e3abbe73b538e0cc011322fff72d275dba6cdd08",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "vehicle-merge.mjs",
+      "currentTestSha256": "6676619063eb1d0531721967f03ffa724afc320c6b6bb5324543ae1e85a02484",
+      "originalSelection": true,
+      "originalTestSha256": "6676619063eb1d0531721967f03ffa724afc320c6b6bb5324543ae1e85a02484",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "SKIP"
+    },
+    {
+      "module": "vehicle-source-fidelity.mjs",
+      "currentTestSha256": "1b6ee7f33cb3070e3d90a888582ce91b8c0b94add22e829a9d047789520fcf53",
+      "originalSelection": false
+    },
+    {
+      "module": "view-remembered.mjs",
+      "currentTestSha256": "8ae02d586b26a1a490694f7fa1211721e1ca3a2b326ca74a872e837b8579f556",
+      "originalSelection": true,
+      "originalTestSha256": "8ae02d586b26a1a490694f7fa1211721e1ca3a2b326ca74a872e837b8579f556",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "voices.mjs",
+      "currentTestSha256": "99a7417f497732003edfa1f1a7b51b5e99a4c0de2a594be1bab7fc4bf8a7d11c",
+      "originalSelection": true,
+      "originalTestSha256": "99a7417f497732003edfa1f1a7b51b5e99a4c0de2a594be1bab7fc4bf8a7d11c",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "wet-glints.mjs",
+      "currentTestSha256": "735ffa3119583cc11c2543325f54d78e61c1656dd5e118e172a2e187e083202f",
+      "originalSelection": true,
+      "originalTestSha256": "735ffa3119583cc11c2543325f54d78e61c1656dd5e118e172a2e187e083202f",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "SKIP"
+    },
+    {
+      "module": "wheelie-hint.mjs",
+      "currentTestSha256": "52fc4b7e52d139654a14737b0535efa424aead9d146b48b35832238c380b5dd0",
+      "originalSelection": true,
+      "originalTestSha256": "52fc4b7e52d139654a14737b0535efa424aead9d146b48b35832238c380b5dd0",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "wheelie.mjs",
+      "currentTestSha256": "9a2864dc7599129e4a8d06796dfa20023125deec1ac0a512b4016a1df301e140",
+      "originalSelection": true,
+      "originalTestSha256": "9a2864dc7599129e4a8d06796dfa20023125deec1ac0a512b4016a1df301e140",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "witness-car-lines.mjs",
+      "currentTestSha256": "dae86c9f4a9818a7a39dfa54d535a78ebdffc8071d99e1ed4596bc676dc3bbae",
+      "originalSelection": true,
+      "originalTestSha256": "dae86c9f4a9818a7a39dfa54d535a78ebdffc8071d99e1ed4596bc676dc3bbae",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "witnesses-monarch.mjs",
+      "currentTestSha256": "f5ec337473dea3630bd702cd78373829e78be2462bb642fa4d0277f919121dc3",
+      "originalSelection": true,
+      "originalTestSha256": "f5ec337473dea3630bd702cd78373829e78be2462bb642fa4d0277f919121dc3",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "witnesses-venues.mjs",
+      "currentTestSha256": "e37c643435fa3f03f82ad967a126013c063f45aaa2f56e48b0dfb30cd32ed172",
+      "originalSelection": true,
+      "originalTestSha256": "e37c643435fa3f03f82ad967a126013c063f45aaa2f56e48b0dfb30cd32ed172",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "world-edge-land.mjs",
+      "currentTestSha256": "c8083aae6610522cf517706d67ea254b80daa2a58a8dd6f2ff663a38eec6678f",
+      "originalSelection": true,
+      "originalTestSha256": "c8083aae6610522cf517706d67ea254b80daa2a58a8dd6f2ff663a38eec6678f",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "world-edge.mjs",
+      "currentTestSha256": "350e3a0dd9290409f6a144338d565e4d010b49cad90ed89342efbee0cf0c89b4",
+      "originalSelection": true,
+      "originalTestSha256": "350e3a0dd9290409f6a144338d565e4d010b49cad90ed89342efbee0cf0c89b4",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "world-reset-sportsbook.mjs",
+      "currentTestSha256": "31f56600c87b45ed27a2e3a65d56db214b901dfc6f973c9261e49596d7fc149e",
+      "originalSelection": false
+    },
+    {
+      "module": "world-reset.mjs",
+      "currentTestSha256": "81f0810da7f135dda535797d6ea23f820cd6f57aaeba9458311da3ab237c9750",
+      "originalSelection": true,
+      "originalTestSha256": "27641f533d442ee1cba935f5a27a8db5e26dd653f08a554c23e70630d90f2033",
+      "changedSinceOriginalSelection": true,
+      "originalBaselineLatestValidOutcome": "PASS"
+    },
+    {
+      "module": "wreck-limit.mjs",
+      "currentTestSha256": "12f52d8fd8554def10c11aaaf0b66389f5fa9777b654aa6cd67e1d11bb8a68ea",
+      "originalSelection": true,
+      "originalTestSha256": "12f52d8fd8554def10c11aaaf0b66389f5fa9777b654aa6cd67e1d11bb8a68ea",
+      "changedSinceOriginalSelection": false,
+      "originalBaselineLatestValidOutcome": "PASS"
+    }
+  ]
+}

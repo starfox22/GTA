@@ -1,0 +1,5 @@
+{
+  "qualification": "Invalid harness staging; not a game failure or accepted entry/exit/camera proof.",
+  "htmlSha256": "5b199b249eeb301af2722c21e84470c6b20902ff0976d17c3e439be1ab3e58da",
+  "reason": "board called look after drive; teleportPlayer drops land vehicles. Captured status.vehicle=null, player outside; recorder stopped before using as proof. Camera yaw205 also put foreground buildings over model. Corrected fixture must call look before drive and assert boarded identity."
+}

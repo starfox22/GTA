@@ -163,6 +163,8 @@
         // The city wakes up with him: wrecks, damage, blood and bodies gone (world-reset.js).
         resetWorld('wasted');
         save();
+        // Blur during WASTED had no play mode to pause; keep the respawn safe.
+        if (document.hidden || (typeof document.hasFocus === 'function' && !document.hasFocus())) togglePause();
       }, 4200);
     }
     /* Where WASTED wakes the player: the nearest hospital (RIVERSIDE MEDICAL on Palm

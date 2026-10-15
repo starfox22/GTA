@@ -23,12 +23,10 @@ navigation.js (big map, GPS), cycles.js (bike share), src/shell.html + src/ui/* 
   vehicle is `ascend`. The HUD strip has a `moto` context and a `wheelie` pseudo-key
   (`keyName('forward') + '+' + keyName('ascend')`, left out on touch).
 - Menu keys (Escape, Enter, the map's arrows / + / − / 0 / C) are fixed.
-- Left fire and right aim/secondary fire release independently. Blur and hidden tabs clear
-  physical and virtual keys and both buttons; pause, help and the map clear both firing
-  buttons. A missing mouseup outside the game must not leave firing or aiming held.
-  Every elevator entry releases `mouse.down` and `mouse.alt`, the actual right-button
-  aim/secondary-fire state, including Fort Sentinel's records search and skyline lifts
-  (`mission-modal-input` checks their actual entry functions, including rejected duplicate entry).
+- Left fire and right aim/secondary fire release independently. Focus loss clears keys and
+  both buttons. Successful modal/menu/travel entry clears both; rejected entry leaves live
+  controls untouched. `mouse-buttons`, `mission-modal-input` and `modal-pointer-lifecycle`
+  exercise the actual handlers. See [input lifecycle](input-lifecycle.md).
 - **Hints follow the device** (input-hints.js): `keyName(id)` returns the touch button's
   label (`touchButtonLabel`, mobile.js: the same text the button shows, so ACTION / EXIT /
   GAS follow the context) or the gamepad button (`gamepadKeyName`) while that device was

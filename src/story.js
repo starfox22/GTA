@@ -296,7 +296,7 @@
       dialogueCanClose = canClose;
       gameMode = 'dialogue';
       keys = {};
-      mouse.down = false;
+      mouse.down = mouse.alt = false;
       getElement('callName').textContent = c.name;
       getElement('callRole').textContent = c.role;
       setContactPortrait(getElement('callPortrait'), contact);
@@ -809,7 +809,7 @@
       };
       gameMode = 'elevator';
       keys = {};
-      mouse.down = false;
+      mouse.down = mouse.alt = false;
       getElement('elevatorOverlay').classList.remove('hidden');
       getElement('elevatorDirection').textContent = up
         ? 'ASCENDING TO THE BLUE HOUR'

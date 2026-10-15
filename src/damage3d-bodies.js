@@ -31,10 +31,10 @@
        * DOORS
        * A front door on its hinge, made on first use and shared by the damage (a sprung or torn-off door) and the
        * door swings (carjack3d.js swingDriverDoor: a carjack, getting in and out): `m.doors[side]` = { pivot, panel,
-       * opening, glass, rect }. Where the body's shell can be probed the door is cut from its own side
-       * (damage3d-crumple.js doorPanelGeometries: its curve, paint and livery outside, the door card inside) and the
-       * opening it leaves is the cabin seen side-on, both in the body's upholstery (CAR_CABIN_TRIM, in shade), never
-       * a dark slab; its window (`glass`: the side pane's own surface within the door, laid by rays) swings with it.
+       * opening, glass, rect }. Source-backed layers move out of a real aperture in the fixed body
+       * (vehicle-doors3d.js); separated native doors retain their authored parts and hinges. Existing seats and
+       * dashboard remain visible behind it, with a door card only on the moving door. Its front window swings
+       * with the door while remaining fixed quarter-glass stays in place.
        * Without a shell to probe, the old flat panels. The hinge is the door's front edge; where the door sits along the
        * body is vehicleDoorSpan (at the driver's seat on every body, long ones included).
        */
@@ -102,24 +102,41 @@
         m.doors = m.doors || {};
         let door = m.doors[side];
         if (door) return door;
+        if (m.merged) splitVehicleModel(m);
         claimDamageResources();
+        vehicleDoorNear(m);
         const { w, h } = m.dims,
           [x0, x1] = vehicleDoorSpan(m),
           span = x1 - x0,
           pivot = new Three.Group();
-        pivot.position.set(x1, 0, side * w * 0.5);
+        const sill = m.dims.sill ?? 4.8, nativeDoor = m.kit?.nativeDoors?.[side];
+        if (nativeDoor) pivot.position.fromArray(nativeDoor.hinge);
+        else pivot.position.set(x1, 0, vehicleDoorHinge(m, side, x1, (sill + h) / 2));
         m.body.add(pivot);
         // From the sill (`dims.sill`: a real-size body's, cars3d.js) to the belt.
         // The door is cut from the body's own side (its curve, paint and livery; damage3d-crumple.js), else a slab.
-        const sill = m.dims.sill ?? 4.8,
-          rect = { x0, x1, y0: sill + 0.2, y1: h - 0.15 },
-          shaped = m.shell ? doorPanelGeometries(m, side, rect.x0, rect.x1, rect.y0, rect.y1, pivot.position) : null;
+        const rect = { x0, x1, y0: sill + 0.02 * (m.seats?.M || CAR_M), y1: h - 0.02 * (m.seats?.M || CAR_M) },
+          extracted = vehicleDoorLayers(c, m, side, rect, pivot),
+          shaped = !extracted.layers.length && m.shell ? doorPanelGeometries(m, side, rect.x0, rect.x1, rect.y0, rect.y1, pivot.position) : null;
         let panel,
           opening,
           glass = null;
-        if (shaped) {
+        if (extracted.layers.length) {
+          glass = extracted.layers.find(layer => layer.userData.doorGlass) || null;
+          panel = extracted.layers.find(layer => layer.userData.vehicleDoorSource === m.shell) || extracted.layers.find(layer => layer !== glass) || glass;
+          // A source without an inner door card gets the existing cabin upholstery on the moving door,
+          // never across the aperture. Seats and dashboard remain in the actual cabin behind it.
+          if (!nativeDoor) {
+            const M = m.seats?.M || CAR_M,
+              card = box(pivot, (x0 - x1) / 2, (rect.y0 + h) / 2, -side * .055 * M,
+                span * .94, Math.max(.08 * M, h - rect.y0 - .04 * M), .025 * M, doorTrimMaterial(c, true));
+            card.castShadow = false; extracted.layers.push(card);
+            card.userData.vehicleDoorInside = true;
+          }
+          opening = new Three.Group(); m.body.add(opening);
+        } else if (shaped) {
           panel = new Three.Mesh(shaped.door, [m.paint, doorTrimMaterial(c, true)]);
-          opening = new Three.Mesh(shaped.opening, [m.paint, doorTrimMaterial(c, false)]);
+          opening = new Three.Group();
           panel.castShadow = opening.receiveShadow = panel.receiveShadow = true;
           pivot.add(panel);
           m.body.add(opening);
@@ -133,17 +150,18 @@
           }
         } else {
           panel = box(pivot, -span / 2, (sill + h + 0.4) / 2, side * 0.25, span, h + 0.4 - sill, 0.45, m.paint);
-          opening = box(m.body, (x0 + x1) / 2, (sill + h) / 2, side * (w * 0.5 + 0.04), span * 0.92, h - sill - 0.2, 0.3, engineBay);
+          opening = new Three.Group(); m.body.add(opening);
           // A livery samples its door colour through the panel's UVs (police3d.js).
           if (m.panelGeometry) panel.geometry = m.panelGeometry;
         }
         // `rect`: the shaped door's place in the side (holes in that metal go with it, damage3d-marks.js).
-        door = m.doors[side] = { pivot, panel, opening, glass, rect: shaped ? rect : null, span };
+        door = m.doors[side] = { pivot, panel, opening, glass, layers: extracted.layers.length ? extracted.layers : [panel], native: extracted.native, volume: extracted.volume, sourceExtracted: !!extracted.layers.length, rect, span };
         // The hinge moves with the crumpled side; the opening and the door (in its closed place, relative to the
         // hinge) bend with it.
         crumpleAdopt(m, pivot, true);
         crumpleAdopt(m, opening, false);
-        crumpleAdopt(m, panel, false, true);
+        for (const layer of door.layers) crumpleAdopt(m, layer, false, true);
+        if (glass && !door.layers.includes(glass)) crumpleAdopt(m, glass, false, true);
         // Made outside a damage pass (a door swing on a dented car): bent with the dents it has now.
         if (m.crumple?.dents) crumpleStart(c, m, m.crumple.dents, false);
         return door;
@@ -348,26 +366,25 @@
           bumper.material = damage.burnt ? burntMetal : m.bumperMaterials?.[i] || m.bumperMaterial || chrome;
         });
         // Doors swing out on a bent hinge; torn off, the dark opening is left.
+        let doorMask = 0;
         for (const side of [-1, 1]) {
           const key = side < 0 ? 'doorLeft' : 'doorRight',
             state = parts[key];
           if (!state) {
             // Repaired: the door is shut again (the body's own side shows), no opening.
             const shut = m.doors?.[side];
-            if (shut) shut.panel.visible = shut.opening.visible = false;
-            if (shut?.glass) shut.glass.visible = false;
+            if (shut) vehicleDoorShown(shut, false, false);
             continue;
           }
           const door = vehicleDoor(c, m, side);
-          door.opening.visible = true;
-          door.pivot.rotation.set(0, side * (state === 1 ? 0.95 : 0), state === 1 ? -0.09 : 0);
+          doorMask |= side < 0 ? 1 : 2;
+          vehicleDoorPose(door, side, state === 1 ? .95 : 0, state === 1 ? -.09 : 0);
           // (A shut door, its panel hidden, is torn off too: the body's own side flies off as the panel.)
           if (state === 2 && before[key] !== 2 && !first && (door.panel.visible || !before[key]))
             spawnPanel(door.panel, paintColor, c, door.span, h - 4.4, 0.45, 1.2);
-          door.panel.visible = state < 2;
-          // A sprung or torn door's window is gone (the body's pane stays as the damage leaves it).
-          if (door.glass) door.glass.visible = false;
+          vehicleDoorShown(door, state < 2, false);
         }
+        vehicleDoorBodyState(c, m, doorMask);
         // The trunk lid pops up on its hinge (vans and SUVs have tailgates in the body), or is picked open
         // (vehicle-trunk.js `c.trunkOpen`).
         // A civilian body's rear deck line (`m.trunkDeck`, cars3d-kit.js): the lid lies along it from the rear glass's

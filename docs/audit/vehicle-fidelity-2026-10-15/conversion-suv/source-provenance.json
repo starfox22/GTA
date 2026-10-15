@@ -1,0 +1,137 @@
+{
+  "approved": [
+    "M1",
+    "M2",
+    "S1",
+    "S2",
+    "S3"
+  ],
+  "freeAssetsOnly": true,
+  "evidence": {
+    "m1_enduro": {
+      "author": "jsa201077 (unityjsa7)",
+      "source": "https://sketchfab.com/3d-models/real-motorbike-02-unity3d-f24e366933c54835b562e5210d93047f",
+      "license": "CC BY 4.0",
+      "evidence": "Asset-specific third-party credit, VGFramework README line 300",
+      "evidenceURL": "https://github.com/vimontgames/vgframework/blob/b3173a3814790af7061f1949437a3c958b00000b/README.md",
+      "firstPartyVerification": "not independently confirmed; creator page blocked in research session"
+    },
+    "m2_sport": {
+      "author": "nouter2077",
+      "source": "https://skfb.ly/oIYFv",
+      "license": "CC BY 4.0",
+      "evidence": "Asset-specific third-party credit, Nonplanar-Vehicle-Control README lines 116\u2013117",
+      "evidenceURL": "https://github.com/thomasfork/Nonplanar-Vehicle-Control/blob/8cb0ee51e2cf5cf7b3abbf21d3bdadc538a6c672/README.md",
+      "firstPartyVerification": "not independently confirmed; creator page blocked in research session"
+    },
+    "s1_jimny": {
+      "embeddedAssetMetadata": {
+        "generator": "glTF-Transform v4.4.1",
+        "version": "2.0",
+        "extras": {
+          "author": "tonielpro520 (https://sketchfab.com/tonielpro520)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/2023-suzuki-jimny-sierra-8b7c4d136f6742e180faf654d874f14a",
+          "title": "2023 Suzuki Jimny Sierra"
+        }
+      },
+      "evidence": "Original downloaded GLB author, source and CC BY 4.0 licence metadata"
+    },
+    "s2_suv": {
+      "embeddedAssetMetadata": {
+        "extras": {
+          "author": "Comrade1280 (https://sketchfab.com/comrade1280)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/generic-passenger-car-pack-20f9af9b8a404d5cb022ac6fe87f21f5",
+          "title": "Generic passenger car pack"
+        },
+        "generator": "Sketchfab-12.68.0",
+        "version": "2.0"
+      },
+      "evidence": "Original downloaded GLB author, source and CC BY 4.0 licence metadata"
+    },
+    "s3_offroad": {
+      "embeddedAssetMetadata": {
+        "extras": {
+          "author": "Comrade1280 (https://sketchfab.com/comrade1280)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/generic-passenger-car-pack-20f9af9b8a404d5cb022ac6fe87f21f5",
+          "title": "Generic passenger car pack"
+        },
+        "generator": "Sketchfab-12.68.0",
+        "version": "2.0"
+      },
+      "evidence": "Original downloaded GLB author, source and CC BY 4.0 licence metadata"
+    }
+  },
+  "files": {
+    "m1_enduro": [
+      {
+        "path": "motorcycles/vgframework/data--Meshes--Cars--Motorbike--motorbike.fbx",
+        "bytes": 268684,
+        "sha256": "a347eaa03ea29854c45d78dd1f1136f9ff2b29d57b0ff8ef5179687629ce7aca"
+      },
+      {
+        "path": "motorcycles/vgframework/data--Meshes--Cars--Motorbike--motorbike_fork.fbx",
+        "bytes": 78716,
+        "sha256": "fe930b7bbf1e342ccc1128b97e186bcda216c75ebdb7c46ff5a2e8a058a76ee4"
+      },
+      {
+        "path": "motorcycles/vgframework/data--Meshes--Cars--Motorbike--motorbike_wheel.fbx",
+        "bytes": 99740,
+        "sha256": "bd3daed591a5d8df47ca2a8e1e83ed247131bd419de5eb417b5e1e264e0194ce"
+      },
+      {
+        "path": "motorcycles/vgframework/data--Textures--Cars--Motorbike--motorbike_albedo.png",
+        "bytes": 1507745,
+        "sha256": "e23eeb2303592d05c5f11504b6e1a1160fd8e49f4a8c6c015b97b33238912f2a"
+      },
+      {
+        "path": "motorcycles/vgframework/prefab.xml",
+        "bytes": 73241,
+        "sha256": "65028afbcdb0c1d48e2488526050d13602c6531b0b4d879b4d1ae14be73b8f55"
+      }
+    ],
+    "m2_sport": [
+      {
+        "path": "motorcycles/nonplanar/assets--motorcycle.glb",
+        "bytes": 15428024,
+        "sha256": "228b3f088ac348c40b55bd2881c7271304614ecc0ad422b21506c6d82708228c"
+      }
+    ],
+    "s1_jimny": [
+      {
+        "path": "suv/jimny-2023.glb",
+        "bytes": 4603920,
+        "sha256": "0f70478e347b1bf19410e45ade6f0b1037041df5417b7bc8da4d9739bdb5f6ce"
+      },
+      {
+        "path": "suv/jimny-decoded.glb",
+        "bytes": 45908032,
+        "sha256": "5e9062ad80993b33b716a003de8f0a766299daadfa36ba7caeef99c26b13c2d7"
+      }
+    ],
+    "s2_suv": [
+      {
+        "path": "suv/carpack-4.glb",
+        "bytes": 11761956,
+        "sha256": "a2d5667f3a1d47fa0dbb84cf2cf76b8aeee6a69f7fff209af09973c625f9be6e"
+      }
+    ],
+    "s3_offroad": [
+      {
+        "path": "suv/carpack-4.glb",
+        "bytes": 11761956,
+        "sha256": "a2d5667f3a1d47fa0dbb84cf2cf76b8aeee6a69f7fff209af09973c625f9be6e"
+      }
+    ]
+  },
+  "assembly": {
+    "m1": "Source prefab transforms applied to raw FBX vertex coordinates, matching the source UFBX importer",
+    "m2": "Rigid source Z-up \u2192 game Y-up rotation",
+    "s1": "Rigid GLTF +Z front \u2192 game +X front rotation",
+    "s2_s3": "Vehicle selection from original passenger pack, whole-vehicle wheel-baseline rigid orientation and authored red-tail colour sign"
+  },
+  "optimization": "Blender edge collapse preserves mesh/material/UV surfaces; exact coincident vertices welded within 0.1 micrometre, no vertex clustering, no part removal",
+  "changes": "Source-authored SUV split normals retained at ratio one and transferred after reduction; Jimny painted shell, panels and hood retained at full source resolution; near SUV normals use signed16 precision. Zero reduced SUV normals recover from nearby same-material source vertices, recorded in model metadata. Motorcycle arrays and all four existing atlases remain unchanged. Existing optical-glass and exterior-paint ownership retained."
+}

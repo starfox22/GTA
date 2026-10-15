@@ -1,0 +1,105 @@
+{
+  "candidateHtmlSha256": "7c7d8ba6de871356644554685110328505d1d2152b5f6f9965c1ab118adc042d",
+  "zipSha256": "fabceefd610803b3550e67f05568669267fb030f7a0f6b8e6b2105c50120eed5",
+  "crc": "PASS",
+  "allManifestAssetsExact": true,
+  "assetsVerified": 105,
+  "packedEntries": 96,
+  "entries": [
+    {
+      "file": "DeadEndCity/README.txt",
+      "bytes": 454,
+      "sha256": "ec10f732adc6bb5dc2eda79a58da7e8b3d9a1a56a336491a46e39d12e7be52e8"
+    },
+    {
+      "file": "DeadEndCity/index.html",
+      "bytes": 12032589,
+      "sha256": "7447dfc29e502cf3c570414796ed7be8a61bdbf21770bf29c3f1be6631cf0a3d"
+    },
+    {
+      "file": "DeadEndCity/media/island-colada.mp3",
+      "bytes": 1925823,
+      "sha256": "f695b7de584edc492810fed41a1cbfd9cd0ccaf1cf6447f3c0889eb058a70d12"
+    },
+    {
+      "file": "DeadEndCity/media/island-dub.mp3",
+      "bytes": 2487833,
+      "sha256": "be282aaaf7bee116a3348db3248e9a70bcaa30898de4675d3455a6bf0c7616be"
+    },
+    {
+      "file": "DeadEndCity/media/lofi-freeway.mp3",
+      "bytes": 2120191,
+      "sha256": "11d8e376ad5e5b53a9f2e1604e588a09ce02360fb97cb06ccc6fe69de33754db"
+    },
+    {
+      "file": "DeadEndCity/media/lofi-hooptie.mp3",
+      "bytes": 2637757,
+      "sha256": "435a8efd2e05add54f37f2cfbeb765b48386bf48909cd52523829d0f868a23f1"
+    },
+    {
+      "file": "DeadEndCity/media/lounge-heists.mp3",
+      "bytes": 2209481,
+      "sha256": "46db5bd44a5938d98978d37725836462c5ba2b388d3874b877cb194f5ab7f1f1"
+    },
+    {
+      "file": "DeadEndCity/media/lounge-martini.mp3",
+      "bytes": 2063086,
+      "sha256": "a75e273b7afa3dc9fed814baff6ba3759380caab3d14e1b09042b6657be66d76"
+    },
+    {
+      "file": "DeadEndCity/media/oddball.mp3",
+      "bytes": 1733978,
+      "sha256": "9ffe2ec825e2c01ccba1b66da1e032a0148d3895e5c72fcb7e4e729584b65111"
+    },
+    {
+      "file": "DeadEndCity/media/pack-audio.js",
+      "bytes": 3128576,
+      "sha256": "2b090a6eb35d23fa42d78df142f6431d7acbeadec1303ef4850c07b7191f9851"
+    },
+    {
+      "file": "DeadEndCity/media/pack-data-2.js",
+      "bytes": 8381212,
+      "sha256": "ef477d3cd596490722930d40e365162f9c68e1f2c837be2659cf3bfba057e9b6"
+    },
+    {
+      "file": "DeadEndCity/media/pack-data-3.js",
+      "bytes": 10083235,
+      "sha256": "3820dba9f16c2f60b4a6b1a0386a43f73f5ddda837042c0307b30cb11eb255c0"
+    },
+    {
+      "file": "DeadEndCity/media/pack-data-4.js",
+      "bytes": 4357707,
+      "sha256": "b6a0faa8dd646c3e55696727eaad8262c51b709c24b00795f4426f7d6e62fa4a"
+    },
+    {
+      "file": "DeadEndCity/media/pack-data.js",
+      "bytes": 8134659,
+      "sha256": "0c9877c72afd7c6e459cef9c01c555ddfe6e92ef5029a4b83065ff1ca7b69b9d"
+    },
+    {
+      "file": "DeadEndCity/media/pack-images-2.js",
+      "bytes": 11331296,
+      "sha256": "6d24d46e64ca48818c439c69c2230f57670d830e31e306835231338777de26d7"
+    },
+    {
+      "file": "DeadEndCity/media/pack-images-3.js",
+      "bytes": 1936800,
+      "sha256": "b896c0230598164b31038b102bfbe6e0a8292e917bfeeae7c6dc155092b95d59"
+    },
+    {
+      "file": "DeadEndCity/media/pack-images.js",
+      "bytes": 8631077,
+      "sha256": "400f1809af7d425ca6c7cfb22113616cb199cb941cd38b697767ef6bc77c6c7d"
+    },
+    {
+      "file": "DeadEndCity/media/rock.mp3",
+      "bytes": 811108,
+      "sha256": "a1d9d63cd8af19387969f541cce96dd2c1f7791c4b05ae61691b9a1b6620180d"
+    },
+    {
+      "file": "DeadEndCity/media/synth.mp3",
+      "bytes": 1550927,
+      "sha256": "914b506fcf2fe116752f22b478ef09cf30fd6dc3b86632e22d7370507bf2f934"
+    }
+  ]
+}

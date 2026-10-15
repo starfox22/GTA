@@ -8,7 +8,7 @@
      * after their upload (render3d-resources.js BAKED CANVAS RELEASE: signs, ground sheets). So on the way back the
      * page reloads, after a save, which rebuilds the renderer whole; a job under way is offered again by RESTART
      * CURRENT JOB (`retryJobIndex`). A dev or test page (DEV_BOOT_FLAGS) does not reload: tests read the state.
-     * Normal frames only test `gpuContext.lost`.
+     * Live frames wait while lost or awaiting the recovery reload; explicit developer steps remain available.
      */
     const GPU_CONTEXT_RELOAD_MS = 1500,
       // No restore by then: the player is told to reload by hand.
@@ -42,8 +42,11 @@
       gpuContext.restores++;
       getElement('renderBadge').textContent = 'SOUTH COAST · DUSK';
       tell('PICTURE BACK · reloading the city · progress saved', 4, { id: 'gpu-context' });
-      if (gameMode === 'play' || gameMode === 'pause') save();
       gpuContext.reloadPending = true;
+      if (gameMode === 'play') togglePause();
+      else if (gameMode === 'pause') save();
+      const info = getElement('pauseInfo');
+      if (gameMode === 'pause' && info) info.textContent = 'The picture is back. Reloading the city · your progress is saved.';
       if (!DEV_BOOT_FLAGS) setTimeout(() => location.reload(), GPU_CONTEXT_RELOAD_MS);
     }
     // Called by drawWorld while the context is gone, in place of the draw.

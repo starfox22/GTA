@@ -1,0 +1,690 @@
+{
+  "m1_enduro.paint": {
+    "ratio": 1.0,
+    "preserveSourceNormals": false
+  },
+  "m1_enduro.paintFar": {
+    "ratio": 0.22,
+    "preserveSourceNormals": false
+  },
+  "m1_enduro.trim": {
+    "ratio": 1.0,
+    "preserveSourceNormals": false
+  },
+  "m1_enduro.trimFar": {
+    "ratio": 0.22,
+    "preserveSourceNormals": false
+  },
+  "m1_enduro.steer.paint": {
+    "ratio": 1.0,
+    "preserveSourceNormals": false
+  },
+  "m1_enduro.steer.paintFar": {
+    "ratio": 0.22,
+    "preserveSourceNormals": false
+  },
+  "m1_enduro.steer.trim": {
+    "ratio": 1.0,
+    "preserveSourceNormals": false
+  },
+  "m1_enduro.steer.trimFar": {
+    "ratio": 0.22,
+    "preserveSourceNormals": false
+  },
+  "m1_enduro.head": {
+    "ratio": 1.0,
+    "preserveSourceNormals": false
+  },
+  "m1_enduro.headFar": {
+    "ratio": 0.22,
+    "preserveSourceNormals": false
+  },
+  "m1_enduro.tail": {
+    "ratio": 1.0,
+    "preserveSourceNormals": false
+  },
+  "m1_enduro.tailFar": {
+    "ratio": 0.22,
+    "preserveSourceNormals": false
+  },
+  "m1_enduro.wheel0.tyre": {
+    "ratio": 1.0,
+    "preserveSourceNormals": false
+  },
+  "m1_enduro.wheel0.tyreFar": {
+    "ratio": 0.22,
+    "preserveSourceNormals": false
+  },
+  "m1_enduro.wheel0.rim": {
+    "ratio": 1.0,
+    "preserveSourceNormals": false
+  },
+  "m1_enduro.wheel0.rimFar": {
+    "ratio": 0.22,
+    "preserveSourceNormals": false
+  },
+  "m1_enduro.wheel1.tyre": {
+    "ratio": 1.0,
+    "preserveSourceNormals": false
+  },
+  "m1_enduro.wheel1.tyreFar": {
+    "ratio": 0.22,
+    "preserveSourceNormals": false
+  },
+  "m1_enduro.wheel1.rim": {
+    "ratio": 1.0,
+    "preserveSourceNormals": false
+  },
+  "m1_enduro.wheel1.rimFar": {
+    "ratio": 0.22,
+    "preserveSourceNormals": false
+  },
+  "m2_sport.paint": {
+    "ratio": 0.12,
+    "preserveSourceNormals": false
+  },
+  "m2_sport.paintFar": {
+    "ratio": 0.022,
+    "preserveSourceNormals": false
+  },
+  "m2_sport.glass": {
+    "ratio": 0.3,
+    "preserveSourceNormals": false
+  },
+  "m2_sport.glassFar": {
+    "ratio": 0.022,
+    "preserveSourceNormals": false
+  },
+  "m2_sport.trim": {
+    "ratio": 0.12,
+    "preserveSourceNormals": false
+  },
+  "m2_sport.trimFar": {
+    "ratio": 0.022,
+    "preserveSourceNormals": false
+  },
+  "m2_sport.steer.paint": {
+    "ratio": 0.12,
+    "preserveSourceNormals": false
+  },
+  "m2_sport.steer.paintFar": {
+    "ratio": 0.022,
+    "preserveSourceNormals": false
+  },
+  "m2_sport.steer.trim": {
+    "ratio": 0.12,
+    "preserveSourceNormals": false
+  },
+  "m2_sport.steer.trimFar": {
+    "ratio": 0.022,
+    "preserveSourceNormals": false
+  },
+  "m2_sport.head": {
+    "ratio": 0.3,
+    "preserveSourceNormals": false
+  },
+  "m2_sport.headFar": {
+    "ratio": 0.022,
+    "preserveSourceNormals": false
+  },
+  "m2_sport.tail": {
+    "ratio": 0.3,
+    "preserveSourceNormals": false
+  },
+  "m2_sport.tailFar": {
+    "ratio": 0.022,
+    "preserveSourceNormals": false
+  },
+  "m2_sport.wheel0.tyre": {
+    "ratio": 0.12,
+    "preserveSourceNormals": false
+  },
+  "m2_sport.wheel0.tyreFar": {
+    "ratio": 0.022,
+    "preserveSourceNormals": false
+  },
+  "m2_sport.wheel0.rim": {
+    "ratio": 0.12,
+    "preserveSourceNormals": false
+  },
+  "m2_sport.wheel0.rimFar": {
+    "ratio": 0.022,
+    "preserveSourceNormals": false
+  },
+  "m2_sport.wheel1.tyre": {
+    "ratio": 0.12,
+    "preserveSourceNormals": false
+  },
+  "m2_sport.wheel1.tyreFar": {
+    "ratio": 0.022,
+    "preserveSourceNormals": false
+  },
+  "m2_sport.wheel1.rim": {
+    "ratio": 0.12,
+    "preserveSourceNormals": false
+  },
+  "m2_sport.wheel1.rimFar": {
+    "ratio": 0.022,
+    "preserveSourceNormals": false
+  },
+  "s1_jimny.opticalGlass": {
+    "ratio": 0.3,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.opticalGlassFar": {
+    "ratio": 0.022,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.glass:0": {
+    "ratio": 0.3,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.glass:0Far": {
+    "ratio": 0.022,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.glass:1": {
+    "ratio": 0.3,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.glass:1Far": {
+    "ratio": 0.022,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.glass:2": {
+    "ratio": 0.3,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.glass:2Far": {
+    "ratio": 0.022,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.glass:3": {
+    "ratio": 0.3,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.glass:3Far": {
+    "ratio": 0.022,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.glass:4": {
+    "ratio": 0.3,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.glass:4Far": {
+    "ratio": 0.022,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.wheel0.tyre": {
+    "ratio": 0.13,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.wheel0.tyreFar": {
+    "ratio": 0.022,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.wheel0.rim": {
+    "ratio": 0.13,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.wheel0.rimFar": {
+    "ratio": 0.022,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.wheel1.tyre": {
+    "ratio": 0.13,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.wheel1.tyreFar": {
+    "ratio": 0.022,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.wheel1.rim": {
+    "ratio": 0.13,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.wheel1.rimFar": {
+    "ratio": 0.022,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.wheel2.tyre": {
+    "ratio": 0.13,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.wheel2.tyreFar": {
+    "ratio": 0.022,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.wheel2.rim": {
+    "ratio": 0.13,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.wheel2.rimFar": {
+    "ratio": 0.022,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.wheel3.tyre": {
+    "ratio": 0.13,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.wheel3.tyreFar": {
+    "ratio": 0.022,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.wheel3.rim": {
+    "ratio": 0.13,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.wheel3.rimFar": {
+    "ratio": 0.022,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.headLeft": {
+    "ratio": 0.3,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.headLeftFar": {
+    "ratio": 0.022,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.tailLeft": {
+    "ratio": 0.3,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.tailLeftFar": {
+    "ratio": 0.022,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.headRight": {
+    "ratio": 0.3,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.headRightFar": {
+    "ratio": 0.022,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.tailRight": {
+    "ratio": 0.3,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.tailRightFar": {
+    "ratio": 0.022,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.shell": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.shellFar": {
+    "ratio": 0.022,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.panels": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.panelsFar": {
+    "ratio": 0.022,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.hood": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.hoodFar": {
+    "ratio": 0.022,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.cabin": {
+    "ratio": 0.13,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.cabinFar": {
+    "ratio": 0.022,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.trim": {
+    "ratio": 0.23,
+    "preserveSourceNormals": true
+  },
+  "s1_jimny.trimFar": {
+    "ratio": 0.022,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.glass:0": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.glass:0Far": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.glass:1": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.glass:1Far": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.glass:2": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.glass:2Far": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.glass:3": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.glass:3Far": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.wheel0.tyre": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.wheel0.tyreFar": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.wheel0.rim": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.wheel0.rimFar": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.wheel1.tyre": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.wheel1.tyreFar": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.wheel1.rim": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.wheel1.rimFar": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.wheel2.tyre": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.wheel2.tyreFar": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.wheel2.rim": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.wheel2.rimFar": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.wheel3.tyre": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.wheel3.tyreFar": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.wheel3.rim": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.wheel3.rimFar": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.headLeft": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.headLeftFar": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.tailLeft": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.tailLeftFar": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.headRight": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.headRightFar": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.tailRight": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.tailRightFar": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.shell": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.shellFar": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.panels": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.panelsFar": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.hood": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.hoodFar": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.cabin": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.cabinFar": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.trim": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s2_suv.trimFar": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.glass:0": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.glass:0Far": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.glass:1": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.glass:1Far": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.glass:2": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.glass:2Far": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.glass:3": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.glass:3Far": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.wheel0.tyre": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.wheel0.tyreFar": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.wheel0.rim": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.wheel0.rimFar": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.wheel1.tyre": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.wheel1.tyreFar": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.wheel1.rim": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.wheel1.rimFar": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.wheel2.tyre": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.wheel2.tyreFar": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.wheel2.rim": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.wheel2.rimFar": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.wheel3.tyre": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.wheel3.tyreFar": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.wheel3.rim": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.wheel3.rimFar": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.headLeft": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.headLeftFar": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.tailLeft": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.tailLeftFar": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.headRight": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.headRightFar": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.tailRight": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.tailRightFar": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.shell": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.shellFar": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.panels": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.panelsFar": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.hood": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.hoodFar": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.cabin": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.cabinFar": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.trim": {
+    "ratio": 1.0,
+    "preserveSourceNormals": true
+  },
+  "s3_offroad.trimFar": {
+    "ratio": 0.55,
+    "preserveSourceNormals": true
+  }
+}

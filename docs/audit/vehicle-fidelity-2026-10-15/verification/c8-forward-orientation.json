@@ -1,0 +1,55 @@
+{
+  "result": "PASS; original procedural Chevette and downloaded C8 both face game +X at heading0; no asset change required",
+  "matchedCamera": {
+    "yawDegrees": 65,
+    "pitchDegrees": 12,
+    "liftUnits": 4,
+    "vehicleHeadingRadians": 0,
+    "vehiclePosition": [
+      418,
+      6000
+    ]
+  },
+  "images": [
+    {
+      "path": "dist/review-2026-10-15-runway-before/before-chevette-closed-front.png",
+      "sha256": "562ba95cc3692419e02f7aa241dee695940f90f347deddc635051b814d70ab83",
+      "observedFront": "lower screen-right"
+    },
+    {
+      "path": "dist/review-2026-10-15-runway-after/after-chevette-closed-front.png",
+      "sha256": "c340d1e52e3881cf960b2b56cb445ef4437ce85ead1f3964e724cc4613735ab6",
+      "observedFront": "lower screen-right"
+    }
+  ],
+  "sourcePackSHA256": "e83f2d0f38b64ca743717eb50054ea15dfa56488fe8346ee423790815f375328",
+  "c8GeometryMetres": {
+    "headlampX": [
+      1.796723875075909,
+      1.7967239632583076
+    ],
+    "taillampX": [
+      -2.1463579886567388,
+      -2.146357988115941
+    ],
+    "frontHubX": [
+      1.2962455185986526,
+      1.2962455185986526
+    ],
+    "rearHubX": [
+      -1.455925425814372,
+      -1.4569046174555826
+    ],
+    "windscreenFootX": 0.9269057208442372,
+    "rearWindowFootX": -0.7263078442876373
+  },
+  "proceduralContract": "cars3d-kit surf(front) uses frontX; outward front normal +X. Old Chevette front wheel xf+.29*l, rear xr-.29*l.",
+  "parentOrientation": "render3d-frame applies group.rotation.y=-c.a for both model builders; heading0 retains model +X as world +X. Camera yaw65 has positive screen-right projection for +X.",
+  "comparisonRule": "Compare identical named view/camera receipts. A115-degree driver-door view and a65-degree closed-front view show opposite screen bearings because the camera is on a different side.",
+  "runtimeInputs": {
+    "src/render3d-frame.js": "1a5f644114d7733af2b3399b930d0c463a6bc46ffdf6e66dbeef0f6d916546af",
+    "src/cars3d-kit.js": "93574398a702759b35c83d33be0dc31c8c3810b5500c9777ec42ef2726a23c20",
+    "src/cars3d-bodies-b.js": "e64f5946334198a810f45f3541c829cc772e59ce4cd1a9baed6c21c816bc2b8e"
+  },
+  "assetsModified": false
+}

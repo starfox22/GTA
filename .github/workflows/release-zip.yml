@@ -47,7 +47,7 @@ jobs:
             --notes "Newest build of \`${GITHUB_REF_NAME}\` (${GITHUB_SHA::7}). Download DeadEndCity.zip, unzip it and double-click DeadEndCity/index.html (Chrome, Edge, Firefox or Safari)."
 
       - name: Publish the requested Codex review download
-        if: github.ref == 'refs/heads/codex/game-fixes-2026-10-11' || github.ref == 'refs/heads/codex/chase-clouds-polish-2026-10-12'
+        if: github.ref == 'refs/heads/codex/game-fixes-2026-10-11' || github.ref == 'refs/heads/codex-reviews'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

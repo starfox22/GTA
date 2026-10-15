@@ -1,0 +1,11 @@
+Model Information:
+* title:	Chieftain MK-5 Main Battle Tank
+* source:	https://sketchfab.com/3d-models/chieftain-mk-5-main-battle-tank-1afc838ca30c4dac99c15e731d0d2ab8
+* author:	Muhamad Mirza Arrafi (https://sketchfab.com/nazidefenseforceofficial)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Chieftain MK-5 Main Battle Tank" (https://sketchfab.com/3d-models/chieftain-mk-5-main-battle-tank-1afc838ca30c4dac99c15e731d0d2ab8) by Muhamad Mirza Arrafi (https://sketchfab.com/nazidefenseforceofficial) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

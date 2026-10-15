@@ -1,0 +1,2953 @@
+{
+  "htmlSha256": "21403cd7c63950f619da9e8818a60be14ef306b0d08ced79ac336cd247c4df1a",
+  "recorderSha256": "a1b1fc48ef3ab80eddcf69f0bf3929b562a5edf4e79fabfe9dd71aa912f3aa51",
+  "gpuTestSha256": "042fe03009559f796d7851750d03078c7d2006f216ddfecb192751a7b467cc85",
+  "checks": 293,
+  "notes": [
+    "model: built in 115 ms: 4237 vertices, 7064 triangles",
+    "hair 1.810 m, scalp 1.810 m, soles -0.004 m, chin 1.579 m",
+    "1 triangles face against their normals in the bind (0.14 per mille)",
+    "model: pose set: {\"stand\":{\"stretch\":1.16,\"collapsedPerMille\":0,\"flippedPerMille\":0.99,\"worstGapMm\":0},\"walk\":{\"stretch\":1.66,\"collapsedPerMille\":0,\"flippedPerMille\":1.13,\"worstGapMm\":0},\"run\":{\"stretch\":2.15,\"collapsedPerMille\":0.42,\"flippedPerMille\":3.96,\"worstGapMm\":0},\"pistolAim\":{\"stretch\":1.87,\"collapsedPerMille\":0,\"flippedPerMille\":0.99,\"worstGapMm\":0},\"rifle\":{\"stretch\":1.89,\"collapsedPerMille\":0.14,\"flippedPerMille\":0.42,\"worstGapMm\":0},\"handsUp\":{\"stretch\":3.15,\"collapsedPerMille\":0.28,\"flippedPerMille\":4.53,\"worstGapMm\":0},\"phone\":{\"stretch\":1.92,\"collapsedPerMille\":0.14,\"flippedPerMille\":1.84,\"worstGapMm\":0},\"seated\":{\"stretch\":3.18,\"collapsedPerMille\":0.28,\"flippedPerMille\":4.67,\"worstGapMm\":0},\"kneel\":{\"stretch\":2.73,\"collapsedPerMille\":0.14,\"flippedPerMille\":6.23,\"worstGapMm\":0},\"crawl\":{\"stretch\":2.63,\"collapsedPerMille\":0,\"flippedPerMille\":1.98,\"worstGapMm\":0},\"freefall\":{\"stretch\":1.86,\"collapsedPerMille\":0,\"flippedPerMille\":0,\"worstGapMm\":0},\"swim\":{\"stretch\":3.17,\"collapsedPerMille\":0.14,\"flippedPerMille\":2.69,\"worstGapMm\":0},\"deadBack\":{\"stretch\":1.87,\"collapsedPerMille\":0,\"flippedPerMille\":0,\"worstGapMm\":0},\"carjack\":{\"stretch\":1.96,\"collapsedPerMille\":0.14,\"flippedPerMille\":0.85,\"worstGapMm\":0},\"twistLeft\":{\"stretch\":2.77,\"collapsedPerMille\":0,\"flippedPerMille\":0.85,\"worstGapMm\":0},\"twistRight\":{\"stretch\":2.89,\"collapsedPerMille\":0,\"flippedPerMille\":0.85,\"worstGapMm\":0},\"wristBent\":{\"stretch\":1.81,\"collapsedPerMille\":0,\"flippedPerMille\":1.56,\"worstGapMm\":0},\"wristTwisted\":{\"stretch\":2.16,\"collapsedPerMille\":0,\"flippedPerMille\":0,\"worstGapMm\":0}}",
+    "fields: built in 2918 ms: 56897 vertices, 113462 triangles",
+    "hair 1.814 m, scalp 1.800 m, soles -0.003 m, chin 1.566 m",
+    "332 triangles face against their normals in the bind (2.93 per mille)",
+    "fields: pose set: {\"stand\":{\"stretch\":1.4,\"collapsedPerMille\":0,\"flippedPerMille\":0.04,\"worstGapMm\":0},\"walk\":{\"stretch\":1.74,\"collapsedPerMille\":0.01,\"flippedPerMille\":0.13,\"worstGapMm\":0.9},\"run\":{\"stretch\":2.38,\"collapsedPerMille\":0.25,\"flippedPerMille\":2.27,\"worstGapMm\":1.1},\"pistolAim\":{\"stretch\":2.79,\"collapsedPerMille\":0.08,\"flippedPerMille\":1.36,\"worstGapMm\":1.6},\"rifle\":{\"stretch\":2.2,\"collapsedPerMille\":0.1,\"flippedPerMille\":0.95,\"worstGapMm\":0.5},\"handsUp\":{\"stretch\":5,\"collapsedPerMille\":0.07,\"flippedPerMille\":3.66,\"worstGapMm\":0},\"phone\":{\"stretch\":1.7,\"collapsedPerMille\":0.03,\"flippedPerMille\":0.71,\"worstGapMm\":3.6},\"seated\":{\"stretch\":3.37,\"collapsedPerMille\":0.13,\"flippedPerMille\":3.23,\"worstGapMm\":1.1},\"kneel\":{\"stretch\":3.22,\"collapsedPerMille\":0.14,\"flippedPerMille\":7.31,\"worstGapMm\":0},\"crawl\":{\"stretch\":3.47,\"collapsedPerMille\":0.1,\"flippedPerMille\":2.35,\"worstGapMm\":0},\"freefall\":{\"stretch\":1.91,\"collapsedPerMille\":0,\"flippedPerMille\":0.08,\"worstGapMm\":0},\"swim\":{\"stretch\":4.2,\"collapsedPerMille\":0.05,\"flippedPerMille\":1.93,\"worstGapMm\":0.3},\"deadBack\":{\"stretch\":2.03,\"collapsedPerMille\":0,\"flippedPerMille\":0.04,\"worstGapMm\":0},\"carjack\":{\"stretch\":2.16,\"collapsedPerMille\":0.1,\"flippedPerMille\":0.66,\"worstGapMm\":4.3},\"twistLeft\":{\"stretch\":1.8,\"collapsedPerMille\":0,\"flippedPerMille\":0.11,\"worstGapMm\":0},\"twistRight\":{\"stretch\":1.81,\"collapsedPerMille\":0.04,\"flippedPerMille\":0.24,\"worstGapMm\":0},\"wristBent\":{\"stretch\":2.68,\"collapsedPerMille\":0.07,\"flippedPerMille\":1.2,\"worstGapMm\":0},\"wristTwisted\":{\"stretch\":1.48,\"collapsedPerMille\":0,\"flippedPerMille\":0,\"worstGapMm\":2.6}}",
+    "lost: {\"watched\":true,\"lost\":true,\"losses\":1,\"restores\":0,\"reloadPending\":false,\"lostSeconds\":1.9} mode pause",
+    "restored: {\"watched\":true,\"lost\":false,\"losses\":1,\"restores\":1,\"reloadPending\":true,\"lostSeconds\":0}"
+  ],
+  "errors": [],
+  "warnings": [
+    "Scripts \"build/three.js\" and \"build/three.min.js\" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation"
+  ],
+  "lod": [
+    {
+      "quality": "low",
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6300,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "13:00",
+        "renderer": "3d",
+        "vehicles": 280,
+        "pedestrians": 595
+      },
+      "model": {
+        "id": 265,
+        "type": "chevette",
+        "asset": "c8_hari",
+        "far": true,
+        "triangles": 9407,
+        "visible": true,
+        "pool": {
+          "ready": false,
+          "instances": 0,
+          "triangles": 0
+        }
+      },
+      "doors": {
+        "id": 265,
+        "type": "chevette",
+        "asset": "2019 Chevrolet Corvette C8 Stingray",
+        "mask": 0,
+        "nativeDoors": true,
+        "doors": {},
+        "materials": {
+          "shell": {
+            "uuid": "8ea0a730-fe4c-44c1-8bfc-71dd84a4a461",
+            "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+            "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+            "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+            "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+            "transparent": false,
+            "opacity": 1,
+            "alphaTest": 0.5,
+            "depthWrite": true,
+            "side": 0,
+            "forceSinglePass": false
+          },
+          "trim": {
+            "uuid": "bc1b78eb-cb80-4997-9786-bec38f1d36ae",
+            "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+            "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+            "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+            "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+            "transparent": false,
+            "opacity": 1,
+            "alphaTest": 0.5,
+            "depthWrite": true,
+            "side": 0,
+            "forceSinglePass": false
+          },
+          "optics": {
+            "uuid": "211e9f0e-af88-4137-852a-2ff1dc129aff",
+            "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+            "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+            "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+            "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+            "transparent": true,
+            "opacity": 1,
+            "alphaTest": 0,
+            "depthWrite": false,
+            "side": 2,
+            "forceSinglePass": true
+          },
+          "cabin": {
+            "uuid": "33f2c2a5-4780-4b50-88ed-6a9be7fe3016",
+            "map": null,
+            "roughnessMap": null,
+            "metalnessMap": null,
+            "emissiveMap": null,
+            "transparent": true,
+            "opacity": 0.24,
+            "alphaTest": 0,
+            "depthWrite": true,
+            "side": 0,
+            "forceSinglePass": false
+          }
+        },
+        "closedSourceGeometry": {
+          "shell": false,
+          "panels": false,
+          "cabin": false,
+          "trim": false,
+          "optics": false
+        },
+        "sourceGeometryRestored": {
+          "shell": false,
+          "panels": false,
+          "cabin": false,
+          "trim": false,
+          "optics": false
+        },
+        "cabin": {
+          "authored": true,
+          "fallbackVisible": false,
+          "interiorTriangles": 20295,
+          "seat": [
+            0.28,
+            1.84,
+            -3.712
+          ]
+        }
+      },
+      "char": null,
+      "damage": {
+        "id": 265,
+        "type": "chevette",
+        "hp": 140,
+        "maxhp": 140,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 418,
+        "y": 6000,
+        "a": 0
+      }
+    },
+    {
+      "quality": "ultra",
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6300,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "13:00",
+        "renderer": "3d",
+        "vehicles": 280,
+        "pedestrians": 595
+      },
+      "model": {
+        "id": 265,
+        "type": "chevette",
+        "asset": "c8_hari",
+        "far": true,
+        "triangles": 9407,
+        "visible": true,
+        "pool": {
+          "ready": false,
+          "instances": 0,
+          "triangles": 0
+        }
+      },
+      "doors": {
+        "id": 265,
+        "type": "chevette",
+        "asset": "2019 Chevrolet Corvette C8 Stingray",
+        "mask": 0,
+        "nativeDoors": true,
+        "doors": {},
+        "materials": {
+          "shell": {
+            "uuid": "8ea0a730-fe4c-44c1-8bfc-71dd84a4a461",
+            "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+            "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+            "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+            "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+            "transparent": false,
+            "opacity": 1,
+            "alphaTest": 0.5,
+            "depthWrite": true,
+            "side": 0,
+            "forceSinglePass": false
+          },
+          "trim": {
+            "uuid": "bc1b78eb-cb80-4997-9786-bec38f1d36ae",
+            "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+            "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+            "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+            "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+            "transparent": false,
+            "opacity": 1,
+            "alphaTest": 0.5,
+            "depthWrite": true,
+            "side": 0,
+            "forceSinglePass": false
+          },
+          "optics": {
+            "uuid": "211e9f0e-af88-4137-852a-2ff1dc129aff",
+            "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+            "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+            "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+            "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+            "transparent": true,
+            "opacity": 1,
+            "alphaTest": 0,
+            "depthWrite": false,
+            "side": 2,
+            "forceSinglePass": true
+          },
+          "cabin": {
+            "uuid": "33f2c2a5-4780-4b50-88ed-6a9be7fe3016",
+            "map": null,
+            "roughnessMap": null,
+            "metalnessMap": null,
+            "emissiveMap": null,
+            "transparent": true,
+            "opacity": 0.24,
+            "alphaTest": 0,
+            "depthWrite": true,
+            "side": 0,
+            "forceSinglePass": false
+          }
+        },
+        "closedSourceGeometry": {
+          "shell": false,
+          "panels": false,
+          "cabin": false,
+          "trim": false,
+          "optics": false
+        },
+        "sourceGeometryRestored": {
+          "shell": false,
+          "panels": false,
+          "cabin": false,
+          "trim": false,
+          "optics": false
+        },
+        "cabin": {
+          "authored": true,
+          "fallbackVisible": false,
+          "interiorTriangles": 20295,
+          "seat": [
+            0.28,
+            1.84,
+            -3.712
+          ]
+        }
+      },
+      "char": null,
+      "damage": {
+        "id": 265,
+        "type": "chevette",
+        "hp": 140,
+        "maxhp": 140,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 418,
+        "y": 6000,
+        "a": 0
+      }
+    }
+  ],
+  "playerBodyTestSha256": "bbb4c503dd7175965173155090f863df71f4774c08e09883f8242ddf3ea5368a",
+  "id": 265,
+  "clean": {
+    "status": {
+      "mode": "play",
+      "x": 418,
+      "y": 6080,
+      "district": "SOUTHPORT AIRPORT",
+      "hp": 100,
+      "cash": 0,
+      "wanted": 0,
+      "mission": null,
+      "completed": 0,
+      "vehicle": null,
+      "weapon": "9MM PISTOL",
+      "clock": "13:00",
+      "renderer": "3d",
+      "vehicles": 280,
+      "pedestrians": 595
+    },
+    "model": {
+      "id": 265,
+      "type": "chevette",
+      "asset": "c8_hari",
+      "far": false,
+      "triangles": 85031,
+      "visible": true,
+      "pool": {
+        "ready": false,
+        "instances": 0,
+        "triangles": 0
+      }
+    },
+    "doors": {
+      "id": 265,
+      "type": "chevette",
+      "asset": "2019 Chevrolet Corvette C8 Stingray",
+      "mask": 0,
+      "nativeDoors": true,
+      "doors": {},
+      "materials": {
+        "shell": {
+          "uuid": "8ea0a730-fe4c-44c1-8bfc-71dd84a4a461",
+          "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+          "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+          "transparent": false,
+          "opacity": 1,
+          "alphaTest": 0.5,
+          "depthWrite": true,
+          "side": 0,
+          "forceSinglePass": false
+        },
+        "trim": {
+          "uuid": "bc1b78eb-cb80-4997-9786-bec38f1d36ae",
+          "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+          "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+          "transparent": false,
+          "opacity": 1,
+          "alphaTest": 0.5,
+          "depthWrite": true,
+          "side": 0,
+          "forceSinglePass": false
+        },
+        "optics": {
+          "uuid": "211e9f0e-af88-4137-852a-2ff1dc129aff",
+          "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+          "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+          "transparent": true,
+          "opacity": 1,
+          "alphaTest": 0,
+          "depthWrite": false,
+          "side": 2,
+          "forceSinglePass": true
+        },
+        "cabin": {
+          "uuid": "33f2c2a5-4780-4b50-88ed-6a9be7fe3016",
+          "map": null,
+          "roughnessMap": null,
+          "metalnessMap": null,
+          "emissiveMap": null,
+          "transparent": true,
+          "opacity": 0.24,
+          "alphaTest": 0,
+          "depthWrite": true,
+          "side": 0,
+          "forceSinglePass": false
+        }
+      },
+      "closedSourceGeometry": {
+        "shell": true,
+        "panels": true,
+        "cabin": true,
+        "trim": true,
+        "optics": true
+      },
+      "sourceGeometryRestored": {
+        "shell": true,
+        "panels": true,
+        "cabin": true,
+        "trim": true,
+        "optics": true
+      },
+      "cabin": {
+        "authored": true,
+        "fallbackVisible": false,
+        "interiorTriangles": 20295,
+        "seat": [
+          0.28,
+          1.84,
+          -3.712
+        ]
+      }
+    },
+    "char": null,
+    "damage": {
+      "id": 265,
+      "type": "chevette",
+      "hp": 140,
+      "maxhp": 140,
+      "zones": {
+        "front": 0,
+        "rear": 0,
+        "left": 0,
+        "right": 0
+      },
+      "dents": [],
+      "parts": {
+        "hood": 0,
+        "bumperFront": 0,
+        "bumperRear": 0,
+        "doorLeft": 0,
+        "doorRight": 0,
+        "trunk": 0
+      },
+      "glass": {
+        "front": 0,
+        "rear": 0,
+        "left": 0,
+        "right": 0
+      },
+      "lights": [],
+      "flatTires": [],
+      "marks": {},
+      "pull": 0,
+      "handling": {
+        "power": 1,
+        "top": 1,
+        "grip": 1,
+        "pull": 0,
+        "steer": 1,
+        "brake": 1
+      },
+      "burning": 0,
+      "fireSpent": false,
+      "burnt": false,
+      "speed": 0,
+      "spin": 0,
+      "x": 418,
+      "y": 6000,
+      "a": 0
+    }
+  },
+  "returnedNear": {
+    "status": {
+      "mode": "play",
+      "x": 418,
+      "y": 6080,
+      "district": "SOUTHPORT AIRPORT",
+      "hp": 100,
+      "cash": 0,
+      "wanted": 0,
+      "mission": null,
+      "completed": 0,
+      "vehicle": null,
+      "weapon": "9MM PISTOL",
+      "clock": "13:00",
+      "renderer": "3d",
+      "vehicles": 280,
+      "pedestrians": 595
+    },
+    "model": {
+      "id": 265,
+      "type": "chevette",
+      "asset": "c8_hari",
+      "far": false,
+      "triangles": 85031,
+      "visible": true,
+      "pool": {
+        "ready": false,
+        "instances": 0,
+        "triangles": 0
+      }
+    },
+    "doors": {
+      "id": 265,
+      "type": "chevette",
+      "asset": "2019 Chevrolet Corvette C8 Stingray",
+      "mask": 0,
+      "nativeDoors": true,
+      "doors": {},
+      "materials": {
+        "shell": {
+          "uuid": "8ea0a730-fe4c-44c1-8bfc-71dd84a4a461",
+          "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+          "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+          "transparent": false,
+          "opacity": 1,
+          "alphaTest": 0.5,
+          "depthWrite": true,
+          "side": 0,
+          "forceSinglePass": false
+        },
+        "trim": {
+          "uuid": "bc1b78eb-cb80-4997-9786-bec38f1d36ae",
+          "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+          "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+          "transparent": false,
+          "opacity": 1,
+          "alphaTest": 0.5,
+          "depthWrite": true,
+          "side": 0,
+          "forceSinglePass": false
+        },
+        "optics": {
+          "uuid": "211e9f0e-af88-4137-852a-2ff1dc129aff",
+          "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+          "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+          "transparent": true,
+          "opacity": 1,
+          "alphaTest": 0,
+          "depthWrite": false,
+          "side": 2,
+          "forceSinglePass": true
+        },
+        "cabin": {
+          "uuid": "33f2c2a5-4780-4b50-88ed-6a9be7fe3016",
+          "map": null,
+          "roughnessMap": null,
+          "metalnessMap": null,
+          "emissiveMap": null,
+          "transparent": true,
+          "opacity": 0.24,
+          "alphaTest": 0,
+          "depthWrite": true,
+          "side": 0,
+          "forceSinglePass": false
+        }
+      },
+      "closedSourceGeometry": {
+        "shell": true,
+        "panels": true,
+        "cabin": true,
+        "trim": true,
+        "optics": true
+      },
+      "sourceGeometryRestored": {
+        "shell": true,
+        "panels": true,
+        "cabin": true,
+        "trim": true,
+        "optics": true
+      },
+      "cabin": {
+        "authored": true,
+        "fallbackVisible": false,
+        "interiorTriangles": 20295,
+        "seat": [
+          0.28,
+          1.84,
+          -3.712
+        ]
+      }
+    },
+    "char": null,
+    "damage": {
+      "id": 265,
+      "type": "chevette",
+      "hp": 140,
+      "maxhp": 140,
+      "zones": {
+        "front": 0,
+        "rear": 0,
+        "left": 0,
+        "right": 0
+      },
+      "dents": [],
+      "parts": {
+        "hood": 0,
+        "bumperFront": 0,
+        "bumperRear": 0,
+        "doorLeft": 0,
+        "doorRight": 0,
+        "trunk": 0
+      },
+      "glass": {
+        "front": 0,
+        "rear": 0,
+        "left": 0,
+        "right": 0
+      },
+      "lights": [],
+      "flatTires": [],
+      "marks": {},
+      "pull": 0,
+      "handling": {
+        "power": 1,
+        "top": 1,
+        "grip": 1,
+        "pull": 0,
+        "steer": 1,
+        "brake": 1
+      },
+      "burning": 0,
+      "fireSpent": false,
+      "burnt": false,
+      "speed": 0,
+      "spin": 0,
+      "x": 418,
+      "y": 6000,
+      "a": 0
+    }
+  },
+  "burnBeforeDoor": {
+    "status": {
+      "mode": "play",
+      "x": 378,
+      "y": 6000,
+      "district": "SOUTHPORT AIRPORT",
+      "hp": 100,
+      "cash": 0,
+      "wanted": 0,
+      "mission": null,
+      "completed": 0,
+      "vehicle": null,
+      "weapon": "9MM PISTOL",
+      "clock": "13:00",
+      "renderer": "3d",
+      "vehicles": 280,
+      "pedestrians": 595
+    },
+    "model": {
+      "id": 265,
+      "type": "chevette",
+      "asset": "c8_hari",
+      "far": false,
+      "triangles": 85031,
+      "visible": true,
+      "pool": {
+        "ready": false,
+        "instances": 0,
+        "triangles": 0
+      }
+    },
+    "doors": {
+      "id": 265,
+      "type": "chevette",
+      "asset": "2019 Chevrolet Corvette C8 Stingray",
+      "mask": 0,
+      "nativeDoors": true,
+      "doors": {},
+      "materials": {
+        "shell": {
+          "uuid": "e5ed0ec2-48b9-4426-a5fd-404775a8ca4d",
+          "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+          "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+          "transparent": false,
+          "opacity": 1,
+          "alphaTest": 0.5,
+          "depthWrite": true,
+          "side": 0,
+          "forceSinglePass": false
+        },
+        "trim": {
+          "uuid": "8a1d12e8-aedd-445d-bb9d-e16b86197378",
+          "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+          "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+          "transparent": false,
+          "opacity": 1,
+          "alphaTest": 0.5,
+          "depthWrite": true,
+          "side": 0,
+          "forceSinglePass": false
+        },
+        "optics": {
+          "uuid": "e3d14854-a428-43dd-b974-62bd8c9a51d6",
+          "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+          "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+          "transparent": true,
+          "opacity": 1,
+          "alphaTest": 0,
+          "depthWrite": false,
+          "side": 2,
+          "forceSinglePass": true
+        },
+        "cabin": [
+          {
+            "uuid": "1d1ba052-2475-4f0c-b147-b5d4373d57fa",
+            "map": null,
+            "roughnessMap": null,
+            "metalnessMap": null,
+            "emissiveMap": null,
+            "transparent": false,
+            "opacity": 1,
+            "alphaTest": 0,
+            "depthWrite": false,
+            "side": 0,
+            "forceSinglePass": false
+          },
+          {
+            "uuid": "1d1ba052-2475-4f0c-b147-b5d4373d57fa",
+            "map": null,
+            "roughnessMap": null,
+            "metalnessMap": null,
+            "emissiveMap": null,
+            "transparent": false,
+            "opacity": 1,
+            "alphaTest": 0,
+            "depthWrite": false,
+            "side": 0,
+            "forceSinglePass": false
+          },
+          {
+            "uuid": "1d1ba052-2475-4f0c-b147-b5d4373d57fa",
+            "map": null,
+            "roughnessMap": null,
+            "metalnessMap": null,
+            "emissiveMap": null,
+            "transparent": false,
+            "opacity": 1,
+            "alphaTest": 0,
+            "depthWrite": false,
+            "side": 0,
+            "forceSinglePass": false
+          },
+          {
+            "uuid": "1d1ba052-2475-4f0c-b147-b5d4373d57fa",
+            "map": null,
+            "roughnessMap": null,
+            "metalnessMap": null,
+            "emissiveMap": null,
+            "transparent": false,
+            "opacity": 1,
+            "alphaTest": 0,
+            "depthWrite": false,
+            "side": 0,
+            "forceSinglePass": false
+          },
+          {
+            "uuid": "210f9ce5-bfcf-4556-86a1-a5e176ca5e8b",
+            "map": null,
+            "roughnessMap": null,
+            "metalnessMap": null,
+            "emissiveMap": null,
+            "transparent": false,
+            "opacity": 1,
+            "alphaTest": 0,
+            "depthWrite": true,
+            "side": 0,
+            "forceSinglePass": false
+          }
+        ]
+      },
+      "closedSourceGeometry": {
+        "shell": true,
+        "panels": true,
+        "cabin": true,
+        "trim": true,
+        "optics": true
+      },
+      "sourceGeometryRestored": {
+        "shell": true,
+        "panels": true,
+        "cabin": true,
+        "trim": true,
+        "optics": true
+      },
+      "cabin": {
+        "authored": true,
+        "fallbackVisible": false,
+        "interiorTriangles": 20295,
+        "seat": [
+          0.28,
+          1.84,
+          -3.712
+        ]
+      }
+    },
+    "char": {
+      "id": 265,
+      "type": "chevette",
+      "materials": [
+        "approved",
+        "approved",
+        "approved",
+        "approved",
+        "approved",
+        "approved"
+      ],
+      "swapped": 22,
+      "state": [
+        0,
+        0,
+        1,
+        0.083
+      ],
+      "ember": 0
+    },
+    "damage": {
+      "id": 265,
+      "type": "chevette",
+      "hp": 0,
+      "maxhp": 140,
+      "zones": {
+        "front": 0,
+        "rear": 0,
+        "left": 0,
+        "right": 0
+      },
+      "dents": [],
+      "parts": {
+        "hood": 2,
+        "bumperFront": 0,
+        "bumperRear": 1,
+        "doorLeft": 0,
+        "doorRight": 0,
+        "trunk": 1
+      },
+      "glass": {
+        "front": 2,
+        "rear": 2,
+        "left": 2,
+        "right": 2
+      },
+      "lights": [
+        "headLeft",
+        "headRight",
+        "tailLeft",
+        "tailRight"
+      ],
+      "flatTires": [
+        "frontLeft",
+        "frontRight",
+        "rearLeft",
+        "rearRight"
+      ],
+      "marks": {},
+      "pull": 0,
+      "handling": {
+        "power": 0.5,
+        "top": 0.56,
+        "grip": 0.52,
+        "pull": 0,
+        "steer": 0.84,
+        "brake": 0.52
+      },
+      "burning": 0,
+      "fireSpent": false,
+      "burnt": true,
+      "speed": 0,
+      "spin": 0,
+      "x": 418,
+      "y": 6000,
+      "a": 0
+    }
+  },
+  "burntOpen": {
+    "status": {
+      "mode": "play",
+      "x": 378,
+      "y": 6000,
+      "district": "SOUTHPORT AIRPORT",
+      "hp": 100,
+      "cash": 0,
+      "wanted": 0,
+      "mission": null,
+      "completed": 0,
+      "vehicle": null,
+      "weapon": "9MM PISTOL",
+      "clock": "13:00",
+      "renderer": "3d",
+      "vehicles": 280,
+      "pedestrians": 595
+    },
+    "model": {
+      "id": 265,
+      "type": "chevette",
+      "asset": "c8_hari",
+      "far": false,
+      "triangles": 82076,
+      "visible": true,
+      "pool": {
+        "ready": false,
+        "instances": 0,
+        "triangles": 0
+      }
+    },
+    "doors": {
+      "id": 265,
+      "type": "chevette",
+      "asset": "2019 Chevrolet Corvette C8 Stingray",
+      "mask": 1,
+      "nativeDoors": true,
+      "doors": {
+        "-1": {
+          "native": true,
+          "pivot": [
+            6.2026074183272675,
+            4.273754743811496,
+            -6.8764977614945595
+          ],
+          "axis": [
+            1.6292067916978678e-7,
+            0.9999999999999867,
+            0
+          ],
+          "quaternion": [
+            -8.514813256067597e-8,
+            -0.5226355119225733,
+            0,
+            0.8525562278685334
+          ],
+          "angle": -1.0998786755217869,
+          "windowVisible": false,
+          "sourceParts": [
+            "doorLeft.paint",
+            "doorLeft.trim",
+            "doorLeft.cabin",
+            "doorLeft.indicator",
+            "doorLeft.opticalGlass",
+            "doorLeft.glass"
+          ],
+          "layers": [
+            {
+              "triangles": 1420,
+              "visible": true,
+              "window": false,
+              "innerCard": false,
+              "material": {
+                "uuid": "e5ed0ec2-48b9-4426-a5fd-404775a8ca4d",
+                "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+                "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 0,
+                "forceSinglePass": false
+              }
+            },
+            {
+              "triangles": 78,
+              "visible": false,
+              "window": true,
+              "innerCard": false,
+              "material": [
+                {
+                  "uuid": "1d1ba052-2475-4f0c-b147-b5d4373d57fa",
+                  "map": null,
+                  "roughnessMap": null,
+                  "metalnessMap": null,
+                  "emissiveMap": null,
+                  "transparent": false,
+                  "opacity": 1,
+                  "alphaTest": 0,
+                  "depthWrite": false,
+                  "side": 0,
+                  "forceSinglePass": false
+                },
+                {
+                  "uuid": "1d1ba052-2475-4f0c-b147-b5d4373d57fa",
+                  "map": null,
+                  "roughnessMap": null,
+                  "metalnessMap": null,
+                  "emissiveMap": null,
+                  "transparent": false,
+                  "opacity": 1,
+                  "alphaTest": 0,
+                  "depthWrite": false,
+                  "side": 0,
+                  "forceSinglePass": false
+                },
+                {
+                  "uuid": "1d1ba052-2475-4f0c-b147-b5d4373d57fa",
+                  "map": null,
+                  "roughnessMap": null,
+                  "metalnessMap": null,
+                  "emissiveMap": null,
+                  "transparent": false,
+                  "opacity": 1,
+                  "alphaTest": 0,
+                  "depthWrite": false,
+                  "side": 0,
+                  "forceSinglePass": false
+                },
+                {
+                  "uuid": "1d1ba052-2475-4f0c-b147-b5d4373d57fa",
+                  "map": null,
+                  "roughnessMap": null,
+                  "metalnessMap": null,
+                  "emissiveMap": null,
+                  "transparent": false,
+                  "opacity": 1,
+                  "alphaTest": 0,
+                  "depthWrite": false,
+                  "side": 0,
+                  "forceSinglePass": false
+                },
+                {
+                  "uuid": "e26bb370-21bf-49d6-9fa5-a50f0368dff3",
+                  "map": null,
+                  "roughnessMap": null,
+                  "metalnessMap": null,
+                  "emissiveMap": null,
+                  "transparent": false,
+                  "opacity": 1,
+                  "alphaTest": 0,
+                  "depthWrite": true,
+                  "side": 2,
+                  "forceSinglePass": true
+                }
+              ]
+            },
+            {
+              "triangles": 1383,
+              "visible": true,
+              "window": false,
+              "innerCard": false,
+              "material": {
+                "uuid": "8a1d12e8-aedd-445d-bb9d-e16b86197378",
+                "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+                "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 0,
+                "forceSinglePass": false
+              }
+            },
+            {
+              "triangles": 74,
+              "visible": true,
+              "window": false,
+              "innerCard": false,
+              "material": {
+                "uuid": "e3d14854-a428-43dd-b974-62bd8c9a51d6",
+                "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+                "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+                "transparent": true,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 2,
+                "forceSinglePass": true
+              }
+            }
+          ],
+          "apertureHasCentrePanel": false
+        }
+      },
+      "materials": {
+        "shell": {
+          "uuid": "e5ed0ec2-48b9-4426-a5fd-404775a8ca4d",
+          "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+          "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+          "transparent": false,
+          "opacity": 1,
+          "alphaTest": 0.5,
+          "depthWrite": true,
+          "side": 0,
+          "forceSinglePass": false
+        },
+        "trim": {
+          "uuid": "8a1d12e8-aedd-445d-bb9d-e16b86197378",
+          "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+          "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+          "transparent": false,
+          "opacity": 1,
+          "alphaTest": 0.5,
+          "depthWrite": true,
+          "side": 0,
+          "forceSinglePass": false
+        },
+        "optics": {
+          "uuid": "e3d14854-a428-43dd-b974-62bd8c9a51d6",
+          "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+          "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+          "transparent": true,
+          "opacity": 1,
+          "alphaTest": 0,
+          "depthWrite": false,
+          "side": 2,
+          "forceSinglePass": true
+        },
+        "cabin": [
+          {
+            "uuid": "1d1ba052-2475-4f0c-b147-b5d4373d57fa",
+            "map": null,
+            "roughnessMap": null,
+            "metalnessMap": null,
+            "emissiveMap": null,
+            "transparent": false,
+            "opacity": 1,
+            "alphaTest": 0,
+            "depthWrite": false,
+            "side": 0,
+            "forceSinglePass": false
+          },
+          {
+            "uuid": "1d1ba052-2475-4f0c-b147-b5d4373d57fa",
+            "map": null,
+            "roughnessMap": null,
+            "metalnessMap": null,
+            "emissiveMap": null,
+            "transparent": false,
+            "opacity": 1,
+            "alphaTest": 0,
+            "depthWrite": false,
+            "side": 0,
+            "forceSinglePass": false
+          },
+          {
+            "uuid": "1d1ba052-2475-4f0c-b147-b5d4373d57fa",
+            "map": null,
+            "roughnessMap": null,
+            "metalnessMap": null,
+            "emissiveMap": null,
+            "transparent": false,
+            "opacity": 1,
+            "alphaTest": 0,
+            "depthWrite": false,
+            "side": 0,
+            "forceSinglePass": false
+          },
+          {
+            "uuid": "1d1ba052-2475-4f0c-b147-b5d4373d57fa",
+            "map": null,
+            "roughnessMap": null,
+            "metalnessMap": null,
+            "emissiveMap": null,
+            "transparent": false,
+            "opacity": 1,
+            "alphaTest": 0,
+            "depthWrite": false,
+            "side": 0,
+            "forceSinglePass": false
+          },
+          {
+            "uuid": "210f9ce5-bfcf-4556-86a1-a5e176ca5e8b",
+            "map": null,
+            "roughnessMap": null,
+            "metalnessMap": null,
+            "emissiveMap": null,
+            "transparent": false,
+            "opacity": 1,
+            "alphaTest": 0,
+            "depthWrite": true,
+            "side": 0,
+            "forceSinglePass": false
+          }
+        ]
+      },
+      "closedSourceGeometry": {
+        "shell": true,
+        "panels": false,
+        "cabin": false,
+        "trim": false,
+        "optics": false
+      },
+      "sourceGeometryRestored": {
+        "shell": true,
+        "panels": false,
+        "cabin": false,
+        "trim": false,
+        "optics": false
+      },
+      "cabin": {
+        "authored": true,
+        "fallbackVisible": false,
+        "interiorTriangles": 20295,
+        "seat": [
+          0.28,
+          1.84,
+          -3.712
+        ]
+      }
+    },
+    "char": {
+      "id": 265,
+      "type": "chevette",
+      "materials": [
+        "approved",
+        "approved",
+        "approved",
+        "approved",
+        "approved",
+        "approved"
+      ],
+      "swapped": 25,
+      "state": [
+        0,
+        0,
+        1,
+        0.083
+      ],
+      "ember": 0
+    },
+    "damage": {
+      "id": 265,
+      "type": "chevette",
+      "hp": 0,
+      "maxhp": 140,
+      "zones": {
+        "front": 0,
+        "rear": 0,
+        "left": 0,
+        "right": 0
+      },
+      "dents": [],
+      "parts": {
+        "hood": 2,
+        "bumperFront": 0,
+        "bumperRear": 1,
+        "doorLeft": 0,
+        "doorRight": 0,
+        "trunk": 1
+      },
+      "glass": {
+        "front": 2,
+        "rear": 2,
+        "left": 2,
+        "right": 2
+      },
+      "lights": [
+        "headLeft",
+        "headRight",
+        "tailLeft",
+        "tailRight"
+      ],
+      "flatTires": [
+        "frontLeft",
+        "frontRight",
+        "rearLeft",
+        "rearRight"
+      ],
+      "marks": {},
+      "pull": 0,
+      "handling": {
+        "power": 0.5,
+        "top": 0.56,
+        "grip": 0.52,
+        "pull": 0,
+        "steer": 0.84,
+        "brake": 0.52
+      },
+      "burning": 0,
+      "fireSpent": false,
+      "burnt": true,
+      "speed": 0,
+      "spin": 0,
+      "x": 418,
+      "y": 6000,
+      "a": 0
+    }
+  },
+  "repaired": {
+    "status": {
+      "mode": "play",
+      "x": 378,
+      "y": 6000,
+      "district": "SOUTHPORT AIRPORT",
+      "hp": 100,
+      "cash": 0,
+      "wanted": 0,
+      "mission": null,
+      "completed": 0,
+      "vehicle": null,
+      "weapon": "9MM PISTOL",
+      "clock": "13:01",
+      "renderer": "3d",
+      "vehicles": 280,
+      "pedestrians": 595
+    },
+    "model": {
+      "id": 265,
+      "type": "chevette",
+      "asset": "c8_hari",
+      "far": false,
+      "triangles": 85031,
+      "visible": true,
+      "pool": {
+        "ready": false,
+        "instances": 0,
+        "triangles": 0
+      }
+    },
+    "doors": {
+      "id": 265,
+      "type": "chevette",
+      "asset": "2019 Chevrolet Corvette C8 Stingray",
+      "mask": 0,
+      "nativeDoors": true,
+      "doors": {
+        "-1": {
+          "native": true,
+          "pivot": [
+            6.2026074183272675,
+            4.273754743811496,
+            -6.8764977614945595
+          ],
+          "axis": [
+            1.6292067916978678e-7,
+            0.9999999999999867,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "angle": 0,
+          "windowVisible": false,
+          "sourceParts": [
+            "doorLeft.paint",
+            "doorLeft.trim",
+            "doorLeft.cabin",
+            "doorLeft.indicator",
+            "doorLeft.opticalGlass",
+            "doorLeft.glass"
+          ],
+          "layers": [
+            {
+              "triangles": 1420,
+              "visible": false,
+              "window": false,
+              "innerCard": false,
+              "material": {
+                "uuid": "8ea0a730-fe4c-44c1-8bfc-71dd84a4a461",
+                "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+                "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 0,
+                "forceSinglePass": false
+              }
+            },
+            {
+              "triangles": 78,
+              "visible": false,
+              "window": true,
+              "innerCard": false,
+              "material": [
+                {
+                  "uuid": "1d1ba052-2475-4f0c-b147-b5d4373d57fa",
+                  "map": null,
+                  "roughnessMap": null,
+                  "metalnessMap": null,
+                  "emissiveMap": null,
+                  "transparent": false,
+                  "opacity": 1,
+                  "alphaTest": 0,
+                  "depthWrite": false,
+                  "side": 0,
+                  "forceSinglePass": false
+                },
+                {
+                  "uuid": "1d1ba052-2475-4f0c-b147-b5d4373d57fa",
+                  "map": null,
+                  "roughnessMap": null,
+                  "metalnessMap": null,
+                  "emissiveMap": null,
+                  "transparent": false,
+                  "opacity": 1,
+                  "alphaTest": 0,
+                  "depthWrite": false,
+                  "side": 0,
+                  "forceSinglePass": false
+                },
+                {
+                  "uuid": "1d1ba052-2475-4f0c-b147-b5d4373d57fa",
+                  "map": null,
+                  "roughnessMap": null,
+                  "metalnessMap": null,
+                  "emissiveMap": null,
+                  "transparent": false,
+                  "opacity": 1,
+                  "alphaTest": 0,
+                  "depthWrite": false,
+                  "side": 0,
+                  "forceSinglePass": false
+                },
+                {
+                  "uuid": "1d1ba052-2475-4f0c-b147-b5d4373d57fa",
+                  "map": null,
+                  "roughnessMap": null,
+                  "metalnessMap": null,
+                  "emissiveMap": null,
+                  "transparent": false,
+                  "opacity": 1,
+                  "alphaTest": 0,
+                  "depthWrite": false,
+                  "side": 0,
+                  "forceSinglePass": false
+                },
+                {
+                  "uuid": "e26bb370-21bf-49d6-9fa5-a50f0368dff3",
+                  "map": null,
+                  "roughnessMap": null,
+                  "metalnessMap": null,
+                  "emissiveMap": null,
+                  "transparent": false,
+                  "opacity": 1,
+                  "alphaTest": 0,
+                  "depthWrite": true,
+                  "side": 2,
+                  "forceSinglePass": true
+                }
+              ]
+            },
+            {
+              "triangles": 1383,
+              "visible": false,
+              "window": false,
+              "innerCard": false,
+              "material": {
+                "uuid": "bc1b78eb-cb80-4997-9786-bec38f1d36ae",
+                "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+                "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 0,
+                "forceSinglePass": false
+              }
+            },
+            {
+              "triangles": 74,
+              "visible": false,
+              "window": false,
+              "innerCard": false,
+              "material": {
+                "uuid": "211e9f0e-af88-4137-852a-2ff1dc129aff",
+                "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+                "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+                "transparent": true,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 2,
+                "forceSinglePass": true
+              }
+            }
+          ],
+          "apertureHasCentrePanel": false
+        }
+      },
+      "materials": {
+        "shell": {
+          "uuid": "8ea0a730-fe4c-44c1-8bfc-71dd84a4a461",
+          "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+          "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+          "transparent": false,
+          "opacity": 1,
+          "alphaTest": 0.5,
+          "depthWrite": true,
+          "side": 0,
+          "forceSinglePass": false
+        },
+        "trim": {
+          "uuid": "bc1b78eb-cb80-4997-9786-bec38f1d36ae",
+          "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+          "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+          "transparent": false,
+          "opacity": 1,
+          "alphaTest": 0.5,
+          "depthWrite": true,
+          "side": 0,
+          "forceSinglePass": false
+        },
+        "optics": {
+          "uuid": "211e9f0e-af88-4137-852a-2ff1dc129aff",
+          "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+          "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+          "transparent": true,
+          "opacity": 1,
+          "alphaTest": 0,
+          "depthWrite": false,
+          "side": 2,
+          "forceSinglePass": true
+        },
+        "cabin": {
+          "uuid": "33f2c2a5-4780-4b50-88ed-6a9be7fe3016",
+          "map": null,
+          "roughnessMap": null,
+          "metalnessMap": null,
+          "emissiveMap": null,
+          "transparent": true,
+          "opacity": 0.24,
+          "alphaTest": 0,
+          "depthWrite": true,
+          "side": 0,
+          "forceSinglePass": false
+        }
+      },
+      "closedSourceGeometry": {
+        "shell": true,
+        "panels": true,
+        "cabin": true,
+        "trim": true,
+        "optics": true
+      },
+      "sourceGeometryRestored": {
+        "shell": true,
+        "panels": true,
+        "cabin": true,
+        "trim": true,
+        "optics": true
+      },
+      "cabin": {
+        "authored": true,
+        "fallbackVisible": false,
+        "interiorTriangles": 20295,
+        "seat": [
+          0.28,
+          1.84,
+          -3.712
+        ]
+      }
+    },
+    "char": null,
+    "damage": {
+      "id": 265,
+      "type": "chevette",
+      "hp": 140,
+      "maxhp": 140,
+      "zones": {
+        "front": 0,
+        "rear": 0,
+        "left": 0,
+        "right": 0
+      },
+      "dents": [],
+      "parts": {
+        "hood": 0,
+        "bumperFront": 0,
+        "bumperRear": 0,
+        "doorLeft": 0,
+        "doorRight": 0,
+        "trunk": 0
+      },
+      "glass": {
+        "front": 0,
+        "rear": 0,
+        "left": 0,
+        "right": 0
+      },
+      "lights": [],
+      "flatTires": [],
+      "marks": {},
+      "pull": 0,
+      "handling": {
+        "power": 1,
+        "top": 1,
+        "grip": 1,
+        "pull": 0,
+        "steer": 1,
+        "brake": 1
+      },
+      "burning": 0,
+      "fireSpent": false,
+      "burnt": false,
+      "speed": 0,
+      "spin": 0,
+      "x": 418,
+      "y": 6000,
+      "a": 0
+    }
+  },
+  "reopened": {
+    "status": {
+      "mode": "play",
+      "x": 378,
+      "y": 6000,
+      "district": "SOUTHPORT AIRPORT",
+      "hp": 100,
+      "cash": 0,
+      "wanted": 0,
+      "mission": null,
+      "completed": 0,
+      "vehicle": null,
+      "weapon": "9MM PISTOL",
+      "clock": "13:01",
+      "renderer": "3d",
+      "vehicles": 280,
+      "pedestrians": 595
+    },
+    "model": {
+      "id": 265,
+      "type": "chevette",
+      "asset": "c8_hari",
+      "far": false,
+      "triangles": 82076,
+      "visible": true,
+      "pool": {
+        "ready": false,
+        "instances": 0,
+        "triangles": 0
+      }
+    },
+    "doors": {
+      "id": 265,
+      "type": "chevette",
+      "asset": "2019 Chevrolet Corvette C8 Stingray",
+      "mask": 1,
+      "nativeDoors": true,
+      "doors": {
+        "-1": {
+          "native": true,
+          "pivot": [
+            6.2026074183272675,
+            4.273754743811496,
+            -6.8764977614945595
+          ],
+          "axis": [
+            1.6292067916978678e-7,
+            0.9999999999999867,
+            0
+          ],
+          "quaternion": [
+            -8.514813256067597e-8,
+            -0.5226355119225733,
+            0,
+            0.8525562278685334
+          ],
+          "angle": -1.0998786755217869,
+          "windowVisible": true,
+          "sourceParts": [
+            "doorLeft.paint",
+            "doorLeft.trim",
+            "doorLeft.cabin",
+            "doorLeft.indicator",
+            "doorLeft.opticalGlass",
+            "doorLeft.glass"
+          ],
+          "layers": [
+            {
+              "triangles": 1420,
+              "visible": true,
+              "window": false,
+              "innerCard": false,
+              "material": {
+                "uuid": "8ea0a730-fe4c-44c1-8bfc-71dd84a4a461",
+                "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+                "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 0,
+                "forceSinglePass": false
+              }
+            },
+            {
+              "triangles": 78,
+              "visible": true,
+              "window": true,
+              "innerCard": false,
+              "material": {
+                "uuid": "94a52ebe-f457-40f7-835c-8739d50d4384",
+                "map": null,
+                "roughnessMap": null,
+                "metalnessMap": null,
+                "emissiveMap": null,
+                "transparent": true,
+                "opacity": 0.24,
+                "alphaTest": 0,
+                "depthWrite": true,
+                "side": 2,
+                "forceSinglePass": true
+              }
+            },
+            {
+              "triangles": 1383,
+              "visible": true,
+              "window": false,
+              "innerCard": false,
+              "material": {
+                "uuid": "bc1b78eb-cb80-4997-9786-bec38f1d36ae",
+                "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+                "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 0,
+                "forceSinglePass": false
+              }
+            },
+            {
+              "triangles": 74,
+              "visible": true,
+              "window": false,
+              "innerCard": false,
+              "material": {
+                "uuid": "211e9f0e-af88-4137-852a-2ff1dc129aff",
+                "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+                "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+                "transparent": true,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 2,
+                "forceSinglePass": true
+              }
+            }
+          ],
+          "apertureHasCentrePanel": false
+        }
+      },
+      "materials": {
+        "shell": {
+          "uuid": "8ea0a730-fe4c-44c1-8bfc-71dd84a4a461",
+          "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+          "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+          "transparent": false,
+          "opacity": 1,
+          "alphaTest": 0.5,
+          "depthWrite": true,
+          "side": 0,
+          "forceSinglePass": false
+        },
+        "trim": {
+          "uuid": "bc1b78eb-cb80-4997-9786-bec38f1d36ae",
+          "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+          "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+          "transparent": false,
+          "opacity": 1,
+          "alphaTest": 0.5,
+          "depthWrite": true,
+          "side": 0,
+          "forceSinglePass": false
+        },
+        "optics": {
+          "uuid": "211e9f0e-af88-4137-852a-2ff1dc129aff",
+          "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+          "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+          "transparent": true,
+          "opacity": 1,
+          "alphaTest": 0,
+          "depthWrite": false,
+          "side": 2,
+          "forceSinglePass": true
+        },
+        "cabin": {
+          "uuid": "33f2c2a5-4780-4b50-88ed-6a9be7fe3016",
+          "map": null,
+          "roughnessMap": null,
+          "metalnessMap": null,
+          "emissiveMap": null,
+          "transparent": true,
+          "opacity": 0.24,
+          "alphaTest": 0,
+          "depthWrite": true,
+          "side": 0,
+          "forceSinglePass": false
+        }
+      },
+      "closedSourceGeometry": {
+        "shell": true,
+        "panels": false,
+        "cabin": false,
+        "trim": false,
+        "optics": false
+      },
+      "sourceGeometryRestored": {
+        "shell": true,
+        "panels": false,
+        "cabin": false,
+        "trim": false,
+        "optics": false
+      },
+      "cabin": {
+        "authored": true,
+        "fallbackVisible": false,
+        "interiorTriangles": 20295,
+        "seat": [
+          0.28,
+          1.84,
+          -3.712
+        ]
+      }
+    },
+    "char": null,
+    "damage": {
+      "id": 265,
+      "type": "chevette",
+      "hp": 140,
+      "maxhp": 140,
+      "zones": {
+        "front": 0,
+        "rear": 0,
+        "left": 0,
+        "right": 0
+      },
+      "dents": [],
+      "parts": {
+        "hood": 0,
+        "bumperFront": 0,
+        "bumperRear": 0,
+        "doorLeft": 0,
+        "doorRight": 0,
+        "trunk": 0
+      },
+      "glass": {
+        "front": 0,
+        "rear": 0,
+        "left": 0,
+        "right": 0
+      },
+      "lights": [],
+      "flatTires": [],
+      "marks": {},
+      "pull": 0,
+      "handling": {
+        "power": 1,
+        "top": 1,
+        "grip": 1,
+        "pull": 0,
+        "steer": 1,
+        "brake": 1
+      },
+      "burning": 0,
+      "fireSpent": false,
+      "burnt": false,
+      "speed": 0,
+      "spin": 0,
+      "x": 418,
+      "y": 6000,
+      "a": 0
+    }
+  },
+  "interiorCamera": {
+    "player": [
+      418,
+      5970
+    ],
+    "car": [
+      418,
+      6000
+    ],
+    "yaw": 165,
+    "pitch": 10,
+    "lift": 4,
+    "zoom": 11
+  },
+  "interior": {
+    "status": {
+      "mode": "play",
+      "x": 418,
+      "y": 5970,
+      "district": "SOUTHPORT AIRPORT",
+      "hp": 100,
+      "cash": 0,
+      "wanted": 0,
+      "mission": null,
+      "completed": 0,
+      "vehicle": null,
+      "weapon": "9MM PISTOL",
+      "clock": "13:01",
+      "renderer": "3d",
+      "vehicles": 280,
+      "pedestrians": 595
+    },
+    "model": {
+      "id": 265,
+      "type": "chevette",
+      "asset": "c8_hari",
+      "far": false,
+      "triangles": 82076,
+      "visible": true,
+      "pool": {
+        "ready": false,
+        "instances": 0,
+        "triangles": 0
+      }
+    },
+    "doors": {
+      "id": 265,
+      "type": "chevette",
+      "asset": "2019 Chevrolet Corvette C8 Stingray",
+      "mask": 1,
+      "nativeDoors": true,
+      "doors": {
+        "-1": {
+          "native": true,
+          "pivot": [
+            6.2026074183272675,
+            4.273754743811496,
+            -6.8764977614945595
+          ],
+          "axis": [
+            1.6292067916978678e-7,
+            0.9999999999999867,
+            0
+          ],
+          "quaternion": [
+            -8.515092222334681e-8,
+            -0.5226526347499827,
+            0,
+            0.8525457309663182
+          ],
+          "angle": -1.0999188439758079,
+          "windowVisible": true,
+          "sourceParts": [
+            "doorLeft.paint",
+            "doorLeft.trim",
+            "doorLeft.cabin",
+            "doorLeft.indicator",
+            "doorLeft.opticalGlass",
+            "doorLeft.glass"
+          ],
+          "layers": [
+            {
+              "triangles": 1420,
+              "visible": true,
+              "window": false,
+              "innerCard": false,
+              "material": {
+                "uuid": "8ea0a730-fe4c-44c1-8bfc-71dd84a4a461",
+                "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+                "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 0,
+                "forceSinglePass": false
+              }
+            },
+            {
+              "triangles": 78,
+              "visible": true,
+              "window": true,
+              "innerCard": false,
+              "material": {
+                "uuid": "94a52ebe-f457-40f7-835c-8739d50d4384",
+                "map": null,
+                "roughnessMap": null,
+                "metalnessMap": null,
+                "emissiveMap": null,
+                "transparent": true,
+                "opacity": 0.24,
+                "alphaTest": 0,
+                "depthWrite": true,
+                "side": 2,
+                "forceSinglePass": true
+              }
+            },
+            {
+              "triangles": 1383,
+              "visible": true,
+              "window": false,
+              "innerCard": false,
+              "material": {
+                "uuid": "bc1b78eb-cb80-4997-9786-bec38f1d36ae",
+                "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+                "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 0,
+                "forceSinglePass": false
+              }
+            },
+            {
+              "triangles": 74,
+              "visible": true,
+              "window": false,
+              "innerCard": false,
+              "material": {
+                "uuid": "211e9f0e-af88-4137-852a-2ff1dc129aff",
+                "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+                "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+                "transparent": true,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 2,
+                "forceSinglePass": true
+              }
+            }
+          ],
+          "apertureHasCentrePanel": false
+        }
+      },
+      "materials": {
+        "shell": {
+          "uuid": "8ea0a730-fe4c-44c1-8bfc-71dd84a4a461",
+          "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+          "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+          "transparent": false,
+          "opacity": 1,
+          "alphaTest": 0.5,
+          "depthWrite": true,
+          "side": 0,
+          "forceSinglePass": false
+        },
+        "trim": {
+          "uuid": "bc1b78eb-cb80-4997-9786-bec38f1d36ae",
+          "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+          "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+          "transparent": false,
+          "opacity": 1,
+          "alphaTest": 0.5,
+          "depthWrite": true,
+          "side": 0,
+          "forceSinglePass": false
+        },
+        "optics": {
+          "uuid": "211e9f0e-af88-4137-852a-2ff1dc129aff",
+          "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+          "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+          "transparent": true,
+          "opacity": 1,
+          "alphaTest": 0,
+          "depthWrite": false,
+          "side": 2,
+          "forceSinglePass": true
+        },
+        "cabin": {
+          "uuid": "33f2c2a5-4780-4b50-88ed-6a9be7fe3016",
+          "map": null,
+          "roughnessMap": null,
+          "metalnessMap": null,
+          "emissiveMap": null,
+          "transparent": true,
+          "opacity": 0.24,
+          "alphaTest": 0,
+          "depthWrite": true,
+          "side": 0,
+          "forceSinglePass": false
+        }
+      },
+      "closedSourceGeometry": {
+        "shell": true,
+        "panels": false,
+        "cabin": false,
+        "trim": false,
+        "optics": false
+      },
+      "sourceGeometryRestored": {
+        "shell": true,
+        "panels": false,
+        "cabin": false,
+        "trim": false,
+        "optics": false
+      },
+      "cabin": {
+        "authored": true,
+        "fallbackVisible": false,
+        "interiorTriangles": 20295,
+        "seat": [
+          0.28,
+          1.84,
+          -3.712
+        ]
+      }
+    },
+    "char": null,
+    "damage": {
+      "id": 265,
+      "type": "chevette",
+      "hp": 140,
+      "maxhp": 140,
+      "zones": {
+        "front": 0,
+        "rear": 0,
+        "left": 0,
+        "right": 0
+      },
+      "dents": [],
+      "parts": {
+        "hood": 0,
+        "bumperFront": 0,
+        "bumperRear": 0,
+        "doorLeft": 0,
+        "doorRight": 0,
+        "trunk": 0
+      },
+      "glass": {
+        "front": 0,
+        "rear": 0,
+        "left": 0,
+        "right": 0
+      },
+      "lights": [],
+      "flatTires": [],
+      "marks": {},
+      "pull": 0,
+      "handling": {
+        "power": 1,
+        "top": 1,
+        "grip": 1,
+        "pull": 0,
+        "steer": 1,
+        "brake": 1
+      },
+      "burning": 0,
+      "fireSpent": false,
+      "burnt": false,
+      "speed": 0,
+      "spin": 0,
+      "x": 418,
+      "y": 6000,
+      "a": 0
+    }
+  },
+  "boardedForExit": {
+    "status": {
+      "mode": "play",
+      "x": 418,
+      "y": 6000,
+      "district": "SOUTHPORT AIRPORT",
+      "hp": 100,
+      "cash": 0,
+      "wanted": 0,
+      "mission": null,
+      "completed": 0,
+      "vehicle": "chevette",
+      "weapon": "9MM PISTOL",
+      "clock": "13:04",
+      "renderer": "3d",
+      "vehicles": 280,
+      "pedestrians": 595
+    },
+    "vehicle": {
+      "id": 265,
+      "type": "chevette",
+      "x": 418,
+      "y": 6000,
+      "a": 0,
+      "altitude": 0
+    }
+  },
+  "exitMidpoint": {
+    "status": {
+      "mode": "play",
+      "x": 418,
+      "y": 5973,
+      "district": "SOUTHPORT AIRPORT",
+      "hp": 100,
+      "cash": 0,
+      "wanted": 0,
+      "mission": null,
+      "completed": 0,
+      "vehicle": null,
+      "weapon": "9MM PISTOL",
+      "clock": "13:04",
+      "renderer": "3d",
+      "vehicles": 280,
+      "pedestrians": 595
+    },
+    "model": {
+      "id": 265,
+      "type": "chevette",
+      "asset": "c8_hari",
+      "far": false,
+      "triangles": 82076,
+      "visible": true,
+      "pool": {
+        "ready": false,
+        "instances": 0,
+        "triangles": 0
+      }
+    },
+    "doors": {
+      "id": 265,
+      "type": "chevette",
+      "asset": "2019 Chevrolet Corvette C8 Stingray",
+      "mask": 1,
+      "nativeDoors": true,
+      "doors": {
+        "-1": {
+          "native": true,
+          "pivot": [
+            6.2026074183272675,
+            4.273754743811496,
+            -6.8764977614945595
+          ],
+          "axis": [
+            1.6292067916978678e-7,
+            0.9999999999999867,
+            0
+          ],
+          "quaternion": [
+            -7.342117372473884e-8,
+            -0.4506559517114611,
+            0,
+            0.8926977165799361
+          ],
+          "angle": -0.9349999999999825,
+          "windowVisible": true,
+          "sourceParts": [
+            "doorLeft.paint",
+            "doorLeft.trim",
+            "doorLeft.cabin",
+            "doorLeft.indicator",
+            "doorLeft.opticalGlass",
+            "doorLeft.glass"
+          ],
+          "layers": [
+            {
+              "triangles": 1420,
+              "visible": true,
+              "window": false,
+              "innerCard": false,
+              "material": {
+                "uuid": "8ea0a730-fe4c-44c1-8bfc-71dd84a4a461",
+                "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+                "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 0,
+                "forceSinglePass": false
+              }
+            },
+            {
+              "triangles": 78,
+              "visible": true,
+              "window": true,
+              "innerCard": false,
+              "material": {
+                "uuid": "94a52ebe-f457-40f7-835c-8739d50d4384",
+                "map": null,
+                "roughnessMap": null,
+                "metalnessMap": null,
+                "emissiveMap": null,
+                "transparent": true,
+                "opacity": 0.24,
+                "alphaTest": 0,
+                "depthWrite": true,
+                "side": 2,
+                "forceSinglePass": true
+              }
+            },
+            {
+              "triangles": 1383,
+              "visible": true,
+              "window": false,
+              "innerCard": false,
+              "material": {
+                "uuid": "bc1b78eb-cb80-4997-9786-bec38f1d36ae",
+                "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+                "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 0,
+                "forceSinglePass": false
+              }
+            },
+            {
+              "triangles": 74,
+              "visible": true,
+              "window": false,
+              "innerCard": false,
+              "material": {
+                "uuid": "211e9f0e-af88-4137-852a-2ff1dc129aff",
+                "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+                "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+                "transparent": true,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 2,
+                "forceSinglePass": true
+              }
+            }
+          ],
+          "apertureHasCentrePanel": false
+        }
+      },
+      "materials": {
+        "shell": {
+          "uuid": "8ea0a730-fe4c-44c1-8bfc-71dd84a4a461",
+          "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+          "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+          "transparent": false,
+          "opacity": 1,
+          "alphaTest": 0.5,
+          "depthWrite": true,
+          "side": 0,
+          "forceSinglePass": false
+        },
+        "trim": {
+          "uuid": "bc1b78eb-cb80-4997-9786-bec38f1d36ae",
+          "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+          "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+          "transparent": false,
+          "opacity": 1,
+          "alphaTest": 0.5,
+          "depthWrite": true,
+          "side": 0,
+          "forceSinglePass": false
+        },
+        "optics": {
+          "uuid": "211e9f0e-af88-4137-852a-2ff1dc129aff",
+          "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+          "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+          "transparent": true,
+          "opacity": 1,
+          "alphaTest": 0,
+          "depthWrite": false,
+          "side": 2,
+          "forceSinglePass": true
+        },
+        "cabin": {
+          "uuid": "33f2c2a5-4780-4b50-88ed-6a9be7fe3016",
+          "map": null,
+          "roughnessMap": null,
+          "metalnessMap": null,
+          "emissiveMap": null,
+          "transparent": true,
+          "opacity": 0.24,
+          "alphaTest": 0,
+          "depthWrite": true,
+          "side": 0,
+          "forceSinglePass": false
+        }
+      },
+      "closedSourceGeometry": {
+        "shell": true,
+        "panels": false,
+        "cabin": false,
+        "trim": false,
+        "optics": false
+      },
+      "sourceGeometryRestored": {
+        "shell": true,
+        "panels": false,
+        "cabin": false,
+        "trim": false,
+        "optics": false
+      },
+      "cabin": {
+        "authored": true,
+        "fallbackVisible": false,
+        "interiorTriangles": 20295,
+        "seat": [
+          0.28,
+          1.84,
+          -3.712
+        ]
+      }
+    },
+    "char": null,
+    "damage": {
+      "id": 265,
+      "type": "chevette",
+      "hp": 140,
+      "maxhp": 140,
+      "zones": {
+        "front": 0,
+        "rear": 0,
+        "left": 0,
+        "right": 0
+      },
+      "dents": [],
+      "parts": {
+        "hood": 0,
+        "bumperFront": 0,
+        "bumperRear": 0,
+        "doorLeft": 0,
+        "doorRight": 0,
+        "trunk": 0
+      },
+      "glass": {
+        "front": 0,
+        "rear": 0,
+        "left": 0,
+        "right": 0
+      },
+      "lights": [],
+      "flatTires": [],
+      "marks": {},
+      "pull": 0,
+      "handling": {
+        "power": 1,
+        "top": 1,
+        "grip": 1,
+        "pull": 0,
+        "steer": 1,
+        "brake": 1
+      },
+      "burning": 0,
+      "fireSpent": false,
+      "burnt": false,
+      "speed": 0,
+      "spin": 0,
+      "x": 418,
+      "y": 6000,
+      "a": 0
+    }
+  },
+  "exitSettled": {
+    "status": {
+      "mode": "play",
+      "x": 418,
+      "y": 5973,
+      "district": "SOUTHPORT AIRPORT",
+      "hp": 100,
+      "cash": 0,
+      "wanted": 0,
+      "mission": null,
+      "completed": 0,
+      "vehicle": null,
+      "weapon": "9MM PISTOL",
+      "clock": "13:05",
+      "renderer": "3d",
+      "vehicles": 280,
+      "pedestrians": 595
+    },
+    "model": {
+      "id": 265,
+      "type": "chevette",
+      "asset": "c8_hari",
+      "far": false,
+      "triangles": 85031,
+      "visible": true,
+      "pool": {
+        "ready": false,
+        "instances": 0,
+        "triangles": 0
+      }
+    },
+    "doors": {
+      "id": 265,
+      "type": "chevette",
+      "asset": "2019 Chevrolet Corvette C8 Stingray",
+      "mask": 0,
+      "nativeDoors": true,
+      "doors": {
+        "-1": {
+          "native": true,
+          "pivot": [
+            6.2026074183272675,
+            4.273754743811496,
+            -6.8764977614945595
+          ],
+          "axis": [
+            1.6292067916978678e-7,
+            0.9999999999999867,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "angle": 0,
+          "windowVisible": false,
+          "sourceParts": [
+            "doorLeft.paint",
+            "doorLeft.trim",
+            "doorLeft.cabin",
+            "doorLeft.indicator",
+            "doorLeft.opticalGlass",
+            "doorLeft.glass"
+          ],
+          "layers": [
+            {
+              "triangles": 1420,
+              "visible": false,
+              "window": false,
+              "innerCard": false,
+              "material": {
+                "uuid": "8ea0a730-fe4c-44c1-8bfc-71dd84a4a461",
+                "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+                "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 0,
+                "forceSinglePass": false
+              }
+            },
+            {
+              "triangles": 78,
+              "visible": false,
+              "window": true,
+              "innerCard": false,
+              "material": {
+                "uuid": "94a52ebe-f457-40f7-835c-8739d50d4384",
+                "map": null,
+                "roughnessMap": null,
+                "metalnessMap": null,
+                "emissiveMap": null,
+                "transparent": true,
+                "opacity": 0.24,
+                "alphaTest": 0,
+                "depthWrite": true,
+                "side": 2,
+                "forceSinglePass": true
+              }
+            },
+            {
+              "triangles": 1383,
+              "visible": false,
+              "window": false,
+              "innerCard": false,
+              "material": {
+                "uuid": "bc1b78eb-cb80-4997-9786-bec38f1d36ae",
+                "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+                "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 0,
+                "forceSinglePass": false
+              }
+            },
+            {
+              "triangles": 74,
+              "visible": false,
+              "window": false,
+              "innerCard": false,
+              "material": {
+                "uuid": "211e9f0e-af88-4137-852a-2ff1dc129aff",
+                "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+                "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+                "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+                "transparent": true,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 2,
+                "forceSinglePass": true
+              }
+            }
+          ],
+          "apertureHasCentrePanel": false
+        }
+      },
+      "materials": {
+        "shell": {
+          "uuid": "8ea0a730-fe4c-44c1-8bfc-71dd84a4a461",
+          "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+          "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+          "transparent": false,
+          "opacity": 1,
+          "alphaTest": 0.5,
+          "depthWrite": true,
+          "side": 0,
+          "forceSinglePass": false
+        },
+        "trim": {
+          "uuid": "bc1b78eb-cb80-4997-9786-bec38f1d36ae",
+          "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+          "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+          "transparent": false,
+          "opacity": 1,
+          "alphaTest": 0.5,
+          "depthWrite": true,
+          "side": 0,
+          "forceSinglePass": false
+        },
+        "optics": {
+          "uuid": "211e9f0e-af88-4137-852a-2ff1dc129aff",
+          "map": "69c493cb-6e8c-4a2d-9527-0a2ff1e61d58",
+          "roughnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "metalnessMap": "f6588208-368d-4a60-9f52-5ce5ec02de51",
+          "emissiveMap": "22f925aa-48a7-4b61-8fa6-e58e8494ae19",
+          "transparent": true,
+          "opacity": 1,
+          "alphaTest": 0,
+          "depthWrite": false,
+          "side": 2,
+          "forceSinglePass": true
+        },
+        "cabin": {
+          "uuid": "33f2c2a5-4780-4b50-88ed-6a9be7fe3016",
+          "map": null,
+          "roughnessMap": null,
+          "metalnessMap": null,
+          "emissiveMap": null,
+          "transparent": true,
+          "opacity": 0.24,
+          "alphaTest": 0,
+          "depthWrite": true,
+          "side": 0,
+          "forceSinglePass": false
+        }
+      },
+      "closedSourceGeometry": {
+        "shell": true,
+        "panels": true,
+        "cabin": true,
+        "trim": true,
+        "optics": true
+      },
+      "sourceGeometryRestored": {
+        "shell": true,
+        "panels": true,
+        "cabin": true,
+        "trim": true,
+        "optics": true
+      },
+      "cabin": {
+        "authored": true,
+        "fallbackVisible": false,
+        "interiorTriangles": 20295,
+        "seat": [
+          0.28,
+          1.84,
+          -3.712
+        ]
+      }
+    },
+    "char": null,
+    "damage": {
+      "id": 265,
+      "type": "chevette",
+      "hp": 140,
+      "maxhp": 140,
+      "zones": {
+        "front": 0,
+        "rear": 0,
+        "left": 0,
+        "right": 0
+      },
+      "dents": [],
+      "parts": {
+        "hood": 0,
+        "bumperFront": 0,
+        "bumperRear": 0,
+        "doorLeft": 0,
+        "doorRight": 0,
+        "trunk": 0
+      },
+      "glass": {
+        "front": 0,
+        "rear": 0,
+        "left": 0,
+        "right": 0
+      },
+      "lights": [],
+      "flatTires": [],
+      "marks": {},
+      "pull": 0,
+      "handling": {
+        "power": 1,
+        "top": 1,
+        "grip": 1,
+        "pull": 0,
+        "steer": 1,
+        "brake": 1
+      },
+      "burning": 0,
+      "fireSpent": false,
+      "burnt": false,
+      "speed": 0,
+      "spin": 0,
+      "x": 418,
+      "y": 6000,
+      "a": 0
+    }
+  },
+  "playerBodyAssertions": 267,
+  "beforeContext": {
+    "profile": {
+      "total": 135,
+      "byLayer": {
+        "detail": 1,
+        "farDetail": 0,
+        "other": 134
+      },
+      "byName": [
+        [
+          "Mesh BoxGeometry MeshStandardMaterial",
+          22
+        ],
+        [
+          "vehicle in vehicle",
+          22
+        ],
+        [
+          "Elevated railway in Elevated railway",
+          8
+        ]
+      ],
+      "byCell": [
+        [
+          "0,0",
+          107
+        ],
+        [
+          "0,5632",
+          25
+        ],
+        [
+          "0,512",
+          1
+        ]
+      ],
+      "triangles": 1258287,
+      "byTriangles": [
+        [
+          "Crowd heads",
+          413280
+        ],
+        [
+          "Mesh BoxGeometry MeshStandardMaterial",
+          114588
+        ],
+        [
+          "Mesh SphereGeometry MeshBasicMaterial",
+          102816
+        ]
+      ],
+      "instanced": [
+        [
+          "Crowd heads",
+          2460,
+          168,
+          true,
+          false
+        ],
+        [
+          "Mesh SphereGeometry MeshBasicMaterial",
+          612,
+          168,
+          false,
+          false
+        ],
+        [
+          "Stadium crowd (2460 seats) in Stadium crowd (2460 seats)",
+          4920,
+          12,
+          true,
+          false
+        ]
+      ],
+      "programs": [
+        [
+          "physical",
+          78
+        ],
+        [
+          "depth",
+          12
+        ],
+        [
+          "basic",
+          7
+        ]
+      ]
+    },
+    "faults": {
+      "count": 0,
+      "gameTime": 6.8,
+      "drill": null,
+      "kinds": []
+    }
+  },
+  "recovery": {
+    "gpu": {
+      "watched": true,
+      "lost": false,
+      "losses": 1,
+      "restores": 1,
+      "reloadPending": true,
+      "lostSeconds": 0
+    },
+    "status": {
+      "mode": "pause",
+      "x": 418,
+      "y": 5973,
+      "district": "SOUTHPORT AIRPORT",
+      "hp": 100,
+      "cash": 0,
+      "wanted": 0,
+      "mission": null,
+      "completed": 0,
+      "vehicle": null,
+      "weapon": "9MM PISTOL",
+      "clock": "13:06",
+      "renderer": "3d",
+      "vehicles": 280,
+      "pedestrians": 595
+    },
+    "faults": {
+      "count": 0,
+      "gameTime": 6.83,
+      "drill": null,
+      "kinds": []
+    }
+  }
+}

@@ -101,6 +101,7 @@
         }
         getElement('resumeBtn').focus();
       } else if (gameMode === 'pause') {
+        if (gpuContext.lost || gpuContext.reloadPending) return;
         initAudio();
         gameMode = 'play';
         getElement('pauseMenu').classList.add('hidden');

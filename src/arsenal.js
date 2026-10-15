@@ -93,7 +93,7 @@
       if (gameMode !== 'play') return;
       gameMode = 'arsenal';
       keys = {};
-      mouse.down = false;
+      mouse.down = mouse.alt = false;
       clearTouchInput();
       renderArsenal();
       getElement('arsenalOverlay').classList.remove('hidden');
@@ -104,7 +104,7 @@
       getElement('arsenalOverlay').classList.add('hidden');
       gameMode = 'play';
       keys = {};
-      mouse.down = false;
+      mouse.down = mouse.alt = false;
       clearTouchInput();
       updateUI();
       canvas.focus();

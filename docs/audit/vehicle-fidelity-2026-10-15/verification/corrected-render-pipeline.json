@@ -1,0 +1,13 @@
+{
+  "stages": [
+    {
+      "name": "runtime",
+      "exitCode": 0
+    },
+    {
+      "name": "smoke",
+      "exitCode": 0
+    }
+  ],
+  "pass": true
+}

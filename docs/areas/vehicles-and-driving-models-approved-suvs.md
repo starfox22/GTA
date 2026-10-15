@@ -75,9 +75,10 @@ gameplay roles.
 - Dynamic door/trunk paint boxes carry valid white-source paint UVs, finish, colour,
   repeat-atlas attributes and separate police livery coordinates. Approved geometry
   without a packed colour receives explicit white vertex colour, avoiding black
-  meshes under `vertexColors: true`. Successful ray-cut doors/openings also inherit
-  these attributes barycentrically from the source surface (`damage3d-crumple.js`);
-  preserving only legacy UVs would sample an empty atlas rectangle under new paint.
+  meshes under `vertexColors: true`. Source-backed doors preserve these attributes
+  when cutting real apertures and moving the extracted skin/trim/window; see
+  `vehicles-and-driving-doors.md`. Preserving only legacy UVs would sample an empty
+  atlas rectangle under new paint.
 - The damage renderer hides a previously created synthetic trunk lid after repair
   or closure, showing the intact source hatch/window again. Open or sprung lids
   still animate. Native review caught a repaired green paint slab over rear glass.
@@ -88,7 +89,7 @@ gameplay roles.
 builders, Three.js, character head geometry and cabin-fit code. It checks style
 selection without simulation mutation, independent/shared wheel geometry, measured
 centres, source UV preservation, close/far budgets, four-seat cabins, police equipment
-and signed/locked wheel animation. The final host run has 438 passing assertions
+and signed/locked wheel animation. The 14 October host run has 438 passing assertions
 (including production seated head/fit geometry); `suv-host.json` records exact input
 hashes and measurements. The marked/unmarked palette tests use the real production
 PBR constructor and compiled livery patch with dark gameplay colour, so white

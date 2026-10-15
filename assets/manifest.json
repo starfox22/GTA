@@ -595,5 +595,47 @@
     "file": "assets/approved-vehicle-orm-low.webp",
     "mime": "image/webp",
     "original": "assets/approved-vehicle-orm-low.webp"
+  },
+  {
+    "id": "media-sports-vehicle-models",
+    "file": "assets/sports-vehicle-models.bin",
+    "mime": "application/octet-stream",
+    "original": "assets/sports-vehicle-models.bin"
+  },
+  {
+    "id": "media-sports-vehicle-albedo",
+    "file": "assets/sports-vehicle-albedo.webp",
+    "mime": "image/webp",
+    "original": "assets/sports-vehicle-albedo.webp"
+  },
+  {
+    "id": "media-sports-vehicle-orm",
+    "file": "assets/sports-vehicle-orm.webp",
+    "mime": "image/webp",
+    "original": "assets/sports-vehicle-orm.webp"
+  },
+  {
+    "id": "media-sports-vehicle-emissive",
+    "file": "assets/sports-vehicle-emissive.webp",
+    "mime": "image/webp",
+    "original": "assets/sports-vehicle-emissive.webp"
+  },
+  {
+    "id": "media-sports-vehicle-albedo-low",
+    "file": "assets/sports-vehicle-albedo-low.webp",
+    "mime": "image/webp",
+    "original": "assets/sports-vehicle-albedo-low.webp"
+  },
+  {
+    "id": "media-sports-vehicle-orm-low",
+    "file": "assets/sports-vehicle-orm-low.webp",
+    "mime": "image/webp",
+    "original": "assets/sports-vehicle-orm-low.webp"
+  },
+  {
+    "id": "media-sports-vehicle-emissive-low",
+    "file": "assets/sports-vehicle-emissive-low.webp",
+    "mime": "image/webp",
+    "original": "assets/sports-vehicle-emissive-low.webp"
   }
 ]

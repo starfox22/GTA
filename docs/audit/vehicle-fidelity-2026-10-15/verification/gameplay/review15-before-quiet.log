@@ -1,0 +1,6 @@
+started dev server (?dev&norender: boot 18.1s)
+PASS lockpick (28.0s)
+     hold 0: progress 0.08 pins 0 working trunk, 0.58 game s · hold 1: progress 0.29 pins 1 working trunk, 1.66 game s · hold 2: progress 0.5 pins 2 working trunk, 2.69 game s · hold 3: progress 0.65 pins 3 working trunk, 3.46 game s · hold 4: progress 0.86 pins 4 working trunk, 4.54 game s · hold 5: progress 1 pins 5 working trunk, 5.42 game s · door hold 0: locked true, 0.78 game s · door hold 1: locked true, 1.89 game s · door hold 2: locked true, 2.95 game s · door hold 3: locked false, 4.11 game s
+PASS player-jump (26.3s)
+     jump height (m) 0.5 · air time (s) 0.639 · villa garden wall (m) 1.35 · feet back on the ground (units) 0 · sea railing at 3417,1152.5: landed 3466,1153; {"from":[3411,1153],"to":[3448,1153],"metres":4.62,"maxClearance":1.5,"vault":true,"into":"water"} · effort: {"sample":"player-jump-grunt","loaded":true,"sound":true,"asked":6,"played":6,"soft":3,"last":{"soft":true,"rate":1.101,"level":0.173,"at":16.17}} · speed 54.2 -> 11
+2/2 passed, 0 skipped, 0 failed in 75s

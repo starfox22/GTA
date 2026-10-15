@@ -1,0 +1,531 @@
+[
+  {
+    "part": "c8_hari.shell",
+    "before": 11533,
+    "after": 7496,
+    "ratio": 0.65
+  },
+  {
+    "part": "c8_hari.shellFar",
+    "before": 11533,
+    "after": 461,
+    "ratio": 0.04
+  },
+  {
+    "part": "c8_hari.panels",
+    "before": 9406,
+    "after": 6112,
+    "ratio": 0.65
+  },
+  {
+    "part": "c8_hari.panelsFar",
+    "before": 9406,
+    "after": 375,
+    "ratio": 0.04
+  },
+  {
+    "part": "c8_hari.trim",
+    "before": 97762,
+    "after": 19549,
+    "ratio": 0.2
+  },
+  {
+    "part": "c8_hari.trimFar",
+    "before": 97762,
+    "after": 2442,
+    "ratio": 0.025
+  },
+  {
+    "part": "c8_hari.headLeft",
+    "before": 427,
+    "after": 256,
+    "ratio": 0.6
+  },
+  {
+    "part": "c8_hari.headLeftFar",
+    "before": 427,
+    "after": 42,
+    "ratio": 0.1
+  },
+  {
+    "part": "c8_hari.headRight",
+    "before": 427,
+    "after": 256,
+    "ratio": 0.6
+  },
+  {
+    "part": "c8_hari.headRightFar",
+    "before": 427,
+    "after": 42,
+    "ratio": 0.1
+  },
+  {
+    "part": "c8_hari.indicatorRight",
+    "before": 600,
+    "after": 359,
+    "ratio": 0.6
+  },
+  {
+    "part": "c8_hari.indicatorRightFar",
+    "before": 600,
+    "after": 60,
+    "ratio": 0.1
+  },
+  {
+    "part": "c8_hari.indicatorLeft",
+    "before": 600,
+    "after": 359,
+    "ratio": 0.6
+  },
+  {
+    "part": "c8_hari.indicatorLeftFar",
+    "before": 600,
+    "after": 60,
+    "ratio": 0.1
+  },
+  {
+    "part": "c8_hari.tailLeft",
+    "before": 1528,
+    "after": 916,
+    "ratio": 0.6
+  },
+  {
+    "part": "c8_hari.tailLeftFar",
+    "before": 1528,
+    "after": 151,
+    "ratio": 0.1
+  },
+  {
+    "part": "c8_hari.tailRight",
+    "before": 1528,
+    "after": 916,
+    "ratio": 0.6
+  },
+  {
+    "part": "c8_hari.tailRightFar",
+    "before": 1528,
+    "after": 151,
+    "ratio": 0.1
+  },
+  {
+    "part": "c8_hari.cabin",
+    "before": 43174,
+    "after": 12088,
+    "ratio": 0.28
+  },
+  {
+    "part": "c8_hari.cabinFar",
+    "before": 43174,
+    "after": 1125,
+    "ratio": 0.02
+  },
+  {
+    "part": "c8_hari.cabin.seats",
+    "before": 3128,
+    "after": 3128,
+    "ratio": 1.0,
+    "normals": "exact authored attributes"
+  },
+  {
+    "part": "c8_hari.cabin.seatsFar",
+    "before": 3128,
+    "after": 250,
+    "ratio": 0.08
+  },
+  {
+    "part": "c8_hari.cabin.controls",
+    "before": 7340,
+    "after": 3303,
+    "ratio": 0.45
+  },
+  {
+    "part": "c8_hari.cabin.controlsFar",
+    "before": 7340,
+    "after": 367,
+    "ratio": 0.05
+  },
+  {
+    "part": "c8_hari.hood",
+    "before": 994,
+    "after": 646,
+    "ratio": 0.65
+  },
+  {
+    "part": "c8_hari.hoodFar",
+    "before": 994,
+    "after": 39,
+    "ratio": 0.04
+  },
+  {
+    "part": "c8_hari.hood.trim",
+    "before": 2610,
+    "after": 522,
+    "ratio": 0.2
+  },
+  {
+    "part": "c8_hari.hood.trimFar",
+    "before": 2610,
+    "after": 65,
+    "ratio": 0.025
+  },
+  {
+    "part": "c8_hari.glass:1",
+    "before": 198,
+    "after": 118,
+    "ratio": 0.6
+  },
+  {
+    "part": "c8_hari.glassFar:1",
+    "before": 198,
+    "after": 15,
+    "ratio": 0.08
+  },
+  {
+    "part": "c8_hari.glass:3",
+    "before": 62,
+    "after": 37,
+    "ratio": 0.6
+  },
+  {
+    "part": "c8_hari.glassFar:3",
+    "before": 62,
+    "after": 4,
+    "ratio": 0.08
+  },
+  {
+    "part": "c8_hari.opticalGlass",
+    "before": 3432,
+    "after": 2058,
+    "ratio": 0.6
+  },
+  {
+    "part": "c8_hari.opticalGlassFar",
+    "before": 3432,
+    "after": 274,
+    "ratio": 0.08
+  },
+  {
+    "part": "c8_hari.wheel1.rim",
+    "before": 8052,
+    "after": 2897,
+    "ratio": 0.36
+  },
+  {
+    "part": "c8_hari.wheel1.rimFar",
+    "before": 8052,
+    "after": 442,
+    "ratio": 0.055
+  },
+  {
+    "part": "c8_hari.wheel1.tyre",
+    "before": 2160,
+    "after": 972,
+    "ratio": 0.45
+  },
+  {
+    "part": "c8_hari.wheel1.tyreFar",
+    "before": 2160,
+    "after": 129,
+    "ratio": 0.06
+  },
+  {
+    "part": "c8_hari.wheel1.caliper",
+    "before": 2174,
+    "after": 433,
+    "ratio": 0.2
+  },
+  {
+    "part": "c8_hari.wheel1.caliperFar",
+    "before": 2174,
+    "after": 59,
+    "ratio": 0.025
+  },
+  {
+    "part": "c8_hari.wheel0.caliper",
+    "before": 2174,
+    "after": 433,
+    "ratio": 0.2
+  },
+  {
+    "part": "c8_hari.wheel0.caliperFar",
+    "before": 2174,
+    "after": 59,
+    "ratio": 0.025
+  },
+  {
+    "part": "c8_hari.wheel0.rim",
+    "before": 8052,
+    "after": 2897,
+    "ratio": 0.36
+  },
+  {
+    "part": "c8_hari.wheel0.rimFar",
+    "before": 8052,
+    "after": 441,
+    "ratio": 0.055
+  },
+  {
+    "part": "c8_hari.wheel0.tyre",
+    "before": 2160,
+    "after": 972,
+    "ratio": 0.45
+  },
+  {
+    "part": "c8_hari.wheel0.tyreFar",
+    "before": 2160,
+    "after": 129,
+    "ratio": 0.06
+  },
+  {
+    "part": "c8_hari.wheel3.rim",
+    "before": 8052,
+    "after": 2898,
+    "ratio": 0.36
+  },
+  {
+    "part": "c8_hari.wheel3.rimFar",
+    "before": 8052,
+    "after": 442,
+    "ratio": 0.055
+  },
+  {
+    "part": "c8_hari.wheel3.tyre",
+    "before": 2160,
+    "after": 972,
+    "ratio": 0.45
+  },
+  {
+    "part": "c8_hari.wheel3.tyreFar",
+    "before": 2160,
+    "after": 128,
+    "ratio": 0.06
+  },
+  {
+    "part": "c8_hari.wheel2.rim",
+    "before": 8052,
+    "after": 2897,
+    "ratio": 0.36
+  },
+  {
+    "part": "c8_hari.wheel2.rimFar",
+    "before": 8052,
+    "after": 442,
+    "ratio": 0.055
+  },
+  {
+    "part": "c8_hari.wheel2.tyre",
+    "before": 2160,
+    "after": 972,
+    "ratio": 0.45
+  },
+  {
+    "part": "c8_hari.wheel2.tyreFar",
+    "before": 2160,
+    "after": 128,
+    "ratio": 0.06
+  },
+  {
+    "part": "c8_hari.doorRight.paint",
+    "before": 2185,
+    "after": 1420,
+    "ratio": 0.65
+  },
+  {
+    "part": "c8_hari.doorRight.paintFar",
+    "before": 2185,
+    "after": 87,
+    "ratio": 0.04
+  },
+  {
+    "part": "c8_hari.doorRight.trim",
+    "before": 2129,
+    "after": 425,
+    "ratio": 0.2
+  },
+  {
+    "part": "c8_hari.doorRight.trimFar",
+    "before": 2129,
+    "after": 52,
+    "ratio": 0.025
+  },
+  {
+    "part": "c8_hari.doorRight.cabin",
+    "before": 3171,
+    "after": 886,
+    "ratio": 0.28
+  },
+  {
+    "part": "c8_hari.doorRight.cabinFar",
+    "before": 3171,
+    "after": 63,
+    "ratio": 0.02
+  },
+  {
+    "part": "c8_hari.doorRight.opticalGlass",
+    "before": 124,
+    "after": 74,
+    "ratio": 0.6
+  },
+  {
+    "part": "c8_hari.doorRight.opticalGlassFar",
+    "before": 124,
+    "after": 9,
+    "ratio": 0.08
+  },
+  {
+    "part": "c8_hari.doorRight.glass:2",
+    "before": 122,
+    "after": 73,
+    "ratio": 0.6
+  },
+  {
+    "part": "c8_hari.doorRight.glassFar:2",
+    "before": 122,
+    "after": 9,
+    "ratio": 0.08
+  },
+  {
+    "part": "c8_hari.doorRight.indicator",
+    "before": 114,
+    "after": 68,
+    "ratio": 0.6
+  },
+  {
+    "part": "c8_hari.doorRight.indicatorFar",
+    "before": 114,
+    "after": 11,
+    "ratio": 0.1
+  },
+  {
+    "part": "c8_hari.doorLeft.paint",
+    "before": 2185,
+    "after": 1420,
+    "ratio": 0.65
+  },
+  {
+    "part": "c8_hari.doorLeft.paintFar",
+    "before": 2185,
+    "after": 87,
+    "ratio": 0.04
+  },
+  {
+    "part": "c8_hari.doorLeft.trim",
+    "before": 2127,
+    "after": 425,
+    "ratio": 0.2
+  },
+  {
+    "part": "c8_hari.doorLeft.trimFar",
+    "before": 2127,
+    "after": 52,
+    "ratio": 0.025
+  },
+  {
+    "part": "c8_hari.doorLeft.cabin",
+    "before": 3186,
+    "after": 890,
+    "ratio": 0.28
+  },
+  {
+    "part": "c8_hari.doorLeft.cabinFar",
+    "before": 3186,
+    "after": 63,
+    "ratio": 0.02
+  },
+  {
+    "part": "c8_hari.doorLeft.indicator",
+    "before": 114,
+    "after": 68,
+    "ratio": 0.6
+  },
+  {
+    "part": "c8_hari.doorLeft.indicatorFar",
+    "before": 114,
+    "after": 11,
+    "ratio": 0.1
+  },
+  {
+    "part": "c8_hari.doorLeft.opticalGlass",
+    "before": 124,
+    "after": 74,
+    "ratio": 0.6
+  },
+  {
+    "part": "c8_hari.doorLeft.opticalGlassFar",
+    "before": 124,
+    "after": 9,
+    "ratio": 0.08
+  },
+  {
+    "part": "c8_hari.doorLeft.glass:0",
+    "before": 130,
+    "after": 78,
+    "ratio": 0.6
+  },
+  {
+    "part": "c8_hari.doorLeft.glassFar:0",
+    "before": 130,
+    "after": 10,
+    "ratio": 0.08
+  },
+  {
+    "part": "c8_hari.trunk.paint",
+    "before": 2222,
+    "after": 1444,
+    "ratio": 0.65
+  },
+  {
+    "part": "c8_hari.trunk.paintFar",
+    "before": 2222,
+    "after": 88,
+    "ratio": 0.04
+  },
+  {
+    "part": "c8_hari.trunk.trim",
+    "before": 11287,
+    "after": 2256,
+    "ratio": 0.2
+  },
+  {
+    "part": "c8_hari.trunk.trimFar",
+    "before": 11287,
+    "after": 407,
+    "ratio": 0.025
+  },
+  {
+    "part": "c8_hari.trunk.glass",
+    "before": 170,
+    "after": 102,
+    "ratio": 0.6
+  },
+  {
+    "part": "c8_hari.trunk.glassFar",
+    "before": 170,
+    "after": 13,
+    "ratio": 0.08
+  },
+  {
+    "part": "c8_hari.wheel2.caliper",
+    "before": 2174,
+    "after": 433,
+    "ratio": 0.2
+  },
+  {
+    "part": "c8_hari.wheel2.caliperFar",
+    "before": 2174,
+    "after": 57,
+    "ratio": 0.025
+  },
+  {
+    "part": "c8_hari.wheel3.caliper",
+    "before": 2174,
+    "after": 433,
+    "ratio": 0.2
+  },
+  {
+    "part": "c8_hari.wheel3.caliperFar",
+    "before": 2174,
+    "after": 57,
+    "ratio": 0.025
+  }
+]

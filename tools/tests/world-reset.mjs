@@ -31,6 +31,16 @@ export default async function (t) {
     const coupe = await t.call('vehicleAt', COUPE.x, COUPE.y);
     t.assert(coupe && Math.hypot(coupe.x - COUPE.x, coupe.y - COUPE.y) < 3, 'no parked car at the payphone spot: ' + JSON.stringify(coupe));
 
+    // A live deducted stake is progress across the city reset, not world damage.
+    await t.call('matchDay', 1, 10);
+    await t.wait(1 / 30);
+    await t.call('setCash', 1000);
+    await t.call('sportsbookFormat', 'american');
+    const wager = await t.call('sportsbookBet', 'result', 'home', 100),
+      bookBefore = await t.call('sportsbook');
+    t.assert(!wager.error && wager.cash === 900, 'live progress bet setup: ' + JSON.stringify(wager));
+    t.assert(bookBefore.open.some(b => b.id === wager.id), 'no deducted stake before WASTED');
+
     // ---- WASTED.
     const ours = await wreckSome(t);
     await t.call('blast', COUPE.x, COUPE.y, 1); // the coupe goes up too, far from the player
@@ -43,7 +53,8 @@ export default async function (t) {
     const at = await t.call('status');
     await t.call('blast', at.x, at.y, 3);
     await t.wait(0.5);
-    t.assert((await t.call('status')).mode === 'dead', 'not killed');
+    const deadStatus = await t.call('status');
+    t.assert(deadStatus.mode === 'dead', 'not killed');
     await new Promise((r) => setTimeout(r, 4800)); // WASTED runs on the wall clock
     let r = await t.call('worldResetReport');
     t.assert(r.byReason.wasted === 1 && r.last.reason === 'wasted', 'no reset on WASTED: ' + JSON.stringify(r));
@@ -56,6 +67,18 @@ export default async function (t) {
     for (const id of ours) t.assert((await t.call('damageReport', id)) === null, 'a test car outlived the reset: ' + id);
     const s = await t.call('status');
     t.assert(s.mode === 'play' && s.hp === 100, 'not back on his feet: ' + JSON.stringify(s));
+    await t.wait(1 / 30); // existing restore policy settles the rebuilt live match
+    const bookAfter = await t.call('sportsbook'),
+      returned = bookAfter.settled.find(b => b.id === wager.id);
+    t.assert(returned?.status === 'void' && returned.payout === 100, 'WASTED lost deducted stake: ' + JSON.stringify(bookAfter));
+    t.assert(bookAfter.cash === Math.max(0, deadStatus.cash - 250) + 100, 'WASTED refund did not reach wallet: ' + JSON.stringify(bookAfter));
+    t.assert(bookAfter.stats.placed === bookBefore.stats.placed && bookAfter.stats.staked === bookBefore.stats.staked &&
+      bookAfter.stats.void === bookBefore.stats.void + 1 && bookAfter.stats.returned === bookBefore.stats.returned + 100,
+      'WASTED lost betting history/statistics: ' + JSON.stringify(bookAfter.stats));
+    t.assert(bookAfter.format === 'american', 'WASTED lost odds format');
+    await t.wait(1 / 30);
+    const once = await t.call('sportsbook');
+    t.assert(once.cash === bookAfter.cash && JSON.stringify(once.stats) === JSON.stringify(bookAfter.stats), 'WASTED stake refunded twice');
 
     // ---- A pick in the mission picker, then its call taken (the payphone's accept) with two stars: no reset at all.
     await wreckSome(t);
@@ -102,6 +125,12 @@ export default async function (t) {
     t.assert((await t.call('status')).mode === 'play' && !m.mission && m.last?.result === 'failed', 'BUSTED did not fail the job: ' + JSON.stringify(m));
     const g = await t.call('integrity');
     t.assert(!g.problems.length, 'integrity after the resets: ' + JSON.stringify(g.problems));
+    const kept = await t.call('sportsbook');
+    t.assert(kept.settled.some(b => b.id === wager.id && b.status === 'void' && b.payout === 100), 'BUSTED discarded settled betting history');
+    t.assert(kept.stats.placed === bookAfter.stats.placed && kept.stats.staked === bookAfter.stats.staked &&
+      kept.stats.void === bookAfter.stats.void && kept.stats.returned === bookAfter.stats.returned,
+      'BUSTED discarded betting statistics or refunded again: ' + JSON.stringify(kept.stats));
+    t.note('live $100 stake survives WASTED as one void/refund; odds format/history/statistics remain after BUSTED');
   } finally {
     await t.call('holdSimulation', false);
   }

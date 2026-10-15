@@ -650,7 +650,7 @@ body.dealer-reveal #pager,body.dealer-reveal #toast{visibility:hidden}
       }
       gameMode = 'dealer';
       keys = {};
-      mouse.down = false;
+      mouse.down = mouse.alt = false;
       ensureDealerOverlay().classList.remove('hidden');
       document.body.classList.add('dealer-open');
       syncPanelCover();

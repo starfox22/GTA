@@ -50,7 +50,7 @@
             )
             .replace('#include <map_fragment>', '#include <map_fragment>\n' + ASSET_CHAR_GLSL)
             // The embers glow through the soot where the texture's blistered paint shows (the procedural emissiveMap).
-            .replace('#include <emissivemap_fragment>', 'totalEmissiveRadiance *= charSootTexel * charState.z;');
+            .replace('#include <emissivemap_fragment>', 'vec3 charEmberRadiance = totalEmissiveRadiance * charSootTexel * charState.z;\n#include <emissivemap_fragment>\ntotalEmissiveRadiance = charState.z > 0.5 ? charEmberRadiance : totalEmissiveRadiance;');
           if (own.kind === 'finish' || own.kind === 'approved') {
             if (own.kind === 'approved') shader.uniforms.charRoughnessFloor = own.roughnessFloor;
             shader.vertexShader = shader.vertexShader
@@ -151,11 +151,13 @@
               material.forceSinglePass = source.forceSinglePass;
               material.roughnessMap = source.roughnessMap;
               material.metalnessMap = source.metalnessMap;
+              material.emissiveMap = source.emissiveMap || null;
+              material.emissiveIntensity = source.emissiveIntensity;
               own.livery.value = source.userData.approvedLivery || null;
               own.roughnessFloor.value = source.userData.approvedRubber ? 0.78 : source.userData.approvedPaint ? 0.22 : 0;
               own.dirt = source.userData.carDirt || null;
             }
-            material.emissive.setRGB(0, 0, 0);
+            material.emissive.copy(source.emissive);
             own.state.value.set(0, 0, 0, set.tile);
             own.seed.value.set(set.seed[0], set.seed[1], set.seed[2]);
             i = set.sources.push(source) - 1;
@@ -194,6 +196,7 @@
           // Burnt paint and trim are matte; wear and heat dull them on the way (paintVehicle's numbers).
           material.roughness = burnt ? 0.97 : Math.min(1, source.roughness + grime * 2.7 + heat * 0.4);
           material.metalness = burnt ? 0.12 : source.metalness * (1 - grime * 2.7);
+          if (!burnt) material.emissive.copy(source.emissive);
         }
       }
       /* The embers' glow (linear RGB) on a burnt model's char materials, written only when it changed. */
@@ -202,6 +205,20 @@
         if (!set || set.ember === r) return;
         set.ember = r;
         for (let i = 0; i < set.materials.length; i++) set.materials[i].emissive.setRGB(r, g, b);
+      }
+      // A source-backed door can be created after its body has already charred.
+      // It shares the live char material immediately, but must remember the clean
+      // source for release; another swap ignores materials that are already char.
+      function assetCharAdopt(m, mesh) {
+        const set = m.assetChar;
+        if (!set || set.swaps.includes(mesh)) return;
+        let inherited = false;
+        const original = material => {
+          const index = set.materials.indexOf(material);
+          if (index < 0) return material;
+          inherited = true; return set.sources[index];
+        }, source = Array.isArray(mesh.material) ? mesh.material.map(original) : original(mesh.material);
+        if (inherited) set.swaps.push(mesh, source);
       }
       /* Puts the shared materials back (a repair, a respray) and returns the char materials to the pool. */
       function assetCharRelease(m) {
@@ -249,6 +266,15 @@
                 Object.assign(opticalMaterial, { transparent: true, opacity: 1, alphaTest: 0,
                   depthWrite: false, side: Three.DoubleSide, forceSinglePass: true });
                 m.group.add(new Three.Mesh(geometry, opticalMaterial));
+                // The sports source also has an emissive atlas. Compile both
+                // opaque and optical char variants before the first damaged C8.
+                for (const optical of [false, true]) {
+                  const emissiveMaterial = assetCharMaterial('approved');
+                  emissiveMaterial.emissiveMap = sootTexture;
+                  if (optical) Object.assign(emissiveMaterial, { transparent: true, alphaTest: 0,
+                    depthWrite: false, side: Three.DoubleSide, forceSinglePass: true });
+                  m.group.add(new Three.Mesh(geometry, emissiveMaterial));
+                }
               }
               sharedGeometries.add(geometry);
             }

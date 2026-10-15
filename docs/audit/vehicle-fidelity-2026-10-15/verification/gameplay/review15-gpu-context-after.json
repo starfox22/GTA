@@ -1,0 +1,186 @@
+{
+  "status": "PASS",
+  "assertions": 42,
+  "failures": [],
+  "checks": [
+    {
+      "ok": true,
+      "message": "loss did not keep normal pause/save behavior"
+    },
+    {
+      "ok": true,
+      "message": "resume was allowed while picture lost"
+    },
+    {
+      "ok": true,
+      "message": "lost live frame dispatched gameplay"
+    },
+    {
+      "ok": true,
+      "message": "recovery unpaused before reload"
+    },
+    {
+      "ok": true,
+      "message": "pending reload dispatched live gameplay"
+    },
+    {
+      "ok": true,
+      "message": "already paused recovery changed mode/save behavior"
+    },
+    {
+      "ok": true,
+      "message": "pending reload allowed resume from an existing pause"
+    },
+    {
+      "ok": true,
+      "message": "healthy live simulation no longer advances normally"
+    },
+    {
+      "ok": true,
+      "message": "restore left deferred play state unpaused"
+    },
+    {
+      "ok": true,
+      "message": "restore changed deferred respawn progress"
+    },
+    {
+      "ok": true,
+      "message": "roof/lost: live travel completed into lost picture"
+    },
+    {
+      "ok": true,
+      "message": "roof/lost: live dispatch gate changed wrong phases"
+    },
+    {
+      "ok": true,
+      "message": "roof/lost: explicit developer frame no longer advances travel/simulation"
+    },
+    {
+      "ok": true,
+      "message": "roof/lost: live frame failed to catch deliberate stepped play state"
+    },
+    {
+      "ok": true,
+      "message": "roof/reload pending: live travel completed into lost picture"
+    },
+    {
+      "ok": true,
+      "message": "roof/reload pending: live dispatch gate changed wrong phases"
+    },
+    {
+      "ok": true,
+      "message": "roof/reload pending: explicit developer frame no longer advances travel/simulation"
+    },
+    {
+      "ok": true,
+      "message": "roof/reload pending: live frame failed to catch deliberate stepped play state"
+    },
+    {
+      "ok": true,
+      "message": "sky/lost: live travel completed into lost picture"
+    },
+    {
+      "ok": true,
+      "message": "sky/lost: live dispatch gate changed wrong phases"
+    },
+    {
+      "ok": true,
+      "message": "sky/lost: explicit developer frame no longer advances travel/simulation"
+    },
+    {
+      "ok": true,
+      "message": "sky/lost: live frame failed to catch deliberate stepped play state"
+    },
+    {
+      "ok": true,
+      "message": "sky/reload pending: live travel completed into lost picture"
+    },
+    {
+      "ok": true,
+      "message": "sky/reload pending: live dispatch gate changed wrong phases"
+    },
+    {
+      "ok": true,
+      "message": "sky/reload pending: explicit developer frame no longer advances travel/simulation"
+    },
+    {
+      "ok": true,
+      "message": "sky/reload pending: live frame failed to catch deliberate stepped play state"
+    },
+    {
+      "ok": true,
+      "message": "records/lost: live travel completed into lost picture"
+    },
+    {
+      "ok": true,
+      "message": "records/lost: live dispatch gate changed wrong phases"
+    },
+    {
+      "ok": true,
+      "message": "records/lost: explicit developer frame no longer advances travel/simulation"
+    },
+    {
+      "ok": true,
+      "message": "records/lost: live frame failed to catch deliberate stepped play state"
+    },
+    {
+      "ok": true,
+      "message": "records/reload pending: live travel completed into lost picture"
+    },
+    {
+      "ok": true,
+      "message": "records/reload pending: live dispatch gate changed wrong phases"
+    },
+    {
+      "ok": true,
+      "message": "records/reload pending: explicit developer frame no longer advances travel/simulation"
+    },
+    {
+      "ok": true,
+      "message": "records/reload pending: live frame failed to catch deliberate stepped play state"
+    },
+    {
+      "ok": true,
+      "message": "Die/lost: deferred respawn resumed unseen gameplay"
+    },
+    {
+      "ok": true,
+      "message": "Die/lost: respawn cost/reset changed"
+    },
+    {
+      "ok": true,
+      "message": "Die/reload pending: deferred respawn resumed unseen gameplay"
+    },
+    {
+      "ok": true,
+      "message": "Die/reload pending: respawn cost/reset changed"
+    },
+    {
+      "ok": true,
+      "message": "Bust/lost: deferred respawn resumed unseen gameplay"
+    },
+    {
+      "ok": true,
+      "message": "Bust/lost: respawn cost/reset changed"
+    },
+    {
+      "ok": true,
+      "message": "Bust/reload pending: deferred respawn resumed unseen gameplay"
+    },
+    {
+      "ok": true,
+      "message": "Bust/reload pending: respawn cost/reset changed"
+    }
+  ],
+  "sourceHashes": {
+    "src/gpu-context.js": "f528314b6f72e39d7e512abc35bb0e78d51759389dfbe76b5d45f871a958a3e0",
+    "src/game-loop.js": "316e59c409341303ea075ca2c255916b8403839d1b010059d1267c95b5bf8004",
+    "src/game-menus.js": "b6d45c4b73bd019614150cf8a0d3e680fe050a5446208bf0963cbd1c59086c63",
+    "src/story.js": "d9218fc6a59734248d904f5cf55b7b717dd3990e1eae44c233ffaa5730eccf57",
+    "src/skyline-lift.js": "59f1c293b51b26a6bde9e2d61c8d03735097118c76c0be66811c7b162749ff8d",
+    "src/fort-cover-records.js": "bc626a88aac658b9563f5065775ce39d38f002d396e8eec499a5b02ea949c4ac",
+    "src/game-player-actions.js": "06c705f36908ad8986ac391e107558b9d635cd2a27c3796d246fd88ae8cb2e5a",
+    "src/pursuit-officers.js": "d9f86e9e7e8cca5023bbc83aed72849dadbc460c4345c4aacf32e275e326f0a1",
+    "tools/tests/gpu-context-lifecycle.mjs": "0165bfede8d3ee846c430586f016961bb035b48623e12d0fb0851afc8bff5795"
+  }
+}

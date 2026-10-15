@@ -1,0 +1,64 @@
+{
+  "method": "Production crowdPoseTargets + existing player-body test rig-chain and dual-quaternion CPU skinning of actual shipped player-model.bin. Target/eased model measurements, not live browser bone telemetry.",
+  "phase": {
+    "requestedSeconds": 0.22,
+    "targetTransition": 0.44,
+    "easedSequence": "fresh first exit draw, then13 steps at1/60s with production easing9/s"
+  },
+  "playerHeightScale": 1.0285714285714287,
+  "terrainElevationWorldUnits": 0,
+  "runwaySurfaceWorldUnits": 0.12,
+  "sourceInputSha256": {
+    "assets/player-model.bin": "78608bc4f6a03a74645cb0064b91420f9447b0bff62b1fa28aee88e61a90b6eb",
+    "src/crowd3d-poses.js": "29ce527e00f846b43776c8db034953572132314afeeafab04cf52c295e29471d",
+    "src/crowd3d-draw.js": "d8e91259d6571d93a53f517f471a0cf3a57a3ce33e8bc8163308de65743296c0",
+    "src/crowd3d-special.js": "c8b248b49156d9b1d22c1408e691daa2c9fb4487b78e22ed5a4ab44a9997703f",
+    "src/carjack3d.js": "0f75aad9b5014f7a0125fd771dfef0120383ea597503984edbe09e8038ab2951",
+    "src/game-player-actions.js": "06c705f36908ad8986ac391e107558b9d635cd2a27c3796d246fd88ae8cb2e5a",
+    "src/airfields3d.js": "64ca42c8fc2d6606cbf001e406e44eede7a837cff59d98771b763f4bb2c80d47",
+    "tools/tests/player-body.mjs": "d399ca5bf627a945f7f89d17dc6ed7726846962d16fcfe80aea8d2cb795ba543"
+  },
+  "rows": [
+    {
+      "label": "settled idle production target",
+      "hipDrop": 0,
+      "ankles": [
+        0.596070374608408,
+        0.5727678508514984
+      ],
+      "shoeMinMetres": -0.0044617358449803935,
+      "shoeMaxMetres": 0.13209512019398284,
+      "shoeVerticesBelowRunway": 77,
+      "totalShoeVertices": 395
+    },
+    {
+      "label": "exit target at .22s",
+      "hipDrop": -1.7359999418258667,
+      "ankles": [
+        -0.21785861840015075,
+        -0.8187747920768418
+      ],
+      "shoeMinMetres": -0.1784045662110229,
+      "shoeMaxMetres": 0.02948582598701946,
+      "shoeVerticesBelowRunway": 393,
+      "totalShoeVertices": 395
+    },
+    {
+      "label": "fresh first exit draw plus13 pose-easing steps",
+      "hipDrop": -2.3043363094329834,
+      "ankles": [
+        -0.07680741057313556,
+        -1.1075134844577383
+      ],
+      "shoeMinMetres": -0.21449690275863503,
+      "shoeMaxMetres": 0.04655259415416853,
+      "shoeVerticesBelowRunway": 384,
+      "totalShoeVertices": 395
+    }
+  ],
+  "photos": {
+    "dist/review-2026-10-15-runway-before/before-chevette-player-exit.png": "0bf2594675697fccbb1e3b6f5af1fa1d167a610264bcf4d77ab358d86d486985",
+    "dist/review-2026-10-15-runway-after/after-chevette-player-exit.png": "cd976c4230511a473a38a712bedee0d451fafaf73d7d35273607678183f10134"
+  },
+  "conclusion": "Exit transition lowers hips without foot-floor constraints; severe shoe/lower-leg clipping is transition-specific. Settled pose has only minor sole/raised-surface intersection."
+}

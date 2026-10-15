@@ -1,0 +1,27 @@
+started dev server (?dev&norender: boot 28.4s)
+PASS enter-key (7.7s)
+PASS mission-modal-input (0.1s)
+PASS modal-pointer-lifecycle (0.4s)
+     13 production modal transitions release both buttons; rejected entries preserve input and campaign state
+PASS mouse-buttons (0.1s)
+     real input listeners: independent left/right/middle release; blur and hidden tab in play/help; pause/help/map clear both buttons
+PASS respawn-focus-pause (0.1s)
+     actual death/arrest callbacks and pause: focused return stays live; hidden/blurred return pauses; timing, costs, ammo, mission identity and world reset preserved
+PASS sportsbook-bets (3.9s)
+     payout $ 21 · cash after settlement 991
+PASS travel-focus-pause (0.1s)
+     actual roof/sky/records completion functions: hidden and blurred live frames freeze; focused return and explicit stepping finish
+PASS world-reset-sportsbook (0.2s)
+     actual city/sports reset chain, bet placement, save restore and settlement: death/arrest retain progress; interrupted live stakes refund once; new game clears
+PASS driveby-mouse (55.1s)
+     continuous real hold 5.0 wall s, 1.36 game s at 0.20 game s/s · front pointer: {"point":{"x":649,"y":300,"viewport":[960,600]},"boxes":[{"id":"hudLocation","l":16,"t":20,"r":277,"b":70},{"id":"cash","l":779,"t":20,"r":892,"b":48},{"id":"stars","l":795,"t":50,"r":892,"b":71},{"id":"worldClock","l":806,"t":73,"r":892,"b":87},{"id":"pauseBtn","l":910,"t":20,"r":944,"b":54},{"id":"navigation","l":373,"t":64,"r":587,"b":108},{"id":"carRadio","l":754,"t":397,"r":944,"b":428},{"id":"toast","l":16,"t":116,"r":269,"b":154},{"id":"minimapBox","l":16,"t":445,"r":216,"b":580},{"id":"pager","l":250,"t":440,"r":710,"b":556},{"id":"quickKeys","l":247,"t":564,"r":713,"b":580},{"id":"vehicleStats","l":774,"t":370,"r":944,"b":455},{"id":"weaponButton","l":744,"t":463,"r":944,"b":580},{"id":"fpsCounter","l":425,"t":0,"r":535,"b":18}]} · continuous real hold 4.1 wall s, 1.23 game s at 0.24 game s/s · continuous real hold 4.8 wall s, 1.88 game s at 0.21 game s/s · continuous real hold 2.5 wall s, 0.81 game s at 0.46 game s/s
+PASS fort-records-route (27.3s)
+PASS fps-counter (76.6s)
+PASS god-mode-codes (45.2s)
+     A taps: x 1152 → 1147 → 1139 · after the code: mode settings · ON sound: {"on":true,"seconds":4,"peak":0.767,"rms":0.061,"loudestRms":0.325} · OFF sound: {"on":false,"seconds":4,"peak":0.435,"rms":0.04,"loudestRms":0.258}
+PASS mission-retry-save (56.7s)
+     demo 1–4 and replay retry persistence; locked/invalid/legacy saves; completion/new-game clearing; inventory/reward unchanged · reload kept pistol 4/23; restart began stage zero with the existing 12/60 job-start restock
+PASS roof-lifts (107.3s)
+     POLICE HQ: east side, 120 up · OFFICES · LINDEN ST: south side, 102 up · OFFICES · EXCHANGE ST: south side, 121 up · OFFICES · HARBOR AVE: north side, 115 up · OFFICES · ARMORY ST: south side, 93 up · OFFICES · MARINA RD: south side, 92 up · MONARCH ONE: south side, 2131 up
+PASS surrender-input (44.0s)
+15/15 passed, 0 skipped, 0 failed in 459s

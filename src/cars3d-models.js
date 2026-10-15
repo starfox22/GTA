@@ -293,17 +293,18 @@
         const lamps = civLampMaterials,
           broken = c.damage?.lights;
         for (const lamp of m.lamps) {
-          const material = broken?.[lamp.key]
+          const states = lamp.materials || lamps,
+            material = broken?.[lamp.key]
             ? lamp.mesh.material
             : lamp.kind === 'head'
               ? driven && lampsOn > 0.25
-                ? lamps.headOn
-                : lamps.headOff
+                ? states.headOn
+                : states.headOff
               : braking
-                ? lamps.brake
+                ? states.brake
                 : driven && lampsOn > 0.25
-                  ? lamps.tailOn
-                  : lamps.tailOff;
+                  ? states.tailOn
+                  : states.tailOff;
           if (lamp.mesh.material !== material) lamp.mesh.material = material;
         }
         if (m.drl) {
@@ -323,6 +324,9 @@
             driven = spinning === 'all' || spinning === (wheel.front ? 'front' : 'rear');
           wheel.wheel.rotation.z -= (((c.speed + (driven ? spinExtra : 0)) * deltaSeconds) / wheel.radius) * (driven ? 1 : 1 - lock);
           if (wheel.front) wheel.wheel.rotation.y = -m.steer;
+          // A brake caliper follows its hub, steering and suspension, while the
+          // disc and tyre roll around it. The nested counter-rotation cancels roll.
+          if (wheel.caliper) wheel.caliper.rotation.z = -wheel.wheel.rotation.z;
         }
         if (m.extra?.animate) m.extra.animate(c, m, deltaSeconds, driven, lampsOn);
         // Road dirt toward the sills: the car's own share, more as it wears (civLiveryPatch ROAD DIRT).

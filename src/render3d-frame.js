@@ -113,6 +113,7 @@
           modelBuildMs = 0;
           beginVehicleImpostors();
           approvedVehicleTextureQuality();
+          sportsVehicleTextureQuality();
           for (const c of vehicles) {
             let m = carModels.get(c);
             const near =

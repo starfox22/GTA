@@ -26,6 +26,13 @@ const embeddedAssetReferences = {
   "approvedVehicleOrm": "media-approved-vehicle-orm",
   "approvedVehicleAlbedoLow": "media-approved-vehicle-albedo-low",
   "approvedVehicleOrmLow": "media-approved-vehicle-orm-low",
+  "sportsVehicleModels": "media-sports-vehicle-models",
+  "sportsVehicleAlbedo": "media-sports-vehicle-albedo",
+  "sportsVehicleOrm": "media-sports-vehicle-orm",
+  "sportsVehicleEmissive": "media-sports-vehicle-emissive",
+  "sportsVehicleAlbedoLow": "media-sports-vehicle-albedo-low",
+  "sportsVehicleOrmLow": "media-sports-vehicle-orm-low",
+  "sportsVehicleEmissiveLow": "media-sports-vehicle-emissive-low",
   "aircraftModels": "media-aircraft-models",
   "aircraftSkin": "media-aircraft-skin",
   "dogModel": "media-dog-model",
@@ -163,7 +170,7 @@ function embeddedMediaDataUrl(identifier) {
 }
 
 const gameAssets = {};
-for (const name of ['architecture', 'ground', 'weapons', 'harbor', 'arsenal', 'unicorn', 'playerModel', 'playerSkin', 'playerDetail', 'vehicleModels', 'vehicleAtlas', 'approvedVehicleModels', 'approvedVehicleAlbedo', 'approvedVehicleOrm', 'approvedVehicleAlbedoLow', 'approvedVehicleOrmLow', 'aircraftModels', 'aircraftSkin', 'dogModel', 'npcModels', 'npcSkin', 'wallSkin', 'trailMud']) {
+for (const name of ['architecture', 'ground', 'weapons', 'harbor', 'arsenal', 'unicorn', 'playerModel', 'playerSkin', 'playerDetail', 'vehicleModels', 'vehicleAtlas', 'approvedVehicleModels', 'approvedVehicleAlbedo', 'approvedVehicleOrm', 'approvedVehicleAlbedoLow', 'approvedVehicleOrmLow', 'sportsVehicleModels', 'sportsVehicleAlbedo', 'sportsVehicleOrm', 'sportsVehicleEmissive', 'sportsVehicleAlbedoLow', 'sportsVehicleOrmLow', 'sportsVehicleEmissiveLow', 'aircraftModels', 'aircraftSkin', 'dogModel', 'npcModels', 'npcSkin', 'wallSkin', 'trailMud']) {
   gameAssets[name] = embeddedMediaDataUrl(embeddedAssetReferences[name]);
 }
 gameAssets.audio = {};

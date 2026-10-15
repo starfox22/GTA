@@ -41,6 +41,13 @@ Cash, weapons and ammunition, armour, the story and contract pointers, campaign 
 dealership's owned cars (brought back repaired to their bays: `keepOwnedCars`), the clock and weather, drawbridge
 timetables. Nothing about the world is in the save.
 
+`resetWorld` snapshots `sportsbookSaveData` before repopulating on WASTED/BUSTED
+and restores it with `loadSportsbook`. Population rebuilds sports match objects:
+the existing book update rebinds a bet on the same upcoming fixture, or voids and
+refunds an interrupted live match once. History, statistics and the next bet id
+survive. NEW GAME still clears the book. `world-reset-sportsbook` exercises the
+actual reset, placement, save-restore and settlement functions together.
+
 ## Cover
 
 Callers move the player first (`teleportPlayer`), so the view cuts; `#worldResetFade` (base.css, z-index 6, under the

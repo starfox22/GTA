@@ -81,6 +81,8 @@
           .replace('#include <map_fragment>', 'vec2 approvedUv = vAvAtlasRect.xy + fract(vAvSourceUv) * vAvAtlasRect.zw;\n' + Three.ShaderChunk.map_fragment.replace(/\bvMapUv\b/g, 'approvedUv'))
           .replace('#include <roughnessmap_fragment>', Three.ShaderChunk.roughnessmap_fragment.replace(/\bvRoughnessMapUv\b/g, 'approvedUv'))
           .replace('#include <metalnessmap_fragment>', Three.ShaderChunk.metalnessmap_fragment.replace(/\bvMetalnessMapUv\b/g, 'approvedUv'));
+        shader.fragmentShader = shader.fragmentShader.replace('#include <emissivemap_fragment>',
+          Three.ShaderChunk.emissivemap_fragment.replace(/\bvEmissiveMapUv\b/g, 'approvedUv'));
       }
       function approvedVehicleMaterialPatch(material, paint = false, livery = null, rubber = false) {
         material.userData.assetAtlas = 'approved';
@@ -165,7 +167,7 @@
         }
         const dx = c.x - player.x, dy = c.y - player.y,
           reach = 210 / (activeTier?.lodBias || 1),
-          damaged = c.hp < c.maxhp || m.damageVersion !== c.damageVersion || m.approvedLodDamagePinned || !!c.trunkOpen,
+          damaged = c.hp < c.maxhp || m.damageVersion !== c.damageVersion || m.approvedLodDamagePinned || !!c.trunkOpen || !!m.doorBodyMask,
           far = c !== player.car && !damaged && dx * dx + dy * dy > reach * reach * (m.approvedLodFar ? 0.81 : 1.21);
         if (far === !!m.approvedLodFar) return;
         m.approvedLodFar = far;

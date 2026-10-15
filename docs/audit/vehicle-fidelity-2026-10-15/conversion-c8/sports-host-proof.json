@@ -1,0 +1,42 @@
+{
+  "assertions": 1228,
+  "notes": [
+    {
+      "packSHA256": "e83f2d0f38b64ca743717eb50054ea15dfa56488fe8346ee423790815f375328",
+      "sourceInputs": {
+        "src/sports-vehicle-assets3d.js": "8ba3a42e896c96fa377069e5a35aa81232d91e76c79376a5663358f15f600cd3",
+        "src/approved-suv3d.js": "e2240298c99e21fb0850073e4fd277f9d1a27fd72511310cce214948cb634b40",
+        "src/approved-vehicle-assets3d.js": "dd4f6b19a21c46418d90db2458d72eda3ef66efb5bf2d6b5e66ddd217dd051c1",
+        "src/vehicle-assets3d.js": "a5896067f11e776498110833dcc9cbd4ccb58da9cbf3569e193f191318c39784",
+        "src/vehicle-char3d.js": "77fa8966e444f1797618c885d77b7d5a26cb68c77f1df8cf9cbed24eead18db0",
+        "src/cars3d-models.js": "b8afc30af84a39f6f4d0577e7ca43644cc0838067331312112d21fe54ef14236"
+      },
+      "model": "c8_hari",
+      "triangles": 85031,
+      "farTriangles": 9407,
+      "actualNearTriangles": 85031,
+      "actualFarTriangles": 9407,
+      "parts": 86,
+      "arrays": 618,
+      "textureUploads": 12,
+      "disposeByAtlas": [
+        2,
+        2,
+        2
+      ],
+      "nativeDoorHinges": [
+        [
+          6.203920642204758,
+          4.266917853803121,
+          6.882027187977273
+        ],
+        [
+          6.2026074183272675,
+          4.273754743811496,
+          -6.8764977614945595
+        ]
+      ]
+    }
+  ],
+  "pass": true
+}

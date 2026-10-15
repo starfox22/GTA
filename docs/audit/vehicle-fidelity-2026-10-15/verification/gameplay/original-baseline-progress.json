@@ -1,0 +1,3640 @@
+{
+  "status": "COMPLETE_WITH_RETAINED_ATTEMPTS_ALL_ASSERTED_FAILURES_RESOLVED_UNCHANGED",
+  "updatedUTC": "2026-10-15T14:53:32.100697+00:00",
+  "selectedOriginalModules": 214,
+  "uniqueLatestValidOutcomes": {
+    "PASS": 196,
+    "SKIP": 18,
+    "FAIL": 0,
+    "PENDING": 0
+  },
+  "baselineHtml": "dist/review-2026-10-15-before.html",
+  "baselineHtmlSha256": "5b199b249eeb301af2722c21e84470c6b20902ff0976d17c3e439be1ab3e58da",
+  "qualification": "Resumed exact original modules across three main processes plus two unchanged whole-module follow-ups; not a single uninterrupted pass. Infrastructure interruption, deliberate reprioritization and initial timing-sensitive failures remain retained. Browser HTML is frozen; source-reading host modules used workspace source and require separately qualified final-host proof. No original assertion, threshold or wait was relaxed. The canonical world-reset extension was applied only after all original214 modules completed.",
+  "modules": [
+    {
+      "module": "ammo-supply",
+      "testSha256AtOriginalSelection": "4ecd5ef99994c9de008283eafeface800233856b134644a5cb171f94ee23275d",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(20.3s)"
+        }
+      ]
+    },
+    {
+      "module": "approved-motorcycle-rider-fit",
+      "testSha256AtOriginalSelection": "6c2db1441f161bf24be0a249e866de115c8b265fd3fbdb5cc05912492ba4d19c",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(0.7s)"
+        }
+      ]
+    },
+    {
+      "module": "approved-motorcycle-rigs",
+      "testSha256AtOriginalSelection": "5fda776f1db5391b2cc1a9a884540035b288293b5d204f1bb5f44866f67b0122",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(0.5s)"
+        }
+      ]
+    },
+    {
+      "module": "approved-suv-rigs",
+      "testSha256AtOriginalSelection": "e37a6c114901f77751637c65d7b6032521db59d084be294947332817461aca4e",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(1.3s)"
+        }
+      ]
+    },
+    {
+      "module": "approved-vehicle-pipeline",
+      "testSha256AtOriginalSelection": "4b144cf87fbc1854b8319cb9ba7df5650a20d1254cd89ffea0bd859e47c20a22",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(1.9s)"
+        }
+      ]
+    },
+    {
+      "module": "asset-char",
+      "testSha256AtOriginalSelection": "f7cfab52180e95f6629cd8918300b0f4548d6f08edd87bf51e6b9b54cba52152",
+      "status": "SKIP",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "SKIP",
+          "summary": "(16.7s): Requires WebGL: run with --render"
+        }
+      ]
+    },
+    {
+      "module": "blood-amounts",
+      "testSha256AtOriginalSelection": "2d8cf84bb4d0347c698420e733ad3364e87a9128457915b8f9c140cd6b9f69c0",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(14.6s)"
+        }
+      ]
+    },
+    {
+      "module": "blood-spray",
+      "testSha256AtOriginalSelection": "8a5ca374571efa145d08783d83b48fc0af6685ae62a4f1480d132b0c8b3e945e",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(16.7s)"
+        }
+      ]
+    },
+    {
+      "module": "blood-wounds",
+      "testSha256AtOriginalSelection": "9324916d525849522224da92db600a6672f8f71716e97d47db5e073f052885a9",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(42.4s)"
+        }
+      ]
+    },
+    {
+      "module": "bluehour-entrance",
+      "testSha256AtOriginalSelection": "83170cd0761801e4c392f8dc3ec54d5e90d1ee5f47d2334f2062bd11b00f9de2",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(29.2s)"
+        }
+      ]
+    },
+    {
+      "module": "boot-status",
+      "testSha256AtOriginalSelection": "22932994820a1bb23311c358e5d07cdfb39bf20a465b47a27642f2fcf635e96b",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(1.0s)"
+        }
+      ]
+    },
+    {
+      "module": "brake-distances",
+      "testSha256AtOriginalSelection": "50f525fe03b735db3c86fed4a8913a518efbcffe13713bd314e6f2c191154cce",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(5.2s)"
+        }
+      ]
+    },
+    {
+      "module": "bullet-hits",
+      "testSha256AtOriginalSelection": "c11c01cdcd0ee89b2d3de913e009797cd5ee77336dcde5fc71783e5d724f702f",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(29.1s)"
+        }
+      ]
+    },
+    {
+      "module": "cabin-headroom",
+      "testSha256AtOriginalSelection": "92c2a48f934db25fa42de6d87ebcdad6541aac196c47731ea039dd2311d99257",
+      "status": "SKIP",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "SKIP",
+          "summary": "(0.0s): Requires WebGL: run with --render"
+        }
+      ]
+    },
+    {
+      "module": "camera-comfort",
+      "testSha256AtOriginalSelection": "7a3ff0eec3ebfe20b5075d0172d0672c9fef8f75496786d1552a5ac3611a3584",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(53.7s)"
+        }
+      ]
+    },
+    {
+      "module": "camera-feel",
+      "testSha256AtOriginalSelection": "ed007b8af3ab18e0f97b6b8b2eb259e7455e1db573a19432179c1be835611c39",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(3.5s)"
+        }
+      ]
+    },
+    {
+      "module": "camera-framing",
+      "testSha256AtOriginalSelection": "a66555bcd5c9235496ff682ab4218cda4938639cd41edbba2dd43ab962c129f5",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(14.6s)"
+        }
+      ]
+    },
+    {
+      "module": "camera-lead-setting",
+      "testSha256AtOriginalSelection": "631915db6b4203154de1f9cc6a7053c7a21419947c522e1b3a904e5f4df351f8",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(76.3s)"
+        }
+      ]
+    },
+    {
+      "module": "camera-slow-framing",
+      "testSha256AtOriginalSelection": "70b8cbbe93b239ee25471dc89028a17f4ba9d233b6547f9d1458a7f7c95b7f53",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(53.8s)"
+        }
+      ]
+    },
+    {
+      "module": "car-blood",
+      "testSha256AtOriginalSelection": "5d3fe79ce85c56e77d48429d9af243078de78cf5686bffaede1a628276407da3",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(284.3s)"
+        }
+      ]
+    },
+    {
+      "module": "car-cabins",
+      "testSha256AtOriginalSelection": "dadfd16faddbc09001e61c0b3731ec070f508d2d3be1f33475a97f82574fccd9",
+      "status": "SKIP",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "SKIP",
+          "summary": "(0.0s): Requires WebGL: run with --render"
+        }
+      ]
+    },
+    {
+      "module": "car-feet-clearance",
+      "testSha256AtOriginalSelection": "781df49c81c652797455497dcd9c095884af3b211c41062c1217f18fceed9b5d",
+      "status": "SKIP",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "SKIP",
+          "summary": "(35.5s): Requires WebGL: run with --render"
+        }
+      ]
+    },
+    {
+      "module": "car-window-open",
+      "testSha256AtOriginalSelection": "e5ab8bec46e832671ab2b09d96db45c37f7a7fe95ac50fabcf87247ace2001ba",
+      "status": "SKIP",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "SKIP",
+          "summary": "(28.4s): Requires WebGL: run with --render"
+        }
+      ]
+    },
+    {
+      "module": "carjack-traffic",
+      "testSha256AtOriginalSelection": "4d0af2032457dbec8e9aefd1459dec4a301ea230395ee035ffa0062a58c272fb",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(52.7s)"
+        }
+      ]
+    },
+    {
+      "module": "carjack",
+      "testSha256AtOriginalSelection": "5209cb253c260f844368a67e7df14b61c4a021f4bd1b5aeda504e7e1de8b8ecb",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(57.6s)"
+        }
+      ]
+    },
+    {
+      "module": "chase-aim",
+      "testSha256AtOriginalSelection": "51990b83b136f20a102a649150521142fbd90a2e6c25c60cd1ad854be3468445",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(2.8s)"
+        }
+      ]
+    },
+    {
+      "module": "chase-audio-pan",
+      "testSha256AtOriginalSelection": "d6a6c273fc21d5c7ae3af81a5115b38329a7329fdb3af1ffbd098e76fa9b5472",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(0.0s)"
+        }
+      ]
+    },
+    {
+      "module": "chase-budget",
+      "testSha256AtOriginalSelection": "5de20b4fec3f4018b83f6b1a2c5217b57176d42d1c8a7930a6e837c2250444c9",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(44.3s): error: read ECONNRESET"
+        },
+        {
+          "shard": 2,
+          "log": "review15-before-resume.log",
+          "status": "PASS",
+          "summary": "(4.2s)"
+        }
+      ]
+    },
+    {
+      "module": "chase-clouds",
+      "testSha256AtOriginalSelection": "fbf464802baa319a3edc5ab671aa223e8522b7f7ac3e207830a6a5cbc51c8c95",
+      "status": "SKIP",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "SKIP",
+          "summary": "(0.3s): Requires WebGL: run with --render"
+        }
+      ]
+    },
+    {
+      "module": "chase-cover-clearance",
+      "testSha256AtOriginalSelection": "cef5c9472102124e15556bb4bdf3645f46bc932d32c9902f77216563e2a3238d",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(0.0s)"
+        }
+      ]
+    },
+    {
+      "module": "chase-crane",
+      "testSha256AtOriginalSelection": "10beb06ff159243401fc2f59ca05c92ad44c355adb0d653f29644daf1c720727",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(2.4s)"
+        }
+      ]
+    },
+    {
+      "module": "chase-hud-box",
+      "testSha256AtOriginalSelection": "ed7ee79fc838d2740ab5589990b15dab40f03e2febf532c6ea968a39b40ead7d",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(1.9s)"
+        }
+      ]
+    },
+    {
+      "module": "chase-hud-layout",
+      "testSha256AtOriginalSelection": "980dec625571e6c0d5ad023d48234c575b9ed53716c5f96afa6639d941067703",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(20.8s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 2,
+          "log": "review15-before-resume.log",
+          "status": "PASS",
+          "summary": "(61.7s)"
+        }
+      ]
+    },
+    {
+      "module": "chase-in-view",
+      "testSha256AtOriginalSelection": "be9ca3d9618b4857bc5ac028f697db95e255ad251056ff3d4811758402fd2b3b",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(1.0s)"
+        }
+      ]
+    },
+    {
+      "module": "chase-input",
+      "testSha256AtOriginalSelection": "dba3d64cf1cec802153761b5ddfc17d7451ac3620512870bd760efe9a529be82",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(3.9s)"
+        }
+      ]
+    },
+    {
+      "module": "chase-lock",
+      "testSha256AtOriginalSelection": "c2698642b9d834e05b4af394ddba89847131b6e57823f32c153f767f52f0c6b1",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(9.1s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 2,
+          "log": "review15-before-resume.log",
+          "status": "PASS",
+          "summary": "(45.2s)"
+        }
+      ]
+    },
+    {
+      "module": "chase-motion-blur",
+      "testSha256AtOriginalSelection": "9780809de3a4d0ea5feace0bde8a7f447fa361852dd8ccfed1356cb019f73e37",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(0.4s)"
+        }
+      ]
+    },
+    {
+      "module": "chase-move-keys",
+      "testSha256AtOriginalSelection": "b152ce333fe62a6fcf516b779683e11596d7e3e14145a13f950e8b76f4d864f6",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 2,
+          "log": "review15-before-resume.log",
+          "status": "PASS",
+          "summary": "(41.4s)"
+        }
+      ]
+    },
+    {
+      "module": "chase-radio-chip",
+      "testSha256AtOriginalSelection": "c06c3dd897a29e630021c9685bd4d650039e2c8066b03b1a2151dd5211ddcc37",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(0.7s)"
+        }
+      ]
+    },
+    {
+      "module": "chase-shooter",
+      "testSha256AtOriginalSelection": "00f1c11e37af7526ded3fe31d66bef0ffd0923ba7f5c497367883253f14b3b8f",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(0.5s)"
+        }
+      ]
+    },
+    {
+      "module": "chase-streams",
+      "testSha256AtOriginalSelection": "b857bd377b3d5f6d414ebea370c3fb037c3d3dd72ccc5fffe7bb51cff03388b4",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(14.2s)"
+        }
+      ]
+    },
+    {
+      "module": "chase-view-mode",
+      "testSha256AtOriginalSelection": "8cde701ae17c146b1f3d2b4bcb3ff8c04fb5a5420bd3c7ae8c25472eefd65df6",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(0.6s)"
+        }
+      ]
+    },
+    {
+      "module": "chase-walk",
+      "testSha256AtOriginalSelection": "69d02b363fdb03e94379c592e11723f6149b7e76c8cdc47ed013d6fae3b48cb6",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(1.3s)"
+        }
+      ]
+    },
+    {
+      "module": "chase-wall-clearance",
+      "testSha256AtOriginalSelection": "241720d85c490e159d497aeb60b60763ab438a8ee7234ab17963eba03f2641a6",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(5.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 2,
+          "log": "review15-before-resume.log",
+          "status": "PASS",
+          "summary": "(31.0s)"
+        }
+      ]
+    },
+    {
+      "module": "cheat-helicopter",
+      "testSha256AtOriginalSelection": "35b52ba41de92df153e01b552225335839e9e0f656d7dee64f0b7af0956a1ad2",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.1s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 2,
+          "log": "review15-before-resume.log",
+          "status": "PASS",
+          "summary": "(38.2s)"
+        }
+      ]
+    },
+    {
+      "module": "chimney-smoke",
+      "testSha256AtOriginalSelection": "47e9f04bb770e44ff89cdbfad11458301c5483ec755febe9fe31293c1c2971bf",
+      "status": "SKIP",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 2,
+          "log": "review15-before-resume.log",
+          "status": "SKIP",
+          "summary": "(77.2s): Requires WebGL: run with --render"
+        }
+      ]
+    },
+    {
+      "module": "civil-aircraft",
+      "testSha256AtOriginalSelection": "dc86c670bce189ba7f6ae7273d20b479fffdf72c1b5d389d5d5742050b64e1c5",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(12.7s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 2,
+          "log": "review15-before-resume.log",
+          "status": "PASS",
+          "summary": "(95.9s)"
+        }
+      ]
+    },
+    {
+      "module": "cloud-history",
+      "testSha256AtOriginalSelection": "72d337a45760d85987519a200d65c11219e245c07d023bf894253cb9507e60d7",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(0.0s)"
+        }
+      ]
+    },
+    {
+      "module": "clouds",
+      "testSha256AtOriginalSelection": "bf789a5d60a3688db1207e18a20c55082c61380d6eea87f3949586c6ca4550f4",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(4.9s)"
+        }
+      ]
+    },
+    {
+      "module": "club-entrance",
+      "testSha256AtOriginalSelection": "5afc2523dfbb79dfe6e0f02c3ad0ff721160e9d6aeac7b223fc08d268f98fe23",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 2,
+          "log": "review15-before-resume.log",
+          "status": "PASS",
+          "summary": "(22.9s)"
+        }
+      ]
+    },
+    {
+      "module": "combat-continuity",
+      "testSha256AtOriginalSelection": "01d779ea74d4330cf239869d312b222e0f98515bbe58e1448ef8352a9f1d9b21",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(0.0s)"
+        }
+      ]
+    },
+    {
+      "module": "coronation-bridge",
+      "testSha256AtOriginalSelection": "1b2f7ce723e7ada7c9867398e5f0491d9f1a57e78af193151d76b78cc65348a4",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 2,
+          "log": "review15-before-resume.log",
+          "status": "PASS",
+          "summary": "(29.7s)"
+        }
+      ]
+    },
+    {
+      "module": "demo-complete-card",
+      "testSha256AtOriginalSelection": "188bd2c8df0b2f5d084f80c9519dcd133bb9cba4e9963af67034e0942c440d82",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.2s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 2,
+          "log": "review15-before-resume.log",
+          "status": "PASS",
+          "summary": "(60.5s)"
+        }
+      ]
+    },
+    {
+      "module": "demo-free-roam-markers",
+      "testSha256AtOriginalSelection": "6ad9762b584cb4feea92e698e329772b013e10dce44f8700b483c435abe41abc",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(45.9s)"
+        }
+      ]
+    },
+    {
+      "module": "demo-gating",
+      "testSha256AtOriginalSelection": "2bef2f022217a31b383aa204f74233e4537bd13e8adaa4703bf7c02155936c5c",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(18.5s)"
+        }
+      ]
+    },
+    {
+      "module": "drawbridge-islands",
+      "testSha256AtOriginalSelection": "a854fe8032d02b07330da7231f5647be44562383cf41fb70639f8ee590606018",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.6s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 2,
+          "log": "review15-before-resume.log",
+          "status": "PASS",
+          "summary": "(108.7s)"
+        }
+      ]
+    },
+    {
+      "module": "drawbridge-traffic",
+      "testSha256AtOriginalSelection": "3977814f1e7a9084ebd5eec4d04feef25462e5d90f77450a4870fb606f5864cd",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 2,
+          "log": "review15-before-resume.log",
+          "status": "PASS",
+          "summary": "(298.7s)"
+        }
+      ]
+    },
+    {
+      "module": "drift-handling",
+      "testSha256AtOriginalSelection": "f1be1971e9fe418261add3d18f8f8a7d6f78c9748742ad2d79461944542efa81",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(6.2s)"
+        }
+      ]
+    },
+    {
+      "module": "drive-no-nan",
+      "testSha256AtOriginalSelection": "a2c13e601c3ac85031ce352444986de2f51fb4e604284f0b40352b9ff761bd4d",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(21.2s)"
+        }
+      ]
+    },
+    {
+      "module": "driveby-arcs",
+      "testSha256AtOriginalSelection": "4026405ed63f8b167f8ad28cc0dab3e874081815fad3c647bf06170a17c88c7d",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 2,
+          "log": "review15-before-resume.log",
+          "status": "PASS",
+          "summary": "(35.3s)"
+        }
+      ]
+    },
+    {
+      "module": "driveby-mouse",
+      "testSha256AtOriginalSelection": "b2c69ea9d1f1d64a97c815e5c202e210b1d2a199c601e29f4fe4de56482db5e2",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 2,
+          "log": "review15-before-resume.log",
+          "status": "PASS",
+          "summary": "(66.3s)"
+        }
+      ]
+    },
+    {
+      "module": "driveby-seats",
+      "testSha256AtOriginalSelection": "88d5d2e6d86038be97de21c4831d1f724c2aa2fb366e0d3e15e823c2fffe78a2",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(0.2s)"
+        }
+      ]
+    },
+    {
+      "module": "driving-settings-migrate",
+      "testSha256AtOriginalSelection": "61de83dff327deb10478dbf0583d650d85e13f4b5a62e9532d85687e840aedd8",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(0.0s)"
+        }
+      ]
+    },
+    {
+      "module": "enter-key",
+      "testSha256AtOriginalSelection": "3b37e8018136d2610d442c1351b2b966ea901f82a4af2eab6ec06cdea480923c",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(5.3s)"
+        }
+      ]
+    },
+    {
+      "module": "falls",
+      "testSha256AtOriginalSelection": "848bff688faed24577f34cc4070ce94de14a694ad339e1de357ce27de58102ae",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 2,
+          "log": "review15-before-resume.log",
+          "status": "PASS",
+          "summary": "(123.1s)"
+        }
+      ]
+    },
+    {
+      "module": "foliage-cutaway",
+      "testSha256AtOriginalSelection": "b563a723adad5eb62a4f528c708e7d635f4927f7c961806ef8f086947ade013f",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(0.2s)"
+        }
+      ]
+    },
+    {
+      "module": "footwork",
+      "testSha256AtOriginalSelection": "7849db27785b061239217aae99bdb55886e10e5781e7d6574e4c25ddf2e63627",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 2,
+          "log": "review15-before-resume.log",
+          "status": "PASS",
+          "summary": "(34.1s)"
+        }
+      ]
+    },
+    {
+      "module": "fort-cover",
+      "testSha256AtOriginalSelection": "36f6a160f75fceee4d1c435a497984ae555d8b5393afdfaf5a29aea5b6cbe75d",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 2,
+          "log": "review15-before-resume.log",
+          "status": "PASS",
+          "summary": "(41.8s)"
+        }
+      ]
+    },
+    {
+      "module": "fort-gate-barrier",
+      "testSha256AtOriginalSelection": "758012c7a6b6d47eaf21e42ab58fe6c4fd007907feeea940451414e30bf5a217",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.2s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 2,
+          "log": "review15-before-resume.log",
+          "status": "PASS",
+          "summary": "(40.8s)"
+        }
+      ]
+    },
+    {
+      "module": "fort-gate-talk",
+      "testSha256AtOriginalSelection": "4100523ace5a71cb68ed1eeeb2de376c66df1a569852135a09119648c55e2f99",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 2,
+          "log": "review15-before-resume.log",
+          "status": "PASS",
+          "summary": "(38.4s)"
+        }
+      ]
+    },
+    {
+      "module": "fort-records-route",
+      "testSha256AtOriginalSelection": "f14f5cf43499d4a51ac0cae5b2e72b4f748690dbe83fab480266291cc63b0cd8",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(1.2s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 2,
+          "log": "review15-before-resume.log",
+          "status": "PASS",
+          "summary": "(26.0s)"
+        }
+      ]
+    },
+    {
+      "module": "fort-vehicle-theft",
+      "testSha256AtOriginalSelection": "595287884c8818b4f3b5e20d20bff2995a3c52c5fc173c3c27fd30cbd92fd6b1",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.7s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 2,
+          "log": "review15-before-resume.log",
+          "status": "PASS",
+          "summary": "(28.1s)"
+        }
+      ]
+    },
+    {
+      "module": "fps-counter",
+      "testSha256AtOriginalSelection": "bfc622cb04ceaead4ade46cee906c362743fc5cab58ba59ef4ba8fae96f51f97",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 2,
+          "log": "review15-before-resume.log",
+          "status": "PASS",
+          "summary": "(77.6s)"
+        }
+      ]
+    },
+    {
+      "module": "frame-guard",
+      "testSha256AtOriginalSelection": "b5b8d62d6e1769a650a6ca77ea175384e3e4cafce31fe0899203cc9e9d506323",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 2,
+          "log": "review15-before-resume.log",
+          "status": "PASS",
+          "summary": "(37.1s)"
+        }
+      ]
+    },
+    {
+      "module": "frame-trace",
+      "testSha256AtOriginalSelection": "473a2ba6d1bf15c41181ab71c59548a6ce2663155672e73020a6f07fd19db995",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(1.4s)"
+        }
+      ]
+    },
+    {
+      "module": "freeroam-respawn",
+      "testSha256AtOriginalSelection": "b267be8a17b45a17edcd636a8237e1991e9ca5739bc4c0fa7008ba0c9ec43e62",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.1s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 2,
+          "log": "review15-before-resume.log",
+          "status": "PASS",
+          "summary": "(53.0s)"
+        }
+      ]
+    },
+    {
+      "module": "garages-islands",
+      "testSha256AtOriginalSelection": "8728d2f283415e16cb99d6e3f92f95c0fed9f85a4356cfc918921c3053915172",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.1s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 2,
+          "log": "review15-before-resume.log",
+          "status": "PASS",
+          "summary": "(44.9s)"
+        }
+      ]
+    },
+    {
+      "module": "god-drawbridges",
+      "testSha256AtOriginalSelection": "9182a527165982cde3f3be403ec1a8d229e59c05c9c63cfd8b4d28274d350724",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 2,
+          "log": "review15-before-resume.log",
+          "status": "PASS",
+          "summary": "(113.8s)"
+        }
+      ]
+    },
+    {
+      "module": "god-mode-codes",
+      "testSha256AtOriginalSelection": "77b9c9e86e8e83026c98267379834270a250de8dd149ba1345acd89fe9c8481e",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 2,
+          "log": "review15-before-resume.log",
+          "status": "FAIL",
+          "summary": "(32.2s): both A taps should walk the player left: 1152 \u2192 1150 \u2192 1148"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(11.8s)"
+        }
+      ]
+    },
+    {
+      "module": "god-teleport-map",
+      "testSha256AtOriginalSelection": "ffdd36f6dae9a8267510261cbcf128dda98b632f7a6b6af6a9bbffdadccc46be",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 2,
+          "log": "review15-before-resume.log",
+          "status": "PASS",
+          "summary": "(33.9s)"
+        }
+      ]
+    },
+    {
+      "module": "gore-dismember",
+      "testSha256AtOriginalSelection": "029cacc53e76c7d1c3ec9e849bc31f843ce3f101ed09a65b27ffd09d11ae3ad2",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 2,
+          "log": "review15-before-resume.log",
+          "status": "PASS",
+          "summary": "(34.6s)"
+        }
+      ]
+    },
+    {
+      "module": "gpu-context",
+      "testSha256AtOriginalSelection": "e82dd6d8faaf6f545d02275e79eb3e10b53ddc2d4fa6150cd10b2a8bc00dc538",
+      "status": "SKIP",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 2,
+          "log": "review15-before-resume.log",
+          "status": "SKIP",
+          "summary": "(26.4s): no 3D renderer on this page (run with --render)"
+        }
+      ]
+    },
+    {
+      "module": "graphics-all-tiers",
+      "testSha256AtOriginalSelection": "43f1c8a3d202b11d202f625e2f831b177f2d2743fca4bef710e8b4f9eecc0ffd",
+      "status": "SKIP",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "SKIP",
+          "summary": "(0.0s): Requires WebGL: run with --render"
+        }
+      ]
+    },
+    {
+      "module": "headlight-aim",
+      "testSha256AtOriginalSelection": "55e890c3c014d78343e0e5bc4d306437e90d58d9220aac6e47d978cc9fc61b19",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 2,
+          "log": "review15-before-resume.log",
+          "status": "PASS",
+          "summary": "(29.1s)"
+        }
+      ]
+    },
+    {
+      "module": "headlight-budget",
+      "testSha256AtOriginalSelection": "ad90f3b4dcf195a42945d07a29a308657aa1a2848cdcf02948a51bd2dcb05d0b",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(0.0s)"
+        }
+      ]
+    },
+    {
+      "module": "health-indoors",
+      "testSha256AtOriginalSelection": "e7bb8ce6883c2300dc0b0ac1813c6305344a184488d26b43cbb308c460610a66",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 2,
+          "log": "review15-before-resume.log",
+          "status": "PASS",
+          "summary": "(68.5s)"
+        }
+      ]
+    },
+    {
+      "module": "hillclimb-physics",
+      "testSha256AtOriginalSelection": "2992acf477b47f4f093e2b831890d83787df33784e266ad8794674179f5f164c",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(143.5s)"
+        }
+      ]
+    },
+    {
+      "module": "hud-clearance",
+      "testSha256AtOriginalSelection": "cc07a20994911889f2372748898539d104970b0c02a9dafcca392ec07bc72133",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(26.6s)"
+        }
+      ]
+    },
+    {
+      "module": "hud-dom-writes",
+      "testSha256AtOriginalSelection": "520d4fbac190e6d8174d99759b121635843eb0b8318b11fac97d732ad0386de4",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(3.3s)"
+        }
+      ]
+    },
+    {
+      "module": "hud-layout",
+      "testSha256AtOriginalSelection": "c3fa67bbf121a207316ecde9188db8736d088822eb1279a3dc7def6ec69229e2",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(34.3s)"
+        }
+      ]
+    },
+    {
+      "module": "hud-touch-dispatch",
+      "testSha256AtOriginalSelection": "c8c985e1703582159df6e8376aaa9ec37177b822002871dfcaac23d1261a3a54",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(26.2s)"
+        }
+      ]
+    },
+    {
+      "module": "instance-upload-ranges",
+      "testSha256AtOriginalSelection": "fc31322b052c73219e24d973efd6b0ffb7bac87364718d974c37b035d2bec6ab",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(0.1s)"
+        }
+      ]
+    },
+    {
+      "module": "integrity-shore",
+      "testSha256AtOriginalSelection": "e0f88160a1134c3ec6fa9c30d9b73a3ef31e1538c1367a7566f3999e220c3e7b",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(22.5s)"
+        }
+      ]
+    },
+    {
+      "module": "interface-hints",
+      "testSha256AtOriginalSelection": "13743bc5a7e9f85d20a33ab74e5d61c5835ff23be99074cc9d9670dd4205bd72",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(27.4s)"
+        }
+      ]
+    },
+    {
+      "module": "liner-voyage",
+      "testSha256AtOriginalSelection": "9a9a3a594697770a44c2defee1b06f918e7e18fc24033144ecc4a2ae90cd97b0",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(30.9s)"
+        }
+      ]
+    },
+    {
+      "module": "living-key",
+      "testSha256AtOriginalSelection": "3cff241e2a131d7f3252e62a81535bdc577fd9edd91c5809012f0719014accc9",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(56.3s)"
+        }
+      ]
+    },
+    {
+      "module": "living-medics",
+      "testSha256AtOriginalSelection": "62ee498ee34b3a1be0da9a0915773c7749d0a6e20e591a354528e1a6eb8b5b80",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(58.6s)"
+        }
+      ]
+    },
+    {
+      "module": "living-sirens",
+      "testSha256AtOriginalSelection": "ce90f91af1abb2a131e800fd045b212d1a16951d06de6a0fa5b75f2906b38f18",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(32.0s)"
+        }
+      ]
+    },
+    {
+      "module": "living-snatch",
+      "testSha256AtOriginalSelection": "9e7f396df85f71cd45620bd2e4a3ea0af4c134fd34d38e193fa4caf407385a38",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(95.4s)"
+        }
+      ]
+    },
+    {
+      "module": "living-traffic",
+      "testSha256AtOriginalSelection": "f1e281f26589a18cd5f99030390db4236921692276314a38fe3448aa6943f015",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(50.6s)"
+        }
+      ]
+    },
+    {
+      "module": "lockpick",
+      "testSha256AtOriginalSelection": "a11c5eaedb3c075df206de51108d0d2a0d3db14d3488daaeac2ab65f1979e8cb",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "FAIL",
+          "summary": "(93.2s): trunk still shut after holding the action key: {\"lockpick\":{\"owned\":true,\"equipped\":true,\"working\":\"trunk\",\"active\":true},\"stats\":{\"pins\":4,\"trunks\":0,\"doors\":0},\"car\":{\"id\":316,\"type\":\"sedan\",\"loot\":\"UNIFORM AND ID\",\"distance\":0.2,\"trunkPoint\":{\"x\":1076,\"y\":1000},\"open\":false,\"progress\":0.92,\"pins\":4,\"inReach\":true,\"closeInReach\":false,\"stopped\":true}}"
+        },
+        {
+          "shard": 4,
+          "log": "review15-before-quiet.log",
+          "status": "PASS",
+          "summary": "(28.0s)",
+          "qualification": "Unchanged whole-module follow-up after external software GPU load ended; same frozen baseline"
+        }
+      ]
+    },
+    {
+      "module": "m4-wheel-partition",
+      "testSha256AtOriginalSelection": "b80a7c49a0fae299cc01a1f53f4e3f4ea609ed1aac9a94cf76bc158c4a926625",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(0.5s)"
+        }
+      ]
+    },
+    {
+      "module": "marea-talk",
+      "testSha256AtOriginalSelection": "738bc8669d3efd6e3075427c077472dbae451645789bedc1965e08c09abb6e1e",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(97.4s)"
+        }
+      ]
+    },
+    {
+      "module": "markers-rings",
+      "testSha256AtOriginalSelection": "98702046ca50f939c03b8714d340ef42d8bcb2814f3f6846e055129002e1eb75",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(58.6s)"
+        }
+      ]
+    },
+    {
+      "module": "medic-routing",
+      "testSha256AtOriginalSelection": "96b9eb95d75e01547166c6bcb8ad53c2c98abface12f7909a079b4b50dd72d33",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(0.0s)"
+        }
+      ]
+    },
+    {
+      "module": "military-model-rig",
+      "testSha256AtOriginalSelection": "3f5d7ebac03aefa1db4978c646187e21e7afca6087306b1deeb3e77a9e9f3aa0",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(0.6s)"
+        }
+      ]
+    },
+    {
+      "module": "minimap-clutter",
+      "testSha256AtOriginalSelection": "d92bf44a7d3989c2fcfa8dc672fc43ab1cf0dedc2a063d6869de9ef1263a0a69",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(162.6s)"
+        }
+      ]
+    },
+    {
+      "module": "mission-abandon",
+      "testSha256AtOriginalSelection": "b6520a591fc4eee4aa0aaff95ec6d3bd3102b16a1ab7bfe536cf399bdb1e8e8d",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(42.3s)"
+        }
+      ]
+    },
+    {
+      "module": "mission-brief",
+      "testSha256AtOriginalSelection": "a3e6e75ec7d5d9ac24175c79677880bbd92591a9d0d44c827ae22158f13debc8",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(39.4s)"
+        }
+      ]
+    },
+    {
+      "module": "mission-card-keys",
+      "testSha256AtOriginalSelection": "d8adb5b5cd3230020f65afcf517654ea44b19935838905c6135cf74778eb865d",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(32.1s)"
+        }
+      ]
+    },
+    {
+      "module": "mission-card-subtitle",
+      "testSha256AtOriginalSelection": "59b93fc5111dd8f1fa27dc26701bad32dca5af10280bccd84c27f0c6f9bb6889",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(29.6s)"
+        }
+      ]
+    },
+    {
+      "module": "mission-modal-input",
+      "testSha256AtOriginalSelection": "88b858a9c61e9c80cc2324eefc67f473c750028ca647a18720f7cd06f0c40480",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(0.0s)"
+        }
+      ]
+    },
+    {
+      "module": "mission-replay-frontier",
+      "testSha256AtOriginalSelection": "80c2b77e0e7fe2b265275b3345b1d8d8bc82696364c1f692f66e1291c5b80e7f",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(46.0s)"
+        }
+      ]
+    },
+    {
+      "module": "mission-retry-save",
+      "testSha256AtOriginalSelection": "584a4423f9b18916b0480c06cab4c089d6ab8fe02dfc36fc3a87c8e75d5e2c52",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(50.2s)"
+        }
+      ]
+    },
+    {
+      "module": "mission-retry",
+      "testSha256AtOriginalSelection": "b76e2a80b45a714b640466ad60caa44691478637844baca075d2945d49a37489",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(48.1s)"
+        }
+      ]
+    },
+    {
+      "module": "mission-world-preservation",
+      "testSha256AtOriginalSelection": "ba662c0696d8c4531edfc830ccd57341a3fd493445e31097723bb7d082a99ce2",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(0.2s)"
+        }
+      ]
+    },
+    {
+      "module": "mission1-bay",
+      "testSha256AtOriginalSelection": "0a8e6b2c6058afcb60612bd9ec5ea0bf12c68a98e9e9fd41078774de74941bbe",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(150.9s)"
+        }
+      ]
+    },
+    {
+      "module": "mission1-depot",
+      "testSha256AtOriginalSelection": "bee9b8e56ee94638c9248afd2ecdb18cb080110a22a2d3f22ee47e38e0ddb0e3",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(42.0s)"
+        }
+      ]
+    },
+    {
+      "module": "mission1-truck",
+      "testSha256AtOriginalSelection": "64933bc550aa62989b5a609f72315625d0c56c7439c86ba6d654c3821ca90853",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(21.6s)"
+        }
+      ]
+    },
+    {
+      "module": "mission2-ambulance",
+      "testSha256AtOriginalSelection": "db606ce798924a802d82689a78e1a62c3e174822a1c15adf16213ba1687263aa",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(49.8s)"
+        }
+      ]
+    },
+    {
+      "module": "mission2-cones",
+      "testSha256AtOriginalSelection": "f324c9776c937b3faa9584b668452f0665c05786fe5fc50387838a9dd335d1fb",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(50.8s)"
+        }
+      ]
+    },
+    {
+      "module": "mission2-getaway",
+      "testSha256AtOriginalSelection": "32a1995b3a8ca6e9ce6c7d4e1a72430c7a62ef18877961734e90f2160cc1c4eb",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(44.5s)"
+        }
+      ]
+    },
+    {
+      "module": "mission2-paths",
+      "testSha256AtOriginalSelection": "d24364d2719c7308264d1f1f76f514ae110389d692bf5a724370dcb9feb67214",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(51.5s)"
+        }
+      ]
+    },
+    {
+      "module": "mission2-poison",
+      "testSha256AtOriginalSelection": "a69fbfa38b85b9a04ec87796471ec9701d9a4a74eac8ff149c197a28b5bd4903",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(55.2s)"
+        }
+      ]
+    },
+    {
+      "module": "mission2-touch-run",
+      "testSha256AtOriginalSelection": "05091802f13e18f04ef4d849b0e3b3387e6314985de9f9bae8b183c253a83eb9",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(28.9s)"
+        }
+      ]
+    },
+    {
+      "module": "mission3-summit",
+      "testSha256AtOriginalSelection": "12935dbab7ca9c952e3b445c9b661993428355b94bcb6231aeabb2dce10f53f4",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(43.0s)"
+        }
+      ]
+    },
+    {
+      "module": "mission34-lifecycle",
+      "testSha256AtOriginalSelection": "b64b336fe538e308230cb29393af7870468396fd3ce1a50c19d6d4338ca8b21c",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(32.6s)"
+        }
+      ]
+    },
+    {
+      "module": "mission4-alert",
+      "testSha256AtOriginalSelection": "1b497977573e1bc31f4b3c1e6076707d93763e7616be755c2e9933b64a5c392c",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(91.7s)"
+        }
+      ]
+    },
+    {
+      "module": "mission4-kessler",
+      "testSha256AtOriginalSelection": "e180245fa79d0fef93e21bc179bd55628352dc73d8dcd00f53f05fdfac818d98",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(80.8s)"
+        }
+      ]
+    },
+    {
+      "module": "mission4-paths",
+      "testSha256AtOriginalSelection": "ccc9fcca61fb708c5fa1da6e4ea80ae5b3b02892384b8748fe1dbf4c1c4055c2",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(89.2s)"
+        }
+      ]
+    },
+    {
+      "module": "mission4-tail",
+      "testSha256AtOriginalSelection": "801f29585058b127752560e0a7d1b0c0ed9521f5a2ea0873dbf7a0d1d87ea20a",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(69.3s)"
+        }
+      ]
+    },
+    {
+      "module": "monarch-garages",
+      "testSha256AtOriginalSelection": "611da15a8d484e7c434d4f1b87a8464394cd364109fcb1e21a23bbba52887d02",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(206.9s)"
+        }
+      ]
+    },
+    {
+      "module": "monarch-one",
+      "testSha256AtOriginalSelection": "c24d2a896417ae42da5d72465197635584d52499a143fad3fde5376bd63cbe94",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(37.2s)"
+        }
+      ]
+    },
+    {
+      "module": "motorcycle-puncture",
+      "testSha256AtOriginalSelection": "4641c01098e3530b2e345560deaa1a344e9c33d26f96d8f068f72aeb90b25c75",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(0.0s)"
+        }
+      ]
+    },
+    {
+      "module": "motorcycle-rider-fit",
+      "testSha256AtOriginalSelection": "995d53ae7d7eec91d75a52c2235d26afff0acdad353d718d92e3caa8b0ce0260",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(0.3s)"
+        }
+      ]
+    },
+    {
+      "module": "motorcycle-wheel-rig",
+      "testSha256AtOriginalSelection": "8c750b1781bdc0f250c73983fc2ad2b9b9c40101a5d09b21b819a1961924b4f7",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(0.4s)"
+        }
+      ]
+    },
+    {
+      "module": "mountain-road",
+      "testSha256AtOriginalSelection": "5c1f2583841e95f36f3b1d15b148febf55cf3a895c57c818daf17aa9c47249a9",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(19.0s)"
+        }
+      ]
+    },
+    {
+      "module": "mounted-gun-projection",
+      "testSha256AtOriginalSelection": "5818498c442b43b63446eb93145d5ea426a1647438a7714eda4d3e1f8596efe4",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(0.0s)"
+        }
+      ]
+    },
+    {
+      "module": "mounted-guns",
+      "testSha256AtOriginalSelection": "ed872d75f3b4f6cdd23b2fd770fe1ff717a98e15cae3d958cd33682f603431fd",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(55.4s)"
+        }
+      ]
+    },
+    {
+      "module": "mouse-buttons",
+      "testSha256AtOriginalSelection": "42d71b2229d8832ac250387fda84f1a71bf571be8e93d1b92ba3f79851e10454",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(0.1s)"
+        }
+      ]
+    },
+    {
+      "module": "navigation-shortlist",
+      "testSha256AtOriginalSelection": "f3faa8a111f86d753eb8b322286a92f3164c5e18808257250309021199ca27ea",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(0.4s)"
+        }
+      ]
+    },
+    {
+      "module": "north-point-key",
+      "testSha256AtOriginalSelection": "573541491d9cdf1c95ea145474dcb3b456c782ae4ccd02054735fe78fe8d1b00",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(40.2s)"
+        }
+      ]
+    },
+    {
+      "module": "npc-avatars",
+      "testSha256AtOriginalSelection": "cb65448c73175e4bd89b6f6dec8598787727b91eac8e2e6c44376e3969b8042a",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(0.9s)"
+        }
+      ]
+    },
+    {
+      "module": "nudge-aside",
+      "testSha256AtOriginalSelection": "e09e539306706930673d2ab954f2c63fe7c0383878b460985e4c602f201759dc",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(45.7s)"
+        }
+      ]
+    },
+    {
+      "module": "parachute-cloud",
+      "testSha256AtOriginalSelection": "43b881448a052534adda0f010ed93b1ab4407a7ed88cb6c1baf294237a8f83d8",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(142.0s)"
+        }
+      ]
+    },
+    {
+      "module": "parachute-deploy",
+      "testSha256AtOriginalSelection": "5c05803227bfaa03b6726d7df48eb87499133640c45de1b016c7c5458d85b780",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.1s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(150.9s)"
+        }
+      ]
+    },
+    {
+      "module": "parachute-liner",
+      "testSha256AtOriginalSelection": "e3bd3e0f9ea091237ee0ccf6904dd25a26b74faf90e593a3c234873e5567fb33",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(65.1s)"
+        }
+      ]
+    },
+    {
+      "module": "parachute",
+      "testSha256AtOriginalSelection": "23c1ecf073fb71e84c848276366c44401ac9255a2f4c42efe21c94611dc54fa2",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(45.3s)"
+        }
+      ]
+    },
+    {
+      "module": "parked-bridge-efficiency",
+      "testSha256AtOriginalSelection": "a556fd35e2ec597ad76ff7f0bc5ab64366100938db80b59d1e059cab8800739b",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.5s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(37.7s)"
+        }
+      ]
+    },
+    {
+      "module": "parked-vehicle-hits",
+      "testSha256AtOriginalSelection": "ecdf21eef4d28fad147d045588e9d89442b361dcb820928fd384ef6b22dee8d3",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(48.0s)"
+        }
+      ]
+    },
+    {
+      "module": "pause-restart",
+      "testSha256AtOriginalSelection": "4782bd59aa4c8204b8b18434f77c6e1b0f893327a63658bf480813091bc31043",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(80.3s)"
+        }
+      ]
+    },
+    {
+      "module": "payphones-islands",
+      "testSha256AtOriginalSelection": "989d30259120f397d9f36cf8d89720440f35b88e536214ae6976ca1ccc672c1c",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(30.0s)"
+        }
+      ]
+    },
+    {
+      "module": "pedestrian-awareness",
+      "testSha256AtOriginalSelection": "3f9b226789cbfd21db06187405715d83ab9e3fa3664bc1105ed273e609462731",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(215.2s)"
+        }
+      ]
+    },
+    {
+      "module": "performance-kernels",
+      "testSha256AtOriginalSelection": "c0b825f77b5774b8cf5a72b94a7f31d4a53279a0f5b90bf8e65325637971ce35",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(1.2s)"
+        }
+      ]
+    },
+    {
+      "module": "player-body",
+      "testSha256AtOriginalSelection": "d399ca5bf627a945f7f89d17dc6ed7726846962d16fcfe80aea8d2cb795ba543",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(7.0s)"
+        }
+      ]
+    },
+    {
+      "module": "player-jump",
+      "testSha256AtOriginalSelection": "35756debc36be5a1371981a9a71139b306f9671939b6ca7c675c7494228e8441",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "FAIL",
+          "summary": "(54.7s): a real Space press made 0 jumps"
+        },
+        {
+          "shard": 4,
+          "log": "review15-before-quiet.log",
+          "status": "PASS",
+          "summary": "(26.3s)",
+          "qualification": "Unchanged whole-module follow-up after external software GPU load ended; same frozen baseline"
+        }
+      ]
+    },
+    {
+      "module": "police-circus",
+      "testSha256AtOriginalSelection": "301142464c310b78a5663683d8841b51ee8b74c731c07ad27ce18ec980e35376",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(47.0s)"
+        }
+      ]
+    },
+    {
+      "module": "police-night-sight",
+      "testSha256AtOriginalSelection": "b7890bac53c5276856113d95aadaa417cfc7551a58df0dcea341070c01b2edf9",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(31.4s)"
+        }
+      ]
+    },
+    {
+      "module": "police-radio",
+      "testSha256AtOriginalSelection": "f8d3184c753cca10d89aa4440d230c86a4fe7c0c9ca5e71df0905971a4baa638",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(41.1s)"
+        }
+      ]
+    },
+    {
+      "module": "police-search-clock",
+      "testSha256AtOriginalSelection": "5709b29b6ac69f083cd7e08424572f368f7a41791a08211a9560989fb8330e79",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(32.6s)"
+        }
+      ]
+    },
+    {
+      "module": "police-witness",
+      "testSha256AtOriginalSelection": "afa1130e03902550275a16b80b30fee69baa595be5218824b49d9151acfaf2c4",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(74.5s)"
+        }
+      ]
+    },
+    {
+      "module": "rear-badges",
+      "testSha256AtOriginalSelection": "24894860f16ef2ff7b46654546a8820925bea5b86a285661d612842f7990a292",
+      "status": "SKIP",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "SKIP",
+          "summary": "(0.0s): Requires WebGL: run with --render"
+        }
+      ]
+    },
+    {
+      "module": "regency-traffic",
+      "testSha256AtOriginalSelection": "b30d51e44773005bc42c87332b42be5245b388d498522eab4acb2ba82e911fff",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(8.5s)"
+        }
+      ]
+    },
+    {
+      "module": "render-auto-scale",
+      "testSha256AtOriginalSelection": "c000dd41272eddfcdb1b132a05366b0db283874383bda22712e4cad2ea8e9894",
+      "status": "SKIP",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "SKIP",
+          "summary": "(0.0s): Requires WebGL: run with --render"
+        }
+      ]
+    },
+    {
+      "module": "render-cell-preupload",
+      "testSha256AtOriginalSelection": "3e99a57cbb74cd90d70a3cf6e722fb6cf32ff57e717744cd11d306de80c911e2",
+      "status": "SKIP",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "SKIP",
+          "summary": "(0.0s): Requires WebGL: run with --render"
+        }
+      ]
+    },
+    {
+      "module": "render-effects",
+      "testSha256AtOriginalSelection": "191fbcc0673a72c0025e1441276a5e4233817d8aa9300f7867764ab5c9389a86",
+      "status": "SKIP",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "SKIP",
+          "summary": "(18.3s): Requires WebGL: run with --render"
+        }
+      ]
+    },
+    {
+      "module": "render-hiccups",
+      "testSha256AtOriginalSelection": "284aebc8c95220c5bf34be16aa616fb75515cd2df68424b53fe58bb5a10d9bd9",
+      "status": "SKIP",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "SKIP",
+          "summary": "(0.0s): Renderer counters require WebGL: run with --render"
+        }
+      ]
+    },
+    {
+      "module": "render-tier-switch",
+      "testSha256AtOriginalSelection": "d3f655c6328d3eb4f69a625f1c87798277bebe6530aa93192f494313a9bd6fd3",
+      "status": "SKIP",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "SKIP",
+          "summary": "(0.0s): Requires WebGL: run with --render"
+        }
+      ]
+    },
+    {
+      "module": "respray-beacon",
+      "testSha256AtOriginalSelection": "5c301cb6aff3bf6793a9c188e12c43c9998bc378c49ccca991dbbe762da4f9e8",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(34.8s)"
+        }
+      ]
+    },
+    {
+      "module": "respray-lose-police",
+      "testSha256AtOriginalSelection": "89a918bd9ec535e8c4b092e426432b22cd2110c96d2c0f27f55fd9175cdd2258",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(66.8s)"
+        }
+      ]
+    },
+    {
+      "module": "restart-carriers",
+      "testSha256AtOriginalSelection": "1d6383b9b7fa0f3fe4ea2b0596c444e4b5bc2b07e01dc374d749b7f309a82519",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(50.2s)"
+        }
+      ]
+    },
+    {
+      "module": "ride-look",
+      "testSha256AtOriginalSelection": "1c9ffd99109bb3249e9a97bd72c5c8f71c21d8cdc2375def7ca55c3decb146b2",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(42.4s)"
+        }
+      ]
+    },
+    {
+      "module": "rider-falls",
+      "testSha256AtOriginalSelection": "1aff6143f47d9c92cc11233dd61cf1a284643d7640009cc85e0d0ae93f44709e",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(41.2s)"
+        }
+      ]
+    },
+    {
+      "module": "rig-geometry",
+      "testSha256AtOriginalSelection": "189426d0b68640a32834961e97898301de241f3f790352c1d9734fe7b7acd4ba",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(0.2s)"
+        }
+      ]
+    },
+    {
+      "module": "road-signs",
+      "testSha256AtOriginalSelection": "43cd5d6fb852546404ebc1bca5c4a448f832db2e2d45a10233da380b2e68ad91",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(25.7s)"
+        }
+      ]
+    },
+    {
+      "module": "roof-lifts",
+      "testSha256AtOriginalSelection": "0fcbaa071e5d62a86e1d3c8d8df7fc2e21a87d2ee768687bbf4c04897b55a682",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(79.8s)"
+        }
+      ]
+    },
+    {
+      "module": "roof-skin",
+      "testSha256AtOriginalSelection": "f08df66a4f9bbfda43dd29b2bdfc343648829b75ee8158367238724e6f00a772",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(0.0s)"
+        }
+      ]
+    },
+    {
+      "module": "scenery-pools",
+      "testSha256AtOriginalSelection": "83335e044d4ab5dd585484bc9f2246d8d5bba2ad969bccacbd9e7cc97bb95d67",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(0.1s)"
+        }
+      ]
+    },
+    {
+      "module": "second-run-over",
+      "testSha256AtOriginalSelection": "77e63424e19f14419fbf72266b7606bd4f7df1f1284c16d7d4ebf84154141a01",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(36.1s)"
+        }
+      ]
+    },
+    {
+      "module": "sim-audits",
+      "testSha256AtOriginalSelection": "724c0709c6166f124851cde9f744548e7fc939de4c57899b739f73f2bfa9d3a2",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(1.1s)"
+        }
+      ]
+    },
+    {
+      "module": "sim-efficiency",
+      "testSha256AtOriginalSelection": "d52dd59808083380ca749986c28eb1a821e9f011d542ccc8300562fdc7a9e63d",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(11.4s)"
+        }
+      ]
+    },
+    {
+      "module": "sky-meeting-talk",
+      "testSha256AtOriginalSelection": "cec0289816a234f9057b98607251fff4deebc3e0d485bacd304b8bd85adf2385",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(35.7s)"
+        }
+      ]
+    },
+    {
+      "module": "sky-meeting",
+      "testSha256AtOriginalSelection": "d5e78e37c8d8ff6d3133155c729014c51ed6ff0740ab9026ba032bc52e0ccbe4",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(71.4s)"
+        }
+      ]
+    },
+    {
+      "module": "sound-output",
+      "testSha256AtOriginalSelection": "2f9fb9c28dd6fb9c558ad4808ab3a8af17fb4b2f303d5649a907660c7e3c0042",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(2.1s)"
+        }
+      ]
+    },
+    {
+      "module": "soundscape",
+      "testSha256AtOriginalSelection": "a7a346dd6b88467bc56bd00ea01d1f7dce5bb28b8c5ef37df6e5043f01fe5ec4",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(29.7s)"
+        }
+      ]
+    },
+    {
+      "module": "sportsbook-bets",
+      "testSha256AtOriginalSelection": "47616b06a8680ba169b63a2ef600612bd0168c0fae5476a331b4ccd35bada444",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(1.0s)"
+        }
+      ]
+    },
+    {
+      "module": "sun-gradual",
+      "testSha256AtOriginalSelection": "79a2f9808c869e8e77e353fac0c5d5f40614f3ae0108e968904ba094083fa11b",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(32.6s)"
+        }
+      ]
+    },
+    {
+      "module": "surrender-input",
+      "testSha256AtOriginalSelection": "27d92b954a02793586b7cfce34b0b03693ef7f74750664b8952a69a1ab8b64a1",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(38.4s)"
+        }
+      ]
+    },
+    {
+      "module": "swim-rescue",
+      "testSha256AtOriginalSelection": "6515efdb3d5addbf851b4d5e3d88dff040e5a1b5d8c269a5947e79a0368fce21",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(39.6s)"
+        }
+      ]
+    },
+    {
+      "module": "taxi-fare-toast",
+      "testSha256AtOriginalSelection": "767ff238bb1afb952a7d44b08587107abdb5d6ef88b9265b81c5e56346fe2033",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(0.8s)"
+        }
+      ]
+    },
+    {
+      "module": "taxi-ride",
+      "testSha256AtOriginalSelection": "1377cb8a5efc834b30667ca71878fbc83d296fcbc4746ea3539014a453de3f94",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(31.2s)"
+        }
+      ]
+    },
+    {
+      "module": "terrace-death",
+      "testSha256AtOriginalSelection": "c2eeea27d61821a27df01d44c2d97f0d4a56a2dbcdbc14ae87eebc5d53618c06",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(32.2s)"
+        }
+      ]
+    },
+    {
+      "module": "traffic-pass-parked",
+      "testSha256AtOriginalSelection": "0cccb32871f6975b5ecb62d6011ec1cac56017a26cd550f2a4a3a98119cc836a",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(28.1s)"
+        }
+      ]
+    },
+    {
+      "module": "trail-mud",
+      "testSha256AtOriginalSelection": "e77af50b985e6f5c2ca617c3e02a55a88683bfb4ef8e960d858c818533b1c801",
+      "status": "SKIP",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "SKIP",
+          "summary": "(25.4s): Requires WebGL: run with --render"
+        }
+      ]
+    },
+    {
+      "module": "trail-trees",
+      "testSha256AtOriginalSelection": "d8df9901632a47e46b53e4e5663a0601ad076d396122ca8d388f815769c458a0",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(24.6s)"
+        }
+      ]
+    },
+    {
+      "module": "trunk-close",
+      "testSha256AtOriginalSelection": "230bb1e9d43f8e48224ef7219bb057bdbcf99ea674260081d355f94999349928",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(117.2s)"
+        }
+      ]
+    },
+    {
+      "module": "tyre-effects",
+      "testSha256AtOriginalSelection": "ffa197f559b7bba114cd155e51763f20cac88fc41e5fb7970afb34b3cf46b19f",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(8.3s)"
+        }
+      ]
+    },
+    {
+      "module": "vehicle-damage-shape",
+      "testSha256AtOriginalSelection": "d794b35d1e2c1e189c861bd9aac8faf4bed2cba36a2fa6462f0ddc7859439e4d",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(59.0s)"
+        }
+      ]
+    },
+    {
+      "module": "vehicle-gunfire",
+      "testSha256AtOriginalSelection": "a662b58e2ee21498f99b32d6e67e984e8ed3963da6383621b44237541784e36e",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(8.8s)"
+        }
+      ]
+    },
+    {
+      "module": "vehicle-layouts",
+      "testSha256AtOriginalSelection": "8084e473fab47f087236e04df7441d696eab052537ee47264a4ee4f8a99ca8a8",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(4.9s)"
+        }
+      ]
+    },
+    {
+      "module": "vehicle-material-lifecycle",
+      "testSha256AtOriginalSelection": "9dad973bf2cf214dd27f0413e3abbe73b538e0cc011322fff72d275dba6cdd08",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(0.0s)"
+        }
+      ]
+    },
+    {
+      "module": "vehicle-merge",
+      "testSha256AtOriginalSelection": "6676619063eb1d0531721967f03ffa724afc320c6b6bb5324543ae1e85a02484",
+      "status": "SKIP",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "SKIP",
+          "summary": "(0.0s): Requires WebGL: run with --render"
+        }
+      ]
+    },
+    {
+      "module": "view-remembered",
+      "testSha256AtOriginalSelection": "8ae02d586b26a1a490694f7fa1211721e1ca3a2b326ca74a872e837b8579f556",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(80.5s)"
+        }
+      ]
+    },
+    {
+      "module": "voices",
+      "testSha256AtOriginalSelection": "99a7417f497732003edfa1f1a7b51b5e99a4c0de2a594be1bab7fc4bf8a7d11c",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(25.5s)"
+        }
+      ]
+    },
+    {
+      "module": "wet-glints",
+      "testSha256AtOriginalSelection": "735ffa3119583cc11c2543325f54d78e61c1656dd5e118e172a2e187e083202f",
+      "status": "SKIP",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "SKIP",
+          "summary": "(26.5s): Requires WebGL: run with --render"
+        }
+      ]
+    },
+    {
+      "module": "wheelie-hint",
+      "testSha256AtOriginalSelection": "52fc4b7e52d139654a14737b0535efa424aead9d146b48b35832238c380b5dd0",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(62.1s)"
+        }
+      ]
+    },
+    {
+      "module": "wheelie",
+      "testSha256AtOriginalSelection": "9a2864dc7599129e4a8d06796dfa20023125deec1ac0a512b4016a1df301e140",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(71.2s)"
+        }
+      ]
+    },
+    {
+      "module": "witness-car-lines",
+      "testSha256AtOriginalSelection": "dae86c9f4a9818a7a39dfa54d535a78ebdffc8071d99e1ed4596bc676dc3bbae",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "PASS",
+          "summary": "(0.0s)"
+        }
+      ]
+    },
+    {
+      "module": "witnesses-monarch",
+      "testSha256AtOriginalSelection": "f5ec337473dea3630bd702cd78373829e78be2462bb642fa4d0277f919121dc3",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(106.0s)"
+        }
+      ]
+    },
+    {
+      "module": "witnesses-venues",
+      "testSha256AtOriginalSelection": "e37c643435fa3f03f82ad967a126013c063f45aaa2f56e48b0dfb30cd32ed172",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(24.1s)"
+        }
+      ]
+    },
+    {
+      "module": "world-edge-land",
+      "testSha256AtOriginalSelection": "c8083aae6610522cf517706d67ea254b80daa2a58a8dd6f2ff663a38eec6678f",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(14.9s)"
+        }
+      ]
+    },
+    {
+      "module": "world-edge",
+      "testSha256AtOriginalSelection": "350e3a0dd9290409f6a144338d565e4d010b49cad90ed89342efbee0cf0c89b4",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(63.7s)"
+        }
+      ]
+    },
+    {
+      "module": "world-reset",
+      "testSha256AtOriginalSelection": "27641f533d442ee1cba935f5a27a8db5e26dd653f08a554c23e70630d90f2033",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(29.7s)"
+        }
+      ]
+    },
+    {
+      "module": "wreck-limit",
+      "testSha256AtOriginalSelection": "12f52d8fd8554def10c11aaaf0b66389f5fa9777b654aa6cd67e1d11bb8a68ea",
+      "status": "PASS",
+      "attempts": [
+        {
+          "shard": 1,
+          "log": "review15-before-suite.log",
+          "status": "INFRASTRUCTURE_INTERRUPTED",
+          "summary": "(0.0s): error: not ready: waiting for the title menu"
+        },
+        {
+          "shard": 3,
+          "log": "review15-before-third.log",
+          "status": "PASS",
+          "summary": "(94.6s)"
+        }
+      ]
+    }
+  ],
+  "files": [
+    {
+      "file": "review15-before-suite-selection.json",
+      "sha256": "882da90c1375630866dc5d7e714f67c38a9c40a85807743290cf580907c997c8"
+    },
+    {
+      "file": "review15-before-suite.log",
+      "sha256": "8d209a29abdacdae0eae93b926859496f8b1a04bacde6967be00b2c7f0fd4e0b"
+    },
+    {
+      "file": "review15-before-suite-exit.json",
+      "sha256": "415ea05a91edc46d71cca145d95f1e2019537e69a3e489f790931e50d255dd92"
+    },
+    {
+      "file": "review15-before-resume-selection.json",
+      "sha256": "86ebcabae6201ba8a563fcd855b967c1380be167948851ebf040bf1aa2e365d4"
+    },
+    {
+      "file": "review15-before-resume.log",
+      "sha256": "902d69254282d24b6df4f9a01e37bbb72740e7b2180b7c3c12dc486d208c049b"
+    },
+    {
+      "file": "review15-before-resume-exit.json",
+      "sha256": "d56127a4ac987194e5eb531c93c3045dc225f22f4d043e9c615d910a78c368a3"
+    },
+    {
+      "file": "review15-before-resume-interruption.json",
+      "sha256": "91b390e3aaa28d7ab2ba75743b7578cab8e653c8a19fbacc736f719165b498c2"
+    },
+    {
+      "file": "review15-before-third-selection.json",
+      "sha256": "e77486d812e5b0e7b76a5059df5dd59531b606d30033262e6a988b3c8573e9b3"
+    },
+    {
+      "file": "review15-before-third.log",
+      "sha256": "d5f98a280285f775d38d10732953fe1a39062110cfe8f6d3debf503b3d0a9164"
+    },
+    {
+      "file": "review15-before-third-exit.json",
+      "sha256": "f44c8f64a95421445dfb8cbeab941faed3d5de82b09d789afc31b1d62ba6fd87"
+    },
+    {
+      "file": "review15-before-quiet-selection.json",
+      "sha256": "245f4ff84ea6d31f188dc25fd27eef2266fae5456144c1f6aed7602bac7240a6"
+    },
+    {
+      "file": "review15-before-quiet.log",
+      "sha256": "edce4374f2f21a526a3aee04b5ef034a15eadf1d261edd5c4ab6437870caa7a8"
+    },
+    {
+      "file": "review15-before-quiet-exit.json",
+      "sha256": "74397bfc690aba894e5652dcd42d6028fcd3a1083791e45ce1e09d872fc80773"
+    },
+    {
+      "file": "god-mode-codes-followup.json",
+      "sha256": "934ee9862c9c7136bec1419bed7bd7294fd2e9a61609b6c0a25ef7524ce9f9ef"
+    },
+    {
+      "file": "lockpick-followup.json",
+      "sha256": "5b130907a1d2f2e44e5f66da83ce59f48e15bec609782f06a43c1c5e2c10021f"
+    },
+    {
+      "file": "player-jump-followup.json",
+      "sha256": "ab8f41103c94e06d9cb6940282b33862c3f189d0f79ae824d6febb94a48cfa85"
+    }
+  ]
+}

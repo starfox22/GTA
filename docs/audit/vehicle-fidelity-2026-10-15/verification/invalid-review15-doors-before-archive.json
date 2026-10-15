@@ -1,0 +1,8 @@
+{
+  "qualification": "Invalid original recorder stderr retained verbatim inside a deterministic gzip archive. Original trailing whitespace is preserved on decompression. Not an accepted game result.",
+  "archive": "invalid-review15-doors-before.log.gz",
+  "archiveSha256": "2ee0a542ea194af89bfbd92e4c58fe87105262072e5660216752e63f2e40ab89",
+  "expandedFile": "invalid-review15-doors-before.log",
+  "expandedSha256": "f149c1560aa9f03d74270cfde40fc69acc22f3ed00da07a8e7feeb9c1667b588",
+  "expandedBytes": 14663
+}

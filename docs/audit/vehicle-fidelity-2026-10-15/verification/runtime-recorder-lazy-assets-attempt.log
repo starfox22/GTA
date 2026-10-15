@@ -1,0 +1,3 @@
+page.waitForFunction: Timeout 240000ms exceeded.
+    at tier (/workspace/GTA/tools/vehicle-runtime-final-review.mjs:40:13)
+    at async file:///workspace/GTA/tools/vehicle-runtime-final-review.mjs:52:2

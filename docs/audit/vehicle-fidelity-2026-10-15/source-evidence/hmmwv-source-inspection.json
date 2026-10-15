@@ -1,0 +1,189 @@
+{
+  "source": {
+    "author": "42manako (https://sketchfab.com/42manako)",
+    "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+    "source": "https://sketchfab.com/3d-models/hmmwv-m998a1-soft-top-ffbc4b053628413fb84acf5b89595d96",
+    "title": "HMMWV M998A1 (soft top)"
+  },
+  "gltfSha256": "55e96b72d34f607053d2157609b74a6fcd98f925388390b7ec9f297a5fd5cdbc",
+  "licenceSha256": "80a892d79740c21a69e1a7799fc5967e409ef3842c1202e2777d696cac1ca54b",
+  "sourceTriangles": 20702,
+  "meshPrimitives": [
+    {
+      "mesh": "Object_HMMWV_Utility_mat1_D.jpg_mat_0-HMMWV_Utility_mat1_D.jpg_0",
+      "triangles": 8153,
+      "material": "mat_0-HMMWV_Utility_mat1_D.jpg",
+      "attributes": [
+        "NORMAL",
+        "POSITION",
+        "TEXCOORD_0",
+        "TEXCOORD_1",
+        "TEXCOORD_2",
+        "TEXCOORD_3",
+        "TEXCOORD_4",
+        "TEXCOORD_5",
+        "TEXCOORD_6",
+        "TEXCOORD_7",
+        "TEXCOORD_8",
+        "TEXCOORD_9"
+      ]
+    },
+    {
+      "mesh": "Object_HMMWV_Utility_mat3_D.jpg_mat_1-HMMWV_Utility_mat3_D.jpg_0",
+      "triangles": 4133,
+      "material": "mat_1-HMMWV_Utility_mat3_D.jpg",
+      "attributes": [
+        "NORMAL",
+        "POSITION",
+        "TEXCOORD_0",
+        "TEXCOORD_1",
+        "TEXCOORD_2",
+        "TEXCOORD_3",
+        "TEXCOORD_4",
+        "TEXCOORD_5",
+        "TEXCOORD_6",
+        "TEXCOORD_7",
+        "TEXCOORD_8",
+        "TEXCOORD_9"
+      ]
+    },
+    {
+      "mesh": "Object_HMMWV_Utility_mat2_D.jpg_mat_2-HMMWV_Utility_mat2_D.jpg_0",
+      "triangles": 2683,
+      "material": "mat_2-HMMWV_Utility_mat2_D.jpg",
+      "attributes": [
+        "NORMAL",
+        "POSITION",
+        "TEXCOORD_0",
+        "TEXCOORD_1",
+        "TEXCOORD_2",
+        "TEXCOORD_3",
+        "TEXCOORD_4",
+        "TEXCOORD_5",
+        "TEXCOORD_6",
+        "TEXCOORD_7",
+        "TEXCOORD_8",
+        "TEXCOORD_9"
+      ]
+    },
+    {
+      "mesh": "Object_HMMWV_Utility_mat5_D.jpg_mat_3-HMMWV_Utility_mat5_D.jpg_0",
+      "triangles": 240,
+      "material": "mat_3-HMMWV_Utility_mat5_D.jpg",
+      "attributes": [
+        "NORMAL",
+        "POSITION",
+        "TEXCOORD_0",
+        "TEXCOORD_1",
+        "TEXCOORD_2",
+        "TEXCOORD_3",
+        "TEXCOORD_4",
+        "TEXCOORD_5",
+        "TEXCOORD_6",
+        "TEXCOORD_7",
+        "TEXCOORD_8",
+        "TEXCOORD_9"
+      ]
+    },
+    {
+      "mesh": "Object_HMMWV_Utility_mat6_D.jpg_mat_4-HMMWV_Utility_mat6_D.jpg_0",
+      "triangles": 180,
+      "material": "mat_4-HMMWV_Utility_mat6_D.jpg",
+      "attributes": [
+        "NORMAL",
+        "POSITION",
+        "TEXCOORD_0",
+        "TEXCOORD_1",
+        "TEXCOORD_2",
+        "TEXCOORD_3",
+        "TEXCOORD_4",
+        "TEXCOORD_5",
+        "TEXCOORD_6",
+        "TEXCOORD_7",
+        "TEXCOORD_8",
+        "TEXCOORD_9"
+      ]
+    },
+    {
+      "mesh": "Object_HMMWV_Utility_mat7_D.jpg_mat_5-HMMWV_Utility_mat7_D.jpg_0",
+      "triangles": 133,
+      "material": "mat_5-HMMWV_Utility_mat7_D.jpg",
+      "attributes": [
+        "NORMAL",
+        "POSITION",
+        "TEXCOORD_0",
+        "TEXCOORD_1",
+        "TEXCOORD_2",
+        "TEXCOORD_3",
+        "TEXCOORD_4",
+        "TEXCOORD_5",
+        "TEXCOORD_6",
+        "TEXCOORD_7",
+        "TEXCOORD_8",
+        "TEXCOORD_9"
+      ]
+    },
+    {
+      "mesh": "Object_HMMWV_Utility_mat4_D.jpg_mat_6-HMMWV_Utility_mat4_D.jpg_0",
+      "triangles": 4652,
+      "material": "mat_6-HMMWV_Utility_mat4_D.jpg",
+      "attributes": [
+        "NORMAL",
+        "POSITION",
+        "TEXCOORD_0",
+        "TEXCOORD_1",
+        "TEXCOORD_2",
+        "TEXCOORD_3",
+        "TEXCOORD_4",
+        "TEXCOORD_5",
+        "TEXCOORD_6",
+        "TEXCOORD_7",
+        "TEXCOORD_8",
+        "TEXCOORD_9"
+      ]
+    },
+    {
+      "mesh": "Object_HMMWV_Utility_mat8_D.jpg_mat_7-HMMWV_Utility_mat8_D.jpg_0",
+      "triangles": 528,
+      "material": "mat_7-HMMWV_Utility_mat8_D.jpg",
+      "attributes": [
+        "NORMAL",
+        "POSITION",
+        "TEXCOORD_0",
+        "TEXCOORD_1",
+        "TEXCOORD_2",
+        "TEXCOORD_3",
+        "TEXCOORD_4",
+        "TEXCOORD_5",
+        "TEXCOORD_6",
+        "TEXCOORD_7",
+        "TEXCOORD_8",
+        "TEXCOORD_9"
+      ]
+    }
+  ],
+  "nodeNames": [
+    "Sketchfab_model",
+    "6d3574091d60416a8f776437e72e3cdc.fbx",
+    "RootNode",
+    "Object_HMMWV_Utility_mat1_D.jpg",
+    "Object_HMMWV_Utility_mat1_D.jpg_mat_0-HMMWV_Utility_mat1_D.jpg_0",
+    "Object_HMMWV_Utility_mat3_D.jpg",
+    "Object_HMMWV_Utility_mat3_D.jpg_mat_1-HMMWV_Utility_mat3_D.jpg_0",
+    "Object_HMMWV_Utility_mat2_D.jpg",
+    "Object_HMMWV_Utility_mat2_D.jpg_mat_2-HMMWV_Utility_mat2_D.jpg_0",
+    "Object_HMMWV_Utility_mat5_D.jpg",
+    "Object_HMMWV_Utility_mat5_D.jpg_mat_3-HMMWV_Utility_mat5_D.jpg_0",
+    "Object_HMMWV_Utility_mat6_D.jpg",
+    "Object_HMMWV_Utility_mat6_D.jpg_mat_4-HMMWV_Utility_mat6_D.jpg_0",
+    "Object_HMMWV_Utility_mat7_D.jpg",
+    "Object_HMMWV_Utility_mat7_D.jpg_mat_5-HMMWV_Utility_mat7_D.jpg_0",
+    "Object_HMMWV_Utility_mat4_D.jpg",
+    "Object_HMMWV_Utility_mat4_D.jpg_mat_6-HMMWV_Utility_mat4_D.jpg_0",
+    "Object_HMMWV_Utility_mat8_D.jpg",
+    "Object_HMMWV_Utility_mat8_D.jpg_mat_7-HMMWV_Utility_mat8_D.jpg_0"
+  ],
+  "normalTextures": 0,
+  "metallicRoughnessTextures": 0,
+  "animations": 0
+}

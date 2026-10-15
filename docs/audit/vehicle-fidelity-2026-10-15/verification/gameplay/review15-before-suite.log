@@ -1,0 +1,272 @@
+Scripts "build/three.js" and "build/three.min.js" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation
+started dev server (?dev&norender: boot 16.9s)
+PASS approved-motorcycle-rider-fit (0.7s)
+     {"riderHeight":1.65,"maxTargetError":0,"maxWristError":0.12122533882768248,"maxRestWristError":0,"maxBoneError":7.771561172376096e-15,"formerSteeringGap":1.19677433390081} · {"riderHeight":1.8,"maxTargetError":0,"maxWristError":0,"maxRestWristError":0,"maxBoneError":8.43769498715119e-15,"formerSteeringGap":1.19677433390081} · {"riderHeight":1.9,"maxTargetError":0,"maxWristError":0,"maxRestWristError":0,"maxBoneError":8.43769498715119e-15,"formerSteeringGap":1.19677433390081}
+PASS approved-motorcycle-rigs (0.5s)
+     {"restError":1.2917073125271293e-7,"normalError":4.423433763540704e-8,"rollingWobble":5.551115123125783e-17,"models":[{"type":"kr500","key":"m1_enduro","nearLodTriangles":12350,"farLodTriangles":2707,"pairs":10,"sourceTriangles":12350,"grips":[[0.20460008339352115,1.3637767135858536,-0.3328997466802597],[0.20460008339352115,1.3637767135858536,0.33290025331974027]],"cachedParts":10},{"type":"bike","key":"m2_sport","nearLodTriangles":50795,"farLodTriangles":12820,"pairs":11,"sourceTriangles":50795,"grips":[[0.43523815564945734,1.006513867682728,-0.3086999999999997],[0.43523815564945734,1.006513867682728,0.30870000000000025]],"cachedParts":11}]}
+PASS approved-suv-rigs (1.3s)
+     {"doorProof":{"key":"s1_jimny","actualShaped":false,"actualAttributes":["position","normal","uv","finish","color","avSourceUv","avAtlasRect","liveryUv"],"probeShaped":true,"probeAttributes":["position","uv","avSourceUv","avAtlasRect","finish","color","normal"]}} · {"doorProof":{"key":"s2_suv","actualShaped":false,"actualAttributes":["position","normal","uv","finish","color","avSourceUv","avAtlasRect","liveryUv"],"probeShaped":false,"probeAttributes":[]}} · {"doorProof":{"key":"s3_offroad","actualShaped":false,"actualAttributes":["position","normal","uv","finish","color","avSourceUv","avAtlasRect","liveryUv"],"probeShaped":false,"probeAttributes":[]}} · {"trunkVisibility":{"source":"production carBodyDamage + actual Generic SUV Sheriff","opened":true,"closedHidden":true,"sprung":true,"repairedHidden":true,"sourceGlassPreserved":true}} · {"approvedSUVs":[{"key":"s1_jimny","nearTriangles":62925,"farTriangles":9894,"seat":[-0.3836971163749693,0.4537090229987146,0.3719811916351319,0.25,0.8737090229987146],"clearance":0.17544762401897573,"pivots":[[9.336581687535054,2.779711800197189,-5.586644929423751,2.789101404920368],[9.339219978907872,2.7796009605548986,5.589057228952147,2.7890112051722245],[-8.587354085216234,2.7797089149544183,-5.586614325847132,2.788922967933447],[-8.58473558481856,2.7797130274430235,5.5893446282277255,2.7889289173091525]]},{"key":"s2_suv","nearTriangles":7742,"farTriangles":4244,"seat":[-0.1839768178645893,0.6860059643489217,0.4135218032504037,0.25,1.1561036205989217],"clearance":0.020078717686848917,"pivots":[[11.45684062322659,3.0070733291297667,-5.791175406812156,3.007073349845253],[11.456836697553427,3.0070733291297693,5.791173877969153,3.0070733291311944],[-10.387537069938418,3.0070741969769457,-5.791177615055597,3.0070733498452515],[-10.38754099561158,3.007074196976948,5.791171669725713,3.0070733291311944]]},{"key":"s3_offroad","nearTriangles":6416,"farTriangles":3517,"seat":[-0.6608686069240979,0.53328720396407,0.39200535496992184,0.25,1.09977157896407],"clearance":0.020168540219054364,"pivots":[[9.775246875438732,2.860813959541758,-5.87991094769413,2.8608139779042547],[9.77525397179484,2.86081395954176,5.87991119696003,2.860813959543117],[-8.790665542619635,2.860814827388934,-5.879900865277287,2.8608139779042654],[-8.790653720780135,2.8608148273889364,5.8799133561993315,2.860813959543117]]}],"lawRows":[{"equipment":"marked","body":"utility","seat":[-0.18397681786458933,0.6860059643489216,0.43600000000000005,0.25,1.1561036205989217],"rear":true},{"equipment":"unmarked","body":"utility","seat":[-0.18397681786458933,0.6860059643489216,0.43600000000000005,0.25,1.1561036205989217],"rear":true},{"equipment":"unmarked","body":"tahoe","seat":[-0.18397681786458933,0.6860059643489216,0.44800000000000006,0.25,1.1561036205989217],"rear":true}],"policeSource":"s2_suv","headroom":"actual production head geometry and fit; rendered check separate"}
+PASS approved-vehicle-pipeline (1.9s)
+     {"models":["m1_enduro","m2_sport","s1_jimny","s2_suv","s3_offroad"],"parts":152,"repeatUVParts":13,"textureUploads":6,"legacyAssets":"byte-identical","sourceBodyEnvelopes":"matched","gpuCompile":"requires rendered checks"}
+PASS boot-status (1.0s)
+PASS brake-distances (5.2s)
+     sedan dry m 45.9 · sedan dry mean g 0.86 · sedan drift m 0 · distance / (v^2/2ga) 1.004 · wet / dry 1.458 · 50 / 100 km/h distance 0.266 · sedan 50 km/h dry m 12.2
+SKIP cabin-headroom (0.0s): Requires WebGL: run with --render
+PASS camera-feel (3.5s)
+     lead heading on a straight (deg, south = 90) 90 · lead / its rule (0.55 s, capped by the frame) 0.83 · largest lead swing in a tenth of a second during the spin (units) 1.5999999999999943 · on-foot aim lead east (units) 33 · on-foot aim lead across 0.3 · pistol recoil kick (units) 1.2083045973594573 · kick settled after a second 0 · lead with look-ahead 0 (m) 0
+PASS camera-framing (14.6s)
+     on-foot default zoom 2 · on-foot context 1 · on-foot aim 2 · on foot: zoom 1.849, 29.1 m of street, person 23 px · car context at rest (walking) 1 · car context 0.56 · car at rest aim 2 · pull-back at 73 km/h 0.914 · at speed (73 km/h eased): aim 1.023, framed 1.035, speed share 0.914 · context after stepping out 1 · aim after stepping out 2 · zoomed-out on foot 1.25 · bike context 0.61 · bus context 0.48 · car context at 125 % distance 0.448 · motion comfort framing at speed 0.86 · motion comfort holds one zoom at speed (0.963 at 73 km/h) 0.963
+SKIP car-cabins (0.0s): Requires WebGL: run with --render
+PASS chase-aim (2.8s)
+     camera 0: aim off the camera's heading (deg) 2 · camera 120: aim off the camera's heading (deg) 2 · camera -100: aim off the camera's heading (deg) 2 · at the wheel looking left: aim off -90 (deg) 10 · drive-by: {"window":"left","relDeg":-103,"aim":"clear","out":1} · drive-by aim off the nose (deg from -90) 13
+PASS chase-audio-pan (0.0s)
+     500 camera-basis cases; unchanged top-down offsets/gain; real sample, horn, water, impact, stadium, siren, engine, skid, footstep, whizz and pass-by callers
+SKIP chase-clouds (0.3s): Requires WebGL: run with --render
+PASS chase-cover-clearance (0.0s)
+     18 finite-volume, rotated-cover, grid-edge, boom and start-overlap assertions
+PASS chase-crane (2.4s)
+     against the wall: crane (m) 0.49 · aiming: crane (m) 0.01 · in the open: boom (m) 3.5 · in the open: crane (m) 0
+PASS chase-hud-box (1.9s)
+     on foot: box centre off the player across (share of its width) 0.07426973275326283 · on foot: box centre off the player up and down (share of its height) 0.03544720311097823 · on foot: {"box":{"l":316.1,"t":263.2,"r":477,"b":597.5},"at":{"x":408.5,"y":418.5,"depth":28.9}} · in a sedan: box centre off the player across (share of its width) 0 · in a sedan: box centre off the player up and down (share of its height) 0.16676628810520028 · in a sedan: {"box":{"l":311.7,"t":241.3,"r":648.3,"b":575.9},"at":{"x":480,"y":352.8,"depth":51.5}} · the card and the player do not meet: {"viewport":[960,600],"player":{"l":312,"t":241,"r":648,"b":576},"open":{"l":16,"t":271,"r":275,"b":372},"strip":{"l":16,"t":337,"r":275,"b":372},"story":null,"folded":false,"hidden":false,"yielding":false,"asked":false,"fadeCard":false,"fadeStory":false,"nav":{"l":373,"t":64,"r":587,"b":108},"fadeNav":false,"readLeft":5.42}
+PASS chase-in-view (1.0s)
+     120 points agree
+PASS chase-input (3.9s)
+     on foot: boom (m) 3.5 · on foot: camera height over the street (m) 2.14 · right stick right for 0.5 s: turn (deg) 92 · half sensitivity: share of the turn 0.5 · LT held: aim blend 1 · LT held: boom (m) 1.86 · LT held: lens (deg) 44 · LT let go: aim blend 0 · zoom out key: boom factor 1.25 · zoom reset: boom factor 1 · in the car: the camera looks along the car (deg off) 1 · looking behind: the camera looks back along the car (deg off) 1 · C let go: the camera looks along the car again (deg off) 0
+PASS chase-motion-blur (0.4s)
+PASS chase-radio-chip (0.7s)
+PASS chase-shooter (0.5s)
+PASS chase-streams (14.2s)
+     seen after the settle: {"people":31,"cars":4,"peopleInFrustum":72,"carsInFrustum":17} · crowd centre leaned up the street (m) 62.5 · traffic centre leaned up the street (m) 91.875 · turning 60 deg/s: {"seconds":12,"people":{"popIn":0,"popOut":0,"seen":21.3},"vehicles":{"popIn":0,"popOut":0,"seen":4.4},"examples":[]} · people seen while turning (average) 21.3 · vehicles seen while turning (average) 4.4 · walking up the avenue: {"seconds":8,"people":{"popIn":0,"popOut":0,"seen":29.5},"vehicles":{"popIn":0,"popOut":0,"seen":9.1},"examples":[]} · people seen while walking (average) 29.5 · driving north: {"seconds":10,"people":{"popIn":0,"popOut":0,"seen":34.4},"vehicles":{"popIn":0,"popOut":0,"seen":14},"examples":[]} · vehicles seen while driving (average) 14
+PASS chase-view-mode (0.6s)
+     after the switch: camera to player (m) 3.4773598102583527 · after a teleport: camera to player (m) 3.4773598102583527
+PASS chase-walk (1.3s)
+     heading 135: walked off the camera's heading by (deg) 0 · heading -60: walked off the camera's heading by (deg) 0.06858282186249198 · heading 10: walked off the camera's heading by (deg) 1.3099324740202292
+PASS cloud-history (0.0s)
+     first frame, continuous wind, weather, tier, teleport, resize, altitude and skipped draws
+PASS clouds (4.9s)
+     fair base over the city (m) 383.8 · fair cumulus depth (m) 366.2 · overcast base, weather alone (m) 300.4 · overcast base over the city (m) 306 · overcast base over MOUNT ASCENT against its summit (m) 25.5 · fair 383.8-750 m (sea 347.4 m), overcast 306-568 m, Mount Ascent 134 m · jump over (2139, 211): immersion 1.00
+PASS combat-continuity (0.0s)
+     five firearm poses for mouse/controller; normal/reset car transitions; reload-preserving reselect and real switch
+PASS drift-handling (6.2s)
+     hot rod power-slide peak slip deg 56 · slip after the catch deg 1 · sedan handbrake 0.5 s turned deg 38 · sedan handbrake turn and power out deg 112 · sedan lane change peak slip deg 3 · muscle (TCS) floored bend peak slip deg 10
+PASS drive-no-nan (21.2s)
+     sedan 56 m · bike 154 m · truck 30 m
+PASS driveby-seats (0.2s)
+     sedan: sedan [-0.318,0.275,0.426,0.25,0.846] · chevette: chevette [-0.79,0.261,0.464,0.41,0.88] · suv: s1_jimny [-0.384,0.454,0.372,0.25,0.874] · brutini: brutini [-0.412,0.202,0.482,0.61,0.82] · police: law:charger [-0.313,0.331,0.436,0.25,0.883] · van: van [0.919,0.68,0.46,0.25,1.1]
+PASS driving-settings-migrate (0.0s)
+PASS enter-key (5.3s)
+PASS foliage-cutaway (0.2s)
+     on foot: leaves below 1.5 m stay 1.5 · on foot: open box half width (m) 0.78 · on foot: open box half height (m) 1.28 · truck: leaves below 1.5 m stay 1.5
+PASS frame-trace (1.4s)
+SKIP graphics-all-tiers (0.0s): Requires WebGL: run with --render
+PASS headlight-budget (0.0s)
+     one beam: [0.964,0.756,0,0,0.001,0.043], cap 1.5 · one beam, 10 m ahead 0.964 · one beam, 25 m ahead 0.756 · one beam, 45 m ahead (past its reach) 0 · one beam, behind the lamps 0 · one beam, 10 m to the oncoming side 0.001 · one beam, 12 m to the kerb side at 20 m 0.043 · junction: [[1.466,4.393],[1.474,4.176],[1.474,4.176],[1.474,4.176],[1.474,4.176],[1.455,3.597],[1.455,3.597]]
+PASS hud-dom-writes (3.3s)
+PASS instance-upload-ranges (0.1s)
+     WebGL1: decal 201600 -> 84 B; debris 53200 -> 152 B; impostors 101760 -> 928 B; dense tail draw capped at 160 · WebGL2: decal 201600 -> 84 B; debris 53200 -> 152 B; impostors 101760 -> 928 B; dense tail draw capped at 160
+PASS m4-wheel-partition (0.5s)
+     2389 source triangles = 2128 rolling + 261 fixed; rest max error 4.665e-7u; all source normals/UVs exact; 48 spin phases per wheel; [{"wheel":0,"at":[1.7261375807285309,0.43411974403858183,0.9090009858489037],"radius":0.4341118186712265,"sourceTriangles":549,"rollingTriangles":532,"fixedTriangles":17,"sourceCenterM":[0.00003758072853088379,0.000019744038581848145,-0.000299014151096344],"previousCircleOrbitM":0.00008483576978290941,"correctedCircleOrbitM":0},{"wheel":1,"at":[1.7261375797748566,0.43411974403858183,-0.902394918268919],"radius":0.4341118186712265,"sourceTriangles":562,"rollingTriangles":532,"fixedTriangles":30,"sourceCenterM":[0.11353757977485657,0.000019744038581848145,-0.01779491826891899],"previousCircleOrbitM":0.22707515954971313,"correctedCircleOrbitM":0},{"wheel":2,"at":[-1.4255351285815239,0.4342473226070404,0.9079786788105965],"radius":0.43412598967552185,"sourceTriangles":647,"rollingTriangles":532,"fixedTriangles":115,"sourceCenterM":[-0.3547351285815239,-0.045052677392959595,-0.00032132118940353394],"previousCircleOrbitM":0.7151617496207023,"correctedCircleOrbitM":0},{"wheel":3,"at":[-1.4255351553380489,0.4342473358154297,-0.9013726065874099],"radius":0.43412598967552185,"sourceTriangles":631,"rollingTriangles":532,"fixedTriangles":99,"sourceCenterM":[-0.35433515533804893,-0.04515266418457031,0.00032739341259002686],"previousCircleOrbitM":0.7143947485772043,"correctedCircleOrbitM":0}]
+PASS medic-routing (0.0s)
+PASS military-model-rig (0.6s)
+     army_jeep: front follows physics steer -0.38 · army_truck: front follows physics steer -0.38 · Original 156 lamp triangles reassigned; no geometry/texture replacement; two military kits reused across 20 repeated spawns.
+PASS mission-modal-input (0.0s)
+PASS mission-world-preservation (0.2s)
+     ambient Harbor Kings/live pursuit persist, depot/hotel keep ordinary/owned vehicles, sealed deployment and rooftop patrol routes remain valid
+PASS motorcycle-puncture (0.0s)
+     actual side-entry rays: 3 headings × 2 elevations × 2 sides × 2 axles; engine/end/high/probability misses and car/truck/glass rules pass
+PASS motorcycle-rider-fit (0.3s)
+     {"riderHeight":1.8,"maxTargetError":0,"maxWristError":0.48314257402214855,"maxRestWristError":0.03311148324819847,"maxBoneError":8.881784197001252e-15,"formerSteeringGap":1.4716794259796324}
+PASS motorcycle-wheel-rig (0.4s)
+     signed forward roll at real radius -0.7381163271331562 · actual packed tyres/rims: rest vertex error 1.31e-7u, normal error 4.46e-8; worst previous axial rim wobble 2.95cm -> 2.78e-15cm; signed roll, brakes, spin, steering and flat damage pass
+PASS mountain-road (19.0s)
+     RIDGELINE HIGHWAY: 1301 m, top 7.1 m, grade 9.8%, R 40 m, rails 151 m · EAGLE PASS: 418 m, top 11.7 m, grade 9.9%, R 40 m, rails 144 m · REGENCY ROAD: 171 m, top 6.3 m, grade 10.1%, R 27 m, rails 32 m · STONECREEK CONNECTOR: 321 m, top 0.1 m, grade 0.6%, R 175 m, rails 0 m · EAGLE PASS up at 110: 404 m in 21.9 s, avg 66 km/h, lane 0.73 m, vertical 0.68 g · EAGLE PASS down at 90: 424 m in 23 s, avg 66 km/h, lane 0.51 m, vertical 0.43 g · RIDGELINE HIGHWAY up at 130: 177 m in 9 s, avg 71 km/h, lane 0.69 m, vertical 0.68 g · REGENCY ROAD up at 90: 157 m in 7.4 s, avg 76 km/h, lane 1.74 m, vertical 0.91 g
+PASS mounted-gun-projection (0.0s)
+     {"maximumGroundMiss":1.1368683772161603e-13,"stationaryBystanderMiss":2.4829684351146257,"oldParallelRayMiss":21,"physicalTraverseDegreesPerSecond":150,"physicalStopsDegrees":[20,160]}
+PASS mouse-buttons (0.1s)
+     real input listeners: independent left/right/middle release; blur and hidden tab in play/help; pause/help/map clear both buttons
+PASS navigation-shortlist (0.4s)
+PASS npc-avatars (0.9s)
+     no 3D renderer on this page: the in-game checks need a rendered page · Male_Adult_01: near triangles 4000 · Male_Adult_01: mid triangles 999 · Male_Adult_01: stature (m) 1.8219232614551273 · Male_Adult_01: shoulder width (the rig's at 1) 1.0488532763532763 · Male_Adult_04: near triangles 4000 · Male_Adult_04: mid triangles 1000 · Male_Adult_04: stature (m) 1.8313811497762802 · Male_Adult_04: shoulder width (the rig's at 1) 1.0488532763532763 · Male_Adult_06: near triangles 4000 · Male_Adult_06: mid triangles 1000 · Male_Adult_06: stature (m) 1.826758787860828 · Male_Adult_06: shoulder width (the rig's at 1) 1.0488532763532763 · Male_Adult_08: near triangles 4000 · Male_Adult_08: mid triangles 1000 · Male_Adult_08: stature (m) 1.827777211607567 · Male_Adult_08: shoulder width (the rig's at 1) 1.0488532763532763 · Male_Adult_12: near triangles 3999 · Male_Adult_12: mid triangles 1000 · Male_Adult_12: stature (m) 1.8136539655604536 · Male_Adult_12: shoulder width (the rig's at 1) 1.0488532763532763 · Male_Adult_14: near triangles 4000 · Male_Adult_14: mid triangles 1000 · Male_Adult_14: stature (m) 1.8139634314126205 · Male_Adult_14: shoulder width (the rig's at 1) 1.0488532763532763 · Male_Adult_17: near triangles 4000 · Male_Adult_17: mid triangles 1000 · Male_Adult_17: stature (m) 1.8148766993944137 · Male_Adult_17: shoulder width (the rig's at 1) 1.0488532763532763 · Female_Adult_01: near triangles 4000 · Female_Adult_01: mid triangles 1000 · Female_Adult_01: stature (m) 1.8105999204729286 · Female_Adult_01: shoulder width (the rig's at 1) 0.9701368760064414 · Female_Adult_02: near triangles 4000 · Female_Adult_02: mid triangles 1000 · Female_Adult_02: stature (m) 1.8072039406746627 · Female_Adult_02: shoulder width (the rig's at 1) 0.9701368760064414 · Female_Adult_03: near triangles 3999 · Female_Adult_03: mid triangles 1000 · Female_Adult_03: stature (m) 1.8213365162589723 · Female_Adult_03: shoulder width (the rig's at 1) 0.9701368760064414 · Female_Adult_04: near triangles 3999 · Female_Adult_04: mid triangles 1000 · Female_Adult_04: stature (m) 1.8312077690315036 · Female_Adult_04: shoulder width (the rig's at 1) 0.9701368760064414 · Female_Adult_11: near triangles 4000 · Female_Adult_11: mid triangles 999 · Female_Adult_11: stature (m) 1.8131579805697715 · Female_Adult_11: shoulder width (the rig's at 1) 0.9701368760064414 · Female_Adult_14: near triangles 4000 · Female_Adult_14: mid triangles 1000 · Female_Adult_14: stature (m) 1.8084503244076457 · Female_Adult_14: shoulder width (the rig's at 1) 0.9701368760064414 · Female_Adult_15: near triangles 4000 · Female_Adult_15: mid triangles 1000 · Female_Adult_15: stature (m) 1.820759053900838 · Female_Adult_15: shoulder width (the rig's at 1) 0.9701368760064414 · Female_Party_02: near triangles 4000 · Female_Party_02: mid triangles 1000 · Female_Party_02: stature (m) 1.8440489735321277 · Female_Party_02: shoulder width (the rig's at 1) 0.9701368760064414 · Business_Male_01: near triangles 4000 · Business_Male_01: mid triangles 999 · Business_Male_01: stature (m) 1.8137389326734203 · Business_Male_01: shoulder width (the rig's at 1) 1.0488532763532763 · Business_Female_01: near triangles 4000 · Business_Female_01: mid triangles 1000 · Business_Female_01: stature (m) 1.8181898731139623 · Business_Female_01: shoulder width (the rig's at 1) 0.9701368760064414 · Business_Female_03: near triangles 3999 · Business_Female_03: mid triangles 1000 · Business_Female_03: stature (m) 1.8150398868468725 · Business_Female_03: shoulder width (the rig's at 1) 0.9701368760064414 · Police_Male_03: near triangles 4000 · Police_Male_03: mid triangles 1284 · Police_Male_03: stature (m) 1.8128540022298696 · Police_Male_03: shoulder width (the rig's at 1) 1.0488532763532763 · Security_Female_01: near triangles 4000 · Security_Female_01: mid triangles 1000 · Security_Female_01: stature (m) 1.8187826363369826 · Security_Female_01: shoulder width (the rig's at 1) 0.9701368760064414 · Police_Male_02: near triangles 3999 · Police_Male_02: mid triangles 1362 · Police_Male_02: stature (m) 1.849547552663301 · Police_Male_02: shoulder width (the rig's at 1) 1.0488532763532763 · Military_Male_01: near triangles 3999 · Military_Male_01: mid triangles 2637 · Military_Male_01: stature (m) 1.8419785662155068 · Military_Male_01: shoulder width (the rig's at 1) 1.0488532763532763 · Military_Male_02: near triangles 3999 · Military_Male_02: mid triangles 999 · Military_Male_02: stature (m) 1.8101661660841535 · Military_Male_02: shoulder width (the rig's at 1) 1.0488532763532763 · Medical_Male_01: near triangles 4000 · Medical_Male_01: mid triangles 1000 · Medical_Male_01: stature (m) 1.8133418239653112 · Medical_Male_01: shoulder width (the rig's at 1) 1.0488532763532763 · Medical_Female_01: near triangles 4000 · Medical_Female_01: mid triangles 999 · Medical_Female_01: stature (m) 1.809264343591141 · Medical_Female_01: shoulder width (the rig's at 1) 0.9701368760064414 · Construction_Male_07: near triangles 3999 · Construction_Male_07: mid triangles 1000 · Construction_Male_07: stature (m) 1.8397665400590217 · Construction_Male_07: shoulder width (the rig's at 1) 1.0488532763532763 · Sports_Male_04: near triangles 4000 · Sports_Male_04: mid triangles 1000 · Sports_Male_04: stature (m) 1.8130804604185482 · Sports_Male_04: shoulder width (the rig's at 1) 1.0488532763532763 · Sports_Female_02: near triangles 3999 · Sports_Female_02: mid triangles 999 · Sports_Female_02: stature (m) 1.8105582798365505 · Sports_Female_02: shoulder width (the rig's at 1) 0.9701368760064414 · Sports_Female_01: near triangles 4000 · Sports_Female_01: mid triangles 1000 · Sports_Female_01: stature (m) 1.8076236589678698 · Sports_Female_01: shoulder width (the rig's at 1) 0.9701368760064414 · Sports_Male_01: near triangles 4000 · Sports_Male_01: mid triangles 1000 · Sports_Male_01: stature (m) 1.8114701839030856 · Sports_Male_01: shoulder width (the rig's at 1) 1.0488532763532763 · Male_Child_01: near triangles 4000 · Male_Child_01: mid triangles 1000 · Male_Child_01: stature at a child's look height (m) 1.1600685776301793 · Male_Child_01: shoulder width (the rig's at 1) 1.0457032599709202 · Female_Child_01: near triangles 4000 · Female_Child_01: mid triangles 1000 · Female_Child_01: stature at a child's look height (m) 1.1589236738766944 · Female_Child_01: shoulder width (the rig's at 1) 0.9338503362945999 · Police_Male_01: near triangles 4000 · Police_Male_01: mid triangles 1000 · Police_Male_01: stature (m) 1.8101661109731402 · Police_Male_01: shoulder width (the rig's at 1) 1.0488532763532763 · Security_Male_01: near triangles 3999 · Security_Male_01: mid triangles 1076 · Security_Male_01: stature (m) 1.8137389326734203 · Security_Male_01: shoulder width (the rig's at 1) 1.0488532763532763 · Traffic_Male_03: near triangles 4000 · Traffic_Male_03: mid triangles 1284 · Traffic_Male_03: stature (m) 1.8128540022298696 · Traffic_Male_03: shoulder width (the rig's at 1) 1.0488532763532763 · Traffic_Male_01: near triangles 4000 · Traffic_Male_01: mid triangles 1000 · Traffic_Male_01: stature (m) 1.8101661109731402 · Traffic_Male_01: shoulder width (the rig's at 1) 1.0488532763532763 · Traffic_Female_01: near triangles 4000 · Traffic_Female_01: mid triangles 1000 · Traffic_Female_01: stature (m) 1.8187826363369826 · Traffic_Female_01: shoulder width (the rig's at 1) 0.9701368760064414 · Fed_Male_07: near triangles 4000 · Fed_Male_07: mid triangles 1000 · Fed_Male_07: stature (m) 1.8137390009260606 · Fed_Male_07: shoulder width (the rig's at 1) 1.0488532763532763 · Fed_Female_01: near triangles 4000 · Fed_Female_01: mid triangles 1000 · Fed_Female_01: stature (m) 1.8181898731139623 · Fed_Female_01: shoulder width (the rig's at 1) 0.9701368760064414 · Military_Male_03: near triangles 4000 · Military_Male_03: mid triangles 2202 · Military_Male_03: stature (m) 1.854041211174003 · Military_Male_03: shoulder width (the rig's at 1) 1.0488532763532763 · Military_Male_04: near triangles 4000 · Military_Male_04: mid triangles 2651 · Military_Male_04: stature (m) 1.8592109161562156 · Military_Male_04: shoulder width (the rig's at 1) 1.0488532763532763 · Military_Male_05: near triangles 4000 · Military_Male_05: mid triangles 1000 · Military_Male_05: stature (m) 1.8138765113162145 · Military_Male_05: shoulder width (the rig's at 1) 1.0488532763532763 · Military_Male_06: near triangles 4000 · Military_Male_06: mid triangles 1000 · Military_Male_06: stature (m) 1.8101661109731402 · Military_Male_06: shoulder width (the rig's at 1) 1.0488532763532763 · Male_Child_02: near triangles 4000 · Male_Child_02: mid triangles 1000 · Male_Child_02: stature at a child's look height (m) 1.1608757036754065 · Male_Child_02: shoulder width (the rig's at 1) 1.052583792014419 · Female_Child_02: near triangles 4000 · Female_Child_02: mid triangles 1000 · Female_Child_02: stature at a child's look height (m) 1.1589863824290891 · Female_Child_02: shoulder width (the rig's at 1) 0.9300720329240526 · Male_Adult_18: near triangles 4000 · Male_Adult_18: mid triangles 1000 · Male_Adult_18: stature (m) 1.8515515744686128 · Male_Adult_18: shoulder width (the rig's at 1) 1.0488532763532763 · Male_Adult_20: near triangles 4000 · Male_Adult_20: mid triangles 1000 · Male_Adult_20: stature (m) 1.8130387832011496 · Male_Adult_20: shoulder width (the rig's at 1) 1.0488532763532763 · Male_Adult_10: near triangles 4000 · Male_Adult_10: mid triangles 1000 · Male_Adult_10: stature (m) 1.8194279293662738 · Male_Adult_10: shoulder width (the rig's at 1) 1.0488532763532763 · Male_Adult_09: near triangles 4000 · Male_Adult_09: mid triangles 1000 · Male_Adult_09: stature (m) 1.8259901766798328 · Male_Adult_09: shoulder width (the rig's at 1) 1.0488532763532763 · Female_Adult_12: near triangles 4000 · Female_Adult_12: mid triangles 1000 · Female_Adult_12: stature (m) 1.812413763361318 · Female_Adult_12: shoulder width (the rig's at 1) 0.9701368760064414 · Business_Male_03: near triangles 3999 · Business_Male_03: mid triangles 1000 · Business_Male_03: stature (m) 1.8207467631569934 · Business_Male_03: shoulder width (the rig's at 1) 1.0488532763532763 · Business_Male_05: near triangles 4000 · Business_Male_05: mid triangles 1000 · Business_Male_05: stature (m) 1.8138764411477108 · Business_Male_05: shoulder width (the rig's at 1) 1.0488532763532763 · Business_Male_02: near triangles 4000 · Business_Male_02: mid triangles 1000 · Business_Male_02: stature (m) 1.8233316156480996 · Business_Male_02: shoulder width (the rig's at 1) 1.0488532763532763 · Business_Male_06: near triangles 4000 · Business_Male_06: mid triangles 1000 · Business_Male_06: stature (m) 1.8137389326734203 · Business_Male_06: shoulder width (the rig's at 1) 1.0488532763532763 · Male_Adult_03: near triangles 4000 · Male_Adult_03: mid triangles 1000 · Male_Adult_03: stature (m) 1.8138764411477108 · Male_Adult_03: shoulder width (the rig's at 1) 1.0488532763532763 · Male_Adult_05: near triangles 3999 · Male_Adult_05: mid triangles 999 · Male_Adult_05: stature (m) 1.8285213778061529 · Male_Adult_05: shoulder width (the rig's at 1) 1.0488532763532763 · Male_Adult_07: near triangles 4000 · Male_Adult_07: mid triangles 1000 · Male_Adult_07: stature (m) 1.8236145149384229 · Male_Adult_07: shoulder width (the rig's at 1) 1.0488532763532763 · Male_Adult_11: near triangles 4000 · Male_Adult_11: mid triangles 1000 · Male_Adult_11: stature (m) 1.8138764411477108 · Male_Adult_11: shoulder width (the rig's at 1) 1.0488532763532763 · Female_Adult_07: near triangles 4000 · Female_Adult_07: mid triangles 1000 · Female_Adult_07: stature (m) 1.8123348896524738 · Female_Adult_07: shoulder width (the rig's at 1) 0.9701368760064414 · Female_Adult_13: near triangles 3999 · Female_Adult_13: mid triangles 999 · Female_Adult_13: stature (m) 1.823161872290075 · Female_Adult_13: shoulder width (the rig's at 1) 0.9701368760064414 · Business_Male_04: near triangles 4000 · Business_Male_04: mid triangles 1000 · Business_Male_04: stature (m) 1.8138731755582351 · Business_Male_04: shoulder width (the rig's at 1) 1.0488532763532763 · Sports_Male_02: near triangles 4000 · Sports_Male_02: mid triangles 1000 · Sports_Male_02: stature (m) 1.8085360666071733 · Sports_Male_02: shoulder width (the rig's at 1) 1.0488532763532763 · Sports_Male_03: near triangles 4000 · Sports_Male_03: mid triangles 1000 · Sports_Male_03: stature (m) 1.8149695671695685 · Sports_Male_03: shoulder width (the rig's at 1) 1.0488532763532763 · Steward_Male_09: near triangles 4000 · Steward_Male_09: mid triangles 1000 · Steward_Male_09: stature (m) 1.8259901766798328 · Steward_Male_09: shoulder width (the rig's at 1) 1.0488532763532763 · Male_Adult_01 1.82 m w1.05 x2.61; Male_Adult_04 1.83 m w1.05 x1.85; Male_Adult_06 1.83 m w1.05 x1.84; Male_Adult_08 1.83 m w1.05 x1.59; Male_Adult_12 1.81 m w1.05 x1.77; Male_Adult_14 1.81 m w1.05 x1.76; Male_Adult_17 1.81 m w1.05 x1.88; Female_Adult_01 1.81 m w0.97 x1.41; Female_Adult_02 1.81 m w0.97 x1.39; Female_Adult_03 1.82 m w0.97 x1.34; Female_Adult_04 1.83 m w0.97 x1.97; Female_Adult_11 1.81 m w0.97 x2.16; Female_Adult_14 1.81 m w0.97 x2.94; Female_Adult_15 1.82 m w0.97 x1.74; Female_Party_02 1.84 m w0.97 x1.58; Business_Male_01 1.81 m w1.05 x1.53; Business_Female_01 1.82 m w0.97 x1.95; Business_Female_03 1.82 m w0.97 x1.75; Police_Male_03 1.81 m w1.05 x1.71; Security_Female_01 1.82 m w0.97 x2.20; Police_Male_02 1.85 m w1.05 x1.84; Military_Male_01 1.84 m w1.05 x1.83; Military_Male_02 1.81 m w1.05 x2.09; Medical_Male_01 1.81 m w1.05 x1.69; Medical_Female_01 1.81 m w0.97 x3.07; Construction_Male_07 1.84 m w1.05 x2.62; Sports_Male_04 1.81 m w1.05 x1.62; Sports_Female_02 1.81 m w0.97 x1.84; Sports_Female_01 1.81 m w0.97 x1.99; Sports_Male_01 1.81 m w1.05 x1.59; Male_Child_01 1.81 m w1.05 x1.53; Female_Child_01 1.81 m w0.93 x2.96; Police_Male_01 1.81 m w1.05 x1.69; Security_Male_01 1.81 m w1.05 x1.69; Traffic_Male_03 1.81 m w1.05 x1.71; Traffic_Male_01 1.81 m w1.05 x1.69; Traffic_Female_01 1.82 m w0.97 x2.20; Fed_Male_07 1.81 m w1.05 x2.47; Fed_Female_01 1.82 m w0.97 x1.95; Military_Male_03 1.85 m w1.05 x2.62; Military_Male_04 1.86 m w1.05 x1.82; Military_Male_05 1.81 m w1.05 x2.21; Military_Male_06 1.81 m w1.05 x2.21; Male_Child_02 1.81 m w1.05 x1.41; Female_Child_02 1.81 m w0.93 x1.95; Male_Adult_18 1.85 m w1.05 x1.91; Male_Adult_20 1.81 m w1.05 x1.62; Male_Adult_10 1.82 m w1.05 x1.87; Male_Adult_09 1.83 m w1.05 x2.20; Female_Adult_12 1.81 m w0.97 x2.23; Business_Male_03 1.82 m w1.05 x1.60; Business_Male_05 1.81 m w1.05 x1.59; Business_Male_02 1.82 m w1.05 x2.76; Business_Male_06 1.81 m w1.05 x1.43; Male_Adult_03 1.81 m w1.05 x2.59; Male_Adult_05 1.83 m w1.05 x1.81; Male_Adult_07 1.82 m w1.05 x1.94; Male_Adult_11 1.81 m w1.05 x1.85; Female_Adult_07 1.81 m w0.97 x2.25; Female_Adult_13 1.82 m w0.97 x2.33; Business_Male_04 1.81 m w1.05 x1.59; Sports_Male_02 1.81 m w1.05 x2.59; Sports_Male_03 1.81 m w1.05 x2.59; Steward_Male_09 1.83 m w1.05 x2.20
+PASS performance-kernels (1.2s)
+     {"crowd":{"checked":31684,"encounterFrames":240,"denseSlots":1849,"operations":null,"timing":null},"gates":{"checked":4360,"reusedContacts":4360,"frames":120,"fixedFortSightSolids":20}}
+PASS player-body (7.0s)
+     no 3D renderer on this page: the in-game checks need a rendered page · model: built in 26 ms: 4237 vertices, 7064 triangles · model: player body triangles 7064 · model: body volume (litres; positive = facing out) 95.8 · hair 1.810 m, scalp 1.810 m, soles -0.004 m, chin 1.579 m · stature, soles to the scalp (m) 1.814 · heads tall (chin to scalp) 7.84 · model: shoulder breadth across the deltoids (m) 0.518 · chest over waist width (the V) 1.091 · belly forward of the chest (mm; flat stomach) -19.1 · chest depth (m) 0.285 · fingertips at mid-thigh (share of stature) 0.389 · share of the hands the trigger finger moves 0.176 · 1 triangles face against their normals in the bind (0.14 per mille) · model: pose set: {"stand":{"stretch":1.16,"collapsedPerMille":0,"flippedPerMille":0.99,"worstGapMm":0},"walk":{"stretch":1.66,"collapsedPerMille":0,"flippedPerMille":1.13,"worstGapMm":0},"run":{"stretch":2.15,"collapsedPerMille":0.42,"flippedPerMille":3.96,"worstGapMm":0},"pistolAim":{"stretch":1.87,"collapsedPerMille":0,"flippedPerMille":0.99,"worstGapMm":0},"rifle":{"stretch":1.89,"collapsedPerMille":0.14,"flippedPerMille":0.42,"worstGapMm":0},"handsUp":{"stretch":3.15,"collapsedPerMille":0.28,"flippedPerMille":4.53,"worstGapMm":0},"phone":{"stretch":1.92,"collapsedPerMille":0.14,"flippedPerMille":1.84,"worstGapMm":0},"seated":{"stretch":3.18,"collapsedPerMille":0.28,"flippedPerMille":4.67,"worstGapMm":0},"kneel":{"stretch":2.73,"collapsedPerMille":0.14,"flippedPerMille":6.23,"worstGapMm":0},"crawl":{"stretch":2.63,"collapsedPerMille":0,"flippedPerMille":1.98,"worstGapMm":0},"freefall":{"stretch":1.86,"collapsedPerMille":0,"flippedPerMille":0,"worstGapMm":0},"swim":{"stretch":3.17,"collapsedPerMille":0.14,"flippedPerMille":2.69,"worstGapMm":0},"deadBack":{"stretch":1.87,"collapsedPerMille":0,"flippedPerMille":0,"worstGapMm":0},"carjack":{"stretch":1.96,"collapsedPerMille":0.14,"flippedPerMille":0.85,"worstGapMm":0},"twistLeft":{"stretch":2.77,"collapsedPerMille":0,"flippedPerMille":0.85,"worstGapMm":0},"twistRight":{"stretch":2.89,"collapsedPerMille":0,"flippedPerMille":0.85,"worstGapMm":0},"wristBent":{"stretch":1.81,"collapsedPerMille":0,"flippedPerMille":1.56,"worstGapMm":0},"wristTwisted":{"stretch":2.16,"collapsedPerMille":0,"flippedPerMille":0,"worstGapMm":0}} · fields: built in 1572 ms: 56897 vertices, 113462 triangles · fields: player body triangles (HIGH and ULTRA) 113462 · LOW/MEDIUM triangles over HIGH 0.47 · LOW/MEDIUM: top of the hair (m) 1.814 · fields: body volume (litres; positive = facing out) 81.1 · hair 1.814 m, scalp 1.800 m, soles -0.003 m, chin 1.566 m · stature, soles to the scalp (m) 1.803 · hair on the crown (m) 0.014 · heads tall (chin to scalp) 7.7 · fields: shoulder breadth across the deltoids (m) 0.575 · chest over waist width (the V) 1.085 · belly forward of the chest (mm; flat stomach) -37.3 · chest depth (m) 0.274 · fingertips at mid-thigh (share of stature) 0.385 · share of the hands the trigger finger moves 0.113 · 332 triangles face against their normals in the bind (2.93 per mille) · fields: pose set: {"stand":{"stretch":1.4,"collapsedPerMille":0,"flippedPerMille":0.04,"worstGapMm":0},"walk":{"stretch":1.74,"collapsedPerMille":0.01,"flippedPerMille":0.13,"worstGapMm":0.9},"run":{"stretch":2.38,"collapsedPerMille":0.25,"flippedPerMille":2.27,"worstGapMm":1.1},"pistolAim":{"stretch":2.79,"collapsedPerMille":0.08,"flippedPerMille":1.36,"worstGapMm":1.6},"rifle":{"stretch":2.2,"collapsedPerMille":0.1,"flippedPerMille":0.95,"worstGapMm":0.5},"handsUp":{"stretch":5,"collapsedPerMille":0.07,"flippedPerMille":3.66,"worstGapMm":0},"phone":{"stretch":1.7,"collapsedPerMille":0.03,"flippedPerMille":0.71,"worstGapMm":3.6},"seated":{"stretch":3.37,"collapsedPerMille":0.13,"flippedPerMille":3.23,"worstGapMm":1.1},"kneel":{"stretch":3.22,"collapsedPerMille":0.14,"flippedPerMille":7.31,"worstGapMm":0},"crawl":{"stretch":3.47,"collapsedPerMille":0.1,"flippedPerMille":2.35,"worstGapMm":0},"freefall":{"stretch":1.91,"collapsedPerMille":0,"flippedPerMille":0.08,"worstGapMm":0},"swim":{"stretch":4.2,"collapsedPerMille":0.05,"flippedPerMille":1.93,"worstGapMm":0.3},"deadBack":{"stretch":2.03,"collapsedPerMille":0,"flippedPerMille":0.04,"worstGapMm":0},"carjack":{"stretch":2.16,"collapsedPerMille":0.1,"flippedPerMille":0.66,"worstGapMm":4.3},"twistLeft":{"stretch":1.8,"collapsedPerMille":0,"flippedPerMille":0.11,"worstGapMm":0},"twistRight":{"stretch":1.81,"collapsedPerMille":0.04,"flippedPerMille":0.24,"worstGapMm":0},"wristBent":{"stretch":2.68,"collapsedPerMille":0.07,"flippedPerMille":1.2,"worstGapMm":0},"wristTwisted":{"stretch":1.48,"collapsedPerMille":0,"flippedPerMille":0,"worstGapMm":2.6}}
+SKIP rear-badges (0.0s): Requires WebGL: run with --render
+PASS regency-traffic (8.5s)
+     luxury: lane -2.23 m, pass gap 1.91 m, turns 1 · suv: lane -2.3 m, pass gap 17.4 m, turns 0 · taxi: lane -2.23 m, pass gap 2.1 m, turns 1
+SKIP render-auto-scale (0.0s): Requires WebGL: run with --render
+SKIP render-cell-preupload (0.0s): Requires WebGL: run with --render
+SKIP render-hiccups (0.0s): Renderer counters require WebGL: run with --render
+SKIP render-tier-switch (0.0s): Requires WebGL: run with --render
+PASS rig-geometry (0.2s)
+     nearHeadGeometry woman's shape (units) 0.032 · nearTorsoGeometry woman's shape (units) 0.235 · nearPelvisGeometry woman's shape (units) 0.12 · nearThighGeometry woman's shape (units) 0.068 · near set triangles, every variant 22879
+PASS roof-skin (0.0s)
+PASS scenery-pools (0.1s)
+     1024 exact instances / 64 chunks; close fixture 1024 -> 16 instances, 1 -> 1 camera draw; 24 frustum sweeps and off-camera shadow candidate preserved; shadowed/wide/flight/A-B/mutation fallbacks pass
+PASS sim-audits (1.1s)
+PASS sim-efficiency (11.4s)
+PASS sound-output (2.1s)
+PASS sportsbook-bets (1.0s)
+     payout $ 21 · cash after settlement 991
+PASS taxi-fare-toast (0.8s)
+PASS tyre-effects (8.3s)
+     sedan burnout crept (m) 0 · muscle burnout crept (m) 0
+PASS vehicle-gunfire (8.8s)
+     table: pistol engine-bay hits to fire 25 · pistol, engine bay: {"type":"sedan","weapon":"9MM PISTOL","zone":"engine","hp":150,"smoke":14,"heavySmoke":21,"fire":26,"shots":26,"instant":false,"exploded":true,"fireToExplosion":6.4,"hpLeft":0} · pistol rounds into the engine bay to set it on fire 26 · seconds from the engine fire to the explosion 6.4 · rifle, engine bay: {"type":"sedan","weapon":"ASSAULT RIFLE","zone":"engine","hp":150,"smoke":6,"heavySmoke":9,"fire":11,"shots":11,"instant":false,"exploded":true,"fireToExplosion":6.4,"hpLeft":0} · pistol, doors: {"type":"sedan","weapon":"9MM PISTOL","zone":"body","hp":150,"smoke":null,"heavySmoke":null,"fire":null,"shots":34,"instant":false,"exploded":false,"fireToExplosion":null,"hpLeft":134}
+PASS vehicle-layouts (4.9s)
+PASS vehicle-material-lifecycle (0.0s)
+SKIP vehicle-merge (0.0s): Requires WebGL: run with --render
+PASS witness-car-lines (0.0s)
+PASS ammo-supply (20.3s)
+     default on-foot zoom 2 · on-foot zoom at start 2 · screen half depth 139 units; on-screen gunman fired 3
+SKIP asset-char (16.7s): Requires WebGL: run with --render
+PASS blood-amounts (14.6s)
+     plan: 9mm 15 m torso 1/9/2/2.8m, 9mm 15 m head 1.3/12/2/3m, 9mm 15 m leg 0.8/7/2/2.5m, 9mm 1 m torso 1.169/11/2/2.9m, rifle 15 m torso 1.6/16/3/3.4m, rifle 3 m torso 2.14/22/3/4m, shotgun 20 m leg 0.44/3/1/2.1m, shotgun 6 m leg 0.845/6/2/2.5m, shotgun 4 m leg 3.265/23/4/5.3m, shotgun 1.5 m leg 3.96/28/4/6m, shotgun 1.5 m head 6.435/46/5/7.1m, .50 30 m torso 2.8/29/3/4.6m · ground marks: pistol 16 {"pool":1,"spatter":2,"drop":14,"track":0,"stain":0,"wall":0}, point-blank shotgun 70 {"pool":1,"spatter":7,"drop":63,"track":0,"stain":0,"wall":0} · point-blank sides: {"downrange":70,"uprange":0,"level":0,"farthest":49.3} · walls: point blank 3, pistol 8 m 0 · cars: point blank 1 (0.28), pistol 10 m 0
+PASS blood-spray (16.7s)
+     9mm: {"flying":24,"align":0.985,"against":0,"meanHeading":0.003,"highest":11.2,"mist":3} · rifle: {"flying":37,"align":0.976,"against":0,"meanHeading":-0.027,"highest":11.6,"mist":4} · blast 2 m: {"flying":134,"align":0.96,"against":0,"meanHeading":-3.117,"highest":12.8,"mist":12} lost head,shin R · blast 2 m landed: {"downrange":122,"uprange":0,"level":1,"farthest":50.1} · blast 5 m: {"flying":85,"align":0.951,"against":0,"meanHeading":3.135,"highest":12.4,"mist":8} lost head · blast 5 m landed: {"downrange":87,"uprange":0,"level":0,"farthest":47.3}
+PASS blood-wounds (42.4s)
+     one round: pool r 3.08 -> 6.36 (10 s) -> 6.97 (30 s), rMax 7 · several rounds: pool r 9.69 (30 s), rMax 9.7
+PASS bluehour-entrance (29.2s)
+PASS bullet-hits (29.1s)
+     9mm: {"civilian":1,"gang":2,"guard":2,"vescari":3,"patrol":3,"patrol4":4,"swat":7,"fed":5,"soldier":5,"garrison":6} · rifle: {"civilian":1,"gang":2,"guard":2,"vescari":2,"patrol":2,"patrol4":2,"swat":4,"fed":3,"soldier":3,"garrison":4} · swat: 9mm torso hits 7 · fed: 9mm torso hits 5 · soldier: 9mm torso hits 5 · swat: rifle torso hits 4 · fed: rifle torso hits 3 · soldier: rifle torso hits 3 · live: swat 7 torso / 2 leg, gang 2 · exit spray: {"downrange":46,"uprange":0,"level":0,"farthest":39.7}
+PASS camera-comfort (53.7s)
+     board (0 km/h, framed 2): {"seconds":4,"accel":{"rms":0.162,"peak":0.708},"jerk":{"rms":1.22,"peak":8.66},"zoomRate":{"rms":0,"peak":0},"jolt":0,"drift":{"peak":0.279,"swing":0.279}} · accelerate (102.3 km/h, framed 1.034): {"seconds":4,"accel":{"rms":0.153,"peak":0.29},"jerk":{"rms":0.1,"peak":0.22},"zoomRate":{"rms":18.61,"peak":28.31},"jolt":0,"drift":{"peak":0.1,"swing":0.118}} · slalom (106.2 km/h, framed 0.93): {"seconds":4,"accel":{"rms":0.063,"peak":0.136},"jerk":{"rms":0.14,"peak":0.28},"zoomRate":{"rms":1.52,"peak":2.87},"jolt":0,"drift":{"peak":0.136,"swing":0.077}} · weave (113.7 km/h, framed 0.944): {"seconds":3,"accel":{"rms":0.11,"peak":0.156},"jerk":{"rms":0.23,"peak":0.33},"zoomRate":{"rms":0.5,"peak":0.63},"jolt":0,"drift":{"peak":0.151,"swing":0.118}} · brake (6 km/h, framed 1.064): {"seconds":4,"accel":{"rms":0.154,"peak":0.199},"jerk":{"rms":0.23,"peak":0.76},"zoomRate":{"rms":5.92,"peak":24.09},"jolt":0,"drift":{"peak":0.144,"swing":0.051}} · turn (55.2 km/h, framed 1.083): {"seconds":3,"accel":{"rms":0.209,"peak":0.313},"jerk":{"rms":0.28,"peak":0.44},"zoomRate":{"rms":5.28,"peak":11.52},"jolt":0,"drift":{"peak":0.214,"swing":0.175}} · rough (0.2 km/h, framed 1.946): {"seconds":4,"accel":{"rms":0.014,"peak":0.042},"jerk":{"rms":0.02,"peak":0.08},"zoomRate":{"rms":11.78,"peak":22.71},"jolt":0,"drift":{"peak":0.02,"swing":0.021}} · blast jolt: on foot 0.0155, in a car 0.0071, motion comfort 0 · car context 0.56 · car at rest framed (zoom), 3 s after boarding 2 · pull-back at 111 km/h 0.841
+PASS camera-lead-setting (76.3s)
+     0 %: lead 0 m (aims at 0 m), 0 of the half frame (43.2 m, framed 0.805, 100 km/h eased) · 100 %: lead 10.8 m (aims at 10.8 m), 0.249 of the half frame (43.3 m, framed 0.804, 96 km/h eased) · 150 %: lead 16.2 m (aims at 16.2 m), 0.374 of the half frame (43.3 m, framed 0.804, 97 km/h eased) · 200 %: lead 21.6 m (aims at 21.6 m), 0.499 of the half frame (43.3 m, framed 0.804, 97 km/h eased) · 300 %: lead 27.9 m (aims at 28.1 m), 0.644 of the half frame (43.3 m, framed 0.804, 97 km/h eased) · bus north at 300 %: lead 29.2 m, rear end at 0.698 of the half frame (50.5 m) · lead at 0 % 0 · 0 % after a turn: view 0.6 m from the car (offset -0.3,-4.8, heading 90) · 200 % after a turn: view 7.3 m from the car (offset -0.3,58.6, heading 90)
+PASS camera-slow-framing (53.8s)
+     on-foot context at 100 % 1 · on-foot aim at 100 % 2 · parked car context = on foot 1 · parked car aim = on foot 2 · parked car framed 2 s after boarding 2 · the car share it eases to at speed 0.56 · aim at 20 km/h = on foot 2 · no pull-back at 20 km/h 1 · context at 40 km/h = the car share 0.56 · aim at 40 km/h = vehicle framing × pull-back 1.102 · slow car context at 125 % walking distance 0.8 · slow car aim at 125 % walking distance 1.6 · on-foot context at 125 % 0.8 · on-foot aim at 125 % 1.6 · on-foot aim at 60 % 3.333 · on-foot aim back at 100 % 2 · context after a carjack at rest 1 · motion comfort context at rest 1 · motion comfort framing at rest 1 · motion comfort framing at speed 0.86 · chase boom foot 3.5 m, car at rest ≤ 4.42 m, 60 km/h 6.96 m; foot 2; parked 2; 20 km/h 2; 40 km/h aim 1.102 framed 1.152 (0.1 s after the switch 1.988); walk 125 % 1.6, 60 % 3.333
+PASS car-blood (284.3s)
+     fatal sev by km/h: {"16":0.01,"20":0.05,"25":0.12,"30":0.2,"50":0.47,"80":0.68,"120":0.75} · sev at 16 km/h (barely a drop) 0.01 · sev at 25 km/h (a few drops) 0.12 · sev at 50 km/h (a clear splash) 0.47 · sev at 80 km/h (heavy) 0.68 · sev at 120 km/h (no more than 0.76) 0.75 · a survivor at 50 km/h (0.6 of a death) 0.28 · fatal run-over: sev 0.68 at (19.4, 4) 78 km/h · stopped at once: flow 0.16, creep 1 after 24 s · blood load of five people at 50 km/h 2.35 · five at 50 km/h: 3 records, load 2.35 (one at 80 km/h: 0.68)
+SKIP car-feet-clearance (35.5s): Requires WebGL: run with --render
+SKIP car-window-open (28.4s): Requires WebGL: run with --render
+PASS carjack-traffic (52.7s)
+     skipped a suv at a light: the prompt there is RENT BIKE · $5 · traffic at a light (suv, red): 4.8 s to the seat · between parked cars: 4.6 s to the seat · next lane: 4.1 s to the seat · boxed in: 2.2 s to the seat (short: no room) · rolling at 40 km/h: 1.7 s to the seat (short: rolling) · rolling: car {"type":"sedan","fitted":{"abs":true,"esc":true,"tcs":true},"lamps":{"abs":"ready","esc":"ready","tcs":"ready"},"charact
+PASS carjack (57.6s)
+     seconds from E to the seat (driver side) 3.0000000000000013
+FAIL chase-budget (44.3s): error: read ECONNRESET
+FAIL chase-hud-layout (20.8s): error: not ready: waiting for the title menu
+FAIL chase-lock (9.1s): error: not ready: waiting for the title menu
+FAIL chase-move-keys (0.0s): error: not ready: waiting for the title menu
+FAIL chase-wall-clearance (5.0s): error: not ready: waiting for the title menu
+FAIL cheat-helicopter (0.1s): error: not ready: waiting for the title menu
+FAIL chimney-smoke (0.0s): error: not ready: waiting for the title menu
+FAIL civil-aircraft (12.7s): error: not ready: waiting for the title menu
+FAIL club-entrance (0.0s): error: not ready: waiting for the title menu
+FAIL coronation-bridge (0.0s): error: not ready: waiting for the title menu
+FAIL demo-complete-card (0.2s): error: not ready: waiting for the title menu
+FAIL drawbridge-islands (0.6s): error: not ready: waiting for the title menu
+FAIL drawbridge-traffic (0.0s): error: not ready: waiting for the title menu
+FAIL driveby-arcs (0.0s): error: not ready: waiting for the title menu
+FAIL driveby-mouse (0.0s): error: not ready: waiting for the title menu
+FAIL falls (0.0s): error: not ready: waiting for the title menu
+FAIL footwork (0.0s): error: not ready: waiting for the title menu
+FAIL fort-cover (0.0s): error: not ready: waiting for the title menu
+FAIL fort-gate-barrier (0.2s): error: not ready: waiting for the title menu
+FAIL fort-gate-talk (0.0s): error: not ready: waiting for the title menu
+FAIL fort-records-route (1.2s): error: not ready: waiting for the title menu
+FAIL fort-vehicle-theft (0.7s): error: not ready: waiting for the title menu
+FAIL fps-counter (0.0s): error: not ready: waiting for the title menu
+FAIL frame-guard (0.0s): error: not ready: waiting for the title menu
+FAIL freeroam-respawn (0.1s): error: not ready: waiting for the title menu
+FAIL garages-islands (0.1s): error: not ready: waiting for the title menu
+FAIL god-drawbridges (0.0s): error: not ready: waiting for the title menu
+FAIL god-mode-codes (0.0s): error: not ready: waiting for the title menu
+FAIL god-teleport-map (0.0s): error: not ready: waiting for the title menu
+FAIL gore-dismember (0.0s): error: not ready: waiting for the title menu
+FAIL gpu-context (0.0s): error: not ready: waiting for the title menu
+FAIL headlight-aim (0.0s): error: not ready: waiting for the title menu
+FAIL health-indoors (0.0s): error: not ready: waiting for the title menu
+FAIL hillclimb-physics (0.0s): error: not ready: waiting for the title menu
+FAIL hud-clearance (0.0s): error: not ready: waiting for the title menu
+FAIL hud-layout (0.0s): error: not ready: waiting for the title menu
+FAIL hud-touch-dispatch (0.0s): error: not ready: waiting for the title menu
+FAIL integrity-shore (0.0s): error: not ready: waiting for the title menu
+FAIL interface-hints (0.0s): error: not ready: waiting for the title menu
+FAIL liner-voyage (0.0s): error: not ready: waiting for the title menu
+FAIL living-key (0.0s): error: not ready: waiting for the title menu
+FAIL living-medics (0.0s): error: not ready: waiting for the title menu
+FAIL living-sirens (0.0s): error: not ready: waiting for the title menu
+FAIL living-snatch (0.0s): error: not ready: waiting for the title menu
+FAIL living-traffic (0.0s): error: not ready: waiting for the title menu
+FAIL lockpick (0.0s): error: not ready: waiting for the title menu
+FAIL marea-talk (0.0s): error: not ready: waiting for the title menu
+FAIL markers-rings (0.0s): error: not ready: waiting for the title menu
+FAIL minimap-clutter (0.0s): error: not ready: waiting for the title menu
+FAIL mission-abandon (0.0s): error: not ready: waiting for the title menu
+FAIL mission-brief (0.0s): error: not ready: waiting for the title menu
+FAIL mission-card-keys (0.0s): error: not ready: waiting for the title menu
+FAIL mission-card-subtitle (0.0s): error: not ready: waiting for the title menu
+FAIL mission-retry-save (0.0s): error: not ready: waiting for the title menu
+FAIL mission-retry (0.0s): error: not ready: waiting for the title menu
+FAIL mission1-bay (0.0s): error: not ready: waiting for the title menu
+FAIL mission1-depot (0.0s): error: not ready: waiting for the title menu
+FAIL mission1-truck (0.0s): error: not ready: waiting for the title menu
+FAIL mission2-ambulance (0.0s): error: not ready: waiting for the title menu
+FAIL mission2-cones (0.0s): error: not ready: waiting for the title menu
+FAIL mission2-getaway (0.0s): error: not ready: waiting for the title menu
+FAIL mission2-paths (0.0s): error: not ready: waiting for the title menu
+FAIL mission2-poison (0.0s): error: not ready: waiting for the title menu
+FAIL mission2-touch-run (0.0s): error: not ready: waiting for the title menu
+FAIL mission3-summit (0.0s): error: not ready: waiting for the title menu
+FAIL mission34-lifecycle (0.0s): error: not ready: waiting for the title menu
+FAIL mission4-alert (0.0s): error: not ready: waiting for the title menu
+FAIL mission4-kessler (0.0s): error: not ready: waiting for the title menu
+FAIL mission4-paths (0.0s): error: not ready: waiting for the title menu
+FAIL mission4-tail (0.0s): error: not ready: waiting for the title menu
+FAIL monarch-garages (0.0s): error: not ready: waiting for the title menu
+FAIL monarch-one (0.0s): error: not ready: waiting for the title menu
+FAIL mounted-guns (0.0s): error: not ready: waiting for the title menu
+FAIL north-point-key (0.0s): error: not ready: waiting for the title menu
+FAIL nudge-aside (0.0s): error: not ready: waiting for the title menu
+FAIL parachute-cloud (0.0s): error: not ready: waiting for the title menu
+FAIL parachute-deploy (0.1s): error: not ready: waiting for the title menu
+FAIL parachute-liner (0.0s): error: not ready: waiting for the title menu
+FAIL parachute (0.0s): error: not ready: waiting for the title menu
+FAIL parked-bridge-efficiency (0.5s): error: not ready: waiting for the title menu
+FAIL parked-vehicle-hits (0.0s): error: not ready: waiting for the title menu
+FAIL pause-restart (0.0s): error: not ready: waiting for the title menu
+FAIL payphones-islands (0.0s): error: not ready: waiting for the title menu
+FAIL pedestrian-awareness (0.0s): error: not ready: waiting for the title menu
+FAIL player-jump (0.0s): error: not ready: waiting for the title menu
+FAIL police-circus (0.0s): error: not ready: waiting for the title menu
+FAIL police-night-sight (0.0s): error: not ready: waiting for the title menu
+FAIL police-radio (0.0s): error: not ready: waiting for the title menu
+FAIL police-search-clock (0.0s): error: not ready: waiting for the title menu
+FAIL police-witness (0.0s): error: not ready: waiting for the title menu
+FAIL render-effects (0.0s): error: not ready: waiting for the title menu
+FAIL respray-beacon (0.0s): error: not ready: waiting for the title menu
+FAIL respray-lose-police (0.0s): error: not ready: waiting for the title menu
+FAIL restart-carriers (0.0s): error: not ready: waiting for the title menu
+FAIL ride-look (0.0s): error: not ready: waiting for the title menu
+FAIL rider-falls (0.0s): error: not ready: waiting for the title menu
+FAIL road-signs (0.0s): error: not ready: waiting for the title menu
+FAIL roof-lifts (0.0s): error: not ready: waiting for the title menu
+FAIL second-run-over (0.0s): error: not ready: waiting for the title menu
+FAIL sky-meeting-talk (0.0s): error: not ready: waiting for the title menu
+FAIL sky-meeting (0.0s): error: not ready: waiting for the title menu
+FAIL soundscape (0.0s): error: not ready: waiting for the title menu
+FAIL sun-gradual (0.0s): error: not ready: waiting for the title menu
+FAIL surrender-input (0.0s): error: not ready: waiting for the title menu
+FAIL swim-rescue (0.0s): error: not ready: waiting for the title menu
+FAIL taxi-ride (0.0s): error: not ready: waiting for the title menu
+FAIL terrace-death (0.0s): error: not ready: waiting for the title menu
+FAIL traffic-pass-parked (0.0s): error: not ready: waiting for the title menu
+FAIL trail-mud (0.0s): error: not ready: waiting for the title menu
+FAIL trail-trees (0.0s): error: not ready: waiting for the title menu
+FAIL trunk-close (0.0s): error: not ready: waiting for the title menu
+FAIL vehicle-damage-shape (0.0s): error: not ready: waiting for the title menu
+FAIL view-remembered (0.0s): error: not ready: waiting for the title menu
+FAIL voices (0.0s): error: not ready: waiting for the title menu
+FAIL wet-glints (0.0s): error: not ready: waiting for the title menu
+FAIL wheelie-hint (0.0s): error: not ready: waiting for the title menu
+FAIL wheelie (0.0s): error: not ready: waiting for the title menu
+FAIL witnesses-monarch (0.0s): error: not ready: waiting for the title menu
+FAIL witnesses-venues (0.0s): error: not ready: waiting for the title menu
+FAIL world-edge-land (0.0s): error: not ready: waiting for the title menu
+FAIL world-edge (0.0s): error: not ready: waiting for the title menu
+FAIL world-reset (0.0s): error: not ready: waiting for the title menu
+FAIL wreck-limit (0.0s): error: not ready: waiting for the title menu
+FAIL demo-gating (0.0s): error: not ready: waiting for the title menu
+FAIL demo-free-roam-markers (0.0s): error: not ready: waiting for the title menu
+FAIL mission-replay-frontier (0.0s): error: not ready: waiting for the title menu
+75/214 passed, 13 skipped, 126 failed in 1108s
