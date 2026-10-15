@@ -1,5 +1,10 @@
 # Browser preview of the Codex branch
 
+**Play: https://starfox22.github.io/GTA/**. The owner enabled the required setting
+on October 15. [The first successful deployment](https://github.com/starfox22/GTA/actions/runs/38793337239)
+published `bd4ec11` and passed exact full-file verification of all 18 public files.
+[Evidence](audit/browser-preview-2026-10-15/successful-deployment.json).
+
 The owner requested one browser link instead of downloading each review ZIP.
 `.github/workflows/codex-review-pages.yml` builds and deploys **`codex-reviews`**
 with GitHub Pages whenever that branch changes. It does not push to `main`,
@@ -61,6 +66,8 @@ environment, distinguish that network limitation from the site's deployment stat
 
 The [initial run](https://github.com/starfox22/GTA/actions/runs/38792992642) stopped
 with Pages configuration `Not Found`; it did not publish a site. Local packaging,
-full-file HTTP comparison and all nine streamed tracks passed. The owner was asked
-to enable GitHub Actions as the Pages source. Future successful runs supply the
-actual browser URL; this historical failure is not proof of their later status.
+full-file HTTP comparison and all nine streamed tracks passed. The owner then
+enabled GitHub Actions as the Pages source and the next deployment succeeded,
+as linked above. The execution environment blocks direct `github.io` requests,
+so public byte verification ran on GitHub's runner. Its success is distinct
+from the earlier local browser/packaging checks.

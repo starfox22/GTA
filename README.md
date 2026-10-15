@@ -8,9 +8,9 @@ Version 0.9.0, the public demo (see `docs/CHANGELOG.md`).
 
 - **In the browser**: open the published build,
   https://claude.ai/artifact/NtDPAmpmNsgU8LPW4hH13B, and press **ENTER THE CITY**.
-- **Codex browser review**: [GitHub Pages setup and deployment](docs/browser-preview.md)
-  provides one automatically updated preview of `codex-reviews`, separate from the
-  publication above. Initial repository setup may be required.
+- **Codex browser review**: play at **https://starfox22.github.io/GTA/**. Every push
+  to `codex-reviews` updates this preview automatically, separate from the
+  publication above. [Hosting and verification](docs/browser-preview.md).
 - **Downloaded**: get `DeadEndCity.zip` from this repository's **Releases** page ("Latest
   build" follows `main`; commit-specific Codex reviews and tagged versions are kept), unzip it and double-click `DeadEndCity/index.html`
   (Chrome, Edge, Firefox or Safari). Keep the `media` folder beside it: the car radio
