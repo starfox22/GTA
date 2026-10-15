@@ -5,6 +5,7 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | Doc | Read it for |
 | --- | --- |
 | HANDOFF.md | START HERE for a new session: project state, the owner's preferences, the lead/helper workflow, publish and `main` steps, open items |
+| browser-preview.md | Permanent browser play from codex-reviews: GitHub Pages setup, automatic deployment, public file verification and hosting limits |
 | FILEMAP.md | Which file holds what (generated; grep it first) |
 | BACKLOG.md | Known issues and loose ends per feature (check before polishing an area) |
 | areas/core-and-contracts.md | The closure and include model, units and scale, entity contracts, carriers, saves, performance rules |

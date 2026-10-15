@@ -1,0 +1,49 @@
+# A permanent browser preview of the review branch; no generated files enter Git.
+# One-time repository setup: Settings > Pages > Source: GitHub Actions.
+name: Play Codex review
+
+on:
+  push:
+    branches: [codex-reviews]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: codex-review-pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/codex-reviews'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: codex-review-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build the browser game
+        run: python3 tools/build.py --split-media dist/pages
+
+      - name: Check Pages configuration
+        uses: actions/configure-pages@v5
+
+      - name: Upload the browser game
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/pages
+
+      - name: Deploy the browser game
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Verify the public game
+        env:
+          PREVIEW_URL: ${{ steps.deployment.outputs.page_url }}
+        run: python3 tools/verify-pages.py dist/pages "$PREVIEW_URL"

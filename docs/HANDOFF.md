@@ -3,6 +3,18 @@
 Written for the next AI session (or human) picking this work up. Read `/CLAUDE.md` first (commands,
 rules, workflow), then this page, then only the area doc your task needs (`docs/README.md`).
 
+## October 15: permanent browser preview
+
+The owner wants browser play without downloading each ZIP. The
+[browser-preview guide](browser-preview.md) documents the dedicated
+`codex-review-pages.yml` workflow: every push to **`codex-reviews`** builds the split
+game, deploys it with GitHub Pages and compares every public file's bytes with the
+artifact. It uses a separate `codex-review-pages` environment, does not write to
+main or commit builds, and keeps ZIP publication intact. Initial Pages enablement
+may require the owner to select **Settings → Pages → Source: GitHub Actions**;
+the workflow token cannot enable it. Use the deployment's actual URL and status,
+not an assumed link. The claude.ai/chatgpt.site publications remain separate.
+
 ## October 15: source fidelity, real door openings and Chevette replacement
 
 Continue on **`codex-reviews`**, the permanent GitHub branch. The owner renamed it

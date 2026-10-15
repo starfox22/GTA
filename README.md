@@ -8,11 +8,14 @@ Version 0.9.0, the public demo (see `docs/CHANGELOG.md`).
 
 - **In the browser**: open the published build,
   https://claude.ai/artifact/NtDPAmpmNsgU8LPW4hH13B, and press **ENTER THE CITY**.
+- **Codex browser review**: [GitHub Pages setup and deployment](docs/browser-preview.md)
+  provides one automatically updated preview of `codex-reviews`, separate from the
+  publication above. Initial repository setup may be required.
 - **Downloaded**: get `DeadEndCity.zip` from this repository's **Releases** page ("Latest
-  build" is rebuilt on every push; tagged versions are kept), unzip it and double-click `DeadEndCity/index.html`
+  build" follows `main`; commit-specific Codex reviews and tagged versions are kept), unzip it and double-click `DeadEndCity/index.html`
   (Chrome, Edge, Firefox or Safari). Keep the `media` folder beside it: the car radio
-  streams its music from there. Everything else is inside `index.html`, and nothing is
-  fetched from the network.
+  streams its music from there, and media packs hold the graphics and sound effects.
+  The downloaded build needs no network connection.
 - **From source**: `python3 tools/build.py` writes `dead-end-city.html` (one file with
   everything embedded, music included); `python3 tools/build.py --zip dist/DeadEndCity.zip`
   makes the download.

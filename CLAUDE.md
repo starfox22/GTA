@@ -18,6 +18,7 @@ sh tools/check.sh [tag]                  # syntax gate only (dist/check/<tag>.{h
 python3 tools/build.py                   # dead-end-city.html (local, git-ignored: never commit it)
 python3 tools/build.py --out dist/game.html            # scratch build
 python3 tools/build.py --split-media dist/publish      # dist/publish/index.html + media/ (*.mp3 + pack-*.js): the artifact
+python3 tools/verify-pages.py dist/pages https://example.github.io/game/  # verify every publicly served Pages file against the local artifact
 python3 tools/build.py --zip dist/DeadEndCity.zip      # DeadEndCity/{index.html,media/,README.txt}; CI uploads branch artifacts, updates "latest" only from main, and publishes versioned releases for tags v*. The October 11 legacy review branch and permanent `codex-reviews` branch also publish commit-specific prereleases.
 python3 tools/filemap.py                 # regenerate docs/FILEMAP.md after adding/removing/renaming files
 node tools/smoke.mjs dist/game.html dist/smoke         # boot, FPS, walk, drive, map, both cameras: 6 screenshots
