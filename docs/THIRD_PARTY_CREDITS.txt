@@ -993,3 +993,36 @@ UV repetition, transparency, cabin, emission and real door/wheel pivots retained
 paint is neutralized for game resprays. Five collapsed trim zero normals recover
 from nearby same-material authored vertices, recorded in the conversion receipt.
 Base Chevette Z06 only; the separate carbon-aero Chevette SE remains unchanged.
+
+Downloaded HELLFIRE CUSTOM hotrod — Coupe '33 (2026-10-15)
+--------------------------------------------------------
+This work is based on "Coupe '33 Hot Rod #3 - Low Poly Model"
+(https://sketchfab.com/3d-models/coupe-33-hot-rod-3-low-poly-model-cb5b519024c7472895ef10a8663fb533)
+by Daniel Zhabotinsky (https://sketchfab.com/DanielZhabotinsky), licensed under
+CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/).
+Obtained from the matching exported source and asset-specific license.txt in
+abd0175149-droid/new-mafia, commit f1eab6db49e1eaf69d5fb61c4c09b529ada65595,
+frontend/public/3d/sketchfab/coupe33/. Source URLs, file hashes and clean rebuild
+instructions are retained in tools/hotrod_vehicle_source.json and
+docs/audit/police-aviation-review-2026-10-15/hotrod/README.md.
+Adapted for Dead End City: uniformly normalized and partitioned into animation
+and damage parts; PBR maps atlas-packed; paint neutralized for resprays; reduced
+far LOD added. Original close topology, authored split normals, cabin and closed
+stock-hood identity retained. The original source includes no exposed blower.
+
+AIRPORT JETS (October 15 review)
+
+This work is based on "1990 Cessna Citation, Texture Detailed, Exterior"
+(https://sketchfab.com/3d-models/1990-cessna-citation-texture-detailed-exterior-a78839624fe64900a8352cb23462350a)
+by BlenderCommunityHead (https://sketchfab.com/aboodgoudagad), licensed under
+CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/).
+Modified for Dead End City: uniform frame/size fit, source-triangle partition
+into estimated control/gear pivots, distant geometry reduction and game lights.
+The mirrored derivative already reduced geometry and the image to 256px.
+
+This work is based on "Southwest Airlines Boeing 737"
+(https://sketchfab.com/3d-models/southwest-airlines-boeing-737-73d0cd0c03594c5d9c53235d74b429bf)
+by A Random Modeler (https://sketchfab.com/danielskom111), licensed under
+CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/).
+Modified for Dead End City: uniform frame/size fit, fictional Oceanview
+material palette and branding-face recolor, material merging and distant LOD.

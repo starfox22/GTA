@@ -1,6 +1,6 @@
 # Audio and radio
 
-audio.js (Web Audio lifecycle, the mix, samples, procedural sounds), engine-audio.js,
+audio.js (Web Audio lifecycle, the mix, samples, procedural sounds), engine-audio.js, aircraft-audio.js,
 crash-audio.js, weather-audio.js, water-audio.js, ambience.js, sealife-audio.js,
 sports-audio.js, beachclub-audio.js, themepark-sound.js, car-radio.js, settings.js (volumes).
 The free-roam soundscape (the ear probe and the room, ambience beds, footsteps, horns,
@@ -46,6 +46,9 @@ doors, tyre ground) is in audio-soundscape.md.
   simulated (idle, clutch, automatic gearbox, load) and layers are pitched and cross-faded by
   rpm; the nearest four traffic vehicles get a voice each with Doppler. Hypercars add
   synthesised turbo and motor sounds (hypercars.js `updateHypercarVoice`).
+- Fixed-wing engines use explicit piston/propeller/turbine profiles for each airframe,
+  actual spooled power, runway roll and at most four positioned voices. Contracts and
+  offline listening fixtures: [Aircraft audio](audio-aircraft.md).
 - Crashes (crash-audio.js): one positioned recorded crash per impact, picked by closing speed
   and material, one per pair per 0.7 s, at `CRASH_LEVEL` under gunfire and engines.
 - Rain (weather-audio.js): three recorded beds cross-faded by intensity, muffled under cover

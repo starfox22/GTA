@@ -1,0 +1,24 @@
+{
+  "inspectionOnly": true,
+  "inGame": false,
+  "model": "airliner",
+  "mode": "near",
+  "pose": "neutral",
+  "packSha256": "a8f911de36c3d7a8a97b4b0a0ee0ef855fed15ee9415d0f505edbdd7967b092b",
+  "boundsBlender": [
+    [
+      -19.615623474121094,
+      -17.835739135742188,
+      -3.14141325361561e-05
+    ],
+    [
+      19.615623474121094,
+      17.835739135742188,
+      12.693092346191406
+    ]
+  ],
+  "render": "Blender CPU Cycles, 16 samples; original source normals, coordinate/size fit only for source mode",
+  "originalPngSha256": "1b2a3518d848d2d070d10d2d9f1226af62ea4b9b96f1fca9749216a67e53778c",
+  "reviewJpegSha256": "be89f3463d7ac0f241f44d077d1f1d003cc3e4aad772a58590440c1170e0b3d8",
+  "reviewJpeg": "Lossy JPEG encoding only; native1100x780 render size unchanged"
+}

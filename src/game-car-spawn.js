@@ -146,6 +146,7 @@
           stolen: undefined,
           abandonedFlight: undefined,
           airframe: undefined,
+          parkingStand: undefined,
           roofSite: undefined,
           hop: undefined,
           scrape: undefined,

@@ -1,0 +1,2414 @@
+{
+  "version": 1,
+  "atlas": [
+    4096,
+    4096
+  ],
+  "normalScale": 32767,
+  "finish": "roughnessMetalness",
+  "models": {
+    "coupe33_zhab": {
+      "type": "coupe33_zhab",
+      "kind": "car",
+      "title": "Coupe '33 Hot Rod #3 - Low Poly Model",
+      "author": "Daniel Zhabotinsky",
+      "dims": [
+        4.5,
+        1.6242246711168973,
+        1.8852344737802043
+      ],
+      "x0": -2.25,
+      "x1": 2.25,
+      "wheels": [
+        {
+          "x": 1.6655849257668647,
+          "y": 0.3064463457424072,
+          "z": -0.7917314753217379,
+          "r": 0.3064463492987359,
+          "width": 0.2484847468515495,
+          "side": -1,
+          "front": true,
+          "axle": [
+            1.5099579687739104e-07,
+            -6.661338147750914e-16,
+            0.9999999999999887
+          ],
+          "sourceNode": "HOTROD_33_WheelBlades_FL"
+        },
+        {
+          "x": 1.6655849257668647,
+          "y": 0.30644647120308394,
+          "z": 0.7920595215734125,
+          "r": 0.3064463493553065,
+          "width": 0.24848474685154961,
+          "side": 1,
+          "front": true,
+          "axle": [
+            1.5099579687736706e-07,
+            -5.642599567590169e-07,
+            0.9999999999998295
+          ],
+          "sourceNode": "HOTROD_33_WheelBlades_FR"
+        },
+        {
+          "x": -1.3976970906002422,
+          "y": 0.35280230946608365,
+          "z": -0.780683408099957,
+          "r": 0.3509195991693181,
+          "width": 0.31859393371761224,
+          "side": -1,
+          "front": false,
+          "axle": [
+            1.5099579687739104e-07,
+            -6.661338147750914e-16,
+            0.9999999999999887
+          ],
+          "sourceNode": "HOTROD_33_WheelBlades_RL"
+        },
+        {
+          "x": -1.3976970906002422,
+          "y": 0.3528024976570989,
+          "z": 0.7813483162695339,
+          "r": 0.3509195991168634,
+          "width": 0.31859393371761213,
+          "side": 1,
+          "front": false,
+          "axle": [
+            1.5099579687736704e-07,
+            -5.642599253397051e-07,
+            0.9999999999998294
+          ],
+          "sourceNode": "HOTROD_33_WheelBlades_RR"
+        }
+      ],
+      "lamps": {
+        "headLeft": {
+          "x": 1.9001555808908999,
+          "y": 0.733868714384934,
+          "z": -0.3872062980786134,
+          "size": 0.08447586226781062
+        },
+        "headRight": {
+          "x": 1.9001556978787868,
+          "y": 0.7338687099098217,
+          "z": 0.38905609653151163,
+          "size": 0.08447586226781052
+        },
+        "tailLeft": {
+          "x": -2.108154810536641,
+          "y": 0.6930391402968923,
+          "z": -0.42257316856748833,
+          "size": 0.03194001754086619
+        },
+        "tailRight": {
+          "x": -2.1081547069127113,
+          "y": 0.6930391440422284,
+          "z": 0.42248831588258867,
+          "size": 0.03194001754086619
+        }
+      },
+      "glass": {
+        "base": 1.1244690725059128,
+        "roof": 1.4364089358074617,
+        "xf": 0.49272966829216125,
+        "rf": 0.4348151313925026,
+        "xb": -0.8733770281247485,
+        "rb": -0.8086150145014839,
+        "halfBase": 0.6840862855185103,
+        "halfTop": 0.5788422415925857,
+        "crown": 0.18781573530943563
+      },
+      "hinge": [
+        0.6356740253125849,
+        1.1338906465201453
+      ],
+      "sill": 0.3129871038979331,
+      "profile": [
+        0.5467176497692775,
+        0.631105651479787,
+        0.7349205434747896,
+        0.7902344631491458,
+        0.9586586571152591,
+        1.065699805685984,
+        1.1546332087495592,
+        1.2058662640666642,
+        1.2304919511455144,
+        1.2462243772922192,
+        1.2497897492266576,
+        1.3037191605824414,
+        1.5169858878140448,
+        1.6052225921497771,
+        1.6226283097528544,
+        1.6242246711168973,
+        1.6242246711168973,
+        1.5119306476258807,
+        1.4313089697729866,
+        1.591748696412436,
+        1.591748696412436,
+        1.5693988612971121,
+        1.5693988612971121,
+        1.5591099211770856,
+        1.5279956204434888,
+        1.4194980491121143,
+        1.136803068990667,
+        1.136803068990667,
+        1.1195242314109188,
+        1.1195242314109188,
+        0.9037552246422375,
+        0.8983349799018354,
+        1.0835107523162242,
+        1.0835107523162242,
+        0.9681601444839186,
+        1.0514869539834002,
+        1.0514869539834002,
+        1.034396540158236,
+        1.007179053667238,
+        0.5683238493114064,
+        0.4296349070382856
+      ],
+      "section": [
+        [
+          0.43470807158604624,
+          0.5467176497692775,
+          0.8731282541404357
+        ],
+        [
+          0.42772304331933797,
+          0.631105651479787,
+          0.9072193153012539
+        ],
+        [
+          0.412122974676496,
+          0.7349205434747896,
+          0.9357891152034881
+        ],
+        [
+          0.40458137755237844,
+          0.7902344631491458,
+          0.9357891152034881
+        ],
+        [
+          0.40458137755237844,
+          0.9586586571152591,
+          0.9357589539304937
+        ],
+        [
+          0.44007785046985964,
+          1.065699805685984,
+          0.9355973713905655
+        ],
+        [
+          0.4499831720994969,
+          1.1546332087495592,
+          0.9355884200760981
+        ],
+        [
+          0.43987994782439477,
+          1.2058662640666642,
+          0.9356236615594177
+        ],
+        [
+          0.4233826334768024,
+          1.2304919511455144,
+          0.9356439738303204
+        ],
+        [
+          0.4233826334768024,
+          1.2462243772922192,
+          0.9356439738303204
+        ],
+        [
+          0.26447315016893347,
+          1.2497897492266576,
+          0.9359628960051412
+        ],
+        [
+          0.2502450276056581,
+          1.3037191605824414,
+          0.9360066859469872
+        ],
+        [
+          0.2445041223685739,
+          1.5169858878140448,
+          0.9369789005759391
+        ],
+        [
+          0.2445041223685739,
+          1.6052225921497771,
+          0.9369789005759391
+        ],
+        [
+          0.27627630641835194,
+          1.6226283097528544,
+          0.7751963556019863
+        ],
+        [
+          0.27627630641835194,
+          1.6242246711168973,
+          0.775196795084289
+        ],
+        [
+          0.24580228117079303,
+          1.6242246711168973,
+          0.775196795084289
+        ],
+        [
+          0.24580228117079303,
+          1.5119306476258807,
+          0.7153053959118949
+        ],
+        [
+          0.2582944389359056,
+          1.4313089697729866,
+          0.7098411929306475
+        ],
+        [
+          0.2582944389359056,
+          1.591748696412436,
+          0.712743931345116
+        ],
+        [
+          0.5970729847186047,
+          1.591748696412436,
+          0.712743931345116
+        ],
+        [
+          0.24490043019244398,
+          1.5693988612971121,
+          0.6771160793780409
+        ],
+        [
+          0.24455585244513015,
+          1.5693988612971121,
+          0.6771160793780409
+        ],
+        [
+          0.18509851186566287,
+          1.5591099211770856,
+          0.9422683273066912
+        ],
+        [
+          0.18509851186566287,
+          1.5279956204434888,
+          0.9422683273066912
+        ],
+        [
+          0.20943881611377715,
+          1.4194980491121143,
+          0.5846450997945487
+        ],
+        [
+          0.1845439311349341,
+          1.136803068990667,
+          0.9422010585679436
+        ],
+        [
+          0.1845439311349341,
+          1.136803068990667,
+          0.9426172368901021
+        ],
+        [
+          0.1904614177844146,
+          1.1195242314109188,
+          0.9426172368901021
+        ],
+        [
+          0.20062990775352232,
+          1.1195242314109188,
+          0.9425241155686231
+        ],
+        [
+          0.20062990775352232,
+          0.9037552246422375,
+          0.9425241155686231
+        ],
+        [
+          0.21994919351929137,
+          0.8983349799018354,
+          0.942416797022292
+        ],
+        [
+          0.26727983404303063,
+          1.0835107523162242,
+          0.9420433073012642
+        ],
+        [
+          0.28771585932273247,
+          1.0835107523162242,
+          0.9421737749699263
+        ],
+        [
+          0.28771585932273247,
+          0.9681601444839186,
+          0.9424127513860987
+        ],
+        [
+          0.37152029283637095,
+          1.0514869539834002,
+          0.9426172368901021
+        ],
+        [
+          0.2818204495221402,
+          1.0514869539834002,
+          0.9426172368901021
+        ],
+        [
+          0.11481969279263993,
+          1.034396540158236,
+          0.9422430999789284
+        ],
+        [
+          0.09664316026978642,
+          1.007179053667238,
+          0.9421838744245972
+        ],
+        [
+          0.09664316026978642,
+          0.5683238493114064,
+          0.8933157963056899
+        ],
+        [
+          0.19357032423987233,
+          0.4296349070382856,
+          0.6948358604292113
+        ]
+      ],
+      "hasInterior": true,
+      "roleParts": {
+        "shell": [
+          "shell"
+        ],
+        "panels": [
+          "panels"
+        ],
+        "hood": [
+          "hood"
+        ],
+        "trim": [
+          "trim"
+        ],
+        "cabin": [
+          "cabin"
+        ],
+        "glass": [
+          "glass"
+        ],
+        "opticalGlass": [
+          "opticalGlass"
+        ],
+        "shellFar": [
+          "shellFar"
+        ],
+        "panelsFar": [
+          "panelsFar"
+        ],
+        "hoodFar": [
+          "hoodFar"
+        ],
+        "trimFar": [
+          "trimFar"
+        ],
+        "cabinFar": [
+          "cabinFar"
+        ],
+        "glassFar": [
+          "glassFar"
+        ],
+        "opticalGlassFar": [
+          "opticalGlassFar"
+        ]
+      },
+      "paintTexture": true,
+      "paintColor": "#ffffff",
+      "normalScale": 32767,
+      "sourceTriangles": 20856,
+      "sourceUniformScale": 1.0524404392592466,
+      "sourceShift": [
+        8.683124108621598e-08,
+        -0.0376082500989538,
+        0.0002212961692218962
+      ],
+      "hasEmissiveAtlas": false,
+      "lampVertexColorsBaked": false,
+      "source": "https://sketchfab.com/3d-models/coupe-33-hot-rod-3-low-poly-model-cb5b519024c7472895ef10a8663fb533",
+      "license": "CC BY 4.0",
+      "nativeDoors": false,
+      "doorSpan": [
+        -0.46833590408565523,
+        0.3925603752284085
+      ],
+      "sourceNodePivots": "Exact wheel parent transforms; stock hood and native cabin retained. Source has no separate door objects or calipers.",
+      "paintUv": [
+        0.25244140625,
+        0.00146484375
+      ],
+      "quant": [
+        -2.25,
+        0.0,
+        -0.9426172368901021,
+        4.5,
+        1.6242246711168973,
+        1.8852344737802043
+      ],
+      "parts": {
+        "glass": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 96,
+          "triangles": 88,
+          "panes": [
+            20,
+            26,
+            20,
+            22,
+            0
+          ]
+        },
+        "glassFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 29,
+          "triangles": 21,
+          "panes": [
+            5,
+            6,
+            5,
+            5,
+            0
+          ]
+        },
+        "shell": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 3976,
+          "triangles": 4620
+        },
+        "shellFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 871,
+          "triangles": 1154
+        },
+        "panels": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 1130,
+          "triangles": 1468
+        },
+        "panelsFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 305,
+          "triangles": 367
+        },
+        "trim": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 7693,
+          "triangles": 7857
+        },
+        "trimFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 2165,
+          "triangles": 1963
+        },
+        "cabin": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 1818,
+          "triangles": 1951
+        },
+        "cabinFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 539,
+          "triangles": 485
+        },
+        "tailRight": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 11,
+          "triangles": 10
+        },
+        "tailRightFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 4,
+          "triangles": 2
+        },
+        "tailLeft": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 11,
+          "triangles": 10
+        },
+        "tailLeftFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 4,
+          "triangles": 2
+        },
+        "hood": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 624,
+          "triangles": 596
+        },
+        "hoodFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 230,
+          "triangles": 148
+        },
+        "opticalGlass": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 44,
+          "triangles": 56
+        },
+        "opticalGlassFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 18,
+          "triangles": 14
+        },
+        "headLeft": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 15,
+          "triangles": 14
+        },
+        "headLeftFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 5,
+          "triangles": 3
+        },
+        "headRight": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 15,
+          "triangles": 14
+        },
+        "headRightFar": {
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "vertices": 5,
+          "triangles": 3
+        },
+        "wheel0.rim": {
+          "origin": [
+            1.6655849257668647,
+            0.3064463457424072,
+            -0.7917314753217379
+          ],
+          "vertices": 575,
+          "triangles": 571
+        },
+        "wheel0.rimFar": {
+          "origin": [
+            1.6655849257668647,
+            0.3064463457424072,
+            -0.7917314753217379
+          ],
+          "vertices": 243,
+          "triangles": 142
+        },
+        "wheel0.tyre": {
+          "origin": [
+            1.6655849257668647,
+            0.3064463457424072,
+            -0.7917314753217379
+          ],
+          "vertices": 484,
+          "triangles": 472
+        },
+        "wheel0.tyreFar": {
+          "origin": [
+            1.6655849257668647,
+            0.3064463457424072,
+            -0.7917314753217379
+          ],
+          "vertices": 215,
+          "triangles": 118
+        },
+        "wheel2.rim": {
+          "origin": [
+            -1.3976970906002422,
+            0.35280230946608365,
+            -0.780683408099957
+          ],
+          "vertices": 575,
+          "triangles": 571
+        },
+        "wheel2.rimFar": {
+          "origin": [
+            -1.3976970906002422,
+            0.35280230946608365,
+            -0.780683408099957
+          ],
+          "vertices": 249,
+          "triangles": 142
+        },
+        "wheel2.tyre": {
+          "origin": [
+            -1.3976970906002422,
+            0.35280230946608365,
+            -0.780683408099957
+          ],
+          "vertices": 484,
+          "triangles": 472
+        },
+        "wheel2.tyreFar": {
+          "origin": [
+            -1.3976970906002422,
+            0.35280230946608365,
+            -0.780683408099957
+          ],
+          "vertices": 215,
+          "triangles": 118
+        },
+        "wheel3.rim": {
+          "origin": [
+            -1.3976970906002422,
+            0.3528024976570989,
+            0.7813483162695339
+          ],
+          "vertices": 575,
+          "triangles": 571
+        },
+        "wheel3.rimFar": {
+          "origin": [
+            -1.3976970906002422,
+            0.3528024976570989,
+            0.7813483162695339
+          ],
+          "vertices": 250,
+          "triangles": 142
+        },
+        "wheel3.tyre": {
+          "origin": [
+            -1.3976970906002422,
+            0.3528024976570989,
+            0.7813483162695339
+          ],
+          "vertices": 484,
+          "triangles": 472
+        },
+        "wheel3.tyreFar": {
+          "origin": [
+            -1.3976970906002422,
+            0.3528024976570989,
+            0.7813483162695339
+          ],
+          "vertices": 213,
+          "triangles": 118
+        },
+        "wheel1.rim": {
+          "origin": [
+            1.6655849257668647,
+            0.30644647120308394,
+            0.7920595215734125
+          ],
+          "vertices": 575,
+          "triangles": 571
+        },
+        "wheel1.rimFar": {
+          "origin": [
+            1.6655849257668647,
+            0.30644647120308394,
+            0.7920595215734125
+          ],
+          "vertices": 242,
+          "triangles": 142
+        },
+        "wheel1.tyre": {
+          "origin": [
+            1.6655849257668647,
+            0.30644647120308394,
+            0.7920595215734125
+          ],
+          "vertices": 484,
+          "triangles": 472
+        },
+        "wheel1.tyreFar": {
+          "origin": [
+            1.6655849257668647,
+            0.30644647120308394,
+            0.7920595215734125
+          ],
+          "vertices": 215,
+          "triangles": 118
+        }
+      },
+      "lodParts": {
+        "glass": "glassFar",
+        "shell": "shellFar",
+        "panels": "panelsFar",
+        "trim": "trimFar",
+        "cabin": "cabinFar",
+        "tailRight": "tailRightFar",
+        "tailLeft": "tailLeftFar",
+        "hood": "hoodFar",
+        "opticalGlass": "opticalGlassFar",
+        "headLeft": "headLeftFar",
+        "headRight": "headRightFar",
+        "wheel0.rim": "wheel0.rimFar",
+        "wheel0.tyre": "wheel0.tyreFar",
+        "wheel2.rim": "wheel2.rimFar",
+        "wheel2.tyre": "wheel2.tyreFar",
+        "wheel3.rim": "wheel3.rimFar",
+        "wheel3.tyre": "wheel3.tyreFar",
+        "wheel1.rim": "wheel1.rimFar",
+        "wheel1.tyre": "wheel1.tyreFar"
+      },
+      "triangles": 20856,
+      "farTriangles": 5202,
+      "rolePanes": {
+        "glass": [
+          20,
+          26,
+          20,
+          22,
+          0
+        ],
+        "glassFar": [
+          5,
+          6,
+          5,
+          5,
+          0
+        ]
+      }
+    }
+  },
+  "arrays": {
+    "coupe33_zhab.glass.p": [
+      "i2",
+      0,
+      288
+    ],
+    "coupe33_zhab.glass.n": [
+      "i2",
+      576,
+      288
+    ],
+    "coupe33_zhab.glass.uv": [
+      "u2",
+      1152,
+      192
+    ],
+    "coupe33_zhab.glass.a": [
+      "f4",
+      1536,
+      192
+    ],
+    "coupe33_zhab.glass.t": [
+      "u2",
+      2304,
+      384
+    ],
+    "coupe33_zhab.glass.f": [
+      "u1",
+      3072,
+      192
+    ],
+    "coupe33_zhab.glass.i": [
+      "u2",
+      3264,
+      264
+    ],
+    "coupe33_zhab.glassFar.p": [
+      "i2",
+      3792,
+      87
+    ],
+    "coupe33_zhab.glassFar.n": [
+      "i2",
+      3968,
+      87
+    ],
+    "coupe33_zhab.glassFar.uv": [
+      "u2",
+      4144,
+      58
+    ],
+    "coupe33_zhab.glassFar.a": [
+      "f4",
+      4260,
+      58
+    ],
+    "coupe33_zhab.glassFar.t": [
+      "u2",
+      4492,
+      116
+    ],
+    "coupe33_zhab.glassFar.f": [
+      "u1",
+      4724,
+      58
+    ],
+    "coupe33_zhab.glassFar.i": [
+      "u2",
+      4784,
+      63
+    ],
+    "coupe33_zhab.shell.p": [
+      "i2",
+      4912,
+      11928
+    ],
+    "coupe33_zhab.shell.n": [
+      "i2",
+      28768,
+      11928
+    ],
+    "coupe33_zhab.shell.uv": [
+      "u2",
+      52624,
+      7952
+    ],
+    "coupe33_zhab.shell.a": [
+      "f4",
+      68528,
+      7952
+    ],
+    "coupe33_zhab.shell.t": [
+      "u2",
+      100336,
+      15904
+    ],
+    "coupe33_zhab.shell.f": [
+      "u1",
+      132144,
+      7952
+    ],
+    "coupe33_zhab.shell.i": [
+      "u2",
+      140096,
+      13860
+    ],
+    "coupe33_zhab.shellFar.p": [
+      "i2",
+      167816,
+      2613
+    ],
+    "coupe33_zhab.shellFar.n": [
+      "i2",
+      173044,
+      2613
+    ],
+    "coupe33_zhab.shellFar.uv": [
+      "u2",
+      178272,
+      1742
+    ],
+    "coupe33_zhab.shellFar.a": [
+      "f4",
+      181756,
+      1742
+    ],
+    "coupe33_zhab.shellFar.t": [
+      "u2",
+      188724,
+      3484
+    ],
+    "coupe33_zhab.shellFar.f": [
+      "u1",
+      195692,
+      1742
+    ],
+    "coupe33_zhab.shellFar.i": [
+      "u2",
+      197436,
+      3462
+    ],
+    "coupe33_zhab.panels.p": [
+      "i2",
+      204360,
+      3390
+    ],
+    "coupe33_zhab.panels.n": [
+      "i2",
+      211140,
+      3390
+    ],
+    "coupe33_zhab.panels.uv": [
+      "u2",
+      217920,
+      2260
+    ],
+    "coupe33_zhab.panels.a": [
+      "f4",
+      222440,
+      2260
+    ],
+    "coupe33_zhab.panels.t": [
+      "u2",
+      231480,
+      4520
+    ],
+    "coupe33_zhab.panels.f": [
+      "u1",
+      240520,
+      2260
+    ],
+    "coupe33_zhab.panels.i": [
+      "u2",
+      242780,
+      4404
+    ],
+    "coupe33_zhab.panelsFar.p": [
+      "i2",
+      251588,
+      915
+    ],
+    "coupe33_zhab.panelsFar.n": [
+      "i2",
+      253420,
+      915
+    ],
+    "coupe33_zhab.panelsFar.uv": [
+      "u2",
+      255252,
+      610
+    ],
+    "coupe33_zhab.panelsFar.a": [
+      "f4",
+      256472,
+      610
+    ],
+    "coupe33_zhab.panelsFar.t": [
+      "u2",
+      258912,
+      1220
+    ],
+    "coupe33_zhab.panelsFar.f": [
+      "u1",
+      261352,
+      610
+    ],
+    "coupe33_zhab.panelsFar.i": [
+      "u2",
+      261964,
+      1101
+    ],
+    "coupe33_zhab.trim.p": [
+      "i2",
+      264168,
+      23079
+    ],
+    "coupe33_zhab.trim.n": [
+      "i2",
+      310328,
+      23079
+    ],
+    "coupe33_zhab.trim.uv": [
+      "u2",
+      356488,
+      15386
+    ],
+    "coupe33_zhab.trim.a": [
+      "f4",
+      387260,
+      15386
+    ],
+    "coupe33_zhab.trim.t": [
+      "u2",
+      448804,
+      30772
+    ],
+    "coupe33_zhab.trim.f": [
+      "u1",
+      510348,
+      15386
+    ],
+    "coupe33_zhab.trim.i": [
+      "u2",
+      525736,
+      23571
+    ],
+    "coupe33_zhab.trimFar.p": [
+      "i2",
+      572880,
+      6495
+    ],
+    "coupe33_zhab.trimFar.n": [
+      "i2",
+      585872,
+      6495
+    ],
+    "coupe33_zhab.trimFar.uv": [
+      "u2",
+      598864,
+      4330
+    ],
+    "coupe33_zhab.trimFar.a": [
+      "f4",
+      607524,
+      4330
+    ],
+    "coupe33_zhab.trimFar.t": [
+      "u2",
+      624844,
+      8660
+    ],
+    "coupe33_zhab.trimFar.f": [
+      "u1",
+      642164,
+      4330
+    ],
+    "coupe33_zhab.trimFar.i": [
+      "u2",
+      646496,
+      5889
+    ],
+    "coupe33_zhab.cabin.p": [
+      "i2",
+      658276,
+      5454
+    ],
+    "coupe33_zhab.cabin.n": [
+      "i2",
+      669184,
+      5454
+    ],
+    "coupe33_zhab.cabin.uv": [
+      "u2",
+      680092,
+      3636
+    ],
+    "coupe33_zhab.cabin.a": [
+      "f4",
+      687364,
+      3636
+    ],
+    "coupe33_zhab.cabin.t": [
+      "u2",
+      701908,
+      7272
+    ],
+    "coupe33_zhab.cabin.f": [
+      "u1",
+      716452,
+      3636
+    ],
+    "coupe33_zhab.cabin.i": [
+      "u2",
+      720088,
+      5853
+    ],
+    "coupe33_zhab.cabinFar.p": [
+      "i2",
+      731796,
+      1617
+    ],
+    "coupe33_zhab.cabinFar.n": [
+      "i2",
+      735032,
+      1617
+    ],
+    "coupe33_zhab.cabinFar.uv": [
+      "u2",
+      738268,
+      1078
+    ],
+    "coupe33_zhab.cabinFar.a": [
+      "f4",
+      740424,
+      1078
+    ],
+    "coupe33_zhab.cabinFar.t": [
+      "u2",
+      744736,
+      2156
+    ],
+    "coupe33_zhab.cabinFar.f": [
+      "u1",
+      749048,
+      1078
+    ],
+    "coupe33_zhab.cabinFar.i": [
+      "u2",
+      750128,
+      1455
+    ],
+    "coupe33_zhab.tailRight.p": [
+      "i2",
+      753040,
+      33
+    ],
+    "coupe33_zhab.tailRight.n": [
+      "i2",
+      753108,
+      33
+    ],
+    "coupe33_zhab.tailRight.uv": [
+      "u2",
+      753176,
+      22
+    ],
+    "coupe33_zhab.tailRight.a": [
+      "f4",
+      753220,
+      22
+    ],
+    "coupe33_zhab.tailRight.t": [
+      "u2",
+      753308,
+      44
+    ],
+    "coupe33_zhab.tailRight.f": [
+      "u1",
+      753396,
+      22
+    ],
+    "coupe33_zhab.tailRight.i": [
+      "u2",
+      753420,
+      30
+    ],
+    "coupe33_zhab.tailRight.c": [
+      "u1",
+      753480,
+      33
+    ],
+    "coupe33_zhab.tailRightFar.p": [
+      "i2",
+      753516,
+      12
+    ],
+    "coupe33_zhab.tailRightFar.n": [
+      "i2",
+      753540,
+      12
+    ],
+    "coupe33_zhab.tailRightFar.uv": [
+      "u2",
+      753564,
+      8
+    ],
+    "coupe33_zhab.tailRightFar.a": [
+      "f4",
+      753580,
+      8
+    ],
+    "coupe33_zhab.tailRightFar.t": [
+      "u2",
+      753612,
+      16
+    ],
+    "coupe33_zhab.tailRightFar.f": [
+      "u1",
+      753644,
+      8
+    ],
+    "coupe33_zhab.tailRightFar.i": [
+      "u2",
+      753652,
+      6
+    ],
+    "coupe33_zhab.tailRightFar.c": [
+      "u1",
+      753664,
+      12
+    ],
+    "coupe33_zhab.tailLeft.p": [
+      "i2",
+      753676,
+      33
+    ],
+    "coupe33_zhab.tailLeft.n": [
+      "i2",
+      753744,
+      33
+    ],
+    "coupe33_zhab.tailLeft.uv": [
+      "u2",
+      753812,
+      22
+    ],
+    "coupe33_zhab.tailLeft.a": [
+      "f4",
+      753856,
+      22
+    ],
+    "coupe33_zhab.tailLeft.t": [
+      "u2",
+      753944,
+      44
+    ],
+    "coupe33_zhab.tailLeft.f": [
+      "u1",
+      754032,
+      22
+    ],
+    "coupe33_zhab.tailLeft.i": [
+      "u2",
+      754056,
+      30
+    ],
+    "coupe33_zhab.tailLeft.c": [
+      "u1",
+      754116,
+      33
+    ],
+    "coupe33_zhab.tailLeftFar.p": [
+      "i2",
+      754152,
+      12
+    ],
+    "coupe33_zhab.tailLeftFar.n": [
+      "i2",
+      754176,
+      12
+    ],
+    "coupe33_zhab.tailLeftFar.uv": [
+      "u2",
+      754200,
+      8
+    ],
+    "coupe33_zhab.tailLeftFar.a": [
+      "f4",
+      754216,
+      8
+    ],
+    "coupe33_zhab.tailLeftFar.t": [
+      "u2",
+      754248,
+      16
+    ],
+    "coupe33_zhab.tailLeftFar.f": [
+      "u1",
+      754280,
+      8
+    ],
+    "coupe33_zhab.tailLeftFar.i": [
+      "u2",
+      754288,
+      6
+    ],
+    "coupe33_zhab.tailLeftFar.c": [
+      "u1",
+      754300,
+      12
+    ],
+    "coupe33_zhab.hood.p": [
+      "i2",
+      754312,
+      1872
+    ],
+    "coupe33_zhab.hood.n": [
+      "i2",
+      758056,
+      1872
+    ],
+    "coupe33_zhab.hood.uv": [
+      "u2",
+      761800,
+      1248
+    ],
+    "coupe33_zhab.hood.a": [
+      "f4",
+      764296,
+      1248
+    ],
+    "coupe33_zhab.hood.t": [
+      "u2",
+      769288,
+      2496
+    ],
+    "coupe33_zhab.hood.f": [
+      "u1",
+      774280,
+      1248
+    ],
+    "coupe33_zhab.hood.i": [
+      "u2",
+      775528,
+      1788
+    ],
+    "coupe33_zhab.hoodFar.p": [
+      "i2",
+      779104,
+      690
+    ],
+    "coupe33_zhab.hoodFar.n": [
+      "i2",
+      780484,
+      690
+    ],
+    "coupe33_zhab.hoodFar.uv": [
+      "u2",
+      781864,
+      460
+    ],
+    "coupe33_zhab.hoodFar.a": [
+      "f4",
+      782784,
+      460
+    ],
+    "coupe33_zhab.hoodFar.t": [
+      "u2",
+      784624,
+      920
+    ],
+    "coupe33_zhab.hoodFar.f": [
+      "u1",
+      786464,
+      460
+    ],
+    "coupe33_zhab.hoodFar.i": [
+      "u2",
+      786924,
+      444
+    ],
+    "coupe33_zhab.opticalGlass.p": [
+      "i2",
+      787812,
+      132
+    ],
+    "coupe33_zhab.opticalGlass.n": [
+      "i2",
+      788076,
+      132
+    ],
+    "coupe33_zhab.opticalGlass.uv": [
+      "u2",
+      788340,
+      88
+    ],
+    "coupe33_zhab.opticalGlass.a": [
+      "f4",
+      788516,
+      88
+    ],
+    "coupe33_zhab.opticalGlass.t": [
+      "u2",
+      788868,
+      176
+    ],
+    "coupe33_zhab.opticalGlass.f": [
+      "u1",
+      789220,
+      88
+    ],
+    "coupe33_zhab.opticalGlass.i": [
+      "u2",
+      789308,
+      168
+    ],
+    "coupe33_zhab.opticalGlassFar.p": [
+      "i2",
+      789644,
+      54
+    ],
+    "coupe33_zhab.opticalGlassFar.n": [
+      "i2",
+      789752,
+      54
+    ],
+    "coupe33_zhab.opticalGlassFar.uv": [
+      "u2",
+      789860,
+      36
+    ],
+    "coupe33_zhab.opticalGlassFar.a": [
+      "f4",
+      789932,
+      36
+    ],
+    "coupe33_zhab.opticalGlassFar.t": [
+      "u2",
+      790076,
+      72
+    ],
+    "coupe33_zhab.opticalGlassFar.f": [
+      "u1",
+      790220,
+      36
+    ],
+    "coupe33_zhab.opticalGlassFar.i": [
+      "u2",
+      790256,
+      42
+    ],
+    "coupe33_zhab.headLeft.p": [
+      "i2",
+      790340,
+      45
+    ],
+    "coupe33_zhab.headLeft.n": [
+      "i2",
+      790432,
+      45
+    ],
+    "coupe33_zhab.headLeft.uv": [
+      "u2",
+      790524,
+      30
+    ],
+    "coupe33_zhab.headLeft.a": [
+      "f4",
+      790584,
+      30
+    ],
+    "coupe33_zhab.headLeft.t": [
+      "u2",
+      790704,
+      60
+    ],
+    "coupe33_zhab.headLeft.f": [
+      "u1",
+      790824,
+      30
+    ],
+    "coupe33_zhab.headLeft.i": [
+      "u2",
+      790856,
+      42
+    ],
+    "coupe33_zhab.headLeft.c": [
+      "u1",
+      790940,
+      45
+    ],
+    "coupe33_zhab.headLeftFar.p": [
+      "i2",
+      790988,
+      15
+    ],
+    "coupe33_zhab.headLeftFar.n": [
+      "i2",
+      791020,
+      15
+    ],
+    "coupe33_zhab.headLeftFar.uv": [
+      "u2",
+      791052,
+      10
+    ],
+    "coupe33_zhab.headLeftFar.a": [
+      "f4",
+      791072,
+      10
+    ],
+    "coupe33_zhab.headLeftFar.t": [
+      "u2",
+      791112,
+      20
+    ],
+    "coupe33_zhab.headLeftFar.f": [
+      "u1",
+      791152,
+      10
+    ],
+    "coupe33_zhab.headLeftFar.i": [
+      "u2",
+      791164,
+      9
+    ],
+    "coupe33_zhab.headLeftFar.c": [
+      "u1",
+      791184,
+      15
+    ],
+    "coupe33_zhab.headRight.p": [
+      "i2",
+      791200,
+      45
+    ],
+    "coupe33_zhab.headRight.n": [
+      "i2",
+      791292,
+      45
+    ],
+    "coupe33_zhab.headRight.uv": [
+      "u2",
+      791384,
+      30
+    ],
+    "coupe33_zhab.headRight.a": [
+      "f4",
+      791444,
+      30
+    ],
+    "coupe33_zhab.headRight.t": [
+      "u2",
+      791564,
+      60
+    ],
+    "coupe33_zhab.headRight.f": [
+      "u1",
+      791684,
+      30
+    ],
+    "coupe33_zhab.headRight.i": [
+      "u2",
+      791716,
+      42
+    ],
+    "coupe33_zhab.headRight.c": [
+      "u1",
+      791800,
+      45
+    ],
+    "coupe33_zhab.headRightFar.p": [
+      "i2",
+      791848,
+      15
+    ],
+    "coupe33_zhab.headRightFar.n": [
+      "i2",
+      791880,
+      15
+    ],
+    "coupe33_zhab.headRightFar.uv": [
+      "u2",
+      791912,
+      10
+    ],
+    "coupe33_zhab.headRightFar.a": [
+      "f4",
+      791932,
+      10
+    ],
+    "coupe33_zhab.headRightFar.t": [
+      "u2",
+      791972,
+      20
+    ],
+    "coupe33_zhab.headRightFar.f": [
+      "u1",
+      792012,
+      10
+    ],
+    "coupe33_zhab.headRightFar.i": [
+      "u2",
+      792024,
+      9
+    ],
+    "coupe33_zhab.headRightFar.c": [
+      "u1",
+      792044,
+      15
+    ],
+    "coupe33_zhab.wheel0.rim.p": [
+      "i2",
+      792060,
+      1725
+    ],
+    "coupe33_zhab.wheel0.rim.n": [
+      "i2",
+      795512,
+      1725
+    ],
+    "coupe33_zhab.wheel0.rim.uv": [
+      "u2",
+      798964,
+      1150
+    ],
+    "coupe33_zhab.wheel0.rim.a": [
+      "f4",
+      801264,
+      1150
+    ],
+    "coupe33_zhab.wheel0.rim.t": [
+      "u2",
+      805864,
+      2300
+    ],
+    "coupe33_zhab.wheel0.rim.f": [
+      "u1",
+      810464,
+      1150
+    ],
+    "coupe33_zhab.wheel0.rim.i": [
+      "u2",
+      811616,
+      1713
+    ],
+    "coupe33_zhab.wheel0.rimFar.p": [
+      "i2",
+      815044,
+      729
+    ],
+    "coupe33_zhab.wheel0.rimFar.n": [
+      "i2",
+      816504,
+      729
+    ],
+    "coupe33_zhab.wheel0.rimFar.uv": [
+      "u2",
+      817964,
+      486
+    ],
+    "coupe33_zhab.wheel0.rimFar.a": [
+      "f4",
+      818936,
+      486
+    ],
+    "coupe33_zhab.wheel0.rimFar.t": [
+      "u2",
+      820880,
+      972
+    ],
+    "coupe33_zhab.wheel0.rimFar.f": [
+      "u1",
+      822824,
+      486
+    ],
+    "coupe33_zhab.wheel0.rimFar.i": [
+      "u2",
+      823312,
+      426
+    ],
+    "coupe33_zhab.wheel0.tyre.p": [
+      "i2",
+      824164,
+      1452
+    ],
+    "coupe33_zhab.wheel0.tyre.n": [
+      "i2",
+      827068,
+      1452
+    ],
+    "coupe33_zhab.wheel0.tyre.uv": [
+      "u2",
+      829972,
+      968
+    ],
+    "coupe33_zhab.wheel0.tyre.a": [
+      "f4",
+      831908,
+      968
+    ],
+    "coupe33_zhab.wheel0.tyre.t": [
+      "u2",
+      835780,
+      1936
+    ],
+    "coupe33_zhab.wheel0.tyre.f": [
+      "u1",
+      839652,
+      968
+    ],
+    "coupe33_zhab.wheel0.tyre.i": [
+      "u2",
+      840620,
+      1416
+    ],
+    "coupe33_zhab.wheel0.tyreFar.p": [
+      "i2",
+      843452,
+      645
+    ],
+    "coupe33_zhab.wheel0.tyreFar.n": [
+      "i2",
+      844744,
+      645
+    ],
+    "coupe33_zhab.wheel0.tyreFar.uv": [
+      "u2",
+      846036,
+      430
+    ],
+    "coupe33_zhab.wheel0.tyreFar.a": [
+      "f4",
+      846896,
+      430
+    ],
+    "coupe33_zhab.wheel0.tyreFar.t": [
+      "u2",
+      848616,
+      860
+    ],
+    "coupe33_zhab.wheel0.tyreFar.f": [
+      "u1",
+      850336,
+      430
+    ],
+    "coupe33_zhab.wheel0.tyreFar.i": [
+      "u2",
+      850768,
+      354
+    ],
+    "coupe33_zhab.wheel2.rim.p": [
+      "i2",
+      851476,
+      1725
+    ],
+    "coupe33_zhab.wheel2.rim.n": [
+      "i2",
+      854928,
+      1725
+    ],
+    "coupe33_zhab.wheel2.rim.uv": [
+      "u2",
+      858380,
+      1150
+    ],
+    "coupe33_zhab.wheel2.rim.a": [
+      "f4",
+      860680,
+      1150
+    ],
+    "coupe33_zhab.wheel2.rim.t": [
+      "u2",
+      865280,
+      2300
+    ],
+    "coupe33_zhab.wheel2.rim.f": [
+      "u1",
+      869880,
+      1150
+    ],
+    "coupe33_zhab.wheel2.rim.i": [
+      "u2",
+      871032,
+      1713
+    ],
+    "coupe33_zhab.wheel2.rimFar.p": [
+      "i2",
+      874460,
+      747
+    ],
+    "coupe33_zhab.wheel2.rimFar.n": [
+      "i2",
+      875956,
+      747
+    ],
+    "coupe33_zhab.wheel2.rimFar.uv": [
+      "u2",
+      877452,
+      498
+    ],
+    "coupe33_zhab.wheel2.rimFar.a": [
+      "f4",
+      878448,
+      498
+    ],
+    "coupe33_zhab.wheel2.rimFar.t": [
+      "u2",
+      880440,
+      996
+    ],
+    "coupe33_zhab.wheel2.rimFar.f": [
+      "u1",
+      882432,
+      498
+    ],
+    "coupe33_zhab.wheel2.rimFar.i": [
+      "u2",
+      882932,
+      426
+    ],
+    "coupe33_zhab.wheel2.tyre.p": [
+      "i2",
+      883784,
+      1452
+    ],
+    "coupe33_zhab.wheel2.tyre.n": [
+      "i2",
+      886688,
+      1452
+    ],
+    "coupe33_zhab.wheel2.tyre.uv": [
+      "u2",
+      889592,
+      968
+    ],
+    "coupe33_zhab.wheel2.tyre.a": [
+      "f4",
+      891528,
+      968
+    ],
+    "coupe33_zhab.wheel2.tyre.t": [
+      "u2",
+      895400,
+      1936
+    ],
+    "coupe33_zhab.wheel2.tyre.f": [
+      "u1",
+      899272,
+      968
+    ],
+    "coupe33_zhab.wheel2.tyre.i": [
+      "u2",
+      900240,
+      1416
+    ],
+    "coupe33_zhab.wheel2.tyreFar.p": [
+      "i2",
+      903072,
+      645
+    ],
+    "coupe33_zhab.wheel2.tyreFar.n": [
+      "i2",
+      904364,
+      645
+    ],
+    "coupe33_zhab.wheel2.tyreFar.uv": [
+      "u2",
+      905656,
+      430
+    ],
+    "coupe33_zhab.wheel2.tyreFar.a": [
+      "f4",
+      906516,
+      430
+    ],
+    "coupe33_zhab.wheel2.tyreFar.t": [
+      "u2",
+      908236,
+      860
+    ],
+    "coupe33_zhab.wheel2.tyreFar.f": [
+      "u1",
+      909956,
+      430
+    ],
+    "coupe33_zhab.wheel2.tyreFar.i": [
+      "u2",
+      910388,
+      354
+    ],
+    "coupe33_zhab.wheel3.rim.p": [
+      "i2",
+      911096,
+      1725
+    ],
+    "coupe33_zhab.wheel3.rim.n": [
+      "i2",
+      914548,
+      1725
+    ],
+    "coupe33_zhab.wheel3.rim.uv": [
+      "u2",
+      918000,
+      1150
+    ],
+    "coupe33_zhab.wheel3.rim.a": [
+      "f4",
+      920300,
+      1150
+    ],
+    "coupe33_zhab.wheel3.rim.t": [
+      "u2",
+      924900,
+      2300
+    ],
+    "coupe33_zhab.wheel3.rim.f": [
+      "u1",
+      929500,
+      1150
+    ],
+    "coupe33_zhab.wheel3.rim.i": [
+      "u2",
+      930652,
+      1713
+    ],
+    "coupe33_zhab.wheel3.rimFar.p": [
+      "i2",
+      934080,
+      750
+    ],
+    "coupe33_zhab.wheel3.rimFar.n": [
+      "i2",
+      935580,
+      750
+    ],
+    "coupe33_zhab.wheel3.rimFar.uv": [
+      "u2",
+      937080,
+      500
+    ],
+    "coupe33_zhab.wheel3.rimFar.a": [
+      "f4",
+      938080,
+      500
+    ],
+    "coupe33_zhab.wheel3.rimFar.t": [
+      "u2",
+      940080,
+      1000
+    ],
+    "coupe33_zhab.wheel3.rimFar.f": [
+      "u1",
+      942080,
+      500
+    ],
+    "coupe33_zhab.wheel3.rimFar.i": [
+      "u2",
+      942580,
+      426
+    ],
+    "coupe33_zhab.wheel3.tyre.p": [
+      "i2",
+      943432,
+      1452
+    ],
+    "coupe33_zhab.wheel3.tyre.n": [
+      "i2",
+      946336,
+      1452
+    ],
+    "coupe33_zhab.wheel3.tyre.uv": [
+      "u2",
+      949240,
+      968
+    ],
+    "coupe33_zhab.wheel3.tyre.a": [
+      "f4",
+      951176,
+      968
+    ],
+    "coupe33_zhab.wheel3.tyre.t": [
+      "u2",
+      955048,
+      1936
+    ],
+    "coupe33_zhab.wheel3.tyre.f": [
+      "u1",
+      958920,
+      968
+    ],
+    "coupe33_zhab.wheel3.tyre.i": [
+      "u2",
+      959888,
+      1416
+    ],
+    "coupe33_zhab.wheel3.tyreFar.p": [
+      "i2",
+      962720,
+      639
+    ],
+    "coupe33_zhab.wheel3.tyreFar.n": [
+      "i2",
+      964000,
+      639
+    ],
+    "coupe33_zhab.wheel3.tyreFar.uv": [
+      "u2",
+      965280,
+      426
+    ],
+    "coupe33_zhab.wheel3.tyreFar.a": [
+      "f4",
+      966132,
+      426
+    ],
+    "coupe33_zhab.wheel3.tyreFar.t": [
+      "u2",
+      967836,
+      852
+    ],
+    "coupe33_zhab.wheel3.tyreFar.f": [
+      "u1",
+      969540,
+      426
+    ],
+    "coupe33_zhab.wheel3.tyreFar.i": [
+      "u2",
+      969968,
+      354
+    ],
+    "coupe33_zhab.wheel1.rim.p": [
+      "i2",
+      970676,
+      1725
+    ],
+    "coupe33_zhab.wheel1.rim.n": [
+      "i2",
+      974128,
+      1725
+    ],
+    "coupe33_zhab.wheel1.rim.uv": [
+      "u2",
+      977580,
+      1150
+    ],
+    "coupe33_zhab.wheel1.rim.a": [
+      "f4",
+      979880,
+      1150
+    ],
+    "coupe33_zhab.wheel1.rim.t": [
+      "u2",
+      984480,
+      2300
+    ],
+    "coupe33_zhab.wheel1.rim.f": [
+      "u1",
+      989080,
+      1150
+    ],
+    "coupe33_zhab.wheel1.rim.i": [
+      "u2",
+      990232,
+      1713
+    ],
+    "coupe33_zhab.wheel1.rimFar.p": [
+      "i2",
+      993660,
+      726
+    ],
+    "coupe33_zhab.wheel1.rimFar.n": [
+      "i2",
+      995112,
+      726
+    ],
+    "coupe33_zhab.wheel1.rimFar.uv": [
+      "u2",
+      996564,
+      484
+    ],
+    "coupe33_zhab.wheel1.rimFar.a": [
+      "f4",
+      997532,
+      484
+    ],
+    "coupe33_zhab.wheel1.rimFar.t": [
+      "u2",
+      999468,
+      968
+    ],
+    "coupe33_zhab.wheel1.rimFar.f": [
+      "u1",
+      1001404,
+      484
+    ],
+    "coupe33_zhab.wheel1.rimFar.i": [
+      "u2",
+      1001888,
+      426
+    ],
+    "coupe33_zhab.wheel1.tyre.p": [
+      "i2",
+      1002740,
+      1452
+    ],
+    "coupe33_zhab.wheel1.tyre.n": [
+      "i2",
+      1005644,
+      1452
+    ],
+    "coupe33_zhab.wheel1.tyre.uv": [
+      "u2",
+      1008548,
+      968
+    ],
+    "coupe33_zhab.wheel1.tyre.a": [
+      "f4",
+      1010484,
+      968
+    ],
+    "coupe33_zhab.wheel1.tyre.t": [
+      "u2",
+      1014356,
+      1936
+    ],
+    "coupe33_zhab.wheel1.tyre.f": [
+      "u1",
+      1018228,
+      968
+    ],
+    "coupe33_zhab.wheel1.tyre.i": [
+      "u2",
+      1019196,
+      1416
+    ],
+    "coupe33_zhab.wheel1.tyreFar.p": [
+      "i2",
+      1022028,
+      645
+    ],
+    "coupe33_zhab.wheel1.tyreFar.n": [
+      "i2",
+      1023320,
+      645
+    ],
+    "coupe33_zhab.wheel1.tyreFar.uv": [
+      "u2",
+      1024612,
+      430
+    ],
+    "coupe33_zhab.wheel1.tyreFar.a": [
+      "f4",
+      1025472,
+      430
+    ],
+    "coupe33_zhab.wheel1.tyreFar.t": [
+      "u2",
+      1027192,
+      860
+    ],
+    "coupe33_zhab.wheel1.tyreFar.f": [
+      "u1",
+      1028912,
+      430
+    ],
+    "coupe33_zhab.wheel1.tyreFar.i": [
+      "u2",
+      1029344,
+      354
+    ],
+    "coupe33_zhab.glass.o": [
+      "f4",
+      1030052,
+      192
+    ],
+    "coupe33_zhab.glassFar.o": [
+      "f4",
+      1030820,
+      58
+    ],
+    "coupe33_zhab.shell.o": [
+      "f4",
+      1031052,
+      7952
+    ],
+    "coupe33_zhab.shellFar.o": [
+      "f4",
+      1062860,
+      1742
+    ],
+    "coupe33_zhab.panels.o": [
+      "f4",
+      1069828,
+      2260
+    ],
+    "coupe33_zhab.panelsFar.o": [
+      "f4",
+      1078868,
+      610
+    ],
+    "coupe33_zhab.trim.o": [
+      "f4",
+      1081308,
+      15386
+    ],
+    "coupe33_zhab.trimFar.o": [
+      "f4",
+      1142852,
+      4330
+    ],
+    "coupe33_zhab.cabin.o": [
+      "f4",
+      1160172,
+      3636
+    ],
+    "coupe33_zhab.cabinFar.o": [
+      "f4",
+      1174716,
+      1078
+    ],
+    "coupe33_zhab.tailRight.o": [
+      "f4",
+      1179028,
+      22
+    ],
+    "coupe33_zhab.tailRightFar.o": [
+      "f4",
+      1179116,
+      8
+    ],
+    "coupe33_zhab.tailLeft.o": [
+      "f4",
+      1179148,
+      22
+    ],
+    "coupe33_zhab.tailLeftFar.o": [
+      "f4",
+      1179236,
+      8
+    ],
+    "coupe33_zhab.hood.o": [
+      "f4",
+      1179268,
+      1248
+    ],
+    "coupe33_zhab.hoodFar.o": [
+      "f4",
+      1184260,
+      460
+    ],
+    "coupe33_zhab.opticalGlass.o": [
+      "f4",
+      1186100,
+      88
+    ],
+    "coupe33_zhab.opticalGlassFar.o": [
+      "f4",
+      1186452,
+      36
+    ],
+    "coupe33_zhab.headLeft.o": [
+      "f4",
+      1186596,
+      30
+    ],
+    "coupe33_zhab.headLeftFar.o": [
+      "f4",
+      1186716,
+      10
+    ],
+    "coupe33_zhab.headRight.o": [
+      "f4",
+      1186756,
+      30
+    ],
+    "coupe33_zhab.headRightFar.o": [
+      "f4",
+      1186876,
+      10
+    ],
+    "coupe33_zhab.wheel0.rim.o": [
+      "f4",
+      1186916,
+      1150
+    ],
+    "coupe33_zhab.wheel0.rimFar.o": [
+      "f4",
+      1191516,
+      486
+    ],
+    "coupe33_zhab.wheel0.tyre.o": [
+      "f4",
+      1193460,
+      968
+    ],
+    "coupe33_zhab.wheel0.tyreFar.o": [
+      "f4",
+      1197332,
+      430
+    ],
+    "coupe33_zhab.wheel2.rim.o": [
+      "f4",
+      1199052,
+      1150
+    ],
+    "coupe33_zhab.wheel2.rimFar.o": [
+      "f4",
+      1203652,
+      498
+    ],
+    "coupe33_zhab.wheel2.tyre.o": [
+      "f4",
+      1205644,
+      968
+    ],
+    "coupe33_zhab.wheel2.tyreFar.o": [
+      "f4",
+      1209516,
+      430
+    ],
+    "coupe33_zhab.wheel3.rim.o": [
+      "f4",
+      1211236,
+      1150
+    ],
+    "coupe33_zhab.wheel3.rimFar.o": [
+      "f4",
+      1215836,
+      500
+    ],
+    "coupe33_zhab.wheel3.tyre.o": [
+      "f4",
+      1217836,
+      968
+    ],
+    "coupe33_zhab.wheel3.tyreFar.o": [
+      "f4",
+      1221708,
+      426
+    ],
+    "coupe33_zhab.wheel1.rim.o": [
+      "f4",
+      1223412,
+      1150
+    ],
+    "coupe33_zhab.wheel1.rimFar.o": [
+      "f4",
+      1228012,
+      484
+    ],
+    "coupe33_zhab.wheel1.tyre.o": [
+      "f4",
+      1229948,
+      968
+    ],
+    "coupe33_zhab.wheel1.tyreFar.o": [
+      "f4",
+      1233820,
+      430
+    ]
+  }
+}

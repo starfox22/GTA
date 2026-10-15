@@ -186,7 +186,7 @@
        * either side (the reference section's ring, so painted lines follow the body
        * as it tapers to the bumpers).
        */
-      function liveryFrame(body, l, w) {
+      function liveryFrame(body, l, w, planar = false) {
         const ring = policeRing(body),
           v = policeRingV(body, w),
           top = body.uvTop || body.h,
@@ -194,6 +194,10 @@
           centre = (ring.length - 1) / 2,
           vSide = (y, side) => {
             const at = (j) => v[side < 0 ? j : ring.length - 1 - j];
+            // Downloaded panels need an affine side projection: their sparse source
+            // section bins are not the procedural body's continuous cross section.
+            // The painter and geometry use this same straight height interval.
+            if (planar) return lerpNumber(at(0), at(centre - 1), (y - body.yb) / (top - body.yb));
             if (y <= heights[0]) return at(0);
             for (let j = 0; j < centre - 1; j++)
               if (y <= heights[j + 1]) return lerpNumber(at(j), at(j + 1), (y - heights[j]) / Math.max(1e-6, heights[j + 1] - heights[j]));
@@ -310,8 +314,8 @@
       function liverySeams(g, f, xs, y0, y1, color = 'rgba(0,0,0,0.55)') {
         for (const x of xs) liveryBand(g, f, x - 0.045, x + 0.045, y0, y1, color);
       }
-      function policeLiveryTexture(livery, body, l, w) {
-        const key = livery + ':' + body.name + ':' + l + ':' + w;
+      function policeLiveryTexture(livery, body, l, w, planar = false) {
+        const key = livery + ':' + body.name + ':' + l + ':' + w + (planar ? ':planar' : '');
         let tx = policeLiveryTextures.get(key);
         if (tx) return tx;
         const canvas = document.createElement('canvas');
@@ -319,7 +323,7 @@
         canvas.height = LIVERY_H;
         const g = canvas.getContext('2d'),
           spec = POLICE_LIVERIES[livery],
-          f = liveryFrame(body, l, w),
+          f = liveryFrame(body, l, w, planar),
           top = body.h + 2,
           sill = body.yb + 0.9,
           waist = body.yb + (body.h - body.yb) * 0.66;

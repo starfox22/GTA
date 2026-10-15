@@ -1,0 +1,2549 @@
+{
+  "label": "final-police",
+  "htmlSha256": "45af8f11bf43a9ed9c9252c63af33f0e0ec1df56edf64b11b91e4131ceb02222",
+  "recorderSha256": "8c1bca4c50dde244e5f321a9bbafb3ffaf2f7a4d8780cedccc76699b22c568af",
+  "fixture": {
+    "seed": 1,
+    "time": 13,
+    "weather": "clear",
+    "viewport": [
+      1000,
+      700
+    ],
+    "crop": [
+      130,
+      80,
+      740,
+      500
+    ],
+    "policeOrigin": [
+      418,
+      6000
+    ],
+    "policeSpacing": 110,
+    "policeLooks": [
+      [
+        "police",
+        "crownvic",
+        "bw"
+      ],
+      [
+        "police",
+        "charger",
+        "modern"
+      ],
+      [
+        "police",
+        "utility",
+        "sheriff"
+      ]
+    ],
+    "policeSideAngles": [
+      0,
+      180
+    ],
+    "policePitch": 9,
+    "lookBeforeBoard": true,
+    "holdSimulation": true,
+    "graphics": [
+      "high",
+      "low"
+    ]
+  },
+  "captures": [
+    {
+      "name": "police-utility-sheriff-high-side0",
+      "id": 267,
+      "body": "utility",
+      "livery": "sheriff",
+      "yaw": 0,
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6220,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "police",
+        "weapon": "9MM PISTOL",
+        "clock": "13:00",
+        "renderer": "3d",
+        "vehicles": 282,
+        "pedestrians": 595
+      },
+      "camera": {
+        "zoom": 12,
+        "target": 12,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 12,
+        "aim": 12,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 5,
+        "personPx": 157,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.35,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 85.46,
+            "peak": 519.86
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 4.23,
+        "drill": null,
+        "kinds": []
+      },
+      "quality": {
+        "setting": "high",
+        "tier": "HIGH",
+        "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "hdr": true,
+        "shadowMap": 3072,
+        "pixelRatio": 1,
+        "renderScale": 1,
+        "shadows": "high",
+        "shadowSetting": "auto",
+        "adaptive": {
+          "averageFrameMs": 0,
+          "tierDrops": 0,
+          "ceiling": 1,
+          "holdSeconds": 0
+        }
+      },
+      "flight": null,
+      "aircraftAssets": {
+        "loaded": true,
+        "enabled": true,
+        "models": [
+          {
+            "name": "bell429",
+            "title": "Bell 429 Helicopter",
+            "kind": "heli",
+            "triangles": 13173,
+            "dims": [
+              12.244,
+              4.249,
+              3.233
+            ],
+            "parts": {
+              "paint": 3061,
+              "accent": 2797,
+              "trim": 4230,
+              "glass": 1175,
+              "rotor": 1197,
+              "tail": 713
+            }
+          },
+          {
+            "name": "skyhawk",
+            "title": "Cessna172",
+            "kind": "plane",
+            "triangles": 9694,
+            "dims": [
+              8.28,
+              2.597,
+              11.046
+            ],
+            "parts": {
+              "aileronL": 11,
+              "aileronR": 21,
+              "body": 5476,
+              "cabin": 2288,
+              "elevatorL": 148,
+              "elevatorR": 147,
+              "flapL": 61,
+              "flapR": 64,
+              "glass": 898,
+              "prop": 212,
+              "rudder": 248,
+              "spinner": 120
+            }
+          }
+        ],
+        "kits": [],
+        "skins": 0
+      },
+      "models": [
+        {
+          "id": 1,
+          "type": "coupe",
+          "draws": 12,
+          "casters": 3,
+          "triangles": 10608,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              4387
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1673
+            ],
+            [
+              "MeshStandardMaterial",
+              782
+            ],
+            [
+              "MeshStandardMaterial",
+              782
+            ],
+            [
+              "MeshStandardMaterial",
+              780
+            ],
+            [
+              "MeshStandardMaterial",
+              776
+            ]
+          ],
+          "asset": "Kiri '86",
+          "cabin": {
+            "hip": [
+              -0.282,
+              0.362,
+              -0.414
+            ],
+            "door": [
+              -0.382,
+              0.891
+            ],
+            "floor": 0.262,
+            "floorWorldY": 0.274,
+            "pedalHeight": 0.362,
+            "recline": 0.4,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 2131,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 0.585
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 2,
+          "type": "sedan",
+          "draws": 14,
+          "casters": 3,
+          "triangles": 10067,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              4807
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1880
+            ],
+            [
+              "MeshPhysicalMaterial",
+              638
+            ],
+            [
+              "MeshStandardMaterial",
+              531
+            ],
+            [
+              "MeshStandardMaterial",
+              531
+            ],
+            [
+              "MeshStandardMaterial",
+              527
+            ]
+          ],
+          "asset": "Fairheaven LT '80",
+          "cabin": {
+            "hip": [
+              -0.318,
+              0.275,
+              -0.426
+            ],
+            "door": [
+              -0.418,
+              0.798
+            ],
+            "floor": 0.226,
+            "floorWorldY": 0.239,
+            "pedalHeight": 0.326,
+            "recline": 0.3,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 2134,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 0.549
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 3,
+          "type": "suv",
+          "draws": 18,
+          "casters": 3,
+          "triangles": 122277,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              57894
+            ],
+            [
+              "MeshPhysicalMaterial",
+              28399
+            ],
+            [
+              "MeshPhysicalMaterial",
+              11635
+            ],
+            [
+              "MeshStandardMaterial",
+              5329
+            ],
+            [
+              "MeshPhysicalMaterial",
+              3776
+            ],
+            [
+              "MeshStandardMaterial",
+              2889
+            ]
+          ],
+          "asset": "Suzuki Jimny 2023",
+          "cabin": {
+            "hip": [
+              -0.384,
+              0.454,
+              -0.372
+            ],
+            "door": [
+              -0.484,
+              0.766
+            ],
+            "floor": 0.254,
+            "floorWorldY": 0.266,
+            "pedalHeight": 0.354,
+            "recline": 0.3,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 13838,
+            "seated": 0,
+            "headroom": 0.175,
+            "behind": 0.794
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 4,
+          "type": "van",
+          "draws": 13,
+          "casters": 3,
+          "triangles": 9494,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              2168
+            ],
+            [
+              "MeshStandardMaterial",
+              2116
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1558
+            ],
+            [
+              "MeshStandardMaterial",
+              1084
+            ],
+            [
+              "MeshStandardMaterial",
+              1084
+            ],
+            [
+              "MeshPhysicalMaterial",
+              684
+            ]
+          ],
+          "asset": null,
+          "cabin": {
+            "hip": [
+              0.919,
+              0.68,
+              -0.46
+            ],
+            "door": [
+              0.525,
+              1.575
+            ],
+            "floor": 0.48,
+            "floorWorldY": 0.493,
+            "pedalHeight": 0.58,
+            "recline": 0.3,
+            "rear": false,
+            "two": false,
+            "cabinTriangles": 1204,
+            "seated": 0,
+            "headroom": 0.143,
+            "behind": 0.08
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": {
+            "text": "MULE",
+            "sub": null,
+            "style": "block",
+            "letters": 4
+          }
+        },
+        {
+          "id": 5,
+          "type": "bike",
+          "draws": 12,
+          "casters": 3,
+          "triangles": 53999,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              25166
+            ],
+            [
+              "MeshStandardMaterial",
+              5732
+            ],
+            [
+              "MeshPhysicalMaterial",
+              5605
+            ],
+            [
+              "MeshStandardMaterial",
+              4071
+            ],
+            [
+              "MeshStandardMaterial",
+              3204
+            ],
+            [
+              "MeshStandardMaterial",
+              2429
+            ]
+          ],
+          "asset": "Sport motorcycle (SRAD 750)",
+          "cabin": null,
+          "panes": null,
+          "badge": null
+        },
+        {
+          "id": 6,
+          "type": "supercar",
+          "draws": 14,
+          "casters": 3,
+          "triangles": 11433,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              4894
+            ],
+            [
+              "MeshPhysicalMaterial",
+              2084
+            ],
+            [
+              "MeshPhysicalMaterial",
+              977
+            ],
+            [
+              "MeshStandardMaterial",
+              666
+            ],
+            [
+              "MeshStandardMaterial",
+              666
+            ],
+            [
+              "MeshStandardMaterial",
+              660
+            ]
+          ],
+          "asset": "Italian Supercar '84",
+          "cabin": {
+            "hip": [
+              -0.268,
+              0.214,
+              -0.46
+            ],
+            "door": [
+              -0.368,
+              0.86
+            ],
+            "floor": 0.21,
+            "floorWorldY": 0.223,
+            "pedalHeight": 0.31,
+            "recline": 0.52,
+            "rear": false,
+            "two": true,
+            "cabinTriangles": 1131,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 0.08
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 265,
+          "type": "police",
+          "draws": 11,
+          "casters": 3,
+          "triangles": 10033,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              5669
+            ],
+            [
+              "MeshStandardMaterial",
+              1936
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1358
+            ],
+            [
+              "MeshPhysicalMaterial",
+              454
+            ],
+            [
+              "MeshBasicMaterial",
+              152
+            ],
+            [
+              "ShaderMaterial",
+              132
+            ]
+          ],
+          "asset": "80 American Police Sedan",
+          "cabin": {
+            "hip": [
+              -0.352,
+              0.379,
+              -0.436
+            ],
+            "door": [
+              -0.452,
+              0.825
+            ],
+            "floor": 0.319,
+            "floorWorldY": 0.331,
+            "pedalHeight": 0.419,
+            "recline": 0.3,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 2016,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 0.553
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 266,
+          "type": "police",
+          "draws": 15,
+          "casters": 3,
+          "triangles": 10797,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              7399
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1585
+            ],
+            [
+              "MeshPhysicalMaterial",
+              383
+            ],
+            [
+              "MeshPhysicalMaterial",
+              298
+            ],
+            [
+              "MeshStandardMaterial",
+              168
+            ],
+            [
+              "MeshStandardMaterial",
+              168
+            ]
+          ],
+          "asset": "80s Generic Police Car",
+          "cabin": {
+            "hip": [
+              -0.313,
+              0.331,
+              -0.436
+            ],
+            "door": [
+              -0.413,
+              0.849
+            ],
+            "floor": 0.263,
+            "floorWorldY": 0.275,
+            "pedalHeight": 0.363,
+            "recline": 0.3,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 3213,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 0.621
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 267,
+          "type": "police",
+          "draws": 21,
+          "casters": 4,
+          "triangles": 10523,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              3259
+            ],
+            [
+              "MeshStandardMaterial",
+              2248
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1013
+            ],
+            [
+              "MeshPhysicalMaterial",
+              972
+            ],
+            [
+              "MeshStandardMaterial",
+              288
+            ],
+            [
+              "MeshStandardMaterial",
+              280
+            ]
+          ],
+          "asset": "Generic SUV",
+          "cabin": {
+            "hip": [
+              -0.184,
+              0.686,
+              -0.436
+            ],
+            "door": [
+              -0.284,
+              0.966
+            ],
+            "floor": 0.536,
+            "floorWorldY": 0.549,
+            "pedalHeight": 0.636,
+            "recline": 0.3,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 934,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 1.502
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        }
+      ],
+      "pngSha256": "2eac0de19230853e1f10c6ab9959c381b4dc9f8679c8cc080f635e22ba516b08"
+    },
+    {
+      "name": "police-utility-sheriff-high-side180",
+      "id": 267,
+      "body": "utility",
+      "livery": "sheriff",
+      "yaw": 180,
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6220,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "police",
+        "weapon": "9MM PISTOL",
+        "clock": "13:00",
+        "renderer": "3d",
+        "vehicles": 282,
+        "pedestrians": 595
+      },
+      "camera": {
+        "zoom": 12,
+        "target": 12,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 12,
+        "aim": 12,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 5,
+        "personPx": 157,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.38,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 266.68,
+            "peak": 1559.58
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 4.27,
+        "drill": null,
+        "kinds": []
+      },
+      "quality": {
+        "setting": "high",
+        "tier": "HIGH",
+        "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "hdr": true,
+        "shadowMap": 3072,
+        "pixelRatio": 1,
+        "renderScale": 1,
+        "shadows": "high",
+        "shadowSetting": "auto",
+        "adaptive": {
+          "averageFrameMs": 0,
+          "tierDrops": 0,
+          "ceiling": 1,
+          "holdSeconds": 0
+        }
+      },
+      "flight": null,
+      "aircraftAssets": {
+        "loaded": true,
+        "enabled": true,
+        "models": [
+          {
+            "name": "bell429",
+            "title": "Bell 429 Helicopter",
+            "kind": "heli",
+            "triangles": 13173,
+            "dims": [
+              12.244,
+              4.249,
+              3.233
+            ],
+            "parts": {
+              "paint": 3061,
+              "accent": 2797,
+              "trim": 4230,
+              "glass": 1175,
+              "rotor": 1197,
+              "tail": 713
+            }
+          },
+          {
+            "name": "skyhawk",
+            "title": "Cessna172",
+            "kind": "plane",
+            "triangles": 9694,
+            "dims": [
+              8.28,
+              2.597,
+              11.046
+            ],
+            "parts": {
+              "aileronL": 11,
+              "aileronR": 21,
+              "body": 5476,
+              "cabin": 2288,
+              "elevatorL": 148,
+              "elevatorR": 147,
+              "flapL": 61,
+              "flapR": 64,
+              "glass": 898,
+              "prop": 212,
+              "rudder": 248,
+              "spinner": 120
+            }
+          }
+        ],
+        "kits": [],
+        "skins": 0
+      },
+      "models": [
+        {
+          "id": 1,
+          "type": "coupe",
+          "draws": 12,
+          "casters": 3,
+          "triangles": 10608,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              4387
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1673
+            ],
+            [
+              "MeshStandardMaterial",
+              782
+            ],
+            [
+              "MeshStandardMaterial",
+              782
+            ],
+            [
+              "MeshStandardMaterial",
+              780
+            ],
+            [
+              "MeshStandardMaterial",
+              776
+            ]
+          ],
+          "asset": "Kiri '86",
+          "cabin": {
+            "hip": [
+              -0.282,
+              0.362,
+              -0.414
+            ],
+            "door": [
+              -0.382,
+              0.891
+            ],
+            "floor": 0.262,
+            "floorWorldY": 0.274,
+            "pedalHeight": 0.362,
+            "recline": 0.4,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 2131,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 0.585
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 2,
+          "type": "sedan",
+          "draws": 14,
+          "casters": 3,
+          "triangles": 10067,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              4807
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1880
+            ],
+            [
+              "MeshPhysicalMaterial",
+              638
+            ],
+            [
+              "MeshStandardMaterial",
+              531
+            ],
+            [
+              "MeshStandardMaterial",
+              531
+            ],
+            [
+              "MeshStandardMaterial",
+              527
+            ]
+          ],
+          "asset": "Fairheaven LT '80",
+          "cabin": {
+            "hip": [
+              -0.318,
+              0.275,
+              -0.426
+            ],
+            "door": [
+              -0.418,
+              0.798
+            ],
+            "floor": 0.226,
+            "floorWorldY": 0.239,
+            "pedalHeight": 0.326,
+            "recline": 0.3,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 2134,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 0.549
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 3,
+          "type": "suv",
+          "draws": 18,
+          "casters": 3,
+          "triangles": 122277,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              57894
+            ],
+            [
+              "MeshPhysicalMaterial",
+              28399
+            ],
+            [
+              "MeshPhysicalMaterial",
+              11635
+            ],
+            [
+              "MeshStandardMaterial",
+              5329
+            ],
+            [
+              "MeshPhysicalMaterial",
+              3776
+            ],
+            [
+              "MeshStandardMaterial",
+              2889
+            ]
+          ],
+          "asset": "Suzuki Jimny 2023",
+          "cabin": {
+            "hip": [
+              -0.384,
+              0.454,
+              -0.372
+            ],
+            "door": [
+              -0.484,
+              0.766
+            ],
+            "floor": 0.254,
+            "floorWorldY": 0.266,
+            "pedalHeight": 0.354,
+            "recline": 0.3,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 13838,
+            "seated": 0,
+            "headroom": 0.175,
+            "behind": 0.794
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 4,
+          "type": "van",
+          "draws": 13,
+          "casters": 3,
+          "triangles": 9494,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              2168
+            ],
+            [
+              "MeshStandardMaterial",
+              2116
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1558
+            ],
+            [
+              "MeshStandardMaterial",
+              1084
+            ],
+            [
+              "MeshStandardMaterial",
+              1084
+            ],
+            [
+              "MeshPhysicalMaterial",
+              684
+            ]
+          ],
+          "asset": null,
+          "cabin": {
+            "hip": [
+              0.919,
+              0.68,
+              -0.46
+            ],
+            "door": [
+              0.525,
+              1.575
+            ],
+            "floor": 0.48,
+            "floorWorldY": 0.493,
+            "pedalHeight": 0.58,
+            "recline": 0.3,
+            "rear": false,
+            "two": false,
+            "cabinTriangles": 1204,
+            "seated": 0,
+            "headroom": 0.143,
+            "behind": 0.08
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": {
+            "text": "MULE",
+            "sub": null,
+            "style": "block",
+            "letters": 4
+          }
+        },
+        {
+          "id": 5,
+          "type": "bike",
+          "draws": 12,
+          "casters": 3,
+          "triangles": 53999,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              25166
+            ],
+            [
+              "MeshStandardMaterial",
+              5732
+            ],
+            [
+              "MeshPhysicalMaterial",
+              5605
+            ],
+            [
+              "MeshStandardMaterial",
+              4071
+            ],
+            [
+              "MeshStandardMaterial",
+              3204
+            ],
+            [
+              "MeshStandardMaterial",
+              2429
+            ]
+          ],
+          "asset": "Sport motorcycle (SRAD 750)",
+          "cabin": null,
+          "panes": null,
+          "badge": null
+        },
+        {
+          "id": 6,
+          "type": "supercar",
+          "draws": 14,
+          "casters": 3,
+          "triangles": 11433,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              4894
+            ],
+            [
+              "MeshPhysicalMaterial",
+              2084
+            ],
+            [
+              "MeshPhysicalMaterial",
+              977
+            ],
+            [
+              "MeshStandardMaterial",
+              666
+            ],
+            [
+              "MeshStandardMaterial",
+              666
+            ],
+            [
+              "MeshStandardMaterial",
+              660
+            ]
+          ],
+          "asset": "Italian Supercar '84",
+          "cabin": {
+            "hip": [
+              -0.268,
+              0.214,
+              -0.46
+            ],
+            "door": [
+              -0.368,
+              0.86
+            ],
+            "floor": 0.21,
+            "floorWorldY": 0.223,
+            "pedalHeight": 0.31,
+            "recline": 0.52,
+            "rear": false,
+            "two": true,
+            "cabinTriangles": 1131,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 0.08
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 265,
+          "type": "police",
+          "draws": 11,
+          "casters": 3,
+          "triangles": 10033,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              5669
+            ],
+            [
+              "MeshStandardMaterial",
+              1936
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1358
+            ],
+            [
+              "MeshPhysicalMaterial",
+              454
+            ],
+            [
+              "MeshBasicMaterial",
+              152
+            ],
+            [
+              "ShaderMaterial",
+              132
+            ]
+          ],
+          "asset": "80 American Police Sedan",
+          "cabin": {
+            "hip": [
+              -0.352,
+              0.379,
+              -0.436
+            ],
+            "door": [
+              -0.452,
+              0.825
+            ],
+            "floor": 0.319,
+            "floorWorldY": 0.331,
+            "pedalHeight": 0.419,
+            "recline": 0.3,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 2016,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 0.553
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 266,
+          "type": "police",
+          "draws": 15,
+          "casters": 3,
+          "triangles": 10797,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              7399
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1585
+            ],
+            [
+              "MeshPhysicalMaterial",
+              383
+            ],
+            [
+              "MeshPhysicalMaterial",
+              298
+            ],
+            [
+              "MeshStandardMaterial",
+              168
+            ],
+            [
+              "MeshStandardMaterial",
+              168
+            ]
+          ],
+          "asset": "80s Generic Police Car",
+          "cabin": {
+            "hip": [
+              -0.313,
+              0.331,
+              -0.436
+            ],
+            "door": [
+              -0.413,
+              0.849
+            ],
+            "floor": 0.263,
+            "floorWorldY": 0.275,
+            "pedalHeight": 0.363,
+            "recline": 0.3,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 3213,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 0.621
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 267,
+          "type": "police",
+          "draws": 21,
+          "casters": 4,
+          "triangles": 10523,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              3259
+            ],
+            [
+              "MeshStandardMaterial",
+              2248
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1013
+            ],
+            [
+              "MeshPhysicalMaterial",
+              972
+            ],
+            [
+              "MeshStandardMaterial",
+              288
+            ],
+            [
+              "MeshStandardMaterial",
+              280
+            ]
+          ],
+          "asset": "Generic SUV",
+          "cabin": {
+            "hip": [
+              -0.184,
+              0.686,
+              -0.436
+            ],
+            "door": [
+              -0.284,
+              0.966
+            ],
+            "floor": 0.536,
+            "floorWorldY": 0.549,
+            "pedalHeight": 0.636,
+            "recline": 0.3,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 934,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 1.502
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        }
+      ],
+      "pngSha256": "08dff576d546d37c9961556182c4698c39e2503dd233ae9d16db4e7491a41cec"
+    },
+    {
+      "name": "police-utility-sheriff-low-side0",
+      "id": 267,
+      "body": "utility",
+      "livery": "sheriff",
+      "yaw": 0,
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6220,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "police",
+        "weapon": "9MM PISTOL",
+        "clock": "13:00",
+        "renderer": "3d",
+        "vehicles": 282,
+        "pedestrians": 595
+      },
+      "camera": {
+        "zoom": 12,
+        "target": 12,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 12,
+        "aim": 12,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 5,
+        "personPx": 157,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.42,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 362.85,
+            "peak": 1559.58
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 4.3,
+        "drill": null,
+        "kinds": []
+      },
+      "quality": {
+        "setting": "low",
+        "tier": "LOW",
+        "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "hdr": true,
+        "shadowMap": 0,
+        "pixelRatio": 1,
+        "renderScale": 1,
+        "shadows": "off",
+        "shadowSetting": "auto",
+        "adaptive": {
+          "averageFrameMs": 0,
+          "tierDrops": 0,
+          "ceiling": 1,
+          "holdSeconds": 0
+        }
+      },
+      "flight": null,
+      "aircraftAssets": {
+        "loaded": true,
+        "enabled": true,
+        "models": [
+          {
+            "name": "bell429",
+            "title": "Bell 429 Helicopter",
+            "kind": "heli",
+            "triangles": 13173,
+            "dims": [
+              12.244,
+              4.249,
+              3.233
+            ],
+            "parts": {
+              "paint": 3061,
+              "accent": 2797,
+              "trim": 4230,
+              "glass": 1175,
+              "rotor": 1197,
+              "tail": 713
+            }
+          },
+          {
+            "name": "skyhawk",
+            "title": "Cessna172",
+            "kind": "plane",
+            "triangles": 9694,
+            "dims": [
+              8.28,
+              2.597,
+              11.046
+            ],
+            "parts": {
+              "aileronL": 11,
+              "aileronR": 21,
+              "body": 5476,
+              "cabin": 2288,
+              "elevatorL": 148,
+              "elevatorR": 147,
+              "flapL": 61,
+              "flapR": 64,
+              "glass": 898,
+              "prop": 212,
+              "rudder": 248,
+              "spinner": 120
+            }
+          }
+        ],
+        "kits": [],
+        "skins": 0
+      },
+      "models": [
+        {
+          "id": 1,
+          "type": "coupe",
+          "draws": 12,
+          "casters": 3,
+          "triangles": 10608,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              4387
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1673
+            ],
+            [
+              "MeshStandardMaterial",
+              782
+            ],
+            [
+              "MeshStandardMaterial",
+              782
+            ],
+            [
+              "MeshStandardMaterial",
+              780
+            ],
+            [
+              "MeshStandardMaterial",
+              776
+            ]
+          ],
+          "asset": "Kiri '86",
+          "cabin": {
+            "hip": [
+              -0.282,
+              0.362,
+              -0.414
+            ],
+            "door": [
+              -0.382,
+              0.891
+            ],
+            "floor": 0.262,
+            "floorWorldY": 0.274,
+            "pedalHeight": 0.362,
+            "recline": 0.4,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 2131,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 0.585
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 2,
+          "type": "sedan",
+          "draws": 14,
+          "casters": 3,
+          "triangles": 10067,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              4807
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1880
+            ],
+            [
+              "MeshPhysicalMaterial",
+              638
+            ],
+            [
+              "MeshStandardMaterial",
+              531
+            ],
+            [
+              "MeshStandardMaterial",
+              531
+            ],
+            [
+              "MeshStandardMaterial",
+              527
+            ]
+          ],
+          "asset": "Fairheaven LT '80",
+          "cabin": {
+            "hip": [
+              -0.318,
+              0.275,
+              -0.426
+            ],
+            "door": [
+              -0.418,
+              0.798
+            ],
+            "floor": 0.226,
+            "floorWorldY": 0.239,
+            "pedalHeight": 0.326,
+            "recline": 0.3,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 2134,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 0.549
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 3,
+          "type": "suv",
+          "draws": 18,
+          "casters": 3,
+          "triangles": 122277,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              57894
+            ],
+            [
+              "MeshPhysicalMaterial",
+              28399
+            ],
+            [
+              "MeshPhysicalMaterial",
+              11635
+            ],
+            [
+              "MeshStandardMaterial",
+              5329
+            ],
+            [
+              "MeshPhysicalMaterial",
+              3776
+            ],
+            [
+              "MeshStandardMaterial",
+              2889
+            ]
+          ],
+          "asset": "Suzuki Jimny 2023",
+          "cabin": {
+            "hip": [
+              -0.384,
+              0.454,
+              -0.372
+            ],
+            "door": [
+              -0.484,
+              0.766
+            ],
+            "floor": 0.254,
+            "floorWorldY": 0.266,
+            "pedalHeight": 0.354,
+            "recline": 0.3,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 13838,
+            "seated": 0,
+            "headroom": 0.175,
+            "behind": 0.794
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 4,
+          "type": "van",
+          "draws": 13,
+          "casters": 3,
+          "triangles": 9494,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              2168
+            ],
+            [
+              "MeshStandardMaterial",
+              2116
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1558
+            ],
+            [
+              "MeshStandardMaterial",
+              1084
+            ],
+            [
+              "MeshStandardMaterial",
+              1084
+            ],
+            [
+              "MeshPhysicalMaterial",
+              684
+            ]
+          ],
+          "asset": null,
+          "cabin": {
+            "hip": [
+              0.919,
+              0.68,
+              -0.46
+            ],
+            "door": [
+              0.525,
+              1.575
+            ],
+            "floor": 0.48,
+            "floorWorldY": 0.493,
+            "pedalHeight": 0.58,
+            "recline": 0.3,
+            "rear": false,
+            "two": false,
+            "cabinTriangles": 1204,
+            "seated": 0,
+            "headroom": 0.143,
+            "behind": 0.08
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": {
+            "text": "MULE",
+            "sub": null,
+            "style": "block",
+            "letters": 4
+          }
+        },
+        {
+          "id": 5,
+          "type": "bike",
+          "draws": 12,
+          "casters": 3,
+          "triangles": 53999,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              25166
+            ],
+            [
+              "MeshStandardMaterial",
+              5732
+            ],
+            [
+              "MeshPhysicalMaterial",
+              5605
+            ],
+            [
+              "MeshStandardMaterial",
+              4071
+            ],
+            [
+              "MeshStandardMaterial",
+              3204
+            ],
+            [
+              "MeshStandardMaterial",
+              2429
+            ]
+          ],
+          "asset": "Sport motorcycle (SRAD 750)",
+          "cabin": null,
+          "panes": null,
+          "badge": null
+        },
+        {
+          "id": 6,
+          "type": "supercar",
+          "draws": 14,
+          "casters": 3,
+          "triangles": 11433,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              4894
+            ],
+            [
+              "MeshPhysicalMaterial",
+              2084
+            ],
+            [
+              "MeshPhysicalMaterial",
+              977
+            ],
+            [
+              "MeshStandardMaterial",
+              666
+            ],
+            [
+              "MeshStandardMaterial",
+              666
+            ],
+            [
+              "MeshStandardMaterial",
+              660
+            ]
+          ],
+          "asset": "Italian Supercar '84",
+          "cabin": {
+            "hip": [
+              -0.268,
+              0.214,
+              -0.46
+            ],
+            "door": [
+              -0.368,
+              0.86
+            ],
+            "floor": 0.21,
+            "floorWorldY": 0.223,
+            "pedalHeight": 0.31,
+            "recline": 0.52,
+            "rear": false,
+            "two": true,
+            "cabinTriangles": 1131,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 0.08
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 265,
+          "type": "police",
+          "draws": 11,
+          "casters": 3,
+          "triangles": 10033,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              5669
+            ],
+            [
+              "MeshStandardMaterial",
+              1936
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1358
+            ],
+            [
+              "MeshPhysicalMaterial",
+              454
+            ],
+            [
+              "MeshBasicMaterial",
+              152
+            ],
+            [
+              "ShaderMaterial",
+              132
+            ]
+          ],
+          "asset": "80 American Police Sedan",
+          "cabin": {
+            "hip": [
+              -0.352,
+              0.379,
+              -0.436
+            ],
+            "door": [
+              -0.452,
+              0.825
+            ],
+            "floor": 0.319,
+            "floorWorldY": 0.331,
+            "pedalHeight": 0.419,
+            "recline": 0.3,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 2016,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 0.553
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 266,
+          "type": "police",
+          "draws": 15,
+          "casters": 3,
+          "triangles": 10797,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              7399
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1585
+            ],
+            [
+              "MeshPhysicalMaterial",
+              383
+            ],
+            [
+              "MeshPhysicalMaterial",
+              298
+            ],
+            [
+              "MeshStandardMaterial",
+              168
+            ],
+            [
+              "MeshStandardMaterial",
+              168
+            ]
+          ],
+          "asset": "80s Generic Police Car",
+          "cabin": {
+            "hip": [
+              -0.313,
+              0.331,
+              -0.436
+            ],
+            "door": [
+              -0.413,
+              0.849
+            ],
+            "floor": 0.263,
+            "floorWorldY": 0.275,
+            "pedalHeight": 0.363,
+            "recline": 0.3,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 3213,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 0.621
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 267,
+          "type": "police",
+          "draws": 21,
+          "casters": 4,
+          "triangles": 10523,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              3259
+            ],
+            [
+              "MeshStandardMaterial",
+              2248
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1013
+            ],
+            [
+              "MeshPhysicalMaterial",
+              972
+            ],
+            [
+              "MeshStandardMaterial",
+              288
+            ],
+            [
+              "MeshStandardMaterial",
+              280
+            ]
+          ],
+          "asset": "Generic SUV",
+          "cabin": {
+            "hip": [
+              -0.184,
+              0.686,
+              -0.436
+            ],
+            "door": [
+              -0.284,
+              0.966
+            ],
+            "floor": 0.536,
+            "floorWorldY": 0.549,
+            "pedalHeight": 0.636,
+            "recline": 0.3,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 934,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 1.502
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        }
+      ],
+      "pngSha256": "56a404470985adeca9c437a9183b7fbb401c82bba14547265fe7b669cb0f5f9b"
+    }
+  ],
+  "errors": [],
+  "warnings": [
+    "Scripts \"build/three.js\" and \"build/three.min.js\" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation"
+  ],
+  "policeLineup": [
+    {
+      "id": 265,
+      "type": "police",
+      "body": "crownvic",
+      "livery": "bw"
+    },
+    {
+      "id": 266,
+      "type": "police",
+      "body": "charger",
+      "livery": "modern"
+    },
+    {
+      "id": 267,
+      "type": "police",
+      "body": "utility",
+      "livery": "sheriff"
+    }
+  ],
+  "pass": true
+}

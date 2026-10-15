@@ -1,0 +1,52 @@
+{
+  "runner": "native Node + real Three.js r160, standard assertion/range contract; no browser or GPU",
+  "results": [
+    {
+      "name": "rig",
+      "passed": true,
+      "assertions": 26,
+      "notes": [
+        {
+          "jet": {
+            "near": 20131,
+            "far": 6929,
+            "actualDims": [
+              15.620614308437576,
+              5.662708292423373,
+              14.75
+            ]
+          },
+          "transport": {
+            "near": 162629,
+            "far": 17319
+          },
+          "sharedGeometries": 22
+        }
+      ]
+    },
+    {
+      "name": "lifecycle",
+      "passed": true,
+      "assertions": 43,
+      "notes": [
+        {
+          "sourceGeometries": 29,
+          "privatePaintDisposals": 4,
+          "sharedDisposals": 0,
+          "staticLodDistanceLow": 380
+        }
+      ]
+    }
+  ],
+  "sha256": {
+    "src/jet-assets3d.js": "a165323397d1fe4adc6135208a63289997a46955afb14a735c6b4778dfafb26f",
+    "src/plane3d-build.js": "f5ed35f4ea07e037b1c5dd62b4354e939aff65805d9092c25ffa9817250a25ce",
+    "src/world3d-resort.js": "c484c9f3b748aab1a6dfd544c5ec82e32679aa2a4c32ade3c3fb630b901ba960",
+    "src/render3d-resources.js": "0c8d709fdd12c23a45494f9503e259c42c2db5f01e4b3b0f34699afceb31c510",
+    "src/aircraft-audio.js": "89bb464608fb2c11812f662f604fd957dabd35fcd2be53a525bd6c5f5cf44ba0",
+    "tools/tests/jet-assets-rig.mjs": "f9c94eacbe8feb3a461282f7eb8c7c102d0a5ea1d346d331c9792cd0f9004bb6",
+    "tools/tests/jet-assets-lifecycle.mjs": "17ab4f72054f7b49bc38931a8a237e31c23f0f2cdddf7d0512cc10cce0855bdb",
+    "assets/jet-models.bin": "a8f911de36c3d7a8a97b4b0a0ee0ef855fed15ee9415d0f505edbdd7967b092b",
+    "assets/jet-skin.webp": "116993dd172cc53a8e580e0088ca1f755c7d78a4214521c12db9abde696bccf6"
+  }
+}

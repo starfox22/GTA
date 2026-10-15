@@ -1,0 +1,100 @@
+{
+  "kind": "Scoped delivery evidence; original failed/partial attempts and the remaining hill-climb failure stay unchanged.",
+  "gameHtmlSha256": "719a535fe3905275c381737acb7fc3e80ee1ab4378c0d5736a4595096b16c03c",
+  "gameSourcesStillFrozen": true,
+  "allRegressionTestsPass": false,
+  "knownOpen": [
+    "60Hz scripted hill-climb pilot can leave its corridor and miss unchanged75s target",
+    "Adapted Citation deployed-flap triangle seams; native256px texture detail"
+  ],
+  "nativeImages": {
+    "total": 36,
+    "before": 16,
+    "afterComparisons": 16,
+    "additionalRuntimeAndCredits": 4
+  },
+  "primaryCapture": {
+    "mainPass": true,
+    "images": 11,
+    "errors": [],
+    "fullAttemptPass": false
+  },
+  "parkingCapture": {
+    "pass": true,
+    "images": 4
+  },
+  "trailCapture": {
+    "pass": true,
+    "images": 1,
+    "id": 282,
+    "result": {
+      "kind": "drive-trail",
+      "road": "MOUNT ASCENT TRAIL",
+      "reason": "time",
+      "seconds": 30,
+      "progress": 0.387,
+      "minHp": 249,
+      "airborneS": 0,
+      "maxKmh": 30,
+      "car": {
+        "type": "suv",
+        "hp": 249,
+        "maxhp": 250,
+        "overturned": false
+      },
+      "newLandings": [],
+      "mode": "play",
+      "hp": 100,
+      "x": 7458,
+      "y": 1355,
+      "altitudeM": 47.5,
+      "groundM": 47.5,
+      "falling": null,
+      "tumbling": false,
+      "splat": null,
+      "parachute": null,
+      "vehicle": {
+        "type": "suv",
+        "hp": 249,
+        "airborne": false,
+        "overturned": null
+      },
+      "impacts": [],
+      "vehicleLandings": []
+    }
+  },
+  "seededRuntime": {
+    "originalAttemptPass": false,
+    "completedAssertions": 116,
+    "images": 3,
+    "errors": [],
+    "failure": "page.waitForFunction: Timeout 540000ms exceeded.\n    at runAviationVehicleRuntime (/workspace/GTA/tools/aviation-vehicle-runtime-review.mjs:234:18)\n    at async file:///workspace/GTA/tools/police-aircraft-render-review.mjs:84:20",
+    "reason": "Seeded boots deliberately disable initAudio; actual output tested separately, original timeout preserved."
+  },
+  "unseededBrowserAudio": {
+    "pass": true,
+    "assertions": 40,
+    "report": "unseeded-aircraft-audio-runtime.json"
+  },
+  "packagedBrowser": {
+    "pass": true,
+    "smokeErrors": [],
+    "defaultFps": "0 FPS \u00b7 3933.3 ms",
+    "walkDistanceUnits": 16,
+    "driveDistanceUnits": 26,
+    "returnedToStreet": true,
+    "credits": {
+      "visible": true,
+      "hotrod": true,
+      "citation": true,
+      "transport": true,
+      "textCharacters": 69338
+    }
+  },
+  "galleryArtifact": {
+    "files": 63,
+    "images": 36,
+    "sounds": 6,
+    "localLinksChecked": 86
+  }
+}

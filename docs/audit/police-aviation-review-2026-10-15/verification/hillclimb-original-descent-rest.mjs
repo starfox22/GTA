@@ -1,0 +1,14 @@
+import fs from 'node:fs';import assert from 'node:assert/strict';
+import {request}from'/workspace/GTA/tools/dev.mjs';
+const call=async(method,...args)=>{const r=await request({op:'call',method,args},{timeoutMs:240000});if(r.error)throw Error(r.error);return r.result;};
+await call('hillClimb','top',0);const descent=await call('trailDrive',240,35,0,1/30,'down');
+const out={descent};fs.writeFileSync('/workspace/GTA/dist/review16/hillclimb-original-descent-rest.json',JSON.stringify(out,null,2));
+assert.equal(descent.reason,'trailhead');assert.ok(descent.cliffFlights===0&&descent.ride.flights===0&&descent.ride.airS<.3);
+assert.ok(descent.ride.maxBlowMs<4.5&&!descent.overturned&&descent.hp>=200);
+await call('hillClimb','cp2',0);await request({op:'wait',seconds:4});const s1=await call('ride3d');await request({op:'wait',seconds:1});const s2=await call('ride3d');
+Object.assign(out,{s1,s2});fs.writeFileSync('/workspace/GTA/dist/review16/hillclimb-original-descent-rest.json',JSON.stringify(out,null,2));
+assert.ok(s2.onTerrain&&!s2.air);assert.ok(Math.abs(s2.pitchDeg-s1.pitchDeg)<.05&&Math.abs(s2.rollDeg-s1.rollDeg)<.05);
+assert.ok(Math.abs(s2.loadG-1)<.03);const front=s2.wheelLoadG[0]+s2.wheelLoadG[1],rear=s2.wheelLoadG[2]+s2.wheelLoadG[3];
+assert.ok(Math.abs(s2.pitchDeg)<3||(s2.pitchDeg>0)===rear>front);
+out.pass=true;fs.writeFileSync('/workspace/GTA/dist/review16/hillclimb-original-descent-rest.json',JSON.stringify(out,null,2));
+console.log(JSON.stringify(out));

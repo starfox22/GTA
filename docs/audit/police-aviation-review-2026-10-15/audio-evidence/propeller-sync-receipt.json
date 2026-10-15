@@ -1,0 +1,20 @@
+{
+  "change": "Production animateAircraft uses shared real propeller RPM converted by pi/30; blade-passage blur; legacy fan animation unchanged",
+  "before": {
+    "command": "DEC_PLANE_ANIMATION_SOURCE=dist/review16/propeller-sync-before/plane3d-build.js node tools/tests/aircraft-propeller-sync.mjs",
+    "exitCode": 1,
+    "failure": "skyhawk idle visual/audio RPM: 133.69015158393103 != 700"
+  },
+  "after": {
+    "command": "node tools/tests/aircraft-propeller-sync.mjs",
+    "exitCode": 0,
+    "assertions": 22
+  },
+  "sha256": {
+    "dist/review16/propeller-sync-before/plane3d-build.js": "256dcf43c9a9abde4e6fe4f815d8cfb26c290d8ce81b18f49d0aa551232203a4",
+    "dist/review16/propeller-sync-after/plane3d-build.js": "f5ed35f4ea07e037b1c5dd62b4354e939aff65805d9092c25ffa9817250a25ce",
+    "dist/review16/propeller-sync-after/aircraft-audio.js": "89bb464608fb2c11812f662f604fd957dabd35fcd2be53a525bd6c5f5cf44ba0",
+    "tools/tests/aircraft-propeller-sync.mjs": "5091699bb9e0f810d97cd9b026bc44d8c22703623f952e3bd1a3e8dde8cab8bd"
+  },
+  "scope": "Actual complete production animateAircraft executed in host VM with recording scene objects and shared production sound helper. No browser/GPU, no visual capture or subjective approval."
+}

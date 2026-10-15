@@ -1,0 +1,342 @@
+{
+  "jet": {
+    "parts": {
+      "aileronL": {
+        "triangles": 131,
+        "vertices": 103,
+        "indexBytes": 2,
+        "maxPositionErrorMetres": 0.00011732854123991387,
+        "minimumNormalDot": 0.9999999997664808,
+        "maxUvError": 7.5949344519980755e-06,
+        "sourceVertexIdsSha256": "2a8965229b4333e260e17e641246cf4017f673422ba177037a564b3565438960",
+        "sourceTriangleOwnershipSha256": "cce6c97a0818f0f29dcc3aad2e25f43d8f21b2bf7a4956ee0629d6b304126c5c"
+      },
+      "aileronLFar": {
+        "triangles": 43,
+        "vertices": 42,
+        "indexBytes": 2,
+        "maxPositionErrorMetres": 0.0001152671979554043,
+        "minimumNormalDot": 0.9999999998022107,
+        "maxUvError": 7.5949344519980755e-06,
+        "sourceVertexIdsSha256": "057202ae2892fe627ef694db583089df10b0acc89ec8b0928030f0ff939fc318",
+        "sourceTriangleOwnershipSha256": "cce6c97a0818f0f29dcc3aad2e25f43d8f21b2bf7a4956ee0629d6b304126c5c"
+      },
+      "aileronR": {
+        "triangles": 172,
+        "vertices": 138,
+        "indexBytes": 2,
+        "maxPositionErrorMetres": 0.00011918207039762763,
+        "minimumNormalDot": 0.9999999997981794,
+        "maxUvError": 7.628086203137485e-06,
+        "sourceVertexIdsSha256": "ca92e5df64562e9b33029dca2fcc837651868593bd2a5faba70b2505df25acbd",
+        "sourceTriangleOwnershipSha256": "a5c3a4b32a4be694602c418615293238f2af9abf3f8fa92ab0ff4944876b661f"
+      },
+      "aileronRFar": {
+        "triangles": 58,
+        "vertices": 64,
+        "indexBytes": 2,
+        "maxPositionErrorMetres": 0.00011918207039762763,
+        "minimumNormalDot": 0.9999999998331015,
+        "maxUvError": 7.623914742072024e-06,
+        "sourceVertexIdsSha256": "0c1a834417fdf900811017feb5198f9a75b40b8a39daaa6c57093602805bcb82",
+        "sourceTriangleOwnershipSha256": "a5c3a4b32a4be694602c418615293238f2af9abf3f8fa92ab0ff4944876b661f"
+      },
+      "body": {
+        "triangles": 14699,
+        "vertices": 9670,
+        "indexBytes": 2,
+        "maxPositionErrorMetres": 0.00011917995043653207,
+        "minimumNormalDot": 0.9999999997014952,
+        "maxUvError": 7.628897030098614e-06,
+        "sourceVertexIdsSha256": "5539688156638fcda4ec412035e29a09df1708171771fdbe493d38e9c422084d",
+        "sourceTriangleOwnershipSha256": "29964a8debaba880655a14c763d6f334325be69c0e1ab47e31c54205c824b054"
+      },
+      "bodyFar": {
+        "triangles": 4997,
+        "vertices": 4007,
+        "indexBytes": 2,
+        "maxPositionErrorMetres": 0.00011917995043653207,
+        "minimumNormalDot": 0.9999999997014952,
+        "maxUvError": 7.628424085637242e-06,
+        "sourceVertexIdsSha256": "1b185aaf7b0d3628f2645fce529a137c02cf12f7a9892f276231fc5dfc5b7790",
+        "sourceTriangleOwnershipSha256": "29964a8debaba880655a14c763d6f334325be69c0e1ab47e31c54205c824b054"
+      },
+      "elevatorL": {
+        "triangles": 509,
+        "vertices": 325,
+        "indexBytes": 2,
+        "maxPositionErrorMetres": 0.00011847461769232126,
+        "minimumNormalDot": 0.9999999998023307,
+        "maxUvError": 7.6281787456666805e-06,
+        "sourceVertexIdsSha256": "18e4b9a3f984a85ef2b2b994e515d37a2bb1c45e4db82c9e373446bd5bae9684",
+        "sourceTriangleOwnershipSha256": "2b8182bd6f70cf8bc4722f19ec2b444bd949632dc705680dddd8e662fd0ba75f"
+      },
+      "elevatorLFar": {
+        "triangles": 172,
+        "vertices": 128,
+        "indexBytes": 2,
+        "maxPositionErrorMetres": 0.00011800202037459684,
+        "minimumNormalDot": 0.9999999998187636,
+        "maxUvError": 7.6281787456666805e-06,
+        "sourceVertexIdsSha256": "676ed0fe7752af459f8f760559102949eac6d25b53c59dec3b0841775fc2f0b6",
+        "sourceTriangleOwnershipSha256": "2b8182bd6f70cf8bc4722f19ec2b444bd949632dc705680dddd8e662fd0ba75f"
+      },
+      "elevatorR": {
+        "triangles": 527,
+        "vertices": 336,
+        "indexBytes": 2,
+        "maxPositionErrorMetres": 0.00011890549906912184,
+        "minimumNormalDot": 0.9999999997125806,
+        "maxUvError": 7.617692793893127e-06,
+        "sourceVertexIdsSha256": "3c830ddf589b9ee25fd242c245149050778f1ba45f15519bfb41a9300fc75d96",
+        "sourceTriangleOwnershipSha256": "205929e5e629278891340966e1ca5aff0f9fddf8d7cea0c9c665ba9344d23606"
+      },
+      "elevatorRFar": {
+        "triangles": 178,
+        "vertices": 128,
+        "indexBytes": 2,
+        "maxPositionErrorMetres": 0.00011863763184205567,
+        "minimumNormalDot": 0.9999999997816661,
+        "maxUvError": 7.6165177087528235e-06,
+        "sourceVertexIdsSha256": "e77d47654a3d5ad891e70b37c66b7a65e3705f6a4c300b99f46b061b6af46672",
+        "sourceTriangleOwnershipSha256": "205929e5e629278891340966e1ca5aff0f9fddf8d7cea0c9c665ba9344d23606"
+      },
+      "flapL": {
+        "triangles": 289,
+        "vertices": 230,
+        "indexBytes": 2,
+        "maxPositionErrorMetres": 0.00011838693150645341,
+        "minimumNormalDot": 0.9999999996940054,
+        "maxUvError": 7.610029956695019e-06,
+        "sourceVertexIdsSha256": "0714040e957f9bbb5380f5538bc919da7792767056ed83fe311431df855df56e",
+        "sourceTriangleOwnershipSha256": "92dd89276d07c3f619b650b54688aacf12fbf23863100ff33676b5b0e54fee41"
+      },
+      "flapLFar": {
+        "triangles": 97,
+        "vertices": 112,
+        "indexBytes": 2,
+        "maxPositionErrorMetres": 0.00011623703971830324,
+        "minimumNormalDot": 0.9999999998111567,
+        "maxUvError": 7.610029956695019e-06,
+        "sourceVertexIdsSha256": "e28705056db88389ec507cd0f40a783ce61373dd0e9d6bbb650d5679edb9bc8c",
+        "sourceTriangleOwnershipSha256": "92dd89276d07c3f619b650b54688aacf12fbf23863100ff33676b5b0e54fee41"
+      },
+      "flapR": {
+        "triangles": 370,
+        "vertices": 276,
+        "indexBytes": 2,
+        "maxPositionErrorMetres": 0.00011755412378189334,
+        "minimumNormalDot": 0.9999999997166347,
+        "maxUvError": 7.591277481400205e-06,
+        "sourceVertexIdsSha256": "353f92c9dadb889b04597d68ecbae79bdfef0005c153b811fbae198c3d7c6026",
+        "sourceTriangleOwnershipSha256": "b4da0c92efe6434faa170d97467b5a49712a96ba8d9daba9d8127ff2b09bf552"
+      },
+      "flapRFar": {
+        "triangles": 124,
+        "vertices": 121,
+        "indexBytes": 2,
+        "maxPositionErrorMetres": 0.0001174679911537524,
+        "minimumNormalDot": 0.9999999997166347,
+        "maxUvError": 7.575766722112132e-06,
+        "sourceVertexIdsSha256": "5b805f9d9eab5ad074e09bb27db16a1df653f8216791a27c1c9f50c4f1b5a0b6",
+        "sourceTriangleOwnershipSha256": "b4da0c92efe6434faa170d97467b5a49712a96ba8d9daba9d8127ff2b09bf552"
+      },
+      "gearL": {
+        "triangles": 1131,
+        "vertices": 959,
+        "indexBytes": 2,
+        "maxPositionErrorMetres": 0.00011901940487901719,
+        "minimumNormalDot": 0.999999999738947,
+        "maxUvError": 7.619395166545695e-06,
+        "sourceVertexIdsSha256": "8c0837d7179219aadafcb2fa94e192ebf586772edd79bd90f11a6378324f6503",
+        "sourceTriangleOwnershipSha256": "ad4b6d0149c6e24dd5b475dd2a7076ea34c9cfb12d3b908dcd96d29095eb333d"
+      },
+      "gearLFar": {
+        "triangles": 433,
+        "vertices": 547,
+        "indexBytes": 2,
+        "maxPositionErrorMetres": 0.00011894510106791323,
+        "minimumNormalDot": 0.999999999738947,
+        "maxUvError": 7.615098875368709e-06,
+        "sourceVertexIdsSha256": "3546766db515abf3cd4a42ed4d95c68e89a048ce5eb6f3a20c97750242e33596",
+        "sourceTriangleOwnershipSha256": "ad4b6d0149c6e24dd5b475dd2a7076ea34c9cfb12d3b908dcd96d29095eb333d"
+      },
+      "gearN": {
+        "triangles": 1127,
+        "vertices": 957,
+        "indexBytes": 2,
+        "maxPositionErrorMetres": 0.0001188728608196854,
+        "minimumNormalDot": 0.9999999997183802,
+        "maxUvError": 7.627874742399676e-06,
+        "sourceVertexIdsSha256": "87143d175685798c399057bb67389e1d18575e7995debadfcb09255d15fbfc80",
+        "sourceTriangleOwnershipSha256": "7401514c5aaf2a2d3c5e94554b387fe0ec5f5c5d532138e14f795a6b1040ac7a"
+      },
+      "gearNFar": {
+        "triangles": 382,
+        "vertices": 491,
+        "indexBytes": 2,
+        "maxPositionErrorMetres": 0.0001188728608196854,
+        "minimumNormalDot": 0.9999999997183802,
+        "maxUvError": 7.627874742399676e-06,
+        "sourceVertexIdsSha256": "e242dce4a2cb0298b2d4bc46640fa63d43c01d8d7f6de6c6f5d59351144650e3",
+        "sourceTriangleOwnershipSha256": "7401514c5aaf2a2d3c5e94554b387fe0ec5f5c5d532138e14f795a6b1040ac7a"
+      },
+      "gearR": {
+        "triangles": 855,
+        "vertices": 700,
+        "indexBytes": 2,
+        "maxPositionErrorMetres": 0.00011802789136727831,
+        "minimumNormalDot": 0.9999999997407841,
+        "maxUvError": 7.623142114526749e-06,
+        "sourceVertexIdsSha256": "e879224492860ac7860173cde865cf0604719242ba2207c219460c0a8b2e8603",
+        "sourceTriangleOwnershipSha256": "63d163b5f06ded778949e23f7713d668bf68cb44ffb40e9448af1f97e4b63f62"
+      },
+      "gearRFar": {
+        "triangles": 337,
+        "vertices": 395,
+        "indexBytes": 2,
+        "maxPositionErrorMetres": 0.00011802789136727831,
+        "minimumNormalDot": 0.9999999997407841,
+        "maxUvError": 7.623142114526749e-06,
+        "sourceVertexIdsSha256": "a4325cf476e5bb27dea61e1307f278f567d75c5b1ea0623f9fdee8c41821e97c",
+        "sourceTriangleOwnershipSha256": "63d163b5f06ded778949e23f7713d668bf68cb44ffb40e9448af1f97e4b63f62"
+      },
+      "rudder": {
+        "triangles": 321,
+        "vertices": 238,
+        "indexBytes": 2,
+        "maxPositionErrorMetres": 0.00011837109625911779,
+        "minimumNormalDot": 0.9999999997641911,
+        "maxUvError": 7.607957414057509e-06,
+        "sourceVertexIdsSha256": "2cba9bcdbeeda7bb950ea3f3cc9234f02feeb4254cb670c5cd2ccccb783f6417",
+        "sourceTriangleOwnershipSha256": "b8a89d930d25d0f09106ea8467c5182e7715fb31698fbe2570ad3d3fd61e5ea7"
+      },
+      "rudderFar": {
+        "triangles": 108,
+        "vertices": 108,
+        "indexBytes": 2,
+        "maxPositionErrorMetres": 0.00011837109625911779,
+        "minimumNormalDot": 0.9999999997641911,
+        "maxUvError": 7.589635363736136e-06,
+        "sourceVertexIdsSha256": "a235d09bbf1875a5a687900097aa4bed6e577f7085552e5e98ef5f907cc94129",
+        "sourceTriangleOwnershipSha256": "b8a89d930d25d0f09106ea8467c5182e7715fb31698fbe2570ad3d3fd61e5ea7"
+      }
+    },
+    "source": {
+      "author": "BlenderCommunityHead (https://sketchfab.com/aboodgoudagad)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/1990-cessna-citation-texture-detailed-exterior-a78839624fe64900a8352cb23462350a",
+      "title": "1990 Cessna Citation, Texture Detailed, Exterior"
+    },
+    "sourceTriangles": 20131,
+    "nearTriangles": 20131,
+    "farTriangles": 6929,
+    "dims": [
+      15.620614308437576,
+      5.662708292423373,
+      14.75
+    ]
+  },
+  "airliner": {
+    "parts": {
+      "body": {
+        "triangles": 36641,
+        "vertices": 28621,
+        "indexBytes": 2,
+        "maxPositionErrorMetres": 0.00029933356825750934,
+        "minimumNormalDot": 0.9999999996807228,
+        "maxUvError": 0.0,
+        "sourceVertexIdsSha256": "874193d1f0fd89ca5ece7be3915ba1d476980c25c3590c4a7f40756d100d6684",
+        "sourceTriangleOwnershipSha256": "d93b242734db68209e518943a4f18f6f07c65263f3191a1b98b3bb942c352a59"
+      },
+      "bodyFar": {
+        "triangles": 5999,
+        "vertices": 6612,
+        "indexBytes": 2,
+        "maxPositionErrorMetres": 0.0002990853946798211,
+        "minimumNormalDot": 0.9999999996807228,
+        "maxUvError": 0.0,
+        "sourceVertexIdsSha256": "ec4c5e9b6f7150ccd5c58598dabd56e9cef98af5307cf0cdbcb74266568feb99",
+        "sourceTriangleOwnershipSha256": "d93b242734db68209e518943a4f18f6f07c65263f3191a1b98b3bb942c352a59"
+      },
+      "trim": {
+        "triangles": 43674,
+        "vertices": 37928,
+        "indexBytes": 2,
+        "maxPositionErrorMetres": 0.0002993353678490962,
+        "minimumNormalDot": 0.9999999996679404,
+        "maxUvError": 0.0,
+        "sourceVertexIdsSha256": "2f9cae4ccb42893ad768b6e1ed17145fdb91b906eb2c4dcd80462ddc39d6db9a",
+        "sourceTriangleOwnershipSha256": "d7cbaf01bd4fee55a5370d45f3a0a49eee64293166d86bae41978a5db4c1bd3f"
+      },
+      "trimFar": {
+        "triangles": 10038,
+        "vertices": 13000,
+        "indexBytes": 2,
+        "maxPositionErrorMetres": 0.0002992863422761616,
+        "minimumNormalDot": 0.9999999996976265,
+        "maxUvError": 0.0,
+        "sourceVertexIdsSha256": "dd7d42d00a29871b236f9e86ac5aa826948f2f1140205f11d46c5aaa77b7f314",
+        "sourceTriangleOwnershipSha256": "d7cbaf01bd4fee55a5370d45f3a0a49eee64293166d86bae41978a5db4c1bd3f"
+      },
+      "glass": {
+        "triangles": 5668,
+        "vertices": 5750,
+        "indexBytes": 2,
+        "maxPositionErrorMetres": 0.00029915917225054045,
+        "minimumNormalDot": 0.9999999997186065,
+        "maxUvError": 0.0,
+        "sourceVertexIdsSha256": "f827f5216fa1d9f8ca2d4612c6cea26d4072b08ff78cbc09bb0d60ee0ac3780a",
+        "sourceTriangleOwnershipSha256": "30b773101ae504f1f8b5add0483b563fee36abb8bc9ed30aaf5fd1888621c9f9"
+      },
+      "glassFar": {
+        "triangles": 1282,
+        "vertices": 1490,
+        "indexBytes": 2,
+        "maxPositionErrorMetres": 0.00029915917225054045,
+        "minimumNormalDot": 0.9999999997390144,
+        "maxUvError": 0.0,
+        "sourceVertexIdsSha256": "7db77ad19c19aa141922325969ad16f05e14d3885946ae597bd3ca37710188de",
+        "sourceTriangleOwnershipSha256": "30b773101ae504f1f8b5add0483b563fee36abb8bc9ed30aaf5fd1888621c9f9"
+      },
+      "cabin": {
+        "triangles": 76646,
+        "vertices": 115496,
+        "indexBytes": 4,
+        "maxPositionErrorMetres": 0.00029933726774089564,
+        "minimumNormalDot": 0.999999999749659,
+        "maxUvError": 0.0,
+        "sourceVertexIdsSha256": "779fb08c3947eb35002cd56127117855524b31bcf8f3e29379403a4940141f93",
+        "sourceTriangleOwnershipSha256": "9f2fe6bfd92bc002bc1fce875b0e8ecc66e9b43f8608a8425ec1b47a18676538"
+      }
+    },
+    "source": {
+      "author": "A Random Modeler (https://sketchfab.com/danielskom111)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/southwest-airlines-boeing-737-73d0cd0c03594c5d9c53235d74b429bf",
+      "title": "Southwest Airlines Boeing 737"
+    },
+    "sourceTriangles": 162629,
+    "nearTriangles": 162629,
+    "farTriangles": 17319,
+    "dims": [
+      39.23164329132513,
+      12.693061263071819,
+      35.671654921074044
+    ]
+  },
+  "outputs": {
+    "jet-models.bin": {
+      "bytes": 6143692,
+      "sha256": "a8f911de36c3d7a8a97b4b0a0ee0ef855fed15ee9415d0f505edbdd7967b092b"
+    },
+    "jet-skin.webp": {
+      "bytes": 11136,
+      "sha256": "116993dd172cc53a8e580e0088ca1f755c7d78a4214521c12db9abde696bccf6"
+    }
+  },
+  "unchangedExistingAircraft": {
+    "aircraft-models.bin": "7f0861b09b2a8b91be8c86aae9125bf7cbc5515a0f138d0d5e800a0ac0835961",
+    "aircraft-skin.webp": "ef8329a4b14e9d5430b56892e0a5851156f8ed6401792954cb0d123871868317"
+  }
+}

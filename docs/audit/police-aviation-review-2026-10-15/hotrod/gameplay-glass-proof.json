@@ -1,0 +1,21 @@
+{
+  "sourceExpected": [
+    1.1244690725059128,
+    1.6242246711168973,
+    -0.1940837840277219,
+    0.1094954818427025
+  ],
+  "CAR_GLASS_BANDS_hotrod": [
+    1.124469073,
+    1.624224671,
+    -0.194083784,
+    0.109495482
+  ],
+  "uniformRuntimeScale": 8,
+  "productionSpecMetres": {
+    "l": 4.5,
+    "w": 2.07
+  },
+  "passed": true,
+  "sourceSHA256": "461349ce811e758f6373db523cb11e50397fa37cd0fc5e0ca6900393ae0116ef"
+}

@@ -49,7 +49,12 @@ gameplay roles.
 - The marked patrol S2 has a fitted roof bar, mounting feet, red/blue/takedown lenses,
   grille strobes, halo anchors and aerial number placement. Unmarked S2 keeps dash,
   grille and rear-deck lights. Existing police patterns/wig-wag and crew still work.
-- Sheriff livery is projected into `liveryUv`; source atlas coordinates stay in
+  `policeApprovedDecalAnchors` omits the SUV's unsupported sedan trunk number,
+  fits its aerial unit number between the source rails above the bowed roof, and
+  places both side unit numbers wholly on rear-quarter paint below the glass.
+  It reads source geometry without changing any source attributes or indices.
+- Sheriff livery uses one affine sill-to-glass-belt side projection in `liveryUv`, shared by near/far shells;
+  sparse per-station vertex envelopes must not change letter height. Source atlas coordinates stay in
   `uv`. `policeApprovedPanels` retains normals, UVs, colours and finish while
   splitting the roof/pillar livery boundary. Close and far parts use the same
   projection. Approved police paint uses `look.paint`, like the legacy police

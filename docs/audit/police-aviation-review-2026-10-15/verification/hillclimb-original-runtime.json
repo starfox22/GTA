@@ -1,0 +1,679 @@
+[
+  {
+    "mode": "fresh60",
+    "before": {
+      "driving": {
+        "type": "crawler",
+        "fitted": {
+          "abs": true,
+          "esc": true,
+          "tcs": true
+        },
+        "lamps": {
+          "abs": "ready",
+          "esc": "ready",
+          "tcs": "ready"
+        },
+        "character": {
+          "front": 0.53,
+          "cgOverWheelbase": 0.3,
+          "bias": 0.85,
+          "drive": "4x4",
+          "liftOff": 0.35
+        },
+        "settings": {
+          "abs": true,
+          "esc": true,
+          "tcs": true,
+          "steering": 100,
+          "lookAhead": 200,
+          "cameraDistance": 120,
+          "walkDistance": 100
+        },
+        "tyres": null,
+        "absActive": false,
+        "tyreSlip": 0
+      },
+      "ride": {
+        "type": "crawler",
+        "onTerrain": false,
+        "active": false,
+        "air": false,
+        "liftM": 0,
+        "pitchDeg": 0,
+        "rollDeg": 0,
+        "loadG": 0,
+        "wheelTravelM": null,
+        "wheelLoadG": null,
+        "model": {
+          "hz": 1.23,
+          "sagM": 0.166,
+          "droopM": 0.166,
+          "bumpM": 0.166,
+          "tyreM": 0.404,
+          "wheelbaseM": 2.511,
+          "trackM": 1.68
+        }
+      }
+    },
+    "result": {
+      "direction": "up",
+      "frame": 0.0167,
+      "ride": {
+        "airS": 0.03,
+        "hops": 0,
+        "maxGapM": 0.01,
+        "gapAt": [
+          7418,
+          1548,
+          44
+        ],
+        "maxLiftM": 2.52,
+        "liftAt": [
+          7384,
+          1237,
+          52.4,
+          [
+            0.18,
+            -0.13,
+            0.01,
+            -0.2
+          ]
+        ],
+        "minLiftM": -0.19,
+        "maxRiseMs": 6.97,
+        "maxUpMs": 6.14,
+        "maxDownMs": -5.53,
+        "stops": 14,
+        "maxBlowMs": 5.42,
+        "blowAt": [
+          7388,
+          1242,
+          0,
+          6.53,
+          23
+        ],
+        "flights": 0,
+        "maxPitchRate": 2.27,
+        "maxRollRate": 8.29,
+        "nan": 0
+      },
+      "cliffFlights": 0,
+      "cliffAirS": 0,
+      "nan": false,
+      "overturned": false,
+      "reason": "summit",
+      "seconds": 77.5,
+      "sample": 696,
+      "of": 700,
+      "progress": 0.994,
+      "height": 762,
+      "meanSpin": 0.1,
+      "slidBackM": 0.6,
+      "maxKmh": 46,
+      "hp": 235,
+      "mudCoat": 0.3,
+      "last": {
+        "peak": "MOUNT ASCENT",
+        "time": 77.23,
+        "clean": true,
+        "challenge": false,
+        "splits": [
+          6.63,
+          19.35,
+          44.4,
+          69.42
+        ]
+      }
+    },
+    "after": {
+      "driving": {
+        "type": "crawler",
+        "fitted": {
+          "abs": true,
+          "esc": true,
+          "tcs": true
+        },
+        "lamps": {
+          "abs": "ready",
+          "esc": "ready",
+          "tcs": "ready"
+        },
+        "character": {
+          "front": 0.53,
+          "cgOverWheelbase": 0.3,
+          "bias": 0.85,
+          "drive": "4x4",
+          "liftOff": 0.35
+        },
+        "settings": {
+          "abs": true,
+          "esc": true,
+          "tcs": true,
+          "steering": 100,
+          "lookAhead": 200,
+          "cameraDistance": 120,
+          "walkDistance": 100
+        },
+        "tyres": {
+          "pedal": 0,
+          "steer": 0,
+          "slip": [
+            0,
+            0
+          ],
+          "lock": [
+            0,
+            0
+          ],
+          "pressure": [
+            1,
+            1
+          ],
+          "lateral": [
+            1,
+            1
+          ],
+          "spin": 0,
+          "yawSlide": 0,
+          "decelG": 0
+        },
+        "absActive": false,
+        "tyreSlip": 0
+      },
+      "ride": {
+        "type": "crawler",
+        "onTerrain": true,
+        "active": true,
+        "air": false,
+        "liftM": 0.035,
+        "pitchDeg": 0.44,
+        "rollDeg": -0.07,
+        "loadG": 0.729,
+        "wheelTravelM": [
+          -0.045,
+          -0.047,
+          -0.045,
+          -0.048
+        ],
+        "wheelLoadG": [
+          0.21,
+          0.21,
+          0.175,
+          0.134
+        ],
+        "model": {
+          "hz": 1.23,
+          "sagM": 0.166,
+          "droopM": 0.166,
+          "bumpM": 0.166,
+          "tyreM": 0.404,
+          "wheelbaseM": 2.511,
+          "trackM": 1.68
+        }
+      }
+    }
+  },
+  {
+    "mode": "fresh30",
+    "before": {
+      "driving": {
+        "type": "crawler",
+        "fitted": {
+          "abs": true,
+          "esc": true,
+          "tcs": true
+        },
+        "lamps": {
+          "abs": "ready",
+          "esc": "ready",
+          "tcs": "ready"
+        },
+        "character": {
+          "front": 0.53,
+          "cgOverWheelbase": 0.3,
+          "bias": 0.85,
+          "drive": "4x4",
+          "liftOff": 0.35
+        },
+        "settings": {
+          "abs": true,
+          "esc": true,
+          "tcs": true,
+          "steering": 100,
+          "lookAhead": 200,
+          "cameraDistance": 120,
+          "walkDistance": 100
+        },
+        "tyres": null,
+        "absActive": false,
+        "tyreSlip": 0
+      },
+      "ride": {
+        "type": "crawler",
+        "onTerrain": false,
+        "active": false,
+        "air": false,
+        "liftM": 0,
+        "pitchDeg": 0,
+        "rollDeg": 0,
+        "loadG": 0,
+        "wheelTravelM": null,
+        "wheelLoadG": null,
+        "model": {
+          "hz": 1.23,
+          "sagM": 0.166,
+          "droopM": 0.166,
+          "bumpM": 0.166,
+          "tyreM": 0.404,
+          "wheelbaseM": 2.511,
+          "trackM": 1.68
+        }
+      }
+    },
+    "result": {
+      "direction": "up",
+      "frame": 0.0333,
+      "ride": {
+        "airS": 0.03,
+        "hops": 0,
+        "maxGapM": 0.01,
+        "gapAt": [
+          7418,
+          1548,
+          45
+        ],
+        "maxLiftM": 2.29,
+        "liftAt": [
+          8098,
+          1583,
+          17.7,
+          [
+            -0.19,
+            0.23,
+            -0.07,
+            0.72
+          ]
+        ],
+        "minLiftM": -0.15,
+        "maxRiseMs": 7.22,
+        "maxUpMs": 5.28,
+        "maxDownMs": -4.58,
+        "stops": 11,
+        "maxBlowMs": 2.2,
+        "blowAt": [
+          8056,
+          1583,
+          3,
+          0.18,
+          22
+        ],
+        "flights": 0,
+        "maxPitchRate": 2.33,
+        "maxRollRate": 6.51,
+        "nan": 0
+      },
+      "cliffFlights": 0,
+      "cliffAirS": 0,
+      "nan": false,
+      "overturned": false,
+      "reason": "summit",
+      "seconds": 73.4,
+      "sample": 696,
+      "of": 700,
+      "progress": 0.994,
+      "height": 762,
+      "meanSpin": 0.09,
+      "slidBackM": 0,
+      "maxKmh": 45,
+      "hp": 237,
+      "mudCoat": 0.3,
+      "last": {
+        "peak": "MOUNT ASCENT",
+        "time": 72.97,
+        "clean": true,
+        "challenge": false,
+        "splits": [
+          6.67,
+          19.33,
+          44.3,
+          65.43
+        ]
+      }
+    },
+    "after": {
+      "driving": {
+        "type": "crawler",
+        "fitted": {
+          "abs": true,
+          "esc": true,
+          "tcs": true
+        },
+        "lamps": {
+          "abs": "ready",
+          "esc": "ready",
+          "tcs": "ready"
+        },
+        "character": {
+          "front": 0.53,
+          "cgOverWheelbase": 0.3,
+          "bias": 0.85,
+          "drive": "4x4",
+          "liftOff": 0.35
+        },
+        "settings": {
+          "abs": true,
+          "esc": true,
+          "tcs": true,
+          "steering": 100,
+          "lookAhead": 200,
+          "cameraDistance": 120,
+          "walkDistance": 100
+        },
+        "tyres": {
+          "pedal": 0,
+          "steer": 1,
+          "slip": [
+            0,
+            0
+          ],
+          "lock": [
+            0,
+            0
+          ],
+          "pressure": [
+            1,
+            1
+          ],
+          "lateral": [
+            1,
+            1
+          ],
+          "spin": 0,
+          "yawSlide": 0,
+          "decelG": 0
+        },
+        "absActive": false,
+        "tyreSlip": 0
+      },
+      "ride": {
+        "type": "crawler",
+        "onTerrain": true,
+        "active": true,
+        "air": false,
+        "liftM": 0.016,
+        "pitchDeg": -0.54,
+        "rollDeg": -0.28,
+        "loadG": 0.964,
+        "wheelTravelM": [
+          -0.003,
+          -0.011,
+          -0.052,
+          -0.056
+        ],
+        "wheelLoadG": [
+          0.282,
+          0.274,
+          0.219,
+          0.188
+        ],
+        "model": {
+          "hz": 1.23,
+          "sagM": 0.166,
+          "droopM": 0.166,
+          "bumpM": 0.166,
+          "tyreM": 0.404,
+          "wheelbaseM": 2.511,
+          "trackM": 1.68
+        }
+      }
+    }
+  },
+  {
+    "mode": "reused60",
+    "before": {
+      "driving": {
+        "type": "crawler",
+        "fitted": {
+          "abs": true,
+          "esc": true,
+          "tcs": true
+        },
+        "lamps": {
+          "abs": "ready",
+          "esc": "ready",
+          "tcs": "ready"
+        },
+        "character": {
+          "front": 0.53,
+          "cgOverWheelbase": 0.3,
+          "bias": 0.85,
+          "drive": "4x4",
+          "liftOff": 0.35
+        },
+        "settings": {
+          "abs": true,
+          "esc": true,
+          "tcs": true,
+          "steering": 100,
+          "lookAhead": 200,
+          "cameraDistance": 120,
+          "walkDistance": 100
+        },
+        "tyres": {
+          "pedal": 0,
+          "steer": 1,
+          "slip": [
+            0,
+            0
+          ],
+          "lock": [
+            0,
+            0
+          ],
+          "pressure": [
+            1,
+            1
+          ],
+          "lateral": [
+            1,
+            1
+          ],
+          "spin": 0,
+          "yawSlide": 0,
+          "decelG": 0
+        },
+        "absActive": false,
+        "tyreSlip": 0
+      },
+      "ride": {
+        "type": "crawler",
+        "onTerrain": true,
+        "active": true,
+        "air": false,
+        "liftM": 0.016,
+        "pitchDeg": -0.54,
+        "rollDeg": -0.28,
+        "loadG": 0.964,
+        "wheelTravelM": [
+          -0.003,
+          -0.011,
+          -0.052,
+          -0.056
+        ],
+        "wheelLoadG": [
+          0.282,
+          0.274,
+          0.219,
+          0.188
+        ],
+        "model": {
+          "hz": 1.23,
+          "sagM": 0.166,
+          "droopM": 0.166,
+          "bumpM": 0.166,
+          "tyreM": 0.404,
+          "wheelbaseM": 2.511,
+          "trackM": 1.68
+        }
+      }
+    },
+    "result": {
+      "direction": "up",
+      "frame": 0.0167,
+      "ride": {
+        "airS": 0.01,
+        "hops": 0,
+        "maxGapM": 0.01,
+        "gapAt": [
+          7418,
+          1547,
+          44
+        ],
+        "maxLiftM": 1.78,
+        "liftAt": [
+          8136,
+          1590,
+          17.2,
+          [
+            -0.02,
+            1.25,
+            -0.07,
+            0.6
+          ]
+        ],
+        "minLiftM": -0.19,
+        "maxRiseMs": 4.55,
+        "maxUpMs": 5.2,
+        "maxDownMs": -4.47,
+        "stops": 13,
+        "maxBlowMs": 1.88,
+        "blowAt": [
+          8144,
+          1602,
+          1,
+          2.47,
+          20
+        ],
+        "flights": 0,
+        "maxPitchRate": 2.19,
+        "maxRollRate": 6.7,
+        "nan": 0
+      },
+      "cliffFlights": 0,
+      "cliffAirS": 0,
+      "nan": false,
+      "overturned": false,
+      "reason": "summit",
+      "seconds": 75.9,
+      "sample": 696,
+      "of": 700,
+      "progress": 0.994,
+      "height": 762,
+      "meanSpin": 0.09,
+      "slidBackM": 0.2,
+      "maxKmh": 46,
+      "hp": 237,
+      "mudCoat": 0.54,
+      "last": {
+        "peak": "MOUNT ASCENT",
+        "time": 75.62,
+        "clean": true,
+        "challenge": false,
+        "splits": [
+          6.63,
+          20.1,
+          46.68,
+          67.78
+        ]
+      }
+    },
+    "after": {
+      "driving": {
+        "type": "crawler",
+        "fitted": {
+          "abs": true,
+          "esc": true,
+          "tcs": true
+        },
+        "lamps": {
+          "abs": "ready",
+          "esc": "ready",
+          "tcs": "ready"
+        },
+        "character": {
+          "front": 0.53,
+          "cgOverWheelbase": 0.3,
+          "bias": 0.85,
+          "drive": "4x4",
+          "liftOff": 0.35
+        },
+        "settings": {
+          "abs": true,
+          "esc": true,
+          "tcs": true,
+          "steering": 100,
+          "lookAhead": 200,
+          "cameraDistance": 120,
+          "walkDistance": 100
+        },
+        "tyres": {
+          "pedal": 0,
+          "steer": 0,
+          "slip": [
+            0,
+            0
+          ],
+          "lock": [
+            0,
+            0
+          ],
+          "pressure": [
+            1,
+            1
+          ],
+          "lateral": [
+            1,
+            1
+          ],
+          "spin": 0,
+          "yawSlide": 0,
+          "decelG": 0
+        },
+        "absActive": false,
+        "tyreSlip": 0
+      },
+      "ride": {
+        "type": "crawler",
+        "onTerrain": true,
+        "active": true,
+        "air": false,
+        "liftM": 0.034,
+        "pitchDeg": 0.55,
+        "rollDeg": -0.05,
+        "loadG": 0.766,
+        "wheelTravelM": [
+          -0.047,
+          -0.048,
+          -0.043,
+          -0.046
+        ],
+        "wheelLoadG": [
+          0.207,
+          0.206,
+          0.219,
+          0.134
+        ],
+        "model": {
+          "hz": 1.23,
+          "sagM": 0.166,
+          "droopM": 0.166,
+          "bumpM": 0.166,
+          "tyreM": 0.404,
+          "wheelbaseM": 2.511,
+          "trackM": 1.68
+        }
+      }
+    }
+  }
+]

@@ -44,6 +44,10 @@
       let vaEnabled = true;
       function vehicleAssetModel(type) {
         if (!vaEnabled) return null;
+        if (type === 'hotrod' && typeof hotrodVehicleModel === 'function') {
+          const hotrod = hotrodVehicleModel();
+          if (hotrod) return hotrod;
+        }
         if (type === 'chevette' && typeof sportsVehicleModel === 'function') {
           const sports = sportsVehicleModel();
           if (sports) return sports;
@@ -121,7 +125,11 @@
        */
       function vaGeometry(model, data, name, k, uvAt, rawPart = false) {
         if (Array.isArray(name)) return vaJoin(name.map((part) => vaGeometry(model, data, part, k, uvAt)).filter(Boolean));
-        if (!rawPart && model.roleParts?.[name]) return sportsRoleGeometry(model, data, name, k, uvAt);
+        if (!rawPart && model.roleParts?.[name]) {
+          const names = model.roleParts[name];
+          if (names.length === 1) return vaGeometry(model, data, names[0], k, uvAt, true);
+          return sportsRoleGeometry(model, data, name, k, uvAt);
+        }
         const info = model.parts[name];
         if (!info) return null;
         const a = data.arrays,
@@ -161,7 +169,8 @@
         // Approved models retain authored material finish independently of their atlas UVs.
         const finish = a[key + '.f'];
         if (finish) geo.setAttribute('finish', new Three.BufferAttribute(new Uint8Array(finish), 2, true));
-        const sourceUv = a[key + '.a'], atlasRect = a[key + '.t'];
+        const sourceUv = a[key + '.a'], atlasRect = a[key + '.t'], ormUv = a[key + '.o'];
+        if (ormUv) geo.setAttribute('avOrmSourceUv', new Three.BufferAttribute(new Float32Array(ormUv), 2));
         if (sourceUv) geo.setAttribute('avSourceUv', new Three.BufferAttribute(new Float32Array(sourceUv), 2));
         if (atlasRect) geo.setAttribute('avAtlasRect', new Three.BufferAttribute(new Uint16Array(atlasRect), 4, true));
         geo.setIndex(new Three.BufferAttribute(index.BYTES_PER_ELEMENT === 4 ? new Uint32Array(index) : new Uint16Array(index), 1));
@@ -228,8 +237,8 @@
       function vaKit(type, l, w, approvedKey = null) {
         const key = (approvedKey || type) + ':' + l.toFixed(2) + ':' + w.toFixed(2);
         if (vaKits.has(key)) return vaKits.get(key);
-        const sports = approvedKey === 'c8_hari',
-          data = sports ? sportsVehicleData() : approvedKey ? approvedVehicleData() : vaData(),
+        const sports = approvedKey === 'c8_hari', hotrod = approvedKey === 'coupe33_zhab',
+          data = hotrod ? hotrodVehicleData() : sports ? sportsVehicleData() : approvedKey ? approvedVehicleData() : vaData(),
           model = data.header.models[approvedKey || type],
           M = CAR_M,
           k = approvedKey ? Math.min(l / model.dims[0], w / 0.87 / model.dims[2], M) : l / model.dims[0],
@@ -325,6 +334,7 @@
         kit.assetWheels.sort((a, b) => approvedKey ? Number(b.front) - Number(a.front) || a.side - b.side : b.x - a.x || a.side - b.side);
         if (approvedKey) approvedSuvFarKit(kit, model, data, k);
         if (sports) sportsNativeDoors(kit);
+        if (hotrod) hotrodVehicleKitFit(kit, model, data, k);
         vaKits.set(key, kit);
         return kit;
       }
@@ -337,24 +347,25 @@
           l = spec.l,
           w = spec.w * 0.87,
           sports = vaEnabled && vehicle.type === 'chevette' && typeof sportsVehicleModel === 'function' && sportsVehicleModel(),
-          approvedKey = sports ? 'c8_hari' : approvedSuvKey(vehicle),
-          approvedModel = sports || (approvedKey && vaEnabled ? approvedVehicleModel(approvedKey) : null),
+          hotrod = vaEnabled && vehicle.type === 'hotrod' && typeof hotrodVehicleModel === 'function' && hotrodVehicleModel(),
+          approvedKey = hotrod ? 'coupe33_zhab' : sports ? 'c8_hari' : approvedSuvKey(vehicle),
+          approvedModel = hotrod || sports || (approvedKey && vaEnabled ? approvedVehicleModel(approvedKey) : null),
           kit = vaKit(vehicle.type, l, w, approvedModel ? approvedKey : null),
           model = kit.asset,
-          materials = sports ? sportsVehicleMaterials() : kit.approvedKey ? approvedVehicleMaterials(model) : civSharedMaterials(),
+          materials = hotrod ? hotrodVehicleMaterials() : sports ? sportsVehicleMaterials() : kit.approvedKey ? approvedVehicleMaterials(model) : civSharedMaterials(),
           assetMaterials = kit.approvedKey ? materials : vaMaterials(),
-          lampMaterials = sports ? sportsVehicleLamps() : civLampSet(),
+          lampMaterials = hotrod ? hotrodVehicleLamps() : sports ? sportsVehicleLamps() : civLampSet(),
           group = new Three.Group(),
           bodyGroup = new Three.Group();
         group.add(bodyGroup);
         scene.add(group);
         if (kit.approvedKey && !kit.impostorPaint) {
-          kit.impostorPaint = sports ? sportsVehiclePaint({ color: '#ffffff' }) : approvedVehicleImpostorPaint(model);
-          if (sports) sharedMaterials.add(kit.impostorPaint);
+          kit.impostorPaint = hotrod ? hotrodVehiclePaint({ color: '#ffffff' }) : sports ? sportsVehiclePaint({ color: '#ffffff' }) : approvedVehicleImpostorPaint(model);
+          if (sports || hotrod) sharedMaterials.add(kit.impostorPaint);
         }
         const livery = kit.approvedKey ? materials.trim.map : model.paintTexture ? vaAtlas() : vaLivery(),
           finish = civFinish(vehicle.color, vehicle.id),
-          paint = sports ? sportsVehiclePaint(vehicle) : kit.approvedKey ? approvedVehiclePaint(vehicle, model) : civPaintMaterial(model.paintTexture ? '#ffffff' : vehicle.color, livery, finish);
+          paint = hotrod ? hotrodVehiclePaint(vehicle) : sports ? sportsVehiclePaint(vehicle) : kit.approvedKey ? approvedVehiclePaint(vehicle, model) : civPaintMaterial(model.paintTexture ? '#ffffff' : vehicle.color, livery, finish);
         const shell = mesh(kit.shell, paint, bodyGroup, 0, 0, 0),
           cabin = kit.cabin ? mesh(kit.cabin, materials.glass, bodyGroup, 0, 0, 0) : null,
           hood = mesh(kit.hood, paint, bodyGroup, 0, 0, 0),
@@ -394,7 +405,7 @@
             if (geo) {
               const lamp = mesh(geo, lit, bodyGroup, 0, 0, 0);
               lamp.castShadow = false;
-              lamps.push({ mesh: lamp, key, lit, kind, materials: sports ? lampMaterials : null });
+              lamps.push({ mesh: lamp, key, lit, kind, materials: sports || hotrod ? lampMaterials : null });
             }
             const h = kit.halos[key] || { x: (kind === 'head' ? 0.49 : -0.49) * l, y: kit.glass.base * 0.75, z: side * w * 0.33, size: 1 };
             nightLights.push(halo(bodyGroup, h.x + (kind === 'head' ? 0.4 : -0.4), h.y, h.z, (kind === 'head' ? 11 : 7) * (h.size || 1), kind === 'head' ? '#ffe9bd' : '#ff5a44'));
@@ -431,7 +442,8 @@
           civilian: true,
           asset: model.title,
           realSize: true,
-          dims: { l, w, h: g.base, roof: g.roof, van: false, sill: kit.sill + 0.1 * CAR_M },
+          dims: { l, w, h: g.base, roof: g.roof, van: false, sill: kit.sill + 0.1 * CAR_M,
+            ...(hotrod ? { door: model.doorSpan.map(value => value * kit.k) } : {}) },
           shell,
           assetTrim: trim,
           approvedInterior,
@@ -507,6 +519,8 @@
         }
         const sports = typeof sportsVehicleModel === 'function' && sportsVehicleModel();
         if (vaEnabled && sports) effective.chevette = sports;
+        const hotrod = typeof hotrodVehicleModel === 'function' && hotrodVehicleModel();
+        if (vaEnabled && hotrod) effective.hotrod = hotrod;
         for (const [type, m] of Object.entries(effective))
           models[type] = { title: m.title, sourceKey: m.type, kind: m.kind || 'car', triangles: m.triangles, farTriangles: m.farTriangles || null, dims: m.dims, wheels: m.wheels.length, belt: m.glass?.base ?? null, roof: m.glass?.roof ?? null, paintTexture: m.paintTexture };
         return { loaded: true, enabled: vaEnabled, atlas: !!vaAtlasCache?.image, approvedAtlas: !!approvedVehicleTextures[0]?.image, rangerStyles: vaEnabled && approved ? APPROVED_SUV_KEYS : [], models, kits: [...vaKits.keys()] };

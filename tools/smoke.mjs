@@ -2,10 +2,11 @@
 // drives a known vehicle with real keys, opens the map and switches both cameras.
 // Saves six screenshots, console.log and smoke.json; fails if a claimed action did not happen.
 //   node tools/smoke.mjs [dead-end-city.html] [outdir] [--size 960x600]
-// Slow software GL: DEC_SMOKE_MOVE_TIMEOUT_MS=240000 retains the same movement assertions with more wall time.
+// Slow software GL: DEC_SMOKE_BOOT_TIMEOUT_MS / DEC_SMOKE_MOVE_TIMEOUT_MS allow more wall time with the same assertions.
 import { launchBrowser } from './browser.mjs';
 import path from 'node:path';
 import fs from 'node:fs';
+import { createHash } from 'node:crypto';
 
 const file = path.resolve(process.argv[2] || 'dead-end-city.html');
 if (!fs.existsSync(file)) { console.error('missing ' + file + ': build it first (python3 tools/build.py)'); process.exit(1); }
@@ -22,19 +23,27 @@ if (!size || +size[1] < 320 || +size[2] < 240) {
 }
 const page = await browser.newPage({ viewport: { width: +size[1], height: +size[2] } });
 const moveTimeout = Number(process.env.DEC_SMOKE_MOVE_TIMEOUT_MS || 60000);
-if (!Number.isFinite(moveTimeout) || moveTimeout < 1000) {
+const bootTimeout = Number(process.env.DEC_SMOKE_BOOT_TIMEOUT_MS || 300000);
+if (![moveTimeout, bootTimeout].every(value => Number.isFinite(value) && value >= 1000)) {
   await browser.close();
-  throw new Error('DEC_SMOKE_MOVE_TIMEOUT_MS must be a finite number of at least 1000');
+  throw new Error('Smoke timeout settings must be finite numbers of at least 1000');
 }
-page.setDefaultTimeout(300000);
+page.setDefaultTimeout(bootTimeout);
 const errors = [];
 const warnings = [];
 const logs = [];
-const checks = { viewport: [+size[1], +size[2]], moveTimeout };
+const checks = { viewport: [+size[1], +size[2]], moveTimeout, bootTimeout };
+const sha256 = file => createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+const htmlSha256 = sha256(file);
+const captures = [];
 page.on('console', (m) => { const t = m.type(); const s = `[${t}] ${m.text()}`; logs.push(s); if (t === 'error') errors.push(s); else if (t === 'warning') warnings.push(s); });
 page.on('pageerror', (e) => errors.push('[pageerror] ' + e.message + '\n' + (e.stack || '')));
 const state = () => page.evaluate(() => window.DeadEndCity.status());
-const shot = name => page.screenshot({ path: path.join(out, name + '.png'), timeout: 180000 });
+const shot = async name => {
+  const filename = name + '.png';
+  await page.screenshot({ path: path.join(out, filename), timeout: 180000 });
+  captures.push({ file: filename, sha256: sha256(path.join(out, filename)), viewport: checks.viewport });
+};
 function assert(ok, message) { if (!ok) throw new Error(message); }
 // Wait for observable movement, not a fixed number of wall-clock milliseconds:
 // software GL may advance only a handful of simulation frames in that interval.
@@ -60,8 +69,8 @@ async function moveWithKey(key, distance, vehicle) {
 }
 
 try {
-  await page.goto('file://' + file, { timeout: 300000, waitUntil: 'load' });
-  await page.waitForFunction(() => !!window.DeadEndCity, null, { timeout: 300000 });
+  await page.goto('file://' + file, { timeout: bootTimeout, waitUntil: 'load' });
+  await page.waitForFunction(() => !!window.DeadEndCity, null, { timeout: bootTimeout });
   checks.menu = await state();
   console.log('booted', JSON.stringify(checks.menu));
   assert(checks.menu.mode === 'menu', 'game did not boot to the title menu');
@@ -112,6 +121,26 @@ try {
   await page.waitForFunction(() => window.DeadEndCity.settings().cameraView === 'street' && !document.body.classList.contains('chase-view'));
   checks.returnedToStreet = true;
 
+  if (process.argv.includes('--credits')) {
+    await page.keyboard.press('Escape');
+    await page.waitForFunction(() => window.DeadEndCity.status().mode === 'pause');
+    await page.click('#creditsBtn');
+    await page.locator('.credits-sources summary').click();
+    const text = await page.locator('#fullAssetCredits').innerText();
+    checks.credits = {
+      visible: await page.locator('#fullAssetCredits').isVisible(),
+      hotrod: text.includes('cb5b519024c7472895ef10a8663fb533'),
+      citation: text.includes('a78839624fe64900a8352cb23462350a'),
+      transport: text.includes('73d0cd0c03594c5d9c53235d74b429bf'),
+      textCharacters: text.length,
+    };
+    assert(checks.credits.visible && checks.credits.hotrod && checks.credits.citation && checks.credits.transport, 'Full downloaded-model attributions are not readable in Credits');
+    await shot('07-credits');
+    await page.click('#closeCredits');
+    if ((await state()).mode !== 'play') await page.keyboard.press('Escape');
+    await page.waitForFunction(() => window.DeadEndCity.status().mode === 'play');
+  }
+
   checks.browser = await page.evaluate(() => ({
     ua: navigator.userAgent,
     badge: document.getElementById('renderBadge')?.textContent,
@@ -121,7 +150,8 @@ try {
   errors.push('[smoke] ' + e.message);
 } finally {
   fs.writeFileSync(path.join(out, 'console.log'), logs.join('\n'));
-  fs.writeFileSync(path.join(out, 'smoke.json'), JSON.stringify({ file, checks, errors, warnings }, null, 2) + '\n');
+  fs.writeFileSync(path.join(out, 'smoke.json'), JSON.stringify({ file, htmlSha256,
+    recorderSha256: sha256(new URL(import.meta.url)), captures, checks, errors, warnings }, null, 2) + '\n');
   console.log(JSON.stringify(checks, null, 2));
   console.log(`console lines: ${logs.length}, errors: ${errors.length}, warnings: ${warnings.length}`);
   for (const e of errors.slice(0, 40)) console.log(e);

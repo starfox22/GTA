@@ -1,0 +1,64 @@
+{
+  "sourceReceipt": "dist/review16/final-captures/runtime/aviation-vehicle-runtime.json",
+  "sourceReceiptSha256": "eb8e458bbd73d13e38afa946219d6eb85f0e29ad1fd88ae306d2a81dd38817d1",
+  "htmlSha256": "719a535fe3905275c381737acb7fc3e80ee1ab4378c0d5736a4595096b16c03c",
+  "recorderSha256": "2ac7d987c18fcbf796951aa80c11e49f738684572d967ce9d7c6ab9e4cd3d73f",
+  "checksRecordedBeforeTimeout": 116,
+  "audioProfilesCompleted": 0,
+  "failure": "page.waitForFunction: Timeout 540000ms exceeded.\n    at runAviationVehicleRuntime (/workspace/GTA/tools/aviation-vehicle-runtime-review.mjs:234:18)\n    at async file:///workspace/GTA/tools/police-aircraft-render-review.mjs:84:20",
+  "observedSeededAudio": {
+    "ground": {
+      "audioMix": {
+        "context": null,
+        "states": [],
+        "makeup": 2,
+        "soundOffText": "",
+        "time": 0,
+        "soundOn": true,
+        "buses": null,
+        "master": null,
+        "duck": null,
+        "loudDuck": null,
+        "buffers": 0,
+        "loops": {}
+      },
+      "engineSound": {
+        "ready": false
+      }
+    },
+    "cruise": {
+      "audioMix": {
+        "context": null,
+        "states": [],
+        "makeup": 2,
+        "soundOffText": "",
+        "time": 0,
+        "soundOn": true,
+        "buses": null,
+        "master": null,
+        "duck": null,
+        "loudDuck": null,
+        "buffers": 0,
+        "loops": {}
+      },
+      "engineSound": {
+        "ready": false
+      }
+    }
+  },
+  "retainedCaptures": [
+    {
+      "file": "hotrod-open-source-cabin.png",
+      "sha256": "278de46bff17fa983f200c00db8c979d662702cf53394368ee542da048ba6401"
+    },
+    {
+      "file": "jet-ground-flaps-source.png",
+      "sha256": "83f49fd1dd8af62949fc06389c316b9436ea4a1a73705a689ef61e008b65ce15"
+    },
+    {
+      "file": "jet-cruise-gear-flaps-chase.png",
+      "sha256": "2257eca408de61e5d25aaf7150ba55bff56d185c9e114dc20194c6e35ea8b289"
+    }
+  ],
+  "qualification": "Seeded boot intentionally returns early from initAudio. This recorder audio wait is invalid for that session; separate unseeded NO_RENDER Chromium audio completed40assertions on identical frozenHTML."
+}

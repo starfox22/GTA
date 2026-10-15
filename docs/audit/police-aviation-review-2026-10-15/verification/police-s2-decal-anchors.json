@@ -1,0 +1,92 @@
+{
+  "kind": "Actual production S2 anchors and source geometry; focused CPU host, no GPU/browser",
+  "inputs": {
+    "src/approved-suv3d.js": "0e5675f412b4208e3c2fc7ab0c484201d7a1f24c35dc0b6a6faef6a3e6f37388",
+    "src/police3d-asset.js": "22269ba4a823546063308af6d0abd2ac509a85ab5c653f0bbb9ab99e80f19157",
+    "src/police3d-cabins.js": "4edfb74289e7ec04d7ab4a0ac362e5b95639fcfbd11fdbe1b3fa1f0a6e82f936",
+    "tools/tests/approved-suv-rigs.mjs": "7b7ecf2b5e1db12bae2983db90c991039c91faa4aafd9bde777db4b5b39ee999",
+    "assets/approved-vehicle-models.bin": "f21c4d91d34df544ffab87b895551b3ef7712746fd25c394e33738056b71e895",
+    "assets/vehicle-models.bin": "63908560d08068f6b6df9859b9bb6040ad38028c2a0d9a0268f7d9cd4c2649ae"
+  },
+  "before": {
+    "k": 10,
+    "roofDecal": {
+      "x": -12.971872233569337,
+      "y": 16.982332754720122,
+      "length": 11.488311948316213,
+      "width": 11.293582622785754,
+      "lift": null
+    },
+    "trunkDecal": {
+      "x": -20.4,
+      "y": 16.148054040816422
+    },
+    "sideDecal": {
+      "x": -18.615,
+      "y": 16.0216690267629,
+      "half": 6.27020859080751
+    }
+  },
+  "after": {
+    "roof": {
+      "x": -12.971872233569337,
+      "y": 17.049618530273438,
+      "length": 11.488311948316213,
+      "width": 8,
+      "lift": null
+    },
+    "side": {
+      "x": -18.615,
+      "y": 9.813742220255321,
+      "half": 8.377517700195312
+    },
+    "trunk": null,
+    "maximumSourceRoofInFootprint": 17.00077036072693,
+    "minimumClearanceMetres": 0.004884816954650972,
+    "sideGlyphSamples": 100,
+    "sideClearanceMetres": [
+      0.03411042905266175,
+      0.065553624189479
+    ],
+    "glyphTriangles": 12,
+    "sourceGeometryChanged": false
+  },
+  "upperPaintProof": {
+    "shellFacesAbove1_59m": 0,
+    "upperPaintFaces": 546,
+    "liveryUvs": [
+      [
+        0.1875,
+        0.0625
+      ],
+      [
+        0.5625,
+        0.0625
+      ]
+    ],
+    "sheriffRoofAndPillarSwatches": "both #f0f0ec",
+    "unitDigitsInLiveryCanvas": false
+  },
+  "host": {
+    "module": "approved-suv-rigs",
+    "pass": true,
+    "assertions": 1019,
+    "receipt": "dist/review16/police-s2-decal-host.json",
+    "receiptSha256": "09c358475a8cb6ae8ba091335b7b2a1c286f84d1f29408ec05facd05e0af85c7",
+    "glyphMetrics": "actual production decalGeometry with host advance=.4 for every glyph, atlas height512; no font rasterizer"
+  },
+  "budgets": {
+    "sourcePositionsNormalsUvsIndicesChanged": false,
+    "extraMeshesDrawsTexturesShaders": 0,
+    "twoDigitUnitGlyphTrianglesBeforeAfter": [
+      16,
+      12
+    ],
+    "twoDigitUnitGlyphVerticesBeforeAfter": [
+      32,
+      24
+    ],
+    "sideOwnershipBudgetUnchanged": true
+  },
+  "nativeCapture": "Root-owned final capture pending; after-sheriff image identified defect before this repair."
+}

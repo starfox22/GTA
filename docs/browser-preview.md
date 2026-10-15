@@ -71,3 +71,21 @@ enabled GitHub Actions as the Pages source and the next deployment succeeded,
 as linked above. The execution environment blocks direct `github.io` requests,
 so public byte verification ran on GitHub's runner. Its success is distinct
 from the earlier local browser/packaging checks.
+
+## Screenshot and sound review
+
+The October 15 police/aviation review adds **https://starfox22.github.io/GTA/review/**.
+`tools/build-review-gallery.py dist/pages` copies the checked-in native comparison
+images and production-graph MP3 samples selected by
+`docs/audit/police-aviation-review-2026-10-15/gallery.json`, then writes a static
+mobile-friendly page. The Pages workflow runs this after the split game build.
+`verify-pages.py` verifies the gallery and every image/audio file as well as the
+game. Missing evidence stops the gallery build; it never creates placeholder or
+synthetic screenshots. The game remains at the root URL.
+
+Split builds add full SHA-256 queries to media-pack and streamed-track URLs.
+Gallery image/audio URLs use the same content identity rule. Unchanged files
+keep their URL across deployments; changed files invalidate browser caches.
+`python3 tools/build-media-cache-check.py` checks both behaviours with isolated
+changed and unchanged assets. The classic script tags remain compatible with
+relative local-file loading.

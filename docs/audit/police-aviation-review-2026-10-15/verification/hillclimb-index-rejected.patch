@@ -1,0 +1,54 @@
+--- src/offroad-club.js
++++ REJECTED/offroad-club.js
+@@ -497,7 +497,11 @@
+         reason = 'time',
+         lastProgress = 0,
+         stall = 0,
+-        backing = 0;
++        backing = 0,
++        maxPathGap = 0,
++        maxCorridorGap = 0,
++        offTrailSeconds = 0,
++        routeGapAt = null;
+       // Start from the nearest sample.
+       let nearest = Infinity;
+       for (let i = 0; i <= n; i++) {
+@@ -523,8 +527,29 @@
+         for (let k = 0; k < 6 && idx < n; k++) {
+           const here = Math.hypot(path[idx][0] - c.x, path[idx][1] - c.y),
+             next = Math.hypot(path[idx + 1][0] - c.x, path[idx + 1][1] - c.y);
+-          if (next <= here + 2) idx++;
++          if (next <= here) idx++;
+           else break;
++        }
++        // Console telemetry only: measure the authored carriageway and turning
++        // pads independently of the pilot's current progress index.
++        let pathGap = Infinity, nearestSegment = 0;
++        for (let j = 0; j < n; j++) {
++          const ax = path[j][0], ay = path[j][1],
++            dx = path[j + 1][0] - ax, dy = path[j + 1][1] - ay,
++            u = clamp(((c.x - ax) * dx + (c.y - ay) * dy) / (dx * dx + dy * dy || 1), 0, 1),
++            d = Math.hypot(c.x - ax - u * dx, c.y - ay - u * dy);
++          if (d < pathGap) { pathGap = d; nearestSegment = j; }
++        }
++        maxPathGap = Math.max(maxPathGap, pathGap);
++        let corridorGap = pathGap - trail.width / 2;
++        for (let j = 0; j < trail.hairpins.length; j++) {
++          const pad = trail.hairpins[j];
++          corridorGap = Math.min(corridorGap, Math.hypot(c.x - pad[0], c.y - pad[1]) - HAIRPIN_PAD);
++        }
++        if (corridorGap > 0) offTrailSeconds += dt;
++        if (corridorGap > maxCorridorGap) {
++          maxCorridorGap = corridorGap;
++          routeGapAt = [Math.round(c.x), Math.round(c.y), +time.toFixed(2), idx, nearestSegment];
+         }
+         if (idx > best) {
+           best = idx;
+@@ -609,6 +634,7 @@
+         maxKmh: Math.round(maxSpeed),
+         hp: Math.round(c.hp),
+         mudCoat: +c.mudCoat.toFixed(2),
++        route: { maxPathGapM: +worldMeters(maxPathGap).toFixed(3), maxCorridorGapM: +worldMeters(maxCorridorGap).toFixed(3), offTrailS: +offTrailSeconds.toFixed(2), gapAt: routeGapAt },
+         last: clubState.last,
+       };
+     }

@@ -1,0 +1,38 @@
+[
+  {
+    "part": "trimFar",
+    "position": [
+      1.8885629177093506,
+      0.7204694747924805,
+      0.20518375933170319
+    ],
+    "material": 2,
+    "sourceNode": "HOTROD_33A_Bottom_UCB_BOTTOM_0",
+    "sourceVertex": 489,
+    "distance": 0.0017323454500591836
+  },
+  {
+    "part": "trimFar",
+    "position": [
+      1.9277220964431763,
+      0.49121183156967163,
+      0.193062886595726
+    ],
+    "material": 2,
+    "sourceNode": "HOTROD_33A_Bottom_UCB_BOTTOM_0",
+    "sourceVertex": 498,
+    "distance": 0.001733032914242484
+  },
+  {
+    "part": "trimFar",
+    "position": [
+      1.876715898513794,
+      0.8538857698440552,
+      0.20200996100902557
+    ],
+    "material": 2,
+    "sourceNode": "HOTROD_33A_Bottom_UCB_BOTTOM_0",
+    "sourceVertex": 507,
+    "distance": 0.0017324716636224627
+  }
+]

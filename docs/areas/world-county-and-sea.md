@@ -72,8 +72,17 @@ grid, navigation and layout data: world-and-map.md; shores and bridges: world-an
   else reads `line.points`.
 - Airfields (airfields.js, airfields3d.js): SOUTHPORT 18/36 (460 m, courier strip on a
   reclaimed pier) and OCEANVIEW 09/27 (1,280 m, jets and the airliner, running out to sea on
-  `oceanview-pier`); Fort Sentinel's strip is for helicopters. Runway piers are
+  `oceanview-pier`); Fort Sentinel also accepts fixed-wing landings. Runway piers are
   `LAND_REGIONS`. Console `airfields()`.
+- Free-roam planes park nose out (aviation-flight.js `AIRCRAFT_STANDS`): Southport's three
+  fixed-gear SKYLARK 172 trainers face west onto apron spurs, then taxi north to runway 18;
+  Oceanview's jets, courier and airliner face south along four taxiway stubs onto runway 27.
+  The airliner uses the eastern stand to keep enough take-off runway ahead. No reverse or
+  pushback is needed. `aircraftTaxi(id?)` reports the route and collision-footprint clearance.
+  The trainer has a power-limited piston propeller; the airframes retain separate lift,
+  drag, rotation, stall, spool and bank profiles. Nosewheel steering uses each wheelbase,
+  slows with speed and cannot pivot at rest. `aircraft-flight-model` tests the host model;
+  `aircraft-taxi-takeoff` boards existing aircraft and drives the routes with normal keys.
 - Parks (renewal.js `CENTRAL_PARK`, `COMMONS`; streets inside closed by `parkStreetClosed`).
   South Coast Stadium is enclosed: see places-monarch-and-county.md.
 

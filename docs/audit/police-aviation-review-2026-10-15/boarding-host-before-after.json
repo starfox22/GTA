@@ -1,0 +1,22 @@
+[
+  {
+    "frame": "jet",
+    "x": 5530,
+    "y": 9577,
+    "centreDistance": 77,
+    "gapUnits": 18,
+    "outsideFootRadius": true,
+    "beforeReachable": false,
+    "afterReachable": true
+  },
+  {
+    "frame": "airliner",
+    "x": 4880,
+    "y": 9612,
+    "centreDistance": 92,
+    "gapUnits": 18,
+    "outsideFootRadius": true,
+    "beforeReachable": false,
+    "afterReachable": true
+  }
+]

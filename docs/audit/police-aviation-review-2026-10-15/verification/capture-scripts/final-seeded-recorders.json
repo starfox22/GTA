@@ -1,0 +1,25 @@
+{
+  "kind": "Verbatim recorder implementations loaded by the final native screenshot attempt, before splitting unseeded audio verification.",
+  "files": [
+    {
+      "tool": "tools/police-aircraft-render-review.mjs",
+      "archive": "docs/audit/police-aviation-review-2026-10-15/verification/capture-scripts/police-aircraft-render-review-final-seeded.mjs",
+      "sha256": "e610ddc37b8231d65a876099e609d51b76213378b8ccc938c1b7c8e4d08f5108"
+    },
+    {
+      "tool": "tools/aircraft-parking-render-review.mjs",
+      "archive": "docs/audit/police-aviation-review-2026-10-15/verification/capture-scripts/aircraft-parking-render-review-final-seeded.mjs",
+      "sha256": "e3d55e416e70a4fc9b5c2796c6cabcc8666721c1dd60a59c2232f84901b1f14d"
+    },
+    {
+      "tool": "tools/aviation-vehicle-runtime-review.mjs",
+      "archive": "docs/audit/police-aviation-review-2026-10-15/verification/capture-scripts/aviation-vehicle-runtime-review-final-seeded.mjs",
+      "sha256": "2ac7d987c18fcbf796951aa80c11e49f738684572d967ce9d7c6ab9e4cd3d73f"
+    },
+    {
+      "tool": "tools/trail-contact-render-review.mjs",
+      "archive": "docs/audit/police-aviation-review-2026-10-15/verification/capture-scripts/trail-contact-render-review-final-seeded.mjs",
+      "sha256": "98758fefa109f0483443e8d38bdb5cc00e7320617e974ae0fb66c9997fb6a0ca"
+    }
+  ]
+}

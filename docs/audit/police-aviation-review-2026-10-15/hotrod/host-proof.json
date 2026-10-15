@@ -1,0 +1,175 @@
+{
+  "assertions": 208,
+  "passed": true,
+  "evidence": [
+    "hotrod source pack, actual builder/animation/LOD/PBR contracts passed without WebGL",
+    {
+      "seat": [
+        0,
+        0.665,
+        0.29,
+        0.49000000000000016,
+        1.1244690725059128
+      ],
+      "clearance": 0.021650384170513782,
+      "k": 8,
+      "steering": {
+        "x": 1.6946652000000002,
+        "y": 7.89229928,
+        "z": -1.9947692,
+        "r": 1.36911736,
+        "tilt": 0.54038
+      }
+    },
+    {
+      "gameplayGlassProof": {
+        "sourceExpected": [
+          1.1244690725059128,
+          1.6242246711168973,
+          -0.1940837840277219,
+          0.1094954818427025
+        ],
+        "CAR_GLASS_BANDS_hotrod": [
+          1.124469073,
+          1.624224671,
+          -0.194083784,
+          0.109495482
+        ],
+        "uniformRuntimeScale": 8,
+        "productionSpecMetres": {
+          "l": 4.5,
+          "w": 2.07
+        },
+        "passed": true
+      }
+    },
+    {
+      "sourceOccupantProof": {
+        "fullSize": true,
+        "probes": [
+          {
+            "index": 0,
+            "hip": [
+              0,
+              0.665,
+              -0.29
+            ],
+            "cushionY": 0.6911687264390161,
+            "cushionAboveHip": 0.02616872643901602
+          },
+          {
+            "index": 1,
+            "hip": [
+              0,
+              0.665,
+              0.29
+            ],
+            "cushionY": 0.6911687264390161,
+            "cushionAboveHip": 0.02616872643901602
+          }
+        ],
+        "clearance": 0.021650384170513782,
+        "steeringWorldMetres": [
+          0.21183315000000003,
+          0.98653741,
+          -0.24934615,
+          0.17113967,
+          0.54038
+        ]
+      }
+    },
+    {
+      "apertureProof": {
+        "key": "hotrod",
+        "actualRayOpenHits": 0,
+        "windowRays": 19,
+        "fixedWindowHits": 0,
+        "visibleInterior": [
+          {
+            "part": "authored source cabin",
+            "face": 9489
+          },
+          {
+            "part": "authored source cabin",
+            "face": 9075
+          },
+          {
+            "part": "authored source cabin",
+            "face": 9423
+          },
+          {
+            "part": "authored source cabin",
+            "face": 9075
+          },
+          {
+            "part": "authored source cabin",
+            "face": 9061
+          },
+          {
+            "part": "authored source cabin",
+            "face": 8994
+          },
+          {
+            "part": "authored source cabin",
+            "face": 8992
+          },
+          {
+            "part": "authored source cabin",
+            "face": 8996
+          },
+          {
+            "part": "authored source cabin",
+            "face": 8994
+          },
+          {
+            "part": "authored source cabin",
+            "face": 8964
+          }
+        ],
+        "sourceRestored": true,
+        "windowMoves": true,
+        "marksFollowSource": true,
+        "layers": 5
+      }
+    },
+    {
+      "hotrodRigProof": {
+        "clearance": 0.021650384170513782,
+        "sourceSeat": [
+          0,
+          0.665,
+          -0.29
+        ],
+        "fullSizeCharacter": true,
+        "sourceDoorAttributes": [
+          "position",
+          "normal",
+          "uv",
+          "color",
+          "finish",
+          "avOrmSourceUv",
+          "avSourceUv",
+          "avAtlasRect"
+        ],
+        "burnBeforeFirstDoor": true,
+        "repaired": true
+      }
+    }
+  ],
+  "inputs": {
+    "src/game-vehicles.js": "bfaf21d42358ebda1d9786caf4360633036602514aaff8577ae7eb5c41eca32c",
+    "src/hotrod-vehicle-assets3d.js": "f25596a5afdbc03785ab4c47c110c7a3b9562c2ea95e4d605223b21888eb43f4",
+    "src/vehicle-assets3d.js": "0d8fbe62c4d0e6ae59880b2ab271bcc5a695b4e6e8dae43d4400ad9e64648c80",
+    "src/driveby-seats.js": "1f92c7136dc8ecce66aa1849bb275c88c997db214a3fd256e81ca4bc47c28f30",
+    "src/damage-vehicles.js": "461349ce811e758f6373db523cb11e50397fa37cd0fc5e0ca6900393ae0116ef",
+    "src/cars3d-bodies-a.js": "dad6f14d1241338a9dd7531af01ab476af61e0cad48dac0a33da7f28b61bd056",
+    "src/cars3d-interior.js": "a88f3aee1f81e0eb09fdcded061d083aaad45a61a41a55ceb6cb5331ffc2d705",
+    "src/cars3d-headroom.js": "159e0a94d45d1edf7d6842fe200feb8dcfb0f6b28bc34c960817d5475d6c2d1c",
+    "src/crowd3d-driveby.js": "68ea4f7d1f364807be65bf6898f5128165814d6ba2fc905dcf899c0906047703",
+    "src/damage3d-crumple.js": "309633223a2f21ed31eb312ff0cb9943e706576c333dbb36e87fc86c47d72243",
+    "tools/hotrod-vehicle-host-check.mjs": "99ff8a816e952cfef3ee1aeed1d0e495174c4088dbf30a050a1f8ef190a01a53",
+    "tools/tests/hotrod-vehicle-assets.mjs": "e6227a6949be62577a14707845d988223db623f599e6c9af7e24c13baf9dcb53",
+    "tools/tests/hotrod-vehicle-rig.mjs": "a164d131f3a3a9d240a1ef6daa9d5640d65031e4021b12621798e30cbf29c4f4",
+    "assets/hotrod-vehicle-models.bin": "5bb5ff8daede71430712c699834a9d7b0d508b6e2a624e5666586ee485dbacef"
+  }
+}

@@ -1,0 +1,324 @@
+{
+  "kind": "Exact final local Pages artifact, native screenshot inputs/hashes/dimensions, every gallery link/hash and six decodable MP3 demonstrations",
+  "pass": true,
+  "galleryLinksChecked": 86,
+  "nativeImages": 36,
+  "audioSamples": 6,
+  "files": [
+    {
+      "file": "index.html",
+      "bytes": 12162402,
+      "sha256": "6fc25ae849408922b77b243949d1f9662752b9b39bf600bef94eb624f2e6b7ef"
+    },
+    {
+      "file": "media/island-colada.mp3",
+      "bytes": 1925823,
+      "sha256": "f695b7de584edc492810fed41a1cbfd9cd0ccaf1cf6447f3c0889eb058a70d12"
+    },
+    {
+      "file": "media/island-dub.mp3",
+      "bytes": 2487833,
+      "sha256": "be282aaaf7bee116a3348db3248e9a70bcaa30898de4675d3455a6bf0c7616be"
+    },
+    {
+      "file": "media/lofi-freeway.mp3",
+      "bytes": 2120191,
+      "sha256": "11d8e376ad5e5b53a9f2e1604e588a09ce02360fb97cb06ccc6fe69de33754db"
+    },
+    {
+      "file": "media/lofi-hooptie.mp3",
+      "bytes": 2637757,
+      "sha256": "435a8efd2e05add54f37f2cfbeb765b48386bf48909cd52523829d0f868a23f1"
+    },
+    {
+      "file": "media/lounge-heists.mp3",
+      "bytes": 2209481,
+      "sha256": "46db5bd44a5938d98978d37725836462c5ba2b388d3874b877cb194f5ab7f1f1"
+    },
+    {
+      "file": "media/lounge-martini.mp3",
+      "bytes": 2063086,
+      "sha256": "a75e273b7afa3dc9fed814baff6ba3759380caab3d14e1b09042b6657be66d76"
+    },
+    {
+      "file": "media/oddball.mp3",
+      "bytes": 1733978,
+      "sha256": "9ffe2ec825e2c01ccba1b66da1e032a0148d3895e5c72fcb7e4e729584b65111"
+    },
+    {
+      "file": "media/pack-audio.js",
+      "bytes": 3128576,
+      "sha256": "2b090a6eb35d23fa42d78df142f6431d7acbeadec1303ef4850c07b7191f9851"
+    },
+    {
+      "file": "media/pack-data-2.js",
+      "bytes": 8381212,
+      "sha256": "ef477d3cd596490722930d40e365162f9c68e1f2c837be2659cf3bfba057e9b6"
+    },
+    {
+      "file": "media/pack-data-3.js",
+      "bytes": 10083235,
+      "sha256": "3820dba9f16c2f60b4a6b1a0386a43f73f5ddda837042c0307b30cb11eb255c0"
+    },
+    {
+      "file": "media/pack-data-4.js",
+      "bytes": 6038238,
+      "sha256": "9ab514ec2cc577607a08a4394b3f2a37f77260547be80d254fb8562760ef4cd0"
+    },
+    {
+      "file": "media/pack-data-5.js",
+      "bytes": 8192005,
+      "sha256": "91ec0e6f38569ab1e7719359c33143e7f7f171a1f8c0b96ea98f419359660174"
+    },
+    {
+      "file": "media/pack-data.js",
+      "bytes": 8134659,
+      "sha256": "0c9877c72afd7c6e459cef9c01c555ddfe6e92ef5029a4b83065ff1ca7b69b9d"
+    },
+    {
+      "file": "media/pack-images-2.js",
+      "bytes": 11331296,
+      "sha256": "6d24d46e64ca48818c439c69c2230f57670d830e31e306835231338777de26d7"
+    },
+    {
+      "file": "media/pack-images-3.js",
+      "bytes": 6613583,
+      "sha256": "f9eeb55674c02349e8013093b5dd798cd280aa1466295a0a07e3691135bc5534"
+    },
+    {
+      "file": "media/pack-images-4.js",
+      "bytes": 7763374,
+      "sha256": "d68da22ce448ac4ba828178ebd9890218f3af36fc6acf42535428c5022d09768"
+    },
+    {
+      "file": "media/pack-images.js",
+      "bytes": 8631077,
+      "sha256": "400f1809af7d425ca6c7cfb22113616cb199cb941cd38b697767ef6bc77c6c7d"
+    },
+    {
+      "file": "media/rock.mp3",
+      "bytes": 811108,
+      "sha256": "a1d9d63cd8af19387969f541cce96dd2c1f7791c4b05ae61691b9a1b6620180d"
+    },
+    {
+      "file": "media/synth.mp3",
+      "bytes": 1550927,
+      "sha256": "914b506fcf2fe116752f22b478ef09cf30fd6dc3b86632e22d7370507bf2f934"
+    },
+    {
+      "file": "review/audio-evidence/airliner-after.mp3",
+      "bytes": 51644,
+      "sha256": "9b6ff6595a3566e293884ae176dd2633ad13e48a5ed420ff3085faa906759214"
+    },
+    {
+      "file": "review/audio-evidence/business-jet-after.mp3",
+      "bytes": 51644,
+      "sha256": "e21c489c15187c6d7dc02caa9effff137711c45c37f6aef43a59533108402434"
+    },
+    {
+      "file": "review/audio-evidence/courier-after.mp3",
+      "bytes": 51644,
+      "sha256": "e713c1b71e5069b853e66175ac5ed08a848c0749ca94e4cca4bca1f82a5d294f"
+    },
+    {
+      "file": "review/audio-evidence/skyhawk-after.mp3",
+      "bytes": 51644,
+      "sha256": "0dfb2debbec54de32b85304d6b3f859bcddfb8a962e5975533c5b895ea231565"
+    },
+    {
+      "file": "review/audio-evidence/skyhawk-before.mp3",
+      "bytes": 51644,
+      "sha256": "62b1ed1e43b22d6469cd8b251baa131a81b45cabf62358398c93e2e7c9adc6d7"
+    },
+    {
+      "file": "review/audio-evidence/skyhawk-flyby.mp3",
+      "bytes": 51644,
+      "sha256": "58f8e1ce6752aed0bb0fc40a5e178cb77af753639136e5d6c2014b190a6a75b5"
+    },
+    {
+      "file": "review/images/after/airport-static-jet.png",
+      "bytes": 534881,
+      "sha256": "ccd083698d4d6107b6bcd114ab47ffd8d884774240546d30f6573b94486bd8b8"
+    },
+    {
+      "file": "review/images/after/compact-suv-trail.png",
+      "bytes": 463141,
+      "sha256": "d5f3b4cab98942412b32728baba098f36f265bd900e90796288d72fe0e2bd44d"
+    },
+    {
+      "file": "review/images/after/hotrod-isolated-front.png",
+      "bytes": 409510,
+      "sha256": "94853c14e4f30d5263c47572bf1c9fc688b8a3bfbebca9b3a7e25cf4af94b430"
+    },
+    {
+      "file": "review/images/after/hotrod-isolated-side.png",
+      "bytes": 430241,
+      "sha256": "a672ea25d912eba78b23f80d0909e94af0668fd09ca9282135ed3d57764b560f"
+    },
+    {
+      "file": "review/images/after/oceanview-parking.png",
+      "bytes": 488895,
+      "sha256": "0c26776c80910faf2d074f31a71d2eefb4c5706392e80d124f800fc7c95ed570"
+    },
+    {
+      "file": "review/images/after/plane-jet-front.png",
+      "bytes": 441230,
+      "sha256": "b4bcb9f909b37a62b08fbf2751c370c92ccc2f4eca5a887d4a1692e361a5bedf"
+    },
+    {
+      "file": "review/images/after/police-charger-modern-high-side0.png",
+      "bytes": 443263,
+      "sha256": "ea99fafca7ea4eb4f8c33d07821784fa563c82932749fccbd751c5ea6771c57a"
+    },
+    {
+      "file": "review/images/after/police-charger-modern-high-side180.png",
+      "bytes": 431300,
+      "sha256": "63ecc2250d76b7884dc7410ef1ff2468b357275018cb2e58fd8af600ddce559c"
+    },
+    {
+      "file": "review/images/after/police-charger-modern-low-side0.png",
+      "bytes": 435326,
+      "sha256": "e760c5d1cd0b715a8bd93bb7b8467cfb0d947492d7fc7fd5c42ecad496a9fedb"
+    },
+    {
+      "file": "review/images/after/police-crownvic-bw-high-side0.png",
+      "bytes": 396549,
+      "sha256": "7fb9c853260b4b9bd3f1ae821cffc89527bd1d092b0b280a861c09353b4bb9a9"
+    },
+    {
+      "file": "review/images/after/police-crownvic-bw-high-side180.png",
+      "bytes": 431723,
+      "sha256": "dc9595b99655d9afe3da96cae148df427b061b3a8b70ba0e650da8b447bc30d0"
+    },
+    {
+      "file": "review/images/after/police-crownvic-bw-low-side0.png",
+      "bytes": 405094,
+      "sha256": "d8aea44ee0b75d57295fcb923be908f472c7af3c3b68e952c86d5b2a5ce592a3"
+    },
+    {
+      "file": "review/images/after/police-utility-sheriff-high-side0.png",
+      "bytes": 415614,
+      "sha256": "dcb2135b9152cf5a022fa2238b9ccebc108bcf74aee883a3abf8d720d81a279c"
+    },
+    {
+      "file": "review/images/after/police-utility-sheriff-high-side180.png",
+      "bytes": 409371,
+      "sha256": "44ab5d6977620e6220ff21f8185b5f76dac757ebfaaa975c74a15ee09dec2f25"
+    },
+    {
+      "file": "review/images/after/police-utility-sheriff-low-side0.png",
+      "bytes": 407836,
+      "sha256": "033eb3ee9ff58b7fc4dccf064c84b2d0e43bd4800b690d61d0cd55fd9ea2c008"
+    },
+    {
+      "file": "review/images/after/southport-parking.png",
+      "bytes": 557077,
+      "sha256": "3d0642f77b08aa006e275d379860a9fab4fddcf88fdc004ac15fd13417a9bf95"
+    },
+    {
+      "file": "review/images/before/airport-static-jet.png",
+      "bytes": 540797,
+      "sha256": "d1fa8e15e05006b5cce1d216a66423701b8c6ef97526f7cd0207c4f68fa31638"
+    },
+    {
+      "file": "review/images/before/compact-suv-trail.png",
+      "bytes": 400683,
+      "sha256": "27a6b5edc5529077463a8c191a8040bce67c6a35bc143929a192b18dc92e7881"
+    },
+    {
+      "file": "review/images/before/hotrod-isolated-front.png",
+      "bytes": 393675,
+      "sha256": "a3322afe8e9819a4c0522620796cd59ed2ae7ed83742acf2fc276e9b748a3f7a"
+    },
+    {
+      "file": "review/images/before/hotrod-isolated-side.png",
+      "bytes": 393033,
+      "sha256": "e59910660ed10696fbfe07e22034d8700c97ebc720732b9d7a0a550dc3e50831"
+    },
+    {
+      "file": "review/images/before/oceanview-parking.png",
+      "bytes": 482743,
+      "sha256": "78b063ec0e89839debecc750dafe1fc2939d762657fa414d88a6d2a6e12c0a98"
+    },
+    {
+      "file": "review/images/before/plane-jet-front.png",
+      "bytes": 442422,
+      "sha256": "44e41fbf221f380922dd8b74f0858c51a935384949b956b3b7bc46f076664f0e"
+    },
+    {
+      "file": "review/images/before/police-charger-modern-high-side0.png",
+      "bytes": 443705,
+      "sha256": "aca93fa9b3f8c659925be489dabda66e595dcc6e8719d4824b722fa93cbbba57"
+    },
+    {
+      "file": "review/images/before/police-charger-modern-high-side180.png",
+      "bytes": 434443,
+      "sha256": "c83c45f4d483b0137780cad22ab3f88d3f1d22bf36114c0a11d860b6d049e214"
+    },
+    {
+      "file": "review/images/before/police-charger-modern-low-side0.png",
+      "bytes": 435730,
+      "sha256": "088662c334424958460f2602113456eb2b3078256b705ef79a373ecf4ebfaa0e"
+    },
+    {
+      "file": "review/images/before/police-crownvic-bw-high-side0.png",
+      "bytes": 393559,
+      "sha256": "e8171a1cc57072be441ec3948c581ea4c5e5f45282c132854bb8024cd69311ab"
+    },
+    {
+      "file": "review/images/before/police-crownvic-bw-high-side180.png",
+      "bytes": 433627,
+      "sha256": "4e70c47eee73c9ae3c3adcf72afaf07336a91db30b86c35765423083c45da51d"
+    },
+    {
+      "file": "review/images/before/police-crownvic-bw-low-side0.png",
+      "bytes": 401545,
+      "sha256": "a8c9e2787773a7fc2c98e5f410bd66ea2a43b2c6b7cf26fa67c3dc6554d0ed2e"
+    },
+    {
+      "file": "review/images/before/police-utility-sheriff-high-side0.png",
+      "bytes": 414798,
+      "sha256": "eeaffb341f2ba7ffa0843747f3c5d2f49ef3ab80c25bb7c89aa9e9a66f00ab98"
+    },
+    {
+      "file": "review/images/before/police-utility-sheriff-high-side180.png",
+      "bytes": 408433,
+      "sha256": "b36fa949adf6b67b08b2d384282db9a33698e5f88fb9478cb84936727572ffc9"
+    },
+    {
+      "file": "review/images/before/police-utility-sheriff-low-side0.png",
+      "bytes": 408193,
+      "sha256": "739f23658e1bf6cecee58db950facc11f5665f767814f1a80b2d6e580ae1882b"
+    },
+    {
+      "file": "review/images/before/southport-parking.png",
+      "bytes": 550822,
+      "sha256": "b609b308d06ed1994b63a82f10d7f454565da8fbbc0b3bf7d0d28ca6a13b6437"
+    },
+    {
+      "file": "review/images/runtime/07-credits.png",
+      "bytes": 110120,
+      "sha256": "e17c88b0b2dd50792cafb58a81e57bb2b70b09af1901c99119c4f43a7c1f8527"
+    },
+    {
+      "file": "review/images/runtime/hotrod-open-source-cabin.png",
+      "bytes": 739336,
+      "sha256": "278de46bff17fa983f200c00db8c979d662702cf53394368ee542da048ba6401"
+    },
+    {
+      "file": "review/images/runtime/jet-cruise-gear-flaps-chase.png",
+      "bytes": 651858,
+      "sha256": "2257eca408de61e5d25aaf7150ba55bff56d185c9e114dc20194c6e35ea8b289"
+    },
+    {
+      "file": "review/images/runtime/jet-ground-flaps-source.png",
+      "bytes": 662594,
+      "sha256": "83f49fd1dd8af62949fc06389c316b9436ea4a1a73705a689ef61e008b65ce15"
+    },
+    {
+      "file": "review/index.html",
+      "bytes": 22048,
+      "sha256": "34a73c00af69c823701141161143d66f47d242b2d538cd78c31fd27ac1214109"
+    }
+  ]
+}

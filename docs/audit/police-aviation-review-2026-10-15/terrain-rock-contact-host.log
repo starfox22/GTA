@@ -1,0 +1,10 @@
+SUV 0/15: progress 0.293, max 18 km/h, no flights/damage/overturn
+SUV 1/15: progress 0.291, max 18 km/h, no flights/damage/overturn
+SUV 2/15: progress 0.293, max 18 km/h, no flights/damage/overturn
+SUV 0/20: progress 0.337, max 23 km/h, no flights/damage/overturn
+SUV 1/20: progress 0.339, max 23 km/h, no flights/damage/overturn
+SUV 2/20: progress 0.339, max 23 km/h, no flights/damage/overturn
+SUV 0/28: progress 0.397, max 30 km/h, no flights/damage/overturn
+SUV 1/28: progress 0.396, max 30 km/h, no flights/damage/overturn
+SUV 2/28: progress 0.399, max 31 km/h, no flights/damage/overturn
+PASS terrain-rock-contact final optimized production source: 18 assertions, fresh generated terrain

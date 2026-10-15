@@ -1,0 +1,717 @@
+{
+  "kind": "Read-only original authored roof-border diagnosis; no source/code change",
+  "sourceGlbSha256": "a2d5667f3a1d47fa0dbb84cf2cf76b8aeee6a69f7fff209af09973c625f9be6e",
+  "sourceMaterialIndex": 34,
+  "sourceMaterialName": "Body_7",
+  "baseColorTextureIndex": 35,
+  "ormTextureIndex": 36,
+  "directGlbSamples": [
+    {
+      "uv": [
+        0.8,
+        0.275
+      ],
+      "rgb": [
+        29,
+        29,
+        29
+      ],
+      "orm": [
+        255,
+        27,
+        0
+      ]
+    },
+    {
+      "uv": [
+        0.9,
+        0.275
+      ],
+      "rgb": [
+        29,
+        29,
+        29
+      ],
+      "orm": [
+        255,
+        27,
+        0
+      ]
+    },
+    {
+      "uv": [
+        0.95,
+        0.275
+      ],
+      "rgb": [
+        29,
+        29,
+        29
+      ],
+      "orm": [
+        255,
+        27,
+        0
+      ]
+    },
+    {
+      "uv": [
+        0.98,
+        0.275
+      ],
+      "rgb": [
+        13,
+        13,
+        13
+      ],
+      "orm": [
+        255,
+        27,
+        0
+      ]
+    },
+    {
+      "uv": [
+        0.99,
+        0.275
+      ],
+      "rgb": [
+        14,
+        14,
+        14
+      ],
+      "orm": [
+        255,
+        27,
+        0
+      ]
+    },
+    {
+      "uv": [
+        0.8,
+        0.35
+      ],
+      "rgb": [
+        29,
+        29,
+        29
+      ],
+      "orm": [
+        255,
+        27,
+        0
+      ]
+    },
+    {
+      "uv": [
+        0.9,
+        0.35
+      ],
+      "rgb": [
+        29,
+        29,
+        29
+      ],
+      "orm": [
+        255,
+        27,
+        0
+      ]
+    },
+    {
+      "uv": [
+        0.95,
+        0.35
+      ],
+      "rgb": [
+        29,
+        29,
+        29
+      ],
+      "orm": [
+        255,
+        27,
+        0
+      ]
+    },
+    {
+      "uv": [
+        0.98,
+        0.35
+      ],
+      "rgb": [
+        14,
+        14,
+        14
+      ],
+      "orm": [
+        255,
+        27,
+        0
+      ]
+    },
+    {
+      "uv": [
+        0.99,
+        0.35
+      ],
+      "rgb": [
+        8,
+        8,
+        8
+      ],
+      "orm": [
+        255,
+        27,
+        0
+      ]
+    },
+    {
+      "uv": [
+        0.8,
+        0.43
+      ],
+      "rgb": [
+        29,
+        29,
+        29
+      ],
+      "orm": [
+        255,
+        27,
+        0
+      ]
+    },
+    {
+      "uv": [
+        0.9,
+        0.43
+      ],
+      "rgb": [
+        29,
+        29,
+        29
+      ],
+      "orm": [
+        255,
+        27,
+        0
+      ]
+    },
+    {
+      "uv": [
+        0.95,
+        0.43
+      ],
+      "rgb": [
+        29,
+        29,
+        29
+      ],
+      "orm": [
+        255,
+        27,
+        0
+      ]
+    },
+    {
+      "uv": [
+        0.98,
+        0.43
+      ],
+      "rgb": [
+        14,
+        14,
+        14
+      ],
+      "orm": [
+        255,
+        27,
+        0
+      ]
+    },
+    {
+      "uv": [
+        0.99,
+        0.43
+      ],
+      "rgb": [
+        6,
+        6,
+        6
+      ],
+      "orm": [
+        255,
+        27,
+        0
+      ]
+    },
+    {
+      "uv": [
+        0.8,
+        0.55
+      ],
+      "rgb": [
+        29,
+        29,
+        29
+      ],
+      "orm": [
+        255,
+        27,
+        0
+      ]
+    },
+    {
+      "uv": [
+        0.9,
+        0.55
+      ],
+      "rgb": [
+        29,
+        29,
+        29
+      ],
+      "orm": [
+        255,
+        27,
+        0
+      ]
+    },
+    {
+      "uv": [
+        0.95,
+        0.55
+      ],
+      "rgb": [
+        29,
+        29,
+        29
+      ],
+      "orm": [
+        255,
+        27,
+        0
+      ]
+    },
+    {
+      "uv": [
+        0.98,
+        0.55
+      ],
+      "rgb": [
+        16,
+        16,
+        16
+      ],
+      "orm": [
+        255,
+        27,
+        0
+      ]
+    },
+    {
+      "uv": [
+        0.99,
+        0.55
+      ],
+      "rgb": [
+        10,
+        10,
+        10
+      ],
+      "orm": [
+        255,
+        27,
+        0
+      ]
+    },
+    {
+      "uv": [
+        0.8,
+        0.65
+      ],
+      "rgb": [
+        29,
+        29,
+        29
+      ],
+      "orm": [
+        255,
+        27,
+        0
+      ]
+    },
+    {
+      "uv": [
+        0.9,
+        0.65
+      ],
+      "rgb": [
+        29,
+        29,
+        29
+      ],
+      "orm": [
+        255,
+        27,
+        0
+      ]
+    },
+    {
+      "uv": [
+        0.95,
+        0.65
+      ],
+      "rgb": [
+        29,
+        29,
+        29
+      ],
+      "orm": [
+        255,
+        27,
+        0
+      ]
+    },
+    {
+      "uv": [
+        0.98,
+        0.65
+      ],
+      "rgb": [
+        16,
+        16,
+        16
+      ],
+      "orm": [
+        255,
+        27,
+        0
+      ]
+    },
+    {
+      "uv": [
+        0.99,
+        0.65
+      ],
+      "rgb": [
+        25,
+        25,
+        25
+      ],
+      "orm": [
+        255,
+        27,
+        0
+      ]
+    }
+  ],
+  "originalSourceMatches": [
+    {
+      "runtimePart": "trim",
+      "runtimeFace": 905,
+      "sourceGlobalFace": 2860,
+      "sourcePrimitive": "SUV Body_Body_0",
+      "sourceMaterial": "Body_7",
+      "sourceComponentFaces": 3997,
+      "centroidErrorMetres": 6.427566551517284e-06,
+      "sourceTriangle": [
+        [
+          -1.141367847954994,
+          1.681088026942599,
+          0.5288050793554004
+        ],
+        [
+          -0.928543731915858,
+          1.6837939744412105,
+          0.531055233942057
+        ],
+        [
+          -0.9271820839737677,
+          1.6905488629452017,
+          0.44368019023000854
+        ]
+      ],
+      "sampleLiveryUv": null,
+      "sampleFinish": [
+        1,
+        1
+      ],
+      "sampleSourceUv": [
+        0.9854818537082968,
+        0.40991038832379567
+      ]
+    },
+    {
+      "runtimePart": "trim",
+      "runtimeFace": 906,
+      "sourceGlobalFace": 2862,
+      "sourcePrimitive": "SUV Body_Body_0",
+      "sourceMaterial": "Body_7",
+      "sourceComponentFaces": 3997,
+      "centroidErrorMetres": 1.3517858645093396e-05,
+      "sourceTriangle": [
+        [
+          -1.4572694319206736,
+          1.6794319575666445,
+          0.4395738345493715
+        ],
+        [
+          -1.4572696446439384,
+          1.6726846627254541,
+          0.5261227419224696
+        ],
+        [
+          -1.141367847954994,
+          1.681088026942599,
+          0.5288050793554004
+        ]
+      ],
+      "sampleLiveryUv": null,
+      "sampleFinish": [
+        1,
+        1
+      ],
+      "sampleSourceUv": [
+        0.9869226141056513,
+        0.33134762525000305
+      ]
+    },
+    {
+      "runtimePart": "trim",
+      "runtimeFace": 907,
+      "sourceGlobalFace": 2865,
+      "sourcePrimitive": "SUV Body_Body_0",
+      "sourceMaterial": "Body_7",
+      "sourceComponentFaces": 3997,
+      "centroidErrorMetres": 1.543605489117826e-05,
+      "sourceTriangle": [
+        [
+          -1.7481511945137553,
+          1.6584567421783118,
+          0.43640636931907023
+        ],
+        [
+          -1.746947920244982,
+          1.651966113139788,
+          0.5213014853561159
+        ],
+        [
+          -1.4572696446439384,
+          1.6726846627254541,
+          0.5261227419224696
+        ]
+      ],
+      "sampleLiveryUv": null,
+      "sampleFinish": [
+        1,
+        1
+      ],
+      "sampleSourceUv": [
+        0.9847188063584493,
+        0.27514492363757675
+      ]
+    },
+    {
+      "runtimePart": "trim",
+      "runtimeFace": 918,
+      "sourceGlobalFace": 2898,
+      "sourcePrimitive": "SUV Body_Body_0",
+      "sourceMaterial": "Body_7",
+      "sourceComponentFaces": 3997,
+      "centroidErrorMetres": 7.725040853197552e-06,
+      "sourceTriangle": [
+        [
+          -1.4648769720413544,
+          1.646719976953416,
+          0.607727714140983
+        ],
+        [
+          -1.4792263904055458,
+          1.6087707555873818,
+          0.6238134792355156
+        ],
+        [
+          -1.162953588945217,
+          1.6131379795450111,
+          0.6286014308640383
+        ]
+      ],
+      "sampleLiveryUv": null,
+      "sampleFinish": [
+        1,
+        1
+      ],
+      "sampleSourceUv": [
+        0.7952764281135666,
+        0.9647973608565855
+      ]
+    },
+    {
+      "runtimePart": "panels",
+      "runtimeFace": 741,
+      "sourceGlobalFace": 4095,
+      "sourcePrimitive": "SUV Body_Body_0",
+      "sourceMaterial": "Body_7",
+      "sourceComponentFaces": 70,
+      "centroidErrorMetres": 1.2434356292363454e-05,
+      "sourceTriangle": [
+        [
+          -1.7731022310039934,
+          1.695575867719323,
+          0.5135676122766034
+        ],
+        [
+          -1.8426024703299033,
+          1.6377006582022302,
+          0.5154464505784753
+        ],
+        [
+          -1.746947920244982,
+          1.6525139416704162,
+          0.5213014853561159
+        ]
+      ],
+      "sampleLiveryUv": [
+        0.5625,
+        0.0625
+      ],
+      "sampleFinish": [
+        1,
+        1
+      ],
+      "sampleSourceUv": [
+        0.008988400176717155,
+        0.8613934965356526
+      ]
+    },
+    {
+      "runtimePart": "panels",
+      "runtimeFace": 758,
+      "sourceGlobalFace": 4112,
+      "sourcePrimitive": "SUV Body_Body_0",
+      "sourceMaterial": "Body_7",
+      "sourceComponentFaces": 70,
+      "centroidErrorMetres": 1.808865514712979e-05,
+      "sourceTriangle": [
+        [
+          -1.2994049887810855,
+          1.70381065262229,
+          0.5240256357280834
+        ],
+        [
+          -1.299472897954817,
+          1.7245059872959654,
+          0.5213279327809812
+        ],
+        [
+          -1.7224412180109834,
+          1.7013776430609182,
+          0.5155781405030047
+        ]
+      ],
+      "sampleLiveryUv": [
+        0.5625,
+        0.0625
+      ],
+      "sampleFinish": [
+        1,
+        1
+      ],
+      "sampleSourceUv": [
+        0.02329253447982829,
+        0.8569054118359198
+      ]
+    },
+    {
+      "runtimePart": "panels",
+      "runtimeFace": 769,
+      "sourceGlobalFace": 4123,
+      "sourcePrimitive": "SUV Body_Body_0",
+      "sourceMaterial": "Body_7",
+      "sourceComponentFaces": 70,
+      "centroidErrorMetres": 9.528004026573094e-06,
+      "sourceTriangle": [
+        [
+          -1.299472897954817,
+          1.7245059872959654,
+          0.5213279327809812
+        ],
+        [
+          -1.2994049887810855,
+          1.70381065262229,
+          0.5240256357280834
+        ],
+        [
+          -0.9824437676338924,
+          1.7100311642269002,
+          0.5270477895194667
+        ]
+      ],
+      "sampleLiveryUv": [
+        0.5625,
+        0.0625
+      ],
+      "sampleFinish": [
+        1,
+        1
+      ],
+      "sampleSourceUv": [
+        0.08105996249324121,
+        0.8677890576510076
+      ]
+    }
+  ],
+  "centroidOcclusion": [
+    {
+      "trimFace": 905,
+      "centroid": [
+        -0.9990352312723796,
+        1.6851422627766928,
+        0.5011850039164225
+      ],
+      "firstPart": "panels",
+      "firstFace": 765,
+      "firstPoint": [
+        -0.9990352312723796,
+        1.7199855178819057,
+        0.5011850039164225
+      ],
+      "coveredMetres": 0.03484325510521309
+    },
+    {
+      "trimFace": 906,
+      "centroid": [
+        -1.3519601186116537,
+        1.6777369181315103,
+        0.4981772263844808
+      ],
+      "firstPart": "panels",
+      "firstFace": 763,
+      "firstPoint": [
+        -1.3519601186116537,
+        1.7106999064539625,
+        0.4981772263844808
+      ],
+      "coveredMetres": 0.03296298832245235
+    },
+    {
+      "trimFace": 907,
+      "centroid": [
+        -1.6507747014363607,
+        1.6610394795735677,
+        0.49461205800374347
+      ],
+      "firstPart": "panels",
+      "firstFace": 762,
+      "firstPoint": [
+        -1.6507747014363607,
+        1.6917092979494812,
+        0.49461205800374347
+      ],
+      "coveredMetres": 0.030669818375913493
+    }
+  ],
+  "interpretation": "Authored roof UV island includes continuous narrow dark border beneath raised rails. Surface/body connectivity does not establish paint semantics. Retain source border; no evidence of generated letter/cap sampling error. Gutter/rack-base purpose inferred from location; no independent named gutter metadata."
+}

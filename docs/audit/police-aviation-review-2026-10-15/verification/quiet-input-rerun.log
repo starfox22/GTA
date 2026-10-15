@@ -1,0 +1,6 @@
+started dev server (?dev&norender: boot 14.9s)
+PASS god-mode-codes (10.6s)
+     A taps: x 1152 → 1133 → 1114 · after the code: mode settings · ON sound: {"on":true,"seconds":4,"peak":0.729,"rms":0.061,"loudestRms":0.319} · OFF sound: {"on":false,"seconds":4,"peak":0.47,"rms":0.04,"loudestRms":0.26}
+PASS player-jump (26.2s)
+     jump height (m) 0.5 · air time (s) 0.639 · villa garden wall (m) 1.35 · feet back on the ground (units) 0 · sea railing at 3417,1152.5: landed 3466,1153; {"from":[3411,1153],"to":[3448,1153],"metres":4.62,"maxClearance":1.5,"vault":true,"into":"water"} · effort: {"sample":"player-jump-grunt","loaded":true,"sound":true,"asked":6,"played":6,"soft":4,"last":{"soft":true,"rate":1.107,"level":0.175,"at":16.47}} · speed 54.2 -> 23.3
+2/2 passed, 0 skipped, 0 failed in 54s

@@ -1,0 +1,30 @@
+{
+  "publishedGame": {
+    "html": "dist/review16/final-runtime.html",
+    "sha256": "719a535fe3905275c381737acb7fc3e80ee1ab4378c0d5736a4595096b16c03c"
+  },
+  "rejectedCandidate": {
+    "published": false,
+    "html": "dist/review16/hillclimb-index-candidate.html",
+    "sha256": "80f7b408cce5dd3c711210ad11f917841e43f0cb4fd3d712588bb75d28388dc4",
+    "source": "hillclimb-index-rejected-source.js",
+    "qualification": "Source extracted verbatim between its file banner and the next subsystem marker in the immutable candidate HTML; trailing include whitespace retained."
+  },
+  "restoredPilotSha256": "3f0392fdffee03fa2eda1a4a0129270553f28bbaa9bec9aea50707f826cb0939",
+  "unchangedTests": {
+    "hillclimb-physics.mjs": "2992acf477b47f4f093e2b831890d83787df33784e266ad8794674179f5f164c",
+    "falls.mjs": "848bff688faed24577f34cc4070ce94de14a694ad339e1de357ce27de58102ae"
+  },
+  "files": {
+    "hillclimb-index-runtime.json": "e21838a3f839cc0ecf51005c6411ab7ae9f5f07d1592019a6ff3a046b9d52abd",
+    "hillclimb-original-runtime.json": "69127d94a604d722a40f0d4c6dbf888ea6524073d0bb4dbd9abffdd44a914fcc",
+    "hillclimb-index-rejected.patch": "11cdbeee80b8387b1394c1c04883c2707164f5e90060bf16f5695791535c801f",
+    "hillclimb-index-runtime.mjs": "b4d2169d33a24ec1f7d703076f9b5a549b98e9f035ad249afb293ce317d9db4b",
+    "hillclimb-original-descent-rest.mjs": "749f9040325f795fbf1e707dde200fdb9ec3b7bc3f1c6ce11420377379be51ca",
+    "hillclimb-index-runtime.log": "39fa9029ca0447b8169e71fb61e9d517e4b2e56841c3de832d363fb5e9404e32",
+    "hillclimb-index-rejected-source.js": "b779fd177142204540c4ac0a1205615ecea28319a691d084e23d7b28016cb3cf",
+    "hillclimb-original-descent-rest.json": "63535f549217eae2c8c4b6a3795529ce02af1b293c2b487b4fcb66519f656d4b",
+    "hillclimb-original-runtime.mjs": "14afc4e141c2bcd9b9a0643f22b115b8e4500c5e15257cc266e262b6904ba118"
+  },
+  "harnessQualification": "Original executed harnesses copied verbatim. They use absolute /workspace/GTA paths and frozen HTML paths. Original follow-up output was retained as JSON; rejected attempt also retained its raw redirected log. No new game run performed during curation."
+}

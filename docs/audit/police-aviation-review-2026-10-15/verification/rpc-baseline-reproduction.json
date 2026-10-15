@@ -1,0 +1,14 @@
+{
+  "source": "/workspace/GTA/dist/review16/baseline-source/tools/dev.mjs",
+  "node": "24.19.0",
+  "blockedMilliseconds": 7500,
+  "first": {
+    "commands": 1,
+    "connections": 1
+  },
+  "pass": false,
+  "error": {
+    "code": "ECONNRESET",
+    "message": "socket hang up"
+  }
+}

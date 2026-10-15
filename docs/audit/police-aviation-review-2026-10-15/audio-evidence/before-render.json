@@ -1,0 +1,59 @@
+{
+  "renderer": "web-audio-engine@0.13.4 OfflineAudioContext (CPU)",
+  "sources": {
+    "engine-audio.js": "ddb818145a752f402598326e42c787844649679ebdde9679b9e345abe557482b",
+    "aircraft-audio.js": null
+  },
+  "timing": "0–1.5 s idle; 1.5 s throttle advanced; actual power ramps at profile spool rate; 6.2 s output cut (old graph 0.3–0.4 s release, new graph 0.12 s). New graph only: flyby left→right at 240 units/s, 160 units offset, 80 units elevation.",
+  "scope": "Actual shipped Web Audio graph, dry engineBus at unity; excludes global limiter/mix makeup, radio, ambient scene, runway/wind layers and cabin convolution. It is an isolated sound fixture, not gameplay recording.",
+  "results": [
+    {
+      "file": "skyhawk-idle-takeoff-cutoff.wav",
+      "bytes": 816044,
+      "sha256": "62e6d98f28b9e3754786dd34e50e739f00ff8a93428ebfe9e84adddabfbf1a73",
+      "seconds": 8.5,
+      "rate": 24000,
+      "channels": 2,
+      "peak": 0.25002986192703247,
+      "idleRms": 0.01794624177586551,
+      "takeoffRms": 0.06268916626235017,
+      "cutoffRms": 0.0007854652986145845
+    },
+    {
+      "file": "courier-idle-takeoff-cutoff.wav",
+      "bytes": 816044,
+      "sha256": "5e08f6eb1b612884c47298e3787c8e4c1403c94bba219dbc9cb49cc46cf55f48",
+      "seconds": 8.5,
+      "rate": 24000,
+      "channels": 2,
+      "peak": 0.3632833957672119,
+      "idleRms": 0.04674624918979565,
+      "takeoffRms": 0.11424789414762886,
+      "cutoffRms": 0.0006342065893398672
+    },
+    {
+      "file": "jet-idle-takeoff-cutoff.wav",
+      "bytes": 816044,
+      "sha256": "3fb6c6187b65193c4f19b52ba615b991caae26baa4f2aeeed90d32b650175117",
+      "seconds": 8.5,
+      "rate": 24000,
+      "channels": 2,
+      "peak": 0.24808870255947113,
+      "idleRms": 0.01794624177586551,
+      "takeoffRms": 0.06225815496444714,
+      "cutoffRms": 0.0007837169488056339
+    },
+    {
+      "file": "airliner-idle-takeoff-cutoff.wav",
+      "bytes": 816044,
+      "sha256": "1a2c8c422829c2a106d5bef7289ecb6fc4f7b5980d4828c8409a9a2aad08601b",
+      "seconds": 8.5,
+      "rate": 24000,
+      "channels": 2,
+      "peak": 0.19624608755111694,
+      "idleRms": 0.01752855791261706,
+      "takeoffRms": 0.050758121011945476,
+      "cutoffRms": 0.0006489743108002909
+    }
+  ]
+}

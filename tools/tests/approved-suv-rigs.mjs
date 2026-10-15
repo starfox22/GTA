@@ -73,8 +73,9 @@ export default async function(t) {
       function approvedVehicleTexture() { return fixtureTexture; }
       function approvedVehicleImpostorPaint() { return materials.trim; }
       policeLiveryTexture = () => new Three.Texture();
-      policeGlyphs = () => ({ material: materials.trim });
-      policeDecalGeometry = () => new Three.BoxGeometry(.01, .01, .01);
+      // Exercise the actual glyph placement without depending on a host font rasterizer.
+      policeGlyphs = () => ({ material: materials.trim, height: 512,
+        advance: Object.fromEntries([...POLICE_GLYPHS].map(ch => [ch, .4])) });
       let fixturePose = null;
       const chaseViewActive = false, specScratch = {};
       function occupantLooksFor() { return { proxies: [{}, {}], looks: [{}, {}] }; }
@@ -85,7 +86,7 @@ export default async function(t) {
         fixturePose = { hip: new Three.Vector3(0, RIG.hip * RIG_UNIT, 0).applyMatrix4(sp.rootOverride).toArray(),
           lean: sp.riderLean, hands: sp.handTargets.map(v => v.toArray()), feet: sp.legTargets.map(v => v.toArray()) };
       }
-      ({ makeAssetCar, makeAssetPoliceVehicle, approvedSuvKey, approvedSuvGlassBand, vaGeometry, policeApprovedPanels, animateApprovedSuvWheels, vehicleAssetModel, bodyPoolFor, vehicleDoor, vehicleDoorsReport, doorPanelGeometries, carBodyDamage, swingDriverDoor, markOntoDoor, crumpleSlices, crumplePending: () => crumpleQueue.size, assetCharSwap, assetCharRelease, seatOccupant, fixtureOccupantPose: () => fixturePose, carSeatPlan, cabinClearance, cabinSeatClouds, DRIVEBY_SEATS })`, scope);
+      ({ makeAssetCar, makeAssetPoliceVehicle, approvedSuvKey, approvedSuvGlassBand, vaGeometry, policeApprovedPanels, policeApprovedDecalAnchors, policeDecalGeometry, bodies: POLICE_BODIES, animateApprovedSuvWheels, vehicleAssetModel, bodyPoolFor, vehicleDoor, vehicleDoorsReport, doorPanelGeometries, carBodyDamage, swingDriverDoor, markOntoDoor, crumpleSlices, crumplePending: () => crumpleQueue.size, assetCharSwap, assetCharRelease, seatOccupant, fixtureOccupantPose: () => fixturePose, carSeatPlan, cabinClearance, cabinSeatClouds, DRIVEBY_SEATS })`, scope);
   const clearDamage = () => ({ parts: { hood: 0, bumperFront: 0, bumperRear: 0, doorLeft: 0, doorRight: 0, trunk: 0 }, glass: { front: 0, rear: 0, left: 0, right: 0 }, tires: {}, front: 0, rear: 0, left: 0, right: 0, burnt: false });
   function checkAperture(vehicle, model, key) {
     const drainCrumple = () => { for (let i = 0; i < 500 && api.crumplePending(); i++) api.crumpleSlices(); t.assert(!api.crumplePending(), key + ': actual crumple budget queue did not drain'); };
@@ -323,6 +324,103 @@ export default async function(t) {
     t.assert(model.paint.color.equals(new Three.Color(look.paint)), equipment + ': patrol paint incorrectly inherits dark gameplay vehicle colour');
     t.assert(model.paint.map === scope.fixtureTexture && model.paint.userData.approvedPaint, equipment + ': actual approved source paint material was not constructed');
     if (equipment === 'marked') {
+      const ownership = model.kit.sideBodyLivery;
+      t.assert(ownership?.[0].movedTriangles === 434 && ownership?.[1].movedTriangles === 213,
+        'marked S2 must coat complete connected source door/quarter skins at both levels');
+      const triangleKeys = geometries => geometries.flatMap(geometry => {
+        const names = Object.keys(geometry.attributes).filter(name => name !== 'liveryUv').sort(), keys = [];
+        for (let i = 0; i < geometry.index.count; i += 3) {
+          const values = [];
+          for (let j = 0; j < 3; j++) {
+            const vi = geometry.index.getX(i + j);
+            for (const name of names) {
+              const attr = geometry.attributes[name];
+              for (let component = 0; component < attr.itemSize; component++) values.push(Math.fround(attr.getComponent(vi, component)));
+            }
+          }
+          keys.push(JSON.stringify(values));
+        }
+        return keys;
+      }).sort();
+      for (const [level, suffix, transfer] of [[model.kit, '', ownership[0]], [model.kit.far, 'Far', ownership[1]]]) {
+        const original = ['shell', 'panels', 'hood', 'trim', 'cabin'].map(name => api.vaGeometry(header.models.s2_suv, { header, arrays }, name + suffix, model.kit.k)).filter(Boolean),
+          before = triangleKeys(original), after = triangleKeys([level.shell, level.paint, level.hood, level.trim]);
+        t.assert(before.length === after.length && before.every((value, i) => value === after[i]),
+          'marked S2 ' + suffix + ': role transfer loses source corners, normals, UVs, finish, colour or winding');
+        t.assert(transfer.before.shell + transfer.before.trim === transfer.after.shell + transfer.after.trim,
+          'marked S2 ' + suffix + ': role transfer changes draw triangle total');
+        t.assert(level.trimOuter.drawRange.count === (header.models.s2_suv.parts['trim' + suffix].triangles - transfer.movedTriangles) * 3,
+          'marked S2 ' + suffix + ': exterior impostor prefix includes cabin after role transfer');
+      }
+      const ray = new Three.Raycaster(), targets = [model.shell, model.panels, model.assetTrim];
+      model.body.updateMatrixWorld(true);
+      const roof = model.kit.roofDecal, sideNumber = model.kit.sideDecal, scale = model.kit.k,
+        glyphs = api.policeDecalGeometry(look, api.bodies[body], model.kit.l, model.dims.w, model.kit),
+        glyphPosition = glyphs.attributes.position, glyphNormal = glyphs.attributes.normal;
+      t.assert(model.kit.trunkDecal === null && glyphs.index.count / 3 === 12 && glyphPosition.count === 24,
+        'marked S2 must have one roof number and two side numbers, without a sedan trunk duplicate');
+      t.assert(sideNumber.y > header.models.s2_suv.sill * scale && sideNumber.y + .085 * scale < model.kit.glass.base - .03 * scale,
+        'marked S2 side number sits beside upper glass/roof instead of the rear quarter');
+      // Clip every real source triangle against the complete roof-number footprint.
+      // Taking source centroids or just glyph corners misses a bowed roof or rail crossing.
+      let top = -Infinity;
+      for (const level of [model.kit, model.kit.far]) for (const geometry of [level.paint, level.trim]) {
+        const pos = geometry.attributes.position;
+        for (let i = 0; i < geometry.index.count; i += 3) {
+          let polygon = [0, 1, 2].map(j => new Three.Vector3().fromBufferAttribute(pos, geometry.index.getX(i + j)).toArray());
+          for (const [axis, boundary, sign] of [[0, roof.x - roof.length / 2, 1], [0, roof.x + roof.length / 2, -1],
+            [2, -roof.width / 2, 1], [2, roof.width / 2, -1]]) {
+            const clipped = [];
+            for (let j = 0; j < polygon.length; j++) {
+              const a = polygon[j], b = polygon[(j + 1) % polygon.length], da = sign * (a[axis] - boundary), db = sign * (b[axis] - boundary);
+              if (da >= 0) clipped.push(a);
+              if ((da >= 0) !== (db >= 0)) clipped.push(a.map((value, component) => value + (b[component] - value) * da / (da - db)));
+            }
+            polygon = clipped;
+          }
+          for (const point of polygon) top = Math.max(top, point[1]);
+        }
+      }
+      t.assert(Number.isFinite(top) && roof.y - top >= .04 && roof.y - top < .15,
+        'marked S2 roof number intersects the bowed roof/rails or floats above it at either LOD: ' + JSON.stringify({ top, roof }));
+      for (let i = 0; i < glyphPosition.count; i++) if (glyphNormal.getY(i) > .9)
+        t.assert(Math.abs(glyphPosition.getZ(i)) < .48 * scale && Math.abs(glyphPosition.getZ(i)) <= roof.width / 2 + 1e-5 &&
+          Math.abs(glyphPosition.getX(i) - roof.x) <= roof.length / 2 && glyphPosition.getY(i) >= top + .04,
+        'marked S2 aerial glyph touches a source roof rail or passes below the roof');
+      for (const sign of [-1, 1]) {
+        ray.set(new Three.Vector3(sideNumber.x, sideNumber.y, sign * 2 * scale), new Three.Vector3(0, 0, -sign));
+        const hit = ray.intersectObjects(targets, false)[0];
+        t.assert(hit && hit.object !== model.assetTrim && Math.abs(hit.point.z) < sideNumber.half + .06,
+          'marked S2 quarter number has no painted source side behind its anchor');
+      }
+      const sideClearances = [];
+      for (let base = 0; base < glyphPosition.count; base += 4) {
+        if (Math.abs(glyphNormal.getZ(base)) < .9) continue;
+        const sign = Math.sign(glyphNormal.getZ(base)), xs = [0, 1, 2, 3].map(j => glyphPosition.getX(base + j)),
+          ys = [0, 1, 2, 3].map(j => glyphPosition.getY(base + j)), plane = Math.abs(glyphPosition.getZ(base));
+        for (const tx of [0, .25, .5, .75, 1]) for (const ty of [0, .25, .5, .75, 1]) {
+          const x = Math.min(...xs) + (Math.max(...xs) - Math.min(...xs)) * tx,
+            y = Math.min(...ys) + (Math.max(...ys) - Math.min(...ys)) * ty;
+          ray.set(new Three.Vector3(x, y, sign * 2 * scale), new Three.Vector3(0, 0, -sign));
+          const hit = ray.intersectObjects(targets, false)[0], clearance = hit ? plane - Math.abs(hit.point.z) : -Infinity;
+          t.assert(hit && hit.object !== model.assetTrim && hit.object.geometry.attributes.liveryUv && clearance > 0 && clearance < .12 * scale,
+            'marked S2 side glyph clips, floats or overlaps glass/plastic/wheel void: ' + JSON.stringify({ x, y, sign, clearance }));
+          sideClearances.push(clearance / scale);
+        }
+      }
+      const unrelated = { approvedKey: 's1_jimny', trunkDecal: { x: 1, y: 2 } }, unrelatedBefore = JSON.stringify(unrelated);
+      api.policeApprovedDecalAnchors(unrelated, {});
+      t.assert(JSON.stringify(unrelated) === unrelatedBefore, 'S2 decal repair mutates an unrelated approved model');
+      t.note(JSON.stringify({ sheriffDecals: { roof, side: sideNumber, trunk: model.kit.trunkDecal,
+        maximumSourceRoofInFootprint: top, minimumClearanceMetres: (roof.y - top) / scale,
+        sideGlyphSamples: sideClearances.length, sideClearanceMetres: [Math.min(...sideClearances), Math.max(...sideClearances)],
+        glyphTriangles: glyphs.index.count / 3, sourceGeometryChanged: false } }));
+      for (const side of [-1, 1]) for (const x of [-.7, -.25, .05, .5, .8]) for (const y of [.76, .82, .9, .94]) {
+        ray.set(new Three.Vector3(x * model.kit.k, y * model.kit.k, side * 2 * model.kit.k), new Three.Vector3(0, 0, -side));
+        const hit = ray.intersectObjects(targets, false)[0];
+        t.assert(hit && hit.object !== model.assetTrim && hit.object.geometry.attributes.liveryUv,
+          'marked S2 source door has an exposed dark trim triangle at ' + [side, x, y]);
+      }
       const shader = { vertexShader: Three.ShaderLib.physical.vertexShader, fragmentShader: Three.ShaderLib.physical.fragmentShader, uniforms: {} };
       model.paint.onBeforeCompile(shader);
       t.assert(shader.uniforms.approvedLivery?.value === model.paint.userData.approvedLivery && /approvedDecal\.rgb\s*\*\s*diffuse/.test(shader.fragmentShader), 'marked sheriff shader does not sample the separate patrol decal with its actual paint palette');
@@ -338,10 +436,11 @@ export default async function(t) {
         t.assert(Math.min(...minimum) >= .95, 'opaque white sheriff livery is darkened by the actual paint/source vertex composition');
       }
     }
+    else t.assert(!model.kit.sideBodyLivery, 'unmarked S2 unexpectedly inherits marked body face-role transfer');
     t.assert(model.approvedAsset === 's2_suv' && model.police && model.wheels.length === 4, equipment + ': full-size patrol SUV missing');
     t.assert(model.shell.geometry.attributes.liveryUv?.count === model.shell.geometry.attributes.position.count, equipment + ': projected livery missing');
     const source = api.vaGeometry(header.models.s2_suv, { header, arrays }, 'shell', model.kit.k), uv = model.shell.geometry.attributes.uv;
-    t.assert(uv.array.every((value, index) => value === source.attributes.uv.array[index]), equipment + ': livery overwrites authored atlas UVs');
+    t.assert(source.attributes.uv.array.every((value, index) => value === uv.array[index]), equipment + ': livery overwrites authored atlas UVs');
     for (const mesh of [model.hood, model.panels]) t.assert(mesh.geometry.attributes.liveryUv && mesh.geometry.attributes.finish, equipment + ': paint panel loses PBR/livery coordinates');
     t.assert(equipment !== 'marked' || !!model.kit.equipment && model.kit.anchors.length >= 5 && model.kit.beaconLeft && model.kit.beaconRight, 'sheriff source body has no fitted police equipment');
     const seat = model.seats; lawRows.push({ equipment, body, seat: [seat.x / seat.M, seat.y / seat.M, -seat.z / seat.M, seat.lean, model.kit.glass.base / seat.M], rear: seat.rear !== null });

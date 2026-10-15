@@ -1,0 +1,19 @@
+{
+  "change": "Extract aircraftPropellerRpm without changing synthesis parameters",
+  "allFiveWavsByteIdentical": true,
+  "beforeSourceSha256": {
+    "engine-audio.js": "b5346a9aebfebe34305e8e374362a0aab081b45a8f34be1ba90fe6e49764bb1c",
+    "aircraft-audio.js": "960594dfe6750840aaf1ceeca1e1b944061938ce648e56150a443fb34fe0d353"
+  },
+  "afterSourceSha256": {
+    "engine-audio.js": "b5346a9aebfebe34305e8e374362a0aab081b45a8f34be1ba90fe6e49764bb1c",
+    "aircraft-audio.js": "89bb464608fb2c11812f662f604fd957dabd35fcd2be53a525bd6c5f5cf44ba0"
+  },
+  "wavSha256": {
+    "skyhawk-idle-takeoff-cutoff.wav": "9d60cc8104bc4f0a8dd963c94cc36d46318a9301390b56e0d8083da6f4652b86",
+    "courier-idle-takeoff-cutoff.wav": "e5fb6d6e5c3d400a7cc834f064ba55e0b6877393b3a25f1a9c07e9a5ba70f40f",
+    "jet-idle-takeoff-cutoff.wav": "70212d60d2eb3c57220310f1fddfd7f031309893df6bc731054dcd4bc5b9aabf",
+    "airliner-idle-takeoff-cutoff.wav": "d7108e45b44963f0372730308075b03fa53a7aede5c15dc64bdb2d4c1095300a",
+    "skyhawk-flyby.wav": "dda5602402847dc006df51b1c04e0eba0dca9e630b8a7602de78925723287d11"
+  }
+}

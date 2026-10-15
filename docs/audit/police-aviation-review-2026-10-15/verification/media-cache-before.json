@@ -1,0 +1,7 @@
+{
+  "builder": "/workspace/GTA/dist/review16/baseline-source/tools/build.py",
+  "builderSha256": "31bc8bea4e3ba4a60d0f1b3c024543e2b046b4436793cd9480bb1fef0b570718",
+  "checks": 1,
+  "pass": false,
+  "error": "Media URL has no exact content identity: media/pack-images.js"
+}

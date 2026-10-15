@@ -369,23 +369,31 @@
         height: 152,
         kind: 'tower',
       },
-      // Oceanview's parked jets (their fuselages). Southport's GA apron holds flyable SKYLARK 172s instead
-      // (aviation-flight.js populateAircraft): vehicles, colliding as such.
+      // Oceanview's source-model 737s (world3d-resort.js parkedJet). Compound
+      // fuselage, wing, tail and gear bounds preserve the open apron corners
+      // while including the drawn wingtips; the previous fuselage-only boxes
+      // let taxiing aircraft drive through them. Metre bounds are measured in
+      // the normalized source (+X nose, +Z starboard), then scaled exactly as
+      // the renderer and rotated by its Three.js yaw (map y = world z).
       ...[
         [4100, 9160, true, 1.8],
         [4460, 9160, true, 1.6],
         [5710, 9300, false, 1.4],
-      ].map(([x, y, vertical, size]) => {
-        const w = (vertical ? 18 : 126) * size,
-          h = (vertical ? 126 : 18) * size;
-        return {
-          x: x - w / 2,
-          y: y - h / 2,
-          w,
-          h,
-          height: 24 * size,
+      ].flatMap(([x, y, vertical, size]) => {
+        const scale = 214 * 0.63 * size / 39.2316433;
+        return [
+          [-19.20044, 19.61583, -1.89735, 1.89735, 12.69307], // fuselage / fin
+          [-6.60710, 7.67180, -17.83583, 17.83583, 6.92786], // wing / winglet
+          [-19.61583, -13.92449, -7.12780, 7.13733, 6.02847], // tailplane
+          [-0.64949, 17.10879, -4.26557, 4.26557, 2.56141], // landing gear
+        ].map(([minAhead, maxAhead, minSide, maxSide, height]) => ({
+          x: x + (vertical ? minSide : minAhead) * scale,
+          y: y + (vertical ? -maxAhead : minSide) * scale,
+          w: (vertical ? maxSide - minSide : maxAhead - minAhead) * scale,
+          h: (vertical ? maxAhead - minAhead : maxSide - minSide) * scale,
+          height: height * scale,
           kind: 'parked aircraft',
-        };
+        }));
       }),
     ];
     function airportSceneryBlocked(x, y, r = 0) {

@@ -184,14 +184,29 @@
       return best || PLACES.find((p) => p.kind === 'hospital');
     }
     function nearestCar() {
-      if (player.parachute) return null;
+      if (player.parachute || player.roof) return null;
       let best = null,
         bd = 64;
       for (const vehicle of vehicles) {
-        if (player.roof) return null;
-        const d = distanceBetween(vehicle, player);
         // A helicopter parked on a roof is reached from that roof, not the street.
         if (isAircraft(vehicle) && Math.abs(entityElevation(vehicle) - entityElevation(player)) > 30) continue;
+        let d;
+        if (vehicle.type === 'plane') {
+          // The full wing box also blocks walking. A centre-only 64-unit
+          // reach sat inside the jets' boxes, so nobody outside their wings
+          // could board. Both the prompt and E use this same 3 m edge reach.
+          const spec = vehicleSpec(vehicle),
+            dx = player.x - vehicle.x,
+            dy = player.y - vehicle.y,
+            reach = (spec.l + spec.w) / 2 + 3 * UNITS_PER_METRE;
+          if (Math.abs(dx) > reach || Math.abs(dy) > reach) continue;
+          const cos = Math.cos(vehicle.a), sin = Math.sin(vehicle.a),
+            along = Math.max(0, Math.abs(dx * cos + dy * sin) - spec.l / 2),
+            across = Math.max(0, Math.abs(-dx * sin + dy * cos) - spec.w / 2);
+          // Normalize the edge gap to the existing selection range so the
+          // nearest reachable vehicle still wins when another is beside it.
+          d = Math.hypot(along, across) * 64 / (3 * UNITS_PER_METRE);
+        } else d = distanceBetween(vehicle, player);
         // A car on its roof or side (falls-vehicles.js) has nothing to drive on.
         if (vehicle.hp > 0 && aircraftClearance(vehicle) < 2 && d < bd && !vehicle.overturned) {
           best = vehicle;

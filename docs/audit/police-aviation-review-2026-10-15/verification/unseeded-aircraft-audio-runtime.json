@@ -1,0 +1,2555 @@
+{
+  "html": "/workspace/GTA/dist/review16/published.html",
+  "htmlSha256": "719a535fe3905275c381737acb7fc3e80ee1ab4378c0d5736a4595096b16c03c",
+  "recorderSha256": "b3d93429c45429f1450f86b82cc11060237fb659be5405d8dc8fd61e9177e511",
+  "browserHelperSha256": "35961799c4a7706ab6a28148a2e5275e780feae8ed4f64f2a5ad34c8d9d1badb",
+  "fixture": {
+    "query": "?dev&norender&hold",
+    "seeded": false,
+    "held": true,
+    "viewport": [
+      960,
+      600
+    ],
+    "source": "Frozen published HTML; no production override, private object access or eval hook.",
+    "reason": "initAudio returns early for DEV_BOOT_SEED; an unseeded page is required to exercise real Web Audio.",
+    "scope": "Actual Chromium AudioContext/production aircraft graphs, NO_RENDER (no WebGL context, images or hardware FPS claim)."
+  },
+  "environment": {
+    "node": "v24.19.0",
+    "platform": "linux",
+    "arch": "x64",
+    "configuredNames": [
+      "CHROME_PATH",
+      "PLAYWRIGHT_MODULE",
+      "DEC_BROWSER_SLOTS"
+    ],
+    "browserVersion": "154.0.8037.57"
+  },
+  "checks": 40,
+  "actions": [
+    {
+      "name": "audioMix",
+      "args": []
+    },
+    {
+      "name": "status",
+      "args": []
+    },
+    {
+      "name": "holdSimulation",
+      "args": [
+        true
+      ]
+    },
+    {
+      "name": "god",
+      "args": [
+        true
+      ]
+    },
+    {
+      "name": "settings",
+      "args": [
+        {
+          "sound": true,
+          "masterVolume": 100,
+          "engineVolume": 75,
+          "radioVolume": 0,
+          "ambienceVolume": 0,
+          "voiceVolume": 0,
+          "sirenVolume": 0,
+          "soundVolume": 0
+        }
+      ]
+    },
+    {
+      "name": "status",
+      "args": []
+    },
+    {
+      "name": "audioMix",
+      "args": []
+    },
+    {
+      "name": "look",
+      "args": [
+        -2060,
+        9884
+      ]
+    },
+    {
+      "name": "drive",
+      "args": [
+        "plane",
+        0,
+        0,
+        "skyhawk"
+      ]
+    },
+    {
+      "name": "simulate",
+      "args": [
+        0.1
+      ]
+    },
+    {
+      "name": "audioLevel",
+      "args": []
+    },
+    {
+      "name": "status",
+      "args": []
+    },
+    {
+      "name": "flight",
+      "args": []
+    },
+    {
+      "name": "engineSound",
+      "args": []
+    },
+    {
+      "name": "audioMix",
+      "args": []
+    },
+    {
+      "name": "audioLevel",
+      "args": []
+    },
+    {
+      "name": "frameFaults",
+      "args": []
+    },
+    {
+      "name": "vehicleAt",
+      "args": [
+        -2000,
+        9884
+      ]
+    },
+    {
+      "name": "settings",
+      "args": [
+        {
+          "sound": false
+        }
+      ]
+    },
+    {
+      "name": "simulate",
+      "args": [
+        0.1
+      ]
+    },
+    {
+      "name": "status",
+      "args": []
+    },
+    {
+      "name": "flight",
+      "args": []
+    },
+    {
+      "name": "engineSound",
+      "args": []
+    },
+    {
+      "name": "audioMix",
+      "args": []
+    },
+    {
+      "name": "audioLevel",
+      "args": []
+    },
+    {
+      "name": "frameFaults",
+      "args": []
+    },
+    {
+      "name": "settings",
+      "args": [
+        {
+          "sound": true
+        }
+      ]
+    },
+    {
+      "name": "simulate",
+      "args": [
+        0.1
+      ]
+    },
+    {
+      "name": "placeVehicle",
+      "args": [
+        1000,
+        9884,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "interact",
+      "args": []
+    },
+    {
+      "name": "simulate",
+      "args": [
+        0.1
+      ]
+    },
+    {
+      "name": "status",
+      "args": []
+    },
+    {
+      "name": "flight",
+      "args": []
+    },
+    {
+      "name": "engineSound",
+      "args": []
+    },
+    {
+      "name": "audioMix",
+      "args": []
+    },
+    {
+      "name": "audioLevel",
+      "args": []
+    },
+    {
+      "name": "frameFaults",
+      "args": []
+    },
+    {
+      "name": "look",
+      "args": [
+        -2060,
+        9884
+      ]
+    },
+    {
+      "name": "drive",
+      "args": [
+        "plane",
+        0,
+        0,
+        "courier"
+      ]
+    },
+    {
+      "name": "simulate",
+      "args": [
+        0.1
+      ]
+    },
+    {
+      "name": "audioLevel",
+      "args": []
+    },
+    {
+      "name": "status",
+      "args": []
+    },
+    {
+      "name": "flight",
+      "args": []
+    },
+    {
+      "name": "engineSound",
+      "args": []
+    },
+    {
+      "name": "audioMix",
+      "args": []
+    },
+    {
+      "name": "audioLevel",
+      "args": []
+    },
+    {
+      "name": "frameFaults",
+      "args": []
+    },
+    {
+      "name": "vehicleAt",
+      "args": [
+        -2000,
+        9884
+      ]
+    },
+    {
+      "name": "settings",
+      "args": [
+        {
+          "sound": false
+        }
+      ]
+    },
+    {
+      "name": "simulate",
+      "args": [
+        0.1
+      ]
+    },
+    {
+      "name": "status",
+      "args": []
+    },
+    {
+      "name": "flight",
+      "args": []
+    },
+    {
+      "name": "engineSound",
+      "args": []
+    },
+    {
+      "name": "audioMix",
+      "args": []
+    },
+    {
+      "name": "audioLevel",
+      "args": []
+    },
+    {
+      "name": "frameFaults",
+      "args": []
+    },
+    {
+      "name": "settings",
+      "args": [
+        {
+          "sound": true
+        }
+      ]
+    },
+    {
+      "name": "simulate",
+      "args": [
+        0.1
+      ]
+    },
+    {
+      "name": "placeVehicle",
+      "args": [
+        1400,
+        9884,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "interact",
+      "args": []
+    },
+    {
+      "name": "simulate",
+      "args": [
+        0.1
+      ]
+    },
+    {
+      "name": "status",
+      "args": []
+    },
+    {
+      "name": "flight",
+      "args": []
+    },
+    {
+      "name": "engineSound",
+      "args": []
+    },
+    {
+      "name": "audioMix",
+      "args": []
+    },
+    {
+      "name": "audioLevel",
+      "args": []
+    },
+    {
+      "name": "frameFaults",
+      "args": []
+    },
+    {
+      "name": "look",
+      "args": [
+        -2060,
+        9884
+      ]
+    },
+    {
+      "name": "drive",
+      "args": [
+        "plane",
+        0,
+        0,
+        "jet"
+      ]
+    },
+    {
+      "name": "simulate",
+      "args": [
+        0.1
+      ]
+    },
+    {
+      "name": "audioLevel",
+      "args": []
+    },
+    {
+      "name": "status",
+      "args": []
+    },
+    {
+      "name": "flight",
+      "args": []
+    },
+    {
+      "name": "engineSound",
+      "args": []
+    },
+    {
+      "name": "audioMix",
+      "args": []
+    },
+    {
+      "name": "audioLevel",
+      "args": []
+    },
+    {
+      "name": "frameFaults",
+      "args": []
+    },
+    {
+      "name": "vehicleAt",
+      "args": [
+        -2000,
+        9884
+      ]
+    },
+    {
+      "name": "settings",
+      "args": [
+        {
+          "sound": false
+        }
+      ]
+    },
+    {
+      "name": "simulate",
+      "args": [
+        0.1
+      ]
+    },
+    {
+      "name": "status",
+      "args": []
+    },
+    {
+      "name": "flight",
+      "args": []
+    },
+    {
+      "name": "engineSound",
+      "args": []
+    },
+    {
+      "name": "audioMix",
+      "args": []
+    },
+    {
+      "name": "audioLevel",
+      "args": []
+    },
+    {
+      "name": "frameFaults",
+      "args": []
+    },
+    {
+      "name": "settings",
+      "args": [
+        {
+          "sound": true
+        }
+      ]
+    },
+    {
+      "name": "simulate",
+      "args": [
+        0.1
+      ]
+    },
+    {
+      "name": "placeVehicle",
+      "args": [
+        1800,
+        9884,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "interact",
+      "args": []
+    },
+    {
+      "name": "simulate",
+      "args": [
+        0.1
+      ]
+    },
+    {
+      "name": "status",
+      "args": []
+    },
+    {
+      "name": "flight",
+      "args": []
+    },
+    {
+      "name": "engineSound",
+      "args": []
+    },
+    {
+      "name": "audioMix",
+      "args": []
+    },
+    {
+      "name": "audioLevel",
+      "args": []
+    },
+    {
+      "name": "frameFaults",
+      "args": []
+    },
+    {
+      "name": "look",
+      "args": [
+        -2060,
+        9884
+      ]
+    },
+    {
+      "name": "drive",
+      "args": [
+        "plane",
+        0,
+        0,
+        "airliner"
+      ]
+    },
+    {
+      "name": "simulate",
+      "args": [
+        0.1
+      ]
+    },
+    {
+      "name": "audioLevel",
+      "args": []
+    },
+    {
+      "name": "status",
+      "args": []
+    },
+    {
+      "name": "flight",
+      "args": []
+    },
+    {
+      "name": "engineSound",
+      "args": []
+    },
+    {
+      "name": "audioMix",
+      "args": []
+    },
+    {
+      "name": "audioLevel",
+      "args": []
+    },
+    {
+      "name": "frameFaults",
+      "args": []
+    },
+    {
+      "name": "vehicleAt",
+      "args": [
+        -2000,
+        9884
+      ]
+    },
+    {
+      "name": "settings",
+      "args": [
+        {
+          "sound": false
+        }
+      ]
+    },
+    {
+      "name": "simulate",
+      "args": [
+        0.1
+      ]
+    },
+    {
+      "name": "status",
+      "args": []
+    },
+    {
+      "name": "flight",
+      "args": []
+    },
+    {
+      "name": "engineSound",
+      "args": []
+    },
+    {
+      "name": "audioMix",
+      "args": []
+    },
+    {
+      "name": "audioLevel",
+      "args": []
+    },
+    {
+      "name": "frameFaults",
+      "args": []
+    },
+    {
+      "name": "settings",
+      "args": [
+        {
+          "sound": true
+        }
+      ]
+    },
+    {
+      "name": "simulate",
+      "args": [
+        0.1
+      ]
+    },
+    {
+      "name": "placeVehicle",
+      "args": [
+        2200,
+        9884,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "interact",
+      "args": []
+    },
+    {
+      "name": "simulate",
+      "args": [
+        0.1
+      ]
+    },
+    {
+      "name": "status",
+      "args": []
+    },
+    {
+      "name": "flight",
+      "args": []
+    },
+    {
+      "name": "engineSound",
+      "args": []
+    },
+    {
+      "name": "audioMix",
+      "args": []
+    },
+    {
+      "name": "audioLevel",
+      "args": []
+    },
+    {
+      "name": "frameFaults",
+      "args": []
+    },
+    {
+      "name": "status",
+      "args": []
+    },
+    {
+      "name": "flight",
+      "args": []
+    },
+    {
+      "name": "engineSound",
+      "args": []
+    },
+    {
+      "name": "audioMix",
+      "args": []
+    },
+    {
+      "name": "audioLevel",
+      "args": []
+    },
+    {
+      "name": "frameFaults",
+      "args": []
+    }
+  ],
+  "profiles": [
+    {
+      "expected": {
+        "airframe": "skyhawk",
+        "kind": "piston",
+        "engines": 1,
+        "gain": 0.306,
+        "hiss": 0,
+        "rpm": 700,
+        "bladeHz": 23.33,
+        "firingHz": 23.33
+      },
+      "live": {
+        "status": {
+          "mode": "play",
+          "x": -2000,
+          "y": 9884,
+          "district": "OCEANVIEW INTERNATIONAL",
+          "hp": 100,
+          "cash": 0,
+          "wanted": 0,
+          "mission": null,
+          "completed": 0,
+          "vehicle": "plane",
+          "weapon": "9MM PISTOL",
+          "clock": "17:20",
+          "renderer": "2d",
+          "vehicles": 280,
+          "pedestrians": 595
+        },
+        "flight": {
+          "type": "skyhawk",
+          "airspeed": 0,
+          "altitude": 0,
+          "agl": 0,
+          "vs": 0,
+          "heading": 90,
+          "pitch": 0,
+          "bank": 0,
+          "throttle": 0,
+          "power": 0,
+          "flaps": "UP",
+          "flapPos": 0,
+          "gear": "DOWN",
+          "gearPos": 1,
+          "g": 1,
+          "aoa": 2.29,
+          "stallSpeed": 87,
+          "stall": false,
+          "stallWarning": false,
+          "gearWarning": false,
+          "buffet": 0,
+          "hp": 1,
+          "runway": {
+            "name": "OCEANVIEW",
+            "designation": "09",
+            "remaining": 1025
+          },
+          "hud": true,
+          "instruments": true
+        },
+        "engine": {
+          "ready": true,
+          "vehicle": "plane",
+          "set": null,
+          "kind": "piston",
+          "rpm": 0,
+          "gear": 1,
+          "throttle": 0,
+          "load": 0,
+          "gain": 0,
+          "tone": 900,
+          "layers": [],
+          "road": 0,
+          "wind": 0,
+          "tracks": 0,
+          "aircraft": [
+            {
+              "airframe": "skyhawk",
+              "kind": "piston",
+              "engines": 1,
+              "power": 0,
+              "rpm": 700,
+              "firingHz": 23.33,
+              "bladeHz": 23.33,
+              "gain": 0.306,
+              "hiss": 0,
+              "distance": 0,
+              "pan": 0,
+              "doppler": 1
+            }
+          ],
+          "nearbyDriven": 0,
+          "traffic": [],
+          "trace": []
+        },
+        "mix": {
+          "context": "running",
+          "states": [
+            "running @0.0",
+            "running @0.6"
+          ],
+          "makeup": 2,
+          "soundOffText": "",
+          "time": 3.47,
+          "soundOn": true,
+          "buses": {
+            "mix": 1,
+            "effects": 0,
+            "engines": 0.465,
+            "ambience": 0,
+            "sirens": 0,
+            "music": 0,
+            "voices": 0
+          },
+          "master": 0,
+          "duck": 1,
+          "loudDuck": {
+            "gain": 1,
+            "depth": 0,
+            "events": 0
+          },
+          "buffers": 64,
+          "loops": {
+            "rotor-loop": {
+              "gain": 0,
+              "rate": 0.806,
+              "filter": 4800
+            },
+            "siren": {
+              "gain": 0,
+              "rate": 1,
+              "filter": 819
+            },
+            "tires": {
+              "gain": 0,
+              "rate": 1.04,
+              "filter": 4800
+            }
+          }
+        },
+        "meter": {
+          "state": "running",
+          "rms": 0.0319,
+          "peak": 0.0593
+        },
+        "faults": {
+          "count": 0,
+          "gameTime": 0.1,
+          "drill": null,
+          "kinds": []
+        }
+      },
+      "identity": {
+        "id": 265,
+        "type": "plane",
+        "x": -2000,
+        "y": 9884,
+        "a": 0,
+        "altitude": 0
+      },
+      "muted": {
+        "status": {
+          "mode": "play",
+          "x": -2000,
+          "y": 9884,
+          "district": "OCEANVIEW INTERNATIONAL",
+          "hp": 100,
+          "cash": 0,
+          "wanted": 0,
+          "mission": null,
+          "completed": 0,
+          "vehicle": "plane",
+          "weapon": "9MM PISTOL",
+          "clock": "17:20",
+          "renderer": "2d",
+          "vehicles": 280,
+          "pedestrians": 595
+        },
+        "flight": {
+          "type": "skyhawk",
+          "airspeed": 0,
+          "altitude": 0,
+          "agl": 0,
+          "vs": 0,
+          "heading": 90,
+          "pitch": 0,
+          "bank": 0,
+          "throttle": 0,
+          "power": 0,
+          "flaps": "UP",
+          "flapPos": 0,
+          "gear": "DOWN",
+          "gearPos": 1,
+          "g": 1,
+          "aoa": 2.29,
+          "stallSpeed": 87,
+          "stall": false,
+          "stallWarning": false,
+          "gearWarning": false,
+          "buffet": 0,
+          "hp": 1,
+          "runway": {
+            "name": "OCEANVIEW",
+            "designation": "09",
+            "remaining": 1025
+          },
+          "hud": true,
+          "instruments": true
+        },
+        "engine": {
+          "ready": true,
+          "vehicle": "plane",
+          "set": null,
+          "kind": "piston",
+          "rpm": 0,
+          "gear": 1,
+          "throttle": 0,
+          "load": 0,
+          "gain": 0,
+          "tone": 900,
+          "layers": [],
+          "road": 0,
+          "wind": 0,
+          "tracks": 0,
+          "aircraft": [
+            {
+              "airframe": null,
+              "kind": null,
+              "engines": 0,
+              "power": 0,
+              "rpm": 0,
+              "firingHz": 0,
+              "bladeHz": 0,
+              "gain": 0,
+              "hiss": 0,
+              "distance": 0,
+              "pan": 0,
+              "doppler": 1
+            }
+          ],
+          "nearbyDriven": 0,
+          "traffic": [],
+          "trace": []
+        },
+        "mix": {
+          "context": "running",
+          "states": [
+            "running @0.0",
+            "running @0.6"
+          ],
+          "makeup": 2,
+          "soundOffText": "SOUND OFF · PRESS M TO TURN IT ON",
+          "time": 4.94,
+          "soundOn": false,
+          "buses": {
+            "mix": 0,
+            "effects": 0,
+            "engines": 0.465,
+            "ambience": 0,
+            "sirens": 0,
+            "music": 0,
+            "voices": 0
+          },
+          "master": 0,
+          "duck": 1,
+          "loudDuck": {
+            "gain": 1,
+            "depth": 0,
+            "events": 0
+          },
+          "buffers": 64,
+          "loops": {
+            "rotor-loop": {
+              "gain": 0,
+              "rate": 0.8,
+              "filter": 4800
+            },
+            "siren": {
+              "gain": 0,
+              "rate": 1,
+              "filter": 800
+            },
+            "tires": {
+              "gain": 0,
+              "rate": 1.04,
+              "filter": 4800
+            }
+          }
+        },
+        "meter": {
+          "state": "running",
+          "rms": 0,
+          "peak": 0
+        },
+        "faults": {
+          "count": 0,
+          "gameTime": 0.2,
+          "drill": null,
+          "kinds": []
+        }
+      },
+      "exited": {
+        "status": {
+          "mode": "play",
+          "x": 1000,
+          "y": 9822,
+          "district": "OCEANVIEW INTERNATIONAL",
+          "hp": 100,
+          "cash": 0,
+          "wanted": 0,
+          "mission": null,
+          "completed": 0,
+          "vehicle": null,
+          "weapon": "9MM PISTOL",
+          "clock": "17:20",
+          "renderer": "2d",
+          "vehicles": 280,
+          "pedestrians": 595
+        },
+        "flight": null,
+        "engine": {
+          "ready": true,
+          "vehicle": null,
+          "set": null,
+          "kind": null,
+          "rpm": 0,
+          "gear": 1,
+          "throttle": 0,
+          "load": 0,
+          "gain": 0,
+          "tone": 900,
+          "layers": [],
+          "road": 0,
+          "wind": 0,
+          "tracks": 0,
+          "aircraft": [
+            {
+              "airframe": null,
+              "kind": null,
+              "engines": 0,
+              "power": 0,
+              "rpm": 0,
+              "firingHz": 0,
+              "bladeHz": 0,
+              "gain": 0,
+              "hiss": 0,
+              "distance": 0,
+              "pan": 0,
+              "doppler": 1
+            }
+          ],
+          "nearbyDriven": 0,
+          "traffic": [],
+          "trace": []
+        },
+        "mix": {
+          "context": "running",
+          "states": [
+            "running @0.0",
+            "running @0.6"
+          ],
+          "makeup": 2,
+          "soundOffText": "",
+          "time": 7.33,
+          "soundOn": true,
+          "buses": {
+            "mix": 1,
+            "effects": 0,
+            "engines": 0.465,
+            "ambience": 0,
+            "sirens": 0,
+            "music": 0,
+            "voices": 0
+          },
+          "master": 0,
+          "duck": 1,
+          "loudDuck": {
+            "gain": 1,
+            "depth": 0,
+            "events": 0
+          },
+          "buffers": 64,
+          "loops": {
+            "rotor-loop": {
+              "gain": 0,
+              "rate": 0.8,
+              "filter": 4800
+            },
+            "siren": {
+              "gain": 0,
+              "rate": 1,
+              "filter": 800
+            },
+            "tires": {
+              "gain": 0,
+              "rate": 1.04,
+              "filter": 4800
+            }
+          }
+        },
+        "meter": {
+          "state": "running",
+          "rms": 0,
+          "peak": 0
+        },
+        "faults": {
+          "count": 0,
+          "gameTime": 0.4,
+          "drill": null,
+          "kinds": []
+        }
+      }
+    },
+    {
+      "expected": {
+        "airframe": "courier",
+        "kind": "turboprop",
+        "engines": 1,
+        "gain": 0.85,
+        "hiss": 0.0042,
+        "rpm": 1050,
+        "bladeHz": 70,
+        "firingHz": 0
+      },
+      "live": {
+        "status": {
+          "mode": "play",
+          "x": -2000,
+          "y": 9884,
+          "district": "OCEANVIEW INTERNATIONAL",
+          "hp": 100,
+          "cash": 0,
+          "wanted": 0,
+          "mission": null,
+          "completed": 0,
+          "vehicle": "plane",
+          "weapon": "9MM PISTOL",
+          "clock": "17:20",
+          "renderer": "2d",
+          "vehicles": 281,
+          "pedestrians": 595
+        },
+        "flight": {
+          "type": "courier",
+          "airspeed": 0,
+          "altitude": 0,
+          "agl": 0,
+          "vs": 0,
+          "heading": 90,
+          "pitch": 0,
+          "bank": 0,
+          "throttle": 0,
+          "power": 0,
+          "flaps": "UP",
+          "flapPos": 0,
+          "gear": "DOWN",
+          "gearPos": 1,
+          "g": 1,
+          "aoa": 2.29,
+          "stallSpeed": 100,
+          "stall": false,
+          "stallWarning": false,
+          "gearWarning": false,
+          "buffet": 0,
+          "hp": 1,
+          "runway": {
+            "name": "OCEANVIEW",
+            "designation": "09",
+            "remaining": 1025
+          },
+          "hud": true,
+          "instruments": true
+        },
+        "engine": {
+          "ready": true,
+          "vehicle": "plane",
+          "set": null,
+          "kind": "turboprop",
+          "rpm": 0,
+          "gear": 1,
+          "throttle": 0,
+          "load": 0,
+          "gain": 0,
+          "tone": 900,
+          "layers": [],
+          "road": 0,
+          "wind": 0,
+          "tracks": 0,
+          "aircraft": [
+            {
+              "airframe": "courier",
+              "kind": "turboprop",
+              "engines": 1,
+              "power": 0,
+              "rpm": 1050,
+              "firingHz": 0,
+              "bladeHz": 70,
+              "gain": 0.8497,
+              "hiss": 0.0042,
+              "distance": 0,
+              "pan": 0,
+              "doppler": 1
+            }
+          ],
+          "nearbyDriven": 0,
+          "traffic": [],
+          "trace": []
+        },
+        "mix": {
+          "context": "running",
+          "states": [
+            "running @0.0",
+            "running @0.6"
+          ],
+          "makeup": 2,
+          "soundOffText": "",
+          "time": 8.33,
+          "soundOn": true,
+          "buses": {
+            "mix": 1,
+            "effects": 0,
+            "engines": 0.465,
+            "ambience": 0,
+            "sirens": 0,
+            "music": 0,
+            "voices": 0
+          },
+          "master": 0,
+          "duck": 1,
+          "loudDuck": {
+            "gain": 1,
+            "depth": 0,
+            "events": 0
+          },
+          "buffers": 64,
+          "loops": {
+            "rotor-loop": {
+              "gain": 0,
+              "rate": 0.8,
+              "filter": 4800
+            },
+            "siren": {
+              "gain": 0,
+              "rate": 1,
+              "filter": 800
+            },
+            "tires": {
+              "gain": 0,
+              "rate": 1.04,
+              "filter": 4800
+            }
+          }
+        },
+        "meter": {
+          "state": "running",
+          "rms": 0.0414,
+          "peak": 0.0753
+        },
+        "faults": {
+          "count": 0,
+          "gameTime": 0.5,
+          "drill": null,
+          "kinds": []
+        }
+      },
+      "identity": {
+        "id": 281,
+        "type": "plane",
+        "x": -2000,
+        "y": 9884,
+        "a": 0,
+        "altitude": 0
+      },
+      "muted": {
+        "status": {
+          "mode": "play",
+          "x": -2000,
+          "y": 9884,
+          "district": "OCEANVIEW INTERNATIONAL",
+          "hp": 100,
+          "cash": 0,
+          "wanted": 0,
+          "mission": null,
+          "completed": 0,
+          "vehicle": "plane",
+          "weapon": "9MM PISTOL",
+          "clock": "17:20",
+          "renderer": "2d",
+          "vehicles": 281,
+          "pedestrians": 595
+        },
+        "flight": {
+          "type": "courier",
+          "airspeed": 0,
+          "altitude": 0,
+          "agl": 0,
+          "vs": 0,
+          "heading": 90,
+          "pitch": 0,
+          "bank": 0,
+          "throttle": 0,
+          "power": 0,
+          "flaps": "UP",
+          "flapPos": 0,
+          "gear": "DOWN",
+          "gearPos": 1,
+          "g": 1,
+          "aoa": 2.29,
+          "stallSpeed": 100,
+          "stall": false,
+          "stallWarning": false,
+          "gearWarning": false,
+          "buffet": 0,
+          "hp": 1,
+          "runway": {
+            "name": "OCEANVIEW",
+            "designation": "09",
+            "remaining": 1025
+          },
+          "hud": true,
+          "instruments": true
+        },
+        "engine": {
+          "ready": true,
+          "vehicle": "plane",
+          "set": null,
+          "kind": "turboprop",
+          "rpm": 0,
+          "gear": 1,
+          "throttle": 0,
+          "load": 0,
+          "gain": 0,
+          "tone": 900,
+          "layers": [],
+          "road": 0,
+          "wind": 0,
+          "tracks": 0,
+          "aircraft": [
+            {
+              "airframe": null,
+              "kind": null,
+              "engines": 0,
+              "power": 0,
+              "rpm": 0,
+              "firingHz": 0,
+              "bladeHz": 0,
+              "gain": 0,
+              "hiss": 0.0042,
+              "distance": 0,
+              "pan": 0,
+              "doppler": 1
+            }
+          ],
+          "nearbyDriven": 0,
+          "traffic": [],
+          "trace": []
+        },
+        "mix": {
+          "context": "running",
+          "states": [
+            "running @0.0",
+            "running @0.6"
+          ],
+          "makeup": 2,
+          "soundOffText": "SOUND OFF · PRESS M TO TURN IT ON",
+          "time": 9.69,
+          "soundOn": false,
+          "buses": {
+            "mix": 0,
+            "effects": 0,
+            "engines": 0.465,
+            "ambience": 0,
+            "sirens": 0,
+            "music": 0,
+            "voices": 0
+          },
+          "master": 0,
+          "duck": 1,
+          "loudDuck": {
+            "gain": 1,
+            "depth": 0,
+            "events": 0
+          },
+          "buffers": 64,
+          "loops": {
+            "rotor-loop": {
+              "gain": 0,
+              "rate": 0.8,
+              "filter": 4800
+            },
+            "siren": {
+              "gain": 0,
+              "rate": 1,
+              "filter": 800
+            },
+            "tires": {
+              "gain": 0,
+              "rate": 1.04,
+              "filter": 4800
+            }
+          }
+        },
+        "meter": {
+          "state": "running",
+          "rms": 0,
+          "peak": 0
+        },
+        "faults": {
+          "count": 0,
+          "gameTime": 0.6,
+          "drill": null,
+          "kinds": []
+        }
+      },
+      "exited": {
+        "status": {
+          "mode": "play",
+          "x": 1400,
+          "y": 9814,
+          "district": "OCEANVIEW INTERNATIONAL",
+          "hp": 100,
+          "cash": 0,
+          "wanted": 0,
+          "mission": null,
+          "completed": 0,
+          "vehicle": null,
+          "weapon": "9MM PISTOL",
+          "clock": "17:20",
+          "renderer": "2d",
+          "vehicles": 281,
+          "pedestrians": 595
+        },
+        "flight": null,
+        "engine": {
+          "ready": true,
+          "vehicle": null,
+          "set": null,
+          "kind": null,
+          "rpm": 0,
+          "gear": 1,
+          "throttle": 0,
+          "load": 0,
+          "gain": 0,
+          "tone": 900,
+          "layers": [],
+          "road": 0,
+          "wind": 0,
+          "tracks": 0,
+          "aircraft": [
+            {
+              "airframe": null,
+              "kind": null,
+              "engines": 0,
+              "power": 0,
+              "rpm": 0,
+              "firingHz": 0,
+              "bladeHz": 0,
+              "gain": 0,
+              "hiss": 0.0042,
+              "distance": 0,
+              "pan": 0,
+              "doppler": 1
+            }
+          ],
+          "nearbyDriven": 0,
+          "traffic": [],
+          "trace": []
+        },
+        "mix": {
+          "context": "running",
+          "states": [
+            "running @0.0",
+            "running @0.6"
+          ],
+          "makeup": 2,
+          "soundOffText": "",
+          "time": 11.81,
+          "soundOn": true,
+          "buses": {
+            "mix": 1,
+            "effects": 0,
+            "engines": 0.465,
+            "ambience": 0,
+            "sirens": 0,
+            "music": 0,
+            "voices": 0
+          },
+          "master": 0,
+          "duck": 1,
+          "loudDuck": {
+            "gain": 1,
+            "depth": 0,
+            "events": 0
+          },
+          "buffers": 64,
+          "loops": {
+            "rotor-loop": {
+              "gain": 0,
+              "rate": 0.8,
+              "filter": 4800
+            },
+            "siren": {
+              "gain": 0,
+              "rate": 1,
+              "filter": 800
+            },
+            "tires": {
+              "gain": 0,
+              "rate": 1.04,
+              "filter": 4800
+            }
+          }
+        },
+        "meter": {
+          "state": "running",
+          "rms": 0,
+          "peak": 0
+        },
+        "faults": {
+          "count": 0,
+          "gameTime": 0.8,
+          "drill": null,
+          "kinds": []
+        }
+      }
+    },
+    {
+      "expected": {
+        "airframe": "jet",
+        "kind": "turbofan",
+        "engines": 2,
+        "gain": 1.19,
+        "hiss": 0.027,
+        "rpm": 0,
+        "bladeHz": 0,
+        "firingHz": 0
+      },
+      "live": {
+        "status": {
+          "mode": "play",
+          "x": -2000,
+          "y": 9884,
+          "district": "OCEANVIEW INTERNATIONAL",
+          "hp": 100,
+          "cash": 0,
+          "wanted": 0,
+          "mission": null,
+          "completed": 0,
+          "vehicle": "plane",
+          "weapon": "9MM PISTOL",
+          "clock": "17:20",
+          "renderer": "2d",
+          "vehicles": 282,
+          "pedestrians": 595
+        },
+        "flight": {
+          "type": "jet",
+          "airspeed": 0,
+          "altitude": 0,
+          "agl": 0,
+          "vs": 0,
+          "heading": 90,
+          "pitch": 0,
+          "bank": 0,
+          "throttle": 0,
+          "power": 0,
+          "flaps": "UP",
+          "flapPos": 0,
+          "gear": "DOWN",
+          "gearPos": 1,
+          "g": 1,
+          "aoa": 2.29,
+          "stallSpeed": 157,
+          "stall": false,
+          "stallWarning": false,
+          "gearWarning": false,
+          "buffet": 0,
+          "hp": 1,
+          "runway": {
+            "name": "OCEANVIEW",
+            "designation": "09",
+            "remaining": 1025
+          },
+          "hud": true,
+          "instruments": true
+        },
+        "engine": {
+          "ready": true,
+          "vehicle": "plane",
+          "set": null,
+          "kind": "turbofan",
+          "rpm": 0,
+          "gear": 1,
+          "throttle": 0,
+          "load": 0,
+          "gain": 0,
+          "tone": 900,
+          "layers": [],
+          "road": 0,
+          "wind": 0,
+          "tracks": 0,
+          "aircraft": [
+            {
+              "airframe": "jet",
+              "kind": "turbofan",
+              "engines": 2,
+              "power": 0,
+              "rpm": 0,
+              "firingHz": 0,
+              "bladeHz": 0,
+              "gain": 1.19,
+              "hiss": 0.027,
+              "distance": 0,
+              "pan": 0,
+              "doppler": 1
+            }
+          ],
+          "nearbyDriven": 0,
+          "traffic": [],
+          "trace": []
+        },
+        "mix": {
+          "context": "running",
+          "states": [
+            "running @0.0",
+            "running @0.6"
+          ],
+          "makeup": 2,
+          "soundOffText": "",
+          "time": 13.36,
+          "soundOn": true,
+          "buses": {
+            "mix": 1,
+            "effects": 0,
+            "engines": 0.465,
+            "ambience": 0,
+            "sirens": 0,
+            "music": 0,
+            "voices": 0
+          },
+          "master": 0,
+          "duck": 1,
+          "loudDuck": {
+            "gain": 1,
+            "depth": 0,
+            "events": 0
+          },
+          "buffers": 64,
+          "loops": {
+            "rotor-loop": {
+              "gain": 0,
+              "rate": 0.8,
+              "filter": 4800
+            },
+            "siren": {
+              "gain": 0,
+              "rate": 1,
+              "filter": 800
+            },
+            "tires": {
+              "gain": 0,
+              "rate": 1.04,
+              "filter": 4800
+            }
+          }
+        },
+        "meter": {
+          "state": "running",
+          "rms": 0.037,
+          "peak": 0.0959
+        },
+        "faults": {
+          "count": 0,
+          "gameTime": 0.9,
+          "drill": null,
+          "kinds": []
+        }
+      },
+      "identity": {
+        "id": 282,
+        "type": "plane",
+        "x": -2000,
+        "y": 9884,
+        "a": 0,
+        "altitude": 0
+      },
+      "muted": {
+        "status": {
+          "mode": "play",
+          "x": -2000,
+          "y": 9884,
+          "district": "OCEANVIEW INTERNATIONAL",
+          "hp": 100,
+          "cash": 0,
+          "wanted": 0,
+          "mission": null,
+          "completed": 0,
+          "vehicle": "plane",
+          "weapon": "9MM PISTOL",
+          "clock": "17:20",
+          "renderer": "2d",
+          "vehicles": 282,
+          "pedestrians": 595
+        },
+        "flight": {
+          "type": "jet",
+          "airspeed": 0,
+          "altitude": 0,
+          "agl": 0,
+          "vs": 0,
+          "heading": 90,
+          "pitch": 0,
+          "bank": 0,
+          "throttle": 0,
+          "power": 0,
+          "flaps": "UP",
+          "flapPos": 0,
+          "gear": "DOWN",
+          "gearPos": 1,
+          "g": 1,
+          "aoa": 2.29,
+          "stallSpeed": 157,
+          "stall": false,
+          "stallWarning": false,
+          "gearWarning": false,
+          "buffet": 0,
+          "hp": 1,
+          "runway": {
+            "name": "OCEANVIEW",
+            "designation": "09",
+            "remaining": 1025
+          },
+          "hud": true,
+          "instruments": true
+        },
+        "engine": {
+          "ready": true,
+          "vehicle": "plane",
+          "set": null,
+          "kind": "turbofan",
+          "rpm": 0,
+          "gear": 1,
+          "throttle": 0,
+          "load": 0,
+          "gain": 0,
+          "tone": 900,
+          "layers": [],
+          "road": 0,
+          "wind": 0,
+          "tracks": 0,
+          "aircraft": [
+            {
+              "airframe": null,
+              "kind": null,
+              "engines": 0,
+              "power": 0,
+              "rpm": 0,
+              "firingHz": 0,
+              "bladeHz": 0,
+              "gain": 0,
+              "hiss": 0.027,
+              "distance": 0,
+              "pan": 0,
+              "doppler": 1
+            }
+          ],
+          "nearbyDriven": 0,
+          "traffic": [],
+          "trace": []
+        },
+        "mix": {
+          "context": "running",
+          "states": [
+            "running @0.0",
+            "running @0.6"
+          ],
+          "makeup": 2,
+          "soundOffText": "SOUND OFF · PRESS M TO TURN IT ON",
+          "time": 14.69,
+          "soundOn": false,
+          "buses": {
+            "mix": 0,
+            "effects": 0,
+            "engines": 0.465,
+            "ambience": 0,
+            "sirens": 0,
+            "music": 0,
+            "voices": 0
+          },
+          "master": 0,
+          "duck": 1,
+          "loudDuck": {
+            "gain": 1,
+            "depth": 0,
+            "events": 0
+          },
+          "buffers": 64,
+          "loops": {
+            "rotor-loop": {
+              "gain": 0,
+              "rate": 0.8,
+              "filter": 4800
+            },
+            "siren": {
+              "gain": 0,
+              "rate": 1,
+              "filter": 800
+            },
+            "tires": {
+              "gain": 0,
+              "rate": 1.04,
+              "filter": 4800
+            }
+          }
+        },
+        "meter": {
+          "state": "running",
+          "rms": 0,
+          "peak": 0
+        },
+        "faults": {
+          "count": 0,
+          "gameTime": 1,
+          "drill": null,
+          "kinds": []
+        }
+      },
+      "exited": {
+        "status": {
+          "mode": "play",
+          "x": 1800,
+          "y": 9807,
+          "district": "OCEANVIEW INTERNATIONAL",
+          "hp": 100,
+          "cash": 0,
+          "wanted": 0,
+          "mission": null,
+          "completed": 0,
+          "vehicle": null,
+          "weapon": "9MM PISTOL",
+          "clock": "17:21",
+          "renderer": "2d",
+          "vehicles": 282,
+          "pedestrians": 595
+        },
+        "flight": null,
+        "engine": {
+          "ready": true,
+          "vehicle": null,
+          "set": null,
+          "kind": null,
+          "rpm": 0,
+          "gear": 1,
+          "throttle": 0,
+          "load": 0,
+          "gain": 0,
+          "tone": 900,
+          "layers": [],
+          "road": 0,
+          "wind": 0,
+          "tracks": 0,
+          "aircraft": [
+            {
+              "airframe": null,
+              "kind": null,
+              "engines": 0,
+              "power": 0,
+              "rpm": 0,
+              "firingHz": 0,
+              "bladeHz": 0,
+              "gain": 0,
+              "hiss": 0.027,
+              "distance": 0,
+              "pan": 0,
+              "doppler": 1
+            }
+          ],
+          "nearbyDriven": 0,
+          "traffic": [],
+          "trace": []
+        },
+        "mix": {
+          "context": "running",
+          "states": [
+            "running @0.0",
+            "running @0.6"
+          ],
+          "makeup": 2,
+          "soundOffText": "",
+          "time": 16.9,
+          "soundOn": true,
+          "buses": {
+            "mix": 1,
+            "effects": 0,
+            "engines": 0.465,
+            "ambience": 0,
+            "sirens": 0,
+            "music": 0,
+            "voices": 0
+          },
+          "master": 0,
+          "duck": 1,
+          "loudDuck": {
+            "gain": 1,
+            "depth": 0,
+            "events": 0
+          },
+          "buffers": 64,
+          "loops": {
+            "rotor-loop": {
+              "gain": 0,
+              "rate": 0.8,
+              "filter": 4800
+            },
+            "siren": {
+              "gain": 0,
+              "rate": 1,
+              "filter": 800
+            },
+            "tires": {
+              "gain": 0,
+              "rate": 1.04,
+              "filter": 4800
+            }
+          }
+        },
+        "meter": {
+          "state": "running",
+          "rms": 0,
+          "peak": 0
+        },
+        "faults": {
+          "count": 0,
+          "gameTime": 1.2,
+          "drill": null,
+          "kinds": []
+        }
+      }
+    },
+    {
+      "expected": {
+        "airframe": "airliner",
+        "kind": "turbofan",
+        "engines": 2,
+        "gain": 1.275,
+        "hiss": 0.027,
+        "rpm": 0,
+        "bladeHz": 0,
+        "firingHz": 0
+      },
+      "live": {
+        "status": {
+          "mode": "play",
+          "x": -2000,
+          "y": 9884,
+          "district": "OCEANVIEW INTERNATIONAL",
+          "hp": 100,
+          "cash": 0,
+          "wanted": 0,
+          "mission": null,
+          "completed": 0,
+          "vehicle": "plane",
+          "weapon": "9MM PISTOL",
+          "clock": "17:21",
+          "renderer": "2d",
+          "vehicles": 283,
+          "pedestrians": 595
+        },
+        "flight": {
+          "type": "airliner",
+          "airspeed": 0,
+          "altitude": 0,
+          "agl": 0,
+          "vs": 0,
+          "heading": 90,
+          "pitch": 0,
+          "bank": 0,
+          "throttle": 0,
+          "power": 0,
+          "flaps": "UP",
+          "flapPos": 0,
+          "gear": "DOWN",
+          "gearPos": 1,
+          "g": 1,
+          "aoa": 2.29,
+          "stallSpeed": 183,
+          "stall": false,
+          "stallWarning": false,
+          "gearWarning": false,
+          "buffet": 0,
+          "hp": 1,
+          "runway": {
+            "name": "OCEANVIEW",
+            "designation": "09",
+            "remaining": 1025
+          },
+          "hud": true,
+          "instruments": true
+        },
+        "engine": {
+          "ready": true,
+          "vehicle": "plane",
+          "set": null,
+          "kind": "turbofan",
+          "rpm": 0,
+          "gear": 1,
+          "throttle": 0,
+          "load": 0,
+          "gain": 0,
+          "tone": 900,
+          "layers": [],
+          "road": 0,
+          "wind": 0,
+          "tracks": 0,
+          "aircraft": [
+            {
+              "airframe": "airliner",
+              "kind": "turbofan",
+              "engines": 2,
+              "power": 0,
+              "rpm": 0,
+              "firingHz": 0,
+              "bladeHz": 0,
+              "gain": 1.2747,
+              "hiss": 0.027,
+              "distance": 0,
+              "pan": 0,
+              "doppler": 1
+            }
+          ],
+          "nearbyDriven": 0,
+          "traffic": [],
+          "trace": []
+        },
+        "mix": {
+          "context": "running",
+          "states": [
+            "running @0.0",
+            "running @0.6"
+          ],
+          "makeup": 2,
+          "soundOffText": "",
+          "time": 17.92,
+          "soundOn": true,
+          "buses": {
+            "mix": 1,
+            "effects": 0,
+            "engines": 0.465,
+            "ambience": 0,
+            "sirens": 0,
+            "music": 0,
+            "voices": 0
+          },
+          "master": 0,
+          "duck": 1,
+          "loudDuck": {
+            "gain": 1,
+            "depth": 0,
+            "events": 0
+          },
+          "buffers": 64,
+          "loops": {
+            "rotor-loop": {
+              "gain": 0,
+              "rate": 0.8,
+              "filter": 4800
+            },
+            "siren": {
+              "gain": 0,
+              "rate": 1,
+              "filter": 800
+            },
+            "tires": {
+              "gain": 0,
+              "rate": 1.04,
+              "filter": 4800
+            }
+          }
+        },
+        "meter": {
+          "state": "running",
+          "rms": 0.0359,
+          "peak": 0.0893
+        },
+        "faults": {
+          "count": 0,
+          "gameTime": 1.3,
+          "drill": null,
+          "kinds": []
+        }
+      },
+      "identity": {
+        "id": 283,
+        "type": "plane",
+        "x": -2000,
+        "y": 9884,
+        "a": 0,
+        "altitude": 0
+      },
+      "muted": {
+        "status": {
+          "mode": "play",
+          "x": -2000,
+          "y": 9884,
+          "district": "OCEANVIEW INTERNATIONAL",
+          "hp": 100,
+          "cash": 0,
+          "wanted": 0,
+          "mission": null,
+          "completed": 0,
+          "vehicle": "plane",
+          "weapon": "9MM PISTOL",
+          "clock": "17:21",
+          "renderer": "2d",
+          "vehicles": 283,
+          "pedestrians": 595
+        },
+        "flight": {
+          "type": "airliner",
+          "airspeed": 0,
+          "altitude": 0,
+          "agl": 0,
+          "vs": 0,
+          "heading": 90,
+          "pitch": 0,
+          "bank": 0,
+          "throttle": 0,
+          "power": 0,
+          "flaps": "UP",
+          "flapPos": 0,
+          "gear": "DOWN",
+          "gearPos": 1,
+          "g": 1,
+          "aoa": 2.29,
+          "stallSpeed": 183,
+          "stall": false,
+          "stallWarning": false,
+          "gearWarning": false,
+          "buffet": 0,
+          "hp": 1,
+          "runway": {
+            "name": "OCEANVIEW",
+            "designation": "09",
+            "remaining": 1025
+          },
+          "hud": true,
+          "instruments": true
+        },
+        "engine": {
+          "ready": true,
+          "vehicle": "plane",
+          "set": null,
+          "kind": "turbofan",
+          "rpm": 0,
+          "gear": 1,
+          "throttle": 0,
+          "load": 0,
+          "gain": 0,
+          "tone": 900,
+          "layers": [],
+          "road": 0,
+          "wind": 0,
+          "tracks": 0,
+          "aircraft": [
+            {
+              "airframe": null,
+              "kind": null,
+              "engines": 0,
+              "power": 0,
+              "rpm": 0,
+              "firingHz": 0,
+              "bladeHz": 0,
+              "gain": 0,
+              "hiss": 0.027,
+              "distance": 0,
+              "pan": 0,
+              "doppler": 1
+            }
+          ],
+          "nearbyDriven": 0,
+          "traffic": [],
+          "trace": []
+        },
+        "mix": {
+          "context": "running",
+          "states": [
+            "running @0.0",
+            "running @0.6"
+          ],
+          "makeup": 2,
+          "soundOffText": "SOUND OFF · PRESS M TO TURN IT ON",
+          "time": 19.25,
+          "soundOn": false,
+          "buses": {
+            "mix": 0,
+            "effects": 0,
+            "engines": 0.465,
+            "ambience": 0,
+            "sirens": 0,
+            "music": 0,
+            "voices": 0
+          },
+          "master": 0,
+          "duck": 1,
+          "loudDuck": {
+            "gain": 1,
+            "depth": 0,
+            "events": 0
+          },
+          "buffers": 64,
+          "loops": {
+            "rotor-loop": {
+              "gain": 0,
+              "rate": 0.8,
+              "filter": 4800
+            },
+            "siren": {
+              "gain": 0,
+              "rate": 1,
+              "filter": 800
+            },
+            "tires": {
+              "gain": 0,
+              "rate": 1.04,
+              "filter": 4800
+            }
+          }
+        },
+        "meter": {
+          "state": "running",
+          "rms": 0,
+          "peak": 0
+        },
+        "faults": {
+          "count": 0,
+          "gameTime": 1.4,
+          "drill": null,
+          "kinds": []
+        }
+      },
+      "exited": {
+        "status": {
+          "mode": "play",
+          "x": 2200,
+          "y": 9789,
+          "district": "OCEANVIEW INTERNATIONAL",
+          "hp": 100,
+          "cash": 0,
+          "wanted": 0,
+          "mission": null,
+          "completed": 0,
+          "vehicle": null,
+          "weapon": "9MM PISTOL",
+          "clock": "17:21",
+          "renderer": "2d",
+          "vehicles": 283,
+          "pedestrians": 595
+        },
+        "flight": null,
+        "engine": {
+          "ready": true,
+          "vehicle": null,
+          "set": null,
+          "kind": null,
+          "rpm": 0,
+          "gear": 1,
+          "throttle": 0,
+          "load": 0,
+          "gain": 0,
+          "tone": 900,
+          "layers": [],
+          "road": 0,
+          "wind": 0,
+          "tracks": 0,
+          "aircraft": [
+            {
+              "airframe": null,
+              "kind": null,
+              "engines": 0,
+              "power": 0,
+              "rpm": 0,
+              "firingHz": 0,
+              "bladeHz": 0,
+              "gain": 0,
+              "hiss": 0.027,
+              "distance": 0,
+              "pan": 0,
+              "doppler": 1
+            }
+          ],
+          "nearbyDriven": 0,
+          "traffic": [],
+          "trace": []
+        },
+        "mix": {
+          "context": "running",
+          "states": [
+            "running @0.0",
+            "running @0.6"
+          ],
+          "makeup": 2,
+          "soundOffText": "",
+          "time": 21.81,
+          "soundOn": true,
+          "buses": {
+            "mix": 1,
+            "effects": 0,
+            "engines": 0.465,
+            "ambience": 0,
+            "sirens": 0,
+            "music": 0,
+            "voices": 0
+          },
+          "master": 0,
+          "duck": 1,
+          "loudDuck": {
+            "gain": 1,
+            "depth": 0,
+            "events": 0
+          },
+          "buffers": 64,
+          "loops": {
+            "rotor-loop": {
+              "gain": 0,
+              "rate": 0.8,
+              "filter": 4800
+            },
+            "siren": {
+              "gain": 0,
+              "rate": 1,
+              "filter": 800
+            },
+            "tires": {
+              "gain": 0,
+              "rate": 1.04,
+              "filter": 4800
+            }
+          }
+        },
+        "meter": {
+          "state": "running",
+          "rms": 0,
+          "peak": 0
+        },
+        "faults": {
+          "count": 0,
+          "gameTime": 1.6,
+          "drill": null,
+          "kinds": []
+        }
+      }
+    }
+  ],
+  "errors": [],
+  "warnings": [
+    "Scripts \"build/three.js\" and \"build/three.min.js\" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation"
+  ],
+  "passed": true,
+  "beforeStart": {
+    "context": null,
+    "states": [],
+    "makeup": 2,
+    "soundOffText": "",
+    "time": 0,
+    "soundOn": true,
+    "buses": null,
+    "master": null,
+    "duck": null,
+    "loudDuck": null,
+    "buffers": 0,
+    "loops": {}
+  },
+  "afterStart": {
+    "status": {
+      "mode": "play",
+      "x": 748,
+      "y": 584,
+      "district": "NORTHBANK · OLD QUARTER",
+      "hp": 100,
+      "cash": 0,
+      "wanted": 0,
+      "mission": null,
+      "completed": 0,
+      "vehicle": null,
+      "weapon": "9MM PISTOL",
+      "clock": "17:20",
+      "renderer": "2d",
+      "vehicles": 264,
+      "pedestrians": 595
+    },
+    "mix": {
+      "context": "running",
+      "states": [
+        "running @0.0",
+        "running @0.6"
+      ],
+      "makeup": 2,
+      "soundOffText": "",
+      "time": 1.84,
+      "soundOn": true,
+      "buses": {
+        "mix": 1,
+        "effects": 0,
+        "engines": 0.465,
+        "ambience": 0,
+        "sirens": 0,
+        "music": 0,
+        "voices": 0
+      },
+      "master": 0,
+      "duck": 1,
+      "loudDuck": {
+        "gain": 1,
+        "depth": 0,
+        "events": 0
+      },
+      "buffers": 64,
+      "loops": {
+        "rotor-loop": {
+          "gain": 0,
+          "rate": 1,
+          "filter": 4800
+        },
+        "siren": {
+          "gain": 0,
+          "rate": 1,
+          "filter": 4800
+        },
+        "tires": {
+          "gain": 0,
+          "rate": 1,
+          "filter": 4800
+        }
+      }
+    }
+  },
+  "final": {
+    "status": {
+      "mode": "play",
+      "x": 2200,
+      "y": 9789,
+      "district": "OCEANVIEW INTERNATIONAL",
+      "hp": 100,
+      "cash": 0,
+      "wanted": 0,
+      "mission": null,
+      "completed": 0,
+      "vehicle": null,
+      "weapon": "9MM PISTOL",
+      "clock": "17:21",
+      "renderer": "2d",
+      "vehicles": 283,
+      "pedestrians": 595
+    },
+    "flight": null,
+    "engine": {
+      "ready": true,
+      "vehicle": null,
+      "set": null,
+      "kind": null,
+      "rpm": 0,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "gain": 0,
+      "tone": 900,
+      "layers": [],
+      "road": 0,
+      "wind": 0,
+      "tracks": 0,
+      "aircraft": [
+        {
+          "airframe": null,
+          "kind": null,
+          "engines": 0,
+          "power": 0,
+          "rpm": 0,
+          "firingHz": 0,
+          "bladeHz": 0,
+          "gain": 0,
+          "hiss": 0.027,
+          "distance": 0,
+          "pan": 0,
+          "doppler": 1
+        }
+      ],
+      "nearbyDriven": 0,
+      "traffic": [],
+      "trace": []
+    },
+    "mix": {
+      "context": "running",
+      "states": [
+        "running @0.0",
+        "running @0.6"
+      ],
+      "makeup": 2,
+      "soundOffText": "",
+      "time": 21.82,
+      "soundOn": true,
+      "buses": {
+        "mix": 1,
+        "effects": 0,
+        "engines": 0.465,
+        "ambience": 0,
+        "sirens": 0,
+        "music": 0,
+        "voices": 0
+      },
+      "master": 0,
+      "duck": 1,
+      "loudDuck": {
+        "gain": 1,
+        "depth": 0,
+        "events": 0
+      },
+      "buffers": 64,
+      "loops": {
+        "rotor-loop": {
+          "gain": 0,
+          "rate": 0.8,
+          "filter": 4800
+        },
+        "siren": {
+          "gain": 0,
+          "rate": 1,
+          "filter": 800
+        },
+        "tires": {
+          "gain": 0,
+          "rate": 1.04,
+          "filter": 4800
+        }
+      }
+    },
+    "meter": {
+      "state": "running",
+      "rms": 0,
+      "peak": 0
+    },
+    "faults": {
+      "count": 0,
+      "gameTime": 1.6,
+      "drill": null,
+      "kinds": []
+    }
+  }
+}

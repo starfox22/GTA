@@ -1,0 +1,30 @@
+started dev server (?dev&norender: boot 23.4s)
+PASS chase-audio-pan (0.1s)
+     500 camera-basis cases; unchanged top-down offsets/gain; real sample, horn, water, impact, stadium, siren, engine, skid, footstep, whizz and pass-by callers
+PASS enter-key (6.4s)
+PASS mission-world-preservation (0.2s)
+     ambient Harbor Kings/live pursuit persist, depot/hotel keep ordinary/owned vehicles, sealed deployment and rooftop patrol routes remain valid
+PASS mountain-road (47.7s)
+     RIDGELINE HIGHWAY: 1301 m, top 7.1 m, grade 9.8%, R 40 m, rails 151 m · EAGLE PASS: 418 m, top 11.7 m, grade 9.9%, R 40 m, rails 144 m · REGENCY ROAD: 171 m, top 6.3 m, grade 10.1%, R 27 m, rails 32 m · STONECREEK CONNECTOR: 321 m, top 0.1 m, grade 0.6%, R 175 m, rails 0 m · EAGLE PASS up at 110: 403 m in 21.8 s, avg 67 km/h, lane 0.46 m, vertical 0.83 g · EAGLE PASS down at 90: 425 m in 23.1 s, avg 66 km/h, lane 0.71 m, vertical 0.56 g · RIDGELINE HIGHWAY up at 130: 176 m in 9 s, avg 70 km/h, lane 0.9 m, vertical 0.75 g · REGENCY ROAD up at 90: 157 m in 7.5 s, avg 76 km/h, lane 1.73 m, vertical 1.07 g
+PASS sound-output (2.6s)
+PASS vehicle-layouts (10.3s)
+PASS world-reset-sportsbook (0.1s)
+     actual city/sports reset chain, bet placement, save restore and settlement: death/arrest retain progress; interrupted live stakes refund once; new game clears
+PASS aircraft-taxi-takeoff (289.0s)
+     southport-1: existing #259; 54.2 s taxi, 388.2 m to 3 m AGL, 434.8 m runway available · oceanview-courier: existing #122; 51.2 s taxi, 330.1 m to 3 m AGL, 1127.2 m runway available · oceanview-mid: existing #257; 50.6 s taxi, 694.4 m to 3 m AGL, 1032.5 m runway available · oceanview-east: existing #258; 58.0 s taxi, 1145.0 m to 3 m AGL, 1196.2 m runway available
+PASS civil-aircraft (37.7s)
+     civil helicopters: {"spec":{"name":"SKYRANGER 429","l":98,"rotorRadius":44},"list":[{"id":262,"x":896,"y":1492,"altitude":102,"roof":true,"hp":240,"player":false},{"id":263,"x":2432,"y":2516,"altitude":121,"roof":true,"hp":240,"player":false},{"id":264,"x":960,"y":4660,"altitude":0,"roof":false,"hp":240,"player":false}]}
+PASS falls (76.0s)
+     cliff at 7360,1380 (49.9 m): down 20.6 m at 20.1 m/s · car off 73.6 m: {"hp":0,"destroyed":true,"overturned":"roof","airborne":false}, player dead
+PASS fps-counter (74.0s)
+FAIL hillclimb-physics (118.8s): climb at 1/60: 76.88 s is over the 1:15 challenge
+     climb at 1/30: summit in 72.97 s (splits 6.67, 19.33, 44.3, 65.43), air 0.03 s, gap 0.01 m, up 5.28 m/s, stops 11 (max 2.2 m/s)
+PASS mission-retry-save (50.2s)
+     demo 1–4 and replay retry persistence; locked/invalid/legacy saves; completion/new-game clearing; inventory/reward unchanged · reload kept pistol 4/23; restart began stage zero with the existing 12/60 job-start restock
+PASS mission3-summit (48.5s)
+     stage 0 points at the summit 7760
+PASS rider-falls (57.2s)
+     25 km/h: hp 97; 45 km/h: hp 79 (into the wall at 39 km/h)
+PASS soundscape (37.3s)
+     Midtown street enclosure 0.446 · steps in 2 s of running 9 · Midtown enclosure 0.446, summit echo 0.193, 9 steps in 2 s
+15/16 passed, 0 skipped, 1 failed in 882s

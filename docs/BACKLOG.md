@@ -3,6 +3,15 @@
 Known, unfixed issues reported by the agents that built each feature (as of v30). Pick from
 here when polishing; delete a line when it is fixed. Newest features first.
 
+## Mount Ascent console trail pilot (offroad-club.js)
+
+- `trailDrive` can leave the graded corridor, and the unchanged 75 s challenge assertion fails at 60 Hz:
+  focused run 76.88 s; fresh crawler 77.23 s with a bank strike; reused crawler 75.62 s. The 30 Hz run takes
+  72.97 s. Correct route following across fresh/reused 30/60 Hz states before reviewing challenge balance;
+  keep the 75 s timer and safety assertions unchanged during the fix. A strict nearest-index attempt
+  overturned at 30 Hz and was rejected. Retain descent-35 and `falls` controls and the corrected rock normals.
+  [Diagnosis and rejected attempt](audit/police-aviation-review-2026-10-15/terrain-rock-contact.md).
+
 ## The living city (livingcity*.js)
 - Traffic streams only on the city grid: Monarch Isle and the county keep their own fixed traffic; North Point Key gets only its few visitors (livingcity-key.js: one lane each way, no overtaking, no sirens pull-over on the Key).
 - Signals cycle every 24 s on a 64 m grid, so about half the traffic in the ring stands at a light or in its queue at any moment (`trafficReport().held`).
@@ -297,4 +306,9 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - The bot's trapped-vehicle probe fired once in 58 game minutes of seeds 2 and 3 (a luxury car near the Police HQ, not reproducible from a fresh spawn: a cruiser box-in or a wedge); `steerTo` can leave a car nose to wall.
 - Round three's downloaded vehicles (vehicles-and-driving-models-heavy.md): asset cars, trucks and the bus carry no
   windscreen wipers (the procedural bodies did); the tank's and Fort Sentinel's atlas bodies do not darken when burnt;
-  the LAV-8, the SWAT Bearcat, the fuel bowser, the van, the hot rod, the rally car and the boats are still procedural.
+  the LAV-8, the SWAT Bearcat, the fuel bowser, the van and the rally car are still procedural.
+  The hot rod was replaced by the licensed Coupe 33 in the October 15 police/aviation review;
+  downloaded boat routes are documented in vehicles-and-driving-models-assets.md.
+  The downloaded Citation retains its native 256px exterior texture; adapted flap skin partitions show small
+  jagged seams when deflected. A licensed source with authored movable flap geometry/pivots and a higher-resolution
+  native exterior texture remains polish work. [Native source and controls evidence](audit/police-aviation-review-2026-10-15/jet-assets.md).

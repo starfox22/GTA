@@ -1,0 +1,23 @@
+boot final-runtime
+shot police-crownvic-bw-high-side0
+shot police-crownvic-bw-high-side180
+shot police-crownvic-bw-low-side0
+shot police-charger-modern-high-side0
+shot police-charger-modern-high-side180
+shot police-charger-modern-low-side0
+shot police-utility-sheriff-high-side0
+shot police-utility-sheriff-high-side180
+shot police-utility-sheriff-low-side0
+shot plane-jet-front
+shot airport-static-jet
+shot southport-parking
+shot oceanview-parking
+shot hotrod-isolated-front
+shot hotrod-isolated-side
+complete 4 images; errors 0
+Captured hotrod-open-source-cabin
+Captured jet-ground-flaps-source
+Captured jet-cruise-gear-flaps-chase
+page.waitForFunction: Timeout 540000ms exceeded.
+    at runAviationVehicleRuntime (/workspace/GTA/tools/aviation-vehicle-runtime-review.mjs:234:18)
+    at async file:///workspace/GTA/tools/police-aircraft-render-review.mjs:84:20

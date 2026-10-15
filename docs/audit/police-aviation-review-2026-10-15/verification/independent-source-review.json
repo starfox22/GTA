@@ -1,0 +1,25 @@
+{
+  "scope": "Independent read-only source review versus d75acc1; no builds, browser runs or source edits by the reviewer.",
+  "areas": [
+    "boot/include order",
+    "shared cabin eye/uniform update before occupant queues",
+    "shared/private resource disposal and world-reset lifecycle",
+    "quality-tier texture replacement and epochs",
+    "hot rod native attributes, atlases and LODs",
+    "early airport jet construction and shared assets",
+    "police kit rewrites",
+    "aircraft audio voice cap and lifetime"
+  ],
+  "result": "No additional concrete blocker identified in these areas. Hill-climb runtime regression is investigated separately; this review is not test or hardware performance evidence.",
+  "inputs": {
+    "src/flight-view3d.js": "11636913f7d7a8753ac9a94e3cb9da8c5ee8ca781ce63e6f932674c24074c2cd",
+    "src/render3d-frame.js": "32888ca0db14af6e55efa9d41f32874716f3adba7726c3e2696079e8ced1997f",
+    "src/cars3d-interior.js": "2308597c6e39959c69dcc093aa996a7a9194a63cf12d9e28f142ac3c2ecf44ad",
+    "src/crowd3d-driveby.js": "a029117a61ae25cd08e4fbad45f681ec87deb8b98b6540e7a5206093b5d6aa14",
+    "src/aircraft-audio.js": "89bb464608fb2c11812f662f604fd957dabd35fcd2be53a525bd6c5f5cf44ba0",
+    "src/jet-assets3d.js": "a165323397d1fe4adc6135208a63289997a46955afb14a735c6b4778dfafb26f",
+    "src/hotrod-vehicle-assets3d.js": "f25596a5afdbc03785ab4c47c110c7a3b9562c2ea95e4d605223b21888eb43f4",
+    "src/approved-suv3d.js": "0e5675f412b4208e3c2fc7ab0c484201d7a1f24c35dc0b6a6faef6a3e6f37388",
+    "src/police3d-asset.js": "22269ba4a823546063308af6d0abd2ac509a85ab5c653f0bbb9ab99e80f19157"
+  }
+}

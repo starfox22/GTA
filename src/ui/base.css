@@ -331,6 +331,22 @@ kbd {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+.credits-sources summary {
+  cursor: pointer;
+  color: #e3d0a0;
+  font-size: 14px;
+  padding: 10px 0;
+}
+.credits-sources pre {
+  max-height: 45vh;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font: 12px/1.5 monospace;
+  color: #b9c4c7;
+  padding: 12px;
+  background: #10191e;
+}
 .credits-copy {
   margin-bottom: 22px;
 }

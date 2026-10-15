@@ -271,16 +271,20 @@
        */
       const CAR_GLASS_CLEAR = [24 * CAR_M, 36 * CAR_M],
         CAR_GLASS_FAR_TINT = 0.92,
+        carViewEye = new Three.Vector3(),
+        carViewSetBack = { value: 0 },
         CAR_GLASS_OUTPUT = `
         // CAR GLASS (cars3d-interior.js): the tint, then the reflection over it; mirror toward grazing angles.
         float carGlassNV = saturate( dot( geometryNormal, geometryViewDir ) );
-        float carGlassTint = mix( diffuseColor.a, ${CAR_GLASS_FAR_TINT.toFixed(2)}, smoothstep( ${CAR_GLASS_CLEAR[0].toFixed(1)}, ${CAR_GLASS_CLEAR[1].toFixed(1)}, length( vViewPosition ) ) );
+        float carGlassTint = mix( diffuseColor.a, ${CAR_GLASS_FAR_TINT.toFixed(2)}, smoothstep( ${CAR_GLASS_CLEAR[0].toFixed(1)}, ${CAR_GLASS_CLEAR[1].toFixed(1)}, length( vViewPosition - vec3( 0.0, 0.0, carViewSetBack ) ) ) );
         float carGlassEdge = pow( 1.0 - carGlassNV, 5.0 );
         gl_FragColor = vec4( totalDiffuse * carGlassTint + totalSpecular + totalEmissiveRadiance, carGlassTint + ( 1.0 - carGlassTint ) * carGlassEdge );`;
       function carGlassPatch(material, key = 'car-glass') {
         material.onBeforeCompile = (shader) => {
           cityMaterialPatch(shader);
+          shader.uniforms.carViewSetBack = carViewSetBack;
           shader.fragmentShader = shader.fragmentShader
+            .replace('#include <common>', '#include <common>\nuniform float carViewSetBack;')
             .replace('#include <lights_physical_fragment>', '#include <lights_physical_fragment>\nmaterial.specularColor = vec3( 0.07 );')
             .replace('#include <opaque_fragment>', CAR_GLASS_OUTPUT)
             .replace('#include <fog_fragment>', 'float carGlassAlpha = max( gl_FragColor.a, 1e-3 );\ngl_FragColor.rgb /= carGlassAlpha;\n#include <fog_fragment>\ngl_FragColor.rgb *= carGlassAlpha;')

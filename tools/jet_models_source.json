@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "verificationLimit": "Original Sketchfab pages are blocked by this environment; provenance is the asset-specific exported glTF metadata and matching original license.txt (737), or model-specific mirror attribution (Citation). Citation is an already optimized derivative, not the full original author export. Generic repository licenses are not used as model grants.",
+  "sources": [
+    {
+      "model": "jet",
+      "title": "1990 Cessna Citation, Texture Detailed, Exterior",
+      "author": "BlenderCommunityHead (https://sketchfab.com/aboodgoudagad)",
+      "url": "https://sketchfab.com/3d-models/1990-cessna-citation-texture-detailed-exterior-a78839624fe64900a8352cb23462350a",
+      "license": "CC-BY-4.0",
+      "mirror": "SKauanDev/Anubis",
+      "revision": "827d46ce9cdefbf70c529196b28481e6735db658",
+      "changesAlreadyInMirror": "Geometry/material simplification; texture resized to native 256px WebP; transforms baked to meters, Y-up, nose -X. Exterior only; no cabin interior."
+    },
+    {
+      "model": "airliner",
+      "title": "Southwest Airlines Boeing 737",
+      "author": "A Random Modeler (https://sketchfab.com/danielskom111)",
+      "url": "https://sketchfab.com/3d-models/southwest-airlines-boeing-737-73d0cd0c03594c5d9c53235d74b429bf",
+      "license": "CC-BY-4.0",
+      "mirror": "zyetaone/z-aero-window",
+      "revision": "f29024af69b6ab925103b90ef165d092b1f6cda8",
+      "changesAlreadyInMirror": "Full Sketchfab export, 500 primitives, 36 native material colors, no images."
+    }
+  ],
+  "files": [
+    {
+      "path": "citation2.glb",
+      "url": "https://raw.githubusercontent.com/SKauanDev/Anubis/827d46ce9cdefbf70c529196b28481e6735db658/public/models/citation2.glb",
+      "bytes": 562036,
+      "sha256": "5c8a7a98cdbb24faac928370df7f3adc03da8388663a6bb856b59366d271af1e"
+    },
+    {
+      "path": "citation-attribution.md",
+      "url": "https://raw.githubusercontent.com/SKauanDev/Anubis/827d46ce9cdefbf70c529196b28481e6735db658/public/models/README.md",
+      "bytes": 4929,
+      "sha256": "0e773b75019c0c39f8689d8cc1ce6d4e4a8ab3f995d413413d775c27827612f9"
+    },
+    {
+      "path": "southwest737/scene.gltf",
+      "url": "https://raw.githubusercontent.com/zyetaone/z-aero-window/f29024af69b6ab925103b90ef165d092b1f6cda8/tools/wing-source/southwest-737/scene.gltf",
+      "bytes": 1027725,
+      "sha256": "7ddb6f6e7200a2a8e8ba15ee0c3cdc0235e32d6eed036664680537137d990360"
+    },
+    {
+      "path": "southwest737/scene.bin",
+      "url": "https://raw.githubusercontent.com/zyetaone/z-aero-window/f29024af69b6ab925103b90ef165d092b1f6cda8/tools/wing-source/southwest-737/scene.bin",
+      "bytes": 9463348,
+      "sha256": "753c80127d93636b5a27c65a7c862b9ccc022e949fc21851687d3b694e6be9c7"
+    },
+    {
+      "path": "southwest737/license.txt",
+      "url": "https://raw.githubusercontent.com/zyetaone/z-aero-window/f29024af69b6ab925103b90ef165d092b1f6cda8/tools/wing-source/southwest-737/license.txt",
+      "bytes": 762,
+      "sha256": "1ac17a52537be30939bb97cbfb1fed2482d27018a9260e00ea3e7b163e4f6315"
+    }
+  ]
+}

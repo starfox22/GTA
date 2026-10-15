@@ -139,12 +139,14 @@
       assetCars: () => city3D?.assetCars?.() ?? null,
       approvedAssets: () => city3D?.approvedAssets?.() ?? null,
       sportsAssets: () => city3D?.sportsAssets?.() ?? null,
+      hotrodAssets: () => city3D?.hotrodAssets?.() ?? null,
       vehicleDoors: (id) => city3D?.vehicleDoors?.(id) ?? null,
       // Before/after: false builds every vehicle model made from now on procedurally (park new ones to compare).
       assetCarsOn: (on) => city3D?.assetCarsOn?.(on) ?? null,
       // The downloaded aircraft models (aircraft-assets3d.js: the SKYRANGER 429) and the before/after
       // switch (false: helicopters and aircraft built from now on are procedural).
       aircraftAssets: () => city3D?.aircraftAssets?.() ?? null,
+      jetAssets: () => city3D?.jetAssets?.() ?? null,
       aircraftAssetsOn: (on) => city3D?.aircraftAssetsOn?.(on) ?? null,
       // The seated heads against every closed car cabin built (cars3d-headroom.js CABIN HEADROOM): room in metres for
       // the tallest man and woman, the player and the player's drive-by pose; `through` counts cars with a head out.

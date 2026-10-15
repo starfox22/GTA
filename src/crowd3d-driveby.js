@@ -233,12 +233,12 @@
       /* A civilian or police model in view (vehicle pass): kept if near enough, the nearest OCCUPANT_CAP. */
       function queueCarOccupants(c, m) {
         if (!m.group.visible || !carOccupancy(c)) return;
-        const p = camera.position,
+        const p = carViewEye,
           dx = c.x - p.x,
           dy = m.group.position.y - p.y,
           dz = c.y - p.z,
           near = dx * dx + dy * dy + dz * dz;
-        // Out of reach the tint has closed (the street view's camera is high above): nobody to see.
+        // Shares the glass fade's effective eye; roof-clearance setback is cosmetic.
         if (near > OCCUPANT_REACH * OCCUPANT_REACH) return;
         // The player's own car first, whatever the cap.
         const d = c === player.car ? -1 : near;

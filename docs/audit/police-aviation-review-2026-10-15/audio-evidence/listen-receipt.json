@@ -1,0 +1,47 @@
+{
+  "encoding": "ffmpeg libmp3lame, 48 kbit/s, stereo 24 kHz; lossy delivery copies of actual OfflineAudioContext graph fixtures",
+  "files": [
+    {
+      "file": "skyhawk-before.mp3",
+      "bytes": 51644,
+      "sha256": "62b1ed1e43b22d6469cd8b251baa131a81b45cabf62358398c93e2e7c9adc6d7",
+      "sourceWav": "dist/review16/audio-before/skyhawk-idle-takeoff-cutoff.wav",
+      "sourceWavSha256": "62e6d98f28b9e3754786dd34e50e739f00ff8a93428ebfe9e84adddabfbf1a73"
+    },
+    {
+      "file": "skyhawk-after.mp3",
+      "bytes": 51644,
+      "sha256": "0dfb2debbec54de32b85304d6b3f859bcddfb8a962e5975533c5b895ea231565",
+      "sourceWav": "dist/review16/audio/skyhawk-idle-takeoff-cutoff.wav",
+      "sourceWavSha256": "9d60cc8104bc4f0a8dd963c94cc36d46318a9301390b56e0d8083da6f4652b86"
+    },
+    {
+      "file": "courier-after.mp3",
+      "bytes": 51644,
+      "sha256": "e713c1b71e5069b853e66175ac5ed08a848c0749ca94e4cca4bca1f82a5d294f",
+      "sourceWav": "dist/review16/audio/courier-idle-takeoff-cutoff.wav",
+      "sourceWavSha256": "e5fb6d6e5c3d400a7cc834f064ba55e0b6877393b3a25f1a9c07e9a5ba70f40f"
+    },
+    {
+      "file": "business-jet-after.mp3",
+      "bytes": 51644,
+      "sha256": "e21c489c15187c6d7dc02caa9effff137711c45c37f6aef43a59533108402434",
+      "sourceWav": "dist/review16/audio/jet-idle-takeoff-cutoff.wav",
+      "sourceWavSha256": "70212d60d2eb3c57220310f1fddfd7f031309893df6bc731054dcd4bc5b9aabf"
+    },
+    {
+      "file": "airliner-after.mp3",
+      "bytes": 51644,
+      "sha256": "9b6ff6595a3566e293884ae176dd2633ad13e48a5ed420ff3085faa906759214",
+      "sourceWav": "dist/review16/audio/airliner-idle-takeoff-cutoff.wav",
+      "sourceWavSha256": "d7108e45b44963f0372730308075b03fa53a7aede5c15dc64bdb2d4c1095300a"
+    },
+    {
+      "file": "skyhawk-flyby.mp3",
+      "bytes": 51644,
+      "sha256": "58f8e1ce6752aed0bb0fc40a5e178cb77af753639136e5d6c2014b190a6a75b5",
+      "sourceWav": "dist/review16/audio/skyhawk-flyby.wav",
+      "sourceWavSha256": "dda5602402847dc006df51b1c04e0eba0dca9e630b8a7602de78925723287d11"
+    }
+  ]
+}

@@ -1,0 +1,1135 @@
+{
+  "label": "final-runtime",
+  "htmlSha256": "719a535fe3905275c381737acb7fc3e80ee1ab4378c0d5736a4595096b16c03c",
+  "recorderSha256": "98758fefa109f0483443e8d38bdb5cc00e7320617e974ae0fb66c9997fb6a0ca",
+  "fixture": {
+    "seed": 1,
+    "time": 13,
+    "weather": "clear",
+    "viewport": [
+      1000,
+      700
+    ],
+    "crop": [
+      130,
+      80,
+      740,
+      500
+    ],
+    "trailSeconds": 30,
+    "compactSelection": "actual created SUV id modulo 3 equals zero; at most six ordinary fallTest spawns",
+    "tier": "high",
+    "held": true
+  },
+  "captures": [
+    {
+      "name": "compact-suv-trail",
+      "fixture": {
+        "seconds": 30,
+        "id": 282,
+        "result": {
+          "kind": "drive-trail",
+          "road": "MOUNT ASCENT TRAIL",
+          "reason": "time",
+          "seconds": 30,
+          "progress": 0.387,
+          "minHp": 249,
+          "airborneS": 0,
+          "maxKmh": 30,
+          "car": {
+            "type": "suv",
+            "hp": 249,
+            "maxhp": 250,
+            "overturned": false
+          },
+          "newLandings": [],
+          "mode": "play",
+          "hp": 100,
+          "x": 7458,
+          "y": 1355,
+          "altitudeM": 47.5,
+          "groundM": 47.5,
+          "falling": null,
+          "tumbling": false,
+          "splat": null,
+          "parachute": null,
+          "vehicle": {
+            "type": "suv",
+            "hp": 249,
+            "airborne": false,
+            "overturned": null
+          },
+          "impacts": [],
+          "vehicleLandings": []
+        },
+        "camera": {
+          "zoom": 7,
+          "yaw": 65,
+          "pitch": 20,
+          "lift": 4
+        }
+      },
+      "status": {
+        "mode": "play",
+        "x": 7458,
+        "y": 1355,
+        "district": "RIDGELINE COUNTY",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "suv",
+        "weapon": "9MM PISTOL",
+        "clock": "13:00",
+        "renderer": "3d",
+        "vehicles": 283,
+        "pedestrians": 595
+      },
+      "camera": {
+        "zoom": 7,
+        "target": 7,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 13,
+        "framing": 1,
+        "framed": 7,
+        "aim": 7,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 8.5,
+        "personPx": 92,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 4,
+          "accel": {
+            "rms": 0.178,
+            "peak": 0.378
+          },
+          "jerk": {
+            "rms": 0.85,
+            "peak": 5.6
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0.0027,
+          "drift": {
+            "peak": 0.106,
+            "swing": 0.142
+          }
+        }
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 90.03,
+        "drill": null,
+        "kinds": []
+      },
+      "quality": {
+        "setting": "high",
+        "tier": "HIGH",
+        "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "hdr": true,
+        "shadowMap": 3072,
+        "pixelRatio": 1,
+        "renderScale": 1,
+        "shadows": "high",
+        "shadowSetting": "auto",
+        "adaptive": {
+          "averageFrameMs": 0,
+          "tierDrops": 0,
+          "ceiling": 1,
+          "holdSeconds": 0
+        }
+      },
+      "airfields": {
+        "runways": [
+          {
+            "name": "SOUTHPORT",
+            "airport": "SOUTHPORT AIRPORT",
+            "designations": "18/36",
+            "lengthM": 460,
+            "widthM": 29.5,
+            "blastPadsM": [
+              15,
+              30
+            ],
+            "thresholds": [
+              {
+                "designation": "18",
+                "x": 418,
+                "y": 4280
+              },
+              {
+                "designation": "36",
+                "x": 418,
+                "y": 7960
+              }
+            ],
+            "aimingPointM": 150,
+            "touchdownZoneM": [],
+            "approachLights": [],
+            "papi": {
+              "18": "RRWW",
+              "36": "RRWW"
+            }
+          },
+          {
+            "name": "OCEANVIEW",
+            "airport": "OCEANVIEW INTERNATIONAL",
+            "designations": "09/27",
+            "lengthM": 1280,
+            "widthM": 30,
+            "blastPadsM": [
+              30,
+              30
+            ],
+            "thresholds": [
+              {
+                "designation": "09",
+                "x": -4040,
+                "y": 9884
+              },
+              {
+                "designation": "27",
+                "x": 6200,
+                "y": 9884
+              }
+            ],
+            "aimingPointM": 300,
+            "touchdownZoneM": [
+              150,
+              450,
+              600
+            ],
+            "approachLights": [
+              "09",
+              "27"
+            ],
+            "papi": {
+              "27": "RRWW",
+              "09": "RRWW"
+            }
+          }
+        ],
+        "piers": [
+          "southport-pier",
+          "oceanview-pier",
+          "oceanview-pier-east"
+        ],
+        "taxiways": 12,
+        "aircraft": [
+          {
+            "id": 122,
+            "airframe": "courier",
+            "stand": "oceanview-courier",
+            "x": 5260,
+            "y": 9430,
+            "a": 1.571,
+            "district": "OCEANVIEW INTERNATIONAL",
+            "hp": 250,
+            "clear": true,
+            "dry": true
+          },
+          {
+            "id": 256,
+            "airframe": "jet",
+            "stand": "oceanview-west",
+            "x": 3750,
+            "y": 9430,
+            "a": 1.571,
+            "district": "OCEANVIEW INTERNATIONAL",
+            "hp": 320,
+            "clear": true,
+            "dry": true
+          },
+          {
+            "id": 257,
+            "airframe": "jet",
+            "stand": "oceanview-mid",
+            "x": 4500,
+            "y": 9430,
+            "a": 1.571,
+            "district": "OCEANVIEW INTERNATIONAL",
+            "hp": 320,
+            "clear": true,
+            "dry": true
+          },
+          {
+            "id": 258,
+            "airframe": "airliner",
+            "stand": "oceanview-east",
+            "x": 5910,
+            "y": 9430,
+            "a": 1.571,
+            "district": "OCEANVIEW INTERNATIONAL",
+            "hp": 520,
+            "clear": true,
+            "dry": true
+          },
+          {
+            "id": 259,
+            "airframe": "skyhawk",
+            "stand": "southport-1",
+            "x": 800,
+            "y": 4650,
+            "a": 3.142,
+            "district": "SOUTHPORT AIRPORT",
+            "hp": 170,
+            "clear": true,
+            "dry": true
+          },
+          {
+            "id": 260,
+            "airframe": "skyhawk",
+            "stand": "southport-2",
+            "x": 800,
+            "y": 4930,
+            "a": 3.142,
+            "district": "SOUTHPORT AIRPORT",
+            "hp": 170,
+            "clear": true,
+            "dry": true
+          },
+          {
+            "id": 261,
+            "airframe": "skyhawk",
+            "stand": "southport-3",
+            "x": 1000,
+            "y": 5420,
+            "a": 3.142,
+            "district": "SOUTHPORT AIRPORT",
+            "hp": 170,
+            "clear": true,
+            "dry": true
+          }
+        ]
+      },
+      "hotrodAssets": {
+        "loaded": true,
+        "enabled": true,
+        "key": "coupe33_zhab",
+        "triangles": 20856,
+        "farTriangles": 5202,
+        "atlasSizes": [],
+        "reducedTextures": false,
+        "nativeCabin": true,
+        "nativeDoors": false,
+        "source": "https://sketchfab.com/3d-models/coupe-33-hot-rod-3-low-poly-model-cb5b519024c7472895ef10a8663fb533",
+        "license": "CC BY 4.0"
+      },
+      "models": [
+        {
+          "id": 1,
+          "type": "coupe",
+          "draws": 12,
+          "casters": 3,
+          "triangles": 10608,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              4387
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1673
+            ],
+            [
+              "MeshStandardMaterial",
+              782
+            ],
+            [
+              "MeshStandardMaterial",
+              782
+            ],
+            [
+              "MeshStandardMaterial",
+              780
+            ],
+            [
+              "MeshStandardMaterial",
+              776
+            ]
+          ],
+          "asset": "Kiri '86",
+          "cabin": {
+            "hip": [
+              -0.282,
+              0.362,
+              -0.414
+            ],
+            "door": [
+              -0.382,
+              0.891
+            ],
+            "floor": 0.262,
+            "floorWorldY": 0.274,
+            "pedalHeight": 0.362,
+            "recline": 0.4,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 2131,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 0.585
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 2,
+          "type": "sedan",
+          "draws": 14,
+          "casters": 3,
+          "triangles": 10067,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              4807
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1880
+            ],
+            [
+              "MeshPhysicalMaterial",
+              638
+            ],
+            [
+              "MeshStandardMaterial",
+              531
+            ],
+            [
+              "MeshStandardMaterial",
+              531
+            ],
+            [
+              "MeshStandardMaterial",
+              527
+            ]
+          ],
+          "asset": "Fairheaven LT '80",
+          "cabin": {
+            "hip": [
+              -0.318,
+              0.275,
+              -0.426
+            ],
+            "door": [
+              -0.418,
+              0.798
+            ],
+            "floor": 0.226,
+            "floorWorldY": 0.239,
+            "pedalHeight": 0.326,
+            "recline": 0.3,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 2134,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 0.549
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 3,
+          "type": "suv",
+          "draws": 18,
+          "casters": 3,
+          "triangles": 122277,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              57894
+            ],
+            [
+              "MeshPhysicalMaterial",
+              28399
+            ],
+            [
+              "MeshPhysicalMaterial",
+              11635
+            ],
+            [
+              "MeshStandardMaterial",
+              5329
+            ],
+            [
+              "MeshPhysicalMaterial",
+              3776
+            ],
+            [
+              "MeshStandardMaterial",
+              2889
+            ]
+          ],
+          "asset": "Suzuki Jimny 2023",
+          "cabin": {
+            "hip": [
+              -0.384,
+              0.454,
+              -0.372
+            ],
+            "door": [
+              -0.484,
+              0.766
+            ],
+            "floor": 0.254,
+            "floorWorldY": 0.266,
+            "pedalHeight": 0.354,
+            "recline": 0.3,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 13838,
+            "seated": 0,
+            "headroom": 0.175,
+            "behind": 0.794
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 4,
+          "type": "van",
+          "draws": 13,
+          "casters": 3,
+          "triangles": 9494,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              2168
+            ],
+            [
+              "MeshStandardMaterial",
+              2116
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1558
+            ],
+            [
+              "MeshStandardMaterial",
+              1084
+            ],
+            [
+              "MeshStandardMaterial",
+              1084
+            ],
+            [
+              "MeshPhysicalMaterial",
+              684
+            ]
+          ],
+          "asset": null,
+          "cabin": {
+            "hip": [
+              0.919,
+              0.68,
+              -0.46
+            ],
+            "door": [
+              0.525,
+              1.575
+            ],
+            "floor": 0.48,
+            "floorWorldY": 0.493,
+            "pedalHeight": 0.58,
+            "recline": 0.3,
+            "rear": false,
+            "two": false,
+            "cabinTriangles": 1204,
+            "seated": 0,
+            "headroom": 0.143,
+            "behind": 0.08
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": {
+            "text": "MULE",
+            "sub": null,
+            "style": "block",
+            "letters": 4
+          }
+        },
+        {
+          "id": 5,
+          "type": "bike",
+          "draws": 12,
+          "casters": 3,
+          "triangles": 53999,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              25166
+            ],
+            [
+              "MeshStandardMaterial",
+              5732
+            ],
+            [
+              "MeshPhysicalMaterial",
+              5605
+            ],
+            [
+              "MeshStandardMaterial",
+              4071
+            ],
+            [
+              "MeshStandardMaterial",
+              3204
+            ],
+            [
+              "MeshStandardMaterial",
+              2429
+            ]
+          ],
+          "asset": "Sport motorcycle (SRAD 750)",
+          "cabin": null,
+          "panes": null,
+          "badge": null
+        },
+        {
+          "id": 6,
+          "type": "supercar",
+          "draws": 14,
+          "casters": 3,
+          "triangles": 11433,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              4894
+            ],
+            [
+              "MeshPhysicalMaterial",
+              2084
+            ],
+            [
+              "MeshPhysicalMaterial",
+              977
+            ],
+            [
+              "MeshStandardMaterial",
+              666
+            ],
+            [
+              "MeshStandardMaterial",
+              666
+            ],
+            [
+              "MeshStandardMaterial",
+              660
+            ]
+          ],
+          "asset": "Italian Supercar '84",
+          "cabin": {
+            "hip": [
+              -0.268,
+              0.214,
+              -0.46
+            ],
+            "door": [
+              -0.368,
+              0.86
+            ],
+            "floor": 0.21,
+            "floorWorldY": 0.223,
+            "pedalHeight": 0.31,
+            "recline": 0.52,
+            "rear": false,
+            "two": true,
+            "cabinTriangles": 1131,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 0.08
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 265,
+          "type": "suv",
+          "draws": 18,
+          "casters": 3,
+          "triangles": 10091,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              3693
+            ],
+            [
+              "MeshStandardMaterial",
+              2140
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1013
+            ],
+            [
+              "MeshPhysicalMaterial",
+              538
+            ],
+            [
+              "MeshStandardMaterial",
+              288
+            ],
+            [
+              "MeshStandardMaterial",
+              280
+            ]
+          ],
+          "asset": "Generic SUV",
+          "cabin": {
+            "hip": [
+              -0.184,
+              0.686,
+              -0.414
+            ],
+            "door": [
+              -0.284,
+              0.966
+            ],
+            "floor": 0.536,
+            "floorWorldY": 49.736,
+            "pedalHeight": 0.636,
+            "recline": 0.3,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 934,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 1.502
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 281,
+          "type": "suv",
+          "draws": 18,
+          "casters": 3,
+          "triangles": 8266,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              1764
+            ],
+            [
+              "MeshStandardMaterial",
+              1724
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1340
+            ],
+            [
+              "MeshPhysicalMaterial",
+              858
+            ],
+            [
+              "MeshStandardMaterial",
+              280
+            ],
+            [
+              "MeshStandardMaterial",
+              280
+            ]
+          ],
+          "asset": "Generic Offroad",
+          "cabin": {
+            "hip": [
+              -0.661,
+              0.533,
+              -0.392
+            ],
+            "door": [
+              -0.761,
+              0.489
+            ],
+            "floor": 0.48,
+            "floorWorldY": 48.333,
+            "pedalHeight": 0.58,
+            "recline": 0.3,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 283,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 0.528
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 282,
+          "type": "suv",
+          "draws": 18,
+          "casters": 3,
+          "triangles": 122277,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              57894
+            ],
+            [
+              "MeshPhysicalMaterial",
+              28399
+            ],
+            [
+              "MeshPhysicalMaterial",
+              11635
+            ],
+            [
+              "MeshStandardMaterial",
+              5329
+            ],
+            [
+              "MeshPhysicalMaterial",
+              3776
+            ],
+            [
+              "MeshStandardMaterial",
+              2889
+            ]
+          ],
+          "asset": "Suzuki Jimny 2023",
+          "cabin": {
+            "hip": [
+              -0.384,
+              0.454,
+              -0.372
+            ],
+            "door": [
+              -0.484,
+              0.766
+            ],
+            "floor": 0.254,
+            "floorWorldY": 47.8,
+            "pedalHeight": 0.354,
+            "recline": 0.3,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 13838,
+            "seated": 1,
+            "headroom": 0.175,
+            "behind": 0.794
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        }
+      ],
+      "pngSha256": "d5f3b4cab98942412b32728baba098f36f265bd900e90796288d72fe0e2bd44d"
+    }
+  ],
+  "errors": [],
+  "warnings": [
+    "Scripts \"build/three.js\" and \"build/three.min.js\" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation",
+    "[.WebGL-0x1bac295e8200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): Running out of reserved outsideRenderPass queueSerial. ending renderPass now."
+  ],
+  "attempts": [
+    {
+      "id": 265,
+      "result": {
+        "kind": "drive-trail",
+        "road": "MOUNT ASCENT TRAIL",
+        "reason": "time",
+        "seconds": 30,
+        "progress": 0.396,
+        "minHp": 250,
+        "airborneS": 0,
+        "maxKmh": 32,
+        "car": {
+          "type": "suv",
+          "hp": 250,
+          "maxhp": 250,
+          "overturned": false
+        },
+        "newLandings": [],
+        "mode": "play",
+        "hp": 100,
+        "x": 7490,
+        "y": 1350,
+        "altitudeM": 47.9,
+        "groundM": 47.9,
+        "falling": null,
+        "tumbling": false,
+        "splat": null,
+        "parachute": null,
+        "vehicle": {
+          "type": "suv",
+          "hp": 250,
+          "airborne": false,
+          "overturned": null
+        },
+        "impacts": [],
+        "vehicleLandings": []
+      }
+    },
+    {
+      "id": 281,
+      "result": {
+        "kind": "drive-trail",
+        "road": "MOUNT ASCENT TRAIL",
+        "reason": "time",
+        "seconds": 30,
+        "progress": 0.393,
+        "minHp": 250,
+        "airborneS": 0,
+        "maxKmh": 31,
+        "car": {
+          "type": "suv",
+          "hp": 250,
+          "maxhp": 250,
+          "overturned": false
+        },
+        "newLandings": [],
+        "mode": "play",
+        "hp": 100,
+        "x": 7475,
+        "y": 1353,
+        "altitudeM": 47.6,
+        "groundM": 47.6,
+        "falling": null,
+        "tumbling": false,
+        "splat": null,
+        "parachute": null,
+        "vehicle": {
+          "type": "suv",
+          "hp": 250,
+          "airborne": false,
+          "overturned": null
+        },
+        "impacts": [],
+        "vehicleLandings": []
+      }
+    },
+    {
+      "id": 282,
+      "result": {
+        "kind": "drive-trail",
+        "road": "MOUNT ASCENT TRAIL",
+        "reason": "time",
+        "seconds": 30,
+        "progress": 0.387,
+        "minHp": 249,
+        "airborneS": 0,
+        "maxKmh": 30,
+        "car": {
+          "type": "suv",
+          "hp": 249,
+          "maxhp": 250,
+          "overturned": false
+        },
+        "newLandings": [],
+        "mode": "play",
+        "hp": 100,
+        "x": 7458,
+        "y": 1355,
+        "altitudeM": 47.5,
+        "groundM": 47.5,
+        "falling": null,
+        "tumbling": false,
+        "splat": null,
+        "parachute": null,
+        "vehicle": {
+          "type": "suv",
+          "hp": 249,
+          "airborne": false,
+          "overturned": null
+        },
+        "impacts": [],
+        "vehicleLandings": []
+      }
+    }
+  ],
+  "pass": true
+}

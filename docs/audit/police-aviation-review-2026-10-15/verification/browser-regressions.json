@@ -1,0 +1,1493 @@
+{
+  "kind": "Original unedited runner logs; baseline failures retained; focused final and quiet input reruns recorded separately. No-render production game through localhost adapter, no hardware FPS implication.",
+  "runs": [
+    {
+      "log": "baseline-suite.log",
+      "logSha256": "7d97ec2e1550883f15c5e4f6a427af347dac2821fd068340576289c13b94aaa1",
+      "html": "before.html",
+      "htmlSha256": "21403cd7c63950f619da9e8818a60be14ef306b0d08ced79ac336cd247c4df1a",
+      "complete": true,
+      "pass": false,
+      "counts": {
+        "pass": 200,
+        "total": 222,
+        "skip": 18,
+        "fail": 4
+      },
+      "tests": [
+        {
+          "status": "PASS",
+          "name": "approved-motorcycle-rider-fit",
+          "seconds": 0.5,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "approved-motorcycle-rigs",
+          "seconds": 0.3,
+          "detail": null
+        },
+        {
+          "status": "FAIL",
+          "name": "approved-suv-rigs",
+          "seconds": 9.8,
+          "detail": "error: socket hang up"
+        },
+        {
+          "status": "PASS",
+          "name": "approved-vehicle-pipeline",
+          "seconds": 1.6,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "boot-status",
+          "seconds": 1.1,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "brake-distances",
+          "seconds": 5.8,
+          "detail": null
+        },
+        {
+          "status": "SKIP",
+          "name": "cabin-headroom",
+          "seconds": 0.0,
+          "detail": "Requires WebGL: run with --render"
+        },
+        {
+          "status": "PASS",
+          "name": "camera-feel",
+          "seconds": 4.5,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "camera-framing",
+          "seconds": 18.2,
+          "detail": null
+        },
+        {
+          "status": "SKIP",
+          "name": "car-cabins",
+          "seconds": 0.0,
+          "detail": "Requires WebGL: run with --render"
+        },
+        {
+          "status": "PASS",
+          "name": "car-exit-feet",
+          "seconds": 0.7,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "chase-aim",
+          "seconds": 3.9,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "chase-audio-pan",
+          "seconds": 0.0,
+          "detail": null
+        },
+        {
+          "status": "SKIP",
+          "name": "chase-clouds",
+          "seconds": 0.4,
+          "detail": "Requires WebGL: run with --render"
+        },
+        {
+          "status": "PASS",
+          "name": "chase-cover-clearance",
+          "seconds": 0.0,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "chase-crane",
+          "seconds": 3.0,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "chase-hud-box",
+          "seconds": 2.1,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "chase-in-view",
+          "seconds": 1.4,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "chase-input",
+          "seconds": 4.9,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "chase-motion-blur",
+          "seconds": 0.4,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "chase-radio-chip",
+          "seconds": 1.0,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "chase-shooter",
+          "seconds": 0.7,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "chase-streams",
+          "seconds": 16.2,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "chase-view-mode",
+          "seconds": 0.9,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "chase-walk",
+          "seconds": 1.6,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "cloud-history",
+          "seconds": 0.0,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "clouds",
+          "seconds": 6.1,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "combat-continuity",
+          "seconds": 0.0,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "drift-handling",
+          "seconds": 9.0,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "drive-no-nan",
+          "seconds": 11.7,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "driveby-seats",
+          "seconds": 0.2,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "driving-settings-migrate",
+          "seconds": 0.0,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "enter-key",
+          "seconds": 5.5,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "foliage-cutaway",
+          "seconds": 0.3,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "frame-trace",
+          "seconds": 2.5,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "gpu-context-lifecycle",
+          "seconds": 0.2,
+          "detail": null
+        },
+        {
+          "status": "SKIP",
+          "name": "graphics-all-tiers",
+          "seconds": 0.0,
+          "detail": "Requires WebGL: run with --render"
+        },
+        {
+          "status": "PASS",
+          "name": "headlight-budget",
+          "seconds": 0.0,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "hud-dom-writes",
+          "seconds": 6.5,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "instance-upload-ranges",
+          "seconds": 0.1,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "m4-wheel-partition",
+          "seconds": 0.3,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "medic-routing",
+          "seconds": 0.1,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "military-model-rig",
+          "seconds": 0.2,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "mission-modal-input",
+          "seconds": 0.0,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "mission-world-preservation",
+          "seconds": 0.1,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "modal-pointer-lifecycle",
+          "seconds": 0.1,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "motorcycle-puncture",
+          "seconds": 0.1,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "motorcycle-rider-fit",
+          "seconds": 0.3,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "motorcycle-wheel-rig",
+          "seconds": 0.2,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "mountain-road",
+          "seconds": 28.6,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "mounted-gun-projection",
+          "seconds": 0.0,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "mouse-buttons",
+          "seconds": 0.0,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "navigation-shortlist",
+          "seconds": 0.4,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "npc-avatars",
+          "seconds": 1.1,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "performance-kernels",
+          "seconds": 1.7,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "player-body",
+          "seconds": 9.3,
+          "detail": null
+        },
+        {
+          "status": "SKIP",
+          "name": "rear-badges",
+          "seconds": 0.0,
+          "detail": "Requires WebGL: run with --render"
+        },
+        {
+          "status": "PASS",
+          "name": "regency-traffic",
+          "seconds": 11.9,
+          "detail": null
+        },
+        {
+          "status": "SKIP",
+          "name": "render-auto-scale",
+          "seconds": 0.0,
+          "detail": "Requires WebGL: run with --render"
+        },
+        {
+          "status": "SKIP",
+          "name": "render-cell-preupload",
+          "seconds": 0.0,
+          "detail": "Requires WebGL: run with --render"
+        },
+        {
+          "status": "SKIP",
+          "name": "render-hiccups",
+          "seconds": 0.0,
+          "detail": "Renderer counters require WebGL: run with --render"
+        },
+        {
+          "status": "SKIP",
+          "name": "render-tier-switch",
+          "seconds": 0.0,
+          "detail": "Requires WebGL: run with --render"
+        },
+        {
+          "status": "PASS",
+          "name": "respawn-focus-pause",
+          "seconds": 0.0,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "rig-geometry",
+          "seconds": 0.2,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "roof-skin",
+          "seconds": 0.1,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "scenery-pools",
+          "seconds": 0.1,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "sim-audits",
+          "seconds": 4.3,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "sim-efficiency",
+          "seconds": 19.7,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "sound-output",
+          "seconds": 2.4,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "sports-vehicle-assets",
+          "seconds": 0.9,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "sportsbook-bets",
+          "seconds": 1.3,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "taxi-fare-toast",
+          "seconds": 1.0,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "travel-focus-pause",
+          "seconds": 0.0,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "tyre-effects",
+          "seconds": 11.8,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "vehicle-gunfire",
+          "seconds": 12.1,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "vehicle-layouts",
+          "seconds": 8.9,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "vehicle-material-lifecycle",
+          "seconds": 0.0,
+          "detail": null
+        },
+        {
+          "status": "SKIP",
+          "name": "vehicle-merge",
+          "seconds": 0.0,
+          "detail": "Requires WebGL: run with --render"
+        },
+        {
+          "status": "PASS",
+          "name": "vehicle-source-fidelity",
+          "seconds": 0.4,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "witness-car-lines",
+          "seconds": 0.1,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "world-reset-sportsbook",
+          "seconds": 0.1,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "ammo-supply",
+          "seconds": 29.0,
+          "detail": null
+        },
+        {
+          "status": "SKIP",
+          "name": "asset-char",
+          "seconds": 14.3,
+          "detail": "Requires WebGL: run with --render"
+        },
+        {
+          "status": "PASS",
+          "name": "blood-amounts",
+          "seconds": 16.3,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "blood-spray",
+          "seconds": 18.1,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "blood-wounds",
+          "seconds": 38.0,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "bluehour-entrance",
+          "seconds": 18.4,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "bullet-hits",
+          "seconds": 15.7,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "camera-comfort",
+          "seconds": 37.8,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "camera-lead-setting",
+          "seconds": 45.2,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "camera-slow-framing",
+          "seconds": 61.8,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "car-blood",
+          "seconds": 199.2,
+          "detail": null
+        },
+        {
+          "status": "SKIP",
+          "name": "car-feet-clearance",
+          "seconds": 22.2,
+          "detail": "Requires WebGL: run with --render"
+        },
+        {
+          "status": "SKIP",
+          "name": "car-window-open",
+          "seconds": 19.6,
+          "detail": "Requires WebGL: run with --render"
+        },
+        {
+          "status": "PASS",
+          "name": "carjack-traffic",
+          "seconds": 53.7,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "carjack",
+          "seconds": 75.3,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "chase-budget",
+          "seconds": 29.7,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "chase-hud-layout",
+          "seconds": 36.1,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "chase-lock",
+          "seconds": 32.8,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "chase-move-keys",
+          "seconds": 48.7,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "chase-wall-clearance",
+          "seconds": 31.0,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "cheat-helicopter",
+          "seconds": 37.6,
+          "detail": null
+        },
+        {
+          "status": "SKIP",
+          "name": "chimney-smoke",
+          "seconds": 22.9,
+          "detail": "Requires WebGL: run with --render"
+        },
+        {
+          "status": "PASS",
+          "name": "civil-aircraft",
+          "seconds": 44.5,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "club-entrance",
+          "seconds": 26.1,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "coronation-bridge",
+          "seconds": 67.0,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "demo-complete-card",
+          "seconds": 45.7,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "drawbridge-islands",
+          "seconds": 87.9,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "drawbridge-traffic",
+          "seconds": 310.5,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "driveby-arcs",
+          "seconds": 43.6,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "driveby-mouse",
+          "seconds": 72.1,
+          "detail": null
+        },
+        {
+          "status": "FAIL",
+          "name": "falls",
+          "seconds": 74.2,
+          "detail": "4x4 intact down the trail: {\"type\":\"suv\",\"hp\":250,\"maxhp\":250,\"overturned\":true}"
+        },
+        {
+          "status": "PASS",
+          "name": "footwork",
+          "seconds": 36.1,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "fort-cover",
+          "seconds": 80.7,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "fort-gate-barrier",
+          "seconds": 49.7,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "fort-gate-talk",
+          "seconds": 39.4,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "fort-records-route",
+          "seconds": 20.8,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "fort-vehicle-theft",
+          "seconds": 38.1,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "fps-counter",
+          "seconds": 77.0,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "frame-guard",
+          "seconds": 33.4,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "freeroam-respawn",
+          "seconds": 60.2,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "garages-islands",
+          "seconds": 35.6,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "god-drawbridges",
+          "seconds": 170.1,
+          "detail": null
+        },
+        {
+          "status": "FAIL",
+          "name": "god-mode-codes",
+          "seconds": 21.6,
+          "detail": "both A taps should walk the player left: 1152 \u2192 1150 \u2192 1145"
+        },
+        {
+          "status": "PASS",
+          "name": "god-teleport-map",
+          "seconds": 27.4,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "gore-dismember",
+          "seconds": 36.6,
+          "detail": null
+        },
+        {
+          "status": "SKIP",
+          "name": "gpu-context",
+          "seconds": 27.7,
+          "detail": "no 3D renderer on this page (run with --render)"
+        },
+        {
+          "status": "PASS",
+          "name": "headlight-aim",
+          "seconds": 27.9,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "health-indoors",
+          "seconds": 48.8,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "hillclimb-physics",
+          "seconds": 190.2,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "hud-clearance",
+          "seconds": 37.1,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "hud-layout",
+          "seconds": 37.9,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "hud-touch-dispatch",
+          "seconds": 18.1,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "integrity-shore",
+          "seconds": 15.4,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "interface-hints",
+          "seconds": 17.2,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "liner-voyage",
+          "seconds": 16.6,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "living-key",
+          "seconds": 78.9,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "living-medics",
+          "seconds": 59.6,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "living-sirens",
+          "seconds": 31.6,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "living-snatch",
+          "seconds": 50.6,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "living-traffic",
+          "seconds": 45.0,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "lockpick",
+          "seconds": 76.4,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "marea-talk",
+          "seconds": 35.3,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "markers-rings",
+          "seconds": 32.5,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "minimap-clutter",
+          "seconds": 43.8,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "mission-abandon",
+          "seconds": 23.1,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "mission-brief",
+          "seconds": 33.2,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "mission-card-keys",
+          "seconds": 24.1,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "mission-card-subtitle",
+          "seconds": 18.9,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "mission-retry-save",
+          "seconds": 28.7,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "mission-retry",
+          "seconds": 21.0,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "mission1-bay",
+          "seconds": 81.3,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "mission1-depot",
+          "seconds": 36.1,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "mission1-truck",
+          "seconds": 27.8,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "mission2-ambulance",
+          "seconds": 52.7,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "mission2-cones",
+          "seconds": 33.9,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "mission2-getaway",
+          "seconds": 34.7,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "mission2-paths",
+          "seconds": 42.2,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "mission2-poison",
+          "seconds": 79.7,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "mission2-touch-run",
+          "seconds": 24.0,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "mission3-summit",
+          "seconds": 32.0,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "mission34-lifecycle",
+          "seconds": 29.5,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "mission4-alert",
+          "seconds": 95.6,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "mission4-kessler",
+          "seconds": 122.1,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "mission4-paths",
+          "seconds": 76.8,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "mission4-tail",
+          "seconds": 65.0,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "monarch-garages",
+          "seconds": 174.8,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "monarch-one",
+          "seconds": 30.9,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "mounted-guns",
+          "seconds": 49.9,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "north-point-key",
+          "seconds": 49.9,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "nudge-aside",
+          "seconds": 29.0,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "parachute-cloud",
+          "seconds": 89.4,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "parachute-deploy",
+          "seconds": 167.7,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "parachute-liner",
+          "seconds": 56.0,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "parachute",
+          "seconds": 46.2,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "parked-bridge-efficiency",
+          "seconds": 28.2,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "parked-vehicle-hits",
+          "seconds": 48.0,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "pause-restart",
+          "seconds": 45.7,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "payphones-islands",
+          "seconds": 26.2,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "pedestrian-awareness",
+          "seconds": 151.4,
+          "detail": null
+        },
+        {
+          "status": "FAIL",
+          "name": "player-jump",
+          "seconds": 48.4,
+          "detail": "Space did not brake the car: 54.2 -> 50.3"
+        },
+        {
+          "status": "PASS",
+          "name": "police-circus",
+          "seconds": 49.5,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "police-night-sight",
+          "seconds": 30.5,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "police-radio",
+          "seconds": 40.2,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "police-search-clock",
+          "seconds": 58.1,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "police-witness",
+          "seconds": 92.5,
+          "detail": null
+        },
+        {
+          "status": "SKIP",
+          "name": "render-effects",
+          "seconds": 23.3,
+          "detail": "Requires WebGL: run with --render"
+        },
+        {
+          "status": "PASS",
+          "name": "respray-beacon",
+          "seconds": 29.3,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "respray-lose-police",
+          "seconds": 65.5,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "restart-carriers",
+          "seconds": 49.0,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "ride-look",
+          "seconds": 42.6,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "rider-falls",
+          "seconds": 42.1,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "road-signs",
+          "seconds": 29.8,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "roof-lifts",
+          "seconds": 83.0,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "second-run-over",
+          "seconds": 37.4,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "sky-meeting-talk",
+          "seconds": 42.1,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "sky-meeting",
+          "seconds": 78.2,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "soundscape",
+          "seconds": 31.7,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "sun-gradual",
+          "seconds": 32.5,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "surrender-input",
+          "seconds": 34.8,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "swim-rescue",
+          "seconds": 42.6,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "taxi-ride",
+          "seconds": 38.4,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "terrace-death",
+          "seconds": 35.3,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "traffic-pass-parked",
+          "seconds": 30.7,
+          "detail": null
+        },
+        {
+          "status": "SKIP",
+          "name": "trail-mud",
+          "seconds": 25.4,
+          "detail": "Requires WebGL: run with --render"
+        },
+        {
+          "status": "PASS",
+          "name": "trail-trees",
+          "seconds": 33.7,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "trunk-close",
+          "seconds": 105.1,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "vehicle-damage-shape",
+          "seconds": 45.7,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "view-remembered",
+          "seconds": 75.2,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "voices",
+          "seconds": 14.2,
+          "detail": null
+        },
+        {
+          "status": "SKIP",
+          "name": "wet-glints",
+          "seconds": 19.5,
+          "detail": "Requires WebGL: run with --render"
+        },
+        {
+          "status": "PASS",
+          "name": "wheelie-hint",
+          "seconds": 26.1,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "wheelie",
+          "seconds": 35.7,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "witnesses-monarch",
+          "seconds": 32.3,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "witnesses-venues",
+          "seconds": 20.0,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "world-edge-land",
+          "seconds": 15.6,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "world-edge",
+          "seconds": 65.3,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "world-reset",
+          "seconds": 28.6,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "wreck-limit",
+          "seconds": 90.3,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "demo-gating",
+          "seconds": 13.3,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "demo-free-roam-markers",
+          "seconds": 47.3,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "mission-replay-frontier",
+          "seconds": 63.8,
+          "detail": null
+        }
+      ]
+    },
+    {
+      "log": "final-focused-suite.log",
+      "logSha256": "808e0c1fa7be18b8d8338cc24f83f9cae5d7584df6057b89ca989bc699a2cc3f",
+      "html": "final-runtime.html",
+      "htmlSha256": "719a535fe3905275c381737acb7fc3e80ee1ab4378c0d5736a4595096b16c03c",
+      "complete": true,
+      "pass": false,
+      "counts": {
+        "pass": 15,
+        "total": 16,
+        "skip": 0,
+        "fail": 1
+      },
+      "tests": [
+        {
+          "status": "PASS",
+          "name": "chase-audio-pan",
+          "seconds": 0.1,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "enter-key",
+          "seconds": 6.4,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "mission-world-preservation",
+          "seconds": 0.2,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "mountain-road",
+          "seconds": 47.7,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "sound-output",
+          "seconds": 2.6,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "vehicle-layouts",
+          "seconds": 10.3,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "world-reset-sportsbook",
+          "seconds": 0.1,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "aircraft-taxi-takeoff",
+          "seconds": 289.0,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "civil-aircraft",
+          "seconds": 37.7,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "falls",
+          "seconds": 76.0,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "fps-counter",
+          "seconds": 74.0,
+          "detail": null
+        },
+        {
+          "status": "FAIL",
+          "name": "hillclimb-physics",
+          "seconds": 118.8,
+          "detail": "climb at 1/60: 76.88 s is over the 1:15 challenge"
+        },
+        {
+          "status": "PASS",
+          "name": "mission-retry-save",
+          "seconds": 50.2,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "mission3-summit",
+          "seconds": 48.5,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "rider-falls",
+          "seconds": 57.2,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "soundscape",
+          "seconds": 37.3,
+          "detail": null
+        }
+      ]
+    },
+    {
+      "log": "quiet-input-rerun.log",
+      "logSha256": "ac08a33285d496131d3c5702b23ec3680bcd4bfe710df9c7a6254ef4b27b2d33",
+      "html": "published.html",
+      "htmlSha256": "719a535fe3905275c381737acb7fc3e80ee1ab4378c0d5736a4595096b16c03c",
+      "complete": true,
+      "pass": true,
+      "counts": {
+        "pass": 2,
+        "total": 2,
+        "skip": 0,
+        "fail": 0
+      },
+      "tests": [
+        {
+          "status": "PASS",
+          "name": "god-mode-codes",
+          "seconds": 10.6,
+          "detail": null
+        },
+        {
+          "status": "PASS",
+          "name": "player-jump",
+          "seconds": 26.2,
+          "detail": null
+        }
+      ]
+    }
+  ]
+}

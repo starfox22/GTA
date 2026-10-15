@@ -1,0 +1,14 @@
+{
+  "source": "/workspace/GTA/tools/dev.mjs",
+  "node": "24.19.0",
+  "blockedMilliseconds": 7500,
+  "first": {
+    "commands": 1,
+    "connections": 1
+  },
+  "second": {
+    "commands": 2,
+    "connections": 2
+  },
+  "pass": true
+}

@@ -9,15 +9,16 @@
      * draw the flat version for the 2D view and the maps, and airfields3d.js
      * builds the lit 3D version (markings in a shader, lights in the glow field).
      *
-     * The lengths come from the aircraft (aviation.js, AIRFRAME PERFORMANCE,
-     * measured headless at the real scale): each runway is 1.3-1.5 times the
-     * longest take-off roll of what uses it, with a blast pad at each end.
+     * The lengths suit the aircraft (aviation-flight.js; production model
+     * measured at 60/120 Hz): there is room for rotation and initial climb,
+     * with a blast pad at each end. Taxi in from the threshold-side connector.
      *   SOUTHPORT 18/36   460 m x 29.5 m  GA strip for the Serrano courier
-     *                                     (roll 230-300 m). Most of it runs out
+     *                                     (roll about 290 m), plus the SKYLARK
+     *                                     trainer (about 325 m). Most runs out
      *                                     over the sea on a reclaimed pier.
      *   OCEANVIEW 09/27  1280 m x 30 m    the regional runway for the Aurelia jet
-     *                                     (roll 500-600 m) and the Meridian
-     *                                     airliner (800-950 m). The island only
+     *                                     (roll about 620 m) and the Meridian
+     *                                     airliner (about 1,055 m). The island only
      *                                     has room for 550 m, so the runway runs
      *                                     west over a reclaimed pier into the
      *                                     open sea, Kai Tak style.
@@ -134,12 +135,12 @@
     const TAXIWAYS = [
       // Southport: a parallel taxiway down the pier and four connectors.
       { airport: 'SOUTHPORT', from: [700, 4300], to: [700, 7940], width: 80 },
-      { airport: 'SOUTHPORT', from: [740, 4340], to: [536, 4340], width: 80, hold: 140 },
-      { airport: 'SOUTHPORT', from: [1060, 5330], to: [740, 5330], width: 80 },
+      { airport: 'SOUTHPORT', from: [740, 4380], to: [418, 4380], width: 80, hold: 140 },
+      ...[[800, 4650], [800, 4930], [1000, 5420]].map(([x, y]) => ({ airport: 'SOUTHPORT', from: [x, y], to: [700, y], width: 80 })),
       { airport: 'SOUTHPORT', from: [740, 6120], to: [536, 6120], width: 80, hold: 140 },
       { airport: 'SOUTHPORT', from: [740, 7900], to: [536, 7900], width: 80, hold: 140 },
       // Oceanview: stubs from the apron down to the runway.
-      ...[3750, 4500, 5260, 5910].map((x) => ({ airport: 'OCEANVIEW', from: [x, 9400], to: [x, 9764], width: 90, hold: 214 })),
+      ...[3750, 4500, 5260, 5910].map((x) => ({ airport: 'OCEANVIEW', from: [x, 9360], to: [x, 9884], width: 90, hold: 254 })),
       // The turn pad at the west end.
       { airport: 'OCEANVIEW', from: [-4040, 9690], to: [-3780, 9690], width: 150 },
     ];
@@ -251,7 +252,10 @@
         taxiways: TAXIWAYS.length,
         aircraft: vehicles
           .filter((c) => c.type === 'plane')
-          .map((c) => ({ airframe: c.airframe || 'courier', x: Math.round(c.x), y: Math.round(c.y), district: districtAt(c.x, c.y), hp: Math.round(c.hp) })),
+          .map((c) => ({ id: c.id, airframe: c.airframe || 'courier', stand: c.parkingStand || null,
+            x: Math.round(c.x), y: Math.round(c.y), a: +c.a.toFixed(3), district: districtAt(c.x, c.y), hp: Math.round(c.hp),
+            clear: aircraftClear(c), dry: corners(vehicleShape(c)).every((p) => landAt(p.x, p.y)),
+          })),
       };
     }
     /* ---- Flat ground (2D view, the maps, the baked 3D ground sheets) ---------------------- */

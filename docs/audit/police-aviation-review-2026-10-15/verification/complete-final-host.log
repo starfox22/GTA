@@ -1,0 +1,15 @@
+Scripts "build/three.js" and "build/three.min.js" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation
+PASS police-livery-projection 10839 824ms
+PASS approved-suv-rigs 905 18074ms
+PASS vehicle-source-fidelity 118 164ms
+PASS approved-motorcycle-rigs 167 200ms
+PASS sports-vehicle-assets 1228 750ms
+PASS hotrod-vehicle-assets 137 247ms
+PASS hotrod-vehicle-rig 71 2099ms
+PASS jet-assets-rig 26 744ms
+PASS jet-assets-lifecycle 43 669ms
+PASS aircraft-audio 60 44ms
+PASS aircraft-propeller-sync 22 138ms
+PASS aircraft-flight-model 4149 2070ms
+PASS terrain-rock-contact 18 28346ms
+PASS car-cabin-view-distance 165 104ms

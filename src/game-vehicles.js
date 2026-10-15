@@ -32,7 +32,8 @@
       plane: {
         name: 'SERRANO C200 COURIER',
         l: 112,
-        w: 100,
+        w: 104,
+        height: 36,
         // Only the engine note reads these: the flight model is aviation.js.
         max: 500 * KMH,
         acc: 0.3 * GRAVITY,

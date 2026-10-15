@@ -1,0 +1,5 @@
+AssertionError [ERR_ASSERTION]: climb at 1/30: stopped (stuck) at 0.694 of the course
+    at Object.assert (file:///tmp/GTA-hill-index-runtime.mjs:12:51)
+    at default (file:///workspace/GTA/tools/tests/hillclimb-physics.mjs:21:9)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///tmp/GTA-hill-index-runtime.mjs:18:2

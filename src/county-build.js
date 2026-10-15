@@ -342,7 +342,7 @@
       makeCar('helicopter', 3690, 8830, 0);
       makeCar('supercar', 4200, 8740, 0);
       makeCar('bus', 4400, 8760, 0);
-      makeCar('plane', FLIGHT.parked.x, FLIGHT.parked.y, 0);
+      makeCar('plane', FLIGHT.parked.x, FLIGHT.parked.y, FLIGHT.parked.a);
       populateMilitary();
       spawnTrailVehicles();
       populateOffroadClub();

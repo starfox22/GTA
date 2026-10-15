@@ -17,7 +17,9 @@ October 15: the base Chevette Z06 uses the separate
 [licensed C8 pack](vehicles-and-driving-models-sports.md). SUV source shading is
 covered by [source fidelity](vehicles-and-driving-source-fidelity.md), and real
 openings by [front doors](vehicles-and-driving-doors.md). The carbon-aero Chevette
-SE keeps its existing body and equipment.
+SE keeps its existing body and equipment. The HELLFIRE CUSTOM / `hotrod` now uses
+the separate [licensed Coupe '33 pack](vehicles-and-driving-models-hotrod.md),
+with its stock hood, native cabin and source chrome blade wheels.
 
 ## Cars (ASSET CARS, vehicle-assets3d.js)
 
@@ -25,9 +27,10 @@ SE keeps its existing body and equipment.
   (Daniel Zhabotinsky's series; credits in THIRD_PARTY_CREDITS.txt), converted offline by `tools/vehicle_models.py
   SRC_DIR` into assets/vehicle-models.bin + vehicle-atlas.webp (4096x2048 since round three, one trim material, two wheel materials).
   `makeVehicle` takes `makeAssetCar` when `vehicleAssetModel(type)` has one, else the procedural body (a build without
-  the block falls back by itself). Rally (its livery) and hotrod (the HELLFIRE's flames and blower; the Coupe '33 was
-  tried) stay procedural, as do every other type; only replace a type where the model clearly looks better and loses
-  nothing. Mirrors that carry the original license.txt are fetched under SRC_DIR/mirror/.
+  the block falls back by itself). Rally retains its procedural livery/body. The hotrod uses the separate
+  `coupe33_zhab` source pack through the same builder; its original flame/blower body is the asset-disabled
+  fallback. See [hotrod source and integration](vehicles-and-driving-models-hotrod.md) for its distinct PBR/LOD
+  contracts. Mirrors for the original pack carry asset-specific license.txt files under SRC_DIR/mirror/.
 - Decimation knobs per model: `keep` shares, `borderCos` (how far a seam or border run may bend and still collapse:
   0.985 by default, 0.7-0.85 for the muscle car, the bike and the boat), `minPiece` (pieces smaller than this many
   metres left out: bolts and clips), `texCap` (the largest atlas tile, 512 px by default).
@@ -39,7 +42,7 @@ SE keeps its existing body and equipment.
   line, screen and rear glass feet and tops, widths); the seat fit starts 1.15 m behind the screen's foot
   (`carSeatPlan` `own.hipX`). A changed model re-records DRIVEBY_SEATS (cabin-headroom test) and CAR_GLASS_BANDS
   (the model's numbers at the type's length). Fronts are fixed per model (`front`), checked in a side view.
-- Budget: decimated (quadric half-edge collapse, seams and creases kept) to the procedural bodies' triangles or
+- Original pack budget: decimated (quadric half-edge collapse, seams and creases kept) to the procedural bodies' triangles or
   fewer (supercar +7 %); draw calls the same (13-14 pristine). `assetCars()` reports, `assetCarsOn(false)` builds
   models made from then on procedurally (before/after rows).
 
@@ -59,21 +62,10 @@ SE keeps its existing body and equipment.
 - Wipers: the truck types (box truck, bus, ambulance, pickup; Vinny's cab) take the procedural pair (`addWipers`) at the
   foot of the measured windscreen, arms capped to the glass's height (`reach`); swept in the rain as before.
 
-## Police: the Crown Vic body (POLICE ASSET BODY, police3d-asset.js)
+## Police
 
-- `policeLookChoice` / `pickPoliceLook` still choose body and livery; only the 'crownvic' body is drawn from the
-  80 American Police Sedan (`look.asset`, impostor key `...:asset`), in every livery (bw, modern, sheriff, unmarked).
-- The livery canvas is the procedural crownvic's (`policeLiveryTexture`); the model's shell gets UVs in its frame by
-  projecting each vertex on the crownvic's section ring scaled to the model's own section (`section`: bottom, top,
-  half width at 41 stations, measured by the converter). Pillars and roof take the roof / pillar swatches (triangles
-  unshared where they meet), the hood its swatch. A new police livery needs nothing more.
-- The bar's lenses (`nodeRoles` 'beacon') are the light mesh: eight segments across the car on channels 0-4 (red left,
-  white takedowns, blue right) with impostor beacons and halo anchors; the housing ('lightbar') joins the trim. The rear
-  window bar (5/6) as the procedural; unmarked cars drop the bar and get the dash, grille and deck lights.
-- Roof, trunk and fender numbers sit on the model's surfaces (`kit.roofDecal`, `trunkDecal`, `sideDecal`, read by
-  `policeDecalGeometry`). Rear badges, mirrors, push bar and wheels are the model's own; no running-light strips.
-- 11 draws pristine (21 procedural), 3 shadow casters (11), ~10k triangles. DRIVEBY_SEATS `'law:crownvic'` is the
-  model's seat (re-record with `test.mjs --render cabin-headroom` after a model change).
+Downloaded body roles, affine livery projection, equipment and source-owned markings:
+[police models](vehicles-and-driving-models-police.md).
 
 ## Motorbikes
 
@@ -99,6 +91,5 @@ single-draw tyre/hub finish, steering and far LOD: [military models](vehicles-an
 - Helicopters: the MD-500 Defender (camouflage, a gun pod, no door gunners: not the Black Hawk the military type and
   MOUNTED_GUNS are). The Bell 429 replaces no look: it is the extra SKYRANGER 429 civil helicopter
   (vehicles-and-driving-models-aircraft.md).
-- Hot rod (the Coupe '33 lacks the HELLFIRE's flames and blower), the private bicycle (the Old Bicycle's thin frame and
-  grey tyres read weaker; the converter's `crank` role and the runtime's crank are ready for another model), the
-  fishing boat (no type; untextured), the NR750 and the Draco-only motorbikes (see Motorbikes).
+- The private bicycle (the Old Bicycle's thin frame and grey tyres read weaker; the converter's `crank` role and the
+  runtime's crank are ready for another model), the fishing boat (no type; untextured), the NR750 and the Draco-only motorbikes (see Motorbikes).

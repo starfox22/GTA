@@ -1,0 +1,17 @@
+[
+  {
+    "corruption": "zero-normal",
+    "rejected": true,
+    "reason": "jet.aileronL: zero packed source normal"
+  },
+  {
+    "corruption": "changed-UV",
+    "rejected": true,
+    "reason": "jet.aileronL: original source UV changed/clipped"
+  },
+  {
+    "corruption": "reversed-winding",
+    "rejected": true,
+    "reason": "jet.aileronL: source position/corner order changed"
+  }
+]

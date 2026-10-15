@@ -1,0 +1,137 @@
+{
+  "packSha256": "a8f911de36c3d7a8a97b4b0a0ee0ef855fed15ee9415d0f505edbdd7967b092b",
+  "models": {
+    "jet": {
+      "sourceTriangles": 20131,
+      "reconstructedCloseTriangles": 20131,
+      "closeVerticesChecked": 13932,
+      "maxPositionErrorMetres": 0.00011918207039762763,
+      "minimumAuthoredNormalDot": 0.9999999996940054,
+      "maxOriginalUvError": 7.628897030098614e-06,
+      "zeroSourceNormals": 0,
+      "zeroPackedNormals": 0,
+      "sourceDoubleSided": true,
+      "parts": {
+        "aileronL": {
+          "sourceTriangles": 131,
+          "packedVertices": 103,
+          "maxPositionErrorMetres": 0.00011732854123991387,
+          "minimumAuthoredNormalDot": 0.9999999997664808,
+          "maxOriginalUvError": 7.5949344519980755e-06
+        },
+        "aileronR": {
+          "sourceTriangles": 172,
+          "packedVertices": 138,
+          "maxPositionErrorMetres": 0.00011918207039762763,
+          "minimumAuthoredNormalDot": 0.9999999997981794,
+          "maxOriginalUvError": 7.628086203137485e-06
+        },
+        "body": {
+          "sourceTriangles": 14699,
+          "packedVertices": 9670,
+          "maxPositionErrorMetres": 0.00011917995043653207,
+          "minimumAuthoredNormalDot": 0.9999999997014952,
+          "maxOriginalUvError": 7.628897030098614e-06
+        },
+        "elevatorL": {
+          "sourceTriangles": 509,
+          "packedVertices": 325,
+          "maxPositionErrorMetres": 0.00011847461769232126,
+          "minimumAuthoredNormalDot": 0.9999999998023307,
+          "maxOriginalUvError": 7.6281787456666805e-06
+        },
+        "elevatorR": {
+          "sourceTriangles": 527,
+          "packedVertices": 336,
+          "maxPositionErrorMetres": 0.00011890549906912184,
+          "minimumAuthoredNormalDot": 0.9999999997125806,
+          "maxOriginalUvError": 7.617692793893127e-06
+        },
+        "flapL": {
+          "sourceTriangles": 289,
+          "packedVertices": 230,
+          "maxPositionErrorMetres": 0.00011838693150645341,
+          "minimumAuthoredNormalDot": 0.9999999996940054,
+          "maxOriginalUvError": 7.610029956695019e-06
+        },
+        "flapR": {
+          "sourceTriangles": 370,
+          "packedVertices": 276,
+          "maxPositionErrorMetres": 0.00011755412378189334,
+          "minimumAuthoredNormalDot": 0.9999999997166347,
+          "maxOriginalUvError": 7.591277481400205e-06
+        },
+        "gearL": {
+          "sourceTriangles": 1131,
+          "packedVertices": 959,
+          "maxPositionErrorMetres": 0.00011901940487901719,
+          "minimumAuthoredNormalDot": 0.999999999738947,
+          "maxOriginalUvError": 7.619395166545695e-06
+        },
+        "gearN": {
+          "sourceTriangles": 1127,
+          "packedVertices": 957,
+          "maxPositionErrorMetres": 0.0001188728608196854,
+          "minimumAuthoredNormalDot": 0.9999999997183802,
+          "maxOriginalUvError": 7.627874742399676e-06
+        },
+        "gearR": {
+          "sourceTriangles": 855,
+          "packedVertices": 700,
+          "maxPositionErrorMetres": 0.00011802789136727831,
+          "minimumAuthoredNormalDot": 0.9999999997407841,
+          "maxOriginalUvError": 7.623142114526749e-06
+        },
+        "rudder": {
+          "sourceTriangles": 321,
+          "packedVertices": 238,
+          "maxPositionErrorMetres": 0.00011837109625911779,
+          "minimumAuthoredNormalDot": 0.9999999997641911,
+          "maxOriginalUvError": 7.607957414057509e-06
+        }
+      }
+    },
+    "airliner": {
+      "sourceTriangles": 162629,
+      "reconstructedCloseTriangles": 162629,
+      "closeVerticesChecked": 187795,
+      "maxPositionErrorMetres": 0.00029933726774089564,
+      "minimumAuthoredNormalDot": 0.9999999996679404,
+      "maxOriginalUvError": 0.0,
+      "zeroSourceNormals": 0,
+      "zeroPackedNormals": 0,
+      "sourceDoubleSided": true,
+      "parts": {
+        "body": {
+          "sourceTriangles": 36641,
+          "packedVertices": 28621,
+          "maxPositionErrorMetres": 0.00029933356825750934,
+          "minimumAuthoredNormalDot": 0.9999999996807228,
+          "maxOriginalUvError": 0.0
+        },
+        "trim": {
+          "sourceTriangles": 43674,
+          "packedVertices": 37928,
+          "maxPositionErrorMetres": 0.0002993353678490962,
+          "minimumAuthoredNormalDot": 0.9999999996679404,
+          "maxOriginalUvError": 0.0
+        },
+        "glass": {
+          "sourceTriangles": 5668,
+          "packedVertices": 5750,
+          "maxPositionErrorMetres": 0.00029915917225054045,
+          "minimumAuthoredNormalDot": 0.9999999997186065,
+          "maxOriginalUvError": 0.0
+        },
+        "cabin": {
+          "sourceTriangles": 76646,
+          "packedVertices": 115496,
+          "maxPositionErrorMetres": 0.00029933726774089564,
+          "minimumAuthoredNormalDot": 0.999999999749659,
+          "maxOriginalUvError": 0.0
+        }
+      }
+    }
+  },
+  "method": "Independent DECVM001 decode and original-source triangle/corner reconstruction; converter gather used only as an additional ownership check"
+}

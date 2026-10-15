@@ -637,5 +637,47 @@
     "file": "assets/sports-vehicle-emissive-low.webp",
     "mime": "image/webp",
     "original": "assets/sports-vehicle-emissive-low.webp"
+  },
+  {
+    "id": "media-hotrod-vehicle-models",
+    "file": "assets/hotrod-vehicle-models.bin",
+    "mime": "application/octet-stream",
+    "original": "assets/hotrod-vehicle-models.bin"
+  },
+  {
+    "id": "media-hotrod-vehicle-albedo",
+    "file": "assets/hotrod-vehicle-albedo.webp",
+    "mime": "image/webp",
+    "original": "assets/hotrod-vehicle-albedo.webp"
+  },
+  {
+    "id": "media-hotrod-vehicle-albedo-low",
+    "file": "assets/hotrod-vehicle-albedo-low.webp",
+    "mime": "image/webp",
+    "original": "assets/hotrod-vehicle-albedo-low.webp"
+  },
+  {
+    "id": "media-hotrod-vehicle-orm",
+    "file": "assets/hotrod-vehicle-orm.webp",
+    "mime": "image/webp",
+    "original": "assets/hotrod-vehicle-orm.webp"
+  },
+  {
+    "id": "media-hotrod-vehicle-orm-low",
+    "file": "assets/hotrod-vehicle-orm-low.webp",
+    "mime": "image/webp",
+    "original": "assets/hotrod-vehicle-orm-low.webp"
+  },
+  {
+    "id": "media-jet-models",
+    "file": "assets/jet-models.bin",
+    "mime": "application/octet-stream",
+    "original": "assets/jet-models.bin"
+  },
+  {
+    "id": "media-jet-skin",
+    "file": "assets/jet-skin.webp",
+    "mime": "image/webp",
+    "original": "assets/jet-skin.webp"
   }
 ]

@@ -1,0 +1,6 @@
+{
+  "builder": "/workspace/GTA/tools/build.py",
+  "builderSha256": "5eac6fa9c1fd1cae51b75f67dceb77ced8a653aef9887f9297a8d191b7f562cb",
+  "checks": 23,
+  "pass": true
+}

@@ -47,6 +47,7 @@ Placeholders filled after the includes are expanded (src/shell.html):
 import argparse
 import base64
 import hashlib
+import html
 import json
 import os
 import re
@@ -133,10 +134,14 @@ def write_media_packs(split_dir, entries):
             order.append(name)
         packs[name].append(chunk)
         sizes[name] += len(chunk)
+    references = []
     for name in order:
-        with open(os.path.join(split_dir, 'media', name), 'w', encoding='ascii') as fh:
-            fh.write(''.join(packs[name]) + '})((window.DEAD_END_CITY_MEDIA = window.DEAD_END_CITY_MEDIA || {}));\n')
-    return [f'<script src="media/{name}"></script>\n' for name in order]
+        payload = (''.join(packs[name]) + '})((window.DEAD_END_CITY_MEDIA = window.DEAD_END_CITY_MEDIA || {}));\n').encode('ascii')
+        with open(os.path.join(split_dir, 'media', name), 'wb') as fh:
+            fh.write(payload)
+        sha = hashlib.sha256(payload).hexdigest()
+        references.append(f'<script src="media/{name}?sha={sha}"></script>\n')
+    return references
 
 
 def media_blocks(split_dir=None):
@@ -158,11 +163,13 @@ def media_blocks(split_dir=None):
             os.makedirs(os.path.join(split_dir, 'media'), exist_ok=True)
             with open(os.path.join(ROOT, entry['file']), 'rb') as src, \
                     open(os.path.join(split_dir, 'media', name), 'wb') as dst:
-                dst.write(src.read())
+                raw = src.read()
+                dst.write(raw)
+            sha = hashlib.sha256(raw).hexdigest()
             parts.append(
                 f"<!-- STREAMED MEDIA: {entry['original']} is served from media/{name} -->\n"
                 f"<script type=\"application/octet-stream\" id=\"{entry['id']}\" data-mime=\"{entry['mime']}\" "
-                f"data-src=\"media/{name}\"></script>\n"
+                f"data-src=\"media/{name}?sha={sha}\"></script>\n"
             )
             continue
         if split_dir:
@@ -188,6 +195,7 @@ def build(out_path, split_dir=None):
         '<!-- @include-media -->': media_blocks(split_dir),
         '<!-- @include-asset-loader -->': read('src/asset-loader.js').rstrip('\n'),
         '<!-- @include-credits -->': read('docs/THIRD_PARTY_CREDITS.txt').rstrip('\n'),
+        '<!-- @include-readable-credits -->': html.escape(read('docs/THIRD_PARTY_CREDITS.txt').rstrip('\n')),
     }
     for key, value in replacements.items():
         if key not in shell:

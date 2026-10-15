@@ -1,0 +1,16 @@
+{
+  "sourceSHA256": "4da2215fa7b57af592a19bedc0f53969c9c86ce311e480224187502f22234981",
+  "packSHA256": "5bb5ff8daede71430712c699834a9d7b0d508b6e2a624e5666586ee485dbacef",
+  "activeSourceTriangles": 20856,
+  "nearVerticesChecked": 19669,
+  "maxPositionErrorMetres": 3.842239345659367e-05,
+  "minimumAuthoredNormalDot": 0.9999999997016354,
+  "maxRawUVError": 1.1920928955078125e-06,
+  "sourceFrame": "GLTF +X ahead, +Y up, +Z right; one uniform length fit and ground/centre translation",
+  "nearTriangles": 20856,
+  "farTriangles": 5202,
+  "normals": "Every close vertex matches an original authored position + raw UV + split normal; no smoothing/welding",
+  "nativeCabinRetained": true,
+  "sourceHasSeparateDoorNodes": false,
+  "sourceHasSeparateCalipers": false
+}

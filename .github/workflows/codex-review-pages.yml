@@ -31,6 +31,9 @@ jobs:
       - name: Build the browser game
         run: python3 tools/build.py --split-media dist/pages
 
+      - name: Build the screenshot and sound gallery
+        run: python3 tools/build-review-gallery.py dist/pages
+
       - name: Check Pages configuration
         uses: actions/configure-pages@v5
 

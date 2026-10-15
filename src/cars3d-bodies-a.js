@@ -454,6 +454,7 @@
             plateLight(k, 0.6);
           },
         }),
+        // The shipped hotrod uses the licensed Coupe '33 pack when present; this remains its procedural fallback.
         /* HELLFIRE CUSTOM: a chopped '32 three-window coupe: the blown V8 through
            the hood, zoomie headers down the sides, a chrome grille shell and
            bucket headlamps, cycle-winged front wheels on a dropped axle, fat

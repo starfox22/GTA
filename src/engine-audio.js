@@ -25,8 +25,9 @@
      *   ROAD   tyre roar (filtered noise) rising with speed, gravel crunch off
      *          the road (the tank-track recording, gentler), wind on open
      *          vehicles at speed; tank tracks clank with speed.
-     *   AIR    the turboprop and the jets are synthesised from spool: turbine
-     *          whine, the fan's roar and hiss, the propeller's blade buzz. The
+     *   AIR    aircraft-audio.js assigns the actual airframe's piston, turboprop
+     *          or turbofan voice: combustion pulses, blade passing, turbine
+     *          whine and fan roar follow the engine's actual power. The
      *          helicopter keeps its recorded rotor loop (audio.js).
      *
      * TRAFFIC: the nearest four driven vehicles within earshot get one cheap
@@ -109,8 +110,7 @@
       engineTrace = [];
     function engineKind(car) {
       if (!car) return null;
-      // A plane without an airframe is the courier (makeCar's default plane).
-      if (car.type === 'plane') return (car.airframe || 'courier') === 'courier' ? 'turboprop' : 'turbofan';
+      if (car.type === 'plane') return aircraftEngineProfile(car).kind;
       if (car.type === 'helicopter' || car.type === 'bicycle') return null;
       return ENGINE_OF_TYPE[car.type] ? ENGINE_OF_TYPE[car.type][0] : 'compact';
     }
@@ -183,7 +183,8 @@
         wind: noiseLayer('highpass', 1800, 0.5),
         gravel: null,
         tracks: null,
-        jet: null,
+        aircraft: [],
+        aircraftClock: 0,
         traffic: [],
         trafficClock: 0,
         traceClock: 0,
@@ -314,77 +315,7 @@
       source.connect(filter).connect(gain).connect(engineAudio.out);
       source.start(now);
     }
-    // Jet and turboprop voices, made the first time the player flies.
-    function buildJetVoice(a) {
-      if (a.jet) return a.jet;
-      const roar = audio.createBufferSource(),
-        roarFilter = audio.createBiquadFilter(),
-        roarGain = audio.createGain(),
-        hiss = audio.createBufferSource(),
-        hissFilter = audio.createBiquadFilter(),
-        hissGain = audio.createGain(),
-        whine = audio.createOscillator(),
-        whine2 = audio.createOscillator(),
-        whineGain = audio.createGain(),
-        prop = audio.createOscillator(),
-        propFilter = audio.createBiquadFilter(),
-        propGain = audio.createGain(),
-        wobble = audio.createOscillator(),
-        wobbleDepth = audio.createGain();
-      roar.buffer = hiss.buffer = a.noise;
-      roar.loop = hiss.loop = true;
-      roarFilter.type = 'lowpass';
-      roarFilter.frequency.value = 400;
-      hissFilter.type = 'bandpass';
-      hissFilter.frequency.value = 3500;
-      hissFilter.Q.value = 0.6;
-      whine.type = 'sine';
-      whine2.type = 'triangle';
-      prop.type = 'sawtooth';
-      propFilter.type = 'lowpass';
-      propFilter.frequency.value = 700;
-      propFilter.Q.value = 1.2;
-      wobble.frequency.value = 1.3;
-      wobbleDepth.gain.value = 0;
-      for (const g of [roarGain, hissGain, whineGain, propGain]) g.gain.value = 0;
-      roar.connect(roarFilter).connect(roarGain).connect(engineBus);
-      hiss.connect(hissFilter).connect(hissGain).connect(engineBus);
-      whine.connect(whineGain);
-      whine2.connect(whineGain);
-      whineGain.connect(engineBus);
-      prop.connect(propFilter).connect(propGain).connect(engineBus);
-      // The blades beat slowly against the airframe: a gentle wobble on the buzz.
-      wobble.connect(wobbleDepth).connect(propGain.gain);
-      roar.start(0, 0.3);
-      hiss.start(0, 1.1);
-      whine.start();
-      whine2.start();
-      prop.start();
-      wobble.start();
-      return (a.jet = { roarFilter, roarGain, hissFilter, hissGain, whine, whine2, whineGain, prop, propGain, wobbleDepth });
-    }
-    function updateJetVoice(a, car, kind, on, now) {
-      if (!a.jet && !(on && kind)) return;
-      const j = buildJetVoice(a),
-        aircraft = on && (kind === 'turbofan' || kind === 'turboprop'),
-        power = aircraft ? clamp(car.power ?? car.throttle ?? 0, 0, 1) : 0,
-        // Turbine speed: about 55 % at idle, 100 % at full power.
-        spool = aircraft && car.hp > 0 ? 0.55 + 0.45 * power : 0,
-        fan = kind === 'turbofan',
-        big = car?.airframe === 'airliner' ? 0.8 : 1;
-      glideParam(j.whine.frequency, (fan ? 2200 : 1500) * big * (0.6 + spool), now, 0.3);
-      glideParam(j.whine2.frequency, (fan ? 3350 : 2350) * big * (0.6 + spool), now, 0.3);
-      glideParam(j.whineGain.gain, spool ? (fan ? 0.018 : 0.012) * (0.5 + spool) : 0, now, 0.3);
-      glideParam(j.roarFilter.frequency, 250 + power * (fan ? 1400 : 700), now, 0.4);
-      glideParam(j.roarGain.gain, spool ? (fan ? 0.1 : 0.05) * (0.25 + power) * big * 1.2 : 0, now, 0.4);
-      glideParam(j.hissFilter.frequency, 2500 + spool * 2500, now, 0.4);
-      glideParam(j.hissGain.gain, spool ? (fan ? 0.05 : 0.025) * (0.3 + power) : 0, now, 0.4);
-      // Turboprop: four blades at 1200-1700 rpm (80-113 Hz blade passing).
-      const propeller = spool && !fan ? 0.07 + 0.09 * power : 0;
-      glideParam(j.prop.frequency, (4 * (1200 + 500 * power)) / 60, now, 0.5);
-      glideParam(j.propGain.gain, propeller, now, 0.3);
-      glideParam(j.wobbleDepth.gain, propeller * 0.25, now, 0.3);
-    }
+    // @include src/aircraft-audio.js
     /* Revs of a traffic vehicle guessed from its speed through a simple gearbox. */
     function trafficRpm(c, set, speed, accelerating) {
       if (speed <= 6) return set.idle;
@@ -506,6 +437,9 @@
           else a.startDelay = 0;
         }
       }
+      // Aircraft must still fade when entering a road vehicle whose recorded
+      // buffers have not finished decoding; that path may return early below.
+      updateAircraftAudio(a, car, on, now, dt);
       if (set && !engineUseSet(a, kind)) return;
       const tuning = car ? ENGINE_OF_TYPE[car.type] || ['compact', 1, 1] : ['compact', 1, 1],
         spec = car ? vehicleSpec(car) : null,
@@ -548,11 +482,12 @@
         }
       }
       // Tyres on the road, gravel off it, wind on open vehicles, tank tracks.
-      const road = car && alive && !set?.boat && !isAircraft(car) && car.type !== 'helicopter' ? Math.abs(along) : 0,
-        offRoad = road > 5 && !onRoad(car.x, car.y),
+      const runwayRoll = car?.type === 'plane' && alive && (car.altitude || 0) <= terrainHeight(car.x, car.y) + 0.5 && (car.gearPos ?? 1) > 0.85,
+        road = runwayRoll ? Math.abs(along) : car && alive && !set?.boat && !isAircraft(car) && car.type !== 'helicopter' ? Math.abs(along) : 0,
+        offRoad = road > 5 && !runwayRoll && !onRoad(car.x, car.y),
         open = car && (spec?.bike || spec?.bicycle || spec?.jetski || car.type === 'roadster' || set?.boat),
         roll = clamp(road / 420, 0, 1);
-      glideParam(a.road.gain.gain, on ? (car?.type === 'tank' ? 0 : 0.11 * Math.pow(roll, 1.3) * (offRoad ? 1.5 : 1)) : 0, now, 0.15);
+      glideParam(a.road.gain.gain, on ? (car?.type === 'tank' ? 0 : (runwayRoll ? 0.065 : 0.11) * Math.pow(roll, 1.3) * (offRoad ? 1.5 : 1)) : 0, now, 0.15);
       glideParam(a.road.filter.frequency, (offRoad ? 220 : 320) + road * 1.3, now, 0.2);
       const air = car && on ? clamp(Math.abs(car.speed || along) / 480, 0, 1) : 0;
       glideParam(a.wind.gain.gain, on && car && car.type !== 'helicopter' ? air * air * (open ? 0.09 : 0.025) : 0, now, 0.3);
@@ -571,7 +506,6 @@
         glideParam(a.gravel.gain.gain, on ? crunch : 0, now, 0.15);
         glideParam(a.gravel.source.playbackRate, tank ? 0.75 + clamp(road / trackTop, 0, 1) * 0.5 : 0.9 + roll * 0.4, now, 0.2);
       }
-      updateJetVoice(a, car, kind, on && alive, now);
       updateTrafficEngines(a, on, now, dt);
       // A short trace of the player's engine for DeadEndCity.engineSound().
       a.traceClock -= dt;
@@ -609,7 +543,7 @@
         road: +a.road.gain.gain.value.toFixed(3),
         wind: +a.wind.gain.gain.value.toFixed(3),
         tracks: a.gravel ? +a.gravel.gain.gain.value.toFixed(3) : 0,
-        jet: a.jet ? { whine: Math.round(a.jet.whine.frequency.value), whineGain: +a.jet.whineGain.gain.value.toFixed(3), roar: +a.jet.roarGain.gain.value.toFixed(3), prop: +a.jet.propGain.gain.value.toFixed(3) } : null,
+        aircraft: a.aircraft.map(aircraftVoiceReport),
         // Driven vehicles within earshot (the nearest four get a voice).
         nearbyDriven: vehicles.filter((c) => c !== player.car && c.hp > 0 && (c.ai || c.cop) && distanceBetween(c, player) < TRAFFIC_REACH).length,
         traffic: a.traffic.map((v) => ({ type: v.car.type, loop: v.name, distance: Math.round(distanceBetween(v.car, player)), rpm: Math.round(v.rpm), rate: +v.rate.toFixed(3), level: +v.level.toFixed(3) })),

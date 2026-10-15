@@ -1,0 +1,2 @@
+4 model families; four-stroke/blade rates; actual power/spool; cutoff/mute; distance/elevation/occlusion; camera pan/Doppler; 4 reusable voices
+PASS aircraft-audio: 60 host assertions

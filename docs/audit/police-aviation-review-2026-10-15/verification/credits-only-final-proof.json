@@ -1,0 +1,12 @@
+{
+  "visualCandidateHtmlSha256": "06b27514b0e368013a6fbdd80356e1c81f431849d4b382106b39c7dd595dd64f",
+  "finalHtmlSha256": "2ece3e5b11299c2679930abf384195c049f6a627b344b7d17736a299e012be8e",
+  "gameJavascriptByteIdentical": true,
+  "changedSourceFiles": [
+    "src/ui/base.css",
+    "src/ui/credits.html"
+  ],
+  "allAssetHashesUnchanged": true,
+  "visibleCreditsMatchFullEmbeddedAttributionText": true,
+  "qualification": "Native model captures use immutable after.html. Final package adds an expandable, escaped full attribution section and corrects the Credits introduction; its JavaScript and every asset are byte-identical."
+}

@@ -149,7 +149,7 @@
           reach = m.dims.w * 1.5,
           // A new vehicle's paint samples source repeat UVs, atlas rectangle, vertex finish and a separate
           // sheriff livery. A shaped door must inherit those just as it inherits the original legacy UVs.
-          inherited = m.approvedAsset ? ['avSourceUv', 'avAtlasRect', 'finish', 'color', 'liveryUv']
+          inherited = m.approvedAsset ? ['avSourceUv', 'avOrmSourceUv', 'avAtlasRect', 'finish', 'color', 'liveryUv']
             .filter(name => probe.geometry.attributes[name]) : [],
           inheritedSizes = Object.fromEntries(inherited.map(name => [name, probe.geometry.attributes[name].itemSize]));
         for (let j = 0; j < NY; j++)

@@ -33,8 +33,15 @@ const embeddedAssetReferences = {
   "sportsVehicleAlbedoLow": "media-sports-vehicle-albedo-low",
   "sportsVehicleOrmLow": "media-sports-vehicle-orm-low",
   "sportsVehicleEmissiveLow": "media-sports-vehicle-emissive-low",
+  "hotrodVehicleModels": "media-hotrod-vehicle-models",
+  "hotrodVehicleAlbedo": "media-hotrod-vehicle-albedo",
+  "hotrodVehicleAlbedoLow": "media-hotrod-vehicle-albedo-low",
+  "hotrodVehicleOrm": "media-hotrod-vehicle-orm",
+  "hotrodVehicleOrmLow": "media-hotrod-vehicle-orm-low",
   "aircraftModels": "media-aircraft-models",
   "aircraftSkin": "media-aircraft-skin",
+  "jetModels": "media-jet-models",
+  "jetSkin": "media-jet-skin",
   "dogModel": "media-dog-model",
   "npcModels": "media-npc-models",
   "npcSkin": "media-npc-skin",
@@ -170,7 +177,7 @@ function embeddedMediaDataUrl(identifier) {
 }
 
 const gameAssets = {};
-for (const name of ['architecture', 'ground', 'weapons', 'harbor', 'arsenal', 'unicorn', 'playerModel', 'playerSkin', 'playerDetail', 'vehicleModels', 'vehicleAtlas', 'approvedVehicleModels', 'approvedVehicleAlbedo', 'approvedVehicleOrm', 'approvedVehicleAlbedoLow', 'approvedVehicleOrmLow', 'sportsVehicleModels', 'sportsVehicleAlbedo', 'sportsVehicleOrm', 'sportsVehicleEmissive', 'sportsVehicleAlbedoLow', 'sportsVehicleOrmLow', 'sportsVehicleEmissiveLow', 'aircraftModels', 'aircraftSkin', 'dogModel', 'npcModels', 'npcSkin', 'wallSkin', 'trailMud']) {
+for (const name of ['architecture', 'ground', 'weapons', 'harbor', 'arsenal', 'unicorn', 'playerModel', 'playerSkin', 'playerDetail', 'vehicleModels', 'vehicleAtlas', 'approvedVehicleModels', 'approvedVehicleAlbedo', 'approvedVehicleOrm', 'approvedVehicleAlbedoLow', 'approvedVehicleOrmLow', 'sportsVehicleModels', 'sportsVehicleAlbedo', 'sportsVehicleOrm', 'sportsVehicleEmissive', 'sportsVehicleAlbedoLow', 'sportsVehicleOrmLow', 'sportsVehicleEmissiveLow', 'hotrodVehicleModels', 'hotrodVehicleAlbedo', 'hotrodVehicleOrm', 'hotrodVehicleAlbedoLow', 'hotrodVehicleOrmLow', 'aircraftModels', 'aircraftSkin', 'jetModels', 'jetSkin', 'dogModel', 'npcModels', 'npcSkin', 'wallSkin', 'trailMud']) {
   gameAssets[name] = embeddedMediaDataUrl(embeddedAssetReferences[name]);
 }
 gameAssets.audio = {};

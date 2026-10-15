@@ -1,0 +1,157 @@
+{
+  "method": "Actual Three.js r160 CPU geometry from shipped buildAircraft, neutral controls and gear down. Native shared primitive geometries match render3d-statics.js. Canvas livery and labels stubbed; sprites, MeshBasicMaterial light lenses and invisible prop blur excluded. Every remaining transformed source position vertex measured.",
+  "models": {
+    "courier": {
+      "min": [
+        -54.900001525878906,
+        0,
+        -51.84080123901367
+      ],
+      "max": [
+        52.10000038146973,
+        35.900001525878906,
+        51.84080123901367
+      ],
+      "dimensions": [
+        107.00000190734863,
+        35.900001525878906,
+        103.68160247802734
+      ],
+      "solidMeshes": 39,
+      "vertices": 11468,
+      "excludedLightOrInvisibleMeshes": 8,
+      "extrema": [
+        {
+          "name": "courier airframe",
+          "vertex": 1816,
+          "point": [
+            -54.900001525878906,
+            34.5,
+            0
+          ]
+        },
+        {
+          "name": "<unnamed>",
+          "vertex": 0,
+          "point": [
+            2.6,
+            0,
+            13.5
+          ]
+        },
+        {
+          "name": "courier airframe",
+          "vertex": 790,
+          "point": [
+            4.497488498687744,
+            19.049999237060547,
+            -51.84080123901367
+          ]
+        },
+        {
+          "name": "<unnamed>",
+          "vertex": 8,
+          "point": [
+            52.10000038146973,
+            11.9,
+            0.5232590436935425
+          ]
+        },
+        {
+          "name": "courier airframe",
+          "vertex": 1764,
+          "point": [
+            -48.70000076293945,
+            35.900001525878906,
+            0
+          ]
+        },
+        {
+          "name": "courier airframe",
+          "vertex": 346,
+          "point": [
+            4.497488498687744,
+            19.049999237060547,
+            51.84080123901367
+          ]
+        }
+      ]
+    },
+    "airliner": {
+      "min": [
+        -115,
+        0,
+        -76.02799987792969
+      ],
+      "max": [
+        107,
+        66.5,
+        76.02799987792969
+      ],
+      "dimensions": [
+        222,
+        66.5,
+        152.05599975585938
+      ],
+      "solidMeshes": 76,
+      "vertices": 13489,
+      "excludedLightOrInvisibleMeshes": 7,
+      "extrema": [
+        {
+          "name": "airliner airframe",
+          "vertex": 1293,
+          "point": [
+            -115,
+            66.5,
+            0.002940000034868717
+          ]
+        },
+        {
+          "name": "<unnamed>",
+          "vertex": 21,
+          "point": [
+            78,
+            0,
+            -2.349999999999999
+          ]
+        },
+        {
+          "name": "airliner airframe",
+          "vertex": 790,
+          "point": [
+            -22.080303192138672,
+            33.65999984741211,
+            -76.02799987792969
+          ]
+        },
+        {
+          "name": "fuselage",
+          "vertex": 0,
+          "point": [
+            107,
+            23.5,
+            0
+          ]
+        },
+        {
+          "name": "airliner airframe",
+          "vertex": 1128,
+          "point": [
+            -101,
+            66.5,
+            0
+          ]
+        },
+        {
+          "name": "airliner airframe",
+          "vertex": 346,
+          "point": [
+            -22.080303192138672,
+            33.65999984741211,
+            76.02799987792969
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "kind": "Review fixture split: move actual WebAudio verification to an unseeded no-render browser; preserve every seeded native capture and original timeout outcome.",
+  "priorRecorderSha256": "2ac7d987c18fcbf796951aa80c11e49f738684572d967ce9d7c6ab9e4cd3d73f",
+  "newVisualRecorderSha256": "612b83bfc16c6b17752b51064cdc6ab8060c3fa6f7ddcc384cfbe12957a0b437",
+  "originalAttempt": "final-seeded-runtime-attempt.json",
+  "separateAudio": "unseeded-aircraft-audio-runtime.json",
+  "gameSourcesChanged": false
+}

@@ -147,29 +147,58 @@
         stone = terrainNoise(x / 4.5, y / 4.5, 77);
       return clamp(smoothStep(-0.15, 0.35, slab) * 0.75 + Math.max(0, stone) * 0.5, 0, 1);
     }
+    // Contact height and normal must describe the same surface. Leaving the
+    // rock relief out of the normal turned a boulder strike into an upward
+    // spring impulse along the underlying downhill plane, launching short
+    // wheelbase SUVs from the graded trail. Sample the relief's local slope
+    // over 0.5 units (6.25 cm); ordinary terrain adds no extra noise samples.
+    function rideRockNormal(x, y, relief, out) {
+      if (relief > 0) {
+        // Central difference: the sample separation is one world unit.
+        out.gx += rideRelief(x + 0.5, y) - rideRelief(x - 0.5, y);
+        out.gy += rideRelief(x, y + 0.5) - rideRelief(x, y - 0.5);
+      }
+      return out;
+    }
+    function rideRockContact(x, y, out) {
+      const relief = rideRelief(x, y);
+      out.h += relief;
+      return rideRockNormal(x, y, relief, out);
+    }
     /* Where a tyre of `radius` rolling along (cos, sin) stands on the ground: the
        middle of its footprint and 0.6 of the radius fore and aft, each lowered by
        the tyre's curve there; the highest wins, with its triangle's gradient. */
     function rideTyreGround(x, y, cos, sin, radius, out) {
       rideGroundAt(x, y, out);
-      out.h += rideRelief(x, y);
+      let contactX = x, contactY = y, relief = rideRelief(x, y);
+      out.h += relief;
       const s = radius * 0.6,
         drop = radius * 0.2;
       rideGroundAt(x + cos * s, y + sin * s, rideSample);
-      rideSample.h += rideRelief(x + cos * s, y + sin * s);
+      const frontRelief = rideRelief(x + cos * s, y + sin * s);
+      rideSample.h += frontRelief;
       if (rideSample.h - drop > out.h) {
         out.h = rideSample.h - drop;
         out.gx = rideSample.gx;
         out.gy = rideSample.gy;
+        contactX = x + cos * s;
+        contactY = y + sin * s;
+        relief = frontRelief;
       }
       rideGroundAt(x - cos * s, y - sin * s, rideSample);
-      rideSample.h += rideRelief(x - cos * s, y - sin * s);
+      const backRelief = rideRelief(x - cos * s, y - sin * s);
+      rideSample.h += backRelief;
       if (rideSample.h - drop > out.h) {
         out.h = rideSample.h - drop;
         out.gx = rideSample.gx;
         out.gy = rideSample.gy;
+        contactX = x - cos * s;
+        contactY = y - sin * s;
+        relief = backRelief;
       }
-      return out;
+      // Only the highest rounded-tyre sample supports the wheel. Its normal
+      // needs four relief samples; the rejected candidates need only height.
+      return rideRockNormal(contactX, contactY, relief, out);
     }
     function rideGrounds(c, m, cos, sin) {
       for (let i = 0; i < 4; i++) {

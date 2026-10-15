@@ -1,0 +1,421 @@
+{
+  "before_commit": "d75acc1ebc3c56a6c62434512d72d2fde632200d",
+  "source_sha256": {
+    "before": {
+      "looks": "f385d30c48847ec531da779fbb05513f2415a7dcfa641607a2304faa492c75ab",
+      "cabins": "5079506f096777cdad043eda10a83063ea1e9f4862f1ffc7986bc3ae5d26217f",
+      "asset": "dc22aac8043dccaba9cc42c282618a91c6e74cbfed7df3ee9ecb9cd0cf04e5da"
+    },
+    "after": {
+      "looks": "f385d30c48847ec531da779fbb05513f2415a7dcfa641607a2304faa492c75ab",
+      "cabins": "4edfb74289e7ec04d7ab4a0ac362e5b95639fcfbd11fdbe1b3fa1f0a6e82f936",
+      "asset": "a8f915f8910ff36619495ac3acc9cc14b9f4d5386fae5d87e8a32009139fd3c5"
+    }
+  },
+  "method": "Packed Float32 positions, production JavaScript UV functions evaluated in Node vm, per-triangle xy-to-UV Jacobian; no browser/GPU. Broad sample uses central half length, |face.nz|>.6, middle half height, outer half half-width. Writing domain additionally requires all three vertices between fixed model.sill and glass.base and beyond .7*glass.halfBase on one side. Condition compares texture pixels to world xy units. Sign checks physical side orientation, not atlas image recognition.",
+  "models": [
+    {
+      "model": "police",
+      "body": "crownvic",
+      "pack": "assets/vehicle-models.bin",
+      "pack_sha256": "63908560d08068f6b6df9859b9bb6040ad38028c2a0d9a0268f7d9cd4c2649ae",
+      "l": 51.0,
+      "w": 18.966,
+      "scale": 10.240963855421686,
+      "maximum_section_bottom_step_metres": 0.536,
+      "minimum_section_height_metres": 0.038000000000000034,
+      "parts": [
+        {
+          "part": "shell",
+          "source_triangles": 1358,
+          "position_sha256": "58e168a309ed2eed0b7cb31599ec6f2a7b0129994c081c84e1dc92245ab42334",
+          "index_sha256": "d4ecf44c6e9f3f6755758734633ebe5c3cdcd7168814eb4f09db9f11dc54b896",
+          "position_unchanged_by_uv_function": true,
+          "before": {
+            "uv_sha256": "0f9059cae0bf92e21cdec106ca9997a1cefdc164a272cd83a0db7e18f863f990",
+            "broad_side_sample": {
+              "triangles": 358,
+              "fold_or_flat_triangles": 8,
+              "fold_or_flat_area_fraction": 0.034985133048238935,
+              "pixel_jacobian_condition": {
+                "p50": 1.6282425594473608,
+                "p95": 7.012007295646349,
+                "max": 62.61422294818131
+              },
+              "vertical_shear_pixels_per_horizontal_pixel": {
+                "p50": 0.15653991014461255,
+                "p95": 1.3234439858570448,
+                "max": 13.441074861870776
+              },
+              "minimum_signed_dv_dy": -0.015568448776406306
+            },
+            "writing_domain": {
+              "triangles": 338,
+              "fold_or_flat_triangles": 8,
+              "fold_or_flat_area_fraction": 0.03999326775530217,
+              "pixel_jacobian_condition": {
+                "p50": 1.6334423349233576,
+                "p95": 7.325677000926704,
+                "max": 62.61422294818131
+              },
+              "vertical_shear_pixels_per_horizontal_pixel": {
+                "p50": 0.17814418608704646,
+                "p95": 1.3963872995043498,
+                "max": 13.441074861870776
+              },
+              "minimum_signed_dv_dy": -0.015568448776406306
+            },
+            "shell_triangles_spanning_v_below_point3_to_above_point8": 0,
+            "evaluated_function_sha256": [
+              "faf744792a70f8fee5ee34bfd750565d4ad32fd48ad01efbc715fa647fefd745",
+              "32ac43906cf15bfd867bb40d7e556f277821bd881235d6cf95fc1399ef150774",
+              "eb1b039bbc670bfd43a9affbcaf22c2e4ca32be277fbc7620dbd199cac375366",
+              "f5c0c5e6ead257c20197f8a68f7ada418822d0028a3bf9eaab046af0d9720c16"
+            ]
+          },
+          "after": {
+            "uv_sha256": "034f65c0a9e45788f9b87f5c6683e55372b8b29d08f7db44bbd4448982a7abff",
+            "broad_side_sample": {
+              "triangles": 358,
+              "fold_or_flat_triangles": 0,
+              "fold_or_flat_area_fraction": 0.0,
+              "pixel_jacobian_condition": {
+                "p50": 1.6998555442993641,
+                "p95": 1.6998908597077518,
+                "max": 1.6999264850483187
+              },
+              "vertical_shear_pixels_per_horizontal_pixel": {
+                "p50": 9.479993167358674e-07,
+                "p95": 2.47861473643226e-05,
+                "max": 0.08288273090063124
+              },
+              "minimum_signed_dv_dy": 0.031283605284460364
+            },
+            "writing_domain": {
+              "triangles": 338,
+              "fold_or_flat_triangles": 0,
+              "fold_or_flat_area_fraction": 0.0,
+              "pixel_jacobian_condition": {
+                "p50": 1.6998558560624,
+                "p95": 1.69989139609901,
+                "max": 1.6999264850483187
+              },
+              "vertical_shear_pixels_per_horizontal_pixel": {
+                "p50": 7.431731935865764e-07,
+                "p95": 1.9187462075653112e-05,
+                "max": 3.878560124815471e-05
+              },
+              "minimum_signed_dv_dy": 0.06665992382663061
+            },
+            "shell_triangles_spanning_v_below_point3_to_above_point8": 0,
+            "evaluated_function_sha256": [
+              "faf744792a70f8fee5ee34bfd750565d4ad32fd48ad01efbc715fa647fefd745",
+              "32ac43906cf15bfd867bb40d7e556f277821bd881235d6cf95fc1399ef150774",
+              "8f69403bcc3ea5d3b28c14f137c270c6742076c8898eb59e5a8932a1555e8904",
+              "70ad619cad3c27848aab1f2816ebf3cc515b69aa4c20ea1935e76e98dcaba2b7"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "model": "police_charger",
+      "body": "charger",
+      "pack": "assets/vehicle-models.bin",
+      "pack_sha256": "63908560d08068f6b6df9859b9bb6040ad38028c2a0d9a0268f7d9cd4c2649ae",
+      "l": 51.0,
+      "w": 18.966,
+      "scale": 10.109018830525272,
+      "maximum_section_bottom_step_metres": 0.632,
+      "minimum_section_height_metres": 0.0010000000000000009,
+      "parts": [
+        {
+          "part": "shell",
+          "source_triangles": 1585,
+          "position_sha256": "50a750383c0d8f4071bf8a8d23712107b45dd2a6fb3a53a5653fa4d299e3c42e",
+          "index_sha256": "c748d86cd61f262aafdbe67ca443a29fd658c08a88cafb068081f33d96b01449",
+          "position_unchanged_by_uv_function": true,
+          "before": {
+            "uv_sha256": "3f7a312618dc2764f059d2f0820e0990babdd4c45c67128cf1d46fedb5422bca",
+            "broad_side_sample": {
+              "triangles": 483,
+              "fold_or_flat_triangles": 9,
+              "fold_or_flat_area_fraction": 0.04418867945599019,
+              "pixel_jacobian_condition": {
+                "p50": 1.708988244575781,
+                "p95": 6.2527853744293305,
+                "max": 4142.051520194757
+              },
+              "vertical_shear_pixels_per_horizontal_pixel": {
+                "p50": 0.21021109602552496,
+                "p95": 2.029062966396456,
+                "max": 2.626524063730484
+              },
+              "minimum_signed_dv_dy": -0.26370941769009154
+            },
+            "writing_domain": {
+              "triangles": 462,
+              "fold_or_flat_triangles": 9,
+              "fold_or_flat_area_fraction": 0.04515481402042162,
+              "pixel_jacobian_condition": {
+                "p50": 1.7127084746998422,
+                "p95": 6.26504184745893,
+                "max": 4142.051520194757
+              },
+              "vertical_shear_pixels_per_horizontal_pixel": {
+                "p50": 0.24057583607429017,
+                "p95": 2.0295133819895668,
+                "max": 2.626524063730484
+              },
+              "minimum_signed_dv_dy": -0.26370941769009154
+            },
+            "shell_triangles_spanning_v_below_point3_to_above_point8": 8,
+            "evaluated_function_sha256": [
+              "faf744792a70f8fee5ee34bfd750565d4ad32fd48ad01efbc715fa647fefd745",
+              "32ac43906cf15bfd867bb40d7e556f277821bd881235d6cf95fc1399ef150774",
+              "eb1b039bbc670bfd43a9affbcaf22c2e4ca32be277fbc7620dbd199cac375366",
+              "f5c0c5e6ead257c20197f8a68f7ada418822d0028a3bf9eaab046af0d9720c16"
+            ]
+          },
+          "after": {
+            "uv_sha256": "30363fefa03b74bfb6d9c55196671e61f570f9fc0122a29af11a74c740f9d420",
+            "broad_side_sample": {
+              "triangles": 483,
+              "fold_or_flat_triangles": 1,
+              "fold_or_flat_area_fraction": 0.00017962225137947273,
+              "pixel_jacobian_condition": {
+                "p50": 1.4757635669359934,
+                "p95": 1.4757832086946852,
+                "max": 20078485195430.387
+              },
+              "vertical_shear_pixels_per_horizontal_pixel": {
+                "p50": 2.6413383835115336e-07,
+                "p95": 1.3863238863719498e-05,
+                "max": 0.18991970438217937
+              },
+              "minimum_signed_dv_dy": 0.0
+            },
+            "writing_domain": {
+              "triangles": 462,
+              "fold_or_flat_triangles": 0,
+              "fold_or_flat_area_fraction": 0.0,
+              "pixel_jacobian_condition": {
+                "p50": 1.4757636921205546,
+                "p95": 1.475781420807942,
+                "max": 1.4758330693734278
+              },
+              "vertical_shear_pixels_per_horizontal_pixel": {
+                "p50": 2.405681009329209e-07,
+                "p95": 7.39249267856684e-06,
+                "max": 2.767702375163594e-05
+              },
+              "minimum_signed_dv_dy": 0.0578713786641246
+            },
+            "shell_triangles_spanning_v_below_point3_to_above_point8": 8,
+            "evaluated_function_sha256": [
+              "faf744792a70f8fee5ee34bfd750565d4ad32fd48ad01efbc715fa647fefd745",
+              "32ac43906cf15bfd867bb40d7e556f277821bd881235d6cf95fc1399ef150774",
+              "8f69403bcc3ea5d3b28c14f137c270c6742076c8898eb59e5a8932a1555e8904",
+              "70ad619cad3c27848aab1f2816ebf3cc515b69aa4c20ea1935e76e98dcaba2b7"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "model": "s2_suv",
+      "body": "utility",
+      "pack": "assets/approved-vehicle-models.bin",
+      "pack_sha256": "f21c4d91d34df544ffab87b895551b3ef7712746fd25c394e33738056b71e895",
+      "l": 51.0,
+      "w": 18.966,
+      "scale": 10,
+      "maximum_section_bottom_step_metres": 0.9777879560603076,
+      "minimum_section_height_metres": 0.037853107291155874,
+      "parts": [
+        {
+          "part": "shell",
+          "source_triangles": 538,
+          "position_sha256": "902d5bf99a9ee691567492281742f8a16ad4d52c090e46585d2d932e7fa4931d",
+          "index_sha256": "2098cd2863e60f5262669ee6b26b5565b57a80b788ff7e626c636b73b8879dbc",
+          "position_unchanged_by_uv_function": true,
+          "before": {
+            "uv_sha256": "272b9c89617a975b82746da8ab10497c4dfea226252ecb7a84f9ec26077c1abe",
+            "broad_side_sample": {
+              "triangles": 320,
+              "fold_or_flat_triangles": 0,
+              "fold_or_flat_area_fraction": 0.0,
+              "pixel_jacobian_condition": {
+                "p50": 2.307728783801452,
+                "p95": 4.896617344668816,
+                "max": 6.816461203248911
+              },
+              "vertical_shear_pixels_per_horizontal_pixel": {
+                "p50": 0.07413000977857043,
+                "p95": 0.4811921579679484,
+                "max": 0.5289146525177107
+              },
+              "minimum_signed_dv_dy": 0.006449540962807033
+            },
+            "writing_domain": {
+              "triangles": 320,
+              "fold_or_flat_triangles": 0,
+              "fold_or_flat_area_fraction": 0.0,
+              "pixel_jacobian_condition": {
+                "p50": 2.307728783801452,
+                "p95": 4.896617344668816,
+                "max": 6.816461203248911
+              },
+              "vertical_shear_pixels_per_horizontal_pixel": {
+                "p50": 0.07413000977857043,
+                "p95": 0.4811921579679484,
+                "max": 0.5289146525177107
+              },
+              "minimum_signed_dv_dy": 0.006449540962807033
+            },
+            "shell_triangles_spanning_v_below_point3_to_above_point8": 0,
+            "evaluated_function_sha256": [
+              "faf744792a70f8fee5ee34bfd750565d4ad32fd48ad01efbc715fa647fefd745",
+              "32ac43906cf15bfd867bb40d7e556f277821bd881235d6cf95fc1399ef150774",
+              "eb1b039bbc670bfd43a9affbcaf22c2e4ca32be277fbc7620dbd199cac375366",
+              "f5c0c5e6ead257c20197f8a68f7ada418822d0028a3bf9eaab046af0d9720c16"
+            ]
+          },
+          "after": {
+            "uv_sha256": "d5cefa0962797d8702934db132e8fe26fc8cce7ccf48cb972c57c09a62779044",
+            "broad_side_sample": {
+              "triangles": 320,
+              "fold_or_flat_triangles": 0,
+              "fold_or_flat_area_fraction": 0.0,
+              "pixel_jacobian_condition": {
+                "p50": 1.1950373187891268,
+                "p95": 1.195047591348933,
+                "max": 1.195080592462766
+              },
+              "vertical_shear_pixels_per_horizontal_pixel": {
+                "p50": 2.9278861496635434e-07,
+                "p95": 1.4780092469937515e-05,
+                "max": 2.4791135834384133e-05
+              },
+              "minimum_signed_dv_dy": 0.04686335962941259
+            },
+            "writing_domain": {
+              "triangles": 320,
+              "fold_or_flat_triangles": 0,
+              "fold_or_flat_area_fraction": 0.0,
+              "pixel_jacobian_condition": {
+                "p50": 1.1950373187891268,
+                "p95": 1.195047591348933,
+                "max": 1.195080592462766
+              },
+              "vertical_shear_pixels_per_horizontal_pixel": {
+                "p50": 2.9278861496635434e-07,
+                "p95": 1.4780092469937515e-05,
+                "max": 2.4791135834384133e-05
+              },
+              "minimum_signed_dv_dy": 0.04686335962941259
+            },
+            "shell_triangles_spanning_v_below_point3_to_above_point8": 0,
+            "evaluated_function_sha256": [
+              "faf744792a70f8fee5ee34bfd750565d4ad32fd48ad01efbc715fa647fefd745",
+              "32ac43906cf15bfd867bb40d7e556f277821bd881235d6cf95fc1399ef150774",
+              "8f69403bcc3ea5d3b28c14f137c270c6742076c8898eb59e5a8932a1555e8904",
+              "70ad619cad3c27848aab1f2816ebf3cc515b69aa4c20ea1935e76e98dcaba2b7"
+            ]
+          }
+        },
+        {
+          "part": "shellFar",
+          "source_triangles": 295,
+          "position_sha256": "7eb627d52ffd36e0d3a094ad15912337b4ed2371992029dace7d7b371880cc96",
+          "index_sha256": "de8359d96c1077c3484b7a90f592fc7bce81439836dff2240dfab56e1c70431e",
+          "position_unchanged_by_uv_function": true,
+          "before": {
+            "uv_sha256": "4784cf6bbe9cfc6a933c452309fcf720f1e41870f3fd4cb73a9ca09308b37426",
+            "broad_side_sample": {
+              "triangles": 182,
+              "fold_or_flat_triangles": 4,
+              "fold_or_flat_area_fraction": 0.02124666530157754,
+              "pixel_jacobian_condition": {
+                "p50": 2.303708161693942,
+                "p95": 3.8624481037274325,
+                "max": 5.620127129117266
+              },
+              "vertical_shear_pixels_per_horizontal_pixel": {
+                "p50": 0.07086659060062302,
+                "p95": 0.48825455535583084,
+                "max": 0.5589597905560847
+              },
+              "minimum_signed_dv_dy": -0.11462911173469643
+            },
+            "writing_domain": {
+              "triangles": 182,
+              "fold_or_flat_triangles": 4,
+              "fold_or_flat_area_fraction": 0.02124666530157754,
+              "pixel_jacobian_condition": {
+                "p50": 2.303708161693942,
+                "p95": 3.8624481037274325,
+                "max": 5.620127129117266
+              },
+              "vertical_shear_pixels_per_horizontal_pixel": {
+                "p50": 0.07086659060062302,
+                "p95": 0.48825455535583084,
+                "max": 0.5589597905560847
+              },
+              "minimum_signed_dv_dy": -0.11462911173469643
+            },
+            "shell_triangles_spanning_v_below_point3_to_above_point8": 0,
+            "evaluated_function_sha256": [
+              "faf744792a70f8fee5ee34bfd750565d4ad32fd48ad01efbc715fa647fefd745",
+              "32ac43906cf15bfd867bb40d7e556f277821bd881235d6cf95fc1399ef150774",
+              "eb1b039bbc670bfd43a9affbcaf22c2e4ca32be277fbc7620dbd199cac375366",
+              "f5c0c5e6ead257c20197f8a68f7ada418822d0028a3bf9eaab046af0d9720c16"
+            ]
+          },
+          "after": {
+            "uv_sha256": "87c4d317f47c89e497f9a55f81e452519797fb97f7889bf44df8d46e04130273",
+            "broad_side_sample": {
+              "triangles": 182,
+              "fold_or_flat_triangles": 0,
+              "fold_or_flat_area_fraction": 0.0,
+              "pixel_jacobian_condition": {
+                "p50": 1.195037319308648,
+                "p95": 1.1950408903181549,
+                "max": 1.1950561757536737
+              },
+              "vertical_shear_pixels_per_horizontal_pixel": {
+                "p50": 2.6672081256550305e-07,
+                "p95": 2.289323075706243e-06,
+                "max": 1.2999001673117657e-05
+              },
+              "minimum_signed_dv_dy": 0.046858861926737515
+            },
+            "writing_domain": {
+              "triangles": 182,
+              "fold_or_flat_triangles": 0,
+              "fold_or_flat_area_fraction": 0.0,
+              "pixel_jacobian_condition": {
+                "p50": 1.195037319308648,
+                "p95": 1.1950408903181549,
+                "max": 1.1950561757536737
+              },
+              "vertical_shear_pixels_per_horizontal_pixel": {
+                "p50": 2.6672081256550305e-07,
+                "p95": 2.289323075706243e-06,
+                "max": 1.2999001673117657e-05
+              },
+              "minimum_signed_dv_dy": 0.046858861926737515
+            },
+            "shell_triangles_spanning_v_below_point3_to_above_point8": 0,
+            "evaluated_function_sha256": [
+              "faf744792a70f8fee5ee34bfd750565d4ad32fd48ad01efbc715fa647fefd745",
+              "32ac43906cf15bfd867bb40d7e556f277821bd881235d6cf95fc1399ef150774",
+              "8f69403bcc3ea5d3b28c14f137c270c6742076c8898eb59e5a8932a1555e8904",
+              "70ad619cad3c27848aab1f2816ebf3cc515b69aa4c20ea1935e76e98dcaba2b7"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,812 @@
+{
+  "method": "CPU production terrain, road/tyre/steering/suspension/falls functions. 30 Hz named drivePath, four 120 Hz vehicle substeps. World actors, static contacts, cosmetic effects and player injury/explosion follow-up omitted. Actual generated terrain shared for comparisons; fresh terrain covered by terrain-rock-contact test.",
+  "baselineCommit": "d75acc1",
+  "baselineSuspensionSha256": "1f08e24f2c1ea92691c830fc2fab04c2beac9d46f03d17a68df590ec49e9a036",
+  "finalSuspensionSha256": "3f8ce4067ee794494f97f53f1f2e949193f524d92435663480324f862ef020cd",
+  "before": {
+    "rows": [
+      {
+        "id": 0,
+        "type": "suv",
+        "dimensions": [
+          29.10296154,
+          14.8792476656,
+          15.1049318312
+        ],
+        "run": {
+          "reason": "time",
+          "seconds": 30,
+          "progress": 0.297,
+          "minHp": 250,
+          "airborneS": 0,
+          "maxKmh": 20
+        },
+        "position": [
+          7565.362836745854,
+          1281.5571612572212
+        ],
+        "hp": 250,
+        "maxhp": 250,
+        "overturned": false,
+        "landings": [],
+        "pilotMaxKmh": 15
+      },
+      {
+        "id": 1,
+        "type": "suv",
+        "dimensions": [
+          36.890138856,
+          16.5408721304,
+          13.865866204
+        ],
+        "run": {
+          "reason": "time",
+          "seconds": 30,
+          "progress": 0.296,
+          "minHp": 250,
+          "airborneS": 0,
+          "maxKmh": 20
+        },
+        "position": [
+          7570.568974795353,
+          1281.7302119496649
+        ],
+        "hp": 250,
+        "maxhp": 250,
+        "overturned": false,
+        "landings": [],
+        "pilotMaxKmh": 15
+      },
+      {
+        "id": 2,
+        "type": "suv",
+        "dimensions": [
+          31.5154917664,
+          15.6802141984,
+          12.5569003336
+        ],
+        "run": {
+          "reason": "time",
+          "seconds": 30,
+          "progress": 0.296,
+          "minHp": 250,
+          "airborneS": 0,
+          "maxKmh": 20
+        },
+        "position": [
+          7568.378877378697,
+          1280.5871051051251
+        ],
+        "hp": 250,
+        "maxhp": 250,
+        "overturned": false,
+        "landings": [],
+        "pilotMaxKmh": 15
+      },
+      {
+        "id": 0,
+        "type": "suv",
+        "dimensions": [
+          29.10296154,
+          14.8792476656,
+          15.1049318312
+        ],
+        "run": {
+          "reason": "stuck",
+          "seconds": 27.9,
+          "progress": 0.157,
+          "minHp": 250,
+          "airborneS": 0.47,
+          "maxKmh": 26
+        },
+        "position": [
+          7732.653279631221,
+          1187.7854247564621
+        ],
+        "hp": 250,
+        "maxhp": 250,
+        "overturned": true,
+        "landings": [
+          {
+            "type": "suv",
+            "player": true,
+            "speed": 2.3,
+            "drop": 0.3,
+            "wheels": false,
+            "hp": 250,
+            "at": 13.29,
+            "seq": 1
+          },
+          {
+            "type": "suv",
+            "player": true,
+            "rest": "side",
+            "fell": 2.3,
+            "bounces": 0,
+            "hp": 250,
+            "at": 13.29,
+            "seq": 2
+          }
+        ],
+        "firstFlight": {
+          "seconds": 12.833333333333245,
+          "x": 7692.952300484081,
+          "y": 1183.3741262509566,
+          "speedKmh": 25.555351857655797,
+          "pitch": -0.3601888403116703,
+          "roll": 0.044034331373368714,
+          "pitchRate": 2.004206435712082,
+          "rollRate": 2.666481318137074
+        },
+        "firstOverturn": {
+          "seconds": 13.299999999999885,
+          "x": 7719.043389387463,
+          "y": 1186.2731877844249,
+          "roll": 1.5707963267948966
+        },
+        "pilotMaxKmh": 20
+      },
+      {
+        "id": 1,
+        "type": "suv",
+        "dimensions": [
+          36.890138856,
+          16.5408721304,
+          13.865866204
+        ],
+        "run": {
+          "reason": "time",
+          "seconds": 30,
+          "progress": 0.343,
+          "minHp": 250,
+          "airborneS": 0,
+          "maxKmh": 24
+        },
+        "position": [
+          7401.663855365541,
+          1298.9823132918825
+        ],
+        "hp": 250,
+        "maxhp": 250,
+        "overturned": false,
+        "landings": [],
+        "pilotMaxKmh": 20
+      },
+      {
+        "id": 2,
+        "type": "suv",
+        "dimensions": [
+          31.5154917664,
+          15.6802141984,
+          12.5569003336
+        ],
+        "run": {
+          "reason": "time",
+          "seconds": 30,
+          "progress": 0.343,
+          "minHp": 250,
+          "airborneS": 0.53,
+          "maxKmh": 27
+        },
+        "position": [
+          7401.074696378708,
+          1298.8880002147953
+        ],
+        "hp": 250,
+        "maxhp": 250,
+        "overturned": false,
+        "landings": [
+          {
+            "type": "suv",
+            "player": true,
+            "speed": 2.8,
+            "drop": 0.4,
+            "wheels": false,
+            "hp": 250,
+            "at": 13.42,
+            "seq": 3
+          },
+          {
+            "type": "suv",
+            "player": true,
+            "rest": "wheels",
+            "fell": 2.6,
+            "bounces": 0,
+            "hp": 250,
+            "at": 13.42,
+            "seq": 4
+          }
+        ],
+        "firstFlight": {
+          "seconds": 12.883333333333242,
+          "x": 7692.912945913101,
+          "y": 1181.9732985808453,
+          "speedKmh": 26.59575574126085,
+          "pitch": -0.4255536594783571,
+          "roll": -0.0950978349666253,
+          "pitchRate": 1.5041836791099745,
+          "rollRate": 1.8623002502725872
+        },
+        "pilotMaxKmh": 20
+      },
+      {
+        "id": 0,
+        "type": "suv",
+        "dimensions": [
+          29.10296154,
+          14.8792476656,
+          15.1049318312
+        ],
+        "run": {
+          "reason": "stuck",
+          "seconds": 26.47,
+          "progress": 0.163,
+          "minHp": 250,
+          "airborneS": 0.53,
+          "maxKmh": 35
+        },
+        "position": [
+          7777.079123316985,
+          1190.2539804148555
+        ],
+        "hp": 250,
+        "maxhp": 250,
+        "overturned": true,
+        "landings": [
+          {
+            "type": "suv",
+            "player": true,
+            "speed": 3.6,
+            "drop": 0.7,
+            "wheels": false,
+            "hp": 250,
+            "at": 11.96,
+            "seq": 5
+          },
+          {
+            "type": "suv",
+            "player": true,
+            "rest": "roof",
+            "fell": 3.5,
+            "bounces": 0,
+            "hp": 250,
+            "at": 11.96,
+            "seq": 6
+          }
+        ],
+        "firstFlight": {
+          "seconds": 11.424999999999992,
+          "x": 7710.35878627244,
+          "y": 1184.7770681278023,
+          "speedKmh": 34.84788855797245,
+          "pitch": -0.14215384035998693,
+          "roll": -0.26086162806475655,
+          "pitchRate": -2.798989273342261,
+          "rollRate": 6.772954768416499
+        },
+        "firstOverturn": {
+          "seconds": 11.966666666666628,
+          "x": 7751.738010555001,
+          "y": 1188.1737893066925,
+          "roll": 3.141592653589793
+        },
+        "pilotMaxKmh": 28
+      },
+      {
+        "id": 1,
+        "type": "suv",
+        "dimensions": [
+          36.890138856,
+          16.5408721304,
+          13.865866204
+        ],
+        "run": {
+          "reason": "time",
+          "seconds": 30,
+          "progress": 0.409,
+          "minHp": 250,
+          "airborneS": 0,
+          "maxKmh": 37
+        },
+        "position": [
+          7572.4292707349905,
+          1367.227109401772
+        ],
+        "hp": 250,
+        "maxhp": 250,
+        "overturned": false,
+        "landings": [],
+        "pilotMaxKmh": 28
+      },
+      {
+        "id": 2,
+        "type": "suv",
+        "dimensions": [
+          31.5154917664,
+          15.6802141984,
+          12.5569003336
+        ],
+        "run": {
+          "reason": "time",
+          "seconds": 30,
+          "progress": 0.4,
+          "minHp": 250,
+          "airborneS": 0,
+          "maxKmh": 32
+        },
+        "position": [
+          7514.079623744189,
+          1358.507988527143
+        ],
+        "hp": 250,
+        "maxhp": 250,
+        "overturned": false,
+        "landings": [],
+        "pilotMaxKmh": 28
+      }
+    ],
+    "cliff": {
+      "hp": -174.76226497767107,
+      "maxhp": 150,
+      "overturned": true,
+      "airborne": false,
+      "position": [
+        1250.0350604612306,
+        1000
+      ],
+      "firstFlight": {
+        "seconds": 0.008333333333333333,
+        "x": 1000.6479321347697,
+        "y": 1000,
+        "speedKmh": 34.988335277561745,
+        "pitch": -0.004204285714285714,
+        "roll": 0,
+        "pitchRate": -0.5045142857142857,
+        "rollRate": 0
+      },
+      "firstOverturn": {
+        "seconds": 3.4833333333333236,
+        "x": 1250.0350604612306,
+        "y": 1000,
+        "roll": 3.141592653589793
+      }
+    },
+    "road": {
+      "id": 0,
+      "type": "sedan",
+      "dimensions": [
+        38.8,
+        17.04,
+        null
+      ],
+      "run": {
+        "reason": "time",
+        "seconds": 20,
+        "progress": 0.596,
+        "minHp": 150,
+        "airborneS": 0,
+        "maxKmh": 20
+      },
+      "position": [
+        8381.167460786686,
+        2073.4662937095914
+      ],
+      "hp": 150,
+      "maxhp": 150,
+      "overturned": false,
+      "landings": []
+    },
+    "moto": {
+      "id": 0,
+      "type": "bike",
+      "dimensions": [
+        16.8,
+        6.4,
+        null
+      ],
+      "run": {
+        "reason": "time",
+        "seconds": 20,
+        "progress": 0.606,
+        "minHp": 85,
+        "airborneS": 0,
+        "maxKmh": 20
+      },
+      "position": [
+        8389.14663455436,
+        2083.6369588594503
+      ],
+      "hp": 85,
+      "maxhp": 85,
+      "overturned": false,
+      "landings": []
+    }
+  },
+  "corrected": {
+    "rows": [
+      {
+        "id": 0,
+        "type": "suv",
+        "dimensions": [
+          29.10296154,
+          14.8792476656,
+          15.1049318312
+        ],
+        "run": {
+          "reason": "time",
+          "seconds": 30,
+          "progress": 0.293,
+          "minHp": 250,
+          "airborneS": 0,
+          "maxKmh": 18
+        },
+        "position": [
+          7584.220276033249,
+          1279.7650192712204
+        ],
+        "hp": 250,
+        "maxhp": 250,
+        "overturned": false,
+        "landings": [],
+        "pilotMaxKmh": 15
+      },
+      {
+        "id": 1,
+        "type": "suv",
+        "dimensions": [
+          36.890138856,
+          16.5408721304,
+          13.865866204
+        ],
+        "run": {
+          "reason": "time",
+          "seconds": 30,
+          "progress": 0.291,
+          "minHp": 250,
+          "airborneS": 0,
+          "maxKmh": 18
+        },
+        "position": [
+          7589.281354134231,
+          1280.608906595577
+        ],
+        "hp": 250,
+        "maxhp": 250,
+        "overturned": false,
+        "landings": [],
+        "pilotMaxKmh": 15
+      },
+      {
+        "id": 2,
+        "type": "suv",
+        "dimensions": [
+          31.5154917664,
+          15.6802141984,
+          12.5569003336
+        ],
+        "run": {
+          "reason": "time",
+          "seconds": 30,
+          "progress": 0.293,
+          "minHp": 250,
+          "airborneS": 0,
+          "maxKmh": 18
+        },
+        "position": [
+          7586.66614196935,
+          1281.1107475710862
+        ],
+        "hp": 250,
+        "maxhp": 250,
+        "overturned": false,
+        "landings": [],
+        "pilotMaxKmh": 15
+      },
+      {
+        "id": 0,
+        "type": "suv",
+        "dimensions": [
+          29.10296154,
+          14.8792476656,
+          15.1049318312
+        ],
+        "run": {
+          "reason": "time",
+          "seconds": 30,
+          "progress": 0.337,
+          "minHp": 250,
+          "airborneS": 0,
+          "maxKmh": 23
+        },
+        "position": [
+          7409.745257667119,
+          1286.4170992748432
+        ],
+        "hp": 250,
+        "maxhp": 250,
+        "overturned": false,
+        "landings": [],
+        "pilotMaxKmh": 20
+      },
+      {
+        "id": 1,
+        "type": "suv",
+        "dimensions": [
+          36.890138856,
+          16.5408721304,
+          13.865866204
+        ],
+        "run": {
+          "reason": "time",
+          "seconds": 30,
+          "progress": 0.339,
+          "minHp": 250,
+          "airborneS": 0,
+          "maxKmh": 23
+        },
+        "position": [
+          7407.735289503149,
+          1289.4116417032901
+        ],
+        "hp": 250,
+        "maxhp": 250,
+        "overturned": false,
+        "landings": [],
+        "pilotMaxKmh": 20
+      },
+      {
+        "id": 2,
+        "type": "suv",
+        "dimensions": [
+          31.5154917664,
+          15.6802141984,
+          12.5569003336
+        ],
+        "run": {
+          "reason": "time",
+          "seconds": 30,
+          "progress": 0.339,
+          "minHp": 250,
+          "airborneS": 0,
+          "maxKmh": 23
+        },
+        "position": [
+          7408.386070646354,
+          1289.2438506497547
+        ],
+        "hp": 250,
+        "maxhp": 250,
+        "overturned": false,
+        "landings": [],
+        "pilotMaxKmh": 20
+      },
+      {
+        "id": 0,
+        "type": "suv",
+        "dimensions": [
+          29.10296154,
+          14.8792476656,
+          15.1049318312
+        ],
+        "run": {
+          "reason": "time",
+          "seconds": 30,
+          "progress": 0.397,
+          "minHp": 250,
+          "airborneS": 0,
+          "maxKmh": 30
+        },
+        "position": [
+          7496.986775345734,
+          1351.9066972552894
+        ],
+        "hp": 250,
+        "maxhp": 250,
+        "overturned": false,
+        "landings": [],
+        "pilotMaxKmh": 28
+      },
+      {
+        "id": 1,
+        "type": "suv",
+        "dimensions": [
+          36.890138856,
+          16.5408721304,
+          13.865866204
+        ],
+        "run": {
+          "reason": "time",
+          "seconds": 30,
+          "progress": 0.396,
+          "minHp": 250,
+          "airborneS": 0,
+          "maxKmh": 30
+        },
+        "position": [
+          7493.135747336981,
+          1357.0542423195764
+        ],
+        "hp": 250,
+        "maxhp": 250,
+        "overturned": false,
+        "landings": [],
+        "pilotMaxKmh": 28
+      },
+      {
+        "id": 2,
+        "type": "suv",
+        "dimensions": [
+          31.5154917664,
+          15.6802141984,
+          12.5569003336
+        ],
+        "run": {
+          "reason": "time",
+          "seconds": 30,
+          "progress": 0.399,
+          "minHp": 250,
+          "airborneS": 0,
+          "maxKmh": 31
+        },
+        "position": [
+          7504.031119655228,
+          1357.6111449055281
+        ],
+        "hp": 250,
+        "maxhp": 250,
+        "overturned": false,
+        "landings": [],
+        "pilotMaxKmh": 28
+      }
+    ],
+    "cliff": {
+      "hp": -174.76226497767107,
+      "maxhp": 150,
+      "overturned": true,
+      "airborne": false,
+      "position": [
+        1250.0350604612306,
+        1000
+      ],
+      "firstFlight": {
+        "seconds": 0.008333333333333333,
+        "x": 1000.6479321347697,
+        "y": 1000,
+        "speedKmh": 34.988335277561745,
+        "pitch": -0.004204285714285714,
+        "roll": 0,
+        "pitchRate": -0.5045142857142857,
+        "rollRate": 0
+      },
+      "firstOverturn": {
+        "seconds": 3.4833333333333236,
+        "x": 1250.0350604612306,
+        "y": 1000,
+        "roll": 3.141592653589793
+      }
+    },
+    "road": {
+      "id": 0,
+      "type": "sedan",
+      "dimensions": [
+        38.8,
+        17.04,
+        null
+      ],
+      "run": {
+        "reason": "time",
+        "seconds": 20,
+        "progress": 0.596,
+        "minHp": 150,
+        "airborneS": 0,
+        "maxKmh": 20
+      },
+      "position": [
+        8381.167460786686,
+        2073.4662937095914
+      ],
+      "hp": 150,
+      "maxhp": 150,
+      "overturned": false,
+      "landings": []
+    },
+    "moto": {
+      "id": 0,
+      "type": "bike",
+      "dimensions": [
+        16.8,
+        6.4,
+        null
+      ],
+      "run": {
+        "reason": "time",
+        "seconds": 20,
+        "progress": 0.606,
+        "minHp": 85,
+        "airborneS": 0,
+        "maxKmh": 20
+      },
+      "position": [
+        8389.14663455436,
+        2083.6369588594503
+      ],
+      "hp": 85,
+      "maxhp": 85,
+      "overturned": false,
+      "landings": []
+    }
+  },
+  "winnerOnlyOptimization": {
+    "contactCases": 4206,
+    "contactsNumericallyIdentical": true,
+    "routesNumericallyIdentical": true,
+    "routes": [
+      {
+        "id": 0,
+        "maxKmh": 15,
+        "progress": 0.293,
+        "hp": 250
+      },
+      {
+        "id": 1,
+        "maxKmh": 15,
+        "progress": 0.291,
+        "hp": 250
+      },
+      {
+        "id": 2,
+        "maxKmh": 15,
+        "progress": 0.293,
+        "hp": 250
+      },
+      {
+        "id": 0,
+        "maxKmh": 20,
+        "progress": 0.337,
+        "hp": 250
+      },
+      {
+        "id": 1,
+        "maxKmh": 20,
+        "progress": 0.339,
+        "hp": 250
+      },
+      {
+        "id": 2,
+        "maxKmh": 20,
+        "progress": 0.339,
+        "hp": 250
+      },
+      {
+        "id": 0,
+        "maxKmh": 28,
+        "progress": 0.397,
+        "hp": 250
+      },
+      {
+        "id": 1,
+        "maxKmh": 28,
+        "progress": 0.396,
+        "hp": 250
+      },
+      {
+        "id": 2,
+        "maxKmh": 28,
+        "progress": 0.399,
+        "hp": 250
+      }
+    ]
+  },
+  "unchangedNegativeControls": {
+    "cliff": true,
+    "road": true,
+    "moto": true
+  },
+  "firstLaunchPathDistanceUnits": 0.7499691523232123,
+  "firstLaunchPathSample": 593,
+  "trailHalfWidthUnits": 21,
+  "trailSteepRange": [
+    0.83,
+    0.88
+  ]
+}

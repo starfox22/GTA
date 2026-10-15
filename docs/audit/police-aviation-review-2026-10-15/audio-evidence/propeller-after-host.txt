@@ -1,0 +1,2 @@
+Production animateAircraft: C172/PC12 idle+full audio/RPM match, blade-count blur, smooth acceleration/coast-down, parked/destroyed/abandoned states, null prop and unchanged twin-fan behavior
+PASS aircraft-propeller-sync: 22 host assertions

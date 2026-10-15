@@ -55,6 +55,20 @@
       // viewZoom the scale of that ground relative to the street view at zoom 1
       // (the same meaning worldZoom has, so LOD thresholds carry over).
       const viewCenter = { x: 0, y: 0 };
+      // Orthographic roof clearance moves the physical camera without changing
+      // framing. Cabin visibility uses its original eye instead; perspective
+      // views keep the physical eye. The glass shader shares this exact offset.
+      let streetViewSetBack = 0;
+      function updateCarViewDistance() {
+        const setBack = camera === streetCamera ? streetViewSetBack : 0,
+          axis = camera.matrixWorld.elements;
+        if (carViewSetBack.value !== setBack) carViewSetBack.value = setBack;
+        carViewEye.set(
+          camera.position.x - axis[8] * setBack,
+          camera.position.y - axis[9] * setBack,
+          camera.position.z - axis[10] * setBack,
+        );
+      }
       let viewReach = 920,
         viewZoom = 1,
         viewGroundDistance = 880;
@@ -173,6 +187,7 @@
             cosPitch = 560 / Math.hypot(680, 560),
             clear = Math.max(distance, (streetCeiling() + (viewH / 2) * cosPitch) / sinPitch),
             setBack = clear - distance;
+          streetViewSetBack = setBack;
           if (inspectAngles) {
             // Inspection only (DeadEndCity.inspectView): the same camera turned to
             // another bearing and pitch, to look at people from the side.

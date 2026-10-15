@@ -3,6 +3,48 @@
 Written for the next AI session (or human) picking this work up. Read `/CLAUDE.md` first (commands,
 rules, workflow), then this page, then only the area doc your task needs (`docs/README.md`).
 
+## October 15: police, aircraft, airport access and hot rod
+
+Continue from **`origin/codex-reviews`** in `starfox22/GTA`, the same permanent
+GitHub branch. Do not start a new branch per owner prompt or move this work to
+main without the owner's approval. Browser game: **https://starfox22.github.io/GTA/**;
+native comparison and sound gallery: **https://starfox22.github.io/GTA/review/**.
+
+[Police/aviation review](audit/police-aviation-review-2026-10-15/README.md) lists
+the complete change set, exact capture/test inputs, source licences and limits.
+It covers straightened police lettering; C172/PC12/turbofan sound families and
+shared visual prop RPM; reachable boarding, taxi steering, Cessna rotation,
+nose-out stands and matching collision footprints; licensed Coupe 33/Citation/737
+assets with source-exact close meshes and shared distant LODs; and the compact
+SUV's rocky-trail contact-normal correction. Existing Bell/Cessna, SUV,
+motorcycle and C8 source packs remain intact.
+
+The close street view now shares an effective eye between occupant culling and
+window tint. The physical orthographic camera's roof/cloud setback must not
+hide drivers or force opaque glass; perspective/chase/ride views reset the offset.
+Hot rod seat/glass tables use its actual 2.07 m production width. Its tests read
+the production dimensions; do not reintroduce a smaller stand-in spec.
+
+Read the linked area docs before changing these paths. Preserve independent
+source UV channels (`avOrmSourceUv` on the hot rod), authored split normals,
+source-triangle ownership and shared near/far resource protection. The Citation
+is an exterior-only optimized export with a native 256px texture, estimated
+hinges and no independent turbine blades. The 737 is static airport scenery;
+the flyable airliner remains procedural. Do not describe CPU source previews
+as game screenshots or software-renderer timings as M4 Max performance.
+
+Two open polish items are explicit in the audit and backlog: deployed Citation
+flaps reveal small seams along adapted triangle boundaries, and the scripted
+trail pilot can leave the graded path and miss the unchanged 75 s climb target
+at 60 Hz. The tested one-comparison controller change was rejected as unsafe;
+preserve the corrected rock normals and the original safety assertions.
+
+The Pages workflow also builds the gallery from checked-in native PNGs and
+small production-graph MP3s. `tools/verify-pages.py` checks every public file.
+The dev-RPC client deliberately uses fresh HTTP connections: a long synchronous
+host test can outlive a keepalive socket. Do not add automatic retries around
+commands that mutate game state.
+
 ## October 15: permanent browser preview
 
 **Live: https://starfox22.github.io/GTA/**. The owner enabled GitHub Actions as the

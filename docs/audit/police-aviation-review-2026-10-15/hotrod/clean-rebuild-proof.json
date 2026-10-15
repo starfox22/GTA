@@ -1,0 +1,32 @@
+{
+  "hotrod-vehicle-models.bin": {
+    "bytes": 1260244,
+    "sha256": "5bb5ff8daede71430712c699834a9d7b0d508b6e2a624e5666586ee485dbacef",
+    "cleanRebuildSHA256": "5bb5ff8daede71430712c699834a9d7b0d508b6e2a624e5666586ee485dbacef",
+    "byteIdentical": true
+  },
+  "hotrod-vehicle-orm-low.webp": {
+    "bytes": 1433450,
+    "sha256": "40516b6423c0c3fdbaeadbef8a3d73062c6cdf31d0b0b5c6120dd0f1d69c916b",
+    "cleanRebuildSHA256": "40516b6423c0c3fdbaeadbef8a3d73062c6cdf31d0b0b5c6120dd0f1d69c916b",
+    "byteIdentical": true
+  },
+  "hotrod-vehicle-orm.webp": {
+    "bytes": 4377366,
+    "sha256": "66276bc83467210f07ffe4db370ecd3980e0dd67f519153950976ab1c7cbb6e7",
+    "cleanRebuildSHA256": "66276bc83467210f07ffe4db370ecd3980e0dd67f519153950976ab1c7cbb6e7",
+    "byteIdentical": true
+  },
+  "hotrod-vehicle-albedo-low.webp": {
+    "bytes": 938714,
+    "sha256": "8538db89e53241c7f2d0ea287f4a6547027d1420d7b64b40a90819bda87b6df0",
+    "cleanRebuildSHA256": "8538db89e53241c7f2d0ea287f4a6547027d1420d7b64b40a90819bda87b6df0",
+    "byteIdentical": true
+  },
+  "hotrod-vehicle-albedo.webp": {
+    "bytes": 2568580,
+    "sha256": "cdff1f661ca3bdee158178679f3e90f963588d9bf62f1ade9071e6c0cad41a9e",
+    "cleanRebuildSHA256": "cdff1f661ca3bdee158178679f3e90f963588d9bf62f1ade9071e6c0cad41a9e",
+    "byteIdentical": true
+  }
+}

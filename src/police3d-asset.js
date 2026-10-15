@@ -4,11 +4,10 @@
        * POLICE ASSET BODY
        * The body and livery stay the game's choice (driveby-seats.js policeLookChoice, pickPoliceLook): only the
        * 'crownvic' body is drawn from the model (`look.asset`, set in pickPoliceLook while vehicleAssetModel('police')
-       * has one), every livery on it. The livery canvas is the procedural crownvic's (policeLiveryTexture, painted in
-       * the lofted shell's UV space: u along the car, v round its section); the model's shell gets UVs in that space by
-       * projecting each vertex on the crownvic's section ring scaled to the model's own section at that station
-       * (`section`, measured by tools/vehicle_models.py), so the doors, stripes, POLICE and the star land where they
-       * land on the procedural body. Pillars and roof sample the livery's pillar and roof swatches, the hood its hood
+       * has one), every livery on it. The livery painter uses an affine side frame for downloaded bodies, with one
+       * measured sill-to-glass-belt interval along the whole model. Sparse per-station vertex envelopes are unsuitable
+       * for text: their missing sill/belt samples folded straight letters across otherwise flat doors. The source
+       * geometry, normals and approved atlas attributes stay intact. Pillars and roof sample the livery's swatches, the hood its hood
        * swatch. The model's light bar lenses are the light mesh (red left, white takedowns, blue right on the police
        * light channels, with beacons for the body impostors and halo anchors); its housing joins the trim. Unmarked cars
        * leave the bar off and get the dash, grille and rear-deck lights. Wheels, lamps, glass and the cabin are the
@@ -59,7 +58,8 @@
           },
           shell = vaGeometry(model, data, 'shell', k);
         if (approvedKey) shell.setAttribute('liveryUv', shell.attributes.uv.clone());
-        policeAssetLiveryUv(shell, body, l, w, station, approvedKey ? 'liveryUv' : 'uv');
+        const liverySection = { yb: model.sill * k, top: gm.base * k, half: gm.halfBase * k };
+        policeAssetLiveryUv(shell, body, l, w, liverySection, approvedKey ? 'liveryUv' : 'uv');
         const trimParts = marked ? ['trim', 'lightbar', 'cabin'] : ['trim', 'cabin'],
           trim = vaGeometry(model, data, trimParts, k),
           outer = trimParts.slice(0, -1).reduce((n, part) => n + (model.parts[part]?.triangles || 0), 0) * 3,
@@ -212,46 +212,36 @@
         if (approvedKey) {
           approvedSuvFarKit(kit, model, data, k);
           kit.far.shell.setAttribute('liveryUv', kit.far.shell.attributes.uv.clone());
-          policeAssetLiveryUv(kit.far.shell, body, l, w, station, 'liveryUv');
+          policeAssetLiveryUv(kit.far.shell, body, l, w, liverySection, 'liveryUv');
           kit.far.hood = policeApprovedSwatch(kit.far.hood, POLICE_SWATCH.hood);
           kit.far.paint = policeApprovedPanels(kit.far.paint);
+          if (marked) {
+            policeApprovedSideBody(kit, body, l, w, liverySection);
+            policeApprovedDecalAnchors(kit, liverySection);
+          }
         }
         policeAssetKits.set(key, kit);
         return kit;
       }
       /*
-       * The livery's UVs on the model's shell: u along the car as the lofted shell's, v the point of the crownvic's
-       * section ring (policeRing / policeRingV) nearest the vertex, the ring scaled to the model's section there.
+       * The letters are planar from either exterior side, independent of panel tessellation and local section
+       * extrema. Only the hidden/upper centre of the shell blends round to the top of the livery canvas; the outer
+       * side panels keep the same affine mapping on near/far meshes and extracted moving source doors.
        */
-      function policeAssetLiveryUv(geo, body, l, w, station, attribute = 'uv') {
-        const ring = policeRing(body),
-          vs = policeRingV(body, w),
-          n = ring.length,
+      function policeAssetLiveryUv(geo, body, l, w, section, attribute = 'uv') {
+        const frame = liveryFrame(body, l, w, true),
+          centreV = (1 + POLICE_SWATCH_BAND) / 2,
           pos = geo.attributes.position,
           uv = geo.attributes[attribute];
         for (let i = 0; i < pos.count; i++) {
           const x = pos.getX(i),
-            s = station(x),
-            H = Math.max(1e-3, s.top - s.yb),
-            py = pos.getY(i) - s.yb,
-            pz = pos.getZ(i);
-          let best = Infinity,
-            v = vs[0];
-          for (let r = 0; r < n - 1; r++) {
-            const ay = ring[r][0] * H,
-              az = ring[r][1] * s.half,
-              dy = ring[r + 1][0] * H - ay,
-              dz = ring[r + 1][1] * s.half - az,
-              len2 = dy * dy + dz * dz,
-              t = len2 > 0 ? clamp(((py - ay) * dy + (pz - az) * dz) / len2, 0, 1) : 0,
-              ey = ay + dy * t - py,
-              ez = az + dz * t - pz,
-              d = ey * ey + ez * ez;
-            if (d < best) {
-              best = d;
-              v = vs[r] + (vs[r + 1] - vs[r]) * t;
-            }
-          }
+            z = pos.getZ(i),
+            y = body.yb + clamp((pos.getY(i) - section.yb) / Math.max(1e-3, section.top - section.yb), 0, 1) * (body.h - body.yb),
+            sideV = 1 - frame.Y(y, z < 0 ? -1 : 1) / LIVERY_H,
+            // Every exterior door vertex lies beyond this central cap strip. Do not
+            // let a flared fender or a thin source section shrink lettering beside it.
+            side = clamp(Math.abs(z) / Math.max(1e-3, section.half * 0.7), 0, 1),
+            v = lerpNumber(centreV, sideV, side);
           uv.setXY(i, clamp(x / l + 0.5, 0, 1), v);
         }
         uv.needsUpdate = true;
@@ -396,7 +386,7 @@
           bodyGroup = new Three.Group();
         group.add(bodyGroup);
         scene.add(group);
-        const livery = look.unmarked ? null : policeLiveryTexture(look.livery, body, l, w),
+        const livery = look.unmarked ? null : policeLiveryTexture(look.livery, body, l, w, true),
           finish = look.unmarked ? { roughness: 0.3, metalness: 0.45 } : { roughness: 0.3, metalness: 0.06 },
           paint = kit.approvedKey ? approvedVehiclePaint({ color: look.paint }, kit.asset, { livery, police: true }) : new Three.MeshPhysicalMaterial({
             color: look.paint,

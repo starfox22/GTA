@@ -1,0 +1,505 @@
+{
+  "kind": "Unmodified native PNG copies; original crop dimensions retained; capture reports bind immutable HTML inputs. Early combined sheriff and overlapping hotrod images excluded.",
+  "files": [
+    {
+      "file": "images/before/police-crownvic-bw-high-side0.png",
+      "sha256": "e8171a1cc57072be441ec3948c581ea4c5e5f45282c132854bb8024cd69311ab",
+      "bytes": 393559,
+      "dimensions": [
+        740,
+        500
+      ],
+      "htmlSha256": "21403cd7c63950f619da9e8818a60be14ef306b0d08ced79ac336cd247c4df1a",
+      "recorderSha256": "506e629dde8aeefc9197c3c6ad1081f0194bc23b92c4c4484d32572ebc6b7abf",
+      "capture": "police-crownvic-bw-high-side0",
+      "source": "dist/review16/before-images/police-crownvic-bw-high-side0.png",
+      "report": "dist/review16/before-images/review.json"
+    },
+    {
+      "file": "images/after/police-crownvic-bw-high-side0.png",
+      "sha256": "7fb9c853260b4b9bd3f1ae821cffc89527bd1d092b0b280a861c09353b4bb9a9",
+      "bytes": 396549,
+      "dimensions": [
+        740,
+        500
+      ],
+      "htmlSha256": "719a535fe3905275c381737acb7fc3e80ee1ab4378c0d5736a4595096b16c03c",
+      "recorderSha256": "e610ddc37b8231d65a876099e609d51b76213378b8ccc938c1b7c8e4d08f5108",
+      "capture": "police-crownvic-bw-high-side0",
+      "source": "dist/review16/final-captures/after-images/police-crownvic-bw-high-side0.png",
+      "report": "dist/review16/final-captures/after-images/review.json"
+    },
+    {
+      "file": "images/before/police-crownvic-bw-high-side180.png",
+      "sha256": "4e70c47eee73c9ae3c3adcf72afaf07336a91db30b86c35765423083c45da51d",
+      "bytes": 433627,
+      "dimensions": [
+        740,
+        500
+      ],
+      "htmlSha256": "21403cd7c63950f619da9e8818a60be14ef306b0d08ced79ac336cd247c4df1a",
+      "recorderSha256": "506e629dde8aeefc9197c3c6ad1081f0194bc23b92c4c4484d32572ebc6b7abf",
+      "capture": "police-crownvic-bw-high-side180",
+      "source": "dist/review16/before-images/police-crownvic-bw-high-side180.png",
+      "report": "dist/review16/before-images/review.json"
+    },
+    {
+      "file": "images/after/police-crownvic-bw-high-side180.png",
+      "sha256": "dc9595b99655d9afe3da96cae148df427b061b3a8b70ba0e650da8b447bc30d0",
+      "bytes": 431723,
+      "dimensions": [
+        740,
+        500
+      ],
+      "htmlSha256": "719a535fe3905275c381737acb7fc3e80ee1ab4378c0d5736a4595096b16c03c",
+      "recorderSha256": "e610ddc37b8231d65a876099e609d51b76213378b8ccc938c1b7c8e4d08f5108",
+      "capture": "police-crownvic-bw-high-side180",
+      "source": "dist/review16/final-captures/after-images/police-crownvic-bw-high-side180.png",
+      "report": "dist/review16/final-captures/after-images/review.json"
+    },
+    {
+      "file": "images/before/police-crownvic-bw-low-side0.png",
+      "sha256": "a8c9e2787773a7fc2c98e5f410bd66ea2a43b2c6b7cf26fa67c3dc6554d0ed2e",
+      "bytes": 401545,
+      "dimensions": [
+        740,
+        500
+      ],
+      "htmlSha256": "21403cd7c63950f619da9e8818a60be14ef306b0d08ced79ac336cd247c4df1a",
+      "recorderSha256": "506e629dde8aeefc9197c3c6ad1081f0194bc23b92c4c4484d32572ebc6b7abf",
+      "capture": "police-crownvic-bw-low-side0",
+      "source": "dist/review16/before-images/police-crownvic-bw-low-side0.png",
+      "report": "dist/review16/before-images/review.json"
+    },
+    {
+      "file": "images/after/police-crownvic-bw-low-side0.png",
+      "sha256": "d8aea44ee0b75d57295fcb923be908f472c7af3c3b68e952c86d5b2a5ce592a3",
+      "bytes": 405094,
+      "dimensions": [
+        740,
+        500
+      ],
+      "htmlSha256": "719a535fe3905275c381737acb7fc3e80ee1ab4378c0d5736a4595096b16c03c",
+      "recorderSha256": "e610ddc37b8231d65a876099e609d51b76213378b8ccc938c1b7c8e4d08f5108",
+      "capture": "police-crownvic-bw-low-side0",
+      "source": "dist/review16/final-captures/after-images/police-crownvic-bw-low-side0.png",
+      "report": "dist/review16/final-captures/after-images/review.json"
+    },
+    {
+      "file": "images/before/police-charger-modern-high-side0.png",
+      "sha256": "aca93fa9b3f8c659925be489dabda66e595dcc6e8719d4824b722fa93cbbba57",
+      "bytes": 443705,
+      "dimensions": [
+        740,
+        500
+      ],
+      "htmlSha256": "21403cd7c63950f619da9e8818a60be14ef306b0d08ced79ac336cd247c4df1a",
+      "recorderSha256": "506e629dde8aeefc9197c3c6ad1081f0194bc23b92c4c4484d32572ebc6b7abf",
+      "capture": "police-charger-modern-high-side0",
+      "source": "dist/review16/before-images/police-charger-modern-high-side0.png",
+      "report": "dist/review16/before-images/review.json"
+    },
+    {
+      "file": "images/after/police-charger-modern-high-side0.png",
+      "sha256": "ea99fafca7ea4eb4f8c33d07821784fa563c82932749fccbd751c5ea6771c57a",
+      "bytes": 443263,
+      "dimensions": [
+        740,
+        500
+      ],
+      "htmlSha256": "719a535fe3905275c381737acb7fc3e80ee1ab4378c0d5736a4595096b16c03c",
+      "recorderSha256": "e610ddc37b8231d65a876099e609d51b76213378b8ccc938c1b7c8e4d08f5108",
+      "capture": "police-charger-modern-high-side0",
+      "source": "dist/review16/final-captures/after-images/police-charger-modern-high-side0.png",
+      "report": "dist/review16/final-captures/after-images/review.json"
+    },
+    {
+      "file": "images/before/police-charger-modern-high-side180.png",
+      "sha256": "c83c45f4d483b0137780cad22ab3f88d3f1d22bf36114c0a11d860b6d049e214",
+      "bytes": 434443,
+      "dimensions": [
+        740,
+        500
+      ],
+      "htmlSha256": "21403cd7c63950f619da9e8818a60be14ef306b0d08ced79ac336cd247c4df1a",
+      "recorderSha256": "506e629dde8aeefc9197c3c6ad1081f0194bc23b92c4c4484d32572ebc6b7abf",
+      "capture": "police-charger-modern-high-side180",
+      "source": "dist/review16/before-images/police-charger-modern-high-side180.png",
+      "report": "dist/review16/before-images/review.json"
+    },
+    {
+      "file": "images/after/police-charger-modern-high-side180.png",
+      "sha256": "63ecc2250d76b7884dc7410ef1ff2468b357275018cb2e58fd8af600ddce559c",
+      "bytes": 431300,
+      "dimensions": [
+        740,
+        500
+      ],
+      "htmlSha256": "719a535fe3905275c381737acb7fc3e80ee1ab4378c0d5736a4595096b16c03c",
+      "recorderSha256": "e610ddc37b8231d65a876099e609d51b76213378b8ccc938c1b7c8e4d08f5108",
+      "capture": "police-charger-modern-high-side180",
+      "source": "dist/review16/final-captures/after-images/police-charger-modern-high-side180.png",
+      "report": "dist/review16/final-captures/after-images/review.json"
+    },
+    {
+      "file": "images/before/police-charger-modern-low-side0.png",
+      "sha256": "088662c334424958460f2602113456eb2b3078256b705ef79a373ecf4ebfaa0e",
+      "bytes": 435730,
+      "dimensions": [
+        740,
+        500
+      ],
+      "htmlSha256": "21403cd7c63950f619da9e8818a60be14ef306b0d08ced79ac336cd247c4df1a",
+      "recorderSha256": "506e629dde8aeefc9197c3c6ad1081f0194bc23b92c4c4484d32572ebc6b7abf",
+      "capture": "police-charger-modern-low-side0",
+      "source": "dist/review16/before-images/police-charger-modern-low-side0.png",
+      "report": "dist/review16/before-images/review.json"
+    },
+    {
+      "file": "images/after/police-charger-modern-low-side0.png",
+      "sha256": "e760c5d1cd0b715a8bd93bb7b8467cfb0d947492d7fc7fd5c42ecad496a9fedb",
+      "bytes": 435326,
+      "dimensions": [
+        740,
+        500
+      ],
+      "htmlSha256": "719a535fe3905275c381737acb7fc3e80ee1ab4378c0d5736a4595096b16c03c",
+      "recorderSha256": "e610ddc37b8231d65a876099e609d51b76213378b8ccc938c1b7c8e4d08f5108",
+      "capture": "police-charger-modern-low-side0",
+      "source": "dist/review16/final-captures/after-images/police-charger-modern-low-side0.png",
+      "report": "dist/review16/final-captures/after-images/review.json"
+    },
+    {
+      "file": "images/before/police-utility-sheriff-high-side0.png",
+      "sha256": "eeaffb341f2ba7ffa0843747f3c5d2f49ef3ab80c25bb7c89aa9e9a66f00ab98",
+      "bytes": 414798,
+      "dimensions": [
+        740,
+        500
+      ],
+      "htmlSha256": "21403cd7c63950f619da9e8818a60be14ef306b0d08ced79ac336cd247c4df1a",
+      "recorderSha256": "506e629dde8aeefc9197c3c6ad1081f0194bc23b92c4c4484d32572ebc6b7abf",
+      "capture": "police-utility-sheriff-high-side0",
+      "source": "dist/review16/before-images/police-utility-sheriff-high-side0.png",
+      "report": "dist/review16/before-images/review.json"
+    },
+    {
+      "file": "images/after/police-utility-sheriff-high-side0.png",
+      "sha256": "dcb2135b9152cf5a022fa2238b9ccebc108bcf74aee883a3abf8d720d81a279c",
+      "bytes": 415614,
+      "dimensions": [
+        740,
+        500
+      ],
+      "htmlSha256": "719a535fe3905275c381737acb7fc3e80ee1ab4378c0d5736a4595096b16c03c",
+      "recorderSha256": "e610ddc37b8231d65a876099e609d51b76213378b8ccc938c1b7c8e4d08f5108",
+      "capture": "police-utility-sheriff-high-side0",
+      "source": "dist/review16/final-captures/after-images/police-utility-sheriff-high-side0.png",
+      "report": "dist/review16/final-captures/after-images/review.json"
+    },
+    {
+      "file": "images/before/police-utility-sheriff-high-side180.png",
+      "sha256": "b36fa949adf6b67b08b2d384282db9a33698e5f88fb9478cb84936727572ffc9",
+      "bytes": 408433,
+      "dimensions": [
+        740,
+        500
+      ],
+      "htmlSha256": "21403cd7c63950f619da9e8818a60be14ef306b0d08ced79ac336cd247c4df1a",
+      "recorderSha256": "506e629dde8aeefc9197c3c6ad1081f0194bc23b92c4c4484d32572ebc6b7abf",
+      "capture": "police-utility-sheriff-high-side180",
+      "source": "dist/review16/before-images/police-utility-sheriff-high-side180.png",
+      "report": "dist/review16/before-images/review.json"
+    },
+    {
+      "file": "images/after/police-utility-sheriff-high-side180.png",
+      "sha256": "44ab5d6977620e6220ff21f8185b5f76dac757ebfaaa975c74a15ee09dec2f25",
+      "bytes": 409371,
+      "dimensions": [
+        740,
+        500
+      ],
+      "htmlSha256": "719a535fe3905275c381737acb7fc3e80ee1ab4378c0d5736a4595096b16c03c",
+      "recorderSha256": "e610ddc37b8231d65a876099e609d51b76213378b8ccc938c1b7c8e4d08f5108",
+      "capture": "police-utility-sheriff-high-side180",
+      "source": "dist/review16/final-captures/after-images/police-utility-sheriff-high-side180.png",
+      "report": "dist/review16/final-captures/after-images/review.json"
+    },
+    {
+      "file": "images/before/police-utility-sheriff-low-side0.png",
+      "sha256": "739f23658e1bf6cecee58db950facc11f5665f767814f1a80b2d6e580ae1882b",
+      "bytes": 408193,
+      "dimensions": [
+        740,
+        500
+      ],
+      "htmlSha256": "21403cd7c63950f619da9e8818a60be14ef306b0d08ced79ac336cd247c4df1a",
+      "recorderSha256": "506e629dde8aeefc9197c3c6ad1081f0194bc23b92c4c4484d32572ebc6b7abf",
+      "capture": "police-utility-sheriff-low-side0",
+      "source": "dist/review16/before-images/police-utility-sheriff-low-side0.png",
+      "report": "dist/review16/before-images/review.json"
+    },
+    {
+      "file": "images/after/police-utility-sheriff-low-side0.png",
+      "sha256": "033eb3ee9ff58b7fc4dccf064c84b2d0e43bd4800b690d61d0cd55fd9ea2c008",
+      "bytes": 407836,
+      "dimensions": [
+        740,
+        500
+      ],
+      "htmlSha256": "719a535fe3905275c381737acb7fc3e80ee1ab4378c0d5736a4595096b16c03c",
+      "recorderSha256": "e610ddc37b8231d65a876099e609d51b76213378b8ccc938c1b7c8e4d08f5108",
+      "capture": "police-utility-sheriff-low-side0",
+      "source": "dist/review16/final-captures/after-images/police-utility-sheriff-low-side0.png",
+      "report": "dist/review16/final-captures/after-images/review.json"
+    },
+    {
+      "file": "images/before/hotrod-isolated-front.png",
+      "sha256": "a3322afe8e9819a4c0522620796cd59ed2ae7ed83742acf2fc276e9b748a3f7a",
+      "bytes": 393675,
+      "dimensions": [
+        740,
+        500
+      ],
+      "htmlSha256": "21403cd7c63950f619da9e8818a60be14ef306b0d08ced79ac336cd247c4df1a",
+      "recorderSha256": "0918491b55e58ab6c322fd8e909c1afdd4fdd36c3b8f7605a1955e04d1942682",
+      "capture": "hotrod-isolated-front",
+      "source": "dist/review16/before-parking/hotrod-isolated-front.png",
+      "report": "dist/review16/before-parking/review.json"
+    },
+    {
+      "file": "images/after/hotrod-isolated-front.png",
+      "sha256": "94853c14e4f30d5263c47572bf1c9fc688b8a3bfbebca9b3a7e25cf4af94b430",
+      "bytes": 409510,
+      "dimensions": [
+        740,
+        500
+      ],
+      "htmlSha256": "719a535fe3905275c381737acb7fc3e80ee1ab4378c0d5736a4595096b16c03c",
+      "recorderSha256": "e3d55e416e70a4fc9b5c2796c6cabcc8666721c1dd60a59c2232f84901b1f14d",
+      "capture": "hotrod-isolated-front",
+      "source": "dist/review16/final-captures/after-parking/hotrod-isolated-front.png",
+      "report": "dist/review16/final-captures/after-parking/review.json"
+    },
+    {
+      "file": "images/before/hotrod-isolated-side.png",
+      "sha256": "e59910660ed10696fbfe07e22034d8700c97ebc720732b9d7a0a550dc3e50831",
+      "bytes": 393033,
+      "dimensions": [
+        740,
+        500
+      ],
+      "htmlSha256": "21403cd7c63950f619da9e8818a60be14ef306b0d08ced79ac336cd247c4df1a",
+      "recorderSha256": "0918491b55e58ab6c322fd8e909c1afdd4fdd36c3b8f7605a1955e04d1942682",
+      "capture": "hotrod-isolated-side",
+      "source": "dist/review16/before-parking/hotrod-isolated-side.png",
+      "report": "dist/review16/before-parking/review.json"
+    },
+    {
+      "file": "images/after/hotrod-isolated-side.png",
+      "sha256": "a672ea25d912eba78b23f80d0909e94af0668fd09ca9282135ed3d57764b560f",
+      "bytes": 430241,
+      "dimensions": [
+        740,
+        500
+      ],
+      "htmlSha256": "719a535fe3905275c381737acb7fc3e80ee1ab4378c0d5736a4595096b16c03c",
+      "recorderSha256": "e3d55e416e70a4fc9b5c2796c6cabcc8666721c1dd60a59c2232f84901b1f14d",
+      "capture": "hotrod-isolated-side",
+      "source": "dist/review16/final-captures/after-parking/hotrod-isolated-side.png",
+      "report": "dist/review16/final-captures/after-parking/review.json"
+    },
+    {
+      "file": "images/before/plane-jet-front.png",
+      "sha256": "44e41fbf221f380922dd8b74f0858c51a935384949b956b3b7bc46f076664f0e",
+      "bytes": 442422,
+      "dimensions": [
+        740,
+        500
+      ],
+      "htmlSha256": "21403cd7c63950f619da9e8818a60be14ef306b0d08ced79ac336cd247c4df1a",
+      "recorderSha256": "506e629dde8aeefc9197c3c6ad1081f0194bc23b92c4c4484d32572ebc6b7abf",
+      "capture": "plane-jet-front",
+      "source": "dist/review16/before-images/plane-jet-front.png",
+      "report": "dist/review16/before-images/review.json"
+    },
+    {
+      "file": "images/after/plane-jet-front.png",
+      "sha256": "b4bcb9f909b37a62b08fbf2751c370c92ccc2f4eca5a887d4a1692e361a5bedf",
+      "bytes": 441230,
+      "dimensions": [
+        740,
+        500
+      ],
+      "htmlSha256": "719a535fe3905275c381737acb7fc3e80ee1ab4378c0d5736a4595096b16c03c",
+      "recorderSha256": "e610ddc37b8231d65a876099e609d51b76213378b8ccc938c1b7c8e4d08f5108",
+      "capture": "plane-jet-front",
+      "source": "dist/review16/final-captures/after-images/plane-jet-front.png",
+      "report": "dist/review16/final-captures/after-images/review.json"
+    },
+    {
+      "file": "images/before/airport-static-jet.png",
+      "sha256": "d1fa8e15e05006b5cce1d216a66423701b8c6ef97526f7cd0207c4f68fa31638",
+      "bytes": 540797,
+      "dimensions": [
+        740,
+        500
+      ],
+      "htmlSha256": "21403cd7c63950f619da9e8818a60be14ef306b0d08ced79ac336cd247c4df1a",
+      "recorderSha256": "506e629dde8aeefc9197c3c6ad1081f0194bc23b92c4c4484d32572ebc6b7abf",
+      "capture": "airport-static-jet",
+      "source": "dist/review16/before-images/airport-static-jet.png",
+      "report": "dist/review16/before-images/review.json"
+    },
+    {
+      "file": "images/after/airport-static-jet.png",
+      "sha256": "ccd083698d4d6107b6bcd114ab47ffd8d884774240546d30f6573b94486bd8b8",
+      "bytes": 534881,
+      "dimensions": [
+        740,
+        500
+      ],
+      "htmlSha256": "719a535fe3905275c381737acb7fc3e80ee1ab4378c0d5736a4595096b16c03c",
+      "recorderSha256": "e610ddc37b8231d65a876099e609d51b76213378b8ccc938c1b7c8e4d08f5108",
+      "capture": "airport-static-jet",
+      "source": "dist/review16/final-captures/after-images/airport-static-jet.png",
+      "report": "dist/review16/final-captures/after-images/review.json"
+    },
+    {
+      "file": "images/before/southport-parking.png",
+      "sha256": "b609b308d06ed1994b63a82f10d7f454565da8fbbc0b3bf7d0d28ca6a13b6437",
+      "bytes": 550822,
+      "dimensions": [
+        740,
+        500
+      ],
+      "htmlSha256": "21403cd7c63950f619da9e8818a60be14ef306b0d08ced79ac336cd247c4df1a",
+      "recorderSha256": "0918491b55e58ab6c322fd8e909c1afdd4fdd36c3b8f7605a1955e04d1942682",
+      "capture": "southport-parking",
+      "source": "dist/review16/before-parking/southport-parking.png",
+      "report": "dist/review16/before-parking/review.json"
+    },
+    {
+      "file": "images/after/southport-parking.png",
+      "sha256": "3d0642f77b08aa006e275d379860a9fab4fddcf88fdc004ac15fd13417a9bf95",
+      "bytes": 557077,
+      "dimensions": [
+        740,
+        500
+      ],
+      "htmlSha256": "719a535fe3905275c381737acb7fc3e80ee1ab4378c0d5736a4595096b16c03c",
+      "recorderSha256": "e3d55e416e70a4fc9b5c2796c6cabcc8666721c1dd60a59c2232f84901b1f14d",
+      "capture": "southport-parking",
+      "source": "dist/review16/final-captures/after-parking/southport-parking.png",
+      "report": "dist/review16/final-captures/after-parking/review.json"
+    },
+    {
+      "file": "images/before/oceanview-parking.png",
+      "sha256": "78b063ec0e89839debecc750dafe1fc2939d762657fa414d88a6d2a6e12c0a98",
+      "bytes": 482743,
+      "dimensions": [
+        740,
+        500
+      ],
+      "htmlSha256": "21403cd7c63950f619da9e8818a60be14ef306b0d08ced79ac336cd247c4df1a",
+      "recorderSha256": "0918491b55e58ab6c322fd8e909c1afdd4fdd36c3b8f7605a1955e04d1942682",
+      "capture": "oceanview-parking",
+      "source": "dist/review16/before-parking/oceanview-parking.png",
+      "report": "dist/review16/before-parking/review.json"
+    },
+    {
+      "file": "images/after/oceanview-parking.png",
+      "sha256": "0c26776c80910faf2d074f31a71d2eefb4c5706392e80d124f800fc7c95ed570",
+      "bytes": 488895,
+      "dimensions": [
+        740,
+        500
+      ],
+      "htmlSha256": "719a535fe3905275c381737acb7fc3e80ee1ab4378c0d5736a4595096b16c03c",
+      "recorderSha256": "e3d55e416e70a4fc9b5c2796c6cabcc8666721c1dd60a59c2232f84901b1f14d",
+      "capture": "oceanview-parking",
+      "source": "dist/review16/final-captures/after-parking/oceanview-parking.png",
+      "report": "dist/review16/final-captures/after-parking/review.json"
+    },
+    {
+      "file": "images/before/compact-suv-trail.png",
+      "sha256": "27a6b5edc5529077463a8c191a8040bce67c6a35bc143929a192b18dc92e7881",
+      "bytes": 400683,
+      "dimensions": [
+        740,
+        500
+      ],
+      "htmlSha256": "21403cd7c63950f619da9e8818a60be14ef306b0d08ced79ac336cd247c4df1a",
+      "recorderSha256": "4ed857143fe0c37f1b1105e60e9ce4ca027b09f9edff9a29b94332196bef85c9",
+      "capture": "compact-suv-trail",
+      "source": "dist/review16/before-trail/compact-suv-trail.png",
+      "report": "dist/review16/before-trail/review.json"
+    },
+    {
+      "file": "images/after/compact-suv-trail.png",
+      "sha256": "d5f3b4cab98942412b32728baba098f36f265bd900e90796288d72fe0e2bd44d",
+      "bytes": 463141,
+      "dimensions": [
+        740,
+        500
+      ],
+      "htmlSha256": "719a535fe3905275c381737acb7fc3e80ee1ab4378c0d5736a4595096b16c03c",
+      "recorderSha256": "98758fefa109f0483443e8d38bdb5cc00e7320617e974ae0fb66c9997fb6a0ca",
+      "capture": "compact-suv-trail",
+      "source": "dist/review16/final-captures/after-trail/compact-suv-trail.png",
+      "report": "dist/review16/final-captures/after-trail/review.json"
+    },
+    {
+      "file": "images/runtime/hotrod-open-source-cabin.png",
+      "sha256": "278de46bff17fa983f200c00db8c979d662702cf53394368ee542da048ba6401",
+      "bytes": 739336,
+      "dimensions": [
+        960,
+        600
+      ],
+      "htmlSha256": "719a535fe3905275c381737acb7fc3e80ee1ab4378c0d5736a4595096b16c03c",
+      "recorderSha256": "2ac7d987c18fcbf796951aa80c11e49f738684572d967ce9d7c6ab9e4cd3d73f",
+      "source": "dist/review16/final-captures/runtime/hotrod-open-source-cabin.png",
+      "report": "dist/review16/final-captures/runtime/aviation-vehicle-runtime.json"
+    },
+    {
+      "file": "images/runtime/jet-ground-flaps-source.png",
+      "sha256": "83f49fd1dd8af62949fc06389c316b9436ea4a1a73705a689ef61e008b65ce15",
+      "bytes": 662594,
+      "dimensions": [
+        960,
+        600
+      ],
+      "htmlSha256": "719a535fe3905275c381737acb7fc3e80ee1ab4378c0d5736a4595096b16c03c",
+      "recorderSha256": "2ac7d987c18fcbf796951aa80c11e49f738684572d967ce9d7c6ab9e4cd3d73f",
+      "source": "dist/review16/final-captures/runtime/jet-ground-flaps-source.png",
+      "report": "dist/review16/final-captures/runtime/aviation-vehicle-runtime.json"
+    },
+    {
+      "file": "images/runtime/jet-cruise-gear-flaps-chase.png",
+      "sha256": "2257eca408de61e5d25aaf7150ba55bff56d185c9e114dc20194c6e35ea8b289",
+      "bytes": 651858,
+      "dimensions": [
+        960,
+        600
+      ],
+      "htmlSha256": "719a535fe3905275c381737acb7fc3e80ee1ab4378c0d5736a4595096b16c03c",
+      "recorderSha256": "2ac7d987c18fcbf796951aa80c11e49f738684572d967ce9d7c6ab9e4cd3d73f",
+      "source": "dist/review16/final-captures/runtime/jet-cruise-gear-flaps-chase.png",
+      "report": "dist/review16/final-captures/runtime/aviation-vehicle-runtime.json"
+    },
+    {
+      "file": "images/runtime/07-credits.png",
+      "sha256": "e17c88b0b2dd50792cafb58a81e57bb2b70b09af1901c99119c4f43a7c1f8527",
+      "bytes": 110120,
+      "dimensions": [
+        960,
+        600
+      ],
+      "htmlSha256": "6fc25ae849408922b77b243949d1f9662752b9b39bf600bef94eb624f2e6b7ef",
+      "recorderSha256": "91c0e6f015513bafa5069030e3ef0ebb0fb432ef95f770fc43dde0ada3979c17",
+      "source": "dist/review16/smoke/07-credits.png",
+      "report": "dist/review16/smoke/smoke.json"
+    }
+  ]
+}

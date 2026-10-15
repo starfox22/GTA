@@ -196,6 +196,7 @@
       // @include src/grass3d.js
       // @include src/helicopter3d.js
       // @include src/aircraft-assets3d.js
+      // @include src/jet-assets3d.js
       // @include src/apache3d.js
       // @include src/vehicles3d.js
       // @include src/police3d.js
@@ -203,6 +204,7 @@
       // @include src/vehicle-assets3d.js
       // @include src/approved-vehicle-assets3d.js
       // @include src/sports-vehicle-assets3d.js
+      // @include src/hotrod-vehicle-assets3d.js
       // @include src/approved-suv3d.js
       // @include src/vehicle-char3d.js
       // @include src/hypercars3d.js

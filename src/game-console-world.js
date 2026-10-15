@@ -65,6 +65,9 @@
       // Runways, their thresholds, lights and PAPI indications, the piers and
       // where every plane is (airfields.js).
       airfields: () => airfieldReport(),
+      // A parked plane's nose-out taxi route and current full-wing clearance.
+      // Read-only: board it with Interact and taxi with the normal controls.
+      aircraftTaxi: (id) => aircraftTaxiReport(id),
       // The Blue Hour's street entrance (roofmission-entrance.js): the forecourt kept
       // clear, the limousines at the kerb and the doormen and valet on post.
       blueHourEntrance: () => blueHourEntranceReport(),

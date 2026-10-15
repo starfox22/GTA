@@ -1,0 +1,126 @@
+{
+  "kind": "actual archived occupant queue/glass patch versus changed consumers, same physical camera",
+  "qualification": "CPU Three.js only. Both sides use the unchanged current physical street-camera placement; the old queue and glass patch are loaded verbatim from the immutable baseline. This does not compile GLSL or render occupants.",
+  "baselineSources": {
+    "crowd3d-driveby.js": "68ea4f7d1f364807be65bf6898f5128165814d6ba2fc905dcf899c0906047703",
+    "cars3d-interior.js": "a88f3aee1f81e0eb09fdcded061d083aaad45a61a41a55ceb6cb5331ffc2d705",
+    "flight-view3d.js": "f7180cdbf8549f50bd223475a3e003c8fc86bf9b0926fa0ca61fe814d7c32352",
+    "render3d-frame.js": "1a5f644114d7733af2b3399b930d0c463a6bc46ffdf6e66dbeef0f6d916546af"
+  },
+  "currentSources": {
+    "crowd3d-driveby.js": "a029117a61ae25cd08e4fbad45f681ec87deb8b98b6540e7a5206093b5d6aa14",
+    "cars3d-interior.js": "2308597c6e39959c69dcc093aa996a7a9194a63cf12d9e28f142ac3c2ecf44ad",
+    "flight-view3d.js": "11636913f7d7a8753ac9a94e3cb9da8c5ee8ca781ce63e6f932674c24074c2cd",
+    "render3d-frame.js": "32888ca0db14af6e55efa9d41f32874716f3adba7726c3e2696079e8ced1997f"
+  },
+  "cases": [
+    {
+      "label": "ordinary close street",
+      "zoom": 11,
+      "inspect": null,
+      "physicalCamera": [
+        418,
+        435.7543932891765,
+        7642.385970944028
+      ],
+      "virtualEye": [
+        418,
+        81.81818181818176,
+        7350.909090909091
+      ],
+      "setbackM": 57.3135037242181,
+      "before": {
+        "queuedCars": 0,
+        "glassDistanceM": 66.17280445918614,
+        "tint": 0.9199999999999999
+      },
+      "after": {
+        "queuedCars": 1,
+        "glassDistanceM": 8.903639333914551,
+        "tint": 0.35
+      }
+    },
+    {
+      "label": "inspection yaw65 pitch12",
+      "zoom": 11,
+      "inspect": {
+        "yaw": 1.1344640137963142,
+        "pitch": 0.20943951023931953,
+        "lift": 4
+      },
+      "physicalCamera": [
+        895.462096347081,
+        135.97928891147473,
+        7522.644232005384
+      ],
+      "virtualEye": [
+        488.9934498821868,
+        40.65010918353771,
+        7333.104789358907
+      ],
+      "setbackM": 57.3135037242181,
+      "before": {
+        "queuedCars": 0,
+        "glassDistanceM": 67.1230446661149,
+        "tint": 0.9199999999999999
+      },
+      "after": {
+        "queuedCars": 1,
+        "glassDistanceM": 9.851095587515314,
+        "tint": 0.35
+      }
+    },
+    {
+      "label": "street near cutoff",
+      "zoom": 3,
+      "inspect": null,
+      "physicalCamera": [
+        418,
+        472.43277539364726,
+        7672.5916973830035
+      ],
+      "virtualEye": [
+        418,
+        246.6666666666666,
+        7486.666666666667
+      ],
+      "setbackM": 36.55869700234509,
+      "before": {
+        "queuedCars": 0,
+        "glassDistanceM": 72.11163249171595,
+        "tint": 0.9199999999999999
+      },
+      "after": {
+        "queuedCars": 1,
+        "glassDistanceM": 35.55941819296581,
+        "tint": 0.9177513370985582
+      }
+    },
+    {
+      "label": "distant street",
+      "zoom": 0.64,
+      "inspect": null,
+      "physicalCamera": [
+        418,
+        1082.5,
+        8175
+      ],
+      "virtualEye": [
+        418,
+        1082.5,
+        8175
+      ],
+      "setbackM": 0,
+      "before": {
+        "queuedCars": 0,
+        "glassDistanceM": 170.8972301743069,
+        "tint": 0.9199999999999999
+      },
+      "after": {
+        "queuedCars": 0,
+        "glassDistanceM": 170.8972301743069,
+        "tint": 0.9199999999999999
+      }
+    }
+  ]
+}

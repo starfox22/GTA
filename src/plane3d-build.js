@@ -533,6 +533,7 @@
         };
       }
       function makePlane(vehicle) {
+        if (vehicle.airframe === 'jet' && acEnabled && jetAssetModel('jet')) return makeAssetJetPlane(vehicle);
         // A downloaded airframe (aircraft-assets3d.js: the SKYLARK 172) when the build carries it.
         if (vehicle.airframe && aircraftAssetModel(vehicle.airframe)?.kind === 'plane') return makeAssetPlane(vehicle);
         const group = new Three.Group();
@@ -555,6 +556,7 @@
        * gear, engines and lights from the simulation, and shake with the buffet.
        */
       function animateAircraft(c, m, deltaSeconds) {
+        jetAssetPlaneLod(c, m);
         const alive = c.hp > 0,
           airborne = (c.altitude || 0) > terrainHeight(c.x, c.y) + 1,
           running = alive && (c === player.car || (c.abandonedFlight && airborne)),
@@ -587,12 +589,16 @@
         }
         // Gear up on the ground: the belly sits on the runway.
         m.body.position.y = airborne ? 0 : -(1 - gearPos) * m.bellyDrop;
-        // Propeller / fans: spool with power, coast down when stopped.
-        const target = running ? 14 + power * 70 : 0;
+        // Propellers use the same real RPM as their audible blade/combustion pulses.
+        // Keep the existing fan animation scale and smooth acceleration/coast-down.
+        const target = running ? m.prop ? aircraftPropellerRpm(c) * Math.PI / 30 : 14 + power * 70 : 0;
         m.propSpeed += (target - m.propSpeed) * (1 - Math.exp(-deltaSeconds * (running ? 1.6 : 0.5)));
         if (m.prop) {
           m.prop.rotation.x += deltaSeconds * m.propSpeed;
-          const blur = clamp((m.propSpeed - 20) / 50, 0, 1);
+          // Blur follows blade passages, so the four-blade courier blurs more
+          // than the two-blade C172 at the same shaft RPM (20–75 passages/s).
+          const bladeHz = m.propSpeed * aircraftEngineProfile(c).blades / (2 * Math.PI),
+            blur = clamp((bladeHz - 20) / 55, 0, 1);
           m.disc.visible = blur > 0.02;
           m.disc.material.opacity = blur * 0.22;
         }

@@ -85,7 +85,10 @@ export function request(op, { port = readState()?.port, timeoutMs = BOOT_TIMEOUT
     if (!port) return reject(new Error('no dev server: node tools/dev.mjs start'));
     const body = JSON.stringify(op);
     const req = http.request(
-      { host: '127.0.0.1', port, method: 'POST', path: '/', headers: { 'content-type': 'application/json' }, timeout: timeoutMs },
+      // A long host/VM test can block this client's event loop while the server
+      // expires an idle keep-alive socket. Use a fresh local connection; retrying
+      // a possibly executed command could repeat a mutation.
+      { host: '127.0.0.1', port, method: 'POST', path: '/', agent: false, headers: { 'content-type': 'application/json' }, timeout: timeoutMs },
       (res) => {
         let text = '';
         res.on('data', (d) => (text += d));

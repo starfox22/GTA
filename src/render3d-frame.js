@@ -27,6 +27,7 @@
           camera.position.z += (cameraKick.y + tremor.y) * jolt;
           if (camera === streetCamera) lockStreetCameraToPixels();
           camera.updateMatrixWorld(true);
+          updateCarViewDistance();
           viewFrustum.setFromProjectionMatrix(
             viewProjection.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse),
           );
@@ -114,6 +115,7 @@
           beginVehicleImpostors();
           approvedVehicleTextureQuality();
           sportsVehicleTextureQuality();
+          hotrodVehicleTextureQuality();
           for (const c of vehicles) {
             let m = carModels.get(c);
             const near =

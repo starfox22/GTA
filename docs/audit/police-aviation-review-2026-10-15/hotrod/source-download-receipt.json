@@ -1,0 +1,115 @@
+{
+  "key": "coupe33-zhabotinsky-original",
+  "repo": "abd0175149-droid/new-mafia",
+  "commit": "f1eab6db49e1eaf69d5fb61c4c09b529ada65595",
+  "path": "frontend/public/3d/sketchfab/coupe33",
+  "sourceGeometry": {
+    "extras": {
+      "author": "Daniel Zhabotinsky (https://sketchfab.com/DanielZhabotinsky)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/coupe-33-hot-rod-3-low-poly-model-cb5b519024c7472895ef10a8663fb533",
+      "title": "Coupe '33 Hot Rod #3 - Low Poly Model"
+    },
+    "generator": "Sketchfab-16.74.0",
+    "version": "2.0"
+  },
+  "files": [
+    {
+      "path": "scene.gltf",
+      "bytes": 47522,
+      "sha256": "4da2215fa7b57af592a19bedc0f53969c9c86ce311e480224187502f22234981",
+      "url": "https://raw.githubusercontent.com/abd0175149-droid/new-mafia/f1eab6db49e1eaf69d5fb61c4c09b529ada65595/frontend/public/3d/sketchfab/coupe33/scene.gltf"
+    },
+    {
+      "path": "scene.bin",
+      "bytes": 1091352,
+      "sha256": "1373bedcb7bc4c83210e282c12cf18b2f644e506aeb2c259fdae5c7a8ca6c451",
+      "url": "https://raw.githubusercontent.com/abd0175149-droid/new-mafia/f1eab6db49e1eaf69d5fb61c4c09b529ada65595/frontend/public/3d/sketchfab/coupe33/scene.bin"
+    },
+    {
+      "path": "license.txt",
+      "bytes": 798,
+      "sha256": "eaf44b7731b3076d24f90d38cca789cb5519d8f7157f20aea34fef8237783fba",
+      "url": "https://raw.githubusercontent.com/abd0175149-droid/new-mafia/f1eab6db49e1eaf69d5fb61c4c09b529ada65595/frontend/public/3d/sketchfab/coupe33/license.txt"
+    },
+    {
+      "path": "textures/Carbadges_misc_U_baseColor.webp",
+      "bytes": 381952,
+      "sha256": "d46e85555d794105170dd8d372e059da2f7e427e3f12ebaeb6ddc81b00f4fb92",
+      "url": "https://raw.githubusercontent.com/abd0175149-droid/new-mafia/f1eab6db49e1eaf69d5fb61c4c09b529ada65595/frontend/public/3d/sketchfab/coupe33/textures/Carbadges_misc_U_baseColor.webp"
+    },
+    {
+      "path": "textures/HOTROD_33_bodymat_metallicRoughness.webp",
+      "bytes": 114902,
+      "sha256": "460180a7920e75db1471274c5a8c74882f448b0b62a9241de58a1a0725047800",
+      "url": "https://raw.githubusercontent.com/abd0175149-droid/new-mafia/f1eab6db49e1eaf69d5fb61c4c09b529ada65595/frontend/public/3d/sketchfab/coupe33/textures/HOTROD_33_bodymat_metallicRoughness.webp"
+    },
+    {
+      "path": "textures/HOTROD_33_bodymat_specularf0.webp",
+      "bytes": 8460,
+      "sha256": "ad90815ef13eb1d68589369b1f4a569da5822850d0c30d4df4989624706f3fba",
+      "url": "https://raw.githubusercontent.com/abd0175149-droid/new-mafia/f1eab6db49e1eaf69d5fb61c4c09b529ada65595/frontend/public/3d/sketchfab/coupe33/textures/HOTROD_33_bodymat_specularf0.webp"
+    },
+    {
+      "path": "textures/Numberplates_Misk_U_baseColor.webp",
+      "bytes": 44580,
+      "sha256": "daf2100b2944cfd969c6d4b98a7ac01a678c93742c6d9ae2f1ac4739aaff1340",
+      "url": "https://raw.githubusercontent.com/abd0175149-droid/new-mafia/f1eab6db49e1eaf69d5fb61c4c09b529ada65595/frontend/public/3d/sketchfab/coupe33/textures/Numberplates_Misk_U_baseColor.webp"
+    },
+    {
+      "path": "textures/RB1c_Tire_1k_baseColor.webp",
+      "bytes": 33940,
+      "sha256": "aba29d22e46aa34866e2d0f0a0ad82673545bc7e195aa41c57086631625b8e78",
+      "url": "https://raw.githubusercontent.com/abd0175149-droid/new-mafia/f1eab6db49e1eaf69d5fb61c4c09b529ada65595/frontend/public/3d/sketchfab/coupe33/textures/RB1c_Tire_1k_baseColor.webp"
+    },
+    {
+      "path": "textures/RB1c_Tire_1k_metallicRoughness.webp",
+      "bytes": 75586,
+      "sha256": "9ac3967cc737339223c08f4231b494aac6738eb9addb5d70ce5df6164cb6f5fe",
+      "url": "https://raw.githubusercontent.com/abd0175149-droid/new-mafia/f1eab6db49e1eaf69d5fb61c4c09b529ada65595/frontend/public/3d/sketchfab/coupe33/textures/RB1c_Tire_1k_metallicRoughness.webp"
+    },
+    {
+      "path": "textures/RB1c_Tire_1k_specularf0.webp",
+      "bytes": 307140,
+      "sha256": "4523405ecf651a9428f70a1b9251dc46b3d747c7b82019ec6949d4643c032050",
+      "url": "https://raw.githubusercontent.com/abd0175149-droid/new-mafia/f1eab6db49e1eaf69d5fb61c4c09b529ada65595/frontend/public/3d/sketchfab/coupe33/textures/RB1c_Tire_1k_specularf0.webp"
+    },
+    {
+      "path": "textures/UCB_BOTTOM_baseColor.webp",
+      "bytes": 73702,
+      "sha256": "b39428cbbbb33c8add93663fe0c5cdf03c15cf832cd86e32cb672cc345b43211",
+      "url": "https://raw.githubusercontent.com/abd0175149-droid/new-mafia/f1eab6db49e1eaf69d5fb61c4c09b529ada65595/frontend/public/3d/sketchfab/coupe33/textures/UCB_BOTTOM_baseColor.webp"
+    },
+    {
+      "path": "textures/UCB_BOTTOM_metallicRoughness.webp",
+      "bytes": 88066,
+      "sha256": "52a6d8bd4e34481eb56d68166ac6650388f3e97374b3b94d729cdd38b1bc40f8",
+      "url": "https://raw.githubusercontent.com/abd0175149-droid/new-mafia/f1eab6db49e1eaf69d5fb61c4c09b529ada65595/frontend/public/3d/sketchfab/coupe33/textures/UCB_BOTTOM_metallicRoughness.webp"
+    },
+    {
+      "path": "textures/UCB_BOTTOM_specularf0.webp",
+      "bytes": 313678,
+      "sha256": "5aba1824b4391c55191dcadf9f7ed0745c2b4706c7b67b6afb1aa70ef4d5a767",
+      "url": "https://raw.githubusercontent.com/abd0175149-droid/new-mafia/f1eab6db49e1eaf69d5fb61c4c09b529ada65595/frontend/public/3d/sketchfab/coupe33/textures/UCB_BOTTOM_specularf0.webp"
+    },
+    {
+      "path": "textures/UCB_Interiors_2_baseColor.webp",
+      "bytes": 37678,
+      "sha256": "19e74d6f4166e104a16247b67c3882c01447c34d157f2b725b82a8fd2b685d0f",
+      "url": "https://raw.githubusercontent.com/abd0175149-droid/new-mafia/f1eab6db49e1eaf69d5fb61c4c09b529ada65595/frontend/public/3d/sketchfab/coupe33/textures/UCB_Interiors_2_baseColor.webp"
+    },
+    {
+      "path": "textures/UCB_Interiors_2_metallicRoughness.webp",
+      "bytes": 32104,
+      "sha256": "67438879032cbcb923522897799a40c14291a1f9b794f28e8c6c000abe94f6bb",
+      "url": "https://raw.githubusercontent.com/abd0175149-droid/new-mafia/f1eab6db49e1eaf69d5fb61c4c09b529ada65595/frontend/public/3d/sketchfab/coupe33/textures/UCB_Interiors_2_metallicRoughness.webp"
+    },
+    {
+      "path": "textures/UCB_Lights_and_Glass_Transperent_baseColor.webp",
+      "bytes": 73024,
+      "sha256": "6afba5c9ff4b37b7e3e2344608a0dda78ac9ba6e950b4e7d4ab5caf051050495",
+      "url": "https://raw.githubusercontent.com/abd0175149-droid/new-mafia/f1eab6db49e1eaf69d5fb61c4c09b529ada65595/frontend/public/3d/sketchfab/coupe33/textures/UCB_Lights_and_Glass_Transperent_baseColor.webp"
+    }
+  ],
+  "verificationLimit": "Original Sketchfab page is inaccessible in this environment; license evidence is the asset-specific exported license.txt and matching GLTF asset.extras in the pinned public mirror. Mirror code licenses are not used as asset permission."
+}

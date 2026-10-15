@@ -21,17 +21,22 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/vehicles-and-driving.md | Vehicle specs, handling, brakes and assists, crashes, riders, cliffs, aircraft (models: -models.md) |
 | areas/vehicles-and-driving-models.md | Vehicle models: the damage contract, draw calls and the pristine merge, body impostors, flagships |
 | areas/vehicles-and-driving-models-assets.md | Downloaded vehicle models: the converter, asset cars, the Crown Vic patrol body, boats |
+| areas/vehicles-and-driving-models-police.md | Downloaded patrol roles, affine liveries, marked equipment and source-owned decals |
 | areas/vehicles-and-driving-models-approved-suvs.md | Approved SUV replacements: source bodies, wheel pivots, livery, cabins, doors and near/far geometry |
 | areas/vehicles-and-driving-source-fidelity.md | Preserve authored SUV shading, close body detail, source fixtures and regeneration |
+| areas/vehicles-and-driving-models-hotrod.md | Downloaded Coupe 33 hot rod: exact source, source UVs/PBR, cabin/doors and shared tier/LOD budgets |
+| areas/vehicles-and-driving-models-jets.md | Downloaded Citation/737 sources, control/gear adaptation, scenery collision and LOD budgets |
 | areas/vehicles-and-driving-models-sports.md | Downloaded Chevette C8: native cabin/doors, PBR/emission, calipers and shared tier/LOD budgets |
 | areas/vehicles-and-driving-models-sports-source.md | C8 licence, pinned source hashes, clean conversion recipe and independent texel/ownership checks |
+| areas/audio-aircraft.md | Model-specific aircraft engine sound, actual spooled power, exterior voices, Doppler and sound previews |
 | areas/vehicles-and-driving-doors.md | Real door apertures, native hinges, pane motion, damage anchors and closure/repair |
 | areas/vehicles-and-driving-door-transitions.md | Exit foot placement, shipped-mesh ground checks and pose-easing/IK contracts |
 | areas/vehicles-and-driving-models-motorcycles.md | Motorcycle models: downloaded parts, source unsteering, measured rolling axles, steering/lock/spin, flat tyres and real-size mud contacts |
 | areas/vehicles-and-driving-models-military.md | Military geometry kits, original HMMWV lamp lenses, matte finishes, steering and far LOD |
 | areas/vehicles-and-driving-models-aircraft.md | Downloaded aircraft: the SKYRANGER 429 civil helicopter, the SKYLARK 172 light aircraft |
 | areas/vehicles-and-driving-models-heavy.md | Downloaded models, round three: converter knobs (stretch, paintTex, clustering, atlas weights), the police bodies by model (POLICE_ASSET_TYPES), trucks, bus, ambulance, convertible, limousine, Vinny's truck on a downloaded cab, Fort Sentinel's HMMWV, M35 and tank (ASSET MILITARY) |
-| areas/vehicles-and-driving-cabins.md | Car cabins: see-through glass, the seat plan fitted round the drawn head (`cabinHeadroom`), seated occupants, the drive-by seat, rear badges |
+| areas/vehicles-and-driving-cabins.md | Car cabins: see-through glass, the seat plan fitted round the drawn head (`cabinHeadroom`), seated occupants, the drive-by seat |
+| areas/vehicles-and-driving-badges.md | Rear model names, emblems and shared trim-atlas rules |
 | areas/vehicles-and-driving-damage.md | Crash damage on the body: the crumple field and its limits, bent parts, bullet holes and stars pinned to the panel they hit (`vehicleDamageShape`) |
 | areas/vehicles-and-driving-handling.md | Steering and grip, brakes and assists, drifts and the handbrake (`driftTest`) |
 | areas/people-and-crowd.md | Crowd behaviour, perception, speech bubbles |

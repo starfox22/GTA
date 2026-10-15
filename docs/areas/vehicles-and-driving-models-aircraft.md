@@ -32,8 +32,11 @@ aircraft-assets3d.js (ASSET AIRCRAFT). Credits in docs/THIRD_PARTY_CREDITS.txt. 
 
 - A new flyable airframe `skyhawk` in AIRFRAME_SPECS (8.3 m, 11 m span, fixed gear: `fixedGear` makes L say FIXED
   GEAR; lift-off ~100 km/h). Three stand on Southport's GA apron where the static procedural couriers were (their
-  AIRPORT_SCENERY_SOLIDS boxes went with them: the planes collide as vehicles). The courier, jet and airliner keep
-  their procedural models and physics (mission 11's courier, the turbofan nacelles and retracting gear, liveries).
+  AIRPORT_SCENERY_SOLIDS boxes went with them: the planes collide as vehicles). The courier and flyable airliner keep
+  their procedural models. The jet and terminal transports now use the separate
+  [downloaded jet pack](vehicles-and-driving-models-jets.md). Courier/jet/airliner airborne lift,
+  drag, thrust and spool profiles are retained; taxi steering and collision changes are recorded in
+  the [flight audit](../audit/police-aviation-review-2026-10-15/flight-and-parking.md).
 - The converter maps the source's own nodes: Aileron/Flaps/Elevator Left and Right, Rudder (hinge = the part's
   leading edge, `hinges`), the propeller and spinner (spun about the spinner's axis); cockpit instruments and switches
   are left out, seats and cabin reduced and vertex coloured. `makeAssetPlane` returns buildAircraft's object, so
@@ -41,6 +44,9 @@ aircraft-assets3d.js (ASSET AIRCRAFT). Credits in docs/THIRD_PARTY_CREDITS.txt. 
 - 9.7k triangles; the exterior texture is aircraft-skin.webp (1024 px). Without the model it draws as the courier.
 
 ## Surveyed, not used (preview sheet scratchpad aircraft/sheet-1.jpg)
+
+This is the original October 9 survey. The October 15 Citation/737 integration
+and its verified source evidence are documented in [downloaded jets](vehicles-and-driving-models-jets.md).
 
 - Airliners (737-800 Qantas / Lufthansa, ATR 72-600, CRJ-900 CityJet): real airline liveries and logos baked in, and
   sizes far from the Meridian 220's footprint; the procedural airliner and jet stay.

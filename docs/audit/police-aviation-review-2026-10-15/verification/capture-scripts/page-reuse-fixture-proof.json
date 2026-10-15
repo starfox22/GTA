@@ -1,0 +1,5 @@
+{
+  "parkingScenarioLiteralByteIdenticalAfterPageReuseWrapper": true,
+  "scenarioSha256": "28f380727254e3a7e096f60c8eb0b923650c532d153097dfeb1dbbaa2bf950ce",
+  "qualification": "Before used a fresh seeded page; after shares the seeded held main capture page. Fixture coordinates/weather/time/viewport/crop/camera/isolated hotrod body are unchanged. Trail selects a compact SUV within six normal spawns instead of three; the same 30-second ordinary pilot is unchanged."
+}

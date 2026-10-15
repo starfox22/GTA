@@ -1,0 +1,450 @@
+{
+  "html": "/workspace/GTA/dist/review16/hillclimb-index-candidate.html",
+  "htmlSha256": "80f7b408cce5dd3c711210ad11f917841e43f0cb4fd3d712588bb75d28388dc4",
+  "calls": [
+    {
+      "method": "holdSimulation",
+      "args": [
+        true
+      ],
+      "result": true
+    },
+    {
+      "method": "teleport",
+      "args": [
+        7520,
+        1950
+      ],
+      "result": {
+        "mode": "play",
+        "x": 7520,
+        "y": 1950,
+        "district": "RIDGELINE COUNTY",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "17:20",
+        "renderer": "2d",
+        "vehicles": 264,
+        "pedestrians": 595
+      }
+    },
+    {
+      "method": "drive",
+      "args": [
+        "crawler"
+      ],
+      "result": {
+        "mode": "play",
+        "x": 7580,
+        "y": 1950,
+        "district": "RIDGELINE COUNTY",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "crawler",
+        "weapon": "9MM PISTOL",
+        "clock": "17:20",
+        "renderer": "2d",
+        "vehicles": 265,
+        "pedestrians": 595
+      }
+    },
+    {
+      "method": "hillClimb",
+      "args": [
+        "gate",
+        0
+      ],
+      "result": {
+        "club": {
+          "town": "NORTHRIDGE",
+          "lot": {
+            "x": 8464,
+            "y": 2654,
+            "w": 424,
+            "h": 408
+          },
+          "house": {
+            "x": 8570,
+            "y": 2666,
+            "w": 220,
+            "h": 134
+          },
+          "workshop": {
+            "x": 8790,
+            "y": 2666,
+            "w": 86,
+            "h": 148
+          },
+          "sign": {
+            "x": 8590,
+            "y": 3055
+          },
+          "walls": 11,
+          "trailhead": {
+            "x": 7470,
+            "y": 2046,
+            "w": 170,
+            "h": 84
+          },
+          "padMaxHeight": 0,
+          "roadClearance": 0,
+          "trailClearance": 824
+        },
+        "vehicles": [
+          {
+            "type": "series",
+            "name": "ROVER SERIES III SAFARI",
+            "lengthM": 4.45,
+            "widthM": 1.68,
+            "massT": 1.75,
+            "topKmh": 110,
+            "zeroTo": [
+              80,
+              19
+            ],
+            "tyre": "mt",
+            "drive": "4x4",
+            "lowRange": true,
+            "parked": true,
+            "id": 153
+          },
+          {
+            "type": "crawler",
+            "name": "BADGER RUBICON CRAWLER",
+            "lengthM": 4.33,
+            "widthM": 2,
+            "massT": 2.1,
+            "topKmh": 150,
+            "zeroTo": [
+              100,
+              10.8
+            ],
+            "tyre": "mt",
+            "drive": "4x4",
+            "lowRange": true,
+            "parked": true,
+            "id": 154
+          },
+          {
+            "type": "bronco",
+            "name": "MUSTANG RIDGE BRONCO",
+            "lengthM": 4.2,
+            "widthM": 1.86,
+            "massT": 2.05,
+            "topKmh": 155,
+            "zeroTo": [
+              100,
+              9.8
+            ],
+            "tyre": "at",
+            "drive": "4x4",
+            "lowRange": true,
+            "parked": true,
+            "id": 155
+          },
+          {
+            "type": "expedition",
+            "name": "HIGHLANDER 70 EXPEDITION",
+            "lengthM": 5.22,
+            "widthM": 1.94,
+            "massT": 2.75,
+            "topKmh": 150,
+            "zeroTo": [
+              100,
+              15.5
+            ],
+            "tyre": "mt",
+            "drive": "4x4",
+            "lowRange": true,
+            "parked": true,
+            "id": 156
+          },
+          {
+            "type": "hilux",
+            "name": "TAURO HX35 ARCTIC",
+            "lengthM": 5.33,
+            "widthM": 1.94,
+            "massT": 2.2,
+            "topKmh": 175,
+            "zeroTo": [
+              100,
+              10.5
+            ],
+            "tyre": "at",
+            "drive": "4x4",
+            "lowRange": true,
+            "parked": true,
+            "id": 157
+          },
+          {
+            "type": "sixbysix",
+            "name": "OKTAV 6×6 EXPEDITION",
+            "lengthM": 5.87,
+            "widthM": 2.11,
+            "massT": 3.85,
+            "topKmh": 160,
+            "zeroTo": [
+              100,
+              7.8
+            ],
+            "tyre": "mt",
+            "drive": "4x4",
+            "lowRange": true,
+            "parked": true,
+            "id": 158
+          },
+          {
+            "type": "trophy",
+            "name": "SIDEWINDER TROPHY TRUCK",
+            "lengthM": 5.8,
+            "widthM": 2.24,
+            "massT": 2.75,
+            "topKmh": 210,
+            "zeroTo": [
+              100,
+              5.4
+            ],
+            "tyre": "desert",
+            "drive": "4x4",
+            "lowRange": false,
+            "parked": true,
+            "id": 159
+          }
+        ],
+        "members": [],
+        "player": {
+          "type": "crawler",
+          "kmh": 0,
+          "wheelKmh": 0,
+          "wheelSpin": 0,
+          "lowRange": false,
+          "mud": 0,
+          "rock": 0,
+          "across": 0.19,
+          "trailSample": 6,
+          "grade": 0,
+          "height": 95,
+          "mudCoat": 0,
+          "mudWet": 0
+        },
+        "climb": null,
+        "armed": -1,
+        "last": null,
+        "records": {},
+        "courses": [
+          {
+            "trail": "MOUNT ASCENT TRAIL",
+            "start": [
+              7563,
+              1870
+            ],
+            "checkpoints": [
+              [
+                8047,
+                1682,
+                70
+              ],
+              [
+                7343,
+                1527,
+                223
+              ],
+              [
+                7467,
+                1352,
+                427
+              ],
+              [
+                7525,
+                1173,
+                620
+              ]
+            ],
+            "hairpins": [
+              [
+                8052,
+                1640
+              ],
+              [
+                7384,
+                1518
+              ],
+              [
+                7924,
+                1430
+              ],
+              [
+                7438,
+                1316
+              ],
+              [
+                7838,
+                1222
+              ],
+              [
+                7514,
+                1133
+              ]
+            ],
+            "target": 75
+          },
+          {
+            "trail": "NEEDLE RIDGE TRAIL",
+            "start": [
+              9514,
+              2775
+            ],
+            "checkpoints": [
+              [
+                9812,
+                2025,
+                111
+              ],
+              [
+                9585,
+                1714,
+                221
+              ],
+              [
+                9738,
+                1402,
+                325
+              ]
+            ],
+            "hairpins": [
+              [
+                9947,
+                2096
+              ],
+              [
+                9476,
+                1900
+              ],
+              [
+                9882,
+                1830
+              ],
+              [
+                9526,
+                1670
+              ],
+              [
+                9888,
+                1595
+              ],
+              [
+                9576,
+                1440
+              ],
+              [
+                9936,
+                1357
+              ]
+            ],
+            "target": 150
+          }
+        ],
+        "wet": 0,
+        "effects": null
+      }
+    },
+    {
+      "method": "trailDrive",
+      "args": [
+        240,
+        45,
+        0,
+        0.03333333333333333
+      ],
+      "result": {
+        "direction": "up",
+        "frame": 0.0333,
+        "ride": {
+          "airS": 0.18,
+          "hops": 0,
+          "maxGapM": 0.62,
+          "gapAt": [
+            7483,
+            1262,
+            15
+          ],
+          "maxLiftM": 3.15,
+          "liftAt": [
+            7478,
+            1260,
+            54.1,
+            [
+              1.07,
+              0.02,
+              4.74,
+              -0.54
+            ]
+          ],
+          "minLiftM": -0.15,
+          "maxRiseMs": 5.07,
+          "maxUpMs": 5.44,
+          "maxDownMs": -4.5,
+          "stops": 13,
+          "maxBlowMs": 1.36,
+          "blowAt": [
+            7900,
+            1386,
+            1,
+            0.28,
+            18
+          ],
+          "flights": 1,
+          "maxPitchRate": 2.1,
+          "maxRollRate": 6.07,
+          "nan": 0
+        },
+        "cliffFlights": 1,
+        "cliffAirS": 0.37,
+        "nan": false,
+        "overturned": true,
+        "reason": "stuck",
+        "seconds": 78.2,
+        "sample": 486,
+        "of": 700,
+        "progress": 0.694,
+        "height": 438,
+        "meanSpin": 0.27,
+        "slidBackM": 4.9,
+        "maxKmh": 46,
+        "hp": 240,
+        "mudCoat": 0.4,
+        "route": {
+          "maxPathGapM": 9.321,
+          "maxCorridorGapM": 6.696,
+          "offTrailS": 13.57,
+          "gapAt": [
+            7279,
+            1568,
+            26.3,
+            224,
+            219
+          ]
+        },
+        "last": null
+      }
+    },
+    {
+      "method": "holdSimulation",
+      "args": [
+        false
+      ],
+      "result": false
+    }
+  ],
+  "notes": [],
+  "assertions": 2,
+  "failure": "AssertionError [ERR_ASSERTION]: climb at 1/30: stopped (stuck) at 0.694 of the course\n    at Object.assert (file:///tmp/GTA-hill-index-runtime.mjs:12:51)\n    at default (file:///workspace/GTA/tools/tests/hillclimb-physics.mjs:21:9)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async file:///tmp/GTA-hill-index-runtime.mjs:18:2"
+}

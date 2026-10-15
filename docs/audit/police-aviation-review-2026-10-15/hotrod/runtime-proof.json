@@ -1,0 +1,5890 @@
+{
+  "scope": "Completed hotrod phase only; the combined aviation/audio/trail run was still ongoing when this receipt was taken. No pass is claimed for those later phases.",
+  "reportSource": "dist/review16/final-captures/runtime/aviation-vehicle-runtime.json",
+  "sourceReportCheckpointSha256": "76fb0297df67b5d2389b6cfee1df5ac0d9fff247f12c02248c95d17c43d42791",
+  "sourceReportCheckpointChecks": 88,
+  "sourceReportCheckpointOverallPass": null,
+  "sourceReportCheckpointHashNote": "The live combined report continues to change. This checksum identifies the read checkpoint, while the complete hotrod payload and its canonical checksum below are durable.",
+  "html": "/workspace/GTA/dist/review16/final-runtime.html",
+  "htmlSha256": "719a535fe3905275c381737acb7fc3e80ee1ab4378c0d5736a4595096b16c03c",
+  "recorderSha256": "2ac7d987c18fcbf796951aa80c11e49f738684572d967ce9d7c6ab9e4cd3d73f",
+  "inputs": [
+    {
+      "file": "/workspace/GTA/dist/review16/final-runtime.html",
+      "sha256": "719a535fe3905275c381737acb7fc3e80ee1ab4378c0d5736a4595096b16c03c"
+    }
+  ],
+  "checks": {
+    "finalFrozenInput": true,
+    "shadercheckEnabled": true,
+    "sameExactHotrodAcrossAllSnapshots": true,
+    "nativeSourceLoaded": true,
+    "nativeCabinNoDuplicateFallback": true,
+    "initialStatePristineUnboardedNoBuiltDoors": true,
+    "allFiveQualitySelections": true,
+    "allNearBudgetsAndVisibility": true,
+    "allFarBudgetsAndVisibility": true,
+    "atlasSizesAtEveryTier": true,
+    "softwareAutoSelectsLow": true,
+    "burnFromInitiallyPristineDoorStateCreatesChar": true,
+    "burntDoorOpensActualAperture": true,
+    "repairRemovesCharAndRestoresHealth": true,
+    "repairClosesDoorsAndRestoresAllSourceAttributes": true,
+    "repairRestoresExactOriginalMaterialsAndMaps": true,
+    "exactRepairedHotrodBoarded": true,
+    "actualDriverSeated": true,
+    "positiveNativeCabinHeadroom": true,
+    "gameplaySeatMatchesRenderedSource": true,
+    "noHeadThroughRoofOrGlass": true,
+    "allRecordedHeadClearancesPositive": true,
+    "repairedSourceDoorLayersVisibleWithOriginalMaterials": true,
+    "intactWindowMovesWithOpenDoor": true,
+    "noFrameFaultsOrGpuLossInHotrodSnapshots": true,
+    "noRecordedConsoleErrorsOrWarningsAtCheckpoint": true,
+    "nativeCabinCaptureHashMatches": true
+  },
+  "checkCount": 27,
+  "passed": true,
+  "hotrodPayloadSha256": "cf3cf7a53179a44eba6325b11a4e6d8138d2968981950f1932556dd510f1ece5",
+  "hotrodPayload": {
+    "fixture": {
+      "viewport": [
+        960,
+        600
+      ],
+      "seed": 1,
+      "held": true,
+      "shadercheck": true,
+      "hotrod": [
+        418,
+        7800
+      ],
+      "clock": 13
+    },
+    "hotrodId": 285,
+    "tiers": [
+      {
+        "requested": "low",
+        "quality": {
+          "setting": "low",
+          "tier": "LOW",
+          "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+          "hdr": true,
+          "shadowMap": 0,
+          "pixelRatio": 1,
+          "renderScale": 1,
+          "shadows": "off",
+          "shadowSetting": "auto",
+          "adaptive": {
+            "averageFrameMs": 0,
+            "tierDrops": 0,
+            "ceiling": 1,
+            "holdSeconds": 0
+          }
+        },
+        "near": {
+          "status": {
+            "mode": "play",
+            "x": 418,
+            "y": 7880,
+            "district": "SOUTHPORT AIRPORT",
+            "hp": 100,
+            "cash": 0,
+            "wanted": 0,
+            "mission": null,
+            "completed": 0,
+            "vehicle": null,
+            "weapon": "9MM PISTOL",
+            "clock": "13:00",
+            "renderer": "3d",
+            "vehicles": 285,
+            "pedestrians": 595
+          },
+          "faults": {
+            "count": 0,
+            "gameTime": 7.23,
+            "drill": null,
+            "kinds": []
+          },
+          "gpu": {
+            "watched": true,
+            "lost": false,
+            "losses": 0,
+            "restores": 0,
+            "reloadPending": false,
+            "lostSeconds": 0
+          },
+          "identity": {
+            "id": 285,
+            "type": "hotrod",
+            "x": 418,
+            "y": 7800,
+            "a": 0,
+            "kmh": 0,
+            "ai": false,
+            "occupied": false,
+            "altitude": 0
+          },
+          "model": {
+            "id": 285,
+            "type": "hotrod",
+            "asset": "coupe33_zhab",
+            "far": false,
+            "triangles": 20856,
+            "visible": true,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          "assets": {
+            "loaded": true,
+            "enabled": true,
+            "key": "coupe33_zhab",
+            "triangles": 20856,
+            "farTriangles": 5202,
+            "atlasSizes": [
+              [
+                2048,
+                2048
+              ],
+              [
+                2048,
+                2048
+              ]
+            ],
+            "reducedTextures": true,
+            "nativeCabin": true,
+            "nativeDoors": false,
+            "source": "https://sketchfab.com/3d-models/coupe-33-hot-rod-3-low-poly-model-cb5b519024c7472895ef10a8663fb533",
+            "license": "CC BY 4.0"
+          },
+          "doors": {
+            "id": 285,
+            "type": "hotrod",
+            "asset": "Coupe '33 Hot Rod #3 - Low Poly Model",
+            "mask": 0,
+            "nativeDoors": false,
+            "doors": {},
+            "materials": {
+              "shell": {
+                "uuid": "678f9f86-0702-4b05-8aff-070ab6537ccf",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "trim": {
+                "uuid": "912f905b-37cc-4805-880b-516c342e565a",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "optics": {
+                "uuid": "cbe878b8-6fb2-4b54-9d2d-1dee0620516f",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": true,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "cabin": {
+                "uuid": "cbe878b8-6fb2-4b54-9d2d-1dee0620516f",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": true,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 2,
+                "forceSinglePass": true
+              }
+            },
+            "closedSourceGeometry": {
+              "shell": true,
+              "panels": true,
+              "cabin": true,
+              "trim": true,
+              "optics": true
+            },
+            "sourceGeometryRestored": {
+              "shell": true,
+              "panels": true,
+              "cabin": true,
+              "trim": true,
+              "optics": true
+            },
+            "cabin": {
+              "authored": true,
+              "fallbackVisible": false,
+              "interiorTriangles": 1951,
+              "seat": [
+                0,
+                5.32,
+                -2.32
+              ]
+            }
+          },
+          "char": null,
+          "damage": {
+            "id": 285,
+            "type": "hotrod",
+            "hp": 145,
+            "maxhp": 145,
+            "zones": {
+              "front": 0,
+              "rear": 0,
+              "left": 0,
+              "right": 0
+            },
+            "dents": [],
+            "parts": {
+              "hood": 0,
+              "bumperFront": 0,
+              "bumperRear": 0,
+              "doorLeft": 0,
+              "doorRight": 0,
+              "trunk": 0
+            },
+            "glass": {
+              "front": 0,
+              "rear": 0,
+              "left": 0,
+              "right": 0
+            },
+            "lights": [],
+            "flatTires": [],
+            "marks": {},
+            "pull": 0,
+            "handling": {
+              "power": 1,
+              "top": 1,
+              "grip": 1,
+              "pull": 0,
+              "steer": 1,
+              "brake": 1
+            },
+            "burning": 0,
+            "fireSpent": false,
+            "burnt": false,
+            "speed": 0,
+            "spin": 0,
+            "x": 418,
+            "y": 7800,
+            "a": 0
+          },
+          "cabin": {
+            "hip": [
+              0,
+              0.665,
+              -0.29
+            ],
+            "door": [
+              -0.468,
+              0.393
+            ],
+            "floor": 0.665,
+            "floorWorldY": 0.677,
+            "pedalHeight": 0.765,
+            "recline": 0.54,
+            "rear": false,
+            "two": true,
+            "cabinTriangles": 1951,
+            "seated": 0,
+            "headroom": 0.022,
+            "behind": 0.309
+          },
+          "headroom": [
+            {
+              "type": "hotrod",
+              "body": null,
+              "hip": [
+                0,
+                0.665
+              ],
+              "recline": 0.54,
+              "fitMs": 0.7,
+              "clear": {
+                "man": 0.022,
+                "woman": 0.084,
+                "player": 0.103,
+                "avatar": "Male_Adult_04",
+                "avatarRoom": 0.039
+              },
+              "roof": {
+                "man": 0.022,
+                "woman": 0.084,
+                "player": 0.103
+              },
+              "through": [],
+              "key": "hotrod",
+              "seat": [
+                0,
+                0.665,
+                0.29,
+                0.49,
+                1.124
+              ],
+              "gameSeat": [
+                0,
+                0.665,
+                0.29,
+                0.49,
+                1.124
+              ],
+              "seatGap": 0
+            }
+          ],
+          "camera": {
+            "zoom": 1.553,
+            "target": 1.6,
+            "context": 1,
+            "slowFraming": false,
+            "vehicleContext": null,
+            "speed": 1,
+            "kmh": 0,
+            "framing": 0.912,
+            "framed": 1.459,
+            "aim": 1.6,
+            "defaultZoom": 2,
+            "limits": [
+              0.14,
+              4.5
+            ],
+            "viewport": [
+              960,
+              600
+            ],
+            "viewMetres": 34.6,
+            "personPx": 19,
+            "motionComfort": false,
+            "vehicleDistance": 120,
+            "walkDistance": 100,
+            "comfort": null
+          }
+        },
+        "far": {
+          "status": {
+            "mode": "play",
+            "x": 418,
+            "y": 8100,
+            "district": "SOUTHPORT AIRPORT",
+            "hp": 100,
+            "cash": 0,
+            "wanted": 0,
+            "mission": null,
+            "completed": 0,
+            "vehicle": null,
+            "weapon": "9MM PISTOL",
+            "clock": "13:00",
+            "renderer": "3d",
+            "vehicles": 285,
+            "pedestrians": 595
+          },
+          "faults": {
+            "count": 0,
+            "gameTime": 7.25,
+            "drill": null,
+            "kinds": []
+          },
+          "gpu": {
+            "watched": true,
+            "lost": false,
+            "losses": 0,
+            "restores": 0,
+            "reloadPending": false,
+            "lostSeconds": 0
+          },
+          "identity": {
+            "id": 285,
+            "type": "hotrod",
+            "x": 418,
+            "y": 7800,
+            "a": 0,
+            "kmh": 0,
+            "ai": false,
+            "occupied": false,
+            "altitude": 0
+          },
+          "model": {
+            "id": 285,
+            "type": "hotrod",
+            "asset": "coupe33_zhab",
+            "far": true,
+            "triangles": 5202,
+            "visible": true,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          "assets": {
+            "loaded": true,
+            "enabled": true,
+            "key": "coupe33_zhab",
+            "triangles": 20856,
+            "farTriangles": 5202,
+            "atlasSizes": [
+              [
+                2048,
+                2048
+              ],
+              [
+                2048,
+                2048
+              ]
+            ],
+            "reducedTextures": true,
+            "nativeCabin": true,
+            "nativeDoors": false,
+            "source": "https://sketchfab.com/3d-models/coupe-33-hot-rod-3-low-poly-model-cb5b519024c7472895ef10a8663fb533",
+            "license": "CC BY 4.0"
+          },
+          "doors": {
+            "id": 285,
+            "type": "hotrod",
+            "asset": "Coupe '33 Hot Rod #3 - Low Poly Model",
+            "mask": 0,
+            "nativeDoors": false,
+            "doors": {},
+            "materials": {
+              "shell": {
+                "uuid": "678f9f86-0702-4b05-8aff-070ab6537ccf",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "trim": {
+                "uuid": "912f905b-37cc-4805-880b-516c342e565a",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "optics": {
+                "uuid": "cbe878b8-6fb2-4b54-9d2d-1dee0620516f",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": true,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "cabin": {
+                "uuid": "cbe878b8-6fb2-4b54-9d2d-1dee0620516f",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": true,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 2,
+                "forceSinglePass": true
+              }
+            },
+            "closedSourceGeometry": {
+              "shell": false,
+              "panels": false,
+              "cabin": false,
+              "trim": false,
+              "optics": false
+            },
+            "sourceGeometryRestored": {
+              "shell": false,
+              "panels": false,
+              "cabin": false,
+              "trim": false,
+              "optics": false
+            },
+            "cabin": {
+              "authored": true,
+              "fallbackVisible": false,
+              "interiorTriangles": 1951,
+              "seat": [
+                0,
+                5.32,
+                -2.32
+              ]
+            }
+          },
+          "char": null,
+          "damage": {
+            "id": 285,
+            "type": "hotrod",
+            "hp": 145,
+            "maxhp": 145,
+            "zones": {
+              "front": 0,
+              "rear": 0,
+              "left": 0,
+              "right": 0
+            },
+            "dents": [],
+            "parts": {
+              "hood": 0,
+              "bumperFront": 0,
+              "bumperRear": 0,
+              "doorLeft": 0,
+              "doorRight": 0,
+              "trunk": 0
+            },
+            "glass": {
+              "front": 0,
+              "rear": 0,
+              "left": 0,
+              "right": 0
+            },
+            "lights": [],
+            "flatTires": [],
+            "marks": {},
+            "pull": 0,
+            "handling": {
+              "power": 1,
+              "top": 1,
+              "grip": 1,
+              "pull": 0,
+              "steer": 1,
+              "brake": 1
+            },
+            "burning": 0,
+            "fireSpent": false,
+            "burnt": false,
+            "speed": 0,
+            "spin": 0,
+            "x": 418,
+            "y": 7800,
+            "a": 0
+          },
+          "cabin": {
+            "hip": [
+              0,
+              0.665,
+              -0.29
+            ],
+            "door": [
+              -0.468,
+              0.393
+            ],
+            "floor": 0.665,
+            "floorWorldY": 0.677,
+            "pedalHeight": 0.765,
+            "recline": 0.54,
+            "rear": false,
+            "two": true,
+            "cabinTriangles": 1951,
+            "seated": 0,
+            "headroom": 0.022,
+            "behind": 0.309
+          },
+          "headroom": [
+            {
+              "type": "hotrod",
+              "body": null,
+              "hip": [
+                0,
+                0.665
+              ],
+              "recline": 0.54,
+              "fitMs": 0.7,
+              "clear": {
+                "man": 0.022,
+                "woman": 0.084,
+                "player": 0.103,
+                "avatar": "Male_Adult_04",
+                "avatarRoom": 0.039
+              },
+              "roof": {
+                "man": 0.022,
+                "woman": 0.084,
+                "player": 0.103
+              },
+              "through": [],
+              "key": "hotrod",
+              "seat": [
+                0,
+                0.665,
+                0.29,
+                0.49,
+                1.124
+              ],
+              "gameSeat": [
+                0,
+                0.665,
+                0.29,
+                0.49,
+                1.124
+              ],
+              "seatGap": 0
+            }
+          ],
+          "camera": {
+            "zoom": 0.886,
+            "target": 0.9,
+            "context": 1,
+            "slowFraming": false,
+            "vehicleContext": null,
+            "speed": 1,
+            "kmh": 0,
+            "framing": 0.913,
+            "framed": 0.821,
+            "aim": 0.9,
+            "defaultZoom": 2,
+            "limits": [
+              0.14,
+              4.5
+            ],
+            "viewport": [
+              960,
+              600
+            ],
+            "viewMetres": 60.7,
+            "personPx": 11,
+            "motionComfort": false,
+            "vehicleDistance": 120,
+            "walkDistance": 100,
+            "comfort": null
+          }
+        }
+      },
+      {
+        "requested": "medium",
+        "quality": {
+          "setting": "medium",
+          "tier": "MEDIUM",
+          "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+          "hdr": true,
+          "shadowMap": 2048,
+          "pixelRatio": 1,
+          "renderScale": 1,
+          "shadows": "low",
+          "shadowSetting": "auto",
+          "adaptive": {
+            "averageFrameMs": 0,
+            "tierDrops": 0,
+            "ceiling": 1,
+            "holdSeconds": 0
+          }
+        },
+        "near": {
+          "status": {
+            "mode": "play",
+            "x": 418,
+            "y": 7880,
+            "district": "SOUTHPORT AIRPORT",
+            "hp": 100,
+            "cash": 0,
+            "wanted": 0,
+            "mission": null,
+            "completed": 0,
+            "vehicle": null,
+            "weapon": "9MM PISTOL",
+            "clock": "13:00",
+            "renderer": "3d",
+            "vehicles": 285,
+            "pedestrians": 595
+          },
+          "faults": {
+            "count": 0,
+            "gameTime": 7.28,
+            "drill": null,
+            "kinds": []
+          },
+          "gpu": {
+            "watched": true,
+            "lost": false,
+            "losses": 0,
+            "restores": 0,
+            "reloadPending": false,
+            "lostSeconds": 0
+          },
+          "identity": {
+            "id": 285,
+            "type": "hotrod",
+            "x": 418,
+            "y": 7800,
+            "a": 0,
+            "kmh": 0,
+            "ai": false,
+            "occupied": false,
+            "altitude": 0
+          },
+          "model": {
+            "id": 285,
+            "type": "hotrod",
+            "asset": "coupe33_zhab",
+            "far": false,
+            "triangles": 20856,
+            "visible": true,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          "assets": {
+            "loaded": true,
+            "enabled": true,
+            "key": "coupe33_zhab",
+            "triangles": 20856,
+            "farTriangles": 5202,
+            "atlasSizes": [
+              [
+                2048,
+                2048
+              ],
+              [
+                2048,
+                2048
+              ]
+            ],
+            "reducedTextures": true,
+            "nativeCabin": true,
+            "nativeDoors": false,
+            "source": "https://sketchfab.com/3d-models/coupe-33-hot-rod-3-low-poly-model-cb5b519024c7472895ef10a8663fb533",
+            "license": "CC BY 4.0"
+          },
+          "doors": {
+            "id": 285,
+            "type": "hotrod",
+            "asset": "Coupe '33 Hot Rod #3 - Low Poly Model",
+            "mask": 0,
+            "nativeDoors": false,
+            "doors": {},
+            "materials": {
+              "shell": {
+                "uuid": "678f9f86-0702-4b05-8aff-070ab6537ccf",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "trim": {
+                "uuid": "912f905b-37cc-4805-880b-516c342e565a",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "optics": {
+                "uuid": "cbe878b8-6fb2-4b54-9d2d-1dee0620516f",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": true,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "cabin": {
+                "uuid": "cbe878b8-6fb2-4b54-9d2d-1dee0620516f",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": true,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 2,
+                "forceSinglePass": true
+              }
+            },
+            "closedSourceGeometry": {
+              "shell": true,
+              "panels": true,
+              "cabin": true,
+              "trim": true,
+              "optics": true
+            },
+            "sourceGeometryRestored": {
+              "shell": true,
+              "panels": true,
+              "cabin": true,
+              "trim": true,
+              "optics": true
+            },
+            "cabin": {
+              "authored": true,
+              "fallbackVisible": false,
+              "interiorTriangles": 1951,
+              "seat": [
+                0,
+                5.32,
+                -2.32
+              ]
+            }
+          },
+          "char": null,
+          "damage": {
+            "id": 285,
+            "type": "hotrod",
+            "hp": 145,
+            "maxhp": 145,
+            "zones": {
+              "front": 0,
+              "rear": 0,
+              "left": 0,
+              "right": 0
+            },
+            "dents": [],
+            "parts": {
+              "hood": 0,
+              "bumperFront": 0,
+              "bumperRear": 0,
+              "doorLeft": 0,
+              "doorRight": 0,
+              "trunk": 0
+            },
+            "glass": {
+              "front": 0,
+              "rear": 0,
+              "left": 0,
+              "right": 0
+            },
+            "lights": [],
+            "flatTires": [],
+            "marks": {},
+            "pull": 0,
+            "handling": {
+              "power": 1,
+              "top": 1,
+              "grip": 1,
+              "pull": 0,
+              "steer": 1,
+              "brake": 1
+            },
+            "burning": 0,
+            "fireSpent": false,
+            "burnt": false,
+            "speed": 0,
+            "spin": 0,
+            "x": 418,
+            "y": 7800,
+            "a": 0
+          },
+          "cabin": {
+            "hip": [
+              0,
+              0.665,
+              -0.29
+            ],
+            "door": [
+              -0.468,
+              0.393
+            ],
+            "floor": 0.665,
+            "floorWorldY": 0.677,
+            "pedalHeight": 0.765,
+            "recline": 0.54,
+            "rear": false,
+            "two": true,
+            "cabinTriangles": 1951,
+            "seated": 0,
+            "headroom": 0.022,
+            "behind": 0.309
+          },
+          "headroom": [
+            {
+              "type": "hotrod",
+              "body": null,
+              "hip": [
+                0,
+                0.665
+              ],
+              "recline": 0.54,
+              "fitMs": 0.7,
+              "clear": {
+                "man": 0.022,
+                "woman": 0.084,
+                "player": 0.103,
+                "avatar": "Male_Adult_04",
+                "avatarRoom": 0.039
+              },
+              "roof": {
+                "man": 0.022,
+                "woman": 0.084,
+                "player": 0.103
+              },
+              "through": [],
+              "key": "hotrod",
+              "seat": [
+                0,
+                0.665,
+                0.29,
+                0.49,
+                1.124
+              ],
+              "gameSeat": [
+                0,
+                0.665,
+                0.29,
+                0.49,
+                1.124
+              ],
+              "seatGap": 0
+            }
+          ],
+          "camera": {
+            "zoom": 1.554,
+            "target": 1.6,
+            "context": 1,
+            "slowFraming": false,
+            "vehicleContext": null,
+            "speed": 1,
+            "kmh": 0,
+            "framing": 0.914,
+            "framed": 1.463,
+            "aim": 1.6,
+            "defaultZoom": 2,
+            "limits": [
+              0.14,
+              4.5
+            ],
+            "viewport": [
+              960,
+              600
+            ],
+            "viewMetres": 34.6,
+            "personPx": 19,
+            "motionComfort": false,
+            "vehicleDistance": 120,
+            "walkDistance": 100,
+            "comfort": null
+          }
+        },
+        "far": {
+          "status": {
+            "mode": "play",
+            "x": 418,
+            "y": 8100,
+            "district": "SOUTHPORT AIRPORT",
+            "hp": 100,
+            "cash": 0,
+            "wanted": 0,
+            "mission": null,
+            "completed": 0,
+            "vehicle": null,
+            "weapon": "9MM PISTOL",
+            "clock": "13:00",
+            "renderer": "3d",
+            "vehicles": 285,
+            "pedestrians": 595
+          },
+          "faults": {
+            "count": 0,
+            "gameTime": 7.3,
+            "drill": null,
+            "kinds": []
+          },
+          "gpu": {
+            "watched": true,
+            "lost": false,
+            "losses": 0,
+            "restores": 0,
+            "reloadPending": false,
+            "lostSeconds": 0
+          },
+          "identity": {
+            "id": 285,
+            "type": "hotrod",
+            "x": 418,
+            "y": 7800,
+            "a": 0,
+            "kmh": 0,
+            "ai": false,
+            "occupied": false,
+            "altitude": 0
+          },
+          "model": {
+            "id": 285,
+            "type": "hotrod",
+            "asset": "coupe33_zhab",
+            "far": true,
+            "triangles": 5202,
+            "visible": true,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          "assets": {
+            "loaded": true,
+            "enabled": true,
+            "key": "coupe33_zhab",
+            "triangles": 20856,
+            "farTriangles": 5202,
+            "atlasSizes": [
+              [
+                2048,
+                2048
+              ],
+              [
+                2048,
+                2048
+              ]
+            ],
+            "reducedTextures": true,
+            "nativeCabin": true,
+            "nativeDoors": false,
+            "source": "https://sketchfab.com/3d-models/coupe-33-hot-rod-3-low-poly-model-cb5b519024c7472895ef10a8663fb533",
+            "license": "CC BY 4.0"
+          },
+          "doors": {
+            "id": 285,
+            "type": "hotrod",
+            "asset": "Coupe '33 Hot Rod #3 - Low Poly Model",
+            "mask": 0,
+            "nativeDoors": false,
+            "doors": {},
+            "materials": {
+              "shell": {
+                "uuid": "678f9f86-0702-4b05-8aff-070ab6537ccf",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "trim": {
+                "uuid": "912f905b-37cc-4805-880b-516c342e565a",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "optics": {
+                "uuid": "cbe878b8-6fb2-4b54-9d2d-1dee0620516f",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": true,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "cabin": {
+                "uuid": "cbe878b8-6fb2-4b54-9d2d-1dee0620516f",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": true,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 2,
+                "forceSinglePass": true
+              }
+            },
+            "closedSourceGeometry": {
+              "shell": false,
+              "panels": false,
+              "cabin": false,
+              "trim": false,
+              "optics": false
+            },
+            "sourceGeometryRestored": {
+              "shell": false,
+              "panels": false,
+              "cabin": false,
+              "trim": false,
+              "optics": false
+            },
+            "cabin": {
+              "authored": true,
+              "fallbackVisible": false,
+              "interiorTriangles": 1951,
+              "seat": [
+                0,
+                5.32,
+                -2.32
+              ]
+            }
+          },
+          "char": null,
+          "damage": {
+            "id": 285,
+            "type": "hotrod",
+            "hp": 145,
+            "maxhp": 145,
+            "zones": {
+              "front": 0,
+              "rear": 0,
+              "left": 0,
+              "right": 0
+            },
+            "dents": [],
+            "parts": {
+              "hood": 0,
+              "bumperFront": 0,
+              "bumperRear": 0,
+              "doorLeft": 0,
+              "doorRight": 0,
+              "trunk": 0
+            },
+            "glass": {
+              "front": 0,
+              "rear": 0,
+              "left": 0,
+              "right": 0
+            },
+            "lights": [],
+            "flatTires": [],
+            "marks": {},
+            "pull": 0,
+            "handling": {
+              "power": 1,
+              "top": 1,
+              "grip": 1,
+              "pull": 0,
+              "steer": 1,
+              "brake": 1
+            },
+            "burning": 0,
+            "fireSpent": false,
+            "burnt": false,
+            "speed": 0,
+            "spin": 0,
+            "x": 418,
+            "y": 7800,
+            "a": 0
+          },
+          "cabin": {
+            "hip": [
+              0,
+              0.665,
+              -0.29
+            ],
+            "door": [
+              -0.468,
+              0.393
+            ],
+            "floor": 0.665,
+            "floorWorldY": 0.677,
+            "pedalHeight": 0.765,
+            "recline": 0.54,
+            "rear": false,
+            "two": true,
+            "cabinTriangles": 1951,
+            "seated": 0,
+            "headroom": 0.022,
+            "behind": 0.309
+          },
+          "headroom": [
+            {
+              "type": "hotrod",
+              "body": null,
+              "hip": [
+                0,
+                0.665
+              ],
+              "recline": 0.54,
+              "fitMs": 0.7,
+              "clear": {
+                "man": 0.022,
+                "woman": 0.084,
+                "player": 0.103,
+                "avatar": "Male_Adult_04",
+                "avatarRoom": 0.039
+              },
+              "roof": {
+                "man": 0.022,
+                "woman": 0.084,
+                "player": 0.103
+              },
+              "through": [],
+              "key": "hotrod",
+              "seat": [
+                0,
+                0.665,
+                0.29,
+                0.49,
+                1.124
+              ],
+              "gameSeat": [
+                0,
+                0.665,
+                0.29,
+                0.49,
+                1.124
+              ],
+              "seatGap": 0
+            }
+          ],
+          "camera": {
+            "zoom": 0.886,
+            "target": 0.9,
+            "context": 1,
+            "slowFraming": false,
+            "vehicleContext": null,
+            "speed": 1,
+            "kmh": 0,
+            "framing": 0.915,
+            "framed": 0.823,
+            "aim": 0.9,
+            "defaultZoom": 2,
+            "limits": [
+              0.14,
+              4.5
+            ],
+            "viewport": [
+              960,
+              600
+            ],
+            "viewMetres": 60.7,
+            "personPx": 11,
+            "motionComfort": false,
+            "vehicleDistance": 120,
+            "walkDistance": 100,
+            "comfort": null
+          }
+        }
+      },
+      {
+        "requested": "high",
+        "quality": {
+          "setting": "high",
+          "tier": "HIGH",
+          "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+          "hdr": true,
+          "shadowMap": 3072,
+          "pixelRatio": 1,
+          "renderScale": 1,
+          "shadows": "high",
+          "shadowSetting": "auto",
+          "adaptive": {
+            "averageFrameMs": 0,
+            "tierDrops": 0,
+            "ceiling": 1,
+            "holdSeconds": 0
+          }
+        },
+        "near": {
+          "status": {
+            "mode": "play",
+            "x": 418,
+            "y": 7880,
+            "district": "SOUTHPORT AIRPORT",
+            "hp": 100,
+            "cash": 0,
+            "wanted": 0,
+            "mission": null,
+            "completed": 0,
+            "vehicle": null,
+            "weapon": "9MM PISTOL",
+            "clock": "13:00",
+            "renderer": "3d",
+            "vehicles": 285,
+            "pedestrians": 595
+          },
+          "faults": {
+            "count": 0,
+            "gameTime": 7.33,
+            "drill": null,
+            "kinds": []
+          },
+          "gpu": {
+            "watched": true,
+            "lost": false,
+            "losses": 0,
+            "restores": 0,
+            "reloadPending": false,
+            "lostSeconds": 0
+          },
+          "identity": {
+            "id": 285,
+            "type": "hotrod",
+            "x": 418,
+            "y": 7800,
+            "a": 0,
+            "kmh": 0,
+            "ai": false,
+            "occupied": false,
+            "altitude": 0
+          },
+          "model": {
+            "id": 285,
+            "type": "hotrod",
+            "asset": "coupe33_zhab",
+            "far": false,
+            "triangles": 20856,
+            "visible": true,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          "assets": {
+            "loaded": true,
+            "enabled": true,
+            "key": "coupe33_zhab",
+            "triangles": 20856,
+            "farTriangles": 5202,
+            "atlasSizes": [
+              [
+                4096,
+                4096
+              ],
+              [
+                4096,
+                4096
+              ]
+            ],
+            "reducedTextures": false,
+            "nativeCabin": true,
+            "nativeDoors": false,
+            "source": "https://sketchfab.com/3d-models/coupe-33-hot-rod-3-low-poly-model-cb5b519024c7472895ef10a8663fb533",
+            "license": "CC BY 4.0"
+          },
+          "doors": {
+            "id": 285,
+            "type": "hotrod",
+            "asset": "Coupe '33 Hot Rod #3 - Low Poly Model",
+            "mask": 0,
+            "nativeDoors": false,
+            "doors": {},
+            "materials": {
+              "shell": {
+                "uuid": "678f9f86-0702-4b05-8aff-070ab6537ccf",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "trim": {
+                "uuid": "912f905b-37cc-4805-880b-516c342e565a",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "optics": {
+                "uuid": "cbe878b8-6fb2-4b54-9d2d-1dee0620516f",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": true,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "cabin": {
+                "uuid": "cbe878b8-6fb2-4b54-9d2d-1dee0620516f",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": true,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 2,
+                "forceSinglePass": true
+              }
+            },
+            "closedSourceGeometry": {
+              "shell": true,
+              "panels": true,
+              "cabin": true,
+              "trim": true,
+              "optics": true
+            },
+            "sourceGeometryRestored": {
+              "shell": true,
+              "panels": true,
+              "cabin": true,
+              "trim": true,
+              "optics": true
+            },
+            "cabin": {
+              "authored": true,
+              "fallbackVisible": false,
+              "interiorTriangles": 1951,
+              "seat": [
+                0,
+                5.32,
+                -2.32
+              ]
+            }
+          },
+          "char": null,
+          "damage": {
+            "id": 285,
+            "type": "hotrod",
+            "hp": 145,
+            "maxhp": 145,
+            "zones": {
+              "front": 0,
+              "rear": 0,
+              "left": 0,
+              "right": 0
+            },
+            "dents": [],
+            "parts": {
+              "hood": 0,
+              "bumperFront": 0,
+              "bumperRear": 0,
+              "doorLeft": 0,
+              "doorRight": 0,
+              "trunk": 0
+            },
+            "glass": {
+              "front": 0,
+              "rear": 0,
+              "left": 0,
+              "right": 0
+            },
+            "lights": [],
+            "flatTires": [],
+            "marks": {},
+            "pull": 0,
+            "handling": {
+              "power": 1,
+              "top": 1,
+              "grip": 1,
+              "pull": 0,
+              "steer": 1,
+              "brake": 1
+            },
+            "burning": 0,
+            "fireSpent": false,
+            "burnt": false,
+            "speed": 0,
+            "spin": 0,
+            "x": 418,
+            "y": 7800,
+            "a": 0
+          },
+          "cabin": {
+            "hip": [
+              0,
+              0.665,
+              -0.29
+            ],
+            "door": [
+              -0.468,
+              0.393
+            ],
+            "floor": 0.665,
+            "floorWorldY": 0.677,
+            "pedalHeight": 0.765,
+            "recline": 0.54,
+            "rear": false,
+            "two": true,
+            "cabinTriangles": 1951,
+            "seated": 0,
+            "headroom": 0.022,
+            "behind": 0.309
+          },
+          "headroom": [
+            {
+              "type": "hotrod",
+              "body": null,
+              "hip": [
+                0,
+                0.665
+              ],
+              "recline": 0.54,
+              "fitMs": 0.7,
+              "clear": {
+                "man": 0.022,
+                "woman": 0.084,
+                "player": 0.103,
+                "avatar": "Male_Adult_04",
+                "avatarRoom": 0.039
+              },
+              "roof": {
+                "man": 0.022,
+                "woman": 0.084,
+                "player": 0.103
+              },
+              "through": [],
+              "key": "hotrod",
+              "seat": [
+                0,
+                0.665,
+                0.29,
+                0.49,
+                1.124
+              ],
+              "gameSeat": [
+                0,
+                0.665,
+                0.29,
+                0.49,
+                1.124
+              ],
+              "seatGap": 0
+            }
+          ],
+          "camera": {
+            "zoom": 1.555,
+            "target": 1.6,
+            "context": 1,
+            "slowFraming": false,
+            "vehicleContext": null,
+            "speed": 1,
+            "kmh": 0,
+            "framing": 0.916,
+            "framed": 1.466,
+            "aim": 1.6,
+            "defaultZoom": 2,
+            "limits": [
+              0.14,
+              4.5
+            ],
+            "viewport": [
+              960,
+              600
+            ],
+            "viewMetres": 34.6,
+            "personPx": 19,
+            "motionComfort": false,
+            "vehicleDistance": 120,
+            "walkDistance": 100,
+            "comfort": null
+          }
+        },
+        "far": {
+          "status": {
+            "mode": "play",
+            "x": 418,
+            "y": 8100,
+            "district": "SOUTHPORT AIRPORT",
+            "hp": 100,
+            "cash": 0,
+            "wanted": 0,
+            "mission": null,
+            "completed": 0,
+            "vehicle": null,
+            "weapon": "9MM PISTOL",
+            "clock": "13:00",
+            "renderer": "3d",
+            "vehicles": 285,
+            "pedestrians": 595
+          },
+          "faults": {
+            "count": 0,
+            "gameTime": 7.35,
+            "drill": null,
+            "kinds": []
+          },
+          "gpu": {
+            "watched": true,
+            "lost": false,
+            "losses": 0,
+            "restores": 0,
+            "reloadPending": false,
+            "lostSeconds": 0
+          },
+          "identity": {
+            "id": 285,
+            "type": "hotrod",
+            "x": 418,
+            "y": 7800,
+            "a": 0,
+            "kmh": 0,
+            "ai": false,
+            "occupied": false,
+            "altitude": 0
+          },
+          "model": {
+            "id": 285,
+            "type": "hotrod",
+            "asset": "coupe33_zhab",
+            "far": true,
+            "triangles": 5202,
+            "visible": true,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          "assets": {
+            "loaded": true,
+            "enabled": true,
+            "key": "coupe33_zhab",
+            "triangles": 20856,
+            "farTriangles": 5202,
+            "atlasSizes": [
+              [
+                4096,
+                4096
+              ],
+              [
+                4096,
+                4096
+              ]
+            ],
+            "reducedTextures": false,
+            "nativeCabin": true,
+            "nativeDoors": false,
+            "source": "https://sketchfab.com/3d-models/coupe-33-hot-rod-3-low-poly-model-cb5b519024c7472895ef10a8663fb533",
+            "license": "CC BY 4.0"
+          },
+          "doors": {
+            "id": 285,
+            "type": "hotrod",
+            "asset": "Coupe '33 Hot Rod #3 - Low Poly Model",
+            "mask": 0,
+            "nativeDoors": false,
+            "doors": {},
+            "materials": {
+              "shell": {
+                "uuid": "678f9f86-0702-4b05-8aff-070ab6537ccf",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "trim": {
+                "uuid": "912f905b-37cc-4805-880b-516c342e565a",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "optics": {
+                "uuid": "cbe878b8-6fb2-4b54-9d2d-1dee0620516f",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": true,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "cabin": {
+                "uuid": "cbe878b8-6fb2-4b54-9d2d-1dee0620516f",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": true,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 2,
+                "forceSinglePass": true
+              }
+            },
+            "closedSourceGeometry": {
+              "shell": false,
+              "panels": false,
+              "cabin": false,
+              "trim": false,
+              "optics": false
+            },
+            "sourceGeometryRestored": {
+              "shell": false,
+              "panels": false,
+              "cabin": false,
+              "trim": false,
+              "optics": false
+            },
+            "cabin": {
+              "authored": true,
+              "fallbackVisible": false,
+              "interiorTriangles": 1951,
+              "seat": [
+                0,
+                5.32,
+                -2.32
+              ]
+            }
+          },
+          "char": null,
+          "damage": {
+            "id": 285,
+            "type": "hotrod",
+            "hp": 145,
+            "maxhp": 145,
+            "zones": {
+              "front": 0,
+              "rear": 0,
+              "left": 0,
+              "right": 0
+            },
+            "dents": [],
+            "parts": {
+              "hood": 0,
+              "bumperFront": 0,
+              "bumperRear": 0,
+              "doorLeft": 0,
+              "doorRight": 0,
+              "trunk": 0
+            },
+            "glass": {
+              "front": 0,
+              "rear": 0,
+              "left": 0,
+              "right": 0
+            },
+            "lights": [],
+            "flatTires": [],
+            "marks": {},
+            "pull": 0,
+            "handling": {
+              "power": 1,
+              "top": 1,
+              "grip": 1,
+              "pull": 0,
+              "steer": 1,
+              "brake": 1
+            },
+            "burning": 0,
+            "fireSpent": false,
+            "burnt": false,
+            "speed": 0,
+            "spin": 0,
+            "x": 418,
+            "y": 7800,
+            "a": 0
+          },
+          "cabin": {
+            "hip": [
+              0,
+              0.665,
+              -0.29
+            ],
+            "door": [
+              -0.468,
+              0.393
+            ],
+            "floor": 0.665,
+            "floorWorldY": 0.677,
+            "pedalHeight": 0.765,
+            "recline": 0.54,
+            "rear": false,
+            "two": true,
+            "cabinTriangles": 1951,
+            "seated": 0,
+            "headroom": 0.022,
+            "behind": 0.309
+          },
+          "headroom": [
+            {
+              "type": "hotrod",
+              "body": null,
+              "hip": [
+                0,
+                0.665
+              ],
+              "recline": 0.54,
+              "fitMs": 0.7,
+              "clear": {
+                "man": 0.022,
+                "woman": 0.084,
+                "player": 0.103,
+                "avatar": "Male_Adult_04",
+                "avatarRoom": 0.039
+              },
+              "roof": {
+                "man": 0.022,
+                "woman": 0.084,
+                "player": 0.103
+              },
+              "through": [],
+              "key": "hotrod",
+              "seat": [
+                0,
+                0.665,
+                0.29,
+                0.49,
+                1.124
+              ],
+              "gameSeat": [
+                0,
+                0.665,
+                0.29,
+                0.49,
+                1.124
+              ],
+              "seatGap": 0
+            }
+          ],
+          "camera": {
+            "zoom": 0.886,
+            "target": 0.9,
+            "context": 1,
+            "slowFraming": false,
+            "vehicleContext": null,
+            "speed": 1,
+            "kmh": 0,
+            "framing": 0.917,
+            "framed": 0.825,
+            "aim": 0.9,
+            "defaultZoom": 2,
+            "limits": [
+              0.14,
+              4.5
+            ],
+            "viewport": [
+              960,
+              600
+            ],
+            "viewMetres": 60.6,
+            "personPx": 11,
+            "motionComfort": false,
+            "vehicleDistance": 120,
+            "walkDistance": 100,
+            "comfort": null
+          }
+        }
+      },
+      {
+        "requested": "ultra",
+        "quality": {
+          "setting": "ultra",
+          "tier": "ULTRA",
+          "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+          "hdr": true,
+          "shadowMap": 4096,
+          "pixelRatio": 1,
+          "renderScale": 1,
+          "shadows": "high",
+          "shadowSetting": "auto",
+          "adaptive": {
+            "averageFrameMs": 0,
+            "tierDrops": 0,
+            "ceiling": 1,
+            "holdSeconds": 0
+          }
+        },
+        "near": {
+          "status": {
+            "mode": "play",
+            "x": 418,
+            "y": 7880,
+            "district": "SOUTHPORT AIRPORT",
+            "hp": 100,
+            "cash": 0,
+            "wanted": 0,
+            "mission": null,
+            "completed": 0,
+            "vehicle": null,
+            "weapon": "9MM PISTOL",
+            "clock": "13:00",
+            "renderer": "3d",
+            "vehicles": 285,
+            "pedestrians": 595
+          },
+          "faults": {
+            "count": 0,
+            "gameTime": 7.38,
+            "drill": null,
+            "kinds": []
+          },
+          "gpu": {
+            "watched": true,
+            "lost": false,
+            "losses": 0,
+            "restores": 0,
+            "reloadPending": false,
+            "lostSeconds": 0
+          },
+          "identity": {
+            "id": 285,
+            "type": "hotrod",
+            "x": 418,
+            "y": 7800,
+            "a": 0,
+            "kmh": 0,
+            "ai": false,
+            "occupied": false,
+            "altitude": 0
+          },
+          "model": {
+            "id": 285,
+            "type": "hotrod",
+            "asset": "coupe33_zhab",
+            "far": false,
+            "triangles": 20856,
+            "visible": true,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          "assets": {
+            "loaded": true,
+            "enabled": true,
+            "key": "coupe33_zhab",
+            "triangles": 20856,
+            "farTriangles": 5202,
+            "atlasSizes": [
+              [
+                4096,
+                4096
+              ],
+              [
+                4096,
+                4096
+              ]
+            ],
+            "reducedTextures": false,
+            "nativeCabin": true,
+            "nativeDoors": false,
+            "source": "https://sketchfab.com/3d-models/coupe-33-hot-rod-3-low-poly-model-cb5b519024c7472895ef10a8663fb533",
+            "license": "CC BY 4.0"
+          },
+          "doors": {
+            "id": 285,
+            "type": "hotrod",
+            "asset": "Coupe '33 Hot Rod #3 - Low Poly Model",
+            "mask": 0,
+            "nativeDoors": false,
+            "doors": {},
+            "materials": {
+              "shell": {
+                "uuid": "678f9f86-0702-4b05-8aff-070ab6537ccf",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "trim": {
+                "uuid": "912f905b-37cc-4805-880b-516c342e565a",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "optics": {
+                "uuid": "cbe878b8-6fb2-4b54-9d2d-1dee0620516f",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": true,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "cabin": {
+                "uuid": "cbe878b8-6fb2-4b54-9d2d-1dee0620516f",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": true,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 2,
+                "forceSinglePass": true
+              }
+            },
+            "closedSourceGeometry": {
+              "shell": true,
+              "panels": true,
+              "cabin": true,
+              "trim": true,
+              "optics": true
+            },
+            "sourceGeometryRestored": {
+              "shell": true,
+              "panels": true,
+              "cabin": true,
+              "trim": true,
+              "optics": true
+            },
+            "cabin": {
+              "authored": true,
+              "fallbackVisible": false,
+              "interiorTriangles": 1951,
+              "seat": [
+                0,
+                5.32,
+                -2.32
+              ]
+            }
+          },
+          "char": null,
+          "damage": {
+            "id": 285,
+            "type": "hotrod",
+            "hp": 145,
+            "maxhp": 145,
+            "zones": {
+              "front": 0,
+              "rear": 0,
+              "left": 0,
+              "right": 0
+            },
+            "dents": [],
+            "parts": {
+              "hood": 0,
+              "bumperFront": 0,
+              "bumperRear": 0,
+              "doorLeft": 0,
+              "doorRight": 0,
+              "trunk": 0
+            },
+            "glass": {
+              "front": 0,
+              "rear": 0,
+              "left": 0,
+              "right": 0
+            },
+            "lights": [],
+            "flatTires": [],
+            "marks": {},
+            "pull": 0,
+            "handling": {
+              "power": 1,
+              "top": 1,
+              "grip": 1,
+              "pull": 0,
+              "steer": 1,
+              "brake": 1
+            },
+            "burning": 0,
+            "fireSpent": false,
+            "burnt": false,
+            "speed": 0,
+            "spin": 0,
+            "x": 418,
+            "y": 7800,
+            "a": 0
+          },
+          "cabin": {
+            "hip": [
+              0,
+              0.665,
+              -0.29
+            ],
+            "door": [
+              -0.468,
+              0.393
+            ],
+            "floor": 0.665,
+            "floorWorldY": 0.677,
+            "pedalHeight": 0.765,
+            "recline": 0.54,
+            "rear": false,
+            "two": true,
+            "cabinTriangles": 1951,
+            "seated": 0,
+            "headroom": 0.022,
+            "behind": 0.309
+          },
+          "headroom": [
+            {
+              "type": "hotrod",
+              "body": null,
+              "hip": [
+                0,
+                0.665
+              ],
+              "recline": 0.54,
+              "fitMs": 0.7,
+              "clear": {
+                "man": 0.022,
+                "woman": 0.084,
+                "player": 0.103,
+                "avatar": "Male_Adult_04",
+                "avatarRoom": 0.039
+              },
+              "roof": {
+                "man": 0.022,
+                "woman": 0.084,
+                "player": 0.103
+              },
+              "through": [],
+              "key": "hotrod",
+              "seat": [
+                0,
+                0.665,
+                0.29,
+                0.49,
+                1.124
+              ],
+              "gameSeat": [
+                0,
+                0.665,
+                0.29,
+                0.49,
+                1.124
+              ],
+              "seatGap": 0
+            }
+          ],
+          "camera": {
+            "zoom": 1.556,
+            "target": 1.6,
+            "context": 1,
+            "slowFraming": false,
+            "vehicleContext": null,
+            "speed": 1,
+            "kmh": 0,
+            "framing": 0.918,
+            "framed": 1.469,
+            "aim": 1.6,
+            "defaultZoom": 2,
+            "limits": [
+              0.14,
+              4.5
+            ],
+            "viewport": [
+              960,
+              600
+            ],
+            "viewMetres": 34.5,
+            "personPx": 19,
+            "motionComfort": false,
+            "vehicleDistance": 120,
+            "walkDistance": 100,
+            "comfort": null
+          }
+        },
+        "far": {
+          "status": {
+            "mode": "play",
+            "x": 418,
+            "y": 8100,
+            "district": "SOUTHPORT AIRPORT",
+            "hp": 100,
+            "cash": 0,
+            "wanted": 0,
+            "mission": null,
+            "completed": 0,
+            "vehicle": null,
+            "weapon": "9MM PISTOL",
+            "clock": "13:00",
+            "renderer": "3d",
+            "vehicles": 285,
+            "pedestrians": 595
+          },
+          "faults": {
+            "count": 0,
+            "gameTime": 7.4,
+            "drill": null,
+            "kinds": []
+          },
+          "gpu": {
+            "watched": true,
+            "lost": false,
+            "losses": 0,
+            "restores": 0,
+            "reloadPending": false,
+            "lostSeconds": 0
+          },
+          "identity": {
+            "id": 285,
+            "type": "hotrod",
+            "x": 418,
+            "y": 7800,
+            "a": 0,
+            "kmh": 0,
+            "ai": false,
+            "occupied": false,
+            "altitude": 0
+          },
+          "model": {
+            "id": 285,
+            "type": "hotrod",
+            "asset": "coupe33_zhab",
+            "far": true,
+            "triangles": 5202,
+            "visible": true,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          "assets": {
+            "loaded": true,
+            "enabled": true,
+            "key": "coupe33_zhab",
+            "triangles": 20856,
+            "farTriangles": 5202,
+            "atlasSizes": [
+              [
+                4096,
+                4096
+              ],
+              [
+                4096,
+                4096
+              ]
+            ],
+            "reducedTextures": false,
+            "nativeCabin": true,
+            "nativeDoors": false,
+            "source": "https://sketchfab.com/3d-models/coupe-33-hot-rod-3-low-poly-model-cb5b519024c7472895ef10a8663fb533",
+            "license": "CC BY 4.0"
+          },
+          "doors": {
+            "id": 285,
+            "type": "hotrod",
+            "asset": "Coupe '33 Hot Rod #3 - Low Poly Model",
+            "mask": 0,
+            "nativeDoors": false,
+            "doors": {},
+            "materials": {
+              "shell": {
+                "uuid": "678f9f86-0702-4b05-8aff-070ab6537ccf",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "trim": {
+                "uuid": "912f905b-37cc-4805-880b-516c342e565a",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "optics": {
+                "uuid": "cbe878b8-6fb2-4b54-9d2d-1dee0620516f",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": true,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "cabin": {
+                "uuid": "cbe878b8-6fb2-4b54-9d2d-1dee0620516f",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": true,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 2,
+                "forceSinglePass": true
+              }
+            },
+            "closedSourceGeometry": {
+              "shell": false,
+              "panels": false,
+              "cabin": false,
+              "trim": false,
+              "optics": false
+            },
+            "sourceGeometryRestored": {
+              "shell": false,
+              "panels": false,
+              "cabin": false,
+              "trim": false,
+              "optics": false
+            },
+            "cabin": {
+              "authored": true,
+              "fallbackVisible": false,
+              "interiorTriangles": 1951,
+              "seat": [
+                0,
+                5.32,
+                -2.32
+              ]
+            }
+          },
+          "char": null,
+          "damage": {
+            "id": 285,
+            "type": "hotrod",
+            "hp": 145,
+            "maxhp": 145,
+            "zones": {
+              "front": 0,
+              "rear": 0,
+              "left": 0,
+              "right": 0
+            },
+            "dents": [],
+            "parts": {
+              "hood": 0,
+              "bumperFront": 0,
+              "bumperRear": 0,
+              "doorLeft": 0,
+              "doorRight": 0,
+              "trunk": 0
+            },
+            "glass": {
+              "front": 0,
+              "rear": 0,
+              "left": 0,
+              "right": 0
+            },
+            "lights": [],
+            "flatTires": [],
+            "marks": {},
+            "pull": 0,
+            "handling": {
+              "power": 1,
+              "top": 1,
+              "grip": 1,
+              "pull": 0,
+              "steer": 1,
+              "brake": 1
+            },
+            "burning": 0,
+            "fireSpent": false,
+            "burnt": false,
+            "speed": 0,
+            "spin": 0,
+            "x": 418,
+            "y": 7800,
+            "a": 0
+          },
+          "cabin": {
+            "hip": [
+              0,
+              0.665,
+              -0.29
+            ],
+            "door": [
+              -0.468,
+              0.393
+            ],
+            "floor": 0.665,
+            "floorWorldY": 0.677,
+            "pedalHeight": 0.765,
+            "recline": 0.54,
+            "rear": false,
+            "two": true,
+            "cabinTriangles": 1951,
+            "seated": 0,
+            "headroom": 0.022,
+            "behind": 0.309
+          },
+          "headroom": [
+            {
+              "type": "hotrod",
+              "body": null,
+              "hip": [
+                0,
+                0.665
+              ],
+              "recline": 0.54,
+              "fitMs": 0.7,
+              "clear": {
+                "man": 0.022,
+                "woman": 0.084,
+                "player": 0.103,
+                "avatar": "Male_Adult_04",
+                "avatarRoom": 0.039
+              },
+              "roof": {
+                "man": 0.022,
+                "woman": 0.084,
+                "player": 0.103
+              },
+              "through": [],
+              "key": "hotrod",
+              "seat": [
+                0,
+                0.665,
+                0.29,
+                0.49,
+                1.124
+              ],
+              "gameSeat": [
+                0,
+                0.665,
+                0.29,
+                0.49,
+                1.124
+              ],
+              "seatGap": 0
+            }
+          ],
+          "camera": {
+            "zoom": 0.887,
+            "target": 0.9,
+            "context": 1,
+            "slowFraming": false,
+            "vehicleContext": null,
+            "speed": 1,
+            "kmh": 0,
+            "framing": 0.919,
+            "framed": 0.827,
+            "aim": 0.9,
+            "defaultZoom": 2,
+            "limits": [
+              0.14,
+              4.5
+            ],
+            "viewport": [
+              960,
+              600
+            ],
+            "viewMetres": 60.6,
+            "personPx": 11,
+            "motionComfort": false,
+            "vehicleDistance": 120,
+            "walkDistance": 100,
+            "comfort": null
+          }
+        }
+      },
+      {
+        "requested": "auto",
+        "quality": {
+          "setting": "auto",
+          "tier": "LOW",
+          "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+          "hdr": true,
+          "shadowMap": 0,
+          "pixelRatio": 1,
+          "renderScale": 1,
+          "shadows": "off",
+          "shadowSetting": "auto",
+          "adaptive": {
+            "averageFrameMs": 0,
+            "tierDrops": 0,
+            "ceiling": 1,
+            "holdSeconds": 0
+          }
+        },
+        "near": {
+          "status": {
+            "mode": "play",
+            "x": 418,
+            "y": 7880,
+            "district": "SOUTHPORT AIRPORT",
+            "hp": 100,
+            "cash": 0,
+            "wanted": 0,
+            "mission": null,
+            "completed": 0,
+            "vehicle": null,
+            "weapon": "9MM PISTOL",
+            "clock": "13:00",
+            "renderer": "3d",
+            "vehicles": 285,
+            "pedestrians": 595
+          },
+          "faults": {
+            "count": 0,
+            "gameTime": 7.43,
+            "drill": null,
+            "kinds": []
+          },
+          "gpu": {
+            "watched": true,
+            "lost": false,
+            "losses": 0,
+            "restores": 0,
+            "reloadPending": false,
+            "lostSeconds": 0
+          },
+          "identity": {
+            "id": 285,
+            "type": "hotrod",
+            "x": 418,
+            "y": 7800,
+            "a": 0,
+            "kmh": 0,
+            "ai": false,
+            "occupied": false,
+            "altitude": 0
+          },
+          "model": {
+            "id": 285,
+            "type": "hotrod",
+            "asset": "coupe33_zhab",
+            "far": false,
+            "triangles": 20856,
+            "visible": true,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          "assets": {
+            "loaded": true,
+            "enabled": true,
+            "key": "coupe33_zhab",
+            "triangles": 20856,
+            "farTriangles": 5202,
+            "atlasSizes": [
+              [
+                2048,
+                2048
+              ],
+              [
+                2048,
+                2048
+              ]
+            ],
+            "reducedTextures": true,
+            "nativeCabin": true,
+            "nativeDoors": false,
+            "source": "https://sketchfab.com/3d-models/coupe-33-hot-rod-3-low-poly-model-cb5b519024c7472895ef10a8663fb533",
+            "license": "CC BY 4.0"
+          },
+          "doors": {
+            "id": 285,
+            "type": "hotrod",
+            "asset": "Coupe '33 Hot Rod #3 - Low Poly Model",
+            "mask": 0,
+            "nativeDoors": false,
+            "doors": {},
+            "materials": {
+              "shell": {
+                "uuid": "678f9f86-0702-4b05-8aff-070ab6537ccf",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "trim": {
+                "uuid": "912f905b-37cc-4805-880b-516c342e565a",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "optics": {
+                "uuid": "cbe878b8-6fb2-4b54-9d2d-1dee0620516f",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": true,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "cabin": {
+                "uuid": "cbe878b8-6fb2-4b54-9d2d-1dee0620516f",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": true,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 2,
+                "forceSinglePass": true
+              }
+            },
+            "closedSourceGeometry": {
+              "shell": true,
+              "panels": true,
+              "cabin": true,
+              "trim": true,
+              "optics": true
+            },
+            "sourceGeometryRestored": {
+              "shell": true,
+              "panels": true,
+              "cabin": true,
+              "trim": true,
+              "optics": true
+            },
+            "cabin": {
+              "authored": true,
+              "fallbackVisible": false,
+              "interiorTriangles": 1951,
+              "seat": [
+                0,
+                5.32,
+                -2.32
+              ]
+            }
+          },
+          "char": null,
+          "damage": {
+            "id": 285,
+            "type": "hotrod",
+            "hp": 145,
+            "maxhp": 145,
+            "zones": {
+              "front": 0,
+              "rear": 0,
+              "left": 0,
+              "right": 0
+            },
+            "dents": [],
+            "parts": {
+              "hood": 0,
+              "bumperFront": 0,
+              "bumperRear": 0,
+              "doorLeft": 0,
+              "doorRight": 0,
+              "trunk": 0
+            },
+            "glass": {
+              "front": 0,
+              "rear": 0,
+              "left": 0,
+              "right": 0
+            },
+            "lights": [],
+            "flatTires": [],
+            "marks": {},
+            "pull": 0,
+            "handling": {
+              "power": 1,
+              "top": 1,
+              "grip": 1,
+              "pull": 0,
+              "steer": 1,
+              "brake": 1
+            },
+            "burning": 0,
+            "fireSpent": false,
+            "burnt": false,
+            "speed": 0,
+            "spin": 0,
+            "x": 418,
+            "y": 7800,
+            "a": 0
+          },
+          "cabin": {
+            "hip": [
+              0,
+              0.665,
+              -0.29
+            ],
+            "door": [
+              -0.468,
+              0.393
+            ],
+            "floor": 0.665,
+            "floorWorldY": 0.677,
+            "pedalHeight": 0.765,
+            "recline": 0.54,
+            "rear": false,
+            "two": true,
+            "cabinTriangles": 1951,
+            "seated": 0,
+            "headroom": 0.022,
+            "behind": 0.309
+          },
+          "headroom": [
+            {
+              "type": "hotrod",
+              "body": null,
+              "hip": [
+                0,
+                0.665
+              ],
+              "recline": 0.54,
+              "fitMs": 0.7,
+              "clear": {
+                "man": 0.022,
+                "woman": 0.084,
+                "player": 0.103,
+                "avatar": "Male_Adult_04",
+                "avatarRoom": 0.039
+              },
+              "roof": {
+                "man": 0.022,
+                "woman": 0.084,
+                "player": 0.103
+              },
+              "through": [],
+              "key": "hotrod",
+              "seat": [
+                0,
+                0.665,
+                0.29,
+                0.49,
+                1.124
+              ],
+              "gameSeat": [
+                0,
+                0.665,
+                0.29,
+                0.49,
+                1.124
+              ],
+              "seatGap": 0
+            }
+          ],
+          "camera": {
+            "zoom": 1.557,
+            "target": 1.6,
+            "context": 1,
+            "slowFraming": false,
+            "vehicleContext": null,
+            "speed": 1,
+            "kmh": 0,
+            "framing": 0.92,
+            "framed": 1.473,
+            "aim": 1.6,
+            "defaultZoom": 2,
+            "limits": [
+              0.14,
+              4.5
+            ],
+            "viewport": [
+              960,
+              600
+            ],
+            "viewMetres": 34.5,
+            "personPx": 19,
+            "motionComfort": false,
+            "vehicleDistance": 120,
+            "walkDistance": 100,
+            "comfort": null
+          }
+        },
+        "far": {
+          "status": {
+            "mode": "play",
+            "x": 418,
+            "y": 8100,
+            "district": "SOUTHPORT AIRPORT",
+            "hp": 100,
+            "cash": 0,
+            "wanted": 0,
+            "mission": null,
+            "completed": 0,
+            "vehicle": null,
+            "weapon": "9MM PISTOL",
+            "clock": "13:00",
+            "renderer": "3d",
+            "vehicles": 285,
+            "pedestrians": 595
+          },
+          "faults": {
+            "count": 0,
+            "gameTime": 7.45,
+            "drill": null,
+            "kinds": []
+          },
+          "gpu": {
+            "watched": true,
+            "lost": false,
+            "losses": 0,
+            "restores": 0,
+            "reloadPending": false,
+            "lostSeconds": 0
+          },
+          "identity": {
+            "id": 285,
+            "type": "hotrod",
+            "x": 418,
+            "y": 7800,
+            "a": 0,
+            "kmh": 0,
+            "ai": false,
+            "occupied": false,
+            "altitude": 0
+          },
+          "model": {
+            "id": 285,
+            "type": "hotrod",
+            "asset": "coupe33_zhab",
+            "far": true,
+            "triangles": 5202,
+            "visible": true,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          "assets": {
+            "loaded": true,
+            "enabled": true,
+            "key": "coupe33_zhab",
+            "triangles": 20856,
+            "farTriangles": 5202,
+            "atlasSizes": [
+              [
+                2048,
+                2048
+              ],
+              [
+                2048,
+                2048
+              ]
+            ],
+            "reducedTextures": true,
+            "nativeCabin": true,
+            "nativeDoors": false,
+            "source": "https://sketchfab.com/3d-models/coupe-33-hot-rod-3-low-poly-model-cb5b519024c7472895ef10a8663fb533",
+            "license": "CC BY 4.0"
+          },
+          "doors": {
+            "id": 285,
+            "type": "hotrod",
+            "asset": "Coupe '33 Hot Rod #3 - Low Poly Model",
+            "mask": 0,
+            "nativeDoors": false,
+            "doors": {},
+            "materials": {
+              "shell": {
+                "uuid": "678f9f86-0702-4b05-8aff-070ab6537ccf",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "trim": {
+                "uuid": "912f905b-37cc-4805-880b-516c342e565a",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "optics": {
+                "uuid": "cbe878b8-6fb2-4b54-9d2d-1dee0620516f",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": true,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "cabin": {
+                "uuid": "cbe878b8-6fb2-4b54-9d2d-1dee0620516f",
+                "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                "emissiveMap": null,
+                "transparent": true,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 2,
+                "forceSinglePass": true
+              }
+            },
+            "closedSourceGeometry": {
+              "shell": false,
+              "panels": false,
+              "cabin": false,
+              "trim": false,
+              "optics": false
+            },
+            "sourceGeometryRestored": {
+              "shell": false,
+              "panels": false,
+              "cabin": false,
+              "trim": false,
+              "optics": false
+            },
+            "cabin": {
+              "authored": true,
+              "fallbackVisible": false,
+              "interiorTriangles": 1951,
+              "seat": [
+                0,
+                5.32,
+                -2.32
+              ]
+            }
+          },
+          "char": null,
+          "damage": {
+            "id": 285,
+            "type": "hotrod",
+            "hp": 145,
+            "maxhp": 145,
+            "zones": {
+              "front": 0,
+              "rear": 0,
+              "left": 0,
+              "right": 0
+            },
+            "dents": [],
+            "parts": {
+              "hood": 0,
+              "bumperFront": 0,
+              "bumperRear": 0,
+              "doorLeft": 0,
+              "doorRight": 0,
+              "trunk": 0
+            },
+            "glass": {
+              "front": 0,
+              "rear": 0,
+              "left": 0,
+              "right": 0
+            },
+            "lights": [],
+            "flatTires": [],
+            "marks": {},
+            "pull": 0,
+            "handling": {
+              "power": 1,
+              "top": 1,
+              "grip": 1,
+              "pull": 0,
+              "steer": 1,
+              "brake": 1
+            },
+            "burning": 0,
+            "fireSpent": false,
+            "burnt": false,
+            "speed": 0,
+            "spin": 0,
+            "x": 418,
+            "y": 7800,
+            "a": 0
+          },
+          "cabin": {
+            "hip": [
+              0,
+              0.665,
+              -0.29
+            ],
+            "door": [
+              -0.468,
+              0.393
+            ],
+            "floor": 0.665,
+            "floorWorldY": 0.677,
+            "pedalHeight": 0.765,
+            "recline": 0.54,
+            "rear": false,
+            "two": true,
+            "cabinTriangles": 1951,
+            "seated": 0,
+            "headroom": 0.022,
+            "behind": 0.309
+          },
+          "headroom": [
+            {
+              "type": "hotrod",
+              "body": null,
+              "hip": [
+                0,
+                0.665
+              ],
+              "recline": 0.54,
+              "fitMs": 0.7,
+              "clear": {
+                "man": 0.022,
+                "woman": 0.084,
+                "player": 0.103,
+                "avatar": "Male_Adult_04",
+                "avatarRoom": 0.039
+              },
+              "roof": {
+                "man": 0.022,
+                "woman": 0.084,
+                "player": 0.103
+              },
+              "through": [],
+              "key": "hotrod",
+              "seat": [
+                0,
+                0.665,
+                0.29,
+                0.49,
+                1.124
+              ],
+              "gameSeat": [
+                0,
+                0.665,
+                0.29,
+                0.49,
+                1.124
+              ],
+              "seatGap": 0
+            }
+          ],
+          "camera": {
+            "zoom": 0.887,
+            "target": 0.9,
+            "context": 1,
+            "slowFraming": false,
+            "vehicleContext": null,
+            "speed": 1,
+            "kmh": 0,
+            "framing": 0.921,
+            "framed": 0.829,
+            "aim": 0.9,
+            "defaultZoom": 2,
+            "limits": [
+              0.14,
+              4.5
+            ],
+            "viewport": [
+              960,
+              600
+            ],
+            "viewMetres": 60.6,
+            "personPx": 11,
+            "motionComfort": false,
+            "vehicleDistance": 120,
+            "walkDistance": 100,
+            "comfort": null
+          }
+        }
+      }
+    ],
+    "stages": {
+      "hotrodClean": {
+        "status": {
+          "mode": "play",
+          "x": 418,
+          "y": 7880,
+          "district": "SOUTHPORT AIRPORT",
+          "hp": 100,
+          "cash": 0,
+          "wanted": 0,
+          "mission": null,
+          "completed": 0,
+          "vehicle": null,
+          "weapon": "9MM PISTOL",
+          "clock": "13:00",
+          "renderer": "3d",
+          "vehicles": 285,
+          "pedestrians": 595
+        },
+        "faults": {
+          "count": 0,
+          "gameTime": 7.2,
+          "drill": null,
+          "kinds": []
+        },
+        "gpu": {
+          "watched": true,
+          "lost": false,
+          "losses": 0,
+          "restores": 0,
+          "reloadPending": false,
+          "lostSeconds": 0
+        },
+        "identity": {
+          "id": 285,
+          "type": "hotrod",
+          "x": 418,
+          "y": 7800,
+          "a": 0,
+          "kmh": 0,
+          "ai": false,
+          "occupied": false,
+          "altitude": 0
+        },
+        "model": {
+          "id": 285,
+          "type": "hotrod",
+          "asset": "coupe33_zhab",
+          "far": false,
+          "triangles": 20856,
+          "visible": true,
+          "pool": {
+            "ready": false,
+            "instances": 0,
+            "triangles": 0
+          }
+        },
+        "assets": {
+          "loaded": true,
+          "enabled": true,
+          "key": "coupe33_zhab",
+          "triangles": 20856,
+          "farTriangles": 5202,
+          "atlasSizes": [
+            [
+              4096,
+              4096
+            ],
+            [
+              4096,
+              4096
+            ]
+          ],
+          "reducedTextures": false,
+          "nativeCabin": true,
+          "nativeDoors": false,
+          "source": "https://sketchfab.com/3d-models/coupe-33-hot-rod-3-low-poly-model-cb5b519024c7472895ef10a8663fb533",
+          "license": "CC BY 4.0"
+        },
+        "doors": {
+          "id": 285,
+          "type": "hotrod",
+          "asset": "Coupe '33 Hot Rod #3 - Low Poly Model",
+          "mask": 0,
+          "nativeDoors": false,
+          "doors": {},
+          "materials": {
+            "shell": {
+              "uuid": "678f9f86-0702-4b05-8aff-070ab6537ccf",
+              "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+              "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "emissiveMap": null,
+              "transparent": false,
+              "opacity": 1,
+              "alphaTest": 0.5,
+              "depthWrite": true,
+              "side": 2,
+              "forceSinglePass": true
+            },
+            "trim": {
+              "uuid": "912f905b-37cc-4805-880b-516c342e565a",
+              "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+              "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "emissiveMap": null,
+              "transparent": false,
+              "opacity": 1,
+              "alphaTest": 0.5,
+              "depthWrite": true,
+              "side": 2,
+              "forceSinglePass": true
+            },
+            "optics": {
+              "uuid": "cbe878b8-6fb2-4b54-9d2d-1dee0620516f",
+              "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+              "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "emissiveMap": null,
+              "transparent": true,
+              "opacity": 1,
+              "alphaTest": 0,
+              "depthWrite": false,
+              "side": 2,
+              "forceSinglePass": true
+            },
+            "cabin": {
+              "uuid": "cbe878b8-6fb2-4b54-9d2d-1dee0620516f",
+              "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+              "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "emissiveMap": null,
+              "transparent": true,
+              "opacity": 1,
+              "alphaTest": 0,
+              "depthWrite": false,
+              "side": 2,
+              "forceSinglePass": true
+            }
+          },
+          "closedSourceGeometry": {
+            "shell": true,
+            "panels": true,
+            "cabin": true,
+            "trim": true,
+            "optics": true
+          },
+          "sourceGeometryRestored": {
+            "shell": true,
+            "panels": true,
+            "cabin": true,
+            "trim": true,
+            "optics": true
+          },
+          "cabin": {
+            "authored": true,
+            "fallbackVisible": false,
+            "interiorTriangles": 1951,
+            "seat": [
+              0,
+              5.32,
+              -2.32
+            ]
+          }
+        },
+        "char": null,
+        "damage": {
+          "id": 285,
+          "type": "hotrod",
+          "hp": 145,
+          "maxhp": 145,
+          "zones": {
+            "front": 0,
+            "rear": 0,
+            "left": 0,
+            "right": 0
+          },
+          "dents": [],
+          "parts": {
+            "hood": 0,
+            "bumperFront": 0,
+            "bumperRear": 0,
+            "doorLeft": 0,
+            "doorRight": 0,
+            "trunk": 0
+          },
+          "glass": {
+            "front": 0,
+            "rear": 0,
+            "left": 0,
+            "right": 0
+          },
+          "lights": [],
+          "flatTires": [],
+          "marks": {},
+          "pull": 0,
+          "handling": {
+            "power": 1,
+            "top": 1,
+            "grip": 1,
+            "pull": 0,
+            "steer": 1,
+            "brake": 1
+          },
+          "burning": 0,
+          "fireSpent": false,
+          "burnt": false,
+          "speed": 0,
+          "spin": 0,
+          "x": 418,
+          "y": 7800,
+          "a": 0
+        },
+        "cabin": {
+          "hip": [
+            0,
+            0.665,
+            -0.29
+          ],
+          "door": [
+            -0.468,
+            0.393
+          ],
+          "floor": 0.665,
+          "floorWorldY": 0.677,
+          "pedalHeight": 0.765,
+          "recline": 0.54,
+          "rear": false,
+          "two": true,
+          "cabinTriangles": 1951,
+          "seated": 0,
+          "headroom": 0.022,
+          "behind": 0.309
+        },
+        "headroom": [
+          {
+            "type": "hotrod",
+            "body": null,
+            "hip": [
+              0,
+              0.665
+            ],
+            "recline": 0.54,
+            "fitMs": 0.7,
+            "clear": {
+              "man": 0.022,
+              "woman": 0.084,
+              "player": 0.103,
+              "avatar": "Male_Adult_04",
+              "avatarRoom": 0.039
+            },
+            "roof": {
+              "man": 0.022,
+              "woman": 0.084,
+              "player": 0.103
+            },
+            "through": [],
+            "key": "hotrod",
+            "seat": [
+              0,
+              0.665,
+              0.29,
+              0.49,
+              1.124
+            ],
+            "gameSeat": [
+              0,
+              0.665,
+              0.29,
+              0.49,
+              1.124
+            ],
+            "seatGap": 0
+          }
+        ],
+        "camera": {
+          "zoom": 1.52,
+          "target": 1.6,
+          "context": 1,
+          "slowFraming": false,
+          "vehicleContext": null,
+          "speed": 1,
+          "kmh": 0,
+          "framing": 0.911,
+          "framed": 1.457,
+          "aim": 1.6,
+          "defaultZoom": 2,
+          "limits": [
+            0.14,
+            4.5
+          ],
+          "viewport": [
+            960,
+            600
+          ],
+          "viewMetres": 35.4,
+          "personPx": 19,
+          "motionComfort": false,
+          "vehicleDistance": 120,
+          "walkDistance": 100,
+          "comfort": null
+        }
+      },
+      "hotrodBurnBeforeDoor": {
+        "status": {
+          "mode": "play",
+          "x": 378,
+          "y": 7800,
+          "district": "SOUTHPORT AIRPORT",
+          "hp": 100,
+          "cash": 0,
+          "wanted": 0,
+          "mission": null,
+          "completed": 0,
+          "vehicle": null,
+          "weapon": "9MM PISTOL",
+          "clock": "13:00",
+          "renderer": "3d",
+          "vehicles": 285,
+          "pedestrians": 595
+        },
+        "faults": {
+          "count": 0,
+          "gameTime": 7.5,
+          "drill": null,
+          "kinds": []
+        },
+        "gpu": {
+          "watched": true,
+          "lost": false,
+          "losses": 0,
+          "restores": 0,
+          "reloadPending": false,
+          "lostSeconds": 0
+        },
+        "identity": {
+          "id": 285,
+          "type": "hotrod",
+          "x": 418,
+          "y": 7800,
+          "a": 0,
+          "kmh": 0,
+          "ai": false,
+          "occupied": false,
+          "altitude": 0
+        },
+        "model": {
+          "id": 285,
+          "type": "hotrod",
+          "asset": "coupe33_zhab",
+          "far": false,
+          "triangles": 21111,
+          "visible": true,
+          "pool": {
+            "ready": false,
+            "instances": 0,
+            "triangles": 0
+          }
+        },
+        "assets": {
+          "loaded": true,
+          "enabled": true,
+          "key": "coupe33_zhab",
+          "triangles": 20856,
+          "farTriangles": 5202,
+          "atlasSizes": [
+            [
+              4096,
+              4096
+            ],
+            [
+              4096,
+              4096
+            ]
+          ],
+          "reducedTextures": false,
+          "nativeCabin": true,
+          "nativeDoors": false,
+          "source": "https://sketchfab.com/3d-models/coupe-33-hot-rod-3-low-poly-model-cb5b519024c7472895ef10a8663fb533",
+          "license": "CC BY 4.0"
+        },
+        "doors": {
+          "id": 285,
+          "type": "hotrod",
+          "asset": "Coupe '33 Hot Rod #3 - Low Poly Model",
+          "mask": 3,
+          "nativeDoors": false,
+          "doors": {
+            "1": {
+              "native": false,
+              "pivot": [
+                3.140483001827268,
+                0,
+                4.982737522862813
+              ],
+              "axis": [
+                0,
+                1,
+                0
+              ],
+              "quaternion": [
+                -0.02057328499861761,
+                0.4568754701364737,
+                -0.04000466770726297,
+                0.8883924646762675
+              ],
+              "angle": 0.95,
+              "windowVisible": false,
+              "sourceParts": [],
+              "layers": [
+                {
+                  "triangles": 109,
+                  "visible": true,
+                  "window": false,
+                  "innerCard": false,
+                  "material": {
+                    "uuid": "aa4da6de-1516-45a3-b27d-3efdfb5fd5df",
+                    "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                    "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "emissiveMap": null,
+                    "transparent": false,
+                    "opacity": 1,
+                    "alphaTest": 0.5,
+                    "depthWrite": true,
+                    "side": 2,
+                    "forceSinglePass": true
+                  }
+                },
+                {
+                  "triangles": 89,
+                  "visible": true,
+                  "window": false,
+                  "innerCard": false,
+                  "material": {
+                    "uuid": "aa4da6de-1516-45a3-b27d-3efdfb5fd5df",
+                    "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                    "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "emissiveMap": null,
+                    "transparent": false,
+                    "opacity": 1,
+                    "alphaTest": 0.5,
+                    "depthWrite": true,
+                    "side": 2,
+                    "forceSinglePass": true
+                  }
+                },
+                {
+                  "triangles": 19,
+                  "visible": false,
+                  "window": true,
+                  "innerCard": false,
+                  "material": {
+                    "uuid": "81bac3ce-2256-467f-911a-ae3539bf90fe",
+                    "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                    "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "emissiveMap": null,
+                    "transparent": true,
+                    "opacity": 1,
+                    "alphaTest": 0,
+                    "depthWrite": false,
+                    "side": 2,
+                    "forceSinglePass": true
+                  }
+                },
+                {
+                  "triangles": 103,
+                  "visible": true,
+                  "window": false,
+                  "innerCard": false,
+                  "material": {
+                    "uuid": "bdc8fdae-f750-4056-91da-0e738f1a3799",
+                    "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                    "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "emissiveMap": null,
+                    "transparent": false,
+                    "opacity": 1,
+                    "alphaTest": 0.5,
+                    "depthWrite": true,
+                    "side": 2,
+                    "forceSinglePass": true
+                  }
+                },
+                {
+                  "triangles": 12,
+                  "visible": true,
+                  "window": false,
+                  "innerCard": true,
+                  "material": {
+                    "uuid": "1f862518-7364-4155-b4bc-a22439eebaa4",
+                    "map": null,
+                    "roughnessMap": null,
+                    "metalnessMap": null,
+                    "emissiveMap": null,
+                    "transparent": false,
+                    "opacity": 1,
+                    "alphaTest": 0,
+                    "depthWrite": true,
+                    "side": 0,
+                    "forceSinglePass": false
+                  }
+                }
+              ],
+              "apertureHasCentrePanel": false
+            },
+            "-1": {
+              "native": false,
+              "pivot": [
+                3.140483001827268,
+                0,
+                -4.971309871594048
+              ],
+              "axis": [
+                0,
+                1,
+                0
+              ],
+              "quaternion": [
+                0.02057328499861761,
+                -0.4568754701364737,
+                -0.04000466770726297,
+                0.8883924646762675
+              ],
+              "angle": -0.95,
+              "windowVisible": false,
+              "sourceParts": [],
+              "layers": [
+                {
+                  "triangles": 110,
+                  "visible": true,
+                  "window": false,
+                  "innerCard": false,
+                  "material": {
+                    "uuid": "aa4da6de-1516-45a3-b27d-3efdfb5fd5df",
+                    "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                    "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "emissiveMap": null,
+                    "transparent": false,
+                    "opacity": 1,
+                    "alphaTest": 0.5,
+                    "depthWrite": true,
+                    "side": 2,
+                    "forceSinglePass": true
+                  }
+                },
+                {
+                  "triangles": 87,
+                  "visible": true,
+                  "window": false,
+                  "innerCard": false,
+                  "material": {
+                    "uuid": "aa4da6de-1516-45a3-b27d-3efdfb5fd5df",
+                    "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                    "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "emissiveMap": null,
+                    "transparent": false,
+                    "opacity": 1,
+                    "alphaTest": 0.5,
+                    "depthWrite": true,
+                    "side": 2,
+                    "forceSinglePass": true
+                  }
+                },
+                {
+                  "triangles": 19,
+                  "visible": false,
+                  "window": true,
+                  "innerCard": false,
+                  "material": {
+                    "uuid": "81bac3ce-2256-467f-911a-ae3539bf90fe",
+                    "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                    "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "emissiveMap": null,
+                    "transparent": true,
+                    "opacity": 1,
+                    "alphaTest": 0,
+                    "depthWrite": false,
+                    "side": 2,
+                    "forceSinglePass": true
+                  }
+                },
+                {
+                  "triangles": 103,
+                  "visible": true,
+                  "window": false,
+                  "innerCard": false,
+                  "material": {
+                    "uuid": "bdc8fdae-f750-4056-91da-0e738f1a3799",
+                    "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                    "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "emissiveMap": null,
+                    "transparent": false,
+                    "opacity": 1,
+                    "alphaTest": 0.5,
+                    "depthWrite": true,
+                    "side": 2,
+                    "forceSinglePass": true
+                  }
+                },
+                {
+                  "triangles": 12,
+                  "visible": true,
+                  "window": false,
+                  "innerCard": true,
+                  "material": {
+                    "uuid": "1f862518-7364-4155-b4bc-a22439eebaa4",
+                    "map": null,
+                    "roughnessMap": null,
+                    "metalnessMap": null,
+                    "emissiveMap": null,
+                    "transparent": false,
+                    "opacity": 1,
+                    "alphaTest": 0,
+                    "depthWrite": true,
+                    "side": 0,
+                    "forceSinglePass": false
+                  }
+                }
+              ],
+              "apertureHasCentrePanel": false
+            }
+          },
+          "materials": {
+            "shell": {
+              "uuid": "aa4da6de-1516-45a3-b27d-3efdfb5fd5df",
+              "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+              "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "emissiveMap": null,
+              "transparent": false,
+              "opacity": 1,
+              "alphaTest": 0.5,
+              "depthWrite": true,
+              "side": 2,
+              "forceSinglePass": true
+            },
+            "trim": {
+              "uuid": "bdc8fdae-f750-4056-91da-0e738f1a3799",
+              "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+              "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "emissiveMap": null,
+              "transparent": false,
+              "opacity": 1,
+              "alphaTest": 0.5,
+              "depthWrite": true,
+              "side": 2,
+              "forceSinglePass": true
+            },
+            "optics": {
+              "uuid": "81bac3ce-2256-467f-911a-ae3539bf90fe",
+              "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+              "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "emissiveMap": null,
+              "transparent": true,
+              "opacity": 1,
+              "alphaTest": 0,
+              "depthWrite": false,
+              "side": 2,
+              "forceSinglePass": true
+            },
+            "cabin": [
+              {
+                "uuid": "1d1ba052-2475-4f0c-b147-b5d4373d57fa",
+                "map": null,
+                "roughnessMap": null,
+                "metalnessMap": null,
+                "emissiveMap": null,
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 0,
+                "forceSinglePass": false
+              },
+              {
+                "uuid": "1d1ba052-2475-4f0c-b147-b5d4373d57fa",
+                "map": null,
+                "roughnessMap": null,
+                "metalnessMap": null,
+                "emissiveMap": null,
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 0,
+                "forceSinglePass": false
+              },
+              {
+                "uuid": "1d1ba052-2475-4f0c-b147-b5d4373d57fa",
+                "map": null,
+                "roughnessMap": null,
+                "metalnessMap": null,
+                "emissiveMap": null,
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 0,
+                "forceSinglePass": false
+              },
+              {
+                "uuid": "1d1ba052-2475-4f0c-b147-b5d4373d57fa",
+                "map": null,
+                "roughnessMap": null,
+                "metalnessMap": null,
+                "emissiveMap": null,
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 0,
+                "forceSinglePass": false
+              },
+              {
+                "uuid": "210f9ce5-bfcf-4556-86a1-a5e176ca5e8b",
+                "map": null,
+                "roughnessMap": null,
+                "metalnessMap": null,
+                "emissiveMap": null,
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": true,
+                "side": 0,
+                "forceSinglePass": false
+              }
+            ]
+          },
+          "closedSourceGeometry": {
+            "shell": false,
+            "panels": false,
+            "cabin": false,
+            "trim": false,
+            "optics": true
+          },
+          "sourceGeometryRestored": {
+            "shell": false,
+            "panels": false,
+            "cabin": false,
+            "trim": false,
+            "optics": true
+          },
+          "cabin": {
+            "authored": true,
+            "fallbackVisible": false,
+            "interiorTriangles": 1951,
+            "seat": [
+              0,
+              5.32,
+              -2.32
+            ]
+          }
+        },
+        "char": {
+          "id": 285,
+          "type": "hotrod",
+          "materials": [
+            "approved",
+            "approved",
+            "approved",
+            "approved",
+            "approved"
+          ],
+          "swapped": 27,
+          "state": [
+            0,
+            0,
+            1,
+            0.083
+          ],
+          "ember": 0
+        },
+        "damage": {
+          "id": 285,
+          "type": "hotrod",
+          "hp": 0,
+          "maxhp": 145,
+          "zones": {
+            "front": 0,
+            "rear": 0,
+            "left": 0,
+            "right": 0
+          },
+          "dents": [],
+          "parts": {
+            "hood": 1,
+            "bumperFront": 0,
+            "bumperRear": 1,
+            "doorLeft": 1,
+            "doorRight": 1,
+            "trunk": 1
+          },
+          "glass": {
+            "front": 2,
+            "rear": 2,
+            "left": 2,
+            "right": 2
+          },
+          "lights": [
+            "headLeft",
+            "headRight",
+            "tailLeft",
+            "tailRight"
+          ],
+          "flatTires": [
+            "frontLeft",
+            "frontRight",
+            "rearLeft",
+            "rearRight"
+          ],
+          "marks": {},
+          "pull": 0,
+          "handling": {
+            "power": 0.5,
+            "top": 0.56,
+            "grip": 0.52,
+            "pull": 0,
+            "steer": 0.84,
+            "brake": 0.52
+          },
+          "burning": 0,
+          "fireSpent": false,
+          "burnt": true,
+          "speed": 0,
+          "spin": 0,
+          "x": 418,
+          "y": 7800,
+          "a": 0
+        },
+        "cabin": {
+          "hip": [
+            0,
+            0.665,
+            -0.29
+          ],
+          "door": [
+            -0.468,
+            0.393
+          ],
+          "floor": 0.665,
+          "floorWorldY": 0.528,
+          "pedalHeight": 0.765,
+          "recline": 0.54,
+          "rear": false,
+          "two": true,
+          "cabinTriangles": 1951,
+          "seated": 0,
+          "headroom": 0.022,
+          "behind": 0.309
+        },
+        "headroom": [
+          {
+            "type": "hotrod",
+            "body": null,
+            "hip": [
+              0,
+              0.665
+            ],
+            "recline": 0.54,
+            "fitMs": 0.7,
+            "clear": {
+              "man": 0.022,
+              "woman": 0.084,
+              "player": 0.103,
+              "avatar": "Male_Adult_04",
+              "avatarRoom": 0.039
+            },
+            "roof": {
+              "man": 0.022,
+              "woman": 0.084,
+              "player": 0.103
+            },
+            "through": [],
+            "key": "hotrod",
+            "seat": [
+              0,
+              0.665,
+              0.29,
+              0.49,
+              1.124
+            ],
+            "gameSeat": [
+              0,
+              0.665,
+              0.29,
+              0.49,
+              1.124
+            ],
+            "seatGap": 0
+          }
+        ],
+        "camera": {
+          "zoom": 4.341,
+          "target": 4.5,
+          "context": 1,
+          "slowFraming": false,
+          "vehicleContext": null,
+          "speed": 1,
+          "kmh": 0,
+          "framing": 0.923,
+          "framed": 4.154,
+          "aim": 4.5,
+          "defaultZoom": 2,
+          "limits": [
+            0.14,
+            4.5
+          ],
+          "viewport": [
+            960,
+            600
+          ],
+          "viewMetres": 12.4,
+          "personPx": 54,
+          "motionComfort": false,
+          "vehicleDistance": 120,
+          "walkDistance": 100,
+          "comfort": null
+        }
+      },
+      "hotrodBurntOpen": {
+        "status": {
+          "mode": "play",
+          "x": 378,
+          "y": 7800,
+          "district": "SOUTHPORT AIRPORT",
+          "hp": 100,
+          "cash": 0,
+          "wanted": 0,
+          "mission": null,
+          "completed": 0,
+          "vehicle": null,
+          "weapon": "9MM PISTOL",
+          "clock": "13:00",
+          "renderer": "3d",
+          "vehicles": 285,
+          "pedestrians": 595
+        },
+        "faults": {
+          "count": 0,
+          "gameTime": 7.53,
+          "drill": null,
+          "kinds": []
+        },
+        "gpu": {
+          "watched": true,
+          "lost": false,
+          "losses": 0,
+          "restores": 0,
+          "reloadPending": false,
+          "lostSeconds": 0
+        },
+        "identity": {
+          "id": 285,
+          "type": "hotrod",
+          "x": 418,
+          "y": 7800,
+          "a": 0,
+          "kmh": 0,
+          "ai": false,
+          "occupied": false,
+          "altitude": 0
+        },
+        "model": {
+          "id": 285,
+          "type": "hotrod",
+          "asset": "coupe33_zhab",
+          "far": false,
+          "triangles": 21111,
+          "visible": true,
+          "pool": {
+            "ready": false,
+            "instances": 0,
+            "triangles": 0
+          }
+        },
+        "assets": {
+          "loaded": true,
+          "enabled": true,
+          "key": "coupe33_zhab",
+          "triangles": 20856,
+          "farTriangles": 5202,
+          "atlasSizes": [
+            [
+              4096,
+              4096
+            ],
+            [
+              4096,
+              4096
+            ]
+          ],
+          "reducedTextures": false,
+          "nativeCabin": true,
+          "nativeDoors": false,
+          "source": "https://sketchfab.com/3d-models/coupe-33-hot-rod-3-low-poly-model-cb5b519024c7472895ef10a8663fb533",
+          "license": "CC BY 4.0"
+        },
+        "doors": {
+          "id": 285,
+          "type": "hotrod",
+          "asset": "Coupe '33 Hot Rod #3 - Low Poly Model",
+          "mask": 3,
+          "nativeDoors": false,
+          "doors": {
+            "1": {
+              "native": false,
+              "pivot": [
+                3.140483001827268,
+                0,
+                4.982737522862813
+              ],
+              "axis": [
+                0,
+                1,
+                0
+              ],
+              "quaternion": [
+                -0.02057328499861761,
+                0.4568754701364737,
+                -0.04000466770726297,
+                0.8883924646762675
+              ],
+              "angle": 0.95,
+              "windowVisible": false,
+              "sourceParts": [],
+              "layers": [
+                {
+                  "triangles": 109,
+                  "visible": true,
+                  "window": false,
+                  "innerCard": false,
+                  "material": {
+                    "uuid": "aa4da6de-1516-45a3-b27d-3efdfb5fd5df",
+                    "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                    "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "emissiveMap": null,
+                    "transparent": false,
+                    "opacity": 1,
+                    "alphaTest": 0.5,
+                    "depthWrite": true,
+                    "side": 2,
+                    "forceSinglePass": true
+                  }
+                },
+                {
+                  "triangles": 89,
+                  "visible": true,
+                  "window": false,
+                  "innerCard": false,
+                  "material": {
+                    "uuid": "aa4da6de-1516-45a3-b27d-3efdfb5fd5df",
+                    "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                    "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "emissiveMap": null,
+                    "transparent": false,
+                    "opacity": 1,
+                    "alphaTest": 0.5,
+                    "depthWrite": true,
+                    "side": 2,
+                    "forceSinglePass": true
+                  }
+                },
+                {
+                  "triangles": 19,
+                  "visible": false,
+                  "window": true,
+                  "innerCard": false,
+                  "material": {
+                    "uuid": "81bac3ce-2256-467f-911a-ae3539bf90fe",
+                    "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                    "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "emissiveMap": null,
+                    "transparent": true,
+                    "opacity": 1,
+                    "alphaTest": 0,
+                    "depthWrite": false,
+                    "side": 2,
+                    "forceSinglePass": true
+                  }
+                },
+                {
+                  "triangles": 103,
+                  "visible": true,
+                  "window": false,
+                  "innerCard": false,
+                  "material": {
+                    "uuid": "bdc8fdae-f750-4056-91da-0e738f1a3799",
+                    "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                    "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "emissiveMap": null,
+                    "transparent": false,
+                    "opacity": 1,
+                    "alphaTest": 0.5,
+                    "depthWrite": true,
+                    "side": 2,
+                    "forceSinglePass": true
+                  }
+                },
+                {
+                  "triangles": 12,
+                  "visible": true,
+                  "window": false,
+                  "innerCard": true,
+                  "material": {
+                    "uuid": "1f862518-7364-4155-b4bc-a22439eebaa4",
+                    "map": null,
+                    "roughnessMap": null,
+                    "metalnessMap": null,
+                    "emissiveMap": null,
+                    "transparent": false,
+                    "opacity": 1,
+                    "alphaTest": 0,
+                    "depthWrite": true,
+                    "side": 0,
+                    "forceSinglePass": false
+                  }
+                }
+              ],
+              "apertureHasCentrePanel": false
+            },
+            "-1": {
+              "native": false,
+              "pivot": [
+                3.140483001827268,
+                0,
+                -4.971309871594048
+              ],
+              "axis": [
+                0,
+                1,
+                0
+              ],
+              "quaternion": [
+                0.023510661313314626,
+                -0.5221064327579081,
+                -0.038352083367315055,
+                0.8516931603452086
+              ],
+              "angle": -1.0998786755218126,
+              "windowVisible": false,
+              "sourceParts": [],
+              "layers": [
+                {
+                  "triangles": 110,
+                  "visible": true,
+                  "window": false,
+                  "innerCard": false,
+                  "material": {
+                    "uuid": "aa4da6de-1516-45a3-b27d-3efdfb5fd5df",
+                    "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                    "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "emissiveMap": null,
+                    "transparent": false,
+                    "opacity": 1,
+                    "alphaTest": 0.5,
+                    "depthWrite": true,
+                    "side": 2,
+                    "forceSinglePass": true
+                  }
+                },
+                {
+                  "triangles": 87,
+                  "visible": true,
+                  "window": false,
+                  "innerCard": false,
+                  "material": {
+                    "uuid": "aa4da6de-1516-45a3-b27d-3efdfb5fd5df",
+                    "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                    "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "emissiveMap": null,
+                    "transparent": false,
+                    "opacity": 1,
+                    "alphaTest": 0.5,
+                    "depthWrite": true,
+                    "side": 2,
+                    "forceSinglePass": true
+                  }
+                },
+                {
+                  "triangles": 19,
+                  "visible": false,
+                  "window": true,
+                  "innerCard": false,
+                  "material": {
+                    "uuid": "81bac3ce-2256-467f-911a-ae3539bf90fe",
+                    "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                    "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "emissiveMap": null,
+                    "transparent": true,
+                    "opacity": 1,
+                    "alphaTest": 0,
+                    "depthWrite": false,
+                    "side": 2,
+                    "forceSinglePass": true
+                  }
+                },
+                {
+                  "triangles": 103,
+                  "visible": true,
+                  "window": false,
+                  "innerCard": false,
+                  "material": {
+                    "uuid": "bdc8fdae-f750-4056-91da-0e738f1a3799",
+                    "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                    "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "emissiveMap": null,
+                    "transparent": false,
+                    "opacity": 1,
+                    "alphaTest": 0.5,
+                    "depthWrite": true,
+                    "side": 2,
+                    "forceSinglePass": true
+                  }
+                },
+                {
+                  "triangles": 12,
+                  "visible": true,
+                  "window": false,
+                  "innerCard": true,
+                  "material": {
+                    "uuid": "1f862518-7364-4155-b4bc-a22439eebaa4",
+                    "map": null,
+                    "roughnessMap": null,
+                    "metalnessMap": null,
+                    "emissiveMap": null,
+                    "transparent": false,
+                    "opacity": 1,
+                    "alphaTest": 0,
+                    "depthWrite": true,
+                    "side": 0,
+                    "forceSinglePass": false
+                  }
+                }
+              ],
+              "apertureHasCentrePanel": false
+            }
+          },
+          "materials": {
+            "shell": {
+              "uuid": "aa4da6de-1516-45a3-b27d-3efdfb5fd5df",
+              "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+              "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "emissiveMap": null,
+              "transparent": false,
+              "opacity": 1,
+              "alphaTest": 0.5,
+              "depthWrite": true,
+              "side": 2,
+              "forceSinglePass": true
+            },
+            "trim": {
+              "uuid": "bdc8fdae-f750-4056-91da-0e738f1a3799",
+              "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+              "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "emissiveMap": null,
+              "transparent": false,
+              "opacity": 1,
+              "alphaTest": 0.5,
+              "depthWrite": true,
+              "side": 2,
+              "forceSinglePass": true
+            },
+            "optics": {
+              "uuid": "81bac3ce-2256-467f-911a-ae3539bf90fe",
+              "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+              "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "emissiveMap": null,
+              "transparent": true,
+              "opacity": 1,
+              "alphaTest": 0,
+              "depthWrite": false,
+              "side": 2,
+              "forceSinglePass": true
+            },
+            "cabin": [
+              {
+                "uuid": "1d1ba052-2475-4f0c-b147-b5d4373d57fa",
+                "map": null,
+                "roughnessMap": null,
+                "metalnessMap": null,
+                "emissiveMap": null,
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 0,
+                "forceSinglePass": false
+              },
+              {
+                "uuid": "1d1ba052-2475-4f0c-b147-b5d4373d57fa",
+                "map": null,
+                "roughnessMap": null,
+                "metalnessMap": null,
+                "emissiveMap": null,
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 0,
+                "forceSinglePass": false
+              },
+              {
+                "uuid": "1d1ba052-2475-4f0c-b147-b5d4373d57fa",
+                "map": null,
+                "roughnessMap": null,
+                "metalnessMap": null,
+                "emissiveMap": null,
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 0,
+                "forceSinglePass": false
+              },
+              {
+                "uuid": "1d1ba052-2475-4f0c-b147-b5d4373d57fa",
+                "map": null,
+                "roughnessMap": null,
+                "metalnessMap": null,
+                "emissiveMap": null,
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 0,
+                "forceSinglePass": false
+              },
+              {
+                "uuid": "210f9ce5-bfcf-4556-86a1-a5e176ca5e8b",
+                "map": null,
+                "roughnessMap": null,
+                "metalnessMap": null,
+                "emissiveMap": null,
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": true,
+                "side": 0,
+                "forceSinglePass": false
+              }
+            ]
+          },
+          "closedSourceGeometry": {
+            "shell": false,
+            "panels": false,
+            "cabin": false,
+            "trim": false,
+            "optics": true
+          },
+          "sourceGeometryRestored": {
+            "shell": false,
+            "panels": false,
+            "cabin": false,
+            "trim": false,
+            "optics": true
+          },
+          "cabin": {
+            "authored": true,
+            "fallbackVisible": false,
+            "interiorTriangles": 1951,
+            "seat": [
+              0,
+              5.32,
+              -2.32
+            ]
+          }
+        },
+        "char": {
+          "id": 285,
+          "type": "hotrod",
+          "materials": [
+            "approved",
+            "approved",
+            "approved",
+            "approved",
+            "approved"
+          ],
+          "swapped": 27,
+          "state": [
+            0,
+            0,
+            1,
+            0.083
+          ],
+          "ember": 0
+        },
+        "damage": {
+          "id": 285,
+          "type": "hotrod",
+          "hp": 0,
+          "maxhp": 145,
+          "zones": {
+            "front": 0,
+            "rear": 0,
+            "left": 0,
+            "right": 0
+          },
+          "dents": [],
+          "parts": {
+            "hood": 1,
+            "bumperFront": 0,
+            "bumperRear": 1,
+            "doorLeft": 1,
+            "doorRight": 1,
+            "trunk": 1
+          },
+          "glass": {
+            "front": 2,
+            "rear": 2,
+            "left": 2,
+            "right": 2
+          },
+          "lights": [
+            "headLeft",
+            "headRight",
+            "tailLeft",
+            "tailRight"
+          ],
+          "flatTires": [
+            "frontLeft",
+            "frontRight",
+            "rearLeft",
+            "rearRight"
+          ],
+          "marks": {},
+          "pull": 0,
+          "handling": {
+            "power": 0.5,
+            "top": 0.56,
+            "grip": 0.52,
+            "pull": 0,
+            "steer": 0.84,
+            "brake": 0.52
+          },
+          "burning": 0,
+          "fireSpent": false,
+          "burnt": true,
+          "speed": 0,
+          "spin": 0,
+          "x": 418,
+          "y": 7800,
+          "a": 0
+        },
+        "cabin": {
+          "hip": [
+            0,
+            0.665,
+            -0.29
+          ],
+          "door": [
+            -0.468,
+            0.393
+          ],
+          "floor": 0.665,
+          "floorWorldY": 0.528,
+          "pedalHeight": 0.765,
+          "recline": 0.54,
+          "rear": false,
+          "two": true,
+          "cabinTriangles": 1951,
+          "seated": 0,
+          "headroom": 0.022,
+          "behind": 0.309
+        },
+        "headroom": [
+          {
+            "type": "hotrod",
+            "body": null,
+            "hip": [
+              0,
+              0.665
+            ],
+            "recline": 0.54,
+            "fitMs": 0.7,
+            "clear": {
+              "man": 0.022,
+              "woman": 0.084,
+              "player": 0.103,
+              "avatar": "Male_Adult_04",
+              "avatarRoom": 0.039
+            },
+            "roof": {
+              "man": 0.022,
+              "woman": 0.084,
+              "player": 0.103
+            },
+            "through": [],
+            "key": "hotrod",
+            "seat": [
+              0,
+              0.665,
+              0.29,
+              0.49,
+              1.124
+            ],
+            "gameSeat": [
+              0,
+              0.665,
+              0.29,
+              0.49,
+              1.124
+            ],
+            "seatGap": 0
+          }
+        ],
+        "camera": {
+          "zoom": 4.28,
+          "target": 4.5,
+          "context": 1,
+          "slowFraming": false,
+          "vehicleContext": null,
+          "speed": 1,
+          "kmh": 0,
+          "framing": 0.924,
+          "framed": 4.16,
+          "aim": 4.5,
+          "defaultZoom": 2,
+          "limits": [
+            0.14,
+            4.5
+          ],
+          "viewport": [
+            960,
+            600
+          ],
+          "viewMetres": 12.6,
+          "personPx": 53,
+          "motionComfort": false,
+          "vehicleDistance": 120,
+          "walkDistance": 100,
+          "comfort": null
+        }
+      },
+      "hotrodRepaired": {
+        "status": {
+          "mode": "play",
+          "x": 378,
+          "y": 7800,
+          "district": "SOUTHPORT AIRPORT",
+          "hp": 100,
+          "cash": 0,
+          "wanted": 0,
+          "mission": null,
+          "completed": 0,
+          "vehicle": null,
+          "weapon": "9MM PISTOL",
+          "clock": "13:01",
+          "renderer": "3d",
+          "vehicles": 285,
+          "pedestrians": 595
+        },
+        "faults": {
+          "count": 0,
+          "gameTime": 8.87,
+          "drill": null,
+          "kinds": []
+        },
+        "gpu": {
+          "watched": true,
+          "lost": false,
+          "losses": 0,
+          "restores": 0,
+          "reloadPending": false,
+          "lostSeconds": 0
+        },
+        "identity": {
+          "id": 285,
+          "type": "hotrod",
+          "x": 418,
+          "y": 7800,
+          "a": 0,
+          "kmh": 0,
+          "ai": false,
+          "occupied": false,
+          "altitude": 0
+        },
+        "model": {
+          "id": 285,
+          "type": "hotrod",
+          "asset": "coupe33_zhab",
+          "far": false,
+          "triangles": 20856,
+          "visible": true,
+          "pool": {
+            "ready": false,
+            "instances": 0,
+            "triangles": 0
+          }
+        },
+        "assets": {
+          "loaded": true,
+          "enabled": true,
+          "key": "coupe33_zhab",
+          "triangles": 20856,
+          "farTriangles": 5202,
+          "atlasSizes": [
+            [
+              4096,
+              4096
+            ],
+            [
+              4096,
+              4096
+            ]
+          ],
+          "reducedTextures": false,
+          "nativeCabin": true,
+          "nativeDoors": false,
+          "source": "https://sketchfab.com/3d-models/coupe-33-hot-rod-3-low-poly-model-cb5b519024c7472895ef10a8663fb533",
+          "license": "CC BY 4.0"
+        },
+        "doors": {
+          "id": 285,
+          "type": "hotrod",
+          "asset": "Coupe '33 Hot Rod #3 - Low Poly Model",
+          "mask": 0,
+          "nativeDoors": false,
+          "doors": {
+            "1": {
+              "native": false,
+              "pivot": [
+                3.140483001827268,
+                0,
+                4.982737522862813
+              ],
+              "axis": [
+                0,
+                1,
+                0
+              ],
+              "quaternion": [
+                0,
+                0,
+                0,
+                1
+              ],
+              "angle": 0,
+              "windowVisible": false,
+              "sourceParts": [],
+              "layers": [
+                {
+                  "triangles": 109,
+                  "visible": false,
+                  "window": false,
+                  "innerCard": false,
+                  "material": {
+                    "uuid": "678f9f86-0702-4b05-8aff-070ab6537ccf",
+                    "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                    "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "emissiveMap": null,
+                    "transparent": false,
+                    "opacity": 1,
+                    "alphaTest": 0.5,
+                    "depthWrite": true,
+                    "side": 2,
+                    "forceSinglePass": true
+                  }
+                },
+                {
+                  "triangles": 89,
+                  "visible": false,
+                  "window": false,
+                  "innerCard": false,
+                  "material": {
+                    "uuid": "678f9f86-0702-4b05-8aff-070ab6537ccf",
+                    "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                    "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "emissiveMap": null,
+                    "transparent": false,
+                    "opacity": 1,
+                    "alphaTest": 0.5,
+                    "depthWrite": true,
+                    "side": 2,
+                    "forceSinglePass": true
+                  }
+                },
+                {
+                  "triangles": 19,
+                  "visible": false,
+                  "window": true,
+                  "innerCard": false,
+                  "material": {
+                    "uuid": "cbe878b8-6fb2-4b54-9d2d-1dee0620516f",
+                    "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                    "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "emissiveMap": null,
+                    "transparent": true,
+                    "opacity": 1,
+                    "alphaTest": 0,
+                    "depthWrite": false,
+                    "side": 2,
+                    "forceSinglePass": true
+                  }
+                },
+                {
+                  "triangles": 103,
+                  "visible": false,
+                  "window": false,
+                  "innerCard": false,
+                  "material": {
+                    "uuid": "912f905b-37cc-4805-880b-516c342e565a",
+                    "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                    "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "emissiveMap": null,
+                    "transparent": false,
+                    "opacity": 1,
+                    "alphaTest": 0.5,
+                    "depthWrite": true,
+                    "side": 2,
+                    "forceSinglePass": true
+                  }
+                },
+                {
+                  "triangles": 12,
+                  "visible": false,
+                  "window": false,
+                  "innerCard": true,
+                  "material": {
+                    "uuid": "1f862518-7364-4155-b4bc-a22439eebaa4",
+                    "map": null,
+                    "roughnessMap": null,
+                    "metalnessMap": null,
+                    "emissiveMap": null,
+                    "transparent": false,
+                    "opacity": 1,
+                    "alphaTest": 0,
+                    "depthWrite": true,
+                    "side": 0,
+                    "forceSinglePass": false
+                  }
+                }
+              ],
+              "apertureHasCentrePanel": false
+            },
+            "-1": {
+              "native": false,
+              "pivot": [
+                3.140483001827268,
+                0,
+                -4.971309871594048
+              ],
+              "axis": [
+                0,
+                1,
+                0
+              ],
+              "quaternion": [
+                0,
+                0,
+                0,
+                1
+              ],
+              "angle": 0,
+              "windowVisible": false,
+              "sourceParts": [],
+              "layers": [
+                {
+                  "triangles": 110,
+                  "visible": false,
+                  "window": false,
+                  "innerCard": false,
+                  "material": {
+                    "uuid": "678f9f86-0702-4b05-8aff-070ab6537ccf",
+                    "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                    "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "emissiveMap": null,
+                    "transparent": false,
+                    "opacity": 1,
+                    "alphaTest": 0.5,
+                    "depthWrite": true,
+                    "side": 2,
+                    "forceSinglePass": true
+                  }
+                },
+                {
+                  "triangles": 87,
+                  "visible": false,
+                  "window": false,
+                  "innerCard": false,
+                  "material": {
+                    "uuid": "678f9f86-0702-4b05-8aff-070ab6537ccf",
+                    "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                    "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "emissiveMap": null,
+                    "transparent": false,
+                    "opacity": 1,
+                    "alphaTest": 0.5,
+                    "depthWrite": true,
+                    "side": 2,
+                    "forceSinglePass": true
+                  }
+                },
+                {
+                  "triangles": 19,
+                  "visible": false,
+                  "window": true,
+                  "innerCard": false,
+                  "material": {
+                    "uuid": "cbe878b8-6fb2-4b54-9d2d-1dee0620516f",
+                    "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                    "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "emissiveMap": null,
+                    "transparent": true,
+                    "opacity": 1,
+                    "alphaTest": 0,
+                    "depthWrite": false,
+                    "side": 2,
+                    "forceSinglePass": true
+                  }
+                },
+                {
+                  "triangles": 103,
+                  "visible": false,
+                  "window": false,
+                  "innerCard": false,
+                  "material": {
+                    "uuid": "912f905b-37cc-4805-880b-516c342e565a",
+                    "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                    "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "emissiveMap": null,
+                    "transparent": false,
+                    "opacity": 1,
+                    "alphaTest": 0.5,
+                    "depthWrite": true,
+                    "side": 2,
+                    "forceSinglePass": true
+                  }
+                },
+                {
+                  "triangles": 12,
+                  "visible": false,
+                  "window": false,
+                  "innerCard": true,
+                  "material": {
+                    "uuid": "1f862518-7364-4155-b4bc-a22439eebaa4",
+                    "map": null,
+                    "roughnessMap": null,
+                    "metalnessMap": null,
+                    "emissiveMap": null,
+                    "transparent": false,
+                    "opacity": 1,
+                    "alphaTest": 0,
+                    "depthWrite": true,
+                    "side": 0,
+                    "forceSinglePass": false
+                  }
+                }
+              ],
+              "apertureHasCentrePanel": false
+            }
+          },
+          "materials": {
+            "shell": {
+              "uuid": "678f9f86-0702-4b05-8aff-070ab6537ccf",
+              "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+              "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "emissiveMap": null,
+              "transparent": false,
+              "opacity": 1,
+              "alphaTest": 0.5,
+              "depthWrite": true,
+              "side": 2,
+              "forceSinglePass": true
+            },
+            "trim": {
+              "uuid": "912f905b-37cc-4805-880b-516c342e565a",
+              "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+              "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "emissiveMap": null,
+              "transparent": false,
+              "opacity": 1,
+              "alphaTest": 0.5,
+              "depthWrite": true,
+              "side": 2,
+              "forceSinglePass": true
+            },
+            "optics": {
+              "uuid": "cbe878b8-6fb2-4b54-9d2d-1dee0620516f",
+              "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+              "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "emissiveMap": null,
+              "transparent": true,
+              "opacity": 1,
+              "alphaTest": 0,
+              "depthWrite": false,
+              "side": 2,
+              "forceSinglePass": true
+            },
+            "cabin": {
+              "uuid": "cbe878b8-6fb2-4b54-9d2d-1dee0620516f",
+              "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+              "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "emissiveMap": null,
+              "transparent": true,
+              "opacity": 1,
+              "alphaTest": 0,
+              "depthWrite": false,
+              "side": 2,
+              "forceSinglePass": true
+            }
+          },
+          "closedSourceGeometry": {
+            "shell": true,
+            "panels": true,
+            "cabin": true,
+            "trim": true,
+            "optics": true
+          },
+          "sourceGeometryRestored": {
+            "shell": true,
+            "panels": true,
+            "cabin": true,
+            "trim": true,
+            "optics": true
+          },
+          "cabin": {
+            "authored": true,
+            "fallbackVisible": false,
+            "interiorTriangles": 1951,
+            "seat": [
+              0,
+              5.32,
+              -2.32
+            ]
+          }
+        },
+        "char": null,
+        "damage": {
+          "id": 285,
+          "type": "hotrod",
+          "hp": 145,
+          "maxhp": 145,
+          "zones": {
+            "front": 0,
+            "rear": 0,
+            "left": 0,
+            "right": 0
+          },
+          "dents": [],
+          "parts": {
+            "hood": 0,
+            "bumperFront": 0,
+            "bumperRear": 0,
+            "doorLeft": 0,
+            "doorRight": 0,
+            "trunk": 0
+          },
+          "glass": {
+            "front": 0,
+            "rear": 0,
+            "left": 0,
+            "right": 0
+          },
+          "lights": [],
+          "flatTires": [],
+          "marks": {},
+          "pull": 0,
+          "handling": {
+            "power": 1,
+            "top": 1,
+            "grip": 1,
+            "pull": 0,
+            "steer": 1,
+            "brake": 1
+          },
+          "burning": 0,
+          "fireSpent": false,
+          "burnt": false,
+          "speed": 0,
+          "spin": 0,
+          "x": 418,
+          "y": 7800,
+          "a": 0
+        },
+        "cabin": {
+          "hip": [
+            0,
+            0.665,
+            -0.29
+          ],
+          "door": [
+            -0.468,
+            0.393
+          ],
+          "floor": 0.665,
+          "floorWorldY": 0.677,
+          "pedalHeight": 0.765,
+          "recline": 0.54,
+          "rear": false,
+          "two": true,
+          "cabinTriangles": 1951,
+          "seated": 0,
+          "headroom": 0.022,
+          "behind": 0.309
+        },
+        "headroom": [
+          {
+            "type": "hotrod",
+            "body": null,
+            "hip": [
+              0,
+              0.665
+            ],
+            "recline": 0.54,
+            "fitMs": 0.7,
+            "clear": {
+              "man": 0.022,
+              "woman": 0.084,
+              "player": 0.103,
+              "avatar": "Male_Adult_04",
+              "avatarRoom": 0.039
+            },
+            "roof": {
+              "man": 0.022,
+              "woman": 0.084,
+              "player": 0.103
+            },
+            "through": [],
+            "key": "hotrod",
+            "seat": [
+              0,
+              0.665,
+              0.29,
+              0.49,
+              1.124
+            ],
+            "gameSeat": [
+              0,
+              0.665,
+              0.29,
+              0.49,
+              1.124
+            ],
+            "seatGap": 0
+          }
+        ],
+        "camera": {
+          "zoom": 4.338,
+          "target": 4.5,
+          "context": 1,
+          "slowFraming": false,
+          "vehicleContext": null,
+          "speed": 1,
+          "kmh": 0,
+          "framing": 0.966,
+          "framed": 4.347,
+          "aim": 4.5,
+          "defaultZoom": 2,
+          "limits": [
+            0.14,
+            4.5
+          ],
+          "viewport": [
+            960,
+            600
+          ],
+          "viewMetres": 12.4,
+          "personPx": 54,
+          "motionComfort": false,
+          "vehicleDistance": 120,
+          "walkDistance": 100,
+          "comfort": {
+            "seconds": 1.4,
+            "accel": {
+              "rms": 0,
+              "peak": 0
+            },
+            "jerk": {
+              "rms": 0,
+              "peak": 0
+            },
+            "zoomRate": {
+              "rms": 3.4,
+              "peak": 4.33
+            },
+            "jolt": 0,
+            "drift": {
+              "peak": 0,
+              "swing": 0
+            }
+          }
+        }
+      },
+      "hotrodOpenCabin": {
+        "status": {
+          "mode": "play",
+          "x": 418,
+          "y": 7800,
+          "district": "SOUTHPORT AIRPORT",
+          "hp": 100,
+          "cash": 0,
+          "wanted": 0,
+          "mission": null,
+          "completed": 0,
+          "vehicle": "hotrod",
+          "weapon": "9MM PISTOL",
+          "clock": "13:03",
+          "renderer": "3d",
+          "vehicles": 285,
+          "pedestrians": 595
+        },
+        "faults": {
+          "count": 0,
+          "gameTime": 10.22,
+          "drill": null,
+          "kinds": []
+        },
+        "gpu": {
+          "watched": true,
+          "lost": false,
+          "losses": 0,
+          "restores": 0,
+          "reloadPending": false,
+          "lostSeconds": 0
+        },
+        "identity": {
+          "id": 285,
+          "type": "hotrod",
+          "x": 418,
+          "y": 7800,
+          "a": 0,
+          "kmh": 0,
+          "ai": false,
+          "occupied": false,
+          "altitude": 0
+        },
+        "model": {
+          "id": 285,
+          "type": "hotrod",
+          "asset": "coupe33_zhab",
+          "far": false,
+          "triangles": 20983,
+          "visible": true,
+          "pool": {
+            "ready": false,
+            "instances": 0,
+            "triangles": 0
+          }
+        },
+        "assets": {
+          "loaded": true,
+          "enabled": true,
+          "key": "coupe33_zhab",
+          "triangles": 20856,
+          "farTriangles": 5202,
+          "atlasSizes": [
+            [
+              4096,
+              4096
+            ],
+            [
+              4096,
+              4096
+            ]
+          ],
+          "reducedTextures": false,
+          "nativeCabin": true,
+          "nativeDoors": false,
+          "source": "https://sketchfab.com/3d-models/coupe-33-hot-rod-3-low-poly-model-cb5b519024c7472895ef10a8663fb533",
+          "license": "CC BY 4.0"
+        },
+        "doors": {
+          "id": 285,
+          "type": "hotrod",
+          "asset": "Coupe '33 Hot Rod #3 - Low Poly Model",
+          "mask": 1,
+          "nativeDoors": false,
+          "doors": {
+            "1": {
+              "native": false,
+              "pivot": [
+                3.140483001827268,
+                0,
+                4.982737522862813
+              ],
+              "axis": [
+                0,
+                1,
+                0
+              ],
+              "quaternion": [
+                0,
+                0,
+                0,
+                1
+              ],
+              "angle": 0,
+              "windowVisible": false,
+              "sourceParts": [],
+              "layers": [
+                {
+                  "triangles": 109,
+                  "visible": false,
+                  "window": false,
+                  "innerCard": false,
+                  "material": {
+                    "uuid": "678f9f86-0702-4b05-8aff-070ab6537ccf",
+                    "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                    "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "emissiveMap": null,
+                    "transparent": false,
+                    "opacity": 1,
+                    "alphaTest": 0.5,
+                    "depthWrite": true,
+                    "side": 2,
+                    "forceSinglePass": true
+                  }
+                },
+                {
+                  "triangles": 89,
+                  "visible": false,
+                  "window": false,
+                  "innerCard": false,
+                  "material": {
+                    "uuid": "678f9f86-0702-4b05-8aff-070ab6537ccf",
+                    "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                    "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "emissiveMap": null,
+                    "transparent": false,
+                    "opacity": 1,
+                    "alphaTest": 0.5,
+                    "depthWrite": true,
+                    "side": 2,
+                    "forceSinglePass": true
+                  }
+                },
+                {
+                  "triangles": 19,
+                  "visible": false,
+                  "window": true,
+                  "innerCard": false,
+                  "material": {
+                    "uuid": "cbe878b8-6fb2-4b54-9d2d-1dee0620516f",
+                    "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                    "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "emissiveMap": null,
+                    "transparent": true,
+                    "opacity": 1,
+                    "alphaTest": 0,
+                    "depthWrite": false,
+                    "side": 2,
+                    "forceSinglePass": true
+                  }
+                },
+                {
+                  "triangles": 103,
+                  "visible": false,
+                  "window": false,
+                  "innerCard": false,
+                  "material": {
+                    "uuid": "912f905b-37cc-4805-880b-516c342e565a",
+                    "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                    "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "emissiveMap": null,
+                    "transparent": false,
+                    "opacity": 1,
+                    "alphaTest": 0.5,
+                    "depthWrite": true,
+                    "side": 2,
+                    "forceSinglePass": true
+                  }
+                },
+                {
+                  "triangles": 12,
+                  "visible": false,
+                  "window": false,
+                  "innerCard": true,
+                  "material": {
+                    "uuid": "1f862518-7364-4155-b4bc-a22439eebaa4",
+                    "map": null,
+                    "roughnessMap": null,
+                    "metalnessMap": null,
+                    "emissiveMap": null,
+                    "transparent": false,
+                    "opacity": 1,
+                    "alphaTest": 0,
+                    "depthWrite": true,
+                    "side": 0,
+                    "forceSinglePass": false
+                  }
+                }
+              ],
+              "apertureHasCentrePanel": false
+            },
+            "-1": {
+              "native": false,
+              "pivot": [
+                3.140483001827268,
+                0,
+                -4.971309871594048
+              ],
+              "axis": [
+                0,
+                1,
+                0
+              ],
+              "quaternion": [
+                0,
+                -0.5226362855468083,
+                0,
+                0.8525557536195713
+              ],
+              "angle": -1.099880490356818,
+              "windowVisible": true,
+              "sourceParts": [],
+              "layers": [
+                {
+                  "triangles": 110,
+                  "visible": true,
+                  "window": false,
+                  "innerCard": false,
+                  "material": {
+                    "uuid": "678f9f86-0702-4b05-8aff-070ab6537ccf",
+                    "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                    "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "emissiveMap": null,
+                    "transparent": false,
+                    "opacity": 1,
+                    "alphaTest": 0.5,
+                    "depthWrite": true,
+                    "side": 2,
+                    "forceSinglePass": true
+                  }
+                },
+                {
+                  "triangles": 87,
+                  "visible": true,
+                  "window": false,
+                  "innerCard": false,
+                  "material": {
+                    "uuid": "678f9f86-0702-4b05-8aff-070ab6537ccf",
+                    "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                    "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "emissiveMap": null,
+                    "transparent": false,
+                    "opacity": 1,
+                    "alphaTest": 0.5,
+                    "depthWrite": true,
+                    "side": 2,
+                    "forceSinglePass": true
+                  }
+                },
+                {
+                  "triangles": 19,
+                  "visible": true,
+                  "window": true,
+                  "innerCard": false,
+                  "material": {
+                    "uuid": "cbe878b8-6fb2-4b54-9d2d-1dee0620516f",
+                    "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                    "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "emissiveMap": null,
+                    "transparent": true,
+                    "opacity": 1,
+                    "alphaTest": 0,
+                    "depthWrite": false,
+                    "side": 2,
+                    "forceSinglePass": true
+                  }
+                },
+                {
+                  "triangles": 103,
+                  "visible": true,
+                  "window": false,
+                  "innerCard": false,
+                  "material": {
+                    "uuid": "912f905b-37cc-4805-880b-516c342e565a",
+                    "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+                    "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+                    "emissiveMap": null,
+                    "transparent": false,
+                    "opacity": 1,
+                    "alphaTest": 0.5,
+                    "depthWrite": true,
+                    "side": 2,
+                    "forceSinglePass": true
+                  }
+                },
+                {
+                  "triangles": 12,
+                  "visible": true,
+                  "window": false,
+                  "innerCard": true,
+                  "material": {
+                    "uuid": "1f862518-7364-4155-b4bc-a22439eebaa4",
+                    "map": null,
+                    "roughnessMap": null,
+                    "metalnessMap": null,
+                    "emissiveMap": null,
+                    "transparent": false,
+                    "opacity": 1,
+                    "alphaTest": 0,
+                    "depthWrite": true,
+                    "side": 0,
+                    "forceSinglePass": false
+                  }
+                }
+              ],
+              "apertureHasCentrePanel": false
+            }
+          },
+          "materials": {
+            "shell": {
+              "uuid": "678f9f86-0702-4b05-8aff-070ab6537ccf",
+              "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+              "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "emissiveMap": null,
+              "transparent": false,
+              "opacity": 1,
+              "alphaTest": 0.5,
+              "depthWrite": true,
+              "side": 2,
+              "forceSinglePass": true
+            },
+            "trim": {
+              "uuid": "912f905b-37cc-4805-880b-516c342e565a",
+              "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+              "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "emissiveMap": null,
+              "transparent": false,
+              "opacity": 1,
+              "alphaTest": 0.5,
+              "depthWrite": true,
+              "side": 2,
+              "forceSinglePass": true
+            },
+            "optics": {
+              "uuid": "cbe878b8-6fb2-4b54-9d2d-1dee0620516f",
+              "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+              "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "emissiveMap": null,
+              "transparent": true,
+              "opacity": 1,
+              "alphaTest": 0,
+              "depthWrite": false,
+              "side": 2,
+              "forceSinglePass": true
+            },
+            "cabin": {
+              "uuid": "cbe878b8-6fb2-4b54-9d2d-1dee0620516f",
+              "map": "07a17aef-1730-471c-869b-18d6fe0b51fe",
+              "roughnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "metalnessMap": "4141506d-2df4-4f8f-8f83-8c7920f36b14",
+              "emissiveMap": null,
+              "transparent": true,
+              "opacity": 1,
+              "alphaTest": 0,
+              "depthWrite": false,
+              "side": 2,
+              "forceSinglePass": true
+            }
+          },
+          "closedSourceGeometry": {
+            "shell": false,
+            "panels": false,
+            "cabin": false,
+            "trim": false,
+            "optics": true
+          },
+          "sourceGeometryRestored": {
+            "shell": false,
+            "panels": false,
+            "cabin": false,
+            "trim": false,
+            "optics": true
+          },
+          "cabin": {
+            "authored": true,
+            "fallbackVisible": false,
+            "interiorTriangles": 1951,
+            "seat": [
+              0,
+              5.32,
+              -2.32
+            ]
+          }
+        },
+        "char": null,
+        "damage": {
+          "id": 285,
+          "type": "hotrod",
+          "hp": 145,
+          "maxhp": 145,
+          "zones": {
+            "front": 0,
+            "rear": 0,
+            "left": 0,
+            "right": 0
+          },
+          "dents": [],
+          "parts": {
+            "hood": 0,
+            "bumperFront": 0,
+            "bumperRear": 0,
+            "doorLeft": 0,
+            "doorRight": 0,
+            "trunk": 0
+          },
+          "glass": {
+            "front": 0,
+            "rear": 0,
+            "left": 0,
+            "right": 0
+          },
+          "lights": [],
+          "flatTires": [],
+          "marks": {},
+          "pull": 0,
+          "handling": {
+            "power": 1,
+            "top": 1,
+            "grip": 1,
+            "pull": 0,
+            "steer": 1,
+            "brake": 1
+          },
+          "burning": 0,
+          "fireSpent": false,
+          "burnt": false,
+          "speed": 0,
+          "spin": 0,
+          "x": 418,
+          "y": 7800,
+          "a": 0
+        },
+        "cabin": {
+          "hip": [
+            0,
+            0.665,
+            -0.29
+          ],
+          "door": [
+            -0.468,
+            0.393
+          ],
+          "floor": 0.665,
+          "floorWorldY": 0.677,
+          "pedalHeight": 0.765,
+          "recline": 0.54,
+          "rear": false,
+          "two": true,
+          "cabinTriangles": 1951,
+          "seated": 1,
+          "headroom": 0.022,
+          "behind": 0.309
+        },
+        "headroom": [
+          {
+            "type": "hotrod",
+            "body": null,
+            "hip": [
+              0,
+              0.665
+            ],
+            "recline": 0.54,
+            "fitMs": 0.7,
+            "clear": {
+              "man": 0.022,
+              "woman": 0.084,
+              "player": 0.103,
+              "avatar": "Male_Adult_04",
+              "avatarRoom": 0.039
+            },
+            "roof": {
+              "man": 0.022,
+              "woman": 0.084,
+              "player": 0.103
+            },
+            "through": [],
+            "key": "hotrod",
+            "seat": [
+              0,
+              0.665,
+              0.29,
+              0.49,
+              1.124
+            ],
+            "gameSeat": [
+              0,
+              0.665,
+              0.29,
+              0.49,
+              1.124
+            ],
+            "seatGap": 0
+          }
+        ],
+        "camera": {
+          "zoom": 10.842,
+          "target": 11,
+          "context": 1,
+          "slowFraming": true,
+          "vehicleContext": 0.467,
+          "speed": 1,
+          "kmh": 0,
+          "framing": 0.987,
+          "framed": 10.852,
+          "aim": 11,
+          "defaultZoom": 2,
+          "limits": [
+            0.14,
+            4.5
+          ],
+          "viewport": [
+            960,
+            600
+          ],
+          "viewMetres": 5,
+          "personPx": 135,
+          "motionComfort": false,
+          "vehicleDistance": 120,
+          "walkDistance": 100,
+          "comfort": {
+            "seconds": 1.33,
+            "accel": {
+              "rms": 0.202,
+              "peak": 0.591
+            },
+            "jerk": {
+              "rms": 0.83,
+              "peak": 2.1
+            },
+            "zoomRate": {
+              "rms": 1.58,
+              "peak": 2.18
+            },
+            "jolt": 0,
+            "drift": {
+              "peak": 0.246,
+              "swing": 0.163
+            }
+          }
+        }
+      }
+    }
+  },
+  "capture": {
+    "file": "dist/review16/final-captures/runtime/hotrod-open-source-cabin.png",
+    "sha256": "278de46bff17fa983f200c00db8c979d662702cf53394368ee542da048ba6401",
+    "viewport": [
+      960,
+      600
+    ],
+    "visualReview": {
+      "reviewedAtNativeResolution": true,
+      "correctSourceBody": true,
+      "openDoorAndMovingWindowVisible": true,
+      "seatedDriverVisibleInDarkCabin": true,
+      "obviousHeadOrBodyPenetration": false,
+      "limits": "Front three-quarter view leaves most upholstery in shadow. Lingering burn/repair particles remain above the roof. Image is unretouched; these normal transient effects are retained."
+    }
+  },
+  "parkingReceipt": "parking-runtime-proof.json",
+  "limits": [
+    "Software WebGL validates this rendered path and recorded shader/runtime errors; hardware FPS is not established.",
+    "Native source doors are not claimed: the source is combined and uses source-backed clipping.",
+    "Burn started with no constructed doors; burn damage itself constructed both door sets before the explicit doorSwing action. The CPU host separately proves char-before-first-door material adoption.",
+    "Public runtime sourceGeometryRestored compares all geometry attributes but does not expose their arrays; host-proof.json records independent ORM/source-UV attribute coverage.",
+    "No isolated wear/heat transition is added by this recorder; ordinary hotrod wear keeps the source physical-material path as documented."
+  ]
+}

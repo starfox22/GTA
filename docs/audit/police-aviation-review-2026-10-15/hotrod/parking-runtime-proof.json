@@ -1,0 +1,394 @@
+{
+  "scope": "Hotrod-only extract of final native parking captures; does not substitute for burn/repair/tier runtime assertions.",
+  "reportSource": "dist/review16/final-captures/after-parking/review.json",
+  "reportSha256": "6aa5b0b8c49982f8169292d905b2dcd56eff915b4fcc3f5ec0a99a6b1de7eadc",
+  "htmlSha256": "719a535fe3905275c381737acb7fc3e80ee1ab4378c0d5736a4595096b16c03c",
+  "recorderSha256": "e3d55e416e70a4fc9b5c2796c6cabcc8666721c1dd60a59c2232f84901b1f14d",
+  "fixture": {
+    "seed": 1,
+    "time": 13,
+    "weather": "clear",
+    "viewport": [
+      1000,
+      700
+    ],
+    "crop": [
+      130,
+      80,
+      740,
+      500
+    ],
+    "hotrod": [
+      418,
+      7300
+    ],
+    "tier": "high",
+    "held": true
+  },
+  "identity": {
+    "id": 284,
+    "type": "hotrod",
+    "x": 418,
+    "y": 7300,
+    "a": 0,
+    "altitude": 0
+  },
+  "checks": {
+    "finalFrozenInput": true,
+    "parkingRecorderPassed": true,
+    "noConsoleErrorsOrWarnings": true,
+    "twoHotrodViews": true,
+    "exactBoardedIdentity": true,
+    "nativeSourceBudget": true,
+    "actualSeatedDriver": true,
+    "headroom": true,
+    "noFrameOrGpuFaults": true
+  },
+  "passed": true,
+  "errors": [],
+  "warnings": [],
+  "captures": [
+    {
+      "name": "hotrod-isolated-front",
+      "png": "dist/review16/final-captures/after-parking/hotrod-isolated-front.png",
+      "pngSha256": "94853c14e4f30d5263c47572bf1c9fc688b8a3bfbebca9b3a7e25cf4af94b430",
+      "fixture": {
+        "x": 418,
+        "y": 7300,
+        "a": 0,
+        "zoom": 11,
+        "yaw": 65,
+        "pitch": 12,
+        "lift": 4
+      },
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 7300,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "hotrod",
+        "weapon": "9MM PISTOL",
+        "clock": "13:01",
+        "renderer": "3d",
+        "vehicles": 284,
+        "pedestrians": 595
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 7.1,
+        "drill": null,
+        "kinds": []
+      },
+      "quality": {
+        "setting": "high",
+        "tier": "HIGH",
+        "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "hdr": true,
+        "shadowMap": 3072,
+        "pixelRatio": 1,
+        "renderScale": 1,
+        "shadows": "high",
+        "shadowSetting": "auto",
+        "adaptive": {
+          "averageFrameMs": 0,
+          "tierDrops": 0,
+          "ceiling": 1,
+          "holdSeconds": 0
+        }
+      },
+      "hotrodAssets": {
+        "loaded": true,
+        "enabled": true,
+        "key": "coupe33_zhab",
+        "triangles": 20856,
+        "farTriangles": 5202,
+        "atlasSizes": [
+          [
+            4096,
+            4096
+          ],
+          [
+            4096,
+            4096
+          ]
+        ],
+        "reducedTextures": false,
+        "nativeCabin": true,
+        "nativeDoors": false,
+        "source": "https://sketchfab.com/3d-models/coupe-33-hot-rod-3-low-poly-model-cb5b519024c7472895ef10a8663fb533",
+        "license": "CC BY 4.0"
+      },
+      "model": {
+        "id": 284,
+        "type": "hotrod",
+        "draws": 18,
+        "casters": 3,
+        "triangles": 20856,
+        "heaviest": [
+          [
+            "MeshPhysicalMaterial",
+            9808
+          ],
+          [
+            "MeshPhysicalMaterial",
+            4620
+          ],
+          [
+            "MeshPhysicalMaterial",
+            1468
+          ],
+          [
+            "MeshPhysicalMaterial",
+            596
+          ],
+          [
+            "MeshPhysicalMaterial",
+            571
+          ],
+          [
+            "MeshPhysicalMaterial",
+            571
+          ]
+        ],
+        "asset": "Coupe '33 Hot Rod #3 - Low Poly Model",
+        "cabin": {
+          "hip": [
+            0,
+            0.665,
+            -0.29
+          ],
+          "door": [
+            -0.468,
+            0.393
+          ],
+          "floor": 0.665,
+          "floorWorldY": 0.677,
+          "pedalHeight": 0.765,
+          "recline": 0.54,
+          "rear": false,
+          "two": true,
+          "cabinTriangles": 1951,
+          "seated": 1,
+          "headroom": 0.022,
+          "behind": 0.309
+        },
+        "panes": {
+          "left": {
+            "drawn": true,
+            "depthWrite": false
+          },
+          "front": {
+            "drawn": true,
+            "depthWrite": false
+          },
+          "right": {
+            "drawn": true,
+            "depthWrite": false
+          },
+          "rear": {
+            "drawn": true,
+            "depthWrite": false
+          },
+          "roof": {
+            "drawn": true,
+            "depthWrite": false
+          }
+        },
+        "badge": null
+      },
+      "visualReview": {
+        "reviewed": true,
+        "sourceIdentityVisible": true,
+        "seatedDriverVisibleThroughGlass": true,
+        "obviousBodyHolesOrHeadPenetration": false,
+        "note": "Stock closed hood, grille/fenders, continuous source coupe body and chrome blade wheels visible. Small HUD remnants lie outside the car; native 740x500 crop reviewed without upscaling."
+      }
+    },
+    {
+      "name": "hotrod-isolated-side",
+      "png": "dist/review16/final-captures/after-parking/hotrod-isolated-side.png",
+      "pngSha256": "a672ea25d912eba78b23f80d0909e94af0668fd09ca9282135ed3d57764b560f",
+      "fixture": {
+        "x": 418,
+        "y": 7300,
+        "a": 0,
+        "zoom": 11,
+        "yaw": 0,
+        "pitch": 9,
+        "lift": 4
+      },
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 7300,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "hotrod",
+        "weapon": "9MM PISTOL",
+        "clock": "13:01",
+        "renderer": "3d",
+        "vehicles": 284,
+        "pedestrians": 595
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 7.13,
+        "drill": null,
+        "kinds": []
+      },
+      "quality": {
+        "setting": "high",
+        "tier": "HIGH",
+        "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "hdr": true,
+        "shadowMap": 3072,
+        "pixelRatio": 1,
+        "renderScale": 1,
+        "shadows": "high",
+        "shadowSetting": "auto",
+        "adaptive": {
+          "averageFrameMs": 0,
+          "tierDrops": 0,
+          "ceiling": 1,
+          "holdSeconds": 0
+        }
+      },
+      "hotrodAssets": {
+        "loaded": true,
+        "enabled": true,
+        "key": "coupe33_zhab",
+        "triangles": 20856,
+        "farTriangles": 5202,
+        "atlasSizes": [
+          [
+            4096,
+            4096
+          ],
+          [
+            4096,
+            4096
+          ]
+        ],
+        "reducedTextures": false,
+        "nativeCabin": true,
+        "nativeDoors": false,
+        "source": "https://sketchfab.com/3d-models/coupe-33-hot-rod-3-low-poly-model-cb5b519024c7472895ef10a8663fb533",
+        "license": "CC BY 4.0"
+      },
+      "model": {
+        "id": 284,
+        "type": "hotrod",
+        "draws": 18,
+        "casters": 3,
+        "triangles": 20856,
+        "heaviest": [
+          [
+            "MeshPhysicalMaterial",
+            9808
+          ],
+          [
+            "MeshPhysicalMaterial",
+            4620
+          ],
+          [
+            "MeshPhysicalMaterial",
+            1468
+          ],
+          [
+            "MeshPhysicalMaterial",
+            596
+          ],
+          [
+            "MeshPhysicalMaterial",
+            571
+          ],
+          [
+            "MeshPhysicalMaterial",
+            571
+          ]
+        ],
+        "asset": "Coupe '33 Hot Rod #3 - Low Poly Model",
+        "cabin": {
+          "hip": [
+            0,
+            0.665,
+            -0.29
+          ],
+          "door": [
+            -0.468,
+            0.393
+          ],
+          "floor": 0.665,
+          "floorWorldY": 0.677,
+          "pedalHeight": 0.765,
+          "recline": 0.54,
+          "rear": false,
+          "two": true,
+          "cabinTriangles": 1951,
+          "seated": 1,
+          "headroom": 0.022,
+          "behind": 0.309
+        },
+        "panes": {
+          "left": {
+            "drawn": true,
+            "depthWrite": false
+          },
+          "front": {
+            "drawn": true,
+            "depthWrite": false
+          },
+          "right": {
+            "drawn": true,
+            "depthWrite": false
+          },
+          "rear": {
+            "drawn": true,
+            "depthWrite": false
+          },
+          "roof": {
+            "drawn": true,
+            "depthWrite": false
+          }
+        },
+        "badge": null
+      },
+      "visualReview": {
+        "reviewed": true,
+        "sourceIdentityVisible": true,
+        "seatedDriverVisibleThroughGlass": true,
+        "obviousBodyHolesOrHeadPenetration": false,
+        "note": "Stock closed hood, grille/fenders, continuous source coupe body and chrome blade wheels visible. Small HUD remnants lie outside the car; native 740x500 crop reviewed without upscaling."
+      }
+    }
+  ],
+  "limits": [
+    "Software WebGL proves this capture path, not hardware FPS.",
+    "Door aperture, all graphics tiers and burn/repair are assessed separately in runtime-proof.json."
+  ]
+}

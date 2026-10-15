@@ -1,0 +1,88 @@
+[
+  {
+    "primitive": 62,
+    "boundaryEdges": 626,
+    "edgesMatchedKept": 626,
+    "matches": {
+      "61": 626
+    }
+  },
+  {
+    "primitive": 63,
+    "boundaryEdges": 21,
+    "edgesMatchedKept": 0,
+    "matches": {}
+  },
+  {
+    "primitive": 64,
+    "boundaryEdges": 122,
+    "edgesMatchedKept": 73,
+    "matches": {
+      "61": 73
+    }
+  },
+  {
+    "primitive": 65,
+    "boundaryEdges": 28,
+    "edgesMatchedKept": 0,
+    "matches": {}
+  },
+  {
+    "primitive": 122,
+    "boundaryEdges": 629,
+    "edgesMatchedKept": 629,
+    "matches": {
+      "121": 629
+    }
+  },
+  {
+    "primitive": 123,
+    "boundaryEdges": 30,
+    "edgesMatchedKept": 0,
+    "matches": {}
+  },
+  {
+    "primitive": 124,
+    "boundaryEdges": 126,
+    "edgesMatchedKept": 77,
+    "matches": {
+      "121": 77
+    }
+  },
+  {
+    "primitive": 125,
+    "boundaryEdges": 19,
+    "edgesMatchedKept": 0,
+    "matches": {}
+  },
+  {
+    "primitive": 159,
+    "boundaryEdges": 2016,
+    "edgesMatchedKept": 1930,
+    "matches": {
+      "158": 676,
+      "157": 1249,
+      "164": 5
+    }
+  },
+  {
+    "primitive": 165,
+    "boundaryEdges": 378,
+    "edgesMatchedKept": 225,
+    "matches": {
+      "158": 225
+    }
+  },
+  {
+    "primitive": 166,
+    "boundaryEdges": 63,
+    "edgesMatchedKept": 0,
+    "matches": {}
+  },
+  {
+    "primitive": 167,
+    "boundaryEdges": 90,
+    "edgesMatchedKept": 0,
+    "matches": {}
+  }
+]

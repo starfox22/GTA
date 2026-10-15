@@ -1,0 +1,131 @@
+{
+  "descent": {
+    "direction": "down",
+    "frame": 0.0333,
+    "ride": {
+      "airS": 0,
+      "hops": 0,
+      "maxGapM": 0,
+      "gapAt": null,
+      "maxLiftM": 0.72,
+      "liftAt": [
+        7705,
+        1184,
+        77.1,
+        [
+          -0.32,
+          -0.18,
+          0.74,
+          0.66
+        ]
+      ],
+      "minLiftM": -0.09,
+      "maxRiseMs": 11.47,
+      "maxUpMs": 2.13,
+      "maxDownMs": -3.96,
+      "stops": 4,
+      "maxBlowMs": 1.03,
+      "blowAt": [
+        7684,
+        1183,
+        0,
+        0.66,
+        24
+      ],
+      "flights": 0,
+      "maxPitchRate": 1.47,
+      "maxRollRate": 3.79,
+      "nan": 0
+    },
+    "cliffFlights": 0,
+    "cliffAirS": 0,
+    "nan": false,
+    "overturned": false,
+    "reason": "trailhead",
+    "seconds": 73.7,
+    "sample": 698,
+    "of": 700,
+    "progress": 0.997,
+    "height": 94,
+    "meanSpin": 0.03,
+    "slidBackM": 0,
+    "maxKmh": 35,
+    "hp": 237,
+    "mudCoat": 0.78,
+    "last": {
+      "peak": "MOUNT ASCENT",
+      "time": 75.62,
+      "clean": true,
+      "challenge": false,
+      "splits": [
+        6.63,
+        20.1,
+        46.68,
+        67.78
+      ]
+    }
+  },
+  "s1": {
+    "type": "crawler",
+    "onTerrain": true,
+    "active": true,
+    "air": false,
+    "liftM": 0.072,
+    "pitchDeg": -3.35,
+    "rollDeg": 1.43,
+    "loadG": 1,
+    "wheelTravelM": [
+      -0.01,
+      0.02,
+      0.003,
+      -0.014
+    ],
+    "wheelLoadG": [
+      0.235,
+      0.281,
+      0.255,
+      0.229
+    ],
+    "model": {
+      "hz": 1.23,
+      "sagM": 0.166,
+      "droopM": 0.166,
+      "bumpM": 0.166,
+      "tyreM": 0.404,
+      "wheelbaseM": 2.511,
+      "trackM": 1.68
+    }
+  },
+  "s2": {
+    "type": "crawler",
+    "onTerrain": true,
+    "active": true,
+    "air": false,
+    "liftM": 0.072,
+    "pitchDeg": -3.34,
+    "rollDeg": 1.42,
+    "loadG": 1,
+    "wheelTravelM": [
+      -0.01,
+      0.02,
+      0.003,
+      -0.014
+    ],
+    "wheelLoadG": [
+      0.235,
+      0.281,
+      0.255,
+      0.229
+    ],
+    "model": {
+      "hz": 1.23,
+      "sagM": 0.166,
+      "droopM": 0.166,
+      "bumpM": 0.166,
+      "tyreM": 0.404,
+      "wheelbaseM": 2.511,
+      "trackM": 1.68
+    }
+  },
+  "pass": true
+}

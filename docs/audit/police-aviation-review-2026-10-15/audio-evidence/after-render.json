@@ -1,0 +1,71 @@
+{
+  "renderer": "web-audio-engine@0.13.4 OfflineAudioContext (CPU)",
+  "sources": {
+    "engine-audio.js": "b5346a9aebfebe34305e8e374362a0aab081b45a8f34be1ba90fe6e49764bb1c",
+    "aircraft-audio.js": "89bb464608fb2c11812f662f604fd957dabd35fcd2be53a525bd6c5f5cf44ba0"
+  },
+  "timing": "0\u20131.5 s idle; 1.5 s throttle advanced; actual power ramps at profile spool rate; 6.2 s output cut (old graph 0.3\u20130.4 s release, new graph 0.12 s). New graph only: flyby left\u2192right at 240 units/s, 160 units offset, 80 units elevation.",
+  "scope": "Actual shipped Web Audio graph, dry engineBus at unity; excludes global limiter/mix makeup, radio, ambient scene, runway/wind layers and cabin convolution. It is an isolated sound fixture, not gameplay recording.",
+  "results": [
+    {
+      "file": "skyhawk-idle-takeoff-cutoff.wav",
+      "bytes": 816044,
+      "sha256": "9d60cc8104bc4f0a8dd963c94cc36d46318a9301390b56e0d8083da6f4652b86",
+      "seconds": 8.5,
+      "rate": 24000,
+      "channels": 2,
+      "peak": 0.2559550702571869,
+      "idleRms": 0.08137328729051867,
+      "takeoffRms": 0.13326671851394145,
+      "cutoffRms": 6.663556262412662e-07
+    },
+    {
+      "file": "courier-idle-takeoff-cutoff.wav",
+      "bytes": 816044,
+      "sha256": "e5fb6d6e5c3d400a7cc834f064ba55e0b6877393b3a25f1a9c07e9a5ba70f40f",
+      "seconds": 8.5,
+      "rate": 24000,
+      "channels": 2,
+      "peak": 0.22254644334316254,
+      "idleRms": 0.05230897327438443,
+      "takeoffRms": 0.1155892942826454,
+      "cutoffRms": 5.86035261147665e-07
+    },
+    {
+      "file": "jet-idle-takeoff-cutoff.wav",
+      "bytes": 816044,
+      "sha256": "70212d60d2eb3c57220310f1fddfd7f031309893df6bc731054dcd4bc5b9aabf",
+      "seconds": 8.5,
+      "rate": 24000,
+      "channels": 2,
+      "peak": 0.48954668641090393,
+      "idleRms": 0.030363274192445118,
+      "takeoffRms": 0.13461634924739208,
+      "cutoffRms": 7.326851744476816e-07
+    },
+    {
+      "file": "airliner-idle-takeoff-cutoff.wav",
+      "bytes": 816044,
+      "sha256": "d7108e45b44963f0372730308075b03fa53a7aede5c15dc64bdb2d4c1095300a",
+      "seconds": 8.5,
+      "rate": 24000,
+      "channels": 2,
+      "peak": 0.5079329013824463,
+      "idleRms": 0.032625327616660864,
+      "takeoffRms": 0.14384402258491608,
+      "cutoffRms": 7.576536769988737e-07
+    },
+    {
+      "file": "skyhawk-flyby.wav",
+      "bytes": 816044,
+      "sha256": "dda5602402847dc006df51b1c04e0eba0dca9e630b8a7602de78925723287d11",
+      "seconds": 8.5,
+      "rate": 24000,
+      "channels": 2,
+      "peak": 0.1316501647233963,
+      "idleRms": 0.015103427860822695,
+      "takeoffRms": 0.04047642814978373,
+      "cutoffRms": 1.4610340097992635e-07
+    }
+  ]
+}

@@ -1,0 +1,410 @@
+{
+  "kind": "Final native police subset: 9 original 740x500 viewport crops; no image processing",
+  "parentReport": "dist/review16/final-captures/after-images/review.json",
+  "parentReportSnapshotSha256": "99dd799c66faf27d854162db9dfa29f92227718a746c1202d9a3c82e416d6758",
+  "parentReportCapturesAtSnapshot": 11,
+  "parentPipelinePassAtSnapshot": null,
+  "parentPipelineAcceptance": "Root-owned; this subset does not claim completion of component recorders. The 11 captured main frames passed renderer, GPU and fault checks.",
+  "htmlPath": "dist/review16/final-runtime.html",
+  "htmlSha256": "719a535fe3905275c381737acb7fc3e80ee1ab4378c0d5736a4595096b16c03c",
+  "recorderPath": "tools/police-aircraft-render-review.mjs",
+  "recorderSha256": "e610ddc37b8231d65a876099e609d51b76213378b8ccc938c1b7c8e4d08f5108",
+  "fixture": {
+    "seed": 1,
+    "time": 13,
+    "weather": "clear",
+    "viewport": [
+      1000,
+      700
+    ],
+    "crop": [
+      130,
+      80,
+      740,
+      500
+    ],
+    "curated": true,
+    "policeOrigin": [
+      418,
+      6000
+    ],
+    "policeSpacing": 110,
+    "policeLooks": [
+      [
+        "police",
+        "crownvic",
+        "bw"
+      ],
+      [
+        "police",
+        "charger",
+        "modern"
+      ],
+      [
+        "police",
+        "utility",
+        "sheriff"
+      ]
+    ],
+    "policeSideAngles": [
+      0,
+      180
+    ],
+    "policePitch": 9,
+    "lookBeforeBoard": true,
+    "holdSimulation": true,
+    "graphics": [
+      "high",
+      "low"
+    ]
+  },
+  "errorsSoFar": [],
+  "warningsSoFar": [
+    "Scripts \"build/three.js\" and \"build/three.min.js\" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation"
+  ],
+  "policeCaptures": [
+    {
+      "name": "police-crownvic-bw-high-side0",
+      "path": "dist/review16/final-captures/after-images/police-crownvic-bw-high-side0.png",
+      "pngSha256": "7fb9c853260b4b9bd3f1ae821cffc89527bd1d092b0b280a861c09353b4bb9a9",
+      "vehicleId": 265,
+      "body": "crownvic",
+      "livery": "bw",
+      "yaw": 0,
+      "quality": {
+        "setting": "high",
+        "tier": "HIGH",
+        "pixelRatio": 1,
+        "renderScale": 1
+      },
+      "renderer": "3d",
+      "faults": {
+        "count": 0,
+        "gameTime": 1.37,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "model": {
+        "id": 265,
+        "type": "police",
+        "draws": 19,
+        "triangles": 10033,
+        "asset": "80 American Police Sedan"
+      }
+    },
+    {
+      "name": "police-crownvic-bw-high-side180",
+      "path": "dist/review16/final-captures/after-images/police-crownvic-bw-high-side180.png",
+      "pngSha256": "dc9595b99655d9afe3da96cae148df427b061b3a8b70ba0e650da8b447bc30d0",
+      "vehicleId": 265,
+      "body": "crownvic",
+      "livery": "bw",
+      "yaw": 180,
+      "quality": {
+        "setting": "high",
+        "tier": "HIGH",
+        "pixelRatio": 1,
+        "renderScale": 1
+      },
+      "renderer": "3d",
+      "faults": {
+        "count": 0,
+        "gameTime": 1.4,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "model": {
+        "id": 265,
+        "type": "police",
+        "draws": 19,
+        "triangles": 10033,
+        "asset": "80 American Police Sedan"
+      }
+    },
+    {
+      "name": "police-crownvic-bw-low-side0",
+      "path": "dist/review16/final-captures/after-images/police-crownvic-bw-low-side0.png",
+      "pngSha256": "d8aea44ee0b75d57295fcb923be908f472c7af3c3b68e952c86d5b2a5ce592a3",
+      "vehicleId": 265,
+      "body": "crownvic",
+      "livery": "bw",
+      "yaw": 0,
+      "quality": {
+        "setting": "low",
+        "tier": "LOW",
+        "pixelRatio": 1,
+        "renderScale": 1
+      },
+      "renderer": "3d",
+      "faults": {
+        "count": 0,
+        "gameTime": 1.43,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "model": {
+        "id": 265,
+        "type": "police",
+        "draws": 19,
+        "triangles": 10033,
+        "asset": "80 American Police Sedan"
+      }
+    },
+    {
+      "name": "police-charger-modern-high-side0",
+      "path": "dist/review16/final-captures/after-images/police-charger-modern-high-side0.png",
+      "pngSha256": "ea99fafca7ea4eb4f8c33d07821784fa563c82932749fccbd751c5ea6771c57a",
+      "vehicleId": 266,
+      "body": "charger",
+      "livery": "modern",
+      "yaw": 0,
+      "quality": {
+        "setting": "high",
+        "tier": "HIGH",
+        "pixelRatio": 1,
+        "renderScale": 1
+      },
+      "renderer": "3d",
+      "faults": {
+        "count": 0,
+        "gameTime": 2.8,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "model": {
+        "id": 266,
+        "type": "police",
+        "draws": 15,
+        "triangles": 10797,
+        "asset": "80s Generic Police Car"
+      }
+    },
+    {
+      "name": "police-charger-modern-high-side180",
+      "path": "dist/review16/final-captures/after-images/police-charger-modern-high-side180.png",
+      "pngSha256": "63ecc2250d76b7884dc7410ef1ff2468b357275018cb2e58fd8af600ddce559c",
+      "vehicleId": 266,
+      "body": "charger",
+      "livery": "modern",
+      "yaw": 180,
+      "quality": {
+        "setting": "high",
+        "tier": "HIGH",
+        "pixelRatio": 1,
+        "renderScale": 1
+      },
+      "renderer": "3d",
+      "faults": {
+        "count": 0,
+        "gameTime": 2.83,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "model": {
+        "id": 266,
+        "type": "police",
+        "draws": 15,
+        "triangles": 10797,
+        "asset": "80s Generic Police Car"
+      }
+    },
+    {
+      "name": "police-charger-modern-low-side0",
+      "path": "dist/review16/final-captures/after-images/police-charger-modern-low-side0.png",
+      "pngSha256": "e760c5d1cd0b715a8bd93bb7b8467cfb0d947492d7fc7fd5c42ecad496a9fedb",
+      "vehicleId": 266,
+      "body": "charger",
+      "livery": "modern",
+      "yaw": 0,
+      "quality": {
+        "setting": "low",
+        "tier": "LOW",
+        "pixelRatio": 1,
+        "renderScale": 1
+      },
+      "renderer": "3d",
+      "faults": {
+        "count": 0,
+        "gameTime": 2.87,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "model": {
+        "id": 266,
+        "type": "police",
+        "draws": 15,
+        "triangles": 10797,
+        "asset": "80s Generic Police Car"
+      }
+    },
+    {
+      "name": "police-utility-sheriff-high-side0",
+      "path": "dist/review16/final-captures/after-images/police-utility-sheriff-high-side0.png",
+      "pngSha256": "dcb2135b9152cf5a022fa2238b9ccebc108bcf74aee883a3abf8d720d81a279c",
+      "vehicleId": 267,
+      "body": "utility",
+      "livery": "sheriff",
+      "yaw": 0,
+      "quality": {
+        "setting": "high",
+        "tier": "HIGH",
+        "pixelRatio": 1,
+        "renderScale": 1
+      },
+      "renderer": "3d",
+      "faults": {
+        "count": 0,
+        "gameTime": 4.23,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "model": {
+        "id": 267,
+        "type": "police",
+        "draws": 21,
+        "triangles": 10519,
+        "asset": "Generic SUV"
+      }
+    },
+    {
+      "name": "police-utility-sheriff-high-side180",
+      "path": "dist/review16/final-captures/after-images/police-utility-sheriff-high-side180.png",
+      "pngSha256": "44ab5d6977620e6220ff21f8185b5f76dac757ebfaaa975c74a15ee09dec2f25",
+      "vehicleId": 267,
+      "body": "utility",
+      "livery": "sheriff",
+      "yaw": 180,
+      "quality": {
+        "setting": "high",
+        "tier": "HIGH",
+        "pixelRatio": 1,
+        "renderScale": 1
+      },
+      "renderer": "3d",
+      "faults": {
+        "count": 0,
+        "gameTime": 4.27,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "model": {
+        "id": 267,
+        "type": "police",
+        "draws": 21,
+        "triangles": 10519,
+        "asset": "Generic SUV"
+      }
+    },
+    {
+      "name": "police-utility-sheriff-low-side0",
+      "path": "dist/review16/final-captures/after-images/police-utility-sheriff-low-side0.png",
+      "pngSha256": "033eb3ee9ff58b7fc4dccf064c84b2d0e43bd4800b690d61d0cd55fd9ea2c008",
+      "vehicleId": 267,
+      "body": "utility",
+      "livery": "sheriff",
+      "yaw": 0,
+      "quality": {
+        "setting": "low",
+        "tier": "LOW",
+        "pixelRatio": 1,
+        "renderScale": 1
+      },
+      "renderer": "3d",
+      "faults": {
+        "count": 0,
+        "gameTime": 4.3,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "model": {
+        "id": 267,
+        "type": "police",
+        "draws": 21,
+        "triangles": 10519,
+        "asset": "Generic SUV"
+      }
+    }
+  ],
+  "policeSubsetAccepted": true,
+  "visualFindings": [
+    "All three final S2 views inspected: High 0 degrees, High 180 degrees and Low 0 degrees.",
+    "SHERIFF reads left to right on clean white doors; both rear-quarter 41 numbers are legible.",
+    "One intended aerial 41 is clear; the unsupported trunk duplicate is absent.",
+    "Thin blue roof-edge strips match the original authored dark glossy roof-island border under rails; retained source detail, not generated text.",
+    "Final nine police image hashes and capture renderer/GPU/fault checks verified; legacy sedan marking review was completed earlier."
+  ],
+  "sourceBorderProof": "verification/police-s2-roof-border-source.json",
+  "expectedMainCaptureCount": 11
+}

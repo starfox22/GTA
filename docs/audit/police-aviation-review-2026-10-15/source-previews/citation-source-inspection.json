@@ -1,0 +1,24 @@
+{
+  "inspectionOnly": true,
+  "inGame": false,
+  "model": "jet",
+  "mode": "source",
+  "pose": "neutral",
+  "packSha256": "a8f911de36c3d7a8a97b4b0a0ee0ef855fed15ee9415d0f505edbdd7967b092b",
+  "boundsBlender": [
+    [
+      -7.810307502746582,
+      -7.375000476837158,
+      0.0
+    ],
+    [
+      7.810307502746582,
+      7.375000476837158,
+      5.662708282470703
+    ]
+  ],
+  "render": "Blender CPU Cycles, 16 samples; original source normals, coordinate/size fit only for source mode",
+  "originalPngSha256": "a91e1323d28f57612107abb9f38ddebe3b6d44a6f7f66e2b3d7bcac7dcbab447",
+  "reviewJpegSha256": "204b18ae7a1231f74148356aed13e6e1b8fea955d55418cf947e24089124b129",
+  "reviewJpeg": "Lossy JPEG encoding only; native1100x780 render size unchanged"
+}

@@ -1,0 +1,12 @@
+{
+  "visualCaptureHtmlSha256": "06b27514b0e368013a6fbdd80356e1c81f431849d4b382106b39c7dd595dd64f",
+  "finalHtmlSha256": "45af8f11bf43a9ed9c9252c63af33f0e0ec1df56edf64b11b91e4131ceb02222",
+  "changedSharedInputs": [
+    "src/approved-suv3d.js",
+    "src/police3d-asset.js",
+    "src/ui/base.css",
+    "src/ui/credits.html"
+  ],
+  "allAssetBytesIdentical": true,
+  "qualification": "R2 captures retain their exact build label. Final changes add visible Credits UI and marked-S2-only side-skin ownership; fresh final sheriff photos supersede R2 sheriff photos. Unaffected models, audio, flight and trail production source/asset inputs are unchanged. Builder also adds content-based URLs only for split deployment."
+}

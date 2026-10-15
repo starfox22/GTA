@@ -1,0 +1,20 @@
+"""Native original-source CPU previews, not rendered game evidence.
+
+blender -b --threads 1 -P tools/hotrod_vehicle_preview.py -- SOURCE/scene.gltf OUTPUT
+The source model is neither exported nor reshaped. Review floor/lights/cameras only.
+"""
+import bpy,sys,json,math,pathlib
+from mathutils import Vector
+args=sys.argv[sys.argv.index('--')+1:];source=pathlib.Path(args[0]);destination=pathlib.Path(args[1]);destination.mkdir(exist_ok=True)
+bpy.ops.wm.read_factory_settings(use_empty=True);bpy.ops.import_scene.gltf(filepath=str(source))
+objects=[o for o in bpy.context.scene.objects if o.type=='MESH'];pts=[o.matrix_world@Vector(p)for o in objects for p in o.bound_box];lo=Vector([min(p[i]for p in pts)for i in range(3)]);hi=Vector([max(p[i]for p in pts)for i in range(3)]);center=(lo+hi)*.5;size=max(hi-lo)
+rows=[{'name':o.name,'vertices':len(o.data.vertices),'triangles':sum(len(p.vertices)-2 for p in o.data.polygons),'translation':list(o.matrix_world.translation),'bounds':[[min((o.matrix_world@Vector(p))[i]for p in o.bound_box),max((o.matrix_world@Vector(p))[i]for p in o.bound_box)]for i in range(3)]}for o in objects]
+(destination/'native-source-inspection.json').write_text(json.dumps({'source':str(source),'bounds':[list(lo),list(hi)],'objects':rows},indent=2))
+scene=bpy.context.scene;scene.render.engine='CYCLES';scene.cycles.device='CPU';scene.cycles.samples=32;scene.cycles.use_denoising=False;scene.render.resolution_x=1100;scene.render.resolution_y=800;scene.render.resolution_percentage=100;scene.world=bpy.data.worlds.new('ReviewWorld');scene.world.use_nodes=True;scene.world.node_tree.nodes['Background'].inputs['Color'].default_value=(.42,.46,.5,1);scene.world.node_tree.nodes['Background'].inputs['Strength'].default_value=.5;scene.view_settings.view_transform='AgX'
+bpy.ops.mesh.primitive_plane_add(size=size*200,location=(center.x,center.y,lo.z-.005));floor=bpy.context.object;floor.name='ReviewFloor';m=bpy.data.materials.new('ReviewFloor');m.use_nodes=True;m.node_tree.nodes['Principled BSDF'].inputs['Base Color'].default_value=(.12,.14,.17,1);m.node_tree.nodes['Principled BSDF'].inputs['Roughness'].default_value=.8;floor.data.materials.append(m)
+for j,(position,power,width)in enumerate([((.3,-1,1.5),1500,1.0),((-1,1,1),1000,1.5),((1,1,1.3),1300,.8)]):
+ light=bpy.data.lights.new('ReviewArea'+str(j),'AREA');light.energy=power*size*size/20;light.size=width*size;obj=bpy.data.objects.new(light.name,light);bpy.context.collection.objects.link(obj);obj.location=center+Vector(position)*size;obj.rotation_euler=(center-obj.location).to_track_quat('-Z','Y').to_euler()
+# Original models stay untouched; source front/back bearings are recorded after inspection.
+for view,offset in [('three-quarter-a',Vector((-.95,-1.25,.64))),('three-quarter-b',Vector((.95,1.25,.64)))]:
+ camdata=bpy.data.cameras.new('ReviewCamera');cam=bpy.data.objects.new('ReviewCamera',camdata);bpy.context.collection.objects.link(cam);cam.location=center+offset*size;cam.rotation_euler=(center-cam.location).to_track_quat('-Z','Y').to_euler();camdata.type='ORTHO';camdata.ortho_scale=size*1.37;scene.camera=cam;scene.render.filepath=str(destination/(view+'.png'));bpy.ops.render.render(write_still=True);bpy.data.objects.remove(cam,do_unlink=True)
+print('SOURCE_PREVIEWS_COMPLETE',destination,flush=True)

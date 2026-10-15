@@ -1,0 +1,148 @@
+{
+  "comparisons": [
+    {
+      "title": "Crown Vic patrol markings \u2014 High, exterior side A",
+      "description": "The same shared livery canvas now projects without folds across the downloaded body panels.",
+      "before": "images/before/police-crownvic-bw-high-side0.png",
+      "after": "images/after/police-crownvic-bw-high-side0.png"
+    },
+    {
+      "title": "Crown Vic patrol markings \u2014 High, exterior side B",
+      "description": "The same shared livery canvas now projects without folds across the downloaded body panels.",
+      "before": "images/before/police-crownvic-bw-high-side180.png",
+      "after": "images/after/police-crownvic-bw-high-side180.png"
+    },
+    {
+      "title": "Crown Vic patrol markings \u2014 Low, exterior side A",
+      "description": "The same shared livery canvas now projects without folds across the downloaded body panels.",
+      "before": "images/before/police-crownvic-bw-low-side0.png",
+      "after": "images/after/police-crownvic-bw-low-side0.png"
+    },
+    {
+      "title": "Charger patrol markings \u2014 High, exterior side A",
+      "description": "The same shared livery canvas now projects without folds across the downloaded body panels.",
+      "before": "images/before/police-charger-modern-high-side0.png",
+      "after": "images/after/police-charger-modern-high-side0.png"
+    },
+    {
+      "title": "Charger patrol markings \u2014 High, exterior side B",
+      "description": "The same shared livery canvas now projects without folds across the downloaded body panels.",
+      "before": "images/before/police-charger-modern-high-side180.png",
+      "after": "images/after/police-charger-modern-high-side180.png"
+    },
+    {
+      "title": "Charger patrol markings \u2014 Low, exterior side A",
+      "description": "The same shared livery canvas now projects without folds across the downloaded body panels.",
+      "before": "images/before/police-charger-modern-low-side0.png",
+      "after": "images/after/police-charger-modern-low-side0.png"
+    },
+    {
+      "title": "Sheriff SUV markings \u2014 High, exterior side A",
+      "description": "Straight side projection restores SHERIFF lettering; the complete exterior door coating also removes dark triangular gaps while preserving window trim and wheel arches.",
+      "before": "images/before/police-utility-sheriff-high-side0.png",
+      "after": "images/after/police-utility-sheriff-high-side0.png"
+    },
+    {
+      "title": "Sheriff SUV markings \u2014 High, exterior side B",
+      "description": "Straight side projection restores SHERIFF lettering; the complete exterior door coating also removes dark triangular gaps while preserving window trim and wheel arches.",
+      "before": "images/before/police-utility-sheriff-high-side180.png",
+      "after": "images/after/police-utility-sheriff-high-side180.png"
+    },
+    {
+      "title": "Sheriff SUV markings \u2014 Low, exterior side A",
+      "description": "Straight side projection restores SHERIFF lettering; the complete exterior door coating also removes dark triangular gaps while preserving window trim and wheel arches.",
+      "before": "images/before/police-utility-sheriff-low-side0.png",
+      "after": "images/after/police-utility-sheriff-low-side0.png"
+    },
+    {
+      "title": "Downloaded Coupe 33 hot rod \u2014 front",
+      "description": "Source body, wheels, cabin and PBR surfaces replace the previous procedural hot rod.",
+      "before": "images/before/hotrod-isolated-front.png",
+      "after": "images/after/hotrod-isolated-front.png"
+    },
+    {
+      "title": "Downloaded Coupe 33 hot rod \u2014 side",
+      "description": "The source cabin and authored wheel positions are retained. The stock source hood is closed; no procedural blower or flames are added.",
+      "before": "images/before/hotrod-isolated-side.png",
+      "after": "images/after/hotrod-isolated-side.png"
+    },
+    {
+      "title": "Downloaded business jet",
+      "description": "The flyable business jet uses a licensed Citation exterior, with adapted control surfaces and landing gear.",
+      "before": "images/before/plane-jet-front.png",
+      "after": "images/after/plane-jet-front.png"
+    },
+    {
+      "title": "Downloaded terminal jets",
+      "description": "The airport scenery uses a licensed 737 model in a fictional Oceanview material palette.",
+      "before": "images/before/airport-static-jet.png",
+      "after": "images/after/airport-static-jet.png"
+    },
+    {
+      "title": "Southport parking and taxi access",
+      "description": "The Cessnas face west toward the parallel taxiway, with marked connections near runway 18\u2019s northern threshold.",
+      "before": "images/before/southport-parking.png",
+      "after": "images/after/southport-parking.png"
+    },
+    {
+      "title": "Oceanview parking and taxi access",
+      "description": "The flyable aircraft face the southbound taxi connections, then turn west toward runway 27.",
+      "before": "images/before/oceanview-parking.png",
+      "after": "images/after/oceanview-parking.png"
+    },
+    {
+      "title": "Compact SUV on the rocky trail",
+      "description": "The same descent pilot with a 30-second limit and compact SUV body: the previous build tips onto its roof; corrected rock contact normals keep it on its wheels. The vehicle travels farther after the fix, so the outcome positions differ.",
+      "before": "images/before/compact-suv-trail.png",
+      "after": "images/after/compact-suv-trail.png"
+    }
+  ],
+  "sounds": [
+    {
+      "title": "Cessna before \u2014 incorrect jet voice",
+      "file": "audio-evidence/skyhawk-before.mp3"
+    },
+    {
+      "title": "Cessna after \u2014 four-cylinder piston and two-blade propeller",
+      "file": "audio-evidence/skyhawk-after.mp3"
+    },
+    {
+      "title": "Courier \u2014 turbine and four-blade propeller",
+      "file": "audio-evidence/courier-after.mp3"
+    },
+    {
+      "title": "Business jet \u2014 twin turbofan",
+      "file": "audio-evidence/business-jet-after.mp3"
+    },
+    {
+      "title": "Airliner \u2014 larger twin turbofan",
+      "file": "audio-evidence/airliner-after.mp3"
+    },
+    {
+      "title": "Cessna exterior flyby \u2014 positional motion",
+      "file": "audio-evidence/skyhawk-flyby.mp3"
+    }
+  ],
+  "screenshots": [
+    {
+      "title": "Hot rod \u2014 open source cabin",
+      "description": "Actual boarded driver and open door after the burn/repair check. The source-body opening exposes its retained cabin.",
+      "file": "images/runtime/hotrod-open-source-cabin.png"
+    },
+    {
+      "title": "Business jet \u2014 ground configuration",
+      "description": "Downloaded Citation exterior with mapped ground flap controls and gear interlock. Known visual limitation: deployed flap boundaries show small triangular seams because the source has no separately authored flap cuts.",
+      "file": "images/runtime/jet-ground-flaps-source.png"
+    },
+    {
+      "title": "Business jet \u2014 chase view in flight",
+      "description": "The same source model in a 100 m flight fixture, after mapped gear/flap inputs, viewed through the actual chase camera.",
+      "file": "images/runtime/jet-cruise-gear-flaps-chase.png"
+    },
+    {
+      "title": "Readable model credits",
+      "description": "The pause-menu Credits panel exposes the full embedded attribution text, including the new free models.",
+      "file": "images/runtime/07-credits.png"
+    }
+  ]
+}

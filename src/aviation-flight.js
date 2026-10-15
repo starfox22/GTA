@@ -17,8 +17,9 @@
       },
       // The courier parked on Oceanview's apron in free roam.
       parked: {
-        x: 5000,
-        y: 9300,
+        x: 5260,
+        y: 9430,
+        a: Math.PI / 2,
       },
       heli: {
         x: 3690,
@@ -88,7 +89,8 @@
       courier: {
         name: 'SERRANO C200 COURIER',
         l: 112,
-        w: 100,
+        w: 104,
+        height: 36,
         hp: 250,
         flightMass: 1450,
         // Wing and drag sized for a lift-off near 115-140 km/h and about 400 km/h
@@ -110,6 +112,8 @@
         // Engine spool, fraction of full power per second (up, down).
         spoolUp: 0.9,
         spoolDown: 1.3,
+        taxiWheelbase: 4.4,
+        taxiYaw: 0.5,
       },
       // A Cessna 172 class four-seat trainer from a downloaded model (aircraft-assets3d.js; without the model it draws
       // as the courier): high wing, fixed tricycle gear (`fixedGear`: L does nothing), lift-off near 100 km/h, about
@@ -125,15 +129,24 @@
         wing: 16.2,
         drag0: 0.034,
         thrust: 0.22 * GRAVITY,
+        // A fixed-pitch piston propeller is power limited in cruise. Keep
+        // static/take-off thrust, then let available thrust fall with speed;
+        // a turbofan's near-constant thrust would over-speed this trainer.
+        propellerReferenceSpeed: 54 * UNITS_PER_METRE,
         brake: 0.42,
         roll: 3,
         bank: 1,
         stall: 87 * KMH,
         rotate: 100 * KMH,
         assist: 0.6,
+        // A trainer's climb input is gentler than the faster frames: the
+        // shared 0.21-rad increment stalled it immediately after rotation.
+        pitchPull: 0.1,
         spoolUp: 1.1,
         spoolDown: 1.5,
         fixedGear: true,
+        taxiWheelbase: 2,
+        taxiYaw: 0.65,
       },
       jet: {
         name: 'AURELIA J8 PRIVATE JET',
@@ -144,7 +157,7 @@
         mass: 5.2,
         flightMass: 2400,
         // Lift-off near 180-200 km/h, about 740 km/h flat out; a light
-        // business jet's thrust-to-weight over the roll (0.3): 500-600 m.
+        // business jet's thrust-to-weight over the roll (0.3): about 620 m.
         wing: 13.7,
         drag0: 0.0198,
         thrust: 0.3 * GRAVITY,
@@ -156,17 +169,21 @@
         assist: 0.46,
         spoolUp: 0.38,
         spoolDown: 0.55,
+        taxiWheelbase: 5,
+        taxiYaw: 0.4,
       },
       airliner: {
         name: 'MERIDIAN 220 AIRLINER',
-        l: 214,
-        w: 148,
-        height: 60,
+        // Includes the procedural tail trailing edge and winglet skins,
+        // measured from the production Three.js meshes about body origin.
+        l: 230,
+        w: 154,
+        height: 68,
         hp: 520,
         mass: 14,
         flightMass: 4300,
         // Lift-off near 210-230 km/h, about 830 km/h flat out; a regional
-        // jet's thrust-to-weight over the roll (0.26): 800-950 m.
+        // jet's thrust-to-weight over the roll (0.26): about 1,055 m.
         wing: 18.3,
         drag0: 0.0184,
         thrust: 0.26 * GRAVITY,
@@ -178,31 +195,63 @@
         assist: 0.32,
         spoolUp: 0.3,
         spoolDown: 0.45,
+        taxiWheelbase: 9.5,
+        taxiYaw: 0.28,
       },
     };
+    // Nose-out parking: no aircraft needs car-style reverse or a pushback to
+    // reach the runway. Oceanview's largest aircraft uses the eastern stub so
+    // runway 27 has its full take-off distance ahead; the trainers use 18.
+    const AIRCRAFT_STANDS = [
+      { id: 'oceanview-west', airframe: 'jet', x: 3750, y: 9430, a: Math.PI / 2, taxi: [[3750, 9784], [3650, 9884], [3450, 9884]], runway: '27' },
+      { id: 'oceanview-mid', airframe: 'jet', x: 4500, y: 9430, a: Math.PI / 2, taxi: [[4500, 9784], [4400, 9884], [4200, 9884]], runway: '27' },
+      { id: 'oceanview-east', airframe: 'airliner', x: 5910, y: 9430, a: Math.PI / 2, taxi: [[5910, 9724], [5750, 9884], [5510, 9884]], runway: '27' },
+      { id: 'oceanview-courier', airframe: 'courier', ...FLIGHT.parked, taxi: [[5260, 9784], [5160, 9884], [4960, 9884]], runway: '27' },
+      ...[[800, 4650], [800, 4930], [1000, 5420]].map(([x, y], i) => ({
+        id: 'southport-' + (i + 1), airframe: 'skyhawk', x, y, a: Math.PI,
+        taxi: [[740, y], [700, y - 40], [700, 4420], [660, 4380], [458, 4380], [418, 4420], [418, 4500]], runway: '18',
+      })),
+    ];
     function populateAircraft() {
       // Both jets and the airliner live at Oceanview: Southport's 460 m strip is
-      // for the courier (a jet needs 500-600 m to lift off).
-      for (const [airframe, x, y, a] of [
-        ['jet', 5530, 9500, 0],
-        ['airliner', 4880, 9520, 0],
-        ['jet', 3790, 9230, 0],
-      ]) {
+      // for the courier and trainers (a jet needs about 620 m to lift off).
+      for (const stand of AIRCRAFT_STANDS) {
+        const { airframe, x, y, a } = stand;
+        // The courier is created with the county's original aircraft, so a
+        // reset still restores one courier rather than adding a duplicate.
+        if (airframe === 'courier') {
+          const courier = vehicles.find((c) => c.type === 'plane' && !c.airframe && c.x === x && c.y === y);
+          if (courier) courier.parkingStand = stand.id;
+          continue;
+        }
         const vehicle = makeCar('plane', x, y, a, false, airframe === 'jet' ? '#e1e4db' : '#d0dfde');
         vehicle.airframe = airframe;
         vehicle.hp = vehicle.maxhp = vehicleSpec(vehicle).hp;
-        vehicle.authorized = true;
+        vehicle.parkingStand = stand.id;
+        if (airframe === 'skyhawk') vehicle.color = '#e9e9e4';
+        else vehicle.authorized = true;
       }
-      // Southport's GA apron: three SKYLARK 172s where the parked couriers stood (their 460 m strip suits them).
-      for (const [x, y, a, color] of [
-        [800, 4650, 0, '#e9e9e4'],
-        [800, 4930, 0, '#e9e9e4'],
-        [1000, 5420, Math.PI / 2, '#e9e9e4'],
-      ]) {
-        const vehicle = makeCar('plane', x, y, a, false, color);
-        vehicle.airframe = 'skyhawk';
-        vehicle.hp = vehicle.maxhp = vehicleSpec(vehicle).hp;
-      }
+    }
+    // Read-only fixture for console/tests: ordinary entry and keys do the
+    // driving. Every sample uses the production full-wing collision box and
+    // landing clearance test, including neighbouring aircraft and buildings.
+    function aircraftTaxiReport(id) {
+      const c = id === undefined ? player.car : vehicles.find((v) => v.id === id);
+      if (!c || c.type !== 'plane') return null;
+      const stand = AIRCRAFT_STANDS.find((s) => s.id === c.parkingStand),
+        spec = vehicleSpec(c),
+        footprint = vehicleShape(c),
+        runway = runwayUnder(c.x, c.y, c.a);
+      return {
+        id: c.id, airframe: c.airframe || 'courier', name: spec.name, stand: stand?.id || null,
+        x: c.x, y: c.y, a: c.a, hp: c.hp, maxhp: c.maxhp,
+        speedKmh: worldMeters(Math.hypot(c.vx || 0, c.vy || 0)) * 3.6,
+        aglM: worldMeters(aircraftClearance(c)), throttle: c.throttle || 0, power: c.power || 0,
+        clear: aircraftClear(c), dry: corners(footprint).every((p) => landAt(p.x, p.y)),
+        footprintM: { length: worldMeters(spec.l), span: worldMeters(spec.w) },
+        taxi: stand ? stand.taxi.map(([x, y]) => ({ x, y })) : [],
+        runway: runway ? { designation: runway.designation, remainingM: worldMeters(runway.remaining) } : null,
+      };
     }
     const PLANE_FLIGHT = {
       gravity: GRAVITY,
@@ -321,10 +370,10 @@
     function planeControl(aircraft, stepSeconds, active) {
       flightSetup(aircraft);
       const controlled = aircraft === player.car && active,
-        up = controlled && (keys.KeyW || keys.ArrowUp),
-        down = controlled && (keys.KeyS || keys.ArrowDown),
+        up = controlled && actionHeld('forward'),
+        down = controlled && actionHeld('back'),
         turn = controlled
-          ? (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0)
+          ? (actionHeld('right') ? 1 : 0) - (actionHeld('left') ? 1 : 0)
           : 0;
       // Nose up / down are the climb and descend actions (↑ / ↓, controls.js).
       const pull = controlled && actionHeld('ascend'),
@@ -389,7 +438,7 @@
           0.16,
         );
       let pitchTarget = airborne
-        ? clamp(trim + (pull ? 0.21 : push ? -0.16 : 0), -0.24, 0.39)
+        ? clamp(trim + (pull ? airframeProfile.pitchPull ?? 0.21 : push ? -0.16 : 0), -0.24, 0.39)
         : pull
           ? 0.2
           : 0;
@@ -450,7 +499,9 @@
           // No wheels under it: the belly scrapes along.
           (!airborne && aircraft.gearPos < 0.5 ? 3.2 * GRAVITY : 0);
       const thrust =
-          aircraft.power * airframeProfile.thrust * clamp(aircraft.hp / aircraft.maxhp, 0.3, 1),
+          aircraft.power * airframeProfile.thrust * clamp(aircraft.hp / aircraft.maxhp, 0.3, 1) *
+            (airframeProfile.propellerReferenceSpeed
+              ? Math.min(1, airframeProfile.propellerReferenceSpeed / Math.max(1, speed)) : 1),
         pathA = horizontalSpeed > 1 ? Math.atan2(aircraft.vy, aircraft.vx) : aircraft.a;
       // Buffet: shakes in as the wing nears the stall, hard once it has let go;
       // on the ground a light rumble from the runway.
@@ -526,10 +577,17 @@
               ? 0.25
               : 0) * GRAVITY;
         along = Math.max(0, along + (thrust - drag - braking) * stepSeconds);
-        // Nosewheel steering: full lock at taxi speed, tapering off as the rudder
-        // takes over on the take-off roll.
+        // Nosewheel steering follows the airframe's wheelbase, with assisted
+        // differential braking at taxi speed. It cannot swivel at rest. Lock
+        // tapers on the take-off roll and lateral acceleration stays below
+        // 0.22 g, so a trainer turns within its apron without a jet pivoting
+        // like one or a high-speed ground turn snapping into a spin.
+        const taxiSpeed = along * METERS_PER_UNIT,
+          steering = turn * 0.55 / (1 + Math.pow(taxiSpeed / 8, 2)),
+          yawLimit = Math.min(airframeProfile.taxiYaw, 0.22 * 9.81 / Math.max(1, taxiSpeed)),
+          taxiYaw = clamp(taxiSpeed / airframeProfile.taxiWheelbase * Math.tan(steering), -yawLimit, yawLimit);
         aircraft.av +=
-          ((turn * 0.55 * clamp(along / (9.8 * UNITS_PER_METRE), 0, 1)) / (1 + along / (21.5 * UNITS_PER_METRE)) - aircraft.av) *
+          (taxiYaw - aircraft.av) *
           (1 - Math.exp(-stepSeconds * 5));
         aircraft.ctrlYaw += (turn - aircraft.ctrlYaw) * ease;
         aircraft.a = normalizeAngle(aircraft.a + aircraft.av * stepSeconds);

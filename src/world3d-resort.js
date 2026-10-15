@@ -90,8 +90,15 @@
         group.position.set(x, 0, z);
         group.rotation.y = a;
         const kind = size >= 0.9 ? 'airliner' : 'jet';
-        group.scale.setScalar(size * (kind === 'airliner' ? 0.63 : 0.9));
         ag.add(group);
+        const downloaded = kind === 'airliner' && makeParkedAssetJet(kind, group);
+        if (downloaded) {
+          // Preserve each stand's existing aircraft length, using one uniform
+          // source scale. The real 737's wider wing plan is also its collider.
+          group.scale.setScalar((214 * size * .63) / (downloaded.model.length * UNITS_PER_METRE));
+          return;
+        }
+        group.scale.setScalar(size * (kind === 'airliner' ? 0.63 : 0.9));
         buildAircraft(kind, group, { color: kind === 'airliner' ? '#e6ebe8' : '#dfe3e0', accent: kind === 'airliner' ? '#2c6f8e' : '#8a3b46' });
       }
       // Southport is a GA strip (airfields.js): its apron's light aircraft are flyable SKYLARK 172s (vehicles,
