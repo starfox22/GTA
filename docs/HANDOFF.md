@@ -9,6 +9,9 @@ Continue from **`origin/codex-reviews`** in `starfox22/GTA`, the same permanent
 GitHub branch. Do not start a new branch per owner prompt or move this work to
 main without the owner's approval. Browser game: **https://starfox22.github.io/GTA/**;
 native comparison and sound gallery: **https://starfox22.github.io/GTA/review/**.
+The [verified deployment](audit/police-aviation-review-2026-10-15/verification/successful-deployment.json)
+of game commit `6a9decb` passed all 63 public file hashes in run
+[38818439357](https://github.com/starfox22/GTA/actions/runs/38818439357).
 
 [Police/aviation review](audit/police-aviation-review-2026-10-15/README.md) lists
 the complete change set, exact capture/test inputs, source licences and limits.

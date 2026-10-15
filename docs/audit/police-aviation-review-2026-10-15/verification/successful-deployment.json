@@ -1,0 +1,106 @@
+{
+  "checkedAt": "2026-10-15T22:40:01.990581+00:00",
+  "pass": true,
+  "gameCommit": "6a9decb1b25666cad4ae797acdb499d819eb2ec1",
+  "branch": "codex-reviews",
+  "playUrl": "https://starfox22.github.io/GTA/?review=6fc25ae849408922",
+  "galleryUrl": "https://starfox22.github.io/GTA/review/",
+  "workflow": {
+    "commit": "6a9decb1b25666cad4ae797acdb499d819eb2ec1",
+    "url": "https://github.com/starfox22/GTA/actions/runs/38818439357",
+    "branch": "codex-reviews",
+    "state": {
+      "status": "WORKFLOW_RUN_STATUS_COMPLETED",
+      "conclusion": "WORKFLOW_RUN_CONCLUSION_SUCCESS"
+    },
+    "jobs": [
+      {
+        "url": "https://github.com/starfox22/GTA/actions/runs/38818439357/job/116708830070",
+        "steps": [
+          {
+            "name": "Set up job",
+            "number": "1",
+            "conclusion": "success",
+            "started-at": "2026-10-15T22:38:09Z",
+            "completed-at": "2026-10-15T22:38:12Z"
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "number": "2",
+            "conclusion": "success",
+            "started-at": "2026-10-15T22:38:12Z",
+            "completed-at": "2026-10-15T22:38:22Z"
+          },
+          {
+            "name": "Build the browser game",
+            "number": "3",
+            "conclusion": "success",
+            "started-at": "2026-10-15T22:38:22Z",
+            "completed-at": "2026-10-15T22:38:22Z"
+          },
+          {
+            "name": "Build the screenshot and sound gallery",
+            "number": "4",
+            "conclusion": "success",
+            "started-at": "2026-10-15T22:38:22Z",
+            "completed-at": "2026-10-15T22:38:22Z"
+          },
+          {
+            "name": "Check Pages configuration",
+            "number": "5",
+            "conclusion": "success",
+            "started-at": "2026-10-15T22:38:22Z",
+            "completed-at": "2026-10-15T22:38:23Z"
+          },
+          {
+            "name": "Upload the browser game",
+            "number": "6",
+            "conclusion": "success",
+            "started-at": "2026-10-15T22:38:23Z",
+            "completed-at": "2026-10-15T22:38:27Z"
+          },
+          {
+            "name": "Deploy the browser game",
+            "number": "7",
+            "conclusion": "success",
+            "started-at": "2026-10-15T22:38:27Z",
+            "completed-at": "2026-10-15T22:38:34Z"
+          },
+          {
+            "name": "Verify the public game",
+            "number": "8",
+            "conclusion": "success",
+            "started-at": "2026-10-15T22:38:34Z",
+            "completed-at": "2026-10-15T22:38:53Z"
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "number": "16",
+            "conclusion": "success",
+            "started-at": "2026-10-15T22:38:53Z",
+            "completed-at": "2026-10-15T22:38:54Z"
+          },
+          {
+            "name": "Complete job",
+            "number": "17",
+            "conclusion": "success",
+            "started-at": "2026-10-15T22:38:54Z",
+            "completed-at": "2026-10-15T22:38:54Z"
+          }
+        ]
+      }
+    ]
+  },
+  "verification": {
+    "method": "GitHub deployment runner ran tools/verify-pages.py against every built Pages file, requiring HTTP200 and full SHA256 byte equality. Public GitHub job step status was read from workflow HTML.",
+    "artifactManifest": "public-site-manifest.json",
+    "files": 63,
+    "bytes": 124574920,
+    "indexSha256": "6fc25ae849408922b77b243949d1f9662752b9b39bf600bef94eb624f2e6b7ef",
+    "gallerySha256": "34a73c00af69c823701141161143d66f47d242b2d538cd78c31fd27ac1214109",
+    "publicRawImages": "public-image-links.json",
+    "cloudProxyLimitation": "Direct github.io requests are blocked by the cloud proxy; public file checks ran on GitHub, not via a claimed cloud-browser visit."
+  },
+  "mainRemains": "bde9ee4c7f295b096fe71f6924b84d491a56a86e",
+  "knownOpenItemsRetained": true
+}

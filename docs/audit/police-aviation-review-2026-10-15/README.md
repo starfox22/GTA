@@ -6,6 +6,11 @@ comparison baseline is `d75acc1ebc3c56a6c62434512d72d2fde632200d`; main was
 The browser game remains **https://starfox22.github.io/GTA/**. The screenshot and
 sound gallery is **https://starfox22.github.io/GTA/review/**.
 
+[Deployment 38818439357](https://github.com/starfox22/GTA/actions/runs/38818439357)
+on `6a9decb` succeeded, including all **63 public file** SHA-256 checks.
+The [deployment receipt](verification/successful-deployment.json) records the
+actual step status, exact artifact manifest and separately checked public PNG links.
+
 ## Changes
 
 1. **Police markings:** removed the downloaded-body UV folds that stretched and

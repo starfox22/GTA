@@ -1,0 +1,28 @@
+{
+  "checkedAt": "2026-10-15T22:38:52.162102+00:00",
+  "commit": "6a9decb1b25666cad4ae797acdb499d819eb2ec1",
+  "pass": true,
+  "images": [
+    {
+      "url": "https://raw.githubusercontent.com/starfox22/GTA/6a9decb1b25666cad4ae797acdb499d819eb2ec1/docs/audit/police-aviation-review-2026-10-15/images/after/police-utility-sheriff-high-side0.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 415614,
+      "sha256": "dcb2135b9152cf5a022fa2238b9ccebc108bcf74aee883a3abf8d720d81a279c"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/starfox22/GTA/6a9decb1b25666cad4ae797acdb499d819eb2ec1/docs/audit/police-aviation-review-2026-10-15/images/after/hotrod-isolated-front.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 409510,
+      "sha256": "94853c14e4f30d5263c47572bf1c9fc688b8a3bfbebca9b3a7e25cf4af94b430"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/starfox22/GTA/6a9decb1b25666cad4ae797acdb499d819eb2ec1/docs/audit/police-aviation-review-2026-10-15/images/runtime/jet-ground-flaps-source.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 662594,
+      "sha256": "83f49fd1dd8af62949fc06389c316b9436ea4a1a73705a689ef61e008b65ce15"
+    }
+  ]
+}
