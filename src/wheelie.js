@@ -6,9 +6,10 @@
      * gravity. Up/Down shift that mass back/forward, independently of W/S drive.
      * A stopped or reversing bike cannot be pulled up by a key. On a rolling
      * bike a single clutch/body impulse can initiate lift, limited by available
-     * engine force, cornering grip and speed. Rider balance assistance feathers
-     * that actual force toward a sustainable 29-degree wheelie; it cannot add
-     * engine power or rescue a bike past its balance point. Down changes the
+     * engine force, cornering grip and speed. Holding rearward weight keeps
+     * raising the front at the earlier rider-controlled pace; there is no fixed
+     * angle target. Release it to settle, or it can pass its balance point and
+     * loop out. Down changes the
      * mass, S/Space brakes the contacting rear, and an unloaded front contributes
      * no steering/brake force or tyre effects. Landing uses a substepped fork.
      */
@@ -27,11 +28,10 @@
     const WHEELIE_BY_TYPE = { bike: 'sport', dolcati: 'sport', yamasaki: 'sport', kr500: 'enduro', cruiser: 'cruiser', bicycle: 'bicycle' },
       WHEELIE_STEER = 0.25, // the steering left with the front fully up
       WHEELIE_REAR_BRAKE = 0.55, // g: the rear brake alone, the front in the air
-      WHEELIE_RISE = 0.55, // rad/s: the front lifted by a rider who has the power for it
+      WHEELIE_RISE = 0.45, // earlier rider-controlled lift pace, within the engine's available power
       WHEELIE_SETTLE = 0.35,
-      WHEELIE_HOLD = 0.50, // the rider balances below the unassisted tipping point
       WHEELIE_ROLL_MIN = 3 * KMH,
-      WHEELIE_ROLL_FULL = 8 * KMH, // rad/s: the front let down on a feathered throttle
+      WHEELIE_ROLL_FULL = 8 * KMH,
       WHEELIE_DAMP = 1.2, // the rider's body soaking up the pitch (1/s)
       WHEELIE_FORK = 900, // the fork's spring (rad/s² a radian) ...
       WHEELIE_FORK_DAMP = 30, // ... and damping: about half critical, one small bounce
@@ -84,7 +84,7 @@
       for (let i = 0; i < steps; i++) {
         // The body is the control: ease mass back or forward only while rolling.
         // Forward shift keeps W available; a real brake remains a separate action.
-        lean += ((lower || (brake && rolling) ? -0.65 * rolling : shiftBack ? rolling : 0) - lean) * (1 - Math.exp(-6 * dt));
+        lean += ((lower || (brake && rolling) ? -0.5 * rolling : shiftBack ? rolling : 0) - lean) * (1 - Math.exp(-6 * dt));
         if (!rolling && Math.abs(lean) < 0.001) lean = 0;
         const b = geo.b - geo.back * lean,
           h = geo.h + geo.back * 0.5 * lean,
@@ -98,7 +98,7 @@
         else if (throttle && a > 0 && (ask || up)) {
           // The rider works the throttle for a pace of pitch, within the engine's actual pull.
           // Past the balance point only the rear brake and a forward weight shift can save it.
-          const pace = lower ? -0.9 : ask ? clamp((WHEELIE_HOLD * geo.rise - th) * 2.8, -WHEELIE_SETTLE, WHEELIE_RISE * geo.rise) : -WHEELIE_SETTLE,
+          const pace = ask ? WHEELIE_RISE * geo.rise : -WHEELIE_SETTLE,
             want = 5 * (pace - w);
           lift = clamp((want * geo.k2 + weight) / Math.max(0.2, lever * upright), 0, a + (ask ? geo.pull * g : 0));
           a = Math.min(a, lift);
@@ -167,32 +167,6 @@
     }
     function wheelieLowerKeyName() {
       return keyName('wheelieDown');
-    }
-    // Countersteering rolls a motorcycle before its path curves. The stable,
-    // damped response is integrated at the same 240 Hz as pitch; at walking
-    // pace the direct steering takes over smoothly. AI handling is unchanged.
-    function motorcycleBalanceStep(c, requestedYaw, along, stepSeconds) {
-      let roll = c.bikeRoll || 0, rate = c.bikeRollRate || 0;
-      if (c.fallen || c.hp <= 0) { c.bikeRoll = c.bikeRollRate = 0; return requestedYaw; }
-      if (c.rideAir) {
-        c.bikeRollRate = rate * Math.exp(-0.4 * stepSeconds);
-        c.bikeRoll = roll + (rate + c.bikeRollRate) * 0.5 * stepSeconds;
-        return requestedYaw;
-      }
-      const speed = Math.abs(along),
-        blend = clamp((speed - 6 * KMH) / (12 * KMH), 0, 1),
-        target = clamp(Math.atan(along * requestedYaw / GRAVITY), -0.95, 0.95) * blend,
-        steps = Math.max(1, Math.ceil(stepSeconds / WHEELIE_PITCH_STEP)),
-        dt = stepSeconds / steps;
-      for (let i = 0; i < steps; i++) {
-        rate += (64 * (target - roll) - 16 * rate) * dt;
-        rate = clamp(rate, -2.4, 2.4);
-        roll += rate * dt;
-      }
-      if (Math.abs(roll) < 0.00001 && Math.abs(rate) < 0.0001) roll = rate = 0;
-      c.bikeRoll = roll; c.bikeRollRate = rate;
-      const balancedYaw = GRAVITY * Math.tan(roll) / Math.max(speed, 6 * KMH) * Math.sign(along || 1);
-      return requestedYaw * (1 - blend) + balancedYaw * blend;
     }
     // Console: wheelieState() (docs/console/vehicles.md).
     function wheelieConsole() {

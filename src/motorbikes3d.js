@@ -593,10 +593,8 @@
         const player_ = c === player.car,
           turn = player_ ? clamp(c.tyres?.steer ?? ((actionHeld('right') ? 1 : 0) - (actionHeld('left') ? 1 : 0)), -1, 1) : clamp(c.av * 0.4, -1, 1),
           speed = Math.abs(c.speed || 0),
-          // Little steering at speed: a bike countersteers and leans instead.
-          countersteer = clamp((speed - 25 * KMH) / (35 * KMH), 0, 1),
-          target = -turn * 0.35 * clamp(1 - speed / (60 * KMH), 0.15, 1) +
-            countersteer * clamp((c.bikeRollRate || 0) * 0.035, -0.065, 0.065);
+          // Restore the earlier fork response; rider animation still follows the bike.
+          target = -turn * 0.35 * clamp(1 - speed / (60 * KMH), 0.15, 1);
         m.steerAngle = (m.steerAngle || 0) + (target - (m.steerAngle || 0)) * Math.min(1, deltaSeconds * 7);
         m.steer.rotation.y = m.steerAngle;
         // Use the tyre model's lock and rear wheelspin. Generic special-wheel rolling must skip

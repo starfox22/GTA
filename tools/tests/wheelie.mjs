@@ -1,4 +1,4 @@
-// Wheelie rider inputs are independent of W/S, speed-gated and sustainable; real keys exercise the live translator.
+// Previous lift/loopout feel with independent, speed-gated rider keys; manual feathering still earns distance.
 export const fresh = true;
 
 export default async function (t) {
@@ -17,18 +17,41 @@ export default async function (t) {
     w = await t.call('wheelieState');
     t.assert(w.onBike && Math.abs(w.deg) < 0.5 && w.log.loops === 0, `off the throttle it comes down: ${w.deg}°`);
 
-    // Sustained balance supports the requested distance achievements, rather
-    // than forcing a loopout after a few seconds of holding rider-back.
+    // Hold the rider back and feather the throttle from observed pitch/rate.
+    // The meter's 200 m milestone remains reachable without an automatic angle target.
     await t.call('rideInto', 'bike', 50, 'none', 25, 0.05);
-    await t.keys(['KeyW', 'WheelieUp'], 11);
+    let throttle = true, taps = 0, score;
+    for (let i = 0; i < 120; i++) {
+      w = await t.call('wheelieState');
+      if (!w.onBike) t.assert(false, 'manual feathering threw the rider: ' + JSON.stringify({ w, rider: await t.call('riderReport'), score: await t.call('wheelieScore') }));
+      const predicted = w.deg + w.rate * .1 * 180 / Math.PI;
+      const next = predicted < 28 ? true : predicted > 32 ? false : throttle;
+      if (next !== throttle) taps++;
+      throttle = next;
+      await t.keys(throttle ? ['KeyW', 'WheelieUp'] : ['WheelieUp'], .1);
+      score = await t.call('wheelieScore');
+      if (score.distanceM > 201) break;
+      t.assert(score.reason !== 'landed', 'manual throttle control landed early: ' + JSON.stringify({ w, score, taps }));
+    }
     w = await t.call('wheelieState');
-    const score = await t.call('wheelieScore');
-    t.assert(w.onBike && w.deg > 15 && w.deg < 40, `long wheelie stays balanced: ${JSON.stringify(w)}`);
+    t.assert(w.onBike && taps > 2, `wheelie did not require throttle feathering: ${JSON.stringify(w)}`);
     t.assert(score.distanceM > 200 && score.tier === 2, `200 m wheelie achievement: ${JSON.stringify(score)}`);
     await t.keys(['KeyW', 'WheelieDown'], 1.5);
     w = await t.call('wheelieState');
     t.assert(w.onBike && w.deg < 1, `weight forward lands the long wheelie: ${w.deg}°`);
-    t.note(`sport bike: ${lifted}° after 1.2 s; sustained ${score.distanceM} m`);
+    t.note(`sport bike: ${lifted}° after 1.2 s; manually feathered ${score.distanceM} m with ${taps} input changes`);
+
+    // Continued rearward pull has the earlier risk: past balance, a real loopout.
+    const loops = w.log.loops;
+    await t.call('rideInto', 'bike', 25, 'none', 25, 0.05);
+    await t.keys(['KeyW', 'WheelieUp'], 5);
+    w = await t.call('wheelieState');
+    score = await t.call('wheelieScore');
+    const rider = await t.call('riderReport');
+    t.assert(!w.onBike && w.log.loops === loops + 1, `continued pull no longer loops out: ${JSON.stringify(w.log)}`);
+    t.assert(rider.throws.at(-1)?.cause === 'loopout', 'loopout did not use the improved rider fall');
+    t.assert(score.reason === 'crashed' && !score.tracking && score.distanceM > 0, 'actual loopout did not finalize earned metres: ' + JSON.stringify(score));
+    await t.wait(8);
 
     // A heavy cruiser barely lifts.
     await t.call('rideInto', 'cruiser', 30, 'none', 25, 0.05);

@@ -66,17 +66,19 @@ The body shift fades in between 3 and 8 km/h, so stationary or reversing arrow p
 cannot move the rider or accelerate the bike. Forward weight shift keeps the throttle
 available; S or Space uses the real rear brake while the front is up.
 
-Holding rider-back with drive asks the rider to feather the available engine force toward
-a sustainable 29° sport-bike wheelie. This balance assistance cannot add power, lift on a
-coast or start a clutch/body pop while airborne or sharply banked. It permits long distance
-wheelies without an inevitable timed loopout. Passing the actual balance/tail limit still
-throws the rider. Releasing the shift settles gently; leaning forward lowers more quickly.
+Holding rider-back with drive restores the earlier 0.45 rad/s lift pace, within available
+engine force. The front continues rising while held; there is no automatic 29° hold.
+Release/tap the rearward shift to settle, or keep the weight back and feather the throttle
+to hold the wheelie manually. Passing the actual
+balance/tail limit throws the rider. Forward weight uses the earlier centre-of-mass shift
+without operating the brake or cutting the separate W action. A coast or an airborne bike
+cannot manufacture engine force or a clutch/body pop.
 
-Ridden motorcycles have a substepped, critically damped roll response (`motorcycleBalanceStep`).
-Requested lateral acceleration produces the gravity-balanced bank; at speed that bank
-controls yaw, with direct steering blended back below 18 km/h. The body and steering follow
-the same roll state (`bikeRoll`, `bikeRollRate`), including a small transient fork countersteer.
-Traffic handling is unchanged. The rider adds bounded torso/pelvis hangoff and looks through
+Motorcycles again use the earlier direct steering/yaw response and immediate bank
+`clamp(av * 0.13, -0.28, 0.28)`, with the earlier speed-dependent fork angle. Bank no longer
+adds a second steering filter or generates yaw. `bikeRoll`/`bikeRollRate` remain pose
+snapshots (the immediate angle and zero delayed rate) for the improved rider and fall
+animation. The rider adds bounded torso/pelvis hangoff and looks through
 the corner while the source grips and pegs remain fixed IK targets.
 
 With the front up, rear braking is capped at 0.55 g, multiplied by the tyre surface and
@@ -98,9 +100,14 @@ pivot dropped its centre by `radius * (1 - cos(pitch))`. Riders use the same res
 body matrix for the seat, bars and pegs. The correction uses the actual bank, base pitch
 and pending terrain angles; the bicycle and scaled bike-share frame use the same rule.
 
-`wheelie-dynamics` tests the actual control/torque kernels, independent rider input, stationary gating, sustained balance, grip budgets,
+`motorcycle-previous-feel` checks 18 full-controller traces recorded from the previous
+published controller at `3bae7a00`: turn, lift, release, coast and both brakes at 30/60/120 Hz.
+The bindings intentionally differ; above the retained speed gate the mechanics match.
+`wheelie-dynamics` tests the actual control/torque kernels, independent rider input, stationary gating, continued lift/loopout, grip budgets,
 30/60/120 Hz agreement and landing recovery. `wheelie` presses real W + ↑, W + ↓ and
-W + Space, plus stopped/coasting Up alone. `wheelie-tyre-contact` checks airborne and partial front effects.
+W + Space, plus stopped/coasting Up alone; observed-pitch/rate throttle feathering reaches the 200 m
+milestone, and an actual loopout finalizes the meter as crashed. `wheelie-tyre-contact`
+checks airborne and partial front effects.
 `motorcycle-wheel-rig` and `approved-motorcycle-rigs` hold the actual rear axle still
 through 0.2/0.6/1.1 rad pitches, while the rider-fit tests retain seat/hand/foot contacts.
 

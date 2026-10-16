@@ -605,10 +605,6 @@
           acceleration = wheelieStep(c, vehicleDefinition, c === pc && active && c.hp > 0, acceleration, along, stepSeconds);
           if (c.wheelie > 0) steer *= wheelieSteerShare(c);
         }
-        // A ridden motorcycle turns by rolling into its lateral acceleration. Keep the
-        // finite roll response in the simulation so the body and steering agree.
-        if (vehicleDefinition.bike && !vehicleDefinition.bicycle && (c === pc || c.bikeRoll || c.bikeRollRate))
-          steer = motorcycleBalanceStep(c, steer, along, stepSeconds);
         if (vehicleDefinition.bike && c.rideAir) {
           acceleration = grip = lateralScale = drag = 0;
         }
@@ -670,6 +666,14 @@
         c.a = Math.atan2(Math.sin(turned), Math.cos(turned));
         c.moveA = Math.atan2(c.vy, c.vx);
         c.speed = c.vx * Math.cos(c.a) + c.vy * Math.sin(c.a);
+        // Restore the earlier direct turn and its immediate visual bank. These
+        // snapshots keep the improved rider/fall poses in the bike's frame;
+        // bank no longer filters or generates steering forces.
+        if (vehicleDefinition.bike && !vehicleDefinition.bicycle && (c === pc || c.bikeRoll !== undefined)) {
+          const bank = clamp(c.av * 0.13, -0.28, 0.28);
+          if (c.bikeRoll !== bank) c.bikeRoll = bank;
+          if (c.bikeRollRate !== 0) c.bikeRollRate = 0;
+        }
       }
       if (isBoat(c)) {
         const nx = c.x + c.vx * stepSeconds,

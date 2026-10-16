@@ -1,4 +1,4 @@
-// Production input/pitch kernels: independent rider shifts, grip-limited brakes and stable pitch/roll across timesteps.
+// Production input/pitch kernels: independent rider shifts, restored rising wheelies and grip-limited brakes.
 import fs from 'node:fs';
 import vm from 'node:vm';
 import { createRequire } from 'node:module';
@@ -44,7 +44,7 @@ export default async function (t) {
     api = vm.runInContext(read('controls') + read('wheelie') + read('driving') + `
       function driveInput(vehicleDefinition, c = player.car) { ${input} return { up: !!up, down: !!down }; }
       ({ step: wheelieStep, pressControlKey, holdActions, releaseControlKey, wheelieHeld, wheelieLowerHeld, driveInput,
-        balance: motorcycleBalanceStep, frontContact: wheelieFrontContact, brakeStep, brakesOff, tyreState, drivingCharacter });`, scope),
+        log: () => ({ ...wheelieLog }), frontContact: wheelieFrontContact, brakeStep, brakesOff, tyreState, drivingCharacter });`, scope),
     press = code => api.holdActions(api.pressControlKey(code)),
     release = () => { for (const code of ['KeyW', 'KeyS', 'ArrowUp', 'ArrowDown', 'KeyG', 'Space']) api.releaseControlKey(code); };
   press('ArrowUp');
@@ -98,46 +98,37 @@ export default async function (t) {
     for (let i = 0; i < 240; i++) api.step(c, spec, true, 0, along, 1 / 120);
     t.assert(c.wheelie === 0 && c.wheelieLean === 0, 'non-rolling rider inputs moved the motorcycle');
   }
-  // An available engine can sustain a useful long wheelie; the rider assist
-  // never exceeds the supplied force and cannot create power on a coast.
+  // Restore the earlier continuing lift: holding Up does not settle onto a
+  // fixed angle. Releasing/tapping it controls the wheelie; a prolonged pull loops out.
   release(); press('KeyW'); press('ArrowUp');
   const holds = [30, 60, 120].map(rate => {
     const c = bike(); c.wheelie = c.wheelieRate = c.wheelieLean = 0;
-    let distance = 0;
-    for (let i = 0; i < rate * 16; i++) {
+    for (let i = 0; i < rate * 2.5; i++) {
       const delivered = api.step(c, spec, true, 9 * 8, 100, 1 / rate);
       t.assert(delivered <= 9 * 8 + 1e-9 && delivered >= 0, 'wheelie assist manufactured drive force');
-      if (c.wheelie > .08) distance += 100 / 8 / rate;
     }
-    t.assert(c.wheelie > .40 && c.wheelie < .55 && distance > 190, 'sustainable wheelie balance failed');
+    t.assert(c.wheelie > .8 && c.wheelie < 1.2, 'held rider-back no longer continues the previous lift');
+    const loops = api.log().loops;
+    for (let i = 0; i < rate * 2 && api.log().loops === loops; i++) api.step(c, spec, true, 9 * 8, 100, 1 / rate);
+    t.assert(api.log().loops === loops + 1, 'holding past the balance point no longer loops out');
     return c;
   });
-  t.assert(holds.every(c => Math.abs(c.wheelie - holds[0].wheelie) < 1e-9), 'held wheelie differs between timesteps');
-  release();
-  for (const rate of [30, 60, 120]) {
-    const c = bike(); c.bikeRoll = c.bikeRollRate = 0;
-    const first = api.balance(c, .45, 100, 1 / rate);
-    t.assert(first > 0 && first < .15, 'motorcycle turned instantly before rolling');
-    for (let i = 1; i < rate * 2; i++) api.balance(c, .45, 100, 1 / rate);
-    t.near(c.bikeRoll, .50, .53, 'physical corner bank ' + rate);
-    t.near(api.balance(c, .45, 100, 1 / rate), .44, .46, 'bank and yaw balance ' + rate);
-    for (let i = 0; i < rate * 2; i++) api.balance(c, 0, 100, 1 / rate);
-    t.assert(Math.abs(c.bikeRoll) < .001, 'motorcycle did not stand up after steering release');
-    t.finite(c, 'corner balance ' + rate);
-  }
+  t.assert(holds.every(c => c.wheelie === 0), 'loopout did not release pitch across timesteps');
   // Neither control can create chassis rotation/drive without a tyre contact.
   for (const shift of ['ArrowUp', 'ArrowDown']) {
     release(); press('KeyW'); press(shift);
     const c = bike(); c.wheelie = .25; c.wheelieRate = 0; c.rideAir = true;
     for (let i = 0; i < 120; i++) {
       t.assert(api.step(c, spec, true, 9 * 8, 100, 1 / 120) === 0, 'airborne throttle/brake generated contact force');
-      api.balance(c, .45, 100, 1 / 120);
     }
-    t.assert(c.wheelie === .25 && c.bikeRoll === 0, 'airborne rider input generated rotation');
+    t.assert(c.wheelie === .25, 'airborne rider input generated pitch');
   }
-  const airborne = bike(); airborne.rideAir = true; airborne.bikeRoll = .2; airborne.bikeRollRate = .3;
-  api.balance(airborne, -.45, 100, 1 / 120);
-  t.assert(airborne.bikeRoll > .2 && airborne.bikeRollRate > .29, 'airborne roll momentum snapped or reversed with input');
+  const airborne = bike(); airborne.rideAir = true; airborne.wheelie = .2; airborne.wheelieRate = .3;
+  api.step(airborne, spec, true, 0, 100, 1 / 120);
+  t.assert(airborne.wheelie > .2 && airborne.wheelieRate > .29, 'airborne pitch momentum snapped or reversed');
+  airborne.rideAir = false;
+  for (let i = 0; i < 240; i++) api.step(airborne, spec, true, 0, 100, 1 / 120);
+  t.assert(Math.abs(airborne.wheelie) < .001, 'pitch did not return to grounded fork contact after flight');
   release();
 
   // Exercise actual load transfer, bias, slip and ABS: an airborne front has no force or lock telemetry.

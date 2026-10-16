@@ -68,7 +68,9 @@ police3d.js, helicopter3d-*.js, apache3d.js, plane3d.js, vehicles3d.js, boats3d.
   terms, it returns the acceleration (feathered throttle, rear brake only) and scales steer by
   `wheelieSteerShare`. Input uses dedicated remappable rider-back/forward actions (↑/↓), while W/S
   stays throttle/brake. Weight shift requires forward movement; Up alone supplies no engine
-  power. Forward shift keeps throttle available; S/Space brakes the contacting rear. Pitch, grip and landing
+  power. Forward shift keeps throttle available; S/Space brakes the contacting rear.
+  The earlier lift pace continues while held: hold too long and it loops; tap/release to balance.
+  Turning again uses the previous direct yaw response and immediate yaw-based bank. Pitch, grip and landing
   contracts: vehicles-and-driving-handling.md. Per-type
   geometry in `WHEELIE_GEOMETRY` (sport, enduro, cruiser barely lifts, bicycle). The renderers
   only read it (motorbikes3d `animateMotorbike`, cycles3d `bicycleWheelie`). Console `wheelieState()`.
