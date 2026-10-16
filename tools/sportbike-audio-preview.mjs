@@ -50,10 +50,13 @@ for (let i = 0; i < channels[0].length; i++) for (let ch = 0; ch < 2; ch++) {
   wav.writeInt16LE(Math.round(Math.max(-1, Math.min(1, v)) * 32767), 44 + (i * 2 + ch) * 2);
 }
 const rms = (from, to) => { let sum = 0, n = 0; for (let i = Math.floor(from * rate); i < to * rate; i++) { sum += channels[0][i] ** 2; n++; } return Math.sqrt(sum / n); },
-  result = { file: 'kuzuki600r-idle-six-gears-limiter-overrun.wav', rate, seconds, channels: 2, peak,
+  result = { file: 'kuzuki600r-idle-six-gears-limiter-overrun.wav', bytes: wav.length, sha256: crypto.createHash('sha256').update(wav).digest('hex'), rate, seconds, channels: 2, peak,
     idleRms: rms(0.8, 1.6), loadedRms: rms(14, 15), limiterRms: rms(16, 16.8), overrunRms: rms(17.6, 18.5), mutedRms: rms(23.5, 24) };
 if (!Number.isFinite(peak) || !Object.values(result).filter(v => typeof v === 'number').every(Number.isFinite) || peak >= 0.9 || result.idleRms <= 0.005 || result.loadedRms <= result.idleRms || result.mutedRms > 0.0005) throw new Error('invalid production audio render ' + JSON.stringify(result));
 fs.writeFileSync(path.join(out, result.file), wav);
+const mp3 = result.file.replace(/\.wav$/, '.mp3');
+execFileSync('ffmpeg', ['-v', 'error', '-y', '-i', path.join(out, result.file), '-c:a', 'libmp3lame', '-q:a', '3', path.join(out, mp3)]);
+result.listeningMp3 = { file: mp3, bytes: fs.statSync(path.join(out, mp3)).size, sha256: crypto.createHash('sha256').update(fs.readFileSync(path.join(out, mp3))).digest('hex') };
 const hash = file => crypto.createHash('sha256').update(fs.readFileSync(new URL('../' + file, import.meta.url))).digest('hex');
 fs.writeFileSync(path.join(out, 'receipt.json'), JSON.stringify({ renderer: 'web-audio-engine@0.13.4 OfflineAudioContext',
   scope: 'Actual shipped updateEngineAudio() caller, OGG recordings, loop boundaries, intake/gear detail, limiter, road and wind; dry engineBus at unity. Excludes global limiter/makeup, radio, ambience and cabin acoustics; isolated listening fixture, not a gameplay capture.',

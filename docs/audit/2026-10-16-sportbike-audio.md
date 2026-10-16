@@ -66,3 +66,10 @@ radio, ambience, cabin acoustics and global limiter/makeup; engineBus is at unit
 A neighboring receipt includes source hashes, schedule and measured levels.
 
 Peak 0.280; RMS idle 0.027, loaded 0.090, limiter 0.068, overrun 0.060, muted tail 0.000033. All finite, with no clipping.
+
+Native Chromium boot/decode check: audio context running, 66 decoded buffers;
+`engineSound()` reports `inline4`, 1,300 rpm, 15,500 redline, 4 cylinders, 43.33 Hz
+firing, both recorded layers and a live engine-bus gain. No console errors. The
+no-render developer browser was stopped after the check. Browser JSON reports and
+error log are beside the listening fixture in `dist/sportbike-audio/`. The renderer
+also emits the MP3 automatically and records exact WAV/MP3 byte counts and SHA-256 hashes.
