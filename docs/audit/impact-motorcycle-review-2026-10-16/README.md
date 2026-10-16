@@ -2,6 +2,8 @@
 
 This pass continues the permanent `codex-reviews` branch. The owner requested more convincing vehicle strikes for the player and pedestrians, a fix for walking beside cars, a downloaded Dolcati replacement, a Japanese inline-four sound for the sport motorcycle, graphics defaults, its KUZUKI 600R name, and improved Up/Down wheelie controls.
 
+Published [playable game](https://starfox22.github.io/GTA/?review=871f214e44785d89) and [native screenshot/sound gallery](https://starfox22.github.io/GTA/review/). [Deployment 38911041748](https://github.com/starfox22/GTA/actions/runs/38911041748) from `321b8de6` succeeded, including exact public SHA-256 verification of all 121 files (173,923,210 bytes). [Success receipt](verification/successful-deployment.json) retains actual job/step status. Later receipt/documentation commits leave the game and gallery bytes identical.
+
 ## Changes
 
 - Bumper contacts now launch player and NPC bodies into the same gravity-driven flight, with speed/frontage/edge-dependent momentum, tumble, ground bounce and sliding. Survivors blend through getting up. Fatal impacts retain body motion and leave a pool only after landing. Vehicle-hit deaths wait for their slowed fall/slide before hospital return, with a 16-second fallback; ordinary deaths retain 4.2 seconds. Harmless walking-speed nudges and separate repeat run-overs retain their contracts.

@@ -21,6 +21,12 @@ qualified full/focused results, native release captures, packaged smoke and stre
 Two known checks remain: the unchanged Mount Ascent pilot timer and the live-world
 pedestrian-awareness rate fixture, which also fails the previous published build.
 
+Published [game](https://starfox22.github.io/GTA/?review=871f214e44785d89) and
+[review gallery](https://starfox22.github.io/GTA/review/). [Run 38911041748](https://github.com/starfox22/GTA/actions/runs/38911041748)
+verified all 121 public files from `321b8de6`; the [success receipt](audit/impact-motorcycle-review-2026-10-16/verification/successful-deployment.json)
+retains actual deployment and verification step results. Later documentation/receipt commits
+produce the same game and gallery bytes.
+
 ## October 15: police, aircraft, airport access and hot rod
 
 Continue from **`origin/codex-reviews`** in `starfox22/GTA`, the same permanent
