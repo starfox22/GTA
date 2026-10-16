@@ -73,6 +73,7 @@
     // @include src/vehicle-trunk.js
     // @include src/riders.js
     // @include src/wheelie.js
+    // @include src/wheelie-score.js
     // @include src/themepark.js
     // @include src/marina.js
     // @include src/taxi.js

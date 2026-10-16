@@ -108,6 +108,7 @@
         // Existing restore rules rebind upcoming bets or refund interrupted play.
         book = reason === 'new-game' ? null : sportsbookSaveData();
       // Callers step the player out first (teleportPlayer); a car still held would be dropped from the world.
+      resetWheelieScore();
       if (player.car) player.car = null;
       clearPolice();
       resetOfficerCrews();

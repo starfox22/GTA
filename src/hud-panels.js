@@ -106,6 +106,7 @@
       updateFreefallCue();
       // Past the world edge: the countdown card (world-edge.js).
       updateWorldEdgeCue();
+      updateWheelieScoreHud();
       watchWeaponBox();
       watchRadioBox();
       updateHudPops();

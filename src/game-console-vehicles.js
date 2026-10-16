@@ -499,6 +499,7 @@
     addConsoleMethods('handling', handlingConsole());
     // Wheelies: wheelieState() (see wheelie.js wheelieConsole).
     addConsoleMethods('handling', wheelieConsole());
+    addConsoleMethods('handling', { wheelieScore: wheelieScoreReport });
     // MONARCH MOTORS: dealership(), prestigeCatalog(), dealershipVisit(), dealerMenu(),
     // dealerBuy(), dealerAlarm(), dealerShatter(), dealerCalm(), dealerResetGarage()
     // (see dealership.js dealershipConsole).

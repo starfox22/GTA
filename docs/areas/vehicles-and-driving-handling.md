@@ -91,3 +91,13 @@ and pending terrain angles; the bicycle and scaled bike-share frame use the same
 W + Space. `wheelie-tyre-contact` checks airborne and partial front effects.
 `motorcycle-wheel-rig` and `approved-motorcycle-rigs` hold the actual rear axle still
 through 0.2/0.6/1.1 rad pitches, while the rider-fit tests retain seat/hand/foot contacts.
+
+`wheelie-score.js` measures each player's actual fixed-step displacement after integration,
+in world units / 8. A clear front lift must last 80 ms; 120 ms of touchdown ends the
+run, with no ground distance counted during that grace period. Stops, damage, throws,
+exits and position discontinuities end it. A single bounded vehicle reference is released
+on completion/reset; no history grows. The HUD celebrates `GREAT!` beyond 100 m and
+`Amazing!` beyond 200 m, then holds the final result for four gameplay seconds. Pause
+holds its clocks. Its measured box participates in player clearance and HUD overlap
+reports. `wheelieScore()` exposes read-only evidence; `wheelie-score` tests the shipped
+scorer/HUD at 0/99/101/201 m, touchdown, stationary balance, pause, crashes and relocation.

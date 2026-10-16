@@ -8,6 +8,7 @@
       updateRideSkip(deltaSeconds);
       if (active) timed('knockdowns', () => updateKnockdowns(deltaSeconds));
       if (active || gameMode === 'menu') timed('cars', () => updateCars(deltaSeconds, active));
+      updateWheelieScore(deltaSeconds);
       // A shark's breach plays out while WASTED is on screen (sealife.js).
       if (gameMode === 'dead') {
         updateSeaLife(deltaSeconds);

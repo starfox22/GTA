@@ -36,6 +36,7 @@
       story: { l: 0, t: 0, r: 0, b: 0, ok: false },
       // The waypoint pill (top centre): a long vehicle heading down the screen reaches up to it.
       nav: { l: 0, t: 0, r: 0, b: 0, ok: false },
+      wheelie: { l: 0, t: 0, r: 0, b: 0, ok: false },
       fadeNav: false,
       fadeNavAt: -1e9,
       vw: 0,
@@ -117,7 +118,7 @@
         C.vh = viewportHeight;
         C.chaseLayout = chaseLayout;
         C.touchLayout = touchLayout;
-        C.open.ok = C.strip.ok = C.story.ok = false;
+        C.open.ok = C.strip.ok = C.story.ok = C.wheelie.ok = false;
         // (A fold for the old layout's card is no reason to keep this one folded.)
         C.yielding = false;
         C.measuredAt = -1;
@@ -158,6 +159,18 @@
           C.nav.b = box.bottom;
           C.nav.ok = true;
           dispatchTop = Math.max(dispatchTop, Math.ceil(box.bottom + 8));
+        }
+      }
+      const wheelie = getElement('wheelieScore');
+      C.wheelie.ok = false;
+      if (wheelie.classList.contains('on')) {
+        const box = wheelie.getBoundingClientRect();
+        if (box.height > 0) {
+          C.wheelie.l = box.left;
+          C.wheelie.t = box.top;
+          C.wheelie.r = box.right;
+          C.wheelie.b = box.bottom;
+          C.wheelie.ok = true;
         }
       }
       const story = getElement('storyLine');
@@ -285,7 +298,7 @@
     const HUD_OVERLAP_IDS = [
       'hudLocation', 'cash', 'stars', 'worldClock', 'pauseBtn', 'navigation', 'terrainStatus', 'policeStatusPanel',
       'policeNotice', 'arrestStatus', 'stealthStatus', 'storyLine', 'carRadio', 'radioCaption', 'toast',
-      'announcement', 'interaction', 'freefallCue', 'worldEdgeCue', 'minimapBox', 'pager', 'quickKeys',
+      'announcement', 'interaction', 'freefallCue', 'worldEdgeCue', 'wheelieScore', 'minimapBox', 'pager', 'quickKeys',
       'vehicleStats', 'weaponButton', 'moveStick', 'aimStick', 'fpsCounter', 'driveByCross',
     ];
     function hudOverlapReport(slack = 2) {
