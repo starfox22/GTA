@@ -69,6 +69,15 @@ Where a file lives: `grep -i <word> docs/FILEMAP.md`.
   read by both renderer and colliders (quay railing `promenadeSpots()`, street ends
   `streetEndPlan()`). On foot the player is also stopped by `footObstacleBlocked`
   (furniture registered with `registerFootObstacle`, trunks, standing props).
+- A vehicle can move its padded footprint over a walker between steps. `moveBody()` passes
+  the actor to `footStepVehicleBlocked`: an existing overlap may shrink or slide along its
+  side, so short outward steps cannot lock the actor beside the car. Vehicle-local penetration
+  must never increase; a clean approach still stops at the padded footprint. This exception
+  applies separately to each nearby vehicle and never skips buildings, furniture or shore
+  rules. An occupancy query without an actor retains the original blocking behavior.
+  `tools/tests/foot-vehicle-escape.mjs` covers both actor types, rotated sides/corners, shallow
+  and deep contacts, tangential escapes, inward attempts, neighboring cars and static walls,
+  plus movement keys in the actual simulation.
 - Vehicle fields the physics step writes are all declared up front in `makeCar()`
   (game-car-spawn.js) so every vehicle shares one object layout; add new per-step fields
   there with the value readers treat as "not set".

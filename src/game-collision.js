@@ -278,8 +278,23 @@
         cell[cell.n++] = c;
       }
     }
+    /* A moving vehicle can leave a person inside its padded footprint. Rejecting every overlapping
+       destination then traps them, even while walking away. A step may preserve or reduce an existing
+       penetration (including sliding along the side), never deepen it or enter from outside. Compare
+       in the vehicle's local frame so both world-axis substeps work beside a rotated car. */
+    function footVehicleEscape(body, x, y, c, radius) {
+      const spec = vehicleSpec(c),
+        cos = Math.cos(c.a), sin = Math.sin(c.a),
+        dx = body.x - c.x, dy = body.y - c.y,
+        nx = x - c.x, ny = y - c.y,
+        hx = spec.l / 2 + radius, hy = spec.w / 2 + radius,
+        before = Math.min(hx - Math.abs(dx * cos + dy * sin), hy - Math.abs(-dx * sin + dy * cos)),
+        after = Math.min(hx - Math.abs(nx * cos + ny * sin), hy - Math.abs(-nx * sin + ny * cos));
+      return before > 0 && after <= before + 1e-7;
+    }
     // Whether a vehicle blocks a foot step to (x, y); `reach` bounds the test.
-    function footStepVehicleBlocked(x, y, collisionRadius, reach) {
+    // Without a body this remains the ordinary occupancy query (including the grid audit).
+    function footStepVehicleBlocked(x, y, collisionRadius, reach, body = null) {
       refreshVehicleGrid();
       const span = reach + 64,
         stamp = vehicleGridState.stamp,
@@ -298,7 +313,8 @@
           for (let k = 0; k < cell.n; k++) {
             const c = cell[k];
             if (c.x - x > reach || x - c.x > reach || c.y - y > reach || y - c.y > reach) continue;
-            if ((!isAircraft(c) || aircraftClearance(c) < 20) && pointInCar(x, y, c, collisionRadius)) return true;
+            if ((!isAircraft(c) || aircraftClearance(c) < 20) && pointInCar(x, y, c, collisionRadius) &&
+              (!body || !footVehicleEscape(body, x, y, c, collisionRadius))) return true;
           }
         }
       }
@@ -341,7 +357,7 @@
       if (onFoot && footFurnitureBlocked(body, x, y)) return true;
       // Behind the drawbridge's sidewalk arms, and never onto a raised span.
       if (drawbridgeFootBlocked(body, x, y, collisionRadius)) return true;
-      return footStepVehicleBlocked(x, y, collisionRadius, reach);
+      return footStepVehicleBlocked(x, y, collisionRadius, reach, body);
     }
     function moveBody(body, displacementX, displacementY, collisionRadius) {
       if (body === player && player.roof)
