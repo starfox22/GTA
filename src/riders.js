@@ -95,6 +95,17 @@
         vz,
         heading: speed > 5 ? Math.atan2(vy, vx) : from.a,
         pitch: 0,
+        bank: 0,
+        bankSpin: 0,
+        side: 1,
+        riderFall: !!RIDER_THROW_STYLES[cause],
+        baseElevation: entityElevation(from),
+        recovery: 0,
+        groundTime: 0,
+        recoverFor: 0,
+        recoverPitch: 0,
+        recoverBank: 0,
+        restPitch: 0,
         spin: clamp((speed / UNITS_PER_METRE) * 0.65, 3, 11),
         slideSpin: randomBetween(-1, 1) * clamp(speed / 60, 0.5, 4),
         phase: 'air',
@@ -130,14 +141,25 @@
         // (A car's roof is low enough; a van's or an SUV's side is struck.)
         throwState = riderThrowState(vx * style.keep, vy * style.keep, RIDER_SEAT, climb, cause, [c, other && riderObstacleTop(other) - entityElevation(other) < 1.6 * UNITS_PER_METRE ? other : null], c);
       throwState.spin *= style.spin;
+      // Preserve the frame the rider just left. A tucked front slides onto
+      // that side, while a loopout starts leaned back with the raised chassis.
+      // Neither starts as a fresh upright body at the handlebars.
+      const baseBank = c.bikeRoll ?? clamp((c.av || 0) * 0.13, -0.28, 0.28),
+        bank = baseBank + (c.slopeRoll || 0),
+        side = Math.sign(bank) || Math.sign(c.av || 0) || 1;
+      throwState.side = side;
+      throwState.bank = bank;
+      throwState.pitch = (loopout ? -Math.max(0, c.wheelie || 0) : 0.1) - (c.slopePitch || 0);
+      throwState.bankSpin = cause === 'lowside' ? side * 3.2 : side * 0.45;
+      if (cause === 'lowside') throwState.spin *= 0.18;
       // The legs and body into the bars (collisionImpact's crashInjury, already
       // dealt): counted toward being knocked out.
       throwState.crashHurt = deltaV ? crashInjury(c, deltaV) : 0;
       throwState.rollShare = style.roll;
       if (loopout) throwState.heading = c.a;
-      // The rider starts at the handlebars, just ahead of the bike's middle (off
-      // the back of a wheelie, over the rear wheel).
-      const reach = loopout ? -0.3 : 0.2;
+      // Release near the saddle, before the continuing momentum carries the
+      // rider beyond the bars (or over the rear wheel in a loopout).
+      const reach = loopout ? -0.3 : -0.1;
       let x = c.x + Math.cos(c.a) * spec.l * reach,
         y = c.y + Math.sin(c.a) * spec.l * reach;
       if (solid(x, y, RIDER_RADIUS)) {
@@ -148,8 +170,8 @@
       c.wheelieRate = 0;
       // The bike carries on alone and goes down, tumbling while it is quick.
       c.fallen = {
-        roll: 0,
-        side: Math.random() < 0.5 ? -1 : 1,
+        roll: baseBank,
+        side,
         tumble: clamp(Math.hypot(c.vx, c.vy) / UNITS_PER_METRE * 0.6, 0, 9),
       };
       c.speed = Math.hypot(c.vx, c.vy);
@@ -255,6 +277,24 @@
             t.bank *= Math.exp(-6 * deltaSeconds);
             t.z = RIDER_SEAT * rise;
           }
+        } else if (t.riderFall) {
+          if (body.hp > 0 && t.downFor < t.recoverFor) {
+            if (t.phase !== 'recover') {
+              t.recoverPitch = normalizeAngle(t.pitch);
+              t.recoverBank = t.bank;
+            }
+            t.phase = 'recover';
+            t.recovery = clamp(1 - t.downFor / t.recoverFor, 0, 1);
+            const r = t.recovery,
+              gather = clamp(r / 0.6, 0, 1),
+              stand = clamp((r - 0.22) / 0.78, 0, 1),
+              turn = r * r * (3 - 2 * r);
+            t.pitch = t.recoverPitch * (1 - turn);
+            t.bank = t.recoverBank * (1 - gather * gather * (3 - 2 * gather));
+            t.z = RIDER_SEAT * stand * stand * (3 - 2 * stand);
+          } else {
+            t.pitch += normalizeAngle(t.restPitch - t.pitch) * (1 - Math.exp(-8 * deltaSeconds));
+          }
         }
         return t.downFor <= 0;
       }
@@ -274,6 +314,7 @@
           t.peak = Math.max(t.peak, t.z);
           t.pitch += t.spin * dt;
           if (t.vehicleHit) t.bank = clamp(t.bank + t.bankSpin * dt, -0.85, 0.85);
+          else if (t.riderFall) t.bank = clamp(t.bank + t.bankSpin * dt, -1.42, 1.42);
           const drag = Math.exp(-0.04 * dt);
           t.vx *= drag;
           t.vy *= drag;
@@ -312,7 +353,7 @@
           t.spin *= 0.5;
           t.roll = (t.roll || 0) * 0.5;
         }
-        if (t.vehicleHit) {
+        if (t.vehicleHit || t.riderFall) {
           // Keep the hips' world height as the road rises/falls beneath them.
           const ground = terrainHeight(body.x, body.y);
           t.z += t.baseElevation - ground;
@@ -326,6 +367,7 @@
             along = Math.hypot(t.vx, t.vy);
           t.z = 0;
           if (t.vehicleHit) t.bankSpin *= 0.3;
+          else if (t.riderFall) t.bankSpin *= 0.4;
           hit(fallInjury(into) + (t.bounces ? 0 : riderInjury(along, 'tumble')));
           playSample('crash-bump-1', clamp(into / (8 * UNITS_PER_METRE), 0.15, 0.6), 0.8, body);
           t.vx *= 0.7;
@@ -344,9 +386,14 @@
             if (along > 6 * UNITS_PER_METRE) noise(0.5, 0.12, 900);
           }
         } else if (t.phase === 'slide') {
+          if (t.riderFall) t.groundTime += dt;
           if (t.vehicleHit) {
             t.z = 0;
             t.bank *= Math.exp(-7 * dt);
+          } else if (t.riderFall) {
+            t.z = 0;
+            const bank = t.cause === 'lowside' ? t.side * 1.42 : 0;
+            t.bank += (bank - t.bank) * (1 - Math.exp(-7 * dt));
           }
           // Tumbling, then sliding on the riding gear: Coulomb friction (less on a
           // wet road; a tumble scrubs more), a little road rash per metre, the
@@ -366,24 +413,27 @@
           }
           t.heading += t.slideSpin * dt * clamp(v / (30 * KMH), 0, 1);
           // Lie on the back or the front, whichever the tumble left nearer.
-          const lie = Math.round((t.pitch - Math.PI / 2) / Math.PI) * Math.PI + Math.PI / 2;
-          if (rolling) {
+          const lie = t.riderFall && t.cause === 'lowside' ? 0.12 : Math.round((t.pitch - Math.PI / 2) / Math.PI) * Math.PI + Math.PI / 2;
+          if (rolling && !(t.riderFall && t.cause === 'lowside')) {
             t.pitch += t.roll * t.rollSign * dt;
-            t.roll = Math.min(t.roll * Math.exp(-1.4 * dt), v / RIDER_ROLL_RADIUS);
           } else t.pitch += (lie - t.pitch) * (1 - Math.exp(-8 * dt));
+          if (rolling) t.roll = Math.min(t.roll * Math.exp(-1.4 * dt), v / RIDER_ROLL_RADIUS);
           if (v < 0.6 * UNITS_PER_METRE) {
             if (t.rash > 0) hit(t.rash);
             t.rash = 0;
             t.vx = t.vy = 0;
             t.roll = 0;
             t.phase = 'down';
-            t.pitch = lie;
+            if (t.riderFall) t.restPitch = lie;
+            else t.pitch = lie;
             // Lying still a moment, longer the worse it was: up again at once
             // after a roll, a few seconds after a bad one, out cold after a very
             // bad one.
             const total = t.hurt + (t.crashHurt || 0);
             t.knockedOut = total >= RIDER_KNOCKOUT;
             t.downFor = t.knockedOut ? clamp(5 + (total - RIDER_KNOCKOUT) / 8, 5, 9) : clamp(0.5 + total / 14, 0.5, 3.4);
+            // Recovery uses the end of the existing daze, not an added delay.
+            if (t.riderFall) t.recoverFor = Math.min(0.95, t.downFor);
             if (t.vehicleHit) {
               t.downFor = Math.max(t.downFor, 2.2, (t.minDownTime || 0) - t.time);
               if (body.hp <= 0) bodyPool(body, 'impact', t.heading);
@@ -489,13 +539,16 @@
           kmh: Math.round(Math.hypot(t.vx, t.vy) / KMH),
           vz: +(t.vz / UNITS_PER_METRE).toFixed(1),
           pitch: +t.pitch.toFixed(2),
+          bank: +(t.bank || 0).toFixed(2),
+          cause: t.cause,
+          recovery: +(t.recovery || 0).toFixed(2),
           hurt: Math.round(t.hurt),
           hits: t.hits,
           strikeKmh: t.strike || 0,
           bounces: t.bounces,
           rolling: +(t.roll || 0).toFixed(1),
           knockedOut: !!t.knockedOut,
-          downFor: t.phase === 'down' ? +t.downFor.toFixed(1) : undefined,
+          downFor: t.phase === 'down' || t.phase === 'recover' ? +t.downFor.toFixed(1) : undefined,
           slidM: +worldMeters(t.slid).toFixed(1),
           fromM: +worldMeters(Math.hypot(player.x - t.from.x, player.y - t.from.y)).toFixed(1),
         };

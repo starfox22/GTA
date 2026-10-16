@@ -395,6 +395,40 @@
                 T[J_HEAD_PITCH] = 0.25 * effort;
               }
             }
+            if (thrown?.riderFall) {
+              // A rider protects the head and gathers the knees as the road
+              // approaches. A tucked front leaves them on the same side as
+              // the bike; a loopout or over-the-bars throw rotates in pitch.
+              // The physics clock owns this pose, including a held frame.
+              const ground = clamp(thrown.groundTime / 0.22, 0, 1),
+                tuck = clamp(Math.abs(thrown.spin) / 8, 0.2, 0.85),
+                brace = thrown.phase === 'air' && thrown.vz < 0 ? clamp(1 - thrown.z / (2 * UNITS_PER_METRE), 0, 1) : 0,
+                w = Math.sin(thrown.time * 6 + seed) * 0.06 * (1 - ground),
+                r = thrown.recovery || 0,
+                effort = Math.sin(r * Math.PI),
+                remain = 1 - r;
+              T[J_HEAD_YAW] = 0;
+              T[J_ROLL] = 0;
+              T[J_LEAN] = -0.08 * tuck * (1 - ground) * remain - 0.3 * effort;
+              T[J_HEAD_PITCH] = (0.18 + 0.16 * tuck) * remain;
+              for (let side = 0; side < 2; side++) {
+                const near = side === (thrown.side > 0 ? 1 : 0),
+                  low = thrown.cause === 'lowside',
+                  shoulder = low ? near ? 0.6 : 1.2 : side ? 1.1 : 1.5,
+                  elbow = low ? near ? 1.3 : 1.8 : side ? 1.1 : 1.5,
+                  hip = low ? near ? 0.35 : 0.7 : side ? 0.15 : 0.4,
+                  knee = low ? near ? -0.7 : -1.1 : side ? -0.35 : -0.75,
+                  airArm = 0.9 + tuck * 0.4 + brace * 0.6 + (side ? -w : w),
+                  airHip = 0.3 + tuck * 0.65 + (side ? -w : w);
+                setArm(T, side,
+                  (airArm + (shoulder - airArm) * ground) * remain + effort * (side ? 0.3 : 0.7) + 0.02 * r,
+                  (0.45 - tuck * 0.18) * remain + 0.12 * r,
+                  (1.05 + tuck * 0.5 + (elbow - 1.05 - tuck * 0.5) * ground) * remain + 0.16 * r);
+                T[J_HIP[side]] = (airHip + (hip - airHip) * ground) * remain + effort * (side ? 0.6 : 1.2);
+                T[J_KNEE[side]] = (-0.55 - tuck * 0.85 + (knee + 0.55 + tuck * 0.85) * ground) * remain - effort * (side ? 1.2 : 1.65) - 0.04 * r;
+              }
+              T[J_SPREAD] = 0.15 * remain;
+            }
             if (spec?.thrown?.flail) {
               const w = Math.sin(t * 10 + seed);
               setArm(T, 0, 2.3 + w * 0.5, 0.9 - w * 0.3, 0.5);

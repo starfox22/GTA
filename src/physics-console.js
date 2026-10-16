@@ -742,5 +742,37 @@
             turnedDeg: Math.round((turned * 180) / Math.PI),
           };
         },
+        // A bounded release fixture through the same throw/flight/slide rules as
+        // a live rider. Hold simulation before staging or capturing subframes.
+        riderFallScene(cause = 'lowside', type = 'bike', kph = 45, side = 1) {
+          if (!RIDER_THROW_STYLES[cause] || !vehicleSpec({ type })?.bike) return { error: 'Use crash, landing, lowside or loopout and a two-wheeler.' };
+          if (player.car) exitCar();
+          reviveForRide();
+          document.body?.classList.remove('wasted');
+          if (testCar && vehicles.includes(testCar)) {
+            clearCarStains(testCar);
+            vehicles.splice(vehicles.indexOf(testCar), 1);
+          }
+          teleportPlayer(420, 4600);
+          const c = (testCar = makeCar(type, player.x, player.y, 0, false)),
+            direction = Number(side) < 0 ? -1 : 1;
+          c.authorized = true;
+          enterVehicle(c);
+          c.vx = c.speed = clamp(Number(kph) || 45, 5, 120) * KMH;
+          c.vy = 0;
+          c.av = direction * 0.8;
+          c.bikeRoll = direction * 0.28;
+          c.wheelie = cause === 'loopout' ? 1.25 : 0;
+          throwRider(c, c.vx, c.vy, cause);
+          return this.riderFallAdvance(0);
+        },
+        riderFallAdvance(seconds = 0.1) {
+          if (!testCar || !vehicles.includes(testCar)) return null;
+          const steps = Math.round(clamp(Number(seconds) || 0, 0, 20) * 120);
+          for (let i = 0; i < steps && (gameMode === 'play' || gameMode === 'dead'); i++) update(1 / 120);
+          return { ...riderReport(), x: +player.x.toFixed(3), y: +player.y.toFixed(3),
+            source: 'throwRider → stepThrownBody',
+            bike: { type: testCar.type, x: +testCar.x.toFixed(3), y: +testCar.y.toFixed(3), roll: +(testCar.fallen?.roll || 0).toFixed(3), side: testCar.fallen?.side } };
+        },
       };
     }

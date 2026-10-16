@@ -303,12 +303,14 @@
           const hips = RIG.hip * H,
             bank = thrown.bank || 0,
             along = -hips * Math.sin(thrown.pitch),
-            across = -hips * Math.cos(thrown.pitch) * Math.sin(bank);
+            across = -hips * Math.cos(thrown.pitch) * Math.sin(bank),
+            // End at this person's standing hip height, including smaller NPCs.
+            height = thrown.riderFall && thrown.phase === 'recover' ? thrown.z * hips / RIDER_SEAT : thrown.z;
           crowdJoint(
             mRoot,
             mIdentity,
             p.x + Math.cos(thrown.heading) * along - Math.sin(thrown.heading) * across,
-            elevation + thrown.z - hips * Math.cos(thrown.pitch) * Math.cos(bank) + 1.2 * (1 - (thrown.recovery || 0)),
+            elevation + height - hips * Math.cos(thrown.pitch) * Math.cos(bank) + 1.2 * (1 - (thrown.recovery || 0)),
             p.y + Math.sin(thrown.heading) * along + Math.cos(thrown.heading) * across,
             -thrown.pitch,
             thrown.bank || 0,
@@ -321,6 +323,13 @@
           crowdJoint(mRoot, mIdentity, p.x + Math.cos(heading) * shift, elevation + fall * 1.2 * H, p.y + Math.sin(heading) * shift, (fallSign * fall * Math.PI) / 2, p.ejected ? p.ejectRoll || 0 : 0, -heading);
         }
         mRoot.scale(crowdScale.set(H, H, H));
+        if (thrown?.riderFall && thrown.phase !== 'air') {
+          // Support the posed body on the road. In recovery the planted boot,
+          // knee or palm carries the weight, rather than clipping through it
+          // while an otherwise rigid root simply rotates upright.
+          const lowest = riderPoseLowestPoint(mRoot, R, H, J, hipY, lean, roll, armSwing, elbows, abduct, legHip, legKnee);
+          mRoot.elements[13] += Math.max(0, elevation + 0.02 - lowest) * clamp(thrown.groundTime / 0.12, 0, 1);
+        }
         rigRimFlag = spec?.rim ? 16 : 0;
         // (An avatar is fitted at its own shoulders: its joints stand where its body was fitted.)
         const w = avatarSlot ? avatarSlot.width : R.width,
@@ -571,6 +580,33 @@
         rigRimFlag = 0;
         crowdRecording = null;
         return right;
+      }
+      // Lowest contact on a rider's posed capsules, using the same matrices
+      // and dimensions as the full rig below. Scratch matrices are reused;
+      // this runs only for grounded rider falls, never ordinary walkers.
+      function riderPoseLowestPoint(root, R, H, J, hipY, lean, roll, arms, elbows, abduct, hips, knees) {
+        const w = R.width;
+        crowdJoint(mHips, root, 0, hipY, 0, 0, roll * 0.4, 0);
+        crowdJoint(mTorso, mHips, 0, RIG.waist, 0, lean, roll, J[J_TWIST]);
+        crowdJoint(mHead, mTorso, 0.04, RIG.neck, 0, -J[J_HEAD_PITCH] - lean * 0.3, 0, J[J_HEAD_YAW]);
+        let low = Math.min(mHips.elements[13] - 0.7 * H,
+          mTorso.elements[13] - 0.9 * H,
+          mHead.elements[13] + 1.1 * mHead.elements[5] - 0.9 * H);
+        for (let side = 0; side < 2; side++) {
+          const sign = side ? 1 : -1;
+          crowdJoint(mShoulder[side], mTorso, 0, RIG.shoulderY, sign * R.shoulderZ * w, arms[side], -sign * abduct[side], 0);
+          crowdJoint(mElbow[side], mShoulder[side], 0, -RIG.upperArm, 0, elbows[side]);
+          crowdJoint(mHand[side], mElbow[side], 0, -RIG.forearm, 0, 0.1);
+          crowdJoint(mHip[side], mHips, 0, 0, sign * R.hipZ * w, hips[side], -sign * J[J_SPREAD], 0);
+          crowdJoint(mKnee[side], mHip[side], 0, -RIG.thigh, 0, knees[side]);
+          crowdJoint(mFoot, mKnee[side], 0, -RIG.shin, 0, -(hips[side] + knees[side]) * (J[J_FALL] > 0.5 ? 0.3 : 1));
+          low = Math.min(low, mShoulder[side].elements[13] - 0.5 * H,
+            mElbow[side].elements[13] - 0.4 * H,
+            mHand[side].elements[13] - 0.6 * mHand[side].elements[5] - 0.3 * H,
+            mKnee[side].elements[13] - 0.5 * H,
+            mFoot.elements[13] - 0.55 * H - Math.abs(mFoot.elements[1]) * 1.1);
+        }
+        return low;
       }
       /**
        * Weapons in hand. The hold's grip is placed in the aim frame (at the

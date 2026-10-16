@@ -67,6 +67,7 @@
             // Thrown off a bike or out of a crash (riders.js).
             sp.pose = 'thrown';
             sp.thrown = player.thrown;
+            sp.facing = player.thrown.heading;
             sp.elevation = entityElevation(player);
             return sp;
           }

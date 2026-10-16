@@ -53,6 +53,15 @@ police3d.js, helicopter3d-*.js, apache3d.js, plane3d.js, vehicles3d.js, boats3d.
   Survived falls hurt with kind `'fall'` (no blood: `hurt()` skips it); a fatal one bleeds and
   pools (blood.js). Traffic riders lose hp directly, no wound. Console: `rideInto`,
   `rideIntoWall`, `riderReport()` (`bloodNear`, `poolsNear`).
+- Rider falls retain the release bank (`bikeRoll`, plus terrain roll); loopouts
+  retain the raised-bike pitch. Lowsides roll onto that same side and slide,
+  rather than somersaulting forwards. Ordinary fall `riderFall` states preserve
+  world-height gravity over slopes and use the last ≤0.95 s of the existing
+  injury/KO wait for a protective, bent-knee recovery. No extra daze is added.
+  `crowd3d-poses` drives arms/knees from the fall clock; `crowd3d-draw` supports
+  grounded capsule/boot contacts and ends at each rig's actual standing height.
+  Vehicle-hit flight/recovery and injury scales remain separate. Host test:
+  `rider-fall-motion`; console: `riderFallScene`, `riderFallAdvance`.
 - Wheelies (wheelie.js): `c.wheelie` (rad, pitch about the rear patch, slightly negative on the
   fork's bounce) and `c.wheelieRate`; stepped in controlVehicle after the offroad and drawbridge
   terms, it returns the acceleration (feathered throttle, rear brake only) and scales steer by
