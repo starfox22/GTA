@@ -144,9 +144,29 @@
       announce('THE CITY ALWAYS COLLECTS', 'WASTED', 4.6);
       document.body?.classList.add('wasted');
       noise(0.3, 0.4);
-      setTimeout(() => {
+      // WASTED runs at 35% speed. Its ordinary 4.2 s hospital timer can expire
+      // before a vehicle-struck body has landed; allow that specific flight to
+      // finish, bounded by 16 wall seconds even on a stalled/background page.
+      const deathSequence = player.deathSequence = (player.deathSequence || 0) + 1,
+        impact = player.thrown?.vehicleHit ? player.thrown : null,
+        impactUntil = impact ? performance.now() + 16000 : 0;
+      const respawn = () => {
+        // A teleport/new game or later death owns its own body and overlay.
+        if (player.deathSequence !== deathSequence) return;
+        if (impact && player.thrown !== impact) {
+          if (gameMode !== 'dead') document.body?.classList.remove('wasted');
+          return;
+        }
+        if (gameMode !== 'dead') {
+          document.body?.classList.remove('wasted');
+          return;
+        }
+        if (impact && impact.phase !== 'down' && performance.now() < impactUntil) {
+          announceTime = Math.max(announceTime, 0.3);
+          setTimeout(respawn, 100);
+          return;
+        }
         document.body?.classList.remove('wasted');
-        if (gameMode !== 'dead') return;
         cash = Math.max(0, cash - 250);
         player.hp = 100;
         goreRestore(player);
@@ -165,7 +185,8 @@
         save();
         // Blur during WASTED had no play mode to pause; keep the respawn safe.
         if (document.hidden || (typeof document.hasFocus === 'function' && !document.hasFocus())) togglePause();
-      }, 4200);
+      };
+      setTimeout(respawn, 4200);
     }
     /* Where WASTED wakes the player: the nearest hospital (RIVERSIDE MEDICAL on Palm
        Keys, not across the sound), THE HALCYON CLINIC only on and round Monarch Isle,

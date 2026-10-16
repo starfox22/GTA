@@ -387,6 +387,7 @@
       car: null,
       walk: 0,
       inv: 0,
+      deathSequence: 0,
     };
     const cameraTarget = {
         x: spawn.x,

@@ -54,6 +54,11 @@ people-and-crowd.md. Tests: pedestrian-awareness, second-run-over.
   screen; `bodyPool` waits until `down` and forms at the resting position. The
   normal death, witness, reward and injury paths still apply. No pool travels
   with a body. Teleport/respawn clears the player's throw as usual.
+- WASTED keeps its 35% slow motion. The hospital callback starts at the usual
+  4.2 wall seconds, checks an unfinished fatal vehicle flight every 100 ms, and
+  returns after it settles (16 wall seconds maximum for a stalled page). Ordinary
+  deaths retain 4.2 seconds. Captured flight identity and `player.deathSequence`
+  prevent an old callback from moving or clearing a later death screen.
 - Nudges under 20 km/h preserve the harmless sideways set-down and existing
   crime threshold. A vehicle cannot treat an airborne casualty as a downed
   second pass; after settling, `runOverDowned` takes ownership of the casualty's
@@ -62,6 +67,8 @@ people-and-crowd.md. Tests: pedestrian-awareness, second-run-over.
   height and corner effects, recovery/walking, and fatal flight/landing. Console
   `vehicleImpactScene`, `vehicleImpactAdvance`, `vehicleImpactState` stage and
   inspect one bounded pair for deterministic screenshots (docs/console/crowd.md).
+  Host test `vehicle-impact-respawn` couples actual body flight with the death
+  timer at 35% speed, including wet-road settling, bounded fallback and stale callbacks.
 
 ## Running over someone on the ground (runover.js)
 
