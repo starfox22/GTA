@@ -3,6 +3,10 @@
 // in-cloud amount (the heart of a cloud, above the tops, under a fair base), and a jump into
 // a cloud (cloudJump) putting the jumper in cloud on the way down. With WebGL (render page)
 // the camera's in-cloud state engages too.
+// Cloud drift, wind heading and the previous player's facing affect the jump.
+// Start from the same world rather than inheriting another test's trajectory.
+export const fresh = true;
+
 const CITY = [748, 584],
   SEA = [-4600, -7600],
   ASCENT = [7760, 1090];
@@ -36,6 +40,9 @@ export default async function (t) {
     t.assert(under.amount === 0, `under a fair base: amount ${under.amount}`);
     // A jump into a cloud: in cloud somewhere between the top and the base.
     await t.call('teleport', ...CITY);
+    // The under-base check above switches to fair; stage the descent back in
+    // cloudy weather so it crosses the same thick layer as the in-cloud check.
+    await t.call('sky', 'cloudy');
     const jump = await t.call('cloudJump', 820, 'cloud');
     t.assert(jump && jump.parachute && jump.parachute.stage === 'freefall', `cloudJump: ${JSON.stringify(jump?.parachute)}`);
     let deepest = 0,
