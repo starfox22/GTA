@@ -217,6 +217,8 @@
       'engine-sport-low': 1.408707,
       'engine-sport-mid': 0.760499,
       'engine-twin-idle': 2.055692,
+      'engine-inline4-idle': 2.0,
+      'engine-inline4-high': 1.25,
       'engine-v8-idle': 1.920431,
       'engine-v8-low': 0.592948,
       'engine-v8-mid': 0.686576,

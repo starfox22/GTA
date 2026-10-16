@@ -1026,3 +1026,36 @@ by A Random Modeler (https://sketchfab.com/danielskom111), licensed under
 CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/).
 Modified for Dead End City: uniform frame/size fit, fictional Oceanview
 material palette and branding-face recolor, material merging and distant LOD.
+
+KUZUKI600R JAPANESE INLINE-FOUR ENGINE (16 October 2026)
+engine-inline4-idle.ogg
+  "KawasakiZX6RStart.wav" by Sclolex
+  https://freesound.org/people/Sclolex/sounds/211668/
+  License: Creative Commons Zero (CC0 1.0)
+  https://creativecommons.org/publicdomain/zero/1.0/
+  Downloaded from alfredr/thirty-phantom, commit
+  83cdeea54cf2d1c5da96e80e85d772037bae0c61, public/audio/engine-bike.mp3;
+  public/audio/CREDITS.md explicitly credits this recording and CC0.
+  Changes: settled idle at 7.05-9.13 s; DC/subsonic removal, 80 ms circular join,
+  mono 44.1 kHz Vorbis and RMS normalization. Measured apparent firing ~38 Hz
+  sets the 1,140 rpm playback root; this is not a supplied tachometer measurement.
+
+engine-inline4-high.ogg
+  "Sportsbike Flyby" by richwise (Suzuki 1000cc sportsbike on a racetrack)
+  https://freesound.org/people/richwise/sounds/361403/
+  License: Creative Commons Zero (CC0 1.0)
+  Downloaded from web3-engineer/zaeon-os, commit
+  07d3a67215bd3814436994bcbb38816f80ef65ef,
+  public/assets/sounds/cyber/moto-motor-alto.wav; CREDITS.md in that directory
+  explicitly credits richwise, the original page and CC0. This earlier derivative
+  precedes its mirror's later added bass/saturation. The mirror used 6.4-7.85 s,
+  high-pass filtering, pitch stabilization to 300 Hz, normalization, a circular
+  1.25 s loop and 22% circular convolution reverb. Changes here: DC/subsonic
+  removal, mono Vorbis and RMS normalization. Apparent firing 300 Hz gives a
+  9,000 rpm playback root, not a claimed source tachometer reading. This is a
+  Suzuki inline-four reference recording, not a GSX-R600-specific recording.
+
+Both loops append 0.2 s of their beginning beyond the exact runtime loop point.
+Reproducible conversion and source SHA-256 checks: tools/sportbike_audio.py.
+Load/intake detail, mechanical whine, gearbox and limiter are original procedural
+code in src/engine-audio.js; no further recordings are used. No endorsement implied.

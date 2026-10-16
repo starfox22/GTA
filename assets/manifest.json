@@ -679,5 +679,17 @@
     "file": "assets/jet-skin.webp",
     "mime": "image/webp",
     "original": "assets/jet-skin.webp"
+  },
+  {
+    "id": "media-audio-engine-inline4-idle",
+    "file": "assets/engine-inline4-idle.ogg",
+    "mime": "audio/ogg",
+    "original": "tools/sportbike_audio.py (pinned CC0 Japanese inline-four recordings)"
+  },
+  {
+    "id": "media-audio-engine-inline4-high",
+    "file": "assets/engine-inline4-high.ogg",
+    "mime": "audio/ogg",
+    "original": "tools/sportbike_audio.py (pinned CC0 Japanese inline-four recordings)"
   }
 ]
