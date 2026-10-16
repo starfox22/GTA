@@ -47,8 +47,17 @@ export default async function (t) {
     s = await t.call('runOverState');
     t.assert(s.overruns === 0 && s.hp > 0, `the same pass hit twice: ${JSON.stringify(s)}`);
 
+    // The ballistic first pass now carries the body further than the former
+    // set-down. Let the rear bumper genuinely clear them before reversing:
+    // uninterrupted contact is still the original pass, even after two seconds.
+    for (let i = 0; i < 15; i++) {
+      const car = await t.call('status');
+      s = await t.call('runOverState');
+      if (car.x - s.x > 40 && s.hit.age > 2) break;
+      await t.wait(0.1);
+    }
     // Second: reverse back over them at 29 km/h, 2+ seconds after the first.
-    await t.wait(0.2);
+    await t.wait(0.1);
     await t.call('launch', -8);
     let second = null;
     for (let i = 0; i < 14 && !second; i++) {

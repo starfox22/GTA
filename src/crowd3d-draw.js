@@ -301,15 +301,17 @@
           // Thrown off a bike (riders.js): somersaulting about the hips along the
           // flight (`pitch`), the hips `z` above the road; flat once down.
           const hips = RIG.hip * H,
-            along = -hips * Math.sin(thrown.pitch);
+            bank = thrown.bank || 0,
+            along = -hips * Math.sin(thrown.pitch),
+            across = -hips * Math.cos(thrown.pitch) * Math.sin(bank);
           crowdJoint(
             mRoot,
             mIdentity,
-            p.x + Math.cos(thrown.heading) * along,
-            elevation + thrown.z - hips * Math.cos(thrown.pitch) + 1.2,
-            p.y + Math.sin(thrown.heading) * along,
+            p.x + Math.cos(thrown.heading) * along - Math.sin(thrown.heading) * across,
+            elevation + thrown.z - hips * Math.cos(thrown.pitch) * Math.cos(bank) + 1.2 * (1 - (thrown.recovery || 0)),
+            p.y + Math.sin(thrown.heading) * along + Math.cos(thrown.heading) * across,
             -thrown.pitch,
-            0,
+            thrown.bank || 0,
             -thrown.heading,
           );
         } else {

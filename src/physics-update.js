@@ -126,18 +126,22 @@
         vehicle.spareContacts = vehicle.pedestrianContacts || null;
         vehicle.pedestrianContacts = contacts;
         if (
-          speed >= 40 &&
+          speed >= 20 * KMH &&
           !player.parachute &&
           !player.car &&
+          !player.thrown &&
+          !player.fall &&
+          !player.swimming &&
+          !player.climbing &&
+          !player.pool &&
+          !player.deck &&
+          !player.coaster &&
+          !transitRide &&
+          !taxiRide &&
           !playerOnRoof() &&
           sameFloor(vehicle, player) &&
-          pointInCar(player.x, player.y, vehicle, 6)
-        ) {
-          const a = Math.atan2(vehicle.vy, vehicle.vx);
-          hurt(speed * 0.15, 'impact');
-          player.inv = 1;
-          moveBody(player, Math.cos(a) * 25, Math.sin(a) * 25, 8);
-        }
+          sweptPersonContact(player, vehicle, vehicle.personSweepStart)
+        ) hitPlayerWithVehicle(vehicle, speed);
       }
       if (impactContacts.size > 300)
         for (const [k, v] of impactContacts) if (physicsClock - v.time > 2) impactContacts.delete(k);

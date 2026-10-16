@@ -173,6 +173,9 @@
           occupied: undefined,
           driverMood: undefined,
           driverColor: undefined,
+          // Developer vehicle/body strike fixture; no separate retained list.
+          impactFixture: undefined,
+          impactFixtureFlight: undefined,
           driverFemale: undefined,
           driverRole: undefined,
           passengers: undefined,
