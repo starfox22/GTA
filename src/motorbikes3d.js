@@ -6,9 +6,11 @@
        * tyres, rims and trim atlas it shares; before makeVehicle).
        *
        * Every motorbike is built at its real size (VEHICLE_DEFINITIONS `l`,
-       * modelScale 1), in metres times CAR_M:
-       *  - bike VORTEX 900: a naked triple streetfighter (Street Triple / MT-09):
-       *    twin round lamps, a trellis frame, a stubby belly pipe;
+       * modelScale 1), in metres times CAR_M. Downloaded bodies normally supply
+       * the KUZUKI 600R's fully faired inline-four sportbike and the selected
+       * replacement motorcycles. These are the retained procedural fallbacks:
+       *  - bike KUZUKI 600R: the legacy naked streetfighter shell with twin round
+       *    lamps, a trellis frame and a stubby belly pipe;
        *  - cruiser NOMAD CRUISER: a heavy V-twin (Fat Boy): a fat tank, a round
        *    chrome lamp, pull-back bars, forward controls, twin shotgun pipes;
        *  - dolcati DOLCATI V4: a V4 superbike after the Panigale V4: a full red
@@ -28,7 +30,7 @@
        * (front x > 0, each with its radius), lamps headLeft / tailLeft (lit, brake
        * and broken states as the cars'), nightLights [head, tail]. `bikeUpdate`
        * runs after the pass has leaned the body: lamps, the fork steering and the
-       * wheelie (wheelie.js c.wheelie: the body pitched about the rear tyre's contact patch).
+       * wheelie (wheelie.js c.wheelie: the chassis pitched about the real rear axle).
        *
        * Draw calls per bike: paint, trim, drl, two lamps, two tyres, two rims and
        * the rider: ten, against ~35 for the old box-built bikes.
@@ -604,16 +606,27 @@
           const wheelSpeed = front ? (c.speed || 0) * (1 - (lock?.[0] || 0)) : spinning ? rearSpeed : (c.speed || 0) * (1 - (lock?.[1] || 0));
           wheel.rotation.z = (wheel.rotation.z - wheelSpeed * deltaSeconds / radius) % TAU;
         }
-        // The wheelie is the physics' (wheelie.js c.wheelie: the pitch about the
-        // rear tyre, a little below zero while the fork takes the landing).
+        // Pitch the chassis around the rear axle: a round rear tyre keeps its centre at its
+        // authored height. Pivoting around the ground sinks it by r * (1 - cos(pitch)).
         m.wheelie = c.fallen || c.hp <= 0 ? 0 : c.wheelie || 0;
         if (Math.abs(m.wheelie) > 0.002) {
-          // Pitch about the rear contact patch (x = rear axle, y = 0).
-          const xr = m.rearAxleX ?? MOTO_BODIES[m.moto].wheels.xr * CAR_M,
-            a = m.wheelie;
+          const rear = m.wheels.find((w) => !w.front)?.wheel,
+            p = rear?.position,
+            carrier = rear && rear.parent !== m.body ? rear.parent.matrix.elements : null,
+            xr = p ? carrier ? carrier[0] * p.x + carrier[4] * p.y + carrier[8] * p.z + carrier[12] : p.x : m.rearAxleX ?? MOTO_BODIES[m.moto].wheels.xr * CAR_M,
+            yr = p ? carrier ? carrier[1] * p.x + carrier[5] * p.y + carrier[9] * p.z + carrier[13] : p.y : MOTO_BODIES[m.moto].wheels.rr * CAR_M,
+            a = m.wheelie,
+            // Terrain tilt is applied after bikeUpdate by the vehicle pass.
+            // Translate in that final base frame, not in the unbanked XY plane.
+            pitch = m.body.rotation.z + (c.slopePitch || 0),
+            bank = m.body.rotation.x + (c.slopeRoll || 0),
+            yaw = m.body.rotation.y,
+            dx = xr * (Math.cos(pitch) - Math.cos(pitch + a)) - yr * (Math.sin(pitch) - Math.sin(pitch + a)),
+            dy = xr * (Math.sin(pitch) - Math.sin(pitch + a)) + yr * (Math.cos(pitch) - Math.cos(pitch + a)),
+            sy = Math.sin(yaw), cy = Math.cos(yaw),
+            sb = Math.sin(bank), cb = Math.cos(bank);
           m.body.rotation.z += a;
-          m.body.position.x = xr - xr * Math.cos(a);
-          m.body.position.y = -xr * Math.sin(a);
-        } else if (m.body.position.x || m.body.position.y) m.body.position.set(0, 0, 0);
+          m.body.position.set(cy * dx, cb * dy + sb * sy * dx, sb * dy - cb * sy * dx);
+        } else if (m.body.position.x || m.body.position.y || m.body.position.z) m.body.position.set(0, 0, 0);
       }
       // END SUBSYSTEM: src/motorbikes3d.js

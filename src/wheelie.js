@@ -51,9 +51,15 @@
       WHEELIE_DAMP = 1.2, // the rider's body soaking up the pitch (1/s)
       WHEELIE_FORK = 900, // the fork's spring (rad/s² a radian) ...
       WHEELIE_FORK_DAMP = 30, // ... and damping: about half critical, one small bounce
+      WHEELIE_PITCH_STEP = 1 / 240, // the stiff landing fork keeps the same response at 60/120 Hz
       wheelieLog = { lifts: 0, loops: 0, pops: 0, bestDeg: 0, bestSeconds: 0, lastLoop: null };
     function wheelieGeometry(c, spec) {
       return WHEELIE_GEOMETRY[WHEELIE_BY_TYPE[c.type] || (spec.bicycle ? 'bicycle' : 'sport')];
+    }
+    // The fork unloads over the first ~5 cm of front-wheel lift, then contributes no road force or effects.
+    function wheelieFrontContact(c) {
+      const share = clamp((0.04 - Math.max(0, c.wheelie || 0)) / 0.035, 0, 1);
+      return share * share * (3 - 2 * share);
     }
     /* One physics step of the pitch (physics-driving.js controlVehicle, every
        two-wheeler on the road). `ridden`: the player is on it and in control.
@@ -69,51 +75,58 @@
       }
       const geo = wheelieGeometry(c, spec),
         g = GRAVITY / UNITS_PER_METRE,
-        throttle = ridden && actionHeld('forward'),
-        brake = ridden && actionHeld('back'),
+        lower = ridden && wheelieLowerHeld(),
+        throttle = ridden && actionHeld('forward') && !lower,
+        brake = lower || (ridden && actionHeld('handbrake')),
         ask = ridden && throttle && along > -1 * KMH && wheelieHeld(),
-        up = th > 0.03;
-      // The rider's weight eases back and forward rather than jumping.
-      c.wheelieLean = (c.wheelieLean || 0) + ((ask ? 1 : 0) - (c.wheelieLean || 0)) * Math.min(1, stepSeconds * 6);
-      const lean = c.wheelieLean,
-        b = geo.b - geo.back * lean,
-        h = geo.h + geo.back * 0.5 * lean,
-        cos = Math.cos(th),
-        sin = Math.sin(th),
-        lever = h * cos + b * sin,
-        weight = g * (b * cos - h * sin),
         // Leaned over in a bend the drive's lift shrinks (cos² of the lean).
         bank = Math.atan(Math.abs(along * (c.av || 0)) / GRAVITY),
-        upright = Math.cos(bank) ** 2;
-      // `a` drives the bike on; `lift` (the drive plus the arms' pull) turns it up.
-      let a = acceleration / UNITS_PER_METRE,
-        lift = a;
-      if (up && brake) lift = a = Math.max(a, -WHEELIE_REAR_BRAKE * g);
-      else if (throttle && a > 0 && (ask || up)) {
-        // The rider works the throttle for a pace of pitch: lifting while the
-        // climb key is held (as far as the power allows), letting it settle
-        // without. Past the balance point no throttle can hold it (only the brake).
-        const pace = ask ? WHEELIE_RISE * geo.rise : -WHEELIE_SETTLE,
-          want = 5 * (pace - w);
-        lift = clamp((want * geo.k2 + weight) / Math.max(0.2, lever * upright), 0, a + (ask ? geo.pull * g : 0));
-        a = Math.min(a, lift);
-      }
-      // The clutch popped (or the bars pulled) as the climb key goes down.
-      if (ask && !c.wheeliePopped && th < 0.05 && upright > 0.8) {
-        const kick = geo.pop * clamp(lift / (geo.popG * g), 0, 1);
-        if (kick > 0.05) {
-          w += kick;
-          wheelieLog.pops++;
+        upright = Math.cos(bank) ** 2,
+        surface = spec.bicycle ? 1 : wetGrip() * tyreSurfaceGrip(c, spec, along),
+        cornerUse = Math.abs(along * (c.av || 0)) / Math.max(1, (spec.cornerG || 1.2) * GRAVITY * surface),
+        rearBrake = WHEELIE_REAR_BRAKE * g * surface * Math.sqrt(Math.max(0, 1 - cornerUse * cornerUse)),
+        steps = Math.max(1, Math.ceil(stepSeconds / WHEELIE_PITCH_STEP)),
+        dt = stepSeconds / steps;
+      let lean = c.wheelieLean || 0, delivered = 0;
+      for (let i = 0; i < steps; i++) {
+        // A brake tap shifts the rider forward as well as cutting the drive; neither shift snaps.
+        lean += ((lower ? -0.5 : ask ? 1 : 0) - lean) * (1 - Math.exp(-6 * dt));
+        const b = geo.b - geo.back * lean,
+          h = geo.h + geo.back * 0.5 * lean,
+          cos = Math.cos(th), sin = Math.sin(th),
+          lever = h * cos + b * sin,
+          weight = g * (b * cos - h * sin),
+          up = th > 0.03;
+        // `a` drives the bike on; `lift` (the drive plus the arms' pull) turns it up.
+        let a = acceleration / UNITS_PER_METRE, lift = a;
+        if (up && brake) lift = a = clamp(a, -rearBrake, 0);
+        else if (throttle && a > 0 && (ask || up)) {
+          // The rider works the throttle for a pace of pitch, within the engine's actual pull.
+          // Past the balance point only the rear brake and a forward weight shift can save it.
+          const pace = ask ? WHEELIE_RISE * geo.rise : -WHEELIE_SETTLE,
+            want = 5 * (pace - w);
+          lift = clamp((want * geo.k2 + weight) / Math.max(0.2, lever * upright), 0, a + (ask ? geo.pull * g : 0));
+          a = Math.min(a, lift);
         }
-        c.wheeliePopped = true;
-      } else if (!ask) c.wheeliePopped = false;
-      const torque = (lift * lever * upright - weight) / geo.k2;
-      // Up: the pitch's own torque (damped by the rider's body); down on the
-      // fork: its spring, until the drive lifts it off again.
-      const angular = th > 0 ? torque - WHEELIE_DAMP * w : -WHEELIE_FORK * th - WHEELIE_FORK_DAMP * w + Math.max(0, torque);
-      w += angular * stepSeconds;
-      th = Math.max(-0.06, th + w * stepSeconds);
-      if (th <= 0 && w < 0 && w > -0.05 && th > -0.002) th = w = 0;
+        // One clutch pop per press; leaning in a bend cannot create a free lift impulse.
+        if (ask && !c.wheeliePopped && th < 0.05 && upright > 0.8) {
+          const kick = geo.pop * clamp(lift / (geo.popG * g), 0, 1);
+          if (kick > 0.05) {
+            w += kick;
+            wheelieLog.pops++;
+          }
+          c.wheeliePopped = true;
+        } else if (!ask) c.wheeliePopped = false;
+        const torque = (lift * lever * upright - weight) / geo.k2,
+          angular = th > 0 ? torque - WHEELIE_DAMP * w : -WHEELIE_FORK * th - WHEELIE_FORK_DAMP * w + Math.max(0, torque);
+        w += angular * dt;
+        th += w * dt;
+        // The fork's bump stop dissipates excess landing energy instead of rebounding from a clipped angle.
+        if (th < -0.06) { th = -0.06; w = Math.max(0, w); }
+        if (th <= 0 && w < 0 && w > -0.05 && th > -0.002) th = w = 0;
+        delivered += a;
+      }
+      c.wheelieLean = lean;
       // Up and away: count it, time it.
       if (th > 0.08 && !c.wheelieFrom) {
         c.wheelieFrom = gameTime;
@@ -134,7 +147,7 @@
         c.wheelie = c.wheelieRate = c.wheelieLean = 0;
         return acceleration;
       }
-      return a * UNITS_PER_METRE;
+      return delivered / steps * UNITS_PER_METRE;
     }
     /* WHEELIE HINT: getting on a motorbike that can lift its front (not the cruiser's hop, not a bicycle) says how,
        in the names of the device in use (keyName: keys, gamepad or touch), until the player has pulled one, at most
@@ -149,13 +162,16 @@
     function offerWheelieHint(c) {
       if (!wheelieHintDue(c)) return false;
       wheelieHint.shown++;
-      wheelieHint.last = 'WHEELIE · HOLD ' + keyName('forward') + ' + ' + keyName('ascend') + ' to lift the front';
+      wheelieHint.last = 'WHEELIE · HOLD ' + keyName('forward') + ' + ' + keyName('ascend') + ' to lift the front · ' + wheelieLowerKeyName() + ' to lower';
       tell(wheelieHint.last, 6, { id: 'wheelieHint', tone: 'info' });
       return true;
     }
     // The steering a lifted front leaves (the bike steers by leaning alone).
     function wheelieSteerShare(c) {
       return 1 - (1 - WHEELIE_STEER) * clamp((c.wheelie || 0) / 0.3, 0, 1);
+    }
+    function wheelieLowerKeyName() {
+      return keyName(hintDevice() === 'keyboard' ? 'descend' : 'back');
     }
     // Console: wheelieState() (docs/console/vehicles.md).
     function wheelieConsole() {
@@ -173,6 +189,7 @@
             rate: +(c.wheelieRate || 0).toFixed(2),
             lean: +(c.wheelieLean || 0).toFixed(2),
             asked: wheelieHeld(),
+            lowering: wheelieLowerHeld(),
             kmh: Math.round(Math.hypot(c.vx || 0, c.vy || 0) / KMH),
             balanceDeg: Math.round((Math.atan2(geo.b - geo.back, geo.h + geo.back * 0.5) * 180) / Math.PI),
             loopDeg: Math.round((geo.loop * 180) / Math.PI),

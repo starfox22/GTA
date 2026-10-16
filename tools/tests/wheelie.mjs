@@ -52,7 +52,18 @@ export default async function (t) {
   const lifts = w.log.lifts;
   await realHold(t, ['KeyW', 'ArrowUp'], 1.2);
   w = await t.call('wheelieState');
-  t.assert(w.log.lifts > lifts || w.deg > 3, `W + ↑ lifts the front: ${w.deg}°, lifts ${lifts} → ${w.log.lifts}`);
+  t.assert(w.onBike && (w.log.lifts > lifts || w.deg > 3), `W + ↑ lifts the front without looping out: ${w.deg}°, lifts ${lifts} → ${w.log.lifts}`);
+  const beforeLower = w.deg;
+  await realHold(t, ['KeyW', 'ArrowDown'], .65);
+  w = await t.call('wheelieState');
+  t.assert(w.onBike && w.deg < Math.max(1, beforeLower - 8), `W + ↓ did not lower the front: ${beforeLower}° → ${w.deg}°`);
+  await t.call('rideInto', 'bike', 25, 'none', 25, 0.05);
+  await t.keys(['KeyW', 'KeyT'], 1.4);
+  const beforeSpace = await t.call('wheelieState');
+  t.assert(beforeSpace.deg > 12, 'rear-brake real-key fixture did not lift');
+  await realHold(t, ['KeyW', 'Space'], .65);
+  w = await t.call('wheelieState');
+  t.assert(w.onBike && w.deg < Math.max(1, beforeSpace.deg - 8), `W + Space did not lower the front: ${beforeSpace.deg}° → ${w.deg}°`);
   // ... and ↑ alone is only the throttle.
   await t.call('rideInto', 'bike', 20, 'none', 25, 0.05);
   w = await t.call('wheelieState');
@@ -74,16 +85,17 @@ export default async function (t) {
   }
 }
 
-/* Real key presses run through the live frame loop, whose step is capped at 33 ms: on a loaded machine (a few frames
-   a second) 1.2 s of wall clock was a third of a second of riding, too short to lift the front. Measure how fast the
-   game clock runs now and hold the keys for the wall time that gives `gameSeconds` of riding. */
+/* Short real-key bursts stop against the observed game clock. A one-off wall-clock calibration can read zero
+   frames on a loaded machine, then over-hold Up for ten seconds after it recovers and loop out the fixture. */
 async function realHold(t, codes, gameSeconds) {
-  const a = await t.call('wheelieState'),
-    from = Date.now();
-  await t.realWait(0.4);
-  const b = await t.call('wheelieState'),
-    rate = (b.at - a.at) / Math.max(0.4, (Date.now() - from) / 1000),
-    wall = Math.min(10, gameSeconds / Math.min(1, Math.max(0.1, rate)));
-  if (wall > gameSeconds * 1.2) t.note(`slow page: ${rate.toFixed(2)} game s per s, keys held ${wall.toFixed(1)} s`);
-  await t.keys(codes, wall, { real: true });
+  const start = await t.call('wheelieState');
+  let current = start, wall = 0;
+  for (let i = 0; i < 80 && current.at - start.at < gameSeconds; i++) {
+    const burst = Math.min(.2, Math.max(.04, gameSeconds - (current.at - start.at)));
+    await t.keys(codes, burst, { real: true });
+    wall += burst;
+    current = await t.call('wheelieState');
+  }
+  t.assert(current.at - start.at >= gameSeconds - .03, 'the live frame loop did not advance during real input');
+  if (wall > gameSeconds * 1.4) t.note(`slow page: real keys took ${wall.toFixed(1)} s for ${(current.at - start.at).toFixed(2)} game s`);
 }

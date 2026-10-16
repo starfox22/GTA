@@ -3,6 +3,7 @@
 import fs from 'node:fs';
 import vm from 'node:vm';
 import { createRequire } from 'node:module';
+import { assertWheelieRearAxle } from './wheelie-dynamics.mjs';
 
 const Three = createRequire(import.meta.url)('../../vendor/three.r160.js');
 const source = name => fs.readFileSync(new URL('../../src/' + name, import.meta.url), 'utf8');
@@ -114,6 +115,7 @@ export default async function (t) {
     api.specialDamage(c, model, { tires: {}, burnt: false });
     t.assert(model.wheels.every(({ wheel }) => wheel.children[0].visible && wheel.scale.y === 1 && wheel.position.y === wheel.userData.baseY),
       type + ': repaired burnt tyre remains invisible or dropped');
+    assertWheelieRearAxle(t, api.animateMotorbike, c, model);
     // Body bank/wheelie and fork steering must compose without changing an axle's
     // local-Z roll: rotate a source vertex through tilted world frames too.
     model.body.rotation.x = .23; c.wheelie = .36; player.car = c; c.tyres = { steer: .7, lock: [0, 0], spin: 0 };
@@ -161,6 +163,7 @@ export default async function (t) {
     t.assert(model.wheels.every(({ wheel }) => !wheel.children[0].visible), type + ': procedural burnt tyres still visible');
     api.specialDamage(c, model, { tires: {}, burnt: false });
     t.assert(model.wheels.every(({ wheel }) => wheel.children[0].visible && wheel.scale.y === 1), type + ': procedural repair did not restore tyres');
+    assertWheelieRearAxle(t, api.animateMotorbike, c, model);
   }
 
   const c = { type: 'bike', color: '#d95121', hp: 100, speed: 20, av: 0, wheelie: 0, tyres: { steer: .4, lock: [0, 0], spin: 0 } };

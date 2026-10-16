@@ -544,14 +544,14 @@
             // location and real wheel dimensions once, independent of steering and roll.
             const bike = wheel.userData.bikeContact;
             if (bike) {
-              list.push({ x: bike.x, z: bike.z, driven: !bike.front, r: bike.r, width: bike.width, emit: 0, lastX: NaN, lastY: NaN });
+              list.push({ x: bike.x, z: bike.z, front: bike.front, driven: !bike.front, r: bike.r, width: bike.width, emit: 0, lastX: NaN, lastY: NaN });
               continue;
             }
             // Other models are built at design size and drawn at modelScale.
             const k = m.modelScale || 1,
               x = wheel.position.x * k,
               drive = spec.drive || (spec.offroad ? '4x4' : 'rwd');
-            list.push({ x, z: wheel.position.z * k, driven: drive === '4x4' || (drive === 'fwd' ? x > 0 : x < 0), r: (wheel.position.y || 4) * k, width: 2.6 * k, emit: 0, lastX: NaN, lastY: NaN });
+            list.push({ x, z: wheel.position.z * k, front: x > 0, driven: drive === '4x4' || (drive === 'fwd' ? x > 0 : x < 0), r: (wheel.position.y || 4) * k, width: 2.6 * k, emit: 0, lastX: NaN, lastY: NaN });
           }
         m.contacts = list;
         return list;
@@ -566,7 +566,13 @@
           speed = Math.abs(c.speed || 0),
           level = entityElevation(c) + Math.min(c.fordDepth, 6);
         for (const w of contactWheels(c, m)) {
-          w.emit += (e.rate / 4) * deltaSeconds * 4;
+          const contact = w.front ? e.frontContact : 1;
+          if (!(contact > 0)) {
+            w.emit = 0;
+            w.lastX = w.lastY = NaN;
+            continue;
+          }
+          w.emit += (e.rate / 4) * deltaSeconds * 4 * contact;
           const wx = c.x + cos * w.x - sin * w.z,
             wy = c.y + sin * w.x + cos * w.z;
           while (w.emit >= 1) {
@@ -604,6 +610,14 @@
         // The thrown mud's colour: drier is paler.
         mudShade.copy(MUD_DRY).lerp(MUD_WET, wet);
         for (const w of contactWheels(c, m)) {
+          const contact = w.front ? emission.frontContact : 1;
+          if (!(contact > 0)) {
+            // End the print at lift-off. A new patch after landing starts here,
+            // instead of joining the old front track across the airborne travel.
+            w.emit = 0;
+            w.lastX = w.lastY = NaN;
+            continue;
+          }
           const wx = c.x + cos * w.x - sin * w.z,
             wy = c.y + sin * w.x + cos * w.z;
           // Tracks: a print every metre and a half of travel.
@@ -613,16 +627,16 @@
           }
           const moved = Math.hypot(wx - w.lastX, wy - w.lastY);
           if (moved > 12 || (moved > 2 && spin > 0.5 && moved > 6)) {
-            if (moved < 40) addGroundDecal(tyreTracks, (wx + w.lastX) / 2, (wy + w.lastY) / 2, Math.atan2(wy - w.lastY, wx - w.lastX), moved + 1, w.width * 0.95, 90 + mud * 120, mud > 0.15 ? wet : 0.1, -1);
+            if (moved < 40) addGroundDecal(tyreTracks, (wx + w.lastX) / 2, (wy + w.lastY) / 2, Math.atan2(wy - w.lastY, wx - w.lastX), moved + 1, w.width * 0.95 * contact, 90 + mud * 120, mud > 0.15 ? wet : 0.1, -1);
             w.lastX = wx;
             w.lastY = wy;
-          } else if (spin > 0.6 && speed < 8 && mudRandom() < deltaSeconds * 4) addGroundDecal(tyreTracks, wx, wy, c.a, w.r * 1.2, w.width, 120, wet, -1);
+          } else if (spin > 0.6 && speed < 8 && mudRandom() < deltaSeconds * 4 * contact) addGroundDecal(tyreTracks, wx, wy, c.a, w.r * 1.2, w.width * contact, 120, wet, -1);
           if (!w.driven && spin > 0.1) continue;
           // How much is thrown: spin in mud throws the most, speed through mud some; dry
           // ground gives dust by speed and spin, more from a 4x4, none when wet
           // (tyreDustRate, tyre-effects.js).
           const rate = mud > 0.1 ? (spin * 150 + speed * (mud * 0.6 + 0.03)) * (w.driven ? 1 : 0.4) : tyreDustRate(c, w.driven);
-          w.emit += rate * deltaSeconds;
+          w.emit += rate * deltaSeconds * contact;
           while (w.emit >= 1) {
             w.emit -= 1;
             const throwSpeed = Math.min(160, wheelSpeed) * (0.25 + mudRandom() * 0.35),

@@ -255,22 +255,28 @@
        lateralUse: the share of the grip the corner is using (0..1);
        speed: forward speed (u/s). Returns the deceleration (u/s², positive) and
        leaves each axle's slip, lock and remaining sideways share in `t`. */
-    function brakeStep(c, t, ch, abs, pedal, mu, wet, lateralUse, speed, stepSeconds) {
+    function brakeStep(c, t, ch, abs, pedal, mu, wet, lateralUse, speed, stepSeconds, frontContact = 1, rearCap = Infinity) {
       const slideRatio = SLIDE_DRY + (SLIDE_WET - SLIDE_DRY) * clamp(wet, 0, 1),
         // The corner takes its share of each tyre first (the friction circle).
-        cornerLeft = Math.sqrt(Math.max(0.15, 1 - lateralUse * lateralUse)),
+        cornerLeft = Math.sqrt(Math.max(0.15 * frontContact, 1 - lateralUse * lateralUse)),
         metres = Math.max(1.5, speed / UNITS_PER_METRE),
         // How fast extra brake torque drags a wheel toward locking (1/s).
         lockRate = Math.min(260, 600 / metres),
         demand = pedal * BRAKE_CAPACITY * mu;
       // Weight on each axle with the deceleration of the last step (in g).
       const decelG = clamp(t.lastDecel || 0, 0, 1.6),
-        frontLoad = clamp(ch.front + ch.hL * decelG, 0.2, ch.bike ? 0.94 : 0.9),
+        frontLoad = clamp(ch.front + ch.hL * decelG, 0.2, ch.bike ? 0.94 : 0.9) * frontContact,
         loads = [frontLoad, 1 - frontLoad],
-        bias = [ch.bias, 1 - ch.bias];
+        bias = [ch.bias * frontContact, 1 - ch.bias * frontContact];
       let force = 0;
       for (let i = 0; i < 2; i++) {
-        const cap = mu * loads[i] * cornerLeft,
+        if (i === 0 && frontContact === 0) {
+          t.slip[0] = t.lock[0] = t.lateral[0] = t.dump[0] = 0;
+          t.pressure[0] = 1;
+          continue;
+        }
+        const normalCap = mu * loads[i],
+          cap = (i === 1 && frontContact < 1 ? normalCap * frontContact + Math.min(normalCap, rearCap) * (1 - frontContact) : normalCap) * cornerLeft,
           asked = demand * bias[i] * t.pressure[i];
         let s = t.slip[i];
         if (asked <= cap && s <= MU_PEAK_SLIP) s = MU_PEAK_SLIP * (asked / Math.max(1e-6, cap));
@@ -306,15 +312,17 @@
         // next to nothing once locked.
         const share = cap > 0 ? delivered / (mu * loads[i]) : 0;
         t.lateral[i] = Math.sqrt(Math.max(0, 1 - share * share)) * (1 - t.lock[i]) + (1 - t.lock[i]) * 0.12;
+        if (i === 0) t.lateral[i] *= frontContact;
       }
       t.lastDecel = force;
       return force * GRAVITY;
     }
     // Nothing on the brakes: the wheels roll again.
-    function brakesOff(t) {
+    function brakesOff(t, frontContact = 1) {
       t.slip[0] = t.slip[1] = 0;
       t.lock[0] = t.lock[1] = 0;
-      t.lateral[0] = t.lateral[1] = 1;
+      t.lateral[0] = frontContact;
+      t.lateral[1] = 1;
       t.pressure[0] = t.pressure[1] = 1;
       t.lastDecel = 0;
     }

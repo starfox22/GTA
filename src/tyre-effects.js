@@ -90,7 +90,7 @@
         y,
         a,
         len,
-        dark: clamp(dark, 0.05, 1),
+        dark: clamp(dark, (spec.bike || spec.bicycle) && wheelieFrontContact(c) < 1 ? 0 : 0.05, 1),
         w: spec.bike ? 1.2 : clamp(spec.w * 0.11, 1.3, 3),
         life: MARK_LIFE,
         h0: terrainHeight(x, y) + 0.2,
@@ -139,10 +139,19 @@
         if (axle !== 'rear') front = Math.max(front, d);
         if (axle !== 'front') rear = Math.max(rear, d);
       }
+      // Grounded bikes keep their single shared rubber line. As the front lifts,
+      // its fading contact belongs at the front patch; it cannot stain the rear.
+      const frontContact = spec.bike || spec.bicycle ? wheelieFrontContact(c) : 1;
+      if (frontContact < 1) front *= frontContact;
       if (!front && !rear) return;
       c.lastSkid = Math.floor(physicsClock * 40);
       const a = speed > 1 ? Math.atan2(c.vy, c.vx) : c.a,
         len = speed / 40 + 1.5;
+      if (frontContact < 1) {
+        if (front) pushTyreMark(c, spec, 0.3 * spec.l, 0, a, len, front, true);
+        if (rear) pushTyreMark(c, spec, -0.3 * spec.l, 0, a, len, rear, true);
+        return;
+      }
       for (const side of spec.bike ? [0] : [-1, 1]) {
         if (front && !spec.bike) pushTyreMark(c, spec, 0.3 * spec.l, side, a, len, front, true);
         if (rear || spec.bike) pushTyreMark(c, spec, -0.3 * spec.l, side, a, len, Math.max(rear, front), true);
@@ -164,8 +173,9 @@
        surface), 'sand', 'lawn' or 'dust' (loose city ground), 'offroad' (the trails and
        the county: offroad3d-mud.js), 'ford' (wading a trail's ford: water off every
        wheel, offroad3d-mud.js), 'spray' (soaked tarmac) or null; `rate` in puffs a
-       second per wheel of `axle` ('rear', 'front' or 'all'); `heat` the burnout's. */
-    const tyreEmissionOut = { kind: null, rate: 0, axle: 'rear', heat: 0 };
+       second per wheel of `axle` ('rear', 'front' or 'all'); `frontContact` weights
+       a two-wheeler's front patch through lift-off/landing; `heat` the burnout's. */
+    const tyreEmissionOut = { kind: null, rate: 0, axle: 'rear', heat: 0, frontContact: 1 };
     function tyreEmission(c) {
       const out = tyreEmissionOut;
       out.kind = null;
@@ -173,6 +183,7 @@
       out.axle = 'rear';
       out.heat = 0;
       const spec = vehicleSpec(c);
+      out.frontContact = spec.bike || spec.bicycle ? wheelieFrontContact(c) : 1;
       if (spec.tank || isAircraft(c) || isBoat(c) || c.cliffAir || c.deckAir || c.overturned || c.fallen) return out;
       const speed = Math.hypot(c.vx || 0, c.vy || 0),
         spin = spec.bicycle ? 0 : c.wheelSpin || 0;
@@ -232,7 +243,8 @@
        per wheel of the axle, before the graphics tier's share) and how far the car went. */
     function tyreEffectsStep(c, stepSeconds) {
       const e = tyreEmission(c),
-        wheels = e.axle === 'all' ? 4 : 2,
+        spec = vehicleSpec(c),
+        wheels = spec.bike || spec.bicycle ? (e.axle === 'all' ? 1 + e.frontContact : e.axle === 'front' ? e.frontContact : 1) : e.axle === 'all' ? 4 : 2,
         speed = Math.hypot(c.vx || 0, c.vy || 0);
       if (e.kind === 'smoke') tyreEffectStats.smoke += e.rate * wheels * stepSeconds;
       else if (e.kind === 'spray') tyreEffectStats.spray += e.rate * wheels * stepSeconds;
@@ -257,7 +269,7 @@
         car: c ? c.type : null,
         ground: c ? tyreGroundKind(c) : null,
         burnout: b ? { active: b.active, heat: round(b.heat, 100), seconds: round(b.time), axle: b.axle } : null,
-        emitting: e ? { kind: e.kind, rate: round(e.rate), axle: e.axle } : null,
+        emitting: e ? { kind: e.kind, rate: round(e.rate), axle: e.axle, frontContact: round(e.frontContact, 100) } : null,
         wheelSpin: c ? round(c.wheelSpin || 0, 100) : 0,
         totals: {
           smoke: round(tyreEffectStats.smoke),

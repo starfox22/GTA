@@ -57,7 +57,9 @@ police3d.js, helicopter3d-*.js, apache3d.js, plane3d.js, vehicles3d.js, boats3d.
   fork's bounce) and `c.wheelieRate`; stepped in controlVehicle after the offroad and drawbridge
   terms, it returns the acceleration (feathered throttle, rear brake only) and scales steer by
   `wheelieSteerShare`. Input is `wheelieHeld()` (controls.js): climb + forward held by a key
-  that is not one of climb's, so ↑ alone on the road is still only the throttle. Per-type
+  that is not one of climb's, so ↑ alone on the road is still only the throttle. ↓ lowers
+  with the rear brake and takes priority over W on two-wheelers. Pitch, grip and landing
+  contracts: vehicles-and-driving-handling.md. Per-type
   geometry in `WHEELIE_GEOMETRY` (sport, enduro, cruiser barely lifts, bicycle). The renderers
   only read it (motorbikes3d `animateMotorbike`, cycles3d `bicycleWheelie`). Console `wheelieState()`.
 - An airborne helicopter or plane faster than `AIRCRAFT_CRASH_SPEED` (40 km/h) into a

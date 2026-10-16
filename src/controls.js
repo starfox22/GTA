@@ -80,7 +80,7 @@
       // On a motorbike or a bicycle the climb key, held with the throttle, pulls a
       // wheelie (wheelieHeld); there it does not take over from forward (`overrideCtx`).
       { id: 'ascend', label: 'Climb / wheelie', note: 'Helicopter rise and take off · plane nose up · on a motorbike or bicycle, hold with the throttle to lift the front wheel', group: 'air', code: 'KeyT', keys: ['ArrowUp', 'KeyT'], ctx: ['air', 'drive'], overrides: 'forward', overrideCtx: ['air'] },
-      { id: 'descend', label: 'Descend', note: 'Helicopter descend and land · plane nose down', group: 'air', code: 'KeyG', keys: ['ArrowDown', 'KeyG'], ctx: ['air'], overrides: 'back' },
+      { id: 'descend', label: 'Descend / lower front', note: 'Helicopter descend and land · plane nose down · on a motorbike or bicycle, lower the front wheel with the rear brake', group: 'air', code: 'KeyG', keys: ['ArrowDown', 'KeyG'], ctx: ['air', 'drive'], overrides: 'back', overrideCtx: ['air'] },
       { id: 'flapsDown', label: 'Flaps down', note: 'Plane: extend the flaps a notch (UP, 1, 2, FULL) for take-off and landing', group: 'air', keys: ['KeyX'], ctx: ['air'] },
       { id: 'flapsUp', label: 'Flaps up', note: 'Plane: retract the flaps a notch', group: 'air', keys: ['KeyZ'], ctx: ['air'] },
       { id: 'gear', label: 'Landing gear', note: 'Plane: raise or lower the landing gear (it cannot retract on the ground)', group: 'air', keys: ['KeyL'], ctx: ['air'] },
@@ -195,11 +195,16 @@
        ↑ alone (riding on the arrows) is only the throttle; a pad's trigger or a
        test holding the virtual code counts as its own throttle. */
     function wheelieHeld() {
-      if (!actionHeld('ascend') || !actionHeld('forward')) return false;
+      if (!actionHeld('ascend') || !actionHeld('forward') || wheelieLowerHeld()) return false;
       const climbKeys = controlBindings.ascend,
         throttleKeys = controlBindings.forward.filter(Boolean);
       if (!throttleKeys.some((k) => physicalKeysDown.has(k))) return true;
       return throttleKeys.some((k) => physicalKeysDown.has(k) && !climbKeys.includes(k));
+    }
+    // Lowering has priority over the throttle on a two-wheeler, including while W is still held.
+    function wheelieLowerHeld() {
+      return actionHeld('descend') || actionHeld('back') ||
+        (actionHeld('handbrake') && (player.car?.wheelie || 0) > 0.005);
     }
     /* Keydown: remember the physical key and return the actions it drives. The
        caller decides (by game mode) whether they become held in `keys`. */

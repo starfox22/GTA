@@ -128,6 +128,7 @@
           wheelieRate: undefined,
           wheelieLean: undefined,
           wheeliePopped: undefined,
+          wheelieFrom: undefined,
           windowsDown: undefined,
           sinkFor: undefined,
           overturned: undefined,

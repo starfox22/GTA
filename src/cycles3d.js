@@ -224,8 +224,8 @@
         model.wheels = wheels;
         return model;
       }
-      /* A bicycle's wheelie (wheelie.js c.wheelie): the body pitched about the
-         rear tyre's contact patch, the rear wheel (wheels[0]) under the body or
+      /* A bicycle's wheelie (wheelie.js c.wheelie): the chassis pitched about the
+         rear axle so the tyre stays on the road, the rear wheel (wheels[0]) under the body or
          under the share bike's scaled frame. */
       function bicycleWheelie(c, m) {
         const a = c.fallen || c.hp <= 0 ? 0 : c.wheelie || 0,
@@ -233,11 +233,19 @@
         if (!wheel) return;
         if (Math.abs(a) > 0.002) {
           const holder = wheel.parent,
-            xr = holder === m.body ? wheel.position.x : holder.position.x + wheel.position.x * holder.scale.x;
+            xr = holder === m.body ? wheel.position.x : holder.position.x + wheel.position.x * holder.scale.x,
+            yr = holder === m.body ? wheel.position.y : holder.position.y + wheel.position.y * holder.scale.y,
+            // Include the terrain angles the vehicle pass adds after this pose.
+            pitch = m.body.rotation.z + (c.slopePitch || 0),
+            bank = m.body.rotation.x + (c.slopeRoll || 0),
+            yaw = m.body.rotation.y,
+            dx = xr * (Math.cos(pitch) - Math.cos(pitch + a)) - yr * (Math.sin(pitch) - Math.sin(pitch + a)),
+            dy = xr * (Math.sin(pitch) - Math.sin(pitch + a)) + yr * (Math.cos(pitch) - Math.cos(pitch + a)),
+            sy = Math.sin(yaw), cy = Math.cos(yaw),
+            sb = Math.sin(bank), cb = Math.cos(bank);
           m.body.rotation.z += a;
-          m.body.position.x = xr - xr * Math.cos(a);
-          m.body.position.y = -xr * Math.sin(a);
-        } else if (m.body.position.x || m.body.position.y) m.body.position.set(0, 0, 0);
+          m.body.position.set(cy * dx, cb * dy + sb * sy * dx, sb * dy - cb * sy * dx);
+        } else if (m.body.position.x || m.body.position.y || m.body.position.z) m.body.position.set(0, 0, 0);
       }
       /* The dock rack for `n` docks in metres from the station origin (x along
          the rack, z toward the walkway): a low plinth rail, and per dock a steel

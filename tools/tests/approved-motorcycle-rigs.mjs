@@ -3,6 +3,7 @@
 import fs from 'node:fs';
 import vm from 'node:vm';
 import { createRequire } from 'node:module';
+import { assertWheelieRearAxle } from './wheelie-dynamics.mjs';
 
 const Three = createRequire(import.meta.url)('../../vendor/three.r160.js');
 const source = name => fs.readFileSync(new URL('../../src/' + name + '.js', import.meta.url), 'utf8');
@@ -107,6 +108,7 @@ export default async function (t) {
     t.assert(model.wheels.every(w => !w.wheel.children[0].visible && w.wheel.children[1].visible), key + ': burnt tyre/rim visibility wrong');
     api.specialDamage(c, model, { tires: {}, burnt: false });
     t.assert(model.wheels.every(w => w.wheel.children[0].visible && w.wheel.scale.y === 1), key + ': repair failed to restore tyres');
+    assertWheelieRearAxle(t, api.animateMotorbike, c, model);
     const contacts = api.contactWheels(c, model);
     t.assert(!contacts[0].driven && contacts[1].driven && contacts[0].x > 0 && contacts[1].x < 0,
       key + ': contact/mud records escaped the source body frame');

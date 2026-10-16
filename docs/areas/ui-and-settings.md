@@ -18,10 +18,12 @@ navigation.js (big map, GPS), cycles.js (bike share), src/shell.html + src/ui/* 
   player-jump.js). Space no longer fires on foot (there was no other use for it).
   `overrides` lets an air action take a key from movement in the `air`
   context (`ascend` / `descend` on the arrows); `controlConflicts()` knows that pair.
-  `overrideCtx` limits where it takes over: `ascend` is also a `drive` action (climb + throttle
-  = a wheelie, `wheelieHeld()`), but on the road ↑ stays forward too; the pad's stick-up in a
-  vehicle is `ascend`. The HUD strip has a `moto` context and a `wheelie` pseudo-key
-  (`keyName('forward') + '+' + keyName('ascend')`, left out on touch).
+  `overrideCtx` limits where it takes over: `ascend` and `descend` are also `drive` actions
+  for wheelies, but on the road ↑ / ↓ keep their forward / brake actions too. W + ↑ lifts;
+  ↓ lowers a two-wheeler with brake priority even while W is held. ↑ alone remains throttle.
+  The pad's stick-up in a vehicle is `ascend`; LT or touch BRAKE lowers. The HUD strip has
+  a `moto` context and `wheelie` / `wheelieDown` pseudo-keys for LIFT / LOWER. The lift chord
+  uses the current forward + ascend names; lowering names descend on keys, back on pad/touch.
 - Menu keys (Escape, Enter, the map's arrows / + / − / 0 / C) are fixed.
 - Left fire and right aim/secondary fire release independently. Focus loss clears keys and
   both buttons. Successful modal/menu/travel entry clears both; rejected entry leaves live

@@ -56,3 +56,38 @@ driving.js). Specs, crashes, aircraft and models: vehicles-and-driving.md.
   Measure with `tyreEffects(reset)` (tools/tests/tyre-effects.mjs).
 - Traffic in the rain drives inside `wetGrip()`, slower; one driver in eleven keeps dry habits
   (the odd rear-ender). `aiDriving()` counts crashes and slides.
+
+## Two-wheeler pitch and wheelie controls
+
+`wheelieStep` keeps the engine's available force and the bike/rider centre-of-mass torque
+authoritative. `wheelieHeld()` asks for lift with a separate throttle and climb input
+(default W + ↑); ↑ alone remains throttle. `wheelieLowerHeld()` is the descend or brake
+action (↓ / S / G), or the handbrake while the front is raised. On a two-wheeler only,
+it cuts the throttle before the normal brake model, even while W remains held or ↑ and
+↓ overlap. The rider's mass eases forward while
+lowering and back while asking for lift. A pad uses LT and touch uses BRAKE to lower.
+
+With the front up, rear braking is capped at 0.55 g, multiplied by the tyre surface and
+rain grip and the longitudinal share left by cornering. It cannot add positive drive
+torque. `wheelieFrontContact` smoothly unloads the front over the first ~5 cm of lift.
+Brake load/bias, ABS/slip/lock and remaining lateral grip use that contact; a fully raised
+front has no road force or locked-front lowside. Stability and tyre squeal follow the
+contacting tyres. Skid marks, spray, ford water, dust/mud and tracks also fade out at
+the front, with emission debt and track anchors cleared before the wheel touches down.
+Pitch and the fork spring substep at 240 Hz; mass shift uses an exponential response.
+The fork bump stop dissipates excess landing speed rather than injecting a bounce from
+an angle that was clipped while keeping its inward velocity. The per-type geometry,
+power limit, bank restriction on a clutch pop, reduced steering and real loopout remain.
+
+The renderer pitches the chassis about the actual rear axle's body-space centre, using
+the downloaded model's fixed carrier transform (including a puncture's local offset).
+This keeps the round rear tyre at its authored floor height; the previous ground-level
+pivot dropped its centre by `radius * (1 - cos(pitch))`. Riders use the same resulting
+body matrix for the seat, bars and pegs. The correction uses the actual bank, base pitch
+and pending terrain angles; the bicycle and scaled bike-share frame use the same rule.
+
+`wheelie-dynamics` tests the actual control/torque kernels, brake priority, grip budgets,
+30/60/120 Hz agreement and landing recovery. `wheelie` presses real W + ↑, W + ↓ and
+W + Space. `wheelie-tyre-contact` checks airborne and partial front effects.
+`motorcycle-wheel-rig` and `approved-motorcycle-rigs` hold the actual rear axle still
+through 0.2/0.6/1.1 rad pitches, while the rider-fit tests retain seat/hand/foot contacts.

@@ -414,9 +414,9 @@
       // Fort Sentinel in the borrowed uniform (fort-cover.js): soldiers walk; the walk key runs (footPace).
       cover: [['move', 'WALK'], ['walk', 'RUN'], ['interact', 'INTERACT'], ['help', 'CONTROLS']],
       car: [['move', 'DRIVE'], ['handbrake', 'HANDBRAKE'], ['interact', 'EXIT'], ['radioNext', 'STATION'], ['help', 'CONTROLS']],
-      bike: [['forward', 'PEDAL'], ['sprint', 'STAND'], ['back', 'BRAKE'], ['wheelie', 'WHEELIE'], ['interact', 'EXIT']],
+      bike: [['forward', 'PEDAL'], ['sprint', 'STAND'], ['wheelie', 'LIFT'], ['wheelieDown', 'LOWER'], ['interact', 'EXIT']],
       // A motorbike: throttle and climb together lift the front (wheelie.js).
-      moto: [['move', 'RIDE'], ['wheelie', 'WHEELIE'], ['handbrake', 'HANDBRAKE'], ['interact', 'EXIT'], ['radioNext', 'STATION']],
+      moto: [['move', 'RIDE'], ['wheelie', 'LIFT'], ['wheelieDown', 'LOWER'], ['interact', 'EXIT'], ['radioNext', 'STATION']],
       boat: [['move', 'STEER'], ['handbrake', 'SLOW'], ['bail', 'DIVE'], ['interact', 'EXIT']],
       heli: [['ascend', 'RISE'], ['descend', 'DESCEND'], ['move', 'FLY'], ['bail', 'BAIL OUT']],
       plane: [['forward', 'THROTTLE'], ['ascend', 'NOSE UP'], ['descend', 'NOSE DOWN'], ['flapsDown', 'FLAPS'], ['gear', 'GEAR'], ['bail', 'BAIL OUT']],
@@ -429,6 +429,7 @@
     };
     function hintKey(id) {
       if (id === 'wheelie') return keyName('forward') + '+' + keyName('ascend');
+      if (id === 'wheelieDown') return wheelieLowerKeyName();
       return id === 'move' ? moveKeysName() : keyName(id);
     }
     function renderQuickKeys() {

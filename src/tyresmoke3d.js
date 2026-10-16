@@ -90,12 +90,27 @@
         // Nothing, or the trails' and county's ground (offroad3d-mud.js throws that).
         if (!e.kind || e.kind === 'offroad' || !(e.rate > 0)) {
           m.tyreSmokeDue = 0;
+          m.tyreSmokeFrontDue = 0;
+          return;
+        }
+        const spec = vehicleSpec(c);
+        if (spec.bike || spec.bicycle) {
+          // Separate front/rear accumulators keep the rear grounded and fade the
+          // lifted patch at the authoritative contact rate. No stored front burst
+          // survives a flight to appear when the tyre touches down again.
+          m.tyreSmokeDue = e.axle !== 'front' ? (m.tyreSmokeDue || 0) + e.rate * share * deltaSeconds : 0;
+          m.tyreSmokeFrontDue = e.axle !== 'rear' && e.frontContact > 0 ? (m.tyreSmokeFrontDue || 0) + e.rate * share * deltaSeconds * e.frontContact : 0;
+          const rear = Math.min(4, Math.floor(m.tyreSmokeDue)),
+            front = Math.min(4, Math.floor(m.tyreSmokeFrontDue));
+          m.tyreSmokeDue -= rear;
+          m.tyreSmokeFrontDue -= front;
+          if (rear) tyreAxlePuffs(c, spec, -0.3 * spec.l, rear, e.kind, cap, e.heat);
+          if (front) tyreAxlePuffs(c, spec, 0.3 * spec.l, front, e.kind, cap, e.heat);
           return;
         }
         m.tyreSmokeDue = (m.tyreSmokeDue || 0) + e.rate * share * deltaSeconds;
         if (m.tyreSmokeDue < 1) return;
-        const count = Math.min(4, Math.floor(m.tyreSmokeDue)),
-          spec = vehicleSpec(c);
+        const count = Math.min(4, Math.floor(m.tyreSmokeDue));
         m.tyreSmokeDue -= count;
         if (e.axle !== 'front') tyreAxlePuffs(c, spec, -0.3 * spec.l, count, e.kind, cap, e.heat);
         if (e.axle !== 'rear') tyreAxlePuffs(c, spec, 0.3 * spec.l, count, e.kind, cap, e.heat);
