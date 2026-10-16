@@ -165,7 +165,7 @@
         palette: ['#8f1b1b', '#16181b', '#d8561a', '#2a4f8a', '#e3b23c', '#3b6b5c', '#5e2b7e'],
       },
       bike: {
-        name: 'VORTEX 900',
+        name: 'KUZUKI 600R',
         // A sport bike.
         l: 2.1 * UNITS_PER_METRE,
         w: 0.8 * UNITS_PER_METRE,

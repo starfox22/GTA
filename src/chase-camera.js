@@ -130,10 +130,10 @@
     function chaseCameraLive() {
       return viewMode === VIEW_CHASE && !player.coaster;
     }
-    /* The game's half of whether the camera motion blur runs (postfx3d-motion.js adds the tier and the air):
-       the chase view, Settings · Graphics · Motion blur, never with Motion comfort, only in play. */
+    /* Kept as the single renderer gate while motion blur is temporarily withdrawn. */
     function chaseMotionBlurAllowed() {
-      return chaseCameraLive() && settings.motionBlur !== false && !motionComfortOn() && gameMode === 'play';
+      // Temporarily withdrawn with the graphics control; legacy saves cannot enable it.
+      return false;
     }
     function setViewMode(mode, quiet = false) {
       const next = mode === VIEW_CHASE ? VIEW_CHASE : VIEW_STREET;

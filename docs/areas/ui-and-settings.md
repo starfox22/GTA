@@ -56,6 +56,8 @@ navigation.js (big map, GPS), cycles.js (bike share), src/shell.html + src/ui/* 
   look-ahead (`drivingSettings.lookAhead`, 0-300 %, default 200 %; the driving settings record carries `version`
   2, and an older record still at 150 % loads as 200 %). All are read live by the street camera (the chase view
   ignores them); camera tests calibrate at 100 % and restore the defaults with `drivingReset`.
+- Motion blur is temporarily disabled and absent from Graphics. Old saved values and console requests cannot enable the pass.
+- Graphics · Player outline at night defaults to off; explicit saved choices remain available.
 - Graphics · Ring under your character (`settings.playerRing`, `playerRingOn()`): off by
   default, also for saves that predate it; drives the 3D `playerRing` and the 2D fallback's
   circle under the player. Objectives have no ring at all (markers.js): the floating arrow only.
