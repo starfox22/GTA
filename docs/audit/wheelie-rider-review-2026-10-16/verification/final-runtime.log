@@ -1,0 +1,11 @@
+started dev server (?dev&norender: boot 22s)
+PASS interface-hints (5.7s)
+     GO TO: 16 places; minimap 198x108
+PASS rider-falls (31.6s)
+     25 km/h: hp 97; 45 km/h: hp 79 (into the wall at 39 km/h)
+PASS vehicle-body-impacts (28.4s)
+     gravity over 0.3 s 2.9429999999999996
+PASS wheelie-hint (30.0s)
+PASS wheelie (41.0s)
+     sport bike: 20.2° after 1.2 s; sustained 316.923 m · slow page: real keys took 2.5 s for 1.25 game s · slow page: real keys took 1.0 s for 0.65 game s · slow page: real keys took 1.5 s for 0.73 game s · slow page: real keys took 1.9 s for 1.21 game s · slow page: real keys took 1.9 s for 1.21 game s
+5/5 passed, 0 skipped, 0 failed in 160s

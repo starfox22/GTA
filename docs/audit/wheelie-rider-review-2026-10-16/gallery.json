@@ -1,6 +1,6 @@
 {
   "title": "Wheelie controls, rider motion and distance achievements",
-  "introduction": "Native 3D game frames of independent rider controls, a sustained wheelie, actual distance milestones, corner lean and supported recovery. The counter advances through physical travel in the shipped simulation. Achievement screenshots pause the game's own CSS animation at 350 ms; rider falls use named gameplay fixtures. Click an image for its original viewport pixels. Capture inputs, validation and the limits of the assisted balance and procedural animation are recorded in the linked audit.",
+  "introduction": "Six native 3D game frames and two actual Settings UI captures (world drawing disabled) showing independent rider controls, a sustained wheelie, actual distance milestones, corner lean and supported recovery. The counter advances through physical travel in the shipped simulation. Achievement screenshots pause the game's own CSS animation at 350 ms; rider falls use named gameplay fixtures. Click an image for its original viewport pixels. Capture inputs, validation and the limits of the assisted balance and procedural animation are recorded in the linked audit.",
   "comparisons": [],
   "screenshots": [
     {

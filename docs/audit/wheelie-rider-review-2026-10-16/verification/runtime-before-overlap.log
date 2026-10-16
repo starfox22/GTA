@@ -1,0 +1,10 @@
+started dev server (?dev&norender: boot 15.2s)
+PASS blood-wounds (17.2s)
+     one round: pool r 3.08 -> 6.36 (10 s) -> 6.97 (30 s), rMax 7 · several rounds: pool r 8.79 (30 s), rMax 8.8
+PASS car-blood (89.8s)
+     fatal sev by km/h: {"16":0.01,"20":0.05,"25":0.12,"30":0.2,"50":0.47,"80":0.68,"120":0.75} · sev at 16 km/h (barely a drop) 0.01 · sev at 25 km/h (a few drops) 0.12 · sev at 50 km/h (a clear splash) 0.47 · sev at 80 km/h (heavy) 0.68 · sev at 120 km/h (no more than 0.76) 0.75 · a survivor at 50 km/h (0.6 of a death) 0.28 · fatal run-over: sev 0.68 at (19.4, 4) 78 km/h · stopped at once: flow 0.16, creep 1 after 24 s · blood load of five people at 50 km/h 2.35 · five at 50 km/h: 3 records, load 2.35 (one at 80 km/h: 0.68)
+PASS freeroam-respawn (36.4s)
+PASS interface-hints (21.7s)
+     GO TO: 16 places; minimap 198x108
+PASS rider-falls (31.7s)
+     25 km/h: hp 97; 45 km/h: hp 79 (into the wall at 39 km/h)

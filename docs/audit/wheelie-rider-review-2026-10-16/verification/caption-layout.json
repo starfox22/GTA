@@ -1,0 +1,79 @@
+{
+  "pass": true,
+  "htmlSha256": "aa9ca8c1d6a9279894308e0b2f5a9d7e99ebc67b3d1328825b64cb0c5b8632cb",
+  "fixture": "Production stylesheet and wheelie HUD with a synthetic dispatch caption; layout only, no simulated gameplay.",
+  "results": [
+    {
+      "name": "desktop",
+      "width": 1000,
+      "height": 700,
+      "meter": {
+        "x": 380,
+        "y": 75,
+        "width": 240,
+        "height": 48.234375,
+        "bottom": 123.234375
+      },
+      "caption": {
+        "x": 438,
+        "y": 142,
+        "width": 124,
+        "height": 82,
+        "bottom": 224
+      },
+      "reducedMotion": [
+        "none",
+        "none",
+        "none"
+      ]
+    },
+    {
+      "name": "phone",
+      "width": 390,
+      "height": 844,
+      "meter": {
+        "x": 75,
+        "y": 104,
+        "width": 240,
+        "height": 48.234375,
+        "bottom": 152.234375
+      },
+      "caption": {
+        "x": 69,
+        "y": 160,
+        "width": 252,
+        "height": 40,
+        "bottom": 200
+      },
+      "reducedMotion": [
+        "none",
+        "none",
+        "none"
+      ]
+    },
+    {
+      "name": "landscape",
+      "width": 740,
+      "height": 390,
+      "meter": {
+        "x": 250,
+        "y": 104,
+        "width": 240,
+        "height": 48.234375,
+        "bottom": 152.234375
+      },
+      "caption": {
+        "x": 244,
+        "y": 160,
+        "width": 252,
+        "height": 40,
+        "bottom": 200
+      },
+      "reducedMotion": [
+        "none",
+        "none",
+        "none"
+      ]
+    }
+  ]
+}

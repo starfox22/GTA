@@ -8,8 +8,11 @@ import shutil
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-CURRENT_AUDIT = ROOT / 'docs/audit/impact-motorcycle-review-2026-10-16'
-PREVIOUS_AUDIT = ROOT / 'docs/audit/police-aviation-review-2026-10-15'
+CURRENT_AUDIT = ROOT / 'docs/audit/wheelie-rider-review-2026-10-16'
+HISTORY = [
+    ('impact-motorcycle', ROOT / 'docs/audit/impact-motorcycle-review-2026-10-16', 'Vehicle impacts and motorcycles'),
+    ('police-aviation', ROOT / 'docs/audit/police-aviation-review-2026-10-15', 'Police and aviation'),
+]
 
 
 def build_gallery(audit, target, play_version, game_path):
@@ -35,9 +38,11 @@ def build_gallery(audit, target, play_version, game_path):
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(source, destination)
             # Preserve image/audio links from the preceding review messages.
-            if audit == PREVIOUS_AUDIT:
+            if audit != CURRENT_AUDIT:
                 legacy = target.parent / name
                 legacy.parent.mkdir(parents=True, exist_ok=True)
+                if legacy.exists() and legacy.read_bytes() != source.read_bytes():
+                    raise ValueError('Review history asset collision: ' + name)
                 shutil.copyfile(source, legacy)
             copied.add(name)
         return html.escape(name, quote=True) + '?sha=' + digest
@@ -80,8 +85,12 @@ Additional runtime screenshots retain their recorded gameplay states. Technical 
     page = page.replace('Dead End City — police and aviation review', html.escape(title))
     page = page.replace('docs/audit/police-aviation-review-2026-10-15', audit.relative_to(ROOT).as_posix())
     page = page.replace('href="../"', f'href="{game_path}?review={play_version}"', 1)
-    if audit == CURRENT_AUDIT:
-        page += '<p><a href="police-aviation/">Previous police and aviation review</a></p>'
+    prefix = '' if audit == CURRENT_AUDIT else '../'
+    links = [f'<a href="{prefix}{folder}/">{html.escape(label)}</a>'
+             for folder, prior, label in HISTORY if prior != audit]
+    if audit != CURRENT_AUDIT:
+        links.insert(0, '<a href="../">Latest wheelie and rider review</a>')
+    page += '<p>' + ' · '.join(links) + '</p>'
     page += ''.join(sections)
     if sounds:
         sound_description = data.get('soundDescription', 'Offline renders of the actual production Web Audio graph: idle, spool up, full power and cutoff. These are sound demonstrations, not recordings of a play session.')
@@ -95,7 +104,8 @@ def main():
     game = Path(sys.argv[1])
     version = hashlib.sha256((game / 'index.html').read_bytes()).hexdigest()[:16]
     build_gallery(CURRENT_AUDIT, game / 'review', version, '../')
-    build_gallery(PREVIOUS_AUDIT, game / 'review/police-aviation', version, '../../')
+    for folder, audit, _ in HISTORY:
+        build_gallery(audit, game / 'review' / folder, version, '../../')
 
 
 if __name__ == '__main__':

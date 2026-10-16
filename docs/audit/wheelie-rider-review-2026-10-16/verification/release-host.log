@@ -1,0 +1,17 @@
+Scripts "build/three.js" and "build/three.min.js" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation
+PASS wheelie-dynamics 4049
+PASS wheelie-bindings 61
+PASS wheelie-score 37
+PASS wheelie-score-settle 4
+PASS wheelie-tyre-contact 135
+PASS rider-fall-motion 11839
+PASS rider-fatal-flight 66
+PASS motorcycle-riding-animation 153
+PASS motorcycle-rider-fit 102
+PASS approved-motorcycle-rider-fit 222
+PASS motorcycle-wheel-rig 230
+PASS approved-motorcycle-rigs 207
+PASS dolcati-model 184
+PASS terrain-rock-contact 18
+PASS vehicle-impact-respawn 26
+PASS respawn-focus-pause 112

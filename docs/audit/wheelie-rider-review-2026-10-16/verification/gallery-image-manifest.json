@@ -1,0 +1,101 @@
+{
+  "kind": "Unmodified native game PNGs. Milestone CSS animation sampled at 350 ms; full viewport pixels retained.",
+  "files": [
+    {
+      "file": "screenshots/native/wheelie-review-great-100m.png",
+      "sha256": "c7d49568f7d9dc9fa919bb1590b6f95bd2e46f5e97e528c9f0e792cd896f8ac1",
+      "bytes": 943806,
+      "dimensions": [
+        1000,
+        700
+      ],
+      "htmlSha256": "798146e2731d19b1310ffd073427c74129c765899c79e7b00f5101cd008f650c",
+      "recorderSha256": "05adb5ea47d6148c9203b68dd068fe48f064c9308954fc8fcd8515fb4e5f3a7d",
+      "report": "verification/capture-game-raw.json"
+    },
+    {
+      "file": "screenshots/native/wheelie-review-amazing-200m.png",
+      "sha256": "1df52e882dc0249f63e3087827c06e0ac3df0cbcf60b49ec1ec9250b452d7db7",
+      "bytes": 943745,
+      "dimensions": [
+        1000,
+        700
+      ],
+      "htmlSha256": "798146e2731d19b1310ffd073427c74129c765899c79e7b00f5101cd008f650c",
+      "recorderSha256": "05adb5ea47d6148c9203b68dd068fe48f064c9308954fc8fcd8515fb4e5f3a7d",
+      "report": "verification/capture-game-raw.json"
+    },
+    {
+      "file": "screenshots/native/wheelie-review-landed-result.png",
+      "sha256": "f07815a661c2b3df95e5a3d608aff7cd8e428656304e23a83392cf493f9f5ac7",
+      "bytes": 941678,
+      "dimensions": [
+        1000,
+        700
+      ],
+      "htmlSha256": "798146e2731d19b1310ffd073427c74129c765899c79e7b00f5101cd008f650c",
+      "recorderSha256": "05adb5ea47d6148c9203b68dd068fe48f064c9308954fc8fcd8515fb4e5f3a7d",
+      "report": "verification/capture-game-raw.json"
+    },
+    {
+      "file": "screenshots/native/wheelie-review-corner-lean.png",
+      "sha256": "4b038d00f573e7c879f912054fd57f9b2fad04b9ffeddf7b351aa257af1a1dde",
+      "bytes": 857853,
+      "dimensions": [
+        1000,
+        700
+      ],
+      "htmlSha256": "798146e2731d19b1310ffd073427c74129c765899c79e7b00f5101cd008f650c",
+      "recorderSha256": "05adb5ea47d6148c9203b68dd068fe48f064c9308954fc8fcd8515fb4e5f3a7d",
+      "report": "verification/capture-game-raw.json"
+    },
+    {
+      "file": "screenshots/native/wheelie-review-lowside-release.png",
+      "sha256": "7c24df33f63a5655fb6b764316e2f85b8ed68d3b47d384ea32d7d2c1871d76e5",
+      "bytes": 789548,
+      "dimensions": [
+        1000,
+        700
+      ],
+      "htmlSha256": "798146e2731d19b1310ffd073427c74129c765899c79e7b00f5101cd008f650c",
+      "recorderSha256": "05adb5ea47d6148c9203b68dd068fe48f064c9308954fc8fcd8515fb4e5f3a7d",
+      "report": "verification/capture-game-raw.json"
+    },
+    {
+      "file": "screenshots/native/wheelie-review-supported-recovery.png",
+      "sha256": "fbb1d86a2cbd42853f2636dc0f22ad97a0b36de57acb245523729b8e50b6e71b",
+      "bytes": 805615,
+      "dimensions": [
+        1000,
+        700
+      ],
+      "htmlSha256": "798146e2731d19b1310ffd073427c74129c765899c79e7b00f5101cd008f650c",
+      "recorderSha256": "05adb5ea47d6148c9203b68dd068fe48f064c9308954fc8fcd8515fb4e5f3a7d",
+      "report": "verification/capture-game-raw.json"
+    },
+    {
+      "file": "screenshots/native/wheelie-review-movement-controls.png",
+      "sha256": "5b34da8d471a3592a41d5643474d978c82cf1dbf076b792266ed3169bc386f6f",
+      "bytes": 110069,
+      "dimensions": [
+        1000,
+        700
+      ],
+      "htmlSha256": "aa9ca8c1d6a9279894308e0b2f5a9d7e99ebc67b3d1328825b64cb0c5b8632cb",
+      "recorderSha256": "0f49bf98cf08723fb506b8b13de02691bd08e66e4b0617d36f9ad87be9455ed8",
+      "report": "verification/capture-ui.json"
+    },
+    {
+      "file": "screenshots/native/wheelie-review-wheelie-bindings.png",
+      "sha256": "4fded8f760133633bb5f88ad2187b28e85b55658dc37dbef3b7d8c110083c786",
+      "bytes": 114085,
+      "dimensions": [
+        1000,
+        700
+      ],
+      "htmlSha256": "aa9ca8c1d6a9279894308e0b2f5a9d7e99ebc67b3d1328825b64cb0c5b8632cb",
+      "recorderSha256": "0f49bf98cf08723fb506b8b13de02691bd08e66e4b0617d36f9ad87be9455ed8",
+      "report": "verification/capture-ui.json"
+    }
+  ]
+}

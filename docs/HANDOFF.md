@@ -3,6 +3,19 @@
 Written for the next AI session (or human) picking this work up. Read `/CLAUDE.md` first (commands,
 rules, workflow), then this page, then only the area doc your task needs (`docs/README.md`).
 
+## October 16: independent wheelie controls and rider motion
+
+Continue on **`codex-reviews`**. W/S now supplies throttle/brake by default; dedicated,
+remappable ↑/↓ rider weight actions appear in Settings · Controls. Exact saved old default
+pairs migrate; custom keys persist. The shift is gated below 3 km/h and fully active at
+8 km/h. The Kuzuki can hold a long assisted wheelie within its actual available force,
+with forward weight/rear brake recovery, finite bank response and inertia during jumps.
+The meter measures actual settled airborne-front travel and celebrates beyond 100/200 m.
+Rider motion adds tuck, corner posture, road-facing gaze, signed spills and supported
+recovery. Fatal motorcycle falls keep moving and pool after settling through the bounded
+hospital handoff. The [wheelie/rider audit](audit/wheelie-rider-review-2026-10-16/README.md)
+records native evidence, exact release inputs, validation and simulation limits.
+
 ## October 16: vehicle impacts and motorcycles
 
 Continue on **`codex-reviews`**. The current owner request covers airborne vehicle strikes,

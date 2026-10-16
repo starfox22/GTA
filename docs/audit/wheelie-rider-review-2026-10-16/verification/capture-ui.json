@@ -1,0 +1,432 @@
+{
+  "htmlSha256": "aa9ca8c1d6a9279894308e0b2f5a9d7e99ebc67b3d1328825b64cb0c5b8632cb",
+  "recorderSha256": "0f49bf98cf08723fb506b8b13de02691bd08e66e4b0617d36f9ad87be9455ed8",
+  "fixture": "Native settings DOM with world drawing disabled (?norender),1000x700, default bindings; UI entrance animation allowed to finish.",
+  "captures": [
+    {
+      "file": "wheelie-review-movement-controls.png",
+      "sha256": "5b34da8d471a3592a41d5643474d978c82cf1dbf076b792266ed3169bc386f6f",
+      "bindings": {
+        "forward": [
+          "KeyW",
+          null
+        ],
+        "back": [
+          "KeyS",
+          null
+        ],
+        "left": [
+          "KeyA",
+          "ArrowLeft"
+        ],
+        "right": [
+          "KeyD",
+          "ArrowRight"
+        ],
+        "walk": [
+          "ShiftLeft",
+          "ShiftRight"
+        ],
+        "sprint": [
+          "ShiftLeft",
+          "ShiftRight"
+        ],
+        "interact": [
+          "KeyE",
+          null
+        ],
+        "fire": [
+          "KeyF",
+          null
+        ],
+        "jump": [
+          "Space",
+          null
+        ],
+        "handbrake": [
+          "Space",
+          null
+        ],
+        "wheelieUp": [
+          "ArrowUp",
+          null
+        ],
+        "wheelieDown": [
+          "ArrowDown",
+          null
+        ],
+        "poison": [
+          "KeyP",
+          null
+        ],
+        "horn": [
+          "KeyH",
+          null
+        ],
+        "lookBehind": [
+          "KeyC",
+          null
+        ],
+        "radioPower": [
+          "KeyN",
+          null
+        ],
+        "radioNext": [
+          "KeyB",
+          null
+        ],
+        "radioQuieter": [
+          "Comma",
+          null
+        ],
+        "radioLouder": [
+          "Period",
+          null
+        ],
+        "skipRide": [
+          "KeyY",
+          null
+        ],
+        "skipStop": [
+          "KeyU",
+          null
+        ],
+        "ascend": [
+          "ArrowUp",
+          "KeyT"
+        ],
+        "descend": [
+          "ArrowDown",
+          "KeyG"
+        ],
+        "chuteGlide": [
+          "ArrowUp",
+          null
+        ],
+        "chuteFlare": [
+          "ArrowDown",
+          null
+        ],
+        "flapsDown": [
+          "KeyX",
+          null
+        ],
+        "flapsUp": [
+          "KeyZ",
+          null
+        ],
+        "gear": [
+          "KeyL",
+          null
+        ],
+        "rockets": [
+          "Space",
+          null
+        ],
+        "bail": [
+          "KeyJ",
+          null
+        ],
+        "divert": [
+          "KeyC",
+          null
+        ],
+        "reload": [
+          "KeyR",
+          null
+        ],
+        "cycleWeapon": [
+          "KeyQ",
+          null
+        ],
+        "fists": [
+          "Backquote",
+          "Digit8"
+        ],
+        "knife": [
+          "KeyK",
+          "Digit7"
+        ],
+        "lockpick": [
+          "Digit9",
+          null
+        ],
+        "weapon1": [
+          "Digit1",
+          null
+        ],
+        "weapon2": [
+          "Digit2",
+          null
+        ],
+        "weapon3": [
+          "Digit3",
+          null
+        ],
+        "weapon4": [
+          "Digit4",
+          null
+        ],
+        "weapon5": [
+          "Digit5",
+          null
+        ],
+        "weapon6": [
+          "Digit6",
+          null
+        ],
+        "arsenal": [
+          "KeyI",
+          null
+        ],
+        "map": [
+          "Tab",
+          null
+        ],
+        "missionCard": [
+          "KeyO",
+          null
+        ],
+        "cameraView": [
+          "KeyV",
+          null
+        ],
+        "zoomIn": [
+          "Equal",
+          "NumpadAdd"
+        ],
+        "zoomOut": [
+          "Minus",
+          "NumpadSubtract"
+        ],
+        "zoomReset": [
+          "Digit0",
+          null
+        ],
+        "mute": [
+          "KeyM",
+          null
+        ],
+        "help": [
+          "Slash",
+          null
+        ]
+      },
+      "renderer": "DOM settings, world draw disabled"
+    },
+    {
+      "file": "wheelie-review-wheelie-bindings.png",
+      "sha256": "4fded8f760133633bb5f88ad2187b28e85b55658dc37dbef3b7d8c110083c786",
+      "bindings": {
+        "forward": [
+          "KeyW",
+          null
+        ],
+        "back": [
+          "KeyS",
+          null
+        ],
+        "left": [
+          "KeyA",
+          "ArrowLeft"
+        ],
+        "right": [
+          "KeyD",
+          "ArrowRight"
+        ],
+        "walk": [
+          "ShiftLeft",
+          "ShiftRight"
+        ],
+        "sprint": [
+          "ShiftLeft",
+          "ShiftRight"
+        ],
+        "interact": [
+          "KeyE",
+          null
+        ],
+        "fire": [
+          "KeyF",
+          null
+        ],
+        "jump": [
+          "Space",
+          null
+        ],
+        "handbrake": [
+          "Space",
+          null
+        ],
+        "wheelieUp": [
+          "ArrowUp",
+          null
+        ],
+        "wheelieDown": [
+          "ArrowDown",
+          null
+        ],
+        "poison": [
+          "KeyP",
+          null
+        ],
+        "horn": [
+          "KeyH",
+          null
+        ],
+        "lookBehind": [
+          "KeyC",
+          null
+        ],
+        "radioPower": [
+          "KeyN",
+          null
+        ],
+        "radioNext": [
+          "KeyB",
+          null
+        ],
+        "radioQuieter": [
+          "Comma",
+          null
+        ],
+        "radioLouder": [
+          "Period",
+          null
+        ],
+        "skipRide": [
+          "KeyY",
+          null
+        ],
+        "skipStop": [
+          "KeyU",
+          null
+        ],
+        "ascend": [
+          "ArrowUp",
+          "KeyT"
+        ],
+        "descend": [
+          "ArrowDown",
+          "KeyG"
+        ],
+        "chuteGlide": [
+          "ArrowUp",
+          null
+        ],
+        "chuteFlare": [
+          "ArrowDown",
+          null
+        ],
+        "flapsDown": [
+          "KeyX",
+          null
+        ],
+        "flapsUp": [
+          "KeyZ",
+          null
+        ],
+        "gear": [
+          "KeyL",
+          null
+        ],
+        "rockets": [
+          "Space",
+          null
+        ],
+        "bail": [
+          "KeyJ",
+          null
+        ],
+        "divert": [
+          "KeyC",
+          null
+        ],
+        "reload": [
+          "KeyR",
+          null
+        ],
+        "cycleWeapon": [
+          "KeyQ",
+          null
+        ],
+        "fists": [
+          "Backquote",
+          "Digit8"
+        ],
+        "knife": [
+          "KeyK",
+          "Digit7"
+        ],
+        "lockpick": [
+          "Digit9",
+          null
+        ],
+        "weapon1": [
+          "Digit1",
+          null
+        ],
+        "weapon2": [
+          "Digit2",
+          null
+        ],
+        "weapon3": [
+          "Digit3",
+          null
+        ],
+        "weapon4": [
+          "Digit4",
+          null
+        ],
+        "weapon5": [
+          "Digit5",
+          null
+        ],
+        "weapon6": [
+          "Digit6",
+          null
+        ],
+        "arsenal": [
+          "KeyI",
+          null
+        ],
+        "map": [
+          "Tab",
+          null
+        ],
+        "missionCard": [
+          "KeyO",
+          null
+        ],
+        "cameraView": [
+          "KeyV",
+          null
+        ],
+        "zoomIn": [
+          "Equal",
+          "NumpadAdd"
+        ],
+        "zoomOut": [
+          "Minus",
+          "NumpadSubtract"
+        ],
+        "zoomReset": [
+          "Digit0",
+          null
+        ],
+        "mute": [
+          "KeyM",
+          null
+        ],
+        "help": [
+          "Slash",
+          null
+        ]
+      },
+      "renderer": "DOM settings, world draw disabled"
+    }
+  ],
+  "errors": [],
+  "remapReloadPassed": true,
+  "pass": true
+}

@@ -1,0 +1,22 @@
+started dev server (?dev&norender: boot 12.1s)
+PASS brake-distances (3.5s)
+     sedan dry m 45.9 · sedan dry mean g 0.86 · sedan drift m 0 · distance / (v^2/2ga) 1.004 · wet / dry 1.458 · 50 / 100 km/h distance 0.266 · sedan 50 km/h dry m 12.2
+PASS drift-handling (3.9s)
+     hot rod power-slide peak slip deg 56 · slip after the catch deg 1 · sedan handbrake 0.5 s turned deg 38 · sedan handbrake turn and power out deg 112 · sedan lane change peak slip deg 3 · muscle (TCS) floored bend peak slip deg 10
+PASS drive-no-nan (5.0s)
+     sedan 56 m · bike 167 m · truck 30 m
+PASS hud-dom-writes (1.8s)
+PASS vehicle-layouts (2.9s)
+PASS falls (29.4s)
+     cliff at 7360,1380 (49.9 m): down 20.6 m at 20.1 m/s · car off 73.6 m: {"hp":0,"destroyed":true,"overturned":"roof","airborne":false}, player dead
+PASS hud-layout (19.1s)
+     drawn: carRadio, toast, radioCaption, policeStatusPanel · touch, bus heading down: player {"l":468,"t":121,"r":493,"b":228}, open card {"l":310,"t":54,"r":650,"b":142}
+PASS parachute-deploy (73.9s)
+     cue: height a pull at terminal speed needs (m) 198.5 · pilot chute: throw, inflation, pin and bag lift (s) 0.83 · pull to line stretch (s) 1.8 · fall while the lines pay out (m) 50.200000000000045 · line stretch snatch (g) 1.88 · snivel (s) 1.9999999999999998 · pull to fully open (s) 4.7 · height lost opening (m) 198 · opening shock (g) 3.78 · forecast minus actual height to a landable rate (m) 0 · terminal pull at 598.8 m: line stretch 1.8 s, open 4.7 s and 198 m later, 3.78 g; forecast 198.5 m, actual 198.5 m at 4.77 s · 80 m pull: hit at 52 m/s (dead) · soon: pulled at 414.9 m (needs 199.8 m) · now: pulled at 281.1 m (needs 200.6 m)
+PASS parachute (19.1s)
+     no canopy: hit at 44.8 m/s · opened at 105 m · opened at 17.1 m: hit at 43 m/s
+PASS rider-falls (19.3s)
+     25 km/h: hp 97; 45 km/h: hp 79 (into the wall at 39 km/h)
+PASS world-reset (25.0s)
+     live $100 stake survives WASTED as one void/refund; odds format/history/statistics remain after BUSTED
+11/11 passed, 0 skipped, 0 failed in 216s
