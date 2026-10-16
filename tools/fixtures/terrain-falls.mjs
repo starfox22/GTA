@@ -21,16 +21,16 @@ export function terrainFallsFixture({ sourceRoot = ROOT, terrainCache, sourceOve
     wetGrip: () => 1, onRoad: () => false, hypot2: Math.hypot,
     distanceBetween: (a, b) => Math.hypot(a.x - b.x, a.y - b.y), seededRandom: () => 0.4,
     randomBetween: (a, b) => (a + b) / 2, worldMeters: n => n / 8,
-    addConsoleMethods: () => {}, actionCode: id => ({ forward: 'KeyW', back: 'KeyS', left: 'KeyA', right: 'KeyD' })[id],
+    addConsoleMethods: () => {},
     offroadSummit: () => {}, burnoutStep: () => false, layTyreMarks: () => {}, tyreEffectsStep: () => {},
-    wheelieHeld: () => false,
     damageVehicle: (c, damage) => { c.hp -= damage; }, playerImpact: () => {}, playSample: () => {},
     kickCamera: () => {}, tell: () => {}, keyName: s => s,
   };
-  scope.actionHeld = id => !!scope.keys[scope.actionCode(id)];
   scope.fallDropMetres = speed => speed * speed / (2 * scope.GRAVITY) / 8;
   const context = vm.createContext(scope);
-  for (const name of ['game-vehicles', 'geography-regions', 'geography-land', 'county-map', 'transit-rails',
+  // Keep the production action helpers together: the vehicle controller also reads descend/rear-brake
+  // priority on a two-wheeler. A partial action table hides dependencies as those controls evolve.
+  for (const name of ['controls', 'game-vehicles', 'geography-regions', 'geography-land', 'county-map', 'transit-rails',
     'terrain-roads', 'terrain-grading', 'terrain-noise', 'terrain-field', 'terrain-suspension', 'terrain-scenery',
     'offroad-trails', 'falls-vehicles', 'driving', 'damage-vehicles', 'game-car-spawn', 'wheelie', 'physics-driving', 'falls-console'])
     vm.runInContext(read(name), context, { filename: name });
