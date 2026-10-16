@@ -679,5 +679,47 @@
     "file": "assets/jet-skin.webp",
     "mime": "image/webp",
     "original": "assets/jet-skin.webp"
+  },
+  {
+    "id": "media-dolcati-vehicle-models",
+    "file": "assets/dolcati-vehicle-models.bin",
+    "mime": "application/octet-stream",
+    "original": "assets/dolcati-vehicle-models.bin"
+  },
+  {
+    "id": "media-dolcati-vehicle-albedo",
+    "file": "assets/dolcati-vehicle-albedo.webp",
+    "mime": "image/webp",
+    "original": "assets/dolcati-vehicle-albedo.webp"
+  },
+  {
+    "id": "media-dolcati-vehicle-orm",
+    "file": "assets/dolcati-vehicle-orm.webp",
+    "mime": "image/webp",
+    "original": "assets/dolcati-vehicle-orm.webp"
+  },
+  {
+    "id": "media-dolcati-vehicle-emissive",
+    "file": "assets/dolcati-vehicle-emissive.webp",
+    "mime": "image/webp",
+    "original": "assets/dolcati-vehicle-emissive.webp"
+  },
+  {
+    "id": "media-dolcati-vehicle-albedo-low",
+    "file": "assets/dolcati-vehicle-albedo-low.webp",
+    "mime": "image/webp",
+    "original": "assets/dolcati-vehicle-albedo-low.webp"
+  },
+  {
+    "id": "media-dolcati-vehicle-orm-low",
+    "file": "assets/dolcati-vehicle-orm-low.webp",
+    "mime": "image/webp",
+    "original": "assets/dolcati-vehicle-orm-low.webp"
+  },
+  {
+    "id": "media-dolcati-vehicle-emissive-low",
+    "file": "assets/dolcati-vehicle-emissive-low.webp",
+    "mime": "image/webp",
+    "original": "assets/dolcati-vehicle-emissive-low.webp"
   }
 ]

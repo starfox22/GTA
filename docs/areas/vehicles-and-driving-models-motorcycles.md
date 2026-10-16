@@ -4,6 +4,9 @@ Runtime: `motorbikes3d.js`, `motorbike-assets3d.js`; converters: `tools/vehicle_
 `tools/approved_vehicle_models.py` (approved pack).
 Handling and wheelies stay in the game rules; renderer rigs only read their state.
 
+See [Dolcati source model](vehicles-and-driving-models-dolcati.md) for its source licence,
+conversion, rig and LOD budgets.
+
 ## Approved replacement pack
 
 The owner's October 14 selection uses the separate approved vehicle pack: `m1_enduro`
@@ -86,6 +89,5 @@ broken and absent lenses, and a repair restores the head/tail halos.
   hangs round the front wheel (fork feet, caliper, a wrapping fender) in the steering; `barsWide` the levers and hand
   guards. Stands modelled down are left out with `dropBox`. Hints after `unsteer` are in the re-centred frame.
 - Cars (convert): a wheel takes nothing past its tyre's inner wall (the Suburban's arch lining turned with its wheels).
-- Kept procedural: dolcati, yamasaki (the matching models are Draco-compressed with no plain mirror on GitHub, or their
+- Kept procedural: yamasaki (the matching models are Draco-compressed with no plain mirror on GitHub, or their
   paint and maker's logos are baked into one texture: the NR750 cannot take the traffic colours).
-- 11 draws (as procedural), ~14k triangles with the rider stand-in (procedural 6.9k).

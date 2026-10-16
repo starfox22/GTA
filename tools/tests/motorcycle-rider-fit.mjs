@@ -7,20 +7,22 @@ const Three = createRequire(import.meta.url)('../../vendor/three.r160.js');
 const read = name => fs.readFileSync(new URL('../../src/' + name + '.js', import.meta.url), 'utf8');
 
 export async function runMotorcycleRiderFit(t, approvedPack = false, riderHeight = 1.8) {
-  const bytes = fs.readFileSync(new URL('../../assets/' + (approvedPack ? 'approved-vehicle-models.bin' : 'vehicle-models.bin'), import.meta.url));
+  const dolcatiPack = approvedPack === 'dolcati',
+    bikeTypes = dolcatiPack ? ['dolcati'] : approvedPack ? ['bike', 'kr500'] : ['bike', 'cruiser', 'kr500'];
+  const bytes = fs.readFileSync(new URL('../../assets/' + (dolcatiPack ? 'dolcati-vehicle-models.bin' : approvedPack ? 'approved-vehicle-models.bin' : 'vehicle-models.bin'), import.meta.url));
   const length = bytes.readUInt32LE(8), header = JSON.parse(bytes.subarray(12, 12 + length));
-  const base = length + 12, types = { f4: Float32Array, i1: Int8Array, u1: Uint8Array, i2: Int16Array, u2: Uint16Array }, arrays = {};
+  const base = length + 12, types = { f4: Float32Array, i1: Int8Array, u1: Uint8Array, i2: Int16Array, u2: Uint16Array, u4: Uint32Array }, arrays = {};
   for (const [name, [type, offset, count]] of Object.entries(header.arrays)) {
     const raw = bytes.subarray(base + offset, base + offset + count * types[type].BYTES_PER_ELEMENT);
     arrays[name] = new types[type](Uint8Array.from(raw).buffer);
   }
-  const mapping = approvedPack ? { bike: 'm2_sport', kr500: 'm1_enduro' } : {},
+  const mapping = dolcatiPack ? { dolcati: 'dolcati_roy' } : approvedPack ? { bike: 'm2_sport', kr500: 'm1_enduro' } : {},
     packedModel = type => header.models[mapping[type] || type], fixture = { header, arrays },
     materials = Object.fromEntries(['trim', 'rubber', 'rim', 'glass', 'headOff', 'tailOff', 'headOn', 'tailOn', 'brake', 'drlOn', 'drlOff']
     .map(name => [name, new Three.MeshStandardMaterial()]));
   const player = { car: null }, captures = [], look = { height: riderHeight / 1.75, width: 1, shoulderZ: 1.56 }, M = 8;
   const actualLengths = {};
-  if (approvedPack) for (const type of ['bike', 'kr500']) {
+  if (approvedPack) for (const type of bikeTypes) {
     const match = new RegExp('\\b' + type + ':\\s*\\{[\\s\\S]*?\\bl:\\s*([0-9.]+) \\* UNITS_PER_METRE').exec(read('game-vehicles'));
     if (!match) throw Error(type + ': production length missing');
     actualLengths[type] = Number(match[1]) * M;
@@ -38,6 +40,10 @@ export async function runMotorcycleRiderFit(t, approvedPack = false, riderHeight
     approvedVehicleGeometry: (model, part, k, uvAt) => api.vaGeometry(model, fixture, part, k, uvAt),
     approvedVehicleMaterials: () => materials,
     approvedVehiclePaint: c => new Three.MeshPhysicalMaterial({ color: c.color }),
+    dolcatiVehicleModel: () => dolcatiPack ? header.models.dolcati_roy : null,
+    dolcatiVehicleData: () => fixture,
+    dolcatiVehicleMaterials: () => materials, dolcatiVehicleLamps: () => materials,
+    dolcatiVehiclePaint: c => new Three.MeshPhysicalMaterial({ color: c.color }),
     civSharedMaterials: () => materials, civLampSet: () => materials,
     outfitLook: () => look, compiledLook: () => look,
     driveByRiderArm() {},
@@ -73,7 +79,7 @@ export async function runMotorcycleRiderFit(t, approvedPack = false, riderHeight
   };
   let maxTargetError = 0, maxWristError = 0, maxRestWristError = 0, maxBoneError = 0, formerSteeringGap = 0;
   const restReach = [];
-  for (const type of approvedPack ? ['bike', 'kr500'] : ['bike', 'cruiser', 'kr500']) {
+  for (const type of bikeTypes) {
     const packed = packedModel(type), assetScale = approvedPack ? actualLengths[type] / packed.dims[0] : M,
       grips = packed.grips || [-1, 1].map(side => [packed.grip[0], packed.grip[1], side * packed.grip[2]]);
     t.assert(!approvedPack && type === 'kr500' || !!packed.grips, type + ': measured paired grips missing');

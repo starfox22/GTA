@@ -1,0 +1,132 @@
+[
+  {
+    "part": "dolcati_roy.trim",
+    "before": 247429,
+    "after": 247429,
+    "ratio": 1.0,
+    "normals": "exact authored attributes"
+  },
+  {
+    "part": "dolcati_roy.trimFar",
+    "before": 247429,
+    "after": 14525,
+    "ratio": 0.06
+  },
+  {
+    "part": "dolcati_roy.tail",
+    "before": 2316,
+    "after": 2316,
+    "ratio": 1.0,
+    "normals": "exact authored attributes"
+  },
+  {
+    "part": "dolcati_roy.tailFar",
+    "before": 2316,
+    "after": 138,
+    "ratio": 0.06
+  },
+  {
+    "part": "dolcati_roy.glass",
+    "before": 1152,
+    "after": 1152,
+    "ratio": 1.0,
+    "normals": "exact authored attributes"
+  },
+  {
+    "part": "dolcati_roy.glassFar",
+    "before": 1152,
+    "after": 137,
+    "ratio": 0.12
+  },
+  {
+    "part": "dolcati_roy.paint",
+    "before": 13850,
+    "after": 13850,
+    "ratio": 1.0,
+    "normals": "exact authored attributes"
+  },
+  {
+    "part": "dolcati_roy.paintFar",
+    "before": 13850,
+    "after": 829,
+    "ratio": 0.06
+  },
+  {
+    "part": "dolcati_roy.head",
+    "before": 480,
+    "after": 480,
+    "ratio": 1.0,
+    "normals": "exact authored attributes"
+  },
+  {
+    "part": "dolcati_roy.headFar",
+    "before": 480,
+    "after": 28,
+    "ratio": 0.06
+  },
+  {
+    "part": "dolcati_roy.steer.trim",
+    "before": 46355,
+    "after": 46355,
+    "ratio": 1.0,
+    "normals": "exact authored attributes"
+  },
+  {
+    "part": "dolcati_roy.steer.trimFar",
+    "before": 46355,
+    "after": 2741,
+    "ratio": 0.06
+  },
+  {
+    "part": "dolcati_roy.wheel0.rim",
+    "before": 36936,
+    "after": 36936,
+    "ratio": 1.0,
+    "normals": "exact authored attributes"
+  },
+  {
+    "part": "dolcati_roy.wheel0.rimFar",
+    "before": 36936,
+    "after": 4432,
+    "ratio": 0.12
+  },
+  {
+    "part": "dolcati_roy.wheel0.tyre",
+    "before": 1152,
+    "after": 1152,
+    "ratio": 1.0,
+    "normals": "exact authored attributes"
+  },
+  {
+    "part": "dolcati_roy.wheel0.tyreFar",
+    "before": 1152,
+    "after": 138,
+    "ratio": 0.12
+  },
+  {
+    "part": "dolcati_roy.wheel1.tyre",
+    "before": 1152,
+    "after": 1152,
+    "ratio": 1.0,
+    "normals": "exact authored attributes"
+  },
+  {
+    "part": "dolcati_roy.wheel1.tyreFar",
+    "before": 1152,
+    "after": 138,
+    "ratio": 0.12
+  },
+  {
+    "part": "dolcati_roy.wheel1.rim",
+    "before": 21842,
+    "after": 21842,
+    "ratio": 1.0,
+    "normals": "exact authored attributes"
+  },
+  {
+    "part": "dolcati_roy.wheel1.rimFar",
+    "before": 21842,
+    "after": 2611,
+    "ratio": 0.12
+  }
+]

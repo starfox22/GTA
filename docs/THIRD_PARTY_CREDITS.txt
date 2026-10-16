@@ -1026,3 +1026,13 @@ by A Random Modeler (https://sketchfab.com/danielskom111), licensed under
 CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/).
 Modified for Dead End City: uniform frame/size fit, fictional Oceanview
 material palette and branding-face recolor, material merging and distant LOD.
+
+Downloaded DOLCATI V4 motorcycle (October 16, 2026)
+Based on "Ducati Panigale V4" by ROY (https://sketchfab.com/roy.gearloft.in).
+Original: https://sketchfab.com/3d-models/ducati-panigale-v4-47f87e3d70f644289e34cbff91255d0c
+License: Creative Commons Attribution 4.0 International (CC BY 4.0), https://creativecommons.org/licenses/by/4.0/
+Downloaded mirror: https://github.com/NormanFxxkingRockwell/moframe/blob/aae5834e3ab3139529e1bf8267e449d28e77d915/public/models/ducati/ducati_panigale_v4.glb
+GLB SHA-256: 83f555ed9ac013feb319c582e0fb2bb09e8094e0f9835f7a616c4796afb92370
+Model-specific embedded GLB metadata supplies the author, original source and CC-BY-4.0 license.
+Changes: rigid coordinate rotation and ground centering; source-measured wheel/steering/rider rig; separate reduced distant geometry; source PBR texture atlases; red-pigment respray adaptation retaining source lettering; rough rubber and optical tail-cover treatment. Close geometry, authored split normals and UVs retained. No endorsement is implied.
+
