@@ -44,6 +44,10 @@
       let vaEnabled = true;
       function vehicleAssetModel(type) {
         if (!vaEnabled) return null;
+        if (type === 'dolcati' && typeof dolcatiVehicleModel === 'function') {
+          const dolcati = dolcatiVehicleModel();
+          if (dolcati) return dolcati;
+        }
         if (type === 'hotrod' && typeof hotrodVehicleModel === 'function') {
           const hotrod = hotrodVehicleModel();
           if (hotrod) return hotrod;
@@ -521,6 +525,8 @@
         if (vaEnabled && sports) effective.chevette = sports;
         const hotrod = typeof hotrodVehicleModel === 'function' && hotrodVehicleModel();
         if (vaEnabled && hotrod) effective.hotrod = hotrod;
+        const dolcati = typeof dolcatiVehicleModel === 'function' && dolcatiVehicleModel();
+        if (vaEnabled && dolcati) effective.dolcati = dolcati;
         for (const [type, m] of Object.entries(effective))
           models[type] = { title: m.title, sourceKey: m.type, kind: m.kind || 'car', triangles: m.triangles, farTriangles: m.farTriangles || null, dims: m.dims, wheels: m.wheels.length, belt: m.glass?.base ?? null, roof: m.glass?.roof ?? null, paintTexture: m.paintTexture };
         return { loaded: true, enabled: vaEnabled, atlas: !!vaAtlasCache?.image, approvedAtlas: !!approvedVehicleTextures[0]?.image, rangerStyles: vaEnabled && approved ? APPROVED_SUV_KEYS : [], models, kits: [...vaKits.keys()] };

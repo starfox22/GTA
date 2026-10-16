@@ -38,6 +38,13 @@ const embeddedAssetReferences = {
   "hotrodVehicleAlbedoLow": "media-hotrod-vehicle-albedo-low",
   "hotrodVehicleOrm": "media-hotrod-vehicle-orm",
   "hotrodVehicleOrmLow": "media-hotrod-vehicle-orm-low",
+  "dolcatiVehicleModels": "media-dolcati-vehicle-models",
+  "dolcatiVehicleAlbedo": "media-dolcati-vehicle-albedo",
+  "dolcatiVehicleAlbedoLow": "media-dolcati-vehicle-albedo-low",
+  "dolcatiVehicleOrm": "media-dolcati-vehicle-orm",
+  "dolcatiVehicleOrmLow": "media-dolcati-vehicle-orm-low",
+  "dolcatiVehicleEmissive": "media-dolcati-vehicle-emissive",
+  "dolcatiVehicleEmissiveLow": "media-dolcati-vehicle-emissive-low",
   "aircraftModels": "media-aircraft-models",
   "aircraftSkin": "media-aircraft-skin",
   "jetModels": "media-jet-models",
@@ -180,6 +187,9 @@ function embeddedMediaDataUrl(identifier) {
 
 const gameAssets = {};
 for (const name of ['architecture', 'ground', 'weapons', 'harbor', 'arsenal', 'unicorn', 'playerModel', 'playerSkin', 'playerDetail', 'vehicleModels', 'vehicleAtlas', 'approvedVehicleModels', 'approvedVehicleAlbedo', 'approvedVehicleOrm', 'approvedVehicleAlbedoLow', 'approvedVehicleOrmLow', 'sportsVehicleModels', 'sportsVehicleAlbedo', 'sportsVehicleOrm', 'sportsVehicleEmissive', 'sportsVehicleAlbedoLow', 'sportsVehicleOrmLow', 'sportsVehicleEmissiveLow', 'hotrodVehicleModels', 'hotrodVehicleAlbedo', 'hotrodVehicleOrm', 'hotrodVehicleAlbedoLow', 'hotrodVehicleOrmLow', 'aircraftModels', 'aircraftSkin', 'jetModels', 'jetSkin', 'dogModel', 'npcModels', 'npcSkin', 'wallSkin', 'trailMud']) {
+  gameAssets[name] = embeddedMediaDataUrl(embeddedAssetReferences[name]);
+}
+for (const name of ['dolcatiVehicleModels', 'dolcatiVehicleAlbedo', 'dolcatiVehicleOrm', 'dolcatiVehicleEmissive', 'dolcatiVehicleAlbedoLow', 'dolcatiVehicleOrmLow', 'dolcatiVehicleEmissiveLow']) {
   gameAssets[name] = embeddedMediaDataUrl(embeddedAssetReferences[name]);
 }
 gameAssets.audio = {};

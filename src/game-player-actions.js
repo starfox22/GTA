@@ -114,7 +114,7 @@
       }
       player.tumble = null;
       player.tumbleRoll = 0;
-      player.thrown = null;
+      if (!player.thrown?.vehicleHit) player.thrown = null;
       player.fall = null;
       cancelPlayerJump();
       cancelCarjack();

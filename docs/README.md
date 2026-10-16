@@ -32,6 +32,7 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/vehicles-and-driving-doors.md | Real door apertures, native hinges, pane motion, damage anchors and closure/repair |
 | areas/vehicles-and-driving-door-transitions.md | Exit foot placement, shipped-mesh ground checks and pose-easing/IK contracts |
 | areas/vehicles-and-driving-models-motorcycles.md | Motorcycle models: downloaded parts, source unsteering, measured rolling axles, steering/lock/spin, flat tyres and real-size mud contacts |
+| [Downloaded Dolcati model](areas/vehicles-and-driving-models-dolcati.md) | ROY source/licence, reproducible conversion, rider/wheel contacts and near/far budgets |
 | areas/vehicles-and-driving-models-military.md | Military geometry kits, original HMMWV lamp lenses, matte finishes, steering and far LOD |
 | areas/vehicles-and-driving-models-aircraft.md | Downloaded aircraft: the SKYRANGER 429 civil helicopter, the SKYLARK 172 light aircraft |
 | areas/vehicles-and-driving-models-heavy.md | Downloaded models, round three: converter knobs (stretch, paintTex, clustering, atlas weights), the police bodies by model (POLICE_ASSET_TYPES), trucks, bus, ambulance, convertible, limousine, Vinny's truck on a downloaded cab, Fort Sentinel's HMMWV, M35 and tank (ASSET MILITARY) |

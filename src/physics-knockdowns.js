@@ -13,13 +13,16 @@
     }
     function updateKnockdown(p, deltaSeconds) {
       if (p.impactCooldown > 0) p.impactCooldown = Math.max(0, p.impactCooldown - deltaSeconds);
+      // A fatal car strike keeps carrying the body through the same arc; death
+      // must not freeze it beside the bumper or leave its pool at the take-off.
+      if (p.ejected?.vehicleHit && (p.hp > 0 || p.ejected.phase !== 'down')) stepRiderEjection(p, p.ejected, deltaSeconds);
       if (p.hp <= 0) {
         p.dying = null;
         return;
       }
       if (p.dying) stepDying(p, deltaSeconds);
       if (p.hp <= 0) return;
-      if (p.ejected) stepEjection(p, deltaSeconds);
+      if (p.ejected && !p.ejected.vehicleHit) stepEjection(p, deltaSeconds);
       if (p.knockedFor > 0) {
         p.aiming = false;
         p.knockedFor = Math.max(0, p.knockedFor - deltaSeconds);
@@ -74,16 +77,71 @@
         return;
       }
     }
+    // One launch rule for the player and everyone else. The bumper takes the
+    // legs; a low bonnet wraps the body upwards, a tall flat front mostly pushes
+    // it ahead. Edge strikes spill sideways. Units remain metres/seconds scaled
+    // by UNITS_PER_METRE; GRAVITY, not an animation curve, determines the arc.
+    function vehicleImpactState(person, c, speed) {
+      const spec = vehicleSpec(c),
+        a = Math.atan2(c.vy, c.vx),
+        fx = Math.cos(a), fy = Math.sin(a),
+        across = (-(person.x - c.x) * Math.sin(c.a) + (person.y - c.y) * Math.cos(c.a)) / (spec.w / 2 + 3),
+        edge = clamp(Math.abs(across), 0, 1),
+        front = Math.abs(Math.cos(a - c.a)),
+        tall = riderObstacleTop(c) - entityElevation(c) > 1.75 * UNITS_PER_METRE,
+        ramp = (tall ? 0.56 : spec.bike ? 0.72 : 1) * (0.65 + 0.35 * front),
+        carry = clamp(speed, 0, 150 * KMH) * (0.72 - edge * 0.16),
+        sideways = carry * Math.sign(across) * edge * 0.18,
+        lift = clamp(speed * 0.29 * ramp, 1.4 * UNITS_PER_METRE, 7.8 * UNITS_PER_METRE),
+        t = riderThrowState(fx * carry - fy * sideways, fy * carry + fx * sideways, RIDER_SEAT, lift, 'vehicle', [c, null], person);
+      t.vehicleHit = true;
+      t.rider = true;
+      t.source = c === player.car ? player : c;
+      t.ignoreUntil = 0.85;
+      t.pitch = -0.12;
+      t.spin = clamp(speed / UNITS_PER_METRE * 0.36, 2.2, 6.8) * (0.85 + edge * 0.15);
+      t.bank = Math.sign(across) * edge * 0.18;
+      t.bankSpin = Math.sign(across) * (0.3 + edge * 1.3);
+      t.slideSpin = Math.sign(across) * edge * 1.2;
+      t.rollShare = 0.65;
+      t.crashHurt = 0;
+      t.baseElevation = entityElevation(person);
+      return t;
+    }
+    function vehicleImpactDamage(kph) {
+      // These are gameplay thresholds, not a prediction of real-world injury.
+      return kph < 20 ? 0 : Math.min(250, 36 * ((kph - 20) / 27) ** 2);
+    }
+    function hitPlayerWithVehicle(c, speed) {
+      if (player.thrown || gameMode !== 'play') return false;
+      cancelPlayerJump();
+      cancelCarjack();
+      player.sceneSeat = null;
+      player.thrown = vehicleImpactState(player, c, speed);
+      const t = player.thrown;
+      t.crashHurt = vehicleImpactDamage(speed / KMH);
+      hurt(t.crashHurt, 'impact', t.heading);
+      // die() keeps this flight; invulnerability only prevents an immediate
+      // second bumper hit, never the later contact with a wall or the road.
+      if (player.hp > 0) player.inv = 0.6;
+      addCarStain(c, player, speed / KMH, player.hp <= 0);
+      shake = Math.max(shake, clamp(speed / 30, 2, 8));
+      if (player.hp > 0) tell('STRUCK BY A VEHICLE', 2.2, { tone: 'warn' });
+      return true;
+    }
     function knockPerson(person, c, speed) {
       const kph = worldMeters(speed) * 3.6;
-      if (kph < 0.1 || (person.impactCooldown || 0) > 0) return;
+      if (kph < 0.1 || (person.impactCooldown || 0) > 0 || (person.ejected?.vehicleHit && !['down', 'recover'].includes(person.ejected.phase))) return;
       // Someone already on the ground is run over, not knocked down (runover.js).
       if (personOnGround(person)) return runOverDowned(person, c, speed, kph);
       if (kph < 20 && personIncapacitated(person)) return;
       const a = Math.atan2(c.vy, c.vx),
         source = c === player.car ? player : c;
-      // These are gameplay thresholds, not a prediction of real-world injury.
-      const damage = kph < 20 ? 0 : Math.min(250, 36 * ((kph - 20) / 27) ** 2);
+      const damage = vehicleImpactDamage(kph);
+      if (damage > 0) {
+        person.ejected = vehicleImpactState(person, c, speed);
+        person.ejected.crashHurt = damage;
+      }
       person.impactCooldown = 0.9;
       person.carHit = { car: c, at: gameTime };
       person.threat = {
@@ -108,33 +166,31 @@
       } else if (person.faction && !person.military && source === player) alertGang(person.faction);
       if (person.hp > 0) {
         person.knockedFor = 3.5 + Math.min(1.5, kph / 30);
+        if (person.ejected?.vehicleHit) person.ejected.minDownTime = person.knockedFor;
         person.dazedFor = 0;
       }
-      const vehicleDefinition = vehicleSpec(c),
-        headingCosine = Math.cos(c.a),
-        headingSine = Math.sin(c.a),
-        side = Math.sign(-(person.x - c.x) * headingSine + (person.y - c.y) * headingCosine) || 1;
-      const ahead = {
-          x: person.x + Math.cos(a) * clamp(speed * 0.15, 12, 45),
-          y: person.y + Math.sin(a) * clamp(speed * 0.15, 12, 45),
-        },
-        beside = [side, -side].map((s) => ({
-          x: person.x - headingSine * s * (vehicleDefinition.w / 2 + 14),
-          y: person.y + headingCosine * s * (vehicleDefinition.w / 2 + 14),
-        })),
-        // A hit that hurts throws them on ahead of the car; a nudge at walking pace (no harm, no crime) sets them
-        // down beside it, out of its path: put 12 units ahead of a car still creeping on, the next touch was a run
-        // over (runover.js) and a crime for what was an accident (a respray's car rolling out onto the pavement).
-        candidates = damage > 0 ? [ahead, ...beside] : [...beside, ahead];
-      for (const q of candidates)
-        if (
-          !solid(q.x, q.y, 6) &&
-          !vehicles.some((o) => sameFloor(o, q) && pointInCar(q.x, q.y, o, 6))
-        ) {
-          person.x = q.x;
-          person.y = q.y;
-          break;
-        }
+      if (damage <= 0) {
+        const vehicleDefinition = vehicleSpec(c),
+          headingCosine = Math.cos(c.a),
+          headingSine = Math.sin(c.a),
+          side = Math.sign(-(person.x - c.x) * headingSine + (person.y - c.y) * headingCosine) || 1,
+          ahead = {
+            x: person.x + Math.cos(a) * clamp(speed * 0.15, 12, 45),
+            y: person.y + Math.sin(a) * clamp(speed * 0.15, 12, 45),
+          },
+          beside = [side, -side].map((s) => ({
+            x: person.x - headingSine * s * (vehicleDefinition.w / 2 + 14),
+            y: person.y + headingCosine * s * (vehicleDefinition.w / 2 + 14),
+          }));
+        // Walking-pace nudges stay harmless and leave the person beside the
+        // vehicle, clear of its next wheel pass (nudge-aside regression).
+        for (const q of [...beside, ahead])
+          if (!solid(q.x, q.y, 6) && !vehicles.some((o) => sameFloor(o, q) && pointInCar(q.x, q.y, o, 6))) {
+            person.x = q.x;
+            person.y = q.y;
+            break;
+          }
+      }
       // Everyone who saw it reacts: gasps, onlookers, someone to help, a call.
       // Nudging someone at walking pace is an accident, not a crime: only a hit
       // that hurts (20 km/h and up) makes the player the culprit.
@@ -271,4 +327,70 @@
             );
         }
       }
+    }
+    // Bounded developer fixture: one staged vehicle/person pair, found in the
+    // ordinary world lists (no retained entities survive a reset or teleport).
+    function vehicleImpactConsole() {
+      return {
+        vehicleImpactScene(who = 'player', type = 'sedan', kph = 65, lateral = 0, hp = 100) {
+          if (!['player', 'pedestrian'].includes(who) || !VEHICLE_DEFINITIONS[type]) return { error: 'Use player/pedestrian and a road vehicle type.' };
+          for (let i = vehicles.length - 1; i >= 0; i--) if (vehicles[i].impactFixture) {
+            clearCarStains(vehicles[i]);
+            vehicles.splice(i, 1);
+          }
+          for (let i = bleeders.length - 1; i >= 0; i--) if (bleeders[i].p.impactFixture) bleeders.splice(i, 1);
+          for (let i = pedestrians.length - 1; i >= 0; i--) if (pedestrians[i].impactFixture) pedestrians.splice(i, 1);
+          teleportPlayer(420, 4600);
+          player.hp = 100;
+          player.bloodPool = null;
+          player.inv = 0;
+          if (gameMode === 'dead') gameMode = 'play';
+          const a = 0,
+            x = player.x + (who === 'pedestrian' ? 52 : 0),
+            y = player.y + (who === 'pedestrian' ? -30 : 0),
+            spec = vehicleSpec({ type }),
+            side = clamp(Number(lateral) || 0, -1, 1) * spec.w * 0.42,
+            c = makeCar(type, x - spec.l / 2 - 12, y - side, a, false, '#b52b27');
+          if (isBoat(c) || isAircraft(c)) { vehicles.splice(vehicles.indexOf(c), 1); return { error: 'Use a road vehicle.' }; }
+          c.vx = c.speed = clamp(Number(kph) || 0, 1, 180) * KMH;
+          c.vy = c.av = 0;
+          c.occupied = false;
+          c.impactFixture = who;
+          if (who === 'pedestrian') {
+            const p = { x, y, a: Math.PI, hp: Math.max(1, Number(hp) || 30), timer: 999, state: 'idle', stateTime: 900, flee: 0, walk: 0, impactFixture: true };
+            dressPerson(p, 'casual');
+            pedestrians.push(p);
+          }
+          return this.vehicleImpactState();
+        },
+        // Step this scene through play or the fatal impact's WASTED screen in
+        // exact physics seconds, without depending on the browser frame rate.
+        vehicleImpactAdvance(seconds = 0.1) {
+          if (!vehicles.some((c) => c.impactFixture)) return null;
+          const steps = Math.round(clamp(Number(seconds) || 0, 0, 20) * 120);
+          for (let i = 0; i < steps && (gameMode === 'play' || gameMode === 'dead'); i++) update(1 / 120);
+          return this.vehicleImpactState();
+        },
+        vehicleImpactState() {
+          const c = vehicles.find((o) => o.impactFixture),
+            p = c?.impactFixture === 'player' ? player : pedestrians.find((o) => o.impactFixture);
+          if (!c || !p) return null;
+          const t = p === player ? p.thrown : p.ejected;
+          if (t?.vehicleHit) c.impactFixtureFlight = t;
+          const f = t || c.impactFixtureFlight,
+            round = (v) => +v.toFixed(3);
+          return {
+            who: c.impactFixture, hp: round(Math.max(0, p.hp)), dead: p.hp <= 0,
+            x: round(p.x), y: round(p.y), carX: round(c.x), carY: round(c.y),
+            active: !!t, phase: t?.phase || (f ? 'standing' : 'waiting'),
+            heightM: round(worldMeters(f?.z || 0)), peakM: round(worldMeters(f?.peak || 0)),
+            vx: round(worldMeters(f?.vx || 0)), vy: round(worldMeters(f?.vy || 0)), vz: round(worldMeters(f?.vz || 0)),
+            pitch: round(f?.pitch || 0), bank: round(f?.bank || 0), time: round(f?.time || 0),
+            travelledM: f ? round(worldMeters(distanceBetween(p, f.from))) : 0,
+            bounces: f?.bounces || 0, hits: f?.hits || 0, down: round(p.knockedFor || 0),
+            recovery: round(f?.recovery || 0), pool: !!p.bloodPool,
+            overruns: p.overruns || 0, gameMode,
+          };
+        },
+      };
     }

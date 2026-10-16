@@ -1,0 +1,455 @@
+{
+  "source": {
+    "url": "https://raw.githubusercontent.com/NormanFxxkingRockwell/moframe/aae5834e3ab3139529e1bf8267e449d28e77d915/public/models/ducati/ducati_panigale_v4.glb",
+    "mirrorCommit": "aae5834e3ab3139529e1bf8267e449d28e77d915",
+    "sha256": "83f555ed9ac013feb319c582e0fb2bb09e8094e0f9835f7a616c4796afb92370",
+    "bytes": 18313296,
+    "embeddedCredit": {
+      "author": "ROY (https://sketchfab.com/roy.gearloft.in)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/ducati-panigale-v4-47f87e3d70f644289e34cbff91255d0c",
+      "title": "Ducati Panigale V4"
+    }
+  },
+  "sourceTriangles": 372664,
+  "nearTriangles": 372664,
+  "farTriangles": 25717,
+  "sourceNearGeometryExact": true,
+  "sourceTexturesNativeResolution": true,
+  "changes": "Rigid -Z to +X rotation and ground centering; source-measured animation pivots and rider contacts; separate decimated far LOD; tail cover optical correction. Respray neutralizes red pigment in shader while retaining source lettering.",
+  "protectedPacks": {
+    "vehicle-models.bin": "63908560d08068f6b6df9859b9bb6040ad38028c2a0d9a0268f7d9cd4c2649ae",
+    "approved-vehicle-models.bin": "f21c4d91d34df544ffab87b895551b3ef7712746fd25c394e33738056b71e895"
+  },
+  "model": {
+    "type": "dolcati_roy",
+    "kind": "moto",
+    "title": "Ducati Panigale V4",
+    "author": "ROY",
+    "source": "https://sketchfab.com/3d-models/ducati-panigale-v4-47f87e3d70f644289e34cbff91255d0c",
+    "license": "CC BY 4.0",
+    "dims": [
+      2.221500981409821,
+      1.1937503491263246,
+      0.8127299454804844
+    ],
+    "wheels": [
+      {
+        "x": 0.8065567400127959,
+        "y": 0.30803689532216205,
+        "z": -5.026747148660656e-08,
+        "r": 0.3042242484285433,
+        "width": 0.11885615945095679,
+        "axle": [
+          3.065330753867324e-07,
+          -3.3092402151879696e-09,
+          0.9999999999999531
+        ],
+        "front": true,
+        "side": 1,
+        "sourceNode": "Object_185"
+      },
+      {
+        "x": -0.7615699484010168,
+        "y": 0.3495243495683285,
+        "z": -0.0942903333333334,
+        "r": 0.34969703280949105,
+        "width": 0.21796700000010122,
+        "axle": [
+          -1.578226457020594e-14,
+          -1.7359933022433098e-13,
+          1.0
+        ],
+        "front": false,
+        "side": 1,
+        "sourceNode": "Object_192"
+      }
+    ],
+    "axis": [
+      0.8065567400127959,
+      0.30803689532216205,
+      0.4996295581036171,
+      0.995349889066385
+    ],
+    "rake": 0.4199903784437587,
+    "seat": [
+      -0.2648233873378256,
+      0.8790744291216764
+    ],
+    "seatProof": {
+      "primitive": 6,
+      "node": "Object_14",
+      "material": "hard_plastic_black",
+      "triangle": 1049,
+      "barycentric": [
+        0.17566207720373883,
+        0.5681709323341683,
+        0.2561669904620929
+      ],
+      "driverContact": [
+        -0.2648233873378256,
+        0.8790744291216764,
+        0.0
+      ]
+    },
+    "grips": [
+      [
+        0.4911766126621744,
+        0.9333498890663858,
+        -0.313
+      ],
+      [
+        0.4911766126621744,
+        0.9333498890663858,
+        0.313
+      ]
+    ],
+    "grip": [
+      0.4911766126621744,
+      0.9333498890663858,
+      0.313
+    ],
+    "peg": [
+      -0.12482338733782565,
+      0.4673498890663858,
+      0.152
+    ],
+    "lean": -1.1,
+    "gripProof": {
+      "primitive": 60,
+      "node": "Object_111",
+      "source": "paired rubber handlebar grip axes"
+    },
+    "pegProof": {
+      "primitive": 34,
+      "node": "Object_64",
+      "source": "transverse driver footrest upper contact"
+    },
+    "steeringProof": {
+      "primitive": 59,
+      "node": "Object_109",
+      "method": "source fork-tube XY principal-axis fit",
+      "direction": [
+        -0.4023971761418149,
+        0.9154651891978708
+      ]
+    },
+    "headSteers": false,
+    "x0": -1.1107504907049106,
+    "x1": 1.1107504907049106,
+    "paintTexture": true,
+    "paintColor": "#ffffff",
+    "normalScale": 32767,
+    "sourceTriangles": 372664,
+    "sourceShift": [
+      -0.04482338733782565,
+      0.6453498890663858,
+      0.0
+    ],
+    "sourceUniformScale": 1.0,
+    "roleParts": {
+      "glass": [
+        "glass"
+      ],
+      "glassFar": [
+        "glassFar"
+      ]
+    },
+    "sourceNearGeometry": "All original source triangles, split normals and UVs retained",
+    "sourceWheelPartition": {
+      "front": [
+        92,
+        93,
+        94,
+        95,
+        96,
+        97
+      ],
+      "rear": [
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106
+      ],
+      "fixedSteering": [
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        98
+      ]
+    },
+    "paintUv": [
+      0.7900390625,
+      0.0029296875
+    ],
+    "quant": [
+      -1.1107504907049106,
+      0.0,
+      -0.40636534228857724,
+      2.221500981409821,
+      1.1937503491263246,
+      0.8127299454804844
+    ],
+    "parts": {
+      "trim": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 258823,
+        "triangles": 247429
+      },
+      "trimFar": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 13160,
+        "triangles": 14525
+      },
+      "tail": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 1411,
+        "triangles": 2316
+      },
+      "tailFar": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 91,
+        "triangles": 138
+      },
+      "glass": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 957,
+        "triangles": 1152
+      },
+      "glassFar": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 141,
+        "triangles": 137
+      },
+      "paint": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 9145,
+        "triangles": 13850
+      },
+      "paintFar": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 758,
+        "triangles": 829
+      },
+      "head": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 750,
+        "triangles": 480
+      },
+      "headFar": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 30,
+        "triangles": 28
+      },
+      "steer.trim": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 47383,
+        "triangles": 46355
+      },
+      "steer.trimFar": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 2311,
+        "triangles": 2741
+      },
+      "wheel0.rim": {
+        "origin": [
+          0.8065567400127959,
+          0.30803689532216205,
+          -5.026747148660656e-08
+        ],
+        "vertices": 48666,
+        "triangles": 36936
+      },
+      "wheel0.rimFar": {
+        "origin": [
+          0.8065567400127959,
+          0.30803689532216205,
+          -5.026747148660656e-08
+        ],
+        "vertices": 3573,
+        "triangles": 4432
+      },
+      "wheel0.tyre": {
+        "origin": [
+          0.8065567400127959,
+          0.30803689532216205,
+          -5.026747148660656e-08
+        ],
+        "vertices": 825,
+        "triangles": 1152
+      },
+      "wheel0.tyreFar": {
+        "origin": [
+          0.8065567400127959,
+          0.30803689532216205,
+          -5.026747148660656e-08
+        ],
+        "vertices": 91,
+        "triangles": 138
+      },
+      "wheel1.tyre": {
+        "origin": [
+          -0.7615699484010168,
+          0.3495243495683285,
+          -0.0942903333333334
+        ],
+        "vertices": 873,
+        "triangles": 1152
+      },
+      "wheel1.tyreFar": {
+        "origin": [
+          -0.7615699484010168,
+          0.3495243495683285,
+          -0.0942903333333334
+        ],
+        "vertices": 92,
+        "triangles": 138
+      },
+      "wheel1.rim": {
+        "origin": [
+          -0.7615699484010168,
+          0.3495243495683285,
+          -0.0942903333333334
+        ],
+        "vertices": 24551,
+        "triangles": 21842
+      },
+      "wheel1.rimFar": {
+        "origin": [
+          -0.7615699484010168,
+          0.3495243495683285,
+          -0.0942903333333334
+        ],
+        "vertices": 2048,
+        "triangles": 2611
+      }
+    },
+    "lodParts": {
+      "trim": "trimFar",
+      "tail": "tailFar",
+      "glass": "glassFar",
+      "paint": "paintFar",
+      "head": "headFar",
+      "steer.trim": "steer.trimFar",
+      "wheel0.rim": "wheel0.rimFar",
+      "wheel0.tyre": "wheel0.tyreFar",
+      "wheel1.tyre": "wheel1.tyreFar",
+      "wheel1.rim": "wheel1.rimFar"
+    },
+    "triangles": 372664,
+    "farTriangles": 25717,
+    "rolePanes": {
+      "glass": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "glassFar": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "output": {
+    "dolcati-vehicle-emissive-low.webp": {
+      "bytes": 352176,
+      "sha256": "701029374aacf7a0b200e3c7dc93bdce46164f7ae65c8f42d9ec426d3491877a"
+    },
+    "dolcati-vehicle-orm-low.webp": {
+      "bytes": 88,
+      "sha256": "a2a80a818c60c7973ccc68770600d2062c6ff98f494bcfc804c112949b728024"
+    },
+    "dolcati-vehicle-emissive.webp": {
+      "bytes": 1263372,
+      "sha256": "2720f677fbeafaefccb7b1f20c4c5c57637c6d248b12a9add1c5285ce355edcb"
+    },
+    "dolcati-vehicle-albedo.webp": {
+      "bytes": 1319196,
+      "sha256": "c4a15e9b10e4f3b691cdd54644e1d93cd98efdcfd8d7d07c1d78a8d606d59265"
+    },
+    "dolcati-vehicle-albedo-low.webp": {
+      "bytes": 363906,
+      "sha256": "d2e93a305d6f382c4d429a123b8b43e57339a4f5320584fa29a87003cdd939e5"
+    },
+    "dolcati-vehicle-orm.webp": {
+      "bytes": 220,
+      "sha256": "5f0d4193f8c8990ec766c2ae990aa1ccf4ea438bfd36f98e5fd0a6475b64a875"
+    },
+    "dolcati-vehicle-models.bin": {
+      "bytes": 18026262,
+      "sha256": "82e1c9741210a8a2c39fcb999438f72872603867e89ac0a0c533e367874f3b45"
+    }
+  },
+  "converterSHA256": "c252db9d04e2c5c304ce874ef4fbc96bfa4dff1475d9b65434e7a2cde4f8e6c8",
+  "simplifierSHA256": "f8b157a0b26c107a5f19c81cc4f0724f7d1b8417e321d5119a35eb8ad3cdaf4d"
+}

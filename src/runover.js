@@ -33,7 +33,7 @@
       if (p.dying) return true;
       const e = p.ejected;
       // Thrown clear of a bike or a car and still flying or sliding is not yet "down".
-      if (e && e.phase !== 'down' && (e.rider || e.time < 0.6)) return false;
+      if (e && e.phase !== 'down' && e.phase !== 'recover' && (e.rider || e.time < 0.6)) return false;
       return (p.knockedFor || 0) > 0.55 || p.react?.kind === 'groan' || (p.downed === true && p.state === 'downed');
     }
     /* What a wheel does to someone lying down: harm in hit points, where it landed and the verdict. */
@@ -64,6 +64,9 @@
         byPlayer = source === player,
         mortal = dying || harm.mortal,
         severity = clamp(0.8 + harm.harm / 28, 0.9, 2.3);
+      // Once down, the crush owns the casualty's recovery/death timers. Do not
+      // let the earlier flight stand a maimed or dying person back up.
+      if (person.ejected?.vehicleHit) person.ejected = null;
       person.impactCooldown = 0.9;
       person.carHit = { car: c, at: gameTime, second: true };
       person.overruns = (person.overruns || 0) + 1;
@@ -207,6 +210,7 @@
             hp: +p.hp.toFixed(1),
             dead: p.hp <= 0,
             down: +(p.knockedFor || 0).toFixed(1),
+            flight: p.ejected?.vehicleHit ? { phase: p.ejected.phase, height: +worldMeters(p.ejected.z).toFixed(2), time: +p.ejected.time.toFixed(2) } : null,
             dying: p.dying ? +(p.dying.die - gameTime).toFixed(2) : null,
             conscious: p.dying ? p.dying.conscious : !(p.mutedUntil > gameTime + 5),
             overruns: p.overruns || 0,

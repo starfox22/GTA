@@ -38,12 +38,37 @@ people-and-crowd.md. Tests: pedestrian-awareness, second-run-over.
   (`p.sawPlayerAt` is now set for those who noticed the player's car).
 - Dodge variants live in `updateReaction` ('dodge': `leapV`, `leapFor`, `calm` = a sidestep facing the car).
 
+## First impact and flight (physics-knockdowns.js, riders.js)
+
+- `vehicleImpactState(person, car, speed)` is shared by player `thrown` and NPC
+  `ejected.vehicleHit` (athletes step it from `sportsCheckHarm`, outside the four crowd lists). The existing NPC first-hit damage curve now also applies
+  to the player; both use `fallInjury` / `riderInjury` for later contacts. Impulse
+  follows travel, reduced at a corner, with sideways spill; a low bonnet lifts
+  more than a truck's flat front. Horizontal transfer caps at 150 km/h and lift
+  at 7.8 m/s. `GRAVITY` determines the arc, with substeps capped at 64.
+- Air, bouncing and sliding use the rider solver; `vehicleHit` adds body bank,
+  world-height tracking over uneven ground, an asymmetric protective pose and a
+  1.1 s get-up through bent knees and hands. A stationary car over the casualty
+  delays standing and they crawl out. Inputs resume once the recovery completes.
+- A fatal hit keeps that same flight for NPCs and during the player's WASTED
+  screen; `bodyPool` waits until `down` and forms at the resting position. The
+  normal death, witness, reward and injury paths still apply. No pool travels
+  with a body. Teleport/respawn clears the player's throw as usual.
+- Nudges under 20 km/h preserve the harmless sideways set-down and existing
+  crime threshold. A vehicle cannot treat an airborne casualty as a downed
+  second pass; after settling, `runOverDowned` takes ownership of the casualty's
+  timers and cancels the earlier throw before crushing/maiming them.
+- `vehicle-body-impacts` tests real swept player/NPC contacts, gravity, front
+  height and corner effects, recovery/walking, and fatal flight/landing. Console
+  `vehicleImpactScene`, `vehicleImpactAdvance`, `vehicleImpactState` stage and
+  inspect one bounded pair for deterministic screenshots (docs/console/crowd.md).
+
 ## Running over someone on the ground (runover.js)
 
 - `knockPerson` hands anyone for whom `personOnGround(p)` (alive and knocked down, groaning or
   dying) to `runOverDowned`: at 4 km/h or more, and not the same car again within `RUNOVER_SAME_CAR`
   (2 s: its own first pass). Nothing else of the first-pass code runs for them.
-- Where the first pass leaves them: a hit that hurts (20 km/h and up) throws them ahead of the car; a nudge at
+- Where the first pass leaves them: a hit that hurts (20 km/h and up) launches them along a ballistic arc ahead of the car; a nudge at
   walking pace (no harm, no crime) sets them down beside it, out of its path, so a car that stops and drives on
   does not run them over and turn the accident into a crime (tools/tests/nudge-aside.mjs).
 - `runOverHarm`: `(10 + 0.8 kph) x weight(0.6..2.2 from spec.mass) x zone(legs 0.8, torso 1.05,

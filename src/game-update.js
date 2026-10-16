@@ -9,7 +9,11 @@
       if (active) timed('knockdowns', () => updateKnockdowns(deltaSeconds));
       if (active || gameMode === 'menu') timed('cars', () => updateCars(deltaSeconds, active));
       // A shark's breach plays out while WASTED is on screen (sealife.js).
-      if (gameMode === 'dead') updateSeaLife(deltaSeconds);
+      if (gameMode === 'dead') {
+        updateSeaLife(deltaSeconds);
+        // The body still lands while WASTED is shown after a fatal car strike.
+        if (!active && player.thrown?.vehicleHit) updateThrownPlayer(deltaSeconds);
+      }
       if (active) {
         // Play time, cash earned, wanted peak; the demo card's timer (campaign.js).
         trackCampaignStats(deltaSeconds);

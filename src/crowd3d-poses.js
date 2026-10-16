@@ -17,7 +17,7 @@
         T[J_HIP[1]] = -sway * 0.04;
         T[J_KNEE[sway > 0 ? 1 : 0]] = -0.04 - Math.abs(sway) * 0.1;
         T[J_HEAD_YAW] = Math.sin(t * 0.31 + seed * 2) * Math.max(0, Math.sin(t * 0.13 + seed)) * 0.7;
-        if (p.hp <= 0) {
+        if (p.hp <= 0 && !(spec?.thrown?.vehicleHit || p.ejected?.vehicleHit)) {
           // The dead lie still: none of the idle life above.
           T.fill(0);
           T[J_LOCO] = 0;
@@ -358,6 +358,43 @@
             T[J_KNEE[1]] = -0.2;
             T[J_SPREAD] = 0.15 + flying * 0.15;
             // Falling off a drop (falls-body.js): the arms and legs windmill.
+            const thrown = spec?.thrown || p.ejected;
+            if (thrown?.vehicleHit) {
+              // The passive body pose owns all idle motion, including a corpse
+              // whose flight state is frozen once it rests on the road.
+              T[J_HEAD_YAW] = 0;
+              T[J_ROLL] = 0;
+              T[J_LEAN] = 0;
+              // A fast bumper strike is an asymmetric protective reflex: loose
+              // limbs at take-off, knees gathered as the torso rotates, hands
+              // bracing before touchdown. This uses the physics clock so a held
+              // screenshot has exactly the pose of its airborne state.
+              const air = thrown.phase === 'air',
+                moving = air || thrown.phase === 'slide',
+                life = p.hp > 0 ? 1 : 0.25,
+                w = moving ? Math.sin(thrown.time * 8 + seed) * life : 0,
+                tuck = moving ? 0.5 + 0.5 * Math.sin(thrown.pitch * 0.8) : 0,
+                brace = air && thrown.vz < 0 ? clamp(1 - thrown.z / (2.3 * UNITS_PER_METRE), 0, 1) * life : 0;
+              setArm(T, 0, 1.1 + tuck * 0.75 + brace * 0.8 + w * 0.18, 0.6 + tuck * 0.25, 0.45 + tuck * 0.65);
+              setArm(T, 1, 1.65 - tuck * 0.3 + brace * 0.7 - w * 0.25, 0.85 - tuck * 0.25, 0.3 + tuck * 0.5);
+              T[J_HIP[0]] = 0.2 + tuck * 0.9 + w * 0.16;
+              T[J_HIP[1]] = -0.15 + tuck * 0.55 - w * 0.18;
+              T[J_KNEE[0]] = -0.25 - tuck * 0.95;
+              T[J_KNEE[1]] = -0.2 - tuck * 0.65;
+              T[J_HEAD_PITCH] = moving ? 0.18 + tuck * 0.18 : 0.08;
+              T[J_SPREAD] = 0.18 + (1 - tuck) * 0.14;
+              if (thrown.phase === 'recover') {
+                const r = thrown.recovery || 0, effort = Math.sin(r * Math.PI);
+                setArm(T, 0, 1.6 * (1 - r), 0.45 * (1 - r), 0.5 + effort * 0.9);
+                setArm(T, 1, 1.1 * (1 - r), 0.65 * (1 - r), 0.35 + effort * 0.8);
+                T[J_HIP[0]] = 1.3 * effort;
+                T[J_HIP[1]] = 0.6 * effort;
+                T[J_KNEE[0]] = -1.65 * effort;
+                T[J_KNEE[1]] = -1.2 * effort;
+                T[J_LEAN] = -0.32 * effort;
+                T[J_HEAD_PITCH] = 0.25 * effort;
+              }
+            }
             if (spec?.thrown?.flail) {
               const w = Math.sin(t * 10 + seed);
               setArm(T, 0, 2.3 + w * 0.5, 0.9 - w * 0.3, 0.5);

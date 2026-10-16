@@ -186,6 +186,9 @@
 
     function sportsCheckHarm(match, deltaSeconds) {
       for (const person of match.people) {
+        // Athletes live outside the crowd's four lists, but a vehicle strike
+        // must still carry them through the shared flight, even when fatal.
+        if (person.ejected?.vehicleHit && (person.hp > 0 || person.ejected.phase !== 'down')) stepRiderEjection(person, person.ejected, deltaSeconds);
         if (person.knockedFor > 0) person.knockedFor = Math.max(0, person.knockedFor - deltaSeconds);
         if (person.impactCooldown > 0) person.impactCooldown = Math.max(0, person.impactCooldown - deltaSeconds);
         const hurt = person.hp < person.lastHp - 0.01,

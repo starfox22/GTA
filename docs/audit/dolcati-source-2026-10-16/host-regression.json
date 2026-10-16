@@ -1,0 +1,48 @@
+{
+  "passed": true,
+  "assertions": 184,
+  "notes": [
+    {
+      "sourceTriangles": 372664,
+      "farTriangles": 25717,
+      "sharedLodPairs": 10,
+      "maxWobble": 5.551115123125783e-17,
+      "tyreRadii": [
+        0.28895470655018657,
+        0.3321451331341573
+      ],
+      "closeBudget": {
+        "calls": 11,
+        "triangles": 372676
+      },
+      "trafficBudget": {
+        "calls": 11,
+        "triangles": 25729
+      }
+    },
+    {
+      "riderHeight": 1.65,
+      "maxTargetError": 0,
+      "maxWristError": 0.3413720407793105,
+      "maxRestWristError": 0,
+      "maxBoneError": 6.217248937900877e-15,
+      "formerSteeringGap": 1.0904169221705413
+    },
+    {
+      "riderHeight": 1.8,
+      "maxTargetError": 0,
+      "maxWristError": 0,
+      "maxRestWristError": 0,
+      "maxBoneError": 7.105427357601002e-15,
+      "formerSteeringGap": 1.0904169221705413
+    },
+    {
+      "riderHeight": 1.9,
+      "maxTargetError": 0,
+      "maxWristError": 0,
+      "maxRestWristError": 0,
+      "maxBoneError": 7.549516567451064e-15,
+      "formerSteeringGap": 1.0904169221705413
+    }
+  ]
+}

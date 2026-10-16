@@ -15,14 +15,15 @@
       const APPROVED_MOTO_MODELS = { bike: 'm2_sport', kr500: 'm1_enduro' };
       function motoAssetKit(type, l) {
         const approvedKey = APPROVED_MOTO_MODELS[type],
-          approved = approvedKey && typeof approvedVehicleModel === 'function' ? approvedVehicleModel(approvedKey) : null,
-          data = approved ? approvedVehicleData() : vaData(),
+          dolcati = type === 'dolcati' && typeof dolcatiVehicleModel === 'function' ? dolcatiVehicleModel() : null,
+          approved = dolcati || (approvedKey && typeof approvedVehicleModel === 'function' ? approvedVehicleModel(approvedKey) : null),
+          data = dolcati ? dolcatiVehicleData() : approved ? approvedVehicleData() : vaData(),
           model = approved || data.header.models[type],
           key = model.type + ':' + l.toFixed(2);
         if (motoAssetKits.has(key)) return motoAssetKits.get(key);
         const lodGeometries = new Map(),
           geometry = (name, uvAt) => {
-            const load = part => approved ? approvedVehicleGeometry(model, part, k, uvAt) : vaGeometry(model, data, part, k, uvAt),
+            const load = part => approved && !dolcati ? approvedVehicleGeometry(model, part, k, uvAt) : vaGeometry(model, data, part, k, uvAt),
               near = load(name),
               farName = approved && model.lodParts?.[name],
               far = farName ? load(farName) : null;
@@ -62,6 +63,7 @@
         const kit = {
           model,
           approved: !!approved,
+          dolcati: !!dolcati,
           lodGeometries,
           headSteers: model.headSteers !== false,
           k,
@@ -101,9 +103,9 @@
           knee: [(hip[0] + px) / 2 + 0.16, (hip[1] + py) / 2 + 0.1],
           foot: [px, py],
           head: shoulder[1] + 0.2,
-          suit: '#23272c',
-          accent: '#8a9098',
-          helmet: '#16181b',
+          suit: dolcati ? '#c8102e' : '#23272c',
+          accent: dolcati ? '#f0f0ec' : '#8a9098',
+          helmet: dolcati ? '#c8102e' : '#16181b',
           visor: '#2c3b4a',
         };
         kit.pegZ = pz;
@@ -125,8 +127,8 @@
           kit = motoAssetKit(type, spec.l),
           k = kit.k,
           materials = civSharedMaterials(),
-          assetMaterials = kit.approved ? approvedVehicleMaterials(kit.model) : vaMaterials(),
-          lampMaterials = civLampSet(),
+          assetMaterials = kit.dolcati ? dolcatiVehicleMaterials() : kit.approved ? approvedVehicleMaterials(kit.model) : vaMaterials(),
+          lampMaterials = kit.dolcati ? dolcatiVehicleLamps() : civLampSet(),
           model = specialVehicle(vehicle),
           b = model.body;
         model.bike = true;
@@ -135,7 +137,7 @@
         model.bicycle = !!kit.crank;
         model.asset = kit.model.title;
         model.badge = null;
-        model.paint = kit.approved ? approvedVehiclePaint(vehicle, kit.model) :
+        model.paint = kit.dolcati ? dolcatiVehiclePaint(vehicle) : kit.approved ? approvedVehiclePaint(vehicle, kit.model) :
           new Three.MeshPhysicalMaterial({ color: vehicle.color, roughness: 0.26, metalness: 0.1, clearcoat: 1, clearcoatRoughness: 0.05 });
         if (kit.approved) {
           model.approvedAsset = kit.model.type;
@@ -198,11 +200,11 @@
           tail = add(kit.tail, lampMaterials.tailOff, b);
         if (head) {
           head.castShadow = false;
-          model.lamps.push({ mesh: head, key: 'headLeft', lit: lampMaterials.headOff, kind: 'head' });
+          model.lamps.push({ mesh: head, key: 'headLeft', lit: lampMaterials.headOff, kind: 'head', materials: lampMaterials });
         }
         if (tail) {
           tail.castShadow = false;
-          model.lamps.push({ mesh: tail, key: 'tailLeft', lit: lampMaterials.tailOff, kind: 'tail' });
+          model.lamps.push({ mesh: tail, key: 'tailLeft', lit: lampMaterials.tailOff, kind: 'tail', materials: lampMaterials });
         }
         model.lampOut = [!head || !!vehicle.damage?.lights?.headLeft, !tail || !!vehicle.damage?.lights?.tailLeft];
         // Head and tail glow, in the [head, tail] order the halo pass expects.
@@ -253,7 +255,12 @@
           bias = activeTier ? activeTier.lodBias : 1,
           zoom = chaseViewActive ? chaseZoomAt(c.x, c.y) : viewZoom,
           pinned = c.damage?.marks?.length > 0 || c.dents?.length > 0,
-          far = c !== player.car && !pinned && zoom < MOTO_ASSET_LOD_ZOOM * bias * (lod.isFar ? 1.1 : 0.9);
+          // The full source Dolcati is a hero mesh. Unoccupied traffic receives it
+          // only at close inspection distance on High/Ultra; the reduced shared
+          // source mesh serves the rest of the city. Damage keeps its pinned faces.
+          heroFar = m.approvedAsset === 'dolcati_roy' &&
+            (bias > 1.05 || Math.hypot(c.x - player.x, c.y - player.y) > CAR_M * (lod.isFar ? 7 : 9)),
+          far = c !== player.car && !pinned && (heroFar || zoom < MOTO_ASSET_LOD_ZOOM * bias * (lod.isFar ? 1.1 : 0.9));
         if (far === lod.isFar) return;
         lod.isFar = far;
         for (const part of lod.pairs) part.mesh.geometry = far ? part.far : part.near;
