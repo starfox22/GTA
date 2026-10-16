@@ -85,10 +85,17 @@
         case 'jump':
           return foot ? touchButtonLabel('touchUp') : null;
         case 'ascend':
-          // On a two-wheeler the steering stick pushed up is the climb (a wheelie, mobile.js).
-          return air ? touchButtonLabel('touchUp') : c && vehicleSpec(c).bike ? 'STEER ↑' : 'RISE';
+          return air ? touchButtonLabel('touchUp') : 'RISE';
         case 'descend':
           return air ? touchButtonLabel('touchDown') : 'DESCEND';
+        case 'wheelieUp':
+          return c && vehicleSpec(c).bike ? 'STEER ↑' : null;
+        case 'wheelieDown':
+          return c && vehicleSpec(c).bike ? 'STEER ↓' : null;
+        case 'chuteGlide':
+          return chute ? touchButtonLabel('touchGo') : null;
+        case 'chuteFlare':
+          return chute ? touchButtonLabel('touchBrake') : null;
         case 'bail':
           return air || chute ? touchButtonLabel('touchJump') : null;
         case 'reload':
@@ -140,7 +147,7 @@
     }
     /* What the tests and the console see: the device and a sample of names. */
     function inputHintsReport() {
-      const sample = ['interact', 'forward', 'back', 'fire', 'bail', 'map', 'radioPower', 'radioNext', 'reload', 'walk'];
+      const sample = ['interact', 'forward', 'back', 'wheelieUp', 'wheelieDown', 'fire', 'bail', 'map', 'radioPower', 'radioNext', 'reload', 'walk'];
       return {
         device: hintDevice(),
         forced: hintInput.forced,

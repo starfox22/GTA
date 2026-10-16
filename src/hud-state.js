@@ -415,7 +415,7 @@
       cover: [['move', 'WALK'], ['walk', 'RUN'], ['interact', 'INTERACT'], ['help', 'CONTROLS']],
       car: [['move', 'DRIVE'], ['handbrake', 'HANDBRAKE'], ['interact', 'EXIT'], ['radioNext', 'STATION'], ['help', 'CONTROLS']],
       bike: [['forward', 'PEDAL'], ['sprint', 'STAND'], ['wheelie', 'LIFT'], ['wheelieDown', 'LOWER'], ['interact', 'EXIT']],
-      // A motorbike: throttle and climb together lift the front (wheelie.js).
+      // A motorbike: throttle plus rearward weight lifts; forward weight stays off the brake.
       moto: [['move', 'RIDE'], ['wheelie', 'LIFT'], ['wheelieDown', 'LOWER'], ['interact', 'EXIT'], ['radioNext', 'STATION']],
       boat: [['move', 'STEER'], ['handbrake', 'SLOW'], ['bail', 'DIVE'], ['interact', 'EXIT']],
       heli: [['ascend', 'RISE'], ['descend', 'DESCEND'], ['move', 'FLY'], ['bail', 'BAIL OUT']],
@@ -428,8 +428,7 @@
       coaster: [['interact', 'VIEW']],
     };
     function hintKey(id) {
-      if (id === 'wheelie') return keyName('forward') + '+' + keyName('ascend');
-      if (id === 'wheelieDown') return wheelieLowerKeyName();
+      if (id === 'wheelie') return keyName('forward') + '+' + keyName('wheelieUp');
       return id === 'move' ? moveKeysName() : keyName(id);
     }
     function renderQuickKeys() {
@@ -440,8 +439,6 @@
       const strip = getElement('quickKeys');
       strip.replaceChildren();
       for (const [id, label] of QUICK_KEYS[context]) {
-        // No wheelie from the touch controls (their up button is the handbrake on the road).
-        if (id === 'wheelie' && hintDevice() === 'touch') continue;
         const item = document.createElement('span'),
           key = document.createElement('kbd');
         key.textContent = hintKey(id) === '/' ? '?' : hintKey(id);

@@ -51,6 +51,15 @@ export default async function (t) {
     pad = await t.call('gamepadFeed', { buttons: { RT: 1 } });
     t.assert(pad.mode === 'play:drive' && pad.held.includes('KeyW'), 'RT does not hold the throttle: ' + JSON.stringify(pad));
     await t.call('gamepadFeed', null);
+    // Rider weight has its own inputs, independent of the throttle and brake.
+    await t.call('drive', 'bike');
+    h = await t.call('inputHints', 'gamepad');
+    t.assert(h.names.wheelieUp === 'L-STICK ↑' && h.names.wheelieDown === 'L-STICK ↓', 'gamepad rider weight: ' + JSON.stringify(h.names));
+    pad = await t.call('gamepadFeed', { axes: [0, 1, 0, 0], buttons: { RT: 1 } });
+    t.assert(pad.held.includes('ArrowDown') && pad.held.includes('KeyW') && !pad.held.includes('KeyS'), 'forward weight changed the pedals: ' + JSON.stringify(pad));
+    await t.call('gamepadFeed', null);
+    h = await t.call('inputHints', 'touch');
+    t.assert(h.names.wheelieUp === 'STEER ↑' && h.names.wheelieDown === 'STEER ↓', 'touch rider weight: ' + JSON.stringify(h.names));
     h = await t.call('inputHints', 'keyboard');
     t.assert(h.names.radioPower === 'N' && /^N · /.test(h.radioChip), 'keyboard radio chip: ' + h.radioChip);
     await t.call('inputHints', 'auto');

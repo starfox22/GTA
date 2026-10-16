@@ -13,7 +13,7 @@ export default async function (t) {
     let w = await t.call('wheelieState');
     let line = hintLine(await t.call('notices'));
     t.assert(w.hint.shown === 1 && line, 'no hint on the first motorbike: ' + JSON.stringify(w.hint));
-    t.assert(line.text === 'WHEELIE · HOLD W + ↑ to lift the front · ↓ to lower', 'keyboard hint: ' + line.text);
+    t.assert(line.text === 'WHEELIE · HOLD W + ↑ while moving · ↓ weight forward', 'keyboard hint: ' + line.text);
     // Let it run out, then a car: nothing.
     await t.wait(8);
     t.assert(!hintLine(await t.call('notices')), 'the hint never ran out');
@@ -28,12 +28,12 @@ export default async function (t) {
     await t.call('inputHints', 'gamepad');
     await t.call('drive', 'yamasaki');
     line = hintLine(await t.call('notices'));
-    t.assert(line && line.text === 'WHEELIE · HOLD RT + L-STICK ↑ to lift the front · LT to lower', 'gamepad hint: ' + JSON.stringify(line));
+    t.assert(line && line.text === 'WHEELIE · HOLD RT + L-STICK ↑ while moving · L-STICK ↓ weight forward', 'gamepad hint: ' + JSON.stringify(line));
     await t.wait(8);
     await t.call('inputHints', 'touch');
     await t.call('drive', 'dolcati');
     line = hintLine(await t.call('notices'));
-    t.assert(line && line.text === 'WHEELIE · HOLD GAS + STEER ↑ to lift the front · BRAKE to lower', 'touch hint: ' + JSON.stringify(line));
+    t.assert(line && line.text === 'WHEELIE · HOLD GAS + STEER ↑ while moving · STEER ↓ weight forward', 'touch hint: ' + JSON.stringify(line));
     await t.wait(8);
     // Three a session.
     await t.call('inputHints', 'keyboard');

@@ -86,7 +86,7 @@
           k = canopy ? p.phaseK : 0,
           flying = phase === 'open',
           // Brakes stay stowed until the canopy flies; the last few metres a jumper flares whether or not you ask.
-          flareInput = flying && actionHeld('back') ? 1 : 0,
+          flareInput = flying && (actionHeld('back') || actionHeld('chuteFlare')) ? 1 : 0,
           autoFlare = flying ? smooth01(40, 12, agl) : 0;
         chuteRig.turn += (turnInput - chuteRig.turn) * (1 - Math.exp(-dt * 4));
         chuteRig.flare += (Math.max(flareInput, autoFlare) - chuteRig.flare) * (1 - Math.exp(-dt * 5));
@@ -121,7 +121,7 @@
             trail = Math.atan2(along, fall) * (1 - opening),
             rollTarget = chuteRig.turn * 0.5 * opening,
             pitchTarget =
-              trail + (chuteRig.flare * 0.14 - (flying && actionHeld('forward') ? 0.08 : 0)) * opening - (chuteRig.accel / GRAVITY) * 0.45 * opening;
+              trail + (chuteRig.flare * 0.14 - (flying && (actionHeld('forward') || actionHeld('chuteGlide')) ? 0.08 : 0)) * opening - (chuteRig.accel / GRAVITY) * 0.45 * opening;
           chuteRig.rollRate += ((rollTarget - chuteRig.roll) * 9 - chuteRig.rollRate * 3.2) * dt;
           // About a 3 s swing, lightly damped: the surge rocks the jumper through a couple of swings.
           chuteRig.pitchRate += ((pitchTarget - chuteRig.pitch) * 4.4 - chuteRig.pitchRate * 1.5) * dt;

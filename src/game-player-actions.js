@@ -490,14 +490,14 @@
         else if (c.type === 'bicycle')
           tell(
             'CITY CYCLE · HOLD ' + keyName('forward') + ' to pedal · ' + keyName('sprint') + ' stand on the pedals · ' +
-              keyName('back') + ' brake · ' + keyName('forward') + '+' + keyName('ascend') + ' wheelie',
+              keyName('back') + ' brake · ' + keyName('wheelieUp') + ' lean back · ' + keyName('wheelieDown') + ' lean forward',
             6,
           );
         else if (vehicleSpec(c).bike) {
-          // A motorbike: the throttle and the climb key together pull a wheelie (wheelie.js).
+          // Rider weight and the throttle/brake have separate actions.
           tell(
             vehicleSpec(c).name + ' · ' + keyName('forward') + ' throttle · ' + keyName('left') + '/' + keyName('right') +
-              ' steer · ' + keyName('forward') + '+' + keyName('ascend') + ' wheelie',
+              ' steer · ' + keyName('wheelieUp') + ' lean back · ' + keyName('wheelieDown') + ' lean forward',
             4,
           );
           // The first rides spell the wheelie out (wheelie.js WHEELIE HINT).

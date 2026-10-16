@@ -16,14 +16,25 @@ navigation.js (big map, GPS), cycles.js (bike share), src/shell.html + src/ui/* 
   `handbrake` in a vehicle, `rockets` in the air; each has its own virtual code, `Jump`, `Space`,
   `RocketSalvo`, so readers check the context themselves and a jump is taken on the press's edge,
   player-jump.js). Space no longer fires on foot (there was no other use for it).
-  `overrides` lets an air action take a key from movement in the `air`
+  `overrides` lets an air action take a custom shared key from movement in the `air`
   context (`ascend` / `descend` on the arrows); `controlConflicts()` knows that pair.
-  `overrideCtx` limits where it takes over: `ascend` and `descend` are also `drive` actions
-  for wheelies, but on the road ↑ / ↓ keep their forward / brake actions too. W + ↑ lifts;
-  ↓ lowers a two-wheeler with brake priority even while W is held. ↑ alone remains throttle.
-  The pad's stick-up in a vehicle is `ascend`; LT or touch BRAKE lowers. The HUD strip has
-  a `moto` context and `wheelie` / `wheelieDown` pseudo-keys for LIFT / LOWER. The lift chord
-  uses the current forward + ascend names; lowering names descend on keys, back on pad/touch.
+- Forward/back default to W/S alone. Only saved exact `[KeyW, ArrowUp]` and
+  `[KeyS, ArrowDown]` defaults migrate; custom primary/secondary keys and unbound slots remain.
+  Vehicles has visible, independently remappable `wheelieUp` / `wheelieDown` actions,
+  default ↑ / ↓, with unique virtual codes `WheelieUp` / `WheelieDown`. They shift rider
+  weight back/forward without operating either pedal. `wheelieHeld()` gives rearward
+  weight, with forward weight winning when both are held; `wheelieLowerHeld()` reads
+  forward weight alone. The pitch solver combines rider weight with actual throttle/braking.
+  Aircraft climb/descend keep ↑/T and ↓/G; canopy `chuteGlide` / `chuteFlare` keep the
+  arrows through `ChuteGlide` / `ChuteFlare`, while W/S also glide/flare. These contextual
+  actions appear in Aircraft & Parachute. Their distinct virtual codes never become
+  legacy arrow movement entries.
+  A pad's stick up/down and a two-wheeler's touch steering stick up/down shift weight;
+  RT/LT or GAS/BRAKE remain independent. Settings and the help card list both rider
+  actions under Vehicles. The bike/moto HUD names the current throttle + rearward-weight
+  chord for LIFT, and the separate forward-weight action for LOWER, including on touch.
+  `wheelie-bindings` covers migration, custom bindings, physical keys, pad/touch inputs,
+  canopy/aircraft contexts and actual settings/help rendering without a browser.
 - Menu keys (Escape, Enter, the map's arrows / + / − / 0 / C) are fixed.
 - Left fire and right aim/secondary fire release independently. Focus loss clears keys and
   both buttons. Successful modal/menu/travel entry clears both; rejected entry leaves live

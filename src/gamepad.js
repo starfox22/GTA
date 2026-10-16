@@ -38,8 +38,8 @@
     /* The left stick's four ways, per context (null: that way does nothing there). */
     const PAD_STICK = {
       foot: { up: 'forward', down: 'back', left: 'left', right: 'right' },
-      // The stick pushed up, with the throttle trigger: a wheelie on a two-wheeler (wheelie.js).
-      drive: { up: 'ascend', down: null, left: 'left', right: 'right' },
+      // Rider weight is independent of RT throttle / LT brake on a two-wheeler.
+      drive: { up: 'wheelieUp', down: 'wheelieDown', left: 'left', right: 'right' },
       air: { up: 'ascend', down: 'descend', left: 'left', right: 'right' },
       chute: { up: null, down: null, left: 'left', right: 'right' },
     };
@@ -321,6 +321,8 @@
     function gamepadKeyName(id) {
       const context = controlContext(),
         ways = PAD_STICK[context];
+      if (context === 'chute' && id === 'chuteGlide') id = 'forward';
+      if (context === 'chute' && id === 'chuteFlare') id = 'back';
       for (const way of ['up', 'down', 'left', 'right']) if (ways[way] === id) return PAD_STICK_NAMES[way];
       // In the chase view on foot LT aims: a gentle push of the stick walks.
       if (id === 'walk' && context === 'foot' && chaseCameraLive()) return 'L-STICK (LIGHT)';

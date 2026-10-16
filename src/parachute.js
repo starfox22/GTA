@@ -192,7 +192,7 @@
     }
     // The canopy's settled descent rate for the brakes held: flared, trimmed, risers pulled.
     function parachuteSinkRate() {
-      return (actionHeld('back') ? 2.1 : actionHeld('forward') ? 4.2 : 3.5) * UNITS_PER_METRE;
+      return (actionHeld('back') || actionHeld('chuteFlare') ? 2.1 : actionHeld('forward') || actionHeld('chuteGlide') ? 4.2 : 3.5) * UNITS_PER_METRE;
     }
     /* Height the canopy still needs (map units), stepping the deployment on from
        `deploy` seconds after a pull at `pullRate` (a pull now if still packed),
@@ -339,8 +339,8 @@
       if (!actionHeld('bail')) p.armed = true;
       else if (p.armed && p.stage === 'freefall') deployParachute();
       const turn = (actionHeld('right') ? 1 : 0) - (actionHeld('left') ? 1 : 0),
-        fast = actionHeld('forward'),
-        flare = actionHeld('back'),
+        fast = actionHeld('forward') || actionHeld('chuteGlide'),
+        flare = actionHeld('back') || actionHeld('chuteFlare'),
         canopy = p.stage === 'canopy',
         rate = parachuteSinkRate();
       // The deployment runs on from the pull (DEPLOYMENT); `area` is the drag it gives.

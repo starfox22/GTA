@@ -26,9 +26,9 @@
      * action lists the contexts it is used in (foot, drive, air, chute); two
      * actions conflict only when their contexts overlap. The settings screen
      * warns about a conflict and offers to swap the two keys. The exception is
-     * an action that `overrides` another: climb and descend share the arrows
-     * with forward and back, and win inside their own context (controlContext()),
-     * so in an aircraft ↑ / ↓ climb and descend while W / S keep the throttle.
+     * an action that `overrides` another: climb and descend win over a custom
+     * throttle binding inside an aircraft. Arrow keys have separate rider,
+     * aircraft and canopy actions; W / S keep acceleration and braking separate.
      *
      * Menu keys are fixed and not listed here: Escape (pause / back), Enter
      * (accept), and inside the city map the arrows, + / −, 0 and C.
@@ -46,11 +46,11 @@
     /* id, label, note (one line of help), group, default keys (the first is the
        action's virtual code unless `code` names it), contexts, and `overrides`:
        another action this one replaces on a shared key inside its own contexts
-       (so ↑ is forward on foot and in a car, but climb in an aircraft). Order is
+       (so a custom ↑ throttle binding still climbs in an aircraft). Order is
        the order on the settings screen. */
     const CONTROL_ACTIONS = [
-      { id: 'forward', label: 'Forward', note: 'Walk, accelerate, pedal, fly forward, add throttle', group: 'move', keys: ['KeyW', 'ArrowUp'], ctx: EVERYWHERE },
-      { id: 'back', label: 'Back / brake', note: 'Walk back, brake and reverse, cut throttle, flare the canopy', group: 'move', keys: ['KeyS', 'ArrowDown'], ctx: EVERYWHERE },
+      { id: 'forward', label: 'Forward', note: 'Walk, accelerate, pedal, fly forward, add throttle (default W)', group: 'move', keys: ['KeyW'], ctx: EVERYWHERE },
+      { id: 'back', label: 'Back / brake', note: 'Walk back, brake and reverse, cut throttle, flare the canopy (default S)', group: 'move', keys: ['KeyS'], ctx: EVERYWHERE },
       { id: 'left', label: 'Left', note: 'Walk or steer left, bank or turn left', group: 'move', keys: ['KeyA', 'ArrowLeft'], ctx: EVERYWHERE },
       { id: 'right', label: 'Right', note: 'Walk or steer right, bank or turn right', group: 'move', keys: ['KeyD', 'ArrowRight'], ctx: EVERYWHERE },
       // On foot the player runs; Shift held walks (game.js footPace). Its virtual
@@ -64,6 +64,9 @@
       // Space is the handbrake's, and the two may be bound apart. The id 'handbrake' keeps saved bindings.
       { id: 'jump', label: 'Jump', note: 'On foot: hop over low walls, railings, benches and fences (run at them to clear the higher ones)', group: 'move', code: 'Jump', keys: ['Space'], ctx: ['foot'] },
       { id: 'handbrake', label: 'Handbrake', note: 'Handbrake in a vehicle (slow down in a boat)', group: 'vehicle', keys: ['Space'], ctx: ['drive'] },
+      // Unique virtual codes keep rider weight separate from legacy movement-key readers.
+      { id: 'wheelieUp', label: 'Wheelie up / lean back', note: 'Motorbike or bicycle: shift your weight back to lift the front; accelerate separately with Forward (default W)', group: 'vehicle', code: 'WheelieUp', keys: ['ArrowUp'], ctx: ['drive'] },
+      { id: 'wheelieDown', label: 'Wheelie down / lean forward', note: 'Motorbike or bicycle: shift your weight forward to lower the front; acceleration and braking stay on Forward / Back (default W / S)', group: 'vehicle', code: 'WheelieDown', keys: ['ArrowDown'], ctx: ['drive'] },
       { id: 'poison', label: 'Spike the drink', note: 'Mission 2: poison the reserved drink', group: 'combat', keys: ['KeyP'], ctx: ['foot'] },
       { id: 'horn', label: 'Horn', note: 'Sound the horn', group: 'vehicle', keys: ['KeyH'], ctx: ['drive'] },
       // The chase camera's look behind (chase-camera.js): held, the view cuts to behind the vehicle.
@@ -75,12 +78,11 @@
       // A passenger is on foot as far as contexts go (controlContext()).
       { id: 'skipRide', label: 'Skip the ride', note: 'Riding a cab, a train or the liner: fade out and arrive (the cab fare is charged)', group: 'vehicle', keys: ['KeyY'], ctx: ['foot'] },
       { id: 'skipStop', label: 'Skip to another stop', note: 'On a train: choose the station the skip takes you to', group: 'vehicle', keys: ['KeyU'], ctx: ['foot'] },
-      // The arrows climb and descend in an aircraft (they take over from forward /
-      // back there, `overrides`); T / G stay as second keys and as the virtual codes.
-      // On a motorbike or a bicycle the climb key, held with the throttle, pulls a
-      // wheelie (wheelieHeld); there it does not take over from forward (`overrideCtx`).
-      { id: 'ascend', label: 'Climb / wheelie', note: 'Helicopter rise and take off · plane nose up · on a motorbike or bicycle, hold with the throttle to lift the front wheel', group: 'air', code: 'KeyT', keys: ['ArrowUp', 'KeyT'], ctx: ['air', 'drive'], overrides: 'forward', overrideCtx: ['air'] },
-      { id: 'descend', label: 'Descend / lower front', note: 'Helicopter descend and land · plane nose down · on a motorbike or bicycle, lower the front wheel with the rear brake', group: 'air', code: 'KeyG', keys: ['ArrowDown', 'KeyG'], ctx: ['air', 'drive'], overrides: 'back', overrideCtx: ['air'] },
+      // Aircraft and canopy arrows stay independent of rider-weight controls.
+      { id: 'ascend', label: 'Climb', note: 'Helicopter rise and take off · plane nose up', group: 'air', code: 'KeyT', keys: ['ArrowUp', 'KeyT'], ctx: ['air'], overrides: 'forward' },
+      { id: 'descend', label: 'Descend', note: 'Helicopter descend and land · plane nose down', group: 'air', code: 'KeyG', keys: ['ArrowDown', 'KeyG'], ctx: ['air'], overrides: 'back' },
+      { id: 'chuteGlide', label: 'Parachute glide / track', note: 'Freefall: track forward · canopy: glide faster (Forward also works)', group: 'air', code: 'ChuteGlide', keys: ['ArrowUp'], ctx: ['chute'], overrides: 'forward' },
+      { id: 'chuteFlare', label: 'Parachute flare', note: 'Slow the canopy for landing (Back also works)', group: 'air', code: 'ChuteFlare', keys: ['ArrowDown'], ctx: ['chute'], overrides: 'back' },
       { id: 'flapsDown', label: 'Flaps down', note: 'Plane: extend the flaps a notch (UP, 1, 2, FULL) for take-off and landing', group: 'air', keys: ['KeyX'], ctx: ['air'] },
       { id: 'flapsUp', label: 'Flaps up', note: 'Plane: retract the flaps a notch', group: 'air', keys: ['KeyZ'], ctx: ['air'] },
       { id: 'gear', label: 'Landing gear', note: 'Plane: raise or lower the landing gear (it cannot retract on the ground)', group: 'air', keys: ['KeyL'], ctx: ['air'] },
@@ -123,7 +125,7 @@
       // Physical code -> ids of the actions bound to it.
       controlIndex = new Map();
     // Physical keys currently down, so releasing one of two keys bound to the same
-    // action (W and the up arrow) does not let go of the action.
+    // action does not let go of the action.
     const physicalKeysDown = new Set();
     function defaultBindings() {
       return Object.fromEntries(CONTROL_ACTIONS.map((a) => [a.id, [a.keys[0] || null, a.keys[1] || null]]));
@@ -140,6 +142,13 @@
             if (Array.isArray(slots))
               controlBindings[a.id] = [0, 1].map((i) => (validKeyCode(slots[i]) ? slots[i] : null));
           }
+        // Only the exact old movement defaults lose their arrow key. A custom
+        // primary, secondary, reversed order or explicitly unbound slot is kept.
+        for (const [id, primary, arrow] of [['forward', 'KeyW', 'ArrowUp'], ['back', 'KeyS', 'ArrowDown']]) {
+          const slots = saved?.[id];
+          if (Array.isArray(slots) && slots.length === 2 && slots[0] === primary && slots[1] === arrow)
+            controlBindings[id] = [primary, null];
+        }
         // Saved before the arrows became climb / descend (30.x): a pair still on the
         // old T / G defaults moves to the new ones. Likewise walk, once C before
         // running became the default and Shift the walk key.
@@ -189,22 +198,13 @@
     function actionHeld(id) {
       return !!keys[actionCode(id)];
     }
-    /* The wheelie (wheelie.js): the climb action held together with the throttle
-       held by something that is not one of climb's own keys. With the default
-       keys ↑ is both forward and climb on the road, so W + ↑ lifts the front and
-       ↑ alone (riding on the arrows) is only the throttle; a pad's trigger or a
-       test holding the virtual code counts as its own throttle. */
+    // Rider weight only: the pitch solver combines this with engine/pedal force.
+    // Forward weight wins when both weight controls are held; neither operates a pedal.
     function wheelieHeld() {
-      if (!actionHeld('ascend') || !actionHeld('forward') || wheelieLowerHeld()) return false;
-      const climbKeys = controlBindings.ascend,
-        throttleKeys = controlBindings.forward.filter(Boolean);
-      if (!throttleKeys.some((k) => physicalKeysDown.has(k))) return true;
-      return throttleKeys.some((k) => physicalKeysDown.has(k) && !climbKeys.includes(k));
+      return actionHeld('wheelieUp') && !wheelieLowerHeld();
     }
-    // Lowering has priority over the throttle on a two-wheeler, including while W is still held.
     function wheelieLowerHeld() {
-      return actionHeld('descend') || actionHeld('back') ||
-        (actionHeld('handbrake') && (player.car?.wheelie || 0) > 0.005);
+      return actionHeld('wheelieDown');
     }
     /* Keydown: remember the physical key and return the actions it drives. The
        caller decides (by game mode) whether they become held in `keys`. */
@@ -233,7 +233,7 @@
      * KEY NAMES
      * keyLabel('ShiftLeft') -> 'L-SHIFT'; keyName('ascend') -> '↑' (the first bound
      * key, for prompts and help; the touch or gamepad button while that device
-     * is in use, input-hints.js); keyNames('forward') -> 'W / ↑' (always keys).
+     * is in use, input-hints.js); keyNames('forward') -> 'W' (always keys).
      */
     const KEY_LABELS = {
       Space: 'SPACE', ShiftLeft: 'SHIFT', ShiftRight: 'R-SHIFT', ControlLeft: 'CTRL', ControlRight: 'R-CTRL',
