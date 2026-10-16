@@ -6,8 +6,12 @@
 // the stain dries over ~2 min, more people pile up on three records instead of replacing each other,
 // rain washes it, a repair or a garage respray clears it, and with the blood setting off nothing stains.
 export const fresh = true;
-const SPOT = { x: 420, y: 4600 }; // the airport's open ground, nobody about
+const SPOT = { x: 420, y: 4600 }; // the airport's open ground, isolated before every arrangement
 async function arrange(t, type = 'sedan') {
+  // Clear the old victims and ambient road traffic. witnessStage always adds one
+  // victim even with zero onlookers, so put that helper well behind the eastbound run.
+  await t.call('teleport', SPOT.x - 300, SPOT.y);
+  await t.call('witnessStage', 0, false, 1600, false, false, true);
   await t.call('teleport', SPOT.x, SPOT.y);
   await t.call('drive', type, 0, 0);
   await t.call('repair');
