@@ -1,0 +1,71 @@
+{
+  "source": "/workspace/work/bike-sound/work/svj-original.glb",
+  "sourceSha256": "4c56b1baafe861dcbb7438571d685ddb96709d3cc909f58b83bc58887e96fd16",
+  "sourceBytes": 18659824,
+  "scriptSha256": "dcabc915a5d5596d95fad645398c9444b6b74ea38d19171d67148a83d9712970",
+  "blender": "4.3.2",
+  "platform": "Linux-6.18.44-x86_64-with-glibc2.41",
+  "engine": "CYCLES",
+  "device": "CPU",
+  "samples": 16,
+  "denoising": false,
+  "resolution": [
+    1024,
+    640
+  ],
+  "originalBlenderBounds": [
+    [
+      -1.1170576810836792,
+      -2.4276702404022217,
+      -0.002472321270033717
+    ],
+    [
+      1.1170576810836792,
+      2.426255226135254,
+      1.1211720705032349
+    ]
+  ],
+  "sourceMeshObjects": 62,
+  "sourceTriangles": 508324,
+  "sourceMaterials": 30,
+  "sourceModified": false,
+  "doors": "closed as authored",
+  "description": "Independent Blender render of original downloaded source. Studio camera, lights and floor added; source meshes, transforms and materials unchanged. Not a gameplay screenshot.",
+  "captures": [
+    {
+      "file": "source-front-three-quarter.png",
+      "sha256": "993340dd0bb97b6df1a249c35e537618733cf52d1429dfe576f5bf455ca1a6e1",
+      "bytes": 979226,
+      "seconds": 11.94,
+      "cameraPosition": [
+        -4.611229419708252,
+        -5.825418472290039,
+        3.471705436706543
+      ],
+      "cameraEuler": [
+        1.1971856355667114,
+        1.2250677627889672e-07,
+        -0.669638991355896
+      ],
+      "orthoScale": 6.213025093078613
+    },
+    {
+      "file": "source-rear-three-quarter.png",
+      "sha256": "3cf9b5271f0a4ac5c5712fc07e7d3166925c3fbf6399b953f342a48728f9d569",
+      "bytes": 966311,
+      "seconds": 20.623,
+      "cameraPosition": [
+        4.611229419708252,
+        5.824003219604492,
+        3.471705436706543
+      ],
+      "cameraEuler": [
+        1.197185754776001,
+        1.5888186766233048e-08,
+        2.4719536304473877
+      ],
+      "orthoScale": 6.213025093078613
+    }
+  ],
+  "viewTransform": "AgX"
+}

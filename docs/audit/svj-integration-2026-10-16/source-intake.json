@@ -375,7 +375,7 @@
     "Both doors merged in DoorFrLeft_1; split triangles by x side.",
     "Both rear wheels merged in WheelRearLeft_9; split triangles by x side.",
     "Front wheels authored steered about -16deg: unsteer before runtime steering/spin, preserve opposite wheel 180deg orientation.",
-    "GLASS is opaque, dark metallic material in source; keep source cabin geometry but adapt glass to existing game visibility/glazing contracts.",
+    "GLASS is opaque, dark metallic material in source. The initial cabin inference from intAlcantara/intPlastic material names was withdrawn: direct primitive inspection finds no seats, dashboard or steering wheel. Runtime adds a fitted game cabin and see-through gameplay glazing.",
     "Source advertises4K textures but distributed GLB carries one1024px embedded carbon JPEG; other materials use factors."
   ],
   "geometryValidation": {
@@ -400,5 +400,10 @@
     "status": 200,
     "bytes": 18659824,
     "matchesGitBlob": true
+  },
+  "cabinInspection": {
+    "nativeSeatsDashboardSteering": false,
+    "evidence": "All 62 primitive bounds inspected. Materials named intAlcantara/intPlastic/intTexButtons are not sufficient evidence of cabin geometry; no visible interior in independent original source previews.",
+    "adaptation": "Fitted two-seat game cabin and see-through canopy, documented in source model metadata and integration docs."
   }
 }

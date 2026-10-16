@@ -20,3 +20,21 @@ Rebuild commands, source limitations, changed game glass/cabin and runtime API
 assertions: [SVJ integration](../../areas/vehicles-and-driving-models-svj.md).
 These CPU proofs are separate from the parent review’s final native game captures;
 they do not establish shader compilation, transparent sorting or hardware FPS.
+
+
+Original downloaded source previews (not gameplay screenshots):
+
+- [Front three-quarter](source-front-three-quarter.png)
+- [Rear three-quarter](source-rear-three-quarter.png)
+
+`source-preview.py` imports the untouched pinned GLB and adds only a neutral
+studio floor, lights and cameras. `source-preview-receipt.json` records the source,
+script and image hashes, original geometry count and CPU Cycles render settings.
+Both retain the source’s purple paint, opaque canopy and static wheel steering.
+They provide independent silhouette/material reference for the final game views;
+render lighting, respray colour and gameplay glazing deliberately differ.
+
+```sh
+blender -b --threads 4 -P docs/audit/svj-integration-2026-10-16/source-preview.py -- \
+  work/svj-source/original.glb work/svj-source-preview
+```
