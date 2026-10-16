@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-611 files in the include tree, 208,923 lines.
+611 files in the include tree, 208,938 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -71,7 +71,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/carjack.js`   340 — Carjacking and driver reactions
 - `src/carjack-struggle.js`   569 — The carjack struggle: walking round to the driver's door, the door, reaching in, a tug of war, hauling the driver out and taking the seat …
 - `src/vehicle-trunk.js`   399 — Vehicle trunks and the lockpick at work: a trunk with something in it (`c.trunkLoot`, set by a mission), picked pin by pin by holding interact with …
-- `src/riders.js`   581 — Riders thrown from motorbikes and bicycles
+- `src/riders.js`   588 — Riders thrown from motorbikes and bicycles
 - `src/wheelie.js`   228 — Wheelies: a motorbike's or bicycle's front wheel lifted by the throttle and the rider's weight, pitching about the rear tyre (c.wheelie, radians; the …
 - `src/wheelie-score.js`   175 — Wheelie distance and milestones: actual airborne path, one bounded player-bike reference, pause-safe result/milestone clocks and a compact HUD.
 - `src/themepark.js`    65 — ▸ Sunset Pier resort and theme park
@@ -187,12 +187,12 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/physics.js ▸ Vehicle and pedestrian physics
 
 - `src/physics-shapes.js`   347 — Oriented collision boxes, vehicle shapes, the static-collider grid (addStatic, nearbyStatics).
-- `src/physics-collisions.js`   350 — Contact resolution, crash severity, damage and injury (resolveContact, damageVehicle, repairVehicle).
+- `src/physics-collisions.js`   356 — Contact resolution, crash severity, damage and injury (resolveContact, damageVehicle, repairVehicle).
 - `src/physics-traffic.js`   522 — Traffic AI: signals, junction planning, road-line following (trafficControl).
 - `src/physics-aircraft.js`   278 — Aircraft strikes: An airframe is not a car: a helicopter or a plane flown into a building, a hillside or a bridge tower faster than …
 - `src/physics-driving.js`   723 — controlVehicle(): grip, cornering limit, kerb strikes, reverse; broadphase buffers.
 - `src/physics-step.js`   381 — physicsStep(): the fixed step, broadphase, contact passes, settling.
-- `src/physics-knockdowns.js`   396 — People knocked down by vehicles, swept person contacts, blood tracks.
+- `src/physics-knockdowns.js`   397 — People knocked down by vehicles, swept person contacts, blood tracks.
 - `src/runover.js`   228 — Second pass: a vehicle runs over someone already on the ground (knockPerson hands over): harm by speed and weight, blood, the car's stain, a death a …
 - `src/physics-update.js`   148 — updateCars(): per-frame vehicle update driving the fixed steps.
 - `src/physics-console.js`   778 — HANDLING TESTS (developer console) turnTest() drives a fresh vehicle on the open strip beside the Oceanview runway through the real game step …
@@ -765,7 +765,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/crowd3d-looks.js`   569 — Crowd 3D looks: compiling a look into parts and paints (compileLook, compiledLook, specialLooks).
 - `src/npc-avatar-cast.js`   137 — Casting the street avatars: which Rocketbox avatar (tools/npc_models.py CAST, its role tags) a look is drawn as near the camera, the tint its top …
 - `src/crowd3d-joints.js`   142 — Crowd 3D joint indices and per-person pose state (crowdState, setArm, crowdDancePose).
-- `src/crowd3d-poses.js`   990 — Crowd 3D pose targets and IK for arms and legs (crowdPoseTargets, solveLeg).
+- `src/crowd3d-poses.js`   991 — Crowd 3D pose targets and IK for arms and legs (crowdPoseTargets, solveLeg).
 - `src/crowd3d-roofparty.js`   141 — Crowd 3D poses for mission 2 (the Blue Hour): Vescari's poisoned toast beat by beat, and the bodyguards' heads turning with their sight cones.
 - `src/crowd3d-draw.js`   755 — drawCrowdPerson(): weapon holds, phone poses and the far-figure shortcut.
 - `src/crowd3d-gore.js`   361 — Crowd 3D gore: what the rig draws of gore.js's state: lost parts left out, a ragged stump (torn cloth and skin, raw flesh, the bone) at each cut …
@@ -918,7 +918,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/ui/title-radio.css`   148 — TITLE RADIO (car-radio.js): the car radio box docked on the title menu.
 - `src/ui/flight-hud.css`   276 — Flight HUD (hud.js, FLIGHT HUD): Shown only in an aircraft, compact and against the screen edges so the view stays clear: attitude, airspeed and …
 - `src/ui/freefall.css`   205 — Freefall cue (parachute.js FREEFALL CUE): While the canopy is still packed: the call to open it with its key, the height above whatever is below, a …
-- `src/ui/wheelie-score.css`    71 — Airborne distance: a quiet glass card, crisp numerals and one burst per milestone.
+- `src/ui/wheelie-score.css`    80 — Airborne distance: a quiet glass card, crisp numerals and one burst per milestone.
 - `src/ui/world-edge.css`   171 — Open-sea cue (world-edge.js): After 10 s heading away from all land: RETURN TO THE CITY, the seconds left as a big number (10 ..
 - `src/ui/notify.css`   120 — Notification feed (hud-notify.js): tell() lines as .note boxes in #toast, newest first; older lines dim; an edge colour per tone and a thin bar that …
 - `src/ui/map-panel.css`   181 — City map (map-view.js): as large as the screen allows, with its filters (the legend doubles as them) and the GO TO list beside it, below it on a …

@@ -56,6 +56,15 @@
 @keyframes wheelieScoreRays { 15% { opacity: .9; } 100% { opacity: 0; } }
 body.panel-open #wheelieScore { opacity: 0; visibility: hidden; }
 body.panel-open #wheelieScore, body.panel-open #wheelieScore *, body.panel-open #wheelieScore::before, body.panel-open #wheelieScore::after { animation-play-state: paused; }
+/* Keep dispatch speech readable alongside a stunt: use the space above it. */
+body:has(#radioCaption.show) #wheelieScore { top: 75px; width: 240px; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-block: 8px; }
+body:has(#radioCaption.show) #wheelieScoreLabel,
+body:has(#radioCaption.show) #wheelieScoreNext,
+body:has(#radioCaption.show) .wheelie-score-track { display: none; }
+body:has(#radioCaption.show) .wheelie-score-reading { margin-top: 0; }
+body:has(#radioCaption.show) #wheelieScoreDistance { font-size: 28px; }
+body:has(#radioCaption.show) #wheelieScoreGrade { margin: 0; font-size: 18px; }
+body.touch-mode:has(#radioCaption.show) #wheelieScore { top: 104px; }
 @media (max-width: 820px), (pointer: coarse) {
   #wheelieScore { top: 104px; width: 164px; padding: 10px 12px; }
   #wheelieScoreDistance { font-size: 34px; }
