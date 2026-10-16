@@ -1,0 +1,8 @@
+{
+  "baselineCommit": "7f45832a06f067a2af7289f268447b834b669101",
+  "source": "docs/BACKLOG.md",
+  "sourceSha256": "5f49c4c157600297a20ab830e800b4df160039c6afa83a22985d6e0bfbcfd44d",
+  "excerpt": "## Mount Ascent console trail pilot (offroad-club.js)\n\n- `trailDrive` can leave the graded corridor, and the unchanged 75 s challenge assertion fails at 60 Hz:\n  focused run 76.88 s; fresh crawler 77.23 s with a bank strike; reused crawler 75.62 s. The 30 Hz run takes\n  72.97 s. Correct route following across fresh/reused 30/60 Hz states before reviewing challenge balance;\n  keep the 75 s timer and safety assertions unchanged during the fix. A strict nearest-index attempt\n  overturned at 30 Hz and was rejected. Retain descent-35 and `falls` controls and the corrected rock normals.\n  [Diagnosis and rejected attempt](audit/police-aviation-review-2026-10-15/terrain-rock-contact.md).\n",
+  "currentFailure": "FAIL hillclimb-physics (79.9s): climb at 1/60: 76.88 s is over the 1:15 challenge",
+  "assessment": "Matches documented pre-existing scripted-pilot timing failure exactly;75s assertion and terrain safety checks remain unchanged."
+}

@@ -1,0 +1,25 @@
+{
+  "baselineCommit": "7f45832a06f067a2af7289f268447b834b669101",
+  "inputs": [
+    {
+      "path": "/workspace/GTA/work/before.html",
+      "sha256": "719a535fe3905275c381737acb7fc3e80ee1ab4378c0d5736a4595096b16c03c",
+      "bytes": 114866084
+    },
+    {
+      "path": "/workspace/GTA/work/release.html",
+      "sha256": "4fb728805903abdb8a6afe04c258fdb1c2d7e21274814d9e7cb44d26fbb45d08",
+      "bytes": 143679752
+    },
+    {
+      "path": "/workspace/work/ped-baseline/tools/tests/pedestrian-awareness.mjs",
+      "sha256": "3f9b226789cbfd21db06187405715d83ab9e3fa3664bc1105ed273e609462731",
+      "bytes": 4932
+    },
+    {
+      "path": "/workspace/work/ped-baseline/tools/tests/pedestrian-awareness-isolated.mjs",
+      "sha256": "d1d2200425ef9f97cbbe7e7e138dfd99b830c23d35775bb9134e52c0d681889c",
+      "bytes": 5258
+    }
+  ]
+}

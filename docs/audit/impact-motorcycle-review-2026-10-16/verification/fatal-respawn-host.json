@@ -1,0 +1,21 @@
+{
+  "sourceCommit": "9cdfb304",
+  "scope": "Actual production launch/body solver and die/pause callbacks with a virtual wall clock; no browser/render performance claim",
+  "assertions": 138,
+  "results": [
+    {
+      "name": "vehicle-impact-respawn",
+      "pass": true,
+      "assertions": 26
+    },
+    {
+      "name": "respawn-focus-pause",
+      "pass": true,
+      "assertions": 112
+    }
+  ],
+  "notes": [
+    "{\"slowMotion\":0.35,\"wetGrip\":0.72,\"trajectories\":[{\"kph\":70,\"settledSeconds\":7.84,\"respawnSeconds\":7.9},{\"kph\":110,\"settledSeconds\":11.21,\"respawnSeconds\":11.3},{\"kph\":150,\"settledSeconds\":13.55,\"respawnSeconds\":13.6}],\"hardCapSeconds\":16}",
+    "actual death/arrest callbacks and pause: focused return stays live; hidden/blurred return pauses; timing, costs, ammo, mission identity and world reset preserved"
+  ]
+}

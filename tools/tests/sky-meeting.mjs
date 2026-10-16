@@ -61,14 +61,16 @@ export default async function (t) {
   // The waiter takes the order, fetches the cocktails from the bar and serves them.
   r = await until(t, 'drinks served', (q) => q.stage === 'drinks', 60, 2);
   t.assert(r.drinks === 2 && r.seat.hand === 'cocktail' && r.diplomat.hand === 'cocktail', 'a glass each: ' + JSON.stringify(r));
+  // Speech keeps the glass down. Once the conversation finishes, observe a full
+  // quiet 8.5-second sip cycle before asking for the handover.
+  r = await until(t, 'ready to hand over', (q) => q.stage === 'handover', 60, 2);
   let lifted = 0;
-  for (let i = 0; i < 20; i++) {
-    await t.wait(0.5);
+  for (let i = 0; i < 40; i++) {
+    await t.wait(0.25);
     lifted = Math.max(lifted, (await report(t)).seat.lift);
   }
   t.assert(lifted > 0.9, 'the player raised his glass: ' + lifted);
-  // The talk, then the handover with the real key.
-  r = await until(t, 'ready to hand over', (q) => q.stage === 'handover', 60, 2);
+  // The handover with the real key.
   prompt = await t.call('promptState');
   t.assert(/HAND OVER THE PAPERS/.test(prompt.offered || ''), 'handover prompt: ' + JSON.stringify(prompt));
   await t.keys('KeyE', 0.2, { real: true });

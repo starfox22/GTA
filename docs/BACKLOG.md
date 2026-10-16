@@ -12,6 +12,10 @@ here when polishing; delete a line when it is fixed. Newest features first.
   overturned at 30 Hz and was rejected. Retain descent-35 and `falls` controls and the corrected rock normals.
   [Diagnosis and rejected attempt](audit/police-aviation-review-2026-10-15/terrain-rock-contact.md).
 
+## Pedestrian-awareness regression fixture
+
+- The original 80 km/h / 41 m rate check also fails on published `7f45832a`: 0.4 clear versus current 0.5 (requires 0.6). Its seeded specimen still shares live-world RNG, actor indices, off-camera update cadence and prior trial timing. Population clearing changed those phases rather than isolating them; that experiment was reverted. Preserve thresholds when making trials independent. [Current/baseline receipts](audit/impact-motorcycle-review-2026-10-16/verification/baseline-pedestrian-results.json).
+
 ## The living city (livingcity*.js)
 - Traffic streams only on the city grid: Monarch Isle and the county keep their own fixed traffic; North Point Key gets only its few visitors (livingcity-key.js: one lane each way, no overtaking, no sirens pull-over on the Key).
 - Signals cycle every 24 s on a 64 m grid, so about half the traffic in the ring stands at a light or in its queue at any moment (`trafficReport().held`).

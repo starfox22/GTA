@@ -1,10 +1,10 @@
 {
-  "sourceCommit": "9db35c35",
-  "htmlSha256": "a484c44c40fbca69b42963561994117ecc933d6fb51fd434dc0349cd6209bb46",
-  "bytes": 143678675,
+  "broadRegressionSourceCommit": "9db35c35",
+  "broadRegressionHtmlSha256": "a484c44c40fbca69b42963561994117ecc933d6fb51fd434dc0349cd6209bb46",
+  "releaseSourceCommit": "9cdfb304",
+  "htmlSha256": "4fb728805903abdb8a6afe04c258fdb1c2d7e21274814d9e7cb44d26fbb45d08",
+  "bytes": 143679752,
+  "splitIndexSha256": "871f214e44785d89a19e530f16ae91cdbc44b401c65caab6acd4ec93d8e58fa0",
   "renderer": "Software WebGL via managed Chromium/loopback HTTP adapter",
-  "scope": "Frozen combined game; later fixture corrections, documentation and native evidence leave game bytes unchanged.",
-  "postFixtureFixCommit": "2106d3bd",
-  "postFixtureFixHtmlIdentical": true,
-  "splitIndexSha256": "a769758dda13073bd8e326ae2504cc6129c3f0e1db01e5f23d9cbd154533c496"
+  "scope": "Final release adds bounded fatal-impact respawn to broad-regression9db source. Final focused checks, screenshots and packaged smoke target this release; later test fixture/documentation commits leave game bytes unchanged."
 }

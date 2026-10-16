@@ -1,0 +1,38 @@
+{
+  "scenario": "Production CIRRUS update/script/talk/sip functions: dialogue-time ten-second check versus full quiet cycle at handover; geometry, HUD and speech rendering stubbed.",
+  "baselineCommit": "7f45832a",
+  "currentCommit": "8099df5686a1aaed0beba19e7682533f707d4d4a",
+  "sources": [
+    {
+      "path": "src/skyline-meeting.js",
+      "baselineSHA256": "b2722e417a24676e101d77471657e75c49eb63548f1c8adfb3bb769c566b7afd",
+      "currentSHA256": "b2722e417a24676e101d77471657e75c49eb63548f1c8adfb3bb769c566b7afd",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/crowd-speech.js",
+      "baselineSHA256": "0778309d56178e3e9313b6a36c2a355973c8376e3c5daf4d3720152ca9967901",
+      "currentSHA256": "0778309d56178e3e9313b6a36c2a355973c8376e3c5daf4d3720152ca9967901",
+      "byteIdentical": true
+    },
+    {
+      "path": "src/skyline-bar.js",
+      "baselineSHA256": "80e8edfa81e8c1a98ff3749d7b12900c683540e821b7f651be16cb5ec770c644",
+      "currentSHA256": "80e8edfa81e8c1a98ff3749d7b12900c683540e821b7f651be16cb5ec770c644",
+      "byteIdentical": true
+    }
+  ],
+  "reproduction": {
+    "scriptPath": "work/sky-sip-fixture-proof.mjs",
+    "scriptSHA256": "88b675bcfb59ee68edcf0e5d46be9fed3c6de7dfbc836251aef2be80d7383985",
+    "command": "node work/sky-sip-fixture-proof.mjs"
+  },
+  "phases": 850,
+  "phaseStepSeconds": 0.01,
+  "oldFailures": 252,
+  "oldSevenPhase": 1.91,
+  "quietFailures": 0,
+  "quietMin": 1,
+  "quietSamples": 40,
+  "quietFramesPerSample": 8
+}

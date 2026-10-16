@@ -1,0 +1,1421 @@
+{
+  "broadSourceCommit": "9db35c35",
+  "broadHtmlSha256": "a484c44c40fbca69b42963561994117ecc933d6fb51fd434dc0349cd6209bb46",
+  "releaseSourceCommit": "8099df5686a1aaed0beba19e7682533f707d4d4a",
+  "releaseHtmlSha256": "4fb728805903abdb8a6afe04c258fdb1c2d7e21274814d9e7cb44d26fbb45d08",
+  "coverage": "239-module disjoint broad pass, retained original failures, followed by final-source focused checks for corrected fixtures, transient garage failure and bounded fatal-impact respawn. Native final captures/smoke/media validate the release package.",
+  "knownBaselineFailures": {
+    "hillclimb-physics": "Pre-existing Mount Ascent scripted pilot exceeds unchanged75s target at60Hz; documented in docs/BACKLOG.md and docs/HANDOFF.md before this change.",
+    "pedestrian-awareness": "Original rate assertion also fails on previous published7f45832a (0.4 cleared; current original0.5). Perception/contact code unchanged; fixture depends on live-world RNG/cadence. Experimental population isolation did not stabilize the comparison and was reverted. See baseline comparison and experimental logs."
+  },
+  "newUnresolvedFailures": [],
+  "originalCounts": {
+    "PASS": 214,
+    "SKIP": 18,
+    "FAIL": 7
+  },
+  "originalResults": [
+    {
+      "name": "aircraft-audio",
+      "status": "PASS",
+      "seconds": 0.1
+    },
+    {
+      "name": "aircraft-propeller-sync",
+      "status": "PASS",
+      "seconds": 0.2
+    },
+    {
+      "name": "approved-motorcycle-rigs",
+      "status": "PASS",
+      "seconds": 0.3
+    },
+    {
+      "name": "approved-vehicle-pipeline",
+      "status": "PASS",
+      "seconds": 2.0
+    },
+    {
+      "name": "boot-status",
+      "status": "PASS",
+      "seconds": 1.1
+    },
+    {
+      "name": "brake-distances",
+      "status": "PASS",
+      "seconds": 4.3
+    },
+    {
+      "name": "camera-feel",
+      "status": "PASS",
+      "seconds": 3.3
+    },
+    {
+      "name": "camera-framing",
+      "status": "PASS",
+      "seconds": 13.7
+    },
+    {
+      "name": "chase-audio-pan",
+      "status": "PASS",
+      "seconds": 0.0
+    },
+    {
+      "name": "chase-clouds",
+      "status": "SKIP",
+      "seconds": 0.3,
+      "message": "Requires WebGL: run with --render"
+    },
+    {
+      "name": "chase-cover-clearance",
+      "status": "PASS",
+      "seconds": 0.0
+    },
+    {
+      "name": "chase-crane",
+      "status": "PASS",
+      "seconds": 2.3
+    },
+    {
+      "name": "chase-hud-box",
+      "status": "PASS",
+      "seconds": 2.1
+    },
+    {
+      "name": "chase-in-view",
+      "status": "PASS",
+      "seconds": 1.8
+    },
+    {
+      "name": "chase-input",
+      "status": "PASS",
+      "seconds": 4.3
+    },
+    {
+      "name": "chase-view-mode",
+      "status": "PASS",
+      "seconds": 0.4
+    },
+    {
+      "name": "cloud-history",
+      "status": "PASS",
+      "seconds": 0.0
+    },
+    {
+      "name": "dolcati-model",
+      "status": "PASS",
+      "seconds": 1.6
+    },
+    {
+      "name": "drive-no-nan",
+      "status": "PASS",
+      "seconds": 9.7
+    },
+    {
+      "name": "driving-settings-migrate",
+      "status": "PASS",
+      "seconds": 0.0
+    },
+    {
+      "name": "frame-trace",
+      "status": "PASS",
+      "seconds": 2.0
+    },
+    {
+      "name": "gpu-context-lifecycle",
+      "status": "PASS",
+      "seconds": 0.1
+    },
+    {
+      "name": "graphics-all-tiers",
+      "status": "SKIP",
+      "seconds": 0.0,
+      "message": "Requires WebGL: run with --render"
+    },
+    {
+      "name": "hotrod-vehicle-rig",
+      "status": "PASS",
+      "seconds": 1.7
+    },
+    {
+      "name": "hud-dom-writes",
+      "status": "PASS",
+      "seconds": 2.6
+    },
+    {
+      "name": "instance-upload-ranges",
+      "status": "PASS",
+      "seconds": 0.1
+    },
+    {
+      "name": "jet-assets-lifecycle",
+      "status": "PASS",
+      "seconds": 0.9
+    },
+    {
+      "name": "jet-assets-rig",
+      "status": "PASS",
+      "seconds": 0.5
+    },
+    {
+      "name": "m4-wheel-partition",
+      "status": "PASS",
+      "seconds": 0.1
+    },
+    {
+      "name": "medic-routing",
+      "status": "PASS",
+      "seconds": 0.0
+    },
+    {
+      "name": "military-model-rig",
+      "status": "PASS",
+      "seconds": 0.1
+    },
+    {
+      "name": "mission-world-preservation",
+      "status": "PASS",
+      "seconds": 0.1
+    },
+    {
+      "name": "mountain-road",
+      "status": "PASS",
+      "seconds": 18.8
+    },
+    {
+      "name": "npc-avatars",
+      "status": "PASS",
+      "seconds": 0.7
+    },
+    {
+      "name": "performance-kernels",
+      "status": "PASS",
+      "seconds": 0.9
+    },
+    {
+      "name": "player-body",
+      "status": "PASS",
+      "seconds": 5.4
+    },
+    {
+      "name": "rear-badges",
+      "status": "SKIP",
+      "seconds": 0.0,
+      "message": "Requires WebGL: run with --render"
+    },
+    {
+      "name": "render-auto-scale",
+      "status": "SKIP",
+      "seconds": 0.0,
+      "message": "Requires WebGL: run with --render"
+    },
+    {
+      "name": "rig-geometry",
+      "status": "PASS",
+      "seconds": 0.1
+    },
+    {
+      "name": "roof-skin",
+      "status": "PASS",
+      "seconds": 0.0
+    },
+    {
+      "name": "scenery-pools",
+      "status": "PASS",
+      "seconds": 0.1
+    },
+    {
+      "name": "sportbike-audio",
+      "status": "PASS",
+      "seconds": 0.0
+    },
+    {
+      "name": "sports-vehicle-assets",
+      "status": "PASS",
+      "seconds": 0.3
+    },
+    {
+      "name": "sportsbook-bets",
+      "status": "PASS",
+      "seconds": 2.0
+    },
+    {
+      "name": "travel-focus-pause",
+      "status": "PASS",
+      "seconds": 0.0
+    },
+    {
+      "name": "vehicle-material-lifecycle",
+      "status": "PASS",
+      "seconds": 0.0
+    },
+    {
+      "name": "vehicle-source-fidelity",
+      "status": "PASS",
+      "seconds": 0.4
+    },
+    {
+      "name": "wheelie-dynamics",
+      "status": "PASS",
+      "seconds": 0.1
+    },
+    {
+      "name": "witness-car-lines",
+      "status": "PASS",
+      "seconds": 0.0
+    },
+    {
+      "name": "world-reset-sportsbook",
+      "status": "PASS",
+      "seconds": 0.1
+    },
+    {
+      "name": "ammo-supply",
+      "status": "PASS",
+      "seconds": 33.5
+    },
+    {
+      "name": "blood-amounts",
+      "status": "PASS",
+      "seconds": 25.2
+    },
+    {
+      "name": "blood-wounds",
+      "status": "PASS",
+      "seconds": 44.9
+    },
+    {
+      "name": "bullet-hits",
+      "status": "PASS",
+      "seconds": 25.9
+    },
+    {
+      "name": "camera-lead-setting",
+      "status": "PASS",
+      "seconds": 48.9
+    },
+    {
+      "name": "car-blood",
+      "status": "FAIL",
+      "seconds": 74.8,
+      "message": "a flank hit did not stain the flank: [{\"id\":16,\"face\":\"right\",\"x\":-10.65,\"z\":8.52,\"sev\":0.65,\"hits\":1,\"load\":0.65,\"adds\":0,\"kph\":72,\"age\":1.1,\"dry\":0,\"wash\":0,\"reach\":2.34,\"flow\":1,\"creep\":0},{\"id\":17,\"face\":\"front\",\"x\":19.4,\"z\":-0.88,\"sev\":0.64,\"hits\":1,\"load\":0.64,\"adds\":0,\"kph\":71,\"age\":1,\"dry\":0,\"wash\":0,\"reach\":2.33,\"flow\":1,\"creep\":0}]"
+    },
+    {
+      "name": "car-window-open",
+      "status": "SKIP",
+      "seconds": 24.5,
+      "message": "Requires WebGL: run with --render"
+    },
+    {
+      "name": "carjack",
+      "status": "PASS",
+      "seconds": 35.9
+    },
+    {
+      "name": "chase-lock",
+      "status": "PASS",
+      "seconds": 26.0
+    },
+    {
+      "name": "chase-move-keys",
+      "status": "PASS",
+      "seconds": 34.9
+    },
+    {
+      "name": "chase-wall-clearance",
+      "status": "PASS",
+      "seconds": 25.8
+    },
+    {
+      "name": "chimney-smoke",
+      "status": "SKIP",
+      "seconds": 20.4,
+      "message": "Requires WebGL: run with --render"
+    },
+    {
+      "name": "club-entrance",
+      "status": "PASS",
+      "seconds": 22.3
+    },
+    {
+      "name": "demo-complete-card",
+      "status": "PASS",
+      "seconds": 26.4
+    },
+    {
+      "name": "drawbridge-traffic",
+      "status": "PASS",
+      "seconds": 170.7
+    },
+    {
+      "name": "driveby-mouse",
+      "status": "PASS",
+      "seconds": 37.9
+    },
+    {
+      "name": "falls",
+      "status": "PASS",
+      "seconds": 53.2
+    },
+    {
+      "name": "footwork",
+      "status": "PASS",
+      "seconds": 25.4
+    },
+    {
+      "name": "fort-gate-barrier",
+      "status": "PASS",
+      "seconds": 31.4
+    },
+    {
+      "name": "fort-records-route",
+      "status": "PASS",
+      "seconds": 25.3
+    },
+    {
+      "name": "fps-counter",
+      "status": "PASS",
+      "seconds": 71.9
+    },
+    {
+      "name": "freeroam-respawn",
+      "status": "PASS",
+      "seconds": 46.3
+    },
+    {
+      "name": "god-drawbridges",
+      "status": "PASS",
+      "seconds": 85.0
+    },
+    {
+      "name": "god-teleport-map",
+      "status": "PASS",
+      "seconds": 26.9
+    },
+    {
+      "name": "headlight-aim",
+      "status": "PASS",
+      "seconds": 23.6
+    },
+    {
+      "name": "hillclimb-physics",
+      "status": "FAIL",
+      "seconds": 79.9,
+      "message": "climb at 1/60: 76.88 s is over the 1:15 challenge"
+    },
+    {
+      "name": "hud-layout",
+      "status": "PASS",
+      "seconds": 32.5
+    },
+    {
+      "name": "integrity-shore",
+      "status": "PASS",
+      "seconds": 26.4
+    },
+    {
+      "name": "living-key",
+      "status": "PASS",
+      "seconds": 44.7
+    },
+    {
+      "name": "living-sirens",
+      "status": "PASS",
+      "seconds": 26.7
+    },
+    {
+      "name": "living-traffic",
+      "status": "PASS",
+      "seconds": 35.1
+    },
+    {
+      "name": "marea-talk",
+      "status": "PASS",
+      "seconds": 26.9
+    },
+    {
+      "name": "minimap-clutter",
+      "status": "PASS",
+      "seconds": 43.5
+    },
+    {
+      "name": "mission-brief",
+      "status": "PASS",
+      "seconds": 32.7
+    },
+    {
+      "name": "mission-card-subtitle",
+      "status": "PASS",
+      "seconds": 24.8
+    },
+    {
+      "name": "mission-retry-save",
+      "status": "PASS",
+      "seconds": 44.7
+    },
+    {
+      "name": "mission1-bay",
+      "status": "PASS",
+      "seconds": 103.0
+    },
+    {
+      "name": "mission1-truck",
+      "status": "PASS",
+      "seconds": 27.7
+    },
+    {
+      "name": "mission2-cones",
+      "status": "PASS",
+      "seconds": 25.2
+    },
+    {
+      "name": "mission2-paths",
+      "status": "PASS",
+      "seconds": 37.1
+    },
+    {
+      "name": "mission2-touch-run",
+      "status": "PASS",
+      "seconds": 23.0
+    },
+    {
+      "name": "mission34-lifecycle",
+      "status": "PASS",
+      "seconds": 32.1
+    },
+    {
+      "name": "mission4-kessler",
+      "status": "PASS",
+      "seconds": 68.5
+    },
+    {
+      "name": "mission4-tail",
+      "status": "PASS",
+      "seconds": 41.1
+    },
+    {
+      "name": "monarch-one",
+      "status": "PASS",
+      "seconds": 22.2
+    },
+    {
+      "name": "mounted-guns",
+      "status": "PASS",
+      "seconds": 35.5
+    },
+    {
+      "name": "nudge-aside",
+      "status": "PASS",
+      "seconds": 26.3
+    },
+    {
+      "name": "parachute-deploy",
+      "status": "PASS",
+      "seconds": 107.0
+    },
+    {
+      "name": "parachute",
+      "status": "PASS",
+      "seconds": 41.1
+    },
+    {
+      "name": "parked-vehicle-hits",
+      "status": "PASS",
+      "seconds": 35.8
+    },
+    {
+      "name": "payphones-islands",
+      "status": "PASS",
+      "seconds": 25.1
+    },
+    {
+      "name": "police-circus",
+      "status": "PASS",
+      "seconds": 33.0
+    },
+    {
+      "name": "police-night-sight",
+      "status": "PASS",
+      "seconds": 20.6
+    },
+    {
+      "name": "police-search-clock",
+      "status": "PASS",
+      "seconds": 28.9
+    },
+    {
+      "name": "render-effects",
+      "status": "SKIP",
+      "seconds": 20.4,
+      "message": "Requires WebGL: run with --render"
+    },
+    {
+      "name": "respray-lose-police",
+      "status": "PASS",
+      "seconds": 57.6
+    },
+    {
+      "name": "ride-look",
+      "status": "PASS",
+      "seconds": 36.2
+    },
+    {
+      "name": "road-signs",
+      "status": "PASS",
+      "seconds": 27.1
+    },
+    {
+      "name": "second-run-over",
+      "status": "PASS",
+      "seconds": 32.6
+    },
+    {
+      "name": "sky-meeting",
+      "status": "FAIL",
+      "seconds": 38.6,
+      "message": "the player raised his glass: 0.7"
+    },
+    {
+      "name": "sun-gradual",
+      "status": "PASS",
+      "seconds": 29.8
+    },
+    {
+      "name": "swim-rescue",
+      "status": "PASS",
+      "seconds": 35.9
+    },
+    {
+      "name": "terrace-death",
+      "status": "PASS",
+      "seconds": 31.2
+    },
+    {
+      "name": "trail-mud",
+      "status": "SKIP",
+      "seconds": 25.5,
+      "message": "Requires WebGL: run with --render"
+    },
+    {
+      "name": "trunk-close",
+      "status": "PASS",
+      "seconds": 70.2
+    },
+    {
+      "name": "vehicle-damage-shape",
+      "status": "PASS",
+      "seconds": 37.2
+    },
+    {
+      "name": "voices",
+      "status": "PASS",
+      "seconds": 22.4
+    },
+    {
+      "name": "wheelie-hint",
+      "status": "PASS",
+      "seconds": 37.4
+    },
+    {
+      "name": "witnesses-monarch",
+      "status": "PASS",
+      "seconds": 37.4
+    },
+    {
+      "name": "world-edge-land",
+      "status": "PASS",
+      "seconds": 23.2
+    },
+    {
+      "name": "world-reset",
+      "status": "PASS",
+      "seconds": 40.9
+    },
+    {
+      "name": "demo-gating",
+      "status": "PASS",
+      "seconds": 23.6
+    },
+    {
+      "name": "aircraft-flight-model",
+      "status": "PASS",
+      "seconds": 4.1
+    },
+    {
+      "name": "approved-motorcycle-rider-fit",
+      "status": "PASS",
+      "seconds": 0.8
+    },
+    {
+      "name": "approved-suv-rigs",
+      "status": "PASS",
+      "seconds": 10.6
+    },
+    {
+      "name": "cabin-headroom",
+      "status": "SKIP",
+      "seconds": 0.0,
+      "message": "Requires WebGL: run with --render"
+    },
+    {
+      "name": "car-cabin-view-distance",
+      "status": "PASS",
+      "seconds": 0.1
+    },
+    {
+      "name": "car-cabins",
+      "status": "SKIP",
+      "seconds": 0.0,
+      "message": "Requires WebGL: run with --render"
+    },
+    {
+      "name": "car-exit-feet",
+      "status": "PASS",
+      "seconds": 0.5
+    },
+    {
+      "name": "chase-aim",
+      "status": "PASS",
+      "seconds": 2.6
+    },
+    {
+      "name": "chase-radio-chip",
+      "status": "PASS",
+      "seconds": 1.2
+    },
+    {
+      "name": "chase-shooter",
+      "status": "PASS",
+      "seconds": 0.5
+    },
+    {
+      "name": "chase-streams",
+      "status": "PASS",
+      "seconds": 14.1
+    },
+    {
+      "name": "chase-walk",
+      "status": "PASS",
+      "seconds": 1.3
+    },
+    {
+      "name": "clouds",
+      "status": "FAIL",
+      "seconds": 5.4,
+      "message": "the jumper never got into the cloud (immersion 0.13)"
+    },
+    {
+      "name": "combat-continuity",
+      "status": "PASS",
+      "seconds": 0.0
+    },
+    {
+      "name": "drift-handling",
+      "status": "PASS",
+      "seconds": 6.3
+    },
+    {
+      "name": "driveby-seats",
+      "status": "PASS",
+      "seconds": 0.1
+    },
+    {
+      "name": "enter-key",
+      "status": "PASS",
+      "seconds": 5.3
+    },
+    {
+      "name": "foliage-cutaway",
+      "status": "PASS",
+      "seconds": 0.4
+    },
+    {
+      "name": "headlight-budget",
+      "status": "PASS",
+      "seconds": 0.0
+    },
+    {
+      "name": "hotrod-vehicle-assets",
+      "status": "PASS",
+      "seconds": 0.3
+    },
+    {
+      "name": "mission-modal-input",
+      "status": "PASS",
+      "seconds": 0.0
+    },
+    {
+      "name": "modal-pointer-lifecycle",
+      "status": "PASS",
+      "seconds": 0.2
+    },
+    {
+      "name": "motorcycle-puncture",
+      "status": "PASS",
+      "seconds": 0.0
+    },
+    {
+      "name": "motorcycle-rider-fit",
+      "status": "PASS",
+      "seconds": 0.2
+    },
+    {
+      "name": "motorcycle-wheel-rig",
+      "status": "PASS",
+      "seconds": 0.1
+    },
+    {
+      "name": "mounted-gun-projection",
+      "status": "PASS",
+      "seconds": 0.0
+    },
+    {
+      "name": "mouse-buttons",
+      "status": "PASS",
+      "seconds": 0.0
+    },
+    {
+      "name": "navigation-shortlist",
+      "status": "PASS",
+      "seconds": 0.4
+    },
+    {
+      "name": "police-livery-projection",
+      "status": "PASS",
+      "seconds": 0.3
+    },
+    {
+      "name": "regency-traffic",
+      "status": "PASS",
+      "seconds": 11.5
+    },
+    {
+      "name": "render-cell-preupload",
+      "status": "SKIP",
+      "seconds": 0.0,
+      "message": "Requires WebGL: run with --render"
+    },
+    {
+      "name": "render-hiccups",
+      "status": "SKIP",
+      "seconds": 0.0,
+      "message": "Renderer counters require WebGL: run with --render"
+    },
+    {
+      "name": "render-tier-switch",
+      "status": "SKIP",
+      "seconds": 0.0,
+      "message": "Requires WebGL: run with --render"
+    },
+    {
+      "name": "respawn-focus-pause",
+      "status": "PASS",
+      "seconds": 0.0
+    },
+    {
+      "name": "sim-audits",
+      "status": "PASS",
+      "seconds": 1.4
+    },
+    {
+      "name": "sim-efficiency",
+      "status": "PASS",
+      "seconds": 14.6
+    },
+    {
+      "name": "sound-output",
+      "status": "PASS",
+      "seconds": 2.1
+    },
+    {
+      "name": "taxi-fare-toast",
+      "status": "PASS",
+      "seconds": 1.7
+    },
+    {
+      "name": "terrain-rock-contact",
+      "status": "FAIL",
+      "seconds": 17.2,
+      "message": "error: wheelieLowerHeld is not defined"
+    },
+    {
+      "name": "tyre-effects",
+      "status": "PASS",
+      "seconds": 7.6
+    },
+    {
+      "name": "vehicle-gunfire",
+      "status": "PASS",
+      "seconds": 9.6
+    },
+    {
+      "name": "vehicle-layouts",
+      "status": "PASS",
+      "seconds": 5.1
+    },
+    {
+      "name": "vehicle-merge",
+      "status": "SKIP",
+      "seconds": 0.0,
+      "message": "Requires WebGL: run with --render"
+    },
+    {
+      "name": "wheelie-tyre-contact",
+      "status": "PASS",
+      "seconds": 0.0
+    },
+    {
+      "name": "aircraft-taxi-takeoff",
+      "status": "PASS",
+      "seconds": 231.9
+    },
+    {
+      "name": "asset-char",
+      "status": "SKIP",
+      "seconds": 24.8,
+      "message": "Requires WebGL: run with --render"
+    },
+    {
+      "name": "blood-spray",
+      "status": "PASS",
+      "seconds": 26.2
+    },
+    {
+      "name": "bluehour-entrance",
+      "status": "PASS",
+      "seconds": 22.9
+    },
+    {
+      "name": "camera-comfort",
+      "status": "PASS",
+      "seconds": 48.1
+    },
+    {
+      "name": "camera-slow-framing",
+      "status": "PASS",
+      "seconds": 40.3
+    },
+    {
+      "name": "car-feet-clearance",
+      "status": "SKIP",
+      "seconds": 24.1,
+      "message": "Requires WebGL: run with --render"
+    },
+    {
+      "name": "carjack-traffic",
+      "status": "PASS",
+      "seconds": 36.0
+    },
+    {
+      "name": "chase-budget",
+      "status": "PASS",
+      "seconds": 27.0
+    },
+    {
+      "name": "chase-hud-layout",
+      "status": "PASS",
+      "seconds": 31.0
+    },
+    {
+      "name": "chase-motion-blur",
+      "status": "PASS",
+      "seconds": 46.6
+    },
+    {
+      "name": "cheat-helicopter",
+      "status": "PASS",
+      "seconds": 32.3
+    },
+    {
+      "name": "civil-aircraft",
+      "status": "PASS",
+      "seconds": 37.2
+    },
+    {
+      "name": "coronation-bridge",
+      "status": "PASS",
+      "seconds": 34.5
+    },
+    {
+      "name": "drawbridge-islands",
+      "status": "PASS",
+      "seconds": 51.5
+    },
+    {
+      "name": "driveby-arcs",
+      "status": "PASS",
+      "seconds": 26.8
+    },
+    {
+      "name": "foot-vehicle-escape",
+      "status": "PASS",
+      "seconds": 30.2
+    },
+    {
+      "name": "fort-cover",
+      "status": "PASS",
+      "seconds": 38.0
+    },
+    {
+      "name": "fort-gate-talk",
+      "status": "PASS",
+      "seconds": 32.3
+    },
+    {
+      "name": "fort-vehicle-theft",
+      "status": "PASS",
+      "seconds": 26.8
+    },
+    {
+      "name": "frame-guard",
+      "status": "PASS",
+      "seconds": 28.0
+    },
+    {
+      "name": "garages-islands",
+      "status": "FAIL",
+      "seconds": 32.2,
+      "message": "still damaged after the repair: 0.041"
+    },
+    {
+      "name": "god-mode-codes",
+      "status": "PASS",
+      "seconds": 31.4
+    },
+    {
+      "name": "gore-dismember",
+      "status": "PASS",
+      "seconds": 34.3
+    },
+    {
+      "name": "gpu-context",
+      "status": "SKIP",
+      "seconds": 24.2,
+      "message": "no 3D renderer on this page (run with --render)"
+    },
+    {
+      "name": "health-indoors",
+      "status": "PASS",
+      "seconds": 43.2
+    },
+    {
+      "name": "hud-clearance",
+      "status": "PASS",
+      "seconds": 26.5
+    },
+    {
+      "name": "hud-touch-dispatch",
+      "status": "PASS",
+      "seconds": 23.2
+    },
+    {
+      "name": "interface-hints",
+      "status": "PASS",
+      "seconds": 24.4
+    },
+    {
+      "name": "liner-voyage",
+      "status": "PASS",
+      "seconds": 24.7
+    },
+    {
+      "name": "living-medics",
+      "status": "PASS",
+      "seconds": 44.7
+    },
+    {
+      "name": "living-snatch",
+      "status": "PASS",
+      "seconds": 35.9
+    },
+    {
+      "name": "lockpick",
+      "status": "PASS",
+      "seconds": 61.9
+    },
+    {
+      "name": "markers-rings",
+      "status": "PASS",
+      "seconds": 26.4
+    },
+    {
+      "name": "mission-abandon",
+      "status": "PASS",
+      "seconds": 25.1
+    },
+    {
+      "name": "mission-card-keys",
+      "status": "PASS",
+      "seconds": 30.3
+    },
+    {
+      "name": "mission-retry",
+      "status": "PASS",
+      "seconds": 26.6
+    },
+    {
+      "name": "mission1-depot",
+      "status": "PASS",
+      "seconds": 38.8
+    },
+    {
+      "name": "mission2-ambulance",
+      "status": "PASS",
+      "seconds": 39.9
+    },
+    {
+      "name": "mission2-getaway",
+      "status": "PASS",
+      "seconds": 29.1
+    },
+    {
+      "name": "mission2-poison",
+      "status": "PASS",
+      "seconds": 35.0
+    },
+    {
+      "name": "mission3-summit",
+      "status": "PASS",
+      "seconds": 30.6
+    },
+    {
+      "name": "mission4-alert",
+      "status": "PASS",
+      "seconds": 51.1
+    },
+    {
+      "name": "mission4-paths",
+      "status": "PASS",
+      "seconds": 55.2
+    },
+    {
+      "name": "monarch-garages",
+      "status": "PASS",
+      "seconds": 113.6
+    },
+    {
+      "name": "north-point-key",
+      "status": "PASS",
+      "seconds": 34.1
+    },
+    {
+      "name": "parachute-cloud",
+      "status": "PASS",
+      "seconds": 68.5
+    },
+    {
+      "name": "parachute-liner",
+      "status": "PASS",
+      "seconds": 47.4
+    },
+    {
+      "name": "parked-bridge-efficiency",
+      "status": "PASS",
+      "seconds": 27.2
+    },
+    {
+      "name": "pause-restart",
+      "status": "PASS",
+      "seconds": 40.9
+    },
+    {
+      "name": "pedestrian-awareness",
+      "status": "FAIL",
+      "seconds": 118.6,
+      "message": "facing a car at 80 km/h from 41 m: 0.9 dodged, 0.5 cleared"
+    },
+    {
+      "name": "player-jump",
+      "status": "PASS",
+      "seconds": 34.8
+    },
+    {
+      "name": "police-radio",
+      "status": "PASS",
+      "seconds": 30.0
+    },
+    {
+      "name": "police-witness",
+      "status": "PASS",
+      "seconds": 57.2
+    },
+    {
+      "name": "respray-beacon",
+      "status": "PASS",
+      "seconds": 25.7
+    },
+    {
+      "name": "restart-carriers",
+      "status": "PASS",
+      "seconds": 43.8
+    },
+    {
+      "name": "rider-falls",
+      "status": "PASS",
+      "seconds": 33.9
+    },
+    {
+      "name": "roof-lifts",
+      "status": "PASS",
+      "seconds": 70.0
+    },
+    {
+      "name": "sky-meeting-talk",
+      "status": "PASS",
+      "seconds": 38.8
+    },
+    {
+      "name": "soundscape",
+      "status": "PASS",
+      "seconds": 29.4
+    },
+    {
+      "name": "surrender-input",
+      "status": "PASS",
+      "seconds": 25.9
+    },
+    {
+      "name": "taxi-ride",
+      "status": "PASS",
+      "seconds": 27.6
+    },
+    {
+      "name": "traffic-pass-parked",
+      "status": "PASS",
+      "seconds": 24.5
+    },
+    {
+      "name": "trail-trees",
+      "status": "PASS",
+      "seconds": 25.4
+    },
+    {
+      "name": "vehicle-body-impacts",
+      "status": "PASS",
+      "seconds": 39.1
+    },
+    {
+      "name": "view-remembered",
+      "status": "PASS",
+      "seconds": 74.6
+    },
+    {
+      "name": "wet-glints",
+      "status": "SKIP",
+      "seconds": 24.6,
+      "message": "Requires WebGL: run with --render"
+    },
+    {
+      "name": "wheelie",
+      "status": "PASS",
+      "seconds": 43.0
+    },
+    {
+      "name": "witnesses-venues",
+      "status": "PASS",
+      "seconds": 27.3
+    },
+    {
+      "name": "world-edge",
+      "status": "PASS",
+      "seconds": 78.8
+    },
+    {
+      "name": "wreck-limit",
+      "status": "PASS",
+      "seconds": 108.9
+    },
+    {
+      "name": "demo-free-roam-markers",
+      "status": "PASS",
+      "seconds": 53.7
+    },
+    {
+      "name": "mission-replay-frontier",
+      "status": "PASS",
+      "seconds": 65.1
+    }
+  ],
+  "focusedAttemptsCounts": {
+    "PASS": 16,
+    "SKIP": 0,
+    "FAIL": 1
+  },
+  "finalSourceFocusedCounts": {
+    "PASS": 16,
+    "SKIP": 0,
+    "FAIL": 1
+  },
+  "focusedFixtureFiles": [
+    {
+      "file": "tools/tests/car-blood.mjs",
+      "sha256": "64a14725194a28bd1e836e887f92196c3505576a7d8d919efcc96152ed24c1a9"
+    },
+    {
+      "file": "tools/tests/clouds.mjs",
+      "sha256": "fbc786a0b3752ef35c3da73089481d1d3c4526cd6350844c50ea19618b3c8769"
+    },
+    {
+      "file": "tools/tests/freeroam-respawn.mjs",
+      "sha256": "b267be8a17b45a17edcd636a8237e1991e9ca5739bc4c0fa7008ba0c9ec43e62"
+    },
+    {
+      "file": "tools/tests/garages-islands.mjs",
+      "sha256": "8728d2f283415e16cb99d6e3f92f95c0fed9f85a4356cfc918921c3053915172"
+    },
+    {
+      "file": "tools/tests/gore-dismember.mjs",
+      "sha256": "029cacc53e76c7d1c3ec9e849bc31f843ce3f101ed09a65b27ffd09d11ae3ad2"
+    },
+    {
+      "file": "tools/tests/nudge-aside.mjs",
+      "sha256": "e09e539306706930673d2ab954f2c63fe7c0383878b460985e4c602f201759dc"
+    },
+    {
+      "file": "tools/tests/pedestrian-awareness.mjs",
+      "sha256": "3f9b226789cbfd21db06187405715d83ab9e3fa3664bc1105ed273e609462731"
+    },
+    {
+      "file": "tools/tests/respawn-focus-pause.mjs",
+      "sha256": "29a2fd31ee30343fe54f72931027fb4ed387b5b22a17d592fb808056ae131511"
+    },
+    {
+      "file": "tools/tests/restart-carriers.mjs",
+      "sha256": "1d6383b9b7fa0f3fe4ea2b0596c444e4b5bc2b07e01dc374d749b7f309a82519"
+    },
+    {
+      "file": "tools/tests/rider-falls.mjs",
+      "sha256": "1aff6143f47d9c92cc11233dd61cf1a284643d7640009cc85e0d0ae93f44709e"
+    },
+    {
+      "file": "tools/tests/second-run-over.mjs",
+      "sha256": "dbcd8188b28226eabcb88305791632588c4b8bc18d421cc4b415b698427ead82"
+    },
+    {
+      "file": "tools/tests/sky-meeting.mjs",
+      "sha256": "492e465127fe684fe699e0905dc057b9add14ae5097183026c085c2557f44825"
+    },
+    {
+      "file": "tools/tests/terrace-death.mjs",
+      "sha256": "c2eeea27d61821a27df01d44c2d97f0d4a56a2dbcdbc14ae87eebc5d53618c06"
+    },
+    {
+      "file": "tools/tests/terrain-rock-contact.mjs",
+      "sha256": "c3835d60f06c3f86a0a5db78658709a81a90c37609159502e834a9239f830daf"
+    },
+    {
+      "file": "tools/tests/vehicle-body-impacts.mjs",
+      "sha256": "3e0922d20129675f822f6d1b356f2b39247ecb795949d4a1f5a498fcd3826b6d"
+    },
+    {
+      "file": "tools/tests/vehicle-impact-respawn.mjs",
+      "sha256": "b00732b7dcad7da2510e3307ba1de16d21ad206ef170c4392fd2b48f5c464678"
+    },
+    {
+      "file": "tools/tests/world-reset.mjs",
+      "sha256": "81f0810da7f135dda535797d6ea23f820cd6f57aaeba9458311da3ab237c9750"
+    }
+  ],
+  "finalSourceFocusedResults": [
+    {
+      "name": "respawn-focus-pause",
+      "status": "PASS",
+      "seconds": 0.1
+    },
+    {
+      "name": "terrain-rock-contact",
+      "status": "PASS",
+      "seconds": 19.8
+    },
+    {
+      "name": "vehicle-impact-respawn",
+      "status": "PASS",
+      "seconds": 0.1
+    },
+    {
+      "name": "car-blood",
+      "status": "PASS",
+      "seconds": 101.7
+    },
+    {
+      "name": "clouds",
+      "status": "PASS",
+      "seconds": 23.0
+    },
+    {
+      "name": "freeroam-respawn",
+      "status": "PASS",
+      "seconds": 36.1
+    },
+    {
+      "name": "garages-islands",
+      "status": "PASS",
+      "seconds": 21.8
+    },
+    {
+      "name": "gore-dismember",
+      "status": "PASS",
+      "seconds": 26.2
+    },
+    {
+      "name": "nudge-aside",
+      "status": "PASS",
+      "seconds": 18.3
+    },
+    {
+      "name": "pedestrian-awareness",
+      "status": "FAIL",
+      "seconds": 91.8,
+      "message": "facing a car at 80 km/h from 41 m: 0.9 dodged, 0.5 cleared"
+    },
+    {
+      "name": "restart-carriers",
+      "status": "PASS",
+      "seconds": 28.2
+    },
+    {
+      "name": "rider-falls",
+      "status": "PASS",
+      "seconds": 29.4
+    },
+    {
+      "name": "second-run-over",
+      "status": "PASS",
+      "seconds": 24.3
+    },
+    {
+      "name": "terrace-death",
+      "status": "PASS",
+      "seconds": 24.1
+    },
+    {
+      "name": "vehicle-body-impacts",
+      "status": "PASS",
+      "seconds": 26.2
+    },
+    {
+      "name": "world-reset",
+      "status": "PASS",
+      "seconds": 34.8
+    },
+    {
+      "name": "sky-meeting",
+      "status": "PASS",
+      "seconds": 47.0
+    }
+  ],
+  "effectiveCounts": {
+    "PASS": 220,
+    "SKIP": 18,
+    "FAIL": 2
+  },
+  "experimentalPedestrianResults": [
+    {
+      "name": "pedestrian-awareness",
+      "status": "FAIL",
+      "seconds": 75.7,
+      "message": "facing a car at 80 km/h from 41 m: 0.7 dodged, 0.2 cleared"
+    }
+  ],
+  "note": "Effective counts include focused replacements/additions; this is not an unqualified one-shot green broad pass. Renderer-only skips retain their reasons."
+}

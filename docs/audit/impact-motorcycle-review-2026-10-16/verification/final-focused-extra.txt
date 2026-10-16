@@ -1,0 +1,6 @@
+Waiting for final focused group before extra corrected-fixture checks
+Running extra final-source checks: sky-meeting
+started dev server (?dev&norender: boot 20s)
+PASS sky-meeting (47.0s)
+     arrival: {"him":{"name":"ANTON VARGA","x":4312,"y":-3845,"altitude":1409.9,"pose":null,"sitting":false,"hidden":false,"hand":null,"hp":100,"speech":"This way. I keep a table by the glass."},"you":{"x":4302,"y":-3847,"altitude":1409.9,"roof":"evolution"}}
+1/1 passed, 0 skipped, 0 failed in 68s

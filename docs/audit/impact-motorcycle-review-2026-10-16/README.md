@@ -4,7 +4,7 @@ This pass continues the permanent `codex-reviews` branch. The owner requested mo
 
 ## Changes
 
-- Bumper contacts now launch player and NPC bodies into the same gravity-driven flight, with speed/frontage/edge-dependent momentum, tumble, ground bounce and sliding. Survivors blend through getting up. Fatal impacts retain body motion and leave a pool only after landing. Harmless walking-speed nudges and separate repeat run-overs retain their contracts.
+- Bumper contacts now launch player and NPC bodies into the same gravity-driven flight, with speed/frontage/edge-dependent momentum, tumble, ground bounce and sliding. Survivors blend through getting up. Fatal impacts retain body motion and leave a pool only after landing. Vehicle-hit deaths wait for their slowed fall/slide before hospital return, with a 16-second fallback; ordinary deaths retain 4.2 seconds. Harmless walking-speed nudges and separate repeat run-overs retain their contracts.
 - People already overlapping a vehicle’s padded footprint can move out or along it. Walking into a clear car, deeper into one, into a second car or through a wall remains blocked.
 - The Dolcati V4 uses ROY’s CC BY 4.0 Panigale source. Source close geometry, textures and normals are retained, with shared near/far geometry and fitted steering, wheel centres, saddle, grips and pegs. The existing vehicle and approved motorcycle packs are preserved.
 - KUZUKI 600R replaces the VORTEX 900 display name. Its `bike` identity stays compatible with existing traffic and saves. Its sound uses real CC0 Kawasaki ZX6R idle and Suzuki inline-four exhaust recordings, six ratios, shift unloading, engine braking and a high-rev limiter.
@@ -23,12 +23,23 @@ The capture receipts retain exact HTML and recorder hashes, fixture parameters, 
 
 ## Verification inputs
 
-The final game is frozen from `9db35c35`, SHA-256 `a484c44c40fbca69b42963561994117ecc933d6fb51fd434dc0349cd6209bb46`. Later test-fixture corrections and documentation build byte-identically. The split entry point is `a769758dda13073bd8e326ae2504cc6129c3f0e1db01e5f23d9cbd154533c496`. Receipts are under [verification](verification/).
+The final game is frozen from `9cdfb304`, SHA-256 `4fb728805903abdb8a6afe04c258fdb1c2d7e21274814d9e7cb44d26fbb45d08`. Later test-fixture corrections and documentation build byte-identically. The split entry point is `871f214e44785d89a19e530f16ae91cdbc44b401c65caab6acd4ec93d8e58fa0`. The disjoint broad suite uses `9db35c35`; the final source adds only the bounded fatal-impact respawn, checked separately with actual solver/timer cases and focused release tests. Receipts are under [verification](verification/).
 
 - The eight final native captures passed with zero captured console errors, GL losses or frame faults. They verify the actual imported `dolcati_roy` model, a player and NPC airborne after 65 km/h strikes, the KUZUKI wheelie at 18.9°/60 km/h, and Graphics with motion blur absent and outline/ring off despite a legacy saved blur setting.
+- The fatal-impact respawn and existing death/arrest focus paths passed 138 host assertions. Actual wet-road trajectories at 70/110/150 km/h settle after 7.84/11.21/13.55 wall seconds under 35% slow motion and return after 7.9/11.3/13.6. Stalled flight returns at 16 seconds; ordinary death stays at 4.2 seconds. Stale callbacks preserve a later death and canceled scenes clean up WASTED.
 - The production sound graph and native browser decode checks passed. The offline sample and exact source/buffer hashes are retained with their receipts.
 - Media-pack tests passed 183 assertions, cache tests passed 23, and the oversized model reconstructed byte-for-byte from bounded classic-script chunks. All 14 packs are at most 12,000,000 bytes including their wrappers.
-- Local project-subpath verification passed all 121 publication files (173,927,707 bytes), including both galleries and preserved prior image URLs. Gallery asset links resolve and native screenshot digests match their capture receipts.
+- Local project-subpath verification passed all 121 publication files (173,923,210 bytes), including both galleries and preserved prior image URLs. Gallery asset links resolve and native screenshot digests match their capture receipts.
+
+## Regression results
+
+The disjoint 239-module broad run retained **214 PASS / 18 renderer-only SKIP / 7 FAIL**. Final-source focused checks retained **16 PASS / 1 FAIL** across 17 distinct modules. Combining corrected final results gives **220 PASS / 18 SKIP / 2 known failures** across 240 modules, including the new respawn regression. This is a qualified result, not a one-shot green suite. Exact inputs, original/focused logs and per-module outcomes are in [regression-results.json](verification/regression-results.json).
+
+Four test setups were corrected without lowering assertions: cloud flight restores cloudy weather; the isolated terrain VM loads production controls; blood-stain contacts clear unrelated traffic; the cocktail test observes a quiet sip after dialogue. A production-code phase sweep shows the old cocktail window fails 252/850 phases and the quiet window 0/850. Its archived VM reproduction can be run from the repository root and writes its report to `work/`. The unchanged garage test passed its release rerun.
+
+Two failures remain explicit. The existing Mount Ascent pilot repeats its prior 76.88 s miss of the unchanged 75 s target. The original pedestrian-awareness rate assertion also fails the previous published `7f45832a` build: 0.4 cleared versus 0.5 in the current original test, against 0.6 required. Its live-world RNG, actor indices and update cadence prevent a clean statistical comparison. A population-isolation experiment did not stabilize it and was reverted; both builds and that experiment are retained in the baseline receipts. Perception/dodge/contact source was not changed to tune the rates. See [baseline comparison](verification/baseline-pedestrian-results.json).
+
+The split release passed native smoke with real keys: 16 units walking, 24 driving, map, both cameras, [six native PNGs](verification/packaged-smoke/) and zero errors (one existing Three.js deprecation warning). All nine streamed tracks reached `canplay`. Final native captures use the exact release HTML, actual downloaded model and unchanged PNG bytes.
 
 ## Limits
 

@@ -1,0 +1,33 @@
+Waiting for one complete shard before opening final-source focused browser
+Running final-source focused checks
+started dev server (?dev&norender: boot 18.8s)
+PASS respawn-focus-pause (0.1s)
+     actual death/arrest callbacks and pause: focused return stays live; hidden/blurred return pauses; timing, costs, ammo, mission identity and world reset preserved
+PASS terrain-rock-contact (19.8s)
+     summed contact height 2 · rock plus terrain x slope 0.5000000000000001 · rock plus terrain y slope -0.09999999999999981 · SUV 0/15: progress 0.293, max 18 km/h, no flights/damage/overturn · SUV 1/15: progress 0.291, max 18 km/h, no flights/damage/overturn · SUV 2/15: progress 0.293, max 18 km/h, no flights/damage/overturn · SUV 0/20: progress 0.337, max 23 km/h, no flights/damage/overturn · SUV 1/20: progress 0.339, max 23 km/h, no flights/damage/overturn · SUV 2/20: progress 0.339, max 23 km/h, no flights/damage/overturn · SUV 0/28: progress 0.397, max 30 km/h, no flights/damage/overturn · SUV 1/28: progress 0.396, max 30 km/h, no flights/damage/overturn · SUV 2/28: progress 0.399, max 31 km/h, no flights/damage/overturn
+PASS vehicle-impact-respawn (0.1s)
+     {"slowMotion":0.35,"wetGrip":0.72,"trajectories":[{"kph":70,"settledSeconds":7.84,"respawnSeconds":7.9},{"kph":110,"settledSeconds":11.21,"respawnSeconds":11.3},{"kph":150,"settledSeconds":13.55,"respawnSeconds":13.6}],"hardCapSeconds":16}
+PASS car-blood (101.7s)
+     fatal sev by km/h: {"16":0.01,"20":0.05,"25":0.12,"30":0.2,"50":0.47,"80":0.68,"120":0.75} · sev at 16 km/h (barely a drop) 0.01 · sev at 25 km/h (a few drops) 0.12 · sev at 50 km/h (a clear splash) 0.47 · sev at 80 km/h (heavy) 0.68 · sev at 120 km/h (no more than 0.76) 0.75 · a survivor at 50 km/h (0.6 of a death) 0.28 · fatal run-over: sev 0.68 at (19.4, 4) 78 km/h · stopped at once: flow 0.16, creep 1 after 24 s · blood load of five people at 50 km/h 2.35 · five at 50 km/h: 3 records, load 2.35 (one at 80 km/h: 0.68)
+PASS clouds (23.0s)
+     fair base over the city (m) 383.8 · fair cumulus depth (m) 366.2 · overcast base, weather alone (m) 300.4 · overcast base over the city (m) 306 · overcast base over MOUNT ASCENT against its summit (m) 25.5 · fair 383.8-750 m (sea 347.4 m), overcast 306-568 m, Mount Ascent 134 m · jump over (748, 584): immersion 1.00
+PASS freeroam-respawn (36.1s)
+PASS garages-islands (21.8s)
+     northbank eastside: 8 m · northbank south: 338 m · palmkeys palm: 30 m · ridgeline county: 30 m · monarch monarch: 245 m · oceanview oceanview: 114 m · coralcoast coral: 114 m · sunsetisle pier: 69 m · sentinel sentinel: 19 m
+PASS gore-dismember (26.2s)
+     shotgun 1.5 m leg: {"x":432,"y":4600,"a":0,"hp":-32,"dead":true,"down":true,"lost":["leg R"],"pieces":1,"thrown":1,"wounds":2,"bleedOut":null,"hit":{"cls":"buck","zone":"leg","close":1,"scale":0.132,"burst":0}} · severed: [["leg",true,0.55]] · after 30 loads: 24 pieces, 16 stumps, 48 tracked; decals 480
+PASS nudge-aside (18.3s)
+     down 23 units off the car's line (victim placed at 506,4600)
+FAIL pedestrian-awareness (91.8s): facing a car at 80 km/h from 41 m: 0.9 dodged, 0.5 cleared
+     toward 40 km/h, 27 m: noticed 100% (eyes 10, ears 0), dodged 90% (cleared 80%), hit 20% (0 without a cry) {"sidestep":8,"freeze":1,"back":1} · away 40 km/h, 27 m: noticed 20% (eyes 0, ears 2), dodged 0% (cleared 0%), hit 100% (8 without a cry) {"none":8,"pending":2} · away 40 km/h, 27 m, horn: noticed 80% (eyes 0, ears 8), dodged 20% (cleared 10%), hit 90% (2 without a cry) {"freeze":4,"dodge":2,"pending":2,"none":2} · side 40 km/h, 27 m: noticed 100% (eyes 10, ears 0), dodged 70% (cleared 70%), hit 30% (0 without a cry) {"freeze":3,"dodge":7} · toward 80 km/h, 41 m: noticed 100% (eyes 10, ears 0), dodged 90% (cleared 50%), hit 50% (0 without a cry) {"dodge":8,"freeze":1,"sidestep":1} · toward 40 km/h, 5 m: noticed 100% (eyes 10, ears 0), dodged 0% (cleared 0%), hit 100% (0 without a cry) {"pending":10} · toward 80 km/h, 12 m: noticed 100% (eyes 10, ears 0), dodged 0% (cleared 0%), hit 100% (0 without a cry) {"pending":10} · toward 40 km/h, texting: noticed 100% (eyes 10, ears 0), dodged 10% (cleared 10%), hit 90% (0 without a cry) {"dodge":1,"pending":8,"late":1} · toward 40 km/h, same gap: noticed 100% (eyes 10, ears 0), dodged 90% (cleared 90%), hit 10% (0 without a cry) {"dodge":9,"freeze":1}
+PASS restart-carriers (28.2s)
+PASS rider-falls (29.4s)
+     25 km/h: hp 97; 45 km/h: hp 79 (into the wall at 39 km/h)
+PASS second-run-over (24.3s)
+     harm: sedan 6 km/h 12.3/16.1/20.7, 30 km/h 28.2/36.9/47.5; truck 8 km/h 37.9; bicycle 20 km/h 17.4 · two passes: dying 0.4 s after the second at 29 km/h, 2 stains on the car · 6 km/h over someone down: hp 30 -> 12, still down 2.8
+PASS terrace-death (24.1s)
+PASS vehicle-body-impacts (26.2s)
+     gravity over 0.3 s 2.9429999999999996
+PASS world-reset (34.8s)
+     live $100 stake survives WASTED as one void/refund; odds format/history/statistics remain after BUSTED
+15/16 passed, 0 skipped, 1 failed in 800s

@@ -29,104 +29,104 @@
     },
     {
       "file": "images/after-dolcati-side.png",
-      "sha256": "654db3952835cdb5552685824b5f70bb272d9c24afad6e75fc89b7b5ecfb1964",
-      "bytes": 387921,
+      "sha256": "1a9cce2188ccbe841dacb5f6d96d468992c46beb289d63cf0ef83f999f7bec88",
+      "bytes": 387737,
       "dimensions": [
         740,
         500
       ],
-      "htmlSha256": "a484c44c40fbca69b42963561994117ecc933d6fb51fd434dc0349cd6209bb46",
+      "htmlSha256": "4fb728805903abdb8a6afe04c258fdb1c2d7e21274814d9e7cb44d26fbb45d08",
       "recorderSha256": "515e6cee4a5966086f6235e6c59e0f3e46cb2a999115635bc85e51a76187e652",
       "capture": "after-dolcati-side",
       "report": "verification/capture-after.json"
     },
     {
       "file": "images/after-dolcati-front.png",
-      "sha256": "c46803be03ac754d918e1c996dc3d754d4939b8e4e0f90c0ae58b928addf1979",
-      "bytes": 380862,
+      "sha256": "58b6bb3f21b3b1186d8737303377d9f666800d8b82d1be7f41e66332d5c5fa18",
+      "bytes": 380826,
       "dimensions": [
         740,
         500
       ],
-      "htmlSha256": "a484c44c40fbca69b42963561994117ecc933d6fb51fd434dc0349cd6209bb46",
+      "htmlSha256": "4fb728805903abdb8a6afe04c258fdb1c2d7e21274814d9e7cb44d26fbb45d08",
       "recorderSha256": "515e6cee4a5966086f6235e6c59e0f3e46cb2a999115635bc85e51a76187e652",
       "capture": "after-dolcati-front",
       "report": "verification/capture-after.json"
     },
     {
       "file": "images/after-impact-player-air.png",
-      "sha256": "75e38f98c9f9b62b310b0b827d993e3e4c2e3161f681ee205740bcc8cb2dc1e3",
-      "bytes": 427683,
+      "sha256": "87a645c0049e3436f67757f9823db5b86a33c84be8e718ebb05c7a75e61e70dd",
+      "bytes": 426283,
       "dimensions": [
         740,
         500
       ],
-      "htmlSha256": "a484c44c40fbca69b42963561994117ecc933d6fb51fd434dc0349cd6209bb46",
+      "htmlSha256": "4fb728805903abdb8a6afe04c258fdb1c2d7e21274814d9e7cb44d26fbb45d08",
       "recorderSha256": "515e6cee4a5966086f6235e6c59e0f3e46cb2a999115635bc85e51a76187e652",
       "capture": "after-impact-player-air",
       "report": "verification/capture-after.json"
     },
     {
       "file": "images/after-impact-player-tumble.png",
-      "sha256": "450f9b573b41d6badd634636e80aa88e7477afa6c12a5cc6662d6af768c63435",
-      "bytes": 435249,
+      "sha256": "a0bdd092a33ada8cbdf6436d7a0c6a875362e6f4a68e17855df05a4aea08f2e7",
+      "bytes": 431661,
       "dimensions": [
         740,
         500
       ],
-      "htmlSha256": "a484c44c40fbca69b42963561994117ecc933d6fb51fd434dc0349cd6209bb46",
+      "htmlSha256": "4fb728805903abdb8a6afe04c258fdb1c2d7e21274814d9e7cb44d26fbb45d08",
       "recorderSha256": "515e6cee4a5966086f6235e6c59e0f3e46cb2a999115635bc85e51a76187e652",
       "capture": "after-impact-player-tumble",
       "report": "verification/capture-after.json"
     },
     {
       "file": "images/after-impact-pedestrian-air.png",
-      "sha256": "f9531236b5e4a988911aefda6abbee34dba4778326518a97df06de6d207ce5e8",
-      "bytes": 437049,
+      "sha256": "268dc33d2f30adbf366ebd9a5a09ea54d753852c2489cd621dd96c10efe1b9c4",
+      "bytes": 436671,
       "dimensions": [
         740,
         500
       ],
-      "htmlSha256": "a484c44c40fbca69b42963561994117ecc933d6fb51fd434dc0349cd6209bb46",
+      "htmlSha256": "4fb728805903abdb8a6afe04c258fdb1c2d7e21274814d9e7cb44d26fbb45d08",
       "recorderSha256": "515e6cee4a5966086f6235e6c59e0f3e46cb2a999115635bc85e51a76187e652",
       "capture": "after-impact-pedestrian-air",
       "report": "verification/capture-after.json"
     },
     {
       "file": "images/after-impact-pedestrian-tumble.png",
-      "sha256": "6716d1f8f33b5b7cb3ce836b7dc9e013a8c0cc3364139729b266c073be318ed2",
-      "bytes": 482542,
+      "sha256": "cc4e29ab7edb54ac0a591634469900b02be16b1a04845f1d8cfbfaf2ed9a4ed0",
+      "bytes": 482400,
       "dimensions": [
         740,
         500
       ],
-      "htmlSha256": "a484c44c40fbca69b42963561994117ecc933d6fb51fd434dc0349cd6209bb46",
+      "htmlSha256": "4fb728805903abdb8a6afe04c258fdb1c2d7e21274814d9e7cb44d26fbb45d08",
       "recorderSha256": "515e6cee4a5966086f6235e6c59e0f3e46cb2a999115635bc85e51a76187e652",
       "capture": "after-impact-pedestrian-tumble",
       "report": "verification/capture-after.json"
     },
     {
       "file": "images/after-kuzuki-wheelie.png",
-      "sha256": "72cc05e1fcc0982c37a91c7094eb7133018db47431a64bd45586d355f6657904",
-      "bytes": 555449,
+      "sha256": "6a2d95ebbf8b9ffacc25c7f30ce5bbffd2561ccff9ca7f8e804d22a8bfd9450e",
+      "bytes": 555340,
       "dimensions": [
         740,
         500
       ],
-      "htmlSha256": "a484c44c40fbca69b42963561994117ecc933d6fb51fd434dc0349cd6209bb46",
+      "htmlSha256": "4fb728805903abdb8a6afe04c258fdb1c2d7e21274814d9e7cb44d26fbb45d08",
       "recorderSha256": "515e6cee4a5966086f6235e6c59e0f3e46cb2a999115635bc85e51a76187e652",
       "capture": "after-kuzuki-wheelie",
       "report": "verification/capture-after.json"
     },
     {
       "file": "images/after-graphics-settings.png",
-      "sha256": "cb440d09516077626052a1264cc75fdb8c09061690f4564ae0ff6201ef72b14b",
-      "bytes": 138760,
+      "sha256": "394d603c0762342046e49f46634e60d20fe47010e468d3cbe253bbc7239adf22",
+      "bytes": 139023,
       "dimensions": [
         1000,
         700
       ],
-      "htmlSha256": "a484c44c40fbca69b42963561994117ecc933d6fb51fd434dc0349cd6209bb46",
+      "htmlSha256": "4fb728805903abdb8a6afe04c258fdb1c2d7e21274814d9e7cb44d26fbb45d08",
       "recorderSha256": "515e6cee4a5966086f6235e6c59e0f3e46cb2a999115635bc85e51a76187e652",
       "capture": "after-graphics-settings",
       "report": "verification/capture-after.json"

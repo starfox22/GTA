@@ -16,6 +16,11 @@ The source model/credits are documented in [Dolcati source](audit/dolcati-source
 from an exact GSX-R600 sample. Player outline/ring default off; saved choices persist.
 Motion blur is temporarily disabled and removed from Graphics, including old saved enablement.
 
+Final release source is `9cdfb304` (bounded fatal-impact hospital return). The audit retains
+qualified full/focused results, native release captures, packaged smoke and streamed audio.
+Two known checks remain: the unchanged Mount Ascent pilot timer and the live-world
+pedestrian-awareness rate fixture, which also fails the previous published build.
+
 ## October 15: police, aircraft, airport access and hot rod
 
 Continue from **`origin/codex-reviews`** in `starfox22/GTA`, the same permanent
