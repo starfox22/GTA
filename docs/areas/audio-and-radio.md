@@ -83,7 +83,9 @@ doors, tyre ground) is in audio-soundscape.md.
   media in the page**: `"stream": true` entries (the nine radio tracks) are copied to
   `media/*.mp3` and played by URL; every other entry goes into a media pack,
   `media/pack-{images,audio,data}[-n].js`, a plain script registering the same data: URL in
-  `window.DEAD_END_CITY_MEDIA` (asset-loader.js reads it first). Classic `<script src>` works
+  `window.DEAD_END_CITY_MEDIA` (asset-loader.js reads it first). A single oversized
+  entry appends its data URL across ordered packs before the loader starts; every
+  complete script, including wrappers, stays at most 12 MB. Classic `<script src>` works
   from file://, where fetch() and WebGL textures from image files are blocked, so the zip
   still plays offline. Limits: page ≤ 16 MB, each file ≤ 15 MB (packs split at 12 MB),
   256 MB per artifact version. Prefer small media (WebP, MP3/OGG) all the same: players

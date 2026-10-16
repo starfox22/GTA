@@ -18,7 +18,8 @@ and SHA-256 so the assembled file can be audited without tooling.
                                          other entry goes into a media pack, media/pack-<kind>.js
                                          (images, audio, data; -2, -3... past PACK_LIMIT), a
                                          plain script that registers the same labelled Base64
-                                         as a data: URL. Classic <script src> tags load them in
+                                         as a data: URL (oversized values append across packs).
+                                         Classic <script src> tags load them in
                                          order before the asset loader, so the game starts the
                                          same way, and they work from file:// (the zip) where
                                          fetch() and WebGL textures from files are blocked.
@@ -109,6 +110,13 @@ def write_media_packs(split_dir, entries):
     sizes = {}
     order = []
     counters = {}
+    wrapper = (
+        '// Dead End City media pack (tools/build.py --split-media): labelled Base64\n'
+        '// registered as data: URLs for src/asset-loader.js. Not code to edit.\n'
+        '(function (M) {\n'
+    )
+    close = '})((window.DEAD_END_CITY_MEDIA = window.DEAD_END_CITY_MEDIA || {}));\n'
+    capacity = PACK_LIMIT - len(wrapper) - len(close)
     for entry in entries:
         with open(os.path.join(ROOT, entry['file']), 'rb') as fh:
             raw = fh.read()
@@ -121,22 +129,51 @@ def write_media_packs(split_dir, entries):
         kind = pack_kind(entry)
         n = counters.setdefault(kind, 1)
         name = f'pack-{kind}.js' if n == 1 else f'pack-{kind}-{n}.js'
-        if name in packs and sizes[name] + len(chunk) > PACK_LIMIT:
+        if len(chunk) > capacity:
+            # An individual source can be larger than a pack (the exact source
+            # motorcycle mesh, for example). Ordered classic scripts concatenate
+            # its data URL before the asset loader runs; file:// still needs no
+            # fetch, modules or asynchronous reassembly. Keep other entries in
+            # their ordinary independent packs and retain source audit labels.
+            if name in packs:
+                n += 1
+            at = 0
+            while at < len(url):
+                name = f'pack-{kind}.js' if n == 1 else f'pack-{kind}-{n}.js'
+                label = f"// {entry['original']} | {len(raw)} bytes | SHA-256 {sha}\n"
+                assignment = f"M[{json.dumps(entry['id'])}] {'=' if at == 0 else '+='} "
+                room = capacity - len(label) - len(assignment) - len(';\n') - 2
+                if room <= 0:
+                    raise ValueError('Media pack limit cannot hold the source label: ' + entry['id'])
+                piece = url[at:at + room]
+                encoded = json.dumps(piece)
+                # Normal data URLs are ASCII; also account for JSON escaping in
+                # an unusual MIME label without ever splitting an escape token.
+                while len(encoded) > room + 2:
+                    piece = piece[:len(piece) - (len(encoded) - room - 2)]
+                    encoded = json.dumps(piece)
+                if not piece:
+                    raise ValueError('Media pack limit cannot hold a data URL fragment: ' + entry['id'])
+                fragment = label + assignment + encoded + ';\n'
+                packs[name] = [wrapper, fragment]
+                sizes[name] = len(fragment)
+                order.append(name)
+                at += len(piece)
+                n += 1
+            counters[kind] = n
+            continue
+        if name in packs and sizes[name] + len(chunk) > capacity:
             counters[kind] = n = n + 1
             name = f'pack-{kind}-{n}.js'
         if name not in packs:
-            packs[name] = [
-                '// Dead End City media pack (tools/build.py --split-media): labelled Base64\n'
-                '// registered as data: URLs for src/asset-loader.js. Not code to edit.\n'
-                '(function (M) {\n'
-            ]
+            packs[name] = [wrapper]
             sizes[name] = 0
             order.append(name)
         packs[name].append(chunk)
         sizes[name] += len(chunk)
     references = []
     for name in order:
-        payload = (''.join(packs[name]) + '})((window.DEAD_END_CITY_MEDIA = window.DEAD_END_CITY_MEDIA || {}));\n').encode('ascii')
+        payload = (''.join(packs[name]) + close).encode('ascii')
         with open(os.path.join(split_dir, 'media', name), 'wb') as fh:
             fh.write(payload)
         sha = hashlib.sha256(payload).hexdigest()
