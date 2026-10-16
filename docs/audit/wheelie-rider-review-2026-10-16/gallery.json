@@ -1,0 +1,48 @@
+{
+  "title": "Wheelie controls, rider motion and distance achievements",
+  "introduction": "Native 3D game frames of independent rider controls, a sustained wheelie, actual distance milestones, corner lean and supported recovery. The counter advances through physical travel in the shipped simulation. Achievement screenshots pause the game's own CSS animation at 350 ms; rider falls use named gameplay fixtures. Click an image for its original viewport pixels. Capture inputs, validation and the limits of the assisted balance and procedural animation are recorded in the linked audit.",
+  "comparisons": [],
+  "screenshots": [
+    {
+      "title": "Beyond 100 m — GREAT!",
+      "description": "Actual airborne front-wheel travel crosses 100 metres. The native HUD celebrates with a brief blue glow, shine and text burst; its progress bar now targets 200 metres. This frame pauses the native achievement animation at 350 ms.",
+      "file": "screenshots/native/wheelie-review-great-100m.png"
+    },
+    {
+      "title": "Beyond 200 m — Amazing!",
+      "description": "The same uninterrupted wheelie crosses 200 metres through continued forward simulation. The second achievement adds a stronger gold glow and a bounded ray burst. The native CSS animation is paused at its 350 ms frame.",
+      "file": "screenshots/native/wheelie-review-amazing-200m.png"
+    },
+    {
+      "title": "Landing — final wheelie distance",
+      "description": "Rider-forward input lowers the front and a confirmed touchdown ends the run. The final measured distance remains visible for four gameplay seconds. Touchdown grace cannot add ground travel, and pause holds the result timer.",
+      "file": "screenshots/native/wheelie-review-landed-result.png"
+    },
+    {
+      "title": "Corner lean — bike and rider move together",
+      "description": "Throttle and steering inputs produce the motorcycle's physical bank. Rider posture follows the bank, with bounded torso and pelvis movement and a view through the bend; hands and feet retain their source-model IK contacts.",
+      "file": "screenshots/native/wheelie-review-corner-lean.png"
+    },
+    {
+      "title": "Lowside — release on the falling side",
+      "description": "A named 45 km/h lowside fixture advances through the shipped rider-fall solver. Rider and bike retain their release side, the rider gathers the knees and protects the head, and momentum continues after separation.",
+      "file": "screenshots/native/wheelie-review-lowside-release.png"
+    },
+    {
+      "title": "Recovery — supported crouch to standing",
+      "description": "The same staged fall advances into recovery after its existing injury and knockout wait. The posed boot, knee or hand supports the body above the road as the rider gathers into a crouch and stands.",
+      "file": "screenshots/native/wheelie-review-supported-recovery.png"
+    },
+    {
+      "title": "Movement controls — separate acceleration and braking",
+      "description": "Settings shows W for Forward and S for Back / brake. Default Up and Down arrows now belong to rider weight actions; they do not accelerate or brake a motorcycle. Only exact legacy default movement pairs migrate, preserving custom bindings.",
+      "file": "screenshots/native/wheelie-review-movement-controls.png"
+    },
+    {
+      "title": "Wheelie bindings — independent rider weight",
+      "description": "Settings exposes independently remappable Wheelie up / lean back and Wheelie down / lean forward actions, defaulting to Up and Down. Rider weight fades in between 3 and 8 km/h; stopped or reversing arrow presses cannot move the rider or propel the bike.",
+      "file": "screenshots/native/wheelie-review-wheelie-bindings.png"
+    }
+  ],
+  "sounds": []
+}
