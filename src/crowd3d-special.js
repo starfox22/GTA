@@ -463,7 +463,64 @@
         riderHands = [new Three.Vector3(), new Three.Vector3()],
         riderFeet = [new Three.Vector3(), new Three.Vector3()],
         riderScratch = new Three.Vector3(),
-        riderScale = new Three.Vector3();
+        riderScale = new Three.Vector3(),
+        riderBase = new Three.Vector3(), riderShift = new Three.Vector3(),
+        riderFitRoot = new Three.Matrix4(), riderFitHips = new Three.Matrix4(),
+        riderFitTorso = new Three.Matrix4(), riderFitShoulder = new Three.Matrix4();
+      function riderArmDistance(sp, R, H) {
+        riderFitRoot.copy(riderRoot).scale(riderScale.set(H, H, H));
+        crowdJoint(riderFitHips, riderFitRoot, 0, RIG.hip, 0, 0, (sp.torsoRoll || 0) * .4);
+        crowdJoint(riderFitTorso, riderFitHips, 0, RIG.waist, 0, sp.riderLean, sp.torsoRoll || 0, sp.torsoTwist || 0);
+        let farthest = 0;
+        for (let side = 0; side < 2; side++) {
+          crowdJoint(riderFitShoulder, riderFitTorso, 0, RIG.shoulderY, (side ? 1 : -1) * R.shoulderZ * R.width);
+          farthest = Math.max(farthest, riderScratch.setFromMatrixPosition(riderFitShoulder).distanceToSquared(riderHands[side]));
+        }
+        return farthest;
+      }
+      function fitRidingMotion(sp, R, H, baseLean) {
+        const reach = (RIG.upperArm + RIG.forearm) * H * .997;
+        if (riderArmDistance(sp, R, H) <= reach * reach) return;
+        const lean = sp.riderLean, roll = sp.torsoRoll, twist = sp.torsoTwist,
+          apply = blend => {
+            riderScratch.copy(riderBase).addScaledVector(riderShift, blend); riderRoot.setPosition(riderScratch);
+            sp.riderLean = baseLean + (lean - baseLean) * blend;
+            sp.torsoRoll = roll * blend; sp.torsoTwist = twist * blend;
+          };
+        apply(0);
+        // Preserve an existing source/full-lock anatomical limit, while never
+        // adding a new overreach through the cosmetic body motion.
+        const allowed = Math.max(reach * reach, riderArmDistance(sp, R, H) + 1e-8);
+        let low = 0, high = 1;
+        for (let i = 0; i < 8; i++) {
+          const middle = (low + high) * .5; apply(middle);
+          if (riderArmDistance(sp, R, H) <= allowed) low = middle;
+          else high = middle;
+        }
+        apply(low);
+      }
+      // Render-owned body response. Read the settled bike bank and rider weight;
+      // the character never changes steering, grip or the physics' centre of mass.
+      function ridingMotion(c, proxy, deltaSeconds) {
+        let motion = proxy.ridingMotion;
+        if (!motion) proxy.ridingMotion = motion = { shift: 0, tuck: 0, brace: 0, roll: 0, look: 0 };
+        const kmh = Math.abs(c.speed || 0) / KMH,
+          gate = clamp((kmh - 3) / 5, 0, 1), moving = gate * gate * (3 - 2 * gate),
+          sport = c.type === 'bike' || c.type === 'dolcati' || c.type === 'yamasaki',
+          bank = clamp(c.bikeRoll ?? Math.atan((c.speed || 0) * (c.av || 0) / (9.81 * CAR_M)), -.85, .85) * moving,
+          weight = clamp(c.wheelieLean || 0, -.65, 1),
+          // A deliberate forward weight shift wins over the automatic braking
+          // brace; otherwise Down could open the chest instead of folding it.
+          brace = c.braking ? moving * (1 - Math.max(0, -weight) / .65 * .6) : 0,
+          tuck = (sport ? 1 : .35) * clamp((kmh - 40) / 130, 0, 1) * (1 - .85 * brace),
+          blend = 1 - Math.exp(-10 * clamp(deltaSeconds, 0, .1));
+        motion.shift += (weight * moving - motion.shift) * blend;
+        motion.tuck += (tuck - motion.tuck) * blend;
+        motion.brace += (brace - motion.brace) * blend;
+        motion.roll += (bank * (sport ? .28 : .15) - motion.roll) * blend;
+        motion.look += (-clamp(bank * .52 + (c.bikeRollRate || 0) * .045 * moving, -.42, .42) - motion.look) * blend;
+        return motion;
+      }
       /* Called by render3d.js for a two-wheeler or jet ski whose rider shows; true when the rig draws them. */
       function queueRider(c, m) {
         riderQueue.push(c, m);
@@ -503,15 +560,33 @@
           sp.parachute = null;
           sp.pose = 'riding';
           // Up on a wheelie (wheelie.js) the rider leans forward over the bars.
-          sp.riderLean = seat.lean - 0.6 * Math.max(0, c.wheelie || 0);
+          const baseLean = seat.lean - 0.6 * Math.max(0, c.wheelie || 0);
+          sp.riderLean = baseLean;
+          const motion = kind === 'motorbike' ? ridingMotion(c, proxy, deltaSeconds) : null;
+          if (motion) {
+            // Open the chest and slide back for an Up weight shift; Down folds
+            // toward the tank. Fast sport riding tucks; braking braces the chest.
+            sp.riderLean += motion.shift * (motion.shift < 0 ? .28 : .19) - motion.tuck * .16 + motion.brace * .10;
+            sp.torsoRoll = motion.roll;
+            sp.torsoTwist = -motion.roll * .32;
+            sp.headYaw = motion.look;
+          }
           const R = compiledLook(sp.look, proxy),
             H = R.height * RIG_UNIT;
           // Root: the frame's rotation, the hips on the seat.
           M.decompose(riderSeat, crowdQuat, riderScale);
           riderRotation.makeRotationFromQuaternion(crowdQuat);
-          riderSeat.set(...seat.seat).applyMatrix4(M);
+          riderSeat.set(...seat.seat);
+          riderBase.copy(riderSeat).applyMatrix4(M);
+          if (motion) {
+            riderSeat.x -= (motion.shift * .035 + motion.brace * .012) * CAR_M;
+            riderSeat.z += motion.roll * .20 * CAR_M;
+          }
+          riderSeat.applyMatrix4(M);
           riderUp.set(0, 1, 0).applyQuaternion(crowdQuat);
           riderRoot.copy(riderRotation).setPosition(riderSeat.addScaledVector(riderUp, -(RIG.hip - 0.5) * H));
+          riderBase.addScaledVector(riderUp, -(RIG.hip - .5) * H);
+          riderShift.setFromMatrixPosition(riderRoot).sub(riderBase);
           sp.rootOverride = riderRoot;
           sp.elevation = riderSeat.y;
           sp.facing = c.a;
@@ -535,6 +610,14 @@
           }
           sp.handTargets = riderHands;
           sp.legTargets = riderFeet;
+          if (motion) {
+            fitRidingMotion(sp, R, H, baseLean);
+            const pitch = Math.atan2(M.elements[1], Math.hypot(M.elements[0], M.elements[2]));
+            // Counter the trunk's tuck and most chassis pitch at the neck, so
+            // the rider looks through the bend rather than down into the tank.
+            sp.headPitch = clamp(sp.riderLean * .7 + pitch * .75 + .06, -.84, .45);
+            sp.elevation = riderRoot.elements[13];
+          }
           // A drive-by: the left hand off the bar and onto the pistol (crowd3d-driveby.js).
           if (isPlayer) driveByRiderArm(c, sp, riderRoot, riderHands, H, deltaSeconds);
           drawCrowdPerson(proxy, stateFor(proxy), deltaSeconds, detail, sp);

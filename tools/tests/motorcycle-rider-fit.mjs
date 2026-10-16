@@ -6,7 +6,7 @@ import { createRequire } from 'node:module';
 const Three = createRequire(import.meta.url)('../../vendor/three.r160.js');
 const read = name => fs.readFileSync(new URL('../../src/' + name + '.js', import.meta.url), 'utf8');
 
-export async function runMotorcycleRiderFit(t, approvedPack = false, riderHeight = 1.8) {
+export async function runMotorcycleRiderFit(t, approvedPack = false, riderHeight = 1.8, exercise = null) {
   const dolcatiPack = approvedPack === 'dolcati',
     bikeTypes = dolcatiPack ? ['dolcati'] : approvedPack ? ['bike', 'kr500'] : ['bike', 'cruiser', 'kr500'];
   const bytes = fs.readFileSync(new URL('../../assets/' + (dolcatiPack ? 'dolcati-vehicle-models.bin' : approvedPack ? 'approved-vehicle-models.bin' : 'vehicle-models.bin'), import.meta.url));
@@ -57,7 +57,8 @@ export async function runMotorcycleRiderFit(t, approvedPack = false, riderHeight
     },
     drawCrowdPerson(p, state, dt, detail, spec) {
       captures.push({ p, state, root: spec.rootOverride.clone(), hands: spec.handTargets.map(v => v.clone()),
-        feet: spec.legTargets.map(v => v.clone()), lean: spec.riderLean, pose: spec.pose });
+        feet: spec.legTargets.map(v => v.clone()), lean: spec.riderLean, pose: spec.pose,
+        roll: spec.torsoRoll, twist: spec.torsoTwist, headYaw: spec.headYaw, headPitch: spec.headPitch });
     },
   });
   const rig = read('character-rig3d'), bodies = read('crowd3d-bodies');
@@ -70,13 +71,15 @@ export async function runMotorcycleRiderFit(t, approvedPack = false, riderHeight
       // Other player activities are outside this renderer-only host. Keep the actual rider branch.
       specialSpec = () => { resetSpec(specScratch); specScratch.look = look; return specScratch; };
       ({ makeAssetMotorbike, vaGeometry, queueRider, drawQueuedRiders, crowdPoseTargets, crowdJoint, ikArm,
-        RIG, RIG_UNIT, J_COUNT, J_LEAN, J_DROP, J_ROLL, J_TWIST })`, scope);
+        RIG, RIG_UNIT, J_COUNT, J_LEAN, J_DROP, J_ROLL, J_TWIST, J_HEAD_PITCH, J_HEAD_YAW })`, scope);
   const pos = matrix => new Three.Vector3().setFromMatrixPosition(matrix);
-  const capture = (c, model, own = false) => {
+  const capture = (c, model, own = false, deltaSeconds = 1 / 60) => {
     player.car = own ? c : null;
-    api.queueRider(c, model); api.drawQueuedRiders(1 / 60, 2);
+    api.queueRider(c, model); api.drawQueuedRiders(deltaSeconds, 2);
     return captures.at(-1);
   };
+  // Additional production-rig exercises share this exact builder/queue/IK host.
+  if (exercise) return exercise({ api, capture, packedModel, actualLengths, look, player });
   let maxTargetError = 0, maxWristError = 0, maxRestWristError = 0, maxBoneError = 0, formerSteeringGap = 0;
   const restReach = [];
   for (const type of bikeTypes) {
