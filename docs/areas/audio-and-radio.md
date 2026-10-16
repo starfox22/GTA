@@ -46,6 +46,13 @@ doors, tyre ground) is in audio-soundscape.md.
   simulated (idle, clutch, automatic gearbox, load) and layers are pitched and cross-faded by
   rpm; the nearest four traffic vehicles get a voice each with Doppler. Hypercars add
   synthesised turbo and motor sounds (hypercars.js `updateHypercarVoice`).
+- The KUZUKI600R (`bike`) alone uses `inline4`: real CC0 ZX6R idle and Suzuki sportsbike
+  exhaust, 1,300–15,500 rpm, six close ratios, short shift cuts, engine braking and an
+  audio-rate ignition limiter. Extra intake/gear tones share the engine envelope/bus;
+  no V8 starter or random overrun backfires. Other motorcycles keep their old sets.
+  `tools/sportbike_audio.py` verifies pinned sources and rebuilds both loops; source
+  limitations and the production-graph listening fixture are in
+  [the sound audit](../audit/2026-10-16-sportbike-audio.md).
 - Fixed-wing engines use explicit piston/propeller/turbine profiles for each airframe,
   actual spooled power, runway roll and at most four positioned voices. Contracts and
   offline listening fixtures: [Aircraft audio](audio-aircraft.md).

@@ -59,6 +59,12 @@
       diesel: { layers: [['engine-diesel-idle', 650], ['engine-diesel-mid', 920], ['engine-diesel-high', 1080]], idle: 600, shift: 1900, redline: 2150, gears: 6, level: 1.15 },
       // Twin tickover (richwise, CC0), then the four-cylinder loops high up.
       bike: { layers: [['engine-twin-idle', 1250], ['engine-compact-mid', 3460], ['engine-compact-high', 4900], ['engine-sport-high', 7800]], idle: 1250, shift: 9800, redline: 10800, gears: 6, level: 0.95, burble: 0.8 },
+      // KUZUKI600R sport bike only: recorded Japanese inline-four idle and exhaust,
+      // a 1,300 rpm idle and GSX-R600-like 15,500 rpm ceiling. Other bikes keep
+      // their own existing sets. Recording roots are measured firing Hz * 30,
+      // not a claim that the recordists supplied a tachometer reading.
+      inline4: { layers: [['engine-inline4-idle', 1140], ['engine-inline4-high', 9000]], idle: 1300, shift: 14500, redline: 15500, gears: 6,
+        ratios: [2.785, 2.052, 1.681, 1.45, 1.304, 1.208], inline4: true, level: 1.02 },
       // A big V-twin: the tickover and the V8 run slow.
       cruiser: { layers: [['engine-twin-idle', 1000], ['engine-v8-low', 3200], ['engine-v8-mid', 4300]], idle: 900, shift: 4800, redline: 5600, gears: 5, level: 1, burble: 1 },
       // The tank: the diesel pitched down, plus its tracks.
@@ -89,7 +95,7 @@
       truck: ['diesel', 1, 1],
       flatbed: ['diesel', 0.95, 1.05],
       bus: ['diesel', 0.9, 1],
-      bike: ['bike', 1, 1],
+      bike: ['inline4', 1, 1],
       cruiser: ['cruiser', 1, 1],
       // The flagships (cars3d.js, motorbikes3d.js).
       chevette: ['flatplane', 0.96, 1.1],
@@ -135,7 +141,8 @@
       if (engineAudio || !audio || !master) return engineAudio;
       const out = audio.createGain(),
         tone = audio.createBiquadFilter(),
-        body = audio.createBiquadFilter();
+        body = audio.createBiquadFilter(),
+        pulseGate = audio.createGain();
       // The player's engine: layers -> tone (load low-pass) -> body (a little
       // presence so small speakers hear the firing harmonics) -> out.
       tone.type = 'lowpass';
@@ -146,7 +153,8 @@
       body.Q.value = 0.8;
       body.gain.value = 3;
       out.gain.value = 0;
-      tone.connect(body).connect(out).connect(engineBus);
+      pulseGate.gain.value = 1;
+      tone.connect(body).connect(pulseGate).connect(out).connect(engineBus);
       const noise = engineNoiseBuffer(),
         noiseLayer = (type, frequency, q) => {
           const source = audio.createBufferSource(),
@@ -165,6 +173,9 @@
       engineAudio = {
         out,
         tone,
+        pulseGate,
+        inline4: null,
+        limiting: false,
         noise,
         layers: [],
         setName: null,
@@ -244,7 +255,74 @@
      * The revs, gear and load of the player's road vehicle for one frame.
      * `along` is the signed forward speed; `up`/`down` the throttle and brake.
      */
+    // A close-ratio sport-bike box: lower gears retain engine braking, the
+    // clutch slips on launch, and an upshift briefly unloads the exhaust.
+    function inline4Simulate(a, set, spec, along, up, down, dt) {
+      const speed = Math.abs(along), drive = up || (down && along < 10),
+        top = spec.max || 500, ratios = set.ratios,
+        pedal = drive ? 1 : 0;
+      a.throttle += (pedal - a.throttle) * (1 - Math.exp(-dt * (drive ? 13 : 10)));
+      a.shiftCut = Math.max(0, a.shiftCut - dt);
+      let g = clamp(a.gear - 1, 0, 5),
+        wheel = speed / top * set.redline * ratios[g] / ratios[5];
+      if (a.shiftCut === 0) {
+        if (wheel >= set.shift * (0.77 + 0.23 * a.throttle) && a.throttle > 0.2 && g < 5) {
+          g++;
+          a.shiftCut = 0.085;
+        } else if (g > 0 && wheel < (drive ? 5900 : 3300)) {
+          const lower = wheel * ratios[g - 1] / ratios[g];
+          if (lower < set.shift * 0.86) {
+            g--;
+            a.shiftCut = 0.09;
+            a.rpm = Math.max(a.rpm, lower * 1.025);
+          }
+        }
+      }
+      a.gear = g + 1;
+      wheel = speed / top * set.redline * ratios[g] / ratios[5];
+      const slip = g === 0 ? clamp(1 - speed / (top * 0.13), 0, 1) : 0,
+        target = clamp(Math.max(wheel, set.idle + a.throttle * slip * 5400), set.idle, set.redline),
+        cutting = a.shiftCut > 0,
+        rise = target > a.rpm,
+        response = cutting ? 28 : rise ? 11 : 9;
+      a.rpm += (target - a.rpm) * (1 - Math.exp(-dt * response));
+      a.load += ((cutting ? 0.025 : a.throttle) - a.load) * (1 - Math.exp(-dt * 28));
+      a.limiting = drive && wheel >= set.redline * 0.992 && a.rpm >= set.redline * 0.985;
+      a.lastDrive = drive;
+      a.burble = 0; // A stock high-revving four does not have a V8's random backfires.
+    }
+    // One reusable intake/gear detail voice. All layers pass through the same
+    // engine bus, mute and damage envelope. Limiter chopping runs at audio rate
+    // so it stays regular even when the rendered frame rate is low.
+    function buildInline4Detail(a) {
+      if (a.inline4) return a.inline4;
+      const intake = audio.createOscillator(), intakeGain = audio.createGain(),
+        mechanical = audio.createOscillator(), mechanicalGain = audio.createGain(),
+        limiter = audio.createOscillator(), limiterDepth = audio.createGain();
+      intake.setPeriodicWave(audio.createPeriodicWave(new Float32Array(7), new Float32Array([0, 0.12, 0.7, 0.42, 0.2, 0.08, 0.03])));
+      mechanical.type = 'sine';
+      limiter.type = 'sine';
+      limiter.frequency.value = 17;
+      intakeGain.gain.value = mechanicalGain.gain.value = limiterDepth.gain.value = 0;
+      intake.connect(intakeGain).connect(a.tone);
+      mechanical.connect(mechanicalGain).connect(a.tone);
+      limiter.connect(limiterDepth).connect(a.pulseGate.gain);
+      intake.start(); mechanical.start(); limiter.start();
+      return a.inline4 = { intake, intakeGain, mechanical, mechanicalGain, limiter, limiterDepth };
+    }
+    function updateInline4Detail(a, active, now, rpmNorm) {
+      const voice = active ? buildInline4Detail(a) : a.inline4;
+      if (!voice) return;
+      const limiter = active && a.limiting;
+      glideParam(a.pulseGate.gain, limiter ? 0.58 : 1, now, 0.008);
+      glideParam(voice.limiterDepth.gain, limiter ? 0.42 : 0, now, 0.008);
+      glideParam(voice.intake.frequency, a.rpm / 30, now, 0.025);
+      glideParam(voice.mechanical.frequency, a.rpm / 10, now, 0.035);
+      glideParam(voice.intakeGain.gain, active ? 0.025 * rpmNorm * a.load : 0, now, 0.025);
+      glideParam(voice.mechanicalGain.gain, active ? 0.004 * (0.3 + 0.7 * rpmNorm) * (1 - a.load * 0.5) : 0, now, 0.04);
+    }
     function engineSimulate(a, set, spec, along, up, down, dt) {
+      if (set.inline4) return inline4Simulate(a, set, spec, along, up, down, dt);
       const speed = Math.abs(along),
         reversing = along < -5,
         drive = up || (down && along < 10),
@@ -403,7 +481,7 @@
         // Doppler: closing speed of the car on the listener along the line between them.
         const closing = ((c.vx || 0) * -dx + (c.vy || 0) * -dy) / d - (pvx * -dx + pvy * -dy) / d,
           doppler = clamp(SOUND_SPEED / (SOUND_SPEED - closing), 0.8, 1.25);
-        v.rate = clamp((v.rpm * tuning[1] * doppler) / v.root, 0.4, 2.4);
+        v.rate = clamp((v.rpm * tuning[1] * doppler) / v.root, set.inline4 ? 0.12 : 0.4, 2.4);
         const near = 1 / (1 + d / 85),
           fade = clamp((TRAFFIC_REACH - d) / 80, 0, 1);
         v.level = on && c.hp > 0 ? 0.24 * (set.level || 1) * tuning[2] * (accelerating ? 1 : 0.7) * near * fade : 0;
@@ -430,9 +508,11 @@
           a.gear = 1;
           a.rpm = set.idle * 1.5;
           a.throttle = 0;
-          a.startDelay = 0.75;
+          a.startDelay = set.inline4 ? 0 : 0.75;
+          a.shiftCut = 0;
+          a.limiting = false;
           a.burble = 0;
-          if (on && audioBuffers['engine-start'])
+          if (on && !set.inline4 && audioBuffers['engine-start'])
             playSample('engine-start', 0.34 * (set.level || 1), kind === 'diesel' || kind === 'tank' || kind === 'marine' ? 0.78 : kind === 'bike' || kind === 'jetski' || kind === 'single' ? 1.3 : kind === 'v8' || kind === 'cruiser' ? 0.95 : 1.12);
           else a.startDelay = 0;
         }
@@ -440,7 +520,11 @@
       // Aircraft must still fade when entering a road vehicle whose recorded
       // buffers have not finished decoding; that path may return early below.
       updateAircraftAudio(a, car, on, now, dt);
-      if (set && !engineUseSet(a, kind)) return;
+      if (set && !engineUseSet(a, kind)) {
+        updateInline4Detail(a, false, now, 0);
+        glideParam(a.out.gain, 0, now, 0.06);
+        return;
+      }
       const tuning = car ? ENGINE_OF_TYPE[car.type] || ['compact', 1, 1] : ['compact', 1, 1],
         spec = car ? vehicleSpec(car) : null,
         // Spinning wheels (offroad.js) rev the engine past what the ground speed says.
@@ -448,6 +532,7 @@
         along = rolling + (car?.spinSpeed || 0) * (rolling < -5 ? -1 : 1),
         running = on && alive && !!set;
       a.startDelay -= dt;
+      if (!running) a.limiting = false;
       if (running) {
         const up = keys.KeyW || keys.ArrowUp,
           down = keys.KeyS || keys.ArrowDown;
@@ -462,12 +547,20 @@
       a.misfire -= dt;
       const level = running && !starting ? 0.48 * (set.level || 1) * tuning[2] * (0.42 + 0.38 * a.load + 0.2 * rpmNorm) * (a.misfire > 0 ? 0.35 : 1) : 0;
       glideParam(a.out.gain, level, now, starting || !running ? 0.25 : 0.06);
-      glideParam(a.tone.frequency, 900 + 2600 * a.load + 5200 * rpmNorm * (0.4 + 0.6 * a.load), now, 0.08);
+      glideParam(a.tone.frequency, set?.inline4 ? 1500 + 4800 * a.load + 6700 * rpmNorm * (0.35 + 0.65 * a.load) : 900 + 2600 * a.load + 5200 * rpmNorm * (0.4 + 0.6 * a.load), now, 0.06);
+      updateInline4Detail(a, running && !!set?.inline4, now, rpmNorm);
       if (a.layers.length && running) {
         const weights = engineLayerWeights(a.layers, a.rpm * tuning[1], engineWeights);
+        if (set.inline4) {
+          // Keep the real idle near its recorded speed, then hand over to the
+          // Suzuki exhaust before the revs would turn tickover into a squeal.
+          const mix = clamp((a.rpm - 1800) / 2000, 0, 1);
+          weights[0] = Math.cos(mix * Math.PI * 0.5);
+          weights[1] = Math.sin(mix * Math.PI * 0.5);
+        }
         for (let i = 0; i < a.layers.length; i++) {
           const layer = a.layers[i];
-          layer.rate = clamp((a.rpm * tuning[1]) / layer.root, 0.3, 2.6);
+          layer.rate = clamp((a.rpm * tuning[1]) / layer.root, set.inline4 ? 0.12 : 0.3, set.inline4 ? 3.4 : 2.6);
           layer.level = weights[i];
           glideParam(layer.source.playbackRate, layer.rate, now, 0.05);
           glideParam(layer.gain.gain, layer.level, now, 0.06);
@@ -535,6 +628,11 @@
         kind: engineKind(player.car),
         rpm: Math.round(a.rpm),
         gear: a.gear,
+        redline: ENGINE_SETS[a.setName]?.redline || null,
+        cylinders: ENGINE_SETS[a.setName]?.inline4 ? 4 : null,
+        firingHz: ENGINE_SETS[a.setName]?.inline4 ? +(a.rpm / 30).toFixed(2) : null,
+        limiter: !!a.limiting && !!ENGINE_SETS[a.setName]?.inline4,
+        shiftCut: Math.max(0, +a.shiftCut.toFixed(3)),
         throttle: +a.throttle.toFixed(2),
         load: +a.load.toFixed(2),
         gain: +a.out.gain.value.toFixed(3),

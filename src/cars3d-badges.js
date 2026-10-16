@@ -286,7 +286,7 @@
        * badges do: MOTO_BADGES [text, style, x, y, half width there (metres), capital height], into the bike's trim.
        */
       const MOTO_BADGES = {
-        bike: ['VORTEX', 'italic', 0.22, 1.0, 0.168, 0.034],
+        bike: ['KUZUKI 600R', 'italic', 0.22, 1.0, 0.168, 0.034],
         cruiser: ['NOMAD', 'wide', 0.14, 0.93, 0.192, 0.036],
         dolcati: ['DOLCATI', 'block', 0.4, 0.84, 0.196, 0.034],
         yamasaki: ['YAMASAKI', 'italic', 0.32, 0.87, 0.186, 0.032],

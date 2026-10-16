@@ -1,6 +1,7 @@
     // BEGIN SUBSYSTEM: src/game-console-crowd.js — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
     // People: the crowd report, shots and alarms the crowd reacts to, street scenes,
     // character/pose lineups, speech bubbles, crowd render cost.
+    addConsoleMethods('crowd', vehicleImpactConsole());
     addConsoleMethods('crowd', {
       // Living people near the player, nearest first, for play-tests that pick a
       // victim: kind 'civilian', 'police', 'gang' or 'all' (default).

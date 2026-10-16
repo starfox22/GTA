@@ -224,7 +224,7 @@
         if (o.x - x > 90 || x - o.x > 90 || o.y - y > 90 || y - o.y > 90) continue;
         // Never the rider's own bike (behind, then lying down); what it hit only
         // while the body clears it.
-        if (o === t.ignore[0] || (t.time < 0.3 && o === t.ignore[1])) continue;
+        if ((o === t.ignore[0] && (!t.vehicleHit || t.time < t.ignoreUntil)) || (t.time < 0.3 && o === t.ignore[1])) continue;
         if (isAircraft(o) && aircraftClearance(o) > 20) continue;
         if (ground < riderObstacleTop(o) && pointInCar(x, y, o, RIDER_RADIUS)) return o;
       }
@@ -235,8 +235,27 @@
        Returns true once the body has got up. */
     function stepThrownBody(body, t, deltaSeconds, hurtBody) {
       t.time += deltaSeconds;
-      if (t.phase === 'down') {
+      if (t.phase === 'down' || t.phase === 'recover') {
+        if (t.vehicleHit && body.hp <= 0) {
+          bodyPool(body, 'impact', t.heading);
+          return false;
+        }
         t.downFor -= deltaSeconds;
+        if (t.vehicleHit && t.downFor < 1.1) {
+          const car = vehicles.find((c) => sameFloor(c, body) && pointInCar(body.x, body.y, c, RIDER_RADIUS));
+          if (car) {
+            t.downFor = 1.1;
+            if (hypot2(car.vx || 0, car.vy || 0) < 2 * KMH) stepClearOfCar(body, car, deltaSeconds);
+          } else {
+            if (t.phase !== 'recover') t.recoverPitch = normalizeAngle(t.pitch);
+            t.phase = 'recover';
+            t.recovery = clamp(1 - t.downFor / 1.1, 0, 1);
+            const rise = t.recovery * t.recovery * (3 - 2 * t.recovery);
+            t.pitch = t.recoverPitch * (1 - rise);
+            t.bank *= Math.exp(-6 * deltaSeconds);
+            t.z = RIDER_SEAT * rise;
+          }
+        }
         return t.downFor <= 0;
       }
       const hit = (amount) => {
@@ -245,14 +264,16 @@
         hurtBody(amount);
       };
       const speed = Math.hypot(t.vx, t.vy),
-        steps = Math.max(1, Math.ceil((speed * deltaSeconds) / 4)),
+        steps = Math.min(64, Math.max(1, Math.ceil((speed * deltaSeconds) / 4))),
         dt = deltaSeconds / steps;
       for (let i = 0; i < steps; i++) {
         if (t.phase === 'air') {
+          if (t.vehicleHit) t.z += t.vz * dt - 0.5 * GRAVITY * dt * dt;
           t.vz -= GRAVITY * dt;
-          t.z += t.vz * dt;
+          if (!t.vehicleHit) t.z += t.vz * dt;
           t.peak = Math.max(t.peak, t.z);
           t.pitch += t.spin * dt;
+          if (t.vehicleHit) t.bank = clamp(t.bank + t.bankSpin * dt, -0.85, 0.85);
           const drag = Math.exp(-0.04 * dt);
           t.vx *= drag;
           t.vy *= drag;
@@ -291,12 +312,20 @@
           t.spin *= 0.5;
           t.roll = (t.roll || 0) * 0.5;
         }
+        if (t.vehicleHit) {
+          // Keep the hips' world height as the road rises/falls beneath them.
+          const ground = terrainHeight(body.x, body.y);
+          t.z += t.baseElevation - ground;
+          t.baseElevation = ground;
+          body.altitude = ground;
+        }
         if (t.phase === 'air' && t.z <= 0) {
           // Touchdown: the drop into the road (the fall scale) and, the first
           // time, the tumble at the speed along it.
           const into = -t.vz,
             along = Math.hypot(t.vx, t.vy);
           t.z = 0;
+          if (t.vehicleHit) t.bankSpin *= 0.3;
           hit(fallInjury(into) + (t.bounces ? 0 : riderInjury(along, 'tumble')));
           playSample('crash-bump-1', clamp(into / (8 * UNITS_PER_METRE), 0.15, 0.6), 0.8, body);
           t.vx *= 0.7;
@@ -315,6 +344,10 @@
             if (along > 6 * UNITS_PER_METRE) noise(0.5, 0.12, 900);
           }
         } else if (t.phase === 'slide') {
+          if (t.vehicleHit) {
+            t.z = 0;
+            t.bank *= Math.exp(-7 * dt);
+          }
           // Tumbling, then sliding on the riding gear: Coulomb friction (less on a
           // wet road; a tumble scrubs more), a little road rash per metre, the
           // body turning as it goes.
@@ -351,6 +384,10 @@
             const total = t.hurt + (t.crashHurt || 0);
             t.knockedOut = total >= RIDER_KNOCKOUT;
             t.downFor = t.knockedOut ? clamp(5 + (total - RIDER_KNOCKOUT) / 8, 5, 9) : clamp(0.5 + total / 14, 0.5, 3.4);
+            if (t.vehicleHit) {
+              t.downFor = Math.max(t.downFor, 2.2, (t.minDownTime || 0) - t.time);
+              if (body.hp <= 0) bodyPool(body, 'impact', t.heading);
+            }
             break;
           }
         }
@@ -362,14 +399,16 @@
     function updateThrownPlayer(deltaSeconds) {
       const t = player.thrown;
       if (!t) return false;
+      if (t.vehicleHit && player.hp <= 0 && t.phase === 'down') return true;
       const up = stepThrownBody(player, t, deltaSeconds, (amount) => {
         if (player.hp <= 0) return;
         // Kind 'fall': a fall that is survived draws no blood; one that kills
         // bleeds and pools under the body as any death does (hurt(), blood.js).
+        if (t.vehicleHit) player.inv = 0;
         hurt(Math.min(amount, 1000), 'fall');
       });
       player.a = t.heading;
-      if (player.thrown && t.phase === 'down' && t.knockedOut && !t.toldOut) {
+      if (player.hp > 0 && player.thrown && t.phase === 'down' && t.knockedOut && !t.toldOut) {
         t.toldOut = true;
         tell('KNOCKED OUT', Math.max(2, t.downFor), { tone: 'warn' });
       }
@@ -377,7 +416,9 @@
         player.thrown = null;
         player.inv = Math.max(player.inv, 0.4);
         tell(
-          t.knockedOut
+          t.vehicleHit
+            ? t.knockedOut ? 'You come round on the road.' : 'You drag yourself back onto your feet.'
+            : t.knockedOut
             ? 'You come round on the road. The bike is where it landed.'
             : t.hurt > 25
               ? 'You drag yourself up. The bike is where it landed.'
@@ -399,18 +440,23 @@
           return;
         }
         // Killed: a death like any other, and the pool under the body (blood.js).
-        strikePerson(person, person.hp + 1, e.heading + Math.PI, null, false, 'impact');
+        strikePerson(person, person.hp + 1, e.heading + Math.PI, e.vehicleHit ? e.source : null, false, 'impact');
         bodyPool(person, 'impact', e.heading + Math.PI);
+        if (e.vehicleHit && e.source === player) {
+          cash += 25;
+          crime(0.35);
+        }
       });
       person.a = e.heading;
       if (person.hp <= 0) {
+        if (e.vehicleHit) return;
         person.ejected = null;
         return;
       }
       if (e.phase === 'down' && !e.settled) {
         e.settled = true;
         person.knockedFor = e.downFor + 0.6;
-      } else if (e.phase !== 'down') person.knockedFor = Math.max(person.knockedFor, 1);
+      } else if (e.phase !== 'down') person.knockedFor = Math.max(person.knockedFor, e.vehicleHit ? 1.2 : 1);
       if (up || e.time > 16) {
         person.ejected = null;
         person.knockedFor = 0.01;

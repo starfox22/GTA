@@ -153,6 +153,8 @@ const embeddedAssetReferences = {
     "engine-diesel-mid": "media-audio-engine-diesel-mid",
     "engine-diesel-high": "media-audio-engine-diesel-high",
     "engine-twin-idle": "media-audio-engine-twin-idle",
+    "engine-inline4-idle": "media-audio-engine-inline4-idle",
+    "engine-inline4-high": "media-audio-engine-inline4-high",
     "tank-tracks": "media-audio-tank-tracks",
     "boat-outboard-low": "media-audio-boat-outboard-low",
     "boat-outboard-high": "media-audio-boat-outboard-high",
