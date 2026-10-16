@@ -1,0 +1,144 @@
+{
+  "checkedAt": "2026-10-16T18:12:54.427975+00:00",
+  "pass": true,
+  "publicationCommit": "09f5570dd8b3023f49020b85dac89418942e9bbd",
+  "branch": "codex-reviews",
+  "workflow": {
+    "commit": "09f5570dd8b3023f49020b85dac89418942e9bbd",
+    "url": "https://github.com/starfox22/GTA/actions/runs/38945460131",
+    "state": {
+      "status": "WORKFLOW_RUN_STATUS_COMPLETED",
+      "conclusion": "WORKFLOW_RUN_CONCLUSION_SUCCESS"
+    },
+    "jobs": [
+      {
+        "url": "https://github.com/starfox22/GTA/actions/runs/38945460131/job/117123331804",
+        "steps": [
+          {
+            "name": "Set up job",
+            "number": "1",
+            "conclusion": "success",
+            "external-id": "4f19fef4-064f-427f-9295-6838767e45bd",
+            "expand": "",
+            "started-at": "2026-10-16T18:11:51Z",
+            "completed-at": "2026-10-16T18:11:53Z",
+            "log-url": "/starfox22/GTA/commit/09f5570dd8b3023f49020b85dac89418942e9bbd/checks/117123331804/logs/1",
+            "job-completed": null,
+            "use-actions-ux": null
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "number": "2",
+            "conclusion": "success",
+            "external-id": "2f715055-36f6-4359-b752-86a119684ab3",
+            "expand": "",
+            "started-at": "2026-10-16T18:11:53Z",
+            "completed-at": "2026-10-16T18:12:06Z",
+            "log-url": "/starfox22/GTA/commit/09f5570dd8b3023f49020b85dac89418942e9bbd/checks/117123331804/logs/2",
+            "job-completed": null,
+            "use-actions-ux": null
+          },
+          {
+            "name": "Build the browser game",
+            "number": "3",
+            "conclusion": "success",
+            "external-id": "0ed2dcfe-a1cb-46fd-98c3-ceddfff3d503",
+            "expand": "",
+            "started-at": "2026-10-16T18:12:06Z",
+            "completed-at": "2026-10-16T18:12:06Z",
+            "log-url": "/starfox22/GTA/commit/09f5570dd8b3023f49020b85dac89418942e9bbd/checks/117123331804/logs/3",
+            "job-completed": null,
+            "use-actions-ux": null
+          },
+          {
+            "name": "Build the screenshot and sound gallery",
+            "number": "4",
+            "conclusion": "success",
+            "external-id": "077b544a-8bb5-4d69-befb-be03e18763f3",
+            "expand": "",
+            "started-at": "2026-10-16T18:12:06Z",
+            "completed-at": "2026-10-16T18:12:06Z",
+            "log-url": "/starfox22/GTA/commit/09f5570dd8b3023f49020b85dac89418942e9bbd/checks/117123331804/logs/4",
+            "job-completed": null,
+            "use-actions-ux": null
+          },
+          {
+            "name": "Check Pages configuration",
+            "number": "5",
+            "conclusion": "success",
+            "external-id": "8a0466e2-19a7-4203-ba76-1d6b80ca72e7",
+            "expand": "",
+            "started-at": "2026-10-16T18:12:06Z",
+            "completed-at": "2026-10-16T18:12:07Z",
+            "log-url": "/starfox22/GTA/commit/09f5570dd8b3023f49020b85dac89418942e9bbd/checks/117123331804/logs/5",
+            "job-completed": null,
+            "use-actions-ux": null
+          },
+          {
+            "name": "Upload the browser game",
+            "number": "6",
+            "conclusion": "success",
+            "external-id": "ba6030af-b672-41d1-bb6a-c99292395510",
+            "expand": "",
+            "started-at": "2026-10-16T18:12:07Z",
+            "completed-at": "2026-10-16T18:12:11Z",
+            "log-url": "/starfox22/GTA/commit/09f5570dd8b3023f49020b85dac89418942e9bbd/checks/117123331804/logs/6",
+            "job-completed": null,
+            "use-actions-ux": null
+          },
+          {
+            "name": "Deploy the browser game",
+            "number": "7",
+            "conclusion": "success",
+            "external-id": "2cd40041-85a0-427f-859f-a0c0ea335562",
+            "expand": "",
+            "started-at": "2026-10-16T18:12:11Z",
+            "completed-at": "2026-10-16T18:12:18Z",
+            "log-url": "/starfox22/GTA/commit/09f5570dd8b3023f49020b85dac89418942e9bbd/checks/117123331804/logs/7",
+            "job-completed": null,
+            "use-actions-ux": null
+          },
+          {
+            "name": "Verify the public game",
+            "number": "8",
+            "conclusion": "success",
+            "external-id": "ae232616-6dba-4178-818b-e3ac76dd4aa0",
+            "expand": "",
+            "started-at": "2026-10-16T18:12:18Z",
+            "completed-at": "2026-10-16T18:12:48Z",
+            "log-url": "/starfox22/GTA/commit/09f5570dd8b3023f49020b85dac89418942e9bbd/checks/117123331804/logs/8",
+            "job-completed": null,
+            "use-actions-ux": null
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "number": "16",
+            "conclusion": "success",
+            "external-id": "d8fcc5a3-3746-4ee2-a2bf-ba988d588fe2",
+            "expand": "",
+            "started-at": "2026-10-16T18:12:48Z",
+            "completed-at": "2026-10-16T18:12:48Z",
+            "log-url": "/starfox22/GTA/commit/09f5570dd8b3023f49020b85dac89418942e9bbd/checks/117123331804/logs/16",
+            "job-completed": null,
+            "use-actions-ux": null
+          },
+          {
+            "name": "Complete job",
+            "number": "17",
+            "conclusion": "success",
+            "external-id": "9a2d629f-9141-41dc-b049-e13460e0dcc3",
+            "expand": "",
+            "started-at": "2026-10-16T18:12:48Z",
+            "completed-at": "2026-10-16T18:12:48Z",
+            "log-url": "/starfox22/GTA/commit/09f5570dd8b3023f49020b85dac89418942e9bbd/checks/117123331804/logs/17",
+            "job-completed": null,
+            "use-actions-ux": null
+          }
+        ]
+      }
+    ]
+  },
+  "pageUrl": "https://starfox22.github.io/GTA/",
+  "entrySha256": "e07df7a93ae2ba0f39a2956579140ecbd2a648a9657abb2b63a96cb220cb1898",
+  "verifiedFiles": 141
+}

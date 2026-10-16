@@ -16,6 +16,12 @@ recovery. Fatal motorcycle falls keep moving and pool after settling through the
 hospital handoff. The [wheelie/rider audit](audit/wheelie-rider-review-2026-10-16/README.md)
 records native evidence, exact release inputs, validation and simulation limits.
 
+Published [game](https://starfox22.github.io/GTA/?review=e07df7a93ae2ba0f) and
+[gallery](https://starfox22.github.io/GTA/review/). [Run 38945460131](https://github.com/starfox22/GTA/actions/runs/38945460131)
+verified all 141 public files from `09f5570d`; the [success receipt](audit/wheelie-rider-review-2026-10-16/verification/successful-deployment.json)
+retains actual deployment and verification results. This receipt-only follow-up leaves
+the game and gallery bytes unchanged.
+
 ## October 16: vehicle impacts and motorcycles
 
 Continue on **`codex-reviews`**. The current owner request covers airborne vehicle strikes,
