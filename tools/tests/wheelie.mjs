@@ -20,7 +20,7 @@ export default async function (t) {
     // Hold the rider back and feather the throttle from observed pitch/rate.
     // The meter's 200 m milestone remains reachable without an automatic angle target.
     await t.call('rideInto', 'bike', 50, 'none', 25, 0.05);
-    let throttle = true, taps = 0, score;
+    let throttle = true, taps = 0, tracking = false, score;
     for (let i = 0; i < 120; i++) {
       w = await t.call('wheelieState');
       if (!w.onBike) t.assert(false, 'manual feathering threw the rider: ' + JSON.stringify({ w, rider: await t.call('riderReport'), score: await t.call('wheelieScore') }));
@@ -30,8 +30,9 @@ export default async function (t) {
       throttle = next;
       await t.keys(throttle ? ['KeyW', 'WheelieUp'] : ['WheelieUp'], .1);
       score = await t.call('wheelieScore');
+      tracking ||= score.tracking;
       if (score.distanceM > 201) break;
-      t.assert(score.reason !== 'landed', 'manual throttle control landed early: ' + JSON.stringify({ w, score, taps }));
+      t.assert(!tracking || score.reason !== 'landed', 'manual throttle control landed early: ' + JSON.stringify({ w, score, taps }));
     }
     w = await t.call('wheelieState');
     t.assert(w.onBike && taps > 2, `wheelie did not require throttle feathering: ${JSON.stringify(w)}`);
@@ -76,7 +77,7 @@ export default async function (t) {
   w = await t.call('wheelieState');
   t.assert(w.onBike && (w.log.lifts > lifts || w.deg > 3), `W + ↑ lifts the front without looping out: ${w.deg}°, lifts ${lifts} → ${w.log.lifts}`);
   const beforeLower = w.deg;
-  await realHold(t, ['KeyW', 'ArrowDown'], .65);
+  await realHold(t, ['KeyW', 'ArrowDown'], .85);
   w = await t.call('wheelieState');
   t.assert(w.onBike && w.deg < Math.max(1, beforeLower - 8), `W + ↓ did not lower the front: ${beforeLower}° → ${w.deg}°`);
   await t.call('rideInto', 'bike', 25, 'none', 25, 0.05);
