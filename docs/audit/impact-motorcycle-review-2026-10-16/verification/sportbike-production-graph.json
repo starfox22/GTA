@@ -1,0 +1,5072 @@
+{
+  "renderer": "web-audio-engine@0.13.4 OfflineAudioContext",
+  "scope": "Actual shipped updateEngineAudio() caller, OGG recordings, loop boundaries, intake/gear detail, limiter, road and wind; dry engineBus at unity. Excludes global limiter/makeup, radio, ambience and cabin acoustics; isolated listening fixture, not a gameplay capture.",
+  "timeline": "0–1.8s idle; 1.8–15.5s full-throttle six-gear pull; 15.5–17s sixth-gear limiter; 17–21s closed-throttle engine braking to stop; 21–22s idle; 22s mute.",
+  "sha256": {
+    "src/engine-audio.js": "8d010940d0eb8cd17d6b0a329ee3c4c4f7e8a57c0f180633c80a92f7c81ab176",
+    "src/audio.js": "1b13fd65586a5d4d9d6fecec688ead0b10a02d4c161f4c00d52b5ec7f1ac02a8",
+    "assets/engine-inline4-idle.ogg": "b581fb7da8aa856cb659bcd19781da7ec5efc236164332153b76f329d959bb04",
+    "assets/engine-inline4-high.ogg": "4fb076766a067d6efbd937c42a154a937b1693a0abd0ac557ba15628dd241e20"
+  },
+  "result": {
+    "file": "kuzuki600r-idle-six-gears-limiter-overrun.wav",
+    "bytes": 4608044,
+    "sha256": "3d0adbd3d39347e2042ae38db0d17ced5a90dcd018743c749251f01b3f2eae86",
+    "rate": 48000,
+    "seconds": 24,
+    "channels": 2,
+    "peak": 0.27951285243034363,
+    "idleRms": 0.02710974368810924,
+    "loadedRms": 0.09003934816413524,
+    "limiterRms": 0.06756668555395327,
+    "overrunRms": 0.059805494759744914,
+    "mutedRms": 0.00003297466598757478,
+    "listeningMp3": {
+      "file": "kuzuki600r-idle-six-gears-limiter-overrun.mp3",
+      "bytes": 259700,
+      "sha256": "266a42f626563548a9d39a816a23880b23b9b2b723c9bdda10d8d907c294bb80"
+    }
+  },
+  "trace": [
+    {
+      "t": 0,
+      "rpm": 1859,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.631,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.207,
+          "weight": 0.05
+        }
+      ]
+    },
+    {
+      "t": 0.1,
+      "rpm": 1527,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.34,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.17,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 0.2,
+      "rpm": 1392,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.221,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.155,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 0.3,
+      "rpm": 1338,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.173,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.149,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 0.4,
+      "rpm": 1315,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.154,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.146,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 0.5,
+      "rpm": 1306,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.146,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.145,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 0.6,
+      "rpm": 1303,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.143,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.145,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 0.7,
+      "rpm": 1301,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.141,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.145,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 0.8,
+      "rpm": 1300,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.141,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.144,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 0.9,
+      "rpm": 1300,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.14,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.144,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 1,
+      "rpm": 1300,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.14,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.144,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 1.1,
+      "rpm": 1300,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.14,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.144,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 1.2,
+      "rpm": 1300,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.14,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.144,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 1.3,
+      "rpm": 1300,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.14,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.144,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 1.4,
+      "rpm": 1300,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.14,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.144,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 1.5,
+      "rpm": 1300,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.14,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.144,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 1.6,
+      "rpm": 1300,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.14,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.144,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 1.7,
+      "rpm": 1300,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.14,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.144,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 1.8,
+      "rpm": 1476,
+      "gear": 1,
+      "throttle": 0.19,
+      "load": 0.07,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.295,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.164,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 1.9,
+      "rpm": 3570,
+      "gear": 1,
+      "throttle": 0.78,
+      "load": 0.66,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.132,
+          "weight": 0.18
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.397,
+          "weight": 0.98
+        }
+      ]
+    },
+    {
+      "t": 2,
+      "rpm": 4998,
+      "gear": 1,
+      "throttle": 0.94,
+      "load": 0.9,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.555,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 2.1,
+      "rpm": 5511,
+      "gear": 1,
+      "throttle": 0.98,
+      "load": 0.97,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.612,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 2.2,
+      "rpm": 5544,
+      "gear": 1,
+      "throttle": 1,
+      "load": 0.99,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.616,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 2.3,
+      "rpm": 5388,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.599,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 2.4,
+      "rpm": 5148,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.572,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 2.5,
+      "rpm": 4871,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.541,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 2.6,
+      "rpm": 4579,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.509,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 2.7,
+      "rpm": 4280,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.476,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 2.8,
+      "rpm": 3979,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.442,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 2.9,
+      "rpm": 3677,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.225,
+          "weight": 0.1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.409,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 3,
+      "rpm": 3383,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 2.968,
+          "weight": 0.32
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.376,
+          "weight": 0.95
+        }
+      ]
+    },
+    {
+      "t": 3.1,
+      "rpm": 3337,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 2.927,
+          "weight": 0.36
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.371,
+          "weight": 0.93
+        }
+      ]
+    },
+    {
+      "t": 3.2,
+      "rpm": 3490,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.061,
+          "weight": 0.24
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.388,
+          "weight": 0.97
+        }
+      ]
+    },
+    {
+      "t": 3.3,
+      "rpm": 3714,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.258,
+          "weight": 0.07
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.413,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 3.4,
+      "rpm": 3963,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.44,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 3.5,
+      "rpm": 4220,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.469,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 3.6,
+      "rpm": 4480,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.498,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 3.7,
+      "rpm": 4740,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.527,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 3.8,
+      "rpm": 5001,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.556,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 3.9,
+      "rpm": 5262,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.585,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 4,
+      "rpm": 5522,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.614,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 4.1,
+      "rpm": 5783,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.643,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 4.2,
+      "rpm": 6044,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.672,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 4.3,
+      "rpm": 6305,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.701,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 4.4,
+      "rpm": 6566,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.73,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 4.5,
+      "rpm": 6827,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.759,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 4.6,
+      "rpm": 7087,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.787,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 4.7,
+      "rpm": 7348,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.816,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 4.8,
+      "rpm": 7609,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.845,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 4.9,
+      "rpm": 7870,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.874,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 5,
+      "rpm": 8131,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.903,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 5.1,
+      "rpm": 8392,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.932,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 5.2,
+      "rpm": 8652,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.961,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 5.3,
+      "rpm": 8913,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.99,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 5.4,
+      "rpm": 9174,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.019,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 5.5,
+      "rpm": 9435,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.048,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 5.6,
+      "rpm": 9696,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.077,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 5.7,
+      "rpm": 9957,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.106,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 5.8,
+      "rpm": 10217,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.135,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 5.9,
+      "rpm": 10478,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.164,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 6,
+      "rpm": 10739,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.193,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 6.1,
+      "rpm": 11000,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.222,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 6.2,
+      "rpm": 11261,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.251,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 6.3,
+      "rpm": 11522,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.28,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 6.4,
+      "rpm": 11782,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.309,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 6.5,
+      "rpm": 12043,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.338,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 6.6,
+      "rpm": 12304,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.367,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 6.7,
+      "rpm": 12565,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.396,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 6.8,
+      "rpm": 12826,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.425,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 6.9,
+      "rpm": 13087,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.454,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 7,
+      "rpm": 13347,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.483,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 7.1,
+      "rpm": 13608,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.512,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 7.2,
+      "rpm": 13869,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.541,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 7.3,
+      "rpm": 14130,
+      "gear": 1,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.57,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 7.4,
+      "rpm": 11608,
+      "gear": 2,
+      "throttle": 1,
+      "load": 0.27,
+      "limiter": false,
+      "shiftCut": 0.052,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.29,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 7.5,
+      "rpm": 10990,
+      "gear": 2,
+      "throttle": 1,
+      "load": 0.77,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.221,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 7.6,
+      "rpm": 11052,
+      "gear": 2,
+      "throttle": 1,
+      "load": 0.99,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.228,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 7.7,
+      "rpm": 11201,
+      "gear": 2,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.245,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 7.8,
+      "rpm": 11379,
+      "gear": 2,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.264,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 7.9,
+      "rpm": 11567,
+      "gear": 2,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.285,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 8,
+      "rpm": 11757,
+      "gear": 2,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.306,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 8.1,
+      "rpm": 11949,
+      "gear": 2,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.328,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 8.2,
+      "rpm": 12141,
+      "gear": 2,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.349,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 8.3,
+      "rpm": 12333,
+      "gear": 2,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.37,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 8.4,
+      "rpm": 12525,
+      "gear": 2,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.392,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 8.5,
+      "rpm": 12717,
+      "gear": 2,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.413,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 8.6,
+      "rpm": 12909,
+      "gear": 2,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.434,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 8.7,
+      "rpm": 13102,
+      "gear": 2,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.456,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 8.8,
+      "rpm": 13294,
+      "gear": 2,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.477,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 8.9,
+      "rpm": 13486,
+      "gear": 2,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.498,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 9,
+      "rpm": 13678,
+      "gear": 2,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.52,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 9.1,
+      "rpm": 13870,
+      "gear": 2,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.541,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 9.2,
+      "rpm": 14063,
+      "gear": 2,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.563,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 9.3,
+      "rpm": 14255,
+      "gear": 2,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.584,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 9.4,
+      "rpm": 12308,
+      "gear": 3,
+      "throttle": 1,
+      "load": 0.18,
+      "limiter": false,
+      "shiftCut": 0.035,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.368,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 9.5,
+      "rpm": 12109,
+      "gear": 3,
+      "throttle": 1,
+      "load": 0.86,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.345,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 9.6,
+      "rpm": 12189,
+      "gear": 3,
+      "throttle": 1,
+      "load": 0.99,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.354,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 9.7,
+      "rpm": 12320,
+      "gear": 3,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.369,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 9.8,
+      "rpm": 12469,
+      "gear": 3,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.385,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 9.9,
+      "rpm": 12624,
+      "gear": 3,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.403,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 10,
+      "rpm": 12780,
+      "gear": 3,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.42,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 10.1,
+      "rpm": 12937,
+      "gear": 3,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.437,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 10.2,
+      "rpm": 13095,
+      "gear": 3,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.455,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 10.3,
+      "rpm": 13252,
+      "gear": 3,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.472,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 10.4,
+      "rpm": 13409,
+      "gear": 3,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.49,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 10.5,
+      "rpm": 13567,
+      "gear": 3,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.507,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 10.6,
+      "rpm": 13724,
+      "gear": 3,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.525,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 10.7,
+      "rpm": 13882,
+      "gear": 3,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.542,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 10.8,
+      "rpm": 14039,
+      "gear": 3,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.56,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 10.9,
+      "rpm": 14197,
+      "gear": 3,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.577,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 11,
+      "rpm": 14354,
+      "gear": 3,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.595,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 11.1,
+      "rpm": 12707,
+      "gear": 4,
+      "throttle": 1,
+      "load": 0.08,
+      "limiter": false,
+      "shiftCut": 0.002,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.412,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 11.2,
+      "rpm": 12717,
+      "gear": 4,
+      "throttle": 1,
+      "load": 0.94,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.413,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 11.3,
+      "rpm": 12810,
+      "gear": 4,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.423,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 11.4,
+      "rpm": 12932,
+      "gear": 4,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.437,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 11.5,
+      "rpm": 13063,
+      "gear": 4,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.451,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 11.6,
+      "rpm": 13197,
+      "gear": 4,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.466,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 11.7,
+      "rpm": 13332,
+      "gear": 4,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.481,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 11.8,
+      "rpm": 13468,
+      "gear": 4,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.496,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 11.9,
+      "rpm": 13604,
+      "gear": 4,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.512,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 12,
+      "rpm": 13740,
+      "gear": 4,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.527,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 12.1,
+      "rpm": 13875,
+      "gear": 4,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.542,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 12.2,
+      "rpm": 14011,
+      "gear": 4,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.557,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 12.3,
+      "rpm": 14147,
+      "gear": 4,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.572,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 12.4,
+      "rpm": 14283,
+      "gear": 4,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.587,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 12.5,
+      "rpm": 13576,
+      "gear": 5,
+      "throttle": 1,
+      "load": 0.41,
+      "limiter": false,
+      "shiftCut": 0.068,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.508,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 12.6,
+      "rpm": 13194,
+      "gear": 5,
+      "throttle": 1,
+      "load": 0.64,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.466,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 12.7,
+      "rpm": 13246,
+      "gear": 5,
+      "throttle": 1,
+      "load": 0.98,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.472,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 12.8,
+      "rpm": 13345,
+      "gear": 5,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.483,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 12.9,
+      "rpm": 13459,
+      "gear": 5,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.495,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 13,
+      "rpm": 13579,
+      "gear": 5,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.509,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 13.1,
+      "rpm": 13700,
+      "gear": 5,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.522,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 13.2,
+      "rpm": 13822,
+      "gear": 5,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.536,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 13.3,
+      "rpm": 13944,
+      "gear": 5,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.549,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 13.4,
+      "rpm": 14066,
+      "gear": 5,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.563,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 13.5,
+      "rpm": 14188,
+      "gear": 5,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.576,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 13.6,
+      "rpm": 14310,
+      "gear": 5,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.59,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 13.7,
+      "rpm": 13824,
+      "gear": 6,
+      "throttle": 1,
+      "load": 0.41,
+      "limiter": false,
+      "shiftCut": 0.068,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.536,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 13.8,
+      "rpm": 13568,
+      "gear": 6,
+      "throttle": 1,
+      "load": 0.64,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.508,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 13.9,
+      "rpm": 13624,
+      "gear": 6,
+      "throttle": 1,
+      "load": 0.98,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.514,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 14,
+      "rpm": 13719,
+      "gear": 6,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.524,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 14.1,
+      "rpm": 13825,
+      "gear": 6,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.536,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 14.2,
+      "rpm": 13937,
+      "gear": 6,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.549,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 14.3,
+      "rpm": 14049,
+      "gear": 6,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.561,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 14.4,
+      "rpm": 14162,
+      "gear": 6,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.574,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 14.5,
+      "rpm": 14275,
+      "gear": 6,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.586,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 14.6,
+      "rpm": 14388,
+      "gear": 6,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.599,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 14.7,
+      "rpm": 14501,
+      "gear": 6,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.611,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 14.8,
+      "rpm": 14614,
+      "gear": 6,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.624,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 14.9,
+      "rpm": 14727,
+      "gear": 6,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.636,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 15,
+      "rpm": 14841,
+      "gear": 6,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.649,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 15.1,
+      "rpm": 14954,
+      "gear": 6,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.662,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 15.2,
+      "rpm": 15067,
+      "gear": 6,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.674,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 15.3,
+      "rpm": 15180,
+      "gear": 6,
+      "throttle": 1,
+      "load": 1,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.687,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 15.4,
+      "rpm": 15293,
+      "gear": 6,
+      "throttle": 1,
+      "load": 1,
+      "limiter": true,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.699,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 15.5,
+      "rpm": 15406,
+      "gear": 6,
+      "throttle": 1,
+      "load": 1,
+      "limiter": true,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.712,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 15.6,
+      "rpm": 15469,
+      "gear": 6,
+      "throttle": 1,
+      "load": 1,
+      "limiter": true,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.719,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 15.7,
+      "rpm": 15490,
+      "gear": 6,
+      "throttle": 1,
+      "load": 1,
+      "limiter": true,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.721,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 15.8,
+      "rpm": 15497,
+      "gear": 6,
+      "throttle": 1,
+      "load": 1,
+      "limiter": true,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.722,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 15.9,
+      "rpm": 15499,
+      "gear": 6,
+      "throttle": 1,
+      "load": 1,
+      "limiter": true,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.722,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 16,
+      "rpm": 15500,
+      "gear": 6,
+      "throttle": 1,
+      "load": 1,
+      "limiter": true,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.722,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 16.1,
+      "rpm": 15500,
+      "gear": 6,
+      "throttle": 1,
+      "load": 1,
+      "limiter": true,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.722,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 16.2,
+      "rpm": 15500,
+      "gear": 6,
+      "throttle": 1,
+      "load": 1,
+      "limiter": true,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.722,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 16.3,
+      "rpm": 15500,
+      "gear": 6,
+      "throttle": 1,
+      "load": 1,
+      "limiter": true,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.722,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 16.4,
+      "rpm": 15500,
+      "gear": 6,
+      "throttle": 1,
+      "load": 1,
+      "limiter": true,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.722,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 16.5,
+      "rpm": 15500,
+      "gear": 6,
+      "throttle": 1,
+      "load": 1,
+      "limiter": true,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.722,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 16.6,
+      "rpm": 15500,
+      "gear": 6,
+      "throttle": 1,
+      "load": 1,
+      "limiter": true,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.722,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 16.7,
+      "rpm": 15500,
+      "gear": 6,
+      "throttle": 1,
+      "load": 1,
+      "limiter": true,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.722,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 16.8,
+      "rpm": 15500,
+      "gear": 6,
+      "throttle": 1,
+      "load": 1,
+      "limiter": true,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.722,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 16.9,
+      "rpm": 15500,
+      "gear": 6,
+      "throttle": 1,
+      "load": 1,
+      "limiter": true,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.722,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 17,
+      "rpm": 15500,
+      "gear": 6,
+      "throttle": 0.85,
+      "load": 0.94,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.722,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 17.1,
+      "rpm": 15349,
+      "gear": 6,
+      "throttle": 0.31,
+      "load": 0.43,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.705,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 17.2,
+      "rpm": 15058,
+      "gear": 6,
+      "throttle": 0.11,
+      "load": 0.16,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.673,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 17.3,
+      "rpm": 14710,
+      "gear": 6,
+      "throttle": 0.04,
+      "load": 0.06,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.634,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 17.4,
+      "rpm": 14338,
+      "gear": 6,
+      "throttle": 0.02,
+      "load": 0.02,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.593,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 17.5,
+      "rpm": 13957,
+      "gear": 6,
+      "throttle": 0.01,
+      "load": 0.01,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.551,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 17.6,
+      "rpm": 13572,
+      "gear": 6,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.508,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 17.7,
+      "rpm": 13186,
+      "gear": 6,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.465,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 17.8,
+      "rpm": 12799,
+      "gear": 6,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.422,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 17.9,
+      "rpm": 12411,
+      "gear": 6,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.379,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 18,
+      "rpm": 12024,
+      "gear": 6,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.336,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 18.1,
+      "rpm": 11637,
+      "gear": 6,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.293,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 18.2,
+      "rpm": 11249,
+      "gear": 6,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.25,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 18.3,
+      "rpm": 10862,
+      "gear": 6,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.207,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 18.4,
+      "rpm": 10474,
+      "gear": 6,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.164,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 18.5,
+      "rpm": 10087,
+      "gear": 6,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.121,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 18.6,
+      "rpm": 9699,
+      "gear": 6,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.078,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 18.7,
+      "rpm": 9312,
+      "gear": 6,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 1.035,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 18.8,
+      "rpm": 8924,
+      "gear": 6,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.992,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 18.9,
+      "rpm": 8537,
+      "gear": 6,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.949,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 19,
+      "rpm": 8149,
+      "gear": 6,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.905,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 19.1,
+      "rpm": 7762,
+      "gear": 6,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.862,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 19.2,
+      "rpm": 7374,
+      "gear": 6,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.819,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 19.3,
+      "rpm": 6987,
+      "gear": 6,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.776,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 19.4,
+      "rpm": 6599,
+      "gear": 6,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.733,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 19.5,
+      "rpm": 6212,
+      "gear": 6,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.69,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 19.6,
+      "rpm": 5824,
+      "gear": 6,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.647,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 19.7,
+      "rpm": 5437,
+      "gear": 6,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.604,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 19.8,
+      "rpm": 5049,
+      "gear": 6,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.561,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 19.9,
+      "rpm": 4662,
+      "gear": 6,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.518,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 20,
+      "rpm": 4274,
+      "gear": 6,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.475,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 20.1,
+      "rpm": 3887,
+      "gear": 6,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.4,
+          "weight": 0
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.432,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 20.2,
+      "rpm": 3466,
+      "gear": 5,
+      "throttle": 0,
+      "load": 0.02,
+      "limiter": false,
+      "shiftCut": 0.04,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.04,
+          "weight": 0.26
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.385,
+          "weight": 0.97
+        }
+      ]
+    },
+    {
+      "t": 20.3,
+      "rpm": 3368,
+      "gear": 4,
+      "throttle": 0,
+      "load": 0.02,
+      "limiter": false,
+      "shiftCut": 0.04,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 2.954,
+          "weight": 0.33
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.374,
+          "weight": 0.94
+        }
+      ]
+    },
+    {
+      "t": 20.4,
+      "rpm": 3363,
+      "gear": 3,
+      "throttle": 0,
+      "load": 0.02,
+      "limiter": false,
+      "shiftCut": 0.04,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 2.95,
+          "weight": 0.34
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.374,
+          "weight": 0.94
+        }
+      ]
+    },
+    {
+      "t": 20.5,
+      "rpm": 3444,
+      "gear": 2,
+      "throttle": 0,
+      "load": 0.02,
+      "limiter": false,
+      "shiftCut": 0.04,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.021,
+          "weight": 0.28
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.383,
+          "weight": 0.96
+        }
+      ]
+    },
+    {
+      "t": 20.6,
+      "rpm": 3778,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0.02,
+      "limiter": false,
+      "shiftCut": 0.04,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 3.314,
+          "weight": 0.02
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.42,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "t": 20.7,
+      "rpm": 3223,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 2.827,
+          "weight": 0.44
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.358,
+          "weight": 0.9
+        }
+      ]
+    },
+    {
+      "t": 20.8,
+      "rpm": 2553,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 2.24,
+          "weight": 0.83
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.284,
+          "weight": 0.56
+        }
+      ]
+    },
+    {
+      "t": 20.9,
+      "rpm": 1850,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.623,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.206,
+          "weight": 0.04
+        }
+      ]
+    },
+    {
+      "t": 21,
+      "rpm": 1524,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.336,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.169,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 21.1,
+      "rpm": 1391,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.22,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.155,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 21.2,
+      "rpm": 1337,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.173,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.149,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 21.3,
+      "rpm": 1315,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.154,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.146,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 21.4,
+      "rpm": 1306,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.146,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.145,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 21.5,
+      "rpm": 1302,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.143,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.145,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 21.6,
+      "rpm": 1301,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.141,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.145,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 21.7,
+      "rpm": 1300,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.141,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.144,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 21.8,
+      "rpm": 1300,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.14,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.144,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 21.9,
+      "rpm": 1300,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.14,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.144,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 22,
+      "rpm": 1300,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.14,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.144,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 22.1,
+      "rpm": 1300,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.14,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.144,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 22.2,
+      "rpm": 1300,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.14,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.144,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 22.3,
+      "rpm": 1300,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.14,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.144,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 22.4,
+      "rpm": 1300,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.14,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.144,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 22.5,
+      "rpm": 1300,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.14,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.144,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 22.6,
+      "rpm": 1300,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.14,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.144,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 22.7,
+      "rpm": 1300,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.14,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.144,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 22.8,
+      "rpm": 1300,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.14,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.144,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 22.9,
+      "rpm": 1300,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.14,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.144,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 23,
+      "rpm": 1300,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.14,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.144,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 23.1,
+      "rpm": 1300,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.14,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.144,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 23.2,
+      "rpm": 1300,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.14,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.144,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 23.3,
+      "rpm": 1300,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.14,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.144,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 23.4,
+      "rpm": 1300,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.14,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.144,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 23.5,
+      "rpm": 1300,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.14,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.144,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 23.6,
+      "rpm": 1300,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.14,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.144,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 23.7,
+      "rpm": 1300,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.14,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.144,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 23.8,
+      "rpm": 1300,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.14,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.144,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "t": 23.9,
+      "rpm": 1300,
+      "gear": 1,
+      "throttle": 0,
+      "load": 0,
+      "limiter": false,
+      "shiftCut": 0,
+      "layers": [
+        {
+          "name": "engine-inline4-idle",
+          "rate": 1.14,
+          "weight": 1
+        },
+        {
+          "name": "engine-inline4-high",
+          "rate": 0.144,
+          "weight": 0
+        }
+      ]
+    }
+  ]
+}

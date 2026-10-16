@@ -1,0 +1,8 @@
+{
+  "pass": true,
+  "allPackFiles": 14,
+  "largestPackBytes": 12000000,
+  "dolcatiBytes": 18026262,
+  "dolcatiSHA256": "82e1c9741210a8a2c39fcb999438f72872603867e89ac0a0c533e367874f3b45",
+  "scope": "Actual merged production split build; classic data-pack script order and exact source binary equality"
+}

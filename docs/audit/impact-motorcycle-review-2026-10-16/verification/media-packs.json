@@ -1,0 +1,76 @@
+{
+  "builder": "82d5e6a611d806ed489748a985a52dd4fe1f95cf01d2dd053bf7111a09f689ad",
+  "packs": [
+    {
+      "name": "pack-audio.js",
+      "bytes": 3178942,
+      "sha256": "6e8b88b41bda65198e3c871f252894227a9a20c9a530b54a49ae8253c2429af3"
+    },
+    {
+      "name": "pack-data-2.js",
+      "bytes": 8381212,
+      "sha256": "ef477d3cd596490722930d40e365162f9c68e1f2c837be2659cf3bfba057e9b6"
+    },
+    {
+      "name": "pack-data-3.js",
+      "bytes": 10083235,
+      "sha256": "3820dba9f16c2f60b4a6b1a0386a43f73f5ddda837042c0307b30cb11eb255c0"
+    },
+    {
+      "name": "pack-data-4.js",
+      "bytes": 6038238,
+      "sha256": "9ab514ec2cc577607a08a4394b3f2a37f77260547be80d254fb8562760ef4cd0"
+    },
+    {
+      "name": "pack-data-5.js",
+      "bytes": 8192005,
+      "sha256": "91ec0e6f38569ab1e7719359c33143e7f7f171a1f8c0b96ea98f419359660174"
+    },
+    {
+      "name": "pack-data-6.js",
+      "bytes": 12000000,
+      "sha256": "89ada4fa74180666cae3830e331898fa55c7864e37300d210ec96bc31f4950e0"
+    },
+    {
+      "name": "pack-data-7.js",
+      "bytes": 12000000,
+      "sha256": "bbef4372c3c365f76b25a37d7c9bbc45b96638ac83839f432927cab421fb3925"
+    },
+    {
+      "name": "pack-data-8.js",
+      "bytes": 36258,
+      "sha256": "284b6c4c4fb39398630f58d993b963d1134c9ab9c0059c11309d83d83db5e0ee"
+    },
+    {
+      "name": "pack-data.js",
+      "bytes": 8134659,
+      "sha256": "0c9877c72afd7c6e459cef9c01c555ddfe6e92ef5029a4b83065ff1ca7b69b9d"
+    },
+    {
+      "name": "pack-images-2.js",
+      "bytes": 11331296,
+      "sha256": "6d24d46e64ca48818c439c69c2230f57670d830e31e306835231338777de26d7"
+    },
+    {
+      "name": "pack-images-3.js",
+      "bytes": 6613583,
+      "sha256": "f9eeb55674c02349e8013093b5dd798cd280aa1466295a0a07e3691135bc5534"
+    },
+    {
+      "name": "pack-images-4.js",
+      "bytes": 11693380,
+      "sha256": "24a87d6ae9456be8960c1ce94123aadca26773e57985fac924047a84e5492217"
+    },
+    {
+      "name": "pack-images-5.js",
+      "bytes": 470003,
+      "sha256": "ede61dfa2e663649e36c004b29d3fe8532c6cb45c37496a47d66c2b2f56d350d"
+    },
+    {
+      "name": "pack-images.js",
+      "bytes": 8631077,
+      "sha256": "400f1809af7d425ca6c7cfb22113616cb199cb941cd38b697767ef6bc77c6c7d"
+    }
+  ],
+  "allAtMost12MB": true
+}

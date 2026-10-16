@@ -74,10 +74,10 @@ from the earlier local browser/packaging checks.
 
 ## Screenshot and sound review
 
-The October 15 police/aviation review adds **https://starfox22.github.io/GTA/review/**.
+The current impact/motorcycle review is at **https://starfox22.github.io/GTA/review/**. The preceding police/aviation review is retained at **https://starfox22.github.io/GTA/review/police-aviation/**.
 `tools/build-review-gallery.py dist/pages` copies the checked-in native comparison
 images and production-graph MP3 samples selected by
-`docs/audit/police-aviation-review-2026-10-15/gallery.json`, then writes a static
+`docs/audit/impact-motorcycle-review-2026-10-16/gallery.json` and the retained previous gallery, then writes a static
 mobile-friendly page. The Pages workflow runs this after the split game build.
 `verify-pages.py` verifies the gallery and every image/audio file as well as the
 game. Missing evidence stops the gallery build; it never creates placeholder or

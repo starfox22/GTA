@@ -8,14 +8,13 @@ import shutil
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-AUDIT = ROOT / 'docs/audit/police-aviation-review-2026-10-15'
+CURRENT_AUDIT = ROOT / 'docs/audit/impact-motorcycle-review-2026-10-16'
+PREVIOUS_AUDIT = ROOT / 'docs/audit/police-aviation-review-2026-10-15'
 
 
-def main():
-    target = Path(sys.argv[1]) / 'review'
-    play_version = hashlib.sha256((Path(sys.argv[1]) / 'index.html').read_bytes()).hexdigest()[:16]
-    data = json.loads((AUDIT / 'gallery.json').read_text())
-    native = json.loads((AUDIT / 'verification/gallery-image-manifest.json').read_text())
+def build_gallery(audit, target, play_version, game_path):
+    data = json.loads((audit / 'gallery.json').read_text())
+    native = json.loads((audit / 'verification/gallery-image-manifest.json').read_text())
     native = {row['file']: row for row in native['files']}
     expected_images = {row[phase] for row in data['comparisons'] for phase in ('before', 'after')}
     expected_images.update(row['file'] for row in data.get('screenshots', []))
@@ -25,8 +24,8 @@ def main():
     copied = set()
 
     def asset(name):
-        source = (AUDIT / name).resolve()
-        if not source.is_relative_to(AUDIT.resolve()) or not source.is_file():
+        source = (audit / name).resolve()
+        if not source.is_relative_to(audit.resolve()) or not source.is_file():
             raise ValueError('Missing or invalid review evidence: ' + name)
         digest = hashlib.sha256(source.read_bytes()).hexdigest()
         if name in expected_images and native[name]['sha256'] != digest:
@@ -35,6 +34,11 @@ def main():
             destination = target / name
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(source, destination)
+            # Preserve image/audio links from the preceding review messages.
+            if audit == PREVIOUS_AUDIT:
+                legacy = target.parent / name
+                legacy.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(source, legacy)
             copied.add(name)
         return html.escape(name, quote=True) + '?sha=' + digest
 
@@ -64,17 +68,34 @@ figure{margin:0;background:#1c2733;border-radius:8px;overflow:hidden}.single{max
 audio{display:block;max-width:100%;margin:8px 0 20px}ul{padding-left:24px}@media(max-width:800px){body{padding:16px}.comparison{grid-template-columns:1fr}}
 </style><h1>Dead End City — police and aviation review</h1>
 <p><a href="../">Play the game</a> · <a href="https://github.com/starfox22/GTA/tree/codex-reviews/docs/audit/police-aviation-review-2026-10-15">Full change list, licences and verification</a></p>
-<nav aria-label="Review sections"><a href="#comparison-1">Police</a> · <a href="#comparison-10">Hot rod</a> · <a href="#comparison-12">Jets</a> · <a href="#comparison-14">Airport parking</a> · <a href="#comparison-16">Trail</a> · <a href="#screenshot-1">Cabin and controls</a> · <a href="#aircraft-sounds">Sounds</a></nav>
+<nav aria-label="Review sections"><a href="#comparison-1">Police</a> · <a href="#comparison-10">Hot rod</a> · <a href="#comparison-12">Jets</a> · <a href="#comparison-14">Airport parking</a> · <a href="#comparison-16">Trail</a> · <a href="#screenshot-1">Cabin and controls</a> · <a href="#engine-sounds">Sounds</a></nav>
 <p>Original game screenshots at matched camera positions, clear weather and 13:00. Click any image to open its full native size.
 Before is the previous published build (d75acc1). Detailed comparisons use the game's inspection camera.
 Additional runtime screenshots retain their recorded gameplay states. Technical limits and capture inputs are recorded in the linked audit.</p>'''
-    page = page.replace('href="../"', f'href="../?review={play_version}"', 1)
+    title = data.get('title', 'Dead End City — police and aviation review')
+    intro = data.get('introduction')
+    if intro:
+        begin = page.index('<nav aria-label=')
+        page = page[:begin] + '<p>' + html.escape(intro) + '</p>'
+    page = page.replace('Dead End City — police and aviation review', html.escape(title))
+    page = page.replace('docs/audit/police-aviation-review-2026-10-15', audit.relative_to(ROOT).as_posix())
+    page = page.replace('href="../"', f'href="{game_path}?review={play_version}"', 1)
+    if audit == CURRENT_AUDIT:
+        page += '<p><a href="police-aviation/">Previous police and aviation review</a></p>'
     page += ''.join(sections)
     if sounds:
-        page += '<section id="aircraft-sounds"><h2>Aircraft sound samples</h2><p>Offline renders of the actual production Web Audio graph: idle, spool up, full power and cutoff. These are sound demonstrations, not recordings of a play session.</p><ul>' + ''.join(sounds) + '</ul></section>'
+        sound_description = data.get('soundDescription', 'Offline renders of the actual production Web Audio graph: idle, spool up, full power and cutoff. These are sound demonstrations, not recordings of a play session.')
+        page += '<section id="engine-sounds"><h2>Engine sound samples</h2><p>' + html.escape(sound_description) + '</p><ul>' + ''.join(sounds) + '</ul></section>'
     page += '</html>\n'
     (target / 'index.html').write_text(page)
-    print(f'Review gallery: {len(data["comparisons"])} comparisons, {len(data.get("screenshots", []))} additional screenshots, {len(sounds)} sounds, {len(copied)} evidence files')
+    print(f'{audit.name} gallery: {len(data["comparisons"])} comparisons, {len(data.get("screenshots", []))} additional screenshots, {len(sounds)} sounds, {len(copied)} evidence files')
+
+
+def main():
+    game = Path(sys.argv[1])
+    version = hashlib.sha256((game / 'index.html').read_bytes()).hexdigest()[:16]
+    build_gallery(CURRENT_AUDIT, game / 'review', version, '../')
+    build_gallery(PREVIOUS_AUDIT, game / 'review/police-aviation', version, '../../')
 
 
 if __name__ == '__main__':

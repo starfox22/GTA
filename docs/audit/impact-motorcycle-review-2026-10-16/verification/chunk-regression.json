@@ -1,0 +1,8 @@
+{
+  "builder": "/workspace/GTA/tools/build.py",
+  "builderSha256": "82d5e6a611d806ed489748a985a52dd4fe1f95cf01d2dd053bf7111a09f689ad",
+  "checks": 183,
+  "largestPackBytes": 12000000,
+  "reconstructedHeroBytes": 18026262,
+  "pass": true
+}

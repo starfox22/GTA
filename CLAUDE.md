@@ -191,7 +191,7 @@ packs with plain `<script src>` so the zip still plays from file://.
   `shoreStepBlocked` lets him off land or a dock (never a bridge or the pier) into the sea; the fall carries `fall.jumped`
   and ends swimming. Fort Sentinel, the theme park and the Marea keep their blockers out of it. Space is `jump` on foot,
   `handbrake` driving, `rockets` in the air. The take-off effort sound is player-jump-audio.js `jumpEffortSound`.
-- `c.wheelie` (wheelie.js) is the only two-wheeler pitch; wheelie input is `wheelieHeld()` (controls.js).
+- `c.wheelie` (wheelie.js) is the only two-wheeler pitch; throttle + `wheelieHeld()` lifts, `wheelieLowerHeld()` lowers even with throttle held. `wheelieFrontContact()` weights airborne front grip/brakes/marks/spray; rear braking respects remaining grip. Renderers rotate about the actual rear axle through bank and terrain tilt, and the rider follows the body matrix.
 - Objectives have no ground ring or light pool: the floating arrow (render3d-effects.js `arrowGroup`, shown
   by `objectiveArrowShown()` in markers.js) is the only pointer; the ring under the player is the `playerRing`
   setting (off by default, `playerRingOn()`). Console `markers()` lists what marks the objective and the player.
@@ -252,6 +252,11 @@ packs with plain `<script src>` so the zip still plays from file://.
   colour, gloss and drying. Work goes through `cbSlice` (about 3 ms a frame); new vehicle GL resources are pooled
   or made in `cbWarmStep`.
 - A nudge under 20 km/h drops the person beside the car (`knockPerson`), never in its path.
+- Vehicle strikes that hurt use `vehicleImpactState` (physics-knockdowns.js) and the shared ballistic solver in riders.js
+  for both player and NPCs. `thrown` / `ejected.vehicleHit` owns flight, bounce, slide and recovery; fatal bodies keep
+  moving through death and pool only after settling. Preserve ordinary rider falls, separate second passes and non-road carrier guards.
+- A walker already inside a vehicle's padded footprint may preserve/reduce penetration through `footVehicleEscape`
+  (game-collision.js); outside steps cannot enter it. All static, furniture, shore and second-vehicle blockers still apply.
 - Pedestrians react to a car only through `watchVehicle()` (crowd-awareness.js: sight, hearing, attention,
   reaction time); never start a 'dodge' directly. `carHorn(c, length)` is the only way a car honks (it sets
   `c.hornUntil`, which the awareness model hears). Someone on the ground (`personOnGround(p)`) who is run over
@@ -423,7 +428,7 @@ packs with plain `<script src>` so the zip still plays from file://.
 - Downloaded vehicle models (vehicle-assets3d.js ASSET CARS; vehicles-and-driving-models.md): `tools/vehicle_models.py`
   makes assets/vehicle-models.bin + vehicle-atlas.webp; `makeAssetCar` keeps civKit's contract (shell, panels, hood,
   5-pane glass, trim with the cabin last, lamps, wheels with the tyre first); a type is replaced only where the model
-  clearly looks better and loses nothing (rally, hotrod, helicopters, the bicycle, four motorbikes and the workboat,
+  clearly looks better and loses nothing (rally, hotrod, helicopters, the bicycle, held motorbikes and the workboat,
   held by `ASSET_BOATS_HELD`, stay procedural); the police 'crownvic' body is police3d-asset.js (the game's livery
   projected through the crownvic's section ring), motorbikes motorbike-assets3d.js, boats boat-assets3d.js; a model change re-records
   DRIVEBY_SEATS (`test.mjs cabin-headroom --render`) and CAR_GLASS_BANDS; `assetCarsOn(false)` gives before/after.
@@ -436,6 +441,12 @@ packs with plain `<script src>` so the zip still plays from file://.
   (`assetCharSwap`/`assetCharRelease` from paintVehicle); never set a map on the shared `vaMaterials`.
   The military matte/vertex-finish materials tag `userData.assetAtlas`; all four char kinds, including finish,
   prewarm and pool at most 12 each. Shared military kits are immutable (models-military.md).
+- The Dolcati V4 uses the isolated ROY Panigale pack (`dolcati-vehicle-assets3d.js`, tools/dolcati_vehicle_models.py).
+  Keep its source-exact near normals/triangles and shared distant mesh, real wheel/fork/rider contacts, source PBR and
+  tier textures; never rewrite the legacy or approved packs. A new asset must enter both embedded references and the
+  production `gameAssets` loader; injecting ASSETS in a host decoder test alone does not prove boot integration.
+- The KUZUKI 600R (`bike`) alone maps to the recorded `inline4` sound bank; other bike sound identities remain separate.
+  RPM, six ratios, shift cuts and limiter live in engine-audio.js; tools/sportbike_audio.py pins the credited CC0 inputs.
 - Downloaded motorbikes: a source posed with its bars turned is straightened by `unsteer` (vehicle_models_moto.py); a wheel
   turns only whole round pieces (spokes, hub, rim); car wheels stop at the tyre's inner wall; four-wheeled models' wheels
   follow their springs (`ride.d`) through ride-wheels3d.js. The KR 500 is a CC-BY model (credits).
@@ -540,6 +551,7 @@ packs with plain `<script src>` so the zip still plays from file://.
 - **Assets are downloaded, not made** (the owner's rule): any new model, texture or sound starts from a ready-made
   asset with a clean licence (CC0/MIT/BSD/CC-BY; only GitHub reaches through the cloud proxy); a new collection is shown to
   the owner as preview sheets before it is integrated; hand-built assets only when nothing usable exists.
+- Split media packs remain at most 12 MB including wrappers. Oversized data URLs are assigned/appended across ordered classic scripts; preserve that order and exact reconstructed bytes (`tools/build-media-chunks-check.py`).
 - **Third-party assets** must be credited in `docs/THIRD_PARTY_CREDITS.txt` (the build embeds
   it; never delete it). Media goes in `assets/` + `assets/manifest.json`.
 - Never hand-edit or commit `dead-end-city.html`; `dist/` is scratch.

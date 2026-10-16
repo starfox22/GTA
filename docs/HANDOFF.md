@@ -3,6 +3,19 @@
 Written for the next AI session (or human) picking this work up. Read `/CLAUDE.md` first (commands,
 rules, workflow), then this page, then only the area doc your task needs (`docs/README.md`).
 
+## October 16: vehicle impacts and motorcycles
+
+Continue on **`codex-reviews`**. The current owner request covers airborne vehicle strikes,
+walking away from overlapping car footprints, ROY’s licensed Dolcati/Panigale model,
+real Japanese inline-four audio, the KUZUKI 600R name, Up/Down wheelie improvements,
+and graphics defaults. See [the impact/motorcycle audit](audit/impact-motorcycle-review-2026-10-16/README.md)
+for exact behavior, native screenshots, sound demonstrations, verification and limits.
+
+The source model/credits are documented in [Dolcati source](audit/dolcati-source-2026-10-16/README.md);
+[the sound audit](audit/2026-10-16-sportbike-audio.md) distinguishes real inline-four recordings
+from an exact GSX-R600 sample. Player outline/ring default off; saved choices persist.
+Motion blur is temporarily disabled and removed from Graphics, including old saved enablement.
+
 ## October 15: police, aircraft, airport access and hot rod
 
 Continue from **`origin/codex-reviews`** in `starfox22/GTA`, the same permanent

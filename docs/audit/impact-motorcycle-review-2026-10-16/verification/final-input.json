@@ -1,0 +1,10 @@
+{
+  "sourceCommit": "9db35c35",
+  "htmlSha256": "a484c44c40fbca69b42963561994117ecc933d6fb51fd434dc0349cd6209bb46",
+  "bytes": 143678675,
+  "renderer": "Software WebGL via managed Chromium/loopback HTTP adapter",
+  "scope": "Frozen combined game; later fixture corrections, documentation and native evidence leave game bytes unchanged.",
+  "postFixtureFixCommit": "2106d3bd",
+  "postFixtureFixHtmlIdentical": true,
+  "splitIndexSha256": "a769758dda13073bd8e326ae2504cc6129c3f0e1db01e5f23d9cbd154533c496"
+}

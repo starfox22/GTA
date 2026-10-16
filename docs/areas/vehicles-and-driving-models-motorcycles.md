@@ -10,7 +10,7 @@ conversion, rig and LOD budgets.
 ## Approved replacement pack
 
 The owner's October 14 selection uses the separate approved vehicle pack: `m1_enduro`
-replaces the KR 500 (`kr500`), and `m2_sport` replaces the VORTEX 900 (`bike`). The
+replaces the KR 500 (`kr500`), and `m2_sport` replaces the KUZUKI 600R (`bike`, formerly VORTEX 900). The
 cruiser and bicycle still use the original pack and keep their styles and rigs. The
 game's type, collision size, handling and mission rules stay the same. When the
 approved pack is missing or asset rendering is disabled, the prior asset/procedural
@@ -51,7 +51,7 @@ broken and absent lenses, and a repair restores the head/tail halos.
   Apply chassis slopes before `finishCrowd3D`, including enclosed occupants. The arm IK retains its physical
   reach/length clamp; current CB750 full-lock and ambiguous KR source-partition limits are in the audit report.
 - The kit puts the steering geometry in the fork pivot's frame (axis top, tilted by the model's `rake`), the front wheel
-  under it; `m.rearAxleX` is the wheelie's pivot (animateMotorbike); the rider's pose (`riderSeat`, the stand-in
+  under it; the actual rear-wheel centre through its fixed carrier is the wheelie's pivot (animateMotorbike); the rider's pose (`riderSeat`, the stand-in
   `motoRiderGeometry(type, pose, scale)`) comes from the measured saddle, grips and pegs.
 - The front wheel sits on an un-raked axle carrier (`motoFrontAxle`): roll, tyre squash and the flat-tyre drop use
   its own upright frame instead of translating along the fork. Damage identifies it with `wheel.userData.front`.

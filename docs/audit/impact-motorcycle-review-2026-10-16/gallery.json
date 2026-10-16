@@ -1,0 +1,57 @@
+{
+  "title": "Dead End City — impacts and motorcycles",
+  "introduction": "Native game screenshots of the downloaded Dolcati V4, airborne vehicle strikes, KUZUKI 600R wheelie and Graphics settings. The model comparisons use matched inspection cameras, High graphics, clear weather and 13:00. Before uses the previous published branch build (7f45832a). Click an image for its original size; capture inputs and limits are in the linked audit.",
+  "comparisons": [
+    {
+      "title": "Dolcati V4 — side view",
+      "description": "The procedural bike is replaced by ROY’s downloaded Panigale V4 source, with detailed brakes, wheels, fairing, cockpit and fitted rider contacts.",
+      "before": "images/before-dolcati-side.png",
+      "after": "images/after-dolcati-side.png"
+    },
+    {
+      "title": "Dolcati V4 — front view",
+      "description": "The close source mesh preserves authored geometry and shading; a shared reduced mesh serves distant traffic.",
+      "before": "images/before-dolcati-front.png",
+      "after": "images/after-dolcati-front.png"
+    }
+  ],
+  "screenshots": [
+    {
+      "title": "Player — airborne vehicle strike",
+      "description": "A held physics fixture after a 65 km/h sedan strike. The body carries forward momentum and rises under gravity; this is an actual game pose.",
+      "file": "images/after-impact-player-air.png"
+    },
+    {
+      "title": "Player — continuing tumble",
+      "description": "The same strike advanced through further flight. Pose and height are driven by the shared ballistic state.",
+      "file": "images/after-impact-player-tumble.png"
+    },
+    {
+      "title": "Pedestrian — airborne vehicle strike",
+      "description": "An NPC follows the same flight system as the player, with edge-dependent sideways rotation.",
+      "file": "images/after-impact-pedestrian-air.png"
+    },
+    {
+      "title": "Pedestrian — continuing tumble",
+      "description": "NPC impact motion continues through flight and landing, including when a strike is fatal. The capture receipt records this fixture’s health and phase.",
+      "file": "images/after-impact-pedestrian-tumble.png"
+    },
+    {
+      "title": "KUZUKI 600R — wheelie",
+      "description": "Throttle plus Up lifts the front. Down applies the rear brake and lowers it, including while throttle is held. Rear tyre contact and rider placement follow the bike.",
+      "file": "images/after-kuzuki-wheelie.png"
+    },
+    {
+      "title": "Graphics settings",
+      "description": "Motion blur is removed and disabled. Player outline and ring default to off; explicit saved choices for those two aids are preserved.",
+      "file": "images/after-graphics-settings.png"
+    }
+  ],
+  "sounds": [
+    {
+      "title": "KUZUKI 600R — idle, six gears, limiter and overrun",
+      "file": "audio/kuzuki600r-idle-six-gears-limiter-overrun.mp3"
+    }
+  ],
+  "soundDescription": "An isolated offline render of the shipped engine graph with the actual CC0 ZX6R and Suzuki inline-four loops: idle, a six-gear pull, limiter, closed-throttle braking and mute. It excludes global mix processing, ambience, radio and cabin acoustics. This is a sound demonstration, not a gameplay recording or an exact GSX-R600 recording."
+}

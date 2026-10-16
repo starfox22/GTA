@@ -1,0 +1,10 @@
+{
+  "kind": "Local project-subpath verification of every publication file using tools/verify-pages.py",
+  "command": "python3 tools/verify-pages.py dist/pages http://127.0.0.1:8765/dist/pages/",
+  "pass": true,
+  "files": 121,
+  "bytes": 173927707,
+  "indexSha256": "a769758dda13073bd8e326ae2504cc6129c3f0e1db01e5f23d9cbd154533c496",
+  "galleryLinksResolved": true,
+  "publicDeployment": false
+}
