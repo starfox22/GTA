@@ -1,0 +1,1298 @@
+{
+  "source": {
+    "url": "https://raw.githubusercontent.com/pxlinspace/lambo/e94085e40e5137ae1f9c35cc517024167e8711cb/assets/models/lamborghini/lamborghini_aventador_svj_sdc__free.glb",
+    "mirrorCommit": "e94085e40e5137ae1f9c35cc517024167e8711cb",
+    "sha256": "4c56b1baafe861dcbb7438571d685ddb96709d3cc909f58b83bc58887e96fd16",
+    "bytes": 18659824,
+    "embeddedCredit": {
+      "author": "SDC PERFORMANCE\u2122\ufe0f (https://sketchfab.com/Lambo_SC04)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/lamborghini-aventador-svj-sdc-free-784e4656aca649cca55d6b18740a19b2",
+      "title": "Lamborghini Aventador SVJ SDC ( FREE )"
+    }
+  },
+  "nearSourceExact": true,
+  "sourceTriangles": 508324,
+  "model": {
+    "type": "svj_sdc",
+    "kind": "car",
+    "title": "Lamborghini Aventador SVJ SDC ( FREE )",
+    "author": "SDC PERFORMANCE\u2122\ufe0f (https://sketchfab.com/Lambo_SC04)",
+    "source": "https://sketchfab.com/3d-models/lamborghini-aventador-svj-sdc-free-784e4656aca649cca55d6b18740a19b2",
+    "license": "CC BY 4.0",
+    "dims": [
+      4.94,
+      1.1427401787691005,
+      2.2737332802056813
+    ],
+    "x0": -2.47,
+    "x1": 2.47,
+    "wheels": [
+      {
+        "x": 1.2297051360343125,
+        "y": 0.33008122298711945,
+        "z": -0.8357683288552015,
+        "r": 0.32972270633457357,
+        "width": 0.32082750302001484,
+        "front": true,
+        "side": -1,
+        "axle": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "sourceNode": "Object_47",
+        "caliper": "wheel0.caliper"
+      },
+      {
+        "x": 1.254256072515499,
+        "y": 0.330080564312772,
+        "z": 0.8445727294885244,
+        "r": 0.32972512628385436,
+        "width": 0.320826887735531,
+        "front": true,
+        "side": 1,
+        "axle": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "sourceNode": "Object_74",
+        "caliper": "wheel1.caliper"
+      },
+      {
+        "x": -1.4768902788986635,
+        "y": 0.36378548243082437,
+        "z": -0.842978851129916,
+        "r": 0.36480384898868584,
+        "width": 0.35497106106376325,
+        "front": false,
+        "side": -1,
+        "axle": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "sourceNode": "Object_56",
+        "caliper": "wheel2.caliper"
+      },
+      {
+        "x": -1.4768902788986635,
+        "y": 0.36378548243082437,
+        "z": 0.842978851129916,
+        "r": 0.36480384898868584,
+        "width": 0.35497106106376325,
+        "front": false,
+        "side": 1,
+        "axle": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "sourceNode": "Object_56",
+        "caliper": null
+      }
+    ],
+    "lamps": {
+      "headLeft": {
+        "x": 1.923143059072807,
+        "y": 0.5471893468023827,
+        "z": -0.7229693752145822,
+        "size": 0.06511645822680728
+      },
+      "headRight": {
+        "x": 1.9228527218506999,
+        "y": 0.5471879491585022,
+        "z": 0.7237009951978894,
+        "size": 0.06510054372182143
+      },
+      "tailLeft": {
+        "x": -2.165266449578482,
+        "y": 0.802866703714836,
+        "z": -0.6246510971308316,
+        "size": 0.17225688441778092
+      },
+      "tailRight": {
+        "x": -2.165266263225965,
+        "y": 0.802866703714836,
+        "z": 0.6246510392863537,
+        "size": 0.1722569170294715
+      }
+    },
+    "glass": {
+      "base": 0.712064196413178,
+      "roof": 1.0784481364180831,
+      "xf": 1.4485319632255067,
+      "rf": 0.3839830708779217,
+      "xb": -0.6418919611358123,
+      "rb": -0.784374604471053,
+      "halfBase": 0.8650731916782478,
+      "halfTop": 0.6106399000081749,
+      "crown": 0.06411718950085837
+    },
+    "hinge": [
+      1.3467586465574777,
+      0.7700749869139546
+    ],
+    "sill": 0.2316941417400804,
+    "profile": [
+      0.9122325504879003,
+      1.091680085941907,
+      1.0919801134949187,
+      1.0919801134949187,
+      1.0435658537097519,
+      0.9720989414625921,
+      0.9978944780959762,
+      1.0117778027596842,
+      1.0409660733248287,
+      1.0595974737793377,
+      1.0610153679667185,
+      1.0880326317041684,
+      1.0963601045316576,
+      1.1147839082817845,
+      1.126541672546737,
+      1.1352207304570519,
+      1.139047168814305,
+      1.141769406388465,
+      1.1427401787691005,
+      1.141805931481875,
+      1.1392788671109373,
+      1.135420873060738,
+      1.121980135625852,
+      1.1100236338745406,
+      1.084121379366193,
+      1.0210615510036516,
+      0.9676982031789162,
+      0.9415415153668134,
+      0.8856846466242719,
+      0.8559980694276033,
+      0.7964466377926213,
+      0.7846581638944977,
+      0.7726070571818537,
+      0.7553437636126592,
+      0.7230742939367154,
+      0.6949264915937134,
+      0.6589016149283985,
+      0.6126497742257494,
+      0.5530559163343062,
+      0.48414715033497546,
+      0.37977778297184495
+    ],
+    "section": [
+      [
+        0.8506495658257436,
+        0.9122325504879003,
+        0.4364535910054657
+      ],
+      [
+        0.510247528628071,
+        1.091680085941907,
+        0.7294058669305211
+      ],
+      [
+        0.4840222009720596,
+        1.0919801134949187,
+        0.8977077204364181
+      ],
+      [
+        0.3803101299965472,
+        1.0919801134949187,
+        0.9539268584727827
+      ],
+      [
+        0.30158783842793985,
+        1.0435658537097519,
+        1.0033589757079813
+      ],
+      [
+        0.30158783842793985,
+        0.9720989414625921,
+        1.021531452029643
+      ],
+      [
+        0.5459327001835446,
+        0.9978944780959762,
+        1.021531452029643
+      ],
+      [
+        0.705403556359941,
+        1.0117778027596842,
+        1.020887852552054
+      ],
+      [
+        0.7420500894939216,
+        1.0409660733248287,
+        1.019495053837016
+      ],
+      [
+        0.6914533932599928,
+        1.0595974737793377,
+        1.0205183155100523
+      ],
+      [
+        0.6296024957953226,
+        1.0610153679667185,
+        1.0208966732378775
+      ],
+      [
+        0.12555476250334716,
+        1.0880326317041684,
+        1.0268336159721763
+      ],
+      [
+        0.1240504783947756,
+        1.0963601045316576,
+        1.043169339764851
+      ],
+      [
+        0.11980384616954146,
+        1.1147839082817845,
+        1.0452901556478595
+      ],
+      [
+        0.11855431371694214,
+        1.126541672546737,
+        1.0452901556478595
+      ],
+      [
+        0.11510549544213289,
+        1.1352207304570519,
+        1.0423569670240043
+      ],
+      [
+        0.11298666731930983,
+        1.139047168814305,
+        1.0282739345791507
+      ],
+      [
+        0.11183077700670335,
+        1.141769406388465,
+        1.000567414997349
+      ],
+      [
+        0.11044092110850283,
+        1.1427401787691005,
+        0.9883186503812508
+      ],
+      [
+        0.10862103348234016,
+        1.141805931481875,
+        0.9833611143608935
+      ],
+      [
+        0.10862103348234016,
+        1.1392788671109373,
+        0.980681799983241
+      ],
+      [
+        0.10925274522225703,
+        1.135420873060738,
+        0.9775413252425326
+      ],
+      [
+        0.1102456857877748,
+        1.121980135625852,
+        0.9743443856890522
+      ],
+      [
+        0.1102456857877748,
+        1.1100236338745406,
+        0.9743443856890522
+      ],
+      [
+        0.11200921730680082,
+        1.084121379366193,
+        0.9721107644155116
+      ],
+      [
+        0.11428613448188377,
+        1.0210615510036516,
+        0.9692409356475719
+      ],
+      [
+        0.11539577054673424,
+        0.9676982031789162,
+        0.9749164257999604
+      ],
+      [
+        0.11629995296115266,
+        0.9415415153668134,
+        0.9893780023251565
+      ],
+      [
+        0.11760275893966332,
+        0.8856846466242719,
+        0.9916806982651463
+      ],
+      [
+        0.584684519824084,
+        0.8559980694276033,
+        0.991834190621977
+      ],
+      [
+        0.6616005896178045,
+        0.7964466377926213,
+        0.992072783961753
+      ],
+      [
+        0.5913861911722813,
+        0.7846581638944977,
+        0.9925018295743107
+      ],
+      [
+        0.36868906277655356,
+        0.7726070571818537,
+        0.9925121410802733
+      ],
+      [
+        0.10977398097810938,
+        0.7553437636126592,
+        0.9924078457880359
+      ],
+      [
+        0.10977398097810938,
+        0.7230742939367154,
+        0.9871693522889472
+      ],
+      [
+        0.11020955669346413,
+        0.6949264915937134,
+        0.9566940070036357
+      ],
+      [
+        0.10797822600294985,
+        0.6589016149283985,
+        0.9040510358936578
+      ],
+      [
+        0.10797822600294985,
+        0.6126497742257494,
+        0.839014442144057
+      ],
+      [
+        0.10800981275464892,
+        0.5530559163343062,
+        0.7567739082232211
+      ],
+      [
+        0.10957800024731176,
+        0.48414715033497546,
+        0.592042258363154
+      ],
+      [
+        0.2885573871188599,
+        0.37977778297184495,
+        0.29790099125958913
+      ]
+    ],
+    "hasInterior": false,
+    "roleParts": {
+      "shell": [
+        "shell"
+      ],
+      "panels": [
+        "panels",
+        "doorLeft.paint",
+        "doorRight.paint"
+      ],
+      "hood": [
+        "hood"
+      ],
+      "trim": [
+        "trim",
+        "doorLeft.trim",
+        "doorRight.trim"
+      ],
+      "cabin": [],
+      "glass": [
+        "glass",
+        "doorLeft.glass",
+        "doorRight.glass"
+      ],
+      "opticalGlass": [
+        "opticalGlass"
+      ],
+      "shellFar": [
+        "shellFar"
+      ],
+      "panelsFar": [
+        "panelsFar",
+        "doorLeft.paintFar",
+        "doorRight.paintFar"
+      ],
+      "hoodFar": [
+        "hoodFar"
+      ],
+      "trimFar": [
+        "trimFar",
+        "doorLeft.trimFar",
+        "doorRight.trimFar"
+      ],
+      "cabinFar": [],
+      "glassFar": [
+        "glassFar",
+        "doorLeft.glassFar",
+        "doorRight.glassFar"
+      ],
+      "opticalGlassFar": [
+        "opticalGlassFar"
+      ]
+    },
+    "doors": {
+      "left": {
+        "side": -1,
+        "hinge": [
+          0.8541757938842164,
+          0.6937449994129328,
+          -0.8752505233450507
+        ],
+        "axis": [
+          0.0,
+          0.17715299831526515,
+          0.9841833239736953
+        ],
+        "sourceNode": "DoorFrLeft_1 (paired independent side geometry)",
+        "pivotEvidence": "Derived at the source forward door seam, not an authored hinge; slightly outward scissor axis",
+        "bounds": {
+          "x0": -0.4701465299149358,
+          "x1": 0.8686726937580811,
+          "y0": 0.2316095796807136,
+          "y1": 1.0561186835167389,
+          "z0": -1.1368666401028407,
+          "z1": -0.6099862043809793
+        },
+        "parts": {
+          "paint": [
+            "doorLeft.paint"
+          ],
+          "trim": [
+            "doorLeft.trim"
+          ],
+          "glass": [
+            "doorLeft.glass"
+          ]
+        }
+      },
+      "right": {
+        "side": 1,
+        "hinge": [
+          0.8541757938842164,
+          0.6937449994129328,
+          0.8752505233450507
+        ],
+        "axis": [
+          0.0,
+          0.17715299831526515,
+          -0.9841833239736953
+        ],
+        "sourceNode": "DoorFrLeft_1 (paired independent side geometry)",
+        "pivotEvidence": "Derived at the source forward door seam, not an authored hinge; slightly outward scissor axis",
+        "bounds": {
+          "x0": -0.4701465299149358,
+          "x1": 0.8686726937580811,
+          "y0": 0.2316095796807136,
+          "y1": 1.0561186835167389,
+          "z0": 0.6099862043809793,
+          "z1": 1.1368666401028407
+        },
+        "parts": {
+          "paint": [
+            "doorRight.paint"
+          ],
+          "trim": [
+            "doorRight.trim"
+          ],
+          "glass": [
+            "doorRight.glass"
+          ]
+        }
+      }
+    },
+    "paintTexture": true,
+    "paintColor": "#ffffff",
+    "normalScale": 32767,
+    "sourceTriangles": 508324,
+    "nearReachMetres": 12,
+    "sourceShift": [
+      -0.0007075195648553745,
+      0.0016570611291321646,
+      -0.0
+    ],
+    "sourceUniformScale": 1.0177331666802916,
+    "sourceWheelStraightening": [
+      {
+        "wheel": 0,
+        "sourceCenter": [
+          1.2089860510049233,
+          0.32267276695714303,
+          -0.8212057504044652
+        ],
+        "sourceAxle": [
+          -0.27621972970567227,
+          -0.008711498089545744,
+          0.9610550300177202
+        ],
+        "rotation": [
+          [
+            0.9610937286762498,
+            -0.001227037289006654,
+            0.27621972970567227
+          ],
+          [
+            -0.001227037289006654,
+            0.9999613013414705,
+            0.008711498089545744
+          ],
+          [
+            -0.27621972970567227,
+            -0.008711498089545744,
+            0.9610550300177203
+          ]
+        ]
+      },
+      {
+        "wheel": 1,
+        "sourceCenter": [
+          1.2331092075305854,
+          0.3226721197596565,
+          0.8298567415695086
+        ],
+        "sourceAxle": [
+          -0.2899483417493822,
+          0.008712134088019186,
+          0.9570026425441134
+        ],
+        "rotation": [
+          [
+            0.9570414269988287,
+            0.0012907845789290949,
+            0.2899483417493822
+          ],
+          [
+            0.0012907845789290949,
+            0.9999612155452846,
+            -0.008712134088019186
+          ],
+          [
+            -0.2899483417493822,
+            0.008712134088019186,
+            0.9570026425441133
+          ]
+        ]
+      },
+      {
+        "wheel": 2,
+        "sourceCenter": [
+          -1.4504491561245894,
+          0.35578975729130274,
+          -0.8282906352355592
+        ],
+        "sourceAxle": [
+          -1.665501343807557e-07,
+          -0.008711329979261218,
+          0.9999620556450954
+        ],
+        "rotation": [
+          [
+            0.9999999999999861,
+            -7.254503527133553e-10,
+            1.665501343807557e-07
+          ],
+          [
+            -7.254503527133553e-10,
+            0.9999620556451092,
+            0.008711329979261218
+          ],
+          [
+            -1.665501343807557e-07,
+            -0.008711329979261218,
+            0.9999620556450953
+          ]
+        ]
+      },
+      {
+        "wheel": 3,
+        "sourceCenter": [
+          -1.4504491561245894,
+          0.35578975729130274,
+          0.8282906352355592
+        ],
+        "sourceAxle": [
+          1.665501343807557e-07,
+          0.008711329979261218,
+          0.9999620556450954
+        ],
+        "rotation": [
+          [
+            0.9999999999999861,
+            -7.254503527133553e-10,
+            -1.665501343807557e-07
+          ],
+          [
+            -7.254503527133553e-10,
+            0.9999620556451092,
+            -0.008711329979261218
+          ],
+          [
+            1.665501343807557e-07,
+            0.008711329979261218,
+            0.9999620556450953
+          ]
+        ]
+      }
+    ],
+    "sourceNearGeometry": "All original source triangles, split normals and UVs retained after rigid wheel neutralization and uniform metre fit",
+    "cabinAdaptation": "Source has no seats/dashboard/steering wheel; fitted two-seat game cabin added and opaque source canopy made see-through",
+    "paintUv": [
+      0.5107421875,
+      0.0029296875
+    ],
+    "quant": [
+      -2.47,
+      0.0,
+      -1.1368666401028407,
+      4.94,
+      1.1427401787691005,
+      2.2737332802056813
+    ],
+    "parts": {
+      "panels": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 10060,
+        "triangles": 17513
+      },
+      "panelsFar": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 579,
+        "triangles": 612
+      },
+      "shell": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 9561,
+        "triangles": 15734
+      },
+      "shellFar": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 613,
+        "triangles": 550
+      },
+      "trim": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 173635,
+        "triangles": 293015
+      },
+      "trimFar": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 9486,
+        "triangles": 10254
+      },
+      "opticalGlass": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 1522,
+        "triangles": 2650
+      },
+      "opticalGlassFar": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 148,
+        "triangles": 145
+      },
+      "glass": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 1040,
+        "triangles": 1948,
+        "panes": [
+          508,
+          908,
+          532,
+          0,
+          0
+        ]
+      },
+      "glassFar": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 93,
+        "triangles": 105,
+        "panes": [
+          27,
+          49,
+          29,
+          0,
+          0
+        ]
+      },
+      "doorLeft.paint": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 2066,
+        "triangles": 3712
+      },
+      "doorLeft.paintFar": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 102,
+        "triangles": 129
+      },
+      "doorRight.paint": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 2066,
+        "triangles": 3712
+      },
+      "doorRight.paintFar": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 102,
+        "triangles": 129
+      },
+      "doorLeft.trim": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 2163,
+        "triangles": 3447
+      },
+      "doorLeft.trimFar": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 119,
+        "triangles": 120
+      },
+      "doorRight.trim": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 2163,
+        "triangles": 3447
+      },
+      "doorRight.trimFar": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 119,
+        "triangles": 120
+      },
+      "doorLeft.glass": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 462,
+        "triangles": 920,
+        "panes": [
+          920,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "doorLeft.glassFar": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 27,
+        "triangles": 50,
+        "panes": [
+          50,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "doorRight.glass": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 462,
+        "triangles": 920,
+        "panes": [
+          0,
+          0,
+          920,
+          0,
+          0
+        ]
+      },
+      "doorRight.glassFar": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 27,
+        "triangles": 50,
+        "panes": [
+          0,
+          0,
+          50,
+          0,
+          0
+        ]
+      },
+      "headLeft": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 58,
+        "triangles": 72
+      },
+      "headLeftFar": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 4,
+        "triangles": 2
+      },
+      "headRight": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 58,
+        "triangles": 72
+      },
+      "headRightFar": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 4,
+        "triangles": 2
+      },
+      "hood": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 1776,
+        "triangles": 3352
+      },
+      "hoodFar": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 73,
+        "triangles": 116
+      },
+      "wheel0.rim": {
+        "origin": [
+          1.2297051360343125,
+          0.33008122298711945,
+          -0.8357683288552015
+        ],
+        "vertices": 13640,
+        "triangles": 24719
+      },
+      "wheel0.rimFar": {
+        "origin": [
+          1.2297051360343125,
+          0.33008122298711945,
+          -0.8357683288552015
+        ],
+        "vertices": 920,
+        "triangles": 1359
+      },
+      "wheel0.tyre": {
+        "origin": [
+          1.2297051360343125,
+          0.33008122298711945,
+          -0.8357683288552015
+        ],
+        "vertices": 971,
+        "triangles": 1632
+      },
+      "wheel0.tyreFar": {
+        "origin": [
+          1.2297051360343125,
+          0.33008122298711945,
+          -0.8357683288552015
+        ],
+        "vertices": 85,
+        "triangles": 88
+      },
+      "wheel0.caliper": {
+        "origin": [
+          1.2297051360343125,
+          0.33008122298711945,
+          -0.8357683288552015
+        ],
+        "vertices": 1260,
+        "triangles": 2306
+      },
+      "wheel0.caliperFar": {
+        "origin": [
+          1.2297051360343125,
+          0.33008122298711945,
+          -0.8357683288552015
+        ],
+        "vertices": 93,
+        "triangles": 126
+      },
+      "wheel1.caliper": {
+        "origin": [
+          1.254256072515499,
+          0.330080564312772,
+          0.8445727294885244
+        ],
+        "vertices": 1260,
+        "triangles": 2306
+      },
+      "wheel1.caliperFar": {
+        "origin": [
+          1.254256072515499,
+          0.330080564312772,
+          0.8445727294885244
+        ],
+        "vertices": 92,
+        "triangles": 126
+      },
+      "wheel2.rim": {
+        "origin": [
+          -1.4768902788986635,
+          0.36378548243082437,
+          -0.842978851129916
+        ],
+        "vertices": 13640,
+        "triangles": 24719
+      },
+      "wheel2.rimFar": {
+        "origin": [
+          -1.4768902788986635,
+          0.36378548243082437,
+          -0.842978851129916
+        ],
+        "vertices": 921,
+        "triangles": 1358
+      },
+      "wheel3.rim": {
+        "origin": [
+          -1.4768902788986635,
+          0.36378548243082437,
+          0.842978851129916
+        ],
+        "vertices": 13640,
+        "triangles": 24719
+      },
+      "wheel3.rimFar": {
+        "origin": [
+          -1.4768902788986635,
+          0.36378548243082437,
+          0.842978851129916
+        ],
+        "vertices": 923,
+        "triangles": 1359
+      },
+      "wheel2.tyre": {
+        "origin": [
+          -1.4768902788986635,
+          0.36378548243082437,
+          -0.842978851129916
+        ],
+        "vertices": 971,
+        "triangles": 1632
+      },
+      "wheel2.tyreFar": {
+        "origin": [
+          -1.4768902788986635,
+          0.36378548243082437,
+          -0.842978851129916
+        ],
+        "vertices": 86,
+        "triangles": 89
+      },
+      "wheel3.tyre": {
+        "origin": [
+          -1.4768902788986635,
+          0.36378548243082437,
+          0.842978851129916
+        ],
+        "vertices": 971,
+        "triangles": 1632
+      },
+      "wheel3.tyreFar": {
+        "origin": [
+          -1.4768902788986635,
+          0.36378548243082437,
+          0.842978851129916
+        ],
+        "vertices": 86,
+        "triangles": 89
+      },
+      "wheel2.caliper": {
+        "origin": [
+          -1.4768902788986635,
+          0.36378548243082437,
+          -0.842978851129916
+        ],
+        "vertices": 1670,
+        "triangles": 1966
+      },
+      "wheel2.caliperFar": {
+        "origin": [
+          -1.4768902788986635,
+          0.36378548243082437,
+          -0.842978851129916
+        ],
+        "vertices": 174,
+        "triangles": 108
+      },
+      "tailLeft": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 11843,
+        "triangles": 22914
+      },
+      "tailLeftFar": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 468,
+        "triangles": 801
+      },
+      "tailRight": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 11843,
+        "triangles": 22914
+      },
+      "tailRightFar": {
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "vertices": 468,
+        "triangles": 800
+      },
+      "wheel1.rim": {
+        "origin": [
+          1.254256072515499,
+          0.330080564312772,
+          0.8445727294885244
+        ],
+        "vertices": 13640,
+        "triangles": 24719
+      },
+      "wheel1.rimFar": {
+        "origin": [
+          1.254256072515499,
+          0.330080564312772,
+          0.8445727294885244
+        ],
+        "vertices": 919,
+        "triangles": 1358
+      },
+      "wheel1.tyre": {
+        "origin": [
+          1.254256072515499,
+          0.330080564312772,
+          0.8445727294885244
+        ],
+        "vertices": 971,
+        "triangles": 1632
+      },
+      "wheel1.tyreFar": {
+        "origin": [
+          1.254256072515499,
+          0.330080564312772,
+          0.8445727294885244
+        ],
+        "vertices": 85,
+        "triangles": 88
+      }
+    },
+    "lodParts": {
+      "panels": "panelsFar",
+      "shell": "shellFar",
+      "trim": "trimFar",
+      "opticalGlass": "opticalGlassFar",
+      "glass": "glassFar",
+      "doorLeft.paint": "doorLeft.paintFar",
+      "doorRight.paint": "doorRight.paintFar",
+      "doorLeft.trim": "doorLeft.trimFar",
+      "doorRight.trim": "doorRight.trimFar",
+      "doorLeft.glass": "doorLeft.glassFar",
+      "doorRight.glass": "doorRight.glassFar",
+      "headLeft": "headLeftFar",
+      "headRight": "headRightFar",
+      "hood": "hoodFar",
+      "wheel0.rim": "wheel0.rimFar",
+      "wheel0.tyre": "wheel0.tyreFar",
+      "wheel0.caliper": "wheel0.caliperFar",
+      "wheel1.caliper": "wheel1.caliperFar",
+      "wheel2.rim": "wheel2.rimFar",
+      "wheel3.rim": "wheel3.rimFar",
+      "wheel2.tyre": "wheel2.tyreFar",
+      "wheel3.tyre": "wheel3.tyreFar",
+      "wheel2.caliper": "wheel2.caliperFar",
+      "tailLeft": "tailLeftFar",
+      "tailRight": "tailRightFar",
+      "wheel1.rim": "wheel1.rimFar",
+      "wheel1.tyre": "wheel1.tyreFar",
+      "cabin": "cabinFar"
+    },
+    "triangles": 508324,
+    "farTriangles": 20133,
+    "rolePanes": {
+      "glass": [
+        1428,
+        908,
+        1452,
+        0,
+        0
+      ],
+      "glassFar": [
+        77,
+        49,
+        79,
+        0,
+        0
+      ]
+    }
+  },
+  "protectedPacks": {
+    "sports-vehicle-emissive.webp": "7f6bbb79735ee46ed8c593edad3468d084e7c3c11b0f3e4d3bfb667158f42cc4",
+    "dolcati-vehicle-emissive-low.webp": "701029374aacf7a0b200e3c7dc93bdce46164f7ae65c8f42d9ec426d3491877a",
+    "approved-vehicle-orm-low.webp": "39a3bf2ec95a6481c622d1c22c4ab56385d63f9894de11cdf84c3276f61a5182",
+    "sports-vehicle-models.bin": "e83f2d0f38b64ca743717eb50054ea15dfa56488fe8346ee423790815f375328",
+    "dolcati-vehicle-orm-low.webp": "a2a80a818c60c7973ccc68770600d2062c6ff98f494bcfc804c112949b728024",
+    "hotrod-vehicle-orm.webp": "66276bc83467210f07ffe4db370ecd3980e0dd67f519153950976ab1c7cbb6e7",
+    "approved-vehicle-models.bin": "f21c4d91d34df544ffab87b895551b3ef7712746fd25c394e33738056b71e895",
+    "approved-vehicle-albedo.webp": "efd56ff941652ed28c64507ed239b8ced3f812f0960409fd217149a8dba4cdbe",
+    "approved-vehicle-orm.webp": "bd38bd3f94a11f72855ba1401c3135e7092b31553a57944b9727e782879456dc",
+    "sports-vehicle-albedo.webp": "1214e5109191afb7d3e9574587698235a1ff79cef9e74681f86a4eb6d31b150e",
+    "dolcati-vehicle-emissive.webp": "2720f677fbeafaefccb7b1f20c4c5c57637c6d248b12a9add1c5285ce355edcb",
+    "vehicle-atlas.webp": "1dbbb7ea292956c3280e52c0d8121dc47d009bfe043717d1d2c55d90c87865f2",
+    "hotrod-vehicle-models.bin": "5bb5ff8daede71430712c699834a9d7b0d508b6e2a624e5666586ee485dbacef",
+    "dolcati-vehicle-albedo.webp": "c4a15e9b10e4f3b691cdd54644e1d93cd98efdcfd8d7d07c1d78a8d606d59265",
+    "sports-vehicle-orm-low.webp": "600d58d1a0b52b9a1fba11328e802fb27b64eea56d1117f3831a517674b9eeee",
+    "hotrod-vehicle-albedo-low.webp": "8538db89e53241c7f2d0ea287f4a6547027d1420d7b64b40a90819bda87b6df0",
+    "dolcati-vehicle-albedo-low.webp": "d2e93a305d6f382c4d429a123b8b43e57339a4f5320584fa29a87003cdd939e5",
+    "hotrod-vehicle-albedo.webp": "cdff1f661ca3bdee158178679f3e90f963588d9bf62f1ade9071e6c0cad41a9e",
+    "dolcati-vehicle-orm.webp": "5f0d4193f8c8990ec766c2ae990aa1ccf4ea438bfd36f98e5fd0a6475b64a875",
+    "approved-vehicle-albedo-low.webp": "f4f7583617c32339d2ca91e00722a6f5c3295b10451a783f291aed0b9b7ab1f2",
+    "sports-vehicle-orm.webp": "a36c9a79d266d24708fd3e4ca447e3cfdf20419a59a40beb366302adda6dedce",
+    "sports-vehicle-emissive-low.webp": "e9c741beb1612f50094f5709abd5e641861c784df5c346e467cc1d31626fe6c4",
+    "sports-vehicle-albedo-low.webp": "9384e9a3d72e6bc3fc337a4e3f78cf36b305e51a2703ff5620e4415dcbfc3c3a",
+    "hotrod-vehicle-orm-low.webp": "40516b6423c0c3fdbaeadbef8a3d73062c6cdf31d0b0b5c6120dd0f1d69c916b",
+    "dolcati-vehicle-models.bin": "82e1c9741210a8a2c39fcb999438f72872603867e89ac0a0c533e367874f3b45",
+    "vehicle-models.bin": "63908560d08068f6b6df9859b9bb6040ad38028c2a0d9a0268f7d9cd4c2649ae"
+  },
+  "changes": "Uniform metre fit; rigid neutral wheel pose; separate paired wheels/doors by source side; fitted game cabin and see-through canopy; body pigment neutralized for resprays; far LOD only decimated",
+  "output": {
+    "svj-vehicle-orm-low.webp": {
+      "bytes": 496,
+      "sha256": "c8bcda140c2553d457dd3deac7142dfde02d7d17e43334eb65164b08be789563"
+    },
+    "svj-vehicle-albedo.webp": {
+      "bytes": 20648,
+      "sha256": "b707e37f92d95ddc7ece28ec6c954ca73ef0c23be1f96ec6636f71a41bc96777"
+    },
+    "svj-vehicle-orm.webp": {
+      "bytes": 452,
+      "sha256": "ba21ff21167a8c030f813606ab13664a2de955de0cbdf52a845177ea286af28e"
+    },
+    "svj-vehicle-albedo-low.webp": {
+      "bytes": 13858,
+      "sha256": "23d6d201ff7a07f8f999ccb24240cfad176b6f9ea322efae33e06f20c70f3969"
+    },
+    "svj-vehicle-emissive-low.webp": {
+      "bytes": 492,
+      "sha256": "745cf3b8c7339bd573a1fa50b3385e41a9b1058259b9495dea3bb99b950c86fd"
+    },
+    "svj-vehicle-models.bin": {
+      "bytes": 15583540,
+      "sha256": "80e548a6aebd679ab984abc1d85894025e8265355fc0cdefc0d29e520b36a925"
+    },
+    "svj-vehicle-emissive.webp": {
+      "bytes": 446,
+      "sha256": "e5d7c80fc3ccae64a85b2a3e8a0d53807d0faab2d24dce0320eef91d849ab760"
+    }
+  },
+  "converterSHA256": "4a6093a7048dc82382db28e200c0a3da6ae2cc417a17ee4a8b0644bb1151629f",
+  "helperSHA256": "f8b157a0b26c107a5f19c81cc4f0724f7d1b8417e321d5119a35eb8ad3cdaf4d"
+}

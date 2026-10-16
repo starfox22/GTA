@@ -116,6 +116,7 @@
           approvedVehicleTextureQuality();
           sportsVehicleTextureQuality();
           hotrodVehicleTextureQuality();
+          svjVehicleTextureQuality();
           dolcatiVehicleTextureQuality();
           for (const c of vehicles) {
             let m = carModels.get(c);

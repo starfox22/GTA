@@ -1,0 +1,44 @@
+{
+  "result": "PASS",
+  "modules": [
+    {
+      "module": "svj-loader-materials",
+      "assertions": 38
+    },
+    {
+      "module": "svj-vehicle-assets",
+      "assertions": 193
+    },
+    {
+      "module": "sports-vehicle-assets",
+      "assertions": 1228
+    },
+    {
+      "module": "hotrod-vehicle-assets",
+      "assertions": 137
+    },
+    {
+      "module": "hotrod-vehicle-rig",
+      "assertions": 71
+    },
+    {
+      "module": "dolcati-model",
+      "assertions": 184
+    },
+    {
+      "module": "approved-suv-rigs",
+      "assertions": 1019
+    }
+  ],
+  "assertions": 2870,
+  "finalFocusedRerun": {
+    "modules": [
+      "svj-loader-materials",
+      "svj-vehicle-assets"
+    ],
+    "assertions": 231,
+    "result": "PASS"
+  },
+  "quickCheck": "svj-ready: PASS; syntax, build164763436bytes, no duplicate functions, FILEMAP current",
+  "renderedEvidence": "Parent captures the final integrated production game separately"
+}

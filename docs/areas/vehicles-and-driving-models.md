@@ -48,6 +48,10 @@ vehicles-and-driving.md.
   the procedural fallback; Z06 Carbon Aero (`chevetteSE`) keeps that wider body,
   equipment and wing. The ZR1X is a separate body. Keep each active body's glass
   and recorded drive-by seat in step, and `cabinHeadroom()` at zero `through`.
+- BRUTINI SVJ uses the [downloaded SDC Aventador SVJ](vehicles-and-driving-models-svj.md),
+  retaining every close source triangle and source-backed scissor doors. Its fitted
+  two-seat cabin fills the source’s missing interior; the game glass and recorded
+  drive-by seat follow that source canopy.
 
 ## Downloaded models
 

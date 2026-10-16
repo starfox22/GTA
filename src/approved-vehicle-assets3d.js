@@ -166,7 +166,7 @@
               [damage.parts, damage.glass, damage.lights, damage.tires].some(record => record && Object.values(record).some(Boolean))));
         }
         const dx = c.x - player.x, dy = c.y - player.y,
-          reach = 210 / (activeTier?.lodBias || 1),
+          reach = (m.kit?.asset?.nearReachMetres ? m.kit.asset.nearReachMetres * CAR_M : 210) / (activeTier?.lodBias || 1),
           damaged = c.hp < c.maxhp || m.damageVersion !== c.damageVersion || m.approvedLodDamagePinned || !!c.trunkOpen || !!m.doorBodyMask,
           far = c !== player.car && !damaged && dx * dx + dy * dy > reach * reach * (m.approvedLodFar ? 0.81 : 1.21);
         if (far === !!m.approvedLodFar) return;

@@ -97,6 +97,7 @@
         approvedAssets: () => approvedVehicleReport(),
         sportsAssets: () => sportsVehicleReport(),
         hotrodAssets: () => hotrodVehicleReport(),
+        svjAssets: () => svjVehicleReport(),
         vehicleDoors: (id) => vehicleDoorsReport(id),
         // The downloaded aircraft models (aircraft-assets3d.js ASSET AIRCRAFT) and the switch for before/after rows.
         aircraftAssets: () => aircraftAssetReport(),

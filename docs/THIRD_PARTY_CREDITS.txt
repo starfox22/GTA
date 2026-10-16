@@ -1068,3 +1068,21 @@ Both loops append 0.2 s of their beginning beyond the exact runtime loop point.
 Reproducible conversion and source SHA-256 checks: tools/sportbike_audio.py.
 Load/intake detail, mechanical whine, gearbox and limiter are original procedural
 code in src/engine-audio.js; no further recordings are used. No endorsement implied.
+
+Downloaded BRUTINI SVJ (October 16, 2026)
+This work is based on "Lamborghini Aventador SVJ SDC ( FREE )"
+https://sketchfab.com/3d-models/lamborghini-aventador-svj-sdc-free-784e4656aca649cca55d6b18740a19b2
+by SDC PERFORMANCE (https://sketchfab.com/Lambo_SC04), licensed under
+Creative Commons Attribution 4.0 International (CC BY 4.0):
+https://creativecommons.org/licenses/by/4.0/
+Pinned download: https://raw.githubusercontent.com/pxlinspace/lambo/e94085e40e5137ae1f9c35cc517024167e8711cb/assets/models/lamborghini/lamborghini_aventador_svj_sdc__free.glb
+Source GLB SHA-256: 4c56b1baafe861dcbb7438571d685ddb96709d3cc909f58b83bc58887e96fd16
+The asset-specific embedded GLB metadata identifies the artist, original listing
+and CC-BY-4.0 license. The mirror application’s MIT license is separate.
+Adapted for Dead End City: rigid axis/wheel neutralization and uniform 4.94 m fit;
+source triangle partition into independent wheels, source brake calipers,
+scissor doors and damage/glass roles; lossless source PBR texture atlases;
+body pigment neutralized for resprays; separate reduced far LOD. The source
+contains no seats/dashboard/steering wheel: a fitted game cabin and see-through
+canopy were added. All close source faces, split normals and UVs are retained.
+No endorsement by the artist or vehicle manufacturer is implied.

@@ -1,0 +1,404 @@
+{
+  "url": "https://raw.githubusercontent.com/pxlinspace/lambo/e94085e40e5137ae1f9c35cc517024167e8711cb/assets/models/lamborghini/lamborghini_aventador_svj_sdc__free.glb",
+  "commit": "e94085e40e5137ae1f9c35cc517024167e8711cb",
+  "bytes": 18659824,
+  "sha256": "4c56b1baafe861dcbb7438571d685ddb96709d3cc909f58b83bc58887e96fd16",
+  "embeddedAsset": {
+    "extras": {
+      "author": "SDC PERFORMANCE\u2122\ufe0f (https://sketchfab.com/Lambo_SC04)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/lamborghini-aventador-svj-sdc-free-784e4656aca649cca55d6b18740a19b2",
+      "title": "Lamborghini Aventador SVJ SDC ( FREE )"
+    },
+    "generator": "Sketchfab-16.14.0",
+    "version": "2.0"
+  },
+  "triangles": 508324,
+  "primitiveVertices": 329859,
+  "meshes": 62,
+  "nodes": 79,
+  "materials": 30,
+  "requiredExtensions": [],
+  "animations": 0,
+  "images": [
+    {
+      "mime": "image/jpeg",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 105303,
+      "sha256": "bb1e2f0c3b2e5eca68d650372f571c612ce1ade42e5ffde1a5e413ba3c7d3f2d"
+    }
+  ],
+  "groups": [
+    {
+      "node": 0,
+      "name": "Sketchfab_model",
+      "translation": null,
+      "rotation": null,
+      "scale": null,
+      "determinant": 1.0,
+      "worldBounds": [
+        [
+          -1.1171,
+          -0.0025,
+          -2.4263
+        ],
+        [
+          1.1171,
+          1.1212,
+          2.4277
+        ]
+      ]
+    },
+    {
+      "node": 1,
+      "name": "root",
+      "translation": null,
+      "rotation": null,
+      "scale": null,
+      "determinant": 1.0,
+      "worldBounds": [
+        [
+          -1.1171,
+          -0.0025,
+          -2.4263
+        ],
+        [
+          1.1171,
+          1.1212,
+          2.4277
+        ]
+      ]
+    },
+    {
+      "node": 2,
+      "name": "GLTF_SceneRootNode",
+      "translation": null,
+      "rotation": null,
+      "scale": null,
+      "determinant": 1.0,
+      "worldBounds": [
+        [
+          -1.1171,
+          -0.0025,
+          -2.4263
+        ],
+        [
+          1.1171,
+          1.1212,
+          2.4277
+        ]
+      ]
+    },
+    {
+      "node": 3,
+      "name": "Body_0",
+      "translation": null,
+      "rotation": null,
+      "scale": null,
+      "determinant": 1.0000001424923577e-09,
+      "worldBounds": [
+        [
+          -1.0303,
+          0.0912,
+          -2.4263
+        ],
+        [
+          1.03,
+          1.1212,
+          2.4277
+        ]
+      ]
+    },
+    {
+      "node": 22,
+      "name": "DoorFrLeft_1",
+      "translation": null,
+      "rotation": null,
+      "scale": null,
+      "determinant": 1.0000001424923577e-09,
+      "worldBounds": [
+        [
+          -1.1171,
+          0.2259,
+          -0.4612
+        ],
+        [
+          1.1171,
+          1.0361,
+          0.8542
+        ]
+      ]
+    },
+    {
+      "node": 27,
+      "name": "EngineHood_2",
+      "translation": null,
+      "rotation": null,
+      "scale": null,
+      "determinant": 1.0000001424923577e-09,
+      "worldBounds": [
+        [
+          -0.7332,
+          0.8726,
+          -2.0181
+        ],
+        [
+          0.7327,
+          1.105,
+          -0.6498
+        ]
+      ]
+    },
+    {
+      "node": 33,
+      "name": "Headlights_3",
+      "translation": null,
+      "rotation": null,
+      "scale": null,
+      "determinant": 1.0000001424923577e-09,
+      "worldBounds": [
+        [
+          -0.8259,
+          0.4598,
+          1.6766
+        ],
+        [
+          0.8252,
+          0.6329,
+          2.0716
+        ]
+      ]
+    },
+    {
+      "node": 40,
+      "name": "Trunk_4",
+      "translation": null,
+      "rotation": null,
+      "scale": null,
+      "determinant": 1.0000001424923577e-09,
+      "worldBounds": [
+        [
+          -0.7861,
+          0.4675,
+          1.3271
+        ],
+        [
+          0.7861,
+          0.7535,
+          2.1624
+        ]
+      ]
+    },
+    {
+      "node": 43,
+      "name": "Undercarriage_5",
+      "translation": null,
+      "rotation": null,
+      "scale": null,
+      "determinant": 1.0000001424923577e-09,
+      "worldBounds": [
+        [
+          -0.9998,
+          0.0903,
+          -1.8354
+        ],
+        [
+          0.9997,
+          0.7511,
+          2.2699
+        ]
+      ]
+    },
+    {
+      "node": 45,
+      "name": "WheelFrLeft_6",
+      "translation": null,
+      "rotation": null,
+      "scale": null,
+      "determinant": 1.0000001424923612e-09,
+      "worldBounds": [
+        [
+          0.586,
+          -0.0011,
+          0.8564
+        ],
+        [
+          1.072,
+          0.6463,
+          1.566
+        ]
+      ]
+    },
+    {
+      "node": 50,
+      "name": "BrakeFrLeft_7",
+      "translation": null,
+      "rotation": null,
+      "scale": null,
+      "determinant": 1.0000001424923577e-09,
+      "worldBounds": [
+        [
+          0.87,
+          0.1203,
+          1.009
+        ],
+        [
+          0.9755,
+          0.4587,
+          1.1655
+        ]
+      ]
+    },
+    {
+      "node": 52,
+      "name": "BrakeFrRight_8",
+      "translation": null,
+      "rotation": null,
+      "scale": null,
+      "determinant": 1.0000001424923577e-09,
+      "worldBounds": [
+        [
+          -0.906,
+          0.1205,
+          0.9996
+        ],
+        [
+          -0.8244,
+          0.4589,
+          1.1582
+        ]
+      ]
+    },
+    {
+      "node": 54,
+      "name": "WheelRearLeft_9",
+      "translation": null,
+      "rotation": null,
+      "scale": null,
+      "determinant": 1.0000001424923577e-09,
+      "worldBounds": [
+        [
+          -1.0134,
+          -0.0025,
+          -1.808
+        ],
+        [
+          1.0134,
+          0.7139,
+          -1.0929
+        ]
+      ]
+    },
+    {
+      "node": 60,
+      "name": "BrakeRearLeft_10",
+      "translation": null,
+      "rotation": null,
+      "scale": null,
+      "determinant": 1.0000001424923577e-09,
+      "worldBounds": [
+        [
+          0.8313,
+          0.2507,
+          -1.354
+        ],
+        [
+          0.9151,
+          0.5722,
+          -1.1891
+        ]
+      ]
+    },
+    {
+      "node": 62,
+      "name": "Taillights_11",
+      "translation": null,
+      "rotation": null,
+      "scale": null,
+      "determinant": 1.0000001424923577e-09,
+      "worldBounds": [
+        [
+          -0.8634,
+          0.7235,
+          -2.2819
+        ],
+        [
+          0.8634,
+          0.8481,
+          -1.915
+        ]
+      ]
+    },
+    {
+      "node": 72,
+      "name": "WheelFrLeft.001_12",
+      "translation": null,
+      "rotation": null,
+      "scale": null,
+      "determinant": 1.0000001424923577e-09,
+      "worldBounds": [
+        [
+          -1.0842,
+          -0.0011,
+          0.8752
+        ],
+        [
+          -0.5905,
+          0.6463,
+          1.5865
+        ]
+      ]
+    },
+    {
+      "node": 77,
+      "name": "Body.001_13",
+      "translation": null,
+      "rotation": null,
+      "scale": null,
+      "determinant": 1.0000001424923577e-09,
+      "worldBounds": [
+        [
+          -0.8647,
+          0.5282,
+          -1.9781
+        ],
+        [
+          0.8647,
+          0.7059,
+          -1.9522
+        ]
+      ]
+    }
+  ],
+  "notes": [
+    "Both doors merged in DoorFrLeft_1; split triangles by x side.",
+    "Both rear wheels merged in WheelRearLeft_9; split triangles by x side.",
+    "Front wheels authored steered about -16deg: unsteer before runtime steering/spin, preserve opposite wheel 180deg orientation.",
+    "GLASS is opaque, dark metallic material in source; keep source cabin geometry but adapt glass to existing game visibility/glazing contracts.",
+    "Source advertises4K textures but distributed GLB carries one1024px embedded carbon JPEG; other materials use factors."
+  ],
+  "geometryValidation": {
+    "errors": [],
+    "triangles": 508324,
+    "normalLengthRange": [
+      0.9999998807907104,
+      1.0000001192092896
+    ],
+    "bothDoorGroupSplit": {
+      "negativeXTriangles": 8079,
+      "positiveXTriangles": 8079,
+      "crossing": 0
+    },
+    "bothRearWheelGroupSplit": {
+      "negativeXTriangles": 26351,
+      "positiveXTriangles": 26351,
+      "crossing": 0
+    }
+  },
+  "rawPinnedDownload": {
+    "status": 200,
+    "bytes": 18659824,
+    "matchesGitBlob": true
+  }
+}

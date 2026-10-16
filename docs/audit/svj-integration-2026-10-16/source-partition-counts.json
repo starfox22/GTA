@@ -1,0 +1,33 @@
+{
+  "sourceTriangles": 508324,
+  "parts": {
+    "panels": 17513,
+    "shell": 15734,
+    "trim": 293015,
+    "opticalGlass": 2650,
+    "glass": 1948,
+    "doorLeft.paint": 3712,
+    "doorRight.paint": 3712,
+    "doorLeft.trim": 3447,
+    "doorRight.trim": 3447,
+    "doorLeft.glass": 920,
+    "doorRight.glass": 920,
+    "headLeft": 72,
+    "headRight": 72,
+    "hood": 3352,
+    "wheel0.rim": 24719,
+    "wheel0.tyre": 1632,
+    "wheel0.caliper": 2306,
+    "wheel1.caliper": 2306,
+    "wheel2.rim": 24719,
+    "wheel3.rim": 24719,
+    "wheel2.tyre": 1632,
+    "wheel3.tyre": 1632,
+    "wheel2.caliper": 1966,
+    "tailLeft": 22914,
+    "tailRight": 22914,
+    "wheel1.rim": 24719,
+    "wheel1.tyre": 1632
+  },
+  "everyFaceAssignedOnce": true
+}

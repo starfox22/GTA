@@ -11,7 +11,7 @@
         return approvedSuvCabinMaterialCache;
       }
       function approvedSuvInteriorGeometry(kit) {
-        if (kit.asset.hasInterior === true || kit.asset.type === 's1_jimny') return null;
+        if (kit.asset.hasInterior === true || kit.asset.assetPack === 'svj' || kit.asset.type === 's1_jimny') return null;
         const set = civSet();
         carCabinParts((geometry, matrix, color, finish) => civAddMatrix(set, geometry, matrix, { color, finish }),
           kit.glass, kit.l, kit.seats.glass.w, kit.seats, CAR_CABIN_TRIM.suv, { hatch: true, police: !!kit.police });
@@ -48,7 +48,7 @@
         for (const [field, names] of Object.entries({ shell: 'shell', cabin: 'glass', hood: 'hood', paint: 'panels', trim: ['trim', 'cabin'], opticalGlass: 'opticalGlass' }))
           far[field] = approvedSuvFarPart(model, data, names, k) || kit[field];
         const trimName = model.lodParts?.trim || 'trim',
-          outer = (model.assetPack === 'sports' ? sportsRoleTriangles(model, trimName) : model.parts[trimName]?.triangles || 0) * 3;
+          outer = (model.roleParts ? sportsRoleTriangles(model, trimName) : model.parts[trimName]?.triangles || 0) * 3;
         far.trimOuter = far.trim ? civDrawRange(far.trim, outer) : null;
         far.wheels = kit.assetWheels.map((wheel, i) => ({
           tyre: approvedSuvFarPart(model, data, 'wheel' + i + '.tyre', k) || wheel.tyre,

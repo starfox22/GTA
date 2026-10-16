@@ -733,5 +733,47 @@
     "file": "assets/engine-inline4-high.ogg",
     "mime": "audio/ogg",
     "original": "tools/sportbike_audio.py (pinned CC0 Japanese inline-four recordings)"
+  },
+  {
+    "id": "media-svj-vehicle-models",
+    "file": "assets/svj-vehicle-models.bin",
+    "mime": "application/octet-stream",
+    "original": "tools/svj_vehicle_models.py (pinned CC-BY SDC source)"
+  },
+  {
+    "id": "media-svj-vehicle-albedo",
+    "file": "assets/svj-vehicle-albedo.webp",
+    "mime": "image/webp",
+    "original": "tools/svj_vehicle_models.py (pinned CC-BY SDC source)"
+  },
+  {
+    "id": "media-svj-vehicle-albedo-low",
+    "file": "assets/svj-vehicle-albedo-low.webp",
+    "mime": "image/webp",
+    "original": "tools/svj_vehicle_models.py (pinned CC-BY SDC source)"
+  },
+  {
+    "id": "media-svj-vehicle-orm",
+    "file": "assets/svj-vehicle-orm.webp",
+    "mime": "image/webp",
+    "original": "tools/svj_vehicle_models.py (pinned CC-BY SDC source)"
+  },
+  {
+    "id": "media-svj-vehicle-orm-low",
+    "file": "assets/svj-vehicle-orm-low.webp",
+    "mime": "image/webp",
+    "original": "tools/svj_vehicle_models.py (pinned CC-BY SDC source)"
+  },
+  {
+    "id": "media-svj-vehicle-emissive",
+    "file": "assets/svj-vehicle-emissive.webp",
+    "mime": "image/webp",
+    "original": "tools/svj_vehicle_models.py (pinned CC-BY SDC source)"
+  },
+  {
+    "id": "media-svj-vehicle-emissive-low",
+    "file": "assets/svj-vehicle-emissive-low.webp",
+    "mime": "image/webp",
+    "original": "tools/svj_vehicle_models.py (pinned CC-BY SDC source)"
   }
 ]

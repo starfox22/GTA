@@ -140,6 +140,7 @@
       approvedAssets: () => city3D?.approvedAssets?.() ?? null,
       sportsAssets: () => city3D?.sportsAssets?.() ?? null,
       hotrodAssets: () => city3D?.hotrodAssets?.() ?? null,
+      svjAssets: () => city3D?.svjAssets?.() ?? null,
       vehicleDoors: (id) => city3D?.vehicleDoors?.(id) ?? null,
       // Before/after: false builds every vehicle model made from now on procedurally (park new ones to compare).
       assetCarsOn: (on) => city3D?.assetCarsOn?.(on) ?? null,

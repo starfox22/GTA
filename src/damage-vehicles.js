@@ -89,7 +89,7 @@
       van: [1.1, 2.5, -0.498, 0.3],
       pickup: [1.05, 1.48, -0.105, 0.163],
       chevette: [0.7997014, 1.1262768, -0.1548631, 0.1976345],
-      brutini: [0.82, 1.13, -0.44, 0.2],
+      brutini: [0.712064196, 1.142565326, -0.129937644, 0.293225094],
       cavalino: [0.86, 1.2, -0.4, 0.16],
       // The downloaded box truck, flatbed cab, bus and ambulance (their cabs' glass; vehicles-and-driving-models-heavy.md).
       truck: [1.31, 2.18, 0.346, 0.438],
