@@ -19,7 +19,6 @@
           if (Number.isFinite(changes.lookSensitivity)) settings.lookSensitivity = clamp(Math.round(changes.lookSensitivity), 20, 300);
           if (typeof changes.invertLook === 'boolean') settings.invertLook = changes.invertLook;
           if (typeof changes.aimAssist === 'boolean') settings.aimAssist = changes.aimAssist;
-          if (typeof changes.motionBlur === 'boolean') settings.motionBlur = changes.motionBlur;
           // Settings · Gameplay · Gore (gore.js): 'full' or 'reduced'.
           if (changes.gore === 'full' || changes.gore === 'reduced') settings.gore = changes.gore;
           // 'auto', 'off', 'low' or 'high' (quality.js SHADOWS).

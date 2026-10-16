@@ -479,6 +479,7 @@ packs with plain `<script src>` so the zip still plays from file://.
   after its own smoothing; any change of `player.coaster` or its `view` resets the head. Console `rideLook()`.
 - Sound that is off is said on screen: M and the start of play post `soundOffText()` (audio.js; mute and master
   volume are saved). `MIX_MAKEUP` sits after the limiter; `wakeAudio` resumes a suspended context on any gesture.
+- Graphics defaults: player outline and ring are off; preserve explicit saved choices. Motion blur is temporarily withdrawn: no menu row, no saved/console enablement, `chaseMotionBlurAllowed()` always false.
 - `kickCamera(heading, units)` / `shake` (camera-feel.js) are the only camera jolts; renderers
   only read `cameraKick` and `cameraShakeOffset`.
 - Roomy one-shots (shots, blasts, crashes, near thunder) connect to `reverbSend`

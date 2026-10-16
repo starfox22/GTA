@@ -62,8 +62,8 @@
       radioVolumeSet: false,
       npcChatter: true,
       cutaway: true,
-      // The faint moonlit rim on the player's silhouette at night (render3d.js).
-      playerOutline: true,
+      // The optional moonlit rim on the player's silhouette at night: off by default.
+      playerOutline: false,
       // The ring on the ground under the player (render3d-effects.js, game-draw2d.js): off by default.
       playerRing: false,
       // The camera eases back for a spectacle close by (drawbridge.js drawbridgeCameraZoom).
@@ -75,8 +75,8 @@
       invertLook: false,
       // Aiming in the chase camera locks onto a threat near the reticle (chase-camera.js LOCK-ON).
       aimAssist: true,
-      // The chase camera's motion blur on HIGH / ULTRA (postfx3d-motion.js).
-      motionBlur: true,
+      // Motion blur is withdrawn for now. Keep a false report field for older tools.
+      motionBlur: false,
       // GORE (gore.js): 'full' (lost limbs, the full spray) or 'reduced' (no dismemberment, less blood).
       gore: 'full',
     };
@@ -115,7 +115,6 @@
         if (Number.isFinite(saved.lookSensitivity)) settings.lookSensitivity = clamp(Math.round(saved.lookSensitivity), 20, 300);
         if (typeof saved.invertLook === 'boolean') settings.invertLook = saved.invertLook;
         if (typeof saved.aimAssist === 'boolean') settings.aimAssist = saved.aimAssist;
-        if (typeof saved.motionBlur === 'boolean') settings.motionBlur = saved.motionBlur;
         if (saved.gore === 'full' || saved.gore === 'reduced') settings.gore = saved.gore;
         // The title menu's radio (car-radio.js TITLE RADIO), on unless switched off.
         if (typeof saved.titleRadio === 'boolean') titleRadioEnabled = saved.titleRadio;
@@ -145,7 +144,6 @@
             lookSensitivity: settings.lookSensitivity,
             invertLook: settings.invertLook,
             aimAssist: settings.aimAssist,
-            motionBlur: settings.motionBlur,
             gore: settings.gore,
             titleRadio: titleRadioEnabled,
             soundOn,
@@ -286,15 +284,6 @@
           set: (on) => {
             settings.playerOutline = !!on;
           },
-        },
-        {
-          id: 'motionBlur',
-          kind: 'toggle',
-          label: 'Motion blur',
-          note: () =>
-            'In the chase camera on HIGH and ULTRA, the street smears a little as the camera moves fast (a short exposure); your own car and the player stay sharp. Off with Motion comfort.',
-          get: () => settings.motionBlur,
-          set: (on) => (settings.motionBlur = !!on),
         },
         {
           id: 'playerRing',
