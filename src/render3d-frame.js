@@ -248,7 +248,7 @@
               if (!m.plane) m.body.rotation.z = -wear * 0.025 + stance.pitch;
               if (m.bike) {
                 // Leaning into the turn, or down on its side after a crash (riders.js).
-                m.body.rotation.x = c.fallen ? c.fallen.roll : clamp(c.av * 0.13, -0.28, 0.28);
+                m.body.rotation.x = c.fallen ? c.fallen.roll : c.bikeRoll ?? clamp(c.av * 0.13, -0.28, 0.28);
                 // (`showLamps`: a review bike shows its rider, DeadEndCity.carLineup.)
                 m.rider.visible = c.hp > 0 && (c === player.car || c.ai || !!c.showLamps);
                 // Lamps, the fork's steering and the wheelie (motorbikes3d.js).

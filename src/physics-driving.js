@@ -208,10 +208,10 @@
         c.counterSteer = false;
         c.handbrakeTurn = false;
         if (c.hp > 0 && c === pc && active) {
-          const lowerFront = vehicleDefinition.bike && wheelieLowerHeld(),
-            up = (keys.KeyW || keys.ArrowUp) && !lowerFront,
-            down = keys.KeyS || keys.ArrowDown || lowerFront,
-            brake = keys.Space,
+          const rearBrake = vehicleDefinition.bike && (c.wheelie || 0) > 0.005 && actionHeld('handbrake'),
+            up = actionHeld('forward') && !rearBrake && !(vehicleDefinition.bike && actionHeld('back')),
+            down = actionHeld('back') || rearBrake,
+            brake = actionHeld('handbrake'),
             frontContact = vehicleDefinition.bike ? wheelieFrontContact(c) : 1,
             steerBrake = brake && frontContact === 1,
             turnKey = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0);
@@ -301,7 +301,7 @@
               acceleration -= Math.sign(along) * Math.min(Math.abs(along) / stepSeconds, (rear * Math.abs(along)) / travel);
               handbrakeSide = (rear * Math.abs(lateral)) / travel + (vehicleDefinition.cornerG || 1.2) * GRAVITY * surface * handling.grip * frontLoad * tyreSideShare(slipAngle);
             }
-          } else if (brake && !(lowerFront && frontContact < 1)) acceleration -= Math.sign(along) * Math.min(Math.abs(along) / stepSeconds, 0.45 * GRAVITY * surface);
+          } else if (brake && !(rearBrake && frontContact < 1)) acceleration -= Math.sign(along) * Math.min(Math.abs(along) / stepSeconds, 0.45 * GRAVITY * surface);
           // Off the tarmac (verges, lawns, dirt): more rolling resistance.
           if ((up || down) && !pedalled && !handlingTestPaved && !onRoad(c.x, c.y))
             acceleration -= Math.sign(along) * Math.min(Math.abs(along) / stepSeconds, (vehicleDefinition.dirt ? 0.02 : vehicleDefinition.offroad ? 0.05 : 0.14) * GRAVITY);
@@ -604,6 +604,13 @@
         if (vehicleDefinition.bike && (c === pc || c.wheelie || c.wheelieRate)) {
           acceleration = wheelieStep(c, vehicleDefinition, c === pc && active && c.hp > 0, acceleration, along, stepSeconds);
           if (c.wheelie > 0) steer *= wheelieSteerShare(c);
+        }
+        // A ridden motorcycle turns by rolling into its lateral acceleration. Keep the
+        // finite roll response in the simulation so the body and steering agree.
+        if (vehicleDefinition.bike && !vehicleDefinition.bicycle && (c === pc || c.bikeRoll || c.bikeRollRate))
+          steer = motorcycleBalanceStep(c, steer, along, stepSeconds);
+        if (vehicleDefinition.bike && c.rideAir) {
+          acceleration = grip = lateralScale = drag = 0;
         }
         c.vx += headingCosine * acceleration * stepSeconds;
         c.vy += headingSine * acceleration * stepSeconds;

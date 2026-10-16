@@ -60,12 +60,24 @@ driving.js). Specs, crashes, aircraft and models: vehicles-and-driving.md.
 ## Two-wheeler pitch and wheelie controls
 
 `wheelieStep` keeps the engine's available force and the bike/rider centre-of-mass torque
-authoritative. `wheelieHeld()` asks for lift with a separate throttle and climb input
-(default W + ↑); ↑ alone remains throttle. `wheelieLowerHeld()` is the descend or brake
-action (↓ / S / G), or the handbrake while the front is raised. On a two-wheeler only,
-it cuts the throttle before the normal brake model, even while W remains held or ↑ and
-↓ overlap. The rider's mass eases forward while
-lowering and back while asking for lift. A pad uses LT and touch uses BRAKE to lower.
+authoritative. Settings · Controls exposes separate **Wheelie / lean back** and
+**Wheelie / lean forward** actions: ↑ / ↓ by default, independent of W / S throttle/brake.
+The body shift fades in between 3 and 8 km/h, so stationary or reversing arrow presses
+cannot move the rider or accelerate the bike. Forward weight shift keeps the throttle
+available; S or Space uses the real rear brake while the front is up.
+
+Holding rider-back with drive asks the rider to feather the available engine force toward
+a sustainable 29° sport-bike wheelie. This balance assistance cannot add power, lift on a
+coast or start a clutch/body pop while airborne or sharply banked. It permits long distance
+wheelies without an inevitable timed loopout. Passing the actual balance/tail limit still
+throws the rider. Releasing the shift settles gently; leaning forward lowers more quickly.
+
+Ridden motorcycles have a substepped, critically damped roll response (`motorcycleBalanceStep`).
+Requested lateral acceleration produces the gravity-balanced bank; at speed that bank
+controls yaw, with direct steering blended back below 18 km/h. The body and steering follow
+the same roll state (`bikeRoll`, `bikeRollRate`), including a small transient fork countersteer.
+Traffic handling is unchanged. The rider adds bounded torso/pelvis hangoff and looks through
+the corner while the source grips and pegs remain fixed IK targets.
 
 With the front up, rear braking is capped at 0.55 g, multiplied by the tyre surface and
 rain grip and the longitudinal share left by cornering. It cannot add positive drive
@@ -86,9 +98,9 @@ pivot dropped its centre by `radius * (1 - cos(pitch))`. Riders use the same res
 body matrix for the seat, bars and pegs. The correction uses the actual bank, base pitch
 and pending terrain angles; the bicycle and scaled bike-share frame use the same rule.
 
-`wheelie-dynamics` tests the actual control/torque kernels, brake priority, grip budgets,
+`wheelie-dynamics` tests the actual control/torque kernels, independent rider input, stationary gating, sustained balance, grip budgets,
 30/60/120 Hz agreement and landing recovery. `wheelie` presses real W + ↑, W + ↓ and
-W + Space. `wheelie-tyre-contact` checks airborne and partial front effects.
+W + Space, plus stopped/coasting Up alone. `wheelie-tyre-contact` checks airborne and partial front effects.
 `motorcycle-wheel-rig` and `approved-motorcycle-rigs` hold the actual rear axle still
 through 0.2/0.6/1.1 rad pitches, while the rider-fit tests retain seat/hand/foot contacts.
 

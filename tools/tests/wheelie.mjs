@@ -1,16 +1,13 @@
-// Wheelies (wheelie.js): throttle + climb lifts the front about the rear tyre, the throttle
-// alone lets it settle, off the throttle it drops; held too long a sport bike loops out and
-// the rider falls off the back; a cruiser barely lifts; the real keys: W + up lifts (on every motorbike that can),
-// up alone (riding on the arrows) is only the throttle.
+// Wheelie rider inputs are independent of W/S, speed-gated and sustainable; real keys exercise the live translator.
 export const fresh = true;
 
 export default async function (t) {
   await t.call('holdSimulation', true);
   try {
     await t.call('rideInto', 'bike', 30, 'none', 25, 0.05);
-    await t.keys(['KeyW', 'KeyT'], 1.2);
+    await t.keys(['KeyW', 'WheelieUp'], 1.2);
     let w = await t.call('wheelieState');
-    t.assert(w.onBike && w.deg > 12 && w.deg < 45, `W + climb lifts the front: ${w.deg}°`);
+    t.assert(w.onBike && w.deg > 12 && w.deg < 45, `W + rider back lifts the front: ${w.deg}°`);
     t.assert(w.steerShare < 0.6, `little steering with the front up: ${w.steerShare}`);
     const lifted = w.deg;
     await t.keys(['KeyW'], 0.6);
@@ -20,26 +17,28 @@ export default async function (t) {
     w = await t.call('wheelieState');
     t.assert(w.onBike && Math.abs(w.deg) < 0.5 && w.log.loops === 0, `off the throttle it comes down: ${w.deg}°`);
 
-    // Held on from a low gear: past the balance point, over it goes (at speed
-    // the engine no longer has the pull to lift it).
-    await t.call('rideInto', 'bike', 25, 'none', 25, 0.05);
-    await t.keys(['KeyW', 'KeyT'], 5);
+    // Sustained balance supports the requested distance achievements, rather
+    // than forcing a loopout after a few seconds of holding rider-back.
+    await t.call('rideInto', 'bike', 50, 'none', 25, 0.05);
+    await t.keys(['KeyW', 'WheelieUp'], 11);
     w = await t.call('wheelieState');
-    const rider = await t.call('riderReport');
-    t.assert(!w.onBike && w.log.loops === 1, `held too long it loops out: ${JSON.stringify(w.log)}`);
-    t.assert(rider.throws.at(-1)?.cause === 'loopout', `off the back: ${JSON.stringify(rider.throws.at(-1))}`);
-    t.note(`sport bike: ${lifted}° after 1.2 s, looped at ${w.log.lastLoop.kmh} km/h`);
-    await t.wait(8);
+    const score = await t.call('wheelieScore');
+    t.assert(w.onBike && w.deg > 15 && w.deg < 40, `long wheelie stays balanced: ${JSON.stringify(w)}`);
+    t.assert(score.distanceM > 200 && score.tier === 2, `200 m wheelie achievement: ${JSON.stringify(score)}`);
+    await t.keys(['KeyW', 'WheelieDown'], 1.5);
+    w = await t.call('wheelieState');
+    t.assert(w.onBike && w.deg < 1, `weight forward lands the long wheelie: ${w.deg}°`);
+    t.note(`sport bike: ${lifted}° after 1.2 s; sustained ${score.distanceM} m`);
 
     // A heavy cruiser barely lifts.
     await t.call('rideInto', 'cruiser', 30, 'none', 25, 0.05);
-    await t.keys(['KeyW', 'KeyT'], 1.5);
+    await t.keys(['KeyW', 'WheelieUp'], 1.5);
     w = await t.call('wheelieState');
     t.assert(w.onBike && w.deg < 4, `the cruiser stays down: ${w.deg}°`);
 
     // A bicycle: a small one.
     await t.call('rideInto', 'bicycle', 12, 'none', 25, 0.05);
-    await t.keys(['KeyW', 'KeyT'], 0.8);
+    await t.keys(['KeyW', 'WheelieUp'], 0.8);
     w = await t.call('wheelieState');
     t.assert(w.onBike && w.deg > 4 && w.deg < 30, `a bicycle lifts a little: ${w.deg}°`);
   } finally {
@@ -58,21 +57,28 @@ export default async function (t) {
   w = await t.call('wheelieState');
   t.assert(w.onBike && w.deg < Math.max(1, beforeLower - 8), `W + ↓ did not lower the front: ${beforeLower}° → ${w.deg}°`);
   await t.call('rideInto', 'bike', 25, 'none', 25, 0.05);
-  await t.keys(['KeyW', 'KeyT'], 1.4);
+  await t.keys(['KeyW', 'WheelieUp'], 1.4);
   const beforeSpace = await t.call('wheelieState');
   t.assert(beforeSpace.deg > 12, 'rear-brake real-key fixture did not lift');
   await realHold(t, ['KeyW', 'Space'], .65);
   w = await t.call('wheelieState');
   t.assert(w.onBike && w.deg < Math.max(1, beforeSpace.deg - 8), `W + Space did not lower the front: ${beforeSpace.deg}° → ${w.deg}°`);
-  // ... and ↑ alone is only the throttle.
+  // Up alone shifts the rolling rider; it does not feed the engine.
   await t.call('rideInto', 'bike', 20, 'none', 25, 0.05);
   w = await t.call('wheelieState');
   const before = w.log.lifts,
     kmh = w.kmh;
   await realHold(t, ['ArrowUp'], 1.2);
   w = await t.call('wheelieState');
-  t.assert(w.log.lifts === before && w.deg < 1, `↑ alone does not lift it: ${w.deg}°`);
-  t.assert(w.kmh > kmh + 5, `↑ alone is the throttle: ${kmh} → ${w.kmh} km/h`);
+  t.assert(w.log.lifts === before && w.deg < 1, `↑ alone cannot manufacture drive/lift: ${w.deg}°`);
+  t.assert(w.kmh < kmh, `↑ alone must coast: ${kmh} → ${w.kmh} km/h`);
+  // Neither rider arrow does anything to a stopped motorcycle.
+  for (const key of ['ArrowUp', 'ArrowDown']) {
+    await t.call('rideInto', 'bike', 0, 'none', 25, .05);
+    await realHold(t, [key], .7);
+    w = await t.call('wheelieState');
+    t.assert(w.kmh === 0 && Math.abs(w.deg) < .1 && w.lean === 0, `stationary ${key} moved bike/rider: ${JSON.stringify(w)}`);
+  }
   // Every other motorbike that can pull one (the wheelie hint's list) lifts on the real keys too.
   for (const type of ['dolcati', 'yamasaki', 'kr500']) {
     await t.call('rideInto', type, 20, 'none', 25, 0.05);

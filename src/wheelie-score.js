@@ -47,7 +47,8 @@
     function wheelieScoreStep(c, dt, fromX, fromY) {
       if (gameMode !== 'play' || !(dt > 0) || dt > 0.1) return;
       const S = wheelieScoreState;
-      if (S.car && (S.car !== c || player.car !== S.car)) finishWheelieScore('exited');
+      if (S.car && (S.car.fallen || S.car.hp <= 0 || player.thrown || player.hp <= 0)) finishWheelieScore('crashed');
+      else if (S.car && (S.car !== c || player.car !== S.car)) finishWheelieScore('exited');
       if (!c || player.car !== c || !vehicleSpec(c).bike) return;
       if (S.blockedId !== null) {
         if (S.blockedId !== (c.id ?? -1) || (c.wheelie || 0) <= WHEELIE_SCORE_KEEP) S.blockedId = null;

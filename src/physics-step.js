@@ -374,5 +374,8 @@
       forestTrunkContacts();
       mark('phys:contacts');
       for (let v = 0; v < vehicles.length; v++) settleVehicle(vehicles[v], pc, stepSeconds);
+      // Score only final travel/contact: wall and shore resolution may roll a
+      // speculative driving displacement back, and terrain can launch both tyres.
+      if (pc && vehicleSpec(pc).bike) wheelieScoreStep(pc, stepSeconds, pc.stepStartX, pc.stepStartY);
       mark('phys:post');
     }

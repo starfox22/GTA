@@ -83,6 +83,12 @@ export default async function wheelieTyreContactTest(t) {
   rubber = marks(car, [1, 0]);
   t.assert(rubber.length === 2 && rubber.every(mark => mark.x > car.x), 'ordinary car mark count changed');
   t.assert(rubber.every(mark => mark.dark === 1), 'ordinary car rubber appearance changed');
+  for (const state of ['rideAir', 'cliffAir', 'deckAir', 'overturned', 'fallen']) {
+    const airborne = makeBike(.4, { [state]: true, skid: 1, wheelSpin: 1, fordDepth: 2 });
+    t.assert(marks(airborne, [1, 1], { lateral: 100, handbrake: true }).length === 0,
+      state + ': tyres without ground contact painted rubber');
+    t.assert(emission(airborne).kind === null, state + ': tyres without ground contact emitted road effects');
+  }
 
   // The authoritative output supplies the same smooth front weight for wet roads,
   // fords and offroad ground. Totals count one rear plus the weighted front on bikes.

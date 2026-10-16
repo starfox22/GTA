@@ -102,7 +102,8 @@
        brakeDecel, pedalled, burnout). Called every physics step; lays at 40 Hz. */
     function layTyreMarks(c, spec, tyres, s) {
       // Rubber marks only hard ground; loose ground takes tracks (offroad3d-mud.js) and dust.
-      if (s.pedalled || spec.tank || !tyres || tyreGroundKind(c) in TYRE_DUST_GROUND) return;
+      if (c.rideAir || c.cliffAir || c.deckAir || c.overturned || c.fallen ||
+          s.pedalled || spec.tank || !tyres || tyreGroundKind(c) in TYRE_DUST_GROUND) return;
       const speed = Math.hypot(c.vx || 0, c.vy || 0),
         slideAngle = Math.abs(s.lateral) / Math.max(Math.abs(s.along), 20),
         axle = drivenAxle(c);
@@ -184,7 +185,7 @@
       out.heat = 0;
       const spec = vehicleSpec(c);
       out.frontContact = spec.bike || spec.bicycle ? wheelieFrontContact(c) : 1;
-      if (spec.tank || isAircraft(c) || isBoat(c) || c.cliffAir || c.deckAir || c.overturned || c.fallen) return out;
+      if (spec.tank || isAircraft(c) || isBoat(c) || c.rideAir || c.cliffAir || c.deckAir || c.overturned || c.fallen) return out;
       const speed = Math.hypot(c.vx || 0, c.vy || 0),
         spin = spec.bicycle ? 0 : c.wheelSpin || 0;
       if (!(speed > 4 * KMH) && !(spin > 0.3)) return out;

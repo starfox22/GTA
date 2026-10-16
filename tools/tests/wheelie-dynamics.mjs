@@ -1,4 +1,4 @@
-// Production input/pitch kernels: Down wins over W, rear braking respects grip, and pitch/fork response is stable across timesteps.
+// Production input/pitch kernels: independent rider shifts, grip-limited brakes and stable pitch/roll across timesteps.
 import fs from 'node:fs';
 import vm from 'node:vm';
 import { createRequire } from 'node:module';
@@ -39,24 +39,24 @@ export default async function (t) {
       localStorage: { getItem: () => null }, SETTING_ROWS: {}, isAircraft: c => c?.type === 'plane', isBoat: () => false,
       clamp: (v, lo, hi) => Math.max(lo, Math.min(hi, v)), wetGrip: () => surface.wet,
       tyreSurfaceGrip: () => surface.tyre, riderAboard: () => false, vehicleSpec: () => spec }),
-    driving = read('physics-driving'), inputAt = driving.indexOf('          const lowerFront ='),
+    driving = read('physics-driving'), inputAt = driving.indexOf('          const rearBrake ='),
     input = driving.slice(inputAt, driving.indexOf('          // A bicycle', inputAt)),
     api = vm.runInContext(read('controls') + read('wheelie') + read('driving') + `
       function driveInput(vehicleDefinition, c = player.car) { ${input} return { up: !!up, down: !!down }; }
       ({ step: wheelieStep, pressControlKey, holdActions, releaseControlKey, wheelieHeld, wheelieLowerHeld, driveInput,
-        frontContact: wheelieFrontContact, brakeStep, brakesOff, tyreState, drivingCharacter });`, scope),
+        balance: motorcycleBalanceStep, frontContact: wheelieFrontContact, brakeStep, brakesOff, tyreState, drivingCharacter });`, scope),
     press = code => api.holdActions(api.pressControlKey(code)),
-    release = () => { for (const code of ['KeyW', 'ArrowUp', 'ArrowDown', 'KeyG', 'Space']) api.releaseControlKey(code); };
+    release = () => { for (const code of ['KeyW', 'KeyS', 'ArrowUp', 'ArrowDown', 'KeyG', 'Space']) api.releaseControlKey(code); };
   press('ArrowUp');
-  t.assert(!api.wheelieHeld() && api.driveInput(spec).up, 'Up alone must remain the throttle');
+  t.assert(api.wheelieHeld() && !api.driveInput(spec).up, 'Up should shift rider weight without accelerating');
   press('KeyW');
-  t.assert(api.wheelieHeld(), 'W + Up no longer asks for a wheelie');
+  t.assert(api.wheelieHeld() && api.driveInput(spec).up, 'W + Up must drive while shifting back');
   press('ArrowDown');
-  t.assert(api.wheelieLowerHeld() && !api.wheelieHeld(), 'Down must win while Up and W are still held');
-  t.assert(!api.driveInput(spec).up && api.driveInput(spec).down, 'lower input still asks the engine to accelerate');
-  t.assert(api.driveInput({ bike: false }).up, 'wheelie brake priority changed car controls');
+  t.assert(api.wheelieLowerHeld() && !api.wheelieHeld(), 'opposed shifts should resolve forward');
+  t.assert(api.driveInput(spec).up && !api.driveInput(spec).down, 'forward weight shift must not cut W or apply brakes');
+  t.assert(api.driveInput({ bike: false }).up, 'rider shift changed car throttle');
   release();
-  press('KeyW'); press('ArrowDown');
+  press('KeyS');
   const bike = () => ({ type: 'bike', hp: 100, wheelie: Math.PI / 6, wheelieRate: .4, wheelieLean: 1, av: 0, vx: 60, vy: 0 });
   const run = (rate, seconds, acceleration = -12 * 8, initial = bike()) => {
     player.car = initial;
@@ -76,17 +76,68 @@ export default async function (t) {
   const corner = api.step(banked, spec, true, -12 * 8, 60, 1 / 120);
   t.assert(dry < wet && wet < corner && corner < 0, 'rear brake grip ignores rain or cornering demand');
   t.near(dry / 8, -.551 * 9.81, -.549 * 9.81, 'dry rear brake cap (m/s²)');
-  t.assert(api.step(bike(), spec, true, 6 * 8, 60, 1 / 120) <= 0, 'lower command retained positive drive torque');
+  t.assert(api.step(bike(), spec, true, 6 * 8, 60, 1 / 120) <= 0, 'real brake retained positive drive torque');
+  release(); press('KeyW'); press('ArrowDown');
+  t.assert(api.step(bike(), spec, true, 6 * 8, 60, 1 / 120) >= 0, 'weight shift unexpectedly applied the rear brake');
   surface.wet = 1;
   release();
   const saved = bike(); saved.wheelie = .95;
   player.car = saved;
   press('KeyW'); press('Space');
-  t.assert(api.wheelieLowerHeld() && !api.driveInput(spec).up && api.driveInput(spec).down, 'W + Space retained drive torque with the front airborne');
+  t.assert(!api.driveInput(spec).up && api.driveInput(spec).down, 'W + Space retained drive torque with the front airborne');
   run(120, .6, -12 * 8, saved);
   t.assert(saved.wheelie < .7 && saved.wheelieRate < 0, 'rear brake cannot recover a wheelie above its balance point');
   player.car = { type: 'bike', wheelie: 0 };
   t.assert(api.driveInput(spec).up, 'grounded W + Space behavior changed');
+  release();
+
+  // Stationary/reverse inputs cannot manufacture pitch or a body shift.
+  for (const along of [0, -20, 2 * 8 / 3.6]) {
+    release(); press('ArrowUp');
+    const c = bike(); c.wheelie = c.wheelieRate = c.wheelieLean = 0;
+    for (let i = 0; i < 240; i++) api.step(c, spec, true, 0, along, 1 / 120);
+    t.assert(c.wheelie === 0 && c.wheelieLean === 0, 'non-rolling rider inputs moved the motorcycle');
+  }
+  // An available engine can sustain a useful long wheelie; the rider assist
+  // never exceeds the supplied force and cannot create power on a coast.
+  release(); press('KeyW'); press('ArrowUp');
+  const holds = [30, 60, 120].map(rate => {
+    const c = bike(); c.wheelie = c.wheelieRate = c.wheelieLean = 0;
+    let distance = 0;
+    for (let i = 0; i < rate * 16; i++) {
+      const delivered = api.step(c, spec, true, 9 * 8, 100, 1 / rate);
+      t.assert(delivered <= 9 * 8 + 1e-9 && delivered >= 0, 'wheelie assist manufactured drive force');
+      if (c.wheelie > .08) distance += 100 / 8 / rate;
+    }
+    t.assert(c.wheelie > .40 && c.wheelie < .55 && distance > 190, 'sustainable wheelie balance failed');
+    return c;
+  });
+  t.assert(holds.every(c => Math.abs(c.wheelie - holds[0].wheelie) < 1e-9), 'held wheelie differs between timesteps');
+  release();
+  for (const rate of [30, 60, 120]) {
+    const c = bike(); c.bikeRoll = c.bikeRollRate = 0;
+    const first = api.balance(c, .45, 100, 1 / rate);
+    t.assert(first > 0 && first < .15, 'motorcycle turned instantly before rolling');
+    for (let i = 1; i < rate * 2; i++) api.balance(c, .45, 100, 1 / rate);
+    t.near(c.bikeRoll, .50, .53, 'physical corner bank ' + rate);
+    t.near(api.balance(c, .45, 100, 1 / rate), .44, .46, 'bank and yaw balance ' + rate);
+    for (let i = 0; i < rate * 2; i++) api.balance(c, 0, 100, 1 / rate);
+    t.assert(Math.abs(c.bikeRoll) < .001, 'motorcycle did not stand up after steering release');
+    t.finite(c, 'corner balance ' + rate);
+  }
+  // Neither control can create chassis rotation/drive without a tyre contact.
+  for (const shift of ['ArrowUp', 'ArrowDown']) {
+    release(); press('KeyW'); press(shift);
+    const c = bike(); c.wheelie = .25; c.wheelieRate = 0; c.rideAir = true;
+    for (let i = 0; i < 120; i++) {
+      t.assert(api.step(c, spec, true, 9 * 8, 100, 1 / 120) === 0, 'airborne throttle/brake generated contact force');
+      api.balance(c, .45, 100, 1 / 120);
+    }
+    t.assert(c.wheelie === .25 && c.bikeRoll === 0, 'airborne rider input generated rotation');
+  }
+  const airborne = bike(); airborne.rideAir = true; airborne.bikeRoll = .2; airborne.bikeRollRate = .3;
+  api.balance(airborne, -.45, 100, 1 / 120);
+  t.assert(airborne.bikeRoll > .2 && airborne.bikeRollRate > .29, 'airborne roll momentum snapped or reversed with input');
   release();
 
   // Exercise actual load transfer, bias, slip and ABS: an airborne front has no force or lock telemetry.
