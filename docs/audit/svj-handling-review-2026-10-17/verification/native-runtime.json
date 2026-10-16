@@ -1,0 +1,155 @@
+{
+  "pass": true,
+  "htmlSha256": "c3200fc63508a789867d7ff8617c7f5c2a79c4dc703529f8ac69002372cd579d",
+  "sourceChecks": [
+    {
+      "file": "svj-handling-after-front.png",
+      "asset": "svj_sdc",
+      "bodySourceTriangles": 508324,
+      "openDoorSourceTriangles": 0,
+      "totalSourceTriangles": 508324,
+      "textures": [
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ]
+      ],
+      "doorMask": 0
+    },
+    {
+      "file": "svj-handling-after-rear.png",
+      "asset": "svj_sdc",
+      "bodySourceTriangles": 508324,
+      "openDoorSourceTriangles": 0,
+      "totalSourceTriangles": 508324,
+      "textures": [
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ]
+      ],
+      "doorMask": 0
+    },
+    {
+      "file": "svj-handling-after-scissor-door.png",
+      "asset": "svj_sdc",
+      "bodySourceTriangles": 500245,
+      "openDoorSourceTriangles": 8079,
+      "totalSourceTriangles": 508324,
+      "textures": [
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ]
+      ],
+      "doorMask": 1
+    }
+  ],
+  "wheelie": {
+    "onBike": true,
+    "type": "bike",
+    "geometry": "sport",
+    "deg": 16.3,
+    "rate": 0.36,
+    "lean": 1,
+    "bankDeg": 0,
+    "bankRate": 0,
+    "rollingShare": 1,
+    "asked": false,
+    "lowering": false,
+    "kmh": 80,
+    "balanceDeg": 38,
+    "loopDeg": 69,
+    "steerShare": 0.29,
+    "log": {
+      "lifts": 1,
+      "loops": 0,
+      "pops": 1,
+      "bestDeg": 16,
+      "bestSeconds": 0,
+      "lastLoop": null
+    },
+    "hint": {
+      "shown": 1,
+      "last": "WHEELIE \u00b7 HOLD W + \u2191 while moving \u00b7 \u2193 weight forward",
+      "due": false
+    },
+    "at": 3.93
+  },
+  "score": {
+    "phase": "active",
+    "tracking": true,
+    "type": "bike",
+    "metres": 14.19,
+    "grade": 0,
+    "distanceM": 14.19,
+    "tier": 0,
+    "milestone": "",
+    "milestonePulses": 0,
+    "reason": "",
+    "airborneSeconds": 0.708,
+    "touchdownSeconds": 0,
+    "resultSeconds": 0,
+    "runs": 0,
+    "bestMetres": 0
+  },
+  "corner": {
+    "onBike": true,
+    "type": "bike",
+    "geometry": "sport",
+    "deg": 0,
+    "rate": 0,
+    "lean": 0,
+    "bankDeg": 4.2,
+    "bankRate": 0,
+    "rollingShare": 1,
+    "asked": false,
+    "lowering": false,
+    "kmh": 78,
+    "balanceDeg": 38,
+    "loopDeg": 69,
+    "steerShare": 1,
+    "log": {
+      "lifts": 1,
+      "loops": 0,
+      "pops": 1,
+      "bestDeg": 16,
+      "bestSeconds": 0,
+      "lastLoop": null
+    },
+    "hint": {
+      "shown": 1,
+      "last": "WHEELIE \u00b7 HOLD W + \u2191 while moving \u00b7 \u2193 weight forward",
+      "due": false
+    },
+    "at": 4.63
+  },
+  "errors": [],
+  "warnings": [
+    "Scripts \"build/three.js\" and \"build/three.min.js\" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation"
+  ]
+}

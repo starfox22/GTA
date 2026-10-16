@@ -1,0 +1,77 @@
+{
+  "kind": "Unmodified native 3D game PNGs, full 1000 \u00d7 700 viewport. Inspection cameras; actual simulated rider controls.",
+  "files": [
+    {
+      "file": "screenshots/native/svj-handling-before-rear.png",
+      "sha256": "65e5760a340a1d7c0a3eb3029a6026e06ac745d8d7805cefb25b0e8db2bc2c33",
+      "bytes": 708417,
+      "dimensions": [
+        1000,
+        700
+      ],
+      "htmlSha256": "aa9ca8c1d6a9279894308e0b2f5a9d7e99ebc67b3d1328825b64cb0c5b8632cb",
+      "recorderSha256": "813c97a36417eec0102c9026bc83284a1f1a571780f1e71ffcbf8bfcb2f2234c",
+      "report": "verification/capture-before.json"
+    },
+    {
+      "file": "screenshots/native/svj-handling-after-front.png",
+      "sha256": "1b2e7022486737a5e3128a66cb7476d6a6cc4bbb9a6725abe6552e7e88a9a194",
+      "bytes": 732060,
+      "dimensions": [
+        1000,
+        700
+      ],
+      "htmlSha256": "c3200fc63508a789867d7ff8617c7f5c2a79c4dc703529f8ac69002372cd579d",
+      "recorderSha256": "ec3ebb044082dfc6544dfd1329033a0ac15fdb10a0380dfae56e057ba7e7bc14",
+      "report": "verification/capture-after.json"
+    },
+    {
+      "file": "screenshots/native/svj-handling-after-rear.png",
+      "sha256": "da54313d1d3807c374041228504934255c75a672602a1091931d92506d16ec4c",
+      "bytes": 722946,
+      "dimensions": [
+        1000,
+        700
+      ],
+      "htmlSha256": "c3200fc63508a789867d7ff8617c7f5c2a79c4dc703529f8ac69002372cd579d",
+      "recorderSha256": "ec3ebb044082dfc6544dfd1329033a0ac15fdb10a0380dfae56e057ba7e7bc14",
+      "report": "verification/capture-after.json"
+    },
+    {
+      "file": "screenshots/native/svj-handling-after-scissor-door.png",
+      "sha256": "100595b8fd804872c11a72e801f6fbaf1179a5c2f3e5a7b8b273a9eab56233dc",
+      "bytes": 739714,
+      "dimensions": [
+        1000,
+        700
+      ],
+      "htmlSha256": "c3200fc63508a789867d7ff8617c7f5c2a79c4dc703529f8ac69002372cd579d",
+      "recorderSha256": "ec3ebb044082dfc6544dfd1329033a0ac15fdb10a0380dfae56e057ba7e7bc14",
+      "report": "verification/capture-after.json"
+    },
+    {
+      "file": "screenshots/native/svj-handling-after-wheelie.png",
+      "sha256": "22d31536e7de71471a0fa8469a731cfe41c6726095a7cf81720075418586d074",
+      "bytes": 975102,
+      "dimensions": [
+        1000,
+        700
+      ],
+      "htmlSha256": "c3200fc63508a789867d7ff8617c7f5c2a79c4dc703529f8ac69002372cd579d",
+      "recorderSha256": "ec3ebb044082dfc6544dfd1329033a0ac15fdb10a0380dfae56e057ba7e7bc14",
+      "report": "verification/capture-after.json"
+    },
+    {
+      "file": "screenshots/native/svj-handling-after-corner.png",
+      "sha256": "b79df7843972ea5ab4c8880fba4dc445330e2137020e76f2e1ecc00742fec189",
+      "bytes": 998957,
+      "dimensions": [
+        1000,
+        700
+      ],
+      "htmlSha256": "c3200fc63508a789867d7ff8617c7f5c2a79c4dc703529f8ac69002372cd579d",
+      "recorderSha256": "ec3ebb044082dfc6544dfd1329033a0ac15fdb10a0380dfae56e057ba7e7bc14",
+      "report": "verification/capture-after.json"
+    }
+  ]
+}

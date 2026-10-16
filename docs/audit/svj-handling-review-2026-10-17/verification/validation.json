@@ -1,0 +1,66 @@
+{
+  "productSourceCommits": {
+    "svj": "f5e4808d",
+    "handling": "d6f01674"
+  },
+  "frozen": {
+    "htmlSha256": "c3200fc63508a789867d7ff8617c7f5c2a79c4dc703529f8ac69002372cd579d",
+    "gameJsSha256": "b0247b8cf78d68ea66396eb97ebb5bb261c88e1fed3821413569133ce9e86147",
+    "splitEntrySha256": "edd4ead2d4e72b00a7792a4626ca304a81007848e82ba3ec6565f66b1ea5d5e1",
+    "finalRegeneratedHtmlIdentical": true
+  },
+  "host": {
+    "modules": 20,
+    "assertions": 18758,
+    "receipt": "final-host.json"
+  },
+  "originalSourceCorners": {
+    "sourceTriangles": 508324,
+    "nearTriangles": 508324,
+    "farTriangles": 20133,
+    "receipt": "source-corner-proof.json"
+  },
+  "native": {
+    "acceptedImages": 6,
+    "renderer": "3d",
+    "gameplayHtmlSha256": "c3200fc63508a789867d7ff8617c7f5c2a79c4dc703529f8ac69002372cd579d",
+    "beforeHtmlSha256": "aa9ca8c1d6a9279894308e0b2f5a9d7e99ebc67b3d1328825b64cb0c5b8632cb",
+    "errors": 0,
+    "frameFaults": 0,
+    "gpuLosses": 0,
+    "receipt": "capture-after.json",
+    "runtimeChecks": "native-runtime.json",
+    "rejected": "The first before front PNG retained an expanded radio transition; only the clear rear before view is accepted."
+  },
+  "liveController": {
+    "source": "acc08f81",
+    "test": "ce748636",
+    "qualification": "Isolated controller browser run; tested controller, rider, score and input files match final integrated source. Final integrated UI, native rendering and packaged smoke separately verified.",
+    "distanceMetres": 201.701,
+    "tier": 2,
+    "manualThrottleChanges": 12,
+    "realLoopoutAndCrashScore": true,
+    "receipt": "restored-controller-live.log",
+    "parityReceipt": "live-controller-source-parity.json"
+  },
+  "integratedBindingsUI": {
+    "remapReload": true,
+    "receipt": "bindings-ui.json"
+  },
+  "packagedSmoke": {
+    "errors": 0,
+    "captures": 7,
+    "walkUnits": 16,
+    "driveUnits": 24,
+    "bothCameras": true,
+    "creditsSvj": true,
+    "receipt": "packaged-smoke.json"
+  },
+  "publicArtifact": {
+    "files": 158,
+    "bytes": 214957978,
+    "manifest": "public-artifact-manifest.json"
+  },
+  "fullSuiteRepeated": false,
+  "pass": true
+}

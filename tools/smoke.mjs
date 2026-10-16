@@ -132,9 +132,10 @@ try {
       hotrod: text.includes('cb5b519024c7472895ef10a8663fb533'),
       citation: text.includes('a78839624fe64900a8352cb23462350a'),
       transport: text.includes('73d0cd0c03594c5d9c53235d74b429bf'),
+      svj: text.includes('784e4656aca649cca55d6b18740a19b2'),
       textCharacters: text.length,
     };
-    assert(checks.credits.visible && checks.credits.hotrod && checks.credits.citation && checks.credits.transport, 'Full downloaded-model attributions are not readable in Credits');
+    assert(checks.credits.visible && checks.credits.hotrod && checks.credits.citation && checks.credits.transport && checks.credits.svj, 'Full downloaded-model attributions are not readable in Credits');
     await shot('07-credits');
     await page.click('#closeCredits');
     if ((await state()).mode !== 'play') await page.keyboard.press('Escape');

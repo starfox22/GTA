@@ -1,0 +1,175 @@
+{
+  "sourceSHA256": "4c56b1baafe861dcbb7438571d685ddb96709d3cc909f58b83bc58887e96fd16",
+  "sourceTriangles": 508324,
+  "nearTriangles": 508324,
+  "farTriangles": 20133,
+  "nearSourceFacesOwnedExactlyOnce": true,
+  "everyNearTriangleCornerMatchesSourceAfterDocumentedRigidFit": true,
+  "normalStorage": "signed16 authored split normals, no smoothing or welding",
+  "positionQuantizationMaximumMetres": 3.769035920285653e-05,
+  "sourceTexturePixels": "1024-square authored carbon JPEG retained at native resolution in the2048atlas",
+  "parts": {
+    "panels": {
+      "triangles": 17513,
+      "everyCornerPositionExact": true,
+      "everyCornerNormalExact": true,
+      "everyCornerUvExact": true
+    },
+    "shell": {
+      "triangles": 15734,
+      "everyCornerPositionExact": true,
+      "everyCornerNormalExact": true,
+      "everyCornerUvExact": true
+    },
+    "trim": {
+      "triangles": 293015,
+      "everyCornerPositionExact": true,
+      "everyCornerNormalExact": true,
+      "everyCornerUvExact": true
+    },
+    "opticalGlass": {
+      "triangles": 2650,
+      "everyCornerPositionExact": true,
+      "everyCornerNormalExact": true,
+      "everyCornerUvExact": true
+    },
+    "glass": {
+      "triangles": 1948,
+      "everyCornerPositionExact": true,
+      "everyCornerNormalExact": true,
+      "everyCornerUvExact": true
+    },
+    "doorLeft.paint": {
+      "triangles": 3712,
+      "everyCornerPositionExact": true,
+      "everyCornerNormalExact": true,
+      "everyCornerUvExact": true
+    },
+    "doorRight.paint": {
+      "triangles": 3712,
+      "everyCornerPositionExact": true,
+      "everyCornerNormalExact": true,
+      "everyCornerUvExact": true
+    },
+    "doorLeft.trim": {
+      "triangles": 3447,
+      "everyCornerPositionExact": true,
+      "everyCornerNormalExact": true,
+      "everyCornerUvExact": true
+    },
+    "doorRight.trim": {
+      "triangles": 3447,
+      "everyCornerPositionExact": true,
+      "everyCornerNormalExact": true,
+      "everyCornerUvExact": true
+    },
+    "doorLeft.glass": {
+      "triangles": 920,
+      "everyCornerPositionExact": true,
+      "everyCornerNormalExact": true,
+      "everyCornerUvExact": true
+    },
+    "doorRight.glass": {
+      "triangles": 920,
+      "everyCornerPositionExact": true,
+      "everyCornerNormalExact": true,
+      "everyCornerUvExact": true
+    },
+    "headLeft": {
+      "triangles": 72,
+      "everyCornerPositionExact": true,
+      "everyCornerNormalExact": true,
+      "everyCornerUvExact": true
+    },
+    "headRight": {
+      "triangles": 72,
+      "everyCornerPositionExact": true,
+      "everyCornerNormalExact": true,
+      "everyCornerUvExact": true
+    },
+    "hood": {
+      "triangles": 3352,
+      "everyCornerPositionExact": true,
+      "everyCornerNormalExact": true,
+      "everyCornerUvExact": true
+    },
+    "wheel0.rim": {
+      "triangles": 24719,
+      "everyCornerPositionExact": true,
+      "everyCornerNormalExact": true,
+      "everyCornerUvExact": true
+    },
+    "wheel0.tyre": {
+      "triangles": 1632,
+      "everyCornerPositionExact": true,
+      "everyCornerNormalExact": true,
+      "everyCornerUvExact": true
+    },
+    "wheel0.caliper": {
+      "triangles": 2306,
+      "everyCornerPositionExact": true,
+      "everyCornerNormalExact": true,
+      "everyCornerUvExact": true
+    },
+    "wheel1.caliper": {
+      "triangles": 2306,
+      "everyCornerPositionExact": true,
+      "everyCornerNormalExact": true,
+      "everyCornerUvExact": true
+    },
+    "wheel2.rim": {
+      "triangles": 24719,
+      "everyCornerPositionExact": true,
+      "everyCornerNormalExact": true,
+      "everyCornerUvExact": true
+    },
+    "wheel3.rim": {
+      "triangles": 24719,
+      "everyCornerPositionExact": true,
+      "everyCornerNormalExact": true,
+      "everyCornerUvExact": true
+    },
+    "wheel2.tyre": {
+      "triangles": 1632,
+      "everyCornerPositionExact": true,
+      "everyCornerNormalExact": true,
+      "everyCornerUvExact": true
+    },
+    "wheel3.tyre": {
+      "triangles": 1632,
+      "everyCornerPositionExact": true,
+      "everyCornerNormalExact": true,
+      "everyCornerUvExact": true
+    },
+    "wheel2.caliper": {
+      "triangles": 1966,
+      "everyCornerPositionExact": true,
+      "everyCornerNormalExact": true,
+      "everyCornerUvExact": true
+    },
+    "tailLeft": {
+      "triangles": 22914,
+      "everyCornerPositionExact": true,
+      "everyCornerNormalExact": true,
+      "everyCornerUvExact": true
+    },
+    "tailRight": {
+      "triangles": 22914,
+      "everyCornerPositionExact": true,
+      "everyCornerNormalExact": true,
+      "everyCornerUvExact": true
+    },
+    "wheel1.rim": {
+      "triangles": 24719,
+      "everyCornerPositionExact": true,
+      "everyCornerNormalExact": true,
+      "everyCornerUvExact": true
+    },
+    "wheel1.tyre": {
+      "triangles": 1632,
+      "everyCornerPositionExact": true,
+      "everyCornerNormalExact": true,
+      "everyCornerUvExact": true
+    }
+  }
+}

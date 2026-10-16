@@ -1,0 +1,42 @@
+{
+  "controllerCommit": "acc08f81",
+  "testCommit": "ce748636",
+  "integratedProductCommit": "d6f01674",
+  "files": [
+    {
+      "file": "src/controls.js",
+      "sha256": "5bd7531cae662900e1a1a4f416ba3931b51462e615d2df96aed990a565ed655b",
+      "equal": true
+    },
+    {
+      "file": "src/wheelie.js",
+      "sha256": "cfb1fcb5bc50e03a9eaf74e53a2ec0c72ae1d9c640372c8456503c6e1d7a7a09",
+      "equal": true
+    },
+    {
+      "file": "src/physics-driving.js",
+      "sha256": "386821f1bee9137bdb45e7fab88cfa75d0fa144f9d8619f27b7ea4116da33e2c",
+      "equal": true
+    },
+    {
+      "file": "src/motorbikes3d.js",
+      "sha256": "568754630ce753ffde599c06a2096c68e3ab158df1032e8b46d75d1d12076f59",
+      "equal": true
+    },
+    {
+      "file": "src/wheelie-score.js",
+      "sha256": "0cbf757dca5f2769207e7bfccf79d022df08c55bdba5f59fe75c5a1f98ae4e16",
+      "equal": true
+    },
+    {
+      "file": "src/riders.js",
+      "sha256": "2f000881d5e1ee71bc233f70930514c209ea9eea2187bb03ebca266dbfd42116",
+      "equal": true
+    },
+    {
+      "file": "src/crowd3d-poses.js",
+      "sha256": "148ce2cfc202a76308387a6a784cf396b8928f05f3622cbb6c88539d6ab6e42d",
+      "equal": true
+    }
+  ]
+}

@@ -3,6 +3,31 @@
 Written for the next AI session (or human) picking this work up. Read `/CLAUDE.md` first (commands,
 rules, workflow), then this page, then only the area doc your task needs (`docs/README.md`).
 
+## October 17: downloaded Brutini SVJ and earlier motorcycle handling
+
+Continue on **`codex-reviews`**. The owner requested a downloaded replacement for
+BRUTINI SVJ and the earlier bike turning/wheelie physics, keeping the current
+key mappings. The ordinary Brutini now uses SDC PERFORMANCE's CC-BY-4.0 Aventador
+SVJ: all 508,324 source near triangles, authored split normals/UVs, 20,133-triangle
+far LOD, source wheels, measured scissor hinges and fitted gameplay cabin.
+Read [SVJ model notes](areas/vehicles-and-driving-models-svj.md) and preserve its
+attribution, source face ownership, glazing and shared-resource contracts.
+
+Bike steering/bank and continuing 0.45 rad/s wheelie lift restore `3bae7a00` feel;
+the previous pass's 29-degree auto-hold and delayed roll steering are removed.
+Keep W/S drive, separate remappable ↑/↓ rider weight, the stationary speed gate,
+meter/milestones, source rear-axle pivot and improved rider/fall animation.
+Balance by feathering throttle/rider weight; continuous excessive pull can loop out.
+
+The [SVJ/handling review](audit/svj-handling-review-2026-10-17/README.md) retains
+six native screenshots, source/capture hashes, 20 host modules / 18,758 assertions,
+live manual 201.701 m and loop-out checks, Settings remap/reload and zero-error
+packaged smoke including readable SVJ credit. Frozen game source: `d6f01674`;
+later changes are test/documentation/evidence only. Entry hash starts `edd4ead2d4e72b00`.
+The Pages workflow publishes the [playable build](https://starfox22.github.io/GTA/?review=edd4ead2d4e72b00)
+and [current gallery](https://starfox22.github.io/GTA/review/), preserving the previous
+reviews under `/review/wheelie-rider/`, `/review/impact-motorcycle/` and `/review/police-aviation/`.
+
 ## October 16: independent wheelie controls and rider motion
 
 Continue on **`codex-reviews`**. W/S now supplies throttle/brake by default; dedicated,

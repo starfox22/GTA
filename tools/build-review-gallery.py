@@ -8,8 +8,9 @@ import shutil
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-CURRENT_AUDIT = ROOT / 'docs/audit/wheelie-rider-review-2026-10-16'
+CURRENT_AUDIT = ROOT / 'docs/audit/svj-handling-review-2026-10-17'
 HISTORY = [
+    ('wheelie-rider', ROOT / 'docs/audit/wheelie-rider-review-2026-10-16', 'Wheelie controls, achievements and rider motion'),
     ('impact-motorcycle', ROOT / 'docs/audit/impact-motorcycle-review-2026-10-16', 'Vehicle impacts and motorcycles'),
     ('police-aviation', ROOT / 'docs/audit/police-aviation-review-2026-10-15', 'Police and aviation'),
 ]
@@ -89,7 +90,7 @@ Additional runtime screenshots retain their recorded gameplay states. Technical 
     links = [f'<a href="{prefix}{folder}/">{html.escape(label)}</a>'
              for folder, prior, label in HISTORY if prior != audit]
     if audit != CURRENT_AUDIT:
-        links.insert(0, '<a href="../">Latest wheelie and rider review</a>')
+        links.insert(0, '<a href="../">Latest game review</a>')
     page += '<p>' + ' · '.join(links) + '</p>'
     page += ''.join(sections)
     if sounds:

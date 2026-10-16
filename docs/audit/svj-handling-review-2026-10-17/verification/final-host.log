@@ -1,0 +1,21 @@
+Scripts "build/three.js" and "build/three.min.js" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation
+PASS svj-vehicle-assets 193
+PASS svj-loader-materials 38
+PASS sports-vehicle-assets 1228
+PASS hotrod-vehicle-assets 137
+PASS hotrod-vehicle-rig 71
+PASS approved-suv-rigs 1019
+PASS approved-motorcycle-rigs 207
+PASS vehicle-source-fidelity 118
+PASS approved-motorcycle-rider-fit 222
+PASS car-cabin-view-distance 165
+PASS motorcycle-previous-feel 1632
+PASS wheelie-dynamics 1203
+PASS wheelie-bindings 61
+PASS wheelie-score 37
+PASS wheelie-score-settle 4
+PASS wheelie-tyre-contact 135
+PASS rider-fall-motion 11839
+PASS rider-fatal-flight 66
+PASS motorcycle-riding-animation 153
+PASS motorcycle-wheel-rig 230

@@ -1,0 +1,7649 @@
+{
+  "label": "after",
+  "htmlSha256": "c3200fc63508a789867d7ff8617c7f5c2a79c4dc703529f8ac69002372cd579d",
+  "recorderSha256": "ec3ebb044082dfc6544dfd1329033a0ac15fdb10a0380dfae56e057ba7e7bc14",
+  "fixture": {
+    "viewport": [
+      1000,
+      700
+    ],
+    "seed": 1,
+    "origin": [
+      418,
+      6000
+    ],
+    "heading": 0,
+    "quality": "high",
+    "clock": 13,
+    "weather": "clear",
+    "held": true
+  },
+  "inputs": [
+    [
+      "status",
+      []
+    ],
+    [
+      "holdSimulation",
+      [
+        true
+      ]
+    ],
+    [
+      "god",
+      [
+        true
+      ]
+    ],
+    [
+      "graphics",
+      [
+        "high"
+      ]
+    ],
+    [
+      "sky",
+      [
+        "clear"
+      ]
+    ],
+    [
+      "setClock",
+      [
+        13
+      ]
+    ],
+    [
+      "wanted",
+      [
+        0
+      ]
+    ],
+    [
+      "settings",
+      [
+        {
+          "sound": false,
+          "fps": false,
+          "gps": false,
+          "minimapFolded": true,
+          "keyHints": false,
+          "lookAhead": 0,
+          "radioVolume": 0
+        }
+      ]
+    ],
+    [
+      "look",
+      [
+        418,
+        6000,
+        3
+      ]
+    ],
+    [
+      "drive",
+      [
+        "brutini",
+        0,
+        0
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        6000,
+        0
+      ]
+    ],
+    [
+      "viewMode",
+      [
+        "street"
+      ]
+    ],
+    [
+      "closeUp",
+      [
+        11
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        65,
+        12,
+        5
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        1.3,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "vehicleAt",
+      [
+        418,
+        6000
+      ]
+    ],
+    [
+      "settings",
+      [
+        {}
+      ]
+    ],
+    [
+      "settings",
+      [
+        {}
+      ]
+    ],
+    [
+      "status",
+      []
+    ],
+    [
+      "cameraView",
+      []
+    ],
+    [
+      "frameFaults",
+      []
+    ],
+    [
+      "gpuContext",
+      []
+    ],
+    [
+      "carModels",
+      []
+    ],
+    [
+      "assetCars",
+      []
+    ],
+    [
+      "approvedAssets",
+      []
+    ],
+    [
+      "sportsAssets",
+      []
+    ],
+    [
+      "svjAssets",
+      []
+    ],
+    [
+      "wheelieState",
+      []
+    ],
+    [
+      "wheelieScore",
+      []
+    ],
+    [
+      "vehicleDoors",
+      [
+        265
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        245,
+        12,
+        5
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "settings",
+      [
+        {}
+      ]
+    ],
+    [
+      "settings",
+      [
+        {}
+      ]
+    ],
+    [
+      "status",
+      []
+    ],
+    [
+      "cameraView",
+      []
+    ],
+    [
+      "frameFaults",
+      []
+    ],
+    [
+      "gpuContext",
+      []
+    ],
+    [
+      "carModels",
+      []
+    ],
+    [
+      "assetCars",
+      []
+    ],
+    [
+      "approvedAssets",
+      []
+    ],
+    [
+      "sportsAssets",
+      []
+    ],
+    [
+      "svjAssets",
+      []
+    ],
+    [
+      "wheelieState",
+      []
+    ],
+    [
+      "wheelieScore",
+      []
+    ],
+    [
+      "vehicleDoors",
+      [
+        265
+      ]
+    ],
+    [
+      "doorSwing",
+      [
+        265,
+        true,
+        -1
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        115,
+        12,
+        5
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "vehicleDoors",
+      [
+        265
+      ]
+    ],
+    [
+      "settings",
+      [
+        {}
+      ]
+    ],
+    [
+      "settings",
+      [
+        {}
+      ]
+    ],
+    [
+      "status",
+      []
+    ],
+    [
+      "cameraView",
+      []
+    ],
+    [
+      "frameFaults",
+      []
+    ],
+    [
+      "gpuContext",
+      []
+    ],
+    [
+      "carModels",
+      []
+    ],
+    [
+      "assetCars",
+      []
+    ],
+    [
+      "approvedAssets",
+      []
+    ],
+    [
+      "sportsAssets",
+      []
+    ],
+    [
+      "svjAssets",
+      []
+    ],
+    [
+      "wheelieState",
+      []
+    ],
+    [
+      "wheelieScore",
+      []
+    ],
+    [
+      "vehicleDoors",
+      [
+        265
+      ]
+    ],
+    [
+      "doorSwing",
+      [
+        265,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        1.3,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "look",
+      [
+        418,
+        6000,
+        3
+      ]
+    ],
+    [
+      "rideInto",
+      [
+        "bike",
+        50,
+        "none",
+        25,
+        0.05
+      ]
+    ],
+    [
+      "closeUp",
+      [
+        11
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        18,
+        10,
+        6
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        1.1,
+        [
+          "KeyW",
+          "WheelieUp"
+        ],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [
+          "KeyW",
+          "WheelieUp"
+        ],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [
+          "KeyW",
+          "WheelieUp"
+        ],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "wheelieState",
+      []
+    ],
+    [
+      "settings",
+      [
+        {}
+      ]
+    ],
+    [
+      "settings",
+      [
+        {}
+      ]
+    ],
+    [
+      "status",
+      []
+    ],
+    [
+      "cameraView",
+      []
+    ],
+    [
+      "frameFaults",
+      []
+    ],
+    [
+      "gpuContext",
+      []
+    ],
+    [
+      "carModels",
+      []
+    ],
+    [
+      "assetCars",
+      []
+    ],
+    [
+      "approvedAssets",
+      []
+    ],
+    [
+      "sportsAssets",
+      []
+    ],
+    [
+      "svjAssets",
+      []
+    ],
+    [
+      "wheelieState",
+      []
+    ],
+    [
+      "wheelieScore",
+      []
+    ],
+    [
+      "rideInto",
+      [
+        "bike",
+        65,
+        "none",
+        25,
+        0.05
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.6,
+        [
+          "KeyW",
+          "KeyD"
+        ],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        35,
+        12,
+        6
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [
+          "KeyW",
+          "KeyD"
+        ],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [
+          "KeyW",
+          "KeyD"
+        ],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "wheelieState",
+      []
+    ],
+    [
+      "settings",
+      [
+        {}
+      ]
+    ],
+    [
+      "settings",
+      [
+        {}
+      ]
+    ],
+    [
+      "status",
+      []
+    ],
+    [
+      "cameraView",
+      []
+    ],
+    [
+      "frameFaults",
+      []
+    ],
+    [
+      "gpuContext",
+      []
+    ],
+    [
+      "carModels",
+      []
+    ],
+    [
+      "assetCars",
+      []
+    ],
+    [
+      "approvedAssets",
+      []
+    ],
+    [
+      "sportsAssets",
+      []
+    ],
+    [
+      "svjAssets",
+      []
+    ],
+    [
+      "wheelieState",
+      []
+    ],
+    [
+      "wheelieScore",
+      []
+    ],
+    [
+      "bindings",
+      []
+    ]
+  ],
+  "captures": [
+    {
+      "file": "svj-handling-after-front.png",
+      "sha256": "1b2e7022486737a5e3128a66cb7476d6a6cc4bbb9a6725abe6552e7e88a9a194",
+      "inspection": [
+        65,
+        12,
+        5
+      ],
+      "closeUp": 11,
+      "id": 265,
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6000,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "brutini",
+        "weapon": "9MM PISTOL",
+        "clock": "13:01",
+        "renderer": "3d",
+        "vehicles": 280,
+        "pedestrians": 595
+      },
+      "cameraView": {
+        "zoom": 11,
+        "target": 11,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 11,
+        "aim": 11,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 5.4,
+        "personPx": 144,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.33,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "frameFaults": {
+        "count": 0,
+        "gameTime": 1.35,
+        "drill": null,
+        "kinds": []
+      },
+      "gpuContext": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "carModels": [
+        {
+          "id": 1,
+          "type": "coupe",
+          "draws": 12,
+          "casters": 3,
+          "triangles": 10608,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              4387
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1673
+            ],
+            [
+              "MeshStandardMaterial",
+              782
+            ],
+            [
+              "MeshStandardMaterial",
+              782
+            ],
+            [
+              "MeshStandardMaterial",
+              780
+            ],
+            [
+              "MeshStandardMaterial",
+              776
+            ]
+          ],
+          "asset": "Kiri '86",
+          "cabin": {
+            "hip": [
+              -0.282,
+              0.362,
+              -0.414
+            ],
+            "door": [
+              -0.382,
+              0.891
+            ],
+            "floor": 0.262,
+            "floorWorldY": 0.274,
+            "pedalHeight": 0.362,
+            "recline": 0.4,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 2131,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 0.585
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 2,
+          "type": "sedan",
+          "draws": 14,
+          "casters": 3,
+          "triangles": 10067,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              4807
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1880
+            ],
+            [
+              "MeshPhysicalMaterial",
+              638
+            ],
+            [
+              "MeshStandardMaterial",
+              531
+            ],
+            [
+              "MeshStandardMaterial",
+              531
+            ],
+            [
+              "MeshStandardMaterial",
+              527
+            ]
+          ],
+          "asset": "Fairheaven LT '80",
+          "cabin": {
+            "hip": [
+              -0.318,
+              0.275,
+              -0.426
+            ],
+            "door": [
+              -0.418,
+              0.798
+            ],
+            "floor": 0.226,
+            "floorWorldY": 0.239,
+            "pedalHeight": 0.326,
+            "recline": 0.3,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 2134,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 0.549
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 3,
+          "type": "suv",
+          "draws": 18,
+          "casters": 3,
+          "triangles": 122277,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              57894
+            ],
+            [
+              "MeshPhysicalMaterial",
+              28399
+            ],
+            [
+              "MeshPhysicalMaterial",
+              11635
+            ],
+            [
+              "MeshStandardMaterial",
+              5329
+            ],
+            [
+              "MeshPhysicalMaterial",
+              3776
+            ],
+            [
+              "MeshStandardMaterial",
+              2889
+            ]
+          ],
+          "asset": "Suzuki Jimny 2023",
+          "cabin": {
+            "hip": [
+              -0.384,
+              0.454,
+              -0.372
+            ],
+            "door": [
+              -0.484,
+              0.766
+            ],
+            "floor": 0.254,
+            "floorWorldY": 0.266,
+            "pedalHeight": 0.354,
+            "recline": 0.3,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 13838,
+            "seated": 0,
+            "headroom": 0.175,
+            "behind": 0.794
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 4,
+          "type": "van",
+          "draws": 13,
+          "casters": 3,
+          "triangles": 9494,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              2168
+            ],
+            [
+              "MeshStandardMaterial",
+              2116
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1558
+            ],
+            [
+              "MeshStandardMaterial",
+              1084
+            ],
+            [
+              "MeshStandardMaterial",
+              1084
+            ],
+            [
+              "MeshPhysicalMaterial",
+              684
+            ]
+          ],
+          "asset": null,
+          "cabin": {
+            "hip": [
+              0.919,
+              0.68,
+              -0.46
+            ],
+            "door": [
+              0.525,
+              1.575
+            ],
+            "floor": 0.48,
+            "floorWorldY": 0.493,
+            "pedalHeight": 0.58,
+            "recline": 0.3,
+            "rear": false,
+            "two": false,
+            "cabinTriangles": 1204,
+            "seated": 0,
+            "headroom": 0.143,
+            "behind": 0.08
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": {
+            "text": "MULE",
+            "sub": null,
+            "style": "block",
+            "letters": 4
+          }
+        },
+        {
+          "id": 5,
+          "type": "bike",
+          "draws": 12,
+          "casters": 3,
+          "triangles": 53999,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              25166
+            ],
+            [
+              "MeshStandardMaterial",
+              5732
+            ],
+            [
+              "MeshPhysicalMaterial",
+              5605
+            ],
+            [
+              "MeshStandardMaterial",
+              4071
+            ],
+            [
+              "MeshStandardMaterial",
+              3204
+            ],
+            [
+              "MeshStandardMaterial",
+              2429
+            ]
+          ],
+          "asset": "Sport motorcycle (SRAD 750)",
+          "cabin": null,
+          "panes": null,
+          "badge": null
+        },
+        {
+          "id": 6,
+          "type": "supercar",
+          "draws": 14,
+          "casters": 3,
+          "triangles": 11433,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              4894
+            ],
+            [
+              "MeshPhysicalMaterial",
+              2084
+            ],
+            [
+              "MeshPhysicalMaterial",
+              977
+            ],
+            [
+              "MeshStandardMaterial",
+              666
+            ],
+            [
+              "MeshStandardMaterial",
+              666
+            ],
+            [
+              "MeshStandardMaterial",
+              660
+            ]
+          ],
+          "asset": "Italian Supercar '84",
+          "cabin": {
+            "hip": [
+              -0.268,
+              0.214,
+              -0.46
+            ],
+            "door": [
+              -0.368,
+              0.86
+            ],
+            "floor": 0.21,
+            "floorWorldY": 0.223,
+            "pedalHeight": 0.31,
+            "recline": 0.52,
+            "rear": false,
+            "two": true,
+            "cabinTriangles": 1131,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 0.08
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 265,
+          "type": "brutini",
+          "draws": 22,
+          "casters": 3,
+          "triangles": 509900,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              299909
+            ],
+            [
+              "MeshPhysicalMaterial",
+              24937
+            ],
+            [
+              "MeshStandardMaterial",
+              24719
+            ],
+            [
+              "MeshStandardMaterial",
+              24719
+            ],
+            [
+              "MeshStandardMaterial",
+              24719
+            ],
+            [
+              "MeshStandardMaterial",
+              24719
+            ]
+          ],
+          "asset": "Lamborghini Aventador SVJ SDC ( FREE )",
+          "cabin": {
+            "hip": [
+              -0.052,
+              0.211,
+              -0.43
+            ],
+            "door": [
+              0.149,
+              1.449
+            ],
+            "floor": 0.21,
+            "floorWorldY": 0.223,
+            "pedalHeight": 0.31,
+            "recline": 0.66,
+            "rear": false,
+            "two": true,
+            "cabinTriangles": 0,
+            "seated": 1,
+            "headroom": 0.02,
+            "behind": 0.08
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": false
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": false
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": false
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": false
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": false
+            }
+          },
+          "badge": null
+        }
+      ],
+      "assetCars": {
+        "loaded": true,
+        "enabled": true,
+        "atlas": true,
+        "approvedAtlas": true,
+        "rangerStyles": [
+          "s1_jimny",
+          "s2_suv",
+          "s3_offroad"
+        ],
+        "models": {
+          "sedan": {
+            "title": "Fairheaven LT '80",
+            "sourceKey": "sedan",
+            "kind": "car",
+            "triangles": 10067,
+            "farTriangles": null,
+            "dims": [
+              5.001,
+              1.349,
+              1.832
+            ],
+            "wheels": 4,
+            "belt": 0.8727,
+            "roof": 1.2991,
+            "paintTexture": false
+          },
+          "taxi": {
+            "title": "Canyon '75 Taxi",
+            "sourceKey": "taxi",
+            "kind": "car",
+            "triangles": 10340,
+            "farTriangles": null,
+            "dims": [
+              5.307,
+              1.827,
+              2.131
+            ],
+            "wheels": 4,
+            "belt": 1.1593,
+            "roof": 1.622,
+            "paintTexture": true
+          },
+          "coupe": {
+            "title": "Kiri '86",
+            "sourceKey": "coupe",
+            "kind": "car",
+            "triangles": 10608,
+            "farTriangles": null,
+            "dims": [
+              4.314,
+              1.32,
+              1.761
+            ],
+            "wheels": 4,
+            "belt": 0.8646,
+            "roof": 1.3174,
+            "paintTexture": false
+          },
+          "sport": {
+            "title": "JDM Experimental Sportcar '90",
+            "sourceKey": "sport",
+            "kind": "car",
+            "triangles": 8866,
+            "farTriangles": null,
+            "dims": [
+              4.438,
+              1.155,
+              1.97
+            ],
+            "wheels": 4,
+            "belt": 0.7888,
+            "roof": 1.113,
+            "paintTexture": false
+          },
+          "supercar": {
+            "title": "Italian Supercar '84",
+            "sourceKey": "supercar",
+            "kind": "car",
+            "triangles": 11433,
+            "farTriangles": null,
+            "dims": [
+              4.555,
+              1.18,
+              2.026
+            ],
+            "wheels": 4,
+            "belt": 0.8046,
+            "roof": 1.1213,
+            "paintTexture": false
+          },
+          "luxury": {
+            "title": "80 American Sedan",
+            "sourceKey": "luxury",
+            "kind": "car",
+            "triangles": 9256,
+            "farTriangles": null,
+            "dims": [
+              5.2,
+              1.497,
+              1.974
+            ],
+            "wheels": 4,
+            "belt": 1.0055,
+            "roof": 1.4461,
+            "paintTexture": false
+          },
+          "police": {
+            "title": "80 American Police Sedan",
+            "sourceKey": "police",
+            "kind": "car",
+            "triangles": 9993,
+            "farTriangles": null,
+            "dims": [
+              4.98,
+              1.589,
+              1.875
+            ],
+            "wheels": 4,
+            "belt": 0.9166,
+            "roof": 1.3328,
+            "paintTexture": false
+          },
+          "police_charger": {
+            "title": "80s Generic Police Car",
+            "sourceKey": "police_charger",
+            "kind": "car",
+            "triangles": 10757,
+            "farTriangles": null,
+            "dims": [
+              5.045,
+              1.574,
+              1.832
+            ],
+            "wheels": 4,
+            "belt": 0.8733,
+            "roof": 1.3005,
+            "paintTexture": false
+          },
+          "police_suv": {
+            "title": "Chevrolet Suburban Sheriff Cruiser",
+            "sourceKey": "police_suv",
+            "kind": "car",
+            "triangles": 6611,
+            "farTriangles": null,
+            "dims": [
+              6.584,
+              2.159,
+              2.645
+            ],
+            "wheels": 4,
+            "belt": 1.3693,
+            "roof": 1.9515,
+            "paintTexture": false
+          },
+          "muscle": {
+            "title": "American Muscle '71",
+            "sourceKey": "muscle",
+            "kind": "car",
+            "triangles": 9801,
+            "farTriangles": null,
+            "dims": [
+              4.89,
+              1.331,
+              2.088
+            ],
+            "wheels": 4,
+            "belt": 0.8928,
+            "roof": 1.2787,
+            "paintTexture": false
+          },
+          "truck": {
+            "title": "'90 Light Commercial Truck",
+            "sourceKey": "truck",
+            "kind": "car",
+            "triangles": 10442,
+            "farTriangles": null,
+            "dims": [
+              10,
+              2.843,
+              2.604
+            ],
+            "wheels": 4,
+            "belt": 1.3053,
+            "roof": 2.085,
+            "paintTexture": false
+          },
+          "flatbed": {
+            "title": "'90 Light Commercial Truck",
+            "sourceKey": "flatbed",
+            "kind": "car",
+            "triangles": 8791,
+            "farTriangles": null,
+            "dims": [
+              9.5,
+              2.843,
+              2.604
+            ],
+            "wheels": 4,
+            "belt": 1.3053,
+            "roof": 2.085,
+            "paintTexture": false
+          },
+          "pickup": {
+            "title": "Compact Pickup '78",
+            "sourceKey": "pickup",
+            "kind": "car",
+            "triangles": 11033,
+            "farTriangles": null,
+            "dims": [
+              4.6,
+              1.357,
+              1.708
+            ],
+            "wheels": 4,
+            "belt": 0.8622,
+            "roof": 1.2036,
+            "paintTexture": false
+          },
+          "suv": {
+            "title": "Chevrolet Suburban (Sheriff Cruiser, civilian trim)",
+            "sourceKey": "suv",
+            "kind": "car",
+            "triangles": 4406,
+            "farTriangles": null,
+            "dims": [
+              6.584,
+              2.159,
+              2.645
+            ],
+            "wheels": 4,
+            "belt": 1.3693,
+            "roof": 1.9515,
+            "paintTexture": false
+          },
+          "limousine": {
+            "title": "80 American Sedan (stretched)",
+            "sourceKey": "limousine",
+            "kind": "car",
+            "triangles": 9183,
+            "farTriangles": null,
+            "dims": [
+              8.8,
+              1.497,
+              1.974
+            ],
+            "wheels": 4,
+            "belt": 1.0055,
+            "roof": 1.4461,
+            "paintTexture": false
+          },
+          "roadster": {
+            "title": "Chrysler Sebring Convertible",
+            "sourceKey": "roadster",
+            "kind": "car",
+            "triangles": 16223,
+            "farTriangles": null,
+            "dims": [
+              4.9,
+              1.305,
+              1.915
+            ],
+            "wheels": 4,
+            "belt": 0.9136,
+            "roof": 1.2599,
+            "paintTexture": false
+          },
+          "bus": {
+            "title": "Generic Town Bus",
+            "sourceKey": "bus",
+            "kind": "car",
+            "triangles": 17521,
+            "farTriangles": null,
+            "dims": [
+              12,
+              2.969,
+              2.924
+            ],
+            "wheels": 4,
+            "belt": 1.5096,
+            "roof": 2.8475,
+            "paintTexture": false
+          },
+          "ambulance": {
+            "title": "ambulance car",
+            "sourceKey": "ambulance",
+            "kind": "car",
+            "triangles": 11145,
+            "farTriangles": null,
+            "dims": [
+              6.7,
+              2.552,
+              2.388
+            ],
+            "wheels": 4,
+            "belt": 1.2869,
+            "roof": 2.011,
+            "paintTexture": true
+          },
+          "army_jeep": {
+            "title": "HMMWV M998A1 (soft top)",
+            "sourceKey": "army_jeep",
+            "kind": "special",
+            "triangles": 21900,
+            "farTriangles": null,
+            "dims": [
+              4.6,
+              1.838,
+              2.508
+            ],
+            "wheels": 4,
+            "belt": null,
+            "roof": null,
+            "paintTexture": false
+          },
+          "army_truck": {
+            "title": "Military Truck 1/2 Ton (M35)",
+            "sourceKey": "army_truck",
+            "kind": "special",
+            "triangles": 11371,
+            "farTriangles": null,
+            "dims": [
+              6.7,
+              3.231,
+              2.727
+            ],
+            "wheels": 6,
+            "belt": null,
+            "roof": null,
+            "paintTexture": false
+          },
+          "cruiser": {
+            "title": "Harley-Davidson Seventy-Two HD FXT 2015",
+            "sourceKey": "cruiser",
+            "kind": "moto",
+            "triangles": 10404,
+            "farTriangles": null,
+            "dims": [
+              2.473,
+              1.406,
+              1.043
+            ],
+            "wheels": 2,
+            "belt": null,
+            "roof": null,
+            "paintTexture": false
+          },
+          "bike": {
+            "title": "Sport motorcycle (SRAD 750)",
+            "sourceKey": "m2_sport",
+            "kind": "moto",
+            "triangles": 50795,
+            "farTriangles": 12820,
+            "dims": [
+              2.3499084459232287,
+              1.3225039827046685,
+              0.8953110834292488
+            ],
+            "wheels": 2,
+            "belt": null,
+            "roof": null,
+            "paintTexture": true
+          },
+          "kr500": {
+            "title": "Real Motorbike 02",
+            "sourceKey": "m1_enduro",
+            "kind": "moto",
+            "triangles": 12350,
+            "farTriangles": 2707,
+            "dims": [
+              2.2430405332680894,
+              1.6277218014001846,
+              0.9387188255786896
+            ],
+            "wheels": 2,
+            "belt": null,
+            "roof": null,
+            "paintTexture": true
+          },
+          "s1_jimny": {
+            "title": "Suzuki Jimny 2023",
+            "sourceKey": "s1_jimny",
+            "kind": "car",
+            "triangles": 122277,
+            "farTriangles": 10043,
+            "dims": [
+              3.637870192527771,
+              1.8881164789198883,
+              1.8599059581756592
+            ],
+            "wheels": 4,
+            "belt": 0.8737090229987146,
+            "roof": 1.5884509086607936,
+            "paintTexture": true
+          },
+          "s2_suv": {
+            "title": "Generic SUV",
+            "sourceKey": "s2_suv",
+            "kind": "car",
+            "triangles": 7951,
+            "farTriangles": 4354,
+            "dims": [
+              4.611267357026888,
+              1.7332332754720121,
+              2.0676090162520184
+            ],
+            "wheels": 4,
+            "belt": 1.1561036205989217,
+            "roof": 1.6171728180337601,
+            "paintTexture": true
+          },
+          "s3_offroad": {
+            "title": "Generic Offroad",
+            "sourceKey": "s3_offroad",
+            "kind": "car",
+            "triangles": 6502,
+            "farTriangles": 3563,
+            "dims": [
+              3.9394364708438196,
+              1.5696125417427886,
+              1.960026774849609
+            ],
+            "wheels": 4,
+            "belt": 1.09977157896407,
+            "roof": 1.4890706826889362,
+            "paintTexture": true
+          },
+          "chevette": {
+            "title": "2019 Chevrolet Corvette C8 Stingray",
+            "sourceKey": "c8_hari",
+            "kind": "car",
+            "triangles": 85031,
+            "farTriangles": 9407,
+            "dims": [
+              4.69,
+              1.2028457182176802,
+              2.171102649767788
+            ],
+            "wheels": 4,
+            "belt": 0.7997014025149419,
+            "roof": 1.12627682494793,
+            "paintTexture": true
+          },
+          "hotrod": {
+            "title": "Coupe '33 Hot Rod #3 - Low Poly Model",
+            "sourceKey": "coupe33_zhab",
+            "kind": "car",
+            "triangles": 20856,
+            "farTriangles": 5202,
+            "dims": [
+              4.5,
+              1.6242246711168973,
+              1.8852344737802043
+            ],
+            "wheels": 4,
+            "belt": 1.1244690725059128,
+            "roof": 1.4364089358074617,
+            "paintTexture": true
+          },
+          "brutini": {
+            "title": "Lamborghini Aventador SVJ SDC ( FREE )",
+            "sourceKey": "svj_sdc",
+            "kind": "car",
+            "triangles": 508324,
+            "farTriangles": 20133,
+            "dims": [
+              4.94,
+              1.1427401787691005,
+              2.2737332802056813
+            ],
+            "wheels": 4,
+            "belt": 0.712064196413178,
+            "roof": 1.0784481364180831,
+            "paintTexture": true
+          },
+          "dolcati": {
+            "title": "Ducati Panigale V4",
+            "sourceKey": "dolcati_roy",
+            "kind": "moto",
+            "triangles": 372664,
+            "farTriangles": 25717,
+            "dims": [
+              2.221500981409821,
+              1.1937503491263246,
+              0.8127299454804844
+            ],
+            "wheels": 2,
+            "belt": null,
+            "roof": null,
+            "paintTexture": true
+          }
+        },
+        "kits": [
+          "coupe:35.20:14.41",
+          "sedan:38.80:14.82",
+          "s1_jimny:29.10:12.94",
+          "supercar:37.60:16.01",
+          "svj_sdc:39.52:16.77"
+        ]
+      },
+      "approvedAssets": {
+        "loaded": true,
+        "keys": [
+          "m1_enduro",
+          "m2_sport",
+          "s1_jimny",
+          "s2_suv",
+          "s3_offroad"
+        ],
+        "atlasSizes": [
+          [
+            4096,
+            4096
+          ],
+          [
+            4096,
+            4096
+          ]
+        ],
+        "reducedTextures": false,
+        "models": [
+          {
+            "id": 3,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 120202,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 5,
+            "type": "bike",
+            "asset": "m2_sport",
+            "far": false,
+            "triangles": 50795,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 265,
+            "type": "brutini",
+            "asset": "svj_sdc",
+            "far": false,
+            "triangles": 508324,
+            "visible": true,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          }
+        ]
+      },
+      "sportsAssets": {
+        "loaded": true,
+        "enabled": true,
+        "key": "c8_hari",
+        "triangles": 85031,
+        "farTriangles": 9407,
+        "atlasSizes": [],
+        "reducedTextures": false,
+        "nativeDoors": [
+          "left",
+          "right"
+        ]
+      },
+      "svjAssets": {
+        "loaded": true,
+        "enabled": true,
+        "key": "svj_sdc",
+        "triangles": 508324,
+        "farTriangles": 20133,
+        "atlasSizes": [
+          [
+            2048,
+            2048
+          ],
+          [
+            2048,
+            2048
+          ],
+          [
+            2048,
+            2048
+          ]
+        ],
+        "reducedTextures": false,
+        "nativeDoors": [
+          "left",
+          "right"
+        ],
+        "source": "https://sketchfab.com/3d-models/lamborghini-aventador-svj-sdc-free-784e4656aca649cca55d6b18740a19b2",
+        "license": "CC BY 4.0",
+        "sourceTriangles": 508324,
+        "nativeCabin": false
+      },
+      "wheelieState": {
+        "onBike": false,
+        "log": {
+          "lifts": 0,
+          "loops": 0,
+          "pops": 0,
+          "bestDeg": 0,
+          "bestSeconds": 0,
+          "lastLoop": null
+        },
+        "hint": {
+          "shown": 0,
+          "last": "",
+          "due": false
+        }
+      },
+      "wheelieScore": {
+        "phase": "idle",
+        "tracking": false,
+        "type": null,
+        "metres": 0,
+        "grade": 0,
+        "distanceM": 0,
+        "tier": 0,
+        "milestone": "",
+        "milestonePulses": 0,
+        "reason": "",
+        "airborneSeconds": 0,
+        "touchdownSeconds": 0,
+        "resultSeconds": 0,
+        "runs": 0,
+        "bestMetres": 0
+      },
+      "doors": {
+        "cars": [
+          {
+            "id": 265,
+            "type": "brutini",
+            "asset": "Lamborghini Aventador SVJ SDC ( FREE )",
+            "mask": 0,
+            "nativeDoors": true,
+            "doors": {},
+            "materials": {
+              "shell": {
+                "uuid": "8aa0a83a-c1fd-456a-b84e-7ebb528ca6de",
+                "map": "092e65fe-cedb-4998-9688-f6e53ca43908",
+                "roughnessMap": "32a1af30-fbb3-4db8-b5d9-4daee25f70f8",
+                "metalnessMap": "32a1af30-fbb3-4db8-b5d9-4daee25f70f8",
+                "emissiveMap": "dab7e4f1-a6e5-4b17-b465-548df4a16d74",
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "trim": {
+                "uuid": "2a2447da-7a76-42fd-a35a-9821958f0331",
+                "map": "092e65fe-cedb-4998-9688-f6e53ca43908",
+                "roughnessMap": "32a1af30-fbb3-4db8-b5d9-4daee25f70f8",
+                "metalnessMap": "32a1af30-fbb3-4db8-b5d9-4daee25f70f8",
+                "emissiveMap": "dab7e4f1-a6e5-4b17-b465-548df4a16d74",
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "optics": {
+                "uuid": "de27e9bc-63b0-496a-ad2a-ebcd7663df2a",
+                "map": "092e65fe-cedb-4998-9688-f6e53ca43908",
+                "roughnessMap": "32a1af30-fbb3-4db8-b5d9-4daee25f70f8",
+                "metalnessMap": "32a1af30-fbb3-4db8-b5d9-4daee25f70f8",
+                "emissiveMap": "dab7e4f1-a6e5-4b17-b465-548df4a16d74",
+                "transparent": true,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "cabin": {
+                "uuid": "e1dbe690-0d66-4fa7-aec2-12d1d745f74d",
+                "map": null,
+                "roughnessMap": null,
+                "metalnessMap": null,
+                "emissiveMap": null,
+                "transparent": true,
+                "opacity": 0.24,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 2,
+                "forceSinglePass": true
+              }
+            },
+            "closedSourceGeometry": {
+              "shell": true,
+              "panels": true,
+              "cabin": true,
+              "trim": true,
+              "optics": true
+            },
+            "sourceGeometryRestored": {
+              "shell": true,
+              "panels": true,
+              "cabin": true,
+              "trim": true,
+              "optics": true
+            },
+            "cabin": {
+              "authored": false,
+              "fallbackVisible": true,
+              "interiorTriangles": 0,
+              "seat": [
+                -0.41469346249677863,
+                1.69,
+                -3.44
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "file": "svj-handling-after-rear.png",
+      "sha256": "da54313d1d3807c374041228504934255c75a672602a1091931d92506d16ec4c",
+      "inspection": [
+        245,
+        12,
+        5
+      ],
+      "closeUp": 11,
+      "id": 265,
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6000,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "brutini",
+        "weapon": "9MM PISTOL",
+        "clock": "13:01",
+        "renderer": "3d",
+        "vehicles": 280,
+        "pedestrians": 595
+      },
+      "cameraView": {
+        "zoom": 11,
+        "target": 11,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 11,
+        "aim": 11,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 5.4,
+        "personPx": 144,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.37,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "frameFaults": {
+        "count": 0,
+        "gameTime": 1.38,
+        "drill": null,
+        "kinds": []
+      },
+      "gpuContext": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "carModels": [
+        {
+          "id": 1,
+          "type": "coupe",
+          "draws": 12,
+          "casters": 3,
+          "triangles": 10608,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              4387
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1673
+            ],
+            [
+              "MeshStandardMaterial",
+              782
+            ],
+            [
+              "MeshStandardMaterial",
+              782
+            ],
+            [
+              "MeshStandardMaterial",
+              780
+            ],
+            [
+              "MeshStandardMaterial",
+              776
+            ]
+          ],
+          "asset": "Kiri '86",
+          "cabin": {
+            "hip": [
+              -0.282,
+              0.362,
+              -0.414
+            ],
+            "door": [
+              -0.382,
+              0.891
+            ],
+            "floor": 0.262,
+            "floorWorldY": 0.274,
+            "pedalHeight": 0.362,
+            "recline": 0.4,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 2131,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 0.585
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 2,
+          "type": "sedan",
+          "draws": 14,
+          "casters": 3,
+          "triangles": 10067,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              4807
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1880
+            ],
+            [
+              "MeshPhysicalMaterial",
+              638
+            ],
+            [
+              "MeshStandardMaterial",
+              531
+            ],
+            [
+              "MeshStandardMaterial",
+              531
+            ],
+            [
+              "MeshStandardMaterial",
+              527
+            ]
+          ],
+          "asset": "Fairheaven LT '80",
+          "cabin": {
+            "hip": [
+              -0.318,
+              0.275,
+              -0.426
+            ],
+            "door": [
+              -0.418,
+              0.798
+            ],
+            "floor": 0.226,
+            "floorWorldY": 0.239,
+            "pedalHeight": 0.326,
+            "recline": 0.3,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 2134,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 0.549
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 3,
+          "type": "suv",
+          "draws": 18,
+          "casters": 3,
+          "triangles": 122277,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              57894
+            ],
+            [
+              "MeshPhysicalMaterial",
+              28399
+            ],
+            [
+              "MeshPhysicalMaterial",
+              11635
+            ],
+            [
+              "MeshStandardMaterial",
+              5329
+            ],
+            [
+              "MeshPhysicalMaterial",
+              3776
+            ],
+            [
+              "MeshStandardMaterial",
+              2889
+            ]
+          ],
+          "asset": "Suzuki Jimny 2023",
+          "cabin": {
+            "hip": [
+              -0.384,
+              0.454,
+              -0.372
+            ],
+            "door": [
+              -0.484,
+              0.766
+            ],
+            "floor": 0.254,
+            "floorWorldY": 0.266,
+            "pedalHeight": 0.354,
+            "recline": 0.3,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 13838,
+            "seated": 0,
+            "headroom": 0.175,
+            "behind": 0.794
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 4,
+          "type": "van",
+          "draws": 13,
+          "casters": 3,
+          "triangles": 9494,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              2168
+            ],
+            [
+              "MeshStandardMaterial",
+              2116
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1558
+            ],
+            [
+              "MeshStandardMaterial",
+              1084
+            ],
+            [
+              "MeshStandardMaterial",
+              1084
+            ],
+            [
+              "MeshPhysicalMaterial",
+              684
+            ]
+          ],
+          "asset": null,
+          "cabin": {
+            "hip": [
+              0.919,
+              0.68,
+              -0.46
+            ],
+            "door": [
+              0.525,
+              1.575
+            ],
+            "floor": 0.48,
+            "floorWorldY": 0.493,
+            "pedalHeight": 0.58,
+            "recline": 0.3,
+            "rear": false,
+            "two": false,
+            "cabinTriangles": 1204,
+            "seated": 0,
+            "headroom": 0.143,
+            "behind": 0.08
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": {
+            "text": "MULE",
+            "sub": null,
+            "style": "block",
+            "letters": 4
+          }
+        },
+        {
+          "id": 5,
+          "type": "bike",
+          "draws": 12,
+          "casters": 3,
+          "triangles": 53999,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              25166
+            ],
+            [
+              "MeshStandardMaterial",
+              5732
+            ],
+            [
+              "MeshPhysicalMaterial",
+              5605
+            ],
+            [
+              "MeshStandardMaterial",
+              4071
+            ],
+            [
+              "MeshStandardMaterial",
+              3204
+            ],
+            [
+              "MeshStandardMaterial",
+              2429
+            ]
+          ],
+          "asset": "Sport motorcycle (SRAD 750)",
+          "cabin": null,
+          "panes": null,
+          "badge": null
+        },
+        {
+          "id": 6,
+          "type": "supercar",
+          "draws": 14,
+          "casters": 3,
+          "triangles": 11433,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              4894
+            ],
+            [
+              "MeshPhysicalMaterial",
+              2084
+            ],
+            [
+              "MeshPhysicalMaterial",
+              977
+            ],
+            [
+              "MeshStandardMaterial",
+              666
+            ],
+            [
+              "MeshStandardMaterial",
+              666
+            ],
+            [
+              "MeshStandardMaterial",
+              660
+            ]
+          ],
+          "asset": "Italian Supercar '84",
+          "cabin": {
+            "hip": [
+              -0.268,
+              0.214,
+              -0.46
+            ],
+            "door": [
+              -0.368,
+              0.86
+            ],
+            "floor": 0.21,
+            "floorWorldY": 0.223,
+            "pedalHeight": 0.31,
+            "recline": 0.52,
+            "rear": false,
+            "two": true,
+            "cabinTriangles": 1131,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 0.08
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 265,
+          "type": "brutini",
+          "draws": 22,
+          "casters": 3,
+          "triangles": 509900,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              299909
+            ],
+            [
+              "MeshPhysicalMaterial",
+              24937
+            ],
+            [
+              "MeshStandardMaterial",
+              24719
+            ],
+            [
+              "MeshStandardMaterial",
+              24719
+            ],
+            [
+              "MeshStandardMaterial",
+              24719
+            ],
+            [
+              "MeshStandardMaterial",
+              24719
+            ]
+          ],
+          "asset": "Lamborghini Aventador SVJ SDC ( FREE )",
+          "cabin": {
+            "hip": [
+              -0.052,
+              0.211,
+              -0.43
+            ],
+            "door": [
+              0.149,
+              1.449
+            ],
+            "floor": 0.21,
+            "floorWorldY": 0.223,
+            "pedalHeight": 0.31,
+            "recline": 0.66,
+            "rear": false,
+            "two": true,
+            "cabinTriangles": 0,
+            "seated": 1,
+            "headroom": 0.02,
+            "behind": 0.08
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": false
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": false
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": false
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": false
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": false
+            }
+          },
+          "badge": null
+        }
+      ],
+      "assetCars": {
+        "loaded": true,
+        "enabled": true,
+        "atlas": true,
+        "approvedAtlas": true,
+        "rangerStyles": [
+          "s1_jimny",
+          "s2_suv",
+          "s3_offroad"
+        ],
+        "models": {
+          "sedan": {
+            "title": "Fairheaven LT '80",
+            "sourceKey": "sedan",
+            "kind": "car",
+            "triangles": 10067,
+            "farTriangles": null,
+            "dims": [
+              5.001,
+              1.349,
+              1.832
+            ],
+            "wheels": 4,
+            "belt": 0.8727,
+            "roof": 1.2991,
+            "paintTexture": false
+          },
+          "taxi": {
+            "title": "Canyon '75 Taxi",
+            "sourceKey": "taxi",
+            "kind": "car",
+            "triangles": 10340,
+            "farTriangles": null,
+            "dims": [
+              5.307,
+              1.827,
+              2.131
+            ],
+            "wheels": 4,
+            "belt": 1.1593,
+            "roof": 1.622,
+            "paintTexture": true
+          },
+          "coupe": {
+            "title": "Kiri '86",
+            "sourceKey": "coupe",
+            "kind": "car",
+            "triangles": 10608,
+            "farTriangles": null,
+            "dims": [
+              4.314,
+              1.32,
+              1.761
+            ],
+            "wheels": 4,
+            "belt": 0.8646,
+            "roof": 1.3174,
+            "paintTexture": false
+          },
+          "sport": {
+            "title": "JDM Experimental Sportcar '90",
+            "sourceKey": "sport",
+            "kind": "car",
+            "triangles": 8866,
+            "farTriangles": null,
+            "dims": [
+              4.438,
+              1.155,
+              1.97
+            ],
+            "wheels": 4,
+            "belt": 0.7888,
+            "roof": 1.113,
+            "paintTexture": false
+          },
+          "supercar": {
+            "title": "Italian Supercar '84",
+            "sourceKey": "supercar",
+            "kind": "car",
+            "triangles": 11433,
+            "farTriangles": null,
+            "dims": [
+              4.555,
+              1.18,
+              2.026
+            ],
+            "wheels": 4,
+            "belt": 0.8046,
+            "roof": 1.1213,
+            "paintTexture": false
+          },
+          "luxury": {
+            "title": "80 American Sedan",
+            "sourceKey": "luxury",
+            "kind": "car",
+            "triangles": 9256,
+            "farTriangles": null,
+            "dims": [
+              5.2,
+              1.497,
+              1.974
+            ],
+            "wheels": 4,
+            "belt": 1.0055,
+            "roof": 1.4461,
+            "paintTexture": false
+          },
+          "police": {
+            "title": "80 American Police Sedan",
+            "sourceKey": "police",
+            "kind": "car",
+            "triangles": 9993,
+            "farTriangles": null,
+            "dims": [
+              4.98,
+              1.589,
+              1.875
+            ],
+            "wheels": 4,
+            "belt": 0.9166,
+            "roof": 1.3328,
+            "paintTexture": false
+          },
+          "police_charger": {
+            "title": "80s Generic Police Car",
+            "sourceKey": "police_charger",
+            "kind": "car",
+            "triangles": 10757,
+            "farTriangles": null,
+            "dims": [
+              5.045,
+              1.574,
+              1.832
+            ],
+            "wheels": 4,
+            "belt": 0.8733,
+            "roof": 1.3005,
+            "paintTexture": false
+          },
+          "police_suv": {
+            "title": "Chevrolet Suburban Sheriff Cruiser",
+            "sourceKey": "police_suv",
+            "kind": "car",
+            "triangles": 6611,
+            "farTriangles": null,
+            "dims": [
+              6.584,
+              2.159,
+              2.645
+            ],
+            "wheels": 4,
+            "belt": 1.3693,
+            "roof": 1.9515,
+            "paintTexture": false
+          },
+          "muscle": {
+            "title": "American Muscle '71",
+            "sourceKey": "muscle",
+            "kind": "car",
+            "triangles": 9801,
+            "farTriangles": null,
+            "dims": [
+              4.89,
+              1.331,
+              2.088
+            ],
+            "wheels": 4,
+            "belt": 0.8928,
+            "roof": 1.2787,
+            "paintTexture": false
+          },
+          "truck": {
+            "title": "'90 Light Commercial Truck",
+            "sourceKey": "truck",
+            "kind": "car",
+            "triangles": 10442,
+            "farTriangles": null,
+            "dims": [
+              10,
+              2.843,
+              2.604
+            ],
+            "wheels": 4,
+            "belt": 1.3053,
+            "roof": 2.085,
+            "paintTexture": false
+          },
+          "flatbed": {
+            "title": "'90 Light Commercial Truck",
+            "sourceKey": "flatbed",
+            "kind": "car",
+            "triangles": 8791,
+            "farTriangles": null,
+            "dims": [
+              9.5,
+              2.843,
+              2.604
+            ],
+            "wheels": 4,
+            "belt": 1.3053,
+            "roof": 2.085,
+            "paintTexture": false
+          },
+          "pickup": {
+            "title": "Compact Pickup '78",
+            "sourceKey": "pickup",
+            "kind": "car",
+            "triangles": 11033,
+            "farTriangles": null,
+            "dims": [
+              4.6,
+              1.357,
+              1.708
+            ],
+            "wheels": 4,
+            "belt": 0.8622,
+            "roof": 1.2036,
+            "paintTexture": false
+          },
+          "suv": {
+            "title": "Chevrolet Suburban (Sheriff Cruiser, civilian trim)",
+            "sourceKey": "suv",
+            "kind": "car",
+            "triangles": 4406,
+            "farTriangles": null,
+            "dims": [
+              6.584,
+              2.159,
+              2.645
+            ],
+            "wheels": 4,
+            "belt": 1.3693,
+            "roof": 1.9515,
+            "paintTexture": false
+          },
+          "limousine": {
+            "title": "80 American Sedan (stretched)",
+            "sourceKey": "limousine",
+            "kind": "car",
+            "triangles": 9183,
+            "farTriangles": null,
+            "dims": [
+              8.8,
+              1.497,
+              1.974
+            ],
+            "wheels": 4,
+            "belt": 1.0055,
+            "roof": 1.4461,
+            "paintTexture": false
+          },
+          "roadster": {
+            "title": "Chrysler Sebring Convertible",
+            "sourceKey": "roadster",
+            "kind": "car",
+            "triangles": 16223,
+            "farTriangles": null,
+            "dims": [
+              4.9,
+              1.305,
+              1.915
+            ],
+            "wheels": 4,
+            "belt": 0.9136,
+            "roof": 1.2599,
+            "paintTexture": false
+          },
+          "bus": {
+            "title": "Generic Town Bus",
+            "sourceKey": "bus",
+            "kind": "car",
+            "triangles": 17521,
+            "farTriangles": null,
+            "dims": [
+              12,
+              2.969,
+              2.924
+            ],
+            "wheels": 4,
+            "belt": 1.5096,
+            "roof": 2.8475,
+            "paintTexture": false
+          },
+          "ambulance": {
+            "title": "ambulance car",
+            "sourceKey": "ambulance",
+            "kind": "car",
+            "triangles": 11145,
+            "farTriangles": null,
+            "dims": [
+              6.7,
+              2.552,
+              2.388
+            ],
+            "wheels": 4,
+            "belt": 1.2869,
+            "roof": 2.011,
+            "paintTexture": true
+          },
+          "army_jeep": {
+            "title": "HMMWV M998A1 (soft top)",
+            "sourceKey": "army_jeep",
+            "kind": "special",
+            "triangles": 21900,
+            "farTriangles": null,
+            "dims": [
+              4.6,
+              1.838,
+              2.508
+            ],
+            "wheels": 4,
+            "belt": null,
+            "roof": null,
+            "paintTexture": false
+          },
+          "army_truck": {
+            "title": "Military Truck 1/2 Ton (M35)",
+            "sourceKey": "army_truck",
+            "kind": "special",
+            "triangles": 11371,
+            "farTriangles": null,
+            "dims": [
+              6.7,
+              3.231,
+              2.727
+            ],
+            "wheels": 6,
+            "belt": null,
+            "roof": null,
+            "paintTexture": false
+          },
+          "cruiser": {
+            "title": "Harley-Davidson Seventy-Two HD FXT 2015",
+            "sourceKey": "cruiser",
+            "kind": "moto",
+            "triangles": 10404,
+            "farTriangles": null,
+            "dims": [
+              2.473,
+              1.406,
+              1.043
+            ],
+            "wheels": 2,
+            "belt": null,
+            "roof": null,
+            "paintTexture": false
+          },
+          "bike": {
+            "title": "Sport motorcycle (SRAD 750)",
+            "sourceKey": "m2_sport",
+            "kind": "moto",
+            "triangles": 50795,
+            "farTriangles": 12820,
+            "dims": [
+              2.3499084459232287,
+              1.3225039827046685,
+              0.8953110834292488
+            ],
+            "wheels": 2,
+            "belt": null,
+            "roof": null,
+            "paintTexture": true
+          },
+          "kr500": {
+            "title": "Real Motorbike 02",
+            "sourceKey": "m1_enduro",
+            "kind": "moto",
+            "triangles": 12350,
+            "farTriangles": 2707,
+            "dims": [
+              2.2430405332680894,
+              1.6277218014001846,
+              0.9387188255786896
+            ],
+            "wheels": 2,
+            "belt": null,
+            "roof": null,
+            "paintTexture": true
+          },
+          "s1_jimny": {
+            "title": "Suzuki Jimny 2023",
+            "sourceKey": "s1_jimny",
+            "kind": "car",
+            "triangles": 122277,
+            "farTriangles": 10043,
+            "dims": [
+              3.637870192527771,
+              1.8881164789198883,
+              1.8599059581756592
+            ],
+            "wheels": 4,
+            "belt": 0.8737090229987146,
+            "roof": 1.5884509086607936,
+            "paintTexture": true
+          },
+          "s2_suv": {
+            "title": "Generic SUV",
+            "sourceKey": "s2_suv",
+            "kind": "car",
+            "triangles": 7951,
+            "farTriangles": 4354,
+            "dims": [
+              4.611267357026888,
+              1.7332332754720121,
+              2.0676090162520184
+            ],
+            "wheels": 4,
+            "belt": 1.1561036205989217,
+            "roof": 1.6171728180337601,
+            "paintTexture": true
+          },
+          "s3_offroad": {
+            "title": "Generic Offroad",
+            "sourceKey": "s3_offroad",
+            "kind": "car",
+            "triangles": 6502,
+            "farTriangles": 3563,
+            "dims": [
+              3.9394364708438196,
+              1.5696125417427886,
+              1.960026774849609
+            ],
+            "wheels": 4,
+            "belt": 1.09977157896407,
+            "roof": 1.4890706826889362,
+            "paintTexture": true
+          },
+          "chevette": {
+            "title": "2019 Chevrolet Corvette C8 Stingray",
+            "sourceKey": "c8_hari",
+            "kind": "car",
+            "triangles": 85031,
+            "farTriangles": 9407,
+            "dims": [
+              4.69,
+              1.2028457182176802,
+              2.171102649767788
+            ],
+            "wheels": 4,
+            "belt": 0.7997014025149419,
+            "roof": 1.12627682494793,
+            "paintTexture": true
+          },
+          "hotrod": {
+            "title": "Coupe '33 Hot Rod #3 - Low Poly Model",
+            "sourceKey": "coupe33_zhab",
+            "kind": "car",
+            "triangles": 20856,
+            "farTriangles": 5202,
+            "dims": [
+              4.5,
+              1.6242246711168973,
+              1.8852344737802043
+            ],
+            "wheels": 4,
+            "belt": 1.1244690725059128,
+            "roof": 1.4364089358074617,
+            "paintTexture": true
+          },
+          "brutini": {
+            "title": "Lamborghini Aventador SVJ SDC ( FREE )",
+            "sourceKey": "svj_sdc",
+            "kind": "car",
+            "triangles": 508324,
+            "farTriangles": 20133,
+            "dims": [
+              4.94,
+              1.1427401787691005,
+              2.2737332802056813
+            ],
+            "wheels": 4,
+            "belt": 0.712064196413178,
+            "roof": 1.0784481364180831,
+            "paintTexture": true
+          },
+          "dolcati": {
+            "title": "Ducati Panigale V4",
+            "sourceKey": "dolcati_roy",
+            "kind": "moto",
+            "triangles": 372664,
+            "farTriangles": 25717,
+            "dims": [
+              2.221500981409821,
+              1.1937503491263246,
+              0.8127299454804844
+            ],
+            "wheels": 2,
+            "belt": null,
+            "roof": null,
+            "paintTexture": true
+          }
+        },
+        "kits": [
+          "coupe:35.20:14.41",
+          "sedan:38.80:14.82",
+          "s1_jimny:29.10:12.94",
+          "supercar:37.60:16.01",
+          "svj_sdc:39.52:16.77"
+        ]
+      },
+      "approvedAssets": {
+        "loaded": true,
+        "keys": [
+          "m1_enduro",
+          "m2_sport",
+          "s1_jimny",
+          "s2_suv",
+          "s3_offroad"
+        ],
+        "atlasSizes": [
+          [
+            4096,
+            4096
+          ],
+          [
+            4096,
+            4096
+          ]
+        ],
+        "reducedTextures": false,
+        "models": [
+          {
+            "id": 3,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 120202,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 5,
+            "type": "bike",
+            "asset": "m2_sport",
+            "far": false,
+            "triangles": 50795,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 265,
+            "type": "brutini",
+            "asset": "svj_sdc",
+            "far": false,
+            "triangles": 508324,
+            "visible": true,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          }
+        ]
+      },
+      "sportsAssets": {
+        "loaded": true,
+        "enabled": true,
+        "key": "c8_hari",
+        "triangles": 85031,
+        "farTriangles": 9407,
+        "atlasSizes": [],
+        "reducedTextures": false,
+        "nativeDoors": [
+          "left",
+          "right"
+        ]
+      },
+      "svjAssets": {
+        "loaded": true,
+        "enabled": true,
+        "key": "svj_sdc",
+        "triangles": 508324,
+        "farTriangles": 20133,
+        "atlasSizes": [
+          [
+            2048,
+            2048
+          ],
+          [
+            2048,
+            2048
+          ],
+          [
+            2048,
+            2048
+          ]
+        ],
+        "reducedTextures": false,
+        "nativeDoors": [
+          "left",
+          "right"
+        ],
+        "source": "https://sketchfab.com/3d-models/lamborghini-aventador-svj-sdc-free-784e4656aca649cca55d6b18740a19b2",
+        "license": "CC BY 4.0",
+        "sourceTriangles": 508324,
+        "nativeCabin": false
+      },
+      "wheelieState": {
+        "onBike": false,
+        "log": {
+          "lifts": 0,
+          "loops": 0,
+          "pops": 0,
+          "bestDeg": 0,
+          "bestSeconds": 0,
+          "lastLoop": null
+        },
+        "hint": {
+          "shown": 0,
+          "last": "",
+          "due": false
+        }
+      },
+      "wheelieScore": {
+        "phase": "idle",
+        "tracking": false,
+        "type": null,
+        "metres": 0,
+        "grade": 0,
+        "distanceM": 0,
+        "tier": 0,
+        "milestone": "",
+        "milestonePulses": 0,
+        "reason": "",
+        "airborneSeconds": 0,
+        "touchdownSeconds": 0,
+        "resultSeconds": 0,
+        "runs": 0,
+        "bestMetres": 0
+      },
+      "doors": {
+        "cars": [
+          {
+            "id": 265,
+            "type": "brutini",
+            "asset": "Lamborghini Aventador SVJ SDC ( FREE )",
+            "mask": 0,
+            "nativeDoors": true,
+            "doors": {},
+            "materials": {
+              "shell": {
+                "uuid": "8aa0a83a-c1fd-456a-b84e-7ebb528ca6de",
+                "map": "092e65fe-cedb-4998-9688-f6e53ca43908",
+                "roughnessMap": "32a1af30-fbb3-4db8-b5d9-4daee25f70f8",
+                "metalnessMap": "32a1af30-fbb3-4db8-b5d9-4daee25f70f8",
+                "emissiveMap": "dab7e4f1-a6e5-4b17-b465-548df4a16d74",
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "trim": {
+                "uuid": "2a2447da-7a76-42fd-a35a-9821958f0331",
+                "map": "092e65fe-cedb-4998-9688-f6e53ca43908",
+                "roughnessMap": "32a1af30-fbb3-4db8-b5d9-4daee25f70f8",
+                "metalnessMap": "32a1af30-fbb3-4db8-b5d9-4daee25f70f8",
+                "emissiveMap": "dab7e4f1-a6e5-4b17-b465-548df4a16d74",
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "optics": {
+                "uuid": "de27e9bc-63b0-496a-ad2a-ebcd7663df2a",
+                "map": "092e65fe-cedb-4998-9688-f6e53ca43908",
+                "roughnessMap": "32a1af30-fbb3-4db8-b5d9-4daee25f70f8",
+                "metalnessMap": "32a1af30-fbb3-4db8-b5d9-4daee25f70f8",
+                "emissiveMap": "dab7e4f1-a6e5-4b17-b465-548df4a16d74",
+                "transparent": true,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "cabin": {
+                "uuid": "e1dbe690-0d66-4fa7-aec2-12d1d745f74d",
+                "map": null,
+                "roughnessMap": null,
+                "metalnessMap": null,
+                "emissiveMap": null,
+                "transparent": true,
+                "opacity": 0.24,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 2,
+                "forceSinglePass": true
+              }
+            },
+            "closedSourceGeometry": {
+              "shell": true,
+              "panels": true,
+              "cabin": true,
+              "trim": true,
+              "optics": true
+            },
+            "sourceGeometryRestored": {
+              "shell": true,
+              "panels": true,
+              "cabin": true,
+              "trim": true,
+              "optics": true
+            },
+            "cabin": {
+              "authored": false,
+              "fallbackVisible": true,
+              "interiorTriangles": 0,
+              "seat": [
+                -0.41469346249677863,
+                1.69,
+                -3.44
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "file": "svj-handling-after-scissor-door.png",
+      "sha256": "100595b8fd804872c11a72e801f6fbaf1179a5c2f3e5a7b8b273a9eab56233dc",
+      "inspection": [
+        115,
+        12,
+        5
+      ],
+      "closeUp": 11,
+      "id": 265,
+      "doors": {
+        "cars": [
+          {
+            "id": 265,
+            "type": "brutini",
+            "asset": "Lamborghini Aventador SVJ SDC ( FREE )",
+            "mask": 1,
+            "nativeDoors": true,
+            "doors": {
+              "-1": {
+                "native": true,
+                "pivot": [
+                  6.833406351073731,
+                  5.549959995303462,
+                  -7.002004186760406
+                ],
+                "axis": [
+                  0,
+                  0.17715299831526515,
+                  0.9841833239736953
+                ],
+                "quaternion": [
+                  0,
+                  -0.09258644796311859,
+                  -0.5143691553506589,
+                  0.8525562278685334
+                ],
+                "angle": -0.15853353913968218,
+                "windowVisible": true,
+                "sourceParts": [
+                  "doorLeft.paint",
+                  "doorLeft.trim",
+                  "doorLeft.glass"
+                ],
+                "layers": [
+                  {
+                    "triangles": 3712,
+                    "visible": true,
+                    "window": false,
+                    "innerCard": false,
+                    "material": {
+                      "uuid": "8aa0a83a-c1fd-456a-b84e-7ebb528ca6de",
+                      "map": "092e65fe-cedb-4998-9688-f6e53ca43908",
+                      "roughnessMap": "32a1af30-fbb3-4db8-b5d9-4daee25f70f8",
+                      "metalnessMap": "32a1af30-fbb3-4db8-b5d9-4daee25f70f8",
+                      "emissiveMap": "dab7e4f1-a6e5-4b17-b465-548df4a16d74",
+                      "transparent": false,
+                      "opacity": 1,
+                      "alphaTest": 0.5,
+                      "depthWrite": true,
+                      "side": 2,
+                      "forceSinglePass": true
+                    }
+                  },
+                  {
+                    "triangles": 920,
+                    "visible": true,
+                    "window": true,
+                    "innerCard": false,
+                    "material": {
+                      "uuid": "e1dbe690-0d66-4fa7-aec2-12d1d745f74d",
+                      "map": null,
+                      "roughnessMap": null,
+                      "metalnessMap": null,
+                      "emissiveMap": null,
+                      "transparent": true,
+                      "opacity": 0.24,
+                      "alphaTest": 0,
+                      "depthWrite": false,
+                      "side": 2,
+                      "forceSinglePass": true
+                    }
+                  },
+                  {
+                    "triangles": 3447,
+                    "visible": true,
+                    "window": false,
+                    "innerCard": false,
+                    "material": {
+                      "uuid": "2a2447da-7a76-42fd-a35a-9821958f0331",
+                      "map": "092e65fe-cedb-4998-9688-f6e53ca43908",
+                      "roughnessMap": "32a1af30-fbb3-4db8-b5d9-4daee25f70f8",
+                      "metalnessMap": "32a1af30-fbb3-4db8-b5d9-4daee25f70f8",
+                      "emissiveMap": "dab7e4f1-a6e5-4b17-b465-548df4a16d74",
+                      "transparent": false,
+                      "opacity": 1,
+                      "alphaTest": 0.5,
+                      "depthWrite": true,
+                      "side": 2,
+                      "forceSinglePass": true
+                    }
+                  }
+                ],
+                "apertureHasCentrePanel": false
+              }
+            },
+            "materials": {
+              "shell": {
+                "uuid": "8aa0a83a-c1fd-456a-b84e-7ebb528ca6de",
+                "map": "092e65fe-cedb-4998-9688-f6e53ca43908",
+                "roughnessMap": "32a1af30-fbb3-4db8-b5d9-4daee25f70f8",
+                "metalnessMap": "32a1af30-fbb3-4db8-b5d9-4daee25f70f8",
+                "emissiveMap": "dab7e4f1-a6e5-4b17-b465-548df4a16d74",
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "trim": {
+                "uuid": "2a2447da-7a76-42fd-a35a-9821958f0331",
+                "map": "092e65fe-cedb-4998-9688-f6e53ca43908",
+                "roughnessMap": "32a1af30-fbb3-4db8-b5d9-4daee25f70f8",
+                "metalnessMap": "32a1af30-fbb3-4db8-b5d9-4daee25f70f8",
+                "emissiveMap": "dab7e4f1-a6e5-4b17-b465-548df4a16d74",
+                "transparent": false,
+                "opacity": 1,
+                "alphaTest": 0.5,
+                "depthWrite": true,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "optics": {
+                "uuid": "de27e9bc-63b0-496a-ad2a-ebcd7663df2a",
+                "map": "092e65fe-cedb-4998-9688-f6e53ca43908",
+                "roughnessMap": "32a1af30-fbb3-4db8-b5d9-4daee25f70f8",
+                "metalnessMap": "32a1af30-fbb3-4db8-b5d9-4daee25f70f8",
+                "emissiveMap": "dab7e4f1-a6e5-4b17-b465-548df4a16d74",
+                "transparent": true,
+                "opacity": 1,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 2,
+                "forceSinglePass": true
+              },
+              "cabin": {
+                "uuid": "e1dbe690-0d66-4fa7-aec2-12d1d745f74d",
+                "map": null,
+                "roughnessMap": null,
+                "metalnessMap": null,
+                "emissiveMap": null,
+                "transparent": true,
+                "opacity": 0.24,
+                "alphaTest": 0,
+                "depthWrite": false,
+                "side": 2,
+                "forceSinglePass": true
+              }
+            },
+            "closedSourceGeometry": {
+              "shell": true,
+              "panels": false,
+              "cabin": false,
+              "trim": false,
+              "optics": true
+            },
+            "sourceGeometryRestored": {
+              "shell": true,
+              "panels": false,
+              "cabin": false,
+              "trim": false,
+              "optics": true
+            },
+            "cabin": {
+              "authored": false,
+              "fallbackVisible": true,
+              "interiorTriangles": 0,
+              "seat": [
+                -0.41469346249677863,
+                1.69,
+                -3.44
+              ]
+            }
+          }
+        ]
+      },
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6000,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "brutini",
+        "weapon": "9MM PISTOL",
+        "clock": "13:01",
+        "renderer": "3d",
+        "vehicles": 280,
+        "pedestrians": 595
+      },
+      "cameraView": {
+        "zoom": 11,
+        "target": 11,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 11,
+        "aim": 11,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 5.4,
+        "personPx": 144,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.4,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "frameFaults": {
+        "count": 0,
+        "gameTime": 1.42,
+        "drill": null,
+        "kinds": []
+      },
+      "gpuContext": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "carModels": [
+        {
+          "id": 1,
+          "type": "coupe",
+          "draws": 12,
+          "casters": 3,
+          "triangles": 10608,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              4387
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1673
+            ],
+            [
+              "MeshStandardMaterial",
+              782
+            ],
+            [
+              "MeshStandardMaterial",
+              782
+            ],
+            [
+              "MeshStandardMaterial",
+              780
+            ],
+            [
+              "MeshStandardMaterial",
+              776
+            ]
+          ],
+          "asset": "Kiri '86",
+          "cabin": {
+            "hip": [
+              -0.282,
+              0.362,
+              -0.414
+            ],
+            "door": [
+              -0.382,
+              0.891
+            ],
+            "floor": 0.262,
+            "floorWorldY": 0.274,
+            "pedalHeight": 0.362,
+            "recline": 0.4,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 2131,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 0.585
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 2,
+          "type": "sedan",
+          "draws": 14,
+          "casters": 3,
+          "triangles": 10067,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              4807
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1880
+            ],
+            [
+              "MeshPhysicalMaterial",
+              638
+            ],
+            [
+              "MeshStandardMaterial",
+              531
+            ],
+            [
+              "MeshStandardMaterial",
+              531
+            ],
+            [
+              "MeshStandardMaterial",
+              527
+            ]
+          ],
+          "asset": "Fairheaven LT '80",
+          "cabin": {
+            "hip": [
+              -0.318,
+              0.275,
+              -0.426
+            ],
+            "door": [
+              -0.418,
+              0.798
+            ],
+            "floor": 0.226,
+            "floorWorldY": 0.239,
+            "pedalHeight": 0.326,
+            "recline": 0.3,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 2134,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 0.549
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 3,
+          "type": "suv",
+          "draws": 18,
+          "casters": 3,
+          "triangles": 122277,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              57894
+            ],
+            [
+              "MeshPhysicalMaterial",
+              28399
+            ],
+            [
+              "MeshPhysicalMaterial",
+              11635
+            ],
+            [
+              "MeshStandardMaterial",
+              5329
+            ],
+            [
+              "MeshPhysicalMaterial",
+              3776
+            ],
+            [
+              "MeshStandardMaterial",
+              2889
+            ]
+          ],
+          "asset": "Suzuki Jimny 2023",
+          "cabin": {
+            "hip": [
+              -0.384,
+              0.454,
+              -0.372
+            ],
+            "door": [
+              -0.484,
+              0.766
+            ],
+            "floor": 0.254,
+            "floorWorldY": 0.266,
+            "pedalHeight": 0.354,
+            "recline": 0.3,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 13838,
+            "seated": 0,
+            "headroom": 0.175,
+            "behind": 0.794
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 4,
+          "type": "van",
+          "draws": 13,
+          "casters": 3,
+          "triangles": 9494,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              2168
+            ],
+            [
+              "MeshStandardMaterial",
+              2116
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1558
+            ],
+            [
+              "MeshStandardMaterial",
+              1084
+            ],
+            [
+              "MeshStandardMaterial",
+              1084
+            ],
+            [
+              "MeshPhysicalMaterial",
+              684
+            ]
+          ],
+          "asset": null,
+          "cabin": {
+            "hip": [
+              0.919,
+              0.68,
+              -0.46
+            ],
+            "door": [
+              0.525,
+              1.575
+            ],
+            "floor": 0.48,
+            "floorWorldY": 0.493,
+            "pedalHeight": 0.58,
+            "recline": 0.3,
+            "rear": false,
+            "two": false,
+            "cabinTriangles": 1204,
+            "seated": 0,
+            "headroom": 0.143,
+            "behind": 0.08
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": {
+            "text": "MULE",
+            "sub": null,
+            "style": "block",
+            "letters": 4
+          }
+        },
+        {
+          "id": 5,
+          "type": "bike",
+          "draws": 12,
+          "casters": 3,
+          "triangles": 53999,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              25166
+            ],
+            [
+              "MeshStandardMaterial",
+              5732
+            ],
+            [
+              "MeshPhysicalMaterial",
+              5605
+            ],
+            [
+              "MeshStandardMaterial",
+              4071
+            ],
+            [
+              "MeshStandardMaterial",
+              3204
+            ],
+            [
+              "MeshStandardMaterial",
+              2429
+            ]
+          ],
+          "asset": "Sport motorcycle (SRAD 750)",
+          "cabin": null,
+          "panes": null,
+          "badge": null
+        },
+        {
+          "id": 6,
+          "type": "supercar",
+          "draws": 14,
+          "casters": 3,
+          "triangles": 11433,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              4894
+            ],
+            [
+              "MeshPhysicalMaterial",
+              2084
+            ],
+            [
+              "MeshPhysicalMaterial",
+              977
+            ],
+            [
+              "MeshStandardMaterial",
+              666
+            ],
+            [
+              "MeshStandardMaterial",
+              666
+            ],
+            [
+              "MeshStandardMaterial",
+              660
+            ]
+          ],
+          "asset": "Italian Supercar '84",
+          "cabin": {
+            "hip": [
+              -0.268,
+              0.214,
+              -0.46
+            ],
+            "door": [
+              -0.368,
+              0.86
+            ],
+            "floor": 0.21,
+            "floorWorldY": 0.223,
+            "pedalHeight": 0.31,
+            "recline": 0.52,
+            "rear": false,
+            "two": true,
+            "cabinTriangles": 1131,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 0.08
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 265,
+          "type": "brutini",
+          "draws": 25,
+          "casters": 5,
+          "triangles": 509900,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              296462
+            ],
+            [
+              "MeshStandardMaterial",
+              24719
+            ],
+            [
+              "MeshStandardMaterial",
+              24719
+            ],
+            [
+              "MeshStandardMaterial",
+              24719
+            ],
+            [
+              "MeshStandardMaterial",
+              24719
+            ],
+            [
+              "MeshStandardMaterial",
+              22914
+            ]
+          ],
+          "asset": "Lamborghini Aventador SVJ SDC ( FREE )",
+          "cabin": {
+            "hip": [
+              -0.052,
+              0.211,
+              -0.43
+            ],
+            "door": [
+              0.149,
+              1.449
+            ],
+            "floor": 0.21,
+            "floorWorldY": 0.223,
+            "pedalHeight": 0.31,
+            "recline": 0.66,
+            "rear": false,
+            "two": true,
+            "cabinTriangles": 0,
+            "seated": 1,
+            "headroom": 0.02,
+            "behind": 0.08
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": false
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": false
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": false
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": false
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": false
+            }
+          },
+          "badge": null
+        }
+      ],
+      "assetCars": {
+        "loaded": true,
+        "enabled": true,
+        "atlas": true,
+        "approvedAtlas": true,
+        "rangerStyles": [
+          "s1_jimny",
+          "s2_suv",
+          "s3_offroad"
+        ],
+        "models": {
+          "sedan": {
+            "title": "Fairheaven LT '80",
+            "sourceKey": "sedan",
+            "kind": "car",
+            "triangles": 10067,
+            "farTriangles": null,
+            "dims": [
+              5.001,
+              1.349,
+              1.832
+            ],
+            "wheels": 4,
+            "belt": 0.8727,
+            "roof": 1.2991,
+            "paintTexture": false
+          },
+          "taxi": {
+            "title": "Canyon '75 Taxi",
+            "sourceKey": "taxi",
+            "kind": "car",
+            "triangles": 10340,
+            "farTriangles": null,
+            "dims": [
+              5.307,
+              1.827,
+              2.131
+            ],
+            "wheels": 4,
+            "belt": 1.1593,
+            "roof": 1.622,
+            "paintTexture": true
+          },
+          "coupe": {
+            "title": "Kiri '86",
+            "sourceKey": "coupe",
+            "kind": "car",
+            "triangles": 10608,
+            "farTriangles": null,
+            "dims": [
+              4.314,
+              1.32,
+              1.761
+            ],
+            "wheels": 4,
+            "belt": 0.8646,
+            "roof": 1.3174,
+            "paintTexture": false
+          },
+          "sport": {
+            "title": "JDM Experimental Sportcar '90",
+            "sourceKey": "sport",
+            "kind": "car",
+            "triangles": 8866,
+            "farTriangles": null,
+            "dims": [
+              4.438,
+              1.155,
+              1.97
+            ],
+            "wheels": 4,
+            "belt": 0.7888,
+            "roof": 1.113,
+            "paintTexture": false
+          },
+          "supercar": {
+            "title": "Italian Supercar '84",
+            "sourceKey": "supercar",
+            "kind": "car",
+            "triangles": 11433,
+            "farTriangles": null,
+            "dims": [
+              4.555,
+              1.18,
+              2.026
+            ],
+            "wheels": 4,
+            "belt": 0.8046,
+            "roof": 1.1213,
+            "paintTexture": false
+          },
+          "luxury": {
+            "title": "80 American Sedan",
+            "sourceKey": "luxury",
+            "kind": "car",
+            "triangles": 9256,
+            "farTriangles": null,
+            "dims": [
+              5.2,
+              1.497,
+              1.974
+            ],
+            "wheels": 4,
+            "belt": 1.0055,
+            "roof": 1.4461,
+            "paintTexture": false
+          },
+          "police": {
+            "title": "80 American Police Sedan",
+            "sourceKey": "police",
+            "kind": "car",
+            "triangles": 9993,
+            "farTriangles": null,
+            "dims": [
+              4.98,
+              1.589,
+              1.875
+            ],
+            "wheels": 4,
+            "belt": 0.9166,
+            "roof": 1.3328,
+            "paintTexture": false
+          },
+          "police_charger": {
+            "title": "80s Generic Police Car",
+            "sourceKey": "police_charger",
+            "kind": "car",
+            "triangles": 10757,
+            "farTriangles": null,
+            "dims": [
+              5.045,
+              1.574,
+              1.832
+            ],
+            "wheels": 4,
+            "belt": 0.8733,
+            "roof": 1.3005,
+            "paintTexture": false
+          },
+          "police_suv": {
+            "title": "Chevrolet Suburban Sheriff Cruiser",
+            "sourceKey": "police_suv",
+            "kind": "car",
+            "triangles": 6611,
+            "farTriangles": null,
+            "dims": [
+              6.584,
+              2.159,
+              2.645
+            ],
+            "wheels": 4,
+            "belt": 1.3693,
+            "roof": 1.9515,
+            "paintTexture": false
+          },
+          "muscle": {
+            "title": "American Muscle '71",
+            "sourceKey": "muscle",
+            "kind": "car",
+            "triangles": 9801,
+            "farTriangles": null,
+            "dims": [
+              4.89,
+              1.331,
+              2.088
+            ],
+            "wheels": 4,
+            "belt": 0.8928,
+            "roof": 1.2787,
+            "paintTexture": false
+          },
+          "truck": {
+            "title": "'90 Light Commercial Truck",
+            "sourceKey": "truck",
+            "kind": "car",
+            "triangles": 10442,
+            "farTriangles": null,
+            "dims": [
+              10,
+              2.843,
+              2.604
+            ],
+            "wheels": 4,
+            "belt": 1.3053,
+            "roof": 2.085,
+            "paintTexture": false
+          },
+          "flatbed": {
+            "title": "'90 Light Commercial Truck",
+            "sourceKey": "flatbed",
+            "kind": "car",
+            "triangles": 8791,
+            "farTriangles": null,
+            "dims": [
+              9.5,
+              2.843,
+              2.604
+            ],
+            "wheels": 4,
+            "belt": 1.3053,
+            "roof": 2.085,
+            "paintTexture": false
+          },
+          "pickup": {
+            "title": "Compact Pickup '78",
+            "sourceKey": "pickup",
+            "kind": "car",
+            "triangles": 11033,
+            "farTriangles": null,
+            "dims": [
+              4.6,
+              1.357,
+              1.708
+            ],
+            "wheels": 4,
+            "belt": 0.8622,
+            "roof": 1.2036,
+            "paintTexture": false
+          },
+          "suv": {
+            "title": "Chevrolet Suburban (Sheriff Cruiser, civilian trim)",
+            "sourceKey": "suv",
+            "kind": "car",
+            "triangles": 4406,
+            "farTriangles": null,
+            "dims": [
+              6.584,
+              2.159,
+              2.645
+            ],
+            "wheels": 4,
+            "belt": 1.3693,
+            "roof": 1.9515,
+            "paintTexture": false
+          },
+          "limousine": {
+            "title": "80 American Sedan (stretched)",
+            "sourceKey": "limousine",
+            "kind": "car",
+            "triangles": 9183,
+            "farTriangles": null,
+            "dims": [
+              8.8,
+              1.497,
+              1.974
+            ],
+            "wheels": 4,
+            "belt": 1.0055,
+            "roof": 1.4461,
+            "paintTexture": false
+          },
+          "roadster": {
+            "title": "Chrysler Sebring Convertible",
+            "sourceKey": "roadster",
+            "kind": "car",
+            "triangles": 16223,
+            "farTriangles": null,
+            "dims": [
+              4.9,
+              1.305,
+              1.915
+            ],
+            "wheels": 4,
+            "belt": 0.9136,
+            "roof": 1.2599,
+            "paintTexture": false
+          },
+          "bus": {
+            "title": "Generic Town Bus",
+            "sourceKey": "bus",
+            "kind": "car",
+            "triangles": 17521,
+            "farTriangles": null,
+            "dims": [
+              12,
+              2.969,
+              2.924
+            ],
+            "wheels": 4,
+            "belt": 1.5096,
+            "roof": 2.8475,
+            "paintTexture": false
+          },
+          "ambulance": {
+            "title": "ambulance car",
+            "sourceKey": "ambulance",
+            "kind": "car",
+            "triangles": 11145,
+            "farTriangles": null,
+            "dims": [
+              6.7,
+              2.552,
+              2.388
+            ],
+            "wheels": 4,
+            "belt": 1.2869,
+            "roof": 2.011,
+            "paintTexture": true
+          },
+          "army_jeep": {
+            "title": "HMMWV M998A1 (soft top)",
+            "sourceKey": "army_jeep",
+            "kind": "special",
+            "triangles": 21900,
+            "farTriangles": null,
+            "dims": [
+              4.6,
+              1.838,
+              2.508
+            ],
+            "wheels": 4,
+            "belt": null,
+            "roof": null,
+            "paintTexture": false
+          },
+          "army_truck": {
+            "title": "Military Truck 1/2 Ton (M35)",
+            "sourceKey": "army_truck",
+            "kind": "special",
+            "triangles": 11371,
+            "farTriangles": null,
+            "dims": [
+              6.7,
+              3.231,
+              2.727
+            ],
+            "wheels": 6,
+            "belt": null,
+            "roof": null,
+            "paintTexture": false
+          },
+          "cruiser": {
+            "title": "Harley-Davidson Seventy-Two HD FXT 2015",
+            "sourceKey": "cruiser",
+            "kind": "moto",
+            "triangles": 10404,
+            "farTriangles": null,
+            "dims": [
+              2.473,
+              1.406,
+              1.043
+            ],
+            "wheels": 2,
+            "belt": null,
+            "roof": null,
+            "paintTexture": false
+          },
+          "bike": {
+            "title": "Sport motorcycle (SRAD 750)",
+            "sourceKey": "m2_sport",
+            "kind": "moto",
+            "triangles": 50795,
+            "farTriangles": 12820,
+            "dims": [
+              2.3499084459232287,
+              1.3225039827046685,
+              0.8953110834292488
+            ],
+            "wheels": 2,
+            "belt": null,
+            "roof": null,
+            "paintTexture": true
+          },
+          "kr500": {
+            "title": "Real Motorbike 02",
+            "sourceKey": "m1_enduro",
+            "kind": "moto",
+            "triangles": 12350,
+            "farTriangles": 2707,
+            "dims": [
+              2.2430405332680894,
+              1.6277218014001846,
+              0.9387188255786896
+            ],
+            "wheels": 2,
+            "belt": null,
+            "roof": null,
+            "paintTexture": true
+          },
+          "s1_jimny": {
+            "title": "Suzuki Jimny 2023",
+            "sourceKey": "s1_jimny",
+            "kind": "car",
+            "triangles": 122277,
+            "farTriangles": 10043,
+            "dims": [
+              3.637870192527771,
+              1.8881164789198883,
+              1.8599059581756592
+            ],
+            "wheels": 4,
+            "belt": 0.8737090229987146,
+            "roof": 1.5884509086607936,
+            "paintTexture": true
+          },
+          "s2_suv": {
+            "title": "Generic SUV",
+            "sourceKey": "s2_suv",
+            "kind": "car",
+            "triangles": 7951,
+            "farTriangles": 4354,
+            "dims": [
+              4.611267357026888,
+              1.7332332754720121,
+              2.0676090162520184
+            ],
+            "wheels": 4,
+            "belt": 1.1561036205989217,
+            "roof": 1.6171728180337601,
+            "paintTexture": true
+          },
+          "s3_offroad": {
+            "title": "Generic Offroad",
+            "sourceKey": "s3_offroad",
+            "kind": "car",
+            "triangles": 6502,
+            "farTriangles": 3563,
+            "dims": [
+              3.9394364708438196,
+              1.5696125417427886,
+              1.960026774849609
+            ],
+            "wheels": 4,
+            "belt": 1.09977157896407,
+            "roof": 1.4890706826889362,
+            "paintTexture": true
+          },
+          "chevette": {
+            "title": "2019 Chevrolet Corvette C8 Stingray",
+            "sourceKey": "c8_hari",
+            "kind": "car",
+            "triangles": 85031,
+            "farTriangles": 9407,
+            "dims": [
+              4.69,
+              1.2028457182176802,
+              2.171102649767788
+            ],
+            "wheels": 4,
+            "belt": 0.7997014025149419,
+            "roof": 1.12627682494793,
+            "paintTexture": true
+          },
+          "hotrod": {
+            "title": "Coupe '33 Hot Rod #3 - Low Poly Model",
+            "sourceKey": "coupe33_zhab",
+            "kind": "car",
+            "triangles": 20856,
+            "farTriangles": 5202,
+            "dims": [
+              4.5,
+              1.6242246711168973,
+              1.8852344737802043
+            ],
+            "wheels": 4,
+            "belt": 1.1244690725059128,
+            "roof": 1.4364089358074617,
+            "paintTexture": true
+          },
+          "brutini": {
+            "title": "Lamborghini Aventador SVJ SDC ( FREE )",
+            "sourceKey": "svj_sdc",
+            "kind": "car",
+            "triangles": 508324,
+            "farTriangles": 20133,
+            "dims": [
+              4.94,
+              1.1427401787691005,
+              2.2737332802056813
+            ],
+            "wheels": 4,
+            "belt": 0.712064196413178,
+            "roof": 1.0784481364180831,
+            "paintTexture": true
+          },
+          "dolcati": {
+            "title": "Ducati Panigale V4",
+            "sourceKey": "dolcati_roy",
+            "kind": "moto",
+            "triangles": 372664,
+            "farTriangles": 25717,
+            "dims": [
+              2.221500981409821,
+              1.1937503491263246,
+              0.8127299454804844
+            ],
+            "wheels": 2,
+            "belt": null,
+            "roof": null,
+            "paintTexture": true
+          }
+        },
+        "kits": [
+          "coupe:35.20:14.41",
+          "sedan:38.80:14.82",
+          "s1_jimny:29.10:12.94",
+          "supercar:37.60:16.01",
+          "svj_sdc:39.52:16.77"
+        ]
+      },
+      "approvedAssets": {
+        "loaded": true,
+        "keys": [
+          "m1_enduro",
+          "m2_sport",
+          "s1_jimny",
+          "s2_suv",
+          "s3_offroad"
+        ],
+        "atlasSizes": [
+          [
+            4096,
+            4096
+          ],
+          [
+            4096,
+            4096
+          ]
+        ],
+        "reducedTextures": false,
+        "models": [
+          {
+            "id": 3,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 120202,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 5,
+            "type": "bike",
+            "asset": "m2_sport",
+            "far": false,
+            "triangles": 50795,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 265,
+            "type": "brutini",
+            "asset": "svj_sdc",
+            "far": false,
+            "triangles": 500245,
+            "visible": true,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          }
+        ]
+      },
+      "sportsAssets": {
+        "loaded": true,
+        "enabled": true,
+        "key": "c8_hari",
+        "triangles": 85031,
+        "farTriangles": 9407,
+        "atlasSizes": [],
+        "reducedTextures": false,
+        "nativeDoors": [
+          "left",
+          "right"
+        ]
+      },
+      "svjAssets": {
+        "loaded": true,
+        "enabled": true,
+        "key": "svj_sdc",
+        "triangles": 508324,
+        "farTriangles": 20133,
+        "atlasSizes": [
+          [
+            2048,
+            2048
+          ],
+          [
+            2048,
+            2048
+          ],
+          [
+            2048,
+            2048
+          ]
+        ],
+        "reducedTextures": false,
+        "nativeDoors": [
+          "left",
+          "right"
+        ],
+        "source": "https://sketchfab.com/3d-models/lamborghini-aventador-svj-sdc-free-784e4656aca649cca55d6b18740a19b2",
+        "license": "CC BY 4.0",
+        "sourceTriangles": 508324,
+        "nativeCabin": false
+      },
+      "wheelieState": {
+        "onBike": false,
+        "log": {
+          "lifts": 0,
+          "loops": 0,
+          "pops": 0,
+          "bestDeg": 0,
+          "bestSeconds": 0,
+          "lastLoop": null
+        },
+        "hint": {
+          "shown": 0,
+          "last": "",
+          "due": false
+        }
+      },
+      "wheelieScore": {
+        "phase": "idle",
+        "tracking": false,
+        "type": null,
+        "metres": 0,
+        "grade": 0,
+        "distanceM": 0,
+        "tier": 0,
+        "milestone": "",
+        "milestonePulses": 0,
+        "reason": "",
+        "airborneSeconds": 0,
+        "touchdownSeconds": 0,
+        "resultSeconds": 0,
+        "runs": 0,
+        "bestMetres": 0
+      }
+    },
+    {
+      "file": "svj-handling-after-wheelie.png",
+      "sha256": "22d31536e7de71471a0fa8469a731cfe41c6726095a7cf81720075418586d074",
+      "wheelie": {
+        "onBike": true,
+        "type": "bike",
+        "geometry": "sport",
+        "deg": 16.3,
+        "rate": 0.36,
+        "lean": 1,
+        "bankDeg": 0,
+        "bankRate": 0,
+        "rollingShare": 1,
+        "asked": false,
+        "lowering": false,
+        "kmh": 80,
+        "balanceDeg": 38,
+        "loopDeg": 69,
+        "steerShare": 0.29,
+        "log": {
+          "lifts": 1,
+          "loops": 0,
+          "pops": 1,
+          "bestDeg": 16,
+          "bestSeconds": 0,
+          "lastLoop": null
+        },
+        "hint": {
+          "shown": 1,
+          "last": "WHEELIE · HOLD W + ↑ while moving · ↓ weight forward",
+          "due": false
+        },
+        "at": 3.93
+      },
+      "status": {
+        "mode": "play",
+        "x": -2425,
+        "y": 9710,
+        "district": "OCEANVIEW INTERNATIONAL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "bike",
+        "weapon": "9MM PISTOL",
+        "clock": "13:03",
+        "renderer": "3d",
+        "vehicles": 281,
+        "pedestrians": 595
+      },
+      "cameraView": {
+        "zoom": 8.274,
+        "target": 11,
+        "context": 0.508,
+        "slowFraming": false,
+        "vehicleContext": 0.508,
+        "speed": 0.941,
+        "kmh": 60,
+        "framing": 0.73,
+        "framed": 8.03,
+        "aim": 5.263,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 7.2,
+        "personPx": 108,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.17,
+          "accel": {
+            "rms": 3.952,
+            "peak": 10.522
+          },
+          "jerk": {
+            "rms": 14.09,
+            "peak": 37.26
+          },
+          "zoomRate": {
+            "rms": 275.71,
+            "peak": 1451.52
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 1.066,
+            "swing": 0.741
+          }
+        }
+      },
+      "frameFaults": {
+        "count": 0,
+        "gameTime": 3.93,
+        "drill": null,
+        "kinds": []
+      },
+      "gpuContext": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "carModels": [
+        {
+          "id": 1,
+          "type": "coupe",
+          "draws": 12,
+          "casters": 3,
+          "triangles": 10608,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              4387
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1673
+            ],
+            [
+              "MeshStandardMaterial",
+              782
+            ],
+            [
+              "MeshStandardMaterial",
+              782
+            ],
+            [
+              "MeshStandardMaterial",
+              780
+            ],
+            [
+              "MeshStandardMaterial",
+              776
+            ]
+          ],
+          "asset": "Kiri '86",
+          "cabin": {
+            "hip": [
+              -0.282,
+              0.362,
+              -0.414
+            ],
+            "door": [
+              -0.382,
+              0.891
+            ],
+            "floor": 0.262,
+            "floorWorldY": 0.274,
+            "pedalHeight": 0.362,
+            "recline": 0.4,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 2131,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 0.585
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 2,
+          "type": "sedan",
+          "draws": 14,
+          "casters": 3,
+          "triangles": 10067,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              4807
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1880
+            ],
+            [
+              "MeshPhysicalMaterial",
+              638
+            ],
+            [
+              "MeshStandardMaterial",
+              531
+            ],
+            [
+              "MeshStandardMaterial",
+              531
+            ],
+            [
+              "MeshStandardMaterial",
+              527
+            ]
+          ],
+          "asset": "Fairheaven LT '80",
+          "cabin": {
+            "hip": [
+              -0.318,
+              0.275,
+              -0.426
+            ],
+            "door": [
+              -0.418,
+              0.798
+            ],
+            "floor": 0.226,
+            "floorWorldY": 0.239,
+            "pedalHeight": 0.326,
+            "recline": 0.3,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 2134,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 0.549
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 3,
+          "type": "suv",
+          "draws": 18,
+          "casters": 3,
+          "triangles": 122277,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              57894
+            ],
+            [
+              "MeshPhysicalMaterial",
+              28399
+            ],
+            [
+              "MeshPhysicalMaterial",
+              11635
+            ],
+            [
+              "MeshStandardMaterial",
+              5329
+            ],
+            [
+              "MeshPhysicalMaterial",
+              3776
+            ],
+            [
+              "MeshStandardMaterial",
+              2889
+            ]
+          ],
+          "asset": "Suzuki Jimny 2023",
+          "cabin": {
+            "hip": [
+              -0.384,
+              0.454,
+              -0.372
+            ],
+            "door": [
+              -0.484,
+              0.766
+            ],
+            "floor": 0.254,
+            "floorWorldY": 0.266,
+            "pedalHeight": 0.354,
+            "recline": 0.3,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 13838,
+            "seated": 0,
+            "headroom": 0.175,
+            "behind": 0.794
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 4,
+          "type": "van",
+          "draws": 13,
+          "casters": 3,
+          "triangles": 9494,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              2168
+            ],
+            [
+              "MeshStandardMaterial",
+              2116
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1558
+            ],
+            [
+              "MeshStandardMaterial",
+              1084
+            ],
+            [
+              "MeshStandardMaterial",
+              1084
+            ],
+            [
+              "MeshPhysicalMaterial",
+              684
+            ]
+          ],
+          "asset": null,
+          "cabin": {
+            "hip": [
+              0.919,
+              0.68,
+              -0.46
+            ],
+            "door": [
+              0.525,
+              1.575
+            ],
+            "floor": 0.48,
+            "floorWorldY": 0.493,
+            "pedalHeight": 0.58,
+            "recline": 0.3,
+            "rear": false,
+            "two": false,
+            "cabinTriangles": 1204,
+            "seated": 0,
+            "headroom": 0.143,
+            "behind": 0.08
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": {
+            "text": "MULE",
+            "sub": null,
+            "style": "block",
+            "letters": 4
+          }
+        },
+        {
+          "id": 5,
+          "type": "bike",
+          "draws": 12,
+          "casters": 3,
+          "triangles": 53999,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              25166
+            ],
+            [
+              "MeshStandardMaterial",
+              5732
+            ],
+            [
+              "MeshPhysicalMaterial",
+              5605
+            ],
+            [
+              "MeshStandardMaterial",
+              4071
+            ],
+            [
+              "MeshStandardMaterial",
+              3204
+            ],
+            [
+              "MeshStandardMaterial",
+              2429
+            ]
+          ],
+          "asset": "Sport motorcycle (SRAD 750)",
+          "cabin": null,
+          "panes": null,
+          "badge": null
+        },
+        {
+          "id": 6,
+          "type": "supercar",
+          "draws": 14,
+          "casters": 3,
+          "triangles": 11433,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              4894
+            ],
+            [
+              "MeshPhysicalMaterial",
+              2084
+            ],
+            [
+              "MeshPhysicalMaterial",
+              977
+            ],
+            [
+              "MeshStandardMaterial",
+              666
+            ],
+            [
+              "MeshStandardMaterial",
+              666
+            ],
+            [
+              "MeshStandardMaterial",
+              660
+            ]
+          ],
+          "asset": "Italian Supercar '84",
+          "cabin": {
+            "hip": [
+              -0.268,
+              0.214,
+              -0.46
+            ],
+            "door": [
+              -0.368,
+              0.86
+            ],
+            "floor": 0.21,
+            "floorWorldY": 0.223,
+            "pedalHeight": 0.31,
+            "recline": 0.52,
+            "rear": false,
+            "two": true,
+            "cabinTriangles": 1131,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 0.08
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 265,
+          "type": "brutini",
+          "draws": 22,
+          "casters": 3,
+          "triangles": 509900,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              299909
+            ],
+            [
+              "MeshPhysicalMaterial",
+              24937
+            ],
+            [
+              "MeshStandardMaterial",
+              24719
+            ],
+            [
+              "MeshStandardMaterial",
+              24719
+            ],
+            [
+              "MeshStandardMaterial",
+              24719
+            ],
+            [
+              "MeshStandardMaterial",
+              24719
+            ]
+          ],
+          "asset": "Lamborghini Aventador SVJ SDC ( FREE )",
+          "cabin": {
+            "hip": [
+              -0.052,
+              0.211,
+              -0.43
+            ],
+            "door": [
+              0.149,
+              1.449
+            ],
+            "floor": 0.21,
+            "floorWorldY": 0.223,
+            "pedalHeight": 0.31,
+            "recline": 0.66,
+            "rear": false,
+            "two": true,
+            "cabinTriangles": 0,
+            "seated": 1,
+            "headroom": 0.02,
+            "behind": 0.08
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": false
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": false
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": false
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": false
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": false
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 281,
+          "type": "bike",
+          "draws": 12,
+          "casters": 3,
+          "triangles": 53999,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              25166
+            ],
+            [
+              "MeshStandardMaterial",
+              5732
+            ],
+            [
+              "MeshPhysicalMaterial",
+              5605
+            ],
+            [
+              "MeshStandardMaterial",
+              4071
+            ],
+            [
+              "MeshStandardMaterial",
+              3204
+            ],
+            [
+              "MeshStandardMaterial",
+              2429
+            ]
+          ],
+          "asset": "Sport motorcycle (SRAD 750)",
+          "cabin": null,
+          "panes": null,
+          "badge": null
+        }
+      ],
+      "assetCars": {
+        "loaded": true,
+        "enabled": true,
+        "atlas": true,
+        "approvedAtlas": true,
+        "rangerStyles": [
+          "s1_jimny",
+          "s2_suv",
+          "s3_offroad"
+        ],
+        "models": {
+          "sedan": {
+            "title": "Fairheaven LT '80",
+            "sourceKey": "sedan",
+            "kind": "car",
+            "triangles": 10067,
+            "farTriangles": null,
+            "dims": [
+              5.001,
+              1.349,
+              1.832
+            ],
+            "wheels": 4,
+            "belt": 0.8727,
+            "roof": 1.2991,
+            "paintTexture": false
+          },
+          "taxi": {
+            "title": "Canyon '75 Taxi",
+            "sourceKey": "taxi",
+            "kind": "car",
+            "triangles": 10340,
+            "farTriangles": null,
+            "dims": [
+              5.307,
+              1.827,
+              2.131
+            ],
+            "wheels": 4,
+            "belt": 1.1593,
+            "roof": 1.622,
+            "paintTexture": true
+          },
+          "coupe": {
+            "title": "Kiri '86",
+            "sourceKey": "coupe",
+            "kind": "car",
+            "triangles": 10608,
+            "farTriangles": null,
+            "dims": [
+              4.314,
+              1.32,
+              1.761
+            ],
+            "wheels": 4,
+            "belt": 0.8646,
+            "roof": 1.3174,
+            "paintTexture": false
+          },
+          "sport": {
+            "title": "JDM Experimental Sportcar '90",
+            "sourceKey": "sport",
+            "kind": "car",
+            "triangles": 8866,
+            "farTriangles": null,
+            "dims": [
+              4.438,
+              1.155,
+              1.97
+            ],
+            "wheels": 4,
+            "belt": 0.7888,
+            "roof": 1.113,
+            "paintTexture": false
+          },
+          "supercar": {
+            "title": "Italian Supercar '84",
+            "sourceKey": "supercar",
+            "kind": "car",
+            "triangles": 11433,
+            "farTriangles": null,
+            "dims": [
+              4.555,
+              1.18,
+              2.026
+            ],
+            "wheels": 4,
+            "belt": 0.8046,
+            "roof": 1.1213,
+            "paintTexture": false
+          },
+          "luxury": {
+            "title": "80 American Sedan",
+            "sourceKey": "luxury",
+            "kind": "car",
+            "triangles": 9256,
+            "farTriangles": null,
+            "dims": [
+              5.2,
+              1.497,
+              1.974
+            ],
+            "wheels": 4,
+            "belt": 1.0055,
+            "roof": 1.4461,
+            "paintTexture": false
+          },
+          "police": {
+            "title": "80 American Police Sedan",
+            "sourceKey": "police",
+            "kind": "car",
+            "triangles": 9993,
+            "farTriangles": null,
+            "dims": [
+              4.98,
+              1.589,
+              1.875
+            ],
+            "wheels": 4,
+            "belt": 0.9166,
+            "roof": 1.3328,
+            "paintTexture": false
+          },
+          "police_charger": {
+            "title": "80s Generic Police Car",
+            "sourceKey": "police_charger",
+            "kind": "car",
+            "triangles": 10757,
+            "farTriangles": null,
+            "dims": [
+              5.045,
+              1.574,
+              1.832
+            ],
+            "wheels": 4,
+            "belt": 0.8733,
+            "roof": 1.3005,
+            "paintTexture": false
+          },
+          "police_suv": {
+            "title": "Chevrolet Suburban Sheriff Cruiser",
+            "sourceKey": "police_suv",
+            "kind": "car",
+            "triangles": 6611,
+            "farTriangles": null,
+            "dims": [
+              6.584,
+              2.159,
+              2.645
+            ],
+            "wheels": 4,
+            "belt": 1.3693,
+            "roof": 1.9515,
+            "paintTexture": false
+          },
+          "muscle": {
+            "title": "American Muscle '71",
+            "sourceKey": "muscle",
+            "kind": "car",
+            "triangles": 9801,
+            "farTriangles": null,
+            "dims": [
+              4.89,
+              1.331,
+              2.088
+            ],
+            "wheels": 4,
+            "belt": 0.8928,
+            "roof": 1.2787,
+            "paintTexture": false
+          },
+          "truck": {
+            "title": "'90 Light Commercial Truck",
+            "sourceKey": "truck",
+            "kind": "car",
+            "triangles": 10442,
+            "farTriangles": null,
+            "dims": [
+              10,
+              2.843,
+              2.604
+            ],
+            "wheels": 4,
+            "belt": 1.3053,
+            "roof": 2.085,
+            "paintTexture": false
+          },
+          "flatbed": {
+            "title": "'90 Light Commercial Truck",
+            "sourceKey": "flatbed",
+            "kind": "car",
+            "triangles": 8791,
+            "farTriangles": null,
+            "dims": [
+              9.5,
+              2.843,
+              2.604
+            ],
+            "wheels": 4,
+            "belt": 1.3053,
+            "roof": 2.085,
+            "paintTexture": false
+          },
+          "pickup": {
+            "title": "Compact Pickup '78",
+            "sourceKey": "pickup",
+            "kind": "car",
+            "triangles": 11033,
+            "farTriangles": null,
+            "dims": [
+              4.6,
+              1.357,
+              1.708
+            ],
+            "wheels": 4,
+            "belt": 0.8622,
+            "roof": 1.2036,
+            "paintTexture": false
+          },
+          "suv": {
+            "title": "Chevrolet Suburban (Sheriff Cruiser, civilian trim)",
+            "sourceKey": "suv",
+            "kind": "car",
+            "triangles": 4406,
+            "farTriangles": null,
+            "dims": [
+              6.584,
+              2.159,
+              2.645
+            ],
+            "wheels": 4,
+            "belt": 1.3693,
+            "roof": 1.9515,
+            "paintTexture": false
+          },
+          "limousine": {
+            "title": "80 American Sedan (stretched)",
+            "sourceKey": "limousine",
+            "kind": "car",
+            "triangles": 9183,
+            "farTriangles": null,
+            "dims": [
+              8.8,
+              1.497,
+              1.974
+            ],
+            "wheels": 4,
+            "belt": 1.0055,
+            "roof": 1.4461,
+            "paintTexture": false
+          },
+          "roadster": {
+            "title": "Chrysler Sebring Convertible",
+            "sourceKey": "roadster",
+            "kind": "car",
+            "triangles": 16223,
+            "farTriangles": null,
+            "dims": [
+              4.9,
+              1.305,
+              1.915
+            ],
+            "wheels": 4,
+            "belt": 0.9136,
+            "roof": 1.2599,
+            "paintTexture": false
+          },
+          "bus": {
+            "title": "Generic Town Bus",
+            "sourceKey": "bus",
+            "kind": "car",
+            "triangles": 17521,
+            "farTriangles": null,
+            "dims": [
+              12,
+              2.969,
+              2.924
+            ],
+            "wheels": 4,
+            "belt": 1.5096,
+            "roof": 2.8475,
+            "paintTexture": false
+          },
+          "ambulance": {
+            "title": "ambulance car",
+            "sourceKey": "ambulance",
+            "kind": "car",
+            "triangles": 11145,
+            "farTriangles": null,
+            "dims": [
+              6.7,
+              2.552,
+              2.388
+            ],
+            "wheels": 4,
+            "belt": 1.2869,
+            "roof": 2.011,
+            "paintTexture": true
+          },
+          "army_jeep": {
+            "title": "HMMWV M998A1 (soft top)",
+            "sourceKey": "army_jeep",
+            "kind": "special",
+            "triangles": 21900,
+            "farTriangles": null,
+            "dims": [
+              4.6,
+              1.838,
+              2.508
+            ],
+            "wheels": 4,
+            "belt": null,
+            "roof": null,
+            "paintTexture": false
+          },
+          "army_truck": {
+            "title": "Military Truck 1/2 Ton (M35)",
+            "sourceKey": "army_truck",
+            "kind": "special",
+            "triangles": 11371,
+            "farTriangles": null,
+            "dims": [
+              6.7,
+              3.231,
+              2.727
+            ],
+            "wheels": 6,
+            "belt": null,
+            "roof": null,
+            "paintTexture": false
+          },
+          "cruiser": {
+            "title": "Harley-Davidson Seventy-Two HD FXT 2015",
+            "sourceKey": "cruiser",
+            "kind": "moto",
+            "triangles": 10404,
+            "farTriangles": null,
+            "dims": [
+              2.473,
+              1.406,
+              1.043
+            ],
+            "wheels": 2,
+            "belt": null,
+            "roof": null,
+            "paintTexture": false
+          },
+          "bike": {
+            "title": "Sport motorcycle (SRAD 750)",
+            "sourceKey": "m2_sport",
+            "kind": "moto",
+            "triangles": 50795,
+            "farTriangles": 12820,
+            "dims": [
+              2.3499084459232287,
+              1.3225039827046685,
+              0.8953110834292488
+            ],
+            "wheels": 2,
+            "belt": null,
+            "roof": null,
+            "paintTexture": true
+          },
+          "kr500": {
+            "title": "Real Motorbike 02",
+            "sourceKey": "m1_enduro",
+            "kind": "moto",
+            "triangles": 12350,
+            "farTriangles": 2707,
+            "dims": [
+              2.2430405332680894,
+              1.6277218014001846,
+              0.9387188255786896
+            ],
+            "wheels": 2,
+            "belt": null,
+            "roof": null,
+            "paintTexture": true
+          },
+          "s1_jimny": {
+            "title": "Suzuki Jimny 2023",
+            "sourceKey": "s1_jimny",
+            "kind": "car",
+            "triangles": 122277,
+            "farTriangles": 10043,
+            "dims": [
+              3.637870192527771,
+              1.8881164789198883,
+              1.8599059581756592
+            ],
+            "wheels": 4,
+            "belt": 0.8737090229987146,
+            "roof": 1.5884509086607936,
+            "paintTexture": true
+          },
+          "s2_suv": {
+            "title": "Generic SUV",
+            "sourceKey": "s2_suv",
+            "kind": "car",
+            "triangles": 7951,
+            "farTriangles": 4354,
+            "dims": [
+              4.611267357026888,
+              1.7332332754720121,
+              2.0676090162520184
+            ],
+            "wheels": 4,
+            "belt": 1.1561036205989217,
+            "roof": 1.6171728180337601,
+            "paintTexture": true
+          },
+          "s3_offroad": {
+            "title": "Generic Offroad",
+            "sourceKey": "s3_offroad",
+            "kind": "car",
+            "triangles": 6502,
+            "farTriangles": 3563,
+            "dims": [
+              3.9394364708438196,
+              1.5696125417427886,
+              1.960026774849609
+            ],
+            "wheels": 4,
+            "belt": 1.09977157896407,
+            "roof": 1.4890706826889362,
+            "paintTexture": true
+          },
+          "chevette": {
+            "title": "2019 Chevrolet Corvette C8 Stingray",
+            "sourceKey": "c8_hari",
+            "kind": "car",
+            "triangles": 85031,
+            "farTriangles": 9407,
+            "dims": [
+              4.69,
+              1.2028457182176802,
+              2.171102649767788
+            ],
+            "wheels": 4,
+            "belt": 0.7997014025149419,
+            "roof": 1.12627682494793,
+            "paintTexture": true
+          },
+          "hotrod": {
+            "title": "Coupe '33 Hot Rod #3 - Low Poly Model",
+            "sourceKey": "coupe33_zhab",
+            "kind": "car",
+            "triangles": 20856,
+            "farTriangles": 5202,
+            "dims": [
+              4.5,
+              1.6242246711168973,
+              1.8852344737802043
+            ],
+            "wheels": 4,
+            "belt": 1.1244690725059128,
+            "roof": 1.4364089358074617,
+            "paintTexture": true
+          },
+          "brutini": {
+            "title": "Lamborghini Aventador SVJ SDC ( FREE )",
+            "sourceKey": "svj_sdc",
+            "kind": "car",
+            "triangles": 508324,
+            "farTriangles": 20133,
+            "dims": [
+              4.94,
+              1.1427401787691005,
+              2.2737332802056813
+            ],
+            "wheels": 4,
+            "belt": 0.712064196413178,
+            "roof": 1.0784481364180831,
+            "paintTexture": true
+          },
+          "dolcati": {
+            "title": "Ducati Panigale V4",
+            "sourceKey": "dolcati_roy",
+            "kind": "moto",
+            "triangles": 372664,
+            "farTriangles": 25717,
+            "dims": [
+              2.221500981409821,
+              1.1937503491263246,
+              0.8127299454804844
+            ],
+            "wheels": 2,
+            "belt": null,
+            "roof": null,
+            "paintTexture": true
+          }
+        },
+        "kits": [
+          "coupe:35.20:14.41",
+          "sedan:38.80:14.82",
+          "s1_jimny:29.10:12.94",
+          "supercar:37.60:16.01",
+          "svj_sdc:39.52:16.77"
+        ]
+      },
+      "approvedAssets": {
+        "loaded": true,
+        "keys": [
+          "m1_enduro",
+          "m2_sport",
+          "s1_jimny",
+          "s2_suv",
+          "s3_offroad"
+        ],
+        "atlasSizes": [
+          [
+            4096,
+            4096
+          ],
+          [
+            4096,
+            4096
+          ]
+        ],
+        "reducedTextures": false,
+        "models": [
+          {
+            "id": 3,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 120202,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 5,
+            "type": "bike",
+            "asset": "m2_sport",
+            "far": false,
+            "triangles": 50795,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 265,
+            "type": "brutini",
+            "asset": "svj_sdc",
+            "far": false,
+            "triangles": 508324,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 281,
+            "type": "bike",
+            "asset": "m2_sport",
+            "far": false,
+            "triangles": 50795,
+            "visible": true,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          }
+        ]
+      },
+      "sportsAssets": {
+        "loaded": true,
+        "enabled": true,
+        "key": "c8_hari",
+        "triangles": 85031,
+        "farTriangles": 9407,
+        "atlasSizes": [],
+        "reducedTextures": false,
+        "nativeDoors": [
+          "left",
+          "right"
+        ]
+      },
+      "svjAssets": {
+        "loaded": true,
+        "enabled": true,
+        "key": "svj_sdc",
+        "triangles": 508324,
+        "farTriangles": 20133,
+        "atlasSizes": [
+          [
+            2048,
+            2048
+          ],
+          [
+            2048,
+            2048
+          ],
+          [
+            2048,
+            2048
+          ]
+        ],
+        "reducedTextures": false,
+        "nativeDoors": [
+          "left",
+          "right"
+        ],
+        "source": "https://sketchfab.com/3d-models/lamborghini-aventador-svj-sdc-free-784e4656aca649cca55d6b18740a19b2",
+        "license": "CC BY 4.0",
+        "sourceTriangles": 508324,
+        "nativeCabin": false
+      },
+      "wheelieState": {
+        "onBike": true,
+        "type": "bike",
+        "geometry": "sport",
+        "deg": 16.3,
+        "rate": 0.36,
+        "lean": 1,
+        "bankDeg": 0,
+        "bankRate": 0,
+        "rollingShare": 1,
+        "asked": false,
+        "lowering": false,
+        "kmh": 80,
+        "balanceDeg": 38,
+        "loopDeg": 69,
+        "steerShare": 0.29,
+        "log": {
+          "lifts": 1,
+          "loops": 0,
+          "pops": 1,
+          "bestDeg": 16,
+          "bestSeconds": 0,
+          "lastLoop": null
+        },
+        "hint": {
+          "shown": 1,
+          "last": "WHEELIE · HOLD W + ↑ while moving · ↓ weight forward",
+          "due": false
+        },
+        "at": 3.93
+      },
+      "wheelieScore": {
+        "phase": "active",
+        "tracking": true,
+        "type": "bike",
+        "metres": 14.19,
+        "grade": 0,
+        "distanceM": 14.19,
+        "tier": 0,
+        "milestone": "",
+        "milestonePulses": 0,
+        "reason": "",
+        "airborneSeconds": 0.708,
+        "touchdownSeconds": 0,
+        "resultSeconds": 0,
+        "runs": 0,
+        "bestMetres": 0
+      }
+    },
+    {
+      "file": "svj-handling-after-corner.png",
+      "sha256": "b79df7843972ea5ab4c8880fba4dc445330e2137020e76f2e1ecc00742fec189",
+      "turn": {
+        "onBike": true,
+        "type": "bike",
+        "geometry": "sport",
+        "deg": 0,
+        "rate": 0,
+        "lean": 0,
+        "bankDeg": 4.2,
+        "bankRate": 0,
+        "rollingShare": 1,
+        "asked": false,
+        "lowering": false,
+        "kmh": 78,
+        "balanceDeg": 38,
+        "loopDeg": 69,
+        "steerShare": 1,
+        "log": {
+          "lifts": 1,
+          "loops": 0,
+          "pops": 1,
+          "bestDeg": 16,
+          "bestSeconds": 0,
+          "lastLoop": null
+        },
+        "hint": {
+          "shown": 1,
+          "last": "WHEELIE · HOLD W + ↑ while moving · ↓ weight forward",
+          "due": false
+        },
+        "at": 4.63
+      },
+      "status": {
+        "mode": "play",
+        "x": -2488,
+        "y": 9717,
+        "district": "OCEANVIEW INTERNATIONAL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "bike",
+        "weapon": "9MM PISTOL",
+        "clock": "13:04",
+        "renderer": "3d",
+        "vehicles": 281,
+        "pedestrians": 595
+      },
+      "cameraView": {
+        "zoom": 6.846,
+        "target": 11,
+        "context": 0.508,
+        "slowFraming": false,
+        "vehicleContext": 0.508,
+        "speed": 0.965,
+        "kmh": 50,
+        "framing": 0.61,
+        "framed": 6.711,
+        "aim": 5.395,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 8.7,
+        "personPx": 90,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 0.67,
+          "accel": {
+            "rms": 4.643,
+            "peak": 9.523
+          },
+          "jerk": {
+            "rms": 19.55,
+            "peak": 36.55
+          },
+          "zoomRate": {
+            "rms": 25.69,
+            "peak": 29.86
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0.767,
+            "swing": 0.258
+          }
+        }
+      },
+      "frameFaults": {
+        "count": 0,
+        "gameTime": 4.63,
+        "drill": null,
+        "kinds": []
+      },
+      "gpuContext": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "carModels": [
+        {
+          "id": 1,
+          "type": "coupe",
+          "draws": 12,
+          "casters": 3,
+          "triangles": 10608,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              4387
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1673
+            ],
+            [
+              "MeshStandardMaterial",
+              782
+            ],
+            [
+              "MeshStandardMaterial",
+              782
+            ],
+            [
+              "MeshStandardMaterial",
+              780
+            ],
+            [
+              "MeshStandardMaterial",
+              776
+            ]
+          ],
+          "asset": "Kiri '86",
+          "cabin": {
+            "hip": [
+              -0.282,
+              0.362,
+              -0.414
+            ],
+            "door": [
+              -0.382,
+              0.891
+            ],
+            "floor": 0.262,
+            "floorWorldY": 0.274,
+            "pedalHeight": 0.362,
+            "recline": 0.4,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 2131,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 0.585
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 2,
+          "type": "sedan",
+          "draws": 14,
+          "casters": 3,
+          "triangles": 10067,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              4807
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1880
+            ],
+            [
+              "MeshPhysicalMaterial",
+              638
+            ],
+            [
+              "MeshStandardMaterial",
+              531
+            ],
+            [
+              "MeshStandardMaterial",
+              531
+            ],
+            [
+              "MeshStandardMaterial",
+              527
+            ]
+          ],
+          "asset": "Fairheaven LT '80",
+          "cabin": {
+            "hip": [
+              -0.318,
+              0.275,
+              -0.426
+            ],
+            "door": [
+              -0.418,
+              0.798
+            ],
+            "floor": 0.226,
+            "floorWorldY": 0.239,
+            "pedalHeight": 0.326,
+            "recline": 0.3,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 2134,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 0.549
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 3,
+          "type": "suv",
+          "draws": 18,
+          "casters": 3,
+          "triangles": 122277,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              57894
+            ],
+            [
+              "MeshPhysicalMaterial",
+              28399
+            ],
+            [
+              "MeshPhysicalMaterial",
+              11635
+            ],
+            [
+              "MeshStandardMaterial",
+              5329
+            ],
+            [
+              "MeshPhysicalMaterial",
+              3776
+            ],
+            [
+              "MeshStandardMaterial",
+              2889
+            ]
+          ],
+          "asset": "Suzuki Jimny 2023",
+          "cabin": {
+            "hip": [
+              -0.384,
+              0.454,
+              -0.372
+            ],
+            "door": [
+              -0.484,
+              0.766
+            ],
+            "floor": 0.254,
+            "floorWorldY": 0.266,
+            "pedalHeight": 0.354,
+            "recline": 0.3,
+            "rear": true,
+            "two": false,
+            "cabinTriangles": 13838,
+            "seated": 0,
+            "headroom": 0.175,
+            "behind": 0.794
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 4,
+          "type": "van",
+          "draws": 13,
+          "casters": 3,
+          "triangles": 9494,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              2168
+            ],
+            [
+              "MeshStandardMaterial",
+              2116
+            ],
+            [
+              "MeshPhysicalMaterial",
+              1558
+            ],
+            [
+              "MeshStandardMaterial",
+              1084
+            ],
+            [
+              "MeshStandardMaterial",
+              1084
+            ],
+            [
+              "MeshPhysicalMaterial",
+              684
+            ]
+          ],
+          "asset": null,
+          "cabin": {
+            "hip": [
+              0.919,
+              0.68,
+              -0.46
+            ],
+            "door": [
+              0.525,
+              1.575
+            ],
+            "floor": 0.48,
+            "floorWorldY": 0.493,
+            "pedalHeight": 0.58,
+            "recline": 0.3,
+            "rear": false,
+            "two": false,
+            "cabinTriangles": 1204,
+            "seated": 0,
+            "headroom": 0.143,
+            "behind": 0.08
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": {
+            "text": "MULE",
+            "sub": null,
+            "style": "block",
+            "letters": 4
+          }
+        },
+        {
+          "id": 5,
+          "type": "bike",
+          "draws": 12,
+          "casters": 3,
+          "triangles": 53999,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              25166
+            ],
+            [
+              "MeshStandardMaterial",
+              5732
+            ],
+            [
+              "MeshPhysicalMaterial",
+              5605
+            ],
+            [
+              "MeshStandardMaterial",
+              4071
+            ],
+            [
+              "MeshStandardMaterial",
+              3204
+            ],
+            [
+              "MeshStandardMaterial",
+              2429
+            ]
+          ],
+          "asset": "Sport motorcycle (SRAD 750)",
+          "cabin": null,
+          "panes": null,
+          "badge": null
+        },
+        {
+          "id": 6,
+          "type": "supercar",
+          "draws": 14,
+          "casters": 3,
+          "triangles": 11433,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              4894
+            ],
+            [
+              "MeshPhysicalMaterial",
+              2084
+            ],
+            [
+              "MeshPhysicalMaterial",
+              977
+            ],
+            [
+              "MeshStandardMaterial",
+              666
+            ],
+            [
+              "MeshStandardMaterial",
+              666
+            ],
+            [
+              "MeshStandardMaterial",
+              660
+            ]
+          ],
+          "asset": "Italian Supercar '84",
+          "cabin": {
+            "hip": [
+              -0.268,
+              0.214,
+              -0.46
+            ],
+            "door": [
+              -0.368,
+              0.86
+            ],
+            "floor": 0.21,
+            "floorWorldY": 0.223,
+            "pedalHeight": 0.31,
+            "recline": 0.52,
+            "rear": false,
+            "two": true,
+            "cabinTriangles": 1131,
+            "seated": 0,
+            "headroom": 0.02,
+            "behind": 0.08
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": true
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": true
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 265,
+          "type": "brutini",
+          "draws": 22,
+          "casters": 3,
+          "triangles": 509900,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              299909
+            ],
+            [
+              "MeshPhysicalMaterial",
+              24937
+            ],
+            [
+              "MeshStandardMaterial",
+              24719
+            ],
+            [
+              "MeshStandardMaterial",
+              24719
+            ],
+            [
+              "MeshStandardMaterial",
+              24719
+            ],
+            [
+              "MeshStandardMaterial",
+              24719
+            ]
+          ],
+          "asset": "Lamborghini Aventador SVJ SDC ( FREE )",
+          "cabin": {
+            "hip": [
+              -0.052,
+              0.211,
+              -0.43
+            ],
+            "door": [
+              0.149,
+              1.449
+            ],
+            "floor": 0.21,
+            "floorWorldY": 0.223,
+            "pedalHeight": 0.31,
+            "recline": 0.66,
+            "rear": false,
+            "two": true,
+            "cabinTriangles": 0,
+            "seated": 1,
+            "headroom": 0.02,
+            "behind": 0.08
+          },
+          "panes": {
+            "left": {
+              "drawn": true,
+              "depthWrite": false
+            },
+            "front": {
+              "drawn": true,
+              "depthWrite": false
+            },
+            "right": {
+              "drawn": true,
+              "depthWrite": false
+            },
+            "rear": {
+              "drawn": true,
+              "depthWrite": false
+            },
+            "roof": {
+              "drawn": true,
+              "depthWrite": false
+            }
+          },
+          "badge": null
+        },
+        {
+          "id": 282,
+          "type": "bike",
+          "draws": 12,
+          "casters": 3,
+          "triangles": 53999,
+          "heaviest": [
+            [
+              "MeshStandardMaterial",
+              25166
+            ],
+            [
+              "MeshStandardMaterial",
+              5732
+            ],
+            [
+              "MeshPhysicalMaterial",
+              5605
+            ],
+            [
+              "MeshStandardMaterial",
+              4071
+            ],
+            [
+              "MeshStandardMaterial",
+              3204
+            ],
+            [
+              "MeshStandardMaterial",
+              2429
+            ]
+          ],
+          "asset": "Sport motorcycle (SRAD 750)",
+          "cabin": null,
+          "panes": null,
+          "badge": null
+        }
+      ],
+      "assetCars": {
+        "loaded": true,
+        "enabled": true,
+        "atlas": true,
+        "approvedAtlas": true,
+        "rangerStyles": [
+          "s1_jimny",
+          "s2_suv",
+          "s3_offroad"
+        ],
+        "models": {
+          "sedan": {
+            "title": "Fairheaven LT '80",
+            "sourceKey": "sedan",
+            "kind": "car",
+            "triangles": 10067,
+            "farTriangles": null,
+            "dims": [
+              5.001,
+              1.349,
+              1.832
+            ],
+            "wheels": 4,
+            "belt": 0.8727,
+            "roof": 1.2991,
+            "paintTexture": false
+          },
+          "taxi": {
+            "title": "Canyon '75 Taxi",
+            "sourceKey": "taxi",
+            "kind": "car",
+            "triangles": 10340,
+            "farTriangles": null,
+            "dims": [
+              5.307,
+              1.827,
+              2.131
+            ],
+            "wheels": 4,
+            "belt": 1.1593,
+            "roof": 1.622,
+            "paintTexture": true
+          },
+          "coupe": {
+            "title": "Kiri '86",
+            "sourceKey": "coupe",
+            "kind": "car",
+            "triangles": 10608,
+            "farTriangles": null,
+            "dims": [
+              4.314,
+              1.32,
+              1.761
+            ],
+            "wheels": 4,
+            "belt": 0.8646,
+            "roof": 1.3174,
+            "paintTexture": false
+          },
+          "sport": {
+            "title": "JDM Experimental Sportcar '90",
+            "sourceKey": "sport",
+            "kind": "car",
+            "triangles": 8866,
+            "farTriangles": null,
+            "dims": [
+              4.438,
+              1.155,
+              1.97
+            ],
+            "wheels": 4,
+            "belt": 0.7888,
+            "roof": 1.113,
+            "paintTexture": false
+          },
+          "supercar": {
+            "title": "Italian Supercar '84",
+            "sourceKey": "supercar",
+            "kind": "car",
+            "triangles": 11433,
+            "farTriangles": null,
+            "dims": [
+              4.555,
+              1.18,
+              2.026
+            ],
+            "wheels": 4,
+            "belt": 0.8046,
+            "roof": 1.1213,
+            "paintTexture": false
+          },
+          "luxury": {
+            "title": "80 American Sedan",
+            "sourceKey": "luxury",
+            "kind": "car",
+            "triangles": 9256,
+            "farTriangles": null,
+            "dims": [
+              5.2,
+              1.497,
+              1.974
+            ],
+            "wheels": 4,
+            "belt": 1.0055,
+            "roof": 1.4461,
+            "paintTexture": false
+          },
+          "police": {
+            "title": "80 American Police Sedan",
+            "sourceKey": "police",
+            "kind": "car",
+            "triangles": 9993,
+            "farTriangles": null,
+            "dims": [
+              4.98,
+              1.589,
+              1.875
+            ],
+            "wheels": 4,
+            "belt": 0.9166,
+            "roof": 1.3328,
+            "paintTexture": false
+          },
+          "police_charger": {
+            "title": "80s Generic Police Car",
+            "sourceKey": "police_charger",
+            "kind": "car",
+            "triangles": 10757,
+            "farTriangles": null,
+            "dims": [
+              5.045,
+              1.574,
+              1.832
+            ],
+            "wheels": 4,
+            "belt": 0.8733,
+            "roof": 1.3005,
+            "paintTexture": false
+          },
+          "police_suv": {
+            "title": "Chevrolet Suburban Sheriff Cruiser",
+            "sourceKey": "police_suv",
+            "kind": "car",
+            "triangles": 6611,
+            "farTriangles": null,
+            "dims": [
+              6.584,
+              2.159,
+              2.645
+            ],
+            "wheels": 4,
+            "belt": 1.3693,
+            "roof": 1.9515,
+            "paintTexture": false
+          },
+          "muscle": {
+            "title": "American Muscle '71",
+            "sourceKey": "muscle",
+            "kind": "car",
+            "triangles": 9801,
+            "farTriangles": null,
+            "dims": [
+              4.89,
+              1.331,
+              2.088
+            ],
+            "wheels": 4,
+            "belt": 0.8928,
+            "roof": 1.2787,
+            "paintTexture": false
+          },
+          "truck": {
+            "title": "'90 Light Commercial Truck",
+            "sourceKey": "truck",
+            "kind": "car",
+            "triangles": 10442,
+            "farTriangles": null,
+            "dims": [
+              10,
+              2.843,
+              2.604
+            ],
+            "wheels": 4,
+            "belt": 1.3053,
+            "roof": 2.085,
+            "paintTexture": false
+          },
+          "flatbed": {
+            "title": "'90 Light Commercial Truck",
+            "sourceKey": "flatbed",
+            "kind": "car",
+            "triangles": 8791,
+            "farTriangles": null,
+            "dims": [
+              9.5,
+              2.843,
+              2.604
+            ],
+            "wheels": 4,
+            "belt": 1.3053,
+            "roof": 2.085,
+            "paintTexture": false
+          },
+          "pickup": {
+            "title": "Compact Pickup '78",
+            "sourceKey": "pickup",
+            "kind": "car",
+            "triangles": 11033,
+            "farTriangles": null,
+            "dims": [
+              4.6,
+              1.357,
+              1.708
+            ],
+            "wheels": 4,
+            "belt": 0.8622,
+            "roof": 1.2036,
+            "paintTexture": false
+          },
+          "suv": {
+            "title": "Chevrolet Suburban (Sheriff Cruiser, civilian trim)",
+            "sourceKey": "suv",
+            "kind": "car",
+            "triangles": 4406,
+            "farTriangles": null,
+            "dims": [
+              6.584,
+              2.159,
+              2.645
+            ],
+            "wheels": 4,
+            "belt": 1.3693,
+            "roof": 1.9515,
+            "paintTexture": false
+          },
+          "limousine": {
+            "title": "80 American Sedan (stretched)",
+            "sourceKey": "limousine",
+            "kind": "car",
+            "triangles": 9183,
+            "farTriangles": null,
+            "dims": [
+              8.8,
+              1.497,
+              1.974
+            ],
+            "wheels": 4,
+            "belt": 1.0055,
+            "roof": 1.4461,
+            "paintTexture": false
+          },
+          "roadster": {
+            "title": "Chrysler Sebring Convertible",
+            "sourceKey": "roadster",
+            "kind": "car",
+            "triangles": 16223,
+            "farTriangles": null,
+            "dims": [
+              4.9,
+              1.305,
+              1.915
+            ],
+            "wheels": 4,
+            "belt": 0.9136,
+            "roof": 1.2599,
+            "paintTexture": false
+          },
+          "bus": {
+            "title": "Generic Town Bus",
+            "sourceKey": "bus",
+            "kind": "car",
+            "triangles": 17521,
+            "farTriangles": null,
+            "dims": [
+              12,
+              2.969,
+              2.924
+            ],
+            "wheels": 4,
+            "belt": 1.5096,
+            "roof": 2.8475,
+            "paintTexture": false
+          },
+          "ambulance": {
+            "title": "ambulance car",
+            "sourceKey": "ambulance",
+            "kind": "car",
+            "triangles": 11145,
+            "farTriangles": null,
+            "dims": [
+              6.7,
+              2.552,
+              2.388
+            ],
+            "wheels": 4,
+            "belt": 1.2869,
+            "roof": 2.011,
+            "paintTexture": true
+          },
+          "army_jeep": {
+            "title": "HMMWV M998A1 (soft top)",
+            "sourceKey": "army_jeep",
+            "kind": "special",
+            "triangles": 21900,
+            "farTriangles": null,
+            "dims": [
+              4.6,
+              1.838,
+              2.508
+            ],
+            "wheels": 4,
+            "belt": null,
+            "roof": null,
+            "paintTexture": false
+          },
+          "army_truck": {
+            "title": "Military Truck 1/2 Ton (M35)",
+            "sourceKey": "army_truck",
+            "kind": "special",
+            "triangles": 11371,
+            "farTriangles": null,
+            "dims": [
+              6.7,
+              3.231,
+              2.727
+            ],
+            "wheels": 6,
+            "belt": null,
+            "roof": null,
+            "paintTexture": false
+          },
+          "cruiser": {
+            "title": "Harley-Davidson Seventy-Two HD FXT 2015",
+            "sourceKey": "cruiser",
+            "kind": "moto",
+            "triangles": 10404,
+            "farTriangles": null,
+            "dims": [
+              2.473,
+              1.406,
+              1.043
+            ],
+            "wheels": 2,
+            "belt": null,
+            "roof": null,
+            "paintTexture": false
+          },
+          "bike": {
+            "title": "Sport motorcycle (SRAD 750)",
+            "sourceKey": "m2_sport",
+            "kind": "moto",
+            "triangles": 50795,
+            "farTriangles": 12820,
+            "dims": [
+              2.3499084459232287,
+              1.3225039827046685,
+              0.8953110834292488
+            ],
+            "wheels": 2,
+            "belt": null,
+            "roof": null,
+            "paintTexture": true
+          },
+          "kr500": {
+            "title": "Real Motorbike 02",
+            "sourceKey": "m1_enduro",
+            "kind": "moto",
+            "triangles": 12350,
+            "farTriangles": 2707,
+            "dims": [
+              2.2430405332680894,
+              1.6277218014001846,
+              0.9387188255786896
+            ],
+            "wheels": 2,
+            "belt": null,
+            "roof": null,
+            "paintTexture": true
+          },
+          "s1_jimny": {
+            "title": "Suzuki Jimny 2023",
+            "sourceKey": "s1_jimny",
+            "kind": "car",
+            "triangles": 122277,
+            "farTriangles": 10043,
+            "dims": [
+              3.637870192527771,
+              1.8881164789198883,
+              1.8599059581756592
+            ],
+            "wheels": 4,
+            "belt": 0.8737090229987146,
+            "roof": 1.5884509086607936,
+            "paintTexture": true
+          },
+          "s2_suv": {
+            "title": "Generic SUV",
+            "sourceKey": "s2_suv",
+            "kind": "car",
+            "triangles": 7951,
+            "farTriangles": 4354,
+            "dims": [
+              4.611267357026888,
+              1.7332332754720121,
+              2.0676090162520184
+            ],
+            "wheels": 4,
+            "belt": 1.1561036205989217,
+            "roof": 1.6171728180337601,
+            "paintTexture": true
+          },
+          "s3_offroad": {
+            "title": "Generic Offroad",
+            "sourceKey": "s3_offroad",
+            "kind": "car",
+            "triangles": 6502,
+            "farTriangles": 3563,
+            "dims": [
+              3.9394364708438196,
+              1.5696125417427886,
+              1.960026774849609
+            ],
+            "wheels": 4,
+            "belt": 1.09977157896407,
+            "roof": 1.4890706826889362,
+            "paintTexture": true
+          },
+          "chevette": {
+            "title": "2019 Chevrolet Corvette C8 Stingray",
+            "sourceKey": "c8_hari",
+            "kind": "car",
+            "triangles": 85031,
+            "farTriangles": 9407,
+            "dims": [
+              4.69,
+              1.2028457182176802,
+              2.171102649767788
+            ],
+            "wheels": 4,
+            "belt": 0.7997014025149419,
+            "roof": 1.12627682494793,
+            "paintTexture": true
+          },
+          "hotrod": {
+            "title": "Coupe '33 Hot Rod #3 - Low Poly Model",
+            "sourceKey": "coupe33_zhab",
+            "kind": "car",
+            "triangles": 20856,
+            "farTriangles": 5202,
+            "dims": [
+              4.5,
+              1.6242246711168973,
+              1.8852344737802043
+            ],
+            "wheels": 4,
+            "belt": 1.1244690725059128,
+            "roof": 1.4364089358074617,
+            "paintTexture": true
+          },
+          "brutini": {
+            "title": "Lamborghini Aventador SVJ SDC ( FREE )",
+            "sourceKey": "svj_sdc",
+            "kind": "car",
+            "triangles": 508324,
+            "farTriangles": 20133,
+            "dims": [
+              4.94,
+              1.1427401787691005,
+              2.2737332802056813
+            ],
+            "wheels": 4,
+            "belt": 0.712064196413178,
+            "roof": 1.0784481364180831,
+            "paintTexture": true
+          },
+          "dolcati": {
+            "title": "Ducati Panigale V4",
+            "sourceKey": "dolcati_roy",
+            "kind": "moto",
+            "triangles": 372664,
+            "farTriangles": 25717,
+            "dims": [
+              2.221500981409821,
+              1.1937503491263246,
+              0.8127299454804844
+            ],
+            "wheels": 2,
+            "belt": null,
+            "roof": null,
+            "paintTexture": true
+          }
+        },
+        "kits": [
+          "coupe:35.20:14.41",
+          "sedan:38.80:14.82",
+          "s1_jimny:29.10:12.94",
+          "supercar:37.60:16.01",
+          "svj_sdc:39.52:16.77"
+        ]
+      },
+      "approvedAssets": {
+        "loaded": true,
+        "keys": [
+          "m1_enduro",
+          "m2_sport",
+          "s1_jimny",
+          "s2_suv",
+          "s3_offroad"
+        ],
+        "atlasSizes": [
+          [
+            4096,
+            4096
+          ],
+          [
+            4096,
+            4096
+          ]
+        ],
+        "reducedTextures": false,
+        "models": [
+          {
+            "id": 3,
+            "type": "suv",
+            "asset": "s1_jimny",
+            "far": false,
+            "triangles": 120202,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 5,
+            "type": "bike",
+            "asset": "m2_sport",
+            "far": false,
+            "triangles": 50795,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 265,
+            "type": "brutini",
+            "asset": "svj_sdc",
+            "far": false,
+            "triangles": 508324,
+            "visible": false,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          },
+          {
+            "id": 282,
+            "type": "bike",
+            "asset": "m2_sport",
+            "far": false,
+            "triangles": 50795,
+            "visible": true,
+            "pool": {
+              "ready": false,
+              "instances": 0,
+              "triangles": 0
+            }
+          }
+        ]
+      },
+      "sportsAssets": {
+        "loaded": true,
+        "enabled": true,
+        "key": "c8_hari",
+        "triangles": 85031,
+        "farTriangles": 9407,
+        "atlasSizes": [],
+        "reducedTextures": false,
+        "nativeDoors": [
+          "left",
+          "right"
+        ]
+      },
+      "svjAssets": {
+        "loaded": true,
+        "enabled": true,
+        "key": "svj_sdc",
+        "triangles": 508324,
+        "farTriangles": 20133,
+        "atlasSizes": [
+          [
+            2048,
+            2048
+          ],
+          [
+            2048,
+            2048
+          ],
+          [
+            2048,
+            2048
+          ]
+        ],
+        "reducedTextures": false,
+        "nativeDoors": [
+          "left",
+          "right"
+        ],
+        "source": "https://sketchfab.com/3d-models/lamborghini-aventador-svj-sdc-free-784e4656aca649cca55d6b18740a19b2",
+        "license": "CC BY 4.0",
+        "sourceTriangles": 508324,
+        "nativeCabin": false
+      },
+      "wheelieState": {
+        "onBike": true,
+        "type": "bike",
+        "geometry": "sport",
+        "deg": 0,
+        "rate": 0,
+        "lean": 0,
+        "bankDeg": 4.2,
+        "bankRate": 0,
+        "rollingShare": 1,
+        "asked": false,
+        "lowering": false,
+        "kmh": 78,
+        "balanceDeg": 38,
+        "loopDeg": 69,
+        "steerShare": 1,
+        "log": {
+          "lifts": 1,
+          "loops": 0,
+          "pops": 1,
+          "bestDeg": 16,
+          "bestSeconds": 0,
+          "lastLoop": null
+        },
+        "hint": {
+          "shown": 1,
+          "last": "WHEELIE · HOLD W + ↑ while moving · ↓ weight forward",
+          "due": false
+        },
+        "at": 4.63
+      },
+      "wheelieScore": {
+        "phase": "result",
+        "tracking": false,
+        "type": null,
+        "metres": 14.19,
+        "grade": 0,
+        "distanceM": 14.19,
+        "tier": 0,
+        "milestone": "",
+        "milestonePulses": 0,
+        "reason": "exited",
+        "airborneSeconds": 0.708,
+        "touchdownSeconds": 0,
+        "resultSeconds": 3.3,
+        "runs": 1,
+        "bestMetres": 14.19
+      }
+    }
+  ],
+  "errors": [],
+  "warnings": [
+    "Scripts \"build/three.js\" and \"build/three.min.js\" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation"
+  ],
+  "vehicle": {
+    "id": 265,
+    "type": "brutini",
+    "x": 418,
+    "y": 6000,
+    "a": 0,
+    "altitude": 0
+  },
+  "bindings": {
+    "forward": [
+      "KeyW",
+      null
+    ],
+    "back": [
+      "KeyS",
+      null
+    ],
+    "left": [
+      "KeyA",
+      "ArrowLeft"
+    ],
+    "right": [
+      "KeyD",
+      "ArrowRight"
+    ],
+    "walk": [
+      "ShiftLeft",
+      "ShiftRight"
+    ],
+    "sprint": [
+      "ShiftLeft",
+      "ShiftRight"
+    ],
+    "interact": [
+      "KeyE",
+      null
+    ],
+    "fire": [
+      "KeyF",
+      null
+    ],
+    "jump": [
+      "Space",
+      null
+    ],
+    "handbrake": [
+      "Space",
+      null
+    ],
+    "wheelieUp": [
+      "ArrowUp",
+      null
+    ],
+    "wheelieDown": [
+      "ArrowDown",
+      null
+    ],
+    "poison": [
+      "KeyP",
+      null
+    ],
+    "horn": [
+      "KeyH",
+      null
+    ],
+    "lookBehind": [
+      "KeyC",
+      null
+    ],
+    "radioPower": [
+      "KeyN",
+      null
+    ],
+    "radioNext": [
+      "KeyB",
+      null
+    ],
+    "radioQuieter": [
+      "Comma",
+      null
+    ],
+    "radioLouder": [
+      "Period",
+      null
+    ],
+    "skipRide": [
+      "KeyY",
+      null
+    ],
+    "skipStop": [
+      "KeyU",
+      null
+    ],
+    "ascend": [
+      "ArrowUp",
+      "KeyT"
+    ],
+    "descend": [
+      "ArrowDown",
+      "KeyG"
+    ],
+    "chuteGlide": [
+      "ArrowUp",
+      null
+    ],
+    "chuteFlare": [
+      "ArrowDown",
+      null
+    ],
+    "flapsDown": [
+      "KeyX",
+      null
+    ],
+    "flapsUp": [
+      "KeyZ",
+      null
+    ],
+    "gear": [
+      "KeyL",
+      null
+    ],
+    "rockets": [
+      "Space",
+      null
+    ],
+    "bail": [
+      "KeyJ",
+      null
+    ],
+    "divert": [
+      "KeyC",
+      null
+    ],
+    "reload": [
+      "KeyR",
+      null
+    ],
+    "cycleWeapon": [
+      "KeyQ",
+      null
+    ],
+    "fists": [
+      "Backquote",
+      "Digit8"
+    ],
+    "knife": [
+      "KeyK",
+      "Digit7"
+    ],
+    "lockpick": [
+      "Digit9",
+      null
+    ],
+    "weapon1": [
+      "Digit1",
+      null
+    ],
+    "weapon2": [
+      "Digit2",
+      null
+    ],
+    "weapon3": [
+      "Digit3",
+      null
+    ],
+    "weapon4": [
+      "Digit4",
+      null
+    ],
+    "weapon5": [
+      "Digit5",
+      null
+    ],
+    "weapon6": [
+      "Digit6",
+      null
+    ],
+    "arsenal": [
+      "KeyI",
+      null
+    ],
+    "map": [
+      "Tab",
+      null
+    ],
+    "missionCard": [
+      "KeyO",
+      null
+    ],
+    "cameraView": [
+      "KeyV",
+      null
+    ],
+    "zoomIn": [
+      "Equal",
+      "NumpadAdd"
+    ],
+    "zoomOut": [
+      "Minus",
+      "NumpadSubtract"
+    ],
+    "zoomReset": [
+      "Digit0",
+      null
+    ],
+    "mute": [
+      "KeyM",
+      null
+    ],
+    "help": [
+      "Slash",
+      null
+    ]
+  },
+  "pass": true
+}

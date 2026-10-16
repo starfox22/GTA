@@ -191,7 +191,7 @@ packs with plain `<script src>` so the zip still plays from file://.
   `shoreStepBlocked` lets him off land or a dock (never a bridge or the pier) into the sea; the fall carries `fall.jumped`
   and ends swimming. Fort Sentinel, the theme park and the Marea keep their blockers out of it. Space is `jump` on foot,
   `handbrake` driving, `rockets` in the air. The take-off effort sound is player-jump-audio.js `jumpEffortSound`.
-- `c.wheelie` (wheelie.js) is the only two-wheeler pitch; throttle + `wheelieHeld()` balances a rolling wheelie; `wheelieLowerHeld()` shifts weight forward independently of throttle/brake. Dedicated ↑/↓ actions are speed-gated; W/S supplies drive/brake. `wheelieFrontContact()` weights airborne front grip/brakes/marks/spray; rear braking respects remaining grip. Renderers rotate about the actual rear axle through bank and terrain tilt, and the rider follows the body matrix.
+- `c.wheelie` (wheelie.js) is the only two-wheeler pitch; throttle + `wheelieHeld()` lifts a rolling wheelie; feather throttle/rider weight to balance. `wheelieLowerHeld()` shifts weight forward independently of throttle/brake. Dedicated ↑/↓ actions are speed-gated; W/S supplies drive/brake. `wheelieFrontContact()` weights airborne front grip/brakes/marks/spray; rear braking respects remaining grip. Renderers rotate about the actual rear axle through bank and terrain tilt, and the rider follows the body matrix.
 - Objectives have no ground ring or light pool: the floating arrow (render3d-effects.js `arrowGroup`, shown
   by `objectiveArrowShown()` in markers.js) is the only pointer; the ring under the player is the `playerRing`
   setting (off by default, `playerRingOn()`). Console `markers()` lists what marks the objective and the player.

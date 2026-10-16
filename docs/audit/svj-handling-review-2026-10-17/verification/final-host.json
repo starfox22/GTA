@@ -1,0 +1,210 @@
+{
+  "sourceHead": "fada471bec7c71f85f3187c3a2c53270aef96fbe",
+  "tests": [
+    {
+      "name": "svj-vehicle-assets",
+      "sha256": "99925ba38bbbac38ec946a65a4f72083880895575071bbb9b0adcab7c2527ce2",
+      "pass": true,
+      "checks": 193,
+      "notes": [
+        "SVJ fitted DRIVEBY_SEATS [-0.05183668281209733,0.21125,0.43,0.6100000000000002,0.712064196413178]",
+        "SVJ real source builder, headroom, wheel/door, far LOD and char/repair contracts passed"
+      ]
+    },
+    {
+      "name": "svj-loader-materials",
+      "sha256": "db5cd770d2291c55bd66250bd3f0d29f4e6988a042f29721cc072be786f07e93",
+      "pass": true,
+      "checks": 38,
+      "notes": [
+        "SVJ actual boot wiring, pack identity, PBR shader hooks and texture tiers passed without WebGL"
+      ]
+    },
+    {
+      "name": "sports-vehicle-assets",
+      "sha256": "f34dcbcb626f66873131e52d64708c0d9fdbd2e4f4e414f0c36b038105fd2c5e",
+      "pass": true,
+      "checks": 1228,
+      "notes": [
+        "{\"packSHA256\":\"e83f2d0f38b64ca743717eb50054ea15dfa56488fe8346ee423790815f375328\",\"sourceInputs\":{\"src/sports-vehicle-assets3d.js\":\"8ba3a42e896c96fa377069e5a35aa81232d91e76c79376a5663358f15f600cd3\",\"src/approved-suv3d.js\":\"c6b81661a353b5cd9904c47d1d6a361275b129ebbd3b5bfa469c9720bfdf984d\",\"src/approved-vehicle-assets3d.js\":\"3424e15194aacfec19a487d72cb0f33b89143790b318a939373f68de9a7854a2\",\"src/vehicle-assets3d.js\":\"92c4e9de1d1df5ef8fbfcc7a2c8cc46ed891cb0c0c14eda4ee55a6c61043950f\",\"src/vehicle-char3d.js\":\"77fa8966e444f1797618c885d77b7d5a26cb68c77f1df8cf9cbed24eead18db0\",\"src/cars3d-models.js\":\"b8afc30af84a39f6f4d0577e7ca43644cc0838067331312112d21fe54ef14236\"},\"model\":\"c8_hari\",\"triangles\":85031,\"farTriangles\":9407,\"actualNearTriangles\":85031,\"actualFarTriangles\":9407,\"parts\":86,\"arrays\":618,\"textureUploads\":12,\"disposeByAtlas\":[2,2,2],\"nativeDoorHinges\":[[6.203920642204758,4.266917853803121,6.882027187977273],[6.2026074183272675,4.273754743811496,-6.8764977614945595]]}"
+      ]
+    },
+    {
+      "name": "hotrod-vehicle-assets",
+      "sha256": "e6227a6949be62577a14707845d988223db623f599e6c9af7e24c13baf9dcb53",
+      "pass": true,
+      "checks": 137,
+      "notes": [
+        "hotrod source pack, actual builder/animation/LOD/PBR contracts passed without WebGL"
+      ]
+    },
+    {
+      "name": "hotrod-vehicle-rig",
+      "sha256": "a164d131f3a3a9d240a1ef6daa9d5640d65031e4021b12621798e30cbf29c4f4",
+      "pass": true,
+      "checks": 71,
+      "notes": [
+        "{\"seat\":[0,0.665,0.29,0.49000000000000016,1.1244690725059128],\"clearance\":0.021650384170513782,\"k\":8,\"steering\":{\"x\":1.6946652000000002,\"y\":7.89229928,\"z\":-1.9947692,\"r\":1.36911736,\"tilt\":0.54038}}",
+        "{\"gameplayGlassProof\":{\"sourceExpected\":[1.1244690725059128,1.6242246711168973,-0.1940837840277219,0.1094954818427025],\"CAR_GLASS_BANDS_hotrod\":[1.124469073,1.624224671,-0.194083784,0.109495482],\"uniformRuntimeScale\":8,\"productionSpecMetres\":{\"l\":4.5,\"w\":2.07},\"passed\":true}}",
+        "{\"sourceOccupantProof\":{\"fullSize\":true,\"probes\":[{\"index\":0,\"hip\":[0,0.665,-0.29],\"cushionY\":0.6911687264390161,\"cushionAboveHip\":0.02616872643901602},{\"index\":1,\"hip\":[0,0.665,0.29],\"cushionY\":0.6911687264390161,\"cushionAboveHip\":0.02616872643901602}],\"clearance\":0.021650384170513782,\"steeringWorldMetres\":[0.21183315000000003,0.98653741,-0.24934615,0.17113967,0.54038]}}",
+        "{\"apertureProof\":{\"key\":\"hotrod\",\"actualRayOpenHits\":0,\"windowRays\":19,\"fixedWindowHits\":0,\"visibleInterior\":[{\"part\":\"authored source cabin\",\"face\":9489},{\"part\":\"authored source cabin\",\"face\":9075},{\"part\":\"authored source cabin\",\"face\":9423},{\"part\":\"authored source cabin\",\"face\":9075},{\"part\":\"authored source cabin\",\"face\":9061},{\"part\":\"authored source cabin\",\"face\":8994},{\"part\":\"authored source cabin\",\"face\":8992},{\"part\":\"authored source cabin\",\"face\":8996},{\"part\":\"authored source cabin\",\"face\":8994},{\"part\":\"authored source cabin\",\"face\":8964}],\"sourceRestored\":true,\"windowMoves\":true,\"marksFollowSource\":true,\"layers\":5}}",
+        "{\"hotrodRigProof\":{\"clearance\":0.021650384170513782,\"sourceSeat\":[0,0.665,-0.29],\"fullSizeCharacter\":true,\"sourceDoorAttributes\":[\"position\",\"normal\",\"uv\",\"color\",\"finish\",\"avOrmSourceUv\",\"avSourceUv\",\"avAtlasRect\"],\"burnBeforeFirstDoor\":true,\"repaired\":true}}"
+      ]
+    },
+    {
+      "name": "approved-suv-rigs",
+      "sha256": "7b7ecf2b5e1db12bae2983db90c991039c91faa4aafd9bde777db4b5b39ee999",
+      "pass": true,
+      "checks": 1019,
+      "notes": [
+        "{\"doorProof\":{\"key\":\"s1_jimny\",\"actualShaped\":true,\"actualAttributes\":[\"position\",\"normal\",\"uv\",\"color\",\"finish\",\"avSourceUv\",\"avAtlasRect\"],\"probeShaped\":true,\"probeAttributes\":[\"position\",\"uv\",\"avSourceUv\",\"avAtlasRect\",\"finish\",\"color\",\"normal\"]}}",
+        "{\"apertureProof\":{\"key\":\"s1_jimny\",\"actualRayOpenHits\":0,\"visibleInterior\":[{\"part\":\"authored source cabin\",\"face\":55585},{\"part\":\"authored source cabin\",\"face\":55245},{\"part\":\"authored source cabin\",\"face\":49894},{\"part\":\"authored source cabin\",\"face\":51388},{\"part\":\"authored source cabin\",\"face\":49870},{\"part\":\"authored source cabin\",\"face\":51392},{\"part\":\"authored source cabin\",\"face\":49876}],\"sourceRestored\":true,\"windowMoves\":true,\"marksFollowSource\":true,\"layers\":5}}",
+        "{\"doorProof\":{\"key\":\"s2_suv\",\"actualShaped\":true,\"actualAttributes\":[\"position\",\"normal\",\"uv\",\"color\",\"finish\",\"avSourceUv\",\"avAtlasRect\"],\"probeShaped\":false,\"probeAttributes\":[]}}",
+        "{\"apertureProof\":{\"key\":\"s2_suv\",\"actualRayOpenHits\":0,\"visibleInterior\":[{\"part\":\"production seats/dashboard fallback\",\"face\":154},{\"part\":\"production seats/dashboard fallback\",\"face\":144},{\"part\":\"production seats/dashboard fallback\",\"face\":116},{\"part\":\"production seats/dashboard fallback\",\"face\":134},{\"part\":\"production seats/dashboard fallback\",\"face\":115},{\"part\":\"production seats/dashboard fallback\",\"face\":5},{\"part\":\"production seats/dashboard fallback\",\"face\":1889}],\"sourceRestored\":true,\"windowMoves\":true,\"marksFollowSource\":true,\"layers\":5}}",
+        "{\"doorProof\":{\"key\":\"s3_offroad\",\"actualShaped\":true,\"actualAttributes\":[\"position\",\"normal\",\"uv\",\"color\",\"finish\",\"avSourceUv\",\"avAtlasRect\"],\"probeShaped\":false,\"probeAttributes\":[]}}",
+        "{\"apertureProof\":{\"key\":\"s3_offroad\",\"actualRayOpenHits\":0,\"visibleInterior\":[{\"part\":\"production seats/dashboard fallback\",\"face\":154},{\"part\":\"production seats/dashboard fallback\",\"face\":144},{\"part\":\"production seats/dashboard fallback\",\"face\":116},{\"part\":\"production seats/dashboard fallback\",\"face\":134},{\"part\":\"production seats/dashboard fallback\",\"face\":115},{\"part\":\"production seats/dashboard fallback\",\"face\":5},{\"part\":\"production seats/dashboard fallback\",\"face\":1513}],\"sourceRestored\":true,\"windowMoves\":true,\"marksFollowSource\":true,\"layers\":5}}",
+        "{\"sheriffDecals\":{\"roof\":{\"x\":-12.971872233569337,\"y\":17.049618530273438,\"length\":11.488311948316213,\"width\":8,\"lift\":null},\"side\":{\"x\":-18.615,\"y\":9.813742220255321,\"half\":8.377517700195312},\"trunk\":null,\"maximumSourceRoofInFootprint\":17.00077036072693,\"minimumClearanceMetres\":0.004884816954650972,\"sideGlyphSamples\":100,\"sideClearanceMetres\":[0.03411042905266175,0.065553624189479],\"glyphTriangles\":12,\"sourceGeometryChanged\":false}}",
+        "{\"trunkVisibility\":{\"source\":\"production carBodyDamage + actual Generic SUV Sheriff\",\"opened\":true,\"closedHidden\":true,\"sprung\":true,\"repairedHidden\":true,\"sourceGlassPreserved\":true}}",
+        "{\"apertureProof\":{\"key\":\"marked-sheriff\",\"actualRayOpenHits\":0,\"visibleInterior\":[{\"part\":\"production seats/dashboard fallback\",\"face\":154},{\"part\":\"production seats/dashboard fallback\",\"face\":145},{\"part\":\"production seats/dashboard fallback\",\"face\":116},{\"part\":\"production seats/dashboard fallback\",\"face\":134},{\"part\":\"production seats/dashboard fallback\",\"face\":115},{\"part\":\"production seats/dashboard fallback\",\"face\":5},{\"part\":\"production seats/dashboard fallback\",\"face\":1889},{\"part\":\"production seats/dashboard fallback\",\"face\":2235}],\"sourceRestored\":true,\"windowMoves\":true,\"marksFollowSource\":true,\"layers\":5}}",
+        "{\"apertureProof\":{\"key\":\"legacy-sedan\",\"actualRayOpenHits\":0,\"visibleInterior\":[{\"part\":\"authored source cabin\",\"face\":4088},{\"part\":\"authored source cabin\",\"face\":4052},{\"part\":\"authored source cabin\",\"face\":4091},{\"part\":\"authored source cabin\",\"face\":4054},{\"part\":\"authored source cabin\",\"face\":4529},{\"part\":\"authored source cabin\",\"face\":3896},{\"part\":\"authored source cabin\",\"face\":3841},{\"part\":\"authored source cabin\",\"face\":3991}],\"sourceRestored\":true,\"windowMoves\":true,\"marksFollowSource\":true,\"layers\":5}}",
+        "{\"apertureProof\":{\"key\":\"legacy-coupe\",\"actualRayOpenHits\":0,\"visibleInterior\":[{\"part\":\"authored source cabin\",\"face\":3937},{\"part\":\"authored source cabin\",\"face\":3938},{\"part\":\"authored source cabin\",\"face\":3774},{\"part\":\"authored source cabin\",\"face\":3874}],\"sourceRestored\":true,\"windowMoves\":true,\"marksFollowSource\":true,\"layers\":5}}",
+        "{\"apertureProof\":{\"key\":\"legacy-crownvic\",\"actualRayOpenHits\":0,\"visibleInterior\":[{\"part\":\"authored source cabin\",\"face\":4258},{\"part\":\"authored source cabin\",\"face\":4258},{\"part\":\"authored source cabin\",\"face\":3715},{\"part\":\"authored source cabin\",\"face\":4474}],\"sourceRestored\":true,\"windowMoves\":true,\"marksFollowSource\":true,\"layers\":5}}",
+        "{\"apertureProof\":{\"key\":\"native-c8\",\"actualRayOpenHits\":0,\"visibleInterior\":[{\"part\":\"authored source cabin\",\"face\":24317},{\"part\":\"authored source cabin\",\"face\":31905},{\"part\":\"authored source cabin\",\"face\":32235},{\"part\":\"authored source cabin\",\"face\":37485},{\"part\":\"authored source cabin\",\"face\":32018},{\"part\":\"authored source cabin\",\"face\":34338},{\"part\":\"authored source cabin\",\"face\":34174},{\"part\":\"authored source cabin\",\"face\":27667},{\"part\":\"authored source cabin\",\"face\":25654}],\"sourceRestored\":true,\"windowMoves\":true,\"marksFollowSource\":true,\"layers\":4}}",
+        "{\"sportsSeatProbe\":{\"hipY\":0.23,\"probes\":[{\"x\":0.035,\"z\":-0.504,\"hipY\":0.23,\"cushionY\":0.25064295803463477,\"cushionAboveHip\":0.020642958034634756,\"upward\":0.8961805924920514},{\"x\":0.035,\"z\":-0.464,\"hipY\":0.23,\"cushionY\":0.2500646934821351,\"cushionAboveHip\":0.020064693482135104,\"upward\":0.8711047195009475},{\"x\":0.035,\"z\":-0.42400000000000004,\"hipY\":0.23,\"cushionY\":0.2467096062889207,\"cushionAboveHip\":0.01670960628892068,\"upward\":0.8711047195009475},{\"x\":0,\"z\":0.42400000000000004,\"hipY\":0.24581404,\"cushionY\":0.263504746210669,\"cushionAboveHip\":0.017690706210668983,\"upward\":0.8865402899703204},{\"x\":0,\"z\":0.464,\"hipY\":0.24581404,\"cushionY\":0.2658140436562739,\"cushionAboveHip\":0.020000003656273913,\"upward\":0.9101870155068922},{\"x\":0,\"z\":0.504,\"hipY\":0.24581404,\"cushionY\":0.2577550195631406,\"cushionAboveHip\":0.011940979563140608,\"upward\":0.6512240528823716}]}}",
+        "{\"sportsPassengerSeat\":{\"fitted\":[0,0.24581404,0.464,0.5700000000000002],\"clearanceMetres\":0.021985807239919396,\"measuredWheel\":[0.31392,0.72501,-0.358883,0.165,0.25284],\"actualProductionOccupantPoses\":[{\"hip\":[0.28,1.8399999999999999,-3.712],\"lean\":0.49000000000000016,\"hands\":[[2.6310120391018486,6.263184723101846,-4.101355593476739],[2.6310120391018486,6.263184723101846,-1.6407724065232614]],\"feet\":[[6.2,2.64,-4.5920000000000005],[6.2,2.64,-2.8320000000000003]]},{\"hip\":[0,1.9665123200000005,3.712],\"lean\":0.5700000000000002,\"hands\":[[2.4,2.7665123200000004,2.912],[2.4,2.7665123200000004,4.5120000000000005]],\"feet\":[[5.92,2.7665123200000004,2.8320000000000003],[5.92,2.7665123200000004,4.5920000000000005]]}]}}",
+        "{\"sportsSeat\":{\"key\":\"c8_hari\",\"M\":8,\"fitted\":[0.035,0.23,0.464,0.49000000000000016,0.7997014025149419],\"clearanceMetres\":0.02134809094985016,\"sourceSeats\":{\"origin\":[0,0,0],\"vertices\":2828,\"triangles\":3128},\"glass\":{\"base\":0.7997014025149419,\"roof\":1.12627682494793,\"xf\":0.9269057208442372,\"rf\":0.4149687968481118,\"xb\":-0.7263078442876373,\"rb\":-0.7187354177625122,\"halfBase\":0.7594208256622118,\"halfTop\":0.6314556429638732,\"crown\":0.06156889326975014}}}",
+        "{\"lateDoorCharRepair\":{\"type\":\"chevette\",\"builder\":\"actual packed production builder\",\"sourceLayers\":3,\"inheritedCharAdopted\":true,\"reopenedSourceMaterials\":true,\"shaderOrGeometryChange\":false}}",
+        "{\"lateDoorCharRepair\":{\"type\":\"suv\",\"builder\":\"actual packed production builder\",\"sourceLayers\":3,\"inheritedCharAdopted\":true,\"reopenedSourceMaterials\":true,\"shaderOrGeometryChange\":false}}",
+        "{\"lateDoorCharRepair\":{\"type\":\"sedan\",\"builder\":\"actual packed production builder\",\"sourceLayers\":3,\"inheritedCharAdopted\":true,\"reopenedSourceMaterials\":true,\"shaderOrGeometryChange\":false}}",
+        "{\"approvedSUVs\":[{\"key\":\"s1_jimny\",\"nearTriangles\":120202,\"farTriangles\":9894,\"seat\":[-0.3836971163749693,0.4537090229987146,0.3719811916351319,0.25,0.8737090229987146],\"clearance\":0.17544762401897573,\"pivots\":[[9.336581687535054,2.779711800197189,-5.586644929423751,2.789101404920368],[9.339219978907872,2.7796009605548986,5.589057228952147,2.7890112051722245],[-8.587354085216234,2.7797089149544183,-5.586614325847132,2.788922967933447],[-8.58473558481856,2.7797130274430235,5.5893446282277255,2.7889289173091525]]},{\"key\":\"s2_suv\",\"nearTriangles\":7745,\"farTriangles\":4244,\"seat\":[-0.1839768178645893,0.6860059643489217,0.4135218032504037,0.25,1.1561036205989217],\"clearance\":0.020078717686848917,\"pivots\":[[11.45684062322659,3.0070733291297667,-5.791175406812156,3.007073349845253],[11.456836697553427,3.0070733291297693,5.791173877969153,3.0070733291311944],[-10.387537069938418,3.0070741969769457,-5.791177615055597,3.0070733498452515],[-10.38754099561158,3.007074196976948,5.791171669725713,3.0070733291311944]]},{\"key\":\"s3_offroad\",\"nearTriangles\":6416,\"farTriangles\":3517,\"seat\":[-0.6608686069240979,0.53328720396407,0.39200535496992184,0.25,1.09977157896407],\"clearance\":0.020168540219054364,\"pivots\":[[9.775246875438732,2.860813959541758,-5.87991094769413,2.8608139779042547],[9.77525397179484,2.86081395954176,5.87991119696003,2.860813959543117],[-8.790665542619635,2.860814827388934,-5.879900865277287,2.8608139779042654],[-8.790653720780135,2.8608148273889364,5.8799133561993315,2.860813959543117]]}],\"lawRows\":[{\"equipment\":\"marked\",\"body\":\"utility\",\"seat\":[-0.18397681786458933,0.6860059643489216,0.43600000000000005,0.25,1.1561036205989217],\"rear\":true},{\"equipment\":\"unmarked\",\"body\":\"utility\",\"seat\":[-0.18397681786458933,0.6860059643489216,0.43600000000000005,0.25,1.1561036205989217],\"rear\":true},{\"equipment\":\"unmarked\",\"body\":\"tahoe\",\"seat\":[-0.18397681786458933,0.6860059643489216,0.44800000000000006,0.25,1.1561036205989217],\"rear\":true}],\"policeSource\":\"s2_suv\",\"headroom\":\"actual production head geometry and fit; rendered check separate\"}"
+      ]
+    },
+    {
+      "name": "approved-motorcycle-rigs",
+      "sha256": "2a419d1c43f9515f57d2aa87120dec0d770b7440beaa3bd42ff5c465f27b2906",
+      "pass": true,
+      "checks": 207,
+      "notes": [
+        "{\"restError\":1.2917073125271293e-7,\"normalError\":4.423433763540704e-8,\"rollingWobble\":5.551115123125783e-17,\"models\":[{\"type\":\"kr500\",\"key\":\"m1_enduro\",\"nearLodTriangles\":12350,\"farLodTriangles\":2707,\"pairs\":10,\"sourceTriangles\":12350,\"grips\":[[0.20460008339352115,1.3637767135858536,-0.3328997466802597],[0.20460008339352115,1.3637767135858536,0.33290025331974027]],\"cachedParts\":10},{\"type\":\"bike\",\"key\":\"m2_sport\",\"nearLodTriangles\":50795,\"farLodTriangles\":12820,\"pairs\":11,\"sourceTriangles\":50795,\"grips\":[[0.43523815564945734,1.006513867682728,-0.3086999999999997],[0.43523815564945734,1.006513867682728,0.30870000000000025]],\"cachedParts\":11}]}"
+      ]
+    },
+    {
+      "name": "vehicle-source-fidelity",
+      "sha256": "1b6ee7f33cb3070e3d90a888582ce91b8c0b94add22e829a9d047789520fcf53",
+      "pass": true,
+      "checks": 118,
+      "notes": [
+        "{\"originalSourceSamples\":59,\"surfaces\":9,\"maximumNormalErrorDegrees\":0.0011787874984249959}"
+      ]
+    },
+    {
+      "name": "approved-motorcycle-rider-fit",
+      "sha256": "6c2db1441f161bf24be0a249e866de115c8b265fd3fbdb5cc05912492ba4d19c",
+      "pass": true,
+      "checks": 222,
+      "notes": [
+        "{\"riderHeight\":1.65,\"maxTargetError\":0,\"maxWristError\":0.12122533882768248,\"maxRestWristError\":0,\"maxBoneError\":7.771561172376096e-15,\"formerSteeringGap\":1.19677433390081}",
+        "{\"riderHeight\":1.8,\"maxTargetError\":0,\"maxWristError\":0,\"maxRestWristError\":0,\"maxBoneError\":8.43769498715119e-15,\"formerSteeringGap\":1.19677433390081}",
+        "{\"riderHeight\":1.9,\"maxTargetError\":0,\"maxWristError\":0,\"maxRestWristError\":0,\"maxBoneError\":8.43769498715119e-15,\"formerSteeringGap\":1.19677433390081}"
+      ]
+    },
+    {
+      "name": "car-cabin-view-distance",
+      "sha256": "93a4942eb33cfafaa63851a9a32d3a070a7afac9e3c95947df26bfeb376ac7ae",
+      "pass": true,
+      "checks": 165,
+      "notes": [
+        "Production street camera/occupant/glass: roof-setback invariance, inspection, final-camera translation, fade/range bounds, nearest16/player priority, and immediate aircraft/chase/ride reset"
+      ]
+    },
+    {
+      "name": "motorcycle-previous-feel",
+      "sha256": "fb6169f6ad987b15e369acd4b5e5f2ee7ace9bd170382a9d88f11568bbadc846",
+      "pass": true,
+      "checks": 1632,
+      "notes": [
+        "18 full-controller traces match published 3bae7a00: turn, lift, release, coast, brake, rear brake at 30/60/120 Hz."
+      ]
+    },
+    {
+      "name": "wheelie-dynamics",
+      "sha256": "cf6b8518d803c797b2bb0403e5a1d0c51973c5219fd5b6bd74fee48100ed2f41",
+      "pass": true,
+      "checks": 1203,
+      "notes": [
+        "rising 30° front lowered to 13.45° in .4s at 30/60/120 Hz; dry/wet/corner rear brake -5.40/-3.88/-3.02 m/s²"
+      ]
+    },
+    {
+      "name": "wheelie-bindings",
+      "sha256": "f2b0f14f2b8e6b49cc79388932e623742cb94bdb2b976b540d343e13f2c47666",
+      "pass": true,
+      "checks": 61,
+      "notes": [
+        "Saved defaults migrate without altering custom bindings; production keyboard/pad/touch and settings/help keep rider weight separate from throttle/brake."
+      ]
+    },
+    {
+      "name": "wheelie-score",
+      "sha256": "9118a88eb08d97d9cce0985e8a6dcaf37c0aab9eb2e29b673633981ab4e209b3",
+      "pass": true,
+      "checks": 37,
+      "notes": [
+        "production HUD snapshots [{\"score\":{\"phase\":\"idle\",\"tracking\":false,\"type\":null,\"metres\":0,\"grade\":0,\"distanceM\":0,\"tier\":0,\"milestone\":\"\",\"milestonePulses\":0,\"reason\":\"\",\"airborneSeconds\":0,\"touchdownSeconds\":0,\"resultSeconds\":0,\"runs\":0,\"bestMetres\":0},\"shown\":false,\"distance\":\"\",\"grade\":\"\",\"next\":\"\"},{\"score\":{\"phase\":\"active\",\"tracking\":true,\"type\":\"bike\",\"metres\":99,\"grade\":0,\"distanceM\":99,\"tier\":0,\"milestone\":\"\",\"milestonePulses\":0,\"reason\":\"\",\"airborneSeconds\":1.98,\"touchdownSeconds\":0,\"resultSeconds\":0,\"runs\":0,\"bestMetres\":0},\"shown\":true,\"distance\":\"99\",\"grade\":\"Keep it up\",\"next\":\"100 m · GREAT!\",\"progress\":\"0.9900\",\"celebrate\":\"\"},{\"score\":{\"phase\":\"active\",\"tracking\":true,\"type\":\"bike\",\"metres\":101,\"grade\":1,\"distanceM\":101,\"tier\":1,\"milestone\":\"GREAT!\",\"milestonePulses\":1,\"reason\":\"\",\"airborneSeconds\":2.02,\"touchdownSeconds\":0,\"resultSeconds\":0,\"runs\":0,\"bestMetres\":0},\"shown\":true,\"distance\":\"101\",\"grade\":\"GREAT!\",\"next\":\"200 m · Amazing!\",\"progress\":\"0.0100\",\"celebrate\":\"a\"},{\"score\":{\"phase\":\"active\",\"tracking\":true,\"type\":\"bike\",\"metres\":201,\"grade\":2,\"distanceM\":201,\"tier\":2,\"milestone\":\"Amazing!\",\"milestonePulses\":2,\"reason\":\"\",\"airborneSeconds\":4.02,\"touchdownSeconds\":0,\"resultSeconds\":0,\"runs\":0,\"bestMetres\":0},\"shown\":true,\"distance\":\"201\",\"grade\":\"Amazing!\",\"next\":\"KEEP THE STREAK ALIVE\",\"progress\":\"1.0000\",\"celebrate\":\"b\"}]"
+      ]
+    },
+    {
+      "name": "wheelie-score-settle",
+      "sha256": "fc157d9883eb60432ccfd68bb6ff0188b5a74196173d1194f7ddd38be8963cf2",
+      "pass": true,
+      "checks": 4,
+      "notes": []
+    },
+    {
+      "name": "wheelie-tyre-contact",
+      "sha256": "06cae044c0bb4c23ca2c5312f0b3be088f991898e4739c535f60e98970bb7829",
+      "pass": true,
+      "checks": 135,
+      "notes": [
+        "production marks/contact/stats; wet/ford/dry dust/mud consumers; smooth front fade; grounded rear; car baseline; fresh touchdown track; renderer state read only"
+      ]
+    },
+    {
+      "name": "rider-fall-motion",
+      "sha256": "3c313e2139defe75304cc5a8572fb0c344ff42007feaa9c7bdc2401a48b8774e",
+      "pass": true,
+      "checks": 11839,
+      "notes": [
+        "{\"observations\":[{\"cause\":\"lowside\",\"seconds\":2.81,\"hp\":87.5,\"bank\":0},{\"cause\":\"loopout\",\"seconds\":2.67,\"hp\":88.5,\"bank\":0},{\"cause\":\"crash\",\"seconds\":2.82,\"hp\":90.7,\"bank\":0},{\"cause\":\"landing\",\"seconds\":2.69,\"hp\":89.6,\"bank\":0}],\"maxRecoveryStepM\":0.0406,\"maxEndGapM\":0.0021}"
+      ]
+    },
+    {
+      "name": "rider-fatal-flight",
+      "sha256": "f64bb87f5ad80e73be83d59a72dee6364a4084bf0d1503c598a7710beef79a8a",
+      "pass": true,
+      "checks": 66,
+      "notes": [
+        "{\"measurements\":[{\"who\":\"player\",\"cause\":\"lowside\",\"deadAt\":0.48,\"restedAt\":7.18},{\"who\":\"player\",\"cause\":\"loopout\",\"deadAt\":0.44,\"restedAt\":6.55},{\"who\":\"player\",\"cause\":\"crash\",\"deadAt\":1.22,\"restedAt\":6.78},{\"who\":\"player\",\"cause\":\"landing\",\"deadAt\":0.58,\"restedAt\":6.31},{\"who\":\"npc\",\"cause\":\"lowside\",\"deadAt\":0.48,\"restedAt\":2.83},{\"who\":\"npc\",\"cause\":\"loopout\",\"deadAt\":0.44,\"restedAt\":2.59},{\"who\":\"npc\",\"cause\":\"crash\",\"deadAt\":1.22,\"restedAt\":3.17},{\"who\":\"npc\",\"cause\":\"landing\",\"deadAt\":0.58,\"restedAt\":2.6}],\"originalHospitalMs\":4200,\"hardCapMs\":16000}"
+      ]
+    },
+    {
+      "name": "motorcycle-riding-animation",
+      "sha256": "356155faa7009fe392a30f7c669f86f9e65e7b1a61f61e8345464110349d7fe1",
+      "pass": true,
+      "checks": 153,
+      "notes": [
+        "{\"maxContactError\":0,\"maxWristGap\":0,\"maxBoneError\":1.2434497875801753e-14,\"examples\":[{\"type\":\"bike\",\"height\":1.65,\"neutral\":-0.9992307663863391,\"back\":-0.8631189971599282,\"forward\":-1.181230742537572,\"fast\":-1.1100000041155331,\"braking\":-0.8610769374590727,\"cornerRoll\":0.13999998382230464,\"cornerGaze\":-0.25999996995570857},{\"type\":\"kr500\",\"height\":1.65,\"neutral\":-0.11723076823521872,\"back\":0.038350351786168996,\"forward\":-0.29923074253757204,\"fast\":-0.1560000082755121,\"braking\":-0.0038769318662123936,\"cornerRoll\":0.07499999133337747,\"cornerGaze\":-0.25999996995570857},{\"type\":\"bike\",\"height\":1.8,\"neutral\":-0.9992307663863391,\"back\":-0.8092307802084913,\"forward\":-1.181230742537572,\"fast\":-1.1100000041155331,\"braking\":-0.8610769374590727,\"cornerRoll\":0.13999998382230464,\"cornerGaze\":-0.25999996995570857},{\"type\":\"kr500\",\"height\":1.8,\"neutral\":-0.11723076823521872,\"back\":0.0727692197915086,\"forward\":-0.29923074253757204,\"fast\":-0.1560000082755121,\"braking\":-0.0038769318662123936,\"cornerRoll\":0.07499999133337747,\"cornerGaze\":-0.25999996995570857},{\"type\":\"bike\",\"height\":1.9,\"neutral\":-0.9992307663863391,\"back\":-0.8092307802084913,\"forward\":-1.181230742537572,\"fast\":-1.1100000041155331,\"braking\":-0.8610769374590727,\"cornerRoll\":0.13999998382230464,\"cornerGaze\":-0.25999996995570857},{\"type\":\"kr500\",\"height\":1.9,\"neutral\":-0.11723076823521872,\"back\":0.0727692197915086,\"forward\":-0.29923074253757204,\"fast\":-0.1560000082755121,\"braking\":-0.0038769318662123936,\"cornerRoll\":0.07499999133337747,\"cornerGaze\":-0.25999996995570857},{\"type\":\"dolcati\",\"height\":1.65,\"neutral\":-1.1492307663863393,\"back\":-1.0433623842245103,\"forward\":-1.331230742537572,\"fast\":-1.2600000041155333,\"braking\":-1.0315709245290523,\"cornerRoll\":0.13999998382230464,\"cornerGaze\":-0.25999996995570857},{\"type\":\"dolcati\",\"height\":1.8,\"neutral\":-1.1492307663863393,\"back\":-0.9592307802084914,\"forward\":-1.331230742537572,\"fast\":-1.2600000041155333,\"braking\":-1.011076937459073,\"cornerRoll\":0.13999998382230464,\"cornerGaze\":-0.25999996995570857},{\"type\":\"dolcati\",\"height\":1.9,\"neutral\":-1.1492307663863393,\"back\":-0.9592307802084914,\"forward\":-1.331230742537572,\"fast\":-1.2600000041155333,\"braking\":-1.011076937459073,\"cornerRoll\":0.13999998382230464,\"cornerGaze\":-0.25999996995570857}]}"
+      ]
+    },
+    {
+      "name": "motorcycle-wheel-rig",
+      "sha256": "5fcf908a0c7b6bf6569d21c3c4a49035413c1d2de52f98437cd3265aec8e4dbd",
+      "pass": true,
+      "checks": 230,
+      "notes": [
+        "actual packed tyres/rims: rest vertex error 1.31e-7u, normal error 4.46e-8; worst previous axial rim wobble 2.95cm -> 2.78e-15cm; signed roll, brakes, spin, steering and flat damage pass"
+      ]
+    }
+  ],
+  "pass": true
+}

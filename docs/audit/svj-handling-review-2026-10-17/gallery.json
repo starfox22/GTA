@@ -1,0 +1,34 @@
+{
+  "title": "Dead End City — Brutini SVJ and motorcycle handling",
+  "introduction": "The Brutini SVJ now uses a downloaded Aventador SVJ model. Motorcycle steering and wheelie lift return to the earlier handling, while W/S drive, the separate arrow-key rider controls, rider animations and wheelie distance achievements remain. These native game screenshots use matched inspection cameras at High quality, clear weather and 13:00. Exact source, capture and validation receipts are linked in the full audit.",
+  "comparisons": [
+    {
+      "title": "Brutini SVJ — rear quarter",
+      "description": "Matched rear inspection view showing the replacement body, wheels and rear aero.",
+      "before": "screenshots/native/svj-handling-before-rear.png",
+      "after": "screenshots/native/svj-handling-after-rear.png"
+    }
+  ],
+  "screenshots": [
+    {
+      "title": "Brutini SVJ — downloaded body",
+      "description": "The licensed Aventador SVJ source model drawn by the game at full near detail.",
+      "file": "screenshots/native/svj-handling-after-front.png"
+    },
+    {
+      "title": "Brutini SVJ — working scissor door",
+      "description": "The source door, mirror and window lift together on the measured scissor hinge, opening onto the fitted game cabin.",
+      "file": "screenshots/native/svj-handling-after-scissor-door.png"
+    },
+    {
+      "title": "Kuzuki 600R — restored wheelie lift",
+      "description": "The earlier wheelie dynamics with the current W + rider-back controls. The distance meter and rider posture remain active.",
+      "file": "screenshots/native/svj-handling-after-wheelie.png"
+    },
+    {
+      "title": "Kuzuki 600R — restored cornering",
+      "description": "The earlier direct steering response and bank, with the improved rider animation retained.",
+      "file": "screenshots/native/svj-handling-after-corner.png"
+    }
+  ]
+}
