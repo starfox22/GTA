@@ -66,7 +66,7 @@
         severity = clamp(0.8 + harm.harm / 28, 0.9, 2.3);
       // Once down, the crush owns the casualty's recovery/death timers. Do not
       // let the earlier flight stand a maimed or dying person back up.
-      if (person.ejected?.vehicleHit) person.ejected = null;
+      if (person.ejected?.vehicleHit || person.ejected?.riderFall) person.ejected = null;
       person.impactCooldown = 0.9;
       person.carHit = { car: c, at: gameTime, second: true };
       person.overruns = (person.overruns || 0) + 1;

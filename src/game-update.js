@@ -12,8 +12,8 @@
       // A shark's breach plays out while WASTED is on screen (sealife.js).
       if (gameMode === 'dead') {
         updateSeaLife(deltaSeconds);
-        // The body still lands while WASTED is shown after a fatal car strike.
-        if (!active && player.thrown?.vehicleHit) updateThrownPlayer(deltaSeconds);
+        // Fatal car strikes and rider falls still land during WASTED.
+        if (!active && (player.thrown?.vehicleHit || player.thrown?.riderFall)) updateThrownPlayer(deltaSeconds);
       }
       if (active) {
         // Play time, cash earned, wanted peak; the demo card's timer (campaign.js).

@@ -257,8 +257,15 @@
        Returns true once the body has got up. */
     function stepThrownBody(body, t, deltaSeconds, hurtBody) {
       t.time += deltaSeconds;
+      // A fatal hit during a get-up releases its support into the same gravity
+      // solver. A corpse can collapse from a crouch, never finish standing up.
+      if (body.hp <= 0 && t.phase === 'recover' && (t.vehicleHit || t.riderFall)) {
+        t.phase = 'air';
+        t.vz = 0;
+        t.recovery = 0;
+      }
       if (t.phase === 'down' || t.phase === 'recover') {
-        if (t.vehicleHit && body.hp <= 0) {
+        if ((t.vehicleHit || t.riderFall) && body.hp <= 0) {
           bodyPool(body, 'impact', t.heading);
           return false;
         }
@@ -436,8 +443,8 @@
             if (t.riderFall) t.recoverFor = Math.min(0.95, t.downFor);
             if (t.vehicleHit) {
               t.downFor = Math.max(t.downFor, 2.2, (t.minDownTime || 0) - t.time);
-              if (body.hp <= 0) bodyPool(body, 'impact', t.heading);
             }
+            if ((t.vehicleHit || t.riderFall) && body.hp <= 0) bodyPool(body, 'impact', t.heading);
             break;
           }
         }
@@ -449,7 +456,7 @@
     function updateThrownPlayer(deltaSeconds) {
       const t = player.thrown;
       if (!t) return false;
-      if (t.vehicleHit && player.hp <= 0 && t.phase === 'down') return true;
+      if ((t.vehicleHit || t.riderFall) && player.hp <= 0 && t.phase === 'down') return true;
       const up = stepThrownBody(player, t, deltaSeconds, (amount) => {
         if (player.hp <= 0) return;
         // Kind 'fall': a fall that is survived draws no blood; one that kills
@@ -499,7 +506,7 @@
       });
       person.a = e.heading;
       if (person.hp <= 0) {
-        if (e.vehicleHit) return;
+        if (e.vehicleHit || e.riderFall) return;
         person.ejected = null;
         return;
       }

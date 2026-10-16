@@ -13,16 +13,17 @@
     }
     function updateKnockdown(p, deltaSeconds) {
       if (p.impactCooldown > 0) p.impactCooldown = Math.max(0, p.impactCooldown - deltaSeconds);
-      // A fatal car strike keeps carrying the body through the same arc; death
-      // must not freeze it beside the bumper or leave its pool at the take-off.
-      if (p.ejected?.vehicleHit && (p.hp > 0 || p.ejected.phase !== 'down')) stepRiderEjection(p, p.ejected, deltaSeconds);
+      // Fatal car strikes and rider falls keep the same arc; death must not
+      // freeze a body at the contact or leave its pool at the take-off.
+      const flight = p.ejected;
+      if ((flight?.vehicleHit || flight?.riderFall) && (p.hp > 0 || flight.phase !== 'down')) stepRiderEjection(p, flight, deltaSeconds);
       if (p.hp <= 0) {
         p.dying = null;
         return;
       }
       if (p.dying) stepDying(p, deltaSeconds);
       if (p.hp <= 0) return;
-      if (p.ejected && !p.ejected.vehicleHit) stepEjection(p, deltaSeconds);
+      if (p.ejected && !(p.ejected.vehicleHit || p.ejected.riderFall)) stepEjection(p, deltaSeconds);
       if (p.knockedFor > 0) {
         p.aiming = false;
         p.knockedFor = Math.max(0, p.knockedFor - deltaSeconds);

@@ -55,7 +55,7 @@ people-and-crowd.md. Tests: pedestrian-awareness, second-run-over.
   normal death, witness, reward and injury paths still apply. No pool travels
   with a body. Teleport/respawn clears the player's throw as usual.
 - WASTED keeps its 35% slow motion. The hospital callback starts at the usual
-  4.2 wall seconds, checks an unfinished fatal vehicle flight every 100 ms, and
+  4.2 wall seconds, checks an unfinished fatal vehicle/rider flight every 100 ms, and
   returns after it settles (16 wall seconds maximum for a stalled page). Ordinary
   deaths retain 4.2 seconds. Captured flight identity and `player.deathSequence`
   prevent an old callback from moving or clearing a later death screen.

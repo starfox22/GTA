@@ -17,7 +17,7 @@
         T[J_HIP[1]] = -sway * 0.04;
         T[J_KNEE[sway > 0 ? 1 : 0]] = -0.04 - Math.abs(sway) * 0.1;
         T[J_HEAD_YAW] = Math.sin(t * 0.31 + seed * 2) * Math.max(0, Math.sin(t * 0.13 + seed)) * 0.7;
-        if (p.hp <= 0 && !(spec?.thrown?.vehicleHit || p.ejected?.vehicleHit)) {
+        if (p.hp <= 0 && !(spec?.thrown?.vehicleHit || spec?.thrown?.riderFall || p.ejected?.vehicleHit || p.ejected?.riderFall)) {
           // The dead lie still: none of the idle life above.
           T.fill(0);
           T[J_LOCO] = 0;
@@ -401,9 +401,10 @@
               // the bike; a loopout or over-the-bars throw rotates in pitch.
               // The physics clock owns this pose, including a held frame.
               const ground = clamp(thrown.groundTime / 0.22, 0, 1),
-                tuck = clamp(Math.abs(thrown.spin) / 8, 0.2, 0.85),
-                brace = thrown.phase === 'air' && thrown.vz < 0 ? clamp(1 - thrown.z / (2 * UNITS_PER_METRE), 0, 1) : 0,
-                w = Math.sin(thrown.time * 6 + seed) * 0.06 * (1 - ground),
+                life = p.hp > 0 ? 1 : 0.25,
+                tuck = clamp(Math.abs(thrown.spin) / 8, 0.2, 0.85) * life,
+                brace = p.hp > 0 && thrown.phase === 'air' && thrown.vz < 0 ? clamp(1 - thrown.z / (2 * UNITS_PER_METRE), 0, 1) : 0,
+                w = Math.sin(thrown.time * 6 + seed) * 0.06 * (1 - ground) * life,
                 r = thrown.recovery || 0,
                 effort = Math.sin(r * Math.PI),
                 remain = 1 - r;

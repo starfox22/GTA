@@ -665,9 +665,9 @@
     function bodyPool(p, kind = 'ballistic', a = 0, surface = null) {
       if (!bloodOn || !p || p.poisoned) return null;
       const flight = p === player ? player.thrown : p.ejected;
-      // A vehicle-struck body can die in flight: its pool belongs where it
-      // finally rests, not in mid-air or at the original bumper contact.
-      if (flight?.vehicleHit && flight.phase !== 'down') return null;
+      // A struck person or rider can die in flight: its pool belongs where it
+      // finally rests, not in mid-air or at the original contact.
+      if ((flight?.vehicleHit || flight?.riderFall) && flight.phase !== 'down') return null;
       const hits = Math.max(1, p.bloodHits || 1),
         blast = kind === 'blast',
         impact = kind === 'impact' || kind === 'fall',

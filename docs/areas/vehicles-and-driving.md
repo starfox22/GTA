@@ -51,7 +51,8 @@ police3d.js, helicopter3d-*.js, apache3d.js, plane3d.js, vehicles3d.js, boats3d.
   car, fatal from 75 km/h; tumble on first touching the ground; road rash) plus `fallInjury`
   for the drop: a few points under 20 km/h, ~12 at 40, ~30 at 70, KO from 45 hp in one fall.
   Survived falls hurt with kind `'fall'` (no blood: `hurt()` skips it); a fatal one bleeds and
-  pools (blood.js). Traffic riders lose hp directly, no wound. Console: `rideInto`,
+  pools after its flight/slide settles (blood.js); fatal riders never recover.
+  Traffic riders lose hp directly, no wound. Console: `rideInto`,
   `rideIntoWall`, `riderReport()` (`bloodNear`, `poolsNear`).
 - Rider falls retain the release bank (`bikeRoll`, plus terrain roll); loopouts
   retain the raised-bike pitch. Lowsides roll onto that same side and slide,

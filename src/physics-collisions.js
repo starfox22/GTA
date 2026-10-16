@@ -171,7 +171,13 @@
           shake = Math.min(10, deltaV * 0.03);
           // The view lurches on the way the car was going, into what it hit (camera-feel.js).
           kickCamera(Math.atan2(hit.n.y, hit.n.x) + (own === a ? 0 : Math.PI), clamp((deltaV - 12) * 0.075, 0, 16));
-          hurt(crashInjury(own, deltaV), 'impact');
+          const injury = crashInjury(own, deltaV);
+          // A lethal rider injury must release the saddle before die() clears
+          // its occupant. The same damage still applies, and riderCrash below
+          // sees the fallen bike and cannot throw this rider a second time.
+          if (vehicleSpec(own).bike && injury >= player.hp && player.inv <= 0 && !player.godMode)
+            riderCrash(own, deltaV, own === a ? b : a);
+          hurt(injury, 'impact');
         }
         if (closing > 130) radio('look-out');
         // Whoever was going faster did the ramming: the wreck is theirs, and

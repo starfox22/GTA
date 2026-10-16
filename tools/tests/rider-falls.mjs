@@ -30,7 +30,11 @@ export default async function (t) {
     r = await t.call('rideIntoWall', 'bike', 110, 5, 20, 420, 4400);
     throw_ = r.throws.at(-1);
     t.assert(r.dead, `110 km/h into a wall kills: hp ${r.hp} ${JSON.stringify(throw_)}`);
+    t.assert(r.thrown && r.thrown.phase !== 'recover', 'fatal rider keeps the airborne/slide carrier');
+    // The pool belongs at rest, after the fatal body has finished its arc.
+    r = await t.call('riderFallAdvance', 5);
     t.assert(r.poolsNear >= 1, `the dead rider pools: ${r.poolsNear}`);
+    t.assert(r.thrown?.phase === 'down' && r.thrown.recovery === 0, 'fatal rider stays down');
 
     // Traffic's rider (flat out) over a sedan: hurt, alive, no blood.
     r = await t.call('rideInto', 'bike', 45, 'sedan', 20, 8, true);

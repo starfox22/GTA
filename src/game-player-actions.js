@@ -114,7 +114,7 @@
       }
       player.tumble = null;
       player.tumbleRoll = 0;
-      if (!player.thrown?.vehicleHit) player.thrown = null;
+      if (!(player.thrown?.vehicleHit || player.thrown?.riderFall)) player.thrown = null;
       player.fall = null;
       cancelPlayerJump();
       cancelCarjack();
@@ -145,10 +145,10 @@
       document.body?.classList.add('wasted');
       noise(0.3, 0.4);
       // WASTED runs at 35% speed. Its ordinary 4.2 s hospital timer can expire
-      // before a vehicle-struck body has landed; allow that specific flight to
+      // before a struck or thrown rider has landed; allow that specific flight to
       // finish, bounded by 16 wall seconds even on a stalled/background page.
       const deathSequence = player.deathSequence = (player.deathSequence || 0) + 1,
-        impact = player.thrown?.vehicleHit ? player.thrown : null,
+        impact = player.thrown?.vehicleHit || player.thrown?.riderFall ? player.thrown : null,
         impactUntil = impact ? performance.now() + 16000 : 0;
       const respawn = () => {
         // A teleport/new game or later death owns its own body and overlay.
