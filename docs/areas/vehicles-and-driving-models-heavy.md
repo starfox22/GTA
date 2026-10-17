@@ -34,11 +34,11 @@ followed). Credits in docs/THIRD_PARTY_CREDITS.txt.
   with a car-kind model), so they gain the car contract (crumple, marks, blood, the merge). The ambulance's livery is
   its texture (`paintTexture`); its roof light bars (`beacon`) are its two strobes, split left and right
   (`vaSplitSides`; render3d-frame.js flashes `strobes` while `emergencyBeacons(c)`).
-- The SOLSTICE SPIDER ('roadster') is the Chrysler Sebring Convertible: an open car (a windscreen and no side glass:
+- The Chrynser Sebing ('roadster') is the Chrysler Sebring Convertible: an open car (a windscreen and no side glass:
   the kit's glass record gets `open`, so seats, wipers and headroom treat it as the procedural roadster).
 - The RANGER 4X4 ('suv') is the patrol SUV's Suburban in plain paint (bar, push bar, spot lamp left out); the
   WORKHORSE ('pickup') the Compact Pickup '78; the SOVEREIGN STRETCH the 80 American Sedan stretched to 8.8 m; the
-  NOMAD CRUISER ('cruiser', ASSET MOTORBIKES) the Seventy-Two chopper (same author and hints as the VORTEX 900).
+  Chorley 72 ('cruiser', ASSET MOTORBIKES) the Seventy-Two chopper (same author and hints as the VORTEX 900).
 - CAR_GLASS_BANDS rows for these types are the models' numbers at the types' lengths (belt, roof + crown, rear and
   screen feet over the length; tools: the converter's header).
 

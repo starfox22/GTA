@@ -3,6 +3,13 @@
 Written for the next AI session (or human) picking this work up. Read `/CLAUDE.md` first (commands,
 rules, workflow), then this page, then only the area doc your task needs (`docs/README.md`).
 
+## October 17: selected civilian names and Monarch model replacement
+
+The owner selected **Chrynser Sebing** for `roadster` and **Chorley 72** for
+`cruiser`. Other game names remain as they are. Downloaded real-car models are
+requested for the remaining Monarch luxury/Prestige roster; the existing
+Brutini SVJ is retained. Keep the chosen names separate from real source credits.
+
 ## October 17: Hum-4 name and vehicle naming direction
 
 The military `jeep` formerly displayed as SENTINEL M4 UTILITY is now **Hum-4**,

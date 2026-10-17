@@ -86,7 +86,7 @@
       },
       roadster: {
         balance: 0.5,
-        name: 'SOLSTICE SPIDER',
+        name: 'Chrynser Sebing',
         // A two-seat roadster.
         l: 4.2 * UNITS_PER_METRE,
         w: 2.05 * UNITS_PER_METRE,
@@ -185,7 +185,7 @@
         palette: ['#c4483c', '#1e56b8', '#16181b', '#eceeed', '#5bbd2b', '#e9b82a'],
       },
       cruiser: {
-        name: 'NOMAD CRUISER',
+        name: 'Chorley 72',
         // A cruiser motorbike.
         l: 2.45 * UNITS_PER_METRE,
         w: 0.95 * UNITS_PER_METRE,
