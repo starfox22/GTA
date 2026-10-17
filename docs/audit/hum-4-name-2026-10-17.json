@@ -1,0 +1,12 @@
+{
+  "pass": true,
+  "previousHead": "ede42a56c4b249ac647ed7fb638e3bc32e3ab3dd",
+  "previousName": "SENTINEL M4 UTILITY",
+  "name": "Hum-4",
+  "type": "jeep",
+  "monolithSha256": "56488452002a4788593122dd24cc10b670a688ada97679256587aa73cdcb213f",
+  "entrySha256": "50caae4bb177d7bd27fd429d0198d8c8bf85c2f0f62ca6adb78578b343fc11ab",
+  "verification": "Built monolith is byte-identical to the verified M4 performance release after exactly three old-name substitutions: shared definition and embedded attribution copies. Quick-check passes. No physics, model, input, save keys or other names change.",
+  "publicFileCount": 172,
+  "publicTotalBytes": 225120100
+}

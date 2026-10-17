@@ -3,6 +3,17 @@
 Written for the next AI session (or human) picking this work up. Read `/CLAUDE.md` first (commands,
 rules, workflow), then this page, then only the area doc your task needs (`docs/README.md`).
 
+## October 17: Hum-4 name and vehicle naming direction
+
+The military `jeep` formerly displayed as SENTINEL M4 UTILITY is now **Hum-4**,
+matching the owner's requested spelling. Its shared definition supplies the HUD
+and vehicle lists; the credit label follows the rename. Keep the stable `jeep`
+type, model, saves and handling unchanged. Future fictional vehicle names should
+closely resemble the actual models represented by their downloaded assets.
+Other names discussed in chat are suggestions, not approved replacements.
+[Playable Hum-4 build](https://starfox22.github.io/GTA/?review=50caae4bb177d7bd).
+[Rename verification](audit/hum-4-name-2026-10-17.json).
+
 ## October 17: military M4 performance and round rims
 
 Continue on **`codex-reviews`**. The owner's Fort Sentinel M4 slowdown came from

@@ -167,7 +167,7 @@
        (`militaryModel`). */
     Object.assign(VEHICLE_DEFINITIONS, {
       jeep: {
-        name: 'SENTINEL M4 UTILITY',
+        name: 'Hum-4',
         offroad: true,
         // A military utility truck, 2.2 m body.
         l: 4.6 * UNITS_PER_METRE,

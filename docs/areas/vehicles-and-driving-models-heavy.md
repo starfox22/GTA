@@ -57,7 +57,7 @@ followed). Credits in docs/THIRD_PARTY_CREDITS.txt.
   tank's turret and gun (`split`: by height and position, metres; `turretAt`, `barrelAt` pivots). Big parts go out in
   slices (`slices`, joined by `militaryAssetSlices`). Drawn at the type's design size: makeVehicle scales by the
   type's modelScale as before; `hull` is the length the collider stands for (the tank's gun reaches past it).
-- M4 utility ('jeep') = HMMWV M998A1 soft top; the gun jeep keeps its procedural ring mount and M2 at the same design
+- Hum-4 (formerly M4 utility, 'jeep') = HMMWV M998A1 soft top; the gun jeep keeps its procedural ring mount and M2 at the same design
   numbers (`militaryGunMount`), so MOUNTED_GUNS (pivot -2.9, height 17.5) is unchanged. It is converted without
   `cluster`: vertex clustering folded its thin hood, wings and canvas into each other (the hood was lost and the top
   went inside out, so the single-sided atlas material showed holes); the edge collapse alone stops near 17k triangles.
