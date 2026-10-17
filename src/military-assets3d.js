@@ -135,11 +135,11 @@
           const near = new Three.Group(),
             far = new Three.Group();
           b.add(near, far);
-          mesh(body, materials.armyBody, near, 0, 0, 0);
-          mesh(farBody, materials.armyBody, far, 0, 0, 0);
+          militaryMarkRayMesh(mesh(body, materials.armyBody, near, 0, 0, 0));
+          militaryMarkRayMesh(mesh(farBody, materials.armyBody, far, 0, 0, 0));
           far.visible = false;
           model.lod = { near, far, isFar: false };
-        } else if (body) mesh(body, materials.armyBody, b, 0, 0, 0);
+        } else if (body) militaryMarkRayMesh(mesh(body, materials.armyBody, b, 0, 0, 0));
         if (panes) mesh(panes, glass, b, 0, 0, 0).castShadow = false;
         for (const key of ['headLeft', 'headRight', 'tailLeft', 'tailRight']) {
           const geo = kit.lamps[key];

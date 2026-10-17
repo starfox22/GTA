@@ -30,7 +30,7 @@ export async function runMilitaryModelRig(t, exercise = null) {
   });
   const finishSource = read('cars3d-materials.js'),
     finish = finishSource.slice(finishSource.indexOf('      function civFinishPatch('), finishSource.indexOf('      let civMaterials')),
-    api = vm.runInContext(finish + read('vehicle-assets3d.js') + read('approved-vehicle-assets3d.js') + read('military-asset-wheels3d.js') + read('military-assets3d.js') + read('vehicle-char3d.js') + `
+    api = vm.runInContext(finish + read('vehicle-assets3d.js') + read('approved-vehicle-assets3d.js') + read('military-asset-wheels3d.js') + read('military-mark-rays3d.js') + read('military-assets3d.js') + read('vehicle-char3d.js') + `
       vaData = () => fixture; vaAtlas = () => sootTexture;
       ({ militaryAssetBody, militaryAssetKit, animateMilitaryWheels, animateMilitaryLamps, militaryLampSet, militaryLod,
          vaMaterials, assetCharModel, assetCharSwap, assetCharState, assetCharRelease, assetCharWarm })`, scope),

@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-612 files in the include tree, 209,108 lines.
+613 files in the include tree, 209,290 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -474,7 +474,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/beachvolley3d.js`   178 — Beach volleyball court meshes
 - `src/beach3d.js`   806 — Palm Keys Beach meshes
 - `src/county3d.js`    14 — ▸ County and mountain meshes
-- `src/base3d.js`    64 — ▸ Fort Sentinel meshes
+- `src/base3d.js`    65 — ▸ Fort Sentinel meshes
 - `src/airfields3d.js`   487 — Runways, taxiways and airfield lighting
 - `src/boats3d.js`    21 — ▸ Boat kit: lofted hulls and shared yacht parts
 - `src/drawbridge3d.js`    60 — ▸ The drawbridges in 3D
@@ -708,6 +708,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/base3d-frame.js`   102 — Fort Sentinel per-frame visuals: updateBaseVisuals() and the searchlight lens.
 - `src/base3d-vehicles.js`   277 — Military vehicle models: makeMilitaryVehicle(), compactTank, wheels, lamps and star decals.
 - `src/military-asset-wheels3d.js`   160 — Downloaded M4 wheels: split the source tyre circle from fixed running gear, recover its true axle and circularize its slightly oval source tyre/rim.
+- `src/military-mark-rays3d.js`   181 — Exact CPU ray broadphase for immutable downloaded military bodies.
 - `src/military-assets3d.js`   236 — Fort Sentinel's vehicles from downloaded models (vehicle-assets3d.js ASSET CARS data, tools/vehicle_models_special.py): the M4 utility (HMMWV) and …
 
 ## src/boats3d.js ▸ Boat kit: lofted hulls and shared yacht parts

@@ -71,6 +71,18 @@ handling are unchanged. Credits: THIRD_PARTY_CREDITS.txt.
 - Near HMMWV body stays unclustered. Far body is eligible only for other vehicles
   in chase view. The tier-scaled transition has 0.9/1.1 hysteresis; the player's
   own vehicle and street/flight views always keep the near body.
+- `military-mark-rays3d.js` accelerates CPU ray queries on these immutable shared
+  near/far bodies. A cached triangle BVH and conservative per-triangle bounds
+  select candidates within the ray's world near/far segment, including under
+  nonuniform/negative model scale. Three r160 still performs the original exact
+  triangle/material/normal/UV intersection; source face order and `faceIndex` are
+  restored. The private reusable subset index is never drawn or uploaded. Render
+  positions, indices, materials and the mark's 16-point support checks stay exact.
+  Trees build with the title-prewarmed model kit and are reused by patrol copies;
+  the M4 near body retains about 1.13 MB of typed query data. Source disposal drops
+  its WeakMap entry and disposes the CPU-only subset. Changed position/index
+  versions, morphs, array materials and partial draw ranges use vanilla Three.
+  Never register deformable civilian geometry here.
 
 Checks: `military-model-rig` runs the production decoder/builders/animation/char
 functions with real Three.js and the packed assets. Render `asset-char` and all
@@ -99,3 +111,10 @@ The short rendered samples identify the responsible pass; repeatable host ray pr
 measure mark throughput. Keep a separate HIGH capture explicitly separate from a
 LOW before/after pair. The recorder uses the normal 1000×700 title layout so the
 radio panel stays beside the start button.
+
+`military-mark-rays` compares full and accelerated actual M4/M35 ray intersections,
+near/far edge cases, sidedness, scaled transforms and production hole anchors,
+including failed/retried marks. `node tools/m4-marks-bench.mjs --baseline` versus
+the same command without `--baseline` records process CPU, exact triangle work,
+build cost, bounded retained data and source hashes; timings are evidence, never
+test thresholds. Add `--out work/<receipt>.json` to retain a measurement.
