@@ -154,9 +154,21 @@ const STAGES = {
     await call('viewMode', 'street');
     return r;
   },
+  // Opt-in: board the actual parked M4 at Fort Sentinel, retaining its theft alarm,
+  // garrison fire and five-star response. This also exercises damage marks while driving.
+  async fortM4() {
+    await call('fortCoverTest', 'jeep');
+    await call('teleport', 9470, 8915);
+    await measure(0.2, [], true);
+    await call('interact');
+    const state = await call('status');
+    if (state.vehicle !== 'jeep' || state.wanted !== 5) throw new Error('fortM4 did not board the base M4 at five stars');
+    await measure(2, []);
+    return measure(6, ['KeyW']);
+  },
 };
 // Stages run only when named in --stages.
-const OPT_IN_STAGES = new Set(['fort', 'fortChase']);
+const OPT_IN_STAGES = new Set(['fort', 'fortChase', 'fortM4']);
 // --scenes: three fixed views for the renderer's draw counts (drawProfile, stats, vehicleMerges) instead of the tour:
 // a city street at noon, a sports car at speed on the Keys Bridge (the driving camera pulled back) and the street at
 // night with headlights. Use on a rendered page started with --seed, so both builds of an A/B see the same world.
