@@ -84,6 +84,11 @@ face ownership, and source-fixed calipers cancel wheel rotation. Missing cabin
 geometry receives an explicitly fitted game cabin.
 Measured source seats may pass `fixed`, `floor`, `minHipY` and `pedal` controls;
 generic fallback constraints remain unchanged when these fields are absent.
+The `monarch_roadster_ev` source authors both `Sidewall` and `Thread` rubber with
+an untextured pale0.8 base colour. Its shared rubber material alone receives an
+explicit `#25272a` tint for realistic black tyres. Original source factors,
+roughness, geometry, UVs and all atlas pixels remain intact; the other nine
+source rubber families, rims, brakes, bodywork and lamps receive no such tint.
 
 The independent verifier checks every near corner against the pinned original
 position, rigid normal, four channel UVs, colour and source flags. It also checks

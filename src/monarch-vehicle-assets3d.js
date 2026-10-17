@@ -223,6 +223,8 @@
           rubber = monarchVehicleFinish(new Three.MeshStandardMaterial(options), model, false, true),
           opticalGlass = monarchVehicleFinish(new Three.MeshStandardMaterial({ ...options, transparent: true, opacity: 1, alphaTest: 0, depthWrite: false }), model),
           glass = monarchVehicleGlassSides(carGlassMaterial('#28333b', .24)), glassFar = monarchVehicleGlassSides(carGlassMaterial('#28333b', .64));
+        // This source authors both Sidewall/Thread as pale0.8 untextured rubber.
+        if (model.type === 'monarch_roadster_ev') rubber.color.set('#25272a');
         for (const material of [glass, glassFar]) { material.depthWrite = false; material.side = Three.DoubleSide; material.forceSinglePass = true; }
         const materials = { trim, rim: trim, rubber, opticalGlass, glass, glassFar };
         for (const material of new Set(Object.values(materials))) sharedMaterials.add(material);

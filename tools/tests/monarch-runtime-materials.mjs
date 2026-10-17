@@ -38,6 +38,8 @@ export default async function(t) {
   for(const m of Object.values(data.header.models))for(const type of m.gameTypes)
     t.assert(api.monarchVehicleModel(type)===m,'gameplay mapping selects actual source identity '+type);
   const materials=api.monarchVehicleMaterials(model),paint=api.monarchVehiclePaint({color:'#d42871'},model),paint2=api.monarchVehiclePaint({color:'#3274ca'},model),lamps=api.monarchVehicleLamps(model);
+  t.assert(materials.rubber.color.getHexString()===(model.type==='monarch_roadster_ev'?'25272a':'ffffff'),'only the downloaded Roadster source receives the explicit black-rubber correction');
+  t.assert(materials.trim.color.getHexString()==='ffffff'&&materials.rim===materials.trim&&Object.values(lamps).every(m=>m.color.getHexString()==='ffffff'),'source-specific rubber tint cannot darken rims, body trim or lamps');
   t.assert(!!materials.trim.normalMap===!!model.hasNormalMaps&&(!model.hasNormalMaps||materials.trim.normalMap.colorSpace===Three.NoColorSpace),'source normal-enabled variant binds a linear normal map only where supplied');
   t.assert(materials.trim.emissiveIntensity===(model.emissiveIntensity??1)&&lamps.headOn.emissiveIntensity===2,'source emission strength is restored without scaling gameplay lamp states');
   t.assert(materials===api.monarchVehicleMaterials(model)&&lamps===api.monarchVehicleLamps(model),'source materials/lamps are cached by source rather than car count');
