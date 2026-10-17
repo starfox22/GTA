@@ -88,3 +88,14 @@ covers 48 forward/reverse phases and three steering angles, proving that all int
 bands stay circular and puncture squash stays vertical. The worst corrected band
 radius spread is 0.153 mm, below the 0.25 mm tolerance. These are geometry/matrix
 checks; final native game captures remain separate visual evidence.
+
+For matched native wheel/base captures and first-hit attribution, run
+`node tools/m4-utility-render-review.mjs HTML OUT before --quality low`, then use
+`after` against the candidate HTML with the same quality. The receipt records the
+HTML/recorder hashes, every named input, native screenshots, two explicitly stepped
+render frames per stage, draw counters and raw CPU profiles. It compares pristine,
+12 newly shot side marks, cached marks, and actual motor-pool boarding/return fire.
+The short rendered samples identify the responsible pass; repeatable host ray probes
+measure mark throughput. Keep a separate HIGH capture explicitly separate from a
+LOW before/after pair. The recorder uses the normal 1000×700 title layout so the
+radio panel stays beside the start button.
