@@ -1,0 +1,203 @@
+{
+  "date": "2026-10-17T19:48:02.409Z",
+  "pack": "work/monarch-assets/monarch-vehicle-models.bin",
+  "packBytes": 101143026,
+  "packSHA256": "25473f93258f4c6ec167e2fb9953e8fc9d40d58844862cb8c4289b22826490ed",
+  "runtimeSHA256": "305c05e7123a85e691519f38d70d82d3d7822f097b7b1f1acf1bbab99ecf7489",
+  "testSHA256": "9cd33a0e854f9b4bfddf9eb84a8ff6dee94d48ff49e653b0d63b3b06c06f8a08",
+  "geometrySHA256": "c004bd085288d3762f6c7b15be22f917e90fad8c19a90623c17ea7350ecf2f70",
+  "results": [
+    {
+      "model": "monarch_laferrari",
+      "assertions": 293801,
+      "result": "PASS",
+      "notes": [
+        {
+          "monarchRuntime": {
+            "model": "monarch_laferrari",
+            "nearTriangles": 587310,
+            "testedPart": "trim",
+            "sourceVertexCount": 73371,
+            "instancedActiveAttributeSlots": 16,
+            "rayComparisons": 153,
+            "textureRequests": 21,
+            "gpuCompilation": "Separate native shadercheck required"
+          }
+        }
+      ]
+    },
+    {
+      "model": "monarch_roadster_ev",
+      "assertions": 361621,
+      "result": "PASS",
+      "notes": [
+        {
+          "monarchRuntime": {
+            "model": "monarch_roadster_ev",
+            "nearTriangles": 608850,
+            "testedPart": "trim",
+            "sourceVertexCount": 90325,
+            "instancedActiveAttributeSlots": 16,
+            "rayComparisons": 157,
+            "textureRequests": 21,
+            "gpuCompilation": "Separate native shadercheck required"
+          }
+        }
+      ]
+    },
+    {
+      "model": "monarch_db11",
+      "assertions": 384745,
+      "result": "PASS",
+      "notes": [
+        {
+          "monarchRuntime": {
+            "model": "monarch_db11",
+            "nearTriangles": 217999,
+            "testedPart": "trim",
+            "sourceVertexCount": 96104,
+            "instancedActiveAttributeSlots": 16,
+            "rayComparisons": 165,
+            "textureRequests": 21,
+            "gpuCompilation": "Separate native shadercheck required"
+          }
+        }
+      ]
+    },
+    {
+      "model": "monarch_valkyrie",
+      "assertions": 43021,
+      "result": "PASS",
+      "notes": [
+        {
+          "monarchRuntime": {
+            "model": "monarch_valkyrie",
+            "nearTriangles": 36364,
+            "testedPart": "trim",
+            "sourceVertexCount": 10673,
+            "instancedActiveAttributeSlots": 16,
+            "rayComparisons": 165,
+            "textureRequests": 21,
+            "gpuCompilation": "Separate native shadercheck required"
+          }
+        }
+      ]
+    },
+    {
+      "model": "monarch_ccx",
+      "assertions": 63505,
+      "result": "PASS",
+      "notes": [
+        {
+          "monarchRuntime": {
+            "model": "monarch_ccx",
+            "nearTriangles": 41225,
+            "testedPart": "cabin",
+            "sourceVertexCount": 15794,
+            "instancedActiveAttributeSlots": 16,
+            "rayComparisons": 165,
+            "textureRequests": 25,
+            "gpuCompilation": "Separate native shadercheck required"
+          }
+        }
+      ]
+    },
+    {
+      "model": "monarch_p1_gtr",
+      "assertions": 67385,
+      "result": "PASS",
+      "notes": [
+        {
+          "monarchRuntime": {
+            "model": "monarch_p1_gtr",
+            "nearTriangles": 71888,
+            "testedPart": "trim",
+            "sourceVertexCount": 16764,
+            "instancedActiveAttributeSlots": 16,
+            "rayComparisons": 165,
+            "textureRequests": 25,
+            "gpuCompilation": "Separate native shadercheck required"
+          }
+        }
+      ]
+    },
+    {
+      "model": "monarch_huayra",
+      "assertions": 693765,
+      "result": "PASS",
+      "notes": [
+        {
+          "monarchRuntime": {
+            "model": "monarch_huayra",
+            "nearTriangles": 290985,
+            "testedPart": "trim",
+            "sourceVertexCount": 173359,
+            "instancedActiveAttributeSlots": 16,
+            "rayComparisons": 165,
+            "textureRequests": 21,
+            "gpuCompilation": "Separate native shadercheck required"
+          }
+        }
+      ]
+    },
+    {
+      "model": "monarch_wayron",
+      "assertions": 49905,
+      "result": "PASS",
+      "notes": [
+        {
+          "monarchRuntime": {
+            "model": "monarch_wayron",
+            "nearTriangles": 35007,
+            "testedPart": "trim",
+            "sourceVertexCount": 12394,
+            "instancedActiveAttributeSlots": 16,
+            "rayComparisons": 165,
+            "textureRequests": 25,
+            "gpuCompilation": "Separate native shadercheck required"
+          }
+        }
+      ]
+    },
+    {
+      "model": "monarch_c8_hari",
+      "assertions": 410457,
+      "result": "PASS",
+      "notes": [
+        {
+          "monarchRuntime": {
+            "model": "monarch_c8_hari",
+            "nearTriangles": 263683,
+            "testedPart": "trim",
+            "sourceVertexCount": 102533,
+            "instancedActiveAttributeSlots": 16,
+            "rayComparisons": 161,
+            "textureRequests": 21,
+            "gpuCompilation": "Separate native shadercheck required"
+          }
+        }
+      ]
+    },
+    {
+      "model": "monarch_tourbillon",
+      "assertions": 460653,
+      "result": "PASS",
+      "notes": [
+        {
+          "monarchRuntime": {
+            "model": "monarch_tourbillon",
+            "nearTriangles": 386080,
+            "testedPart": "trim",
+            "sourceVertexCount": 115081,
+            "instancedActiveAttributeSlots": 16,
+            "rayComparisons": 165,
+            "textureRequests": 25,
+            "gpuCompilation": "Separate native shadercheck required"
+          }
+        }
+      ]
+    }
+  ],
+  "totalAssertions": 2828858,
+  "totalRayComparisons": 1626
+}

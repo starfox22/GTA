@@ -1,0 +1,54 @@
+{
+  "source": "/workspace/GTA/work/monarch-sources-a/wild-downloads/ferrari_laferrari__www.vecarz.com.glb",
+  "sourceSha256": "dc26015f2fb73791b111e16a0e0693a9497d047bf8e331ac98c2678987b2ad27",
+  "sourceBytes": 27019920,
+  "scriptSha256": "a3b96fbd53bd3b8bb71aca3f7520142229c05d0643ac16dc9db56e4e59895c8e",
+  "blender": "4.3.2",
+  "platform": "Linux-6.18.44-x86_64-with-glibc2.41",
+  "engine": "CYCLES",
+  "device": "CPU",
+  "samples": 32,
+  "denoising": false,
+  "resolution": [
+    640,
+    400
+  ],
+  "originalBlenderBounds": [
+    [
+      -1.0080548524856567,
+      -2.36086106300354,
+      -0.0021019389387220144
+    ],
+    [
+      1.005892038345337,
+      2.125417470932007,
+      1.0629773139953613
+    ]
+  ],
+  "sourceMeshObjects": 85,
+  "sourceTriangles": 587310,
+  "sourceMaterials": 85,
+  "sourceModified": false,
+  "doors": "closed as authored",
+  "description": "Independent Blender render of original downloaded source. Studio camera, lights and floor added; source meshes, transforms and materials unchanged. Not a gameplay screenshot.",
+  "captures": [
+    {
+      "file": "source-front-three-quarter.png",
+      "sha256": "de24db32abe1e6f85c15031a67073874a3ea4640ee61f2ba588604de7e488be1",
+      "bytes": 348153,
+      "seconds": 19.772,
+      "cameraPosition": [
+        -4.263045787811279,
+        -5.501255989074707,
+        3.2222049236297607
+      ],
+      "cameraEuler": [
+        1.1971856355667114,
+        3.817281424289831e-08,
+        -0.6696389317512512
+      ],
+      "orthoScale": 5.742436408996582
+    }
+  ],
+  "viewTransform": "AgX"
+}

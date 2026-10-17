@@ -1,0 +1,72 @@
+{
+  "frozenInlineSHA256": "76506acb4d5cbe9c2a36c7b4fe600c993989701090260c60b378f7cab9dbcece",
+  "frozenInlineBytes": 328132176,
+  "entrySHA256": "5872e59fb2e2b5f083d91970b903f0e8351bf1523b55cf5d5daefe87401fe245",
+  "entryBytes": 12317945,
+  "normalizedShellSHA256": "cc7f87472a43862c60bf021e4cb8fccd1325f47f47f256625b366799dd79afbb",
+  "fileCount": 40,
+  "totalBytes": 319159734,
+  "mediaPackCount": 30,
+  "maxPackBytes": 12000000,
+  "exactAssetCount": 209,
+  "streamedAssets": 9,
+  "monarchPack": {
+    "id": "media-monarch-vehicle-models",
+    "file": "assets/monarch-vehicle-models.bin",
+    "bytes": 101143026,
+    "sha256": "25473f93258f4c6ec167e2fb9953e8fc9d40d58844862cb8c4289b22826490ed",
+    "stream": false
+  },
+  "sourceCount": 10,
+  "gameTypes": [
+    "chevetteSE",
+    "dbs",
+    "jasko",
+    "lafera",
+    "novera",
+    "sirocco",
+    "tourbillon",
+    "valkyrie",
+    "w1",
+    "wayron",
+    "zr1x"
+  ],
+  "fullNearFaces": 2539391,
+  "arrayStorage": {
+    "inputPayloadBytes": 197969178,
+    "exactAliasArrays": 3001,
+    "periodicPrefixArrays": 2127,
+    "outputPayloadBytes": 100539342,
+    "savedBytes": 97429836
+  },
+  "runtimeSHA256": "4a9f3f0eef36fe58187dbe2eb8ed45cfdc2f22de6c675f2b84c5223656eddb3e",
+  "buildToolSHA256": "82d5e6a611d806ed489748a985a52dd4fe1f95cf01d2dd053bf7111a09f689ad",
+  "verifierSHA256": "8c6fd0ab40956a8314268ad4de82fbb7e74410660768c9a9682f2d2cce63cc0d",
+  "manifestSHA256": "e3dccdbac6d6ce6ddb0490481c10dd26ed44c140b92522024963dbdcfb5ceda8",
+  "pass": true,
+  "inlineScripts": [
+    {
+      "attributes": " id=\"game-source\"",
+      "bytes": 10538445,
+      "sha256": "f94e4d1b49f3848ad937f2f9fe171436d34e0becb33beb7d34034fa54b89c28a"
+    },
+    {
+      "attributes": " id=\"three-source\"",
+      "bytes": 1317092,
+      "sha256": "d40017902e0d6c5874ba7078d5f388870d0d0298d48b70d4a9264811f011ee82"
+    },
+    {
+      "attributes": " id=\"asset-loader\"",
+      "bytes": 11694,
+      "sha256": "231ba22db8814fcd52843f39697495e07662471109795443e9b239772aaf7014"
+    },
+    {
+      "attributes": " id=\"third-party-credits\" type=\"text/plain\"",
+      "bytes": 80485,
+      "sha256": "3e6259402d283641144e8b2d3681278c8595e572c59b6c7e321e6ec005183456"
+    }
+  ],
+  "plainTextScriptCount": 1,
+  "executableScriptCount": 3,
+  "auditGeneratorSHA256": "f5be038be9b1b948d21e5993b489fe5e34ce012c1d8cbc50b39e839afa931e41"
+}

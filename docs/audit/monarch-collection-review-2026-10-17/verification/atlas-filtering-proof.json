@@ -1,0 +1,475 @@
+{
+  "result": "PASS",
+  "kind": "Production source hook checks and independent CPU mip/filter oracles; native GPU screenshots assessed separately",
+  "date": "2026-10-17T19:50:02.490Z",
+  "assertions": 1938,
+  "synthetic": {
+    "checked": 1936,
+    "oldLeakedSamples": 793,
+    "maxOldValue": 0.795054469140625,
+    "darkSourceValue": 0.04,
+    "maxGuardError": 6.938893903907228e-18,
+    "sourceMapsChanged": false,
+    "periodicMinifiedEdge": "conservative inset approximation"
+  },
+  "runtimeSHA256": "305c05e7123a85e691519f38d70d82d3d7822f097b7b1f1acf1bbab99ecf7489",
+  "testSHA256": "0ac145e01c02b8c7f3686b7aff3667c37a959309ce4b3d4aed8c915162e47f1d",
+  "packSHA256": "25473f93258f4c6ec167e2fb9953e8fc9d40d58844862cb8c4289b22826490ed",
+  "sourceTourbillonSHA256": "d2fbcc87a9fd4d842a398947e3fa6f5680c606455e01ea5a80dab6b0735d7ded",
+  "carbonActualAtlas": {
+    "nativeRect": {
+      "rect": [
+        0.88378728923476,
+        0.000976577401388571,
+        0.06250095368886854,
+        0.06250095368886854
+      ],
+      "pixels": [
+        1810,
+        2,
+        128,
+        128
+      ],
+      "atlas": [
+        2048,
+        2048
+      ]
+    },
+    "method": "Independent linear box-mip chain + bilinear/trilinear sampling; not GPU measurement",
+    "channels": {
+      "albedo": {
+        "nativeRGB255Range": [
+          [
+            15,
+            15,
+            15
+          ],
+          [
+            37,
+            37,
+            37
+          ]
+        ],
+        "mips": [
+          {
+            "footprintPixels": 1,
+            "unprotectedMaxRGB255": [
+              37,
+              37,
+              37
+            ],
+            "guardedMaxRGB255": [
+              37,
+              37,
+              37
+            ]
+          },
+          {
+            "footprintPixels": 2,
+            "unprotectedMaxRGB255": [
+              37,
+              37,
+              37
+            ],
+            "guardedMaxRGB255": [
+              37,
+              37,
+              37
+            ]
+          },
+          {
+            "footprintPixels": 4,
+            "unprotectedMaxRGB255": [
+              37,
+              37,
+              37
+            ],
+            "guardedMaxRGB255": [
+              37,
+              37,
+              37
+            ]
+          },
+          {
+            "footprintPixels": 8,
+            "unprotectedMaxRGB255": [
+              151.3307568485097,
+              151.3307568485097,
+              151.3307568485097
+            ],
+            "guardedMaxRGB255": [
+              35.753619728725056,
+              35.753619728725056,
+              35.753619728725056
+            ]
+          },
+          {
+            "footprintPixels": 16,
+            "unprotectedMaxRGB255": [
+              166.08409849142598,
+              166.08409849142598,
+              166.08409849142598
+            ],
+            "guardedMaxRGB255": [
+              30.240145607617794,
+              30.240145607617794,
+              30.240145607617794
+            ]
+          },
+          {
+            "footprintPixels": 32,
+            "unprotectedMaxRGB255": [
+              157.26877986441087,
+              157.26877986441087,
+              157.26877986441087
+            ],
+            "guardedMaxRGB255": [
+              30.240145607617794,
+              30.240145607617794,
+              30.240145607617794
+            ]
+          },
+          {
+            "footprintPixels": 64,
+            "unprotectedMaxRGB255": [
+              176.17409901606064,
+              176.17409901606064,
+              176.17409901606064
+            ],
+            "guardedMaxRGB255": [
+              30.240145607617794,
+              30.240145607617794,
+              30.240145607617794
+            ]
+          }
+        ]
+      },
+      "orm": {
+        "nativeRGB255Range": [
+          [
+            255,
+            7,
+            255
+          ],
+          [
+            255,
+            178,
+            255
+          ]
+        ],
+        "mips": [
+          {
+            "footprintPixels": 1,
+            "unprotectedMaxRGB255": [
+              255,
+              176,
+              255
+            ],
+            "guardedMaxRGB255": [
+              255,
+              176,
+              255
+            ]
+          },
+          {
+            "footprintPixels": 2,
+            "unprotectedMaxRGB255": [
+              255,
+              175.6875,
+              255
+            ],
+            "guardedMaxRGB255": [
+              255,
+              175.625,
+              255
+            ]
+          },
+          {
+            "footprintPixels": 4,
+            "unprotectedMaxRGB255": [
+              255,
+              175.5625,
+              255
+            ],
+            "guardedMaxRGB255": [
+              255,
+              160.3125,
+              255
+            ]
+          },
+          {
+            "footprintPixels": 8,
+            "unprotectedMaxRGB255": [
+              255,
+              186.8828125,
+              255
+            ],
+            "guardedMaxRGB255": [
+              255,
+              141.89062500000003,
+              255
+            ]
+          },
+          {
+            "footprintPixels": 16,
+            "unprotectedMaxRGB255": [
+              255,
+              207.2252197265625,
+              255
+            ],
+            "guardedMaxRGB255": [
+              255,
+              104.2421875,
+              255
+            ]
+          },
+          {
+            "footprintPixels": 32,
+            "unprotectedMaxRGB255": [
+              255,
+              207.70431518554688,
+              255
+            ],
+            "guardedMaxRGB255": [
+              255,
+              104.2421875,
+              255
+            ]
+          },
+          {
+            "footprintPixels": 64,
+            "unprotectedMaxRGB255": [
+              255,
+              217.62023448944092,
+              255
+            ],
+            "guardedMaxRGB255": [
+              255,
+              104.2421875,
+              255
+            ]
+          }
+        ]
+      },
+      "normal": {
+        "nativeRGB255Range": [
+          [
+            128,
+            128,
+            255
+          ],
+          [
+            128,
+            128,
+            255
+          ]
+        ],
+        "mips": [
+          {
+            "footprintPixels": 1,
+            "unprotectedMaxRGB255": [
+              128,
+              128,
+              255
+            ],
+            "guardedMaxRGB255": [
+              128,
+              128,
+              255
+            ],
+            "unprotectedMaxNormalAngleDegrees": 0,
+            "guardedMaxNormalAngleDegrees": 0
+          },
+          {
+            "footprintPixels": 2,
+            "unprotectedMaxRGB255": [
+              128,
+              128,
+              255
+            ],
+            "guardedMaxRGB255": [
+              128,
+              128,
+              255
+            ],
+            "unprotectedMaxNormalAngleDegrees": 0,
+            "guardedMaxNormalAngleDegrees": 0
+          },
+          {
+            "footprintPixels": 4,
+            "unprotectedMaxRGB255": [
+              128,
+              128,
+              255
+            ],
+            "guardedMaxRGB255": [
+              128,
+              128,
+              255
+            ],
+            "unprotectedMaxNormalAngleDegrees": 0,
+            "guardedMaxNormalAngleDegrees": 0
+          },
+          {
+            "footprintPixels": 8,
+            "unprotectedMaxRGB255": [
+              151.625,
+              168.546875,
+              255
+            ],
+            "guardedMaxRGB255": [
+              128,
+              128,
+              255
+            ],
+            "unprotectedMaxNormalAngleDegrees": 27.349726345735917,
+            "guardedMaxNormalAngleDegrees": 0
+          },
+          {
+            "footprintPixels": 16,
+            "unprotectedMaxRGB255": [
+              155.41210937499997,
+              170.98095703125,
+              255
+            ],
+            "guardedMaxRGB255": [
+              128,
+              128,
+              255
+            ],
+            "unprotectedMaxNormalAngleDegrees": 29.286213093298205,
+            "guardedMaxNormalAngleDegrees": 0
+          },
+          {
+            "footprintPixels": 32,
+            "unprotectedMaxRGB255": [
+              151.842529296875,
+              148.35382080078125,
+              255
+            ],
+            "guardedMaxRGB255": [
+              128,
+              128,
+              255
+            ],
+            "unprotectedMaxNormalAngleDegrees": 14.289031059991157,
+            "guardedMaxNormalAngleDegrees": 0
+          },
+          {
+            "footprintPixels": 64,
+            "unprotectedMaxRGB255": [
+              135.9980621337891,
+              140.61083221435544,
+              255
+            ],
+            "guardedMaxRGB255": [
+              128,
+              128,
+              255
+            ],
+            "unprotectedMaxNormalAngleDegrees": 6.74973127741526,
+            "guardedMaxNormalAngleDegrees": 0
+          }
+        ]
+      }
+    }
+  },
+  "limits": [
+    "Conservative inset approximates periodic minified edge filtering.",
+    "The oracle generates linear box mips and bilinear/trilinear filters; it is not measured GPU output.",
+    "No source atlas, geometry, raw UV, normal strength, source PBR factor or seat metadata changed."
+  ],
+  "nativeReview": {
+    "result": "PASS",
+    "review": "Independent visual comparison: repeated bright lower sill, splitter and grille bands removed. Source silhouette, body paint, wheels and glazing stable. Remaining broad windshield/cowl reflection is distinct from repeated atlas contamination.",
+    "fixture": {
+      "viewport": [
+        1000,
+        700
+      ],
+      "seed": 1,
+      "position": [
+        418,
+        6000
+      ],
+      "heading": 0,
+      "quality": "high",
+      "weather": "clear",
+      "clock": 13,
+      "inspection": [
+        65,
+        12,
+        4
+      ]
+    },
+    "htmlSHA256": "76506acb4d5cbe9c2a36c7b4fe600c993989701090260c60b378f7cab9dbcece",
+    "receiptPass": true,
+    "consoleErrors": [],
+    "images": {
+      "release-captures": {
+        "path": "atlas-filtering/tourbillon-release-captures.png",
+        "sha256": "78d44aa21acec633f7be253f3f4b98392ed2a02338e283f93de0f8940f14865d"
+      },
+      "gradient-tourbillon": {
+        "path": "atlas-filtering/tourbillon-gradient-tourbillon.png",
+        "sha256": "1869ad3aa93dc38574b5a17588a20c89d36f2dfef0d9af91ec6a3ca2ad2fb811"
+      },
+      "guard-tourbillon": {
+        "path": "atlas-filtering/tourbillon-guard-tourbillon.png",
+        "sha256": "ca36fca5a4132563104bec543a24d86f85353c9ed66cf390fd85b9122e67095d"
+      }
+    },
+    "brightnessComparison": {
+      "comparison": "guard versus continuous-gradient-only, same fixed camera",
+      "lowerSide": {
+        "roi": [
+          315,
+          350,
+          441,
+          417
+        ],
+        "before": 39.11944247018874,
+        "after": 36.51974255705599
+      },
+      "grille": {
+        "roi": [
+          477,
+          406,
+          708,
+          453
+        ],
+        "before": 32.257836725921834,
+        "after": 26.496146879125604
+      }
+    },
+    "remainingAcceptance": "Completed final frozen-build Tourbillon capture is recorded in finalNativeAcceptance.",
+    "stage": "Guard-stage predecessor evidence, before the Roadster-only rubber tint; not a final post-tint capture",
+    "sourceRuntimeSHA256": "4a9f3f0eef36fe58187dbe2eb8ed45cfdc2f22de6c675f2b84c5223656eddb3e",
+    "latestFinalAcceptance": false
+  },
+  "cpuOracleInput": {
+    "runtimePath": "src/monarch-vehicle-assets3d.js",
+    "runtimeSHA256": "305c05e7123a85e691519f38d70d82d3d7822f097b7b1f1acf1bbab99ecf7489",
+    "testPath": "tools/tests/monarch-atlas-filtering.mjs",
+    "testSHA256": "0ac145e01c02b8c7f3686b7aff3667c37a959309ce4b3d4aed8c915162e47f1d",
+    "runUtc": "2026-10-17T19:50:02.490Z",
+    "packSHA256": "25473f93258f4c6ec167e2fb9953e8fc9d40d58844862cb8c4289b22826490ed"
+  },
+  "finalNativeAcceptance": {
+    "result": "PASS",
+    "htmlSHA256": "e086ab80b0cb52e289ea6adc562170acb2bd8d42e53fe57ac2c5ee8f4ca8d445",
+    "runtimeSHA256": "305c05e7123a85e691519f38d70d82d3d7822f097b7b1f1acf1bbab99ecf7489",
+    "file": "screenshots/native/monarch-after-tourbillon.png",
+    "sha256": "291f36444bf335c492a7ea0954c40b881e41850f884db3b24d4ee85882c90e29",
+    "captureReceipt": "capture-after-first.json",
+    "consoleErrors": [],
+    "frameFaults": {
+      "count": 0,
+      "gameTime": 9.4,
+      "drill": null,
+      "kinds": []
+    },
+    "gpuLost": false,
+    "review": "Final shader retains clean dark grille, sill and splitter with original geometry and source PBR factors."
+  }
+}

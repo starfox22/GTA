@@ -6,9 +6,34 @@ rules, workflow), then this page, then only the area doc your task needs (`docs/
 ## October 17: selected civilian names and Monarch model replacement
 
 The owner selected **Chrynser Sebing** for `roadster` and **Chorley 72** for
-`cruiser`. Other game names remain as they are. Downloaded real-car models are
-requested for the remaining Monarch luxury/Prestige roster; the existing
-Brutini SVJ is retained. Keep the chosen names separate from real source credits.
+`cruiser`. Other game names remain as they are. Eleven remaining Prestige
+entries now use ten downloaded CC BY 4.0 real-car sources; the existing Brutini
+SVJ and ordinary Chevette pack are retained. DB11, C8 Stingray, CCX, P1 GTR and
+Tesla Roadster are explicitly disclosed family/class alternatives. Keep chosen
+game names separate from source identities and credits.
+
+Read the [collection audit](audit/monarch-collection-review-2026-10-17/README.md),
+[source workflow](sources/monarch-vehicles/README.md) and
+[pipeline contract](areas/vehicles-and-driving-models-monarch-pipeline.md).
+The pack preserves 2,539,391 included near source faces and all source corners;
+Far alone is reduced. Nine fixed measured seat fits plus the existing full C8
+fit keep full-size adult heads, hands and feet within source cabins. Re-recorded
+`DRIVEBY_SEATS` and `CAR_GLASS_BANDS` follow the actual kits; CCX is open-top.
+The scalar glasshouse report is approximate for these cars; the independent
+production-host source-triangle/rig proof is the clearance authority.
+
+Only one driven/nearest source family holds High textures; all others use
+<=1024 atlases, with synchronous demotion and stale-load guards. Keep source
+PBR factors neutral through clean paint, source shader inheritance through char,
+and shared kits/materials/maps immutable. Repair restores source references.
+Source tile samples use continuous UV gradients and a conservative minified
+filter-support guard; source pixels and normal strength remain unchanged.
+Frozen monolith starts `e086ab80b0cb52e2`, split entry `971a2df4e8b34242`.
+[Playable collection](https://starfox22.github.io/GTA/?review=971a2df4e8b34242)
+and [all thirteen native comparisons](https://starfox22.github.io/GTA/review/?review=971a2df4e8b34242).
+The final native review passes 223 lifecycle/showroom assertions with zero
+errors, context losses or lingering char. Thirteen exact before/after camera
+and status comparisons cover all model/name changes.
 
 ## October 17: Hum-4 name and vehicle naming direction
 

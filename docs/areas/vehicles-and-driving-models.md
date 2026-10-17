@@ -44,14 +44,19 @@ vehicles-and-driving.md.
   game-populate.js (`showcase()`). The Prestige Collection and MONARCH MOTORS:
   places-monarch-and-county.md.
 - CHEVETTE Z06 uses the [downloaded C8](vehicles-and-driving-models-sports.md),
-  with measured glass, cushion and source door hinges. `cars3d-bodies-b.js` retains
-  the procedural fallback; Z06 Carbon Aero (`chevetteSE`) keeps that wider body,
-  equipment and wing. The ZR1X is a separate body. Keep each active body's glass
-  and recorded drive-by seat in step, and `cabinHeadroom()` at zero `through`.
+  with measured glass, cushion and source door hinges. The ordinary Z06 retains
+  its existing pack. Prestige Z06 Carbon Aero (`chevetteSE`) and ZR1X share the
+  full-source Hari C8 family alternative in the Monarch pack. Their names and
+  handling remain distinct; the downloaded body represents a Stingray.
 - BRUTINI SVJ uses the [downloaded SDC Aventador SVJ](vehicles-and-driving-models-svj.md),
   retaining every close source triangle and source-backed scissor doors. Its fitted
   two-seat cabin fills the source’s missing interior; the game glass and recorded
   drive-by seat follow that source canopy.
+- The other eleven Prestige entries use ten downloaded sources in the
+  [Monarch pipeline](vehicles-and-driving-models-monarch-pipeline.md). Source
+  identity and family/class alternatives are explicit in the collection audit
+  and credits. Preserve all close source faces, independent map UVs, source
+  colour/cutoffs, measured cockpit fits and four independent wheel rigs.
 
 ## Downloaded models
 

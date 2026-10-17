@@ -48,6 +48,8 @@
           const svj = svjVehicleModel();
           if (svj) return svj;
         }
+        const monarch = typeof monarchVehicleModel === 'function' && monarchVehicleModel(type);
+        if (monarch) return monarch;
         if (type === 'dolcati' && typeof dolcatiVehicleModel === 'function') {
           const dolcati = dolcatiVehicleModel();
           if (dolcati) return dolcati;
@@ -172,13 +174,30 @@
         geo.setAttribute('position', new Three.BufferAttribute(position, 3));
         geo.setAttribute('normal', new Three.BufferAttribute(normal, 3));
         geo.setAttribute('uv', new Three.BufferAttribute(uvs, 2));
-        if (c) geo.setAttribute('color', new Three.BufferAttribute(new Uint8Array(c), 3, true));
+        if (c) geo.setAttribute('color', new Three.BufferAttribute(new Uint8Array(c), info.colorSize || 3, true));
         else if (model.approved) geo.setAttribute('color', new Three.BufferAttribute(new Uint8Array(q.length).fill(255), 3, true));
         // Approved models retain authored material finish independently of their atlas UVs.
         const finish = a[key + '.f'];
         if (finish) geo.setAttribute('finish', new Three.BufferAttribute(new Uint8Array(finish), 2, true));
         const sourceUv = a[key + '.a'], atlasRect = a[key + '.t'], ormUv = a[key + '.o'];
         if (ormUv) geo.setAttribute('avOrmSourceUv', new Three.BufferAttribute(new Float32Array(ormUv), 2));
+        const normalUv = a[key + '.q'], emissiveUv = a[key + '.e'], doubleSide = a[key + '.s'], paintMask = a[key + '.d'], normalScale = a[key + '.l'], alphaCutoff = a[key + '.v'];
+        if (normalUv) geo.setAttribute('avNormalSourceUv', new Three.BufferAttribute(new Float32Array(normalUv), 2));
+        if (emissiveUv) geo.setAttribute('avEmissiveSourceUv', new Three.BufferAttribute(new Float32Array(emissiveUv), 2));
+        if (doubleSide) geo.setAttribute('avDoubleSide', new Three.BufferAttribute(new Uint8Array(doubleSide), 1, true));
+        if (paintMask) geo.setAttribute('avPaintMask', new Three.BufferAttribute(new Uint8Array(paintMask), 1, true));
+        if (normalScale || doubleSide || paintMask) {
+          const surface = new Float32Array(count * 4);
+          for (let i = 0; i < count; i++) {
+            surface[i * 4] = paintMask ? paintMask[i] / 255 : 0;
+            surface[i * 4 + 1] = doubleSide ? doubleSide[i] / 255 : 0;
+            surface[i * 4 + 2] = normalScale ? normalScale[i] : 1;
+            surface[i * 4 + 3] = alphaCutoff ? alphaCutoff[i] : -1;
+          }
+          // One active shader attribute leaves room for instanced transforms
+          // and tint on WebGL's guaranteed 16 vertex-attribute slots.
+          geo.setAttribute('avSurface', new Three.BufferAttribute(surface, 4));
+        }
         if (sourceUv) geo.setAttribute('avSourceUv', new Three.BufferAttribute(new Float32Array(sourceUv), 2));
         if (atlasRect) geo.setAttribute('avAtlasRect', new Three.BufferAttribute(new Uint16Array(atlasRect), 4, true));
         geo.setIndex(new Three.BufferAttribute(index.BYTES_PER_ELEMENT === 4 ? new Uint32Array(index) : new Uint16Array(index), 1));
@@ -246,7 +265,8 @@
         const key = (approvedKey || type) + ':' + l.toFixed(2) + ':' + w.toFixed(2);
         if (vaKits.has(key)) return vaKits.get(key);
         const sports = approvedKey === 'c8_hari', hotrod = approvedKey === 'coupe33_zhab', svj = approvedKey === 'svj_sdc',
-          data = svj ? svjVehicleData() : hotrod ? hotrodVehicleData() : sports ? sportsVehicleData() : approvedKey ? approvedVehicleData() : vaData(),
+          monarch = approvedKey?.startsWith('monarch_'),
+          data = monarch ? monarchVehicleData() : svj ? svjVehicleData() : hotrod ? hotrodVehicleData() : sports ? sportsVehicleData() : approvedKey ? approvedVehicleData() : vaData(),
           model = data.header.models[approvedKey || type],
           M = CAR_M,
           k = approvedKey ? Math.min(l / model.dims[0], w / 0.87 / model.dims[2], M) : l / model.dims[0],
@@ -335,7 +355,7 @@
             front: wh.front,
             tyre: vaGeometry(model, data, 'wheel' + i + '.tyre', k),
             rim: vaGeometry(model, data, 'wheel' + i + '.rim', k),
-            caliper: sports || svj ? vaGeometry(model, data, wh.caliper, k) : null,
+            caliper: sports || svj || monarch ? vaGeometry(model, data, wh.caliper, k) : null,
           });
         });
         // Axle by axle, left then right (the order the merge plan pairs wheels in: vehicle-merge3d.js).
@@ -344,6 +364,7 @@
         if (sports) sportsNativeDoors(kit);
         if (svj) svjVehicleKitFit(kit, model, data, k);
         if (hotrod) hotrodVehicleKitFit(kit, model, data, k);
+        if (monarch) monarchVehicleKitFit(kit, model, data, k);
         vaKits.set(key, kit);
         return kit;
       }
@@ -358,24 +379,27 @@
           sports = vaEnabled && vehicle.type === 'chevette' && typeof sportsVehicleModel === 'function' && sportsVehicleModel(),
           hotrod = vaEnabled && vehicle.type === 'hotrod' && typeof hotrodVehicleModel === 'function' && hotrodVehicleModel(),
           svj = vaEnabled && vehicle.type === 'brutini' && typeof svjVehicleModel === 'function' && svjVehicleModel(),
-          approvedKey = svj ? 'svj_sdc' : hotrod ? 'coupe33_zhab' : sports ? 'c8_hari' : approvedSuvKey(vehicle),
-          approvedModel = svj || hotrod || sports || (approvedKey && vaEnabled ? approvedVehicleModel(approvedKey) : null),
+          monarch = vaEnabled && typeof monarchVehicleModel === 'function' && monarchVehicleModel(vehicle.type),
+          approvedKey = monarch ? monarch.type : svj ? 'svj_sdc' : hotrod ? 'coupe33_zhab' : sports ? 'c8_hari' : approvedSuvKey(vehicle),
+          approvedModel = monarch || svj || hotrod || sports || (approvedKey && vaEnabled ? approvedVehicleModel(approvedKey) : null),
           kit = vaKit(vehicle.type, l, w, approvedModel ? approvedKey : null),
           model = kit.asset,
-          materials = svj ? svjVehicleMaterials() : hotrod ? hotrodVehicleMaterials() : sports ? sportsVehicleMaterials() : kit.approvedKey ? approvedVehicleMaterials(model) : civSharedMaterials(),
+          materials = monarch ? monarchVehicleMaterials(model) : svj ? svjVehicleMaterials() : hotrod ? hotrodVehicleMaterials() : sports ? sportsVehicleMaterials() : kit.approvedKey ? approvedVehicleMaterials(model) : civSharedMaterials(),
           assetMaterials = kit.approvedKey ? materials : vaMaterials(),
-          lampMaterials = svj ? svjVehicleLamps() : hotrod ? hotrodVehicleLamps() : sports ? sportsVehicleLamps() : civLampSet(),
+          lampMaterials = monarch ? monarchVehicleLamps(model) : svj ? svjVehicleLamps() : hotrod ? hotrodVehicleLamps() : sports ? sportsVehicleLamps() : civLampSet(),
           group = new Three.Group(),
           bodyGroup = new Three.Group();
         group.add(bodyGroup);
         scene.add(group);
         if (kit.approvedKey && !kit.impostorPaint) {
-          kit.impostorPaint = svj ? svjVehiclePaint({ color: '#ffffff' }) : hotrod ? hotrodVehiclePaint({ color: '#ffffff' }) : sports ? sportsVehiclePaint({ color: '#ffffff' }) : approvedVehicleImpostorPaint(model);
-          if (sports || hotrod || svj) sharedMaterials.add(kit.impostorPaint);
+          kit.impostorPaint = monarch ? monarchVehiclePaint({ color: '#ffffff' }, model) : svj ? svjVehiclePaint({ color: '#ffffff' }) : hotrod ? hotrodVehiclePaint({ color: '#ffffff' }) : sports ? sportsVehiclePaint({ color: '#ffffff' }) : approvedVehicleImpostorPaint(model);
+          if (sports || hotrod || svj || monarch) sharedMaterials.add(kit.impostorPaint);
         }
         const livery = kit.approvedKey ? materials.trim.map : model.paintTexture ? vaAtlas() : vaLivery(),
-          finish = civFinish(vehicle.color, vehicle.id),
-          paint = svj ? svjVehiclePaint(vehicle) : hotrod ? hotrodVehiclePaint(vehicle) : sports ? sportsVehiclePaint(vehicle) : kit.approvedKey ? approvedVehiclePaint(vehicle, model) : civPaintMaterial(model.paintTexture ? '#ffffff' : vehicle.color, livery, finish);
+          // Source ORM and per-vertex factors already describe the finish.
+          // A generic colour-dependent finish would multiply those a second time.
+          finish = monarch ? { roughness: 1, metalness: 1 } : civFinish(vehicle.color, vehicle.id),
+          paint = monarch ? monarchVehiclePaint(vehicle, model) : svj ? svjVehiclePaint(vehicle) : hotrod ? hotrodVehiclePaint(vehicle) : sports ? sportsVehiclePaint(vehicle) : kit.approvedKey ? approvedVehiclePaint(vehicle, model) : civPaintMaterial(model.paintTexture ? '#ffffff' : vehicle.color, livery, finish);
         const shell = mesh(kit.shell, paint, bodyGroup, 0, 0, 0),
           cabin = kit.cabin ? mesh(kit.cabin, materials.glass, bodyGroup, 0, 0, 0) : null,
           hood = mesh(kit.hood, paint, bodyGroup, 0, 0, 0),
@@ -415,7 +439,7 @@
             if (geo) {
               const lamp = mesh(geo, lit, bodyGroup, 0, 0, 0);
               lamp.castShadow = false;
-              lamps.push({ mesh: lamp, key, lit, kind, materials: sports || hotrod || svj ? lampMaterials : null });
+              lamps.push({ mesh: lamp, key, lit, kind, materials: sports || hotrod || svj || monarch ? lampMaterials : null });
             }
             const h = kit.halos[key] || { x: (kind === 'head' ? 0.49 : -0.49) * l, y: kit.glass.base * 0.75, z: side * w * 0.33, size: 1 };
             nightLights.push(halo(bodyGroup, h.x + (kind === 'head' ? 0.4 : -0.4), h.y, h.z, (kind === 'head' ? 11 : 7) * (h.size || 1), kind === 'head' ? '#ffe9bd' : '#ff5a44'));
@@ -498,6 +522,9 @@
           ],
         };
         if (kit.approvedKey) approvedSuvLodParts(result);
+        if (monarch) result.group.traverse(object => {
+          if (object.isMesh) monarchVehicleMesh(object, model);
+        });
         return result;
       }
       // A geometry's triangles on the left (z < 0) and on the right, as two geometries (an ambulance's two beacon halves).
@@ -535,6 +562,9 @@
         if (vaEnabled && svj) effective.brutini = svj;
         const dolcati = typeof dolcatiVehicleModel === 'function' && dolcatiVehicleModel();
         if (vaEnabled && dolcati) effective.dolcati = dolcati;
+        const monarch = typeof monarchVehicleData === 'function' && monarchVehicleData();
+        if (vaEnabled && monarch) for (const model of Object.values(monarch.header.models))
+          for (const type of model.gameTypes) effective[type] = model;
         for (const [type, m] of Object.entries(effective))
           models[type] = { title: m.title, sourceKey: m.type, kind: m.kind || 'car', triangles: m.triangles, farTriangles: m.farTriangles || null, dims: m.dims, wheels: m.wheels.length, belt: m.glass?.base ?? null, roof: m.glass?.roof ?? null, paintTexture: m.paintTexture };
         return { loaded: true, enabled: vaEnabled, atlas: !!vaAtlasCache?.image, approvedAtlas: !!approvedVehicleTextures[0]?.image, rangerStyles: vaEnabled && approved ? APPROVED_SUV_KEYS : [], models, kits: [...vaKits.keys()] };

@@ -1,0 +1,177 @@
+{
+  "result": "PASS",
+  "kind": "Roadster-only runtime rubber-colour correction; geometry and downloaded maps unchanged",
+  "date": "2026-10-17T19:50:02.611Z",
+  "source": {
+    "path": "/workspace/GTA/work/monarch-sources-a/roadster-ev-downloads/test4.glb",
+    "sha256": "f0d70024ed306213b8587950c53af35a97b74c4f3fdf60aa4849bebfa5296c60",
+    "title": "Tesla Roadster 2020",
+    "author": "metarex.4d",
+    "license": "CC BY 4.0",
+    "originalUrl": "https://sketchfab.com/3d-models/tesla-roadster-2020-1fbf29e297bd4a17ac39a00a378441d8",
+    "originalMaterials": [
+      {
+        "index": 21,
+        "doubleSided": true,
+        "name": "Sidewall",
+        "pbrMetallicRoughness": {
+          "baseColorFactor": [
+            0.800000011920929,
+            0.800000011920929,
+            0.800000011920929,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.7550510168075562
+        }
+      },
+      {
+        "index": 22,
+        "doubleSided": true,
+        "name": "Thread",
+        "pbrMetallicRoughness": {
+          "baseColorFactor": [
+            0.800000011920929,
+            0.800000011920929,
+            0.800000011920929,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.7550510168075562
+        }
+      }
+    ],
+    "allRubberTextureMapsAbsent": true,
+    "reason": "Both tyre sidewall and tread are authored pale0.8 instead of realistic black rubber."
+  },
+  "change": {
+    "sourceCommit": "17daafe4",
+    "rootCherryPick": "1d23976b",
+    "runtimePath": "src/monarch-vehicle-assets3d.js",
+    "beforeRuntimeSHA256": "4a9f3f0eef36fe58187dbe2eb8ed45cfdc2f22de6c675f2b84c5223656eddb3e",
+    "runtimeSHA256": "305c05e7123a85e691519f38d70d82d3d7822f097b7b1f1acf1bbab99ecf7489",
+    "model": "monarch_roadster_ev",
+    "gameTypes": [
+      "novera"
+    ],
+    "role": "rubber",
+    "sRGBMaterialTint": "#25272a",
+    "originalSourceFactorsPreserved": true,
+    "shaderSamplingUnchanged": {
+      "atlasSampler": {
+        "beforeSHA256": "2a792d792044b4060af3a8ba1124d436c13296332ec0935afe92ed613732ff0e",
+        "afterSHA256": "2a792d792044b4060af3a8ba1124d436c13296332ec0935afe92ed613732ff0e",
+        "unchanged": true
+      },
+      "sourcePBRShader": {
+        "beforeSHA256": "f0420117f162efc15dc3d86045053672b2a1a53aa035c426e7aca7a9e5b79540",
+        "afterSHA256": "f0420117f162efc15dc3d86045053672b2a1a53aa035c426e7aca7a9e5b79540",
+        "unchanged": true
+      }
+    },
+    "exactRuntimeDiff": "diff --git a/src/monarch-vehicle-assets3d.js b/src/monarch-vehicle-assets3d.js\nindex 461eb4a4..5c021dc3 100644\n--- a/src/monarch-vehicle-assets3d.js\n+++ b/src/monarch-vehicle-assets3d.js\n@@ -223,6 +223,8 @@\n           rubber = monarchVehicleFinish(new Three.MeshStandardMaterial(options), model, false, true),\n           opticalGlass = monarchVehicleFinish(new Three.MeshStandardMaterial({ ...options, transparent: true, opacity: 1, alphaTest: 0, depthWrite: false }), model),\n           glass = monarchVehicleGlassSides(carGlassMaterial('#28333b', .24)), glassFar = monarchVehicleGlassSides(carGlassMaterial('#28333b', .64));\n+        // This source authors both Sidewall/Thread as pale0.8 untextured rubber.\n+        if (model.type === 'monarch_roadster_ev') rubber.color.set('#25272a');\n         for (const material of [glass, glassFar]) { material.depthWrite = false; material.side = Three.DoubleSide; material.forceSinglePass = true; }\n         const materials = { trim, rim: trim, rubber, opticalGlass, glass, glassFar };\n         for (const material of new Set(Object.values(materials))) sharedMaterials.add(material);\n"
+  },
+  "immutableInputs": {
+    "packPath": "work/monarch-assets/monarch-vehicle-models.bin",
+    "packSHA256": "25473f93258f4c6ec167e2fb9953e8fc9d40d58844862cb8c4289b22826490ed",
+    "packBytes": 101143026,
+    "sourceSHA256": "f0d70024ed306213b8587950c53af35a97b74c4f3fdf60aa4849bebfa5296c60",
+    "expectedOriginalSourceSHA256": "f0d70024ed306213b8587950c53af35a97b74c4f3fdf60aa4849bebfa5296c60",
+    "sourceUnchanged": true,
+    "entirePackUnchanged": true,
+    "geometryUVNormalAtlasDataUnchanged": true
+  },
+  "productionHost": {
+    "receipt": "work/monarch-convert/runtime-host-final.json",
+    "log": "work/monarch-convert/runtime-host-rubber-tint.log",
+    "runtimeSHA256": "305c05e7123a85e691519f38d70d82d3d7822f097b7b1f1acf1bbab99ecf7489",
+    "totalAssertions": 2828858,
+    "totalRayComparisons": 1626,
+    "protectedOtherModels": [
+      {
+        "sourceKey": "monarch_laferrari",
+        "testResult": "PASS",
+        "assertions": 293801,
+        "assertedRubberColourMultiplier": "#ffffff"
+      },
+      {
+        "sourceKey": "monarch_db11",
+        "testResult": "PASS",
+        "assertions": 384745,
+        "assertedRubberColourMultiplier": "#ffffff"
+      },
+      {
+        "sourceKey": "monarch_valkyrie",
+        "testResult": "PASS",
+        "assertions": 43021,
+        "assertedRubberColourMultiplier": "#ffffff"
+      },
+      {
+        "sourceKey": "monarch_ccx",
+        "testResult": "PASS",
+        "assertions": 63505,
+        "assertedRubberColourMultiplier": "#ffffff"
+      },
+      {
+        "sourceKey": "monarch_p1_gtr",
+        "testResult": "PASS",
+        "assertions": 67385,
+        "assertedRubberColourMultiplier": "#ffffff"
+      },
+      {
+        "sourceKey": "monarch_huayra",
+        "testResult": "PASS",
+        "assertions": 693765,
+        "assertedRubberColourMultiplier": "#ffffff"
+      },
+      {
+        "sourceKey": "monarch_wayron",
+        "testResult": "PASS",
+        "assertions": 49905,
+        "assertedRubberColourMultiplier": "#ffffff"
+      },
+      {
+        "sourceKey": "monarch_c8_hari",
+        "testResult": "PASS",
+        "assertions": 410457,
+        "assertedRubberColourMultiplier": "#ffffff"
+      },
+      {
+        "sourceKey": "monarch_tourbillon",
+        "testResult": "PASS",
+        "assertions": 460653,
+        "assertedRubberColourMultiplier": "#ffffff"
+      }
+    ],
+    "rimTrimLampProtection": "Committed production host test asserts unchanged white trim/rim multiplier, rim===trim, and white multipliers on all lamp-state materials for all10models."
+  },
+  "atlasOracle": {
+    "result": "PASS",
+    "assertions": 1938,
+    "runtimeSHA256": "305c05e7123a85e691519f38d70d82d3d7822f097b7b1f1acf1bbab99ecf7489"
+  },
+  "frozenHtmlSHA256FromRoot": "e086ab80b0cb52e289ea6adc562170acb2bd8d42e53fe57ac2c5ee8f4ca8d445",
+  "nativeFinalCaptureStatus": "Final post-tint Novera native screenshot accepted; complete collection and lifecycle receipts recorded separately.",
+  "nativeReview": {
+    "result": "PASS",
+    "htmlSHA256": "e086ab80b0cb52e289ea6adc562170acb2bd8d42e53fe57ac2c5ee8f4ca8d445",
+    "images": {
+      "pre-tint": {
+        "path": "roadster-rubber/pre-tint-native.png",
+        "sha256": "d800f51ed74c3c8e97c869a13e3432dffb12dac0922bd62bb27d3f7e5d783c85"
+      },
+      "final": {
+        "path": "roadster-rubber/final-native.png",
+        "sha256": "67344ee88e4589476970728fb3feb08909a6616b3b48f6eaa1bcfaa03260c6af"
+      }
+    },
+    "changedPixels": 3722,
+    "differenceBoundsXYXY": [
+      287,
+      294,
+      514,
+      460
+    ],
+    "review": "Independent native review confirms dark rubber; source rims, body, interior and seated driver preserved. Final complete collection receipt is recorded separately."
+  }
+}

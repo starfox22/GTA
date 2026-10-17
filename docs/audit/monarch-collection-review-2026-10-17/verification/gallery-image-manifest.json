@@ -1,0 +1,377 @@
+{
+  "nativeImages": 26,
+  "comparisons": [
+    {
+      "type": "valkyrie",
+      "beforeName": "WALTER MARTIN VALKYRIE",
+      "afterName": "WALTER MARTIN VALKYRIE",
+      "source": "monarch_valkyrie",
+      "statusExact": true,
+      "cameraExact": true
+    },
+    {
+      "type": "dbs",
+      "beforeName": "WALTER MARTIN DBS SUPERLEGGERA",
+      "afterName": "WALTER MARTIN DBS SUPERLEGGERA",
+      "source": "monarch_db11",
+      "statusExact": true,
+      "cameraExact": true
+    },
+    {
+      "type": "zr1x",
+      "beforeName": "CHEVETTE ZR1X",
+      "afterName": "CHEVETTE ZR1X",
+      "source": "monarch_c8_hari",
+      "statusExact": true,
+      "cameraExact": true
+    },
+    {
+      "type": "chevetteSE",
+      "beforeName": "CHEVETTE Z06 CARBON AERO",
+      "afterName": "CHEVETTE Z06 CARBON AERO",
+      "source": "monarch_c8_hari",
+      "statusExact": true,
+      "cameraExact": true
+    },
+    {
+      "type": "wayron",
+      "beforeName": "MUGATTI WAYRON SUPER SPORT",
+      "afterName": "MUGATTI WAYRON SUPER SPORT",
+      "source": "monarch_wayron",
+      "statusExact": true,
+      "cameraExact": true
+    },
+    {
+      "type": "tourbillon",
+      "beforeName": "MUGATTI TOURBILLON",
+      "afterName": "MUGATTI TOURBILLON",
+      "source": "monarch_tourbillon",
+      "statusExact": true,
+      "cameraExact": true
+    },
+    {
+      "type": "jasko",
+      "beforeName": "KONIGSBERG JASKO ABSOLUT",
+      "afterName": "KONIGSBERG JASKO ABSOLUT",
+      "source": "monarch_ccx",
+      "statusExact": true,
+      "cameraExact": true
+    },
+    {
+      "type": "sirocco",
+      "beforeName": "PAGANO SIROCCO",
+      "afterName": "PAGANO SIROCCO",
+      "source": "monarch_huayra",
+      "statusExact": true,
+      "cameraExact": true
+    },
+    {
+      "type": "novera",
+      "beforeName": "RIMAK NOVERA",
+      "afterName": "RIMAK NOVERA",
+      "source": "monarch_roadster_ev",
+      "statusExact": true,
+      "cameraExact": true
+    },
+    {
+      "type": "w1",
+      "beforeName": "McLOWEN W1",
+      "afterName": "McLOWEN W1",
+      "source": "monarch_p1_gtr",
+      "statusExact": true,
+      "cameraExact": true
+    },
+    {
+      "type": "lafera",
+      "beforeName": "CAVALINO LA FERA",
+      "afterName": "CAVALINO LA FERA",
+      "source": "monarch_laferrari",
+      "statusExact": true,
+      "cameraExact": true
+    },
+    {
+      "type": "roadster",
+      "beforeName": "SOLSTICE SPIDER",
+      "afterName": "Chrynser Sebing",
+      "source": "roadster",
+      "statusExact": true,
+      "cameraExact": true
+    },
+    {
+      "type": "cruiser",
+      "beforeName": "NOMAD CRUISER",
+      "afterName": "Chorley 72",
+      "source": "cruiser",
+      "statusExact": true,
+      "cameraExact": true
+    }
+  ],
+  "simulationAndCameraInputsExact": true,
+  "prefixDrawOnlySuppressed": true,
+  "baselineSha256": "56488452002a4788593122dd24cc10b670a688ada97679256587aa73cdcb213f",
+  "releaseSha256": "e086ab80b0cb52e289ea6adc562170acb2bd8d42e53fe57ac2c5ee8f4ca8d445",
+  "readOnlyDifference": "After adds monarchAssets queries and a texture readiness wait.",
+  "files": [
+    {
+      "file": "screenshots/native/monarch-before-valkyrie.png",
+      "sha256": "f37f4064f8943af20a0c4988a9df1226afa580f2e6f43e87748a9f9ea2538e1e",
+      "bytes": 719992,
+      "phase": "before",
+      "viewport": [
+        1000,
+        700
+      ]
+    },
+    {
+      "file": "screenshots/native/monarch-after-valkyrie.png",
+      "sha256": "4f9244f1f31f2a5e0e23607cf18eb0e61724ca42c9f0734b1324629f0820a52e",
+      "bytes": 710009,
+      "phase": "after",
+      "viewport": [
+        1000,
+        700
+      ]
+    },
+    {
+      "file": "screenshots/native/monarch-before-dbs.png",
+      "sha256": "a23cbf422892c2302e435a052ca133a8e662e2a6a0c3ca3903a846de08297251",
+      "bytes": 712578,
+      "phase": "before",
+      "viewport": [
+        1000,
+        700
+      ]
+    },
+    {
+      "file": "screenshots/native/monarch-after-dbs.png",
+      "sha256": "81689a8ae27d0f91ce64c8c7d05993868e63a73a669e0bf3ca2648e667fa9f18",
+      "bytes": 706683,
+      "phase": "after",
+      "viewport": [
+        1000,
+        700
+      ]
+    },
+    {
+      "file": "screenshots/native/monarch-before-zr1x.png",
+      "sha256": "896e8c9dd8917d28cf559732f31e8943b5ad18d836c506c3800fded3eaed4c8b",
+      "bytes": 733969,
+      "phase": "before",
+      "viewport": [
+        1000,
+        700
+      ]
+    },
+    {
+      "file": "screenshots/native/monarch-after-zr1x.png",
+      "sha256": "b492bb581b495dcf4955c1d782d2976d3da02999db6b8ef5113c45b13b2674a3",
+      "bytes": 723132,
+      "phase": "after",
+      "viewport": [
+        1000,
+        700
+      ]
+    },
+    {
+      "file": "screenshots/native/monarch-before-chevetteSE.png",
+      "sha256": "bfe84601cdad4dd90c78cbd5f4341939ed24894b27cd5be829136ba0d60a6589",
+      "bytes": 748782,
+      "phase": "before",
+      "viewport": [
+        1000,
+        700
+      ]
+    },
+    {
+      "file": "screenshots/native/monarch-after-chevetteSE.png",
+      "sha256": "68d871d880e739a12b925f51979827ea0f70e37d72f3dc20ab061a81a03425ba",
+      "bytes": 745561,
+      "phase": "after",
+      "viewport": [
+        1000,
+        700
+      ]
+    },
+    {
+      "file": "screenshots/native/monarch-before-wayron.png",
+      "sha256": "89d333a7d8aa9d1965269abc520971d70387f252088e61a69f7f4380f7bc9556",
+      "bytes": 739427,
+      "phase": "before",
+      "viewport": [
+        1000,
+        700
+      ]
+    },
+    {
+      "file": "screenshots/native/monarch-after-wayron.png",
+      "sha256": "c39a44718adfec3df62484c2a4b10cf951804a7b1bc062d89555256bd6faf712",
+      "bytes": 739153,
+      "phase": "after",
+      "viewport": [
+        1000,
+        700
+      ]
+    },
+    {
+      "file": "screenshots/native/monarch-before-tourbillon.png",
+      "sha256": "c116d52fc6a6c1b61829939108bbd8a8329d2bfdfb24d50865f80123d4239963",
+      "bytes": 738252,
+      "phase": "before",
+      "viewport": [
+        1000,
+        700
+      ]
+    },
+    {
+      "file": "screenshots/native/monarch-after-tourbillon.png",
+      "sha256": "291f36444bf335c492a7ea0954c40b881e41850f884db3b24d4ee85882c90e29",
+      "bytes": 739757,
+      "phase": "after",
+      "viewport": [
+        1000,
+        700
+      ]
+    },
+    {
+      "file": "screenshots/native/monarch-before-jasko.png",
+      "sha256": "27025a66182d003f0a637a790ee0cdc04b87f4756fb1f5130e6cc8da77cb8520",
+      "bytes": 739451,
+      "phase": "before",
+      "viewport": [
+        1000,
+        700
+      ]
+    },
+    {
+      "file": "screenshots/native/monarch-after-jasko.png",
+      "sha256": "dfa820f5b30e8e7f3f14cf0331e17530bec7b40a6001477c47a6e00755b5f683",
+      "bytes": 725629,
+      "phase": "after",
+      "viewport": [
+        1000,
+        700
+      ]
+    },
+    {
+      "file": "screenshots/native/monarch-before-sirocco.png",
+      "sha256": "4b60f3c1d1fb9d13a6967987a0deeceefbcb344ab4e99b28aa08a4a504c796ee",
+      "bytes": 742230,
+      "phase": "before",
+      "viewport": [
+        1000,
+        700
+      ]
+    },
+    {
+      "file": "screenshots/native/monarch-after-sirocco.png",
+      "sha256": "8e9b1f087a11c5f578bf106cb5f746bded393987083c4590d1f6b86b85e716c9",
+      "bytes": 741957,
+      "phase": "after",
+      "viewport": [
+        1000,
+        700
+      ]
+    },
+    {
+      "file": "screenshots/native/monarch-before-novera.png",
+      "sha256": "8b92fcb21c48eea0bcac3df2fde13900df4c9b6da170dcc73a742c5a225f534f",
+      "bytes": 731723,
+      "phase": "before",
+      "viewport": [
+        1000,
+        700
+      ]
+    },
+    {
+      "file": "screenshots/native/monarch-after-novera.png",
+      "sha256": "67344ee88e4589476970728fb3feb08909a6616b3b48f6eaa1bcfaa03260c6af",
+      "bytes": 725018,
+      "phase": "after",
+      "viewport": [
+        1000,
+        700
+      ]
+    },
+    {
+      "file": "screenshots/native/monarch-before-w1.png",
+      "sha256": "31bb79534eafeda582bba9a620d486273a3f3b35eb9df9178b3dfb427b195ce5",
+      "bytes": 733108,
+      "phase": "before",
+      "viewport": [
+        1000,
+        700
+      ]
+    },
+    {
+      "file": "screenshots/native/monarch-after-w1.png",
+      "sha256": "b5ddd6fec60f451e355f2f25910209f1199ba9404f55291812e99e632efe85cc",
+      "bytes": 745326,
+      "phase": "after",
+      "viewport": [
+        1000,
+        700
+      ]
+    },
+    {
+      "file": "screenshots/native/monarch-before-lafera.png",
+      "sha256": "92caad9294dbe9a8106e78e1b3dfbc99fcefabbd20f9b7d96ba06fadffaba11d",
+      "bytes": 736803,
+      "phase": "before",
+      "viewport": [
+        1000,
+        700
+      ]
+    },
+    {
+      "file": "screenshots/native/monarch-after-lafera.png",
+      "sha256": "9fbb5217f74ca035f494f0941719d7ef619312f9f4c5203660a9a1502d47206a",
+      "bytes": 736391,
+      "phase": "after",
+      "viewport": [
+        1000,
+        700
+      ]
+    },
+    {
+      "file": "screenshots/native/monarch-before-roadster.png",
+      "sha256": "402436e5688c7ed9cae7da3e057194213269b8770a91cb35314002a6dc6b5831",
+      "bytes": 730023,
+      "phase": "before",
+      "viewport": [
+        1000,
+        700
+      ]
+    },
+    {
+      "file": "screenshots/native/monarch-after-roadster.png",
+      "sha256": "8955afa9a13cd4aedd1183b295be2370d6d326937c7f681826a8ae15dfa692bc",
+      "bytes": 729693,
+      "phase": "after",
+      "viewport": [
+        1000,
+        700
+      ]
+    },
+    {
+      "file": "screenshots/native/monarch-before-cruiser.png",
+      "sha256": "96141b8c99b1865af873aaf2fd87da6373b810b63bb5ca03126bae6e8180ee57",
+      "bytes": 720975,
+      "phase": "before",
+      "viewport": [
+        1000,
+        700
+      ]
+    },
+    {
+      "file": "screenshots/native/monarch-after-cruiser.png",
+      "sha256": "cb86f7ebb11cdf44c8ecaa2dc2d176b8f0324a55e3159f621e0e1d12f417a828",
+      "bytes": 720203,
+      "phase": "after",
+      "viewport": [
+        1000,
+        700
+      ]
+    }
+  ],
+  "pass": true
+}

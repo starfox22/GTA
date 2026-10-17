@@ -118,6 +118,7 @@
           hotrodVehicleTextureQuality();
           svjVehicleTextureQuality();
           dolcatiVehicleTextureQuality();
+          monarchVehicleTextureQuality();
           for (const c of vehicles) {
             let m = carModels.get(c);
             const near =

@@ -1,0 +1,218 @@
+[
+  {
+    "url": "https://raw.githubusercontent.com/Nahjs/wild-racing-models/6c6a4875004713fe23f3a5ae1bc6c6c075214be3/models/Ferrari/ferrari_laferrari__www.vecarz.com.glb",
+    "status": 200,
+    "bytes": 27019920,
+    "sizeMatches": true
+  },
+  {
+    "url": "https://raw.githubusercontent.com/gwesseling/Tesla-app/a03a55533adcf0f45a610b7bc4e1a9e03277c13c/assets/test4.glb",
+    "status": 200,
+    "bytes": 20199468,
+    "sizeMatches": true
+  },
+  {
+    "url": "https://raw.githubusercontent.com/btwwahab/Auctions-Website-Frontend/f2d6f0279588c6877e8878ba6f861445f550c06a/scene.gltf",
+    "status": 200,
+    "bytes": 464321,
+    "sizeMatches": true
+  },
+  {
+    "url": "https://raw.githubusercontent.com/btwwahab/Auctions-Website-Frontend/f2d6f0279588c6877e8878ba6f861445f550c06a/scene.bin",
+    "status": 200,
+    "bytes": 10696804,
+    "sizeMatches": true
+  },
+  {
+    "url": "https://raw.githubusercontent.com/Nahjs/wild-racing-models/6c6a4875004713fe23f3a5ae1bc6c6c075214be3/models/Aston/aston_martin_valkyrie_free.glb",
+    "status": 200,
+    "bytes": 2146928,
+    "sizeMatches": true
+  },
+  {
+    "url": "https://raw.githubusercontent.com/pedrosoandre/carros/0a56de377f02f2574d781f6920fed08d6423ec2f/assets/koenigsegg-ccx-no.glb",
+    "status": 200,
+    "bytes": 7656048,
+    "sizeMatches": true
+  },
+  {
+    "url": "https://raw.githubusercontent.com/Nissmo89/Supercar-Vault-3D/00f08b282d6b2c0f6834f91c582f9d539dcc02fd/models/free_mclaren_p1_gtr.glb",
+    "status": 200,
+    "bytes": 11416440,
+    "sizeMatches": true
+  },
+  {
+    "url": "https://raw.githubusercontent.com/AuraK-7/wild-racing-models/6c6a4875004713fe23f3a5ae1bc6c6c075214be3/models/pagani_huayra_free.glb",
+    "status": 200,
+    "bytes": 12498568,
+    "sizeMatches": true
+  },
+  {
+    "url": "https://raw.githubusercontent.com/pedrosoandre/carros/0a56de377f02f2574d781f6920fed08d6423ec2f/assets/bugatti-veyron.glb",
+    "status": 200,
+    "bytes": 3967440,
+    "sizeMatches": true
+  },
+  {
+    "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/scene.gltf",
+    "status": 200,
+    "bytes": 222840,
+    "sizeMatches": true
+  },
+  {
+    "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/scene.bin",
+    "status": 200,
+    "bytes": 11431588,
+    "sizeMatches": true
+  },
+  {
+    "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Grille_6_baseColor.png",
+    "status": 200,
+    "bytes": 1300,
+    "sizeMatches": true
+  },
+  {
+    "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Grille_7_baseColor.png",
+    "status": 200,
+    "bytes": 3654,
+    "sizeMatches": true
+  },
+  {
+    "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Misc_baseColor.png",
+    "status": 200,
+    "bytes": 191308,
+    "sizeMatches": true
+  },
+  {
+    "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Badges_baseColor.png",
+    "status": 200,
+    "bytes": 52856,
+    "sizeMatches": true
+  },
+  {
+    "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Lights_baseColor.png",
+    "status": 200,
+    "bytes": 244586,
+    "sizeMatches": true
+  },
+  {
+    "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Interior_baseColor.png",
+    "status": 200,
+    "bytes": 105325,
+    "sizeMatches": true
+  },
+  {
+    "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Chrome_Engine_Pipes_Use_Grill_5_as_BW_to_Bump_to_Normal_metallicRoughness.png",
+    "status": 200,
+    "bytes": 321,
+    "sizeMatches": true
+  },
+  {
+    "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Engine_Decals_baseColor.png",
+    "status": 200,
+    "bytes": 107109,
+    "sizeMatches": true
+  },
+  {
+    "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Grille_1_baseColor.png",
+    "status": 200,
+    "bytes": 1327,
+    "sizeMatches": true
+  },
+  {
+    "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Grille_3_baseColor.png",
+    "status": 200,
+    "bytes": 906,
+    "sizeMatches": true
+  },
+  {
+    "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Carbon_Fiber_baseColor.png",
+    "status": 200,
+    "bytes": 12458,
+    "sizeMatches": true
+  },
+  {
+    "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Grill_4_Speakers_baseColor.png",
+    "status": 200,
+    "bytes": 4475,
+    "sizeMatches": true
+  },
+  {
+    "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Carpet_baseColor.png",
+    "status": 200,
+    "bytes": 36967,
+    "sizeMatches": true
+  },
+  {
+    "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Seats_Adjust_the_leather_texture_using_Color_Ramp_or_using_HSV_baseColor.jpeg",
+    "status": 200,
+    "bytes": 509430,
+    "sizeMatches": true
+  },
+  {
+    "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Gauges_baseColor.png",
+    "status": 200,
+    "bytes": 85422,
+    "sizeMatches": true
+  },
+  {
+    "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Interior_Display_baseColor.png",
+    "status": 200,
+    "bytes": 92796,
+    "sizeMatches": true
+  },
+  {
+    "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Interior_Trim_baseColor.png",
+    "status": 200,
+    "bytes": 6569,
+    "sizeMatches": true
+  },
+  {
+    "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Brake_Disc_baseColor.png",
+    "status": 200,
+    "bytes": 25610,
+    "sizeMatches": true
+  },
+  {
+    "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Tire_Treads_baseColor.png",
+    "status": 200,
+    "bytes": 74619,
+    "sizeMatches": true
+  },
+  {
+    "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Tire_Sidewall_baseColor.png",
+    "status": 200,
+    "bytes": 230701,
+    "sizeMatches": true
+  },
+  {
+    "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/material_baseColor.png",
+    "status": 200,
+    "bytes": 41225,
+    "sizeMatches": true
+  },
+  {
+    "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Interior_Trim_2_baseColor.png",
+    "status": 200,
+    "bytes": 370,
+    "sizeMatches": true
+  },
+  {
+    "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Interior_Badge_baseColor.png",
+    "status": 200,
+    "bytes": 32569,
+    "sizeMatches": true
+  },
+  {
+    "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Mat_supergt.209_baseColor.png",
+    "status": 200,
+    "bytes": 953,
+    "sizeMatches": true
+  },
+  {
+    "url": "https://raw.githubusercontent.com/AuraK-7/wild-racing-models/6c6a4875004713fe23f3a5ae1bc6c6c075214be3/models/Bugatti/bugatti_tourbillon_2024.glb",
+    "status": 200,
+    "bytes": 22476496,
+    "sizeMatches": true
+  }
+]

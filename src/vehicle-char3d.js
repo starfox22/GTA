@@ -18,7 +18,7 @@
       const ASSET_CHAR_TILE = 1 / 12,
         assetCharGrime = new Three.Color('#585451'),
         assetCharHeat = new Three.Color('#1d1a17'),
-        assetCharFree = { cut: [], atlas: [], plain: [], finish: [], approved: [] },
+        assetCharFree = { cut: [], atlas: [], plain: [], finish: [], approved: [], monarch: [] },
         ASSET_CHAR_GLSL = `
         vec3 charW = abs( normalize( vCharNormal ) );
         charW *= charW * charW;
@@ -34,7 +34,7 @@
       function assetCharPatch(material) {
         const own = material.userData.assetChar;
         material.onBeforeCompile = (shader) => {
-          cityMaterialPatch(shader);
+          if (own.kind !== 'monarch') cityMaterialPatch(shader);
           shader.uniforms.charSoot = { value: sootTexture };
           shader.uniforms.charState = own.state;
           shader.uniforms.charSeed = own.seed;
@@ -79,14 +79,23 @@
               .replace(ASSET_CHAR_GLSL, CIV_DIRT_GLSL + '\n' + ASSET_CHAR_GLSL);
             approvedVehicleAtlasPatch(shader);
           }
+          if (own.kind === 'monarch') {
+            // Apply soot around the original source hooks. The source patch
+            // expands the remaining map chunks, retaining UV sets, sidedness,
+            // paint masks, normal scale and cutouts on the burnt body too.
+            shader.fragmentShader = shader.fragmentShader
+              .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\nroughnessFactor = charState.z > 0.5 ? 0.97 : min(1.0, roughnessFactor + charState.x * 2.7 + charState.y * 0.4);')
+              .replace('#include <metalnessmap_fragment>', '#include <metalnessmap_fragment>\nmetalnessFactor = charState.z > 0.5 ? 0.12 : metalnessFactor * (1.0 - charState.x * 2.7);');
+            own.sourceCompile(shader);
+          }
         };
-        material.customProgramCacheKey = () => 'asset-char-' + own.kind + (own.livery?.value ? '-livery' : '');
+        material.customProgramCacheKey = () => 'asset-char-' + own.kind + (own.sourceProgramKey ? '-' + own.sourceProgramKey : '') + (own.livery?.value ? '-livery' : '');
       }
       // Char kind: atlas cut-out, atlas, plain (no map), or atlas with per-vertex finish.
       function assetCharMaterial(kind) {
         const free = assetCharFree[kind];
         if (free.length) return free.pop();
-        const material = new Three.MeshStandardMaterial({ color: '#ffffff', map: kind === 'plain' ? null : kind === 'approved' ? approvedVehicleTexture() : vaAtlas(),
+        const material = new Three.MeshStandardMaterial({ color: '#ffffff', map: kind === 'plain' || kind === 'monarch' ? null : kind === 'approved' ? approvedVehicleTexture() : vaAtlas(),
           roughnessMap: kind === 'approved' ? approvedVehicleTexture(true) : null,
           metalnessMap: kind === 'approved' ? approvedVehicleTexture(true) : null,
           vertexColors: kind === 'approved', alphaTest: kind === 'cut' || kind === 'finish' || kind === 'approved' ? 0.5 : 0 });
@@ -123,7 +132,7 @@
           set.seed = [((id * 0.6180339) % 1) * 7, ((id * 0.4142135) % 1) * 7, ((id * 0.7320508) % 1) * 7];
           set.tile = tile;
         }
-        const kindOf = (material) =>
+        const kindOf = (material) => material.userData?.monarchSource && !material.userData.assetChar ? 'monarch' :
           material.userData?.assetAtlas || (material === shared.trim ? 'cut' : material === shared.rubber || material === shared.rim ? 'atlas' : burnt && material === m.paint ? 'plain' : null);
         const charFor = (source) => {
           const kind = kindOf(source);
@@ -135,12 +144,12 @@
             material.roughness = source.roughness;
             material.metalness = source.metalness;
             material.envMapIntensity = source.envMapIntensity;
-            if (kind === 'finish' || kind === 'approved') {
+            if (kind === 'finish' || kind === 'approved' || kind === 'monarch') {
               material.map = source.map;
               material.vertexColors = source.vertexColors;
               material.needsUpdate = true;
             }
-            if (kind === 'approved') {
+            if (kind === 'approved' || kind === 'monarch') {
               // A reused approved material can switch between opaque bodywork and
               // authored transparent optics; restore every render flag from its source.
               material.transparent = source.transparent;
@@ -153,6 +162,13 @@
               material.metalnessMap = source.metalnessMap;
               material.emissiveMap = source.emissiveMap || null;
               material.emissiveIntensity = source.emissiveIntensity;
+              if (kind === 'monarch') {
+                material.extensions = { ...source.extensions };
+                material.normalMap = source.normalMap || null;
+                material.normalScale.copy(source.normalScale);
+                own.sourceCompile = source.onBeforeCompile;
+                own.sourceProgramKey = source.customProgramCacheKey();
+              }
               own.livery.value = source.userData.approvedLivery || null;
               own.roughnessFloor.value = source.userData.approvedRubber ? 0.78 : source.userData.approvedPaint ? 0.22 : 0;
               own.dirt = source.userData.carDirt || null;
@@ -227,6 +243,11 @@
         for (let i = 0; i < set.swaps.length; i += 2) set.swaps[i].material = set.swaps[i + 1];
         for (const material of set.materials) {
           const free = assetCharFree[material.userData.assetChar.kind];
+          if (material.userData.assetChar.kind === 'monarch') {
+            material.userData.assetChar.sourceCompile = null;
+            material.userData.assetChar.sourceProgramKey = null;
+            material.userData.assetChar.dirt = null;
+          }
           if (free.length < 12) free.push(material);
           else material.dispose();
         }

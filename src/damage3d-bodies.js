@@ -592,11 +592,11 @@
         // Scuffed and dented panels lose the gloss of their clear coat.
         if (m.paint.isMeshPhysicalMaterial) {
           // `finish`: a model's own paint (police liveries are satin, not metallic).
-          const finish = m.finish;
-          m.paint.roughness = (finish ? finish.roughness : 0.42) + wear * 0.5;
+          const finish = m.finish, sourcePbr = !!m.paint.userData.monarchSource;
+          m.paint.roughness = sourcePbr ? 1 : (finish ? finish.roughness : 0.42) + wear * 0.5;
           m.paint.metalness = finish ? finish.metalness * (1 - wear * 0.6) : 0.55 - wear * 0.35;
-          m.paint.clearcoat = 1 - wear * 0.8;
-          m.paint.clearcoatRoughness = 0.08 + wear * 0.5;
+          m.paint.clearcoat = (sourcePbr ? 0.7 : 1) * (1 - wear * 0.8);
+          m.paint.clearcoatRoughness = (sourcePbr ? 0.16 : 0.08) + wear * 0.5;
         }
       }
       // Suspension pose on top of the body's own animation: weight transfer, the blast

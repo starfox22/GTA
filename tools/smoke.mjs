@@ -136,6 +136,11 @@ try {
       textCharacters: text.length,
     };
     assert(checks.credits.visible && checks.credits.hotrod && checks.credits.citation && checks.credits.transport && checks.credits.svj, 'Full downloaded-model attributions are not readable in Credits');
+    if (process.argv.includes('--monarch')) {
+      const sources = JSON.parse(fs.readFileSync(new URL('./monarch_vehicle_sources.json', import.meta.url))).models;
+      checks.credits.monarch = sources.map(model => ({ source: model.key, readable: text.includes(model.sourceUrl) }));
+      assert(checks.credits.monarch.length === 10 && checks.credits.monarch.every(model => model.readable), 'Every Monarch source attribution must be readable in Credits');
+    }
     await shot('07-credits');
     await page.click('#closeCredits');
     if ((await state()).mode !== 'play') await page.keyboard.press('Escape');

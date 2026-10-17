@@ -1,0 +1,84 @@
+{
+  "title": "Dead End City — Monarch collection and selected names",
+  "introduction": "Native before/after captures at matched High quality, camera, clear weather, 13:00 light and 1000 × 700 viewport. The collection uses downloaded real-car sources. Model-family alternatives are identified explicitly; the existing Brutini SVJ is retained. The final two comparisons show the selected Chrynser Sebing and Chorley 72 names.",
+  "comparisons": [
+    {
+      "title": "Walter Martin Valkyrie",
+      "description": "Aston Martin Valkyrie.",
+      "before": "screenshots/native/monarch-before-valkyrie.png",
+      "after": "screenshots/native/monarch-after-valkyrie.png"
+    },
+    {
+      "title": "Walter Martin DBS Superleggera",
+      "description": "Aston Martin DB11 family alternative.",
+      "before": "screenshots/native/monarch-before-dbs.png",
+      "after": "screenshots/native/monarch-after-dbs.png"
+    },
+    {
+      "title": "Chevette ZR1X",
+      "description": "Full-source Corvette C8 Stingray family alternative.",
+      "before": "screenshots/native/monarch-before-zr1x.png",
+      "after": "screenshots/native/monarch-after-zr1x.png"
+    },
+    {
+      "title": "Chevette Z06 Carbon Aero",
+      "description": "Full-source Corvette C8 Stingray family alternative.",
+      "before": "screenshots/native/monarch-before-chevetteSE.png",
+      "after": "screenshots/native/monarch-after-chevetteSE.png"
+    },
+    {
+      "title": "Mugatti Wayron Super Sport",
+      "description": "Bugatti Veyron 16.4 Super Sport.",
+      "before": "screenshots/native/monarch-before-wayron.png",
+      "after": "screenshots/native/monarch-after-wayron.png"
+    },
+    {
+      "title": "Mugatti Tourbillon",
+      "description": "Bugatti Tourbillon.",
+      "before": "screenshots/native/monarch-before-tourbillon.png",
+      "after": "screenshots/native/monarch-after-tourbillon.png"
+    },
+    {
+      "title": "Konigsberg Jasko Absolut",
+      "description": "Koenigsegg CCX family alternative.",
+      "before": "screenshots/native/monarch-before-jasko.png",
+      "after": "screenshots/native/monarch-after-jasko.png"
+    },
+    {
+      "title": "Pagano Sirocco",
+      "description": "Pagani Huayra.",
+      "before": "screenshots/native/monarch-before-sirocco.png",
+      "after": "screenshots/native/monarch-after-sirocco.png"
+    },
+    {
+      "title": "Rimak Novera",
+      "description": "Tesla Roadster 2020 EV class alternative; the Novera name and driving stats are retained.",
+      "before": "screenshots/native/monarch-before-novera.png",
+      "after": "screenshots/native/monarch-after-novera.png"
+    },
+    {
+      "title": "McLowen W1",
+      "description": "McLaren P1 GTR family alternative.",
+      "before": "screenshots/native/monarch-before-w1.png",
+      "after": "screenshots/native/monarch-after-w1.png"
+    },
+    {
+      "title": "Cavalino La Fera",
+      "description": "Ferrari LaFerrari.",
+      "before": "screenshots/native/monarch-before-lafera.png",
+      "after": "screenshots/native/monarch-after-lafera.png"
+    },
+    {
+      "title": "Chrynser Sebing",
+      "description": "Selected name; existing Chrysler Sebring source.",
+      "before": "screenshots/native/monarch-before-roadster.png",
+      "after": "screenshots/native/monarch-after-roadster.png"
+    },
+    {
+      "title": "Chorley 72",
+      "description": "Selected name; existing Harley-Davidson Seventy-Two source.",
+      "before": "screenshots/native/monarch-before-cruiser.png",
+      "after": "screenshots/native/monarch-after-cruiser.png"
+    }
+  ]
+}

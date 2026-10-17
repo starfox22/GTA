@@ -1,0 +1,3324 @@
+{
+  "label": "before",
+  "htmlSha256": "56488452002a4788593122dd24cc10b670a688ada97679256587aa73cdcb213f",
+  "recorderSha256": "769810a0cf919730d512540210bbb57967d5945f57a07b7206c62af6b68427fc",
+  "fixture": {
+    "viewport": [
+      1000,
+      700
+    ],
+    "seed": 1,
+    "position": [
+      418,
+      6000
+    ],
+    "heading": 0,
+    "quality": "high",
+    "weather": "clear",
+    "clock": 13,
+    "inspection": [
+      65,
+      12,
+      4
+    ]
+  },
+  "types": [
+    "valkyrie",
+    "dbs",
+    "zr1x",
+    "chevetteSE",
+    "wayron",
+    "tourbillon",
+    "jasko",
+    "sirocco",
+    "novera",
+    "w1",
+    "lafera",
+    "roadster",
+    "cruiser"
+  ],
+  "inputs": [
+    [
+      "status",
+      []
+    ],
+    [
+      "holdSimulation",
+      [
+        true
+      ]
+    ],
+    [
+      "god",
+      [
+        true
+      ]
+    ],
+    [
+      "graphics",
+      [
+        "high"
+      ]
+    ],
+    [
+      "sky",
+      [
+        "clear"
+      ]
+    ],
+    [
+      "settings",
+      [
+        {
+          "sound": false,
+          "fps": false,
+          "gps": false,
+          "minimapFolded": true,
+          "keyHints": false,
+          "lookAhead": 0,
+          "radioVolume": 0
+        }
+      ]
+    ],
+    [
+      "look",
+      [
+        418,
+        6000,
+        3
+      ]
+    ],
+    [
+      "drive",
+      [
+        "valkyrie",
+        0,
+        0
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        6000,
+        0
+      ]
+    ],
+    [
+      "setClock",
+      [
+        13
+      ]
+    ],
+    [
+      "viewMode",
+      [
+        "street"
+      ]
+    ],
+    [
+      "closeUp",
+      [
+        11
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        65,
+        12,
+        4
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.25,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        1.3,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "status",
+      []
+    ],
+    [
+      "cameraView",
+      []
+    ],
+    [
+      "frameFaults",
+      []
+    ],
+    [
+      "gpuContext",
+      []
+    ],
+    [
+      "assetCars",
+      []
+    ],
+    [
+      "approvedAssets",
+      []
+    ],
+    [
+      "damageReport",
+      []
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        6700,
+        0
+      ]
+    ],
+    [
+      "look",
+      [
+        418,
+        6000,
+        3
+      ]
+    ],
+    [
+      "drive",
+      [
+        "dbs",
+        0,
+        0
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        6000,
+        0
+      ]
+    ],
+    [
+      "setClock",
+      [
+        13
+      ]
+    ],
+    [
+      "viewMode",
+      [
+        "street"
+      ]
+    ],
+    [
+      "closeUp",
+      [
+        11
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        65,
+        12,
+        4
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.25,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        1.3,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "status",
+      []
+    ],
+    [
+      "cameraView",
+      []
+    ],
+    [
+      "frameFaults",
+      []
+    ],
+    [
+      "gpuContext",
+      []
+    ],
+    [
+      "assetCars",
+      []
+    ],
+    [
+      "approvedAssets",
+      []
+    ],
+    [
+      "damageReport",
+      []
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        6800,
+        0
+      ]
+    ],
+    [
+      "look",
+      [
+        418,
+        6000,
+        3
+      ]
+    ],
+    [
+      "drive",
+      [
+        "zr1x",
+        0,
+        0
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        6000,
+        0
+      ]
+    ],
+    [
+      "setClock",
+      [
+        13
+      ]
+    ],
+    [
+      "viewMode",
+      [
+        "street"
+      ]
+    ],
+    [
+      "closeUp",
+      [
+        11
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        65,
+        12,
+        4
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.25,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        1.3,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "status",
+      []
+    ],
+    [
+      "cameraView",
+      []
+    ],
+    [
+      "frameFaults",
+      []
+    ],
+    [
+      "gpuContext",
+      []
+    ],
+    [
+      "assetCars",
+      []
+    ],
+    [
+      "approvedAssets",
+      []
+    ],
+    [
+      "damageReport",
+      []
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        6900,
+        0
+      ]
+    ],
+    [
+      "look",
+      [
+        418,
+        6000,
+        3
+      ]
+    ],
+    [
+      "drive",
+      [
+        "chevetteSE",
+        0,
+        0
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        6000,
+        0
+      ]
+    ],
+    [
+      "setClock",
+      [
+        13
+      ]
+    ],
+    [
+      "viewMode",
+      [
+        "street"
+      ]
+    ],
+    [
+      "closeUp",
+      [
+        11
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        65,
+        12,
+        4
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.25,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        1.3,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "status",
+      []
+    ],
+    [
+      "cameraView",
+      []
+    ],
+    [
+      "frameFaults",
+      []
+    ],
+    [
+      "gpuContext",
+      []
+    ],
+    [
+      "assetCars",
+      []
+    ],
+    [
+      "approvedAssets",
+      []
+    ],
+    [
+      "damageReport",
+      []
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        7000,
+        0
+      ]
+    ],
+    [
+      "look",
+      [
+        418,
+        6000,
+        3
+      ]
+    ],
+    [
+      "drive",
+      [
+        "wayron",
+        0,
+        0
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        6000,
+        0
+      ]
+    ],
+    [
+      "setClock",
+      [
+        13
+      ]
+    ],
+    [
+      "viewMode",
+      [
+        "street"
+      ]
+    ],
+    [
+      "closeUp",
+      [
+        11
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        65,
+        12,
+        4
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.25,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        1.3,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "status",
+      []
+    ],
+    [
+      "cameraView",
+      []
+    ],
+    [
+      "frameFaults",
+      []
+    ],
+    [
+      "gpuContext",
+      []
+    ],
+    [
+      "assetCars",
+      []
+    ],
+    [
+      "approvedAssets",
+      []
+    ],
+    [
+      "damageReport",
+      []
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        7100,
+        0
+      ]
+    ],
+    [
+      "look",
+      [
+        418,
+        6000,
+        3
+      ]
+    ],
+    [
+      "drive",
+      [
+        "tourbillon",
+        0,
+        0
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        6000,
+        0
+      ]
+    ],
+    [
+      "setClock",
+      [
+        13
+      ]
+    ],
+    [
+      "viewMode",
+      [
+        "street"
+      ]
+    ],
+    [
+      "closeUp",
+      [
+        11
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        65,
+        12,
+        4
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.25,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        1.3,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "status",
+      []
+    ],
+    [
+      "cameraView",
+      []
+    ],
+    [
+      "frameFaults",
+      []
+    ],
+    [
+      "gpuContext",
+      []
+    ],
+    [
+      "assetCars",
+      []
+    ],
+    [
+      "approvedAssets",
+      []
+    ],
+    [
+      "damageReport",
+      []
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        7200,
+        0
+      ]
+    ],
+    [
+      "look",
+      [
+        418,
+        6000,
+        3
+      ]
+    ],
+    [
+      "drive",
+      [
+        "jasko",
+        0,
+        0
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        6000,
+        0
+      ]
+    ],
+    [
+      "setClock",
+      [
+        13
+      ]
+    ],
+    [
+      "viewMode",
+      [
+        "street"
+      ]
+    ],
+    [
+      "closeUp",
+      [
+        11
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        65,
+        12,
+        4
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.25,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        1.3,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "status",
+      []
+    ],
+    [
+      "cameraView",
+      []
+    ],
+    [
+      "frameFaults",
+      []
+    ],
+    [
+      "gpuContext",
+      []
+    ],
+    [
+      "assetCars",
+      []
+    ],
+    [
+      "approvedAssets",
+      []
+    ],
+    [
+      "damageReport",
+      []
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        7300,
+        0
+      ]
+    ],
+    [
+      "look",
+      [
+        418,
+        6000,
+        3
+      ]
+    ],
+    [
+      "drive",
+      [
+        "sirocco",
+        0,
+        0
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        6000,
+        0
+      ]
+    ],
+    [
+      "setClock",
+      [
+        13
+      ]
+    ],
+    [
+      "viewMode",
+      [
+        "street"
+      ]
+    ],
+    [
+      "closeUp",
+      [
+        11
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        65,
+        12,
+        4
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.25,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        1.3,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "status",
+      []
+    ],
+    [
+      "cameraView",
+      []
+    ],
+    [
+      "frameFaults",
+      []
+    ],
+    [
+      "gpuContext",
+      []
+    ],
+    [
+      "assetCars",
+      []
+    ],
+    [
+      "approvedAssets",
+      []
+    ],
+    [
+      "damageReport",
+      []
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        7400,
+        0
+      ]
+    ],
+    [
+      "look",
+      [
+        418,
+        6000,
+        3
+      ]
+    ],
+    [
+      "drive",
+      [
+        "novera",
+        0,
+        0
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        6000,
+        0
+      ]
+    ],
+    [
+      "setClock",
+      [
+        13
+      ]
+    ],
+    [
+      "viewMode",
+      [
+        "street"
+      ]
+    ],
+    [
+      "closeUp",
+      [
+        11
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        65,
+        12,
+        4
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.25,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        1.3,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "status",
+      []
+    ],
+    [
+      "cameraView",
+      []
+    ],
+    [
+      "frameFaults",
+      []
+    ],
+    [
+      "gpuContext",
+      []
+    ],
+    [
+      "assetCars",
+      []
+    ],
+    [
+      "approvedAssets",
+      []
+    ],
+    [
+      "damageReport",
+      []
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        7500,
+        0
+      ]
+    ],
+    [
+      "look",
+      [
+        418,
+        6000,
+        3
+      ]
+    ],
+    [
+      "drive",
+      [
+        "w1",
+        0,
+        0
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        6000,
+        0
+      ]
+    ],
+    [
+      "setClock",
+      [
+        13
+      ]
+    ],
+    [
+      "viewMode",
+      [
+        "street"
+      ]
+    ],
+    [
+      "closeUp",
+      [
+        11
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        65,
+        12,
+        4
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.25,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        1.3,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "status",
+      []
+    ],
+    [
+      "cameraView",
+      []
+    ],
+    [
+      "frameFaults",
+      []
+    ],
+    [
+      "gpuContext",
+      []
+    ],
+    [
+      "assetCars",
+      []
+    ],
+    [
+      "approvedAssets",
+      []
+    ],
+    [
+      "damageReport",
+      []
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        7600,
+        0
+      ]
+    ],
+    [
+      "look",
+      [
+        418,
+        6000,
+        3
+      ]
+    ],
+    [
+      "drive",
+      [
+        "lafera",
+        0,
+        0
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        6000,
+        0
+      ]
+    ],
+    [
+      "setClock",
+      [
+        13
+      ]
+    ],
+    [
+      "viewMode",
+      [
+        "street"
+      ]
+    ],
+    [
+      "closeUp",
+      [
+        11
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        65,
+        12,
+        4
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.25,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        1.3,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "status",
+      []
+    ],
+    [
+      "cameraView",
+      []
+    ],
+    [
+      "frameFaults",
+      []
+    ],
+    [
+      "gpuContext",
+      []
+    ],
+    [
+      "assetCars",
+      []
+    ],
+    [
+      "approvedAssets",
+      []
+    ],
+    [
+      "damageReport",
+      []
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        7700,
+        0
+      ]
+    ],
+    [
+      "look",
+      [
+        418,
+        6000,
+        3
+      ]
+    ],
+    [
+      "drive",
+      [
+        "roadster",
+        0,
+        0
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        6000,
+        0
+      ]
+    ],
+    [
+      "setClock",
+      [
+        13
+      ]
+    ],
+    [
+      "viewMode",
+      [
+        "street"
+      ]
+    ],
+    [
+      "closeUp",
+      [
+        11
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        65,
+        12,
+        4
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.25,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        1.3,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "status",
+      []
+    ],
+    [
+      "cameraView",
+      []
+    ],
+    [
+      "frameFaults",
+      []
+    ],
+    [
+      "gpuContext",
+      []
+    ],
+    [
+      "assetCars",
+      []
+    ],
+    [
+      "approvedAssets",
+      []
+    ],
+    [
+      "damageReport",
+      []
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        7800,
+        0
+      ]
+    ],
+    [
+      "look",
+      [
+        418,
+        6000,
+        3
+      ]
+    ],
+    [
+      "drive",
+      [
+        "cruiser",
+        0,
+        0
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        6000,
+        0
+      ]
+    ],
+    [
+      "setClock",
+      [
+        13
+      ]
+    ],
+    [
+      "viewMode",
+      [
+        "street"
+      ]
+    ],
+    [
+      "closeUp",
+      [
+        11
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        65,
+        12,
+        4
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.25,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        1.3,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "status",
+      []
+    ],
+    [
+      "cameraView",
+      []
+    ],
+    [
+      "frameFaults",
+      []
+    ],
+    [
+      "gpuContext",
+      []
+    ],
+    [
+      "assetCars",
+      []
+    ],
+    [
+      "approvedAssets",
+      []
+    ],
+    [
+      "damageReport",
+      []
+    ]
+  ],
+  "captures": [
+    {
+      "file": "monarch-before-valkyrie.png",
+      "sha256": "f37f4064f8943af20a0c4988a9df1226afa580f2e6f43e87748a9f9ea2538e1e",
+      "type": "valkyrie",
+      "vehicleName": "WALTER MARTIN VALKYRIE",
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6000,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "valkyrie",
+        "weapon": "9MM PISTOL",
+        "clock": "13:01",
+        "renderer": "3d",
+        "vehicles": 280,
+        "pedestrians": 595
+      },
+      "camera": {
+        "zoom": 11,
+        "target": 11,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 11,
+        "aim": 11,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 5.4,
+        "personPx": 144,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.55,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 1.57,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "asset": null,
+      "damage": {
+        "id": 265,
+        "type": "valkyrie",
+        "hp": 150,
+        "maxhp": 150,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 418,
+        "y": 6000,
+        "a": 0
+      }
+    },
+    {
+      "file": "monarch-before-dbs.png",
+      "sha256": "a23cbf422892c2302e435a052ca133a8e662e2a6a0c3ca3903a846de08297251",
+      "type": "dbs",
+      "vehicleName": "WALTER MARTIN DBS SUPERLEGGERA",
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6000,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "dbs",
+        "weapon": "9MM PISTOL",
+        "clock": "13:01",
+        "renderer": "3d",
+        "vehicles": 281,
+        "pedestrians": 595
+      },
+      "camera": {
+        "zoom": 11,
+        "target": 11,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 11,
+        "aim": 11,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 5.4,
+        "personPx": 144,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.55,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 3.13,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "asset": null,
+      "damage": {
+        "id": 281,
+        "type": "dbs",
+        "hp": 160,
+        "maxhp": 160,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 418,
+        "y": 6000,
+        "a": 0
+      }
+    },
+    {
+      "file": "monarch-before-zr1x.png",
+      "sha256": "896e8c9dd8917d28cf559732f31e8943b5ad18d836c506c3800fded3eaed4c8b",
+      "type": "zr1x",
+      "vehicleName": "CHEVETTE ZR1X",
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6000,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "zr1x",
+        "weapon": "9MM PISTOL",
+        "clock": "13:01",
+        "renderer": "3d",
+        "vehicles": 282,
+        "pedestrians": 595
+      },
+      "camera": {
+        "zoom": 11,
+        "target": 11,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 11,
+        "aim": 11,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 5.4,
+        "personPx": 144,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.55,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 4.7,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "asset": null,
+      "damage": {
+        "id": 282,
+        "type": "zr1x",
+        "hp": 150,
+        "maxhp": 150,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 418,
+        "y": 6000,
+        "a": 0
+      }
+    },
+    {
+      "file": "monarch-before-chevetteSE.png",
+      "sha256": "bfe84601cdad4dd90c78cbd5f4341939ed24894b27cd5be829136ba0d60a6589",
+      "type": "chevetteSE",
+      "vehicleName": "CHEVETTE Z06 CARBON AERO",
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6000,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "chevetteSE",
+        "weapon": "9MM PISTOL",
+        "clock": "13:01",
+        "renderer": "3d",
+        "vehicles": 283,
+        "pedestrians": 595
+      },
+      "camera": {
+        "zoom": 11,
+        "target": 11,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 11,
+        "aim": 11,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 5.4,
+        "personPx": 144,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.55,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 6.27,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "asset": null,
+      "damage": {
+        "id": 283,
+        "type": "chevetteSE",
+        "hp": 145,
+        "maxhp": 145,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 418,
+        "y": 6000,
+        "a": 0
+      }
+    },
+    {
+      "file": "monarch-before-wayron.png",
+      "sha256": "89d333a7d8aa9d1965269abc520971d70387f252088e61a69f7f4380f7bc9556",
+      "type": "wayron",
+      "vehicleName": "MUGATTI WAYRON SUPER SPORT",
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6000,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "wayron",
+        "weapon": "9MM PISTOL",
+        "clock": "13:01",
+        "renderer": "3d",
+        "vehicles": 284,
+        "pedestrians": 595
+      },
+      "camera": {
+        "zoom": 11,
+        "target": 11,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 11,
+        "aim": 11,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 5.4,
+        "personPx": 144,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.55,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 7.83,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "asset": null,
+      "damage": {
+        "id": 284,
+        "type": "wayron",
+        "hp": 170,
+        "maxhp": 170,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 418,
+        "y": 6000,
+        "a": 0
+      }
+    },
+    {
+      "file": "monarch-before-tourbillon.png",
+      "sha256": "c116d52fc6a6c1b61829939108bbd8a8329d2bfdfb24d50865f80123d4239963",
+      "type": "tourbillon",
+      "vehicleName": "MUGATTI TOURBILLON",
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6000,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "tourbillon",
+        "weapon": "9MM PISTOL",
+        "clock": "13:01",
+        "renderer": "3d",
+        "vehicles": 285,
+        "pedestrians": 595
+      },
+      "camera": {
+        "zoom": 11,
+        "target": 11,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 11,
+        "aim": 11,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 5.4,
+        "personPx": 144,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.55,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 9.4,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "asset": null,
+      "damage": {
+        "id": 285,
+        "type": "tourbillon",
+        "hp": 175,
+        "maxhp": 175,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 418,
+        "y": 6000,
+        "a": 0
+      }
+    },
+    {
+      "file": "monarch-before-jasko.png",
+      "sha256": "27025a66182d003f0a637a790ee0cdc04b87f4756fb1f5130e6cc8da77cb8520",
+      "type": "jasko",
+      "vehicleName": "KONIGSBERG JASKO ABSOLUT",
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6000,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "jasko",
+        "weapon": "9MM PISTOL",
+        "clock": "13:01",
+        "renderer": "3d",
+        "vehicles": 286,
+        "pedestrians": 595
+      },
+      "camera": {
+        "zoom": 11,
+        "target": 11,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 11,
+        "aim": 11,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 5.4,
+        "personPx": 144,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.55,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 10.97,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "asset": null,
+      "damage": {
+        "id": 286,
+        "type": "jasko",
+        "hp": 150,
+        "maxhp": 150,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 418,
+        "y": 6000,
+        "a": 0
+      }
+    },
+    {
+      "file": "monarch-before-sirocco.png",
+      "sha256": "4b60f3c1d1fb9d13a6967987a0deeceefbcb344ab4e99b28aa08a4a504c796ee",
+      "type": "sirocco",
+      "vehicleName": "PAGANO SIROCCO",
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6000,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "sirocco",
+        "weapon": "9MM PISTOL",
+        "clock": "13:01",
+        "renderer": "3d",
+        "vehicles": 287,
+        "pedestrians": 595
+      },
+      "camera": {
+        "zoom": 11,
+        "target": 11,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 11,
+        "aim": 11,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 5.4,
+        "personPx": 144,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.55,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 12.53,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "asset": null,
+      "damage": {
+        "id": 287,
+        "type": "sirocco",
+        "hp": 150,
+        "maxhp": 150,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 418,
+        "y": 6000,
+        "a": 0
+      }
+    },
+    {
+      "file": "monarch-before-novera.png",
+      "sha256": "8b92fcb21c48eea0bcac3df2fde13900df4c9b6da170dcc73a742c5a225f534f",
+      "type": "novera",
+      "vehicleName": "RIMAK NOVERA",
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6000,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "novera",
+        "weapon": "9MM PISTOL",
+        "clock": "13:01",
+        "renderer": "3d",
+        "vehicles": 288,
+        "pedestrians": 595
+      },
+      "camera": {
+        "zoom": 11,
+        "target": 11,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 11,
+        "aim": 11,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 5.4,
+        "personPx": 144,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.55,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 14.1,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "asset": null,
+      "damage": {
+        "id": 288,
+        "type": "novera",
+        "hp": 165,
+        "maxhp": 165,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 418,
+        "y": 6000,
+        "a": 0
+      }
+    },
+    {
+      "file": "monarch-before-w1.png",
+      "sha256": "31bb79534eafeda582bba9a620d486273a3f3b35eb9df9178b3dfb427b195ce5",
+      "type": "w1",
+      "vehicleName": "McLOWEN W1",
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6000,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "w1",
+        "weapon": "9MM PISTOL",
+        "clock": "13:01",
+        "renderer": "3d",
+        "vehicles": 289,
+        "pedestrians": 595
+      },
+      "camera": {
+        "zoom": 11,
+        "target": 11,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 11,
+        "aim": 11,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 5.4,
+        "personPx": 144,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.55,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 15.67,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "asset": null,
+      "damage": {
+        "id": 289,
+        "type": "w1",
+        "hp": 150,
+        "maxhp": 150,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 418,
+        "y": 6000,
+        "a": 0
+      }
+    },
+    {
+      "file": "monarch-before-lafera.png",
+      "sha256": "92caad9294dbe9a8106e78e1b3dfbc99fcefabbd20f9b7d96ba06fadffaba11d",
+      "type": "lafera",
+      "vehicleName": "CAVALINO LA FERA",
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6000,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "lafera",
+        "weapon": "9MM PISTOL",
+        "clock": "13:01",
+        "renderer": "3d",
+        "vehicles": 290,
+        "pedestrians": 595
+      },
+      "camera": {
+        "zoom": 11,
+        "target": 11,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 11,
+        "aim": 11,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 5.4,
+        "personPx": 144,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.55,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 17.23,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "asset": null,
+      "damage": {
+        "id": 290,
+        "type": "lafera",
+        "hp": 150,
+        "maxhp": 150,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 418,
+        "y": 6000,
+        "a": 0
+      }
+    },
+    {
+      "file": "monarch-before-roadster.png",
+      "sha256": "402436e5688c7ed9cae7da3e057194213269b8770a91cb35314002a6dc6b5831",
+      "type": "roadster",
+      "vehicleName": "SOLSTICE SPIDER",
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6000,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "roadster",
+        "weapon": "9MM PISTOL",
+        "clock": "13:01",
+        "renderer": "3d",
+        "vehicles": 291,
+        "pedestrians": 595
+      },
+      "camera": {
+        "zoom": 11,
+        "target": 11,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 11,
+        "aim": 11,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 5.4,
+        "personPx": 144,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.55,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 18.8,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "asset": {
+        "title": "Chrysler Sebring Convertible",
+        "sourceKey": "roadster",
+        "kind": "car",
+        "triangles": 16223,
+        "farTriangles": null,
+        "dims": [
+          4.9,
+          1.305,
+          1.915
+        ],
+        "wheels": 4,
+        "belt": 0.9136,
+        "roof": 1.2599,
+        "paintTexture": false
+      },
+      "damage": {
+        "id": 291,
+        "type": "roadster",
+        "hp": 120,
+        "maxhp": 120,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 418,
+        "y": 6000,
+        "a": 0
+      }
+    },
+    {
+      "file": "monarch-before-cruiser.png",
+      "sha256": "96141b8c99b1865af873aaf2fd87da6373b810b63bb5ca03126bae6e8180ee57",
+      "type": "cruiser",
+      "vehicleName": "NOMAD CRUISER",
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6000,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "cruiser",
+        "weapon": "9MM PISTOL",
+        "clock": "13:01",
+        "renderer": "3d",
+        "vehicles": 292,
+        "pedestrians": 595
+      },
+      "camera": {
+        "zoom": 11,
+        "target": 11,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.508,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 11,
+        "aim": 11,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 5.4,
+        "personPx": 144,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.55,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 20.37,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "asset": {
+        "title": "Harley-Davidson Seventy-Two HD FXT 2015",
+        "sourceKey": "cruiser",
+        "kind": "moto",
+        "triangles": 10404,
+        "farTriangles": null,
+        "dims": [
+          2.473,
+          1.406,
+          1.043
+        ],
+        "wheels": 2,
+        "belt": null,
+        "roof": null,
+        "paintTexture": false
+      },
+      "damage": {
+        "id": 292,
+        "type": "cruiser",
+        "hp": 110,
+        "maxhp": 110,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 418,
+        "y": 6000,
+        "a": 0
+      }
+    }
+  ],
+  "errors": [],
+  "warnings": [
+    "Scripts \"build/three.js\" and \"build/three.min.js\" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation"
+  ],
+  "pass": true
+}

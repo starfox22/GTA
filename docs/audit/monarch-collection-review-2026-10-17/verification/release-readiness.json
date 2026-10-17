@@ -1,0 +1,25 @@
+{
+  "pass": true,
+  "frozenHtmlSha256": "e086ab80b0cb52e289ea6adc562170acb2bd8d42e53fe57ac2c5ee8f4ca8d445",
+  "entrySha256": "971a2df4e8b34242908e21471c470090eec4465410cc5826763a69cb902892cc",
+  "nativeRuntimeAssertions": 223,
+  "comparisons": 13,
+  "nativeComparisonImages": 26,
+  "productionRigAssertions": 619,
+  "runtimeMaterialAssertions": 2828858,
+  "independentRayComparisons": 1626,
+  "atlasFilteringAssertions": 1938,
+  "originalSourceCorners": 7618173,
+  "preservedPriorAssets": 128,
+  "quickCheck": {
+    "pass": true,
+    "command": "sh tools/quick-check.sh monarch-guard",
+    "lines": 209159,
+    "functionDeclarations": 3667
+  },
+  "publicArtifact": {
+    "files": 220,
+    "bytes": 411147527,
+    "manifestSha256": "046681d8bda2d8da1194b8b61c83b2ceb808e3dd03c34a230a8825df320e1661"
+  }
+}

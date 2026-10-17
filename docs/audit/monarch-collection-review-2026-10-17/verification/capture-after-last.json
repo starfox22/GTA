@@ -1,0 +1,4788 @@
+{
+  "label": "after",
+  "htmlSha256": "e086ab80b0cb52e289ea6adc562170acb2bd8d42e53fe57ac2c5ee8f4ca8d445",
+  "recorderSha256": "03463f678fcbfed695d8333fcf5336b1ffca389a1c5f816659ed644c7f798528",
+  "fixture": {
+    "viewport": [
+      1000,
+      700
+    ],
+    "seed": 1,
+    "position": [
+      418,
+      6000
+    ],
+    "heading": 0,
+    "quality": "high",
+    "weather": "clear",
+    "clock": 13,
+    "inspection": [
+      65,
+      12,
+      4
+    ]
+  },
+  "types": [
+    "valkyrie",
+    "dbs",
+    "zr1x",
+    "chevetteSE",
+    "wayron",
+    "tourbillon",
+    "jasko",
+    "sirocco",
+    "novera",
+    "w1",
+    "lafera",
+    "roadster",
+    "cruiser"
+  ],
+  "captureRange": [
+    6,
+    13
+  ],
+  "prefixDrawSuppressed": true,
+  "inputs": [
+    [
+      "status",
+      []
+    ],
+    [
+      "holdSimulation",
+      [
+        true
+      ]
+    ],
+    [
+      "god",
+      [
+        true
+      ]
+    ],
+    [
+      "graphics",
+      [
+        "high"
+      ]
+    ],
+    [
+      "sky",
+      [
+        "clear"
+      ]
+    ],
+    [
+      "settings",
+      [
+        {
+          "sound": false,
+          "fps": false,
+          "gps": false,
+          "minimapFolded": true,
+          "keyHints": false,
+          "lookAhead": 0,
+          "radioVolume": 0
+        }
+      ]
+    ],
+    [
+      "look",
+      [
+        418,
+        6000,
+        3
+      ]
+    ],
+    [
+      "drive",
+      [
+        "valkyrie",
+        0,
+        0
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        6000,
+        0
+      ]
+    ],
+    [
+      "setClock",
+      [
+        13
+      ]
+    ],
+    [
+      "viewMode",
+      [
+        "street"
+      ]
+    ],
+    [
+      "closeUp",
+      [
+        11
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        65,
+        12,
+        4
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.25,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        1.3,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        6700,
+        0
+      ]
+    ],
+    [
+      "look",
+      [
+        418,
+        6000,
+        3
+      ]
+    ],
+    [
+      "drive",
+      [
+        "dbs",
+        0,
+        0
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        6000,
+        0
+      ]
+    ],
+    [
+      "setClock",
+      [
+        13
+      ]
+    ],
+    [
+      "viewMode",
+      [
+        "street"
+      ]
+    ],
+    [
+      "closeUp",
+      [
+        11
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        65,
+        12,
+        4
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.25,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        1.3,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        6800,
+        0
+      ]
+    ],
+    [
+      "look",
+      [
+        418,
+        6000,
+        3
+      ]
+    ],
+    [
+      "drive",
+      [
+        "zr1x",
+        0,
+        0
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        6000,
+        0
+      ]
+    ],
+    [
+      "setClock",
+      [
+        13
+      ]
+    ],
+    [
+      "viewMode",
+      [
+        "street"
+      ]
+    ],
+    [
+      "closeUp",
+      [
+        11
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        65,
+        12,
+        4
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.25,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        1.3,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        6900,
+        0
+      ]
+    ],
+    [
+      "look",
+      [
+        418,
+        6000,
+        3
+      ]
+    ],
+    [
+      "drive",
+      [
+        "chevetteSE",
+        0,
+        0
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        6000,
+        0
+      ]
+    ],
+    [
+      "setClock",
+      [
+        13
+      ]
+    ],
+    [
+      "viewMode",
+      [
+        "street"
+      ]
+    ],
+    [
+      "closeUp",
+      [
+        11
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        65,
+        12,
+        4
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.25,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        1.3,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        7000,
+        0
+      ]
+    ],
+    [
+      "look",
+      [
+        418,
+        6000,
+        3
+      ]
+    ],
+    [
+      "drive",
+      [
+        "wayron",
+        0,
+        0
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        6000,
+        0
+      ]
+    ],
+    [
+      "setClock",
+      [
+        13
+      ]
+    ],
+    [
+      "viewMode",
+      [
+        "street"
+      ]
+    ],
+    [
+      "closeUp",
+      [
+        11
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        65,
+        12,
+        4
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.25,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        1.3,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        7100,
+        0
+      ]
+    ],
+    [
+      "look",
+      [
+        418,
+        6000,
+        3
+      ]
+    ],
+    [
+      "drive",
+      [
+        "tourbillon",
+        0,
+        0
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        6000,
+        0
+      ]
+    ],
+    [
+      "setClock",
+      [
+        13
+      ]
+    ],
+    [
+      "viewMode",
+      [
+        "street"
+      ]
+    ],
+    [
+      "closeUp",
+      [
+        11
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        65,
+        12,
+        4
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.25,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        1.3,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        7200,
+        0
+      ]
+    ],
+    [
+      "look",
+      [
+        418,
+        6000,
+        3
+      ]
+    ],
+    [
+      "drive",
+      [
+        "jasko",
+        0,
+        0
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        6000,
+        0
+      ]
+    ],
+    [
+      "setClock",
+      [
+        13
+      ]
+    ],
+    [
+      "viewMode",
+      [
+        "street"
+      ]
+    ],
+    [
+      "closeUp",
+      [
+        11
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        65,
+        12,
+        4
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.25,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        1.3,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "status",
+      []
+    ],
+    [
+      "cameraView",
+      []
+    ],
+    [
+      "frameFaults",
+      []
+    ],
+    [
+      "gpuContext",
+      []
+    ],
+    [
+      "assetCars",
+      []
+    ],
+    [
+      "approvedAssets",
+      []
+    ],
+    [
+      "damageReport",
+      []
+    ],
+    [
+      "monarchAssets",
+      []
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        7300,
+        0
+      ]
+    ],
+    [
+      "look",
+      [
+        418,
+        6000,
+        3
+      ]
+    ],
+    [
+      "drive",
+      [
+        "sirocco",
+        0,
+        0
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        6000,
+        0
+      ]
+    ],
+    [
+      "setClock",
+      [
+        13
+      ]
+    ],
+    [
+      "viewMode",
+      [
+        "street"
+      ]
+    ],
+    [
+      "closeUp",
+      [
+        11
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        65,
+        12,
+        4
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.25,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        1.3,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "status",
+      []
+    ],
+    [
+      "cameraView",
+      []
+    ],
+    [
+      "frameFaults",
+      []
+    ],
+    [
+      "gpuContext",
+      []
+    ],
+    [
+      "assetCars",
+      []
+    ],
+    [
+      "approvedAssets",
+      []
+    ],
+    [
+      "damageReport",
+      []
+    ],
+    [
+      "monarchAssets",
+      []
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        7400,
+        0
+      ]
+    ],
+    [
+      "look",
+      [
+        418,
+        6000,
+        3
+      ]
+    ],
+    [
+      "drive",
+      [
+        "novera",
+        0,
+        0
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        6000,
+        0
+      ]
+    ],
+    [
+      "setClock",
+      [
+        13
+      ]
+    ],
+    [
+      "viewMode",
+      [
+        "street"
+      ]
+    ],
+    [
+      "closeUp",
+      [
+        11
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        65,
+        12,
+        4
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.25,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        1.3,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "status",
+      []
+    ],
+    [
+      "cameraView",
+      []
+    ],
+    [
+      "frameFaults",
+      []
+    ],
+    [
+      "gpuContext",
+      []
+    ],
+    [
+      "assetCars",
+      []
+    ],
+    [
+      "approvedAssets",
+      []
+    ],
+    [
+      "damageReport",
+      []
+    ],
+    [
+      "monarchAssets",
+      []
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        7500,
+        0
+      ]
+    ],
+    [
+      "look",
+      [
+        418,
+        6000,
+        3
+      ]
+    ],
+    [
+      "drive",
+      [
+        "w1",
+        0,
+        0
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        6000,
+        0
+      ]
+    ],
+    [
+      "setClock",
+      [
+        13
+      ]
+    ],
+    [
+      "viewMode",
+      [
+        "street"
+      ]
+    ],
+    [
+      "closeUp",
+      [
+        11
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        65,
+        12,
+        4
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.25,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        1.3,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "status",
+      []
+    ],
+    [
+      "cameraView",
+      []
+    ],
+    [
+      "frameFaults",
+      []
+    ],
+    [
+      "gpuContext",
+      []
+    ],
+    [
+      "assetCars",
+      []
+    ],
+    [
+      "approvedAssets",
+      []
+    ],
+    [
+      "damageReport",
+      []
+    ],
+    [
+      "monarchAssets",
+      []
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        7600,
+        0
+      ]
+    ],
+    [
+      "look",
+      [
+        418,
+        6000,
+        3
+      ]
+    ],
+    [
+      "drive",
+      [
+        "lafera",
+        0,
+        0
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        6000,
+        0
+      ]
+    ],
+    [
+      "setClock",
+      [
+        13
+      ]
+    ],
+    [
+      "viewMode",
+      [
+        "street"
+      ]
+    ],
+    [
+      "closeUp",
+      [
+        11
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        65,
+        12,
+        4
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.25,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        1.3,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "status",
+      []
+    ],
+    [
+      "cameraView",
+      []
+    ],
+    [
+      "frameFaults",
+      []
+    ],
+    [
+      "gpuContext",
+      []
+    ],
+    [
+      "assetCars",
+      []
+    ],
+    [
+      "approvedAssets",
+      []
+    ],
+    [
+      "damageReport",
+      []
+    ],
+    [
+      "monarchAssets",
+      []
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        7700,
+        0
+      ]
+    ],
+    [
+      "look",
+      [
+        418,
+        6000,
+        3
+      ]
+    ],
+    [
+      "drive",
+      [
+        "roadster",
+        0,
+        0
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        6000,
+        0
+      ]
+    ],
+    [
+      "setClock",
+      [
+        13
+      ]
+    ],
+    [
+      "viewMode",
+      [
+        "street"
+      ]
+    ],
+    [
+      "closeUp",
+      [
+        11
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        65,
+        12,
+        4
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.25,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        1.3,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "status",
+      []
+    ],
+    [
+      "cameraView",
+      []
+    ],
+    [
+      "frameFaults",
+      []
+    ],
+    [
+      "gpuContext",
+      []
+    ],
+    [
+      "assetCars",
+      []
+    ],
+    [
+      "approvedAssets",
+      []
+    ],
+    [
+      "damageReport",
+      []
+    ],
+    [
+      "monarchAssets",
+      []
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        7800,
+        0
+      ]
+    ],
+    [
+      "look",
+      [
+        418,
+        6000,
+        3
+      ]
+    ],
+    [
+      "drive",
+      [
+        "cruiser",
+        0,
+        0
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        6000,
+        0
+      ]
+    ],
+    [
+      "setClock",
+      [
+        13
+      ]
+    ],
+    [
+      "viewMode",
+      [
+        "street"
+      ]
+    ],
+    [
+      "closeUp",
+      [
+        11
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        65,
+        12,
+        4
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.25,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        1.3,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "status",
+      []
+    ],
+    [
+      "cameraView",
+      []
+    ],
+    [
+      "frameFaults",
+      []
+    ],
+    [
+      "gpuContext",
+      []
+    ],
+    [
+      "assetCars",
+      []
+    ],
+    [
+      "approvedAssets",
+      []
+    ],
+    [
+      "damageReport",
+      []
+    ],
+    [
+      "monarchAssets",
+      []
+    ]
+  ],
+  "captures": [
+    {
+      "file": "monarch-after-jasko.png",
+      "sha256": "dfa820f5b30e8e7f3f14cf0331e17530bec7b40a6001477c47a6e00755b5f683",
+      "type": "jasko",
+      "vehicleName": "KONIGSBERG JASKO ABSOLUT",
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6000,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "jasko",
+        "weapon": "9MM PISTOL",
+        "clock": "13:01",
+        "renderer": "3d",
+        "vehicles": 286,
+        "pedestrians": 595
+      },
+      "camera": {
+        "zoom": 11,
+        "target": 11,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 11,
+        "aim": 11,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 5.4,
+        "personPx": 144,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.55,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 10.97,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "asset": {
+        "title": "2007 Koenigsegg CCX (No Roof)",
+        "sourceKey": "monarch_ccx",
+        "kind": "car",
+        "triangles": 41225,
+        "farTriangles": 3319,
+        "dims": [
+          4.295,
+          1.0806492217405987,
+          2.009802734433199
+        ],
+        "wheels": 4,
+        "belt": 0.7044348630330757,
+        "roof": 1.0037901773072995,
+        "paintTexture": true
+      },
+      "model": {
+        "id": 286,
+        "type": "jasko",
+        "asset": "monarch_ccx",
+        "far": false,
+        "triangles": 41225,
+        "visible": true,
+        "pool": {
+          "ready": false,
+          "instances": 0,
+          "triangles": 0
+        }
+      },
+      "damage": {
+        "id": 286,
+        "type": "jasko",
+        "hp": 150,
+        "maxhp": 150,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 418,
+        "y": 6000,
+        "a": 0
+      },
+      "monarch": {
+        "loaded": true,
+        "enabled": true,
+        "reducedTextures": false,
+        "error": null,
+        "highSourceLimit": 1,
+        "heroType": "jasko",
+        "heroSource": "monarch_ccx",
+        "estimatedTextureMiB": 362.7,
+        "models": {
+          "monarch_laferrari": {
+            "gameTypes": [
+              "lafera"
+            ],
+            "title": "Ferrari Laferrari | www.vecarz.com",
+            "author": "vecarz",
+            "source": "https://sketchfab.com/3d-models/ferrari-laferrari-wwwvecarzcom-979f7085012e4d6399f38de3f9c39012",
+            "license": "CC BY 4.0",
+            "triangles": 587310,
+            "farTriangles": 46762,
+            "nativeCabin": true,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {}
+          },
+          "monarch_roadster_ev": {
+            "gameTypes": [
+              "novera"
+            ],
+            "title": "Tesla Roadster 2020",
+            "author": "metarex.4d",
+            "source": "https://sketchfab.com/3d-models/tesla-roadster-2020-1fbf29e297bd4a17ac39a00a378441d8",
+            "license": "CC BY 4.0",
+            "triangles": 608850,
+            "farTriangles": 48557,
+            "nativeCabin": true,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              64,
+              64
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {}
+          },
+          "monarch_db11": {
+            "gameTypes": [
+              "dbs"
+            ],
+            "title": "Aston Martin db11",
+            "author": "Black Snow",
+            "source": "https://sketchfab.com/3d-models/aston-martin-db11-0ce56f01b1ff40b3a4e36bc56873dbc7",
+            "license": "CC BY 4.0",
+            "triangles": 217999,
+            "farTriangles": 17295,
+            "nativeCabin": true,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              128,
+              128
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {}
+          },
+          "monarch_valkyrie": {
+            "gameTypes": [
+              "valkyrie"
+            ],
+            "title": "Aston Martin Valkyrie FREE",
+            "author": "MHDesigning",
+            "source": "https://sketchfab.com/3d-models/aston-martin-valkyrie-free-8c352d8ec67a4c3b9c1cb1467e06395c",
+            "license": "CC BY 4.0",
+            "triangles": 36364,
+            "farTriangles": 2999,
+            "nativeCabin": false,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              64,
+              64
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {}
+          },
+          "monarch_ccx": {
+            "gameTypes": [
+              "jasko"
+            ],
+            "title": "2007 Koenigsegg CCX (No Roof)",
+            "author": "_Sheep19 (https://sketchfab.com/shobhit190401)",
+            "source": "https://sketchfab.com/3d-models/2007-koenigsegg-ccx-no-roof-423b64e085974b97b5cfd5a87d9dcce3",
+            "license": "CC BY 4.0",
+            "triangles": 41225,
+            "farTriangles": 3319,
+            "nativeCabin": true,
+            "hasNormalMaps": true,
+            "targetTextures": "high",
+            "expectedAtlas": [
+              4096,
+              4096
+            ],
+            "pendingTextures": {},
+            "texturesReady": true,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {
+              "albedo": [
+                4096,
+                4096
+              ],
+              "orm": [
+                4096,
+                4096
+              ],
+              "emissive": [
+                4096,
+                4096
+              ],
+              "normal": [
+                4096,
+                4096
+              ]
+            }
+          },
+          "monarch_p1_gtr": {
+            "gameTypes": [
+              "w1"
+            ],
+            "title": "Free McLaren P1 GTR",
+            "author": "Desiccated_Lemon (https://sketchfab.com/Desiccated_Lemon)",
+            "source": "https://sketchfab.com/3d-models/free-mclaren-p1-gtr-d805bec04cf5407fa7c036c20c726d39",
+            "license": "CC BY 4.0",
+            "triangles": 71888,
+            "farTriangles": 5735,
+            "nativeCabin": true,
+            "hasNormalMaps": true,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [],
+            "atlasSizes": {}
+          },
+          "monarch_huayra": {
+            "gameTypes": [
+              "sirocco"
+            ],
+            "title": "Pagani Huayra [Free]",
+            "author": "Black Snow (https://sketchfab.com/BlackSnow02)",
+            "source": "https://sketchfab.com/3d-models/pagani-huayra-free-c2d61a9f53a54a229547bb76e4b71e25",
+            "license": "CC BY 4.0",
+            "triangles": 290985,
+            "farTriangles": 23258,
+            "nativeCabin": true,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              64,
+              64
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [],
+            "atlasSizes": {}
+          },
+          "monarch_wayron": {
+            "gameTypes": [
+              "wayron"
+            ],
+            "title": "Bugatti Veyron 16.4 Super Sport - Lowpoly",
+            "author": "andikapratamaw (https://sketchfab.com/andikapratamaw)",
+            "source": "https://sketchfab.com/3d-models/bugatti-veyron-164-super-sport-lowpoly-0ee4c65face949efa4500deb17c79150",
+            "license": "CC BY 4.0",
+            "triangles": 35007,
+            "farTriangles": 4720,
+            "nativeCabin": false,
+            "hasNormalMaps": true,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [],
+            "atlasSizes": {}
+          },
+          "monarch_c8_hari": {
+            "gameTypes": [
+              "zr1x",
+              "chevetteSE"
+            ],
+            "title": "2019 Chevrolet Corvette C8 Stingray",
+            "author": "Hari (Hari31)",
+            "source": "https://sketchfab.com/3d-models/2019-chevrolet-corvette-c8-stingray-790c40ccff6843eab0b7b4bd18421ff8",
+            "license": "CC BY 4.0",
+            "triangles": 263683,
+            "farTriangles": 21055,
+            "nativeCabin": true,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {}
+          },
+          "monarch_tourbillon": {
+            "gameTypes": [
+              "tourbillon"
+            ],
+            "title": "Bugatti Tourbillon 2024",
+            "author": "MdMahib (https://sketchfab.com/MdMahib)",
+            "source": "https://sketchfab.com/3d-models/bugatti-tourbillon-2024-c992c9bc9ba8427197d5fe380eaa2b31",
+            "license": "CC BY 4.0",
+            "triangles": 386080,
+            "farTriangles": 30854,
+            "nativeCabin": true,
+            "hasNormalMaps": true,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": true,
+            "nativeDoors": [],
+            "atlasSizes": {
+              "albedo": [
+                1024,
+                1024
+              ],
+              "orm": [
+                1024,
+                1024
+              ],
+              "emissive": [
+                1024,
+                1024
+              ],
+              "normal": [
+                1024,
+                1024
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "file": "monarch-after-sirocco.png",
+      "sha256": "8e9b1f087a11c5f578bf106cb5f746bded393987083c4590d1f6b86b85e716c9",
+      "type": "sirocco",
+      "vehicleName": "PAGANO SIROCCO",
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6000,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "sirocco",
+        "weapon": "9MM PISTOL",
+        "clock": "13:01",
+        "renderer": "3d",
+        "vehicles": 287,
+        "pedestrians": 595
+      },
+      "camera": {
+        "zoom": 11,
+        "target": 11,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 11,
+        "aim": 11,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 5.4,
+        "personPx": 144,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.55,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 12.53,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "asset": {
+        "title": "Pagani Huayra [Free]",
+        "sourceKey": "monarch_huayra",
+        "kind": "car",
+        "triangles": 290985,
+        "farTriangles": 23258,
+        "dims": [
+          4.6,
+          1.145550182179247,
+          2.25988397470948
+        ],
+        "wheels": 4,
+        "belt": 0.7673680812955805,
+        "roof": 1.14557200658584,
+        "paintTexture": true
+      },
+      "model": {
+        "id": 287,
+        "type": "sirocco",
+        "asset": "monarch_huayra",
+        "far": false,
+        "triangles": 290985,
+        "visible": true,
+        "pool": {
+          "ready": false,
+          "instances": 0,
+          "triangles": 0
+        }
+      },
+      "damage": {
+        "id": 287,
+        "type": "sirocco",
+        "hp": 150,
+        "maxhp": 150,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 418,
+        "y": 6000,
+        "a": 0
+      },
+      "monarch": {
+        "loaded": true,
+        "enabled": true,
+        "reducedTextures": false,
+        "error": null,
+        "highSourceLimit": 1,
+        "heroType": "sirocco",
+        "heroSource": "monarch_huayra",
+        "estimatedTextureMiB": 42.7,
+        "models": {
+          "monarch_laferrari": {
+            "gameTypes": [
+              "lafera"
+            ],
+            "title": "Ferrari Laferrari | www.vecarz.com",
+            "author": "vecarz",
+            "source": "https://sketchfab.com/3d-models/ferrari-laferrari-wwwvecarzcom-979f7085012e4d6399f38de3f9c39012",
+            "license": "CC BY 4.0",
+            "triangles": 587310,
+            "farTriangles": 46762,
+            "nativeCabin": true,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {}
+          },
+          "monarch_roadster_ev": {
+            "gameTypes": [
+              "novera"
+            ],
+            "title": "Tesla Roadster 2020",
+            "author": "metarex.4d",
+            "source": "https://sketchfab.com/3d-models/tesla-roadster-2020-1fbf29e297bd4a17ac39a00a378441d8",
+            "license": "CC BY 4.0",
+            "triangles": 608850,
+            "farTriangles": 48557,
+            "nativeCabin": true,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              64,
+              64
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {}
+          },
+          "monarch_db11": {
+            "gameTypes": [
+              "dbs"
+            ],
+            "title": "Aston Martin db11",
+            "author": "Black Snow",
+            "source": "https://sketchfab.com/3d-models/aston-martin-db11-0ce56f01b1ff40b3a4e36bc56873dbc7",
+            "license": "CC BY 4.0",
+            "triangles": 217999,
+            "farTriangles": 17295,
+            "nativeCabin": true,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              128,
+              128
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {}
+          },
+          "monarch_valkyrie": {
+            "gameTypes": [
+              "valkyrie"
+            ],
+            "title": "Aston Martin Valkyrie FREE",
+            "author": "MHDesigning",
+            "source": "https://sketchfab.com/3d-models/aston-martin-valkyrie-free-8c352d8ec67a4c3b9c1cb1467e06395c",
+            "license": "CC BY 4.0",
+            "triangles": 36364,
+            "farTriangles": 2999,
+            "nativeCabin": false,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              64,
+              64
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {}
+          },
+          "monarch_ccx": {
+            "gameTypes": [
+              "jasko"
+            ],
+            "title": "2007 Koenigsegg CCX (No Roof)",
+            "author": "_Sheep19 (https://sketchfab.com/shobhit190401)",
+            "source": "https://sketchfab.com/3d-models/2007-koenigsegg-ccx-no-roof-423b64e085974b97b5cfd5a87d9dcce3",
+            "license": "CC BY 4.0",
+            "triangles": 41225,
+            "farTriangles": 3319,
+            "nativeCabin": true,
+            "hasNormalMaps": true,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": true,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {
+              "albedo": [
+                1024,
+                1024
+              ],
+              "orm": [
+                1024,
+                1024
+              ],
+              "emissive": [
+                1024,
+                1024
+              ],
+              "normal": [
+                1024,
+                1024
+              ]
+            }
+          },
+          "monarch_p1_gtr": {
+            "gameTypes": [
+              "w1"
+            ],
+            "title": "Free McLaren P1 GTR",
+            "author": "Desiccated_Lemon (https://sketchfab.com/Desiccated_Lemon)",
+            "source": "https://sketchfab.com/3d-models/free-mclaren-p1-gtr-d805bec04cf5407fa7c036c20c726d39",
+            "license": "CC BY 4.0",
+            "triangles": 71888,
+            "farTriangles": 5735,
+            "nativeCabin": true,
+            "hasNormalMaps": true,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [],
+            "atlasSizes": {}
+          },
+          "monarch_huayra": {
+            "gameTypes": [
+              "sirocco"
+            ],
+            "title": "Pagani Huayra [Free]",
+            "author": "Black Snow (https://sketchfab.com/BlackSnow02)",
+            "source": "https://sketchfab.com/3d-models/pagani-huayra-free-c2d61a9f53a54a229547bb76e4b71e25",
+            "license": "CC BY 4.0",
+            "triangles": 290985,
+            "farTriangles": 23258,
+            "nativeCabin": true,
+            "hasNormalMaps": false,
+            "targetTextures": "high",
+            "expectedAtlas": [
+              64,
+              64
+            ],
+            "pendingTextures": {},
+            "texturesReady": true,
+            "nativeDoors": [],
+            "atlasSizes": {
+              "albedo": [
+                64,
+                64
+              ],
+              "orm": [
+                64,
+                64
+              ],
+              "emissive": [
+                64,
+                64
+              ]
+            }
+          },
+          "monarch_wayron": {
+            "gameTypes": [
+              "wayron"
+            ],
+            "title": "Bugatti Veyron 16.4 Super Sport - Lowpoly",
+            "author": "andikapratamaw (https://sketchfab.com/andikapratamaw)",
+            "source": "https://sketchfab.com/3d-models/bugatti-veyron-164-super-sport-lowpoly-0ee4c65face949efa4500deb17c79150",
+            "license": "CC BY 4.0",
+            "triangles": 35007,
+            "farTriangles": 4720,
+            "nativeCabin": false,
+            "hasNormalMaps": true,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [],
+            "atlasSizes": {}
+          },
+          "monarch_c8_hari": {
+            "gameTypes": [
+              "zr1x",
+              "chevetteSE"
+            ],
+            "title": "2019 Chevrolet Corvette C8 Stingray",
+            "author": "Hari (Hari31)",
+            "source": "https://sketchfab.com/3d-models/2019-chevrolet-corvette-c8-stingray-790c40ccff6843eab0b7b4bd18421ff8",
+            "license": "CC BY 4.0",
+            "triangles": 263683,
+            "farTriangles": 21055,
+            "nativeCabin": true,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {}
+          },
+          "monarch_tourbillon": {
+            "gameTypes": [
+              "tourbillon"
+            ],
+            "title": "Bugatti Tourbillon 2024",
+            "author": "MdMahib (https://sketchfab.com/MdMahib)",
+            "source": "https://sketchfab.com/3d-models/bugatti-tourbillon-2024-c992c9bc9ba8427197d5fe380eaa2b31",
+            "license": "CC BY 4.0",
+            "triangles": 386080,
+            "farTriangles": 30854,
+            "nativeCabin": true,
+            "hasNormalMaps": true,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": true,
+            "nativeDoors": [],
+            "atlasSizes": {
+              "albedo": [
+                1024,
+                1024
+              ],
+              "orm": [
+                1024,
+                1024
+              ],
+              "emissive": [
+                1024,
+                1024
+              ],
+              "normal": [
+                1024,
+                1024
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "file": "monarch-after-novera.png",
+      "sha256": "67344ee88e4589476970728fb3feb08909a6616b3b48f6eaa1bcfaa03260c6af",
+      "type": "novera",
+      "vehicleName": "RIMAK NOVERA",
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6000,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "novera",
+        "weapon": "9MM PISTOL",
+        "clock": "13:01",
+        "renderer": "3d",
+        "vehicles": 288,
+        "pedestrians": 595
+      },
+      "camera": {
+        "zoom": 11,
+        "target": 11,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 11,
+        "aim": 11,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 5.4,
+        "personPx": 144,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.55,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 14.1,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "asset": {
+        "title": "Tesla Roadster 2020",
+        "sourceKey": "monarch_roadster_ev",
+        "kind": "car",
+        "triangles": 608850,
+        "farTriangles": 48557,
+        "dims": [
+          4.750000000000001,
+          1.2111049790648667,
+          1.9416828037611846
+        ],
+        "wheels": 4,
+        "belt": 0.7678068929954687,
+        "roof": 1.21132072583371,
+        "paintTexture": true
+      },
+      "model": {
+        "id": 288,
+        "type": "novera",
+        "asset": "monarch_roadster_ev",
+        "far": false,
+        "triangles": 608850,
+        "visible": true,
+        "pool": {
+          "ready": false,
+          "instances": 0,
+          "triangles": 0
+        }
+      },
+      "damage": {
+        "id": 288,
+        "type": "novera",
+        "hp": 165,
+        "maxhp": 165,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 418,
+        "y": 6000,
+        "a": 0
+      },
+      "monarch": {
+        "loaded": true,
+        "enabled": true,
+        "reducedTextures": false,
+        "error": null,
+        "highSourceLimit": 1,
+        "heroType": "novera",
+        "heroSource": "monarch_roadster_ev",
+        "estimatedTextureMiB": 42.8,
+        "models": {
+          "monarch_laferrari": {
+            "gameTypes": [
+              "lafera"
+            ],
+            "title": "Ferrari Laferrari | www.vecarz.com",
+            "author": "vecarz",
+            "source": "https://sketchfab.com/3d-models/ferrari-laferrari-wwwvecarzcom-979f7085012e4d6399f38de3f9c39012",
+            "license": "CC BY 4.0",
+            "triangles": 587310,
+            "farTriangles": 46762,
+            "nativeCabin": true,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {}
+          },
+          "monarch_roadster_ev": {
+            "gameTypes": [
+              "novera"
+            ],
+            "title": "Tesla Roadster 2020",
+            "author": "metarex.4d",
+            "source": "https://sketchfab.com/3d-models/tesla-roadster-2020-1fbf29e297bd4a17ac39a00a378441d8",
+            "license": "CC BY 4.0",
+            "triangles": 608850,
+            "farTriangles": 48557,
+            "nativeCabin": true,
+            "hasNormalMaps": false,
+            "targetTextures": "high",
+            "expectedAtlas": [
+              64,
+              64
+            ],
+            "pendingTextures": {},
+            "texturesReady": true,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {
+              "albedo": [
+                64,
+                64
+              ],
+              "orm": [
+                64,
+                64
+              ],
+              "emissive": [
+                64,
+                64
+              ]
+            }
+          },
+          "monarch_db11": {
+            "gameTypes": [
+              "dbs"
+            ],
+            "title": "Aston Martin db11",
+            "author": "Black Snow",
+            "source": "https://sketchfab.com/3d-models/aston-martin-db11-0ce56f01b1ff40b3a4e36bc56873dbc7",
+            "license": "CC BY 4.0",
+            "triangles": 217999,
+            "farTriangles": 17295,
+            "nativeCabin": true,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              128,
+              128
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {}
+          },
+          "monarch_valkyrie": {
+            "gameTypes": [
+              "valkyrie"
+            ],
+            "title": "Aston Martin Valkyrie FREE",
+            "author": "MHDesigning",
+            "source": "https://sketchfab.com/3d-models/aston-martin-valkyrie-free-8c352d8ec67a4c3b9c1cb1467e06395c",
+            "license": "CC BY 4.0",
+            "triangles": 36364,
+            "farTriangles": 2999,
+            "nativeCabin": false,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              64,
+              64
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {}
+          },
+          "monarch_ccx": {
+            "gameTypes": [
+              "jasko"
+            ],
+            "title": "2007 Koenigsegg CCX (No Roof)",
+            "author": "_Sheep19 (https://sketchfab.com/shobhit190401)",
+            "source": "https://sketchfab.com/3d-models/2007-koenigsegg-ccx-no-roof-423b64e085974b97b5cfd5a87d9dcce3",
+            "license": "CC BY 4.0",
+            "triangles": 41225,
+            "farTriangles": 3319,
+            "nativeCabin": true,
+            "hasNormalMaps": true,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": true,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {
+              "albedo": [
+                1024,
+                1024
+              ],
+              "orm": [
+                1024,
+                1024
+              ],
+              "emissive": [
+                1024,
+                1024
+              ],
+              "normal": [
+                1024,
+                1024
+              ]
+            }
+          },
+          "monarch_p1_gtr": {
+            "gameTypes": [
+              "w1"
+            ],
+            "title": "Free McLaren P1 GTR",
+            "author": "Desiccated_Lemon (https://sketchfab.com/Desiccated_Lemon)",
+            "source": "https://sketchfab.com/3d-models/free-mclaren-p1-gtr-d805bec04cf5407fa7c036c20c726d39",
+            "license": "CC BY 4.0",
+            "triangles": 71888,
+            "farTriangles": 5735,
+            "nativeCabin": true,
+            "hasNormalMaps": true,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [],
+            "atlasSizes": {}
+          },
+          "monarch_huayra": {
+            "gameTypes": [
+              "sirocco"
+            ],
+            "title": "Pagani Huayra [Free]",
+            "author": "Black Snow (https://sketchfab.com/BlackSnow02)",
+            "source": "https://sketchfab.com/3d-models/pagani-huayra-free-c2d61a9f53a54a229547bb76e4b71e25",
+            "license": "CC BY 4.0",
+            "triangles": 290985,
+            "farTriangles": 23258,
+            "nativeCabin": true,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              64,
+              64
+            ],
+            "pendingTextures": {},
+            "texturesReady": true,
+            "nativeDoors": [],
+            "atlasSizes": {
+              "albedo": [
+                64,
+                64
+              ],
+              "orm": [
+                64,
+                64
+              ],
+              "emissive": [
+                64,
+                64
+              ]
+            }
+          },
+          "monarch_wayron": {
+            "gameTypes": [
+              "wayron"
+            ],
+            "title": "Bugatti Veyron 16.4 Super Sport - Lowpoly",
+            "author": "andikapratamaw (https://sketchfab.com/andikapratamaw)",
+            "source": "https://sketchfab.com/3d-models/bugatti-veyron-164-super-sport-lowpoly-0ee4c65face949efa4500deb17c79150",
+            "license": "CC BY 4.0",
+            "triangles": 35007,
+            "farTriangles": 4720,
+            "nativeCabin": false,
+            "hasNormalMaps": true,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [],
+            "atlasSizes": {}
+          },
+          "monarch_c8_hari": {
+            "gameTypes": [
+              "zr1x",
+              "chevetteSE"
+            ],
+            "title": "2019 Chevrolet Corvette C8 Stingray",
+            "author": "Hari (Hari31)",
+            "source": "https://sketchfab.com/3d-models/2019-chevrolet-corvette-c8-stingray-790c40ccff6843eab0b7b4bd18421ff8",
+            "license": "CC BY 4.0",
+            "triangles": 263683,
+            "farTriangles": 21055,
+            "nativeCabin": true,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {}
+          },
+          "monarch_tourbillon": {
+            "gameTypes": [
+              "tourbillon"
+            ],
+            "title": "Bugatti Tourbillon 2024",
+            "author": "MdMahib (https://sketchfab.com/MdMahib)",
+            "source": "https://sketchfab.com/3d-models/bugatti-tourbillon-2024-c992c9bc9ba8427197d5fe380eaa2b31",
+            "license": "CC BY 4.0",
+            "triangles": 386080,
+            "farTriangles": 30854,
+            "nativeCabin": true,
+            "hasNormalMaps": true,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": true,
+            "nativeDoors": [],
+            "atlasSizes": {
+              "albedo": [
+                1024,
+                1024
+              ],
+              "orm": [
+                1024,
+                1024
+              ],
+              "emissive": [
+                1024,
+                1024
+              ],
+              "normal": [
+                1024,
+                1024
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "file": "monarch-after-w1.png",
+      "sha256": "b5ddd6fec60f451e355f2f25910209f1199ba9404f55291812e99e632efe85cc",
+      "type": "w1",
+      "vehicleName": "McLOWEN W1",
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6000,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "w1",
+        "weapon": "9MM PISTOL",
+        "clock": "13:01",
+        "renderer": "3d",
+        "vehicles": 289,
+        "pedestrians": 595
+      },
+      "camera": {
+        "zoom": 11,
+        "target": 11,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 11,
+        "aim": 11,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 5.4,
+        "personPx": 144,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.55,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 15.67,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "asset": {
+        "title": "Free McLaren P1 GTR",
+        "sourceKey": "monarch_p1_gtr",
+        "kind": "car",
+        "triangles": 71888,
+        "farTriangles": 5735,
+        "dims": [
+          4.588,
+          1.1363321548860579,
+          1.9711610404511049
+        ],
+        "wheels": 4,
+        "belt": 0.6894029688920492,
+        "roof": 1.0644732567091448,
+        "paintTexture": true
+      },
+      "model": {
+        "id": 289,
+        "type": "w1",
+        "asset": "monarch_p1_gtr",
+        "far": false,
+        "triangles": 71888,
+        "visible": true,
+        "pool": {
+          "ready": false,
+          "instances": 0,
+          "triangles": 0
+        }
+      },
+      "damage": {
+        "id": 289,
+        "type": "w1",
+        "hp": 150,
+        "maxhp": 150,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 418,
+        "y": 6000,
+        "a": 0
+      },
+      "monarch": {
+        "loaded": true,
+        "enabled": true,
+        "reducedTextures": false,
+        "error": null,
+        "highSourceLimit": 1,
+        "heroType": "w1",
+        "heroSource": "monarch_p1_gtr",
+        "estimatedTextureMiB": 384.1,
+        "models": {
+          "monarch_laferrari": {
+            "gameTypes": [
+              "lafera"
+            ],
+            "title": "Ferrari Laferrari | www.vecarz.com",
+            "author": "vecarz",
+            "source": "https://sketchfab.com/3d-models/ferrari-laferrari-wwwvecarzcom-979f7085012e4d6399f38de3f9c39012",
+            "license": "CC BY 4.0",
+            "triangles": 587310,
+            "farTriangles": 46762,
+            "nativeCabin": true,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {}
+          },
+          "monarch_roadster_ev": {
+            "gameTypes": [
+              "novera"
+            ],
+            "title": "Tesla Roadster 2020",
+            "author": "metarex.4d",
+            "source": "https://sketchfab.com/3d-models/tesla-roadster-2020-1fbf29e297bd4a17ac39a00a378441d8",
+            "license": "CC BY 4.0",
+            "triangles": 608850,
+            "farTriangles": 48557,
+            "nativeCabin": true,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              64,
+              64
+            ],
+            "pendingTextures": {},
+            "texturesReady": true,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {
+              "albedo": [
+                64,
+                64
+              ],
+              "orm": [
+                64,
+                64
+              ],
+              "emissive": [
+                64,
+                64
+              ]
+            }
+          },
+          "monarch_db11": {
+            "gameTypes": [
+              "dbs"
+            ],
+            "title": "Aston Martin db11",
+            "author": "Black Snow",
+            "source": "https://sketchfab.com/3d-models/aston-martin-db11-0ce56f01b1ff40b3a4e36bc56873dbc7",
+            "license": "CC BY 4.0",
+            "triangles": 217999,
+            "farTriangles": 17295,
+            "nativeCabin": true,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              128,
+              128
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {}
+          },
+          "monarch_valkyrie": {
+            "gameTypes": [
+              "valkyrie"
+            ],
+            "title": "Aston Martin Valkyrie FREE",
+            "author": "MHDesigning",
+            "source": "https://sketchfab.com/3d-models/aston-martin-valkyrie-free-8c352d8ec67a4c3b9c1cb1467e06395c",
+            "license": "CC BY 4.0",
+            "triangles": 36364,
+            "farTriangles": 2999,
+            "nativeCabin": false,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              64,
+              64
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {}
+          },
+          "monarch_ccx": {
+            "gameTypes": [
+              "jasko"
+            ],
+            "title": "2007 Koenigsegg CCX (No Roof)",
+            "author": "_Sheep19 (https://sketchfab.com/shobhit190401)",
+            "source": "https://sketchfab.com/3d-models/2007-koenigsegg-ccx-no-roof-423b64e085974b97b5cfd5a87d9dcce3",
+            "license": "CC BY 4.0",
+            "triangles": 41225,
+            "farTriangles": 3319,
+            "nativeCabin": true,
+            "hasNormalMaps": true,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": true,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {
+              "albedo": [
+                1024,
+                1024
+              ],
+              "orm": [
+                1024,
+                1024
+              ],
+              "emissive": [
+                1024,
+                1024
+              ],
+              "normal": [
+                1024,
+                1024
+              ]
+            }
+          },
+          "monarch_p1_gtr": {
+            "gameTypes": [
+              "w1"
+            ],
+            "title": "Free McLaren P1 GTR",
+            "author": "Desiccated_Lemon (https://sketchfab.com/Desiccated_Lemon)",
+            "source": "https://sketchfab.com/3d-models/free-mclaren-p1-gtr-d805bec04cf5407fa7c036c20c726d39",
+            "license": "CC BY 4.0",
+            "triangles": 71888,
+            "farTriangles": 5735,
+            "nativeCabin": true,
+            "hasNormalMaps": true,
+            "targetTextures": "high",
+            "expectedAtlas": [
+              4096,
+              4096
+            ],
+            "pendingTextures": {},
+            "texturesReady": true,
+            "nativeDoors": [],
+            "atlasSizes": {
+              "albedo": [
+                4096,
+                4096
+              ],
+              "orm": [
+                4096,
+                4096
+              ],
+              "emissive": [
+                4096,
+                4096
+              ],
+              "normal": [
+                4096,
+                4096
+              ]
+            }
+          },
+          "monarch_huayra": {
+            "gameTypes": [
+              "sirocco"
+            ],
+            "title": "Pagani Huayra [Free]",
+            "author": "Black Snow (https://sketchfab.com/BlackSnow02)",
+            "source": "https://sketchfab.com/3d-models/pagani-huayra-free-c2d61a9f53a54a229547bb76e4b71e25",
+            "license": "CC BY 4.0",
+            "triangles": 290985,
+            "farTriangles": 23258,
+            "nativeCabin": true,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              64,
+              64
+            ],
+            "pendingTextures": {},
+            "texturesReady": true,
+            "nativeDoors": [],
+            "atlasSizes": {
+              "albedo": [
+                64,
+                64
+              ],
+              "orm": [
+                64,
+                64
+              ],
+              "emissive": [
+                64,
+                64
+              ]
+            }
+          },
+          "monarch_wayron": {
+            "gameTypes": [
+              "wayron"
+            ],
+            "title": "Bugatti Veyron 16.4 Super Sport - Lowpoly",
+            "author": "andikapratamaw (https://sketchfab.com/andikapratamaw)",
+            "source": "https://sketchfab.com/3d-models/bugatti-veyron-164-super-sport-lowpoly-0ee4c65face949efa4500deb17c79150",
+            "license": "CC BY 4.0",
+            "triangles": 35007,
+            "farTriangles": 4720,
+            "nativeCabin": false,
+            "hasNormalMaps": true,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [],
+            "atlasSizes": {}
+          },
+          "monarch_c8_hari": {
+            "gameTypes": [
+              "zr1x",
+              "chevetteSE"
+            ],
+            "title": "2019 Chevrolet Corvette C8 Stingray",
+            "author": "Hari (Hari31)",
+            "source": "https://sketchfab.com/3d-models/2019-chevrolet-corvette-c8-stingray-790c40ccff6843eab0b7b4bd18421ff8",
+            "license": "CC BY 4.0",
+            "triangles": 263683,
+            "farTriangles": 21055,
+            "nativeCabin": true,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {}
+          },
+          "monarch_tourbillon": {
+            "gameTypes": [
+              "tourbillon"
+            ],
+            "title": "Bugatti Tourbillon 2024",
+            "author": "MdMahib (https://sketchfab.com/MdMahib)",
+            "source": "https://sketchfab.com/3d-models/bugatti-tourbillon-2024-c992c9bc9ba8427197d5fe380eaa2b31",
+            "license": "CC BY 4.0",
+            "triangles": 386080,
+            "farTriangles": 30854,
+            "nativeCabin": true,
+            "hasNormalMaps": true,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": true,
+            "nativeDoors": [],
+            "atlasSizes": {
+              "albedo": [
+                1024,
+                1024
+              ],
+              "orm": [
+                1024,
+                1024
+              ],
+              "emissive": [
+                1024,
+                1024
+              ],
+              "normal": [
+                1024,
+                1024
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "file": "monarch-after-lafera.png",
+      "sha256": "9fbb5217f74ca035f494f0941719d7ef619312f9f4c5203660a9a1502d47206a",
+      "type": "lafera",
+      "vehicleName": "CAVALINO LA FERA",
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6000,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "lafera",
+        "weapon": "9MM PISTOL",
+        "clock": "13:01",
+        "renderer": "3d",
+        "vehicles": 290,
+        "pedestrians": 595
+      },
+      "camera": {
+        "zoom": 11,
+        "target": 11,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 11,
+        "aim": 11,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 5.4,
+        "personPx": 144,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.55,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 17.23,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "asset": {
+        "title": "Ferrari Laferrari | www.vecarz.com",
+        "sourceKey": "monarch_laferrari",
+        "kind": "car",
+        "triangles": 587310,
+        "farTriangles": 46762,
+        "dims": [
+          4.7,
+          1.1119339098337002,
+          2.1021266310492694
+        ],
+        "wheels": 4,
+        "belt": 0.7110211683513009,
+        "roof": 1.0606126861693719,
+        "paintTexture": true
+      },
+      "model": {
+        "id": 290,
+        "type": "lafera",
+        "asset": "monarch_laferrari",
+        "far": false,
+        "triangles": 587310,
+        "visible": true,
+        "pool": {
+          "ready": false,
+          "instances": 0,
+          "triangles": 0
+        }
+      },
+      "damage": {
+        "id": 290,
+        "type": "lafera",
+        "hp": 150,
+        "maxhp": 150,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 418,
+        "y": 6000,
+        "a": 0
+      },
+      "monarch": {
+        "loaded": true,
+        "enabled": true,
+        "reducedTextures": false,
+        "error": null,
+        "highSourceLimit": 1,
+        "heroType": "lafera",
+        "heroSource": "monarch_laferrari",
+        "estimatedTextureMiB": 320.1,
+        "models": {
+          "monarch_laferrari": {
+            "gameTypes": [
+              "lafera"
+            ],
+            "title": "Ferrari Laferrari | www.vecarz.com",
+            "author": "vecarz",
+            "source": "https://sketchfab.com/3d-models/ferrari-laferrari-wwwvecarzcom-979f7085012e4d6399f38de3f9c39012",
+            "license": "CC BY 4.0",
+            "triangles": 587310,
+            "farTriangles": 46762,
+            "nativeCabin": true,
+            "hasNormalMaps": false,
+            "targetTextures": "high",
+            "expectedAtlas": [
+              4096,
+              4096
+            ],
+            "pendingTextures": {},
+            "texturesReady": true,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {
+              "albedo": [
+                4096,
+                4096
+              ],
+              "orm": [
+                4096,
+                4096
+              ],
+              "emissive": [
+                4096,
+                4096
+              ]
+            }
+          },
+          "monarch_roadster_ev": {
+            "gameTypes": [
+              "novera"
+            ],
+            "title": "Tesla Roadster 2020",
+            "author": "metarex.4d",
+            "source": "https://sketchfab.com/3d-models/tesla-roadster-2020-1fbf29e297bd4a17ac39a00a378441d8",
+            "license": "CC BY 4.0",
+            "triangles": 608850,
+            "farTriangles": 48557,
+            "nativeCabin": true,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              64,
+              64
+            ],
+            "pendingTextures": {},
+            "texturesReady": true,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {
+              "albedo": [
+                64,
+                64
+              ],
+              "orm": [
+                64,
+                64
+              ],
+              "emissive": [
+                64,
+                64
+              ]
+            }
+          },
+          "monarch_db11": {
+            "gameTypes": [
+              "dbs"
+            ],
+            "title": "Aston Martin db11",
+            "author": "Black Snow",
+            "source": "https://sketchfab.com/3d-models/aston-martin-db11-0ce56f01b1ff40b3a4e36bc56873dbc7",
+            "license": "CC BY 4.0",
+            "triangles": 217999,
+            "farTriangles": 17295,
+            "nativeCabin": true,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              128,
+              128
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {}
+          },
+          "monarch_valkyrie": {
+            "gameTypes": [
+              "valkyrie"
+            ],
+            "title": "Aston Martin Valkyrie FREE",
+            "author": "MHDesigning",
+            "source": "https://sketchfab.com/3d-models/aston-martin-valkyrie-free-8c352d8ec67a4c3b9c1cb1467e06395c",
+            "license": "CC BY 4.0",
+            "triangles": 36364,
+            "farTriangles": 2999,
+            "nativeCabin": false,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              64,
+              64
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {}
+          },
+          "monarch_ccx": {
+            "gameTypes": [
+              "jasko"
+            ],
+            "title": "2007 Koenigsegg CCX (No Roof)",
+            "author": "_Sheep19 (https://sketchfab.com/shobhit190401)",
+            "source": "https://sketchfab.com/3d-models/2007-koenigsegg-ccx-no-roof-423b64e085974b97b5cfd5a87d9dcce3",
+            "license": "CC BY 4.0",
+            "triangles": 41225,
+            "farTriangles": 3319,
+            "nativeCabin": true,
+            "hasNormalMaps": true,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": true,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {
+              "albedo": [
+                1024,
+                1024
+              ],
+              "orm": [
+                1024,
+                1024
+              ],
+              "emissive": [
+                1024,
+                1024
+              ],
+              "normal": [
+                1024,
+                1024
+              ]
+            }
+          },
+          "monarch_p1_gtr": {
+            "gameTypes": [
+              "w1"
+            ],
+            "title": "Free McLaren P1 GTR",
+            "author": "Desiccated_Lemon (https://sketchfab.com/Desiccated_Lemon)",
+            "source": "https://sketchfab.com/3d-models/free-mclaren-p1-gtr-d805bec04cf5407fa7c036c20c726d39",
+            "license": "CC BY 4.0",
+            "triangles": 71888,
+            "farTriangles": 5735,
+            "nativeCabin": true,
+            "hasNormalMaps": true,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": true,
+            "nativeDoors": [],
+            "atlasSizes": {
+              "albedo": [
+                1024,
+                1024
+              ],
+              "orm": [
+                1024,
+                1024
+              ],
+              "emissive": [
+                1024,
+                1024
+              ],
+              "normal": [
+                1024,
+                1024
+              ]
+            }
+          },
+          "monarch_huayra": {
+            "gameTypes": [
+              "sirocco"
+            ],
+            "title": "Pagani Huayra [Free]",
+            "author": "Black Snow (https://sketchfab.com/BlackSnow02)",
+            "source": "https://sketchfab.com/3d-models/pagani-huayra-free-c2d61a9f53a54a229547bb76e4b71e25",
+            "license": "CC BY 4.0",
+            "triangles": 290985,
+            "farTriangles": 23258,
+            "nativeCabin": true,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              64,
+              64
+            ],
+            "pendingTextures": {},
+            "texturesReady": true,
+            "nativeDoors": [],
+            "atlasSizes": {
+              "albedo": [
+                64,
+                64
+              ],
+              "orm": [
+                64,
+                64
+              ],
+              "emissive": [
+                64,
+                64
+              ]
+            }
+          },
+          "monarch_wayron": {
+            "gameTypes": [
+              "wayron"
+            ],
+            "title": "Bugatti Veyron 16.4 Super Sport - Lowpoly",
+            "author": "andikapratamaw (https://sketchfab.com/andikapratamaw)",
+            "source": "https://sketchfab.com/3d-models/bugatti-veyron-164-super-sport-lowpoly-0ee4c65face949efa4500deb17c79150",
+            "license": "CC BY 4.0",
+            "triangles": 35007,
+            "farTriangles": 4720,
+            "nativeCabin": false,
+            "hasNormalMaps": true,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [],
+            "atlasSizes": {}
+          },
+          "monarch_c8_hari": {
+            "gameTypes": [
+              "zr1x",
+              "chevetteSE"
+            ],
+            "title": "2019 Chevrolet Corvette C8 Stingray",
+            "author": "Hari (Hari31)",
+            "source": "https://sketchfab.com/3d-models/2019-chevrolet-corvette-c8-stingray-790c40ccff6843eab0b7b4bd18421ff8",
+            "license": "CC BY 4.0",
+            "triangles": 263683,
+            "farTriangles": 21055,
+            "nativeCabin": true,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {}
+          },
+          "monarch_tourbillon": {
+            "gameTypes": [
+              "tourbillon"
+            ],
+            "title": "Bugatti Tourbillon 2024",
+            "author": "MdMahib (https://sketchfab.com/MdMahib)",
+            "source": "https://sketchfab.com/3d-models/bugatti-tourbillon-2024-c992c9bc9ba8427197d5fe380eaa2b31",
+            "license": "CC BY 4.0",
+            "triangles": 386080,
+            "farTriangles": 30854,
+            "nativeCabin": true,
+            "hasNormalMaps": true,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": true,
+            "nativeDoors": [],
+            "atlasSizes": {
+              "albedo": [
+                1024,
+                1024
+              ],
+              "orm": [
+                1024,
+                1024
+              ],
+              "emissive": [
+                1024,
+                1024
+              ],
+              "normal": [
+                1024,
+                1024
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "file": "monarch-after-roadster.png",
+      "sha256": "8955afa9a13cd4aedd1183b295be2370d6d326937c7f681826a8ae15dfa692bc",
+      "type": "roadster",
+      "vehicleName": "Chrynser Sebing",
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6000,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "roadster",
+        "weapon": "9MM PISTOL",
+        "clock": "13:01",
+        "renderer": "3d",
+        "vehicles": 291,
+        "pedestrians": 595
+      },
+      "camera": {
+        "zoom": 11,
+        "target": 11,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 11,
+        "aim": 11,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 5.4,
+        "personPx": 144,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.55,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 18.8,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "asset": {
+        "title": "Chrysler Sebring Convertible",
+        "sourceKey": "roadster",
+        "kind": "car",
+        "triangles": 16223,
+        "farTriangles": null,
+        "dims": [
+          4.9,
+          1.305,
+          1.915
+        ],
+        "wheels": 4,
+        "belt": 0.9136,
+        "roof": 1.2599,
+        "paintTexture": false
+      },
+      "damage": {
+        "id": 291,
+        "type": "roadster",
+        "hp": 120,
+        "maxhp": 120,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 418,
+        "y": 6000,
+        "a": 0
+      },
+      "monarch": {
+        "loaded": true,
+        "enabled": true,
+        "reducedTextures": false,
+        "error": null,
+        "highSourceLimit": 1,
+        "heroType": null,
+        "heroSource": null,
+        "estimatedTextureMiB": 80.1,
+        "models": {
+          "monarch_laferrari": {
+            "gameTypes": [
+              "lafera"
+            ],
+            "title": "Ferrari Laferrari | www.vecarz.com",
+            "author": "vecarz",
+            "source": "https://sketchfab.com/3d-models/ferrari-laferrari-wwwvecarzcom-979f7085012e4d6399f38de3f9c39012",
+            "license": "CC BY 4.0",
+            "triangles": 587310,
+            "farTriangles": 46762,
+            "nativeCabin": true,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": true,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {
+              "albedo": [
+                1024,
+                1024
+              ],
+              "orm": [
+                1024,
+                1024
+              ],
+              "emissive": [
+                1024,
+                1024
+              ]
+            }
+          },
+          "monarch_roadster_ev": {
+            "gameTypes": [
+              "novera"
+            ],
+            "title": "Tesla Roadster 2020",
+            "author": "metarex.4d",
+            "source": "https://sketchfab.com/3d-models/tesla-roadster-2020-1fbf29e297bd4a17ac39a00a378441d8",
+            "license": "CC BY 4.0",
+            "triangles": 608850,
+            "farTriangles": 48557,
+            "nativeCabin": true,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              64,
+              64
+            ],
+            "pendingTextures": {},
+            "texturesReady": true,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {
+              "albedo": [
+                64,
+                64
+              ],
+              "orm": [
+                64,
+                64
+              ],
+              "emissive": [
+                64,
+                64
+              ]
+            }
+          },
+          "monarch_db11": {
+            "gameTypes": [
+              "dbs"
+            ],
+            "title": "Aston Martin db11",
+            "author": "Black Snow",
+            "source": "https://sketchfab.com/3d-models/aston-martin-db11-0ce56f01b1ff40b3a4e36bc56873dbc7",
+            "license": "CC BY 4.0",
+            "triangles": 217999,
+            "farTriangles": 17295,
+            "nativeCabin": true,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              128,
+              128
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {}
+          },
+          "monarch_valkyrie": {
+            "gameTypes": [
+              "valkyrie"
+            ],
+            "title": "Aston Martin Valkyrie FREE",
+            "author": "MHDesigning",
+            "source": "https://sketchfab.com/3d-models/aston-martin-valkyrie-free-8c352d8ec67a4c3b9c1cb1467e06395c",
+            "license": "CC BY 4.0",
+            "triangles": 36364,
+            "farTriangles": 2999,
+            "nativeCabin": false,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              64,
+              64
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {}
+          },
+          "monarch_ccx": {
+            "gameTypes": [
+              "jasko"
+            ],
+            "title": "2007 Koenigsegg CCX (No Roof)",
+            "author": "_Sheep19 (https://sketchfab.com/shobhit190401)",
+            "source": "https://sketchfab.com/3d-models/2007-koenigsegg-ccx-no-roof-423b64e085974b97b5cfd5a87d9dcce3",
+            "license": "CC BY 4.0",
+            "triangles": 41225,
+            "farTriangles": 3319,
+            "nativeCabin": true,
+            "hasNormalMaps": true,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": true,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {
+              "albedo": [
+                1024,
+                1024
+              ],
+              "orm": [
+                1024,
+                1024
+              ],
+              "emissive": [
+                1024,
+                1024
+              ],
+              "normal": [
+                1024,
+                1024
+              ]
+            }
+          },
+          "monarch_p1_gtr": {
+            "gameTypes": [
+              "w1"
+            ],
+            "title": "Free McLaren P1 GTR",
+            "author": "Desiccated_Lemon (https://sketchfab.com/Desiccated_Lemon)",
+            "source": "https://sketchfab.com/3d-models/free-mclaren-p1-gtr-d805bec04cf5407fa7c036c20c726d39",
+            "license": "CC BY 4.0",
+            "triangles": 71888,
+            "farTriangles": 5735,
+            "nativeCabin": true,
+            "hasNormalMaps": true,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": true,
+            "nativeDoors": [],
+            "atlasSizes": {
+              "albedo": [
+                1024,
+                1024
+              ],
+              "orm": [
+                1024,
+                1024
+              ],
+              "emissive": [
+                1024,
+                1024
+              ],
+              "normal": [
+                1024,
+                1024
+              ]
+            }
+          },
+          "monarch_huayra": {
+            "gameTypes": [
+              "sirocco"
+            ],
+            "title": "Pagani Huayra [Free]",
+            "author": "Black Snow (https://sketchfab.com/BlackSnow02)",
+            "source": "https://sketchfab.com/3d-models/pagani-huayra-free-c2d61a9f53a54a229547bb76e4b71e25",
+            "license": "CC BY 4.0",
+            "triangles": 290985,
+            "farTriangles": 23258,
+            "nativeCabin": true,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              64,
+              64
+            ],
+            "pendingTextures": {},
+            "texturesReady": true,
+            "nativeDoors": [],
+            "atlasSizes": {
+              "albedo": [
+                64,
+                64
+              ],
+              "orm": [
+                64,
+                64
+              ],
+              "emissive": [
+                64,
+                64
+              ]
+            }
+          },
+          "monarch_wayron": {
+            "gameTypes": [
+              "wayron"
+            ],
+            "title": "Bugatti Veyron 16.4 Super Sport - Lowpoly",
+            "author": "andikapratamaw (https://sketchfab.com/andikapratamaw)",
+            "source": "https://sketchfab.com/3d-models/bugatti-veyron-164-super-sport-lowpoly-0ee4c65face949efa4500deb17c79150",
+            "license": "CC BY 4.0",
+            "triangles": 35007,
+            "farTriangles": 4720,
+            "nativeCabin": false,
+            "hasNormalMaps": true,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [],
+            "atlasSizes": {}
+          },
+          "monarch_c8_hari": {
+            "gameTypes": [
+              "zr1x",
+              "chevetteSE"
+            ],
+            "title": "2019 Chevrolet Corvette C8 Stingray",
+            "author": "Hari (Hari31)",
+            "source": "https://sketchfab.com/3d-models/2019-chevrolet-corvette-c8-stingray-790c40ccff6843eab0b7b4bd18421ff8",
+            "license": "CC BY 4.0",
+            "triangles": 263683,
+            "farTriangles": 21055,
+            "nativeCabin": true,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {}
+          },
+          "monarch_tourbillon": {
+            "gameTypes": [
+              "tourbillon"
+            ],
+            "title": "Bugatti Tourbillon 2024",
+            "author": "MdMahib (https://sketchfab.com/MdMahib)",
+            "source": "https://sketchfab.com/3d-models/bugatti-tourbillon-2024-c992c9bc9ba8427197d5fe380eaa2b31",
+            "license": "CC BY 4.0",
+            "triangles": 386080,
+            "farTriangles": 30854,
+            "nativeCabin": true,
+            "hasNormalMaps": true,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": true,
+            "nativeDoors": [],
+            "atlasSizes": {
+              "albedo": [
+                1024,
+                1024
+              ],
+              "orm": [
+                1024,
+                1024
+              ],
+              "emissive": [
+                1024,
+                1024
+              ],
+              "normal": [
+                1024,
+                1024
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "file": "monarch-after-cruiser.png",
+      "sha256": "cb86f7ebb11cdf44c8ecaa2dc2d176b8f0324a55e3159f621e0e1d12f417a828",
+      "type": "cruiser",
+      "vehicleName": "Chorley 72",
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6000,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "cruiser",
+        "weapon": "9MM PISTOL",
+        "clock": "13:01",
+        "renderer": "3d",
+        "vehicles": 292,
+        "pedestrians": 595
+      },
+      "camera": {
+        "zoom": 11,
+        "target": 11,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.508,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 11,
+        "aim": 11,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 5.4,
+        "personPx": 144,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.55,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 20.37,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "asset": {
+        "title": "Harley-Davidson Seventy-Two HD FXT 2015",
+        "sourceKey": "cruiser",
+        "kind": "moto",
+        "triangles": 10404,
+        "farTriangles": null,
+        "dims": [
+          2.473,
+          1.406,
+          1.043
+        ],
+        "wheels": 2,
+        "belt": null,
+        "roof": null,
+        "paintTexture": false
+      },
+      "damage": {
+        "id": 292,
+        "type": "cruiser",
+        "hp": 110,
+        "maxhp": 110,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 418,
+        "y": 6000,
+        "a": 0
+      },
+      "monarch": {
+        "loaded": true,
+        "enabled": true,
+        "reducedTextures": false,
+        "error": null,
+        "highSourceLimit": 1,
+        "heroType": null,
+        "heroSource": null,
+        "estimatedTextureMiB": 80.1,
+        "models": {
+          "monarch_laferrari": {
+            "gameTypes": [
+              "lafera"
+            ],
+            "title": "Ferrari Laferrari | www.vecarz.com",
+            "author": "vecarz",
+            "source": "https://sketchfab.com/3d-models/ferrari-laferrari-wwwvecarzcom-979f7085012e4d6399f38de3f9c39012",
+            "license": "CC BY 4.0",
+            "triangles": 587310,
+            "farTriangles": 46762,
+            "nativeCabin": true,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": true,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {
+              "albedo": [
+                1024,
+                1024
+              ],
+              "orm": [
+                1024,
+                1024
+              ],
+              "emissive": [
+                1024,
+                1024
+              ]
+            }
+          },
+          "monarch_roadster_ev": {
+            "gameTypes": [
+              "novera"
+            ],
+            "title": "Tesla Roadster 2020",
+            "author": "metarex.4d",
+            "source": "https://sketchfab.com/3d-models/tesla-roadster-2020-1fbf29e297bd4a17ac39a00a378441d8",
+            "license": "CC BY 4.0",
+            "triangles": 608850,
+            "farTriangles": 48557,
+            "nativeCabin": true,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              64,
+              64
+            ],
+            "pendingTextures": {},
+            "texturesReady": true,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {
+              "albedo": [
+                64,
+                64
+              ],
+              "orm": [
+                64,
+                64
+              ],
+              "emissive": [
+                64,
+                64
+              ]
+            }
+          },
+          "monarch_db11": {
+            "gameTypes": [
+              "dbs"
+            ],
+            "title": "Aston Martin db11",
+            "author": "Black Snow",
+            "source": "https://sketchfab.com/3d-models/aston-martin-db11-0ce56f01b1ff40b3a4e36bc56873dbc7",
+            "license": "CC BY 4.0",
+            "triangles": 217999,
+            "farTriangles": 17295,
+            "nativeCabin": true,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              128,
+              128
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {}
+          },
+          "monarch_valkyrie": {
+            "gameTypes": [
+              "valkyrie"
+            ],
+            "title": "Aston Martin Valkyrie FREE",
+            "author": "MHDesigning",
+            "source": "https://sketchfab.com/3d-models/aston-martin-valkyrie-free-8c352d8ec67a4c3b9c1cb1467e06395c",
+            "license": "CC BY 4.0",
+            "triangles": 36364,
+            "farTriangles": 2999,
+            "nativeCabin": false,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              64,
+              64
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {}
+          },
+          "monarch_ccx": {
+            "gameTypes": [
+              "jasko"
+            ],
+            "title": "2007 Koenigsegg CCX (No Roof)",
+            "author": "_Sheep19 (https://sketchfab.com/shobhit190401)",
+            "source": "https://sketchfab.com/3d-models/2007-koenigsegg-ccx-no-roof-423b64e085974b97b5cfd5a87d9dcce3",
+            "license": "CC BY 4.0",
+            "triangles": 41225,
+            "farTriangles": 3319,
+            "nativeCabin": true,
+            "hasNormalMaps": true,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": true,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {
+              "albedo": [
+                1024,
+                1024
+              ],
+              "orm": [
+                1024,
+                1024
+              ],
+              "emissive": [
+                1024,
+                1024
+              ],
+              "normal": [
+                1024,
+                1024
+              ]
+            }
+          },
+          "monarch_p1_gtr": {
+            "gameTypes": [
+              "w1"
+            ],
+            "title": "Free McLaren P1 GTR",
+            "author": "Desiccated_Lemon (https://sketchfab.com/Desiccated_Lemon)",
+            "source": "https://sketchfab.com/3d-models/free-mclaren-p1-gtr-d805bec04cf5407fa7c036c20c726d39",
+            "license": "CC BY 4.0",
+            "triangles": 71888,
+            "farTriangles": 5735,
+            "nativeCabin": true,
+            "hasNormalMaps": true,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": true,
+            "nativeDoors": [],
+            "atlasSizes": {
+              "albedo": [
+                1024,
+                1024
+              ],
+              "orm": [
+                1024,
+                1024
+              ],
+              "emissive": [
+                1024,
+                1024
+              ],
+              "normal": [
+                1024,
+                1024
+              ]
+            }
+          },
+          "monarch_huayra": {
+            "gameTypes": [
+              "sirocco"
+            ],
+            "title": "Pagani Huayra [Free]",
+            "author": "Black Snow (https://sketchfab.com/BlackSnow02)",
+            "source": "https://sketchfab.com/3d-models/pagani-huayra-free-c2d61a9f53a54a229547bb76e4b71e25",
+            "license": "CC BY 4.0",
+            "triangles": 290985,
+            "farTriangles": 23258,
+            "nativeCabin": true,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              64,
+              64
+            ],
+            "pendingTextures": {},
+            "texturesReady": true,
+            "nativeDoors": [],
+            "atlasSizes": {
+              "albedo": [
+                64,
+                64
+              ],
+              "orm": [
+                64,
+                64
+              ],
+              "emissive": [
+                64,
+                64
+              ]
+            }
+          },
+          "monarch_wayron": {
+            "gameTypes": [
+              "wayron"
+            ],
+            "title": "Bugatti Veyron 16.4 Super Sport - Lowpoly",
+            "author": "andikapratamaw (https://sketchfab.com/andikapratamaw)",
+            "source": "https://sketchfab.com/3d-models/bugatti-veyron-164-super-sport-lowpoly-0ee4c65face949efa4500deb17c79150",
+            "license": "CC BY 4.0",
+            "triangles": 35007,
+            "farTriangles": 4720,
+            "nativeCabin": false,
+            "hasNormalMaps": true,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [],
+            "atlasSizes": {}
+          },
+          "monarch_c8_hari": {
+            "gameTypes": [
+              "zr1x",
+              "chevetteSE"
+            ],
+            "title": "2019 Chevrolet Corvette C8 Stingray",
+            "author": "Hari (Hari31)",
+            "source": "https://sketchfab.com/3d-models/2019-chevrolet-corvette-c8-stingray-790c40ccff6843eab0b7b4bd18421ff8",
+            "license": "CC BY 4.0",
+            "triangles": 263683,
+            "farTriangles": 21055,
+            "nativeCabin": true,
+            "hasNormalMaps": false,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": false,
+            "nativeDoors": [
+              "left",
+              "right"
+            ],
+            "atlasSizes": {}
+          },
+          "monarch_tourbillon": {
+            "gameTypes": [
+              "tourbillon"
+            ],
+            "title": "Bugatti Tourbillon 2024",
+            "author": "MdMahib (https://sketchfab.com/MdMahib)",
+            "source": "https://sketchfab.com/3d-models/bugatti-tourbillon-2024-c992c9bc9ba8427197d5fe380eaa2b31",
+            "license": "CC BY 4.0",
+            "triangles": 386080,
+            "farTriangles": 30854,
+            "nativeCabin": true,
+            "hasNormalMaps": true,
+            "targetTextures": "low",
+            "expectedAtlas": [
+              1024,
+              1024
+            ],
+            "pendingTextures": {},
+            "texturesReady": true,
+            "nativeDoors": [],
+            "atlasSizes": {
+              "albedo": [
+                1024,
+                1024
+              ],
+              "orm": [
+                1024,
+                1024
+              ],
+              "emissive": [
+                1024,
+                1024
+              ],
+              "normal": [
+                1024,
+                1024
+              ]
+            }
+          }
+        }
+      }
+    }
+  ],
+  "errors": [],
+  "warnings": [
+    "Scripts \"build/three.js\" and \"build/three.min.js\" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation"
+  ],
+  "pass": true
+}

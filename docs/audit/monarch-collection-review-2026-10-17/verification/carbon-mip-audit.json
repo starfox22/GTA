@@ -1,0 +1,358 @@
+{
+  "nativeRect": {
+    "rect": [
+      0.88378728923476,
+      0.000976577401388571,
+      0.06250095368886854,
+      0.06250095368886854
+    ],
+    "pixels": [
+      1810,
+      2,
+      128,
+      128
+    ],
+    "atlas": [
+      2048,
+      2048
+    ]
+  },
+  "method": "Independent linear box-mip chain + bilinear/trilinear sampling; not GPU measurement",
+  "channels": {
+    "albedo": {
+      "nativeRGB255Range": [
+        [
+          15.0,
+          15.0,
+          15.0
+        ],
+        [
+          37.0,
+          37.0,
+          37.0
+        ]
+      ],
+      "mips": [
+        {
+          "footprintPixels": 1,
+          "unprotectedMaxRGB255": [
+            37.0,
+            37.0,
+            37.0
+          ],
+          "guardedMaxRGB255": [
+            37.0,
+            37.0,
+            37.0
+          ]
+        },
+        {
+          "footprintPixels": 2,
+          "unprotectedMaxRGB255": [
+            37.0,
+            37.0,
+            37.0
+          ],
+          "guardedMaxRGB255": [
+            37.0,
+            37.0,
+            37.0
+          ]
+        },
+        {
+          "footprintPixels": 4,
+          "unprotectedMaxRGB255": [
+            37.0,
+            37.0,
+            37.0
+          ],
+          "guardedMaxRGB255": [
+            37.0,
+            37.0,
+            37.0
+          ]
+        },
+        {
+          "footprintPixels": 8,
+          "unprotectedMaxRGB255": [
+            151.3307568485097,
+            151.3307568485097,
+            151.3307568485097
+          ],
+          "guardedMaxRGB255": [
+            35.753619728725056,
+            35.753619728725056,
+            35.753619728725056
+          ]
+        },
+        {
+          "footprintPixels": 16,
+          "unprotectedMaxRGB255": [
+            166.08409849142598,
+            166.08409849142598,
+            166.08409849142598
+          ],
+          "guardedMaxRGB255": [
+            30.240145607617794,
+            30.240145607617794,
+            30.240145607617794
+          ]
+        },
+        {
+          "footprintPixels": 32,
+          "unprotectedMaxRGB255": [
+            157.26877986441087,
+            157.26877986441087,
+            157.26877986441087
+          ],
+          "guardedMaxRGB255": [
+            30.240145607617794,
+            30.240145607617794,
+            30.240145607617794
+          ]
+        },
+        {
+          "footprintPixels": 64,
+          "unprotectedMaxRGB255": [
+            176.17409901606064,
+            176.17409901606064,
+            176.17409901606064
+          ],
+          "guardedMaxRGB255": [
+            30.240145607617794,
+            30.240145607617794,
+            30.240145607617794
+          ]
+        }
+      ]
+    },
+    "orm": {
+      "nativeRGB255Range": [
+        [
+          255.0,
+          7.0,
+          255.0
+        ],
+        [
+          255.0,
+          178.0,
+          255.0
+        ]
+      ],
+      "mips": [
+        {
+          "footprintPixels": 1,
+          "unprotectedMaxRGB255": [
+            255.0,
+            176.0,
+            255.0
+          ],
+          "guardedMaxRGB255": [
+            255.0,
+            176.0,
+            255.0
+          ]
+        },
+        {
+          "footprintPixels": 2,
+          "unprotectedMaxRGB255": [
+            255.0,
+            175.6875,
+            255.0
+          ],
+          "guardedMaxRGB255": [
+            255.0,
+            175.625,
+            255.0
+          ]
+        },
+        {
+          "footprintPixels": 4,
+          "unprotectedMaxRGB255": [
+            255.0,
+            175.5625,
+            255.0
+          ],
+          "guardedMaxRGB255": [
+            255.0,
+            160.3125,
+            255.0
+          ]
+        },
+        {
+          "footprintPixels": 8,
+          "unprotectedMaxRGB255": [
+            255.0,
+            186.8828125,
+            255.0
+          ],
+          "guardedMaxRGB255": [
+            255.0,
+            141.89062500000003,
+            255.0
+          ]
+        },
+        {
+          "footprintPixels": 16,
+          "unprotectedMaxRGB255": [
+            255.0,
+            207.2252197265625,
+            255.0
+          ],
+          "guardedMaxRGB255": [
+            255.0,
+            104.2421875,
+            255.0
+          ]
+        },
+        {
+          "footprintPixels": 32,
+          "unprotectedMaxRGB255": [
+            255.0,
+            207.70431518554688,
+            255.0
+          ],
+          "guardedMaxRGB255": [
+            255.0,
+            104.2421875,
+            255.0
+          ]
+        },
+        {
+          "footprintPixels": 64,
+          "unprotectedMaxRGB255": [
+            255.0,
+            217.62023448944092,
+            255.0
+          ],
+          "guardedMaxRGB255": [
+            255.0,
+            104.2421875,
+            255.0
+          ]
+        }
+      ]
+    },
+    "normal": {
+      "nativeRGB255Range": [
+        [
+          128.0,
+          128.0,
+          255.0
+        ],
+        [
+          128.0,
+          128.0,
+          255.0
+        ]
+      ],
+      "mips": [
+        {
+          "footprintPixels": 1,
+          "unprotectedMaxRGB255": [
+            128.0,
+            128.0,
+            255.0
+          ],
+          "guardedMaxRGB255": [
+            128.0,
+            128.0,
+            255.0
+          ],
+          "unprotectedMaxNormalAngleDegrees": 0.0,
+          "guardedMaxNormalAngleDegrees": 0.0
+        },
+        {
+          "footprintPixels": 2,
+          "unprotectedMaxRGB255": [
+            128.0,
+            128.0,
+            255.0
+          ],
+          "guardedMaxRGB255": [
+            128.0,
+            128.0,
+            255.0
+          ],
+          "unprotectedMaxNormalAngleDegrees": 0.0,
+          "guardedMaxNormalAngleDegrees": 0.0
+        },
+        {
+          "footprintPixels": 4,
+          "unprotectedMaxRGB255": [
+            128.0,
+            128.0,
+            255.0
+          ],
+          "guardedMaxRGB255": [
+            128.0,
+            128.0,
+            255.0
+          ],
+          "unprotectedMaxNormalAngleDegrees": 0.0,
+          "guardedMaxNormalAngleDegrees": 0.0
+        },
+        {
+          "footprintPixels": 8,
+          "unprotectedMaxRGB255": [
+            151.625,
+            168.546875,
+            255.0
+          ],
+          "guardedMaxRGB255": [
+            128.0,
+            128.0,
+            255.0
+          ],
+          "unprotectedMaxNormalAngleDegrees": 27.349726345735917,
+          "guardedMaxNormalAngleDegrees": 0.0
+        },
+        {
+          "footprintPixels": 16,
+          "unprotectedMaxRGB255": [
+            155.41210937499997,
+            170.98095703125,
+            255.0
+          ],
+          "guardedMaxRGB255": [
+            128.0,
+            128.0,
+            255.0
+          ],
+          "unprotectedMaxNormalAngleDegrees": 29.286213093298205,
+          "guardedMaxNormalAngleDegrees": 0.0
+        },
+        {
+          "footprintPixels": 32,
+          "unprotectedMaxRGB255": [
+            151.842529296875,
+            148.35382080078125,
+            255.0
+          ],
+          "guardedMaxRGB255": [
+            128.0,
+            128.0,
+            255.0
+          ],
+          "unprotectedMaxNormalAngleDegrees": 14.289031059991157,
+          "guardedMaxNormalAngleDegrees": 0.0
+        },
+        {
+          "footprintPixels": 64,
+          "unprotectedMaxRGB255": [
+            135.9980621337891,
+            140.61083221435544,
+            255.0
+          ],
+          "guardedMaxRGB255": [
+            128.0,
+            128.0,
+            255.0
+          ],
+          "unprotectedMaxNormalAngleDegrees": 6.74973127741526,
+          "guardedMaxNormalAngleDegrees": 0.0
+        }
+      ]
+    }
+  }
+}

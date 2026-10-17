@@ -1,0 +1,54 @@
+{
+  "source": "/workspace/GTA/work/monarch-sources-b/tourbillon-mahib.glb",
+  "sourceSha256": "d2fbcc87a9fd4d842a398947e3fa6f5680c606455e01ea5a80dab6b0735d7ded",
+  "sourceBytes": 22476496,
+  "scriptSha256": "a3b96fbd53bd3b8bb71aca3f7520142229c05d0643ac16dc9db56e4e59895c8e",
+  "blender": "4.3.2",
+  "platform": "Linux-6.18.44-x86_64-with-glibc2.41",
+  "engine": "CYCLES",
+  "device": "CPU",
+  "samples": 32,
+  "denoising": false,
+  "resolution": [
+    640,
+    400
+  ],
+  "originalBlenderBounds": [
+    [
+      -1.0916727781295776,
+      -2.3372952938079834,
+      -0.0027443733997642994
+    ],
+    [
+      1.0916727781295776,
+      2.340337038040161,
+      1.2003730535507202
+    ]
+  ],
+  "sourceMeshObjects": 49,
+  "sourceTriangles": 386080,
+  "sourceMaterials": 32,
+  "sourceModified": false,
+  "doors": "closed as authored",
+  "description": "Independent Blender render of original downloaded source. Studio camera, lights and floor added; source meshes, transforms and materials unchanged. Not a gameplay screenshot.",
+  "captures": [
+    {
+      "file": "source-front-three-quarter.png",
+      "sha256": "7746a5840f1f18d4a4e1e6f173f2f4906a0f0b9600d7ae4951fcf97c81eb64d3",
+      "bytes": 341594,
+      "seconds": 15.679,
+      "cameraPosition": [
+        -4.443750858306885,
+        -5.611638069152832,
+        3.4053940773010254
+      ],
+      "cameraEuler": [
+        1.197185754776001,
+        -6.962650189734632e-08,
+        -0.6696391105651855
+      ],
+      "orthoScale": 5.987369537353516
+    }
+  ],
+  "viewTransform": "AgX"
+}

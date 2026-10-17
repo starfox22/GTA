@@ -78,10 +78,19 @@ coarse global atlas mips from reaching neighbouring material tiles. The original
 two-pixel gutter is scaled correctly at Low. This is an approximation to periodic
 minified-edge filtering: raw authored UVs and the normal tangent frame remain
 unchanged, while the sampling centre moves inward near a minified tile edge.
+Clean private paint uses neutral roughness/metalness multipliers so the normal
+wear pass cannot apply a second generic colour-dependent finish to source PBR.
 Near source geometry is immutable; do not deform it or dispose a shared resource
 when a vehicle retires. Dynamic source door assemblies retain original closed
 face ownership, and source-fixed calipers cancel wheel rotation. Missing cabin
 geometry receives an explicitly fitted game cabin.
+High/Ultra promote only the driven source family, or the nearest display within
+18 metres on foot with hysteresis. Every other source uses the <=1024 atlas.
+Demote the old family synchronously to its retained Low image before promotion;
+stale asynchronous loads cannot replace a newer tier. `monarchAssets()` exposes
+the focus, target dimensions, pending channels and measured loaded dimensions
+for native readiness checks. Its RGBA8+mip estimate excludes geometry and other
+game resources. Source atlas files and close geometry remain at full detail.
 Measured source seats may pass `fixed`, `floor`, `minHipY` and `pedal` controls;
 generic fallback constraints remain unchanged when these fields are absent.
 The `monarch_roadster_ev` source authors both `Sidewall` and `Thread` rubber with

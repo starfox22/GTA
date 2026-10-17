@@ -5,6 +5,7 @@
 | Method | Purpose |
 | --- | --- |
 | `sportsAssets()` | Read-only C8 pack identity, near/far triangle counts, loaded atlas sizes, reduced-texture state and native door names. `assetCars()` also includes the active Chevette source. |
+| `monarchAssets()` | Read-only downloaded Monarch collection sources, retained game-type mappings, near/far counts, loaded texture sizes and live renderer model identities. |
 | `hotrodAssets()` | Read-only Coupe '33 source identity, close/far triangle counts, loaded atlas sizes and reduced-texture state; `assetCars()` also lists the active hotrod. |
 | `vehicleDoors(id)` | Read-only actual rendered front-door hinges, angles, source layers, aperture masks and cabin geometry; omit `id` to report all built models. |
 | `sceneryPools(on)` | Immutable rooftop pools, currently solar panels (`scenery-pools3d.js`): `false` restores whole pools for A/B, `true` restores automatic spatial chunks with shadows off and no extra draws. Reports source/chunk counts, extra matrix bytes, per-pool `split`/`invalid`, and `viewInstancesBound` / `viewDrawsBound` (camera-frustum upper bounds, not GPU timings or shadow draw counts). Use `stats()` / `drawProfile()` for actual submitted work; real-device procedure: `docs/audit/laptop-profiling.md` |

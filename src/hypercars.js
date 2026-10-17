@@ -262,19 +262,20 @@
     }
     // In the console's carLineup() with the other flagships.
     CIVILIAN_LINEUP.push(...Object.keys(PRESTIGE_TYPES));
-    // Their glasshouses, in the numbers hypercars3d.js builds them with (damage.js).
+    // Measured downloaded-source glazing; keep collision and drive-by windows
+    // aligned with the Monarch kits, including the open-top CCX alternative.
     Object.assign(CAR_GLASS_BANDS, {
-      valkyrie: [0.72, 1.06, -0.3, 0.2],
-      dbs: [0.93, 1.26, -0.38, 0.1],
-      zr1x: [0.88, 1.22, -0.42, 0.13],
-      chevetteSE: [0.88, 1.22, -0.42, 0.13],
-      wayron: [0.86, 1.18, -0.2, 0.18],
-      tourbillon: [0.86, 1.18, -0.22, 0.18],
-      jasko: [0.86, 1.2, -0.2, 0.2],
-      sirocco: [0.84, 1.16, -0.2, 0.19],
-      novera: [0.88, 1.2, -0.22, 0.18],
-      w1: [0.84, 1.17, -0.22, 0.2],
-      lafera: [0.82, 1.12, -0.18, 0.2],
+      valkyrie: [0.723313276, 0.988157053, -0.051121028, 0.297176145],
+      dbs: [0.873963944, 1.246595531, -0.446949924, 0.183541464],
+      zr1x: [0.799701403, 1.187845718, -0.15486308, 0.197634482],
+      chevetteSE: [0.799701403, 1.187845718, -0.15486308, 0.197634482],
+      wayron: [0.828877996, 1.15096584, -0.072186519, 0.277834894],
+      tourbillon: [0.536270856, 1.099959945, 0.069240189, 0.131133381],
+      jasko: [0.704434863, 1.003790177, -0.033588542, 0.280162701, true],
+      sirocco: [0.767368081, 1.145572007, -0.28311549, 0.26649377],
+      novera: [0.767806893, 1.211320726, -0.412647872, 0.273220652],
+      w1: [0.689402969, 1.064473257, -0.055451268, 0.282244312],
+      lafera: [0.711021168, 1.060612686, -0.417064886, 0.250042804],
     });
     /**
      * ENGINES. Sets from the recorded loops (engine-audio.js ENGINE_SETS) with

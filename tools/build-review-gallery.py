@@ -8,8 +8,9 @@ import shutil
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-CURRENT_AUDIT = ROOT / 'docs/audit/m4-utility-review-2026-10-17'
+CURRENT_AUDIT = ROOT / 'docs/audit/monarch-collection-review-2026-10-17'
 HISTORY = [
+    ('m4-utility', ROOT / 'docs/audit/m4-utility-review-2026-10-17', 'Hum-4 performance and round wheels'),
     ('svj-handling', ROOT / 'docs/audit/svj-handling-review-2026-10-17', 'Brutini SVJ and earlier motorcycle handling'),
     ('wheelie-rider', ROOT / 'docs/audit/wheelie-rider-review-2026-10-16', 'Wheelie controls, achievements and rider motion'),
     ('impact-motorcycle', ROOT / 'docs/audit/impact-motorcycle-review-2026-10-16', 'Vehicle impacts and motorcycles'),

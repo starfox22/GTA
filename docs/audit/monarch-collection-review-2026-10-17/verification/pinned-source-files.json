@@ -1,0 +1,166 @@
+{
+  "monarch_laferrari": {
+    "ferrari_laferrari__www.vecarz.com.glb": {
+      "bytes": 27019920,
+      "sha256": "dc26015f2fb73791b111e16a0e0693a9497d047bf8e331ac98c2678987b2ad27"
+    }
+  },
+  "monarch_roadster_ev": {
+    "test4.glb": {
+      "bytes": 20199468,
+      "sha256": "f0d70024ed306213b8587950c53af35a97b74c4f3fdf60aa4849bebfa5296c60"
+    }
+  },
+  "monarch_db11": {
+    "scene.gltf": {
+      "bytes": 464321,
+      "sha256": "d8b7eda435c84d7d27707265ee526d282cbc23ad9658e6f88c685468af5bbbae"
+    },
+    "scene.bin": {
+      "bytes": 10696804,
+      "sha256": "a8e73c88ace9668dddc9983457b3a043c3ba5f0f844a1ca8fb02de0325ebde17"
+    }
+  },
+  "monarch_valkyrie": {
+    "aston_martin_valkyrie_free.glb": {
+      "bytes": 2146928,
+      "sha256": "18578476203203ea20c6d04564699be7a4eb50c2ec1c3fd49d19756a3ae55cc6"
+    }
+  },
+  "monarch_ccx": {
+    "koenigsegg-ccx-no.glb": {
+      "bytes": 7656048,
+      "sha256": "a0e216c9fd7b7270d229dd49cd75dd672630c602ccb9ed408ff2424a1df47c11"
+    }
+  },
+  "monarch_p1_gtr": {
+    "mclaren-p1-gtr-source.glb": {
+      "bytes": 11416440,
+      "sha256": "c8309e98175d388badbd3b39d2f6267e16f9a104556c85e1440667b20d547f57"
+    }
+  },
+  "monarch_huayra": {
+    "pagani-huayra-source.glb": {
+      "bytes": 12498568,
+      "sha256": "8ed06e5460fb0845013284ab52788de9d2d54699fba5401e23ecb1e635304deb"
+    }
+  },
+  "monarch_wayron": {
+    "bugatti-veyron.glb": {
+      "bytes": 3967440,
+      "sha256": "083b52fdcbb7b54f4bdc5a59c0d3773797d859545a43fb10d7dd8416a37923b6"
+    }
+  },
+  "monarch_c8_hari": {
+    "scene.gltf": {
+      "bytes": 222840,
+      "sha256": "840aac54739d1c18b3996eebcdfbbc66bc4d9531a5a578b80c30e5923053699b"
+    },
+    "scene.bin": {
+      "bytes": 11431588,
+      "sha256": "50bd85f55741f7135783f8c0b3d9fa0422b16dbaef78836bbb15dd831574fd14"
+    },
+    "textures/Grille_6_baseColor.png": {
+      "bytes": 1300,
+      "sha256": "ed0a5a453ca3f1bc5af6b7f4d0fa3f711383b2ba22f5626188a055edcc726003"
+    },
+    "textures/Grille_7_baseColor.png": {
+      "bytes": 3654,
+      "sha256": "bd542b6883188bb232f765a85aac081e364596abb3ad5354643f990407eb7f5f"
+    },
+    "textures/Misc_baseColor.png": {
+      "bytes": 191308,
+      "sha256": "733e55d25545d8b2d06fbf975f350cef8f771f3e236b02d09db5c1ef308943c7"
+    },
+    "textures/Badges_baseColor.png": {
+      "bytes": 52856,
+      "sha256": "51787232da7bf542f9e215fe492478479420aa112f9d2348b160f763183329ec"
+    },
+    "textures/Lights_baseColor.png": {
+      "bytes": 244586,
+      "sha256": "23eb6ed222b2b1af0136489aa11693d267d9de6c82e78e3b3618a604ede88ecd"
+    },
+    "textures/Interior_baseColor.png": {
+      "bytes": 105325,
+      "sha256": "24a84aa7e2cde824cdbb50e50e0ac608456c92c4a4e8407fe90361b22e32fbdf"
+    },
+    "textures/Chrome_Engine_Pipes_Use_Grill_5_as_BW_to_Bump_to_Normal_metallicRoughness.png": {
+      "bytes": 321,
+      "sha256": "c878c542fc7434ef9b2eb999e225d1e323449c7fd88aff5e3a092a71dbcf3843"
+    },
+    "textures/Engine_Decals_baseColor.png": {
+      "bytes": 107109,
+      "sha256": "f837dd54239781588884a190cc8d2d7d59eeb6ceaf9e95ca8f6d6ec18edf7075"
+    },
+    "textures/Grille_1_baseColor.png": {
+      "bytes": 1327,
+      "sha256": "5b9d5548cdbb535cdaff37f11737d89e2307beb51da9a7a25e1c677c205e4e31"
+    },
+    "textures/Grille_3_baseColor.png": {
+      "bytes": 906,
+      "sha256": "011ace4f2c2c2d287ac5944c89fc10533cf08bc49b901f8bbcc1fa182d0af5ce"
+    },
+    "textures/Carbon_Fiber_baseColor.png": {
+      "bytes": 12458,
+      "sha256": "ea2e3e6183f0cb9113820c64bb2489fc64bb607814dad91bc8e904e081c1a6f4"
+    },
+    "textures/Grill_4_Speakers_baseColor.png": {
+      "bytes": 4475,
+      "sha256": "298bb6543a8fa9217f4f3db33c1b4874cd35d7cd477aca37b0ee52aab0ad7dd7"
+    },
+    "textures/Carpet_baseColor.png": {
+      "bytes": 36967,
+      "sha256": "2acc732a9ac63827c33021766e1809fd54820d2a249e845c3d9c9992b370477f"
+    },
+    "textures/Seats_Adjust_the_leather_texture_using_Color_Ramp_or_using_HSV_baseColor.jpeg": {
+      "bytes": 509430,
+      "sha256": "82590174d91c25ee7b4d60e37554ef329c9caf89b4994caf882ebb5bae804115"
+    },
+    "textures/Gauges_baseColor.png": {
+      "bytes": 85422,
+      "sha256": "0befb9c51d82ae6e6b28445b2b0fa54fb99143482354508274c39e869594b414"
+    },
+    "textures/Interior_Display_baseColor.png": {
+      "bytes": 92796,
+      "sha256": "57ad5cc99f4c52411f286e31ff29e4cbe16a2604e069d8eda76f6eaba90757dc"
+    },
+    "textures/Interior_Trim_baseColor.png": {
+      "bytes": 6569,
+      "sha256": "86abe97bfa51ae3224e30ee2c17deb8fdd8d0b9859e10cce8c680fffbc8c775a"
+    },
+    "textures/Brake_Disc_baseColor.png": {
+      "bytes": 25610,
+      "sha256": "d62521c9fad60f8a1fdef369b46cb2ad09d7dab2db71e46809ff5db9f2f76c19"
+    },
+    "textures/Tire_Treads_baseColor.png": {
+      "bytes": 74619,
+      "sha256": "c4060e8f7a959d26799185c8aa84f585ac55b8e56b6ddba60e64a7a1b7ab9fec"
+    },
+    "textures/Tire_Sidewall_baseColor.png": {
+      "bytes": 230701,
+      "sha256": "62e36ba4a850736d21c6144a7fecb963719a2c06580b2de30d3763d0a5316f8a"
+    },
+    "textures/material_baseColor.png": {
+      "bytes": 41225,
+      "sha256": "7eb1ef0df8a49a76cd0d06375f413e0d6d12d34fc9de1e76765af39a48327c20"
+    },
+    "textures/Interior_Trim_2_baseColor.png": {
+      "bytes": 370,
+      "sha256": "de6da0cfe8ab8cae6822d375ee78718937fcd6cf404e7d8c33ae9e8daf46f41f"
+    },
+    "textures/Interior_Badge_baseColor.png": {
+      "bytes": 32569,
+      "sha256": "29aaa5251ace944b4bec0c59d2f2e8d40daa0aafed737704b3be34c269ff1d36"
+    },
+    "textures/Mat_supergt.209_baseColor.png": {
+      "bytes": 953,
+      "sha256": "84ae54f49d44d6f212dd5b6a92ce7a71a39941df53c6450586d4808d0a24997c"
+    }
+  },
+  "monarch_tourbillon": {
+    "tourbillon-mahib.glb": {
+      "bytes": 22476496,
+      "sha256": "d2fbcc87a9fd4d842a398947e3fa6f5680c606455e01ea5a80dab6b0735d7ded"
+    }
+  }
+}

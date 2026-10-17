@@ -1,0 +1,32 @@
+[
+  {
+    "path": "docs/sources/monarch-vehicles/laferrari-license.txt",
+    "bytes": 740,
+    "sha256": "ad9529a1f3a3e185115e44dd00a1ce698eb61e1e883b9a6e8cd04471d0a3d361",
+    "matches": true
+  },
+  {
+    "path": "docs/sources/monarch-vehicles/tesla-app-README.md",
+    "bytes": 1873,
+    "sha256": "196853ab987e62fa255ca9d88efc74a3e183ae281b9e2026822dc9c904dd7c09",
+    "matches": true
+  },
+  {
+    "path": "docs/sources/monarch-vehicles/tesla-webgi-README.md",
+    "bytes": 1681,
+    "sha256": "17a0b60efce62ee6a8a8d6318730f95bfe73a90cff56120fc4bdba8b61bf614c",
+    "matches": true
+  },
+  {
+    "path": "docs/sources/monarch-vehicles/db11-license.txt",
+    "bytes": 698,
+    "sha256": "83921e6dd2f4eec51a009c9b196a3e4a17cfe5d3f5e8d4d2aad02ef2e61f3332",
+    "matches": true
+  },
+  {
+    "path": "docs/sources/monarch-vehicles/c8-hari-license.txt",
+    "bytes": 748,
+    "sha256": "1a4ae9a1a94e384cff7650e4334b3a1ceff15188dd031be75a4e4a1d3fe54ce9",
+    "matches": true
+  }
+]

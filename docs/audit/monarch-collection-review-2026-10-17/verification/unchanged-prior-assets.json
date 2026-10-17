@@ -1,0 +1,647 @@
+{
+  "reference": "048c0304bee03eea9632b157371f619076baf29f",
+  "files": [
+    {
+      "file": "assets/cover.webp",
+      "sha256": "bc7de546ac4aeffb579471751ecbec4a9fb38223e3fc6416a14f5417ae7f1d22",
+      "bytes": 381432
+    },
+    {
+      "file": "assets/contact-portraits.webp",
+      "sha256": "a05b1e78dd45e8c1a418cd3ea4230d527c2831325b54e9a5bdeccab62793639a",
+      "bytes": 228528
+    },
+    {
+      "file": "assets/architecture-atlas.webp",
+      "sha256": "eeeb8d890b362f81b1d8a072f6239c7305e27d9470c7586c3e72406d62381f58",
+      "bytes": 438030
+    },
+    {
+      "file": "assets/ground-atlas.webp",
+      "sha256": "c7b03c405a797dde440626691fb5887b65a6170f9503af82f0eaf03d941fb44a",
+      "bytes": 820980
+    },
+    {
+      "file": "assets/weapons-atlas.webp",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "assets/harbor-atlas.webp",
+      "sha256": "db9b59edb8a03f7705c6f67ce182e6195c72f734fd341967c3f61712791ba522",
+      "bytes": 581524
+    },
+    {
+      "file": "assets/arsenal-icons.webp",
+      "sha256": "0681cb18a709a652877d8fd8524d101455dd1a55330fcb3dd53ea7e9c6337bfd",
+      "bytes": 211790
+    },
+    {
+      "file": "assets/unicorn-horse.json",
+      "sha256": "bfb208592daa01fa3a4ef3eff2cd5c23b9cec60952b8c86fc05d74782de0aa78",
+      "bytes": 30607
+    },
+    {
+      "file": "assets/player-model.bin",
+      "sha256": "78608bc4f6a03a74645cb0064b91420f9447b0bff62b1fa28aee88e61a90b6eb",
+      "bytes": 163800
+    },
+    {
+      "file": "assets/player-skin.webp",
+      "sha256": "636d1705fe4a9e5f9d8324ff9f8ab149d1896f4a20239cd2c04152c7f2833bf3",
+      "bytes": 147990
+    },
+    {
+      "file": "assets/player-detail.webp",
+      "sha256": "c07a5d3c9846c9dcbaf488e3e149d2907af9237a72a6c01bee4988d019861a30",
+      "bytes": 212938
+    },
+    {
+      "file": "assets/vehicle-models.bin",
+      "sha256": "63908560d08068f6b6df9859b9bb6040ad38028c2a0d9a0268f7d9cd4c2649ae",
+      "bytes": 5274832
+    },
+    {
+      "file": "assets/vehicle-atlas.webp",
+      "sha256": "1dbbb7ea292956c3280e52c0d8121dc47d009bfe043717d1d2c55d90c87865f2",
+      "bytes": 796772
+    },
+    {
+      "file": "assets/aircraft-models.bin",
+      "sha256": "7f0861b09b2a8b91be8c86aae9125bf7cbc5515a0f138d0d5e800a0ac0835961",
+      "bytes": 438188
+    },
+    {
+      "file": "assets/aircraft-skin.webp",
+      "sha256": "ef8329a4b14e9d5430b56892e0a5851156f8ed6401792954cb0d123871868317",
+      "bytes": 105452
+    },
+    {
+      "file": "assets/dog-model.bin",
+      "sha256": "c849877c6fb0e61ff9b30eb3d9088151dbe917225dc5116ccc83de7a70b9fe56",
+      "bytes": 192473
+    },
+    {
+      "file": "assets/npc-models.bin",
+      "sha256": "affcf9559bf01802330b72fa84357f08d28cacd96c40f2f6246226663036be1f",
+      "bytes": 6285560
+    },
+    {
+      "file": "assets/npc-skin.webp",
+      "sha256": "584472dd56a8fe1708b319eaec611b7e312a2fdb140e1241c2fdd5970c6d5ae0",
+      "bytes": 1852740
+    },
+    {
+      "file": "assets/wall-skin.webp",
+      "sha256": "0db9598d529d72116742e59e822002c3b20e3206394bcb294b40e19a6cfeeac6",
+      "bytes": 424954
+    },
+    {
+      "file": "assets/trail-mud.webp",
+      "sha256": "c6ebd33560352a5defe73c7fc57d07170723b85170bc6e7a7ea055d7b4de2a2a",
+      "bytes": 267924
+    },
+    {
+      "file": "assets/music/synth.mp3",
+      "sha256": "914b506fcf2fe116752f22b478ef09cf30fd6dc3b86632e22d7370507bf2f934",
+      "bytes": 1550927
+    },
+    {
+      "file": "assets/music/rock.mp3",
+      "sha256": "a1d9d63cd8af19387969f541cce96dd2c1f7791c4b05ae61691b9a1b6620180d",
+      "bytes": 811108
+    },
+    {
+      "file": "assets/music/oddball.mp3",
+      "sha256": "9ffe2ec825e2c01ccba1b66da1e032a0148d3895e5c72fcb7e4e729584b65111",
+      "bytes": 1733978
+    },
+    {
+      "file": "assets/music/lounge-martini.mp3",
+      "sha256": "a75e273b7afa3dc9fed814baff6ba3759380caab3d14e1b09042b6657be66d76",
+      "bytes": 2063086
+    },
+    {
+      "file": "assets/music/lounge-heists.mp3",
+      "sha256": "46db5bd44a5938d98978d37725836462c5ba2b388d3874b877cb194f5ab7f1f1",
+      "bytes": 2209481
+    },
+    {
+      "file": "assets/music/island-dub.mp3",
+      "sha256": "be282aaaf7bee116a3348db3248e9a70bcaa30898de4675d3455a6bf0c7616be",
+      "bytes": 2487833
+    },
+    {
+      "file": "assets/music/island-colada.mp3",
+      "sha256": "f695b7de584edc492810fed41a1cbfd9cd0ccaf1cf6447f3c0889eb058a70d12",
+      "bytes": 1925823
+    },
+    {
+      "file": "assets/music/lofi-hooptie.mp3",
+      "sha256": "435a8efd2e05add54f37f2cfbeb765b48386bf48909cd52523829d0f868a23f1",
+      "bytes": 2637757
+    },
+    {
+      "file": "assets/music/lofi-freeway.mp3",
+      "sha256": "11d8e376ad5e5b53a9f2e1604e588a09ce02360fb97cb06ccc6fe69de33754db",
+      "bytes": 2120191
+    },
+    {
+      "file": "assets/audio/automatic.wav",
+      "sha256": "590586e6a50dac494cffc19e8422649da967900b811073b9bd9225484c51de6a",
+      "bytes": 37050
+    },
+    {
+      "file": "assets/audio/call-backup.ogg",
+      "sha256": "f1956bb5ece744b6696d4e8a6ab2b6649c157eb5c2c122559ccf8b118dd2d125",
+      "bytes": 9860
+    },
+    {
+      "file": "assets/audio/civilian-scream-female-1.ogg",
+      "sha256": "fc4d4a039f023d7a889c33aea42733b929dfe308549f8e2db94414208a131929",
+      "bytes": 9487
+    },
+    {
+      "file": "assets/audio/civilian-scream-female-2.ogg",
+      "sha256": "cce797971f6fa1e996b083d523d94caa9373bd97e899673a64037f5a8e14a41a",
+      "bytes": 8968
+    },
+    {
+      "file": "assets/audio/civilian-scream-male-1.ogg",
+      "sha256": "3062973b5c63fb172ca86721fe5ae9845f5f3d3f102acfe58a0a5f9e261ac4ec",
+      "bytes": 8675
+    },
+    {
+      "file": "assets/audio/civilian-scream-male-2.ogg",
+      "sha256": "904b5b86c5bdfc756c6e02169b6ce9f26ec04fc27a0c8f9bd1ecb5cfce6a553c",
+      "bytes": 9161
+    },
+    {
+      "file": "assets/audio/player-jump-grunt.ogg",
+      "sha256": "e73f988d1a99106e6cc0ce4f091adc0ca368c6672a98b47b687648fc9bd0196a",
+      "bytes": 6108
+    },
+    {
+      "file": "assets/audio/explosion.mp3",
+      "sha256": "33a7307e38542d24a19e394b78cd00a1dce187fb0438699f90ace176b9c4829b",
+      "bytes": 38204
+    },
+    {
+      "file": "assets/audio/look-out.ogg",
+      "sha256": "f2b8648f0f8e6c47dbf4eaa3340de8b3d6ae1f200b4e462b07c0daa78cd5d9fd",
+      "bytes": 7251
+    },
+    {
+      "file": "assets/audio/mission-complete.ogg",
+      "sha256": "e6afa79a7e648291280d57454d7d09091c5a5af8b5865c9087bac233c567adb0",
+      "bytes": 11493
+    },
+    {
+      "file": "assets/audio/mission-failed.ogg",
+      "sha256": "294f2ae0df520a5e669bd2c4b5e070c457a05a2593bf60aa56a6f9d793a8f105",
+      "bytes": 10178
+    },
+    {
+      "file": "assets/audio/pistol.wav",
+      "sha256": "e7032821e6cc08c9ddb6cda901f66853b91636e84adef81777a32df3c7ee6478",
+      "bytes": 63538
+    },
+    {
+      "file": "assets/audio/police-challenge.ogg",
+      "sha256": "0ae6ffe88450b468456e9c0832aae956cfe8d12ac2705c2dc2efbcfd1dee77a5",
+      "bytes": 28503
+    },
+    {
+      "file": "assets/audio/police-drop-weapon.ogg",
+      "sha256": "08481a9c46b7a4982bffb94dd56cf5c89ef383c0d93df62b2824e42cf3a7c360",
+      "bytes": 9726
+    },
+    {
+      "file": "assets/audio/police-get-down.ogg",
+      "sha256": "ea5cc21f4a55da6746e5a05e6e65187ae39cf50b9670d9d779e1b4f8a22a56ae",
+      "bytes": 8754
+    },
+    {
+      "file": "assets/audio/police-hands-on-head.ogg",
+      "sha256": "902de97f19af0115e07ee0017e4e78d67d8167ae118dd5a544694ef02bfabfa2",
+      "bytes": 10733
+    },
+    {
+      "file": "assets/audio/police-under-arrest.ogg",
+      "sha256": "ade93f26e1cdd9f753a156c84a282ec74e26488fdd8da6b3cc9d64afbfd3b853",
+      "bytes": 19877
+    },
+    {
+      "file": "assets/audio/rifle.ogg",
+      "sha256": "df19410769e6d02e7a00e3eec9016bf510d7d38388586fe98f3bf1357bcb50c6",
+      "bytes": 16202
+    },
+    {
+      "file": "assets/audio/rotor-loop.ogg",
+      "sha256": "57da67403242cb8d386cd113525538fa5ded469e7dc3ec73bdfef3312caf1d5b",
+      "bytes": 41871
+    },
+    {
+      "file": "assets/audio/shotgun.wav",
+      "sha256": "c08b462d413865dd37b906cdbc1d6cdceba7dabf43f9e74e1ac328fbf437d653",
+      "bytes": 77524
+    },
+    {
+      "file": "assets/audio/siren.wav",
+      "sha256": "b8c280418d636003300f0ced4f991318d5fe087f4eaceaae9523b199408c48ab",
+      "bytes": 384078
+    },
+    {
+      "file": "assets/audio/target-engaged.ogg",
+      "sha256": "5b0f1d0097c8a88eb3108ccd1029ab37087419a1b1858adcb59f6a2298c27d54",
+      "bytes": 10485
+    },
+    {
+      "file": "assets/audio/tires.wav",
+      "sha256": "b43c297b7390b2164bcb662619e6fbd1bdf19cf7337306ec4884e52145f3f8f0",
+      "bytes": 192078
+    },
+    {
+      "file": "assets/audio/crash-bump-1.ogg",
+      "sha256": "5276f33b8a8d24048cb64f7666b98212a66d5b0860177cd376716a6945ac8781",
+      "bytes": 7469
+    },
+    {
+      "file": "assets/audio/crash-bump-2.ogg",
+      "sha256": "0d7b969fab9f7ee1cab88b78e1f615dc1e0eb5e00d52e7dda11ceb259a3fce96",
+      "bytes": 6982
+    },
+    {
+      "file": "assets/audio/crash-scrape.ogg",
+      "sha256": "21832639e8049db8ee12d3fa0f4d47f19cd8334563fb779d5336008b3767bec3",
+      "bytes": 11841
+    },
+    {
+      "file": "assets/audio/crash-medium-1.ogg",
+      "sha256": "5288b610474a153cb33a4a2b1e0d8cff244b84e8a3affe9610ef0b8552f9849d",
+      "bytes": 16829
+    },
+    {
+      "file": "assets/audio/crash-medium-2.ogg",
+      "sha256": "46477ac2d429087e66a48c18cc4bf91dc570c3dccca240ec5d16ad08f1b9c88c",
+      "bytes": 13345
+    },
+    {
+      "file": "assets/audio/crash-medium-3.ogg",
+      "sha256": "05dcbb370b82cc52d86b4afdb7b7779d6b3cf63c02d77b057990a0178e322c39",
+      "bytes": 12032
+    },
+    {
+      "file": "assets/audio/crash-heavy-1.ogg",
+      "sha256": "69af70ef098890729ebeea5661e3d734ecfe73b17c43305652e85eaa3407420f",
+      "bytes": 22082
+    },
+    {
+      "file": "assets/audio/crash-heavy-2.ogg",
+      "sha256": "120639cd15fc018a11a45ccb3633ba1d1d718898d946dedbd6dd6b6371c96a0f",
+      "bytes": 25126
+    },
+    {
+      "file": "assets/audio/crash-glass-1.ogg",
+      "sha256": "a02bb17f31ec01af063e48c5389e7cb570295ce53edffab9768355f841a69219",
+      "bytes": 16308
+    },
+    {
+      "file": "assets/audio/crash-glass-2.ogg",
+      "sha256": "9e15797d16ae90f88c2bef355aea9748d0b28f832413d8b6f14445a579f42c72",
+      "bytes": 17576
+    },
+    {
+      "file": "assets/audio/crash-debris.ogg",
+      "sha256": "06741650cc0250359affbcec86c7ec7bc0711f1b3aeee0fcbeab9db3c14aed7d",
+      "bytes": 16662
+    },
+    {
+      "file": "assets/audio/stadium-goal-cheer.ogg",
+      "sha256": "a7725fa96740107d20e022462166a7ce77d0d2502883bc7721132b787b8cabb6",
+      "bytes": 67772
+    },
+    {
+      "file": "assets/audio/stadium-goal-groan.ogg",
+      "sha256": "c7d50fd94ece2b0c4c1522216d0f5079c8e8f8ea61a27638a5b8499000298ff2",
+      "bytes": 29581
+    },
+    {
+      "file": "assets/audio/engine-start.ogg",
+      "sha256": "206864af1dee31ae942386d0847dd36385fe181d7262b80ab486a699cc7f03a3",
+      "bytes": 23027
+    },
+    {
+      "file": "assets/audio/engine-compact-idle.ogg",
+      "sha256": "6f64b11756e97b243bcd7ddc2f7a571d8d9667170dcbeb1a3c981ace8e145e78",
+      "bytes": 23228
+    },
+    {
+      "file": "assets/audio/engine-compact-low.ogg",
+      "sha256": "9115bf794cdd86452a47f56e170192d5465ff13a48719c1ec01e3f2a9552dfa5",
+      "bytes": 13065
+    },
+    {
+      "file": "assets/audio/engine-compact-mid.ogg",
+      "sha256": "dcbdbe5d0d49742228a737b91cb1c141acf064d4e52131c2d431e472145c3a06",
+      "bytes": 24807
+    },
+    {
+      "file": "assets/audio/engine-compact-high.ogg",
+      "sha256": "9bd0cddbb605f2ea67b42316133981dff196eb4f0a22c610c0501ff1c1f4204d",
+      "bytes": 28317
+    },
+    {
+      "file": "assets/audio/engine-sport-idle.ogg",
+      "sha256": "c48c88aac990d64bd042c748d781e194dee10fdbe9bcb188ec9680fb2c3824c6",
+      "bytes": 18844
+    },
+    {
+      "file": "assets/audio/engine-sport-low.ogg",
+      "sha256": "453f28a4cc24b804592dd8cdd83411df33658a3bd0436959b891f90f98e853fd",
+      "bytes": 17769
+    },
+    {
+      "file": "assets/audio/engine-sport-mid.ogg",
+      "sha256": "f4da43dbd06f956d65ed2b26b6f40392004b54114ed1ed64f4ddd5b46444fe22",
+      "bytes": 12042
+    },
+    {
+      "file": "assets/audio/engine-sport-high.ogg",
+      "sha256": "7c6a12a0799b2c3cb4bca79065d711e22fd828fb4ccbd9c2952228c22d4c1898",
+      "bytes": 17047
+    },
+    {
+      "file": "assets/audio/engine-v8-idle.ogg",
+      "sha256": "31edee628cef1c77a0ef3f55ce53f01dc6c8ea7864c875e64d0cdd259b764c3c",
+      "bytes": 21624
+    },
+    {
+      "file": "assets/audio/engine-v8-low.ogg",
+      "sha256": "a7e388644152a54a91a09a6b5eb9f4509cdbe0b62a32b40ff3a895762fb891c7",
+      "bytes": 9517
+    },
+    {
+      "file": "assets/audio/engine-v8-mid.ogg",
+      "sha256": "e95ce1460bee5f00cf7dc03d72fb2fed29ce3eab104c007fd44120961524259a",
+      "bytes": 10446
+    },
+    {
+      "file": "assets/audio/engine-diesel-idle.ogg",
+      "sha256": "d834ebee9f97869711a1d6e74ac279c16fbe3959ac9c35ab4187301d091e1fea",
+      "bytes": 30749
+    },
+    {
+      "file": "assets/audio/engine-diesel-mid.ogg",
+      "sha256": "4cc13fe1b970f3637bf769ec5819ee537672c9db1aaef9291474ce95133b8182",
+      "bytes": 23223
+    },
+    {
+      "file": "assets/audio/engine-diesel-high.ogg",
+      "sha256": "ef4d3cc9ca835848cc05dda96e2019412e9b4d9325f0528406db9a8cde87de98",
+      "bytes": 21096
+    },
+    {
+      "file": "assets/audio/engine-twin-idle.ogg",
+      "sha256": "a332e828ab64ccba4fbc744ea2cd847c7bb3b8bfab0cfb0d7b8cb03f2693a7e5",
+      "bytes": 19791
+    },
+    {
+      "file": "assets/audio/tank-tracks.ogg",
+      "sha256": "12af29501cc8d1a9e6496314e0eb81d3d8db05637fb5934e81b542dc14a6fab4",
+      "bytes": 44087
+    },
+    {
+      "file": "assets/audio/boat-outboard-low.ogg",
+      "sha256": "743fed35a7dfd910cde24f0fb5c4277204c20c01b312ad8072b3dfeb20296853",
+      "bytes": 15530
+    },
+    {
+      "file": "assets/audio/boat-outboard-high.ogg",
+      "sha256": "0106c331ad0f46ccd985be0654941a514de9fb79c477ebae588722d6ce2cc50d",
+      "bytes": 15865
+    },
+    {
+      "file": "assets/audio/boat-diesel.ogg",
+      "sha256": "88beeb43ec81fe0e93fae3f492be16de5aa8c267fb4c77643c8a2c268efb4ab8",
+      "bytes": 29797
+    },
+    {
+      "file": "assets/audio/boat-jetski.ogg",
+      "sha256": "c634424f224b615cd64d7f03fdc3a469ed144dd849776bac622e734688e5ba2e",
+      "bytes": 10759
+    },
+    {
+      "file": "assets/audio/rain-light.ogg",
+      "sha256": "b702f730d35f44af4ab31ac6966673e0667cdacedab92a36b7b9768c4adf151d",
+      "bytes": 172040
+    },
+    {
+      "file": "assets/audio/rain-steady.ogg",
+      "sha256": "2d32f54fba2692d37db06c4813e0fa8bc014ad86819559b62e03282ab3cb4bb6",
+      "bytes": 145826
+    },
+    {
+      "file": "assets/audio/rain-heavy.ogg",
+      "sha256": "068674a674ded61e33abcc715a61f26091af3b666a2afd0e9dfad0b228b94463",
+      "bytes": 112308
+    },
+    {
+      "file": "assets/audio/sealife-gulls.ogg",
+      "sha256": "38b34afe6b01b4a60cc4d676ae23134375a5435d73afaf3f9cb6ec04f6883a3d",
+      "bytes": 52055
+    },
+    {
+      "file": "assets/audio/sealife-splash.ogg",
+      "sha256": "e70847bffdc38c115ec400c11ee5b132b4306fbfbd22c572ea11ed3a902728a7",
+      "bytes": 66029
+    },
+    {
+      "file": "assets/audio/sealife-big.ogg",
+      "sha256": "e11b6b892614b2dae0efd475290052c035f4c65ff87ab298bc03d56833129c1a",
+      "bytes": 34720
+    },
+    {
+      "file": "assets/audio/sealife-blow.ogg",
+      "sha256": "52f4759e97fcccd0a1449e0c05d8962bac59e7e1ef47fe73e982f090eacbc31b",
+      "bytes": 40094
+    },
+    {
+      "file": "assets/approved-vehicle-models.bin",
+      "sha256": "f21c4d91d34df544ffab87b895551b3ef7712746fd25c394e33738056b71e895",
+      "bytes": 7562096
+    },
+    {
+      "file": "assets/approved-vehicle-albedo.webp",
+      "sha256": "efd56ff941652ed28c64507ed239b8ced3f812f0960409fd217149a8dba4cdbe",
+      "bytes": 4428044
+    },
+    {
+      "file": "assets/approved-vehicle-orm.webp",
+      "sha256": "bd38bd3f94a11f72855ba1401c3135e7092b31553a57944b9727e782879456dc",
+      "bytes": 98718
+    },
+    {
+      "file": "assets/approved-vehicle-albedo-low.webp",
+      "sha256": "f4f7583617c32339d2ca91e00722a6f5c3295b10451a783f291aed0b9b7ab1f2",
+      "bytes": 1340078
+    },
+    {
+      "file": "assets/approved-vehicle-orm-low.webp",
+      "sha256": "39a3bf2ec95a6481c622d1c22c4ab56385d63f9894de11cdf84c3276f61a5182",
+      "bytes": 53742
+    },
+    {
+      "file": "assets/sports-vehicle-models.bin",
+      "sha256": "e83f2d0f38b64ca743717eb50054ea15dfa56488fe8346ee423790815f375328",
+      "bytes": 3267954
+    },
+    {
+      "file": "assets/sports-vehicle-albedo.webp",
+      "sha256": "1214e5109191afb7d3e9574587698235a1ff79cef9e74681f86a4eb6d31b150e",
+      "bytes": 2257118
+    },
+    {
+      "file": "assets/sports-vehicle-orm.webp",
+      "sha256": "a36c9a79d266d24708fd3e4ca447e3cfdf20419a59a40beb366302adda6dedce",
+      "bytes": 2962
+    },
+    {
+      "file": "assets/sports-vehicle-emissive.webp",
+      "sha256": "7f6bbb79735ee46ed8c593edad3468d084e7c3c11b0f3e4d3bfb667158f42cc4",
+      "bytes": 316624
+    },
+    {
+      "file": "assets/sports-vehicle-albedo-low.webp",
+      "sha256": "9384e9a3d72e6bc3fc337a4e3f78cf36b305e51a2703ff5620e4415dcbfc3c3a",
+      "bytes": 1176718
+    },
+    {
+      "file": "assets/sports-vehicle-orm-low.webp",
+      "sha256": "600d58d1a0b52b9a1fba11328e802fb27b64eea56d1117f3831a517674b9eeee",
+      "bytes": 1984
+    },
+    {
+      "file": "assets/sports-vehicle-emissive-low.webp",
+      "sha256": "e9c741beb1612f50094f5709abd5e641861c784df5c346e467cc1d31626fe6c4",
+      "bytes": 273278
+    },
+    {
+      "file": "assets/hotrod-vehicle-models.bin",
+      "sha256": "5bb5ff8daede71430712c699834a9d7b0d508b6e2a624e5666586ee485dbacef",
+      "bytes": 1260244
+    },
+    {
+      "file": "assets/hotrod-vehicle-albedo.webp",
+      "sha256": "cdff1f661ca3bdee158178679f3e90f963588d9bf62f1ade9071e6c0cad41a9e",
+      "bytes": 2568580
+    },
+    {
+      "file": "assets/hotrod-vehicle-albedo-low.webp",
+      "sha256": "8538db89e53241c7f2d0ea287f4a6547027d1420d7b64b40a90819bda87b6df0",
+      "bytes": 938714
+    },
+    {
+      "file": "assets/hotrod-vehicle-orm.webp",
+      "sha256": "66276bc83467210f07ffe4db370ecd3980e0dd67f519153950976ab1c7cbb6e7",
+      "bytes": 4377366
+    },
+    {
+      "file": "assets/hotrod-vehicle-orm-low.webp",
+      "sha256": "40516b6423c0c3fdbaeadbef8a3d73062c6cdf31d0b0b5c6120dd0f1d69c916b",
+      "bytes": 1433450
+    },
+    {
+      "file": "assets/jet-models.bin",
+      "sha256": "a8f911de36c3d7a8a97b4b0a0ee0ef855fed15ee9415d0f505edbdd7967b092b",
+      "bytes": 6143692
+    },
+    {
+      "file": "assets/jet-skin.webp",
+      "sha256": "116993dd172cc53a8e580e0088ca1f755c7d78a4214521c12db9abde696bccf6",
+      "bytes": 11136
+    },
+    {
+      "file": "assets/dolcati-vehicle-models.bin",
+      "sha256": "82e1c9741210a8a2c39fcb999438f72872603867e89ac0a0c533e367874f3b45",
+      "bytes": 18026262
+    },
+    {
+      "file": "assets/dolcati-vehicle-albedo.webp",
+      "sha256": "c4a15e9b10e4f3b691cdd54644e1d93cd98efdcfd8d7d07c1d78a8d606d59265",
+      "bytes": 1319196
+    },
+    {
+      "file": "assets/dolcati-vehicle-orm.webp",
+      "sha256": "5f0d4193f8c8990ec766c2ae990aa1ccf4ea438bfd36f98e5fd0a6475b64a875",
+      "bytes": 220
+    },
+    {
+      "file": "assets/dolcati-vehicle-emissive.webp",
+      "sha256": "2720f677fbeafaefccb7b1f20c4c5c57637c6d248b12a9add1c5285ce355edcb",
+      "bytes": 1263372
+    },
+    {
+      "file": "assets/dolcati-vehicle-albedo-low.webp",
+      "sha256": "d2e93a305d6f382c4d429a123b8b43e57339a4f5320584fa29a87003cdd939e5",
+      "bytes": 363906
+    },
+    {
+      "file": "assets/dolcati-vehicle-orm-low.webp",
+      "sha256": "a2a80a818c60c7973ccc68770600d2062c6ff98f494bcfc804c112949b728024",
+      "bytes": 88
+    },
+    {
+      "file": "assets/dolcati-vehicle-emissive-low.webp",
+      "sha256": "701029374aacf7a0b200e3c7dc93bdce46164f7ae65c8f42d9ec426d3491877a",
+      "bytes": 352176
+    },
+    {
+      "file": "assets/engine-inline4-idle.ogg",
+      "sha256": "b581fb7da8aa856cb659bcd19781da7ec5efc236164332153b76f329d959bb04",
+      "bytes": 20328
+    },
+    {
+      "file": "assets/engine-inline4-high.ogg",
+      "sha256": "4fb076766a067d6efbd937c42a154a937b1693a0abd0ac557ba15628dd241e20",
+      "bytes": 17105
+    },
+    {
+      "file": "assets/svj-vehicle-models.bin",
+      "sha256": "80e548a6aebd679ab984abc1d85894025e8265355fc0cdefc0d29e520b36a925",
+      "bytes": 15583540
+    },
+    {
+      "file": "assets/svj-vehicle-albedo.webp",
+      "sha256": "b707e37f92d95ddc7ece28ec6c954ca73ef0c23be1f96ec6636f71a41bc96777",
+      "bytes": 20648
+    },
+    {
+      "file": "assets/svj-vehicle-albedo-low.webp",
+      "sha256": "23d6d201ff7a07f8f999ccb24240cfad176b6f9ea322efae33e06f20c70f3969",
+      "bytes": 13858
+    },
+    {
+      "file": "assets/svj-vehicle-orm.webp",
+      "sha256": "ba21ff21167a8c030f813606ab13664a2de955de0cbdf52a845177ea286af28e",
+      "bytes": 452
+    },
+    {
+      "file": "assets/svj-vehicle-orm-low.webp",
+      "sha256": "c8bcda140c2553d457dd3deac7142dfde02d7d17e43334eb65164b08be789563",
+      "bytes": 496
+    },
+    {
+      "file": "assets/svj-vehicle-emissive.webp",
+      "sha256": "e5d7c80fc3ccae64a85b2a3e8a0d53807d0faab2d24dce0320eef91d849ab760",
+      "bytes": 446
+    },
+    {
+      "file": "assets/svj-vehicle-emissive-low.webp",
+      "sha256": "745cf3b8c7339bd573a1fa50b3385e41a9b1058259b9495dea3bb99b950c86fd",
+      "bytes": 492
+    }
+  ],
+  "newAssetEntries": 81,
+  "allUnchanged": true
+}

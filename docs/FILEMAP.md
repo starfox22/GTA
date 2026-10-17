@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-613 files in the include tree, 209,366 lines.
+614 files in the include tree, 209,772 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -115,7 +115,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/streets.js`    12 — ▸ Road presentation
 - `src/terrain.js`    20 — ▸ Mountains and off-road contact
 - `src/offroad.js`    53 — ▸ The 4x4 club, trail mud, off-road traction and the hill climb
-- `src/hypercars.js`   604 — The Prestige Collection: hypercar types, specs and sound
+- `src/hypercars.js`   605 — The Prestige Collection: hypercar types, specs and sound
 - `src/mountain-village.js`   648 — The mountain villages of Ridgeline County
 - `src/casino.js`   266 — Casino roulette
 - `src/skyline.js`    15 — ▸ North Point towers, North Point Key, the tower lifts and the CIRRUS sky bar
@@ -177,7 +177,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/tyre-effects.js`   287 — What the tyres leave behind: the burnout (forward and the handbrake held at a standstill), skid marks, and the one rule for tyre smoke, dust and …
 - `src/hud.js`    34 — ▸ HUD behaviour and the title menu
 - `src/gpu-context.js`    69 — GPU context loss: when the browser takes the 3D canvas's WebGL context away (GPU memory, a driver reset), the game pauses, says so, skips drawing …
-- `src/render3d.js`   254 — ▸ Three.js renderer and resource lifecycle
+- `src/render3d.js`   255 — ▸ Three.js renderer and resource lifecycle
 - `src/frame-trace.js`   324 — Frame trace: every frame's CPU split (simulation sections, renderer laps) and what happened in it (collections, DOM mutations, GL uploads and links …
 - `src/frame-guard.js`    44 — Frame guard: an exception in one part of a frame (pre-step, simulation, draw) is logged once per message and counted, and the frame loop keeps …
 - `src/game-loop.js`   235 — Profiler: Rolling averages of simulation and render CPU time per frame, plus the renderer's draw-call and triangle counts.
@@ -512,14 +512,15 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/vehicles3d.js`   631 — Vehicle meshes
 - `src/police3d.js`    62 — ▸ Police vehicle models
 - `src/cars3d.js`    94 — ▸ Civilian car models
-- `src/vehicle-assets3d.js`   541 — Vehicle models from downloaded assets (assets/vehicle-models.bin + vehicle-atlas.webp, tools/vehicle_models.py): decoded into kits on the civilian …
+- `src/vehicle-assets3d.js`   571 — Vehicle models from downloaded assets (assets/vehicle-models.bin + vehicle-atlas.webp, tools/vehicle_models.py): decoded into kits on the civilian …
 - `src/approved-vehicle-assets3d.js`   195 — Approved replacement vehicle pack: independent cached data, source material atlases, per-vertex finishes and close/far geometry.
 - `src/sports-vehicle-assets3d.js`   148 — Licensed sports-car pack, source door part ranges, shared PBR textures and quality transitions.
 - `src/hotrod-vehicle-assets3d.js`   131 — Licensed Coupe '33 source pack: exact close geometry, source PBR textures and shared quality transitions.
 - `src/svj-vehicle-assets3d.js`   130 — Full-resolution licensed SDC SVJ pack; independent source PBR maps and renderer-owned tier changes.
 - `src/dolcati-vehicle-assets3d.js`   111 — ROY's licensed Panigale source: independent pack, exact near meshes, source PBR atlases and shared LOD.
+- `src/monarch-vehicle-assets3d.js`   349 — Licensed Monarch collection: independent source pack and per-source shared material/texture families.
 - `src/approved-suv3d.js`   206 — The three owner-approved free SUV bodies retain the existing Ranger and patrol gameplay contracts.
-- `src/vehicle-char3d.js`   303 — Asset char: the burnt (and, for the army's models, worn and heat-darkened) look of the downloaded vehicle models that draw from the shared vehicle …
+- `src/vehicle-char3d.js`   324 — Asset char: the burnt (and, for the army's models, worn and heat-darkened) look of the downloaded vehicle models that draw from the shared vehicle …
 - `src/hypercars3d.js`   954 — The Prestige Collection's car models
 - `src/motorbikes3d.js`   632 — Motorbike models
 - `src/motorbike-assets3d.js`   268 — Motorbikes from downloaded models (vehicle-assets3d.js ASSET CARS data, tools/vehicle_models_moto.py): the frame, the steering (fork, bars, head …
@@ -537,8 +538,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/render3d-resources.js`   527 — GPU resource lifecycle: shared geometries, model pruning and disposal.
 - `src/render3d-hiccups.js`   383 — Hiccup log: what each drawn frame created for the first time (shader programs, textures, geometries) and the slowest frames' renderer CPU split; read …
 - `src/payphone3d.js`   629 — The story payphone where mission 1 starts: a 1990s yellow pedestal payphone with its lit PHONE sign, handset, keypad, directory and grime, the …
-- `src/render3d-api.js`   501 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
-- `src/render3d-frame.js`   655 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
+- `src/render3d-api.js`   502 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
+- `src/render3d-frame.js`   656 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
 
 ## src/flight-view3d.js ▸ Flight camera and aerial perspective
 
@@ -836,7 +837,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/cars3d-materials.js`   358 — Civilian car materials: trim atlas, paint and finish materials (civMaterials, civPaintMaterial).
 - `src/cars3d-geometry.js`   319 — Civilian car merging kit: matrices, beams, bars, discs and profile shapes (civAdd, civGeometry, civShapeKit).
 - `src/cars3d-wheels.js`   159 — Civilian car tyres and rims (civTyreGeometry, civRimGeometry).
-- `src/cars3d-interior.js`   299 — Car cabins seen through the glass: the seat plan (carSeatPlan), the cabin merged into a kit's trim (carCabinParts: seats and headrests, dashboard …
+- `src/cars3d-interior.js`   300 — Car cabins seen through the glass: the seat plan (carSeatPlan), the cabin merged into a kit's trim (carCabinParts: seats and headrests, dashboard …
 - `src/cars3d-headroom.js`   376 — Cabin headroom: the seated rig's head (head, hair and caps of the tallest man and woman, and the player) against the glasshouse's inner surface; the …
 - `src/cars3d-kit.js`   486 — Civilian car kit: a body's merged parts for one size (civKit, civKits).
 - `src/cars3d-models.js`   342 — Civilian car models: makeCivilianCar(), animateCivilianCar(), liveries, lettering and lamps.
@@ -892,7 +893,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-console-rides.js`   104 — DeadEndCity console, rides: bike share, cab, trains, liner, ride skip, superyacht
 - `src/game-console-leisure.js`    75 — DeadEndCity console, leisure: swim, beach, sea life, Marea club and pool, volleyball, Sunset Pier (+ sports, sportsbook consoles)
 - `src/game-console-crowd.js`   193 — DeadEndCity console, crowd: pedestrianReport, fireShot, alarm, lifeScene, lineups, crowd render cost
-- `src/game-console-graphics.js`   276 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
+- `src/game-console-graphics.js`   277 — DeadEndCity console, graphics: graphics tier, stats, render probes, scaleReport, car, police and helicopter lineups
 - `src/game-console-perf.js`   272 — DeadEndCity console, simulation cost: simProfile (per-section ms, worst frames), simScenario (staged situations)
 - `src/game-console-soak.js`   369 — DeadEndCity console, long-session health: soakReport (sizes of every list that can grow, DOM, non-finite positions)
 - `src/game-console-integrity.js`   178 — DeadEndCity console: integrity(), the invariants tools/bot.mjs checks after every action
@@ -937,5 +938,5 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## Outside the include tree
 
-- `src/asset-loader.js`   224 — decodes the embedded/streamed media into ASSETS before the game starts
+- `src/asset-loader.js`   239 — decodes the embedded/streamed media into ASSETS before the game starts
 - `src/shell.html`    81 — HTML page skeleton: its src/ui/*.css and *.html fragments (in include order) and build.py's `<!-- @include-* -->` slots (game, three.js, media, credits)

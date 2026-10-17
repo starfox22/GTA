@@ -775,5 +775,491 @@
     "file": "assets/svj-vehicle-emissive-low.webp",
     "mime": "image/webp",
     "original": "tools/svj_vehicle_models.py (pinned CC-BY SDC source)"
+  },
+  {
+    "id": "media-monarch-c8-hari-albedo-low",
+    "file": "assets/monarch-c8_hari-albedo-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-c8-hari-albedo",
+    "file": "assets/monarch-c8_hari-albedo.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-c8-hari-emissive-low",
+    "file": "assets/monarch-c8_hari-emissive-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-c8-hari-emissive",
+    "file": "assets/monarch-c8_hari-emissive.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-c8-hari-normal-low",
+    "file": "assets/monarch-c8_hari-normal-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-c8-hari-normal",
+    "file": "assets/monarch-c8_hari-normal.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-c8-hari-orm-low",
+    "file": "assets/monarch-c8_hari-orm-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-c8-hari-orm",
+    "file": "assets/monarch-c8_hari-orm.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-ccx-albedo-low",
+    "file": "assets/monarch-ccx-albedo-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-ccx-albedo",
+    "file": "assets/monarch-ccx-albedo.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-ccx-emissive-low",
+    "file": "assets/monarch-ccx-emissive-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-ccx-emissive",
+    "file": "assets/monarch-ccx-emissive.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-ccx-normal-low",
+    "file": "assets/monarch-ccx-normal-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-ccx-normal",
+    "file": "assets/monarch-ccx-normal.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-ccx-orm-low",
+    "file": "assets/monarch-ccx-orm-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-ccx-orm",
+    "file": "assets/monarch-ccx-orm.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-db11-albedo-low",
+    "file": "assets/monarch-db11-albedo-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-db11-albedo",
+    "file": "assets/monarch-db11-albedo.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-db11-emissive-low",
+    "file": "assets/monarch-db11-emissive-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-db11-emissive",
+    "file": "assets/monarch-db11-emissive.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-db11-normal-low",
+    "file": "assets/monarch-db11-normal-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-db11-normal",
+    "file": "assets/monarch-db11-normal.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-db11-orm-low",
+    "file": "assets/monarch-db11-orm-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-db11-orm",
+    "file": "assets/monarch-db11-orm.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-huayra-albedo-low",
+    "file": "assets/monarch-huayra-albedo-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-huayra-albedo",
+    "file": "assets/monarch-huayra-albedo.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-huayra-emissive-low",
+    "file": "assets/monarch-huayra-emissive-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-huayra-emissive",
+    "file": "assets/monarch-huayra-emissive.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-huayra-normal-low",
+    "file": "assets/monarch-huayra-normal-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-huayra-normal",
+    "file": "assets/monarch-huayra-normal.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-huayra-orm-low",
+    "file": "assets/monarch-huayra-orm-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-huayra-orm",
+    "file": "assets/monarch-huayra-orm.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-laferrari-albedo-low",
+    "file": "assets/monarch-laferrari-albedo-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-laferrari-albedo",
+    "file": "assets/monarch-laferrari-albedo.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-laferrari-emissive-low",
+    "file": "assets/monarch-laferrari-emissive-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-laferrari-emissive",
+    "file": "assets/monarch-laferrari-emissive.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-laferrari-normal-low",
+    "file": "assets/monarch-laferrari-normal-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-laferrari-normal",
+    "file": "assets/monarch-laferrari-normal.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-laferrari-orm-low",
+    "file": "assets/monarch-laferrari-orm-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-laferrari-orm",
+    "file": "assets/monarch-laferrari-orm.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-p1-gtr-albedo-low",
+    "file": "assets/monarch-p1_gtr-albedo-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-p1-gtr-albedo",
+    "file": "assets/monarch-p1_gtr-albedo.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-p1-gtr-emissive-low",
+    "file": "assets/monarch-p1_gtr-emissive-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-p1-gtr-emissive",
+    "file": "assets/monarch-p1_gtr-emissive.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-p1-gtr-normal-low",
+    "file": "assets/monarch-p1_gtr-normal-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-p1-gtr-normal",
+    "file": "assets/monarch-p1_gtr-normal.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-p1-gtr-orm-low",
+    "file": "assets/monarch-p1_gtr-orm-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-p1-gtr-orm",
+    "file": "assets/monarch-p1_gtr-orm.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-roadster-ev-albedo-low",
+    "file": "assets/monarch-roadster_ev-albedo-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-roadster-ev-albedo",
+    "file": "assets/monarch-roadster_ev-albedo.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-roadster-ev-emissive-low",
+    "file": "assets/monarch-roadster_ev-emissive-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-roadster-ev-emissive",
+    "file": "assets/monarch-roadster_ev-emissive.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-roadster-ev-normal-low",
+    "file": "assets/monarch-roadster_ev-normal-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-roadster-ev-normal",
+    "file": "assets/monarch-roadster_ev-normal.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-roadster-ev-orm-low",
+    "file": "assets/monarch-roadster_ev-orm-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-roadster-ev-orm",
+    "file": "assets/monarch-roadster_ev-orm.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-tourbillon-albedo-low",
+    "file": "assets/monarch-tourbillon-albedo-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-tourbillon-albedo",
+    "file": "assets/monarch-tourbillon-albedo.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-tourbillon-emissive-low",
+    "file": "assets/monarch-tourbillon-emissive-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-tourbillon-emissive",
+    "file": "assets/monarch-tourbillon-emissive.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-tourbillon-normal-low",
+    "file": "assets/monarch-tourbillon-normal-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-tourbillon-normal",
+    "file": "assets/monarch-tourbillon-normal.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-tourbillon-orm-low",
+    "file": "assets/monarch-tourbillon-orm-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-tourbillon-orm",
+    "file": "assets/monarch-tourbillon-orm.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-valkyrie-albedo-low",
+    "file": "assets/monarch-valkyrie-albedo-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-valkyrie-albedo",
+    "file": "assets/monarch-valkyrie-albedo.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-valkyrie-emissive-low",
+    "file": "assets/monarch-valkyrie-emissive-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-valkyrie-emissive",
+    "file": "assets/monarch-valkyrie-emissive.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-valkyrie-normal-low",
+    "file": "assets/monarch-valkyrie-normal-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-valkyrie-normal",
+    "file": "assets/monarch-valkyrie-normal.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-valkyrie-orm-low",
+    "file": "assets/monarch-valkyrie-orm-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-valkyrie-orm",
+    "file": "assets/monarch-valkyrie-orm.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-vehicle-models",
+    "file": "assets/monarch-vehicle-models.bin",
+    "mime": "application/octet-stream",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-wayron-albedo-low",
+    "file": "assets/monarch-wayron-albedo-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-wayron-albedo",
+    "file": "assets/monarch-wayron-albedo.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-wayron-emissive-low",
+    "file": "assets/monarch-wayron-emissive-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-wayron-emissive",
+    "file": "assets/monarch-wayron-emissive.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-wayron-normal-low",
+    "file": "assets/monarch-wayron-normal-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-wayron-normal",
+    "file": "assets/monarch-wayron-normal.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-wayron-orm-low",
+    "file": "assets/monarch-wayron-orm-low.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-monarch-wayron-orm",
+    "file": "assets/monarch-wayron-orm.webp",
+    "mime": "image/webp",
+    "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
   }
 ]

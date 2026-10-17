@@ -1,0 +1,257 @@
+{
+  "sourceKits": 10,
+  "gameTypes": 11,
+  "models": [
+    {
+      "type": "lafera",
+      "model": "monarch_laferrari",
+      "triangles": 587310,
+      "farTriangles": 46762,
+      "maximumArmRatio": 0.982148264586486,
+      "footClearance": 0.03906569208062263,
+      "footProbes": 4,
+      "head": {
+        "clearance": 0.05708306725203527,
+        "probes": 8974,
+        "missed": 0,
+        "seat": {
+          "x": 0.11347695317150125,
+          "y": 0.158416132332191,
+          "z": -0.3260355362818928,
+          "lean": 0.63
+        }
+      }
+    },
+    {
+      "type": "novera",
+      "model": "monarch_roadster_ev",
+      "triangles": 608850,
+      "farTriangles": 48557,
+      "maximumArmRatio": 0.8820760590753117,
+      "footClearance": 0.12126897205057188,
+      "footProbes": 4,
+      "head": {
+        "clearance": 0.03656203038591421,
+        "probes": 8974,
+        "missed": 0,
+        "seat": {
+          "x": 0.2872853731458089,
+          "y": 0.2385678594126656,
+          "z": -0.3418815042193787,
+          "lean": 0.5299999999999999
+        }
+      }
+    },
+    {
+      "type": "dbs",
+      "model": "monarch_db11",
+      "triangles": 217999,
+      "farTriangles": 17295,
+      "maximumArmRatio": 0.952835740836115,
+      "footClearance": 0.19520444393154113,
+      "footProbes": 4,
+      "head": {
+        "clearance": 0.030614609626855138,
+        "probes": 8974,
+        "missed": 0,
+        "seat": {
+          "x": -0.10880488048302372,
+          "y": 0.37535337844838296,
+          "z": -0.38464718142406434,
+          "lean": 0.63
+        }
+      }
+    },
+    {
+      "type": "valkyrie",
+      "model": "monarch_valkyrie",
+      "triangles": 36364,
+      "farTriangles": 2999,
+      "maximumArmRatio": 0.947628144521151,
+      "footClearance": 0.02336230014832763,
+      "footProbes": 2,
+      "head": {
+        "clearance": 0.02659407151943871,
+        "probes": 8974,
+        "missed": 0,
+        "seat": {
+          "x": 0.5079822256187596,
+          "y": 0.12,
+          "z": -0.33453293683955393,
+          "lean": 0.72
+        }
+      }
+    },
+    {
+      "type": "jasko",
+      "model": "monarch_ccx",
+      "triangles": 41225,
+      "farTriangles": 3319,
+      "maximumArmRatio": 0.7555925385798121,
+      "footClearance": 0.1334236814918278,
+      "footProbes": 4,
+      "head": {
+        "clearance": -0.8839199984319204,
+        "probes": 8974,
+        "missed": 0,
+        "seat": {
+          "x": 0.2749191746455758,
+          "y": 0.2235572711415213,
+          "z": -0.4243536340608182,
+          "lean": 0.3
+        }
+      }
+    },
+    {
+      "type": "w1",
+      "model": "monarch_p1_gtr",
+      "triangles": 71888,
+      "farTriangles": 5735,
+      "maximumArmRatio": 0.9515187288215485,
+      "footClearance": 0.047456213215267024,
+      "footProbes": 4,
+      "head": {
+        "clearance": 0.061729047944626636,
+        "probes": 8974,
+        "missed": 0,
+        "seat": {
+          "x": 0.23173829279827624,
+          "y": 0.15,
+          "z": -0.3929684140536457,
+          "lean": 0.6799999999999999
+        }
+      }
+    },
+    {
+      "type": "sirocco",
+      "model": "monarch_huayra",
+      "triangles": 290985,
+      "farTriangles": 23258,
+      "maximumArmRatio": 0.9899886111694901,
+      "footClearance": 0.07031795917249764,
+      "footProbes": 4,
+      "head": {
+        "clearance": 0.045707182818051306,
+        "probes": 8974,
+        "missed": 0,
+        "seat": {
+          "x": 0.22748948872171298,
+          "y": 0.1746548159173902,
+          "z": -0.3927759409093274,
+          "lean": 0.63
+        }
+      }
+    },
+    {
+      "type": "wayron",
+      "model": "monarch_wayron",
+      "triangles": 35007,
+      "farTriangles": 4720,
+      "maximumArmRatio": 0.9059638955742667,
+      "footClearance": 0.0847024128839354,
+      "footProbes": 2,
+      "head": {
+        "clearance": 0.07201567213812066,
+        "probes": 8974,
+        "missed": 0,
+        "seat": {
+          "x": 0.20575562357017085,
+          "y": 0.21297955878363878,
+          "z": -0.45999999999999996,
+          "lean": 0.5700000000000002
+        }
+      }
+    },
+    {
+      "type": "zr1x",
+      "model": "monarch_c8_hari",
+      "triangles": 263683,
+      "farTriangles": 21055,
+      "maximumArmRatio": 0.9945195523347217,
+      "footClearance": 0.1250297022123881,
+      "footProbes": 4,
+      "head": {
+        "clearance": 0.043443609852432896,
+        "probes": 8974,
+        "missed": 0,
+        "seat": {
+          "x": 0.035,
+          "y": 0.23,
+          "z": -0.464,
+          "lean": 0.49000000000000016
+        }
+      }
+    },
+    {
+      "type": "tourbillon",
+      "model": "monarch_tourbillon",
+      "triangles": 386080,
+      "farTriangles": 30854,
+      "maximumArmRatio": 0.9920319451934392,
+      "footClearance": 0.10300684555088022,
+      "footProbes": 4,
+      "head": {
+        "clearance": 0.055666600703106806,
+        "probes": 8974,
+        "missed": 0,
+        "seat": {
+          "x": 0.4239248137443472,
+          "y": 0.21286692427516607,
+          "z": -0.4001733789852866,
+          "lean": 0.63
+        }
+      }
+    }
+  ],
+  "assertions": 619,
+  "glassBandAssertions": 47,
+  "testCommit": "7c4dbf50cf4b41168c71098d76b2dcaf6530ab3b",
+  "packSHA256": "25473f93258f4c6ec167e2fb9953e8fc9d40d58844862cb8c4289b22826490ed",
+  "sourceTriangles": 2539391,
+  "fullHeadSourceRays": 89740,
+  "normalFloorRays": 36,
+  "note": "CCX is open top; its head rays reach the lower body, so closed-roof clearance is not asserted. Floor rays use the first near-horizontal original source sheet; absent floor rays and near-vertical bulkheads are not treated as horizontal floor. All hands/feet use actual production occupant targets. Glass-band bounds use capped uniform source fit inside retained gameplay dimensions, independently checked against actual render kits; existing generic rows/outputs are retained.",
+  "files": {
+    "tools/tests/monarch-vehicle-assets.mjs": "3f644c5775d30b027ab8e66dd586eb570611a2b536dd509179fd91cc61e9ade4",
+    "tools/tests/cabin-headroom.mjs": "a80c6f34057da5e1ab6b9f44a3b7e50225df614fa434e325f07bccf27f78ddae",
+    "src/cars3d-interior.js": "62a2732e807193d510015cc66a100e7dfd511e7343ad8f97dc3b19d8b94c9763",
+    "src/crowd3d-driveby.js": "a4dfa8a845e60cc0b952a86fdb959c3a810f2e62747592b7f2818f0ca1142215",
+    "src/driveby-seats.js": "dfaf5920de1e8745b245c92c4c6c5c079e2325d467f5efc684ff412affaf91fa",
+    "src/vehicle-assets3d.js": "c004bd085288d3762f6c7b15be22f917e90fad8c19a90623c17ea7350ecf2f70",
+    "src/vehicle-char3d.js": "dea45636041dd028e7bb315bd4430d9688ab53e47d1fd1988cfccc3ec2e61b52",
+    "src/damage3d-bodies.js": "e987b42e16163e50eda22d61672ff6ebfc1095a13a2afdf8092a007911f0e9d8",
+    "src/monarch-vehicle-assets3d.js": "305c05e7123a85e691519f38d70d82d3d7822f097b7b1f1acf1bbab99ecf7489",
+    "src/hypercars.js": "f78e88363180f6e1bc8f9d7ea2b8f5c45a8fe33b47c3fc4627805a3b47115280",
+    "src/damage-vehicles.js": "50fb6293c9282b154fe0a21b48208b1e8de8f37bcaa68717bbecabf242f391ac"
+  },
+  "reproduction": {
+    "script": "/workspace/GTA/work/monarch-sources-a/run-production-host.mjs",
+    "scriptSHA256": "5b0afec1cdac82f74fcb32cae0add70b9eaf357978e26bb9cd531c4bbcdb67e1",
+    "command": "node /workspace/GTA/work/monarch-sources-a/run-production-host.mjs /workspace/GTA/tools/tests/monarch-vehicle-assets.mjs"
+  },
+  "shaderExtensionAssertions": 69,
+  "shaderNote": "Continuous unwrapped-source UV derivatives are used across atlas fract seams. Every char material privately copies source derivative/texture-LOD extensions before shader compilation; absent extensions on generic source glass remain absent. Source geometry, metadata and numeric PBR values are unchanged.",
+  "runtimeRevision": "final guarded gradients with source-specific Tesla Roadster rubber tint",
+  "runtimeSHA256": "305c05e7123a85e691519f38d70d82d3d7822f097b7b1f1acf1bbab99ecf7489",
+  "charSHA256": "dea45636041dd028e7bb315bd4430d9688ab53e47d1fd1988cfccc3ec2e61b52",
+  "productionGeometryFitMetricsUnchanged": true,
+  "finalLog": "/workspace/GTA/work/monarch-sources-a/full-rig-final-rubber-release.log",
+  "finalLogSHA256": "99bd5a1b34716de379f577564cc3916af84541a55f32fa2f1a958f4e1e230c07",
+  "rubberTintProof": {
+    "path": "/workspace/GTA/work/monarch-sources-a/final-rubber-colors-proof.json",
+    "sha256": "7efa3cda92f7c38bf078e70780b17c0a7e3af381e6471a33d9e54e0382276e6d",
+    "assertions": 10,
+    "colors": {
+      "monarch_laferrari": "ffffff",
+      "monarch_roadster_ev": "25272a",
+      "monarch_db11": "ffffff",
+      "monarch_valkyrie": "ffffff",
+      "monarch_ccx": "ffffff",
+      "monarch_p1_gtr": "ffffff",
+      "monarch_huayra": "ffffff",
+      "monarch_wayron": "ffffff",
+      "monarch_c8_hari": "ffffff",
+      "monarch_tourbillon": "ffffff"
+    }
+  }
+}

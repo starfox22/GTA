@@ -75,6 +75,11 @@ the source receipt but leaves the aggregate recipe unchanged.
 Editable per-source recipes are in `tools/monarch-recipes/`. They specify rigid
 coordinate and display-steering alignment, one uniform real-size fit, native
 wheel/caliper roles, full-face damage/door/pane roles and measured cabin contacts.
+Descriptive `fitEvidence` and `measuredFit` notes retain initial source
+measurements, including bounds before display-wheel neutralization and ground
+rounding. Conversion recomputes these values; the final pack’s `sourceShift`,
+`sourceUniformScale` and fitted dimensions describe the finished kit. The explicit
+seat metadata and open-top classifications match the final pack.
 Near keeps all included source faces and authored corner attributes. Only Far
 is reduced; the six CCX studio-plane faces are explicitly excluded. The existing
 ordinary Chevette C8 pack and Brutini SVJ pack are separate and unchanged.

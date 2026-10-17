@@ -1,0 +1,131 @@
+{
+  "branch": "codex-reviews",
+  "purpose": "Final guarded Monarch release inputs; docs and receipts do not enter the executable",
+  "files": [
+    {
+      "file": "assets/manifest.json",
+      "bytes": 42756,
+      "sha256": "e3dccdbac6d6ce6ddb0490481c10dd26ed44c140b92522024963dbdcfb5ceda8"
+    },
+    {
+      "file": "assets/monarch-vehicle-models.bin",
+      "bytes": 101143026,
+      "sha256": "25473f93258f4c6ec167e2fb9953e8fc9d40d58844862cb8c4289b22826490ed"
+    },
+    {
+      "file": "docs/THIRD_PARTY_CREDITS.txt",
+      "bytes": 80480,
+      "sha256": "78cff045eb6cb03c30a6d283358f1723cd1636630feeeedb362ba4fc18b0784d"
+    },
+    {
+      "file": "src/asset-loader.js",
+      "bytes": 11689,
+      "sha256": "1643d554ce1400f7a924745da41d5f192d6c62adbba059cb44cd1909a09d0789"
+    },
+    {
+      "file": "src/cars3d-interior.js",
+      "bytes": 20853,
+      "sha256": "62a2732e807193d510015cc66a100e7dfd511e7343ad8f97dc3b19d8b94c9763"
+    },
+    {
+      "file": "src/crowd3d-driveby.js",
+      "bytes": 21240,
+      "sha256": "a4dfa8a845e60cc0b952a86fdb959c3a810f2e62747592b7f2818f0ca1142215"
+    },
+    {
+      "file": "src/damage3d-bodies.js",
+      "bytes": 38070,
+      "sha256": "e987b42e16163e50eda22d61672ff6ebfc1095a13a2afdf8092a007911f0e9d8"
+    },
+    {
+      "file": "src/driveby-seats.js",
+      "bytes": 8839,
+      "sha256": "dfaf5920de1e8745b245c92c4c6c5c079e2325d467f5efc684ff412affaf91fa"
+    },
+    {
+      "file": "src/game-console-graphics.js",
+      "bytes": 18275,
+      "sha256": "013b99a666c1e204857f81ae1424d943135bfe64e764d62ccd914231769e3cbc"
+    },
+    {
+      "file": "src/game-vehicles.js",
+      "bytes": 24882,
+      "sha256": "f7a36d5d22ecf0880e57fc11cb0d73360fb0fd563452e7eda15039870e411c6e"
+    },
+    {
+      "file": "src/hypercars.js",
+      "bytes": 27813,
+      "sha256": "f78e88363180f6e1bc8f9d7ea2b8f5c45a8fe33b47c3fc4627805a3b47115280"
+    },
+    {
+      "file": "src/monarch-vehicle-assets3d.js",
+      "bytes": 26600,
+      "sha256": "305c05e7123a85e691519f38d70d82d3d7822f097b7b1f1acf1bbab99ecf7489"
+    },
+    {
+      "file": "src/render3d-api.js",
+      "bytes": 28481,
+      "sha256": "631405483c69513b41a957ee55ae0eec47001d797977273d630e11588a94694e"
+    },
+    {
+      "file": "src/render3d-frame.js",
+      "bytes": 37435,
+      "sha256": "ebf4e2b1ac7a55280e7d02cfa4a749c3c68dffb015a64aad6e488c2893df25ca"
+    },
+    {
+      "file": "src/render3d.js",
+      "bytes": 11259,
+      "sha256": "15c1f9174a8d5e018a3ad4bd94d2fe7ef0a179249f1809e5c76a34fb391612ba"
+    },
+    {
+      "file": "src/vehicle-assets3d.js",
+      "bytes": 33759,
+      "sha256": "c004bd085288d3762f6c7b15be22f917e90fad8c19a90623c17ea7350ecf2f70"
+    },
+    {
+      "file": "src/vehicle-char3d.js",
+      "bytes": 21546,
+      "sha256": "dea45636041dd028e7bb315bd4430d9688ab53e47d1fd1988cfccc3ec2e61b52"
+    },
+    {
+      "file": "tools/build.py",
+      "bytes": 14365,
+      "sha256": "82d5e6a611d806ed489748a985a52dd4fe1f95cf01d2dd053bf7111a09f689ad"
+    },
+    {
+      "file": "tools/monarch-review.mjs",
+      "bytes": 6031,
+      "sha256": "03463f678fcbfed695d8333fcf5336b1ffca389a1c5f816659ed644c7f798528"
+    },
+    {
+      "file": "tools/monarch-runtime-review.mjs",
+      "bytes": 16630,
+      "sha256": "5de466983e4de78e41327691d4477c0c4b474f595d10b2d74e0bb44f75f20b0c"
+    },
+    {
+      "file": "tools/tests/monarch-atlas-filtering.mjs",
+      "bytes": 2899,
+      "sha256": "0ac145e01c02b8c7f3686b7aff3667c37a959309ce4b3d4aed8c915162e47f1d"
+    },
+    {
+      "file": "tools/tests/monarch-runtime-materials.mjs",
+      "bytes": 22054,
+      "sha256": "9cd33a0e854f9b4bfddf9eb84a8ff6dee94d48ff49e653b0d63b3b06c06f8a08"
+    },
+    {
+      "file": "work/monarch-review/final-pages/index.html",
+      "bytes": 12318106,
+      "sha256": "971a2df4e8b34242908e21471c470090eec4465410cc5826763a69cb902892cc"
+    },
+    {
+      "file": "work/monarch-review/final.html",
+      "bytes": 328132337,
+      "sha256": "e086ab80b0cb52e289ea6adc562170acb2bd8d42e53fe57ac2c5ee8f4ca8d445"
+    },
+    {
+      "file": "work/monarch-review/final.js",
+      "bytes": 10538601,
+      "sha256": "2ef94deb1a83ee7719b7d5fa35f5059d5e554668b83548d7c75adea9e9e54879"
+    }
+  ]
+}

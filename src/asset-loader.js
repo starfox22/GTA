@@ -52,6 +52,7 @@ const embeddedAssetReferences = {
   "dolcatiVehicleOrmLow": "media-dolcati-vehicle-orm-low",
   "dolcatiVehicleEmissive": "media-dolcati-vehicle-emissive",
   "dolcatiVehicleEmissiveLow": "media-dolcati-vehicle-emissive-low",
+  "monarchVehicleModels": "media-monarch-vehicle-models",
   "aircraftModels": "media-aircraft-models",
   "aircraftSkin": "media-aircraft-skin",
   "jetModels": "media-jet-models",
@@ -178,6 +179,16 @@ const embeddedAssetReferences = {
   }
 };
 
+// Explicit downloaded collection families; no network fetch or executable
+// metadata is needed to connect their independent PBR texture channels.
+for (const source of ['valkyrie', 'db11', 'c8_hari', 'wayron', 'tourbillon', 'ccx', 'huayra', 'p1_gtr', 'roadster_ev', 'laferrari']) {
+  const family = source.split('_').map(part => part[0].toUpperCase() + part.slice(1).toLowerCase()).join('');
+  for (const channel of ['albedo', 'orm', 'emissive', 'normal']) for (const low of [false, true]) {
+    const key = 'monarchVehicle' + family + channel[0].toUpperCase() + channel.slice(1) + (low ? 'Low' : '');
+    embeddedAssetReferences[key] = 'media-monarch-' + source.replaceAll('_', '-') + '-' + channel + (low ? '-low' : '');
+  }
+}
+
 // Split builds (tools/build.py --split-media) carry no media in the page: the
 // media/pack-*.js scripts loaded above register each entry's data: URL here.
 const mediaPacks = window.DEAD_END_CITY_MEDIA || {};
@@ -201,6 +212,10 @@ for (const name of ['dolcatiVehicleModels', 'dolcatiVehicleAlbedo', 'dolcatiVehi
 }
 for (const name of ['svjVehicleModels', 'svjVehicleAlbedo', 'svjVehicleOrm', 'svjVehicleEmissive', 'svjVehicleAlbedoLow', 'svjVehicleOrmLow', 'svjVehicleEmissiveLow']) {
   gameAssets[name] = embeddedMediaDataUrl(embeddedAssetReferences[name]);
+}
+for (const [name, identifier] of Object.entries(embeddedAssetReferences)) {
+  if (name.startsWith('monarchVehicle') && (Object.prototype.hasOwnProperty.call(mediaPacks, identifier) || document.getElementById(identifier)))
+    gameAssets[name] = embeddedMediaDataUrl(identifier);
 }
 gameAssets.audio = {};
 for (const [name, identifier] of Object.entries(embeddedAssetReferences.audio)) {

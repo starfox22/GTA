@@ -1,0 +1,54 @@
+{
+  "source": "/workspace/GTA/work/monarch-sources-b/pagani-huayra-source.glb",
+  "sourceSha256": "8ed06e5460fb0845013284ab52788de9d2d54699fba5401e23ecb1e635304deb",
+  "sourceBytes": 12498568,
+  "scriptSha256": "a3b96fbd53bd3b8bb71aca3f7520142229c05d0643ac16dc9db56e4e59895c8e",
+  "blender": "4.3.2",
+  "platform": "Linux-6.18.44-x86_64-with-glibc2.41",
+  "engine": "CYCLES",
+  "device": "CPU",
+  "samples": 32,
+  "denoising": false,
+  "resolution": [
+    640,
+    400
+  ],
+  "originalBlenderBounds": [
+    [
+      -1.1428329944610596,
+      -2.496718168258667,
+      0.0217167679220438
+    ],
+    [
+      1.1469039916992188,
+      2.164048433303833,
+      1.1824004650115967
+    ]
+  ],
+  "sourceMeshObjects": 63,
+  "sourceTriangles": 290985,
+  "sourceMaterials": 39,
+  "sourceModified": false,
+  "doors": "closed as authored",
+  "description": "Independent Blender render of original downloaded source. Studio camera, lights and floor added; source meshes, transforms and materials unchanged. Not a gameplay screenshot.",
+  "captures": [
+    {
+      "file": "source-front-three-quarter.png",
+      "sha256": "c36145f7a506956c7cfa08f38f186a40e2071ae95c7f3b15d33acbad7f036640",
+      "bytes": 368248,
+      "seconds": 22.5,
+      "cameraPosition": [
+        -4.425692558288574,
+        -5.759255409240723,
+        3.3985188007354736
+      ],
+      "cameraEuler": [
+        1.1971856355667114,
+        1.2557983097849501e-08,
+        -0.6696389317512512
+      ],
+      "orthoScale": 5.965781211853027
+    }
+  ],
+  "viewTransform": "AgX"
+}

@@ -1,0 +1,4851 @@
+{
+  "packSHA256": "25473f93258f4c6ec167e2fb9953e8fc9d40d58844862cb8c4289b22826490ed",
+  "sourceRecipes": [
+    {
+      "key": "monarch_laferrari",
+      "gameTypes": [
+        "lafera"
+      ],
+      "source": "work/monarch-sources/monarch_laferrari/ferrari_laferrari__www.vecarz.com.glb",
+      "sourceSHA256": "dc26015f2fb73791b111e16a0e0693a9497d047bf8e331ac98c2678987b2ad27",
+      "forward": "+z",
+      "lengthMetres": 4.7,
+      "title": "Ferrari Laferrari | www.vecarz.com",
+      "author": "vecarz",
+      "license": "CC BY 4.0",
+      "sourceUrl": "https://sketchfab.com/3d-models/ferrari-laferrari-wwwvecarzcom-979f7085012e4d6399f38de3f9c39012",
+      "mirror": "Nahjs/wild-racing-models",
+      "commit": "6c6a4875004713fe23f3a5ae1bc6c6c075214be3",
+      "downloadUrl": "https://raw.githubusercontent.com/Nahjs/wild-racing-models/6c6a4875004713fe23f3a5ae1bc6c6c075214be3/models/Ferrari/ferrari_laferrari__www.vecarz.com.glb",
+      "triangles": 587310,
+      "atlasSize": 4096,
+      "wheels": [
+        {
+          "front": true,
+          "side": -1,
+          "tyre": {
+            "primitives": [
+              64
+            ]
+          },
+          "rim": {
+            "primitives": [
+              65,
+              66,
+              67,
+              68,
+              69,
+              70
+            ]
+          },
+          "caliper": {
+            "primitives": [
+              55
+            ]
+          },
+          "center": [
+            1.2130879444488143,
+            0.3145099265951824,
+            -0.7920345684091058
+          ],
+          "r": 0.3124964167730997,
+          "width": 0.2862869576096013,
+          "axle": [
+            0.001399995392272748,
+            -0.002149992923847434,
+            0.9999967087662485
+          ],
+          "neutralize": true,
+          "sourceNode": "/Sketchfab_model/root/GLTF_SceneRootNode/Sketchfab_model_0/Laferrari fbx.fbx_1/RootNode_2/tire 2_73/tire 2_tread.002_0_74/Object_142",
+          "axleEvidence": "Circle fit to original tyre vertices/normals in canonical source frame; rotate complete tyre/rim/caliper assembly rigidly to the running axle."
+        },
+        {
+          "front": true,
+          "side": 1,
+          "tyre": {
+            "primitives": [
+              57
+            ]
+          },
+          "rim": {
+            "primitives": [
+              58,
+              59,
+              60,
+              61,
+              62,
+              63
+            ]
+          },
+          "caliper": {
+            "primitives": [
+              54
+            ]
+          },
+          "center": [
+            1.215577763669813,
+            0.31112424000298544,
+            0.7869500197256458
+          ],
+          "r": 0.3124956043139737,
+          "width": 0.2862868534099443,
+          "axle": [
+            0.001399995392272748,
+            -0.002149992923847434,
+            0.9999967087662485
+          ],
+          "neutralize": true,
+          "sourceNode": "/Sketchfab_model/root/GLTF_SceneRootNode/Sketchfab_model_0/Laferrari fbx.fbx_1/RootNode_2/tire 1_65/tire 1_tread.001_0_66/Object_127",
+          "axleEvidence": "Circle fit to original tyre vertices/normals in canonical source frame; rotate complete tyre/rim/caliper assembly rigidly to the running axle."
+        },
+        {
+          "front": false,
+          "side": -1,
+          "tyre": {
+            "primitives": [
+              78
+            ]
+          },
+          "rim": {
+            "primitives": [
+              79,
+              80,
+              81,
+              82,
+              83,
+              84
+            ]
+          },
+          "caliper": {
+            "primitives": [
+              56
+            ]
+          },
+          "center": [
+            -1.3025114136662284,
+            0.33135868820863146,
+            -0.7817058749002403
+          ],
+          "r": 0.3295218320920791,
+          "width": 0.3018842831249882,
+          "axle": [
+            0.001399995392272748,
+            -0.002149992923847434,
+            0.9999967087662485
+          ],
+          "neutralize": true,
+          "sourceNode": "/Sketchfab_model/root/GLTF_SceneRootNode/Sketchfab_model_0/Laferrari fbx.fbx_1/RootNode_2/tire 4_89/tire 4_tread.004_0_90/Object_172",
+          "axleEvidence": "Circle fit to original tyre vertices/normals in canonical source frame; rotate complete tyre/rim/caliper assembly rigidly to the running axle."
+        },
+        {
+          "front": false,
+          "side": 1,
+          "tyre": {
+            "primitives": [
+              71
+            ]
+          },
+          "rim": {
+            "primitives": [
+              72,
+              73,
+              74,
+              75,
+              76,
+              77
+            ]
+          },
+          "caliper": {
+            "primitives": [
+              53
+            ]
+          },
+          "center": [
+            -1.3000274773930198,
+            0.32800005361027573,
+            0.7836812947282963
+          ],
+          "r": 0.3295221418756519,
+          "width": 0.301884213275218,
+          "axle": [
+            0.001399995392272748,
+            -0.002149992923847434,
+            0.9999967087662485
+          ],
+          "neutralize": true,
+          "sourceNode": "/Sketchfab_model/root/GLTF_SceneRootNode/Sketchfab_model_0/Laferrari fbx.fbx_1/RootNode_2/tire 3_81/tire 3_tread.003_0_82/Object_157",
+          "axleEvidence": "Circle fit to original tyre vertices/normals in canonical source frame; rotate complete tyre/rim/caliper assembly rigidly to the running axle."
+        }
+      ],
+      "paintMaterials": [
+        2
+      ],
+      "fitEvidence": {
+        "scale": 1.0481151731209508,
+        "preFitTranslation": [
+          -0.11674989406082137,
+          0.0015531832372110976,
+          -0.0010684251531857258
+        ],
+        "coordinateRule": "Canonical +X front, +Y up, +Z right; one uniform length fit; rubber floor at zero."
+      },
+      "hasInterior": true,
+      "seats": {
+        "hip": [
+          0.11347695317150125,
+          0.158416132332191,
+          -0.3260355362818928
+        ],
+        "wheel": [
+          0.35347695317150124,
+          0.6577480132912733,
+          -0.3239393059356509
+        ],
+        "radius": 0.16245785183374736,
+        "tilt": 0.25,
+        "evidence": "Measured full-size seated rig against original packed source triangles on both sides; all adult head/hair/cap points, steering reach at full lock, and source-floor pedal checks; see seat-fit-final-proof.json.",
+        "recline": 0.68,
+        "floor": 0.1,
+        "fixed": true
+      },
+      "rules": [
+        {
+          "part": "doorLeft.paint",
+          "select": {
+            "primitives": [
+              2
+            ],
+            "bounds": {
+              "x": [
+                -0.49,
+                0.76
+              ],
+              "y": [
+                0.28,
+                1.1
+              ],
+              "z": [
+                -10,
+                -0.48
+              ]
+            }
+          }
+        },
+        {
+          "part": "doorLeft.trim",
+          "select": {
+            "primitives": [
+              0,
+              1,
+              5,
+              9,
+              20,
+              40,
+              41,
+              42,
+              45
+            ],
+            "bounds": {
+              "x": [
+                -0.49,
+                0.76
+              ],
+              "y": [
+                0.28,
+                1.1
+              ],
+              "z": [
+                -10,
+                -0.48
+              ]
+            }
+          }
+        },
+        {
+          "part": "doorLeft.glass",
+          "select": {
+            "primitives": [
+              25
+            ],
+            "bounds": {
+              "x": [
+                -0.49,
+                0.64
+              ],
+              "z": [
+                -10,
+                -0.48
+              ]
+            }
+          },
+          "pane": 0
+        },
+        {
+          "part": "doorRight.paint",
+          "select": {
+            "primitives": [
+              2
+            ],
+            "bounds": {
+              "x": [
+                -0.49,
+                0.76
+              ],
+              "y": [
+                0.28,
+                1.1
+              ],
+              "z": [
+                0.48,
+                10
+              ]
+            }
+          }
+        },
+        {
+          "part": "doorRight.trim",
+          "select": {
+            "primitives": [
+              0,
+              1,
+              5,
+              9,
+              20,
+              40,
+              41,
+              42,
+              45
+            ],
+            "bounds": {
+              "x": [
+                -0.49,
+                0.76
+              ],
+              "y": [
+                0.28,
+                1.1
+              ],
+              "z": [
+                0.48,
+                10
+              ]
+            }
+          }
+        },
+        {
+          "part": "doorRight.glass",
+          "select": {
+            "primitives": [
+              25
+            ],
+            "bounds": {
+              "x": [
+                -0.49,
+                0.64
+              ],
+              "z": [
+                0.48,
+                10
+              ]
+            }
+          },
+          "pane": 2
+        },
+        {
+          "part": "opticalGlass",
+          "select": {
+            "primitives": [
+              15,
+              24
+            ]
+          }
+        },
+        {
+          "part": "glass",
+          "select": {
+            "primitives": [
+              25
+            ],
+            "bounds": {
+              "x": [
+                0.5,
+                10
+              ]
+            }
+          },
+          "pane": 1
+        },
+        {
+          "part": "glass",
+          "select": {
+            "primitives": [
+              25
+            ],
+            "bounds": {
+              "x": [
+                -10,
+                -0.49
+              ]
+            }
+          },
+          "pane": 3
+        },
+        {
+          "part": "glass",
+          "select": {
+            "primitives": [
+              25
+            ],
+            "bounds": {
+              "z": [
+                -10,
+                0
+              ]
+            }
+          },
+          "pane": 0
+        },
+        {
+          "part": "glass",
+          "select": {
+            "primitives": [
+              25
+            ]
+          },
+          "pane": 2
+        },
+        {
+          "part": "headLeft",
+          "select": {
+            "primitives": [
+              36
+            ],
+            "bounds": {
+              "z": [
+                -10,
+                0
+              ]
+            }
+          }
+        },
+        {
+          "part": "tailLeft",
+          "select": {
+            "primitives": [
+              4,
+              10,
+              16,
+              19,
+              27,
+              28,
+              29
+            ],
+            "bounds": {
+              "z": [
+                -10,
+                0
+              ]
+            }
+          }
+        },
+        {
+          "part": "headRight",
+          "select": {
+            "primitives": [
+              36
+            ],
+            "bounds": {
+              "z": [
+                0,
+                10
+              ]
+            }
+          }
+        },
+        {
+          "part": "tailRight",
+          "select": {
+            "primitives": [
+              4,
+              10,
+              16,
+              19,
+              27,
+              28,
+              29
+            ],
+            "bounds": {
+              "z": [
+                0,
+                10
+              ]
+            }
+          }
+        },
+        {
+          "part": "cabin",
+          "select": {
+            "primitives": [
+              40,
+              41,
+              42,
+              43,
+              44,
+              46,
+              47,
+              48,
+              49,
+              50,
+              51,
+              52
+            ]
+          }
+        },
+        {
+          "part": "hood",
+          "select": {
+            "primitives": [
+              2,
+              39
+            ],
+            "bounds": {
+              "x": [
+                0.8,
+                10
+              ],
+              "y": [
+                0.45,
+                0.85
+              ]
+            }
+          }
+        },
+        {
+          "part": "panels",
+          "select": {
+            "primitives": [
+              2
+            ],
+            "bounds": {
+              "y": [
+                0.72,
+                10
+              ]
+            }
+          }
+        },
+        {
+          "part": "shell",
+          "select": {
+            "primitives": [
+              2
+            ]
+          }
+        }
+      ],
+      "doors": {
+        "left": {
+          "side": -1,
+          "hinge": [
+            0.6742001961465122,
+            0.6724216257149666,
+            -0.6509512399493875
+          ],
+          "axis": [
+            0.0,
+            0.30477572710378376,
+            0.9524241471993242
+          ],
+          "sourceNode": "LaFerrari_3 (existing material-group source faces)",
+          "pivotEvidence": "Physical butterfly-door seam fit; source has no independent authored door pivot. Native preview must verify the aperture and clearance.",
+          "parts": {
+            "paint": [
+              "doorLeft.paint"
+            ],
+            "trim": [
+              "doorLeft.trim"
+            ],
+            "glass": [
+              "doorLeft.glass"
+            ]
+          }
+        },
+        "right": {
+          "side": 1,
+          "hinge": [
+            0.6742001961465122,
+            0.6724216257149666,
+            0.6487115747205915
+          ],
+          "axis": [
+            0.0,
+            0.30477572710378376,
+            -0.9524241471993242
+          ],
+          "sourceNode": "LaFerrari_3 (existing material-group source faces)",
+          "pivotEvidence": "Physical butterfly-door seam fit; source has no independent authored door pivot. Native preview must verify the aperture and clearance.",
+          "parts": {
+            "paint": [
+              "doorRight.paint"
+            ],
+            "trim": [
+              "doorRight.trim"
+            ],
+            "glass": [
+              "doorRight.glass"
+            ]
+          }
+        }
+      },
+      "lowAtlasSize": 1024,
+      "provenance": "tools/monarch_vehicle_sources.json#monarch_laferrari"
+    },
+    {
+      "key": "monarch_roadster_ev",
+      "gameTypes": [
+        "novera"
+      ],
+      "source": "work/monarch-sources/monarch_roadster_ev/test4.glb",
+      "sourceSHA256": "f0d70024ed306213b8587950c53af35a97b74c4f3fdf60aa4849bebfa5296c60",
+      "sourceUrl": "https://sketchfab.com/3d-models/tesla-roadster-2020-1fbf29e297bd4a17ac39a00a378441d8",
+      "title": "Tesla Roadster 2020",
+      "author": "metarex.4d",
+      "license": "CC BY 4.0",
+      "mirror": "gwesseling/Tesla-app",
+      "commit": "a03a55533adcf0f45a610b7bc4e1a9e03277c13c",
+      "downloadUrl": "https://raw.githubusercontent.com/gwesseling/Tesla-app/a03a55533adcf0f45a610b7bc4e1a9e03277c13c/assets/test4.glb",
+      "forward": "+z",
+      "lengthMetres": 4.75,
+      "atlasSize": 4096,
+      "wheels": [
+        {
+          "front": true,
+          "side": -1,
+          "tyre": {
+            "primitives": [
+              89,
+              90
+            ]
+          },
+          "rim": {
+            "primitives": [
+              91,
+              92,
+              93,
+              94
+            ]
+          },
+          "caliper": {
+            "primitives": [
+              103
+            ]
+          },
+          "center": [
+            1.5340322717311545,
+            0.31325617517270377,
+            -0.7848385472012123
+          ],
+          "r": 0.32516594579805697,
+          "width": 0.26353208037905695,
+          "axle": [
+            1.4651636873119984e-07,
+            1.5552867882462351e-09,
+            0.9999999999999893
+          ],
+          "neutralize": true,
+          "sourceNode": "/Sketchfab_model/tesla roadster 2020.fbx/RootNode/TR.DEF-Wheel.Ft.L/roadster.001/roadster.001_Sidewall_0",
+          "axleEvidence": "Circle fit to original sidewall+tread vertices/normals. Authored four independent wheel groups and four independent static calipers."
+        },
+        {
+          "front": true,
+          "side": 1,
+          "tyre": {
+            "primitives": [
+              95,
+              96
+            ]
+          },
+          "rim": {
+            "primitives": [
+              97,
+              98,
+              99,
+              100
+            ]
+          },
+          "caliper": {
+            "primitives": [
+              104
+            ]
+          },
+          "center": [
+            1.5343094296092183,
+            0.3133517539815427,
+            0.7848389264238548
+          ],
+          "r": 0.3251023981460079,
+          "width": 0.26353271863516015,
+          "axle": [
+            8.528044069764161e-07,
+            4.134590003701533e-09,
+            0.9999999999996363
+          ],
+          "neutralize": true,
+          "sourceNode": "/Sketchfab_model/tesla roadster 2020.fbx/RootNode/TR.DEF-Wheel.Ft.R/roadster.002/roadster.002_Sidewall_0",
+          "axleEvidence": "Circle fit to original sidewall+tread vertices/normals. Authored four independent wheel groups and four independent static calipers."
+        },
+        {
+          "front": false,
+          "side": -1,
+          "tyre": {
+            "primitives": [
+              77,
+              78
+            ]
+          },
+          "rim": {
+            "primitives": [
+              79,
+              80,
+              81,
+              82
+            ]
+          },
+          "caliper": {
+            "primitives": [
+              101
+            ]
+          },
+          "center": [
+            -1.3874977238139017,
+            0.34125189781411275,
+            -0.8113921159685709
+          ],
+          "r": 0.3442996612171381,
+          "width": 0.31143908242488993,
+          "axle": [
+            6.324240838800752e-07,
+            -1.2288413064887038e-08,
+            0.9999999999997999
+          ],
+          "neutralize": true,
+          "sourceNode": "/Sketchfab_model/tesla roadster 2020.fbx/RootNode/TR.DEF-Wheel.Bk.L/roadster.003/roadster.003_Sidewall_0",
+          "axleEvidence": "Circle fit to original sidewall+tread vertices/normals. Authored four independent wheel groups and four independent static calipers."
+        },
+        {
+          "front": false,
+          "side": 1,
+          "tyre": {
+            "primitives": [
+              83,
+              84
+            ]
+          },
+          "rim": {
+            "primitives": [
+              85,
+              86,
+              87,
+              88
+            ]
+          },
+          "caliper": {
+            "primitives": [
+              102
+            ]
+          },
+          "center": [
+            -1.3873026178031294,
+            0.3410764803146825,
+            0.7773372257721071
+          ],
+          "r": 0.3443064426827042,
+          "width": 0.31143906617040984,
+          "axle": [
+            8.261886026532538e-07,
+            8.459793976456353e-09,
+            0.9999999999996586
+          ],
+          "neutralize": true,
+          "sourceNode": "/Sketchfab_model/tesla roadster 2020.fbx/RootNode/TR.DEF-Wheel.Bk.R/roadster.004/roadster.004_Sidewall_0",
+          "axleEvidence": "Circle fit to original sidewall+tread vertices/normals. Authored four independent wheel groups and four independent static calipers."
+        }
+      ],
+      "paintMaterials": [
+        2
+      ],
+      "rules": [
+        {
+          "part": "doorLeft.paint",
+          "select": {
+            "primitives": [
+              10
+            ],
+            "bounds": {
+              "z": [
+                -10,
+                0
+              ]
+            }
+          }
+        },
+        {
+          "part": "doorLeft.trim",
+          "select": {
+            "primitives": [
+              3,
+              15,
+              16
+            ],
+            "bounds": {
+              "x": [
+                -0.4,
+                0.96
+              ],
+              "y": [
+                0.2,
+                0.86
+              ],
+              "z": [
+                -10,
+                -0.58
+              ]
+            }
+          }
+        },
+        {
+          "part": "doorLeft.glass",
+          "select": {
+            "primitives": [
+              61
+            ],
+            "bounds": {
+              "z": [
+                -10,
+                0
+              ]
+            }
+          },
+          "pane": 0
+        },
+        {
+          "part": "doorRight.paint",
+          "select": {
+            "primitives": [
+              10
+            ],
+            "bounds": {
+              "z": [
+                0,
+                10
+              ]
+            }
+          }
+        },
+        {
+          "part": "doorRight.trim",
+          "select": {
+            "primitives": [
+              3,
+              15,
+              16
+            ],
+            "bounds": {
+              "x": [
+                -0.4,
+                0.96
+              ],
+              "y": [
+                0.2,
+                0.86
+              ],
+              "z": [
+                0.58,
+                10
+              ]
+            }
+          }
+        },
+        {
+          "part": "doorRight.glass",
+          "select": {
+            "primitives": [
+              61
+            ],
+            "bounds": {
+              "z": [
+                0,
+                10
+              ]
+            }
+          },
+          "pane": 2
+        },
+        {
+          "part": "glass",
+          "select": {
+            "primitives": [
+              1,
+              14
+            ]
+          },
+          "pane": 1
+        },
+        {
+          "part": "glass",
+          "select": {
+            "primitives": [
+              56
+            ]
+          },
+          "pane": 3
+        },
+        {
+          "part": "glass",
+          "select": {
+            "primitives": [
+              58,
+              59
+            ]
+          },
+          "pane": 4
+        },
+        {
+          "part": "glass",
+          "select": {
+            "primitives": [
+              55
+            ],
+            "bounds": {
+              "z": [
+                -10,
+                0
+              ]
+            }
+          },
+          "pane": 0
+        },
+        {
+          "part": "glass",
+          "select": {
+            "primitives": [
+              55
+            ]
+          },
+          "pane": 2
+        },
+        {
+          "part": "opticalGlass",
+          "select": {
+            "primitives": [
+              20,
+              26,
+              36,
+              43,
+              45,
+              47,
+              51,
+              68
+            ]
+          }
+        },
+        {
+          "part": "headLeft",
+          "select": {
+            "primitives": [
+              21,
+              22,
+              30,
+              32,
+              34
+            ],
+            "bounds": {
+              "z": [
+                -10,
+                0
+              ]
+            }
+          }
+        },
+        {
+          "part": "tailLeft",
+          "select": {
+            "primitives": [
+              50,
+              52,
+              53,
+              63,
+              66,
+              67,
+              71
+            ],
+            "bounds": {
+              "z": [
+                -10,
+                0
+              ]
+            }
+          }
+        },
+        {
+          "part": "headRight",
+          "select": {
+            "primitives": [
+              21,
+              22,
+              30,
+              32,
+              34
+            ],
+            "bounds": {
+              "z": [
+                0,
+                10
+              ]
+            }
+          }
+        },
+        {
+          "part": "tailRight",
+          "select": {
+            "primitives": [
+              50,
+              52,
+              53,
+              63,
+              66,
+              67,
+              71
+            ],
+            "bounds": {
+              "z": [
+                0,
+                10
+              ]
+            }
+          }
+        },
+        {
+          "part": "cabin",
+          "select": {
+            "primitives": [
+              3,
+              4,
+              5,
+              6,
+              7,
+              9,
+              13,
+              72
+            ]
+          }
+        },
+        {
+          "part": "hood",
+          "select": {
+            "primitives": [
+              76
+            ],
+            "bounds": {
+              "x": [
+                0.96,
+                10
+              ],
+              "y": [
+                0.45,
+                0.88
+              ],
+              "z": [
+                -0.7,
+                0.7
+              ]
+            }
+          }
+        },
+        {
+          "part": "panels",
+          "select": {
+            "primitives": [
+              2,
+              60
+            ]
+          }
+        },
+        {
+          "part": "shell",
+          "select": {
+            "primitives": [
+              76
+            ]
+          }
+        }
+      ],
+      "doors": {
+        "left": {
+          "side": -1,
+          "hinge": [
+            0.9051315206176477,
+            0.6794039727987927,
+            -0.7628513967831122
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "sourceNode": "roadster.015 (paired source door skins) plus matching sideglass/card faces",
+          "pivotEvidence": "Physical front seam fitted from existing independent door skin geometry, not claimed as an authored hinge. Verify opening clearance in native review.",
+          "parts": {
+            "paint": [
+              "doorLeft.paint"
+            ],
+            "trim": [
+              "doorLeft.trim"
+            ],
+            "glass": [
+              "doorLeft.glass"
+            ]
+          }
+        },
+        "right": {
+          "side": 1,
+          "hinge": [
+            0.9051315206176477,
+            0.6794039727987927,
+            0.7978174732092654
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "sourceNode": "roadster.015 (paired source door skins) plus matching sideglass/card faces",
+          "pivotEvidence": "Physical front seam fitted from existing independent door skin geometry, not claimed as an authored hinge. Verify opening clearance in native review.",
+          "parts": {
+            "paint": [
+              "doorRight.paint"
+            ],
+            "trim": [
+              "doorRight.trim"
+            ],
+            "glass": [
+              "doorRight.glass"
+            ]
+          }
+        }
+      },
+      "hasInterior": true,
+      "seats": {
+        "hip": [
+          0.28728537314580893,
+          0.23856785941266564,
+          -0.34188150421937874
+        ],
+        "wheel": [
+          0.5272853731458089,
+          0.674270193621186,
+          -0.34085474838385743
+        ],
+        "radius": 0.1848160503938342,
+        "tilt": 0.22,
+        "evidence": "Measured full-size seated rig against original packed source triangles on both sides; all adult head/hair/cap points, steering reach at full lock, and source-floor pedal checks; see seat-fit-final-proof.json.",
+        "fixed": true,
+        "recline": 0.58,
+        "floor": 0.1
+      },
+      "fitEvidence": {
+        "scale": 1.0267558355213011,
+        "preFitTranslation": [
+          -0.0684549536471859,
+          0.011699645908365197,
+          0.017027454442662293
+        ]
+      },
+      "originalSourceTriangles": 608850,
+      "identityNote": "Tesla Roadster 2020 concept, an EV-class alternative for Novera; not a Rimac Nevera mesh. Game name and electric handling retained.",
+      "verificationLimit": "The full GLB was re-exported by its mirror and lacks embedded author/license extras. Attribution uses the exact model-specific README link and independently indexed primary author/title/licence/face count; no generic app code licence is used.",
+      "lowAtlasSize": 1024,
+      "alternativeForRimacNevera": true,
+      "provenance": "tools/monarch_vehicle_sources.json#monarch_roadster_ev"
+    },
+    {
+      "key": "monarch_db11",
+      "gameTypes": [
+        "dbs"
+      ],
+      "source": "work/monarch-sources/monarch_db11/scene.gltf",
+      "sourceSHA256": "d8b7eda435c84d7d27707265ee526d282cbc23ad9658e6f88c685468af5bbbae",
+      "forward": "+z",
+      "lengthMetres": 4.71,
+      "title": "Aston Martin db11",
+      "author": "Black Snow",
+      "license": "CC BY 4.0",
+      "sourceUrl": "https://sketchfab.com/3d-models/aston-martin-db11-0ce56f01b1ff40b3a4e36bc56873dbc7",
+      "mirror": "btwwahab/Auctions-Website-Frontend",
+      "commit": "f2d6f0279588c6877e8878ba6f861445f550c06a",
+      "downloadUrl": "https://raw.githubusercontent.com/btwwahab/Auctions-Website-Frontend/f2d6f0279588c6877e8878ba6f861445f550c06a/scene.gltf",
+      "triangles": 217999,
+      "atlasSize": 4096,
+      "wheels": [
+        {
+          "front": true,
+          "side": -1,
+          "tyre": {
+            "primitives": [
+              214
+            ]
+          },
+          "rim": {
+            "primitives": [
+              0,
+              1,
+              85,
+              89,
+              90,
+              91
+            ]
+          },
+          "caliper": {
+            "primitives": [
+              86,
+              87,
+              88
+            ]
+          },
+          "center": [
+            1.2993844939155288,
+            0.3755012103590254,
+            -0.844400147442649
+          ],
+          "r": 0.38180970373126266,
+          "width": 0.2887452963065541,
+          "axle": [
+            7.599304663047098e-05,
+            -3.248402562675001e-05,
+            0.9999999965849224
+          ],
+          "neutralize": true,
+          "sourceNode": "/Sketchfab_model/db11.fbx/RootNode/Object_4.003/Object_4.003_Scene_-_Root_0",
+          "axleEvidence": "Circle fit to original tyre vertices/normals in canonical source frame; rotate complete tyre/rim/caliper assembly rigidly to the running axle."
+        },
+        {
+          "front": true,
+          "side": 1,
+          "tyre": {
+            "primitives": [
+              223
+            ]
+          },
+          "rim": {
+            "primitives": [
+              215,
+              216,
+              220,
+              221,
+              222
+            ]
+          },
+          "caliper": {
+            "primitives": [
+              217,
+              218,
+              219
+            ]
+          },
+          "center": [
+            1.3037280553699087,
+            0.37550121375478507,
+            0.8490687820610077
+          ],
+          "r": 0.3818098611208697,
+          "width": 0.2887442388870415,
+          "axle": [
+            7.589079674185774e-05,
+            3.24990021636426e-05,
+            0.999999996592201
+          ],
+          "neutralize": true,
+          "sourceNode": "/Sketchfab_model/db11.fbx/RootNode/Object_4.001/Object_4.001_Scene_-_Root_0",
+          "axleEvidence": "Circle fit to original tyre vertices/normals in canonical source frame; rotate complete tyre/rim/caliper assembly rigidly to the running axle."
+        },
+        {
+          "front": false,
+          "side": -1,
+          "tyre": {
+            "primitives": [
+              232
+            ]
+          },
+          "rim": {
+            "primitives": [
+              224,
+              225,
+              229,
+              230,
+              231
+            ]
+          },
+          "caliper": {
+            "primitives": [
+              226,
+              227,
+              228
+            ]
+          },
+          "center": [
+            -1.6193993029629266,
+            0.37550121712151796,
+            -0.8444001474306032
+          ],
+          "r": 0.3818097724750399,
+          "width": 0.28874529989772035,
+          "axle": [
+            7.599908374854559e-05,
+            -3.248403734682631e-05,
+            0.9999999965844633
+          ],
+          "neutralize": true,
+          "sourceNode": "/Sketchfab_model/db11.fbx/RootNode/Object_4.002/Object_4.002_Scene_-_Root_0",
+          "axleEvidence": "Circle fit to original tyre vertices/normals in canonical source frame; rotate complete tyre/rim/caliper assembly rigidly to the running axle."
+        },
+        {
+          "front": false,
+          "side": 1,
+          "tyre": {
+            "primitives": [
+              241
+            ]
+          },
+          "rim": {
+            "primitives": [
+              233,
+              234,
+              238,
+              239,
+              240
+            ]
+          },
+          "caliper": {
+            "primitives": [
+              235,
+              236,
+              237
+            ]
+          },
+          "center": [
+            -1.615055743100202,
+            0.3755012155257283,
+            0.8490687820537992
+          ],
+          "r": 0.3818097892586683,
+          "width": 0.2887442407940937,
+          "axle": [
+            7.589413036794877e-05,
+            3.249900837523634e-05,
+            0.9999999965919476
+          ],
+          "neutralize": true,
+          "sourceNode": "/Sketchfab_model/db11.fbx/RootNode/Object_4.004/Object_4.004_Scene_-_Root_0",
+          "axleEvidence": "Circle fit to original tyre vertices/normals in canonical source frame; rotate complete tyre/rim/caliper assembly rigidly to the running axle."
+        }
+      ],
+      "paintMaterials": [
+        29
+      ],
+      "fitEvidence": {
+        "scale": 0.9533523513494647,
+        "preFitTranslation": [
+          0.1826145129670791,
+          0.006165971947620086,
+          -0.00046801566031540176
+        ],
+        "coordinateRule": "Canonical +X front, +Y up, +Z right; one uniform length fit; rubber floor at zero."
+      },
+      "hasInterior": true,
+      "identityNote": "Aston Martin DB11 family alternative for the DBS entry; game name and handling retained.",
+      "seats": {
+        "hip": [
+          -0.10880488048302372,
+          0.37535337844838296,
+          -0.38464718142406434
+        ],
+        "wheel": [
+          0.13119511951697627,
+          0.8381549465827012,
+          -0.3856005337754138
+        ],
+        "radius": 0.17160342324290365,
+        "tilt": 0.2,
+        "evidence": "Measured full-size seated rig against original packed source triangles on both sides; all adult head/hair/cap points, steering reach at full lock, and source-floor pedal checks; see seat-fit-final-proof.json.",
+        "recline": 0.68,
+        "floor": 0.1,
+        "fixed": true
+      },
+      "rules": [
+        {
+          "part": "doorLeft.paint",
+          "select": {
+            "primitives": [
+              101
+            ]
+          }
+        },
+        {
+          "part": "doorLeft.trim",
+          "select": {
+            "primitives": [
+              54,
+              55,
+              56,
+              57,
+              58,
+              59,
+              95,
+              96,
+              97,
+              98,
+              99,
+              100,
+              102,
+              103
+            ]
+          }
+        },
+        {
+          "part": "doorLeft.glass",
+          "select": {
+            "primitives": [
+              184
+            ]
+          },
+          "pane": 0
+        },
+        {
+          "part": "doorRight.paint",
+          "select": {
+            "primitives": [
+              128
+            ]
+          }
+        },
+        {
+          "part": "doorRight.trim",
+          "select": {
+            "primitives": [
+              48,
+              49,
+              50,
+              51,
+              52,
+              53,
+              122,
+              123,
+              124,
+              125,
+              126,
+              127,
+              129,
+              130
+            ]
+          }
+        },
+        {
+          "part": "doorRight.glass",
+          "select": {
+            "primitives": [
+              180
+            ]
+          },
+          "pane": 2
+        },
+        {
+          "part": "hood",
+          "select": {
+            "primitives": [
+              166,
+              167,
+              168,
+              169,
+              170,
+              171
+            ]
+          }
+        },
+        {
+          "part": "opticalGlass",
+          "select": {
+            "primitives": [
+              120,
+              121,
+              135,
+              139,
+              144,
+              149,
+              162
+            ]
+          }
+        },
+        {
+          "part": "glass",
+          "select": {
+            "primitives": [
+              185
+            ]
+          },
+          "pane": 1
+        },
+        {
+          "part": "glass",
+          "select": {
+            "primitives": [
+              182
+            ]
+          },
+          "pane": 3
+        },
+        {
+          "part": "glass",
+          "select": {
+            "primitives": [
+              183
+            ]
+          },
+          "pane": 0
+        },
+        {
+          "part": "glass",
+          "select": {
+            "primitives": [
+              181
+            ]
+          },
+          "pane": 2
+        },
+        {
+          "part": "glass",
+          "select": {
+            "primitives": [
+              191
+            ],
+            "bounds": {
+              "z": [
+                -10,
+                0
+              ]
+            }
+          },
+          "pane": 0
+        },
+        {
+          "part": "glass",
+          "select": {
+            "primitives": [
+              191
+            ]
+          },
+          "pane": 2
+        },
+        {
+          "part": "headLeft",
+          "select": {
+            "primitives": [
+              112,
+              113,
+              114,
+              115,
+              116,
+              117,
+              118,
+              119
+            ]
+          }
+        },
+        {
+          "part": "headRight",
+          "select": {
+            "primitives": [
+              104,
+              105,
+              106,
+              107,
+              108,
+              109,
+              110,
+              111
+            ]
+          }
+        },
+        {
+          "part": "tailLeft",
+          "select": {
+            "primitives": [
+              132,
+              133,
+              134,
+              146,
+              147,
+              148
+            ]
+          }
+        },
+        {
+          "part": "tailRight",
+          "select": {
+            "primitives": [
+              136,
+              137,
+              138,
+              141,
+              142,
+              143
+            ]
+          }
+        },
+        {
+          "part": "cabin",
+          "select": {
+            "primitives": [
+              60,
+              61,
+              62,
+              63,
+              64,
+              65,
+              66,
+              67,
+              68,
+              69,
+              70,
+              71,
+              72,
+              73,
+              74,
+              75,
+              76,
+              77,
+              78,
+              79,
+              80,
+              81,
+              82,
+              83,
+              84,
+              92,
+              93,
+              94,
+              193,
+              194,
+              195,
+              196,
+              197,
+              198,
+              199,
+              204,
+              207,
+              208,
+              209,
+              211
+            ]
+          }
+        },
+        {
+          "part": "panels",
+          "select": {
+            "material": "^amdb11$",
+            "bounds": {
+              "y": [
+                0.9,
+                10
+              ]
+            }
+          }
+        },
+        {
+          "part": "shell",
+          "select": {
+            "material": "^amdb11$"
+          }
+        }
+      ],
+      "doors": {
+        "left": {
+          "side": -1,
+          "hinge": [
+            0.717506815596897,
+            0.7876272719611794,
+            -0.7535945413963072
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "sourceNode": "amdb11_door_L",
+          "pivotEvidence": "Physical hinge fitted at the forward seam of the independently authored source door skin, not claimed to be an authored pivot.",
+          "parts": {
+            "paint": [
+              "doorLeft.paint"
+            ],
+            "trim": [
+              "doorLeft.trim"
+            ],
+            "glass": [
+              "doorLeft.glass"
+            ]
+          }
+        },
+        "right": {
+          "side": 1,
+          "hinge": [
+            0.717506815596897,
+            0.7876272719611794,
+            0.7527021737358471
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "sourceNode": "amdb11_door_R",
+          "pivotEvidence": "Physical hinge fitted at the forward seam of the independently authored source door skin, not claimed to be an authored pivot.",
+          "parts": {
+            "paint": [
+              "doorRight.paint"
+            ],
+            "trim": [
+              "doorRight.trim"
+            ],
+            "glass": [
+              "doorRight.glass"
+            ]
+          }
+        }
+      },
+      "lowAtlasSize": 1024,
+      "sourceFilesSHA256": {
+        "scene.bin": "a8e73c88ace9668dddc9983457b3a043c3ba5f0f844a1ca8fb02de0325ebde17"
+      },
+      "provenance": "tools/monarch_vehicle_sources.json#monarch_db11"
+    },
+    {
+      "key": "monarch_valkyrie",
+      "gameTypes": [
+        "valkyrie"
+      ],
+      "source": "work/monarch-sources/monarch_valkyrie/aston_martin_valkyrie_free.glb",
+      "sourceSHA256": "18578476203203ea20c6d04564699be7a4eb50c2ec1c3fd49d19756a3ae55cc6",
+      "forward": "+z",
+      "lengthMetres": 4.51,
+      "title": "Aston Martin Valkyrie FREE",
+      "author": "MHDesigning",
+      "license": "CC BY 4.0",
+      "sourceUrl": "https://sketchfab.com/3d-models/aston-martin-valkyrie-free-8c352d8ec67a4c3b9c1cb1467e06395c",
+      "mirror": "Nahjs/wild-racing-models",
+      "commit": "6c6a4875004713fe23f3a5ae1bc6c6c075214be3",
+      "downloadUrl": "https://raw.githubusercontent.com/Nahjs/wild-racing-models/6c6a4875004713fe23f3a5ae1bc6c6c075214be3/models/Aston/aston_martin_valkyrie_free.glb",
+      "triangles": 36364,
+      "atlasSize": 4096,
+      "wheels": [
+        {
+          "front": true,
+          "side": -1,
+          "tyre": {
+            "primitives": [
+              59
+            ]
+          },
+          "rim": {
+            "primitives": [
+              61,
+              62,
+              63,
+              64,
+              65,
+              66,
+              67,
+              68,
+              69
+            ]
+          },
+          "caliper": {
+            "primitives": [
+              60
+            ]
+          },
+          "center": [
+            1.9492365665029232,
+            0.5364065824420654,
+            -1.259679281466909
+          ],
+          "r": 0.5171493875615799,
+          "width": 0.3481827705441795,
+          "axle": [
+            -0.5904490647439697,
+            -2.5782555757025705e-08,
+            0.807074904790733
+          ],
+          "neutralize": true,
+          "sourceNode": "/Sketchfab_model/1c90866e2e4549f2be29482e4388865c.fbx/RootNode/FrontRightWheel/FrontRightWheel_AstonMartinValkyrieTires_0",
+          "axleEvidence": "Circle fit to original tyre vertices/normals in canonical source frame; rotate complete tyre/rim/caliper assembly rigidly to the running axle."
+        },
+        {
+          "front": true,
+          "side": 1,
+          "tyre": {
+            "primitives": [
+              81
+            ]
+          },
+          "rim": {
+            "primitives": [
+              83,
+              84,
+              85,
+              86,
+              87,
+              88,
+              89,
+              90,
+              91
+            ]
+          },
+          "caliper": {
+            "primitives": [
+              82
+            ]
+          },
+          "center": [
+            1.9492353273124432,
+            0.5364065785522154,
+            1.2596785525713752
+          ],
+          "r": 0.5171494035628469,
+          "width": 0.3481827087914847,
+          "axle": [
+            -0.5904488590916721,
+            5.83418107158451e-08,
+            0.807075055244145
+          ],
+          "neutralize": true,
+          "sourceNode": "/Sketchfab_model/1c90866e2e4549f2be29482e4388865c.fbx/RootNode/FrontLeftWheel/FrontLeftWheel_AstonMartinValkyrieTires_0",
+          "axleEvidence": "Circle fit to original tyre vertices/normals in canonical source frame; rotate complete tyre/rim/caliper assembly rigidly to the running axle."
+        },
+        {
+          "front": false,
+          "side": -1,
+          "tyre": {
+            "primitives": [
+              70
+            ]
+          },
+          "rim": {
+            "primitives": [
+              72,
+              73,
+              74,
+              75,
+              76,
+              77,
+              78,
+              79,
+              80
+            ]
+          },
+          "caliper": {
+            "primitives": [
+              71
+            ]
+          },
+          "center": [
+            -2.156109511136464,
+            0.536406523493744,
+            -1.198193957031255
+          ],
+          "r": 0.5405627612999298,
+          "width": 0.45708200669934285,
+          "axle": [
+            1.0565816112313172e-07,
+            -1.5748330683962308e-07,
+            0.9999999999999818
+          ],
+          "neutralize": true,
+          "sourceNode": "/Sketchfab_model/1c90866e2e4549f2be29482e4388865c.fbx/RootNode/RearRightWheel/RearRightWheel_AstonMartinValkyrieTires_0",
+          "axleEvidence": "Circle fit to original tyre vertices/normals in canonical source frame; rotate complete tyre/rim/caliper assembly rigidly to the running axle."
+        },
+        {
+          "front": false,
+          "side": 1,
+          "tyre": {
+            "primitives": [
+              92
+            ]
+          },
+          "rim": {
+            "primitives": [
+              94,
+              95,
+              96,
+              97,
+              98,
+              99,
+              100,
+              101,
+              102
+            ]
+          },
+          "caliper": {
+            "primitives": [
+              93
+            ]
+          },
+          "center": [
+            -2.156109510594073,
+            0.5364065235372033,
+            1.1981939570312572
+          ],
+          "r": 0.540562748909535,
+          "width": 0.4570820051048095,
+          "axle": [
+            1.1820138836209138e-07,
+            1.5748330561837776e-07,
+            0.9999999999999806
+          ],
+          "neutralize": true,
+          "sourceNode": "/Sketchfab_model/1c90866e2e4549f2be29482e4388865c.fbx/RootNode/RearLeftWheel/RearLeftWheel_AstonMartinValkyrieTires_0",
+          "axleEvidence": "Circle fit to original tyre vertices/normals in canonical source frame; rotate complete tyre/rim/caliper assembly rigidly to the running axle."
+        }
+      ],
+      "paintMaterials": [
+        1,
+        9
+      ],
+      "fitEvidence": {
+        "scale": 0.677841025970033,
+        "preFitTranslation": [
+          0.007223968514291412,
+          0.004156073885349665,
+          3.6400565261995865e-07
+        ],
+        "coordinateRule": "Canonical +X front, +Y up, +Z right; one uniform length fit; rubber floor at zero."
+      },
+      "hasInterior": false,
+      "interiorNote": "Source canopy glass is authored opaque black; there are no authored seats/dashboard. Keep source opacity and use bounded gameplay cabin fallback only where required.",
+      "rules": [
+        {
+          "part": "doorLeft.paint",
+          "select": {
+            "primitives": [
+              54,
+              55
+            ]
+          }
+        },
+        {
+          "part": "doorLeft.paint",
+          "select": {
+            "primitives": [
+              36
+            ],
+            "bounds": {
+              "x": [
+                -0.45,
+                1.15
+              ],
+              "y": [
+                1.07,
+                10
+              ],
+              "z": [
+                -10,
+                -0.05
+              ]
+            }
+          }
+        },
+        {
+          "part": "doorLeft.trim",
+          "select": {
+            "primitives": [
+              28
+            ],
+            "bounds": {
+              "x": [
+                -0.45,
+                1.15
+              ],
+              "y": [
+                1.07,
+                10
+              ],
+              "z": [
+                -10,
+                -0.05
+              ]
+            }
+          }
+        },
+        {
+          "part": "doorLeft.glass",
+          "select": {
+            "primitives": [
+              9
+            ],
+            "bounds": {
+              "x": [
+                -0.45,
+                1.15
+              ],
+              "z": [
+                -10,
+                -0.05
+              ]
+            }
+          },
+          "pane": 0
+        },
+        {
+          "part": "doorRight.paint",
+          "select": {
+            "primitives": [
+              56,
+              57
+            ]
+          }
+        },
+        {
+          "part": "doorRight.paint",
+          "select": {
+            "primitives": [
+              36
+            ],
+            "bounds": {
+              "x": [
+                -0.45,
+                1.15
+              ],
+              "y": [
+                1.07,
+                10
+              ],
+              "z": [
+                0.05,
+                10
+              ]
+            }
+          }
+        },
+        {
+          "part": "doorRight.trim",
+          "select": {
+            "primitives": [
+              28
+            ],
+            "bounds": {
+              "x": [
+                -0.45,
+                1.15
+              ],
+              "y": [
+                1.07,
+                10
+              ],
+              "z": [
+                0.05,
+                10
+              ]
+            }
+          }
+        },
+        {
+          "part": "doorRight.glass",
+          "select": {
+            "primitives": [
+              9
+            ],
+            "bounds": {
+              "x": [
+                -0.45,
+                1.15
+              ],
+              "z": [
+                0.05,
+                10
+              ]
+            }
+          },
+          "pane": 2
+        },
+        {
+          "part": "opticalGlass",
+          "select": {
+            "primitives": [
+              11,
+              24
+            ]
+          }
+        },
+        {
+          "part": "glass",
+          "select": {
+            "primitives": [
+              9
+            ],
+            "bounds": {
+              "x": [
+                1.15,
+                10
+              ]
+            }
+          },
+          "pane": 1
+        },
+        {
+          "part": "glass",
+          "select": {
+            "primitives": [
+              9
+            ],
+            "bounds": {
+              "z": [
+                -10,
+                0
+              ]
+            }
+          },
+          "pane": 0
+        },
+        {
+          "part": "glass",
+          "select": {
+            "primitives": [
+              9
+            ]
+          },
+          "pane": 2
+        },
+        {
+          "part": "headLeft",
+          "select": {
+            "primitives": [
+              6,
+              7,
+              8,
+              20,
+              21,
+              22,
+              23,
+              58
+            ],
+            "bounds": {
+              "z": [
+                -10,
+                0
+              ]
+            }
+          }
+        },
+        {
+          "part": "tailLeft",
+          "select": {
+            "primitives": [
+              32,
+              33
+            ],
+            "bounds": {
+              "z": [
+                -10,
+                0
+              ]
+            }
+          }
+        },
+        {
+          "part": "headRight",
+          "select": {
+            "primitives": [
+              6,
+              7,
+              8,
+              20,
+              21,
+              22,
+              23,
+              58
+            ],
+            "bounds": {
+              "z": [
+                0,
+                10
+              ]
+            }
+          }
+        },
+        {
+          "part": "tailRight",
+          "select": {
+            "primitives": [
+              32,
+              33
+            ],
+            "bounds": {
+              "z": [
+                0,
+                10
+              ]
+            }
+          }
+        },
+        {
+          "part": "panels",
+          "select": {
+            "material": "^(AstonMartinValkyrieMainBody|AstonMartinValkyrieSecondMain)$",
+            "bounds": {
+              "y": [
+                0.94,
+                10
+              ]
+            }
+          }
+        },
+        {
+          "part": "shell",
+          "select": {
+            "material": "^(AstonMartinValkyrieMainBody|AstonMartinValkyrieSecondMain)$"
+          }
+        }
+      ],
+      "doors": {
+        "left": {
+          "side": -1,
+          "hinge": [
+            0.7844138820948404,
+            0.9382377732250982,
+            -0.20335206105304487
+          ],
+          "axis": [
+            -0.5589457048261816,
+            0.22357828193047263,
+            0.7984938640374022
+          ],
+          "sourceNode": "Plane.023/025 plus corresponding canopy source triangles",
+          "pivotEvidence": "Fitted gullwing/butterfly seam; source canopy has no authored hinge. Native preview must verify the aperture and clearance.",
+          "parts": {
+            "paint": [
+              "doorLeft.paint"
+            ],
+            "trim": [
+              "doorLeft.trim"
+            ],
+            "glass": [
+              "doorLeft.glass"
+            ]
+          }
+        },
+        "right": {
+          "side": 1,
+          "hinge": [
+            0.7844138820948404,
+            0.9382377732250982,
+            0.20335255452897494
+          ],
+          "axis": [
+            -0.5589457048261816,
+            0.22357828193047263,
+            -0.7984938640374022
+          ],
+          "sourceNode": "Plane.023/025 plus corresponding canopy source triangles",
+          "pivotEvidence": "Fitted gullwing/butterfly seam; source canopy has no authored hinge. Native preview must verify the aperture and clearance.",
+          "parts": {
+            "paint": [
+              "doorRight.paint"
+            ],
+            "trim": [
+              "doorRight.trim"
+            ],
+            "glass": [
+              "doorRight.glass"
+            ]
+          }
+        }
+      },
+      "lowAtlasSize": 1024,
+      "seats": {
+        "hip": [
+          0.5079822256187596,
+          0.12,
+          -0.33453293683955393
+        ],
+        "wheel": [
+          0.74,
+          0.46,
+          -0.3
+        ],
+        "radius": 0.16,
+        "tilt": 0.25,
+        "recline": 0.77,
+        "floor": 0.12,
+        "pedal": [
+          0.68,
+          0.4
+        ],
+        "fixed": true,
+        "evidence": "Measured full-size seated rig against original packed source triangles on both sides; all adult head/hair/cap points, steering reach at full lock, and source-floor pedal checks; see seat-fit-final-proof.json."
+      },
+      "provenance": "tools/monarch_vehicle_sources.json#monarch_valkyrie"
+    },
+    {
+      "key": "monarch_ccx",
+      "gameTypes": [
+        "jasko"
+      ],
+      "source": "work/monarch-sources/monarch_ccx/koenigsegg-ccx-no.glb",
+      "preparedSource": "work/monarch-sources/monarch_ccx/koenigsegg-ccx-no-decoded.glb",
+      "forward": "-x",
+      "sourceYawRadians": 0.1274361888156343,
+      "excludePrimitives": [
+        94,
+        95,
+        96
+      ],
+      "lengthMetres": 4.295,
+      "sourceUrl": "https://sketchfab.com/3d-models/2007-koenigsegg-ccx-no-roof-423b64e085974b97b5cfd5a87d9dcce3",
+      "hasInterior": true,
+      "alternativeFor": "Koenigsegg Jesko Absolut; exact clean reachable source unavailable",
+      "sourceSHA256": "a0e216c9fd7b7270d229dd49cd75dd672630c602ccb9ed408ff2424a1df47c11",
+      "title": "2007 Koenigsegg CCX (No Roof)",
+      "author": "_Sheep19 (https://sketchfab.com/shobhit190401)",
+      "license": "CC BY 4.0",
+      "originalSourceUrl": "https://sketchfab.com/3d-models/2007-koenigsegg-ccx-no-roof-423b64e085974b97b5cfd5a87d9dcce3",
+      "atlasSize": 4096,
+      "preparedSHA256": "80ace5ec7dd822ddb6ebc154cdbab283cfd399abbf460771333ad83f13950688",
+      "wheels": [
+        {
+          "front": true,
+          "side": -1,
+          "tyre": {
+            "primitives": [
+              42
+            ],
+            "bounds": {
+              "z": [
+                -10000,
+                0
+              ]
+            }
+          },
+          "rim": {
+            "primitives": [
+              41,
+              43
+            ],
+            "bounds": {
+              "z": [
+                -10000,
+                0
+              ]
+            }
+          },
+          "caliper": {
+            "primitives": [
+              44
+            ],
+            "bounds": {
+              "z": [
+                -10000,
+                0
+              ]
+            }
+          },
+          "neutralizeAxle": true
+        },
+        {
+          "front": true,
+          "side": 1,
+          "tyre": {
+            "primitives": [
+              42
+            ],
+            "bounds": {
+              "z": [
+                0,
+                10000
+              ]
+            }
+          },
+          "rim": {
+            "primitives": [
+              41,
+              43
+            ],
+            "bounds": {
+              "z": [
+                0,
+                10000
+              ]
+            }
+          },
+          "caliper": {
+            "primitives": [
+              44
+            ],
+            "bounds": {
+              "z": [
+                0,
+                10000
+              ]
+            }
+          },
+          "neutralizeAxle": true
+        },
+        {
+          "front": false,
+          "side": -1,
+          "tyre": {
+            "primitives": [
+              60
+            ],
+            "bounds": {
+              "z": [
+                -10000,
+                0
+              ]
+            }
+          },
+          "rim": {
+            "primitives": [
+              59,
+              61
+            ],
+            "bounds": {
+              "z": [
+                -10000,
+                0
+              ]
+            }
+          },
+          "caliper": {
+            "primitives": [
+              62
+            ],
+            "bounds": {
+              "z": [
+                -10000,
+                0
+              ]
+            }
+          },
+          "neutralizeAxle": true
+        },
+        {
+          "front": false,
+          "side": 1,
+          "tyre": {
+            "primitives": [
+              60
+            ],
+            "bounds": {
+              "z": [
+                0,
+                10000
+              ]
+            }
+          },
+          "rim": {
+            "primitives": [
+              59,
+              61
+            ],
+            "bounds": {
+              "z": [
+                0,
+                10000
+              ]
+            }
+          },
+          "caliper": {
+            "primitives": [
+              62
+            ],
+            "bounds": {
+              "z": [
+                0,
+                10000
+              ]
+            }
+          },
+          "neutralizeAxle": true
+        }
+      ],
+      "rules": [
+        {
+          "part": "headLeft",
+          "select": {
+            "primitives": [
+              15,
+              16,
+              22
+            ],
+            "bounds": {
+              "z": [
+                -10000,
+                0
+              ]
+            }
+          }
+        },
+        {
+          "part": "tailLeft",
+          "select": {
+            "primitives": [
+              32,
+              39,
+              47,
+              55
+            ],
+            "bounds": {
+              "z": [
+                -10000,
+                0
+              ]
+            }
+          }
+        },
+        {
+          "part": "doorLeft.paint",
+          "select": {
+            "primitives": [
+              35
+            ],
+            "bounds": {
+              "z": [
+                -10000,
+                0
+              ]
+            }
+          }
+        },
+        {
+          "part": "doorLeft.trim",
+          "select": {
+            "primitives": [
+              36,
+              88,
+              89,
+              90
+            ],
+            "bounds": {
+              "z": [
+                -10000,
+                0
+              ]
+            }
+          }
+        },
+        {
+          "part": "doorLeft.glass",
+          "select": {
+            "primitives": [
+              51
+            ],
+            "bounds": {
+              "z": [
+                -10000,
+                0
+              ]
+            }
+          },
+          "pane": 0
+        },
+        {
+          "part": "headRight",
+          "select": {
+            "primitives": [
+              15,
+              16,
+              22
+            ],
+            "bounds": {
+              "z": [
+                0,
+                10000
+              ]
+            }
+          }
+        },
+        {
+          "part": "tailRight",
+          "select": {
+            "primitives": [
+              32,
+              39,
+              47,
+              55
+            ],
+            "bounds": {
+              "z": [
+                0,
+                10000
+              ]
+            }
+          }
+        },
+        {
+          "part": "doorRight.paint",
+          "select": {
+            "primitives": [
+              35
+            ],
+            "bounds": {
+              "z": [
+                0,
+                10000
+              ]
+            }
+          }
+        },
+        {
+          "part": "doorRight.trim",
+          "select": {
+            "primitives": [
+              36,
+              88,
+              89,
+              90
+            ],
+            "bounds": {
+              "z": [
+                0,
+                10000
+              ]
+            }
+          }
+        },
+        {
+          "part": "doorRight.glass",
+          "select": {
+            "primitives": [
+              51
+            ],
+            "bounds": {
+              "z": [
+                0,
+                10000
+              ]
+            }
+          },
+          "pane": 2
+        },
+        {
+          "part": "opticalGlass",
+          "select": {
+            "primitives": [
+              12
+            ]
+          }
+        },
+        {
+          "part": "glass",
+          "select": {
+            "primitives": [
+              52
+            ]
+          },
+          "pane": 1
+        },
+        {
+          "part": "opticalGlass",
+          "select": {
+            "primitives": [
+              20,
+              34
+            ]
+          }
+        },
+        {
+          "part": "hood",
+          "select": {
+            "primitives": [
+              48,
+              49,
+              50
+            ]
+          }
+        },
+        {
+          "part": "cabin",
+          "select": {
+            "primitives": [
+              65,
+              66,
+              67,
+              68,
+              69,
+              70,
+              71,
+              72,
+              73,
+              74,
+              75,
+              76,
+              77,
+              78,
+              79,
+              80,
+              81,
+              82,
+              83,
+              84,
+              85,
+              86,
+              87,
+              88,
+              89,
+              90,
+              91,
+              92,
+              93
+            ]
+          }
+        },
+        {
+          "part": "panels",
+          "select": {
+            "primitives": [
+              21,
+              29,
+              33,
+              37,
+              45,
+              54,
+              63
+            ]
+          }
+        }
+      ],
+      "measuredFit": {
+        "canonicalBounds": [
+          [
+            -2.00831259538071,
+            0.0010620615762201857,
+            -0.9930003638211437
+          ],
+          [
+            2.005819626523399,
+            1.0110431702059144,
+            0.9862071605455373
+          ]
+        ],
+        "uniformScale": 1.0699697375595318,
+        "shift": [
+          0.0012464844286554921,
+          -0.0010620615762201857,
+          0.0033966016378031982
+        ],
+        "fittedDimensions": [
+          4.295,
+          1.080649221740599,
+          2.117692155422468
+        ]
+      },
+      "doors": {
+        "left": {
+          "side": -1,
+          "hinge": [
+            0.6420504603209324,
+            0.7334516407545744,
+            -0.7316324142152189
+          ],
+          "axis": [
+            0.0,
+            0.21486178267511977,
+            0.9766444667050899
+          ],
+          "parts": {
+            "paint": [
+              "doorLeft.paint"
+            ],
+            "trim": [
+              "doorLeft.trim"
+            ],
+            "glass": [
+              "doorLeft.glass"
+            ]
+          },
+          "pivotEvidence": "Derived near forward native door seam; source has separate paired door meshes but no authored hinge. Approximate outward/up dihedral axis, not an authored rig."
+        },
+        "right": {
+          "side": 1,
+          "hinge": [
+            0.644552430068286,
+            0.7334513539784386,
+            0.7399965207626236
+          ],
+          "axis": [
+            0.0,
+            0.21486178267511977,
+            -0.9766444667050899
+          ],
+          "parts": {
+            "paint": [
+              "doorRight.paint"
+            ],
+            "trim": [
+              "doorRight.trim"
+            ],
+            "glass": [
+              "doorRight.glass"
+            ]
+          },
+          "pivotEvidence": "Derived near forward native door seam; source has separate paired door meshes but no authored hinge. Approximate outward/up dihedral axis, not an authored rig."
+        }
+      },
+      "seats": {
+        "hip": [
+          0.2749191746455758,
+          0.2235572711415213,
+          -0.4243536340608182
+        ],
+        "wheel": [
+          0.5149191746455758,
+          0.68364425829212,
+          -0.3922545419340322
+        ],
+        "radius": 0.16,
+        "tilt": 0.3,
+        "fixed": true,
+        "recline": 0.35,
+        "floor": 0.1,
+        "evidence": "Measured full-size seated rig against original packed source triangles on both sides; all adult head/hair/cap points, steering reach at full lock, and source-floor pedal checks; see seat-fit-final-proof.json."
+      },
+      "sourceTriangles": 41231,
+      "excludedStudioTriangles": 6,
+      "sourceRoleEvidence": "Primitive IDs from production legacy.load_primitives scene traversal, canonical +X/Yup/Zright. Native door hinge only supplied where paired source doors are independent; other assets need runtime door seam adaptation. Seats are measured gameplay fit estimates, not authored attachment points.",
+      "lowAtlasSize": 1024,
+      "openTop": true,
+      "downloadUrl": "https://raw.githubusercontent.com/pedrosoandre/carros/0a56de377f02f2574d781f6920fed08d6423ec2f/assets/koenigsegg-ccx-no.glb",
+      "identityNote": "2007 Koenigsegg CCX without roof, a family alternative for Jasko; not a Jesko mesh. Six studio-plane faces are excluded.",
+      "provenance": "tools/monarch_vehicle_sources.json#monarch_ccx"
+    },
+    {
+      "key": "monarch_p1_gtr",
+      "gameTypes": [
+        "w1"
+      ],
+      "source": "work/monarch-sources/monarch_p1_gtr/mclaren-p1-gtr-source.glb",
+      "forward": "+z",
+      "lengthMetres": 4.588,
+      "sourceUrl": "https://sketchfab.com/3d-models/free-mclaren-p1-gtr-d805bec04cf5407fa7c036c20c726d39",
+      "hasInterior": true,
+      "alternativeFor": "McLaren W1; exact sources have conflicting restrictions or game-rip provenance",
+      "sourceSHA256": "c8309e98175d388badbd3b39d2f6267e16f9a104556c85e1440667b20d547f57",
+      "title": "Free McLaren P1 GTR",
+      "author": "Desiccated_Lemon (https://sketchfab.com/Desiccated_Lemon)",
+      "license": "CC BY 4.0",
+      "originalSourceUrl": "https://sketchfab.com/3d-models/free-mclaren-p1-gtr-d805bec04cf5407fa7c036c20c726d39",
+      "atlasSize": 4096,
+      "wheels": [
+        {
+          "front": true,
+          "side": -1,
+          "tyre": {
+            "primitives": [
+              11,
+              16
+            ],
+            "bounds": {
+              "x": [
+                0,
+                10000
+              ],
+              "z": [
+                -10000,
+                0
+              ]
+            }
+          },
+          "rim": {
+            "primitives": [
+              12,
+              13,
+              14
+            ],
+            "bounds": {
+              "x": [
+                0,
+                10000
+              ],
+              "z": [
+                -10000,
+                0
+              ]
+            }
+          },
+          "caliper": {
+            "primitives": [
+              15
+            ],
+            "bounds": {
+              "x": [
+                0,
+                10000
+              ],
+              "z": [
+                -10000,
+                0
+              ]
+            }
+          }
+        },
+        {
+          "front": true,
+          "side": 1,
+          "tyre": {
+            "primitives": [
+              11,
+              16
+            ],
+            "bounds": {
+              "x": [
+                0,
+                10000
+              ],
+              "z": [
+                0,
+                10000
+              ]
+            }
+          },
+          "rim": {
+            "primitives": [
+              12,
+              13,
+              14
+            ],
+            "bounds": {
+              "x": [
+                0,
+                10000
+              ],
+              "z": [
+                0,
+                10000
+              ]
+            }
+          },
+          "caliper": {
+            "primitives": [
+              15
+            ],
+            "bounds": {
+              "x": [
+                0,
+                10000
+              ],
+              "z": [
+                0,
+                10000
+              ]
+            }
+          }
+        },
+        {
+          "front": false,
+          "side": -1,
+          "tyre": {
+            "primitives": [
+              11,
+              16
+            ],
+            "bounds": {
+              "x": [
+                -10000,
+                0
+              ],
+              "z": [
+                -10000,
+                0
+              ]
+            }
+          },
+          "rim": {
+            "primitives": [
+              12,
+              13,
+              14
+            ],
+            "bounds": {
+              "x": [
+                -10000,
+                0
+              ],
+              "z": [
+                -10000,
+                0
+              ]
+            }
+          },
+          "caliper": {
+            "primitives": [
+              15
+            ],
+            "bounds": {
+              "x": [
+                -10000,
+                0
+              ],
+              "z": [
+                -10000,
+                0
+              ]
+            }
+          }
+        },
+        {
+          "front": false,
+          "side": 1,
+          "tyre": {
+            "primitives": [
+              11,
+              16
+            ],
+            "bounds": {
+              "x": [
+                -10000,
+                0
+              ],
+              "z": [
+                0,
+                10000
+              ]
+            }
+          },
+          "rim": {
+            "primitives": [
+              12,
+              13,
+              14
+            ],
+            "bounds": {
+              "x": [
+                -10000,
+                0
+              ],
+              "z": [
+                0,
+                10000
+              ]
+            }
+          },
+          "caliper": {
+            "primitives": [
+              15
+            ],
+            "bounds": {
+              "x": [
+                -10000,
+                0
+              ],
+              "z": [
+                0,
+                10000
+              ]
+            }
+          }
+        }
+      ],
+      "rules": [
+        {
+          "part": "headLeft",
+          "select": {
+            "primitives": [
+              8,
+              9
+            ],
+            "bounds": {
+              "z": [
+                -10000,
+                0
+              ]
+            }
+          }
+        },
+        {
+          "part": "tailLeft",
+          "select": {
+            "primitives": [
+              23,
+              29,
+              30,
+              31,
+              32,
+              33
+            ],
+            "bounds": {
+              "z": [
+                -10000,
+                0
+              ]
+            }
+          }
+        },
+        {
+          "part": "headRight",
+          "select": {
+            "primitives": [
+              8,
+              9
+            ],
+            "bounds": {
+              "z": [
+                0,
+                10000
+              ]
+            }
+          }
+        },
+        {
+          "part": "tailRight",
+          "select": {
+            "primitives": [
+              23,
+              29,
+              30,
+              31,
+              32,
+              33
+            ],
+            "bounds": {
+              "z": [
+                0,
+                10000
+              ]
+            }
+          }
+        },
+        {
+          "part": "opticalGlass",
+          "select": {
+            "primitives": [
+              7,
+              10,
+              27
+            ]
+          }
+        },
+        {
+          "part": "glass",
+          "select": {
+            "primitives": [
+              36
+            ],
+            "bounds": {
+              "x": [
+                0.5,
+                2
+              ]
+            }
+          },
+          "pane": 1
+        },
+        {
+          "part": "glass",
+          "select": {
+            "primitives": [
+              36
+            ],
+            "bounds": {
+              "z": [
+                -10000,
+                0
+              ]
+            }
+          },
+          "pane": 0
+        },
+        {
+          "part": "glass",
+          "select": {
+            "primitives": [
+              36
+            ],
+            "bounds": {
+              "z": [
+                0,
+                10000
+              ]
+            }
+          },
+          "pane": 2
+        },
+        {
+          "part": "cabin",
+          "select": {
+            "primitives": [
+              37
+            ]
+          }
+        },
+        {
+          "part": "hood",
+          "select": {
+            "primitives": [
+              0
+            ],
+            "bounds": {
+              "x": [
+                1.02,
+                3
+              ]
+            }
+          }
+        },
+        {
+          "part": "panels",
+          "select": {
+            "primitives": [
+              0
+            ]
+          }
+        },
+        {
+          "part": "trim",
+          "select": {
+            "primitives": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              17,
+              18,
+              19,
+              20,
+              21,
+              22,
+              24,
+              25,
+              26,
+              28,
+              34,
+              35,
+              38,
+              39
+            ]
+          }
+        }
+      ],
+      "measuredFit": {
+        "canonicalBounds": [
+          [
+            -1.4602782726287842,
+            -0.028602495789527893,
+            -0.6771708130836487
+          ],
+          [
+            1.6920361518859863,
+            0.7550491094589233,
+            0.6771708130836487
+          ]
+        ],
+        "uniformScale": 1.455438570569058,
+        "shift": [
+          -0.11587893962860107,
+          0.028602495789527893,
+          -0.0
+        ],
+        "fittedDimensions": [
+          4.588,
+          1.1405567721669536,
+          1.9711610404511049
+        ]
+      },
+      "seats": {
+        "hip": [
+          0.23173829279827624,
+          0.15,
+          -0.3929684140536457
+        ],
+        "wheel": [
+          0.4717382927982762,
+          0.5510326752857883,
+          -0.4075227997593363
+        ],
+        "radius": 0.14,
+        "tilt": 0.27,
+        "recline": 0.73,
+        "floor": 0.1,
+        "fixed": true,
+        "evidence": "Measured full-size seated rig against original packed source triangles on both sides; all adult head/hair/cap points, steering reach at full lock, and source-floor pedal checks; see seat-fit-final-proof.json."
+      },
+      "sourceTriangles": 71888,
+      "excludedStudioTriangles": 0,
+      "sourceRoleEvidence": "Primitive IDs from production legacy.load_primitives scene traversal, canonical +X/Yup/Zright. Native door hinge only supplied where paired source doors are independent; other assets need runtime door seam adaptation. Seats are measured gameplay fit estimates, not authored attachment points.",
+      "lowAtlasSize": 1024,
+      "maxTextureSize": 1020,
+      "downloadUrl": "https://raw.githubusercontent.com/Nissmo89/Supercar-Vault-3D/00f08b282d6b2c0f6834f91c582f9d539dcc02fd/models/free_mclaren_p1_gtr.glb",
+      "identityNote": "McLaren P1 GTR family alternative for W1; not an exact McLaren W1 mesh.",
+      "provenance": "tools/monarch_vehicle_sources.json#monarch_p1_gtr"
+    },
+    {
+      "key": "monarch_huayra",
+      "gameTypes": [
+        "sirocco"
+      ],
+      "source": "work/monarch-sources/monarch_huayra/pagani-huayra-source.glb",
+      "forward": "+z",
+      "lengthMetres": 4.6,
+      "sourceUrl": "https://sketchfab.com/3d-models/pagani-huayra-free-c2d61a9f53a54a229547bb76e4b71e25",
+      "hasInterior": true,
+      "sourceSHA256": "8ed06e5460fb0845013284ab52788de9d2d54699fba5401e23ecb1e635304deb",
+      "title": "Pagani Huayra [Free]",
+      "author": "Black Snow (https://sketchfab.com/BlackSnow02)",
+      "license": "CC BY 4.0",
+      "originalSourceUrl": "https://sketchfab.com/3d-models/pagani-huayra-free-c2d61a9f53a54a229547bb76e4b71e25",
+      "atlasSize": 4096,
+      "wheels": [
+        {
+          "front": true,
+          "side": -1,
+          "tyre": {
+            "primitives": [
+              50
+            ]
+          },
+          "rim": {
+            "primitives": [
+              54,
+              55,
+              56,
+              60
+            ],
+            "bounds": {
+              "x": [
+                0,
+                10000
+              ],
+              "z": [
+                -10000,
+                0
+              ]
+            }
+          },
+          "caliper": {
+            "primitives": [
+              44,
+              46,
+              47
+            ],
+            "bounds": {
+              "x": [
+                0,
+                10000
+              ],
+              "z": [
+                -10000,
+                0
+              ]
+            }
+          }
+        },
+        {
+          "front": true,
+          "side": 1,
+          "tyre": {
+            "primitives": [
+              49
+            ]
+          },
+          "rim": {
+            "primitives": [
+              54,
+              55,
+              56,
+              60
+            ],
+            "bounds": {
+              "x": [
+                0,
+                10000
+              ],
+              "z": [
+                0,
+                10000
+              ]
+            }
+          },
+          "caliper": {
+            "primitives": [
+              44,
+              46,
+              47
+            ],
+            "bounds": {
+              "x": [
+                0,
+                10000
+              ],
+              "z": [
+                0,
+                10000
+              ]
+            }
+          }
+        },
+        {
+          "front": false,
+          "side": -1,
+          "tyre": {
+            "primitives": [
+              48
+            ]
+          },
+          "rim": {
+            "primitives": [
+              54,
+              55,
+              56,
+              60
+            ],
+            "bounds": {
+              "x": [
+                -10000,
+                0
+              ],
+              "z": [
+                -10000,
+                0
+              ]
+            }
+          },
+          "caliper": {
+            "primitives": [
+              44,
+              46,
+              47
+            ],
+            "bounds": {
+              "x": [
+                -10000,
+                0
+              ],
+              "z": [
+                -10000,
+                0
+              ]
+            }
+          }
+        },
+        {
+          "front": false,
+          "side": 1,
+          "tyre": {
+            "primitives": [
+              51
+            ]
+          },
+          "rim": {
+            "primitives": [
+              54,
+              55,
+              56,
+              60
+            ],
+            "bounds": {
+              "x": [
+                -10000,
+                0
+              ],
+              "z": [
+                0,
+                10000
+              ]
+            }
+          },
+          "caliper": {
+            "primitives": [
+              44,
+              46,
+              47
+            ],
+            "bounds": {
+              "x": [
+                -10000,
+                0
+              ],
+              "z": [
+                0,
+                10000
+              ]
+            }
+          }
+        }
+      ],
+      "rules": [
+        {
+          "part": "headLeft",
+          "select": {
+            "primitives": [
+              61
+            ],
+            "bounds": {
+              "z": [
+                -10000,
+                0
+              ]
+            }
+          }
+        },
+        {
+          "part": "tailLeft",
+          "select": {
+            "primitives": [
+              3,
+              4,
+              59
+            ],
+            "bounds": {
+              "z": [
+                -10000,
+                0
+              ]
+            }
+          }
+        },
+        {
+          "part": "headRight",
+          "select": {
+            "primitives": [
+              61
+            ],
+            "bounds": {
+              "z": [
+                0,
+                10000
+              ]
+            }
+          }
+        },
+        {
+          "part": "tailRight",
+          "select": {
+            "primitives": [
+              3,
+              4,
+              59
+            ],
+            "bounds": {
+              "z": [
+                0,
+                10000
+              ]
+            }
+          }
+        },
+        {
+          "part": "opticalGlass",
+          "select": {
+            "primitives": [
+              43
+            ]
+          }
+        },
+        {
+          "part": "opticalGlass",
+          "select": {
+            "primitives": [
+              52
+            ],
+            "bounds": {
+              "x": [
+                1.55,
+                3
+              ]
+            }
+          }
+        },
+        {
+          "part": "glass",
+          "select": {
+            "primitives": [
+              52
+            ],
+            "bounds": {
+              "x": [
+                0.7,
+                1.55
+              ]
+            }
+          },
+          "pane": 1
+        },
+        {
+          "part": "glass",
+          "select": {
+            "primitives": [
+              52
+            ],
+            "bounds": {
+              "x": [
+                -2,
+                -0.3
+              ]
+            }
+          },
+          "pane": 3
+        },
+        {
+          "part": "glass",
+          "select": {
+            "primitives": [
+              52
+            ],
+            "bounds": {
+              "z": [
+                -10000,
+                0
+              ]
+            }
+          },
+          "pane": 0
+        },
+        {
+          "part": "glass",
+          "select": {
+            "primitives": [
+              52
+            ],
+            "bounds": {
+              "z": [
+                0,
+                10000
+              ]
+            }
+          },
+          "pane": 2
+        },
+        {
+          "part": "glass",
+          "select": {
+            "primitives": [
+              58
+            ]
+          },
+          "pane": 4
+        },
+        {
+          "part": "cabin",
+          "select": {
+            "primitives": [
+              0,
+              1,
+              2,
+              11,
+              12,
+              13,
+              14,
+              17,
+              18,
+              19,
+              20,
+              21,
+              45,
+              53,
+              57,
+              62
+            ]
+          }
+        },
+        {
+          "part": "hood",
+          "select": {
+            "primitives": [
+              40
+            ],
+            "bounds": {
+              "x": [
+                1.25,
+                3
+              ]
+            }
+          }
+        },
+        {
+          "part": "panels",
+          "select": {
+            "primitives": [
+              40,
+              41,
+              42
+            ]
+          }
+        }
+      ],
+      "measuredFit": {
+        "canonicalBounds": [
+          [
+            -2.164047956466675,
+            0.021717000752687763,
+            -1.1469039916992188
+          ],
+          [
+            2.496717929840088,
+            1.1823999881744385,
+            1.1428329944610596
+          ]
+        ],
+        "uniformScale": 0.9869622530311398,
+        "shift": [
+          -0.16633498668670654,
+          -0.021717000752687763,
+          0.00203549861907959
+        ],
+        "fittedDimensions": [
+          4.6,
+          1.1455502963206854,
+          2.25988397470948
+        ]
+      },
+      "seats": {
+        "hip": [
+          0.22748948872171298,
+          0.1746548159173902,
+          -0.3927759409093274
+        ],
+        "wheel": [
+          0.467489488721713,
+          0.6595700945995348,
+          -0.31717463232714205
+        ],
+        "radius": 0.15,
+        "tilt": 0.25,
+        "recline": 0.68,
+        "floor": 0.1,
+        "fixed": true,
+        "evidence": "Measured full-size seated rig against original packed source triangles on both sides; all adult head/hair/cap points, steering reach at full lock, and source-floor pedal checks; see seat-fit-final-proof.json."
+      },
+      "sourceTriangles": 290985,
+      "excludedStudioTriangles": 0,
+      "sourceRoleEvidence": "Primitive IDs from production legacy.load_primitives scene traversal, canonical +X/Yup/Zright. Native door hinge only supplied where paired source doors are independent; other assets need runtime door seam adaptation. Seats are measured gameplay fit estimates, not authored attachment points.",
+      "lowAtlasSize": 1024,
+      "downloadUrl": "https://raw.githubusercontent.com/AuraK-7/wild-racing-models/6c6a4875004713fe23f3a5ae1bc6c6c075214be3/models/pagani_huayra_free.glb",
+      "provenance": "tools/monarch_vehicle_sources.json#monarch_huayra"
+    },
+    {
+      "key": "monarch_wayron",
+      "gameTypes": [
+        "wayron"
+      ],
+      "source": "work/monarch-sources/monarch_wayron/bugatti-veyron.glb",
+      "preparedSource": "work/monarch-sources/monarch_wayron/bugatti-veyron-decoded.glb",
+      "forward": "+z",
+      "lengthMetres": 4.46,
+      "sourceUrl": "https://sketchfab.com/3d-models/bugatti-veyron-164-super-sport-lowpoly-0ee4c65face949efa4500deb17c79150",
+      "hasInterior": false,
+      "sourceSHA256": "083b52fdcbb7b54f4bdc5a59c0d3773797d859545a43fb10d7dd8416a37923b6",
+      "title": "Bugatti Veyron 16.4 Super Sport - Lowpoly",
+      "author": "andikapratamaw (https://sketchfab.com/andikapratamaw)",
+      "license": "CC BY 4.0",
+      "originalSourceUrl": "https://sketchfab.com/3d-models/bugatti-veyron-164-super-sport-lowpoly-0ee4c65face949efa4500deb17c79150",
+      "atlasSize": 4096,
+      "preparedSHA256": "33b35d3475cc00e013f9b5e61d6f24cf149661dddf4df11cc77d224a9b129816",
+      "wheels": [
+        {
+          "front": true,
+          "side": -1,
+          "tyre": {
+            "primitives": [
+              18
+            ]
+          },
+          "rim": {
+            "primitives": [
+              16,
+              17
+            ]
+          },
+          "caliper": {
+            "primitives": [
+              15
+            ]
+          },
+          "axle": [
+            0,
+            0,
+            1
+          ],
+          "center": [
+            1.2752175135384651,
+            0.3610130009812872,
+            -0.8243035674095154
+          ],
+          "r": 0.3510837852343341
+        },
+        {
+          "front": true,
+          "side": 1,
+          "tyre": {
+            "primitives": [
+              22
+            ]
+          },
+          "rim": {
+            "primitives": [
+              20,
+              21
+            ]
+          },
+          "caliper": {
+            "primitives": [
+              19
+            ]
+          },
+          "axle": [
+            0,
+            0,
+            1
+          ],
+          "center": [
+            1.268109284354686,
+            0.36101394057889724,
+            0.8443915545940399
+          ],
+          "r": 0.3510831100166058
+        },
+        {
+          "front": false,
+          "side": -1,
+          "tyre": {
+            "primitives": [
+              10
+            ]
+          },
+          "rim": {
+            "primitives": [
+              8,
+              9
+            ]
+          },
+          "caliper": {
+            "primitives": [
+              7
+            ]
+          },
+          "axle": [
+            0,
+            0,
+            1
+          ],
+          "center": [
+            -1.43189718296422,
+            0.3610130009812862,
+            -0.8243035674095154
+          ],
+          "r": 0.35108378523433365
+        },
+        {
+          "front": false,
+          "side": 1,
+          "tyre": {
+            "primitives": [
+              14
+            ]
+          },
+          "rim": {
+            "primitives": [
+              12,
+              13
+            ]
+          },
+          "caliper": {
+            "primitives": [
+              11
+            ]
+          },
+          "axle": [
+            0,
+            0,
+            1
+          ],
+          "center": [
+            -1.439005412148,
+            0.36101394057889746,
+            0.844391793012619
+          ],
+          "r": 0.35108311001660586
+        }
+      ],
+      "rules": [
+        {
+          "part": "headLeft",
+          "select": {
+            "primitives": [
+              4
+            ],
+            "bounds": {
+              "x": [
+                1.74,
+                2.15
+              ],
+              "y": [
+                0.5,
+                0.75
+              ],
+              "z": [
+                -2,
+                -0.25
+              ]
+            }
+          }
+        },
+        {
+          "part": "tailLeft",
+          "select": {
+            "primitives": [
+              4
+            ],
+            "bounds": {
+              "x": [
+                -2.25,
+                -1.98
+              ],
+              "y": [
+                0.65,
+                0.86
+              ],
+              "z": [
+                -2,
+                -0.25
+              ]
+            }
+          }
+        },
+        {
+          "part": "headRight",
+          "select": {
+            "primitives": [
+              4
+            ],
+            "bounds": {
+              "x": [
+                1.74,
+                2.15
+              ],
+              "y": [
+                0.5,
+                0.75
+              ],
+              "z": [
+                0.25,
+                2
+              ]
+            }
+          }
+        },
+        {
+          "part": "tailRight",
+          "select": {
+            "primitives": [
+              4
+            ],
+            "bounds": {
+              "x": [
+                -2.25,
+                -1.98
+              ],
+              "y": [
+                0.65,
+                0.86
+              ],
+              "z": [
+                0.25,
+                2
+              ]
+            }
+          }
+        },
+        {
+          "part": "glass",
+          "select": {
+            "primitives": [
+              6
+            ],
+            "bounds": {
+              "x": [
+                0.4,
+                2
+              ]
+            }
+          },
+          "pane": 1
+        },
+        {
+          "part": "glass",
+          "select": {
+            "primitives": [
+              6
+            ],
+            "bounds": {
+              "x": [
+                -2,
+                -0.65
+              ]
+            }
+          },
+          "pane": 3
+        },
+        {
+          "part": "glass",
+          "select": {
+            "primitives": [
+              6
+            ],
+            "bounds": {
+              "z": [
+                -2,
+                0
+              ]
+            }
+          },
+          "pane": 0
+        },
+        {
+          "part": "glass",
+          "select": {
+            "primitives": [
+              6
+            ],
+            "bounds": {
+              "z": [
+                0,
+                2
+              ]
+            }
+          },
+          "pane": 2
+        },
+        {
+          "part": "hood",
+          "select": {
+            "primitives": [
+              0
+            ],
+            "bounds": {
+              "x": [
+                1,
+                3
+              ],
+              "y": [
+                0.6,
+                1.3
+              ]
+            }
+          }
+        },
+        {
+          "part": "panels",
+          "select": {
+            "primitives": [
+              0
+            ]
+          }
+        },
+        {
+          "part": "trim",
+          "select": {
+            "primitives": [
+              1,
+              2,
+              3,
+              4,
+              5
+            ]
+          }
+        }
+      ],
+      "measuredFit": {
+        "canonicalBounds": [
+          [
+            -2.2880077362060547,
+            0.009988665826320575,
+            -1.0106899825080211
+          ],
+          [
+            2.184516191482544,
+            1.2342359086459225,
+            1.0307781187041576
+          ]
+        ],
+        "uniformScale": 0.9971998075603207,
+        "shift": [
+          0.05174577236175537,
+          -0.009988665826320575,
+          -0.010044068098068237
+        ],
+        "fittedDimensions": [
+          4.46,
+          1.2208191149459602,
+          2.035751597669318
+        ]
+      },
+      "sourceTriangles": 35007,
+      "excludedStudioTriangles": 0,
+      "sourceRoleEvidence": "Primitive IDs from production legacy.load_primitives scene traversal, canonical +X/Yup/Zright. Native door hinge only supplied where paired source doors are independent; other assets need runtime door seam adaptation. Seats are measured gameplay fit estimates, not authored attachment points.",
+      "lowAtlasSize": 1024,
+      "seats": {
+        "hip": [
+          0.20575562357017085,
+          0.21297955878363878,
+          -0.45999999999999996
+        ],
+        "wheel": [
+          0.44575562357017084,
+          0.5529795587836388,
+          -0.45999999999999996
+        ],
+        "radius": 0.185,
+        "tilt": 0.4,
+        "recline": 0.6200000000000002,
+        "fixed": true,
+        "floor": 0.1,
+        "evidence": "Measured full-size seated rig against original packed source triangles on both sides; all adult head/hair/cap points, steering reach at full lock, and source-floor pedal checks; see seat-fit-final-proof.json."
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/pedrosoandre/carros/0a56de377f02f2574d781f6920fed08d6423ec2f/assets/bugatti-veyron.glb",
+      "provenance": "tools/monarch_vehicle_sources.json#monarch_wayron"
+    },
+    {
+      "key": "monarch_c8_hari",
+      "gameTypes": [
+        "zr1x",
+        "chevetteSE"
+      ],
+      "existingPack": "assets/sports-vehicle-models.bin",
+      "source": "work/monarch-sources/monarch_c8_hari/scene.gltf",
+      "sourceSHA256": "840aac54739d1c18b3996eebcdfbbc66bc4d9531a5a578b80c30e5923053699b",
+      "forward": "-z",
+      "lengthMetres": 4.69,
+      "title": "2019 Chevrolet Corvette C8 Stingray",
+      "author": "Hari",
+      "license": "CC BY 4.0",
+      "sourceUrl": "https://sketchfab.com/3d-models/2019-chevrolet-corvette-c8-stingray-790c40ccff6843eab0b7b4bd18421ff8",
+      "mirror": "zymantas-dev/corvette-c8-threejs-exp",
+      "commit": "1811c2f116145a409131839be5b2411e4f4f92de",
+      "identityNote": "Full Hari C8 Stingray family alternative for ZR1X and Chevette SE; these are not exact ZR1/Z06 aero meshes. The ordinary Chevette source pack is unchanged.",
+      "existingSourceRecipe": "tools/sports_vehicle_models.py (do not rederive known source roles/hinges/seat fit)",
+      "runtimeModelDimensions": [
+        4.69,
+        1.203,
+        2.171
+      ],
+      "existingNearTriangles": 85031,
+      "originalSourceTriangles": 263683,
+      "sourceRecipe": "hari_c8",
+      "atlasSize": 4096,
+      "paintMaterials": [
+        0
+      ],
+      "lowAtlasSize": 1024,
+      "sourceFilesSHA256": {
+        "scene.bin": "50bd85f55741f7135783f8c0b3d9fa0422b16dbaef78836bbb15dd831574fd14",
+        "textures/Grille_6_baseColor.png": "ed0a5a453ca3f1bc5af6b7f4d0fa3f711383b2ba22f5626188a055edcc726003",
+        "textures/Grille_7_baseColor.png": "bd542b6883188bb232f765a85aac081e364596abb3ad5354643f990407eb7f5f",
+        "textures/Misc_baseColor.png": "733e55d25545d8b2d06fbf975f350cef8f771f3e236b02d09db5c1ef308943c7",
+        "textures/Badges_baseColor.png": "51787232da7bf542f9e215fe492478479420aa112f9d2348b160f763183329ec",
+        "textures/Lights_baseColor.png": "23eb6ed222b2b1af0136489aa11693d267d9de6c82e78e3b3618a604ede88ecd",
+        "textures/Interior_baseColor.png": "24a84aa7e2cde824cdbb50e50e0ac608456c92c4a4e8407fe90361b22e32fbdf",
+        "textures/Chrome_Engine_Pipes_Use_Grill_5_as_BW_to_Bump_to_Normal_metallicRoughness.png": "c878c542fc7434ef9b2eb999e225d1e323449c7fd88aff5e3a092a71dbcf3843",
+        "textures/Engine_Decals_baseColor.png": "f837dd54239781588884a190cc8d2d7d59eeb6ceaf9e95ca8f6d6ec18edf7075",
+        "textures/Grille_1_baseColor.png": "5b9d5548cdbb535cdaff37f11737d89e2307beb51da9a7a25e1c677c205e4e31",
+        "textures/Grille_3_baseColor.png": "011ace4f2c2c2d287ac5944c89fc10533cf08bc49b901f8bbcc1fa182d0af5ce",
+        "textures/Carbon_Fiber_baseColor.png": "ea2e3e6183f0cb9113820c64bb2489fc64bb607814dad91bc8e904e081c1a6f4",
+        "textures/Grill_4_Speakers_baseColor.png": "298bb6543a8fa9217f4f3db33c1b4874cd35d7cd477aca37b0ee52aab0ad7dd7",
+        "textures/Carpet_baseColor.png": "2acc732a9ac63827c33021766e1809fd54820d2a249e845c3d9c9992b370477f",
+        "textures/Seats_Adjust_the_leather_texture_using_Color_Ramp_or_using_HSV_baseColor.jpeg": "82590174d91c25ee7b4d60e37554ef329c9caf89b4994caf882ebb5bae804115",
+        "textures/Gauges_baseColor.png": "0befb9c51d82ae6e6b28445b2b0fa54fb99143482354508274c39e869594b414",
+        "textures/Interior_Display_baseColor.png": "57ad5cc99f4c52411f286e31ff29e4cbe16a2604e069d8eda76f6eaba90757dc",
+        "textures/Interior_Trim_baseColor.png": "86abe97bfa51ae3224e30ee2c17deb8fdd8d0b9859e10cce8c680fffbc8c775a",
+        "textures/Brake_Disc_baseColor.png": "d62521c9fad60f8a1fdef369b46cb2ad09d7dab2db71e46809ff5db9f2f76c19",
+        "textures/Tire_Treads_baseColor.png": "c4060e8f7a959d26799185c8aa84f585ac55b8e56b6ddba60e64a7a1b7ab9fec",
+        "textures/Tire_Sidewall_baseColor.png": "62e36ba4a850736d21c6144a7fecb963719a2c06580b2de30d3763d0a5316f8a",
+        "textures/material_baseColor.png": "7eb1ef0df8a49a76cd0d06375f413e0d6d12d34fc9de1e76765af39a48327c20",
+        "textures/Interior_Trim_2_baseColor.png": "de6da0cfe8ab8cae6822d375ee78718937fcd6cf404e7d8c33ae9e8daf46f41f",
+        "textures/Interior_Badge_baseColor.png": "29aaa5251ace944b4bec0c59d2f2e8d40daa0aafed737704b3be34c269ff1d36",
+        "textures/Mat_supergt.209_baseColor.png": "84ae54f49d44d6f212dd5b6a92ce7a71a39941df53c6450586d4808d0a24997c"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/scene.gltf",
+      "provenance": "tools/monarch_vehicle_sources.json#monarch_c8_hari"
+    },
+    {
+      "key": "monarch_tourbillon",
+      "gameTypes": [
+        "tourbillon"
+      ],
+      "source": "work/monarch-sources/monarch_tourbillon/tourbillon-mahib.glb",
+      "sourceSHA256": "d2fbcc87a9fd4d842a398947e3fa6f5680c606455e01ea5a80dab6b0735d7ded",
+      "sourceUrl": "https://sketchfab.com/3d-models/bugatti-tourbillon-2024-c992c9bc9ba8427197d5fe380eaa2b31",
+      "originalSourceUrl": "https://sketchfab.com/3d-models/bugatti-tourbillon-2024-c992c9bc9ba8427197d5fe380eaa2b31",
+      "title": "Bugatti Tourbillon 2024",
+      "author": "MdMahib (https://sketchfab.com/MdMahib)",
+      "license": "CC BY 4.0",
+      "forward": "+z",
+      "lengthMetres": 4.67,
+      "atlasSize": 4096,
+      "hasInterior": true,
+      "wheels": [
+        {
+          "front": true,
+          "side": -1,
+          "tyre": {
+            "primitives": [
+              32
+            ]
+          },
+          "rim": {
+            "primitives": [
+              31
+            ]
+          },
+          "caliper": {
+            "primitives": [
+              37,
+              38,
+              39
+            ]
+          }
+        },
+        {
+          "front": true,
+          "side": 1,
+          "tyre": {
+            "primitives": [
+              30
+            ]
+          },
+          "rim": {
+            "primitives": [
+              29
+            ]
+          },
+          "caliper": {
+            "primitives": [
+              46,
+              47,
+              48
+            ]
+          }
+        },
+        {
+          "front": false,
+          "side": -1,
+          "tyre": {
+            "primitives": [
+              34
+            ]
+          },
+          "rim": {
+            "primitives": [
+              33
+            ]
+          },
+          "caliper": {
+            "primitives": [
+              40,
+              41,
+              42
+            ]
+          }
+        },
+        {
+          "front": false,
+          "side": 1,
+          "tyre": {
+            "primitives": [
+              36
+            ]
+          },
+          "rim": {
+            "primitives": [
+              35
+            ]
+          },
+          "caliper": {
+            "primitives": [
+              43,
+              44,
+              45
+            ]
+          }
+        }
+      ],
+      "rules": [
+        {
+          "part": "headLeft",
+          "select": {
+            "primitives": [
+              19
+            ],
+            "bounds": {
+              "x": [
+                1.2,
+                3
+              ],
+              "z": [
+                -10,
+                0
+              ]
+            }
+          }
+        },
+        {
+          "part": "tailLeft",
+          "select": {
+            "primitives": [
+              19
+            ],
+            "bounds": {
+              "x": [
+                -3,
+                -0.6
+              ],
+              "z": [
+                -10,
+                0
+              ]
+            }
+          }
+        },
+        {
+          "part": "headRight",
+          "select": {
+            "primitives": [
+              19
+            ],
+            "bounds": {
+              "x": [
+                1.2,
+                3
+              ],
+              "z": [
+                0,
+                10
+              ]
+            }
+          }
+        },
+        {
+          "part": "tailRight",
+          "select": {
+            "primitives": [
+              19
+            ],
+            "bounds": {
+              "x": [
+                -3,
+                -0.6
+              ],
+              "z": [
+                0,
+                10
+              ]
+            }
+          }
+        },
+        {
+          "part": "opticalGlass",
+          "select": {
+            "primitives": [
+              20,
+              28
+            ]
+          }
+        },
+        {
+          "part": "opticalGlass",
+          "select": {
+            "primitives": [
+              27
+            ],
+            "bounds": {
+              "x": [
+                1.5,
+                3
+              ]
+            }
+          }
+        },
+        {
+          "part": "opticalGlass",
+          "select": {
+            "primitives": [
+              27
+            ],
+            "bounds": {
+              "x": [
+                -3,
+                -0.6
+              ]
+            }
+          }
+        },
+        {
+          "part": "glass",
+          "select": {
+            "primitives": [
+              26,
+              27
+            ],
+            "bounds": {
+              "x": [
+                0.65,
+                1.5
+              ]
+            }
+          },
+          "pane": 1
+        },
+        {
+          "part": "glass",
+          "select": {
+            "primitives": [
+              26,
+              27
+            ],
+            "bounds": {
+              "z": [
+                -10,
+                0
+              ]
+            }
+          },
+          "pane": 0
+        },
+        {
+          "part": "glass",
+          "select": {
+            "primitives": [
+              26,
+              27
+            ],
+            "bounds": {
+              "z": [
+                0,
+                10
+              ]
+            }
+          },
+          "pane": 2
+        },
+        {
+          "part": "cabin",
+          "select": {
+            "primitives": [
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15,
+              16,
+              17,
+              24
+            ]
+          }
+        },
+        {
+          "part": "hood",
+          "select": {
+            "primitives": [
+              22
+            ],
+            "bounds": {
+              "x": [
+                1.25,
+                3
+              ]
+            }
+          }
+        },
+        {
+          "part": "panels",
+          "select": {
+            "primitives": [
+              22,
+              23
+            ]
+          }
+        }
+      ],
+      "sourceTriangles": 386080,
+      "seats": {
+        "hip": [
+          0.4239248137443472,
+          0.21286692427516607,
+          -0.4001733789852866
+        ],
+        "wheel": [
+          0.6639248137443472,
+          0.6830403032604526,
+          -0.38016471003602226
+        ],
+        "radius": 0.17,
+        "tilt": 0.4,
+        "recline": 0.68,
+        "floor": 0.1,
+        "fixed": true,
+        "evidence": "Measured full-size seated rig against original packed source triangles on both sides; all adult head/hair/cap points, steering reach at full lock, and source-floor pedal checks; see seat-fit-final-proof.json."
+      },
+      "measuredFit": {
+        "canonicalBounds": [
+          [
+            -2.33762550057545,
+            -0.0027443694454911682,
+            -1.0916727537287896
+          ],
+          [
+            2.330351176775399,
+            1.18596577370518,
+            1.0916727537287896
+          ]
+        ],
+        "uniformScale": 1.0004334474632164,
+        "shift": [
+          0.0036371619000254984,
+          0.0027443694454911682,
+          -0.0
+        ],
+        "fittedDimensions": [
+          4.67,
+          1.1892253865467195,
+          2.1842918730291117
+        ]
+      },
+      "sourceRoleEvidence": "Explicit native primitive IDs; four independent tyre/rim/caliper groups. No authored door rig/seam objects; source cabin retained and seat points are measured gameplay fit estimates.",
+      "lowAtlasSize": 1024,
+      "downloadUrl": "https://raw.githubusercontent.com/AuraK-7/wild-racing-models/6c6a4875004713fe23f3a5ae1bc6c6c075214be3/models/Bugatti/bugatti_tourbillon_2024.glb",
+      "provenance": "tools/monarch_vehicle_sources.json#monarch_tourbillon"
+    }
+  ],
+  "models": {
+    "monarch_laferrari": {
+      "sourceSHA256": "dc26015f2fb73791b111e16a0e0693a9497d047bf8e331ac98c2678987b2ad27",
+      "nearFaces": 587310,
+      "nearCorners": 1761930,
+      "farFaces": 46762,
+      "maxError": {
+        "position": 3.628576755820845e-05,
+        "normal": 1.536291174109028e-05,
+        "uv": 0.0,
+        "color": 0.0
+      },
+      "excludedSceneFaces": 0,
+      "textureBudget": {
+        "maxTextureSize": null,
+        "resampledMaterials": [],
+        "uniqueTiles": 33,
+        "tilePixels": 2627328,
+        "gpuRGBA8MipBytesHigh": 268435456,
+        "gpuRGBA8MipBytesLow": 16777216,
+        "allocatedChannels": 3
+      }
+    },
+    "monarch_roadster_ev": {
+      "sourceSHA256": "f0d70024ed306213b8587950c53af35a97b74c4f3fdf60aa4849bebfa5296c60",
+      "nearFaces": 608850,
+      "nearCorners": 1826550,
+      "farFaces": 48557,
+      "maxError": {
+        "position": 3.664926248703182e-05,
+        "normal": 1.5343518268262635e-05,
+        "uv": 0.0,
+        "color": 0.0
+      },
+      "excludedSceneFaces": 0,
+      "textureBudget": {
+        "maxTextureSize": null,
+        "resampledMaterials": [],
+        "uniqueTiles": 18,
+        "tilePixels": 1152,
+        "gpuRGBA8MipBytesHigh": 65536,
+        "gpuRGBA8MipBytesLow": 65536,
+        "allocatedChannels": 3
+      }
+    },
+    "monarch_db11": {
+      "sourceSHA256": "d8b7eda435c84d7d27707265ee526d282cbc23ad9658e6f88c685468af5bbbae",
+      "nearFaces": 217999,
+      "nearCorners": 653997,
+      "farFaces": 17295,
+      "maxError": {
+        "position": 3.637145794810337e-05,
+        "normal": 1.5348381397162214e-05,
+        "uv": 0.0,
+        "color": 0.0
+      },
+      "excludedSceneFaces": 0,
+      "textureBudget": {
+        "maxTextureSize": null,
+        "resampledMaterials": [],
+        "uniqueTiles": 32,
+        "tilePixels": 2048,
+        "gpuRGBA8MipBytesHigh": 262144,
+        "gpuRGBA8MipBytesLow": 262144,
+        "allocatedChannels": 3
+      }
+    },
+    "monarch_valkyrie": {
+      "sourceSHA256": "18578476203203ea20c6d04564699be7a4eb50c2ec1c3fd49d19756a3ae55cc6",
+      "nearFaces": 36364,
+      "nearCorners": 109092,
+      "farFaces": 2999,
+      "maxError": {
+        "position": 3.478732438755294e-05,
+        "normal": 1.531868962545424e-05,
+        "uv": 0.0,
+        "color": 0.0
+      },
+      "excludedSceneFaces": 0,
+      "textureBudget": {
+        "maxTextureSize": null,
+        "resampledMaterials": [],
+        "uniqueTiles": 18,
+        "tilePixels": 1152,
+        "gpuRGBA8MipBytesHigh": 65536,
+        "gpuRGBA8MipBytesLow": 65536,
+        "allocatedChannels": 3
+      }
+    },
+    "monarch_ccx": {
+      "sourceSHA256": "a0e216c9fd7b7270d229dd49cd75dd672630c602ccb9ed408ff2424a1df47c11",
+      "nearFaces": 41225,
+      "nearCorners": 123675,
+      "farFaces": 3319,
+      "maxError": {
+        "position": 3.330915092858433e-05,
+        "normal": 1.531825232070627e-05,
+        "uv": 2.9800958145642653e-08,
+        "color": 0.0
+      },
+      "excludedSceneFaces": 6,
+      "textureBudget": {
+        "maxTextureSize": null,
+        "resampledMaterials": [],
+        "uniqueTiles": 17,
+        "tilePixels": 4719168,
+        "gpuRGBA8MipBytesHigh": 357913941,
+        "gpuRGBA8MipBytesLow": 22369621,
+        "allocatedChannels": 4
+      }
+    },
+    "monarch_p1_gtr": {
+      "sourceSHA256": "c8309e98175d388badbd3b39d2f6267e16f9a104556c85e1440667b20d547f57",
+      "nearFaces": 71888,
+      "nearCorners": 215664,
+      "farFaces": 5735,
+      "maxError": {
+        "position": 3.53463267286358e-05,
+        "normal": 1.5333509772896825e-05,
+        "uv": 0.0,
+        "color": 0.0
+      },
+      "excludedSceneFaces": 0,
+      "textureBudget": {
+        "maxTextureSize": 1020,
+        "resampledMaterials": [
+          {
+            "material": 0,
+            "native": [
+              1024,
+              1024
+            ],
+            "staged": [
+              1020,
+              1020
+            ]
+          },
+          {
+            "material": 1,
+            "native": [
+              1024,
+              1024
+            ],
+            "staged": [
+              1020,
+              1020
+            ]
+          },
+          {
+            "material": 2,
+            "native": [
+              1024,
+              1024
+            ],
+            "staged": [
+              1020,
+              1020
+            ]
+          },
+          {
+            "material": 3,
+            "native": [
+              1024,
+              1024
+            ],
+            "staged": [
+              1020,
+              1020
+            ]
+          },
+          {
+            "material": 10,
+            "native": [
+              1024,
+              1024
+            ],
+            "staged": [
+              1020,
+              1020
+            ]
+          },
+          {
+            "material": 32,
+            "native": [
+              1024,
+              1024
+            ],
+            "staged": [
+              1020,
+              1020
+            ]
+          },
+          {
+            "material": 34,
+            "native": [
+              1024,
+              1024
+            ],
+            "staged": [
+              1020,
+              1020
+            ]
+          },
+          {
+            "material": 36,
+            "native": [
+              1024,
+              1024
+            ],
+            "staged": [
+              1020,
+              1020
+            ]
+          },
+          {
+            "material": 37,
+            "native": [
+              1024,
+              1024
+            ],
+            "staged": [
+              1020,
+              1020
+            ]
+          }
+        ],
+        "uniqueTiles": 38,
+        "tilePixels": 13558544,
+        "gpuRGBA8MipBytesHigh": 357913941,
+        "gpuRGBA8MipBytesLow": 22369621,
+        "allocatedChannels": 4
+      }
+    },
+    "monarch_huayra": {
+      "sourceSHA256": "8ed06e5460fb0845013284ab52788de9d2d54699fba5401e23ecb1e635304deb",
+      "nearFaces": 290985,
+      "nearCorners": 872955,
+      "farFaces": 23258,
+      "maxError": {
+        "position": 3.555110957487173e-05,
+        "normal": 1.5330539619773376e-05,
+        "uv": 0.0,
+        "color": 0.0
+      },
+      "excludedSceneFaces": 0,
+      "textureBudget": {
+        "maxTextureSize": null,
+        "resampledMaterials": [],
+        "uniqueTiles": 25,
+        "tilePixels": 1600,
+        "gpuRGBA8MipBytesHigh": 65536,
+        "gpuRGBA8MipBytesLow": 65536,
+        "allocatedChannels": 3
+      }
+    },
+    "monarch_wayron": {
+      "sourceSHA256": "083b52fdcbb7b54f4bdc5a59c0d3773797d859545a43fb10d7dd8416a37923b6",
+      "nearFaces": 35007,
+      "nearCorners": 105021,
+      "farFaces": 4720,
+      "maxError": {
+        "position": 3.420122973607498e-05,
+        "normal": 1.5273078748156976e-05,
+        "uv": 2.8056520662289586e-08,
+        "color": 0.0
+      },
+      "excludedSceneFaces": 0,
+      "textureBudget": {
+        "maxTextureSize": null,
+        "resampledMaterials": [],
+        "uniqueTiles": 9,
+        "tilePixels": 2097600,
+        "gpuRGBA8MipBytesHigh": 357913941,
+        "gpuRGBA8MipBytesLow": 22369621,
+        "allocatedChannels": 4
+      }
+    },
+    "monarch_c8_hari": {
+      "sourceSHA256": "840aac54739d1c18b3996eebcdfbbc66bc4d9531a5a578b80c30e5923053699b",
+      "nearFaces": 263683,
+      "nearCorners": 791049,
+      "farFaces": 21055,
+      "maxError": {
+        "position": 3.6141877705897496e-05,
+        "normal": 1.5356834084157e-05,
+        "uv": 0.0,
+        "color": 0.0
+      },
+      "excludedSceneFaces": 0,
+      "textureBudget": {
+        "maxTextureSize": null,
+        "resampledMaterials": [],
+        "uniqueTiles": 35,
+        "tilePixels": 7344704,
+        "gpuRGBA8MipBytesHigh": 268435456,
+        "gpuRGBA8MipBytesLow": 16777216,
+        "allocatedChannels": 3
+      }
+    },
+    "monarch_tourbillon": {
+      "sourceSHA256": "d2fbcc87a9fd4d842a398947e3fa6f5680c606455e01ea5a80dab6b0735d7ded",
+      "nearFaces": 386080,
+      "nearCorners": 1158240,
+      "farFaces": 30854,
+      "maxError": {
+        "position": 3.6090797526089347e-05,
+        "normal": 1.5355987717957653e-05,
+        "uv": 0.0,
+        "color": 2.9685450542160652e-08
+      },
+      "excludedSceneFaces": 0,
+      "textureBudget": {
+        "maxTextureSize": null,
+        "resampledMaterials": [],
+        "uniqueTiles": 28,
+        "tilePixels": 2794880,
+        "gpuRGBA8MipBytesHigh": 89478485,
+        "gpuRGBA8MipBytesLow": 22369621,
+        "allocatedChannels": 4
+      }
+    }
+  }
+}

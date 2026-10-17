@@ -1,0 +1,10 @@
+{
+  "pass": true,
+  "checks": [
+    "verified native import",
+    "reject corrupt existing input without replacing it",
+    "reject corrupt import before installation",
+    "offline missing source fails without network",
+    "reject repository path escape"
+  ]
+}
