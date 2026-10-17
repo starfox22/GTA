@@ -106,20 +106,42 @@ export default async function(t) {
   // Exercise actual KitFit replacement after an earlier far-kit builder has
   // already retained its generic boxes. Headroom fitting is a separate rig test.
   scope.carSeatPlan=(...args)=>{scope.seatOptions=args[5];return{glass:{w:18}};};
-  const missing={...model,seats:{...model.seats,floor:.06},parts:{},roleParts:{hood:[],panels:[]},doors:{},hasInterior:true,paintRect:[.1,.2,.02,.03]},
+  const missing={...model,glass:{...model.glass,open:true},seats:{...model.seats,floor:.06,minHipY:.08,pedal:[.7,.16],fixed:true},parts:{},roleParts:{hood:[],panels:[]},doors:{},hasInterior:true,paintRect:[.1,.2,.02,.03]},
     panel=()=>{const g=new Three.BoxGeometry();g.setAttribute('avSourceUv',g.attributes.uv.clone());return g;},
     kit={type:first.gameTypes[0],asset:missing,l:40,k:8,glass:{},seats:{glass:{w:18}},hood:new Three.BoxGeometry(),paint:new Three.BoxGeometry(),far:{hood:new Three.BoxGeometry(),paint:new Three.BoxGeometry()},lamps:{},door:panel(),trunk:panel()};
   api.monarchVehicleKitFit(kit,missing,data,8);
   t.assert(scope.seatOptions.floor===.06,'source-specific physical floor passes through the actual unit conversion without changing other cars');
+  t.assert(kit.glass.open===true,'explicit source open-top classification reaches the actual seat plan');
+  t.assert(scope.seatOptions.minY===.08&&scope.seatOptions.pedal[0]===.7&&scope.seatOptions.pedal[1]===.16&&scope.seatOptions.fixed===true,'source-specific fixed adult seat, hip lower bound and pedal target pass independently of physical floor');
   t.assert([kit.hood,kit.paint,kit.far.hood,kit.far.paint].every(g=>g.index.count===0&&g.attributes.position.count===0),'missing source hood/panels stay absent in both near and already-created far LOD');
   t.assert(['finish','avSourceUv','avOrmSourceUv','avNormalSourceUv','avEmissiveSourceUv','avAtlasRect','avSurface'].every(name=>kit.hood.attributes[name]?.count===0),'empty source roles retain full layout for safe immutable joins');
   t.assert(kit.door.attributes.avSurface.getX(0)===1&&kit.door.attributes.avSurface.getY(0)===0&&kit.door.attributes.avSurface.getZ(0)===1&&kit.door.attributes.avSurface.getW(0)===-1&&Math.abs(kit.door.attributes.avAtlasRect.getZ(0)-.02)<1e-7,'generated moved panels use neutral paint tile and combined default surface controls');
-  const high=requests.slice();high.forEach(image=>image.complete(4096));const texture=paint2.map;
-  activeTier.lodBias=2;api.monarchVehicleTextureQuality();const low=requests.slice(high.length);low.forEach(image=>image.complete(2048));
-  t.assert(texture===paint2.map&&texture.image.width===2048&&api.monarchVehicleReport().reducedTextures,'actual source texture identity survives quality reallocation');
-  activeTier.lodBias=1;api.monarchVehicleTextureQuality();const oldHigh=requests.slice(high.length+low.length);
-  activeTier.lodBias=2;api.monarchVehicleTextureQuality();const newLow=requests.slice(high.length+low.length+oldHigh.length);newLow.forEach(image=>image.complete(2048));oldHigh.forEach(image=>image.complete(4096));
-  t.assert(texture.image.width===2048&&uploads.at(-1)===2048,'late source high-quality image cannot overwrite newer low-quality texture');
+  const low=requests.slice(),lowSize=model.lowAtlas[0],highSize=model.atlas[0],texture=paint2.map;
+  t.assert(low.every(image=>image.url.includes('Low')),'a whole newly encountered source family first requests its compact Low fallback');
+  low.forEach(image=>image.complete(lowSize));
+  scope.player={x:0,y:0,car:{type:model.gameTypes[0],x:0,y:0}};scope.vehicles=[];
+  api.monarchVehicleTextureQuality();let at=requests.length;const high=requests.slice(low.length);high.forEach(image=>image.complete(highSize));
+  let report=api.monarchVehicleReport();
+  t.assert(high.length===low.length&&texture.image.width===highSize&&report.heroSource===model.type&&report.models[model.type].texturesReady&&report.models[model.type].targetTextures==='high','driven hero alone promotes to actual source High and publishes complete dimension/pending proof');
+  const other=Object.values(data.header.models).find(m=>m.type!==model.type&&m.gameTypes.length);
+  if(other){
+    const otherMaterials=api.monarchVehicleMaterials(other),background=requests.slice(at);at=requests.length;background.forEach(image=>image.complete(other.lowAtlas[0]));
+    t.assert(background.every(image=>image.url.includes('Low'))&&otherMaterials.trim.map.image.width===other.lowAtlas[0],'another showroom source remains compact while the hero is detailed');
+    scope.player.car={type:other.gameTypes[0],x:0,y:0};api.monarchVehicleTextureQuality();
+    const promoteOther=requests.slice(at);at=requests.length;
+    t.assert(texture.image.width===lowSize&&report.models[model.type].atlasSizes.albedo[0]===highSize,'previous source demotes synchronously before any next-family High callback');
+    promoteOther.forEach(image=>image.complete(other.atlas[0]));report=api.monarchVehicleReport();
+    t.assert(report.heroSource===other.type&&Object.values(report.models).filter(m=>m.targetTextures==='high').length===1&&texture===paint2.map,'High source residency is bounded to one immutable shared family through hero changes');
+    scope.player.car=null;const near={type:model.gameTypes[0],x:80,y:0},far={type:other.gameTypes[0],x:88,y:0};scope.vehicles=[near,far];api.monarchVehicleTextureQuality();
+    t.assert(api.monarchVehicleReport().heroSource===model.type,'walking up to a display chooses the nearest source within18metres');
+    near.x=90;far.x=85;api.monarchVehicleTextureQuality();t.assert(api.monarchVehicleReport().heroSource===model.type,'nearby-display hysteresis avoids repeated High family churn');
+    far.x=40;api.monarchVehicleTextureQuality();t.assert(api.monarchVehicleReport().heroSource===other.type,'a clearly nearer display takes over High detail');
+    near.x=far.x=18*8+1;api.monarchVehicleTextureQuality();t.assert(api.monarchVehicleReport().heroSource===null&&Object.values(api.monarchVehicleReport().models).every(m=>m.targetTextures==='low'),'leaving the displays releases all High families immediately');
+  }
+  scope.player.car={type:model.gameTypes[0],x:0,y:0};at=requests.length;api.monarchVehicleTextureQuality();const oldHigh=requests.slice(at);
+  activeTier.lodBias=2;api.monarchVehicleTextureQuality();oldHigh.forEach(image=>image.complete(highSize));report=api.monarchVehicleReport();
+  t.assert(texture.image.width===lowSize&&report.reducedTextures&&report.heroSource===null&&report.models[model.type].texturesReady,'late source High callback cannot overwrite a newer synchronous Low demotion');
+  t.assert(report.highSourceLimit===1&&Object.values(report.models).every(m=>m.targetTextures==='low'),'Low tier never retains an active High family');
   t.assert(!errors.length,'production Monarch decoder/material/image path reports no errors');
   t.note?.(JSON.stringify({monarchRuntime:{model:model.type,nearTriangles:model.triangles,testedPart:part,sourceVertexCount:surface.count,instancedActiveAttributeSlots:activeSlots,rayComparisons:comparisons,textureRequests:requests.length,gpuCompilation:'Separate native shadercheck required'}}));
 }

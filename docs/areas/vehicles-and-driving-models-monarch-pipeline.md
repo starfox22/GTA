@@ -45,23 +45,33 @@ this is not an assertion of an identical external path-traced material system.
 Atlas size is the smallest power-of-two fit below the recipe ceiling. Source
 images are resampled only with an explicit `maxTextureSize`; native/staged sizes
 and RGBA8-with-mips GPU estimates are recorded. Low/Medium default to 1024 and
-cannot exceed 2048. Geometry Far alone uses the existing Blender reducer and
+cannot exceed 1024. Geometry Far alone uses the existing Blender reducer and
 nearest same-material source UV1/colour transfer. `--reuse-prepared` accepts a
 cache only when source part input, part manifest and reducer SHA all match.
 Identical typed-array payloads and exact constant prefixes share immutable pack
 offsets; every alias is compared byte for byte. `--deduplicate` can apply the same
 storage pass to an existing generated pack. `--update-seat-fits` updates only
-measured seat metadata for the same pinned source and verifies that the entire
+measured seats and the explicit source `openTop` fit flag for the same pinned source and verifies that the entire
 binary geometry/material payload remains unchanged.
 
 `monarchVehicleData/Model/Materials/Paint/Lamps/KitFit/TextureQuality/Report`
 are the runtime hooks. All source kits, geometry and shared palettes are cached.
+Texture families load lazily. Low/Medium use the bounded Low images; High keeps
+only the current driven or nearest inspected source family at full texture size,
+with an 18m walking range and hysteresis. All other families retain Low images.
+The old hero demotes synchronously before the next High promotion; stale image
+callbacks cannot restore a retired High request. The complete ten-source set is
+about 118MiB of RGBA8 textures with mipmaps at Low, and about 438MiB with the
+largest single High hero, before unrelated game textures and geometry. These are
+allocation estimates, not measured hardware throughput or a universal VRAM cap.
 The combined `avSurface` vec4 uses one vertex attribute slot: paint mask,
 double-sided flag, normal scale and source alpha cutoff (`-1` opaque, `-2` blend).
 Near source geometry is immutable; do not deform it or dispose a shared resource
 when a vehicle retires. Dynamic source door assemblies retain original closed
 face ownership, and source-fixed calipers cancel wheel rotation. Missing cabin
 geometry receives an explicitly fitted game cabin.
+Measured source seats may pass `fixed`, `floor`, `minHipY` and `pedal` controls;
+generic fallback constraints remain unchanged when these fields are absent.
 
 The independent verifier checks every near corner against the pinned original
 position, rigid normal, four channel UVs, colour and source flags. It also checks

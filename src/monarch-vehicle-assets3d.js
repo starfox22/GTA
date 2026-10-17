@@ -43,41 +43,83 @@
         return data?.header.models[data.byGameType[type] || type] || null;
       }
       const monarchVehicleTextureSets = new Map(), monarchVehicleMaterialSets = new Map(), monarchVehicleLampSets = new Map();
-      let monarchVehicleReduced;
+      let monarchVehicleReduced, monarchVehicleHero = null;
+      function monarchVehicleHeroCar() {
+        if (typeof player === 'undefined') return null;
+        if (player.car) return monarchVehicleTypes.has(player.car.type) ? player.car : null;
+        if (typeof vehicles === 'undefined') return null;
+        const reach2 = (18 * CAR_M) ** 2;
+        let nearest = null, distance2 = reach2, previous2 = Infinity;
+        for (const car of vehicles) {
+          if (!monarchVehicleTypes.has(car.type)) continue;
+          const d2 = (car.x - player.x) ** 2 + (car.y - player.y) ** 2;
+          if (car === monarchVehicleHero) previous2 = d2;
+          if (d2 < distance2) { nearest = car; distance2 = d2; }
+        }
+        // Keep one source family detailed while walking between close displays.
+        return previous2 < reach2 && previous2 <= distance2 * 1.21 ? monarchVehicleHero : nearest;
+      }
+      function monarchVehicleHighFamily(model) {
+        return !(activeTier?.lodBias > 1.05) && !!monarchVehicleHero && model.gameTypes.includes(monarchVehicleHero.type);
+      }
+      function monarchVehicleImage(texture, image) {
+        if (texture.image === image) return;
+        if (texture.image && (texture.image.width !== image.width || texture.image.height !== image.height)) texture.dispose();
+        texture.image = image; texture.needsUpdate = true;
+        try { renderer.initTexture(texture); } catch (error) {}
+      }
       function monarchVehicleLoadTexture(texture, model, channel, reduced) {
+        texture.userData.monarchTargetReduced = reduced;
+        const epoch = (texture.userData.monarchEpoch || 0) + 1;
+        texture.userData.monarchEpoch = epoch;
+        // Low is retained as the immediate fallback. Demote before promoting a
+        // different family, without waiting for another asynchronous image load.
+        if (reduced && texture.userData.monarchLowImage) {
+          texture.userData.monarchPending = null;
+          monarchVehicleImage(texture, texture.userData.monarchLowImage); return;
+        }
+        const loadLow = reduced || !texture.userData.monarchLowImage;
         const keys = model.textureKeys?.[channel],
           high = typeof keys === 'string' ? keys : keys?.high,
           low = typeof keys === 'string' ? keys + 'Low' : keys?.low,
-          url = typeof ASSETS !== 'undefined' && (ASSETS[reduced && low ? low : high] || ASSETS[high]);
+          url = typeof ASSETS !== 'undefined' && (ASSETS[loadLow && low ? low : high] || ASSETS[high]);
         if (!url || typeof Image === 'undefined') return;
-        const epoch = (texture.userData.monarchEpoch || 0) + 1;
-        texture.userData.monarchEpoch = epoch;
+        texture.userData.monarchPending = loadLow ? 'low' : 'high';
         const image = new Image();
         image.onload = () => {
+          if (loadLow) texture.userData.monarchLowImage = image;
           if (texture.userData.monarchEpoch !== epoch) return;
-          if (texture.image && (texture.image.width !== image.width || texture.image.height !== image.height)) texture.dispose();
-          texture.image = image; texture.needsUpdate = true;
-          try { renderer.initTexture(texture); } catch (error) {}
+          texture.userData.monarchPending = null;
+          monarchVehicleImage(texture, image);
+          if (loadLow && !texture.userData.monarchTargetReduced) monarchVehicleLoadTexture(texture, model, channel, false);
         };
         image.src = url;
       }
       function monarchVehicleTexture(model, channel = 'albedo') {
         let record = monarchVehicleTextureSets.get(model.type);
-        if (!record) { record = { model, textures: {} }; monarchVehicleTextureSets.set(model.type, record); }
+        if (!record) { record = { model, textures: {}, reduced: !monarchVehicleHighFamily(model) }; monarchVehicleTextureSets.set(model.type, record); }
         if (record.textures[channel]) return record.textures[channel];
-        const texture = new Three.Texture(), reduced = (activeTier?.lodBias || 1) > 1.05;
+        const texture = new Three.Texture();
         texture.colorSpace = channel === 'albedo' || channel === 'emissive' ? Three.SRGBColorSpace : Three.NoColorSpace;
         texture.flipY = false; texture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
-        if (monarchVehicleReduced === undefined) monarchVehicleReduced = reduced;
-        record.textures[channel] = texture; monarchVehicleLoadTexture(texture, model, channel, reduced);
+        record.textures[channel] = texture; monarchVehicleLoadTexture(texture, model, channel, record.reduced);
         return texture;
       }
       function monarchVehicleTextureQuality() {
         const reduced = (activeTier?.lodBias || 1) > 1.05;
-        if (reduced === monarchVehicleReduced) return;
         monarchVehicleReduced = reduced;
-        for (const record of monarchVehicleTextureSets.values())
-          for (const channel in record.textures) monarchVehicleLoadTexture(record.textures[channel], record.model, channel, reduced);
+        monarchVehicleHero = reduced ? null : monarchVehicleHeroCar();
+        // Every old hero is demoted synchronously before a new High request.
+        for (const record of monarchVehicleTextureSets.values()) {
+          if (record.reduced || monarchVehicleHighFamily(record.model)) continue;
+          record.reduced = true;
+          for (const channel in record.textures) monarchVehicleLoadTexture(record.textures[channel], record.model, channel, true);
+        }
+        for (const record of monarchVehicleTextureSets.values()) {
+          if (!record.reduced || !monarchVehicleHighFamily(record.model)) continue;
+          record.reduced = false;
+          for (const channel in record.textures) monarchVehicleLoadTexture(record.textures[channel], record.model, channel, false);
+        }
       }
       function monarchVehicleFinish(material, model, paint = false, rubber = false, lamp = false) {
         material.map = monarchVehicleTexture(model);
@@ -178,10 +220,14 @@
       }
       function monarchVehicleKitFit(kit, model, data, k) {
         const M = CAR_M, source = model.seats, own = {};
+        if (model.glass.open !== undefined) kit.glass.open = !!model.glass.open;
         if (source?.hip) { own.hipX = source.hip[0] * k / kit.l; own.y = source.hip[1] * k / M; own.minY = own.y; own.z = Math.abs(source.hip[2]) * k / M; }
+        if (source?.minHipY !== undefined) own.minY = source.minHipY * k / M;
+        if (source?.pedal) own.pedal = source.pedal.map(value => value * k / M);
         if (source?.wheel) { own.wheel = [(source.wheel[0] - model.glass.xf) * k / M, source.wheel[1] * k / M]; own.wheelZ = source.wheel[2] * k / M; }
         if (source?.radius) own.radius = source.radius * k / M;
         if (source?.floor !== undefined) own.floor = source.floor * k / M;
+        if (source?.fixed !== undefined) own.fixed = source.fixed;
         if (source?.tilt !== undefined) own.tilt = source.tilt;
         if (source?.recline !== undefined) own.recline = source.recline;
         kit.seats = carSeatPlan(kit.glass, kit.l, kit.seats.glass.w, M, kit.type, Object.keys(own).length ? own : null);
@@ -239,11 +285,23 @@
       function monarchVehicleReport() {
         const data = monarchVehicleData(), models = {};
         if (data) for (const [key, model] of Object.entries(data.header.models)) {
-          const textures = monarchVehicleTextureSets.get(key)?.textures;
+          const record = monarchVehicleTextureSets.get(key), textures = record?.textures,
+            expectedAtlas = record?.reduced === false ? model.atlas : model.lowAtlas;
           models[key] = { gameTypes: model.gameTypes, title: model.title, author: model.author, source: model.source, license: model.license,
             triangles: model.triangles, farTriangles: model.farTriangles, nativeCabin: !!model.hasInterior,
+            hasNormalMaps: !!model.hasNormalMaps, targetTextures: record?.reduced === false ? 'high' : 'low', expectedAtlas,
+            pendingTextures: textures ? Object.fromEntries(Object.entries(textures).filter(([, texture]) => texture.userData.monarchPending)
+              .map(([channel, texture]) => [channel, texture.userData.monarchPending])) : {},
+            texturesReady: !!textures && Object.keys(textures).length >= (model.hasNormalMaps ? 4 : 3) &&
+              Object.values(textures).every(texture => !texture.userData.monarchPending && texture.image?.width === expectedAtlas?.[0] && texture.image?.height === expectedAtlas?.[1]),
             nativeDoors: Object.keys(model.doors || {}), atlasSizes: textures ? Object.fromEntries(Object.entries(textures).map(([channel, texture]) =>
               [channel, [texture.image?.width || 0, texture.image?.height || 0]])) : {} };
         }
-        return { loaded: !!data, enabled: vaEnabled, reducedTextures: !!monarchVehicleReduced, error: monarchVehicleLoadError, models };
+        let textureBytes = 0;
+        for (const record of monarchVehicleTextureSets.values()) for (const texture of Object.values(record.textures))
+          textureBytes += (texture.image?.width || 0) * (texture.image?.height || 0) * 4 * 4 / 3;
+        return { loaded: !!data, enabled: vaEnabled, reducedTextures: !!monarchVehicleReduced, error: monarchVehicleLoadError,
+          highSourceLimit: 1, heroType: monarchVehicleHero?.type || null,
+          heroSource: data?.byGameType[monarchVehicleHero?.type] || null,
+          estimatedTextureMiB: Math.round(textureBytes / 104857.6) / 10, models };
       }

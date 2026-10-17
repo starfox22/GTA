@@ -234,6 +234,7 @@ def source_model(recipe):
                      halfTop=float(np.max(np.abs(upper[:, 2]))) if len(upper) else float(np.max(np.abs(glazing[:, 2]))), crown=0.)
     else:
         raise RuntimeError('Explicit measured glass/cabin metadata required when source panes cannot be identified')
+    if 'openTop' in recipe: glass = dict(glass, open=bool(recipe['openTop']))
     roles = {role: [] for role in ('shell', 'panels', 'hood', 'trim', 'cabin', 'glass', 'opticalGlass')}
     for name in parts:
         if name.startswith('wheel') or name.startswith(('head', 'tail')): continue
@@ -335,7 +336,7 @@ def make_atlas(r, output):
     if rects is None:
         raise RuntimeError(r['meta']['type'] + ': source tiles do not fit atlas ceiling; choose explicit maxTextureSize/atlasSize, never silently resample')
     low_size = min(size, int(r['recipe'].get('lowAtlasSize', 1024)))
-    if low_size > 2048: raise RuntimeError('Low/Medium atlas budget is at most2048')
+    if low_size > 1024: raise RuntimeError('Low/Medium atlas budget is at most1024')
     prefix = r['meta']['type']; keys = {}
     for channel in CHANNELS:
         mode, background = ('RGBA', (0, 0, 0, 0)) if channel == 'albedo' else ('RGB', (128, 128, 255) if channel == 'normal' else (255, 255, 255) if channel == 'orm' else (0, 0, 0))
@@ -522,28 +523,32 @@ def update_seat_fits(pack, recipes):
 
     A fit review often changes only hip/recline values. Rebuilding all source
     atlases/reducers for that would add no visual evidence and invites unrelated
-    changes. This path deliberately cannot alter a door, part, texture or wheel.
+    changes. This path can mark an explicitly open source roof, but cannot alter
+    any glazing dimensions, door, part, texture or wheel.
     """
     raw = pack.read_bytes(); before = hashlib.sha256(raw).hexdigest()
     if raw[:8] != b'DECVM001': raise RuntimeError('Invalid source pack')
     length = struct.unpack_from('<I', raw, 8)[0]
     header = json.loads(raw[12:12 + length]); payload = raw[12 + length:]
-    updates = {}
+    updates, roof_updates = {}, {}
     for recipe in recipes:
-        if recipe.get('seats') is None: continue
+        if recipe.get('seats') is None and 'openTop' not in recipe: continue
         model = header['models'][recipe['key']]
         if model['sourceSHA256'] != recipe['sourceSHA256'] or sha(Path(recipe['source'])) != recipe['sourceSHA256']:
             raise RuntimeError('Seat fit source identity differs from existing geometry: ' + recipe['key'])
-        if model.get('seats') != recipe['seats']:
+        if recipe.get('seats') is not None and model.get('seats') != recipe['seats']:
             updates[recipe['key']] = dict(before=model.get('seats'), after=copy.deepcopy(recipe['seats']))
             model['seats'] = copy.deepcopy(recipe['seats'])
+        if 'openTop' in recipe and model.get('glass', {}).get('open', False) != bool(recipe['openTop']):
+            roof_updates[recipe['key']] = dict(before=model.get('glass', {}).get('open', False), after=bool(recipe['openTop']))
+            model.setdefault('glass', {})['open'] = bool(recipe['openTop'])
     encoded = json.dumps(header, separators=(',', ':')).encode(); encoded += b' ' * (-(12 + len(encoded)) % 4)
     output = b'DECVM001' + struct.pack('<I', len(encoded)) + encoded + payload
     staged = pack.with_name(pack.name + '.tmp'); staged.write_bytes(output); staged.replace(pack)
     check_length = struct.unpack_from('<I', output, 8)[0]
     if output[12 + check_length:] != payload: raise RuntimeError('Seat-only update changed source geometry')
     return dict(inputSHA256=before, outputSHA256=sha(pack), unchangedPayloadSHA256=hashlib.sha256(payload).hexdigest(),
-                updates=updates, operation='Measured seats metadata only; all array layouts and complete geometry/UV/material payload bytes unchanged')
+                updates=updates, openTopUpdates=roof_updates, operation='Measured seats/open-roof fit metadata only; all array layouts and complete geometry/UV/material payload bytes unchanged')
 
 
 def main():
@@ -580,6 +585,8 @@ def main():
             for entry in receipt['models']:
                 if entry['model']['type'] in update['updates']:
                     entry['model']['seats'] = update['updates'][entry['model']['type']]['after']
+                if entry['model']['type'] in update['openTopUpdates']:
+                    entry['model']['glass']['open'] = update['openTopUpdates'][entry['model']['type']]['after']
             receipt['output'][pack.name] = dict(bytes=pack.stat().st_size, sha256=sha(pack))
             receipt_path.write_text(json.dumps(receipt, indent=2))
         (args.work / 'seat-fit-update.json').write_text(json.dumps(update, indent=2)); print(json.dumps(update)); return

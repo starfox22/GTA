@@ -179,9 +179,10 @@ class MonarchConverterTest(unittest.TestCase):
         header = dict(models={self.recipe['key']: model}, arrays=arrays)
         encoded = json.dumps(header).encode(); encoded += b' ' * (-(12 + len(encoded)) % 4)
         pack = self.root / 'pack.bin'; pack.write_bytes(b'DECVM001' + struct.pack('<I', len(encoded)) + encoded + payload)
-        recipe = copy.deepcopy(self.recipe); recipe['seats'] = dict(hip=[.1, .07, -.32], floor=.03, recline=.2)
+        recipe = copy.deepcopy(self.recipe); recipe['seats'] = dict(hip=[.1, .07, -.32], floor=.03, recline=.2); recipe['openTop'] = True
         update = converter.update_seat_fits(pack, [recipe])
         self.assertEqual(update['updates'][recipe['key']]['after'], recipe['seats'])
+        self.assertTrue(update['openTopUpdates'][recipe['key']]['after'])
         raw = pack.read_bytes(); length = struct.unpack_from('<I', raw, 8)[0]
         self.assertEqual(raw[12 + length:], payload)
         bad = copy.deepcopy(recipe); bad['sourceSHA256'] = '0' * 64
