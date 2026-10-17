@@ -155,5 +155,10 @@ runs preserve each stage's state hash across 5,568 total simulation frames.
 The gallery retains all earlier SVJ, wheelie, impact and aviation reviews.
 The exact public artifact file hashes and byte counts are retained in
 [the artifact manifest](verification/public-artifact-manifest.json).
-Deployment and the public SHA verification are pending the publication workflow.
+[Run 39048668942](https://github.com/starfox22/GTA/actions/runs/39048668942)
+successfully built and deployed publication commit `7c1da99a`, then verified all
+**172 public files / 225,120,142 bytes** against the artifact. The
+[successful deployment receipt](verification/successful-deployment.json) retains
+actual build, gallery, deployment and public verification step results. This
+receipt-only follow-up leaves game and gallery bytes unchanged.
 

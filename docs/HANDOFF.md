@@ -27,6 +27,11 @@ Host verification passes 54,660 assertions; the seeded ABBA base/theft/chase
 stages retain identical state hashes. Final native checks include a real
 collision-induced puncture, rolling wheel and repair. Historical SVJ, wheelie,
 impact and aviation reviews remain available from the gallery.
+[Run 39048668942](https://github.com/starfox22/GTA/actions/runs/39048668942)
+deployed `7c1da99a` and verified all 172 public files / 225,120,142 bytes against
+the artifact. The [successful deployment receipt](audit/m4-utility-review-2026-10-17/verification/successful-deployment.json)
+retains actual step results; this receipt-only follow-up leaves game/gallery
+bytes unchanged.
 
 ## October 17: downloaded Brutini SVJ and earlier motorcycle handling
 
