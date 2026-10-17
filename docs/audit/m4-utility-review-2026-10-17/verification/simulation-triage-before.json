@@ -1,0 +1,5584 @@
+{
+  "city-foot": {
+    "before": {
+      "status": {
+        "mode": "play",
+        "x": -1844,
+        "y": 2600,
+        "district": "OCEAN DRIVE",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "17:20",
+        "renderer": "2d",
+        "vehicles": 264,
+        "pedestrians": 595
+      },
+      "military": {
+        "alert": false,
+        "lockdown": false,
+        "challenge": 0,
+        "gate": [
+          {
+            "arm": 0,
+            "bollards": 0,
+            "slide": 0,
+            "broken": []
+          },
+          {
+            "arm": 0,
+            "bollards": 0,
+            "slide": 0,
+            "broken": []
+          }
+        ],
+        "soldiers": {
+          "gate": 3,
+          "post": 11,
+          "tower": 8,
+          "range": 4,
+          "patrol": 9,
+          "drill": 12,
+          "sergeant": 1
+        },
+        "aiming": 0,
+        "vehicles": [
+          {
+            "type": "jeep",
+            "x": 9470,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9515,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9560,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9605,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9665,
+            "y": 8950,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9715,
+            "y": 8950,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9780,
+            "y": 8950,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9830,
+            "y": 8950,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "tank",
+            "x": 9490,
+            "y": 9080,
+            "hp": 1600,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "tank",
+            "x": 9565,
+            "y": 9080,
+            "hp": 1600,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "apc",
+            "x": 9645,
+            "y": 9080,
+            "hp": 950,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "armytruck",
+            "x": 9715,
+            "y": 9080,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9765,
+            "y": 9080,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9835,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9880,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9925,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 10160,
+            "y": 9042,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9470,
+            "y": 8018,
+            "hp": 380,
+            "ai": false,
+            "role": "qrf"
+          },
+          {
+            "type": "jeep",
+            "x": 9512,
+            "y": 8018,
+            "hp": 380,
+            "ai": false,
+            "role": "qrf"
+          },
+          {
+            "type": "helicopter",
+            "x": 9492,
+            "y": 7936,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9466,
+            "y": 8234,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9514,
+            "y": 8234,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9800,
+            "y": 7850,
+            "hp": 380,
+            "ai": true,
+            "role": "patrol"
+          },
+          {
+            "type": "jeep",
+            "x": 10100,
+            "y": 9850,
+            "hp": 380,
+            "ai": true,
+            "role": "patrol"
+          },
+          {
+            "type": "helicopter",
+            "x": 9550,
+            "y": 9522,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 9810,
+            "y": 9522,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 10340,
+            "y": 9365,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 10200,
+            "y": 9365,
+            "hp": 640,
+            "ai": false,
+            "role": "parked"
+          }
+        ],
+        "supply": null,
+        "drill": {
+          "x": 9650,
+          "y": 8330,
+          "active": false
+        }
+      }
+    },
+    "result": {
+      "frames": 180,
+      "avgMs": 22.18,
+      "p50Ms": 13.8,
+      "p95Ms": 50.1,
+      "p99Ms": 126.6,
+      "maxMs": 628.7,
+      "parts": {
+        "cars": [
+          9.43,
+          87.4
+        ],
+        "phys:control": [
+          4.1,
+          62
+        ],
+        "people": [
+          4.02,
+          42.1
+        ],
+        "waypoint": [
+          2.42,
+          434.1
+        ],
+        "phys:post": [
+          1.96,
+          25.6
+        ],
+        "sealife": [
+          1.59,
+          49
+        ],
+        "phys:broadphase": [
+          1.4,
+          26.9
+        ],
+        "civic": [
+          1.14,
+          33.5
+        ],
+        "phys:contacts": [
+          0.86,
+          25.7
+        ],
+        "(untimed)": [
+          0.69,
+          0
+        ],
+        "ui": [
+          0.58,
+          24.9
+        ],
+        "sports": [
+          0.49,
+          25.7
+        ],
+        "bullets": [
+          0.46,
+          23.3
+        ],
+        "citylife": [
+          0.35,
+          16.1
+        ],
+        "damage": [
+          0.27,
+          6.7
+        ],
+        "police:officers": [
+          0.24,
+          4.7
+        ],
+        "knockdowns": [
+          0.24,
+          7.3
+        ],
+        "military": [
+          0.21,
+          13.2
+        ],
+        "drawbridge": [
+          0.13,
+          5.6
+        ],
+        "offroad": [
+          0.11,
+          14.4
+        ]
+      },
+      "worst": [
+        [
+          628.7,
+          0,
+          "waypoint",
+          434.1
+        ],
+        [
+          126.6,
+          3,
+          "cars",
+          87.4
+        ],
+        [
+          103.6,
+          1,
+          "sealife",
+          47.7
+        ],
+        [
+          80.6,
+          2,
+          "sealife",
+          42
+        ],
+        [
+          65.9,
+          6,
+          "sealife",
+          46.7
+        ]
+      ],
+      "slow": {
+        "phys:control": 51,
+        "phys:broadphase": 13,
+        "phys:post": 21,
+        "cars": 147,
+        "beachclub": 1,
+        "sealife": 11,
+        "people": 53,
+        "citylife": 5,
+        "civic": 12,
+        "military": 3,
+        "offroad": 1,
+        "waypoint": 1,
+        "drawbridge": 2,
+        "damage": 3,
+        "phys:contacts": 11,
+        "knockdowns": 4,
+        "ui": 9,
+        "bullets": 5,
+        "sports": 5,
+        "police:officers": 2,
+        "police:wanted": 1,
+        "beach": 1
+      },
+      "heapMB": 0,
+      "heapDrops": 0,
+      "vehicles": 297,
+      "pedestrians": 601
+    },
+    "ms": 4914,
+    "profile": [
+      [
+        881.1,
+        881.1,
+        "(program)",
+        "0",
+        ""
+      ],
+      [
+        264.6,
+        264.6,
+        "vehicleSpec",
+        "12636",
+        "12654:159 12636:58 12639:25 12644:25 12640:17"
+      ],
+      [
+        240.9,
+        240.9,
+        "(garbage collector)",
+        "0",
+        ""
+      ],
+      [
+        223.8,
+        629.6,
+        "controlVehicle",
+        "20011",
+        "20014:26 20430:25 20553:18 20427:14 20450:10"
+      ],
+      [
+        106.2,
+        207.4,
+        "vehicleBroadphase",
+        "20633",
+        "20639:27 20674:15 20672:13 20688:13 20664:9"
+      ],
+      [
+        90.8,
+        292,
+        "buildNavigationGraph",
+        "90793",
+        "90820:21 90828:9 90849:8 90853:5 90826:4"
+      ],
+      [
+        79.7,
+        1388.3,
+        "physicsStep",
+        "20970",
+        "20979:40 20981:29 20983:14 20990:7 20988:3"
+      ],
+      [
+        77.3,
+        152.6,
+        "regionContains",
+        "27520",
+        "27520:57"
+      ],
+      [
+        75.3,
+        75.3,
+        "pointInPolygon",
+        "27507",
+        "27507:107"
+      ],
+      [
+        75,
+        367.7,
+        "navigationGraph",
+        "90782",
+        "90788:146"
+      ],
+      [
+        73.4,
+        229.9,
+        "updateStreetWalker",
+        "98603",
+        "98618:14 98763:13 98605:7 98630:2 98650:2"
+      ],
+      [
+        72.8,
+        156,
+        "trafficControl",
+        "19284",
+        "19426:19 19340:9 19423:6 19427:5 19284:5"
+      ],
+      [
+        62.2,
+        62.2,
+        "isAircraft",
+        "66870",
+        "66870:23 66871:12"
+      ],
+      [
+        58,
+        655.7,
+        "updatePeople",
+        "22654",
+        "22714:9 22712:7 22700:6 22665:5 22692:4"
+      ],
+      [
+        56.6,
+        185.1,
+        "landAtExact",
+        "27537",
+        "27537:53"
+      ],
+      [
+        55.7,
+        264.6,
+        "landAt",
+        "27681",
+        "27681:96 27684:4 27689:2 27685:1"
+      ],
+      [
+        54.4,
+        101.3,
+        "updateGangFights",
+        "38866",
+        "38887:11 38940:3 38944:2 38870:2 38873:2"
+      ],
+      [
+        43.6,
+        3621.6,
+        "timed",
+        "216275",
+        "216278:22 216275:9 216277:7 216276:6 216279:1"
+      ],
+      [
+        41.1,
+        1576.7,
+        "updateCars",
+        "21642",
+        "21741:34 21650:9 21716:5 21729:3 21662:3"
+      ],
+      [
+        36.4,
+        46.2,
+        "mark",
+        "20974",
+        "20975:15 20976:2 20974:1"
+      ],
+      [
+        35.8,
+        80.4,
+        "terrainVehiclePose",
+        "73462",
+        "73470:7 73468:4 73469:4 73464:4 73473:3"
+      ],
+      [
+        35.7,
+        35.7,
+        "engineAcceleration",
+        "12579",
+        "12579:14"
+      ],
+      [
+        35.7,
+        303.5,
+        "settleVehicle",
+        "20867",
+        "20867:29 20873:13 20869:7 20871:1"
+      ],
+      [
+        35.5,
+        35.5,
+        "buildCrowdGrid",
+        "98134",
+        "98148:21 98142:5 98143:4 98153:1"
+      ],
+      [
+        35.3,
+        78,
+        "boatControl",
+        "19836",
+        "19843:4 19885:4 19877:3 19853:1 19844:1"
+      ],
+      [
+        34.9,
+        123,
+        "groundAt",
+        "28304",
+        "28304:33 28311:1"
+      ],
+      [
+        33.9,
+        3730.9,
+        "update",
+        "23067",
+        "23110:7 23112:7 23233:5 23084:3 23098:2"
+      ],
+      [
+        33.5,
+        51.8,
+        "(anon)",
+        "90769",
+        "90770:25 90769:8"
+      ],
+      [
+        33.3,
+        109.4,
+        "vehicleContactPasses",
+        "20784",
+        "20814:25 20784:13 20816:3 20815:3 20826:2"
+      ],
+      [
+        32.1,
+        168.4,
+        "isBoat",
+        "32660",
+        "32661:36 32660:13"
+      ]
+    ],
+    "cpuMs": 2413,
+    "heapMB": [
+      74.5,
+      92.3,
+      110.3
+    ],
+    "newErrors": 0,
+    "after": {
+      "status": {
+        "mode": "play",
+        "x": -1844,
+        "y": 2600,
+        "district": "OCEAN DRIVE",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "17:22",
+        "renderer": "2d",
+        "vehicles": 297,
+        "pedestrians": 601
+      },
+      "military": {
+        "alert": false,
+        "lockdown": false,
+        "challenge": 0,
+        "gate": [
+          {
+            "arm": 0,
+            "bollards": 0,
+            "slide": 0,
+            "broken": []
+          },
+          {
+            "arm": 0,
+            "bollards": 0,
+            "slide": 0,
+            "broken": []
+          }
+        ],
+        "soldiers": {
+          "gate": 3,
+          "post": 11,
+          "tower": 8,
+          "range": 4,
+          "patrol": 9,
+          "drill": 12,
+          "sergeant": 1
+        },
+        "aiming": 0,
+        "vehicles": [
+          {
+            "type": "jeep",
+            "x": 9470,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9515,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9560,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9605,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9665,
+            "y": 8950,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9715,
+            "y": 8950,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9780,
+            "y": 8950,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9830,
+            "y": 8950,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "tank",
+            "x": 9490,
+            "y": 9080,
+            "hp": 1600,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "tank",
+            "x": 9565,
+            "y": 9080,
+            "hp": 1600,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "apc",
+            "x": 9645,
+            "y": 9080,
+            "hp": 950,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "armytruck",
+            "x": 9715,
+            "y": 9080,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9765,
+            "y": 9080,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9835,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9880,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9925,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 10160,
+            "y": 9042,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9470,
+            "y": 8018,
+            "hp": 380,
+            "ai": false,
+            "role": "qrf"
+          },
+          {
+            "type": "jeep",
+            "x": 9512,
+            "y": 8018,
+            "hp": 380,
+            "ai": false,
+            "role": "qrf"
+          },
+          {
+            "type": "helicopter",
+            "x": 9492,
+            "y": 7936,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9466,
+            "y": 8234,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9514,
+            "y": 8234,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9949,
+            "y": 7850,
+            "hp": 380,
+            "ai": true,
+            "role": "patrol"
+          },
+          {
+            "type": "jeep",
+            "x": 9951,
+            "y": 9850,
+            "hp": 380,
+            "ai": true,
+            "role": "patrol"
+          },
+          {
+            "type": "helicopter",
+            "x": 9550,
+            "y": 9522,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 9810,
+            "y": 9522,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 10340,
+            "y": 9365,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 10200,
+            "y": 9365,
+            "hp": 640,
+            "ai": false,
+            "role": "parked"
+          }
+        ],
+        "supply": null,
+        "drill": {
+          "x": 9687,
+          "y": 8330,
+          "active": true
+        }
+      }
+    }
+  },
+  "city-jeep": {
+    "before": {
+      "status": {
+        "mode": "play",
+        "x": -1854,
+        "y": 2619,
+        "district": "OCEAN DRIVE",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "jeep",
+        "weapon": "9MM PISTOL",
+        "clock": "17:22",
+        "renderer": "2d",
+        "vehicles": 298,
+        "pedestrians": 601
+      },
+      "military": {
+        "alert": false,
+        "lockdown": false,
+        "challenge": 0,
+        "gate": [
+          {
+            "arm": 0,
+            "bollards": 0,
+            "slide": 0,
+            "broken": []
+          },
+          {
+            "arm": 0,
+            "bollards": 0,
+            "slide": 0,
+            "broken": []
+          }
+        ],
+        "soldiers": {
+          "gate": 3,
+          "post": 11,
+          "tower": 8,
+          "range": 4,
+          "patrol": 9,
+          "drill": 12,
+          "sergeant": 1
+        },
+        "aiming": 0,
+        "vehicles": [
+          {
+            "type": "jeep",
+            "x": 9470,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9515,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9560,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9605,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9665,
+            "y": 8950,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9715,
+            "y": 8950,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9780,
+            "y": 8950,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9830,
+            "y": 8950,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "tank",
+            "x": 9490,
+            "y": 9080,
+            "hp": 1600,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "tank",
+            "x": 9565,
+            "y": 9080,
+            "hp": 1600,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "apc",
+            "x": 9645,
+            "y": 9080,
+            "hp": 950,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "armytruck",
+            "x": 9715,
+            "y": 9080,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9765,
+            "y": 9080,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9835,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9880,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9925,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 10160,
+            "y": 9042,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9470,
+            "y": 8018,
+            "hp": 380,
+            "ai": false,
+            "role": "qrf"
+          },
+          {
+            "type": "jeep",
+            "x": 9512,
+            "y": 8018,
+            "hp": 380,
+            "ai": false,
+            "role": "qrf"
+          },
+          {
+            "type": "helicopter",
+            "x": 9492,
+            "y": 7936,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9466,
+            "y": 8234,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9514,
+            "y": 8234,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9949,
+            "y": 7850,
+            "hp": 380,
+            "ai": true,
+            "role": "patrol"
+          },
+          {
+            "type": "jeep",
+            "x": 9951,
+            "y": 9850,
+            "hp": 380,
+            "ai": true,
+            "role": "patrol"
+          },
+          {
+            "type": "helicopter",
+            "x": 9550,
+            "y": 9522,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 9810,
+            "y": 9522,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 10340,
+            "y": 9365,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 10200,
+            "y": 9365,
+            "hp": 640,
+            "ai": false,
+            "role": "parked"
+          }
+        ],
+        "supply": null,
+        "drill": {
+          "x": 9687,
+          "y": 8330,
+          "active": true
+        }
+      }
+    },
+    "result": {
+      "frames": 180,
+      "avgMs": 14.78,
+      "p50Ms": 10.7,
+      "p95Ms": 36.1,
+      "p99Ms": 50.2,
+      "maxMs": 53.2,
+      "parts": {
+        "cars": [
+          7.25,
+          32.2
+        ],
+        "people": [
+          3.33,
+          33
+        ],
+        "phys:control": [
+          3.15,
+          23.3
+        ],
+        "phys:post": [
+          1.4,
+          28.5
+        ],
+        "(untimed)": [
+          1.23,
+          0.2
+        ],
+        "phys:broadphase": [
+          1.11,
+          20.3
+        ],
+        "civic": [
+          0.81,
+          17.4
+        ],
+        "police:officers": [
+          0.36,
+          17.3
+        ],
+        "damage": [
+          0.29,
+          7.6
+        ],
+        "military": [
+          0.29,
+          28.5
+        ],
+        "ui": [
+          0.28,
+          9.6
+        ],
+        "knockdowns": [
+          0.28,
+          4.6
+        ],
+        "phys:contacts": [
+          0.27,
+          8.5
+        ],
+        "sports": [
+          0.25,
+          5.6
+        ],
+        "sealife": [
+          0.17,
+          14.9
+        ],
+        "bullets": [
+          0.17,
+          4.5
+        ],
+        "citylife": [
+          0.1,
+          7
+        ],
+        "police:wanted": [
+          0.09,
+          2.8
+        ],
+        "beachclub": [
+          0.07,
+          8.1
+        ],
+        "wildlife": [
+          0.06,
+          3.2
+        ]
+      },
+      "worst": [
+        [
+          53.2,
+          0,
+          "cars",
+          21.4
+        ],
+        [
+          50.2,
+          3,
+          "military",
+          28.5
+        ],
+        [
+          45.1,
+          51,
+          "people",
+          31.5
+        ],
+        [
+          43.4,
+          105,
+          "people",
+          33
+        ],
+        [
+          41.8,
+          8,
+          "cars",
+          15.3
+        ]
+      ],
+      "slow": {
+        "phys:control": 48,
+        "cars": 144,
+        "people": 56,
+        "phys:broadphase": 8,
+        "phys:post": 15,
+        "beach": 1,
+        "military": 2,
+        "ui": 4,
+        "civic": 8,
+        "police:officers": 3,
+        "damage": 4,
+        "citylife": 1,
+        "beachclub": 1,
+        "knockdowns": 2,
+        "monarch": 1,
+        "bullets": 2,
+        "sealife": 1,
+        "offroad": 1,
+        "wildlife": 1,
+        "sports": 1,
+        "phys:contacts": 1
+      },
+      "heapMB": 0,
+      "heapDrops": 0,
+      "vehicles": 299,
+      "pedestrians": 601
+    },
+    "ms": 2942,
+    "profile": [
+      [
+        259.9,
+        259.9,
+        "(program)",
+        "0",
+        ""
+      ],
+      [
+        259.2,
+        259.2,
+        "vehicleSpec",
+        "12636",
+        "12654:158 12644:35 12636:34 12639:23 12640:13"
+      ],
+      [
+        217.4,
+        490.3,
+        "controlVehicle",
+        "20011",
+        "20014:23 20427:20 20430:12 20553:11 20015:10"
+      ],
+      [
+        139.8,
+        1237.8,
+        "updateCars",
+        "21642",
+        "21741:28 21650:10 21716:7 21710:5 21662:4"
+      ],
+      [
+        91.8,
+        178.7,
+        "vehicleBroadphase",
+        "20633",
+        "20674:16 20688:11 20641:10 20664:6 20671:6"
+      ],
+      [
+        77.6,
+        590.5,
+        "updatePeople",
+        "22654",
+        "22714:15 22712:15 22665:8 22666:6 22695:5"
+      ],
+      [
+        41.3,
+        989.4,
+        "physicsStep",
+        "20970",
+        "20979:38 20981:22 20990:4 20988:3 20983:1"
+      ],
+      [
+        40.2,
+        40.2,
+        "(garbage collector)",
+        "0",
+        ""
+      ],
+      [
+        38.3,
+        101.8,
+        "trafficControl",
+        "19284",
+        "19426:27 19427:6 19425:4 19341:3 19424:2"
+      ],
+      [
+        37.6,
+        202.6,
+        "settleVehicleFull",
+        "20877",
+        "20903:7 20961:6 20915:6 20956:6 20954:5"
+      ],
+      [
+        34.2,
+        34.2,
+        "buildCrowdGrid",
+        "98134",
+        "98148:27 98142:9 98149:5 98143:3 98150:1"
+      ],
+      [
+        34,
+        56.1,
+        "landAt",
+        "27681",
+        "27681:46 27689:5 27684:3 27685:2"
+      ],
+      [
+        33.9,
+        33.9,
+        "hypot2",
+        "11722",
+        "11731:10 11722:9 11730:3 11728:1 11723:1"
+      ],
+      [
+        33.6,
+        33.6,
+        "personIncapacitated",
+        "20997",
+        "20998:7 20997:4"
+      ],
+      [
+        32.7,
+        159.1,
+        "updateCrowdPerson",
+        "100105",
+        "100109:12 100112:1 100106:1 100110:1 100111:1"
+      ],
+      [
+        31.4,
+        31.4,
+        "(anon)",
+        "22630",
+        "22630:2"
+      ],
+      [
+        30.9,
+        33.8,
+        "isleTrafficControl",
+        "104125",
+        "104188:13 104189:5 104192:2 104128:2 104191:2"
+      ],
+      [
+        30.4,
+        212.5,
+        "isBoat",
+        "32660",
+        "32661:25 32660:12"
+      ],
+      [
+        30.1,
+        70.9,
+        "forEachPedestrianNear",
+        "98164",
+        "98175:19 98173:4 98198:3 98209:3 98192:3"
+      ],
+      [
+        27.8,
+        29.6,
+        "watchVehicle",
+        "99541",
+        "99566:3 99591:2 99565:1"
+      ],
+      [
+        27.4,
+        47.2,
+        "updateBloodTracks",
+        "21226",
+        "21231:5 21239:4 21241:4 21228:2 21242:2"
+      ],
+      [
+        27.2,
+        27.2,
+        "pointInPolygon",
+        "27507",
+        "27507:6"
+      ],
+      [
+        26.1,
+        34,
+        "vehicleHandling",
+        "57104",
+        "57107:12 57109:8 57106:2 57105:2 57104:1"
+      ],
+      [
+        25.8,
+        39.5,
+        "footStepVehicleBlocked",
+        "15739",
+        "15757:11 15754:7 15749:5 15755:5 15759:3"
+      ],
+      [
+        25.4,
+        34.9,
+        "roadVehicleTerrain",
+        "73445",
+        "73445:8 73446:1"
+      ],
+      [
+        25,
+        49.6,
+        "followCamera",
+        "13920",
+        "13939:7"
+      ],
+      [
+        24.5,
+        24.5,
+        "followVehicle",
+        "14101",
+        "14115:2 14102:1"
+      ],
+      [
+        24.2,
+        24.2,
+        "airCoverRay",
+        "54664",
+        "54676:9 54667:5 54664:1"
+      ],
+      [
+        23.6,
+        75.4,
+        "updateCameraFollow",
+        "13906",
+        "13909:4 13913:2 13908:1 13911:1"
+      ],
+      [
+        23,
+        126,
+        "updateReaction",
+        "99758",
+        "99779:15 99761:4 99759:3 99760:2 99955:2"
+      ]
+    ],
+    "cpuMs": 1466,
+    "heapMB": [
+      95.1,
+      102.7,
+      117.3
+    ],
+    "newErrors": 0,
+    "after": {
+      "status": {
+        "mode": "play",
+        "x": -1854,
+        "y": 2619,
+        "district": "OCEAN DRIVE",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "jeep",
+        "weapon": "9MM PISTOL",
+        "clock": "17:25",
+        "renderer": "2d",
+        "vehicles": 299,
+        "pedestrians": 601
+      },
+      "military": {
+        "alert": false,
+        "lockdown": false,
+        "challenge": 0,
+        "gate": [
+          {
+            "arm": 0,
+            "bollards": 0,
+            "slide": 0,
+            "broken": []
+          },
+          {
+            "arm": 0,
+            "bollards": 0,
+            "slide": 0,
+            "broken": []
+          }
+        ],
+        "soldiers": {
+          "gate": 3,
+          "post": 11,
+          "tower": 8,
+          "range": 4,
+          "patrol": 9,
+          "drill": 12,
+          "sergeant": 1
+        },
+        "aiming": 0,
+        "vehicles": [
+          {
+            "type": "jeep",
+            "x": 9470,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9515,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9560,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9605,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9665,
+            "y": 8950,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9715,
+            "y": 8950,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9780,
+            "y": 8950,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9830,
+            "y": 8950,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "tank",
+            "x": 9490,
+            "y": 9080,
+            "hp": 1600,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "tank",
+            "x": 9565,
+            "y": 9080,
+            "hp": 1600,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "apc",
+            "x": 9645,
+            "y": 9080,
+            "hp": 950,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "armytruck",
+            "x": 9715,
+            "y": 9080,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9765,
+            "y": 9080,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9835,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9880,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9925,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 10160,
+            "y": 9042,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9470,
+            "y": 8018,
+            "hp": 380,
+            "ai": false,
+            "role": "qrf"
+          },
+          {
+            "type": "jeep",
+            "x": 9512,
+            "y": 8018,
+            "hp": 380,
+            "ai": false,
+            "role": "qrf"
+          },
+          {
+            "type": "helicopter",
+            "x": 9492,
+            "y": 7936,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9466,
+            "y": 8234,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9514,
+            "y": 8234,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 10264,
+            "y": 7850,
+            "hp": 380,
+            "ai": true,
+            "role": "patrol"
+          },
+          {
+            "type": "jeep",
+            "x": 9636,
+            "y": 9850,
+            "hp": 380,
+            "ai": true,
+            "role": "patrol"
+          },
+          {
+            "type": "helicopter",
+            "x": 9550,
+            "y": 9522,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 9810,
+            "y": 9522,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 10340,
+            "y": 9365,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 10200,
+            "y": 9365,
+            "hp": 640,
+            "ai": false,
+            "role": "parked"
+          }
+        ],
+        "supply": null,
+        "drill": {
+          "x": 9723,
+          "y": 8330,
+          "active": true
+        }
+      }
+    }
+  },
+  "base-calm-foot": {
+    "before": {
+      "status": {
+        "mode": "play",
+        "x": 9470,
+        "y": 8915,
+        "district": "FORT SENTINEL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "FISTS",
+        "clock": "17:25",
+        "renderer": "2d",
+        "vehicles": 299,
+        "pedestrians": 601
+      },
+      "military": {
+        "alert": false,
+        "lockdown": false,
+        "challenge": 0,
+        "gate": [
+          {
+            "arm": 0,
+            "bollards": 0,
+            "slide": 0,
+            "broken": []
+          },
+          {
+            "arm": 0,
+            "bollards": 0,
+            "slide": 0,
+            "broken": []
+          }
+        ],
+        "soldiers": {
+          "gate": 3,
+          "post": 11,
+          "tower": 8,
+          "range": 4,
+          "patrol": 9,
+          "drill": 12,
+          "sergeant": 1
+        },
+        "aiming": 0,
+        "vehicles": [
+          {
+            "type": "jeep",
+            "x": 9470,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9515,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9560,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9605,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9665,
+            "y": 8950,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9715,
+            "y": 8950,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9780,
+            "y": 8950,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9830,
+            "y": 8950,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "tank",
+            "x": 9490,
+            "y": 9080,
+            "hp": 1600,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "tank",
+            "x": 9565,
+            "y": 9080,
+            "hp": 1600,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "apc",
+            "x": 9645,
+            "y": 9080,
+            "hp": 950,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "armytruck",
+            "x": 9715,
+            "y": 9080,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9765,
+            "y": 9080,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9835,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9880,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9925,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 10160,
+            "y": 9042,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9470,
+            "y": 8018,
+            "hp": 380,
+            "ai": false,
+            "role": "qrf"
+          },
+          {
+            "type": "jeep",
+            "x": 9512,
+            "y": 8018,
+            "hp": 380,
+            "ai": false,
+            "role": "qrf"
+          },
+          {
+            "type": "helicopter",
+            "x": 9492,
+            "y": 7936,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9466,
+            "y": 8234,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9514,
+            "y": 8234,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 10264,
+            "y": 7850,
+            "hp": 380,
+            "ai": true,
+            "role": "patrol"
+          },
+          {
+            "type": "jeep",
+            "x": 9636,
+            "y": 9850,
+            "hp": 380,
+            "ai": true,
+            "role": "patrol"
+          },
+          {
+            "type": "helicopter",
+            "x": 9550,
+            "y": 9522,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 9810,
+            "y": 9522,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 10340,
+            "y": 9365,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 10200,
+            "y": 9365,
+            "hp": 640,
+            "ai": false,
+            "role": "parked"
+          }
+        ],
+        "supply": null,
+        "drill": {
+          "x": 9723,
+          "y": 8330,
+          "active": true
+        }
+      }
+    },
+    "result": {
+      "frames": 180,
+      "avgMs": 10.71,
+      "p50Ms": 7.9,
+      "p95Ms": 29.7,
+      "p99Ms": 40.5,
+      "maxMs": 65.4,
+      "parts": {
+        "cars": [
+          4.99,
+          28.1
+        ],
+        "phys:control": [
+          2,
+          26.5
+        ],
+        "phys:post": [
+          1.27,
+          18.9
+        ],
+        "ui": [
+          1.01,
+          49
+        ],
+        "civic": [
+          0.94,
+          23.3
+        ],
+        "phys:broadphase": [
+          0.87,
+          8.4
+        ],
+        "military": [
+          0.8,
+          16.5
+        ],
+        "(untimed)": [
+          0.58,
+          0.3
+        ],
+        "police:officers": [
+          0.54,
+          22.6
+        ],
+        "sports": [
+          0.54,
+          26.3
+        ],
+        "people": [
+          0.49,
+          23.2
+        ],
+        "phys:contacts": [
+          0.4,
+          12.6
+        ],
+        "damage": [
+          0.28,
+          8.2
+        ],
+        "bullets": [
+          0.24,
+          6.9
+        ],
+        "knockdowns": [
+          0.22,
+          4.9
+        ],
+        "wildlife": [
+          0.18,
+          21.5
+        ],
+        "police:wanted": [
+          0.09,
+          5.2
+        ],
+        "waypoint": [
+          0.07,
+          8.2
+        ],
+        "monarch": [
+          0.06,
+          9.3
+        ],
+        "citylife": [
+          0.05,
+          1.5
+        ]
+      },
+      "worst": [
+        [
+          65.4,
+          5,
+          "ui",
+          49
+        ],
+        [
+          40.5,
+          11,
+          "ui",
+          33.6
+        ],
+        [
+          40.1,
+          40,
+          "people",
+          23.2
+        ],
+        [
+          39.2,
+          61,
+          "sports",
+          26.3
+        ],
+        [
+          37.2,
+          95,
+          "ui",
+          25.9
+        ]
+      ],
+      "slow": {
+        "cars": 92,
+        "military": 10,
+        "waypoint": 2,
+        "phys:broadphase": 7,
+        "ui": 9,
+        "phys:post": 12,
+        "knockdowns": 4,
+        "phys:control": 27,
+        "phys:contacts": 6,
+        "damage": 5,
+        "bullets": 3,
+        "police:officers": 4,
+        "civic": 7,
+        "people": 2,
+        "sealife": 1,
+        "sports": 6,
+        "monarch": 1,
+        "coaster": 1,
+        "offroad": 1,
+        "wildlife": 2,
+        "drawbridge": 1,
+        "police:wanted": 1
+      },
+      "heapMB": 0,
+      "heapDrops": 0,
+      "vehicles": 299,
+      "pedestrians": 599
+    },
+    "ms": 2236,
+    "profile": [
+      [
+        321.9,
+        321.9,
+        "(program)",
+        "0",
+        ""
+      ],
+      [
+        181,
+        181,
+        "vehicleSpec",
+        "12636",
+        "12654:155 12644:25 12639:20 12640:17 12636:13"
+      ],
+      [
+        168.2,
+        324.3,
+        "controlVehicle",
+        "20011",
+        "20014:24 20553:14 20427:13 20549:9 20429:9"
+      ],
+      [
+        62.5,
+        120.2,
+        "vehicleBroadphase",
+        "20633",
+        "20688:15 20674:13 20672:9 20641:9 20669:9"
+      ],
+      [
+        45.4,
+        77.1,
+        "updateOfficers",
+        "33612",
+        "33617:6 33782:6 33614:4 33783:2 33618:2"
+      ],
+      [
+        36.4,
+        36.4,
+        "(idle)",
+        "0",
+        ""
+      ],
+      [
+        35.7,
+        150.8,
+        "updateUI",
+        "25476",
+        "25677:4 25562:1 25699:1 25492:1 25695:1"
+      ],
+      [
+        34.9,
+        37.6,
+        "militaryBlocked",
+        "63897",
+        "63897:14 63900:11 63899:10 63901:1 63902:1"
+      ],
+      [
+        33.1,
+        33.4,
+        "mark",
+        "20974",
+        "20975:11 20976:4"
+      ],
+      [
+        32.8,
+        35.3,
+        "landAt",
+        "27681",
+        "27681:43 27689:4 27684:3"
+      ],
+      [
+        32.3,
+        806.1,
+        "physicsStep",
+        "20970",
+        "20981:27 20979:20 20990:6 20983:2 20988:1"
+      ],
+      [
+        31.5,
+        76.8,
+        "groundAt",
+        "28304",
+        "28304:14 28313:2 28308:1 28311:1"
+      ],
+      [
+        29.9,
+        31.1,
+        "drawCivicMinimap",
+        "36077",
+        "36085:12 36087:3 36080:2 36088:1"
+      ],
+      [
+        29.7,
+        29.7,
+        "(garbage collector)",
+        "0",
+        ""
+      ],
+      [
+        28.2,
+        28.2,
+        "renderQuickKeys",
+        "117223",
+        "117225:10"
+      ],
+      [
+        27.4,
+        43.5,
+        "sportsSoccerPositions",
+        "83780",
+        "83780:4 83802:1"
+      ],
+      [
+        26.6,
+        27.3,
+        "updateTrafficLife",
+        "101547",
+        "101548:4 101555:1"
+      ],
+      [
+        25.6,
+        62.8,
+        "vehicleContactPasses",
+        "20784",
+        "20814:12 20815:6 20809:5 20816:2 20826:2"
+      ],
+      [
+        25.6,
+        79.8,
+        "footprintOffGround",
+        "18435",
+        "18443:12 18440:2 18439:1 18436:1 18441:1"
+      ],
+      [
+        24.4,
+        71.8,
+        "trafficControl",
+        "19284",
+        "19340:8 19341:5 19426:4 19427:2 19424:2"
+      ],
+      [
+        24,
+        27.4,
+        "forEachPedestrianNear",
+        "98164",
+        "98210:5 98191:4 98194:3 98192:2 98209:2"
+      ],
+      [
+        24,
+        32,
+        "wildlifePositionAllowed",
+        "88355",
+        "88357:2"
+      ],
+      [
+        23.6,
+        23.6,
+        "junctionBoxBusy",
+        "19212",
+        "19217:3 19213:1 19223:1"
+      ],
+      [
+        23.4,
+        28.2,
+        "settleIsTrivial",
+        "20841",
+        "20844:8 20843:6 20847:4 20849:3 20854:3"
+      ],
+      [
+        23.4,
+        161.9,
+        "isBoat",
+        "32660",
+        "32661:27 32660:17"
+      ],
+      [
+        23.1,
+        23.1,
+        "sportsColorDistance",
+        "82046",
+        "82047:2 82049:1 82048:1"
+      ],
+      [
+        22.7,
+        22.7,
+        "boxContact",
+        "18483",
+        "18485:11 18486:2 18498:2 18497:1 18490:1"
+      ],
+      [
+        21.5,
+        27,
+        "vehicleHandling",
+        "57104",
+        "57107:8 57104:4 57109:4 57106:1"
+      ],
+      [
+        21.2,
+        1752.8,
+        "timed",
+        "216275",
+        "216278:26 216276:11 216277:8 216275:2"
+      ],
+      [
+        20.8,
+        26.5,
+        "updateCameraFollow",
+        "13906",
+        "13912:2 13918:1 13915:1"
+      ]
+    ],
+    "cpuMs": 1136,
+    "heapMB": [
+      83.3,
+      92.7,
+      117.5
+    ],
+    "newErrors": 0,
+    "after": {
+      "status": {
+        "mode": "play",
+        "x": 9470,
+        "y": 8915,
+        "district": "FORT SENTINEL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "FISTS",
+        "clock": "17:28",
+        "renderer": "2d",
+        "vehicles": 299,
+        "pedestrians": 599
+      },
+      "military": {
+        "alert": false,
+        "lockdown": false,
+        "challenge": 0,
+        "gate": [
+          {
+            "arm": 0,
+            "bollards": 0,
+            "slide": 0,
+            "broken": []
+          },
+          {
+            "arm": 0,
+            "bollards": 0,
+            "slide": 0,
+            "broken": []
+          }
+        ],
+        "soldiers": {
+          "gate": 3,
+          "post": 11,
+          "tower": 8,
+          "range": 4,
+          "patrol": 9,
+          "drill": 12,
+          "sergeant": 1
+        },
+        "aiming": 0,
+        "vehicles": [
+          {
+            "type": "jeep",
+            "x": 9470,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9515,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9560,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9605,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9665,
+            "y": 8950,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9715,
+            "y": 8950,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9780,
+            "y": 8950,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9830,
+            "y": 8950,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "tank",
+            "x": 9490,
+            "y": 9080,
+            "hp": 1600,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "tank",
+            "x": 9565,
+            "y": 9080,
+            "hp": 1600,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "apc",
+            "x": 9645,
+            "y": 9080,
+            "hp": 950,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "armytruck",
+            "x": 9715,
+            "y": 9080,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9765,
+            "y": 9080,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9835,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9880,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9925,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 10160,
+            "y": 9042,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9470,
+            "y": 8018,
+            "hp": 380,
+            "ai": false,
+            "role": "qrf"
+          },
+          {
+            "type": "jeep",
+            "x": 9512,
+            "y": 8018,
+            "hp": 380,
+            "ai": false,
+            "role": "qrf"
+          },
+          {
+            "type": "helicopter",
+            "x": 9492,
+            "y": 7936,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9466,
+            "y": 8234,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9514,
+            "y": 8234,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 10482,
+            "y": 7957,
+            "hp": 380,
+            "ai": true,
+            "role": "patrol"
+          },
+          {
+            "type": "jeep",
+            "x": 9377,
+            "y": 9769,
+            "hp": 380,
+            "ai": true,
+            "role": "patrol"
+          },
+          {
+            "type": "helicopter",
+            "x": 9550,
+            "y": 9522,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 9810,
+            "y": 9522,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 10340,
+            "y": 9365,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 10200,
+            "y": 9365,
+            "hp": 640,
+            "ai": false,
+            "role": "parked"
+          }
+        ],
+        "supply": null,
+        "drill": {
+          "x": 9760,
+          "y": 8330,
+          "active": true
+        }
+      }
+    }
+  },
+  "base-stolen-jeep": {
+    "before": {
+      "status": {
+        "mode": "play",
+        "x": 9470,
+        "y": 8950,
+        "district": "FORT SENTINEL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 5,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "jeep",
+        "weapon": "FISTS",
+        "clock": "17:29",
+        "renderer": "2d",
+        "vehicles": 300,
+        "pedestrians": 599
+      },
+      "military": {
+        "alert": true,
+        "lockdown": true,
+        "challenge": 3,
+        "gate": [
+          {
+            "arm": 0,
+            "bollards": 0.27,
+            "slide": 0.08,
+            "broken": []
+          },
+          {
+            "arm": 0,
+            "bollards": 0.27,
+            "slide": 0.08,
+            "broken": []
+          }
+        ],
+        "soldiers": {
+          "gate": 3,
+          "post": 11,
+          "tower": 8,
+          "range": 4,
+          "patrol": 9,
+          "drill": 12,
+          "sergeant": 1
+        },
+        "aiming": 4,
+        "vehicles": [
+          {
+            "type": "jeep",
+            "x": 9470,
+            "y": 8950,
+            "hp": 379,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9515,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9560,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9605,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9665,
+            "y": 8950,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9715,
+            "y": 8950,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9780,
+            "y": 8950,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9830,
+            "y": 8950,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "tank",
+            "x": 9490,
+            "y": 9080,
+            "hp": 1600,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "tank",
+            "x": 9565,
+            "y": 9080,
+            "hp": 1600,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "apc",
+            "x": 9645,
+            "y": 9080,
+            "hp": 950,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "armytruck",
+            "x": 9715,
+            "y": 9080,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9765,
+            "y": 9080,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9835,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9880,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9925,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 10160,
+            "y": 9042,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9470,
+            "y": 8019,
+            "hp": 380,
+            "ai": true,
+            "role": "qrf"
+          },
+          {
+            "type": "jeep",
+            "x": 9512,
+            "y": 8019,
+            "hp": 380,
+            "ai": true,
+            "role": "qrf"
+          },
+          {
+            "type": "helicopter",
+            "x": 9492,
+            "y": 7936,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9466,
+            "y": 8234,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9514,
+            "y": 8234,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 10481,
+            "y": 7983,
+            "hp": 380,
+            "ai": true,
+            "role": "patrol"
+          },
+          {
+            "type": "jeep",
+            "x": 9377,
+            "y": 9744,
+            "hp": 380,
+            "ai": true,
+            "role": "patrol"
+          },
+          {
+            "type": "helicopter",
+            "x": 9550,
+            "y": 9522,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 9810,
+            "y": 9522,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 10340,
+            "y": 9365,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 10200,
+            "y": 9365,
+            "hp": 640,
+            "ai": false,
+            "role": "parked"
+          }
+        ],
+        "supply": null,
+        "drill": {
+          "x": 9760,
+          "y": 8330,
+          "active": false
+        }
+      }
+    },
+    "result": {
+      "frames": 180,
+      "avgMs": 9.18,
+      "p50Ms": 7.1,
+      "p95Ms": 25.1,
+      "p99Ms": 30.7,
+      "maxMs": 31.7,
+      "parts": {
+        "cars": [
+          5.56,
+          30.5
+        ],
+        "phys:control": [
+          1.73,
+          23.5
+        ],
+        "phys:broadphase": [
+          1.66,
+          28.7
+        ],
+        "phys:post": [
+          1.09,
+          21.9
+        ],
+        "civic": [
+          0.79,
+          9
+        ],
+        "military": [
+          0.58,
+          18
+        ],
+        "phys:contacts": [
+          0.54,
+          21.4
+        ],
+        "ui": [
+          0.47,
+          25
+        ],
+        "(untimed)": [
+          0.46,
+          0.3
+        ],
+        "sports": [
+          0.37,
+          21.4
+        ],
+        "police:officers": [
+          0.35,
+          8.8
+        ],
+        "people": [
+          0.22,
+          3.8
+        ],
+        "damage": [
+          0.16,
+          4.4
+        ],
+        "bullets": [
+          0.15,
+          6.5
+        ],
+        "knockdowns": [
+          0.11,
+          2.2
+        ],
+        "police:roadblocks": [
+          0.11,
+          6.2
+        ],
+        "police:wanted": [
+          0.1,
+          3.6
+        ],
+        "sealife": [
+          0.06,
+          4.1
+        ],
+        "police:air": [
+          0.06,
+          3.3
+        ],
+        "beach": [
+          0.03,
+          4.3
+        ]
+      },
+      "worst": [
+        [
+          31.7,
+          78,
+          "cars",
+          30.5
+        ],
+        [
+          30.7,
+          163,
+          "sports",
+          21.2
+        ],
+        [
+          30.6,
+          53,
+          "ui",
+          25
+        ],
+        [
+          29.9,
+          68,
+          "cars",
+          28.5
+        ],
+        [
+          28.4,
+          18,
+          "cars",
+          26.5
+        ]
+      ],
+      "slow": {
+        "cars": 117,
+        "phys:control": 22,
+        "people": 2,
+        "police:wanted": 1,
+        "civic": 11,
+        "phys:broadphase": 18,
+        "ui": 8,
+        "phys:contacts": 4,
+        "military": 6,
+        "phys:post": 7,
+        "police:roadblocks": 2,
+        "damage": 2,
+        "police:officers": 3,
+        "sports": 3,
+        "sealife": 1,
+        "beach": 1,
+        "bullets": 1,
+        "police:air": 1
+      },
+      "heapMB": 0,
+      "heapDrops": 0,
+      "vehicles": 304,
+      "pedestrians": 599
+    },
+    "ms": 2003,
+    "profile": [
+      [
+        323.5,
+        323.5,
+        "(program)",
+        "0",
+        ""
+      ],
+      [
+        207.9,
+        207.9,
+        "vehicleSpec",
+        "12636",
+        "12654:159 12644:27 12639:17 12636:16 12640:13"
+      ],
+      [
+        158,
+        274.2,
+        "vehicleBroadphase",
+        "20633",
+        "20674:20 20633:14 20688:13 20639:11 20672:10"
+      ],
+      [
+        146.2,
+        258,
+        "controlVehicle",
+        "20011",
+        "20011:34 20014:16 20016:7 20553:7 20430:7"
+      ],
+      [
+        89.7,
+        900,
+        "physicsStep",
+        "20970",
+        "20979:43 20981:27 20983:6 20988:4 20986:1"
+      ],
+      [
+        50.7,
+        56.2,
+        "updateBloodTracks",
+        "21226",
+        "21226:18 21242:4 21246:3 21239:3 21231:2"
+      ],
+      [
+        39.7,
+        190.1,
+        "settleVehicle",
+        "20867",
+        "20869:18 20873:12 20870:3"
+      ],
+      [
+        35.9,
+        1618.2,
+        "update",
+        "23067",
+        "23112:4 23251:2 23258:1 23261:1 23217:1"
+      ],
+      [
+        34.7,
+        59.6,
+        "vehicleContactPasses",
+        "20784",
+        "20814:11 20809:4 20807:4 20815:2 20817:2"
+      ],
+      [
+        34.7,
+        54.5,
+        "updateOfficers",
+        "33612",
+        "33782:9 33617:9 33619:4 33618:3 33613:3"
+      ],
+      [
+        33.2,
+        1659.9,
+        "simProfileRun",
+        "218832",
+        "218857:6 218878:2 218851:2 218885:1 218853:1"
+      ],
+      [
+        33.1,
+        36.2,
+        "landAt",
+        "27681",
+        "27681:38 27689:11 27684:2"
+      ],
+      [
+        25,
+        25,
+        "hypot2",
+        "11722",
+        "11731:7 11730:3 11727:2 11723:1 11728:1"
+      ],
+      [
+        23.7,
+        23.7,
+        "sportsOffside",
+        "83070",
+        "83076:2 83074:2"
+      ],
+      [
+        23.7,
+        23.7,
+        "(garbage collector)",
+        "0",
+        ""
+      ],
+      [
+        23.1,
+        23.1,
+        "rideEnd",
+        "74088",
+        "74089:2 74092:1"
+      ],
+      [
+        21.6,
+        33.1,
+        "trafficControl",
+        "19284",
+        "19426:4 19284:3 19427:2 19425:2 19401:1"
+      ],
+      [
+        21.3,
+        21.3,
+        "sportsLaunchBall",
+        "83086",
+        "83105:1 83097:1"
+      ],
+      [
+        21.1,
+        21.1,
+        "drawMap > fillRect",
+        "0",
+        "24528:1"
+      ],
+      [
+        18,
+        18,
+        "(idle)",
+        "0",
+        ""
+      ],
+      [
+        17.8,
+        988.9,
+        "updateCars",
+        "21642",
+        "21650:8 21662:5 21658:4 21651:2 21710:2"
+      ],
+      [
+        16.2,
+        130.3,
+        "settleVehicleFull",
+        "20877",
+        "20877:14 20905:3 20961:3 20903:3 20956:2"
+      ],
+      [
+        15.4,
+        1536.9,
+        "timed",
+        "216275",
+        "216278:17 216276:5 216275:4 216277:3"
+      ],
+      [
+        15,
+        15,
+        "terrainFieldAt",
+        "73412",
+        "73413:17"
+      ],
+      [
+        14.5,
+        19.8,
+        "vehicleHandling",
+        "57104",
+        "57107:6 57109:6 57104:6 57106:1 57121:1"
+      ],
+      [
+        14.1,
+        19.4,
+        "settleIsTrivial",
+        "20841",
+        "20843:9 20844:7 20845:3 20855:2 20846:2"
+      ],
+      [
+        13.8,
+        49.9,
+        "terrainVehiclePose",
+        "73462",
+        "73474:7 73470:5 73469:4 73471:3 73468:3"
+      ],
+      [
+        13,
+        35.3,
+        "distanceBetween",
+        "11734",
+        "11735:6 11734:3"
+      ],
+      [
+        12.5,
+        13.5,
+        "boxContact",
+        "18483",
+        "18485:10 18486:3 18490:3 18491:2 18497:1"
+      ],
+      [
+        11.9,
+        143.1,
+        "isBoat",
+        "32660",
+        "32661:23 32660:2"
+      ]
+    ],
+    "cpuMs": 1173,
+    "heapMB": [
+      94.4,
+      93.6,
+      118
+    ],
+    "newErrors": 0,
+    "after": {
+      "status": {
+        "mode": "play",
+        "x": 9470,
+        "y": 8950,
+        "district": "FORT SENTINEL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 5,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "jeep",
+        "weapon": "FISTS",
+        "clock": "17:32",
+        "renderer": "2d",
+        "vehicles": 304,
+        "pedestrians": 599
+      },
+      "military": {
+        "alert": true,
+        "lockdown": true,
+        "challenge": 3,
+        "gate": [
+          {
+            "arm": 0,
+            "bollards": 1,
+            "slide": 0.92,
+            "broken": []
+          },
+          {
+            "arm": 0,
+            "bollards": 1,
+            "slide": 0.92,
+            "broken": []
+          }
+        ],
+        "soldiers": {
+          "gate": 3,
+          "post": 11,
+          "tower": 8,
+          "range": 4,
+          "patrol": 9,
+          "drill": 12,
+          "sergeant": 1
+        },
+        "aiming": 4,
+        "vehicles": [
+          {
+            "type": "jeep",
+            "x": 9470,
+            "y": 8950,
+            "hp": 329,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9515,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9560,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9605,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9665,
+            "y": 8950,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9715,
+            "y": 8950,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9780,
+            "y": 8950,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9830,
+            "y": 8950,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "tank",
+            "x": 9490,
+            "y": 9080,
+            "hp": 1600,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "tank",
+            "x": 9565,
+            "y": 9080,
+            "hp": 1600,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "apc",
+            "x": 9645,
+            "y": 9080,
+            "hp": 950,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "armytruck",
+            "x": 9715,
+            "y": 9080,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9765,
+            "y": 9080,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9835,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9880,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9925,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 10160,
+            "y": 9042,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9470,
+            "y": 8152,
+            "hp": 380,
+            "ai": true,
+            "role": "qrf"
+          },
+          {
+            "type": "jeep",
+            "x": 9506,
+            "y": 8152,
+            "hp": 380,
+            "ai": true,
+            "role": "qrf"
+          },
+          {
+            "type": "helicopter",
+            "x": 9492,
+            "y": 7936,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9466,
+            "y": 8234,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9514,
+            "y": 8234,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 10476,
+            "y": 8312,
+            "hp": 380,
+            "ai": true,
+            "role": "patrol"
+          },
+          {
+            "type": "jeep",
+            "x": 9383,
+            "y": 9427,
+            "hp": 380,
+            "ai": true,
+            "role": "patrol"
+          },
+          {
+            "type": "helicopter",
+            "x": 9550,
+            "y": 9522,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 9810,
+            "y": 9522,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 10340,
+            "y": 9365,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 10200,
+            "y": 9365,
+            "hp": 640,
+            "ai": false,
+            "role": "parked"
+          }
+        ],
+        "supply": null,
+        "drill": {
+          "x": 9760,
+          "y": 8330,
+          "active": false
+        }
+      }
+    }
+  },
+  "base-stolen-jeep-later": {
+    "before": {
+      "status": {
+        "mode": "play",
+        "x": 9470,
+        "y": 8950,
+        "district": "FORT SENTINEL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 5,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "jeep",
+        "weapon": "FISTS",
+        "clock": "17:32",
+        "renderer": "2d",
+        "vehicles": 304,
+        "pedestrians": 599
+      },
+      "military": {
+        "alert": true,
+        "lockdown": true,
+        "challenge": 3,
+        "gate": [
+          {
+            "arm": 0,
+            "bollards": 1,
+            "slide": 0.92,
+            "broken": []
+          },
+          {
+            "arm": 0,
+            "bollards": 1,
+            "slide": 0.92,
+            "broken": []
+          }
+        ],
+        "soldiers": {
+          "gate": 3,
+          "post": 11,
+          "tower": 8,
+          "range": 4,
+          "patrol": 9,
+          "drill": 12,
+          "sergeant": 1
+        },
+        "aiming": 4,
+        "vehicles": [
+          {
+            "type": "jeep",
+            "x": 9470,
+            "y": 8950,
+            "hp": 329,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9515,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9560,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9605,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9665,
+            "y": 8950,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9715,
+            "y": 8950,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9780,
+            "y": 8950,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9830,
+            "y": 8950,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "tank",
+            "x": 9490,
+            "y": 9080,
+            "hp": 1600,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "tank",
+            "x": 9565,
+            "y": 9080,
+            "hp": 1600,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "apc",
+            "x": 9645,
+            "y": 9080,
+            "hp": 950,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "armytruck",
+            "x": 9715,
+            "y": 9080,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9765,
+            "y": 9080,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9835,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9880,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9925,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 10160,
+            "y": 9042,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9470,
+            "y": 8152,
+            "hp": 380,
+            "ai": true,
+            "role": "qrf"
+          },
+          {
+            "type": "jeep",
+            "x": 9506,
+            "y": 8152,
+            "hp": 380,
+            "ai": true,
+            "role": "qrf"
+          },
+          {
+            "type": "helicopter",
+            "x": 9492,
+            "y": 7936,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9466,
+            "y": 8234,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9514,
+            "y": 8234,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 10476,
+            "y": 8312,
+            "hp": 380,
+            "ai": true,
+            "role": "patrol"
+          },
+          {
+            "type": "jeep",
+            "x": 9383,
+            "y": 9427,
+            "hp": 380,
+            "ai": true,
+            "role": "patrol"
+          },
+          {
+            "type": "helicopter",
+            "x": 9550,
+            "y": 9522,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 9810,
+            "y": 9522,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 10340,
+            "y": 9365,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 10200,
+            "y": 9365,
+            "hp": 640,
+            "ai": false,
+            "role": "parked"
+          }
+        ],
+        "supply": null,
+        "drill": {
+          "x": 9760,
+          "y": 8330,
+          "active": false
+        }
+      }
+    },
+    "result": {
+      "frames": 360,
+      "avgMs": 7.84,
+      "p50Ms": 5.7,
+      "p95Ms": 24.2,
+      "p99Ms": 31.3,
+      "maxMs": 60.1,
+      "parts": {
+        "cars": [
+          4.58,
+          29.5
+        ],
+        "phys:control": [
+          1.62,
+          21.2
+        ],
+        "phys:broadphase": [
+          1.15,
+          26.2
+        ],
+        "phys:post": [
+          0.97,
+          22.3
+        ],
+        "civic": [
+          0.86,
+          25.5
+        ],
+        "military": [
+          0.53,
+          21.6
+        ],
+        "phys:contacts": [
+          0.53,
+          22.2
+        ],
+        "ui": [
+          0.47,
+          34.5
+        ],
+        "police:officers": [
+          0.33,
+          21.3
+        ],
+        "(untimed)": [
+          0.29,
+          0.4
+        ],
+        "damage": [
+          0.2,
+          17.2
+        ],
+        "knockdowns": [
+          0.15,
+          4.2
+        ],
+        "people": [
+          0.15,
+          4.1
+        ],
+        "police:wanted": [
+          0.15,
+          22
+        ],
+        "wildlife": [
+          0.14,
+          21.3
+        ],
+        "police:air": [
+          0.11,
+          25.1
+        ],
+        "sports": [
+          0.09,
+          3.3
+        ],
+        "citylife": [
+          0.09,
+          25
+        ],
+        "transit": [
+          0.08,
+          18.9
+        ],
+        "police:roadblocks": [
+          0.08,
+          5.2
+        ]
+      },
+      "worst": [
+        [
+          60.1,
+          11,
+          "ui",
+          34.5
+        ],
+        [
+          34.3,
+          72,
+          "cars",
+          28.3
+        ],
+        [
+          31.3,
+          97,
+          "civic",
+          23.1
+        ],
+        [
+          31.3,
+          208,
+          "cars",
+          29.5
+        ],
+        [
+          29.6,
+          287,
+          "ui",
+          19.4
+        ]
+      ],
+      "slow": {
+        "phys:control": 35,
+        "cars": 179,
+        "phys:post": 16,
+        "phys:contacts": 5,
+        "military": 12,
+        "sports": 1,
+        "ui": 13,
+        "drawbridge": 1,
+        "phys:broadphase": 20,
+        "police:roadblocks": 3,
+        "civic": 17,
+        "police:wanted": 2,
+        "transit": 2,
+        "wildlife": 2,
+        "police:officers": 7,
+        "knockdowns": 4,
+        "damage": 5,
+        "police:air": 1,
+        "sound": 1,
+        "beachclub": 1,
+        "bullets": 1,
+        "citylife": 1,
+        "sealife": 1,
+        "people": 2,
+        "waypoint": 1
+      },
+      "heapMB": 0,
+      "heapDrops": 0,
+      "vehicles": 304,
+      "pedestrians": 599
+    },
+    "ms": 3370,
+    "profile": [
+      [
+        506.7,
+        506.7,
+        "(program)",
+        "0",
+        ""
+      ],
+      [
+        310.2,
+        310.2,
+        "vehicleSpec",
+        "12636",
+        "12654:331 12640:49 12644:44 12639:37 12642:7"
+      ],
+      [
+        259.1,
+        549,
+        "controlVehicle",
+        "20011",
+        "20553:30 20014:30 20555:22 20016:18 20424:18"
+      ],
+      [
+        211.8,
+        322.4,
+        "vehicleBroadphase",
+        "20633",
+        "20674:38 20641:21 20688:20 20671:18 20670:18"
+      ],
+      [
+        77.7,
+        1498.8,
+        "physicsStep",
+        "20970",
+        "20979:78 20981:50 20983:17 20980:14 20982:9"
+      ],
+      [
+        69.2,
+        347.8,
+        "settleVehicle",
+        "20867",
+        "20873:29 20869:27 20870:3"
+      ],
+      [
+        60.6,
+        2675.5,
+        "timed",
+        "216275",
+        "216277:65 216278:40 216276:11 216275:1"
+      ],
+      [
+        54.9,
+        2829.5,
+        "simProfileRun",
+        "218832",
+        "218857:20 218851:9 218850:2 218852:2 218859:1"
+      ],
+      [
+        52,
+        141.3,
+        "vehicleContactPasses",
+        "20784",
+        "20814:21 20805:8 20807:7 20815:6 20799:5"
+      ],
+      [
+        50.1,
+        50.8,
+        "drawTransitMap",
+        "87684",
+        "87693:55 87712:1"
+      ],
+      [
+        44.6,
+        226.8,
+        "settleVehicleFull",
+        "20877",
+        "20961:18 20903:16 20954:12 20877:10 20962:6"
+      ],
+      [
+        44.4,
+        45.1,
+        "hullTouchesLand",
+        "28521",
+        "28564:7 28555:6 28531:4 28554:4 28552:3"
+      ],
+      [
+        42.1,
+        62.2,
+        "footprintOffGround",
+        "18435",
+        "18439:14 18443:13 18440:6 18437:1 18442:1"
+      ],
+      [
+        40,
+        46.2,
+        "settleIsTrivial",
+        "20841",
+        "20844:21 20843:11 20847:10 20845:9 20848:5"
+      ],
+      [
+        39.3,
+        113.4,
+        "updateOfficers",
+        "33612",
+        "33617:15 33618:7 33782:5 33614:2 33705:2"
+      ],
+      [
+        37.4,
+        37.4,
+        "refreshVehicleGrid",
+        "15695",
+        "15716:17 15696:3 15704:3 15709:3 15705:2"
+      ],
+      [
+        36.8,
+        36.8,
+        "headingBetween",
+        "11736",
+        "11737:11 11736:1"
+      ],
+      [
+        35.6,
+        35.6,
+        "(idle)",
+        "0",
+        ""
+      ],
+      [
+        35.5,
+        54.9,
+        "terrainVehiclePose",
+        "73462",
+        "73469:19 73473:10 73470:7 73471:6 73468:5"
+      ],
+      [
+        32.9,
+        32.9,
+        "(garbage collector)",
+        "0",
+        ""
+      ],
+      [
+        32.6,
+        49,
+        "updateBloodTracks",
+        "21226",
+        "21258:7 21226:6 21241:5 21240:5 21242:4"
+      ],
+      [
+        32.4,
+        61,
+        "updateDamage",
+        "57525",
+        "57529:8 57531:6 57528:3 57532:3 57530:3"
+      ],
+      [
+        30.9,
+        35.8,
+        "landAt",
+        "27681",
+        "27681:62 27689:9 27684:5"
+      ],
+      [
+        30.2,
+        32.4,
+        "isleTrafficControl",
+        "104125",
+        "104190:8 104191:6 104188:5 104189:5 104166:2"
+      ],
+      [
+        28.4,
+        75.7,
+        "vehicleRadius",
+        "18428",
+        "18428:28 18430:22 18431:1 18432:1"
+      ],
+      [
+        27.8,
+        167.1,
+        "updateMilitary",
+        "64541",
+        "64551:12 64628:4 64577:3 64627:2 64603:2"
+      ],
+      [
+        27.4,
+        37.5,
+        "updateAirPolice",
+        "55475",
+        "55479:2 55498:1"
+      ],
+      [
+        27,
+        234,
+        "isBoat",
+        "32660",
+        "32661:43 32660:8"
+      ],
+      [
+        26.1,
+        27.8,
+        "resolveContact",
+        "18955",
+        "19073:4 19068:4 18957:1 18971:1 18968:1"
+      ],
+      [
+        25.9,
+        25.9,
+        "updateHarbor",
+        "31350",
+        "31355:40"
+      ]
+    ],
+    "cpuMs": 1903,
+    "heapMB": [
+      93.6,
+      100.6,
+      134.3
+    ],
+    "newErrors": 0,
+    "after": {
+      "status": {
+        "mode": "play",
+        "x": 9470,
+        "y": 8950,
+        "district": "FORT SENTINEL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 5,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "jeep",
+        "weapon": "FISTS",
+        "clock": "17:38",
+        "renderer": "2d",
+        "vehicles": 304,
+        "pedestrians": 599
+      },
+      "military": {
+        "alert": true,
+        "lockdown": true,
+        "challenge": 3,
+        "gate": [
+          {
+            "arm": 0,
+            "bollards": 1,
+            "slide": 1,
+            "broken": []
+          },
+          {
+            "arm": 0,
+            "bollards": 1,
+            "slide": 1,
+            "broken": []
+          }
+        ],
+        "soldiers": {
+          "gate": 3,
+          "post": 11,
+          "tower": 8,
+          "range": 4,
+          "patrol": 9,
+          "drill": 12,
+          "sergeant": 1
+        },
+        "aiming": 5,
+        "vehicles": [
+          {
+            "type": "jeep",
+            "x": 9470,
+            "y": 8950,
+            "hp": 210,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9515,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9560,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9605,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9665,
+            "y": 8950,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9715,
+            "y": 8950,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9780,
+            "y": 8950,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9830,
+            "y": 8950,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "tank",
+            "x": 9490,
+            "y": 9080,
+            "hp": 1600,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "tank",
+            "x": 9565,
+            "y": 9080,
+            "hp": 1600,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "apc",
+            "x": 9645,
+            "y": 9080,
+            "hp": 950,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "armytruck",
+            "x": 9715,
+            "y": 9080,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9765,
+            "y": 9080,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9835,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9880,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9925,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 10160,
+            "y": 9042,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9470,
+            "y": 8161,
+            "hp": 380,
+            "ai": true,
+            "role": "qrf"
+          },
+          {
+            "type": "jeep",
+            "x": 9506,
+            "y": 8162,
+            "hp": 380,
+            "ai": true,
+            "role": "qrf"
+          },
+          {
+            "type": "helicopter",
+            "x": 9492,
+            "y": 7936,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9466,
+            "y": 8234,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9514,
+            "y": 8234,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 10468,
+            "y": 9110,
+            "hp": 380,
+            "ai": true,
+            "role": "patrol"
+          },
+          {
+            "type": "jeep",
+            "x": 9392,
+            "y": 8632,
+            "hp": 380,
+            "ai": true,
+            "role": "patrol"
+          },
+          {
+            "type": "helicopter",
+            "x": 9550,
+            "y": 9522,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 9810,
+            "y": 9522,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 10340,
+            "y": 9365,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 10200,
+            "y": 9365,
+            "hp": 640,
+            "ai": false,
+            "role": "parked"
+          }
+        ],
+        "supply": null,
+        "drill": {
+          "x": 9760,
+          "y": 8330,
+          "active": false
+        }
+      }
+    }
+  },
+  "base-alert-foot": {
+    "before": {
+      "status": {
+        "mode": "play",
+        "x": 9443,
+        "y": 8950,
+        "district": "FORT SENTINEL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 5,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "FISTS",
+        "clock": "17:38",
+        "renderer": "2d",
+        "vehicles": 304,
+        "pedestrians": 599
+      },
+      "military": {
+        "alert": true,
+        "lockdown": true,
+        "challenge": 3,
+        "gate": [
+          {
+            "arm": 0,
+            "bollards": 1,
+            "slide": 1,
+            "broken": []
+          },
+          {
+            "arm": 0,
+            "bollards": 1,
+            "slide": 1,
+            "broken": []
+          }
+        ],
+        "soldiers": {
+          "gate": 3,
+          "post": 11,
+          "tower": 8,
+          "range": 4,
+          "patrol": 9,
+          "drill": 12,
+          "sergeant": 1
+        },
+        "aiming": 5,
+        "vehicles": [
+          {
+            "type": "jeep",
+            "x": 9470,
+            "y": 8950,
+            "hp": 210,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9515,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9560,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9605,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9665,
+            "y": 8950,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9715,
+            "y": 8950,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9780,
+            "y": 8950,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9830,
+            "y": 8950,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "tank",
+            "x": 9490,
+            "y": 9080,
+            "hp": 1600,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "tank",
+            "x": 9565,
+            "y": 9080,
+            "hp": 1600,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "apc",
+            "x": 9645,
+            "y": 9080,
+            "hp": 950,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "armytruck",
+            "x": 9715,
+            "y": 9080,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9765,
+            "y": 9080,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9835,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9880,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9925,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 10160,
+            "y": 9042,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9470,
+            "y": 8161,
+            "hp": 380,
+            "ai": true,
+            "role": "qrf"
+          },
+          {
+            "type": "jeep",
+            "x": 9506,
+            "y": 8162,
+            "hp": 380,
+            "ai": true,
+            "role": "qrf"
+          },
+          {
+            "type": "helicopter",
+            "x": 9492,
+            "y": 7936,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9466,
+            "y": 8234,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9514,
+            "y": 8234,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 10467,
+            "y": 9176,
+            "hp": 380,
+            "ai": true,
+            "role": "patrol"
+          },
+          {
+            "type": "jeep",
+            "x": 9392,
+            "y": 8566,
+            "hp": 380,
+            "ai": true,
+            "role": "patrol"
+          },
+          {
+            "type": "helicopter",
+            "x": 9550,
+            "y": 9522,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 9810,
+            "y": 9522,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 10340,
+            "y": 9365,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 10200,
+            "y": 9365,
+            "hp": 640,
+            "ai": false,
+            "role": "parked"
+          }
+        ],
+        "supply": null,
+        "drill": {
+          "x": 9760,
+          "y": 8330,
+          "active": false
+        }
+      }
+    },
+    "result": {
+      "frames": 180,
+      "avgMs": 7.12,
+      "p50Ms": 5,
+      "p95Ms": 20.7,
+      "p99Ms": 34.5,
+      "maxMs": 46.1,
+      "parts": {
+        "cars": [
+          3.95,
+          25.8
+        ],
+        "phys:control": [
+          1.26,
+          17.6
+        ],
+        "phys:post": [
+          0.87,
+          13.5
+        ],
+        "phys:broadphase": [
+          0.82,
+          17.5
+        ],
+        "civic": [
+          0.67,
+          17.5
+        ],
+        "phys:contacts": [
+          0.64,
+          22.8
+        ],
+        "ui": [
+          0.61,
+          22.4
+        ],
+        "military": [
+          0.51,
+          27.6
+        ],
+        "knockdowns": [
+          0.38,
+          23.4
+        ],
+        "police:officers": [
+          0.3,
+          17.2
+        ],
+        "(untimed)": [
+          0.22,
+          0.3
+        ],
+        "damage": [
+          0.22,
+          17.7
+        ],
+        "people": [
+          0.16,
+          4
+        ],
+        "sports": [
+          0.11,
+          3.5
+        ],
+        "bullets": [
+          0.1,
+          5
+        ],
+        "police:air": [
+          0.08,
+          2.6
+        ],
+        "police:wanted": [
+          0.06,
+          0.7
+        ],
+        "police:roadblocks": [
+          0.05,
+          0.6
+        ],
+        "wildlife": [
+          0.03,
+          2.5
+        ],
+        "citylife": [
+          0.03,
+          1.6
+        ]
+      },
+      "worst": [
+        [
+          46.1,
+          21,
+          "military",
+          27.6
+        ],
+        [
+          34.5,
+          69,
+          "knockdowns",
+          23.4
+        ],
+        [
+          27.5,
+          0,
+          "cars",
+          25.8
+        ],
+        [
+          25.3,
+          95,
+          "ui",
+          21.1
+        ],
+        [
+          24.7,
+          47,
+          "ui",
+          22.4
+        ]
+      ],
+      "slow": {
+        "phys:contacts": 5,
+        "cars": 80,
+        "bullets": 1,
+        "damage": 1,
+        "ui": 7,
+        "phys:control": 9,
+        "knockdowns": 3,
+        "military": 2,
+        "phys:post": 4,
+        "civic": 4,
+        "people": 1,
+        "phys:broadphase": 4,
+        "police:officers": 1,
+        "sports": 1
+      },
+      "heapMB": 0,
+      "heapDrops": 0,
+      "vehicles": 304,
+      "pedestrians": 599
+    },
+    "ms": 1557,
+    "profile": [
+      [
+        268.7,
+        268.7,
+        "(program)",
+        "0",
+        ""
+      ],
+      [
+        160.9,
+        160.9,
+        "vehicleSpec",
+        "12636",
+        "12654:142 12644:31 12640:29 12639:23 12642:5"
+      ],
+      [
+        118.6,
+        203.3,
+        "controlVehicle",
+        "20011",
+        "20011:100 20014:15 20016:7 20424:6 20553:5"
+      ],
+      [
+        83.8,
+        152.8,
+        "vehicleBroadphase",
+        "20633",
+        "20674:22 20641:17 20688:11 20669:10 20664:10"
+      ],
+      [
+        52.1,
+        86.4,
+        "updateMilitary",
+        "64541",
+        "64551:6 64638:4 64719:2 64577:1 64578:1"
+      ],
+      [
+        40.8,
+        97.1,
+        "vehicleContactPasses",
+        "20784",
+        "20814:16 20799:4 20816:3 20807:3 20812:2"
+      ],
+      [
+        40.7,
+        40.7,
+        "drawMap > drawImage",
+        "0",
+        "24535:13"
+      ],
+      [
+        39.6,
+        73.5,
+        "updateKnockdowns",
+        "21004",
+        "21007:29"
+      ],
+      [
+        39.1,
+        1215.2,
+        "timed",
+        "216275",
+        "216277:32 216278:15 216276:5 216275:1"
+      ],
+      [
+        34.1,
+        119.6,
+        "isBoat",
+        "32660",
+        "32661:29"
+      ],
+      [
+        33.8,
+        640.4,
+        "physicsStep",
+        "20970",
+        "20979:20 20981:17 20983:8 20982:4 20990:2"
+      ],
+      [
+        27.9,
+        27.9,
+        "(garbage collector)",
+        "0",
+        ""
+      ],
+      [
+        25.8,
+        51.5,
+        "groundAt",
+        "28304",
+        "28304:17 28311:4 28313:2 28312:1 28316:1"
+      ],
+      [
+        25.3,
+        690.7,
+        "updateCars",
+        "21642",
+        "21642:32 21658:3 21662:2 21652:2 21710:2"
+      ],
+      [
+        20.1,
+        39.9,
+        "solid",
+        "15631",
+        "15655:3 15631:2 15642:1 15646:1"
+      ],
+      [
+        20,
+        112.5,
+        "updateUI",
+        "25476",
+        "25562:1 25586:1"
+      ],
+      [
+        19.4,
+        23.8,
+        "settleIsTrivial",
+        "20841",
+        "20844:7 20846:5 20845:5 20843:4 20847:3"
+      ],
+      [
+        19.3,
+        35.5,
+        "terrainVehiclePose",
+        "73462",
+        "73469:11 73471:4 73473:2 73474:2 73495:2"
+      ],
+      [
+        17.1,
+        19.5,
+        "landAt",
+        "27681",
+        "27681:37 27689:3"
+      ],
+      [
+        13.5,
+        13.5,
+        "updateHarbor",
+        "31350",
+        "31355:21 31351:1"
+      ],
+      [
+        12.6,
+        12.6,
+        "refreshVehicleGrid",
+        "15695",
+        "15704:3 15720:3 15716:2 15705:1 15717:1"
+      ],
+      [
+        12.5,
+        33.9,
+        "updateKnockdown",
+        "21009",
+        "21038:6 21010:5 21009:5 21021:4 21019:3"
+      ],
+      [
+        11.5,
+        11.5,
+        "(idle)",
+        "0",
+        ""
+      ],
+      [
+        10.5,
+        53,
+        "updateOfficers",
+        "33612",
+        "33782:9 33617:7 33619:2 33618:2 33730:2"
+      ],
+      [
+        10.1,
+        16.2,
+        "countyRouteControl",
+        "59944",
+        "59969:6 59970:5 59994:3 59971:2 59993:2"
+      ],
+      [
+        9.9,
+        15.1,
+        "updateBloodTracks",
+        "21226",
+        "21258:6 21231:3 21246:2 21241:2 21240:2"
+      ],
+      [
+        9.6,
+        9.6,
+        "terrainFieldAt",
+        "73412",
+        "73413:16"
+      ],
+      [
+        9.6,
+        107.7,
+        "settleVehicleFull",
+        "20877",
+        "20961:6 20903:6 20962:4 20956:4 20905:2"
+      ],
+      [
+        9.3,
+        142.3,
+        "settleVehicle",
+        "20867",
+        "20873:10 20869:10"
+      ],
+      [
+        8.6,
+        27.6,
+        "vehicleRadius",
+        "18428",
+        "18428:14 18430:8 18432:1"
+      ]
+    ],
+    "cpuMs": 1067,
+    "heapMB": [
+      98.2,
+      110.8,
+      135.8
+    ],
+    "newErrors": 0,
+    "after": {
+      "status": {
+        "mode": "play",
+        "x": 9443,
+        "y": 8950,
+        "district": "FORT SENTINEL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 5,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "FISTS",
+        "clock": "17:41",
+        "renderer": "2d",
+        "vehicles": 304,
+        "pedestrians": 599
+      },
+      "military": {
+        "alert": true,
+        "lockdown": true,
+        "challenge": 3,
+        "gate": [
+          {
+            "arm": 0,
+            "bollards": 1,
+            "slide": 1,
+            "broken": []
+          },
+          {
+            "arm": 0.56,
+            "bollards": 0.37,
+            "slide": 0.8,
+            "broken": []
+          }
+        ],
+        "soldiers": {
+          "gate": 3,
+          "post": 11,
+          "tower": 8,
+          "range": 4,
+          "patrol": 9,
+          "drill": 12,
+          "sergeant": 1
+        },
+        "aiming": 4,
+        "vehicles": [
+          {
+            "type": "jeep",
+            "x": 9470,
+            "y": 8950,
+            "hp": 185,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9515,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9560,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9605,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9665,
+            "y": 8950,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9715,
+            "y": 8950,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9780,
+            "y": 8950,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9830,
+            "y": 8950,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "tank",
+            "x": 9490,
+            "y": 9080,
+            "hp": 1600,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "tank",
+            "x": 9565,
+            "y": 9080,
+            "hp": 1600,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "apc",
+            "x": 9645,
+            "y": 9080,
+            "hp": 950,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "armytruck",
+            "x": 9715,
+            "y": 9080,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9765,
+            "y": 9080,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9835,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9880,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9925,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 10160,
+            "y": 9042,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9470,
+            "y": 8161,
+            "hp": 380,
+            "ai": true,
+            "role": "qrf"
+          },
+          {
+            "type": "jeep",
+            "x": 9506,
+            "y": 8162,
+            "hp": 380,
+            "ai": true,
+            "role": "qrf"
+          },
+          {
+            "type": "helicopter",
+            "x": 9492,
+            "y": 7936,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9466,
+            "y": 8234,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9514,
+            "y": 8234,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 10462,
+            "y": 9576,
+            "hp": 380,
+            "ai": true,
+            "role": "patrol"
+          },
+          {
+            "type": "jeep",
+            "x": 9397,
+            "y": 8166,
+            "hp": 380,
+            "ai": true,
+            "role": "patrol"
+          },
+          {
+            "type": "helicopter",
+            "x": 9550,
+            "y": 9522,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 9810,
+            "y": 9522,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 10340,
+            "y": 9365,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 10200,
+            "y": 9365,
+            "hp": 640,
+            "ai": false,
+            "role": "parked"
+          }
+        ],
+        "supply": null,
+        "drill": {
+          "x": 9760,
+          "y": 8330,
+          "active": false
+        }
+      }
+    }
+  }
+}

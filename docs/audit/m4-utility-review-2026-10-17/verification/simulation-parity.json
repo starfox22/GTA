@@ -1,0 +1,22 @@
+{
+  "pass": true,
+  "order": "ABBA",
+  "sourceHead": "2e157d76cc16a060d530a9d00534618f6b803844",
+  "stages": {
+    "fortM4": {
+      "hash": "ee6a0099e4ffdff9",
+      "runs": 4,
+      "framesPerRun": 492
+    },
+    "fort": {
+      "hash": "5b23ae2c29c92f4c",
+      "runs": 4,
+      "framesPerRun": 480
+    },
+    "fortChase": {
+      "hash": "21cc50c2746c49a2",
+      "runs": 4,
+      "framesPerRun": 420
+    }
+  }
+}

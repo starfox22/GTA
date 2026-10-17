@@ -1,0 +1,47 @@
+{
+  "baselineGameHead": "db8bbd903955ba970211b27c89c45b632fdbeb09",
+  "baselineHTML": "work/m4-utility/before.html",
+  "baselineHTMLSHA256": "c3200fc63508a789867d7ff8617c7f5c2a79c4dc703529f8ac69002372cd579d",
+  "files": [
+    {
+      "file": "simulation-triage.mjs",
+      "bytes": 1357,
+      "sha256": "aed0992120915dcda6a86506f0346874ae9b2f2f63f7f0c4bd29ae1a530aafe8"
+    },
+    {
+      "file": "simulation-triage-before.json",
+      "bytes": 112471,
+      "sha256": "641932bb8a4628198891111d935db11e7f2f73517f98dc1e8864da9a4e5d6c17"
+    },
+    {
+      "file": "initial-mark-probe.mjs",
+      "bytes": 5388,
+      "sha256": "5a053da4f0dce5698308cf7e4dc75eb095d4fd0a0f0c733c10210c69eb466d0b"
+    },
+    {
+      "file": "initial-mark-probe.json",
+      "bytes": 3200,
+      "sha256": "459248e4b029f1c4f0e9fc0ff21dac27496c0fa13c8417fa3e697ca925225cfe"
+    },
+    {
+      "file": "initial-mark-probe.cpuprofile",
+      "bytes": 128915,
+      "sha256": "cd4aa38cc0b5d07a747433bbeaba2958d8a321d9dbb2f10bc1ecc82b21acbde9"
+    },
+    {
+      "file": "base-boarding-before.json",
+      "bytes": 6145,
+      "sha256": "4dff5dc0fbc92701d7f6d6ce22e750a1703f8aa56b4715398eefa6ab375946ec"
+    },
+    {
+      "file": "capture-before.json",
+      "bytes": 304961,
+      "sha256": "914fc4c908bc6ffb8e6bef53c3635fb7d0ab6fd7bdf85ca32710a2f55ac267ba"
+    },
+    {
+      "file": "recorder-before.mjs",
+      "bytes": 8226,
+      "sha256": "641cd62ac51f61ba745867c56c447dab2443ddc23b718b080d34649d8e228a9b"
+    }
+  ]
+}

@@ -1,0 +1,4071 @@
+{
+ "A": "work/m4-utility/before.html",
+ "B": "work/m4-utility/final.html",
+ "order": [
+  "A",
+  "B",
+  "B",
+  "A"
+ ],
+ "runs": {
+  "A": [
+   {
+    "fortM4": {
+     "mode": "stepped",
+     "frames": 492,
+     "wrappersLeft": 0,
+     "seconds": 8.2,
+     "avgMs": 10.93,
+     "p50Ms": 6.8,
+     "p95Ms": 27.8,
+     "p99Ms": 52.2,
+     "maxMs": 469.2,
+     "longLimitMs": 13.6,
+     "long": 73,
+     "over16": 49,
+     "over33": 14,
+     "gaps": {
+      "p50": 16.67,
+      "p95": 16.67,
+      "max": 16.67,
+      "over2x": 0,
+      "over33": 0
+     },
+     "causes": {
+      "waypoint": 1,
+      "sealife": 6,
+      "civic": 7,
+      "ui": 9,
+      "military": 4,
+      "people": 6,
+      "cars": 27,
+      "f:pre": 4,
+      "bullets": 1,
+      "sports": 2,
+      "damage": 2,
+      "citylife": 1,
+      "knockdowns": 1,
+      "beachclub": 1,
+      "wildlife": 1
+     },
+     "tags": {
+      "gc": 5,
+      "spawn": 3,
+      "dom": 2
+     },
+     "excessMs": {
+      "cars": 510.15,
+      "ui": 438.14,
+      "waypoint": 312.75,
+      "sealife": 286.3,
+      "people": 123.19,
+      "civic": 119.06,
+      "f:pre": 98.52,
+      "sports": 80.05
+     },
+     "sections": {
+      "cars": [
+       4.7,
+       46.5
+      ],
+      "phys:control": [
+       1.74,
+       29.6
+      ],
+      "ui": [
+       1.15,
+       327
+      ],
+      "phys:post": [
+       1.09,
+       27
+      ],
+      "phys:broadphase": [
+       0.92,
+       26
+      ],
+      "civic": [
+       0.7,
+       25.7
+      ],
+      "people": [
+       0.67,
+       26.1
+      ],
+      "waypoint": [
+       0.65,
+       313.4
+      ],
+      "sealife": [
+       0.62,
+       120
+      ],
+      "phys:contacts": [
+       0.45,
+       13.3
+      ],
+      "military": [
+       0.39,
+       17.8
+      ],
+      "f:pre": [
+       0.29,
+       39.7
+      ],
+      "bullets": [
+       0.28,
+       8.8
+      ],
+      "police:officers": [
+       0.23,
+       25.5
+      ],
+      "sports": [
+       0.22,
+       24.2
+      ],
+      "damage": [
+       0.14,
+       19.2
+      ]
+     },
+     "totals": {
+      "gcMB": 272.8,
+      "dom": 245,
+      "vehicles": 20,
+      "allocKB": 321320,
+      "canvasDraws": 86,
+      "canvasText": 424,
+      "gcBetweenMB": 1.2,
+      "people": 2
+     },
+     "perSecond": {
+      "gcMB": 33.27,
+      "dom": 29.88,
+      "vehicles": 2.44,
+      "allocKB": 39185.37,
+      "canvasDraws": 10.49,
+      "canvasText": 51.71,
+      "gcBetweenMB": 0.15,
+      "people": 0.24
+     },
+     "domTargets": [
+      [
+       "navArrow [style]",
+       62
+      ],
+      [
+       "speed (children)",
+       27
+      ],
+      [
+       "carFill [style]",
+       20
+      ],
+      [
+       "quickKeys (children)",
+       11
+      ],
+      [
+       "chaseStatus (children)",
+       10
+      ],
+      [
+       "worldClock (children)",
+       9
+      ],
+      [
+       "missionDistance (children)",
+       8
+      ],
+      [
+       "navDistance (children)",
+       8
+      ]
+     ],
+     "worst": [
+      {
+       "frame": 0,
+       "t": 0.02,
+       "ms": 469.2,
+       "cause": "waypoint +312.75",
+       "tags": [
+        "gc",
+        "spawn"
+       ],
+       "parts": {
+        "waypoint": 313.4,
+        "cars": 46.5,
+        "monarch": 21.8,
+        "people": 21.3
+       },
+       "c": {
+        "gcMB": 9.9,
+        "dom": 2,
+        "vehicles": 15
+       }
+      },
+      {
+       "frame": 5,
+       "t": 0.1,
+       "ms": 364.1,
+       "cause": "ui +325.85",
+       "tags": [
+        "dom"
+       ],
+       "parts": {
+        "ui": 327,
+        "sealife": 28.7,
+        "cars": 4.9,
+        "sports": 0.6
+       },
+       "c": {
+        "canvasDraws": 5,
+        "canvasText": 22,
+        "allocKB": 3600,
+        "dom": 35
+       }
+      },
+      {
+       "frame": 8,
+       "t": 0.15,
+       "ms": 131.1,
+       "cause": "sealife +119.38",
+       "tags": [
+        "gc"
+       ],
+       "parts": {
+        "sealife": 120,
+        "cars": 4.6,
+        "military": 4.5,
+        "civic": 0.4
+       },
+       "c": {
+        "gcMB": 17.8
+       }
+      },
+      {
+       "frame": 1,
+       "t": 0.03,
+       "ms": 74.4,
+       "cause": "sealife +23.08",
+       "tags": [],
+       "parts": {
+        "sealife": 23.7,
+        "sports": 21.4,
+        "cars": 18.3,
+        "f:pre": 1.5
+       },
+       "c": {
+        "allocKB": 2841
+       }
+      },
+      {
+       "frame": 2,
+       "t": 0.05,
+       "ms": 52.2,
+       "cause": "sealife +27.28",
+       "tags": [],
+       "parts": {
+        "sealife": 27.9,
+        "cars": 19.9,
+        "civic": 1.7,
+        "military": 0.7
+       },
+       "c": {
+        "allocKB": 2833
+       }
+      },
+      {
+       "frame": 46,
+       "t": 0.78,
+       "ms": 51.4,
+       "cause": "f:pre +39.41",
+       "tags": [
+        "gc"
+       ],
+       "parts": {
+        "f:pre": 39.7,
+        "cars": 8,
+        "people": 2,
+        "military": 0.5
+       },
+       "c": {
+        "gcMB": 30.7
+       }
+      },
+      {
+       "frame": 179,
+       "t": 3,
+       "ms": 42.8,
+       "cause": "ui +21.35",
+       "tags": [
+        "spawn"
+       ],
+       "parts": {
+        "ui": 22.5,
+        "civic": 9.8,
+        "people": 3.8,
+        "cars": 2.1
+       },
+       "c": {
+        "canvasDraws": 1,
+        "canvasText": 5,
+        "allocKB": 1941,
+        "dom": 3,
+        "vehicles": 4
+       }
+      },
+      {
+       "frame": 249,
+       "t": 4.17,
+       "ms": 36.3,
+       "cause": "cars +23.1",
+       "tags": [],
+       "parts": {
+        "cars": 27.8,
+        "sports": 5.9,
+        "civic": 0.7,
+        "bullets": 0.5
+       },
+       "c": {
+        "allocKB": 821
+       }
+      },
+      {
+       "frame": 6,
+       "t": 0.12,
+       "ms": 35.8,
+       "cause": "sealife +18.68",
+       "tags": [],
+       "parts": {
+        "sealife": 19.3,
+        "cars": 7.9,
+        "f:pre": 4.4,
+        "military": 1.8
+       },
+       "c": {
+        "allocKB": 3085
+       }
+      },
+      {
+       "frame": 186,
+       "t": 3.12,
+       "ms": 35.8,
+       "cause": "cars +29.5",
+       "tags": [],
+       "parts": {
+        "cars": 34.2,
+        "people": 0.3,
+        "civic": 0.3,
+        "military": 0.3
+       },
+       "c": {
+        "allocKB": 573
+       }
+      }
+     ],
+     "cpuMsPerFrame": 6.43,
+     "hash": "ee6a0099e4ffdff9"
+    },
+    "fort": {
+     "mode": "stepped",
+     "frames": 480,
+     "wrappersLeft": 0,
+     "seconds": 8,
+     "avgMs": 6.7,
+     "p50Ms": 4.7,
+     "p95Ms": 19.9,
+     "p99Ms": 30.6,
+     "maxMs": 37.6,
+     "longLimitMs": 9.4,
+     "long": 72,
+     "over16": 31,
+     "over33": 3,
+     "gaps": {
+      "p50": 16.67,
+      "p95": 16.67,
+      "max": 16.67,
+      "over2x": 0,
+      "over33": 0
+     },
+     "causes": {
+      "cars": 38,
+      "sealife": 1,
+      "military": 4,
+      "bullets": 6,
+      "civic": 6,
+      "ui": 6,
+      "people": 2,
+      "wildlife": 1,
+      "f:pre": 2,
+      "taxi": 1,
+      "knockdowns": 2,
+      "transit": 1,
+      "coaster": 1,
+      "citylife": 1
+     },
+     "tags": {
+      "gc": 4
+     },
+     "excessMs": {
+      "cars": 451.49,
+      "civic": 109.42,
+      "ui": 83.2,
+      "bullets": 41.76,
+      "f:pre": 27.21,
+      "coaster": 25.14,
+      "wildlife": 24.14,
+      "taxi": 20.26
+     },
+     "sections": {
+      "cars": [
+       3.89,
+       34.6
+      ],
+      "phys:control": [
+       1.07,
+       26.1
+      ],
+      "phys:broadphase": [
+       1.04,
+       29.9
+      ],
+      "phys:post": [
+       0.84,
+       19.5
+      ],
+      "civic": [
+       0.59,
+       25.2
+      ],
+      "phys:contacts": [
+       0.47,
+       24.2
+      ],
+      "ui": [
+       0.35,
+       27.8
+      ],
+      "military": [
+       0.27,
+       8.5
+      ],
+      "police:officers": [
+       0.19,
+       24.9
+      ],
+      "bullets": [
+       0.19,
+       9.8
+      ],
+      "people": [
+       0.14,
+       9
+      ],
+      "f:pre": [
+       0.08,
+       20.5
+      ],
+      "knockdowns": [
+       0.08,
+       8.1
+      ],
+      "wildlife": [
+       0.08,
+       24.1
+      ],
+      "police:wanted": [
+       0.06,
+       17.2
+      ],
+      "coaster": [
+       0.06,
+       25.2
+      ]
+     },
+     "totals": {
+      "allocKB": 215641,
+      "canvasDraws": 80,
+      "canvasText": 400,
+      "dom": 122,
+      "gcMB": 184
+     },
+     "perSecond": {
+      "allocKB": 26955.13,
+      "canvasDraws": 10,
+      "canvasText": 50,
+      "dom": 15.25,
+      "gcMB": 23
+     },
+     "domTargets": [
+      [
+       "heatFill [style]",
+       74
+      ],
+      [
+       "chaseStatus (children)",
+       9
+      ],
+      [
+       "worldClock (children)",
+       8
+      ],
+      [
+       "quickKeys (children)",
+       7
+      ],
+      [
+       "stars [class]",
+       2
+      ],
+      [
+       "armorLabel (children)",
+       2
+      ],
+      [
+       "vehicleStats [class]",
+       2
+      ],
+      [
+       "chaseStatus [class]",
+       2
+      ]
+     ],
+     "worst": [
+      {
+       "frame": 156,
+       "t": 10.82,
+       "ms": 37.6,
+       "cause": "cars +28.01",
+       "tags": [],
+       "parts": {
+        "cars": 31.9,
+        "bullets": 4.5,
+        "civic": 0.3
+       },
+       "c": {
+        "allocKB": 480
+       }
+      },
+      {
+       "frame": 185,
+       "t": 11.3,
+       "ms": 36.9,
+       "cause": "cars +26.31",
+       "tags": [],
+       "parts": {
+        "cars": 30.2,
+        "ui": 5.2,
+        "civic": 0.3,
+        "people": 0.2
+       },
+       "c": {
+        "canvasDraws": 1,
+        "canvasText": 5,
+        "allocKB": 600,
+        "dom": 1
+       }
+      },
+      {
+       "frame": 215,
+       "t": 11.8,
+       "ms": 36.9,
+       "cause": "cars +30.71",
+       "tags": [],
+       "parts": {
+        "cars": 34.6,
+        "ui": 0.9,
+        "civic": 0.3,
+        "military": 0.3
+       },
+       "c": {
+        "canvasDraws": 1,
+        "canvasText": 5,
+        "allocKB": 984,
+        "dom": 1
+       }
+      },
+      {
+       "frame": 443,
+       "t": 15.6,
+       "ms": 30.7,
+       "cause": "ui +27.45",
+       "tags": [],
+       "parts": {
+        "ui": 27.8,
+        "cars": 1.9,
+        "civic": 0.4,
+        "military": 0.2
+       },
+       "c": {
+        "canvasDraws": 1,
+        "canvasText": 5,
+        "allocKB": 444,
+        "dom": 1
+       }
+      },
+      {
+       "frame": 8,
+       "t": 8.35,
+       "ms": 30.6,
+       "cause": "cars +23.81",
+       "tags": [],
+       "parts": {
+        "cars": 27.7,
+        "sports": 1,
+        "people": 0.4,
+        "civic": 0.4
+       },
+       "c": {
+        "allocKB": 1060
+       }
+      },
+      {
+       "frame": 313,
+       "t": 13.43,
+       "ms": 29.3,
+       "cause": "coaster +25.14",
+       "tags": [
+        "gc"
+       ],
+       "parts": {
+        "coaster": 25.2,
+        "cars": 3.1,
+        "civic": 0.3,
+        "people": 0.2
+       },
+       "c": {
+        "gcMB": 30.9
+       }
+      },
+      {
+       "frame": 305,
+       "t": 13.3,
+       "ms": 28.9,
+       "cause": "f:pre +20.42",
+       "tags": [],
+       "parts": {
+        "f:pre": 20.5,
+        "ui": 5.7,
+        "cars": 1.7,
+        "civic": 0.3
+       },
+       "c": {
+        "canvasDraws": 1,
+        "canvasText": 5,
+        "allocKB": 397,
+        "dom": 2
+       }
+      },
+      {
+       "frame": 129,
+       "t": 10.37,
+       "ms": 28.3,
+       "cause": "civic +24.61",
+       "tags": [],
+       "parts": {
+        "civic": 25.2,
+        "cars": 1.8,
+        "military": 0.3,
+        "bullets": 0.2
+       },
+       "c": {
+        "allocKB": 478
+       }
+      },
+      {
+       "frame": 383,
+       "t": 14.6,
+       "ms": 27.3,
+       "cause": "cars +17.01",
+       "tags": [],
+       "parts": {
+        "cars": 20.9,
+        "ui": 3.3,
+        "damage": 2,
+        "civic": 0.2
+       },
+       "c": {
+        "canvasDraws": 1,
+        "canvasText": 5,
+        "allocKB": 407,
+        "dom": 1
+       }
+      },
+      {
+       "frame": 120,
+       "t": 10.22,
+       "ms": 27.2,
+       "cause": "wildlife +24.02",
+       "tags": [],
+       "parts": {
+        "wildlife": 24.1,
+        "cars": 1.8,
+        "civic": 0.5
+       },
+       "c": {
+        "allocKB": 355
+       }
+      }
+     ],
+     "cpuMsPerFrame": 3.88,
+     "hash": "5b23ae2c29c92f4c"
+    },
+    "fortChase": {
+     "mode": "stepped",
+     "frames": 420,
+     "wrappersLeft": 0,
+     "seconds": 7,
+     "avgMs": 3.92,
+     "p50Ms": 2.7,
+     "p95Ms": 10.8,
+     "p99Ms": 24.5,
+     "maxMs": 30.8,
+     "longLimitMs": 6.7,
+     "long": 38,
+     "over16": 13,
+     "over33": 0,
+     "gaps": {
+      "p50": 16.67,
+      "p95": 16.67,
+      "max": 16.67,
+      "over2x": 0,
+      "over33": 0
+     },
+     "causes": {
+      "f:pre": 3,
+      "cars": 21,
+      "ui": 6,
+      "military": 4,
+      "civic": 3,
+      "coaster": 1
+     },
+     "tags": {
+      "gc": 1
+     },
+     "excessMs": {
+      "cars": 208.74,
+      "ui": 64.56,
+      "civic": 34.25,
+      "military": 32.19,
+      "f:pre": 23.65,
+      "coaster": 10.75,
+      "people": 2.8,
+      "knockdowns": 0.46
+     },
+     "sections": {
+      "cars": [
+       2.19,
+       24.4
+      ],
+      "phys:control": [
+       0.84,
+       23.6
+      ],
+      "phys:broadphase": [
+       0.52,
+       17.9
+      ],
+      "phys:post": [
+       0.33,
+       3.2
+      ],
+      "ui": [
+       0.31,
+       20.1
+      ],
+      "civic": [
+       0.29,
+       17.2
+      ],
+      "military": [
+       0.23,
+       18.2
+      ],
+      "phys:contacts": [
+       0.21,
+       8.4
+      ],
+      "f:pre": [
+       0.09,
+       9.8
+      ],
+      "police:officers": [
+       0.07,
+       13
+      ],
+      "police:roadblocks": [
+       0.05,
+       17.1
+      ],
+      "people": [
+       0.04,
+       1.4
+      ],
+      "coaster": [
+       0.03,
+       10.1
+      ],
+      "damage": [
+       0.02,
+       0.9
+      ],
+      "knockdowns": [
+       0.02,
+       4.6
+      ],
+      "sports": [
+       0.01,
+       2.1
+      ]
+     },
+     "totals": {
+      "allocKB": 146260,
+      "dom": 48,
+      "gcMB": 126.7,
+      "canvasDraws": 70,
+      "canvasText": 350,
+      "gcBetweenMB": 0.5
+     },
+     "perSecond": {
+      "allocKB": 20894.29,
+      "dom": 6.86,
+      "gcMB": 18.1,
+      "canvasDraws": 10,
+      "canvasText": 50,
+      "gcBetweenMB": 0.07
+     },
+     "domTargets": [
+      [
+       "heatFill [style]",
+       27
+      ],
+      [
+       "chaseStatus (children)",
+       8
+      ],
+      [
+       "worldClock (children)",
+       7
+      ],
+      [
+       "(no id) .roof-stealth [style]",
+       1
+      ],
+      [
+       "radioCaption (children)",
+       1
+      ],
+      [
+       "radioCaption [class]",
+       1
+      ],
+      [
+       "navigation [class]",
+       1
+      ],
+      [
+       "toast .note [class]",
+       1
+      ]
+     ],
+     "worst": [
+      {
+       "frame": 11,
+       "t": 16.4,
+       "ms": 30.8,
+       "cause": "ui +12.89",
+       "tags": [],
+       "parts": {
+        "ui": 13.2,
+        "cars": 1.8,
+        "people": 0.3,
+        "civic": 0.3
+       },
+       "c": {
+        "canvasDraws": 1,
+        "canvasText": 5,
+        "allocKB": 422,
+        "dom": 1
+       }
+      },
+      {
+       "frame": 92,
+       "t": 17.75,
+       "ms": 27.3,
+       "cause": "cars +22.11",
+       "tags": [],
+       "parts": {
+        "cars": 24.3,
+        "coaster": 0.7,
+        "civic": 0.5,
+        "people": 0.3
+       },
+       "c": {
+        "allocKB": 551
+       }
+      },
+      {
+       "frame": 131,
+       "t": 18.4,
+       "ms": 27,
+       "cause": "ui +19.79",
+       "tags": [],
+       "parts": {
+        "ui": 20.1,
+        "f:pre": 4.1,
+        "cars": 1.7,
+        "civic": 0.3
+       },
+       "c": {
+        "canvasDraws": 1,
+        "canvasText": 5,
+        "allocKB": 446,
+        "dom": 1
+       }
+      },
+      {
+       "frame": 416,
+       "t": 23.15,
+       "ms": 25,
+       "cause": "cars +22.21",
+       "tags": [],
+       "parts": {
+        "cars": 24.4,
+        "civic": 0.2
+       },
+       "c": {
+        "allocKB": 296
+       }
+      },
+      {
+       "frame": 235,
+       "t": 20.13,
+       "ms": 24.5,
+       "cause": "cars +21.21",
+       "tags": [],
+       "parts": {
+        "cars": 23.4,
+        "civic": 0.4,
+        "people": 0.2
+       },
+       "c": {
+        "allocKB": 356
+       }
+      },
+      {
+       "frame": 262,
+       "t": 20.58,
+       "ms": 21.4,
+       "cause": "cars +18.51",
+       "tags": [],
+       "parts": {
+        "cars": 20.7,
+        "civic": 0.2
+       },
+       "c": {
+        "allocKB": 959
+       }
+      },
+      {
+       "frame": 353,
+       "t": 22.1,
+       "ms": 21.3,
+       "cause": "cars +17.31",
+       "tags": [],
+       "parts": {
+        "cars": 19.5,
+        "ui": 1.2,
+        "people": 0.2
+       },
+       "c": {
+        "canvasDraws": 1,
+        "canvasText": 5,
+        "allocKB": 482,
+        "dom": 1
+       }
+      },
+      {
+       "frame": 60,
+       "t": 17.22,
+       "ms": 20.4,
+       "cause": "military +17.97",
+       "tags": [],
+       "parts": {
+        "military": 18.2,
+        "cars": 1.6,
+        "civic": 0.3
+       },
+       "c": {
+        "allocKB": 334
+       }
+      },
+      {
+       "frame": 74,
+       "t": 17.45,
+       "ms": 19.9,
+       "cause": "cars +16.61",
+       "tags": [],
+       "parts": {
+        "cars": 18.8,
+        "military": 0.3,
+        "people": 0.2
+       },
+       "c": {
+        "allocKB": 303
+       }
+      },
+      {
+       "frame": 383,
+       "t": 22.6,
+       "ms": 19.7,
+       "cause": "ui +0.29",
+       "tags": [],
+       "parts": {
+        "cars": 0.9,
+        "ui": 0.6,
+        "people": 0.2,
+        "civic": 0.2
+       },
+       "c": {
+        "canvasDraws": 1,
+        "canvasText": 5,
+        "allocKB": 395
+       }
+      }
+     ],
+     "cpuMsPerFrame": 2.76,
+     "hash": "21cc50c2746c49a2"
+    }
+   },
+   {
+    "fortM4": {
+     "mode": "stepped",
+     "frames": 492,
+     "wrappersLeft": 0,
+     "seconds": 8.2,
+     "avgMs": 13.37,
+     "p50Ms": 7.7,
+     "p95Ms": 29.6,
+     "p99Ms": 82.3,
+     "maxMs": 693.7,
+     "longLimitMs": 15.4,
+     "long": 76,
+     "over16": 67,
+     "over33": 15,
+     "gaps": {
+      "p50": 16.67,
+      "p95": 16.67,
+      "max": 16.67,
+      "over2x": 0,
+      "over33": 0
+     },
+     "causes": {
+      "waypoint": 2,
+      "cars": 31,
+      "sealife": 4,
+      "ui": 9,
+      "sports": 5,
+      "f:pre": 1,
+      "liner": 1,
+      "people": 3,
+      "civic": 3,
+      "damage": 3,
+      "beachclub": 2,
+      "bullets": 3,
+      "military": 4,
+      "beach": 1,
+      "knockdowns": 1,
+      "sound": 3
+     },
+     "tags": {
+      "spawn": 3,
+      "dom": 2,
+      "gc": 3
+     },
+     "excessMs": {
+      "ui": 737.03,
+      "cars": 725.11,
+      "waypoint": 431.39,
+      "sealife": 305,
+      "sports": 128.47,
+      "civic": 87.97,
+      "military": 80.39,
+      "damage": 77.22
+     },
+     "sections": {
+      "cars": [
+       5.41,
+       82.8
+      ],
+      "phys:control": [
+       2.21,
+       67.5
+      ],
+      "ui": [
+       1.89,
+       621.4
+      ],
+      "phys:post": [
+       1.16,
+       27.1
+      ],
+      "phys:broadphase": [
+       1.1,
+       23.5
+      ],
+      "waypoint": [
+       0.9,
+       425.4
+      ],
+      "sealife": [
+       0.68,
+       63.9
+      ],
+      "civic": [
+       0.62,
+       29
+      ],
+      "people": [
+       0.55,
+       20.7
+      ],
+      "phys:contacts": [
+       0.54,
+       26
+      ],
+      "military": [
+       0.47,
+       25.3
+      ],
+      "sound": [
+       0.38,
+       21.7
+      ],
+      "sports": [
+       0.37,
+       26.1
+      ],
+      "bullets": [
+       0.34,
+       22.2
+      ],
+      "damage": [
+       0.25,
+       22.2
+      ],
+      "police:officers": [
+       0.25,
+       28.7
+      ]
+     },
+     "totals": {
+      "allocKB": 330038,
+      "dom": 247,
+      "vehicles": 20,
+      "canvasDraws": 86,
+      "canvasText": 424,
+      "gcMB": 271,
+      "gcBetweenMB": 1.5,
+      "people": 2
+     },
+     "perSecond": {
+      "allocKB": 40248.54,
+      "dom": 30.12,
+      "vehicles": 2.44,
+      "canvasDraws": 10.49,
+      "canvasText": 51.71,
+      "gcMB": 33.05,
+      "gcBetweenMB": 0.18,
+      "people": 0.24
+     },
+     "domTargets": [
+      [
+       "navArrow [style]",
+       62
+      ],
+      [
+       "speed (children)",
+       27
+      ],
+      [
+       "carFill [style]",
+       20
+      ],
+      [
+       "quickKeys (children)",
+       11
+      ],
+      [
+       "chaseStatus (children)",
+       10
+      ],
+      [
+       "worldClock (children)",
+       9
+      ],
+      [
+       "missionDistance (children)",
+       8
+      ],
+      [
+       "navDistance (children)",
+       8
+      ]
+     ],
+     "worst": [
+      {
+       "frame": 5,
+       "t": 0.1,
+       "ms": 693.7,
+       "cause": "ui +619.51",
+       "tags": [
+        "dom"
+       ],
+       "parts": {
+        "ui": 621.4,
+        "sealife": 42.7,
+        "cars": 13.9,
+        "sports": 10.5
+       },
+       "c": {
+        "canvasDraws": 5,
+        "canvasText": 22,
+        "allocKB": 4121,
+        "dom": 34
+       }
+      },
+      {
+       "frame": 0,
+       "t": 0.02,
+       "ms": 601.1,
+       "cause": "waypoint +424.5",
+       "tags": [
+        "spawn"
+       ],
+       "parts": {
+        "waypoint": 425.4,
+        "cars": 82.8,
+        "people": 20.7,
+        "damage": 10.9
+       },
+       "c": {
+        "allocKB": 11174,
+        "dom": 2,
+        "vehicles": 15
+       }
+      },
+      {
+       "frame": 1,
+       "t": 0.03,
+       "ms": 101.9,
+       "cause": "cars +33.59",
+       "tags": [],
+       "parts": {
+        "cars": 39,
+        "sealife": 32.7,
+        "f:pre": 16.1,
+        "people": 5.3
+       },
+       "c": {
+        "allocKB": 2168
+       }
+      },
+      {
+       "frame": 6,
+       "t": 0.12,
+       "ms": 92.8,
+       "cause": "sealife +63.22",
+       "tags": [],
+       "parts": {
+        "sealife": 63.9,
+        "cars": 15.5,
+        "f:pre": 7.1,
+        "people": 3.5
+       },
+       "c": {
+        "allocKB": 2743
+       }
+      },
+      {
+       "frame": 2,
+       "t": 0.05,
+       "ms": 82.3,
+       "cause": "cars +50.49",
+       "tags": [],
+       "parts": {
+        "cars": 55.9,
+        "sealife": 21,
+        "military": 1.9,
+        "people": 0.6
+       },
+       "c": {
+        "allocKB": 3730
+       }
+      },
+      {
+       "frame": 3,
+       "t": 0.07,
+       "ms": 78.1,
+       "cause": "sealife +39.92",
+       "tags": [],
+       "parts": {
+        "sealife": 40.6,
+        "cars": 25.1,
+        "military": 5.4,
+        "people": 0.5
+       },
+       "c": {
+        "allocKB": 2727
+       }
+      },
+      {
+       "frame": 8,
+       "t": 0.15,
+       "ms": 73.1,
+       "cause": "sealife +58.12",
+       "tags": [
+        "gc"
+       ],
+       "parts": {
+        "sealife": 58.8,
+        "cars": 8.8,
+        "liner": 3.3,
+        "people": 0.3
+       },
+       "c": {
+        "gcMB": 26.8
+       }
+      },
+      {
+       "frame": 7,
+       "t": 0.13,
+       "ms": 65.1,
+       "cause": "sports +25.23",
+       "tags": [],
+       "parts": {
+        "sports": 25.6,
+        "sealife": 25.1,
+        "cars": 6.5,
+        "civic": 3.4
+       },
+       "c": {
+        "allocKB": 1434
+       }
+      },
+      {
+       "frame": 22,
+       "t": 0.38,
+       "ms": 46.8,
+       "cause": "f:pre +41.05",
+       "tags": [],
+       "parts": {
+        "f:pre": 41.3,
+        "cars": 4,
+        "military": 0.3,
+        "knockdowns": 0.2
+       },
+       "c": {
+        "allocKB": 663
+       }
+      },
+      {
+       "frame": 4,
+       "t": 0.08,
+       "ms": 43.7,
+       "cause": "sealife +15.72",
+       "tags": [],
+       "parts": {
+        "cars": 18.8,
+        "sealife": 16.4,
+        "offroad": 2.8,
+        "monarch": 1.6
+       },
+       "c": {
+        "allocKB": 1588
+       }
+      }
+     ],
+     "cpuMsPerFrame": 6.5,
+     "hash": "ee6a0099e4ffdff9"
+    },
+    "fort": {
+     "mode": "stepped",
+     "frames": 480,
+     "wrappersLeft": 0,
+     "seconds": 8,
+     "avgMs": 8.52,
+     "p50Ms": 7.1,
+     "p95Ms": 26.5,
+     "p99Ms": 33.6,
+     "maxMs": 42.5,
+     "longLimitMs": 14.2,
+     "long": 54,
+     "over16": 46,
+     "over33": 5,
+     "gaps": {
+      "p50": 16.67,
+      "p95": 16.67,
+      "max": 16.67,
+      "over2x": 0,
+      "over33": 0
+     },
+     "causes": {
+      "people": 3,
+      "cars": 25,
+      "civic": 6,
+      "ui": 9,
+      "military": 5,
+      "bullets": 1,
+      "damage": 1,
+      "offroad": 1,
+      "coaster": 1,
+      "wildlife": 1,
+      "f:pre": 1
+     },
+     "tags": {
+      "gc": 2
+     },
+     "excessMs": {
+      "cars": 509.8,
+      "military": 123.56,
+      "civic": 117.78,
+      "ui": 99.31,
+      "people": 60.13,
+      "offroad": 20.31,
+      "f:pre": 13.16,
+      "coaster": 13.15
+     },
+     "sections": {
+      "cars": [
+       4.9,
+       34
+      ],
+      "phys:control": [
+       1.7,
+       31.2
+      ],
+      "phys:post": [
+       1.16,
+       32.5
+      ],
+      "phys:broadphase": [
+       1.02,
+       25.5
+      ],
+      "civic": [
+       0.81,
+       25.6
+      ],
+      "military": [
+       0.59,
+       27
+      ],
+      "ui": [
+       0.44,
+       29.9
+      ],
+      "phys:contacts": [
+       0.44,
+       11.8
+      ],
+      "people": [
+       0.27,
+       28.8
+      ],
+      "police:officers": [
+       0.14,
+       4.9
+      ],
+      "bullets": [
+       0.12,
+       6.6
+      ],
+      "police:air": [
+       0.09,
+       25.4
+      ],
+      "knockdowns": [
+       0.09,
+       5.8
+      ],
+      "f:pre": [
+       0.08,
+       8.1
+      ],
+      "police:roadblocks": [
+       0.08,
+       24.3
+      ],
+      "damage": [
+       0.08,
+       4.2
+      ]
+     },
+     "totals": {
+      "allocKB": 214415,
+      "canvasDraws": 80,
+      "canvasText": 400,
+      "dom": 125,
+      "gcMB": 185.6,
+      "gcBetweenMB": 0.7
+     },
+     "perSecond": {
+      "allocKB": 26801.88,
+      "canvasDraws": 10,
+      "canvasText": 50,
+      "dom": 15.63,
+      "gcMB": 23.2,
+      "gcBetweenMB": 0.09
+     },
+     "domTargets": [
+      [
+       "heatFill [style]",
+       74
+      ],
+      [
+       "chaseStatus (children)",
+       9
+      ],
+      [
+       "worldClock (children)",
+       8
+      ],
+      [
+       "quickKeys (children)",
+       7
+      ],
+      [
+       "toast .note [class]",
+       3
+      ],
+      [
+       "toast (children)",
+       3
+      ],
+      [
+       "stars [class]",
+       2
+      ],
+      [
+       "armorLabel (children)",
+       2
+      ]
+     ],
+     "worst": [
+      {
+       "frame": 0,
+       "t": 8.22,
+       "ms": 42.5,
+       "cause": "people +28.53",
+       "tags": [],
+       "parts": {
+        "people": 28.8,
+        "sound": 6.2,
+        "cars": 4.7,
+        "civic": 0.9
+       },
+       "c": {
+        "allocKB": 846
+       }
+      },
+      {
+       "frame": 389,
+       "t": 14.7,
+       "ms": 39,
+       "cause": "ui +29.46",
+       "tags": [],
+       "parts": {
+        "ui": 29.9,
+        "cars": 7.7,
+        "damage": 0.4,
+        "civic": 0.3
+       },
+       "c": {
+        "canvasDraws": 1,
+        "canvasText": 5,
+        "allocKB": 456,
+        "dom": 1
+       }
+      },
+      {
+       "frame": 455,
+       "t": 15.8,
+       "ms": 36.1,
+       "cause": "cars +29.1",
+       "tags": [],
+       "parts": {
+        "cars": 34,
+        "ui": 0.8,
+        "civic": 0.3
+       },
+       "c": {
+        "canvasDraws": 1,
+        "canvasText": 5,
+        "allocKB": 361,
+        "dom": 1
+       }
+      },
+      {
+       "frame": 78,
+       "t": 9.52,
+       "ms": 35.1,
+       "cause": "cars +24.9",
+       "tags": [],
+       "parts": {
+        "cars": 29.8,
+        "people": 4.2,
+        "civic": 0.3,
+        "military": 0.2
+       },
+       "c": {
+        "allocKB": 545
+       }
+      },
+      {
+       "frame": 417,
+       "t": 15.17,
+       "ms": 33.6,
+       "cause": "cars +27.6",
+       "tags": [],
+       "parts": {
+        "cars": 32.5,
+        "civic": 0.3
+       },
+       "c": {
+        "allocKB": 596
+       }
+      },
+      {
+       "frame": 20,
+       "t": 8.55,
+       "ms": 33.2,
+       "cause": "cars +23.6",
+       "tags": [],
+       "parts": {
+        "cars": 28.5,
+        "offroad": 2.9,
+        "knockdowns": 0.3,
+        "civic": 0.3
+       },
+       "c": {
+        "allocKB": 240
+       }
+      },
+      {
+       "frame": 473,
+       "t": 16.1,
+       "ms": 33.2,
+       "cause": "ui +0.66",
+       "tags": [],
+       "parts": {
+        "cars": 2,
+        "ui": 1.1,
+        "civic": 0.3,
+        "people": 0.2
+       },
+       "c": {
+        "canvasDraws": 1,
+        "canvasText": 5,
+        "allocKB": 370,
+        "dom": 2
+       }
+      },
+      {
+       "frame": 215,
+       "t": 11.8,
+       "ms": 33.1,
+       "cause": "military +26.41",
+       "tags": [],
+       "parts": {
+        "military": 27,
+        "cars": 4.2,
+        "ui": 0.9,
+        "civic": 0.3
+       },
+       "c": {
+        "canvasDraws": 1,
+        "canvasText": 5,
+        "allocKB": 1007,
+        "dom": 1
+       }
+      },
+      {
+       "frame": 436,
+       "t": 15.48,
+       "ms": 32.9,
+       "cause": "civic +24.09",
+       "tags": [],
+       "parts": {
+        "civic": 24.9,
+        "cars": 6.9,
+        "military": 0.4
+       },
+       "c": {
+        "allocKB": 352
+       }
+      },
+      {
+       "frame": 29,
+       "t": 8.7,
+       "ms": 31,
+       "cause": "military +20.31",
+       "tags": [],
+       "parts": {
+        "military": 20.9,
+        "cars": 7.8,
+        "ui": 1.5,
+        "people": 0.2
+       },
+       "c": {
+        "canvasDraws": 1,
+        "canvasText": 5,
+        "allocKB": 1055
+       }
+      }
+     ],
+     "cpuMsPerFrame": 3.98,
+     "hash": "5b23ae2c29c92f4c"
+    },
+    "fortChase": {
+     "mode": "stepped",
+     "frames": 420,
+     "wrappersLeft": 0,
+     "seconds": 7,
+     "avgMs": 7.87,
+     "p50Ms": 6.9,
+     "p95Ms": 27.9,
+     "p99Ms": 33.1,
+     "maxMs": 44.5,
+     "longLimitMs": 13.8,
+     "long": 38,
+     "over16": 33,
+     "over33": 4,
+     "gaps": {
+      "p50": 16.67,
+      "p95": 16.67,
+      "max": 16.67,
+      "over2x": 0,
+      "over33": 0
+     },
+     "causes": {
+      "f:pre": 1,
+      "cars": 23,
+      "ui": 5,
+      "knockdowns": 2,
+      "wildlife": 1,
+      "waypoint": 1,
+      "military": 3,
+      "transit": 1,
+      "civic": 1
+     },
+     "tags": {
+      "gc": 1
+     },
+     "excessMs": {
+      "cars": 516.77,
+      "ui": 76.85,
+      "knockdowns": 45.4,
+      "f:pre": 35.29,
+      "military": 32.01,
+      "waypoint": 29.02,
+      "wildlife": 28.14,
+      "transit": 16.15
+     },
+     "sections": {
+      "cars": [
+       4.73,
+       34.8
+      ],
+      "phys:control": [
+       1.84,
+       32.6
+      ],
+      "phys:post": [
+       1.06,
+       28.3
+      ],
+      "phys:broadphase": [
+       0.72,
+       8.6
+      ],
+      "phys:contacts": [
+       0.62,
+       29.4
+      ],
+      "civic": [
+       0.49,
+       8.3
+      ],
+      "military": [
+       0.47,
+       25.7
+      ],
+      "ui": [
+       0.45,
+       22.7
+      ],
+      "knockdowns": [
+       0.17,
+       21.5
+      ],
+      "f:pre": [
+       0.15,
+       35.3
+      ],
+      "police:officers": [
+       0.13,
+       8.2
+      ],
+      "damage": [
+       0.1,
+       7.8
+      ],
+      "people": [
+       0.08,
+       4.4
+      ],
+      "wildlife": [
+       0.08,
+       28.1
+      ],
+      "waypoint": [
+       0.08,
+       29.1
+      ],
+      "sports": [
+       0.06,
+       8.3
+      ]
+     },
+     "totals": {
+      "allocKB": 145301,
+      "dom": 52,
+      "canvasDraws": 70,
+      "canvasText": 350,
+      "gcMB": 126
+     },
+     "perSecond": {
+      "allocKB": 20757.29,
+      "dom": 7.43,
+      "canvasDraws": 10,
+      "canvasText": 50,
+      "gcMB": 18
+     },
+     "domTargets": [
+      [
+       "heatFill [style]",
+       27
+      ],
+      [
+       "chaseStatus (children)",
+       8
+      ],
+      [
+       "worldClock (children)",
+       7
+      ],
+      [
+       "toast [class]",
+       3
+      ],
+      [
+       "(no id) .roof-stealth [class]",
+       1
+      ],
+      [
+       "(no id) .roof-stealth [style]",
+       1
+      ],
+      [
+       "radioCaption (children)",
+       1
+      ],
+      [
+       "radioCaption [class]",
+       1
+      ]
+     ],
+     "worst": [
+      {
+       "frame": 1,
+       "t": 16.23,
+       "ms": 44.5,
+       "cause": "f:pre +35.15",
+       "tags": [],
+       "parts": {
+        "f:pre": 35.3,
+        "military": 5.7,
+        "cars": 2.1,
+        "beachclub": 0.4
+       },
+       "c": {
+        "allocKB": 344,
+        "dom": 1
+       }
+      },
+      {
+       "frame": 329,
+       "t": 21.7,
+       "ms": 41.7,
+       "cause": "cars +30.07",
+       "tags": [],
+       "parts": {
+        "cars": 34.8,
+        "ui": 5.5,
+        "civic": 0.4,
+        "military": 0.4
+       },
+       "c": {
+        "canvasDraws": 1,
+        "canvasText": 5,
+        "allocKB": 394
+       }
+      },
+      {
+       "frame": 200,
+       "t": 19.55,
+       "ms": 34.5,
+       "cause": "cars +23.97",
+       "tags": [],
+       "parts": {
+        "cars": 28.7,
+        "military": 0.3,
+        "civic": 0.2
+       },
+       "c": {
+        "allocKB": 435
+       }
+      },
+      {
+       "frame": 339,
+       "t": 21.87,
+       "ms": 33.9,
+       "cause": "cars +28.27",
+       "tags": [],
+       "parts": {
+        "cars": 33,
+        "civic": 0.3,
+        "people": 0.2
+       },
+       "c": {
+        "allocKB": 392
+       }
+      },
+      {
+       "frame": 179,
+       "t": 19.2,
+       "ms": 33.1,
+       "cause": "cars +20.47",
+       "tags": [],
+       "parts": {
+        "cars": 25.2,
+        "ui": 6.8,
+        "civic": 0.2,
+        "military": 0.2
+       },
+       "c": {
+        "canvasDraws": 1,
+        "canvasText": 5,
+        "allocKB": 372,
+        "dom": 1
+       }
+      },
+      {
+       "frame": 123,
+       "t": 18.27,
+       "ms": 33,
+       "cause": "cars +27.07",
+       "tags": [],
+       "parts": {
+        "cars": 31.8,
+        "military": 0.3
+       },
+       "c": {
+        "allocKB": 393
+       }
+      },
+      {
+       "frame": 19,
+       "t": 16.53,
+       "ms": 32.6,
+       "cause": "cars +26.17",
+       "tags": [],
+       "parts": {
+        "cars": 30.9,
+        "military": 0.6,
+        "civic": 0.5
+       },
+       "c": {
+        "allocKB": 312
+       }
+      },
+      {
+       "frame": 90,
+       "t": 17.72,
+       "ms": 32,
+       "cause": "cars +26.07",
+       "tags": [],
+       "parts": {
+        "cars": 30.8,
+        "civic": 0.3,
+        "military": 0.2
+       },
+       "c": {
+        "allocKB": 309
+       }
+      },
+      {
+       "frame": 100,
+       "t": 17.88,
+       "ms": 31.9,
+       "cause": "cars +26.17",
+       "tags": [],
+       "parts": {
+        "cars": 30.9,
+        "knockdowns": 0.2,
+        "civic": 0.2
+       },
+       "c": {
+        "allocKB": 302
+       }
+      },
+      {
+       "frame": 111,
+       "t": 18.07,
+       "ms": 31.8,
+       "cause": "waypoint +29.02",
+       "tags": [],
+       "parts": {
+        "waypoint": 29.1,
+        "cars": 1.7,
+        "civic": 0.2,
+        "military": 0.2
+       },
+       "c": {
+        "allocKB": 311
+       }
+      }
+     ],
+     "cpuMsPerFrame": 3.53,
+     "hash": "21cc50c2746c49a2"
+    }
+   }
+  ],
+  "B": [
+   {
+    "fortM4": {
+     "mode": "stepped",
+     "frames": 492,
+     "wrappersLeft": 0,
+     "seconds": 8.2,
+     "avgMs": 10.64,
+     "p50Ms": 6.7,
+     "p95Ms": 29.9,
+     "p99Ms": 50.5,
+     "maxMs": 280.2,
+     "longLimitMs": 13.4,
+     "long": 101,
+     "over16": 68,
+     "over33": 13,
+     "gaps": {
+      "p50": 16.67,
+      "p95": 16.67,
+      "max": 16.67,
+      "over2x": 0,
+      "over33": 0
+     },
+     "causes": {
+      "waypoint": 2,
+      "cars": 44,
+      "ui": 13,
+      "sealife": 4,
+      "sound": 1,
+      "military": 7,
+      "people": 4,
+      "offroad": 1,
+      "f:pre": 10,
+      "civic": 6,
+      "bullets": 4,
+      "drawbridge": 2,
+      "sports": 1,
+      "damage": 1,
+      "beach": 1
+     },
+     "tags": {
+      "spawn": 3,
+      "dom": 2,
+      "gc": 7
+     },
+     "excessMs": {
+      "cars": 693.85,
+      "ui": 347.77,
+      "waypoint": 184.16,
+      "sealife": 178.2,
+      "f:pre": 160.23,
+      "civic": 145.82,
+      "military": 123.23,
+      "people": 87.35
+     },
+     "sections": {
+      "cars": [
+       4.55,
+       34.6
+      ],
+      "phys:control": [
+       1.83,
+       33.8
+      ],
+      "ui": [
+       0.99,
+       204.5
+      ],
+      "phys:post": [
+       0.98,
+       32.7
+      ],
+      "phys:broadphase": [
+       0.89,
+       29.9
+      ],
+      "civic": [
+       0.78,
+       25.6
+      ],
+      "f:pre": [
+       0.61,
+       26.9
+      ],
+      "people": [
+       0.55,
+       25.5
+      ],
+      "military": [
+       0.53,
+       24.7
+      ],
+      "phys:contacts": [
+       0.46,
+       24.7
+      ],
+      "waypoint": [
+       0.38,
+       176.9
+      ],
+      "sealife": [
+       0.38,
+       77.1
+      ],
+      "police:officers": [
+       0.34,
+       19.4
+      ],
+      "bullets": [
+       0.28,
+       15
+      ],
+      "sports": [
+       0.15,
+       27.9
+      ],
+      "police:wanted": [
+       0.12,
+       24.8
+      ]
+     },
+     "totals": {
+      "allocKB": 332860,
+      "dom": 245,
+      "vehicles": 20,
+      "canvasDraws": 86,
+      "canvasText": 424,
+      "gcMB": 300.1,
+      "gcBetweenMB": 2.2,
+      "people": 2
+     },
+     "perSecond": {
+      "allocKB": 40592.68,
+      "dom": 29.88,
+      "vehicles": 2.44,
+      "canvasDraws": 10.49,
+      "canvasText": 51.71,
+      "gcMB": 36.6,
+      "gcBetweenMB": 0.27,
+      "people": 0.24
+     },
+     "domTargets": [
+      [
+       "navArrow [style]",
+       62
+      ],
+      [
+       "speed (children)",
+       27
+      ],
+      [
+       "carFill [style]",
+       20
+      ],
+      [
+       "quickKeys (children)",
+       11
+      ],
+      [
+       "chaseStatus (children)",
+       10
+      ],
+      [
+       "worldClock (children)",
+       9
+      ],
+      [
+       "missionDistance (children)",
+       8
+      ],
+      [
+       "navDistance (children)",
+       8
+      ]
+     ],
+     "worst": [
+      {
+       "frame": 0,
+       "t": 0.02,
+       "ms": 280.2,
+       "cause": "waypoint +176.52",
+       "tags": [
+        "spawn"
+       ],
+       "parts": {
+        "waypoint": 176.9,
+        "cars": 34.4,
+        "people": 13.7,
+        "civic": 9.2
+       },
+       "c": {
+        "allocKB": 4585,
+        "dom": 2,
+        "vehicles": 15
+       }
+      },
+      {
+       "frame": 5,
+       "t": 0.1,
+       "ms": 232.2,
+       "cause": "ui +203.51",
+       "tags": [
+        "dom"
+       ],
+       "parts": {
+        "ui": 204.5,
+        "cars": 13.3,
+        "sealife": 10.5,
+        "sports": 1.6
+       },
+       "c": {
+        "canvasDraws": 5,
+        "canvasText": 22,
+        "allocKB": 4750,
+        "dom": 34
+       }
+      },
+      {
+       "frame": 8,
+       "t": 0.15,
+       "ms": 82.5,
+       "cause": "sealife +76.72",
+       "tags": [],
+       "parts": {
+        "sealife": 77.1,
+        "cars": 3.5,
+        "people": 0.4,
+        "military": 0.4
+       },
+       "c": {
+        "allocKB": 5699
+       }
+      },
+      {
+       "frame": 6,
+       "t": 0.12,
+       "ms": 57,
+       "cause": "sealife +22.42",
+       "tags": [
+        "gc"
+       ],
+       "parts": {
+        "sealife": 22.8,
+        "cars": 19.8,
+        "civic": 10.1,
+        "f:pre": 2.4
+       },
+       "c": {
+        "gcMB": 27.9
+       }
+      },
+      {
+       "frame": 1,
+       "t": 0.03,
+       "ms": 50.5,
+       "cause": "cars +19.75",
+       "tags": [],
+       "parts": {
+        "cars": 24.3,
+        "sealife": 14.4,
+        "people": 6.6,
+        "f:pre": 1.9
+       },
+       "c": {
+        "allocKB": 2484
+       }
+      },
+      {
+       "frame": 3,
+       "t": 0.07,
+       "ms": 46.3,
+       "cause": "cars +25.45",
+       "tags": [],
+       "parts": {
+        "cars": 30,
+        "sealife": 14.6,
+        "people": 0.4,
+        "sports": 0.3
+       },
+       "c": {
+        "allocKB": 2042
+       }
+      },
+      {
+       "frame": 2,
+       "t": 0.05,
+       "ms": 45.1,
+       "cause": "cars +17.75",
+       "tags": [],
+       "parts": {
+        "cars": 22.3,
+        "civic": 9.8,
+        "sealife": 9.2,
+        "people": 0.5
+       },
+       "c": {
+        "allocKB": 4196
+       }
+      },
+      {
+       "frame": 140,
+       "t": 2.35,
+       "ms": 42.9,
+       "cause": "cars +7.85",
+       "tags": [],
+       "parts": {
+        "cars": 12.4,
+        "civic": 0.6,
+        "bullets": 0.5,
+        "people": 0.4
+       },
+       "c": {
+        "allocKB": 520
+       }
+      },
+      {
+       "frame": 211,
+       "t": 3.53,
+       "ms": 42,
+       "cause": "f:pre +26.29",
+       "tags": [],
+       "parts": {
+        "f:pre": 26.9,
+        "taxi": 3.6,
+        "cars": 2.3,
+        "people": 0.3
+       },
+       "c": {
+        "allocKB": 491
+       }
+      },
+      {
+       "frame": 155,
+       "t": 2.6,
+       "ms": 41.6,
+       "cause": "cars +27.75",
+       "tags": [],
+       "parts": {
+        "cars": 32.3,
+        "coaster": 4,
+        "ui": 2.3,
+        "military": 0.9
+       },
+       "c": {
+        "canvasDraws": 1,
+        "canvasText": 5,
+        "allocKB": 717,
+        "dom": 3
+       }
+      }
+     ],
+     "cpuMsPerFrame": 5.57,
+     "hash": "ee6a0099e4ffdff9"
+    },
+    "fort": {
+     "mode": "stepped",
+     "frames": 480,
+     "wrappersLeft": 0,
+     "seconds": 8,
+     "avgMs": 5.56,
+     "p50Ms": 3,
+     "p95Ms": 22.7,
+     "p99Ms": 29.2,
+     "maxMs": 37.4,
+     "longLimitMs": 7,
+     "long": 101,
+     "over16": 29,
+     "over33": 3,
+     "gaps": {
+      "p50": 16.67,
+      "p95": 16.67,
+      "max": 16.67,
+      "over2x": 0,
+      "over33": 0
+     },
+     "causes": {
+      "cars": 47,
+      "sports": 6,
+      "damage": 2,
+      "civic": 11,
+      "military": 9,
+      "people": 6,
+      "ui": 9,
+      "beach": 2,
+      "bullets": 6,
+      "transit": 1,
+      "coaster": 1,
+      "(untimed)": 1
+     },
+     "tags": {
+      "gc": 4
+     },
+     "excessMs": {
+      "cars": 504.79,
+      "ui": 122.54,
+      "civic": 73.62,
+      "people": 69.16,
+      "bullets": 68.48,
+      "sports": 65.9,
+      "military": 57.79,
+      "beach": 26.63
+     },
+     "sections": {
+      "cars": [
+       3,
+       34.1
+      ],
+      "phys:control": [
+       1.05,
+       32.6
+      ],
+      "phys:post": [
+       0.64,
+       26.2
+      ],
+      "phys:broadphase": [
+       0.61,
+       24.9
+      ],
+      "ui": [
+       0.39,
+       31
+      ],
+      "civic": [
+       0.39,
+       29.3
+      ],
+      "phys:contacts": [
+       0.29,
+       8.3
+      ],
+      "military": [
+       0.26,
+       8.3
+      ],
+      "people": [
+       0.22,
+       23.3
+      ],
+      "bullets": [
+       0.18,
+       21.3
+      ],
+      "sports": [
+       0.16,
+       22.7
+      ],
+      "police:wanted": [
+       0.09,
+       29.2
+      ],
+      "police:officers": [
+       0.07,
+       8.2
+      ],
+      "damage": [
+       0.06,
+       12.2
+      ],
+      "beach": [
+       0.06,
+       21.3
+      ],
+      "knockdowns": [
+       0.03,
+       4.5
+      ]
+     },
+     "totals": {
+      "allocKB": 213990,
+      "canvasDraws": 80,
+      "canvasText": 400,
+      "dom": 122,
+      "gcMB": 214.5,
+      "gcBetweenMB": 0.4
+     },
+     "perSecond": {
+      "allocKB": 26748.75,
+      "canvasDraws": 10,
+      "canvasText": 50,
+      "dom": 15.25,
+      "gcMB": 26.81,
+      "gcBetweenMB": 0.05
+     },
+     "domTargets": [
+      [
+       "heatFill [style]",
+       74
+      ],
+      [
+       "chaseStatus (children)",
+       9
+      ],
+      [
+       "worldClock (children)",
+       8
+      ],
+      [
+       "quickKeys (children)",
+       7
+      ],
+      [
+       "stars [class]",
+       2
+      ],
+      [
+       "armorLabel (children)",
+       2
+      ],
+      [
+       "vehicleStats [class]",
+       2
+      ],
+      [
+       "chaseStatus [class]",
+       2
+      ]
+     ],
+     "worst": [
+      {
+       "frame": 11,
+       "t": 8.4,
+       "ms": 37.4,
+       "cause": "ui +30.61",
+       "tags": [],
+       "parts": {
+        "ui": 31,
+        "cars": 4,
+        "civic": 1.3,
+        "people": 0.2
+       },
+       "c": {
+        "canvasDraws": 1,
+        "canvasText": 5,
+        "allocKB": 684
+       }
+      },
+      {
+       "frame": 107,
+       "t": 10,
+       "ms": 36,
+       "cause": "cars +31.1",
+       "tags": [],
+       "parts": {
+        "cars": 34.1,
+        "ui": 0.8,
+        "civic": 0.3,
+        "sports": 0.2
+       },
+       "c": {
+        "canvasDraws": 1,
+        "canvasText": 5,
+        "allocKB": 1158,
+        "dom": 1
+       }
+      },
+      {
+       "frame": 117,
+       "t": 10.17,
+       "ms": 34.4,
+       "cause": "cars +30.5",
+       "tags": [],
+       "parts": {
+        "cars": 33.5,
+        "civic": 0.3
+       },
+       "c": {
+        "allocKB": 505
+       }
+      },
+      {
+       "frame": 91,
+       "t": 9.73,
+       "ms": 32.5,
+       "cause": "civic +28.91",
+       "tags": [],
+       "parts": {
+        "civic": 29.3,
+        "cars": 2.6,
+        "military": 0.2
+       },
+       "c": {
+        "allocKB": 920
+       }
+      },
+      {
+       "frame": 28,
+       "t": 8.68,
+       "ms": 29.2,
+       "cause": "cars +22.7",
+       "tags": [
+        "gc"
+       ],
+       "parts": {
+        "cars": 25.7,
+        "people": 2.6,
+        "military": 0.3,
+        "civic": 0.2
+       },
+       "c": {
+        "gcMB": 30.3
+       }
+      },
+      {
+       "frame": 5,
+       "t": 8.3,
+       "ms": 28,
+       "cause": "sports +22.54",
+       "tags": [],
+       "parts": {
+        "sports": 22.7,
+        "ui": 2.4,
+        "cars": 1.6,
+        "civic": 0.3
+       },
+       "c": {
+        "canvasDraws": 1,
+        "canvasText": 5,
+        "allocKB": 789,
+        "dom": 19
+       }
+      },
+      {
+       "frame": 43,
+       "t": 8.93,
+       "ms": 28,
+       "cause": "cars +24.3",
+       "tags": [],
+       "parts": {
+        "cars": 27.3,
+        "military": 0.2
+       },
+       "c": {
+        "allocKB": 445
+       }
+      },
+      {
+       "frame": 223,
+       "t": 11.93,
+       "ms": 27.3,
+       "cause": "cars +23.3",
+       "tags": [],
+       "parts": {
+        "cars": 26.3,
+        "people": 0.2
+       },
+       "c": {
+        "allocKB": 367
+       }
+      },
+      {
+       "frame": 392,
+       "t": 14.75,
+       "ms": 27.3,
+       "cause": "cars +23.5",
+       "tags": [],
+       "parts": {
+        "cars": 26.5,
+        "military": 0.2
+       },
+       "c": {
+        "allocKB": 328
+       }
+      },
+      {
+       "frame": 355,
+       "t": 14.13,
+       "ms": 26.6,
+       "cause": "cars +22.7",
+       "tags": [],
+       "parts": {
+        "cars": 25.7,
+        "military": 0.3
+       },
+       "c": {
+        "allocKB": 660
+       }
+      }
+     ],
+     "cpuMsPerFrame": 2.61,
+     "hash": "5b23ae2c29c92f4c"
+    },
+    "fortChase": {
+     "mode": "stepped",
+     "frames": 420,
+     "wrappersLeft": 0,
+     "seconds": 7,
+     "avgMs": 3.41,
+     "p50Ms": 2.4,
+     "p95Ms": 7.1,
+     "p99Ms": 21.7,
+     "maxMs": 29.9,
+     "longLimitMs": 6.4,
+     "long": 31,
+     "over16": 9,
+     "over33": 0,
+     "gaps": {
+      "p50": 16.67,
+      "p95": 16.67,
+      "max": 16.67,
+      "over2x": 0,
+      "over33": 0
+     },
+     "causes": {
+      "f:pre": 6,
+      "cars": 10,
+      "ui": 2,
+      "people": 1,
+      "damage": 2,
+      "civic": 5,
+      "military": 5
+     },
+     "tags": {
+      "gc": 2
+     },
+     "excessMs": {
+      "cars": 86.1,
+      "f:pre": 58.39,
+      "civic": 45.38,
+      "military": 27.17,
+      "people": 22.62,
+      "ui": 15.48,
+      "damage": 6.67,
+      "knockdowns": 0.38
+     },
+     "sections": {
+      "cars": [
+       1.69,
+       20.9
+      ],
+      "phys:control": [
+       0.55,
+       19.6
+      ],
+      "phys:broadphase": [
+       0.38,
+       15.6
+      ],
+      "civic": [
+       0.3,
+       24.5
+      ],
+      "phys:post": [
+       0.29,
+       3.9
+      ],
+      "f:pre": [
+       0.2,
+       18.6
+      ],
+      "ui": [
+       0.18,
+       4.7
+      ],
+      "military": [
+       0.18,
+       9.6
+      ],
+      "phys:contacts": [
+       0.15,
+       7.6
+      ],
+      "police:officers": [
+       0.1,
+       24.4
+      ],
+      "people": [
+       0.07,
+       22
+      ],
+      "police:wanted": [
+       0.05,
+       17.2
+      ],
+      "damage": [
+       0.04,
+       6.1
+      ],
+      "knockdowns": [
+       0.02,
+       3.3
+      ],
+      "sports": [
+       0.02,
+       4.1
+      ],
+      "waypoint": [
+       0.01,
+       2.8
+      ]
+     },
+     "totals": {
+      "allocKB": 147296,
+      "dom": 49,
+      "canvasDraws": 70,
+      "canvasText": 350,
+      "gcMB": 126.8,
+      "gcBetweenMB": 0.8
+     },
+     "perSecond": {
+      "allocKB": 21042.29,
+      "dom": 7,
+      "canvasDraws": 10,
+      "canvasText": 50,
+      "gcMB": 18.11,
+      "gcBetweenMB": 0.11
+     },
+     "domTargets": [
+      [
+       "heatFill [style]",
+       27
+      ],
+      [
+       "chaseStatus (children)",
+       8
+      ],
+      [
+       "worldClock (children)",
+       7
+      ],
+      [
+       "(no id) .roof-stealth [class]",
+       1
+      ],
+      [
+       "(no id) .roof-stealth [style]",
+       1
+      ],
+      [
+       "radioCaption (children)",
+       1
+      ],
+      [
+       "radioCaption [class]",
+       1
+      ],
+      [
+       "navigation [class]",
+       1
+      ]
+     ],
+     "worst": [
+      {
+       "frame": 410,
+       "t": 23.05,
+       "ms": 29.9,
+       "cause": "civic +0",
+       "tags": [],
+       "parts": {
+        "cars": 1.1,
+        "civic": 0.3
+       },
+       "c": {
+        "allocKB": 289
+       }
+      },
+      {
+       "frame": 175,
+       "t": 19.13,
+       "ms": 26.1,
+       "cause": "civic +24.2",
+       "tags": [],
+       "parts": {
+        "civic": 24.5,
+        "cars": 1
+       },
+       "c": {
+        "allocKB": 303
+       }
+      },
+      {
+       "frame": 192,
+       "t": 19.42,
+       "ms": 24,
+       "cause": "civic +0.3",
+       "tags": [],
+       "parts": {
+        "cars": 1.1,
+        "civic": 0.6,
+        "military": 0.2
+       },
+       "c": {
+        "allocKB": 291
+       }
+      },
+      {
+       "frame": 104,
+       "t": 17.95,
+       "ms": 23.7,
+       "cause": "people +21.93",
+       "tags": [],
+       "parts": {
+        "people": 22,
+        "cars": 1.1,
+        "military": 0.3
+       },
+       "c": {
+        "allocKB": 602
+       }
+      },
+      {
+       "frame": 45,
+       "t": 16.97,
+       "ms": 21.7,
+       "cause": "cars +19.21",
+       "tags": [],
+       "parts": {
+        "cars": 20.9,
+        "civic": 0.2,
+        "military": 0.2
+       },
+       "c": {
+        "allocKB": 629
+       }
+      },
+      {
+       "frame": 341,
+       "t": 21.9,
+       "ms": 21.2,
+       "cause": "f:pre +18.4",
+       "tags": [],
+       "parts": {
+        "f:pre": 18.6,
+        "cars": 1.1,
+        "ui": 0.6,
+        "knockdowns": 0.4
+       },
+       "c": {
+        "canvasDraws": 1,
+        "canvasText": 5,
+        "allocKB": 448
+       }
+      },
+      {
+       "frame": 279,
+       "t": 20.87,
+       "ms": 19.1,
+       "cause": "civic +17",
+       "tags": [],
+       "parts": {
+        "civic": 17.3,
+        "cars": 1.2,
+        "military": 0.2
+       },
+       "c": {
+        "allocKB": 566
+       }
+      },
+      {
+       "frame": 370,
+       "t": 22.38,
+       "ms": 18.9,
+       "cause": "cars +16.31",
+       "tags": [],
+       "parts": {
+        "cars": 18
+       },
+       "c": {
+        "allocKB": 308
+       }
+      },
+      {
+       "frame": 225,
+       "t": 19.97,
+       "ms": 17.8,
+       "cause": "cars +14.91",
+       "tags": [],
+       "parts": {
+        "cars": 16.6,
+        "civic": 0.2
+       },
+       "c": {
+        "allocKB": 309
+       }
+      },
+      {
+       "frame": 72,
+       "t": 17.42,
+       "ms": 16.4,
+       "cause": "f:pre +14.4",
+       "tags": [],
+       "parts": {
+        "f:pre": 14.6,
+        "cars": 1.1,
+        "military": 0.2
+       },
+       "c": {
+        "allocKB": 305
+       }
+      }
+     ],
+     "cpuMsPerFrame": 2.49,
+     "hash": "21cc50c2746c49a2"
+    }
+   },
+   {
+    "fortM4": {
+     "mode": "stepped",
+     "frames": 492,
+     "wrappersLeft": 0,
+     "seconds": 8.2,
+     "avgMs": 12.72,
+     "p50Ms": 7.1,
+     "p95Ms": 33.2,
+     "p99Ms": 69,
+     "maxMs": 610.5,
+     "longLimitMs": 14.2,
+     "long": 88,
+     "over16": 71,
+     "over33": 24,
+     "gaps": {
+      "p50": 16.67,
+      "p95": 16.67,
+      "max": 16.67,
+      "over2x": 0,
+      "over33": 0
+     },
+     "causes": {
+      "waypoint": 3,
+      "sealife": 8,
+      "people": 5,
+      "ui": 4,
+      "cars": 36,
+      "f:pre": 2,
+      "civic": 9,
+      "bullets": 5,
+      "wildlife": 2,
+      "sports": 5,
+      "military": 1,
+      "citylife": 1,
+      "knockdowns": 4,
+      "drawbridge": 1,
+      "sound": 1,
+      "transit": 1
+     },
+     "tags": {
+      "spawn": 2,
+      "gc": 7,
+      "dom": 1
+     },
+     "excessMs": {
+      "cars": 887.84,
+      "ui": 509.69,
+      "waypoint": 331.05,
+      "sealife": 308,
+      "civic": 195.8,
+      "people": 115.19,
+      "sports": 111.9,
+      "bullets": 110.99
+     },
+     "sections": {
+      "cars": [
+       5.72,
+       192.3
+      ],
+      "phys:control": [
+       2.22,
+       146.4
+      ],
+      "phys:broadphase": [
+       1.37,
+       32.6
+      ],
+      "ui": [
+       1.31,
+       453.8
+      ],
+      "phys:post": [
+       1.16,
+       32.9
+      ],
+      "civic": [
+       0.85,
+       29
+      ],
+      "waypoint": [
+       0.68,
+       277.6
+      ],
+      "sealife": [
+       0.65,
+       72.7
+      ],
+      "people": [
+       0.58,
+       27.9
+      ],
+      "military": [
+       0.5,
+       28.6
+      ],
+      "phys:contacts": [
+       0.49,
+       13.5
+      ],
+      "bullets": [
+       0.45,
+       33.9
+      ],
+      "police:officers": [
+       0.38,
+       20.1
+      ],
+      "sports": [
+       0.29,
+       26.4
+      ],
+      "f:pre": [
+       0.21,
+       46.8
+      ],
+      "knockdowns": [
+       0.16,
+       18.5
+      ]
+     },
+     "totals": {
+      "allocKB": 335320,
+      "dom": 245,
+      "vehicles": 20,
+      "gcMB": 302.9,
+      "canvasDraws": 86,
+      "canvasText": 424,
+      "gcBetweenMB": 0.4,
+      "people": 2
+     },
+     "perSecond": {
+      "allocKB": 40892.68,
+      "dom": 29.88,
+      "vehicles": 2.44,
+      "gcMB": 36.94,
+      "canvasDraws": 10.49,
+      "canvasText": 51.71,
+      "gcBetweenMB": 0.05,
+      "people": 0.24
+     },
+     "domTargets": [
+      [
+       "navArrow [style]",
+       62
+      ],
+      [
+       "speed (children)",
+       27
+      ],
+      [
+       "carFill [style]",
+       20
+      ],
+      [
+       "quickKeys (children)",
+       11
+      ],
+      [
+       "chaseStatus (children)",
+       10
+      ],
+      [
+       "worldClock (children)",
+       9
+      ],
+      [
+       "missionDistance (children)",
+       8
+      ],
+      [
+       "navDistance (children)",
+       8
+      ]
+     ],
+     "worst": [
+      {
+       "frame": 0,
+       "t": 0.02,
+       "ms": 610.5,
+       "cause": "waypoint +276.92",
+       "tags": [
+        "spawn"
+       ],
+       "parts": {
+        "waypoint": 277.6,
+        "cars": 192.3,
+        "sealife": 29.3,
+        "beachclub": 28.8
+       },
+       "c": {
+        "allocKB": 15804,
+        "dom": 2,
+        "vehicles": 15
+       }
+      },
+      {
+       "frame": 5,
+       "t": 0.1,
+       "ms": 510.2,
+       "cause": "ui +452.49",
+       "tags": [
+        "dom"
+       ],
+       "parts": {
+        "ui": 453.8,
+        "sealife": 42.9,
+        "cars": 11.4,
+        "people": 0.5
+       },
+       "c": {
+        "canvasDraws": 5,
+        "canvasText": 22,
+        "allocKB": 4314,
+        "dom": 35
+       }
+      },
+      {
+       "frame": 3,
+       "t": 0.07,
+       "ms": 99.5,
+       "cause": "sealife +31.75",
+       "tags": [],
+       "parts": {
+        "cars": 37.3,
+        "sealife": 32.4,
+        "people": 27.9,
+        "civic": 0.4
+       },
+       "c": {
+        "allocKB": 1509
+       }
+      },
+      {
+       "frame": 8,
+       "t": 0.15,
+       "ms": 88.4,
+       "cause": "sealife +72.05",
+       "tags": [],
+       "parts": {
+        "sealife": 72.7,
+        "cars": 10,
+        "civic": 3.6,
+        "military": 0.4
+       },
+       "c": {
+        "allocKB": 7180
+       }
+      },
+      {
+       "frame": 2,
+       "t": 0.05,
+       "ms": 69,
+       "cause": "people +25.02",
+       "tags": [],
+       "parts": {
+        "people": 25.6,
+        "sealife": 22.9,
+        "cars": 18.6,
+        "military": 0.5
+       },
+       "c": {
+        "allocKB": 3985
+       }
+      },
+      {
+       "frame": 136,
+       "t": 2.28,
+       "ms": 54.3,
+       "cause": "citylife +28.53",
+       "tags": [],
+       "parts": {
+        "civic": 29,
+        "citylife": 28.6,
+        "cars": 15.5,
+        "bullets": 8.6
+       },
+       "c": {
+        "allocKB": 940
+       }
+      },
+      {
+       "frame": 119,
+       "t": 2,
+       "ms": 53.5,
+       "cause": "sealife +22.05",
+       "tags": [],
+       "parts": {
+        "cars": 22.9,
+        "sealife": 22.7,
+        "ui": 5.4,
+        "people": 0.6
+       },
+       "c": {
+        "canvasDraws": 1,
+        "canvasText": 5,
+        "allocKB": 1029
+       }
+      },
+      {
+       "frame": 50,
+       "t": 0.85,
+       "ms": 51.6,
+       "cause": "f:pre +46.59",
+       "tags": [
+        "gc"
+       ],
+       "parts": {
+        "f:pre": 46.8,
+        "cars": 3.3,
+        "people": 0.6,
+        "civic": 0.3
+       },
+       "c": {
+        "gcMB": 0.3,
+        "dom": 2
+       }
+      },
+      {
+       "frame": 250,
+       "t": 4.18,
+       "ms": 50.4,
+       "cause": "cars +37.98",
+       "tags": [],
+       "parts": {
+        "cars": 43.7,
+        "civic": 5.1,
+        "military": 0.7,
+        "people": 0.3
+       },
+       "c": {
+        "allocKB": 936
+       }
+      },
+      {
+       "frame": 245,
+       "t": 4.1,
+       "ms": 48.4,
+       "cause": "bullets +33.45",
+       "tags": [],
+       "parts": {
+        "bullets": 33.9,
+        "cars": 2,
+        "ui": 1.4,
+        "civic": 0.9
+       },
+       "c": {
+        "canvasDraws": 1,
+        "canvasText": 5,
+        "allocKB": 642,
+        "dom": 3
+       }
+      }
+     ],
+     "cpuMsPerFrame": 6.25,
+     "hash": "ee6a0099e4ffdff9"
+    },
+    "fort": {
+     "mode": "stepped",
+     "frames": 480,
+     "wrappersLeft": 0,
+     "seconds": 8,
+     "avgMs": 5.71,
+     "p50Ms": 3.6,
+     "p95Ms": 18.1,
+     "p99Ms": 30,
+     "maxMs": 34.4,
+     "longLimitMs": 7.6,
+     "long": 88,
+     "over16": 28,
+     "over33": 2,
+     "gaps": {
+      "p50": 16.67,
+      "p95": 16.67,
+      "max": 16.67,
+      "over2x": 0,
+      "over33": 0
+     },
+     "causes": {
+      "people": 5,
+      "cars": 34,
+      "ui": 15,
+      "civic": 9,
+      "sports": 3,
+      "military": 6,
+      "bullets": 2,
+      "citylife": 2,
+      "f:pre": 4,
+      "knockdowns": 2,
+      "leisure": 1,
+      "damage": 1,
+      "sound": 1,
+      "beachclub": 1,
+      "wildlife": 1,
+      "drawbridge": 1
+     },
+     "tags": {
+      "gc": 2
+     },
+     "excessMs": {
+      "cars": 306.13,
+      "ui": 158.77,
+      "civic": 150.85,
+      "military": 81.03,
+      "f:pre": 65.7,
+      "people": 45.79,
+      "damage": 29.27,
+      "sports": 22.87
+     },
+     "sections": {
+      "cars": [
+       2.7,
+       29.2
+      ],
+      "phys:control": [
+       1.01,
+       27.7
+      ],
+      "civic": [
+       0.62,
+       26.2
+      ],
+      "phys:post": [
+       0.53,
+       23.3
+      ],
+      "phys:broadphase": [
+       0.49,
+       8.9
+      ],
+      "ui": [
+       0.48,
+       29.1
+      ],
+      "military": [
+       0.31,
+       29
+      ],
+      "phys:contacts": [
+       0.26,
+       10.3
+      ],
+      "f:pre": [
+       0.2,
+       24.2
+      ],
+      "police:officers": [
+       0.17,
+       23
+      ],
+      "people": [
+       0.16,
+       23.7
+      ],
+      "police:air": [
+       0.12,
+       25.6
+      ],
+      "police:wanted": [
+       0.09,
+       21.6
+      ],
+      "bullets": [
+       0.08,
+       6.3
+      ],
+      "damage": [
+       0.08,
+       28.3
+      ],
+      "sports": [
+       0.07,
+       13.2
+      ]
+     },
+     "totals": {
+      "allocKB": 213912,
+      "canvasDraws": 80,
+      "canvasText": 400,
+      "dom": 122,
+      "gcMB": 214.6
+     },
+     "perSecond": {
+      "allocKB": 26739,
+      "canvasDraws": 10,
+      "canvasText": 50,
+      "dom": 15.25,
+      "gcMB": 26.82
+     },
+     "domTargets": [
+      [
+       "heatFill [style]",
+       74
+      ],
+      [
+       "chaseStatus (children)",
+       9
+      ],
+      [
+       "worldClock (children)",
+       8
+      ],
+      [
+       "quickKeys (children)",
+       7
+      ],
+      [
+       "stars [class]",
+       2
+      ],
+      [
+       "armorLabel (children)",
+       2
+      ],
+      [
+       "vehicleStats [class]",
+       2
+      ],
+      [
+       "chaseStatus [class]",
+       2
+      ]
+     ],
+     "worst": [
+      {
+       "frame": 423,
+       "t": 15.27,
+       "ms": 34.4,
+       "cause": "civic +21.58",
+       "tags": [],
+       "parts": {
+        "civic": 22.2,
+        "cars": 11.3
+       },
+       "c": {
+        "allocKB": 343
+       }
+      },
+      {
+       "frame": 278,
+       "t": 12.85,
+       "ms": 33.9,
+       "cause": "military +28.69",
+       "tags": [],
+       "parts": {
+        "military": 29,
+        "cars": 3.7,
+        "civic": 0.4,
+        "people": 0.3
+       },
+       "c": {
+        "allocKB": 630
+       }
+      },
+      {
+       "frame": 119,
+       "t": 10.2,
+       "ms": 31.8,
+       "cause": "ui +28.62",
+       "tags": [],
+       "parts": {
+        "ui": 29.1,
+        "cars": 1.3,
+        "civic": 0.4,
+        "dealership": 0.3
+       },
+       "c": {
+        "canvasDraws": 1,
+        "canvasText": 5,
+        "allocKB": 204,
+        "dom": 2
+       }
+      },
+      {
+       "frame": 241,
+       "t": 12.23,
+       "ms": 30.4,
+       "cause": "damage +28.22",
+       "tags": [],
+       "parts": {
+        "damage": 28.3,
+        "cars": 1.3,
+        "civic": 0.2
+       },
+       "c": {
+        "allocKB": 353
+       }
+      },
+      {
+       "frame": 91,
+       "t": 9.73,
+       "ms": 30,
+       "cause": "cars +26.5",
+       "tags": [],
+       "parts": {
+        "cars": 29.2,
+        "civic": 0.2
+       },
+       "c": {
+        "allocKB": 887
+       }
+      },
+      {
+       "frame": 398,
+       "t": 14.85,
+       "ms": 30,
+       "cause": "civic +25.58",
+       "tags": [],
+       "parts": {
+        "civic": 26.2,
+        "cars": 2.8,
+        "people": 0.2
+       },
+       "c": {
+        "allocKB": 424
+       }
+      },
+      {
+       "frame": 178,
+       "t": 11.18,
+       "ms": 27,
+       "cause": "leisure +0.4",
+       "tags": [],
+       "parts": {
+        "cars": 1,
+        "leisure": 0.4,
+        "civic": 0.3,
+        "bullets": 0.2
+       },
+       "c": {
+        "allocKB": 559
+       }
+      },
+      {
+       "frame": 293,
+       "t": 13.1,
+       "ms": 26.8,
+       "cause": "cars +21.7",
+       "tags": [],
+       "parts": {
+        "cars": 24.4,
+        "ui": 0.6,
+        "civic": 0.3,
+        "beach": 0.2
+       },
+       "c": {
+        "canvasDraws": 1,
+        "canvasText": 5,
+        "allocKB": 888,
+        "dom": 2
+       }
+      },
+      {
+       "frame": 165,
+       "t": 10.97,
+       "ms": 26.5,
+       "cause": "f:pre +24",
+       "tags": [],
+       "parts": {
+        "f:pre": 24.2,
+        "cars": 1.1,
+        "military": 0.3
+       },
+       "c": {
+        "allocKB": 442,
+        "dom": 1
+       }
+      },
+      {
+       "frame": 227,
+       "t": 12,
+       "ms": 26.3,
+       "cause": "cars +20.5",
+       "tags": [],
+       "parts": {
+        "cars": 23.2,
+        "ui": 2.3,
+        "civic": 0.2,
+        "military": 0.2
+       },
+       "c": {
+        "canvasDraws": 1,
+        "canvasText": 5,
+        "allocKB": 439,
+        "dom": 1
+       }
+      }
+     ],
+     "cpuMsPerFrame": 2.89,
+     "hash": "5b23ae2c29c92f4c"
+    },
+    "fortChase": {
+     "mode": "stepped",
+     "frames": 420,
+     "wrappersLeft": 0,
+     "seconds": 7,
+     "avgMs": 6.37,
+     "p50Ms": 4.5,
+     "p95Ms": 21.3,
+     "p99Ms": 30.2,
+     "maxMs": 37.5,
+     "longLimitMs": 9,
+     "long": 55,
+     "over16": 28,
+     "over33": 3,
+     "gaps": {
+      "p50": 16.67,
+      "p95": 16.67,
+      "max": 16.67,
+      "over2x": 0,
+      "over33": 0
+     },
+     "causes": {
+      "cars": 27,
+      "civic": 4,
+      "military": 12,
+      "ui": 4,
+      "coaster": 1,
+      "people": 2,
+      "sports": 1,
+      "waypoint": 1,
+      "f:pre": 1,
+      "transit": 1,
+      "monarch": 1
+     },
+     "tags": {},
+     "excessMs": {
+      "cars": 355.32,
+      "military": 155.7,
+      "ui": 54.21,
+      "civic": 50.73,
+      "coaster": 25.74,
+      "f:pre": 22.99,
+      "monarch": 21.05,
+      "damage": 7.36
+     },
+     "sections": {
+      "cars": [
+       3.51,
+       31.5
+      ],
+      "phys:control": [
+       1.18,
+       29.9
+      ],
+      "phys:broadphase": [
+       0.75,
+       18.8
+      ],
+      "phys:post": [
+       0.74,
+       26.3
+      ],
+      "military": [
+       0.64,
+       27.9
+      ],
+      "civic": [
+       0.45,
+       24.3
+      ],
+      "ui": [
+       0.35,
+       25.1
+      ],
+      "phys:contacts": [
+       0.35,
+       20.6
+      ],
+      "f:pre": [
+       0.12,
+       21.3
+      ],
+      "police:wanted": [
+       0.1,
+       24.1
+      ],
+      "people": [
+       0.08,
+       4.8
+      ],
+      "police:officers": [
+       0.07,
+       4.5
+      ],
+      "damage": [
+       0.07,
+       4.3
+      ],
+      "knockdowns": [
+       0.07,
+       5.2
+      ],
+      "coaster": [
+       0.06,
+       25.8
+      ],
+      "monarch": [
+       0.05,
+       21.1
+      ]
+     },
+     "totals": {
+      "allocKB": 145031,
+      "dom": 49,
+      "canvasDraws": 70,
+      "canvasText": 350,
+      "gcMB": 125.7
+     },
+     "perSecond": {
+      "allocKB": 20718.71,
+      "dom": 7,
+      "canvasDraws": 10,
+      "canvasText": 50,
+      "gcMB": 17.96
+     },
+     "domTargets": [
+      [
+       "heatFill [style]",
+       27
+      ],
+      [
+       "chaseStatus (children)",
+       8
+      ],
+      [
+       "worldClock (children)",
+       7
+      ],
+      [
+       "(no id) .roof-stealth [style]",
+       1
+      ],
+      [
+       "radioCaption (children)",
+       1
+      ],
+      [
+       "radioCaption [class]",
+       1
+      ],
+      [
+       "navigation [class]",
+       1
+      ],
+      [
+       "toast .note [class]",
+       1
+      ]
+     ],
+     "worst": [
+      {
+       "frame": 293,
+       "t": 21.1,
+       "ms": 37.5,
+       "cause": "cars +27.99",
+       "tags": [],
+       "parts": {
+        "cars": 31.5,
+        "ui": 5.1,
+        "military": 0.2
+       },
+       "c": {
+        "canvasDraws": 1,
+        "canvasText": 5,
+        "allocKB": 880,
+        "dom": 1
+       }
+      },
+      {
+       "frame": 158,
+       "t": 18.85,
+       "ms": 35.3,
+       "cause": "people +0.12",
+       "tags": [],
+       "parts": {
+        "cars": 1.7,
+        "military": 0.3,
+        "f:pre": 0.2,
+        "people": 0.2
+       },
+       "c": {
+        "allocKB": 297
+       }
+      },
+      {
+       "frame": 125,
+       "t": 18.3,
+       "ms": 34.9,
+       "cause": "cars +27.19",
+       "tags": [],
+       "parts": {
+        "cars": 30.7,
+        "waypoint": 1.7,
+        "ui": 1.2,
+        "civic": 0.3
+       },
+       "c": {
+        "canvasDraws": 1,
+        "canvasText": 5,
+        "allocKB": 416,
+        "dom": 1
+       }
+      },
+      {
+       "frame": 147,
+       "t": 18.67,
+       "ms": 30.4,
+       "cause": "military +27.26",
+       "tags": [],
+       "parts": {
+        "military": 27.9,
+        "cars": 1.8,
+        "civic": 0.3
+       },
+       "c": {
+        "allocKB": 295
+       }
+      },
+      {
+       "frame": 196,
+       "t": 19.48,
+       "ms": 30.2,
+       "cause": "cars +24.49",
+       "tags": [],
+       "parts": {
+        "cars": 28,
+        "military": 1.2,
+        "civic": 0.2
+       },
+       "c": {
+        "allocKB": 323
+       }
+      },
+      {
+       "frame": 364,
+       "t": 22.28,
+       "ms": 29.3,
+       "cause": "cars +23.79",
+       "tags": [],
+       "parts": {
+        "cars": 27.3,
+        "civic": 0.8,
+        "military": 0.3,
+        "knockdowns": 0.2
+       },
+       "c": {
+        "allocKB": 394
+       }
+      },
+      {
+       "frame": 134,
+       "t": 18.45,
+       "ms": 28,
+       "cause": "cars +22.39",
+       "tags": [],
+       "parts": {
+        "cars": 25.9,
+        "f:pre": 0.7,
+        "damage": 0.4,
+        "civic": 0.3
+       },
+       "c": {
+        "allocKB": 301
+       }
+      },
+      {
+       "frame": 79,
+       "t": 17.53,
+       "ms": 27.6,
+       "cause": "coaster +25.74",
+       "tags": [],
+       "parts": {
+        "coaster": 25.8,
+        "cars": 1,
+        "military": 0.2
+       },
+       "c": {
+        "allocKB": 304
+       }
+      },
+      {
+       "frame": 305,
+       "t": 21.3,
+       "ms": 27.1,
+       "cause": "ui +24.75",
+       "tags": [],
+       "parts": {
+        "ui": 25.1,
+        "cars": 1.2,
+        "civic": 0.2
+       },
+       "c": {
+        "canvasDraws": 1,
+        "canvasText": 5,
+        "allocKB": 370
+       }
+      },
+      {
+       "frame": 62,
+       "t": 17.25,
+       "ms": 25.9,
+       "cause": "civic +23.85",
+       "tags": [],
+       "parts": {
+        "civic": 24.3,
+        "cars": 1.1,
+        "military": 0.2
+       },
+       "c": {
+        "allocKB": 319
+       }
+      }
+     ],
+     "cpuMsPerFrame": 3.19,
+     "hash": "21cc50c2746c49a2"
+    }
+   }
+  ]
+ }
+}

@@ -1,0 +1,31 @@
+{
+  "title": "Dead End City — military M4 Utility review",
+  "introduction": "Native captures from the previous published build and this M4 update. Wheel and puncture comparisons use matched High-quality inspection views on clear airport pavement; the base comparison uses matched Low quality and normal gameplay zoom. All use seed 1, clear weather, 13:00 lighting and a 1000 × 700 viewport. The full audit retains inputs, source hashes, CPU measurements and their limits.",
+  "comparisons": [
+    {
+      "title": "M4 Utility — corrected intact tyre and rim shape",
+      "description": "The actual source tyre was about 1.2% narrower than tall. The corrected shared geometry keeps the intact tyre, rim and hub bands circular while rolling and steering.",
+      "before": "screenshots/native/m4-utility-before-round-wheels.png",
+      "after": "screenshots/native/m4-utility-after-round-wheels.png"
+    },
+    {
+      "title": "Punctured tyre — metal rim stays round",
+      "description": "Previously a puncture compressed the entire wheel, flattening its metal rim by 18%. The updated M4 deforms the rubber while the rim and bead remain rigid. These views use an actual collision-induced front-right puncture and rolling wheel, followed by a verified repair.",
+      "before": "screenshots/native/m4-utility-before-punctured-rim.png",
+      "after": "screenshots/native/m4-utility-after-punctured-rim.png"
+    },
+    {
+      "title": "Fort Sentinel — military M4 under fire",
+      "description": "The actual motor-pool M4 after theft, retaining the alarm and five-star response. The cached spatial lookup reduces the triangle searches needed for bullet-hole placement while keeping body and damage detail. Native images show the game; the audit records the separate performance measurements.",
+      "before": "screenshots/native/m4-utility-before-base.png",
+      "after": "screenshots/native/m4-utility-after-base.png"
+    }
+  ],
+  "screenshots": [
+    {
+      "title": "M4 Utility — clear view at High quality",
+      "description": "A separate High-quality detail view shows the retained camouflage body and corrected wheels.",
+      "file": "screenshots/native/m4-utility-after-detail.png"
+    }
+  ]
+}

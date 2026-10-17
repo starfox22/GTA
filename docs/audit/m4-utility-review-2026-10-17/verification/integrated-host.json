@@ -1,0 +1,52 @@
+{
+  "sourceHead": "2e157d76cc16a060d530a9d00534618f6b803844",
+  "tests": [
+    {
+      "name": "m4-wheel-partition",
+      "sha256": "df07af029d4967ced3e030543d1c76611027878de1474a931810ed55953d70d4",
+      "pass": true,
+      "checks": 31294,
+      "notes": [
+        "2389 source triangles = 2128 rolling + 261 fixed; fit max error 4.665e-7u; fixed source normals/positions and all UVs exact; wheel normals inverse-transformed; 48 spin phases per wheel; [{\"wheel\":0,\"at\":[1.7261375807285309,0.43411974403858183,0.9090009858489037],\"radius\":0.4341118186712265,\"sourceTriangles\":549,\"rollingTriangles\":532,\"fixedTriangles\":17,\"sourceCenterM\":[0.00003758072853088379,0.000019744038581848145,-0.000299014151096344],\"previousCircleOrbitM\":0.00008483576978290941,\"correctedCircleOrbitM\":0,\"roundness\":{\"transform\":[1.0122540561952718,-0.000001786787553010758,-0.000001786787553010758,0.9999907463203236],\"treadStations\":24,\"fitResidual\":0.00024976032799399256,\"radialBefore\":[3.430731744268603,3.472921045948304],\"radialAfter\":[3.472704164485891,3.473144309697807]}},{\"wheel\":1,\"at\":[1.7261375797748566,0.43411974403858183,-0.902394918268919],\"radius\":0.4341118186712265,\"sourceTriangles\":562,\"rollingTriangles\":532,\"fixedTriangles\":30,\"sourceCenterM\":[0.11353757977485657,0.000019744038581848145,-0.01779491826891899],\"previousCircleOrbitM\":0.22707515954971313,\"correctedCircleOrbitM\":0,\"roundness\":{\"transform\":[1.0122540487661447,-0.0000017839777031653958,-0.0000017839777031653958,0.9999907444278368],\"treadStations\":24,\"fitResidual\":0.0002497312259565223,\"radialBefore\":[3.430731744268603,3.472921045806742],\"radialAfter\":[3.472704204801567,3.4731442805957693]}},{\"wheel\":2,\"at\":[-1.4255351285815239,0.4342473226070404,0.9079786788105965],\"radius\":0.43412598967552185,\"sourceTriangles\":647,\"rollingTriangles\":532,\"fixedTriangles\":115,\"sourceCenterM\":[-0.3547351285815239,-0.045052677392959595,-0.00032132118940353394],\"previousCircleOrbitM\":0.7151617496207023,\"correctedCircleOrbitM\":0,\"roundness\":{\"transform\":[1.012286452283817,0.0000013195067861996654,0.0000013195067861996654,1.0000007461124834],\"treadStations\":24,\"fitResidual\":0.00023411282359898976,\"radialBefore\":[3.430731042843464,3.473034293771705],\"radialAfter\":[3.472844046727392,3.473242030227773]}},{\"wheel\":3,\"at\":[-1.4255351553380489,0.4342473358154297,-0.9013726065874099],\"radius\":0.43412598967552185,\"sourceTriangles\":631,\"rollingTriangles\":532,\"fixedTriangles\":99,\"sourceCenterM\":[-0.35433515533804893,-0.04515266418457031,0.00032739341259002686],\"previousCircleOrbitM\":0.7143947485772043,\"correctedCircleOrbitM\":0,\"roundness\":{\"transform\":[1.0122864218300303,0.000001306755105156601,0.000001306755105156601,1.000000750146437],\"treadStations\":24,\"fitResidual\":0.00023394041634076414,\"radialBefore\":[3.4307312810177315,3.473034294352456],\"radialAfter\":[3.472843876012748,3.4732418578205158]}}]"
+      ]
+    },
+    {
+      "name": "m4-wheel-shape",
+      "sha256": "208149f23ec8276c782f47b442971ca9f127222492f45023f068e6828d53e9fd",
+      "pass": true,
+      "checks": 14432,
+      "notes": [
+        "{\"m4WheelShape\":{\"sourceAspectBefore\":0.98785,\"worstCleanRadialSpreadM\":0.0001534364744554817,\"worstFlatCorrectedRadialSpreadM\":0.0001534713929007281,\"worstFlatRigidRadialSpreadM\":0.00014915428221248805,\"phases\":48,\"steer\":[-0.6,0,0.6],\"bodyLods\":2,\"damageStates\":2,\"rows\":[{\"wheel\":0,\"radius\":0.4341118097305298,\"bands\":[0.10440164837651827,0.434083269322381,0.23264811098419425,0.4275978842465428,0.23224421836786271,0.13402644955211393],\"correction\":[1.0122540314522872,-0.0000017824228476942653,-0.0000017824228476942653,0.9999907353017851]},{\"wheel\":1,\"radius\":0.4341118097305298,\"bands\":[0.10440165099454242,0.43408327537683106,0.23264811570553334,0.4275978845593254,0.2322442224580115,0.13402645173855435],\"correction\":[1.0122540598646577,-0.0000017844129399933454,-0.0000017844129399933454,0.9999907305425616]},{\"wheel\":2,\"radius\":0.43412598967552185,\"bands\":[0.10440775120796288,0.4340962571492974,0.23264941772409647,0.4276081699235777,0.23225115162540655,0.13402701015881743],\"correction\":[1.0122864289966256,0.0000013111312826569204,0.0000013111312826569204,1.0000007481861806]},{\"wheel\":3,\"radius\":0.43412598967552185,\"bands\":[0.10440774693337561,0.4340962627746014,0.23264941340685197,0.4276081666281415,0.23225114791274157,0.13402700915213014],\"correction\":[1.0122863887929074,0.0000013134462420862991,0.0000013134462420862991,1.000000760929986]}]}}"
+      ]
+    },
+    {
+      "name": "military-model-rig",
+      "sha256": "58f236fde4021da3fe2d63ae8897ab67c7fc2ee6ff9c805e404aad5ed34952b2",
+      "pass": true,
+      "checks": 468,
+      "notes": [
+        "Original 156 lamp triangles reassigned; no geometry/texture replacement; two military kits reused across 20 repeated spawns."
+      ]
+    },
+    {
+      "name": "m4-puncture-rims",
+      "sha256": "f095f467f2628585477f135e6b1b82fd9229fe7d2ee774e477099583be9eb343",
+      "pass": true,
+      "checks": 5970,
+      "notes": [
+        "{\"m4PunctureWarm\":{\"frames\":1000,\"wheels\":4,\"medianElapsedMs\":0.1335390000000416,\"p95ElapsedMs\":0.17395199999998567,\"newGeometries\":0,\"retainedPrivateBuffers\":true,\"heapDeltaAfterGc\":-3571464}}",
+        "M4 metal rims remain rigid under real puncture; bead/source sharing, private lifetime, burn/repair and other models passed"
+      ]
+    },
+    {
+      "name": "military-mark-rays",
+      "sha256": "86834bc2f5e2026f151de1177b91ad9c7ec821088beb911cb782b1e1861fa5c8",
+      "pass": true,
+      "checks": 2496,
+      "notes": [
+        "{\"rawRaysCompared\":1198,\"m4TypedBytes\":1131196,\"evidence\":[{\"mode\":\"production\",\"fullTriangles\":2871936,\"acceleratedTriangles\":1044,\"anchors\":12},{\"mode\":\"side\",\"fullTriangles\":2871936,\"acceleratedTriangles\":1695,\"anchors\":12},{\"mode\":\"low\",\"fullTriangles\":3637196,\"acceleratedTriangles\":18404,\"anchors\":10},{\"mode\":\"miss\",\"fullTriangles\":0,\"acceleratedTriangles\":0,\"anchors\":0}]}"
+      ]
+    }
+  ],
+  "pass": true
+}

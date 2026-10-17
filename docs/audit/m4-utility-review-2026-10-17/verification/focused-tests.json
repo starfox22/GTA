@@ -1,0 +1,9 @@
+{
+  "pass": true,
+  "htmlSHA256": "c1f293d6e0f7e0eb2a81f3ebd09e268d7a038b4830de5f660b9e5cff66efe764",
+  "tests": [
+    "vehicle-layouts",
+    "fort-vehicle-theft"
+  ],
+  "logSHA256": "e57b8a362da8d5794a68225f39f959a0ded016cd961f4ba7cef5b434c099ab88"
+}

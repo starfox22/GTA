@@ -1,0 +1,24 @@
+A run 1 done
+B run 1 done
+B run 2 done
+A run 2 done
+
+A = work/m4-utility/before.html, B = work/m4-utility/final.html; medians of 2 / 2 runs
+stage      cpu/frame A>B  p95 A>B       p99 A>B       max A>B       long A>B   >33 A>B   
+fortM4     6.5>5.9        28.7>31.6     67.3>59.8     581.5>445.4   74.5>94.5  14.5>18.5 
+fort       3.9>2.8        23.2>20.4     32.1>29.6     40>35.9       63>94.5    4>2.5     
+fortChase  3.1>2.8        19.4>14.2     28.8>25.9     37.6>33.7     38>43      2>1.5     
+  fortM4     stateHash equal in every run
+  fort       stateHash equal in every run
+  fortChase  stateHash equal in every run
+  allocKB per frame: 493.2 > 498.7
+  gcMB per frame: 428.9 > 472.5 (KB)
+  dom per frame: 0.3 > 0.3
+  bufMB per frame: 0 > 0 (KB)
+  texMB per frame: 0 > 0 (KB)
+  models per frame: 0 > 0
+  geometries per frame: 0 > 0
+  textures per frame: 0 > 0
+  programs per frame: 0 > 0
+  audioNodes per frame: 0 > 0
+  canvasText per frame: 0.8 > 0.8

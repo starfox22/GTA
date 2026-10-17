@@ -1,0 +1,95 @@
+{
+  "files": [
+    {
+      "file": "screenshots/native/m4-utility-after-base.png",
+      "sha256": "f5ad88e102e1056a90367ec598c06b0d79a2ccd055718e4542414311089884b6",
+      "bytes": 833610,
+      "dimensions": [
+        1000,
+        700
+      ],
+      "htmlSha256": "c1f293d6e0f7e0eb2a81f3ebd09e268d7a038b4830de5f660b9e5cff66efe764",
+      "recorderSha256": "641cd62ac51f61ba745867c56c447dab2443ddc23b718b080d34649d8e228a9b",
+      "quality": "low",
+      "report": "verification/capture-after.json"
+    },
+    {
+      "file": "screenshots/native/m4-utility-after-detail.png",
+      "sha256": "5f5c826f515ebc25dd42f91bece830ec402232ff506fc21167170a9758f2e603",
+      "bytes": 733619,
+      "dimensions": [
+        1000,
+        700
+      ],
+      "htmlSha256": "c1f293d6e0f7e0eb2a81f3ebd09e268d7a038b4830de5f660b9e5cff66efe764",
+      "recorderSha256": "066497567bd4f56aacb8f528ca311c37fdb476d013b16a714cdc78346b4d1c89",
+      "quality": "high",
+      "report": "verification/capture-detail-after.json"
+    },
+    {
+      "file": "screenshots/native/m4-utility-after-punctured-rim.png",
+      "sha256": "99e652544b798a1971548470fd528334776fe847028ef35f45e1cf1e62d0bf8f",
+      "bytes": 717606,
+      "dimensions": [
+        1000,
+        700
+      ],
+      "htmlSha256": "c1f293d6e0f7e0eb2a81f3ebd09e268d7a038b4830de5f660b9e5cff66efe764",
+      "recorderSha256": "066497567bd4f56aacb8f528ca311c37fdb476d013b16a714cdc78346b4d1c89",
+      "quality": "high",
+      "report": "verification/capture-detail-after.json"
+    },
+    {
+      "file": "screenshots/native/m4-utility-after-round-wheels.png",
+      "sha256": "452d3ccd8566145cd0d1ae917b3636002815622783fafcc66742a809ebeb0f63",
+      "bytes": 711881,
+      "dimensions": [
+        1000,
+        700
+      ],
+      "htmlSha256": "c1f293d6e0f7e0eb2a81f3ebd09e268d7a038b4830de5f660b9e5cff66efe764",
+      "recorderSha256": "066497567bd4f56aacb8f528ca311c37fdb476d013b16a714cdc78346b4d1c89",
+      "quality": "high",
+      "report": "verification/capture-detail-after.json"
+    },
+    {
+      "file": "screenshots/native/m4-utility-before-base.png",
+      "sha256": "446667a3c5aac342dbbd1b76a1cf90233b730ad3828b7108981c0c59d4cf34ec",
+      "bytes": 833781,
+      "dimensions": [
+        1000,
+        700
+      ],
+      "htmlSha256": "c3200fc63508a789867d7ff8617c7f5c2a79c4dc703529f8ac69002372cd579d",
+      "recorderSha256": "641cd62ac51f61ba745867c56c447dab2443ddc23b718b080d34649d8e228a9b",
+      "quality": "low",
+      "report": "verification/capture-before.json"
+    },
+    {
+      "file": "screenshots/native/m4-utility-before-punctured-rim.png",
+      "sha256": "cd70a9ac049678d907f016e174a0349a2bfa832acac1bf32c952cbd3ad831a42",
+      "bytes": 717870,
+      "dimensions": [
+        1000,
+        700
+      ],
+      "htmlSha256": "c3200fc63508a789867d7ff8617c7f5c2a79c4dc703529f8ac69002372cd579d",
+      "recorderSha256": "066497567bd4f56aacb8f528ca311c37fdb476d013b16a714cdc78346b4d1c89",
+      "quality": "high",
+      "report": "verification/capture-detail-before.json"
+    },
+    {
+      "file": "screenshots/native/m4-utility-before-round-wheels.png",
+      "sha256": "61cd9e820f43b639b5053adfc9400c7cb892e479dd0410c7ae77baf582e9f9f7",
+      "bytes": 712018,
+      "dimensions": [
+        1000,
+        700
+      ],
+      "htmlSha256": "c3200fc63508a789867d7ff8617c7f5c2a79c4dc703529f8ac69002372cd579d",
+      "recorderSha256": "066497567bd4f56aacb8f528ca311c37fdb476d013b16a714cdc78346b4d1c89",
+      "quality": "high",
+      "report": "verification/capture-detail-before.json"
+    }
+  ]
+}

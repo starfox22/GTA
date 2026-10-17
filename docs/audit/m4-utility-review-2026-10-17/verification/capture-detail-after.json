@@ -1,0 +1,993 @@
+{
+  "label": "after",
+  "htmlSha256": "c1f293d6e0f7e0eb2a81f3ebd09e268d7a038b4830de5f660b9e5cff66efe764",
+  "recorderSha256": "066497567bd4f56aacb8f528ca311c37fdb476d013b16a714cdc78346b4d1c89",
+  "fixture": {
+    "viewport": [
+      1000,
+      700
+    ],
+    "seed": 1,
+    "position": [
+      418,
+      6000
+    ],
+    "heading": 0,
+    "quality": "high",
+    "weather": "clear",
+    "clock": 13
+  },
+  "inputs": [
+    [
+      "status",
+      []
+    ],
+    [
+      "holdSimulation",
+      [
+        true
+      ]
+    ],
+    [
+      "god",
+      [
+        true
+      ]
+    ],
+    [
+      "graphics",
+      [
+        "high"
+      ]
+    ],
+    [
+      "sky",
+      [
+        "clear"
+      ]
+    ],
+    [
+      "setClock",
+      [
+        13
+      ]
+    ],
+    [
+      "settings",
+      [
+        {
+          "sound": false,
+          "fps": false,
+          "gps": false,
+          "minimapFolded": true,
+          "keyHints": false,
+          "lookAhead": 0,
+          "radioVolume": 0
+        }
+      ]
+    ],
+    [
+      "look",
+      [
+        418,
+        6000,
+        3
+      ]
+    ],
+    [
+      "drive",
+      [
+        "jeep",
+        0,
+        0
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        6000,
+        0
+      ]
+    ],
+    [
+      "viewMode",
+      [
+        "street"
+      ]
+    ],
+    [
+      "closeUp",
+      [
+        11
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        65,
+        12,
+        4
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.25,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        1.3,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        65,
+        12,
+        4
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "settings",
+      [
+        {}
+      ]
+    ],
+    [
+      "settings",
+      [
+        {}
+      ]
+    ],
+    [
+      "status",
+      []
+    ],
+    [
+      "cameraView",
+      []
+    ],
+    [
+      "frameFaults",
+      []
+    ],
+    [
+      "gpuContext",
+      []
+    ],
+    [
+      "damageReport",
+      []
+    ],
+    [
+      "inspectView",
+      [
+        0,
+        8,
+        3
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "settings",
+      [
+        {}
+      ]
+    ],
+    [
+      "settings",
+      [
+        {}
+      ]
+    ],
+    [
+      "status",
+      []
+    ],
+    [
+      "cameraView",
+      []
+    ],
+    [
+      "frameFaults",
+      []
+    ],
+    [
+      "gpuContext",
+      []
+    ],
+    [
+      "damageReport",
+      []
+    ],
+    [
+      "dentVehicle",
+      [
+        265,
+        "right",
+        130,
+        1.38
+      ]
+    ],
+    [
+      "launch",
+      [
+        6
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.1,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        0,
+        8,
+        3
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "settings",
+      [
+        {}
+      ]
+    ],
+    [
+      "settings",
+      [
+        {}
+      ]
+    ],
+    [
+      "status",
+      []
+    ],
+    [
+      "cameraView",
+      []
+    ],
+    [
+      "frameFaults",
+      []
+    ],
+    [
+      "gpuContext",
+      []
+    ],
+    [
+      "damageReport",
+      []
+    ],
+    [
+      "burnVehicle",
+      [
+        265,
+        0,
+        true
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        418,
+        6000,
+        0
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.1,
+        [],
+        1,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        1,
+        false,
+        true
+      ]
+    ],
+    [
+      "damageReport",
+      []
+    ],
+    [
+      "frameFaults",
+      []
+    ],
+    [
+      "gpuContext",
+      []
+    ]
+  ],
+  "captures": [
+    {
+      "file": "m4-utility-after-detail.png",
+      "sha256": "5f5c826f515ebc25dd42f91bece830ec402232ff506fc21167170a9758f2e603",
+      "inspection": [
+        65,
+        12,
+        4
+      ],
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6000,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "jeep",
+        "weapon": "9MM PISTOL",
+        "clock": "13:01",
+        "renderer": "3d",
+        "vehicles": 280,
+        "pedestrians": 595
+      },
+      "camera": {
+        "zoom": 11,
+        "target": 11,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 11,
+        "aim": 11,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 5.4,
+        "personPx": 144,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.57,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 1.58,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "vehicle": {
+        "id": 265,
+        "type": "jeep",
+        "hp": 380,
+        "maxhp": 380,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 418,
+        "y": 6000,
+        "a": 0
+      },
+      "damage": {
+        "id": 265,
+        "type": "jeep",
+        "hp": 380,
+        "maxhp": 380,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 418,
+        "y": 6000,
+        "a": 0
+      }
+    },
+    {
+      "file": "m4-utility-after-round-wheels.png",
+      "sha256": "452d3ccd8566145cd0d1ae917b3636002815622783fafcc66742a809ebeb0f63",
+      "inspection": [
+        0,
+        8,
+        3
+      ],
+      "status": {
+        "mode": "play",
+        "x": 418,
+        "y": 6000,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "jeep",
+        "weapon": "9MM PISTOL",
+        "clock": "13:01",
+        "renderer": "3d",
+        "vehicles": 280,
+        "pedestrians": 595
+      },
+      "camera": {
+        "zoom": 11,
+        "target": 11,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 11,
+        "aim": 11,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 5.4,
+        "personPx": 144,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.58,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 1.6,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "vehicle": {
+        "id": 265,
+        "type": "jeep",
+        "hp": 380,
+        "maxhp": 380,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 418,
+        "y": 6000,
+        "a": 0
+      },
+      "damage": {
+        "id": 265,
+        "type": "jeep",
+        "hp": 380,
+        "maxhp": 380,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 418,
+        "y": 6000,
+        "a": 0
+      }
+    },
+    {
+      "file": "m4-utility-after-punctured-rim.png",
+      "sha256": "99e652544b798a1971548470fd528334776fe847028ef35f45e1cf1e62d0bf8f",
+      "inspection": [
+        0,
+        8,
+        3
+      ],
+      "status": {
+        "mode": "play",
+        "x": 424,
+        "y": 6000,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "jeep",
+        "weapon": "9MM PISTOL",
+        "clock": "13:01",
+        "renderer": "3d",
+        "vehicles": 280,
+        "pedestrians": 595
+      },
+      "camera": {
+        "zoom": 11,
+        "target": 11,
+        "context": 1,
+        "slowFraming": true,
+        "vehicleContext": 0.467,
+        "speed": 1,
+        "kmh": 4,
+        "framing": 1,
+        "framed": 11,
+        "aim": 11,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 5.4,
+        "personPx": 144,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 1.7,
+          "accel": {
+            "rms": 0.98,
+            "peak": 5.067
+          },
+          "jerk": {
+            "rms": 12.09,
+            "peak": 59.48
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0.048,
+            "swing": 0.048
+          }
+        }
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 1.72,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "vehicle": {
+        "id": 265,
+        "type": "jeep",
+        "hp": 380,
+        "maxhp": 380,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 1
+        },
+        "dents": [
+          {
+            "x": 11.04,
+            "y": 9.2,
+            "depth": 11.04
+          }
+        ],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 1,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 2
+        },
+        "lights": [],
+        "flatTires": [
+          "frontRight"
+        ],
+        "marks": {},
+        "pull": 0.3,
+        "handling": {
+          "power": 1,
+          "top": 0.89,
+          "grip": 0.88,
+          "pull": 0.3,
+          "steer": 0.96,
+          "brake": 0.88
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 47,
+        "spin": 0.03,
+        "x": 424,
+        "y": 6000,
+        "a": 0
+      },
+      "damage": {
+        "id": 265,
+        "type": "jeep",
+        "hp": 380,
+        "maxhp": 380,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 1
+        },
+        "dents": [
+          {
+            "x": 11.04,
+            "y": 9.2,
+            "depth": 11.04
+          }
+        ],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 1,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 2
+        },
+        "lights": [],
+        "flatTires": [
+          "frontRight"
+        ],
+        "marks": {},
+        "pull": 0.3,
+        "handling": {
+          "power": 1,
+          "top": 0.89,
+          "grip": 0.88,
+          "pull": 0.3,
+          "steer": 0.96,
+          "brake": 0.88
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 47,
+        "spin": 0.03,
+        "x": 424,
+        "y": 6000,
+        "a": 0
+      }
+    }
+  ],
+  "errors": [],
+  "warnings": [
+    "Scripts \"build/three.js\" and \"build/three.min.js\" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation"
+  ],
+  "repair": {
+    "damage": {
+      "id": 265,
+      "type": "jeep",
+      "hp": 380,
+      "maxhp": 380,
+      "zones": {
+        "front": 0,
+        "rear": 0,
+        "left": 0,
+        "right": 0
+      },
+      "dents": [],
+      "parts": {
+        "hood": 0,
+        "bumperFront": 0,
+        "bumperRear": 0,
+        "doorLeft": 0,
+        "doorRight": 0,
+        "trunk": 0
+      },
+      "glass": {
+        "front": 0,
+        "rear": 0,
+        "left": 0,
+        "right": 0
+      },
+      "lights": [],
+      "flatTires": [],
+      "marks": {},
+      "pull": 0,
+      "handling": {
+        "power": 1,
+        "top": 1,
+        "grip": 1,
+        "pull": 0,
+        "steer": 1,
+        "brake": 1
+      },
+      "burning": 0,
+      "fireSpent": false,
+      "burnt": false,
+      "speed": 0,
+      "spin": 0,
+      "x": 418,
+      "y": 6000,
+      "a": 0
+    },
+    "faults": {
+      "count": 0,
+      "gameTime": 1.83,
+      "drill": null,
+      "kinds": []
+    },
+    "gpu": {
+      "watched": true,
+      "lost": false,
+      "losses": 0,
+      "restores": 0,
+      "reloadPending": false,
+      "lostSeconds": 0
+    }
+  },
+  "pass": true
+}

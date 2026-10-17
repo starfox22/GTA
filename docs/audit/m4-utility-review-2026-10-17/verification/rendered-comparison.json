@@ -1,0 +1,109 @@
+{
+  "pass": true,
+  "fixtureAndInputsEqual": true,
+  "statusesEqual": true,
+  "quality": "low",
+  "explicitFramesPerStage": 2,
+  "qualification": "World draw/triangle counts vary slightly in this short live-rendered sample; all actual counts are retained without claiming their cause. Source M4 body buffers and wheel face counts are verified separately. A missing damage timing means it was below the listed top sections, not zero.",
+  "stages": [
+    {
+      "name": "outside-foot",
+      "drawCallsBefore": 153,
+      "drawCallsAfter": 155,
+      "trianglesBefore": 871705,
+      "trianglesAfter": 872771,
+      "damageBeforeMs": [
+        1.35,
+        2.4
+      ],
+      "damageAfterMs": [
+        0.6,
+        1
+      ]
+    },
+    {
+      "name": "outside-pristine",
+      "drawCallsBefore": 161,
+      "drawCallsAfter": 164,
+      "trianglesBefore": 886655,
+      "trianglesAfter": 886919,
+      "damageBeforeMs": [
+        0.65,
+        1
+      ],
+      "damageAfterMs": [
+        5.55,
+        10.8
+      ]
+    },
+    {
+      "name": "outside-new-holes",
+      "drawCallsBefore": 136,
+      "drawCallsAfter": 136,
+      "trianglesBefore": 859530,
+      "trianglesAfter": 859530,
+      "damageBeforeMs": [
+        440.9,
+        874.8
+      ],
+      "damageAfterMs": [
+        22.9,
+        45.5
+      ]
+    },
+    {
+      "name": "outside-cached-holes",
+      "drawCallsBefore": 136,
+      "drawCallsAfter": 136,
+      "trianglesBefore": 859530,
+      "trianglesAfter": 859530,
+      "damageBeforeMs": [
+        0.4,
+        0.6
+      ],
+      "damageAfterMs": null
+    },
+    {
+      "name": "base-foot",
+      "drawCallsBefore": 133,
+      "drawCallsAfter": 133,
+      "trianglesBefore": 669586,
+      "trianglesAfter": 669150,
+      "damageBeforeMs": [
+        2.65,
+        5
+      ],
+      "damageAfterMs": null
+    },
+    {
+      "name": "base-board",
+      "drawCallsBefore": 147,
+      "drawCallsAfter": 147,
+      "trianglesBefore": 673234,
+      "trianglesAfter": 672798,
+      "damageBeforeMs": [
+        0.3,
+        0.4
+      ],
+      "damageAfterMs": [
+        0.35,
+        0.5
+      ]
+    },
+    {
+      "name": "base-under-fire",
+      "drawCallsBefore": 155,
+      "drawCallsAfter": 155,
+      "trianglesBefore": 682969,
+      "trianglesAfter": 682968,
+      "damageBeforeMs": [
+        103.1,
+        205.8
+      ],
+      "damageAfterMs": [
+        5.15,
+        8
+      ]
+    }
+  ]
+}

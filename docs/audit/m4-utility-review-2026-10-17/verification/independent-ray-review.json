@@ -1,0 +1,19 @@
+{
+  "pass": true,
+  "head": "2e157d76cc16a060d530a9d00534618f6b803844",
+  "sourceSHA256": "558425059f48d781b6bbf3a6713ee6e060a628f761b93d9f16c752c9b6762f18",
+  "seed": 4242,
+  "conditions": "Oblique triangle-centroid near=.68/far=1.32 rays, parent rotation and nonuniform/negative/extreme scales plus rotated body causing shear",
+  "evidence": [
+    {
+      "type": "army_jeep",
+      "compared": 1200,
+      "hitRays": 1200
+    },
+    {
+      "type": "army_truck",
+      "compared": 1200,
+      "hitRays": 1200
+    }
+  ]
+}

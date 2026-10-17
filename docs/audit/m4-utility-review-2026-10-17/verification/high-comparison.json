@@ -1,0 +1,40 @@
+{
+  "pass": true,
+  "beforeHtmlSha256": "c3200fc63508a789867d7ff8617c7f5c2a79c4dc703529f8ac69002372cd579d",
+  "afterHtmlSha256": "c1f293d6e0f7e0eb2a81f3ebd09e268d7a038b4830de5f660b9e5cff66efe764",
+  "recorderSha256": "066497567bd4f56aacb8f528ca311c37fdb476d013b16a714cdc78346b4d1c89",
+  "fixtureAndInputsEqual": true,
+  "captures": [
+    {
+      "before": "m4-utility-before-detail.png",
+      "after": "m4-utility-after-detail.png",
+      "statusEqual": true,
+      "cameraEqual": true,
+      "damageDifferences": []
+    },
+    {
+      "before": "m4-utility-before-round-wheels.png",
+      "after": "m4-utility-after-round-wheels.png",
+      "statusEqual": true,
+      "cameraEqual": true,
+      "damageDifferences": []
+    },
+    {
+      "before": "m4-utility-before-punctured-rim.png",
+      "after": "m4-utility-after-punctured-rim.png",
+      "statusEqual": true,
+      "cameraEqual": true,
+      "damageDifferences": [
+        {
+          "field": "damage.parts.doorRight",
+          "before": 2,
+          "after": 1
+        }
+      ]
+    }
+  ],
+  "repairEqual": true,
+  "errorsBefore": [],
+  "errorsAfter": [],
+  "note": "Same recorder, fixture, named inputs, status, camera, puncture, motion and handling. Only the right-door damage part differs (2 versus 1): unchanged recordVehicleDamage uses Math.random() < 0.5 for door break-off after a large crumple (src/damage-vehicles.js:282\u2013283). Three BufferGeometry UUIDs also consume global Math.random, so renderer resource changes can shift that pre-existing cosmetic roll. No claim of complete damage-object equality; both repairs clear all damage."
+}

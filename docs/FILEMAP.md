@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-613 files in the include tree, 209,290 lines.
+613 files in the include tree, 209,366 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -592,7 +592,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/damage3d.js ▸ Crumpling bodies, decals, debris and knocked furniture
 
 - `src/damage3d-decals.js`   698 — Damage 3D decals: the decal atlas (cracked glass, soot) and world decal layers (addDecal, flushDecals).
-- `src/damage3d-bodies.js`   681 — Damage 3D vehicle bodies: shell sections, crumpling, hinged parts and glass (carBodyDamage, crumple).
+- `src/damage3d-bodies.js`   688 — Damage 3D vehicle bodies: shell sections, crumpling, hinged parts and glass (carBodyDamage, crumple).
 - `src/vehicle-doors3d.js`   324 — Source-backed front doors: actual body apertures and moving paint/trim/glass.
 - `src/ride-wheels3d.js`    53 — Ride wheels: every four-wheeled model's wheels follow their springs' travel on terrain (terrain-suspension.js ride.d), as the 4x4 club trucks' axles …
 - `src/damage3d-crumple.js`   670 — Damage 3D crumple: every part of a car body bent by the one crumple field (crumpleField, damage-crumple.js) at its rest place: shell, glass, paint …
@@ -707,9 +707,9 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/base3d-facilities.js`   337 — Fort Sentinel control tower, radar head (radarHead), windsock and glow meshes.
 - `src/base3d-frame.js`   102 — Fort Sentinel per-frame visuals: updateBaseVisuals() and the searchlight lens.
 - `src/base3d-vehicles.js`   277 — Military vehicle models: makeMilitaryVehicle(), compactTank, wheels, lamps and star decals.
-- `src/military-asset-wheels3d.js`   160 — Downloaded M4 wheels: split the source tyre circle from fixed running gear, recover its true axle and circularize its slightly oval source tyre/rim.
+- `src/military-asset-wheels3d.js`   226 — Downloaded M4 wheels: split the source tyre circle from fixed running gear, recover its true axle and circularize its slightly oval source tyre/rim.
 - `src/military-mark-rays3d.js`   181 — Exact CPU ray broadphase for immutable downloaded military bodies.
-- `src/military-assets3d.js`   236 — Fort Sentinel's vehicles from downloaded models (vehicle-assets3d.js ASSET CARS data, tools/vehicle_models_special.py): the M4 utility (HMMWV) and …
+- `src/military-assets3d.js`   239 — Fort Sentinel's vehicles from downloaded models (vehicle-assets3d.js ASSET CARS data, tools/vehicle_models_special.py): the M4 utility (HMMWV) and …
 
 ## src/boats3d.js ▸ Boat kit: lofted hulls and shared yacht parts
 

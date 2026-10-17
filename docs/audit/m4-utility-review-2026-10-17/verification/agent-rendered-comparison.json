@@ -1,0 +1,151 @@
+{
+  "beforeHTML": "c3200fc63508a789867d7ff8617c7f5c2a79c4dc703529f8ac69002372cd579d",
+  "afterHTML": "c1f293d6e0f7e0eb2a81f3ebd09e268d7a038b4830de5f660b9e5cff66efe764",
+  "recorder": "641cd62ac51f61ba745867c56c447dab2443ddc23b718b080d34649d8e228a9b",
+  "fixtureMatched": true,
+  "inputsMatched": true,
+  "statesMatched": true,
+  "beforeErrors": [],
+  "afterErrors": [],
+  "rows": [
+    {
+      "name": "outside-foot",
+      "before": {
+        "cpuMs": 1499.219,
+        "damage": [
+          1.35,
+          2.4
+        ],
+        "drawCalls": 153,
+        "triangles": 871705
+      },
+      "after": {
+        "cpuMs": 1917.519,
+        "damage": [
+          0.6,
+          1
+        ],
+        "drawCalls": 155,
+        "triangles": 872771
+      }
+    },
+    {
+      "name": "outside-pristine",
+      "before": {
+        "cpuMs": 497.792,
+        "damage": [
+          0.65,
+          1
+        ],
+        "drawCalls": 161,
+        "triangles": 886655
+      },
+      "after": {
+        "cpuMs": 577.109,
+        "damage": [
+          5.55,
+          10.8
+        ],
+        "drawCalls": 164,
+        "triangles": 886919
+      }
+    },
+    {
+      "name": "outside-new-holes",
+      "before": {
+        "cpuMs": 804.788,
+        "damage": [
+          440.9,
+          874.8
+        ],
+        "drawCalls": 136,
+        "triangles": 859530
+      },
+      "after": {
+        "cpuMs": 468.778,
+        "damage": [
+          22.9,
+          45.5
+        ],
+        "drawCalls": 136,
+        "triangles": 859530
+      }
+    },
+    {
+      "name": "outside-cached-holes",
+      "before": {
+        "cpuMs": 435.761,
+        "damage": [
+          0.4,
+          0.6
+        ],
+        "drawCalls": 136,
+        "triangles": 859530
+      },
+      "after": {
+        "cpuMs": 324.673,
+        "drawCalls": 136,
+        "triangles": 859530
+      }
+    },
+    {
+      "name": "base-foot",
+      "before": {
+        "cpuMs": 408.756,
+        "damage": [
+          2.65,
+          5
+        ],
+        "drawCalls": 133,
+        "triangles": 669586
+      },
+      "after": {
+        "cpuMs": 500.662,
+        "drawCalls": 133,
+        "triangles": 669150
+      }
+    },
+    {
+      "name": "base-board",
+      "before": {
+        "cpuMs": 422.047,
+        "damage": [
+          0.3,
+          0.4
+        ],
+        "drawCalls": 147,
+        "triangles": 673234
+      },
+      "after": {
+        "cpuMs": 411.625,
+        "damage": [
+          0.35,
+          0.5
+        ],
+        "drawCalls": 147,
+        "triangles": 672798
+      }
+    },
+    {
+      "name": "base-under-fire",
+      "before": {
+        "cpuMs": 790.319,
+        "damage": [
+          103.1,
+          205.8
+        ],
+        "drawCalls": 155,
+        "triangles": 682969
+      },
+      "after": {
+        "cpuMs": 792.322,
+        "damage": [
+          5.15,
+          8
+        ],
+        "drawCalls": 155,
+        "triangles": 682968
+      }
+    }
+  ]
+}

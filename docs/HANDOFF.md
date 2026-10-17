@@ -3,6 +3,31 @@
 Written for the next AI session (or human) picking this work up. Read `/CLAUDE.md` first (commands,
 rules, workflow), then this page, then only the area doc your task needs (`docs/README.md`).
 
+## October 17: military M4 performance and round rims
+
+Continue on **`codex-reviews`**. The owner's Fort Sentinel M4 slowdown came from
+bullet-mark surface/ring raycasts repeatedly scanning the complete body. The
+immutable military body now uses a shared exact triangle broadphase, retaining
+vanilla Three's intersection math, source faces and mark support. The production
+12-hole recheck drops from 2,871,936 to 1,044 triangle tests. Read
+[the M4 review](audit/m4-utility-review-2026-10-17/README.md) for CPU/native
+measurements, their limits and the final deployment receipt.
+
+The source M4 tyre ellipse is corrected once per kit. Punctures now deform only
+rubber: the metal rim and bead remain rigid. A flat owns one reused private mesh
+geometry; repair/burn restores the source, and retirement disposes private
+buffers. Keep cached source attributes immutable, pressure deformation outside
+spin and its analytic normal transform. The actual world-space metal ring tests
+must not divide away a whole-wheel squash. Other vehicles retain their own path.
+
+Frozen game source: `2e157d76`; final monolith starts `c1f293d6e0f7e0eb`, split
+entry `a81ed60dc1a5154c`. [Playable release](https://starfox22.github.io/GTA/?review=a81ed60dc1a5154c)
+and [native comparisons](https://starfox22.github.io/GTA/review/?review=a81ed60dc1a5154c).
+Host verification passes 54,660 assertions; the seeded ABBA base/theft/chase
+stages retain identical state hashes. Final native checks include a real
+collision-induced puncture, rolling wheel and repair. Historical SVJ, wheelie,
+impact and aviation reviews remain available from the gallery.
+
 ## October 17: downloaded Brutini SVJ and earlier motorcycle handling
 
 Continue on **`codex-reviews`**. The owner requested a downloaded replacement for

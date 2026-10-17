@@ -1,0 +1,363 @@
+{
+ "tag": "m4-before",
+ "live": false,
+ "scale": 1,
+ "seed": 1,
+ "at": "2026-10-17T15:24:47.386Z",
+ "tiers": {
+  "current": {
+   "stages": {
+    "fortM4": {
+     "mode": "stepped",
+     "frames": 492,
+     "wrappersLeft": 0,
+     "seconds": 8.2,
+     "avgMs": 7.18,
+     "p50Ms": 4.6,
+     "p95Ms": 13.9,
+     "p99Ms": 38.1,
+     "maxMs": 317.9,
+     "longLimitMs": 9.2,
+     "long": 59,
+     "over16": 22,
+     "over33": 7,
+     "gaps": {
+      "p50": 16.67,
+      "p95": 16.67,
+      "max": 16.67,
+      "over2x": 0,
+      "over33": 0
+     },
+     "causes": {
+      "waypoint": 2,
+      "sealife": 6,
+      "cars": 24,
+      "ui": 7,
+      "f:pre": 1,
+      "civic": 5,
+      "bullets": 6,
+      "citylife": 2,
+      "military": 2,
+      "sports": 1,
+      "people": 2,
+      "coaster": 1
+     },
+     "tags": {
+      "spawn": 3,
+      "gc": 4,
+      "dom": 2,
+      "gc-between": 1
+     },
+     "excessMs": {
+      "cars": 261.54,
+      "ui": 248.84,
+      "waypoint": 197.58,
+      "sealife": 155.98,
+      "civic": 52.6,
+      "bullets": 45.95,
+      "people": 38.74,
+      "military": 38.63
+     },
+     "sections": {
+      "cars": [
+       3.21,
+       40
+      ],
+      "phys:control": [
+       1.28,
+       26.4
+      ],
+      "ui": [
+       0.69,
+       210.3
+      ],
+      "phys:post": [
+       0.65,
+       9.5
+      ],
+      "phys:broadphase": [
+       0.62,
+       5.5
+      ],
+      "civic": [
+       0.44,
+       13.6
+      ],
+      "waypoint": [
+       0.41,
+       195.4
+      ],
+      "people": [
+       0.37,
+       14.2
+      ],
+      "phys:contacts": [
+       0.35,
+       17.3
+      ],
+      "sealife": [
+       0.33,
+       35.4
+      ],
+      "military": [
+       0.31,
+       13.4
+      ],
+      "bullets": [
+       0.26,
+       13.7
+      ],
+      "police:officers": [
+       0.11,
+       4.1
+      ],
+      "sports": [
+       0.08,
+       15.5
+      ],
+      "f:pre": [
+       0.06,
+       8.7
+      ],
+      "police:wanted": [
+       0.05,
+       5.2
+      ]
+     },
+     "totals": {
+      "allocKB": 354178,
+      "dom": 236,
+      "vehicles": 20,
+      "gcMB": 303,
+      "canvasDraws": 86,
+      "canvasText": 424,
+      "gcBetweenMB": 1,
+      "people": 2
+     },
+     "perSecond": {
+      "allocKB": 43192.44,
+      "dom": 28.78,
+      "vehicles": 2.44,
+      "gcMB": 36.95,
+      "canvasDraws": 10.49,
+      "canvasText": 51.71,
+      "gcBetweenMB": 0.12,
+      "people": 0.24
+     },
+     "domTargets": [
+      [
+       "navArrow [style]",
+       62
+      ],
+      [
+       "speed (children)",
+       27
+      ],
+      [
+       "carFill [style]",
+       20
+      ],
+      [
+       "quickKeys (children)",
+       11
+      ],
+      [
+       "chaseStatus (children)",
+       10
+      ],
+      [
+       "worldClock (children)",
+       9
+      ],
+      [
+       "missionDistance (children)",
+       8
+      ],
+      [
+       "navDistance (children)",
+       8
+      ]
+     ],
+     "worst": [
+      {
+       "frame": 0,
+       "t": 0.02,
+       "ms": 317.9,
+       "cause": "waypoint +194.99",
+       "tags": [
+        "spawn"
+       ],
+       "parts": {
+        "waypoint": 195.4,
+        "cars": 40,
+        "people": 13,
+        "sealife": 12
+       },
+       "c": {
+        "allocKB": 26386,
+        "dom": 2,
+        "vehicles": 15
+       }
+      },
+      {
+       "frame": 5,
+       "t": 0.1,
+       "ms": 252.4,
+       "cause": "ui +209.61",
+       "tags": [
+        "dom"
+       ],
+       "parts": {
+        "ui": 210.3,
+        "sealife": 17.7,
+        "people": 14.2,
+        "cars": 8.1
+       },
+       "c": {
+        "canvasDraws": 5,
+        "canvasText": 22,
+        "allocKB": 4147,
+        "dom": 34
+       }
+      },
+      {
+       "frame": 3,
+       "t": 0.07,
+       "ms": 42.1,
+       "cause": "cars +20.59",
+       "tags": [
+        "gc"
+       ],
+       "parts": {
+        "cars": 23.8,
+        "sealife": 13.9,
+        "civic": 1.1,
+        "people": 0.9
+       },
+       "c": {
+        "gcMB": 28.8
+       }
+      },
+      {
+       "frame": 8,
+       "t": 0.15,
+       "ms": 42,
+       "cause": "sealife +35.07",
+       "tags": [],
+       "parts": {
+        "sealife": 35.4,
+        "cars": 4.2,
+        "people": 0.4,
+        "military": 0.4
+       },
+       "c": {
+        "allocKB": 5966
+       }
+      },
+      {
+       "frame": 2,
+       "t": 0.05,
+       "ms": 38.1,
+       "cause": "sealife +16.87",
+       "tags": [],
+       "parts": {
+        "sealife": 17.2,
+        "cars": 16.6,
+        "civic": 1.5,
+        "military": 1
+       },
+       "c": {
+        "allocKB": 4119
+       }
+      },
+      {
+       "frame": 1,
+       "t": 0.03,
+       "ms": 34.8,
+       "cause": "sealife +13.77",
+       "tags": [],
+       "parts": {
+        "sealife": 14.1,
+        "cars": 5.7,
+        "sports": 3.7,
+        "knockdowns": 3.5
+       },
+       "c": {
+        "allocKB": 2087
+       }
+      },
+      {
+       "frame": 6,
+       "t": 0.12,
+       "ms": 33.5,
+       "cause": "sealife +20.57",
+       "tags": [],
+       "parts": {
+        "sealife": 20.9,
+        "cars": 6.1,
+        "f:pre": 3.2,
+        "military": 1
+       },
+       "c": {
+        "allocKB": 2791
+       }
+      },
+      {
+       "frame": 4,
+       "t": 0.08,
+       "ms": 27.3,
+       "cause": "sealife +12.87",
+       "tags": [],
+       "parts": {
+        "sealife": 13.2,
+        "cars": 11.4,
+        "civic": 0.5,
+        "military": 0.5
+       },
+       "c": {
+        "allocKB": 1651
+       }
+      },
+      {
+       "frame": 387,
+       "t": 6.47,
+       "ms": 23.3,
+       "cause": "cars +18.49",
+       "tags": [
+        "gc"
+       ],
+       "parts": {
+        "cars": 21.7,
+        "people": 0.3,
+        "civic": 0.3,
+        "military": 0.2
+       },
+       "c": {
+        "gcMB": 30.3
+       }
+      },
+      {
+       "frame": 7,
+       "t": 0.13,
+       "ms": 22,
+       "cause": "sealife +13.07",
+       "tags": [],
+       "parts": {
+        "sealife": 13.4,
+        "cars": 2.5,
+        "people": 1.9,
+        "military": 0.8
+       },
+       "c": {
+        "allocKB": 1865
+       }
+      }
+     ],
+     "cpuMsPerFrame": 6.17,
+     "hash": "ee6a0099e4ffdff9"
+    }
+   },
+   "browser": null
+  }
+ }
+}
