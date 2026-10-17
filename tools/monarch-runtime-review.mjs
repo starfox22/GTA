@@ -1,12 +1,15 @@
 // Native WebGL review of the downloaded Monarch collection and its material lifecycle.
 // Named public console actions/reports only; screenshots preserve the normal game UI.
-// node tools/monarch-runtime-review.mjs FROZEN_HTML OUTPUT [MONARCH_PACK]
+// node tools/monarch-runtime-review.mjs FROZEN_HTML OUTPUT [MONARCH_PACK] [--lifecycle-only|--showroom-only]
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {launchBrowser} from './browser.mjs';
 
-const [input,directory,packInput='assets/monarch-vehicle-models.bin']=process.argv.slice(2);
+const args=process.argv.slice(2),flags=args.filter(arg=>arg.startsWith('--'));
+if(flags.some(flag=>!['--lifecycle-only','--showroom-only'].includes(flag))||flags.length>1)throw Error('Choose one known review mode');
+const mode=flags[0]?.slice(2,-5)||'full';
+const [input,directory,packInput='assets/monarch-vehicle-models.bin']=args.filter(arg=>!arg.startsWith('--'));
 if(!input||!directory)throw Error('Frozen HTML and output directory required');
 const html=path.resolve(input),out=path.resolve(directory),pack=path.resolve(packInput);
 const sha=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
@@ -19,7 +22,7 @@ const mapping={valkyrie:'monarch_valkyrie',dbs:'monarch_db11',zr1x:'monarch_c8_h
 fs.mkdirSync(out,{recursive:true});
 const report={htmlSha256:sha(fs.readFileSync(html)),recorderSha256:sha(fs.readFileSync(new URL(import.meta.url))),
  packSha256:sha(bytes),fixture:{viewport:[1000,700],seed:1,weather:'clear',clock:13,position:[418,6000]},
- status:'running',events:[],checks:0,inputs:[],sources:Object.fromEntries(Object.entries(source).map(([key,m])=>[key,{gameTypes:m.gameTypes,
+ mode,status:'running',events:[],checks:0,inputs:[],sources:Object.fromEntries(Object.entries(source).map(([key,m])=>[key,{gameTypes:m.gameTypes,
   triangles:m.triangles,farTriangles:m.farTriangles,hasNormalMaps:m.hasNormalMaps,atlas:m.atlas,lowAtlas:m.lowAtlas}])),
  native:[],tiers:[],lifecycle:[],screenshots:[],errors:[],warnings:[]};
 const allowed=new Set(['status','holdSimulation','god','graphics','settings','sky','setClock','wanted','look','drive','placeVehicle',
@@ -45,7 +48,7 @@ async function batch(rows){
 }
 const call=async(name,...args)=>(await batch([[name,args]]))[0];
 const draw=['hitchRun',[1/60,[],1,false,true]],age=['hitchRun',[1.3,[],1,false,false]];
-async function settle(){await batch([draw,draw]);await page.waitForTimeout(1200);}
+async function settle(){await page.waitForTimeout(1200);}
 async function snapshot(id){
  const [status,models,doors,char,damage,faults,gpu]=await batch([['status',[]],['approvedAssets',[]],['vehicleDoors',[id]],
   ['assetChar',[]],['damageReport',[id]],['frameFaults',[]],['gpuContext',[]]]);
@@ -107,14 +110,16 @@ try{
  }
  assert(assets.models.chevette?.triangles===85031&&assets.models.chevette.sourceKey==='c8_hari','Ordinary C8 source changed');
  assert(assets.models.brutini?.triangles===508324&&assets.models.brutini.sourceKey==='svj_sdc','Retained Brutini source changed');
+ if(mode!=='showroom'){
  // Fail early on the new char inheritance before the collection tour.
- // These repaired cars remain 25 m beyond the tour position.
+ // These repaired cars remain 25 m beyond the tour position. The close cabin
+ // camera keeps the native render workload bounded during the lifecycle checks.
  // Use an unboarded, pristine source with native doors. CCX also compiles source
  // normal maps through the soot shader; the C8 verifies the shared-family adapter.
  for(const [index,type]of ['jasko','zr1x'].entries()){
   stage(type+' lifecycle: create clean source');
   const x=418+index*160,y=6200;
-  await batch([['look',[x,y+80,1.6]],['inspectView',[]],['graphics',['high']]]);
+  await batch([['look',[x,y-30,3]],['closeUp',[11]],['inspectView',[165,10,4]],['graphics',['high']]]);
   const [lineup]=await batch([['carLineup',[[type],x,y,0,44,'#b72228',true]],draw,draw]);
   const id=lineup[0].id;await settle();await textures('high',mapping[type]);
   const clean=await snapshot(id);healthy(clean,type+' clean');
@@ -146,6 +151,8 @@ try{
   report.lifecycle.push({type,id,clean,burnt,burntOpen,repaired,reopened});
   console.log('PASS source burn, first door, repair and reopen',type);save();
  }
+ }
+ if(mode==='full'){
  for(const [index,[type,key]]of Object.entries(mapping).entries()){
   stage(type+' native near source and high textures');
   if(index)await call('placeVehicle',418,7000+index*100,0);
@@ -168,6 +175,8 @@ try{
  stage('collection textures: return high tier');
  await batch([['graphics',['high']],draw]);await settle();await textures('high',mapping.lafera);
  await screenshot('laferrari-high-tier.png',{type:'lafera'});
+ }
+ if(mode!=='lifecycle'){
  stage('actual Monarch Motors stock');
  // These are the real dealership's stocked entities, not a staged duplicate row.
  await batch([['inspectView',[]],['dealershipVisit',['hall',1.6]],['viewMode',['street']],['graphics',['high']],draw,draw]);
@@ -181,7 +190,23 @@ try{
   const model=report.showroom.models.models.find(model=>model.id===slot.car);
   assert(model?.asset===(mapping[slot.type]||'svj_sdc'),'Showroom '+slot.type+': wrong stocked source model');
  }
+ assert(Object.values(report.showroom.monarch.models).every(model=>model.texturesReady),'Every stocked source must have loaded maps');
+ for(const type of ['w1','tourbillon']){
+  const slot=report.showroom.dealership.slots.find(slot=>slot.type===type),key=mapping[type];
+  assert(report.showroom.monarch.models[key].hasNormalMaps&&source[key].hasNormalMaps,type+': normal-enabled source metadata missing');
+  assert(report.showroom.models.models.some(model=>model.id===slot.car&&model.asset===key),type+': actual normal-enabled stocked model missing');
+ }
  await screenshot('monarch-motors-stock.png',{place:'actual Monarch Motors hall'});
+ stage('showroom all ten sources: low tier');
+ await batch([['graphics',['low']],draw,draw]);await settle();const lowStock=await textures('low',null);
+ assert(Object.values(lowStock.models).every(model=>model.texturesReady&&Object.values(model.atlasSizes).every(([w,h])=>w<=1024&&h<=1024)),'Stocked low-tier map budget exceeded');
+ report.showroomLow={monarch:lowStock,profile:await call('drawProfile',5)};
+ stage('showroom one full-detail source: high tier');
+ await batch([['graphics',['high']],draw,draw]);await settle();
+ const highFocus=(await call('monarchAssets')).heroSource;
+ report.showroomHigh={monarch:await textures('high',highFocus),profile:await call('drawProfile',5)};
+ assert(highFocus&&Object.values(report.showroomHigh.monarch.models).filter(model=>model.targetTextures==='high').length===1,'Showroom did not retain exactly one full-detail family');
+ }
  report.final={faults:await call('frameFaults'),gpu:await call('gpuContext'),profile:await call('drawProfile',5),
   assets:await call('assetCars'),char:await call('assetChar'),headroom:await call('cabinHeadroom')};
  assert(!report.final.faults.count&&!report.final.gpu.lost&&!report.errors.length,'Final renderer/GPU errors');
