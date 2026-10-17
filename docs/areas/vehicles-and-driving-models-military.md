@@ -44,12 +44,30 @@ handling are unchanged. Credits: THIRD_PARTY_CREDITS.txt.
   both rear centres about 35.4 cm off it. `militaryAssetWheelPartition` runs once per
   cached `army_jeep` kit: it finds and validates the dominant connected tyre/rim circle,
   retains small coaxial hub pieces, moves other components into the static near/far
-  body, and recovers the circle's centre/radius. Every source triangle remains once
-  at its original rest location; normals and atlas UVs stay exact. Four wheel draws
+  body, and recovers the circle's centre/radius. Every source triangle remains once;
+  fixed running gear keeps its exact source positions/normals/UVs. Four wheel draws
   stay four. Compact subsets own their buffers; the obsolete unuploaded input is
   removed from `sharedGeometries` and disposed. Other types and uncertain new layouts
   retain their original geometry. Regenerated source packs need `m4-wheel-partition`
   and rendered moving-wheel checks; the classifier never assumes a generic new asset.
+- The source rolling mesh itself has a mild ellipse: about 0.85768 m across versus
+  0.86822 m high (aspect 0.98785), independent of the earlier wrong-centre orbit.
+  `militaryWheelCircularize` measures all 24 outer tread stations and fits their
+  positive-definite XY ellipse around the recovered axle. Its symmetric square-root
+  transform makes that ellipse circular without adding or deleting vertices/faces.
+  For the shipped wheels the largest stretch is only 1.229%; the corrected outer
+  tread radius spread is about 0.05 mm. All six tyre/rim/hub rings share this same
+  correction, retaining their relative profile and axial thickness. The fit requires
+  every station, a clean residual and principal stretches within 5%; uncertain layouts
+  stay unchanged. The packed assets and the body/fixed running gear are not rewritten.
+  Original UVs and source triangle ownership stay exact. Authored split normals
+  follow the affine inverse transpose; they are never replaced by smoothed normals.
+  This runs once per shared kit and adds no draws or per-frame work.
+- An intact M4 uses a uniform 0.65 model scale. `specialDamage` deliberately applies
+  a vertical 0.82 squash to a punctured tyre, outside wheel spin; that physical flat
+  must remain visibly flat. Repair restores scale 1, ride height and the ordinary
+  wheel matrix. Camera foreshortening can also make a circular sidewall project as
+  an ellipse; the measured source correction addresses actual wheel geometry.
 - Near HMMWV body stays unclustered. Far body is eligible only for other vehicles
   in chase view. The tier-scaled transition has 0.9/1.1 hysteresis; the player's
   own vehicle and street/flight views always keep the near body.
@@ -58,7 +76,15 @@ Checks: `military-model-rig` runs the production decoder/builders/animation/char
 functions with real Three.js and the packed assets. Render `asset-char` and all
 graphics tiers with `--shadercheck` too; shader string checks cannot prove WebGL
 compilation. See the October 13 audit for actual captures and limits.
-`m4-wheel-partition` also proves actual packed triangle conservation, rest geometry,
-normals/UVs, corrected source axle pairs, and circle-centre stability across 48 spin
+`m4-wheel-partition` also proves actual packed triangle conservation, fixed source
+geometry, wheel affine fit/inverse-transpose normals, unchanged UVs, corrected source
+axle pairs, and circle-centre stability across 48 spin
 phases per wheel. The original rear circles orbited over 71 cm peak-to-peak in source
 metres; corrected circle centres stay on their axles.
+`m4-wheel-shape` separately measures six actual tyre/rim/hub cross-sections in world
+space through the production military builder, wheel animation, 0.65 design/group
+scale, body bank/pitch, near/far LOD and actual clean/puncture/repair matrices. It
+covers 48 forward/reverse phases and three steering angles, proving that all intact
+bands stay circular and puncture squash stays vertical. The worst corrected band
+radius spread is 0.153 mm, below the 0.25 mm tolerance. These are geometry/matrix
+checks; final native game captures remain separate visual evidence.

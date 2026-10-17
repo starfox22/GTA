@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import { createRequire } from 'node:module';
 
-export default async function(t) {
+export async function runMilitaryModelRig(t, exercise = null) {
   const Three = createRequire(import.meta.url)('../../vendor/three.r160.js'),
     read = name => fs.readFileSync(new URL('../../src/' + name, import.meta.url), 'utf8'),
     bytes = fs.readFileSync(new URL('../../assets/vehicle-models.bin', import.meta.url)),
@@ -41,6 +41,7 @@ export default async function(t) {
       return model;
     },
     mats = api.vaMaterials();
+  if (exercise) return exercise({ Three, read, scope, api, make, header, arrays, mats });
   t.assert(mats.armyBody.roughness > .8 && mats.armyBody.metalness < .1, 'canvas/paint still uses chrome finish');
   const jeep = make('army_jeep'), kit = api.militaryAssetKit('army_jeep', header.models.army_jeep.dims[0] * 8),
     panes = kit.panes.index.count, lenses = Object.values(kit.lamps).reduce((sum, g) => sum + g.index.count, 0);
@@ -130,3 +131,4 @@ export default async function(t) {
   const stand = make('army_jeep'); t.assert(api.assetCharWarm(stand), 'military char prewarm failed');
   t.note('Original 156 lamp triangles reassigned; no geometry/texture replacement; two military kits reused across 20 repeated spawns.');
 }
+export default runMilitaryModelRig;

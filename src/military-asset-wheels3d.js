@@ -1,6 +1,57 @@
       // Downloaded M4 wheels: split the source tyre circle from fixed running gear,
-      // recover its true axle and preserve every source triangle at its rest location.
+      // recover its true axle and circularize its slightly oval source tyre/rim.
       // This runs once per cached kit; all other models retain their exact original geometry.
+      function militaryWheelCircularize(geo, radius, ringTriangles) {
+        const p = geo.attributes.position, n = geo.attributes.normal, index = geo.index,
+          source = geo.userData.sourceTriangles, vertices = new Set(), bins = new Array(24),
+          matrix = new Three.Matrix3(), rhs = new Three.Vector3(), sums = new Float64Array(9);
+        for (let triangle = 0; triangle < source.length; triangle++) if (ringTriangles.has(source[triangle]))
+          for (let corner = 0; corner < 3; corner++) vertices.add(index.getX(triangle * 3 + corner));
+        for (const i of vertices) {
+          const x = p.getX(i) / radius, y = p.getY(i) / radius, r2 = x * x + y * y,
+            angle = (Math.round(Math.atan2(y, x) / (Math.PI * 2) * 24) + 24) % 24;
+          if (!bins[angle] || r2 > bins[angle].r2) bins[angle] = { x, y, r2 };
+        }
+        // The shipped tyre has 24 source tread stations. All must be present;
+        // uncertain new geometry must not receive a guessed shape correction.
+        if (bins.some(point => !point) || bins.filter(Boolean).length !== 24) return null;
+        for (const { x, y } of bins) {
+          const v = [x * x, 2 * x * y, y * y];
+          rhs.x += v[0]; rhs.y += v[1]; rhs.z += v[2];
+          for (let row = 0; row < 3; row++) for (let column = 0; column < 3; column++) sums[row * 3 + column] += v[row] * v[column];
+        }
+        matrix.set(...sums);
+        if (Math.abs(matrix.determinant()) < 1e-8) return null;
+        rhs.applyMatrix3(matrix.invert());
+        const a = rhs.x, b = rhs.y, c = rhs.z, det = a * c - b * b;
+        if (!(a > 0 && c > 0 && det > 0)) return null;
+        const root = Math.sqrt(det), divisor = Math.sqrt(a + c + 2 * root),
+          xx = (a + root) / divisor, xy = b / divisor, yy = (c + root) / divisor,
+          spread = Math.hypot(a - c, 2 * b),
+          stretch = Math.sqrt((a + c + spread) * .5), shrink = Math.sqrt((a + c - spread) * .5),
+          residual = Math.max(...bins.map(({ x, y }) => Math.abs(Math.sqrt(a * x * x + 2 * b * x * y + c * y * y) - 1)));
+        // This is a measured mild ellipse correction, never a replacement wheel.
+        // Bound both principal stretches to 5% and require a clean source fit.
+        if (!Number.isFinite(stretch) || !Number.isFinite(shrink) || stretch > 1.05 || shrink < .95 || residual > .001) return null;
+        const inverse = 1 / (xx * yy - xy * xy);
+        for (let i = 0; i < p.count; i++) {
+          const x = p.getX(i), y = p.getY(i);
+          p.setXY(i, xx * x + xy * y, xy * x + yy * y);
+          if (n) {
+            const nx = n.getX(i), ny = n.getY(i), nz = n.getZ(i),
+              tx = (yy * nx - xy * ny) * inverse, ty = (xx * ny - xy * nx) * inverse,
+              length = Math.hypot(tx, ty, nz) || 1;
+            // Preserve authored split normals through the affine inverse transpose;
+            // recomputing smooth normals would erase the tyre/rim surface breaks.
+            n.setXYZ(i, tx / length, ty / length, nz / length);
+          }
+        }
+        geo.computeBoundingBox(); geo.computeBoundingSphere();
+        const before = bins.map(point => Math.sqrt(point.r2) * radius),
+          after = bins.map(({ x, y }) => Math.hypot(xx * x + xy * y, xy * x + yy * y) * radius);
+        return { transform: [xx, xy, xy, yy], treadStations: bins.length, fitResidual: residual * radius,
+          radialBefore: [Math.min(...before), Math.max(...before)], radialAfter: [Math.min(...after), Math.max(...after)] };
+      }
       function militaryAssetWheelPartition(geo, wh, k, type) {
         const fallback = { wheel: geo, fixed: null, at: [wh.x * k, wh.y * k, wh.z * k], r: wh.r * k, calibrated: false };
         if (type !== 'army_jeep' || !geo?.index || !geo.attributes.position || !(k > 0) || !(wh.r > 0)) return fallback;
@@ -97,12 +148,13 @@
           return result;
         }
         const wheel = subset(moving, center.map(v => -v)),
-          body = subset(fixed, fallback.at);
+          body = subset(fixed, fallback.at),
+          roundness = militaryWheelCircularize(wheel, radius, new Set(ring.triangles));
         // Both subsets own compact attribute buffers; the unuploaded input is no
         // longer drawn or shared by any kit, so it need not stay in the warm set.
         sharedGeometries.delete(geo);
         geo.dispose();
         return { wheel, fixed: body, at: fallback.at.map((v, axis) => v + center[axis]), r: radius, calibrated: true,
           sourceTriangles: index.length / 3, rollingTriangles: moving.length, fixedTriangles: fixed.length,
-          ringTriangles: ring.triangles.length, sourceCenter: center, components: pieces.size };
+          ringTriangles: ring.triangles.length, sourceCenter: center, components: pieces.size, roundness };
       }

@@ -1,5 +1,5 @@
 // Actual packed HMMWV wheels and production partition helper: exact triangle conservation,
-// unchanged rest pose/normals/UVs, corrected axle circles and 48-phase orbit elimination.
+// unchanged fixed gear/UVs, measured circular wheel fit and 48-phase orbit elimination.
 import fs from 'node:fs';
 import vm from 'node:vm';
 import { createRequire } from 'node:module';
@@ -18,7 +18,7 @@ export default async function (t) {
     api = vm.runInContext(read('vehicle-assets3d.js') + read('military-asset-wheels3d.js') +
       String.fromCharCode(10) + '({ vaGeometry, militaryAssetWheelPartition })', scope),
     model = header.models.army_jeep, data = { header, arrays }, k = 8, rows = [];
-  let restError = 0, sourceTriangles = 0, rollingTriangles = 0, fixedTriangles = 0;
+  let restError = 0, shapeDelta = 0, sourceTriangles = 0, rollingTriangles = 0, fixedTriangles = 0;
   for (let i = 0; i < model.wheels.length; i++) {
     const wh = model.wheels[i], input = api.vaGeometry(model, data, `wheel${i}.tyre`, k),
       before = Array.from(input.attributes.position.array), normals = Array.from(input.attributes.normal.array),
@@ -28,6 +28,8 @@ export default async function (t) {
       `wheel ${i}: genuine tyre/rim and coaxial hub pieces not identified: ${JSON.stringify(result)}`);
     t.assert(!shared.has(input) && shared.has(result.wheel) && shared.has(result.fixed), 'obsolete full input wheel retained or compact subsets omitted');
     t.assert(result.sourceTriangles === result.rollingTriangles + result.fixedTriangles, 'source triangle count changed');
+    t.assert(result.roundness?.treadStations === 24 && result.roundness.radialBefore[1] - result.roundness.radialBefore[0] > .005 * k &&
+      result.roundness.radialAfter[1] - result.roundness.radialAfter[0] < .0001 * k, 'source ellipse was not measured and circularized');
     const seen = new Set();
     for (const [part, at] of [[result.wheel, result.at], [result.fixed, [0, 0, 0]]]) {
       t.assert(part && part.userData.sourceTriangles.length === part.index.count / 3, 'subset source provenance missing');
@@ -36,11 +38,21 @@ export default async function (t) {
         t.assert(!seen.has(sourceTriangle), 'source triangle duplicated between rolling and fixed parts'); seen.add(sourceTriangle);
         for (let corner = 0; corner < 3; corner++) {
           const old = oldIndex[sourceTriangle * 3 + corner], next = part.index.getX(triangle * 3 + corner);
+          const moving = part === result.wheel, matrix = result.roundness.transform,
+            x = before[old * 3] - result.sourceCenter[0], y = before[old * 3 + 1] - result.sourceCenter[1],
+            fitted = [matrix[0] * x + matrix[1] * y, matrix[2] * x + matrix[3] * y, before[old * 3 + 2] - result.sourceCenter[2]],
+            nx = normals[old * 3], ny = normals[old * 3 + 1], nz = normals[old * 3 + 2],
+            determinant = matrix[0] * matrix[3] - matrix[1] * matrix[2],
+            normal = new Three.Vector3((matrix[3] * nx - matrix[2] * ny) / determinant,
+              (matrix[0] * ny - matrix[1] * nx) / determinant, nz).normalize();
           for (let axis = 0; axis < 3; axis++) {
             const position = part.attributes.position.array[next * 3 + axis] + at[axis],
-              expected = before[old * 3 + axis] + [wh.x, wh.y, wh.z][axis] * k;
+              expected = moving ? fitted[axis] + at[axis] : before[old * 3 + axis] + [wh.x, wh.y, wh.z][axis] * k;
             restError = Math.max(restError, Math.abs(position - expected));
-            t.assert(part.attributes.normal.array[next * 3 + axis] === normals[old * 3 + axis], 'source normal changed');
+            if (moving) {
+              shapeDelta = Math.max(shapeDelta, Math.abs(position - before[old * 3 + axis] - [wh.x, wh.y, wh.z][axis] * k));
+              t.assert(Math.abs(part.attributes.normal.array[next * 3 + axis] - normal.getComponent(axis)) < 1e-7, 'authored wheel split normal did not follow inverse-transpose fit');
+            } else t.assert(part.attributes.normal.array[next * 3 + axis] === normals[old * 3 + axis], 'fixed running gear normal changed');
           }
           t.assert(part.attributes.uv.array[next * 2] === uv[old * 2] && part.attributes.uv.array[next * 2 + 1] === uv[old * 2 + 1], 'source atlas UV changed');
         }
@@ -64,10 +76,11 @@ export default async function (t) {
     if (i === 1) t.assert(oldOrbit > .22, 'front-left 11 cm axle error not reproduced');
     rows.push({ wheel: i, at: result.at.map(v => v / k), radius: result.r / k, sourceTriangles: result.sourceTriangles,
       rollingTriangles: result.rollingTriangles, fixedTriangles: result.fixedTriangles, sourceCenterM: result.sourceCenter.map(v => v / k),
-      previousCircleOrbitM: oldOrbit, correctedCircleOrbitM: newOrbit });
+      previousCircleOrbitM: oldOrbit, correctedCircleOrbitM: newOrbit, roundness: result.roundness });
     sourceTriangles += result.sourceTriangles; rollingTriangles += result.rollingTriangles; fixedTriangles += result.fixedTriangles;
   }
-  t.assert(restError < .000002, 'rest geometry moved: ' + restError + ' units');
+  t.assert(restError < .000002, 'geometry differs from documented circular wheel fit: ' + restError + ' units');
+  t.assert(shapeDelta / k > .005 && shapeDelta / k < .006, 'wheel correction exceeds its measured mild source ellipse');
   t.assert(Math.abs(rows[0].at[0] - rows[1].at[0]) < .0001 && Math.abs(rows[2].at[0] - rows[3].at[0]) < .0001, 'source axle pairs remain misaligned');
   // Other types and uncertain new layouts must retain the authoritative original without touching the warm set.
   const fallback = api.vaGeometry(model, data, 'wheel0.tyre', k), original = Array.from(fallback.attributes.position.array),
@@ -77,5 +90,5 @@ export default async function (t) {
   const rejected = api.militaryAssetWheelPartition(uncertain, model.wheels[0], k, 'army_jeep');
   t.assert(!rejected.calibrated && rejected.wheel === uncertain && shared.has(uncertain), 'uncertain geometry did not fail open');
   t.assert(JSON.stringify(original) === JSON.stringify(Array.from(fallback.attributes.position.array)), 'fallback geometry mutated');
-  t.note(`${sourceTriangles} source triangles = ${rollingTriangles} rolling + ${fixedTriangles} fixed; rest max error ${restError.toExponential(3)}u; all source normals/UVs exact; 48 spin phases per wheel; ${JSON.stringify(rows)}`);
+  t.note(`${sourceTriangles} source triangles = ${rollingTriangles} rolling + ${fixedTriangles} fixed; fit max error ${restError.toExponential(3)}u; fixed source normals/positions and all UVs exact; wheel normals inverse-transformed; 48 spin phases per wheel; ${JSON.stringify(rows)}`);
 }

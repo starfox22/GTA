@@ -1,0 +1,118 @@
+{
+  "sourceAsset": "assets/vehicle-models.bin / army_jeep",
+  "sourcePackSHA256": "63908560d08068f6b6df9859b9bb6040ad38028c2a0d9a0268f7d9cd4c2649ae",
+  "sourceShapeBefore": {
+    "outerTreadWidthM": 0.85767571,
+    "outerTreadHeightM": 0.86822363,
+    "aspect": 0.98785115,
+    "outerTreadRadialSpreadM": 0.00527365
+  },
+  "sourceFixedGeometry": "unchanged indexed triangle ownership, positions, normals and UVs; old mixed-wheel input partitioned into2128rolling and261fixed triangles",
+  "correction": "One-time symmetric square root of fitted positive-definite source tread ellipse; at most1.229% principal stretch for shipped M4 wheels; authored split normals transformed by inverse transpose; all original UVs/topology retained",
+  "worldShapeProof": {
+    "sourceAspectBefore": 0.98785,
+    "worstCleanRadialSpreadM": 0.0001534364744554817,
+    "worstFlatCorrectedRadialSpreadM": 0.00015343647445514863,
+    "phases": 48,
+    "steer": [
+      -0.6,
+      0,
+      0.6
+    ],
+    "bodyLods": 2,
+    "damageStates": 2,
+    "rows": [
+      {
+        "wheel": 0,
+        "radius": 0.4341118097305298,
+        "bands": [
+          0.10440164837651827,
+          0.434083269322381,
+          0.23264811098419425,
+          0.4275978842465428,
+          0.23224421836786271,
+          0.13402644955211393
+        ],
+        "correction": [
+          1.0122540314522872,
+          -1.7824228476942653e-06,
+          -1.7824228476942653e-06,
+          0.9999907353017851
+        ]
+      },
+      {
+        "wheel": 1,
+        "radius": 0.4341118097305298,
+        "bands": [
+          0.10440165099454242,
+          0.43408327537683106,
+          0.23264811570553334,
+          0.4275978845593254,
+          0.2322442224580115,
+          0.13402645173855435
+        ],
+        "correction": [
+          1.0122540598646577,
+          -1.7844129399933454e-06,
+          -1.7844129399933454e-06,
+          0.9999907305425616
+        ]
+      },
+      {
+        "wheel": 2,
+        "radius": 0.43412598967552185,
+        "bands": [
+          0.10440775120796288,
+          0.4340962571492974,
+          0.23264941772409647,
+          0.4276081699235777,
+          0.23225115162540655,
+          0.13402701015881743
+        ],
+        "correction": [
+          1.0122864289966256,
+          1.3111312826569204e-06,
+          1.3111312826569204e-06,
+          1.0000007481861806
+        ]
+      },
+      {
+        "wheel": 3,
+        "radius": 0.43412598967552185,
+        "bands": [
+          0.10440774693337561,
+          0.4340962627746014,
+          0.23264941340685197,
+          0.4276081666281415,
+          0.23225114791274157,
+          0.13402700915213014
+        ],
+        "correction": [
+          1.0122863887929074,
+          1.3134462420862991e-06,
+          1.3134462420862991e-06,
+          1.000000760929986
+        ]
+      }
+    ]
+  },
+  "tests": [
+    {
+      "module": "m4-wheel-partition",
+      "assertions": 31294,
+      "result": "PASS"
+    },
+    {
+      "module": "m4-wheel-shape",
+      "assertions": 14432,
+      "result": "PASS"
+    },
+    {
+      "module": "military-model-rig",
+      "assertions": 468,
+      "result": "PASS"
+    }
+  ],
+  "totalAssertions": 46194,
+  "nativeRendering": "Parent performs separate final integrated native game captures; this receipt proves source geometry and actual production matrices, not shader compilation or hardware FPS."
+}
