@@ -66,6 +66,13 @@ largest single High hero, before unrelated game textures and geometry. These are
 allocation estimates, not measured hardware throughput or a universal VRAM cap.
 The combined `avSurface` vec4 uses one vertex attribute slot: paint mask,
 double-sided flag, normal scale and source alpha cutoff (`-1` opaque, `-2` blend).
+Source atlas channels repeat authored UVs with continuous derivatives computed
+before `fract`, using `texture2DGradEXT` (Three maps it to WebGL2 `textureGrad`).
+Monarch materials request the WebGL1 texture-LOD/derivative extensions; devices
+without explicit gradient sampling use a derivative-ratio mip bias. This avoids
+false coarse-mip bands at integer UV repeats without changing source textures,
+normal strength or PBR factors. The atlas still uses its existing two-pixel
+gutters; very coarse minification remains limited by the shared atlas mip chain.
 Near source geometry is immutable; do not deform it or dispose a shared resource
 when a vehicle retires. Dynamic source door assemblies retain original closed
 face ownership, and source-fixed calipers cancel wheel rotation. Missing cabin

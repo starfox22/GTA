@@ -49,8 +49,10 @@ export default async function(t) {
   for(const m of [materials.trim,materials.rubber,materials.opticalGlass,paint2,lamps.headOn]) {
     const s=shaderFor(m);
     t.assert(s.vertexShader.includes('attribute vec4 avSurface;')&&!/attribute float av(?:PaintMask|DoubleSide|NormalScale)/.test(s.vertexShader),'surface controls share one shader attribute');
-    t.assert(s.fragmentShader.includes('texture2D( roughnessMap, monarchOrmUv )')&&s.fragmentShader.includes('texture2D( metalnessMap, monarchOrmUv )'),'source ORM samples independently transformed ORM UV');
-    t.assert(s.fragmentShader.includes('texture2D( emissiveMap, monarchEmissiveUv )'),'source emission has its independent UV path');
+    t.assert(s.fragmentShader.includes('monarchAtlasSample( roughnessMap, vMonarchOrmUv, vAvAtlasRect )')&&s.fragmentShader.includes('monarchAtlasSample( metalnessMap, vMonarchOrmUv, vAvAtlasRect )'),'source ORM samples independently transformed continuous ORM UV');
+    t.assert(s.fragmentShader.includes('monarchAtlasSample( emissiveMap, '+(m===lamps.headOn?'vAvSourceUv':'vMonarchEmissiveUv')+', vAvAtlasRect )'),'source emission and gameplay lamps use the correct independently repeating UV path');
+    t.assert(s.fragmentShader.includes('monarchAtlasSample( map, vAvSourceUv, vAvAtlasRect )')&&s.fragmentShader.includes('monarchAtlasSample( normalMap, vMonarchNormalUv, vAvAtlasRect )'),'albedo and source normals use continuous-gradient atlas sampling too');
+    t.assert(m.extensions.derivatives===true&&m.extensions.shaderTextureLOD===true&&s.fragmentShader.includes('texture2DGradEXT( atlasMap, atlasUv, sourceDx, sourceDy )')&&s.fragmentShader.includes('texture2D( atlasMap, atlasUv, bias )'),'source shader requests vendor WebGL1 gradients and retains an extension-free mip-bias fallback');
     t.assert(s.fragmentShader.includes('vMonarchSurface.w>=0.0 && diffuseColor.a<vMonarchSurface.w')&&s.fragmentShader.includes('vMonarchSurface.w > -1.5 && vMonarchSurface.w < -0.5'),'source MASK cutoff and OPAQUE/BLEND alpha semantics replace the generic0.5cutout');
     t.assert(s.fragmentShader.includes('mapN.xy *= normalScale * vMonarchSurface.z;'),'source material normal strength is applied before tangent-frame reconstruction');
     t.assert(s.fragmentShader.includes('vMonarchSurface.y<0.5')&&!s.fragmentShader.includes('min(0.18, vApprovedFinish.y)')&&!s.fragmentShader.includes('max(0.78, roughnessFactor * vApprovedFinish.x)'),'authored sides/metallic/roughness survive the live production shader');
@@ -60,6 +62,21 @@ export default async function(t) {
     t.assert(m.userData.monarchSource&&m.transparent&&!m.depthWrite&&s.fragmentShader.includes('vMonarchGlassSide<0.5'),'see-through gameplay glass retains source draw and query side contract');
   }
   const pshader=shaderFor(paint2);
+  const sample=pshader.fragmentShader.slice(pshader.fragmentShader.indexOf('vec4 monarchAtlasSample('),pshader.fragmentShader.indexOf('varying vec2 vAvSourceUv;'));
+  t.assert(sample.includes('dFdx( sourceUv ) * rect.zw')&&sample.includes('dFdy( sourceUv ) * rect.zw')&&!sample.includes('dFdx( fract('),'production atlas gradient inputs remain authored coordinates across positive and negative repeat seams');
+  // Independent footprint oracle: an affine screen-space source UV has the
+  // same differential on either side of every integer, including negative UV.
+  // The old implicit fract differential jumps; the explicit source differential
+  // and extension-free mip-bias correction must agree with the repeat sampler.
+  for(const tile of [-27,-2,-1,0,1,24])for(const slope of [.004,.04,.18])for(const sign of [-1,1]){
+    const raw=[tile-sign*slope/2,tile+sign*slope/2],wrapped=raw.map(v=>v-Math.floor(v)),rectSize=128/2048,
+      sourceFootprint=Math.abs(raw[1]-raw[0])*rectSize*2048,
+      oldFootprint=Math.abs(wrapped[1]-wrapped[0])*rectSize*2048,
+      expectedFootprint=slope*128,bias=Math.log2(sourceFootprint/oldFootprint),
+      correctedFallback=Math.log2(oldFootprint)+bias;
+    t.assert(Math.abs(sourceFootprint-expectedFootprint)<1e-10,'source128px tile differential matches original repeated-image footprint at '+tile);
+    t.assert(oldFootprint>sourceFootprint*4&&Math.abs(correctedFallback-Math.log2(expectedFootprint))<1e-10,'integer-repeat mip spike is removed by both source gradients and fallback bias at '+tile);
+  }
   t.assert(pshader.fragmentShader.includes('mix(vec3(1.0),diffuse,vMonarchSurface.x)')&&pshader.vertexShader.includes('mix(vec3(1.0),instanceColor.xyz,avSurface.x)'),'source trim is protected from both private uniform and instanced traffic respray tint');
   // Count source shader inputs, not every CPU geometry attribute. The latter also
   // retains avDoubleSide for ray queries, which must not consume a GPU location.

@@ -121,7 +121,27 @@
           for (const channel in record.textures) monarchVehicleLoadTexture(record.textures[channel], record.model, channel, false);
         }
       }
+      const MONARCH_ATLAS_SAMPLE_GLSL = `
+        vec4 monarchAtlasSample( sampler2D atlasMap, vec2 sourceUv, vec4 rect ) {
+          vec2 atlasUv = rect.xy + fract( sourceUv ) * rect.zw;
+          // Differentiate the continuous authored UV before repeating it. A
+          // derivative of fract jumps at every tile seam and picks wrong mips.
+          vec2 sourceDx = dFdx( sourceUv ) * rect.zw;
+          vec2 sourceDy = dFdy( sourceUv ) * rect.zw;
+          #if defined( texture2DGradEXT ) || defined( GL_EXT_shader_texture_lod )
+            return texture2DGradEXT( atlasMap, atlasUv, sourceDx, sourceDy );
+          #else
+            // WebGL1 without EXT_shader_texture_lod still supports a texture
+            // bias: correct its scalar mip footprint without an unavailable call.
+            vec2 implicitDx = dFdx( atlasUv ), implicitDy = dFdy( atlasUv );
+            float wanted = max( dot( sourceDx, sourceDx ), dot( sourceDy, sourceDy ) );
+            float implicitSize = max( dot( implicitDx, implicitDx ), dot( implicitDy, implicitDy ) );
+            float bias = 0.5 * log2( max( wanted, 1e-16 ) / max( implicitSize, 1e-16 ) );
+            return texture2D( atlasMap, atlasUv, bias );
+          #endif
+        }`;
       function monarchVehicleFinish(material, model, paint = false, rubber = false, lamp = false) {
+        material.extensions = { ...material.extensions, derivatives: true, shaderTextureLOD: true };
         material.map = monarchVehicleTexture(model);
         material.roughnessMap = material.metalnessMap = monarchVehicleTexture(model, 'orm');
         material.emissiveMap = monarchVehicleTexture(model, lamp ? 'albedo' : 'emissive'); material.emissive.setRGB(1, 1, 1);
@@ -136,7 +156,7 @@
             .replace('#include <common>', '#include <common>\nattribute vec2 avOrmSourceUv;\nattribute vec2 avNormalSourceUv;\nattribute vec2 avEmissiveSourceUv;\nattribute vec4 avSurface;\nvarying vec2 vMonarchOrmUv;\nvarying vec2 vMonarchNormalUv;\nvarying vec2 vMonarchEmissiveUv;\nvarying vec4 vMonarchSurface;')
             .replace('#include <begin_vertex>', '#include <begin_vertex>\nvMonarchOrmUv=avOrmSourceUv;vMonarchNormalUv=avNormalSourceUv;vMonarchEmissiveUv=avEmissiveSourceUv;vMonarchSurface=avSurface;');
           shader.fragmentShader = shader.fragmentShader
-            .replace('#include <common>', '#include <common>\nvarying vec2 vMonarchOrmUv;\nvarying vec2 vMonarchNormalUv;\nvarying vec2 vMonarchEmissiveUv;\nvarying vec4 vMonarchSurface;')
+            .replace('#include <common>', '#include <common>\nvarying vec2 vMonarchOrmUv;\nvarying vec2 vMonarchNormalUv;\nvarying vec2 vMonarchEmissiveUv;\nvarying vec4 vMonarchSurface;\n' + MONARCH_ATLAS_SAMPLE_GLSL)
             .replace('#include <clipping_planes_fragment>', '#include <clipping_planes_fragment>\nif(!gl_FrontFacing && vMonarchSurface.y<0.5) discard;')
             .replace('vec2 approvedUv =', 'vec2 monarchOrmUv=vAvAtlasRect.xy+fract(vMonarchOrmUv)*vAvAtlasRect.zw;\nvec2 monarchNormalUv=vAvAtlasRect.xy+fract(vMonarchNormalUv)*vAvAtlasRect.zw;\nvec2 monarchEmissiveUv=vAvAtlasRect.xy+fract(' + (lamp ? 'vAvSourceUv' : 'vMonarchEmissiveUv') + ')*vAvAtlasRect.zw;\nvec2 approvedUv =')
             .replace(/texture2D\( roughnessMap, approvedUv \)/g, 'texture2D( roughnessMap, monarchOrmUv )')
@@ -146,6 +166,11 @@
             .replace('#include <normal_fragment_begin>', Three.ShaderChunk.normal_fragment_begin.replace(/\bvNormalMapUv\b/g, 'vMonarchNormalUv'))
             .replace('#include <normal_fragment_maps>', Three.ShaderChunk.normal_fragment_maps.replace(/\bvNormalMapUv\b/g, 'monarchNormalUv')
               .replace('mapN.xy *= normalScale;', 'mapN.xy *= normalScale * vMonarchSurface.z;'))
+            .replace(/texture2D\( map, approvedUv \)/g, 'monarchAtlasSample( map, vAvSourceUv, vAvAtlasRect )')
+            .replace(/texture2D\( roughnessMap, monarchOrmUv \)/g, 'monarchAtlasSample( roughnessMap, vMonarchOrmUv, vAvAtlasRect )')
+            .replace(/texture2D\( metalnessMap, monarchOrmUv \)/g, 'monarchAtlasSample( metalnessMap, vMonarchOrmUv, vAvAtlasRect )')
+            .replace(/texture2D\( normalMap, monarchNormalUv \)/g, 'monarchAtlasSample( normalMap, vMonarchNormalUv, vAvAtlasRect )')
+            .replace(/texture2D\( emissiveMap, monarchEmissiveUv \)/g, 'monarchAtlasSample( emissiveMap, ' + (lamp ? 'vAvSourceUv' : 'vMonarchEmissiveUv') + ', vAvAtlasRect )')
             .replace('min(0.18, vApprovedFinish.y)', 'vApprovedFinish.y')
             .replace('max(0.78, roughnessFactor * vApprovedFinish.x)', 'roughnessFactor * vApprovedFinish.x')
             .replace('max(0.22, roughnessFactor * vApprovedFinish.x)', 'roughnessFactor * vApprovedFinish.x');
@@ -158,7 +183,7 @@
               .replace('vColor.xyz *= instanceColor.xyz;', 'vColor.xyz *= mix(vec3(1.0),instanceColor.xyz,avSurface.x);'));
           }
         };
-        material.customProgramCacheKey = () => 'monarch-source-v2-' + (paint ? 'paint' : rubber ? 'rubber' : lamp ? 'lamp' : 'trim') + (model.hasNormalMaps ? '-normal' : '');
+        material.customProgramCacheKey = () => 'monarch-source-v3-grad-' + (paint ? 'paint' : rubber ? 'rubber' : lamp ? 'lamp' : 'trim') + (model.hasNormalMaps ? '-normal' : '');
         return material;
       }
       function monarchVehicleGlassSides(material) {
