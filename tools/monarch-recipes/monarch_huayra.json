@@ -1,0 +1,444 @@
+{
+  "key": "monarch_huayra",
+  "gameTypes": [
+    "sirocco"
+  ],
+  "source": "work/monarch-sources/monarch_huayra/pagani-huayra-source.glb",
+  "forward": "+z",
+  "lengthMetres": 4.6,
+  "sourceUrl": "https://sketchfab.com/3d-models/pagani-huayra-free-c2d61a9f53a54a229547bb76e4b71e25",
+  "hasInterior": true,
+  "sourceSHA256": "8ed06e5460fb0845013284ab52788de9d2d54699fba5401e23ecb1e635304deb",
+  "title": "Pagani Huayra [Free]",
+  "author": "Black Snow (https://sketchfab.com/BlackSnow02)",
+  "license": "CC BY 4.0",
+  "originalSourceUrl": "https://sketchfab.com/3d-models/pagani-huayra-free-c2d61a9f53a54a229547bb76e4b71e25",
+  "atlasSize": 4096,
+  "wheels": [
+    {
+      "front": true,
+      "side": -1,
+      "tyre": {
+        "primitives": [
+          50
+        ]
+      },
+      "rim": {
+        "primitives": [
+          54,
+          55,
+          56,
+          60
+        ],
+        "bounds": {
+          "x": [
+            0,
+            10000
+          ],
+          "z": [
+            -10000,
+            0
+          ]
+        }
+      },
+      "caliper": {
+        "primitives": [
+          44,
+          46,
+          47
+        ],
+        "bounds": {
+          "x": [
+            0,
+            10000
+          ],
+          "z": [
+            -10000,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "front": true,
+      "side": 1,
+      "tyre": {
+        "primitives": [
+          49
+        ]
+      },
+      "rim": {
+        "primitives": [
+          54,
+          55,
+          56,
+          60
+        ],
+        "bounds": {
+          "x": [
+            0,
+            10000
+          ],
+          "z": [
+            0,
+            10000
+          ]
+        }
+      },
+      "caliper": {
+        "primitives": [
+          44,
+          46,
+          47
+        ],
+        "bounds": {
+          "x": [
+            0,
+            10000
+          ],
+          "z": [
+            0,
+            10000
+          ]
+        }
+      }
+    },
+    {
+      "front": false,
+      "side": -1,
+      "tyre": {
+        "primitives": [
+          48
+        ]
+      },
+      "rim": {
+        "primitives": [
+          54,
+          55,
+          56,
+          60
+        ],
+        "bounds": {
+          "x": [
+            -10000,
+            0
+          ],
+          "z": [
+            -10000,
+            0
+          ]
+        }
+      },
+      "caliper": {
+        "primitives": [
+          44,
+          46,
+          47
+        ],
+        "bounds": {
+          "x": [
+            -10000,
+            0
+          ],
+          "z": [
+            -10000,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "front": false,
+      "side": 1,
+      "tyre": {
+        "primitives": [
+          51
+        ]
+      },
+      "rim": {
+        "primitives": [
+          54,
+          55,
+          56,
+          60
+        ],
+        "bounds": {
+          "x": [
+            -10000,
+            0
+          ],
+          "z": [
+            0,
+            10000
+          ]
+        }
+      },
+      "caliper": {
+        "primitives": [
+          44,
+          46,
+          47
+        ],
+        "bounds": {
+          "x": [
+            -10000,
+            0
+          ],
+          "z": [
+            0,
+            10000
+          ]
+        }
+      }
+    }
+  ],
+  "rules": [
+    {
+      "part": "headLeft",
+      "select": {
+        "primitives": [
+          61
+        ],
+        "bounds": {
+          "z": [
+            -10000,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "part": "tailLeft",
+      "select": {
+        "primitives": [
+          3,
+          4,
+          59
+        ],
+        "bounds": {
+          "z": [
+            -10000,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "part": "headRight",
+      "select": {
+        "primitives": [
+          61
+        ],
+        "bounds": {
+          "z": [
+            0,
+            10000
+          ]
+        }
+      }
+    },
+    {
+      "part": "tailRight",
+      "select": {
+        "primitives": [
+          3,
+          4,
+          59
+        ],
+        "bounds": {
+          "z": [
+            0,
+            10000
+          ]
+        }
+      }
+    },
+    {
+      "part": "opticalGlass",
+      "select": {
+        "primitives": [
+          43
+        ]
+      }
+    },
+    {
+      "part": "opticalGlass",
+      "select": {
+        "primitives": [
+          52
+        ],
+        "bounds": {
+          "x": [
+            1.55,
+            3
+          ]
+        }
+      }
+    },
+    {
+      "part": "glass",
+      "select": {
+        "primitives": [
+          52
+        ],
+        "bounds": {
+          "x": [
+            0.7,
+            1.55
+          ]
+        }
+      },
+      "pane": 1
+    },
+    {
+      "part": "glass",
+      "select": {
+        "primitives": [
+          52
+        ],
+        "bounds": {
+          "x": [
+            -2,
+            -0.3
+          ]
+        }
+      },
+      "pane": 3
+    },
+    {
+      "part": "glass",
+      "select": {
+        "primitives": [
+          52
+        ],
+        "bounds": {
+          "z": [
+            -10000,
+            0
+          ]
+        }
+      },
+      "pane": 0
+    },
+    {
+      "part": "glass",
+      "select": {
+        "primitives": [
+          52
+        ],
+        "bounds": {
+          "z": [
+            0,
+            10000
+          ]
+        }
+      },
+      "pane": 2
+    },
+    {
+      "part": "glass",
+      "select": {
+        "primitives": [
+          58
+        ]
+      },
+      "pane": 4
+    },
+    {
+      "part": "cabin",
+      "select": {
+        "primitives": [
+          0,
+          1,
+          2,
+          11,
+          12,
+          13,
+          14,
+          17,
+          18,
+          19,
+          20,
+          21,
+          45,
+          53,
+          57,
+          62
+        ]
+      }
+    },
+    {
+      "part": "hood",
+      "select": {
+        "primitives": [
+          40
+        ],
+        "bounds": {
+          "x": [
+            1.25,
+            3
+          ]
+        }
+      }
+    },
+    {
+      "part": "panels",
+      "select": {
+        "primitives": [
+          40,
+          41,
+          42
+        ]
+      }
+    }
+  ],
+  "measuredFit": {
+    "canonicalBounds": [
+      [
+        -2.164047956466675,
+        0.021717000752687763,
+        -1.1469039916992188
+      ],
+      [
+        2.496717929840088,
+        1.1823999881744385,
+        1.1428329944610596
+      ]
+    ],
+    "uniformScale": 0.9869622530311398,
+    "shift": [
+      -0.16633498668670654,
+      -0.021717000752687763,
+      0.00203549861907959
+    ],
+    "fittedDimensions": [
+      4.6,
+      1.1455502963206854,
+      2.25988397470948
+    ]
+  },
+  "seats": {
+    "hip": [
+      0.22748948872171298,
+      0.1746548159173902,
+      -0.3927759409093274
+    ],
+    "wheel": [
+      0.467489488721713,
+      0.6595700945995348,
+      -0.31717463232714205
+    ],
+    "radius": 0.15,
+    "tilt": 0.25,
+    "recline": 0.68,
+    "floor": 0.1,
+    "fixed": true,
+    "evidence": "Measured full-size seated rig against original packed source triangles on both sides; all adult head/hair/cap points, steering reach at full lock, and source-floor pedal checks; see seat-fit-final-proof.json."
+  },
+  "sourceTriangles": 290985,
+  "excludedStudioTriangles": 0,
+  "sourceRoleEvidence": "Primitive IDs from production legacy.load_primitives scene traversal, canonical +X/Yup/Zright. Native door hinge only supplied where paired source doors are independent; other assets need runtime door seam adaptation. Seats are measured gameplay fit estimates, not authored attachment points.",
+  "lowAtlasSize": 1024,
+  "downloadUrl": "https://raw.githubusercontent.com/AuraK-7/wild-racing-models/6c6a4875004713fe23f3a5ae1bc6c6c075214be3/models/pagani_huayra_free.glb",
+  "provenance": "tools/monarch_vehicle_sources.json#monarch_huayra"
+}

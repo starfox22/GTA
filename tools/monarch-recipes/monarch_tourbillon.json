@@ -1,0 +1,350 @@
+{
+  "key": "monarch_tourbillon",
+  "gameTypes": [
+    "tourbillon"
+  ],
+  "source": "work/monarch-sources/monarch_tourbillon/tourbillon-mahib.glb",
+  "sourceSHA256": "d2fbcc87a9fd4d842a398947e3fa6f5680c606455e01ea5a80dab6b0735d7ded",
+  "sourceUrl": "https://sketchfab.com/3d-models/bugatti-tourbillon-2024-c992c9bc9ba8427197d5fe380eaa2b31",
+  "originalSourceUrl": "https://sketchfab.com/3d-models/bugatti-tourbillon-2024-c992c9bc9ba8427197d5fe380eaa2b31",
+  "title": "Bugatti Tourbillon 2024",
+  "author": "MdMahib (https://sketchfab.com/MdMahib)",
+  "license": "CC BY 4.0",
+  "forward": "+z",
+  "lengthMetres": 4.67,
+  "atlasSize": 4096,
+  "hasInterior": true,
+  "wheels": [
+    {
+      "front": true,
+      "side": -1,
+      "tyre": {
+        "primitives": [
+          32
+        ]
+      },
+      "rim": {
+        "primitives": [
+          31
+        ]
+      },
+      "caliper": {
+        "primitives": [
+          37,
+          38,
+          39
+        ]
+      }
+    },
+    {
+      "front": true,
+      "side": 1,
+      "tyre": {
+        "primitives": [
+          30
+        ]
+      },
+      "rim": {
+        "primitives": [
+          29
+        ]
+      },
+      "caliper": {
+        "primitives": [
+          46,
+          47,
+          48
+        ]
+      }
+    },
+    {
+      "front": false,
+      "side": -1,
+      "tyre": {
+        "primitives": [
+          34
+        ]
+      },
+      "rim": {
+        "primitives": [
+          33
+        ]
+      },
+      "caliper": {
+        "primitives": [
+          40,
+          41,
+          42
+        ]
+      }
+    },
+    {
+      "front": false,
+      "side": 1,
+      "tyre": {
+        "primitives": [
+          36
+        ]
+      },
+      "rim": {
+        "primitives": [
+          35
+        ]
+      },
+      "caliper": {
+        "primitives": [
+          43,
+          44,
+          45
+        ]
+      }
+    }
+  ],
+  "rules": [
+    {
+      "part": "headLeft",
+      "select": {
+        "primitives": [
+          19
+        ],
+        "bounds": {
+          "x": [
+            1.2,
+            3
+          ],
+          "z": [
+            -10,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "part": "tailLeft",
+      "select": {
+        "primitives": [
+          19
+        ],
+        "bounds": {
+          "x": [
+            -3,
+            -0.6
+          ],
+          "z": [
+            -10,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "part": "headRight",
+      "select": {
+        "primitives": [
+          19
+        ],
+        "bounds": {
+          "x": [
+            1.2,
+            3
+          ],
+          "z": [
+            0,
+            10
+          ]
+        }
+      }
+    },
+    {
+      "part": "tailRight",
+      "select": {
+        "primitives": [
+          19
+        ],
+        "bounds": {
+          "x": [
+            -3,
+            -0.6
+          ],
+          "z": [
+            0,
+            10
+          ]
+        }
+      }
+    },
+    {
+      "part": "opticalGlass",
+      "select": {
+        "primitives": [
+          20,
+          28
+        ]
+      }
+    },
+    {
+      "part": "opticalGlass",
+      "select": {
+        "primitives": [
+          27
+        ],
+        "bounds": {
+          "x": [
+            1.5,
+            3
+          ]
+        }
+      }
+    },
+    {
+      "part": "opticalGlass",
+      "select": {
+        "primitives": [
+          27
+        ],
+        "bounds": {
+          "x": [
+            -3,
+            -0.6
+          ]
+        }
+      }
+    },
+    {
+      "part": "glass",
+      "select": {
+        "primitives": [
+          26,
+          27
+        ],
+        "bounds": {
+          "x": [
+            0.65,
+            1.5
+          ]
+        }
+      },
+      "pane": 1
+    },
+    {
+      "part": "glass",
+      "select": {
+        "primitives": [
+          26,
+          27
+        ],
+        "bounds": {
+          "z": [
+            -10,
+            0
+          ]
+        }
+      },
+      "pane": 0
+    },
+    {
+      "part": "glass",
+      "select": {
+        "primitives": [
+          26,
+          27
+        ],
+        "bounds": {
+          "z": [
+            0,
+            10
+          ]
+        }
+      },
+      "pane": 2
+    },
+    {
+      "part": "cabin",
+      "select": {
+        "primitives": [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          24
+        ]
+      }
+    },
+    {
+      "part": "hood",
+      "select": {
+        "primitives": [
+          22
+        ],
+        "bounds": {
+          "x": [
+            1.25,
+            3
+          ]
+        }
+      }
+    },
+    {
+      "part": "panels",
+      "select": {
+        "primitives": [
+          22,
+          23
+        ]
+      }
+    }
+  ],
+  "sourceTriangles": 386080,
+  "seats": {
+    "hip": [
+      0.4239248137443472,
+      0.21286692427516607,
+      -0.4001733789852866
+    ],
+    "wheel": [
+      0.6639248137443472,
+      0.6830403032604526,
+      -0.38016471003602226
+    ],
+    "radius": 0.17,
+    "tilt": 0.4,
+    "recline": 0.68,
+    "floor": 0.1,
+    "fixed": true,
+    "evidence": "Measured full-size seated rig against original packed source triangles on both sides; all adult head/hair/cap points, steering reach at full lock, and source-floor pedal checks; see seat-fit-final-proof.json."
+  },
+  "measuredFit": {
+    "canonicalBounds": [
+      [
+        -2.33762550057545,
+        -0.0027443694454911682,
+        -1.0916727537287896
+      ],
+      [
+        2.330351176775399,
+        1.18596577370518,
+        1.0916727537287896
+      ]
+    ],
+    "uniformScale": 1.0004334474632164,
+    "shift": [
+      0.0036371619000254984,
+      0.0027443694454911682,
+      -0.0
+    ],
+    "fittedDimensions": [
+      4.67,
+      1.1892253865467195,
+      2.1842918730291117
+    ]
+  },
+  "sourceRoleEvidence": "Explicit native primitive IDs; four independent tyre/rim/caliper groups. No authored door rig/seam objects; source cabin retained and seat points are measured gameplay fit estimates.",
+  "lowAtlasSize": 1024,
+  "downloadUrl": "https://raw.githubusercontent.com/AuraK-7/wild-racing-models/6c6a4875004713fe23f3a5ae1bc6c6c075214be3/models/Bugatti/bugatti_tourbillon_2024.glb",
+  "provenance": "tools/monarch_vehicle_sources.json#monarch_tourbillon"
+}

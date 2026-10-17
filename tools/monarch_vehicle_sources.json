@@ -1,0 +1,568 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-17",
+  "stagingDirectory": "work/monarch-sources",
+  "license": "CC BY 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+  "decoder": {
+    "version": "meshoptimizer 0.22",
+    "path": "work/monarch-sources/decoder/meshopt_decoder.js",
+    "url": "https://raw.githubusercontent.com/zeux/meshoptimizer/v0.22/js/meshopt_decoder.js",
+    "sha256": "2cc4d9d42473e2243c3d2cf9e6b66ec778fd1fa0fa60ed81b2c9f57434133802"
+  },
+  "models": [
+    {
+      "key": "monarch_laferrari",
+      "gameTypes": [
+        "lafera"
+      ],
+      "title": "Ferrari Laferrari | www.vecarz.com",
+      "author": "vecarz",
+      "license": "CC BY 4.0",
+      "sourceUrl": "https://sketchfab.com/3d-models/ferrari-laferrari-wwwvecarzcom-979f7085012e4d6399f38de3f9c39012",
+      "recipe": "tools/monarch-recipes/monarch_laferrari.json",
+      "source": "work/monarch-sources/monarch_laferrari/ferrari_laferrari__www.vecarz.com.glb",
+      "files": [
+        {
+          "path": "ferrari_laferrari__www.vecarz.com.glb",
+          "url": "https://raw.githubusercontent.com/Nahjs/wild-racing-models/6c6a4875004713fe23f3a5ae1bc6c6c075214be3/models/Ferrari/ferrari_laferrari__www.vecarz.com.glb",
+          "bytes": 27019920,
+          "sha256": "dc26015f2fb73791b111e16a0e0693a9497d047bf8e331ac98c2678987b2ad27"
+        }
+      ],
+      "embeddedAsset": {
+        "extras": {
+          "author": "vecarz (https://sketchfab.com/heynic)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/ferrari-laferrari-wwwvecarzcom-979f7085012e4d6399f38de3f9c39012",
+          "title": "Ferrari Laferrari | www.vecarz.com"
+        },
+        "generator": "Sketchfab-16.58.0",
+        "version": "2.0"
+      },
+      "licenseEvidence": [
+        {
+          "path": "docs/sources/monarch-vehicles/laferrari-license.txt",
+          "url": "https://raw.githubusercontent.com/aryanchauhan3800/CFD_CHECK/3cee5a5697ed067511260f84dc64febd7fd28f62/license.txt",
+          "bytes": 740,
+          "sha256": "ad9529a1f3a3e185115e44dd00a1ce698eb61e1e883b9a6e8cd04471d0a3d361"
+        }
+      ],
+      "observedLicenseEvidence": [
+        "Model-specific embedded glTF asset.extras naming author, CC-BY4.0, model title and original Sketchfab source URL.",
+        "Matching exported license.txt from aryanchauhan3800/CFD_CHECK@3cee5a5697ed067511260f84dc64febd7fd28f62/license.txt.",
+        "Indexed original listing matches vecarz, CC Attribution and587.3k triangles. It credits the earlier SC model at f75b682bb0de4a14b3b6c1f52862ca48; retain that source chain in credits."
+      ],
+      "upstreamCreditUrl": "https://sketchfab.com/3d-models/ferrari-laferrari-f75b682bb0de4a14b3b6c1f52862ca48"
+    },
+    {
+      "key": "monarch_roadster_ev",
+      "gameTypes": [
+        "novera"
+      ],
+      "title": "Tesla Roadster 2020",
+      "author": "metarex.4d",
+      "license": "CC BY 4.0",
+      "sourceUrl": "https://sketchfab.com/3d-models/tesla-roadster-2020-1fbf29e297bd4a17ac39a00a378441d8",
+      "recipe": "tools/monarch-recipes/monarch_roadster_ev.json",
+      "source": "work/monarch-sources/monarch_roadster_ev/test4.glb",
+      "files": [
+        {
+          "path": "test4.glb",
+          "url": "https://raw.githubusercontent.com/gwesseling/Tesla-app/a03a55533adcf0f45a610b7bc4e1a9e03277c13c/assets/test4.glb",
+          "bytes": 20199468,
+          "sha256": "f0d70024ed306213b8587950c53af35a97b74c4f3fdf60aa4849bebfa5296c60"
+        }
+      ],
+      "embeddedAsset": {
+        "generator": "Khronos glTF Blender I/O v3.4.50",
+        "version": "2.0"
+      },
+      "identityNote": "Tesla Roadster 2020 concept, an EV-class alternative for Novera; not a Rimac Nevera mesh. Game name and electric handling retained.",
+      "licenseEvidence": [
+        {
+          "path": "docs/sources/monarch-vehicles/tesla-app-README.md",
+          "url": "https://raw.githubusercontent.com/gwesseling/Tesla-app/a03a55533adcf0f45a610b7bc4e1a9e03277c13c/README.md",
+          "bytes": 1873,
+          "sha256": "196853ab987e62fa255ca9d88efc74a3e183ae281b9e2026822dc9c904dd7c09"
+        },
+        {
+          "path": "docs/sources/monarch-vehicles/tesla-webgi-README.md",
+          "url": "https://raw.githubusercontent.com/stevenzhang070302/tesla-roadster-webgi/907561805d936d64b3cb834b580e81007f6d987a/Readme.md",
+          "bytes": 1681,
+          "sha256": "17a0b60efce62ee6a8a8d6318730f95bfe73a90cff56120fc4bdba8b61bf614c"
+        }
+      ],
+      "observedLicenseEvidence": [
+        {
+          "kind": "primary-indexed-listing",
+          "url": "https://sketchfab.com/3d-models/tesla-roadster-2020-1fbf29e297bd4a17ac39a00a378441d8",
+          "observed": "Author metarex.4d; CC Attribution;608.9k triangles; creator describes named meshes for rigacar."
+        },
+        {
+          "kind": "pinned-mirror-attribution",
+          "observed": "Model-specific credit links the exact original author/model."
+        },
+        {
+          "kind": "independent-mirror-attribution",
+          "commit": "907561805d936d64b3cb834b580e81007f6d987a",
+          "observed": "Explicit metarex.4d and Creative Commons Attribution model grant; same named meshes/materials in optimized derivative."
+        }
+      ],
+      "verificationLimit": "The full GLB was re-exported by its mirror and lacks embedded author/license extras. Attribution uses the exact model-specific README link and independently indexed primary author/title/licence/face count; no generic app code licence is used."
+    },
+    {
+      "key": "monarch_db11",
+      "gameTypes": [
+        "dbs"
+      ],
+      "title": "Aston Martin db11",
+      "author": "Black Snow",
+      "license": "CC BY 4.0",
+      "sourceUrl": "https://sketchfab.com/3d-models/aston-martin-db11-0ce56f01b1ff40b3a4e36bc56873dbc7",
+      "recipe": "tools/monarch-recipes/monarch_db11.json",
+      "source": "work/monarch-sources/monarch_db11/scene.gltf",
+      "files": [
+        {
+          "path": "scene.gltf",
+          "url": "https://raw.githubusercontent.com/btwwahab/Auctions-Website-Frontend/f2d6f0279588c6877e8878ba6f861445f550c06a/scene.gltf",
+          "bytes": 464321,
+          "sha256": "d8b7eda435c84d7d27707265ee526d282cbc23ad9658e6f88c685468af5bbbae"
+        },
+        {
+          "path": "scene.bin",
+          "url": "https://raw.githubusercontent.com/btwwahab/Auctions-Website-Frontend/f2d6f0279588c6877e8878ba6f861445f550c06a/scene.bin",
+          "bytes": 10696804,
+          "sha256": "a8e73c88ace9668dddc9983457b3a043c3ba5f0f844a1ca8fb02de0325ebde17"
+        }
+      ],
+      "embeddedAsset": {
+        "extras": {
+          "author": "Black Snow (https://sketchfab.com/BlackSnow02)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/aston-martin-db11-0ce56f01b1ff40b3a4e36bc56873dbc7",
+          "title": "Aston Martin db11"
+        },
+        "generator": "Sketchfab-15.81.0",
+        "version": "2.0"
+      },
+      "identityNote": "Aston Martin DB11 family alternative for the DBS entry; game name and handling retained.",
+      "licenseEvidence": [
+        {
+          "path": "docs/sources/monarch-vehicles/db11-license.txt",
+          "url": "https://raw.githubusercontent.com/btwwahab/Auctions-Website-Frontend/f2d6f0279588c6877e8878ba6f861445f550c06a/license.txt",
+          "bytes": 698,
+          "sha256": "83921e6dd2f4eec51a009c9b196a3e4a17cfe5d3f5e8d4d2aad02ef2e61f3332"
+        }
+      ],
+      "observedLicenseEvidence": [
+        "Model-specific embedded glTF asset.extras naming author, CC-BY4.0, model title and original Sketchfab source URL.",
+        "Matching asset-specific exported license.txt in the same pinned mirror; indexed primary listing shows Black Snow, CC Attribution and218k triangles."
+      ]
+    },
+    {
+      "key": "monarch_valkyrie",
+      "gameTypes": [
+        "valkyrie"
+      ],
+      "title": "Aston Martin Valkyrie FREE",
+      "author": "MHDesigning",
+      "license": "CC BY 4.0",
+      "sourceUrl": "https://sketchfab.com/3d-models/aston-martin-valkyrie-free-8c352d8ec67a4c3b9c1cb1467e06395c",
+      "recipe": "tools/monarch-recipes/monarch_valkyrie.json",
+      "source": "work/monarch-sources/monarch_valkyrie/aston_martin_valkyrie_free.glb",
+      "files": [
+        {
+          "path": "aston_martin_valkyrie_free.glb",
+          "url": "https://raw.githubusercontent.com/Nahjs/wild-racing-models/6c6a4875004713fe23f3a5ae1bc6c6c075214be3/models/Aston/aston_martin_valkyrie_free.glb",
+          "bytes": 2146928,
+          "sha256": "18578476203203ea20c6d04564699be7a4eb50c2ec1c3fd49d19756a3ae55cc6"
+        }
+      ],
+      "embeddedAsset": {
+        "extras": {
+          "author": "MHDesigning (https://sketchfab.com/MHDesigning)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/aston-martin-valkyrie-free-8c352d8ec67a4c3b9c1cb1467e06395c",
+          "title": "Aston Martin Valkyrie FREE"
+        },
+        "generator": "Sketchfab-16.23.0",
+        "version": "2.0"
+      },
+      "licenseEvidence": [],
+      "observedLicenseEvidence": [
+        "Model-specific embedded glTF asset.extras naming author, CC-BY4.0, model title and original Sketchfab source URL.",
+        "Primary listing could not be retrieved/indexed independently in this session; original-account ownership unverified. No generic repository licence is used as model permission."
+      ]
+    },
+    {
+      "key": "monarch_ccx",
+      "gameTypes": [
+        "jasko"
+      ],
+      "title": "2007 Koenigsegg CCX (No Roof)",
+      "author": "_Sheep19 (https://sketchfab.com/shobhit190401)",
+      "license": "CC BY 4.0",
+      "sourceUrl": "https://sketchfab.com/3d-models/2007-koenigsegg-ccx-no-roof-423b64e085974b97b5cfd5a87d9dcce3",
+      "recipe": "tools/monarch-recipes/monarch_ccx.json",
+      "source": "work/monarch-sources/monarch_ccx/koenigsegg-ccx-no.glb",
+      "files": [
+        {
+          "path": "koenigsegg-ccx-no.glb",
+          "url": "https://raw.githubusercontent.com/pedrosoandre/carros/0a56de377f02f2574d781f6920fed08d6423ec2f/assets/koenigsegg-ccx-no.glb",
+          "bytes": 7656048,
+          "sha256": "a0e216c9fd7b7270d229dd49cd75dd672630c602ccb9ed408ff2424a1df47c11"
+        }
+      ],
+      "embeddedAsset": {
+        "generator": "glTF-Transform v4.4.2",
+        "version": "2.0",
+        "extras": {
+          "author": "_Sheep19 (https://sketchfab.com/shobhit190401)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/2007-koenigsegg-ccx-no-roof-423b64e085974b97b5cfd5a87d9dcce3",
+          "title": "2007 Koenigsegg CCX (No Roof)"
+        }
+      },
+      "identityNote": "2007 Koenigsegg CCX without roof, a family alternative for Jasko; not a Jesko mesh. Six studio-plane faces are excluded.",
+      "preparation": {
+        "kind": "EXT_meshopt_compression",
+        "output": "work/monarch-sources/monarch_ccx/koenigsegg-ccx-no-decoded.glb",
+        "sha256": "80ace5ec7dd822ddb6ebc154cdbab283cfd399abbf460771333ad83f13950688",
+        "operation": "Official meshoptimizer 0.22 decompression/filter decoding only. Native input, source quantization, accessor semantics, scene transforms, materials and images are preserved."
+      },
+      "licenseEvidence": [],
+      "observedLicenseEvidence": "Original artist page independently confirms CC Attribution and self-authored Blender modelling/Photoshop textures. Embedded older name_Sheep19/shobhit190401; current sameUIDartist_shobh19/s0h1o9b. Six studio-plane triangles explicitlyexcluded."
+    },
+    {
+      "key": "monarch_p1_gtr",
+      "gameTypes": [
+        "w1"
+      ],
+      "title": "Free McLaren P1 GTR",
+      "author": "Desiccated_Lemon (https://sketchfab.com/Desiccated_Lemon)",
+      "license": "CC BY 4.0",
+      "sourceUrl": "https://sketchfab.com/3d-models/free-mclaren-p1-gtr-d805bec04cf5407fa7c036c20c726d39",
+      "recipe": "tools/monarch-recipes/monarch_p1_gtr.json",
+      "source": "work/monarch-sources/monarch_p1_gtr/mclaren-p1-gtr-source.glb",
+      "files": [
+        {
+          "path": "mclaren-p1-gtr-source.glb",
+          "url": "https://raw.githubusercontent.com/Nissmo89/Supercar-Vault-3D/00f08b282d6b2c0f6834f91c582f9d539dcc02fd/models/free_mclaren_p1_gtr.glb",
+          "bytes": 11416440,
+          "sha256": "c8309e98175d388badbd3b39d2f6267e16f9a104556c85e1440667b20d547f57"
+        }
+      ],
+      "embeddedAsset": {
+        "extras": {
+          "author": "Desiccated_Lemon (https://sketchfab.com/Desiccated_Lemon)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/free-mclaren-p1-gtr-d805bec04cf5407fa7c036c20c726d39",
+          "title": "Free McLaren P1 GTR"
+        },
+        "generator": "Sketchfab-12.66.0",
+        "version": "2.0"
+      },
+      "identityNote": "McLaren P1 GTR family alternative for W1; not an exact McLaren W1 mesh.",
+      "licenseEvidence": [],
+      "observedLicenseEvidence": "Original artist page independently confirms CC Attribution and explicit commercial/personal use permission. Embedded currentauthorDesiccated_Lemon, olderdisplayALIEEEN; full71888triangles match original71.9k. Textures validated by childcatalog."
+    },
+    {
+      "key": "monarch_huayra",
+      "gameTypes": [
+        "sirocco"
+      ],
+      "title": "Pagani Huayra [Free]",
+      "author": "Black Snow (https://sketchfab.com/BlackSnow02)",
+      "license": "CC BY 4.0",
+      "sourceUrl": "https://sketchfab.com/3d-models/pagani-huayra-free-c2d61a9f53a54a229547bb76e4b71e25",
+      "recipe": "tools/monarch-recipes/monarch_huayra.json",
+      "source": "work/monarch-sources/monarch_huayra/pagani-huayra-source.glb",
+      "files": [
+        {
+          "path": "pagani-huayra-source.glb",
+          "url": "https://raw.githubusercontent.com/AuraK-7/wild-racing-models/6c6a4875004713fe23f3a5ae1bc6c6c075214be3/models/pagani_huayra_free.glb",
+          "bytes": 12498568,
+          "sha256": "8ed06e5460fb0845013284ab52788de9d2d54699fba5401e23ecb1e635304deb"
+        }
+      ],
+      "embeddedAsset": {
+        "extras": {
+          "author": "Black Snow (https://sketchfab.com/BlackSnow02)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/pagani-huayra-free-c2d61a9f53a54a229547bb76e4b71e25",
+          "title": "Pagani Huayra [Free]"
+        },
+        "generator": "Sketchfab-15.91.0",
+        "version": "2.0"
+      },
+      "licenseEvidence": [],
+      "observedLicenseEvidence": "Full original Sketchfab export retained290985triangles matching original291k. Original artist page independently confirms CC Attribution with no description. Embedded author and UID agree. Source materials include PAG_HUAYRA_* and amdb11_*; no authorship claim inferred from filenames."
+    },
+    {
+      "key": "monarch_wayron",
+      "gameTypes": [
+        "wayron"
+      ],
+      "title": "Bugatti Veyron 16.4 Super Sport - Lowpoly",
+      "author": "andikapratamaw (https://sketchfab.com/andikapratamaw)",
+      "license": "CC BY 4.0",
+      "sourceUrl": "https://sketchfab.com/3d-models/bugatti-veyron-164-super-sport-lowpoly-0ee4c65face949efa4500deb17c79150",
+      "recipe": "tools/monarch-recipes/monarch_wayron.json",
+      "source": "work/monarch-sources/monarch_wayron/bugatti-veyron.glb",
+      "files": [
+        {
+          "path": "bugatti-veyron.glb",
+          "url": "https://raw.githubusercontent.com/pedrosoandre/carros/0a56de377f02f2574d781f6920fed08d6423ec2f/assets/bugatti-veyron.glb",
+          "bytes": 3967440,
+          "sha256": "083b52fdcbb7b54f4bdc5a59c0d3773797d859545a43fb10d7dd8416a37923b6"
+        }
+      ],
+      "embeddedAsset": {
+        "generator": "glTF-Transform v4.4.2",
+        "version": "2.0",
+        "extras": {
+          "author": "andikapratamaw (https://sketchfab.com/andikapratamaw)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/bugatti-veyron-164-super-sport-lowpoly-0ee4c65face949efa4500deb17c79150",
+          "title": "Bugatti Veyron 16.4 Super Sport - Lowpoly"
+        }
+      },
+      "preparation": {
+        "kind": "EXT_meshopt_compression",
+        "output": "work/monarch-sources/monarch_wayron/bugatti-veyron-decoded.glb",
+        "sha256": "33b35d3475cc00e013f9b5e61d6f24cf149661dddf4df11cc77d224a9b129816",
+        "operation": "Official meshoptimizer 0.22 decompression/filter decoding only. Native input, source quantization, accessor semantics, scene transforms, materials and images are preserved."
+      },
+      "licenseEvidence": [],
+      "observedLicenseEvidence": "Model-specific embedded CC-BY-4.0 original author+UID plus pinnedmirror cars.json/CREDITS/licensepolicy. Original embed independently indexed same artist/title; full originalpage notreadable (403). No explicit rip/restriction found."
+    },
+    {
+      "key": "monarch_c8_hari",
+      "gameTypes": [
+        "zr1x",
+        "chevetteSE"
+      ],
+      "title": "2019 Chevrolet Corvette C8 Stingray",
+      "author": "Hari",
+      "license": "CC BY 4.0",
+      "sourceUrl": "https://sketchfab.com/3d-models/2019-chevrolet-corvette-c8-stingray-790c40ccff6843eab0b7b4bd18421ff8",
+      "recipe": "tools/monarch-recipes/monarch_c8_hari.json",
+      "source": "work/monarch-sources/monarch_c8_hari/scene.gltf",
+      "files": [
+        {
+          "path": "scene.gltf",
+          "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/scene.gltf",
+          "bytes": 222840,
+          "sha256": "840aac54739d1c18b3996eebcdfbbc66bc4d9531a5a578b80c30e5923053699b"
+        },
+        {
+          "path": "scene.bin",
+          "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/scene.bin",
+          "bytes": 11431588,
+          "sha256": "50bd85f55741f7135783f8c0b3d9fa0422b16dbaef78836bbb15dd831574fd14"
+        },
+        {
+          "path": "textures/Grille_6_baseColor.png",
+          "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Grille_6_baseColor.png",
+          "bytes": 1300,
+          "sha256": "ed0a5a453ca3f1bc5af6b7f4d0fa3f711383b2ba22f5626188a055edcc726003"
+        },
+        {
+          "path": "textures/Grille_7_baseColor.png",
+          "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Grille_7_baseColor.png",
+          "bytes": 3654,
+          "sha256": "bd542b6883188bb232f765a85aac081e364596abb3ad5354643f990407eb7f5f"
+        },
+        {
+          "path": "textures/Misc_baseColor.png",
+          "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Misc_baseColor.png",
+          "bytes": 191308,
+          "sha256": "733e55d25545d8b2d06fbf975f350cef8f771f3e236b02d09db5c1ef308943c7"
+        },
+        {
+          "path": "textures/Badges_baseColor.png",
+          "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Badges_baseColor.png",
+          "bytes": 52856,
+          "sha256": "51787232da7bf542f9e215fe492478479420aa112f9d2348b160f763183329ec"
+        },
+        {
+          "path": "textures/Lights_baseColor.png",
+          "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Lights_baseColor.png",
+          "bytes": 244586,
+          "sha256": "23eb6ed222b2b1af0136489aa11693d267d9de6c82e78e3b3618a604ede88ecd"
+        },
+        {
+          "path": "textures/Interior_baseColor.png",
+          "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Interior_baseColor.png",
+          "bytes": 105325,
+          "sha256": "24a84aa7e2cde824cdbb50e50e0ac608456c92c4a4e8407fe90361b22e32fbdf"
+        },
+        {
+          "path": "textures/Chrome_Engine_Pipes_Use_Grill_5_as_BW_to_Bump_to_Normal_metallicRoughness.png",
+          "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Chrome_Engine_Pipes_Use_Grill_5_as_BW_to_Bump_to_Normal_metallicRoughness.png",
+          "bytes": 321,
+          "sha256": "c878c542fc7434ef9b2eb999e225d1e323449c7fd88aff5e3a092a71dbcf3843"
+        },
+        {
+          "path": "textures/Engine_Decals_baseColor.png",
+          "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Engine_Decals_baseColor.png",
+          "bytes": 107109,
+          "sha256": "f837dd54239781588884a190cc8d2d7d59eeb6ceaf9e95ca8f6d6ec18edf7075"
+        },
+        {
+          "path": "textures/Grille_1_baseColor.png",
+          "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Grille_1_baseColor.png",
+          "bytes": 1327,
+          "sha256": "5b9d5548cdbb535cdaff37f11737d89e2307beb51da9a7a25e1c677c205e4e31"
+        },
+        {
+          "path": "textures/Grille_3_baseColor.png",
+          "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Grille_3_baseColor.png",
+          "bytes": 906,
+          "sha256": "011ace4f2c2c2d287ac5944c89fc10533cf08bc49b901f8bbcc1fa182d0af5ce"
+        },
+        {
+          "path": "textures/Carbon_Fiber_baseColor.png",
+          "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Carbon_Fiber_baseColor.png",
+          "bytes": 12458,
+          "sha256": "ea2e3e6183f0cb9113820c64bb2489fc64bb607814dad91bc8e904e081c1a6f4"
+        },
+        {
+          "path": "textures/Grill_4_Speakers_baseColor.png",
+          "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Grill_4_Speakers_baseColor.png",
+          "bytes": 4475,
+          "sha256": "298bb6543a8fa9217f4f3db33c1b4874cd35d7cd477aca37b0ee52aab0ad7dd7"
+        },
+        {
+          "path": "textures/Carpet_baseColor.png",
+          "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Carpet_baseColor.png",
+          "bytes": 36967,
+          "sha256": "2acc732a9ac63827c33021766e1809fd54820d2a249e845c3d9c9992b370477f"
+        },
+        {
+          "path": "textures/Seats_Adjust_the_leather_texture_using_Color_Ramp_or_using_HSV_baseColor.jpeg",
+          "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Seats_Adjust_the_leather_texture_using_Color_Ramp_or_using_HSV_baseColor.jpeg",
+          "bytes": 509430,
+          "sha256": "82590174d91c25ee7b4d60e37554ef329c9caf89b4994caf882ebb5bae804115"
+        },
+        {
+          "path": "textures/Gauges_baseColor.png",
+          "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Gauges_baseColor.png",
+          "bytes": 85422,
+          "sha256": "0befb9c51d82ae6e6b28445b2b0fa54fb99143482354508274c39e869594b414"
+        },
+        {
+          "path": "textures/Interior_Display_baseColor.png",
+          "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Interior_Display_baseColor.png",
+          "bytes": 92796,
+          "sha256": "57ad5cc99f4c52411f286e31ff29e4cbe16a2604e069d8eda76f6eaba90757dc"
+        },
+        {
+          "path": "textures/Interior_Trim_baseColor.png",
+          "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Interior_Trim_baseColor.png",
+          "bytes": 6569,
+          "sha256": "86abe97bfa51ae3224e30ee2c17deb8fdd8d0b9859e10cce8c680fffbc8c775a"
+        },
+        {
+          "path": "textures/Brake_Disc_baseColor.png",
+          "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Brake_Disc_baseColor.png",
+          "bytes": 25610,
+          "sha256": "d62521c9fad60f8a1fdef369b46cb2ad09d7dab2db71e46809ff5db9f2f76c19"
+        },
+        {
+          "path": "textures/Tire_Treads_baseColor.png",
+          "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Tire_Treads_baseColor.png",
+          "bytes": 74619,
+          "sha256": "c4060e8f7a959d26799185c8aa84f585ac55b8e56b6ddba60e64a7a1b7ab9fec"
+        },
+        {
+          "path": "textures/Tire_Sidewall_baseColor.png",
+          "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Tire_Sidewall_baseColor.png",
+          "bytes": 230701,
+          "sha256": "62e36ba4a850736d21c6144a7fecb963719a2c06580b2de30d3763d0a5316f8a"
+        },
+        {
+          "path": "textures/material_baseColor.png",
+          "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/material_baseColor.png",
+          "bytes": 41225,
+          "sha256": "7eb1ef0df8a49a76cd0d06375f413e0d6d12d34fc9de1e76765af39a48327c20"
+        },
+        {
+          "path": "textures/Interior_Trim_2_baseColor.png",
+          "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Interior_Trim_2_baseColor.png",
+          "bytes": 370,
+          "sha256": "de6da0cfe8ab8cae6822d375ee78718937fcd6cf404e7d8c33ae9e8daf46f41f"
+        },
+        {
+          "path": "textures/Interior_Badge_baseColor.png",
+          "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Interior_Badge_baseColor.png",
+          "bytes": 32569,
+          "sha256": "29aaa5251ace944b4bec0c59d2f2e8d40daa0aafed737704b3be34c269ff1d36"
+        },
+        {
+          "path": "textures/Mat_supergt.209_baseColor.png",
+          "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/textures/Mat_supergt.209_baseColor.png",
+          "bytes": 953,
+          "sha256": "84ae54f49d44d6f212dd5b6a92ce7a71a39941df53c6450586d4808d0a24997c"
+        }
+      ],
+      "embeddedAsset": {
+        "extras": {
+          "author": "Hari (https://sketchfab.com/Hari31)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/2019-chevrolet-corvette-c8-stingray-790c40ccff6843eab0b7b4bd18421ff8",
+          "title": "2019 Chevrolet Corvette C8 Stingray"
+        },
+        "generator": "Sketchfab-12.68.0",
+        "version": "2.0"
+      },
+      "identityNote": "Full Hari C8 Stingray family alternative for ZR1X and Chevette SE; these are not exact ZR1/Z06 aero meshes. The ordinary Chevette source pack is unchanged.",
+      "licenseEvidence": [
+        {
+          "path": "docs/sources/monarch-vehicles/c8-hari-license.txt",
+          "url": "https://raw.githubusercontent.com/zymantas-dev/corvette-c8-threejs-exp/1811c2f116145a409131839be5b2411e4f4f92de/static/models/2019_chevrolet_corvette_c8_stingray/license.txt",
+          "bytes": 748,
+          "sha256": "1a4ae9a1a94e384cff7650e4334b3a1ceff15188dd031be75a4e4a1d3fe54ce9"
+        }
+      ],
+      "observedLicenseEvidence": "Embedded source metadata and matching model-specific license.txt."
+    },
+    {
+      "key": "monarch_tourbillon",
+      "gameTypes": [
+        "tourbillon"
+      ],
+      "title": "Bugatti Tourbillon 2024",
+      "author": "MdMahib (https://sketchfab.com/MdMahib)",
+      "license": "CC BY 4.0",
+      "sourceUrl": "https://sketchfab.com/3d-models/bugatti-tourbillon-2024-c992c9bc9ba8427197d5fe380eaa2b31",
+      "recipe": "tools/monarch-recipes/monarch_tourbillon.json",
+      "source": "work/monarch-sources/monarch_tourbillon/tourbillon-mahib.glb",
+      "files": [
+        {
+          "path": "tourbillon-mahib.glb",
+          "url": "https://raw.githubusercontent.com/AuraK-7/wild-racing-models/6c6a4875004713fe23f3a5ae1bc6c6c075214be3/models/Bugatti/bugatti_tourbillon_2024.glb",
+          "bytes": 22476496,
+          "sha256": "d2fbcc87a9fd4d842a398947e3fa6f5680c606455e01ea5a80dab6b0735d7ded"
+        }
+      ],
+      "embeddedAsset": {
+        "extras": {
+          "author": "MdMahib (https://sketchfab.com/MdMahib)",
+          "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+          "source": "https://sketchfab.com/3d-models/bugatti-tourbillon-2024-c992c9bc9ba8427197d5fe380eaa2b31",
+          "title": "Bugatti Tourbillon 2024"
+        },
+        "generator": "Sketchfab-16.59.0",
+        "version": "2.0"
+      },
+      "licenseEvidence": [],
+      "observedLicenseEvidence": {
+        "embedded": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+        "originalPage": "https://sketchfab.com/3d-models/bugatti-tourbillon-2024-c992c9bc9ba8427197d5fe380eaa2b31",
+        "provenanceLimit": "Originalpage and embedded asset metadata consistently declare CC-BY4. FullsourceJSONhas no Ddiaz/CSR2/copyrightcredit; originaldescriptionmakes no explicitripclaim/restriction. This records declaredlicenseevidence, not independentauthorshipcertification."
+      }
+    }
+  ]
+}

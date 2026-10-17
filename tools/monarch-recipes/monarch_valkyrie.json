@@ -1,0 +1,566 @@
+{
+  "key": "monarch_valkyrie",
+  "gameTypes": [
+    "valkyrie"
+  ],
+  "source": "work/monarch-sources/monarch_valkyrie/aston_martin_valkyrie_free.glb",
+  "sourceSHA256": "18578476203203ea20c6d04564699be7a4eb50c2ec1c3fd49d19756a3ae55cc6",
+  "forward": "+z",
+  "lengthMetres": 4.51,
+  "title": "Aston Martin Valkyrie FREE",
+  "author": "MHDesigning",
+  "license": "CC BY 4.0",
+  "sourceUrl": "https://sketchfab.com/3d-models/aston-martin-valkyrie-free-8c352d8ec67a4c3b9c1cb1467e06395c",
+  "mirror": "Nahjs/wild-racing-models",
+  "commit": "6c6a4875004713fe23f3a5ae1bc6c6c075214be3",
+  "downloadUrl": "https://raw.githubusercontent.com/Nahjs/wild-racing-models/6c6a4875004713fe23f3a5ae1bc6c6c075214be3/models/Aston/aston_martin_valkyrie_free.glb",
+  "triangles": 36364,
+  "atlasSize": 4096,
+  "wheels": [
+    {
+      "front": true,
+      "side": -1,
+      "tyre": {
+        "primitives": [
+          59
+        ]
+      },
+      "rim": {
+        "primitives": [
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67,
+          68,
+          69
+        ]
+      },
+      "caliper": {
+        "primitives": [
+          60
+        ]
+      },
+      "center": [
+        1.9492365665029232,
+        0.5364065824420654,
+        -1.259679281466909
+      ],
+      "r": 0.5171493875615799,
+      "width": 0.3481827705441795,
+      "axle": [
+        -0.5904490647439697,
+        -2.5782555757025705e-08,
+        0.807074904790733
+      ],
+      "neutralize": true,
+      "sourceNode": "/Sketchfab_model/1c90866e2e4549f2be29482e4388865c.fbx/RootNode/FrontRightWheel/FrontRightWheel_AstonMartinValkyrieTires_0",
+      "axleEvidence": "Circle fit to original tyre vertices/normals in canonical source frame; rotate complete tyre/rim/caliper assembly rigidly to the running axle."
+    },
+    {
+      "front": true,
+      "side": 1,
+      "tyre": {
+        "primitives": [
+          81
+        ]
+      },
+      "rim": {
+        "primitives": [
+          83,
+          84,
+          85,
+          86,
+          87,
+          88,
+          89,
+          90,
+          91
+        ]
+      },
+      "caliper": {
+        "primitives": [
+          82
+        ]
+      },
+      "center": [
+        1.9492353273124432,
+        0.5364065785522154,
+        1.2596785525713752
+      ],
+      "r": 0.5171494035628469,
+      "width": 0.3481827087914847,
+      "axle": [
+        -0.5904488590916721,
+        5.83418107158451e-08,
+        0.807075055244145
+      ],
+      "neutralize": true,
+      "sourceNode": "/Sketchfab_model/1c90866e2e4549f2be29482e4388865c.fbx/RootNode/FrontLeftWheel/FrontLeftWheel_AstonMartinValkyrieTires_0",
+      "axleEvidence": "Circle fit to original tyre vertices/normals in canonical source frame; rotate complete tyre/rim/caliper assembly rigidly to the running axle."
+    },
+    {
+      "front": false,
+      "side": -1,
+      "tyre": {
+        "primitives": [
+          70
+        ]
+      },
+      "rim": {
+        "primitives": [
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80
+        ]
+      },
+      "caliper": {
+        "primitives": [
+          71
+        ]
+      },
+      "center": [
+        -2.156109511136464,
+        0.536406523493744,
+        -1.198193957031255
+      ],
+      "r": 0.5405627612999298,
+      "width": 0.45708200669934285,
+      "axle": [
+        1.0565816112313172e-07,
+        -1.5748330683962308e-07,
+        0.9999999999999818
+      ],
+      "neutralize": true,
+      "sourceNode": "/Sketchfab_model/1c90866e2e4549f2be29482e4388865c.fbx/RootNode/RearRightWheel/RearRightWheel_AstonMartinValkyrieTires_0",
+      "axleEvidence": "Circle fit to original tyre vertices/normals in canonical source frame; rotate complete tyre/rim/caliper assembly rigidly to the running axle."
+    },
+    {
+      "front": false,
+      "side": 1,
+      "tyre": {
+        "primitives": [
+          92
+        ]
+      },
+      "rim": {
+        "primitives": [
+          94,
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102
+        ]
+      },
+      "caliper": {
+        "primitives": [
+          93
+        ]
+      },
+      "center": [
+        -2.156109510594073,
+        0.5364065235372033,
+        1.1981939570312572
+      ],
+      "r": 0.540562748909535,
+      "width": 0.4570820051048095,
+      "axle": [
+        1.1820138836209138e-07,
+        1.5748330561837776e-07,
+        0.9999999999999806
+      ],
+      "neutralize": true,
+      "sourceNode": "/Sketchfab_model/1c90866e2e4549f2be29482e4388865c.fbx/RootNode/RearLeftWheel/RearLeftWheel_AstonMartinValkyrieTires_0",
+      "axleEvidence": "Circle fit to original tyre vertices/normals in canonical source frame; rotate complete tyre/rim/caliper assembly rigidly to the running axle."
+    }
+  ],
+  "paintMaterials": [
+    1,
+    9
+  ],
+  "fitEvidence": {
+    "scale": 0.677841025970033,
+    "preFitTranslation": [
+      0.007223968514291412,
+      0.004156073885349665,
+      3.6400565261995865e-07
+    ],
+    "coordinateRule": "Canonical +X front, +Y up, +Z right; one uniform length fit; rubber floor at zero."
+  },
+  "hasInterior": false,
+  "interiorNote": "Source canopy glass is authored opaque black; there are no authored seats/dashboard. Keep source opacity and use bounded gameplay cabin fallback only where required.",
+  "rules": [
+    {
+      "part": "doorLeft.paint",
+      "select": {
+        "primitives": [
+          54,
+          55
+        ]
+      }
+    },
+    {
+      "part": "doorLeft.paint",
+      "select": {
+        "primitives": [
+          36
+        ],
+        "bounds": {
+          "x": [
+            -0.45,
+            1.15
+          ],
+          "y": [
+            1.07,
+            10
+          ],
+          "z": [
+            -10,
+            -0.05
+          ]
+        }
+      }
+    },
+    {
+      "part": "doorLeft.trim",
+      "select": {
+        "primitives": [
+          28
+        ],
+        "bounds": {
+          "x": [
+            -0.45,
+            1.15
+          ],
+          "y": [
+            1.07,
+            10
+          ],
+          "z": [
+            -10,
+            -0.05
+          ]
+        }
+      }
+    },
+    {
+      "part": "doorLeft.glass",
+      "select": {
+        "primitives": [
+          9
+        ],
+        "bounds": {
+          "x": [
+            -0.45,
+            1.15
+          ],
+          "z": [
+            -10,
+            -0.05
+          ]
+        }
+      },
+      "pane": 0
+    },
+    {
+      "part": "doorRight.paint",
+      "select": {
+        "primitives": [
+          56,
+          57
+        ]
+      }
+    },
+    {
+      "part": "doorRight.paint",
+      "select": {
+        "primitives": [
+          36
+        ],
+        "bounds": {
+          "x": [
+            -0.45,
+            1.15
+          ],
+          "y": [
+            1.07,
+            10
+          ],
+          "z": [
+            0.05,
+            10
+          ]
+        }
+      }
+    },
+    {
+      "part": "doorRight.trim",
+      "select": {
+        "primitives": [
+          28
+        ],
+        "bounds": {
+          "x": [
+            -0.45,
+            1.15
+          ],
+          "y": [
+            1.07,
+            10
+          ],
+          "z": [
+            0.05,
+            10
+          ]
+        }
+      }
+    },
+    {
+      "part": "doorRight.glass",
+      "select": {
+        "primitives": [
+          9
+        ],
+        "bounds": {
+          "x": [
+            -0.45,
+            1.15
+          ],
+          "z": [
+            0.05,
+            10
+          ]
+        }
+      },
+      "pane": 2
+    },
+    {
+      "part": "opticalGlass",
+      "select": {
+        "primitives": [
+          11,
+          24
+        ]
+      }
+    },
+    {
+      "part": "glass",
+      "select": {
+        "primitives": [
+          9
+        ],
+        "bounds": {
+          "x": [
+            1.15,
+            10
+          ]
+        }
+      },
+      "pane": 1
+    },
+    {
+      "part": "glass",
+      "select": {
+        "primitives": [
+          9
+        ],
+        "bounds": {
+          "z": [
+            -10,
+            0
+          ]
+        }
+      },
+      "pane": 0
+    },
+    {
+      "part": "glass",
+      "select": {
+        "primitives": [
+          9
+        ]
+      },
+      "pane": 2
+    },
+    {
+      "part": "headLeft",
+      "select": {
+        "primitives": [
+          6,
+          7,
+          8,
+          20,
+          21,
+          22,
+          23,
+          58
+        ],
+        "bounds": {
+          "z": [
+            -10,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "part": "tailLeft",
+      "select": {
+        "primitives": [
+          32,
+          33
+        ],
+        "bounds": {
+          "z": [
+            -10,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "part": "headRight",
+      "select": {
+        "primitives": [
+          6,
+          7,
+          8,
+          20,
+          21,
+          22,
+          23,
+          58
+        ],
+        "bounds": {
+          "z": [
+            0,
+            10
+          ]
+        }
+      }
+    },
+    {
+      "part": "tailRight",
+      "select": {
+        "primitives": [
+          32,
+          33
+        ],
+        "bounds": {
+          "z": [
+            0,
+            10
+          ]
+        }
+      }
+    },
+    {
+      "part": "panels",
+      "select": {
+        "material": "^(AstonMartinValkyrieMainBody|AstonMartinValkyrieSecondMain)$",
+        "bounds": {
+          "y": [
+            0.94,
+            10
+          ]
+        }
+      }
+    },
+    {
+      "part": "shell",
+      "select": {
+        "material": "^(AstonMartinValkyrieMainBody|AstonMartinValkyrieSecondMain)$"
+      }
+    }
+  ],
+  "doors": {
+    "left": {
+      "side": -1,
+      "hinge": [
+        0.7844138820948404,
+        0.9382377732250982,
+        -0.20335206105304487
+      ],
+      "axis": [
+        -0.5589457048261816,
+        0.22357828193047263,
+        0.7984938640374022
+      ],
+      "sourceNode": "Plane.023/025 plus corresponding canopy source triangles",
+      "pivotEvidence": "Fitted gullwing/butterfly seam; source canopy has no authored hinge. Native preview must verify the aperture and clearance.",
+      "parts": {
+        "paint": [
+          "doorLeft.paint"
+        ],
+        "trim": [
+          "doorLeft.trim"
+        ],
+        "glass": [
+          "doorLeft.glass"
+        ]
+      }
+    },
+    "right": {
+      "side": 1,
+      "hinge": [
+        0.7844138820948404,
+        0.9382377732250982,
+        0.20335255452897494
+      ],
+      "axis": [
+        -0.5589457048261816,
+        0.22357828193047263,
+        -0.7984938640374022
+      ],
+      "sourceNode": "Plane.023/025 plus corresponding canopy source triangles",
+      "pivotEvidence": "Fitted gullwing/butterfly seam; source canopy has no authored hinge. Native preview must verify the aperture and clearance.",
+      "parts": {
+        "paint": [
+          "doorRight.paint"
+        ],
+        "trim": [
+          "doorRight.trim"
+        ],
+        "glass": [
+          "doorRight.glass"
+        ]
+      }
+    }
+  },
+  "lowAtlasSize": 1024,
+  "seats": {
+    "hip": [
+      0.5079822256187596,
+      0.12,
+      -0.33453293683955393
+    ],
+    "wheel": [
+      0.74,
+      0.46,
+      -0.3
+    ],
+    "radius": 0.16,
+    "tilt": 0.25,
+    "recline": 0.77,
+    "floor": 0.12,
+    "pedal": [
+      0.68,
+      0.4
+    ],
+    "fixed": true,
+    "evidence": "Measured full-size seated rig against original packed source triangles on both sides; all adult head/hair/cap points, steering reach at full lock, and source-floor pedal checks; see seat-fit-final-proof.json."
+  },
+  "provenance": "tools/monarch_vehicle_sources.json#monarch_valkyrie"
+}

@@ -1,0 +1,559 @@
+{
+  "key": "monarch_db11",
+  "gameTypes": [
+    "dbs"
+  ],
+  "source": "work/monarch-sources/monarch_db11/scene.gltf",
+  "sourceSHA256": "d8b7eda435c84d7d27707265ee526d282cbc23ad9658e6f88c685468af5bbbae",
+  "forward": "+z",
+  "lengthMetres": 4.71,
+  "title": "Aston Martin db11",
+  "author": "Black Snow",
+  "license": "CC BY 4.0",
+  "sourceUrl": "https://sketchfab.com/3d-models/aston-martin-db11-0ce56f01b1ff40b3a4e36bc56873dbc7",
+  "mirror": "btwwahab/Auctions-Website-Frontend",
+  "commit": "f2d6f0279588c6877e8878ba6f861445f550c06a",
+  "downloadUrl": "https://raw.githubusercontent.com/btwwahab/Auctions-Website-Frontend/f2d6f0279588c6877e8878ba6f861445f550c06a/scene.gltf",
+  "triangles": 217999,
+  "atlasSize": 4096,
+  "wheels": [
+    {
+      "front": true,
+      "side": -1,
+      "tyre": {
+        "primitives": [
+          214
+        ]
+      },
+      "rim": {
+        "primitives": [
+          0,
+          1,
+          85,
+          89,
+          90,
+          91
+        ]
+      },
+      "caliper": {
+        "primitives": [
+          86,
+          87,
+          88
+        ]
+      },
+      "center": [
+        1.2993844939155288,
+        0.3755012103590254,
+        -0.844400147442649
+      ],
+      "r": 0.38180970373126266,
+      "width": 0.2887452963065541,
+      "axle": [
+        7.599304663047098e-05,
+        -3.248402562675001e-05,
+        0.9999999965849224
+      ],
+      "neutralize": true,
+      "sourceNode": "/Sketchfab_model/db11.fbx/RootNode/Object_4.003/Object_4.003_Scene_-_Root_0",
+      "axleEvidence": "Circle fit to original tyre vertices/normals in canonical source frame; rotate complete tyre/rim/caliper assembly rigidly to the running axle."
+    },
+    {
+      "front": true,
+      "side": 1,
+      "tyre": {
+        "primitives": [
+          223
+        ]
+      },
+      "rim": {
+        "primitives": [
+          215,
+          216,
+          220,
+          221,
+          222
+        ]
+      },
+      "caliper": {
+        "primitives": [
+          217,
+          218,
+          219
+        ]
+      },
+      "center": [
+        1.3037280553699087,
+        0.37550121375478507,
+        0.8490687820610077
+      ],
+      "r": 0.3818098611208697,
+      "width": 0.2887442388870415,
+      "axle": [
+        7.589079674185774e-05,
+        3.24990021636426e-05,
+        0.999999996592201
+      ],
+      "neutralize": true,
+      "sourceNode": "/Sketchfab_model/db11.fbx/RootNode/Object_4.001/Object_4.001_Scene_-_Root_0",
+      "axleEvidence": "Circle fit to original tyre vertices/normals in canonical source frame; rotate complete tyre/rim/caliper assembly rigidly to the running axle."
+    },
+    {
+      "front": false,
+      "side": -1,
+      "tyre": {
+        "primitives": [
+          232
+        ]
+      },
+      "rim": {
+        "primitives": [
+          224,
+          225,
+          229,
+          230,
+          231
+        ]
+      },
+      "caliper": {
+        "primitives": [
+          226,
+          227,
+          228
+        ]
+      },
+      "center": [
+        -1.6193993029629266,
+        0.37550121712151796,
+        -0.8444001474306032
+      ],
+      "r": 0.3818097724750399,
+      "width": 0.28874529989772035,
+      "axle": [
+        7.599908374854559e-05,
+        -3.248403734682631e-05,
+        0.9999999965844633
+      ],
+      "neutralize": true,
+      "sourceNode": "/Sketchfab_model/db11.fbx/RootNode/Object_4.002/Object_4.002_Scene_-_Root_0",
+      "axleEvidence": "Circle fit to original tyre vertices/normals in canonical source frame; rotate complete tyre/rim/caliper assembly rigidly to the running axle."
+    },
+    {
+      "front": false,
+      "side": 1,
+      "tyre": {
+        "primitives": [
+          241
+        ]
+      },
+      "rim": {
+        "primitives": [
+          233,
+          234,
+          238,
+          239,
+          240
+        ]
+      },
+      "caliper": {
+        "primitives": [
+          235,
+          236,
+          237
+        ]
+      },
+      "center": [
+        -1.615055743100202,
+        0.3755012155257283,
+        0.8490687820537992
+      ],
+      "r": 0.3818097892586683,
+      "width": 0.2887442407940937,
+      "axle": [
+        7.589413036794877e-05,
+        3.249900837523634e-05,
+        0.9999999965919476
+      ],
+      "neutralize": true,
+      "sourceNode": "/Sketchfab_model/db11.fbx/RootNode/Object_4.004/Object_4.004_Scene_-_Root_0",
+      "axleEvidence": "Circle fit to original tyre vertices/normals in canonical source frame; rotate complete tyre/rim/caliper assembly rigidly to the running axle."
+    }
+  ],
+  "paintMaterials": [
+    29
+  ],
+  "fitEvidence": {
+    "scale": 0.9533523513494647,
+    "preFitTranslation": [
+      0.1826145129670791,
+      0.006165971947620086,
+      -0.00046801566031540176
+    ],
+    "coordinateRule": "Canonical +X front, +Y up, +Z right; one uniform length fit; rubber floor at zero."
+  },
+  "hasInterior": true,
+  "identityNote": "Aston Martin DB11 family alternative for the DBS entry; game name and handling retained.",
+  "seats": {
+    "hip": [
+      -0.10880488048302372,
+      0.37535337844838296,
+      -0.38464718142406434
+    ],
+    "wheel": [
+      0.13119511951697627,
+      0.8381549465827012,
+      -0.3856005337754138
+    ],
+    "radius": 0.17160342324290365,
+    "tilt": 0.2,
+    "evidence": "Measured full-size seated rig against original packed source triangles on both sides; all adult head/hair/cap points, steering reach at full lock, and source-floor pedal checks; see seat-fit-final-proof.json.",
+    "recline": 0.68,
+    "floor": 0.1,
+    "fixed": true
+  },
+  "rules": [
+    {
+      "part": "doorLeft.paint",
+      "select": {
+        "primitives": [
+          101
+        ]
+      }
+    },
+    {
+      "part": "doorLeft.trim",
+      "select": {
+        "primitives": [
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          102,
+          103
+        ]
+      }
+    },
+    {
+      "part": "doorLeft.glass",
+      "select": {
+        "primitives": [
+          184
+        ]
+      },
+      "pane": 0
+    },
+    {
+      "part": "doorRight.paint",
+      "select": {
+        "primitives": [
+          128
+        ]
+      }
+    },
+    {
+      "part": "doorRight.trim",
+      "select": {
+        "primitives": [
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          122,
+          123,
+          124,
+          125,
+          126,
+          127,
+          129,
+          130
+        ]
+      }
+    },
+    {
+      "part": "doorRight.glass",
+      "select": {
+        "primitives": [
+          180
+        ]
+      },
+      "pane": 2
+    },
+    {
+      "part": "hood",
+      "select": {
+        "primitives": [
+          166,
+          167,
+          168,
+          169,
+          170,
+          171
+        ]
+      }
+    },
+    {
+      "part": "opticalGlass",
+      "select": {
+        "primitives": [
+          120,
+          121,
+          135,
+          139,
+          144,
+          149,
+          162
+        ]
+      }
+    },
+    {
+      "part": "glass",
+      "select": {
+        "primitives": [
+          185
+        ]
+      },
+      "pane": 1
+    },
+    {
+      "part": "glass",
+      "select": {
+        "primitives": [
+          182
+        ]
+      },
+      "pane": 3
+    },
+    {
+      "part": "glass",
+      "select": {
+        "primitives": [
+          183
+        ]
+      },
+      "pane": 0
+    },
+    {
+      "part": "glass",
+      "select": {
+        "primitives": [
+          181
+        ]
+      },
+      "pane": 2
+    },
+    {
+      "part": "glass",
+      "select": {
+        "primitives": [
+          191
+        ],
+        "bounds": {
+          "z": [
+            -10,
+            0
+          ]
+        }
+      },
+      "pane": 0
+    },
+    {
+      "part": "glass",
+      "select": {
+        "primitives": [
+          191
+        ]
+      },
+      "pane": 2
+    },
+    {
+      "part": "headLeft",
+      "select": {
+        "primitives": [
+          112,
+          113,
+          114,
+          115,
+          116,
+          117,
+          118,
+          119
+        ]
+      }
+    },
+    {
+      "part": "headRight",
+      "select": {
+        "primitives": [
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111
+        ]
+      }
+    },
+    {
+      "part": "tailLeft",
+      "select": {
+        "primitives": [
+          132,
+          133,
+          134,
+          146,
+          147,
+          148
+        ]
+      }
+    },
+    {
+      "part": "tailRight",
+      "select": {
+        "primitives": [
+          136,
+          137,
+          138,
+          141,
+          142,
+          143
+        ]
+      }
+    },
+    {
+      "part": "cabin",
+      "select": {
+        "primitives": [
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81,
+          82,
+          83,
+          84,
+          92,
+          93,
+          94,
+          193,
+          194,
+          195,
+          196,
+          197,
+          198,
+          199,
+          204,
+          207,
+          208,
+          209,
+          211
+        ]
+      }
+    },
+    {
+      "part": "panels",
+      "select": {
+        "material": "^amdb11$",
+        "bounds": {
+          "y": [
+            0.9,
+            10
+          ]
+        }
+      }
+    },
+    {
+      "part": "shell",
+      "select": {
+        "material": "^amdb11$"
+      }
+    }
+  ],
+  "doors": {
+    "left": {
+      "side": -1,
+      "hinge": [
+        0.717506815596897,
+        0.7876272719611794,
+        -0.7535945413963072
+      ],
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "sourceNode": "amdb11_door_L",
+      "pivotEvidence": "Physical hinge fitted at the forward seam of the independently authored source door skin, not claimed to be an authored pivot.",
+      "parts": {
+        "paint": [
+          "doorLeft.paint"
+        ],
+        "trim": [
+          "doorLeft.trim"
+        ],
+        "glass": [
+          "doorLeft.glass"
+        ]
+      }
+    },
+    "right": {
+      "side": 1,
+      "hinge": [
+        0.717506815596897,
+        0.7876272719611794,
+        0.7527021737358471
+      ],
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "sourceNode": "amdb11_door_R",
+      "pivotEvidence": "Physical hinge fitted at the forward seam of the independently authored source door skin, not claimed to be an authored pivot.",
+      "parts": {
+        "paint": [
+          "doorRight.paint"
+        ],
+        "trim": [
+          "doorRight.trim"
+        ],
+        "glass": [
+          "doorRight.glass"
+        ]
+      }
+    }
+  },
+  "lowAtlasSize": 1024,
+  "sourceFilesSHA256": {
+    "scene.bin": "a8e73c88ace9668dddc9983457b3a043c3ba5f0f844a1ca8fb02de0325ebde17"
+  },
+  "provenance": "tools/monarch_vehicle_sources.json#monarch_db11"
+}

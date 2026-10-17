@@ -1,0 +1,461 @@
+{
+  "key": "monarch_p1_gtr",
+  "gameTypes": [
+    "w1"
+  ],
+  "source": "work/monarch-sources/monarch_p1_gtr/mclaren-p1-gtr-source.glb",
+  "forward": "+z",
+  "lengthMetres": 4.588,
+  "sourceUrl": "https://sketchfab.com/3d-models/free-mclaren-p1-gtr-d805bec04cf5407fa7c036c20c726d39",
+  "hasInterior": true,
+  "alternativeFor": "McLaren W1; exact sources have conflicting restrictions or game-rip provenance",
+  "sourceSHA256": "c8309e98175d388badbd3b39d2f6267e16f9a104556c85e1440667b20d547f57",
+  "title": "Free McLaren P1 GTR",
+  "author": "Desiccated_Lemon (https://sketchfab.com/Desiccated_Lemon)",
+  "license": "CC BY 4.0",
+  "originalSourceUrl": "https://sketchfab.com/3d-models/free-mclaren-p1-gtr-d805bec04cf5407fa7c036c20c726d39",
+  "atlasSize": 4096,
+  "wheels": [
+    {
+      "front": true,
+      "side": -1,
+      "tyre": {
+        "primitives": [
+          11,
+          16
+        ],
+        "bounds": {
+          "x": [
+            0,
+            10000
+          ],
+          "z": [
+            -10000,
+            0
+          ]
+        }
+      },
+      "rim": {
+        "primitives": [
+          12,
+          13,
+          14
+        ],
+        "bounds": {
+          "x": [
+            0,
+            10000
+          ],
+          "z": [
+            -10000,
+            0
+          ]
+        }
+      },
+      "caliper": {
+        "primitives": [
+          15
+        ],
+        "bounds": {
+          "x": [
+            0,
+            10000
+          ],
+          "z": [
+            -10000,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "front": true,
+      "side": 1,
+      "tyre": {
+        "primitives": [
+          11,
+          16
+        ],
+        "bounds": {
+          "x": [
+            0,
+            10000
+          ],
+          "z": [
+            0,
+            10000
+          ]
+        }
+      },
+      "rim": {
+        "primitives": [
+          12,
+          13,
+          14
+        ],
+        "bounds": {
+          "x": [
+            0,
+            10000
+          ],
+          "z": [
+            0,
+            10000
+          ]
+        }
+      },
+      "caliper": {
+        "primitives": [
+          15
+        ],
+        "bounds": {
+          "x": [
+            0,
+            10000
+          ],
+          "z": [
+            0,
+            10000
+          ]
+        }
+      }
+    },
+    {
+      "front": false,
+      "side": -1,
+      "tyre": {
+        "primitives": [
+          11,
+          16
+        ],
+        "bounds": {
+          "x": [
+            -10000,
+            0
+          ],
+          "z": [
+            -10000,
+            0
+          ]
+        }
+      },
+      "rim": {
+        "primitives": [
+          12,
+          13,
+          14
+        ],
+        "bounds": {
+          "x": [
+            -10000,
+            0
+          ],
+          "z": [
+            -10000,
+            0
+          ]
+        }
+      },
+      "caliper": {
+        "primitives": [
+          15
+        ],
+        "bounds": {
+          "x": [
+            -10000,
+            0
+          ],
+          "z": [
+            -10000,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "front": false,
+      "side": 1,
+      "tyre": {
+        "primitives": [
+          11,
+          16
+        ],
+        "bounds": {
+          "x": [
+            -10000,
+            0
+          ],
+          "z": [
+            0,
+            10000
+          ]
+        }
+      },
+      "rim": {
+        "primitives": [
+          12,
+          13,
+          14
+        ],
+        "bounds": {
+          "x": [
+            -10000,
+            0
+          ],
+          "z": [
+            0,
+            10000
+          ]
+        }
+      },
+      "caliper": {
+        "primitives": [
+          15
+        ],
+        "bounds": {
+          "x": [
+            -10000,
+            0
+          ],
+          "z": [
+            0,
+            10000
+          ]
+        }
+      }
+    }
+  ],
+  "rules": [
+    {
+      "part": "headLeft",
+      "select": {
+        "primitives": [
+          8,
+          9
+        ],
+        "bounds": {
+          "z": [
+            -10000,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "part": "tailLeft",
+      "select": {
+        "primitives": [
+          23,
+          29,
+          30,
+          31,
+          32,
+          33
+        ],
+        "bounds": {
+          "z": [
+            -10000,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "part": "headRight",
+      "select": {
+        "primitives": [
+          8,
+          9
+        ],
+        "bounds": {
+          "z": [
+            0,
+            10000
+          ]
+        }
+      }
+    },
+    {
+      "part": "tailRight",
+      "select": {
+        "primitives": [
+          23,
+          29,
+          30,
+          31,
+          32,
+          33
+        ],
+        "bounds": {
+          "z": [
+            0,
+            10000
+          ]
+        }
+      }
+    },
+    {
+      "part": "opticalGlass",
+      "select": {
+        "primitives": [
+          7,
+          10,
+          27
+        ]
+      }
+    },
+    {
+      "part": "glass",
+      "select": {
+        "primitives": [
+          36
+        ],
+        "bounds": {
+          "x": [
+            0.5,
+            2
+          ]
+        }
+      },
+      "pane": 1
+    },
+    {
+      "part": "glass",
+      "select": {
+        "primitives": [
+          36
+        ],
+        "bounds": {
+          "z": [
+            -10000,
+            0
+          ]
+        }
+      },
+      "pane": 0
+    },
+    {
+      "part": "glass",
+      "select": {
+        "primitives": [
+          36
+        ],
+        "bounds": {
+          "z": [
+            0,
+            10000
+          ]
+        }
+      },
+      "pane": 2
+    },
+    {
+      "part": "cabin",
+      "select": {
+        "primitives": [
+          37
+        ]
+      }
+    },
+    {
+      "part": "hood",
+      "select": {
+        "primitives": [
+          0
+        ],
+        "bounds": {
+          "x": [
+            1.02,
+            3
+          ]
+        }
+      }
+    },
+    {
+      "part": "panels",
+      "select": {
+        "primitives": [
+          0
+        ]
+      }
+    },
+    {
+      "part": "trim",
+      "select": {
+        "primitives": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          24,
+          25,
+          26,
+          28,
+          34,
+          35,
+          38,
+          39
+        ]
+      }
+    }
+  ],
+  "measuredFit": {
+    "canonicalBounds": [
+      [
+        -1.4602782726287842,
+        -0.028602495789527893,
+        -0.6771708130836487
+      ],
+      [
+        1.6920361518859863,
+        0.7550491094589233,
+        0.6771708130836487
+      ]
+    ],
+    "uniformScale": 1.455438570569058,
+    "shift": [
+      -0.11587893962860107,
+      0.028602495789527893,
+      -0.0
+    ],
+    "fittedDimensions": [
+      4.588,
+      1.1405567721669536,
+      1.9711610404511049
+    ]
+  },
+  "seats": {
+    "hip": [
+      0.23173829279827624,
+      0.15,
+      -0.3929684140536457
+    ],
+    "wheel": [
+      0.4717382927982762,
+      0.5510326752857883,
+      -0.4075227997593363
+    ],
+    "radius": 0.14,
+    "tilt": 0.27,
+    "recline": 0.73,
+    "floor": 0.1,
+    "fixed": true,
+    "evidence": "Measured full-size seated rig against original packed source triangles on both sides; all adult head/hair/cap points, steering reach at full lock, and source-floor pedal checks; see seat-fit-final-proof.json."
+  },
+  "sourceTriangles": 71888,
+  "excludedStudioTriangles": 0,
+  "sourceRoleEvidence": "Primitive IDs from production legacy.load_primitives scene traversal, canonical +X/Yup/Zright. Native door hinge only supplied where paired source doors are independent; other assets need runtime door seam adaptation. Seats are measured gameplay fit estimates, not authored attachment points.",
+  "lowAtlasSize": 1024,
+  "maxTextureSize": 1020,
+  "downloadUrl": "https://raw.githubusercontent.com/Nissmo89/Supercar-Vault-3D/00f08b282d6b2c0f6834f91c582f9d539dcc02fd/models/free_mclaren_p1_gtr.glb",
+  "identityNote": "McLaren P1 GTR family alternative for W1; not an exact McLaren W1 mesh.",
+  "provenance": "tools/monarch_vehicle_sources.json#monarch_p1_gtr"
+}

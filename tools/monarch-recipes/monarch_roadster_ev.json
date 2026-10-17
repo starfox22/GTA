@@ -1,0 +1,568 @@
+{
+  "key": "monarch_roadster_ev",
+  "gameTypes": [
+    "novera"
+  ],
+  "source": "work/monarch-sources/monarch_roadster_ev/test4.glb",
+  "sourceSHA256": "f0d70024ed306213b8587950c53af35a97b74c4f3fdf60aa4849bebfa5296c60",
+  "sourceUrl": "https://sketchfab.com/3d-models/tesla-roadster-2020-1fbf29e297bd4a17ac39a00a378441d8",
+  "title": "Tesla Roadster 2020",
+  "author": "metarex.4d",
+  "license": "CC BY 4.0",
+  "mirror": "gwesseling/Tesla-app",
+  "commit": "a03a55533adcf0f45a610b7bc4e1a9e03277c13c",
+  "downloadUrl": "https://raw.githubusercontent.com/gwesseling/Tesla-app/a03a55533adcf0f45a610b7bc4e1a9e03277c13c/assets/test4.glb",
+  "forward": "+z",
+  "lengthMetres": 4.75,
+  "atlasSize": 4096,
+  "wheels": [
+    {
+      "front": true,
+      "side": -1,
+      "tyre": {
+        "primitives": [
+          89,
+          90
+        ]
+      },
+      "rim": {
+        "primitives": [
+          91,
+          92,
+          93,
+          94
+        ]
+      },
+      "caliper": {
+        "primitives": [
+          103
+        ]
+      },
+      "center": [
+        1.5340322717311545,
+        0.31325617517270377,
+        -0.7848385472012123
+      ],
+      "r": 0.32516594579805697,
+      "width": 0.26353208037905695,
+      "axle": [
+        1.4651636873119984e-07,
+        1.5552867882462351e-09,
+        0.9999999999999893
+      ],
+      "neutralize": true,
+      "sourceNode": "/Sketchfab_model/tesla roadster 2020.fbx/RootNode/TR.DEF-Wheel.Ft.L/roadster.001/roadster.001_Sidewall_0",
+      "axleEvidence": "Circle fit to original sidewall+tread vertices/normals. Authored four independent wheel groups and four independent static calipers."
+    },
+    {
+      "front": true,
+      "side": 1,
+      "tyre": {
+        "primitives": [
+          95,
+          96
+        ]
+      },
+      "rim": {
+        "primitives": [
+          97,
+          98,
+          99,
+          100
+        ]
+      },
+      "caliper": {
+        "primitives": [
+          104
+        ]
+      },
+      "center": [
+        1.5343094296092183,
+        0.3133517539815427,
+        0.7848389264238548
+      ],
+      "r": 0.3251023981460079,
+      "width": 0.26353271863516015,
+      "axle": [
+        8.528044069764161e-07,
+        4.134590003701533e-09,
+        0.9999999999996363
+      ],
+      "neutralize": true,
+      "sourceNode": "/Sketchfab_model/tesla roadster 2020.fbx/RootNode/TR.DEF-Wheel.Ft.R/roadster.002/roadster.002_Sidewall_0",
+      "axleEvidence": "Circle fit to original sidewall+tread vertices/normals. Authored four independent wheel groups and four independent static calipers."
+    },
+    {
+      "front": false,
+      "side": -1,
+      "tyre": {
+        "primitives": [
+          77,
+          78
+        ]
+      },
+      "rim": {
+        "primitives": [
+          79,
+          80,
+          81,
+          82
+        ]
+      },
+      "caliper": {
+        "primitives": [
+          101
+        ]
+      },
+      "center": [
+        -1.3874977238139017,
+        0.34125189781411275,
+        -0.8113921159685709
+      ],
+      "r": 0.3442996612171381,
+      "width": 0.31143908242488993,
+      "axle": [
+        6.324240838800752e-07,
+        -1.2288413064887038e-08,
+        0.9999999999997999
+      ],
+      "neutralize": true,
+      "sourceNode": "/Sketchfab_model/tesla roadster 2020.fbx/RootNode/TR.DEF-Wheel.Bk.L/roadster.003/roadster.003_Sidewall_0",
+      "axleEvidence": "Circle fit to original sidewall+tread vertices/normals. Authored four independent wheel groups and four independent static calipers."
+    },
+    {
+      "front": false,
+      "side": 1,
+      "tyre": {
+        "primitives": [
+          83,
+          84
+        ]
+      },
+      "rim": {
+        "primitives": [
+          85,
+          86,
+          87,
+          88
+        ]
+      },
+      "caliper": {
+        "primitives": [
+          102
+        ]
+      },
+      "center": [
+        -1.3873026178031294,
+        0.3410764803146825,
+        0.7773372257721071
+      ],
+      "r": 0.3443064426827042,
+      "width": 0.31143906617040984,
+      "axle": [
+        8.261886026532538e-07,
+        8.459793976456353e-09,
+        0.9999999999996586
+      ],
+      "neutralize": true,
+      "sourceNode": "/Sketchfab_model/tesla roadster 2020.fbx/RootNode/TR.DEF-Wheel.Bk.R/roadster.004/roadster.004_Sidewall_0",
+      "axleEvidence": "Circle fit to original sidewall+tread vertices/normals. Authored four independent wheel groups and four independent static calipers."
+    }
+  ],
+  "paintMaterials": [
+    2
+  ],
+  "rules": [
+    {
+      "part": "doorLeft.paint",
+      "select": {
+        "primitives": [
+          10
+        ],
+        "bounds": {
+          "z": [
+            -10,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "part": "doorLeft.trim",
+      "select": {
+        "primitives": [
+          3,
+          15,
+          16
+        ],
+        "bounds": {
+          "x": [
+            -0.4,
+            0.96
+          ],
+          "y": [
+            0.2,
+            0.86
+          ],
+          "z": [
+            -10,
+            -0.58
+          ]
+        }
+      }
+    },
+    {
+      "part": "doorLeft.glass",
+      "select": {
+        "primitives": [
+          61
+        ],
+        "bounds": {
+          "z": [
+            -10,
+            0
+          ]
+        }
+      },
+      "pane": 0
+    },
+    {
+      "part": "doorRight.paint",
+      "select": {
+        "primitives": [
+          10
+        ],
+        "bounds": {
+          "z": [
+            0,
+            10
+          ]
+        }
+      }
+    },
+    {
+      "part": "doorRight.trim",
+      "select": {
+        "primitives": [
+          3,
+          15,
+          16
+        ],
+        "bounds": {
+          "x": [
+            -0.4,
+            0.96
+          ],
+          "y": [
+            0.2,
+            0.86
+          ],
+          "z": [
+            0.58,
+            10
+          ]
+        }
+      }
+    },
+    {
+      "part": "doorRight.glass",
+      "select": {
+        "primitives": [
+          61
+        ],
+        "bounds": {
+          "z": [
+            0,
+            10
+          ]
+        }
+      },
+      "pane": 2
+    },
+    {
+      "part": "glass",
+      "select": {
+        "primitives": [
+          1,
+          14
+        ]
+      },
+      "pane": 1
+    },
+    {
+      "part": "glass",
+      "select": {
+        "primitives": [
+          56
+        ]
+      },
+      "pane": 3
+    },
+    {
+      "part": "glass",
+      "select": {
+        "primitives": [
+          58,
+          59
+        ]
+      },
+      "pane": 4
+    },
+    {
+      "part": "glass",
+      "select": {
+        "primitives": [
+          55
+        ],
+        "bounds": {
+          "z": [
+            -10,
+            0
+          ]
+        }
+      },
+      "pane": 0
+    },
+    {
+      "part": "glass",
+      "select": {
+        "primitives": [
+          55
+        ]
+      },
+      "pane": 2
+    },
+    {
+      "part": "opticalGlass",
+      "select": {
+        "primitives": [
+          20,
+          26,
+          36,
+          43,
+          45,
+          47,
+          51,
+          68
+        ]
+      }
+    },
+    {
+      "part": "headLeft",
+      "select": {
+        "primitives": [
+          21,
+          22,
+          30,
+          32,
+          34
+        ],
+        "bounds": {
+          "z": [
+            -10,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "part": "tailLeft",
+      "select": {
+        "primitives": [
+          50,
+          52,
+          53,
+          63,
+          66,
+          67,
+          71
+        ],
+        "bounds": {
+          "z": [
+            -10,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "part": "headRight",
+      "select": {
+        "primitives": [
+          21,
+          22,
+          30,
+          32,
+          34
+        ],
+        "bounds": {
+          "z": [
+            0,
+            10
+          ]
+        }
+      }
+    },
+    {
+      "part": "tailRight",
+      "select": {
+        "primitives": [
+          50,
+          52,
+          53,
+          63,
+          66,
+          67,
+          71
+        ],
+        "bounds": {
+          "z": [
+            0,
+            10
+          ]
+        }
+      }
+    },
+    {
+      "part": "cabin",
+      "select": {
+        "primitives": [
+          3,
+          4,
+          5,
+          6,
+          7,
+          9,
+          13,
+          72
+        ]
+      }
+    },
+    {
+      "part": "hood",
+      "select": {
+        "primitives": [
+          76
+        ],
+        "bounds": {
+          "x": [
+            0.96,
+            10
+          ],
+          "y": [
+            0.45,
+            0.88
+          ],
+          "z": [
+            -0.7,
+            0.7
+          ]
+        }
+      }
+    },
+    {
+      "part": "panels",
+      "select": {
+        "primitives": [
+          2,
+          60
+        ]
+      }
+    },
+    {
+      "part": "shell",
+      "select": {
+        "primitives": [
+          76
+        ]
+      }
+    }
+  ],
+  "doors": {
+    "left": {
+      "side": -1,
+      "hinge": [
+        0.9051315206176477,
+        0.6794039727987927,
+        -0.7628513967831122
+      ],
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "sourceNode": "roadster.015 (paired source door skins) plus matching sideglass/card faces",
+      "pivotEvidence": "Physical front seam fitted from existing independent door skin geometry, not claimed as an authored hinge. Verify opening clearance in native review.",
+      "parts": {
+        "paint": [
+          "doorLeft.paint"
+        ],
+        "trim": [
+          "doorLeft.trim"
+        ],
+        "glass": [
+          "doorLeft.glass"
+        ]
+      }
+    },
+    "right": {
+      "side": 1,
+      "hinge": [
+        0.9051315206176477,
+        0.6794039727987927,
+        0.7978174732092654
+      ],
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "sourceNode": "roadster.015 (paired source door skins) plus matching sideglass/card faces",
+      "pivotEvidence": "Physical front seam fitted from existing independent door skin geometry, not claimed as an authored hinge. Verify opening clearance in native review.",
+      "parts": {
+        "paint": [
+          "doorRight.paint"
+        ],
+        "trim": [
+          "doorRight.trim"
+        ],
+        "glass": [
+          "doorRight.glass"
+        ]
+      }
+    }
+  },
+  "hasInterior": true,
+  "seats": {
+    "hip": [
+      0.28728537314580893,
+      0.23856785941266564,
+      -0.34188150421937874
+    ],
+    "wheel": [
+      0.5272853731458089,
+      0.674270193621186,
+      -0.34085474838385743
+    ],
+    "radius": 0.1848160503938342,
+    "tilt": 0.22,
+    "evidence": "Measured full-size seated rig against original packed source triangles on both sides; all adult head/hair/cap points, steering reach at full lock, and source-floor pedal checks; see seat-fit-final-proof.json.",
+    "fixed": true,
+    "recline": 0.58,
+    "floor": 0.1
+  },
+  "fitEvidence": {
+    "scale": 1.0267558355213011,
+    "preFitTranslation": [
+      -0.0684549536471859,
+      0.011699645908365197,
+      0.017027454442662293
+    ]
+  },
+  "originalSourceTriangles": 608850,
+  "identityNote": "Tesla Roadster 2020 concept, an EV-class alternative for Novera; not a Rimac Nevera mesh. Game name and electric handling retained.",
+  "verificationLimit": "The full GLB was re-exported by its mirror and lacks embedded author/license extras. Attribution uses the exact model-specific README link and independently indexed primary author/title/licence/face count; no generic app code licence is used.",
+  "lowAtlasSize": 1024,
+  "alternativeForRimacNevera": true,
+  "provenance": "tools/monarch_vehicle_sources.json#monarch_roadster_ev"
+}

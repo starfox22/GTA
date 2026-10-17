@@ -1,0 +1,533 @@
+{
+  "key": "monarch_ccx",
+  "gameTypes": [
+    "jasko"
+  ],
+  "source": "work/monarch-sources/monarch_ccx/koenigsegg-ccx-no.glb",
+  "preparedSource": "work/monarch-sources/monarch_ccx/koenigsegg-ccx-no-decoded.glb",
+  "forward": "-x",
+  "sourceYawRadians": 0.1274361888156343,
+  "excludePrimitives": [
+    94,
+    95,
+    96
+  ],
+  "lengthMetres": 4.295,
+  "sourceUrl": "https://sketchfab.com/3d-models/2007-koenigsegg-ccx-no-roof-423b64e085974b97b5cfd5a87d9dcce3",
+  "hasInterior": true,
+  "alternativeFor": "Koenigsegg Jesko Absolut; exact clean reachable source unavailable",
+  "sourceSHA256": "a0e216c9fd7b7270d229dd49cd75dd672630c602ccb9ed408ff2424a1df47c11",
+  "title": "2007 Koenigsegg CCX (No Roof)",
+  "author": "_Sheep19 (https://sketchfab.com/shobhit190401)",
+  "license": "CC BY 4.0",
+  "originalSourceUrl": "https://sketchfab.com/3d-models/2007-koenigsegg-ccx-no-roof-423b64e085974b97b5cfd5a87d9dcce3",
+  "atlasSize": 4096,
+  "preparedSHA256": "80ace5ec7dd822ddb6ebc154cdbab283cfd399abbf460771333ad83f13950688",
+  "wheels": [
+    {
+      "front": true,
+      "side": -1,
+      "tyre": {
+        "primitives": [
+          42
+        ],
+        "bounds": {
+          "z": [
+            -10000,
+            0
+          ]
+        }
+      },
+      "rim": {
+        "primitives": [
+          41,
+          43
+        ],
+        "bounds": {
+          "z": [
+            -10000,
+            0
+          ]
+        }
+      },
+      "caliper": {
+        "primitives": [
+          44
+        ],
+        "bounds": {
+          "z": [
+            -10000,
+            0
+          ]
+        }
+      },
+      "neutralizeAxle": true
+    },
+    {
+      "front": true,
+      "side": 1,
+      "tyre": {
+        "primitives": [
+          42
+        ],
+        "bounds": {
+          "z": [
+            0,
+            10000
+          ]
+        }
+      },
+      "rim": {
+        "primitives": [
+          41,
+          43
+        ],
+        "bounds": {
+          "z": [
+            0,
+            10000
+          ]
+        }
+      },
+      "caliper": {
+        "primitives": [
+          44
+        ],
+        "bounds": {
+          "z": [
+            0,
+            10000
+          ]
+        }
+      },
+      "neutralizeAxle": true
+    },
+    {
+      "front": false,
+      "side": -1,
+      "tyre": {
+        "primitives": [
+          60
+        ],
+        "bounds": {
+          "z": [
+            -10000,
+            0
+          ]
+        }
+      },
+      "rim": {
+        "primitives": [
+          59,
+          61
+        ],
+        "bounds": {
+          "z": [
+            -10000,
+            0
+          ]
+        }
+      },
+      "caliper": {
+        "primitives": [
+          62
+        ],
+        "bounds": {
+          "z": [
+            -10000,
+            0
+          ]
+        }
+      },
+      "neutralizeAxle": true
+    },
+    {
+      "front": false,
+      "side": 1,
+      "tyre": {
+        "primitives": [
+          60
+        ],
+        "bounds": {
+          "z": [
+            0,
+            10000
+          ]
+        }
+      },
+      "rim": {
+        "primitives": [
+          59,
+          61
+        ],
+        "bounds": {
+          "z": [
+            0,
+            10000
+          ]
+        }
+      },
+      "caliper": {
+        "primitives": [
+          62
+        ],
+        "bounds": {
+          "z": [
+            0,
+            10000
+          ]
+        }
+      },
+      "neutralizeAxle": true
+    }
+  ],
+  "rules": [
+    {
+      "part": "headLeft",
+      "select": {
+        "primitives": [
+          15,
+          16,
+          22
+        ],
+        "bounds": {
+          "z": [
+            -10000,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "part": "tailLeft",
+      "select": {
+        "primitives": [
+          32,
+          39,
+          47,
+          55
+        ],
+        "bounds": {
+          "z": [
+            -10000,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "part": "doorLeft.paint",
+      "select": {
+        "primitives": [
+          35
+        ],
+        "bounds": {
+          "z": [
+            -10000,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "part": "doorLeft.trim",
+      "select": {
+        "primitives": [
+          36,
+          88,
+          89,
+          90
+        ],
+        "bounds": {
+          "z": [
+            -10000,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "part": "doorLeft.glass",
+      "select": {
+        "primitives": [
+          51
+        ],
+        "bounds": {
+          "z": [
+            -10000,
+            0
+          ]
+        }
+      },
+      "pane": 0
+    },
+    {
+      "part": "headRight",
+      "select": {
+        "primitives": [
+          15,
+          16,
+          22
+        ],
+        "bounds": {
+          "z": [
+            0,
+            10000
+          ]
+        }
+      }
+    },
+    {
+      "part": "tailRight",
+      "select": {
+        "primitives": [
+          32,
+          39,
+          47,
+          55
+        ],
+        "bounds": {
+          "z": [
+            0,
+            10000
+          ]
+        }
+      }
+    },
+    {
+      "part": "doorRight.paint",
+      "select": {
+        "primitives": [
+          35
+        ],
+        "bounds": {
+          "z": [
+            0,
+            10000
+          ]
+        }
+      }
+    },
+    {
+      "part": "doorRight.trim",
+      "select": {
+        "primitives": [
+          36,
+          88,
+          89,
+          90
+        ],
+        "bounds": {
+          "z": [
+            0,
+            10000
+          ]
+        }
+      }
+    },
+    {
+      "part": "doorRight.glass",
+      "select": {
+        "primitives": [
+          51
+        ],
+        "bounds": {
+          "z": [
+            0,
+            10000
+          ]
+        }
+      },
+      "pane": 2
+    },
+    {
+      "part": "opticalGlass",
+      "select": {
+        "primitives": [
+          12
+        ]
+      }
+    },
+    {
+      "part": "glass",
+      "select": {
+        "primitives": [
+          52
+        ]
+      },
+      "pane": 1
+    },
+    {
+      "part": "opticalGlass",
+      "select": {
+        "primitives": [
+          20,
+          34
+        ]
+      }
+    },
+    {
+      "part": "hood",
+      "select": {
+        "primitives": [
+          48,
+          49,
+          50
+        ]
+      }
+    },
+    {
+      "part": "cabin",
+      "select": {
+        "primitives": [
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81,
+          82,
+          83,
+          84,
+          85,
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+          92,
+          93
+        ]
+      }
+    },
+    {
+      "part": "panels",
+      "select": {
+        "primitives": [
+          21,
+          29,
+          33,
+          37,
+          45,
+          54,
+          63
+        ]
+      }
+    }
+  ],
+  "measuredFit": {
+    "canonicalBounds": [
+      [
+        -2.00831259538071,
+        0.0010620615762201857,
+        -0.9930003638211437
+      ],
+      [
+        2.005819626523399,
+        1.0110431702059144,
+        0.9862071605455373
+      ]
+    ],
+    "uniformScale": 1.0699697375595318,
+    "shift": [
+      0.0012464844286554921,
+      -0.0010620615762201857,
+      0.0033966016378031982
+    ],
+    "fittedDimensions": [
+      4.295,
+      1.080649221740599,
+      2.117692155422468
+    ]
+  },
+  "doors": {
+    "left": {
+      "side": -1,
+      "hinge": [
+        0.6420504603209324,
+        0.7334516407545744,
+        -0.7316324142152189
+      ],
+      "axis": [
+        0.0,
+        0.21486178267511977,
+        0.9766444667050899
+      ],
+      "parts": {
+        "paint": [
+          "doorLeft.paint"
+        ],
+        "trim": [
+          "doorLeft.trim"
+        ],
+        "glass": [
+          "doorLeft.glass"
+        ]
+      },
+      "pivotEvidence": "Derived near forward native door seam; source has separate paired door meshes but no authored hinge. Approximate outward/up dihedral axis, not an authored rig."
+    },
+    "right": {
+      "side": 1,
+      "hinge": [
+        0.644552430068286,
+        0.7334513539784386,
+        0.7399965207626236
+      ],
+      "axis": [
+        0.0,
+        0.21486178267511977,
+        -0.9766444667050899
+      ],
+      "parts": {
+        "paint": [
+          "doorRight.paint"
+        ],
+        "trim": [
+          "doorRight.trim"
+        ],
+        "glass": [
+          "doorRight.glass"
+        ]
+      },
+      "pivotEvidence": "Derived near forward native door seam; source has separate paired door meshes but no authored hinge. Approximate outward/up dihedral axis, not an authored rig."
+    }
+  },
+  "seats": {
+    "hip": [
+      0.2749191746455758,
+      0.2235572711415213,
+      -0.4243536340608182
+    ],
+    "wheel": [
+      0.5149191746455758,
+      0.68364425829212,
+      -0.3922545419340322
+    ],
+    "radius": 0.16,
+    "tilt": 0.3,
+    "fixed": true,
+    "recline": 0.35,
+    "floor": 0.1,
+    "evidence": "Measured full-size seated rig against original packed source triangles on both sides; all adult head/hair/cap points, steering reach at full lock, and source-floor pedal checks; see seat-fit-final-proof.json."
+  },
+  "sourceTriangles": 41231,
+  "excludedStudioTriangles": 6,
+  "sourceRoleEvidence": "Primitive IDs from production legacy.load_primitives scene traversal, canonical +X/Yup/Zright. Native door hinge only supplied where paired source doors are independent; other assets need runtime door seam adaptation. Seats are measured gameplay fit estimates, not authored attachment points.",
+  "lowAtlasSize": 1024,
+  "openTop": true,
+  "downloadUrl": "https://raw.githubusercontent.com/pedrosoandre/carros/0a56de377f02f2574d781f6920fed08d6423ec2f/assets/koenigsegg-ccx-no.glb",
+  "identityNote": "2007 Koenigsegg CCX without roof, a family alternative for Jasko; not a Jesko mesh. Six studio-plane faces are excluded.",
+  "provenance": "tools/monarch_vehicle_sources.json#monarch_ccx"
+}

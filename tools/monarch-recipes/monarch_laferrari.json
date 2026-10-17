@@ -1,0 +1,599 @@
+{
+  "key": "monarch_laferrari",
+  "gameTypes": [
+    "lafera"
+  ],
+  "source": "work/monarch-sources/monarch_laferrari/ferrari_laferrari__www.vecarz.com.glb",
+  "sourceSHA256": "dc26015f2fb73791b111e16a0e0693a9497d047bf8e331ac98c2678987b2ad27",
+  "forward": "+z",
+  "lengthMetres": 4.7,
+  "title": "Ferrari Laferrari | www.vecarz.com",
+  "author": "vecarz",
+  "license": "CC BY 4.0",
+  "sourceUrl": "https://sketchfab.com/3d-models/ferrari-laferrari-wwwvecarzcom-979f7085012e4d6399f38de3f9c39012",
+  "mirror": "Nahjs/wild-racing-models",
+  "commit": "6c6a4875004713fe23f3a5ae1bc6c6c075214be3",
+  "downloadUrl": "https://raw.githubusercontent.com/Nahjs/wild-racing-models/6c6a4875004713fe23f3a5ae1bc6c6c075214be3/models/Ferrari/ferrari_laferrari__www.vecarz.com.glb",
+  "triangles": 587310,
+  "atlasSize": 4096,
+  "wheels": [
+    {
+      "front": true,
+      "side": -1,
+      "tyre": {
+        "primitives": [
+          64
+        ]
+      },
+      "rim": {
+        "primitives": [
+          65,
+          66,
+          67,
+          68,
+          69,
+          70
+        ]
+      },
+      "caliper": {
+        "primitives": [
+          55
+        ]
+      },
+      "center": [
+        1.2130879444488143,
+        0.3145099265951824,
+        -0.7920345684091058
+      ],
+      "r": 0.3124964167730997,
+      "width": 0.2862869576096013,
+      "axle": [
+        0.001399995392272748,
+        -0.002149992923847434,
+        0.9999967087662485
+      ],
+      "neutralize": true,
+      "sourceNode": "/Sketchfab_model/root/GLTF_SceneRootNode/Sketchfab_model_0/Laferrari fbx.fbx_1/RootNode_2/tire 2_73/tire 2_tread.002_0_74/Object_142",
+      "axleEvidence": "Circle fit to original tyre vertices/normals in canonical source frame; rotate complete tyre/rim/caliper assembly rigidly to the running axle."
+    },
+    {
+      "front": true,
+      "side": 1,
+      "tyre": {
+        "primitives": [
+          57
+        ]
+      },
+      "rim": {
+        "primitives": [
+          58,
+          59,
+          60,
+          61,
+          62,
+          63
+        ]
+      },
+      "caliper": {
+        "primitives": [
+          54
+        ]
+      },
+      "center": [
+        1.215577763669813,
+        0.31112424000298544,
+        0.7869500197256458
+      ],
+      "r": 0.3124956043139737,
+      "width": 0.2862868534099443,
+      "axle": [
+        0.001399995392272748,
+        -0.002149992923847434,
+        0.9999967087662485
+      ],
+      "neutralize": true,
+      "sourceNode": "/Sketchfab_model/root/GLTF_SceneRootNode/Sketchfab_model_0/Laferrari fbx.fbx_1/RootNode_2/tire 1_65/tire 1_tread.001_0_66/Object_127",
+      "axleEvidence": "Circle fit to original tyre vertices/normals in canonical source frame; rotate complete tyre/rim/caliper assembly rigidly to the running axle."
+    },
+    {
+      "front": false,
+      "side": -1,
+      "tyre": {
+        "primitives": [
+          78
+        ]
+      },
+      "rim": {
+        "primitives": [
+          79,
+          80,
+          81,
+          82,
+          83,
+          84
+        ]
+      },
+      "caliper": {
+        "primitives": [
+          56
+        ]
+      },
+      "center": [
+        -1.3025114136662284,
+        0.33135868820863146,
+        -0.7817058749002403
+      ],
+      "r": 0.3295218320920791,
+      "width": 0.3018842831249882,
+      "axle": [
+        0.001399995392272748,
+        -0.002149992923847434,
+        0.9999967087662485
+      ],
+      "neutralize": true,
+      "sourceNode": "/Sketchfab_model/root/GLTF_SceneRootNode/Sketchfab_model_0/Laferrari fbx.fbx_1/RootNode_2/tire 4_89/tire 4_tread.004_0_90/Object_172",
+      "axleEvidence": "Circle fit to original tyre vertices/normals in canonical source frame; rotate complete tyre/rim/caliper assembly rigidly to the running axle."
+    },
+    {
+      "front": false,
+      "side": 1,
+      "tyre": {
+        "primitives": [
+          71
+        ]
+      },
+      "rim": {
+        "primitives": [
+          72,
+          73,
+          74,
+          75,
+          76,
+          77
+        ]
+      },
+      "caliper": {
+        "primitives": [
+          53
+        ]
+      },
+      "center": [
+        -1.3000274773930198,
+        0.32800005361027573,
+        0.7836812947282963
+      ],
+      "r": 0.3295221418756519,
+      "width": 0.301884213275218,
+      "axle": [
+        0.001399995392272748,
+        -0.002149992923847434,
+        0.9999967087662485
+      ],
+      "neutralize": true,
+      "sourceNode": "/Sketchfab_model/root/GLTF_SceneRootNode/Sketchfab_model_0/Laferrari fbx.fbx_1/RootNode_2/tire 3_81/tire 3_tread.003_0_82/Object_157",
+      "axleEvidence": "Circle fit to original tyre vertices/normals in canonical source frame; rotate complete tyre/rim/caliper assembly rigidly to the running axle."
+    }
+  ],
+  "paintMaterials": [
+    2
+  ],
+  "fitEvidence": {
+    "scale": 1.0481151731209508,
+    "preFitTranslation": [
+      -0.11674989406082137,
+      0.0015531832372110976,
+      -0.0010684251531857258
+    ],
+    "coordinateRule": "Canonical +X front, +Y up, +Z right; one uniform length fit; rubber floor at zero."
+  },
+  "hasInterior": true,
+  "seats": {
+    "hip": [
+      0.11347695317150125,
+      0.158416132332191,
+      -0.3260355362818928
+    ],
+    "wheel": [
+      0.35347695317150124,
+      0.6577480132912733,
+      -0.3239393059356509
+    ],
+    "radius": 0.16245785183374736,
+    "tilt": 0.25,
+    "evidence": "Measured full-size seated rig against original packed source triangles on both sides; all adult head/hair/cap points, steering reach at full lock, and source-floor pedal checks; see seat-fit-final-proof.json.",
+    "recline": 0.68,
+    "floor": 0.1,
+    "fixed": true
+  },
+  "rules": [
+    {
+      "part": "doorLeft.paint",
+      "select": {
+        "primitives": [
+          2
+        ],
+        "bounds": {
+          "x": [
+            -0.49,
+            0.76
+          ],
+          "y": [
+            0.28,
+            1.1
+          ],
+          "z": [
+            -10,
+            -0.48
+          ]
+        }
+      }
+    },
+    {
+      "part": "doorLeft.trim",
+      "select": {
+        "primitives": [
+          0,
+          1,
+          5,
+          9,
+          20,
+          40,
+          41,
+          42,
+          45
+        ],
+        "bounds": {
+          "x": [
+            -0.49,
+            0.76
+          ],
+          "y": [
+            0.28,
+            1.1
+          ],
+          "z": [
+            -10,
+            -0.48
+          ]
+        }
+      }
+    },
+    {
+      "part": "doorLeft.glass",
+      "select": {
+        "primitives": [
+          25
+        ],
+        "bounds": {
+          "x": [
+            -0.49,
+            0.64
+          ],
+          "z": [
+            -10,
+            -0.48
+          ]
+        }
+      },
+      "pane": 0
+    },
+    {
+      "part": "doorRight.paint",
+      "select": {
+        "primitives": [
+          2
+        ],
+        "bounds": {
+          "x": [
+            -0.49,
+            0.76
+          ],
+          "y": [
+            0.28,
+            1.1
+          ],
+          "z": [
+            0.48,
+            10
+          ]
+        }
+      }
+    },
+    {
+      "part": "doorRight.trim",
+      "select": {
+        "primitives": [
+          0,
+          1,
+          5,
+          9,
+          20,
+          40,
+          41,
+          42,
+          45
+        ],
+        "bounds": {
+          "x": [
+            -0.49,
+            0.76
+          ],
+          "y": [
+            0.28,
+            1.1
+          ],
+          "z": [
+            0.48,
+            10
+          ]
+        }
+      }
+    },
+    {
+      "part": "doorRight.glass",
+      "select": {
+        "primitives": [
+          25
+        ],
+        "bounds": {
+          "x": [
+            -0.49,
+            0.64
+          ],
+          "z": [
+            0.48,
+            10
+          ]
+        }
+      },
+      "pane": 2
+    },
+    {
+      "part": "opticalGlass",
+      "select": {
+        "primitives": [
+          15,
+          24
+        ]
+      }
+    },
+    {
+      "part": "glass",
+      "select": {
+        "primitives": [
+          25
+        ],
+        "bounds": {
+          "x": [
+            0.5,
+            10
+          ]
+        }
+      },
+      "pane": 1
+    },
+    {
+      "part": "glass",
+      "select": {
+        "primitives": [
+          25
+        ],
+        "bounds": {
+          "x": [
+            -10,
+            -0.49
+          ]
+        }
+      },
+      "pane": 3
+    },
+    {
+      "part": "glass",
+      "select": {
+        "primitives": [
+          25
+        ],
+        "bounds": {
+          "z": [
+            -10,
+            0
+          ]
+        }
+      },
+      "pane": 0
+    },
+    {
+      "part": "glass",
+      "select": {
+        "primitives": [
+          25
+        ]
+      },
+      "pane": 2
+    },
+    {
+      "part": "headLeft",
+      "select": {
+        "primitives": [
+          36
+        ],
+        "bounds": {
+          "z": [
+            -10,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "part": "tailLeft",
+      "select": {
+        "primitives": [
+          4,
+          10,
+          16,
+          19,
+          27,
+          28,
+          29
+        ],
+        "bounds": {
+          "z": [
+            -10,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "part": "headRight",
+      "select": {
+        "primitives": [
+          36
+        ],
+        "bounds": {
+          "z": [
+            0,
+            10
+          ]
+        }
+      }
+    },
+    {
+      "part": "tailRight",
+      "select": {
+        "primitives": [
+          4,
+          10,
+          16,
+          19,
+          27,
+          28,
+          29
+        ],
+        "bounds": {
+          "z": [
+            0,
+            10
+          ]
+        }
+      }
+    },
+    {
+      "part": "cabin",
+      "select": {
+        "primitives": [
+          40,
+          41,
+          42,
+          43,
+          44,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52
+        ]
+      }
+    },
+    {
+      "part": "hood",
+      "select": {
+        "primitives": [
+          2,
+          39
+        ],
+        "bounds": {
+          "x": [
+            0.8,
+            10
+          ],
+          "y": [
+            0.45,
+            0.85
+          ]
+        }
+      }
+    },
+    {
+      "part": "panels",
+      "select": {
+        "primitives": [
+          2
+        ],
+        "bounds": {
+          "y": [
+            0.72,
+            10
+          ]
+        }
+      }
+    },
+    {
+      "part": "shell",
+      "select": {
+        "primitives": [
+          2
+        ]
+      }
+    }
+  ],
+  "doors": {
+    "left": {
+      "side": -1,
+      "hinge": [
+        0.6742001961465122,
+        0.6724216257149666,
+        -0.6509512399493875
+      ],
+      "axis": [
+        0.0,
+        0.30477572710378376,
+        0.9524241471993242
+      ],
+      "sourceNode": "LaFerrari_3 (existing material-group source faces)",
+      "pivotEvidence": "Physical butterfly-door seam fit; source has no independent authored door pivot. Native preview must verify the aperture and clearance.",
+      "parts": {
+        "paint": [
+          "doorLeft.paint"
+        ],
+        "trim": [
+          "doorLeft.trim"
+        ],
+        "glass": [
+          "doorLeft.glass"
+        ]
+      }
+    },
+    "right": {
+      "side": 1,
+      "hinge": [
+        0.6742001961465122,
+        0.6724216257149666,
+        0.6487115747205915
+      ],
+      "axis": [
+        0.0,
+        0.30477572710378376,
+        -0.9524241471993242
+      ],
+      "sourceNode": "LaFerrari_3 (existing material-group source faces)",
+      "pivotEvidence": "Physical butterfly-door seam fit; source has no independent authored door pivot. Native preview must verify the aperture and clearance.",
+      "parts": {
+        "paint": [
+          "doorRight.paint"
+        ],
+        "trim": [
+          "doorRight.trim"
+        ],
+        "glass": [
+          "doorRight.glass"
+        ]
+      }
+    }
+  },
+  "lowAtlasSize": 1024,
+  "provenance": "tools/monarch_vehicle_sources.json#monarch_laferrari"
+}

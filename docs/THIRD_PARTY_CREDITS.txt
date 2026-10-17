@@ -992,7 +992,9 @@ atlases, with 2048px Low/Medium derivatives of the 4096px High/Ultra atlases. So
 UV repetition, transparency, cabin, emission and real door/wheel pivots retained;
 paint is neutralized for game resprays. Five collapsed trim zero normals recover
 from nearby same-material authored vertices, recorded in the conversion receipt.
-Base Chevette Z06 only; the separate carbon-aero Chevette SE remains unchanged.
+This October 15 pack continues to serve the base Chevette Z06. The separate
+Monarch collection below replaces the Chevette SE and ZR1X bodies using the full
+Hari source; the original base Chevette pack is unchanged.
 
 Downloaded HELLFIRE CUSTOM hotrod — Coupe '33 (2026-10-15)
 --------------------------------------------------------
@@ -1086,3 +1088,119 @@ body pigment neutralized for resprays; separate reduced far LOD. The source
 contains no seats/dashboard/steering wheel: a fitted game cabin and see-through
 canopy were added. All close source faces, split normals and UVs are retained.
 No endorsement by the artist or vehicle manufacturer is implied.
+
+Downloaded MONARCH PRESTIGE COLLECTION (October 17, 2026)
+-------------------------------------------------------
+Each of the following ten works is licensed under Creative Commons Attribution
+4.0 International (CC BY 4.0): https://creativecommons.org/licenses/by/4.0/
+The fictional game names do not identify the exact model or trim of every source.
+
+VALKYRIE: "Aston Martin Valkyrie FREE" by MHDesigning
+https://sketchfab.com/MHDesigning
+https://sketchfab.com/3d-models/aston-martin-valkyrie-free-8c352d8ec67a4c3b9c1cb1467e06395c
+Pinned mirror: Nahjs/wild-racing-models,
+6c6a4875004713fe23f3a5ae1bc6c6c075214be3,
+models/Aston/aston_martin_valkyrie_free.glb.
+Model-specific embedded metadata names the artist, original listing and CC BY 4.0.
+The source has an opaque black canopy and no authored seats/dashboard; the game
+uses fitted cabin attachment points without changing the downloaded body shape.
+
+DBS: "Aston Martin db11" by Black Snow
+https://sketchfab.com/BlackSnow02
+https://sketchfab.com/3d-models/aston-martin-db11-0ce56f01b1ff40b3a4e36bc56873dbc7
+Pinned mirror: btwwahab/Auctions-Website-Frontend,
+f2d6f0279588c6877e8878ba6f861445f550c06a, scene.gltf and scene.bin.
+Embedded attribution and matching exported license.txt identify CC BY 4.0.
+This is a DB11 family alternative, not an exact DBS Superleggera mesh.
+
+ZR1X and CHEVETTE SE: "2019 Chevrolet Corvette C8 Stingray" by Hari
+https://sketchfab.com/Hari31
+https://sketchfab.com/3d-models/2019-chevrolet-corvette-c8-stingray-790c40ccff6843eab0b7b4bd18421ff8
+Pinned mirror: zymantas-dev/corvette-c8-threejs-exp,
+1811c2f116145a409131839be5b2411e4f4f92de,
+static/models/2019_chevrolet_corvette_c8_stingray/.
+Embedded attribution and matching exported license.txt identify CC BY 4.0.
+The full 263,683-face close source is used for these two entries. This Stingray
+is a C8 family alternative, not an exact ZR1 or Z06 aero mesh. The ordinary
+Chevette Z06 continues using its earlier downloaded pack above.
+
+WAYRON: "Bugatti Veyron 16.4 Super Sport - Lowpoly" by andikapratamaw
+https://sketchfab.com/andikapratamaw
+https://sketchfab.com/3d-models/bugatti-veyron-164-super-sport-lowpoly-0ee4c65face949efa4500deb17c79150
+Pinned mirror: pedrosoandre/carros,
+0a56de377f02f2574d781f6920fed08d6423ec2f, assets/bugatti-veyron.glb.
+Model-specific embedded metadata identifies CC BY 4.0. The source contains no
+authored cabin; the game supplies fitted seats, dashboard and steering contacts.
+
+TOURBILLON: "Bugatti Tourbillon 2024" by MdMahib
+https://sketchfab.com/MdMahib
+https://sketchfab.com/3d-models/bugatti-tourbillon-2024-c992c9bc9ba8427197d5fe380eaa2b31
+Pinned mirror: AuraK-7/wild-racing-models,
+6c6a4875004713fe23f3a5ae1bc6c6c075214be3,
+models/Bugatti/bugatti_tourbillon_2024.glb.
+The original listing and embedded asset-specific attribution declare CC BY 4.0.
+
+JASKO: "2007 Koenigsegg CCX (No Roof)" by _Sheep19
+https://sketchfab.com/shobhit190401
+https://sketchfab.com/3d-models/2007-koenigsegg-ccx-no-roof-423b64e085974b97b5cfd5a87d9dcce3
+Pinned mirror: pedrosoandre/carros,
+0a56de377f02f2574d781f6920fed08d6423ec2f, assets/koenigsegg-ccx-no.glb.
+Embedded attribution and the original artist listing identify CC BY 4.0.
+This is a roofless CCX family alternative, not a Jesko mesh. Six studio-plane
+faces are explicitly excluded; all 41,225 downloaded car faces are retained near.
+
+SIROCCO: "Pagani Huayra [Free]" by Black Snow
+https://sketchfab.com/BlackSnow02
+https://sketchfab.com/3d-models/pagani-huayra-free-c2d61a9f53a54a229547bb76e4b71e25
+Pinned mirror: AuraK-7/wild-racing-models,
+6c6a4875004713fe23f3a5ae1bc6c6c075214be3, models/pagani_huayra_free.glb.
+Embedded attribution and the original artist listing identify CC BY 4.0.
+
+NOVERA: "Tesla Roadster 2020" by metarex.4d
+https://sketchfab.com/metarex.4d
+https://sketchfab.com/3d-models/tesla-roadster-2020-1fbf29e297bd4a17ac39a00a378441d8
+Pinned mirror: gwesseling/Tesla-app,
+a03a55533adcf0f45a610b7bc4e1a9e03277c13c, assets/test4.glb.
+This re-export lacks embedded artist/license extras. The mirror's model-specific
+README links this exact author/work; the indexed original listing and separate
+stevenzhang070302/tesla-roadster-webgi README declare Creative Commons Attribution.
+Both README records are retained in docs/sources/monarch-vehicles/.
+This Tesla concept is an EV-class alternative, not a Rimac Nevera mesh. Novera's
+fictional name and electric driving specification are retained.
+
+W1: "Free McLaren P1 GTR" by Desiccated_Lemon
+https://sketchfab.com/Desiccated_Lemon
+https://sketchfab.com/3d-models/free-mclaren-p1-gtr-d805bec04cf5407fa7c036c20c726d39
+Pinned mirror: Nissmo89/Supercar-Vault-3D,
+00f08b282d6b2c0f6834f91c582f9d539dcc02fd, models/free_mclaren_p1_gtr.glb.
+Embedded attribution and the original artist listing identify CC BY 4.0.
+This P1 GTR is a McLaren family alternative, not an exact W1 mesh.
+
+LAFERA: "Ferrari Laferrari | www.vecarz.com" by vecarz
+https://sketchfab.com/heynic
+https://sketchfab.com/3d-models/ferrari-laferrari-wwwvecarzcom-979f7085012e4d6399f38de3f9c39012
+Pinned mirror: Nahjs/wild-racing-models,
+6c6a4875004713fe23f3a5ae1bc6c6c075214be3,
+models/Ferrari/ferrari_laferrari__www.vecarz.com.glb.
+Embedded attribution and a matching exported license.txt identify CC BY 4.0.
+The listing also credits this earlier SC source:
+https://sketchfab.com/3d-models/ferrari-laferrari-f75b682bb0de4a14b3b6c1f52862ca48
+
+Common modifications for these ten works: rigid axis/display-steering alignment,
+one uniform real-size length fit, and whole-face partition into animation,
+damage, glazing, lamp, cabin, tyre, rim and fixed-caliper roles. Every included
+close source face, split normal and material seam is retained; only the separate
+far LOD is reduced. Measured door pivots and seat contacts adapt the source to
+game animation. Source PBR channels are atlas-packed, source paint pigment is
+neutralized for resprays, and Low/Medium use maps no larger than 1024 pixels.
+The P1 GTR source images are explicitly resampled to a maximum 1020 pixels per
+edge to fit padded 4096-pixel atlases. Other High maps retain native source image
+resolution within their recorded atlas budget. Veyron and CCX compression is
+decoded losslessly with the official meshoptimizer 0.22 decoder; native downloads
+are retained unchanged. No endorsement by an artist or manufacturer is implied.
+
+Exact pinned download URLs, hashes for all 36 native geometry/image files,
+asset-specific attribution records and alternative identities:
+tools/monarch_vehicle_sources.json. Source-specific conversion recipes:
+tools/monarch-recipes/. Rebuild instructions: docs/sources/monarch-vehicles/README.md.
+The existing Brutini SVJ model and its separate attribution above are unchanged.
