@@ -19,7 +19,7 @@ const mapping={valkyrie:'monarch_valkyrie',dbs:'monarch_db11',zr1x:'monarch_c8_h
 fs.mkdirSync(out,{recursive:true});
 const report={htmlSha256:sha(fs.readFileSync(html)),recorderSha256:sha(fs.readFileSync(new URL(import.meta.url))),
  packSha256:sha(bytes),fixture:{viewport:[1000,700],seed:1,weather:'clear',clock:13,position:[418,6000]},
- checks:0,inputs:[],sources:Object.fromEntries(Object.entries(source).map(([key,m])=>[key,{gameTypes:m.gameTypes,
+ status:'running',events:[],checks:0,inputs:[],sources:Object.fromEntries(Object.entries(source).map(([key,m])=>[key,{gameTypes:m.gameTypes,
   triangles:m.triangles,farTriangles:m.farTriangles,hasNormalMaps:m.hasNormalMaps,atlas:m.atlas,lowAtlas:m.lowAtlas}])),
  native:[],tiers:[],lifecycle:[],screenshots:[],errors:[],warnings:[]};
 const allowed=new Set(['status','holdSimulation','god','graphics','settings','sky','setClock','wanted','look','drive','placeVehicle',
@@ -27,17 +27,20 @@ const allowed=new Set(['status','holdSimulation','god','graphics','settings','sk
  'burnVehicle','doorSwing','damageReport','frameFaults','drawProfile','viewMode','inspectView','closeUp','gpuContext',
  'dealership','dealershipVisit','carModels','cabinHeadroom']);
 const save=()=>fs.writeFileSync(path.join(out,'monarch-runtime-review.json'),JSON.stringify(report,null,2)+'\n');
+function stage(name){report.stage=name;report.events.push({name,utc:new Date().toISOString()});save();console.log('STAGE',name);}
 function assert(ok,message){report.checks++;if(!ok)throw Error(message);}
+stage('launch browser');
 const {browser}=await launchBrowser({label:'monarch-runtime-review',args:['--autoplay-policy=no-user-gesture-required']});
 const page=await browser.newPage({viewport:{width:1000,height:700}});page.setDefaultTimeout(480000);
-page.on('pageerror',error=>report.errors.push(error.stack||error.message));
+page.on('pageerror',error=>{report.errors.push(error.stack||error.message);save();console.error('BROWSER ERROR',error.stack||error.message);});
 page.on('console',message=>{
  const text=message.text();
- if(message.type()==='error'||/GL_INVALID|INVALID_OPERATION|INVALID_VALUE|INVALID_ENUM|VALIDATE_STATUS/i.test(text))report.errors.push(text);
+ if(message.type()==='error'||/GL_INVALID|INVALID_OPERATION|INVALID_VALUE|INVALID_ENUM|VALIDATE_STATUS/i.test(text)){report.errors.push(text);save();console.error('WEBGL / CONSOLE ERROR',text);}
  else if(message.type()==='warning')report.warnings.push(text);
 });
 async function batch(rows){
  for(const [name,args] of rows){if(!allowed.has(name))throw Error('Undeclared named action '+name);report.inputs.push([name,args]);}
+ report.lastNamedActions=rows.map(([name])=>name);save();
  return page.evaluate(rows=>rows.map(([name,args])=>window.DeadEndCity[name](...args)),rows);
 }
 const call=async(name,...args)=>(await batch([[name,args]]))[0];
@@ -85,14 +88,17 @@ async function textures(quality,focus){
  report.tiers.push(row);save();return row.report;
 }
 try{
- console.log('Opening frozen Monarch runtime review');
+ stage('load frozen game');
  await page.goto('file://'+html+'?dev&seed=1&hold&shadercheck',{waitUntil:'domcontentloaded',timeout:480000});
- await page.waitForFunction(()=>window.DeadEndCity?.status().mode==='menu');await page.click('#startBtn');
+ stage('document loaded; wait for menu');
+ await page.waitForFunction(()=>window.DeadEndCity?.status().mode==='menu');stage('menu ready; start game');await page.click('#startBtn');
  await page.waitForFunction(()=>['play','dialogue'].includes(window.DeadEndCity.status().mode));
  if((await call('status')).mode==='dialogue')await page.click('#callDecline');
  await page.waitForFunction(()=>window.DeadEndCity.status().mode==='play');
+ stage('play ready; named setup');
  await batch([['holdSimulation',[true]],['god',[true]],['sky',['clear']],['setClock',[13]],['wanted',[0]],['graphics',['high']],
   ['settings',[{sound:false,radioVolume:0,fps:false,gps:false,minimapFolded:true,keyHints:false,lookAhead:0}]],['viewMode',['street']]]);
+ stage('read source metadata');
  const assets=await call('assetCars');
  assert(Object.keys(source).length===10,'Expected ten downloaded source families');
  for(const [type,key]of Object.entries(mapping)){
@@ -106,6 +112,7 @@ try{
  // Use an unboarded, pristine source with native doors. CCX also compiles source
  // normal maps through the soot shader; the C8 verifies the shared-family adapter.
  for(const [index,type]of ['jasko','zr1x'].entries()){
+  stage(type+' lifecycle: create clean source');
   const x=418+index*160,y=6200;
   await batch([['look',[x,y+80,1.6]],['inspectView',[]],['graphics',['high']]]);
   const [lineup]=await batch([['carLineup',[[type],x,y,0,44,'#b72228',true]],draw,draw]);
@@ -113,13 +120,16 @@ try{
   const clean=await snapshot(id);healthy(clean,type+' clean');
   assert(!clean.status.vehicle&&!clean.doors.mask&&!Object.keys(clean.doors.doors).length,type+': clean fixture had prebuilt doors');
   assert(clean.doors.nativeDoors,type+': source native door mapping missing');
+  stage(type+' lifecycle: burn');
   await batch([['burnVehicle',[id,20]],draw,draw]);await settle();
   const burnt=await snapshot(id);healthy(burnt,type+' burnt');
   assert(burnt.char?.materials.includes('monarch')&&burnt.damage.burnt,type+': source soot materials missing');
+  stage(type+' lifecycle: first native burnt door');
   await batch([['doorSwing',[id,true,-1]],draw,draw]);await settle();
   const burntOpen=await snapshot(id);healthy(burntOpen,type+' first burnt door');
   assert((burntOpen.doors.mask&1)&&burntOpen.doors.doors['-1']?.native,type+': first burnt native door failed');
   await screenshot(type+'-late-door-burnt.png',{type,id});
+  stage(type+' lifecycle: repair');
   await batch([['burnVehicle',[id,0,true]],['doorSwing',[id,false]],age,draw,draw]);await settle();
   const repaired=await snapshot(id);healthy(repaired,type+' repaired');
   assert(!repaired.char&&!repaired.damage.burnt&&repaired.damage.hp===repaired.damage.maxhp,type+': char state survived repair');
@@ -127,6 +137,7 @@ try{
   assert(JSON.stringify(repaired.doors.materials)===JSON.stringify(clean.doors.materials),type+': original materials/maps changed after repair');
   await batch([['doorSwing',[id,true,-1]],draw,draw]);await settle();
   const reopened=await snapshot(id);healthy(reopened,type+' reopened');
+  stage(type+' lifecycle: reopen repaired source');
   const originals=new Set(Object.values(clean.doors.materials).filter(Boolean).map(m=>m.uuid));
   const layers=reopened.doors.doors['-1'].layers.filter(layer=>!layer.window);
   assert(layers.length>0&&layers.every(layer=>originals.has(layer.material.uuid)),type+': reopened source door retained char material');
@@ -136,6 +147,7 @@ try{
   console.log('PASS source burn, first door, repair and reopen',type);save();
  }
  for(const [index,[type,key]]of Object.entries(mapping).entries()){
+  stage(type+' native near source and high textures');
   if(index)await call('placeVehicle',418,7000+index*100,0);
   await batch([['look',[418,6000,3]],['drive',[type,0,0]],['placeVehicle',[418,6000,0]],['setClock',[13]],
    ['viewMode',['street']],['closeUp',[11]],['inspectView',[65,12,4]],age,draw]);
@@ -148,12 +160,15 @@ try{
   if(['w1','tourbillon'].includes(type))await screenshot(type+'-source-pbr.png',{type,id:damage.id});
   console.log('PASS native source',type,key,row.model.triangles,'normal maps',source[key].hasNormalMaps);save();
  }
+ stage('all collection textures: low tier');
  await batch([['graphics',['low']],draw]);await settle();await textures('low',null);
  const low=await call('monarchAssets');
  assert(Object.values(low.models).every(m=>Object.values(m.atlasSizes).every(([w,h])=>w<=1024&&h<=1024)),'Low tier exceeded 1024px collection budget');
  // The last driven model remains the full-detail family after returning to HIGH.
+ stage('collection textures: return high tier');
  await batch([['graphics',['high']],draw]);await settle();await textures('high',mapping.lafera);
  await screenshot('laferrari-high-tier.png',{type:'lafera'});
+ stage('actual Monarch Motors stock');
  // These are the real dealership's stocked entities, not a staged duplicate row.
  await batch([['inspectView',[]],['dealershipVisit',['hall',1.6]],['viewMode',['street']],['graphics',['high']],draw,draw]);
  await settle();
@@ -171,6 +186,6 @@ try{
   assets:await call('assetCars'),char:await call('assetChar'),headroom:await call('cabinHeadroom')};
  assert(!report.final.faults.count&&!report.final.gpu.lost&&!report.errors.length,'Final renderer/GPU errors');
  assert(!report.final.char.models.length,'Lingering char state after repaired fixtures');
- report.pass=true;console.log('PASS Monarch native runtime review',report.checks);
-}catch(error){report.pass=false;report.failure=error.stack||String(error);console.error(report.failure);process.exitCode=1;}
+ report.pass=true;report.status='passed';stage('complete');console.log('PASS Monarch native runtime review',report.checks);
+}catch(error){report.pass=false;report.status='failed';report.failure=error.stack||String(error);console.error(report.failure);process.exitCode=1;}
 finally{save();await browser.close();}
