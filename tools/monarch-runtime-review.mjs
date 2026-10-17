@@ -101,32 +101,14 @@ try{
  }
  assert(assets.models.chevette?.triangles===85031&&assets.models.chevette.sourceKey==='c8_hari','Ordinary C8 source changed');
  assert(assets.models.brutini?.triangles===508324&&assets.models.brutini.sourceKey==='svj_sdc','Retained Brutini source changed');
- for(const [index,[type,key]]of Object.entries(mapping).entries()){
-  if(index)await call('placeVehicle',418,7000+index*100,0);
-  await batch([['look',[418,6000,3]],['drive',[type,0,0]],['placeVehicle',[418,6000,0]],['setClock',[13]],
-   ['viewMode',['street']],['closeUp',[11]],['inspectView',[65,12,4]],age,draw]);
-  await settle();await textures('high',key);
-  const damage=await call('damageReport'),row=await snapshot(damage.id);
-  healthy(row,type);assert(row.status.vehicle===type,type+': exact driven fixture missing');
-  assert(row.model?.asset===key&&row.model.visible&&!row.model.far,type+': source model not actually drawn near');
-  assert(row.model.triangles===source[key].triangles,type+': near source triangle count changed');
-  report.native.push({type,source:key,...row});
-  if(['w1','tourbillon'].includes(type))await screenshot(type+'-source-pbr.png',{type,id:damage.id});
-  console.log('PASS native source',type,key,row.model.triangles,'normal maps',source[key].hasNormalMaps);save();
- }
- await batch([['graphics',['low']],draw]);await settle();await textures('low',null);
- const low=await call('monarchAssets');
- assert(Object.values(low.models).every(m=>Object.values(m.atlasSizes).every(([w,h])=>w<=1024&&h<=1024)),'Low tier exceeded 1024px collection budget');
- // The last driven model remains the full-detail family after returning to HIGH.
- await batch([['graphics',['high']],draw]);await settle();await textures('high',mapping.lafera);
- await screenshot('laferrari-high-tier.png',{type:'lafera'});
+ // Fail early on the new char inheritance before the collection tour.
+ // These repaired cars remain 25 m beyond the tour position.
  // Use an unboarded, pristine source with native doors. CCX also compiles source
  // normal maps through the soot shader; the C8 verifies the shared-family adapter.
- await call('placeVehicle',418,8800,0);
  for(const [index,type]of ['jasko','zr1x'].entries()){
-  const x=418+index*160;
-  await batch([['look',[x,6080,1.6]],['inspectView',[]],['graphics',['high']]]);
-  const [lineup]=await batch([['carLineup',[[type],x,6000,0,44,'#b72228',true]],draw,draw]);
+  const x=418+index*160,y=6200;
+  await batch([['look',[x,y+80,1.6]],['inspectView',[]],['graphics',['high']]]);
+  const [lineup]=await batch([['carLineup',[[type],x,y,0,44,'#b72228',true]],draw,draw]);
   const id=lineup[0].id;await settle();await textures('high',mapping[type]);
   const clean=await snapshot(id);healthy(clean,type+' clean');
   assert(!clean.status.vehicle&&!clean.doors.mask&&!Object.keys(clean.doors.doors).length,type+': clean fixture had prebuilt doors');
@@ -148,11 +130,30 @@ try{
   const originals=new Set(Object.values(clean.doors.materials).filter(Boolean).map(m=>m.uuid));
   const layers=reopened.doors.doors['-1'].layers.filter(layer=>!layer.window);
   assert(layers.length>0&&layers.every(layer=>originals.has(layer.material.uuid)),type+': reopened source door retained char material');
-  await batch([['look',[x,5970,3]],['closeUp',[11]],['inspectView',[165,10,4]],draw,draw]);
+  await batch([['look',[x,y-30,3]],['closeUp',[11]],['inspectView',[165,10,4]],draw,draw]);
   await screenshot(type+'-repaired-open-cabin.png',{type,id});
   report.lifecycle.push({type,id,clean,burnt,burntOpen,repaired,reopened});
   console.log('PASS source burn, first door, repair and reopen',type);save();
  }
+ for(const [index,[type,key]]of Object.entries(mapping).entries()){
+  if(index)await call('placeVehicle',418,7000+index*100,0);
+  await batch([['look',[418,6000,3]],['drive',[type,0,0]],['placeVehicle',[418,6000,0]],['setClock',[13]],
+   ['viewMode',['street']],['closeUp',[11]],['inspectView',[65,12,4]],age,draw]);
+  await settle();await textures('high',key);
+  const damage=await call('damageReport'),row=await snapshot(damage.id);
+  healthy(row,type);assert(row.status.vehicle===type,type+': exact driven fixture missing');
+  assert(row.model?.asset===key&&row.model.visible&&!row.model.far,type+': source model not actually drawn near');
+  assert(row.model.triangles===source[key].triangles,type+': near source triangle count changed');
+  report.native.push({type,source:key,...row});
+  if(['w1','tourbillon'].includes(type))await screenshot(type+'-source-pbr.png',{type,id:damage.id});
+  console.log('PASS native source',type,key,row.model.triangles,'normal maps',source[key].hasNormalMaps);save();
+ }
+ await batch([['graphics',['low']],draw]);await settle();await textures('low',null);
+ const low=await call('monarchAssets');
+ assert(Object.values(low.models).every(m=>Object.values(m.atlasSizes).every(([w,h])=>w<=1024&&h<=1024)),'Low tier exceeded 1024px collection budget');
+ // The last driven model remains the full-detail family after returning to HIGH.
+ await batch([['graphics',['high']],draw]);await settle();await textures('high',mapping.lafera);
+ await screenshot('laferrari-high-tier.png',{type:'lafera'});
  // These are the real dealership's stocked entities, not a staged duplicate row.
  await batch([['inspectView',[]],['dealershipVisit',['hall',1.6]],['viewMode',['street']],['graphics',['high']],draw,draw]);
  await settle();
