@@ -24,9 +24,15 @@ six native screenshots, source/capture hashes, 20 host modules / 18,758 assertio
 live manual 201.701 m and loop-out checks, Settings remap/reload and zero-error
 packaged smoke including readable SVJ credit. Frozen game source: `d6f01674`;
 later changes are test/documentation/evidence only. Entry hash starts `edd4ead2d4e72b00`.
-The Pages workflow publishes the [playable build](https://starfox22.github.io/GTA/?review=edd4ead2d4e72b00)
-and [current gallery](https://starfox22.github.io/GTA/review/), preserving the previous
-reviews under `/review/wheelie-rider/`, `/review/impact-motorcycle/` and `/review/police-aviation/`.
+Published [playable build](https://starfox22.github.io/GTA/?review=edd4ead2d4e72b00)
+and [current gallery](https://starfox22.github.io/GTA/review/).
+[Run 38984265524](https://github.com/starfox22/GTA/actions/runs/38984265524) deployed
+`2b34142c` and verified all 158 public files against the artifact. The
+[success receipt](audit/svj-handling-review-2026-10-17/verification/successful-deployment.json)
+retains actual build, gallery, deployment and public verification results.
+This receipt-only follow-up leaves the game and gallery bytes unchanged.
+Previous reviews remain under `/review/wheelie-rider/`, `/review/impact-motorcycle/`
+and `/review/police-aviation/`.
 
 ## October 16: independent wheelie controls and rider motion
 

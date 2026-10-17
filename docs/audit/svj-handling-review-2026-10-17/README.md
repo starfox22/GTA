@@ -6,6 +6,15 @@ restores the earlier motorcycle turn and wheelie response. Dedicated rider keys,
 distance achievements, the improved riding/fall animation and earlier impact,
 audio and graphics changes remain.
 
+Published [playable build](https://starfox22.github.io/GTA/?review=edd4ead2d4e72b00)
+and [screenshot gallery](https://starfox22.github.io/GTA/review/?review=edd4ead2d4e72b00).
+[Successful run 38984265524](https://github.com/starfox22/GTA/actions/runs/38984265524)
+deployed `2b34142c` and verified all **158 public files / 214,957,978 bytes**
+against the artifact. The [deployment receipt](verification/successful-deployment.json)
+retains the actual successful build, gallery, deployment and public-file SHA
+verification steps. This documentation follow-up leaves the published game and
+gallery bytes unchanged.
+
 ## Downloaded model
 
 The source is SDC PERFORMANCE's [Lamborghini Aventador SVJ SDC — FREE](https://sketchfab.com/3d-models/lamborghini-aventador-svj-sdc-free-784e4656aca649cca55d6b18740a19b2),
