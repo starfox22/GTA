@@ -49,9 +49,9 @@ export default async function(t) {
   for(const m of [materials.trim,materials.rubber,materials.opticalGlass,paint2,lamps.headOn]) {
     const s=shaderFor(m);
     t.assert(s.vertexShader.includes('attribute vec4 avSurface;')&&!/attribute float av(?:PaintMask|DoubleSide|NormalScale)/.test(s.vertexShader),'surface controls share one shader attribute');
-    t.assert(s.fragmentShader.includes('monarchAtlasSample( roughnessMap, vMonarchOrmUv, vAvAtlasRect )')&&s.fragmentShader.includes('monarchAtlasSample( metalnessMap, vMonarchOrmUv, vAvAtlasRect )'),'source ORM samples independently transformed continuous ORM UV');
-    t.assert(s.fragmentShader.includes('monarchAtlasSample( emissiveMap, '+(m===lamps.headOn?'vAvSourceUv':'vMonarchEmissiveUv')+', vAvAtlasRect )'),'source emission and gameplay lamps use the correct independently repeating UV path');
-    t.assert(s.fragmentShader.includes('monarchAtlasSample( map, vAvSourceUv, vAvAtlasRect )')&&s.fragmentShader.includes('monarchAtlasSample( normalMap, vMonarchNormalUv, vAvAtlasRect )'),'albedo and source normals use continuous-gradient atlas sampling too');
+    t.assert(s.fragmentShader.includes('monarchAtlasSample( roughnessMap, vMonarchOrmUv, vAvAtlasRect, monarchOrmSize )')&&s.fragmentShader.includes('monarchAtlasSample( metalnessMap, vMonarchOrmUv, vAvAtlasRect, monarchOrmSize )'),'source ORM samples independently transformed continuous ORM UV');
+    t.assert(s.fragmentShader.includes('monarchAtlasSample( emissiveMap, '+(m===lamps.headOn?'vAvSourceUv':'vMonarchEmissiveUv')+', vAvAtlasRect, monarchEmissionSize )'),'source emission and gameplay lamps use the correct independently repeating UV path');
+    t.assert(s.fragmentShader.includes('monarchAtlasSample( map, vAvSourceUv, vAvAtlasRect, monarchAlbedoSize )')&&s.fragmentShader.includes('monarchAtlasSample( normalMap, vMonarchNormalUv, vAvAtlasRect, monarchNormalSize )'),'albedo and source normals use continuous-gradient atlas sampling too');
     t.assert(m.extensions.derivatives===true&&m.extensions.shaderTextureLOD===true&&s.fragmentShader.includes('texture2DGradEXT( atlasMap, atlasUv, sourceDx, sourceDy )')&&s.fragmentShader.includes('texture2D( atlasMap, atlasUv, bias )'),'source shader requests vendor WebGL1 gradients and retains an extension-free mip-bias fallback');
     t.assert(s.fragmentShader.includes('vMonarchSurface.w>=0.0 && diffuseColor.a<vMonarchSurface.w')&&s.fragmentShader.includes('vMonarchSurface.w > -1.5 && vMonarchSurface.w < -0.5'),'source MASK cutoff and OPAQUE/BLEND alpha semantics replace the generic0.5cutout');
     t.assert(s.fragmentShader.includes('mapN.xy *= normalScale * vMonarchSurface.z;'),'source material normal strength is applied before tangent-frame reconstruction');
@@ -136,10 +136,12 @@ export default async function(t) {
   const low=requests.slice(),lowSize=model.lowAtlas[0],highSize=model.atlas[0],texture=paint2.map;
   t.assert(low.every(image=>image.url.includes('Low')),'a whole newly encountered source family first requests its compact Low fallback');
   low.forEach(image=>image.complete(lowSize));
+  t.assert(pshader.uniforms.monarchAlbedoSize.value.x===lowSize&&pshader.uniforms.monarchOrmSize.value.x===lowSize,'actual shared texture upload dimensions feed source-footprint guards');
   scope.player={x:0,y:0,car:{type:model.gameTypes[0],x:0,y:0}};scope.vehicles=[];
   api.monarchVehicleTextureQuality();let at=requests.length;const high=requests.slice(low.length);high.forEach(image=>image.complete(highSize));
   let report=api.monarchVehicleReport();
   t.assert(high.length===low.length&&texture.image.width===highSize&&report.heroSource===model.type&&report.models[model.type].texturesReady&&report.models[model.type].targetTextures==='high','driven hero alone promotes to actual source High and publishes complete dimension/pending proof');
+  t.assert(pshader.uniforms.monarchAlbedoSize.value.x===highSize&&pshader.uniforms.monarchEmissionSize.value.y===highSize,'existing compiled size-uniform identities update when source maps promote');
   const other=Object.values(data.header.models).find(m=>m.type!==model.type&&m.gameTypes.length);
   if(other){
     const otherMaterials=api.monarchVehicleMaterials(other),background=requests.slice(at);at=requests.length;background.forEach(image=>image.complete(other.lowAtlas[0]));
@@ -158,6 +160,7 @@ export default async function(t) {
   scope.player.car={type:model.gameTypes[0],x:0,y:0};at=requests.length;api.monarchVehicleTextureQuality();const oldHigh=requests.slice(at);
   activeTier.lodBias=2;api.monarchVehicleTextureQuality();oldHigh.forEach(image=>image.complete(highSize));report=api.monarchVehicleReport();
   t.assert(texture.image.width===lowSize&&report.reducedTextures&&report.heroSource===null&&report.models[model.type].texturesReady,'late source High callback cannot overwrite a newer synchronous Low demotion');
+  t.assert(pshader.uniforms.monarchAlbedoSize.value.x===lowSize,'synchronous hero demotion updates existing shader footprint dimensions too');
   t.assert(report.highSourceLimit===1&&Object.values(report.models).every(m=>m.targetTextures==='low'),'Low tier never retains an active High family');
   t.assert(!errors.length,'production Monarch decoder/material/image path reports no errors');
   t.note?.(JSON.stringify({monarchRuntime:{model:model.type,nearTriangles:model.triangles,testedPart:part,sourceVertexCount:surface.count,instancedActiveAttributeSlots:activeSlots,rayComparisons:comparisons,textureRequests:requests.length,gpuCompilation:'Separate native shadercheck required'}}));

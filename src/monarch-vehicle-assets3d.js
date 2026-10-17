@@ -65,6 +65,7 @@
       function monarchVehicleImage(texture, image) {
         if (texture.image === image) return;
         if (texture.image && (texture.image.width !== image.width || texture.image.height !== image.height)) texture.dispose();
+        texture.userData.monarchSize.value.set(image.width, image.height);
         texture.image = image; texture.needsUpdate = true;
         try { renderer.initTexture(texture); } catch (error) {}
       }
@@ -100,6 +101,7 @@
         if (!record) { record = { model, textures: {}, reduced: !monarchVehicleHighFamily(model) }; monarchVehicleTextureSets.set(model.type, record); }
         if (record.textures[channel]) return record.textures[channel];
         const texture = new Three.Texture();
+        texture.userData.monarchSize = { value: new Three.Vector2(1, 1) };
         texture.colorSpace = channel === 'albedo' || channel === 'emissive' ? Three.SRGBColorSpace : Three.NoColorSpace;
         texture.flipY = false; texture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
         record.textures[channel] = texture; monarchVehicleLoadTexture(texture, model, channel, record.reduced);
@@ -122,12 +124,20 @@
         }
       }
       const MONARCH_ATLAS_SAMPLE_GLSL = `
-        vec4 monarchAtlasSample( sampler2D atlasMap, vec2 sourceUv, vec4 rect ) {
-          vec2 atlasUv = rect.xy + fract( sourceUv ) * rect.zw;
+        vec4 monarchAtlasSample( sampler2D atlasMap, vec2 sourceUv, vec4 rect, vec2 atlasSize ) {
           // Differentiate the continuous authored UV before repeating it. A
           // derivative of fract jumps at every tile seam and picks wrong mips.
           vec2 sourceDx = dFdx( sourceUv ) * rect.zw;
           vec2 sourceDy = dFdy( sourceUv ) * rect.zw;
+          // A global atlas mip eventually mixes other materials. Keep its whole
+          // trilinear footprint inside this source tile, including mip alignment.
+          float footprint = max( length( sourceDx * atlasSize ), length( sourceDy * atlasSize ) );
+          float safeFootprint = max( 1.0, min( rect.z * atlasSize.x, rect.w * atlasSize.y ) / 8.0 );
+          float footprintScale = min( 1.0, safeFootprint / max( footprint, 1e-8 ) );
+          sourceDx *= footprintScale; sourceDy *= footprintScale;
+          float mipPixels = exp2( ceil( log2( max( footprint * footprintScale, 1.0 ) ) ) );
+          vec2 guard = min( rect.zw * 0.45, max( vec2( 0.0 ), vec2( 1.5 * mipPixels ) / atlasSize - monarchGutter ) );
+          vec2 atlasUv = rect.xy + clamp( fract( sourceUv ) * rect.zw, guard, rect.zw - guard );
           #if defined( texture2DGradEXT ) || defined( GL_EXT_shader_texture_lod )
             return texture2DGradEXT( atlasMap, atlasUv, sourceDx, sourceDy );
           #else
@@ -136,7 +146,7 @@
             vec2 implicitDx = dFdx( atlasUv ), implicitDy = dFdy( atlasUv );
             float wanted = max( dot( sourceDx, sourceDx ), dot( sourceDy, sourceDy ) );
             float implicitSize = max( dot( implicitDx, implicitDx ), dot( implicitDy, implicitDy ) );
-            float bias = 0.5 * log2( max( wanted, 1e-16 ) / max( implicitSize, 1e-16 ) );
+            float bias = min( 0.0, 0.5 * log2( max( wanted, 1e-16 ) / max( implicitSize, 1e-16 ) ) );
             return texture2D( atlasMap, atlasUv, bias );
           #endif
         }`;
@@ -152,11 +162,16 @@
         const base = material.onBeforeCompile;
         material.onBeforeCompile = shader => {
           base(shader);
+          shader.uniforms.monarchAlbedoSize = material.map.userData.monarchSize;
+          shader.uniforms.monarchOrmSize = material.roughnessMap.userData.monarchSize;
+          shader.uniforms.monarchNormalSize = (material.normalMap || material.map).userData.monarchSize;
+          shader.uniforms.monarchEmissionSize = material.emissiveMap.userData.monarchSize;
+          shader.uniforms.monarchGutter = { value: new Three.Vector2(2 / model.atlas[0], 2 / model.atlas[1]) };
           shader.vertexShader = shader.vertexShader
             .replace('#include <common>', '#include <common>\nattribute vec2 avOrmSourceUv;\nattribute vec2 avNormalSourceUv;\nattribute vec2 avEmissiveSourceUv;\nattribute vec4 avSurface;\nvarying vec2 vMonarchOrmUv;\nvarying vec2 vMonarchNormalUv;\nvarying vec2 vMonarchEmissiveUv;\nvarying vec4 vMonarchSurface;')
             .replace('#include <begin_vertex>', '#include <begin_vertex>\nvMonarchOrmUv=avOrmSourceUv;vMonarchNormalUv=avNormalSourceUv;vMonarchEmissiveUv=avEmissiveSourceUv;vMonarchSurface=avSurface;');
           shader.fragmentShader = shader.fragmentShader
-            .replace('#include <common>', '#include <common>\nvarying vec2 vMonarchOrmUv;\nvarying vec2 vMonarchNormalUv;\nvarying vec2 vMonarchEmissiveUv;\nvarying vec4 vMonarchSurface;\n' + MONARCH_ATLAS_SAMPLE_GLSL)
+            .replace('#include <common>', '#include <common>\nvarying vec2 vMonarchOrmUv;\nvarying vec2 vMonarchNormalUv;\nvarying vec2 vMonarchEmissiveUv;\nvarying vec4 vMonarchSurface;\nuniform vec2 monarchAlbedoSize, monarchOrmSize, monarchNormalSize, monarchEmissionSize, monarchGutter;\n' + MONARCH_ATLAS_SAMPLE_GLSL)
             .replace('#include <clipping_planes_fragment>', '#include <clipping_planes_fragment>\nif(!gl_FrontFacing && vMonarchSurface.y<0.5) discard;')
             .replace('vec2 approvedUv =', 'vec2 monarchOrmUv=vAvAtlasRect.xy+fract(vMonarchOrmUv)*vAvAtlasRect.zw;\nvec2 monarchNormalUv=vAvAtlasRect.xy+fract(vMonarchNormalUv)*vAvAtlasRect.zw;\nvec2 monarchEmissiveUv=vAvAtlasRect.xy+fract(' + (lamp ? 'vAvSourceUv' : 'vMonarchEmissiveUv') + ')*vAvAtlasRect.zw;\nvec2 approvedUv =')
             .replace(/texture2D\( roughnessMap, approvedUv \)/g, 'texture2D( roughnessMap, monarchOrmUv )')
@@ -166,11 +181,11 @@
             .replace('#include <normal_fragment_begin>', Three.ShaderChunk.normal_fragment_begin.replace(/\bvNormalMapUv\b/g, 'vMonarchNormalUv'))
             .replace('#include <normal_fragment_maps>', Three.ShaderChunk.normal_fragment_maps.replace(/\bvNormalMapUv\b/g, 'monarchNormalUv')
               .replace('mapN.xy *= normalScale;', 'mapN.xy *= normalScale * vMonarchSurface.z;'))
-            .replace(/texture2D\( map, approvedUv \)/g, 'monarchAtlasSample( map, vAvSourceUv, vAvAtlasRect )')
-            .replace(/texture2D\( roughnessMap, monarchOrmUv \)/g, 'monarchAtlasSample( roughnessMap, vMonarchOrmUv, vAvAtlasRect )')
-            .replace(/texture2D\( metalnessMap, monarchOrmUv \)/g, 'monarchAtlasSample( metalnessMap, vMonarchOrmUv, vAvAtlasRect )')
-            .replace(/texture2D\( normalMap, monarchNormalUv \)/g, 'monarchAtlasSample( normalMap, vMonarchNormalUv, vAvAtlasRect )')
-            .replace(/texture2D\( emissiveMap, monarchEmissiveUv \)/g, 'monarchAtlasSample( emissiveMap, ' + (lamp ? 'vAvSourceUv' : 'vMonarchEmissiveUv') + ', vAvAtlasRect )')
+            .replace(/texture2D\( map, approvedUv \)/g, 'monarchAtlasSample( map, vAvSourceUv, vAvAtlasRect, monarchAlbedoSize )')
+            .replace(/texture2D\( roughnessMap, monarchOrmUv \)/g, 'monarchAtlasSample( roughnessMap, vMonarchOrmUv, vAvAtlasRect, monarchOrmSize )')
+            .replace(/texture2D\( metalnessMap, monarchOrmUv \)/g, 'monarchAtlasSample( metalnessMap, vMonarchOrmUv, vAvAtlasRect, monarchOrmSize )')
+            .replace(/texture2D\( normalMap, monarchNormalUv \)/g, 'monarchAtlasSample( normalMap, vMonarchNormalUv, vAvAtlasRect, monarchNormalSize )')
+            .replace(/texture2D\( emissiveMap, monarchEmissiveUv \)/g, 'monarchAtlasSample( emissiveMap, ' + (lamp ? 'vAvSourceUv' : 'vMonarchEmissiveUv') + ', vAvAtlasRect, monarchEmissionSize )')
             .replace('min(0.18, vApprovedFinish.y)', 'vApprovedFinish.y')
             .replace('max(0.78, roughnessFactor * vApprovedFinish.x)', 'roughnessFactor * vApprovedFinish.x')
             .replace('max(0.22, roughnessFactor * vApprovedFinish.x)', 'roughnessFactor * vApprovedFinish.x');
@@ -183,7 +198,7 @@
               .replace('vColor.xyz *= instanceColor.xyz;', 'vColor.xyz *= mix(vec3(1.0),instanceColor.xyz,avSurface.x);'));
           }
         };
-        material.customProgramCacheKey = () => 'monarch-source-v3-grad-' + (paint ? 'paint' : rubber ? 'rubber' : lamp ? 'lamp' : 'trim') + (model.hasNormalMaps ? '-normal' : '');
+        material.customProgramCacheKey = () => 'monarch-source-v4-guard-' + (paint ? 'paint' : rubber ? 'rubber' : lamp ? 'lamp' : 'trim') + (model.hasNormalMaps ? '-normal' : '');
         return material;
       }
       function monarchVehicleGlassSides(material) {

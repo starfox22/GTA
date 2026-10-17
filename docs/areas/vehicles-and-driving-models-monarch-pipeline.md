@@ -71,8 +71,13 @@ before `fract`, using `texture2DGradEXT` (Three maps it to WebGL2 `textureGrad`)
 Monarch materials request the WebGL1 texture-LOD/derivative extensions; devices
 without explicit gradient sampling use a derivative-ratio mip bias. This avoids
 false coarse-mip bands at integer UV repeats without changing source textures,
-normal strength or PBR factors. The atlas still uses its existing two-pixel
-gutters; very coarse minification remains limited by the shared atlas mip chain.
+normal strength or PBR factors. Actual per-channel upload dimensions follow
+quality changes through shared uniform references. A conservative footprint cap
+(one eighth of the smaller tile dimension) and inward filter-support guard keep
+coarse global atlas mips from reaching neighbouring material tiles. The original
+two-pixel gutter is scaled correctly at Low. This is an approximation to periodic
+minified-edge filtering: raw authored UVs and the normal tangent frame remain
+unchanged, while the sampling centre moves inward near a minified tile edge.
 Near source geometry is immutable; do not deform it or dispose a shared resource
 when a vehicle retires. Dynamic source door assemblies retain original closed
 face ownership, and source-fixed calipers cancel wheel rotation. Missing cabin
