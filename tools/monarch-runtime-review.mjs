@@ -1,14 +1,14 @@
 // Native WebGL review of the downloaded Monarch collection and its material lifecycle.
 // Named public console actions/reports only; screenshots preserve the normal game UI.
-// node tools/monarch-runtime-review.mjs FROZEN_HTML OUTPUT [MONARCH_PACK] [--lifecycle-only|--showroom-only]
+// node tools/monarch-runtime-review.mjs FROZEN_HTML OUTPUT [MONARCH_PACK] [--bounded|--lifecycle-only|--showroom-only]
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {launchBrowser} from './browser.mjs';
 
 const args=process.argv.slice(2),flags=args.filter(arg=>arg.startsWith('--'));
-if(flags.some(flag=>!['--lifecycle-only','--showroom-only'].includes(flag))||flags.length>1)throw Error('Choose one known review mode');
-const mode=flags[0]?.slice(2,-5)||'full';
+if(flags.some(flag=>!['--bounded','--lifecycle-only','--showroom-only'].includes(flag))||flags.length>1)throw Error('Choose one known review mode');
+const mode=flags[0]==='--bounded'?'bounded':flags[0]?.slice(2,-5)||'full';
 const [input,directory,packInput='assets/monarch-vehicle-models.bin']=args.filter(arg=>!arg.startsWith('--'));
 if(!input||!directory)throw Error('Frozen HTML and output directory required');
 const html=path.resolve(input),out=path.resolve(directory),pack=path.resolve(packInput);
@@ -151,6 +151,7 @@ try{
   report.lifecycle.push({type,id,clean,burnt,burntOpen,repaired,reopened});
   console.log('PASS source burn, first door, repair and reopen',type);save();
  }
+ report.lifecyclePass=true;save();
  }
  if(mode==='full'){
  for(const [index,[type,key]]of Object.entries(mapping).entries()){
@@ -206,6 +207,7 @@ try{
  const highFocus=(await call('monarchAssets')).heroSource;
  report.showroomHigh={monarch:await textures('high',highFocus),profile:await call('drawProfile',5)};
  assert(highFocus&&Object.values(report.showroomHigh.monarch.models).filter(model=>model.targetTextures==='high').length===1,'Showroom did not retain exactly one full-detail family');
+ report.showroomPass=true;save();
  }
  report.final={faults:await call('frameFaults'),gpu:await call('gpuContext'),profile:await call('drawProfile',5),
   assets:await call('assetCars'),char:await call('assetChar'),headroom:await call('cabinHeadroom')};
