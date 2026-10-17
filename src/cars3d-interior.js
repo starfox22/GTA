@@ -68,17 +68,17 @@
       function carSeatPlan(g, l, w, M, name, own = null) {
         const width = w / 0.87,
           roof = g.roof + (g.arch || 0) * 0.6,
-          floor = Math.max(0.2 * M, g.base - 0.62 * M, (own?.minY || 0) * M);
+          floor = Math.max((Number.isFinite(own?.floor) ? clamp(own.floor, 0.05, 0.2) : 0.2) * M, g.base - 0.62 * M, (own?.minY || 0) * M);
         // `own.hipX`: where the fit starts (a share of l), as an asset model's own seats sit (vehicle-assets3d.js).
         const x0 = own?.x !== undefined ? own.x * l : own?.hipX !== undefined ? own.hipX * l : g.xf * l - 1.4 * M,
           y0 = own?.y !== undefined ? own.y * M : g.base - 0.42 * M;
         let x = x0,
           y = y0,
-          recline = 0.3,
+          recline = own?.fixed ? (own.recline ?? 0.3) : 0.3,
           side = own?.z !== undefined ? own.z * M : Math.max(0.16 * M, Math.min(0.2 * width, cabinGlassHalf(g, w, y + 0.7 * M * Math.cos(recline)) - 0.19 * M));
         // Under a roof: the seat that keeps the seated head clear of the roof and glass (cars3d-headroom.js CABIN HEADROOM).
         const fitFrom = performance.now();
-        if (!g.open) ({ x, y, recline, side } = cabinSeatFit(g, l, w, M, x0, y0, floor, width, own, CAR_TWO_SEATERS.has(name)));
+        if (!g.open && !own?.fixed) ({ x, y, recline, side } = cabinSeatFit(g, l, w, M, x0, y0, floor, width, own, CAR_TWO_SEATERS.has(name)));
         const fitMs = performance.now() - fitFrom;
         // The rear bench a step back, its back (and headrests) as tall as the rear glass leaves room for: none in a
         // two-seater or where not even a low back fits under a fastback's glass.
@@ -108,7 +108,8 @@
           floor,
           // Keep the shoe below the ankle above the floor, even when the headroom fit lowers the hip.
           // The seat is static: compute this once for both seated occupants and the drive-by pose.
-          pedalY: Math.max(y - 0.26 * M, floor + 0.1 * M),
+          pedalX: x + (own?.pedal?.[0] ?? 0.74) * M,
+          pedalY: own?.pedal?.[1] !== undefined ? own.pedal[1] * M : Math.max(y - 0.26 * M, floor + 0.1 * M),
           recline,
           // The seated torso's lie (crowd3d-driveby.js seatOccupant) and the glasshouse the head is fitted under.
           lean: seatTorsoLean(recline),
