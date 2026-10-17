@@ -148,6 +148,11 @@ frame faults, context losses and remaining char models are all zero. Five
 unaltered fixture screenshots are retained with this review, including the
 actual-stock overview; the wreck fixtures intentionally retain test debris.
 
-The Pages workflow deploys this branch and compares every served file with the
-[checked local artifact](verification/public-artifact.json): 220 files,
-411,147,527 bytes. The successful publication receipt is added after deployment.
+[Run 39066422675](https://github.com/starfox22/GTA/actions/runs/39066422675)
+deployed `7ab88893` and verified every served file against the
+[checked local artifact](verification/public-artifact.json): **220 files,
+411,147,527 bytes**. The [successful publication receipt](verification/successful-deployment.json)
+retains the real build, gallery, deployment and public SHA verification steps.
+[Play the release](https://starfox22.github.io/GTA/?review=971a2df4e8b34242) or
+[view all thirteen comparisons](https://starfox22.github.io/GTA/review/?review=971a2df4e8b34242).
+This receipt-only documentation follow-up leaves game and gallery bytes unchanged.

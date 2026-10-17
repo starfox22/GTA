@@ -34,6 +34,10 @@ and [all thirteen native comparisons](https://starfox22.github.io/GTA/review/?re
 The final native review passes 223 lifecycle/showroom assertions with zero
 errors, context losses or lingering char. Thirteen exact before/after camera
 and status comparisons cover all model/name changes.
+[Run 39066422675](https://github.com/starfox22/GTA/actions/runs/39066422675)
+deployed `7ab88893` and verified all 220 public files / 411,147,527 bytes against
+the artifact. The [success receipt](audit/monarch-collection-review-2026-10-17/verification/successful-deployment.json)
+records those actual steps; this documentation follow-up changes no game/gallery bytes.
 
 ## October 17: Hum-4 name and vehicle naming direction
 
