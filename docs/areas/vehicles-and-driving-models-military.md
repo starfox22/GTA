@@ -38,7 +38,8 @@ handling are unchanged. Credits: THIRD_PARTY_CREDITS.txt.
   `animateMilitaryWheels` reads the physics tyre steer/lock and rear `spinSpeed`;
   only fronts steer, reverse rolls backwards and locked tyres stop rolling.
   This replaces the generic special-wheel loop; never animate both in one frame.
-  Damage squash and `rideWheels` remain on the same wheel pivot.
+  Damage ride height and `rideWheels` remain on the same wheel pivot; the M4 keeps
+  that pivot rigid and deforms only rubber when punctured.
 - The original HMMWV wheel parts also contained fixed running gear, so their whole-part
   bounds measured the wrong axle: one front centre was 11.35 cm off the tyre circle,
   both rear centres about 35.4 cm off it. `militaryAssetWheelPartition` runs once per
@@ -63,11 +64,22 @@ handling are unchanged. Credits: THIRD_PARTY_CREDITS.txt.
   Original UVs and source triangle ownership stay exact. Authored split normals
   follow the affine inverse transpose; they are never replaced by smoothed normals.
   This runs once per shared kit and adds no draws or per-frame work.
-- An intact M4 uses a uniform 0.65 model scale. `specialDamage` deliberately applies
-  a vertical 0.82 squash to a punctured tyre, outside wheel spin; that physical flat
-  must remain visibly flat. Repair restores scale 1, ride height and the ordinary
-  wheel matrix. Camera foreshortening can also make a circular sidewall project as
-  an ellipse; the measured source correction addresses actual wheel geometry.
+- An intact M4 uses a uniform 0.65 model scale. Its source tyre and metal rim share
+  one mesh; the old whole-pivot 0.82 puncture squash also made the rim 18% oval.
+  `specialDamage` now sets M4 pressure while keeping the whole pivot at scale 1.
+  A shared radial profile anchors every source vertex at or below 0.56 tyre radius
+  (the metal ends below 0.536r), smoothly reaching full rubber squash at 0.98r.
+  `militaryRubberUpdate` rolls the source coordinates, compresses only rubber
+  vertically, then unrolls them; the flat therefore stays outside wheel spin.
+  Authored normals follow the analytic inverse-transpose deformation Jacobian.
+  Rigid metal/bead positions and normals remain byte exact, including split seams.
+  The first puncture clones all geometry attributes and the index privately, once;
+  rolling updates reuse those buffers and conservative circle bounds. Stationary
+  wheels skip buffer writes. Repair/burn immediately restore the shared source and
+  dispose the clone; ordinary model retirement disposes any attached private flat.
+  Never add those private geometries to the shared set or dispose shared VBOs.
+  Existing suspension/drop, burn visibility and other models' puncture paths stay
+  intact. Camera projection may still foreshorten a circular sidewall.
 - Near HMMWV body stays unclustered. Far body is eligible only for other vehicles
   in chase view. The tier-scaled transition has 0.9/1.1 hysteresis; the player's
   own vehicle and street/flight views always keep the near body.
@@ -96,10 +108,16 @@ metres; corrected circle centres stay on their axles.
 `m4-wheel-shape` separately measures six actual tyre/rim/hub cross-sections in world
 space through the production military builder, wheel animation, 0.65 design/group
 scale, body bank/pitch, near/far LOD and actual clean/puncture/repair matrices. It
-covers 48 forward/reverse phases and three steering angles, proving that all intact
-bands stay circular and puncture squash stays vertical. The worst corrected band
-radius spread is 0.153 mm, below the 0.25 mm tolerance. These are geometry/matrix
-checks; final native game captures remain separate visual evidence.
+covers 48 forward/reverse phases and three steering angles. Punctured metal/bead
+rings must remain circular in actual world space, without compensating for squash;
+only outer rubber is checked against its intentional vertical pressure collapse.
+The worst corrected band radius spread is 0.153 mm, below the 0.25 mm tolerance.
+`m4-puncture-rims` also checks exact rigid vertices/normals, smooth-transition
+normals against finite differences, UV/split-normal seam continuity, all private
+attribute/index ownership, repair/burn/retirement disposal and an unaffected second
+M4. A 1,000-frame four-flat-wheel warm host sample asserts no new geometry or buffers
+and reports timing/heap diagnostics. These are host geometry/resource checks;
+final native game captures remain separate visual evidence.
 
 For matched native wheel/base captures and first-hit attribution, run
 `node tools/m4-utility-render-review.mjs HTML OUT before --quality low`, then use

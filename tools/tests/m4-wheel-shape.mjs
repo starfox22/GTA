@@ -21,7 +21,7 @@ export default async function(t) {
       kit=api.militaryAssetKit('army_jeep',length/scale),immutable=model.wheels.map(w=>w.wheel.children[0].geometry.attributes.position.array.slice()),
       clear={tires:{},burnt:false},rows=[];
     t.assert(scale===.65&&Math.abs(k*scale-8)<1e-12,'actual production M4 scale is uniform and wheels retain metre proportions');
-    let worstCleanSpread=0,worstFlatSpread=0;
+    let worstCleanSpread=0,worstFlatSpread=0,worstFlatRigidSpread=0;
     for(let wi=0;wi<model.wheels.length;wi++) {
       const wheel=model.wheels[wi],geo=wheel.wheel.children[0].geometry,p=geo.attributes.position,
         points=[...new Set(geo.index.array)],groups=new Map();
@@ -47,25 +47,28 @@ export default async function(t) {
     for(const flat of [false,true])for(const far of [false,true])for(const steer of [-.6,0,.6])for(let phase=0;phase<48;phase++) {
       for(const w of model.wheels)w.wheel.rotation.z=0;
       c.tyres.steer=steer;c.speed=phase<24?24:-24;
-      api.animateMilitaryWheels(c,model,phase*Math.PI*2/48*model.wheels[0].radius/Math.abs(c.speed));
       damageApi.specialDamage(c,model,{tires:flat?{frontLeft:true,frontRight:true,rearLeft:true,rearRight:true}:{},burnt:false});
+      api.animateMilitaryWheels(c,model,phase*Math.PI*2/48*model.wheels[0].radius/Math.abs(c.speed));
       scope.zoom=far?.01:2;api.militaryLod(c,model);group.updateMatrixWorld(true);
       t.assert(model.lod.isFar===far,'actual body LOD selects requested level without changing wheel geometry');
       for(const w of model.wheels) {
-        const object=w.wheel,geo=object.children[0].geometry,p=geo.attributes.position,squash=flat?.82:1;
+        const object=w.wheel,geo=object.children[0].geometry,p=geo.attributes.position;
         turn.setFromEuler(euler.set(object.rotation.x,object.rotation.y,0));
         frame.compose(object.position,turn,one).premultiply(object.parent.matrixWorld);
         axis.setFromMatrixColumn(frame,0).normalize();up.setFromMatrixColumn(frame,1).normalize();origin.setFromMatrixPosition(frame);
         for(const band of w.shapeTestBands) {
+          // Metal/bead rings receive no compensating divide: their actual
+          // punctured world geometry must remain physically circular.
+          const squash=flat&&band.radius/(w.radius/8)>.56?.82:1;
           let low=Infinity,high=0;
           for(const i of band.ids) {
             point.fromBufferAttribute(p,i).applyMatrix4(object.children[0].matrixWorld).sub(origin);
-            // Removing only the deliberate flat-tyre squash must recover the same
-            // circular physical cross-section at every actual rolling phase.
+            // Only outer rubber receives the intended pressure collapse.
             const radius=Math.hypot(point.dot(axis),point.dot(up)/squash)/8;
             low=Math.min(low,radius);high=Math.max(high,radius);
           }
           if(flat)worstFlatSpread=Math.max(worstFlatSpread,high-low);else worstCleanSpread=Math.max(worstCleanSpread,high-low);
+          if(flat&&squash===1)worstFlatRigidSpread=Math.max(worstFlatRigidSpread,high-low);
           t.assert(high-low<.00025&&Math.abs((high+low)/2-band.radius)<.0002,
             'world-space wheel ring stays circular through spin/steer/LOD, preserving intentional puncture squash');
         }
@@ -76,6 +79,6 @@ export default async function(t) {
     t.assert(model.wheels.every((w,i)=>w.wheel.children[0].geometry.attributes.position.array.every((v,j)=>v===immutable[i][j])),'rolling, LOD, puncture and repair never modify cached source-fit vertices');
     c.tyres.lock=[1,1];const phases=model.wheels.map(w=>w.wheel.rotation.z);api.animateMilitaryWheels(c,model,.2);
     t.assert(model.wheels.every((w,i)=>w.wheel.rotation.z===phases[i]),'actual brake locks still stop all corrected wheels');
-    t.note?.(JSON.stringify({m4WheelShape:{sourceAspectBefore:.98785,worstCleanRadialSpreadM:worstCleanSpread,worstFlatCorrectedRadialSpreadM:worstFlatSpread,phases:48,steer:[-.6,0,.6],bodyLods:2,damageStates:2,rows}}));
+    t.note?.(JSON.stringify({m4WheelShape:{sourceAspectBefore:.98785,worstCleanRadialSpreadM:worstCleanSpread,worstFlatCorrectedRadialSpreadM:worstFlatSpread,worstFlatRigidRadialSpreadM:worstFlatRigidSpread,phases:48,steer:[-.6,0,.6],bodyLods:2,damageStates:2,rows}}));
   });
 }

@@ -461,8 +461,9 @@ packs with plain `<script src>` so the zip still plays from file://.
   The HMMWV's packed wheel bounds include fixed running gear: `militaryAssetWheelPartition` validates the dominant
   tyre ring once per kit, restores its true centres/radii, and joins fixed pieces into the body without deleting
   triangles. Its mildly oval source tyre/rim gets a bounded measured circular fit with inverse-transpose split
-  normals; preserve all UVs/topology and the stationary body's original rest pose/normals. Real puncture squash
-  remains vertical through spin and resets on repair. Lamps reuse original lenses with indexed bounds.
+  normals; preserve all UVs/topology and the stationary body's original rest pose/normals. M4 punctures deform
+  only rubber in a private geometry outside spin; metal rims/beads stay rigid, and repair disposes the clone.
+  Never mutate shared source attributes/indices. Lamps reuse original lenses with indexed bounds.
 - Downloaded aircraft and dog (vehicles-and-driving-models-aircraft.md): `tools/aircraft_models.py` makes
   assets/aircraft-models.bin + aircraft-skin.webp (SKYRANGER 429 airframe `bell429`, flyable SKYLARK 172 airframe
   `skyhawk`, `fixedGear`) on the makeHelicopter / buildAircraft contracts; `rotorStrikes` uses an airframe's

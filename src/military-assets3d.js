@@ -92,6 +92,7 @@
               finish[v * 2 + 1] = tyre ? 0.02 : 0.15;
             }
             geo.setAttribute('finish', new Three.BufferAttribute(finish, 2));
+            if (type === 'army_jeep' && part.calibrated) part.rubber = militaryRubberProfile(geo, part.r);
           }
           kit.wheels.push(part);
         });
@@ -158,6 +159,7 @@
           b.add(pivot);
           // The wheel is the pivot's first child (hidden on a burnt wreck, damage3d-bodies.js specialDamage).
           mesh(geo, materials.armyWheel, pivot, 0, 0, 0).castShadow = false;
+          if (part.rubber) pivot.userData.m4Tyre = { kit: part.rubber, pressure: 1, appliedPressure: 1, phase: NaN, geometry: null };
           model.wheels.push({ wheel: pivot, side: wh.side, front: !!wh.front, radius: part.r * scale });
         });
         return k;
@@ -172,6 +174,7 @@
           wheel.rotation.y = front ? steer : 0;
           const lock = c.tyres?.lock?.[front ? 0 : 1] || 0;
           wheel.rotation.z -= ((front ? c.speed : rearSpeed) * (1 - lock) * deltaSeconds) / radius;
+          if (wheel.userData.m4Tyre) militaryRubberUpdate(wheel);
         }
       }
       function animateMilitaryLamps(c, m) {

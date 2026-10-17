@@ -463,7 +463,14 @@
             key = end + (side < 0 ? 'Left' : 'Right'),
             // A motorcycle has one tyre per axle; either side's puncture is visible on it.
             flat = m.bike ? damage.tires?.[end + 'Left'] || damage.tires?.[end + 'Right'] : damage.tires?.[key];
-          squashWheel(wheel, flat && !damage.burnt ? 0.82 : 1);
+          const m4 = wheel.userData.m4Tyre;
+          if (m4) {
+            // The M4's tyre/rim share one source mesh. Pressure deforms only
+            // rubber in the rolling updater; its metal rim/bead must stay rigid.
+            m4.pressure = flat && !damage.burnt ? 0.82 : 1;
+            squashWheel(wheel, 1);
+            if (m4.pressure === 1 && m4.geometry) militaryRubberUpdate(wheel);
+          } else squashWheel(wheel, flat && !damage.burnt ? 0.82 : 1);
           wheel.userData.drop = damage.burnt ? 1.6 : flat ? 0.8 : 0;
           wheel.position.y = wheel.userData.baseY - wheel.userData.drop + (wheel.userData.rideY || 0);
           if (wheel.children[0]) wheel.children[0].visible = !damage.burnt;

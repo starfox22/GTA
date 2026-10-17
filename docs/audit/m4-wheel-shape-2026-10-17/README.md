@@ -21,10 +21,18 @@ Three host regressions passed 46,194 assertions:
 - `military-model-rig`: actual packed builder, shared resources, lamps, brakes,
   forward/reverse/spin animation, body LOD and char/repair material contracts.
 
-The worst corrected world-space ring radius spread is 0.153 mm. Deliberate 0.82
-vertical puncture squash stays stationary while the wheel rolls; repair restores
-scale 1 and the ordinary wheel matrix. Native final integrated game captures are
-separate evidence owned by the parent review.
+The worst corrected world-space ring radius spread is 0.153 mm. This first receipt
+predates the rubber-only puncture follow-up: its flat-state test compensated for
+the old whole-wheel 0.82 squash and therefore did not prove a rigid metal rim.
+
+`puncture-rim-proof.json` records that follow-up. Actual punctured metal/bead world
+radii now pass without any compensating division. Only rubber receives vertical
+pressure collapse, after a smooth anchored bead transition. The private clone
+retains every source attribute/index independently, while authored normals follow
+the analytic deformation Jacobian. Repair, burn and retirement dispose private
+flats and preserve immutable source kits. Four flat wheels reuse all buffers over
+1,000 rolling frames with zero geometry allocations. Native final integrated game
+captures are separate evidence owned by the parent review.
 
 Run each exported default test on the host with an assertion harness, or use the
 existing `tools/test.mjs` selectors. Runtime contracts and detailed adaptation:

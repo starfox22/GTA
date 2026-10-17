@@ -1,0 +1,145 @@
+{
+  "baseCommit": "0f9f059b",
+  "scope": "M4 / army_jeep pressure rendering only; source pack, body, stationary running gear, UVs and triangle ownership unchanged",
+  "originalDefect": "specialDamage applied0.82 whole-pivot vertical scale to a combined rubber+metal source mesh, making the metal rim18%oval",
+  "pressureAdaptation": {
+    "pivotScale": 1,
+    "pressureFactor": 0.82,
+    "rigidThroughRadiusFraction": 0.56,
+    "sourceMetalMaxRadiusFraction": 0.536,
+    "fullRubberSquashAtRadiusFraction": 0.98,
+    "transition": "smoothstep; rolled-coordinate vertical compression, then inverse wheel roll",
+    "normals": "analytic inverse-transpose deformation Jacobian; exact source bytes on rigid metal/bead"
+  },
+  "resourceContract": "one private full attribute+index clone per actual puncture; immutable shared kit; stable rolling buffers; immediate repair/burn disposal; attached private clone disposed by actual model retirement",
+  "worldShapeProof": {
+    "sourceAspectBefore": 0.98785,
+    "worstCleanRadialSpreadM": 0.0001534364744554817,
+    "worstFlatCorrectedRadialSpreadM": 0.0001534713929007281,
+    "worstFlatRigidRadialSpreadM": 0.00014915428221248805,
+    "phases": 48,
+    "steer": [
+      -0.6,
+      0,
+      0.6
+    ],
+    "bodyLods": 2,
+    "damageStates": 2,
+    "rows": [
+      {
+        "wheel": 0,
+        "radius": 0.4341118097305298,
+        "bands": [
+          0.10440164837651827,
+          0.434083269322381,
+          0.23264811098419425,
+          0.4275978842465428,
+          0.23224421836786271,
+          0.13402644955211393
+        ],
+        "correction": [
+          1.0122540314522872,
+          -1.7824228476942653e-06,
+          -1.7824228476942653e-06,
+          0.9999907353017851
+        ]
+      },
+      {
+        "wheel": 1,
+        "radius": 0.4341118097305298,
+        "bands": [
+          0.10440165099454242,
+          0.43408327537683106,
+          0.23264811570553334,
+          0.4275978845593254,
+          0.2322442224580115,
+          0.13402645173855435
+        ],
+        "correction": [
+          1.0122540598646577,
+          -1.7844129399933454e-06,
+          -1.7844129399933454e-06,
+          0.9999907305425616
+        ]
+      },
+      {
+        "wheel": 2,
+        "radius": 0.43412598967552185,
+        "bands": [
+          0.10440775120796288,
+          0.4340962571492974,
+          0.23264941772409647,
+          0.4276081699235777,
+          0.23225115162540655,
+          0.13402701015881743
+        ],
+        "correction": [
+          1.0122864289966256,
+          1.3111312826569204e-06,
+          1.3111312826569204e-06,
+          1.0000007481861806
+        ]
+      },
+      {
+        "wheel": 3,
+        "radius": 0.43412598967552185,
+        "bands": [
+          0.10440774693337561,
+          0.4340962627746014,
+          0.23264941340685197,
+          0.4276081666281415,
+          0.23225114791274157,
+          0.13402700915213014
+        ],
+        "correction": [
+          1.0122863887929074,
+          1.3134462420862991e-06,
+          1.3134462420862991e-06,
+          1.000000760929986
+        ]
+      }
+    ]
+  },
+  "warmHostElapsedSample": {
+    "frames": 1000,
+    "wheels": 4,
+    "medianElapsedMs": 0.12773600000002716,
+    "p95ElapsedMs": 0.19989299999997456,
+    "newGeometries": 0,
+    "retainedPrivateBuffers": true,
+    "heapDeltaAfterGc": -3570664
+  },
+  "sampleLimits": "performance.now elapsed host timing, not CPU-time or hardware FPS. Heap delta is GC-sensitive diagnostic; zero geometry allocations and identical attribute/index buffers are asserted directly.",
+  "tests": [
+    {
+      "module": "m4-wheel-partition",
+      "assertions": 31294,
+      "result": "PASS"
+    },
+    {
+      "module": "m4-wheel-shape",
+      "assertions": 14432,
+      "result": "PASS"
+    },
+    {
+      "module": "military-model-rig",
+      "assertions": 468,
+      "result": "PASS"
+    },
+    {
+      "module": "m4-puncture-rims",
+      "assertions": 5970,
+      "result": "PASS"
+    }
+  ],
+  "totalAssertions": 52164,
+  "finiteDifferenceNormalTolerance": 0.0003,
+  "currentFileSHA256": {
+    "src/military-asset-wheels3d.js": "d96835f6a767c6db60abfd8d0bc75fcdb9b5fdb34cf441eb97a23a27ebd5b8bd",
+    "src/military-assets3d.js": "e9b933b1cb5d8a3d57910fcbed8ad92a7239ad26d4a61ff31697fc7463ed09e1",
+    "src/damage3d-bodies.js": "91cb478df5dcb2539de77541ad4cb4eeff170a7ee1bfb55ab04945bdac6bb66f",
+    "tools/tests/m4-wheel-shape.mjs": "208149f23ec8276c782f47b442971ca9f127222492f45023f068e6828d53e9fd",
+    "tools/tests/m4-puncture-rims.mjs": "f095f467f2628585477f135e6b1b82fd9229fe7d2ee774e477099583be9eb343"
+  },
+  "nativeRendering": "Parent performs separate final integrated native puncture/repair captures and GPU fault checks; this receipt proves host production geometry/matrix/resource behavior."
+}
