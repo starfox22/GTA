@@ -77,9 +77,11 @@ export function monarchFixture(packPath = process.env.GTA_MONARCH_PACK) {
     approvedPaint = approvedSource.slice(approvedSource.indexOf('      function approvedVehiclePaint('), approvedSource.indexOf('      const approvedVehicleImpostorPaints')),
     occupantSource = read('crowd3d-driveby'), occupantDeclarations = occupantSource.slice(occupantSource.indexOf('      const OCCUPANT_REACH'), occupantSource.indexOf('      let occupantCount')),
     actualSeatOccupant = occupantSource.slice(occupantSource.indexOf('      function seatOccupant('));
-  const damageSource = read('damage-vehicles'), glassBands = damageSource.slice(damageSource.indexOf('    const CAR_GLASS_BANDS'), damageSource.indexOf('    // Where the glass is'));
+  const damageSource = read('damage-vehicles'), glassBands = damageSource.slice(damageSource.indexOf('    const CAR_GLASS_BANDS'), damageSource.indexOf('    // ---- Crumple')),
+    hypercarSource=read('hypercars'), hypercarGlassStart=hypercarSource.indexOf('    Object.assign(CAR_GLASS_BANDS,'),
+    hypercarGlass=hypercarSource.slice(hypercarGlassStart,hypercarSource.indexOf('    });',hypercarGlassStart)+7);
   const lod = approvedSource.slice(approvedSource.indexOf('      function approvedVehicleLod('), approvedSource.indexOf('      function approvedVehicleReport('));
-  const api = vm.runInContext(lod + glassBands + materialHeader + finishPatch + dirtSource + legacyPaint + approvedPatch + approvedMaterials + approvedPaint + read('sports-vehicle-assets3d') + read('svj-vehicle-assets3d') + read('military-mark-rays3d') + read('monarch-vehicle-assets3d') + read('cars3d-geometry') + read('character-rig3d') + read('character-near3d') + read('character-near3d-head') + read('driveby-seats') + read('vehicle-assets3d') + read('approved-suv3d') + read('cars3d-models').slice(read('cars3d-models').indexOf('      function animateCivilianCar(')) +
+  const api = vm.runInContext(lod + glassBands + '\nconst fixtureGenericGlassBands=JSON.parse(JSON.stringify(CAR_GLASS_BANDS));\n' + hypercarGlass + materialHeader + finishPatch + dirtSource + legacyPaint + approvedPatch + approvedMaterials + approvedPaint + read('sports-vehicle-assets3d') + read('svj-vehicle-assets3d') + read('military-mark-rays3d') + read('monarch-vehicle-assets3d') + read('cars3d-geometry') + read('character-rig3d') + read('character-near3d') + read('character-near3d-head') + read('driveby-seats') + read('vehicle-assets3d') + read('approved-suv3d') + read('cars3d-models').slice(read('cars3d-models').indexOf('      function animateCivilianCar(')) +
     read('police3d-looks') + read('police3d-cabins') + read('cars3d-interior') + read('cars3d-headroom') + read('police3d-asset') + read('damage-crumple') + read('damage3d-crumple') + read('vehicle-doors3d') + read('vehicle-char3d') + read('damage3d-bodies') + read('carjack3d') + sourceMarkHook + poolSource + occupantDeclarations + actualSeatOccupant + `
       const BODY_CLOSE = { head: { mesh: { geometry: rigHeadGeometry() } } };
       for (const [name, geometry] of Object.entries({ ...rigHairGeometries(), ...rigHatGeometries() })) BODY_CLOSE[name] = { mesh: { geometry } };
@@ -109,9 +111,29 @@ export function monarchFixture(packPath = process.env.GTA_MONARCH_PACK) {
         fixturePose = { hip: new Three.Vector3(0, RIG.hip * RIG_UNIT, 0).applyMatrix4(sp.rootOverride).toArray(),
           lean: sp.riderLean, hands: sp.handTargets.map(v => v.toArray()), feet: sp.legTargets.map(v => v.toArray()) };
       }
-      ({ cabinHeadCloud, cabinHeadPose, CABIN_HEAD_TYPES, militaryMarkRayMesh, monarchVehicleData, monarchVehicleModel, monarchVehicleReport, monarchVehicleMaterials, monarchVehiclePaint, monarchVehicleLamps, makeAssetCar, makeAssetPoliceVehicle, approvedSuvKey, approvedSuvGlassBand, vaGeometry, policeApprovedPanels, animateApprovedSuvWheels, vehicleAssetModel, bodyPoolFor, vehicleDoor, vehicleDoorsReport, doorPanelGeometries, carBodyDamage, swingDriverDoor, markOntoDoor, crumpleSlices, crumplePending: () => crumpleQueue.size, assetCharSwap, assetCharRelease, paintVehicle, seatOccupant, fixtureOccupantPose: () => fixturePose, carSeatPlan, cabinClearance, cabinSeatClouds, DRIVEBY_SEATS, CAR_GLASS_BANDS, vehicleDoorPartition, vehicleDoorPose, vehicleDoorShown, vehicleDoorBodyState, animateCivilianCar, svjVehicleModel, svjVehicleReport, approvedVehicleLod, svjVehicleMaterials })`, scope);
+      ({ cabinHeadCloud, cabinHeadPose, CABIN_HEAD_TYPES, militaryMarkRayMesh, monarchVehicleData, monarchVehicleModel, monarchVehicleReport, monarchVehicleMaterials, monarchVehiclePaint, monarchVehicleLamps, makeAssetCar, makeAssetPoliceVehicle, approvedSuvKey, approvedSuvGlassBand, vaGeometry, policeApprovedPanels, animateApprovedSuvWheels, vehicleAssetModel, bodyPoolFor, vehicleDoor, vehicleDoorsReport, doorPanelGeometries, carBodyDamage, swingDriverDoor, markOntoDoor, crumpleSlices, crumplePending: () => crumpleQueue.size, assetCharSwap, assetCharRelease, paintVehicle, seatOccupant, fixtureOccupantPose: () => fixturePose, carSeatPlan, cabinClearance, cabinSeatClouds, DRIVEBY_SEATS, CAR_GLASS_BANDS, vehicleGlassBand, fixtureGenericGlassBands, vehicleDoorPartition, vehicleDoorPose, vehicleDoorShown, vehicleDoorBodyState, animateCivilianCar, svjVehicleModel, svjVehicleReport, approvedVehicleLod, svjVehicleMaterials })`, scope);
 
   return { api, Three, scope, source: api.monarchVehicleData(), sizes };
+}
+
+// Compare game logic to the independent downloaded-pack metadata; no actor builds are needed.
+export function monarchGlassBands(t, fixture) {
+  const {api,source,sizes}=fixture, M=8;
+  // Family alternatives retain gameplay dimensions; the capped uniform fit determines their visible extent.
+  for(const [type,key]of Object.entries(source.byGameType)) {
+    const model=source.header.models[key], g=model.glass, spec=sizes[type],
+      k=Math.min(spec.l/model.dims[0],spec.w/.87/model.dims[2],M), row=api.CAR_GLASS_BANDS[type],
+      expected=[g.base*k/M,(g.roof+(g.crown||0))*k/M,g.xb*k/spec.l,g.xf*k/spec.l], band=api.vehicleGlassBand({type});
+    t.assert(row&&expected.every((v,i)=>Math.abs(v-row[i])<1e-8)&&!!row[4]===!!g.open,type+': gameplay constant matches source belt, crowned roof, glass feet and open flag');
+    const runtimeExpected=[g.base*k,(g.roof+(g.crown||0))*k,g.xb*k,g.xf*k], actual=[band.belt,band.roof,band.back,band.front];
+    t.assert(runtimeExpected.every((v,i)=>Math.abs(v-actual[i])<1e-6),type+': actual vehicleGlassBand returns source bounds in game units');
+    t.assert(band.open===!!g.open,type+': actual vehicleGlassBand preserves source open-cockpit behavior');
+  }
+  t.assert(Object.entries(api.fixtureGenericGlassBands).every(([type,row])=>JSON.stringify(row)===JSON.stringify(api.CAR_GLASS_BANDS[type])),'Monarch mappings preserve every existing generic and approved source glass row');
+  for(const [type,row]of Object.entries({sedan:[.85,1.27,-.289,.164],roadster:[.78,1.08,-.2,.263,true],brutini:[.712064196,1.142565326,-.129937644,.293225094]})) {
+    const band=api.vehicleGlassBand({type}), l=sizes[type]?.l||4.7*M;
+    t.assert(JSON.stringify(api.CAR_GLASS_BANDS[type])===JSON.stringify(row)&&Math.abs(band.belt-row[0]*M)<1e-8&&Math.abs(band.roof-row[1]*M)<1e-8&&Math.abs(band.back-row[2]*l)<1e-8&&Math.abs(band.front-row[3]*l)<1e-8&&band.open===!!row[4],type+': existing glass constants and scaled production output remain unchanged');
+  }
 }
 
 export function sourceHeadFit(api, Three, built) {
@@ -139,10 +161,11 @@ export function sourceHeadFit(api, Three, built) {
 }
 
 export default async function(t) {
-  const {api, Three, source, scope}=monarchFixture(),
+  const fixture=monarchFixture(), {api, Three, source, scope}=fixture,
     expected={valkyrie:'monarch_valkyrie',dbs:'monarch_db11',zr1x:'monarch_c8_hari',chevetteSE:'monarch_c8_hari',wayron:'monarch_wayron',tourbillon:'monarch_tourbillon',jasko:'monarch_ccx',sirocco:'monarch_huayra',novera:'monarch_roadster_ev',w1:'monarch_p1_gtr',lafera:'monarch_laferrari'},
     smoke=process.env.GTA_MONARCH_SMOKE==='1';
   t.assert(source&&Object.keys(source.header.models).length===(smoke?1:10),'production decoder loads every licensed source kit');
+  monarchGlassBands(t,fixture);
   if(!smoke) {
     t.assert(Object.keys(source.byGameType).length===11,'all eleven collection game types have exactly one source mapping');
     for(const [type,key]of Object.entries(expected))t.assert(api.monarchVehicleModel(type)?.type===key&&api.vehicleAssetModel(type)?.type===key,type+': production dispatch uses the intended source identity');
@@ -156,6 +179,8 @@ export default async function(t) {
     const type=model.gameTypes[0], c=car(type,1908+modelIndex), built=api.makeAssetCar(c), other=api.makeAssetCar(car(type,2908+modelIndex)), label=type+': ';
     built.damageVersion=0;
     t.assert(built.kit.asset===model&&built.approvedAsset===model.type,label+'actual full production builder selects licensed kit');
+    const band=api.vehicleGlassBand(c), g=built.kit.glass;
+    t.assert(Math.abs(band.belt-g.base)<1e-6&&Math.abs(band.roof-g.roof-(g.crown||0))<1e-6&&Math.abs(band.back-g.xb*built.kit.l)<1e-6&&Math.abs(band.front-g.xf*built.kit.l)<1e-6&&band.open===g.open,label+'gameplay glass region matches the actual uniformly fitted render kit');
     t.assert(built.shell.geometry===other.shell.geometry&&built.paint!==other.paint&&built.paint.color.equals(other.paint.color),label+'shared immutable body geometry and private paint');
     t.assert(built.assetTrim.material===other.assetTrim.material&&built.paint.map===other.paint.map,label+'source texture and trim families shared');
     api.paintVehicle(c,built);
