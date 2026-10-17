@@ -234,7 +234,9 @@ export default async function(t) {
     const charMaterials=[...built.assetChar.materials];
     t.assert(charMaterials.length>0&&built.assetTrim.material!==clean&&built.assetTrim.material.map===clean.map&&other.assetTrim.material===clean,label+'burnt source materials stay per vehicle and retain atlases');
     for(const material of charMaterials)if(material.userData.assetChar.kind==='monarch') {
-      const own=material.userData.assetChar, shader={uniforms:{},vertexShader:Three.ShaderLib.standard.vertexShader,fragmentShader:Three.ShaderLib.standard.fragmentShader};
+      const own=material.userData.assetChar, sourceMaterial=built.assetChar.sources[built.assetChar.materials.indexOf(material)],
+        shader={uniforms:{},vertexShader:Three.ShaderLib.standard.vertexShader,fragmentShader:Three.ShaderLib.standard.fragmentShader};
+      t.assert(material.extensions!==sourceMaterial.extensions&&material.extensions.derivatives===sourceMaterial.extensions?.derivatives&&material.extensions.shaderTextureLOD===sourceMaterial.extensions?.shaderTextureLOD,label+'char inherits private source derivative/texture-LOD extensions before compile');
       material.onBeforeCompile(shader);
       t.assert(typeof own.sourceCompile==='function'&&shader.vertexShader.includes('avSurface')&&shader.fragmentShader.includes('vMonarch')&&shader.fragmentShader.includes('charBurnt'),label+'char keeps actual source shader and soot together');
     }
