@@ -1,0 +1,10 @@
+BOOT baseline 80e81b6c3f24fe5a28abd558e68f5dfeb329b8ec557e0fcbcc2f9c84d2d71426
+page.evaluate: TypeError: Cannot read properties of undefined (reading 'status')
+    at wanted (http://127.0.0.1:8765/work/fort-running/release-package/index.html?dev&seed=1&hold&shadercheck:218245:21)
+    at eval (eval at evaluate (:311:30), <anonymous>:1:127)
+    at Array.map (<anonymous>)
+    at eval (eval at evaluate (:311:30), <anonymous>:1:12)
+    at UtilityScript.evaluate (<anonymous>:313:16)
+    at UtilityScript.<anonymous> (<anonymous>:1:44)
+    at batch (/workspace/GTA/work/aviation-review/native.mjs:15:156)
+    at /workspace/GTA/work/aviation-review/native.mjs:27:8

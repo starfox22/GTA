@@ -1,0 +1,151 @@
+{
+  "kind": "Independent focused final aviation acceptance; no production source mutation/build/commit by QA agent",
+  "recordedAt": "2026-10-19T19:10:54.314088+00:00",
+  "candidate": {
+    "name": "candidate-4",
+    "baselineSourceCommit": "df75780a",
+    "monolithSha256": "5c3a03750020524e4097d04018faab69fda63fb847cd1067f7bbc52e7113c8ef",
+    "splitEntrySha256": "ddc04a6eef69d8930ca558a9f02ab1fb7fc4014efed2bbcc75b8113867714f07",
+    "sourceManifestSha256": "b608e5d6f5a9d3eff12dd38507120630fccb8f37b1f335e0afbbd06f87106452",
+    "sourceFiles": 652,
+    "allSourceFilesUnchangedDuringStandardRun": true
+  },
+  "host": {
+    "receipt": "host-final.json",
+    "modules": 3,
+    "assertions": 209,
+    "pass": true,
+    "sourceHashesMatchFinalManifest": true,
+    "tests": [
+      {
+        "name": "airport-architecture",
+        "assertions": 85,
+        "sha256": "c33a7b0d99ef9777cd4c2069ead70a90f2d30ea48660807bf6031c83d73b4df1"
+      },
+      {
+        "name": "airport-road-clearance",
+        "assertions": 31,
+        "sha256": "5eca4c226c7aa86885fe5fa439694f4f881a361bf1b93f347ff3185b4806980c"
+      },
+      {
+        "name": "parachute-camera",
+        "assertions": 93,
+        "sha256": "e51a1e58ab87e33cba8813b76321e07de8a68f91664d8046cf2ef8c98db781e0"
+      }
+    ]
+  },
+  "standard": {
+    "receipt": "standard-candidate4.json",
+    "selected": 7,
+    "passed": 7,
+    "failed": 0,
+    "skipped": 0,
+    "durationSeconds": 333.53,
+    "htmlUnchanged": true,
+    "modulesUnchanged": true,
+    "flags": "dev&norender; unseeded standard boot and module-declared fresh resets",
+    "viewport": [
+      960,
+      600
+    ],
+    "results": [
+      {
+        "status": "PASS",
+        "name": "airport-architecture",
+        "duration": "0.1s",
+        "detail": ""
+      },
+      {
+        "status": "PASS",
+        "name": "airport-road-clearance",
+        "duration": "2.0s",
+        "detail": ""
+      },
+      {
+        "status": "PASS",
+        "name": "chase-view-mode",
+        "duration": "0.8s",
+        "detail": ""
+      },
+      {
+        "status": "PASS",
+        "name": "parachute-camera",
+        "duration": "48.0s",
+        "detail": ""
+      },
+      {
+        "status": "PASS",
+        "name": "aircraft-taxi-takeoff",
+        "duration": "207.2s",
+        "detail": ""
+      },
+      {
+        "status": "PASS",
+        "name": "chase-move-keys",
+        "duration": "30.3s",
+        "detail": ""
+      },
+      {
+        "status": "PASS",
+        "name": "parachute",
+        "duration": "27.3s",
+        "detail": ""
+      }
+    ]
+  },
+  "hygiene": {
+    "receipt": "source-hygiene.json",
+    "checks": 7,
+    "pass": true
+  },
+  "readOnlyInspection": {
+    "blockersFound": [],
+    "airport": "Smooth sloped geometry is contained by conservative shared overhead slabs; high-body and support negative collisions retained; ordinary-car/bus/truck/ambulance lane sweeps clear the new structures.",
+    "camera": "Expanded canopy framing is phase-aware; faster extension applies only while opening. Freefall/foot/aircraft targets and ordinary4m/s wall release remain verified. Wall pull-in still takes priority."
+  },
+  "browserClosed": true,
+  "limits": [
+    "Focused follow-up, not a repeat of the earlier whole12 or broad208 selection.",
+    "Production host camera framing uses default user zoom/open level site; collision takes priority near walls and native appearance/FPS are separate.",
+    "Airport road SAT fixture checks new architecture collision plans, not a complete live road-traffic simulation. Actual parked-aircraft taxi/takeoff is separately covered by the standard browser module.",
+    "The earlier actualDOMJ main/cutaway/reserve/landing/reset receipt remains candidate2 evidence under ../qa/ and is not relabelled onto candidate4.",
+    "Root/native models agent owns final rendered photographs and their review."
+  ],
+  "files": [
+    {
+      "file": "README.md",
+      "sha256": "e156b906713d8d1531bc2700a8933e8be3e24c61ddcb875cf637db072e276a27",
+      "bytes": 2857
+    },
+    {
+      "file": "host-check.mjs",
+      "sha256": "02707a3c1f92827c65909adc8fc3a509431eda572896230c50c6370cb4a848c7",
+      "bytes": 1805
+    },
+    {
+      "file": "host-airport.json",
+      "sha256": "2979258cb3c31d962dbf76f298654275e5a9e88dbc3e606fdb4afa390b6ae66c",
+      "bytes": 2602
+    },
+    {
+      "file": "host-final.json",
+      "sha256": "363d781b080fb68b2200b43084005a004888f6c676f5959df8b3b1a05be7fef7",
+      "bytes": 4845
+    },
+    {
+      "file": "source-hygiene.json",
+      "sha256": "66e8739ef1da40cb7eb1d7538bf4e24f28d63071a48f279fc4b3b7b8bef5aa6c",
+      "bytes": 2259
+    },
+    {
+      "file": "standard-candidate4.json",
+      "sha256": "ece49fdfc239831696a2e536dcc3d175a642b0c491a641f32006786fb8274d7b",
+      "bytes": 3136
+    },
+    {
+      "file": "standard-candidate4.log",
+      "sha256": "9a2c9f02dca5730b37ebbc1b24bf7469939646d71aae25c1528500727d509705",
+      "bytes": 6504
+    }
+  ]
+}

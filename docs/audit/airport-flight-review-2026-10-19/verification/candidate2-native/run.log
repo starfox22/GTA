@@ -1,0 +1,16 @@
+BOOT candidate2 31e92cd0e18e3dd44e99eea3d9ff10862cc0bceb69d2b6fc7a5ce7e8d3b44a6d
+READY
+CAPTURE 01-southport-airport {"far":225}
+CAPTURE 02-oceanview-airport {"far":225}
+CAPTURE 07-southport-terminal {"far":225}
+CAPTURE 08-oceanview-terminal {"far":225}
+CAPTURE 03-courier-exterior {"far":225}
+CAPTURE 04-airliner-exterior {"far":225}
+CAPTURE 05-city-flight-180m {"far":225}
+CAPTURE 06-city-flight-600m {"far":225}
+CAPTURE 09-overhead-flight-haze {"far":225}
+CAPTURE 10-city-flight-dusk {"far":225}
+CAPTURE 11-main-parachute {"far":225}
+CAPTURE 12-main-cutaway {"far":225}
+CAPTURE 13-reserve-parachute {"far":225}
+COMPLETE {"pass":true,"captures":13,"errors":[]}

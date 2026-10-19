@@ -1,0 +1,6 @@
+BOOT palette-release 2eada5957fbf646a719dc21e27c5801aa1429eb812a19ea905b3484a3fef4df4
+READY
+CAPTURE 10-main-parachute {"far":225}
+CAPTURE 11-main-cutaway {"far":225}
+CAPTURE 12-reserve-parachute {"far":225}
+COMPLETE {"pass":true,"captures":3,"errors":[]}

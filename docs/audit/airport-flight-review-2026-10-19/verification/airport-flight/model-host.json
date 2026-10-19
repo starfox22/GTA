@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "assertions": 4149,
+  "notes": [
+    "actual procedural solid-mesh bounds: {\"courier\":{\"min\":[-54.900001525878906,0,-51.84080123901367],\"max\":[52.10000038146973,35.900001525878906,51.84080123901367],\"vertices\":11468},\"airliner\":{\"min\":[-115,0,-76.02799987792969],\"max\":[107,66.5,76.02799987792969],\"vertices\":14427}}",
+    "oceanview-courier: 51.6 s taxi, 1127.5 m runway remaining",
+    "oceanview-west: 51.4 s taxi, 938.6 m runway remaining",
+    "oceanview-mid: 51.4 s taxi, 1032.4 m runway remaining",
+    "oceanview-east: 58.4 s taxi, 1196.1 m runway remaining",
+    "southport-1: 54.8 s taxi, 434.8 m runway remaining",
+    "southport-2: 76.0 s taxi, 434.8 m runway remaining",
+    "southport-3: 127.4 s taxi, 434.6 m runway remaining",
+    "take-off model: [{\"frame\":\"skyhawk\",\"hz\":60,\"rollM\":324.7,\"kmh\":102.2},{\"frame\":\"courier\",\"hz\":60,\"rollM\":285.7,\"kmh\":115},{\"frame\":\"jet\",\"hz\":60,\"rollM\":618.8,\"kmh\":180.2},{\"frame\":\"airliner\",\"hz\":60,\"rollM\":1055.9,\"kmh\":210.3},{\"frame\":\"skyhawk\",\"hz\":120,\"rollM\":321.6,\"kmh\":101.8},{\"frame\":\"courier\",\"hz\":120,\"rollM\":288.6,\"kmh\":115.5},{\"frame\":\"jet\",\"hz\":120,\"rollM\":618.4,\"kmh\":180.2},{\"frame\":\"airliner\",\"hz\":120,\"rollM\":1055.3,\"kmh\":210.3}]"
+  ]
+}

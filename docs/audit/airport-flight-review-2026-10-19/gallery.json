@@ -1,0 +1,81 @@
+{
+  "title": "Dead End City \u2014 airports, aircraft and parachute reserve",
+  "introduction": "Native, unedited High screenshots of the airport, aircraft, longer flight horizon and J cutaway/reserve changes. Scenes use explicit inspection staging rather than ordinary mission completion. Main and reserve poses receive normal rendered warmup before capture; the audit records inputs and exact source hashes. Earlier vehicle and mission reviews remain linked below.",
+  "comparisons": [
+    {
+      "title": "Courier: solid exterior",
+      "description": "Corrected surface winding closes the fuselage and its end caps. Same airframe and camera setup; normal HUD and world time can differ.",
+      "before": "images/before-03-courier-exterior.png",
+      "after": "images/after-03-courier-exterior.png"
+    },
+    {
+      "title": "Airliner: enclosed body and engines",
+      "description": "Outward-facing fuselage and engine cowls replace see-through surfaces. Fan hubs and recessed internal walls give the inlets depth.",
+      "before": "images/before-04-airliner-exterior.png",
+      "after": "images/after-04-airliner-exterior.png"
+    },
+    {
+      "title": "High flight horizon: 600 m to 3 km",
+      "description": "Matched county approach at 180 m AGL. Merged distant scenery and height-aware haze extend the view while the near-detail radius stays 225 m.",
+      "before": "images/before-05-city-flight-180m.png",
+      "after": "images/after-05-city-flight-180m.png"
+    }
+  ],
+  "screenshots": [
+    {
+      "title": "Southport terminal",
+      "description": "Glazed facades, a layered roof, entrance canopy, control tower and apron stand markings. Native High inspection.",
+      "file": "images/after-01-southport-terminal.png"
+    },
+    {
+      "title": "Oceanview terminal and bridges",
+      "description": "Enclosed boarding bridges cross the road at 5 m, slope toward the aircraft doors and keep support feet outside the carriageway.",
+      "file": "images/after-02-oceanview-terminal.png"
+    },
+    {
+      "title": "Courier in three dimensions",
+      "description": "Native High chase inspection from the front quarter: enclosed fuselage, cockpit and landing gear.",
+      "file": "images/after-detail-01-courier-three-quarter-high.png"
+    },
+    {
+      "title": "Airliner exterior and inlets",
+      "description": "Native High chase inspection shows the closed body and recessed engine internals.",
+      "file": "images/after-detail-02-airliner-three-quarter-high.png"
+    },
+    {
+      "title": "County from 600 m",
+      "description": "High chase flight uses a 3 km atmospheric horizon with distant scenery merged into simpler geometry.",
+      "file": "images/after-06-city-flight-600m.png"
+    },
+    {
+      "title": "Coast and bridges",
+      "description": "High aerial view at 450 m: districts, bridges, terrain and ocean fade into the distance.",
+      "file": "images/after-08-city-flight-west.png"
+    },
+    {
+      "title": "Downtown approach",
+      "description": "A staged 300 m approach north toward the city. High settings use distant merged scenery and height-aware haze.",
+      "file": "images/after-detail-03-dense-city-north-300m-high.png"
+    },
+    {
+      "title": "Coast at dusk",
+      "description": "High flight at 400 m and 19:00, looking east across the coast. Atmospheric haze follows the directional sky color.",
+      "file": "images/after-09-downtown-dusk.png"
+    },
+    {
+      "title": "Main canopy fully open",
+      "description": "A physical J press opens the main. The adjusted chase camera frames the jumper, lines and full canopy together.",
+      "file": "images/after-release-10-main-parachute.png"
+    },
+    {
+      "title": "J cuts away the main",
+      "description": "Release J and press it again after opening: the main separates while the jumper keeps the same momentum and returns to freefall.",
+      "file": "images/after-release-11-main-cutaway.png"
+    },
+    {
+      "title": "J deploys the reserve",
+      "description": "Another release and fresh J press opens the white-and-teal reserve. Each rig carries one reserve; holding the key cannot chain actions.",
+      "file": "images/after-release-12-reserve-parachute.png"
+    }
+  ]
+}

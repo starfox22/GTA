@@ -1,0 +1,38 @@
+{
+  "kind": "Independent focused production-host review; actual t.near(value,lo,hi) contract; no native rendering or hardware FPS claim",
+  "startedAt": "2026-10-19T19:02:28.133Z",
+  "sourceHashes": {
+    "src/geography-regions.js": "6565f015a2817945ee41c42dd2bd8148986cdd7a7982ff8c0dc708ca02d29334",
+    "src/airport-terminal3d.js": "e4e40e3b38f7d12a976d00b195796028b133dfe37000de57d16da544273e3c25",
+    "src/chase-camera.js": "9a2a36ae260da78c1ae1b30cfdeea31389118e39381b2047881164f984dad231",
+    "src/parachute.js": "7ef34a896515fb0f6f8878937bac34ccf608ed9213ec331abaf03222bf8886da",
+    "src/parachute3d-canopy.js": "08bf0ce3fffaa5ab51a57f3f9d8a57c7c9ee5121a8e47c32c5a902249e86d94f",
+    "src/parachute3d-pose.js": "aa758ba24d3d242c1a28f9300b935aacd7003b53251fd9cbe2dd5b3b5c5e0963",
+    "src/parachute3d-rigging.js": "0f24aada7179850a4e25c95776f45950266b197100db0ac60aa7cd5eef32d2ae",
+    "src/parachute3d-cutaway.js": "3fed831f891454ab8a040b1282d441c3b20650cafe72f961bdcd52453950c656"
+  },
+  "tests": [
+    {
+      "name": "airport-architecture",
+      "sha256": "c33a7b0d99ef9777cd4c2069ead70a90f2d30ea48660807bf6031c83d73b4df1",
+      "assertions": 85,
+      "notes": [
+        "{\"bridges\":2,\"overheadVolumes\":32,\"bridgeMeshes\":170,\"checkedBridgeVertices\":4040,\"mergedMaterials\":12,\"drawnSupportFootprints\":9}"
+      ],
+      "pass": true
+    },
+    {
+      "name": "airport-road-clearance",
+      "sha256": "5eca4c226c7aa86885fe5fa439694f4f881a361bf1b93f347ff3185b4806980c",
+      "assertions": 31,
+      "notes": [
+        "{\"routes\":[{\"type\":\"sedan\",\"direction\":-1,\"samples\":347,\"blockedSamples\":0,\"firstCollision\":null},{\"type\":\"bus\",\"direction\":-1,\"samples\":347,\"blockedSamples\":0,\"firstCollision\":null},{\"type\":\"truck\",\"direction\":-1,\"samples\":347,\"blockedSamples\":0,\"firstCollision\":null},{\"type\":\"ambulance\",\"direction\":-1,\"samples\":347,\"blockedSamples\":0,\"firstCollision\":null},{\"type\":\"sedan\",\"direction\":1,\"samples\":347,\"blockedSamples\":0,\"firstCollision\":null},{\"type\":\"bus\",\"direction\":1,\"samples\":347,\"blockedSamples\":0,\"firstCollision\":null},{\"type\":\"truck\",\"direction\":1,\"samples\":347,\"blockedSamples\":0,\"firstCollision\":null},{\"type\":\"ambulance\",\"direction\":1,\"samples\":347,\"blockedSamples\":0,\"firstCollision\":null}],\"samples\":2776,\"collisionHeights\":{\"sedan\":32,\"bus\":32,\"truck\":32,\"ambulance\":32}}"
+      ],
+      "pass": true
+    }
+  ],
+  "finishedAt": "2026-10-19T19:02:28.810Z",
+  "assertions": 116,
+  "sourceChangedDuringRun": [],
+  "pass": true
+}

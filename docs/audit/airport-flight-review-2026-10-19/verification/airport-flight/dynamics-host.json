@@ -1,0 +1,413 @@
+{
+  "label": "current flight changes",
+  "status": "PASS",
+  "assertions": 196,
+  "failedAssertions": 0,
+  "failures": [],
+  "results": {
+    "glides": [
+      {
+        "frame": "skyhawk",
+        "hz": 30,
+        "speedKmh": 116.59071045399739,
+        "minKmh": 114.13744497720698,
+        "altitudeM": 334.233116867891,
+        "sinkMps": -3.269985708077096,
+        "stallSeconds": 0,
+        "warningSeconds": 0,
+        "initialEnergyJperKg": 7721.147222222223,
+        "finalEnergyJperKg": 3803.2633642891287,
+        "maxEnergyGainJperKg": -2.985402042253554
+      },
+      {
+        "frame": "courier",
+        "hz": 30,
+        "speedKmh": 129.40795029758777,
+        "minKmh": 125.60045522664242,
+        "altitudeM": 410.30455304827956,
+        "sinkMps": -3.214540208549112,
+        "stallSeconds": 0,
+        "warningSeconds": 0,
+        "initialEnergyJperKg": 9082.065432098765,
+        "finalEnergyJperKg": 4671.16859133815,
+        "maxEnergyGainJperKg": -2.8908567740099897
+      },
+      {
+        "frame": "jet",
+        "hz": 30,
+        "speedKmh": 203.63487061686666,
+        "minKmh": 198.85683061169118,
+        "altitudeM": 482.35649585540654,
+        "sinkMps": -4.678713574752279,
+        "stallSeconds": 0,
+        "warningSeconds": 0,
+        "initialEnergyJperKg": 13804.287654320988,
+        "finalEnergyJperKg": 6331.730516438299,
+        "maxEnergyGainJperKg": -4.178759300438287
+      },
+      {
+        "frame": "airliner",
+        "hz": 30,
+        "speedKmh": 236.22207233279593,
+        "minKmh": 231.32641269410445,
+        "altitudeM": 468.64494778765993,
+        "sinkMps": -5.3838706340328155,
+        "stallSeconds": 0,
+        "warningSeconds": 0,
+        "initialEnergyJperKg": 14483.3,
+        "finalEnergyJperKg": 6750.218182287711,
+        "maxEnergyGainJperKg": -4.739555574311453
+      },
+      {
+        "frame": "skyhawk",
+        "hz": 60,
+        "speedKmh": 116.59071045911531,
+        "minKmh": 114.11403127241013,
+        "altitudeM": 334.277358187808,
+        "sinkMps": -3.269985723822549,
+        "stallSeconds": 0,
+        "warningSeconds": 0,
+        "initialEnergyJperKg": 7721.147222222223,
+        "finalEnergyJperKg": 3803.6973716835564,
+        "maxEnergyGainJperKg": -2.977663051800846
+      },
+      {
+        "frame": "courier",
+        "hz": 60,
+        "speedKmh": 129.4080248383136,
+        "minKmh": 125.57049587104284,
+        "altitudeM": 410.36661518157274,
+        "sinkMps": -3.214563147391751,
+        "stallSeconds": 0,
+        "warningSeconds": 0,
+        "initialEnergyJperKg": 9082.065432098765,
+        "finalEnergyJperKg": 4671.7781651686355,
+        "maxEnergyGainJperKg": -2.8822725185964373
+      },
+      {
+        "frame": "jet",
+        "hz": 60,
+        "speedKmh": 203.6316861875385,
+        "minKmh": 198.8254047580797,
+        "altitudeM": 482.4673339188278,
+        "sinkMps": -4.684068100048063,
+        "stallSeconds": 0,
+        "warningSeconds": 0,
+        "initialEnergyJperKg": 13804.287654320988,
+        "finalEnergyJperKg": 6332.767802671948,
+        "maxEnergyGainJperKg": -4.170968386883942
+      },
+      {
+        "frame": "airliner",
+        "hz": 60,
+        "speedKmh": 236.2035107541582,
+        "minKmh": 231.29416382855553,
+        "altitudeM": 468.7738116638011,
+        "sinkMps": -5.380410571782803,
+        "stallSeconds": 0,
+        "warningSeconds": 0,
+        "initialEnergyJperKg": 14483.3,
+        "finalEnergyJperKg": 6751.144028092789,
+        "maxEnergyGainJperKg": -4.731768976957028
+      },
+      {
+        "frame": "skyhawk",
+        "hz": 120,
+        "speedKmh": 116.59071045812094,
+        "minKmh": 114.10202533143493,
+        "altitudeM": 334.2994873528478,
+        "sinkMps": -3.269985732884736,
+        "stallSeconds": 0,
+        "warningSeconds": 0,
+        "initialEnergyJperKg": 7721.147222222223,
+        "finalEnergyJperKg": 3803.9144587836513,
+        "maxEnergyGainJperKg": -2.9738100503100213
+      },
+      {
+        "frame": "courier",
+        "hz": 120,
+        "speedKmh": 129.40805894201614,
+        "minKmh": 125.55614359138767,
+        "altitudeM": 410.3976619929548,
+        "sinkMps": -3.21457756621899,
+        "stallSeconds": 0,
+        "warningSeconds": 0,
+        "initialEnergyJperKg": 9082.065432098765,
+        "finalEnergyJperKg": 4672.08307492019,
+        "maxEnergyGainJperKg": -2.8779814824702044
+      },
+      {
+        "frame": "jet",
+        "hz": 120,
+        "speedKmh": 203.62981874050897,
+        "minKmh": 198.8101160379157,
+        "altitudeM": 482.52334640168016,
+        "sinkMps": -4.686753652881741,
+        "stallSeconds": 0,
+        "warningSeconds": 0,
+        "initialEnergyJperKg": 13804.287654320988,
+        "finalEnergyJperKg": 6333.287943335225,
+        "maxEnergyGainJperKg": -4.167077481715751
+      },
+      {
+        "frame": "airliner",
+        "hz": 120,
+        "speedKmh": 236.19428668773244,
+        "minKmh": 231.27840367590298,
+        "altitudeM": 468.8380369585434,
+        "sinkMps": -5.378533018816408,
+        "stallSeconds": 0,
+        "warningSeconds": 0,
+        "initialEnergyJperKg": 14483.3,
+        "finalEnergyJperKg": 6751.605967560485,
+        "maxEnergyGainJperKg": -4.727916701525828
+      }
+    ],
+    "turns": [
+      {
+        "frame": "skyhawk",
+        "hz": 30,
+        "speedKmh": 194.87040235623513,
+        "bankRad": 1.0000000000000009,
+        "altitudeM": 450.40588048841687,
+        "measuredYaw": 0.27960579804840346,
+        "physicalYaw": 0.28223130778568656,
+        "gLoad": 1.8255885721010638
+      },
+      {
+        "frame": "courier",
+        "hz": 30,
+        "speedKmh": 319.7723842059753,
+        "bankRad": 1.0000000000000013,
+        "altitudeM": 450.5293599982003,
+        "measuredYaw": 0.17312927287258056,
+        "physicalYaw": 0.17201817677297038,
+        "gLoad": 1.8627114759400878
+      },
+      {
+        "frame": "jet",
+        "hz": 30,
+        "speedKmh": 581.8702868315647,
+        "bankRad": 0.9200000000000004,
+        "altitudeM": 452.1057158285868,
+        "measuredYaw": 0.08064971328864079,
+        "physicalYaw": 0.0797242762652457,
+        "gLoad": 1.669860293621276
+      },
+      {
+        "frame": "airliner",
+        "hz": 30,
+        "speedKmh": 651.6881189883694,
+        "bankRad": 0.7800000000000002,
+        "altitudeM": 452.7542153559477,
+        "measuredYaw": 0.05419808557063588,
+        "physicalYaw": 0.05361894710788871,
+        "gLoad": 1.4218031762898913
+      },
+      {
+        "frame": "skyhawk",
+        "hz": 60,
+        "speedKmh": 194.87269006990238,
+        "bankRad": 1.0000000000000007,
+        "altitudeM": 450.41827553540395,
+        "measuredYaw": 0.27960398203371817,
+        "physicalYaw": 0.2822279996399747,
+        "gLoad": 1.8255904582727926
+      },
+      {
+        "frame": "courier",
+        "hz": 60,
+        "speedKmh": 319.7579616001706,
+        "bankRad": 1.0000000000000004,
+        "altitudeM": 450.6290561062245,
+        "measuredYaw": 0.1731354404540117,
+        "physicalYaw": 0.17202595362537923,
+        "gLoad": 1.8627084459476
+      },
+      {
+        "frame": "jet",
+        "hz": 60,
+        "speedKmh": 581.8412404559746,
+        "bankRad": 0.9199999999999999,
+        "altitudeM": 452.3004740363765,
+        "measuredYaw": 0.08065215213278965,
+        "physicalYaw": 0.07972826083621329,
+        "gLoad": 1.6698573292550858
+      },
+      {
+        "frame": "airliner",
+        "hz": 60,
+        "speedKmh": 651.6578919391849,
+        "bankRad": 0.7799999999999998,
+        "altitudeM": 452.94638896965967,
+        "measuredYaw": 0.054199748112639945,
+        "physicalYaw": 0.053621436740806556,
+        "gLoad": 1.421801437155199
+      },
+      {
+        "frame": "skyhawk",
+        "hz": 120,
+        "speedKmh": 194.87373354297677,
+        "bankRad": 1.0000000000000002,
+        "altitudeM": 450.42452848670695,
+        "measuredYaw": 0.279603209051853,
+        "physicalYaw": 0.282226491481794,
+        "gLoad": 1.8255913260466445
+      },
+      {
+        "frame": "courier",
+        "hz": 120,
+        "speedKmh": 319.75073528627894,
+        "bankRad": 1.0000000000000004,
+        "altitudeM": 450.6788484852084,
+        "measuredYaw": 0.17313853128381101,
+        "physicalYaw": 0.17202985041151128,
+        "gLoad": 1.8627069235122946
+      },
+      {
+        "frame": "jet",
+        "hz": 120,
+        "speedKmh": 581.8267921227133,
+        "bankRad": 0.9199999999999996,
+        "altitudeM": 452.39766486983086,
+        "measuredYaw": 0.0806533612076521,
+        "physicalYaw": 0.07973024298992702,
+        "gLoad": 1.6698558447342238
+      },
+      {
+        "frame": "airliner",
+        "hz": 120,
+        "speedKmh": 651.6428876541823,
+        "bankRad": 0.7799999999999998,
+        "altitudeM": 453.04238922188716,
+        "measuredYaw": 0.05420057034164483,
+        "physicalYaw": 0.05362267263876319,
+        "gLoad": 1.4218005676099081
+      }
+    ],
+    "stalls": [
+      {
+        "frame": "skyhawk",
+        "recoveredAltitudeM": 507.51208297834705,
+        "recoveredKmh": 208.42158569609418,
+        "recoveredAngleOfAttack": 0.01877635213508571
+      },
+      {
+        "frame": "courier",
+        "recoveredAltitudeM": 523.5096977045367,
+        "recoveredKmh": 226.10661671047475,
+        "recoveredAngleOfAttack": 0.014663413089121773
+      },
+      {
+        "frame": "jet",
+        "recoveredAltitudeM": 598.3228181012946,
+        "recoveredKmh": 252.57299238684428,
+        "recoveredAngleOfAttack": 0.08728363435301209
+      },
+      {
+        "frame": "airliner",
+        "recoveredAltitudeM": 608.8609103144355,
+        "recoveredKmh": 266.1944538560802,
+        "recoveredAngleOfAttack": 0.1156338653820648
+      }
+    ],
+    "approaches": [
+      {
+        "frame": "skyhawk",
+        "hz": 30,
+        "speedKmh": 99.45540401131204,
+        "sinkMps": -2.834217237014027,
+        "altitudeM": 592.2186126830331,
+        "stallMargin": 1.3645157346483903
+      },
+      {
+        "frame": "courier",
+        "hz": 30,
+        "speedKmh": 110.51311166587999,
+        "sinkMps": -2.54078318722863,
+        "altitudeM": 614.5330463165316,
+        "stallMargin": 1.317896319795803
+      },
+      {
+        "frame": "jet",
+        "hz": 30,
+        "speedKmh": 174.61722597777984,
+        "sinkMps": -3.8486824722451654,
+        "altitudeM": 627.0513746064115,
+        "stallMargin": 1.3261593064255652
+      },
+      {
+        "frame": "airliner",
+        "hz": 30,
+        "speedKmh": 200.92814070487694,
+        "sinkMps": -5.525163528846543,
+        "altitudeM": 625.4286231139115,
+        "stallMargin": 1.3103308100584086
+      },
+      {
+        "frame": "skyhawk",
+        "hz": 60,
+        "speedKmh": 99.45571771428388,
+        "sinkMps": -2.833719194709842,
+        "altitudeM": 592.2581536835329,
+        "stallMargin": 1.364518852331694
+      },
+      {
+        "frame": "courier",
+        "hz": 60,
+        "speedKmh": 110.50818107521394,
+        "sinkMps": -2.54414211537787,
+        "altitudeM": 614.577651787962,
+        "stallMargin": 1.3178431270743778
+      },
+      {
+        "frame": "jet",
+        "hz": 60,
+        "speedKmh": 174.60493563102676,
+        "sinkMps": -3.862557738467933,
+        "altitudeM": 627.1376390127513,
+        "stallMargin": 1.326078652012572
+      },
+      {
+        "frame": "airliner",
+        "hz": 60,
+        "speedKmh": 200.87964627257494,
+        "sinkMps": -5.530942846961502,
+        "altitudeM": 625.5964315568407,
+        "stallMargin": 1.310020825414285
+      },
+      {
+        "frame": "skyhawk",
+        "hz": 120,
+        "speedKmh": 99.45591571518104,
+        "sinkMps": -2.833468853321515,
+        "altitudeM": 592.2778941528803,
+        "stallMargin": 1.364520971286297
+      },
+      {
+        "frame": "courier",
+        "hz": 120,
+        "speedKmh": 110.50546859297883,
+        "sinkMps": -2.545782171783733,
+        "altitudeM": 614.6001898456436,
+        "stallMargin": 1.3178135301181582
+      },
+      {
+        "frame": "jet",
+        "hz": 120,
+        "speedKmh": 174.59846356374132,
+        "sinkMps": -3.8694374146150476,
+        "altitudeM": 627.1813485324875,
+        "stallMargin": 1.3260358046814147
+      },
+      {
+        "frame": "airliner",
+        "hz": 120,
+        "speedKmh": 200.85526274483288,
+        "sinkMps": -5.533648244664095,
+        "altitudeM": 625.6804464546282,
+        "stallMargin": 1.3098648031620963
+      }
+    ]
+  }
+}

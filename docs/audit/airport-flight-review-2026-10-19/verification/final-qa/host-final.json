@@ -1,0 +1,54 @@
+{
+  "kind": "Independent focused production-host review; actual t.near(value,lo,hi) contract; no native rendering or hardware FPS claim",
+  "startedAt": "2026-10-19T19:03:43.855Z",
+  "sourceHashes": {
+    "src/geography-regions.js": "6565f015a2817945ee41c42dd2bd8148986cdd7a7982ff8c0dc708ca02d29334",
+    "src/airport-terminal3d.js": "e4e40e3b38f7d12a976d00b195796028b133dfe37000de57d16da544273e3c25",
+    "src/chase-camera.js": "56936e7a0c368833617f4e1d131bc5563ea1ec68f9fd91061919f681b8b231bf",
+    "src/parachute.js": "7ef34a896515fb0f6f8878937bac34ccf608ed9213ec331abaf03222bf8886da",
+    "src/parachute3d-canopy.js": "08bf0ce3fffaa5ab51a57f3f9d8a57c7c9ee5121a8e47c32c5a902249e86d94f",
+    "src/parachute3d-pose.js": "aa758ba24d3d242c1a28f9300b935aacd7003b53251fd9cbe2dd5b3b5c5e0963",
+    "src/parachute3d-rigging.js": "0f24aada7179850a4e25c95776f45950266b197100db0ac60aa7cd5eef32d2ae",
+    "src/parachute3d-cutaway.js": "3fed831f891454ab8a040b1282d441c3b20650cafe72f961bdcd52453950c656"
+  },
+  "tests": [
+    {
+      "name": "airport-architecture",
+      "sha256": "c33a7b0d99ef9777cd4c2069ead70a90f2d30ea48660807bf6031c83d73b4df1",
+      "assertions": 85,
+      "notes": [
+        "{\"bridges\":2,\"overheadVolumes\":32,\"bridgeMeshes\":170,\"checkedBridgeVertices\":4040,\"mergedMaterials\":12,\"drawnSupportFootprints\":9}"
+      ],
+      "pass": true
+    },
+    {
+      "name": "airport-road-clearance",
+      "sha256": "5eca4c226c7aa86885fe5fa439694f4f881a361bf1b93f347ff3185b4806980c",
+      "assertions": 31,
+      "notes": [
+        "{\"routes\":[{\"type\":\"sedan\",\"direction\":-1,\"samples\":347,\"blockedSamples\":0,\"firstCollision\":null},{\"type\":\"bus\",\"direction\":-1,\"samples\":347,\"blockedSamples\":0,\"firstCollision\":null},{\"type\":\"truck\",\"direction\":-1,\"samples\":347,\"blockedSamples\":0,\"firstCollision\":null},{\"type\":\"ambulance\",\"direction\":-1,\"samples\":347,\"blockedSamples\":0,\"firstCollision\":null},{\"type\":\"sedan\",\"direction\":1,\"samples\":347,\"blockedSamples\":0,\"firstCollision\":null},{\"type\":\"bus\",\"direction\":1,\"samples\":347,\"blockedSamples\":0,\"firstCollision\":null},{\"type\":\"truck\",\"direction\":1,\"samples\":347,\"blockedSamples\":0,\"firstCollision\":null},{\"type\":\"ambulance\",\"direction\":1,\"samples\":347,\"blockedSamples\":0,\"firstCollision\":null}],\"samples\":2776,\"collisionHeights\":{\"sedan\":32,\"bus\":32,\"truck\":32,\"ambulance\":32}}"
+      ],
+      "pass": true
+    },
+    {
+      "name": "parachute-camera",
+      "sha256": "e51a1e58ab87e33cba8813b76321e07de8a68f91664d8046cf2ef8c98db781e0",
+      "assertions": 93,
+      "notes": [
+        "{\"width\":1000,\"height\":700,\"canopy\":\"main\",\"boomM\":12,\"pivotM\":3.7000000000000455,\"bounds\":{\"left\":285.51062184645787,\"right\":713.1940249128617,\"top\":123.04943892761887,\"bottom\":559.5598187728813,\"behind\":false}}",
+        "{\"width\":1000,\"height\":700,\"canopy\":\"reserve\",\"boomM\":12,\"pivotM\":3.7000000000000455,\"bounds\":{\"left\":284.5871765363697,\"right\":708.7776146965346,\"top\":123.49556605099764,\"bottom\":559.5598187728813,\"behind\":false}}",
+        "{\"width\":960,\"height\":600,\"canopy\":\"main\",\"boomM\":12,\"pivotM\":3.7000000000000455,\"bounds\":{\"left\":292.368805429326,\"right\":660.7802689148814,\"top\":104.30541920938745,\"bottom\":479.6227018053268,\"behind\":false}}",
+        "{\"width\":960,\"height\":600,\"canopy\":\"reserve\",\"boomM\":12,\"pivotM\":3.7000000000000455,\"bounds\":{\"left\":294.9707406360483,\"right\":658.0714096220747,\"top\":104.64119923980383,\"bottom\":479.6227018053268,\"behind\":false}}",
+        "{\"width\":390,\"height\":844,\"canopy\":\"main\",\"boomM\":21.793888998858414,\"pivotM\":3.7000000000000455,\"bounds\":{\"left\":61.06749419982552,\"right\":324.3852780591599,\"top\":289.33469557446244,\"bottom\":560.3311004989833,\"behind\":false}}",
+        "{\"width\":390,\"height\":844,\"canopy\":\"reserve\",\"boomM\":21.793888998858414,\"pivotM\":3.7000000000000455,\"bounds\":{\"left\":61.59883516924023,\"right\":323.3649177683046,\"top\":288.98101917541385,\"bottom\":560.3311004989833,\"behind\":false}}",
+        "{\"width\":360,\"height\":800,\"canopy\":\"main\",\"boomM\":22.346281519349482,\"pivotM\":3.7000000000000455,\"bounds\":{\"left\":56.5233855210615,\"right\":299.0653248734299,\"top\":277.5183974062386,\"bottom\":527.8562536675178,\"behind\":false}}",
+        "{\"width\":360,\"height\":800,\"canopy\":\"reserve\",\"boomM\":22.346281519349482,\"pivotM\":3.7000000000000455,\"bounds\":{\"left\":56.24422490956768,\"right\":298.7823698797532,\"top\":276.85467826236606,\"bottom\":527.8562536675178,\"behind\":false}}"
+      ],
+      "pass": true
+    }
+  ],
+  "finishedAt": "2026-10-19T19:04:33.943Z",
+  "assertions": 209,
+  "sourceChangedDuringRun": [],
+  "pass": true
+}

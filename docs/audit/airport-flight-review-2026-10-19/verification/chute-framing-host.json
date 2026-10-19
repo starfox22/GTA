@@ -1,0 +1,130 @@
+{
+  "test": "parachute-camera",
+  "kind": "production physics, Three.js meshes and camera projection host; no WebGL",
+  "passed": 93,
+  "failed": 0,
+  "failures": [],
+  "sources": {
+    "src/chase-camera.js": "56936e7a0c368833617f4e1d131bc5563ea1ec68f9fd91061919f681b8b231bf",
+    "src/parachute.js": "7ef34a896515fb0f6f8878937bac34ccf608ed9213ec331abaf03222bf8886da",
+    "src/parachute3d-canopy.js": "08bf0ce3fffaa5ab51a57f3f9d8a57c7c9ee5121a8e47c32c5a902249e86d94f",
+    "src/parachute3d-pose.js": "aa758ba24d3d242c1a28f9300b935aacd7003b53251fd9cbe2dd5b3b5c5e0963",
+    "src/parachute3d-rigging.js": "0f24aada7179850a4e25c95776f45950266b197100db0ac60aa7cd5eef32d2ae",
+    "src/parachute3d-cutaway.js": "3fed831f891454ab8a040b1282d441c3b20650cafe72f961bdcd52453950c656",
+    "tools/tests/parachute-camera.mjs": "e51a1e58ab87e33cba8813b76321e07de8a68f91664d8046cf2ef8c98db781e0"
+  },
+  "facts": [
+    {
+      "width": 1000,
+      "height": 700,
+      "canopy": "main",
+      "boomM": 12,
+      "pivotM": 3.7000000000000455,
+      "bounds": {
+        "left": 285.51062184645787,
+        "right": 713.1940249128617,
+        "top": 123.04943892761887,
+        "bottom": 559.5598187728813,
+        "behind": false
+      }
+    },
+    {
+      "width": 1000,
+      "height": 700,
+      "canopy": "reserve",
+      "boomM": 12,
+      "pivotM": 3.7000000000000455,
+      "bounds": {
+        "left": 284.5871765363697,
+        "right": 708.7776146965346,
+        "top": 123.49556605099764,
+        "bottom": 559.5598187728813,
+        "behind": false
+      }
+    },
+    {
+      "width": 960,
+      "height": 600,
+      "canopy": "main",
+      "boomM": 12,
+      "pivotM": 3.7000000000000455,
+      "bounds": {
+        "left": 292.368805429326,
+        "right": 660.7802689148814,
+        "top": 104.30541920938745,
+        "bottom": 479.6227018053268,
+        "behind": false
+      }
+    },
+    {
+      "width": 960,
+      "height": 600,
+      "canopy": "reserve",
+      "boomM": 12,
+      "pivotM": 3.7000000000000455,
+      "bounds": {
+        "left": 294.9707406360483,
+        "right": 658.0714096220747,
+        "top": 104.64119923980383,
+        "bottom": 479.6227018053268,
+        "behind": false
+      }
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "canopy": "main",
+      "boomM": 21.793888998858414,
+      "pivotM": 3.7000000000000455,
+      "bounds": {
+        "left": 61.06749419982552,
+        "right": 324.3852780591599,
+        "top": 289.33469557446244,
+        "bottom": 560.3311004989833,
+        "behind": false
+      }
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "canopy": "reserve",
+      "boomM": 21.793888998858414,
+      "pivotM": 3.7000000000000455,
+      "bounds": {
+        "left": 61.59883516924023,
+        "right": 323.3649177683046,
+        "top": 288.98101917541385,
+        "bottom": 560.3311004989833,
+        "behind": false
+      }
+    },
+    {
+      "width": 360,
+      "height": 800,
+      "canopy": "main",
+      "boomM": 22.346281519349482,
+      "pivotM": 3.7000000000000455,
+      "bounds": {
+        "left": 56.5233855210615,
+        "right": 299.0653248734299,
+        "top": 277.5183974062386,
+        "bottom": 527.8562536675178,
+        "behind": false
+      }
+    },
+    {
+      "width": 360,
+      "height": 800,
+      "canopy": "reserve",
+      "boomM": 22.346281519349482,
+      "pivotM": 3.7000000000000455,
+      "bounds": {
+        "left": 56.24422490956768,
+        "right": 298.7823698797532,
+        "top": 276.85467826236606,
+        "bottom": 527.8562536675178,
+        "behind": false
+      }
+    }
+  ]
+}

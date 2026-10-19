@@ -1,0 +1,4176 @@
+{
+  "label": "palette-release",
+  "htmlSha256": "2eada5957fbf646a719dc21e27c5801aa1429eb812a19ea905b3484a3fef4df4",
+  "recorderSha256": "9390a4c1245e492b544e2e2592bac902e15d948c5bb68754914db5e15c849a77",
+  "fixture": {
+    "flags": "dev&seed=1&hold&shadercheck",
+    "viewport": [
+      1000,
+      700
+    ],
+    "quality": "high",
+    "clock": 13,
+    "weather": "clear",
+    "renderWarmup": "Main and reserve use .8 simulated seconds of real Low rendering before returning to High; no pose injection. Cutaway captured .12 simulated seconds after edge.",
+    "kind": "Focused physical J main/cutaway/reserve presentation check; skipped opening draws reproduce the palette defect; not ordinary mission completion"
+  },
+  "captures": [
+    {
+      "file": "10-main-parachute.png",
+      "sha256": "7e387256c07d9e143034035d0771ed0de2d23550323d1b330a15553d98af5d9a",
+      "scene": {
+        "input": "physical J held through main inflation",
+        "expected": "main open"
+      },
+      "status": {
+        "mode": "play",
+        "x": 3383,
+        "y": 3470,
+        "district": "EXCHANGE DISTRICT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "13:07",
+        "renderer": "3d",
+        "vehicles": 285,
+        "pedestrians": 612
+      },
+      "quality": {
+        "setting": "high",
+        "tier": "HIGH",
+        "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "hdr": true,
+        "shadowMap": 3072,
+        "pixelRatio": 1,
+        "renderScale": 1,
+        "shadows": "high",
+        "shadowSetting": "auto",
+        "adaptive": {
+          "averageFrameMs": 0,
+          "tierDrops": 0,
+          "ceiling": 1,
+          "holdSeconds": 0
+        }
+      },
+      "camera": {
+        "zoom": 1.95,
+        "target": 2,
+        "context": 0.975,
+        "slowFraming": false,
+        "vehicleContext": null,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 0.975,
+        "framed": 1.95,
+        "aim": 1.95,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 30.5,
+        "personPx": 26,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 4,
+          "accel": {
+            "rms": 0.231,
+            "peak": 0.527
+          },
+          "jerk": {
+            "rms": 0.55,
+            "peak": 1.74
+          },
+          "zoomRate": {
+            "rms": 0.05,
+            "peak": 0.15
+          },
+          "jolt": 0.0043,
+          "drift": {
+            "peak": 0.062,
+            "swing": 0.031
+          }
+        }
+      },
+      "chase": {
+        "mode": "chase",
+        "live": true,
+        "ready": true,
+        "locked": false,
+        "position": [
+          3288.3,
+          3469.5,
+          9008
+        ],
+        "pivot": [
+          3383,
+          3469.5,
+          8992.7
+        ],
+        "yawDeg": 0,
+        "pitchDeg": 9,
+        "lookYawDeg": 0,
+        "fov": 56,
+        "boomMetres": 12,
+        "wantMetres": 12,
+        "heightMetres": 1126,
+        "aiming": 0,
+        "behind": false,
+        "craneMetres": 0,
+        "lockOn": null,
+        "aimAssist": true,
+        "speedBlend": 0,
+        "zoom": 1,
+        "aim": {
+          "metres": 35.2,
+          "at": [
+            3566.4,
+            3469.5,
+            8963.1
+          ],
+          "hit": null,
+          "headingDeg": 0
+        },
+        "sensitivity": 100,
+        "invert": false,
+        "motionBlur": false,
+        "view": {
+          "active": true,
+          "drawMetres": 3000,
+          "aerialBlend": 1,
+          "near": 4,
+          "far": 25920,
+          "viewReach": 19808,
+          "viewZoom": 1.119,
+          "fogNear": 2600,
+          "fogDensity": 0.0000757,
+          "motionBlur": {
+            "active": false,
+            "strength": 0,
+            "setting": false,
+            "comfort": false
+          },
+          "farMetres": 225,
+          "farCells": 173,
+          "farMeshes": 0,
+          "shadowCells": {
+            "tested": 87,
+            "hidden": 175,
+            "proxies": 0
+          },
+          "props": {
+            "detail": 2401,
+            "detailHidden": 212,
+            "detailNoShadow": 184,
+            "parts": 829,
+            "partsHidden": 23,
+            "pools": 825,
+            "poolsHidden": 19,
+            "poolsNoShadow": 27,
+            "loose": 194,
+            "looseHidden": 0,
+            "signs": 208,
+            "signsHidden": 3
+          },
+          "draws": {
+            "view": {
+              "calls": 79,
+              "triangles": 573732,
+              "kinds": {
+                "instanced": {
+                  "calls": 54,
+                  "triangles": 456426,
+                  "names": [
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #353a3d @0,0",
+                      3,
+                      16
+                    ],
+                    [
+                      "monarch lanterns",
+                      3,
+                      46
+                    ],
+                    [
+                      "village lanterns",
+                      3,
+                      6
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshBasicMaterial #ffde9b @0,0",
+                      2,
+                      7
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #8b948f @0,0",
+                      2,
+                      10
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #5f7079 @0,0",
+                      2,
+                      6
+                    ],
+                    [
+                      "damage decals",
+                      2,
+                      0
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #353a3d @0,0",
+                      1,
+                      4
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshStandardMaterial #4e654a @0,0",
+                      1,
+                      43
+                    ],
+                    [
+                      "Mesh DodecahedronGeometry MeshStandardMaterial #ffffff @0,0",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #ffffff @0,0",
+                      1,
+                      0
+                    ],
+                    [
+                      "tree stumps",
+                      1,
+                      2
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshBasicMaterial #ffffff @0,0",
+                      1,
+                      87
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #5c5346 @0,0",
+                      1,
+                      54
+                    ],
+                    [
+                      "monarch lanterns",
+                      3,
+                      46
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshStandardMaterial #f6e7c4 @0,0",
+                      1,
+                      44
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshStandardMaterial #4e654a @0,0",
+                      1,
+                      43
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #4e5558 @0,0",
+                      1,
+                      21
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #3d4447 @0,0",
+                      1,
+                      17
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #8a8f92 @0,0",
+                      1,
+                      17
+                    ]
+                  ],
+                  "whole": 54,
+                  "px<Infinity": 44,
+                  "px?": 9,
+                  "px<2": 1
+                },
+                "other": {
+                  "calls": 25,
+                  "triangles": 117306,
+                  "names": [
+                    [
+                      "Player parachute",
+                      11,
+                      4
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #23262b @3328,3584",
+                      2,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry ShaderMaterial @17152,3584",
+                      1,
+                      97
+                    ],
+                    [
+                      "Mesh PlaneGeometry MeshBasicMaterial #0f3a52 @16896,3584",
+                      1,
+                      0
+                    ],
+                    [
+                      "player body",
+                      1,
+                      7
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #1f242b @3328,3584",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #2c333c @3328,3584",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #d2362a @3328,3584",
+                      1,
+                      0
+                    ],
+                    [
+                      "sky dome",
+                      1,
+                      1
+                    ],
+                    [
+                      "LineSegments BufferGeometry LineBasicMaterial #ffe1a1 @0,0",
+                      1,
+                      0
+                    ],
+                    [
+                      "mud splats",
+                      1,
+                      0
+                    ],
+                    [
+                      "tyre tracks",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry ShaderMaterial @17152,3584",
+                      1,
+                      97
+                    ],
+                    [
+                      "glow field",
+                      1,
+                      8
+                    ],
+                    [
+                      "player body",
+                      1,
+                      7
+                    ],
+                    [
+                      "Player parachute",
+                      11,
+                      4
+                    ],
+                    [
+                      "sky dome",
+                      1,
+                      1
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #23262b @3328,3584",
+                      2,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry MeshBasicMaterial #0f3a52 @16896,3584",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #1f242b @3328,3584",
+                      1,
+                      0
+                    ]
+                  ],
+                  "whole": 13,
+                  "px<Infinity": 11,
+                  "px<2": 6,
+                  "<50m": 12,
+                  "px<32": 7,
+                  "px<8": 1
+                }
+              }
+            },
+            "shadow": {
+              "calls": 27,
+              "triangles": 196832,
+              "kinds": {
+                "instanced": {
+                  "calls": 20,
+                  "triangles": 186252,
+                  "names": [
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #5f7079 @0,0",
+                      2,
+                      6
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #8b948f @0,0",
+                      2,
+                      10
+                    ],
+                    [
+                      "Mesh DodecahedronGeometry MeshStandardMaterial #ffffff @0,0",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #ffffff @0,0",
+                      1,
+                      0
+                    ],
+                    [
+                      "tree stumps",
+                      1,
+                      2
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #9aa3a6 @0,0",
+                      1,
+                      5
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #3d4447 @0,0",
+                      1,
+                      17
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #4e5558 @0,0",
+                      1,
+                      21
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #86a9bd @0,0",
+                      1,
+                      1
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #8e5a44 @0,0",
+                      1,
+                      3
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshStandardMaterial #4e654a @0,0",
+                      1,
+                      43
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #7d5245 @0,0",
+                      1,
+                      1
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #5c5346 @0,0",
+                      1,
+                      54
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshStandardMaterial #4e654a @0,0",
+                      1,
+                      43
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #4e5558 @0,0",
+                      1,
+                      21
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #3d4447 @0,0",
+                      1,
+                      17
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #8a8f92 @0,0",
+                      1,
+                      17
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #8b948f @0,0",
+                      2,
+                      10
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #5f7079 @0,0",
+                      2,
+                      6
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #9aa3a6 @0,0",
+                      1,
+                      5
+                    ]
+                  ],
+                  "whole": 20,
+                  "px?": 3,
+                  "px<2": 1,
+                  "px<Infinity": 16
+                },
+                "other": {
+                  "calls": 7,
+                  "triangles": 10580,
+                  "names": [
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #23262b @3328,3584",
+                      2,
+                      0
+                    ],
+                    [
+                      "player body",
+                      1,
+                      7
+                    ],
+                    [
+                      "Player parachute",
+                      1,
+                      3
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #1f242b @3328,3584",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #2c333c @3328,3584",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #d2362a @3328,3584",
+                      1,
+                      0
+                    ],
+                    [
+                      "player body",
+                      1,
+                      7
+                    ],
+                    [
+                      "Player parachute",
+                      1,
+                      3
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #23262b @3328,3584",
+                      2,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #1f242b @3328,3584",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #2c333c @3328,3584",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #d2362a @3328,3584",
+                      1,
+                      0
+                    ]
+                  ],
+                  "whole": 2,
+                  "px<2": 1,
+                  "px<Infinity": 1,
+                  "<50m": 5,
+                  "px<32": 4,
+                  "px<8": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "flight": null,
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 7.13,
+        "drill": null,
+        "kinds": []
+      },
+      "models": {
+        "loaded": true,
+        "enabled": true,
+        "models": [
+          {
+            "name": "bell429",
+            "title": "Bell 429 Helicopter",
+            "kind": "heli",
+            "triangles": 13173,
+            "dims": [
+              12.244,
+              4.249,
+              3.233
+            ],
+            "parts": {
+              "paint": 3061,
+              "accent": 2797,
+              "trim": 4230,
+              "glass": 1175,
+              "rotor": 1197,
+              "tail": 713
+            }
+          },
+          {
+            "name": "skyhawk",
+            "title": "Cessna172",
+            "kind": "plane",
+            "triangles": 9694,
+            "dims": [
+              8.28,
+              2.597,
+              11.046
+            ],
+            "parts": {
+              "aileronL": 11,
+              "aileronR": 21,
+              "body": 5476,
+              "cabin": 2288,
+              "elevatorL": 148,
+              "elevatorR": 147,
+              "flapL": 61,
+              "flapR": 64,
+              "glass": 898,
+              "prop": 212,
+              "rudder": 248,
+              "spinner": 120
+            }
+          }
+        ],
+        "kits": [],
+        "skins": 0
+      },
+      "jets": {
+        "loaded": true,
+        "models": [
+          {
+            "name": "jet",
+            "title": "1990 Cessna Citation (exterior)",
+            "nearTriangles": 20131,
+            "farTriangles": 6929,
+            "dims": [
+              15.620614308437576,
+              5.662708292423373,
+              14.75
+            ],
+            "parts": {
+              "aileronL": {
+                "triangles": 131,
+                "origin": [
+                  -3.0429770398601086,
+                  1.605879844162775,
+                  -6.524109691796505
+                ]
+              },
+              "aileronLFar": {
+                "triangles": 43,
+                "origin": [
+                  -3.0429770398601086,
+                  1.605879844162775,
+                  -6.524109691796505
+                ]
+              },
+              "aileronR": {
+                "triangles": 172,
+                "origin": [
+                  -2.4657296713693304,
+                  1.4848603383496615,
+                  4.250165831160631
+                ]
+              },
+              "aileronRFar": {
+                "triangles": 58,
+                "origin": [
+                  -2.4657296713693304,
+                  1.4848603383496615,
+                  4.250165831160631
+                ]
+              },
+              "body": {
+                "triangles": 14699
+              },
+              "bodyFar": {
+                "triangles": 4997
+              },
+              "elevatorL": {
+                "triangles": 509,
+                "origin": [
+                  -7.258030433430801,
+                  4.98828318363484,
+                  -3.0395732452727264
+                ]
+              },
+              "elevatorLFar": {
+                "triangles": 172,
+                "origin": [
+                  -7.258030433430801,
+                  4.98828318363484,
+                  -3.0395732452727264
+                ]
+              },
+              "elevatorR": {
+                "triangles": 527,
+                "origin": [
+                  -6.706807226018965,
+                  4.994094537372911,
+                  0.4262446439413595
+                ]
+              },
+              "elevatorRFar": {
+                "triangles": 178,
+                "origin": [
+                  -6.706807226018965,
+                  4.994094537372911,
+                  0.4262446439413595
+                ]
+              },
+              "flapL": {
+                "triangles": 289,
+                "origin": [
+                  -2.3775692583653836,
+                  1.4263607641568279,
+                  -4.068176139128255
+                ]
+              },
+              "flapLFar": {
+                "triangles": 97,
+                "origin": [
+                  -2.3775692583653836,
+                  1.4263607641568279,
+                  -4.068176139128255
+                ]
+              },
+              "flapR": {
+                "triangles": 370,
+                "origin": [
+                  -1.8444220140139624,
+                  1.3867654438855332,
+                  1.9136722803042447
+                ]
+              },
+              "flapRFar": {
+                "triangles": 124,
+                "origin": [
+                  -1.8444220140139624,
+                  1.3867654438855332,
+                  1.9136722803042447
+                ]
+              },
+              "gearL": {
+                "triangles": 1131,
+                "origin": [
+                  -1.318370752083915,
+                  1.1816532605446062,
+                  -1.4811204778273768
+                ]
+              },
+              "gearLFar": {
+                "triangles": 433,
+                "origin": [
+                  -1.318370752083915,
+                  1.1816532605446062,
+                  -1.4811204778273768
+                ]
+              },
+              "gearN": {
+                "triangles": 1127,
+                "origin": [
+                  4.969686945957687,
+                  0.9837913918508127,
+                  -0.005325109995856586
+                ]
+              },
+              "gearNFar": {
+                "triangles": 382,
+                "origin": [
+                  4.969686945957687,
+                  0.9837913918508127,
+                  -0.005325109995856586
+                ]
+              },
+              "gearR": {
+                "triangles": 855,
+                "origin": [
+                  -1.39177390469654,
+                  1.18607297249438,
+                  1.5484037301062532
+                ]
+              },
+              "gearRFar": {
+                "triangles": 337,
+                "origin": [
+                  -1.39177390469654,
+                  1.18607297249438,
+                  1.5484037301062532
+                ]
+              },
+              "rudder": {
+                "triangles": 321,
+                "origin": [
+                  -5.533386490712927,
+                  3.411894465869971,
+                  0
+                ]
+              },
+              "rudderFar": {
+                "triangles": 108,
+                "origin": [
+                  -5.533386490712927,
+                  3.411894465869971,
+                  0
+                ]
+              }
+            },
+            "source": {
+              "author": "BlenderCommunityHead (https://sketchfab.com/aboodgoudagad)",
+              "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+              "source": "https://sketchfab.com/3d-models/1990-cessna-citation-texture-detailed-exterior-a78839624fe64900a8352cb23462350a",
+              "title": "1990 Cessna Citation, Texture Detailed, Exterior"
+            },
+            "rigMethod": "Original merged triangles partitioned at measured surface regions. Hinge cuts are adaptation estimates; source has no separate control/gear nodes.",
+            "nativeTexture": [
+              256,
+              256
+            ],
+            "cabin": false
+          },
+          {
+            "name": "airliner",
+            "title": "Boeing 737 (fictional Oceanview livery)",
+            "nearTriangles": 162629,
+            "farTriangles": 17319,
+            "dims": [
+              39.23164329132513,
+              12.693061263071819,
+              35.671654921074044
+            ],
+            "parts": {
+              "body": {
+                "triangles": 36641
+              },
+              "bodyFar": {
+                "triangles": 5999
+              },
+              "trim": {
+                "triangles": 43674
+              },
+              "trimFar": {
+                "triangles": 10038
+              },
+              "glass": {
+                "triangles": 5668
+              },
+              "glassFar": {
+                "triangles": 1282
+              },
+              "cabin": {
+                "triangles": 76646
+              }
+            },
+            "source": {
+              "author": "A Random Modeler (https://sketchfab.com/danielskom111)",
+              "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+              "source": "https://sketchfab.com/3d-models/southwest-airlines-boeing-737-73d0cd0c03594c5d9c53235d74b429bf",
+              "title": "Southwest Airlines Boeing 737"
+            },
+            "rigMethod": "Static source geometry",
+            "nativeTexture": null,
+            "cabin": true
+          }
+        ],
+        "kits": [
+          "airliner"
+        ]
+      },
+      "draws": {
+        "total": 79,
+        "byLayer": {
+          "detail": 1,
+          "farDetail": 0,
+          "other": 78
+        },
+        "byName": [
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            22
+          ],
+          [
+            "Player parachute in Player parachute",
+            11
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            7
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            3
+          ],
+          [
+            "monarch lanterns",
+            3
+          ],
+          [
+            "village lanterns",
+            3
+          ],
+          [
+            "damage decals",
+            2
+          ],
+          [
+            "Mesh BoxGeometry MeshBasicMaterial",
+            2
+          ],
+          [
+            "group@3381,3470 [BoxGeometry MeshStandardMaterial #23262b] in group@3381,3470 [BoxGeometry MeshStandardMaterial #23262b]",
+            2
+          ],
+          [
+            "sky dome",
+            1
+          ],
+          [
+            "Mesh DodecahedronGeometry MeshStandardMaterial",
+            1
+          ],
+          [
+            "tree stumps",
+            1
+          ],
+          [
+            "Mesh ConeGeometry MeshStandardMaterial",
+            1
+          ],
+          [
+            "glow field",
+            1
+          ],
+          [
+            "blood decals",
+            1
+          ]
+        ],
+        "byCell": [
+          [
+            "0,0",
+            60
+          ],
+          [
+            "3072,3072",
+            17
+          ],
+          [
+            "16896,3072",
+            2
+          ]
+        ],
+        "triangles": 573732,
+        "byTriangles": [
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            114576
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            98616
+          ],
+          [
+            "Mesh PlaneGeometry ShaderMaterial",
+            96800
+          ],
+          [
+            "Mesh SphereGeometry MeshBasicMaterial",
+            86688
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            86280
+          ],
+          [
+            "monarch lanterns",
+            45704
+          ],
+          [
+            "glow field",
+            8476
+          ],
+          [
+            "player body",
+            7064
+          ],
+          [
+            "Mesh BoxGeometry MeshBasicMaterial",
+            6936
+          ],
+          [
+            "village lanterns",
+            5832
+          ],
+          [
+            "Mesh BufferGeometry MeshStandardMaterial",
+            4128
+          ],
+          [
+            "Player parachute in Player parachute",
+            3944
+          ],
+          [
+            "rooftop pool solar in rooftop pool solar",
+            2676
+          ],
+          [
+            "sealife-shark",
+            2128
+          ],
+          [
+            "tree stumps",
+            1728
+          ]
+        ],
+        "instanced": [
+          [
+            "Mesh SphereGeometry MeshBasicMaterial",
+            516,
+            168,
+            false,
+            false
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            4519,
+            12,
+            false,
+            true
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            262,
+            168,
+            false,
+            false
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            253,
+            168,
+            false,
+            true
+          ],
+          [
+            "monarch lanterns",
+            1182,
+            24,
+            false,
+            true
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            528,
+            40,
+            false,
+            true
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            424,
+            40,
+            false,
+            true
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            424,
+            40,
+            false,
+            true
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            383,
+            40,
+            false,
+            true
+          ],
+          [
+            "monarch lanterns",
+            394,
+            32,
+            false,
+            true
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            72,
+            168,
+            false,
+            true
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            287,
+            40,
+            false,
+            true
+          ],
+          [
+            "glow field",
+            4238,
+            2,
+            false,
+            false
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            452,
+            12,
+            false,
+            true
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            452,
+            12,
+            false,
+            true
+          ]
+        ],
+        "programs": [
+          [
+            "physical",
+            95
+          ],
+          [
+            "depth",
+            17
+          ],
+          [
+            "basic",
+            10
+          ],
+          [
+            "22",
+            7
+          ],
+          [
+            "2",
+            2
+          ],
+          [
+            "trees",
+            2
+          ],
+          [
+            "33",
+            2
+          ],
+          [
+            "35",
+            2
+          ],
+          [
+            "SphericalGaussianBlur",
+            1
+          ],
+          [
+            "6",
+            1
+          ],
+          [
+            "8",
+            1
+          ],
+          [
+            "10",
+            1
+          ],
+          [
+            "12",
+            1
+          ],
+          [
+            "14",
+            1
+          ],
+          [
+            "16",
+            1
+          ]
+        ]
+      },
+      "parachute": {
+        "stage": "canopy",
+        "canopy": "main",
+        "mainUsed": true,
+        "reserveAvailable": true,
+        "reserveUsed": false,
+        "cutaway": false,
+        "armed": false,
+        "phase": "open",
+        "deployS": 6.83,
+        "opening": 1,
+        "aglM": 1120.4,
+        "altitudeM": 1120.4,
+        "descentMs": 3.5,
+        "loadG": 1,
+        "peakLoadG": 3.58,
+        "from": 1200,
+        "openedAtM": 1199,
+        "pullMs": 5.4,
+        "openAtM": 1131,
+        "openTimeS": 3.9,
+        "openLostM": 68,
+        "safeLostM": 67.3,
+        "safeTimeS": 3.85,
+        "brakesSet": false,
+        "flownS": 2.95,
+        "cue": null
+      },
+      "canopy": {
+        "visible": true,
+        "phase": "open",
+        "canopy": "main",
+        "cutawayVisible": false,
+        "rootM": [
+          422.88,
+          1121.81,
+          433.69
+        ],
+        "harnessToPlayerM": 1.42,
+        "skin": true,
+        "crownM": 5.19,
+        "spanM": 7,
+        "fill": 1,
+        "bunch": 1,
+        "flog": 0,
+        "sliderM": 1.27,
+        "slide": 1,
+        "lines": "canopy",
+        "bag": [
+          -2.06,
+          5.61
+        ],
+        "pilot": 0.38,
+        "upright": 1.01,
+        "pitchDeg": -0.8,
+        "brakes": 0,
+        "accelG": 0.01,
+        "cloud": 0,
+        "cloudLight": [
+          1,
+          1,
+          1
+        ],
+        "finite": true
+      }
+    },
+    {
+      "file": "11-main-cutaway.png",
+      "sha256": "7f94f4e88a53687aba0fffc78f1eb86225fff7f970da888ca7c615ba9d8fd1de",
+      "scene": {
+        "input": "release J, fresh press, hold",
+        "expected": "freefall and detached main"
+      },
+      "status": {
+        "mode": "play",
+        "x": 3400,
+        "y": 3470,
+        "district": "EXCHANGE DISTRICT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "13:07",
+        "renderer": "3d",
+        "vehicles": 285,
+        "pedestrians": 612
+      },
+      "quality": {
+        "setting": "high",
+        "tier": "HIGH",
+        "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "hdr": true,
+        "shadowMap": 3072,
+        "pixelRatio": 1,
+        "renderScale": 1,
+        "shadows": "high",
+        "shadowSetting": "auto",
+        "adaptive": {
+          "averageFrameMs": 0,
+          "tierDrops": 0,
+          "ceiling": 1,
+          "holdSeconds": 0
+        }
+      },
+      "camera": {
+        "zoom": 1.95,
+        "target": 2,
+        "context": 0.975,
+        "slowFraming": false,
+        "vehicleContext": null,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 0.975,
+        "framed": 1.95,
+        "aim": 1.95,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 30.5,
+        "personPx": 26,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 4,
+          "accel": {
+            "rms": 0.226,
+            "peak": 0.527
+          },
+          "jerk": {
+            "rms": 0.62,
+            "peak": 2.29
+          },
+          "zoomRate": {
+            "rms": 0.04,
+            "peak": 0.11
+          },
+          "jolt": 0.0038,
+          "drift": {
+            "peak": 0.062,
+            "swing": 0.031
+          }
+        }
+      },
+      "chase": {
+        "mode": "chase",
+        "live": true,
+        "ready": true,
+        "locked": false,
+        "position": [
+          3308,
+          3469.5,
+          8997.6
+        ],
+        "pivot": [
+          3400.2,
+          3469.5,
+          8982.7
+        ],
+        "yawDeg": 0,
+        "pitchDeg": 9,
+        "lookYawDeg": 0,
+        "fov": 56,
+        "boomMetres": 11.67,
+        "wantMetres": 11.67,
+        "heightMetres": 1124.7,
+        "aiming": 0,
+        "behind": false,
+        "craneMetres": 0,
+        "lockOn": null,
+        "aimAssist": true,
+        "speedBlend": 0,
+        "zoom": 1,
+        "aim": {
+          "metres": 33.4,
+          "at": [
+            3571.5,
+            3469.5,
+            8955.1
+          ],
+          "hit": null,
+          "headingDeg": 0
+        },
+        "sensitivity": 100,
+        "invert": false,
+        "motionBlur": false,
+        "view": {
+          "active": true,
+          "drawMetres": 3000,
+          "aerialBlend": 1,
+          "near": 4,
+          "far": 25920,
+          "viewReach": 19808,
+          "viewZoom": 1.119,
+          "fogNear": 2600,
+          "fogDensity": 0.0000757,
+          "motionBlur": {
+            "active": false,
+            "strength": 0,
+            "setting": false,
+            "comfort": false
+          },
+          "farMetres": 225,
+          "farCells": 173,
+          "farMeshes": 0,
+          "shadowCells": {
+            "tested": 87,
+            "hidden": 175,
+            "proxies": 0
+          },
+          "props": {
+            "detail": 2401,
+            "detailHidden": 212,
+            "detailNoShadow": 184,
+            "parts": 829,
+            "partsHidden": 23,
+            "pools": 825,
+            "poolsHidden": 19,
+            "poolsNoShadow": 27,
+            "loose": 194,
+            "looseHidden": 0,
+            "signs": 208,
+            "signsHidden": 3
+          },
+          "draws": {
+            "view": {
+              "calls": 79,
+              "triangles": 573752,
+              "kinds": {
+                "instanced": {
+                  "calls": 54,
+                  "triangles": 456446,
+                  "names": [
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #353a3d @0,0",
+                      3,
+                      16
+                    ],
+                    [
+                      "monarch lanterns",
+                      3,
+                      46
+                    ],
+                    [
+                      "village lanterns",
+                      3,
+                      6
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshBasicMaterial #ffde9b @0,0",
+                      2,
+                      7
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #8b948f @0,0",
+                      2,
+                      10
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #5f7079 @0,0",
+                      2,
+                      6
+                    ],
+                    [
+                      "damage decals",
+                      2,
+                      0
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #353a3d @0,0",
+                      1,
+                      4
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshStandardMaterial #4e654a @0,0",
+                      1,
+                      43
+                    ],
+                    [
+                      "Mesh DodecahedronGeometry MeshStandardMaterial #ffffff @0,0",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #ffffff @0,0",
+                      1,
+                      0
+                    ],
+                    [
+                      "tree stumps",
+                      1,
+                      2
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshBasicMaterial #ffffff @0,0",
+                      1,
+                      87
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #5c5346 @0,0",
+                      1,
+                      54
+                    ],
+                    [
+                      "monarch lanterns",
+                      3,
+                      46
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshStandardMaterial #f6e7c4 @0,0",
+                      1,
+                      44
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshStandardMaterial #4e654a @0,0",
+                      1,
+                      43
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #4e5558 @0,0",
+                      1,
+                      21
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #3d4447 @0,0",
+                      1,
+                      17
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #8a8f92 @0,0",
+                      1,
+                      17
+                    ]
+                  ],
+                  "whole": 54,
+                  "px<Infinity": 44,
+                  "px?": 9,
+                  "px<2": 1
+                },
+                "other": {
+                  "calls": 25,
+                  "triangles": 117306,
+                  "names": [
+                    [
+                      "Released main canopy",
+                      11,
+                      4
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #23262b @3328,3584",
+                      2,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry ShaderMaterial @17152,3584",
+                      1,
+                      97
+                    ],
+                    [
+                      "Mesh PlaneGeometry MeshBasicMaterial #0f3a52 @16896,3584",
+                      1,
+                      0
+                    ],
+                    [
+                      "player body",
+                      1,
+                      7
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #1f242b @3328,3584",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #2c333c @3328,3584",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #d2362a @3328,3584",
+                      1,
+                      0
+                    ],
+                    [
+                      "sky dome",
+                      1,
+                      1
+                    ],
+                    [
+                      "LineSegments BufferGeometry LineBasicMaterial #ffe1a1 @0,0",
+                      1,
+                      0
+                    ],
+                    [
+                      "mud splats",
+                      1,
+                      0
+                    ],
+                    [
+                      "tyre tracks",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry ShaderMaterial @17152,3584",
+                      1,
+                      97
+                    ],
+                    [
+                      "glow field",
+                      1,
+                      8
+                    ],
+                    [
+                      "player body",
+                      1,
+                      7
+                    ],
+                    [
+                      "Released main canopy",
+                      11,
+                      4
+                    ],
+                    [
+                      "sky dome",
+                      1,
+                      1
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #23262b @3328,3584",
+                      2,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry MeshBasicMaterial #0f3a52 @16896,3584",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #1f242b @3328,3584",
+                      1,
+                      0
+                    ]
+                  ],
+                  "whole": 13,
+                  "px<Infinity": 11,
+                  "px<2": 6,
+                  "<50m": 12,
+                  "px<32": 7,
+                  "px<16": 1
+                }
+              }
+            },
+            "shadow": {
+              "calls": 26,
+              "triangles": 193376,
+              "kinds": {
+                "instanced": {
+                  "calls": 20,
+                  "triangles": 186252,
+                  "names": [
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #5f7079 @0,0",
+                      2,
+                      6
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #8b948f @0,0",
+                      2,
+                      10
+                    ],
+                    [
+                      "Mesh DodecahedronGeometry MeshStandardMaterial #ffffff @0,0",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #ffffff @0,0",
+                      1,
+                      0
+                    ],
+                    [
+                      "tree stumps",
+                      1,
+                      2
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #9aa3a6 @0,0",
+                      1,
+                      5
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #3d4447 @0,0",
+                      1,
+                      17
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #4e5558 @0,0",
+                      1,
+                      21
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #86a9bd @0,0",
+                      1,
+                      1
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #8e5a44 @0,0",
+                      1,
+                      3
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshStandardMaterial #4e654a @0,0",
+                      1,
+                      43
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #7d5245 @0,0",
+                      1,
+                      1
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #5c5346 @0,0",
+                      1,
+                      54
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshStandardMaterial #4e654a @0,0",
+                      1,
+                      43
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #4e5558 @0,0",
+                      1,
+                      21
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #3d4447 @0,0",
+                      1,
+                      17
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #8a8f92 @0,0",
+                      1,
+                      17
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #8b948f @0,0",
+                      2,
+                      10
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #5f7079 @0,0",
+                      2,
+                      6
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #9aa3a6 @0,0",
+                      1,
+                      5
+                    ]
+                  ],
+                  "whole": 20,
+                  "px?": 3,
+                  "px<2": 1,
+                  "px<Infinity": 16
+                },
+                "other": {
+                  "calls": 6,
+                  "triangles": 7124,
+                  "names": [
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #23262b @3328,3584",
+                      2,
+                      0
+                    ],
+                    [
+                      "player body",
+                      1,
+                      7
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #1f242b @3328,3584",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #2c333c @3328,3584",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #d2362a @3328,3584",
+                      1,
+                      0
+                    ],
+                    [
+                      "player body",
+                      1,
+                      7
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #23262b @3328,3584",
+                      2,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #1f242b @3328,3584",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #2c333c @3328,3584",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #d2362a @3328,3584",
+                      1,
+                      0
+                    ]
+                  ],
+                  "whole": 1,
+                  "px<2": 1,
+                  "<50m": 5,
+                  "px<32": 4,
+                  "px<16": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "flight": null,
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 7.38,
+        "drill": null,
+        "kinds": []
+      },
+      "models": {
+        "loaded": true,
+        "enabled": true,
+        "models": [
+          {
+            "name": "bell429",
+            "title": "Bell 429 Helicopter",
+            "kind": "heli",
+            "triangles": 13173,
+            "dims": [
+              12.244,
+              4.249,
+              3.233
+            ],
+            "parts": {
+              "paint": 3061,
+              "accent": 2797,
+              "trim": 4230,
+              "glass": 1175,
+              "rotor": 1197,
+              "tail": 713
+            }
+          },
+          {
+            "name": "skyhawk",
+            "title": "Cessna172",
+            "kind": "plane",
+            "triangles": 9694,
+            "dims": [
+              8.28,
+              2.597,
+              11.046
+            ],
+            "parts": {
+              "aileronL": 11,
+              "aileronR": 21,
+              "body": 5476,
+              "cabin": 2288,
+              "elevatorL": 148,
+              "elevatorR": 147,
+              "flapL": 61,
+              "flapR": 64,
+              "glass": 898,
+              "prop": 212,
+              "rudder": 248,
+              "spinner": 120
+            }
+          }
+        ],
+        "kits": [],
+        "skins": 0
+      },
+      "jets": {
+        "loaded": true,
+        "models": [
+          {
+            "name": "jet",
+            "title": "1990 Cessna Citation (exterior)",
+            "nearTriangles": 20131,
+            "farTriangles": 6929,
+            "dims": [
+              15.620614308437576,
+              5.662708292423373,
+              14.75
+            ],
+            "parts": {
+              "aileronL": {
+                "triangles": 131,
+                "origin": [
+                  -3.0429770398601086,
+                  1.605879844162775,
+                  -6.524109691796505
+                ]
+              },
+              "aileronLFar": {
+                "triangles": 43,
+                "origin": [
+                  -3.0429770398601086,
+                  1.605879844162775,
+                  -6.524109691796505
+                ]
+              },
+              "aileronR": {
+                "triangles": 172,
+                "origin": [
+                  -2.4657296713693304,
+                  1.4848603383496615,
+                  4.250165831160631
+                ]
+              },
+              "aileronRFar": {
+                "triangles": 58,
+                "origin": [
+                  -2.4657296713693304,
+                  1.4848603383496615,
+                  4.250165831160631
+                ]
+              },
+              "body": {
+                "triangles": 14699
+              },
+              "bodyFar": {
+                "triangles": 4997
+              },
+              "elevatorL": {
+                "triangles": 509,
+                "origin": [
+                  -7.258030433430801,
+                  4.98828318363484,
+                  -3.0395732452727264
+                ]
+              },
+              "elevatorLFar": {
+                "triangles": 172,
+                "origin": [
+                  -7.258030433430801,
+                  4.98828318363484,
+                  -3.0395732452727264
+                ]
+              },
+              "elevatorR": {
+                "triangles": 527,
+                "origin": [
+                  -6.706807226018965,
+                  4.994094537372911,
+                  0.4262446439413595
+                ]
+              },
+              "elevatorRFar": {
+                "triangles": 178,
+                "origin": [
+                  -6.706807226018965,
+                  4.994094537372911,
+                  0.4262446439413595
+                ]
+              },
+              "flapL": {
+                "triangles": 289,
+                "origin": [
+                  -2.3775692583653836,
+                  1.4263607641568279,
+                  -4.068176139128255
+                ]
+              },
+              "flapLFar": {
+                "triangles": 97,
+                "origin": [
+                  -2.3775692583653836,
+                  1.4263607641568279,
+                  -4.068176139128255
+                ]
+              },
+              "flapR": {
+                "triangles": 370,
+                "origin": [
+                  -1.8444220140139624,
+                  1.3867654438855332,
+                  1.9136722803042447
+                ]
+              },
+              "flapRFar": {
+                "triangles": 124,
+                "origin": [
+                  -1.8444220140139624,
+                  1.3867654438855332,
+                  1.9136722803042447
+                ]
+              },
+              "gearL": {
+                "triangles": 1131,
+                "origin": [
+                  -1.318370752083915,
+                  1.1816532605446062,
+                  -1.4811204778273768
+                ]
+              },
+              "gearLFar": {
+                "triangles": 433,
+                "origin": [
+                  -1.318370752083915,
+                  1.1816532605446062,
+                  -1.4811204778273768
+                ]
+              },
+              "gearN": {
+                "triangles": 1127,
+                "origin": [
+                  4.969686945957687,
+                  0.9837913918508127,
+                  -0.005325109995856586
+                ]
+              },
+              "gearNFar": {
+                "triangles": 382,
+                "origin": [
+                  4.969686945957687,
+                  0.9837913918508127,
+                  -0.005325109995856586
+                ]
+              },
+              "gearR": {
+                "triangles": 855,
+                "origin": [
+                  -1.39177390469654,
+                  1.18607297249438,
+                  1.5484037301062532
+                ]
+              },
+              "gearRFar": {
+                "triangles": 337,
+                "origin": [
+                  -1.39177390469654,
+                  1.18607297249438,
+                  1.5484037301062532
+                ]
+              },
+              "rudder": {
+                "triangles": 321,
+                "origin": [
+                  -5.533386490712927,
+                  3.411894465869971,
+                  0
+                ]
+              },
+              "rudderFar": {
+                "triangles": 108,
+                "origin": [
+                  -5.533386490712927,
+                  3.411894465869971,
+                  0
+                ]
+              }
+            },
+            "source": {
+              "author": "BlenderCommunityHead (https://sketchfab.com/aboodgoudagad)",
+              "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+              "source": "https://sketchfab.com/3d-models/1990-cessna-citation-texture-detailed-exterior-a78839624fe64900a8352cb23462350a",
+              "title": "1990 Cessna Citation, Texture Detailed, Exterior"
+            },
+            "rigMethod": "Original merged triangles partitioned at measured surface regions. Hinge cuts are adaptation estimates; source has no separate control/gear nodes.",
+            "nativeTexture": [
+              256,
+              256
+            ],
+            "cabin": false
+          },
+          {
+            "name": "airliner",
+            "title": "Boeing 737 (fictional Oceanview livery)",
+            "nearTriangles": 162629,
+            "farTriangles": 17319,
+            "dims": [
+              39.23164329132513,
+              12.693061263071819,
+              35.671654921074044
+            ],
+            "parts": {
+              "body": {
+                "triangles": 36641
+              },
+              "bodyFar": {
+                "triangles": 5999
+              },
+              "trim": {
+                "triangles": 43674
+              },
+              "trimFar": {
+                "triangles": 10038
+              },
+              "glass": {
+                "triangles": 5668
+              },
+              "glassFar": {
+                "triangles": 1282
+              },
+              "cabin": {
+                "triangles": 76646
+              }
+            },
+            "source": {
+              "author": "A Random Modeler (https://sketchfab.com/danielskom111)",
+              "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+              "source": "https://sketchfab.com/3d-models/southwest-airlines-boeing-737-73d0cd0c03594c5d9c53235d74b429bf",
+              "title": "Southwest Airlines Boeing 737"
+            },
+            "rigMethod": "Static source geometry",
+            "nativeTexture": null,
+            "cabin": true
+          }
+        ],
+        "kits": [
+          "airliner"
+        ]
+      },
+      "draws": {
+        "total": 79,
+        "byLayer": {
+          "detail": 1,
+          "farDetail": 0,
+          "other": 78
+        },
+        "byName": [
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            22
+          ],
+          [
+            "Released main canopy in Released main canopy",
+            11
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            7
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            3
+          ],
+          [
+            "monarch lanterns",
+            3
+          ],
+          [
+            "village lanterns",
+            3
+          ],
+          [
+            "damage decals",
+            2
+          ],
+          [
+            "Mesh BoxGeometry MeshBasicMaterial",
+            2
+          ],
+          [
+            "group@3399,3470 [BoxGeometry MeshStandardMaterial #23262b] in group@3399,3470 [BoxGeometry MeshStandardMaterial #23262b]",
+            2
+          ],
+          [
+            "sky dome",
+            1
+          ],
+          [
+            "Mesh DodecahedronGeometry MeshStandardMaterial",
+            1
+          ],
+          [
+            "tree stumps",
+            1
+          ],
+          [
+            "Mesh ConeGeometry MeshStandardMaterial",
+            1
+          ],
+          [
+            "glow field",
+            1
+          ],
+          [
+            "blood decals",
+            1
+          ]
+        ],
+        "byCell": [
+          [
+            "0,0",
+            60
+          ],
+          [
+            "3072,3072",
+            17
+          ],
+          [
+            "16896,3072",
+            2
+          ]
+        ],
+        "triangles": 573752,
+        "byTriangles": [
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            114576
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            98616
+          ],
+          [
+            "Mesh PlaneGeometry ShaderMaterial",
+            96800
+          ],
+          [
+            "Mesh SphereGeometry MeshBasicMaterial",
+            86688
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            86280
+          ],
+          [
+            "monarch lanterns",
+            45704
+          ],
+          [
+            "glow field",
+            8476
+          ],
+          [
+            "player body",
+            7064
+          ],
+          [
+            "Mesh BoxGeometry MeshBasicMaterial",
+            6936
+          ],
+          [
+            "village lanterns",
+            5832
+          ],
+          [
+            "Mesh BufferGeometry MeshStandardMaterial",
+            4128
+          ],
+          [
+            "Released main canopy in Released main canopy",
+            3944
+          ],
+          [
+            "rooftop pool solar in rooftop pool solar",
+            2676
+          ],
+          [
+            "sealife-shark",
+            2128
+          ],
+          [
+            "tree stumps",
+            1728
+          ]
+        ],
+        "instanced": [
+          [
+            "Mesh SphereGeometry MeshBasicMaterial",
+            516,
+            168,
+            false,
+            false
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            4519,
+            12,
+            false,
+            true
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            262,
+            168,
+            false,
+            false
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            253,
+            168,
+            false,
+            true
+          ],
+          [
+            "monarch lanterns",
+            1182,
+            24,
+            false,
+            true
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            528,
+            40,
+            false,
+            true
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            424,
+            40,
+            false,
+            true
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            424,
+            40,
+            false,
+            true
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            383,
+            40,
+            false,
+            true
+          ],
+          [
+            "monarch lanterns",
+            394,
+            32,
+            false,
+            true
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            72,
+            168,
+            false,
+            true
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            287,
+            40,
+            false,
+            true
+          ],
+          [
+            "glow field",
+            4238,
+            2,
+            false,
+            false
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            452,
+            12,
+            false,
+            true
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            452,
+            12,
+            false,
+            true
+          ]
+        ],
+        "programs": [
+          [
+            "physical",
+            97
+          ],
+          [
+            "depth",
+            17
+          ],
+          [
+            "basic",
+            10
+          ],
+          [
+            "22",
+            7
+          ],
+          [
+            "2",
+            2
+          ],
+          [
+            "trees",
+            2
+          ],
+          [
+            "33",
+            2
+          ],
+          [
+            "35",
+            2
+          ],
+          [
+            "SphericalGaussianBlur",
+            1
+          ],
+          [
+            "6",
+            1
+          ],
+          [
+            "8",
+            1
+          ],
+          [
+            "10",
+            1
+          ],
+          [
+            "12",
+            1
+          ],
+          [
+            "14",
+            1
+          ],
+          [
+            "16",
+            1
+          ]
+        ]
+      },
+      "parachute": {
+        "stage": "freefall",
+        "canopy": "main",
+        "mainUsed": true,
+        "reserveAvailable": true,
+        "reserveUsed": false,
+        "cutaway": true,
+        "armed": false,
+        "phase": null,
+        "deployS": null,
+        "opening": 0,
+        "aglM": 1119.4,
+        "altitudeM": 1119.4,
+        "descentMs": 5,
+        "loadG": 0.01,
+        "peakLoadG": 3.58,
+        "from": 1200,
+        "openedAtM": 1199,
+        "pullMs": 5.4,
+        "openAtM": 1131,
+        "openTimeS": 3.9,
+        "openLostM": 68,
+        "safeLostM": 67.3,
+        "safeTimeS": 3.85,
+        "brakesSet": null,
+        "flownS": 3.05,
+        "cue": {
+          "state": "high",
+          "needM": 24.1,
+          "seconds": 2.03
+        }
+      },
+      "canopy": {
+        "visible": false,
+        "phase": "freefall",
+        "canopy": "main",
+        "cutawayVisible": true,
+        "rootM": [
+          422.88,
+          1121.81,
+          433.69
+        ],
+        "harnessToPlayerM": 3.24,
+        "skin": true,
+        "crownM": 5.19,
+        "spanM": 7,
+        "fill": 1,
+        "bunch": 1,
+        "flog": 0,
+        "sliderM": 1.27,
+        "slide": 1,
+        "lines": "canopy",
+        "bag": null,
+        "pilot": 0.38,
+        "upright": 0.79,
+        "pitchDeg": -0.6,
+        "brakes": 0,
+        "accelG": 0.01,
+        "cloud": 0,
+        "cloudLight": [
+          1,
+          1,
+          1
+        ],
+        "finite": true
+      }
+    },
+    {
+      "file": "12-reserve-parachute.png",
+      "sha256": "a1804f87983095a74c54435f94e624c36db306965580f26dd95b2b3ac07b7e5f",
+      "scene": {
+        "input": "release J, fresh press, hold",
+        "expected": "white/teal reserve open"
+      },
+      "status": {
+        "mode": "play",
+        "x": 3645,
+        "y": 3470,
+        "district": "MARLOW BAY",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "13:11",
+        "renderer": "3d",
+        "vehicles": 285,
+        "pedestrians": 594
+      },
+      "quality": {
+        "setting": "high",
+        "tier": "HIGH",
+        "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "hdr": true,
+        "shadowMap": 3072,
+        "pixelRatio": 1,
+        "renderScale": 1,
+        "shadows": "high",
+        "shadowSetting": "auto",
+        "adaptive": {
+          "averageFrameMs": 0,
+          "tierDrops": 0,
+          "ceiling": 1,
+          "holdSeconds": 0
+        }
+      },
+      "camera": {
+        "zoom": 1.95,
+        "target": 2,
+        "context": 0.975,
+        "slowFraming": false,
+        "vehicleContext": null,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 0.975,
+        "framed": 1.95,
+        "aim": 1.95,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 30.5,
+        "personPx": 26,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 4,
+          "accel": {
+            "rms": 0.21,
+            "peak": 0.498
+          },
+          "jerk": {
+            "rms": 0.63,
+            "peak": 1.86
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0.0033,
+          "drift": {
+            "peak": 0.064,
+            "swing": 0.033
+          }
+        }
+      },
+      "chase": {
+        "mode": "chase",
+        "live": true,
+        "ready": true,
+        "locked": false,
+        "position": [
+          3550.4,
+          3469.5,
+          8727.4
+        ],
+        "pivot": [
+          3645.1,
+          3469.5,
+          8712.1
+        ],
+        "yawDeg": 0,
+        "pitchDeg": 9,
+        "lookYawDeg": 0,
+        "fov": 56,
+        "boomMetres": 12,
+        "wantMetres": 12,
+        "heightMetres": 1090.93,
+        "aiming": 0,
+        "behind": false,
+        "craneMetres": 0,
+        "lockOn": null,
+        "aimAssist": true,
+        "speedBlend": 0,
+        "zoom": 1,
+        "aim": {
+          "metres": 35.2,
+          "at": [
+            3828.5,
+            3469.5,
+            8682.5
+          ],
+          "hit": null,
+          "headingDeg": 0
+        },
+        "sensitivity": 100,
+        "invert": false,
+        "motionBlur": false,
+        "view": {
+          "active": true,
+          "drawMetres": 3000,
+          "aerialBlend": 1,
+          "near": 4,
+          "far": 25920,
+          "viewReach": 19808,
+          "viewZoom": 1.119,
+          "fogNear": 2600,
+          "fogDensity": 0.0000757,
+          "motionBlur": {
+            "active": false,
+            "strength": 0,
+            "setting": false,
+            "comfort": false
+          },
+          "farMetres": 225,
+          "farCells": 173,
+          "farMeshes": 0,
+          "shadowCells": {
+            "tested": 83,
+            "hidden": 184,
+            "proxies": 0
+          },
+          "props": {
+            "detail": 2401,
+            "detailHidden": 232,
+            "detailNoShadow": 169,
+            "parts": 829,
+            "partsHidden": 23,
+            "pools": 825,
+            "poolsHidden": 19,
+            "poolsNoShadow": 27,
+            "loose": 194,
+            "looseHidden": 0,
+            "signs": 208,
+            "signsHidden": 3
+          },
+          "draws": {
+            "view": {
+              "calls": 82,
+              "triangles": 574106,
+              "kinds": {
+                "instanced": {
+                  "calls": 53,
+                  "triangles": 453072,
+                  "names": [
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #353a3d @0,0",
+                      3,
+                      16
+                    ],
+                    [
+                      "monarch lanterns",
+                      3,
+                      46
+                    ],
+                    [
+                      "village lanterns",
+                      3,
+                      6
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshBasicMaterial #ffde9b @0,0",
+                      2,
+                      7
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #8b948f @0,0",
+                      2,
+                      10
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #5f7079 @0,0",
+                      2,
+                      6
+                    ],
+                    [
+                      "damage decals",
+                      2,
+                      0
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #353a3d @0,0",
+                      1,
+                      4
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshStandardMaterial #4e654a @0,0",
+                      1,
+                      43
+                    ],
+                    [
+                      "Mesh DodecahedronGeometry MeshStandardMaterial #ffffff @0,0",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #ffffff @0,0",
+                      1,
+                      0
+                    ],
+                    [
+                      "tree stumps",
+                      1,
+                      2
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshBasicMaterial #ffffff @0,0",
+                      1,
+                      84
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #5c5346 @0,0",
+                      1,
+                      54
+                    ],
+                    [
+                      "monarch lanterns",
+                      3,
+                      46
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshStandardMaterial #f6e7c4 @0,0",
+                      1,
+                      44
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshStandardMaterial #4e654a @0,0",
+                      1,
+                      43
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #4e5558 @0,0",
+                      1,
+                      21
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #3d4447 @0,0",
+                      1,
+                      17
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #8a8f92 @0,0",
+                      1,
+                      17
+                    ]
+                  ],
+                  "whole": 53,
+                  "px<Infinity": 43,
+                  "px?": 9,
+                  "px<2": 1
+                },
+                "other": {
+                  "calls": 29,
+                  "triangles": 121034,
+                  "names": [
+                    [
+                      "Player parachute",
+                      11,
+                      4
+                    ],
+                    [
+                      "Released main canopy",
+                      4,
+                      4
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #23262b @3584,3584",
+                      2,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry ShaderMaterial @17408,3584",
+                      1,
+                      97
+                    ],
+                    [
+                      "Mesh PlaneGeometry MeshBasicMaterial #0f3a52 @17408,3584",
+                      1,
+                      0
+                    ],
+                    [
+                      "player body",
+                      1,
+                      7
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #1f242b @3584,3584",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #2c333c @3584,3584",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #d2362a @3584,3584",
+                      1,
+                      0
+                    ],
+                    [
+                      "sky dome",
+                      1,
+                      1
+                    ],
+                    [
+                      "LineSegments BufferGeometry LineBasicMaterial #ffe1a1 @0,0",
+                      1,
+                      0
+                    ],
+                    [
+                      "mud splats",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry ShaderMaterial @17408,3584",
+                      1,
+                      97
+                    ],
+                    [
+                      "glow field",
+                      1,
+                      8
+                    ],
+                    [
+                      "player body",
+                      1,
+                      7
+                    ],
+                    [
+                      "Player parachute",
+                      11,
+                      4
+                    ],
+                    [
+                      "Released main canopy",
+                      4,
+                      4
+                    ],
+                    [
+                      "sky dome",
+                      1,
+                      1
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #23262b @3584,3584",
+                      2,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry MeshBasicMaterial #0f3a52 @17408,3584",
+                      1,
+                      0
+                    ]
+                  ],
+                  "whole": 17,
+                  "px<Infinity": 14,
+                  "px<2": 6,
+                  "<50m": 12,
+                  "px<32": 8,
+                  "px<8": 1
+                }
+              }
+            },
+            "shadow": {
+              "calls": 27,
+              "triangles": 196688,
+              "kinds": {
+                "instanced": {
+                  "calls": 20,
+                  "triangles": 186108,
+                  "names": [
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #5f7079 @0,0",
+                      2,
+                      6
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #8b948f @0,0",
+                      2,
+                      10
+                    ],
+                    [
+                      "Mesh DodecahedronGeometry MeshStandardMaterial #ffffff @0,0",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #ffffff @0,0",
+                      1,
+                      0
+                    ],
+                    [
+                      "tree stumps",
+                      1,
+                      2
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #9aa3a6 @0,0",
+                      1,
+                      5
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #3d4447 @0,0",
+                      1,
+                      17
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #4e5558 @0,0",
+                      1,
+                      21
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #86a9bd @0,0",
+                      1,
+                      1
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #8e5a44 @0,0",
+                      1,
+                      3
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshStandardMaterial #4e654a @0,0",
+                      1,
+                      43
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #7d5245 @0,0",
+                      1,
+                      1
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #5c5346 @0,0",
+                      1,
+                      54
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshStandardMaterial #4e654a @0,0",
+                      1,
+                      43
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #4e5558 @0,0",
+                      1,
+                      21
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #3d4447 @0,0",
+                      1,
+                      17
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #8a8f92 @0,0",
+                      1,
+                      17
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #8b948f @0,0",
+                      2,
+                      10
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #5f7079 @0,0",
+                      2,
+                      6
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #9aa3a6 @0,0",
+                      1,
+                      5
+                    ]
+                  ],
+                  "whole": 20,
+                  "px?": 3,
+                  "px<2": 1,
+                  "px<Infinity": 16
+                },
+                "other": {
+                  "calls": 7,
+                  "triangles": 10580,
+                  "names": [
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #23262b @3584,3584",
+                      2,
+                      0
+                    ],
+                    [
+                      "player body",
+                      1,
+                      7
+                    ],
+                    [
+                      "Player parachute",
+                      1,
+                      3
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #1f242b @3584,3584",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #2c333c @3584,3584",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #d2362a @3584,3584",
+                      1,
+                      0
+                    ],
+                    [
+                      "player body",
+                      1,
+                      7
+                    ],
+                    [
+                      "Player parachute",
+                      1,
+                      3
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #23262b @3584,3584",
+                      2,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #1f242b @3584,3584",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #2c333c @3584,3584",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #d2362a @3584,3584",
+                      1,
+                      0
+                    ]
+                  ],
+                  "whole": 2,
+                  "px<2": 1,
+                  "px<Infinity": 1,
+                  "<50m": 5,
+                  "px<32": 4,
+                  "px<8": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "flight": null,
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 11.52,
+        "drill": null,
+        "kinds": []
+      },
+      "models": {
+        "loaded": true,
+        "enabled": true,
+        "models": [
+          {
+            "name": "bell429",
+            "title": "Bell 429 Helicopter",
+            "kind": "heli",
+            "triangles": 13173,
+            "dims": [
+              12.244,
+              4.249,
+              3.233
+            ],
+            "parts": {
+              "paint": 3061,
+              "accent": 2797,
+              "trim": 4230,
+              "glass": 1175,
+              "rotor": 1197,
+              "tail": 713
+            }
+          },
+          {
+            "name": "skyhawk",
+            "title": "Cessna172",
+            "kind": "plane",
+            "triangles": 9694,
+            "dims": [
+              8.28,
+              2.597,
+              11.046
+            ],
+            "parts": {
+              "aileronL": 11,
+              "aileronR": 21,
+              "body": 5476,
+              "cabin": 2288,
+              "elevatorL": 148,
+              "elevatorR": 147,
+              "flapL": 61,
+              "flapR": 64,
+              "glass": 898,
+              "prop": 212,
+              "rudder": 248,
+              "spinner": 120
+            }
+          }
+        ],
+        "kits": [],
+        "skins": 0
+      },
+      "jets": {
+        "loaded": true,
+        "models": [
+          {
+            "name": "jet",
+            "title": "1990 Cessna Citation (exterior)",
+            "nearTriangles": 20131,
+            "farTriangles": 6929,
+            "dims": [
+              15.620614308437576,
+              5.662708292423373,
+              14.75
+            ],
+            "parts": {
+              "aileronL": {
+                "triangles": 131,
+                "origin": [
+                  -3.0429770398601086,
+                  1.605879844162775,
+                  -6.524109691796505
+                ]
+              },
+              "aileronLFar": {
+                "triangles": 43,
+                "origin": [
+                  -3.0429770398601086,
+                  1.605879844162775,
+                  -6.524109691796505
+                ]
+              },
+              "aileronR": {
+                "triangles": 172,
+                "origin": [
+                  -2.4657296713693304,
+                  1.4848603383496615,
+                  4.250165831160631
+                ]
+              },
+              "aileronRFar": {
+                "triangles": 58,
+                "origin": [
+                  -2.4657296713693304,
+                  1.4848603383496615,
+                  4.250165831160631
+                ]
+              },
+              "body": {
+                "triangles": 14699
+              },
+              "bodyFar": {
+                "triangles": 4997
+              },
+              "elevatorL": {
+                "triangles": 509,
+                "origin": [
+                  -7.258030433430801,
+                  4.98828318363484,
+                  -3.0395732452727264
+                ]
+              },
+              "elevatorLFar": {
+                "triangles": 172,
+                "origin": [
+                  -7.258030433430801,
+                  4.98828318363484,
+                  -3.0395732452727264
+                ]
+              },
+              "elevatorR": {
+                "triangles": 527,
+                "origin": [
+                  -6.706807226018965,
+                  4.994094537372911,
+                  0.4262446439413595
+                ]
+              },
+              "elevatorRFar": {
+                "triangles": 178,
+                "origin": [
+                  -6.706807226018965,
+                  4.994094537372911,
+                  0.4262446439413595
+                ]
+              },
+              "flapL": {
+                "triangles": 289,
+                "origin": [
+                  -2.3775692583653836,
+                  1.4263607641568279,
+                  -4.068176139128255
+                ]
+              },
+              "flapLFar": {
+                "triangles": 97,
+                "origin": [
+                  -2.3775692583653836,
+                  1.4263607641568279,
+                  -4.068176139128255
+                ]
+              },
+              "flapR": {
+                "triangles": 370,
+                "origin": [
+                  -1.8444220140139624,
+                  1.3867654438855332,
+                  1.9136722803042447
+                ]
+              },
+              "flapRFar": {
+                "triangles": 124,
+                "origin": [
+                  -1.8444220140139624,
+                  1.3867654438855332,
+                  1.9136722803042447
+                ]
+              },
+              "gearL": {
+                "triangles": 1131,
+                "origin": [
+                  -1.318370752083915,
+                  1.1816532605446062,
+                  -1.4811204778273768
+                ]
+              },
+              "gearLFar": {
+                "triangles": 433,
+                "origin": [
+                  -1.318370752083915,
+                  1.1816532605446062,
+                  -1.4811204778273768
+                ]
+              },
+              "gearN": {
+                "triangles": 1127,
+                "origin": [
+                  4.969686945957687,
+                  0.9837913918508127,
+                  -0.005325109995856586
+                ]
+              },
+              "gearNFar": {
+                "triangles": 382,
+                "origin": [
+                  4.969686945957687,
+                  0.9837913918508127,
+                  -0.005325109995856586
+                ]
+              },
+              "gearR": {
+                "triangles": 855,
+                "origin": [
+                  -1.39177390469654,
+                  1.18607297249438,
+                  1.5484037301062532
+                ]
+              },
+              "gearRFar": {
+                "triangles": 337,
+                "origin": [
+                  -1.39177390469654,
+                  1.18607297249438,
+                  1.5484037301062532
+                ]
+              },
+              "rudder": {
+                "triangles": 321,
+                "origin": [
+                  -5.533386490712927,
+                  3.411894465869971,
+                  0
+                ]
+              },
+              "rudderFar": {
+                "triangles": 108,
+                "origin": [
+                  -5.533386490712927,
+                  3.411894465869971,
+                  0
+                ]
+              }
+            },
+            "source": {
+              "author": "BlenderCommunityHead (https://sketchfab.com/aboodgoudagad)",
+              "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+              "source": "https://sketchfab.com/3d-models/1990-cessna-citation-texture-detailed-exterior-a78839624fe64900a8352cb23462350a",
+              "title": "1990 Cessna Citation, Texture Detailed, Exterior"
+            },
+            "rigMethod": "Original merged triangles partitioned at measured surface regions. Hinge cuts are adaptation estimates; source has no separate control/gear nodes.",
+            "nativeTexture": [
+              256,
+              256
+            ],
+            "cabin": false
+          },
+          {
+            "name": "airliner",
+            "title": "Boeing 737 (fictional Oceanview livery)",
+            "nearTriangles": 162629,
+            "farTriangles": 17319,
+            "dims": [
+              39.23164329132513,
+              12.693061263071819,
+              35.671654921074044
+            ],
+            "parts": {
+              "body": {
+                "triangles": 36641
+              },
+              "bodyFar": {
+                "triangles": 5999
+              },
+              "trim": {
+                "triangles": 43674
+              },
+              "trimFar": {
+                "triangles": 10038
+              },
+              "glass": {
+                "triangles": 5668
+              },
+              "glassFar": {
+                "triangles": 1282
+              },
+              "cabin": {
+                "triangles": 76646
+              }
+            },
+            "source": {
+              "author": "A Random Modeler (https://sketchfab.com/danielskom111)",
+              "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+              "source": "https://sketchfab.com/3d-models/southwest-airlines-boeing-737-73d0cd0c03594c5d9c53235d74b429bf",
+              "title": "Southwest Airlines Boeing 737"
+            },
+            "rigMethod": "Static source geometry",
+            "nativeTexture": null,
+            "cabin": true
+          }
+        ],
+        "kits": [
+          "airliner"
+        ]
+      },
+      "draws": {
+        "total": 82,
+        "byLayer": {
+          "detail": 1,
+          "farDetail": 0,
+          "other": 81
+        },
+        "byName": [
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            22
+          ],
+          [
+            "Player parachute in Player parachute",
+            11
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            7
+          ],
+          [
+            "Released main canopy in Released main canopy",
+            4
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            3
+          ],
+          [
+            "monarch lanterns",
+            3
+          ],
+          [
+            "village lanterns",
+            3
+          ],
+          [
+            "damage decals",
+            2
+          ],
+          [
+            "Mesh BoxGeometry MeshBasicMaterial",
+            2
+          ],
+          [
+            "group@3643,3470 [BoxGeometry MeshStandardMaterial #23262b] in group@3643,3470 [BoxGeometry MeshStandardMaterial #23262b]",
+            2
+          ],
+          [
+            "sky dome",
+            1
+          ],
+          [
+            "Mesh DodecahedronGeometry MeshStandardMaterial",
+            1
+          ],
+          [
+            "tree stumps",
+            1
+          ],
+          [
+            "Mesh ConeGeometry MeshStandardMaterial",
+            1
+          ],
+          [
+            "glow field",
+            1
+          ]
+        ],
+        "byCell": [
+          [
+            "0,0",
+            59
+          ],
+          [
+            "3584,3072",
+            16
+          ],
+          [
+            "3072,3072",
+            5
+          ],
+          [
+            "17408,3072",
+            2
+          ]
+        ],
+        "triangles": 574106,
+        "byTriangles": [
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            114576
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            98616
+          ],
+          [
+            "Mesh PlaneGeometry ShaderMaterial",
+            96800
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            86280
+          ],
+          [
+            "Mesh SphereGeometry MeshBasicMaterial",
+            83664
+          ],
+          [
+            "monarch lanterns",
+            45704
+          ],
+          [
+            "glow field",
+            8476
+          ],
+          [
+            "player body",
+            7064
+          ],
+          [
+            "Mesh BoxGeometry MeshBasicMaterial",
+            6936
+          ],
+          [
+            "village lanterns",
+            5832
+          ],
+          [
+            "Mesh BufferGeometry MeshStandardMaterial",
+            3984
+          ],
+          [
+            "Player parachute in Player parachute",
+            3944
+          ],
+          [
+            "Released main canopy in Released main canopy",
+            3728
+          ],
+          [
+            "rooftop pool solar in rooftop pool solar",
+            2676
+          ],
+          [
+            "sealife-shark",
+            2128
+          ]
+        ],
+        "instanced": [
+          [
+            "Mesh SphereGeometry MeshBasicMaterial",
+            498,
+            168,
+            false,
+            false
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            4519,
+            12,
+            false,
+            true
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            262,
+            168,
+            false,
+            false
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            253,
+            168,
+            false,
+            true
+          ],
+          [
+            "monarch lanterns",
+            1182,
+            24,
+            false,
+            true
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            528,
+            40,
+            false,
+            true
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            424,
+            40,
+            false,
+            true
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            424,
+            40,
+            false,
+            true
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            383,
+            40,
+            false,
+            true
+          ],
+          [
+            "monarch lanterns",
+            394,
+            32,
+            false,
+            true
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            72,
+            168,
+            false,
+            true
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            287,
+            40,
+            false,
+            true
+          ],
+          [
+            "glow field",
+            4238,
+            2,
+            false,
+            false
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            452,
+            12,
+            false,
+            true
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            452,
+            12,
+            false,
+            true
+          ]
+        ],
+        "programs": [
+          [
+            "physical",
+            99
+          ],
+          [
+            "depth",
+            17
+          ],
+          [
+            "basic",
+            10
+          ],
+          [
+            "22",
+            7
+          ],
+          [
+            "2",
+            2
+          ],
+          [
+            "trees",
+            2
+          ],
+          [
+            "33",
+            2
+          ],
+          [
+            "35",
+            2
+          ],
+          [
+            "SphericalGaussianBlur",
+            1
+          ],
+          [
+            "6",
+            1
+          ],
+          [
+            "8",
+            1
+          ],
+          [
+            "10",
+            1
+          ],
+          [
+            "12",
+            1
+          ],
+          [
+            "14",
+            1
+          ],
+          [
+            "16",
+            1
+          ]
+        ]
+      },
+      "parachute": {
+        "stage": "canopy",
+        "canopy": "reserve",
+        "mainUsed": true,
+        "reserveAvailable": false,
+        "reserveUsed": true,
+        "cutaway": true,
+        "armed": false,
+        "phase": "open",
+        "deployS": 4.03,
+        "opening": 1,
+        "aglM": 1085.3,
+        "altitudeM": 1085.3,
+        "descentMs": 3.5,
+        "loadG": 1,
+        "peakLoadG": 3.45,
+        "from": 1200,
+        "openedAtM": 1119,
+        "pullMs": 6,
+        "openAtM": 1093,
+        "openTimeS": 2.08,
+        "openLostM": 26,
+        "safeLostM": 25.9,
+        "safeTimeS": 2.05,
+        "brakesSet": false,
+        "flownS": 1.97,
+        "cue": null
+      },
+      "canopy": {
+        "visible": true,
+        "phase": "open",
+        "canopy": "reserve",
+        "cutawayVisible": true,
+        "rootM": [
+          455.64,
+          1086.74,
+          433.69
+        ],
+        "harnessToPlayerM": 1.42,
+        "skin": true,
+        "crownM": 5.2,
+        "spanM": 7,
+        "fill": 1,
+        "bunch": 1,
+        "flog": 0,
+        "sliderM": 1.27,
+        "slide": 1,
+        "lines": "canopy",
+        "bag": [
+          -2.06,
+          5.61
+        ],
+        "pilot": 0.38,
+        "upright": 1.01,
+        "pitchDeg": -8.4,
+        "brakes": 0,
+        "accelG": 0.15,
+        "cloud": 0,
+        "cloudLight": [
+          1,
+          1,
+          1
+        ],
+        "finite": true
+      }
+    }
+  ],
+  "inputs": [
+    [
+      "holdSimulation",
+      [
+        true
+      ]
+    ],
+    [
+      "god",
+      [
+        true
+      ]
+    ],
+    [
+      "graphics",
+      [
+        "high"
+      ]
+    ],
+    [
+      "sky",
+      [
+        "clear"
+      ]
+    ],
+    [
+      "setClock",
+      [
+        13
+      ]
+    ],
+    [
+      "wetness",
+      [
+        0
+      ]
+    ],
+    [
+      "wanted",
+      [
+        0
+      ]
+    ],
+    [
+      "settings",
+      [
+        {
+          "sound": false,
+          "fps": false,
+          "gps": false,
+          "minimapFolded": true,
+          "keyHints": false,
+          "playerRing": false,
+          "playerOutline": false,
+          "lookAhead": 0,
+          "radioVolume": 0
+        }
+      ]
+    ],
+    [
+      "setClock",
+      [
+        13
+      ]
+    ],
+    [
+      "bailOut",
+      [
+        1200,
+        3000,
+        3400,
+        0
+      ]
+    ],
+    [
+      "viewMode",
+      [
+        "chase"
+      ]
+    ],
+    [
+      "chaseLook",
+      [
+        0,
+        0,
+        0,
+        10
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.3,
+        [],
+        3,
+        false,
+        false
+      ]
+    ],
+    [
+      "physical down",
+      [
+        "KeyJ"
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        6,
+        [],
+        3,
+        false,
+        false
+      ]
+    ],
+    [
+      "parachuteState",
+      []
+    ],
+    [
+      "graphics",
+      [
+        "low"
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.8,
+        [],
+        3,
+        false,
+        true
+      ]
+    ],
+    [
+      "graphics",
+      [
+        "high"
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        3,
+        false,
+        true
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        3,
+        false,
+        true
+      ]
+    ],
+    [
+      "settings",
+      [
+        {}
+      ]
+    ],
+    [
+      "physical up",
+      [
+        "KeyJ"
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.1,
+        [],
+        3,
+        false,
+        false
+      ]
+    ],
+    [
+      "physical down",
+      [
+        "KeyJ"
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.12,
+        [],
+        3,
+        false,
+        false
+      ]
+    ],
+    [
+      "parachuteState",
+      []
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        3,
+        false,
+        true
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        3,
+        false,
+        true
+      ]
+    ],
+    [
+      "parachuteView",
+      []
+    ],
+    [
+      "settings",
+      [
+        {}
+      ]
+    ],
+    [
+      "physical up",
+      [
+        "KeyJ"
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.1,
+        [],
+        3,
+        false,
+        false
+      ]
+    ],
+    [
+      "physical down",
+      [
+        "KeyJ"
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        3.2,
+        [],
+        3,
+        false,
+        false
+      ]
+    ],
+    [
+      "parachuteState",
+      []
+    ],
+    [
+      "graphics",
+      [
+        "low"
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.8,
+        [],
+        3,
+        false,
+        true
+      ]
+    ],
+    [
+      "graphics",
+      [
+        "high"
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        3,
+        false,
+        true
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        3,
+        false,
+        true
+      ]
+    ],
+    [
+      "settings",
+      [
+        {}
+      ]
+    ],
+    [
+      "physical up",
+      [
+        "KeyJ"
+      ]
+    ]
+  ],
+  "errors": [],
+  "warnings": [
+    "Scripts \"build/three.js\" and \"build/three.min.js\" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation"
+  ],
+  "pass": true
+}

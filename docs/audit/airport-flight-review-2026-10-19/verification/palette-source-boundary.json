@@ -1,0 +1,9 @@
+{
+  "previous": "3aecf8a998e269ce5e9f87579d52230afcb543c9",
+  "release": "90ca3adf6e4bbdc07a6fffdbea1bb41236cbfb03",
+  "changed": [
+    "src/parachute3d-cutaway.js"
+  ],
+  "unchangedFiles": 651,
+  "scope": "Four-line palette color upload; no geometry, camera, input or physics changes"
+}

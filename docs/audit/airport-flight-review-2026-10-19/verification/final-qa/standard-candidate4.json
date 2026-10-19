@@ -1,0 +1,113 @@
+{
+  "kind": "Independent focused standard no-render regressions on exact final aviation candidate4; separate from root native appearance/FPS.",
+  "html": "/workspace/GTA/work/aviation-review/candidate-4/game.html",
+  "htmlSha256": "5c3a03750020524e4097d04018faab69fda63fb847cd1067f7bbc52e7113c8ef",
+  "entrySha256": "ddc04a6eef69d8930ca558a9f02ab1fb7fc4014efed2bbcc75b8113867714f07",
+  "sourceManifestSha256": "b608e5d6f5a9d3eff12dd38507120630fccb8f37b1f335e0afbbd06f87106452",
+  "sourceFilesMatched": 652,
+  "flags": "dev&norender; unseeded standard boot and module-declared fresh resets",
+  "viewport": [
+    960,
+    600
+  ],
+  "startedAt": "2026-10-19T19:04:35.636804+00:00",
+  "command": [
+    "node",
+    "tools/test.mjs",
+    "airport-architecture.mjs",
+    "airport-road-clearance.mjs",
+    "parachute-camera.mjs",
+    "chase-view-mode.mjs",
+    "chase-move-keys.mjs",
+    "parachute.mjs",
+    "aircraft-taxi-takeoff.mjs",
+    "--exact",
+    "--html",
+    "/workspace/GTA/work/aviation-review/candidate-4/game.html",
+    "--verbose"
+  ],
+  "modules": [
+    {
+      "name": "airport-architecture",
+      "sha256": "c33a7b0d99ef9777cd4c2069ead70a90f2d30ea48660807bf6031c83d73b4df1"
+    },
+    {
+      "name": "airport-road-clearance",
+      "sha256": "5eca4c226c7aa86885fe5fa439694f4f881a361bf1b93f347ff3185b4806980c"
+    },
+    {
+      "name": "parachute-camera",
+      "sha256": "e51a1e58ab87e33cba8813b76321e07de8a68f91664d8046cf2ef8c98db781e0"
+    },
+    {
+      "name": "chase-view-mode",
+      "sha256": "8cde701ae17c146b1f3d2b4bcb3ff8c04fb5a5420bd3c7ae8c25472eefd65df6"
+    },
+    {
+      "name": "chase-move-keys",
+      "sha256": "b152ce333fe62a6fcf516b779683e11596d7e3e14145a13f950e8b76f4d864f6"
+    },
+    {
+      "name": "parachute",
+      "sha256": "23c1ecf073fb71e84c848276366c44401ac9255a2f4c42efe21c94611dc54fa2"
+    },
+    {
+      "name": "aircraft-taxi-takeoff",
+      "sha256": "f32876b246d58f281d71661b4474e2f40c14e7fb1dad44b1dc23bb885cd28793"
+    }
+  ],
+  "finishedAt": "2026-10-19T19:10:09.165778+00:00",
+  "durationSeconds": 333.53,
+  "exitCode": 0,
+  "results": [
+    {
+      "status": "PASS",
+      "name": "airport-architecture",
+      "duration": "0.1s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "airport-road-clearance",
+      "duration": "2.0s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "chase-view-mode",
+      "duration": "0.8s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "parachute-camera",
+      "duration": "48.0s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "aircraft-taxi-takeoff",
+      "duration": "207.2s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "chase-move-keys",
+      "duration": "30.3s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "parachute",
+      "duration": "27.3s",
+      "detail": ""
+    }
+  ],
+  "passed": 7,
+  "failed": 0,
+  "skipped": 0,
+  "htmlUnchanged": true,
+  "modulesUnchanged": true,
+  "sourceFilesUnchanged": true,
+  "logSha256": "9a2c9f02dca5730b37ebbc1b24bf7469939646d71aae25c1528500727d509705"
+}

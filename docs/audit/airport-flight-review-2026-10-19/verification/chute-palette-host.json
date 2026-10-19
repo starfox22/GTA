@@ -1,0 +1,85 @@
+{
+  "kind": "Real Three.js production mesh palette/upload host; no WebGL",
+  "baselineCommit": "3aecf8a998e269ce5e9f87579d52230afcb543c9",
+  "baselineCutawaySha256": "3fed831f891454ab8a040b1282d441c3b20650cafe72f961bdcd52453950c656",
+  "sources": {
+    "src/parachute3d-canopy.js": "08bf0ce3fffaa5ab51a57f3f9d8a57c7c9ee5121a8e47c32c5a902249e86d94f",
+    "src/parachute3d-pose.js": "aa758ba24d3d242c1a28f9300b935aacd7003b53251fd9cbe2dd5b3b5c5e0963",
+    "src/parachute3d-rigging.js": "0f24aada7179850a4e25c95776f45950266b197100db0ac60aa7cd5eef32d2ae",
+    "src/parachute3d-cutaway.js": "47667911ed3be19d80a4dde13bc4099dc09040ae13e2efac41802c4e7e600d6c",
+    "tools/tests/parachute-palette.mjs": "2fb18b1424682691690a36f5b3250594667e326d87ebdd7cb20657b71f19972a"
+  },
+  "runs": [
+    {
+      "name": "before",
+      "passed": 31,
+      "failed": 6,
+      "failures": [
+        "reserve: all upper/lower skins, cell strips and reinforcement bands update in the actual mesh color buffer",
+        "palette changes mark both real BufferAttributes for GPU upload",
+        "palette changes mark both real BufferAttributes for GPU upload",
+        "reserve: all upper/lower skins, cell strips and reinforcement bands update in the actual mesh color buffer",
+        "palette changes mark both real BufferAttributes for GPU upload",
+        "palette changes mark both real BufferAttributes for GPU upload"
+      ],
+      "facts": {
+        "vertices": 2142,
+        "ribVertices": 250,
+        "versions": [
+          {
+            "canopy": "reserve",
+            "skin": 0,
+            "ribs": 1
+          },
+          {
+            "canopy": "main",
+            "skin": 0,
+            "ribs": 2
+          },
+          {
+            "canopy": "reserve",
+            "skin": 0,
+            "ribs": 3
+          },
+          {
+            "canopy": "main",
+            "skin": 0,
+            "ribs": 4
+          }
+        ]
+      }
+    },
+    {
+      "name": "fixed",
+      "passed": 37,
+      "failed": 0,
+      "failures": [],
+      "facts": {
+        "vertices": 2142,
+        "ribVertices": 250,
+        "versions": [
+          {
+            "canopy": "reserve",
+            "skin": 1,
+            "ribs": 1
+          },
+          {
+            "canopy": "main",
+            "skin": 2,
+            "ribs": 2
+          },
+          {
+            "canopy": "reserve",
+            "skin": 3,
+            "ribs": 3
+          },
+          {
+            "canopy": "main",
+            "skin": 4,
+            "ribs": 4
+          }
+        ]
+      }
+    }
+  ]
+}

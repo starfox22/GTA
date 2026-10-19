@@ -1,0 +1,447 @@
+{
+  "kind": "Native unedited High game captures. Parachute shots use the release; airport/flight sources are byte-identical to the preceding candidate. Each image pins its actual artifact.",
+  "files": [
+    {
+      "file": "images/before-03-courier-exterior.png",
+      "sha256": "5604cda1036acc5b91081d41b9b0b899de9f1219934b535e0f2d0d9e845b9ab3",
+      "captureReceipt": "verification/baseline-native/review.json",
+      "originalFile": "03-courier-exterior.png",
+      "sourceCommit": "18a3b32b931cf79ccc5444df5d3e80e34c76ca20",
+      "htmlSha256": "80e81b6c3f24fe5a28abd558e68f5dfeb329b8ec557e0fcbcc2f9c84d2d71426",
+      "sourceMonolithSha256": "477c76c31dcc9fa78302833e0099e1cd495032243e9c79b910bcb5bd1f37d821",
+      "recorderSha256": "2953ee572c59e81f4de39bc703b618bfe51b71ff1fbd7d88852df0a49df3593e",
+      "viewport": [
+        1000,
+        700
+      ],
+      "category": {
+        "kind": {
+          "airframe": "courier",
+          "zoom": 5,
+          "yaw": 55,
+          "pitch": 17
+        },
+        "quality": "High",
+        "ordinaryMissionWin": false
+      }
+    },
+    {
+      "file": "images/after-03-courier-exterior.png",
+      "sha256": "4e882d31bfa7fffa652a9a1a57d838f22c7e1ddb0bd469866d8c610e24af353d",
+      "captureReceipt": "verification/final-native/review.json",
+      "originalFile": "03-courier-exterior.png",
+      "sourceCommit": "3aecf8a998e269ce5e9f87579d52230afcb543c9",
+      "htmlSha256": "ddc04a6eef69d8930ca558a9f02ab1fb7fc4014efed2bbcc75b8113867714f07",
+      "sourceMonolithSha256": "5c3a03750020524e4097d04018faab69fda63fb847cd1067f7bbc52e7113c8ef",
+      "recorderSha256": "9470e934429315f1322715619044ee4a499a15d02ca4e399de8d10a543241de6",
+      "viewport": [
+        1000,
+        700
+      ],
+      "category": {
+        "kind": {
+          "airframe": "courier",
+          "zoom": 5,
+          "yaw": 55,
+          "pitch": 17
+        },
+        "quality": "High",
+        "ordinaryMissionWin": false
+      }
+    },
+    {
+      "file": "images/before-04-airliner-exterior.png",
+      "sha256": "f6a32d6b42932f41acc5a949522edbc74507f0d1c83870121885886bb818d234",
+      "captureReceipt": "verification/baseline-native/review.json",
+      "originalFile": "04-airliner-exterior.png",
+      "sourceCommit": "18a3b32b931cf79ccc5444df5d3e80e34c76ca20",
+      "htmlSha256": "80e81b6c3f24fe5a28abd558e68f5dfeb329b8ec557e0fcbcc2f9c84d2d71426",
+      "sourceMonolithSha256": "477c76c31dcc9fa78302833e0099e1cd495032243e9c79b910bcb5bd1f37d821",
+      "recorderSha256": "2953ee572c59e81f4de39bc703b618bfe51b71ff1fbd7d88852df0a49df3593e",
+      "viewport": [
+        1000,
+        700
+      ],
+      "category": {
+        "kind": {
+          "airframe": "airliner",
+          "zoom": 1.7,
+          "yaw": 55,
+          "pitch": 17
+        },
+        "quality": "High",
+        "ordinaryMissionWin": false
+      }
+    },
+    {
+      "file": "images/after-04-airliner-exterior.png",
+      "sha256": "094002639c5c84c7b42a66d0e83c7f7b51dc738e4856ca643233d5b3a0bd4a71",
+      "captureReceipt": "verification/final-native/review.json",
+      "originalFile": "04-airliner-exterior.png",
+      "sourceCommit": "3aecf8a998e269ce5e9f87579d52230afcb543c9",
+      "htmlSha256": "ddc04a6eef69d8930ca558a9f02ab1fb7fc4014efed2bbcc75b8113867714f07",
+      "sourceMonolithSha256": "5c3a03750020524e4097d04018faab69fda63fb847cd1067f7bbc52e7113c8ef",
+      "recorderSha256": "9470e934429315f1322715619044ee4a499a15d02ca4e399de8d10a543241de6",
+      "viewport": [
+        1000,
+        700
+      ],
+      "category": {
+        "kind": {
+          "airframe": "airliner",
+          "zoom": 1.7,
+          "yaw": 55,
+          "pitch": 17
+        },
+        "quality": "High",
+        "ordinaryMissionWin": false
+      }
+    },
+    {
+      "file": "images/before-05-city-flight-180m.png",
+      "sha256": "5f3b05cc0da751147501ac1f3cd1a3c690c7454c2052a75fde920697d38799de",
+      "captureReceipt": "verification/baseline-native/review.json",
+      "originalFile": "05-city-flight-180m.png",
+      "sourceCommit": "18a3b32b931cf79ccc5444df5d3e80e34c76ca20",
+      "htmlSha256": "80e81b6c3f24fe5a28abd558e68f5dfeb329b8ec557e0fcbcc2f9c84d2d71426",
+      "sourceMonolithSha256": "477c76c31dcc9fa78302833e0099e1cd495032243e9c79b910bcb5bd1f37d821",
+      "recorderSha256": "2953ee572c59e81f4de39bc703b618bfe51b71ff1fbd7d88852df0a49df3593e",
+      "viewport": [
+        1000,
+        700
+      ],
+      "category": {
+        "kind": {
+          "altitude": 180,
+          "heading": 0,
+          "pitch": 14,
+          "origin": [
+            3000,
+            3400
+          ]
+        },
+        "quality": "High",
+        "ordinaryMissionWin": false
+      }
+    },
+    {
+      "file": "images/after-05-city-flight-180m.png",
+      "sha256": "69cb113a32fa094f618b986732cfd720dea35b394a39e6db271e4ac80c2c7daa",
+      "captureReceipt": "verification/final-native/review.json",
+      "originalFile": "05-city-flight-180m.png",
+      "sourceCommit": "3aecf8a998e269ce5e9f87579d52230afcb543c9",
+      "htmlSha256": "ddc04a6eef69d8930ca558a9f02ab1fb7fc4014efed2bbcc75b8113867714f07",
+      "sourceMonolithSha256": "5c3a03750020524e4097d04018faab69fda63fb847cd1067f7bbc52e7113c8ef",
+      "recorderSha256": "9470e934429315f1322715619044ee4a499a15d02ca4e399de8d10a543241de6",
+      "viewport": [
+        1000,
+        700
+      ],
+      "category": {
+        "kind": {
+          "altitude": 180,
+          "heading": 0,
+          "pitch": 14,
+          "origin": [
+            3000,
+            3400
+          ]
+        },
+        "quality": "High",
+        "ordinaryMissionWin": false
+      }
+    },
+    {
+      "file": "images/after-01-southport-terminal.png",
+      "sha256": "b6c59016bdff6058414517f5e0996e5759ca1d096c5870e2740615c029f83c16",
+      "captureReceipt": "verification/final-native/review.json",
+      "originalFile": "01-southport-terminal.png",
+      "sourceCommit": "3aecf8a998e269ce5e9f87579d52230afcb543c9",
+      "htmlSha256": "ddc04a6eef69d8930ca558a9f02ab1fb7fc4014efed2bbcc75b8113867714f07",
+      "sourceMonolithSha256": "5c3a03750020524e4097d04018faab69fda63fb847cd1067f7bbc52e7113c8ef",
+      "recorderSha256": "9470e934429315f1322715619044ee4a499a15d02ca4e399de8d10a543241de6",
+      "viewport": [
+        1000,
+        700
+      ],
+      "category": {
+        "kind": {
+          "x": 1060,
+          "y": 4860,
+          "zoom": 1.05,
+          "yaw": 25,
+          "pitch": 23,
+          "lift": 24,
+          "category": "airport architecture inspection"
+        },
+        "quality": "High",
+        "ordinaryMissionWin": false
+      }
+    },
+    {
+      "file": "images/after-02-oceanview-terminal.png",
+      "sha256": "1174b8dea5231129742b6d3c6b533e3f68064bb86dc2e6d5714aa8c6b5effd93",
+      "captureReceipt": "verification/final-native/review.json",
+      "originalFile": "02-oceanview-terminal.png",
+      "sourceCommit": "3aecf8a998e269ce5e9f87579d52230afcb543c9",
+      "htmlSha256": "ddc04a6eef69d8930ca558a9f02ab1fb7fc4014efed2bbcc75b8113867714f07",
+      "sourceMonolithSha256": "5c3a03750020524e4097d04018faab69fda63fb847cd1067f7bbc52e7113c8ef",
+      "recorderSha256": "9470e934429315f1322715619044ee4a499a15d02ca4e399de8d10a543241de6",
+      "viewport": [
+        1000,
+        700
+      ],
+      "category": {
+        "kind": {
+          "x": 4300,
+          "y": 8900,
+          "zoom": 0.62,
+          "yaw": -20,
+          "pitch": 25,
+          "lift": 32,
+          "category": "airport architecture inspection"
+        },
+        "quality": "High",
+        "ordinaryMissionWin": false
+      }
+    },
+    {
+      "file": "images/after-06-city-flight-600m.png",
+      "sha256": "05873e053d87fb8acbd0831fbbbaa3451c7a7cf07bc5c69564ade011beb91ab8",
+      "captureReceipt": "verification/final-native/review.json",
+      "originalFile": "06-city-flight-600m.png",
+      "sourceCommit": "3aecf8a998e269ce5e9f87579d52230afcb543c9",
+      "htmlSha256": "ddc04a6eef69d8930ca558a9f02ab1fb7fc4014efed2bbcc75b8113867714f07",
+      "sourceMonolithSha256": "5c3a03750020524e4097d04018faab69fda63fb847cd1067f7bbc52e7113c8ef",
+      "recorderSha256": "9470e934429315f1322715619044ee4a499a15d02ca4e399de8d10a543241de6",
+      "viewport": [
+        1000,
+        700
+      ],
+      "category": {
+        "kind": {
+          "altitude": 600,
+          "heading": 0,
+          "pitch": 14,
+          "origin": [
+            3000,
+            3400
+          ]
+        },
+        "quality": "High",
+        "ordinaryMissionWin": false
+      }
+    },
+    {
+      "file": "images/after-08-city-flight-west.png",
+      "sha256": "9861fbd0586538101e29d3dda80ec64e26a56de602c3b03938adef253c102fa5",
+      "captureReceipt": "verification/final-native/review.json",
+      "originalFile": "08-city-flight-west.png",
+      "sourceCommit": "3aecf8a998e269ce5e9f87579d52230afcb543c9",
+      "htmlSha256": "ddc04a6eef69d8930ca558a9f02ab1fb7fc4014efed2bbcc75b8113867714f07",
+      "sourceMonolithSha256": "5c3a03750020524e4097d04018faab69fda63fb847cd1067f7bbc52e7113c8ef",
+      "recorderSha256": "9470e934429315f1322715619044ee4a499a15d02ca4e399de8d10a543241de6",
+      "viewport": [
+        1000,
+        700
+      ],
+      "category": {
+        "kind": {
+          "origin": [
+            -1000,
+            2200
+          ],
+          "heading": 0,
+          "altitude": 450,
+          "clock": 13,
+          "category": "Staged dense-city aerial approach"
+        },
+        "quality": "High",
+        "ordinaryMissionWin": false
+      }
+    },
+    {
+      "file": "images/after-09-downtown-dusk.png",
+      "sha256": "c9c4f810ba2e77fec1c589fcb7f1850b1d0eba5fc27a840eeadaf6b6433bd988",
+      "captureReceipt": "verification/final-native/review.json",
+      "originalFile": "09-downtown-dusk.png",
+      "sourceCommit": "3aecf8a998e269ce5e9f87579d52230afcb543c9",
+      "htmlSha256": "ddc04a6eef69d8930ca558a9f02ab1fb7fc4014efed2bbcc75b8113867714f07",
+      "sourceMonolithSha256": "5c3a03750020524e4097d04018faab69fda63fb847cd1067f7bbc52e7113c8ef",
+      "recorderSha256": "9470e934429315f1322715619044ee4a499a15d02ca4e399de8d10a543241de6",
+      "viewport": [
+        1000,
+        700
+      ],
+      "category": {
+        "kind": {
+          "origin": [
+            2000,
+            6000
+          ],
+          "heading": -1.5707963267948966,
+          "altitude": 400,
+          "clock": 19,
+          "category": "Staged dense-city aerial approach"
+        },
+        "quality": "High",
+        "ordinaryMissionWin": false
+      }
+    },
+    {
+      "file": "images/after-release-10-main-parachute.png",
+      "sha256": "7e387256c07d9e143034035d0771ed0de2d23550323d1b330a15553d98af5d9a",
+      "captureReceipt": "verification/release-native/review.json",
+      "originalFile": "10-main-parachute.png",
+      "sourceCommit": "90ca3adf6e4bbdc07a6fffdbea1bb41236cbfb03",
+      "htmlSha256": "2eada5957fbf646a719dc21e27c5801aa1429eb812a19ea905b3484a3fef4df4",
+      "sourceMonolithSha256": "a0777806af596daf716c1f8eaed4a3cbc1aa2192506b2ff0f449dce1ee7969c0",
+      "recorderSha256": "9390a4c1245e492b544e2e2592bac902e15d948c5bb68754914db5e15c849a77",
+      "viewport": [
+        1000,
+        700
+      ],
+      "category": {
+        "kind": {
+          "input": "physical J held through main inflation",
+          "expected": "main open"
+        },
+        "quality": "High",
+        "ordinaryMissionWin": false
+      }
+    },
+    {
+      "file": "images/after-release-11-main-cutaway.png",
+      "sha256": "7f94f4e88a53687aba0fffc78f1eb86225fff7f970da888ca7c615ba9d8fd1de",
+      "captureReceipt": "verification/release-native/review.json",
+      "originalFile": "11-main-cutaway.png",
+      "sourceCommit": "90ca3adf6e4bbdc07a6fffdbea1bb41236cbfb03",
+      "htmlSha256": "2eada5957fbf646a719dc21e27c5801aa1429eb812a19ea905b3484a3fef4df4",
+      "sourceMonolithSha256": "a0777806af596daf716c1f8eaed4a3cbc1aa2192506b2ff0f449dce1ee7969c0",
+      "recorderSha256": "9390a4c1245e492b544e2e2592bac902e15d948c5bb68754914db5e15c849a77",
+      "viewport": [
+        1000,
+        700
+      ],
+      "category": {
+        "kind": {
+          "input": "release J, fresh press, hold",
+          "expected": "freefall and detached main"
+        },
+        "quality": "High",
+        "ordinaryMissionWin": false
+      }
+    },
+    {
+      "file": "images/after-release-12-reserve-parachute.png",
+      "sha256": "a1804f87983095a74c54435f94e624c36db306965580f26dd95b2b3ac07b7e5f",
+      "captureReceipt": "verification/release-native/review.json",
+      "originalFile": "12-reserve-parachute.png",
+      "sourceCommit": "90ca3adf6e4bbdc07a6fffdbea1bb41236cbfb03",
+      "htmlSha256": "2eada5957fbf646a719dc21e27c5801aa1429eb812a19ea905b3484a3fef4df4",
+      "sourceMonolithSha256": "a0777806af596daf716c1f8eaed4a3cbc1aa2192506b2ff0f449dce1ee7969c0",
+      "recorderSha256": "9390a4c1245e492b544e2e2592bac902e15d948c5bb68754914db5e15c849a77",
+      "viewport": [
+        1000,
+        700
+      ],
+      "category": {
+        "kind": {
+          "input": "release J, fresh press, hold",
+          "expected": "white/teal reserve open"
+        },
+        "quality": "High",
+        "ordinaryMissionWin": false
+      }
+    },
+    {
+      "file": "images/after-detail-01-courier-three-quarter-high.png",
+      "sha256": "35518c3752c6fa9b261d79f8bb2afadeacbc409ed3a3f3fc0ab1baec30f02600",
+      "captureReceipt": "verification/final-native-addendum/review.json",
+      "originalFile": "01-courier-three-quarter-high.png",
+      "sourceCommit": "3aecf8a998e269ce5e9f87579d52230afcb543c9",
+      "htmlSha256": "ddc04a6eef69d8930ca558a9f02ab1fb7fc4014efed2bbcc75b8113867714f07",
+      "sourceMonolithSha256": "5c3a03750020524e4097d04018faab69fda63fb847cd1067f7bbc52e7113c8ef",
+      "recorderSha256": "38f31d6fad9c5ac6f7b6668baf9eafe46ac95d4a39b8cf974b5cf1db842559e4",
+      "viewport": [
+        1000,
+        700
+      ],
+      "category": {
+        "kind": {
+          "category": "Staged exterior enclosure inspection",
+          "airframe": "courier",
+          "origin": [
+            418,
+            6500
+          ],
+          "aircraftHeadingRadians": 0,
+          "expectedHeading": 145,
+          "pitchRequestedDegrees": 14
+        },
+        "quality": "High",
+        "ordinaryMissionWin": false
+      }
+    },
+    {
+      "file": "images/after-detail-02-airliner-three-quarter-high.png",
+      "sha256": "1d2705789e76f74fba2c698ac7259e348d836bd65af2490fd7801741a20b743b",
+      "captureReceipt": "verification/final-native-addendum/review.json",
+      "originalFile": "02-airliner-three-quarter-high.png",
+      "sourceCommit": "3aecf8a998e269ce5e9f87579d52230afcb543c9",
+      "htmlSha256": "ddc04a6eef69d8930ca558a9f02ab1fb7fc4014efed2bbcc75b8113867714f07",
+      "sourceMonolithSha256": "5c3a03750020524e4097d04018faab69fda63fb847cd1067f7bbc52e7113c8ef",
+      "recorderSha256": "38f31d6fad9c5ac6f7b6668baf9eafe46ac95d4a39b8cf974b5cf1db842559e4",
+      "viewport": [
+        1000,
+        700
+      ],
+      "category": {
+        "kind": {
+          "category": "Staged exterior enclosure inspection",
+          "airframe": "airliner",
+          "origin": [
+            418,
+            6500
+          ],
+          "aircraftHeadingRadians": 0,
+          "expectedHeading": 145,
+          "pitchRequestedDegrees": 14
+        },
+        "quality": "High",
+        "ordinaryMissionWin": false
+      }
+    },
+    {
+      "file": "images/after-detail-03-dense-city-north-300m-high.png",
+      "sha256": "cd05720daffb396a81e195216a3cd45bb2f791d73207b156d06f6952bcf97365",
+      "captureReceipt": "verification/final-native-addendum/review.json",
+      "originalFile": "03-dense-city-north-300m-high.png",
+      "sourceCommit": "3aecf8a998e269ce5e9f87579d52230afcb543c9",
+      "htmlSha256": "ddc04a6eef69d8930ca558a9f02ab1fb7fc4014efed2bbcc75b8113867714f07",
+      "sourceMonolithSha256": "5c3a03750020524e4097d04018faab69fda63fb847cd1067f7bbc52e7113c8ef",
+      "recorderSha256": "38f31d6fad9c5ac6f7b6668baf9eafe46ac95d4a39b8cf974b5cf1db842559e4",
+      "viewport": [
+        1000,
+        700
+      ],
+      "category": {
+        "kind": {
+          "category": "Staged dense-city aerial approach",
+          "airframe": "courier",
+          "origin": [
+            2000,
+            6000
+          ],
+          "altitudeMetres": 300,
+          "clock": 13,
+          "aircraftHeadingRadians": -1.5707963267948966,
+          "expectedHeading": -90,
+          "pitchRequestedDegrees": 14
+        },
+        "quality": "High",
+        "ordinaryMissionWin": false
+      }
+    }
+  ]
+}

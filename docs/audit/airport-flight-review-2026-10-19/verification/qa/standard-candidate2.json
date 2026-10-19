@@ -1,0 +1,165 @@
+{
+  "kind": "Independent targeted standard no-render runner against immutable central candidate2, default dev flags; host modules remain CPU proofs, browser objective/physics tests are separate from root native renders.",
+  "html": "/workspace/GTA/work/aviation-review/candidate-2/game.html",
+  "htmlSha256": "224b5de6a411c0badd759aff7b8eec25fb0291bff1216ea8adac426025c9be81",
+  "sourceManifestSha256": "3c2aa61e935805c94b4336492fb339b7192e8968065431f60ab81d7610ebf40f",
+  "flags": "dev&norender; fresh per module where declared; standard unseeded boot",
+  "viewport": [
+    960,
+    600
+  ],
+  "startedAt": "2026-10-19T18:40:32.608772+00:00",
+  "command": [
+    "node",
+    "tools/test.mjs",
+    "aerial-city-horizon.mjs",
+    "aircraft-geometry.mjs",
+    "aircraft-flight-model.mjs",
+    "aircraft-flight-dynamics.mjs",
+    "airport-architecture.mjs",
+    "parachute-reserve.mjs",
+    "aircraft-taxi-takeoff.mjs",
+    "civil-aircraft.mjs",
+    "parachute.mjs",
+    "parachute-deploy.mjs",
+    "parachute-liner.mjs",
+    "falls.mjs",
+    "--exact",
+    "--html",
+    "/workspace/GTA/work/aviation-review/candidate-2/game.html",
+    "--verbose"
+  ],
+  "modules": [
+    {
+      "name": "aerial-city-horizon",
+      "sha256": "c18e0c9fbf6481ced2e3794fd9c6286da9e3940bad98270bf8d1f4be36d2fd5d"
+    },
+    {
+      "name": "aircraft-geometry",
+      "sha256": "f42020ca28f41f0df57dfcf54065865ffbcb6ee49d1fd056572334ccfbac65b2"
+    },
+    {
+      "name": "aircraft-flight-model",
+      "sha256": "b695303374040f4b91d028eaa796f4b06a5aeb9165fa4ae02f25a96c73189e94"
+    },
+    {
+      "name": "aircraft-flight-dynamics",
+      "sha256": "c19761bc15c9e24994fbf0728c49d04e0648282e5760da8bfa8ca3402141aa3b"
+    },
+    {
+      "name": "airport-architecture",
+      "sha256": "5f0133faac5813a68a0a3eef6e43e2bebb5e944d646dff0f442a039d1ea53024"
+    },
+    {
+      "name": "parachute-reserve",
+      "sha256": "0fdff4f061872a51505e0c89d597ae320e841af9585f92f1e3eae8209551bee4"
+    },
+    {
+      "name": "aircraft-taxi-takeoff",
+      "sha256": "f32876b246d58f281d71661b4474e2f40c14e7fb1dad44b1dc23bb885cd28793"
+    },
+    {
+      "name": "civil-aircraft",
+      "sha256": "dc86c670bce189ba7f6ae7273d20b479fffdf72c1b5d389d5d5742050b64e1c5"
+    },
+    {
+      "name": "parachute",
+      "sha256": "23c1ecf073fb71e84c848276366c44401ac9255a2f4c42efe21c94611dc54fa2"
+    },
+    {
+      "name": "parachute-deploy",
+      "sha256": "5c05803227bfaa03b6726d7df48eb87499133640c45de1b016c7c5458d85b780"
+    },
+    {
+      "name": "parachute-liner",
+      "sha256": "e3bd3e0f9ea091237ee0ccf6904dd25a26b74faf90e593a3c234873e5567fb33"
+    },
+    {
+      "name": "falls",
+      "sha256": "848bff688faed24577f34cc4070ce94de14a694ad339e1de357ce27de58102ae"
+    }
+  ],
+  "finishedAt": "2026-10-19T18:47:01.699405+00:00",
+  "durationSeconds": 389.09,
+  "exitCode": 0,
+  "results": [
+    {
+      "status": "PASS",
+      "name": "aerial-city-horizon",
+      "duration": "0.0s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "aircraft-flight-dynamics",
+      "duration": "2.4s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "aircraft-flight-model",
+      "duration": "1.2s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "aircraft-geometry",
+      "duration": "0.4s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "airport-architecture",
+      "duration": "0.0s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "parachute-reserve",
+      "duration": "0.1s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "aircraft-taxi-takeoff",
+      "duration": "139.9s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "civil-aircraft",
+      "duration": "20.1s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "falls",
+      "duration": "53.1s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "parachute-deploy",
+      "duration": "91.3s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "parachute-liner",
+      "duration": "35.7s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "parachute",
+      "duration": "31.1s",
+      "detail": ""
+    }
+  ],
+  "passed": 12,
+  "failed": 0,
+  "skipped": 0,
+  "htmlUnchanged": true,
+  "modulesUnchanged": true,
+  "logSha256": "c2f1e80c629b0d94cf10cec3622bc4b05257dea02f994f8d972bd069b1c5f96f"
+}

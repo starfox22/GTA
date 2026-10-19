@@ -1,0 +1,103 @@
+{
+  "kind": "Read-only source hygiene; no rebuild/filemap regeneration/production edits",
+  "recordedAt": "2026-10-19T19:04:34.670695+00:00",
+  "pass": true,
+  "results": [
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "src/geography-regions.js"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "src/airport-terminal3d.js"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "src/chase-camera.js"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "tools/tests/airport-architecture.mjs"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "tools/tests/airport-road-clearance.mjs"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "tools/tests/parachute-camera.mjs"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "files": [
+    {
+      "file": "src/geography-regions.js",
+      "sha256": "6565f015a2817945ee41c42dd2bd8148986cdd7a7982ff8c0dc708ca02d29334"
+    },
+    {
+      "file": "src/airport-terminal3d.js",
+      "sha256": "e4e40e3b38f7d12a976d00b195796028b133dfe37000de57d16da544273e3c25"
+    },
+    {
+      "file": "src/chase-camera.js",
+      "sha256": "56936e7a0c368833617f4e1d131bc5563ea1ec68f9fd91061919f681b8b231bf"
+    },
+    {
+      "file": "tools/tests/airport-architecture.mjs",
+      "sha256": "c33a7b0d99ef9777cd4c2069ead70a90f2d30ea48660807bf6031c83d73b4df1"
+    },
+    {
+      "file": "tools/tests/airport-road-clearance.mjs",
+      "sha256": "5eca4c226c7aa86885fe5fa439694f4f881a361bf1b93f347ff3185b4806980c"
+    },
+    {
+      "file": "tools/tests/parachute-camera.mjs",
+      "sha256": "e51a1e58ab87e33cba8813b76321e07de8a68f91664d8046cf2ef8c98db781e0"
+    }
+  ]
+}

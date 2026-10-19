@@ -1,0 +1,26 @@
+{
+  "test": "airport-architecture",
+  "kind": "host geometry and collision",
+  "assertions": 41,
+  "failures": [],
+  "notes": [
+    {
+      "bridges": 2,
+      "overheadVolumes": 10,
+      "bridgeMeshes": 164,
+      "checkedBridgeVertices": 3896,
+      "mergedMaterials": 12,
+      "drawnSupportFootprints": 9
+    }
+  ],
+  "source": {
+    "src/geography-regions.js": "ab85053b276a00613570d6c9736e8f90b051766f4348de0b9c220cfb4c13d49c",
+    "src/air-cover.js": "a7b4ff8a8e30fc14eb5f6cafeddf658df0cbcd950988ef53f4c963557e1ede8d",
+    "src/airfields.js": "9600a48ccdbf75fd42e83cd1a1f03f2f2fc6fdbfe1a64dab13af7e1e16c137d1",
+    "src/airport-terminal3d.js": "557b4f22c7e7047cebdd153120e27b491f1b8707a023f300cb2cbcd06d125464",
+    "src/world3d-resort.js": "ad74e8c0ffcfebd59f83ef8ec460f891d289a242a4568b98a748460bf23924b5",
+    "src/county3d-forest.js": "f98482ac2cf6c4c9bb4fe988cca8de272fd10b140e5c6b80d0d7c51cccae0be3",
+    "tools/tests/airport-architecture.mjs": "5f0133faac5813a68a0a3eef6e43e2bebb5e944d646dff0f442a039d1ea53024"
+  },
+  "pass": true
+}

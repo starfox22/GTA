@@ -1,0 +1,9 @@
+{
+  "kind": "Standard immutable-candidate palette regression; same 37 assertions as paired host",
+  "pass": true,
+  "modules": 1,
+  "assertions": 37,
+  "monolithSha256": "a0777806af596daf716c1f8eaed4a3cbc1aa2192506b2ff0f449dce1ee7969c0",
+  "testSha256": "2fb18b1424682691690a36f5b3250594667e326d87ebdd7cb20657b71f19972a",
+  "logSha256": "675907e6cf8cc53d11e1065e886969e333afb7f2797f297cc7e4e2af440f85cd"
+}

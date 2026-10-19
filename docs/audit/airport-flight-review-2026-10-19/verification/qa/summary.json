@@ -1,0 +1,170 @@
+{
+  "kind": "Independent aviation QA summary; source unchanged by reviewing agent",
+  "recordedAt": "2026-10-19T18:50:28.457113+00:00",
+  "candidate": {
+    "monolithSha256": "224b5de6a411c0badd759aff7b8eec25fb0291bff1216ea8adac426025c9be81",
+    "entrySha256": "31e92cd0e18e3dd44e99eea3d9ff10862cc0bceb69d2b6fc7a5ce7e8d3b44a6d",
+    "sourceEquivalenceReceipt": "source-equivalence.json"
+  },
+  "productionBlockersFound": [],
+  "acceptanceHarnessFinding": {
+    "file": "tools/tests/aerial-city-horizon.mjs",
+    "issue": "Originally supplied expected/tolerance to the standard lower/upper-bound t.near API",
+    "resolution": "Rendering owner corrected six bounds before frozen candidate2, preserving tolerances; corrected module passes direct host and standard runner"
+  },
+  "standard": {
+    "receipt": "standard-candidate2.json",
+    "selected": 12,
+    "passed": 12,
+    "failed": 0,
+    "skipped": 0,
+    "durationSeconds": 389.09,
+    "htmlUnchanged": true,
+    "testFilesUnchanged": true
+  },
+  "productionHost": {
+    "receipt": "host-review.json",
+    "modules": 5,
+    "assertions": 5489,
+    "pass": true,
+    "sourceHashesMatchCandidate2": true
+  },
+  "productionKeyboardHandlerHost": {
+    "receipt": "keyboard-edge-host.json",
+    "assertions": 66,
+    "cases": 6,
+    "pass": true
+  },
+  "actualDOMKeyboard": {
+    "receipt": "physical-reserve.json",
+    "assertions": 17,
+    "states": 14,
+    "pass": true,
+    "flags": "test&norender&seed=1&hold",
+    "viewport": [
+      1000,
+      700
+    ],
+    "frameFaults": 0,
+    "gameErrors": [],
+    "ordinaryLanding": {
+      "cause": "canopy",
+      "speed": 3.5,
+      "drop": 0.6,
+      "injury": 0,
+      "scraped": 0,
+      "water": false,
+      "roof": false,
+      "outcome": "safe",
+      "at": 73.98,
+      "seq": 1
+    },
+    "landingStatus": {
+      "mode": "play",
+      "x": 6493,
+      "y": 1498,
+      "district": "RIDGELINE COUNTY",
+      "hp": 100,
+      "cash": 0,
+      "wanted": 0,
+      "mission": null,
+      "completed": 0,
+      "vehicle": null,
+      "weapon": "9MM PISTOL",
+      "clock": "18:34",
+      "renderer": "2d",
+      "vehicles": 313,
+      "pedestrians": 591
+    },
+    "resetSerial": {
+      "before": 0,
+      "after": 1
+    },
+    "firstAttempt": "physical-reserve-attempt1.json",
+    "firstAttemptFinding": "All game transitions succeeded. QA assertion compared reset count with undefined on an untouched profile; preserved raw failure, defaulted missing previous count to0 in QA-only script, then reran successfully on unchanged artifact.",
+    "browserClosed": true
+  },
+  "limits": [
+    "No ordinary aviation mission completion or rendered quality/FPS claim.",
+    "Production host geometry/flight/horizon/reserve fixtures are bounded; native baseline/final review is owned by root.",
+    "Flight remains an assisted model, not a full six-degree-of-freedom simulator.",
+    "Actual DOM probe uses initial named helicopter/position fixture; later new-trip fixture is after actual safe landing and explicitly logged. No debug heal/invulnerability follows initial god(false)."
+  ],
+  "files": [
+    {
+      "file": "README.md",
+      "sha256": "1086a1b3d3976f483375613beb064a369d7a4b9f321fea8e2dd5b58fffaf86f7",
+      "bytes": 2841
+    },
+    {
+      "file": "host-review.mjs",
+      "sha256": "350f36bcd368a0f76b72f068239b097f7a5864f7d1c48f6da533543bde27f1fe",
+      "bytes": 2061
+    },
+    {
+      "file": "host-review.json",
+      "sha256": "52dd78b3f246c9e5792d836c4ea82bf13eb6148973fafddcf0c63c7b765487e5",
+      "bytes": 16777
+    },
+    {
+      "file": "host-review-initial.json",
+      "sha256": "bfd2e54535cbaed542e9b269274850942bb97dc3e88fe9b056f9a1873bbad8c4",
+      "bytes": 14911
+    },
+    {
+      "file": "keyboard-edge-host.mjs",
+      "sha256": "b0e90bb52f894509c01757e2cd4024a625f19da8780d401b11f3566385766ba9",
+      "bytes": 3872
+    },
+    {
+      "file": "keyboard-edge-host.json",
+      "sha256": "7b9457e94c33ed95cea570f816e56007d67a7ea56914e77f13bb6305b90367f3",
+      "bytes": 2003
+    },
+    {
+      "file": "source-equivalence.json",
+      "sha256": "3ee61b140dbebfd3981b6cf374d030d4c49c81563e67aac5ebc8592630c41308",
+      "bytes": 398
+    },
+    {
+      "file": "standard-candidate2.json",
+      "sha256": "cef89ee8b4b708dc9174e3ac9785b81e5c96c2d16259409bae6894bd730efcc9",
+      "bytes": 4441
+    },
+    {
+      "file": "standard-candidate2.log",
+      "sha256": "c2f1e80c629b0d94cf10cec3622bc4b05257dea02f994f8d972bd069b1c5f96f",
+      "bytes": 20509
+    },
+    {
+      "file": "physical-reserve.mjs",
+      "sha256": "623fd610f8b57a13b7db0e8972d243644805bdf9aec8fdd71906f4140062c477",
+      "bytes": 7679
+    },
+    {
+      "file": "physical-reserve.json",
+      "sha256": "7873c03cbbaeb936e816d1123a387623344f367bfe81ad373f654ef53786aa0d",
+      "bytes": 46297
+    },
+    {
+      "file": "physical-reserve.log",
+      "sha256": "1c58fc49c43eb5ef9e1465becff306697040236428919c8fb27ab8fcc9b7606c",
+      "bytes": 9324
+    },
+    {
+      "file": "physical-reserve-attempt1.mjs",
+      "sha256": "dc2672ebe62448b85683b96a787b8060e0555a57199e5dc702ebb3bca29b50bf",
+      "bytes": 7669
+    },
+    {
+      "file": "physical-reserve-attempt1.json",
+      "sha256": "fa1f83c5791dad722a0b8213d62ac4f3785abf26eb5fd295a84cc7887a38b555",
+      "bytes": 46558
+    },
+    {
+      "file": "physical-reserve-attempt1.log",
+      "sha256": "c4a60bd1017a7480ed163f22403e0fba8476976fd537ec9ae9c9dd5a1621e21e",
+      "bytes": 9808
+    }
+  ]
+}

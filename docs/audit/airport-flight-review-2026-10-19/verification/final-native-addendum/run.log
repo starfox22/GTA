@@ -1,0 +1,15 @@
+BOOT ddc04a6eef69d8930ca558a9f02ab1fb7fc4014efed2bbcc75b8113867714f07
+READY
+CAPTURE 01-courier-three-quarter-high {"heading":145,"pitch":14,"boom":23.5,"drawMetres":600,"farCells":160}
+CAPTURE 02-airliner-three-quarter-high {"heading":145,"pitch":14,"boom":41.94,"drawMetres":600,"farCells":161}
+CAPTURE 03-dense-city-north-300m-high {"heading":-90,"pitch":14,"boom":23.79,"drawMetres":3000,"farCells":173}
+page.evaluate: Error: No clear vehicle spawn for plane
+    at spawnClearCar (http://127.0.0.1:8765/work/aviation-review/candidate-4/package/index.html?dev&seed=1&hold&shadercheck:16829:13)
+    at Object.drive (http://127.0.0.1:8765/work/aviation-review/candidate-4/package/index.html?dev&seed=1&hold&shadercheck:219496:22)
+    at eval (eval at evaluate (:311:30), <anonymous>:1:129)
+    at Array.map (<anonymous>)
+    at eval (eval at evaluate (:311:30), <anonymous>:1:12)
+    at UtilityScript.evaluate (<anonymous>:313:16)
+    at UtilityScript.<anonymous> (<anonymous>:1:44)
+    at batch (/workspace/GTA/work/aviation-review/capture-addendum.mjs:23:156)
+    at /workspace/GTA/work/aviation-review/capture-addendum.mjs:49:9

@@ -8,8 +8,9 @@ import shutil
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-CURRENT_AUDIT = ROOT / 'docs/audit/fort-running-review-2026-10-19'
+CURRENT_AUDIT = ROOT / 'docs/audit/airport-flight-review-2026-10-19'
 HISTORY = [
+    ('fort-running', ROOT / 'docs/audit/fort-running-review-2026-10-19', 'Fort Sentinel running suspicion'),
     ('general-experience', ROOT / 'docs/audit/general-experience-review-2026-10-19', 'First four missions and general gameplay review'),
     ('monarch-collection', ROOT / 'docs/audit/monarch-collection-review-2026-10-17', 'Monarch collection and selected vehicle names'),
     ('m4-utility', ROOT / 'docs/audit/m4-utility-review-2026-10-17', 'Hum-4 performance and round wheels'),

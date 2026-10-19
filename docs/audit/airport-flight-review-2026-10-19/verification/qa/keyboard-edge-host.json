@@ -1,0 +1,70 @@
+{
+  "kind": "Independent host execution of actual production keydown handler, controls and parachute solver. Empty dry site; no browser/native-render claim.",
+  "startedAt": "2026-10-19T18:39:16.939Z",
+  "gameInputSha256": "3c606d2d185d530dddd2560400a4412a83e769d0a0255d4c1f2db27b644aea9c",
+  "fixtureSha256": "0fdff4f061872a51505e0c89d597ae320e841af9585f92f1e3eae8209551bee4",
+  "sourceHashes": {
+    "controls": "983a0beca438484afeb723fc7a2573924021886a0e45f12854ef871681ef38c1",
+    "falls-body": "15eedd86b7677254dbda5dab86b231fe9ebe08cf48a5fd23aed3747e4f1ea030",
+    "parachute": "7ef34a896515fb0f6f8878937bac34ccf608ed9213ec331abaf03222bf8886da"
+  },
+  "assertions": 66,
+  "cases": [
+    {
+      "hz": 30,
+      "key": "KeyJ",
+      "pass": true,
+      "cutAltitudeM": 2073.9581658219518,
+      "reserveAltitudeM": 1983.7399245279926,
+      "mainUsed": true,
+      "reserveUsed": true
+    },
+    {
+      "hz": 30,
+      "key": "KeyK",
+      "pass": true,
+      "cutAltitudeM": 2073.9581658219518,
+      "reserveAltitudeM": 1983.7399245279926,
+      "mainUsed": true,
+      "reserveUsed": true
+    },
+    {
+      "hz": 60,
+      "key": "KeyJ",
+      "pass": true,
+      "cutAltitudeM": 2073.534954915071,
+      "reserveAltitudeM": 1983.0620604158207,
+      "mainUsed": true,
+      "reserveUsed": true
+    },
+    {
+      "hz": 60,
+      "key": "KeyK",
+      "pass": true,
+      "cutAltitudeM": 2073.534954915071,
+      "reserveAltitudeM": 1983.0620604158207,
+      "mainUsed": true,
+      "reserveUsed": true
+    },
+    {
+      "hz": 120,
+      "key": "KeyJ",
+      "pass": true,
+      "cutAltitudeM": 2073.3767105487227,
+      "reserveAltitudeM": 1982.7160564341946,
+      "mainUsed": true,
+      "reserveUsed": true
+    },
+    {
+      "hz": 120,
+      "key": "KeyK",
+      "pass": true,
+      "cutAltitudeM": 2073.3767105487227,
+      "reserveAltitudeM": 1982.7160564341946,
+      "mainUsed": true,
+      "reserveUsed": true
+    }
+  ],
+  "finishedAt": "2026-10-19T18:39:17.273Z",
+  "pass": true
+}

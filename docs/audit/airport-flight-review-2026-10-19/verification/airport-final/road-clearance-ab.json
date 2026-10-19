@@ -1,0 +1,335 @@
+{
+  "baselineCommit": "df75780a0a35bbb2d0751dd13d37c0a8b3838aae",
+  "scope": "Production SAT, vehicle envelopes, overhead grid and shared airport support plans; staged flat-road host sweeps, not rendered ordinary driving.",
+  "road": {
+    "name": "OCEANVIEW PARKWAY",
+    "from": [
+      3800,
+      8700
+    ],
+    "to": [
+      4590,
+      8770
+    ],
+    "width": 110
+  },
+  "baseline": {
+    "routes": [
+      {
+        "type": "sedan",
+        "direction": -1,
+        "samples": 347,
+        "blockedSamples": 84,
+        "firstCollision": {
+          "x": 3915.7616383597747,
+          "y": 8685.159410919348,
+          "kinds": [
+            "airport canopy column"
+          ]
+        }
+      },
+      {
+        "type": "bus",
+        "direction": -1,
+        "samples": 347,
+        "blockedSamples": 169,
+        "firstCollision": {
+          "x": 3887.8709135964787,
+          "y": 8682.688080877031,
+          "kinds": [
+            "airport canopy column"
+          ]
+        }
+      },
+      {
+        "type": "truck",
+        "direction": -1,
+        "samples": 347,
+        "blockedSamples": 145,
+        "firstCollision": {
+          "x": 3895.8396921002773,
+          "y": 8683.394175174835,
+          "kinds": [
+            "airport canopy column"
+          ]
+        }
+      },
+      {
+        "type": "ambulance",
+        "direction": -1,
+        "samples": 347,
+        "blockedSamples": 106,
+        "firstCollision": {
+          "x": 3907.7928598559756,
+          "y": 8684.453316621544,
+          "kinds": [
+            "airport canopy column"
+          ]
+        }
+      },
+      {
+        "type": "sedan",
+        "direction": 1,
+        "samples": 347,
+        "blockedSamples": 62,
+        "firstCollision": {
+          "x": 4036.8568104333262,
+          "y": 8746.08526175852,
+          "kinds": [
+            "airport jetbridge"
+          ]
+        }
+      },
+      {
+        "type": "bus",
+        "direction": 1,
+        "samples": 347,
+        "blockedSamples": 120,
+        "firstCollision": {
+          "x": 4006.9738910440806,
+          "y": 8743.437408141752,
+          "kinds": [
+            "airport jetbridge"
+          ]
+        }
+      },
+      {
+        "type": "truck",
+        "direction": 1,
+        "samples": 347,
+        "blockedSamples": 104,
+        "firstCollision": {
+          "x": 4014.942669547879,
+          "y": 8744.143502439558,
+          "kinds": [
+            "airport jetbridge"
+          ]
+        }
+      },
+      {
+        "type": "ambulance",
+        "direction": 1,
+        "samples": 347,
+        "blockedSamples": 77,
+        "firstCollision": {
+          "x": 4028.888031929527,
+          "y": 8745.379167460716,
+          "kinds": [
+            "airport jetbridge"
+          ]
+        }
+      }
+    ],
+    "parkedBusHits": [
+      "airport jetbridge"
+    ],
+    "overheadVolumes": 10,
+    "roadwayPosts": [
+      {
+        "x": 4063,
+        "y": 8723,
+        "w": 6,
+        "h": 6,
+        "height": 22,
+        "kind": "airport bridge column"
+      },
+      {
+        "x": 4423,
+        "y": 8723,
+        "w": 6,
+        "h": 6,
+        "height": 22,
+        "kind": "airport bridge column"
+      },
+      {
+        "x": 3933.5,
+        "y": 8692.5,
+        "w": 3,
+        "h": 3,
+        "height": 34,
+        "kind": "airport canopy column"
+      },
+      {
+        "x": 4213.5,
+        "y": 8692.5,
+        "w": 3,
+        "h": 3,
+        "height": 34,
+        "kind": "airport canopy column"
+      }
+    ]
+  },
+  "current": {
+    "routes": [
+      {
+        "type": "sedan",
+        "direction": -1,
+        "samples": 347,
+        "blockedSamples": 0,
+        "firstCollision": null
+      },
+      {
+        "type": "bus",
+        "direction": -1,
+        "samples": 347,
+        "blockedSamples": 0,
+        "firstCollision": null
+      },
+      {
+        "type": "truck",
+        "direction": -1,
+        "samples": 347,
+        "blockedSamples": 0,
+        "firstCollision": null
+      },
+      {
+        "type": "ambulance",
+        "direction": -1,
+        "samples": 347,
+        "blockedSamples": 0,
+        "firstCollision": null
+      },
+      {
+        "type": "sedan",
+        "direction": 1,
+        "samples": 347,
+        "blockedSamples": 0,
+        "firstCollision": null
+      },
+      {
+        "type": "bus",
+        "direction": 1,
+        "samples": 347,
+        "blockedSamples": 0,
+        "firstCollision": null
+      },
+      {
+        "type": "truck",
+        "direction": 1,
+        "samples": 347,
+        "blockedSamples": 0,
+        "firstCollision": null
+      },
+      {
+        "type": "ambulance",
+        "direction": 1,
+        "samples": 347,
+        "blockedSamples": 0,
+        "firstCollision": null
+      }
+    ],
+    "parkedBusHits": [],
+    "overheadVolumes": 32,
+    "roadwayPosts": []
+  },
+  "tests": {
+    "road": {
+      "assertions": 31,
+      "failures": [],
+      "notes": [
+        {
+          "routes": [
+            {
+              "type": "sedan",
+              "direction": -1,
+              "samples": 347,
+              "blockedSamples": 0,
+              "firstCollision": null
+            },
+            {
+              "type": "bus",
+              "direction": -1,
+              "samples": 347,
+              "blockedSamples": 0,
+              "firstCollision": null
+            },
+            {
+              "type": "truck",
+              "direction": -1,
+              "samples": 347,
+              "blockedSamples": 0,
+              "firstCollision": null
+            },
+            {
+              "type": "ambulance",
+              "direction": -1,
+              "samples": 347,
+              "blockedSamples": 0,
+              "firstCollision": null
+            },
+            {
+              "type": "sedan",
+              "direction": 1,
+              "samples": 347,
+              "blockedSamples": 0,
+              "firstCollision": null
+            },
+            {
+              "type": "bus",
+              "direction": 1,
+              "samples": 347,
+              "blockedSamples": 0,
+              "firstCollision": null
+            },
+            {
+              "type": "truck",
+              "direction": 1,
+              "samples": 347,
+              "blockedSamples": 0,
+              "firstCollision": null
+            },
+            {
+              "type": "ambulance",
+              "direction": 1,
+              "samples": 347,
+              "blockedSamples": 0,
+              "firstCollision": null
+            }
+          ],
+          "samples": 2776,
+          "collisionHeights": {
+            "sedan": 32,
+            "bus": 32,
+            "truck": 32,
+            "ambulance": 32
+          }
+        }
+      ],
+      "pass": true
+    },
+    "geometry": {
+      "assertions": 85,
+      "failures": [],
+      "notes": [
+        {
+          "bridges": 2,
+          "overheadVolumes": 32,
+          "bridgeMeshes": 170,
+          "checkedBridgeVertices": 4040,
+          "mergedMaterials": 12,
+          "drawnSupportFootprints": 9
+        }
+      ],
+      "pass": true
+    }
+  },
+  "hashes": {
+    "baseline": {
+      "src/geography-regions.js": "ab85053b276a00613570d6c9736e8f90b051766f4348de0b9c220cfb4c13d49c",
+      "src/county-map.js": "ce4b228c1935e792a91550a0c92e30cd88db0dbf32a717d8a8c3a36e4110d550",
+      "src/game-vehicles.js": "f7a36d5d22ecf0880e57fc11cb0d73360fb0fd563452e7eda15039870e411c6e",
+      "src/physics-shapes.js": "fbe13a785b2b1f58bed3509adf3b60ba4fbdee52a7859b913efe59d7ae719ac9",
+      "src/air-cover.js": "a7b4ff8a8e30fc14eb5f6cafeddf658df0cbcd950988ef53f4c963557e1ede8d"
+    },
+    "current": {
+      "src/geography-regions.js": "6565f015a2817945ee41c42dd2bd8148986cdd7a7982ff8c0dc708ca02d29334",
+      "src/county-map.js": "ce4b228c1935e792a91550a0c92e30cd88db0dbf32a717d8a8c3a36e4110d550",
+      "src/game-vehicles.js": "f7a36d5d22ecf0880e57fc11cb0d73360fb0fd563452e7eda15039870e411c6e",
+      "src/physics-shapes.js": "fbe13a785b2b1f58bed3509adf3b60ba4fbdee52a7859b913efe59d7ae719ac9",
+      "src/air-cover.js": "a7b4ff8a8e30fc14eb5f6cafeddf658df0cbcd950988ef53f4c963557e1ede8d",
+      "src/airport-terminal3d.js": "e4e40e3b38f7d12a976d00b195796028b133dfe37000de57d16da544273e3c25",
+      "tools/tests/airport-road-clearance.mjs": "5eca4c226c7aa86885fe5fa439694f4f881a361bf1b93f347ff3185b4806980c",
+      "tools/tests/airport-architecture.mjs": "c33a7b0d99ef9777cd4c2069ead70a90f2d30ea48660807bf6031c83d73b4df1"
+    }
+  }
+}

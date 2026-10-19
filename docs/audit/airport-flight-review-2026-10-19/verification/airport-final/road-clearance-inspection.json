@@ -1,0 +1,239 @@
+{
+  "road": {
+    "name": "OCEANVIEW PARKWAY",
+    "from": [
+      3800,
+      8700
+    ],
+    "to": [
+      4590,
+      8770
+    ],
+    "width": 110,
+    "laneOffset": 25
+  },
+  "crossings": [
+    {
+      "gate": "A1",
+      "x": 4066,
+      "roadY": 8723.569620253165,
+      "carriagewayY": [
+        8668.35413148155,
+        8778.78510902478
+      ],
+      "currentBottom": 22,
+      "lanes": [
+        {
+          "lane": -25,
+          "type": "sedan",
+          "x": 4068.2065446806405,
+          "y": 8698.667187428793,
+          "hits": [
+            "airport jetbridge"
+          ]
+        },
+        {
+          "lane": -25,
+          "type": "bus",
+          "x": 4068.2065446806405,
+          "y": 8698.667187428793,
+          "hits": [
+            "airport jetbridge"
+          ]
+        },
+        {
+          "lane": -25,
+          "type": "truck",
+          "x": 4068.2065446806405,
+          "y": 8698.667187428793,
+          "hits": [
+            "airport jetbridge"
+          ]
+        },
+        {
+          "lane": -25,
+          "type": "ambulance",
+          "x": 4068.2065446806405,
+          "y": 8698.667187428793,
+          "hits": [
+            "airport jetbridge"
+          ]
+        },
+        {
+          "lane": 25,
+          "type": "sedan",
+          "x": 4063.7934553193595,
+          "y": 8748.472053077538,
+          "hits": [
+            "airport jetbridge"
+          ]
+        },
+        {
+          "lane": 25,
+          "type": "bus",
+          "x": 4063.7934553193595,
+          "y": 8748.472053077538,
+          "hits": [
+            "airport jetbridge"
+          ]
+        },
+        {
+          "lane": 25,
+          "type": "truck",
+          "x": 4063.7934553193595,
+          "y": 8748.472053077538,
+          "hits": [
+            "airport jetbridge"
+          ]
+        },
+        {
+          "lane": 25,
+          "type": "ambulance",
+          "x": 4063.7934553193595,
+          "y": 8748.472053077538,
+          "hits": [
+            "airport jetbridge"
+          ]
+        }
+      ]
+    },
+    {
+      "gate": "A2",
+      "x": 4426,
+      "roadY": 8755.468354430379,
+      "carriagewayY": [
+        8700.252865658764,
+        8810.683843201994
+      ],
+      "currentBottom": 22,
+      "lanes": [
+        {
+          "lane": -25,
+          "type": "sedan",
+          "x": 4428.206544680641,
+          "y": 8730.565921606007,
+          "hits": [
+            "airport jetbridge"
+          ]
+        },
+        {
+          "lane": -25,
+          "type": "bus",
+          "x": 4428.206544680641,
+          "y": 8730.565921606007,
+          "hits": [
+            "airport jetbridge"
+          ]
+        },
+        {
+          "lane": -25,
+          "type": "truck",
+          "x": 4428.206544680641,
+          "y": 8730.565921606007,
+          "hits": [
+            "airport jetbridge"
+          ]
+        },
+        {
+          "lane": -25,
+          "type": "ambulance",
+          "x": 4428.206544680641,
+          "y": 8730.565921606007,
+          "hits": [
+            "airport jetbridge"
+          ]
+        },
+        {
+          "lane": 25,
+          "type": "sedan",
+          "x": 4423.793455319359,
+          "y": 8780.370787254751,
+          "hits": [
+            "airport jetbridge"
+          ]
+        },
+        {
+          "lane": 25,
+          "type": "bus",
+          "x": 4423.793455319359,
+          "y": 8780.370787254751,
+          "hits": [
+            "airport jetbridge"
+          ]
+        },
+        {
+          "lane": 25,
+          "type": "truck",
+          "x": 4423.793455319359,
+          "y": 8780.370787254751,
+          "hits": [
+            "airport jetbridge"
+          ]
+        },
+        {
+          "lane": 25,
+          "type": "ambulance",
+          "x": 4423.793455319359,
+          "y": 8780.370787254751,
+          "hits": [
+            "airport jetbridge"
+          ]
+        }
+      ]
+    }
+  ],
+  "parkedBus": {
+    "x": 4400,
+    "y": 8760,
+    "a": 0,
+    "hits": [
+      {
+        "x": 4426,
+        "y": 8842,
+        "kind": "airport jetbridge",
+        "minHeight": 22
+      }
+    ]
+  },
+  "types": {
+    "sedan": {
+      "l": 38.8,
+      "w": 17.04,
+      "collisionHeight": 32
+    },
+    "bus": {
+      "l": 96,
+      "w": 22.4,
+      "collisionHeight": 32
+    },
+    "truck": {
+      "l": 80,
+      "w": 22.4,
+      "collisionHeight": 32
+    },
+    "ambulance": {
+      "l": 53.6,
+      "w": 20,
+      "collisionHeight": 32
+    }
+  },
+  "proposal": {
+    "roadUnderside": 40,
+    "roadClearanceM": 5,
+    "keepDockUnderside": 22,
+    "mainBridgeHeight": 23,
+    "rampLength": 220,
+    "rampGradePercent": 8.181818181818182,
+    "highEndY": [
+      {
+        "gate": "A1",
+        "y": 8810
+      },
+      {
+        "gate": "A2",
+        "y": 8824
+      }
+    ],
+    "supportPlan": "Move first support from from+86 (inside carriageway) to from+20 (terminal-side verge); second support remains to-80 on apron and follows ramp floor."
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "kind": "Independent source snapshot against central frozen candidate2, not a new build",
+  "monolithSha256": "224b5de6a411c0badd759aff7b8eec25fb0291bff1216ea8adac426025c9be81",
+  "entrySha256": "31e92cd0e18e3dd44e99eea3d9ff10862cc0bceb69d2b6fc7a5ce7e8d3b44a6d",
+  "files": 652,
+  "mismatches": [],
+  "sourceManifestSha256": "3c2aa61e935805c94b4336492fb339b7192e8968065431f60ab81d7610ebf40f"
+}

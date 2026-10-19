@@ -3,6 +3,35 @@
 Written for the next AI session (or human) picking this work up. Read `/CLAUDE.md` first (commands,
 rules, workflow), then this page, then only the area doc your task needs (`docs/README.md`).
 
+## October 19: airports, aircraft, flight horizon and reserve
+
+Continue on **`codex-reviews`**; never publish to `main` without the owner's approval.
+[Play the updated build](https://starfox22.github.io/GTA/?review=2eada5957fbf646a)
+and [native screenshots plus earlier reviews](https://starfox22.github.io/GTA/review/?review=2eada5957fbf646a).
+Southport/Oceanview now have glazed terminals, canopies, layered roofs, detailed towers/hangars,
+apron stands and enclosed boarding bridges. Shared airport plans drive rendering, supports and
+cover/vehicle collision. Road crossings have 5 m headroom and supports outside the carriageway;
+sloped sections descend to the existing docking height. Keep taxiways/parked takeoff routes clear.
+
+Procedural aircraft winding/end caps and engine cowls/inlets are repaired; source Skylark control
+hinges are fitted without changing neutral source vertices. No model/media packs changed.
+Idle glides settle without repeated false stalls, bank turns follow coordinated lift, and stall
+cautions use load/path-adjusted total airspeed while actual stalls require critical angle of attack.
+Read [flight contracts](areas/vehicles-and-driving-flight.md) before retuning.
+High flight range blends from 600 m to 3 km between 20–150 m AGL, with far merged scenery,
+full-height cell culling and directional sky haze; near detail/shadow budgets stay bounded.
+
+Default J remains the remappable bailout/parachute action: jump, deploy main, fresh press after
+opening cuts away, then release/fresh press deploys one reserve. Held/repeat cannot chain stages.
+The released main drifts/fades, reserve has its own forecast and white/teal wing, and the chase
+camera frames the whole rig in desktop/portrait while preserving collision clearance.
+[Parachute contracts](areas/vehicles-and-driving-parachute.md) and the
+[aviation audit](audit/airport-flight-review-2026-10-19/README.md) record physics, keyboard,
+geometry, final-source checks and native captures. The audit retains the initially blocked bridge
+road, cropped canopy and QA fixture failures rather than relabeling intermediate passes.
+Frozen final monolith starts `a0777806af596daf`, split entry `2eada5957fbf646a`.
+SwiftShader captures establish correctness/appearance; they do not establish hardware FPS.
+
 ## October 19: Fort Sentinel running suspicion follow-up
 
 Continue on **`codex-reviews`**; never publish to `main` without the owner's approval.

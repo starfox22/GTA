@@ -1,0 +1,2086 @@
+{
+  "pass": true,
+  "kind": "Independent actual DOM keyboard reserve lifecycle on frozen candidate2. Initial named helicopter/position fixture, then real J edges and whole-world held simulation stepping; no rendering/mission-win claim.",
+  "htmlSha256": "224b5de6a411c0badd759aff7b8eec25fb0291bff1216ea8adac426025c9be81",
+  "recorderSha256": "623fd610f8b57a13b7db0e8972d243644805bdf9aec8fdd71906f4140062c477",
+  "flags": "test&norender&seed=1&hold",
+  "viewport": [
+    1000,
+    700
+  ],
+  "startedAt": "2026-10-19T18:48:35.223Z",
+  "inputs": [
+    {
+      "kind": "call",
+      "method": "holdSimulation",
+      "args": [
+        true
+      ]
+    },
+    {
+      "kind": "call",
+      "method": "god",
+      "args": [
+        false
+      ]
+    },
+    {
+      "kind": "call",
+      "method": "settings",
+      "args": [
+        {
+          "sound": false
+        }
+      ]
+    },
+    {
+      "kind": "call",
+      "method": "teleport",
+      "args": [
+        1500,
+        1500
+      ]
+    },
+    {
+      "kind": "call",
+      "method": "drive",
+      "args": [
+        "helicopter",
+        450,
+        0
+      ]
+    },
+    {
+      "kind": "DOM-keydown",
+      "key": "KeyJ"
+    },
+    {
+      "kind": "call",
+      "method": "hitchRun",
+      "args": [
+        1,
+        [],
+        3,
+        false,
+        false
+      ]
+    },
+    {
+      "kind": "DOM-keydown",
+      "key": "KeyJ"
+    },
+    {
+      "kind": "call",
+      "method": "hitchRun",
+      "args": [
+        0.5,
+        [],
+        3,
+        false,
+        false
+      ]
+    },
+    {
+      "kind": "DOM-keyup",
+      "key": "KeyJ"
+    },
+    {
+      "kind": "DOM-keydown",
+      "key": "KeyJ"
+    },
+    {
+      "kind": "call",
+      "method": "hitchRun",
+      "args": [
+        6,
+        [],
+        3,
+        false,
+        false
+      ]
+    },
+    {
+      "kind": "DOM-keydown",
+      "key": "KeyJ"
+    },
+    {
+      "kind": "call",
+      "method": "hitchRun",
+      "args": [
+        0.1,
+        [],
+        3,
+        false,
+        false
+      ]
+    },
+    {
+      "kind": "DOM-keyup",
+      "key": "KeyJ"
+    },
+    {
+      "kind": "DOM-keydown",
+      "key": "KeyJ"
+    },
+    {
+      "kind": "call",
+      "method": "hitchRun",
+      "args": [
+        2,
+        [],
+        3,
+        false,
+        false
+      ]
+    },
+    {
+      "kind": "DOM-keydown",
+      "key": "KeyJ"
+    },
+    {
+      "kind": "call",
+      "method": "hitchRun",
+      "args": [
+        0.5,
+        [],
+        3,
+        false,
+        false
+      ]
+    },
+    {
+      "kind": "DOM-keyup",
+      "key": "KeyJ"
+    },
+    {
+      "kind": "DOM-keydown",
+      "key": "KeyJ"
+    },
+    {
+      "kind": "call",
+      "method": "hitchRun",
+      "args": [
+        4,
+        [],
+        3,
+        false,
+        false
+      ]
+    },
+    {
+      "kind": "DOM-keyup",
+      "key": "KeyJ"
+    },
+    {
+      "kind": "DOM-keydown",
+      "key": "KeyJ"
+    },
+    {
+      "kind": "call",
+      "method": "hitchRun",
+      "args": [
+        0.05,
+        [],
+        3,
+        false,
+        false
+      ]
+    },
+    {
+      "kind": "DOM-keydown",
+      "key": "KeyJ"
+    },
+    {
+      "kind": "call",
+      "method": "hitchRun",
+      "args": [
+        0.05,
+        [],
+        3,
+        false,
+        false
+      ]
+    },
+    {
+      "kind": "DOM-keyup",
+      "key": "KeyJ"
+    },
+    {
+      "kind": "DOM-keydown",
+      "key": "KeyJ"
+    },
+    {
+      "kind": "call",
+      "method": "hitchRun",
+      "args": [
+        0.05,
+        [],
+        3,
+        false,
+        false
+      ]
+    },
+    {
+      "kind": "DOM-keydown",
+      "key": "KeyJ"
+    },
+    {
+      "kind": "call",
+      "method": "hitchRun",
+      "args": [
+        0.05,
+        [],
+        3,
+        false,
+        false
+      ]
+    },
+    {
+      "kind": "DOM-keyup",
+      "key": "KeyJ"
+    },
+    {
+      "kind": "DOM-keydown",
+      "key": "KeyJ"
+    },
+    {
+      "kind": "call",
+      "method": "hitchRun",
+      "args": [
+        0.05,
+        [],
+        3,
+        false,
+        false
+      ]
+    },
+    {
+      "kind": "DOM-keydown",
+      "key": "KeyJ"
+    },
+    {
+      "kind": "call",
+      "method": "hitchRun",
+      "args": [
+        0.05,
+        [],
+        3,
+        false,
+        false
+      ]
+    },
+    {
+      "kind": "DOM-keyup",
+      "key": "KeyJ"
+    },
+    {
+      "kind": "call",
+      "method": "parachuteState",
+      "args": []
+    },
+    {
+      "kind": "call",
+      "method": "hitchRun",
+      "args": [
+        10,
+        [],
+        3,
+        false,
+        false
+      ]
+    },
+    {
+      "kind": "call",
+      "method": "parachuteState",
+      "args": []
+    },
+    {
+      "kind": "call",
+      "method": "hitchRun",
+      "args": [
+        10,
+        [],
+        3,
+        false,
+        false
+      ]
+    },
+    {
+      "kind": "call",
+      "method": "parachuteState",
+      "args": []
+    },
+    {
+      "kind": "call",
+      "method": "hitchRun",
+      "args": [
+        10,
+        [],
+        3,
+        false,
+        false
+      ]
+    },
+    {
+      "kind": "call",
+      "method": "parachuteState",
+      "args": []
+    },
+    {
+      "kind": "call",
+      "method": "hitchRun",
+      "args": [
+        10,
+        [],
+        3,
+        false,
+        false
+      ]
+    },
+    {
+      "kind": "call",
+      "method": "parachuteState",
+      "args": []
+    },
+    {
+      "kind": "call",
+      "method": "hitchRun",
+      "args": [
+        10,
+        [],
+        3,
+        false,
+        false
+      ]
+    },
+    {
+      "kind": "call",
+      "method": "parachuteState",
+      "args": []
+    },
+    {
+      "kind": "call",
+      "method": "hitchRun",
+      "args": [
+        10,
+        [],
+        3,
+        false,
+        false
+      ]
+    },
+    {
+      "kind": "call",
+      "method": "parachuteState",
+      "args": []
+    },
+    {
+      "kind": "call",
+      "method": "teleport",
+      "args": [
+        1500,
+        1500
+      ]
+    },
+    {
+      "kind": "call",
+      "method": "drive",
+      "args": [
+        "helicopter",
+        450,
+        0
+      ]
+    },
+    {
+      "kind": "DOM-keydown",
+      "key": "KeyJ"
+    },
+    {
+      "kind": "call",
+      "method": "hitchRun",
+      "args": [
+        0.1,
+        [],
+        3,
+        false,
+        false
+      ]
+    },
+    {
+      "kind": "DOM-keyup",
+      "key": "KeyJ"
+    },
+    {
+      "kind": "call",
+      "method": "worldResetReport",
+      "args": []
+    },
+    {
+      "kind": "DOM-keypress",
+      "key": "Escape"
+    },
+    {
+      "kind": "DOM-click",
+      "selector": "#newGame"
+    },
+    {
+      "kind": "call",
+      "method": "worldResetReport",
+      "args": []
+    }
+  ],
+  "states": [
+    {
+      "label": "staged-helicopter",
+      "status": {
+        "mode": "play",
+        "x": 1560,
+        "y": 1500,
+        "district": "MIDTOWN",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "helicopter",
+        "weapon": "9MM PISTOL",
+        "clock": "17:20",
+        "renderer": "2d",
+        "vehicles": 265,
+        "pedestrians": 595
+      },
+      "parachute": null,
+      "falls": {
+        "mode": "play",
+        "hp": 100,
+        "x": 1560,
+        "y": 1500,
+        "altitudeM": 450,
+        "groundM": 0,
+        "falling": null,
+        "tumbling": false,
+        "splat": null,
+        "parachute": null,
+        "vehicle": {
+          "type": "helicopter",
+          "hp": 220,
+          "airborne": false,
+          "overturned": null
+        },
+        "impacts": [],
+        "vehicleLandings": []
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 0,
+        "drill": null,
+        "kinds": []
+      },
+      "context": {
+        "active": true,
+        "mode": "vehicle",
+        "label": "MAVERICK HELICOPTER",
+        "speed": "0",
+        "unit": "KM/H · 450 m ALT · 430 m OVER ROOFS",
+        "units": "kmh"
+      },
+      "cue": {
+        "call": "PRESS J TO OPEN PARACHUTE",
+        "note": "FREEFALL"
+      },
+      "keys": "WASD RUNSHIFT WALKSPACE JUMPE INTERACTF FIRE? CONTROLS"
+    },
+    {
+      "label": "actual-J-bail-held",
+      "status": {
+        "mode": "play",
+        "x": 1580,
+        "y": 1500,
+        "district": "MIDTOWN",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "17:20",
+        "renderer": "2d",
+        "vehicles": 297,
+        "pedestrians": 602
+      },
+      "parachute": {
+        "stage": "freefall",
+        "canopy": "main",
+        "mainUsed": false,
+        "reserveAvailable": true,
+        "reserveUsed": false,
+        "cutaway": false,
+        "armed": false,
+        "phase": null,
+        "deployS": null,
+        "opening": 0,
+        "aglM": 442.6,
+        "altitudeM": 442.6,
+        "descentMs": 12.1,
+        "loadG": 0.05,
+        "peakLoadG": null,
+        "from": 450,
+        "openedAtM": null,
+        "pullMs": null,
+        "openAtM": null,
+        "openTimeS": null,
+        "openLostM": null,
+        "safeLostM": null,
+        "safeTimeS": null,
+        "brakesSet": null,
+        "flownS": null,
+        "cue": {
+          "state": "high",
+          "needM": 87,
+          "seconds": 3.97
+        }
+      },
+      "falls": {
+        "mode": "play",
+        "hp": 100,
+        "x": 1580,
+        "y": 1500,
+        "altitudeM": 442.6,
+        "groundM": 0,
+        "falling": null,
+        "tumbling": false,
+        "splat": null,
+        "parachute": {
+          "stage": "freefall",
+          "canopy": "main",
+          "mainUsed": false,
+          "reserveAvailable": true,
+          "reserveUsed": false,
+          "cutaway": false,
+          "armed": false,
+          "phase": null,
+          "deployS": null,
+          "opening": 0,
+          "aglM": 442.6,
+          "altitudeM": 442.6,
+          "descentMs": 12.1,
+          "loadG": 0.05,
+          "peakLoadG": null,
+          "from": 450,
+          "openedAtM": null,
+          "pullMs": null,
+          "openAtM": null,
+          "openTimeS": null,
+          "openLostM": null,
+          "safeLostM": null,
+          "safeTimeS": null,
+          "brakesSet": null,
+          "flownS": null,
+          "cue": {
+            "state": "high",
+            "needM": 87,
+            "seconds": 3.97
+          }
+        },
+        "vehicle": null,
+        "impacts": [],
+        "vehicleLandings": []
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 1,
+        "drill": null,
+        "kinds": []
+      },
+      "context": {
+        "active": true,
+        "mode": "falling",
+        "label": "FALLING · FREEFALL",
+        "speed": "47",
+        "unit": "KM/H · ↓ 44 · 443 m",
+        "units": "kmh"
+      },
+      "cue": {
+        "call": "PRESS J TO OPEN PARACHUTE",
+        "note": "FREEFALL"
+      },
+      "keys": "J OPEN PARACHUTEWASD STEERW TRACK"
+    },
+    {
+      "label": "bail-repeat-safe",
+      "status": {
+        "mode": "play",
+        "x": 1601,
+        "y": 1500,
+        "district": "MIDTOWN",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "17:21",
+        "renderer": "2d",
+        "vehicles": 300,
+        "pedestrians": 611
+      },
+      "parachute": {
+        "stage": "freefall",
+        "canopy": "main",
+        "mainUsed": false,
+        "reserveAvailable": true,
+        "reserveUsed": false,
+        "cutaway": false,
+        "armed": false,
+        "phase": null,
+        "deployS": null,
+        "opening": 0,
+        "aglM": 435.3,
+        "altitudeM": 435.3,
+        "descentMs": 16.7,
+        "loadG": 0.09,
+        "peakLoadG": null,
+        "from": 450,
+        "openedAtM": null,
+        "pullMs": null,
+        "openAtM": null,
+        "openTimeS": null,
+        "openLostM": null,
+        "safeLostM": null,
+        "safeTimeS": null,
+        "brakesSet": null,
+        "flownS": null,
+        "cue": {
+          "state": "high",
+          "needM": 100.4,
+          "seconds": 4.07
+        }
+      },
+      "falls": {
+        "mode": "play",
+        "hp": 100,
+        "x": 1601,
+        "y": 1500,
+        "altitudeM": 435.3,
+        "groundM": 0,
+        "falling": null,
+        "tumbling": false,
+        "splat": null,
+        "parachute": {
+          "stage": "freefall",
+          "canopy": "main",
+          "mainUsed": false,
+          "reserveAvailable": true,
+          "reserveUsed": false,
+          "cutaway": false,
+          "armed": false,
+          "phase": null,
+          "deployS": null,
+          "opening": 0,
+          "aglM": 435.3,
+          "altitudeM": 435.3,
+          "descentMs": 16.7,
+          "loadG": 0.09,
+          "peakLoadG": null,
+          "from": 450,
+          "openedAtM": null,
+          "pullMs": null,
+          "openAtM": null,
+          "openTimeS": null,
+          "openLostM": null,
+          "safeLostM": null,
+          "safeTimeS": null,
+          "brakesSet": null,
+          "flownS": null,
+          "cue": {
+            "state": "high",
+            "needM": 100.4,
+            "seconds": 4.07
+          }
+        },
+        "vehicle": null,
+        "impacts": [],
+        "vehicleLandings": []
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 1.5,
+        "drill": null,
+        "kinds": []
+      },
+      "context": {
+        "active": true,
+        "mode": "falling",
+        "label": "FALLING · FREEFALL",
+        "speed": "64",
+        "unit": "KM/H · ↓ 60 · 435 m",
+        "units": "kmh"
+      },
+      "cue": {
+        "call": "PRESS J TO OPEN PARACHUTE",
+        "note": "FREEFALL"
+      },
+      "keys": "J OPEN PARACHUTEWASD STEERW TRACK"
+    },
+    {
+      "label": "fresh-main-pull",
+      "status": {
+        "mode": "play",
+        "x": 1601,
+        "y": 1500,
+        "district": "MIDTOWN",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "17:21",
+        "renderer": "2d",
+        "vehicles": 300,
+        "pedestrians": 611
+      },
+      "parachute": {
+        "stage": "canopy",
+        "canopy": "main",
+        "mainUsed": true,
+        "reserveAvailable": true,
+        "reserveUsed": false,
+        "cutaway": false,
+        "armed": false,
+        "phase": "pilot",
+        "deployS": 0,
+        "opening": 0,
+        "aglM": 435.3,
+        "altitudeM": 435.3,
+        "descentMs": 16.7,
+        "loadG": 1,
+        "peakLoadG": 1,
+        "from": 450,
+        "openedAtM": 435,
+        "pullMs": 16.7,
+        "openAtM": null,
+        "openTimeS": null,
+        "openLostM": null,
+        "safeLostM": null,
+        "safeTimeS": null,
+        "brakesSet": true,
+        "flownS": 0,
+        "cue": {
+          "state": "opening",
+          "needM": 100.4,
+          "seconds": 4.07
+        }
+      },
+      "falls": {
+        "mode": "play",
+        "hp": 100,
+        "x": 1601,
+        "y": 1500,
+        "altitudeM": 435.3,
+        "groundM": 0,
+        "falling": null,
+        "tumbling": false,
+        "splat": null,
+        "parachute": {
+          "stage": "canopy",
+          "canopy": "main",
+          "mainUsed": true,
+          "reserveAvailable": true,
+          "reserveUsed": false,
+          "cutaway": false,
+          "armed": false,
+          "phase": "pilot",
+          "deployS": 0,
+          "opening": 0,
+          "aglM": 435.3,
+          "altitudeM": 435.3,
+          "descentMs": 16.7,
+          "loadG": 1,
+          "peakLoadG": 1,
+          "from": 450,
+          "openedAtM": 435,
+          "pullMs": 16.7,
+          "openAtM": null,
+          "openTimeS": null,
+          "openLostM": null,
+          "safeLostM": null,
+          "safeTimeS": null,
+          "brakesSet": true,
+          "flownS": 0,
+          "cue": {
+            "state": "opening",
+            "needM": 100.4,
+            "seconds": 4.07
+          }
+        },
+        "vehicle": null,
+        "impacts": [],
+        "vehicleLandings": []
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 1.5,
+        "drill": null,
+        "kinds": []
+      },
+      "context": {
+        "active": true,
+        "mode": "falling",
+        "label": "FALLING · OPENING",
+        "speed": "64",
+        "unit": "KM/H · ↓ 60 · 435 m",
+        "units": "kmh"
+      },
+      "cue": {
+        "call": "PRESS J TO OPEN PARACHUTE",
+        "note": "FREEFALL"
+      },
+      "keys": "J OPEN PARACHUTEWASD STEERW TRACK"
+    },
+    {
+      "label": "main-open-held-safe",
+      "status": {
+        "mode": "play",
+        "x": 1955,
+        "y": 1500,
+        "district": "MIDTOWN",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "17:27",
+        "renderer": "2d",
+        "vehicles": 307,
+        "pedestrians": 623
+      },
+      "parachute": {
+        "stage": "canopy",
+        "canopy": "main",
+        "mainUsed": true,
+        "reserveAvailable": true,
+        "reserveUsed": false,
+        "cutaway": false,
+        "armed": false,
+        "phase": "open",
+        "deployS": 6,
+        "opening": 1,
+        "aglM": 319,
+        "altitudeM": 327.1,
+        "descentMs": 3.5,
+        "loadG": 1,
+        "peakLoadG": 3.72,
+        "from": 450,
+        "openedAtM": 435,
+        "pullMs": 16.7,
+        "openAtM": 326,
+        "openTimeS": 4.08,
+        "openLostM": 101,
+        "safeLostM": 100.9,
+        "safeTimeS": 4.08,
+        "brakesSet": false,
+        "flownS": 1.93,
+        "cue": null
+      },
+      "falls": {
+        "mode": "play",
+        "hp": 100,
+        "x": 1955,
+        "y": 1500,
+        "altitudeM": 327.1,
+        "groundM": 0,
+        "falling": null,
+        "tumbling": false,
+        "splat": null,
+        "parachute": {
+          "stage": "canopy",
+          "canopy": "main",
+          "mainUsed": true,
+          "reserveAvailable": true,
+          "reserveUsed": false,
+          "cutaway": false,
+          "armed": false,
+          "phase": "open",
+          "deployS": 6,
+          "opening": 1,
+          "aglM": 319,
+          "altitudeM": 327.1,
+          "descentMs": 3.5,
+          "loadG": 1,
+          "peakLoadG": 3.72,
+          "from": 450,
+          "openedAtM": 435,
+          "pullMs": 16.7,
+          "openAtM": 326,
+          "openTimeS": 4.08,
+          "openLostM": 101,
+          "safeLostM": 100.9,
+          "safeTimeS": 4.08,
+          "brakesSet": false,
+          "flownS": 1.93,
+          "cue": null
+        },
+        "vehicle": null,
+        "impacts": [],
+        "vehicleLandings": []
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 7.5,
+        "drill": null,
+        "kinds": []
+      },
+      "context": {
+        "active": true,
+        "mode": "falling",
+        "label": "FALLING · CANOPY",
+        "speed": "30",
+        "unit": "KM/H · ↓ 13 · 327 m",
+        "units": "kmh"
+      },
+      "cue": {
+        "call": "CANOPY OPENING",
+        "note": "CANOPY SNAPPING OPEN"
+      },
+      "keys": "J CUT AWAYWASD STEERS FLAREW GLIDE"
+    },
+    {
+      "label": "open-main-repeat-safe",
+      "status": {
+        "mode": "play",
+        "x": 1961,
+        "y": 1500,
+        "district": "MIDTOWN",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "17:27",
+        "renderer": "2d",
+        "vehicles": 307,
+        "pedestrians": 623
+      },
+      "parachute": {
+        "stage": "canopy",
+        "canopy": "main",
+        "mainUsed": true,
+        "reserveAvailable": true,
+        "reserveUsed": false,
+        "cutaway": false,
+        "armed": false,
+        "phase": "open",
+        "deployS": 6.1,
+        "opening": 1,
+        "aglM": 318.7,
+        "altitudeM": 326.8,
+        "descentMs": 3.5,
+        "loadG": 1,
+        "peakLoadG": 3.72,
+        "from": 450,
+        "openedAtM": 435,
+        "pullMs": 16.7,
+        "openAtM": 326,
+        "openTimeS": 4.08,
+        "openLostM": 101,
+        "safeLostM": 100.9,
+        "safeTimeS": 4.08,
+        "brakesSet": false,
+        "flownS": 2.03,
+        "cue": null
+      },
+      "falls": {
+        "mode": "play",
+        "hp": 100,
+        "x": 1961,
+        "y": 1500,
+        "altitudeM": 326.8,
+        "groundM": 0,
+        "falling": null,
+        "tumbling": false,
+        "splat": null,
+        "parachute": {
+          "stage": "canopy",
+          "canopy": "main",
+          "mainUsed": true,
+          "reserveAvailable": true,
+          "reserveUsed": false,
+          "cutaway": false,
+          "armed": false,
+          "phase": "open",
+          "deployS": 6.1,
+          "opening": 1,
+          "aglM": 318.7,
+          "altitudeM": 326.8,
+          "descentMs": 3.5,
+          "loadG": 1,
+          "peakLoadG": 3.72,
+          "from": 450,
+          "openedAtM": 435,
+          "pullMs": 16.7,
+          "openAtM": 326,
+          "openTimeS": 4.08,
+          "openLostM": 101,
+          "safeLostM": 100.9,
+          "safeTimeS": 4.08,
+          "brakesSet": false,
+          "flownS": 2.03,
+          "cue": null
+        },
+        "vehicle": null,
+        "impacts": [],
+        "vehicleLandings": []
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 7.6,
+        "drill": null,
+        "kinds": []
+      },
+      "context": {
+        "active": true,
+        "mode": "falling",
+        "label": "FALLING · CANOPY",
+        "speed": "31",
+        "unit": "KM/H · ↓ 13 · 327 m",
+        "units": "kmh"
+      },
+      "cue": {
+        "call": "CANOPY OPENING",
+        "note": "CANOPY SNAPPING OPEN"
+      },
+      "keys": "J CUT AWAYWASD STEERS FLAREW GLIDE"
+    },
+    {
+      "label": "fresh-main-cutaway",
+      "status": {
+        "mode": "play",
+        "x": 1961,
+        "y": 1500,
+        "district": "MIDTOWN",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "17:27",
+        "renderer": "2d",
+        "vehicles": 307,
+        "pedestrians": 623
+      },
+      "parachute": {
+        "stage": "freefall",
+        "canopy": "main",
+        "mainUsed": true,
+        "reserveAvailable": true,
+        "reserveUsed": false,
+        "cutaway": true,
+        "armed": false,
+        "phase": null,
+        "deployS": null,
+        "opening": 0,
+        "aglM": 318.7,
+        "altitudeM": 326.8,
+        "descentMs": 3.5,
+        "loadG": 0,
+        "peakLoadG": 3.72,
+        "from": 450,
+        "openedAtM": 435,
+        "pullMs": 16.7,
+        "openAtM": 326,
+        "openTimeS": 4.08,
+        "openLostM": 101,
+        "safeLostM": 100.9,
+        "safeTimeS": 4.08,
+        "brakesSet": null,
+        "flownS": 2.03,
+        "cue": {
+          "state": "high",
+          "needM": 21.6,
+          "seconds": 2
+        }
+      },
+      "falls": {
+        "mode": "play",
+        "hp": 100,
+        "x": 1961,
+        "y": 1500,
+        "altitudeM": 326.8,
+        "groundM": 0,
+        "falling": null,
+        "tumbling": false,
+        "splat": null,
+        "parachute": {
+          "stage": "freefall",
+          "canopy": "main",
+          "mainUsed": true,
+          "reserveAvailable": true,
+          "reserveUsed": false,
+          "cutaway": true,
+          "armed": false,
+          "phase": null,
+          "deployS": null,
+          "opening": 0,
+          "aglM": 318.7,
+          "altitudeM": 326.8,
+          "descentMs": 3.5,
+          "loadG": 0,
+          "peakLoadG": 3.72,
+          "from": 450,
+          "openedAtM": 435,
+          "pullMs": 16.7,
+          "openAtM": 326,
+          "openTimeS": 4.08,
+          "openLostM": 101,
+          "safeLostM": 100.9,
+          "safeTimeS": 4.08,
+          "brakesSet": null,
+          "flownS": 2.03,
+          "cue": {
+            "state": "high",
+            "needM": 21.6,
+            "seconds": 2
+          }
+        },
+        "vehicle": null,
+        "impacts": [],
+        "vehicleLandings": []
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 7.6,
+        "drill": null,
+        "kinds": []
+      },
+      "context": {
+        "active": true,
+        "mode": "falling",
+        "label": "FALLING · RESERVE READY",
+        "speed": "31",
+        "unit": "KM/H · ↓ 13 · 327 m",
+        "units": "kmh"
+      },
+      "cue": {
+        "call": "CANOPY OPENING",
+        "note": "CANOPY SNAPPING OPEN"
+      },
+      "keys": "J CUT AWAYWASD STEERS FLAREW GLIDE"
+    },
+    {
+      "label": "cutaway-held-freefall",
+      "status": {
+        "mode": "play",
+        "x": 2134,
+        "y": 1500,
+        "district": "MIDTOWN",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "17:30",
+        "renderer": "2d",
+        "vehicles": 307,
+        "pedestrians": 619
+      },
+      "parachute": {
+        "stage": "freefall",
+        "canopy": "main",
+        "mainUsed": true,
+        "reserveAvailable": true,
+        "reserveUsed": false,
+        "cutaway": true,
+        "armed": false,
+        "phase": null,
+        "deployS": null,
+        "opening": 0,
+        "aglM": 288.7,
+        "altitudeM": 288.7,
+        "descentMs": 25.8,
+        "loadG": 0.23,
+        "peakLoadG": 3.72,
+        "from": 450,
+        "openedAtM": 435,
+        "pullMs": 16.7,
+        "openAtM": 326,
+        "openTimeS": 4.08,
+        "openLostM": 101,
+        "safeLostM": 100.9,
+        "safeTimeS": 4.08,
+        "brakesSet": null,
+        "flownS": 2.03,
+        "cue": {
+          "state": "high",
+          "needM": 60.5,
+          "seconds": 2.4
+        }
+      },
+      "falls": {
+        "mode": "play",
+        "hp": 100,
+        "x": 2134,
+        "y": 1500,
+        "altitudeM": 288.7,
+        "groundM": 0,
+        "falling": null,
+        "tumbling": false,
+        "splat": null,
+        "parachute": {
+          "stage": "freefall",
+          "canopy": "main",
+          "mainUsed": true,
+          "reserveAvailable": true,
+          "reserveUsed": false,
+          "cutaway": true,
+          "armed": false,
+          "phase": null,
+          "deployS": null,
+          "opening": 0,
+          "aglM": 288.7,
+          "altitudeM": 288.7,
+          "descentMs": 25.8,
+          "loadG": 0.23,
+          "peakLoadG": 3.72,
+          "from": 450,
+          "openedAtM": 435,
+          "pullMs": 16.7,
+          "openAtM": 326,
+          "openTimeS": 4.08,
+          "openLostM": 101,
+          "safeLostM": 100.9,
+          "safeTimeS": 4.08,
+          "brakesSet": null,
+          "flownS": 2.03,
+          "cue": {
+            "state": "high",
+            "needM": 60.5,
+            "seconds": 2.4
+          }
+        },
+        "vehicle": null,
+        "impacts": [],
+        "vehicleLandings": []
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 10.1,
+        "drill": null,
+        "kinds": []
+      },
+      "context": {
+        "active": true,
+        "mode": "falling",
+        "label": "FALLING · RESERVE READY",
+        "speed": "99",
+        "unit": "KM/H · ↓ 93 · 289 m",
+        "units": "kmh"
+      },
+      "cue": {
+        "call": "PRESS J TO OPEN RESERVE",
+        "note": "MAIN RELEASED · RESERVE READY"
+      },
+      "keys": "J OPEN RESERVEWASD STEERW TRACK"
+    },
+    {
+      "label": "fresh-reserve-pull",
+      "status": {
+        "mode": "play",
+        "x": 2134,
+        "y": 1500,
+        "district": "MIDTOWN",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "17:30",
+        "renderer": "2d",
+        "vehicles": 307,
+        "pedestrians": 619
+      },
+      "parachute": {
+        "stage": "canopy",
+        "canopy": "reserve",
+        "mainUsed": true,
+        "reserveAvailable": false,
+        "reserveUsed": true,
+        "cutaway": true,
+        "armed": false,
+        "phase": "pilot",
+        "deployS": 0,
+        "opening": 0,
+        "aglM": 288.7,
+        "altitudeM": 288.7,
+        "descentMs": 25.8,
+        "loadG": 1,
+        "peakLoadG": 1,
+        "from": 450,
+        "openedAtM": 289,
+        "pullMs": 25.8,
+        "openAtM": null,
+        "openTimeS": null,
+        "openLostM": null,
+        "safeLostM": null,
+        "safeTimeS": null,
+        "brakesSet": true,
+        "flownS": 0,
+        "cue": {
+          "state": "opening",
+          "needM": 60.5,
+          "seconds": 2.4
+        }
+      },
+      "falls": {
+        "mode": "play",
+        "hp": 100,
+        "x": 2134,
+        "y": 1500,
+        "altitudeM": 288.7,
+        "groundM": 0,
+        "falling": null,
+        "tumbling": false,
+        "splat": null,
+        "parachute": {
+          "stage": "canopy",
+          "canopy": "reserve",
+          "mainUsed": true,
+          "reserveAvailable": false,
+          "reserveUsed": true,
+          "cutaway": true,
+          "armed": false,
+          "phase": "pilot",
+          "deployS": 0,
+          "opening": 0,
+          "aglM": 288.7,
+          "altitudeM": 288.7,
+          "descentMs": 25.8,
+          "loadG": 1,
+          "peakLoadG": 1,
+          "from": 450,
+          "openedAtM": 289,
+          "pullMs": 25.8,
+          "openAtM": null,
+          "openTimeS": null,
+          "openLostM": null,
+          "safeLostM": null,
+          "safeTimeS": null,
+          "brakesSet": true,
+          "flownS": 0,
+          "cue": {
+            "state": "opening",
+            "needM": 60.5,
+            "seconds": 2.4
+          }
+        },
+        "vehicle": null,
+        "impacts": [],
+        "vehicleLandings": []
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 10.1,
+        "drill": null,
+        "kinds": []
+      },
+      "context": {
+        "active": true,
+        "mode": "falling",
+        "label": "FALLING · RESERVE",
+        "speed": "99",
+        "unit": "KM/H · ↓ 93 · 289 m",
+        "units": "kmh"
+      },
+      "cue": {
+        "call": "PRESS J TO OPEN RESERVE",
+        "note": "MAIN RELEASED · RESERVE READY"
+      },
+      "keys": "J OPEN RESERVEWASD STEERW TRACK"
+    },
+    {
+      "label": "reserve-open",
+      "status": {
+        "mode": "play",
+        "x": 2376,
+        "y": 1500,
+        "district": "MIDTOWN",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "17:34",
+        "renderer": "2d",
+        "vehicles": 307,
+        "pedestrians": 612
+      },
+      "parachute": {
+        "stage": "canopy",
+        "canopy": "reserve",
+        "mainUsed": true,
+        "reserveAvailable": false,
+        "reserveUsed": true,
+        "cutaway": true,
+        "armed": false,
+        "phase": "open",
+        "deployS": 4,
+        "opening": 1,
+        "aglM": 208.8,
+        "altitudeM": 221.6,
+        "descentMs": 3.5,
+        "loadG": 1,
+        "peakLoadG": 3.8,
+        "from": 450,
+        "openedAtM": 289,
+        "pullMs": 25.8,
+        "openAtM": 217,
+        "openTimeS": 2.2,
+        "openLostM": 59,
+        "safeLostM": 60.9,
+        "safeTimeS": 2.4,
+        "brakesSet": false,
+        "flownS": 1.82,
+        "cue": null
+      },
+      "falls": {
+        "mode": "play",
+        "hp": 100,
+        "x": 2376,
+        "y": 1500,
+        "altitudeM": 221.6,
+        "groundM": 0,
+        "falling": null,
+        "tumbling": false,
+        "splat": null,
+        "parachute": {
+          "stage": "canopy",
+          "canopy": "reserve",
+          "mainUsed": true,
+          "reserveAvailable": false,
+          "reserveUsed": true,
+          "cutaway": true,
+          "armed": false,
+          "phase": "open",
+          "deployS": 4,
+          "opening": 1,
+          "aglM": 208.8,
+          "altitudeM": 221.6,
+          "descentMs": 3.5,
+          "loadG": 1,
+          "peakLoadG": 3.8,
+          "from": 450,
+          "openedAtM": 289,
+          "pullMs": 25.8,
+          "openAtM": 217,
+          "openTimeS": 2.2,
+          "openLostM": 59,
+          "safeLostM": 60.9,
+          "safeTimeS": 2.4,
+          "brakesSet": false,
+          "flownS": 1.82,
+          "cue": null
+        },
+        "vehicle": null,
+        "impacts": [],
+        "vehicleLandings": []
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 14.1,
+        "drill": null,
+        "kinds": []
+      },
+      "context": {
+        "active": true,
+        "mode": "falling",
+        "label": "FALLING · RESERVE",
+        "speed": "29",
+        "unit": "KM/H · ↓ 13 · 222 m",
+        "units": "kmh"
+      },
+      "cue": {
+        "call": "RESERVE OPENING",
+        "note": "CANOPY SNAPPING OPEN"
+      },
+      "keys": "WASD STEERS FLAREW GLIDE"
+    },
+    {
+      "label": "reserve-extra-edges-safe",
+      "status": {
+        "mode": "play",
+        "x": 2394,
+        "y": 1500,
+        "district": "MIDTOWN",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "17:34",
+        "renderer": "2d",
+        "vehicles": 307,
+        "pedestrians": 612
+      },
+      "parachute": {
+        "stage": "canopy",
+        "canopy": "reserve",
+        "mainUsed": true,
+        "reserveAvailable": false,
+        "reserveUsed": true,
+        "cutaway": true,
+        "armed": false,
+        "phase": "open",
+        "deployS": 4.3,
+        "opening": 1,
+        "aglM": 207.7,
+        "altitudeM": 220.6,
+        "descentMs": 3.5,
+        "loadG": 1,
+        "peakLoadG": 3.8,
+        "from": 450,
+        "openedAtM": 289,
+        "pullMs": 25.8,
+        "openAtM": 217,
+        "openTimeS": 2.2,
+        "openLostM": 59,
+        "safeLostM": 60.9,
+        "safeTimeS": 2.4,
+        "brakesSet": false,
+        "flownS": 2.12,
+        "cue": null
+      },
+      "falls": {
+        "mode": "play",
+        "hp": 100,
+        "x": 2394,
+        "y": 1500,
+        "altitudeM": 220.6,
+        "groundM": 0,
+        "falling": null,
+        "tumbling": false,
+        "splat": null,
+        "parachute": {
+          "stage": "canopy",
+          "canopy": "reserve",
+          "mainUsed": true,
+          "reserveAvailable": false,
+          "reserveUsed": true,
+          "cutaway": true,
+          "armed": false,
+          "phase": "open",
+          "deployS": 4.3,
+          "opening": 1,
+          "aglM": 207.7,
+          "altitudeM": 220.6,
+          "descentMs": 3.5,
+          "loadG": 1,
+          "peakLoadG": 3.8,
+          "from": 450,
+          "openedAtM": 289,
+          "pullMs": 25.8,
+          "openAtM": 217,
+          "openTimeS": 2.2,
+          "openLostM": 59,
+          "safeLostM": 60.9,
+          "safeTimeS": 2.4,
+          "brakesSet": false,
+          "flownS": 2.12,
+          "cue": null
+        },
+        "vehicle": null,
+        "impacts": [],
+        "vehicleLandings": []
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 14.4,
+        "drill": null,
+        "kinds": []
+      },
+      "context": {
+        "active": true,
+        "mode": "falling",
+        "label": "FALLING · RESERVE",
+        "speed": "31",
+        "unit": "KM/H · ↓ 13 · 221 m",
+        "units": "kmh"
+      },
+      "cue": {
+        "call": "RESERVE OPENING",
+        "note": "CANOPY SNAPPING OPEN"
+      },
+      "keys": "WASD STEERS FLAREW GLIDE"
+    },
+    {
+      "label": "normal-reserve-landing",
+      "status": {
+        "mode": "play",
+        "x": 6493,
+        "y": 1498,
+        "district": "RIDGELINE COUNTY",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "18:34",
+        "renderer": "2d",
+        "vehicles": 313,
+        "pedestrians": 591
+      },
+      "parachute": null,
+      "falls": {
+        "mode": "play",
+        "hp": 100,
+        "x": 6493,
+        "y": 1498,
+        "altitudeM": 9,
+        "groundM": 9,
+        "falling": null,
+        "tumbling": false,
+        "splat": null,
+        "parachute": null,
+        "vehicle": null,
+        "impacts": [
+          {
+            "cause": "canopy",
+            "speed": 3.5,
+            "drop": 0.6,
+            "injury": 0,
+            "scraped": 0,
+            "water": false,
+            "roof": false,
+            "outcome": "safe",
+            "at": 73.98,
+            "seq": 1
+          }
+        ],
+        "vehicleLandings": []
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 74.4,
+        "drill": null,
+        "kinds": []
+      },
+      "context": {
+        "active": true,
+        "mode": "foot",
+        "label": "WALKING",
+        "speed": "3",
+        "unit": "KM/H",
+        "units": "kmh"
+      },
+      "cue": {
+        "call": "RESERVE OPENING",
+        "note": "CANOPY SNAPPING OPEN"
+      },
+      "keys": "WASD RUNSHIFT WALKSPACE JUMPE INTERACTF FIRE? CONTROLS"
+    },
+    {
+      "label": "later-bailout-fresh-rig",
+      "status": {
+        "mode": "play",
+        "x": 1611,
+        "y": 1551,
+        "district": "MIDTOWN",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "18:34",
+        "renderer": "2d",
+        "vehicles": 314,
+        "pedestrians": 591
+      },
+      "parachute": {
+        "stage": "freefall",
+        "canopy": "main",
+        "mainUsed": false,
+        "reserveAvailable": true,
+        "reserveUsed": false,
+        "cutaway": false,
+        "armed": false,
+        "phase": null,
+        "deployS": null,
+        "opening": 0,
+        "aglM": 449.7,
+        "altitudeM": 449.7,
+        "descentMs": 3.5,
+        "loadG": 0,
+        "peakLoadG": null,
+        "from": 450,
+        "openedAtM": null,
+        "pullMs": null,
+        "openAtM": null,
+        "openTimeS": null,
+        "openLostM": null,
+        "safeLostM": null,
+        "safeTimeS": null,
+        "brakesSet": null,
+        "flownS": null,
+        "cue": {
+          "state": "high",
+          "needM": 61.1,
+          "seconds": 3.8
+        }
+      },
+      "falls": {
+        "mode": "play",
+        "hp": 100,
+        "x": 1611,
+        "y": 1551,
+        "altitudeM": 449.7,
+        "groundM": 0,
+        "falling": null,
+        "tumbling": false,
+        "splat": null,
+        "parachute": {
+          "stage": "freefall",
+          "canopy": "main",
+          "mainUsed": false,
+          "reserveAvailable": true,
+          "reserveUsed": false,
+          "cutaway": false,
+          "armed": false,
+          "phase": null,
+          "deployS": null,
+          "opening": 0,
+          "aglM": 449.7,
+          "altitudeM": 449.7,
+          "descentMs": 3.5,
+          "loadG": 0,
+          "peakLoadG": null,
+          "from": 450,
+          "openedAtM": null,
+          "pullMs": null,
+          "openAtM": null,
+          "openTimeS": null,
+          "openLostM": null,
+          "safeLostM": null,
+          "safeTimeS": null,
+          "brakesSet": null,
+          "flownS": null,
+          "cue": {
+            "state": "high",
+            "needM": 61.1,
+            "seconds": 3.8
+          }
+        },
+        "vehicle": null,
+        "impacts": [
+          {
+            "cause": "canopy",
+            "speed": 3.5,
+            "drop": 0.6,
+            "injury": 0,
+            "scraped": 0,
+            "water": false,
+            "roof": false,
+            "outcome": "safe",
+            "at": 73.98,
+            "seq": 1
+          }
+        ],
+        "vehicleLandings": []
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 74.5,
+        "drill": null,
+        "kinds": []
+      },
+      "context": {
+        "active": true,
+        "mode": "falling",
+        "label": "FALLING · FREEFALL",
+        "speed": "13",
+        "unit": "KM/H · ↓ 13 · 450 m",
+        "units": "kmh"
+      },
+      "cue": {
+        "call": "PRESS J TO OPEN PARACHUTE",
+        "note": "FREEFALL"
+      },
+      "keys": "J OPEN PARACHUTEWASD STEERW TRACK"
+    },
+    {
+      "label": "actual-new-game-cleans-active-rig",
+      "status": {
+        "mode": "play",
+        "x": 748,
+        "y": 584,
+        "district": "NORTHBANK · OLD QUARTER",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "17:20",
+        "renderer": "2d",
+        "vehicles": 279,
+        "pedestrians": 594
+      },
+      "parachute": null,
+      "falls": {
+        "mode": "play",
+        "hp": 100,
+        "x": 748,
+        "y": 584,
+        "altitudeM": 449.7,
+        "groundM": 0,
+        "falling": null,
+        "tumbling": false,
+        "splat": null,
+        "parachute": null,
+        "vehicle": null,
+        "impacts": [
+          {
+            "cause": "canopy",
+            "speed": 3.5,
+            "drop": 0.6,
+            "injury": 0,
+            "scraped": 0,
+            "water": false,
+            "roof": false,
+            "outcome": "safe",
+            "at": 73.98,
+            "seq": 1
+          }
+        ],
+        "vehicleLandings": []
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 74.5,
+        "drill": null,
+        "kinds": []
+      },
+      "context": {
+        "active": true,
+        "mode": "foot",
+        "label": "STANDING",
+        "speed": "0",
+        "unit": "KM/H",
+        "units": "kmh"
+      },
+      "cue": {
+        "call": "PRESS J TO OPEN PARACHUTE",
+        "note": "FREEFALL"
+      },
+      "keys": "WASD RUNSHIFT WALKSPACE JUMPE INTERACTF FIRE? CONTROLS"
+    }
+  ],
+  "assertions": 17,
+  "errors": [],
+  "firstLanding": {
+    "status": {
+      "mode": "play",
+      "x": 6493,
+      "y": 1498,
+      "district": "RIDGELINE COUNTY",
+      "hp": 100,
+      "cash": 0,
+      "wanted": 0,
+      "mission": null,
+      "completed": 0,
+      "vehicle": null,
+      "weapon": "9MM PISTOL",
+      "clock": "18:34",
+      "renderer": "2d",
+      "vehicles": 313,
+      "pedestrians": 591
+    },
+    "parachute": null,
+    "falls": {
+      "mode": "play",
+      "hp": 100,
+      "x": 6493,
+      "y": 1498,
+      "altitudeM": 9,
+      "groundM": 9,
+      "falling": null,
+      "tumbling": false,
+      "splat": null,
+      "parachute": null,
+      "vehicle": null,
+      "impacts": [
+        {
+          "cause": "canopy",
+          "speed": 3.5,
+          "drop": 0.6,
+          "injury": 0,
+          "scraped": 0,
+          "water": false,
+          "roof": false,
+          "outcome": "safe",
+          "at": 73.98,
+          "seq": 1
+        }
+      ],
+      "vehicleLandings": []
+    },
+    "faults": {
+      "count": 0,
+      "gameTime": 74.4,
+      "drill": null,
+      "kinds": []
+    },
+    "context": {
+      "active": true,
+      "mode": "foot",
+      "label": "WALKING",
+      "speed": "3",
+      "unit": "KM/H",
+      "units": "kmh"
+    },
+    "cue": {
+      "call": "RESERVE OPENING",
+      "note": "CANOPY SNAPPING OPEN"
+    },
+    "keys": "WASD RUNSHIFT WALKSPACE JUMPE INTERACTF FIRE? CONTROLS"
+  },
+  "worldReset": {
+    "before": {
+      "count": 0,
+      "byReason": {},
+      "serial": 0,
+      "last": null,
+      "now": {
+        "vehicles": 314,
+        "wrecks": 1,
+        "abandoned": 0,
+        "damaged": 5,
+        "burning": 0,
+        "stainedCars": 1,
+        "carStains": 1,
+        "knockedProps": 0,
+        "bloodPools": 246,
+        "bleeders": 0,
+        "severedParts": 0,
+        "goreStumps": 0,
+        "bodies": 4,
+        "fires": 0,
+        "scorch": 1,
+        "skids": 0,
+        "incidents": 4,
+        "wanted": 0,
+        "shopPanesBroken": 0,
+        "worldDecals": null,
+        "rubble": null,
+        "windowsBroken": null
+      }
+    },
+    "after": {
+      "count": 1,
+      "byReason": {
+        "new-game": 1
+      },
+      "serial": 1,
+      "last": {
+        "reason": "new-game",
+        "gameTime": 74.49999999999685,
+        "serial": 1,
+        "ms": 90.8,
+        "before": {
+          "vehicles": 314,
+          "wrecks": 1,
+          "abandoned": 0,
+          "damaged": 5,
+          "burning": 0,
+          "stainedCars": 1,
+          "carStains": 1,
+          "knockedProps": 0,
+          "bloodPools": 246,
+          "bleeders": 0,
+          "severedParts": 0,
+          "goreStumps": 0,
+          "bodies": 4,
+          "fires": 0,
+          "scorch": 1,
+          "skids": 0,
+          "incidents": 4,
+          "wanted": 0,
+          "shopPanesBroken": 0,
+          "worldDecals": null,
+          "rubble": null,
+          "windowsBroken": null
+        },
+        "after": {
+          "vehicles": 279,
+          "wrecks": 0,
+          "abandoned": 0,
+          "damaged": 0,
+          "burning": 0,
+          "stainedCars": 0,
+          "carStains": 0,
+          "knockedProps": 0,
+          "bloodPools": 0,
+          "bleeders": 0,
+          "severedParts": 0,
+          "goreStumps": 0,
+          "bodies": 0,
+          "fires": 0,
+          "scorch": 0,
+          "skids": 0,
+          "incidents": 0,
+          "wanted": 0,
+          "shopPanesBroken": 0,
+          "worldDecals": null,
+          "rubble": null,
+          "windowsBroken": null
+        }
+      },
+      "now": {
+        "vehicles": 279,
+        "wrecks": 0,
+        "abandoned": 0,
+        "damaged": 0,
+        "burning": 0,
+        "stainedCars": 0,
+        "carStains": 0,
+        "knockedProps": 0,
+        "bloodPools": 0,
+        "bleeders": 0,
+        "severedParts": 0,
+        "goreStumps": 0,
+        "bodies": 0,
+        "fires": 0,
+        "scorch": 0,
+        "skids": 0,
+        "incidents": 0,
+        "wanted": 0,
+        "shopPanesBroken": 0,
+        "worldDecals": null,
+        "rubble": null,
+        "windowsBroken": null
+      }
+    }
+  },
+  "finishedAt": "2026-10-19T18:49:28.993Z",
+  "htmlUnchanged": true
+}

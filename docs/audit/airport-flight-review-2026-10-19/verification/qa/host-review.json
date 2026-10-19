@@ -1,0 +1,93 @@
+{
+  "kind": "Independent targeted production-host review; standard t.near(value,lo,hi,label) contract; no browser, build, rendering or FPS claim",
+  "startedAt": "2026-10-19T18:39:35.999Z",
+  "sourceHashes": {
+    "src/aerial-haze3d.js": "22081dc21780a57d4c5b9a3f998af695b2e7770bef85724c5f2bc795e8c3e5bd",
+    "src/aircraft-assets3d.js": "dc858a78f6417f17af2420e9d5cfe206c0cbca0eb754457d9de506f88540ea7a",
+    "src/aviation-flight.js": "0d7b224bf88133231dd8c123650e1fed10f3cf0b5cc690ecd174907a0775f73c",
+    "src/chase-view3d-casters.js": "ce672fce491114fb0e1d4105baddcc4aa33d67313b6a41a1f2eca932630bc5d9",
+    "src/chase-view3d-draws.js": "757a2ef5b4ebaa77825ed364109b5ebcf0b6dcd0e90b85bda16f62cd02179a39",
+    "src/chase-view3d-far.js": "77665cef6e56f06cbef191c728700cce0f978bbc723c154c6a8405b037fc82a7",
+    "src/chase-view3d-props.js": "e86e892764dc1262e99dee152117abf337115ec216e4deb9ca27e8ae81472ce0",
+    "src/chase-view3d.js": "d66a48b5b532b767f49df6dafbee959bcb1b98d8794b9cd0b53030159234a578",
+    "src/controls.js": "983a0beca438484afeb723fc7a2573924021886a0e45f12854ef871681ef38c1",
+    "src/game-player-actions.js": "973f0d4046064e6068018eefb66259d399709bfc64726bbb3ad0d3bbb961609a",
+    "src/lighting3d-look.js": "138c194cf7af04db787a66f49daa44f4b13dbf1a4dd894691a9dc7e49bd1400c",
+    "src/parachute.js": "7ef34a896515fb0f6f8878937bac34ccf608ed9213ec331abaf03222bf8886da",
+    "src/parachute3d-canopy.js": "08bf0ce3fffaa5ab51a57f3f9d8a57c7c9ee5121a8e47c32c5a902249e86d94f",
+    "src/parachute3d-cutaway.js": "3fed831f891454ab8a040b1282d441c3b20650cafe72f961bdcd52453950c656",
+    "src/parachute3d-pose.js": "aa758ba24d3d242c1a28f9300b935aacd7003b53251fd9cbe2dd5b3b5c5e0963",
+    "src/parachute3d-rigging.js": "0f24aada7179850a4e25c95776f45950266b197100db0ac60aa7cd5eef32d2ae",
+    "src/parachute3d.js": "d1e0e80b71bf8909e00943633f3ee7fe72e419c4d3552c8f761eb2de9271ba71",
+    "src/plane3d-build.js": "3be338eee38cf4fd820bd8b6e1a74cff4e518a587ad08e63784fb424c0dad667",
+    "src/plane3d-shapes.js": "16088152e78e958eb9dd3ef99886892a346dc7e653ad92c8f0c4d75f795ddb16",
+    "src/render3d-frame.js": "faccfd5009f62c8e17777fc2bc431ac585016b283c1b10ac6bc5f27c07b44c98",
+    "src/render3d-statics.js": "635ff65490aecb6b691656f7d685ce06b3b8ba8925fe1822456ae597ff49aee4"
+  },
+  "tests": [
+    {
+      "name": "aircraft-geometry",
+      "sha256": "f42020ca28f41f0df57dfcf54065865ffbcb6ee49d1fd056572334ccfbac65b2",
+      "assertions": 478,
+      "notes": [
+        "{\"fuselages\":{\"courier\":{\"outwardVolume\":11356.341567859366,\"exteriorEntranceRays\":114},\"jet\":{\"outwardVolume\":29684.31733778192,\"exteriorEntranceRays\":114},\"airliner\":{\"outwardVolume\":78324.29015181347,\"exteriorEntranceRays\":114}},\"engines\":{\"5\":{\"outwardCowlNormals\":58,\"inwardCowlNormals\":0,\"opaqueSightlines\":48,\"fanDraws\":1},\"8\":{\"outwardCowlNormals\":58,\"inwardCowlNormals\":0,\"opaqueSightlines\":48,\"fanDraws\":1}},\"controls\":{\"aileronL\":{\"lengthMetres\":2.7657318402127404,\"axis\":[-0.13072442868085313,-0.06216911083010498,0.9894675969452759],\"maximumNeutralErrorUnits\":3.317927870227777e-7},\"aileronR\":{\"lengthMetres\":2.765312840102286,\"axis\":[0.13235487627893341,0.0558492535997055,0.9896277318252275],\"maximumNeutralErrorUnits\":7.109820998607574e-7},\"flapL\":{\"lengthMetres\":2.0035632458861294,\"axis\":[0.002035467789058046,-0.023683914184291475,0.9997174246154712],\"maximumNeutralErrorUnits\":2.7312292338876887e-7},\"flapR\":{\"lengthMetres\":2.0035511537210287,\"axis\":[-0.0020070337100231888,0.023426968419858862,0.9997235362670731],\"maximumNeutralErrorUnits\":2.8628453030421497e-7},\"elevatorL\":{\"lengthMetres\":1.6677329432764778,\"axis\":[-0.08670471624110103,-0.010999363895175083,0.9961733313914058],\"maximumNeutralErrorUnits\":5.834882710331613e-7},\"elevatorR\":{\"lengthMetres\":1.6680431857044624,\"axis\":[0.08695494099054896,0.013331076277672453,0.996123044931001],\"maximumNeutralErrorUnits\":4.806239517485267e-7},\"rudder\":{\"lengthMetres\":1.7941728347516783,\"axis\":[-0.38265711006377234,0.9238904351261799,4.532181145617848e-19],\"maximumNeutralErrorUnits\":5.470951691677328e-7}}}"
+      ],
+      "failures": [],
+      "pass": true
+    },
+    {
+      "name": "aircraft-flight-model",
+      "sha256": "b695303374040f4b91d028eaa796f4b06a5aeb9165fa4ae02f25a96c73189e94",
+      "assertions": 4149,
+      "notes": [
+        "actual procedural solid-mesh bounds: {\"courier\":{\"min\":[-54.900001525878906,0,-51.84080123901367],\"max\":[52.10000038146973,35.900001525878906,51.84080123901367],\"vertices\":11468},\"airliner\":{\"min\":[-115,0,-76.02799987792969],\"max\":[107,66.5,76.02799987792969],\"vertices\":14427}}",
+        "oceanview-courier: 51.6 s taxi, 1127.5 m runway remaining",
+        "oceanview-west: 51.4 s taxi, 938.6 m runway remaining",
+        "oceanview-mid: 51.4 s taxi, 1032.4 m runway remaining",
+        "oceanview-east: 58.4 s taxi, 1196.1 m runway remaining",
+        "southport-1: 54.8 s taxi, 434.8 m runway remaining",
+        "southport-2: 76.0 s taxi, 434.8 m runway remaining",
+        "southport-3: 127.4 s taxi, 434.6 m runway remaining",
+        "take-off model: [{\"frame\":\"skyhawk\",\"hz\":60,\"rollM\":324.7,\"kmh\":102.2},{\"frame\":\"courier\",\"hz\":60,\"rollM\":285.7,\"kmh\":115},{\"frame\":\"jet\",\"hz\":60,\"rollM\":618.8,\"kmh\":180.2},{\"frame\":\"airliner\",\"hz\":60,\"rollM\":1055.9,\"kmh\":210.3},{\"frame\":\"skyhawk\",\"hz\":120,\"rollM\":321.6,\"kmh\":101.8},{\"frame\":\"courier\",\"hz\":120,\"rollM\":288.6,\"kmh\":115.5},{\"frame\":\"jet\",\"hz\":120,\"rollM\":618.4,\"kmh\":180.2},{\"frame\":\"airliner\",\"hz\":120,\"rollM\":1055.3,\"kmh\":210.3}]"
+      ],
+      "failures": [],
+      "pass": true
+    },
+    {
+      "name": "aircraft-flight-dynamics",
+      "sha256": "c19761bc15c9e24994fbf0728c49d04e0648282e5760da8bfa8ca3402141aa3b",
+      "assertions": 196,
+      "notes": [
+        "fixed-wing dynamics: {\"glides\":[{\"frame\":\"skyhawk\",\"hz\":30,\"speedKmh\":116.59071045399739,\"minKmh\":114.13744497720698,\"altitudeM\":334.233116867891,\"sinkMps\":-3.269985708077096,\"stallSeconds\":0,\"warningSeconds\":0,\"initialEnergyJperKg\":7721.147222222223,\"finalEnergyJperKg\":3803.2633642891287,\"maxEnergyGainJperKg\":-2.985402042253554},{\"frame\":\"courier\",\"hz\":30,\"speedKmh\":129.40795029758777,\"minKmh\":125.60045522664242,\"altitudeM\":410.30455304827956,\"sinkMps\":-3.214540208549112,\"stallSeconds\":0,\"warningSeconds\":0,\"initialEnergyJperKg\":9082.065432098765,\"finalEnergyJperKg\":4671.16859133815,\"maxEnergyGainJperKg\":-2.8908567740099897},{\"frame\":\"jet\",\"hz\":30,\"speedKmh\":203.63487061686666,\"minKmh\":198.85683061169118,\"altitudeM\":482.35649585540654,\"sinkMps\":-4.678713574752279,\"stallSeconds\":0,\"warningSeconds\":0,\"initialEnergyJperKg\":13804.287654320988,\"finalEnergyJperKg\":6331.730516438299,\"maxEnergyGainJperKg\":-4.178759300438287},{\"frame\":\"airliner\",\"hz\":30,\"speedKmh\":236.22207233279593,\"minKmh\":231.32641269410445,\"altitudeM\":468.64494778765993,\"sinkMps\":-5.3838706340328155,\"stallSeconds\":0,\"warningSeconds\":0,\"initialEnergyJperKg\":14483.3,\"finalEnergyJperKg\":6750.218182287711,\"maxEnergyGainJperKg\":-4.739555574311453},{\"frame\":\"skyhawk\",\"hz\":60,\"speedKmh\":116.59071045911531,\"minKmh\":114.11403127241013,\"altitudeM\":334.277358187808,\"sinkMps\":-3.269985723822549,\"stallSeconds\":0,\"warningSeconds\":0,\"initialEnergyJperKg\":7721.147222222223,\"finalEnergyJperKg\":3803.6973716835564,\"maxEnergyGainJperKg\":-2.977663051800846},{\"frame\":\"courier\",\"hz\":60,\"speedKmh\":129.4080248383136,\"minKmh\":125.57049587104284,\"altitudeM\":410.36661518157274,\"sinkMps\":-3.214563147391751,\"stallSeconds\":0,\"warningSeconds\":0,\"initialEnergyJperKg\":9082.065432098765,\"finalEnergyJperKg\":4671.7781651686355,\"maxEnergyGainJperKg\":-2.8822725185964373},{\"frame\":\"jet\",\"hz\":60,\"speedKmh\":203.6316861875385,\"minKmh\":198.8254047580797,\"altitudeM\":482.4673339188278,\"sinkMps\":-4.684068100048063,\"stallSeconds\":0,\"warningSeconds\":0,\"initialEnergyJperKg\":13804.287654320988,\"finalEnergyJperKg\":6332.767802671948,\"maxEnergyGainJperKg\":-4.170968386883942},{\"frame\":\"airliner\",\"hz\":60,\"speedKmh\":236.2035107541582,\"minKmh\":231.29416382855553,\"altitudeM\":468.7738116638011,\"sinkMps\":-5.380410571782803,\"stallSeconds\":0,\"warningSeconds\":0,\"initialEnergyJperKg\":14483.3,\"finalEnergyJperKg\":6751.144028092789,\"maxEnergyGainJperKg\":-4.731768976957028},{\"frame\":\"skyhawk\",\"hz\":120,\"speedKmh\":116.59071045812094,\"minKmh\":114.10202533143493,\"altitudeM\":334.2994873528478,\"sinkMps\":-3.269985732884736,\"stallSeconds\":0,\"warningSeconds\":0,\"initialEnergyJperKg\":7721.147222222223,\"finalEnergyJperKg\":3803.9144587836513,\"maxEnergyGainJperKg\":-2.9738100503100213},{\"frame\":\"courier\",\"hz\":120,\"speedKmh\":129.40805894201614,\"minKmh\":125.55614359138767,\"altitudeM\":410.3976619929548,\"sinkMps\":-3.21457756621899,\"stallSeconds\":0,\"warningSeconds\":0,\"initialEnergyJperKg\":9082.065432098765,\"finalEnergyJperKg\":4672.08307492019,\"maxEnergyGainJperKg\":-2.8779814824702044},{\"frame\":\"jet\",\"hz\":120,\"speedKmh\":203.62981874050897,\"minKmh\":198.8101160379157,\"altitudeM\":482.52334640168016,\"sinkMps\":-4.686753652881741,\"stallSeconds\":0,\"warningSeconds\":0,\"initialEnergyJperKg\":13804.287654320988,\"finalEnergyJperKg\":6333.287943335225,\"maxEnergyGainJperKg\":-4.167077481715751},{\"frame\":\"airliner\",\"hz\":120,\"speedKmh\":236.19428668773244,\"minKmh\":231.27840367590298,\"altitudeM\":468.8380369585434,\"sinkMps\":-5.378533018816408,\"stallSeconds\":0,\"warningSeconds\":0,\"initialEnergyJperKg\":14483.3,\"finalEnergyJperKg\":6751.605967560485,\"maxEnergyGainJperKg\":-4.727916701525828}],\"turns\":[{\"frame\":\"skyhawk\",\"hz\":30,\"speedKmh\":194.87040235623513,\"bankRad\":1.0000000000000009,\"altitudeM\":450.40588048841687,\"measuredYaw\":0.27960579804840346,\"physicalYaw\":0.28223130778568656,\"gLoad\":1.8255885721010638},{\"frame\":\"courier\",\"hz\":30,\"speedKmh\":319.7723842059753,\"bankRad\":1.0000000000000013,\"altitudeM\":450.5293599982003,\"measuredYaw\":0.17312927287258056,\"physicalYaw\":0.17201817677297038,\"gLoad\":1.8627114759400878},{\"frame\":\"jet\",\"hz\":30,\"speedKmh\":581.8702868315647,\"bankRad\":0.9200000000000004,\"altitudeM\":452.1057158285868,\"measuredYaw\":0.08064971328864079,\"physicalYaw\":0.0797242762652457,\"gLoad\":1.669860293621276},{\"frame\":\"airliner\",\"hz\":30,\"speedKmh\":651.6881189883694,\"bankRad\":0.7800000000000002,\"altitudeM\":452.7542153559477,\"measuredYaw\":0.05419808557063588,\"physicalYaw\":0.05361894710788871,\"gLoad\":1.4218031762898913},{\"frame\":\"skyhawk\",\"hz\":60,\"speedKmh\":194.87269006990238,\"bankRad\":1.0000000000000007,\"altitudeM\":450.41827553540395,\"measuredYaw\":0.27960398203371817,\"physicalYaw\":0.2822279996399747,\"gLoad\":1.8255904582727926},{\"frame\":\"courier\",\"hz\":60,\"speedKmh\":319.7579616001706,\"bankRad\":1.0000000000000004,\"altitudeM\":450.6290561062245,\"measuredYaw\":0.1731354404540117,\"physicalYaw\":0.17202595362537923,\"gLoad\":1.8627084459476},{\"frame\":\"jet\",\"hz\":60,\"speedKmh\":581.8412404559746,\"bankRad\":0.9199999999999999,\"altitudeM\":452.3004740363765,\"measuredYaw\":0.08065215213278965,\"physicalYaw\":0.07972826083621329,\"gLoad\":1.6698573292550858},{\"frame\":\"airliner\",\"hz\":60,\"speedKmh\":651.6578919391849,\"bankRad\":0.7799999999999998,\"altitudeM\":452.94638896965967,\"measuredYaw\":0.054199748112639945,\"physicalYaw\":0.053621436740806556,\"gLoad\":1.421801437155199},{\"frame\":\"skyhawk\",\"hz\":120,\"speedKmh\":194.87373354297677,\"bankRad\":1.0000000000000002,\"altitudeM\":450.42452848670695,\"measuredYaw\":0.279603209051853,\"physicalYaw\":0.282226491481794,\"gLoad\":1.8255913260466445},{\"frame\":\"courier\",\"hz\":120,\"speedKmh\":319.75073528627894,\"bankRad\":1.0000000000000004,\"altitudeM\":450.6788484852084,\"measuredYaw\":0.17313853128381101,\"physicalYaw\":0.17202985041151128,\"gLoad\":1.8627069235122946},{\"frame\":\"jet\",\"hz\":120,\"speedKmh\":581.8267921227133,\"bankRad\":0.9199999999999996,\"altitudeM\":452.39766486983086,\"measuredYaw\":0.0806533612076521,\"physicalYaw\":0.07973024298992702,\"gLoad\":1.6698558447342238},{\"frame\":\"airliner\",\"hz\":120,\"speedKmh\":651.6428876541823,\"bankRad\":0.7799999999999998,\"altitudeM\":453.04238922188716,\"measuredYaw\":0.05420057034164483,\"physicalYaw\":0.05362267263876319,\"gLoad\":1.4218005676099081}],\"stalls\":[{\"frame\":\"skyhawk\",\"recoveredAltitudeM\":507.51208297834705,\"recoveredKmh\":208.42158569609418,\"recoveredAngleOfAttack\":0.01877635213508571},{\"frame\":\"courier\",\"recoveredAltitudeM\":523.5096977045367,\"recoveredKmh\":226.10661671047475,\"recoveredAngleOfAttack\":0.014663413089121773},{\"frame\":\"jet\",\"recoveredAltitudeM\":598.3228181012946,\"recoveredKmh\":252.57299238684428,\"recoveredAngleOfAttack\":0.08728363435301209},{\"frame\":\"airliner\",\"recoveredAltitudeM\":608.8609103144355,\"recoveredKmh\":266.1944538560802,\"recoveredAngleOfAttack\":0.1156338653820648}],\"approaches\":[{\"frame\":\"skyhawk\",\"hz\":30,\"speedKmh\":99.45540401131204,\"sinkMps\":-2.834217237014027,\"altitudeM\":592.2186126830331,\"stallMargin\":1.3645157346483903},{\"frame\":\"courier\",\"hz\":30,\"speedKmh\":110.51311166587999,\"sinkMps\":-2.54078318722863,\"altitudeM\":614.5330463165316,\"stallMargin\":1.317896319795803},{\"frame\":\"jet\",\"hz\":30,\"speedKmh\":174.61722597777984,\"sinkMps\":-3.8486824722451654,\"altitudeM\":627.0513746064115,\"stallMargin\":1.3261593064255652},{\"frame\":\"airliner\",\"hz\":30,\"speedKmh\":200.92814070487694,\"sinkMps\":-5.525163528846543,\"altitudeM\":625.4286231139115,\"stallMargin\":1.3103308100584086},{\"frame\":\"skyhawk\",\"hz\":60,\"speedKmh\":99.45571771428388,\"sinkMps\":-2.833719194709842,\"altitudeM\":592.2581536835329,\"stallMargin\":1.364518852331694},{\"frame\":\"courier\",\"hz\":60,\"speedKmh\":110.50818107521394,\"sinkMps\":-2.54414211537787,\"altitudeM\":614.577651787962,\"stallMargin\":1.3178431270743778},{\"frame\":\"jet\",\"hz\":60,\"speedKmh\":174.60493563102676,\"sinkMps\":-3.862557738467933,\"altitudeM\":627.1376390127513,\"stallMargin\":1.326078652012572},{\"frame\":\"airliner\",\"hz\":60,\"speedKmh\":200.87964627257494,\"sinkMps\":-5.530942846961502,\"altitudeM\":625.5964315568407,\"stallMargin\":1.310020825414285},{\"frame\":\"skyhawk\",\"hz\":120,\"speedKmh\":99.45591571518104,\"sinkMps\":-2.833468853321515,\"altitudeM\":592.2778941528803,\"stallMargin\":1.364520971286297},{\"frame\":\"courier\",\"hz\":120,\"speedKmh\":110.50546859297883,\"sinkMps\":-2.545782171783733,\"altitudeM\":614.6001898456436,\"stallMargin\":1.3178135301181582},{\"frame\":\"jet\",\"hz\":120,\"speedKmh\":174.59846356374132,\"sinkMps\":-3.8694374146150476,\"altitudeM\":627.1813485324875,\"stallMargin\":1.3260358046814147},{\"frame\":\"airliner\",\"hz\":120,\"speedKmh\":200.85526274483288,\"sinkMps\":-5.533648244664095,\"altitudeM\":625.6804464546282,\"stallMargin\":1.3098648031620963}]}"
+      ],
+      "failures": [],
+      "pass": true
+    },
+    {
+      "name": "parachute-reserve",
+      "sha256": "0fdff4f061872a51505e0c89d597ae320e841af9585f92f1e3eae8209551bee4",
+      "assertions": 56,
+      "notes": [
+        "{\"hz\":30,\"reserveOpenSeconds\":2.17,\"peakLoadG\":3.7937004981580196,\"safeLostM\":53.8,\"forecastM\":54.05317927967805,\"cutawayRateMs\":3.5419124649244647,\"pullRateMs\":22.194804783707546,\"priorReserveCueNeedM\":53.29632245786164,\"pullAltitudeM\":1865.4100481352175}",
+        "{\"hz\":60,\"reserveOpenSeconds\":2.17,\"peakLoadG\":3.792837285889569,\"safeLostM\":54.3,\"forecastM\":54.03324208731871,\"cutawayRateMs\":3.5419125448874,\"pullRateMs\":22.182818834460026,\"priorReserveCueNeedM\":53.2766563900286,\"pullAltitudeM\":1865.1798027864372}",
+        "{\"hz\":120,\"reserveOpenSeconds\":2.17,\"peakLoadG\":3.792391876175587,\"safeLostM\":54.6,\"forecastM\":54.023184737433105,\"cutawayRateMs\":3.541912615571972,\"pullRateMs\":22.176772591681992,\"priorReserveCueNeedM\":53.266814752759316,\"pullAltitudeM\":1865.1086737880287}"
+      ],
+      "failures": [],
+      "pass": true
+    },
+    {
+      "name": "aerial-city-horizon",
+      "sha256": "c18e0c9fbf6481ced2e3794fd9c6286da9e3940bad98270bf8d1f4be36d2fd5d",
+      "assertions": 610,
+      "notes": [
+        "HIGH: 600 m street -> 3 km aerial; unchanged 225 m detailed-cell radius; real Three.js frustum corners, ground heights and far-city selection checked."
+      ],
+      "failures": [],
+      "pass": true
+    }
+  ],
+  "finishedAt": "2026-10-19T18:39:39.228Z",
+  "sourceChangedDuringRun": [],
+  "pass": true,
+  "assertions": 5489
+}

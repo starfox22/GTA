@@ -1,0 +1,9 @@
+BOOT baseline 80e81b6c3f24fe5a28abd558e68f5dfeb329b8ec557e0fcbcc2f9c84d2d71426
+READY
+CAPTURE 01-southport-airport {"far":225}
+CAPTURE 02-oceanview-airport {"far":225}
+CAPTURE 03-courier-exterior {"far":225}
+CAPTURE 04-airliner-exterior {"far":225}
+CAPTURE 05-city-flight-180m {"far":225}
+CAPTURE 06-city-flight-600m {"far":225}
+COMPLETE {"pass":true,"captures":6,"errors":[]}

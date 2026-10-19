@@ -1,0 +1,15 @@
+BOOT release ddc04a6eef69d8930ca558a9f02ab1fb7fc4014efed2bbcc75b8113867714f07
+READY
+CAPTURE 01-southport-terminal {"far":225}
+CAPTURE 02-oceanview-terminal {"far":225}
+CAPTURE 03-courier-exterior {"far":225}
+CAPTURE 04-airliner-exterior {"far":225}
+CAPTURE 05-city-flight-180m {"far":225}
+CAPTURE 06-city-flight-600m {"far":225}
+CAPTURE 07-downtown-flight {"far":225}
+CAPTURE 08-city-flight-west {"far":225}
+CAPTURE 09-downtown-dusk {"far":225}
+CAPTURE 10-main-parachute {"far":225}
+CAPTURE 11-main-cutaway {"far":225}
+CAPTURE 12-reserve-parachute {"far":225}
+COMPLETE {"pass":true,"captures":12,"errors":[]}
