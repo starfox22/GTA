@@ -286,7 +286,7 @@
       let celledStatics = 0;
       function staticInView(s) {
         // The chase view: small scenery steps out with its own distance, and the frustum counts (chase-view3d.js).
-        if (chaseViewActive) return (s.radius >= 50 || chaseZoomAt(s.x, s.y) > 0.28) && chaseCellShown(s.x, s.y, s.radius);
+        if (chaseViewActive) return (s.radius >= 50 || chaseZoomAt(s.x, s.y) > 0.28) && chaseCellShown(s.x, s.y, s.radius, s.top);
         return (
           (viewZoom > 0.28 || s.radius >= 50) &&
           Math.abs(s.x - viewCenter.x) < viewReach + s.radius &&

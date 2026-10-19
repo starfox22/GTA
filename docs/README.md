@@ -14,11 +14,14 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/world-and-map-minimap.md | What the minimap draws over its base (MINIMAP MARKS: objective, GPS, police and respray while wanted, places on foot nearby), the mark counts, and Sunset Pier's coaster track and Ferris wheel on both maps |
 | areas/world-and-map-drawbridges.md | The four drawbridges: which island needs which, the state list and its contracts, timetables and the open share, looks and ships, the Coronation Bridge |
 | areas/world-county-and-sea.md | The county, falls off cliffs, rail, airfields, parks, sea life |
+| areas/world-county-and-sea-airports.md | Airport terminal/apron architecture, elevated jetbridge collision and overhead cover, airfields and nose-out aircraft parking |
 | areas/world-county-and-sea-terrain.md | Ridgeline terrain: the height field, the 4x4 trails and their grading, the ride on the terrain (suspension), trail dressing, scenic roads |
 | areas/places-and-venues.md | Palm Keys, the beach and Marea, Sunset Pier, Harbor Point (marina, superyacht, liners, cargo terminal), North Point Key, roofs and helipads, garages, casino |
 | areas/places-sky-meeting.md | The scripted meeting at CIRRUS a story job drives (skyline-meeting.js): stages, API, the lift together, the seated drink and handover |
 | areas/places-monarch-and-county.md | Monarch Isle and MONARCH ONE, Ridgeline villages and the 4x4 club, Fort Sentinel and the Apache, the stadium and GOALLINE, MONARCH MOTORS |
 | areas/vehicles-and-driving.md | Vehicle specs, handling, brakes and assists, crashes, riders, cliffs, aircraft (models: -models.md) |
+| areas/vehicles-and-driving-parachute.md | Main parachute, J cutaway and reserve, opening-height forecast, canopy/body animation and rig lifecycle |
+| areas/vehicles-and-driving-flight.md | Fixed-wing energy, assisted trim, physical bank turns, stall/recovery and takeoff/taxi verification |
 | areas/vehicles-and-driving-models.md | Vehicle models: the damage contract, draw calls and the pristine merge, body impostors, flagships |
 | areas/vehicles-and-driving-models-assets.md | Downloaded vehicle models: the converter, asset cars, the Crown Vic patrol body, boats |
 | areas/vehicles-and-driving-models-police.md | Downloaded patrol roles, affine liveries, marked equipment and source-owned decals |

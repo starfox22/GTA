@@ -368,6 +368,7 @@
       return true;
     }
     function planeControl(aircraft, stepSeconds, active) {
+      if (!(stepSeconds > 0)) return;
       flightSetup(aircraft);
       const controlled = aircraft === player.car && active,
         up = controlled && actionHeld('forward'),
@@ -419,7 +420,7 @@
         return;
       }
       const flaps = aircraft.flapPos,
-        stallSpeed = airframeProfile.stall * (1 - 0.16 * flaps),
+        referenceStallSpeed = airframeProfile.stall * (1 - 0.16 * flaps),
         rotateSpeed = airframeProfile.rotate * (1 - 0.12 * flaps);
       const horizontalSpeed = Math.hypot(aircraft.vx, aircraft.vy),
         speed = Math.hypot(horizontalSpeed, aircraft.vz),
@@ -442,6 +443,16 @@
         : pull
           ? 0.2
           : 0;
+      // Released-stick assistance gives a slow aircraft its nose back. A
+      // level-attitude trim kept hauling an idle glide up into repeated
+      // stalls. Ease toward a safe angle of attack as energy runs out;
+      // deliberate back pressure still overrides this and can stall.
+      if (airborne && !pull && !push) {
+        const glideAssist = clamp((0.7 - aircraft.power) / 0.5, 0, 1) *
+            clamp((referenceStallSpeed * 1.65 - speed) / (referenceStallSpeed * 0.45), 0, 1),
+          glidePitch = Math.min(pitchTarget, flightPathAngle + 0.08);
+        pitchTarget += (glidePitch - pitchTarget) * glideAssist;
+      }
       if (airborne && push) pitchTarget = Math.min(pitchTarget, -0.16);
       if (airborne && aircraft.stalled && !pull)
         pitchTarget = Math.min(pitchTarget, flightPathAngle + 0.035);
@@ -474,14 +485,24 @@
         aircraft.bank *= Math.exp(-stepSeconds * 6);
       }
       const angleOfAttack = aircraft.pitch - flightPathAngle + 0.04,
-        stallAngleExcess = Math.max(0, Math.abs(angleOfAttack) - flightModel.stallAngle);
-      aircraft.stalled = airborne && (stallAngleExcess > 0.015 || horizontalSpeed < stallSpeed);
+        stallAngleExcess = Math.max(0, Math.abs(angleOfAttack) - flightModel.stallAngle),
+        // The wing supports more load in a level bank and less in a steep
+        // dive. Use total airspeed: a fast, nose-down descent is not a stall
+        // merely because little of its speed points along the ground.
+        requiredLoad = clamp(Math.cos(flightPathAngle) / Math.max(0.4, Math.cos(aircraft.bank)), 0.15, 2.5),
+        stallSpeed = referenceStallSpeed * Math.sqrt(requiredLoad);
+      // Speed gives an early, load-aware warning; only exceeding the wing's
+      // critical angle actually stalls it. Recovery has a small hysteresis
+      // band so the horn/buffet do not chatter at the boundary.
+      aircraft.stalled = airborne && (aircraft.stalled
+        ? Math.abs(angleOfAttack) > flightModel.stallAngle - 0.02
+        : stallAngleExcess > 0.015);
       // The warning comes on a few degrees and a few knots before the stall.
       aircraft.stallWarning =
         airborne &&
         (aircraft.stalled ||
           Math.abs(angleOfAttack) > flightModel.stallAngle - 0.05 ||
-          horizontalSpeed < stallSpeed * 1.1);
+          speed < stallSpeed * 1.1);
       aircraft.angleOfAttack = angleOfAttack;
       aircraft.stallSpeed = stallSpeed;
       const attached = clamp(0.22 + 0.3 * flaps + angleOfAttack * 4.6, -1.1, 1.46 + 0.3 * flaps),
@@ -519,11 +540,7 @@
       // Lift rotates the velocity vector; the fuselage follows its slip angle instead of snapping velocity.
       if (airborne) {
         const yawRate = clamp(
-            ((lift * Math.sin(aircraft.bank)) / Math.max(9.8 * UNITS_PER_METRE, horizontalSpeed)) *
-              (1 +
-                airframeProfile.assist *
-                  clamp((horizontalSpeed - stallSpeed) / (13.7 * UNITS_PER_METRE), 0, 1) *
-                  (aircraft.stalled ? 0.3 : 1)),
+            (lift * Math.sin(aircraft.bank)) / Math.max(9.8 * UNITS_PER_METRE, horizontalSpeed),
             -0.7,
             0.7,
           ),

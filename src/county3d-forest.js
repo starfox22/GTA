@@ -438,22 +438,19 @@
       scene.add(airportGroup);
       batchGroups.push(airportGroup);
       const air = COUNTY_AIRPORT;
-      for (let x = air.terminal.x + 12; x < air.terminal.x + air.terminal.w - 10; x += 24) {
-        box(airportGroup, x, 25, air.terminal.y + air.terminal.h + 1, 22, 35, 1.5, terminalGlass);
-        box(airportGroup, x, 25, air.terminal.y + air.terminal.h + 2, 1, 37, 2, chrome);
-      }
-      box(airportGroup, 4200, 37, 8680, 610, 3, 60, countyCream);
-      for (const x of [3920, 4200, 4480]) box(airportGroup, x, 18, 8698, 2.5, 36, 2.5, chrome);
-      box(airportGroup, 3530, 64, 8980, 22, 128, 22, concrete);
-      box(airportGroup, 3530, 135, 8980, 62, 24, 55, terminalGlass);
-      box(airportGroup, 3530, 150, 8980, 68, 4, 61, airWhite);
-      box(airportGroup, 3530, 170, 8980, 1, 37, 1, chrome);
+      airportTerminal(airportGroup, air.terminal, 'OCEANVIEW INTERNATIONAL', true);
+      airportHangar(airportGroup, { x: 4790, y: 9000, w: 230, h: 200 }, 'AIR CARGO 01');
+      airportHangar(airportGroup, { x: 5310, y: 9000, w: 250, h: 200 }, 'MAINTENANCE 02');
+      airportTower(airportGroup, AIRPORT_TOWERS[1]);
+      airportEntranceCanopy(airportGroup, AIRPORT_CANOPIES[1]);
       const radar = box(airportGroup, 3530, 183, 8980, 32, 8, 1, countyRail);
       radar.userData.dynamic = true;
-      const terminalTitle = sign('OCEANVIEW INTERNATIONAL', 4215, 8642, 380, '#d1e5df');
-      terminalTitle.position.y = terminalTitle.userData.backing.position.y = 55;
-      const arrivalsTitle = sign('DEPARTURES / ARRIVALS', 4190, 8709, 215, '#c2dcd5');
-      arrivalsTitle.position.y = arrivalsTitle.userData.backing.position.y = 37;
+      airportPlacard(airportGroup, 'DEPARTURES / ARRIVALS', 4215, 31, 8644, 160);
+      airportApron(airportGroup, AIRPORT_APRONS[1], [
+        { x: 4800, y: 9214, w: 200, h: 48 },
+        { x: 5320, y: 9214, w: 200, h: 48 },
+      ]);
+      AIRCRAFT_STANDS.filter((s) => s.id.startsWith('oceanview')).forEach((s, i) => airportStandPaint(airportGroup, s, i + 1));
       for (const [x, z, a, size] of [
         [4100, 9160, Math.PI / 2, 1.8],
         [4460, 9160, Math.PI / 2, 1.6],
@@ -464,14 +461,8 @@
         const model = ag.children[before];
         airportGroup.attach(model);
       }
-      for (const x of [4100, 4460]) {
-        box(airportGroup, x, 17, 8900, 20, 25, 360, countyCream);
-        box(airportGroup, x, 23, 9080, 32, 30, 32, terminalGlass);
-      }
+      for (const bridge of AIRPORT_JETBRIDGES) airportJetbridge(airportGroup, bridge);
       // The runway, its lights and markings are airfields3d.js.
-      for (let i = 0; i < 8; i++) {
-        box(airportGroup, 4730 + i * 36, 5, 8910, 24, 10, 14, mat(i % 2 ? '#bea077' : '#90a4a2'));
-      }
       statics.push({
         x: 4800,
         y: 9280,

@@ -349,7 +349,9 @@
         // Freefall and canopy: the speed through the air, the rate of descent and
         // the height left.
         const p = player.parachute;
-        name = p.stage === 'freefall' ? 'FALLING · FREEFALL' : p.phase === 'open' ? 'FALLING · CANOPY' : 'FALLING · OPENING';
+        name = p.stage === 'freefall'
+          ? p.mainUsed ? 'FALLING · RESERVE READY' : 'FALLING · FREEFALL'
+          : p.canopy === 'reserve' ? 'FALLING · RESERVE' : p.phase === 'open' ? 'FALLING · CANOPY' : 'FALLING · OPENING';
         figure = Math.round(speedReading(Math.hypot(p.vx || 0, p.vy || 0, p.vz || 0)));
         unit =
           units + ' · ↓ ' + Math.round(speedReading(Math.min(0, p.vz || 0))) + ' · ' +
@@ -397,7 +399,11 @@
      */
     function hudContext() {
       const c = player.car;
-      if (player.parachute) return player.parachute.stage === 'freefall' ? 'freefall' : 'chute';
+      if (player.parachute) {
+        const p = player.parachute;
+        return p.stage === 'freefall' ? p.mainUsed ? 'reservefall' : 'freefall'
+          : p.phase !== 'open' ? 'openingchute' : p.canopy === 'reserve' ? 'reservechute' : 'chute';
+      }
       if (player.coaster) return player.coaster.kind === 'train' ? 'coaster' : 'ride';
       if (!c) return player.swimming ? 'swim' : roofPartyPace() ? 'party' : fortCoverPace() ? 'cover' : 'foot';
       if (c.type === 'helicopter') return 'heli';
@@ -421,7 +427,10 @@
       heli: [['ascend', 'RISE'], ['descend', 'DESCEND'], ['move', 'FLY'], ['bail', 'BAIL OUT']],
       plane: [['forward', 'THROTTLE'], ['ascend', 'NOSE UP'], ['descend', 'NOSE DOWN'], ['flapsDown', 'FLAPS'], ['gear', 'GEAR'], ['bail', 'BAIL OUT']],
       freefall: [['bail', 'OPEN PARACHUTE'], ['move', 'STEER'], ['forward', 'TRACK']],
-      chute: [['move', 'STEER'], ['back', 'FLARE'], ['forward', 'GLIDE']],
+      reservefall: [['bail', 'OPEN RESERVE'], ['move', 'STEER'], ['forward', 'TRACK']],
+      openingchute: [['move', 'STEER'], ['back', 'FLARE'], ['forward', 'GLIDE']],
+      chute: [['bail', 'CUT AWAY'], ['move', 'STEER'], ['back', 'FLARE'], ['forward', 'GLIDE']],
+      reservechute: [['move', 'STEER'], ['back', 'FLARE'], ['forward', 'GLIDE']],
       // Sunset Pier rides: E changes the view (and steps off), the radio plays.
       ride: [['interact', 'VIEW'], ['radioPower', 'RADIO'], ['radioNext', 'STATION']],
       // The Falcon has no radio: only the view.

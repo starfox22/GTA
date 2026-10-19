@@ -43,6 +43,7 @@
         })),
         ...railDecks(),
         ...railStationCovers(),
+        ...airportOverheadVolumes(),
         ...RAIL_STATIONS.map((s) => {
           const p = railLift(s);
           return {
@@ -170,11 +171,11 @@
         addStatic(p.x - 8.5, p.y - 8.5, 17, 17, 60, 'station lift');
       }
       for (const p of railPiers) addStatic(p.x, p.y, p.w, p.h, p.height, 'rail pier');
-      for (const b of [...railDecks(), ...railStationCovers()]) {
+      for (const b of [...railDecks(), ...railStationCovers(), ...airportOverheadVolumes()]) {
         const body = {
           ...b,
           id: 'rail-deck-' + staticBodies.length,
-          kind: 'cover',
+          kind: b.kind || 'cover',
         };
         staticBodies.push(body);
         const cs = corners(body);
@@ -239,7 +240,7 @@
       overheadGrid = new Map();
       const volumes = airCoverVolumes()
         .filter((b) => !b.bridge && (b.minHeight || 0) >= 8)
-        .map((b) => ({ ...b, bottom: b.minHeight, top: b.height, kind: 'railway' }));
+        .map((b) => ({ ...b, bottom: b.minHeight, top: b.height, kind: b.kind || 'railway' }));
       for (const c of [...volumes, ...overheadCovers])
         for (let i = Math.floor(c.x0 / OVERHEAD_CELL); i <= Math.floor(c.x1 / OVERHEAD_CELL); i++)
           for (let j = Math.floor(c.y0 / OVERHEAD_CELL); j <= Math.floor(c.y1 / OVERHEAD_CELL); j++) {

@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-614 files in the include tree, 210,010 lines.
+616 files in the include tree, 210,542 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -91,7 +91,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/roofmission.js`    15 — ▸ Blue Hour rooftop mission
 - `src/rooftops.js`   158 — Building roofs: helipads, helicopter landings, walking on a roof
 - `src/roof-lifts.js`   218 — Roof lifts: every roof with a helipad or a parked helicopter has a lift from a door on the pavement to a door on the roof (North Point Key's own are …
-- `src/air-cover.js`   290 — Overhead cover geometry
+- `src/air-cover.js`   291 — Overhead cover geometry
 - `src/combat-rules.js`   733 — Aerial combat and pursuit rules
 - `src/vehicle-gunfire.js`   191 — Gunfire on road vehicles (VEHICLE GUNFIRE): what a round takes off a car's health by calibre and by where it struck (engine bay, body, boot, glass) …
 - `src/driveby-seats.js`   154 — Drive-by seats: the model's seat for every car the renderer seats people in (DRIVEBY_SEATS, recorded from cars3d-interior.js carSeatPlan and checked …
@@ -101,7 +101,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/engine-audio.js`   651 — ▸ Engine sound
 - `src/county.js`    11 — ▸ Outlying districts
 - `src/monarch.js`    78 — ▸ Monarch Isle: the plan, the land and the streets
-- `src/airfields.js`   392 — Runways, taxiways and the reclaimed runway piers
+- `src/airfields.js`   394 — Runways, taxiways and the reclaimed runway piers
 - `src/military.js`    30 — ▸ Fort Sentinel
 - `src/armor.js`   262 — The player's tank: turret traverse, ammunition, reticle
 - `src/apache.js`   480 — Fort Sentinel's AH-64 attack helicopter
@@ -135,10 +135,10 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/sealife-audio.js`   356 — Sea life sound
 - `src/navigation.js`   735 — City map and route planning
 - `src/map-objective.js`   211 — The objective on the maps: road routes that always reach the road network
-- `src/parachute.js`   734 — Bailout and parachute
+- `src/parachute.js`   772 — Bailout and parachute
 - `src/deck-landing.js`   361 — Landing on a ship from the sky: canopy touchdowns and freefall impacts on the liners' and the superyacht's decks (deckSurfaceAt, deckLandingStep) …
 - `src/falls.js`    22 — ▸ Falls: bodies and vehicles off cliffs, fatal impacts
-- `src/mobile.js`   305 — Touch controls
+- `src/mobile.js`   309 — Touch controls
 - `src/input-hints.js`   163 — Input-aware hints: which device the player is using (keyboard and mouse, touch, gamepad) and what an action is called on it (keyName's touch and …
 - `src/gamepad.js`   362 — Gamepad (standard mapping): play through the same actions as the bound keys, menus by focus, the city map by a cursor; the button names hints use …
 - `src/world-view.js`   344 — World camera gestures
@@ -203,7 +203,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/geography.js ▸ Coastlines and land regions
 
-- `src/geography-regions.js`   464 — One coastline model drives terrain, water, the map and all vehicle footprints.
+- `src/geography-regions.js`   503 — One coastline model drives terrain, water, the map and all vehicle footprints.
 - `src/geography-key.js`    69 — North Point Key: the islet off Northbank's north-east point that carries the three towers (coast and plan anchors).
 - `src/geography-land.js`   666 — Land cell cache (landAt), airport and boulevard tests, BRIDGES, bridge frames, clearance and approach piers.
 - `src/geography-ground.js`   525 — Bridge pylons and footings on the map, groundAt(), lake, coast and region paths, painted district ground and beach.
@@ -324,7 +324,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/aviation.js ▸ Fixed-wing flight and flight missions
 
-- `src/aviation-flight.js`   611 — Fixed-wing flight and two additional campaign chapters.
+- `src/aviation-flight.js`   628 — Fixed-wing flight and two additional campaign chapters.
 - `src/aviation-missions.js`   536 — Aircraft cockpit warnings and flight data, the flight missions (flightMissionStart, flightMissionUpdate) and 2D drawing of planes and airfields.
 
 ## src/streets.js ▸ Road presentation
@@ -387,7 +387,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/falls-body.js`   345 — Falls on foot: the impact scale (fallInjury), the player's ballistic fall off a drop, landings and the fatal splat.
 - `src/falls-vehicles.js`   365 — Falls, vehicles: road vehicles leaving the terrain (cliffSettle, cliffFlight), landings, tumbles down a face and rollovers.
-- `src/falls-console.js`   461 — Falls console: the cliff finder (cliffSpots), bail-out and parachute helpers, scripted fall and descent tests (fallsConsole).
+- `src/falls-console.js`   466 — Falls console: the cliff finder (cliffSpots), bail-out and parachute helpers, scripted fall and descent tests (fallsConsole).
 
 ## src/garages.js ▸ Drive-in repair and respray
 
@@ -439,14 +439,14 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/hud.js ▸ HUD behaviour and the title menu
 
-- `src/hud-state.js`   672 — HUD state and pop boxes, saved settings, weapon and radio watches, stars, minimap fold and zoom (hudState, hudPop).
+- `src/hud-state.js`   681 — HUD state and pop boxes, saved settings, weapon and radio watches, stars, minimap fold and zoom (hudState, hudPop).
 - `src/hud-panels.js`   645 — HUD panels: prompts, centre cards and toasts, sniper warning, panel covers, updateHud() and the flight HUD.
 - `src/hud-clearance.js`   400 — HUD clearance: the mission card never covers the player (and the dialogue line and the waypoint pill fade if they would).
 
 ## src/render3d.js ▸ Three.js renderer and resource lifecycle
 
 - `src/flight-view3d.js`   646 — ▸ Flight camera and aerial perspective
-- `src/chase-view3d.js`   226 — ▸ Chase view 3D: the perspective camera behind the player (chase-camera.js says where it stands), the ground it sees for culling and level of detail …
+- `src/chase-view3d.js`   248 — ▸ Chase view 3D: the perspective camera behind the player (chase-camera.js says where it stands), the ground it sees for culling and level of detail …
 - `src/postfx3d.js`   870 — ▸ HDR post-processing pipeline
 - `src/lighting3d.js`    27 — ▸ Sun, sky, reflections and night light
 - `src/searchlight3d.js`   937 — Searchlights: light shafts, ground pools, the helicopter's spot
@@ -506,7 +506,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/roofskin3d.js`   345 — Roof skin: the city's roof finishes drawn in world space at screen resolution (membrane sheets, gravel ballast, tar and its repairs, clay tiles …
 - `src/grass3d.js`   153 — Grass tufts
 - `src/helicopter3d.js`    99 — ▸ Helicopter models
-- `src/aircraft-assets3d.js`   414 — Aircraft from downloaded models (assets/aircraft-models.bin, tools/aircraft_models.py): the SKYRANGER 429 civil helicopter (a Bell 429) on the …
+- `src/aircraft-assets3d.js`   446 — Aircraft from downloaded models (assets/aircraft-models.bin, tools/aircraft_models.py): the SKYRANGER 429 civil helicopter (a Bell 429) on the …
 - `src/jet-assets3d.js`   207 — Downloaded Citation / Boeing 737.
 - `src/apache3d.js`   435 — The AH-64 attack helicopter model
 - `src/vehicles3d.js`   631 — Vehicle meshes
@@ -569,7 +569,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/lighting3d-cutaway.js`   167 — Lighting 3D cutaway occluders (updateCutaway, setCharacterCutaway) and the default material patches.
 - `src/lighting3d-vehicle-lights.js`   656 — Lighting 3D vehicle lights: the nearest cars' low beams as real lights (CAR LAMPS), the drive light map and beam haze.
 - `src/lighting3d-vehicle-shadows.js`   314 — Lighting 3D vehicle lights, part 2: BEAM SHADOWS (people, cars, trees and posts in the CAR LAMPS beams), the TERRAIN HORIZON strip kept in the same …
-- `src/lighting3d-look.js`   458 — Lighting 3D time-of-day look (updateLighting, NIGHT_LOOK, grade), contact shadows and the quality tier switch.
+- `src/lighting3d-look.js`   460 — Lighting 3D time-of-day look (updateLighting, NIGHT_LOOK, grade), contact shadows and the quality tier switch.
 
 ## src/lighting3d-sky.js ▸ Lighting 3D sun path (updateSunPath: the light, and the sun the sky draws), the sky (lighting3d-sky-dome.js), the night light map, the city light and …
 
@@ -675,10 +675,11 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/world3d-water.js`   361 — Water: the distance-to-shore field, the one water shader (bay, river, ocean, reservoir) and its surfaces.
 - `src/world3d-shore.js`   243 — Shoreline notes, street ends (barriers, gates) and the esplanade furniture along the waterfront (buildPromenade).
-- `src/world3d-resort.js`   157 — ▸ Palms, the Keys' resort hotels, the airport apron, the Blue Hour rooftop bar, updateWorldVisuals and the rescue buoy.
+- `src/world3d-resort.js`   144 — ▸ Palms, the Keys' resort hotels, the airport apron, the Blue Hour rooftop bar, updateWorldVisuals and the rescue buoy.
 
 ## src/world3d-resort.js ▸ Palms, the Keys' resort hotels, the airport apron, the Blue Hour rooftop bar, updateWorldVisuals and the rescue buoy.
 
+- `src/airport-terminal3d.js`   231 — Airport architecture and apron dressing shared by Southport and Oceanview.
 - `src/world3d-bluehour-terrace.js`   399 — ▸ The Blue Hour terrace in 3D (mission 2): teak deck, travertine and brass, glass balustrade, pool and loungers, marble bar, velvet lounges, clipped …
 
 ## src/world3d-bluehour-terrace.js ▸ The Blue Hour terrace in 3D (mission 2): teak deck, travertine and brass, glass balustrade, pool and loungers, marble bar, velvet lounges, clipped …
@@ -695,7 +696,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/county3d-ground.js`   535 — County 3D ground: regional terrain materials and patches (terrainMaterials, TERRAIN_* maps) and scenery cells.
 - `src/county3d-signs.js`    23 — County roadside guide signs: a real-size board (sign() paints it) on two galvanised posts, standing on the verge at the plan's spot …
-- `src/county3d-forest.js`   533 — County 3D forests (plantForest), mist, updateTerrainVisuals(), the airport and updateCountyVisuals().
+- `src/county3d-forest.js`   524 — County 3D forests (plantForest), mist, updateTerrainVisuals(), the airport and updateCountyVisuals().
 - `src/county3d-roads.js`   446 — County 3D scenic roads: the asphalt ribbon over the graded surface (markings, shoulders, wet film), guard rails, viewpoint walls, reflector posts and …
 
 ## src/base3d.js ▸ Fort Sentinel meshes
@@ -867,12 +868,12 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/plane3d.js ▸ Airplane meshes
 
-- `src/plane3d-shapes.js`   564 — Aircraft 3D plans, airfoils, fuselage and lifting surfaces, liveries (aircraftPlans, fuselageMesh).
-- `src/plane3d-build.js`   634 — Aircraft 3D static merge, labels, control surfaces, engines, gear, makePlane() and animateAircraft().
+- `src/plane3d-shapes.js`   567 — Aircraft 3D plans, airfoils, fuselage and lifting surfaces, liveries (aircraftPlans, fuselageMesh).
+- `src/plane3d-build.js`   668 — Aircraft 3D static merge, labels, control surfaces, engines, gear, makePlane() and animateAircraft().
 
 ## src/render3d-effects.js ▸ The optional player ring, the objective arrow, the muzzle and fire lights, the effect particles (fx3d-*.js), scorch, tracers, skid marks.
 
-- `src/parachute3d.js`    51 — ▸ Ram-air parachute
+- `src/parachute3d.js`    52 — ▸ Ram-air parachute
 - `src/fx3d-atlas.js`   272 — The effect particles' texture atlas (fx3d-particles.js): four billowed smoke puffs with their surface normals, a glow, a muzzle flash star, the …
 - `src/fx3d-particles.js`   626 — Effect particles: smoke, dust, fire, sparks, flashes, glass and drops in one instanced billboard pool, stepped from a struct-of-arrays store (fxAdd) …
 - `src/fx3d-recipes.js`   426 — Effect recipes on the particle pool (fx3d-particles.js): a blast's flash, fireball, smoke column, dust ring, sparks and debris; muzzle flashes …
@@ -880,8 +881,9 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/parachute3d.js ▸ Ram-air parachute
 
 - `src/parachute3d-canopy.js`   257 — Parachute 3D canopy: the ram-air wing's meshes and materials, its shape (chuteShape, chuteSkinPoint: airfoil, arc, cell-by-cell pressurisation …
-- `src/parachute3d-pose.js`   184 — Parachute 3D pose: the rig's state (chuteRig), the jumper's body through the jump (box, the pull, line stretch, hanging) and the pendulum under the …
-- `src/parachute3d-rigging.js`   439 — Parachute 3D rigging: lines through the slider's grommets, risers, the billowing slider, pilot chute, bag and container; updateParachute3D() shapes …
+- `src/parachute3d-pose.js`   196 — Parachute 3D pose: the rig's state (chuteRig), the jumper's body through the jump (box, the pull, line stretch, hanging) and the pendulum under the …
+- `src/parachute3d-rigging.js`   444 — Parachute 3D rigging: lines through the slider's grommets, risers, the billowing slider, pilot chute, bag and container; updateParachute3D() shapes …
+- `src/parachute3d-cutaway.js`    97 — One detached main per rig, frozen at release rather than still attached to the jumper.
 
 ## src/game-console.js ▸ DeadEndCity console registry and assembly
 

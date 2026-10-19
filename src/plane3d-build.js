@@ -136,7 +136,9 @@
             [0.96, -Lh * 0.4],
             [0.78, -Lh * 0.92],
             [0.74, -Lh],
-          ].map(([r, y]) => new Three.Vector2(r * R, y)),
+          // Lathe profiles must run aft to forward. Reversing this order made
+          // the entire outside cowl face the engine interior.
+          ].reverse().map(([r, y]) => new Three.Vector2(r * R, y)),
           cowl = new Three.LatheGeometry(profile, 28);
         cowl.rotateZ(-Math.PI / 2);
         cowl.translate(en.x, en.y, en.z);
@@ -145,32 +147,64 @@
         lipGeo.rotateY(Math.PI / 2);
         lipGeo.translate(en.x + Lh, en.y, en.z);
         batch.add(lipGeo, lip);
-        // The intake throat and the fan behind it.
-        const throat = new Three.CylinderGeometry(R * 0.86, R * 0.86, en.len * 0.16, 24, 1, true);
-        throat.rotateZ(Math.PI / 2);
-        throat.translate(en.x + Lh - en.len * 0.08, en.y, en.z);
+        // A separate inward-facing intake liner, then a recessed opaque fan
+        // backwall. Looking between blades must never reveal the runway/sky
+        // through the aircraft. The exterior cowl remains single sided.
+        const throat = new Three.LatheGeometry([
+          new Three.Vector2(R * 0.88, Lh),
+          new Three.Vector2(R * 0.84, Lh - en.len * 0.07),
+          new Three.Vector2(R * 0.78, Lh - en.len * 0.17),
+        ], 28);
+        throat.rotateZ(-Math.PI / 2);
+        throat.translate(en.x, en.y, en.z);
         batch.add(throat, dark);
+        const fanBack = new Three.CircleGeometry(R * 0.8, 32);
+        fanBack.rotateY(Math.PI / 2);
+        fanBack.translate(en.x + Lh - en.len * 0.18, en.y, en.z);
+        batch.add(fanBack, dark);
         const fan = new Three.Group();
         fan.position.set(en.x + Lh - en.len * 0.15, en.y, en.z);
         body.add(fan);
-        const hub = new Three.Mesh(new Three.ConeGeometry(R * 0.28, R * 0.55, 16), metal);
-        hub.rotation.z = -Math.PI / 2;
-        hub.position.x = R * 0.2;
-        fan.add(hub);
-        const bladeGeo = new Three.BoxGeometry(0.25, R * 0.62, R * 0.2);
-        for (let k = 0; k < 18; k++) {
-          const blade = new Three.Mesh(bladeGeo, metal),
-            a = (k * TAU) / 18;
-          blade.position.set(0, Math.cos(a) * R * 0.5, Math.sin(a) * R * 0.5);
-          blade.rotation.set(a + 0.5, 0, 0);
-          fan.add(blade);
+        const fanBatch = aircraftBatch(),
+          hub = new Three.ConeGeometry(R * 0.26, R * 0.55, 20);
+        hub.rotateZ(-Math.PI / 2);
+        hub.translate(R * 0.2, 0, 0);
+        fanBatch.add(hub, metal);
+        const positions = [], indices = [], steps = 6;
+        for (let j = 0; j <= steps; j++) {
+          const f = j / steps,
+            radius = R * (0.24 + f * 0.53),
+            chord = R * (0.16 - f * 0.045),
+            twist = 0.7 - f * 0.4,
+            sweep = R * 0.12 * f * f;
+          for (const [axial, tangent] of [[0.018, 0.5], [-0.018, 0.5], [-0.018, -0.5], [0.018, -0.5]]) {
+            const x = axial * R, z = tangent * chord;
+            positions.push(x * Math.cos(twist) - z * Math.sin(twist), radius, sweep + x * Math.sin(twist) + z * Math.cos(twist));
+          }
         }
+        for (let j = 0; j < steps; j++) for (let k = 0; k < 4; k++) {
+          const a = j * 4 + k, b = j * 4 + (k + 1) % 4, d = a + 4, e = b + 4;
+          indices.push(a, d, b, b, d, e);
+        }
+        indices.push(0, 2, 1, 0, 3, 2, steps * 4, steps * 4 + 1, steps * 4 + 2, steps * 4, steps * 4 + 2, steps * 4 + 3);
+        const blade = new Three.BufferGeometry();
+        blade.setAttribute('position', new Three.Float32BufferAttribute(positions, 3));
+        blade.setIndex(indices); blade.computeVertexNormals();
+        for (let k = 0; k < 28; k++) fanBatch.add(blade, metal, new Three.Matrix4().makeRotationX(k * TAU / 28));
+        fanBatch.flush(fan, 'swept compressor fan');
+        // Batch owns copies; these two construction geometries are not retained
+        // on the scene and therefore do not join its resource collection.
+        hub.dispose(); blade.dispose();
         fans.push(fan);
         // Exhaust cone out of the back.
         const cone = new Three.ConeGeometry(R * 0.5, R * 1.1, 18);
         cone.rotateZ(Math.PI / 2);
         cone.translate(en.x - Lh - R * 0.45, en.y, en.z);
         batch.add(cone, dark);
+        const exhaustBack = new Three.CircleGeometry(R * 0.74, 28);
+        exhaustBack.rotateY(-Math.PI / 2);
+        exhaustBack.translate(en.x - Lh + R * 0.15, en.y, en.z);
+        batch.add(exhaustBack, dark);
       }
       /* The four-blade propeller: spinner, twisted blades with painted tips, and a
          blur disc shown when it turns fast. */

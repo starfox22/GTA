@@ -131,7 +131,7 @@
           let shown = false;
           if (far) {
             farCount++;
-            if (d < reach) {
+            if (chaseAirBlend || d < reach) {
               // The cell from the ground to its highest point.
               chaseSphere.center.set(cell.minX + half, Math.max(0, cell.top) * 0.5, cell.minZ + half);
               chaseSphere.radius = half * 1.42 + Math.max(0, cell.top) * 0.5 + 40;

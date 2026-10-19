@@ -223,6 +223,8 @@
           rig = chuteRiggingState;
         chuteShape.time += dt;
         chuteCloudTint();
+        updateChuteCutaway(p);
+        if (p) chuteSetReservePalette(p.canopy === 'reserve');
         const stage = p ? p.stage : null;
         // Just landed (or splashed down) from under a canopy: start the collapse
         // (not for one still in the bag or barely out of it).
@@ -327,11 +329,12 @@
           // it drags the bag up the lines; after line stretch it trails above the tail.
           chuteSkinPoint(0, 0.5, 0.5, true, chutePoint);
           if (phase === 'pilot') {
-            const thrown = smooth01(0.3, 0.5, k),
-              rise = smooth01(0.45, 1, k);
-            chuteTmp.set(-thrown - 5 * rise, 1 + 2 * thrown + 13 * rise, 3 + 3 * thrown - 5 * rise);
-            chutePilot.scale.setScalar(0.3 + 0.7 * smooth01(0.4, 0.85, k));
-            chutePilot.visible = k > 0.25;
+            const reserve = p.canopy === 'reserve',
+              thrown = reserve ? 0 : smooth01(0.3, 0.5, k),
+              rise = smooth01(reserve ? 0.15 : 0.45, 1, k);
+            chuteTmp.set(-thrown - 5 * rise, 1 + 2 * thrown + 13 * rise, reserve ? 0 : 3 + 3 * thrown - 5 * rise);
+            chutePilot.scale.setScalar(0.3 + 0.7 * smooth01(reserve ? 0.15 : 0.4, 0.85, k));
+            chutePilot.visible = k > (reserve ? 0.1 : 0.25);
           } else if (phase === 'lines') {
             chuteTmp.set(-1.5 * stretch - 4 + Math.sin(chuteShape.time * 3.7) * 0.8, 1 + (CHUTE_LINES + 1) * stretch + 14, 1);
             chutePilot.scale.setScalar(1 + 0.06 * Math.sin(chuteShape.time * 9));
@@ -415,6 +418,8 @@
         return {
           visible: chuteRoot.visible,
           phase: p ? (p.stage === 'canopy' ? p.phase : p.stage) : chuteRig.collapse ? 'collapse' : null,
+          canopy: p ? p.canopy || 'main' : chutePaletteReserve ? 'reserve' : 'main',
+          cutawayVisible: !!chuteCutaway.mesh,
           rootM: [m(root.x), m(root.y), m(root.z)],
           harnessToPlayerM: p ? m(Math.hypot(root.x - player.x, root.z - player.y, root.y - player.altitude)) : null,
           skin: chuteSkin.visible,

@@ -6,10 +6,16 @@ sees far more of the city than the overhead view. Everything here only changes w
 the game never reads it. What steps out by its size and the haze (CHASE PROPS, PARTS, HAZE SIZES) and the
 draw calls per tier: rendering-chase-budget.md.
 
+In flight, `CHASE_AIR_DRAW` opens smoothly from the street range at 20 m AGL to LOW 800 m,
+MEDIUM 1.5 km, HIGH 3 km and ULTRA 4 km at 150 m. It uses the same merged far-city cells;
+the detailed-cell radius, prop budgets and shadow reach stay unchanged. Taxiing keeps the street range.
+
 ## What is drawn at all
 
 - Cells of scenery draw inside the draw distance and the frustum (`chaseCellShown`), plus those within
   `CHASE_SHADOW_KEEP` behind the camera (their shadows fall in front of it).
+- Flight culling uses the real frustum's four far-plane corners and each cell's measured ground-to-roof
+  volume. No horizontal-radius cutoff trims the wide lens's corners before the depth-based haze closes.
 - Haze closes over the far part of the draw distance (the four "Haze" lines in `updateChaseView`); the
   far clip and every distance step below sit in or behind it.
 
@@ -85,3 +91,7 @@ loose pools) and `draws`: the last frame's camera and shadow calls and triangles
 static, instanced, crowd, vehicle, sprite, other), by distance band and by size on screen (`px<N`, the
 largest side at 720 lines), with the top names. `lookSwitches({ chaseBudget: false })` turns the budget off
 in the same page (an A/B).
+
+`drawMetres` reports the current altitude-blended range and `aerialBlend` its 0..1 flight share.
+`tools/tests/aerial-city-horizon.mjs` checks real Three.js frustum/footprint math, city-cell selection,
+ground heights, all tier transitions and unchanged near-detail radius; native captures verify the picture.

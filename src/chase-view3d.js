@@ -20,6 +20,9 @@
        * of the draw distance and closes over the rest, so the far clip is never seen.
        */
       const CHASE_DRAW = { LOW: 2600, MEDIUM: 3600, HIGH: 4800, ULTRA: 6400 },
+        // The flight horizon uses the existing merged city, not kilometre after kilometre of street detail.
+        // Open the range smoothly between 20 and 150 m AGL; taxiing keeps the street budget exactly.
+        CHASE_AIR_DRAW = { LOW: 6400, MEDIUM: 12000, HIGH: 24000, ULTRA: 32000 },
         CHASE_HAZE_CLEAR = 0.16,
         // The share of the far clip where the haze has closed over everything (the fog chunk's floor ends at 0.97).
         CHASE_HAZE_CLOSED = 0.97,
@@ -37,6 +40,7 @@
       chaseCamera.layers.enable(FAR_DETAIL_LAYER);
       let chaseViewActive = false,
         chaseDrawReach = CHASE_DRAW.HIGH,
+        chaseAirBlend = 0,
         // The lens's forward axis (world, unit) and the view depth where the haze has closed completely (the fog
         // chunk's floor, aerial-haze3d.js: from 0.8 to 0.97 of the far clip): past it nothing shows (chaseDepthHidden).
         chaseForwardX = 1,
@@ -44,8 +48,12 @@
         chaseForwardZ = 0,
         chaseClosedDepth = Infinity;
       function chaseDrawDistance() {
-        const tier = activeTier || graphicsTier();
-        return CHASE_DRAW[tier.name] || CHASE_DRAW.HIGH;
+        const tier = activeTier || graphicsTier(),
+          near = CHASE_DRAW[tier.name] || CHASE_DRAW.HIGH,
+          far = CHASE_AIR_DRAW[tier.name] || CHASE_AIR_DRAW.HIGH,
+          height = clamp((viewAgl / UNITS_PER_METRE - 20) / 130, 0, 1);
+        chaseAirBlend = height * height * (3 - 2 * height);
+        return near + (far - near) * chaseAirBlend;
       }
       /* The street zoom a thing at map (x, y) is drawn at in the chase view (its distance from the
          camera against the street frame): for level-of-detail switches tuned on the street view. */
@@ -55,14 +63,19 @@
       }
       /* Whether a cell of scenery round map (x, y) with reach `reach` draws in the chase view: inside
          the draw distance and the frustum, or close enough behind to cast a shadow into the view. */
-      function chaseCellShown(x, y, reach) {
+      function chaseCellShown(x, y, reach, top = terrainHeight(x, y) + reach) {
         const dx = x - chaseCam.x,
           dy = y - chaseCam.y,
           d = Math.hypot(dx, dy);
-        if (d > chaseDrawReach + reach * 1.42) return false;
+        // In flight the far plane and its haze close by view depth. A horizontal radius cuts the
+        // frustum's corners off earlier, while they are still visible through the atmosphere.
+        if (!chaseAirBlend && d > chaseDrawReach + reach * 1.42) return false;
         if (d < CHASE_SHADOW_KEEP + reach * 1.42) return true;
-        chaseSphere.center.set(x, chaseCam.pz, y);
-        chaseSphere.radius = reach * 1.42 + 200;
+        // Test the actual ground-to-roof volume, not a ground cell raised to the aircraft's height.
+        // The latter discarded the city underneath a camera looking steeply down from a plane.
+        const height = Math.max(0, top);
+        chaseSphere.center.set(x, height * 0.5, y);
+        chaseSphere.radius = Math.hypot(reach * Math.SQRT2, height * 0.5) + 40;
         return viewFrustum.intersectsSphere(chaseSphere);
       }
       function updateChaseView(deltaSeconds) {
@@ -100,10 +113,17 @@
           maxX = chaseCam.x,
           minY = chaseCam.y,
           maxY = chaseCam.y;
-        for (let i = -1; i <= 1; i++) {
-          const a = yaw + Math.atan(tanH) * i,
-            far = reach / Math.cos(Math.atan(tanH) * i || 0);
-          chaseCorner.set(chaseCam.x + Math.cos(a) * Math.min(far, reach * 1.35), 0, chaseCam.y + Math.sin(a) * Math.min(far, reach * 1.35));
+        for (let i = 0; i < (chaseAirBlend ? 4 : 3); i++) {
+          if (chaseAirBlend) {
+            // Bound all four corners of the real far plane, including pitch and aspect. The old
+            // horizontal wedge clamped the wide lens's corners before the fog had closed there.
+            chaseCorner.set(i & 1 ? 1 : -1, i & 2 ? 1 : -1, 1).unproject(chaseCamera);
+          } else {
+            const edge = i - 1,
+              a = yaw + Math.atan(tanH) * edge,
+              far = reach / Math.cos(Math.atan(tanH) * edge || 0);
+            chaseCorner.set(chaseCam.x + Math.cos(a) * Math.min(far, reach * 1.35), 0, chaseCam.y + Math.sin(a) * Math.min(far, reach * 1.35));
+          }
           minX = Math.min(minX, chaseCorner.x);
           maxX = Math.max(maxX, chaseCorner.x);
           minY = Math.min(minY, chaseCorner.z);
@@ -117,7 +137,8 @@
         // Haze: clear near the camera, closing over the far part of the draw distance. Rain and the build-up
         // to a shower close it sooner (CHASE_RAIN_HAZE), never over the clear near street; weather3d-chase.js
         // darkens that air (chaseRainAir), so the distance goes dark and dense instead of milky.
-        const clear = reach * CHASE_HAZE_CLEAR;
+        // Keep the runway and nearby rooftops crisp without starting clear air half a city away.
+        const clear = Math.min(reach * CHASE_HAZE_CLEAR, 1200 + 1400 * chaseAirBlend);
         scene.fog.near = clear;
         // fogFactor = 1 - exp(-((d - near) / far)^2): about 0.93 at the far clip.
         scene.fog.density = (1.62 / Math.max(1, reach - clear)) * (1 + weather.rain * CHASE_RAIN_HAZE + weather.approach * 0.3);
@@ -130,6 +151,7 @@
         return {
           active: chaseViewActive,
           drawMetres: Math.round(chaseDrawReach / UNITS_PER_METRE),
+          aerialBlend: +chaseAirBlend.toFixed(3),
           near: chaseCamera.near,
           far: Math.round(chaseCamera.far),
           viewReach: Math.round(viewReach),

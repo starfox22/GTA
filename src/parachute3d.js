@@ -48,4 +48,5 @@
       // @include src/parachute3d-canopy.js
       // @include src/parachute3d-pose.js
       // @include src/parachute3d-rigging.js
+      // @include src/parachute3d-cutaway.js
       // END SUBSYSTEM: src/parachute3d.js

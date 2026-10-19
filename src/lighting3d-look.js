@@ -93,7 +93,9 @@
         sunU[0] = skySunDirection.x;
         sunU[1] = skySunDirection.y;
         sunU[2] = skySunDirection.z;
-        sunU[3] = chaseViewActive ? 1 : 0;
+        // Both perspective flight views use the same directional sky colour and height-aware air.
+        // The orthographic street view keeps its original fog curve and clear near frame.
+        sunU[3] = chaseViewActive || flightViewActive ? 1 : 0;
         skyU[0] = (horizon.r + (HAZE_DUSK_AWAY.r * pinkScale - horizon.r) * pink) * blue + HAZE_CITY_GLOW.r * city;
         skyU[1] = (horizon.g + (HAZE_DUSK_AWAY.g * pinkScale - horizon.g) * pink) * blue + HAZE_CITY_GLOW.g * city;
         skyU[2] = (horizon.b + (HAZE_DUSK_AWAY.b * pinkScale - horizon.b) * pink) * blue + HAZE_CITY_GLOW.b * city;
@@ -111,7 +113,7 @@
         haloU[2] = (glow.b + (HAZE_HALO_WHITE.b - glow.b) * 0.6) * haloShare;
         haloU[3] = 40;
         viewU[0] = Math.exp(-Math.max(0, camera.position.y) / HAZE_SCALE_HEIGHT);
-        viewU[1] = chaseViewActive ? camera.far : 0;
+        viewU[1] = chaseViewActive || flightViewActive ? camera.far : 0;
         viewU[2] = camera.position.y;
       }
       // Lamp materials are declared after this file; their day colours are read on first use.

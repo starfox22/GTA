@@ -37,27 +37,8 @@ grid, navigation and layout data: world-and-map.md; shores and bridges: world-an
   rule lets him off land or a dock into the sea (never a bridge or the pier); the fall carries
   `fall.jumped`, which `updateSwimming` waits for, and ends swimming (`fallIntoWater`).
   Console `jumpReport()`, `jumpObstacles()`; tools/tests/player-jump.mjs.
-- Parachute (parachute.js; parachute3d.js draws it): only an aircraft bail-out (60 m clear)
-  starts one; the ripcord is a second `bail` press once the first is let go, and
-  `deployParachute()` runs once (`stage` stays 'canopy'). The pull is not an open canopy: the
-  DEPLOYMENT stages of a sport ram-air main from 54 m/s belly freefall: pilot 0.8 s (throw,
-  pin, bag lift), lines 1 s (line stretch 1.8 s / ~95 m after the pull, ~50 m of it paying
-  out), snivel 1.1-2 s by pull speed (the slider holds it, cells fill centre out), snap 0.9 s
-  (slider down, end cells last). Pulled at terminal it flies 4.7 s / ~200 m later at ~7 m/s,
-  the load easing to a 3.8 g peak (`PARACHUTE_OPEN_SHOCK` is a soft tanh cap, not a clip);
-  pulled at 30 m/s 4.3 s / 138 m, from a hover 3.8 s / ~57 m (a 75 m hop with an instant pull
-  just makes it). `parachuteForecast()` steps the same model at 30 Hz and is the cue's
-  "need" (to 7 m/s); `p.safeLost` records the same point in flight and the test holds them
-  equal: change the model there and the cue follows. Flying, the canopy is on its
-  deployment brakes (`p.brakesSet`, 15 km/h) for `PARACHUTE_BRAKES_SET` 1.4 s (or until the
-  first steer or flare), then surges to trim. Cue: OPEN SOON at need + 4 s of fall, OPEN NOW
-  at need + 1.5 s (a pull then still lands safe), TOO LOW under need + 2 m; after the pull it
-  shows the stage and the height the rest needs. Until `phase` is 'open' the jumper steers
-  as in freefall and a roof is an impact. The renderer (parachute3d*.js) reads
-  `phase`/`phaseK`/`opening`/`load`/`brakesSet`/`flown` and the velocity (its pendulum is
-  driven by the rig's forward acceleration); the camera jolt is `shake`, set by parachute.js.
-  Every rig object is `userData.dynamic`: without it the detail pass hid the canopy from
-  the flight camera high up. Console `parachuteView()` reports the rig as drawn.
+- Parachutes, staged main deployment, cutaway/reserve controls, rig animation and forecasts:
+  [vehicles-and-driving-parachute.md](vehicles-and-driving-parachute.md).
 - Ships' decks (deck-landing.js): `deckSurfaceAt()` (topmost deck: a liner's promenade deck or
   deckhouse roof, the yacht's highest level) is part of `parachuteFloor`, and
   `deckLandingStep()` runs in updateParachute before the ground: an open canopy on a free spot
@@ -70,19 +51,8 @@ grid, navigation and layout data: world-and-map.md; shores and bridges: world-an
   Airport), COAST LINE (→ Oceanview → Palmshore), RIDGE LINE (→ Eastgate, Northridge,
   Stonecreek). Each `route` is a control polygon filleted by `railTrackGeometry`; everything
   else reads `line.points`.
-- Airfields (airfields.js, airfields3d.js): SOUTHPORT 18/36 (460 m, courier strip on a
-  reclaimed pier) and OCEANVIEW 09/27 (1,280 m, jets and the airliner, running out to sea on
-  `oceanview-pier`); Fort Sentinel also accepts fixed-wing landings. Runway piers are
-  `LAND_REGIONS`. Console `airfields()`.
-- Free-roam planes park nose out (aviation-flight.js `AIRCRAFT_STANDS`): Southport's three
-  fixed-gear SKYLARK 172 trainers face west onto apron spurs, then taxi north to runway 18;
-  Oceanview's jets, courier and airliner face south along four taxiway stubs onto runway 27.
-  The airliner uses the eastern stand to keep enough take-off runway ahead. No reverse or
-  pushback is needed. `aircraftTaxi(id?)` reports the route and collision-footprint clearance.
-  The trainer has a power-limited piston propeller; the airframes retain separate lift,
-  drag, rotation, stall, spool and bank profiles. Nosewheel steering uses each wheelbase,
-  slows with speed and cannot pivot at rest. `aircraft-flight-model` tests the host model;
-  `aircraft-taxi-takeoff` boards existing aircraft and drives the routes with normal keys.
+- Airfields, nose-out parking, terminal architecture, apron paint and elevated airport
+  structure contracts: [world-county-and-sea-airports.md](world-county-and-sea-airports.md).
 - Parks (renewal.js `CENTRAL_PARK`, `COMMONS`; streets inside closed by `parkStreetClosed`).
   South Coast Stadium is enclosed: see places-monarch-and-county.md.
 

@@ -61,29 +61,17 @@
       // No district or street name boards over the carriageway (OCEAN DRIVE,
       // PALM KEYS and NORTHBANK used to hang over Ocean Dr and both ends of the
       // Keys Bridge): district names belong to the HUD and the map.
-      // A terminal, gate arms, control tower, service equipment and parked aircraft.
+      // @include src/airport-terminal3d.js
+      // The GA terminal, maintenance hangar, tower and unobstructed trainer apron.
       const ag = new Three.Group();
       scene.add(ag);
       batchGroups.push(ag);
-      const terminalGlass = staticMat('#446875', 0.16, 0.55),
-        airWhite = staticMat('#d8dfdc', 0.36, 0.3);
-      box(
-        ag,
-        AIRPORT.x + AIRPORT.w / 2,
-        22,
-        AIRPORT.y + AIRPORT.h + 1,
-        AIRPORT.w - 12,
-        29,
-        1.1,
-        terminalGlass,
-      );
-      for (let x = AIRPORT.x + 12; x < AIRPORT.x + AIRPORT.w; x += 19)
-        box(ag, x, 22, AIRPORT.y + AIRPORT.h + 2, 1, 30, 1, chrome);
-      sign('SOUTHPORT INTERNATIONAL', 1010, 4990, 235, '#bcd9dc');
-      box(ag, 790, 54, 5075, 19, 108, 19, concrete);
-      box(ag, 790, 113, 5075, 46, 20, 40, terminalGlass);
-      box(ag, 790, 124, 5075, 50, 3, 44, airWhite);
-      box(ag, 790, 139, 5075, 1, 27, 1, chrome);
+      airportTerminal(ag, AIRPORT, 'SOUTHPORT AIRPORT');
+      airportHangar(ag, AIRPORT.hangar, 'SOUTHPORT AIR');
+      airportTower(ag, AIRPORT_TOWERS[0]);
+      airportEntranceCanopy(ag, AIRPORT_CANOPIES[0]);
+      airportApron(ag, AIRPORT_APRONS[0], [{ x: 1044, y: 5188, w: 84, h: 54 }]);
+      AIRCRAFT_STANDS.filter((s) => s.id.startsWith('southport')).forEach((s, i) => airportStandPaint(ag, s, i + 1));
       // Static apron aircraft share the flying airframes' geometry (plane3d.js).
       function parkedJet(x, z, a, size = 1) {
         const group = new Three.Group();
@@ -104,7 +92,6 @@
       // Southport is a GA strip (airfields.js): its apron's light aircraft are flyable SKYLARK 172s (vehicles,
       // aviation-flight.js populateAircraft; aircraft-assets3d.js draws them). The runway, its lights and markings
       // are airfields3d.js.
-      for (let x = 840; x < 1070; x += 30) box(ag, x, 3, 5140, 21, 6, 12, staticMat('#91836d'));
       statics.push({
         x: 750,
         y: 4900,

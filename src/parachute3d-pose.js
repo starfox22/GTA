@@ -97,9 +97,11 @@
         m.parts.guns.forEach((gun) => (gun.visible = false));
         // Box position to hanging: the lines lift the shoulders a little as they pay
         // out, line stretch swings the body upright with a small overshoot.
-        if (!canopy) chuteRig.upright = chuteRig.uprightRate = 0;
+        if (!canopy && !p.cutaway) chuteRig.upright = chuteRig.uprightRate = 0;
         else {
-          const target = phase === 'pilot' ? 0 : phase === 'lines' ? 0.3 * k * k : 1;
+          // A released harness unloads the body before the jumper arches back
+          // into freefall; do not snap from hanging to belly-to-earth in one frame.
+          const target = !canopy || phase === 'pilot' ? 0 : phase === 'lines' ? 0.3 * k * k : 1;
           chuteRig.uprightRate += ((target - chuteRig.upright) * 40 - chuteRig.uprightRate * 9) * dt;
           chuteRig.upright = clamp(chuteRig.upright + chuteRig.uprightRate * dt, 0, 1.08);
         }
@@ -113,7 +115,13 @@
           chuteRig.sampledAt = gameTime;
         }
         chuteRig.accel += (clamp(accel, -3 * GRAVITY, 3 * GRAVITY) - chuteRig.accel) * (1 - Math.exp(-dt * 12));
-        if (!canopy) chuteRig.roll = chuteRig.rollRate = chuteRig.pitch = chuteRig.pitchRate = 0;
+        if (!canopy) {
+          const settle = Math.exp(-dt * (p.cutaway ? 4 : 20));
+          chuteRig.roll *= settle;
+          chuteRig.pitch *= settle;
+          chuteRig.rollRate *= settle;
+          chuteRig.pitchRate *= settle;
+        }
         else {
           const opening = p.opening,
             fall = Math.max(1, -p.vz),
@@ -147,8 +155,12 @@
           player.y + (hangZ - player.y) * u,
         );
         // The pull: the right hand goes back to the pilot chute pouch, then flings it out.
-        const reach = phase === 'pilot' ? smooth01(0, 0.25, k) * (1 - smooth01(0.3, 0.5, k)) : 0,
-          fling = phase === 'pilot' ? smooth01(0.3, 0.5, k) * (1 - smooth01(0.6, 1, k)) : 0,
+        const reserve = p.canopy === 'reserve',
+          reach = phase === 'pilot' && !reserve ? smooth01(0, 0.25, k) * (1 - smooth01(0.3, 0.5, k)) : 0,
+          fling = phase === 'pilot' && !reserve ? smooth01(0.3, 0.5, k) * (1 - smooth01(0.6, 1, k)) : 0,
+          // Reserve: the left hand pulls the chest handle; its spring pilot
+          // launches from the container rather than being thrown from a pouch.
+          reservePull = phase === 'pilot' && reserve ? smooth01(0, 0.3, k) * (1 - smooth01(0.6, 1, k)) : 0,
           pullR = Math.max(chuteRig.flare, chuteRig.turn),
           pullL = Math.max(chuteRig.flare, -chuteRig.turn),
           // Line stretch kicks the legs down and apart; they come together hanging.
@@ -156,8 +168,8 @@
           legLift = 0.25 + chuteRig.flare * 0.5 + Math.sin(gameTime * 1.3) * 0.04 - 0.2 * snatch;
         arms.forEach((arm, i) => {
           const side = i === 0 ? 1 : -1,
-            boxZ = 0.75 + Math.sin(gameTime * 3.1 + i) * 0.05 + (i === 0 ? 0.5 * fling - 1.1 * reach : 0),
-            boxX = -side * 1.35 + (i === 0 ? reach - 0.3 * fling : 0),
+            boxZ = 0.75 + Math.sin(gameTime * 3.1 + i) * 0.05 + (i === 0 ? 0.5 * fling - 1.1 * reach : 0.6 * reservePull),
+            boxX = -side * 1.35 + (i === 0 ? reach - 0.3 * fling : -1.2 * reservePull),
             // Hands on the toggles: up by the risers, down to the hips to brake.
             togglesZ = 2.75 - (i === 0 ? pullR : pullL) * 1.6,
             togglesX = -side * 0.18;

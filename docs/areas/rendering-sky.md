@@ -35,10 +35,11 @@ rest of the light: rendering-lighting.md; the clouds (from below too): rendering
 - The dome draws at renderOrder 50, after the opaque city, depth-tested at the far plane: only visible
   sky is shaded. An opaque-queue object that writes no depth and must show against the sky needs a
   higher renderOrder (the objective arrow is 99).
-- Chase haze (`cityHazeSun.w` 1 only while the chase view draws; the street view keeps the old curve and
+- Perspective haze (`cityHazeSun.w` 1 in both chase and flight views; the overhead street view keeps the old curve and
   `fogColor` exactly): thinner with height (scale height 150 m above sea level), the sky's colour towards
   each pixel, closed over the last fifth before the far clip. Display-referred shaders (the water) are
   hazed again after `city_hdr_output` undoes their curve (`fogBase`), so the sea meets the sky.
+  The flight camera now shares this sky colour and altitude-aware air instead of a separate flat fog tint.
 - Night: steady stars, the moon with maria and halo, the city's sodium glow low over the horizon
   (`uCityGlow`, dome only; a luminance-neutral share in the haze).
 - Sun glare (chase view, the sky's sun in front and up): a 1 x 1 visibility pass (depth and brightness over

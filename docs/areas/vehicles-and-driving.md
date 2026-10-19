@@ -91,10 +91,9 @@ police3d.js, helicopter3d-*.js, apache3d.js, plane3d.js, vehicles3d.js, boats3d.
 
 ## Aircraft and camera
 
-- Planes (aviation.js `AIRFRAME_SPECS`): thrust is a real share of weight; take-off rolls are
-  measured (courier ~236 m, jet ~504, airliner ~794) and the runways are sized from them
-  (world-county-and-sea.md, Airfields). Flight controls: spool, pitch/roll springs, flaps,
-  gear, stall warnings; `flightData()` feeds the HUD and console.
+- Fixed-wing flight, trim, energy, bank-driven turns and stall/recovery:
+  [vehicles-and-driving-flight.md](vehicles-and-driving-flight.md). Airfield layouts and
+  nose-out parking: [world-county-and-sea-airports.md](world-county-and-sea-airports.md).
 - Helicopters: `helicopterControl` (physics); rooftop landings in rooftops.js. The police
   helicopter is unarmed (police-and-combat.md). The Apache (apache.js) is player-only; the
   military Black Hawk's door guns, the LAV-8 and the gun jeep: police-and-combat-mounted.md.

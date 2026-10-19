@@ -139,6 +139,11 @@
       const cue = parachuteCueState();
       return {
         stage: p.stage,
+        canopy: p.canopy || 'main',
+        mainUsed: !!p.mainUsed || p.stage === 'canopy',
+        reserveAvailable: !p.reserveUsed,
+        reserveUsed: !!p.reserveUsed,
+        cutaway: !!p.cutaway,
         armed: !!p.armed,
         phase: p.stage === 'canopy' ? p.phase : null,
         deployS: p.stage === 'canopy' ? +p.deploy.toFixed(2) : null,

@@ -283,12 +283,44 @@
         return texture;
       }
       const acPlaneKits = new Map();
+      // A control's leading edge must span the whole part. The original pack
+      // selected vertices within 3 cm of its single foremost point: dihedral
+      // made the C172 aileron hinge collapse to a vertical line at the wingtip.
+      // Fit at both span ends instead, and keep the neutral skin exactly where
+      // the downloaded model put it. All fitting happens once per shared kit.
+      function acPlaneControlHinge(model, geometry, name) {
+        const position = geometry.attributes.position,
+          origin = model.parts[name].origin || [0, 0, 0],
+          span = name === 'rudder' ? 1 : 2,
+          U = UNITS_PER_METRE,
+          points = [];
+        let lo = Infinity, hi = -Infinity;
+        for (let i = 0; i < position.count; i++) {
+          const p = [position.getX(i) / U + origin[0], position.getY(i) / U + origin[1], position.getZ(i) / U + origin[2]];
+          points.push(p); lo = Math.min(lo, p[span]); hi = Math.max(hi, p[span]);
+        }
+        if (hi - lo < 0.05) return model.hinges[name];
+        const band = Math.min(0.06, (hi - lo) * 0.04),
+          atEnd = (end) => {
+            const edge = points.filter(p => Math.abs(p[span] - end) <= band),
+              front = Math.max(...edge.map(p => p[0])),
+              leading = edge.filter(p => p[0] >= front - 0.02),
+              mid = [0, 0, 0];
+            for (const p of leading) for (let k = 0; k < 3; k++) mid[k] += p[k] / leading.length;
+            return mid;
+          },
+          a = atEnd(lo), b = atEnd(hi);
+        geometry.translate((origin[0] - a[0]) * U, (origin[1] - a[1]) * U, (origin[2] - a[2]) * U);
+        return { a, b };
+      }
       function acPlaneKit(name) {
         if (acPlaneKits.has(name)) return acPlaneKits.get(name);
         const model = aircraftAssetModel(name),
           data = acData(),
-          kit = { model, parts: {} };
+          kit = { model, parts: {}, hinges: {} };
         for (const part of Object.keys(model.parts)) kit.parts[part] = acGeometry(model, data, part);
+        for (const part of Object.keys(model.hinges || {})) if (kit.parts[part])
+          kit.hinges[part] = acPlaneControlHinge(model, kit.parts[part], part);
         const shared = {
           cabin: new Three.MeshStandardMaterial({ vertexColors: true, roughness: 0.75, metalness: 0.05 }),
           glass: new Three.MeshStandardMaterial({ color: '#28323b', roughness: 0.05, metalness: 0.5, envMapIntensity: 1.6, transparent: true, opacity: 0.42, depthWrite: false }),
@@ -331,7 +363,7 @@
         const surfaces = { aileron: [], elevator: [], rudder: [], flap: [] },
           hingeAxis = new Three.Vector3();
         for (const [part, list, side] of [['aileronL', 'aileron', -1], ['aileronR', 'aileron', 1], ['flapL', 'flap', -1], ['flapR', 'flap', 1], ['elevatorL', 'elevator', -1], ['elevatorR', 'elevator', 1], ['rudder', 'rudder', 0]]) {
-          const h = model.hinges[part];
+          const h = kit.hinges[part];
           if (!h || !P[part]) continue;
           const pivot = new Three.Group();
           pivot.position.set(h.a[0] * U, h.a[1] * U, h.a[2] * U);

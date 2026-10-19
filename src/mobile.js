@@ -178,7 +178,7 @@
       ['touchReload', startReload],
       ['touchWeapon', cycleWeapon],
       ['touchPoison', poisonDrink],
-      // Jump from the aircraft; in freefall the same button pulls the ripcord.
+      // Each tap jumps, opens, cuts away the flying main, or pulls the reserve.
       ['touchJump', () => (player.parachute ? openParachuteByHand() : bailOut())],
       ['touchDivert', () => chooseFlightLanding(!mission?.divert)],
       ['touchSkip', () => rideSkipKey('skip')],
@@ -242,7 +242,7 @@
       const c = player.car,
         air = isAircraft(c),
         chute = !!player.parachute,
-        freefall = player.parachute?.stage === 'freefall',
+        chuteAction = chute && (player.parachute.stage === 'freefall' || (player.parachute.phase === 'open' && player.parachute.canopy !== 'reserve')),
         foot = !c && !chute;
       document.body?.classList.toggle('touch-driving', !!c || chute);
       const show = (id, on) => getElement(id).classList.toggle('hidden', !on);
@@ -257,7 +257,7 @@
       show('touchReload', foot || !!c);
       show('touchWeapon', foot || c?.type === 'tank' || mountedGunKind(c) === 'apc');
       show('touchPoison', foot && player.roof && !!rooftopJob());
-      show('touchJump', freefall || (air && aircraftClearance(c) >= 60));
+      show('touchJump', chuteAction || (air && aircraftClearance(c) >= 60));
       getElement('touchJump').textContent = touchButtonLabel('touchJump');
       show(
         'touchDivert',
@@ -298,7 +298,11 @@
           // The Blue Hour terrace during the job walks by default: the walk action runs there.
           return roofPartyPace() || fortCoverPace() ? 'RUN' : 'WALK';
         case 'touchJump':
-          return player.parachute?.stage === 'freefall' ? 'OPEN CHUTE' : 'PARACHUTE';
+          return chute
+            ? player.parachute.stage === 'freefall'
+              ? player.parachute.mainUsed ? 'OPEN RESERVE' : 'OPEN CHUTE'
+              : player.parachute.canopy === 'reserve' ? 'RESERVE OPEN' : 'CUT AWAY'
+            : 'PARACHUTE';
       }
       return getElement(id)?.textContent || '';
     }

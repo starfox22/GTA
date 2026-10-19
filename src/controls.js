@@ -88,7 +88,7 @@
       { id: 'gear', label: 'Landing gear', note: 'Plane: raise or lower the landing gear (it cannot retract on the ground)', group: 'air', keys: ['KeyL'], ctx: ['air'] },
       // Its own virtual code: Space is the handbrake's, and the two may be bound apart.
       { id: 'rockets', label: 'Rockets', note: 'Apache: fire a rocket salvo along the nose, to the range of the aim (right mouse button too)', group: 'air', code: 'RocketSalvo', keys: ['Space'], ctx: ['air'] },
-      { id: 'bail', label: 'Bail out / open parachute', note: 'Jump from an aircraft, then press again to open the parachute (it never opens by itself); dive off a boat or out of a sinking car', group: 'air', keys: ['KeyJ'], ctx: ['drive', 'air', 'chute'] },
+      { id: 'bail', label: 'Bail out / parachute / cutaway', note: 'Aircraft: jump, release and press again to open the main. With the main fully open: press to cut away, then press again to open the single reserve. Never automatic; also dive off a boat or out of a sinking car', group: 'air', keys: ['KeyJ'], ctx: ['drive', 'air', 'chute'] },
       // V was the divert key before the chase camera took it (loadControlBindings moves an old default pair).
       { id: 'divert', label: 'Divert landing', note: 'Mission 11: change the landing site once the manifest is exposed', group: 'air', keys: ['KeyC'], ctx: ['air'] },
       { id: 'reload', label: 'Reload', note: 'Reload the equipped weapon', group: 'weapons', keys: ['KeyR'], ctx: ['foot', 'drive', 'air'] },

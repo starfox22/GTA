@@ -11,7 +11,7 @@
        * near/far feed this curve; `density` is kept as the knob the time-of-day and
        * weather code turn (far = 1 / density), with the same meaning it always had.
        *
-       * CHASE HAZE (cityHazeSun.w = 1, only while the chase view draws): the same curve, but
+       * PERSPECTIVE HAZE (cityHazeSun.w = 1, in the chase and flight views): the same curve, but
        *  - the air thins with height (scale height 1 / cityHazeSky.w above sea level): a ray
        *    counts the air it crosses against air as dense as at the camera, so towers and
        *    hills rise out of the haze and a view down from a roof looks through more of it;
@@ -28,7 +28,7 @@
        * clouds seen from below (clouds3d-sky.js) include CITY_HAZE_GLSL too.
        */
       const CITY_HAZE = {
-        // xyz: the sun as the sky draws it (world, unit); w: 1 while the chase haze is on.
+        // xyz: the sun as the sky draws it (world, unit); w: 1 while perspective haze is on.
         cityHazeSun: { value: new Float32Array([0, 1, 0, 0]) },
         // rgb: the horizon away from the sun (scene-linear); w: 1 / the haze's scale height (per world unit).
         cityHazeSky: { value: new Float32Array([0.5, 0.6, 0.7, 1 / 1200]) },
@@ -88,7 +88,7 @@
             // Aerial perspective (aerial-haze3d.js): clear to fogNear, then exp-squared over fogFar.
             float fogReach = max( vFogDepth - fogNear, 0.0 ) / fogFar, fogFloor = 0.0;
             if ( cityHazeSun.w > 0.5 ) {
-              // The chase haze: rel is the world offset from the camera (the view matrix is a rotation and a shift).
+              // Perspective haze: rel is the world offset from the camera (the view matrix is a rotation and a shift).
               vec3 fogRel = ( vec4( vFogView, 0.0 ) * viewMatrix ).xyz;
               float fogDist = length( fogRel );
               fogReach = cityHazeReach( fogRel, fogDist, fogNear, fogFar );

@@ -267,6 +267,8 @@
         d.fillStyle = pier.ground;
         d.fill();
       }
+      d.fillStyle = '#a6a69a';
+      for (const p of AIRPORT_APRONS) d.fillRect(p.x, p.y, p.w, p.h);
       for (const t of TAXIWAYS) {
         strokeTaxiway(d, t, detail);
       }

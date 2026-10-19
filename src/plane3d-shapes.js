@@ -264,7 +264,10 @@
               b = a + 1,
               d = a + ring,
               e = d + 1;
-            indices.push(a, b, d, b, e, d);
+            // x runs nose to tail while theta runs top to starboard. The
+            // exterior is (span, circumference), not the reverse: an inward
+            // skin disappears from outside with the normal FrontSide paint.
+            indices.push(a, d, b, b, d, e);
           }
         // Caps at both ends (their own vertices, so the loft keeps smooth normals).
         for (const [i, front] of [
@@ -281,8 +284,8 @@
             uvs.push(i / along, 0.5);
           }
           for (let j = 0; j < radial; j++)
-            if (front) indices.push(centre, centre + 1 + j + 1, centre + 1 + j);
-            else indices.push(centre, centre + 1 + j, centre + 1 + j + 1);
+            if (front) indices.push(centre, centre + 1 + j, centre + 1 + j + 1);
+            else indices.push(centre, centre + 1 + j + 1, centre + 1 + j);
         }
         const geometry = new Three.BufferGeometry();
         geometry.setAttribute('position', new Three.Float32BufferAttribute(positions, 3));

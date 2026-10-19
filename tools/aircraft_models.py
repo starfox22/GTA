@@ -240,9 +240,17 @@ def convert_plane(model, src_root):
         if not len(P):
             continue
         span = 1 if name == 'rudder' else 2
-        front = P[P[:, 0] > P[:, 0].max() - 0.03]
-        a = front[np.argmin(front[:, span])]
-        b = front[np.argmax(front[:, span])]
+        # A swept/dihedral edge does not share one global foremost x. Measure
+        # the leading edge independently at both span ends, or the hinge can
+        # collapse to a tiny vertical line at one wingtip.
+        lo, hi = P[:, span].min(), P[:, span].max()
+        band = min(0.06, (hi - lo) * 0.04)
+
+        def leading_at(end):
+            edge = P[np.abs(P[:, span] - end) <= band]
+            return edge[edge[:, 0] >= edge[:, 0].max() - 0.02].mean(0)
+
+        a, b = leading_at(lo), leading_at(hi)
         hinges[name] = dict(a=[round(float(v), 4) for v in a], b=[round(float(v), 4) for v in b])
     pp = pts('prop')
     sp = pts('spinner') if (role == 'spinner').any() else pp

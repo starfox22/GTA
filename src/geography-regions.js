@@ -351,6 +351,42 @@
         y: 5180,
       },
     };
+    // Airport structures share their plan with airport-terminal3d.js. Jetbridges
+    // stand above the apron: only their narrow columns block people on foot.
+    const AIRPORT_APRONS = [
+      { airport: 'SOUTHPORT', x: 742, y: 4500, w: 408, h: 990 },
+      { airport: 'OCEANVIEW', x: 3480, y: 8670, w: 2660, h: 730 },
+    ];
+    const AIRPORT_JETBRIDGES = [
+      { gate: 'A1', x: 4066, from: 8640, to: 9030, dock: { x: 4084, y: 9064 } },
+      { gate: 'A2', x: 4426, from: 8640, to: 9044, dock: { x: 4444, y: 9078 } },
+    ];
+    const AIRPORT_CANOPIES = [
+      { x: 1010, y: 4988, w: 224, h: 30, bottom: 27, top: 30, posts: [[918, 4999], [1102, 4999]] },
+      { x: 4215, y: 8672, w: 610, h: 56, bottom: 34, top: 38, posts: [[3935, 8694], [4215, 8694], [4495, 8694]] },
+    ];
+    const AIRPORT_TOWERS = [
+      { x: 790, y: 5075, shaft: 19, shaftH: 108, cabW: 46, cabD: 40, bottom: 103, top: 126, beacon: 153 },
+      { x: 3530, y: 8980, shaft: 22, shaftH: 128, cabW: 62, cabD: 55, bottom: 123, top: 152, beacon: 190 },
+    ];
+    function airportBridgeSupports(b) {
+      return [b.from + 86, b.to - 80].map((y) => ({ x: b.x - 3, y: y - 3, w: 6, h: 6, height: 22, kind: 'airport bridge column' }));
+    }
+    function airportOverheadVolumes() {
+      return [
+        ...AIRPORT_JETBRIDGES.flatMap((b) => [
+          { x: b.x, y: (b.from + b.to) / 2, hx: 11, hy: (b.to - b.from) / 2, a: 0, minHeight: 22, height: 45, kind: 'airport jetbridge' },
+          { x: (b.x + b.dock.x) / 2, y: (b.to + b.dock.y) / 2,
+            hx: Math.hypot(b.dock.x - b.x, b.dock.y - b.to) / 2, hy: 9,
+            a: Math.atan2(b.dock.y - b.to, b.dock.x - b.x), minHeight: 22, height: 43, kind: 'airport jetbridge' },
+          { x: b.dock.x, y: b.dock.y, hx: 10, hy: 10, a: 0, minHeight: 20, height: 46, kind: 'airport docking cab' },
+        ]),
+        ...AIRPORT_TOWERS.map((t) => ({ x: t.x, y: t.y, hx: t.cabW / 2, hy: t.cabD / 2, a: 0,
+          minHeight: t.bottom, height: t.top, kind: 'airport control cab' })),
+        ...AIRPORT_CANOPIES.map((c) => ({ x: c.x, y: c.y, hx: c.w / 2, hy: c.h / 2, a: 0,
+          minHeight: c.bottom, height: c.top, kind: 'airport entrance canopy' })),
+      ];
+    }
     // Ground footprints shared by airport scenery, foot collision, traffic spawning and ballistics.
     const AIRPORT_SCENERY_SOLIDS = [
       {
@@ -361,6 +397,9 @@
         height: 126,
         kind: 'tower',
       },
+      ...AIRPORT_JETBRIDGES.flatMap(airportBridgeSupports),
+      ...AIRPORT_CANOPIES.flatMap((c) => c.posts.map(([x, y]) => ({ x: x - 1.5, y: y - 1.5, w: 3, h: 3,
+        height: c.bottom, kind: 'airport canopy column' }))),
       {
         x: 3519,
         y: 8969,

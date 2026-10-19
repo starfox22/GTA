@@ -14,7 +14,9 @@
        low, the jumper meets the ground still fast (playerImpact: hurt, or dead).
        The freefall cue on screen (FREEFALL CUE below) counts the height down against
        the height the opening needs from the current fall rate, calls OPEN SOON and
-       OPEN NOW in time, and then follows the opening until the canopy flies. */
+       OPEN NOW in time, and then follows the opening until the canopy flies.
+       Once the main flies, another fresh bail press cuts it away; release and
+       press again to pull the single reserve. Neither wing opens automatically. */
     // Belly-to-earth freefall tops out at about 54 m/s (120 mph); the canopy settles at 3.5 m/s.
     const PARACHUTE_TERMINAL = 54 * UNITS_PER_METRE,
       /* DEPLOYMENT, from the pull (a ram-air sport main, seconds):
@@ -38,6 +40,9 @@
          canopy is on its deployment brakes (PARACHUTE_BRAKES_SET) until the jumper
          unstows the toggles, and then surges forward to trim speed. */
       PARACHUTE_DEPLOY = { pilot: 0.8, lines: 1, snivel: 1.1, snivelFast: 0.9, snap: 0.9 },
+      // A spring-pilot reserve extracts sooner; it still needs line stretch,
+      // inflation and the slider run, and cannot rescue a pull at ground level.
+      PARACHUTE_RESERVE_DEPLOY = { pilot: 0.32, lines: 0.48, snivel: 0.55, snivelFast: 0.3, snap: 0.7 },
       PARACHUTE_PHASES = ['pilot', 'lines', 'snivel', 'snap'],
       // Drag area, in multiples of the freefall body's, at the end of each stage.
       PARACHUTE_DEPLOY_DRAG = { pilot: 1.25, lines: 1.4, snivel: 12 },
@@ -79,6 +84,9 @@
       player.altitude = c.altitude;
       player.parachute = {
         stage: 'freefall',
+        canopy: 'main',
+        mainUsed: false,
+        reserveUsed: false,
         elapsed: 0,
         opening: 0,
         vx: (c.vx || 0) * 0.55,
@@ -122,7 +130,8 @@
         );
       return true;
     }
-    /* The ripcord: `stage` becomes 'canopy' for good (no second opening), and the
+    /* The ripcord: `stage` becomes 'canopy', consuming the main or (after a
+       cutaway) the single reserve packed in this rig. The
        deployment runs from here: `deploy` seconds since the pull, `phase` (pilot,
        lines, snivel, snap, open) with `phaseK` 0..1 through it, `opening` the
        canopy's inflation (0 in the bag .. 1 flying), `pullRate` the fall rate at
@@ -132,7 +141,11 @@
        to PARACHUTE_SAFE_RATE, the point parachuteForecast() counts to. */
     function deployParachute() {
       const p = player.parachute;
-      if (!p || p.stage !== 'freefall') return false;
+      if (!p || p.stage !== 'freefall' || p.reserveUsed) return false;
+      p.canopy = p.mainUsed ? 'reserve' : 'main';
+      if (p.canopy === 'reserve') p.reserveUsed = true;
+      else p.mainUsed = true;
+      p.armed = false;
       p.stage = 'canopy';
       p.deploy = 0;
       p.phase = 'pilot';
@@ -146,12 +159,31 @@
       p.brakesSet = true;
       p.pullAltitude = player.altitude;
       parachutePhaseSound('pilot');
+      if (p.canopy === 'reserve') tell('RESERVE DEPLOYING · One reserve only · Steer toward clear ground', 4);
+      return true;
+    }
+    /* Release the flying main without changing the jumper's position, heading
+       or momentum. The next fresh pull uses the separate reserve; a held bail
+       action cannot cut and immediately deploy it in the same update. */
+    function cutAwayParachute() {
+      const p = player.parachute;
+      if (!p || p.stage !== 'canopy' || p.phase !== 'open' || p.canopy === 'reserve') return false;
+      p.cutaway = { at: gameTime, x: player.x, y: player.y, altitude: player.altitude, vx: p.vx, vy: p.vy, heading: p.heading };
+      p.mainUsed = true;
+      p.stage = 'freefall';
+      p.phase = 'freefall';
+      p.phaseK = p.opening = 0;
+      p.armed = false;
+      p.load = 0;
+      p.brakesSet = false;
+      tell('MAIN CUT AWAY · FREEFALL · ' + pressKey('bail') + ' AGAIN TO OPEN RESERVE', 6, { id: 'parachute' });
+      noise(0.08, 0.08, 1800);
       return true;
     }
     /* Deployment stage `t` seconds after a pull at `pullRate` (map units a second,
        downward), written into `out` as { phase, phaseK }; 'open' once it is done. */
-    function parachuteDeployPhase(t, pullRate, out) {
-      const d = PARACHUTE_DEPLOY,
+    function parachuteDeployPhase(t, pullRate, out, reserve = false) {
+      const d = reserve ? PARACHUTE_RESERVE_DEPLOY : PARACHUTE_DEPLOY,
         snivel = d.snivel + d.snivelFast * clamp(pullRate / PARACHUTE_TERMINAL, 0, 1);
       let start = 0;
       for (let i = 0; i < 4; i++) {
@@ -200,26 +232,28 @@
        PARACHUTE_SAFE_RATE; and how many seconds that takes. The same steps the
        flight uses at the console's 30 Hz. */
     const parachuteForecastPhase = { phase: '', phaseK: 0 };
-    function parachuteForecast(fall, deploy = 0, pullRate = fall, rate = 3.5 * UNITS_PER_METRE) {
+    function parachuteForecast(fall, deploy = 0, pullRate = fall, rate = 3.5 * UNITS_PER_METRE, reserve = false) {
       const dt = 1 / 30;
       let lost = 0,
         t = deploy,
         fallRate = Math.max(0, fall);
       for (let i = 0; i < 600; i++) {
         t += dt;
-        const s = parachuteDeployPhase(t, pullRate, parachuteForecastPhase);
+        const s = parachuteDeployPhase(t, pullRate, parachuteForecastPhase, reserve);
         fallRate = Math.max(0, fallRate + parachuteFallAccel(fallRate, parachuteDragArea(s.phase, s.phaseK, rate)) * dt);
         lost += fallRate * dt;
         if ((s.phase === 'snap' || s.phase === 'open') && fallRate <= PARACHUTE_SAFE_RATE) break;
       }
       return { need: lost, seconds: t - deploy };
     }
-    /* A fresh press of the bail action (a keydown or the touch button): pull the
-       ripcord. The press that jumped never gets here (game-input.js jumps first). */
+    /* A fresh press (keydown or touch): pull the packed canopy, or cut away a
+       fully flying main. Opening-phase presses do nothing. The reserve is the
+       last wing: it cannot be cut away or replenished while airborne. */
     function openParachuteByHand() {
       const p = player.parachute;
-      if (!p || p.stage !== 'freefall') return false;
-      return deployParachute();
+      if (!p) return false;
+      p.armed = false;
+      return p.stage === 'freefall' ? deployParachute() : cutAwayParachute();
     }
     // What the jumper would come down on here: the ground, or a building's roof.
     function parachuteRoofAt(x, y) {
@@ -335,9 +369,10 @@
       const p = player.parachute;
       if (!p) return;
       p.elapsed += deltaSeconds;
-      // The ripcord: the bail action let go since the jump, then held again.
+      // The ripcord/cutaway: one action per release and press, including when
+      // simulation/gamepad input supplies a held action without a keydown.
       if (!actionHeld('bail')) p.armed = true;
-      else if (p.armed && p.stage === 'freefall') deployParachute();
+      else if (p.armed) openParachuteByHand();
       const turn = (actionHeld('right') ? 1 : 0) - (actionHeld('left') ? 1 : 0),
         fast = actionHeld('forward') || actionHeld('chuteGlide'),
         flare = actionHeld('back') || actionHeld('chuteFlare'),
@@ -348,7 +383,7 @@
       if (canopy) {
         const was = p.phase;
         p.deploy += deltaSeconds;
-        parachuteDeployPhase(p.deploy, p.pullRate, p);
+        parachuteDeployPhase(p.deploy, p.pullRate, p, p.canopy === 'reserve');
         p.opening = parachuteInflation(p.phase, p.phaseK);
         area = parachuteDragArea(p.phase, p.phaseK, rate);
         if (p.phase !== was) parachutePhaseChange(p);
@@ -521,10 +556,10 @@
       const agl = Math.max(0, player.altitude - parachuteFloor(player.x, player.y)),
         fall = Math.max(0, -p.vz);
       if (p.stage === 'canopy') {
-        const rest = parachuteForecast(fall, p.deploy, p.pullRate, parachuteSinkRate());
+        const rest = parachuteForecast(fall, p.deploy, p.pullRate, parachuteSinkRate(), p.canopy === 'reserve');
         return { agl, need: rest.need, seconds: rest.seconds, phase: p.phase, state: agl < rest.need ? 'short' : 'opening' };
       }
-      const f = parachuteForecast(fall),
+      const f = parachuteForecast(fall, 0, fall, 3.5 * UNITS_PER_METRE, !!p.mainUsed),
         above = ([seconds, metres]) => f.need + Math.max(seconds * fall, metres * UNITS_PER_METRE);
       return {
         agl,
@@ -558,8 +593,10 @@
       }
       const opening = cue.phase !== 'freefall',
         touch = hintDevice() === 'touch',
-        key = touch ? 'TAP OPEN' : keyName('bail'),
-        call = opening ? 'CANOPY OPENING' : touch ? 'TO OPEN PARACHUTE' : 'PRESS ' + key + ' TO OPEN PARACHUTE';
+        reserve = player.parachute.mainUsed && (player.parachute.stage === 'freefall' || player.parachute.canopy === 'reserve'),
+        key = keyName('bail'),
+        wing = reserve ? 'RESERVE' : 'PARACHUTE',
+        call = opening ? (reserve ? 'RESERVE OPENING' : 'CANOPY OPENING') : (touch ? 'TAP TO OPEN ' : 'PRESS ' + key + ' TO OPEN ') + wing;
       if (call !== freefallCue.call) {
         freefallCue.call = call;
         getElement('freefallKey').textContent = key;
@@ -579,7 +616,7 @@
             ? 'OPEN NOW'
             : cue.state === 'soon'
               ? 'OPEN SOON'
-              : 'FREEFALL';
+              : reserve ? 'MAIN RELEASED · RESERVE READY' : 'FREEFALL';
       if (note !== freefallCue.note) {
         freefallCue.note = note;
         getElement('freefallNote').textContent = note;
@@ -679,7 +716,8 @@
         p.openTime = +p.deploy.toFixed(2);
         p.openLost = Math.round(worldMeters(p.pullAltitude - player.altitude));
         p.openAt = Math.round(worldMeters(Math.max(0, player.altitude - parachuteFloor(player.x, player.y))));
-        tell('CANOPY OPEN · Steer toward clear ground · Hold ' + keyName('back') + ' to flare and slow your landing', 4);
+        tell((p.canopy === 'reserve' ? 'RESERVE OPEN · NO MORE CANOPIES' : 'CANOPY OPEN · ' + pressKey('bail') + ' TO CUT AWAY · RESERVE READY') +
+          ' · Hold ' + keyName('back') + ' to flare and slow your landing', 5, { id: 'parachute' });
       }
     }
     /* The pull's sounds, stage by stage: the pilot chute thrown into the wind, the
