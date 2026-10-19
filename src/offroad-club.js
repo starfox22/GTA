@@ -487,6 +487,30 @@
         path = down ? trail.path.slice().reverse() : trail.path,
         n = path.length - 1;
       if (!c) return null;
+      // Private route plan for this console call. Player/traffic updates never use it.
+      // Average curvature over 12 units so rounded tenth-unit path coordinates do
+      // not impose spurious speed limits on a straight.
+      const arc = [0];
+      for (let j = 0; j < n; j++) arc.push(arc[j] + Math.hypot(path[j + 1][0] - path[j][0], path[j + 1][1] - path[j][1]));
+      const pointAt = (s) => {
+        let lo = 0,
+          hi = n;
+        while (lo + 1 < hi) {
+          const mid = (lo + hi) >> 1;
+          if (arc[mid] < s) lo = mid;
+          else hi = mid;
+        }
+        const u = clamp((s - arc[lo]) / (arc[lo + 1] - arc[lo]), 0, 1);
+        return [lerp(path[lo][0], path[lo + 1][0], u), lerp(path[lo][1], path[lo + 1][1], u)];
+      };
+      const curvatures = path.map((p, j) => {
+        const before = pointAt(Math.max(0, arc[j] - 12)),
+          after = pointAt(Math.min(arc[n], arc[j] + 12)),
+          a = Math.atan2(p[1] - before[1], p[0] - before[0]),
+          b = Math.atan2(after[1] - p[1], after[0] - p[0]);
+        return Math.abs(normalizeAngle(b - a)) / 12;
+      });
+
       let idx = 0,
         best = 0,
         bestAt = 0,
@@ -519,12 +543,32 @@
           reason = 'lost vehicle';
           break;
         }
-        // Advance along the path while the next samples are closer.
-        for (let k = 0; k < 6 && idx < n; k++) {
-          const here = Math.hypot(path[idx][0] - c.x, path[idx][1] - c.y),
-            next = Math.hypot(path[idx + 1][0] - c.x, path[idx + 1][1] - c.y);
-          if (next <= here + 2) idx++;
-          else break;
+        let fraction = 0;
+        if (down) {
+          // Advance along the path while the next samples are closer.
+          for (let k = 0; k < 6 && idx < n; k++) {
+            const here = Math.hypot(path[idx][0] - c.x, path[idx][1] - c.y),
+              next = Math.hypot(path[idx + 1][0] - c.x, path[idx + 1][1] - c.y);
+            if (next <= here + 2) idx++;
+            else break;
+          }
+        } else {
+          // Locate the vehicle on nearby route segments; neither dense samples nor
+          // proximity slack may pull the progress cursor through a bend.
+          let segment = idx,
+            nearest2 = Infinity;
+          for (let j = Math.max(0, idx - 2); j < Math.min(n, idx + 30); j++) {
+            const dx = path[j + 1][0] - path[j][0],
+              dy = path[j + 1][1] - path[j][1],
+              u = clamp(((c.x - path[j][0]) * dx + (c.y - path[j][1]) * dy) / (dx * dx + dy * dy), 0, 1),
+              d2 = (c.x - path[j][0] - dx * u) ** 2 + (c.y - path[j][1] - dy * u) ** 2;
+            if (d2 < nearest2) {
+              nearest2 = d2;
+              segment = j;
+              fraction = u;
+            }
+          }
+          idx = segment;
         }
         if (idx > best) {
           best = idx;
@@ -540,22 +584,59 @@
         }
         const speed = c.speed || 0,
           kmh = speed / KMH,
-          heading = (i) => Math.atan2(path[Math.min(n, i + 1)][1] - path[Math.min(n, i)][1], path[Math.min(n, i + 1)][0] - path[Math.min(n, i)][0]),
-          // Uphill rounded hairpins turn about half a radian over six dense path samples. Follow their
-          // line closely before the long look pulls the pilot onto a bank; retain the descent's look.
-          tight = Math.abs(normalizeAngle(heading(idx + 6) - heading(idx))) > (down ? 1.1 : 0.45),
-          look = Math.min(n, idx + (tight ? 2 : 4 + Math.floor(Math.max(0, kmh) / 8))),
-          [tx, ty] = path[look],
+          heading = (i) => Math.atan2(path[Math.min(n, i + 1)][1] - path[Math.min(n, i)][1], path[Math.min(n, i + 1)][0] - path[Math.min(n, i)][0]);
+        let err, desired;
+        if (down) {
+          const tight = Math.abs(normalizeAngle(heading(idx + 6) - heading(idx))) > 1.1,
+            look = Math.min(n, idx + (tight ? 2 : 4 + Math.floor(Math.max(0, kmh) / 8))),
+            [tx, ty] = path[look],
+            error = normalizeAngle(Math.atan2(ty - c.y, tx - c.x) - c.a);
+          // Ease off in time for the bends ahead: the sharpest heading change within
+          // braking reach (farther ahead at speed).
+          let bend = 0;
+          const h0 = heading(idx),
+            reach = 6 + Math.floor(Math.max(0, kmh) / 2.5);
+          for (let j = idx + 1; j <= Math.min(n - 1, idx + reach); j++) bend = Math.max(bend, Math.abs(normalizeAngle(heading(j) - h0)));
+          // Rock under the line ahead (the rock garden, the slickrock): crawl it.
+          const rockAhead = offroadSurfaceAt(path[Math.min(n, idx + 6)][0], path[Math.min(n, idx + 6)][1], pilotSurface).rock > 0.3 || c.surfaceRock > 0.3;
+          desired = Math.min(maxKmh, bend > 2.2 ? 9 : bend > 1.3 ? 14 : bend > 0.6 ? 24 : maxKmh, rockAhead ? 22 : maxKmh) * 0.75;
+          err = error;
+        } else {
+          // Physical look-ahead stays consistent across sparse straights and densely
+          // sampled hairpins. Interpolate the target rather than jumping samples.
+          let remain = clamp(18 + Math.max(0, speed) * 0.22, 18, 40),
+            look = idx,
+            tx = path[idx][0] + (path[idx + 1][0] - path[idx][0]) * fraction,
+            ty = path[idx][1] + (path[idx + 1][1] - path[idx][1]) * fraction;
+          while (look < n) {
+            const dx = path[look + 1][0] - tx,
+              dy = path[look + 1][1] - ty,
+              length = Math.hypot(dx, dy);
+            if (length >= remain) {
+              tx += (dx * remain) / length;
+              ty += (dy * remain) / length;
+              break;
+            }
+            remain -= length;
+            look++;
+            [tx, ty] = path[look];
+          }
           err = normalizeAngle(Math.atan2(ty - c.y, tx - c.x) - c.a);
-        // Ease off in time for the bends ahead: the sharpest heading change within
-        // braking reach (farther ahead at speed).
-        let bend = 0;
-        const h0 = heading(idx),
-          reach = 6 + Math.floor(Math.max(0, kmh) / 2.5);
-        for (let j = idx + 1; j <= Math.min(n - 1, idx + reach); j++) bend = Math.max(bend, Math.abs(normalizeAngle(heading(j) - h0)));
-        // Rock under the line ahead (the rock garden, the slickrock): crawl it.
-        const rockAhead = offroadSurfaceAt(path[Math.min(n, idx + 6)][0], path[Math.min(n, idx + 6)][1], pilotSurface).rock > 0.3 || c.surfaceRock > 0.3;
-        const desired = Math.min(maxKmh, bend > 2.2 ? 9 : bend > 1.3 ? 14 : bend > 0.6 ? 24 : maxKmh, rockAhead ? 22 : maxKmh) * (down ? 0.75 : 1);
+          desired = maxKmh;
+          let ahead = 0;
+          // Work backward from the corner's lateral-acceleration limit through a
+          // conservative braking distance, without sample-density speed changes.
+          for (let j = idx; j < n - 1 && ahead < 160; j++) {
+            const length = Math.hypot(path[j + 1][0] - path[j][0], path[j + 1][1] - path[j][1]),
+              curvature = curvatures[j],
+              cornerSpeed = Math.sqrt(0.52 * GRAVITY / Math.max(curvature, 0.00001)),
+              permitted = Math.sqrt(cornerSpeed * cornerSpeed + 2 * 0.25 * GRAVITY * Math.max(0, ahead - 12));
+            desired = Math.min(desired, permitted / KMH);
+            ahead += length;
+          }
+          const rockAhead = offroadSurfaceAt(tx, ty, pilotSurface).rock > 0.3 || c.surfaceRock > 0.3;
+          desired = Math.min(desired, rockAhead ? 22 : maxKmh);
+        }
         // Wedged (nose in a bank past a hairpin): back off a moment on opposite lock.
         stall = keys.KeyW && Math.abs(kmh) < 1 && c.wheelSpin < 0.3 ? stall + dt : 0;
         if (stall > 1.5) backing = 1.4;
@@ -568,8 +649,8 @@
           keys.KeyD = err < 0;
           keys.KeyA = err > 0;
         } else {
-          keys.KeyW = kmh < desired && Math.abs(err) < 1.6;
-          keys.KeyS = kmh > desired + 8 || (Math.abs(err) >= 1.6 && kmh > 4);
+          keys.KeyW = kmh < desired - (down ? 0 : 1) && Math.abs(err) < 1.6;
+          keys.KeyS = kmh > desired + (down ? 8 : 2) || (Math.abs(err) >= 1.6 && kmh > 4);
           keys.KeyD = err > 0.05;
           keys.KeyA = err < -0.05;
         }

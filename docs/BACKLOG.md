@@ -11,6 +11,10 @@ here when polishing; delete a line when it is fixed. Newest features first.
   keep the 75 s timer and safety assertions unchanged during the fix. A strict nearest-index attempt
   overturned at 30 Hz and was rejected. Retain descent-35 and `falls` controls and the corrected rock normals.
   [Diagnosis and rejected attempt](audit/police-aviation-review-2026-10-15/terrain-rock-contact.md).
+  October 19: a physical-distance projection/curvature/braking candidate passes fresh/reused
+  30/60 Hz production-host bounds, with the original descent controller retained. Complete-game
+  acceptance is pending; keep this entry until the unchanged live hillclimb/falls checks pass.
+  [Candidate evidence](audit/general-experience-review-2026-10-19/trail-pilot.md).
 
 ## Pedestrian-awareness regression fixture
 

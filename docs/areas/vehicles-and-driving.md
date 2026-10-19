@@ -34,11 +34,11 @@ police3d.js, helicopter3d-*.js, apache3d.js, plane3d.js, vehicles3d.js, boats3d.
   authoritative. `tools/performance-kernels-check.mjs` compares production readers with the
   previous ordered visitors and gate contacts across migration/sweep and opening/break states.
 - Steering, grip, brakes and assists, drifts and the handbrake: vehicles-and-driving-handling.md.
-- `trailDrive()` uses the console-only `trailPilot` in offroad-club.js, through ordinary vehicle
-  controls and the real physics. Uphill rounded hairpins turn about 0.5 radians over six dense
-  path samples: the pilot switches to its close look at 0.45 radians. Descent retains its previous
-  1.1-radian threshold. This helper has no player/AI/update-loop callers; changing its line must
-  not change terrain, handling, suspension, requested speed or the hillclimb-physics bounds.
+- `trailDrive()` uses console-only `trailPilot` and real vehicle controls. Uphill uses segment
+  projection, physical look-ahead and smoothed-curvature braking; descent is unchanged.
+  No player/AI callers, physics, requested maximum speed or 75 s timer changed. Host
+  `trail-pilot-route` covers fresh/reused 30/60 Hz runs; live `hillclimb-physics`/`falls`
+  remain acceptance. See [pilot audit](../audit/general-experience-review-2026-10-19/trail-pilot.md).
 
 ## Crashes, riders, aircraft strikes (physics-collisions.js, riders.js, physics-aircraft.js)
 

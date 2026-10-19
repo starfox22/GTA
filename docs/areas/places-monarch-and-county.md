@@ -52,7 +52,7 @@ roofs, garages): the plan is a game file, the meshes its `*3d.js` twin, coordina
   HAIRPIN, bermed keyhole switchbacks, the ROCK GARDEN (0.3 m rock relief the tyres climb,
   drawn exactly), SLICKROCK (0.36, sandstone), the SUMMIT RIDGE onto a rounded summit. Marker
   posts, cairns, logs, edge grass (world-county-and-sea-terrain.md, Trail dressing). Four
-  checkpoints; target 1:15 (the trail pilot's clean run is about 69 s at 1/30 and 1/60).
+  checkpoints; target 1:15. Console pilot: vehicles-and-driving.md.
 
 ## Fort Sentinel, the Apache, the tank (military.js, apache.js, armor.js, base3d-*.js)
 

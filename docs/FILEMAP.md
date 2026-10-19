@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-614 files in the include tree, 209,892 lines.
+614 files in the include tree, 209,973 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -351,7 +351,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/offroad-trails.js`   702 — Off-road club block and trails: layout, terrain pads, vehicle types, trail sections and surfaces (offroadSurfaceAt).
 - `src/trail-trees.js`   341 — Trees out of the street camera's line to the 4x4 trails: trailTreeClear() (the one rule every tree placer near a trail asks), the forest trees' size …
-- `src/offroad-club.js`   661 — Off-road club lot: vehicles, colliders, ground, club talk and scenes, the hill climb.
+- `src/offroad-club.js`   742 — Off-road club lot: vehicles, colliders, ground, club talk and scenes, the hill climb.
 
 ## src/skyline.js ▸ North Point towers, North Point Key, the tower lifts and the CIRRUS sky bar
 
