@@ -404,34 +404,39 @@
       const box = getElement('stealthStatus'),
         seen = !fortCover.alarmed && fortCover.seen > 0,
         hot = fortCover.alarmed || fortCover.suspicion >= 70,
-        running = fortCover.speed > FORT_RUN_SPEED,
+        running = fortCoverRunning(),
+        calming = !running && fortCover.rate === 0 && fortCover.suspicion > 0,
         why = fortCover.reason,
         label = fortCover.alarmed
           ? 'COVER BLOWN · GET OUT ALIVE'
-          : hot
-            ? seen
-              ? 'ALMOST MADE · GET OUT OF SIGHT'
-              : 'ALMOST MADE · STAY OUT OF SIGHT'
-            : seen
-              ? why === 'running'
-                ? 'SEEN RUNNING · SLOW DOWN'
-                : why === 'restricted'
-                  ? 'OFF LIMITS · MOVE ALONG'
-                  : why === 'loitering'
-                    ? 'TOO CLOSE · KEEP MOVING'
-                    : why === 'climbing'
-                      ? 'SEEN UP THERE · GET DOWN'
-                      : 'IN A SOLDIER’S SIGHT'
-              : fortCover.suspicion > 8
-                ? 'SUSPICION FADING'
-                : 'IN UNIFORM · WALK LIKE YOU BELONG',
+          : running && seen
+            ? 'SUSPICION RISING · SLOW DOWN'
+            : calming
+              ? 'SUSPICION FADING · KEEP WALKING'
+              : hot
+                ? seen
+                  ? 'ALMOST MADE · GET OUT OF SIGHT'
+                  : 'ALMOST MADE · STAY OUT OF SIGHT'
+                : seen
+                  ? why === 'restricted'
+                    ? 'OFF LIMITS · MOVE ALONG'
+                    : why === 'loitering'
+                      ? 'TOO CLOSE · KEEP MOVING'
+                      : why === 'climbing'
+                        ? 'SEEN UP THERE · GET DOWN'
+                        : 'IN A SOLDIER’S SIGHT'
+                  : fortCover.suspicion > 8
+                    ? 'SUSPICION FADING'
+                    : 'IN UNIFORM · WALK LIKE YOU BELONG',
         hint = fortCover.alarmed
           ? ''
-          : running
-            ? 'RUNNING · LET GO OF ' + keyName('walk') + ' TO WALK'
-            : hintDevice() === 'touch'
-              ? 'WALK TO BLEND IN · HOLD RUN TO RUN'
-              : 'WALK TO BLEND IN · ' + keyName('walk') + ' TO RUN',
+          : running && seen && fortCover.rate > 0
+            ? 'WALK WITHIN ' + Math.ceil((100 - fortCover.suspicion) / fortCover.rate) + 's · RELEASE ' + (hintDevice() === 'touch' ? 'RUN' : keyName('walk'))
+            : running
+              ? 'RUNNING · RELEASE ' + (hintDevice() === 'touch' ? 'RUN' : keyName('walk')) + ' TO WALK'
+              : hintDevice() === 'touch'
+                ? 'WALK TO BLEND IN · HOLD RUN TO RUN'
+                : 'WALK TO BLEND IN · ' + keyName('walk') + ' TO RUN',
         fill = Math.round(fortCover.suspicion);
       if (H.label !== label) getElement('stealthLabel').textContent = H.label = label;
       if (H.hint !== hint) getElement('stealthHint').textContent = H.hint = hint;

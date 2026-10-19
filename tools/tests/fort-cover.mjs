@@ -42,9 +42,10 @@ export default async function (t) {
   t.assert(c.walkDefault, 'under cover the walk is not the default pace');
 
   // Running in a soldier's cone fills the meter (the walk action runs under cover).
+  // East along the avenue stays clear of the reviewing stand immediately south.
   c = await t.call('fortCoverTest', 'inside');
   await t.wait(0.3);
-  await t.keys(['KeyS', 'Walk'], 1.6);
+  await t.keys(['KeyD', 'Walk'], 1.6);
   c = await cover();
   t.assert(c.suspicion > 10 && !c.alarmed, 'running in view did not fill the meter: ' + JSON.stringify(c));
 

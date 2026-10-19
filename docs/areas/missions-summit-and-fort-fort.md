@@ -23,6 +23,12 @@ Kessler's tail: missions-summit-and-fort-kessler.md.
   jump, fall, knockdown or being pushed away interrupts it; returning on foot allows another inspection.
   The gate arm is solid on foot (military-base.js): it lifts for him only through `fortCoverGatePass()` (waved
   through at `FORT_GATE_OPEN_AT`, or cleared and believed, on foot, no stars), in and out, and drops behind him.
+- Running under cover fills suspicion at 20 points/s while seen (five observed seconds from empty),
+  independent of how many soldiers watch; drill-only witnesses apply half pressure. Releasing the
+  remappable RUN action or movement stops running pressure immediately, despite speed smoothing.
+  Ordinary walking/standing drains 12 points/s even in view, provided no restricted/climbing/loiter
+  offence is active. The HUD shows the remaining warning time and fading state. Other offences keep
+  their previous rules: weapons, assaults, gunfire and military-vehicle theft still expose the disguise.
 - The records door (`FORT_RECORDS`) is at the HQ's far east end, about 83 m from the papers window: the walk along
   Sentinel Avenue passes the HQ pad's helicopter, the QRF jeeps and the ready line (M35, LAV-8). Boarding any of
   them (any military vehicle inside the fence or under cover) is `fortCoverBoarded`: cover blown, five stars.

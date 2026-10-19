@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-614 files in the include tree, 209,991 lines.
+614 files in the include tree, 210,010 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -318,8 +318,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/military-base.js`   636 — Fort Sentinel rules: plans, walls, gates, lockdown, solids and alarms (MILITARY, SENTINEL, militaryBlocked, militaryAlarm).
 - `src/military-life.js`   645 — Fort Sentinel life: buildMilitary(), soldiers and drill, gunners and tanks firing, supply runs, updateMilitary().
-- `src/fort-cover.js`   441 — Fort Sentinel cover: the borrowed army uniform (wearUniform), the stolen pass shown at the gate, the cover state and its small API for a mission …
-- `src/fort-cover-watch.js`   165 — Fort Sentinel cover, the garrison's eyes: each soldier's forward cone (fortSoldierSees), the restricted spots, and the suspicion it fills while the …
+- `src/fort-cover.js`   446 — Fort Sentinel cover: the borrowed army uniform (wearUniform), the stolen pass shown at the gate, the cover state and its small API for a mission …
+- `src/fort-cover-watch.js`   179 — Fort Sentinel cover, the garrison's eyes: each soldier's forward cone (fortSoldierSees), the restricted spots, and the suspicion it fills while the …
 - `src/fort-cover-records.js`   119 — Fort Sentinel's HQ records office: its side door (FORT_RECORDS), the fade inside, the timed search for the weapons file on a card (#fortRecords) and …
 
 ## src/aviation.js ▸ Fixed-wing flight and flight missions

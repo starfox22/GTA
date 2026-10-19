@@ -4,9 +4,13 @@
        (tower sentries further, from their cabins), with a clear line of sight (clearSight: walls and buildings).
        No all-round awareness. Seen doing something no soldier does fills the meter (running, standing in a
        restricted spot, hanging about in a soldier's face, climbing); a weapon in hand or a blow seen, or a shot
-       anywhere on the base, blows the cover at once. Unseen it drains slowly. */
+       anywhere on the base, blows the cover at once. Compliant walking lets suspicion fade, even in view. */
     const FORT_VIEW = { half: (55 * Math.PI) / 180, range: 420, towerRange: 650, face: 42 },
       FORT_RUN_SPEED = 9 * KMH,
+      // Running alone takes five observed seconds to expose a fresh disguise.
+      // Extra witnesses do not multiply this pressure; other offences still count.
+      FORT_RUN_SUSPICION = 20,
+      FORT_CALM_RECOVERY = 12,
       // Places a visiting officer has no business in: the soldiers there say so.
       FORT_RESTRICTED = [
         { name: 'AMMUNITION BUNKERS', x: 10290, y: 8775, w: 160, h: 370 },
@@ -67,6 +71,10 @@
       fortCover.lastSpot.y = player.y;
       fortCover.speed += (speed - fortCover.speed) * Math.min(1, deltaSeconds * 8);
     }
+    function fortCoverRunning() {
+      // The smoothed speed must not punish a player who has just released RUN.
+      return actionHeld('walk') && playerMoveHeading() !== null && fortCover.speed > FORT_RUN_SPEED;
+    }
     function updateFortWatch(deltaSeconds) {
       trackFortPace(deltaSeconds);
       fortCover.seen = 0;
@@ -85,12 +93,13 @@
         fortCoverBlow('gunfire', null);
         return;
       }
-      const running = fortCover.speed > FORT_RUN_SPEED,
+      const running = fortCoverRunning(),
         armed = selectedWeaponIndex !== FISTS_INDEX,
         spot = fortRestrictedAt(player.x, player.y),
         climbing = !!player.climbing || (player.jumpUntil || 0) > gameTime || (player.altitude || 0) > 3;
       let top = 0,
         sum = 0,
+        runRate = 0,
         watcher = null,
         watcherRate = 0;
       for (let i = 0; i < gangMembers.length; i++) {
@@ -131,30 +140,35 @@
           rate += 14;
           why = why || 'loitering';
         }
-        if (running) {
-          rate += 10 + 18 * close;
-          why = 'running';
-        }
         // Marching eyes front: the drill platoon half notices.
-        if (e.role === 'drill') rate *= 0.5;
-        if (rate > 0) {
+        const attention = e.role === 'drill' ? 0.5 : 1,
+          run = running ? FORT_RUN_SUSPICION * attention : 0;
+        rate *= attention;
+        runRate = Math.max(runRate, run);
+        if (running) why = 'running';
+        const observedRate = rate + run;
+        if (observedRate > 0) {
           fortSay(e, why);
-          if (rate > watcherRate) {
-            watcherRate = rate;
+          if (observedRate > watcherRate) {
+            watcherRate = observedRate;
             watcher = e;
             fortCover.reason = why;
           }
         } else if (fortCover.suspicion > 78) fortSay(e, 'stop', 12);
         else if (fortCover.suspicion > 45) fortSay(e, 'wary', 14);
         // A soldier who has noticed keeps his eyes on him.
-        if (rate > 0 || fortCover.suspicion > 35) e.a = turnToward(e.a || 0, headingBetween(e, player), deltaSeconds * 3);
+        if (observedRate > 0 || fortCover.suspicion > 35) e.a = turnToward(e.a || 0, headingBetween(e, player), deltaSeconds * 3);
         top = Math.max(top, rate);
         sum += rate;
       }
-      const rate = top + 0.3 * (sum - top);
+      const rate = top + 0.3 * (sum - top) + runRate;
       fortCover.rate = rate;
       if (rate > 0) {
         fortCover.suspicion += rate * deltaSeconds;
+        fortCover.unseenFor = 0;
+      } else if (!running) {
+        // Looking ordinary again is enough; no need to hide from every soldier.
+        fortCover.suspicion -= FORT_CALM_RECOVERY * deltaSeconds;
         fortCover.unseenFor = 0;
       } else if (fortCover.seen === 0) {
         fortCover.unseenFor += deltaSeconds;
