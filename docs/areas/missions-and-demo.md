@@ -73,6 +73,11 @@ index plus one.
 - A sealed warehouse also constrains `deployOfficers()` door/rear spawn positions,
   not just officers' later walking steps. Outside cruisers cannot deploy past the closed
   shutter; a cruiser genuinely sealed inside may deploy only onto its own side.
+- The front shutter's safety strip tests each vehicle's complete oriented footprint,
+  including its 0.6-second predicted position. Corner-only checks miss a long truck or
+  bus spanning the strip. Ordinary vehicles and the player hold it open; pursuing
+  police retain their push-back rule. `mission1-shutter-safety` checks the actual door
+  controller and an independent polygon overlap oracle.
 
 ## Mission 2: the Blue Hour (roofmission-*.js)
 

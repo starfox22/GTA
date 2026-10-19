@@ -90,6 +90,13 @@
     // The front doorway, where a closing shutter must not come down on anything.
     // It stops short of where truckInsideDepot() counts a truck as inside.
     const DEPOT_DOORWAY = { x: -1722, y: 4318, w: 116, h: 32 };
+    const DEPOT_DOORWAY_SHAPE = {
+      x: DEPOT_DOORWAY.x + DEPOT_DOORWAY.w / 2,
+      y: DEPOT_DOORWAY.y + DEPOT_DOORWAY.h / 2,
+      hx: DEPOT_DOORWAY.w / 2 + 2,
+      hy: DEPOT_DOORWAY.h / 2 + 2,
+      a: 0,
+    };
     function depotSolids() {
       const list = [];
       if (depotFrontShutter > 0.2)
@@ -115,12 +122,14 @@
     /* A vehicle in the doorway, or about to be: where it will be in 0.6 s counts
        too, so a truck reversing out lifts the shutter before it reaches it. */
     function inDepotDoorway(c) {
-      const d = DEPOT_DOORWAY,
-        inDoorway = (p) => p.x + 2 > d.x && p.x - 2 < d.x + d.w && p.y + 2 > d.y && p.y - 2 < d.y + d.h;
+      const d = DEPOT_DOORWAY;
       if (isAircraft(c) || Math.abs(c.x - (d.x + d.w / 2)) > 180 || Math.abs(c.y - (d.y + d.h / 2)) > 180)
         return false;
       const ahead = { x: c.x + (c.vx || 0) * 0.6, y: c.y + (c.vy || 0) * 0.6, a: c.a, type: c.type };
-      return corners(vehicleShape(c)).some(inDoorway) || corners(vehicleShape(ahead)).some(inDoorway);
+      // A long truck can span the entire safety strip with all four corners
+      // outside it. Check the whole footprint so the shutter never closes
+      // through its middle (or through a diagonally crossing bumper).
+      return !!(boxContact(vehicleShape(c), DEPOT_DOORWAY_SHAPE) || boxContact(vehicleShape(ahead), DEPOT_DOORWAY_SHAPE));
     }
     /* The player or an ordinary vehicle in the front doorway. Pursuing police
        cars do not hold the shutter up: they are shoved back out by it instead
