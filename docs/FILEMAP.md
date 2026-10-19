@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-614 files in the include tree, 209,781 lines.
+614 files in the include tree, 209,806 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -64,7 +64,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/pursuit.js`    27 — ▸ Police response and pursuit tactics
 - `src/swat.js`   236 — SWAT teams, riot shields and rooftop snipers
 - `src/wounds.js`   184 — Wounds, hit reactions and death falls
-- `src/story.js`  1009 — Story characters and mission stages
+- `src/story.js`  1011 — Story characters and mission stages
 - `src/campaign.js`   549 — Campaign saves and replay
 - `src/chase.js`   570 — Cargo pursuit
 - `src/roadblocks.js`   436 — Police containment and roadblocks
@@ -441,7 +441,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/hud-state.js`   658 — HUD state and pop boxes, saved settings, weapon and radio watches, stars, minimap fold and zoom (hudState, hudPop).
 - `src/hud-panels.js`   645 — HUD panels: prompts, centre cards and toasts, sniper warning, panel covers, updateHud() and the flight HUD.
-- `src/hud-clearance.js`   352 — HUD clearance: the mission card never covers the player (and the dialogue line and the waypoint pill fade if they would).
+- `src/hud-clearance.js`   371 — HUD clearance: the mission card never covers the player (and the dialogue line and the waypoint pill fade if they would).
 
 ## src/render3d.js ▸ Three.js renderer and resource lifecycle
 
@@ -765,7 +765,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/crowd3d-parts.js`   142 — Crowd 3D instanced parts: capacity, body material, limbs, weapon and far-figure geometries (crowdParts, rigPart).
 - `src/crowd3d-bodies.js`   372 — Crowd 3D body sets (close and street detail), prop geometry and instance recording (rigBodySet, crowdEmit).
 - `src/dog3d.js`   151 — Street dogs from a downloaded model (assets/dog-model.bin, tools/dog_model.py: a rigged Labrador, CC-BY): its baked trot, stand, sit and sniff frames …
-- `src/crowd3d-looks.js`   569 — Crowd 3D looks: compiling a look into parts and paints (compileLook, compiledLook, specialLooks).
+- `src/crowd3d-looks.js`   573 — Crowd 3D looks: compiling a look into parts and paints (compileLook, compiledLook, specialLooks).
 - `src/npc-avatar-cast.js`   137 — Casting the street avatars: which Rocketbox avatar (tools/npc_models.py CAST, its role tags) a look is drawn as near the camera, the tint its top …
 - `src/crowd3d-joints.js`   142 — Crowd 3D joint indices and per-person pose state (crowdState, setArm, crowdDancePose).
 - `src/crowd3d-poses.js`   991 — Crowd 3D pose targets and IK for arms and legs (crowdPoseTargets, solveLeg).
@@ -909,7 +909,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/ui/wanted-effects.css`   206 — Wanted level (heat.js, pursuit.js, hud.js): the next star flashes red while dispatch escalates, earned stars grey out during a search, a thin meter …
 - `src/ui/hud-top.css`   642 — INTERFACE 30 — design tokens, HUD, title menu, settings (v30 UI pass).
 - `src/ui/hud-bottom.css`   688 — Bottom row: minimap + vitals, mission card, equipment
-- `src/ui/radio.css`   579 — Car radio: a station chip that opens on a change or on hover
+- `src/ui/radio.css`   584 — Car radio: a station chip that opens on a change or on hover
 - `src/ui/title.css`   308 — Title screen
 - `src/ui/dialogs.css`   251 — Dialogs: one panel style for pause, calls, shops, help
 - `src/ui/god-panel.css`   243 — God panel: the GOD MODE settings tab and the map's teleport pick

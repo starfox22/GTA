@@ -44,6 +44,7 @@
       chaseLayout: false,
       touchLayout: false,
       touchDispatchTop: -1,
+      storyBottom: -1,
       // The chase layout's card: how far up from the bottom it stands (the minimap's top, chase-view.css).
       cardBottom: -1,
       measuredAt: -1,
@@ -174,6 +175,7 @@
         }
       }
       const story = getElement('storyLine');
+      let storyBottom = 196;
       if (story.classList.contains('show')) {
         const box = story.getBoundingClientRect();
         if (box.height > 0) {
@@ -182,8 +184,25 @@
           C.story.r = box.right;
           C.story.b = box.bottom;
           C.story.ok = true;
+          // On a desktop street view the subtitle must clear the actual lower HUD,
+          // including a tall cargo card. A fixed 196px clipped the opening dialogue
+          // behind both the minimap and mission card at 1000x700.
+          if (!touchLayout && !chaseLayout && viewportHeight > 620 && viewportWidth > 700) {
+            for (const id of ['minimapBox', 'pager', 'vehicleStats', 'weaponButton']) {
+              const el = getElement(id);
+              if (el.classList.contains('hidden')) continue;
+              const lower = el.getBoundingClientRect();
+              if (lower.height > 0 && lower.left < box.right && lower.right > box.left)
+                storyBottom = Math.max(storyBottom, viewportHeight - lower.top + 10);
+            }
+          }
         }
       } else C.story.ok = false;
+      storyBottom = Math.ceil(storyBottom);
+      if (storyBottom !== C.storyBottom) {
+        C.storyBottom = storyBottom;
+        document.body.style.setProperty('--storyline-bottom', storyBottom + 'px');
+      }
       // Touch layouts put the mission card at the top. Place dispatch below its measured height rather than
       // a fixed 96 px that runs through the objective; write only after the layout reads above.
       if (touchLayout && dispatchTop !== C.touchDispatchTop) {

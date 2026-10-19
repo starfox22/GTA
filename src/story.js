@@ -399,6 +399,7 @@
       setContactPortrait(getElement('missionPortrait'), missions[mission.index].contact);
       getElement('storyLine').textContent = mission.lastLine;
       getElement('storyLine').classList.add('show');
+      remeasureMissionCard();
     }
     /* A spoken line of a conversation outside a job's script (a chat at the Marea): the same subtitle, named, for
        `seconds`. In a job it is the job's line (missionLine); in free roam it holds on its own clock (storyUI). */
@@ -413,6 +414,7 @@
       const el = getElement('storyLine');
       el.textContent = speaker + ': ' + text;
       el.classList.add('show');
+      remeasureMissionCard();
     }
     function setStage(stage, target, instruction, speaker, text) {
       mission.stage = stage;

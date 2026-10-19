@@ -558,11 +558,15 @@
         }
       }
       function specialLook(p) {
-        const outfit = outfitOf(p);
+        const outfit = outfitOf(p),
+          // The mountain job's package is real cargo, rather than an invisible inventory flag.
+          // Hide the pack in a seat and under the parachute's own container; restore it on foot.
+          summitPack = p === player && summitJob()?.carrier === 'backpack' && !player.car && !player.parachute;
         let entry = specialLooks.get(p);
-        if (!entry || entry.outfit !== outfit || entry.color !== p.color) {
+        if (!entry || entry.outfit !== outfit || entry.color !== p.color || entry.summitPack !== summitPack) {
           const seed = entry?.seed ?? personLookSeed(p);
-          entry = { outfit, color: p.color, seed, look: outfitLook(p, outfit, seed) };
+          entry = { outfit, color: p.color, seed, summitPack, look: outfitLook(p, outfit, seed) };
+          if (summitPack) Object.assign(entry.look, { backpack: true, bagColor: '#6b7253' });
           specialLooks.set(p, entry);
         }
         return entry.look;

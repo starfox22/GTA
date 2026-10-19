@@ -73,7 +73,6 @@ here when polishing; delete a line when it is fixed. Newest features first.
 - Varga reads as a two-piece suit (no waistcoat); the cocktail is the beach club's orange glass prop.
 - Kessler walks into the Marea even while its door is shut (05:15-09:30); a mission walker ignores gates.
 - A driver sitting in a car whose door is being picked does not react.
-- No backpack is drawn on the player's body while he carries the summit package on foot.
 - The hangar floors are not a restricted spot for the fort's suspicion (the hangars are solid buildings).
 - Shot at in his car, Kessler radios the fort, yet his ID still clears the gate once the stars are gone (by design,
   so the job stays winnable; Vinny says why). Carjacking him is not an alert.

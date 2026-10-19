@@ -560,6 +560,11 @@ body:not(.touch-mode).police-search-active #carRadio {
     bottom: 150px;
   }
 }
+@media (min-height: 621px) and (min-width: 701px) {
+  body:not(.touch-mode):not(.chase-view) #storyLine {
+    bottom: var(--storyline-bottom, 196px);
+  }
+}
 /* A short window has no room for the story line (the film subtitle) between the action
    prompt and the open mission card: while a line is up the card stays a strip
    (game-ui.js updateMissionCard), and the line sits just above that strip, between the
