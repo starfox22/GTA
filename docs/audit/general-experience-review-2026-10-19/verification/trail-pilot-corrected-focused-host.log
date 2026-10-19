@@ -1,0 +1,5 @@
+fresh30: 72.27 s, 240 hp, corridor departure 0, air 0 s, max blow 0.41 m/s
+reused60: 72.03 s, 240 hp, corridor departure 0, air 0 s, max blow 0 m/s
+fresh60: 72.05 s, 240 hp, corridor departure 0, air 0 s, max blow 0.87 m/s
+reused30: 72.4 s, 240 hp, corridor departure 0, air 0 s, max blow 0.7 m/s
+PASS 34 assertions

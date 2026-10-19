@@ -501,7 +501,7 @@
           else hi = mid;
         }
         const u = clamp((s - arc[lo]) / (arc[lo + 1] - arc[lo]), 0, 1);
-        return [lerp(path[lo][0], path[lo + 1][0], u), lerp(path[lo][1], path[lo + 1][1], u)];
+        return [path[lo][0] + (path[lo + 1][0] - path[lo][0]) * u, path[lo][1] + (path[lo + 1][1] - path[lo][1]) * u];
       };
       const curvatures = path.map((p, j) => {
         const before = pointAt(Math.max(0, arc[j] - 12)),

@@ -11,7 +11,7 @@ export function terrainFallsFixture({ sourceRoot = ROOT, terrainCache, sourceOve
     Math, performance, UNITS_PER_METRE: 8, METERS_PER_UNIT: 1 / 8, KMH: 8 / 3.6, KNOTS: 8 * 0.514444,
     GRAVITY: 9.81 * 8, BLOCK_SIZE: 512, STREET: 112, STOREY: 25.6, SHOP_FLOOR: 36, TAU: Math.PI * 2,
     FLIGHT: { pickup: { x: 8570, y: 3462 } }, player: {}, weather: { wet: 0 },
-    clamp: (v, a, b) => Math.max(a, Math.min(b, v)), lerp: (a, b, t) => a + (b - a) * t,
+    clamp: (v, a, b) => Math.max(a, Math.min(b, v)),
     normalizeAngle: a => Math.atan2(Math.sin(a), Math.cos(a)),
     smoothStep: (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); },
     PAINT_EVERYDAY: [], PAINT_LUXURY: [], PAINT_SPORT: [], ENGINE_OF_TYPE: {},

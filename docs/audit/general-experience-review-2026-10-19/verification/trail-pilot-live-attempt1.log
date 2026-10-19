@@ -1,0 +1,9 @@
+Frozen candidate SHA256 10020e235d97e4152260edd44d6541a1ceea68d3afefa04efec8e2940d3391b5
+Exact command ["node", "tools/test.mjs", "hillclimb-physics.mjs", "falls.mjs", "--exact", "--html", "/workspace/GTA/work/general-review/release-candidate.html", "--verbose"]
+Started 2026-10-19T17:07:33.530845+00:00
+started dev server (?dev&norender: boot 19.8s)
+PASS falls (31.9s)
+     cliff at 7360,1380 (49.9 m): down 20.6 m at 20.1 m/s · car off 73.6 m: {"hp":0,"destroyed":true,"overturned":"roof","airborne":false}, player dead
+FAIL hillclimb-physics (23.2s): error: page.evaluate: ReferenceError: lerp is not defined
+1/2 passed, 0 skipped, 1 failed in 76s
+Receipt {"status": "complete", "durationSeconds": 76.59, "exitCode": 1, "passed": 1, "failed": 1, "skipped": 0, "missing": [], "htmlUnchangedAfterRun": true, "testsUnchangedAfterRun": true}

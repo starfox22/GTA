@@ -1,0 +1,74 @@
+{
+  "kind": "Complete-game production regression acceptance, exactly the unchanged hillclimb-physics and falls modules; separate from the CPU host pass",
+  "status": "complete",
+  "preparedAt": "2026-10-19T17:07:33.249359+00:00",
+  "count": 2,
+  "html": "/workspace/GTA/work/general-review/release-candidate.html",
+  "htmlSha256": "10020e235d97e4152260edd44d6541a1ceea68d3afefa04efec8e2940d3391b5",
+  "frozenArtifactSourceCommit": "339ba035f5f71560d7b18880260efad4509fe797",
+  "sourceEquivalence": "This immutable artifact predates the later src/crowd-reactions.js NPC dodge integration change. That change is outside this acceptance artifact. The seven recorded physics/terrain/pilot source files are unchanged in the later root source, and the exact current pilot file is embedded verbatim.",
+  "sourceTreeCommitAtPreparation": "b9df98f572749bff336c8e7734d8da8cb9b965ae",
+  "runnerWorktreeCommit": "095824054f07802a16831807e23b69973d4d058d",
+  "tests": [
+    {
+      "name": "hillclimb-physics.mjs",
+      "sha256": "2992acf477b47f4f093e2b831890d83787df33784e266ad8794674179f5f164c"
+    },
+    {
+      "name": "falls.mjs",
+      "sha256": "848bff688faed24577f34cc4070ce94de14a694ad339e1de357ce27de58102ae"
+    }
+  ],
+  "sourceHashes": {
+    "src/offroad-club.js": "9f62a16e0740223164be64f04ff609b71ce7cfa8d85a806877350131245a96db",
+    "src/offroad-trails.js": "cee054a90176b201308d93a1e373801c85c818b8b931ace9cb27eb643f9be8da",
+    "src/terrain-suspension.js": "3f8ce4067ee794494f97f53f1f2e949193f524d92435663480324f862ef020cd",
+    "src/physics-driving.js": "386821f1bee9137bdb45e7fab88cfa75d0fa144f9d8619f27b7ea4116da33e2c",
+    "src/driving.js": "38dbfb4ebfec0760da08f8caba14acab61cd928e95766b4ba92160f4f32513fd",
+    "src/falls-vehicles.js": "721f32322003919eeb4627d3d88537bb88a7948cfad8d48fdeb542a1ee4ef9d1",
+    "src/falls-console.js": "03ac2723fed4265263141915eef25aeaf1b2657f0bcee1602c9e86a64c369df8"
+  },
+  "pilotSourceIncludedVerbatim": true,
+  "runnerHashes": {
+    "tools/test.mjs": "0a855add117bcf82cd1d39da143bff9bfadc0d705b0cf5a70cd17c8300b792cd",
+    "tools/dev.mjs": "d8462fdc383bfa3d2e32b04935922a848adbefb5116bfa5d03bed1a1fd9307d7",
+    "tools/browser.mjs": "35961799c4a7706ab6a28148a2e5275e780feae8ed4f64f2a5ad34c8d9d1badb"
+  },
+  "command": [
+    "node",
+    "tools/test.mjs",
+    "hillclimb-physics.mjs",
+    "falls.mjs",
+    "--exact",
+    "--html",
+    "/workspace/GTA/work/general-review/release-candidate.html",
+    "--verbose"
+  ],
+  "cwd": "/workspace/work/general-trail-pilot",
+  "log": "/workspace/GTA/work/general-review/trail-pilot-live.log",
+  "startedAt": "2026-10-19T17:07:33.530845+00:00",
+  "finishedAt": "2026-10-19T17:08:50.125334+00:00",
+  "durationSeconds": 76.59,
+  "exitCode": 1,
+  "results": [
+    {
+      "status": "PASS",
+      "name": "falls.mjs",
+      "duration": "31.9s",
+      "detail": ""
+    },
+    {
+      "status": "FAIL",
+      "name": "hillclimb-physics.mjs",
+      "duration": "23.2s",
+      "detail": "error: page.evaluate: ReferenceError: lerp is not defined"
+    }
+  ],
+  "passed": 1,
+  "failed": 1,
+  "skipped": 0,
+  "missing": [],
+  "htmlUnchangedAfterRun": true,
+  "testsUnchangedAfterRun": true,
+  "logSha256": "9c09401dc1c7e712bb7d40fd42fd7fc6a230cfca757120a2cd4c47a6e53900c9"
+}

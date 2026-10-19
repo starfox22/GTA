@@ -1,0 +1,30 @@
+{
+  "kind": "Focused corrected-controller production-host regression; complete-game acceptance remains pending",
+  "at": "2026-10-19T17:10:39.536255+00:00",
+  "assertions": 34,
+  "status": "pass",
+  "ascentTimesSeconds": {
+    "fresh30": 72.27,
+    "reused60": 72.03,
+    "fresh60": 72.05,
+    "reused30": 72.4
+  },
+  "allAscents": {
+    "hp": 240,
+    "corridorDepartureSeconds": 0,
+    "flights": 0,
+    "airSeconds": 0,
+    "maxBlowMs": 0.87
+  },
+  "sourceHashes": {
+    "src/offroad-club.js": "f4e2603dfe7dbb03aaf847d1fa1c307194f6db97962f37de52c9be47f7fa82dd",
+    "tools/fixtures/terrain-falls.mjs": "4464b75b72fa2315679907ec88044deef0bb521a1ea2460a8bc37faec820cf02",
+    "tools/fixtures/terrain-trail.mjs": "bdc861e634ea21cf95a5a40bcf7a221398874d3568d4986cc84e3f7dc261e91e",
+    "tools/tests/trail-pilot-route.mjs": "9008ea2b2a3c9569facfbba8e210da228570e76176a307b86181ecc0d04bd259",
+    "tools/tests/hillclimb-physics.mjs": "2992acf477b47f4f093e2b831890d83787df33784e266ad8794674179f5f164c",
+    "tools/tests/falls.mjs": "848bff688faed24577f34cc4070ce94de14a694ad339e1de357ce27de58102ae"
+  },
+  "log": "trail-pilot-corrected-focused-host.log",
+  "logSha256": "1646dd648de1232727634186d37f38efb0e29e0d9ad8c6c7c265fa4cb135bd21",
+  "correction": "Replace two calls to a nonexistent game-global lerp with identical a+(b-a)*u arithmetic; remove that fake global from the host fixture."
+}
