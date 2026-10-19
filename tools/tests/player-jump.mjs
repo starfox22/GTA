@@ -130,8 +130,20 @@ export default async function (t) {
   t.assert(s.vehicle === 'sedan', `not in the car: ${JSON.stringify(s)}`);
   const jumpsInCar = (await t.call('jumpReport')).log.jumps;
   const fast = await t.keys('KeyW', 1.5);
-  // The real Space key held 1.2 s of wall clock (coasting loses ~12 % there; the handbrake over half).
+  // Live frames clamp their dt under CPU load, so wall time does not guarantee 1.2 s of braking.
+  // Keep the physical Space path and observe game time; releases between probes make this stricter.
+  const brakeStarted = Date.now(),
+    brakeTime = (await t.call('frameFaults')).gameTime;
   await t.mouse(480, 300, { seconds: 1.2, keys: ['Space'] });
+  let brakeSeconds = (await t.call('frameFaults')).gameTime - brakeTime;
+  const firstBrakeSeconds = brakeSeconds;
+  while (brakeSeconds < 1.2 && Date.now() - brakeStarted < 30000) {
+    await t.mouse(480, 300, { seconds: Math.min(0.3, (30000 - (Date.now() - brakeStarted)) / 1000), keys: ['Space'] });
+    brakeSeconds = (await t.call('frameFaults')).gameTime - brakeTime;
+  }
+  const brakeWallSeconds = (Date.now() - brakeStarted) / 1000;
+  t.note(`physical Space: first 1.2 wall s advanced ${firstBrakeSeconds.toFixed(2)} game s; total ${brakeSeconds.toFixed(2)} game s in ${brakeWallSeconds.toFixed(2)} wall s`);
+  t.assert(brakeSeconds >= 1.2, `physical Space did not observe 1.2 game seconds within 30 wall seconds: ${brakeSeconds.toFixed(2)} game s in ${brakeWallSeconds.toFixed(2)} wall s`);
   const slowed = await t.wait(0.02);
   t.note(`speed ${fast.speed} -> ${slowed.speed}`);
   t.assert(fast.speed > 30 && Math.abs(slowed.speed) < fast.speed * 0.7, `Space did not brake the car: ${fast.speed} -> ${slowed.speed}`);
