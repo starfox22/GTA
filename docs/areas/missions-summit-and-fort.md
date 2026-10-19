@@ -21,7 +21,11 @@ cleanup, the demo gate) are in missions-and-demo.md; this page is what each job 
   require stable footing too. An airborne or overturned road vehicle does not count as arriving on the summit.
 - `m.carrier`: 'hand' (just dug, a vehicle near), 'backpack' (no vehicle near, or walked away from it), 'car'
   (`m.carryCar`, flagged `mission` so it burns down slowly instead of exploding and is never retired). Inside the
-  warehouse getting out of the carrier takes the package along.
+  warehouse getting out of the carrier takes the package along. Outside, the action key at the rear of a
+  stopped, grounded, living carrier retrieves it into the backpack (20-unit reach, same elevation). This lets
+  a player leave a stranded or damaged ride for another vehicle. Retrieval restores the borrowed protection
+  immediately and clears `carryCar`, so that vehicle burning later cannot destroy the recovered package.
+  Cargo still in a destroyed vehicle keeps the existing failure; a moving or airborne carrier cannot be unloaded.
 - The carrier is borrowed from free roam. `m.carryCarWasMission` records its previous mission protection;
   `summitCleanup()` restores it before generic failure/retry/abandon cleanup. An ordinary player's truck survives
   a job retry with its world damage intact; a vehicle already owned by a job keeps its original ownership.
@@ -32,7 +36,8 @@ cleanup, the demo gate) are in missions-and-demo.md; this page is what each job 
   program, nothing to prewarm).
 - Console: `summitJob()` (report), `summitSkip('summit' | 'deliver')`. Tests: tools/tests/mission3-summit.mjs,
   mission34-lifecycle.mjs (borrowed carrier, production functions plus actual retry cleanup),
-  mission34-footing.mjs (production interruption cases plus real jump/interact input).
+  mission34-footing.mjs (production interruption cases plus real jump/interact input), mission3-recovery.mjs
+  (rear retrieval, ownership, alternate ride and destruction before/after cargo recovery).
 
 ## Mission 4: Borrowed Stripes (fortjob.js with vehicle-trunk.js, fort-cover*.js, skyline-meeting.js)
 

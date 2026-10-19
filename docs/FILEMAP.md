@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-614 files in the include tree, 209,837 lines.
+614 files in the include tree, 209,861 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -109,7 +109,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/mounted-guns.js`   495 — Mounted guns the player fires from Fort Sentinel's vehicles: the LAV-8's 25 mm cannon and coax MG, the gun jeep's ring-mounted .50 cal and the Black …
 - `src/aviation.js`    10 — ▸ Fixed-wing flight and flight missions
 - `src/challenges.js`   507 — Mission-specific encounters
-- `src/summitjob.js`   327 — Mission 3, High Ground: the package buried at the top of Mount Ascent
+- `src/summitjob.js`   351 — Mission 3, High Ground: the package buried at the top of Mount Ascent
 - `src/fortjob.js`   964 — Mission 4, Borrowed Stripes: an off-duty soldier's uniform, Fort Sentinel and the consul at CIRRUS
 - `src/sidejobs.js`   428 — Contract missions after the main story
 - `src/streets.js`    12 — ▸ Road presentation

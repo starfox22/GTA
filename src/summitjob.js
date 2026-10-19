@@ -27,6 +27,7 @@
       digReach: 26,
       digSeconds: 7.5,
       loadReach: 44,
+      retrieveReach: 20,
       handReach: 46,
     };
     // The job's opening, the owner's words: what to do, never how to get up there.
@@ -111,7 +112,7 @@
     }
     function summitDeliveryTarget(m) {
       if (m.carrier === 'car' && player.car !== m.carryCar && !(insideDepot(m.carryCar.x, m.carryCar.y) && insideDepot(player.x, player.y)))
-        return { target: m.carryCar, text: 'THE PACKAGE IS IN THE ' + summitVehicleWord(m.carryCar) + ' · GET BACK IN' };
+        return { target: m.carryCar, text: 'PACKAGE IN THE ' + summitVehicleWord(m.carryCar) + ' · GET BACK IN OR RETRIEVE IT FROM THE REAR' };
       if (wantedStars > 0) return { target: VINNY_DEPOT.door, text: 'LOSE THE POLICE · VINNY WANTS NO HEAT AT HIS DOOR' };
       if (!insideDepot(player.x, player.y)) return { target: VINNY_DEPOT.inside, text: 'BRING THE PACKAGE TO VINNY’S WAREHOUSE' };
       if (player.car) return { target: m.vinny, text: 'GET OUT · HAND VINNY THE PACKAGE' };
@@ -255,6 +256,27 @@
       missionBrief('The package is loaded. Drive it down the mountain to Vinny’s warehouse, carefully.');
       tell('PACKAGE LOADED · ' + summitVehicleWord(c), 2.6);
     }
+    // A borrowed vehicle can become stranded or too damaged to risk the descent.
+    // The package is cargo, not a permanent commitment to that vehicle: take it
+    // from the rear while it is still intact and carry it to another ride.
+    function summitRetrieveReady(m) {
+      const c = m?.carryCar;
+      return m?.stage === 3 && m.carrier === 'car' && summitOnFoot() && c && c.hp > 0 && !c.cliffAir && vehicleStopped(c) && Math.abs(entityElevation(c) - entityElevation(player)) < 10 && distanceBetween(player, summitRearPoint(c)) < SUMMIT_JOB.retrieveReach;
+    }
+    function summitRetrieve(m) {
+      if (!summitRetrieveReady(m)) return false;
+      const c = m.carryCar;
+      if (!m.carryCarWasMission) c.mission = false;
+      m.carrier = 'backpack';
+      m.carryCar = null;
+      m.carryCarWasMission = false;
+      player.lootUntil = gameTime + LOOT_CROUCH;
+      player.lootFacing = headingBetween(player, c);
+      summitDeliverStage(m, 'Got the case? Good. Leave the vehicle if you have to. Just bring me the package.');
+      missionBrief('Package recovered into your backpack. Carry it on foot or use another vehicle to reach Vinny’s warehouse.');
+      tell('PACKAGE RECOVERED · BACKPACK', 2.6);
+      return true;
+    }
     function summitDeliverStage(m, line) {
       const d = summitDeliveryTarget(m);
       setStage(3, d.target, d.text, 'vinny', line);
@@ -262,6 +284,7 @@
     function summitJobInteract() {
       const m = summitJob();
       if (!m) return false;
+      if (summitRetrieve(m)) return true;
       // Stage 1: E is held to dig (updateSummitJob); a press at the cairn is taken here.
       if (m.stage === 1 && summitOnFoot() && distanceBetween(player, m.cache) < SUMMIT_JOB.digReach) return true;
       if (m.stage === 2 && summitOnFoot() && m.lastCar && distanceBetween(player, summitRearPoint(m.lastCar)) < SUMMIT_JOB.loadReach) {
@@ -286,6 +309,7 @@
     function summitJobUI() {
       const m = summitJob();
       if (!m) return;
+      if (summitRetrieveReady(m)) offerPrompt('RETRIEVE THE PACKAGE', { id: 'summit-retrieve' });
       if (m.stage === 1 && summitOnFoot() && distanceBetween(player, m.cache) < SUMMIT_JOB.digReach + 6) {
         if (m.dig > 0 && summitDigging())
           offerPrompt('DIGGING TO RETRIEVE PACKAGE · ' + Math.floor(m.dig * 100) + ' %', { hold: true, id: 'summit-dig' });
