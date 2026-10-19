@@ -1,0 +1,30 @@
+{
+  "trace": "/workspace/GTA/work/general-review/m4-ordinary/experience.jsonl",
+  "sha256": "e79116fa391bdc0be012ba2cb3bd58d6ddde8c2d5bd3f4b9eba44cdc930fae51",
+  "rows": 5922,
+  "inputOrWaitOperations": 1795,
+  "methods": {
+    "payphones": 1,
+    "status": 3243,
+    "solidAt": 30,
+    "fortJob": 90,
+    "promptState": 84,
+    "carjackScan": 31,
+    "showcase": 1,
+    "missionState": 45,
+    "pauseState": 1,
+    "pauseMenu": 1,
+    "mapScreenPoint": 2,
+    "rideSkip": 4,
+    "fortCover": 479,
+    "skyMeeting": 44,
+    "frameFaults": 2,
+    "demo": 1
+  },
+  "newGameErrors": 0,
+  "harnessErrors": [
+    "page.evaluate: Error: no console method pauseState"
+  ],
+  "fixtureMutatorsUsed": [],
+  "note": "One nonexistent read-only pauseState query returned a tool harness error; browser game error list remained empty. Initial prior-story frontier fixture belongs to the combined M3 header, before the continuous M3/M4 play and real M4 retry."
+}

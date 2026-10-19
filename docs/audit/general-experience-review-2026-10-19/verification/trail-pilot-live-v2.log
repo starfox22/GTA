@@ -1,0 +1,10 @@
+Frozen candidate SHA256 0ed67223d94408cd70b5431c31a53d7326884245827c79143e5c8d64bde9d1d7
+Exact command ["node", "tools/test.mjs", "hillclimb-physics.mjs", "falls.mjs", "--exact", "--html", "/workspace/GTA/work/general-review/polished-release.html", "--verbose"]
+Started 2026-10-19T17:11:54.863850+00:00
+started dev server (?dev&norender: boot 19.6s)
+PASS falls (27.1s)
+     cliff at 7360,1380 (49.9 m): down 20.6 m at 20.1 m/s · car off 73.6 m: {"hp":0,"destroyed":true,"overturned":"roof","airborne":false}, player dead
+PASS hillclimb-physics (103.1s)
+     climb at 1/30: summit in 72.33 s (splits 7.67, 20.9, 44.13, 64.57), air 0 s, gap 0 m, up 3.56 m/s, stops 3 (max 1.14 m/s) · climb at 1/60: summit in 72.13 s (splits 7.65, 20.92, 44.1, 64.38), air 0 s, gap 0 m, up 3.51 m/s, stops 1 (max 0.61 m/s) · descent: 73.7 s, air 0 s, gap 0 m, stops 6 · at rest on the climb: pitch -3.34 deg, front 0.52 g, rear 0.48 g
+2/2 passed, 0 skipped, 0 failed in 152s
+Receipt {"status": "complete", "durationSeconds": 152.09, "exitCode": 0, "passed": 2, "failed": 0, "skipped": 0, "missing": [], "htmlUnchangedAfterRun": true, "testsUnchangedAfterRun": true}

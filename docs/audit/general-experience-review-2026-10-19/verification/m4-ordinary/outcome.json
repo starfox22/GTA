@@ -1,0 +1,87 @@
+{
+  "build": "/workspace/GTA/work/general-review/integrated2.html",
+  "sha256": "f70727f921d8ea6945b7eae69fdfa78c00e8f50c242389c6e24d8e501ecccc35",
+  "outcome": {
+    "mission": null,
+    "last": {
+      "result": "won",
+      "index": 3,
+      "stage": 9
+    },
+    "completed": 4,
+    "depotShutter": 0,
+    "depotBackDoor": 1
+  },
+  "status": {
+    "mode": "demo",
+    "x": 4325,
+    "y": -3794,
+    "district": "NORTH POINT KEY",
+    "hp": 98,
+    "cash": 14758,
+    "wanted": 0,
+    "mission": null,
+    "completed": 4,
+    "vehicle": null,
+    "weapon": "FISTS",
+    "clock": "02:59",
+    "renderer": "2d",
+    "vehicles": 277,
+    "pedestrians": 562
+  },
+  "demo": {
+    "build": true,
+    "missions": 4,
+    "godMode": false,
+    "open": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "storyOver": true,
+    "callWaiting": false,
+    "completed": true,
+    "cardShown": true,
+    "cardIn": 0,
+    "cardSeen": true,
+    "picker": [
+      "Dockside Favor",
+      "A Seat at the Table",
+      "High Ground",
+      "Borrowed Stripes",
+      "???",
+      "???",
+      "???",
+      "???",
+      "???",
+      "???",
+      "???",
+      "???",
+      "???",
+      "???",
+      "???",
+      "???"
+    ],
+    "stats": {
+      "playSeconds": 1496,
+      "cashEarned": 9725,
+      "wantedPeak": 1
+    }
+  },
+  "faults": {
+    "count": 0,
+    "gameTime": 1495.63,
+    "drill": null,
+    "kinds": []
+  },
+  "errors": [],
+  "trace": "/workspace/GTA/work/general-review/m4-ordinary/experience.jsonl",
+  "notes": [
+    "Starts from ordinary M3 win completed 3.",
+    "First M4 attempt witnessed picking under observation, then real BUSTED and pause-menu retry.",
+    "Successful retry uses ordinary walk, wait for Kessler arrival and club entry, actual lockpick and held E, existing occupied taxi hails, keyboard RIDE choice, map destination clicks, public paid Y ride skips, held-E uniform change, full gate inspection, default-walk records retrieval and calm exit, real E through Varga meeting.",
+    "No fixture-spawned vehicle, god mode, teleport, mission/stage skips, world/guard freeze or state writes after M3 initial setup.",
+    "Minor traffic collision cost 2 HP on successful M4 retry; finished at 98 HP and 0 stars."
+  ]
+}

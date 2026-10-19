@@ -1,0 +1,23 @@
+diff --git a/src/crowd-reactions.js b/src/crowd-reactions.js
+index 3e2349f4..fef0fb84 100644
+--- a/src/crowd-reactions.js
++++ b/src/crowd-reactions.js
+@@ -122,9 +122,15 @@
+             p.pose = null;
+             faceToward(p, r.car || from, deltaSeconds, 8);
+           } else p.pose = 'dodge';
+-          if (r.t < leapFor) {
+-            const speed = (r.leapV || 55) * (1 - r.t / leapFor) + 10;
+-            moveBody(p, Math.cos(r.leap) * speed * deltaSeconds, Math.sin(r.leap) * speed * deltaSeconds, 5);
++          const start = clamp(r.t - deltaSeconds, 0, leapFor),
++            end = clamp(r.t, 0, leapFor);
++          if (end > start) {
++            // Integrate the fading speed over the actual leap interval. The
++            // off-camera crowd takes larger steps; an endpoint sample shortened
++            // those leaps and lost the final interval altogether.
++            const speed = r.leapV || 55,
++              distance = (end - start) * (10 + speed * (1 - (start + end) / (2 * leapFor)));
++            moveBody(p, Math.cos(r.leap) * distance, Math.sin(r.leap) * distance, 5);
+             if (r.calm) p.walking = true;
+           }
+           break;

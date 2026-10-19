@@ -1,0 +1,1123 @@
+{
+  "kind": "Initial208browsermodules; immutable candidates retained, follow-ups are separate receipts",
+  "stages": [
+    {
+      "log": "browser-shared.log",
+      "htmlSha256": "f70727f921d8ea6945b7eae69fdfa78c00e8f50c242389c6e24d8e501ecccc35",
+      "logSha256": "0e6ef82ed91fd5b16ec221c77184523ed9c87939dc4529209833c3fb945c5524",
+      "results": [
+        {
+          "status": "PASS",
+          "name": "approved-suv-rigs.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "approved-vehicle-pipeline.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "boot-status.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "brake-distances.mjs",
+          "detail": ""
+        },
+        {
+          "status": "SKIP",
+          "name": "cabin-headroom.mjs",
+          "detail": ": Requires WebGL: run with --render"
+        },
+        {
+          "status": "PASS",
+          "name": "camera-feel.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "camera-framing.mjs",
+          "detail": ""
+        },
+        {
+          "status": "SKIP",
+          "name": "car-cabins.mjs",
+          "detail": ": Requires WebGL: run with --render"
+        },
+        {
+          "status": "PASS",
+          "name": "chase-aim.mjs",
+          "detail": ""
+        },
+        {
+          "status": "SKIP",
+          "name": "chase-clouds.mjs",
+          "detail": ": Requires WebGL: run with --render"
+        },
+        {
+          "status": "PASS",
+          "name": "chase-crane.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "chase-hud-box.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "chase-in-view.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "chase-input.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "chase-radio-chip.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "chase-shooter.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "chase-streams.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "chase-view-mode.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "chase-walk.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "drift-handling.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "drive-no-nan.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "driveby-seats.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "enter-key.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "foliage-cutaway.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "frame-trace.mjs",
+          "detail": ""
+        },
+        {
+          "status": "SKIP",
+          "name": "graphics-all-tiers.mjs",
+          "detail": ": Requires WebGL: run with --render"
+        },
+        {
+          "status": "PASS",
+          "name": "headlight-budget.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "hotrod-vehicle-assets.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "hotrod-vehicle-rig.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "hud-dom-writes.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "instance-upload-ranges.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "jet-assets-lifecycle.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "medic-routing.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "mission-modal-input.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "monarch-vehicle-assets.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "motorcycle-puncture.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "mountain-road.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "navigation-shortlist.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "npc-avatars.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "player-body.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "police-livery-projection.mjs",
+          "detail": ""
+        },
+        {
+          "status": "SKIP",
+          "name": "rear-badges.mjs",
+          "detail": ": Requires WebGL: run with --render"
+        },
+        {
+          "status": "PASS",
+          "name": "regency-traffic.mjs",
+          "detail": ""
+        },
+        {
+          "status": "SKIP",
+          "name": "render-auto-scale.mjs",
+          "detail": ": Requires WebGL: run with --render"
+        },
+        {
+          "status": "SKIP",
+          "name": "render-cell-preupload.mjs",
+          "detail": ": Requires WebGL: run with --render"
+        },
+        {
+          "status": "SKIP",
+          "name": "render-hiccups.mjs",
+          "detail": ": Renderer counters require WebGL: run with --render"
+        },
+        {
+          "status": "SKIP",
+          "name": "render-tier-switch.mjs",
+          "detail": ": Requires WebGL: run with --render"
+        },
+        {
+          "status": "PASS",
+          "name": "roof-skin.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "sim-audits.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "sim-efficiency.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "sound-output.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "sports-vehicle-assets.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "sportsbook-bets.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "taxi-fare-toast.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "tyre-effects.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "vehicle-gunfire.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "vehicle-layouts.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "vehicle-material-lifecycle.mjs",
+          "detail": ""
+        },
+        {
+          "status": "SKIP",
+          "name": "vehicle-merge.mjs",
+          "detail": ": Requires WebGL: run with --render"
+        },
+        {
+          "status": "PASS",
+          "name": "witness-car-lines.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "demo-gating.mjs",
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "log": "browser-fresh-a.log",
+      "htmlSha256": "cc3683864df17eebb60fa325ffbdd1269c8ab05226f3411aff84db377f11d1d5",
+      "logSha256": "f6d6a3d05c235d8946d09b56c3cdb79d8463d55709fe27a5fc5da07865c7b508",
+      "results": [
+        {
+          "status": "PASS",
+          "name": "aircraft-taxi-takeoff.mjs",
+          "detail": ""
+        },
+        {
+          "status": "SKIP",
+          "name": "asset-char.mjs",
+          "detail": ": Requires WebGL: run with --render"
+        },
+        {
+          "status": "PASS",
+          "name": "blood-spray.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "bluehour-entrance.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "camera-comfort.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "camera-slow-framing.mjs",
+          "detail": ""
+        },
+        {
+          "status": "SKIP",
+          "name": "car-feet-clearance.mjs",
+          "detail": ": Requires WebGL: run with --render"
+        },
+        {
+          "status": "PASS",
+          "name": "carjack-traffic.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "chase-budget.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "chase-lock.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "chase-move-keys.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "cheat-helicopter.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "civil-aircraft.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "club-entrance.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "demo-complete-card.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "drawbridge-islands.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "driveby-arcs.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "falls.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "footwork.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "fort-gate-barrier.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "fort-records-route.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "fps-counter.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "freeroam-respawn.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "god-drawbridges.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "god-teleport-map.mjs",
+          "detail": ""
+        },
+        {
+          "status": "SKIP",
+          "name": "gpu-context.mjs",
+          "detail": ": no 3D renderer on this page (run with --render)"
+        },
+        {
+          "status": "PASS",
+          "name": "health-indoors.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "hud-clearance.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "hud-touch-dispatch.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "interface-hints.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "living-key.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "living-sirens.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "living-traffic.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "marea-talk.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "minimap-clutter.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "mission-brief.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "mission-card-subtitle.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "mission-retry-save.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "mission1-bay.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "mission1-truck.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "mission2-cones.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "mission2-paths.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "mission2-touch-run.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "mission3-summit.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "mission34-lifecycle.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "mission4-kessler.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "mission4-tail.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "monarch-one.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "north-point-key.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "parachute-cloud.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "parachute-liner.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "parked-bridge-efficiency.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "pause-restart.mjs",
+          "detail": ""
+        },
+        {
+          "status": "FAIL",
+          "name": "pedestrian-awareness.mjs",
+          "detail": ": facing a car at 80 km/h from 41 m: 0.9 dodged, 0.4 cleared"
+        },
+        {
+          "status": "PASS",
+          "name": "police-circus.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "police-radio.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "police-witness.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "respray-beacon.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "restart-carriers.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "rider-falls.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "roof-lifts.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "sky-meeting-talk.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "soundscape.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "surrender-input.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "taxi-ride.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "traffic-pass-parked.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "trail-trees.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "vehicle-body-impacts.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "view-remembered.mjs",
+          "detail": ""
+        },
+        {
+          "status": "SKIP",
+          "name": "wet-glints.mjs",
+          "detail": ": Requires WebGL: run with --render"
+        },
+        {
+          "status": "PASS",
+          "name": "wheelie.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "witnesses-venues.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "world-edge.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "wreck-limit.mjs",
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "log": "browser-fresh-b.log",
+      "htmlSha256": "f70727f921d8ea6945b7eae69fdfa78c00e8f50c242389c6e24d8e501ecccc35",
+      "logSha256": "8b8dbe55d5300bd8b4a5f575689d64c4770a64e5874f776a4b1050a30b121d9c",
+      "results": [
+        {
+          "status": "PASS",
+          "name": "ammo-supply.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "blood-amounts.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "blood-wounds.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "bullet-hits.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "camera-lead-setting.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "car-blood.mjs",
+          "detail": ""
+        },
+        {
+          "status": "SKIP",
+          "name": "car-window-open.mjs",
+          "detail": ": Requires WebGL: run with --render"
+        },
+        {
+          "status": "PASS",
+          "name": "carjack.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "chase-hud-layout.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "chase-motion-blur.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "chase-wall-clearance.mjs",
+          "detail": ""
+        },
+        {
+          "status": "SKIP",
+          "name": "chimney-smoke.mjs",
+          "detail": ": Requires WebGL: run with --render"
+        },
+        {
+          "status": "PASS",
+          "name": "clouds.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "coronation-bridge.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "drawbridge-traffic.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "driveby-mouse.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "foot-vehicle-escape.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "fort-cover.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "fort-gate-talk.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "fort-vehicle-theft.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "frame-guard.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "garages-islands.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "god-mode-codes.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "gore-dismember.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "headlight-aim.mjs",
+          "detail": ""
+        },
+        {
+          "status": "FAIL",
+          "name": "hillclimb-physics.mjs",
+          "detail": ": climb at 1/60: 76.88 s is over the 1:15 challenge"
+        },
+        {
+          "status": "PASS",
+          "name": "hud-layout.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "integrity-shore.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "liner-voyage.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "living-medics.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "living-snatch.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "lockpick.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "markers-rings.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "mission-abandon.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "mission-card-keys.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "mission-retry.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "mission1-depot.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "mission2-ambulance.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "mission2-getaway.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "mission2-poison.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "mission3-recovery.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "mission34-footing.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "mission4-alert.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "mission4-paths.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "monarch-garages.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "mounted-guns.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "nudge-aside.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "parachute-deploy.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "parachute.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "parked-vehicle-hits.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "payphones-islands.mjs",
+          "detail": ""
+        },
+        {
+          "status": "FAIL",
+          "name": "player-jump.mjs",
+          "detail": ": Space did not brake the car: 54.2 -> 52.2"
+        },
+        {
+          "status": "PASS",
+          "name": "police-night-sight.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "police-search-clock.mjs",
+          "detail": ""
+        },
+        {
+          "status": "SKIP",
+          "name": "render-effects.mjs",
+          "detail": ": Requires WebGL: run with --render"
+        },
+        {
+          "status": "PASS",
+          "name": "respray-lose-police.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "ride-look.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "road-signs.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "second-run-over.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "sky-meeting.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "sun-gradual.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "swim-rescue.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "terrace-death.mjs",
+          "detail": ""
+        },
+        {
+          "status": "SKIP",
+          "name": "trail-mud.mjs",
+          "detail": ": Requires WebGL: run with --render"
+        },
+        {
+          "status": "PASS",
+          "name": "trunk-close.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "vehicle-damage-shape.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "voices.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "wheelie-hint.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "witnesses-monarch.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "world-edge-land.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "world-reset.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "demo-free-roam-markers.mjs",
+          "detail": ""
+        },
+        {
+          "status": "PASS",
+          "name": "mission-replay-frontier.mjs",
+          "detail": ""
+        }
+      ]
+    }
+  ],
+  "selected": 208,
+  "passed": 187,
+  "skipped": 18,
+  "failed": 3,
+  "failures": [
+    {
+      "status": "FAIL",
+      "name": "pedestrian-awareness.mjs",
+      "detail": ": facing a car at 80 km/h from 41 m: 0.9 dodged, 0.4 cleared"
+    },
+    {
+      "status": "FAIL",
+      "name": "hillclimb-physics.mjs",
+      "detail": ": climb at 1/60: 76.88 s is over the 1:15 challenge"
+    },
+    {
+      "status": "FAIL",
+      "name": "player-jump.mjs",
+      "detail": ": Space did not brake the car: 54.2 -> 52.2"
+    }
+  ],
+  "followups": [
+    {
+      "test": "pedestrian-awareness.mjs",
+      "receipt": "npc-dodge-live/receipt.json",
+      "status": "FAIL",
+      "detail": "Unchanged >=0.6 clearance contract remains: 0.6 attempted, 0.4 clear; intentional freeze outcomes preserved."
+    },
+    {
+      "test": "second-run-over.mjs",
+      "receipt": "npc-dodge-live/receipt.json",
+      "status": "PASS"
+    },
+    {
+      "test": "vehicle-body-impacts.mjs",
+      "receipt": "npc-dodge-live/receipt.json",
+      "status": "PASS"
+    },
+    {
+      "test": "player-jump.mjs",
+      "receipt": "player-jump-timing-receipt.json",
+      "status": "PASS",
+      "detail": "Fixture-only measured simulation time; real physical Space and original0.7speedratio retained, no production braking change."
+    },
+    {
+      "test": "hillclimb-physics.mjs",
+      "receipt": "trail-pilot-live-v2.json",
+      "status": "PASS",
+      "detail": "Original75s/safetyassertions retained;30Hz72.33s,60Hz72.13s, descent73.7s, zeroair/flights; exact final monolith0ed67223."
+    },
+    {
+      "test": "falls.mjs",
+      "receipt": "trail-pilot-live-v2.json",
+      "status": "PASS"
+    }
+  ],
+  "outstandingOriginalFailure": "pedestrian-awareness.mjs; original>=0.6 clearance threshold retained and still fails. No all-green suite claim."
+}

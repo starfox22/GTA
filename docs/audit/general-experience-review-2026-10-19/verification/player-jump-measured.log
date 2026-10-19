@@ -1,0 +1,5 @@
+reused dev server (rebuilt, reloaded ?dev&norender: boot 11.6s)
+PASS player-jump (9.9s)
+     jump height (m) 0.5 · air time (s) 0.639 · villa garden wall (m) 1.35 · feet back on the ground (units) 0 · sea railing at 3417,1152.5: landed 3466,1153; {"from":[3411,1153],"to":[3448,1153],"metres":4.62,"maxClearance":1.5,"vault":true,"into":"water"} · effort: {"sample":"player-jump-grunt","loaded":true,"sound":true,"asked":6,"played":6,"soft":2,"last":{"soft":true,"rate":1.079,"level":0.163,"at":16.79}} · physical Space: first 1.2 wall s advanced 1.24 game s; total 1.24 game s in 1.26 wall s · speed 54.2 -> 1.4
+1/1 passed, 0 skipped, 0 failed in 22s
+stopped

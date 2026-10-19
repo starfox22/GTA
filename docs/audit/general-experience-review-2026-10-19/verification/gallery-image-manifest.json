@@ -1,0 +1,145 @@
+{
+  "kind": "Native unedited game captures; source versions and staged scenes are explicit",
+  "files": [
+    {
+      "file": "images/general-01-opening-subtitle-high.png",
+      "sha256": "c1aee7ecedda1889b1518876655c8ed7a6fafeffd90d7d1b76d2971cbf9fc901",
+      "captureReceipt": "verification/native-graphics-final/graphics-review.json",
+      "originalFile": "01-opening-subtitle-high.png",
+      "category": {
+        "kind": "fresh public opening",
+        "actions": "actual E/Enter phone acceptance, held rendering clock",
+        "quality": "high"
+      },
+      "htmlSha256": "cc3683864df17eebb60fa325ffbdd1269c8ab05226f3411aff84db377f11d1d5",
+      "recorderSha256": "f094106a9ea772fe20e5bf719c66c68ebf1d684b3e6e8a7ea9328c4b337206cd",
+      "viewport": [
+        1000,
+        700
+      ]
+    },
+    {
+      "file": "images/general-02-summit-dig-high.png",
+      "sha256": "a463f0dfc97f736c43f802cb35f202eff3443fc2200f2356d6741c8a375ada29",
+      "captureReceipt": "verification/native-graphics-final/graphics-review.json",
+      "originalFile": "02-summit-dig-high.png",
+      "category": {
+        "kind": "staged summit arrival",
+        "stage": 1,
+        "quality": "high"
+      },
+      "htmlSha256": "cc3683864df17eebb60fa325ffbdd1269c8ab05226f3411aff84db377f11d1d5",
+      "recorderSha256": "f094106a9ea772fe20e5bf719c66c68ebf1d684b3e6e8a7ea9328c4b337206cd",
+      "viewport": [
+        1000,
+        700
+      ]
+    },
+    {
+      "file": "images/general-04-rear-cargo-retrieval-high.png",
+      "sha256": "bb01144186be8c73c11f50a59a402496bfc6eaab770069db1b96c2ef2b553214",
+      "captureReceipt": "verification/native-graphics-final/graphics-review.json",
+      "originalFile": "04-rear-cargo-retrieval-high.png",
+      "category": {
+        "kind": "staged vehicle/summit arrival followed by ordinary dig and rear loading",
+        "quality": "high"
+      },
+      "htmlSha256": "cc3683864df17eebb60fa325ffbdd1269c8ab05226f3411aff84db377f11d1d5",
+      "recorderSha256": "f094106a9ea772fe20e5bf719c66c68ebf1d684b3e6e8a7ea9328c4b337206cd",
+      "viewport": [
+        1000,
+        700
+      ]
+    },
+    {
+      "file": "images/general-07-records-rain-night-high.png",
+      "sha256": "01c152dd6c493eb2dbc35b0e31edbb11ca94282cb49d1a795e5f971e79b24401",
+      "captureReceipt": "verification/native-graphics-final/graphics-review.json",
+      "originalFile": "07-records-rain-night-high.png",
+      "category": {
+        "kind": "staged gate approach, actual ID presentation, then visual records-door placement",
+        "view": "street",
+        "quality": "high"
+      },
+      "htmlSha256": "cc3683864df17eebb60fa325ffbdd1269c8ab05226f3411aff84db377f11d1d5",
+      "recorderSha256": "f094106a9ea772fe20e5bf719c66c68ebf1d684b3e6e8a7ea9328c4b337206cd",
+      "viewport": [
+        1000,
+        700
+      ]
+    },
+    {
+      "file": "images/general-10-blue-hour-terrace-high.png",
+      "sha256": "ae26b3d35254b876fe77a76b876f1a5955f9332f8819e2ea1d148fac3b3d17df",
+      "captureReceipt": "verification/native-graphics-final/graphics-review.json",
+      "originalFile": "10-blue-hour-terrace-high.png",
+      "category": {
+        "kind": "staged Mission 2 guest/rooftop fixture",
+        "view": "street",
+        "quality": "high"
+      },
+      "htmlSha256": "cc3683864df17eebb60fa325ffbdd1269c8ab05226f3411aff84db377f11d1d5",
+      "recorderSha256": "f094106a9ea772fe20e5bf719c66c68ebf1d684b3e6e8a7ea9328c4b337206cd",
+      "viewport": [
+        1000,
+        700
+      ]
+    },
+    {
+      "file": "images/general-11-varga-meeting-high.png",
+      "sha256": "1de9ddfd3efd3c54fd21286197d742afa0285910c31dd5c4245d55d35b9ddc3c",
+      "captureReceipt": "verification/native-graphics-final/graphics-review.json",
+      "originalFile": "11-varga-meeting-high.png",
+      "category": {
+        "kind": "staged Mission 4 meeting/drinks fixture",
+        "view": "street",
+        "quality": "high"
+      },
+      "htmlSha256": "cc3683864df17eebb60fa325ffbdd1269c8ab05226f3411aff84db377f11d1d5",
+      "recorderSha256": "f094106a9ea772fe20e5bf719c66c68ebf1d684b3e6e8a7ea9328c4b337206cd",
+      "viewport": [
+        1000,
+        700
+      ]
+    },
+    {
+      "file": "images/general-08-backpack-clean-high.png",
+      "sha256": "fa427234ee5344dfd06c93df4edd2796d41ffe3b651152f707cd80db9628ba4c",
+      "captureReceipt": "verification/package-smoke/smoke.json",
+      "originalFile": "08-backpack-clean-high.png",
+      "category": "staged package inspection; not a mission win",
+      "htmlSha256": "7f521784f62e9ba0f30492ba915b7e62acd402126d719314d66f930d3ea4d2ff",
+      "recorderSha256": "db8819b9259d97f56a9203cfe8c32e9a61b217ab3af016eed1e36efc6c5b33a7",
+      "viewport": [
+        1000,
+        700
+      ]
+    },
+    {
+      "file": "images/general-09-checkpoint-chase-high.png",
+      "sha256": "96599c483a5ca5343e08cd21b59ed569d1d25693982eef4e25d41412f2ebc7a9",
+      "captureReceipt": "verification/checkpoint-retry/checkpoint.json",
+      "originalFile": "09-checkpoint-chase-high.png",
+      "category": "staged checkpoint inspection; not a mission win",
+      "htmlSha256": "7f521784f62e9ba0f30492ba915b7e62acd402126d719314d66f930d3ea4d2ff",
+      "recorderSha256": "d176b5be54a9418db76e0e4177ec9a39dc202638a47be780c8b7b6e91730c975",
+      "viewport": [
+        1000,
+        700
+      ]
+    },
+    {
+      "file": "images/general-03-integrated-mission1-complete.png",
+      "sha256": "62b50b6a516296d90741d2d41f5405c89c7750ac6060d6deb4b8f76383504222",
+      "captureReceipt": "verification/native-integrated/summary.json",
+      "originalFile": "03-integrated-mission1-complete.png",
+      "category": "ordinary mission win on source605b175e",
+      "htmlSha256": "c8565c1e0f4ed7dbf5a49ff14082e03e8c50c95426d1bce13bd96df5ce1fbfd9",
+      "recorderSha256": "1fcdca6e028f4ee834184b3f72bfad6607a3eca60095b03b2a30077f6403591a",
+      "viewport": [
+        1000,
+        700
+      ]
+    }
+  ]
+}

@@ -1,0 +1,625 @@
+{
+  "sourceCommit": "605b175e",
+  "sourceHtml": "integrated.html",
+  "sourceSha256": "c8565c1e0f4ed7dbf5a49ff14082e03e8c50c95426d1bce13bd96df5ce1fbfd9",
+  "urlFlags": "?test&seed=1&hold",
+  "viewport": [
+    1000,
+    700
+  ],
+  "renderer": "3D SwiftShader",
+  "category": "ordinary mission gameplay using real DOM actions and held virtual movement through normal physics",
+  "shortcuts": false,
+  "godMode": false,
+  "initialPlacementFixture": false,
+  "healthAmmoHeatEdits": false,
+  "outcome": {
+    "status": {
+      "mode": "play",
+      "x": -1665,
+      "y": 4624,
+      "district": "CORAL MARINA",
+      "hp": 100,
+      "cash": 2475,
+      "wanted": 0,
+      "mission": null,
+      "completed": 1,
+      "vehicle": null,
+      "weapon": "9MM PISTOL",
+      "clock": "22:11",
+      "renderer": "3d",
+      "vehicles": 298,
+      "pedestrians": 675
+    },
+    "mission": {
+      "mission": null,
+      "last": {
+        "result": "won",
+        "index": 0,
+        "stage": 7
+      },
+      "completed": 1,
+      "depotShutter": 0,
+      "depotBackDoor": 1
+    },
+    "frameFaults": {
+      "count": 0,
+      "gameTime": 291.17,
+      "drill": null,
+      "kinds": []
+    },
+    "gpu": {
+      "watched": true,
+      "lost": false,
+      "losses": 0,
+      "restores": 0,
+      "reloadPending": false,
+      "lostSeconds": 0
+    },
+    "integrity": {
+      "problems": [],
+      "mode": "play",
+      "overlays": [],
+      "player": {
+        "x": -1665,
+        "y": 4624,
+        "hp": 100,
+        "vehicle": null,
+        "onFoot": true
+      },
+      "carriers": {
+        "swimming": false,
+        "wading": false,
+        "parachute": false,
+        "fall": false,
+        "jump": false,
+        "climbing": false,
+        "carjack": false,
+        "thrown": false,
+        "tumble": false,
+        "coaster": false,
+        "pool": false,
+        "deck": false,
+        "roof": false,
+        "transit": false,
+        "taxi": false,
+        "loot": false,
+        "rideSkip": false,
+        "hidden": false,
+        "conversation": false
+      },
+      "counts": {
+        "vehicles": 298,
+        "pedestrians": 675,
+        "officers": 8,
+        "particles": 0,
+        "skids": 16,
+        "debris": 0,
+        "bullets": 0,
+        "fires": 0,
+        "notices": 0,
+        "carsInBuildings": 0,
+        "carsOff": 0,
+        "carsBroken": 0,
+        "peopleInBuildings": 0,
+        "peopleBroken": 0,
+        "stuckReactions": 0
+      },
+      "stuckPeople": []
+    },
+    "errors": []
+  },
+  "captures": [
+    {
+      "file": "01-preharbor-interruption.png",
+      "sha256": "3c615ea5875158733bee1a705f3962331cc99235f594b6b398436a2fa237f8d0",
+      "state": {
+        "mode": "play",
+        "x": 1480,
+        "y": 4070,
+        "district": "SOUTH BANK",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "18:13",
+        "renderer": "3d",
+        "vehicles": 279,
+        "pedestrians": 594
+      },
+      "mission": {
+        "mission": null,
+        "last": {
+          "result": "failed",
+          "index": 0,
+          "stage": 1,
+          "reason": "Released from Police HQ. Fine: $250."
+        },
+        "completed": 0,
+        "depotShutter": 0,
+        "depotBackDoor": 1
+      },
+      "card": {
+        "counter": "MISSION 1",
+        "announce": "THE SOUTH COAST LEDGER",
+        "text": "Find the ringing payphone and press E to take a job.",
+        "distance": "PAYPHONE \u00b7 411 m",
+        "open": true,
+        "line": null,
+        "viewport": [
+          1000,
+          700
+        ]
+      },
+      "overlaps": {
+        "viewport": [
+          1000,
+          700
+        ],
+        "touch": false,
+        "boxes": [
+          {
+            "id": "hudLocation",
+            "l": 26,
+            "t": 20,
+            "r": 202,
+            "b": 70
+          },
+          {
+            "id": "cash",
+            "l": 809,
+            "t": 20,
+            "r": 922,
+            "b": 48
+          },
+          {
+            "id": "stars",
+            "l": 825,
+            "t": 50,
+            "r": 922,
+            "b": 71
+          },
+          {
+            "id": "worldClock",
+            "l": 836,
+            "t": 73,
+            "r": 922,
+            "b": 87
+          },
+          {
+            "id": "pauseBtn",
+            "l": 940,
+            "t": 20,
+            "r": 974,
+            "b": 54
+          },
+          {
+            "id": "navigation",
+            "l": 393,
+            "t": 20,
+            "r": 607,
+            "b": 64
+          },
+          {
+            "id": "minimapBox",
+            "l": 26,
+            "t": 495,
+            "r": 266,
+            "b": 680
+          },
+          {
+            "id": "quickKeys",
+            "l": 286,
+            "t": 644,
+            "r": 704,
+            "b": 680
+          },
+          {
+            "id": "vehicleStats",
+            "l": 804,
+            "t": 566,
+            "r": 974,
+            "b": 623
+          },
+          {
+            "id": "weaponButton",
+            "l": 824,
+            "t": 631,
+            "r": 974,
+            "b": 680
+          },
+          {
+            "id": "fpsCounter",
+            "l": 445,
+            "t": 0,
+            "r": 555,
+            "b": 18
+          }
+        ],
+        "overlaps": [],
+        "overPlayer": []
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 53.27,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      }
+    },
+    {
+      "file": "02-integrated-warehouse-entry.png",
+      "sha256": "b9ca2f2ae8bf848756d76533ec58bf4ee872c4dcbec2a0d54ffc24ebdceb3fc2",
+      "state": {
+        "mode": "play",
+        "x": -1663,
+        "y": 4452,
+        "district": "CORAL MARINA",
+        "hp": 100,
+        "cash": 75,
+        "wanted": 3,
+        "mission": "Dockside Favor",
+        "completed": 0,
+        "vehicle": "flatbed",
+        "weapon": "9MM PISTOL",
+        "clock": "22:00",
+        "renderer": "3d",
+        "vehicles": 305,
+        "pedestrians": 667
+      },
+      "mission": {
+        "index": 0,
+        "stage": 6,
+        "instruction": "EXIT THE TRUCK",
+        "target": {
+          "x": -1663,
+          "y": 4452
+        },
+        "depotShutter": 1,
+        "depotBackDoor": 1,
+        "depotSealed": true,
+        "policeInside": 0,
+        "wanted": 3
+      },
+      "card": {
+        "counter": "MISSION 1",
+        "announce": "AIR UNIT ONE \u00b7 OVERHEAD",
+        "text": "Vinny gave you a mission: exit the truck.",
+        "distance": "OBJECTIVE \u00b7 0 m",
+        "open": true,
+        "line": "Vinny: Shutter is down. Leave the truck and go out the back door, on foot.",
+        "viewport": [
+          1000,
+          700
+        ]
+      },
+      "overlaps": {
+        "viewport": [
+          1000,
+          700
+        ],
+        "touch": false,
+        "boxes": [
+          {
+            "id": "hudLocation",
+            "l": 26,
+            "t": 20,
+            "r": 215,
+            "b": 70
+          },
+          {
+            "id": "cash",
+            "l": 809,
+            "t": 20,
+            "r": 922,
+            "b": 48
+          },
+          {
+            "id": "stars",
+            "l": 825,
+            "t": 50,
+            "r": 922,
+            "b": 71
+          },
+          {
+            "id": "worldClock",
+            "l": 836,
+            "t": 94,
+            "r": 922,
+            "b": 108
+          },
+          {
+            "id": "pauseBtn",
+            "l": 940,
+            "t": 20,
+            "r": 974,
+            "b": 54
+          },
+          {
+            "id": "navigation",
+            "l": 413,
+            "t": 20,
+            "r": 587,
+            "b": 64
+          },
+          {
+            "id": "policeStatusPanel",
+            "l": 676,
+            "t": 113,
+            "r": 966,
+            "b": 147
+          },
+          {
+            "id": "storyLine",
+            "l": 180,
+            "t": 447,
+            "r": 820,
+            "b": 485
+          },
+          {
+            "id": "carRadio",
+            "l": 784,
+            "t": 497,
+            "r": 974,
+            "b": 528
+          },
+          {
+            "id": "interaction",
+            "l": 429,
+            "t": 72,
+            "r": 571,
+            "b": 103
+          },
+          {
+            "id": "minimapBox",
+            "l": 26,
+            "t": 495,
+            "r": 266,
+            "b": 680
+          },
+          {
+            "id": "pager",
+            "l": 286,
+            "t": 520,
+            "r": 704,
+            "b": 636
+          },
+          {
+            "id": "quickKeys",
+            "l": 286,
+            "t": 644,
+            "r": 704,
+            "b": 680
+          },
+          {
+            "id": "vehicleStats",
+            "l": 804,
+            "t": 538,
+            "r": 974,
+            "b": 623
+          },
+          {
+            "id": "weaponButton",
+            "l": 824,
+            "t": 631,
+            "r": 974,
+            "b": 680
+          },
+          {
+            "id": "fpsCounter",
+            "l": 445,
+            "t": 0,
+            "r": 555,
+            "b": 18
+          }
+        ],
+        "overlaps": [],
+        "overPlayer": []
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 280.23,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      }
+    },
+    {
+      "file": "03-integrated-mission1-complete.png",
+      "sha256": "62b50b6a516296d90741d2d41f5405c89c7750ac6060d6deb4b8f76383504222",
+      "state": {
+        "mode": "play",
+        "x": -1665,
+        "y": 4624,
+        "district": "CORAL MARINA",
+        "hp": 100,
+        "cash": 2475,
+        "wanted": 0,
+        "mission": null,
+        "completed": 1,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "22:11",
+        "renderer": "3d",
+        "vehicles": 298,
+        "pedestrians": 675
+      },
+      "mission": {
+        "mission": null,
+        "last": {
+          "result": "won",
+          "index": 0,
+          "stage": 7
+        },
+        "completed": 1,
+        "depotShutter": 0,
+        "depotBackDoor": 1
+      },
+      "card": {
+        "counter": "MISSION 2",
+        "announce": "PAYDAY +$2,400",
+        "text": "Find the ringing payphone and press E to take a job.",
+        "distance": "PAYPHONE \u00b7 65 m",
+        "open": true,
+        "line": null,
+        "viewport": [
+          1000,
+          700
+        ]
+      },
+      "overlaps": {
+        "viewport": [
+          1000,
+          700
+        ],
+        "touch": false,
+        "boxes": [
+          {
+            "id": "hudLocation",
+            "l": 26,
+            "t": 20,
+            "r": 224,
+            "b": 70
+          },
+          {
+            "id": "cash",
+            "l": 809,
+            "t": 20,
+            "r": 922,
+            "b": 48
+          },
+          {
+            "id": "stars",
+            "l": 825,
+            "t": 50,
+            "r": 922,
+            "b": 71
+          },
+          {
+            "id": "worldClock",
+            "l": 836,
+            "t": 73,
+            "r": 922,
+            "b": 87
+          },
+          {
+            "id": "pauseBtn",
+            "l": 940,
+            "t": 20,
+            "r": 974,
+            "b": 54
+          },
+          {
+            "id": "navigation",
+            "l": 393,
+            "t": 20,
+            "r": 607,
+            "b": 64
+          },
+          {
+            "id": "toast",
+            "l": 26,
+            "t": 86,
+            "r": 335,
+            "b": 124
+          },
+          {
+            "id": "minimapBox",
+            "l": 26,
+            "t": 495,
+            "r": 266,
+            "b": 680
+          },
+          {
+            "id": "pager",
+            "l": 286,
+            "t": 520,
+            "r": 704,
+            "b": 636
+          },
+          {
+            "id": "quickKeys",
+            "l": 286,
+            "t": 644,
+            "r": 704,
+            "b": 680
+          },
+          {
+            "id": "vehicleStats",
+            "l": 804,
+            "t": 566,
+            "r": 974,
+            "b": 623
+          },
+          {
+            "id": "weaponButton",
+            "l": 824,
+            "t": 631,
+            "r": 974,
+            "b": 680
+          },
+          {
+            "id": "fpsCounter",
+            "l": 448,
+            "t": 0,
+            "r": 552,
+            "b": 18
+          },
+          {
+            "id": "announceSmall",
+            "l": 419,
+            "t": 189,
+            "r": 581,
+            "b": 201
+          },
+          {
+            "id": "announceBig",
+            "l": 310,
+            "t": 203,
+            "r": 690,
+            "b": 244
+          }
+        ],
+        "overlaps": [],
+        "overPlayer": []
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 291.17,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      }
+    }
+  ],
+  "traceSha256": "d7fa4c786974cea72fe12f52febcb2b6b68d83aca311688f037d28545a5d79ec",
+  "notes": [
+    "The first integrated attempt ended in ordinary BUSTED after a GPS pilot collision; the successful retry used the actual pause-menu restart.",
+    "The baseline attempt remained alive after a blocked automated garage approach. It is not end-to-end completion.",
+    "Stage and placement helpers in the separate graphics review are visual fixtures only."
+  ]
+}

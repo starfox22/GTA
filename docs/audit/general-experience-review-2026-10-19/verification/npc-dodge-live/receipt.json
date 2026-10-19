@@ -1,0 +1,71 @@
+{
+  "kind": "Unchanged narrow live integration checks after NPC dodge integral fix; no renderer/FPS claim",
+  "started": "2026-10-19T17:06:59.299Z",
+  "html": "/workspace/GTA/work/general-review/dodge-candidate.html",
+  "htmlSha256": "c2c5b04cd93abdebcce5269f25dc77ae88459d93e5f7c2995261d57ca375b34d",
+  "tests": [
+    {
+      "file": "pedestrian-awareness.mjs",
+      "sha256": "3f9b226789cbfd21db06187405715d83ab9e3fa3664bc1105ed273e609462731"
+    },
+    {
+      "file": "vehicle-body-impacts.mjs",
+      "sha256": "3e0922d20129675f822f6d1b356f2b39247ecb795949d4a1f5a498fcd3826b6d"
+    },
+    {
+      "file": "second-run-over.mjs",
+      "sha256": "dbcd8188b28226eabcb88305791632588c4b8bc18d421cc4b415b698427ead82"
+    }
+  ],
+  "args": [
+    "tools/test.mjs",
+    "pedestrian-awareness.mjs",
+    "vehicle-body-impacts.mjs",
+    "second-run-over.mjs",
+    "--exact",
+    "--html",
+    "/workspace/GTA/work/general-review/dodge-candidate.html",
+    "--verbose"
+  ],
+  "boot": "tools/test.mjs defaults: dev&norender, 960x600, fresh page for each unchanged module; actual boot line retained in log",
+  "results": [
+    "FAIL pedestrian-awareness (79.3s): facing a car at 80 km/h from 41 m: 0.6 dodged, 0.4 cleared",
+    "PASS second-run-over (24.8s)",
+    "PASS vehicle-body-impacts (19.9s)"
+  ],
+  "completed": "2026-10-19T17:09:20.147Z",
+  "exitCode": 1,
+  "logSha256": "fce7110c31b96c6306d63d26767689a92921b6b844d1c1bd32d8415167b29724",
+  "pass": false,
+  "testWorktreeCommit": "d3df977266623d35a7cdb321d2514452aca19684",
+  "frozenGameSourceCommit": "b9df98f5",
+  "htmlSha256Expected": "c2c5b04cd93abdebcce5269f25dc77ae88459d93e5f7c2995261d57ca375b34d",
+  "actualBoot": {
+    "flags": "dev&norender",
+    "viewport": [
+      960,
+      600
+    ],
+    "seconds": 14.9,
+    "deterministicBootSeed": null,
+    "perTrialSeed": 4242
+  },
+  "knownFailure": {
+    "module": "pedestrian-awareness",
+    "case": "toward80km/h,41m",
+    "tried": 0.6,
+    "cleared": 0.4,
+    "requiredTriedAndCleared": 0.6,
+    "outcomes": {
+      "dodge": 6,
+      "freeze": 4
+    },
+    "classification": "Original live-world statistical fixture remains failing; not claimed resolved by exact-distance arithmetic fix"
+  },
+  "browser": "tools/test.mjs stopped its own server; explicit dev stop confirmed stopped",
+  "unchangedTestsFromBase339ba035": {
+    "pedestrian-awareness.mjs": true,
+    "vehicle-body-impacts.mjs": true,
+    "second-run-over.mjs": true
+  }
+}

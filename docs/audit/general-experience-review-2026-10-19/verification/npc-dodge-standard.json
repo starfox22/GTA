@@ -1,0 +1,13 @@
+{
+  "kind": "Focused standard production-host regression, no renderer or rate claim",
+  "file": "tools/tests/npc-dodge-integration.mjs",
+  "sourceCommit": "b9df98f5",
+  "started": "2026-10-19T17:01:17.345Z",
+  "assertions": 487,
+  "notes": [
+    "Default/back/calm fading-speed trajectories are cadence independent; 24 production wall/vehicle/escape/swept-contact controls. Coarse actor cadence and the original awareness-rate contract are separate."
+  ],
+  "pass": true,
+  "sha256": "cfe36d4cb590cb1b7505cc0fbc1d7207e1f7e6d547fb039a08645356e6cc6ae0",
+  "productionSha256": "dfc183f94a60a1ccc702da0aff56f55ab3c6b4a7403e097c36ee2dcbc4927505"
+}

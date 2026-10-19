@@ -38,7 +38,7 @@ police3d.js, helicopter3d-*.js, apache3d.js, plane3d.js, vehicles3d.js, boats3d.
   projection, physical look-ahead and smoothed-curvature braking; descent is unchanged.
   No player/AI callers, physics, requested maximum speed or 75 s timer changed. Host
   `trail-pilot-route` covers fresh/reused 30/60 Hz runs; live `hillclimb-physics`/`falls`
-  remain acceptance. See [pilot audit](../audit/general-experience-review-2026-10-19/trail-pilot.md).
+  pass unchanged on the final frozen build. See [pilot audit](../audit/general-experience-review-2026-10-19/trail-pilot.md).
 
 ## Crashes, riders, aircraft strikes (physics-collisions.js, riders.js, physics-aircraft.js)
 

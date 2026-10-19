@@ -1,0 +1,104 @@
+{
+  "pass": true,
+  "scope": "No-render mission2 full ordinary objective flow; one initial storyProgress(1) fixture to unlock its phone call. Then ordinary input movement/action paths, no objective skips, teleports, god mode, healing, pinned guards, forced poisoning, or fake completion.",
+  "initialFixture": {
+    "storyProgress": 1,
+    "god": false,
+    "bootSeed": 1
+  },
+  "simulationSeconds": 211.37,
+  "normalUI": [
+    "payphone E",
+    "accept call Enter",
+    "wardrobe E",
+    "hotel elevator E",
+    "unseen poison P",
+    "exit elevator E"
+  ],
+  "walkedVia": "Sunset Motel and permanent Keys Bridge, Blue Hour terrace, street walk-away",
+  "outcome": {
+    "outcome": {
+      "mission": null,
+      "last": {
+        "result": "won",
+        "index": 1,
+        "stage": 4
+      },
+      "completed": 2,
+      "depotShutter": 0,
+      "depotBackDoor": 1
+    },
+    "status": {
+      "mode": "play",
+      "x": -1338,
+      "y": 2627,
+      "district": "OCEAN DRIVE",
+      "hp": 100,
+      "cash": 4200,
+      "wanted": 0,
+      "mission": null,
+      "completed": 2,
+      "vehicle": null,
+      "weapon": "9MM PISTOL",
+      "clock": "20:51",
+      "renderer": "2d",
+      "vehicles": 301,
+      "pedestrians": 608
+    },
+    "errors": {
+      "count": 0,
+      "gameTime": 211.37,
+      "drill": null,
+      "kinds": []
+    }
+  },
+  "calls": {
+    "holdSimulation": 2,
+    "god": 1,
+    "storyProgress": 1,
+    "missionState": 4,
+    "status": 718,
+    "solidAt": 6,
+    "roofStealth": 358,
+    "roofPoison": 2,
+    "frameFaults": 1
+  },
+  "realActionInputs": [
+    [
+      "KeyE"
+    ],
+    [
+      "Enter"
+    ],
+    [
+      "KeyE"
+    ],
+    [
+      "KeyE"
+    ],
+    [
+      "KeyP"
+    ],
+    [
+      "KeyE"
+    ]
+  ],
+  "consoleErrors": [],
+  "plannerPause": "The initial street/terrace pilot stopped on a missing safe-glass goal at suspicion13.4. Its controls resumed from the same held game state; the game never failed or reset. Both traces are in experience.jsonl.",
+  "captures": "None: no-render gameplay verification, not graphics evidence.",
+  "sourceHtmlSha256": "e086ab80b0cb52e289ea6adc562170acb2bd8d42e53fe57ac2c5ee8f4ca8d445",
+  "logSha256": "44bf4d3dd35492f8c25118c2a74bb15820b068c8c0037554b32e3d9d53c71652",
+  "actualBoot": {
+    "flags": "dev&norender&seed=1&hold",
+    "viewport": {
+      "width": 960,
+      "height": 600
+    },
+    "source": "Recorded start command used --seed 1 without --size or --nodev; tools/dev.mjs defaults to 960x600 and dev&norender, and its captured ready line reported dev&norender&seed=1&hold."
+  },
+  "coverageLimits": [
+    "The developer-page demo bypass was active. This run proves ordinary mission 2 objective gameplay, not public-demo gating or a test-page run.",
+    "No-render page: no graphics evidence.",
+    "The open-loop input extraction is not interchangeable across viewport or page-flag configurations because traffic/event streaming and collisions depend on the view."
+  ]
+}

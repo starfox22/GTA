@@ -1,0 +1,36 @@
+{
+  "kind": "Initial50hostmodules plus targeted reruns after fixture repairs and the expanded warehouse fix; no renderer/FPS claim",
+  "initial": "host-suite.json",
+  "reruns": [
+    {
+      "name": "gpu-context-lifecycle",
+      "assertions": 42,
+      "pass": true,
+      "notes": [
+        "actual loss/restore/pause + actual frame dispatch and roof/sky/records/respawn completion: lost/pending live progress blocked, prior pause kept, explicit stepping retained"
+      ],
+      "testSha256": "3d2912f96a941fa3ef2fd716d1bce236a8dc99caa4948c737f4cd692576a20ed"
+    },
+    {
+      "name": "world-reset-sportsbook",
+      "assertions": 54,
+      "pass": true,
+      "notes": [
+        "actual city/sports reset chain, bet placement, save restore and settlement: death/arrest retain progress; interrupted live stakes refund once; new game clears"
+      ],
+      "testSha256": "1d8c0c93fd24cc146956c4f902af3b57e38712af066eb8fce7a62a1284a9fd75"
+    },
+    {
+      "name": "mission1-shutter-safety",
+      "assertions": 3376,
+      "pass": true,
+      "notes": [
+        "3360 independent vehicle/door polygon comparisons; long-body, prediction, clear, both dispatch paths, aircraft, pedestrian and inactive/player vehicle safety"
+      ],
+      "testSha256": "fc873fa2b127bb8b663e7c4f2c13e034eecc3845c77a4c1b5d94c768289732b6"
+    }
+  ],
+  "pass": true,
+  "tests": 50,
+  "assertions": 421461
+}

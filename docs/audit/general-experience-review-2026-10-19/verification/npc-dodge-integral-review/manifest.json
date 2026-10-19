@@ -1,0 +1,50 @@
+{
+  "baseCommit": "339ba035f5f71560d7b18880260efad4509fe797",
+  "worktree": "/workspace/work/awareness-fixture",
+  "branch": "general-awareness-fixture",
+  "status": "minimal source patch and host proof; awaiting review, uncommitted",
+  "productionChanges": [
+    "src/crowd-reactions.js dodge displacement integration only"
+  ],
+  "candidateSourceSha256": {
+    "src/game-state.js": "36089a955146fc51f7c6122b14e8ee374e1f0e4a1fffdba0306a336049d70820",
+    "src/game-vehicles.js": "f7a36d5d22ecf0880e57fc11cb0d73360fb0fd563452e7eda15039870e411c6e",
+    "src/crowd-looks.js": "a5eeb9326cdaa826b18e69f28e48a60ffaa5c9476218237af97cd715eda65f27",
+    "src/crowd-speech.js": "0778309d56178e3e9313b6a36c2a355973c8376e3c5daf4d3720152ca9967901",
+    "src/crowd-chatter.js": "885cf77c9380779027041bf288a6721822963298d0a6dc11378f73d3bd2a1020",
+    "src/crowd-perception.js": "275bf7fdc63166ff245fd90774130ce00fbd56c1109801a9c4f2ba7b62a41ed8",
+    "src/crowd-awareness.js": "718aa83b61b17ada5345773c75d55044f45742160038064c710608a431337a0d",
+    "src/crowd-reactions.js": "dfc183f94a60a1ccc702da0aff56f55ab3c6b4a7403e097c36ee2dcbc4927505",
+    "src/crowd-awareness-console.js": "b7eee9c142c0f5772275fc0cc2c4dce026684fc1464e01ac1a88327712611943",
+    "src/crowd-walking.js": "08df6d2fcb87ab522732f5ac9fd9fce565a6e14493572bb4041eb5dacf3eebc2",
+    "src/citylife-civic.js": "0c52ab1090a6052ef59f714dec41b802fbd6cc0202c5072984d3c1c03dd50c70",
+    "src/physics-shapes.js": "fbe13a785b2b1f58bed3509adf3b60ba4fbdee52a7859b913efe59d7ae719ac9",
+    "src/game-collision.js": "bd4c614a649895a067d7476fc41c3ecf96b2955c37cee7a8d4f078e605d17e11",
+    "src/physics-knockdowns.js": "267167327717e581527510f18b680f0e9b0e290644756bc690e21eef95251ff7",
+    "src/physics-update.js": "0f21a5ed3eb40e167dc811e7f87cb1f79176ada154250d1765a0941d6b924644"
+  },
+  "beforeReactionSourceSha256": "a3675d5472b463ac5a0a83b0cfdb5a22859dd5d74db36ee5aa5a7c99095b27b5",
+  "artifactsSha256": {
+    "candidate.diff": "3056293a941801948f8787cdd60697b3116f222d54b7455f806526ad80b6f133",
+    "dodge-integral.mjs": "e6da2dac07bb6e11ab033cdf343a087064493a7eebe3247f3c20eb3ae2e506db",
+    "host-base.mjs": "9b1e789e929e0984327c7b0976d25ee44eb0b5a5aca433fc7b1f156f0b410bfd",
+    "dodge-integral-results.json": "3a00af03a62d5e6b7fcbd9ee0b4acb9163c43ad01794029493ad4bd299178d0f",
+    "crowd-reactions-before.js": "a3675d5472b463ac5a0a83b0cfdb5a22859dd5d74db36ee5aa5a7c99095b27b5"
+  },
+  "assertions": 472,
+  "collisionCases": 24,
+  "behaviorPreserved": [
+    "carAct/watchVehicle and all decision probabilities untouched",
+    "no new RNG draws or person-trait changes",
+    "leap direction, initial speed parameter, duration and reaction outcome unchanged",
+    "actual moveBody call with radius5 and its existing<=5unit spatial substeps",
+    "game update order, visibility priority, reaction cadence and vehicle contact/update rules unchanged"
+  ],
+  "limits": [
+    "This is a reaction displacement/collision host proof, not a full-world awareness-rate replacement or a claim that>=0.6 now passes.",
+    "Preset open-ground site callbacks and post-contact side effects are explicitly bounded; production building rectangles/solid, vehicle-grid collision and swept contacts are exercised.",
+    "Exact interval displacement does not by itself make coarse person updates into simultaneous continuous person/vehicle integration. Existing vehicle sweep-before-person order and frame cadence remain.",
+    "No browser, game population or vehicle handling change."
+  ],
+  "reproduce": "DEC_GAME_ROOT=/workspace/work/awareness-fixture node /workspace/GTA/work/general-review/npc-dodge-integral-review/dodge-integral.mjs"
+}

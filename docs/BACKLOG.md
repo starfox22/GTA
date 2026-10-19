@@ -3,22 +3,9 @@
 Known, unfixed issues reported by the agents that built each feature (as of v30). Pick from
 here when polishing; delete a line when it is fixed. Newest features first.
 
-## Mount Ascent console trail pilot (offroad-club.js)
-
-- `trailDrive` can leave the graded corridor, and the unchanged 75 s challenge assertion fails at 60 Hz:
-  focused run 76.88 s; fresh crawler 77.23 s with a bank strike; reused crawler 75.62 s. The 30 Hz run takes
-  72.97 s. Correct route following across fresh/reused 30/60 Hz states before reviewing challenge balance;
-  keep the 75 s timer and safety assertions unchanged during the fix. A strict nearest-index attempt
-  overturned at 30 Hz and was rejected. Retain descent-35 and `falls` controls and the corrected rock normals.
-  [Diagnosis and rejected attempt](audit/police-aviation-review-2026-10-15/terrain-rock-contact.md).
-  October 19: a physical-distance projection/curvature/braking candidate passes fresh/reused
-  30/60 Hz production-host bounds, with the original descent controller retained. Complete-game
-  acceptance is pending; keep this entry until the unchanged live hillclimb/falls checks pass.
-  [Candidate evidence](audit/general-experience-review-2026-10-19/trail-pilot.md).
-
 ## Pedestrian-awareness regression fixture
 
-- The original 80 km/h / 41 m rate check also fails on published `7f45832a`: 0.4 clear versus current 0.5 (requires 0.6). Its seeded specimen still shares live-world RNG, actor indices, off-camera update cadence and prior trial timing. Population clearing changed those phases rather than isolating them; that experiment was reverted. Preserve thresholds when making trials independent. [Current/baseline receipts](audit/impact-motorcycle-review-2026-10-16/verification/baseline-pedestrian-results.json).
+- The original 80 km/h / 41 m rate check also fails on published `7f45832a`: 0.4 clear versus current 0.5 (requires 0.6). Its seeded specimen still shares live-world RNG, actor indices, off-camera update cadence and prior trial timing. Population clearing changed those phases rather than isolating them; that experiment was reverted. October 19 fixes real step-dependent dodge distance, but the unchanged live check still clears 0.4 (six dodge decisions/four freezes). Body impacts and repeat-run-over pass. Preserve thresholds and panic behavior when making trials independent. [Current boundary](audit/general-experience-review-2026-10-19/verification/npc-awareness-boundary.md). [Current/baseline receipts](audit/impact-motorcycle-review-2026-10-16/verification/baseline-pedestrian-results.json).
 
 ## The living city (livingcity*.js)
 - Traffic streams only on the city grid: Monarch Isle and the county keep their own fixed traffic; North Point Key gets only its few visitors (livingcity-key.js: one lane each way, no overtaking, no sirens pull-over on the Key).

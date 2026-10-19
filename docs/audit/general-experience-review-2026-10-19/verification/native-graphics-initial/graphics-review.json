@@ -1,0 +1,5033 @@
+{
+  "category": "staged native visual fixtures; ordinary mission wins are separate receipts",
+  "htmlSha256": "f70727f921d8ea6945b7eae69fdfa78c00e8f50c242389c6e24d8e501ecccc35",
+  "recorderSha256": "02d80534df7c26c51033278f8dcfd43b400ea896702ed65ed171eec80bd6e05f",
+  "viewport": [
+    1000,
+    700
+  ],
+  "seed": 1,
+  "urlFlags": "?test&seed=1&hold&shadercheck",
+  "inputs": [
+    [
+      "holdSimulation",
+      [
+        true
+      ]
+    ],
+    [
+      "graphics",
+      [
+        "high"
+      ]
+    ],
+    [
+      "settings",
+      [
+        {
+          "sound": false,
+          "fps": false
+        }
+      ]
+    ],
+    [
+      "real DOM key",
+      [
+        "KeyE"
+      ]
+    ],
+    [
+      "real DOM key",
+      [
+        "Enter"
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        3.4,
+        [],
+        3,
+        false,
+        false
+      ]
+    ],
+    [
+      "hudClearance",
+      [
+        "read"
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        3,
+        false,
+        true
+      ]
+    ],
+    [
+      "status",
+      []
+    ],
+    [
+      "graphics",
+      []
+    ],
+    [
+      "frameFaults",
+      []
+    ],
+    [
+      "gpuContext",
+      []
+    ],
+    [
+      "missionState",
+      []
+    ],
+    [
+      "missionCard",
+      []
+    ],
+    [
+      "promptState",
+      []
+    ],
+    [
+      "summitJob",
+      []
+    ],
+    [
+      "fortJob",
+      []
+    ],
+    [
+      "fortCover",
+      []
+    ],
+    [
+      "chaseCamera",
+      []
+    ],
+    [
+      "cameraView",
+      []
+    ],
+    [
+      "hudOverlaps",
+      []
+    ],
+    [
+      "drawProfile",
+      [
+        5
+      ]
+    ],
+    [
+      "stats",
+      []
+    ],
+    [
+      "god",
+      [
+        true
+      ]
+    ],
+    [
+      "storyProgress",
+      [
+        2,
+        true
+      ]
+    ],
+    [
+      "startMission",
+      [
+        2
+      ]
+    ],
+    [
+      "summitSkip",
+      [
+        "summit"
+      ]
+    ],
+    [
+      "setClock",
+      [
+        14
+      ]
+    ],
+    [
+      "sky",
+      [
+        "clear"
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        2.2,
+        [
+          "KeyE"
+        ],
+        3,
+        false,
+        false
+      ]
+    ],
+    [
+      "viewMode",
+      [
+        "street"
+      ]
+    ],
+    [
+      "closeUp",
+      [
+        3.4
+      ]
+    ],
+    [
+      "inspectView",
+      []
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        3,
+        false,
+        true
+      ]
+    ],
+    [
+      "status",
+      []
+    ],
+    [
+      "graphics",
+      []
+    ],
+    [
+      "frameFaults",
+      []
+    ],
+    [
+      "gpuContext",
+      []
+    ],
+    [
+      "missionState",
+      []
+    ],
+    [
+      "missionCard",
+      []
+    ],
+    [
+      "promptState",
+      []
+    ],
+    [
+      "summitJob",
+      []
+    ],
+    [
+      "fortJob",
+      []
+    ],
+    [
+      "fortCover",
+      []
+    ],
+    [
+      "chaseCamera",
+      []
+    ],
+    [
+      "cameraView",
+      []
+    ],
+    [
+      "hudOverlaps",
+      []
+    ],
+    [
+      "drawProfile",
+      [
+        5
+      ]
+    ],
+    [
+      "stats",
+      []
+    ],
+    [
+      "hitchRun",
+      [
+        6,
+        [
+          "KeyE"
+        ],
+        3,
+        false,
+        false
+      ]
+    ],
+    [
+      "summitJob",
+      []
+    ],
+    [
+      "walk",
+      [
+        0,
+        0
+      ]
+    ],
+    [
+      "closeUp",
+      [
+        18
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        270,
+        15,
+        8
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.3,
+        [],
+        3,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        3,
+        false,
+        true
+      ]
+    ],
+    [
+      "status",
+      []
+    ],
+    [
+      "graphics",
+      []
+    ],
+    [
+      "frameFaults",
+      []
+    ],
+    [
+      "gpuContext",
+      []
+    ],
+    [
+      "missionState",
+      []
+    ],
+    [
+      "missionCard",
+      []
+    ],
+    [
+      "promptState",
+      []
+    ],
+    [
+      "summitJob",
+      []
+    ],
+    [
+      "fortJob",
+      []
+    ],
+    [
+      "fortCover",
+      []
+    ],
+    [
+      "chaseCamera",
+      []
+    ],
+    [
+      "cameraView",
+      []
+    ],
+    [
+      "hudOverlaps",
+      []
+    ],
+    [
+      "drawProfile",
+      [
+        5
+      ]
+    ],
+    [
+      "stats",
+      []
+    ],
+    [
+      "startMission",
+      [
+        2
+      ]
+    ],
+    [
+      "teleport",
+      [
+        7738,
+        1092
+      ]
+    ],
+    [
+      "drive",
+      [
+        "hilux",
+        0,
+        3.141592653589793
+      ]
+    ],
+    [
+      "placeVehicle",
+      [
+        7738,
+        1092,
+        3.141592653589793
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.3,
+        [],
+        3,
+        false,
+        false
+      ]
+    ],
+    [
+      "real DOM key",
+      [
+        "KeyE"
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.4,
+        [],
+        3,
+        false,
+        false
+      ]
+    ],
+    [
+      "teleport",
+      [
+        7778,
+        1084
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        8,
+        [
+          "KeyE"
+        ],
+        3,
+        false,
+        false
+      ]
+    ],
+    [
+      "summitJob",
+      []
+    ],
+    [
+      "teleport",
+      [
+        7769,
+        1092
+      ]
+    ],
+    [
+      "real DOM key",
+      [
+        "KeyE"
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.4,
+        [],
+        3,
+        false,
+        false
+      ]
+    ],
+    [
+      "summitJob",
+      []
+    ],
+    [
+      "closeUp",
+      [
+        7
+      ]
+    ],
+    [
+      "inspectView",
+      [
+        90,
+        22,
+        4
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.4,
+        [],
+        3,
+        false,
+        false
+      ]
+    ],
+    [
+      "hitchRun",
+      [
+        0.016666666666666666,
+        [],
+        3,
+        false,
+        true
+      ]
+    ],
+    [
+      "status",
+      []
+    ],
+    [
+      "graphics",
+      []
+    ],
+    [
+      "frameFaults",
+      []
+    ],
+    [
+      "gpuContext",
+      []
+    ],
+    [
+      "missionState",
+      []
+    ],
+    [
+      "missionCard",
+      []
+    ],
+    [
+      "promptState",
+      []
+    ],
+    [
+      "summitJob",
+      []
+    ],
+    [
+      "fortJob",
+      []
+    ],
+    [
+      "fortCover",
+      []
+    ],
+    [
+      "chaseCamera",
+      []
+    ],
+    [
+      "cameraView",
+      []
+    ],
+    [
+      "hudOverlaps",
+      []
+    ],
+    [
+      "drawProfile",
+      [
+        5
+      ]
+    ],
+    [
+      "stats",
+      []
+    ]
+  ],
+  "captures": [
+    {
+      "file": "01-opening-subtitle-high.png",
+      "title": "Readable opening subtitle and mission card",
+      "fixture": {
+        "kind": "fresh public opening",
+        "actions": "actual E/Enter phone acceptance, held rendering clock",
+        "quality": "high"
+      },
+      "state": {
+        "mode": "play",
+        "x": 748,
+        "y": 584,
+        "district": "NORTHBANK \u00b7 OLD QUARTER",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": "Dockside Favor",
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "17:23",
+        "renderer": "3d",
+        "vehicles": 299,
+        "pedestrians": 617
+      },
+      "quality": {
+        "setting": "high",
+        "tier": "HIGH",
+        "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "hdr": true,
+        "shadowMap": 3072,
+        "pixelRatio": 1,
+        "renderScale": 1,
+        "shadows": "high",
+        "shadowSetting": "auto",
+        "adaptive": {
+          "averageFrameMs": 0,
+          "tierDrops": 0,
+          "ceiling": 1,
+          "holdSeconds": 0
+        }
+      },
+      "mission": {
+        "index": 0,
+        "stage": 0,
+        "instruction": "PICK UP VINNY\u2019S MARKED CARGO TRUCK",
+        "target": {
+          "x": 1830,
+          "y": 609
+        },
+        "depotShutter": 0,
+        "depotBackDoor": 1,
+        "depotSealed": false,
+        "policeInside": 0,
+        "wanted": 0
+      },
+      "card": {
+        "counter": "MISSION 1",
+        "announce": "MISSION 1",
+        "text": "Vinny gave you a mission: pick up Vinny\u2019s marked cargo truck.",
+        "distance": "OBJECTIVE \u00b7 135 m",
+        "open": true,
+        "line": "Vinny: Take the truck, load three harbor crates, and drive them into the warehouse.",
+        "viewport": [
+          1000,
+          700
+        ]
+      },
+      "prompt": {
+        "visible": true,
+        "text": "E LOCKED \u00b7 BREAK THE WINDOW",
+        "id": "vehicle",
+        "docked": true,
+        "age": 37.2,
+        "offered": "LOCKED \u00b7 BREAK THE WINDOW"
+      },
+      "sumJob": null,
+      "fortJob": null,
+      "fortCover": {
+        "active": false,
+        "cleared": false,
+        "suspicion": 0,
+        "alarmed": false,
+        "papers": false,
+        "insideBase": false,
+        "leftWithPapers": false,
+        "entered": false,
+        "uniform": null,
+        "inspecting": null,
+        "records": null,
+        "shielded": false,
+        "ownsGate": false,
+        "walkDefault": false,
+        "rate": 0,
+        "seenBy": 0,
+        "reason": null,
+        "pace": 0,
+        "restricted": null,
+        "blownBy": null,
+        "gateCheck": {
+          "x": 9236,
+          "y": 8182,
+          "distance": 11392
+        },
+        "recordsDoor": {
+          "x": 9884,
+          "y": 8035,
+          "distance": 11799
+        },
+        "player": {
+          "x": 748,
+          "y": 584,
+          "onFoot": true
+        }
+      },
+      "camera": {
+        "mode": "street",
+        "live": false,
+        "ready": false,
+        "locked": false,
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "pivot": [
+          0,
+          0,
+          0
+        ],
+        "yawDeg": -90,
+        "pitchDeg": 9,
+        "lookYawDeg": 0,
+        "fov": 52,
+        "boomMetres": 3.5,
+        "wantMetres": 3.5,
+        "heightMetres": 0,
+        "aiming": 0,
+        "behind": false,
+        "craneMetres": 0,
+        "lockOn": null,
+        "aimAssist": true,
+        "speedBlend": 0,
+        "zoom": 1,
+        "aim": null,
+        "sensitivity": 100,
+        "invert": false,
+        "motionBlur": false,
+        "view": {
+          "active": false,
+          "drawMetres": 600,
+          "near": 4,
+          "far": 9000,
+          "viewReach": 920,
+          "viewZoom": 2,
+          "fogNear": 3522,
+          "fogDensity": 0.00015,
+          "motionBlur": {
+            "active": false,
+            "strength": 0,
+            "setting": false,
+            "comfort": false
+          },
+          "farMetres": 225,
+          "farCells": 0,
+          "farMeshes": 0,
+          "shadowCells": {
+            "tested": 0,
+            "hidden": 0,
+            "proxies": 0
+          },
+          "props": {
+            "detail": 2401,
+            "detailHidden": 0,
+            "detailNoShadow": 0,
+            "parts": 829,
+            "partsHidden": 0,
+            "pools": 0,
+            "poolsHidden": 0,
+            "poolsNoShadow": 0,
+            "loose": 0,
+            "looseHidden": 0,
+            "signs": 0,
+            "signsHidden": 0
+          },
+          "draws": {
+            "view": {
+              "calls": 250,
+              "triangles": 1197405,
+              "kinds": {
+                "batch": {
+                  "calls": 24,
+                  "triangles": 35696,
+                  "names": [
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #8a887e",
+                      4,
+                      2
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #353a3d",
+                      4,
+                      13
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #ffffff map lit",
+                      3,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #ffffff",
+                      3,
+                      16
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #7c6d63",
+                      2,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #9a958d",
+                      2,
+                      2
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #b8c0c3",
+                      1,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #4f4037",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshBasicMaterial #ffe7a2",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #ffffff map",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #3a4247",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #aa8560",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #ffffff",
+                      3,
+                      16
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #353a3d",
+                      4,
+                      13
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #8a887e",
+                      4,
+                      2
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #9a958d",
+                      2,
+                      2
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #7c6d63",
+                      2,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #b8c0c3",
+                      1,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #ffffff map lit",
+                      3,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #4f4037",
+                      1,
+                      0
+                    ]
+                  ],
+                  "<300m": 8,
+                  "px<undefined": 24,
+                  "<400m": 14,
+                  "<600m": 2
+                },
+                "static": {
+                  "calls": 11,
+                  "triangles": 128,
+                  "names": [
+                    [
+                      "Elevated railway",
+                      8,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #8a887e @768,512",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #182b3c @768,512",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #182b3c @1024,512",
+                      1,
+                      0
+                    ],
+                    [
+                      "Elevated railway",
+                      8,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #8a887e @768,512",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #182b3c @768,512",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #182b3c @1024,512",
+                      1,
+                      0
+                    ]
+                  ],
+                  "<600m": 3,
+                  "px<undefined": 11,
+                  "<300m": 4,
+                  "<400m": 4
+                },
+                "instanced": {
+                  "calls": 83,
+                  "triangles": 707290,
+                  "names": [
+                    [
+                      "breakable scenery",
+                      17,
+                      98
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #353a3d @0,0",
+                      3,
+                      16
+                    ],
+                    [
+                      "trees locust",
+                      3,
+                      55
+                    ],
+                    [
+                      "monarch lanterns",
+                      3,
+                      46
+                    ],
+                    [
+                      "village lanterns",
+                      3,
+                      6
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshBasicMaterial #ffe7a2 @0,0",
+                      2,
+                      7
+                    ],
+                    [
+                      "trees pear",
+                      2,
+                      26
+                    ],
+                    [
+                      "trees maple",
+                      2,
+                      11
+                    ],
+                    [
+                      "trees plane",
+                      2,
+                      26
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #8b948f @0,0",
+                      2,
+                      10
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #5f7079 @0,0",
+                      2,
+                      6
+                    ],
+                    [
+                      "damage decals",
+                      2,
+                      0
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshBasicMaterial #ffffff @0,0",
+                      1,
+                      105
+                    ],
+                    [
+                      "breakable scenery",
+                      17,
+                      98
+                    ],
+                    [
+                      "trees locust",
+                      3,
+                      55
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #5c5346 @0,0",
+                      1,
+                      54
+                    ],
+                    [
+                      "monarch lanterns",
+                      3,
+                      46
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshStandardMaterial #f6e7c4 @0,0",
+                      1,
+                      44
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshStandardMaterial #4e654a @0,0",
+                      1,
+                      43
+                    ],
+                    [
+                      "trees pear",
+                      2,
+                      26
+                    ]
+                  ],
+                  "whole": 54,
+                  "px<undefined": 76,
+                  "<300m": 17,
+                  "<200m": 2,
+                  "<400m": 7,
+                  "<600m": 3,
+                  "px?": 7
+                },
+                "other": {
+                  "calls": 27,
+                  "triangles": 222086,
+                  "names": [
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #ffffff map @768,512",
+                      9,
+                      2
+                    ],
+                    [
+                      "Mesh PlaneGeometry MeshStandardMaterial #ffffff map lit @768,512",
+                      2,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry ShaderMaterial @768,512",
+                      2,
+                      97
+                    ],
+                    [
+                      "Mesh PlaneGeometry MeshStandardMaterial #ffffff map @768,512",
+                      2,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry MeshStandardMaterial #ffffff map @0,768",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #2d3213 @768,512",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #917410 @768,512",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry MeshBasicMaterial #0c2f44 @512,512",
+                      1,
+                      0
+                    ],
+                    [
+                      "player body",
+                      1,
+                      7
+                    ],
+                    [
+                      "grass tufts",
+                      1,
+                      108
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #ffffff map lit @768,512",
+                      1,
+                      0
+                    ],
+                    [
+                      "LineSegments BufferGeometry LineBasicMaterial #ffe1a1 @0,0",
+                      1,
+                      0
+                    ],
+                    [
+                      "grass tufts",
+                      1,
+                      108
+                    ],
+                    [
+                      "Mesh PlaneGeometry ShaderMaterial @768,512",
+                      2,
+                      97
+                    ],
+                    [
+                      "glow field",
+                      1,
+                      8
+                    ],
+                    [
+                      "player body",
+                      1,
+                      7
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #ffffff map @768,512",
+                      9,
+                      2
+                    ],
+                    [
+                      "Mesh PlaneGeometry MeshStandardMaterial #ffffff map lit @768,512",
+                      2,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry MeshStandardMaterial #ffffff map @768,512",
+                      2,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry MeshStandardMaterial #ffffff map @0,768",
+                      1,
+                      0
+                    ]
+                  ],
+                  "whole": 11,
+                  "px<undefined": 27,
+                  "<600m": 14,
+                  "<400m": 2
+                },
+                "crowd": {
+                  "calls": 21,
+                  "triangles": 10454,
+                  "names": [
+                    [
+                      "crowd torso f street",
+                      1,
+                      1
+                    ],
+                    [
+                      "crowd pelvis f street",
+                      1,
+                      1
+                    ],
+                    [
+                      "crowd thigh f street",
+                      1,
+                      1
+                    ],
+                    [
+                      "crowd head street",
+                      1,
+                      2
+                    ],
+                    [
+                      "crowd boot street",
+                      1,
+                      0
+                    ],
+                    [
+                      "crowd upper arm street",
+                      1,
+                      1
+                    ],
+                    [
+                      "crowd torso street",
+                      1,
+                      1
+                    ],
+                    [
+                      "crowd forearm street",
+                      1,
+                      1
+                    ],
+                    [
+                      "crowd pelvis street",
+                      1,
+                      0
+                    ],
+                    [
+                      "crowd hand street",
+                      1,
+                      1
+                    ],
+                    [
+                      "crowd thigh street",
+                      1,
+                      0
+                    ],
+                    [
+                      "crowd shin street",
+                      1,
+                      1
+                    ],
+                    [
+                      "crowd head street",
+                      1,
+                      2
+                    ],
+                    [
+                      "crowd torso f street",
+                      1,
+                      1
+                    ],
+                    [
+                      "crowd pelvis f street",
+                      1,
+                      1
+                    ],
+                    [
+                      "crowd thigh f street",
+                      1,
+                      1
+                    ],
+                    [
+                      "crowd upper arm street",
+                      1,
+                      1
+                    ],
+                    [
+                      "crowd torso street",
+                      1,
+                      1
+                    ],
+                    [
+                      "crowd forearm street",
+                      1,
+                      1
+                    ],
+                    [
+                      "crowd hand street",
+                      1,
+                      1
+                    ]
+                  ],
+                  "whole": 21,
+                  "px<undefined": 21
+                },
+                "vehicle": {
+                  "calls": 84,
+                  "triangles": 221751,
+                  "names": [
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #ffffff map @768,512",
+                      34,
+                      101
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #ffffff map @768,768",
+                      9,
+                      47
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #ffffff @768,512",
+                      6,
+                      2
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #ffeded @768,512",
+                      5,
+                      2
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #121a20 @768,512",
+                      4,
+                      1
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshPhysicalMaterial #5a2a2a map @768,512",
+                      3,
+                      44
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshBasicMaterial #ffffff @768,512",
+                      2,
+                      0
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #17191c @768,512",
+                      2,
+                      0
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #ffffff @768,768",
+                      2,
+                      3
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshPhysicalMaterial #88bcaa map @768,512",
+                      2,
+                      2
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshPhysicalMaterial #7f8b90 map @768,512",
+                      2,
+                      3
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshPhysicalMaterial #e4e1d8 map @768,512",
+                      2,
+                      2
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #ffffff map @768,512",
+                      34,
+                      101
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #ffffff map @768,768",
+                      9,
+                      47
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshPhysicalMaterial #5a2a2a map @768,512",
+                      3,
+                      44
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshPhysicalMaterial #c4483c map @768,768",
+                      2,
+                      7
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #ffffff @768,768",
+                      2,
+                      3
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshPhysicalMaterial #7f8b90 map @768,512",
+                      2,
+                      3
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #26333c @768,512",
+                      1,
+                      3
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #ffffff @768,512",
+                      6,
+                      2
+                    ]
+                  ],
+                  "<400m": 24,
+                  "px<undefined": 84,
+                  "<600m": 60
+                }
+              }
+            },
+            "shadow": {
+              "calls": 199,
+              "triangles": 764778,
+              "kinds": {
+                "instanced": {
+                  "calls": 75,
+                  "triangles": 540914,
+                  "names": [
+                    [
+                      "breakable scenery",
+                      19,
+                      98
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #353a3d @0,0",
+                      3,
+                      16
+                    ],
+                    [
+                      "monarch lanterns",
+                      3,
+                      46
+                    ],
+                    [
+                      "village lanterns",
+                      3,
+                      6
+                    ],
+                    [
+                      "trees locust",
+                      3,
+                      46
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshBasicMaterial #ffe7a2 @0,0",
+                      2,
+                      7
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #5f7079 @0,0",
+                      2,
+                      6
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #8b948f @0,0",
+                      2,
+                      10
+                    ],
+                    [
+                      "trees pear",
+                      2,
+                      26
+                    ],
+                    [
+                      "trees plane",
+                      2,
+                      26
+                    ],
+                    [
+                      "trees linden",
+                      2,
+                      17
+                    ],
+                    [
+                      "Mesh DodecahedronGeometry MeshStandardMaterial #ffffff @0,0",
+                      1,
+                      0
+                    ],
+                    [
+                      "breakable scenery",
+                      19,
+                      98
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #5c5346 @0,0",
+                      1,
+                      54
+                    ],
+                    [
+                      "monarch lanterns",
+                      3,
+                      46
+                    ],
+                    [
+                      "trees locust",
+                      3,
+                      46
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshStandardMaterial #4e654a @0,0",
+                      1,
+                      43
+                    ],
+                    [
+                      "trees pear",
+                      2,
+                      26
+                    ],
+                    [
+                      "trees plane",
+                      2,
+                      26
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #4e5558 @0,0",
+                      1,
+                      21
+                    ]
+                  ],
+                  "whole": 45,
+                  "px?": 3,
+                  "px<undefined": 72,
+                  "<400m": 8,
+                  "<300m": 20,
+                  "<200m": 2
+                },
+                "other": {
+                  "calls": 10,
+                  "triangles": 9048,
+                  "names": [
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #ffffff map @768,512",
+                      5,
+                      2
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #3a3f44 @256,1024",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #362517 @256,512",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #2d3213 @768,512",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #917410 @768,512",
+                      1,
+                      0
+                    ],
+                    [
+                      "player body",
+                      1,
+                      7
+                    ],
+                    [
+                      "player body",
+                      1,
+                      7
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #ffffff map @768,512",
+                      5,
+                      2
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #3a3f44 @256,1024",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #362517 @256,512",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #2d3213 @768,512",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #917410 @768,512",
+                      1,
+                      0
+                    ]
+                  ],
+                  "<400m": 4,
+                  "px<undefined": 10,
+                  "whole": 1,
+                  "<600m": 5
+                },
+                "crowd": {
+                  "calls": 10,
+                  "triangles": 7104,
+                  "names": [
+                    [
+                      "crowd head street",
+                      1,
+                      2
+                    ],
+                    [
+                      "crowd torso street",
+                      1,
+                      1
+                    ],
+                    [
+                      "crowd torso f street",
+                      1,
+                      1
+                    ],
+                    [
+                      "crowd pelvis street",
+                      1,
+                      0
+                    ],
+                    [
+                      "crowd pelvis f street",
+                      1,
+                      1
+                    ],
+                    [
+                      "crowd upper arm street",
+                      1,
+                      1
+                    ],
+                    [
+                      "crowd thigh street",
+                      1,
+                      0
+                    ],
+                    [
+                      "crowd thigh f street",
+                      1,
+                      1
+                    ],
+                    [
+                      "crowd shin street",
+                      1,
+                      1
+                    ],
+                    [
+                      "crowd skirt street",
+                      1,
+                      0
+                    ],
+                    [
+                      "crowd head street",
+                      1,
+                      2
+                    ],
+                    [
+                      "crowd torso street",
+                      1,
+                      1
+                    ],
+                    [
+                      "crowd torso f street",
+                      1,
+                      1
+                    ],
+                    [
+                      "crowd pelvis f street",
+                      1,
+                      1
+                    ],
+                    [
+                      "crowd upper arm street",
+                      1,
+                      1
+                    ],
+                    [
+                      "crowd thigh f street",
+                      1,
+                      1
+                    ],
+                    [
+                      "crowd shin street",
+                      1,
+                      1
+                    ],
+                    [
+                      "crowd pelvis street",
+                      1,
+                      0
+                    ]
+                  ],
+                  "whole": 10,
+                  "px<undefined": 10
+                },
+                "batch": {
+                  "calls": 40,
+                  "triangles": 38504,
+                  "names": [
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #ffffff map lit",
+                      9,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #8a887e",
+                      4,
+                      2
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #353a3d",
+                      4,
+                      13
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #ffffff",
+                      3,
+                      16
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #ffffff map",
+                      3,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #7c6d63",
+                      3,
+                      2
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #9a958d",
+                      2,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #3a4247",
+                      2,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #4f4037",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #aa8560",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #c7c5ae",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #b8c0c3",
+                      1,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #ffffff",
+                      3,
+                      16
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #353a3d",
+                      4,
+                      13
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #8a887e",
+                      4,
+                      2
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #7c6d63",
+                      3,
+                      2
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #ffffff map lit",
+                      9,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #9a958d",
+                      2,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #b8c0c3",
+                      1,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #ffffff map",
+                      3,
+                      0
+                    ]
+                  ],
+                  "<400m": 31,
+                  "px<undefined": 40,
+                  "<600m": 1,
+                  "<300m": 8
+                },
+                "static": {
+                  "calls": 17,
+                  "triangles": 688,
+                  "names": [
+                    [
+                      "Mesh SphereGeometry MeshStandardMaterial #4e654a @768,512",
+                      3,
+                      1
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #8a887e @768,512",
+                      2,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #b8c0c3 @768,512",
+                      2,
+                      0
+                    ],
+                    [
+                      "OLD QUARTER station",
+                      2,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #8a887e @512,512",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #b8c0c3 @512,512",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh ConeGeometry MeshStandardMaterial #956459 @512,512",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #4f6464 @768,512",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #8a887e @1024,512",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #182b3c @768,512",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #182b3c @1024,512",
+                      1,
+                      0
+                    ],
+                    [
+                      "Elevated railway",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshStandardMaterial #4e654a @768,512",
+                      3,
+                      1
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #8a887e @768,512",
+                      2,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #b8c0c3 @768,512",
+                      2,
+                      0
+                    ],
+                    [
+                      "OLD QUARTER station",
+                      2,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #8a887e @512,512",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #b8c0c3 @512,512",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh ConeGeometry MeshStandardMaterial #956459 @512,512",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #4f6464 @768,512",
+                      1,
+                      0
+                    ]
+                  ],
+                  "<600m": 14,
+                  "px<undefined": 17,
+                  "<400m": 3
+                },
+                "vehicle": {
+                  "calls": 47,
+                  "triangles": 168520,
+                  "names": [
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #b8c0c3 @768,768",
+                      13,
+                      1
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #79c7ba @768,768",
+                      6,
+                      0
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #ffffff map @768,512",
+                      5,
+                      71
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshPhysicalMaterial #88bcaa map @768,512",
+                      2,
+                      2
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshPhysicalMaterial #7f8b90 map @768,512",
+                      2,
+                      3
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshPhysicalMaterial #5a2a2a map @768,512",
+                      2,
+                      40
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshPhysicalMaterial #e4e1d8 map @768,512",
+                      2,
+                      2
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #ffffff map @768,768",
+                      2,
+                      31
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshPhysicalMaterial #2f5a3a map @1024,768",
+                      2,
+                      3
+                    ],
+                    [
+                      "Mesh TorusGeometry MeshStandardMaterial #141518 @768,768",
+                      2,
+                      1
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #b8c0c3 @768,768",
+                      2,
+                      0
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshPhysicalMaterial #16181b map @768,512",
+                      2,
+                      2
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #ffffff map @768,512",
+                      5,
+                      71
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshPhysicalMaterial #5a2a2a map @768,512",
+                      2,
+                      40
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #ffffff map @768,768",
+                      2,
+                      31
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshPhysicalMaterial #c4483c map @768,768",
+                      1,
+                      6
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #ffffff map @1024,768",
+                      1,
+                      5
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshPhysicalMaterial #7f8b90 map @768,512",
+                      2,
+                      3
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshPhysicalMaterial #2f5a3a map @1024,768",
+                      2,
+                      3
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshPhysicalMaterial #88bcaa map @768,512",
+                      2,
+                      2
+                    ]
+                  ],
+                  "<600m": 12,
+                  "px<undefined": 47,
+                  "<400m": 35
+                }
+              }
+            }
+          }
+        }
+      },
+      "streetCamera": {
+        "zoom": 2,
+        "target": 2,
+        "context": 1,
+        "slowFraming": false,
+        "vehicleContext": null,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 2,
+        "aim": 2,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 29.8,
+        "personPx": 26,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 3.4,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "hud": {
+        "viewport": [
+          1000,
+          700
+        ],
+        "touch": false,
+        "boxes": [
+          {
+            "id": "hudLocation",
+            "l": 26,
+            "t": 20,
+            "r": 287,
+            "b": 70
+          },
+          {
+            "id": "cash",
+            "l": 809,
+            "t": 20,
+            "r": 922,
+            "b": 48
+          },
+          {
+            "id": "stars",
+            "l": 825,
+            "t": 50,
+            "r": 922,
+            "b": 71
+          },
+          {
+            "id": "worldClock",
+            "l": 836,
+            "t": 73,
+            "r": 922,
+            "b": 87
+          },
+          {
+            "id": "pauseBtn",
+            "l": 940,
+            "t": 20,
+            "r": 974,
+            "b": 54
+          },
+          {
+            "id": "navigation",
+            "l": 331,
+            "t": 20,
+            "r": 669,
+            "b": 64
+          },
+          {
+            "id": "storyLine",
+            "l": 180,
+            "t": 439,
+            "r": 820,
+            "b": 477
+          },
+          {
+            "id": "interaction",
+            "l": 387,
+            "t": 72,
+            "r": 613,
+            "b": 103
+          },
+          {
+            "id": "minimapBox",
+            "l": 26,
+            "t": 495,
+            "r": 266,
+            "b": 680
+          },
+          {
+            "id": "pager",
+            "l": 286,
+            "t": 488,
+            "r": 704,
+            "b": 636
+          },
+          {
+            "id": "quickKeys",
+            "l": 286,
+            "t": 644,
+            "r": 704,
+            "b": 680
+          },
+          {
+            "id": "vehicleStats",
+            "l": 804,
+            "t": 566,
+            "r": 974,
+            "b": 623
+          },
+          {
+            "id": "weaponButton",
+            "l": 824,
+            "t": 631,
+            "r": 974,
+            "b": 680
+          }
+        ],
+        "overlaps": [],
+        "overPlayer": []
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 3.42,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "draw": {
+        "total": 250,
+        "byLayer": {
+          "detail": 9,
+          "farDetail": 0,
+          "other": 241
+        },
+        "byName": [
+          [
+            "vehicle in vehicle",
+            84
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            24
+          ],
+          [
+            "breakable scenery",
+            17
+          ],
+          [
+            "group@790,553 [BufferGeometry MeshStandardMaterial #ffffff] in group@790,553 [BufferGeometry MeshStandardMaterial #ffffff]",
+            8
+          ],
+          [
+            "Elevated railway in Elevated railway",
+            8
+          ]
+        ],
+        "byCell": [
+          [
+            "0,0",
+            144
+          ],
+          [
+            "512,512",
+            88
+          ],
+          [
+            "512,0",
+            17
+          ],
+          [
+            "0,512",
+            1
+          ]
+        ],
+        "triangles": 1197405,
+        "byTriangles": [
+          [
+            "vehicle in vehicle",
+            221751
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            114600
+          ],
+          [
+            "grass tufts",
+            107520
+          ],
+          [
+            "Mesh SphereGeometry MeshBasicMaterial",
+            104832
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            98616
+          ]
+        ],
+        "instanced": [
+          [
+            "grass tufts",
+            21504,
+            5,
+            false,
+            false
+          ],
+          [
+            "Mesh SphereGeometry MeshBasicMaterial",
+            624,
+            168,
+            false,
+            false
+          ],
+          [
+            "breakable scenery",
+            55,
+            1568,
+            true,
+            true
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            4519,
+            12,
+            false,
+            true
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            262,
+            168,
+            false,
+            false
+          ]
+        ],
+        "programs": [
+          [
+            "physical",
+            86
+          ],
+          [
+            "depth",
+            14
+          ],
+          [
+            "basic",
+            9
+          ],
+          [
+            "22",
+            7
+          ],
+          [
+            "trees",
+            2
+          ]
+        ]
+      },
+      "stats": {
+        "frames": 226,
+        "updateMs": 16.2,
+        "drawMs": 305.12,
+        "frameMs": -519.9,
+        "drawCalls": 437,
+        "triangles": 1962189,
+        "shadowFrame": true,
+        "viewCalls": 241,
+        "shadowCalls": 2,
+        "frameCalls": 452,
+        "renderScale": 1,
+        "sceneObjects": 18307,
+        "programs": 131,
+        "byType": {
+          "Scene": 1,
+          "HemisphereLight": 1,
+          "DirectionalLight": 2,
+          "Object3D": 2,
+          "Mesh": 9999,
+          "Group": 7603,
+          "LineSegments": 10,
+          "SpotLight": 1,
+          "PointLight": 6,
+          "Sprite": 532,
+          "Points": 146,
+          "Line": 1,
+          "LOD": 3
+        },
+        "vehicles": 299,
+        "pedestrians": 617,
+        "parts": {
+          "r:submit+shadow": 196.46,
+          "r:submit": 95.98,
+          "r:damage": 7.01,
+          "cars": 6.73,
+          "r:vehicles": 2.63,
+          "phys:control": 2.48,
+          "people": 2.47,
+          "waypoint": 2.07,
+          "phys:post": 1.38,
+          "sealife": 1.22,
+          "r:scenery": 1.13,
+          "phys:broadphase": 0.95,
+          "civic": 0.88,
+          "phys:contacts": 0.78,
+          "ui": 0.61,
+          "f:pre": 0.5,
+          "r:people+fx": 0.48,
+          "r:crowd": 0.4,
+          "bullets": 0.37,
+          "police:officers": 0.32,
+          "wildlife": 0.21,
+          "sports": 0.21,
+          "r:lod": 0.19,
+          "damage": 0.18,
+          "citylife": 0.18,
+          "knockdowns": 0.13,
+          "military": 0.11,
+          "police:wanted": 0.07,
+          "r:sky": 0.06,
+          "drawbridge": 0.06,
+          "beachclub": 0.06,
+          "monarch": 0.04,
+          "r:camera": 0.03,
+          "beach": 0.03,
+          "coaster": 0.03,
+          "police:air": 0.03,
+          "sound": 0.03,
+          "transit": 0.01,
+          "liner": 0.01,
+          "dealership": 0.01,
+          "offroad": 0.01,
+          "taxi": 0,
+          "leisure": 0,
+          "garage": 0,
+          "police:roadblocks": 0,
+          "roofencounter": 0,
+          "combat": 0,
+          "mission": 0
+        }
+      },
+      "subtitle": {
+        "text": "Vinny: Take the truck, load three harbor crates, and drive them into the warehouse.",
+        "classes": "show",
+        "opacity": "1",
+        "rect": {
+          "x": 180,
+          "y": 439.25,
+          "width": 640,
+          "height": 37.75
+        }
+      },
+      "sha256": "8c794801f0980ae615d1c5a9e0dc7e21be05b050f6abb28294dad578c18ee46d"
+    },
+    {
+      "file": "02-summit-dig-high.png",
+      "title": "Mount Ascent summit and package excavation",
+      "fixture": {
+        "kind": "staged summit arrival",
+        "stage": 1,
+        "quality": "high"
+      },
+      "state": {
+        "mode": "play",
+        "x": 7773,
+        "y": 1090,
+        "district": "RIDGELINE COUNTY",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": "High Ground",
+        "completed": 2,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "14:02",
+        "renderer": "3d",
+        "vehicles": 297,
+        "pedestrians": 593
+      },
+      "quality": {
+        "setting": "high",
+        "tier": "HIGH",
+        "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "hdr": true,
+        "shadowMap": 3072,
+        "pixelRatio": 1,
+        "renderScale": 1,
+        "shadows": "high",
+        "shadowSetting": "auto",
+        "adaptive": {
+          "averageFrameMs": 0,
+          "tierDrops": 0,
+          "ceiling": 1,
+          "holdSeconds": 0
+        }
+      },
+      "mission": {
+        "index": 2,
+        "stage": 1,
+        "instruction": "DIG UP THE PACKAGE AT THE CAIRN \u00b7 HOLD E",
+        "target": {
+          "x": 7791,
+          "y": 1082
+        },
+        "depotShutter": 0,
+        "depotBackDoor": 1,
+        "depotSealed": false,
+        "wanted": 0
+      },
+      "card": {
+        "counter": "MISSION 3",
+        "announce": "MISSION 3",
+        "text": "Vinny gave you a mission: dig up the package at the cairn \u00b7 hold E.",
+        "distance": "OBJECTIVE \u00b7 2 m",
+        "open": true,
+        "line": "Vinny: Tommy said the foot of the big cairn, the side facing the sea. Stones on top, a foot of grit under them. Dig.",
+        "viewport": [
+          1000,
+          700
+        ]
+      },
+      "prompt": {
+        "visible": true,
+        "text": "HOLD E DIGGING TO RETRIEVE PACKAGE \u00b7 29 %",
+        "id": "summit-dig",
+        "docked": true,
+        "age": 30.48,
+        "offered": "DIGGING TO RETRIEVE PACKAGE \u00b7 29 %"
+      },
+      "sumJob": {
+        "stage": 1,
+        "instruction": "DIG UP THE PACKAGE AT THE CAIRN \u00b7 HOLD E",
+        "target": {
+          "x": 7791,
+          "y": 1082
+        },
+        "dig": 0.29,
+        "digging": true,
+        "carrier": null,
+        "carryCar": null,
+        "lastCar": null,
+        "arrived": true,
+        "cache": {
+          "x": 7791,
+          "y": 1082,
+          "altitude": 761.8644348144531
+        },
+        "summit": {
+          "x": 7760,
+          "y": 1090,
+          "altitude": 761.9031982421875
+        },
+        "vinny": null,
+        "insideDepot": false,
+        "beats": []
+      },
+      "fortJob": null,
+      "fortCover": {
+        "active": false,
+        "cleared": false,
+        "suspicion": 0,
+        "alarmed": false,
+        "papers": false,
+        "insideBase": false,
+        "leftWithPapers": false,
+        "entered": false,
+        "uniform": null,
+        "inspecting": null,
+        "records": null,
+        "shielded": false,
+        "ownsGate": false,
+        "walkDefault": false,
+        "rate": 0,
+        "seenBy": 0,
+        "reason": null,
+        "pace": 0,
+        "restricted": null,
+        "blownBy": null,
+        "gateCheck": {
+          "x": 9236,
+          "y": 8182,
+          "distance": 7241
+        },
+        "recordsDoor": {
+          "x": 9884,
+          "y": 8035,
+          "distance": 7273
+        },
+        "player": {
+          "x": 7773,
+          "y": 1090,
+          "onFoot": true
+        }
+      },
+      "camera": {
+        "mode": "street",
+        "live": false,
+        "ready": false,
+        "locked": false,
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "pivot": [
+          0,
+          0,
+          0
+        ],
+        "yawDeg": -90,
+        "pitchDeg": 9,
+        "lookYawDeg": 0,
+        "fov": 52,
+        "boomMetres": 3.5,
+        "wantMetres": 3.5,
+        "heightMetres": 0,
+        "aiming": 0,
+        "behind": false,
+        "craneMetres": 0,
+        "lockOn": null,
+        "aimAssist": true,
+        "speedBlend": 0,
+        "zoom": 1,
+        "aim": null,
+        "sensitivity": 100,
+        "invert": false,
+        "motionBlur": false,
+        "view": {
+          "active": false,
+          "drawMetres": 600,
+          "near": 4,
+          "far": 9000,
+          "viewReach": 920,
+          "viewZoom": 3.4,
+          "fogNear": 3365,
+          "fogDensity": 0.00015,
+          "motionBlur": {
+            "active": false,
+            "strength": 0,
+            "setting": false,
+            "comfort": false
+          },
+          "farMetres": 225,
+          "farCells": 0,
+          "farMeshes": 0,
+          "shadowCells": {
+            "tested": 0,
+            "hidden": 0,
+            "proxies": 0
+          },
+          "props": {
+            "detail": 2401,
+            "detailHidden": 0,
+            "detailNoShadow": 0,
+            "parts": 829,
+            "partsHidden": 0,
+            "pools": 0,
+            "poolsHidden": 0,
+            "poolsNoShadow": 0,
+            "loose": 0,
+            "looseHidden": 0,
+            "signs": 0,
+            "signsHidden": 0
+          },
+          "draws": {
+            "view": {
+              "calls": 126,
+              "triangles": 3594313,
+              "kinds": {
+                "instanced": {
+                  "calls": 78,
+                  "triangles": 3449631,
+                  "names": [
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #353a3d @0,0",
+                      3,
+                      16
+                    ],
+                    [
+                      "Ridgeline pine",
+                      3,
+                      878
+                    ],
+                    [
+                      "Ridgeline oak",
+                      3,
+                      788
+                    ],
+                    [
+                      "Ridgeline maple",
+                      3,
+                      336
+                    ],
+                    [
+                      "monarch lanterns",
+                      3,
+                      46
+                    ],
+                    [
+                      "village lanterns",
+                      3,
+                      6
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshBasicMaterial #ffde9b @0,0",
+                      2,
+                      7
+                    ],
+                    [
+                      "Ridgeline birch",
+                      2,
+                      92
+                    ],
+                    [
+                      "Ridgeline spruce",
+                      2,
+                      72
+                    ],
+                    [
+                      "Ridgeline beech",
+                      2,
+                      142
+                    ],
+                    [
+                      "Ridgeline fir",
+                      2,
+                      538
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #8b948f @0,0",
+                      2,
+                      10
+                    ],
+                    [
+                      "Ridgeline pine",
+                      3,
+                      878
+                    ],
+                    [
+                      "Ridgeline oak",
+                      3,
+                      788
+                    ],
+                    [
+                      "Ridgeline fir",
+                      2,
+                      538
+                    ],
+                    [
+                      "Ridgeline maple",
+                      3,
+                      336
+                    ],
+                    [
+                      "Ridgeline beech",
+                      2,
+                      142
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshBasicMaterial #ffffff @0,0",
+                      1,
+                      105
+                    ],
+                    [
+                      "Ridgeline birch",
+                      2,
+                      92
+                    ],
+                    [
+                      "Ridgeline spruce",
+                      2,
+                      72
+                    ]
+                  ],
+                  "whole": 53,
+                  "px<undefined": 71,
+                  "<300m": 9,
+                  "<400m": 14,
+                  "px?": 7,
+                  "<600m": 2
+                },
+                "batch": {
+                  "calls": 15,
+                  "triangles": 2922,
+                  "names": [
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #b8c0c3",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #4f4037",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #c8b68e",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #b8a884",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #778078",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #eab876",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #9e9c79",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #506d64",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #e8e6df",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #e2721f",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #ffffff map",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #6e6a62",
+                      1,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #6e6a62",
+                      1,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #b8c0c3",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #4f4037",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #c8b68e",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #b8a884",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #778078",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #eab876",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #9e9c79",
+                      1,
+                      0
+                    ]
+                  ],
+                  "<400m": 12,
+                  "px<undefined": 15,
+                  "<600m": 3
+                },
+                "other": {
+                  "calls": 29,
+                  "triangles": 115048,
+                  "names": [
+                    [
+                      "Mesh DodecahedronGeometry MeshStandardMaterial #7d7b74 @7680,1024",
+                      4,
+                      0
+                    ],
+                    [
+                      "Mesh DodecahedronGeometry MeshStandardMaterial #8e8a80 @7680,1024",
+                      4,
+                      0
+                    ],
+                    [
+                      "Mesh DodecahedronGeometry MeshStandardMaterial #66645e @7680,1024",
+                      3,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry ShaderMaterial @7680,1024",
+                      2,
+                      97
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #6b5236 @7680,1024",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #e2632a @7680,1024",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh CircleGeometry MeshStandardMaterial #221d17 @7680,1024",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh RingGeometry MeshStandardMaterial #6d5e4b @7680,1024",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshStandardMaterial #5e5040 @7680,1024",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry MeshBasicMaterial #0f3951 @7936,1024",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry MeshStandardMaterial #e2e4de map @8448,2816",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry MeshStandardMaterial #e2e4de map @7680,-2816",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry ShaderMaterial @7680,1024",
+                      2,
+                      97
+                    ],
+                    [
+                      "glow field",
+                      1,
+                      8
+                    ],
+                    [
+                      "player body",
+                      1,
+                      7
+                    ],
+                    [
+                      "Ridgeline streams",
+                      1,
+                      2
+                    ],
+                    [
+                      "Mesh DodecahedronGeometry MeshStandardMaterial #7d7b74 @7680,1024",
+                      4,
+                      0
+                    ],
+                    [
+                      "Mesh DodecahedronGeometry MeshStandardMaterial #8e8a80 @7680,1024",
+                      4,
+                      0
+                    ],
+                    [
+                      "Mesh DodecahedronGeometry MeshStandardMaterial #66645e @7680,1024",
+                      3,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #6b5236 @7680,1024",
+                      1,
+                      0
+                    ]
+                  ],
+                  "<400m": 15,
+                  "px<undefined": 29,
+                  "<600m": 2,
+                  "whole": 12
+                },
+                "static": {
+                  "calls": 4,
+                  "triangles": 26712,
+                  "names": [
+                    [
+                      "RIDGELINE RANGE terrain",
+                      4,
+                      27
+                    ],
+                    [
+                      "RIDGELINE RANGE terrain",
+                      4,
+                      27
+                    ]
+                  ],
+                  "<400m": 2,
+                  "px<undefined": 4,
+                  "<600m": 2
+                }
+              }
+            },
+            "shadow": {
+              "calls": 101,
+              "triangles": 3491959,
+              "kinds": {
+                "instanced": {
+                  "calls": 69,
+                  "triangles": 3456941,
+                  "names": [
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #353a3d @0,0",
+                      3,
+                      16
+                    ],
+                    [
+                      "Ridgeline pine",
+                      3,
+                      878
+                    ],
+                    [
+                      "Ridgeline fir",
+                      3,
+                      696
+                    ],
+                    [
+                      "Ridgeline oak",
+                      3,
+                      788
+                    ],
+                    [
+                      "Ridgeline beech",
+                      3,
+                      213
+                    ],
+                    [
+                      "Ridgeline maple",
+                      3,
+                      336
+                    ],
+                    [
+                      "Ridgeline birch",
+                      3,
+                      112
+                    ],
+                    [
+                      "Ridgeline boulders",
+                      3,
+                      37
+                    ],
+                    [
+                      "monarch lanterns",
+                      3,
+                      46
+                    ],
+                    [
+                      "village lanterns",
+                      3,
+                      6
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshBasicMaterial #ffde9b @0,0",
+                      2,
+                      7
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #5f7079 @0,0",
+                      2,
+                      6
+                    ],
+                    [
+                      "Ridgeline pine",
+                      3,
+                      878
+                    ],
+                    [
+                      "Ridgeline oak",
+                      3,
+                      788
+                    ],
+                    [
+                      "Ridgeline fir",
+                      3,
+                      696
+                    ],
+                    [
+                      "Ridgeline maple",
+                      3,
+                      336
+                    ],
+                    [
+                      "Ridgeline beech",
+                      3,
+                      213
+                    ],
+                    [
+                      "Ridgeline birch",
+                      3,
+                      112
+                    ],
+                    [
+                      "Ridgeline spruce",
+                      2,
+                      72
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #5c5346 @0,0",
+                      1,
+                      54
+                    ]
+                  ],
+                  "whole": 45,
+                  "px?": 3,
+                  "px<undefined": 66,
+                  "<300m": 10,
+                  "<400m": 14
+                },
+                "other": {
+                  "calls": 15,
+                  "triangles": 7616,
+                  "names": [
+                    [
+                      "Mesh DodecahedronGeometry MeshStandardMaterial #7d7b74 @7680,1024",
+                      4,
+                      0
+                    ],
+                    [
+                      "Mesh DodecahedronGeometry MeshStandardMaterial #8e8a80 @7680,1024",
+                      4,
+                      0
+                    ],
+                    [
+                      "Mesh DodecahedronGeometry MeshStandardMaterial #66645e @7680,1024",
+                      3,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #6b5236 @7680,1024",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshStandardMaterial #5e5040 @7680,1024",
+                      1,
+                      0
+                    ],
+                    [
+                      "player body",
+                      1,
+                      7
+                    ],
+                    [
+                      "Mesh ConeGeometry MeshBasicMaterial #ffe2a2 @7680,1024",
+                      1,
+                      0
+                    ],
+                    [
+                      "player body",
+                      1,
+                      7
+                    ],
+                    [
+                      "Mesh DodecahedronGeometry MeshStandardMaterial #7d7b74 @7680,1024",
+                      4,
+                      0
+                    ],
+                    [
+                      "Mesh DodecahedronGeometry MeshStandardMaterial #8e8a80 @7680,1024",
+                      4,
+                      0
+                    ],
+                    [
+                      "Mesh DodecahedronGeometry MeshStandardMaterial #66645e @7680,1024",
+                      3,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #6b5236 @7680,1024",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshStandardMaterial #5e5040 @7680,1024",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh ConeGeometry MeshBasicMaterial #ffe2a2 @7680,1024",
+                      1,
+                      0
+                    ]
+                  ],
+                  "<400m": 14,
+                  "px<undefined": 15,
+                  "whole": 1
+                },
+                "batch": {
+                  "calls": 14,
+                  "triangles": 2826,
+                  "names": [
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #b8c0c3",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #eab876",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #778078",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #4f4037",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #9e9c79",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #506d64",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #e8e6df",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #e2721f",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #ffffff map",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #6e6a62",
+                      1,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #7a7064",
+                      1,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #9c8366",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #6e6a62",
+                      1,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #7a7064",
+                      1,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #b8c0c3",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #eab876",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #778078",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #4f4037",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #9e9c79",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #506d64",
+                      1,
+                      0
+                    ]
+                  ],
+                  "<400m": 13,
+                  "px<undefined": 14,
+                  "<600m": 1
+                },
+                "static": {
+                  "calls": 3,
+                  "triangles": 24576,
+                  "names": [
+                    [
+                      "RIDGELINE RANGE terrain",
+                      3,
+                      25
+                    ],
+                    [
+                      "RIDGELINE RANGE terrain",
+                      3,
+                      25
+                    ]
+                  ],
+                  "<400m": 3,
+                  "px<undefined": 3
+                }
+              }
+            }
+          }
+        }
+      },
+      "streetCamera": {
+        "zoom": 3.4,
+        "target": 3.4,
+        "context": 1,
+        "slowFraming": false,
+        "vehicleContext": null,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 3.4,
+        "aim": 3.4,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 17.5,
+        "personPx": 44,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 2.2,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "hud": {
+        "viewport": [
+          1000,
+          700
+        ],
+        "touch": false,
+        "boxes": [
+          {
+            "id": "hudLocation",
+            "l": 26,
+            "t": 20,
+            "r": 242,
+            "b": 70
+          },
+          {
+            "id": "cash",
+            "l": 809,
+            "t": 20,
+            "r": 922,
+            "b": 48
+          },
+          {
+            "id": "stars",
+            "l": 825,
+            "t": 50,
+            "r": 922,
+            "b": 71
+          },
+          {
+            "id": "worldClock",
+            "l": 836,
+            "t": 73,
+            "r": 922,
+            "b": 87
+          },
+          {
+            "id": "pauseBtn",
+            "l": 940,
+            "t": 20,
+            "r": 974,
+            "b": 54
+          },
+          {
+            "id": "navigation",
+            "l": 316,
+            "t": 20,
+            "r": 684,
+            "b": 64
+          },
+          {
+            "id": "terrainStatus",
+            "l": 408,
+            "t": 70,
+            "r": 592,
+            "b": 96
+          },
+          {
+            "id": "storyLine",
+            "l": 180,
+            "t": 426,
+            "r": 820,
+            "b": 485
+          },
+          {
+            "id": "interaction",
+            "l": 333,
+            "t": 412,
+            "r": 667,
+            "b": 447
+          },
+          {
+            "id": "minimapBox",
+            "l": 26,
+            "t": 495,
+            "r": 266,
+            "b": 680
+          },
+          {
+            "id": "pager",
+            "l": 286,
+            "t": 518,
+            "r": 704,
+            "b": 636
+          },
+          {
+            "id": "quickKeys",
+            "l": 286,
+            "t": 644,
+            "r": 704,
+            "b": 680
+          },
+          {
+            "id": "vehicleStats",
+            "l": 804,
+            "t": 566,
+            "r": 974,
+            "b": 623
+          },
+          {
+            "id": "weaponButton",
+            "l": 824,
+            "t": 631,
+            "r": 974,
+            "b": 680
+          }
+        ],
+        "overlaps": [
+          [
+            "storyLine",
+            "interaction",
+            334,
+            21
+          ]
+        ],
+        "overPlayer": []
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 5.63,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "draw": {
+        "total": 126,
+        "byLayer": {
+          "detail": 17,
+          "farDetail": 0,
+          "other": 109
+        },
+        "byName": [
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            22
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            7
+          ],
+          [
+            "group@7791,1082 [DodecahedronGeometry MeshStandardMaterial #7d7b74] in group@7791,1082 [DodecahedronGeometry MeshStandardMaterial #7d7b74]",
+            4
+          ],
+          [
+            "group@7791,1082 [DodecahedronGeometry MeshStandardMaterial #8e8a80] in group@7791,1082 [DodecahedronGeometry MeshStandardMaterial #8e8a80]",
+            4
+          ],
+          [
+            "RIDGELINE RANGE terrain",
+            4
+          ]
+        ],
+        "byCell": [
+          [
+            "0,0",
+            100
+          ],
+          [
+            "7680,1024",
+            19
+          ],
+          [
+            "5632,0",
+            4
+          ],
+          [
+            "7680,512",
+            1
+          ],
+          [
+            "8192,2560",
+            1
+          ]
+        ],
+        "triangles": 3594313,
+        "byTriangles": [
+          [
+            "Ridgeline pine",
+            878472
+          ],
+          [
+            "Ridgeline oak",
+            788140
+          ],
+          [
+            "Ridgeline fir",
+            538002
+          ],
+          [
+            "Ridgeline maple",
+            336474
+          ],
+          [
+            "Ridgeline beech",
+            141620
+          ]
+        ],
+        "instanced": [
+          [
+            "Ridgeline pine",
+            1004,
+            332,
+            true,
+            true
+          ],
+          [
+            "Ridgeline fir",
+            858,
+            369,
+            true,
+            true
+          ],
+          [
+            "Ridgeline pine",
+            838,
+            332,
+            true,
+            true
+          ],
+          [
+            "Ridgeline oak",
+            553,
+            502,
+            true,
+            true
+          ],
+          [
+            "Ridgeline oak",
+            544,
+            502,
+            true,
+            true
+          ]
+        ],
+        "programs": [
+          [
+            "physical",
+            91
+          ],
+          [
+            "depth",
+            16
+          ],
+          [
+            "basic",
+            9
+          ],
+          [
+            "22",
+            7
+          ],
+          [
+            "trees",
+            2
+          ]
+        ]
+      },
+      "stats": {
+        "frames": 139,
+        "updateMs": 10.32,
+        "drawMs": 321.49,
+        "frameMs": -2198.8,
+        "drawCalls": 213,
+        "triangles": 7086272,
+        "shadowFrame": true,
+        "viewCalls": 115,
+        "shadowCalls": 98,
+        "frameCalls": 228,
+        "renderScale": 1,
+        "sceneObjects": 18356,
+        "programs": 138,
+        "byType": {
+          "Scene": 1,
+          "HemisphereLight": 1,
+          "DirectionalLight": 2,
+          "Object3D": 2,
+          "Mesh": 10034,
+          "Group": 7617,
+          "LineSegments": 10,
+          "SpotLight": 1,
+          "PointLight": 6,
+          "Sprite": 532,
+          "Points": 146,
+          "Line": 1,
+          "LOD": 3
+        },
+        "vehicles": 297,
+        "pedestrians": 593,
+        "parts": {
+          "r:submit+shadow": 320.76,
+          "cars": 5.54,
+          "phys:control": 2.02,
+          "people": 1.23,
+          "phys:post": 1.22,
+          "civic": 1.16,
+          "phys:broadphase": 1.11,
+          "police:officers": 0.67,
+          "ui": 0.62,
+          "wildlife": 0.4,
+          "phys:contacts": 0.38,
+          "r:damage": 0.21,
+          "bullets": 0.2,
+          "r:scenery": 0.18,
+          "sealife": 0.16,
+          "f:pre": 0.15,
+          "police:wanted": 0.14,
+          "damage": 0.13,
+          "knockdowns": 0.12,
+          "sports": 0.11,
+          "military": 0.08,
+          "citylife": 0.06,
+          "r:lod": 0.05,
+          "r:vehicles": 0.05,
+          "r:crowd": 0.04,
+          "offroad": 0.04,
+          "r:sky": 0.03,
+          "beach": 0.03,
+          "r:people+fx": 0.02,
+          "mission": 0.02,
+          "liner": 0.02,
+          "transit": 0.02,
+          "r:camera": 0.01,
+          "drawbridge": 0.01,
+          "beachclub": 0.01,
+          "monarch": 0.01,
+          "sound": 0.01,
+          "coaster": 0.01,
+          "police:air": 0.01,
+          "leisure": 0,
+          "garage": 0,
+          "combat": 0,
+          "dealership": 0,
+          "police:roadblocks": 0,
+          "waypoint": 0,
+          "taxi": 0,
+          "roofencounter": 0,
+          "flighthud": 0
+        }
+      },
+      "subtitle": {
+        "text": "Vinny: Tommy said the foot of the big cairn, the side facing the sea. Stones on top, a foot of grit under them. Dig.",
+        "classes": "show",
+        "opacity": "1",
+        "rect": {
+          "x": 180,
+          "y": 425.5,
+          "width": 640,
+          "height": 59.5
+        }
+      },
+      "sha256": "3da0b3a0b825b60b6609a7a73a76336014af419fa15085aff3b0feb2fd7d1cea"
+    },
+    {
+      "file": "03-fitted-backpack-high.png",
+      "title": "Visible fitted package backpack",
+      "fixture": {
+        "kind": "staged summit arrival followed by ordinary held-E dig",
+        "camera": "inspection close view from behind",
+        "quality": "high"
+      },
+      "state": {
+        "mode": "play",
+        "x": 7773,
+        "y": 1090,
+        "district": "RIDGELINE COUNTY",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": "High Ground",
+        "completed": 2,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "14:08",
+        "renderer": "3d",
+        "vehicles": 297,
+        "pedestrians": 593
+      },
+      "quality": {
+        "setting": "high",
+        "tier": "HIGH",
+        "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "hdr": true,
+        "shadowMap": 3072,
+        "pixelRatio": 1,
+        "renderScale": 1,
+        "shadows": "high",
+        "shadowSetting": "auto",
+        "adaptive": {
+          "averageFrameMs": 0,
+          "tierDrops": 0,
+          "ceiling": 1,
+          "holdSeconds": 0
+        }
+      },
+      "mission": {
+        "index": 2,
+        "stage": 3,
+        "instruction": "BRING THE PACKAGE TO VINNY\u2019S WAREHOUSE",
+        "target": {
+          "x": -1664,
+          "y": 4450
+        },
+        "depotShutter": 0,
+        "depotBackDoor": 1,
+        "depotSealed": false,
+        "wanted": 0
+      },
+      "card": {
+        "counter": "MISSION 3",
+        "announce": "HIGH GROUND",
+        "text": "Vinny gave you a mission: bring the package to Vinny\u2019s warehouse.",
+        "distance": "OBJECTIVE \u00b7 1252 m",
+        "open": true,
+        "line": "Vinny: Got it? Don\u2019t open it. What you don\u2019t know, nobody can beat out of you. Zip it in the backpack and come down slow.",
+        "viewport": [
+          1000,
+          700
+        ]
+      },
+      "prompt": {
+        "visible": false,
+        "text": "",
+        "id": null,
+        "docked": false,
+        "age": 0,
+        "offered": null
+      },
+      "sumJob": {
+        "stage": 3,
+        "instruction": "BRING THE PACKAGE TO VINNY\u2019S WAREHOUSE",
+        "target": {
+          "x": -1664,
+          "y": 4450
+        },
+        "dig": 1,
+        "digging": false,
+        "carrier": "backpack",
+        "carryCar": null,
+        "lastCar": null,
+        "arrived": true,
+        "cache": {
+          "x": 7791,
+          "y": 1082,
+          "altitude": 761.8644348144531
+        },
+        "summit": {
+          "x": 7760,
+          "y": 1090,
+          "altitude": 761.9031982421875
+        },
+        "vinny": null,
+        "insideDepot": false,
+        "beats": []
+      },
+      "fortJob": null,
+      "fortCover": {
+        "active": false,
+        "cleared": false,
+        "suspicion": 0,
+        "alarmed": false,
+        "papers": false,
+        "insideBase": false,
+        "leftWithPapers": false,
+        "entered": false,
+        "uniform": null,
+        "inspecting": null,
+        "records": null,
+        "shielded": false,
+        "ownsGate": false,
+        "walkDefault": false,
+        "rate": 0,
+        "seenBy": 0,
+        "reason": null,
+        "pace": 0,
+        "restricted": null,
+        "blownBy": null,
+        "gateCheck": {
+          "x": 9236,
+          "y": 8182,
+          "distance": 7241
+        },
+        "recordsDoor": {
+          "x": 9884,
+          "y": 8035,
+          "distance": 7273
+        },
+        "player": {
+          "x": 7773,
+          "y": 1090,
+          "onFoot": true
+        }
+      },
+      "camera": {
+        "mode": "street",
+        "live": false,
+        "ready": false,
+        "locked": false,
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "pivot": [
+          0,
+          0,
+          0
+        ],
+        "yawDeg": -90,
+        "pitchDeg": 9,
+        "lookYawDeg": 0,
+        "fov": 52,
+        "boomMetres": 3.5,
+        "wantMetres": 3.5,
+        "heightMetres": 0,
+        "aiming": 0,
+        "behind": false,
+        "craneMetres": 0,
+        "lockOn": null,
+        "aimAssist": true,
+        "speedBlend": 0,
+        "zoom": 1,
+        "aim": null,
+        "sensitivity": 100,
+        "invert": false,
+        "motionBlur": false,
+        "view": {
+          "active": false,
+          "drawMetres": 600,
+          "near": 4,
+          "far": 9000,
+          "viewReach": 920,
+          "viewZoom": 18,
+          "fogNear": 3182,
+          "fogDensity": 0.00015,
+          "motionBlur": {
+            "active": false,
+            "strength": 0,
+            "setting": false,
+            "comfort": false
+          },
+          "farMetres": 225,
+          "farCells": 0,
+          "farMeshes": 0,
+          "shadowCells": {
+            "tested": 0,
+            "hidden": 0,
+            "proxies": 0
+          },
+          "props": {
+            "detail": 2401,
+            "detailHidden": 0,
+            "detailNoShadow": 0,
+            "parts": 829,
+            "partsHidden": 0,
+            "pools": 0,
+            "poolsHidden": 0,
+            "poolsNoShadow": 0,
+            "loose": 0,
+            "looseHidden": 0,
+            "signs": 0,
+            "signsHidden": 0
+          },
+          "draws": {
+            "view": {
+              "calls": 128,
+              "triangles": 3860872,
+              "kinds": {
+                "instanced": {
+                  "calls": 83,
+                  "triangles": 3710974,
+                  "names": [
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #353a3d @0,0",
+                      3,
+                      16
+                    ],
+                    [
+                      "Ridgeline beech",
+                      3,
+                      213
+                    ],
+                    [
+                      "Ridgeline birch",
+                      3,
+                      112
+                    ],
+                    [
+                      "Ridgeline oak",
+                      3,
+                      788
+                    ],
+                    [
+                      "Ridgeline maple",
+                      3,
+                      336
+                    ],
+                    [
+                      "Ridgeline pine",
+                      3,
+                      878
+                    ],
+                    [
+                      "Ridgeline fir",
+                      3,
+                      696
+                    ],
+                    [
+                      "Ridgeline boulders",
+                      3,
+                      37
+                    ],
+                    [
+                      "monarch lanterns",
+                      3,
+                      46
+                    ],
+                    [
+                      "village lanterns",
+                      3,
+                      6
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshBasicMaterial #ffde9b @0,0",
+                      2,
+                      7
+                    ],
+                    [
+                      "landscape meadowGrass",
+                      2,
+                      8
+                    ],
+                    [
+                      "Ridgeline pine",
+                      3,
+                      878
+                    ],
+                    [
+                      "Ridgeline oak",
+                      3,
+                      788
+                    ],
+                    [
+                      "Ridgeline fir",
+                      3,
+                      696
+                    ],
+                    [
+                      "Ridgeline maple",
+                      3,
+                      336
+                    ],
+                    [
+                      "Ridgeline beech",
+                      3,
+                      213
+                    ],
+                    [
+                      "Ridgeline birch",
+                      3,
+                      112
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshBasicMaterial #ffffff @0,0",
+                      1,
+                      105
+                    ],
+                    [
+                      "Ridgeline spruce",
+                      2,
+                      72
+                    ]
+                  ],
+                  "whole": 53,
+                  "px<undefined": 76,
+                  "<200m": 5,
+                  "<300m": 10,
+                  "<150m": 2,
+                  "<400m": 6,
+                  "<600m": 7,
+                  "px?": 7
+                },
+                "batch": {
+                  "calls": 11,
+                  "triangles": 1914,
+                  "names": [
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #b8c0c3",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #4f4037",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #778078",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #eab876",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #9e9c79",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #e8e6df",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #e2721f",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #ffffff map",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #6e6a62",
+                      1,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #6a5035",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #e3a234",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #6e6a62",
+                      1,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #b8c0c3",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #4f4037",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #778078",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #eab876",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #9e9c79",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #e8e6df",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #e2721f",
+                      1,
+                      0
+                    ]
+                  ],
+                  "<400m": 11,
+                  "px<undefined": 11
+                },
+                "other": {
+                  "calls": 28,
+                  "triangles": 115036,
+                  "names": [
+                    [
+                      "Mesh DodecahedronGeometry MeshStandardMaterial #7d7b74 @7680,1024",
+                      4,
+                      0
+                    ],
+                    [
+                      "Mesh DodecahedronGeometry MeshStandardMaterial #8e8a80 @7680,1024",
+                      4,
+                      0
+                    ],
+                    [
+                      "Mesh DodecahedronGeometry MeshStandardMaterial #66645e @7680,1024",
+                      3,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry ShaderMaterial @7680,1024",
+                      2,
+                      97
+                    ],
+                    [
+                      "Mesh PlaneGeometry MeshStandardMaterial #ffffff map @0,768",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #6b5236 @7680,1024",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #e2632a @7680,1024",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh CircleGeometry MeshStandardMaterial #221d17 @7680,1024",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh RingGeometry MeshStandardMaterial #6d5e4b @7680,1024",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshStandardMaterial #5e5040 @7680,1024",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry MeshBasicMaterial #0f3951 @7936,1024",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry MeshStandardMaterial #e2e4de map @8448,2816",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry ShaderMaterial @7680,1024",
+                      2,
+                      97
+                    ],
+                    [
+                      "glow field",
+                      1,
+                      8
+                    ],
+                    [
+                      "player body",
+                      1,
+                      7
+                    ],
+                    [
+                      "Ridgeline streams",
+                      1,
+                      2
+                    ],
+                    [
+                      "Mesh DodecahedronGeometry MeshStandardMaterial #7d7b74 @7680,1024",
+                      4,
+                      0
+                    ],
+                    [
+                      "Mesh DodecahedronGeometry MeshStandardMaterial #8e8a80 @7680,1024",
+                      4,
+                      0
+                    ],
+                    [
+                      "Mesh DodecahedronGeometry MeshStandardMaterial #66645e @7680,1024",
+                      3,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry MeshStandardMaterial #ffffff map @0,768",
+                      1,
+                      0
+                    ]
+                  ],
+                  "whole": 12,
+                  "px<undefined": 28,
+                  "<400m": 16
+                },
+                "static": {
+                  "calls": 4,
+                  "triangles": 32768,
+                  "names": [
+                    [
+                      "RIDGELINE RANGE terrain",
+                      4,
+                      33
+                    ],
+                    [
+                      "RIDGELINE RANGE terrain",
+                      4,
+                      33
+                    ]
+                  ],
+                  "<300m": 1,
+                  "px<undefined": 4,
+                  "<400m": 1,
+                  "<600m": 2
+                },
+                "crowd": {
+                  "calls": 2,
+                  "triangles": 180,
+                  "names": [
+                    [
+                      "crowd backpack",
+                      1,
+                      0
+                    ],
+                    [
+                      "crowd pistol",
+                      1,
+                      0
+                    ],
+                    [
+                      "crowd backpack",
+                      1,
+                      0
+                    ],
+                    [
+                      "crowd pistol",
+                      1,
+                      0
+                    ]
+                  ],
+                  "whole": 2,
+                  "px<undefined": 2
+                }
+              }
+            },
+            "shadow": {
+              "calls": 104,
+              "triangles": 3497327,
+              "kinds": {
+                "instanced": {
+                  "calls": 69,
+                  "triangles": 3456941,
+                  "names": [
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #353a3d @0,0",
+                      3,
+                      16
+                    ],
+                    [
+                      "Ridgeline pine",
+                      3,
+                      878
+                    ],
+                    [
+                      "Ridgeline fir",
+                      3,
+                      696
+                    ],
+                    [
+                      "Ridgeline oak",
+                      3,
+                      788
+                    ],
+                    [
+                      "Ridgeline beech",
+                      3,
+                      213
+                    ],
+                    [
+                      "Ridgeline maple",
+                      3,
+                      336
+                    ],
+                    [
+                      "Ridgeline birch",
+                      3,
+                      112
+                    ],
+                    [
+                      "Ridgeline boulders",
+                      3,
+                      37
+                    ],
+                    [
+                      "monarch lanterns",
+                      3,
+                      46
+                    ],
+                    [
+                      "village lanterns",
+                      3,
+                      6
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshBasicMaterial #ffde9b @0,0",
+                      2,
+                      7
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #5f7079 @0,0",
+                      2,
+                      6
+                    ],
+                    [
+                      "Ridgeline pine",
+                      3,
+                      878
+                    ],
+                    [
+                      "Ridgeline oak",
+                      3,
+                      788
+                    ],
+                    [
+                      "Ridgeline fir",
+                      3,
+                      696
+                    ],
+                    [
+                      "Ridgeline maple",
+                      3,
+                      336
+                    ],
+                    [
+                      "Ridgeline beech",
+                      3,
+                      213
+                    ],
+                    [
+                      "Ridgeline birch",
+                      3,
+                      112
+                    ],
+                    [
+                      "Ridgeline spruce",
+                      2,
+                      72
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #5c5346 @0,0",
+                      1,
+                      54
+                    ]
+                  ],
+                  "whole": 45,
+                  "px?": 3,
+                  "px<undefined": 66,
+                  "<150m": 2,
+                  "<200m": 5,
+                  "<300m": 9,
+                  "<400m": 6,
+                  "<600m": 2
+                },
+                "other": {
+                  "calls": 14,
+                  "triangles": 7604,
+                  "names": [
+                    [
+                      "Mesh DodecahedronGeometry MeshStandardMaterial #7d7b74 @7680,1024",
+                      4,
+                      0
+                    ],
+                    [
+                      "Mesh DodecahedronGeometry MeshStandardMaterial #8e8a80 @7680,1024",
+                      4,
+                      0
+                    ],
+                    [
+                      "Mesh DodecahedronGeometry MeshStandardMaterial #66645e @7680,1024",
+                      3,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #6b5236 @7680,1024",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshStandardMaterial #5e5040 @7680,1024",
+                      1,
+                      0
+                    ],
+                    [
+                      "player body",
+                      1,
+                      7
+                    ],
+                    [
+                      "player body",
+                      1,
+                      7
+                    ],
+                    [
+                      "Mesh DodecahedronGeometry MeshStandardMaterial #7d7b74 @7680,1024",
+                      4,
+                      0
+                    ],
+                    [
+                      "Mesh DodecahedronGeometry MeshStandardMaterial #8e8a80 @7680,1024",
+                      4,
+                      0
+                    ],
+                    [
+                      "Mesh DodecahedronGeometry MeshStandardMaterial #66645e @7680,1024",
+                      3,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #6b5236 @7680,1024",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshStandardMaterial #5e5040 @7680,1024",
+                      1,
+                      0
+                    ]
+                  ],
+                  "<400m": 13,
+                  "px<undefined": 14,
+                  "whole": 1
+                },
+                "crowd": {
+                  "calls": 1,
+                  "triangles": 132,
+                  "names": [
+                    [
+                      "crowd backpack",
+                      1,
+                      0
+                    ],
+                    [
+                      "crowd backpack",
+                      1,
+                      0
+                    ]
+                  ],
+                  "whole": 1,
+                  "px<undefined": 1
+                },
+                "batch": {
+                  "calls": 16,
+                  "triangles": 2830,
+                  "names": [
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #ffffff map",
+                      3,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #b8c0c3",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #eab876",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #778078",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #4f4037",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #9e9c79",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #506d64",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #e8e6df",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #e2721f",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #6e6a62",
+                      1,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #7a7064",
+                      1,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #9c8366",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #6e6a62",
+                      1,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #7a7064",
+                      1,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #ffffff map",
+                      3,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #b8c0c3",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #eab876",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #778078",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #4f4037",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #9e9c79",
+                      1,
+                      0
+                    ]
+                  ],
+                  "<400m": 16,
+                  "px<undefined": 16
+                },
+                "static": {
+                  "calls": 4,
+                  "triangles": 29820,
+                  "names": [
+                    [
+                      "RIDGELINE RANGE terrain",
+                      4,
+                      30
+                    ],
+                    [
+                      "RIDGELINE RANGE terrain",
+                      4,
+                      30
+                    ]
+                  ],
+                  "<400m": 3,
+                  "px<undefined": 4,
+                  "<300m": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "streetCamera": {
+        "zoom": 18,
+        "target": 18,
+        "context": 1,
+        "slowFraming": false,
+        "vehicleContext": null,
+        "speed": 1,
+        "kmh": 0,
+        "framing": 1,
+        "framed": 18,
+        "aim": 18,
+        "defaultZoom": 2,
+        "limits": [
+          0.14,
+          4.5
+        ],
+        "viewport": [
+          1000,
+          700
+        ],
+        "viewMetres": 3.3,
+        "personPx": 236,
+        "motionComfort": false,
+        "vehicleDistance": 120,
+        "walkDistance": 100,
+        "comfort": {
+          "seconds": 4,
+          "accel": {
+            "rms": 0,
+            "peak": 0
+          },
+          "jerk": {
+            "rms": 0,
+            "peak": 0
+          },
+          "zoomRate": {
+            "rms": 258.39,
+            "peak": 1874.92
+          },
+          "jolt": 0,
+          "drift": {
+            "peak": 0,
+            "swing": 0
+          }
+        }
+      },
+      "hud": {
+        "viewport": [
+          1000,
+          700
+        ],
+        "touch": false,
+        "boxes": [
+          {
+            "id": "hudLocation",
+            "l": 26,
+            "t": 20,
+            "r": 215,
+            "b": 70
+          },
+          {
+            "id": "cash",
+            "l": 809,
+            "t": 20,
+            "r": 922,
+            "b": 48
+          },
+          {
+            "id": "stars",
+            "l": 825,
+            "t": 50,
+            "r": 922,
+            "b": 71
+          },
+          {
+            "id": "worldClock",
+            "l": 836,
+            "t": 73,
+            "r": 922,
+            "b": 87
+          },
+          {
+            "id": "pauseBtn",
+            "l": 940,
+            "t": 20,
+            "r": 974,
+            "b": 54
+          },
+          {
+            "id": "navigation",
+            "l": 314,
+            "t": 20,
+            "r": 686,
+            "b": 64
+          },
+          {
+            "id": "terrainStatus",
+            "l": 408,
+            "t": 70,
+            "r": 592,
+            "b": 96
+          },
+          {
+            "id": "storyLine",
+            "l": 180,
+            "t": 426,
+            "r": 820,
+            "b": 485
+          },
+          {
+            "id": "interaction",
+            "l": 348,
+            "t": 72,
+            "r": 652,
+            "b": 103
+          },
+          {
+            "id": "minimapBox",
+            "l": 26,
+            "t": 495,
+            "r": 266,
+            "b": 680
+          },
+          {
+            "id": "pager",
+            "l": 286,
+            "t": 518,
+            "r": 704,
+            "b": 636
+          },
+          {
+            "id": "quickKeys",
+            "l": 286,
+            "t": 644,
+            "r": 704,
+            "b": 680
+          },
+          {
+            "id": "vehicleStats",
+            "l": 804,
+            "t": 566,
+            "r": 974,
+            "b": 623
+          },
+          {
+            "id": "weaponButton",
+            "l": 824,
+            "t": 631,
+            "r": 974,
+            "b": 680
+          }
+        ],
+        "overlaps": [
+          [
+            "terrainStatus",
+            "interaction",
+            184,
+            24
+          ]
+        ],
+        "overPlayer": [
+          "navigation",
+          "terrainStatus",
+          "storyLine",
+          "interaction"
+        ]
+      },
+      "faults": {
+        "count": 0,
+        "gameTime": 11.95,
+        "drill": null,
+        "kinds": []
+      },
+      "gpu": {
+        "watched": true,
+        "lost": false,
+        "losses": 0,
+        "restores": 0,
+        "reloadPending": false,
+        "lostSeconds": 0
+      },
+      "draw": {
+        "total": 128,
+        "byLayer": {
+          "detail": 17,
+          "farDetail": 0,
+          "other": 111
+        },
+        "byName": [
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            22
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            7
+          ],
+          [
+            "group@7791,1082 [DodecahedronGeometry MeshStandardMaterial #7d7b74] in group@7791,1082 [DodecahedronGeometry MeshStandardMaterial #7d7b74]",
+            4
+          ],
+          [
+            "group@7791,1082 [DodecahedronGeometry MeshStandardMaterial #8e8a80] in group@7791,1082 [DodecahedronGeometry MeshStandardMaterial #8e8a80]",
+            4
+          ],
+          [
+            "RIDGELINE RANGE terrain",
+            4
+          ]
+        ],
+        "byCell": [
+          [
+            "0,0",
+            103
+          ],
+          [
+            "7680,1024",
+            18
+          ],
+          [
+            "5632,0",
+            4
+          ],
+          [
+            "0,512",
+            1
+          ],
+          [
+            "7680,512",
+            1
+          ]
+        ],
+        "triangles": 3860872,
+        "byTriangles": [
+          [
+            "Ridgeline pine",
+            878472
+          ],
+          [
+            "Ridgeline oak",
+            788140
+          ],
+          [
+            "Ridgeline fir",
+            695934
+          ],
+          [
+            "Ridgeline maple",
+            336474
+          ],
+          [
+            "Ridgeline beech",
+            212624
+          ]
+        ],
+        "instanced": [
+          [
+            "Ridgeline pine",
+            1004,
+            332,
+            true,
+            true
+          ],
+          [
+            "Ridgeline fir",
+            858,
+            369,
+            true,
+            true
+          ],
+          [
+            "Ridgeline pine",
+            838,
+            332,
+            true,
+            true
+          ],
+          [
+            "Ridgeline oak",
+            553,
+            502,
+            true,
+            true
+          ],
+          [
+            "Ridgeline oak",
+            544,
+            502,
+            true,
+            true
+          ]
+        ],
+        "programs": [
+          [
+            "physical",
+            91
+          ],
+          [
+            "depth",
+            16
+          ],
+          [
+            "basic",
+            9
+          ],
+          [
+            "22",
+            7
+          ],
+          [
+            "trees",
+            2
+          ]
+        ]
+      },
+      "stats": {
+        "frames": 383,
+        "updateMs": 7.91,
+        "drawMs": 0.34,
+        "frameMs": -1856.2,
+        "drawCalls": 219,
+        "triangles": 7358199,
+        "shadowFrame": true,
+        "viewCalls": 118,
+        "shadowCalls": 101,
+        "frameCalls": 233,
+        "renderScale": 1,
+        "sceneObjects": 18307,
+        "programs": 138,
+        "byType": {
+          "Scene": 1,
+          "HemisphereLight": 1,
+          "DirectionalLight": 2,
+          "Object3D": 2,
+          "Mesh": 9999,
+          "Group": 7603,
+          "LineSegments": 10,
+          "SpotLight": 1,
+          "PointLight": 6,
+          "Sprite": 532,
+          "Points": 146,
+          "Line": 1,
+          "LOD": 3
+        },
+        "vehicles": 297,
+        "pedestrians": 593,
+        "parts": {
+          "cars": 4.45,
+          "phys:control": 1.48,
+          "phys:post": 1.12,
+          "phys:broadphase": 1.04,
+          "civic": 0.72,
+          "phys:contacts": 0.43,
+          "wildlife": 0.41,
+          "ui": 0.37,
+          "people": 0.31,
+          "police:officers": 0.27,
+          "f:pre": 0.2,
+          "bullets": 0.2,
+          "r:submit+shadow": 0.18,
+          "sports": 0.18,
+          "police:wanted": 0.16,
+          "damage": 0.15,
+          "knockdowns": 0.13,
+          "military": 0.1,
+          "sealife": 0.05,
+          "beachclub": 0.03,
+          "waypoint": 0.03,
+          "r:scenery": 0.02,
+          "r:lod": 0.02,
+          "r:vehicles": 0.02,
+          "beach": 0.02,
+          "citylife": 0.02,
+          "coaster": 0.02,
+          "drawbridge": 0.02,
+          "mission": 0.02,
+          "r:crowd": 0.01,
+          "r:damage": 0.01,
+          "transit": 0.01,
+          "police:air": 0.01,
+          "offroad": 0.01,
+          "sound": 0.01,
+          "liner": 0.01,
+          "dealership": 0.01,
+          "monarch": 0.01,
+          "r:camera": 0,
+          "r:sky": 0,
+          "r:people+fx": 0,
+          "combat": 0,
+          "taxi": 0,
+          "flighthud": 0,
+          "garage": 0,
+          "police:roadblocks": 0,
+          "leisure": 0,
+          "roofencounter": 0
+        }
+      },
+      "subtitle": {
+        "text": "Vinny: Got it? Don\u2019t open it. What you don\u2019t know, nobody can beat out of you. Zip it in the backpack and come down slow.",
+        "classes": "show yield-fade",
+        "opacity": "1",
+        "rect": {
+          "x": 180,
+          "y": 425.5,
+          "width": 640,
+          "height": 59.5
+        }
+      },
+      "sha256": "ccffa28ebb0bccf62c32d144864a7dced86c37f1c307557abe34490f01e750e2"
+    }
+  ],
+  "renderChecks": [],
+  "errors": [],
+  "warnings": [
+    "Scripts \"build/three.js\" and \"build/three.min.js\" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation"
+  ],
+  "pass": false,
+  "interrupted": true,
+  "failure": "Interrupted to free browser capacity for ordinary mission 3\u20134 wins after finding the active subtitle/interaction overlap. Partial native visual evidence, not a complete graphics pass."
+}

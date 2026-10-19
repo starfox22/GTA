@@ -1,0 +1,48 @@
+input 0 / 577
+input 100 / 577
+input 200 / 577
+input 300 / 577
+input 400 / 577
+input 500 / 577
+{
+  "pass": false,
+  "inputSha256": "1d7dcd17cdc6bb11011073f9fd80efebec25383c26d6e2486fd6c862dbf02fa4",
+  "inputs": 577,
+  "outcome": {
+    "index": 1,
+    "stage": 0,
+    "instruction": "COLLECT GUEST CLOTHES AT SUNSET MOTEL · E",
+    "target": {
+      "x": 882,
+      "y": 1964
+    },
+    "depotShutter": 0,
+    "depotBackDoor": 1,
+    "depotSealed": false,
+    "wanted": 0
+  },
+  "status": {
+    "mode": "play",
+    "x": 381,
+    "y": 2434,
+    "district": "MIDTOWN",
+    "hp": 100,
+    "cash": 0,
+    "wanted": 0,
+    "mission": "A Seat at the Table",
+    "completed": 1,
+    "vehicle": null,
+    "weapon": "9MM PISTOL",
+    "clock": "19:23",
+    "renderer": "2d",
+    "vehicles": 312,
+    "pedestrians": 617
+  },
+  "faults": {
+    "count": 0,
+    "gameTime": 123.2,
+    "drill": null,
+    "kinds": []
+  },
+  "errors": []
+}

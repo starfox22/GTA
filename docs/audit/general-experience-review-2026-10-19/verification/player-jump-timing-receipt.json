@@ -1,0 +1,44 @@
+{
+  "kind": "player-jump physical Space timing correction",
+  "productionHtml": "/workspace/GTA/work/general-review/release-candidate.html",
+  "htmlSha256": "10020e235d97e4152260edd44d6541a1ceea68d3afefa04efec8e2940d3391b5",
+  "productionSource": "339ba035",
+  "testSha256": "7d0a08d0fb051b3bc9239250680338c6e351ee8628e4bae04e9a83237b6580dd",
+  "baselineFailure": {
+    "log": "browser-fresh-b.log",
+    "speedBefore": 54.2,
+    "speedAfter": 52.2,
+    "gameTimeNotMeasured": true
+  },
+  "probe": "player-jump-time-probe.json",
+  "narrowCheck": {
+    "command": [
+      "node",
+      "tools/test.mjs",
+      "player-jump",
+      "--exact",
+      "--html",
+      "/workspace/GTA/work/general-review/release-candidate.html",
+      "--verbose"
+    ],
+    "log": "player-jump-measured.log",
+    "logSha256": "b6a7b8cc05b76e55b6f0485311b6623af3bd46ef9f53195a931b0bd1c4df19a1",
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0,
+    "speedBefore": 54.2,
+    "speedAfter": 1.4,
+    "observedGameSeconds": 1.24,
+    "wallSeconds": 1.26
+  },
+  "assertions": {
+    "maximumSpeedRatio": 0.7,
+    "minimumGameSeconds": 1.2,
+    "maximumWallSeconds": 30,
+    "physicalSpace": true,
+    "unchangedProductionPhysics": true
+  },
+  "limits": [
+    "The post-shard probe ran after the other broad browser suite closed; its original wall-time phase showed healthy braking. The original overload failure was retained, not reproduced or reclassified as a production defect."
+  ]
+}

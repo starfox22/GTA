@@ -1,0 +1,448 @@
+{
+  "schemaVersion": 1,
+  "testedBuild": {
+    "html": "/workspace/GTA/work/general-review/integrated2.html",
+    "sha256": "f70727f921d8ea6945b7eae69fdfa78c00e8f50c242389c6e24d8e501ecccc35",
+    "sourceCommit": "dfb5ec96",
+    "flags": "?test&norender&seed=1&hold",
+    "rendering": "2D/no-render logic run; native rendered graphics reviewed separately"
+  },
+  "scope": "Continuous M3 objective run and handover, normal M4 phone acceptance, first M4 failure/recovery, successful real-UI retry through all M4 objectives and public demo completion. Prior M1/M2 completion is initial setup, not proof from this trace.",
+  "initialSetup": {
+    "boundary": "events 0\u20138 in mission34-normal.json; first normal physics pilot is event 9",
+    "calls": [
+      {
+        "eventIndex": 0,
+        "method": "holdSimulation",
+        "args": [
+          true
+        ]
+      },
+      {
+        "eventIndex": 1,
+        "method": "god",
+        "args": [
+          false
+        ]
+      },
+      {
+        "eventIndex": 2,
+        "method": "storyProgress",
+        "args": [
+          2,
+          false
+        ]
+      },
+      {
+        "eventIndex": 3,
+        "method": "setCash",
+        "args": [
+          5500
+        ]
+      },
+      {
+        "eventIndex": 4,
+        "method": "trailProfile",
+        "args": [
+          0,
+          1
+        ]
+      },
+      {
+        "eventIndex": 5,
+        "method": "teleport",
+        "args": [
+          7517,
+          1942
+        ]
+      },
+      {
+        "eventIndex": 6,
+        "method": "drive",
+        "args": [
+          "crawler",
+          0,
+          -1.1071487177940904
+        ]
+      },
+      {
+        "eventIndex": 7,
+        "method": "placeVehicle",
+        "args": [
+          7517,
+          1942,
+          -1.1071487177940904
+        ]
+      },
+      {
+        "eventIndex": 8,
+        "method": "startMission",
+        "args": [
+          2
+        ]
+      }
+    ],
+    "state": "completed2, cash5500, godModefalse, living player and crawler at the trailhead, mission index 2 started at its ordinary stage 0",
+    "readonlySetupQuery": "trailProfile(0,1) reads the trail coordinates; its large response is retained only in the source trace"
+  },
+  "afterSetupRules": {
+    "debugTeleport": false,
+    "godEnabled": false,
+    "debugHealingOrRepair": false,
+    "stageSkipOrInjectedWin": false,
+    "actorOrGuardFreeze": false,
+    "worldResetByHarness": false,
+    "timeControl": "holdSimulation(true) holds real frames only; named simulate/pilot calls advance the full live world, physics, traffic, NPCs, mission logic and clock.",
+    "ordinaryGameTransitions": "BUSTED/respawn, pause-menu RESTART CURRENT JOB, paid taxi Y ride skips, elevator/records scenes and Varga E SKIP AHEAD are genuine user-accessible transitions; their internal relocation is not a debug teleport."
+  },
+  "mission3": {
+    "name": "High Ground",
+    "result": "won",
+    "ascent": {
+      "seconds": 85.6,
+      "maxKmh": 34,
+      "arrivalProgress": 0.994,
+      "vehicleHp": 237,
+      "playerHp": 100,
+      "cliffFlights": 0,
+      "overturned": false,
+      "nan": false,
+      "smallOrdinaryTerrainHopSeconds": 0.28
+    },
+    "actions": [
+      "W/S/A/D trail pilot through live physics; brake and exit using real E.",
+      "Walk to cache and hold E for the complete dig; no terrain teleports.",
+      "Walk back and use real E to stow package, then walk to the vehicle rear and real E to retrieve into backpack, exercising the new recovery mechanic.",
+      "Board same crawler and perform short ordinary forward/reverse three-point inputs facing west down the trail.",
+      "Descend at22km/h cap through live physics, brake at trailhead, follow road with W/S/A/D route pilot.",
+      "Crawler wedged at2260,2854; failed ordinary reverse attempt, then real E exit with backpack retained.",
+      "Walk the fixed Keys Bridge and Palm Keys street route; real E at Vinny hands over package and wins."
+    ],
+    "descent": {
+      "seconds": 94.4,
+      "arrivalProgress": 0.997,
+      "vehicleHp": 237,
+      "cliffFlights": 0,
+      "cliffAirSeconds": 0,
+      "overturned": false,
+      "nan": false
+    },
+    "recoverableIssue": "Road pilot/vehicle wedged in Central Garden; after repeated unsuccessful automatic backoffs, exited and completed delivery on foot. Crawler had229HP; player remained100HP. This is an on-foot recovery win, not proof that the road-driving pilot navigated cleanly.",
+    "walkingTrace": "m34-foot/experience.jsonl",
+    "walkingWaypoints": [
+      [
+        200,
+        1152
+      ],
+      [
+        -1420,
+        1152
+      ],
+      [
+        -1410,
+        4224
+      ],
+      [
+        -1664,
+        4320
+      ],
+      [
+        -1664,
+        4360
+      ],
+      [
+        -1664,
+        4475
+      ],
+      [
+        -1626,
+        4495
+      ]
+    ],
+    "finalState": {
+      "mode": "play",
+      "x": -1625,
+      "y": 4496,
+      "district": "CORAL MARINA",
+      "hp": 100,
+      "cash": 8725,
+      "wanted": 0,
+      "mission": null,
+      "completed": 3,
+      "vehicle": null,
+      "weapon": "9MM PISTOL",
+      "clock": "05:29",
+      "renderer": "2d",
+      "vehicles": 278,
+      "pedestrians": 472
+    },
+    "outcome": {
+      "mission": null,
+      "last": {
+        "result": "won",
+        "index": 2,
+        "stage": 4
+      },
+      "completed": 3,
+      "depotShutter": 0,
+      "depotBackDoor": 1
+    },
+    "frameFaults": {
+      "count": 0,
+      "gameTime": 729.17,
+      "drill": null,
+      "kinds": []
+    },
+    "physicsInputHelpers": {
+      "trailDrive": 4,
+      "ride": 3,
+      "simulate": 214,
+      "status": 131,
+      "vehicleAt": 94,
+      "summitJob": 3,
+      "fallState": 2,
+      "followRoute": 7
+    }
+  },
+  "mission4": {
+    "name": "Borrowed Stripes",
+    "initialAcceptance": "From the actual M3 win, walk to Palm Keys South phone(-2186,4678), real E opens dialogue and real Enter accepts frontier mission4.",
+    "firstAttemptFailure": {
+      "reason": "Pilot held E while the visible prompt warned someone was watching; witness reported the lockpick. Police BUSTED the player while approaching an existing cab.",
+      "observed": {
+        "traceLine": 597,
+        "outcome": {
+          "mission": null,
+          "last": {
+            "result": "failed",
+            "index": 3,
+            "stage": 5,
+            "reason": "Released from Police HQ. Fine: $250."
+          },
+          "completed": 3,
+          "depotShutter": 0,
+          "depotBackDoor": 1
+        }
+      },
+      "playerHp": 100,
+      "fine": 250,
+      "completedRetained": 3
+    },
+    "retry": "Actual Escape opens pause; five ArrowDown inputs focus RESTART CURRENT JOB; actual Enter restarts mission4. This ordinary UI returns the player to spawn, keeps prior mission wins and the $250 fine. No debug retry call or state reset.",
+    "successfulActions": [
+      "Walk across fixed Keys Bridge to Marea; ordinary Kessler route, park and club-entry wait.",
+      "Equip actual Digit9 lockpick; read the visible watcher prompt between short E holds; retrieve duffel and close trunk with real E.",
+      "Hail an existing occupied unlocked traffic taxi with real E; Shift+Tab twice then Enter selects RIDE; reset map with0, click Fort destination, real Y pays104dollars and skips the offered ride.",
+      "Hold E at the private fort-side spot to change into uniform; walk to checkpoint with empty hands; real E and full16.4second inspection earns clearance.",
+      "Default-paced walk through inbound lane, then9340,8160\u21929884,8160\u21929884,8050; real E enters records search; full8second wait obtains papers.",
+      "Reverse corridor and calmly leave via9150,8182; papers retained, suspicion0 and no alarm.",
+      "Rehail the same existing taxi; ordinary RIDE/map/real Y returns to North Point Key for113dollars.",
+      "Walk over fixed Key bridge/open forecourt to Varga; actual E prompts advance every conversation, shared lift, seating, waiter service, drinks and handover.",
+      "Public DEMO COMPLETE card appears naturally at completed4."
+    ],
+    "successfulAttemptHpLoss": {
+      "amount": 2,
+      "cause": "Minor traffic contact during existing-cab approach",
+      "noDebugHeal": true
+    },
+    "paidTaxiOffers": [
+      {
+        "traceLine": 2965,
+        "kind": "taxi",
+        "prompt": "SKIP RIDE \u00b7 $104 \u00b7 E STOP HERE",
+        "allowed": true,
+        "reason": null,
+        "destination": "SENTINEL SURPLUS",
+        "detail": "SENTINEL CAUSEWAY \u00b7 $104 \u00b7 ARRIVE 17:11",
+        "fare": 104,
+        "seconds": 260
+      },
+      {
+        "traceLine": 5193,
+        "kind": "taxi",
+        "prompt": "SKIP RIDE \u00b7 $113 \u00b7 E STOP HERE",
+        "allowed": true,
+        "reason": null,
+        "destination": "NORTH POINT KEY",
+        "detail": "$113 \u00b7 ARRIVE 01:59",
+        "fare": 113,
+        "seconds": 264
+      }
+    ],
+    "maxObservedFortSuspicion": 0,
+    "stageEvidence": {
+      "1": {
+        "traceLine": 168,
+        "instruction": "WAIT FOR KESSLER AT THE MAREA BEACH CLUB"
+      },
+      "2": {
+        "traceLine": 330,
+        "instruction": "LET KESSLER WALK INTO THE CLUB \u00b7 THEN PICK HIS TRUNK"
+      },
+      "3": {
+        "traceLine": 334,
+        "instruction": "PICK KESSLER\u2019S TRUNK \u00b7 LOCKPICK 9"
+      },
+      "4": {
+        "traceLine": 390,
+        "instruction": "TAKE THE UNIFORM AND THE ID \u00b7 E"
+      },
+      "5": {
+        "traceLine": 393,
+        "instruction": "CHANGE INTO THE UNIFORM \u00b7 SIT IN A PARKED CAR, OR HOLD E OUT OF SIGHT"
+      },
+      "6": {
+        "traceLine": 2986,
+        "instruction": "WALK UP TO FORT SENTINEL\u2019S GATE \u00b7 SHOW YOUR ID"
+      },
+      "7": {
+        "traceLine": 3183,
+        "instruction": "WALK TO THE RECORDS OFFICE \u00b7 FAR END OF HEADQUARTERS"
+      },
+      "8": {
+        "traceLine": 3775,
+        "instruction": "WALK OUT THROUGH THE MAIN GATE \u00b7 CALMLY"
+      },
+      "9": {
+        "traceLine": 4372,
+        "instruction": "MEET CONSUL VARGA AT EVOLUTION\u2019S DOOR \u00b7 NORTH POINT KEY"
+      }
+    },
+    "finalState": {
+      "mode": "demo",
+      "x": 4325,
+      "y": -3794,
+      "district": "NORTH POINT KEY",
+      "hp": 98,
+      "cash": 14758,
+      "wanted": 0,
+      "mission": null,
+      "completed": 4,
+      "vehicle": null,
+      "weapon": "FISTS",
+      "clock": "02:59",
+      "renderer": "2d",
+      "vehicles": 277,
+      "pedestrians": 562
+    },
+    "outcome": {
+      "mission": null,
+      "last": {
+        "result": "won",
+        "index": 3,
+        "stage": 9
+      },
+      "completed": 4,
+      "depotShutter": 0,
+      "depotBackDoor": 1
+    },
+    "demo": {
+      "build": true,
+      "missions": 4,
+      "godMode": false,
+      "open": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "storyOver": true,
+      "callWaiting": false,
+      "completed": true,
+      "cardShown": true,
+      "cardIn": 0,
+      "cardSeen": true,
+      "picker": [
+        "Dockside Favor",
+        "A Seat at the Table",
+        "High Ground",
+        "Borrowed Stripes",
+        "???",
+        "???",
+        "???",
+        "???",
+        "???",
+        "???",
+        "???",
+        "???",
+        "???",
+        "???",
+        "???",
+        "???"
+      ],
+      "stats": {
+        "playSeconds": 1496,
+        "cashEarned": 9725,
+        "wantedPeak": 1
+      }
+    },
+    "frameFaults": {
+      "count": 0,
+      "gameTime": 1495.63,
+      "drill": null,
+      "kinds": []
+    },
+    "browserGameErrors": [],
+    "newGameErrorCount": 0,
+    "harnessErrors": [
+      {
+        "traceLine": 598,
+        "message": "page.evaluate: Error: no console method pauseState"
+      }
+    ],
+    "traceOperations": {
+      "call": 4059,
+      "keys": 1670,
+      "event": 67,
+      "wait": 123,
+      "mouse": 2,
+      "errors": 1
+    },
+    "traceMethods": {
+      "payphones": 1,
+      "status": 3243,
+      "solidAt": 30,
+      "fortJob": 90,
+      "promptState": 84,
+      "carjackScan": 31,
+      "showcase": 1,
+      "missionState": 45,
+      "pauseState": 1,
+      "pauseMenu": 1,
+      "mapScreenPoint": 2,
+      "rideSkip": 4,
+      "fortCover": 479,
+      "skyMeeting": 44,
+      "frameFaults": 2,
+      "demo": 1
+    }
+  },
+  "evidence": [
+    {
+      "path": "mission34-normal.json",
+      "sha256": "3d7bc54d826a7bb432a19a7312af72b29eedf32888f23ca49700a31e5f09e913",
+      "bytes": 262964,
+      "rows": 474
+    },
+    {
+      "path": "m34-foot/experience.jsonl",
+      "sha256": "05dbd42b6448067fffae3476a263a0a7563c3213916e9628b5883ed06788993a",
+      "bytes": 2191022,
+      "rows": 1374
+    },
+    {
+      "path": "m4-ordinary/experience.jsonl",
+      "sha256": "e79116fa391bdc0be012ba2cb3bd58d6ddde8c2d5bd3f4b9eba44cdc930fae51",
+      "bytes": 5561379,
+      "rows": 5922
+    }
+  ],
+  "limits": [
+    "M1/M2 frontier seeded before this run; those missions have separate root/mission12/native evidence.",
+    "No-render journey proves ordinary progression, live collision/physics and recovery, not rendered AAA quality or a manual human skill rating.",
+    "M3 road pilot became wedged and required an ordinary on-foot recovery; repeated pilot calls at the wedge are retained.",
+    "Client helper initially misestimated default uniform walking speed; rerouting/detours are retained, and local driver-paced helper corrects its pace.",
+    "One nonexistent read-only pauseState query returned a harness error; game frame faults and browser error list remained zero.",
+    "Several client scripts were interrupted/replaced while preserving the held page. A pending road-pilot request may have finished after client termination; no world/state reload occurred."
+  ]
+}

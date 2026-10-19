@@ -1,0 +1,11 @@
+dev server pid 27064 on port 18887, booting ?dev&norender (log: dist/dev.log)
+  loading page...
+  waiting for the title menu...
+  starting a game...
+ready: boot 13.5s (file:///workspace/GTA/work/general-review/release-candidate.html?dev&norender)
+sea railing at 3417,1152.5: landed 3466,1153; {"from":[3411,1153],"to":[3448,1153],"metres":4.62,"maxClearance":1.5,"vault":true,"into":"water"}
+effort: {"sample":"player-jump-grunt","loaded":true,"sound":true,"asked":6,"played":6,"soft":2,"last":{"soft":true,"rate":1.111,"level":0.186,"at":17.28}}
+ORIGINAL {"wallSeconds":1.257,"gameTimeBefore":22.45,"gameTimeAfter":23.63,"simulatedSeconds":1.1799999999999997,"fast":{"type":"sedan","speed":53.8,"vx":53.8,"vy":0,"cadence":0,"effort":0,"altitude":0},"slowed":{"type":"sedan","speed":4.4,"vx":4.4,"vy":0,"cadence":0,"effort":0,"altitude":0},"speedRatio":0.08178438661710039}
+MEASURED {"wallSeconds":1.612,"simulatedSeconds":1.4800000000000004,"speed":0,"speedRatio":0}
+speed 54.2 -> 0
+{"pass":true,"original":{"wallSeconds":1.257,"gameTimeBefore":22.45,"gameTimeAfter":23.63,"simulatedSeconds":1.1799999999999997,"fast":{"type":"sedan","speed":53.8,"vx":53.8,"vy":0,"cadence":0,"effort":0,"altitude":0},"slowed":{"type":"sedan","speed":4.4,"vx":4.4,"vy":0,"cadence":0,"effort":0,"altitude":0},"speedRatio":0.08178438661710039},"measured":{"wallSeconds":1.612,"simulatedSeconds":1.4800000000000004,"speed":0,"speedRatio":0}}

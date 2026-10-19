@@ -1,0 +1,52 @@
+{
+  "title": "Dead End City \u2014 gameplay and graphics review",
+  "introduction": "Native game screenshots from the first-four-mission review. Fresh gameplay and staged inspection scenes are identified individually. The gallery retains all earlier vehicle, motorcycle and physics reviews.",
+  "comparisons": [],
+  "screenshots": [
+    {
+      "file": "images/general-01-opening-subtitle-high.png",
+      "title": "Opening call and readable dialogue",
+      "description": "Fresh public opening: the phone call is accepted with E and Enter. High graphics; the subtitle clears the mission card and minimap."
+    },
+    {
+      "file": "images/general-02-summit-dig-high.png",
+      "title": "High Ground: digging at the summit",
+      "description": "A staged summit inspection followed by the normal held-E action. The digging prompt stays clear of terrain status and dialogue. High graphics."
+    },
+    {
+      "file": "images/general-04-rear-cargo-retrieval-high.png",
+      "title": "Recover the package from a stranded vehicle",
+      "description": "The rear retrieval prompt appears after normal digging and loading in a staged vehicle fixture. The package can return to the player\u2019s backpack. High graphics."
+    },
+    {
+      "file": "images/general-07-records-rain-night-high.png",
+      "title": "Fort Sentinel records office in rain",
+      "description": "A staged view after the full ID inspection, with the normal records-entry prompt. High graphics at night in rain; the objective banner is the game\u2019s normal briefing."
+    },
+    {
+      "file": "images/general-10-blue-hour-terrace-high.png",
+      "title": "A Seat at the Table: Blue Hour at dusk",
+      "description": "Staged inspection of the second mission\u2019s terrace, guests and city environment. High graphics. This image is separate from the recorded ordinary mission win."
+    },
+    {
+      "file": "images/general-11-varga-meeting-high.png",
+      "title": "Borrowed Stripes: the CIRRUS meeting",
+      "description": "Staged inspection of the fourth mission\u2019s seated meeting with Anton Varga. High graphics. The ordinary objective-to-completion run is retained separately in the audit."
+    },
+    {
+      "file": "images/general-08-backpack-clean-high.png",
+      "title": "The recovered package stays with you",
+      "description": "Final packaged build, High graphics: the fitted backpack remains visible on foot. Staged inspection camera after normal held-E digging, with the dialogue allowed to expire."
+    },
+    {
+      "file": "images/general-09-checkpoint-chase-high.png",
+      "title": "Chase dialogue and checkpoint labels",
+      "description": "Final packaged build, High graphics: chase dialogue clears the lower HUD and the full Fort Sentinel name stays clear of navigation. Staged uniform/checkpoint inspection."
+    },
+    {
+      "file": "images/general-03-integrated-mission1-complete.png",
+      "title": "Dockside Favor completed with ordinary controls",
+      "description": "Raw gameplay evidence from the successful first-mission run: pursued cargo delivery, sealed warehouse and back-door exit. Low graphics; 100 HP and wanted level zero. Failed attempts are retained separately."
+    }
+  ]
+}

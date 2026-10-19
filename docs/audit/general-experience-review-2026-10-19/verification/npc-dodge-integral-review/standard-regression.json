@@ -1,0 +1,11 @@
+{
+  "commit": "d3df9772",
+  "source": "/workspace/work/awareness-fixture/tools/tests/npc-dodge-integration.mjs",
+  "testSha256": "cfe36d4cb590cb1b7505cc0fbc1d7207e1f7e6d547fb039a08645356e6cc6ae0",
+  "candidateAssertions": 487,
+  "pass": true,
+  "beforeSource": "339ba035:src/crowd-reactions.js",
+  "beforeResult": "Fails first analytic sample: default x at0.016666666666666666, actual0.4748959392967519 versus expected0.483145868753897",
+  "quickCheck": "npc-dodge-integral: build,syntax,duplicate declarations,FILEMAP and conflict markers all pass",
+  "browserRun": false
+}

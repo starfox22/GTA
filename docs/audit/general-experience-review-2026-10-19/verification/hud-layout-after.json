@@ -1,0 +1,537 @@
+{
+  "pass": true,
+  "fixture": "Frozen production stylesheet, HUD markup and measureMissionCard in a native DOM fixture; no world rendering or gameplay.",
+  "htmlSha256": "4807a0aec6076e9be832089fc682e34a22ccda7e47d924d8526bef54dea9ed66",
+  "recorderSha256": "16f4456f49a5a9fb60c4de513bf16c33a6ae86e337dad45aa198b1e1845bb981",
+  "cases": [
+    {
+      "width": 960,
+      "height": 600,
+      "mode": "open",
+      "subtitle": {
+        "id": "storyLine",
+        "l": 236,
+        "t": 429.40625,
+        "r": 724,
+        "b": 486
+      },
+      "lower": [
+        {
+          "id": "pager",
+          "l": 274.6875,
+          "t": 510.5,
+          "r": 685.3125,
+          "b": 572
+        },
+        {
+          "id": "minimapBox",
+          "l": 16,
+          "t": 445,
+          "r": 216,
+          "b": 580
+        },
+        {
+          "id": "vehicleStats",
+          "l": 0,
+          "t": 0,
+          "r": 0,
+          "b": 0
+        },
+        {
+          "id": "weaponButton",
+          "l": 794,
+          "t": 531,
+          "r": 944,
+          "b": 580
+        }
+      ],
+      "overlaps": [],
+      "onscreen": true
+    },
+    {
+      "width": 960,
+      "height": 600,
+      "mode": "compact",
+      "subtitle": {
+        "id": "storyLine",
+        "l": 236,
+        "t": 429.40625,
+        "r": 724,
+        "b": 486
+      },
+      "lower": [
+        {
+          "id": "pager",
+          "l": 274.6875,
+          "t": 510.5,
+          "r": 685.3125,
+          "b": 572
+        },
+        {
+          "id": "minimapBox",
+          "l": 16,
+          "t": 445,
+          "r": 216,
+          "b": 580
+        },
+        {
+          "id": "vehicleStats",
+          "l": 0,
+          "t": 0,
+          "r": 0,
+          "b": 0
+        },
+        {
+          "id": "weaponButton",
+          "l": 794,
+          "t": 531,
+          "r": 944,
+          "b": 580
+        }
+      ],
+      "overlaps": [],
+      "onscreen": true
+    },
+    {
+      "width": 960,
+      "height": 600,
+      "mode": "folded-map",
+      "subtitle": {
+        "id": "storyLine",
+        "l": 236,
+        "t": 429.40625,
+        "r": 724,
+        "b": 486
+      },
+      "lower": [
+        {
+          "id": "pager",
+          "l": 249.6875,
+          "t": 510.5,
+          "r": 660.3125,
+          "b": 572
+        },
+        {
+          "id": "minimapBox",
+          "l": 16,
+          "t": 523,
+          "r": 166,
+          "b": 580
+        },
+        {
+          "id": "vehicleStats",
+          "l": 0,
+          "t": 0,
+          "r": 0,
+          "b": 0
+        },
+        {
+          "id": "weaponButton",
+          "l": 794,
+          "t": 531,
+          "r": 944,
+          "b": 580
+        }
+      ],
+      "overlaps": [],
+      "onscreen": true
+    },
+    {
+      "width": 1000,
+      "height": 700,
+      "mode": "open",
+      "subtitle": {
+        "id": "storyLine",
+        "l": 180,
+        "t": 425.5,
+        "r": 820,
+        "b": 485
+      },
+      "lower": [
+        {
+          "id": "pager",
+          "l": 286,
+          "t": 524.21875,
+          "r": 704,
+          "b": 672
+        },
+        {
+          "id": "minimapBox",
+          "l": 26,
+          "t": 495,
+          "r": 266,
+          "b": 680
+        },
+        {
+          "id": "vehicleStats",
+          "l": 0,
+          "t": 0,
+          "r": 0,
+          "b": 0
+        },
+        {
+          "id": "weaponButton",
+          "l": 824,
+          "t": 631,
+          "r": 974,
+          "b": 680
+        }
+      ],
+      "overlaps": [],
+      "onscreen": true
+    },
+    {
+      "width": 1000,
+      "height": 700,
+      "mode": "compact",
+      "subtitle": {
+        "id": "storyLine",
+        "l": 180,
+        "t": 425.5,
+        "r": 820,
+        "b": 485
+      },
+      "lower": [
+        {
+          "id": "pager",
+          "l": 289.6875,
+          "t": 610.5,
+          "r": 700.3125,
+          "b": 672
+        },
+        {
+          "id": "minimapBox",
+          "l": 26,
+          "t": 495,
+          "r": 266,
+          "b": 680
+        },
+        {
+          "id": "vehicleStats",
+          "l": 0,
+          "t": 0,
+          "r": 0,
+          "b": 0
+        },
+        {
+          "id": "weaponButton",
+          "l": 824,
+          "t": 631,
+          "r": 974,
+          "b": 680
+        }
+      ],
+      "overlaps": [],
+      "onscreen": true
+    },
+    {
+      "width": 1000,
+      "height": 700,
+      "mode": "folded-map",
+      "subtitle": {
+        "id": "storyLine",
+        "l": 180,
+        "t": 444.5,
+        "r": 820,
+        "b": 504
+      },
+      "lower": [
+        {
+          "id": "pager",
+          "l": 244.6875,
+          "t": 610.5,
+          "r": 655.3125,
+          "b": 672
+        },
+        {
+          "id": "minimapBox",
+          "l": 26,
+          "t": 623,
+          "r": 176,
+          "b": 680
+        },
+        {
+          "id": "vehicleStats",
+          "l": 0,
+          "t": 0,
+          "r": 0,
+          "b": 0
+        },
+        {
+          "id": "weaponButton",
+          "l": 824,
+          "t": 631,
+          "r": 974,
+          "b": 680
+        }
+      ],
+      "overlaps": [],
+      "onscreen": true
+    },
+    {
+      "width": 1280,
+      "height": 720,
+      "mode": "open",
+      "subtitle": {
+        "id": "storyLine",
+        "l": 320,
+        "t": 464.5,
+        "r": 960,
+        "b": 524
+      },
+      "lower": [
+        {
+          "id": "pager",
+          "l": 405,
+          "t": 546,
+          "r": 865,
+          "b": 692
+        },
+        {
+          "id": "minimapBox",
+          "l": 26,
+          "t": 515,
+          "r": 266,
+          "b": 700
+        },
+        {
+          "id": "vehicleStats",
+          "l": 0,
+          "t": 0,
+          "r": 0,
+          "b": 0
+        },
+        {
+          "id": "weaponButton",
+          "l": 1104,
+          "t": 651,
+          "r": 1254,
+          "b": 700
+        }
+      ],
+      "overlaps": [],
+      "onscreen": true
+    },
+    {
+      "width": 1280,
+      "height": 720,
+      "mode": "compact",
+      "subtitle": {
+        "id": "storyLine",
+        "l": 320,
+        "t": 464.5,
+        "r": 960,
+        "b": 524
+      },
+      "lower": [
+        {
+          "id": "pager",
+          "l": 429.6875,
+          "t": 630.5,
+          "r": 840.3125,
+          "b": 692
+        },
+        {
+          "id": "minimapBox",
+          "l": 26,
+          "t": 515,
+          "r": 266,
+          "b": 700
+        },
+        {
+          "id": "vehicleStats",
+          "l": 0,
+          "t": 0,
+          "r": 0,
+          "b": 0
+        },
+        {
+          "id": "weaponButton",
+          "l": 1104,
+          "t": 651,
+          "r": 1254,
+          "b": 700
+        }
+      ],
+      "overlaps": [],
+      "onscreen": true
+    },
+    {
+      "width": 1280,
+      "height": 720,
+      "mode": "folded-map",
+      "subtitle": {
+        "id": "storyLine",
+        "l": 320,
+        "t": 464.5,
+        "r": 960,
+        "b": 524
+      },
+      "lower": [
+        {
+          "id": "pager",
+          "l": 384.6875,
+          "t": 630.5,
+          "r": 795.3125,
+          "b": 692
+        },
+        {
+          "id": "minimapBox",
+          "l": 26,
+          "t": 643,
+          "r": 176,
+          "b": 700
+        },
+        {
+          "id": "vehicleStats",
+          "l": 0,
+          "t": 0,
+          "r": 0,
+          "b": 0
+        },
+        {
+          "id": "weaponButton",
+          "l": 1104,
+          "t": 651,
+          "r": 1254,
+          "b": 700
+        }
+      ],
+      "overlaps": [],
+      "onscreen": true
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "mode": "open",
+      "subtitle": {
+        "id": "storyLine",
+        "l": 400,
+        "t": 644.5,
+        "r": 1040,
+        "b": 704
+      },
+      "lower": [
+        {
+          "id": "pager",
+          "l": 485,
+          "t": 726,
+          "r": 945,
+          "b": 872
+        },
+        {
+          "id": "minimapBox",
+          "l": 26,
+          "t": 695,
+          "r": 266,
+          "b": 880
+        },
+        {
+          "id": "vehicleStats",
+          "l": 0,
+          "t": 0,
+          "r": 0,
+          "b": 0
+        },
+        {
+          "id": "weaponButton",
+          "l": 1264,
+          "t": 831,
+          "r": 1414,
+          "b": 880
+        }
+      ],
+      "overlaps": [],
+      "onscreen": true
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "mode": "compact",
+      "subtitle": {
+        "id": "storyLine",
+        "l": 400,
+        "t": 644.5,
+        "r": 1040,
+        "b": 704
+      },
+      "lower": [
+        {
+          "id": "pager",
+          "l": 509.6875,
+          "t": 810.5,
+          "r": 920.3125,
+          "b": 872
+        },
+        {
+          "id": "minimapBox",
+          "l": 26,
+          "t": 695,
+          "r": 266,
+          "b": 880
+        },
+        {
+          "id": "vehicleStats",
+          "l": 0,
+          "t": 0,
+          "r": 0,
+          "b": 0
+        },
+        {
+          "id": "weaponButton",
+          "l": 1264,
+          "t": 831,
+          "r": 1414,
+          "b": 880
+        }
+      ],
+      "overlaps": [],
+      "onscreen": true
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "mode": "folded-map",
+      "subtitle": {
+        "id": "storyLine",
+        "l": 400,
+        "t": 644.5,
+        "r": 1040,
+        "b": 704
+      },
+      "lower": [
+        {
+          "id": "pager",
+          "l": 464.6875,
+          "t": 810.5,
+          "r": 875.3125,
+          "b": 872
+        },
+        {
+          "id": "minimapBox",
+          "l": 26,
+          "t": 823,
+          "r": 176,
+          "b": 880
+        },
+        {
+          "id": "vehicleStats",
+          "l": 0,
+          "t": 0,
+          "r": 0,
+          "b": 0
+        },
+        {
+          "id": "weaponButton",
+          "l": 1264,
+          "t": 831,
+          "r": 1414,
+          "b": 880
+        }
+      ],
+      "overlaps": [],
+      "onscreen": true
+    }
+  ],
+  "failures": []
+}

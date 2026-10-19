@@ -1,0 +1,41 @@
+{
+  "candidate": "/workspace/GTA/work/general-review/integrated2.html",
+  "sha256": "f70727f921d8ea6945b7eae69fdfa78c00e8f50c242389c6e24d8e501ecccc35",
+  "mission3Outcome": {
+    "mission": null,
+    "last": {
+      "result": "won",
+      "index": 2,
+      "stage": 4
+    },
+    "completed": 3,
+    "depotShutter": 0,
+    "depotBackDoor": 1
+  },
+  "status": {
+    "mode": "play",
+    "x": -1625,
+    "y": 4496,
+    "district": "CORAL MARINA",
+    "hp": 100,
+    "cash": 8725,
+    "wanted": 0,
+    "mission": null,
+    "completed": 3,
+    "vehicle": null,
+    "weapon": "9MM PISTOL",
+    "clock": "05:29",
+    "renderer": "2d",
+    "vehicles": 278,
+    "pedestrians": 472
+  },
+  "faults": {
+    "count": 0,
+    "gameTime": 729.17,
+    "drill": null,
+    "kinds": []
+  },
+  "externalDriver": "/workspace/GTA/work/general-review/m34-foot/experience.jsonl",
+  "fullTrace": "/workspace/GTA/work/general-review/mission34-normal.json",
+  "recoveryMovementTrace": "/workspace/GTA/work/general-review/m34-foot/experience.jsonl"
+}

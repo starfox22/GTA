@@ -1,0 +1,34 @@
+{
+  "pass": true,
+  "kind": "Packaged game standard input/credits smoke plus separate staged native capture; original optional PNG timeout retained",
+  "htmlSha256": "7f521784f62e9ba0f30492ba915b7e62acd402126d719314d66f930d3ea4d2ff",
+  "standardAssertions": {
+    "pass": true,
+    "receipt": "package-smoke/smoke.json",
+    "walkUnits": 16,
+    "driveUnits": 24,
+    "returnedToStreet": true,
+    "all10MonarchCreditsReadable": true,
+    "capturesBeforeTimeout": 8
+  },
+  "initialHarnessOutcome": {
+    "pass": false,
+    "reason": "Optional ninth PNG hit180s software-GL readback timeout after all game/HUD assertions passed. This is retained rather than edited out.",
+    "errors": [
+      "[smoke] page.screenshot: Timeout 180000ms exceeded.\nCall log:\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n"
+    ]
+  },
+  "targetedCaptureRetry": {
+    "pass": true,
+    "receipt": "checkpoint-retry/checkpoint.json",
+    "captures": 1,
+    "timeoutSeconds": 600,
+    "runtimeErrors": []
+  },
+  "runtimeErrors": [],
+  "notes": [
+    "No assertion, preset, model geometry or game source was weakened for the retry.",
+    "These staged inspection images are not mission wins; original standard smoke boards a sedan via a named fixture.",
+    "Both captures use the exact tested/deployed split entry. Native timings are SwiftShader correctness evidence, not hardware FPS."
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "source": "tools/tests/pedestrian-awareness.mjs (unmodified)",
+  "checks": [
+    {
+      "pass": true,
+      "message": "toward 40 km/h, 27 m: no trial result"
+    },
+    {
+      "pass": true,
+      "message": "away 40 km/h, 27 m: no trial result"
+    },
+    {
+      "pass": true,
+      "message": "away 40 km/h, 27 m, horn: no trial result"
+    },
+    {
+      "pass": true,
+      "message": "side 40 km/h, 27 m: no trial result"
+    },
+    {
+      "pass": true,
+      "message": "toward 80 km/h, 41 m: no trial result"
+    },
+    {
+      "pass": true,
+      "message": "toward 40 km/h, 5 m: no trial result"
+    },
+    {
+      "pass": true,
+      "message": "toward 80 km/h, 12 m: no trial result"
+    },
+    {
+      "pass": true,
+      "message": "toward 40 km/h, texting: no trial result"
+    },
+    {
+      "pass": true,
+      "message": "toward 40 km/h, same gap: no trial result"
+    },
+    {
+      "pass": true,
+      "message": "facing the car, only 1 noticed it"
+    },
+    {
+      "pass": true,
+      "message": "facing the car at 40 km/h: 0.7 dodged, 0.5 cleared"
+    },
+    {
+      "pass": false,
+      "message": "facing a car at 80 km/h from 41 m: 0.7 dodged, 0.5 cleared"
+    },
+    {
+      "pass": true,
+      "message": "with their back to the car 0 dodged"
+    },
+    {
+      "pass": true,
+      "message": "with their back to the car only 1 were hit"
+    },
+    {
+      "pass": true,
+      "message": "the car from behind was noticed by 0 (some hear it at the last moment, not most)"
+    },
+    {
+      "pass": true,
+      "message": "cries: 1 of those hit from behind were silent, 0 facing it"
+    },
+    {
+      "pass": true,
+      "message": "the horn from behind changed little: 1 vs 0"
+    },
+    {
+      "pass": true,
+      "message": "horn from behind: 0.3 dodged, 0.3 cleared (back to it 0, facing it 0.5)"
+    },
+    {
+      "pass": true,
+      "message": "side on: 0.6 dodged (behind 0, facing 0.7)"
+    },
+    {
+      "pass": true,
+      "message": "a car 5 m off at 40 km/h gave 0 the time to dodge"
+    },
+    {
+      "pass": true,
+      "message": "a car 12 m off at 80 km/h gave 0 the time to dodge"
+    },
+    {
+      "pass": true,
+      "message": "texting did not hurt: 0 cleared vs 0.4"
+    }
+  ],
+  "pass": false
+}

@@ -1,0 +1,474 @@
+{
+  "kind": "Production host regressions; no browser or graphics performance measurement",
+  "started": "2026-10-19T15:35:07.590Z",
+  "tests": [
+    {
+      "name": "aircraft-audio.mjs",
+      "assertions": 60,
+      "notes": [
+        "4 model families; four-stroke/blade rates; actual power/spool; cutoff/mute; distance/elevation/occlusion; camera pan/Doppler; 4 reusable voices"
+      ],
+      "pass": true,
+      "ms": 131
+    },
+    {
+      "name": "aircraft-flight-model.mjs",
+      "assertions": 4149,
+      "notes": [
+        "actual procedural solid-mesh bounds: {\"courier\":{\"min\":[-54.900001525878906,0,-51.84080123901367],\"max\":[52.10000038146973,35.900001525878906,51.84080123901367],\"vertices\":11468},\"airliner\":{\"min\":[-115,0,-76.02799987792969],\"max\":[107,66.5,76.02799987792969],\"vertices\":13489}}",
+        "oceanview-courier: 51.6 s taxi, 1127.5 m runway remaining",
+        "oceanview-west: 51.4 s taxi, 938.6 m runway remaining",
+        "oceanview-mid: 51.4 s taxi, 1032.4 m runway remaining",
+        "oceanview-east: 58.4 s taxi, 1196.1 m runway remaining",
+        "southport-1: 54.8 s taxi, 434.8 m runway remaining",
+        "southport-2: 76.0 s taxi, 434.8 m runway remaining",
+        "southport-3: 127.4 s taxi, 434.6 m runway remaining",
+        "take-off model: [{\"frame\":\"skyhawk\",\"hz\":60,\"rollM\":324.7,\"kmh\":102.2},{\"frame\":\"courier\",\"hz\":60,\"rollM\":285.7,\"kmh\":115},{\"frame\":\"jet\",\"hz\":60,\"rollM\":618.8,\"kmh\":180.2},{\"frame\":\"airliner\",\"hz\":60,\"rollM\":1055.9,\"kmh\":210.3},{\"frame\":\"skyhawk\",\"hz\":120,\"rollM\":321.6,\"kmh\":101.8},{\"frame\":\"courier\",\"hz\":120,\"rollM\":288.6,\"kmh\":115.5},{\"frame\":\"jet\",\"hz\":120,\"rollM\":618.4,\"kmh\":180.2},{\"frame\":\"airliner\",\"hz\":120,\"rollM\":1055.3,\"kmh\":210.3}]"
+      ],
+      "pass": true,
+      "ms": 1637
+    },
+    {
+      "name": "aircraft-propeller-sync.mjs",
+      "assertions": 22,
+      "notes": [
+        "Production animateAircraft: C172/PC12 idle+full audio/RPM match, blade-count blur, smooth acceleration/coast-down, parked/destroyed/abandoned states, null prop and unchanged twin-fan behavior"
+      ],
+      "pass": true,
+      "ms": 45
+    },
+    {
+      "name": "approved-motorcycle-rider-fit.mjs",
+      "assertions": 222,
+      "notes": [
+        "{\"riderHeight\":1.65,\"maxTargetError\":0,\"maxWristError\":0.12122533882768248,\"maxRestWristError\":0,\"maxBoneError\":7.771561172376096e-15,\"formerSteeringGap\":1.19677433390081}",
+        "{\"riderHeight\":1.8,\"maxTargetError\":0,\"maxWristError\":0,\"maxRestWristError\":0,\"maxBoneError\":8.43769498715119e-15,\"formerSteeringGap\":1.19677433390081}",
+        "{\"riderHeight\":1.9,\"maxTargetError\":0,\"maxWristError\":0,\"maxRestWristError\":0,\"maxBoneError\":8.43769498715119e-15,\"formerSteeringGap\":1.19677433390081}"
+      ],
+      "pass": true,
+      "ms": 341
+    },
+    {
+      "name": "approved-motorcycle-rigs.mjs",
+      "assertions": 207,
+      "notes": [
+        "{\"restError\":1.2917073125271293e-7,\"normalError\":4.423433763540704e-8,\"rollingWobble\":5.551115123125783e-17,\"models\":[{\"type\":\"kr500\",\"key\":\"m1_enduro\",\"nearLodTriangles\":12350,\"farLodTriangles\":2707,\"pairs\":10,\"sourceTriangles\":12350,\"grips\":[[0.20460008339352115,1.3637767135858536,-0.3328997466802597],[0.20460008339352115,1.3637767135858536,0.33290025331974027]],\"cachedParts\":10},{\"type\":\"bike\",\"key\":\"m2_sport\",\"nearLodTriangles\":50795,\"farLodTriangles\":12820,\"pairs\":11,\"sourceTriangles\":50795,\"grips\":[[0.43523815564945734,1.006513867682728,-0.3086999999999997],[0.43523815564945734,1.006513867682728,0.30870000000000025]],\"cachedParts\":11}]}"
+      ],
+      "pass": true,
+      "ms": 172
+    },
+    {
+      "name": "car-cabin-view-distance.mjs",
+      "assertions": 165,
+      "notes": [
+        "Production street camera/occupant/glass: roof-setback invariance, inspection, final-camera translation, fade/range bounds, nearest16/player priority, and immediate aircraft/chase/ride reset"
+      ],
+      "pass": true,
+      "ms": 38
+    },
+    {
+      "name": "car-exit-feet.mjs",
+      "assertions": 2884,
+      "notes": [
+        "{\"exitFeet\":{\"source\":\"actual production targets/specialSpec/solveLeg; shipped mesh + existing body-test DQ skinning\",\"phases\":30,\"headings\":4,\"elevations\":2,\"modes\":[\"target\",\"eased\"],\"actualShoeVertices\":395,\"rows\":[{\"floor\":0,\"heading\":0,\"mode\":\"target\",\"phase\":13,\"minimumMetresAboveGround\":[0.015628689474427568,0.015613309327056332],\"shoeVertices\":395,\"below\":0},{\"floor\":0,\"heading\":0,\"mode\":\"eased\",\"phase\":13,\"minimumMetresAboveGround\":[0.01562694073589656,0.015611560616345414],\"shoeVertices\":395,\"below\":0},{\"floor\":0,\"heading\":0.7853981633974483,\"mode\":\"target\",\"phase\":13,\"minimumMetresAboveGround\":[0.01562868947442069,0.015613309327058508],\"shoeVertices\":395,\"below\":0},{\"floor\":0,\"heading\":0.7853981633974483,\"mode\":\"eased\",\"phase\":13,\"minimumMetresAboveGround\":[0.015626940735897637,0.015611560616350321],\"shoeVertices\":395,\"below\":0},{\"floor\":0,\"heading\":1.5707963267948966,\"mode\":\"target\",\"phase\":13,\"minimumMetresAboveGround\":[0.015628689474424088,0.01561330932705746],\"shoeVertices\":395,\"below\":0},{\"floor\":0,\"heading\":1.5707963267948966,\"mode\":\"eased\",\"phase\":13,\"minimumMetresAboveGround\":[0.015626940735900322,0.015611560616345473],\"shoeVertices\":395,\"below\":0},{\"floor\":0,\"heading\":-2.199114857512855,\"mode\":\"target\",\"phase\":13,\"minimumMetresAboveGround\":[0.015628689474421788,0.015613309327058518],\"shoeVertices\":395,\"below\":0},{\"floor\":0,\"heading\":-2.199114857512855,\"mode\":\"eased\",\"phase\":13,\"minimumMetresAboveGround\":[0.015626940735896912,0.015611560616344985],\"shoeVertices\":395,\"below\":0},{\"floor\":12,\"heading\":0,\"mode\":\"target\",\"phase\":13,\"minimumMetresAboveGround\":[0.01562868947442353,0.015613309327051406],\"shoeVertices\":395,\"below\":0},{\"floor\":12,\"heading\":0,\"mode\":\"eased\",\"phase\":13,\"minimumMetresAboveGround\":[0.01562694073589399,0.015611560616346054],\"shoeVertices\":395,\"below\":0},{\"floor\":12,\"heading\":0.7853981633974483,\"mode\":\"target\",\"phase\":13,\"minimumMetresAboveGround\":[0.015628689474424196,0.015613309327057845],\"shoeVertices\":395,\"below\":0},{\"floor\":12,\"heading\":0.7853981633974483,\"mode\":\"eased\",\"phase\":13,\"minimumMetresAboveGround\":[0.015626940735903316,0.01561156061634228],\"shoeVertices\":395,\"below\":0},{\"floor\":12,\"heading\":1.5707963267948966,\"mode\":\"target\",\"phase\":13,\"minimumMetresAboveGround\":[0.015628689474423085,0.015613309327056735],\"shoeVertices\":395,\"below\":0},{\"floor\":12,\"heading\":1.5707963267948966,\"mode\":\"eased\",\"phase\":13,\"minimumMetresAboveGround\":[0.01562694073589954,0.015611560616348052],\"shoeVertices\":395,\"below\":0},{\"floor\":12,\"heading\":-2.199114857512855,\"mode\":\"target\",\"phase\":13,\"minimumMetresAboveGround\":[0.01562868947442353,0.015613309327055847],\"shoeVertices\":395,\"below\":0},{\"floor\":12,\"heading\":-2.199114857512855,\"mode\":\"eased\",\"phase\":13,\"minimumMetresAboveGround\":[0.015626940735899764,0.015611560616344722],\"shoeVertices\":395,\"below\":0}]}}"
+      ],
+      "pass": true,
+      "ms": 529
+    },
+    {
+      "name": "chase-audio-pan.mjs",
+      "assertions": 669,
+      "notes": [
+        "500 camera-basis cases; unchanged top-down offsets/gain; real sample, horn, water, impact, stadium, siren, engine, skid, footstep, whizz and pass-by callers"
+      ],
+      "pass": true,
+      "ms": 21
+    },
+    {
+      "name": "chase-cover-clearance.mjs",
+      "assertions": 18,
+      "notes": [
+        "18 finite-volume, rotated-cover, grid-edge, boom and start-overlap assertions"
+      ],
+      "pass": true,
+      "ms": 9
+    },
+    {
+      "name": "cloud-history.mjs",
+      "assertions": 13,
+      "notes": [
+        "first frame, continuous wind, weather, tier, teleport, resize, altitude and skipped draws"
+      ],
+      "pass": true,
+      "ms": 7
+    },
+    {
+      "name": "combat-continuity.mjs",
+      "assertions": 38,
+      "notes": [
+        "five firearm poses for mouse/controller; normal/reset car transitions; reload-preserving reselect and real switch"
+      ],
+      "pass": true,
+      "ms": 10
+    },
+    {
+      "name": "dolcati-model.mjs",
+      "assertions": 184,
+      "notes": [
+        "{\"sourceTriangles\":372664,\"farTriangles\":25717,\"sharedLodPairs\":10,\"maxWobble\":5.551115123125783e-17,\"tyreRadii\":[0.28895470655018657,0.3321451331341573],\"closeBudget\":{\"calls\":11,\"triangles\":372676},\"trafficBudget\":{\"calls\":11,\"triangles\":25729}}",
+        "{\"riderHeight\":1.65,\"maxTargetError\":0,\"maxWristError\":0.3413720407793105,\"maxRestWristError\":0,\"maxBoneError\":6.217248937900877e-15,\"formerSteeringGap\":1.0904169221705413}",
+        "{\"riderHeight\":1.8,\"maxTargetError\":0,\"maxWristError\":0,\"maxRestWristError\":0,\"maxBoneError\":7.105427357601002e-15,\"formerSteeringGap\":1.0904169221705413}",
+        "{\"riderHeight\":1.9,\"maxTargetError\":0,\"maxWristError\":0,\"maxRestWristError\":0,\"maxBoneError\":7.549516567451064e-15,\"formerSteeringGap\":1.0904169221705413}"
+      ],
+      "pass": true,
+      "ms": 1693
+    },
+    {
+      "name": "driving-settings-migrate.mjs",
+      "assertions": 15,
+      "notes": [],
+      "pass": true,
+      "ms": 2
+    },
+    {
+      "name": "gpu-context-lifecycle.mjs",
+      "assertions": 0,
+      "notes": [],
+      "pass": false,
+      "error": "Error: Missing production respawn callback die\n    at callbackSource (file:///workspace/GTA/tools/tests/gpu-context-lifecycle.mjs:14:40)\n    at fixture (file:///workspace/GTA/tools/tests/gpu-context-lifecycle.mjs:60:36)\n    at Module.default (file:///workspace/GTA/tools/tests/gpu-context-lifecycle.mjs:66:15)\n    at file:///workspace/GTA/work/general-review/host-suite.mjs:11:54",
+      "ms": 3
+    },
+    {
+      "name": "jet-assets-rig.mjs",
+      "assertions": 26,
+      "notes": [
+        "{\"jet\":{\"near\":20131,\"far\":6929,\"actualDims\":[15.620614308437576,5.662708292423373,14.75]},\"transport\":{\"near\":162629,\"far\":17319},\"sharedGeometries\":22}"
+      ],
+      "pass": true,
+      "ms": 512
+    },
+    {
+      "name": "m4-puncture-rims.mjs",
+      "assertions": 5970,
+      "notes": [
+        "{\"m4PunctureWarm\":{\"frames\":1000,\"wheels\":4,\"medianElapsedMs\":0.2663940000002185,\"p95ElapsedMs\":0.37191299999994953,\"newGeometries\":0,\"retainedPrivateBuffers\":true,\"heapDeltaAfterGc\":null}}",
+        "M4 metal rims remain rigid under real puncture; bead/source sharing, private lifetime, burn/repair and other models passed"
+      ],
+      "pass": true,
+      "ms": 683
+    },
+    {
+      "name": "m4-wheel-partition.mjs",
+      "assertions": 31294,
+      "notes": [
+        "2389 source triangles = 2128 rolling + 261 fixed; fit max error 4.665e-7u; fixed source normals/positions and all UVs exact; wheel normals inverse-transformed; 48 spin phases per wheel; [{\"wheel\":0,\"at\":[1.7261375807285309,0.43411974403858183,0.9090009858489037],\"radius\":0.4341118186712265,\"sourceTriangles\":549,\"rollingTriangles\":532,\"fixedTriangles\":17,\"sourceCenterM\":[0.00003758072853088379,0.000019744038581848145,-0.000299014151096344],\"previousCircleOrbitM\":0.00008483576978290941,\"correctedCircleOrbitM\":0,\"roundness\":{\"transform\":[1.0122540561952718,-0.000001786787553010758,-0.000001786787553010758,0.9999907463203236],\"treadStations\":24,\"fitResidual\":0.00024976032799399256,\"radialBefore\":[3.430731744268603,3.472921045948304],\"radialAfter\":[3.472704164485891,3.473144309697807]}},{\"wheel\":1,\"at\":[1.7261375797748566,0.43411974403858183,-0.902394918268919],\"radius\":0.4341118186712265,\"sourceTriangles\":562,\"rollingTriangles\":532,\"fixedTriangles\":30,\"sourceCenterM\":[0.11353757977485657,0.000019744038581848145,-0.01779491826891899],\"previousCircleOrbitM\":0.22707515954971313,\"correctedCircleOrbitM\":0,\"roundness\":{\"transform\":[1.0122540487661447,-0.0000017839777031653958,-0.0000017839777031653958,0.9999907444278368],\"treadStations\":24,\"fitResidual\":0.0002497312259565223,\"radialBefore\":[3.430731744268603,3.472921045806742],\"radialAfter\":[3.472704204801567,3.4731442805957693]}},{\"wheel\":2,\"at\":[-1.4255351285815239,0.4342473226070404,0.9079786788105965],\"radius\":0.43412598967552185,\"sourceTriangles\":647,\"rollingTriangles\":532,\"fixedTriangles\":115,\"sourceCenterM\":[-0.3547351285815239,-0.045052677392959595,-0.00032132118940353394],\"previousCircleOrbitM\":0.7151617496207023,\"correctedCircleOrbitM\":0,\"roundness\":{\"transform\":[1.012286452283817,0.0000013195067861996654,0.0000013195067861996654,1.0000007461124834],\"treadStations\":24,\"fitResidual\":0.00023411282359898976,\"radialBefore\":[3.430731042843464,3.473034293771705],\"radialAfter\":[3.472844046727392,3.473242030227773]}},{\"wheel\":3,\"at\":[-1.4255351553380489,0.4342473358154297,-0.9013726065874099],\"radius\":0.43412598967552185,\"sourceTriangles\":631,\"rollingTriangles\":532,\"fixedTriangles\":99,\"sourceCenterM\":[-0.35433515533804893,-0.04515266418457031,0.00032739341259002686],\"previousCircleOrbitM\":0.7143947485772043,\"correctedCircleOrbitM\":0,\"roundness\":{\"transform\":[1.0122864218300303,0.000001306755105156601,0.000001306755105156601,1.000000750146437],\"treadStations\":24,\"fitResidual\":0.00023394041634076414,\"radialBefore\":[3.4307312810177315,3.473034294352456],\"radialAfter\":[3.472843876012748,3.4732418578205158]}}]"
+      ],
+      "pass": true,
+      "ms": 108
+    },
+    {
+      "name": "m4-wheel-shape.mjs",
+      "assertions": 14432,
+      "notes": [
+        "{\"m4WheelShape\":{\"sourceAspectBefore\":0.98785,\"worstCleanRadialSpreadM\":0.0001534364744554817,\"worstFlatCorrectedRadialSpreadM\":0.0001534713929007281,\"worstFlatRigidRadialSpreadM\":0.00014915428221248805,\"phases\":48,\"steer\":[-0.6,0,0.6],\"bodyLods\":2,\"damageStates\":2,\"rows\":[{\"wheel\":0,\"radius\":0.4341118097305298,\"bands\":[0.10440164837651827,0.434083269322381,0.23264811098419425,0.4275978842465428,0.23224421836786271,0.13402644955211393],\"correction\":[1.0122540314522872,-0.0000017824228476942653,-0.0000017824228476942653,0.9999907353017851]},{\"wheel\":1,\"radius\":0.4341118097305298,\"bands\":[0.10440165099454242,0.43408327537683106,0.23264811570553334,0.4275978845593254,0.2322442224580115,0.13402645173855435],\"correction\":[1.0122540598646577,-0.0000017844129399933454,-0.0000017844129399933454,0.9999907305425616]},{\"wheel\":2,\"radius\":0.43412598967552185,\"bands\":[0.10440775120796288,0.4340962571492974,0.23264941772409647,0.4276081699235777,0.23225115162540655,0.13402701015881743],\"correction\":[1.0122864289966256,0.0000013111312826569204,0.0000013111312826569204,1.0000007481861806]},{\"wheel\":3,\"radius\":0.43412598967552185,\"bands\":[0.10440774693337561,0.4340962627746014,0.23264941340685197,0.4276081666281415,0.23225114791274157,0.13402700915213014],\"correction\":[1.0122863887929074,0.0000013134462420862991,0.0000013134462420862991,1.000000760929986]}]}}"
+      ],
+      "pass": true,
+      "ms": 621
+    },
+    {
+      "name": "military-mark-rays.mjs",
+      "assertions": 2496,
+      "notes": [
+        "{\"rawRaysCompared\":1198,\"m4TypedBytes\":1131196,\"evidence\":[{\"mode\":\"production\",\"fullTriangles\":2871936,\"acceleratedTriangles\":1044,\"anchors\":12},{\"mode\":\"side\",\"fullTriangles\":2871936,\"acceleratedTriangles\":1695,\"anchors\":12},{\"mode\":\"low\",\"fullTriangles\":3637196,\"acceleratedTriangles\":18404,\"anchors\":10},{\"mode\":\"miss\",\"fullTriangles\":0,\"acceleratedTriangles\":0,\"anchors\":0}]}"
+      ],
+      "pass": true,
+      "ms": 40830
+    },
+    {
+      "name": "military-model-rig.mjs",
+      "assertions": 468,
+      "notes": [
+        "Original 156 lamp triangles reassigned; no geometry/texture replacement; two military kits reused across 20 repeated spawns."
+      ],
+      "pass": true,
+      "ms": 351
+    },
+    {
+      "name": "mission-world-preservation.mjs",
+      "assertions": 69,
+      "notes": [
+        "ambient Harbor Kings/live pursuit persist, depot/hotel keep ordinary/owned vehicles, sealed deployment and rooftop patrol routes remain valid"
+      ],
+      "pass": true,
+      "ms": 80
+    },
+    {
+      "name": "mission1-shutter-safety.mjs",
+      "assertions": 3369,
+      "notes": [
+        "3360 independent vehicle/door polygon comparisons; long-body, prediction, clear, police, aircraft and player controller checks"
+      ],
+      "pass": true,
+      "ms": 1579
+    },
+    {
+      "name": "modal-pointer-lifecycle.mjs",
+      "assertions": 56,
+      "notes": [
+        "13 production modal transitions release both buttons; rejected entries preserve input and campaign state"
+      ],
+      "pass": true,
+      "ms": 40
+    },
+    {
+      "name": "monarch-atlas-filtering.mjs",
+      "assertions": 1938,
+      "notes": [
+        "{\"atlasFiltering\":{\"checked\":1936,\"oldLeakedSamples\":793,\"maxOldValue\":0.795054469140625,\"darkSourceValue\":0.04,\"maxGuardError\":6.938893903907228e-18,\"sourceMapsChanged\":false,\"periodicMinifiedEdge\":\"conservative inset approximation\"}}"
+      ],
+      "pass": true,
+      "ms": 16
+    },
+    {
+      "name": "monarch-runtime-materials.mjs",
+      "assertions": 293801,
+      "notes": [
+        "{\"monarchRuntime\":{\"model\":\"monarch_laferrari\",\"nearTriangles\":587310,\"testedPart\":\"trim\",\"sourceVertexCount\":73371,\"instancedActiveAttributeSlots\":16,\"rayComparisons\":153,\"textureRequests\":21,\"gpuCompilation\":\"Separate native shadercheck required\"}}"
+      ],
+      "pass": true,
+      "ms": 6880
+    },
+    {
+      "name": "motorcycle-previous-feel.mjs",
+      "assertions": 1632,
+      "notes": [
+        "18 full-controller traces match published 3bae7a00: turn, lift, release, coast, brake, rear brake at 30/60/120 Hz."
+      ],
+      "pass": true,
+      "ms": 11477
+    },
+    {
+      "name": "motorcycle-rider-fit.mjs",
+      "assertions": 102,
+      "notes": [
+        "{\"riderHeight\":1.8,\"maxTargetError\":0,\"maxWristError\":0.48314257402214855,\"maxRestWristError\":0.03311148324819847,\"maxBoneError\":8.881784197001252e-15,\"formerSteeringGap\":1.4716794259796324}"
+      ],
+      "pass": true,
+      "ms": 91
+    },
+    {
+      "name": "motorcycle-riding-animation.mjs",
+      "assertions": 153,
+      "notes": [
+        "{\"maxContactError\":0,\"maxWristGap\":0,\"maxBoneError\":1.2434497875801753e-14,\"examples\":[{\"type\":\"bike\",\"height\":1.65,\"neutral\":-0.9992307663863391,\"back\":-0.8631189971599282,\"forward\":-1.181230742537572,\"fast\":-1.1100000041155331,\"braking\":-0.8610769374590727,\"cornerRoll\":0.13999998382230464,\"cornerGaze\":-0.25999996995570857},{\"type\":\"kr500\",\"height\":1.65,\"neutral\":-0.11723076823521872,\"back\":0.038350351786168996,\"forward\":-0.29923074253757204,\"fast\":-0.1560000082755121,\"braking\":-0.0038769318662123936,\"cornerRoll\":0.07499999133337747,\"cornerGaze\":-0.25999996995570857},{\"type\":\"bike\",\"height\":1.8,\"neutral\":-0.9992307663863391,\"back\":-0.8092307802084913,\"forward\":-1.181230742537572,\"fast\":-1.1100000041155331,\"braking\":-0.8610769374590727,\"cornerRoll\":0.13999998382230464,\"cornerGaze\":-0.25999996995570857},{\"type\":\"kr500\",\"height\":1.8,\"neutral\":-0.11723076823521872,\"back\":0.0727692197915086,\"forward\":-0.29923074253757204,\"fast\":-0.1560000082755121,\"braking\":-0.0038769318662123936,\"cornerRoll\":0.07499999133337747,\"cornerGaze\":-0.25999996995570857},{\"type\":\"bike\",\"height\":1.9,\"neutral\":-0.9992307663863391,\"back\":-0.8092307802084913,\"forward\":-1.181230742537572,\"fast\":-1.1100000041155331,\"braking\":-0.8610769374590727,\"cornerRoll\":0.13999998382230464,\"cornerGaze\":-0.25999996995570857},{\"type\":\"kr500\",\"height\":1.9,\"neutral\":-0.11723076823521872,\"back\":0.0727692197915086,\"forward\":-0.29923074253757204,\"fast\":-0.1560000082755121,\"braking\":-0.0038769318662123936,\"cornerRoll\":0.07499999133337747,\"cornerGaze\":-0.25999996995570857},{\"type\":\"dolcati\",\"height\":1.65,\"neutral\":-1.1492307663863393,\"back\":-1.0433623842245103,\"forward\":-1.331230742537572,\"fast\":-1.2600000041155333,\"braking\":-1.0315709245290523,\"cornerRoll\":0.13999998382230464,\"cornerGaze\":-0.25999996995570857},{\"type\":\"dolcati\",\"height\":1.8,\"neutral\":-1.1492307663863393,\"back\":-0.9592307802084914,\"forward\":-1.331230742537572,\"fast\":-1.2600000041155333,\"braking\":-1.011076937459073,\"cornerRoll\":0.13999998382230464,\"cornerGaze\":-0.25999996995570857},{\"type\":\"dolcati\",\"height\":1.9,\"neutral\":-1.1492307663863393,\"back\":-0.9592307802084914,\"forward\":-1.331230742537572,\"fast\":-1.2600000041155333,\"braking\":-1.011076937459073,\"cornerRoll\":0.13999998382230464,\"cornerGaze\":-0.25999996995570857}]}"
+      ],
+      "pass": true,
+      "ms": 1822
+    },
+    {
+      "name": "motorcycle-wheel-rig.mjs",
+      "assertions": 230,
+      "notes": [
+        "actual packed tyres/rims: rest vertex error 1.31e-7u, normal error 4.46e-8; worst previous axial rim wobble 2.95cm -> 2.78e-15cm; signed roll, brakes, spin, steering and flat damage pass"
+      ],
+      "pass": true,
+      "ms": 108
+    },
+    {
+      "name": "mounted-gun-projection.mjs",
+      "assertions": 79,
+      "notes": [
+        "{\"maximumGroundMiss\":1.1368683772161603e-13,\"stationaryBystanderMiss\":2.4829684351146257,\"oldParallelRayMiss\":21,\"physicalTraverseDegreesPerSecond\":150,\"physicalStopsDegrees\":[20,160]}"
+      ],
+      "pass": true,
+      "ms": 7
+    },
+    {
+      "name": "mouse-buttons.mjs",
+      "assertions": 26,
+      "notes": [
+        "real input listeners: independent left/right/middle release; blur and hidden tab in play/help; pause/help/map clear both buttons"
+      ],
+      "pass": true,
+      "ms": 3
+    },
+    {
+      "name": "performance-kernels.mjs",
+      "assertions": 2,
+      "notes": [
+        "{\"crowd\":{\"checked\":31684,\"encounterFrames\":240,\"denseSlots\":1849,\"operations\":null,\"timing\":null},\"gates\":{\"checked\":4360,\"reusedContacts\":4360,\"frames\":120,\"fixedFortSightSolids\":20}}"
+      ],
+      "pass": true,
+      "ms": 1412
+    },
+    {
+      "name": "respawn-focus-pause.mjs",
+      "assertions": 112,
+      "notes": [
+        "actual death/arrest callbacks and pause: focused return stays live; hidden/blurred return pauses; timing, costs, ammo, mission identity and world reset preserved"
+      ],
+      "pass": true,
+      "ms": 23
+    },
+    {
+      "name": "rider-fall-motion.mjs",
+      "assertions": 11839,
+      "notes": [
+        "{\"observations\":[{\"cause\":\"lowside\",\"seconds\":2.81,\"hp\":87.5,\"bank\":0},{\"cause\":\"loopout\",\"seconds\":2.67,\"hp\":88.5,\"bank\":0},{\"cause\":\"crash\",\"seconds\":2.82,\"hp\":90.7,\"bank\":0},{\"cause\":\"landing\",\"seconds\":2.69,\"hp\":89.6,\"bank\":0}],\"maxRecoveryStepM\":0.0406,\"maxEndGapM\":0.0021}"
+      ],
+      "pass": true,
+      "ms": 167
+    },
+    {
+      "name": "rider-fatal-flight.mjs",
+      "assertions": 66,
+      "notes": [
+        "{\"measurements\":[{\"who\":\"player\",\"cause\":\"lowside\",\"deadAt\":0.48,\"restedAt\":7.18},{\"who\":\"player\",\"cause\":\"loopout\",\"deadAt\":0.44,\"restedAt\":6.55},{\"who\":\"player\",\"cause\":\"crash\",\"deadAt\":1.22,\"restedAt\":6.78},{\"who\":\"player\",\"cause\":\"landing\",\"deadAt\":0.58,\"restedAt\":6.31},{\"who\":\"npc\",\"cause\":\"lowside\",\"deadAt\":0.48,\"restedAt\":2.83},{\"who\":\"npc\",\"cause\":\"loopout\",\"deadAt\":0.44,\"restedAt\":2.59},{\"who\":\"npc\",\"cause\":\"crash\",\"deadAt\":1.22,\"restedAt\":3.17},{\"who\":\"npc\",\"cause\":\"landing\",\"deadAt\":0.58,\"restedAt\":2.6}],\"originalHospitalMs\":4200,\"hardCapMs\":16000}"
+      ],
+      "pass": true,
+      "ms": 201
+    },
+    {
+      "name": "rig-geometry.mjs",
+      "assertions": 40746,
+      "notes": [],
+      "pass": true,
+      "ms": 210
+    },
+    {
+      "name": "scenery-pools.mjs",
+      "assertions": 166,
+      "notes": [
+        "1024 exact instances / 64 chunks; close fixture 1024 -> 16 instances, 1 -> 1 camera draw; 24 frustum sweeps and off-camera shadow candidate preserved; shadowed/wide/flight/A-B/mutation fallbacks pass"
+      ],
+      "pass": true,
+      "ms": 51
+    },
+    {
+      "name": "sportbike-audio.mjs",
+      "assertions": 1777,
+      "notes": [
+        "CC0 bike-only bank; 1,300–15,500 rpm; 6 close ratios; 5 shift cuts; four-stroke harmonic rate; overrun; audio-rate limiter; bounded sources; mute/wreck/buffer handover"
+      ],
+      "pass": true,
+      "ms": 65
+    },
+    {
+      "name": "svj-loader-materials.mjs",
+      "assertions": 38,
+      "notes": [
+        "SVJ actual boot wiring, pack identity, PBR shader hooks and texture tiers passed without WebGL"
+      ],
+      "pass": true,
+      "ms": 126
+    },
+    {
+      "name": "svj-vehicle-assets.mjs",
+      "assertions": 193,
+      "notes": [
+        "SVJ fitted DRIVEBY_SEATS [-0.05183668281209733,0.21125,0.43,0.6100000000000002,0.712064196413178]",
+        "SVJ real source builder, headroom, wheel/door, far LOD and char/repair contracts passed"
+      ],
+      "pass": true,
+      "ms": 2212
+    },
+    {
+      "name": "terrain-rock-contact.mjs",
+      "assertions": 18,
+      "notes": [
+        "SUV 0/15: progress 0.293, max 18 km/h, no flights/damage/overturn",
+        "SUV 1/15: progress 0.291, max 18 km/h, no flights/damage/overturn",
+        "SUV 2/15: progress 0.293, max 18 km/h, no flights/damage/overturn",
+        "SUV 0/20: progress 0.337, max 23 km/h, no flights/damage/overturn",
+        "SUV 1/20: progress 0.339, max 23 km/h, no flights/damage/overturn",
+        "SUV 2/20: progress 0.339, max 23 km/h, no flights/damage/overturn",
+        "SUV 0/28: progress 0.397, max 30 km/h, no flights/damage/overturn",
+        "SUV 1/28: progress 0.396, max 30 km/h, no flights/damage/overturn",
+        "SUV 2/28: progress 0.399, max 31 km/h, no flights/damage/overturn"
+      ],
+      "pass": true,
+      "ms": 23440
+    },
+    {
+      "name": "travel-focus-pause.mjs",
+      "assertions": 30,
+      "notes": [
+        "actual roof/sky/records completion functions: hidden and blurred live frames freeze; focused return and explicit stepping finish"
+      ],
+      "pass": true,
+      "ms": 40
+    },
+    {
+      "name": "vehicle-impact-respawn.mjs",
+      "assertions": 26,
+      "notes": [
+        "{\"slowMotion\":0.35,\"wetGrip\":0.72,\"trajectories\":[{\"kph\":70,\"settledSeconds\":7.84,\"respawnSeconds\":7.9},{\"kph\":110,\"settledSeconds\":11.21,\"respawnSeconds\":11.3},{\"kph\":150,\"settledSeconds\":13.55,\"respawnSeconds\":13.6}],\"hardCapSeconds\":16}"
+      ],
+      "pass": true,
+      "ms": 139
+    },
+    {
+      "name": "vehicle-source-fidelity.mjs",
+      "assertions": 118,
+      "notes": [
+        "{\"originalSourceSamples\":59,\"surfaces\":9,\"maximumNormalErrorDegrees\":0.0011787874984249959}"
+      ],
+      "pass": true,
+      "ms": 270
+    },
+    {
+      "name": "wheelie-bindings.mjs",
+      "assertions": 61,
+      "notes": [
+        "Saved defaults migrate without altering custom bindings; production keyboard/pad/touch and settings/help keep rider weight separate from throttle/brake."
+      ],
+      "pass": true,
+      "ms": 119
+    },
+    {
+      "name": "wheelie-dynamics.mjs",
+      "assertions": 1203,
+      "notes": [
+        "rising 30° front lowered to 13.45° in .4s at 30/60/120 Hz; dry/wet/corner rear brake -5.40/-3.88/-3.02 m/s²"
+      ],
+      "pass": true,
+      "ms": 94
+    },
+    {
+      "name": "wheelie-score-settle.mjs",
+      "assertions": 4,
+      "notes": [],
+      "pass": true,
+      "ms": 12
+    },
+    {
+      "name": "wheelie-score.mjs",
+      "assertions": 37,
+      "notes": [
+        "production HUD snapshots [{\"score\":{\"phase\":\"idle\",\"tracking\":false,\"type\":null,\"metres\":0,\"grade\":0,\"distanceM\":0,\"tier\":0,\"milestone\":\"\",\"milestonePulses\":0,\"reason\":\"\",\"airborneSeconds\":0,\"touchdownSeconds\":0,\"resultSeconds\":0,\"runs\":0,\"bestMetres\":0},\"shown\":false,\"distance\":\"\",\"grade\":\"\",\"next\":\"\"},{\"score\":{\"phase\":\"active\",\"tracking\":true,\"type\":\"bike\",\"metres\":99,\"grade\":0,\"distanceM\":99,\"tier\":0,\"milestone\":\"\",\"milestonePulses\":0,\"reason\":\"\",\"airborneSeconds\":1.98,\"touchdownSeconds\":0,\"resultSeconds\":0,\"runs\":0,\"bestMetres\":0},\"shown\":true,\"distance\":\"99\",\"grade\":\"Keep it up\",\"next\":\"100 m · GREAT!\",\"progress\":\"0.9900\",\"celebrate\":\"\"},{\"score\":{\"phase\":\"active\",\"tracking\":true,\"type\":\"bike\",\"metres\":101,\"grade\":1,\"distanceM\":101,\"tier\":1,\"milestone\":\"GREAT!\",\"milestonePulses\":1,\"reason\":\"\",\"airborneSeconds\":2.02,\"touchdownSeconds\":0,\"resultSeconds\":0,\"runs\":0,\"bestMetres\":0},\"shown\":true,\"distance\":\"101\",\"grade\":\"GREAT!\",\"next\":\"200 m · Amazing!\",\"progress\":\"0.0100\",\"celebrate\":\"a\"},{\"score\":{\"phase\":\"active\",\"tracking\":true,\"type\":\"bike\",\"metres\":201,\"grade\":2,\"distanceM\":201,\"tier\":2,\"milestone\":\"Amazing!\",\"milestonePulses\":2,\"reason\":\"\",\"airborneSeconds\":4.02,\"touchdownSeconds\":0,\"resultSeconds\":0,\"runs\":0,\"bestMetres\":0},\"shown\":true,\"distance\":\"201\",\"grade\":\"Amazing!\",\"next\":\"KEEP THE STREAK ALIVE\",\"progress\":\"1.0000\",\"celebrate\":\"b\"}]"
+      ],
+      "pass": true,
+      "ms": 16
+    },
+    {
+      "name": "wheelie-tyre-contact.mjs",
+      "assertions": 135,
+      "notes": [
+        "production marks/contact/stats; wet/ford/dry dust/mud consumers; smooth front fade; grounded rear; car baseline; fresh touchdown track; renderer state read only"
+      ],
+      "pass": true,
+      "ms": 41
+    },
+    {
+      "name": "world-reset-sportsbook.mjs",
+      "assertions": 1,
+      "notes": [],
+      "pass": false,
+      "error": "ReferenceError: resetWheelieScore is not defined\n    at Object.resetWorld (evalmachine.<anonymous>:301:7)\n    at Module.default (file:///workspace/GTA/tools/tests/world-reset-sportsbook.mjs:66:9)\n    at file:///workspace/GTA/work/general-review/host-suite.mjs:11:54",
+      "ms": 11
+    }
+  ],
+  "pass": false,
+  "completed": "2026-10-19T15:36:46.154Z",
+  "assertions": 421359
+}

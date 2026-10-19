@@ -1,0 +1,14 @@
+[
+  {
+    "phase": "before",
+    "pass": false,
+    "error": "trunk/jump: interrupted work must preserve progress: 1.1",
+    "assertions": 3
+  },
+  {
+    "phase": "after",
+    "pass": true,
+    "note": "Production trunk/door targeting, pin progression, crouch/hand poses, resume and expiry through 14 physical interruptions.",
+    "assertions": 252
+  }
+]

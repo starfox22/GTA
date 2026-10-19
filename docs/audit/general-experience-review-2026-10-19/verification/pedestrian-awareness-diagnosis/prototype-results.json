@@ -1,0 +1,1109 @@
+{
+  "kind": "Exploratory open-ground production-function microhost, not shipping live-world integration acceptance",
+  "sourceCommit": "339ba035",
+  "stubs": [
+    "empty static ground/clear line of sight/no drawbridge; fixed same floor; damage/ballistics after contact; presentation/audio; no world population"
+  ],
+  "production": [
+    "dressPerson + production RNG",
+    "nearMisses/watchVehicle/carAct",
+    "crowdSay/pickLine/main RNG",
+    "startReaction/endReaction/updateReaction",
+    "moveBody/footStepBlocked/footStepVehicleBlocked/vehicle grid",
+    "sweptPersonContact/pointInCar/touchPerson/knockPerson"
+  ],
+  "rates": {
+    "toward": {
+      "kmh": 40,
+      "gap": 220,
+      "facing": "toward",
+      "attention": "",
+      "horn": false,
+      "samples": 10,
+      "noticed": 10,
+      "byEyes": 10,
+      "byEars": 0,
+      "hit": 5,
+      "silent": 0,
+      "tried": 7,
+      "cleared": 5,
+      "outcomes": {
+        "freeze": 3,
+        "sidestep": 5,
+        "back": 2
+      },
+      "detail": [
+        {
+          "outcome": "freeze",
+          "hit": true,
+          "by": "eyes",
+          "dx": -30,
+          "dy": -6,
+          "hp": 10,
+          "react": null,
+          "tti": 2.0079166666666626
+        },
+        {
+          "outcome": "sidestep",
+          "hit": false,
+          "by": "eyes",
+          "dx": -30,
+          "dy": -22,
+          "hp": 30,
+          "react": "fist",
+          "tti": 2.1079166666666636
+        },
+        {
+          "outcome": "back",
+          "hit": true,
+          "by": "eyes",
+          "dx": -32,
+          "dy": -5,
+          "hp": 10,
+          "react": "fist",
+          "tti": 2.0079166666666626
+        },
+        {
+          "outcome": "freeze",
+          "hit": true,
+          "by": "eyes",
+          "dx": -30,
+          "dy": 3,
+          "hp": 10,
+          "react": "freeze",
+          "tti": 1.9079166666666616
+        },
+        {
+          "outcome": "sidestep",
+          "hit": false,
+          "by": "eyes",
+          "dx": -30,
+          "dy": 26,
+          "hp": 30,
+          "react": "fist",
+          "tti": 2.0079166666666626
+        },
+        {
+          "outcome": "sidestep",
+          "hit": false,
+          "by": "eyes",
+          "dx": -30,
+          "dy": -25,
+          "hp": 30,
+          "react": "fist",
+          "tti": 1.9079166666666616
+        },
+        {
+          "outcome": "sidestep",
+          "hit": false,
+          "by": "eyes",
+          "dx": -30,
+          "dy": -22,
+          "hp": 30,
+          "react": "fist",
+          "tti": 2.0079166666666626
+        },
+        {
+          "outcome": "freeze",
+          "hit": true,
+          "by": "eyes",
+          "dx": -30,
+          "dy": 0,
+          "hp": 10,
+          "react": null,
+          "tti": 1.9079166666666616
+        },
+        {
+          "outcome": "sidestep",
+          "hit": false,
+          "by": "eyes",
+          "dx": -30,
+          "dy": 23,
+          "hp": 30,
+          "react": "fist",
+          "tti": 2.0079166666666626
+        },
+        {
+          "outcome": "back",
+          "hit": true,
+          "by": "eyes",
+          "dx": -32,
+          "dy": 11,
+          "hp": 10,
+          "react": "fist",
+          "tti": 2.0079166666666626
+        }
+      ]
+    },
+    "away": {
+      "kmh": 40,
+      "gap": 220,
+      "facing": "away",
+      "attention": "",
+      "horn": false,
+      "samples": 10,
+      "noticed": 0,
+      "byEyes": 0,
+      "byEars": 0,
+      "hit": 10,
+      "silent": 10,
+      "tried": 0,
+      "cleared": 0,
+      "outcomes": {
+        "none": 10
+      },
+      "detail": [
+        {
+          "outcome": "none",
+          "hit": true,
+          "by": null,
+          "dx": -30,
+          "dy": -6,
+          "hp": 10,
+          "react": null,
+          "tti": null
+        },
+        {
+          "outcome": "none",
+          "hit": true,
+          "by": null,
+          "dx": -30,
+          "dy": -3,
+          "hp": 10,
+          "react": null,
+          "tti": null
+        },
+        {
+          "outcome": "none",
+          "hit": true,
+          "by": null,
+          "dx": -30,
+          "dy": 0,
+          "hp": 10,
+          "react": null,
+          "tti": null
+        },
+        {
+          "outcome": "none",
+          "hit": true,
+          "by": null,
+          "dx": -30,
+          "dy": 3,
+          "hp": 10,
+          "react": null,
+          "tti": null
+        },
+        {
+          "outcome": "none",
+          "hit": true,
+          "by": null,
+          "dx": -30,
+          "dy": 6,
+          "hp": 10,
+          "react": null,
+          "tti": null
+        },
+        {
+          "outcome": "none",
+          "hit": true,
+          "by": null,
+          "dx": -30,
+          "dy": -6,
+          "hp": 10,
+          "react": null,
+          "tti": null
+        },
+        {
+          "outcome": "none",
+          "hit": true,
+          "by": null,
+          "dx": -30,
+          "dy": -3,
+          "hp": 10,
+          "react": null,
+          "tti": null
+        },
+        {
+          "outcome": "none",
+          "hit": true,
+          "by": null,
+          "dx": -30,
+          "dy": 0,
+          "hp": 10,
+          "react": null,
+          "tti": null
+        },
+        {
+          "outcome": "none",
+          "hit": true,
+          "by": null,
+          "dx": -30,
+          "dy": 3,
+          "hp": 10,
+          "react": null,
+          "tti": null
+        },
+        {
+          "outcome": "none",
+          "hit": true,
+          "by": null,
+          "dx": -30,
+          "dy": 6,
+          "hp": 10,
+          "react": null,
+          "tti": null
+        }
+      ]
+    },
+    "horn": {
+      "kmh": 40,
+      "gap": 220,
+      "facing": "away",
+      "attention": "",
+      "horn": true,
+      "samples": 10,
+      "noticed": 10,
+      "byEyes": 0,
+      "byEars": 10,
+      "hit": 7,
+      "silent": 0,
+      "tried": 3,
+      "cleared": 3,
+      "outcomes": {
+        "freeze": 3,
+        "pending": 4,
+        "dodge": 3
+      },
+      "detail": [
+        {
+          "outcome": "freeze",
+          "hit": true,
+          "by": "ears",
+          "dx": -30,
+          "dy": -6,
+          "hp": 10,
+          "react": "freeze",
+          "tti": 1.1079166666666591
+        },
+        {
+          "outcome": "pending",
+          "hit": true,
+          "by": "ears",
+          "dx": -30,
+          "dy": -3,
+          "hp": 10,
+          "react": "startle",
+          "tti": 0.00791666666667017
+        },
+        {
+          "outcome": "freeze",
+          "hit": true,
+          "by": "ears",
+          "dx": -30,
+          "dy": 0,
+          "hp": 10,
+          "react": "freeze",
+          "tti": 1.0079166666666601
+        },
+        {
+          "outcome": "pending",
+          "hit": true,
+          "by": "ears",
+          "dx": -30,
+          "dy": 3,
+          "hp": 10,
+          "react": "startle",
+          "tti": 0.8079166666666622
+        },
+        {
+          "outcome": "dodge",
+          "hit": false,
+          "by": "ears",
+          "dx": -30,
+          "dy": 21,
+          "hp": 30,
+          "react": "fist",
+          "tti": 1.1079166666666591
+        },
+        {
+          "outcome": "pending",
+          "hit": true,
+          "by": "ears",
+          "dx": -30,
+          "dy": -6,
+          "hp": 10,
+          "react": "startle",
+          "tti": 0.9079166666666612
+        },
+        {
+          "outcome": "dodge",
+          "hit": false,
+          "by": "ears",
+          "dx": -30,
+          "dy": -18,
+          "hp": 30,
+          "react": "fist",
+          "tti": 1.1079166666666591
+        },
+        {
+          "outcome": "pending",
+          "hit": true,
+          "by": "ears",
+          "dx": -30,
+          "dy": 0,
+          "hp": 10,
+          "react": "startle",
+          "tti": 0.8079166666666622
+        },
+        {
+          "outcome": "dodge",
+          "hit": false,
+          "by": "ears",
+          "dx": -30,
+          "dy": 18,
+          "hp": 30,
+          "react": "fist",
+          "tti": 1.1079166666666591
+        },
+        {
+          "outcome": "freeze",
+          "hit": true,
+          "by": "ears",
+          "dx": -30,
+          "dy": 6,
+          "hp": 10,
+          "react": "freeze",
+          "tti": 1.1079166666666591
+        }
+      ]
+    },
+    "side": {
+      "kmh": 40,
+      "gap": 220,
+      "facing": "side",
+      "attention": "",
+      "horn": false,
+      "samples": 10,
+      "noticed": 10,
+      "byEyes": 10,
+      "byEars": 0,
+      "hit": 6,
+      "silent": 0,
+      "tried": 6,
+      "cleared": 4,
+      "outcomes": {
+        "freeze": 3,
+        "dodge": 5,
+        "back": 1,
+        "late": 1
+      },
+      "detail": [
+        {
+          "outcome": "freeze",
+          "hit": true,
+          "by": "eyes",
+          "dx": -30,
+          "dy": -6,
+          "hp": 10,
+          "react": "freeze",
+          "tti": 1.0079166666666601
+        },
+        {
+          "outcome": "dodge",
+          "hit": false,
+          "by": "eyes",
+          "dx": -30,
+          "dy": -18,
+          "hp": 30,
+          "react": "fist",
+          "tti": 1.407916666666657
+        },
+        {
+          "outcome": "back",
+          "hit": true,
+          "by": "eyes",
+          "dx": -32,
+          "dy": -5,
+          "hp": 10,
+          "react": "fist",
+          "tti": 1.1079166666666591
+        },
+        {
+          "outcome": "late",
+          "hit": true,
+          "by": "eyes",
+          "dx": -30,
+          "dy": 3,
+          "hp": 10,
+          "react": "startle",
+          "tti": 0.6079166666666642
+        },
+        {
+          "outcome": "dodge",
+          "hit": false,
+          "by": "eyes",
+          "dx": -30,
+          "dy": 21,
+          "hp": 30,
+          "react": "fist",
+          "tti": 1.3079166666666573
+        },
+        {
+          "outcome": "dodge",
+          "hit": true,
+          "by": "eyes",
+          "dx": -30,
+          "dy": 8,
+          "hp": 10,
+          "react": "dodge",
+          "tti": 1.0079166666666601
+        },
+        {
+          "outcome": "dodge",
+          "hit": false,
+          "by": "eyes",
+          "dx": -30,
+          "dy": -18,
+          "hp": 30,
+          "react": "fist",
+          "tti": 1.1079166666666591
+        },
+        {
+          "outcome": "freeze",
+          "hit": true,
+          "by": "eyes",
+          "dx": -30,
+          "dy": 0,
+          "hp": 10,
+          "react": "freeze",
+          "tti": 0.8079166666666622
+        },
+        {
+          "outcome": "dodge",
+          "hit": false,
+          "by": "eyes",
+          "dx": -30,
+          "dy": 18,
+          "hp": 30,
+          "react": "fist",
+          "tti": 1.207916666666658
+        },
+        {
+          "outcome": "freeze",
+          "hit": true,
+          "by": "eyes",
+          "dx": -30,
+          "dy": 6,
+          "hp": 10,
+          "react": "freeze",
+          "tti": 1.0079166666666601
+        }
+      ]
+    },
+    "farFast": {
+      "kmh": 80,
+      "gap": 330,
+      "facing": "toward",
+      "attention": "",
+      "horn": false,
+      "samples": 10,
+      "noticed": 10,
+      "byEyes": 10,
+      "byEars": 0,
+      "hit": 5,
+      "silent": 0,
+      "tried": 7,
+      "cleared": 5,
+      "outcomes": {
+        "freeze": 3,
+        "dodge": 4,
+        "back": 2,
+        "sidestep": 1
+      },
+      "detail": [
+        {
+          "outcome": "freeze",
+          "hit": true,
+          "by": "eyes",
+          "dx": -36,
+          "dy": -6,
+          "hp": -148,
+          "react": "freeze",
+          "tti": 1.4060416666666666
+        },
+        {
+          "outcome": "dodge",
+          "hit": false,
+          "by": "eyes",
+          "dx": -36,
+          "dy": -18,
+          "hp": 30,
+          "react": "fist",
+          "tti": 1.506041666666667
+        },
+        {
+          "outcome": "back",
+          "hit": true,
+          "by": "eyes",
+          "dx": -32,
+          "dy": -5,
+          "hp": -148,
+          "react": "fist",
+          "tti": 1.4060416666666666
+        },
+        {
+          "outcome": "freeze",
+          "hit": true,
+          "by": "eyes",
+          "dx": -36,
+          "dy": 3,
+          "hp": -148,
+          "react": "freeze",
+          "tti": 1.3060416666666668
+        },
+        {
+          "outcome": "dodge",
+          "hit": false,
+          "by": "eyes",
+          "dx": -36,
+          "dy": 21,
+          "hp": 30,
+          "react": "fist",
+          "tti": 1.506041666666667
+        },
+        {
+          "outcome": "dodge",
+          "hit": false,
+          "by": "eyes",
+          "dx": -36,
+          "dy": -21,
+          "hp": 30,
+          "react": "fist",
+          "tti": 1.3060416666666668
+        },
+        {
+          "outcome": "dodge",
+          "hit": false,
+          "by": "eyes",
+          "dx": -36,
+          "dy": -18,
+          "hp": 30,
+          "react": "fist",
+          "tti": 1.4060416666666666
+        },
+        {
+          "outcome": "freeze",
+          "hit": true,
+          "by": "eyes",
+          "dx": -36,
+          "dy": 0,
+          "hp": -148,
+          "react": "freeze",
+          "tti": 1.3060416666666668
+        },
+        {
+          "outcome": "sidestep",
+          "hit": false,
+          "by": "eyes",
+          "dx": -36,
+          "dy": 23,
+          "hp": 30,
+          "react": "fist",
+          "tti": 1.506041666666667
+        },
+        {
+          "outcome": "back",
+          "hit": true,
+          "by": "eyes",
+          "dx": -32,
+          "dy": 11,
+          "hp": -148,
+          "react": "fist",
+          "tti": 1.4060416666666666
+        }
+      ]
+    },
+    "close": {
+      "kmh": 40,
+      "gap": 40,
+      "facing": "toward",
+      "attention": "",
+      "horn": false,
+      "samples": 10,
+      "noticed": 10,
+      "byEyes": 10,
+      "byEars": 0,
+      "hit": 10,
+      "silent": 0,
+      "tried": 0,
+      "cleared": 0,
+      "outcomes": {
+        "pending": 10
+      },
+      "detail": [
+        {
+          "outcome": "pending",
+          "hit": true,
+          "by": "eyes",
+          "dx": -32,
+          "dy": -6,
+          "hp": 10,
+          "react": null,
+          "tti": 0.08291666666666335
+        },
+        {
+          "outcome": "pending",
+          "hit": true,
+          "by": "eyes",
+          "dx": -32,
+          "dy": -3,
+          "hp": 10,
+          "react": null,
+          "tti": 0.18291666666666428
+        },
+        {
+          "outcome": "pending",
+          "hit": true,
+          "by": "eyes",
+          "dx": -32,
+          "dy": 0,
+          "hp": 10,
+          "react": null,
+          "tti": 0.08291666666666335
+        },
+        {
+          "outcome": "pending",
+          "hit": true,
+          "by": "eyes",
+          "dx": -32,
+          "dy": 3,
+          "hp": 10,
+          "react": null,
+          "tti": 0.08291666666666335
+        },
+        {
+          "outcome": "pending",
+          "hit": true,
+          "by": "eyes",
+          "dx": -32,
+          "dy": 6,
+          "hp": 10,
+          "react": null,
+          "tti": 0.18291666666666428
+        },
+        {
+          "outcome": "pending",
+          "hit": true,
+          "by": "eyes",
+          "dx": -32,
+          "dy": -6,
+          "hp": 10,
+          "react": null,
+          "tti": 0.08291666666666335
+        },
+        {
+          "outcome": "pending",
+          "hit": true,
+          "by": "eyes",
+          "dx": -32,
+          "dy": -3,
+          "hp": 10,
+          "react": null,
+          "tti": 0.18291666666666428
+        },
+        {
+          "outcome": "pending",
+          "hit": true,
+          "by": "eyes",
+          "dx": -32,
+          "dy": 0,
+          "hp": 10,
+          "react": null,
+          "tti": 0.08291666666666335
+        },
+        {
+          "outcome": "pending",
+          "hit": true,
+          "by": "eyes",
+          "dx": -32,
+          "dy": 3,
+          "hp": 10,
+          "react": null,
+          "tti": 0.18291666666666428
+        },
+        {
+          "outcome": "pending",
+          "hit": true,
+          "by": "eyes",
+          "dx": -32,
+          "dy": 6,
+          "hp": 10,
+          "react": null,
+          "tti": 0.18291666666666428
+        }
+      ]
+    },
+    "fast": {
+      "kmh": 80,
+      "gap": 100,
+      "facing": "toward",
+      "attention": "",
+      "horn": false,
+      "samples": 10,
+      "noticed": 10,
+      "byEyes": 10,
+      "byEars": 0,
+      "hit": 10,
+      "silent": 0,
+      "tried": 0,
+      "cleared": 0,
+      "outcomes": {
+        "pending": 10
+      },
+      "detail": [
+        {
+          "outcome": "pending",
+          "hit": true,
+          "by": "eyes",
+          "dx": -35,
+          "dy": -6,
+          "hp": -148,
+          "react": null,
+          "tti": 0.21229166666666668
+        },
+        {
+          "outcome": "pending",
+          "hit": true,
+          "by": "eyes",
+          "dx": -35,
+          "dy": -3,
+          "hp": -148,
+          "react": null,
+          "tti": 0.31229166666666663
+        },
+        {
+          "outcome": "pending",
+          "hit": true,
+          "by": "eyes",
+          "dx": -35,
+          "dy": 0,
+          "hp": -148,
+          "react": null,
+          "tti": 0.21229166666666668
+        },
+        {
+          "outcome": "pending",
+          "hit": true,
+          "by": "eyes",
+          "dx": -35,
+          "dy": 3,
+          "hp": -148,
+          "react": null,
+          "tti": 0.21229166666666668
+        },
+        {
+          "outcome": "pending",
+          "hit": true,
+          "by": "eyes",
+          "dx": -35,
+          "dy": 6,
+          "hp": -148,
+          "react": null,
+          "tti": 0.31229166666666663
+        },
+        {
+          "outcome": "pending",
+          "hit": true,
+          "by": "eyes",
+          "dx": -35,
+          "dy": -6,
+          "hp": -148,
+          "react": null,
+          "tti": 0.21229166666666668
+        },
+        {
+          "outcome": "pending",
+          "hit": true,
+          "by": "eyes",
+          "dx": -35,
+          "dy": -3,
+          "hp": -148,
+          "react": null,
+          "tti": 0.31229166666666663
+        },
+        {
+          "outcome": "pending",
+          "hit": true,
+          "by": "eyes",
+          "dx": -35,
+          "dy": 0,
+          "hp": -148,
+          "react": null,
+          "tti": 0.21229166666666668
+        },
+        {
+          "outcome": "pending",
+          "hit": true,
+          "by": "eyes",
+          "dx": -35,
+          "dy": 3,
+          "hp": -148,
+          "react": null,
+          "tti": 0.31229166666666663
+        },
+        {
+          "outcome": "pending",
+          "hit": true,
+          "by": "eyes",
+          "dx": -35,
+          "dy": 6,
+          "hp": -148,
+          "react": null,
+          "tti": 0.21229166666666668
+        }
+      ]
+    },
+    "phone": {
+      "kmh": 40,
+      "gap": 130,
+      "facing": "toward",
+      "attention": "text",
+      "horn": false,
+      "samples": 10,
+      "noticed": 10,
+      "byEyes": 10,
+      "byEars": 0,
+      "hit": 10,
+      "silent": 0,
+      "tried": 0,
+      "cleared": 0,
+      "outcomes": {
+        "pending": 10
+      },
+      "detail": [
+        {
+          "outcome": "pending",
+          "hit": true,
+          "by": "eyes",
+          "dx": -31,
+          "dy": -6,
+          "hp": 10,
+          "react": null,
+          "tti": 0.6954166666666596
+        },
+        {
+          "outcome": "pending",
+          "hit": true,
+          "by": "eyes",
+          "dx": -31,
+          "dy": -3,
+          "hp": 10,
+          "react": null,
+          "tti": 0.7954166666666606
+        },
+        {
+          "outcome": "pending",
+          "hit": true,
+          "by": "eyes",
+          "dx": -31,
+          "dy": 0,
+          "hp": 10,
+          "react": null,
+          "tti": 0.6954166666666596
+        },
+        {
+          "outcome": "pending",
+          "hit": true,
+          "by": "eyes",
+          "dx": -31,
+          "dy": 3,
+          "hp": 10,
+          "react": null,
+          "tti": 0.49541666666665785
+        },
+        {
+          "outcome": "pending",
+          "hit": true,
+          "by": "eyes",
+          "dx": -31,
+          "dy": 6,
+          "hp": 10,
+          "react": null,
+          "tti": 0.7954166666666606
+        },
+        {
+          "outcome": "pending",
+          "hit": true,
+          "by": "eyes",
+          "dx": -31,
+          "dy": -6,
+          "hp": 10,
+          "react": null,
+          "tti": 0.49541666666665785
+        },
+        {
+          "outcome": "pending",
+          "hit": true,
+          "by": "eyes",
+          "dx": -31,
+          "dy": -3,
+          "hp": 10,
+          "react": null,
+          "tti": 0.6954166666666596
+        },
+        {
+          "outcome": "pending",
+          "hit": true,
+          "by": "eyes",
+          "dx": -31,
+          "dy": 0,
+          "hp": 10,
+          "react": null,
+          "tti": 0.49541666666665785
+        },
+        {
+          "outcome": "pending",
+          "hit": true,
+          "by": "eyes",
+          "dx": -31,
+          "dy": 3,
+          "hp": 10,
+          "react": null,
+          "tti": 0.6954166666666596
+        },
+        {
+          "outcome": "pending",
+          "hit": true,
+          "by": "eyes",
+          "dx": -31,
+          "dy": 6,
+          "hp": 10,
+          "react": null,
+          "tti": 0.6954166666666596
+        }
+      ]
+    },
+    "alert": {
+      "kmh": 40,
+      "gap": 130,
+      "facing": "toward",
+      "attention": "",
+      "horn": false,
+      "samples": 10,
+      "noticed": 10,
+      "byEyes": 10,
+      "byEars": 0,
+      "hit": 6,
+      "silent": 0,
+      "tried": 7,
+      "cleared": 4,
+      "outcomes": {
+        "freeze": 3,
+        "dodge": 5,
+        "back": 2
+      },
+      "detail": [
+        {
+          "outcome": "freeze",
+          "hit": true,
+          "by": "eyes",
+          "dx": -31,
+          "dy": -6,
+          "hp": 10,
+          "react": "freeze",
+          "tti": 1.0954166666666634
+        },
+        {
+          "outcome": "dodge",
+          "hit": false,
+          "by": "eyes",
+          "dx": -31,
+          "dy": -18,
+          "hp": 30,
+          "react": "fist",
+          "tti": 1.1954166666666641
+        },
+        {
+          "outcome": "back",
+          "hit": true,
+          "by": "eyes",
+          "dx": -30,
+          "dy": -5,
+          "hp": 10,
+          "react": "fist",
+          "tti": 1.0954166666666634
+        },
+        {
+          "outcome": "freeze",
+          "hit": true,
+          "by": "eyes",
+          "dx": -31,
+          "dy": 3,
+          "hp": 10,
+          "react": "freeze",
+          "tti": 0.9954166666666624
+        },
+        {
+          "outcome": "dodge",
+          "hit": false,
+          "by": "eyes",
+          "dx": -31,
+          "dy": 21,
+          "hp": 30,
+          "react": "fist",
+          "tti": 1.0954166666666634
+        },
+        {
+          "outcome": "dodge",
+          "hit": true,
+          "by": "eyes",
+          "dx": -31,
+          "dy": 9,
+          "hp": 10,
+          "react": "dodge",
+          "tti": 1.0954166666666634
+        },
+        {
+          "outcome": "dodge",
+          "hit": false,
+          "by": "eyes",
+          "dx": -31,
+          "dy": -18,
+          "hp": 30,
+          "react": "fist",
+          "tti": 1.0954166666666634
+        },
+        {
+          "outcome": "freeze",
+          "hit": true,
+          "by": "eyes",
+          "dx": -31,
+          "dy": 0,
+          "hp": 10,
+          "react": "freeze",
+          "tti": 0.9954166666666624
+        },
+        {
+          "outcome": "dodge",
+          "hit": false,
+          "by": "eyes",
+          "dx": -31,
+          "dy": 18,
+          "hp": 30,
+          "react": "fist",
+          "tti": 1.0954166666666634
+        },
+        {
+          "outcome": "back",
+          "hit": true,
+          "by": "eyes",
+          "dx": -30,
+          "dy": 11,
+          "hp": 10,
+          "react": "fist",
+          "tti": 1.0954166666666634
+        }
+      ]
+    }
+  }
+}

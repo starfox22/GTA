@@ -1,4 +1,4 @@
-# Mount Ascent console pilot candidate
+# Mount Ascent console pilot acceptance
 
 This fixes the **console-only route helper**, not ordinary player vehicle physics. The fresh
 browser batch on immutable `f70727f921d8ea6945b7eae69fdfa78c00e8f50c242389c6e24d8e501ecccc35`
@@ -37,6 +37,17 @@ version met the timer but left the carriageway by up to half a metre and was als
 The selected longer look-ahead/lower corner budget meets both time and corridor bounds. These
 experiments altered the helper only; none changed physics or weakened a test.
 
-**Complete-game acceptance is pending.** Run the unchanged `hillclimb-physics` and `falls` browser
-modules against a separately frozen build containing this candidate before accepting it. Native
-mission wins and screenshots from earlier frozen builds do not establish that result.
+**Complete-game acceptance passes on the final frozen artifact.** The unchanged
+`hillclimb-physics` and `falls` modules both pass on `polished-release.html`, SHA-256
+`0ed67223d94408cd70b5431c31a53d7326884245827c79143e5c8d64bde9d1d7`.
+The full-world climb takes 72.33 s at 30 Hz and 72.13 s at 60 Hz, clean with zero air,
+flights or gap. Maximum upward speed is 3.56 m/s and the largest bump-stop blow is
+1.14 m/s. Descent takes 73.7 s with zero air; stopped pose/load and original cliff controls pass.
+The [v2 receipt](verification/trail-pilot-live-v2.json) verifies unchanged HTML and tests;
+the [full log](verification/trail-pilot-live-v2.log) retains the actual values.
+
+The first live candidate failed because its new interpolation called `lerp`, a helper
+supplied only by the host fixture. The final source uses identical inline arithmetic and
+removes that artificial fixture dependency. [The correction](trail-pilot-helper-correction.md)
+and failed attempt remain preserved. These are targeted final-artifact helper/physics
+checks, not a later replay of the ordinary mission journeys or earlier screenshots.

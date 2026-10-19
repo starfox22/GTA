@@ -1,0 +1,263 @@
+{
+  "classification": "Known live-integration fixture limitation remains; no production regression fix claimed",
+  "sourceCommit": "339ba035f5f71560d7b18880260efad4509fe797",
+  "publishedBaselineCommit": "7f45832a06f067a2af7289f268447b834b669101",
+  "productionSourceSha256": {
+    "src/game-state.js": "36089a955146fc51f7c6122b14e8ee374e1f0e4a1fffdba0306a336049d70820",
+    "src/game-vehicles.js": "f7a36d5d22ecf0880e57fc11cb0d73360fb0fd563452e7eda15039870e411c6e",
+    "src/crowd-looks.js": "a5eeb9326cdaa826b18e69f28e48a60ffaa5c9476218237af97cd715eda65f27",
+    "src/crowd-speech.js": "0778309d56178e3e9313b6a36c2a355973c8376e3c5daf4d3720152ca9967901",
+    "src/crowd-chatter.js": "885cf77c9380779027041bf288a6721822963298d0a6dc11378f73d3bd2a1020",
+    "src/crowd-perception.js": "275bf7fdc63166ff245fd90774130ce00fbd56c1109801a9c4f2ba7b62a41ed8",
+    "src/crowd-awareness.js": "718aa83b61b17ada5345773c75d55044f45742160038064c710608a431337a0d",
+    "src/crowd-reactions.js": "a3675d5472b463ac5a0a83b0cfdb5a22859dd5d74db36ee5aa5a7c99095b27b5",
+    "src/crowd-awareness-console.js": "b7eee9c142c0f5772275fc0cc2c4dce026684fc1464e01ac1a88327712611943",
+    "src/crowd-walking.js": "08df6d2fcb87ab522732f5ac9fd9fce565a6e14493572bb4041eb5dacf3eebc2",
+    "src/citylife-civic.js": "0c52ab1090a6052ef59f714dec41b802fbd6cc0202c5072984d3c1c03dd50c70",
+    "src/physics-shapes.js": "fbe13a785b2b1f58bed3509adf3b60ba4fbdee52a7859b913efe59d7ae719ac9",
+    "src/game-collision.js": "bd4c614a649895a067d7476fc41c3ecf96b2955c37cee7a8d4f078e605d17e11",
+    "src/physics-knockdowns.js": "267167327717e581527510f18b680f0e9b0e290644756bc690e21eef95251ff7",
+    "src/physics-update.js": "0f21a5ed3eb40e167dc811e7f87cb1f79176ada154250d1765a0941d6b924644",
+    "tools/tests/pedestrian-awareness.mjs": "3f9b226789cbfd21db06187405715d83ab9e3fa3664bc1105ed273e609462731"
+  },
+  "unchangedPerceptionAndReactionSources": [
+    {
+      "path": "src/crowd-awareness.js",
+      "baselineSha256": "718aa83b61b17ada5345773c75d55044f45742160038064c710608a431337a0d",
+      "candidateSha256": "718aa83b61b17ada5345773c75d55044f45742160038064c710608a431337a0d",
+      "identical": true
+    },
+    {
+      "path": "src/crowd-looks.js",
+      "baselineSha256": "a5eeb9326cdaa826b18e69f28e48a60ffaa5c9476218237af97cd715eda65f27",
+      "candidateSha256": "a5eeb9326cdaa826b18e69f28e48a60ffaa5c9476218237af97cd715eda65f27",
+      "identical": true
+    },
+    {
+      "path": "src/crowd-perception.js",
+      "baselineSha256": "275bf7fdc63166ff245fd90774130ce00fbd56c1109801a9c4f2ba7b62a41ed8",
+      "candidateSha256": "275bf7fdc63166ff245fd90774130ce00fbd56c1109801a9c4f2ba7b62a41ed8",
+      "identical": true
+    },
+    {
+      "path": "src/crowd-reactions.js",
+      "baselineSha256": "a3675d5472b463ac5a0a83b0cfdb5a22859dd5d74db36ee5aa5a7c99095b27b5",
+      "candidateSha256": "a3675d5472b463ac5a0a83b0cfdb5a22859dd5d74db36ee5aa5a7c99095b27b5",
+      "identical": true
+    },
+    {
+      "path": "src/crowd-speech.js",
+      "baselineSha256": "0778309d56178e3e9313b6a36c2a355973c8376e3c5daf4d3720152ca9967901",
+      "candidateSha256": "0778309d56178e3e9313b6a36c2a355973c8376e3c5daf4d3720152ca9967901",
+      "identical": true
+    },
+    {
+      "path": "src/crowd-chatter.js",
+      "baselineSha256": "885cf77c9380779027041bf288a6721822963298d0a6dc11378f73d3bd2a1020",
+      "candidateSha256": "885cf77c9380779027041bf288a6721822963298d0a6dc11378f73d3bd2a1020",
+      "identical": true
+    }
+  ],
+  "prototype": "prototype.mjs",
+  "prototypeConditions": {
+    "samples": 10,
+    "seed": 4242,
+    "facing": "toward",
+    "kmh": 80,
+    "gapUnits": 330,
+    "unitsPerMetre": 8,
+    "thresholdsUntouched": {
+      "triedAtLeast": 0.6,
+      "clearedAtLeast": 0.6
+    },
+    "personRole": "casual as original fixture; all dressPerson traits and carSense draws unmodified",
+    "clock": "local gameTime0 and near timer0 before every production dressPerson call",
+    "cadence": "constant-velocity approach at1/30s; contact before awareness before actual updateReaction; fixed in-view per-frame reaction movement",
+    "world": "isolated single vehicle and specimen; never clears or edits shipping world population"
+  },
+  "prototypeFarFast": {
+    "kmh": 80,
+    "gap": 330,
+    "facing": "toward",
+    "attention": "",
+    "horn": false,
+    "samples": 10,
+    "noticed": 10,
+    "byEyes": 10,
+    "byEars": 0,
+    "hit": 5,
+    "silent": 0,
+    "tried": 7,
+    "cleared": 5,
+    "outcomes": {
+      "freeze": 3,
+      "dodge": 4,
+      "back": 2,
+      "sidestep": 1
+    },
+    "detail": [
+      {
+        "outcome": "freeze",
+        "hit": true,
+        "by": "eyes",
+        "dx": -36,
+        "dy": -6,
+        "hp": -148,
+        "react": "freeze",
+        "tti": 1.4060416666666666
+      },
+      {
+        "outcome": "dodge",
+        "hit": false,
+        "by": "eyes",
+        "dx": -36,
+        "dy": -18,
+        "hp": 30,
+        "react": "fist",
+        "tti": 1.506041666666667
+      },
+      {
+        "outcome": "back",
+        "hit": true,
+        "by": "eyes",
+        "dx": -32,
+        "dy": -5,
+        "hp": -148,
+        "react": "fist",
+        "tti": 1.4060416666666666
+      },
+      {
+        "outcome": "freeze",
+        "hit": true,
+        "by": "eyes",
+        "dx": -36,
+        "dy": 3,
+        "hp": -148,
+        "react": "freeze",
+        "tti": 1.3060416666666668
+      },
+      {
+        "outcome": "dodge",
+        "hit": false,
+        "by": "eyes",
+        "dx": -36,
+        "dy": 21,
+        "hp": 30,
+        "react": "fist",
+        "tti": 1.506041666666667
+      },
+      {
+        "outcome": "dodge",
+        "hit": false,
+        "by": "eyes",
+        "dx": -36,
+        "dy": -21,
+        "hp": 30,
+        "react": "fist",
+        "tti": 1.3060416666666668
+      },
+      {
+        "outcome": "dodge",
+        "hit": false,
+        "by": "eyes",
+        "dx": -36,
+        "dy": -18,
+        "hp": 30,
+        "react": "fist",
+        "tti": 1.4060416666666666
+      },
+      {
+        "outcome": "freeze",
+        "hit": true,
+        "by": "eyes",
+        "dx": -36,
+        "dy": 0,
+        "hp": -148,
+        "react": "freeze",
+        "tti": 1.3060416666666668
+      },
+      {
+        "outcome": "sidestep",
+        "hit": false,
+        "by": "eyes",
+        "dx": -36,
+        "dy": 23,
+        "hp": 30,
+        "react": "fist",
+        "tti": 1.506041666666667
+      },
+      {
+        "outcome": "back",
+        "hit": true,
+        "by": "eyes",
+        "dx": -32,
+        "dy": 11,
+        "hp": -148,
+        "react": "fist",
+        "tti": 1.4060416666666666
+      }
+    ]
+  },
+  "unchangedOriginalAssertions": {
+    "total": 22,
+    "passed": 21,
+    "failed": [
+      {
+        "pass": false,
+        "message": "facing a car at 80 km/h from 41 m: 0.7 dodged, 0.5 cleared"
+      }
+    ],
+    "allPass": false
+  },
+  "intentionalBackstep": {
+    "source": "src/crowd-awareness.js carAct back branch",
+    "comment": "Back along the path, a half-sideways stumble: rarely enough.",
+    "leapAngle": "vehicle heading + side * 0.45 radians",
+    "leapV": 46,
+    "leapFor": 0.36,
+    "movement": "Production updateReaction dodge uses (leapV*(1-t/leapFor)+10)*dt through actual moveBody and vehicle-grid obstruction.",
+    "observedContacts": [
+      {
+        "outcome": "back",
+        "hit": true,
+        "by": "eyes",
+        "dx": -32,
+        "dy": -5,
+        "hp": -148,
+        "react": "fist",
+        "tti": 1.4060416666666666
+      },
+      {
+        "outcome": "back",
+        "hit": true,
+        "by": "eyes",
+        "dx": -32,
+        "dy": 11,
+        "hp": -148,
+        "react": "fist",
+        "tti": 1.4060416666666666
+      }
+    ],
+    "interpretation": "A forward-away half-sideways retreat cannot outrun an80km/h car and gains too little lateral clearance. Contact is consistent with the deliberately risky backward-stumble outcome; redirecting it just to pass0.6 would change the panic design.",
+    "sedanWidthUnits": 17.04,
+    "paddedContactHalfWidthUnits": 11.52
+  },
+  "limits": [
+    "Not a replacement for original carAwarenessTrials full-world acceptance; original failing integration and>=0.6 threshold remain unchanged.",
+    "Prototype retains production awareness/dressing/RNG/speech/reaction/movement/vehicle-grid/swept-contact/knockPerson functions, but uses an explicitly open-ground scene with clear sight and fixed same-floor classification.",
+    "Vehicle approach is a prescribed constant velocity, not the full120Hz drivetrain/road physics update.",
+    "After contact, strike damage, impact flight, blood, crime and world incident side effects are bounded stubs; this is not a ballistic/damage/audio test.",
+    "Original live RNG consumption, streaming population, camera/off-camera actor-index cadence and cumulative timers are intentionally outside this microhost. Its5/10 cannot establish a full-world result.",
+    "Only the original prescribed seed4242/N10 and original traits were used. No seed search, threshold relaxation or behavior tuning.",
+    "A10-person sample includes intentional freeze/backstep choices; fixed-seed clearance below0.6 alone does not demonstrate a new mechanics regression."
+  ],
+  "originalIntegrationEvidence": "docs/audit/impact-motorcycle-review-2026-10-16/verification/baseline-pedestrian-results.json (published baseline0.4 cleared; earlier current receipt0.5 cleared; requires0.6)",
+  "artifactsSha256": {
+    "prototype.mjs": "cede523388188c31cc6394179ffba74a1b06066c558df3146b4ad3c74f6c5192",
+    "prototype-results.json": "ef1f88217660fbfa3f46b146f6a8d6547133d4b2ae449004738ab9382f38ebd0",
+    "unchanged-assertions.json": "7cc7676d043c5bfee59f566423984cfac7ff35da6ac4c2e20365bcb63c2f96b4"
+  },
+  "productionOrTestEdits": [],
+  "commit": null,
+  "reproduction": "DEC_GAME_ROOT=/workspace/work/awareness-fixture node /workspace/GTA/work/general-review/pedestrian-awareness-diagnosis/prototype.mjs (production checkout339ba035, no browser)"
+}

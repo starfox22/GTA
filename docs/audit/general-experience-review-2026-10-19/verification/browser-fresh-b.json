@@ -1,0 +1,908 @@
+{
+  "kind": "Fresh-profile browser regression shard B, exact selection from browser-shards.json shards[1] restricted to fresh=true",
+  "status": "complete",
+  "count": 73,
+  "html": "/workspace/GTA/work/general-review/integrated2.html",
+  "htmlSha256": "f70727f921d8ea6945b7eae69fdfa78c00e8f50c242389c6e24d8e501ecccc35",
+  "manifestSha256": "65d3262e3cb46b00162bb3c2c299ed5cde84dd323b1c939c124752b1ac27929d",
+  "rootCommit": "dfb5ec9659d17b68882408d1c202556396eba349",
+  "worktreeCommit": "f2c2f148987a80171ed21d879f31f459891e5f7a",
+  "tests": [
+    {
+      "name": "ammo-supply.mjs",
+      "fresh": true,
+      "sha256": "4ecd5ef99994c9de008283eafeface800233856b134644a5cb171f94ee23275d"
+    },
+    {
+      "name": "blood-amounts.mjs",
+      "fresh": true,
+      "sha256": "2d8cf84bb4d0347c698420e733ad3364e87a9128457915b8f9c140cd6b9f69c0"
+    },
+    {
+      "name": "blood-wounds.mjs",
+      "fresh": true,
+      "sha256": "9324916d525849522224da92db600a6672f8f71716e97d47db5e073f052885a9"
+    },
+    {
+      "name": "bullet-hits.mjs",
+      "fresh": true,
+      "sha256": "c11c01cdcd0ee89b2d3de913e009797cd5ee77336dcde5fc71783e5d724f702f"
+    },
+    {
+      "name": "camera-lead-setting.mjs",
+      "fresh": true,
+      "sha256": "631915db6b4203154de1f9cc6a7053c7a21419947c522e1b3a904e5f4df351f8"
+    },
+    {
+      "name": "car-blood.mjs",
+      "fresh": true,
+      "sha256": "64a14725194a28bd1e836e887f92196c3505576a7d8d919efcc96152ed24c1a9"
+    },
+    {
+      "name": "car-window-open.mjs",
+      "fresh": true,
+      "sha256": "e5ab8bec46e832671ab2b09d96db45c37f7a7fe95ac50fabcf87247ace2001ba"
+    },
+    {
+      "name": "carjack.mjs",
+      "fresh": true,
+      "sha256": "5209cb253c260f844368a67e7df14b61c4a021f4bd1b5aeda504e7e1de8b8ecb"
+    },
+    {
+      "name": "chase-hud-layout.mjs",
+      "fresh": true,
+      "sha256": "980dec625571e6c0d5ad023d48234c575b9ed53716c5f96afa6639d941067703"
+    },
+    {
+      "name": "chase-motion-blur.mjs",
+      "fresh": true,
+      "sha256": "baad6dcb5d15d85db148b72f6f6dd7009882d80ec9a46c3731854fcd4229a84e"
+    },
+    {
+      "name": "chase-wall-clearance.mjs",
+      "fresh": true,
+      "sha256": "241720d85c490e159d497aeb60b60763ab438a8ee7234ab17963eba03f2641a6"
+    },
+    {
+      "name": "chimney-smoke.mjs",
+      "fresh": true,
+      "sha256": "47e9f04bb770e44ff89cdbfad11458301c5483ec755febe9fe31293c1c2971bf"
+    },
+    {
+      "name": "clouds.mjs",
+      "fresh": true,
+      "sha256": "fbc786a0b3752ef35c3da73089481d1d3c4526cd6350844c50ea19618b3c8769"
+    },
+    {
+      "name": "coronation-bridge.mjs",
+      "fresh": true,
+      "sha256": "1b2f7ce723e7ada7c9867398e5f0491d9f1a57e78af193151d76b78cc65348a4"
+    },
+    {
+      "name": "demo-free-roam-markers.mjs",
+      "fresh": true,
+      "sha256": "6ad9762b584cb4feea92e698e329772b013e10dce44f8700b483c435abe41abc"
+    },
+    {
+      "name": "drawbridge-traffic.mjs",
+      "fresh": true,
+      "sha256": "3977814f1e7a9084ebd5eec4d04feef25462e5d90f77450a4870fb606f5864cd"
+    },
+    {
+      "name": "driveby-mouse.mjs",
+      "fresh": true,
+      "sha256": "b2c69ea9d1f1d64a97c815e5c202e210b1d2a199c601e29f4fe4de56482db5e2"
+    },
+    {
+      "name": "foot-vehicle-escape.mjs",
+      "fresh": true,
+      "sha256": "abd01200a2a4dbf99fad62a54df05bbe3ce823770f684d34bfca7c8c44cba191"
+    },
+    {
+      "name": "fort-cover.mjs",
+      "fresh": true,
+      "sha256": "36f6a160f75fceee4d1c435a497984ae555d8b5393afdfaf5a29aea5b6cbe75d"
+    },
+    {
+      "name": "fort-gate-talk.mjs",
+      "fresh": true,
+      "sha256": "4100523ace5a71cb68ed1eeeb2de376c66df1a569852135a09119648c55e2f99"
+    },
+    {
+      "name": "fort-vehicle-theft.mjs",
+      "fresh": true,
+      "sha256": "595287884c8818b4f3b5e20d20bff2995a3c52c5fc173c3c27fd30cbd92fd6b1"
+    },
+    {
+      "name": "frame-guard.mjs",
+      "fresh": true,
+      "sha256": "b5b8d62d6e1769a650a6ca77ea175384e3e4cafce31fe0899203cc9e9d506323"
+    },
+    {
+      "name": "garages-islands.mjs",
+      "fresh": true,
+      "sha256": "8728d2f283415e16cb99d6e3f92f95c0fed9f85a4356cfc918921c3053915172"
+    },
+    {
+      "name": "god-mode-codes.mjs",
+      "fresh": true,
+      "sha256": "77b9c9e86e8e83026c98267379834270a250de8dd149ba1345acd89fe9c8481e"
+    },
+    {
+      "name": "gore-dismember.mjs",
+      "fresh": true,
+      "sha256": "029cacc53e76c7d1c3ec9e849bc31f843ce3f101ed09a65b27ffd09d11ae3ad2"
+    },
+    {
+      "name": "headlight-aim.mjs",
+      "fresh": true,
+      "sha256": "55e890c3c014d78343e0e5bc4d306437e90d58d9220aac6e47d978cc9fc61b19"
+    },
+    {
+      "name": "hillclimb-physics.mjs",
+      "fresh": true,
+      "sha256": "2992acf477b47f4f093e2b831890d83787df33784e266ad8794674179f5f164c"
+    },
+    {
+      "name": "hud-layout.mjs",
+      "fresh": true,
+      "sha256": "c3fa67bbf121a207316ecde9188db8736d088822eb1279a3dc7def6ec69229e2"
+    },
+    {
+      "name": "integrity-shore.mjs",
+      "fresh": true,
+      "sha256": "e0f88160a1134c3ec6fa9c30d9b73a3ef31e1538c1367a7566f3999e220c3e7b"
+    },
+    {
+      "name": "liner-voyage.mjs",
+      "fresh": true,
+      "sha256": "9a9a3a594697770a44c2defee1b06f918e7e18fc24033144ecc4a2ae90cd97b0"
+    },
+    {
+      "name": "living-medics.mjs",
+      "fresh": true,
+      "sha256": "62ee498ee34b3a1be0da9a0915773c7749d0a6e20e591a354528e1a6eb8b5b80"
+    },
+    {
+      "name": "living-snatch.mjs",
+      "fresh": true,
+      "sha256": "9e7f396df85f71cd45620bd2e4a3ea0af4c134fd34d38e193fa4caf407385a38"
+    },
+    {
+      "name": "lockpick.mjs",
+      "fresh": true,
+      "sha256": "a11c5eaedb3c075df206de51108d0d2a0d3db14d3488daaeac2ab65f1979e8cb"
+    },
+    {
+      "name": "markers-rings.mjs",
+      "fresh": true,
+      "sha256": "98702046ca50f939c03b8714d340ef42d8bcb2814f3f6846e055129002e1eb75"
+    },
+    {
+      "name": "mission-abandon.mjs",
+      "fresh": true,
+      "sha256": "b6520a591fc4eee4aa0aaff95ec6d3bd3102b16a1ab7bfe536cf399bdb1e8e8d"
+    },
+    {
+      "name": "mission-card-keys.mjs",
+      "fresh": true,
+      "sha256": "d8adb5b5cd3230020f65afcf517654ea44b19935838905c6135cf74778eb865d"
+    },
+    {
+      "name": "mission-replay-frontier.mjs",
+      "fresh": true,
+      "sha256": "80c2b77e0e7fe2b265275b3345b1d8d8bc82696364c1f692f66e1291c5b80e7f"
+    },
+    {
+      "name": "mission-retry.mjs",
+      "fresh": true,
+      "sha256": "b76e2a80b45a714b640466ad60caa44691478637844baca075d2945d49a37489"
+    },
+    {
+      "name": "mission1-depot.mjs",
+      "fresh": true,
+      "sha256": "bee9b8e56ee94638c9248afd2ecdb18cb080110a22a2d3f22ee47e38e0ddb0e3"
+    },
+    {
+      "name": "mission2-ambulance.mjs",
+      "fresh": true,
+      "sha256": "db606ce798924a802d82689a78e1a62c3e174822a1c15adf16213ba1687263aa"
+    },
+    {
+      "name": "mission2-getaway.mjs",
+      "fresh": true,
+      "sha256": "32a1995b3a8ca6e9ce6c7d4e1a72430c7a62ef18877961734e90f2160cc1c4eb"
+    },
+    {
+      "name": "mission2-poison.mjs",
+      "fresh": true,
+      "sha256": "a69fbfa38b85b9a04ec87796471ec9701d9a4a74eac8ff149c197a28b5bd4903"
+    },
+    {
+      "name": "mission3-recovery.mjs",
+      "fresh": true,
+      "sha256": "40333e3c360a06802fdf6a0e5efc637e2470889909c13effa497f1c1b5dea4d4"
+    },
+    {
+      "name": "mission34-footing.mjs",
+      "fresh": true,
+      "sha256": "2156b0c6bcd7f19f89a3acd4b1ed5d1a2110abc5403c040340ca74b3ce0efe26"
+    },
+    {
+      "name": "mission4-alert.mjs",
+      "fresh": true,
+      "sha256": "1b497977573e1bc31f4b3c1e6076707d93763e7616be755c2e9933b64a5c392c"
+    },
+    {
+      "name": "mission4-paths.mjs",
+      "fresh": true,
+      "sha256": "ccc9fcca61fb708c5fa1da6e4ea80ae5b3b02892384b8748fe1dbf4c1c4055c2"
+    },
+    {
+      "name": "monarch-garages.mjs",
+      "fresh": true,
+      "sha256": "611da15a8d484e7c434d4f1b87a8464394cd364109fcb1e21a23bbba52887d02"
+    },
+    {
+      "name": "mounted-guns.mjs",
+      "fresh": true,
+      "sha256": "ed872d75f3b4f6cdd23b2fd770fe1ff717a98e15cae3d958cd33682f603431fd"
+    },
+    {
+      "name": "nudge-aside.mjs",
+      "fresh": true,
+      "sha256": "e09e539306706930673d2ab954f2c63fe7c0383878b460985e4c602f201759dc"
+    },
+    {
+      "name": "parachute-deploy.mjs",
+      "fresh": true,
+      "sha256": "5c05803227bfaa03b6726d7df48eb87499133640c45de1b016c7c5458d85b780"
+    },
+    {
+      "name": "parachute.mjs",
+      "fresh": true,
+      "sha256": "23c1ecf073fb71e84c848276366c44401ac9255a2f4c42efe21c94611dc54fa2"
+    },
+    {
+      "name": "parked-vehicle-hits.mjs",
+      "fresh": true,
+      "sha256": "ecdf21eef4d28fad147d045588e9d89442b361dcb820928fd384ef6b22dee8d3"
+    },
+    {
+      "name": "payphones-islands.mjs",
+      "fresh": true,
+      "sha256": "989d30259120f397d9f36cf8d89720440f35b88e536214ae6976ca1ccc672c1c"
+    },
+    {
+      "name": "player-jump.mjs",
+      "fresh": true,
+      "sha256": "35756debc36be5a1371981a9a71139b306f9671939b6ca7c675c7494228e8441"
+    },
+    {
+      "name": "police-night-sight.mjs",
+      "fresh": true,
+      "sha256": "b7890bac53c5276856113d95aadaa417cfc7551a58df0dcea341070c01b2edf9"
+    },
+    {
+      "name": "police-search-clock.mjs",
+      "fresh": true,
+      "sha256": "5709b29b6ac69f083cd7e08424572f368f7a41791a08211a9560989fb8330e79"
+    },
+    {
+      "name": "render-effects.mjs",
+      "fresh": true,
+      "sha256": "191fbcc0673a72c0025e1441276a5e4233817d8aa9300f7867764ab5c9389a86"
+    },
+    {
+      "name": "respray-lose-police.mjs",
+      "fresh": true,
+      "sha256": "89a918bd9ec535e8c4b092e426432b22cd2110c96d2c0f27f55fd9175cdd2258"
+    },
+    {
+      "name": "ride-look.mjs",
+      "fresh": true,
+      "sha256": "1c9ffd99109bb3249e9a97bd72c5c8f71c21d8cdc2375def7ca55c3decb146b2"
+    },
+    {
+      "name": "road-signs.mjs",
+      "fresh": true,
+      "sha256": "43cd5d6fb852546404ebc1bca5c4a448f832db2e2d45a10233da380b2e68ad91"
+    },
+    {
+      "name": "second-run-over.mjs",
+      "fresh": true,
+      "sha256": "dbcd8188b28226eabcb88305791632588c4b8bc18d421cc4b415b698427ead82"
+    },
+    {
+      "name": "sky-meeting.mjs",
+      "fresh": true,
+      "sha256": "492e465127fe684fe699e0905dc057b9add14ae5097183026c085c2557f44825"
+    },
+    {
+      "name": "sun-gradual.mjs",
+      "fresh": true,
+      "sha256": "79a2f9808c869e8e77e353fac0c5d5f40614f3ae0108e968904ba094083fa11b"
+    },
+    {
+      "name": "swim-rescue.mjs",
+      "fresh": true,
+      "sha256": "6515efdb3d5addbf851b4d5e3d88dff040e5a1b5d8c269a5947e79a0368fce21"
+    },
+    {
+      "name": "terrace-death.mjs",
+      "fresh": true,
+      "sha256": "c2eeea27d61821a27df01d44c2d97f0d4a56a2dbcdbc14ae87eebc5d53618c06"
+    },
+    {
+      "name": "trail-mud.mjs",
+      "fresh": true,
+      "sha256": "e77af50b985e6f5c2ca617c3e02a55a88683bfb4ef8e960d858c818533b1c801"
+    },
+    {
+      "name": "trunk-close.mjs",
+      "fresh": true,
+      "sha256": "230bb1e9d43f8e48224ef7219bb057bdbcf99ea674260081d355f94999349928"
+    },
+    {
+      "name": "vehicle-damage-shape.mjs",
+      "fresh": true,
+      "sha256": "d794b35d1e2c1e189c861bd9aac8faf4bed2cba36a2fa6462f0ddc7859439e4d"
+    },
+    {
+      "name": "voices.mjs",
+      "fresh": true,
+      "sha256": "99a7417f497732003edfa1f1a7b51b5e99a4c0de2a594be1bab7fc4bf8a7d11c"
+    },
+    {
+      "name": "wheelie-hint.mjs",
+      "fresh": true,
+      "sha256": "a7a0750dc95b0476e1db009272a54eaafbc47048dd177b9fb40360c7766b22ab"
+    },
+    {
+      "name": "witnesses-monarch.mjs",
+      "fresh": true,
+      "sha256": "f5ec337473dea3630bd702cd78373829e78be2462bb642fa4d0277f919121dc3"
+    },
+    {
+      "name": "world-edge-land.mjs",
+      "fresh": true,
+      "sha256": "c8083aae6610522cf517706d67ea254b80daa2a58a8dd6f2ff663a38eec6678f"
+    },
+    {
+      "name": "world-reset.mjs",
+      "fresh": true,
+      "sha256": "81f0810da7f135dda535797d6ea23f820cd6f57aaeba9458311da3ab237c9750"
+    }
+  ],
+  "command": [
+    "node",
+    "tools/test.mjs",
+    "ammo-supply.mjs",
+    "blood-amounts.mjs",
+    "blood-wounds.mjs",
+    "bullet-hits.mjs",
+    "camera-lead-setting.mjs",
+    "car-blood.mjs",
+    "car-window-open.mjs",
+    "carjack.mjs",
+    "chase-hud-layout.mjs",
+    "chase-motion-blur.mjs",
+    "chase-wall-clearance.mjs",
+    "chimney-smoke.mjs",
+    "clouds.mjs",
+    "coronation-bridge.mjs",
+    "demo-free-roam-markers.mjs",
+    "drawbridge-traffic.mjs",
+    "driveby-mouse.mjs",
+    "foot-vehicle-escape.mjs",
+    "fort-cover.mjs",
+    "fort-gate-talk.mjs",
+    "fort-vehicle-theft.mjs",
+    "frame-guard.mjs",
+    "garages-islands.mjs",
+    "god-mode-codes.mjs",
+    "gore-dismember.mjs",
+    "headlight-aim.mjs",
+    "hillclimb-physics.mjs",
+    "hud-layout.mjs",
+    "integrity-shore.mjs",
+    "liner-voyage.mjs",
+    "living-medics.mjs",
+    "living-snatch.mjs",
+    "lockpick.mjs",
+    "markers-rings.mjs",
+    "mission-abandon.mjs",
+    "mission-card-keys.mjs",
+    "mission-replay-frontier.mjs",
+    "mission-retry.mjs",
+    "mission1-depot.mjs",
+    "mission2-ambulance.mjs",
+    "mission2-getaway.mjs",
+    "mission2-poison.mjs",
+    "mission3-recovery.mjs",
+    "mission34-footing.mjs",
+    "mission4-alert.mjs",
+    "mission4-paths.mjs",
+    "monarch-garages.mjs",
+    "mounted-guns.mjs",
+    "nudge-aside.mjs",
+    "parachute-deploy.mjs",
+    "parachute.mjs",
+    "parked-vehicle-hits.mjs",
+    "payphones-islands.mjs",
+    "player-jump.mjs",
+    "police-night-sight.mjs",
+    "police-search-clock.mjs",
+    "render-effects.mjs",
+    "respray-lose-police.mjs",
+    "ride-look.mjs",
+    "road-signs.mjs",
+    "second-run-over.mjs",
+    "sky-meeting.mjs",
+    "sun-gradual.mjs",
+    "swim-rescue.mjs",
+    "terrace-death.mjs",
+    "trail-mud.mjs",
+    "trunk-close.mjs",
+    "vehicle-damage-shape.mjs",
+    "voices.mjs",
+    "wheelie-hint.mjs",
+    "witnesses-monarch.mjs",
+    "world-edge-land.mjs",
+    "world-reset.mjs",
+    "--exact",
+    "--html",
+    "/workspace/GTA/work/general-review/integrated2.html",
+    "--verbose"
+  ],
+  "sourceAndTestsMatchRoot": true,
+  "startedAt": "2026-10-19T15:56:25.265682+00:00",
+  "finishedAt": "2026-10-19T16:37:37.064374+00:00",
+  "durationSeconds": 2471.8,
+  "exitCode": 1,
+  "results": [
+    {
+      "status": "PASS",
+      "name": "ammo-supply.mjs",
+      "duration": "6.4s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "blood-amounts.mjs",
+      "duration": "17.5s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "blood-wounds.mjs",
+      "duration": "37.2s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "bullet-hits.mjs",
+      "duration": "18.3s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "camera-lead-setting.mjs",
+      "duration": "42.3s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "car-blood.mjs",
+      "duration": "80.3s",
+      "detail": ""
+    },
+    {
+      "status": "SKIP",
+      "name": "car-window-open.mjs",
+      "duration": "21.2s",
+      "detail": "Requires WebGL: run with --render"
+    },
+    {
+      "status": "PASS",
+      "name": "carjack.mjs",
+      "duration": "34.8s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "chase-hud-layout.mjs",
+      "duration": "29.8s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "chase-motion-blur.mjs",
+      "duration": "37.7s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "chase-wall-clearance.mjs",
+      "duration": "28.7s",
+      "detail": ""
+    },
+    {
+      "status": "SKIP",
+      "name": "chimney-smoke.mjs",
+      "duration": "25.3s",
+      "detail": "Requires WebGL: run with --render"
+    },
+    {
+      "status": "PASS",
+      "name": "clouds.mjs",
+      "duration": "33.1s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "coronation-bridge.mjs",
+      "duration": "26.7s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "drawbridge-traffic.mjs",
+      "duration": "96.3s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "driveby-mouse.mjs",
+      "duration": "28.8s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "foot-vehicle-escape.mjs",
+      "duration": "15.3s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "fort-cover.mjs",
+      "duration": "23.8s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "fort-gate-talk.mjs",
+      "duration": "23.6s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "fort-vehicle-theft.mjs",
+      "duration": "15.1s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "frame-guard.mjs",
+      "duration": "20.6s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "garages-islands.mjs",
+      "duration": "28.3s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "god-mode-codes.mjs",
+      "duration": "24.5s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "gore-dismember.mjs",
+      "duration": "19.4s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "headlight-aim.mjs",
+      "duration": "17.6s",
+      "detail": ""
+    },
+    {
+      "status": "FAIL",
+      "name": "hillclimb-physics.mjs",
+      "duration": "58.4s",
+      "detail": "climb at 1/60: 76.88 s is over the 1:15 challenge"
+    },
+    {
+      "status": "PASS",
+      "name": "hud-layout.mjs",
+      "duration": "22.3s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "integrity-shore.mjs",
+      "duration": "15.8s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "liner-voyage.mjs",
+      "duration": "14.5s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "living-medics.mjs",
+      "duration": "34.4s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "living-snatch.mjs",
+      "duration": "21.4s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "lockpick.mjs",
+      "duration": "41.4s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "markers-rings.mjs",
+      "duration": "17.6s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "mission-abandon.mjs",
+      "duration": "19.1s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "mission-card-keys.mjs",
+      "duration": "19.8s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "mission-retry.mjs",
+      "duration": "24.0s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "mission1-depot.mjs",
+      "duration": "24.6s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "mission2-ambulance.mjs",
+      "duration": "34.9s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "mission2-getaway.mjs",
+      "duration": "33.0s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "mission2-poison.mjs",
+      "duration": "37.6s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "mission3-recovery.mjs",
+      "duration": "22.4s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "mission34-footing.mjs",
+      "duration": "18.2s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "mission4-alert.mjs",
+      "duration": "54.0s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "mission4-paths.mjs",
+      "duration": "50.8s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "monarch-garages.mjs",
+      "duration": "127.5s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "mounted-guns.mjs",
+      "duration": "45.6s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "nudge-aside.mjs",
+      "duration": "25.3s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "parachute-deploy.mjs",
+      "duration": "117.6s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "parachute.mjs",
+      "duration": "31.2s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "parked-vehicle-hits.mjs",
+      "duration": "40.6s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "payphones-islands.mjs",
+      "duration": "22.6s",
+      "detail": ""
+    },
+    {
+      "status": "FAIL",
+      "name": "player-jump.mjs",
+      "duration": "31.5s",
+      "detail": "Space did not brake the car: 54.2 -> 52.2"
+    },
+    {
+      "status": "PASS",
+      "name": "police-night-sight.mjs",
+      "duration": "21.7s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "police-search-clock.mjs",
+      "duration": "25.9s",
+      "detail": ""
+    },
+    {
+      "status": "SKIP",
+      "name": "render-effects.mjs",
+      "duration": "21.3s",
+      "detail": "Requires WebGL: run with --render"
+    },
+    {
+      "status": "PASS",
+      "name": "respray-lose-police.mjs",
+      "duration": "46.1s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "ride-look.mjs",
+      "duration": "31.5s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "road-signs.mjs",
+      "duration": "22.4s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "second-run-over.mjs",
+      "duration": "32.8s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "sky-meeting.mjs",
+      "duration": "61.6s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "sun-gradual.mjs",
+      "duration": "30.6s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "swim-rescue.mjs",
+      "duration": "34.1s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "terrace-death.mjs",
+      "duration": "26.7s",
+      "detail": ""
+    },
+    {
+      "status": "SKIP",
+      "name": "trail-mud.mjs",
+      "duration": "20.8s",
+      "detail": "Requires WebGL: run with --render"
+    },
+    {
+      "status": "PASS",
+      "name": "trunk-close.mjs",
+      "duration": "49.4s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "vehicle-damage-shape.mjs",
+      "duration": "35.4s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "voices.mjs",
+      "duration": "21.4s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "wheelie-hint.mjs",
+      "duration": "28.1s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "witnesses-monarch.mjs",
+      "duration": "34.8s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "world-edge-land.mjs",
+      "duration": "17.0s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "world-reset.mjs",
+      "duration": "36.2s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "demo-free-roam-markers.mjs",
+      "duration": "44.1s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "mission-replay-frontier.mjs",
+      "duration": "49.7s",
+      "detail": ""
+    }
+  ],
+  "passed": 67,
+  "failed": 2,
+  "skipped": 4,
+  "missing": [],
+  "logSha256": "8b8dbe55d5300bd8b4a5f575689d64c4770a64e5874f776a4b1050a30b121d9c"
+}

@@ -1,0 +1,28 @@
+{
+  "kind": "Combined production-host regression receipt; not renderer/FPS proof",
+  "tests": 53,
+  "assertions": 422234,
+  "pass": true,
+  "prior50": "host-suite-final.json",
+  "additional": {
+    "name": "lockpick-footing",
+    "assertions": 252,
+    "pass": true,
+    "beforeAfter": "lockpick-footing-before-after.json",
+    "testSha256": "79f4dcd89203fdf05d36e16afe1f37c6442c262e03e477a2c34247e5e609885a"
+  },
+  "additionalTrailPilot": {
+    "name": "trail-pilot-route",
+    "assertions": 34,
+    "pass": true,
+    "receipt": "trail-pilot-focused-host.log",
+    "sourceProof": "trail-pilot-host-results.json"
+  },
+  "additionalDodgeIntegral": {
+    "name": "npc-dodge-integration",
+    "assertions": 487,
+    "pass": true,
+    "receipt": "npc-dodge-standard.json",
+    "note": "Same production reaction decisions; trajectory/collision assertions across visible/off-camera steps, separate from full-world awareness rate."
+  }
+}

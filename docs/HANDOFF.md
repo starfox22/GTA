@@ -3,6 +3,38 @@
 Written for the next AI session (or human) picking this work up. Read `/CLAUDE.md` first (commands,
 rules, workflow), then this page, then only the area doc your task needs (`docs/README.md`).
 
+## October 19: first four missions, interaction safety and native graphics pass
+
+Continue on **`codex-reviews`**; never publish to `main` without the owner's approval.
+[Play the reviewed build](https://starfox22.github.io/GTA/?review=7f521784f62e9ba0)
+and [screenshots with earlier vehicle reviews](https://starfox22.github.io/GTA/review/?review=7f521784f62e9ba0).
+The [general review](audit/general-experience-review-2026-10-19/README.md) separates ordinary
+mission journeys, staged graphics fixtures, broad regressions and later focused checks.
+
+First-four objective journeys are recorded: independent M1/M2 sessions and one M3→M4 session.
+M1 is native public gameplay; its retry invoked the production handler after real Escape,
+not a physical menu selection. M2 uses development flags/960×600 and has a matched later replay;
+do not claim public-demo gating from it. M4 proves the actual keyboard restart menu and normal
+paid taxi skips. No debug objective wins, god mode or healing occurs after the stated setup
+boundaries. See the exact flags, source hashes, failed attempts and inputs in the audit.
+
+Warehouse sealing now tests whole footprints/lookahead, and dispatched law crews yield safely.
+Stable footing gates handwork; mountain cargo can be recovered from an intact stopped carrier's
+rear, then carried on foot in a visible fitted backpack. HUD dialogue clears prompts, terrain,
+map/card/control hints across street/chase and short windows; long district labels wrap before
+navigation. NPC dodges integrate their original fading speed exactly across visible/coarse steps,
+without changing panic choices or vehicle/person contact order. A console-only trail route fix
+passes the unchanged 75 s climb/falls bounds; player handling and descent controls are retained.
+
+Evidence: 53 host modules / 422,234 assertions; all 208 browser modules accounted for on their
+frozen candidates (187 pass, 18 WebGL skips, three initial failures). Targeted trail/falls and the
+physical-Space timing fixture now pass. The original NPC-awareness clearance-rate check remains
+red and is retained in BACKLOG; do not tune probabilities/seeds or claim an all-green suite.
+Native inspection passes all ten preset/view rainy-night combinations, with 11 raw captures and
+zero shader errors, frame faults or lost contexts. SwiftShader is correctness evidence, not a
+hardware FPS benchmark. Final artifact/source pins are in `verification/final-release-source.json`.
+No assets, source model faces, texture/audio files or chosen vehicle names changed in this pass.
+
 ## October 17: selected civilian names and Monarch model replacement
 
 The owner selected **Chrynser Sebing** for `roadster` and **Chorley 72** for

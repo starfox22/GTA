@@ -1,0 +1,74 @@
+{
+  "kind": "Complete-game production regression acceptance, exactly the unchanged hillclimb-physics and falls modules; separate from the CPU host pass",
+  "status": "complete",
+  "preparedAt": "2026-10-19T17:11:54.537108+00:00",
+  "count": 2,
+  "html": "/workspace/GTA/work/general-review/polished-release.html",
+  "htmlSha256": "0ed67223d94408cd70b5431c31a53d7326884245827c79143e5c8d64bde9d1d7",
+  "frozenArtifactSourceCommit": "1145c317",
+  "sourceEquivalence": "Acceptance applies to the recorded immutable artifact and source commit. The seven physics/terrain/pilot files are hashed from the root checkout at launch, and its exact current pilot file is embedded verbatim in the artifact.",
+  "sourceTreeCommitAtPreparation": "f255c3d0c7df7bf0227a12bc50c09be157f7652d",
+  "runnerWorktreeCommit": "12e428e5c062e6c687f6e3e3e540b95dc36f09b0",
+  "tests": [
+    {
+      "name": "hillclimb-physics.mjs",
+      "sha256": "2992acf477b47f4f093e2b831890d83787df33784e266ad8794674179f5f164c"
+    },
+    {
+      "name": "falls.mjs",
+      "sha256": "848bff688faed24577f34cc4070ce94de14a694ad339e1de357ce27de58102ae"
+    }
+  ],
+  "sourceHashes": {
+    "src/offroad-club.js": "f4e2603dfe7dbb03aaf847d1fa1c307194f6db97962f37de52c9be47f7fa82dd",
+    "src/offroad-trails.js": "cee054a90176b201308d93a1e373801c85c818b8b931ace9cb27eb643f9be8da",
+    "src/terrain-suspension.js": "3f8ce4067ee794494f97f53f1f2e949193f524d92435663480324f862ef020cd",
+    "src/physics-driving.js": "386821f1bee9137bdb45e7fab88cfa75d0fa144f9d8619f27b7ea4116da33e2c",
+    "src/driving.js": "38dbfb4ebfec0760da08f8caba14acab61cd928e95766b4ba92160f4f32513fd",
+    "src/falls-vehicles.js": "721f32322003919eeb4627d3d88537bb88a7948cfad8d48fdeb542a1ee4ef9d1",
+    "src/falls-console.js": "03ac2723fed4265263141915eef25aeaf1b2657f0bcee1602c9e86a64c369df8"
+  },
+  "pilotSourceIncludedVerbatim": true,
+  "runnerHashes": {
+    "tools/test.mjs": "0a855add117bcf82cd1d39da143bff9bfadc0d705b0cf5a70cd17c8300b792cd",
+    "tools/dev.mjs": "d8462fdc383bfa3d2e32b04935922a848adbefb5116bfa5d03bed1a1fd9307d7",
+    "tools/browser.mjs": "35961799c4a7706ab6a28148a2e5275e780feae8ed4f64f2a5ad34c8d9d1badb"
+  },
+  "command": [
+    "node",
+    "tools/test.mjs",
+    "hillclimb-physics.mjs",
+    "falls.mjs",
+    "--exact",
+    "--html",
+    "/workspace/GTA/work/general-review/polished-release.html",
+    "--verbose"
+  ],
+  "cwd": "/workspace/work/general-trail-pilot",
+  "log": "/workspace/GTA/work/general-review/trail-pilot-live-v2.log",
+  "startedAt": "2026-10-19T17:11:54.863850+00:00",
+  "finishedAt": "2026-10-19T17:14:26.950614+00:00",
+  "durationSeconds": 152.09,
+  "exitCode": 0,
+  "results": [
+    {
+      "status": "PASS",
+      "name": "falls.mjs",
+      "duration": "27.1s",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "hillclimb-physics.mjs",
+      "duration": "103.1s",
+      "detail": ""
+    }
+  ],
+  "passed": 2,
+  "failed": 0,
+  "skipped": 0,
+  "missing": [],
+  "htmlUnchangedAfterRun": true,
+  "testsUnchangedAfterRun": true,
+  "logSha256": "595c67e1abd539d88d44529615affc87d82470ae9968ff04535b3b3532111561"
+}
