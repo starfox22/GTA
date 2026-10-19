@@ -4,15 +4,16 @@ import vm from 'node:vm';
 
 export default async function(t) {
   const read = name => fs.readFileSync(new URL('../../src/' + name + '.js', import.meta.url), 'utf8'),
-    shapes = read('physics-shapes'), chase = read('chase'),
+    shapes = read('physics-shapes'), chase = read('chase'), police = read('citylife-police'),
     vehicles = [], player = { x: 0, y: 0, car: null }, officers = [],
     scope = vm.createContext({
-      Math, vehicles, player, officers, UNITS_PER_METRE: 8, GRAVITY: 9.81 * 8, KMH: 8 / 3.6,
+      Math, vehicles, player, officers, wantedStars: 0, UNITS_PER_METRE: 8, GRAVITY: 9.81 * 8, KMH: 8 / 3.6,
       KNOTS: 8 * .514444, LINERS: [], PAINT_SPORT: [], PAINT_LUXURY: [], PAINT_EVERYDAY: [],
       isAircraft: c => c.type === 'helicopter' || c.type === 'plane',
       clamp: (v, lo, hi) => Math.max(lo, Math.min(hi, v)),
     }),
     api = vm.runInContext(read('game-vehicles') + shapes.slice(0, shapes.indexOf('    function addStatic(')) +
+      police.slice(police.indexOf('    function lawVehicle('), police.indexOf('    function recentGangThreat(')) +
       chase.slice(0, chase.indexOf("    // Vinny's crew")) +
       '\n({ inDepotDoorway, updateDepotDoors, setDepotDoors, resetDepotDoors, corners, vehicleShape, ' +
       'shutter: () => depotFrontShutter });', scope);
@@ -78,5 +79,33 @@ export default async function(t) {
   api.setDepotDoors(1, 1);
   for (let i = 0; i < 120; i++) api.updateDepotDoors(1 / 60);
   t.assert(api.shutter() === 0, 'shutter descended on a player on foot');
-  t.note(`${comparisons} independent vehicle/door polygon comparisons; long-body, prediction, clear, police, aircraft and player controller checks`);
+
+  // Ordinary wanted dispatch and SWAT join the scripted four cargo patrols.
+  // Previously only missionPursuit units yielded: a normal cruiser held the
+  // shutter open indefinitely, so the delivered truck could never be sealed in.
+  Object.assign(player, { x: 0, y: 0 });
+  scope.wantedStars = 3;
+  for (const [type, lawUnit] of [['police', undefined], ['van', 'swat']]) {
+    const unit = { type, lawUnit, hp: 100, cop: true, x: -1664, y: 4334, a: Math.PI / 2, vx: 20, vy: 10 };
+    vehicles.push(unit);
+    api.resetDepotDoors();
+    api.setDepotDoors(1, 1);
+    for (let i = 0; i < 240; i++) api.updateDepotDoors(1 / 60);
+    t.assert(api.shutter() === 1 && unit.vy <= -40, `ordinary ${lawUnit || type} pursuit stalled the depot drop`);
+    vehicles.length = 0;
+  }
+  // Wrecks, crewless/stolen cruisers and an idle patrol remain physical
+  // obstacles. A mission-tagged cruiser the player boards gets the same safety.
+  for (const extra of [{ hp: 0 }, { crewLost: true }, { stolen: true }, { idle: true }, { driven: true, missionPursuit: true }]) {
+    const unit = { type: 'police', hp: 100, cop: true, x: -1664, y: 4334, a: Math.PI / 2, vx: 0, vy: 0, ...extra };
+    scope.wantedStars = unit.idle ? 0 : 3;
+    player.car = unit.driven ? unit : null;
+    vehicles.push(unit);
+    api.resetDepotDoors();
+    api.setDepotDoors(1, 1);
+    for (let i = 0; i < 120; i++) api.updateDepotDoors(1 / 60);
+    t.assert(api.shutter() === 0, 'shutter closed on an ordinary obstacle: ' + JSON.stringify(extra));
+    vehicles.length = 0;
+  }
+  t.note(`${comparisons} independent vehicle/door polygon comparisons; long-body, prediction, clear, both dispatch paths, aircraft, pedestrian and inactive/player vehicle safety`);
 }

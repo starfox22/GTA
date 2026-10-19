@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-614 files in the include tree, 209,806 lines.
+614 files in the include tree, 209,812 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -66,7 +66,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/wounds.js`   184 — Wounds, hit reactions and death falls
 - `src/story.js`  1011 — Story characters and mission stages
 - `src/campaign.js`   549 — Campaign saves and replay
-- `src/chase.js`   570 — Cargo pursuit
+- `src/chase.js`   576 — Cargo pursuit
 - `src/roadblocks.js`   436 — Police containment and roadblocks
 - `src/carjack.js`   340 — Carjacking and driver reactions
 - `src/carjack-struggle.js`   569 — The carjack struggle: walking round to the driver's door, the door, reaching in, a tug of war, hauling the driver out and taking the seat …

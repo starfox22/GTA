@@ -134,6 +134,12 @@
     /* The player or an ordinary vehicle in the front doorway. Pursuing police
        cars do not hold the shutter up: they are shoved back out by it instead
        (updateDepotDoors), or a tailing cruiser could stall the drop forever. */
+    function depotPursuingVehicle(c) {
+      // Normal wanted dispatch joins the four scripted cargo patrols. Both
+      // follow the truck to the shutter; either kind must yield to it.
+      return c !== player.car &&
+        (c.missionPursuit || (wantedStars > 0 && c.cop && lawVehicle(c)));
+    }
     function depotDoorwayOccupied() {
       const d = DEPOT_DOORWAY;
       if (
@@ -144,7 +150,7 @@
         player.y - 8 < d.y + d.h
       )
         return true;
-      return vehicles.some((c) => !c.missionPursuit && inDepotDoorway(c));
+      return vehicles.some((c) => !depotPursuingVehicle(c) && inDepotDoorway(c));
     }
     /* Whether a point is inside the depot's four walls. */
     function insideDepot(x, y, margin = 0) {
@@ -198,7 +204,7 @@
       const closing = depotFrontTarget > depotFrontShutter;
       if (closing)
         for (const c of vehicles)
-          if (c.missionPursuit && c !== player.car && inDepotDoorway(c)) {
+          if (depotPursuingVehicle(c) && inDepotDoorway(c)) {
             // The descending shutter pushes a tailing cruiser back onto the street.
             c.vy = Math.min(c.vy, -40);
             c.vx *= 0.5;
