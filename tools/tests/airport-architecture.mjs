@@ -29,7 +29,7 @@ export default async function airportArchitecture(t) {
   const api = vm.runInContext(read('geography-regions') + '\n' + county.slice(0, county.indexOf('    // The bridges (county')) + '\n' +
     read('physics-shapes') + '\n' + read('air-cover') + '\n' +
     read('airport-terminal3d') + '\n({AIRPORT_JETBRIDGES,AIRPORT_CANOPIES,AIRPORT_TOWERS,AIRPORT_SCENERY_SOLIDS,AIRPORT_APRONS,' +
-    'airportBridgeSupports,airportOverheadVolumes,airportJetbridge,airportEntranceCanopy,airportTower,' +
+    'airportBridgeSupports,airportBridgeFloor,airportOverheadVolumes,airportJetbridge,airportEntranceCanopy,airportTower,' +
     'airCoverVolumes,overheadCover,airCoverRay,airCoverStopsShot,addRailCoverColliders,staticBodies,staticGrid,landAtExact})', scope);
   const inVolume = (p, v, epsilon = 0.002) => {
     const dx = p.x - v.x, dz = p.z - v.y, ca = Math.cos(v.a || 0), sa = Math.sin(v.a || 0);
@@ -57,13 +57,13 @@ export default async function airportArchitecture(t) {
     for (const support of supports)
       t.assert(api.AIRPORT_SCENERY_SOLIDS.some(p => p.x === support.x && p.y === support.y && p.w === support.w && p.h === support.h),
         bridge.gate + ': drawn column missing ground collision footprint');
-    const y = bridge.from + 160;
+    const y = bridge.from + 100, floor = api.airportBridgeFloor(bridge, y);
     t.assert(api.overheadCover(bridge.x, y, 0)?.kind === 'airport jetbridge', bridge.gate + ': missing overhead cover');
     t.assert(!api.airCoverRay({ x: bridge.x - 30, y, altitude: 0 }, { x: bridge.x + 30, y, altitude: 0 }),
       bridge.gate + ': a pedestrian-height sight ray must pass under the bridge');
-    t.assert(api.airCoverRay({ x: bridge.x - 30, y, altitude: 16 }, { x: bridge.x + 30, y, altitude: 16 }),
+    t.assert(api.airCoverRay({ x: bridge.x - 30, y, altitude: floor - 8 }, { x: bridge.x + 30, y, altitude: floor - 8 }),
       bridge.gate + ': an elevated sight ray must meet the bridge');
-    t.assert(!api.airCoverStopsShot(bridge.x, y, 0) && api.airCoverStopsShot(bridge.x, y, 20) && !api.airCoverStopsShot(bridge.x, y, 60),
+    t.assert(!api.airCoverStopsShot(bridge.x, y, 0) && api.airCoverStopsShot(bridge.x, y, floor - 4) && !api.airCoverStopsShot(bridge.x, y, 90),
       bridge.gate + ': shot coverage must respect actual slab height');
   }
   for (const canopy of api.AIRPORT_CANOPIES) {

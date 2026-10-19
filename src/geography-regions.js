@@ -363,24 +363,44 @@
     ];
     const AIRPORT_CANOPIES = [
       { x: 1010, y: 4988, w: 224, h: 30, bottom: 27, top: 30, posts: [[918, 4999], [1102, 4999]] },
-      { x: 4215, y: 8672, w: 610, h: 56, bottom: 34, top: 38, posts: [[3935, 8694], [4215, 8694], [4495, 8694]] },
+      { x: 4215, y: 8672, w: 610, h: 56, bottom: 34, top: 38, posts: [[3935, 8650], [4215, 8675], [4495, 8694]] },
     ];
     const AIRPORT_TOWERS = [
       { x: 790, y: 5075, shaft: 19, shaftH: 108, cabW: 46, cabD: 40, bottom: 103, top: 126, beacon: 153 },
       { x: 3530, y: 8980, shaft: 22, shaftH: 128, cabW: 62, cabD: 55, bottom: 123, top: 152, beacon: 190 },
     ];
+    // Cross the public road at 5 m, then descend on an 8.18% enclosed ramp
+    // to the original gate-door level. The low docking arms stay on the apron.
+    function airportBridgeFloor(b, y) {
+      return 40 - 18 * Math.max(0, Math.min(1, (y - (b.to - 220)) / 220));
+    }
     function airportBridgeSupports(b) {
-      return [b.from + 86, b.to - 80].map((y) => ({ x: b.x - 3, y: y - 3, w: 6, h: 6, height: 22, kind: 'airport bridge column' }));
+      return [b.from + 20, b.to - 80].map((y) => ({ x: b.x - 3, y: y - 3, w: 6, h: 6,
+        height: airportBridgeFloor(b, y), kind: 'airport bridge column' }));
+    }
+    function airportBridgeParts(b) {
+      const ramp = b.to - 220;
+      return [
+        { x: b.x, y: (b.from + ramp) / 2, hx: 11, hy: (ramp - b.from) / 2, a: 0, floor: 40, roof: 63, drop: 0, kind: 'airport jetbridge' },
+        { x: b.x, y: (ramp + b.to) / 2, hx: 11, hy: 110, a: 0, floor: 31, roof: 54, drop: 18, kind: 'airport jetbridge' },
+        { x: (b.x + b.dock.x) / 2, y: (b.to + b.dock.y) / 2,
+          hx: Math.hypot(b.dock.x - b.x, b.dock.y - b.to) / 2, hy: 9,
+          a: Math.atan2(b.dock.y - b.to, b.dock.x - b.x), floor: 22, roof: 43, drop: 0, kind: 'airport jetbridge' },
+        { x: b.dock.x, y: b.dock.y, hx: 10, hy: 10, a: 0, floor: 20, roof: 46, drop: 0, kind: 'airport docking cab' },
+      ];
     }
     function airportOverheadVolumes() {
       return [
-        ...AIRPORT_JETBRIDGES.flatMap((b) => [
-          { x: b.x, y: (b.from + b.to) / 2, hx: 11, hy: (b.to - b.from) / 2, a: 0, minHeight: 22, height: 45, kind: 'airport jetbridge' },
-          { x: (b.x + b.dock.x) / 2, y: (b.to + b.dock.y) / 2,
-            hx: Math.hypot(b.dock.x - b.x, b.dock.y - b.to) / 2, hy: 9,
-            a: Math.atan2(b.dock.y - b.to, b.dock.x - b.x), minHeight: 22, height: 43, kind: 'airport jetbridge' },
-          { x: b.dock.x, y: b.dock.y, hx: 10, hy: 10, a: 0, minHeight: 20, height: 46, kind: 'airport docking cab' },
-        ]),
+        ...AIRPORT_JETBRIDGES.flatMap(airportBridgeParts).flatMap((p) => {
+          if (!p.drop) return [{ x: p.x, y: p.y, hx: p.hx, hy: p.hy, a: p.a,
+            minHeight: p.floor, height: p.roof, kind: p.kind }];
+          // Existing cover/vehicle queries use horizontal slabs. Eleven short
+          // slabs bound the true slope within 0.21 m instead of blocking the road
+          // with one large low rectangle. The renderer draws a smooth ramp.
+          return Array.from({ length: 11 }, (_, i) => ({ x: p.x, y: p.y - p.hy + (i + 0.5) * 20, hx: p.hx, hy: 10, a: 0,
+            minHeight: p.floor + p.drop / 2 - p.drop * (i + 1) / 11,
+            height: p.roof + p.drop / 2 - p.drop * i / 11, kind: p.kind }));
+        }),
         ...AIRPORT_TOWERS.map((t) => ({ x: t.x, y: t.y, hx: t.cabW / 2, hy: t.cabD / 2, a: 0,
           minHeight: t.bottom, height: t.top, kind: 'airport control cab' })),
         ...AIRPORT_CANOPIES.map((c) => ({ x: c.x, y: c.y, hx: c.w / 2, hy: c.h / 2, a: 0,

@@ -402,8 +402,20 @@
         s.fov = CHASE_FOOT.fov;
         s.pitch = CHASE_FOOT.pitch;
         if (player.parachute) {
-          s.pivot = 0.4;
-          s.dist = 7.5;
+          const p = player.parachute,
+            // Frame the growing rig, not just the jumper's feet: the lines
+            // lift the wing about five metres above the shoulder harness.
+            lines = p.stage !== 'canopy' || p.phase === 'pilot' ? 0
+              : p.phase === 'lines' ? clamp(p.phaseK, 0, 1) * (2 - clamp(p.phaseK, 0, 1)) : 1,
+            cut = p.stage === 'freefall' && p.cutaway ? clamp(1 - (gameTime - p.cutaway.at) / 0.9, 0, 1) : 0,
+            extent = Math.max(lines, Math.sqrt(clamp(p.opening || 0, 0, 1)), cut * cut * (3 - 2 * cut)),
+            aspect = viewportWidth / Math.max(1, viewportHeight),
+            // A portrait lens loses horizontal FOV. Fit the same complete
+            // wing instead of letting its tips disappear off the sides.
+            halfAngle = Math.atan(Math.tan(56 * Math.PI / 360) * Math.min(1, aspect)),
+            fullBoom = Math.max(12, 5.2 / Math.sin(halfAngle));
+          s.pivot = 0.4 + 3.3 * extent;
+          s.dist = 7.5 + (fullBoom - 7.5) * extent;
           s.shoulder = 0;
           s.fov = 56;
         } else if (player.swimming) {
@@ -629,8 +641,13 @@
         sy0 = cam.py + ry * cam.shoulder,
         reach = chaseBoomReach(sx0, sy0, cam.pz, -fx, -fy, -fz, cam.wantDist, margin);
       // In at once in front of a wall, out again slowly (about 4 m/s).
+      // A fast reserve can spread fully in two seconds: let its unobstructed
+      // deployment boom keep pace, especially with a portrait lens. Once the
+      // wing flies the usual wall-release speed applies again.
+      const chuteOpening = !c && player.parachute?.stage === 'canopy' && player.parachute.phase !== 'open',
+        outRate = chuteOpening ? 6 * Math.max(1, 1 / Math.sqrt(cam.aspect)) : 4;
       if (reach < cam.dist) cam.dist = reach;
-      else cam.dist = Math.min(reach, cam.dist + deltaSeconds * 4 * M * (1 + cam.speedBlend * 3));
+      else cam.dist = Math.min(reach, cam.dist + deltaSeconds * outRate * M * (1 + cam.speedBlend * 3));
       // CLOSE QUARTERS: only a boom the wall cut short cranes (not a short zoom or the aim), never while aiming.
       const cut = cam.dist < cam.wantDist - 0.1 * M ? clamp((CHASE_CRANE.from * M - cam.dist) / ((CHASE_CRANE.from - 0.5) * M), 0, 1) : 0,
         craneTo = cut * (1 - cam.aimBlend) * CHASE_CRANE.lift * M;

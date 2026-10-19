@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-616 files in the include tree, 210,542 lines.
+616 files in the include tree, 210,594 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -171,7 +171,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/god-panel.js`   805 — God mode settings
 - `src/god-drawbridges.js`   134 — God mode settings · DRAWBRIDGES: raise or lower every drawbridge or one at a time, through each bridge's own opening (godDrawbridges).
 - `src/driving.js`   570 — Tyres, brakes and driving assists
-- `src/chase-camera.js`   933 — Chase camera: the third-person view behind the player that V switches with the street view: where it stands and looks, mouse / stick / touch look …
+- `src/chase-camera.js`   950 — Chase camera: the third-person view behind the player that V switches with the street view: where it stands and looks, mouse / stick / touch look …
 - `src/chase-rules.js`   599 — Chase rules: what the player can see in the chase view, for the game's rules (who may fire, spawning and recycling out of sight, the HUD's player …
 - `src/chase-hud.js`    77 — Chase HUD: the reticle in the middle of the screen in the chase view (chase-view.css) and the hidden cursor while the pointer is captured; drawn …
 - `src/tyre-effects.js`   287 — What the tyres leave behind: the burnout (forward and the handbrake held at a standstill), skid marks, and the one rule for tyre smoke, dust and …
@@ -203,7 +203,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/geography.js ▸ Coastlines and land regions
 
-- `src/geography-regions.js`   503 — One coastline model drives terrain, water, the map and all vehicle footprints.
+- `src/geography-regions.js`   523 — One coastline model drives terrain, water, the map and all vehicle footprints.
 - `src/geography-key.js`    69 — North Point Key: the islet off Northbank's north-east point that carries the three towers (coast and plan anchors).
 - `src/geography-land.js`   666 — Land cell cache (landAt), airport and boulevard tests, BRIDGES, bridge frames, clearance and approach piers.
 - `src/geography-ground.js`   525 — Bridge pylons and footings on the map, groundAt(), lake, coast and region paths, painted district ground and beach.
@@ -679,7 +679,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/world3d-resort.js ▸ Palms, the Keys' resort hotels, the airport apron, the Blue Hour rooftop bar, updateWorldVisuals and the rescue buoy.
 
-- `src/airport-terminal3d.js`   231 — Airport architecture and apron dressing shared by Southport and Oceanview.
+- `src/airport-terminal3d.js`   246 — Airport architecture and apron dressing shared by Southport and Oceanview.
 - `src/world3d-bluehour-terrace.js`   399 — ▸ The Blue Hour terrace in 3D (mission 2): teak deck, travertine and brass, glass balustrade, pool and loungers, marble bar, velvet lounges, clipped …
 
 ## src/world3d-bluehour-terrace.js ▸ The Blue Hour terrace in 3D (mission 2): teak deck, travertine and brass, glass balustrade, pool and loungers, marble bar, velvet lounges, clipped …

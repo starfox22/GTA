@@ -53,6 +53,15 @@ through a sprung return to the freefall arch. One frozen main-mesh copy drifts, 
 and fades over at most ten game seconds; its geometry/materials are independent of the
 live reserve and disposed on expiry/world reset/new rig.
 
+`chaseShapeFor()` frames the whole jumper and wing as the lines pay out: pivot rises
+from 0.4 to 3.7 m, boom from 7.5 to 12 m (longer in portrait to fit the horizontal FOV).
+Only while a canopy is deploying, boom extension is `6 * max(1, 1/sqrt(aspect))` m/s
+so a fast reserve cannot outgrow the frame. Once open, ordinary 4 m/s wall-release
+applies; building/cover sweeps and ground clearance always remain authoritative.
+Cutaway eases back to freefall framing over 0.9 s; foot and aircraft shapes are unchanged.
+`parachute-camera.mjs` projects the real rig meshes through the production camera,
+including moving deployments at 30/60 Hz, main/reserve banks, landscape and portrait.
+
 `parachuteState()` reports supply and stage; `parachuteView()` reports the drawn rig and
 `cutawayVisible`. `parachute-reserve.mjs` tests fresh presses, exact cutaway conservation,
 remapping, reserve staging/forecast, exhausted reserve, late fatal pull and landing/reset.

@@ -163,14 +163,13 @@
         }
       }
       function airportJetbridge(group, b) {
-        const parts = airportOverheadVolumes().filter((v) => v.kind.startsWith('airport ') &&
-          Math.abs(v.x - b.x) < 40 && v.y > b.from && v.y < b.dock.y + 12);
+        const parts = airportBridgeParts(b);
         for (const v of parts) {
           const part = new Three.Group();
           part.position.set(v.x, 0, v.y);
           part.rotation.y = -v.a;
           group.add(part);
-          const w = v.hx * 2, d = v.hy * 2, floor = v.minHeight, roof = v.height;
+          const w = v.hx * 2, d = v.hy * 2, floor = v.floor, roof = v.roof;
           box(part, 0, floor + 1, 0, w, 2, d, airportFinish.frame);
           box(part, 0, roof - 1, 0, w, 2, d, airportFinish.edge);
           box(part, 0, (floor + roof) / 2, 0, w - 1, roof - floor - 4, d - 1, airportFinish.glass);
@@ -181,6 +180,22 @@
               box(part, alongZ ? side * (half - 0.5) : s, (floor + roof) / 2,
                 alongZ ? s : side * (half - 0.5), 0.8, roof - floor - 2, 0.8, airportFinish.edge);
           }
+          if (v.drop) {
+            // Shear the corridor continuously down to the aircraft door; the
+            // roof and floor slope while its window mullions remain upright.
+            // Clone the unit boxes so the shared boxGeo is never mutated.
+            const slope = v.drop / d;
+            part.traverse((m) => {
+              if (!m.isMesh) return;
+              const geo = m.geometry.clone(), positions = geo.getAttribute('position');
+              for (let i = 0; i < positions.count; i++)
+                positions.setY(i, positions.getY(i) - slope * positions.getZ(i) * m.scale.z / m.scale.y);
+              geo.computeVertexNormals();
+              geo.computeBoundingSphere();
+              m.geometry = geo;
+              m.position.y -= slope * m.position.z;
+            });
+          }
         }
         for (const p of airportBridgeSupports(b)) {
           box(group, p.x + p.w / 2, p.height / 2, p.y + p.h / 2, p.w, p.height, p.h, airportFinish.stone);
@@ -189,7 +204,7 @@
         // Accordion docking seal remains wholly inside its collision cab.
         for (let x = -8; x <= 8; x += 2.3)
           box(group, b.dock.x + x, 33, b.dock.y + 9.4, 0.7, 23, 0.7, airportFinish.dark);
-        airportPlacard(group, b.gate, b.x, 36, b.to - 18, 14, Math.PI / 2, true);
+        airportPlacard(group, b.gate, b.x, airportBridgeFloor(b, b.to - 18) + 14, b.to - 18, 14, Math.PI / 2, true);
       }
       // Shallow concrete joints and markings cannot catch a taxiing wheel. They
       // are merged, never a giant new unculled mesh or a collision obstacle.

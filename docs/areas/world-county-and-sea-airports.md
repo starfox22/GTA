@@ -42,8 +42,15 @@ posts block people at ground level; apron paint is never a collision obstacle.
 walkways, tower-cab overhangs and entrance canopies. `air-cover.js` includes them
 in sight/shot queries, indexed overhead cover, chase-camera clearance and the
 ordinary numeric static collider grid. Bridge walkways start 22 units (2.75 m)
-above the apron; docking cabs start at 20. Pedestrian sight passes underneath,
-while elevated rays and aircraft meet the actual structure. Use the same plan
+above the apron at their gate ends; docking cabs start at 20. Over the public
+OCEANVIEW PARKWAY, the underside is 40 units (5 m), above the 32-unit conservative
+road-vehicle envelope. A continuous 27.5 m ramp at 8.18% descends to the gate;
+eleven short horizontal collision slabs conservatively bound that sloping mesh
+within 0.21 m. `airportBridgeFloor` / `airportBridgeParts` are its shared plan.
+All bridge and canopy support feet stay wholly outside the public carriageway;
+the first bridge posts stand on the terminal-side verge. Keep normal road lanes
+and full vehicle bodies clear when moving any support. Pedestrian sight passes
+underneath, while elevated rays and aircraft meet the actual structure. Use the same plan
 when changing a bridge's footprint or height. Do not add those slabs to the
 ground-only airport rectangle list: that would make an invisible wall underneath.
 
@@ -54,3 +61,9 @@ registration and dry apron corners. `aircraft-flight-model` checks the productio
 flight model and all seven host taxi routes; `aircraft-taxi-takeoff` boards existing
 planes and drives the routes using normal controls in the full world. Rendered
 appearance and performance need native evidence separately from these host tests.
+
+`airport-road-clearance` samples the production oriented SAT bodies and actual
+numeric collider grid across both public road lanes with sedan, bus, box truck
+and ambulance envelopes. It covers both gates, every support foot, the original
+parked bus pose, 5 m road headroom and the 1:12 ramp-grade limit. Tall-body and
+driving-into-post negative fixtures ensure the tests do not disable collisions.
