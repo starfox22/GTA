@@ -29,6 +29,7 @@ export default async function (t) {
       clamp: (v, a, b) => Math.max(a, Math.min(b, v)), clockText: () => '15:00',
       sportsBoardClock: () => '00:00', sportsbookInside: () => false,
       closeSportsbook: noop, tell: noop, tone: noop, save: noop,
+      resetWheelieScore: noop,
       staffSportsbook: noop, updateSportsbookReactions: noop, renderSportsbook: noop,
       sportsbookClerkSays: noop, sportsbookPuntersReact: noop,
       randomChoice: a => a[0], worldDamageCounts: () => ({}), clearPolice: noop,

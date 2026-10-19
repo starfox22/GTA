@@ -9,7 +9,18 @@ function functionSource(file, name) {
   return s.slice(start, s.indexOf('\n    }', start) + 6);
 }
 function callbackSource(file, name) {
-  const s = functionSource(file, name), start = s.indexOf('setTimeout(() => {') + 'setTimeout(() => {'.length,
+  const s = functionSource(file, name);
+  // Fatal vehicle/rider flights now keep their body until it settles, using a
+  // named, rescheduled respawn closure. Exercise that production closure and
+  // its captured sequence/impact state rather than the removed inline timer.
+  if (name === 'die') {
+    const capture = s.indexOf('      const deathSequence = '),
+      callback = s.indexOf('      const respawn = () => {', capture),
+      end = s.indexOf('\n      };', callback);
+    if (capture < 0 || callback < capture || end < callback) throw Error('Missing production respawn closure ' + name);
+    return s.slice(capture, callback) + s.slice(callback + '      const respawn = () => {'.length, end);
+  }
+  const start = s.indexOf('setTimeout(() => {') + 'setTimeout(() => {'.length,
     end = s.indexOf('\n      }, 4200)', start);
   if (start < 18 || end < start) throw Error('Missing production respawn callback ' + name);
   return s.slice(start, end);
