@@ -37,6 +37,16 @@ people-and-crowd.md. Tests: pedestrian-awareness, second-run-over.
   was only bumped (under 20 km/h), screams as before. Damage, crime and witness rules are unchanged
   (`p.sawPlayerAt` is now set for those who noticed the player's car).
 - Dodge variants live in `updateReaction` ('dodge': `leapV`, `leapFor`, `calm` = a sidestep facing the car).
+  Their fading speed is integrated over the clamped elapsed leap interval, including its last partial step.
+  The default 55 units/s fade over 0.42 s plus its 10 units/s base covers 15.75 units at every cadence;
+  endpoint sampling previously shortened it to 14.65 units at 30 Hz and 10.29 units at a 0.2 s crowd step.
+  Directions, durations, reaction decisions and intentional backward stumbles are unchanged. Displacement
+  still uses `moveBody` and its at-most-5-unit collision substeps. `npc-dodge-integration.mjs` tests actual
+  default/back/calm trajectories, thin walls, parked vehicles, overlap escape and swept vehicle contacts.
+- Coarse off-camera actor updates and the vehicle-sweep-before-person update order remain unchanged;
+  exact leap distance does not provide simultaneous continuous person/vehicle time-of-impact integration.
+  The original live-world `pedestrian-awareness.mjs` clearance-rate failure remains a separate known
+  fixture limit (docs/BACKLOG.md); the historical rates above are not a claim that its unchanged 0.6 check passes.
 
 ## First impact and flight (physics-knockdowns.js, riders.js)
 

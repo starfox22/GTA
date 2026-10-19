@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-614 files in the include tree, 209,973 lines.
+614 files in the include tree, 209,979 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -404,7 +404,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/crowd-perception.js`   461 — Crowd perception: incidents heard and seen (crowdIncident, crowdAlarm); deciding, starting and ending reactions.
 - `src/crowd-awareness.js`   273 — Crowd awareness of vehicles: who sees or hears a car coming, how long they take, and whether they dodge, step aside, freeze, jump back or are hit …
 - `src/crowd-awareness-console.js`   102 — Console for the vehicle-awareness test (crowd-awareness.js): stage pedestrians in the player's car's path and run the passes.
-- `src/crowd-reactions.js`   547 — Crowd reactions per frame (updateReaction), pose galleries and lineups, updateCrowdPerson(), dogs and witness reports.
+- `src/crowd-reactions.js`   553 — Crowd reactions per frame (updateReaction), pose galleries and lineups, updateCrowdPerson(), dogs and witness reports.
 - `src/crowd-witnesses.js`   395 — Crowd witnesses: who really saw or heard what the player did, who runs a short way and phones 911, the call itself (phone out, the lines, cut short …
 - `src/crowd-scenes.js`   354 — Street scenes: set pieces staged round the player, their members and props (sceneOpen, spawnSceneMember, streetFrontages).
 - `src/crowd-transit.js`   323 — Crowd taxis and buses: hailing, bus arrivals, deliveries and the per-frame scene update (updateScenes).
