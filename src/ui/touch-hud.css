@@ -114,7 +114,7 @@
 /* Short landscape screens have room beside the centred meter, under the map. */
 @media (max-height: 520px) and (min-width: 601px) {
   .touch-mode.roof-stealth #radioCaption {
-    top: max(var(--touch-dispatch-top, 160px), 146px);
+    top: max(var(--touch-dispatch-top, 160px), 180px);
     left: var(--hud-edge);
     right: auto;
     margin-inline: 0;

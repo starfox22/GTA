@@ -346,6 +346,9 @@ body:not(.touch-mode) .hud-location b {
 body.roof-stealth:not(.touch-mode) {
   --stealth-radio-top: calc(var(--hud-dock-top, 72px) + 98px);
 }
+body.roof-stealth:not(.touch-mode) #radioCaption {
+  letter-spacing: 0.04em;
+}
 /* Help and status lines, GTA-style: a feed under the location, left. Each
    line is a .note box (notify.css, hud-notify.js); this is their column. */
 #toast {
