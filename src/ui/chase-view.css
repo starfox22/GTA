@@ -84,3 +84,11 @@ body.chase-view:not(.touch-mode) #equipment {
     height: 34px;
   }
 }
+
+/* Short chase windows keep dialogue between the side columns, including the wider
+   mission key strip above the map. The street view has its own narrow-window rule. */
+@media (max-height: 620px) and (min-width: 701px) {
+  body.chase-view:not(.touch-mode) #storyLine {
+    width: min(640px, calc(100vw - 2 * (var(--hud-edge) + min(280px, 27vw) + 12px)));
+  }
+}

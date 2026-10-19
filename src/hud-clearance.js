@@ -45,6 +45,7 @@
       touchLayout: false,
       touchDispatchTop: -1,
       storyBottom: -1,
+      locationWidth: -1,
       promptStoryDock: false,
       // The chase layout's card: how far up from the bottom it stands (the minimap's top, chase-view.css).
       cardBottom: -1,
@@ -163,6 +164,12 @@
           dispatchTop = Math.max(dispatchTop, Math.ceil(box.bottom + 8));
         }
       }
+      // Long district names share the top row with a centred route pill. Keep the
+      // full name readable on its own side, including when it wraps onto a second line.
+      const location = getElement('hudLocation').getBoundingClientRect();
+      let locationWidth = viewportWidth * 0.42;
+      if (!touchLayout && C.nav.ok && location.bottom > C.nav.t && location.top < C.nav.b)
+        locationWidth = Math.max(0, Math.floor(C.nav.l - location.left - 12));
       const wheelie = getElement('wheelieScore');
       C.wheelie.ok = false;
       if (wheelie.classList.contains('on')) {
@@ -176,7 +183,8 @@
         }
       }
       const story = getElement('storyLine');
-      let storyBottom = 196;
+      const storyBase = viewportHeight <= 620 ? 114 : 196;
+      let storyBottom = storyBase;
       C.promptStoryDock = false;
       if (story.classList.contains('show')) {
         const box = story.getBoundingClientRect();
@@ -186,11 +194,11 @@
           C.story.r = box.right;
           C.story.b = box.bottom;
           C.story.ok = true;
-          // On a desktop street view the subtitle must clear the actual lower HUD,
+          // On a desktop view the subtitle must clear the actual lower HUD,
           // including a tall cargo card. A fixed 196px clipped the opening dialogue
           // behind both the minimap and mission card at 1000x700.
-          if (!touchLayout && !chaseLayout && viewportHeight > 620 && viewportWidth > 700) {
-            for (const id of ['minimapBox', 'pager', 'vehicleStats', 'weaponButton']) {
+          if (!touchLayout && viewportWidth > 700) {
+            for (const id of ['minimapBox', 'pager', 'quickKeys', 'vehicleStats', 'weaponButton']) {
               const el = getElement(id);
               if (el.classList.contains('hidden')) continue;
               const lower = el.getBoundingClientRect();
@@ -198,7 +206,7 @@
                 storyBottom = Math.max(storyBottom, viewportHeight - lower.top + 10);
             }
             // Use the subtitle's impending position in this same pass.
-            const rise = Math.ceil(storyBottom) - (C.storyBottom < 0 ? 196 : C.storyBottom);
+            const rise = Math.ceil(storyBottom) - (C.storyBottom < 0 ? storyBase : C.storyBottom);
             C.story.t -= rise;
             C.story.b -= rise;
           }
@@ -219,6 +227,10 @@
       if (storyBottom !== C.storyBottom) {
         C.storyBottom = storyBottom;
         document.body.style.setProperty('--storyline-bottom', storyBottom + 'px');
+      }
+      if (locationWidth !== C.locationWidth) {
+        C.locationWidth = locationWidth;
+        document.body.style.setProperty('--hud-location-max', locationWidth + 'px');
       }
       // Touch layouts put the mission card at the top. Place dispatch below its measured height rather than
       // a fixed 96 px that runs through the objective; write only after the layout reads above.

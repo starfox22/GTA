@@ -561,7 +561,7 @@ body:not(.touch-mode).police-search-active #carRadio {
   }
 }
 @media (min-height: 621px) and (min-width: 701px) {
-  body:not(.touch-mode):not(.chase-view) #storyLine {
+  body:not(.touch-mode) #storyLine {
     bottom: var(--storyline-bottom, 196px);
   }
 }
@@ -572,7 +572,7 @@ body:not(.touch-mode).police-search-active #carRadio {
    the minimap's corner at 960x600). Narrower windows keep the full-width line. */
 @media (max-height: 620px) and (min-width: 701px) {
   #storyLine {
-    bottom: 114px;
+    bottom: var(--storyline-bottom, 114px);
     width: min(640px, calc(100vw - 2 * var(--hud-edge) - 540px));
     font-size: 14px;
   }

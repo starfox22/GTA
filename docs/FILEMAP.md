@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-614 files in the include tree, 209,979 lines.
+614 files in the include tree, 209,991 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -441,7 +441,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/hud-state.js`   672 — HUD state and pop boxes, saved settings, weapon and radio watches, stars, minimap fold and zoom (hudState, hudPop).
 - `src/hud-panels.js`   645 — HUD panels: prompts, centre cards and toasts, sniper warning, panel covers, updateHud() and the flight HUD.
-- `src/hud-clearance.js`   388 — HUD clearance: the mission card never covers the player (and the dialogue line and the waypoint pill fade if they would).
+- `src/hud-clearance.js`   400 — HUD clearance: the mission card never covers the player (and the dialogue line and the waypoint pill fade if they would).
 
 ## src/render3d.js ▸ Three.js renderer and resource lifecycle
 
@@ -907,7 +907,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/ui/casino-transit.css`   201 — styles: #casinoTable, .roulette-top, .roulette-top canvas, .roulette-bank, …
 - `src/ui/police-arsenal.css`   523 — POLICE FEEDBACK AND ARSENAL — readable interface additions, v23.
 - `src/ui/wanted-effects.css`   206 — Wanted level (heat.js, pursuit.js, hud.js): the next star flashes red while dispatch escalates, earned stars grey out during a search, a thin meter …
-- `src/ui/hud-top.css`   647 — INTERFACE 30 — design tokens, HUD, title menu, settings (v30 UI pass).
+- `src/ui/hud-top.css`   651 — INTERFACE 30 — design tokens, HUD, title menu, settings (v30 UI pass).
 - `src/ui/hud-bottom.css`   688 — Bottom row: minimap + vitals, mission card, equipment
 - `src/ui/radio.css`   584 — Car radio: a station chip that opens on a change or on hover
 - `src/ui/title.css`   308 — Title screen
@@ -926,7 +926,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/ui/notify.css`   120 — Notification feed (hud-notify.js): tell() lines as .note boxes in #toast, newest first; older lines dim; an edge colour per tone and a thin bar that …
 - `src/ui/map-panel.css`   181 — City map (map-view.js): as large as the screen allows, with its filters (the legend doubles as them) and the GO TO list beside it, below it on a …
 - `src/ui/god-splash.css`   745 — God mode splash (god-splash.js): A cheat code toggling god mode: a full-screen card over everything (play, pause, Settings, the title); clicks pass …
-- `src/ui/chase-view.css`    86 — Chase view (chase-hud.js): the reticle in the middle of the screen.
+- `src/ui/chase-view.css`    94 — Chase view (chase-hud.js): the reticle in the middle of the screen.
 - `src/ui/mission-brief.css`   123 — Mission brief (mission-brief.js): one sentence for a story step in the upper middle of the screen, above the player and under the waypoint pill, then …
 - `src/ui/reduced-motion.css`    75 — Reduced motion: keep the states, drop the movement
 - `src/ui/hud.html`   311 — HUD. Layout and motion live in the HUD section of the stylesheet; the collapse/expand behaviour of the radio and weapon boxes and the minimap fold …

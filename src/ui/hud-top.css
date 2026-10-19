@@ -62,7 +62,7 @@ kbd {
   min-width: 0;
   border-left: 2px solid var(--acid);
   padding: 1px 0 1px 11px;
-  max-width: 42vw;
+  max-width: min(42vw, var(--hud-location-max, 42vw));
 }
 .hud-location .eyebrow {
   font-size: 9px;
@@ -77,6 +77,10 @@ kbd {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+body:not(.touch-mode) .hud-location b {
+  white-space: normal;
+  overflow: visible;
 }
 .hud-location .street {
   display: block;

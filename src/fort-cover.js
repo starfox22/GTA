@@ -277,7 +277,7 @@
         }
         if (!fortCover.halted && d < 160) {
           fortCover.halted = true;
-          fortGateLine(guard, 'Evening, sir. ID, please.');
+          fortGateLine(guard, 'Sir, ID, please.');
           tone(660, 0.12, 0.12, 'square', 650);
         } else if (selectedWeaponIndex !== FISTS_INDEX && gameTime - fortCover.saidAt > 6) {
           fortCover.saidAt = gameTime;

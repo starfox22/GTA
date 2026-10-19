@@ -64,32 +64,58 @@ try {
           return {docked: promptView.docked, age: hudNow() - promptView.freshAt};
         };
       })();` });
-      for (const mode of ['open', 'compact', 'folded-map']) for (const prompt of ['none', 'fresh', 'terrain', 'docked-terrain']) {
-        const promptState = await page.evaluate(({ mode, height, prompt }) => {
+      for (const view of ['street', 'chase']) for (const scene of ['opening', 'package', 'gate', 'records'])
+        for (const mode of ['open', 'compact', 'folded-map']) for (const prompt of ['none', 'fresh', 'terrain', 'docked-terrain']) {
+        const promptState = await page.evaluate(({ mode, height, prompt, view, scene }) => {
           const el = id => document.getElementById(id);
+          document.body.classList.toggle('chase-view', view === 'chase');
+          el('district').textContent = scene === 'gate' || scene === 'records' ? 'FORT SENTINEL · RESTRICTED' : 'RIDGELINE COUNTY';
+          el('streetName').textContent = '';
+          el('navigation').style.display = '';
+          el('navTitle').textContent = scene === 'gate' || scene === 'records' ? 'WALK UP TO FORT SENTINEL’S GATE · SHOW YOUR ID' : 'BRING THE PACKAGE TO VINNY’S WAREHOUSE';
+          el('navDistance').textContent = 'OBJECTIVE · 1252 m';
+          const hints = scene === 'gate' || scene === 'records'
+            ? [['WASD', 'WALK'], ['SHIFT', 'RUN'], ['E', 'INTERACT'], ['?', 'CONTROLS']]
+            : [['WASD', 'RUN'], ['SHIFT', 'WALK'], ['SPACE', 'JUMP'], ['E', 'INTERACT'], ['F', 'FIRE'], ['?', 'CONTROLS']];
+          el('quickKeys').replaceChildren(...hints.map(([binding, label]) => {
+            const item = document.createElement('span'), key = document.createElement('kbd');
+            key.textContent = binding;
+            item.append(key, ' ' + label);
+            return item;
+          }));
           el('pagerLabel').textContent = 'VINNY MORETTI';
           el('missionTitle').textContent = 'Dockside Favor';
           el('missionText').textContent = 'Vinny gave you a mission: pick up Vinny’s marked cargo truck.';
-          el('cargoStatus').style.display = '';
+          el('cargoStatus').style.display = scene === 'opening' ? '' : 'none';
           el('missionObjective').textContent = 'PICK UP VINNY’S MARKED CARGO TRUCK';
           el('pager').classList.toggle('compact', mode !== 'open' || height <= 620);
           el('minimapBox').classList.toggle('folded', mode === 'folded-map');
-          el('storyLine').textContent = 'Vinny: Take the truck, load three harbor crates, and drive them into the warehouse. Keep the cargo safe and bring it back in one piece.';
+          el('storyLine').textContent = scene === 'package'
+            ? 'Vinny: Got the case? Good. Leave the vehicle if you have to. Just bring me the package.'
+            : scene === 'gate' ? 'GATE SERGEANT: Sir, ID, please.'
+            : scene === 'records' ? 'Vinny: You’re in. Walk like you’ve been there two years. Side door at the far end of headquarters, not the main entrance. And don’t touch their trucks: you take one, you’ve got the whole army on you.'
+            : 'Vinny: Take the truck, load three harbor crates, and drive them into the warehouse. Keep the cargo safe and bring it back in one piece.';
           el('storyLine').classList.add('show');
           return window.measureDialogue(prompt !== 'none', prompt.includes('terrain'), prompt === 'docked-terrain');
-        }, { mode, height, prompt });
+        }, { mode, height, prompt, view, scene });
         const result = await page.evaluate(({prompt}) => {
           const box = id => { const r = document.getElementById(id).getBoundingClientRect(); return { id, l: r.left, t: r.top, r: r.right, b: r.bottom }; },
-            subtitle = box('storyLine'), lower = ['pager', 'minimapBox', 'vehicleStats', 'weaponButton'].map(box),
+            subtitle = box('storyLine'), lower = ['pager', 'quickKeys', 'minimapBox', 'vehicleStats', 'weaponButton'].map(box),
             overlaps = lower.filter(b => Math.min(b.r, subtitle.r) - Math.max(b.l, subtitle.l) > 2 && Math.min(b.b, subtitle.b) - Math.max(b.t, subtitle.t) > 2);
           const interaction = box('interaction'), terrain = box('terrainStatus'),
             meet = (a,b) => Math.min(a.r,b.r)-Math.max(a.l,b.l)>2 && Math.min(a.b,b.b)-Math.max(a.t,b.t)>2;
           if (prompt !== 'none' && meet(interaction, subtitle)) overlaps.push(interaction);
           if (prompt.includes('terrain') && meet(interaction, terrain)) overlaps.push(terrain);
-          return { subtitle, lower, interaction, terrain, overlaps: overlaps.map(b => b.id), onscreen: subtitle.l >= 0 && subtitle.r <= innerWidth && subtitle.t >= 0 && subtitle.b <= innerHeight };
+          const location = box('hudLocation'), navigation = box('navigation'), district = box('district'),
+            name = document.getElementById('district');
+          if (meet(location, navigation)) overlaps.push(location);
+          const visible = id => { const e = document.getElementById(id), c = getComputedStyle(e); return c.display !== 'none' && c.visibility !== 'hidden' && Number(c.opacity) > 0; },
+            textFits = name.scrollWidth <= name.clientWidth + 1 && name.scrollHeight <= name.clientHeight + 1;
+          return { subtitle, lower, interaction, terrain, location, navigation, district, textFits,
+            visible: ['storyLine', 'quickKeys', 'hudLocation', 'navigation'].every(visible), overlaps: overlaps.map(b => b.id), onscreen: subtitle.l >= 0 && subtitle.r <= innerWidth && subtitle.t >= 0 && subtitle.b <= innerHeight };
         }, {prompt});
-        report.cases.push({ width, height, mode, prompt, promptState, ...result });
-        if (result.overlaps.length || !result.onscreen) report.failures.push({ width, height, mode, prompt, ...result });
+        report.cases.push({ width, height, view, scene, mode, prompt, promptState, ...result });
+        if (result.overlaps.length || !result.onscreen || !result.visible || !result.textFits) report.failures.push({ width, height, view, scene, mode, prompt, ...result });
       }
     } finally { await page.close(); }
   }
