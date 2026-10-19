@@ -1,0 +1,43 @@
+{
+  "kind": "Native unedited High-preset game captures on the exact published split entry",
+  "files": [
+    {
+      "file": "images/fort-running-suspicion-high.png",
+      "sha256": "5db98a24434c62a9318dc0ff5bec4c275ef5512b127543e91cba5c777dece8ec",
+      "captureReceipt": "verification/native/smoke.json",
+      "originalFile": "08-fort-running-suspicion-high.png",
+      "category": {
+        "kind": "staged cleared Fort disguise followed by actual physical keyboard movement",
+        "quality": "High",
+        "ordinaryMissionWin": false
+      },
+      "sourceCommit": "74ec9f7b47dac0ecaac68a150b65dfc219c6e413",
+      "htmlSha256": "80e81b6c3f24fe5a28abd558e68f5dfeb329b8ec557e0fcbcc2f9c84d2d71426",
+      "sourceMonolithSha256": "477c76c31dcc9fa78302833e0099e1cd495032243e9c79b910bcb5bd1f37d821",
+      "recorderSha256": "894d931467b0a4225db3e34d04161e695f74d71734dd843bd7f6a1d2ccb27da0",
+      "viewport": [
+        1000,
+        700
+      ]
+    },
+    {
+      "file": "images/fort-running-recovery-high.png",
+      "sha256": "7d9d9dc54e0a22e0dedf9906e0913862806c02bbd48fc93e296879e44272f06c",
+      "captureReceipt": "verification/native/smoke.json",
+      "originalFile": "09-fort-running-recovery-high.png",
+      "category": {
+        "kind": "staged cleared Fort disguise followed by actual physical keyboard movement",
+        "quality": "High",
+        "ordinaryMissionWin": false
+      },
+      "sourceCommit": "74ec9f7b47dac0ecaac68a150b65dfc219c6e413",
+      "htmlSha256": "80e81b6c3f24fe5a28abd558e68f5dfeb329b8ec557e0fcbcc2f9c84d2d71426",
+      "sourceMonolithSha256": "477c76c31dcc9fa78302833e0099e1cd495032243e9c79b910bcb5bd1f37d821",
+      "recorderSha256": "894d931467b0a4225db3e34d04161e695f74d71734dd843bd7f6a1d2ccb27da0",
+      "viewport": [
+        1000,
+        700
+      ]
+    }
+  ]
+}

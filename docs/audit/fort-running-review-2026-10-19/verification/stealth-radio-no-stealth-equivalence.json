@@ -1,0 +1,6 @@
+{
+  "pass": true,
+  "cases": 128,
+  "differences": [],
+  "claim": "With stealth hidden and roof-stealth absent, native DOM radioCaption rectangles are identical before/after at all128 scenarios. No world rendering claim."
+}

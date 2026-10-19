@@ -1,0 +1,17 @@
+{
+  "title": "Dead End City — Fort Sentinel suspicion",
+  "introduction": "Running now builds a recoverable suspicion bar. Walk again before it fills to keep your disguise. These High-preset screenshots use a staged admission followed by actual keyboard movement; earlier mission, vehicle and physics reviews remain linked below.",
+  "comparisons": [],
+  "screenshots": [
+    {
+      "title": "Running builds suspicion with time to react",
+      "description": "High preset, native 1000×700. After staged Fort admission, actual Shift+D input raises suspicion gradually and the HUD counts down the remaining window. The disguise is still intact.",
+      "file": "images/fort-running-suspicion-high.png"
+    },
+    {
+      "title": "Walk again to recover your cover",
+      "description": "Releasing Shift and continuing to walk stops the buildup immediately. Suspicion fades while guards still see the player, and the HUD confirms recovery. Same staged admission, actual keyboard movement and native High renderer.",
+      "file": "images/fort-running-recovery-high.png"
+    }
+  ]
+}

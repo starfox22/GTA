@@ -1,0 +1,2930 @@
+{
+  "pass": false,
+  "mode": "after",
+  "category": "Native DOM fixture of actual production HUD markup/CSS and measureMissionCard. No world rendering or gameplay claim.",
+  "frozenHtmlSha256": "0b5711f566da3db453928e54add1b68e05209ad358ad1ae60c0d316897f85673",
+  "recorderSha256": "f08b8c1a7581cb40239331b3723c98109f4025b509baac1441e6bb42990f7b5f",
+  "cssSha256": "e74298210e6b4cfbbc50b9240d7303b841072cbce665865582d493ce69586ca0",
+  "cases": [
+    {
+      "width": 1280,
+      "height": 800,
+      "touch": false,
+      "view": "street",
+      "state": "run",
+      "long": false,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 522.609375,
+        "t": 108,
+        "r": 757.375,
+        "b": 158.59375,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 538.359375,
+        "t": 170,
+        "r": 741.640625,
+        "b": 196,
+        "w": 203.28125,
+        "h": 26
+      },
+      "overlap": {
+        "w": 203.28125,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "72px",
+      "actualCompact": true,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "touch": false,
+      "view": "street",
+      "state": "run",
+      "long": false,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 522.609375,
+        "t": 108,
+        "r": 757.375,
+        "b": 158.59375,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 538.359375,
+        "t": 170,
+        "r": 741.640625,
+        "b": 196,
+        "w": 203.28125,
+        "h": 26
+      },
+      "overlap": {
+        "w": 203.28125,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "72px",
+      "actualCompact": false,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "touch": false,
+      "view": "street",
+      "state": "run",
+      "long": true,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 522.609375,
+        "t": 108,
+        "r": 757.375,
+        "b": 158.59375,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 438,
+        "t": 170,
+        "r": 842,
+        "b": 210,
+        "w": 404,
+        "h": 40
+      },
+      "overlap": {
+        "w": 234.765625,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "72px",
+      "actualCompact": true,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "touch": false,
+      "view": "street",
+      "state": "run",
+      "long": true,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 522.609375,
+        "t": 108,
+        "r": 757.375,
+        "b": 158.59375,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 438,
+        "t": 170,
+        "r": 842,
+        "b": 210,
+        "w": 404,
+        "h": 40
+      },
+      "overlap": {
+        "w": 234.765625,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "72px",
+      "actualCompact": false,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "touch": false,
+      "view": "street",
+      "state": "recovery",
+      "long": false,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 512.546875,
+        "t": 108,
+        "r": 767.453125,
+        "b": 158.59375,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 538.359375,
+        "t": 170,
+        "r": 741.640625,
+        "b": 196,
+        "w": 203.28125,
+        "h": 26
+      },
+      "overlap": {
+        "w": 203.28125,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "72px",
+      "actualCompact": true,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "touch": false,
+      "view": "street",
+      "state": "recovery",
+      "long": false,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 512.546875,
+        "t": 108,
+        "r": 767.453125,
+        "b": 158.59375,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 538.359375,
+        "t": 170,
+        "r": 741.640625,
+        "b": 196,
+        "w": 203.28125,
+        "h": 26
+      },
+      "overlap": {
+        "w": 203.28125,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "72px",
+      "actualCompact": false,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "touch": false,
+      "view": "street",
+      "state": "recovery",
+      "long": true,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 512.546875,
+        "t": 108,
+        "r": 767.453125,
+        "b": 158.59375,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 438,
+        "t": 170,
+        "r": 842,
+        "b": 210,
+        "w": 404,
+        "h": 40
+      },
+      "overlap": {
+        "w": 254.90625,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "72px",
+      "actualCompact": true,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "touch": false,
+      "view": "street",
+      "state": "recovery",
+      "long": true,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 512.546875,
+        "t": 108,
+        "r": 767.453125,
+        "b": 158.59375,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 438,
+        "t": 170,
+        "r": 842,
+        "b": 210,
+        "w": 404,
+        "h": 40
+      },
+      "overlap": {
+        "w": 254.90625,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "72px",
+      "actualCompact": false,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "touch": false,
+      "view": "chase",
+      "state": "run",
+      "long": false,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 522.609375,
+        "t": 108,
+        "r": 757.375,
+        "b": 158.59375,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 538.359375,
+        "t": 170,
+        "r": 741.640625,
+        "b": 196,
+        "w": 203.28125,
+        "h": 26
+      },
+      "overlap": {
+        "w": 203.28125,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "72px",
+      "actualCompact": true,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "touch": false,
+      "view": "chase",
+      "state": "run",
+      "long": false,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 522.609375,
+        "t": 108,
+        "r": 757.375,
+        "b": 158.59375,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 538.359375,
+        "t": 170,
+        "r": 741.640625,
+        "b": 196,
+        "w": 203.28125,
+        "h": 26
+      },
+      "overlap": {
+        "w": 203.28125,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "72px",
+      "actualCompact": false,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "touch": false,
+      "view": "chase",
+      "state": "run",
+      "long": true,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 522.609375,
+        "t": 108,
+        "r": 757.375,
+        "b": 158.59375,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 438,
+        "t": 170,
+        "r": 842,
+        "b": 210,
+        "w": 404,
+        "h": 40
+      },
+      "overlap": {
+        "w": 234.765625,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "72px",
+      "actualCompact": true,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "touch": false,
+      "view": "chase",
+      "state": "run",
+      "long": true,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 522.609375,
+        "t": 108,
+        "r": 757.375,
+        "b": 158.59375,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 438,
+        "t": 170,
+        "r": 842,
+        "b": 210,
+        "w": 404,
+        "h": 40
+      },
+      "overlap": {
+        "w": 234.765625,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "72px",
+      "actualCompact": false,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "touch": false,
+      "view": "chase",
+      "state": "recovery",
+      "long": false,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 512.546875,
+        "t": 108,
+        "r": 767.453125,
+        "b": 158.59375,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 538.359375,
+        "t": 170,
+        "r": 741.640625,
+        "b": 196,
+        "w": 203.28125,
+        "h": 26
+      },
+      "overlap": {
+        "w": 203.28125,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "72px",
+      "actualCompact": true,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "touch": false,
+      "view": "chase",
+      "state": "recovery",
+      "long": false,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 512.546875,
+        "t": 108,
+        "r": 767.453125,
+        "b": 158.59375,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 538.359375,
+        "t": 170,
+        "r": 741.640625,
+        "b": 196,
+        "w": 203.28125,
+        "h": 26
+      },
+      "overlap": {
+        "w": 203.28125,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "72px",
+      "actualCompact": false,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "touch": false,
+      "view": "chase",
+      "state": "recovery",
+      "long": true,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 512.546875,
+        "t": 108,
+        "r": 767.453125,
+        "b": 158.59375,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 438,
+        "t": 170,
+        "r": 842,
+        "b": 210,
+        "w": 404,
+        "h": 40
+      },
+      "overlap": {
+        "w": 254.90625,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "72px",
+      "actualCompact": true,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "touch": false,
+      "view": "chase",
+      "state": "recovery",
+      "long": true,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 512.546875,
+        "t": 108,
+        "r": 767.453125,
+        "b": 158.59375,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 438,
+        "t": 170,
+        "r": 842,
+        "b": 210,
+        "w": 404,
+        "h": 40
+      },
+      "overlap": {
+        "w": 254.90625,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "72px",
+      "actualCompact": false,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 1000,
+      "height": 700,
+      "touch": false,
+      "view": "street",
+      "state": "run",
+      "long": false,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 382.609375,
+        "t": 108,
+        "r": 617.375,
+        "b": 158.59375,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 438,
+        "t": 170,
+        "r": 562,
+        "b": 210,
+        "w": 124,
+        "h": 40
+      },
+      "overlap": {
+        "w": 124,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "72px",
+      "actualCompact": true,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 1000,
+      "height": 700,
+      "touch": false,
+      "view": "street",
+      "state": "run",
+      "long": false,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 382.609375,
+        "t": 108,
+        "r": 617.375,
+        "b": 158.59375,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 438,
+        "t": 170,
+        "r": 562,
+        "b": 210,
+        "w": 124,
+        "h": 40
+      },
+      "overlap": {
+        "w": 124,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "72px",
+      "actualCompact": false,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 1000,
+      "height": 700,
+      "touch": false,
+      "view": "street",
+      "state": "run",
+      "long": true,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 382.609375,
+        "t": 108,
+        "r": 617.375,
+        "b": 158.59375,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 438,
+        "t": 170,
+        "r": 562,
+        "b": 294,
+        "w": 124,
+        "h": 124
+      },
+      "overlap": {
+        "w": 124,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "72px",
+      "actualCompact": true,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 1000,
+      "height": 700,
+      "touch": false,
+      "view": "street",
+      "state": "run",
+      "long": true,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 382.609375,
+        "t": 108,
+        "r": 617.375,
+        "b": 158.59375,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 438,
+        "t": 170,
+        "r": 562,
+        "b": 294,
+        "w": 124,
+        "h": 124
+      },
+      "overlap": {
+        "w": 124,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "72px",
+      "actualCompact": false,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 1000,
+      "height": 700,
+      "touch": false,
+      "view": "street",
+      "state": "recovery",
+      "long": false,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 372.546875,
+        "t": 108,
+        "r": 627.453125,
+        "b": 158.59375,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 438,
+        "t": 170,
+        "r": 562,
+        "b": 210,
+        "w": 124,
+        "h": 40
+      },
+      "overlap": {
+        "w": 124,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "72px",
+      "actualCompact": true,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 1000,
+      "height": 700,
+      "touch": false,
+      "view": "street",
+      "state": "recovery",
+      "long": false,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 372.546875,
+        "t": 108,
+        "r": 627.453125,
+        "b": 158.59375,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 438,
+        "t": 170,
+        "r": 562,
+        "b": 210,
+        "w": 124,
+        "h": 40
+      },
+      "overlap": {
+        "w": 124,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "72px",
+      "actualCompact": false,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 1000,
+      "height": 700,
+      "touch": false,
+      "view": "street",
+      "state": "recovery",
+      "long": true,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 372.546875,
+        "t": 108,
+        "r": 627.453125,
+        "b": 158.59375,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 438,
+        "t": 170,
+        "r": 562,
+        "b": 294,
+        "w": 124,
+        "h": 124
+      },
+      "overlap": {
+        "w": 124,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "72px",
+      "actualCompact": true,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 1000,
+      "height": 700,
+      "touch": false,
+      "view": "street",
+      "state": "recovery",
+      "long": true,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 372.546875,
+        "t": 108,
+        "r": 627.453125,
+        "b": 158.59375,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 438,
+        "t": 170,
+        "r": 562,
+        "b": 294,
+        "w": 124,
+        "h": 124
+      },
+      "overlap": {
+        "w": 124,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "72px",
+      "actualCompact": false,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 1000,
+      "height": 700,
+      "touch": false,
+      "view": "chase",
+      "state": "run",
+      "long": false,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 382.609375,
+        "t": 108,
+        "r": 617.375,
+        "b": 158.59375,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 438,
+        "t": 170,
+        "r": 562,
+        "b": 210,
+        "w": 124,
+        "h": 40
+      },
+      "overlap": {
+        "w": 124,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "72px",
+      "actualCompact": true,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 1000,
+      "height": 700,
+      "touch": false,
+      "view": "chase",
+      "state": "run",
+      "long": false,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 382.609375,
+        "t": 108,
+        "r": 617.375,
+        "b": 158.59375,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 438,
+        "t": 170,
+        "r": 562,
+        "b": 210,
+        "w": 124,
+        "h": 40
+      },
+      "overlap": {
+        "w": 124,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "72px",
+      "actualCompact": false,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 1000,
+      "height": 700,
+      "touch": false,
+      "view": "chase",
+      "state": "run",
+      "long": true,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 382.609375,
+        "t": 108,
+        "r": 617.375,
+        "b": 158.59375,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 438,
+        "t": 170,
+        "r": 562,
+        "b": 294,
+        "w": 124,
+        "h": 124
+      },
+      "overlap": {
+        "w": 124,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "72px",
+      "actualCompact": true,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 1000,
+      "height": 700,
+      "touch": false,
+      "view": "chase",
+      "state": "run",
+      "long": true,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 382.609375,
+        "t": 108,
+        "r": 617.375,
+        "b": 158.59375,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 438,
+        "t": 170,
+        "r": 562,
+        "b": 294,
+        "w": 124,
+        "h": 124
+      },
+      "overlap": {
+        "w": 124,
+        "h": 0
+      },
+      "neighbors": [
+        {
+          "id": "storyLine",
+          "rect": {
+            "l": 180,
+            "t": 291.75,
+            "r": 820,
+            "b": 373,
+            "w": 640,
+            "h": 81.25
+          }
+        }
+      ],
+      "computedDock": "72px",
+      "actualCompact": false,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 1000,
+      "height": 700,
+      "touch": false,
+      "view": "chase",
+      "state": "recovery",
+      "long": false,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 372.546875,
+        "t": 108,
+        "r": 627.453125,
+        "b": 158.59375,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 438,
+        "t": 170,
+        "r": 562,
+        "b": 210,
+        "w": 124,
+        "h": 40
+      },
+      "overlap": {
+        "w": 124,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "72px",
+      "actualCompact": true,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 1000,
+      "height": 700,
+      "touch": false,
+      "view": "chase",
+      "state": "recovery",
+      "long": false,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 372.546875,
+        "t": 108,
+        "r": 627.453125,
+        "b": 158.59375,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 438,
+        "t": 170,
+        "r": 562,
+        "b": 210,
+        "w": 124,
+        "h": 40
+      },
+      "overlap": {
+        "w": 124,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "72px",
+      "actualCompact": false,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 1000,
+      "height": 700,
+      "touch": false,
+      "view": "chase",
+      "state": "recovery",
+      "long": true,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 372.546875,
+        "t": 108,
+        "r": 627.453125,
+        "b": 158.59375,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 438,
+        "t": 170,
+        "r": 562,
+        "b": 294,
+        "w": 124,
+        "h": 124
+      },
+      "overlap": {
+        "w": 124,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "72px",
+      "actualCompact": true,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 1000,
+      "height": 700,
+      "touch": false,
+      "view": "chase",
+      "state": "recovery",
+      "long": true,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 372.546875,
+        "t": 108,
+        "r": 627.453125,
+        "b": 158.59375,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 438,
+        "t": 170,
+        "r": 562,
+        "b": 294,
+        "w": 124,
+        "h": 124
+      },
+      "overlap": {
+        "w": 124,
+        "h": 0
+      },
+      "neighbors": [
+        {
+          "id": "storyLine",
+          "rect": {
+            "l": 180,
+            "t": 291.75,
+            "r": 820,
+            "b": 373,
+            "w": 640,
+            "h": 81.25
+          }
+        }
+      ],
+      "computedDock": "72px",
+      "actualCompact": false,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 960,
+      "height": 600,
+      "touch": false,
+      "view": "street",
+      "state": "run",
+      "long": false,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 362.609375,
+        "t": 142,
+        "r": 597.375,
+        "b": 192.59375,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 378.359375,
+        "t": 204,
+        "r": 581.640625,
+        "b": 230,
+        "w": 203.28125,
+        "h": 26
+      },
+      "overlap": {
+        "w": 203.28125,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "116px",
+      "actualCompact": true,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 960,
+      "height": 600,
+      "touch": false,
+      "view": "street",
+      "state": "run",
+      "long": false,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 362.609375,
+        "t": 142,
+        "r": 597.375,
+        "b": 192.59375,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 378.359375,
+        "t": 204,
+        "r": 581.640625,
+        "b": 230,
+        "w": 203.28125,
+        "h": 26
+      },
+      "overlap": {
+        "w": 203.28125,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "116px",
+      "actualCompact": true,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 960,
+      "height": 600,
+      "touch": false,
+      "view": "street",
+      "state": "run",
+      "long": true,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 362.609375,
+        "t": 142,
+        "r": 597.375,
+        "b": 192.59375,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 358,
+        "t": 204,
+        "r": 602,
+        "b": 258,
+        "w": 244,
+        "h": 54
+      },
+      "overlap": {
+        "w": 234.765625,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "116px",
+      "actualCompact": true,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 960,
+      "height": 600,
+      "touch": false,
+      "view": "street",
+      "state": "run",
+      "long": true,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 362.609375,
+        "t": 142,
+        "r": 597.375,
+        "b": 192.59375,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 358,
+        "t": 204,
+        "r": 602,
+        "b": 258,
+        "w": 244,
+        "h": 54
+      },
+      "overlap": {
+        "w": 234.765625,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "116px",
+      "actualCompact": true,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 960,
+      "height": 600,
+      "touch": false,
+      "view": "street",
+      "state": "recovery",
+      "long": false,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 352.546875,
+        "t": 142,
+        "r": 607.453125,
+        "b": 192.59375,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 378.359375,
+        "t": 204,
+        "r": 581.640625,
+        "b": 230,
+        "w": 203.28125,
+        "h": 26
+      },
+      "overlap": {
+        "w": 203.28125,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "116px",
+      "actualCompact": true,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 960,
+      "height": 600,
+      "touch": false,
+      "view": "street",
+      "state": "recovery",
+      "long": false,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 352.546875,
+        "t": 142,
+        "r": 607.453125,
+        "b": 192.59375,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 378.359375,
+        "t": 204,
+        "r": 581.640625,
+        "b": 230,
+        "w": 203.28125,
+        "h": 26
+      },
+      "overlap": {
+        "w": 203.28125,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "116px",
+      "actualCompact": true,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 960,
+      "height": 600,
+      "touch": false,
+      "view": "street",
+      "state": "recovery",
+      "long": true,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 352.546875,
+        "t": 142,
+        "r": 607.453125,
+        "b": 192.59375,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 358,
+        "t": 204,
+        "r": 602,
+        "b": 258,
+        "w": 244,
+        "h": 54
+      },
+      "overlap": {
+        "w": 244,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "116px",
+      "actualCompact": true,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 960,
+      "height": 600,
+      "touch": false,
+      "view": "street",
+      "state": "recovery",
+      "long": true,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 352.546875,
+        "t": 142,
+        "r": 607.453125,
+        "b": 192.59375,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 358,
+        "t": 204,
+        "r": 602,
+        "b": 258,
+        "w": 244,
+        "h": 54
+      },
+      "overlap": {
+        "w": 244,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "116px",
+      "actualCompact": true,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 960,
+      "height": 600,
+      "touch": false,
+      "view": "chase",
+      "state": "run",
+      "long": false,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 362.609375,
+        "t": 142,
+        "r": 597.375,
+        "b": 192.59375,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 378.359375,
+        "t": 204,
+        "r": 581.640625,
+        "b": 230,
+        "w": 203.28125,
+        "h": 26
+      },
+      "overlap": {
+        "w": 203.28125,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "116px",
+      "actualCompact": true,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 960,
+      "height": 600,
+      "touch": false,
+      "view": "chase",
+      "state": "run",
+      "long": false,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 362.609375,
+        "t": 142,
+        "r": 597.375,
+        "b": 192.59375,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 378.359375,
+        "t": 204,
+        "r": 581.640625,
+        "b": 230,
+        "w": 203.28125,
+        "h": 26
+      },
+      "overlap": {
+        "w": 203.28125,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "116px",
+      "actualCompact": true,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 960,
+      "height": 600,
+      "touch": false,
+      "view": "chase",
+      "state": "run",
+      "long": true,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 362.609375,
+        "t": 142,
+        "r": 597.375,
+        "b": 192.59375,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 358,
+        "t": 204,
+        "r": 602,
+        "b": 258,
+        "w": 244,
+        "h": 54
+      },
+      "overlap": {
+        "w": 234.765625,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "116px",
+      "actualCompact": true,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 960,
+      "height": 600,
+      "touch": false,
+      "view": "chase",
+      "state": "run",
+      "long": true,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 362.609375,
+        "t": 142,
+        "r": 597.375,
+        "b": 192.59375,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 358,
+        "t": 204,
+        "r": 602,
+        "b": 258,
+        "w": 244,
+        "h": 54
+      },
+      "overlap": {
+        "w": 234.765625,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "116px",
+      "actualCompact": true,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 960,
+      "height": 600,
+      "touch": false,
+      "view": "chase",
+      "state": "recovery",
+      "long": false,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 352.546875,
+        "t": 142,
+        "r": 607.453125,
+        "b": 192.59375,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 378.359375,
+        "t": 204,
+        "r": 581.640625,
+        "b": 230,
+        "w": 203.28125,
+        "h": 26
+      },
+      "overlap": {
+        "w": 203.28125,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "116px",
+      "actualCompact": true,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 960,
+      "height": 600,
+      "touch": false,
+      "view": "chase",
+      "state": "recovery",
+      "long": false,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 352.546875,
+        "t": 142,
+        "r": 607.453125,
+        "b": 192.59375,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 378.359375,
+        "t": 204,
+        "r": 581.640625,
+        "b": 230,
+        "w": 203.28125,
+        "h": 26
+      },
+      "overlap": {
+        "w": 203.28125,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "116px",
+      "actualCompact": true,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 960,
+      "height": 600,
+      "touch": false,
+      "view": "chase",
+      "state": "recovery",
+      "long": true,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 352.546875,
+        "t": 142,
+        "r": 607.453125,
+        "b": 192.59375,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 358,
+        "t": 204,
+        "r": 602,
+        "b": 258,
+        "w": 244,
+        "h": 54
+      },
+      "overlap": {
+        "w": 244,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "116px",
+      "actualCompact": true,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 960,
+      "height": 600,
+      "touch": false,
+      "view": "chase",
+      "state": "recovery",
+      "long": true,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 352.546875,
+        "t": 142,
+        "r": 607.453125,
+        "b": 192.59375,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 358,
+        "t": 204,
+        "r": 602,
+        "b": 258,
+        "w": 244,
+        "h": 54
+      },
+      "overlap": {
+        "w": 244,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "116px",
+      "actualCompact": true,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "view": "street",
+      "state": "run",
+      "long": false,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 77.609375,
+        "t": 300,
+        "r": 312.375,
+        "b": 350.59375,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 93.359375,
+        "t": 616,
+        "r": 296.640625,
+        "b": 642,
+        "w": 203.28125,
+        "h": 26
+      },
+      "overlap": {
+        "w": 203.28125,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "96px",
+      "actualCompact": true,
+      "dispatchTop": "253px",
+      "onscreen": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "view": "street",
+      "state": "run",
+      "long": false,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 77.609375,
+        "t": 300,
+        "r": 312.375,
+        "b": 350.59375,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 93.359375,
+        "t": 616,
+        "r": 296.640625,
+        "b": 642,
+        "w": 203.28125,
+        "h": 26
+      },
+      "overlap": {
+        "w": 203.28125,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "96px",
+      "actualCompact": false,
+      "dispatchTop": "307px",
+      "onscreen": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "view": "street",
+      "state": "run",
+      "long": true,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 77.609375,
+        "t": 300,
+        "r": 312.375,
+        "b": 350.59375,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 69,
+        "t": 588,
+        "r": 321,
+        "b": 642,
+        "w": 252,
+        "h": 54
+      },
+      "overlap": {
+        "w": 234.765625,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "96px",
+      "actualCompact": true,
+      "dispatchTop": "253px",
+      "onscreen": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "view": "street",
+      "state": "run",
+      "long": true,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 77.609375,
+        "t": 300,
+        "r": 312.375,
+        "b": 350.59375,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 69,
+        "t": 588,
+        "r": 321,
+        "b": 642,
+        "w": 252,
+        "h": 54
+      },
+      "overlap": {
+        "w": 234.765625,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "96px",
+      "actualCompact": false,
+      "dispatchTop": "307px",
+      "onscreen": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "view": "street",
+      "state": "recovery",
+      "long": false,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 67.546875,
+        "t": 300,
+        "r": 322.453125,
+        "b": 350.59375,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 93.359375,
+        "t": 616,
+        "r": 296.640625,
+        "b": 642,
+        "w": 203.28125,
+        "h": 26
+      },
+      "overlap": {
+        "w": 203.28125,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "96px",
+      "actualCompact": true,
+      "dispatchTop": "253px",
+      "onscreen": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "view": "street",
+      "state": "recovery",
+      "long": false,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 67.546875,
+        "t": 300,
+        "r": 322.453125,
+        "b": 350.59375,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 93.359375,
+        "t": 616,
+        "r": 296.640625,
+        "b": 642,
+        "w": 203.28125,
+        "h": 26
+      },
+      "overlap": {
+        "w": 203.28125,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "96px",
+      "actualCompact": false,
+      "dispatchTop": "307px",
+      "onscreen": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "view": "street",
+      "state": "recovery",
+      "long": true,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 67.546875,
+        "t": 300,
+        "r": 322.453125,
+        "b": 350.59375,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 69,
+        "t": 588,
+        "r": 321,
+        "b": 642,
+        "w": 252,
+        "h": 54
+      },
+      "overlap": {
+        "w": 252,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "96px",
+      "actualCompact": true,
+      "dispatchTop": "253px",
+      "onscreen": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "view": "street",
+      "state": "recovery",
+      "long": true,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 67.546875,
+        "t": 300,
+        "r": 322.453125,
+        "b": 350.59375,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 69,
+        "t": 588,
+        "r": 321,
+        "b": 642,
+        "w": 252,
+        "h": 54
+      },
+      "overlap": {
+        "w": 252,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "96px",
+      "actualCompact": false,
+      "dispatchTop": "307px",
+      "onscreen": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "view": "chase",
+      "state": "run",
+      "long": false,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 77.609375,
+        "t": 300,
+        "r": 312.375,
+        "b": 350.59375,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 93.359375,
+        "t": 616,
+        "r": 296.640625,
+        "b": 642,
+        "w": 203.28125,
+        "h": 26
+      },
+      "overlap": {
+        "w": 203.28125,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "96px",
+      "actualCompact": true,
+      "dispatchTop": "253px",
+      "onscreen": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "view": "chase",
+      "state": "run",
+      "long": false,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 77.609375,
+        "t": 300,
+        "r": 312.375,
+        "b": 350.59375,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 93.359375,
+        "t": 616,
+        "r": 296.640625,
+        "b": 642,
+        "w": 203.28125,
+        "h": 26
+      },
+      "overlap": {
+        "w": 203.28125,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "96px",
+      "actualCompact": false,
+      "dispatchTop": "307px",
+      "onscreen": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "view": "chase",
+      "state": "run",
+      "long": true,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 77.609375,
+        "t": 300,
+        "r": 312.375,
+        "b": 350.59375,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 69,
+        "t": 588,
+        "r": 321,
+        "b": 642,
+        "w": 252,
+        "h": 54
+      },
+      "overlap": {
+        "w": 234.765625,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "96px",
+      "actualCompact": true,
+      "dispatchTop": "253px",
+      "onscreen": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "view": "chase",
+      "state": "run",
+      "long": true,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 77.609375,
+        "t": 300,
+        "r": 312.375,
+        "b": 350.59375,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 69,
+        "t": 588,
+        "r": 321,
+        "b": 642,
+        "w": 252,
+        "h": 54
+      },
+      "overlap": {
+        "w": 234.765625,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "96px",
+      "actualCompact": false,
+      "dispatchTop": "307px",
+      "onscreen": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "view": "chase",
+      "state": "recovery",
+      "long": false,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 67.546875,
+        "t": 300,
+        "r": 322.453125,
+        "b": 350.59375,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 93.359375,
+        "t": 616,
+        "r": 296.640625,
+        "b": 642,
+        "w": 203.28125,
+        "h": 26
+      },
+      "overlap": {
+        "w": 203.28125,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "96px",
+      "actualCompact": true,
+      "dispatchTop": "253px",
+      "onscreen": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "view": "chase",
+      "state": "recovery",
+      "long": false,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 67.546875,
+        "t": 300,
+        "r": 322.453125,
+        "b": 350.59375,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 93.359375,
+        "t": 616,
+        "r": 296.640625,
+        "b": 642,
+        "w": 203.28125,
+        "h": 26
+      },
+      "overlap": {
+        "w": 203.28125,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "96px",
+      "actualCompact": false,
+      "dispatchTop": "307px",
+      "onscreen": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "view": "chase",
+      "state": "recovery",
+      "long": true,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 67.546875,
+        "t": 300,
+        "r": 322.453125,
+        "b": 350.59375,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 69,
+        "t": 588,
+        "r": 321,
+        "b": 642,
+        "w": 252,
+        "h": 54
+      },
+      "overlap": {
+        "w": 252,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "96px",
+      "actualCompact": true,
+      "dispatchTop": "253px",
+      "onscreen": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "view": "chase",
+      "state": "recovery",
+      "long": true,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 67.546875,
+        "t": 300,
+        "r": 322.453125,
+        "b": 350.59375,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 69,
+        "t": 588,
+        "r": 321,
+        "b": 642,
+        "w": 252,
+        "h": 54
+      },
+      "overlap": {
+        "w": 252,
+        "h": 0
+      },
+      "neighbors": [],
+      "computedDock": "96px",
+      "actualCompact": false,
+      "dispatchTop": "307px",
+      "onscreen": true
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "view": "street",
+      "state": "run",
+      "long": false,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 304.609375,
+        "t": 179.40625,
+        "r": 539.375,
+        "b": 230,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 12,
+        "t": 180,
+        "r": 215.28125,
+        "b": 206,
+        "w": 203.28125,
+        "h": 26
+      },
+      "overlap": {
+        "w": 0,
+        "h": 26
+      },
+      "neighbors": [],
+      "computedDock": "52px",
+      "actualCompact": true,
+      "dispatchTop": "96px",
+      "onscreen": true
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "view": "street",
+      "state": "run",
+      "long": false,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 304.609375,
+        "t": 179.40625,
+        "r": 539.375,
+        "b": 230,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 12,
+        "t": 180,
+        "r": 215.28125,
+        "b": 206,
+        "w": 203.28125,
+        "h": 26
+      },
+      "overlap": {
+        "w": 0,
+        "h": 26
+      },
+      "neighbors": [],
+      "computedDock": "52px",
+      "actualCompact": false,
+      "dispatchTop": "146px",
+      "onscreen": true
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "view": "street",
+      "state": "run",
+      "long": true,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 304.609375,
+        "t": 179.40625,
+        "r": 539.375,
+        "b": 230,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 12,
+        "t": 180,
+        "r": 254,
+        "b": 234,
+        "w": 242,
+        "h": 54
+      },
+      "overlap": {
+        "w": 0,
+        "h": 50
+      },
+      "neighbors": [],
+      "computedDock": "52px",
+      "actualCompact": true,
+      "dispatchTop": "96px",
+      "onscreen": true
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "view": "street",
+      "state": "run",
+      "long": true,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 304.609375,
+        "t": 179.40625,
+        "r": 539.375,
+        "b": 230,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 12,
+        "t": 180,
+        "r": 254,
+        "b": 234,
+        "w": 242,
+        "h": 54
+      },
+      "overlap": {
+        "w": 0,
+        "h": 50
+      },
+      "neighbors": [],
+      "computedDock": "52px",
+      "actualCompact": false,
+      "dispatchTop": "146px",
+      "onscreen": true
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "view": "street",
+      "state": "recovery",
+      "long": false,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 294.546875,
+        "t": 179.40625,
+        "r": 549.453125,
+        "b": 230,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 12,
+        "t": 180,
+        "r": 215.28125,
+        "b": 206,
+        "w": 203.28125,
+        "h": 26
+      },
+      "overlap": {
+        "w": 0,
+        "h": 26
+      },
+      "neighbors": [],
+      "computedDock": "52px",
+      "actualCompact": true,
+      "dispatchTop": "96px",
+      "onscreen": true
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "view": "street",
+      "state": "recovery",
+      "long": false,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 294.546875,
+        "t": 179.40625,
+        "r": 549.453125,
+        "b": 230,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 12,
+        "t": 180,
+        "r": 215.28125,
+        "b": 206,
+        "w": 203.28125,
+        "h": 26
+      },
+      "overlap": {
+        "w": 0,
+        "h": 26
+      },
+      "neighbors": [],
+      "computedDock": "52px",
+      "actualCompact": false,
+      "dispatchTop": "146px",
+      "onscreen": true
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "view": "street",
+      "state": "recovery",
+      "long": true,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 294.546875,
+        "t": 179.40625,
+        "r": 549.453125,
+        "b": 230,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 12,
+        "t": 180,
+        "r": 254,
+        "b": 234,
+        "w": 242,
+        "h": 54
+      },
+      "overlap": {
+        "w": 0,
+        "h": 50
+      },
+      "neighbors": [],
+      "computedDock": "52px",
+      "actualCompact": true,
+      "dispatchTop": "96px",
+      "onscreen": true
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "view": "street",
+      "state": "recovery",
+      "long": true,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 294.546875,
+        "t": 179.40625,
+        "r": 549.453125,
+        "b": 230,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 12,
+        "t": 180,
+        "r": 254,
+        "b": 234,
+        "w": 242,
+        "h": 54
+      },
+      "overlap": {
+        "w": 0,
+        "h": 50
+      },
+      "neighbors": [],
+      "computedDock": "52px",
+      "actualCompact": false,
+      "dispatchTop": "146px",
+      "onscreen": true
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "view": "chase",
+      "state": "run",
+      "long": false,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 304.609375,
+        "t": 179.40625,
+        "r": 539.375,
+        "b": 230,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 12,
+        "t": 180,
+        "r": 215.28125,
+        "b": 206,
+        "w": 203.28125,
+        "h": 26
+      },
+      "overlap": {
+        "w": 0,
+        "h": 26
+      },
+      "neighbors": [],
+      "computedDock": "52px",
+      "actualCompact": true,
+      "dispatchTop": "96px",
+      "onscreen": true
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "view": "chase",
+      "state": "run",
+      "long": false,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 304.609375,
+        "t": 179.40625,
+        "r": 539.375,
+        "b": 230,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 12,
+        "t": 180,
+        "r": 215.28125,
+        "b": 206,
+        "w": 203.28125,
+        "h": 26
+      },
+      "overlap": {
+        "w": 0,
+        "h": 26
+      },
+      "neighbors": [],
+      "computedDock": "52px",
+      "actualCompact": false,
+      "dispatchTop": "146px",
+      "onscreen": true
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "view": "chase",
+      "state": "run",
+      "long": true,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 304.609375,
+        "t": 179.40625,
+        "r": 539.375,
+        "b": 230,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 12,
+        "t": 180,
+        "r": 254,
+        "b": 234,
+        "w": 242,
+        "h": 54
+      },
+      "overlap": {
+        "w": 0,
+        "h": 50
+      },
+      "neighbors": [],
+      "computedDock": "52px",
+      "actualCompact": true,
+      "dispatchTop": "96px",
+      "onscreen": true
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "view": "chase",
+      "state": "run",
+      "long": true,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 304.609375,
+        "t": 179.40625,
+        "r": 539.375,
+        "b": 230,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 12,
+        "t": 180,
+        "r": 254,
+        "b": 234,
+        "w": 242,
+        "h": 54
+      },
+      "overlap": {
+        "w": 0,
+        "h": 50
+      },
+      "neighbors": [],
+      "computedDock": "52px",
+      "actualCompact": false,
+      "dispatchTop": "146px",
+      "onscreen": true
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "view": "chase",
+      "state": "recovery",
+      "long": false,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 294.546875,
+        "t": 179.40625,
+        "r": 549.453125,
+        "b": 230,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 12,
+        "t": 180,
+        "r": 215.28125,
+        "b": 206,
+        "w": 203.28125,
+        "h": 26
+      },
+      "overlap": {
+        "w": 0,
+        "h": 26
+      },
+      "neighbors": [],
+      "computedDock": "52px",
+      "actualCompact": true,
+      "dispatchTop": "96px",
+      "onscreen": true
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "view": "chase",
+      "state": "recovery",
+      "long": false,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 294.546875,
+        "t": 179.40625,
+        "r": 549.453125,
+        "b": 230,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 12,
+        "t": 180,
+        "r": 215.28125,
+        "b": 206,
+        "w": 203.28125,
+        "h": 26
+      },
+      "overlap": {
+        "w": 0,
+        "h": 26
+      },
+      "neighbors": [],
+      "computedDock": "52px",
+      "actualCompact": false,
+      "dispatchTop": "146px",
+      "onscreen": true
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "view": "chase",
+      "state": "recovery",
+      "long": true,
+      "compact": true,
+      "dock": null,
+      "stealth": {
+        "l": 294.546875,
+        "t": 179.40625,
+        "r": 549.453125,
+        "b": 230,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 12,
+        "t": 180,
+        "r": 254,
+        "b": 234,
+        "w": 242,
+        "h": 54
+      },
+      "overlap": {
+        "w": 0,
+        "h": 50
+      },
+      "neighbors": [],
+      "computedDock": "52px",
+      "actualCompact": true,
+      "dispatchTop": "96px",
+      "onscreen": true
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "view": "chase",
+      "state": "recovery",
+      "long": true,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 294.546875,
+        "t": 179.40625,
+        "r": 549.453125,
+        "b": 230,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 12,
+        "t": 180,
+        "r": 254,
+        "b": 234,
+        "w": 242,
+        "h": 54
+      },
+      "overlap": {
+        "w": 0,
+        "h": 50
+      },
+      "neighbors": [],
+      "computedDock": "52px",
+      "actualCompact": false,
+      "dispatchTop": "146px",
+      "onscreen": true
+    }
+  ],
+  "failures": [
+    {
+      "width": 1000,
+      "height": 700,
+      "touch": false,
+      "view": "chase",
+      "state": "run",
+      "long": true,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 382.609375,
+        "t": 108,
+        "r": 617.375,
+        "b": 158.59375,
+        "w": 234.765625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 438,
+        "t": 170,
+        "r": 562,
+        "b": 294,
+        "w": 124,
+        "h": 124
+      },
+      "overlap": {
+        "w": 124,
+        "h": 0
+      },
+      "neighbors": [
+        {
+          "id": "storyLine",
+          "rect": {
+            "l": 180,
+            "t": 291.75,
+            "r": 820,
+            "b": 373,
+            "w": 640,
+            "h": 81.25
+          }
+        }
+      ],
+      "computedDock": "72px",
+      "actualCompact": false,
+      "dispatchTop": "",
+      "onscreen": true
+    },
+    {
+      "width": 1000,
+      "height": 700,
+      "touch": false,
+      "view": "chase",
+      "state": "recovery",
+      "long": true,
+      "compact": false,
+      "dock": null,
+      "stealth": {
+        "l": 372.546875,
+        "t": 108,
+        "r": 627.453125,
+        "b": 158.59375,
+        "w": 254.90625,
+        "h": 50.59375
+      },
+      "radio": {
+        "l": 438,
+        "t": 170,
+        "r": 562,
+        "b": 294,
+        "w": 124,
+        "h": 124
+      },
+      "overlap": {
+        "w": 124,
+        "h": 0
+      },
+      "neighbors": [
+        {
+          "id": "storyLine",
+          "rect": {
+            "l": 180,
+            "t": 291.75,
+            "r": 820,
+            "b": 373,
+            "w": 640,
+            "h": 81.25
+          }
+        }
+      ],
+      "computedDock": "72px",
+      "actualCompact": false,
+      "dispatchTop": "",
+      "onscreen": true
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "scope": "CSS only; caption placement/tracking while existing roof-stealth class is present. No gameplay JS changes.",
+  "sourceSha256": {
+    "src/ui/hud-top.css": "e9c9e5879b1fb9b1b88adeebe88d6cab66ec7eab7b5328187bd89fc8a0e256c5",
+    "src/ui/radio.css": "10e40aec35dfa06feac38325470a73f75cc39ef55cb78be03c38e0fae58852e1",
+    "src/ui/chase-view.css": "ea20055785e801eb09cb7714f0f3a8aadb5db50d5da83eaf2cb372ec0a4dc6ac",
+    "src/ui/touch-hud.css": "e3fc0e0ebcf7be94cf2b0c1415b2573267ad988abb11ea75101d50d4599f5eb4"
+  },
+  "proofs": [
+    {
+      "file": "work/fort-running/stealth-radio-layout-final-after.json",
+      "sha256": "4cae919857e311d7b04c7c1c872b0b2e02c6828b1121f0b5e6228f166f709b00",
+      "pass": true,
+      "cases": 128
+    },
+    {
+      "file": "work/fort-running/stealth-radio-neighbors-final-after.json",
+      "sha256": "d19d4f11ecffa2861b133ee48678e480fa0ef74579039ab0971f1fda3159b009",
+      "pass": true,
+      "cases": 128
+    },
+    {
+      "file": "work/fort-running/stealth-radio-actual-fort-final-after.json",
+      "sha256": "45bd83d8928368461b992786067e4b137dc151c515a4e5f1ae256c6ae653c0b8",
+      "pass": true,
+      "cases": 80
+    },
+    {
+      "file": "work/fort-running/stealth-radio-no-stealth-equivalence.json",
+      "sha256": "3c35d0005727a95ca3bb78a8baf89a74766300a79b5f34aca210d0602970ecd4",
+      "pass": true,
+      "cases": 128
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "kind": "Production host regression for Fort running grace, visible recovery and serious alarms",
+  "assertions": 111,
+  "notes": [
+    "Real cover/gait/bindings/moveBody/sight cones and wall rays: bounded observed run, visible recovery, late release, repeated bursts, drill attention, original other offences and immediate serious alarms. HUD writes tested without claiming native layout."
+  ],
+  "sourceBase": "69224ff47bf1d803075d516f38e15f2dcfef0623",
+  "pass": true,
+  "files": [
+    {
+      "file": "src/fort-cover.js",
+      "sha256": "321a484de00ce6787a97eeb9a43195471c80157680336f09757cdbb69df122e3"
+    },
+    {
+      "file": "src/fort-cover-watch.js",
+      "sha256": "471927ed19f7c0ebdd8372289b53e62efcd1b6fbcad0ea14ed1629d7718240b1"
+    },
+    {
+      "file": "tools/tests/fort-running-suspicion.mjs",
+      "sha256": "8bd03db43412aaba5994e266eae3b485fe17849471ba9be08199d63cd8d6a682"
+    }
+  ]
+}

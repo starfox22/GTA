@@ -3,6 +3,24 @@
 Written for the next AI session (or human) picking this work up. Read `/CLAUDE.md` first (commands,
 rules, workflow), then this page, then only the area doc your task needs (`docs/README.md`).
 
+## October 19: Fort Sentinel running suspicion follow-up
+
+Continue on **`codex-reviews`**; never publish to `main` without the owner's approval.
+[Play the updated build](https://starfox22.github.io/GTA/?review=80e81b6c3f24fe5a)
+and [running/recovery screenshots plus earlier reviews](https://starfox22.github.io/GTA/review/?review=80e81b6c3f24fe5a).
+Observed running alone fills the bar over five seconds from empty, independent of witness count
+(drill-only attention is half). Releasing Run stops pressure immediately; ordinary walking or
+standing drains 12 points/s even while seen, unless another suspicious action remains active.
+The HUD shows RISING with the remaining window and bound Run key, then FADING during recovery.
+W still walks and Shift runs under cover. Weapons, assaults, shots, theft and trespass retain
+existing serious-alarm rules; restricted/climbing/face-loiter pressure is unchanged.
+
+The [Fort audit](audit/fort-running-review-2026-10-19/README.md) pins the narrow source change,
+111 host assertions, six accepted browser modules, physical keyboard checks and native captures.
+It retains the original south-into-stand test failure and radio-caption overlap; fixtures and
+caption layout are corrected. Desktop/touch captions clear the meter and neighboring controls.
+The first four mission and vehicle reviews below retain their original evidence and limits.
+
 ## October 19: first four missions, interaction safety and native graphics pass
 
 Continue on **`codex-reviews`**; never publish to `main` without the owner's approval.

@@ -1,0 +1,10 @@
+started dev server (?dev&norender: boot 10.9s)
+FAIL fort-cover (6.2s): running in view did not fill the meter: {"active":true,"cleared":true,"suspicion":1.5,"alarmed":false,"papers":false,"insideBase":true,"leftWithPapers":false,"entered":true,"uniform":"army","inspecting":null,"records":null,"shielded":true,"ownsGate":true,"walkDefault":true,"rate":0,"seenBy":2,"reason":null,"pace":0,"restricted":null,"blownBy":null,"gateCheck":{"x":9236,"y":8182,"distance":504},"recordsDoor":{"x":9884,"y":8035,"distance":209},"player":{"x":9740,"y":8201,"onFoot":true}}
+PASS fort-gate-talk (16.4s)
+PASS fort-records-route (11.6s)
+PASS fort-vehicle-theft (13.2s)
+PASS mission34-lifecycle (15.6s)
+     production mission functions: carrier protection restored, pre-bag wreck failure, recovered bag survives wreck/death, corpse keys retained, pre-papers alarm fails and post-papers escape retained · meeting update loop: 30 identical target snapshots cause one HUD refresh; moving x, roof height and wanted text still refresh · god off; public frontier set to three prior jobs; summit climb bypassed with teleport, real dig/load key and actual retry; named Kessler wreck fixture fails/restarts; real jeep boarding before ID fails the blown-cover job
+PASS mission4-paths (30.3s)
+     quiet trunk open=true after 5.25 game seconds
+5/6 passed, 0 skipped, 1 failed in 106s

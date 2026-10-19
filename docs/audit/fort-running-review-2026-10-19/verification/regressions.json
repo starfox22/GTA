@@ -1,0 +1,78 @@
+{
+  "kind": "Initial six-module live pass and focused unchanged-assertion fixture correction; original failed run retained",
+  "htmlSha256": "0b5711f566da3db453928e54add1b68e05209ad358ad1ae60c0d316897f85673",
+  "results": [
+    {
+      "log": "regressions.log",
+      "status": "FAIL",
+      "test": "fort-cover.mjs",
+      "detail": ": running in view did not fill the meter: {\"active\":true,\"cleared\":true,\"suspicion\":1.5,\"alarmed\":false,\"papers\":false,\"insideBase\":true,\"leftWithPapers\":false,\"entered\":true,\"uniform\":\"army\",\"inspecting\":null,\"records\":null,\"shielded\":true,\"ownsGate\":true,\"walkDefault\":true,\"rate\":0,\"seenBy\":2,\"reason\":null,\"pace\":0,\"restricted\":null,\"blownBy\":null,\"gateCheck\":{\"x\":9236,\"y\":8182,\"distance\":504},\"recordsDoor\":{\"x\":9884,\"y\":8035,\"distance\":209},\"player\":{\"x\":9740,\"y\":8201,\"onFoot\":true}}"
+    },
+    {
+      "log": "regressions.log",
+      "status": "PASS",
+      "test": "fort-gate-talk.mjs",
+      "detail": ""
+    },
+    {
+      "log": "regressions.log",
+      "status": "PASS",
+      "test": "fort-records-route.mjs",
+      "detail": ""
+    },
+    {
+      "log": "regressions.log",
+      "status": "PASS",
+      "test": "fort-vehicle-theft.mjs",
+      "detail": ""
+    },
+    {
+      "log": "regressions.log",
+      "status": "PASS",
+      "test": "mission34-lifecycle.mjs",
+      "detail": ""
+    },
+    {
+      "log": "regressions.log",
+      "status": "PASS",
+      "test": "mission4-paths.mjs",
+      "detail": ""
+    },
+    {
+      "log": "fort-cover-lane.log",
+      "status": "PASS",
+      "test": "fort-cover.mjs",
+      "detail": ""
+    }
+  ],
+  "initialPassed": 5,
+  "initialFailed": 1,
+  "acceptedUniqueModules": 6,
+  "fixtureCorrection": "fort-cover ran south into SENTINEL.stand and stopped at y8201; east follows the clear avenue in both HQ sight cones. Same1.6s and>10&&!alarmed assertion.",
+  "tests": [
+    {
+      "file": "fort-cover.mjs",
+      "sha256": "730d818ca46427fc7729df336975bd7b603f40e1b7a389ee7b52b0fda61b4698"
+    },
+    {
+      "file": "fort-gate-talk.mjs",
+      "sha256": "4100523ace5a71cb68ed1eeeb2de376c66df1a569852135a09119648c55e2f99"
+    },
+    {
+      "file": "fort-records-route.mjs",
+      "sha256": "f14f5cf43499d4a51ac0cae5b2e72b4f748690dbe83fab480266291cc63b0cd8"
+    },
+    {
+      "file": "fort-vehicle-theft.mjs",
+      "sha256": "595287884c8818b4f3b5e20d20bff2995a3c52c5fc173c3c27fd30cbd92fd6b1"
+    },
+    {
+      "file": "mission34-lifecycle.mjs",
+      "sha256": "47db593a854de4b820a531fa6ed3c45163cb7a1467e8ffe6a788f8214c423fe1"
+    },
+    {
+      "file": "mission4-paths.mjs",
+      "sha256": "ccc9fcca61fb708c5fa1da6e4ea80ae5b3b02892384b8748fe1dbf4c1c4055c2"
+    }
+  ]
+}
