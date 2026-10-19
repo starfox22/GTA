@@ -20,7 +20,7 @@ export function checkMission34Lifecycle(t, overrides = {}) {
     repairVehicle: c => { c.hp = c.maxhp; c.damageVersion++; },
     tone: noop, tell: noop, missionLine: noop, missionBrief: noop, updateUI: noop,
     keyName: () => 'E', trunkPoint: c => ({ x: c.x + 20, y: c.y }),
-    trunkPicking: () => false,
+    trunkPicking: () => false, lockpickFooting: () => true,
     fortCover: { cleared: false, alarmed: false, papers: false, leftWithPapers: false },
     FORT_RECORDS: { door: {} }, FORT_COVER_GATE: { check: { x: 0, y: 0 } },
     inMilitary: () => true, actionHeld: () => false,

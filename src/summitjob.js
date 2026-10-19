@@ -43,14 +43,19 @@
       if (OFFROAD_TYPES[c.type] || ['pickup', 'flatbed', 'van', 'armytruck', 'suv'].includes(c.type)) return 'TRUCK';
       return 'CAR';
     }
+    // The cache and handover need the player's feet free and on the ground. A held
+    // action must not dig through a jump, a vehicle strike or a tumble down the face.
+    function summitOnFoot() {
+      return lockpickFooting() && !player.jump && !player.tumble && !player.wading && !player.pool && !player.sceneSeat;
+    }
     /* Whether the player is down on the summit: on foot on the rock, or in a vehicle
        standing on it (a helicopter set down counts; one hovering does not). */
     function summitArrived() {
       if (player.parachute || player.fall || player.thrown || distanceBetween(player, SUMMIT_JOB.peak) > SUMMIT_JOB.arrive) return false;
       const c = player.car;
-      if (!c) return !player.tumble;
+      if (!c) return summitOnFoot();
       if (isAircraft(c)) return aircraftClearance(c) < 3 * UNITS_PER_METRE;
-      return Math.abs(c.speed || 0) < 40;
+      return !c.cliffAir && !c.overturned && Math.abs(c.speed || 0) < 40;
     }
     function startSummitJob(m) {
       const cache = SUMMIT_JOB.cache;
@@ -102,7 +107,7 @@
     }
     /* The player is crouched over the hole this frame (the dig pose; the feet stay put). */
     function summitDigging() {
-      return (player.digUntil || 0) > gameTime && !player.car;
+      return (player.digUntil || 0) > gameTime && summitOnFoot();
     }
     function summitDeliveryTarget(m) {
       if (m.carrier === 'car' && player.car !== m.carryCar && !(insideDepot(m.carryCar.x, m.carryCar.y) && insideDepot(player.x, player.y)))
@@ -142,7 +147,8 @@
         return;
       }
       if (m.stage === 1) {
-        const at = !c && !player.tumble && !player.parachute && distanceBetween(player, m.cache) < SUMMIT_JOB.digReach;
+        const at = summitOnFoot() && distanceBetween(player, m.cache) < SUMMIT_JOB.digReach;
+        if (!at) player.digUntil = 0;
         if (c && m.instruction.indexOf('GET OUT') !== 0) m.instruction = 'GET OUT · DIG UP THE PACKAGE AT THE CAIRN';
         if (!c && m.instruction.indexOf('GET OUT') === 0) m.instruction = 'DIG UP THE PACKAGE AT THE CAIRN · HOLD ' + keyName('interact');
         if (at && actionHeld('interact')) {
@@ -257,14 +263,14 @@
       const m = summitJob();
       if (!m) return false;
       // Stage 1: E is held to dig (updateSummitJob); a press at the cairn is taken here.
-      if (m.stage === 1 && !player.car && distanceBetween(player, m.cache) < SUMMIT_JOB.digReach) return true;
-      if (m.stage === 2 && !player.car && m.lastCar && distanceBetween(player, summitRearPoint(m.lastCar)) < SUMMIT_JOB.loadReach) {
+      if (m.stage === 1 && summitOnFoot() && distanceBetween(player, m.cache) < SUMMIT_JOB.digReach) return true;
+      if (m.stage === 2 && summitOnFoot() && m.lastCar && distanceBetween(player, summitRearPoint(m.lastCar)) < SUMMIT_JOB.loadReach) {
         player.lootUntil = gameTime + LOOT_CROUCH;
         player.lootFacing = headingBetween(player, m.lastCar);
         summitStow(m, m.lastCar);
         return true;
       }
-      if (m.stage === 3 && !player.car && m.vinny && m.carrier !== 'car' && wantedStars === 0 && insideDepot(player.x, player.y) && distanceBetween(player, m.vinny) < SUMMIT_JOB.handReach) {
+      if (m.stage === 3 && summitOnFoot() && m.vinny && m.carrier !== 'car' && wantedStars === 0 && insideDepot(player.x, player.y) && distanceBetween(player, m.vinny) < SUMMIT_JOB.handReach) {
         m.stage = 4;
         m.handover = 6.5;
         m.target = m.vinny;
@@ -280,14 +286,14 @@
     function summitJobUI() {
       const m = summitJob();
       if (!m) return;
-      if (m.stage === 1 && !player.car && distanceBetween(player, m.cache) < SUMMIT_JOB.digReach + 6) {
+      if (m.stage === 1 && summitOnFoot() && distanceBetween(player, m.cache) < SUMMIT_JOB.digReach + 6) {
         if (m.dig > 0 && summitDigging())
           offerPrompt('DIGGING TO RETRIEVE PACKAGE · ' + Math.floor(m.dig * 100) + ' %', { hold: true, id: 'summit-dig' });
         else offerPrompt(m.dig > 0 ? 'KEEP DIGGING · ' + Math.floor(m.dig * 100) + ' %' : 'DIG UP THE PACKAGE', { hold: true, id: 'summit-dig' });
       }
-      if (m.stage === 2 && !player.car && m.lastCar && distanceBetween(player, summitRearPoint(m.lastCar)) < SUMMIT_JOB.loadReach)
+      if (m.stage === 2 && summitOnFoot() && m.lastCar && distanceBetween(player, summitRearPoint(m.lastCar)) < SUMMIT_JOB.loadReach)
         offerPrompt('LOAD THE PACKAGE', { id: 'summit-load' });
-      if (m.stage === 3 && !player.car && m.vinny && insideDepot(player.x, player.y) && distanceBetween(player, m.vinny) < SUMMIT_JOB.handReach && m.carrier !== 'car')
+      if (m.stage === 3 && summitOnFoot() && m.vinny && insideDepot(player.x, player.y) && distanceBetween(player, m.vinny) < SUMMIT_JOB.handReach && m.carrier !== 'car')
         offerPrompt(wantedStars > 0 ? 'LOSE THE POLICE FIRST' : 'HAND OVER THE PACKAGE', { key: wantedStars > 0 ? null : 'interact', id: 'summit-hand' });
     }
     /* What the renderer draws at the summit (summitjob3d.js): the cairn, the hole as

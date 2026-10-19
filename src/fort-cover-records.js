@@ -17,6 +17,7 @@
     function fortRecordsReady() {
       return (
         fortCover.active &&
+        fortOnFoot() &&
         !fortCover.papers &&
         fortCoverShielded() &&
         !fortRecords &&

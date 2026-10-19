@@ -480,9 +480,17 @@
       if (gameTime - m.departedAt > 25 && !m.waitClub)
         fortBeat(m, 'radio', 'Kessler’s been going to the Marea every leave for a year. Rum, a table by the window, the same waitress. Creature of habit.');
     }
-    function fortTrunkOpenOffer(m) {
+    // Trunk loot, changing and checkpoint conversations share the same stable
+    // footing as a lockpick; hopping, swimming and a knockdown interrupt the work.
+    function fortOnFoot() {
+      return lockpickFooting() && !player.jump && !player.tumble && !player.wading && !player.pool && !player.sceneSeat;
+    }
+    function fortTrunkReach(m, reach = 30) {
       const c = m.kcar;
-      return !player.car && c && !c.trunkOpen && distanceBetween(player, trunkPoint(c, fortScratch)) < 30;
+      return fortOnFoot() && c && c.hp > 0 && vehicleStopped(c) && Math.abs(entityElevation(c) - entityElevation(player)) < 10 && distanceBetween(player, trunkPoint(c, fortScratch)) < reach;
+    }
+    function fortTrunkOpenOffer(m) {
+      return !m.kcar?.trunkOpen && fortTrunkReach(m);
     }
     const fortScratch = { x: 0, y: 0 };
     function fortTrunkText(m) {
@@ -695,7 +703,11 @@
     const FORT_GATE_TEXT = 'WALK UP TO FORT SENTINEL’S GATE · SHOW YOUR ID';
     /* Somewhere to change: inside a car that is standing still, or out of everyone's sight. */
     function fortChangeSpot() {
-      if (player.car) return Math.abs(player.car.speed || 0) < 4 && !isAircraft(player.car) && !vehicleSpec(player.car).bike;
+      if (player.car) {
+        const c = player.car;
+        return Math.abs(c.speed || 0) < 4 && Math.hypot(c.vx || 0, c.vy || 0) < 4 && !c.cliffAir && !c.overturned && !c.sinkFor && !isAircraft(c) && !vehicleSpec(c).bike;
+      }
+      if (!fortOnFoot()) return false;
       for (let i = 0; i < pedestrians.length; i++) {
         const p = pedestrians[i];
         if (p.hp > 0 && Math.abs(p.x - player.x) < 260 && Math.abs(p.y - player.y) < 260 && distanceBetween(p, player) < 260 && clearSight(p, player)) return false;
@@ -736,7 +748,7 @@
       const c = m.kcar;
       // The messy way: his keys from the body, or the keys in a car taken from him.
       const k = fortKessler(m);
-      if (k && k.hp <= 0 && !m.keys && !player.car && distanceBetween(player, k) < 34) {
+      if (k && k.hp <= 0 && !m.keys && fortOnFoot() && distanceBetween(player, k) < 34) {
         m.keys = true;
         player.lootUntil = gameTime + LOOT_CROUCH;
         player.lootFacing = headingBetween(player, k);
@@ -744,7 +756,7 @@
         return true;
       }
       if (fortKeysOpenTrunk()) return true;
-      if (m.stage === FORT_STAGE.take && c && !player.car && distanceBetween(player, trunkPoint(c, fortScratch)) < 34) {
+      if (m.stage === FORT_STAGE.take && fortTrunkReach(m, 34)) {
         player.lootUntil = gameTime + LOOT_CROUCH;
         player.lootFacing = headingBetween(player, c);
         m.bag = true;
@@ -776,9 +788,9 @@
         box.classList.toggle('seen', m.tailHeat > 0.45);
       }
       const k = fortKessler(m);
-      if (k && k.hp <= 0 && !m.keys && !player.car && distanceBetween(player, k) < 34) offerPrompt('TAKE HIS KEYS', { id: 'fort-keys' });
+      if (k && k.hp <= 0 && !m.keys && fortOnFoot() && distanceBetween(player, k) < 34) offerPrompt('TAKE HIS KEYS', { id: 'fort-keys' });
       if (m.keys && fortTrunkOpenOffer(m)) offerPrompt('OPEN THE TRUNK', { id: 'fort-trunk' });
-      if (m.stage === FORT_STAGE.take && m.kcar && !player.car && distanceBetween(player, trunkPoint(m.kcar, fortScratch)) < 34)
+      if (m.stage === FORT_STAGE.take && fortTrunkReach(m, 34))
         offerPrompt('TAKE THE UNIFORM AND ID', { id: 'fort-take' });
       // At the open trunk once the bag is out, the key shuts the lid first (vehicle-trunk.js CLOSE THE TRUNK).
       if (m.stage === FORT_STAGE.change && !(!player.car && trunkCloseTarget())) {
@@ -788,7 +800,7 @@
             player.car ? { key: null, id: 'fort-change-car' } : { hold: true, id: 'fort-change' },
           );
         else if (player.car) offerPrompt('STOP THE CAR TO CHANGE', { key: null, id: 'fort-change-moving' });
-        else offerPrompt('PEOPLE ARE WATCHING · CHANGE IN A PARKED CAR OR OUT OF SIGHT', { key: null, id: 'fort-change-seen' });
+        else if (fortOnFoot()) offerPrompt('PEOPLE ARE WATCHING · CHANGE IN A PARKED CAR OR OUT OF SIGHT', { key: null, id: 'fort-change-seen' });
       }
     }
     function fortJobCleanup() {

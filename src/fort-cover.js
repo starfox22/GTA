@@ -222,7 +222,7 @@
     function fortCoverGateReady() {
       return (
         fortCoverOwnsGate() &&
-        !player.car &&
+        fortOnFoot() &&
         !fortCover.cleared &&
         !fortCover.inspect &&
         selectedWeaponIndex === FISTS_INDEX &&
@@ -249,7 +249,7 @@
     }
     // In the middle of showing the papers: the feet stay put (game-update.js), he faces the sergeant.
     function fortGateTalking() {
-      return !!fortCover.inspect && !player.car;
+      return !!fortCover.inspect && fortOnFoot();
     }
     function updateFortGate(deltaSeconds) {
       const own = fortCoverOwnsGate(),
@@ -288,8 +288,9 @@
         }
       }
       if (!I) return;
-      // Pushed away from the window (a car, a blast): the sergeant wants his papers back.
-      if (d > FORT_COVER_GATE.reach * 1.8) {
+      // A jump, fall or hit interrupts the exchange, as does being pushed away.
+      // Never clear the player while he is lying under a car beside the window.
+      if (!fortOnFoot() || d > FORT_COVER_GATE.reach * 1.8) {
         fortCover.inspect = null;
         fortGateLine(guard, 'Sir? Your ID!');
         return;

@@ -11,13 +11,16 @@ Kessler's tail: missions-summit-and-fort-kessler.md.
   is never offered while its loot is in it); any car moving off past walking pace slams its lid (`slamMovingTrunks`).
   Slammed during TAKE (the bag still in), the stage goes back to opening it.
 - The change: in a car standing still it happens by itself (3 s); on foot, a held interact where no pedestrian
-  within 260 units has a clear line and not inside the base. Then `wearUniform(true)` and `fortCoverBegin()`.
+  within 260 units has a clear line and not inside the base. Foot work requires stable footing, so a jump,
+  fall, knockdown or swim cannot pick up the bag, change, show ID or enter Records. A car must be still in
+  both velocity axes, upright, grounded and not flooding to change. Then `wearUniform(true)` and `fortCoverBegin()`.
 - Gate (fort-cover.js): driven up in uniform the cover still owns the gate (`fortCoverOwnsGate` true short of the
   arm in a non-military car): the sergeant sends the car back to park outside, no challenge, no FORCE THE GATE
   prompt (`militaryInteract`/`militaryUI` skip it). On foot he halts the player within 160 units; past the arm without
   papers he calls him back until `FORT_COVER_GATE.grace` (56 units), then the challenge. Showing the ID runs
   `FORT_GATE_TALK` (about 16 s, `FORT_GATE_CLEARED_AT`) with the feet held (`fortGateTalking`, game-update.js);
-  lines go through `fortGateLine` (bubble when short, subtitle via `missionLine` always). A weapon drawn cancels it.
+  lines go through `fortGateLine` (bubble when short, subtitle via `missionLine` always). A drawn weapon,
+  jump, fall, knockdown or being pushed away interrupts it; returning on foot allows another inspection.
   The gate arm is solid on foot (military-base.js): it lifts for him only through `fortCoverGatePass()` (waved
   through at `FORT_GATE_OPEN_AT`, or cleared and believed, on foot, no stars), in and out, and drops behind him.
 - The records door (`FORT_RECORDS`) is at the HQ's far east end, about 83 m from the papers window: the walk along

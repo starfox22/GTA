@@ -16,7 +16,9 @@ cleanup, the demo gate) are in missions-and-demo.md; this page is what each job 
   a vehicle parked just off the platform rolls down the face.
 - The dig is a held interact (`actionHeld('interact')`), `SUMMIT_JOB.digSeconds` in all; progress is kept on a
   release. `player.digUntil` / `player.digFacing` hold the `kneelDig` pose (crowd3d-special.js) and the feet still
-  (game-update.js `summitDigging()`).
+  (game-update.js `summitDigging()`). Jumping, falling, tumbling, swimming and a vehicle knockdown
+  interrupt the dig and its kneeling pose immediately, retaining earlier progress; cache/load/handover prompts
+  require stable footing too. An airborne or overturned road vehicle does not count as arriving on the summit.
 - `m.carrier`: 'hand' (just dug, a vehicle near), 'backpack' (no vehicle near, or walked away from it), 'car'
   (`m.carryCar`, flagged `mission` so it burns down slowly instead of exploding and is never retired). Inside the
   warehouse getting out of the carrier takes the package along.
@@ -29,7 +31,8 @@ cleanup, the demo gate) are in missions-and-demo.md; this page is what each job 
   hole and spoil heap that grow, the case once the dig passes 62 %. Shared standard materials only (no new
   program, nothing to prewarm).
 - Console: `summitJob()` (report), `summitSkip('summit' | 'deliver')`. Tests: tools/tests/mission3-summit.mjs,
-  mission34-lifecycle.mjs (borrowed carrier, production functions plus actual retry cleanup).
+  mission34-lifecycle.mjs (borrowed carrier, production functions plus actual retry cleanup),
+  mission34-footing.mjs (production interruption cases plus real jump/interact input).
 
 ## Mission 4: Borrowed Stripes (fortjob.js with vehicle-trunk.js, fort-cover*.js, skyline-meeting.js)
 
