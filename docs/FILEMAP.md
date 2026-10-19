@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-616 files in the include tree, 210,594 lines.
+616 files in the include tree, 210,598 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -883,7 +883,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/parachute3d-canopy.js`   257 — Parachute 3D canopy: the ram-air wing's meshes and materials, its shape (chuteShape, chuteSkinPoint: airfoil, arc, cell-by-cell pressurisation …
 - `src/parachute3d-pose.js`   196 — Parachute 3D pose: the rig's state (chuteRig), the jumper's body through the jump (box, the pull, line stretch, hanging) and the pendulum under the …
 - `src/parachute3d-rigging.js`   444 — Parachute 3D rigging: lines through the slider's grommets, risers, the billowing slider, pilot chute, bag and container; updateParachute3D() shapes …
-- `src/parachute3d-cutaway.js`    97 — One detached main per rig, frozen at release rather than still attached to the jumper.
+- `src/parachute3d-cutaway.js`   101 — One detached main per rig, frozen at release rather than still attached to the jumper.
 
 ## src/game-console.js ▸ DeadEndCity console registry and assembly
 

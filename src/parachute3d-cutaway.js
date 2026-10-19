@@ -89,6 +89,10 @@
           tone.set(palette[cell]).multiplyScalar((upper ? 1 : 0.62) * tape);
           chuteSkinBase.set([tone.r, tone.g, tone.b], v * 3);
         }
+        // A hitch may skip the shaded opening entirely. Upload the live
+        // colors here even when the next rebuild is an already full wing.
+        chuteSkinColor.set(chuteSkinBase);
+        chuteSkinGeometry.attributes.color.needsUpdate = true;
         for (let rib = 0; rib < chuteRibCount; rib++) {
           tone.set(palette[Math.min(CHUTE_CELLS - 1, rib)]).multiplyScalar(rib === 0 || rib === CHUTE_CELLS ? 0.8 : 0.45);
           for (let i = 0; i < CHUTE_RIB_POINTS * 2 + 1; i++) chuteRibColor.set([tone.r, tone.g, tone.b], (rib * (CHUTE_RIB_POINTS * 2 + 1) + i) * 3);

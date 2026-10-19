@@ -52,6 +52,9 @@ chest-handle pull and a spring pilot from the container. Cutaway unloads the han
 through a sprung return to the freefall arch. One frozen main-mesh copy drifts, deflates
 and fades over at most ten game seconds; its geometry/materials are independent of the
 live reserve and disposed on expiry/world reset/new rig.
+Palette identity changes copy into the actual skin color buffer and mark both skin/rib
+attributes for upload immediately. Do not rely on inflation shading to upload colors:
+a hitch can skip straight from a fully open main to a fully open reserve.
 
 `chaseShapeFor()` frames the whole jumper and wing as the lines pay out: pivot rises
 from 0.4 to 3.7 m, boom from 7.5 to 12 m (longer in portrait to fit the horizontal FOV).
@@ -66,3 +69,6 @@ including moving deployments at 30/60 Hz, main/reserve banks, landscape and port
 `cutawayVisible`. `parachute-reserve.mjs` tests fresh presses, exact cutaway conservation,
 remapping, reserve staging/forecast, exhausted reserve, late fatal pull and landing/reset.
 The independent physical-key and native evidence lives in the airport/flight review.
+`parachute-palette.mjs` checks full-open main/reserve switches without opening frames,
+every skin/rib color, upload versions, neutral geometry/material identity and frozen-main
+color ownership; unchanged palettes must not cause redundant uploads.
