@@ -68,7 +68,7 @@ body.chase-view:not(.touch-mode) .bottom-middle {
 /* The prompt docks under the waypoint pill in the chase view (the player fills the middle): the
    dispatch caption goes under it. */
 body.chase-view:not(.touch-mode) #radioCaption {
-  top: 154px;
+  top: var(--stealth-radio-top, 154px);
 }
 body.chase-view:not(.touch-mode) #equipment {
   margin-left: auto;

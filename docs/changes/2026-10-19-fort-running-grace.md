@@ -5,3 +5,4 @@
 - The suspicion HUD shows a live warning countdown and recovery feedback using the player’s bound Run key.
 - Weapons, assaults, gunfire, restricted behavior and military-vehicle theft retain their alarm rules.
 - Added production movement/sight/control regressions; corrected the older running test’s path away from the reviewing stand.
+- Kept garrison radio captions clear of the expanded suspicion HUD across desktop and touch layouts.

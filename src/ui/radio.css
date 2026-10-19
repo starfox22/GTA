@@ -524,6 +524,9 @@ body:not(.touch-mode).police-search-active #carRadio {
   #stealthStatus {
     top: 142px;
   }
+  body.roof-stealth:not(.touch-mode) {
+    --stealth-radio-top: 204px;
+  }
   #pager p {
     font-size: 11px;
   }

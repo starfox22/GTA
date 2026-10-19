@@ -315,7 +315,7 @@ body:not(.touch-mode) .hud-location b {
 #radioCaption {
   position: fixed;
   z-index: 12;
-  top: 142px;
+  top: var(--stealth-radio-top, 142px);
   left: 0;
   right: 0;
   margin-inline: auto;
@@ -341,6 +341,10 @@ body:not(.touch-mode) .hud-location b {
 #radioCaption.show {
   opacity: 1;
   transform: none;
+}
+/* A visible disguise meter reserves the next row for garrison/dispatch speech. */
+body.roof-stealth:not(.touch-mode) {
+  --stealth-radio-top: calc(var(--hud-dock-top, 72px) + 98px);
 }
 /* Help and status lines, GTA-style: a feed under the location, left. Each
    line is a .note box (notify.css, hud-notify.js); this is their column. */

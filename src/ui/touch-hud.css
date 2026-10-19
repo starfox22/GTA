@@ -111,6 +111,23 @@
 .touch-mode #radioCaption {
   top: var(--touch-dispatch-top, 160px);
 }
+/* Short landscape screens have room beside the centred meter, under the map. */
+@media (max-height: 520px) and (min-width: 601px) {
+  .touch-mode.roof-stealth #radioCaption {
+    top: max(var(--touch-dispatch-top, 160px), 146px);
+    left: var(--hud-edge);
+    right: auto;
+    margin-inline: 0;
+    max-width: min(252px, calc((100vw - 320px) / 2 - var(--hud-edge) - 8px));
+  }
+}
+/* A phone's open mission card can occupy the row above its fixed stealth meter. */
+@media (max-width: 600px) {
+  .touch-mode.roof-stealth #radioCaption {
+    top: auto;
+    bottom: 202px;
+  }
+}
 .touch-mode #bottom {
   top: 54px;
   bottom: auto;
