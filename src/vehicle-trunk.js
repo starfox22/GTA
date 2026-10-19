@@ -65,6 +65,11 @@
         player.hp > 0 &&
         !player.parachute &&
         !player.swimming &&
+        !player.wading &&
+        !player.pool &&
+        !player.jump &&
+        !player.tumble &&
+        !player.sceneSeat &&
         !player.thrown &&
         !player.fall &&
         !player.climbing &&
@@ -295,7 +300,7 @@
     }
     /* What the player's hands are doing at a lock, for the renderer: 'trunk', 'door' or null. */
     function lockpickWorking() {
-      return lockpickWork.kind && lockpickEquipped() && lootCrouching() ? lockpickWork.kind : null;
+      return lockpickWork.kind && lockpickEquipped() && lockpickFooting() && lootCrouching() ? lockpickWork.kind : null;
     }
     /* The prompt at a trunk with something in it, or at a locked driver's door with the lockpick in hand (updateUI,
        after the vehicle prompts, which it replaces). */

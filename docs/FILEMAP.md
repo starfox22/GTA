@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-614 files in the include tree, 209,832 lines.
+614 files in the include tree, 209,837 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -70,7 +70,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/roadblocks.js`   436 — Police containment and roadblocks
 - `src/carjack.js`   340 — Carjacking and driver reactions
 - `src/carjack-struggle.js`   569 — The carjack struggle: walking round to the driver's door, the door, reaching in, a tug of war, hauling the driver out and taking the seat …
-- `src/vehicle-trunk.js`   399 — Vehicle trunks and the lockpick at work: a trunk with something in it (`c.trunkLoot`, set by a mission), picked pin by pin by holding interact with …
+- `src/vehicle-trunk.js`   404 — Vehicle trunks and the lockpick at work: a trunk with something in it (`c.trunkLoot`, set by a mission), picked pin by pin by holding interact with …
 - `src/riders.js`   588 — Riders thrown from motorbikes and bicycles
 - `src/wheelie.js`   202 — Wheelies: a motorbike's or bicycle's front wheel lifted by the throttle and the rider's weight, pitching about the rear tyre (c.wheelie, radians; the …
 - `src/wheelie-score.js`   175 — Wheelie distance and milestones: actual airborne path, one bounded player-bike reference, pause-safe result/milestone clocks and a compact HUD.
