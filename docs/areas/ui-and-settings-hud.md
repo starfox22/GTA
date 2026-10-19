@@ -31,7 +31,8 @@
 - **Interaction prompt contract** (hud.js INTERACTION PROMPT): systems never write
   `#interaction`. During an `updateUI()` pass they call
   `offerPrompt(text, { key, hold, id })`; the last offer wins; `commitPrompt()` applies the
-  timing rules (pop-in, swap, grace, dock into a chip after 3 s). `id` keeps identity while
+  timing rules (pop-in, swap, grace, dock after 3 s or early to clear dialogue). The dock
+  clears desktop terrain status; an early dock lasts for the action. `id` keeps identity while
   text changes (one id per vehicle kind, so TAKE OFF → RISE is not a new pop-in).
   Visibility is a class (`.show`), never `display` (toggling display restarted the fade-in
   every pass: the old flickering prompt).
@@ -69,9 +70,7 @@
   **In the chase view** `hudPlayerBox` is the eight corners of the player's box (0.8 m wide on foot,
   the vehicle's footprint and height, aircraft and parachute included) through the chase camera
   (chase-rules.js `chasePlayerBox`; a corner behind the near plane counts as on it); tools/tests/
-  chase-hud-box.mjs. The chase camera stands the player bottom centre (on foot about x 316-477, y
-  263-598 at 960x600), right where the bottom-centre card and strip sit: there the card always folds
-  and the strip fades, so the chase view wants the card elsewhere (open item).
+  chase-hud-box.mjs. The chase card stands at the left above the minimap (chase-view.css).
 - Narrow windows (<= 980 px): the notices start under the waypoint pill (116 px) and stop short of
   the centre (`calc(50vw - 150px)`). The dispatch / radio caption (`#radioCaption`, top centre) is never
   wider than the space between the notices' column and the right edge's mirror: a long line wraps.

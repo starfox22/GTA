@@ -513,6 +513,7 @@
       freshAt: 0,
       seenAt: 0,
       docked: false,
+      clearanceDock: false,
     };
     /**
      * Offer the prompt for this pass. `key` is a control action id whose key
@@ -574,12 +575,14 @@
           view.id = offer.id;
           view.freshAt = now;
           view.docked = false;
+          view.clearanceDock = false;
           view.text = text;
           renderPrompt(el, offer);
+          remeasureMissionCard();
           // Jump to the middle without sliding, then pop in (the one place
           // the animation is restarted, on purpose).
           el.classList.add('snap');
-          el.classList.remove('docked', 'pop');
+          el.classList.remove('docked', 'pop', 'clearance-dock');
           // The jump has to go through a style pass before the transitions come back: a computed-style read is that
           // pass (offsetWidth used to force a whole-page layout as well).
           void getComputedStyle(el).opacity;
@@ -600,7 +603,12 @@
         el.classList.remove('show');
         delete el.dataset.prompt;
       }
-      const dock = view.id !== null && now - view.freshAt >= PROMPT_DOCK_AFTER;
+      // A subtitle can occupy the fresh prompt's centre position. Keep this
+      // action in the dock once it yields; disappearing dialogue must not bounce
+      // the same instruction back through the player.
+      if (view.id !== null && cardClear.promptStoryDock) view.clearanceDock = true;
+      el.classList.toggle('clearance-dock', view.clearanceDock);
+      const dock = view.id !== null && (view.clearanceDock || now - view.freshAt >= PROMPT_DOCK_AFTER);
       if (dock !== view.docked) {
         view.docked = dock;
         if (dock) placeDockLine();
@@ -629,6 +637,11 @@
         shown = nav.style.display !== 'none',
         box = shown ? nav.getBoundingClientRect() : null;
       let bottom = box && box.height ? box.bottom : 12;
+      const terrain = getElement('terrainStatus');
+      if (!document.body.classList.contains('touch-mode') && terrain.style.display !== 'none') {
+        const status = terrain.getBoundingClientRect();
+        if (status.height) bottom = Math.max(bottom, status.bottom);
+      }
       // In an aircraft: below the heading strip and its warning line.
       if (flightHud.shown) bottom = Math.max(bottom, flightHud.root.querySelector('.fh-top').getBoundingClientRect().bottom);
       const root = document.documentElement.style;
@@ -649,6 +662,7 @@
     function dockLineKey() {
       return (
         (getElement('navigation').style.display !== 'none' ? 'nav' : '') +
+        (getElement('terrainStatus').style.display !== 'none' ? '|terrain' : '') +
         (flightHud.shown ? (hudState.flightHud ? '|flight' : '|warnings') : '')
       );
     }

@@ -552,6 +552,11 @@ kbd {
 #interaction.show.docked {
   opacity: 0.9;
 }
+/* When dialogue needs the middle, move straight to the dock rather than
+   sliding the instruction across the words it is making room for. */
+#interaction.clearance-dock {
+  transition: opacity 0.18s, visibility 0s;
+}
 #interaction kbd {
   margin-right: 6px;
   border-color: var(--acid);

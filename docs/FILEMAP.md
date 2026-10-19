@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-614 files in the include tree, 209,861 lines.
+614 files in the include tree, 209,892 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -439,9 +439,9 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/hud.js ▸ HUD behaviour and the title menu
 
-- `src/hud-state.js`   658 — HUD state and pop boxes, saved settings, weapon and radio watches, stars, minimap fold and zoom (hudState, hudPop).
+- `src/hud-state.js`   672 — HUD state and pop boxes, saved settings, weapon and radio watches, stars, minimap fold and zoom (hudState, hudPop).
 - `src/hud-panels.js`   645 — HUD panels: prompts, centre cards and toasts, sniper warning, panel covers, updateHud() and the flight HUD.
-- `src/hud-clearance.js`   371 — HUD clearance: the mission card never covers the player (and the dialogue line and the waypoint pill fade if they would).
+- `src/hud-clearance.js`   388 — HUD clearance: the mission card never covers the player (and the dialogue line and the waypoint pill fade if they would).
 
 ## src/render3d.js ▸ Three.js renderer and resource lifecycle
 
@@ -907,7 +907,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/ui/casino-transit.css`   201 — styles: #casinoTable, .roulette-top, .roulette-top canvas, .roulette-bank, …
 - `src/ui/police-arsenal.css`   523 — POLICE FEEDBACK AND ARSENAL — readable interface additions, v23.
 - `src/ui/wanted-effects.css`   206 — Wanted level (heat.js, pursuit.js, hud.js): the next star flashes red while dispatch escalates, earned stars grey out during a search, a thin meter …
-- `src/ui/hud-top.css`   642 — INTERFACE 30 — design tokens, HUD, title menu, settings (v30 UI pass).
+- `src/ui/hud-top.css`   647 — INTERFACE 30 — design tokens, HUD, title menu, settings (v30 UI pass).
 - `src/ui/hud-bottom.css`   688 — Bottom row: minimap + vitals, mission card, equipment
 - `src/ui/radio.css`   584 — Car radio: a station chip that opens on a change or on hover
 - `src/ui/title.css`   308 — Title screen

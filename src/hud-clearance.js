@@ -45,6 +45,7 @@
       touchLayout: false,
       touchDispatchTop: -1,
       storyBottom: -1,
+      promptStoryDock: false,
       // The chase layout's card: how far up from the bottom it stands (the minimap's top, chase-view.css).
       cardBottom: -1,
       measuredAt: -1,
@@ -176,6 +177,7 @@
       }
       const story = getElement('storyLine');
       let storyBottom = 196;
+      C.promptStoryDock = false;
       if (story.classList.contains('show')) {
         const box = story.getBoundingClientRect();
         if (box.height > 0) {
@@ -195,6 +197,21 @@
               if (lower.height > 0 && lower.left < box.right && lower.right > box.left)
                 storyBottom = Math.max(storyBottom, viewportHeight - lower.top + 10);
             }
+            // Use the subtitle's impending position in this same pass.
+            const rise = Math.ceil(storyBottom) - (C.storyBottom < 0 ? 196 : C.storyBottom);
+            C.story.t -= rise;
+            C.story.b -= rise;
+          }
+          // Compare the prompt's natural centre position, even after it docks,
+          // so clearance cannot oscillate between the two positions.
+          if (!touchLayout) {
+            const prompt = getElement('interaction'),
+              width = prompt.offsetWidth,
+              height = prompt.offsetHeight,
+              top = viewportHeight / 2 + 58;
+            C.promptStoryDock = width > 0 && height > 0 &&
+              clearBoxesMeet(C.story, (viewportWidth - width) / 2, top,
+                (viewportWidth + width) / 2, top + height, 10);
           }
         }
       } else C.story.ok = false;
